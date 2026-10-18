@@ -9,12 +9,13 @@
 use std::collections::BTreeSet;
 
 use codex_hepta_contracts::Sha256Digest;
-use serde::Deserialize;
-use serde::Serialize;
 use sqlx::Row;
 use sqlx::Sqlite;
 use sqlx::Transaction;
 
+use crate::AutomationCalendarScheduleV2;
+use crate::AutomationDstGapPolicy;
+use crate::AutomationDstOverlapPolicy;
 use crate::AutomationError;
 use crate::AutomationMissedRunPolicy;
 use crate::AutomationOverlapPolicy;
@@ -24,6 +25,7 @@ use crate::AutomationStore;
 use crate::AutomationTask;
 use crate::AutomationTaskDraft;
 use crate::AutomationTaskId;
+use crate::AutomationTimeZoneProfileV1;
 
 const DAY_MS: u64 = 86_400_000;
 const MAX_TIMEZONE_TRANSITIONS: usize = 512;
@@ -31,53 +33,6 @@ const MAX_TIMEZONE_ID_BYTES: usize = 96;
 const MAX_OFFSET_SECONDS: i32 = 18 * 60 * 60;
 const MAX_CALENDAR_SCAN: usize = 1_032;
 const ZERO_DIGEST: &str = "0000000000000000000000000000000000000000000000000000000000000000";
-
-#[derive(Clone, Copy, Debug, Deserialize, Eq, PartialEq, Serialize)]
-#[serde(rename_all = "snake_case")]
-pub enum AutomationDstGapPolicy {
-    Skip,
-    NextValid,
-}
-
-#[derive(Clone, Copy, Debug, Deserialize, Eq, PartialEq, Serialize)]
-#[serde(rename_all = "snake_case")]
-pub enum AutomationDstOverlapPolicy {
-    First,
-    Second,
-}
-
-#[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
-#[serde(deny_unknown_fields)]
-pub struct AutomationTimezoneTransitionV1 {
-    pub at_utc_ms: u64,
-    pub offset_before_seconds: i32,
-    pub offset_after_seconds: i32,
-}
-
-#[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
-#[serde(deny_unknown_fields)]
-pub struct AutomationTimeZoneProfileV1 {
-    pub timezone_id: String,
-    pub tzdb_digest: Sha256Digest,
-    pub valid_from_utc_ms: u64,
-    pub valid_until_utc_ms: u64,
-    pub initial_offset_seconds: i32,
-    pub transitions: Vec<AutomationTimezoneTransitionV1>,
-}
-
-#[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
-#[serde(deny_unknown_fields)]
-pub struct AutomationCalendarScheduleV2 {
-    pub timezone_id: String,
-    pub tzdb_digest: Sha256Digest,
-    pub start_at_utc_ms: u64,
-    pub end_at_utc_ms: Option<u64>,
-    pub every_days: u16,
-    pub local_time_ms: u32,
-    pub dst_gap_policy: AutomationDstGapPolicy,
-    pub dst_overlap_policy: AutomationDstOverlapPolicy,
-    pub clock_profile: AutomationTimeZoneProfileV1,
-}
 
 impl AutomationTimeZoneProfileV1 {
     fn validate(&self) -> Result<(), AutomationError> {
@@ -858,6 +813,7 @@ fn constraint_or_unavailable(error: sqlx::Error) -> AutomationError {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::AutomationTimezoneTransitionV1;
 
     const HOUR: u64 = 3_600_000;
     const DAY: u64 = DAY_MS;

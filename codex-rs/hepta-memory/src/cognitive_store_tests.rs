@@ -1091,13 +1091,95 @@ async fn v2_fixture_migrates_forward_preserving_memory_and_revoking_legacy_proje
                 .expect("legacy projection revoked");
         assert_eq!(count, 0, "legacy {table} rows must be revoked");
     }
+    // Compare the ordered committed versions AND their canonical SQL checksums.
+    // Adding an owner migration must not require editing a second version list.
+    let migration_rows = sqlx::query_as::<_, (i64, Vec<u8>, bool)>(
+        "SELECT version, checksum, success FROM _sqlx_migrations ORDER BY version",
+    )
+    .fetch_all(&migrated.pool)
+    .await
+    .expect("ordered migration ledger");
+    let expected_rows = sqlx::migrate!("./migrations")
+        .iter()
+        .map(|migration| (migration.version, migration.checksum.to_vec(), true))
+        .collect::<Vec<_>>();
+    assert_eq!(migration_rows, expected_rows);
+    assert_eq!(
+        sqlx::query_scalar::<_, i64>("SELECT COUNT(*) FROM shared_experience_use_events")
+            .fetch_one(&migrated.pool)
+            .await
+            .expect("new use-grant history"),
+        0,
+        "migrating legacy memories must not invent sharing authority"
+    );
+
+    // Exercise v15's reserved withdrawal slot and immutable history inside a
+    // rolled-back fixture transaction. These rows are not admitted use grants.
+    let mut transaction = migrated
+        .pool
+        .begin()
+        .await
+        .expect("schema constraint fixture");
+    for revoked in [0_i64, 1] {
+        let inserted = sqlx::query(
+            "INSERT INTO shared_experience_use_events (
+                policy_id, revision, revoked, memory_id, memory_revision,
+                content_sha256, consumer_agent_id, consumer_workspace_sha256,
+                purpose, parameter_scope, artifact_consumer_id, expires_at
+             ) VALUES (?, 1025, ?, ?, 1, ?, ?, ?, 'recall', '', '', 9999999)",
+        )
+        .bind("3".repeat(64))
+        .bind(revoked)
+        .bind(&memory_id)
+        .bind(content_sha256.as_str())
+        .bind(owner.as_str())
+        .bind("4".repeat(64))
+        .execute(&mut *transaction)
+        .await;
+        assert_eq!(
+            inserted.is_ok(),
+            revoked == 1,
+            "the last slot is withdrawal-only"
+        );
+    }
+    assert!(
+        sqlx::query("UPDATE shared_experience_use_events SET expires_at = 9999998")
+            .execute(&mut *transaction)
+            .await
+            .is_err(),
+        "use history is immutable"
+    );
+    assert!(
+        sqlx::query("DELETE FROM shared_experience_use_events")
+            .execute(&mut *transaction)
+            .await
+            .is_err(),
+        "use history cannot be erased"
+    );
+    transaction
+        .rollback()
+        .await
+        .expect("discard synthetic schema rows");
+    migrated.pool.close().await;
+    drop(migrated);
+    let reopened = CognitiveStore::open(&agent_layout)
+        .await
+        .expect("reopen migrated owner");
     assert_eq!(
         sqlx::query_scalar::<_, String>(
-            "SELECT group_concat(version, ',') FROM _sqlx_migrations ORDER BY version",
+            "SELECT content FROM memory_revisions WHERE memory_id = ? AND revision = 1",
         )
-        .fetch_one(&migrated.pool)
+        .bind(&memory_id)
+        .fetch_one(&reopened.pool)
         .await
-        .expect("migration ledger"),
-        "1,2,3,4,5,6,7,8,9,10,11,12,13,14"
+        .expect("original memory content"),
+        content
+    );
+    assert_eq!(
+        sqlx::query_scalar::<_, i64>("SELECT COUNT(*) FROM shared_experience_use_events")
+            .fetch_one(&reopened.pool)
+            .await
+            .expect("no implicit grants after reopen"),
+        0
     );
 }

@@ -1,0 +1,19 @@
+[Unit]
+Description=Renew the installed Hepta desktop endpoint
+
+[Service]
+Type=oneshot
+User=root
+Group=root
+UMask=0077
+ExecStart=/usr/bin/python3 -I /usr/libexec/hepta/hepta-renew-native-endpoint --manifest /etc/hepta-private-ci/native-desktop/endpoint-manifest.json --trusted-keys /etc/hepta-private-ci/native-desktop/trusted-keys.json --signing-key /etc/hepta-private-ci/native-gateway/endpoint-signing-key.seed
+NoNewPrivileges=true
+CapabilityBoundingSet=
+AmbientCapabilities=
+PrivateTmp=true
+PrivateDevices=true
+ProtectHome=true
+ProtectSystem=strict
+ReadWritePaths=/etc/hepta-private-ci/native-desktop
+RestrictAddressFamilies=AF_UNIX
+TimeoutStartSec=30

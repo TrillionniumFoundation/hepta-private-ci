@@ -222,6 +222,7 @@ pub struct CognitiveStore {
     pub(crate) owner_agent_id: AgentId,
     path: PathBuf,
     _open_guard: Option<Arc<CognitiveStoreOpenGuard>>,
+    pub(crate) federation_peer_pools: Arc<crate::cognitive_federation_pool::FederationPeerPools>,
 }
 
 #[derive(Debug)]
@@ -306,6 +307,7 @@ impl CognitiveStore {
             owner_agent_id,
             path,
             _open_guard: None,
+            federation_peer_pools: Arc::default(),
         }
     }
 
@@ -340,6 +342,7 @@ impl CognitiveStore {
             owner_agent_id: layout.agent_id().clone(),
             path,
             _open_guard: Some(open_guard),
+            federation_peer_pools: Arc::default(),
         })
     }
 
@@ -540,14 +543,17 @@ fn now_unix_seconds() -> Result<i64, CognitiveStoreError> {
         .map_err(|_| CognitiveStoreError::Unavailable("system clock overflow".to_string()))
 }
 
-async fn verify_store(pool: &SqlitePool, owner: &AgentId) -> Result<(), CognitiveStoreError> {
-    let quick_check = sqlx::query_scalar::<_, String>("PRAGMA quick_check(1)")
+pub(crate) async fn verify_store(
+    pool: &SqlitePool,
+    owner: &AgentId,
+) -> Result<(), CognitiveStoreError> {
+    let quick_check = sqlx::query_scalar::<_, String>("PRAGMA integrity_check(1)")
         .fetch_all(pool)
         .await
         .map_err(unavailable)?;
     if quick_check != ["ok"] {
         return Err(CognitiveStoreError::Corrupt(
-            "SQLite quick_check rejected the cognitive store".to_string(),
+            "SQLite integrity_check rejected the cognitive store".to_string(),
         ));
     }
     let foreign_key_errors = sqlx::query("PRAGMA foreign_key_check")
@@ -1484,7 +1490,7 @@ fn valid_recovered_database_filename(value: &str) -> bool {
             .all(|byte| byte.is_ascii_digit() || (b'a'..=b'f').contains(&byte))
 }
 
-fn resolve_active_database_path(root: &Path) -> Result<PathBuf, CognitiveStoreError> {
+pub(crate) fn resolve_active_database_path(root: &Path) -> Result<PathBuf, CognitiveStoreError> {
     let pointer = root.join(COGNITIVE_ACTIVE_DB_POINTER);
 
     #[cfg(unix)]

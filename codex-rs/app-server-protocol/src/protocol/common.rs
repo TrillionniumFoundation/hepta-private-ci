@@ -552,6 +552,11 @@ client_request_definitions! {
         serialization: thread_id(params.thread_id),
         response: v2::ThreadUnsubscribeResponse,
     },
+    ThreadEphemeralRetain => "thread/ephemeral/retain" {
+        params: v2::ThreadEphemeralRetainParams,
+        serialization: thread_id(params.thread_id),
+        response: v2::ThreadEphemeralRetainResponse,
+    },
     #[experimental("thread/increment_elicitation")]
     /// Increment the thread-local out-of-band elicitation counter.
     ///
@@ -602,6 +607,32 @@ client_request_definitions! {
         params: v2::ThreadQueueReconcileParams,
         serialization: thread_id(params.thread_id),
         response: v2::ThreadQueueReconcileResponse,
+    },
+    #[experimental("thread/creation/observe")]
+    ThreadCreationObserve => "thread/creation/observe" {
+        params: v2::ThreadCreationObserveParams,
+        serialization: None,
+        response: v2::ThreadCreationObserveResponse,
+    },
+    #[experimental("thread/creation/reconcile")]
+    ThreadCreationReconcile => "thread/creation/reconcile" {
+        params: v2::ThreadCreationObserveParams,
+        serialization: None,
+        manual_payload_conversion: manual,
+        response: v2::ThreadCreationObserveResponse,
+    },
+    #[experimental("thread/creation/abandon")]
+    ThreadCreationAbandon => "thread/creation/abandon" {
+        params: v2::ThreadCreationObserveParams,
+        serialization: None,
+        manual_payload_conversion: manual,
+        response: v2::ThreadCreationObserveResponse,
+    },
+    #[experimental("thread/queue/observe")]
+    ThreadQueueObserve => "thread/queue/observe" {
+        params: v2::ThreadQueueObserveParams,
+        serialization: thread_id(params.thread_id),
+        response: v2::ThreadQueueObserveResponse,
     },
     #[experimental("thread/queue/list")]
     ThreadQueueList => "thread/queue/list" {
@@ -728,6 +759,13 @@ client_request_definitions! {
     ProjectRead => "project/read" {
         params: v2::ProjectReadParams,
         serialization: global_shared_read("projects"),
+        response: v2::ProjectReadResponse,
+    },
+    #[experimental("project/readByIdempotencyKey")]
+    ProjectReadByIdempotencyKey => "project/readByIdempotencyKey" {
+        params: v2::ProjectReadByIdempotencyKeyParams,
+        serialization: global_shared_read("projects"),
+        manual_payload_conversion: manual,
         response: v2::ProjectReadResponse,
     },
     #[experimental("project/create")]

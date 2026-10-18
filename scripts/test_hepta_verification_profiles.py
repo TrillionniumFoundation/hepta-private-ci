@@ -56,6 +56,11 @@ class VerificationProfileTests(unittest.TestCase):
         for profile in ("development", "qualification"):
             with (
                 self.subTest(profile=profile),
+                patch.object(
+                    GAP,
+                    "cargo_workspace_member_roots",
+                    return_value=set(GAP.RUST_PACKAGES),
+                ),
                 patch.object(GAP.subprocess, "run") as run,
             ):
                 run.return_value.returncode = 0

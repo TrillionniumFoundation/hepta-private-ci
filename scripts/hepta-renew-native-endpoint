@@ -1,0 +1,175 @@
+#!/usr/bin/python3 -I
+"""Renew an installed Linux desktop endpoint using its existing Root signing key."""
+
+import argparse
+import base64
+from contextlib import contextmanager
+import fcntl
+import hashlib
+import json
+import os
+from pathlib import Path
+import stat
+import tempfile
+import time
+
+from cryptography.hazmat.primitives import serialization
+from cryptography.hazmat.primitives.asymmetric.ed25519 import Ed25519PrivateKey
+
+
+FIELDS = (
+    "schema",
+    "endpoint_id",
+    "address",
+    "protocol_version",
+    "gateway_credential_account",
+    "issued_unix_ms",
+    "expires_unix_ms",
+    "key_id",
+)
+MAX_LIFETIME_MS = 24 * 60 * 60 * 1000
+
+
+def unique_object(pairs):
+    result = {}
+    for key, value in pairs:
+        if key in result:
+            raise ValueError("duplicate JSON field")
+        result[key] = value
+    return result
+
+
+@contextmanager
+def protected_file(path, secret=False):
+    if not path.is_absolute() or path != Path(os.path.normpath(path)):
+        raise ValueError("path must be absolute and normalized")
+    for parent in reversed(path.parents):
+        info = parent.lstat()
+        if not stat.S_ISDIR(info.st_mode) or info.st_uid != 0 or info.st_mode & 0o022:
+            raise ValueError("path ancestor is not protected by Root")
+    fd = os.open(path, os.O_RDONLY | os.O_NOFOLLOW | os.O_CLOEXEC)
+    try:
+        info = os.fstat(fd)
+        if (
+            not stat.S_ISREG(info.st_mode)
+            or info.st_uid != 0
+            or info.st_nlink != 1
+            or info.st_mode & 0o022
+            or (secret and stat.S_IMODE(info.st_mode) != 0o600)
+        ):
+            raise ValueError("file is not protected by Root")
+        if secret:
+            fcntl.flock(fd, fcntl.LOCK_EX)
+        with os.fdopen(fd, "rb") as source:
+            fd = -1
+            data = source.read(65537)
+            if len(data) > 65536:
+                raise ValueError("file exceeds the size bound")
+            yield data
+    finally:
+        if fd >= 0:
+            os.close(fd)
+
+
+def payload(manifest):
+    return (
+        "hepta.endpoint-manifest-payload.v1\n"
+        + "".join(f"{name}={manifest[name]}\n" for name in FIELDS)
+    ).encode()
+
+
+def signing_message(digest):
+    return f"hepta.endpoint-manifest-signature.v1\nmanifest_digest={digest}\n".encode()
+
+
+def renew_manifest(manifest, trust, seed, now_ms):
+    if set(manifest) != set(FIELDS) | {"manifest_digest", "signature_base64"}:
+        raise ValueError("unsupported manifest fields")
+    if manifest["schema"] != "hepta.endpoint-manifest.v1":
+        raise ValueError("unsupported endpoint schema")
+    if trust["schema"] != "hepta.native-trusted-keys.v1":
+        raise ValueError("unsupported trust schema")
+    if manifest["key_id"] in trust.get("revoked_key_ids", []):
+        raise ValueError("endpoint key has been revoked")
+    key = Ed25519PrivateKey.from_private_bytes(seed)
+    public = key.public_key().public_bytes(
+        serialization.Encoding.Raw, serialization.PublicFormat.Raw
+    )
+    if public != base64.b64decode(trust["keys"][manifest["key_id"]], validate=True):
+        raise ValueError("signing key does not match installed trust")
+    digest = hashlib.sha256(payload(manifest)).hexdigest()
+    if digest != manifest["manifest_digest"]:
+        raise ValueError("existing endpoint digest is invalid")
+    key.public_key().verify(
+        base64.b64decode(manifest["signature_base64"], validate=True),
+        signing_message(digest),
+    )
+    issued = manifest["issued_unix_ms"]
+    expires = manifest["expires_unix_ms"]
+    if (
+        type(issued) is not int
+        or type(expires) is not int
+        or now_ms < issued
+        or not 0 < expires - issued <= MAX_LIFETIME_MS
+    ):
+        raise ValueError("existing endpoint clock or lifetime is invalid")
+    if expires - now_ms > MAX_LIFETIME_MS // 2:
+        return manifest
+    renewed = dict(manifest)
+    renewed["issued_unix_ms"] = now_ms
+    renewed["expires_unix_ms"] = now_ms + MAX_LIFETIME_MS
+    renewed["manifest_digest"] = hashlib.sha256(payload(renewed)).hexdigest()
+    renewed["signature_base64"] = base64.b64encode(
+        key.sign(signing_message(renewed["manifest_digest"]))
+    ).decode()
+    return renewed
+
+
+def main():
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--manifest", type=Path, required=True)
+    parser.add_argument("--trusted-keys", type=Path, required=True)
+    parser.add_argument("--signing-key", type=Path, required=True)
+    args = parser.parse_args()
+    if os.geteuid() != 0:
+        raise PermissionError("only Root may renew an installed endpoint")
+    with (
+        protected_file(args.signing_key, secret=True) as seed,
+        protected_file(args.manifest) as manifest_bytes,
+        protected_file(args.trusted_keys) as trust_bytes,
+    ):
+        manifest = json.loads(manifest_bytes, object_pairs_hook=unique_object)
+        trust = json.loads(trust_bytes, object_pairs_hook=unique_object)
+        renewed = renew_manifest(manifest, trust, seed, time.time_ns() // 1_000_000)
+        if renewed != manifest:
+            fd, staged = tempfile.mkstemp(
+                prefix=".endpoint-renew-", dir=args.manifest.parent
+            )
+            try:
+                with os.fdopen(fd, "wb") as output:
+                    output.write((json.dumps(renewed, indent=2) + "\n").encode())
+                    os.fchmod(output.fileno(), 0o444)
+                    output.flush()
+                    os.fsync(output.fileno())
+                os.replace(staged, args.manifest)
+                parent_fd = os.open(args.manifest.parent, os.O_RDONLY | os.O_DIRECTORY)
+                try:
+                    os.fsync(parent_fd)
+                finally:
+                    os.close(parent_fd)
+            finally:
+                if os.path.exists(staged):
+                    os.unlink(staged)
+    print(
+        json.dumps(
+            {
+                "renewed": renewed != manifest,
+                "manifest_digest": renewed["manifest_digest"],
+                "expires_unix_ms": renewed["expires_unix_ms"],
+            }
+        )
+    )
+
+
+if __name__ == "__main__":
+    main()

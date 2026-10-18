@@ -16,6 +16,12 @@
 
 This stable document is the implementation guide for `secrets.heptabao`. Normative identity, ownership, contract, data-authority and delivery facts remain in the canonical JSON registries. This guide explains how those facts are implemented and operated. Documentation readiness is not source implementation, activation, operator acceptance, promotion or release.
 
+The current protected runtime's concrete ownership, deadline, cancellation and
+recovery contracts are described in
+[RUNTIME_BOUNDARIES_20261002.md](RUNTIME_BOUNDARIES_20261002.md). That audit follows
+the composed product source rather than treating older module-only candidates
+as the running product.
+
 ## 1. Identity, mission and ownership
 
 Bridge governed secret leases and metadata to the external HeptaBao authority without returning raw secrets in receipts.

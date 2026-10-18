@@ -153,7 +153,12 @@ async fn environment_context_uses_external_current_time_on_each_turn() -> Result
         .iter()
         .zip([FIRST_TIME_UNIX_SECONDS, FIRST_TIME_UNIX_SECONDS + 86_400])
     {
-        assert!(request.has_content_kinds(&["environments.environment_context"]));
+        super::durable_metadata::assert_content_kinds(
+            &test.codex,
+            request,
+            &["environments.environment_context"],
+        )
+        .await?;
         let current_date = DateTime::<Utc>::from_timestamp(timestamp, 0)
             .expect("test timestamp should be valid")
             .with_timezone(&Local)
@@ -343,7 +348,12 @@ async fn system_time_source_adds_current_time_reminder() -> Result<()> {
     test.submit_turn("what time is it?").await?;
 
     let request = responses.single_request();
-    assert!(request.has_content_kinds(&["current_time.reminder"]));
+    super::durable_metadata::assert_content_kinds(
+        &test.codex,
+        &request,
+        &["current_time.reminder"],
+    )
+    .await?;
     let reminders = current_time_reminders(&request);
     assert_eq!(reminders.len(), 1);
     assert_regex_match(

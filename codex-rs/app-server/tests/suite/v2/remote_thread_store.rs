@@ -27,6 +27,7 @@ use codex_app_server::in_process::InProcessServerEvent;
 use codex_app_server::in_process::InProcessStartArgs;
 use codex_app_server_protocol::ClientInfo;
 use codex_app_server_protocol::ClientRequest;
+use codex_app_server_protocol::InitializeCapabilities;
 use codex_app_server_protocol::InitializeParams;
 use codex_app_server_protocol::JSONRPCError;
 use codex_app_server_protocol::RequestId;
@@ -69,6 +70,58 @@ use tokio::time::timeout;
 use uuid::Uuid;
 
 const DEFAULT_READ_TIMEOUT: std::time::Duration = std::time::Duration::from_secs(10);
+
+#[tokio::test]
+async fn identified_creation_rejects_non_local_store_before_any_creation_effect() -> Result<()> {
+    let codex_home = TempDir::new()?;
+    let store_id = Uuid::new_v4().to_string();
+    create_config_toml_with_thread_store(codex_home.path(), "http://127.0.0.1:1", &store_id)?;
+    let thread_store = InMemoryThreadStore::for_id(store_id.clone());
+    let _in_memory_store = InMemoryThreadStoreId { store_id };
+    let loader_overrides = LoaderOverrides::without_managed_config_for_tests();
+    let config = Arc::new(
+        ConfigBuilder::default()
+            .codex_home(codex_home.path().to_path_buf())
+            .fallback_cwd(Some(codex_home.path().to_path_buf()))
+            .loader_overrides(loader_overrides.clone())
+            .build()
+            .await?,
+    );
+    let client = start_in_process_client(
+        config,
+        loader_overrides,
+        Some(InitializeCapabilities {
+            experimental_api: true,
+            ..Default::default()
+        }),
+    )
+    .await?;
+    let before = thread_store.calls().await;
+    let error = client
+        .request(ClientRequest::ThreadStart {
+            request_id: RequestId::Integer(1),
+            params: ThreadStartParams {
+                idempotency_key: Some("non-local-original-create".into()),
+                cwd: Some(codex_home.path().to_string_lossy().into_owned()),
+                ephemeral: Some(false),
+                ..Default::default()
+            },
+        })
+        .await?
+        .expect_err("unbound non-local creation must fail before reservation or effects");
+    assert_eq!(
+        error,
+        codex_app_server_protocol::JSONRPCErrorError {
+            code: -32600,
+            message: "configured thread store does not support identified creation".into(),
+            data: None,
+        }
+    );
+    assert_eq!(thread_store.calls().await, before);
+    client.shutdown().await?;
+    assert_no_local_persistence_artifacts(codex_home.path())?;
+    Ok(())
+}
 
 #[tokio::test]
 async fn thread_section_operations_without_sqlite_return_method_not_found() -> Result<()> {
@@ -367,7 +420,12 @@ async fn cold_thread_resume_reuses_non_local_history_probe() -> Result<()> {
     let thread_store = InMemoryThreadStore::for_id(store_id.clone());
     let _in_memory_store = InMemoryThreadStoreId { store_id };
 
-    let mut client = start_in_process_client(config.clone(), loader_overrides.clone()).await?;
+    let mut client = start_in_process_client(
+        config.clone(),
+        loader_overrides.clone(),
+        /*capabilities*/ None,
+    )
+    .await?;
     let response = client
         .request(ClientRequest::ThreadStart {
             request_id: RequestId::Integer(1),
@@ -408,7 +466,7 @@ async fn cold_thread_resume_reuses_non_local_history_probe() -> Result<()> {
     .await??;
     client.shutdown().await?;
 
-    let client = start_in_process_client(config, loader_overrides).await?;
+    let client = start_in_process_client(config, loader_overrides, /*capabilities*/ None).await?;
     let reads_before_resume = thread_store.calls().await.read_thread_with_history;
     // The in-memory store is pathless, so resume currently fails later while
     // assembling the response. The history-bearing probe must still be reused.
@@ -442,12 +500,13 @@ async fn start_in_process_server(codex_home: &Path) -> Result<InProcessClientHan
             .await?,
     );
 
-    Ok(start_in_process_client(config, loader_overrides).await?)
+    Ok(start_in_process_client(config, loader_overrides, /*capabilities*/ None).await?)
 }
 
 async fn start_in_process_client(
     config: Arc<Config>,
     loader_overrides: LoaderOverrides,
+    capabilities: Option<InitializeCapabilities>,
 ) -> std::io::Result<InProcessClientHandle> {
     in_process::start(InProcessStartArgs {
         arg0_paths: Arg0DispatchPaths::default(),
@@ -470,7 +529,7 @@ async fn start_in_process_client(
                 title: None,
                 version: "0.1.0".to_string(),
             },
-            capabilities: None,
+            capabilities,
         },
         channel_capacity: in_process::DEFAULT_IN_PROCESS_CHANNEL_CAPACITY,
     })

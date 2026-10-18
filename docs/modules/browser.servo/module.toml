@@ -1,0 +1,40 @@
+schema = "hepta.module-manifest.v1"
+order = 35
+id = "browser.servo"
+plane = "adapter"
+kind = "worker"
+lifecycle = "existing"
+state = "isolated_stateful"
+architectureRole = "checked_adapter"
+writes = ["browser_profile_state"]
+uses = ["kernel.authority", "runtime.agentd"]
+owner = "browser-platform"
+deputy = "security-authority"
+denies = ["credential_export", "ungranted_network"]
+localHotPathCentralRpc = "not_applicable_or_bounded"
+sourceStatus = "existing_bound"
+source_root_present = true
+production_implementation = false
+sourceEvidenceRoots = ["apps/hepta-browser", "third_party/servo-patches"]
+missingDeclaredRoots = []
+bootstrapWorkPackage = "BROWSER-WEB-C1"
+technicalDocument = "docs/modules/browser.servo/TECHNICAL.md"
+documentationReady = true
+
+[hotPathPolicy]
+centralSynchronousRpcAllowed = false
+boundedCachedControlInputAllowed = true
+fallbackRequired = true
+
+[publicSurfacePolicy]
+typedContractsOnly = true
+denyUnknownCriticalFields = true
+rawModelOrSecretPayloadExportAllowed = false
+
+[[rootBindings]]
+path = "apps/hepta-browser"
+mode = "exclusive"
+
+[[rootBindings]]
+path = "third_party/servo-patches"
+mode = "exclusive"

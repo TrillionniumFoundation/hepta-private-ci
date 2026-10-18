@@ -1,0 +1,41 @@
+schema = "hepta.module-manifest.v1"
+order = 26
+id = "knowledge.graph"
+plane = "domain"
+kind = "projection"
+lifecycle = "target"
+state = "stateful_rebuildable"
+architectureRole = "projection"
+writes = ["knowledge_graph_projection", "prompt_factor_graph_projection"]
+uses = ["cognitive.store", "cognitive.types", "prompt.registry"]
+owner = "knowledge-graph"
+deputy = "cognitive-platform"
+denies = ["source_fact_mutation", "prompt_registry_mutation", "production_writer_construction"]
+localHotPathCentralRpc = "not_applicable_or_bounded"
+sourceStatus = "existing_bound"
+source_root_present = true
+production_implementation = false
+sourceEvidenceRoots = ["codex-rs/hepta-kg"]
+missingDeclaredRoots = []
+bootstrapWorkPackage = "MEM-4-KG"
+technicalDocument = "docs/modules/knowledge.graph/TECHNICAL.md"
+documentationReady = true
+
+[hotPathPolicy]
+centralSynchronousRpcAllowed = false
+boundedCachedControlInputAllowed = true
+fallbackRequired = true
+
+[publicSurfacePolicy]
+typedContractsOnly = true
+denyUnknownCriticalFields = true
+rawModelOrSecretPayloadExportAllowed = false
+
+[[rootBindings]]
+path = "codex-rs/hepta-kg"
+mode = "exclusive"
+
+[[cargoPackages]]
+path = "codex-rs/hepta-kg"
+compileLayer = 2
+ciGroups = ["effects", "inference", "learning", "lifecycle", "objective"]

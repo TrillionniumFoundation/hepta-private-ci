@@ -693,7 +693,11 @@ impl AutomationStore {
                 )
                 .await?;
             }
-            TaskFlowStepState::Reconciled => {}
+            TaskFlowStepState::Reconciled
+                if step.receipt_digest.as_ref() == Some(terminal_receipt_digest)
+                    && step.final_outcome == Some(terminal_outcome(terminal))
+                    && step.intent_digest == intent_digest
+                    && step.payload_digest == payload_digest => {}
             _ => {
                 return Err(TaskFlowError::Conflict(
                     "automation TaskFlow step is not reconcilable".to_string(),
@@ -738,6 +742,53 @@ impl AutomationStore {
             ));
         }
         Ok(())
+    }
+
+    pub(crate) async fn reconciled_automation_terminal_receipt(
+        &self,
+        work: &AutomationOccurrenceWork,
+        terminal: AutomationOccurrenceTerminalState,
+    ) -> Result<Option<Sha256Digest>, TaskFlowError> {
+        let attempt = self
+            .automation_occurrence_step_attempt(work.occurrence.task_id, work.occurrence.occurrence)
+            .await?;
+        let fence = self
+            .historical_automation_step_fence(&work.occurrence.taskflow_run_id, attempt)
+            .await?;
+        let step = self
+            .read_taskflow_step(
+                &work.occurrence.taskflow_run_id,
+                AUTOMATION_STEP_ID,
+                attempt,
+                &fence,
+            )
+            .await?
+            .ok_or_else(|| {
+                TaskFlowError::Conflict("automation terminal step is missing".to_string())
+            })?;
+        let payload_digest = Sha256Digest::for_bytes(work.admission.prompt.as_bytes());
+        let intent_digest = automation_intent_digest(
+            &work.occurrence,
+            &work.admission.thread_id,
+            &work.admission.client_user_message_id,
+            &payload_digest,
+        )?;
+        if step.intent_digest != intent_digest || step.payload_digest != payload_digest {
+            return Err(TaskFlowError::Conflict(
+                "automation terminal step does not match the historical observation".to_string(),
+            ));
+        }
+        if step.state != TaskFlowStepState::Reconciled {
+            return Ok(None);
+        }
+        if step.final_outcome != Some(terminal_outcome(terminal)) {
+            return Err(TaskFlowError::Conflict(
+                "automation terminal step conflicts with historical outcome".to_string(),
+            ));
+        }
+        step.receipt_digest.map(Some).ok_or_else(|| {
+            TaskFlowError::Corrupt("reconciled automation step lost its receipt".to_string())
+        })
     }
 
     async fn automation_occurrence_step_attempt(

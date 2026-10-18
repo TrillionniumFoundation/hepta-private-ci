@@ -113,3 +113,110 @@ fn world_model_rejects_duplicate_samples_and_invalid_outcomes() {
         Err(WorldModelError::InvalidOutcome)
     );
 }
+
+#[test]
+fn world_model_identity_binds_exact_rows_and_is_permutation_invariant() {
+    let rows = vec![
+        sample("sample-1", "state-b", 10),
+        sample("sample-2", "state-c", 20),
+    ];
+    let fit =
+        |rows| fit_transition_model(id("world-model"), digest("dataset"), rows).expect("fit rows");
+    let original = fit(rows.clone());
+    let mut permuted = rows.clone();
+    permuted.reverse();
+    assert_eq!(original, fit(permuted));
+
+    // The aggregate mean, transition counts and evidence set are unchanged,
+    // but the evidence-to-outcome assignments are different training rows.
+    let mut reassigned = rows.clone();
+    reassigned[0].outcome = rows[1].outcome;
+    reassigned[1].outcome = rows[0].outcome;
+    let changed = fit(reassigned);
+    assert_eq!(
+        original.estimates[0].branches,
+        changed.estimates[0].branches
+    );
+    assert_eq!(
+        original.estimates[0].mean_outcome,
+        changed.estimates[0].mean_outcome
+    );
+    assert_ne!(original.model_digest, changed.model_digest);
+    assert_ne!(
+        original.estimates[0].estimate_digest,
+        changed.estimates[0].estimate_digest
+    );
+
+    let mut relabelled = rows;
+    relabelled[0].sample_id = id("relabelled-sample");
+    assert_ne!(original.model_digest, fit(relabelled).model_digest);
+}
+
+#[test]
+fn world_model_predictions_reject_modified_fitted_statistics_and_lineage() {
+    let original = fit_transition_model(
+        id("world-model"),
+        digest("dataset"),
+        vec![
+            sample("sample-1", "state-b", 10),
+            sample("sample-2", "state-c", 20),
+        ],
+    )
+    .expect("fit rows");
+    for operation in 0..12 {
+        let mut changed = original.clone();
+        match operation {
+            0 => changed.estimates[0].mean_outcome = FixedQ32::from_raw(16),
+            1 => changed.estimates[0].branches[0].count += 1,
+            2 => {
+                // Preserve the probability sum while changing the fitted law.
+                changed.estimates[0].branches[0].probability =
+                    ProbabilityQ32::from_raw(Q32_SCALE / 2 + 1).expect("probability");
+                changed.estimates[0].branches[1].probability =
+                    ProbabilityQ32::from_raw(Q32_SCALE / 2 - 1).expect("probability");
+            }
+            3 => changed.estimates[0].branches[0].next_state_id = id("other-state"),
+            4 => changed.estimates[0].estimate_digest = digest("other-estimate"),
+            5 => changed.model_digest = digest("other-model"),
+            6 => changed.dataset_digest = digest("other-dataset"),
+            7 => changed.model_id = id("other-model"),
+            8 => changed.estimates[0].sample_count += 1,
+            9 => changed.estimates[0].branches.reverse(),
+            10 => changed.estimates.push(changed.estimates[0].clone()),
+            11 => changed.estimates.clear(),
+            _ => unreachable!(),
+        }
+        assert_eq!(
+            predict_transition(&changed, &id("state-a"), &id("action-a")),
+            Err(WorldModelError::InvalidModel),
+            "mutation {operation}"
+        );
+    }
+}
+
+#[test]
+fn world_model_prediction_checks_resource_caps_before_integrity_work() {
+    let original = fit_transition_model(
+        id("world-model"),
+        digest("dataset"),
+        vec![sample("sample-1", "state-b", 10)],
+    )
+    .expect("fit rows");
+    let mut oversized_count = original.clone();
+    oversized_count.estimates[0].sample_count = u32::MAX;
+    let mut oversized_branches = original.clone();
+    oversized_branches.estimates[0].branches.resize(
+        MAX_BRANCHES_PER_STATE_ACTION + 1,
+        original.estimates[0].branches[0].clone(),
+    );
+    let mut oversized_model = original.clone();
+    oversized_model
+        .estimates
+        .resize(MAX_STATE_ACTIONS + 1, original.estimates[0].clone());
+    for changed in [oversized_count, oversized_branches, oversized_model] {
+        assert_eq!(
+            predict_transition(&changed, &id("state-a"), &id("action-a")),
+            Err(WorldModelError::InvalidModel)
+        );
+    }
+}

@@ -392,8 +392,8 @@ fn hook_matches(hook: &MitmHook, req: &Request) -> bool {
         return false;
     }
 
-    let path = req.uri().path();
-    if !is_safe_for_authorization(path) || !path_matches(&hook.matcher.path_prefixes, path) {
+    let path = req.uri().path_or_root();
+    if !is_safe_for_authorization(&path) || !path_matches(&hook.matcher.path_prefixes, &path) {
         return false;
     }
 
@@ -409,7 +409,7 @@ fn query_matches(query_constraints: &[QueryConstraint], req: &Request) -> bool {
         return true;
     }
 
-    let actual_query = req.uri().query().unwrap_or_default();
+    let actual_query = req.uri().query_or_empty();
     let mut actual_values: BTreeMap<String, Vec<String>> = BTreeMap::new();
     for (name, value) in form_urlencoded::parse(actual_query.as_bytes()) {
         actual_values
@@ -482,7 +482,13 @@ fn compile_path_matchers(path_prefixes: &[String]) -> Result<Vec<PathMatcher>> {
                     if prefix.is_empty() {
                         return Err(anyhow!("path_prefixes must not contain empty entries"));
                     }
-                    Ok(PathMatcher::Prefix(prefix.to_string()))
+                    // Compare the literal in the same encoded URI representation
+                    // as the request without decoding ambiguous path bytes.
+                    Ok(PathMatcher::Prefix(
+                        rama_net::uri::PathRef::from_raw_str(prefix)
+                            .as_encoded_str()
+                            .into_owned(),
+                    ))
                 }
                 MatcherPattern::Glob(glob_pattern) => Ok(PathMatcher::Glob(compile_glob_matcher(
                     glob_pattern,

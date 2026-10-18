@@ -29,6 +29,17 @@ fn digest(value: &str) -> Digest32 {
     Digest32::of_bytes(value.as_bytes())
 }
 
+pub(crate) struct ByteTokenizer;
+
+impl codex_hepta_context_compiler::ExactTokenizerV2 for ByteTokenizer {
+    fn tokenizer_digest(&self) -> Digest32 {
+        digest("tokenizer")
+    }
+    fn count_tokens(&self, bytes: &[u8]) -> Result<u64, ContextCompilerV2Error> {
+        Ok(bytes.len() as u64)
+    }
+}
+
 pub(crate) fn admitted_registry(
     root: &std::path::Path,
     payload: &[u8],
@@ -131,7 +142,7 @@ pub(crate) fn admitted_registry(
         locale_id: tuple.locale_id.clone(),
         role: PromptRoleV2::DeveloperInstruction,
         payload_digest: Digest32::of_bytes(payload),
-        token_cost: 4,
+        token_cost: u32::try_from(payload.len()).expect("bounded test payload"),
         expires_unix_ms: None,
     };
     let realization_actor = id("publisher:prompt");
@@ -211,7 +222,11 @@ pub(crate) fn canonical_selection(
             factor_ids: vec![id("factor:verify")],
             interaction_digest: digest("interaction"),
             expected_utility_q32: FixedQ32::ONE,
-            total_token_upper_bound: 4,
+            total_token_upper_bound: candidates
+                .candidates
+                .iter()
+                .map(|candidate| candidate.realization.token_cost)
+                .sum(),
             valid_until_unix_ms: 9_000,
             receipt_digest: digest("portfolio-receipt"),
             authority: AuthorityPosture::DENY_ALL,
@@ -267,12 +282,13 @@ fn exercised_registry_payload_is_the_exact_context_attachment_input() {
                 serializer_digest: digest("serializer"),
                 template_digest: tuple.template_digest,
                 tool_schema_digest: tuple.tool_schema_digest,
-                maximum_context_tokens: 128,
+                maximum_context_tokens: 4096,
             },
             now_unix_ms: 100,
-            token_budget: 128,
+            token_budget: 4096,
             truncation_policy_digest: digest("truncation"),
         },
+        &ByteTokenizer,
     )
     .expect("compile exercised prompt registry context");
 
@@ -402,12 +418,13 @@ fn revocation_after_exercise_prevents_delivery_of_the_selected_realization() {
                 serializer_digest: digest("serializer"),
                 template_digest: tuple.template_digest,
                 tool_schema_digest: tuple.tool_schema_digest,
-                maximum_context_tokens: 128,
+                maximum_context_tokens: 4096,
             },
             now_unix_ms: 100,
-            token_budget: 128,
+            token_budget: 4096,
             truncation_policy_digest: digest("truncation"),
         },
+        &ByteTokenizer,
     )
     .expect_err("stale exercised selection must not deliver");
     assert!(matches!(
@@ -441,12 +458,13 @@ fn compiler_rejects_registry_and_context_model_drift() {
                 serializer_digest: digest("serializer"),
                 template_digest: tuple.template_digest,
                 tool_schema_digest: tuple.tool_schema_digest,
-                maximum_context_tokens: 128,
+                maximum_context_tokens: 4096,
             },
             now_unix_ms: 100,
-            token_budget: 128,
+            token_budget: 4096,
             truncation_policy_digest: digest("truncation"),
         },
+        &ByteTokenizer,
     )
     .expect_err("model drift must fail");
     assert!(matches!(

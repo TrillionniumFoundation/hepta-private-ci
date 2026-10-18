@@ -1306,6 +1306,27 @@ fn insert_definition(
             return Ok(());
         }
 
+        // Schemars emits the same owner as a standalone root with dialect/title
+        // metadata and as a nested definition without it. Compare that exact
+        // validation shape, retaining the standalone metadata in either order.
+        // Different titles, dialects or any validation keyword still collide.
+        if definition_validation_shape(existing, &name)
+            == definition_validation_shape(&schema, &name)
+        {
+            let mut canonical = existing.clone();
+            if let (Some(owner), Some(incoming)) = (canonical.as_object_mut(), schema.as_object()) {
+                for key in ["$schema", "title"] {
+                    if !owner.contains_key(key)
+                        && let Some(value) = incoming.get(key)
+                    {
+                        owner.insert(key.to_string(), value.clone());
+                    }
+                }
+            }
+            definitions.insert(name, canonical);
+            return Ok(());
+        }
+
         let existing_title = existing
             .get("title")
             .and_then(Value::as_str)
@@ -1322,6 +1343,25 @@ fn insert_definition(
     definitions.insert(name, schema);
     Ok(())
 }
+
+fn definition_validation_shape(schema: &Value, name: &str) -> Value {
+    let mut shape = schema.clone();
+    if let Some(object) = shape.as_object_mut() {
+        if object.get("title").and_then(Value::as_str) == Some(name) {
+            object.remove("title");
+        }
+        if object.get("$schema").and_then(Value::as_str)
+            == Some("http://json-schema.org/draft-07/schema#")
+        {
+            object.remove("$schema");
+        }
+    }
+    shape
+}
+
+#[cfg(test)]
+#[path = "export_definition_identity_tests.rs"]
+mod definition_identity_tests;
 
 fn write_json_schema_with_return<T>(out_dir: &Path, name: &str) -> Result<GeneratedSchema>
 where

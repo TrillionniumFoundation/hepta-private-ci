@@ -379,6 +379,30 @@
             },
             "method": {
               "enum": [
+                "thread/ephemeral/retain"
+              ],
+              "title": "Thread/ephemeral/retainRequestMethod",
+              "type": "string"
+            },
+            "params": {
+              "$ref": "#/definitions/v2/ThreadEphemeralRetainParams"
+            }
+          },
+          "required": [
+            "id",
+            "method",
+            "params"
+          ],
+          "title": "Thread/ephemeral/retainRequest",
+          "type": "object"
+        },
+        {
+          "properties": {
+            "id": {
+              "$ref": "#/definitions/v2/RequestId"
+            },
+            "method": {
+              "enum": [
                 "thread/name/set"
               ],
               "title": "Thread/name/setRequestMethod",
@@ -20000,6 +20024,142 @@
         "title": "ThreadCompactStartResponse",
         "type": "object"
       },
+      "ThreadCreationObserveOutcome": {
+        "oneOf": [
+          {
+            "properties": {
+              "threadId": {
+                "type": "string"
+              },
+              "type": {
+                "enum": [
+                  "pending"
+                ],
+                "title": "PendingThreadCreationObserveOutcomeType",
+                "type": "string"
+              }
+            },
+            "required": [
+              "threadId",
+              "type"
+            ],
+            "title": "PendingThreadCreationObserveOutcome",
+            "type": "object"
+          },
+          {
+            "properties": {
+              "threadId": {
+                "type": "string"
+              },
+              "type": {
+                "enum": [
+                  "materialized"
+                ],
+                "title": "MaterializedThreadCreationObserveOutcomeType",
+                "type": "string"
+              }
+            },
+            "required": [
+              "threadId",
+              "type"
+            ],
+            "title": "MaterializedThreadCreationObserveOutcome",
+            "type": "object"
+          },
+          {
+            "properties": {
+              "response": {
+                "$ref": "#/definitions/v2/ThreadStartResponse"
+              },
+              "type": {
+                "enum": [
+                  "created"
+                ],
+                "title": "CreatedThreadCreationObserveOutcomeType",
+                "type": "string"
+              }
+            },
+            "required": [
+              "response",
+              "type"
+            ],
+            "title": "CreatedThreadCreationObserveOutcome",
+            "type": "object"
+          },
+          {
+            "properties": {
+              "threadId": {
+                "type": "string"
+              },
+              "type": {
+                "enum": [
+                  "deleted"
+                ],
+                "title": "DeletedThreadCreationObserveOutcomeType",
+                "type": "string"
+              }
+            },
+            "required": [
+              "threadId",
+              "type"
+            ],
+            "title": "DeletedThreadCreationObserveOutcome",
+            "type": "object"
+          },
+          {
+            "properties": {
+              "threadId": {
+                "type": "string"
+              },
+              "type": {
+                "enum": [
+                  "abandoned"
+                ],
+                "title": "AbandonedThreadCreationObserveOutcomeType",
+                "type": "string"
+              }
+            },
+            "required": [
+              "threadId",
+              "type"
+            ],
+            "title": "AbandonedThreadCreationObserveOutcome",
+            "type": "object"
+          },
+          {
+            "properties": {
+              "type": {
+                "enum": [
+                  "missing"
+                ],
+                "title": "MissingThreadCreationObserveOutcomeType",
+                "type": "string"
+              }
+            },
+            "required": [
+              "type"
+            ],
+            "title": "MissingThreadCreationObserveOutcome",
+            "type": "object"
+          },
+          {
+            "properties": {
+              "type": {
+                "enum": [
+                  "unknown"
+                ],
+                "title": "UnknownThreadCreationObserveOutcomeType",
+                "type": "string"
+              }
+            },
+            "required": [
+              "type"
+            ],
+            "title": "UnknownThreadCreationObserveOutcome",
+            "type": "object"
+          }
+        ]
+      },
       "ThreadDeleteParams": {
         "$schema": "http://json-schema.org/draft-07/schema#",
         "properties": {
@@ -20029,6 +20189,74 @@
           "threadId"
         ],
         "title": "ThreadDeletedNotification",
+        "type": "object"
+      },
+      "ThreadEphemeralDisposalParams": {
+        "description": "Disposal never archives or deletes persistent thread history. The expected session fences delayed cleanup against a replacement runtime.",
+        "properties": {
+          "expectedSessionId": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "expectedSessionId"
+        ],
+        "type": "object"
+      },
+      "ThreadEphemeralRetainParams": {
+        "$schema": "http://json-schema.org/draft-07/schema#",
+        "description": "Opt-in V1 residency until explicit exact-session disposal. This grants no execution, terminal observation or history-deletion authority.",
+        "properties": {
+          "expectedSessionId": {
+            "type": "string"
+          },
+          "operationId": {
+            "type": "string"
+          },
+          "protocolVersion": {
+            "format": "uint32",
+            "minimum": 0.0,
+            "type": "integer"
+          },
+          "threadId": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "expectedSessionId",
+          "operationId",
+          "protocolVersion",
+          "threadId"
+        ],
+        "title": "ThreadEphemeralRetainParams",
+        "type": "object"
+      },
+      "ThreadEphemeralRetainResponse": {
+        "$schema": "http://json-schema.org/draft-07/schema#",
+        "description": "All bindings must match the request before a native caller may cross an effect boundary. Unsupported servers cannot provide this positive V1 ACK.",
+        "properties": {
+          "operationId": {
+            "type": "string"
+          },
+          "protocolVersion": {
+            "format": "uint32",
+            "minimum": 0.0,
+            "type": "integer"
+          },
+          "sessionId": {
+            "type": "string"
+          },
+          "threadId": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "operationId",
+          "protocolVersion",
+          "sessionId",
+          "threadId"
+        ],
+        "title": "ThreadEphemeralRetainResponse",
         "type": "object"
       },
       "ThreadExtra": {
@@ -21579,6 +21807,118 @@
         "title": "ThreadQueueChangedNotification",
         "type": "object"
       },
+      "ThreadQueueObserveOutcome": {
+        "oneOf": [
+          {
+            "properties": {
+              "queuedSubmissionId": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "type": {
+                "enum": [
+                  "pending"
+                ],
+                "title": "PendingThreadQueueObserveOutcomeType",
+                "type": "string"
+              }
+            },
+            "required": [
+              "type"
+            ],
+            "title": "PendingThreadQueueObserveOutcome",
+            "type": "object"
+          },
+          {
+            "properties": {
+              "terminal": {
+                "anyOf": [
+                  {
+                    "$ref": "#/definitions/v2/ThreadQueueObservedTerminal"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "turnId": {
+                "type": "string"
+              },
+              "type": {
+                "enum": [
+                  "persisted"
+                ],
+                "title": "PersistedThreadQueueObserveOutcomeType",
+                "type": "string"
+              }
+            },
+            "required": [
+              "turnId",
+              "type"
+            ],
+            "title": "PersistedThreadQueueObserveOutcome",
+            "type": "object"
+          },
+          {
+            "properties": {
+              "type": {
+                "enum": [
+                  "missing"
+                ],
+                "title": "MissingThreadQueueObserveOutcomeType",
+                "type": "string"
+              }
+            },
+            "required": [
+              "type"
+            ],
+            "title": "MissingThreadQueueObserveOutcome",
+            "type": "object"
+          },
+          {
+            "properties": {
+              "type": {
+                "enum": [
+                  "unknown"
+                ],
+                "title": "UnknownThreadQueueObserveOutcomeType",
+                "type": "string"
+              }
+            },
+            "required": [
+              "type"
+            ],
+            "title": "UnknownThreadQueueObserveOutcome",
+            "type": "object"
+          },
+          {
+            "properties": {
+              "type": {
+                "enum": [
+                  "cancelled"
+                ],
+                "title": "CancelledThreadQueueObserveOutcomeType",
+                "type": "string"
+              }
+            },
+            "required": [
+              "type"
+            ],
+            "title": "CancelledThreadQueueObserveOutcome",
+            "type": "object"
+          }
+        ]
+      },
+      "ThreadQueueObservedTerminal": {
+        "enum": [
+          "completed",
+          "failed",
+          "interrupted"
+        ],
+        "type": "string"
+      },
       "ThreadQueueReconcileMode": {
         "enum": [
           "allowIfAbsent",
@@ -23053,6 +23393,17 @@
       "ThreadUnsubscribeParams": {
         "$schema": "http://json-schema.org/draft-07/schema#",
         "properties": {
+          "ephemeralDisposal": {
+            "anyOf": [
+              {
+                "$ref": "#/definitions/v2/ThreadEphemeralDisposalParams"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Explicit disposal of an idle ephemeral runtime. Omitted/null keeps the ordinary unsubscribe and idle-cache behavior."
+          },
           "threadId": {
             "type": "string"
           }
@@ -23077,12 +23428,23 @@
         "type": "object"
       },
       "ThreadUnsubscribeStatus": {
-        "enum": [
-          "notLoaded",
-          "notSubscribed",
-          "unsubscribed"
-        ],
-        "type": "string"
+        "oneOf": [
+          {
+            "enum": [
+              "notLoaded",
+              "notSubscribed",
+              "unsubscribed"
+            ],
+            "type": "string"
+          },
+          {
+            "description": "The exact idle ephemeral session completed shutdown and was removed from the live registry. This does not promise allocator RSS reclamation.",
+            "enum": [
+              "ephemeralDisposed"
+            ],
+            "type": "string"
+          }
+        ]
       },
       "ThreadUsage": {
         "properties": {

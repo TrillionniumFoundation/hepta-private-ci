@@ -25,6 +25,7 @@ const CHAIN_DIGEST_DOMAIN: &[u8] = b"hepta.learning-artifact.chain.v1";
 struct ArtifactEntry {
     manifest: ArtifactManifest,
     state: ArtifactState,
+    registered_at: usize,
 }
 
 /// Immutable lineage registry. It can classify candidates as eligible but has
@@ -32,8 +33,11 @@ struct ArtifactEntry {
 #[derive(Clone, Debug, Default)]
 pub struct ArtifactRegistry {
     records: Vec<ArtifactRecord>,
-    event_digests: BTreeMap<StableId, Digest32>,
+    event_digests: BTreeMap<StableId, (Digest32, usize)>,
     artifacts: BTreeMap<StableId, ArtifactEntry>,
+    // Rebuildable owner-local indexes. No independent authority or disk schema.
+    children: BTreeMap<StableId, BTreeSet<StableId>>,
+    ineligible: BTreeSet<StableId>,
 }
 
 impl ArtifactRegistry {
@@ -48,7 +52,7 @@ impl ArtifactRegistry {
     ) -> Result<RegistryAppendReceipt, ArtifactRegistryError> {
         let event_id = event.event_id().clone();
         let event_digest = digest_event(&event);
-        if let Some(existing_digest) = self.event_digests.get(&event_id) {
+        if let Some((existing_digest, position)) = self.event_digests.get(&event_id) {
             if *existing_digest != event_digest {
                 return Err(ArtifactRegistryError::IdentityConflict(
                     event_id.to_string(),
@@ -56,8 +60,8 @@ impl ArtifactRegistry {
             }
             let existing = self
                 .records
-                .iter()
-                .find(|record| record.event.event_id() == &event_id)
+                .get(*position)
+                .filter(|record| record.event.event_id() == &event_id)
                 .ok_or(ArtifactRegistryError::InternalInvariant)?;
             return Ok(receipt(
                 existing,
@@ -135,14 +139,20 @@ impl ArtifactRegistry {
         &self.records
     }
 
+    /// Current validated head without copying historical payloads. This reads
+    /// the owner's existing tail; it is not a cached or independently trusted witness.
+    #[must_use]
+    pub fn head_digest(&self) -> Digest32 {
+        self.records
+            .last()
+            .map_or(Digest32::ZERO, |record| record.chain_digest)
+    }
+
     #[must_use]
     pub fn snapshot(&self) -> ArtifactRegistrySnapshot {
         ArtifactRegistrySnapshot {
             records: self.records.clone(),
-            head_digest: self
-                .records
-                .last()
-                .map_or(Digest32::ZERO, |record| record.chain_digest),
+            head_digest: self.head_digest(),
         }
     }
 
@@ -252,34 +262,49 @@ impl ArtifactRegistry {
         Ok(())
     }
 
+    pub(crate) fn registered_before(&self, artifact_id: &StableId, position: usize) -> bool {
+        self.artifacts
+            .get(artifact_id)
+            .is_some_and(|entry| entry.registered_at < position)
+    }
+
     fn lineage_is_eligible(&self, artifact_id: &StableId) -> bool {
-        let mut current = Some(artifact_id);
-        let mut visited = BTreeSet::new();
-        while let Some(id) = current {
-            if !visited.insert(id.clone()) {
-                return false;
+        self.artifacts.contains_key(artifact_id) && !self.ineligible.contains(artifact_id)
+    }
+
+    // Eligibility only decreases: quarantined/revoked ancestors never resume,
+    // and registration rejects an ineligible parent. Visit each descendant at
+    // most once across invalidations; keep its own state and audit record intact.
+    fn invalidate_lineage(&mut self, artifact_id: &StableId) {
+        let mut pending = vec![artifact_id.clone()];
+        while let Some(id) = pending.pop() {
+            if self.ineligible.insert(id.clone())
+                && let Some(children) = self.children.get(&id)
+            {
+                pending.extend(children.iter().cloned());
             }
-            let Some(entry) = self.artifacts.get(id) else {
-                return false;
-            };
-            if entry.state != ArtifactState::Candidate {
-                return false;
-            }
-            current = entry.manifest.predecessor_id.as_ref();
         }
-        true
     }
 
     fn index_record(&mut self, record: &ArtifactRecord) -> Result<(), ArtifactRegistryError> {
-        self.event_digests
-            .insert(record.event.event_id().clone(), record.event_digest);
+        self.event_digests.insert(
+            record.event.event_id().clone(),
+            (record.event_digest, self.records.len()),
+        );
         match &record.event {
             ArtifactEvent::Register { manifest, .. } => {
+                if let Some(parent) = &manifest.predecessor_id {
+                    self.children
+                        .entry(parent.clone())
+                        .or_default()
+                        .insert(manifest.artifact_id.clone());
+                }
                 self.artifacts.insert(
                     manifest.artifact_id.clone(),
                     ArtifactEntry {
                         manifest: manifest.clone(),
                         state: ArtifactState::Candidate,
+                        registered_at: self.records.len(),
                     },
                 );
             }
@@ -289,6 +314,7 @@ impl ArtifactRegistry {
                     .get_mut(&change.artifact_id)
                     .ok_or(ArtifactRegistryError::InternalInvariant)?;
                 entry.state = ArtifactState::Quarantined;
+                self.invalidate_lineage(&change.artifact_id);
             }
             ArtifactEvent::Revoke(change) => {
                 let entry = self
@@ -296,6 +322,7 @@ impl ArtifactRegistry {
                     .get_mut(&change.artifact_id)
                     .ok_or(ArtifactRegistryError::InternalInvariant)?;
                 entry.state = ArtifactState::Revoked;
+                self.invalidate_lineage(&change.artifact_id);
             }
         }
         Ok(())
@@ -409,3 +436,7 @@ fn push_len(bytes: &mut Vec<u8>, value: usize) {
 #[cfg(test)]
 #[path = "registry_tests.rs"]
 mod tests;
+
+#[cfg(test)]
+#[path = "registry_cache_tests.rs"]
+mod cache_tests;

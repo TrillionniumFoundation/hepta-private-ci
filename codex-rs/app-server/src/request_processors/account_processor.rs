@@ -85,6 +85,7 @@ impl Drop for ActiveLogin {
 #[derive(Clone)]
 pub(crate) struct AccountRequestProcessor {
     auth_manager: Arc<AuthManager>,
+    auth_profile_owned_by_host: bool,
     thread_manager: Arc<ThreadManager>,
     outgoing: Arc<OutgoingMessageSender>,
     config: Arc<Config>,
@@ -95,6 +96,7 @@ pub(crate) struct AccountRequestProcessor {
 impl AccountRequestProcessor {
     pub(crate) fn new(
         auth_manager: Arc<AuthManager>,
+        auth_profile_owned_by_host: bool,
         thread_manager: Arc<ThreadManager>,
         outgoing: Arc<OutgoingMessageSender>,
         config: Arc<Config>,
@@ -102,6 +104,7 @@ impl AccountRequestProcessor {
     ) -> Self {
         Self {
             auth_manager,
+            auth_profile_owned_by_host,
             thread_manager,
             outgoing,
             config,
@@ -291,7 +294,7 @@ impl AccountRequestProcessor {
         request_id: ConnectionRequestId,
         params: LoginAccountParams,
     ) -> Result<(), JSONRPCErrorError> {
-        if self.auth_manager.is_workload_identity_selected() {
+        if self.auth_profile_owned_by_host || self.auth_manager.is_workload_identity_selected() {
             return Err(self.configured_auth_owned_by_host_error());
         }
         match params {
@@ -373,13 +376,16 @@ impl AccountRequestProcessor {
     }
 
     fn configured_auth_owned_by_host_error(&self) -> JSONRPCErrorError {
-        invalid_request(
-            "Configured external authentication is owned by the app-server host and cannot be changed through account RPCs.",
-        )
+        let message = if self.auth_profile_owned_by_host {
+            "Configured credential profile is owned by the app-server host and cannot be changed through account RPCs."
+        } else {
+            "Configured external authentication is owned by the app-server host and cannot be changed through account RPCs."
+        };
+        invalid_request(message)
     }
 
     fn ensure_bedrock_login_allowed(&self) -> Result<(), JSONRPCErrorError> {
-        if self.auth_manager.is_workload_identity_selected() {
+        if self.auth_profile_owned_by_host || self.auth_manager.is_workload_identity_selected() {
             return Err(self.configured_auth_owned_by_host_error());
         }
         if self.auth_manager.is_external_chatgpt_auth_active() {
@@ -951,7 +957,7 @@ impl AccountRequestProcessor {
     }
 
     async fn logout_common(&self) -> std::result::Result<Option<AuthMode>, JSONRPCErrorError> {
-        if self.auth_manager.is_workload_identity_selected() {
+        if self.auth_profile_owned_by_host || self.auth_manager.is_workload_identity_selected() {
             return Err(self.configured_auth_owned_by_host_error());
         }
         let config = self.load_latest_config().await;
@@ -1063,31 +1069,31 @@ impl AccountRequestProcessor {
                     let permanent_refresh_failure =
                         self.auth_manager.refresh_failure_for_auth(&auth).is_some();
                     let auth_mode = auth_mode_to_api(auth.api_auth_mode());
-                    let (reported_auth_method, token_opt) =
-                        if self.auth_manager.is_workload_identity_selected()
-                            || matches!(
-                                auth,
-                                CodexAuth::Headers(_)
-                                    | CodexAuth::AgentIdentity(_)
-                                    | CodexAuth::PersonalAccessToken(_)
-                            )
-                            || include_token && permanent_refresh_failure
-                        {
-                            // Host-owned and metadata-bearing credentials are never exported.
-                            (Some(auth_mode), None)
-                        } else {
-                            match auth.get_token() {
-                                Ok(token) if !token.is_empty() => {
-                                    let tok = if include_token { Some(token) } else { None };
-                                    (Some(auth_mode), tok)
-                                }
-                                Ok(_) => (None, None),
-                                Err(err) => {
-                                    tracing::warn!("failed to get token for auth status: {err}");
-                                    (None, None)
-                                }
+                    let (reported_auth_method, token_opt) = if self.auth_profile_owned_by_host
+                        || self.auth_manager.is_workload_identity_selected()
+                        || matches!(
+                            auth,
+                            CodexAuth::Headers(_)
+                                | CodexAuth::AgentIdentity(_)
+                                | CodexAuth::PersonalAccessToken(_)
+                        )
+                        || include_token && permanent_refresh_failure
+                    {
+                        // Host-owned and metadata-bearing credentials are never exported.
+                        (Some(auth_mode), None)
+                    } else {
+                        match auth.get_token() {
+                            Ok(token) if !token.is_empty() => {
+                                let tok = if include_token { Some(token) } else { None };
+                                (Some(auth_mode), tok)
                             }
-                        };
+                            Ok(_) => (None, None),
+                            Err(err) => {
+                                tracing::warn!("failed to get token for auth status: {err}");
+                                (None, None)
+                            }
+                        }
+                    };
                     GetAuthStatusResponse {
                         auth_method: reported_auth_method,
                         auth_token: token_opt,

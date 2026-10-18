@@ -1,0 +1,41 @@
+schema = "hepta.module-manifest.v1"
+order = 28
+id = "learning.ledger"
+plane = "domain"
+kind = "store"
+lifecycle = "target"
+state = "stateful_append_only"
+architectureRole = "authoritative_store"
+writes = ["learning_episode_ledger", "learning_credit_ledger", "learning_unlearning_lineage"]
+uses = ["platform.types", "cognitive.types", "kernel.operations"]
+owner = "learning-platform"
+deputy = "cognitive-platform"
+denies = ["memory_ledger_mutation", "prompt_registry_mutation", "self_labeled_success"]
+localHotPathCentralRpc = "not_applicable_or_bounded"
+sourceStatus = "existing_bound"
+source_root_present = true
+production_implementation = false
+sourceEvidenceRoots = ["codex-rs/hepta-learning-ledger"]
+missingDeclaredRoots = []
+bootstrapWorkPackage = "LRN-0-CAUSAL-LEARNING-CONTRACTS"
+technicalDocument = "docs/modules/learning.ledger/TECHNICAL.md"
+documentationReady = true
+
+[hotPathPolicy]
+centralSynchronousRpcAllowed = false
+boundedCachedControlInputAllowed = true
+fallbackRequired = true
+
+[publicSurfacePolicy]
+typedContractsOnly = true
+denyUnknownCriticalFields = true
+rawModelOrSecretPayloadExportAllowed = false
+
+[[rootBindings]]
+path = "codex-rs/hepta-learning-ledger"
+mode = "exclusive"
+
+[[cargoPackages]]
+path = "codex-rs/hepta-learning-ledger"
+compileLayer = 3
+ciGroups = ["learning"]

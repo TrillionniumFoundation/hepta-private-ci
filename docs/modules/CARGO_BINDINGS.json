@@ -14,12 +14,28 @@
       "module": "runtime.codex"
     },
     {
+      "packagePath": "codex-rs/hepta-agent-components",
+      "module": "runtime.agentd"
+    },
+    {
       "packagePath": "codex-rs/hepta-agent-protocol",
       "module": "runtime.agentd"
     },
     {
       "packagePath": "codex-rs/hepta-agentd",
       "module": "runtime.agentd"
+    },
+    {
+      "packagePath": "codex-rs/hepta-agentd-core",
+      "module": "runtime.agentd"
+    },
+    {
+      "packagePath": "codex-rs/hepta-app-bridge",
+      "module": "runtime.codex"
+    },
+    {
+      "packagePath": "codex-rs/hepta-app-host",
+      "module": "runtime.codex"
     },
     {
       "packagePath": "codex-rs/hepta-authbus",
@@ -147,7 +163,7 @@
     },
     {
       "packagePath": "codex-rs/hepta-native-gateway",
-      "module": "runtime.codex"
+      "module": "runtime.gateway"
     },
     {
       "packagePath": "codex-rs/hepta-ndu",
@@ -176,6 +192,10 @@
     {
       "packagePath": "codex-rs/hepta-plasticity",
       "module": "learning.plasticity"
+    },
+    {
+      "packagePath": "codex-rs/hepta-private-state",
+      "module": "platform.types"
     },
     {
       "packagePath": "codex-rs/hepta-prompt-optimizer",

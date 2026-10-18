@@ -47,6 +47,8 @@ opentelemetry_sdk = { workspace = true, features = [
 http = { workspace = true }
 os_info = { workspace = true }
 reqwest = { workspace = true, features = ["blocking", "rustls-tls"] }
+# OTLP 0.32 uses reqwest 0.13; keep the public telemetry API on workspace 0.12.
+reqwest-otlp = { package = "reqwest", version = "=0.13.5", features = ["blocking", "rustls"] }
 serde = { workspace = true, features = ["derive"] }
 serde_json = { workspace = true }
 strum_macros = { workspace = true }

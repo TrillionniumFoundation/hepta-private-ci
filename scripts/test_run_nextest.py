@@ -18,6 +18,41 @@ SPEC.loader.exec_module(RUNNER)
 
 
 class FilterMetadataStrategyTests(unittest.TestCase):
+    def test_product_selection_preserves_fast_library_and_unrelated_targets(self):
+        root = Path(RUNNER.__file__).resolve().parents[1] / "codex-rs"
+        product = ["-p", "codex-hepta-agentd", "--test", "module_selection_product"]
+        self.assertEqual(
+            RUNNER.with_product_profile(product, root),
+            product + ["--cargo-profile", "hepta-product"],
+        )
+        self.assertEqual(
+            RUNNER.with_product_profile([], root), ["--cargo-profile", "hepta-product"]
+        )
+        for args in (
+            ["-p", "codex-hepta-agentd", "--lib"],
+            ["-p", "codex-hepta-agentd", "--test=organ_stateful_lifecycle"],
+            ["-p", "codex-hepta-fleet"],
+            ["--workspace", "--exclude", "codex-hepta-agentd"],
+        ):
+            self.assertEqual(RUNNER.with_product_profile(args, root), args)
+
+    def test_product_route_preserves_explicit_artifacts_and_argument_boundary(self):
+        root = Path(RUNNER.__file__).resolve().parents[1] / "codex-rs"
+        args = ["-p", "codex-hepta-agentd", "--cargo-profile=dev-small"]
+        self.assertEqual(RUNNER.with_product_profile(args, root), args)
+        args = ["--binaries-metadata", "original.json"]
+        self.assertEqual(RUNNER.with_product_profile(args, root), args)
+        args = [
+            "--test=module_selection_product",
+            "--",
+            "--cargo-profile=opaque-test-argument",
+        ]
+        self.assertEqual(
+            RUNNER.with_product_profile(args, root),
+            args[:1] + ["--cargo-profile", "hepta-product"] + args[1:],
+        )
+        self.assertEqual(RUNNER.with_product_profile([], root.parent), [])
+
     def test_graph_words_inside_matchers_do_not_become_dependencies(self):
         for expression in (
             "test(deps) | test(rdeps)",

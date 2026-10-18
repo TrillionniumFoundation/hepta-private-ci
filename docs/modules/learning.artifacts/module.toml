@@ -1,0 +1,41 @@
+schema = "hepta.module-manifest.v1"
+order = 31
+id = "learning.artifacts"
+plane = "domain"
+kind = "store"
+lifecycle = "target"
+state = "stateful_create_only"
+architectureRole = "authoritative_store"
+writes = ["learning_artifact_registry", "operator_sensor_core_registry"]
+uses = ["platform.types", "kernel.operations"]
+owner = "learning-platform"
+deputy = "durability-kernel"
+denies = ["self_promotion", "mutable_artifact_bytes"]
+localHotPathCentralRpc = "not_applicable_or_bounded"
+sourceStatus = "existing_bound"
+source_root_present = true
+production_implementation = false
+sourceEvidenceRoots = ["codex-rs/hepta-learning-artifacts"]
+missingDeclaredRoots = []
+bootstrapWorkPackage = "ART-1-LEARNING-ARTIFACT-REGISTRY"
+technicalDocument = "docs/modules/learning.artifacts/TECHNICAL.md"
+documentationReady = true
+
+[hotPathPolicy]
+centralSynchronousRpcAllowed = false
+boundedCachedControlInputAllowed = true
+fallbackRequired = true
+
+[publicSurfacePolicy]
+typedContractsOnly = true
+denyUnknownCriticalFields = true
+rawModelOrSecretPayloadExportAllowed = false
+
+[[rootBindings]]
+path = "codex-rs/hepta-learning-artifacts"
+mode = "exclusive"
+
+[[cargoPackages]]
+path = "codex-rs/hepta-learning-artifacts"
+compileLayer = 1
+ciGroups = ["learning"]

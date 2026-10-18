@@ -6,6 +6,12 @@ import subprocess
 import tempfile
 import unittest
 
+from scripts.hepta_workflow_commands import (
+    load_workflow,
+    workflow_run,
+    workflow_step_by_id,
+)
+
 ROOT = Path(__file__).resolve().parents[1]
 
 
@@ -14,19 +20,13 @@ class ConsolidatedScopeTests(unittest.TestCase):
         directory = tempfile.TemporaryDirectory(prefix="hepta-ci-scope-")
         self.addCleanup(directory.cleanup)
         self.root = Path(directory.name)
-        workflow = (
-            ROOT / ".github/workflows/hepta-consolidated-source.yml"
-        ).read_text()
-        # Execute the actual run block, not a reimplementation of its decision.
-        block = workflow.split("        id: scope\n", 1)[1].split(
-            "        run: |\n", 1
-        )[1]
-        lines = []
-        for line in block.splitlines():
-            if line and not line.startswith("          "):
-                break
-            lines.append(line[10:])
-        self.script = "\n".join(lines)
+        workflow = load_workflow(
+            (ROOT / ".github/workflows/hepta-consolidated-source.yml").read_text()
+        )
+        # Execute the parsed step selected by stable data-flow identity, not YAML layout.
+        self.script = workflow_run(
+            workflow_step_by_id(workflow, "workspace-regression", "scope")
+        )
         self.git("init", "-q")
         self.git("config", "user.name", "scope-test")
         self.git("config", "user.email", "scope-test@example.invalid")

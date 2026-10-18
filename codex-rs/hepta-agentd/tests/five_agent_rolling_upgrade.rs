@@ -1,3 +1,4 @@
+#![cfg(feature = "server")]
 #![cfg(unix)]
 
 use std::collections::BTreeSet;
@@ -19,21 +20,21 @@ use codex_app_server_protocol::ClientRequest;
 use codex_app_server_protocol::RequestId;
 use codex_app_server_protocol::ThreadStartParams;
 use codex_app_server_protocol::ThreadStartResponse;
+use codex_hepta_agent_components::automation::AutomationCalendarScheduleV2;
+use codex_hepta_agent_components::automation::AutomationDstGapPolicy;
+use codex_hepta_agent_components::automation::AutomationDstOverlapPolicy;
+use codex_hepta_agent_components::automation::AutomationMissedRunPolicy;
+use codex_hepta_agent_components::automation::AutomationOverlapPolicy;
+use codex_hepta_agent_components::automation::AutomationSchedule;
+use codex_hepta_agent_components::automation::AutomationTaskDraft;
+use codex_hepta_agent_components::automation::AutomationTimeZoneProfileV1;
+use codex_hepta_agent_components::contracts::AgentId;
+use codex_hepta_agent_components::contracts::Sha256Digest;
+use codex_hepta_agent_components::fleet::AgentLifecycle;
+use codex_hepta_agent_components::fleet::FleetRegistry;
+use codex_hepta_agent_components::fleet::ReleaseId;
 use codex_hepta_agentd::AgentdClient;
 use codex_hepta_agentd::AgentdRequest;
-use codex_hepta_automation::AutomationCalendarScheduleV2;
-use codex_hepta_automation::AutomationDstGapPolicy;
-use codex_hepta_automation::AutomationDstOverlapPolicy;
-use codex_hepta_automation::AutomationMissedRunPolicy;
-use codex_hepta_automation::AutomationOverlapPolicy;
-use codex_hepta_automation::AutomationSchedule;
-use codex_hepta_automation::AutomationTaskDraft;
-use codex_hepta_automation::AutomationTimeZoneProfileV1;
-use codex_hepta_contracts::AgentId;
-use codex_hepta_contracts::Sha256Digest;
-use codex_hepta_fleet::AgentLifecycle;
-use codex_hepta_fleet::FleetRegistry;
-use codex_hepta_fleet::ReleaseId;
 use codex_hepta_supervisor::AgentRelease;
 use codex_hepta_supervisor::SupervisorEventKind;
 use codex_uds::UnixStream;
@@ -724,7 +725,10 @@ async fn create_peer_threads(fleet: &FleetHarness, peers: &[AgentFixture]) -> Re
 }
 
 async fn wait_peer_automation_materialized(
-    tasks: &[(AgentdClient, codex_hepta_automation::AutomationTaskId)],
+    tasks: &[(
+        AgentdClient,
+        codex_hepta_agent_components::automation::AutomationTaskId,
+    )],
 ) -> Result<()> {
     timeout(Duration::from_secs(20), async {
         loop {

@@ -1,0 +1,41 @@
+schema = "hepta.module-manifest.v1"
+order = 16
+id = "intuition.policy"
+plane = "domain"
+kind = "fast_policy"
+lifecycle = "target"
+state = "stateless_runtime"
+architectureRole = "intervention_policy"
+writes = []
+uses = ["platform.types", "utility.ndu", "neuron.runtime", "learning.artifacts"]
+owner = "intelligence-platform"
+deputy = "learning-platform"
+denies = ["hard_veto_override", "direct_model_dispatch", "direct_tool_dispatch", "memory_write"]
+localHotPathCentralRpc = "not_applicable_or_bounded"
+sourceStatus = "existing_bound"
+source_root_present = true
+production_implementation = false
+sourceEvidenceRoots = ["codex-rs/hepta-intuition"]
+missingDeclaredRoots = []
+bootstrapWorkPackage = "INT-1-CALIBRATED-INTUITION-POLICY"
+technicalDocument = "docs/modules/intuition.policy/TECHNICAL.md"
+documentationReady = true
+
+[hotPathPolicy]
+centralSynchronousRpcAllowed = false
+boundedCachedControlInputAllowed = true
+fallbackRequired = true
+
+[publicSurfacePolicy]
+typedContractsOnly = true
+denyUnknownCriticalFields = true
+rawModelOrSecretPayloadExportAllowed = false
+
+[[rootBindings]]
+path = "codex-rs/hepta-intuition"
+mode = "exclusive"
+
+[[cargoPackages]]
+path = "codex-rs/hepta-intuition"
+compileLayer = 1
+ciGroups = ["learning", "objective"]

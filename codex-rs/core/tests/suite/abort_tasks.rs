@@ -16,16 +16,18 @@ use codex_protocol::user_input::UserInput;
 use core_test_support::responses::ev_completed;
 use core_test_support::responses::ev_function_call;
 use core_test_support::responses::ev_response_created;
-use core_test_support::responses::mount_response_once;
 use core_test_support::responses::mount_sse_once;
 use core_test_support::responses::mount_sse_sequence;
 use core_test_support::responses::sse;
-use core_test_support::responses::sse_response;
 use core_test_support::responses::start_mock_server;
+use core_test_support::streaming_sse::StreamingSseChunk;
+use core_test_support::streaming_sse::start_streaming_sse_server_with_response_header_gates;
 use core_test_support::test_codex::test_codex;
 use core_test_support::wait_for_event;
 use regex_lite::Regex;
 use serde_json::json;
+use tokio::sync::oneshot;
+use tokio::time::timeout;
 
 /// Integration test: spawn a long‑running exec_command tool via a mocked Responses SSE
 /// function call, then interrupt the session and expect TurnAborted.
@@ -75,20 +77,34 @@ async fn interrupt_long_running_tool_emits_turn_aborted() {
 #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
 async fn root_turn_suspension_preserves_unfinished_turn_history() {
     let server = start_mock_server().await;
-    // Waiting on the mocked response keeps the turn active on local and remote executors
-    // without requiring an OS-specific command or a working sandboxed child process.
-    mount_response_once(
-        &server,
-        sse_response(sse(vec![
-            ev_response_created("suspended_response"),
-            ev_completed("suspended_response"),
-        ]))
-        .set_delay(Duration::from_secs(60)),
+    let (response_release, response_gate) = oneshot::channel();
+    let (streaming_server, _completions) = start_streaming_sse_server_with_response_header_gates(
+        vec![
+            vec![StreamingSseChunk {
+                gate: None,
+                body: sse(vec![
+                    ev_response_created("suspended_response"),
+                    ev_completed("suspended_response"),
+                ]),
+            }],
+            vec![StreamingSseChunk {
+                gate: None,
+                body: sse(vec![
+                    ev_response_created("recovered_response"),
+                    ev_completed("recovered_response"),
+                ]),
+            }],
+        ],
+        vec![Some(response_gate), None],
     )
     .await;
+    let sampling_base_url = format!("{}/v1", streaming_server.uri());
     let test = test_codex()
-        .with_config(|config| {
+        .with_config(move |config| {
             let _ = config.features.enable(Feature::HeptaTurnRecovery);
+            // Keep the automatically selected executor, with sampling gated before
+            // its first provider event on the original streaming test server.
+            config.model_provider.base_url = Some(sampling_base_url);
         })
         .with_model("gpt-5.4")
         .build_with_auto_env(&server)
@@ -120,6 +136,45 @@ async fn root_turn_suspension_preserves_unfinished_turn_history() {
         panic!("expected a started root turn");
     };
     wait_for_event(&codex, |event| matches!(event, EventMsg::TurnStarted(_))).await;
+    timeout(
+        Duration::from_secs(5),
+        streaming_server.wait_for_request_count(1),
+    )
+    .await
+    .expect("the original turn must reach physical sampling after durable Ready");
+    let rollout_path = codex.rollout_path().expect("rollout path");
+    let (before_suspend, _, parse_errors) =
+        codex_rollout::RolloutRecorder::load_rollout_items(&rollout_path)
+            .await
+            .expect("read rollout at the physical request boundary");
+    assert_eq!(parse_errors, 0);
+    let user_index = before_suspend
+        .iter()
+        .position(|item| {
+            serde_json::to_string(item)
+                .is_ok_and(|json| json.contains("preserve this exact unfinished turn"))
+        })
+        .expect("the original user input must be durable");
+    let ready_index = before_suspend.iter().position(|item| matches!(
+        item,
+        RolloutItem::EventMsg(EventMsg::TurnRecoveryCandidate(marker))
+            if marker.turn_id == turn_id
+                && marker.state == codex_protocol::protocol::TurnRecoveryCandidateState::Ready
+    )).expect("the original Ready marker must precede physical sampling");
+    assert!(user_index < ready_index);
+    assert!(
+        before_suspend[..ready_index]
+            .iter()
+            .any(|item| matches!(item, RolloutItem::TurnContext(_)))
+    );
+    assert!(
+        before_suspend[..ready_index].iter().any(|item| matches!(
+            item,
+            RolloutItem::TurnRecoveryRequestBinding(binding)
+                if binding.turn_id == turn_id && binding.replay.is_some()
+        )),
+        "the complete original request binding must precede Ready"
+    );
 
     assert_eq!(
         codex
@@ -149,7 +204,8 @@ async fn root_turn_suspension_preserves_unfinished_turn_history() {
             turn_id: turn_id.clone(),
         },
     );
-    let rollout_path = codex.rollout_path().expect("rollout path");
+    drop(response_release);
+    assert_eq!(streaming_server.requests().await.len(), 1);
     let rollout = tokio::fs::read_to_string(&rollout_path)
         .await
         .expect("read durable rollout");
@@ -165,25 +221,28 @@ async fn root_turn_suspension_preserves_unfinished_turn_history() {
         item,
         RolloutItem::EventMsg(EventMsg::TurnAborted(_) | EventMsg::TurnComplete(_))
     )));
+    let mut history = codex_app_server_protocol::ThreadHistoryBuilder::new();
+    for item in &items {
+        history.handle_rollout_item(item);
+    }
+    assert_eq!(
+        history.recovery_candidate_turn_id(),
+        Some(turn_id.as_str()),
+        "the closed original rollout must retain exact recovery authority"
+    );
     test.thread_manager
         .remove_thread(&test.session_configured.thread_id)
         .await
         .expect("unload the suspended root");
-    let recovery_server = start_mock_server().await;
-    mount_sse_once(
-        &recovery_server,
-        sse(vec![
-            ev_response_created("recovered_response"),
-            ev_completed("recovered_response"),
-        ]),
-    )
-    .await;
+    let original_config = test.config.clone();
     let resumed = test_codex()
-        .with_config(|config| {
-            let _ = config.features.enable(Feature::HeptaTurnRecovery);
+        .with_config(move |config| {
+            // Keep the complete original workspace, permissions and provider
+            // configuration while replacing only the owning runtime.
+            *config = original_config;
         })
         .with_model("gpt-5.4")
-        .resume(&recovery_server, Arc::clone(&test.home), rollout_path)
+        .resume(&server, Arc::clone(&test.home), rollout_path)
         .await
         .expect("resume the suspended root on a replacement runtime");
     assert_eq!(
@@ -211,6 +270,13 @@ async fn root_turn_suspension_preserves_unfinished_turn_history() {
         unreachable!("wait_for_event returned unexpected event");
     };
     assert_eq!(completed.turn_id, turn_id);
+    assert!(
+        completed.error.is_none(),
+        "the actual recovered request must succeed: {:?}",
+        completed.error
+    );
+    assert_eq!(streaming_server.requests().await.len(), 2);
+    streaming_server.shutdown().await;
 }
 
 /// After an interrupt we expect the next request to the model to include both

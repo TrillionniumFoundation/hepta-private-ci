@@ -107,13 +107,13 @@ class ModuleMetadataTests(unittest.TestCase):
         self.assertEqual(row["sha256"], hashlib.sha256(guide.read_bytes()).hexdigest())
         self.assertEqual(row["bytes"], len(guide.read_bytes()))
 
-    def test_missing_readme_entry_fails_before_any_write(self):
+    def test_concise_readme_navigation_preserves_source_facts(self):
         path = self.root / README
-        path.write_text("", encoding="utf-8")
-        before = (self.root / INDEX).read_bytes()
-        with self.assertRaisesRegex(ValueError, "README module coverage"):
-            synchronize(self.root, write=True)
-        self.assertEqual(before, (self.root / INDEX).read_bytes())
+        prose = "# Native owners\nSee each module manifest and technical guide.\n"
+        path.write_text(prose, encoding="utf-8")
+        synchronize(self.root, write=True)
+        self.assertEqual(path.read_text(), prose)
+        self.assertEqual(synchronize(self.root), [])
 
     def test_duplicate_module_row_is_rejected(self):
         path = self.root / INDEX

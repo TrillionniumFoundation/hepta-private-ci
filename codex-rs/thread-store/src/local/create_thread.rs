@@ -25,7 +25,12 @@ pub(super) async fn create_thread(
         model_provider_id: params.metadata.model_provider.clone(),
         generate_memories: matches!(params.metadata.memory_mode, ThreadMemoryMode::Enabled),
     };
-    RolloutRecorder::new(
+    let thread_id = params.thread_id;
+    let thread_source =
+        serde_json::to_string(&params.thread_source).map_err(|err| ThreadStoreError::Internal {
+            message: err.to_string(),
+        })?;
+    let recorder = RolloutRecorder::new(
         &config,
         RolloutRecorderParams::new(
             params.thread_id,
@@ -48,5 +53,19 @@ pub(super) async fn create_thread(
     .await
     .map_err(|err| ThreadStoreError::Internal {
         message: format!("failed to initialize local thread recorder: {err}"),
-    })
+    })?;
+    if let Some(state) = store.state_db().await {
+        state
+            .bind_thread_creation_rollout(
+                thread_id,
+                &config.cwd,
+                &thread_source,
+                recorder.rollout_path(),
+            )
+            .await
+            .map_err(|err| ThreadStoreError::Internal {
+                message: format!("bind original creation rollout: {err}"),
+            })?;
+    }
+    Ok(recorder)
 }

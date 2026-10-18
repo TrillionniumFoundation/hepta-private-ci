@@ -20,6 +20,15 @@ from unittest.mock import patch
 SCRIPT_DIR = Path(__file__).resolve().parent
 REPOSITORY_ROOT = SCRIPT_DIR.parent
 sys.path.insert(0, str(SCRIPT_DIR))
+SOURCE_SPEC = importlib.util.spec_from_file_location(
+    "hepta_source_registry_under_test",
+    SCRIPT_DIR / "hepta_source_registry_closure.py",
+)
+if SOURCE_SPEC is None or SOURCE_SPEC.loader is None:
+    raise RuntimeError("cannot load scripts/hepta_source_registry_closure.py")
+SOURCE_REGISTRY = importlib.util.module_from_spec(SOURCE_SPEC)
+SOURCE_SPEC.loader.exec_module(SOURCE_REGISTRY)
+
 SPEC = importlib.util.spec_from_file_location(
     "hepta_gap_closure_under_test",
     SCRIPT_DIR / "hepta-gap-closure.py",
@@ -597,6 +606,153 @@ class ExactIdentityTest(unittest.TestCase):
         hostile["base_commit"] = self.base
         failures = GAP.validate_static_candidate_manifest(hostile)
         self.assertTrue(any("dynamic candidate identity" in item for item in failures))
+
+
+class WorkspaceMembershipSemanticsTest(unittest.TestCase):
+    def test_globbed_hepta_members_resolve_through_cargo_metadata(self) -> None:
+        roots = GAP.cargo_workspace_member_roots()
+        self.assertTrue(set(GAP.RUST_PACKAGES) <= roots)
+
+    def test_normalizer_does_not_expand_an_already_resolved_glob(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            manifest = Path(directory) / "Cargo.toml"
+            original = '[workspace]\nmembers = ["hepta-*"]\n'
+            manifest.write_text(original, encoding="utf-8")
+            with (
+                patch.object(GAP, "CARGO_MANIFEST", manifest),
+                patch.object(
+                    GAP,
+                    "cargo_workspace_member_roots",
+                    return_value=set(GAP.RUST_PACKAGES),
+                ),
+            ):
+                self.assertFalse(GAP.normalize_workspace())
+            self.assertEqual(manifest.read_text(encoding="utf-8"), original)
+
+    def test_truly_missing_member_is_added_without_expanding_other_globs(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            manifest = Path(directory) / "Cargo.toml"
+            manifest.write_text(
+                '[workspace]\nmembers = [\n    "hepta-evidence",\n    "hepta-*",\n]\n',
+                encoding="utf-8",
+            )
+            with (
+                patch.object(GAP, "CARGO_MANIFEST", manifest),
+                patch.object(
+                    GAP, "RUST_PACKAGES", {"hepta-required": "codex-hepta-required"}
+                ),
+                patch.object(GAP, "cargo_workspace_member_roots", return_value=set()),
+            ):
+                self.assertTrue(GAP.normalize_workspace())
+            updated = manifest.read_text(encoding="utf-8")
+            self.assertIn('    "hepta-required",\n', updated)
+            self.assertEqual(updated.count('    "hepta-*",\n'), 1)
+
+
+class SourceRegistrySemanticsTest(unittest.TestCase):
+    def setUp(self) -> None:
+        self.temporary = tempfile.TemporaryDirectory()
+        self.addCleanup(self.temporary.cleanup)
+        self.root = Path(self.temporary.name)
+        self.module_id = "example.module"
+        self.source_root = "codex-rs/hepta-example"
+        (self.root / self.source_root).mkdir(parents=True)
+        self.technical = self.root / "docs/modules/example.module/TECHNICAL.md"
+        self.technical.parent.mkdir(parents=True)
+        self.technical.write_text(
+            "# Freely structured implementation notes\nNo numbered template is required.\n",
+            encoding="utf-8",
+        )
+        self.audit = self.root / "qualification/gap-closure/PLAN_AUDIT.json"
+        self.audit.parent.mkdir(parents=True)
+        self.audit.write_text("{}\n", encoding="utf-8")
+        self.module = {
+            "id": self.module_id,
+            "rootBindings": [{"path": self.source_root, "mode": "exclusive"}],
+            "sourceStatus": "existing_bound",
+            "source_root_present": True,
+            "production_implementation": False,
+            "sourceEvidenceRoots": [self.source_root],
+            "missingDeclaredRoots": [],
+            "bootstrapWorkPackage": "BOOT",
+            "technicalDocument": "docs/modules/example.module/TECHNICAL.md",
+        }
+        self.binding = {
+            "module": self.module_id,
+            "sourceStatus": "existing_bound",
+            "source_root_present": True,
+            "production_implementation": False,
+            "declaredRoots": [self.source_root],
+            "existingDeclaredRoots": [self.source_root],
+            "sourceEvidenceRoots": [self.source_root],
+            "missingDeclaredRoots": [],
+            "bootstrapWorkPackage": "BOOT",
+        }
+        self.package = {"id": "BOOT", "state": "source_implemented"}
+
+    def documents(self):
+        return (
+            {},
+            [copy.deepcopy(self.module)],
+            {},
+            [copy.deepcopy(self.binding)],
+            {},
+            [copy.deepcopy(self.package)],
+            [],
+        )
+
+    def patches(self):
+        return (
+            patch.object(SOURCE_REGISTRY, "ROOT", self.root),
+            patch.object(
+                SOURCE_REGISTRY, "SOURCE_ROOTS", {self.module_id: (self.source_root,)}
+            ),
+            patch.object(SOURCE_REGISTRY, "AUDIT_PATH", self.audit),
+            patch.object(
+                SOURCE_REGISTRY, "_canonical_documents", side_effect=self.documents
+            ),
+            patch.object(SOURCE_REGISTRY, "_build_audit", return_value={}),
+        )
+
+    def test_arbitrary_nonempty_technical_prose_satisfies_source_closure(self) -> None:
+        patches = self.patches()
+        with patches[0], patches[1], patches[2], patches[3], patches[4]:
+            self.assertEqual(SOURCE_REGISTRY.verify(), [])
+
+    def test_normalize_never_rewrites_technical_prose(self) -> None:
+        before = self.technical.read_text(encoding="utf-8")
+        patches = self.patches()
+        with (
+            patches[0],
+            patches[1],
+            patches[2],
+            patches[3],
+            patches[4],
+            patch.object(SOURCE_REGISTRY, "_write_json", return_value=False),
+        ):
+            self.assertFalse(SOURCE_REGISTRY.normalize())
+        self.assertEqual(self.technical.read_text(encoding="utf-8"), before)
+
+    def test_empty_or_escaping_technical_document_still_fails(self) -> None:
+        for mode in ("empty", "symlink"):
+            with self.subTest(mode=mode):
+                if self.technical.exists() or self.technical.is_symlink():
+                    self.technical.unlink()
+                if mode == "empty":
+                    self.technical.write_text(" \n", encoding="utf-8")
+                    expected = "technical document is empty"
+                else:
+                    outside = self.root.parent / "outside-source-registry-guide.md"
+                    outside.write_text("outside\n", encoding="utf-8")
+                    self.addCleanup(outside.unlink, missing_ok=True)
+                    self.technical.symlink_to(outside)
+                    expected = "technical document escapes repository"
+                patches = self.patches()
+                with patches[0], patches[1], patches[2], patches[3], patches[4]:
+                    failures = SOURCE_REGISTRY.verify()
+                self.assertTrue(
+                    any(expected in failure for failure in failures), failures
+                )
 
 
 if __name__ == "__main__":

@@ -36,6 +36,7 @@
         "open_state_dir_with_issuer_keys": "final_use_open_state",
         "with_verified_effect": "final_use_guarded_effect",
         "with_verified_use_async": "final_use_async_dispatch_fence",
+        "open_state_dir_with_recovered_trust": "final_use_open_state",
         "enter_verified_use": "final_use_delivery_raw"
       },
       "nonPrivilegedMethods": [
@@ -100,7 +101,8 @@
       "privilegedMethods": {
         "new": "final_use_revocation_feed_trust",
         "new_with_keys": "final_use_revocation_feed_trust",
-        "apply": "final_use_revocation_feed_apply"
+        "apply": "final_use_revocation_feed_apply",
+        "authenticate_current_head": "final_use_current_head_freshness"
       },
       "nonPrivilegedMethods": []
     },
@@ -128,9 +130,12 @@
     },
     {
       "typeName": "RegisteredBaoConsumer",
-      "sourcePath": "codex-rs/hepta-bao-adapter/src/final_use_host.rs",
+      "sourcePath": "codex-rs/hepta-bao-adapter/src/consumer_registration.rs",
       "privilegedMethods": {
-        "new": "bao_registered_consumer_new"
+        "new": "bao_registered_consumer_new",
+        "for_operations": "bao_operation_consumer_registration",
+        "for_prepared_operations": "bao_operation_consumer_registration",
+        "for_prepared_receipts": "bao_receipt_consumer_registration"
       },
       "nonPrivilegedMethods": [
         "id"
@@ -142,10 +147,16 @@
       "privilegedMethods": {
         "new": "bao_final_use_host_new",
         "apply_revocation_update": "bao_registered_revocation_update",
-        "consume_kv_v2": "bao_registered_final_use_host"
+        "consume_kv_v2": "bao_registered_final_use_host",
+        "consume_kv_v2_with_authbus": "bao_registered_final_use_host"
       },
       "nonPrivilegedMethods": [
-        "consumer_count"
+        "consumer_count",
+        "operation_metrics"
+      ],
+      "sourcePaths": [
+        "codex-rs/hepta-bao-adapter/src/final_use_host.rs",
+        "codex-rs/hepta-bao-adapter/src/final_use_host_ingress.rs"
       ]
     }
   ],
@@ -160,7 +171,9 @@
       "allowedCallers": [
         "codex-rs/hepta-agentd/src/automation_effect_host.rs",
         "codex-rs/hepta-agentd/src/bin/hepta-agentd-browser.rs",
-        "codex-rs/hepta-infer-worker-host/src/final_use_authorizer.rs"
+        "codex-rs/hepta-bao-adapter/src/runtime_service.rs",
+        "codex-rs/hepta-infer-worker-host/src/final_use_authorizer.rs",
+        "codex-rs/hepta-supervisor/src/local_model_authority.rs"
       ]
     },
     {
@@ -171,8 +184,9 @@
         "\\bclaim_final_use\\s*\\("
       ],
       "allowedCallers": [
-        "codex-rs/hepta-bao-adapter/src/https_consumer.rs",
-        "codex-rs/hepta-agentd/src/browser_servo.rs"
+        "codex-rs/hepta-agentd/src/browser_servo.rs",
+        "codex-rs/hepta-bao-adapter/src/provider_final_use_dispatch.rs",
+        "codex-rs/hepta-supervisor/src/local_model_relay.rs"
       ]
     },
     {
@@ -202,7 +216,7 @@
         "\\bdeliver_final_use\\s*\\("
       ],
       "allowedCallers": [
-        "codex-rs/hepta-bao-adapter/src/https_consumer.rs"
+        "codex-rs/hepta-bao-adapter/src/provider_final_use_dispatch.rs"
       ]
     },
     {
@@ -270,9 +284,9 @@
         "FinalUseAuthority\\s*::\\s*update_revocations\\s*\\("
       ],
       "allowedCallers": [
-        "codex-rs/hepta-agentd/src/automation_effect_host.rs",
         "codex-rs/hepta-contracts/src/final_use_control.rs",
-        "codex-rs/hepta-infer-worker-host/src/final_use_authorizer.rs"
+        "codex-rs/hepta-infer-worker-host/src/final_use_authorizer.rs",
+        "codex-rs/hepta-supervisor/src/local_model_authority.rs"
       ]
     },
     {
@@ -283,7 +297,13 @@
         "FinalUseApprovalVerifier\\s*::\\s*new\\s*\\(",
         "FinalUseApprovalVerifier\\s*::\\s*new_with_keys\\s*\\("
       ],
-      "allowedCallers": []
+      "allowedCallers": [
+        "codex-rs/hepta-bao-adapter/src/authority_role_config.rs",
+        "codex-rs/hepta-bao-adapter/src/consumer_receipt_role.rs",
+        "codex-rs/hepta-bao-adapter/src/operator_approval.rs",
+        "codex-rs/hepta-bao-adapter/src/role_client.rs",
+        "codex-rs/hepta-bao-adapter/src/runtime_service.rs"
+      ]
     },
     {
       "id": "final_use_approval_verify",
@@ -296,7 +316,10 @@
         "FinalUseApprovalVerifier\\s*::\\s*verify_with_key_id\\s*\\("
       ],
       "allowedCallers": [
-        "codex-rs/hepta-bao-adapter/src/final_use_host.rs"
+        "codex-rs/hepta-bao-adapter/src/consumer_receipt_role.rs",
+        "codex-rs/hepta-bao-adapter/src/final_use_host.rs",
+        "codex-rs/hepta-bao-adapter/src/operator_approval.rs",
+        "codex-rs/hepta-bao-adapter/src/role_client.rs"
       ]
     },
     {
@@ -307,7 +330,9 @@
         "FinalUseRevocationFeedVerifier\\s*::\\s*new\\s*\\(",
         "FinalUseRevocationFeedVerifier\\s*::\\s*new_with_keys\\s*\\("
       ],
-      "allowedCallers": []
+      "allowedCallers": [
+        "codex-rs/hepta-bao-adapter/src/runtime_service.rs"
+      ]
     },
     {
       "id": "final_use_revocation_feed_apply",
@@ -350,12 +375,14 @@
         "\\.\\s*consume_kv_v2(?:_with_authbus)?\\s*\\(",
         "BaoClient\\s*::\\s*consume_kv_v2(?:_with_authbus)?\\s*\\("
       ],
-      "allowedCallers": []
+      "allowedCallers": [
+        "codex-rs/hepta-bao-adapter/src/runtime_service.rs"
+      ]
     },
     {
       "id": "bao_registered_consumer_new",
       "typeMarker": "RegisteredBaoConsumer",
-      "definitionPath": "codex-rs/hepta-bao-adapter/src/final_use_host.rs",
+      "definitionPath": "codex-rs/hepta-bao-adapter/src/consumer_registration.rs",
       "callPatterns": [
         "RegisteredBaoConsumer\\s*::\\s*new\\s*\\("
       ],
@@ -368,7 +395,9 @@
       "callPatterns": [
         "BaoFinalUseHost\\s*::\\s*new\\s*\\("
       ],
-      "allowedCallers": []
+      "allowedCallers": [
+        "codex-rs/hepta-bao-adapter/src/runtime_service.rs"
+      ]
     },
     {
       "id": "bao_registered_revocation_update",
@@ -378,12 +407,14 @@
         "\\.\\s*apply_revocation_update\\s*\\(",
         "BaoFinalUseHost\\s*::\\s*apply_revocation_update\\s*\\("
       ],
-      "allowedCallers": []
+      "allowedCallers": [
+        "codex-rs/hepta-bao-adapter/src/runtime_service.rs"
+      ]
     },
     {
       "id": "bao_registered_final_use_host",
       "typeMarker": "BaoFinalUseHost",
-      "definitionPath": "codex-rs/hepta-bao-adapter/src/final_use_host.rs",
+      "definitionPath": "codex-rs/hepta-bao-adapter/src/final_use_host_ingress.rs",
       "callPatterns": [
         "\\.\\s*consume_kv_v2\\s*\\(",
         "BaoFinalUseHost\\s*::\\s*consume_kv_v2\\s*\\("
@@ -400,7 +431,9 @@
         "AuthorityLeaseRegistry\\s*::\\s*open_state_dir_with_clock\\s*\\(",
         "AuthorityLeaseRegistry\\s*::\\s*open_state_dir_with_trust\\s*\\("
       ],
-      "allowedCallers": []
+      "allowedCallers": [
+        "codex-rs/hepta-supervisor/src/local_fleet_host.rs"
+      ]
     },
     {
       "id": "authority_lease_put",
@@ -410,7 +443,9 @@
         "\\.\\s*put_lease\\s*\\(",
         "AuthorityLeaseRegistry\\s*::\\s*put_lease\\s*\\("
       ],
-      "allowedCallers": []
+      "allowedCallers": [
+        "codex-rs/hepta-supervisor/src/local_fleet_host.rs"
+      ]
     },
     {
       "id": "authority_lease_revoke",
@@ -516,6 +551,52 @@
       ],
       "allowedCallers": [
         "codex-rs/hepta-automation/src/authorized_effect.rs"
+      ]
+    },
+    {
+      "id": "final_use_current_head_freshness",
+      "typeMarker": "FinalUseRevocationFeedVerifier",
+      "definitionPath": "codex-rs/hepta-contracts/src/final_use_control.rs",
+      "callPatterns": [
+        "\\.\\s*authenticate_current_head\\s*\\(",
+        "FinalUseRevocationFeedVerifier\\s*::\\s*authenticate_current_head\\s*\\("
+      ],
+      "allowedCallers": [
+        "codex-rs/hepta-bao-adapter/src/final_use_host.rs"
+      ]
+    },
+    {
+      "id": "bao_operation_consumer_registration",
+      "typeMarker": "RegisteredBaoConsumer",
+      "definitionPath": "codex-rs/hepta-bao-adapter/src/consumer_registration.rs",
+      "callPatterns": [
+        "RegisteredBaoConsumer\\s*::\\s*for_operations\\s*\\(",
+        "RegisteredBaoConsumer\\s*::\\s*for_prepared_operations\\s*\\("
+      ],
+      "allowedCallers": [
+        "codex-rs/hepta-bao-adapter/src/consumer_port.rs"
+      ]
+    },
+    {
+      "id": "bao_receipt_consumer_registration",
+      "typeMarker": "RegisteredBaoConsumer",
+      "definitionPath": "codex-rs/hepta-bao-adapter/src/consumer_registration.rs",
+      "callPatterns": [
+        "RegisteredBaoConsumer\\s*::\\s*for_prepared_receipts\\s*\\("
+      ],
+      "allowedCallers": [
+        "codex-rs/hepta-bao-adapter/src/consumer_port.rs"
+      ]
+    },
+    {
+      "id": "fleet_verified_execution_prepare",
+      "typeMarker": "DurableFleetStore",
+      "definitionPath": "codex-rs/hepta-fleet/src/durable_execution.rs",
+      "callPatterns": [
+        "\\.\\s*prepare_local_verified_execution\\s*\\("
+      ],
+      "allowedCallers": [
+        "codex-rs/hepta-supervisor/src/local_fleet_host.rs"
       ]
     }
   ]

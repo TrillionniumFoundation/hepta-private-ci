@@ -3,6 +3,7 @@
 use std::collections::BTreeMap;
 use std::error::Error as StdError;
 use std::fmt;
+use std::panic::AssertUnwindSafe;
 
 use codex_hepta_types::AuthorityPosture;
 use codex_hepta_types::Generation;
@@ -14,6 +15,29 @@ use crate::OrganGraphsV1;
 use crate::ValidatedOrganGraphsV1;
 
 pub const MAX_ORGAN_MESSAGE_BYTES: usize = 64 * 1024;
+
+fn callback_panic_fault(code: &str, fallback: &StableId) -> OrganHandlerFaultV1 {
+    let code = match StableId::new(code) {
+        Ok(code) => code,
+        // Static fault labels are programmer-owned. If one is ever malformed,
+        // preserve fail-closed quarantine with the already validated organ ID.
+        Err(_) => fallback.clone(),
+    };
+    OrganHandlerFaultV1::new(code)
+}
+
+fn catch_migration_callback<T>(
+    panic_code: &str,
+    callback: impl FnOnce() -> Result<T, OrganMigrationError>,
+) -> Result<T, (OrganMigrationError, bool)> {
+    let panic_code =
+        StableId::new(panic_code).map_err(|_| (OrganMigrationError::InvalidInternalCode, false))?;
+    match std::panic::catch_unwind(AssertUnwindSafe(callback)) {
+        Ok(Ok(value)) => Ok(value),
+        Ok(Err(error)) => Err((error, false)),
+        Err(_) => Err((OrganMigrationError::Callback(panic_code), true)),
+    }
+}
 
 /// A trusted, compiled-in handler for the read-only organ host.
 ///
@@ -68,6 +92,7 @@ pub trait OrganStateMigrationV1 {
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub enum OrganMigrationError {
     Rejected,
+    InvalidInternalCode,
     SnapshotTooLarge { actual: usize },
     Callback(StableId),
 }
@@ -243,6 +268,10 @@ pub struct OrganHostV1 {
     slots: Vec<OrganSlotV1>,
     source_indices: BTreeMap<StableId, usize>,
     routes: BTreeMap<(usize, usize), Vec<(usize, usize)>>,
+    /// Set when migration or owner restoration becomes uncertain. A local
+    /// handler fault may still be retired by a reviewed successor, but owner
+    /// uncertainty requires explicit recovery rather than ordinary cutover.
+    cutover_fenced: bool,
 }
 
 impl OrganHostV1 {
@@ -307,6 +336,7 @@ impl OrganHostV1 {
             slots,
             source_indices,
             routes,
+            cutover_fenced: false,
         })
     }
 
@@ -455,7 +485,7 @@ impl OrganHostV1 {
         Ok(())
     }
 
-    fn validate_read_only_successor(
+    pub(crate) fn validate_read_only_successor(
         &self,
         expected: Generation,
         proposed: Generation,
@@ -478,7 +508,54 @@ impl OrganHostV1 {
         Ok(())
     }
 
-    fn activate_read_only_successor(
+    /// Admission used by the reviewed compiled-driver registry. A handler that
+    /// faulted while still owned by this host may be drained and retired by an
+    /// exact successor. Stopped slots and quarantined slots whose stop was
+    /// already attempted remain ineligible, so cleanup uncertainty cannot be
+    /// converted into a successful cutover.
+    pub(crate) fn validate_registry_successor(
+        &self,
+        expected: Generation,
+        proposed: Generation,
+    ) -> Result<(), OrganRuntimeError> {
+        if self.generation() != expected {
+            return Err(OrganRuntimeError::GenerationMismatch {
+                expected: self.generation(),
+                actual: expected,
+            });
+        }
+        if expected.next().ok() != Some(proposed) {
+            return Err(OrganRuntimeError::NonSuccessorGeneration {
+                current: expected,
+                proposed,
+            });
+        }
+        if self.cutover_fenced {
+            let Some(slot) = self.slots.first() else {
+                return Err(OrganRuntimeError::HandlerCount {
+                    expected: 1,
+                    actual: 0,
+                });
+            };
+            return Err(OrganRuntimeError::OrganNotReady {
+                organ: slot.id.clone(),
+                state: slot.state,
+            });
+        }
+        for slot in &self.slots {
+            let eligible = slot.state == HostedOrganStateV1::Ready
+                || (slot.state == HostedOrganStateV1::Quarantined && slot.started);
+            if !eligible {
+                return Err(OrganRuntimeError::OrganNotReady {
+                    organ: slot.id.clone(),
+                    state: slot.state,
+                });
+            }
+        }
+        Ok(())
+    }
+
+    pub(crate) fn activate_read_only_successor(
         &mut self,
         mut candidate: Self,
     ) -> Result<(), OrganRuntimeError> {
@@ -555,9 +632,17 @@ impl OrganHostV1 {
         migration: &mut M,
     ) -> Result<(), OrganRuntimeError> {
         self.validate_recovery_successor(expected, candidate.generation())?;
-        let snapshot = migration
-            .snapshot(expected)
-            .map_err(|error| OrganRuntimeError::MigrationSnapshotFailed { error })?;
+        let snapshot = match catch_migration_callback("organ.migration.snapshot-panic", || {
+            migration.snapshot(expected)
+        }) {
+            Ok(snapshot) => snapshot,
+            Err((error, panicked)) => {
+                if panicked {
+                    self.quarantine_all();
+                }
+                return Err(OrganRuntimeError::MigrationSnapshotFailed { error });
+            }
+        };
         if snapshot.len() > MAX_ORGAN_MESSAGE_BYTES {
             return Err(OrganRuntimeError::MigrationSnapshotFailed {
                 error: OrganMigrationError::SnapshotTooLarge {
@@ -566,20 +651,22 @@ impl OrganHostV1 {
             });
         }
         if let Err(error) = candidate.start_all() {
-            let rollback_error = migration
-                .rollback(&snapshot, expected, candidate.generation())
-                .err();
+            let rollback_error = catch_migration_callback("organ.migration.rollback-panic", || {
+                migration.rollback(&snapshot, expected, candidate.generation())
+            })
+            .err()
+            .map(|(error, _)| error);
             if rollback_error.is_some() {
-                for slot in &mut self.slots {
-                    slot.state = HostedOrganStateV1::Quarantined;
-                }
+                self.quarantine_all();
             }
             return Err(OrganRuntimeError::CandidateStartFailed {
                 error: Box::new(error),
                 rollback_error,
             });
         }
-        if let Err(error) = migration.migrate(&snapshot, expected, candidate.generation()) {
+        if let Err((error, _)) = catch_migration_callback("organ.migration.apply-panic", || {
+            migration.migrate(&snapshot, expected, candidate.generation())
+        }) {
             let candidate_cleanup_faults = candidate.stop_indices(
                 candidate
                     .validated
@@ -588,15 +675,15 @@ impl OrganHostV1 {
                     .into_iter()
                     .rev(),
             );
-            let rollback_error = migration
-                .rollback(&snapshot, expected, candidate.generation())
-                .err();
+            let rollback_error = catch_migration_callback("organ.migration.rollback-panic", || {
+                migration.rollback(&snapshot, expected, candidate.generation())
+            })
+            .err()
+            .map(|(error, _)| error);
             // Failed candidate cleanup leaves state ownership uncertain even when
             // restoration succeeds. Neither activation nor recovery may keep serving.
             if rollback_error.is_some() || !candidate_cleanup_faults.is_empty() {
-                for slot in &mut self.slots {
-                    slot.state = HostedOrganStateV1::Quarantined;
-                }
+                self.quarantine_all();
             }
             return Err(OrganRuntimeError::CandidateMigrationFailed {
                 error,
@@ -614,9 +701,17 @@ impl OrganHostV1 {
         migration: &mut M,
     ) -> Result<(), OrganRuntimeError> {
         let expected = self.generation();
-        let snapshot = migration
-            .snapshot(expected)
-            .map_err(|error| OrganRuntimeError::MigrationSnapshotFailed { error })?;
+        let snapshot = match catch_migration_callback("organ.migration.snapshot-panic", || {
+            migration.snapshot(expected)
+        }) {
+            Ok(snapshot) => snapshot,
+            Err((error, panicked)) => {
+                if panicked {
+                    self.quarantine_all();
+                }
+                return Err(OrganRuntimeError::MigrationSnapshotFailed { error });
+            }
+        };
         if snapshot.len() > MAX_ORGAN_MESSAGE_BYTES {
             return Err(OrganRuntimeError::MigrationSnapshotFailed {
                 error: OrganMigrationError::SnapshotTooLarge {
@@ -625,20 +720,22 @@ impl OrganHostV1 {
             });
         }
         if let Err(error) = candidate.start_all() {
-            let rollback_error = migration
-                .rollback(&snapshot, expected, candidate.generation())
-                .err();
+            let rollback_error = catch_migration_callback("organ.migration.rollback-panic", || {
+                migration.rollback(&snapshot, expected, candidate.generation())
+            })
+            .err()
+            .map(|(error, _)| error);
             if rollback_error.is_some() {
-                for slot in &mut self.slots {
-                    slot.state = HostedOrganStateV1::Quarantined;
-                }
+                self.quarantine_all();
             }
             return Err(OrganRuntimeError::CandidateStartFailed {
                 error: Box::new(error),
                 rollback_error,
             });
         }
-        if let Err(error) = migration.migrate(&snapshot, expected, candidate.generation()) {
+        if let Err((error, _)) = catch_migration_callback("organ.migration.apply-panic", || {
+            migration.migrate(&snapshot, expected, candidate.generation())
+        }) {
             // Candidate cleanup must finish before the owner restores predecessor
             // state. A later stop callback must not observe the restored state as
             // if it belonged to the failed candidate generation.
@@ -650,15 +747,15 @@ impl OrganHostV1 {
                     .into_iter()
                     .rev(),
             );
-            let rollback_error = migration
-                .rollback(&snapshot, expected, candidate.generation())
-                .err();
+            let rollback_error = catch_migration_callback("organ.migration.rollback-panic", || {
+                migration.rollback(&snapshot, expected, candidate.generation())
+            })
+            .err()
+            .map(|(error, _)| error);
             // Failed candidate cleanup leaves state ownership uncertain even when
             // restoration succeeds. Neither activation nor recovery may keep serving.
             if rollback_error.is_some() || !candidate_cleanup_faults.is_empty() {
-                for slot in &mut self.slots {
-                    slot.state = HostedOrganStateV1::Quarantined;
-                }
+                self.quarantine_all();
             }
             return Err(OrganRuntimeError::CandidateMigrationFailed {
                 error,
@@ -682,9 +779,11 @@ impl OrganHostV1 {
                     .into_iter()
                     .rev(),
             );
-            let rollback_error = migration
-                .rollback(&snapshot, expected, candidate.generation())
-                .err();
+            let rollback_error = catch_migration_callback("organ.migration.rollback-panic", || {
+                migration.rollback(&snapshot, expected, candidate.generation())
+            })
+            .err()
+            .map(|(error, _)| error);
             return Err(OrganRuntimeError::MigrationReplacementStopFailed {
                 predecessor_faults,
                 candidate_cleanup_faults,
@@ -711,7 +810,12 @@ impl OrganHostV1 {
         for index in order {
             let slot = &mut self.slots[index];
             slot.started = true;
-            match slot.handler.start() {
+            let start_result = std::panic::catch_unwind(AssertUnwindSafe(|| slot.handler.start()));
+            let start_result = match start_result {
+                Ok(result) => result,
+                Err(_) => Err(callback_panic_fault("organ.callback.start-panic", &slot.id)),
+            };
+            match start_result {
                 Ok(()) => {
                     slot.state = HostedOrganStateV1::Ready;
                     started.push(index);
@@ -780,7 +884,17 @@ impl OrganHostV1 {
         let mut deliveries = Vec::with_capacity(routes.len());
         for (target, input_port) in routes {
             let slot = &mut self.slots[target];
-            let output = match slot.handler.handle(input_port, payload) {
+            let handle_result = std::panic::catch_unwind(AssertUnwindSafe(|| {
+                slot.handler.handle(input_port, payload)
+            }));
+            let handle_result = match handle_result {
+                Ok(result) => result,
+                Err(_) => Err(callback_panic_fault(
+                    "organ.callback.handle-panic",
+                    &slot.id,
+                )),
+            };
+            let output = match handle_result {
                 Ok(output) => output,
                 Err(error) => {
                     slot.state = HostedOrganStateV1::Quarantined;
@@ -828,6 +942,13 @@ impl OrganHostV1 {
         }
     }
 
+    fn quarantine_all(&mut self) {
+        self.cutover_fenced = true;
+        for slot in &mut self.slots {
+            slot.state = HostedOrganStateV1::Quarantined;
+        }
+    }
+
     fn require_ready(&self, index: usize) -> Result<(), OrganRuntimeError> {
         let slot = &self.slots[index];
         if slot.state == HostedOrganStateV1::Ready {
@@ -848,13 +969,21 @@ impl OrganHostV1 {
         for index in indices {
             let slot = &mut self.slots[index];
             if slot.started {
-                match slot.handler.stop() {
+                // Consume the one allowed stop attempt before entering product
+                // callback code. A panic or returned fault must never make Drop
+                // call the same non-idempotent stop hook a second time.
+                slot.started = false;
+                let stop_result =
+                    std::panic::catch_unwind(AssertUnwindSafe(|| slot.handler.stop()));
+                let stop_result = match stop_result {
+                    Ok(result) => result,
+                    Err(_) => Err(callback_panic_fault("organ.callback.stop-panic", &slot.id)),
+                };
+                match stop_result {
                     Ok(()) => {
-                        slot.started = false;
                         slot.state = HostedOrganStateV1::Stopped;
                     }
                     Err(error) => {
-                        slot.started = false;
                         slot.state = HostedOrganStateV1::Quarantined;
                         faults.push(OrganFaultRecordV1 {
                             organ: slot.id.clone(),

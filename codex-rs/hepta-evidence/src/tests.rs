@@ -1,3 +1,8 @@
+#![allow(
+    clippy::expect_used,
+    reason = "deterministic test fixtures require successful setup; a setup error must fail the test immediately"
+)]
+
 use codex_hepta_contracts::ActionId;
 use codex_hepta_contracts::GOVERNANCE_SCHEMA_VERSION;
 use codex_hepta_contracts::GovernanceDecision;

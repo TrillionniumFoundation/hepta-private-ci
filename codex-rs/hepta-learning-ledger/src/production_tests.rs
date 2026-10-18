@@ -115,6 +115,10 @@ fn trust_root_key() -> SigningKey {
 }
 
 fn activated_trust() -> ActivatedLearningTrustV1 {
+    activated_trust_until(/*expires_at*/ 90, /*now*/ 50)
+}
+
+fn activated_trust_until(expires_at: u64, now: u64) -> ActivatedLearningTrustV1 {
     let root_key = trust_root_key();
     let root = LearningTrustRootV1 {
         root_id: id("learning-root"),
@@ -133,11 +137,18 @@ fn activated_trust() -> ActivatedLearningTrustV1 {
         },
         root_id: root.root_id.clone(),
         issued_at: 15,
-        expires_at: 90,
+        expires_at,
         signature: [0; 64],
     };
-    signed.signature = root_key.sign(&signed.signing_bytes().unwrap()).to_bytes();
-    activate_learning_trust(&root, signed, None, 50).unwrap()
+    signed.signature = root_key
+        .sign(
+            &signed
+                .signing_bytes()
+                .unwrap_or_else(|error| panic!("production trust signing bytes: {error:?}")),
+        )
+        .to_bytes();
+    activate_learning_trust(&root, signed, /*previous*/ None, now)
+        .unwrap_or_else(|error| panic!("production trust activation: {error:?}"))
 }
 
 fn seed(name: &str) -> u8 {
@@ -220,9 +231,14 @@ impl Fixture {
     }
 
     fn writer(&self) -> LedgerWriter {
-        let ledger = DurableLedger::create(self.file("ledger"), binding(), 64).unwrap();
-        let witness = LedgerWitnessStore::create(self.file("witness"), binding()).unwrap();
-        let trust = activated_trust();
+        self.writer_with_trust(activated_trust())
+    }
+
+    fn writer_with_trust(&self, trust: ActivatedLearningTrustV1) -> LedgerWriter {
+        let ledger = DurableLedger::create(self.file("ledger"), binding(), /*max_records*/ 64)
+            .unwrap_or_else(|error| panic!("production ledger creation: {error:?}"));
+        let witness = LedgerWitnessStore::create(self.file("witness"), binding())
+            .unwrap_or_else(|error| panic!("production witness creation: {error:?}"));
         let ledger_directory = self.directory();
         let witness_directory = self.directory();
         LedgerWriter::from_durable(
@@ -232,7 +248,7 @@ impl Fixture {
             &ledger_directory,
             &witness_directory,
         )
-        .unwrap()
+        .unwrap_or_else(|error| panic!("production writer creation: {error:?}"))
     }
 }
 
@@ -441,6 +457,72 @@ fn production_writer_closes_authenticated_causal_chain_and_witnesses_each_commit
         LearningEvidenceRoleV1::UnlearningAuthority,
         &unlearning_signing_payload_v1(&unlearning),
     );
+    let before_preview = writer.snapshot().unwrap();
+    let before_witness = writer.witness_frontier().unwrap();
+    let preview = writer
+        .preview_unlearning(
+            credit_receipt.chain_digest,
+            &unlearning,
+            &dataset,
+            &unlearning_evidence,
+            50,
+        )
+        .expect("authenticated canonical no-effect preview");
+    assert_eq!(writer.snapshot().unwrap(), before_preview);
+    assert_eq!(writer.witness_frontier().unwrap(), before_witness);
+    assert_eq!(preview.principal().principal_id, id("privacy-owner"));
+    assert!(
+        writer
+            .preview_unlearning(
+                Digest32::ZERO,
+                &unlearning,
+                &dataset,
+                &unlearning_evidence,
+                50
+            )
+            .is_err()
+    );
+    assert!(
+        writer
+            .preview_unlearning(
+                credit_receipt.chain_digest,
+                &unlearning,
+                &dataset,
+                &unlearning_evidence,
+                unlearning_evidence.expires_at + 1
+            )
+            .is_err()
+    );
+    let mut substituted = unlearning.clone();
+    substituted.reason_digest = digest("different-reason");
+    assert!(
+        writer
+            .preview_unlearning(
+                credit_receipt.chain_digest,
+                &substituted,
+                &dataset,
+                &unlearning_evidence,
+                50
+            )
+            .is_err()
+    );
+    let wrong_role = sign(
+        writer.verifier(),
+        "observer",
+        LearningEvidenceRoleV1::Observer,
+        &unlearning_signing_payload_v1(&unlearning),
+    );
+    assert!(
+        writer
+            .preview_unlearning(
+                credit_receipt.chain_digest,
+                &unlearning,
+                &dataset,
+                &wrong_role,
+                50
+            )
+            .is_err()
+    );
     let receipt = writer
         .append_unlearning(
             credit_receipt.chain_digest,
@@ -450,6 +532,9 @@ fn production_writer_closes_authenticated_causal_chain_and_witnesses_each_commit
             50,
         )
         .unwrap();
+
+    assert_eq!(receipt.append.event_digest, preview.event_digest());
+    assert_eq!(receipt.source_event_digest, preview.source_event_digest());
 
     let frontier = writer.witness_frontier().unwrap();
     assert_eq!(frontier.anchor.sequence, 5);
@@ -950,3 +1035,11 @@ fn product_writer_history_growth_keeps_exact_retry_and_witness_after_reopen() {
 
 #[path = "production_growth_tests.rs"]
 mod growth;
+
+#[path = "production_active_trust_tests.rs"]
+mod active_trust_tests;
+#[path = "production_retrieval_preparation_tests.rs"]
+mod retrieval_preparation;
+
+#[path = "production_binding_audit_tests.rs"]
+mod binding_audit;

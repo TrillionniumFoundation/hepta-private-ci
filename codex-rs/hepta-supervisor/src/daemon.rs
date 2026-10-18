@@ -1,19 +1,8 @@
 #[cfg(unix)]
-use std::fs::File;
-#[cfg(unix)]
-use std::fs::OpenOptions;
+use std::collections::BTreeSet;
 use std::io::ErrorKind;
 #[cfg(unix)]
-use std::io::Seek;
-#[cfg(unix)]
-use std::io::SeekFrom;
-#[cfg(unix)]
-use std::io::Write;
-#[cfg(unix)]
-use std::os::fd::AsRawFd;
-#[cfg(unix)]
 use std::path::Path;
-#[cfg(unix)]
 use std::path::PathBuf;
 #[cfg(unix)]
 use std::sync::Arc;
@@ -58,9 +47,9 @@ use tokio::io::AsyncWriteExt;
 #[cfg(unix)]
 use tokio::io::BufReader;
 #[cfg(unix)]
-use tokio::sync::Mutex;
-#[cfg(unix)]
 use tokio::sync::Semaphore;
+#[cfg(unix)]
+use tokio::task::JoinSet;
 #[cfg(unix)]
 use tokio::time::MissedTickBehavior;
 #[cfg(unix)]
@@ -68,9 +57,15 @@ use tokio::time::timeout;
 use tokio_util::sync::CancellationToken;
 
 #[cfg(unix)]
+#[path = "daemon_diagnostics.rs"]
+mod diagnostics;
+
+#[cfg(unix)]
 use crate::AgentRelease;
 #[cfg(any(unix, test))]
 use crate::AgentSupervisorSnapshot;
+#[cfg(unix)]
+use crate::DurableRuntimeModuleSupervisorV1;
 #[cfg(unix)]
 use crate::H7H89ProductionGrant;
 use crate::H7H89ProductionGrantVerifier;
@@ -121,6 +116,56 @@ use crate::daemon_protocol::SupervisordResponse;
 use crate::signed_authority::authority_epoch_for_supervisor_epoch;
 
 #[cfg(unix)]
+#[path = "daemon_execution.rs"]
+mod execution;
+
+#[cfg(unix)]
+#[path = "daemon_release_reads.rs"]
+mod release_reads;
+
+#[cfg(unix)]
+#[path = "daemon_mutation.rs"]
+mod mutation;
+#[cfg(unix)]
+#[path = "daemon_no_effect.rs"]
+mod no_effect;
+#[cfg(unix)]
+#[path = "daemon_registration.rs"]
+mod registration;
+#[cfg(unix)]
+use mutation::handle_mutation;
+#[cfg(unix)]
+use mutation::ordinary_mutation_status;
+#[cfg(unix)]
+use mutation::reconcile_ordinary_mutation;
+#[cfg(target_os = "linux")]
+#[path = "daemon_controller.rs"]
+mod controller;
+#[cfg(unix)]
+#[path = "daemon_mutex.rs"]
+mod mutex;
+#[cfg(unix)]
+#[path = "daemon_observer.rs"]
+pub(crate) mod observer;
+#[cfg(unix)]
+#[path = "daemon_owner.rs"]
+pub(crate) mod owner;
+#[cfg(unix)]
+#[path = "daemon_read_view.rs"]
+mod read_view;
+#[cfg(unix)]
+#[path = "daemon_selection.rs"]
+mod selection;
+#[cfg(unix)]
+use mutex::MeasuredMutex as Mutex;
+#[cfg(unix)]
+#[path = "daemon_startup.rs"]
+pub(crate) mod startup;
+
+#[cfg(unix)]
+use owner::SingleInstanceLock;
+
+#[cfg(unix)]
 const CONNECTION_CAPACITY: usize = 64;
 #[cfg(unix)]
 const IO_TIMEOUT: Duration = Duration::from_secs(2);
@@ -145,6 +190,40 @@ struct DaemonState<D: ProcessDriver> {
     supervisor_epoch: SupervisorEpoch,
     production_grant_verifier: Option<H7H89ProductionGrantVerifier>,
     observed_faults: AtomicU64,
+    recovery_observation_blocked: std::sync::RwLock<BTreeSet<AgentId>>,
+    // Opened before readiness; restores active generations and fences.
+    runtime_modules: Mutex<DurableRuntimeModuleSupervisorV1>,
+    execution: execution::Execution,
+    // Drop after the writer. Detached or cancelling tasks retain the same guard
+    // through their Arc<DaemonState>; returning from run_supervisord is not a fence.
+    _instance: Arc<SingleInstanceLock>,
+}
+
+#[cfg(unix)]
+impl<D: ProcessDriver> DaemonState<D> {
+    fn any_recovery_observation_blocked(&self) -> bool {
+        self.recovery_observation_blocked
+            .read()
+            .map_or(true, |blocked| !blocked.is_empty())
+    }
+
+    fn recovery_observation_blocked_for(&self, agent_id: &AgentId) -> bool {
+        self.recovery_observation_blocked
+            .read()
+            .map_or(true, |blocked| blocked.contains(agent_id))
+    }
+
+    fn block_recovery_observation(&self, agent_id: AgentId) -> Result<(), SupervisorError> {
+        self.recovery_observation_blocked
+            .write()
+            .map_err(|_| {
+                SupervisorError::Invalid(
+                    "recovery observation block set is unavailable".to_string(),
+                )
+            })?
+            .insert(agent_id);
+        Ok(())
+    }
 }
 
 /// Runs the one lifecycle-only supervisor daemon for a fleet.
@@ -158,7 +237,7 @@ pub async fn run_supervisord(
     fleet_root: HeptaFleetRoot,
     cancellation: CancellationToken,
 ) -> Result<(), SupervisorError> {
-    run_supervisord_inner(fleet_root, cancellation, None).await
+    run_supervisord_inner(fleet_root, cancellation, None, None).await
 }
 
 /// Production entry point for a daemon whose trust root was pinned by an
@@ -175,7 +254,21 @@ pub async fn run_supervisord_with_grant_verifier(
     if !PRODUCTION_AUTHORITY_FEATURE_ENABLED {
         return Err(SupervisorError::ProductionAuthorityFeatureDisabled);
     }
-    run_supervisord_inner(fleet_root, cancellation, Some(verifier)).await
+    run_supervisord_inner(fleet_root, cancellation, Some(verifier), None).await
+}
+
+/// Explicit Linux installation entry point using the concrete local resource owner.
+#[cfg(all(target_os = "linux", feature = "local-host"))]
+pub async fn run_supervisord_with_local_host(
+    fleet_root: HeptaFleetRoot,
+    cancellation: CancellationToken,
+    policy: PathBuf,
+    verifier: Option<H7H89ProductionGrantVerifier>,
+) -> Result<(), SupervisorError> {
+    if verifier.is_some() && !PRODUCTION_AUTHORITY_FEATURE_ENABLED {
+        return Err(SupervisorError::ProductionAuthorityFeatureDisabled);
+    }
+    run_supervisord_inner(fleet_root, cancellation, verifier, Some(policy)).await
 }
 
 #[cfg(unix)]
@@ -183,7 +276,14 @@ async fn run_supervisord_inner(
     fleet_root: HeptaFleetRoot,
     cancellation: CancellationToken,
     production_grant_verifier: Option<H7H89ProductionGrantVerifier>,
+    local_host_policy: Option<PathBuf>,
 ) -> Result<(), SupervisorError> {
+    // Cancelling/dropping the outer future must also stop the ticker and server.
+    let _shutdown = cancellation.clone().drop_guard();
+    let layout = fleet_root.layout();
+    let instance = Arc::new(SingleInstanceLock::acquire(layout.supervisor_lock())?);
+    let registry = FleetRegistry::initialize(fleet_root.clone())?;
+    registry.migrate_owner_journals()?;
     let registry = FleetRegistry::open_existing(fleet_root)?;
     let snapshot = registry.load()?;
     if snapshot.agents.len() > usize::from(MAX_SUPERVISORD_ROSTER) {
@@ -193,28 +293,155 @@ async fn run_supervisord_inner(
         )));
     }
     let layout = registry.layout().clone();
-    let _instance = SingleInstanceLock::acquire(layout.supervisor_lock())?;
-    let driver =
+    let runtime_modules = DurableRuntimeModuleSupervisorV1::open(
+        layout.runtime_module_supervisor_state(),
+    )
+    .map_err(|error| {
+        SupervisorError::Invalid(format!("open durable runtime-module supervisor: {error}"))
+    })?;
+    let mut driver =
         UnixProcessDriver::new(256).map_err(|error| SupervisorError::Invalid(error.to_string()))?;
-    let (supervisor, recovery) = Supervisor::recover(
-        registry.clone(),
-        driver,
-        SupervisorConfig::local_default(),
-        Instant::now(),
-    )?;
+    let mut selection_uids = std::collections::BTreeSet::from([unsafe { libc::geteuid() }]);
+    let mut selection_gid = unsafe { libc::getegid() };
+    let mut observer_principal = None;
+    #[cfg(all(target_os = "linux", feature = "local-host"))]
+    let mut controller_gate: Option<crate::controller_peer::ControllerPeerGate> = None;
+    #[cfg(all(target_os = "linux", not(feature = "local-host")))]
+    let controller_gate: Option<crate::controller_peer::ControllerPeerGate> = None;
+    let mut local_maintenance: Option<tokio::task::JoinHandle<Result<(), SupervisorError>>> = None;
+    #[cfg(all(target_os = "linux", feature = "local-host"))]
+    let mut installed_host = None;
+    #[cfg(all(target_os = "linux", feature = "local-host"))]
+    if let Some(policy_path) = local_host_policy {
+        let host_registry = registry.clone();
+        let runtime = tokio::runtime::Handle::current();
+        let opened = startup::run_owned(Arc::clone(&instance), move || {
+            runtime
+                .block_on(crate::LocalFleetHost::open(&policy_path, host_registry))
+                .map_err(|error| SupervisorError::Invalid(error.to_string()))
+        })
+        .await?;
+        let host = opened.outcome?;
+        selection_uids = host.policy.workload_uids();
+        selection_gid = host.policy.workload_gid;
+        observer_principal = host.policy.observer_principal;
+        controller_gate = host
+            .policy
+            .controller_principal
+            .clone()
+            .map(|principal| {
+                crate::controller_peer::ControllerPeerGate::open(
+                    principal,
+                    &host.policy.cgroup_root,
+                )
+            })
+            .transpose()?;
+        driver = driver.with_local_host(Arc::clone(&host));
+        installed_host = Some(host);
+    }
+    #[cfg(not(all(target_os = "linux", feature = "local-host")))]
+    if local_host_policy.is_some() {
+        return Err(SupervisorError::Invalid(
+            "local host requires the Linux local-host feature".into(),
+        ));
+    }
+    let recovery_registry = registry.clone();
+    let recover = move || {
+        Supervisor::recover(
+            recovery_registry,
+            driver,
+            SupervisorConfig::local_default(),
+            Instant::now(),
+        )
+    };
+    #[cfg(all(target_os = "linux", feature = "local-host"))]
+    let recovered = if let Some(host) = installed_host {
+        let (recovered, maintenance) = startup::recover_with_local_host(
+            host,
+            Arc::clone(&instance),
+            cancellation.clone(),
+            recover,
+        )
+        .await?;
+        local_maintenance = Some(maintenance);
+        recovered
+    } else {
+        startup::run_owned(Arc::clone(&instance), recover).await?
+    };
+    #[cfg(not(all(target_os = "linux", feature = "local-host")))]
+    let recovered = startup::run_owned(Arc::clone(&instance), recover).await?;
+    let startup::OwnedStartup { outcome, instance } = recovered;
+    let (supervisor, recovery) = outcome?;
+    if cancellation.is_cancelled() {
+        // A failed resource owner can cancel while cold recovery is still
+        // blocked. Never publish a ready projection or serve that outcome.
+        if let Some(maintenance) = local_maintenance.take() {
+            maintenance.await.map_err(|error| {
+                SupervisorError::Invalid(format!("local resource owner failed: {error}"))
+            })??;
+        }
+        return Ok(());
+    }
     let state = Arc::new(DaemonState {
         registry,
         supervisor: Mutex::new(supervisor),
         supervisor_epoch: SupervisorEpoch::new(),
         production_grant_verifier,
         observed_faults: AtomicU64::new(recovery.faults.len() as u64),
+        recovery_observation_blocked: std::sync::RwLock::new(BTreeSet::new()),
+        runtime_modules: Mutex::new(runtime_modules),
+        execution: execution::Execution::new(cancellation.clone()),
+        _instance: instance,
     });
+    {
+        let supervisor = state.supervisor.lock().await;
+        publish_recovery_observations(&state, &supervisor)?;
+        execution::refresh(&state, &supervisor);
+    }
     let server = SupervisordServer::bind(
         layout.supervisor_socket().to_path_buf(),
         Arc::clone(&state),
         cancellation.clone(),
     )
     .await?;
+    let selection_server = selection::SelectionServer::bind(
+        layout.runtime_selection_socket(),
+        Arc::clone(&state),
+        cancellation.clone(),
+        selection_uids,
+        selection_gid,
+    )
+    .await?;
+    let mut observer_task = match observer_principal {
+        Some(principal) => Some(tokio::spawn(
+            observer::ObserverServer::bind(
+                layout.run_root().join("observer/ctl"),
+                Arc::clone(&state),
+                cancellation.clone(),
+                principal,
+            )
+            .await?
+            .run(),
+        )),
+        None => None,
+    };
+    let mut selection_task = tokio::spawn(selection_server.run());
+    #[cfg(target_os = "linux")]
+    let mut controller_task = match controller_gate {
+        Some(gate) => Some(tokio::spawn(
+            controller::ControllerServer::bind(
+                layout.run_root().join("controller/ctl"),
+                Arc::clone(&state),
+                cancellation.clone(),
+                gate,
+            )
+            .await?
+            .run(),
+        )),
+        None => None,
+    };
+    #[cfg(not(target_os = "linux"))]
+    let mut controller_task: Option<tokio::task::JoinHandle<Result<(), SupervisorError>>> = None;
     let tick_state = Arc::clone(&state);
     let tick_cancellation = cancellation.clone();
     let ticker = tokio::spawn(async move {
@@ -223,16 +450,68 @@ async fn run_supervisord_inner(
         loop {
             tokio::select! {
                 _ = tick_cancellation.cancelled() => return,
-                _ = interval.tick() => {
-                    let faults = tick_state.supervisor.lock().await.tick(Instant::now()).faults;
-                    tick_state.observed_faults.fetch_add(faults.len() as u64, Ordering::Relaxed);
+                scheduled = interval.tick() => {
+                    execution::tick(Arc::clone(&tick_state), scheduled.into_std()).await;
                 }
             }
         }
     });
-    let result = server.run().await;
+    let mut selection_finished = false;
+    let mut observer_finished = false;
+    let mut maintenance_finished = false;
+    let mut controller_finished = false;
+    let result = tokio::select! {
+        result = server.run() => result,
+        result = async {
+            match &mut local_maintenance { Some(task) => task.await, None => std::future::pending().await }
+        } => {
+            maintenance_finished = true;
+            result.map_err(|error| SupervisorError::Invalid(format!("local resource owner failed: {error}")))?
+        },
+        result = &mut selection_task => {
+            selection_finished = true;
+            result.map_err(|error| SupervisorError::Invalid(format!("selection server failed: {error}")))?
+        },
+        result = async {
+            match &mut observer_task { Some(task) => task.await, None => std::future::pending().await }
+        } => {
+            observer_finished = true;
+            result.map_err(|error| SupervisorError::Invalid(format!("observer server failed: {error}")))?
+        },
+        result = async {
+            match &mut controller_task { Some(task) => task.await, None => std::future::pending().await }
+        } => {
+            controller_finished = true;
+            result.map_err(|error| SupervisorError::Invalid(format!("controller server failed: {error}")))?
+        },
+    };
     cancellation.cancel();
-    let _ = ticker.await;
+    if !controller_finished && let Some(task) = controller_task {
+        task.await.map_err(|error| {
+            SupervisorError::Invalid(format!("controller server failed: {error}"))
+        })??;
+    }
+    if !observer_finished && let Some(task) = observer_task {
+        task.await.map_err(|error| {
+            SupervisorError::Invalid(format!("observer server failed: {error}"))
+        })??;
+    }
+    if !selection_finished {
+        selection_task.await.map_err(|error| {
+            SupervisorError::Invalid(format!("selection server failed: {error}"))
+        })??;
+    }
+    if !maintenance_finished && let Some(task) = local_maintenance {
+        task.await.map_err(|error| {
+            SupervisorError::Invalid(format!("local resource owner failed: {error}"))
+        })??;
+    }
+    let ticker_result = ticker.await;
+    if ticker_result.is_err() || state.execution.failed() {
+        return Err(SupervisorError::Invalid(
+            "supervisord lifecycle worker failed; durable recovery is required".to_string(),
+        ));
+    }
     result
 }
 
@@ -241,6 +520,7 @@ async fn run_supervisord_inner(
     _fleet_root: HeptaFleetRoot,
     _cancellation: CancellationToken,
     _production_grant_verifier: Option<H7H89ProductionGrantVerifier>,
+    _local_host_policy: Option<PathBuf>,
 ) -> Result<(), SupervisorError> {
     Err(std::io::Error::new(
         ErrorKind::Unsupported,
@@ -278,21 +558,50 @@ impl SupervisordServer {
     }
 
     async fn run(mut self) -> Result<(), SupervisorError> {
-        loop {
+        let mut tasks = JoinSet::new();
+        let mut result = loop {
             let stream = tokio::select! {
-                _ = self.cancellation.cancelled() => return Ok(()),
-                accepted = self.listener.accept() => accepted?,
+                _ = self.cancellation.cancelled() => break Ok(()),
+                joined = tasks.join_next(), if !tasks.is_empty() => {
+                    if matches!(joined, Some(Err(_))) {
+                        break Err(SupervisorError::Invalid(
+                            "supervisord connection task failed".to_string(),
+                        ));
+                    }
+                    continue;
+                }
+                accepted = self.listener.accept() => match accepted {
+                    Ok(stream) => stream,
+                    Err(error) => break Err(error.into()),
+                },
             };
             let Ok(permit) = Arc::clone(&self.connections).try_acquire_owned() else {
                 drop(stream);
                 continue;
             };
             let state = Arc::clone(&self.state);
-            tokio::spawn(async move {
+            tasks.spawn(async move {
                 let _permit = permit;
-                let _ = timeout(IO_TIMEOUT, serve_connection(stream, state)).await;
+                let _ = serve_connection(stream, state).await;
             });
+        };
+        self.cancellation.cancel();
+        if result.is_err() {
+            tasks.abort_all();
         }
+        // Drain already accepted requests before normal shutdown. On future drop,
+        // JoinSet aborts them; a still-running synchronous task retains state/lock.
+        while let Some(joined) = tasks.join_next().await {
+            if let Err(error) = joined
+                && error.is_panic()
+            {
+                self.state.observed_faults.fetch_add(1, Ordering::Relaxed);
+                result = Err(SupervisorError::Invalid(
+                    "supervisord connection task failed during shutdown".to_string(),
+                ));
+            }
+        }
+        result
     }
 }
 
@@ -319,7 +628,9 @@ async fn serve_connection(
     let (reader, mut writer) = tokio::io::split(stream);
     let mut reader = BufReader::new(reader).take(MAX_SUPERVISORD_CONTROL_FRAME_BYTES + 1);
     let mut frame = Vec::new();
-    let count = reader.read_until(b'\n', &mut frame).await?;
+    let count = timeout(IO_TIMEOUT, reader.read_until(b'\n', &mut frame))
+        .await
+        .map_err(|_| std::io::Error::new(ErrorKind::TimedOut, "control frame read timed out"))??;
     if count == 0 || count as u64 > MAX_SUPERVISORD_CONTROL_FRAME_BYTES || !frame.ends_with(b"\n") {
         return Ok(());
     }
@@ -355,7 +666,29 @@ async fn serve_connection(
         Ok(()) => SupervisordResponse {
             schema_version: SUPERVISORD_CONTROL_SCHEMA_VERSION,
             request_id: request.request_id,
-            payload: handle_request(Arc::clone(&state), request.method).await,
+
+            payload: match timeout(
+                IO_TIMEOUT,
+                execution::handle_with_request_id(
+                    Arc::clone(&state),
+                    request.request_id,
+                    request.method,
+                ),
+            )
+            .await
+            {
+                Ok(payload) => payload,
+                // Dropping the response waiter cannot release the blocking
+                // owner's Arc or permit. That owner completes durable state
+                // before another mutation can be admitted. Return a bounded,
+                // explicit unknown outcome instead of silently closing the
+                // socket after a potentially completed process effect.
+                Err(_) => error_payload(
+                    "operation_indeterminate",
+                    "request exceeded its response budget; inspect durable state before retry",
+                    /*actual*/ None,
+                ),
+            },
         },
     };
     write_response(&mut writer, response).await
@@ -363,7 +696,7 @@ async fn serve_connection(
 
 #[cfg(unix)]
 async fn write_response(
-    writer: &mut tokio::io::WriteHalf<UnixStream>,
+    writer: &mut (impl tokio::io::AsyncWrite + Unpin),
     response: SupervisordResponse,
 ) -> Result<(), SupervisorError> {
     let mut bytes = serde_json::to_vec(&response)
@@ -374,17 +707,68 @@ async fn write_response(
             "supervisord response exceeded frame bound".to_string(),
         ));
     }
-    writer.write_all(&bytes).await?;
-    writer.shutdown().await?;
+    timeout(IO_TIMEOUT, writer.write_all(&bytes))
+        .await
+        .map_err(|_| {
+            std::io::Error::new(ErrorKind::TimedOut, "control response write timed out")
+        })??;
+    timeout(IO_TIMEOUT, writer.shutdown()).await.map_err(|_| {
+        std::io::Error::new(ErrorKind::TimedOut, "control response shutdown timed out")
+    })??;
     Ok(())
 }
 
 #[cfg(unix)]
 async fn handle_request<D: ProcessDriver>(
     state: Arc<DaemonState<D>>,
+    request_id: u64,
     method: SupervisordMethod,
+    read_pin: Option<Arc<codex_hepta_fleet::PreparedReleaseRead>>,
 ) -> SupervisordPayload {
     match method {
+        SupervisordMethod::AgentDiagnostics { agent_id } => {
+            match state.supervisor.lock().await.snapshot(&agent_id) {
+                Some(snapshot) => SupervisordPayload::AgentDiagnostics {
+                    agent_id,
+                    entries: diagnostics::entries(&snapshot),
+                },
+                None => error_payload("unknown_agent", "selected Agent is not registered", None),
+            }
+        }
+        SupervisordMethod::RegisterAgent { manifest } => {
+            registration::register(state, manifest).await
+        }
+        SupervisordMethod::AllowInstalledRelease { fence, release_id } => {
+            registration::allow(state, fence, release_id).await
+        }
+        SupervisordMethod::RetireAgent { fence } => registration::retire(state, fence).await,
+        SupervisordMethod::RetiredAgentStatus { agent_id } => {
+            match state.registry.retired_agent_path(&agent_id) {
+                Ok(archived_root) => SupervisordPayload::RetiredAgentStatus {
+                    agent_id,
+                    archived_root,
+                },
+                Err(error) => safe_rejection(
+                    error.into(),
+                    /*actual*/ None,
+                    /*mutation_started*/ false,
+                ),
+            }
+        }
+        SupervisordMethod::RuntimeModuleSelection { module_id } => {
+            match state
+                .runtime_modules
+                .lock()
+                .await
+                .module_selection(&module_id)
+            {
+                Ok(selection) => SupervisordPayload::RuntimeModuleSelection { selection },
+                Err(error) => {
+                    error_response(0, "module_selection_unavailable", &error.to_string(), None)
+                        .payload
+                }
+            }
+        }
         SupervisordMethod::Health => {
             let registered_agents = match state.registry.load() {
                 Ok(snapshot) => snapshot.agents.len(),
@@ -412,7 +796,7 @@ async fn handle_request<D: ProcessDriver>(
                 .await
                 .any_production_recovery_required();
             SupervisordPayload::Health(SupervisordHealth {
-                ready: !recovery_required,
+                ready: !recovery_required && !state.any_recovery_observation_blocked(),
                 supervisor_epoch: state.supervisor_epoch.clone(),
                 process_id: std::process::id(),
                 registered_agents,
@@ -445,7 +829,7 @@ async fn handle_request<D: ProcessDriver>(
                     status_from(
                         &state.supervisor_epoch,
                         &record,
-                        supervisor.snapshot(&agent_id),
+                        supervisor.metadata_snapshot(&agent_id),
                     )
                 })
                 .collect::<Result<Vec<_>, _>>()
@@ -483,11 +867,20 @@ async fn handle_request<D: ProcessDriver>(
                 }
             }
         }
+        SupervisordMethod::OrdinaryMutationStatus {
+            agent_id,
+            mutation_request_id,
+        } => ordinary_mutation_status(&state, &agent_id, mutation_request_id),
+        SupervisordMethod::ReconcileOrdinaryMutation {
+            fence,
+            mutation_request_id,
+        } => reconcile_ordinary_mutation(state, fence, mutation_request_id).await,
         SupervisordMethod::Start { fence, release_id } => {
             let target = match resolve_release_outside_lock(
                 Arc::clone(&state),
                 fence.agent_id.clone(),
                 release_id,
+                read_pin.clone(),
             )
             .await
             {
@@ -497,11 +890,20 @@ async fn handle_request<D: ProcessDriver>(
                     return safe_rejection(error, actual, /*mutation_started*/ false);
                 }
             };
-            handle_mutation(state, SupervisordMutation::Start, fence, Some(target)).await
+            mutation::handle_mutation_with_prepared_read(
+                state,
+                request_id,
+                SupervisordMutation::Start,
+                fence,
+                Some(target),
+                read_pin,
+            )
+            .await
         }
         SupervisordMethod::Drain { fence } => {
             handle_mutation(
                 state,
+                request_id,
                 SupervisordMutation::Drain,
                 fence,
                 /*target*/ None,
@@ -511,6 +913,7 @@ async fn handle_request<D: ProcessDriver>(
         SupervisordMethod::Stop { fence } => {
             handle_mutation(
                 state,
+                request_id,
                 SupervisordMutation::Stop,
                 fence,
                 /*target*/ None,
@@ -520,6 +923,7 @@ async fn handle_request<D: ProcessDriver>(
         SupervisordMethod::Kill { fence } => {
             handle_mutation(
                 state,
+                request_id,
                 SupervisordMutation::Kill,
                 fence,
                 /*target*/ None,
@@ -529,6 +933,7 @@ async fn handle_request<D: ProcessDriver>(
         SupervisordMethod::Restart { fence } => {
             handle_mutation(
                 state,
+                request_id,
                 SupervisordMutation::Restart,
                 fence,
                 /*target*/ None,
@@ -540,6 +945,7 @@ async fn handle_request<D: ProcessDriver>(
                 Arc::clone(&state),
                 fence.agent_id.clone(),
                 release_id,
+                None,
             )
             .await
             {
@@ -549,11 +955,19 @@ async fn handle_request<D: ProcessDriver>(
                     return safe_rejection(error, actual, /*mutation_started*/ false);
                 }
             };
-            handle_mutation(state, SupervisordMutation::Upgrade, fence, Some(target)).await
+            handle_mutation(
+                state,
+                request_id,
+                SupervisordMutation::Upgrade,
+                fence,
+                Some(target),
+            )
+            .await
         }
         SupervisordMethod::Rollback { fence } => {
             handle_mutation(
                 state,
+                request_id,
                 SupervisordMutation::Rollback,
                 fence,
                 /*target*/ None,
@@ -708,6 +1122,13 @@ async fn handle_signed_mutation<D: ProcessDriver>(
             return safe_rejection(error, Some(actual), /*mutation_started*/ false);
         }
     }
+    if state.recovery_observation_blocked_for(&agent_id) {
+        return error_payload(
+            "recovery_observation_required",
+            "reconcile the owner-bound recovery observation before another signed transition",
+            Some(actual),
+        );
+    }
     let authority_epoch = authority_epoch_for_supervisor_epoch(state.supervisor_epoch.as_str());
     let receipt = match supervisor.apply_production_grant(
         &agent_id,
@@ -756,155 +1177,47 @@ fn unix_seconds_now() -> u64 {
 }
 
 #[cfg(unix)]
-async fn handle_mutation<D: ProcessDriver>(
-    state: Arc<DaemonState<D>>,
-    operation: SupervisordMutation,
-    fence: SupervisordControlFence,
-    target: Option<AgentRelease>,
-) -> SupervisordPayload {
-    let agent_id = fence.agent_id.clone();
-    let accepted_state_digest = fence.state_digest.clone();
-    let mut supervisor = state.supervisor.lock().await;
-    let actual = match agent_status_locked(&state, &supervisor, &agent_id) {
-        Ok(actual) => actual,
-        Err(error) => {
-            return safe_rejection(error, /*actual*/ None, /*mutation_started*/ false);
-        }
-    };
-    if !control_fence_matches(&fence, &actual.control_fence) {
-        return error_payload(
-            "stale_control_fence",
-            "selected Agent changed; refresh before retry",
-            Some(actual),
-        );
-    }
-    match supervisor.production_recovery_required(&agent_id) {
-        Ok(true) if operation != SupervisordMutation::Kill => {
-            return error_payload(
-                "signed_intent_recovery_required",
-                "this Agent has a quarantined production mutation; only status, recovery, or emergency kill is allowed",
-                Some(actual),
-            );
-        }
-        Ok(_) => {}
-        Err(error) => {
-            return safe_rejection(error, Some(actual), /*mutation_started*/ false);
-        }
-    }
-    if state.production_grant_verifier.is_some()
-        && matches!(
-            operation,
-            SupervisordMutation::Upgrade | SupervisordMutation::Rollback
+fn publish_recovery_observations<D: ProcessDriver>(
+    state: &DaemonState<D>,
+    supervisor: &Supervisor<D>,
+) -> Result<(), SupervisorError> {
+    let authority_epoch = state
+        .production_grant_verifier
+        .as_ref()
+        .map(|_| authority_epoch_for_supervisor_epoch(state.supervisor_epoch.as_str()));
+    for (agent_id, record) in state.registry.load()?.agents {
+        let snapshot = supervisor
+            .metadata_snapshot(&agent_id)
+            .ok_or_else(|| SupervisorError::UnknownAgent(agent_id.clone()))?;
+        let observation = crate::publish_production_recovery_observation(
+            record.layout.owner_run_root(),
+            &agent_id,
+            state.supervisor_epoch.as_str(),
+            record.lifecycle.lifecycle,
+            record.lifecycle.generation,
+            &snapshot,
+            authority_epoch,
+            None,
         )
-    {
-        return error_payload(
-            "signed_release_authority_required",
-            "production mode requires SignedUpgrade or SignedRollback for release transitions",
-            Some(actual),
-        );
-    }
-
-    let prepared = match (operation, target) {
-        (SupervisordMutation::Start, Some(target)) => PreparedMutation::Start(target),
-        (SupervisordMutation::Drain, None) => PreparedMutation::Drain,
-        (SupervisordMutation::Stop, None) => PreparedMutation::Stop,
-        (SupervisordMutation::Kill, None) => PreparedMutation::Kill,
-        (SupervisordMutation::Restart, None) => PreparedMutation::Restart,
-        (SupervisordMutation::Upgrade, Some(target)) => PreparedMutation::Upgrade(target),
-        (SupervisordMutation::Rollback, None) => PreparedMutation::Rollback,
-        (SupervisordMutation::Start | SupervisordMutation::Upgrade, None) => {
-            return error_payload(
-                "invalid_frame",
-                "request is not valid supervisord control JSON",
-                Some(actual),
-            );
+        .map_err(|error| SupervisorError::Invalid(error.to_string()))?;
+        match crate::replay_production_recovery_observation(&observation)
+            .map_err(|error| SupervisorError::Invalid(error.to_string()))?
+        {
+            crate::RecoveryReplayDecisionV1::Clean
+            | crate::RecoveryReplayDecisionV1::ContinueOwnedProcess => {}
+            crate::RecoveryReplayDecisionV1::FinalizeObservedExit => {
+                return Err(SupervisorError::Invalid(format!(
+                    "agent {agent_id} retained an observed exit after recovery finalization"
+                )));
+            }
+            crate::RecoveryReplayDecisionV1::RejectStaleGeneration
+            | crate::RecoveryReplayDecisionV1::RequiresOperator => {
+                state.block_recovery_observation(agent_id.clone())?;
+                state.observed_faults.fetch_add(1, Ordering::Relaxed);
+            }
         }
-        (
-            SupervisordMutation::Drain
-            | SupervisordMutation::Stop
-            | SupervisordMutation::Kill
-            | SupervisordMutation::Restart
-            | SupervisordMutation::Rollback,
-            Some(_),
-        ) => {
-            return error_payload(
-                "invalid_frame",
-                "request is not valid supervisord control JSON",
-                Some(actual),
-            );
-        }
-    };
-
-    let preflight = match &prepared {
-        PreparedMutation::Start(_) => supervisor.preflight_start(&agent_id),
-        PreparedMutation::Drain => supervisor.preflight_drain(&agent_id),
-        PreparedMutation::Stop | PreparedMutation::Kill => {
-            supervisor.preflight_stop_or_kill(&agent_id)
-        }
-        PreparedMutation::Restart => supervisor.preflight_restart(&agent_id),
-        PreparedMutation::Upgrade(target) => supervisor.preflight_upgrade(&agent_id, target),
-        PreparedMutation::Rollback => supervisor.preflight_rollback(&agent_id),
-    };
-    if let Err(error) = preflight {
-        let refreshed = agent_status_locked(&state, &supervisor, &agent_id).ok();
-        return safe_rejection(
-            error,
-            refreshed.or(Some(actual)),
-            /*mutation_started*/ false,
-        );
     }
-
-    let next_revision = match supervisor.next_control_revision(&agent_id) {
-        Ok(revision) => revision,
-        Err(error) => return safe_rejection(error, Some(actual), /*mutation_started*/ false),
-    };
-    if let Err(error) = supervisor.set_control_revision(&agent_id, next_revision) {
-        return safe_rejection(error, Some(actual), /*mutation_started*/ false);
-    }
-
-    let mutation = match prepared {
-        PreparedMutation::Start(target) => {
-            supervisor.start_release(&agent_id, target, Instant::now())
-        }
-        PreparedMutation::Drain => supervisor.drain(&agent_id, Instant::now()),
-        PreparedMutation::Stop => supervisor.stop(&agent_id, Instant::now()),
-        PreparedMutation::Kill => supervisor.kill(&agent_id),
-        PreparedMutation::Restart => supervisor.restart(&agent_id, Instant::now()),
-        PreparedMutation::Upgrade(target) => supervisor.upgrade(&agent_id, target, Instant::now()),
-        PreparedMutation::Rollback => supervisor.rollback(&agent_id, Instant::now()),
-    };
-    let post = agent_status_locked(&state, &supervisor, &agent_id).ok();
-    if let Err(_error) = mutation {
-        return error_payload(
-            "operation_indeterminate",
-            "operation outcome is indeterminate; refresh before retry",
-            post,
-        );
-    }
-    let Some(agent) = post else {
-        return error_payload(
-            "operation_indeterminate",
-            "operation outcome is indeterminate; refresh before retry",
-            /*actual*/ None,
-        );
-    };
-    SupervisordPayload::MutationAccepted {
-        operation,
-        accepted_state_digest,
-        agent,
-        production_receipt: None,
-    }
-}
-
-#[cfg(unix)]
-enum PreparedMutation {
-    Start(AgentRelease),
-    Drain,
-    Stop,
-    Kill,
-    Restart,
-    Upgrade(AgentRelease),
-    Rollback,
+    Ok(())
 }
 
 #[cfg(unix)]
@@ -912,12 +1225,17 @@ async fn resolve_release_outside_lock<D: ProcessDriver>(
     state: Arc<DaemonState<D>>,
     agent_id: AgentId,
     release_id: ReleaseId,
+    read_pin: Option<Arc<codex_hepta_fleet::PreparedReleaseRead>>,
 ) -> Result<AgentRelease, SupervisorError> {
     let registry = state.registry.clone();
-    let release =
-        tokio::task::spawn_blocking(move || registry.resolve_release(&agent_id, &release_id))
-            .await
-            .map_err(|_| SupervisorError::Invalid("release resolver task failed".to_string()))??;
+    let release = tokio::task::spawn_blocking(move || match read_pin {
+        Some(pin) => {
+            registry.resolve_release_descriptor_from_prepared_read(&agent_id, &release_id, &pin)
+        }
+        None => registry.resolve_release(&agent_id, &release_id),
+    })
+    .await
+    .map_err(|_| SupervisorError::Invalid("release resolver task failed".to_string()))??;
     AgentRelease::try_from(release)
 }
 
@@ -945,7 +1263,7 @@ fn agent_status_locked<D: ProcessDriver>(
     status_from(
         &state.supervisor_epoch,
         &record,
-        supervisor.snapshot(agent_id),
+        supervisor.metadata_snapshot(agent_id),
     )
 }
 
@@ -1145,6 +1463,25 @@ fn safe_rejection(
         );
     }
     match error {
+        SupervisorError::ObservationUnavailable => read_view::unavailable(),
+        SupervisorError::ReleaseValidationRejected => error_payload(
+            "release_validation_rejected",
+            "installed program validation failed; no operation was admitted",
+            actual,
+        ),
+        SupervisorError::NotAdmittedBusy => error_payload(
+            "not_admitted_busy",
+            "lifecycle owner is busy; no operation was admitted; refresh before retry",
+            actual,
+        ),
+        SupervisorError::StaleControlFence => error_payload(
+            "stale_control_fence",
+            "selected Agent changed; no operation was admitted; refresh before retry",
+            actual,
+        ),
+        SupervisorError::ConfigurationNotReady(message) => {
+            error_payload("configuration_not_ready", &message, actual)
+        }
         SupervisorError::UnknownAgent(_) => {
             error_payload(
                 "unknown_agent",
@@ -1318,52 +1655,6 @@ async fn prepare_socket(socket_path: &Path) -> Result<(), SupervisorError> {
 async fn set_owner_only(path: &Path) -> Result<(), SupervisorError> {
     use std::os::unix::fs::PermissionsExt;
     tokio::fs::set_permissions(path, std::fs::Permissions::from_mode(0o600)).await?;
-    Ok(())
-}
-
-#[cfg(unix)]
-struct SingleInstanceLock {
-    file: File,
-}
-
-#[cfg(unix)]
-impl SingleInstanceLock {
-    fn acquire(path: &Path) -> Result<Self, SupervisorError> {
-        let mut file = OpenOptions::new()
-            .create(true)
-            .read(true)
-            .write(true)
-            .truncate(false)
-            .open(path)?;
-        set_lock_owner_only(path)?;
-        // SAFETY: flock only operates on this live File descriptor with fixed flags.
-        if unsafe { libc::flock(file.as_raw_fd(), libc::LOCK_EX | libc::LOCK_NB) } == -1 {
-            let error = std::io::Error::last_os_error();
-            return Err(SupervisorError::Io(std::io::Error::new(
-                ErrorKind::AddrInUse,
-                format!("another supervisord owns {}: {error}", path.display()),
-            )));
-        }
-        file.set_len(0)?;
-        file.seek(SeekFrom::Start(0))?;
-        writeln!(file, "{}", std::process::id())?;
-        file.sync_all()?;
-        Ok(Self { file })
-    }
-}
-
-#[cfg(unix)]
-impl Drop for SingleInstanceLock {
-    fn drop(&mut self) {
-        // SAFETY: unlocks the same live File descriptor acquired above.
-        let _ = unsafe { libc::flock(self.file.as_raw_fd(), libc::LOCK_UN) };
-    }
-}
-
-#[cfg(unix)]
-fn set_lock_owner_only(path: &Path) -> Result<(), SupervisorError> {
-    use std::os::unix::fs::PermissionsExt;
-    std::fs::set_permissions(path, std::fs::Permissions::from_mode(0o600))?;
     Ok(())
 }
 
@@ -1689,14 +1980,15 @@ mod tests {
             crate::signed_intent::SignedIntentStatus::Queued,
         )
         .expect("signed intent");
-        crate::signed_intent::write_intent(record.layout.run_root(), &intent)
+        crate::signed_intent::write_intent(record.layout.owner_run_root(), &intent)
             .expect("persist signed intent");
 
         let cancellation = CancellationToken::new();
         let daemon = tokio::spawn(run_supervisord_inner(
             fleet_root.clone(),
             cancellation.clone(),
-            None,
+            /*production_grant_verifier*/ None,
+            /*local_host_policy*/ None,
         ));
         let client =
             crate::SupervisordClient::new(registry.layout().supervisor_socket().to_path_buf())
@@ -1706,9 +1998,13 @@ mod tests {
             match client.health().await {
                 Ok(health) => break health,
                 Err(error) => {
+                    if daemon.is_finished() {
+                        let startup = daemon.await.expect("join failed recovery startup");
+                        panic!("recovery daemon exited before binding: {startup:?}");
+                    }
                     assert!(
                         Instant::now() < deadline,
-                        "recovery daemon did not bind a reachable socket: {error}"
+                        "recovery daemon did not bind a reachable socket while startup remained pending: {error}"
                     );
                     tokio::time::sleep(Duration::from_millis(10)).await;
                 }
@@ -1755,3 +2051,7 @@ mod tests {
 #[cfg(all(test, not(unix)))]
 #[path = "daemon_platform_tests.rs"]
 mod platform_tests;
+
+#[cfg(all(test, unix))]
+#[path = "daemon_shutdown_tests.rs"]
+mod shutdown_tests;

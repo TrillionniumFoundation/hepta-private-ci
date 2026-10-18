@@ -1,10 +1,13 @@
 """Behavioral coverage for changing module sets through existing consumers."""
 
 import copy
+import contextlib
+import io
 import importlib.util
 import json
 from pathlib import Path
 import unittest
+from unittest import mock
 
 from hepta_module_catalog import (
     covers_module_ids,
@@ -31,6 +34,12 @@ class ModuleCatalogTests(unittest.TestCase):
             ]
         ]
         self.cns = load_script("hepta-cns")
+        self.cns_modules = [
+            row["module"]
+            for row in json.loads((ROOT / "docs/readiness/READINESS.json").read_text())[
+                "moduleBindings"
+            ]
+        ]
         self.architecture = json.loads(
             (ROOT / "docs/cns/CNS_ARCHITECTURE.json").read_text()
         )
@@ -82,45 +91,90 @@ class ModuleCatalogTests(unittest.TestCase):
         self.assertFalse(has_module_count(2, ["a.b"]))
 
     def test_actual_cns_binding_consumer_accepts_added_then_retired_module(self):
+        modules = self.cns_modules
         architecture = copy.deepcopy(self.architecture)
         organs, refs = architecture["organs"], architecture["qualificationReferences"]
         organs[0]["moduleBindings"].append("extension.optional")
         registered, _ = self.cns.validate_module_bindings(
-            organs, self.modules + ["extension.optional"], refs
+            organs, modules + ["extension.optional"], refs
         )
         self.assertIn("extension.optional", registered)
         organs[0]["moduleBindings"].remove("extension.optional")
-        registered, _ = self.cns.validate_module_bindings(organs, self.modules, refs)
-        self.assertEqual(registered, set(self.modules))
-        removed = self.modules[-1]
+        registered, _ = self.cns.validate_module_bindings(organs, modules, refs)
+        self.assertEqual(registered, set(modules))
+        removed = modules[-1]
         for organ in organs:
             organ["moduleBindings"] = [
                 mid for mid in organ["moduleBindings"] if mid != removed
             ]
-        registered, _ = self.cns.validate_module_bindings(
-            organs, self.modules[:-1], refs
-        )
+        registered, _ = self.cns.validate_module_bindings(organs, modules[:-1], refs)
         self.assertNotIn(removed, registered)
 
+    def test_cns_verifier_accepts_reordered_objects_not_unknown_fields(self):
+        original_load = self.cns.load
+
+        def load(path):
+            value = original_load(path)
+            if path == self.cns.ARCH_PATH:
+                for key in ("organs", "qualificationReferences"):
+                    value[key] = [
+                        dict(reversed(list(row.items()))) for row in value[key]
+                    ]
+            return value
+
+        with mock.patch.object(self.cns, "load", side_effect=load):
+            with contextlib.redirect_stdout(io.StringIO()):
+                self.assertEqual(self.cns.verify(), 0)
+
+        for key in ("organs", "qualificationReferences"):
+            for extra in (False, True):
+                with self.subTest(key=key, extra=extra):
+
+                    def invalid_load(path):
+                        value = load(path)
+                        if path == self.cns.ARCH_PATH:
+                            row = value[key][0]
+                            if extra:
+                                row["unexpected_field"] = False
+                            else:
+                                del row[
+                                    "scope"
+                                    if key == "qualificationReferences"
+                                    else "function"
+                                ]
+                        return value
+
+                    with mock.patch.object(self.cns, "load", side_effect=invalid_load):
+                        with self.assertRaises(SystemExit):
+                            self.cns.verify()
+
+    def test_reordered_qualification_reference_cannot_claim_production_scope(self):
+        refs = [
+            dict(reversed(list(row.items())))
+            for row in self.architecture["qualificationReferences"]
+        ]
+        refs[0]["scope"] = "production"
+        with self.assertRaisesRegex(SystemExit, "qualification reference posture"):
+            self.cns.validate_module_bindings(
+                self.architecture["organs"], self.cns_modules, refs
+            )
+
     def test_actual_cns_consumer_rejects_dangling_and_unbound_changes(self):
+        modules = self.cns_modules
         organs, refs = (
             self.architecture["organs"],
             self.architecture["qualificationReferences"],
         )
         with self.assertRaises(SystemExit):
             self.cns.validate_module_bindings(
-                organs, self.modules + ["extension.optional"], refs
+                organs, modules + ["extension.optional"], refs
             )
         with self.assertRaises(SystemExit):
-            self.cns.validate_module_bindings(organs, self.modules[:-1], refs)
+            self.cns.validate_module_bindings(organs, modules[:-1], refs)
         with self.assertRaises(SystemExit):
-            self.cns.validate_module_bindings(
-                organs, self.modules + [self.modules[0]], refs
-            )
+            self.cns.validate_module_bindings(organs, modules + [modules[0]], refs)
         with self.assertRaises(SystemExit):
-            self.cns.validate_module_bindings(
-                organs, self.modules + [refs[0]["id"]], refs
-            )
+            self.cns.validate_module_bindings(organs, modules + [refs[0]["id"]], refs)
 
 
 if __name__ == "__main__":

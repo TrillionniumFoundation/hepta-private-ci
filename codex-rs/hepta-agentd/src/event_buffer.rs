@@ -64,7 +64,7 @@ impl EventBuffer {
 
 #[cfg(test)]
 mod tests {
-    use codex_hepta_fleet::AgentLifecycle;
+    use codex_hepta_agent_components::fleet::AgentLifecycle;
 
     use super::*;
 

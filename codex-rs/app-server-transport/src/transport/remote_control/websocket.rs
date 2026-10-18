@@ -29,15 +29,17 @@ use crate::transport::remote_control::enroll::preview_remote_control_response_bo
 use crate::transport::remote_control::enroll::update_persisted_remote_control_enrollment;
 use crate::transport::remote_control::host_device::REMOTE_CONTROL_HOST_DEVICE_KIND_HEADER;
 use crate::transport::remote_control::host_device::host_device_kind;
-use crate::transport::remote_control::server_api::enroll_remote_control_server;
-use crate::transport::remote_control::server_api::refresh_remote_control_server;
+use crate::transport::remote_control::server_api::enroll_remote_control_server_with_client;
+use crate::transport::remote_control::server_api::refresh_remote_control_server_with_client;
 use axum::http::HeaderValue;
 use base64::Engine;
 use codex_app_server_protocol::RemoteControlConnectionStatus;
 use codex_app_server_protocol::RemoteControlStatusChangedNotification;
 use codex_core::util::backoff;
+use codex_http_client::HttpClient;
 use codex_login::AuthManager;
 use codex_login::UnauthorizedRecovery;
+use codex_login::default_client::create_client_without_request_logging;
 use codex_state::StateRuntime;
 use codex_utils_rustls_provider::ensure_rustls_crypto_provider;
 use futures::SinkExt;
@@ -254,6 +256,7 @@ impl WebsocketState {
 }
 
 pub(crate) struct RemoteControlWebsocket {
+    http_client: HttpClient,
     remote_control_url: String,
     installation_id: String,
     server_name: String,
@@ -391,6 +394,7 @@ impl RemoteControlStatusPublisher {
 
 #[derive(Clone, Copy)]
 pub(super) struct RemoteControlConnectOptions<'a> {
+    http_client: &'a HttpClient,
     installation_id: &'a str,
     server_name: &'a str,
     subscribe_cursor: Option<&'a str>,
@@ -421,6 +425,9 @@ impl RemoteControlWebsocket {
 
         let desired_state_rx = desired_state_tx.subscribe();
         Self {
+            // Transport configuration is fixed for this websocket instance.
+            // Authorization headers are still loaded for every enrollment or refresh.
+            http_client: create_client_without_request_logging(),
             remote_control_url: config.remote_control_url,
             installation_id: config.installation_id,
             server_name: config.server_name,
@@ -716,6 +723,7 @@ impl RemoteControlWebsocket {
                 "connecting to app-server remote control websocket"
             );
             let connect_options = RemoteControlConnectOptions {
+                http_client: &self.http_client,
                 installation_id: &self.installation_id,
                 server_name: &self.server_name,
                 subscribe_cursor: subscribe_cursor.as_deref(),
@@ -1553,8 +1561,13 @@ async fn prepare_remote_control_enrollment(
         let enrollment_ref = enrollment.as_mut().ok_or_else(|| {
             io::Error::other("missing remote control enrollment before server refresh")
         })?;
-        match refresh_remote_control_server(&auth, connect_options.installation_id, enrollment_ref)
-            .await
+        match refresh_remote_control_server_with_client(
+            connect_options.http_client,
+            &auth,
+            connect_options.installation_id,
+            enrollment_ref,
+        )
+        .await
         {
             Ok(()) => {}
             Err(err) if err.kind() == ErrorKind::NotFound => {
@@ -1735,7 +1748,8 @@ async fn enroll_and_persist_remote_control_server(
         remote_control_target.enroll_url,
         auth_context.auth.account_id
     );
-    let new_enrollment = match enroll_remote_control_server(
+    let new_enrollment = match enroll_remote_control_server_with_client(
+        connect_options.http_client,
         remote_control_target,
         auth_context.auth,
         connect_options.installation_id,
@@ -2111,6 +2125,7 @@ mod tests {
             },
             &current_enrollment,
             RemoteControlConnectOptions {
+                http_client: &create_client_without_request_logging(),
                 installation_id: TEST_INSTALLATION_ID,
                 server_name: "test-server",
                 subscribe_cursor: None,
@@ -2178,6 +2193,7 @@ mod tests {
             },
             &current_enrollment,
             RemoteControlConnectOptions {
+                http_client: &create_client_without_request_logging(),
                 installation_id: TEST_INSTALLATION_ID,
                 server_name: "test-server",
                 subscribe_cursor: None,
@@ -2268,6 +2284,7 @@ mod tests {
             },
             &current_enrollment,
             RemoteControlConnectOptions {
+                http_client: &create_client_without_request_logging(),
                 installation_id: TEST_INSTALLATION_ID,
                 server_name: "test-server",
                 subscribe_cursor: None,
@@ -2372,6 +2389,7 @@ mod tests {
             },
             &current_enrollment,
             RemoteControlConnectOptions {
+                http_client: &create_client_without_request_logging(),
                 installation_id: TEST_INSTALLATION_ID,
                 server_name: "test-server",
                 subscribe_cursor: None,
@@ -2440,6 +2458,7 @@ mod tests {
             },
             &current_enrollment,
             RemoteControlConnectOptions {
+                http_client: &create_client_without_request_logging(),
                 installation_id: TEST_INSTALLATION_ID,
                 server_name: "test-server",
                 subscribe_cursor: None,
@@ -2495,6 +2514,7 @@ mod tests {
             },
             &current_enrollment,
             RemoteControlConnectOptions {
+                http_client: &create_client_without_request_logging(),
                 installation_id: TEST_INSTALLATION_ID,
                 server_name: "test-server",
                 subscribe_cursor: None,

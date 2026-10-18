@@ -29,7 +29,9 @@ pub use generation::KnowledgeRelationResultV2;
 pub use generation::KnowledgeSupportV2;
 pub use generation::MAX_KNOWLEDGE_EDGES_V2;
 pub use generation::MAX_KNOWLEDGE_NODES_V2;
+pub use generation::MAX_KNOWLEDGE_SUPPORTS_V2;
 pub use generation::MAX_SUPPORTS_PER_RELATION_V2;
+pub use generation::ValidatedKnowledgeGenerationV2;
 pub use generation::apply_incremental_delta;
 pub use generation::build_complete_generation;
 pub use generation::publish_generation;
@@ -126,6 +128,10 @@ fn push_id(bytes: &mut Vec<u8>, value: &StableId) {
     bytes.extend_from_slice(&u32::try_from(raw.len()).unwrap_or(u32::MAX).to_be_bytes());
     bytes.extend_from_slice(raw);
 }
+
+#[cfg(test)]
+#[path = "prompt_factor_tests.rs"]
+mod prompt_factor_tests;
 
 #[cfg(test)]
 #[path = "lib_tests.rs"]

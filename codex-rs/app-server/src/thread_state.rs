@@ -31,6 +31,11 @@ use tokio::sync::oneshot;
 use tokio::sync::watch;
 use tracing::error;
 
+#[path = "thread_ephemeral_retention.rs"]
+mod ephemeral_retention;
+use ephemeral_retention::EphemeralRetentionState;
+use ephemeral_retention::RetentionCapacity;
+
 type PendingInterruptQueue = Vec<ConnectionRequestId>;
 
 pub(crate) struct PendingThreadResumeRequest {
@@ -295,6 +300,7 @@ struct ThreadEntry {
     state: Arc<Mutex<ThreadState>>,
     connection_ids: HashSet<ConnectionId>,
     has_connections_watcher: watch::Sender<bool>,
+    ephemeral_retention: EphemeralRetentionState,
 }
 
 impl Default for ThreadEntry {
@@ -303,6 +309,7 @@ impl Default for ThreadEntry {
             state: Arc::new(Mutex::new(ThreadState::default())),
             connection_ids: HashSet::new(),
             has_connections_watcher: watch::channel(false).0,
+            ephemeral_retention: EphemeralRetentionState::default(),
         }
     }
 }
@@ -332,6 +339,7 @@ pub(crate) struct ConnectionCapabilities {
 #[derive(Clone, Default)]
 pub(crate) struct ThreadStateManager {
     state: Arc<Mutex<ThreadStateManagerInner>>,
+    ephemeral_retention_capacity: RetentionCapacity,
     // Extension event sinks are synchronous, so they need an await-free way to
     // enqueue work on the active per-thread listener.
     listener_commands:

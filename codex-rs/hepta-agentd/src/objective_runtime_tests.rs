@@ -1,7 +1,7 @@
 use std::fs::OpenOptions;
 
-use codex_hepta_learning_ledger::RunStartAdmissionBindingV1;
-use codex_hepta_learning_ledger::RunStartSnapshotV1;
+use codex_hepta_agent_components::learning_ledger::RunStartAdmissionBindingV1;
+use codex_hepta_agent_components::learning_ledger::RunStartSnapshotV1;
 use tempfile::TempDir;
 
 use super::*;
@@ -14,6 +14,82 @@ fn digest(value: &str) -> Digest32 {
 
 fn id(value: &str) -> StableId {
     StableId::new(value).expect("stable id")
+}
+
+#[test]
+fn ordinary_sender_uses_original_v1_preimage_and_rejects_mutated_subject_body_and_time() {
+    use codex_hepta_agent_components::contracts::AgentId;
+    use ed25519_dalek::Signer;
+    use ed25519_dalek::SigningKey;
+    let agent = AgentId::parse("018f4f72-5f8f-7cc1-8f55-df9fb3aa2c12").unwrap();
+    let request = AuthBusObjectiveIngress {
+        issuer_id: "root.readonly-public-facts".into(),
+        key_epoch: 1,
+        message_id: "message:original-goal".into(),
+        sequence: 1,
+        expires_at_ms: 300_000,
+        signature_hex: String::new(),
+        body: AuthBusObjectiveBody {
+            spawn_generation: 7,
+            run_id: "run:original-goal".into(),
+            objective_revision: 1,
+            source_envelope_json: "{}".into(),
+            runtime_body_digest: digest("body").to_string(),
+            preference_state_digest: digest("preferences").to_string(),
+            model_tuple_digest: digest("model").to_string(),
+            prompt_registry_digest: digest("prompts").to_string(),
+            artifact_set_digest: digest("artifacts").to_string(),
+            authority_epoch: 1,
+        },
+    };
+    let payload = serde_json::to_vec(&request.body).unwrap();
+    let actual = objective_ingress_signing_claims_v1(&agent, &request).unwrap();
+    assert_eq!(
+        actual,
+        objective_claims_for_subject(&agent, &request, &payload).unwrap()
+    );
+    let key = SigningKey::from_bytes(&[83; 32]);
+    let signature = key.sign(&actual.signing_bytes());
+    key.verifying_key()
+        .verify_strict(&actual.signing_bytes(), &signature)
+        .unwrap();
+    let other = AgentId::parse("018f4f72-5f8f-7cc1-8f55-df9fb3aa2c13").unwrap();
+    assert!(
+        key.verifying_key()
+            .verify_strict(
+                &objective_ingress_signing_claims_v1(&other, &request)
+                    .unwrap()
+                    .signing_bytes(),
+                &signature
+            )
+            .is_err()
+    );
+    let mut changed = request.clone();
+    changed.body.artifact_set_digest = digest("different CURRENT payloads").to_string();
+    assert!(
+        key.verifying_key()
+            .verify_strict(
+                &objective_ingress_signing_claims_v1(&agent, &changed)
+                    .unwrap()
+                    .signing_bytes(),
+                &signature
+            )
+            .is_err()
+    );
+    changed = request;
+    changed.expires_at_ms += 1;
+    assert!(
+        key.verifying_key()
+            .verify_strict(
+                &objective_ingress_signing_claims_v1(&agent, &changed)
+                    .unwrap()
+                    .signing_bytes(),
+                &signature
+            )
+            .is_err()
+    );
+    changed.body.source_envelope_json = "x".repeat(PRODUCT_SOURCE_JSON_BYTES + 1);
+    assert!(objective_ingress_signing_claims_v1(&agent, &changed).is_err());
 }
 
 fn record(
@@ -42,7 +118,7 @@ fn record(
             admitted_source_digest: digest(&format!("source:{run_id}")),
             observed_at_unix_micros: 1_000_000,
             deadline_unix_micros: 100_000_000,
-            authority: codex_hepta_types::AuthorityPosture::DENY_ALL,
+            authority: codex_hepta_agent_components::types::AuthorityPosture::DENY_ALL,
         },
         disposition,
         snapshot: RunStartSnapshotV1 {
@@ -156,13 +232,13 @@ fn legacy_record_without_protocol_identity_is_rejected_at_final_use() {
 fn recovered_authentication_rejects_revoked_and_stale_owner_trust() {
     use std::os::unix::fs::PermissionsExt;
 
-    use codex_hepta_authbus::SignedMessageClaims;
-    use codex_hepta_contracts::AgentId;
-    use codex_hepta_fleet::AgentManifest;
-    use codex_hepta_fleet::FleetRegistry;
-    use codex_hepta_fleet::ResourceBudget;
-    use codex_hepta_fleet::WorkspaceBinding;
-    use codex_hepta_paths::HeptaFleetRoot;
+    use codex_hepta_agent_components::authbus::SignedMessageClaims;
+    use codex_hepta_agent_components::contracts::AgentId;
+    use codex_hepta_agent_components::fleet::AgentManifest;
+    use codex_hepta_agent_components::fleet::FleetRegistry;
+    use codex_hepta_agent_components::fleet::ResourceBudget;
+    use codex_hepta_agent_components::fleet::WorkspaceBinding;
+    use codex_hepta_agent_components::paths::HeptaFleetRoot;
     use ed25519_dalek::Signer;
     use ed25519_dalek::SigningKey;
 
@@ -226,7 +302,7 @@ fn recovered_authentication_rejects_revoked_and_stale_owner_trust() {
     let mut durable = record("run.trust", 21, RunStartObjectiveDispositionV1::Compiled);
     let claims = SignedMessageClaims {
         issuer_id: id("issuer.objective"),
-        key_epoch: codex_hepta_types::Generation::new(1).expect("epoch"),
+        key_epoch: codex_hepta_agent_components::types::Generation::new(1).expect("epoch"),
         message_id: id("message.run.trust"),
         subject_id: StableId::new(identity.agent_id.as_str()).expect("subject"),
         scope_digest: objective_scope(&identity),

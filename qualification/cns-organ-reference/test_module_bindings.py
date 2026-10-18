@@ -16,16 +16,16 @@ SPEC.loader.exec_module(VERIFIER)
 class ModuleBindingClosedWorldTests(unittest.TestCase):
     def setUp(self):
         architecture = json.loads((ROOT / VERIFIER.ARCH_PATH).read_text())
-        modules = json.loads((ROOT / "docs/modules/MODULES.json").read_text())["modules"]
+        bindings = json.loads((ROOT / "docs/readiness/READINESS.json").read_text())["moduleBindings"]
         self.organs = architecture["organs"]
-        self.module_ids = {row["id"] for row in modules}
+        self.module_ids = {row["module"] for row in bindings}
         self.references = architecture["qualificationReferences"]
 
-    def test_real_registry_projects_all_modules_and_reference_only_binding(self):
+    def test_historical_overlay_projects_its_modules_and_reference_only_binding(self):
         registered, references = VERIFIER.validate_module_bindings(
             self.organs, self.module_ids, self.references
         )
-        self.assertEqual(len(registered), 40)
+        self.assertEqual(registered, self.module_ids)
         self.assertEqual(references, {"hnmf.reference"})
 
     def test_unknown_binding_is_rejected(self):

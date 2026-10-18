@@ -12,16 +12,24 @@ fn digest(character: char) -> String {
 fn event(
     id: EventId,
     episode_id: u64,
-    modalities: &[hnmf_reference::ModalityKind],
+    modalities: &[hnmf_reference::ReferenceModalityKind],
     keys: &[&str],
-) -> MemoryEvent {
-    MemoryEvent {
+) -> ReferenceEventFeatures {
+    ReferenceEventFeatures {
         id,
         episode_id,
+        canonical_event_id: codex_hepta_cognitive_types::hnmf::ContractIdV1::new(format!(
+            "event.{id}"
+        ))
+        .unwrap(),
+        canonical_episode_id: codex_hepta_cognitive_types::hnmf::ContractIdV1::new(format!(
+            "episode.{episode_id}"
+        ))
+        .unwrap(),
         modalities: set(modalities.iter().copied()),
         semantic_keys: set(keys.iter().map(|value| (*value).to_string())),
         source_sha256: set([digest(char::from_digit(id as u32 % 6 + 10, 16).unwrap())]),
-        privacy: hnmf_reference::PrivacyClass::AgentPrivate,
+        privacy: hnmf_reference::ReferencePrivacyClass::AgentPrivate,
         valid_from_unix_ms: 1,
         valid_to_unix_ms: None,
         utility_ppm: 100_000,
@@ -32,12 +40,12 @@ fn event(
 
 fn node(
     id: NodeId,
-    population: EngramPopulation,
-    modalities: &[hnmf_reference::ModalityKind],
+    population: ReferenceEngramPopulation,
+    modalities: &[hnmf_reference::ReferenceModalityKind],
     keys: &[&str],
     support_events: &[EventId],
-) -> EngramNode {
-    EngramNode {
+) -> ReferenceEngramState {
+    ReferenceEngramState {
         id,
         population,
         modalities: set(modalities.iter().copied()),
@@ -53,10 +61,10 @@ fn node(
 fn synapse(
     source: NodeId,
     target: NodeId,
-    relation: SynapseRelation,
+    relation: ReferenceSynapseRelation,
     support_events: &[EventId],
-) -> Synapse {
-    Synapse {
+) -> ReferenceSynapseState {
+    ReferenceSynapseState {
         source,
         target,
         relation,
@@ -67,9 +75,9 @@ fn synapse(
     }
 }
 
-fn cue(keys: &[&str]) -> MemoryCue {
-    MemoryCue {
-        modalities: set([hnmf_reference::ModalityKind::Text]),
+fn cue(keys: &[&str]) -> ReferenceCueFeatures {
+    ReferenceCueFeatures {
+        modalities: set([hnmf_reference::ReferenceModalityKind::Text]),
         semantic_keys: set(keys.iter().map(|value| (*value).to_string())),
         seed_nodes: BTreeSet::new(),
         now_unix_ms: 10,
@@ -77,13 +85,17 @@ fn cue(keys: &[&str]) -> MemoryCue {
 }
 
 fn fabric() -> HardenedFabric {
-    let mut fabric =
-        HardenedFabric::new(7, FabricConfig::default(), HardeningConfig::default()).unwrap();
+    let mut fabric = HardenedFabric::new(
+        7,
+        ReferenceFabricConfig::default(),
+        HardeningConfig::default(),
+    )
+    .unwrap();
     fabric
         .insert_event(event(
             1,
             1,
-            &[hnmf_reference::ModalityKind::Text],
+            &[hnmf_reference::ReferenceModalityKind::Text],
             &["door"],
         ))
         .unwrap();
@@ -91,15 +103,15 @@ fn fabric() -> HardenedFabric {
         .insert_event(event(
             2,
             2,
-            &[hnmf_reference::ModalityKind::Audio],
+            &[hnmf_reference::ReferenceModalityKind::Audio],
             &["alarm"],
         ))
         .unwrap();
     fabric
         .insert_node(node(
             1,
-            EngramPopulation::SensoryTrace,
-            &[hnmf_reference::ModalityKind::Text],
+            ReferenceEngramPopulation::SensoryTrace,
+            &[hnmf_reference::ReferenceModalityKind::Text],
             &["door"],
             &[1],
         ))
@@ -107,14 +119,19 @@ fn fabric() -> HardenedFabric {
     fabric
         .insert_node(node(
             2,
-            EngramPopulation::EpisodicBinding,
-            &[hnmf_reference::ModalityKind::Audio],
+            ReferenceEngramPopulation::EpisodicBinding,
+            &[hnmf_reference::ReferenceModalityKind::Audio],
             &["alarm"],
             &[2],
         ))
         .unwrap();
     fabric
-        .insert_synapse(synapse(1, 2, SynapseRelation::Associative, &[1, 2]))
+        .insert_synapse(synapse(
+            1,
+            2,
+            ReferenceSynapseRelation::Associative,
+            &[1, 2],
+        ))
         .unwrap();
     fabric
 }
@@ -135,7 +152,7 @@ fn forged_recall_packet_cannot_drive_plasticity() {
     assert_eq!(
         fabric.propose_plasticity(
             &packet,
-            OutcomeSignal {
+            ReferenceOutcomeFeatures {
                 utility_delta_ppm: 100_000,
                 prediction_error_ppm: 100_000,
                 novelty_ppm: 100_000,
@@ -156,7 +173,7 @@ fn forged_plasticity_batch_cannot_create_snapshot() {
     let mut candidate = fabric
         .propose_plasticity(
             &packet,
-            OutcomeSignal {
+            ReferenceOutcomeFeatures {
                 utility_delta_ppm: 400_000,
                 prediction_error_ppm: 500_000,
                 novelty_ppm: 100_000,
@@ -181,7 +198,7 @@ fn exact_plasticity_creates_next_generation_only() {
     let candidate = fabric
         .propose_plasticity(
             &packet,
-            OutcomeSignal {
+            ReferenceOutcomeFeatures {
                 utility_delta_ppm: 400_000,
                 prediction_error_ppm: 500_000,
                 novelty_ppm: 100_000,
@@ -222,7 +239,7 @@ fn forget_prevents_cross_event_resurrection() {
 
 #[test]
 fn replay_rejects_duplicate_event_ids() {
-    let candidate = ReplayCandidate {
+    let candidate = ReferenceReplayCandidate {
         event_id: 1,
         source_bucket: 1,
         expected_utility_gain_ppm: 900_000,
@@ -248,12 +265,12 @@ fn storage_and_query_candidate_bounds_are_distinct() {
         maximum_candidate_events: 1,
         ..HardeningConfig::default()
     };
-    let mut fabric = HardenedFabric::new(1, FabricConfig::default(), hardening).unwrap();
+    let mut fabric = HardenedFabric::new(1, ReferenceFabricConfig::default(), hardening).unwrap();
     fabric
         .insert_event(event(
             1,
             1,
-            &[hnmf_reference::ModalityKind::Text],
+            &[hnmf_reference::ReferenceModalityKind::Text],
             &["alpha"],
         ))
         .unwrap();
@@ -261,7 +278,7 @@ fn storage_and_query_candidate_bounds_are_distinct() {
         .insert_event(event(
             2,
             2,
-            &[hnmf_reference::ModalityKind::Text],
+            &[hnmf_reference::ReferenceModalityKind::Text],
             &["beta"],
         ))
         .unwrap();
@@ -269,7 +286,7 @@ fn storage_and_query_candidate_bounds_are_distinct() {
         fabric.insert_event(event(
             3,
             3,
-            &[hnmf_reference::ModalityKind::Text],
+            &[hnmf_reference::ReferenceModalityKind::Text],
             &["gamma"],
         )),
         Err(HardeningError::BoundExceeded("stored events"))
@@ -280,7 +297,7 @@ fn storage_and_query_candidate_bounds_are_distinct() {
 fn generation_overflow_fails_closed() {
     let mut fabric = HardenedFabric::new(
         u64::MAX,
-        FabricConfig::default(),
+        ReferenceFabricConfig::default(),
         HardeningConfig::default(),
     )
     .unwrap();
@@ -288,7 +305,7 @@ fn generation_overflow_fails_closed() {
         .insert_event(event(
             1,
             1,
-            &[hnmf_reference::ModalityKind::Text],
+            &[hnmf_reference::ReferenceModalityKind::Text],
             &["alpha"],
         ))
         .unwrap();
@@ -319,13 +336,17 @@ fn activation_paths_reference_only_final_active_nodes() {
 #[test]
 fn insertion_order_is_deterministic() {
     let first = fabric();
-    let mut second =
-        HardenedFabric::new(7, FabricConfig::default(), HardeningConfig::default()).unwrap();
+    let mut second = HardenedFabric::new(
+        7,
+        ReferenceFabricConfig::default(),
+        HardeningConfig::default(),
+    )
+    .unwrap();
     second
         .insert_event(event(
             2,
             2,
-            &[hnmf_reference::ModalityKind::Audio],
+            &[hnmf_reference::ReferenceModalityKind::Audio],
             &["alarm"],
         ))
         .unwrap();
@@ -333,15 +354,15 @@ fn insertion_order_is_deterministic() {
         .insert_event(event(
             1,
             1,
-            &[hnmf_reference::ModalityKind::Text],
+            &[hnmf_reference::ReferenceModalityKind::Text],
             &["door"],
         ))
         .unwrap();
     second
         .insert_node(node(
             2,
-            EngramPopulation::EpisodicBinding,
-            &[hnmf_reference::ModalityKind::Audio],
+            ReferenceEngramPopulation::EpisodicBinding,
+            &[hnmf_reference::ReferenceModalityKind::Audio],
             &["alarm"],
             &[2],
         ))
@@ -349,14 +370,19 @@ fn insertion_order_is_deterministic() {
     second
         .insert_node(node(
             1,
-            EngramPopulation::SensoryTrace,
-            &[hnmf_reference::ModalityKind::Text],
+            ReferenceEngramPopulation::SensoryTrace,
+            &[hnmf_reference::ReferenceModalityKind::Text],
             &["door"],
             &[1],
         ))
         .unwrap();
     second
-        .insert_synapse(synapse(1, 2, SynapseRelation::Associative, &[1, 2]))
+        .insert_synapse(synapse(
+            1,
+            2,
+            ReferenceSynapseRelation::Associative,
+            &[1, 2],
+        ))
         .unwrap();
     assert_eq!(
         first.recall(&cue(&["door"])).unwrap(),

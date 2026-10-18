@@ -1,0 +1,22 @@
+[package]
+edition.workspace = true
+license.workspace = true
+name = "codex-hepta-app-bridge"
+version.workspace = true
+publish = false
+
+[lib]
+name = "codex_hepta_app_bridge"
+path = "src/lib.rs"
+doctest = false
+test = false
+
+[lints]
+workspace = true
+
+[dependencies]
+codex-hepta-evidence = { workspace = true }
+codex-hepta-governance = { workspace = true }
+codex-hepta-memory = { workspace = true }
+codex-hepta-memory-extension = { workspace = true }
+codex-hepta-prompt-extension = { workspace = true }

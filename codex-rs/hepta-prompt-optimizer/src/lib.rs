@@ -17,6 +17,7 @@ use codex_hepta_types::StableId;
 pub mod canonical;
 mod graph;
 pub mod local_shadow;
+pub mod policy;
 
 pub use graph::GraphBoundPromptPortfolioReceipt;
 pub use graph::optimize_with_factor_graph;
@@ -299,6 +300,10 @@ fn push_id(bytes: &mut Vec<u8>, value: &StableId) {
     bytes.extend_from_slice(&u32::try_from(raw.len()).unwrap_or(u32::MAX).to_be_bytes());
     bytes.extend_from_slice(raw);
 }
+
+#[cfg(test)]
+#[path = "graph_tests.rs"]
+mod graph_tests;
 
 #[cfg(test)]
 #[path = "lib_tests.rs"]

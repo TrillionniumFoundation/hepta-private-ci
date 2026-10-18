@@ -1,0 +1,132 @@
+{
+  "schema": "hepta.module-implementation-map.v3",
+  "schemaVersion": 3,
+  "sourceBase": {
+    "commit": "5c21bf39c67286545f473bf6e06cec9750c2652c",
+    "tree": "83d32789e77f3a31ef4b791e75adaea19d46cf08"
+  },
+  "laneId": null,
+  "module": "runtime.gateway",
+  "owner": "native-integration",
+  "deputy": "runtime-control",
+  "technicalGuide": "docs/modules/runtime.gateway/TECHNICAL.md",
+  "declaredRoots": [
+    "codex-rs/hepta-native-gateway"
+  ],
+  "resolvedRoots": [
+    "codex-rs/hepta-native-gateway"
+  ],
+  "sourceRootPresent": true,
+  "productionImplementation": false,
+  "productCallerState": "not_composed",
+  "productionWriterState": "not_applicable_no_domain_writer",
+  "operations": [
+    {
+      "operation": "serve_native_gateway",
+      "nativeSymbol": "pub async fn run_native_gateway(",
+      "sourcePath": "codex-rs/hepta-native-gateway/src/lib.rs",
+      "sourcePathExists": true,
+      "mappingClass": "owner_native",
+      "sourceSemantics": "Binds a loopback listener, protected read capability and bounded HTTP ingress to the existing runtime source.",
+      "authority": "delegated_existing_owner",
+      "tests": [
+        {
+          "path": "codex-rs/hepta-native-gateway/src/lib.rs",
+          "kind": "native_unit",
+          "command": "just test -p codex-hepta-native-gateway --lib"
+        }
+      ],
+      "designOperation": "serve_native_gateway",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "forward_lifecycle_request",
+      "nativeSymbol": "pub(super) async fn route(",
+      "sourcePath": "codex-rs/hepta-native-gateway/src/lifecycle_source.rs",
+      "sourcePathExists": true,
+      "mappingClass": "owner_native",
+      "sourceSemantics": "Validates the separate lifecycle MAC, original request identity, expiry and replay nonce, then forwards the unchanged typed request to Supervisor; transport loss returns indeterminate.",
+      "authority": "delegated_existing_owner",
+      "tests": [
+        {
+          "path": "codex-rs/hepta-native-gateway/src/lifecycle_source.rs",
+          "kind": "native_unit",
+          "command": "just test -p codex-hepta-native-gateway --lib"
+        }
+      ],
+      "designOperation": "forward_lifecycle_request",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "read_runtime_projection",
+      "nativeSymbol": "pub async fn serve(",
+      "sourcePath": "codex-rs/hepta-native-gateway/src/source.rs",
+      "sourcePathExists": true,
+      "mappingClass": "owner_native",
+      "sourceSemantics": "Reads the existing runtime projection and protected Supervisor observation without owning their stores.",
+      "authority": "delegated_existing_owner",
+      "tests": [
+        {
+          "path": "codex-rs/hepta-native-gateway/src/source.rs",
+          "kind": "native_unit",
+          "command": "just test -p codex-hepta-native-gateway --lib"
+        }
+      ],
+      "designOperation": "read_runtime_projection",
+      "delegatedCallees": []
+    }
+  ],
+  "repositoryControlledGaps": [
+    "The native desktop caller is present in source; qualify this exact integrated gateway binary and consumer against the actual Linux Supervisor before making an execution claim."
+  ],
+  "externalEvidenceGates": [],
+  "claimBoundary": {
+    "nativeSourceMappingComplete": false,
+    "sourceRootPresent": true,
+    "productionImplementation": false,
+    "productExecutionProved": false,
+    "independentAcceptance": false,
+    "activation": false,
+    "release": false,
+    "implementedOperationMappingComplete": true
+  },
+  "sourceMaturity": "native_composition_service",
+  "stateOwnerDisposition": "Owns bounded HTTP connections and nonce replay protection; runtime and Supervisor retain all durable owner facts.",
+  "terminalObserverDisposition": "Only an exact typed Supervisor response or original operation status can describe lifecycle terminality; transport loss remains indeterminate.",
+  "productCallers": [
+    {
+      "sourcePath": "apps/hepta-native/src/backend.rs",
+      "nativeSymbol": "fn runtime_status(",
+      "compositionState": "source_present_integrated_binary_qualification_pending"
+    }
+  ],
+  "sourceRoot": [
+    "codex-rs/hepta-native-gateway"
+  ],
+  "sourceObjects": [
+    {
+      "path": "apps/hepta-native/src/backend.rs",
+      "object": "0814e098a760baa958987af3337c470ab019161a"
+    },
+    {
+      "path": "codex-rs/hepta-native-gateway",
+      "object": "0c4b0613d025a2326ee2ba89111339aa60359992"
+    },
+    {
+      "path": "codex-rs/hepta-native-gateway/src/lib.rs",
+      "object": "56c61ce16ff5e2af22317c08c51730501966290d"
+    },
+    {
+      "path": "codex-rs/hepta-native-gateway/src/lifecycle_source.rs",
+      "object": "fd1b6f79bc0c1a872129cd81f13502a5ae9b872b"
+    },
+    {
+      "path": "codex-rs/hepta-native-gateway/src/source.rs",
+      "object": "9a7514015cef9ba99cc2a671e7049b1e59c6f7ee"
+    },
+    {
+      "path": "docs/modules/runtime.gateway/TECHNICAL.md",
+      "object": "80bb119aa1922863eb9dde59e03954e14b10883e"
+    }
+  ]
+}

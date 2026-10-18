@@ -299,7 +299,8 @@ fn repeated_executable_add_and_retire_fences_every_previous_generation() {
     for epoch in 2..=130 {
         let feature = epoch % 2 == 0;
         let previous = host.generation();
-        replace(&registry, &mut host, epoch, feature, "reverse").expect("same lifecycle entry point");
+        replace(&registry, &mut host, epoch, feature, "reverse")
+            .expect("same lifecycle entry point");
         assert_eq!(host.statuses().len(), if feature { 41 } else { 40 });
         assert_fenced(&mut host, previous);
         core_still_serves(&mut host);
@@ -320,7 +321,8 @@ fn factory_or_start_panic_never_replaces_the_serving_generation() {
     let registry = registry();
     let mut host = live_host(&registry, false);
     for driver in ["factory-panic", "start-panic"] {
-        let error = replace(&registry, &mut host, 2, true, driver).expect_err("candidate must fail");
+        let error =
+            replace(&registry, &mut host, 2, true, driver).expect_err("candidate must fail");
         match driver {
             "factory-panic" => {
                 assert!(matches!(error, OrganHandlerRegistryError::Factory { .. }));
@@ -346,9 +348,9 @@ fn port_digest_and_stale_generation_reject_before_factory_execution() {
     next.organs[40].inputs = vec![id("incompatible.v2")];
     assert!(matches!(
         registry.replace_host(&mut host, generation(1), next, &selected),
-        Err(OrganHandlerRegistryError::Runtime(OrganRuntimeError::Graph(
-            _
-        )))
+        Err(OrganHandlerRegistryError::Runtime(
+            OrganRuntimeError::Graph(_)
+        ))
     ));
     let next = graph(2, true);
     let mut selected = bindings(&next, "factory-panic");

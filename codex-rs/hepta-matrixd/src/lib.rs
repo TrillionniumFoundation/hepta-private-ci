@@ -702,6 +702,21 @@ pub struct ConnectedMatrixAppServer {
 pub async fn connect_via_agentd(
     args: MatrixAgentdConnectArgs,
 ) -> Result<ConnectedMatrixAppServer, MatrixBridgeError> {
+    connect_agent_session(args, "hepta-matrixd").await
+}
+
+async fn connect_agent_session(
+    args: MatrixAgentdConnectArgs,
+    client_name: &str,
+) -> Result<ConnectedMatrixAppServer, MatrixBridgeError> {
+    connect_agent_session_with_peer(args, client_name, None).await
+}
+
+async fn connect_agent_session_with_peer(
+    args: MatrixAgentdConnectArgs,
+    client_name: &str,
+    expected_peer: Option<(u32, u32)>,
+) -> Result<ConnectedMatrixAppServer, MatrixBridgeError> {
     if args.client_version.is_empty()
         || args.command_channel_capacity == 0
         || args.event_channel_capacity == 0
@@ -711,13 +726,29 @@ pub async fn connect_via_agentd(
                 .to_string(),
         ));
     }
-    let agentd = AgentdClient::new(
+    let mut agentd = AgentdClient::new(
         args.agentd_control_socket,
         args.agent_id.clone(),
         args.spawn_generation,
     )?;
+    if let Some((uid, pid)) = expected_peer {
+        #[cfg(unix)]
+        {
+            agentd = agentd.with_peer_process(uid, pid)?;
+        }
+        #[cfg(not(unix))]
+        {
+            let _ = (uid, pid);
+            return Err(MatrixBridgeError::Invalid(
+                "pinned local process identity is unavailable".into(),
+            ));
+        }
+    }
     let health = agentd.health().await?;
-    if !health.ready || health.fenced {
+    if !health.ready
+        || health.fenced
+        || expected_peer.is_some_and(|(_, pid)| health.process_id != pid)
+    {
         return Err(MatrixBridgeError::Invalid(
             "matrixd cannot attach to an unready or fenced agentd generation".to_string(),
         ));
@@ -729,19 +760,40 @@ pub async fn connect_via_agentd(
         ));
     }
     let socket_path = AbsolutePathBuf::from_absolute_path(&ingress.socket_path)?;
-    let client = RemoteAppServerClient::connect_with_bounded_events(
-        RemoteAppServerConnectArgs {
-            endpoint: RemoteAppServerEndpoint::UnixSocket { socket_path },
-            client_name: "hepta-matrixd".to_string(),
-            client_version: args.client_version,
-            experimental_api: true,
-            mcp_server_openai_form_elicitation: false,
-            opt_out_notification_methods: Vec::new(),
-            channel_capacity: args.command_channel_capacity,
-        },
-        args.event_channel_capacity,
-    )
-    .await?;
+    let connect_args = RemoteAppServerConnectArgs {
+        endpoint: RemoteAppServerEndpoint::UnixSocket { socket_path },
+        client_name: client_name.to_string(),
+        client_version: args.client_version,
+        experimental_api: true,
+        mcp_server_openai_form_elicitation: false,
+        opt_out_notification_methods: Vec::new(),
+        channel_capacity: args.command_channel_capacity,
+    };
+    let client = if let Some((uid, pid)) = expected_peer {
+        #[cfg(unix)]
+        {
+            RemoteAppServerClient::connect_with_bounded_events_for_peer(
+                connect_args,
+                args.event_channel_capacity,
+                uid,
+                pid,
+            )
+            .await?
+        }
+        #[cfg(not(unix))]
+        {
+            let _ = (uid, pid);
+            return Err(MatrixBridgeError::Invalid(
+                "pinned local process identity is unavailable".into(),
+            ));
+        }
+    } else {
+        RemoteAppServerClient::connect_with_bounded_events(
+            connect_args,
+            args.event_channel_capacity,
+        )
+        .await?
+    };
     let expected_home = health.home_root.to_string_lossy();
     if client.codex_home() != Some(expected_home.as_ref()) {
         let actual = client.codex_home().unwrap_or("<missing>").to_string();
@@ -1132,3 +1184,6 @@ pub enum MatrixBridgeError {
 
 #[cfg(test)]
 mod tests;
+
+/// Generic UI conversations, separate from Matrix message ingress and Hepta execution plans.
+pub mod chat;

@@ -1,5 +1,6 @@
 //! Validation and deterministic arithmetic for one complete history boundary.
 
+use super::MAX_ABSOLUTE_Q_RETURN;
 use super::SCALE;
 use super::SequentialError;
 use super::SequentialEvidenceGap;
@@ -10,11 +11,20 @@ use crate::push_id;
 use codex_hepta_types::FixedQ32;
 use std::collections::BTreeSet;
 
+pub(super) struct ValidatedStep {
+    pub(super) ratio: i128,
+    pub(super) chosen_q: i128,
+    pub(super) value: i128,
+    pub(super) reward: i128,
+    pub(super) behavior: i128,
+    pub(super) evaluation: i128,
+}
+
 pub(super) fn validate_step(
     plan: &SequentialPlan,
     step: &TrajectoryStep,
     bytes: &mut Vec<u8>,
-) -> Result<(i128, i128, i128, i128), SequentialError> {
+) -> Result<ValidatedStep, SequentialError> {
     if !step.complete_actions {
         return insufficient(SequentialEvidenceGap::IncompleteActions);
     }
@@ -64,7 +74,7 @@ pub(super) fn validate_step(
         {
             return insufficient(SequentialEvidenceGap::WeightLimit);
         }
-        if q.abs() > 129 * SCALE {
+        if q.abs() > MAX_ABSOLUTE_Q_RETURN {
             return Err(SequentialError::InvalidValue);
         }
         behavior_sum += behavior;
@@ -91,11 +101,26 @@ pub(super) fn validate_step(
     if rho == 0 && evaluation != 0 {
         return insufficient(SequentialEvidenceGap::NumericResolution);
     }
-    Ok((rho, q, divide(direct_sum, SCALE)?, i128::from(reward.raw())))
+    Ok(ValidatedStep {
+        ratio: rho,
+        chosen_q: q,
+        value: divide(direct_sum, SCALE)?,
+        reward: i128::from(reward.raw()),
+        behavior,
+        evaluation,
+    })
 }
 
 pub(super) fn divide(numerator: i128, denominator: i128) -> Result<i128, SequentialError> {
     round_ratio(numerator, denominator).map_err(|_| SequentialError::Arithmetic)
+}
+pub(super) fn divide_upper(numerator: i128, denominator: i128) -> Result<i128, SequentialError> {
+    if numerator < 0 || denominator <= 0 {
+        return Err(SequentialError::Arithmetic);
+    }
+    (numerator / denominator)
+        .checked_add(i128::from(numerator % denominator != 0))
+        .ok_or(SequentialError::Arithmetic)
 }
 pub(super) fn multiply(left: i128, right: i128) -> Result<i128, SequentialError> {
     divide(

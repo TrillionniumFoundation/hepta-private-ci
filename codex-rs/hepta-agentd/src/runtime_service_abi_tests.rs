@@ -5,12 +5,12 @@ use std::sync::atomic::AtomicBool;
 use std::sync::atomic::Ordering;
 use std::time::Duration;
 
-use codex_hepta_control_plane::ActiveRuntimeModuleV1;
-use codex_hepta_control_plane::RuntimeModuleAbiV1;
-use codex_hepta_control_plane::RuntimeModuleStateClassV1;
-use codex_hepta_types::Digest32;
-use codex_hepta_types::Generation;
-use codex_hepta_types::StableId;
+use codex_hepta_agent_components::control_plane::ActiveRuntimeModuleV1;
+use codex_hepta_agent_components::control_plane::RuntimeModuleAbiV1;
+use codex_hepta_agent_components::control_plane::RuntimeModuleStateClassV1;
+use codex_hepta_agent_components::types::Digest32;
+use codex_hepta_agent_components::types::Generation;
+use codex_hepta_agent_components::types::StableId;
 use tokio_util::sync::CancellationToken;
 
 use crate::RuntimeTasks;

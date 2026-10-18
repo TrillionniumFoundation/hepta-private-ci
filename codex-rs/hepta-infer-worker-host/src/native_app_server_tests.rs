@@ -46,7 +46,12 @@ fn observe_for_test(
     notification: ServerNotification,
 ) -> std::result::Result<bool, String> {
     let binding = binding();
-    observe_event(output, &observed(notification), &binding)
+    observe_event(
+        output,
+        &mut ObservedAgentMessages::default(),
+        &observed(notification),
+        &binding,
+    )
 }
 
 fn output() -> NativeRunOutput {
@@ -161,6 +166,58 @@ fn only_the_bound_turn_can_complete_the_native_request() {
 }
 
 #[test]
+fn observed_terminal_summary_fills_absent_deltas_without_duplication_or_overflow() {
+    let summary = |text: String| {
+        let mut notification = terminal("thread-a", "turn-a", TurnStatus::Completed);
+        if let ServerNotification::TurnCompleted(completed) = &mut notification {
+            completed.turn.items_view = TurnItemsView::Summary;
+            completed.turn.items.push(ThreadItem::AgentMessage {
+                id: "message-a".into(),
+                text,
+                phase: None,
+                memory_citation: None,
+                delivery: None,
+            });
+        }
+        notification
+    };
+    let mut completed = output();
+    assert!(observe_for_test(&mut completed, summary("final answer".into())).unwrap());
+    assert_eq!(completed.output, "final answer");
+    assert!(completed.terminal_observed);
+    assert!(
+        !completed.succeeded(),
+        "terminal text must not manufacture owner authority"
+    );
+
+    let mut streamed = output();
+    let mut messages = ObservedAgentMessages::default();
+    let binding = binding();
+    let delta = ServerNotification::AgentMessageDelta(AgentMessageDeltaNotification {
+        thread_id: streamed.thread_id.clone(),
+        turn_id: streamed.turn_id.clone(),
+        item_id: "message-a".into(),
+        delta: "already observed".into(),
+    });
+    observe_event(&mut streamed, &mut messages, &observed(delta), &binding).unwrap();
+    assert!(
+        observe_event(
+            &mut streamed,
+            &mut messages,
+            &observed(summary("already observed".into())),
+            &binding,
+        )
+        .unwrap()
+    );
+    assert_eq!(streamed.output, "already observed");
+
+    let mut bounded = output();
+    assert!(observe_for_test(&mut bounded, summary("x".repeat(MAX_OUTPUT_BYTES + 1))).is_err());
+    assert!(bounded.output.is_empty());
+    assert!(!bounded.terminal_observed);
+}
+
+#[test]
 fn output_is_observed_bounded_and_never_predeclares_success() {
     let mut output = output();
     let delta = |thread: &str, text: String| {
@@ -171,13 +228,16 @@ fn output_is_observed_bounded_and_never_predeclares_success() {
             delta: text,
         })
     };
-    observe_for_test(&mut output, delta("unrelated", "discard".to_string())).unwrap();
-    observe_for_test(&mut output, delta("thread-a", "model output".to_string())).unwrap();
+    let mut messages = ObservedAgentMessages::default();
+    let binding = binding();
+    let mut observe = |output: &mut NativeRunOutput, notification| {
+        observe_event(output, &mut messages, &observed(notification), &binding)
+    };
+    observe(&mut output, delta("unrelated", "discard".to_string())).unwrap();
+    observe(&mut output, delta("thread-a", "model output".to_string())).unwrap();
     assert_eq!(output.output, "model output");
     assert_eq!(output.status, NativeRunStatus::Indeterminate);
-    assert!(
-        observe_for_test(&mut output, delta("thread-a", "x".repeat(MAX_OUTPUT_BYTES))).is_err()
-    );
+    assert!(observe(&mut output, delta("thread-a", "x".repeat(MAX_OUTPUT_BYTES))).is_err());
     assert_eq!(output.output, "model output");
     assert!(!output.terminal_observed);
 }
@@ -397,25 +457,9 @@ async fn success_requires_both_matching_completion_and_final_ready_owner() {
     assert!(!output.succeeded());
 }
 
-#[test]
-fn cognitive_final_use_revalidation_follows_durable_dispatch_and_precedes_turn_start() {
-    let source = include_str!("native_app_server.rs");
-    let durable_dispatch = source
-        .find("control.dispatch_native_with_pre_effect_abort(")
-        .expect("durable native dispatch");
-    let revalidation = source
-        .find("owner.revalidate_cognitive_context(snapshot).await")
-        .expect("final-use cognitive revalidation");
-    let turn_start = source
-        .find("client.request_typed::<TurnStartResponse>(ClientRequest::TurnStart")
-        .expect("physical turn start");
-    let durable_stop = source
-        .find("control.abort_native_before_effect(")
-        .expect("durable pre-turn stop");
-    assert!(durable_dispatch < revalidation);
-    assert!(revalidation < turn_start);
-    assert!(durable_stop < turn_start);
-}
+// Ordering is exercised by the real driver below: durable dispatch survives
+// restart, final-use tombstone/correction rejects before a second provider send.
+// Source spelling is not a substitute for these observations.
 
 #[cfg(unix)]
 #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
@@ -450,8 +494,14 @@ async fn real_agentd_worker_accepts_fresh_context_and_rejects_final_use_tombston
     let nonce = SystemTime::now().duration_since(UNIX_EPOCH)?.as_nanos();
     let root = std::env::temp_dir().join(format!("hepta-cognitive-worker-e2e-{nonce}"));
     let agent_id = codex_hepta_contracts::AgentId::parse(AGENT_ID)?;
-    let host =
-        CognitiveTestHost::start(root, agent_id, MODEL, &format!("{}/v1", server.uri())).await?;
+    let host = CognitiveTestHost::start(
+        root,
+        agent_id,
+        MODEL,
+        &format!("{}/v1", server.uri()),
+        codex_utils_cargo_bin::cargo_bin("codex-hepta-agentd")?,
+    )
+    .await?;
     let _accepted_memory = host
         .seed_verified_memory("worker-final-use-accept", ACCEPT_MEMORY)
         .await?;
@@ -636,16 +686,13 @@ async fn real_agentd_worker_accepts_fresh_context_and_rejects_final_use_tombston
     );
 
     drop(durable);
-    let reopened = DurableInferenceControl::open(&journal, 8)?;
-    assert_eq!(
-        reopened.native_record(ACCEPT_REQUEST_ID),
-        Some(&accepted_record)
-    );
-    assert_eq!(reopened.native_record(RACE_REQUEST_ID), Some(&stopped));
-    assert_eq!(
-        reopened.native_record(CORRECTION_REQUEST_ID),
-        Some(&correction_stopped)
-    );
+    let mut reopened = DurableInferenceControl::open(&journal, 8)?;
+    for original in [accepted_record, stopped, correction_stopped] {
+        assert_eq!(
+            reopened.reserve_native(original.request.clone(), /*maximum_in_flight*/ 1)?,
+            original
+        );
+    }
     drop(reopened);
     let _ = std::fs::remove_file(&journal);
     issuer.await??;
@@ -764,3 +811,6 @@ fn final_use_fence_rejects_owner_ingress_cancel_and_deadline_drift() {
         .is_err()
     );
 }
+
+#[path = "native_output_messages_tests.rs"]
+mod output_message_tests;

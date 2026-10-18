@@ -405,8 +405,33 @@ async fn repo_ancestry_without_project_marker_does_not_walk_parents() {
     let cwd = outer.join("nested/inner");
     fs::create_dir_all(outer.join(".agents/skills")).expect("create outer skills");
     fs::create_dir_all(cwd.join(".agents/skills")).expect("create cwd skills");
+    // Temporary directories can have a real repository marker in an ancestor.
+    // Keep the marker walk enabled with an absent marker specific to this fixture.
+    let project_marker = format!(
+        ".skills-project-marker-{}",
+        temp_dir
+            .path()
+            .file_name()
+            .expect("temporary directory name")
+            .to_string_lossy()
+    );
+    assert!(
+        cwd.as_path()
+            .ancestors()
+            .all(|ancestor| !ancestor.join(&project_marker).exists())
+    );
+    let config_stack = stack(vec![ConfigLayerEntry::new(
+        ConfigLayerSource::User {
+            file: outer.join("config.toml"),
+            profile: None,
+        },
+        toml::toml! {
+            project_root_markers = [project_marker]
+        }
+        .into(),
+    )]);
 
-    let roots = repo_agents_skill_roots(Some(Arc::clone(&LOCAL_FS)), &stack(Vec::new()), &cwd)
+    let roots = repo_agents_skill_roots(Some(Arc::clone(&LOCAL_FS)), &config_stack, &cwd)
         .await
         .into_iter()
         .map(|root| root.path)

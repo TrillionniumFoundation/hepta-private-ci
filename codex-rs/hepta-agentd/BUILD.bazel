@@ -1,21 +1,38 @@
 load("@crates//:defs.bzl", "all_crate_deps")
 load("@rules_rust//rust:defs.bzl", "rust_binary", "rust_library", "rust_test")
 load("//:defs.bzl", "WINDOWS_RUSTC_LINK_FLAGS", "codex_rust_crate", "workspace_root_test")
+load("//bazel/rules/testing:hepta_product_binary.bzl", "hepta_product_binary")
 load("//bazel/rules/testing:rust_test_dependencies.bzl", "rust_test_dependencies")
 
 _UNIT_TEST_DEPENDENCIES = {
-    "//codex-rs/hepta-bellman-operator": "//codex-rs/hepta-bellman-operator:hepta-bellman-operator-test-lib",
-    "//codex-rs/hepta-intelligence": "//codex-rs/hepta-intelligence:hepta-intelligence-test-lib",
-    "//codex-rs/hepta-intelligence-eval": "//codex-rs/hepta-intelligence-eval:hepta-intelligence-eval-test-lib",
-    "//codex-rs/hepta-learning-ledger": "//codex-rs/hepta-learning-ledger:hepta-learning-ledger-qualification-lib",
-    "//codex-rs/hepta-prompt-optimizer": "//codex-rs/hepta-prompt-optimizer:hepta-prompt-optimizer-test-lib",
+    "//codex-rs/hepta-infer-worker-host": "//codex-rs/hepta-infer-worker-host:hepta-infer-worker-host-test-lib",
+    "//codex-rs/hepta-supervisor": "//codex-rs/hepta-supervisor:hepta-supervisor-test-lib",
+    "//codex-rs/hepta-agent-components": "//codex-rs/hepta-agent-components:hepta-agent-components-test-lib",
 }
 
 codex_rust_crate(
     name = "hepta-agentd",
+    compile_data = ["//codex-rs/hepta-intelligence-eval:selected_host_shared_fixture_sources"],
+    crate_features = [
+        "server",
+        "production-cognitive-write",
+    ],
     crate_name = "codex_hepta_agentd",
+    integration_binary_overrides = {"codex-hepta-agentd": ":hepta-agentd-product"},
+    integration_compile_data_extra = [
+        "//codex-rs/hepta-automation:migration_test_inputs",
+        "//codex-rs/hepta-control-plane:src/organ_runtime_test_support.rs",
+    ],
     integration_test_timeout = "long",
+    product_integration_tests = ["module_selection_product"],
     unit_test_dependency_replacements = _UNIT_TEST_DEPENDENCIES,
+)
+
+# Ordinary production features and the complete optimized dependency closure.
+hepta_product_binary(
+    name = "hepta-agentd-product",
+    binary = ":codex-hepta-agentd",
+    visibility = ["//visibility:public"],
 )
 
 # Compile the local writer qualification separately from the default product
@@ -25,7 +42,12 @@ rust_library(
     name = "hepta-agentd-cognitive-write-qualification-lib",
     testonly = True,
     srcs = glob(["src/**/*.rs"]),
-    crate_features = ["qualification-cognitive-write"],
+    compile_data = ["//codex-rs/hepta-intelligence-eval:selected_host_shared_fixture_sources"],
+    crate_features = [
+        "server",
+        "production-cognitive-write",
+        "qualification-cognitive-write",
+    ],
     crate_name = "codex_hepta_agentd",
     crate_root = "src/lib.rs",
     edition = "2024",
@@ -36,7 +58,11 @@ rust_library(
 rust_test(
     name = "hepta-agentd-cognitive-write-qualification-test-bin",
     crate = ":hepta-agentd-cognitive-write-qualification-lib",
-    crate_features = ["qualification-cognitive-write"],
+    crate_features = [
+        "server",
+        "production-cognitive-write",
+        "qualification-cognitive-write",
+    ],
     rustc_flags = WINDOWS_RUSTC_LINK_FLAGS + [
         "--remap-path-prefix=../codex-rs=",
         "--remap-path-prefix=codex-rs=",
@@ -68,7 +94,11 @@ rust_binary(
     name = "hepta-agentd-cognitive-product-qualification-bin",
     testonly = True,
     srcs = glob(["src/**/*.rs"]),
-    crate_features = ["qualification-cognitive-write"],
+    crate_features = [
+        "server",
+        "production-cognitive-write",
+        "qualification-cognitive-write",
+    ],
     crate_name = "codex_hepta_agentd",
     crate_root = "src/main.rs",
     edition = "2024",
@@ -88,7 +118,12 @@ rust_binary(
 rust_test(
     name = "hepta-agentd-cognitive-product-qualification-test-bin",
     srcs = ["tests/cognitive_product_e2e.rs"] + glob(["tests/support/**/*.rs"]),
-    crate_features = ["qualification-cognitive-write"],
+    compile_data = ["//codex-rs/hepta-automation:migration_test_inputs"],
+    crate_features = [
+        "server",
+        "production-cognitive-write",
+        "qualification-cognitive-write",
+    ],
     crate_name = "cognitive_product_e2e",
     crate_root = "tests/cognitive_product_e2e.rs",
     data = glob(["tests/support/**"]),

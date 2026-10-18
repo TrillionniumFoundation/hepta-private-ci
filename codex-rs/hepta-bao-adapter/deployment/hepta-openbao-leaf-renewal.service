@@ -1,0 +1,20 @@
+[Unit]
+Description=Renew the existing pinned local OpenBao server leaf
+After=hepta-openbao-private-ci.service
+Requires=hepta-openbao-private-ci.service
+
+[Service]
+Type=oneshot
+User=root
+Group=root
+ExecStart=/usr/libexec/hepta/hepta-renew-openbao-leaf --config /etc/hepta-openbao-private-ci/tls-renewal.json
+UMask=0077
+TimeoutStartSec=90s
+NoNewPrivileges=yes
+ProtectSystem=strict
+ProtectHome=yes
+PrivateTmp=yes
+ReadWritePaths=/var/lib/hepta-bao-provider/tls
+RestrictAddressFamilies=AF_UNIX AF_INET AF_INET6
+IPAddressDeny=any
+IPAddressAllow=localhost

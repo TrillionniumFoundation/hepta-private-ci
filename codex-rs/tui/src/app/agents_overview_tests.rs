@@ -415,6 +415,7 @@ async fn root_switch_preserves_idle_root_with_running_subagent() -> Result<()> {
         .request_typed(ClientRequest::ThreadUnsubscribe {
             request_id: RequestId::String("verify-root-subscription".to_string()),
             params: ThreadUnsubscribeParams {
+                ephemeral_disposal: None,
                 thread_id: previous_root_id.to_string(),
             },
         })

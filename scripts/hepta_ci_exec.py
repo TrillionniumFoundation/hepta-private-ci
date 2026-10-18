@@ -53,6 +53,24 @@ def observed_test_counts(text: str) -> tuple[int, int]:
             for value in re.findall(r"(\d+) (?:failed|timed out|leaked)", summary)
         )
         return int(passed[1]) if passed else 0, failed
+    pytest_fields = (
+        r"\d+ (?:passed|failed|skipped|deselected|xfailed|xpassed|errors?|warnings?)"
+    )
+    pytest = re.findall(
+        rf"(?m)^[ \t=]*({pytest_fields}(?:, {pytest_fields})*) in "
+        r"\d+(?:\.\d+)?s(?: \([^\n]*\))?[ \t=]*$",
+        text,
+    )
+    if pytest:
+        # The outer pytest footer owns its complete selection; do not add
+        # nested runner output or skipped/deselected/expected-failure cases.
+        fields = {
+            name: int(count)
+            for count, name in re.findall(r"(\d+) ([a-z]+)", pytest[-1])
+        }
+        return fields.get("passed", 0), sum(
+            fields.get(key, 0) for key in ("failed", "error", "errors", "xpassed")
+        )
     passed = failed = 0
     for match in re.finditer(
         r"test result: (?:ok|FAILED)\. (\d+) passed; (\d+) failed;", text

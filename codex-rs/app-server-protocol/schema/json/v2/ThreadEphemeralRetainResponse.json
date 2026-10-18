@@ -1,0 +1,28 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "description": "All bindings must match the request before a native caller may cross an effect boundary. Unsupported servers cannot provide this positive V1 ACK.",
+  "properties": {
+    "operationId": {
+      "type": "string"
+    },
+    "protocolVersion": {
+      "format": "uint32",
+      "minimum": 0.0,
+      "type": "integer"
+    },
+    "sessionId": {
+      "type": "string"
+    },
+    "threadId": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "operationId",
+    "protocolVersion",
+    "sessionId",
+    "threadId"
+  ],
+  "title": "ThreadEphemeralRetainResponse",
+  "type": "object"
+}

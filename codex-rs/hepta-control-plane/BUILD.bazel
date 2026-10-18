@@ -17,3 +17,8 @@ rust_binary(
         "//codex-rs/hepta-types",
     ],
 )
+
+exports_files(
+    ["src/organ_runtime_test_support.rs"],
+    visibility = ["//codex-rs/hepta-agentd:__pkg__"],
+)

@@ -69,6 +69,7 @@ pub(crate) struct StartReservation {
 /// failed closed without signalling this fence).
 pub(crate) struct StartTransitionCompletion {
     done: AtomicBool,
+    admission_released: AtomicBool,
     notify: Notify,
 }
 
@@ -76,6 +77,7 @@ impl StartTransitionCompletion {
     pub(crate) fn new() -> Arc<Self> {
         Arc::new(Self {
             done: AtomicBool::new(false),
+            admission_released: AtomicBool::new(false),
             notify: Notify::new(),
         })
     }
@@ -90,6 +92,20 @@ impl StartTransitionCompletion {
 
     pub(crate) fn is_complete(&self) -> bool {
         self.done.load(std::sync::atomic::Ordering::Acquire)
+    }
+
+    /// A terminal owner may admit its successor once terminal persistence and
+    /// recovery publication have finished, while shutdown still waits for
+    /// this exact owner's notification and idle callbacks. An aborted start
+    /// transition uses the same split after its identity-fenced active clear.
+    pub(crate) fn release_admission(&self) {
+        self.admission_released
+            .store(true, std::sync::atomic::Ordering::Release);
+    }
+
+    pub(crate) fn admission_released(&self) -> bool {
+        self.admission_released
+            .load(std::sync::atomic::Ordering::Acquire)
     }
 
     pub(crate) async fn wait(&self) {

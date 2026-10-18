@@ -1,15 +1,15 @@
-use codex_hepta_contracts::AgentId;
-use codex_hepta_memory::CognitiveAccess;
-use codex_hepta_memory::CognitiveScope;
-use codex_hepta_memory::CognitiveStore;
-use codex_hepta_memory::ForgetMemoryDraft;
-use codex_hepta_memory::LedgerSourceKind;
-use codex_hepta_memory::MemoryDraft;
-use codex_hepta_memory::MemoryLifecycleState;
-use codex_hepta_memory::MemoryRevisionDraft;
-use codex_hepta_memory::MemoryVerification;
-use codex_hepta_memory::SourceDraft;
-use codex_hepta_paths::HeptaFleetRoot;
+use codex_hepta_agent_components::contracts::AgentId;
+use codex_hepta_agent_components::memory::CognitiveAccess;
+use codex_hepta_agent_components::memory::CognitiveScope;
+use codex_hepta_agent_components::memory::CognitiveStore;
+use codex_hepta_agent_components::memory::ForgetMemoryDraft;
+use codex_hepta_agent_components::memory::LedgerSourceKind;
+use codex_hepta_agent_components::memory::MemoryDraft;
+use codex_hepta_agent_components::memory::MemoryLifecycleState;
+use codex_hepta_agent_components::memory::MemoryRevisionDraft;
+use codex_hepta_agent_components::memory::MemoryVerification;
+use codex_hepta_agent_components::memory::SourceDraft;
+use codex_hepta_agent_components::paths::HeptaFleetRoot;
 
 use super::read;
 use super::revalidate;
@@ -20,7 +20,7 @@ mod budget;
 #[test]
 fn encoded_read_budget_unavailability_is_local_not_store_failure() {
     let error = super::map_read_ids_error(
-        codex_hepta_cognitive_read::ReadIdsError::EncodedResultTooLarge {
+        codex_hepta_agent_components::cognitive_read::ReadIdsError::EncodedResultTooLarge {
             actual: 9,
             maximum: 8,
         },

@@ -43,13 +43,23 @@ use crate::signed_intent::SignedSupervisorIntent;
 use crate::signed_intent::read_intent;
 use crate::signed_intent::write_intent;
 
+#[path = "recovery_denial.rs"]
+mod recovery_denial;
+
 /// Lifecycle-only controller with one process handle and bounded buffers per agent.
 pub struct Supervisor<D: ProcessDriver> {
     pub(crate) registry: FleetRegistry,
     pub(crate) driver: D,
     pub(crate) config: SupervisorConfig,
     slots: BTreeMap<AgentId, AgentSlot<D::Process>>,
+    tick_records: Option<tick_registry_observation::TickRegistryObservation>,
 }
+
+#[path = "tick_registry_observation.rs"]
+mod tick_registry_observation;
+
+#[path = "agent_registration.rs"]
+mod agent_registration;
 
 #[cfg(test)]
 #[path = "supervisor_tests.rs"]
@@ -75,28 +85,63 @@ impl<D: ProcessDriver> Supervisor<D> {
             driver,
             config,
             slots,
+            tick_records: None,
         };
         let mut report = TickReport::default();
         for (agent_id, record) in snapshot.agents {
             let result = supervisor.with_slot(&agent_id, |supervisor, slot| {
-                // Durable control state is safety-critical and must always be
-                // hydrated even when exact process adoption/revalidation
-                // reports a per-Agent fault. Otherwise an adoption error could
-                // hide a recovery-required signed intent or restart/release
-                // fence and incorrectly make the daemon appear ready.
-                supervisor.restore_release_state(&agent_id, slot, &record)?;
-                let process_fault = supervisor.recover_slot(&agent_id, slot, &record, now).err();
-                supervisor.recover_restart_budget(&agent_id, slot, now)?;
-                supervisor.recover_release_transaction(&agent_id, slot, now)?;
-                supervisor.recover_signed_intent(&agent_id, slot, &record)?;
-                Ok(process_fault)
+                let mut faults = supervisor.validate_durable_recovery(&agent_id, &record);
+                if let Err(error) = supervisor.restore_release_state(&agent_id, slot, &record) {
+                    faults.push(error);
+                }
+                if let Some(error) = faults.first() {
+                    // Deny semantic replay before acquisition, while leaving
+                    // both independent lease-bound adoption attempts enabled.
+                    slot.recovery_blocker = Some(bounded_message(error.to_string()));
+                }
+                // Even failed semantic preparation cannot skip independent
+                // lease-bound acquisition of main and Matrix ownership.
+                if let Err(error) = supervisor.recover_slot(&agent_id, slot, &record, now) {
+                    faults.push(error);
+                }
+                // A failed signal on an admitted, exact owned incarnation is
+                // a control retry, not corrupt durable recovery evidence.
+                // recover_slot marks all admission/hydration failures itself.
+                for restore in [
+                    Self::recover_restart_budget,
+                    Self::recover_release_transaction,
+                ] {
+                    if slot.recovery_blocker.is_some() {
+                        break;
+                    }
+                    if let Err(error) = restore(supervisor, &agent_id, slot, now) {
+                        if !Self::recovery_control_fault_is_retryable(slot, &error) {
+                            slot.recovery_blocker = Some(bounded_message(error.to_string()));
+                        }
+                        faults.push(error);
+                    }
+                }
+                // A retryable release Drain must not hide independent signed
+                // authority recovery. Its exact staged control remains owned.
+                if slot.recovery_blocker.is_none()
+                    && let Err(error) = supervisor.recover_signed_intent(&agent_id, slot, &record)
+                {
+                    slot.recovery_blocker = Some(bounded_message(error.to_string()));
+                    faults.push(error);
+                }
+                if slot.recovery_blocker.is_some()
+                    && let Some(error) = faults.first()
+                {
+                    supervisor.deny_failed_recovery(&agent_id, slot, error, now);
+                }
+                Ok(faults)
             });
             match result {
-                Ok(Some(error)) => supervisor.record_fault(&agent_id, &error, &mut report),
-                Ok(None) => {}
-                // Corrupt/unreadable durable restart, release or signed-intent
-                // state is not an ordinary process fault. Starting without
-                // those fences could widen mutation authority, so fail closed.
+                Ok(faults) => {
+                    for error in faults {
+                        supervisor.record_fault(&agent_id, &error, &mut report);
+                    }
+                }
                 Err(error) => return Err(error),
             }
         }
@@ -104,6 +149,15 @@ impl<D: ProcessDriver> Supervisor<D> {
     }
 
     pub fn snapshot(&self, agent_id: &AgentId) -> Option<AgentSupervisorSnapshot> {
+        let mut snapshot = self.metadata_snapshot(agent_id)?;
+        let slot = self.slots.get(agent_id)?;
+        snapshot.events = slot.events.items.iter().cloned().collect();
+        snapshot.logs = slot.logs.items.iter().cloned().collect();
+        Some(snapshot)
+    }
+
+    /// Observe control and ownership fields without copying diagnostic history.
+    pub(crate) fn metadata_snapshot(&self, agent_id: &AgentId) -> Option<AgentSupervisorSnapshot> {
         self.slots
             .get(agent_id)
             .map(|slot| AgentSupervisorSnapshot {
@@ -157,8 +211,8 @@ impl<D: ProcessDriver> Supervisor<D> {
                     restart_attempt: slot.matrix.restart_attempt,
                     last_error: slot.matrix.last_error.clone(),
                 },
-                events: slot.events.items.iter().cloned().collect(),
-                logs: slot.logs.items.iter().cloned().collect(),
+                events: Vec::new(),
+                logs: Vec::new(),
                 control_revision: slot.control_revision,
                 restart_pending: slot.restart_pending,
                 restart_attempt: slot.restart_attempt,
@@ -258,6 +312,7 @@ impl<D: ProcessDriver> Supervisor<D> {
 
     #[cfg(unix)]
     pub(crate) fn preflight_drain(&self, agent_id: &AgentId) -> Result<(), SupervisorError> {
+        self.ensure_mutation_admitted(agent_id)?;
         let record = self.record(agent_id)?;
         let slot = self
             .slots
@@ -288,6 +343,7 @@ impl<D: ProcessDriver> Supervisor<D> {
 
     #[cfg(unix)]
     pub(crate) fn preflight_start(&self, agent_id: &AgentId) -> Result<(), SupervisorError> {
+        self.ensure_mutation_admitted(agent_id)?;
         let record = self.record(agent_id)?;
         let slot = self
             .slots
@@ -296,7 +352,7 @@ impl<D: ProcessDriver> Supervisor<D> {
         if slot.runtime.is_some() {
             return Err(SupervisorError::AlreadyActive(agent_id.clone()));
         }
-        if crate::lease::read_lease(record.layout.run_root())?.is_some() {
+        if crate::lease::read_lease(record.layout.owner_run_root())?.is_some() {
             return Err(SupervisorError::UnresolvedLease(agent_id.clone()));
         }
         if !matches!(
@@ -334,9 +390,10 @@ impl<D: ProcessDriver> Supervisor<D> {
 
     #[cfg(unix)]
     pub(crate) fn preflight_restart(&self, agent_id: &AgentId) -> Result<(), SupervisorError> {
+        self.ensure_mutation_admitted(agent_id)?;
         let record = self.record(agent_id)?;
         let available = crate::restart_budget::restart_available(
-            record.layout.run_root(),
+            record.layout.owner_run_root(),
             self.config.restart_max_attempts,
             self.config.restart_window,
         )
@@ -364,7 +421,7 @@ impl<D: ProcessDriver> Supervisor<D> {
             }
             Some(_) => Ok(()),
             None => {
-                if crate::lease::read_lease(record.layout.run_root())?.is_some() {
+                if crate::lease::read_lease(record.layout.owner_run_root())?.is_some() {
                     return Err(SupervisorError::UnresolvedLease(agent_id.clone()));
                 }
                 if !matches!(
@@ -386,6 +443,7 @@ impl<D: ProcessDriver> Supervisor<D> {
         agent_id: &AgentId,
         target: &AgentRelease,
     ) -> Result<(), SupervisorError> {
+        self.ensure_mutation_admitted(agent_id)?;
         // Resolve again before consuming the caller's control revision so a
         // revoked/withdrawn predecessor remains a clean pre-dispatch rejection.
         let target = self.refresh_release_for_transition(agent_id, target)?;
@@ -433,6 +491,7 @@ impl<D: ProcessDriver> Supervisor<D> {
 
     #[cfg(unix)]
     pub(crate) fn preflight_rollback(&self, agent_id: &AgentId) -> Result<(), SupervisorError> {
+        self.ensure_mutation_admitted(agent_id)?;
         let slot = self
             .slots
             .get(agent_id)
@@ -454,6 +513,7 @@ impl<D: ProcessDriver> Supervisor<D> {
         command: AgentCommand,
         now: Instant,
     ) -> Result<(), SupervisorError> {
+        self.ensure_mutation_admitted(agent_id)?;
         self.with_slot(agent_id, |supervisor, slot| {
             supervisor.start_slot(agent_id, slot, command, now)
         })
@@ -465,18 +525,37 @@ impl<D: ProcessDriver> Supervisor<D> {
         release: AgentRelease,
         now: Instant,
     ) -> Result<(), SupervisorError> {
+        self.ensure_mutation_admitted(agent_id)?;
         self.with_slot(agent_id, |supervisor, slot| {
             supervisor.start_release_slot(agent_id, slot, release, now)
         })
     }
 
+    /// Only the daemon's same-request final-use byte proof can reach this path.
+    /// The public Start route retains its independent complete catalog read.
+    #[cfg(unix)]
+    pub(crate) fn start_release_from_read(
+        &mut self,
+        agent_id: &AgentId,
+        release: AgentRelease,
+        read: &codex_hepta_fleet::ReleaseReadPin,
+        now: Instant,
+    ) -> Result<(), SupervisorError> {
+        self.ensure_mutation_admitted(agent_id)?;
+        self.with_slot(agent_id, |supervisor, slot| {
+            supervisor.start_release_slot_with_read(agent_id, slot, release, now, Some(read))
+        })
+    }
+
     pub fn drain(&mut self, agent_id: &AgentId, now: Instant) -> Result<(), SupervisorError> {
+        self.ensure_mutation_admitted(agent_id)?;
         self.with_slot(agent_id, |supervisor, slot| {
             supervisor.drain_slot(agent_id, slot, now)
         })
     }
 
     pub fn stop(&mut self, agent_id: &AgentId, now: Instant) -> Result<(), SupervisorError> {
+        self.ensure_recovery_unblocked(agent_id)?;
         self.with_slot(agent_id, |supervisor, slot| {
             supervisor.stop_slot(agent_id, slot, now)
         })
@@ -489,6 +568,7 @@ impl<D: ProcessDriver> Supervisor<D> {
     }
 
     pub fn restart(&mut self, agent_id: &AgentId, now: Instant) -> Result<(), SupervisorError> {
+        self.ensure_mutation_admitted(agent_id)?;
         self.with_slot(agent_id, |supervisor, slot| {
             supervisor.restart_slot(agent_id, slot, now)
         })
@@ -500,6 +580,7 @@ impl<D: ProcessDriver> Supervisor<D> {
         target: AgentRelease,
         now: Instant,
     ) -> Result<(), SupervisorError> {
+        self.ensure_mutation_admitted(agent_id)?;
         self.with_slot(agent_id, |supervisor, slot| {
             supervisor.upgrade_slot(
                 agent_id, slot, target, now, /*explicit_rollback*/ false,
@@ -509,6 +590,7 @@ impl<D: ProcessDriver> Supervisor<D> {
     }
 
     pub fn rollback(&mut self, agent_id: &AgentId, now: Instant) -> Result<(), SupervisorError> {
+        self.ensure_mutation_admitted(agent_id)?;
         self.with_slot(agent_id, |supervisor, slot| {
             let target = slot
                 .previous_release
@@ -577,12 +659,11 @@ impl<D: ProcessDriver> Supervisor<D> {
                 )
                 .map_err(|error| SupervisorError::ProductionAuthority(error.to_string()))?;
             supervisor.preflight_upgrade(agent_id, &target)?;
-            if slot.signed_intent.as_ref().is_some_and(|intent| {
-                !matches!(
-                    intent.status,
-                    SignedIntentStatus::Committed | SignedIntentStatus::RolledBack
-                )
-            }) {
+            if slot
+                .signed_intent
+                .as_ref()
+                .is_some_and(|intent| !intent.status.terminal())
+            {
                 return Err(SupervisorError::SignedIntentRecoveryRequired(
                     agent_id.clone(),
                 ));
@@ -600,7 +681,7 @@ impl<D: ProcessDriver> Supervisor<D> {
                 SignedIntentStatus::Prepared,
             )
             .map_err(|error| SupervisorError::Invalid(error.to_string()))?;
-            write_intent(record.layout.run_root(), &intent)
+            write_intent(record.layout.owner_run_root(), &intent)
                 .map_err(|error| SupervisorError::Invalid(error.to_string()))?;
             Self::set_control_revision_for_slot(slot, next_control_revision)?;
             slot.signed_intent = Some(intent.clone());
@@ -616,14 +697,14 @@ impl<D: ProcessDriver> Supervisor<D> {
                 let recovery = intent
                     .with_status(SignedIntentStatus::RecoveryRequired)
                     .map_err(|error| SupervisorError::Invalid(error.to_string()))?;
-                let _ = write_intent(record.layout.run_root(), &recovery);
+                let _ = write_intent(record.layout.owner_run_root(), &recovery);
                 slot.signed_intent = Some(recovery);
                 return Err(error);
             }
             let queued = intent
                 .with_status(SignedIntentStatus::Queued)
                 .map_err(|error| SupervisorError::Invalid(error.to_string()))?;
-            write_intent(record.layout.run_root(), &queued)
+            write_intent(record.layout.owner_run_root(), &queued)
                 .map_err(|error| SupervisorError::Invalid(error.to_string()))?;
             slot.signed_intent = Some(queued);
             Ok(ProductionMutationReceipt::queued(
@@ -675,7 +756,7 @@ impl<D: ProcessDriver> Supervisor<D> {
             .with_status(terminal_status)
             .map_err(|error| SupervisorError::Invalid(error.to_string()))?;
         let record = self.record(agent_id)?;
-        write_intent(record.layout.run_root(), &terminal)
+        write_intent(record.layout.owner_run_root(), &terminal)
             .map_err(|error| SupervisorError::Invalid(error.to_string()))?;
         slot.signed_intent = Some(terminal);
         Ok(())
@@ -687,7 +768,7 @@ impl<D: ProcessDriver> Supervisor<D> {
         slot: &mut AgentSlot<D::Process>,
         record: &AgentRecord,
     ) -> Result<(), SupervisorError> {
-        let intent = read_intent(record.layout.run_root())
+        let intent = read_intent(record.layout.owner_run_root())
             .map_err(|error| SupervisorError::Invalid(error.to_string()))?;
         let Some(intent) = intent else {
             return Ok(());
@@ -698,10 +779,7 @@ impl<D: ProcessDriver> Supervisor<D> {
             ));
         }
         slot.signed_intent = Some(intent.clone());
-        if matches!(
-            intent.status,
-            SignedIntentStatus::Committed | SignedIntentStatus::RolledBack
-        ) {
+        if intent.status.terminal() {
             return Ok(());
         }
 
@@ -710,7 +788,7 @@ impl<D: ProcessDriver> Supervisor<D> {
         // the crash cut between terminal transaction publication and the
         // matching signed-intent update. Matching release state is required so
         // a detached or unrelated terminal journal cannot close the intent.
-        if let Some(transaction) = read_release_transaction(record.layout.run_root())
+        if let Some(transaction) = read_release_transaction(record.layout.owner_run_root())
             .map_err(|error| SupervisorError::Invalid(error.to_string()))?
         {
             let kind_matches = matches!(
@@ -765,7 +843,7 @@ impl<D: ProcessDriver> Supervisor<D> {
                 let terminal = intent
                     .with_status(status)
                     .map_err(|error| SupervisorError::Invalid(error.to_string()))?;
-                write_intent(record.layout.run_root(), &terminal)
+                write_intent(record.layout.owner_run_root(), &terminal)
                     .map_err(|error| SupervisorError::Invalid(error.to_string()))?;
                 slot.signed_intent = Some(terminal);
                 return Ok(());
@@ -782,7 +860,7 @@ impl<D: ProcessDriver> Supervisor<D> {
                 .with_status(SignedIntentStatus::RecoveryRequired)
                 .map_err(|error| SupervisorError::Invalid(error.to_string()))?
         };
-        write_intent(record.layout.run_root(), &recovery)
+        write_intent(record.layout.owner_run_root(), &recovery)
             .map_err(|error| SupervisorError::Invalid(error.to_string()))?;
         slot.signed_intent = Some(recovery);
 
@@ -823,18 +901,11 @@ impl<D: ProcessDriver> Supervisor<D> {
             .slots
             .get(agent_id)
             .ok_or_else(|| SupervisorError::UnknownAgent(agent_id.clone()))?;
-        Ok(slot
-            .signed_intent
-            .as_ref()
-            .is_some_and(|intent| intent.status == SignedIntentStatus::RecoveryRequired))
+        Ok(slot.has_recovery_denial())
     }
 
     pub fn any_production_recovery_required(&self) -> bool {
-        self.slots.values().any(|slot| {
-            slot.signed_intent
-                .as_ref()
-                .is_some_and(|intent| intent.status == SignedIntentStatus::RecoveryRequired)
-        })
+        self.slots.values().any(AgentSlot::has_recovery_denial)
     }
 
     pub fn release_selection_snapshot(
@@ -842,7 +913,7 @@ impl<D: ProcessDriver> Supervisor<D> {
         agent_id: &AgentId,
     ) -> Result<Option<DurableReleaseTransaction>, SupervisorError> {
         let record = self.record(agent_id)?;
-        read_release_transaction(record.layout.run_root())
+        read_release_transaction(record.layout.owner_run_root())
             .map_err(|error| SupervisorError::Invalid(error.to_string()))
     }
 
@@ -851,7 +922,7 @@ impl<D: ProcessDriver> Supervisor<D> {
         agent_id: &AgentId,
     ) -> Result<Option<ProductionMutationState>, SupervisorError> {
         let record = self.record(agent_id)?;
-        let Some(intent) = read_intent(record.layout.run_root())
+        let Some(intent) = read_intent(record.layout.owner_run_root())
             .map_err(|error| SupervisorError::Invalid(error.to_string()))?
         else {
             return Ok(None);
@@ -871,7 +942,7 @@ impl<D: ProcessDriver> Supervisor<D> {
             .expected_control_revision
             .checked_add(1)
             .ok_or_else(|| SupervisorError::Invalid("control revision overflow".to_string()))?;
-        let transaction = read_release_transaction(record.layout.run_root())
+        let transaction = read_release_transaction(record.layout.owner_run_root())
             .map_err(|error| SupervisorError::Invalid(error.to_string()))?;
         Ok(Some(ProductionMutationState {
             receipt: ProductionMutationReceipt {
@@ -904,7 +975,7 @@ impl<D: ProcessDriver> Supervisor<D> {
     ) -> Result<ProductionMutationReceipt, SupervisorError> {
         self.with_slot(agent_id, |supervisor, slot| {
             let record = supervisor.record(agent_id)?;
-            let intent = read_intent(record.layout.run_root())
+            let intent = read_intent(record.layout.owner_run_root())
                 .map_err(|error| SupervisorError::Invalid(error.to_string()))?
                 .ok_or_else(|| SupervisorError::SignedIntentRecoveryRequired(agent_id.clone()))?;
             if intent.status != SignedIntentStatus::RecoveryRequired {
@@ -912,7 +983,7 @@ impl<D: ProcessDriver> Supervisor<D> {
                     "production recovery requires a recovery_required signed intent".to_string(),
                 ));
             }
-            let transaction = read_release_transaction(record.layout.run_root())
+            let transaction = read_release_transaction(record.layout.owner_run_root())
                 .map_err(|error| SupervisorError::Invalid(error.to_string()))?
                 .ok_or_else(|| SupervisorError::SignedIntentRecoveryRequired(agent_id.clone()))?;
             if transaction.phase != ReleaseTransactionPhase::RecoveryRequired
@@ -1068,13 +1139,13 @@ impl<D: ProcessDriver> Supervisor<D> {
             let terminal_transaction = transaction
                 .with_recovery_resolution(terminal_phase, decision.digest().clone())
                 .map_err(|error| SupervisorError::Invalid(error.to_string()))?;
-            write_release_transaction(record.layout.run_root(), &terminal_transaction)
+            write_release_transaction(record.layout.owner_run_root(), &terminal_transaction)
                 .map_err(|error| SupervisorError::Invalid(error.to_string()))?;
             slot.release_transaction = Some(terminal_transaction);
             let terminal_intent = intent
                 .with_status(terminal_intent_status)
                 .map_err(|error| SupervisorError::Invalid(error.to_string()))?;
-            write_intent(record.layout.run_root(), &terminal_intent)
+            write_intent(record.layout.owner_run_root(), &terminal_intent)
                 .map_err(|error| SupervisorError::Invalid(error.to_string()))?;
             slot.signed_intent = Some(terminal_intent.clone());
 
@@ -1114,6 +1185,7 @@ impl<D: ProcessDriver> Supervisor<D> {
     }
 
     pub fn tick(&mut self, now: Instant) -> TickReport {
+        self.tick_records = Some(tick_registry_observation::TickRegistryObservation::Pending);
         let mut report = TickReport::default();
         let agent_ids: Vec<_> = self.slots.keys().cloned().collect();
         for agent_id in agent_ids {
@@ -1124,6 +1196,7 @@ impl<D: ProcessDriver> Supervisor<D> {
                 self.record_fault(&agent_id, &error, &mut report);
             }
         }
+        self.tick_records = None;
         report
     }
 

@@ -1,0 +1,24 @@
+[package]
+edition.workspace = true
+license.workspace = true
+name = "codex-hepta-app-host"
+version.workspace = true
+publish = false
+
+[lib]
+name = "codex_hepta_app_host"
+path = "src/lib.rs"
+doctest = false
+
+[lints]
+workspace = true
+
+[dependencies]
+codex-app-server = { workspace = true }
+codex-arg0 = { workspace = true }
+codex-config = { workspace = true }
+codex-features = { workspace = true }
+codex-hepta-app-bridge = { workspace = true }
+codex-protocol = { workspace = true }
+codex-utils-absolute-path = { workspace = true }
+codex-utils-cli = { workspace = true }

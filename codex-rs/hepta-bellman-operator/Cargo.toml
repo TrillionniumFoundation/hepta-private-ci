@@ -7,8 +7,14 @@ publish = false
 
 [lib]
 name = "codex_hepta_bellman_operator"
-path = "src/lib.rs"
-doctest = false
+path = "src/authoritative_lib.rs"
+doctest = true
+
+[features]
+default = []
+# Structural/raw compatibility surfaces are intentionally non-default. Product
+# code must use the opaque owner-bound final-use capabilities.
+qualification-unverified-input = []
 
 [lints]
 workspace = true

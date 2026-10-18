@@ -37,6 +37,7 @@ pub use delivery::MAX_REALIZATION_PAYLOAD_BYTES;
 pub use delivery::RealizationDeliveryV2;
 pub use durable::DurablePromptRegistry;
 pub use durable::DurableRegistryError;
+pub use durable::PromptRegistryRecoveryAnchor;
 pub use protocol::PromptFactorV1;
 pub use protocol::PromptRealizationV1;
 pub use protocol::ProtocolCodecError;
@@ -363,6 +364,13 @@ pub struct PromptRegistry {
 }
 
 impl PromptRegistry {
+    /// Snapshot of the canonical revision-one empty registry. This read-only
+    /// fact grants no admission and exposes no private registry mutation.
+    pub fn canonical_empty_snapshot_digest() -> Result<Digest32, Error> {
+        let registry = Self::new(/*maximum_records*/ 1)?;
+        Ok(registry.snapshot_digest())
+    }
+
     pub(crate) fn new(maximum_records: usize) -> Result<Self, Error> {
         if maximum_records == 0 {
             return Err(Error::ZeroCapacity);

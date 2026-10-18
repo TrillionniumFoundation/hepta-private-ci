@@ -8,19 +8,21 @@
 //! permissive default authority.
 
 use std::collections::BTreeSet;
+use std::fs::Metadata;
+use std::fs::OpenOptions;
 use std::io::Read;
 use std::path::PathBuf;
 
+use codex_hepta_agent_components::contracts::FinalUseAuthority;
+use codex_hepta_agent_components::contracts::FinalUseBinding;
+use codex_hepta_agent_components::contracts::FinalUseRevocations;
+use codex_hepta_agent_components::contracts::SignedFinalUseGrant;
 use codex_hepta_agentd::BrowserFinalUseInvocation;
 use codex_hepta_agentd::BrowserServoCall;
 use codex_hepta_agentd::BrowserServoMethod;
 use codex_hepta_agentd::BrowserServoPort;
 use codex_hepta_agentd::BrowserServoProcessConfig;
 use codex_hepta_agentd::ChildBrowserTransport;
-use codex_hepta_contracts::FinalUseAuthority;
-use codex_hepta_contracts::FinalUseBinding;
-use codex_hepta_contracts::FinalUseRevocations;
-use codex_hepta_contracts::SignedFinalUseGrant;
 use serde::Deserialize;
 use serde_json::Value;
 
@@ -147,14 +149,95 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
 }
 
 fn bounded_file(path: PathBuf, maximum: u64) -> Result<Vec<u8>, Box<dyn std::error::Error>> {
-    let mut bytes = Vec::new();
-    std::fs::File::open(&path)?
-        .take(maximum + 1)
-        .read_to_end(&mut bytes)?;
-    if bytes.len() as u64 > maximum {
-        return Err(format!("{} exceeds {maximum} bytes", path.display()).into());
+    ConfigFilePreflight::capture(path)?.read(maximum)
+}
+
+struct ConfigFilePreflight {
+    destination: PathBuf,
+    before: Metadata,
+}
+
+impl ConfigFilePreflight {
+    fn capture(path: PathBuf) -> Result<Self, Box<dyn std::error::Error>> {
+        // Preserve configured aliases by resolving them once, before opening.
+        let destination = path.canonicalize()?;
+        let before = std::fs::symlink_metadata(&destination)?;
+        if !before.is_file() || before.file_type().is_symlink() {
+            return Err("Browser host configuration must be a regular file".into());
+        }
+        Ok(Self {
+            destination,
+            before,
+        })
     }
-    Ok(bytes)
+
+    fn read(self, maximum: u64) -> Result<Vec<u8>, Box<dyn std::error::Error>> {
+        let limit = maximum
+            .checked_add(1)
+            .ok_or("Browser host configuration byte limit overflow")?;
+        let mut options = OpenOptions::new();
+        options.read(true);
+        #[cfg(unix)]
+        {
+            use std::os::unix::fs::OpenOptionsExt;
+            options.custom_flags(libc::O_NOFOLLOW | libc::O_NONBLOCK);
+        }
+        let mut file = options.open(&self.destination)?;
+        let opened = file.metadata()?;
+        if !opened.is_file() || !same_config_file_version(&self.before, &opened) {
+            return Err("Browser host configuration changed before opening".into());
+        }
+        let mut bytes = Vec::new();
+        (&mut file).take(limit).read_to_end(&mut bytes)?;
+        if bytes.len() as u64 > maximum {
+            return Err(format!("{} exceeds {maximum} bytes", self.destination.display()).into());
+        }
+        let after = std::fs::symlink_metadata(&self.destination)?;
+        if !after.is_file()
+            || after.file_type().is_symlink()
+            || !same_config_file_version(&self.before, &file.metadata()?)
+            || !same_config_file_version(&self.before, &after)
+        {
+            return Err("Browser host configuration changed while reading".into());
+        }
+        Ok(bytes)
+    }
+}
+
+fn same_config_file_version(before: &Metadata, after: &Metadata) -> bool {
+    #[cfg(unix)]
+    {
+        use std::os::unix::fs::MetadataExt;
+        (
+            before.dev(),
+            before.ino(),
+            before.uid(),
+            before.mode(),
+            before.nlink(),
+            before.len(),
+            before.mtime(),
+            before.mtime_nsec(),
+            before.ctime(),
+            before.ctime_nsec(),
+        ) == (
+            after.dev(),
+            after.ino(),
+            after.uid(),
+            after.mode(),
+            after.nlink(),
+            after.len(),
+            after.mtime(),
+            after.mtime_nsec(),
+            after.ctime(),
+            after.ctime_nsec(),
+        )
+    }
+    #[cfg(not(unix))]
+    {
+        before.file_type() == after.file_type()
+            && before.len() == after.len()
+            && before.modified().ok() == after.modified().ok()
+    }
 }
 
 fn bounded_stdin(maximum: u64) -> Result<Vec<u8>, Box<dyn std::error::Error>> {
@@ -181,3 +264,7 @@ fn parse_digest(value: &str, name: &str) -> Result<[u8; 32], Box<dyn std::error:
     }
     Ok(output)
 }
+
+#[cfg(test)]
+#[path = "hepta-agentd-browser/hepta-agentd-browser_file_tests.rs"]
+mod file_tests;

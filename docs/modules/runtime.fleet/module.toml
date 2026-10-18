@@ -1,0 +1,41 @@
+schema = "hepta.module-manifest.v1"
+order = 6
+id = "runtime.fleet"
+plane = "control"
+kind = "domain"
+lifecycle = "existing"
+state = "stateful"
+architectureRole = "execution_plant"
+writes = ["fleet_allocation_grant"]
+uses = ["kernel.authority", "runtime.supervisor"]
+owner = "fleet-runtime"
+deputy = "runtime-control"
+denies = ["direct_agent_store_write"]
+localHotPathCentralRpc = "not_applicable_or_bounded"
+sourceStatus = "existing_bound"
+source_root_present = true
+production_implementation = false
+sourceEvidenceRoots = ["codex-rs/hepta-fleet"]
+missingDeclaredRoots = []
+bootstrapWorkPackage = "FLEET-1-ALLOCATION-CONTRACT"
+technicalDocument = "docs/modules/runtime.fleet/TECHNICAL.md"
+documentationReady = true
+
+[hotPathPolicy]
+centralSynchronousRpcAllowed = false
+boundedCachedControlInputAllowed = true
+fallbackRequired = true
+
+[publicSurfacePolicy]
+typedContractsOnly = true
+denyUnknownCriticalFields = true
+rawModelOrSecretPayloadExportAllowed = false
+
+[[rootBindings]]
+path = "codex-rs/hepta-fleet"
+mode = "exclusive"
+
+[[cargoPackages]]
+path = "codex-rs/hepta-fleet"
+compileLayer = 2
+ciGroups = ["lifecycle"]

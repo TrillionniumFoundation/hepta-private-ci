@@ -1,7 +1,7 @@
 //! Explicit translation of reviewed registry state into runtime handoff policy.
 //! Unknown spellings/versions must not silently acquire the stateless path.
 
-use codex_hepta_control_plane::RuntimeModuleStateClassV1;
+use codex_hepta_agent_components::control_plane::RuntimeModuleStateClassV1;
 
 use crate::AgentdError;
 
@@ -10,11 +10,7 @@ pub(super) fn parse(state: &str) -> Result<RuntimeModuleStateClassV1, AgentdErro
         // These are explicit catalog spellings, not substring matches. Read-only
         // modules own no durable writer; declared domains/effects still retain
         // their separate handoff checks. Remote reads do not imply a remote writer.
-        "stateless"
-        | "stateless_runtime"
-        | "ephemeral"
-        | "ephemeral_isolated"
-        | "read_only"
+        "stateless" | "stateless_runtime" | "ephemeral" | "ephemeral_isolated" | "read_only"
         | "read_only_remote" => Ok(RuntimeModuleStateClassV1::Stateless),
         // A rebuildable projection still has state to drain/fence. Neither
         // 'shadow' nor 'create_only' is an exemption from the lifecycle protocol.

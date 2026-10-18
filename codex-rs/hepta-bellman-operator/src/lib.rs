@@ -1,11 +1,11 @@
 //! Bounded, deterministic Bellman/operator candidates for qualification space.
 //!
-//! The legacy target builder remains available as `train`, while
-//! `build_targets` makes its actual scope explicit. Applicability admission,
-//! sensor geometry, tabular Bellman reference, simplest-sufficient tabular
-//! learning, regularity/error-budget checks and an action-conditioned tabular
-//! world model are separate bounded surfaces. None can mutate an online policy,
-//! activate an artifact, select itself, or write production state.
+//! `train` is a compatibility target builder, not a production trainer. The
+//! owner-bound V3 trainers require opaque inputs issued from an authenticated
+//! ledger owner. Structural V1/V2 fitters are only exported with the explicit
+//! `qualification-unverified-input` compatibility feature. Product callers
+//! cannot pass a plain plan or deserialize a verified token.
+//! No API here activates an artifact, selects itself, or grants authority.
 #![forbid(unsafe_code)]
 
 use std::collections::BTreeSet;
@@ -17,6 +17,7 @@ use codex_hepta_types::FixedQ32;
 use codex_hepta_types::Generation;
 use codex_hepta_types::StableId;
 
+mod admission;
 mod authenticated;
 mod dataset_bound;
 mod owner_terminal;
@@ -28,36 +29,80 @@ pub use owner_terminal::freeze_terminal_cell_from_owner_v1;
 mod learned;
 mod loaded;
 pub use loaded::LoadedTabularOperatorV1;
+pub use loaded::LoadedTabularOperatorV2;
+pub use loaded::TABULAR_ARTIFACT_SCHEMA_V1;
+pub use loaded::TABULAR_PAYLOAD_SCHEMA_V1;
 pub use loaded::TabularPayloadError;
 pub use loaded::TabularPayloadPinV1;
+pub use loaded::TabularPayloadPinV2;
+pub use loaded::ValidatedTabularOperatorV1;
 pub use loaded::encode_tabular_payload_v1;
+pub use loaded::validate_tabular_artifact_v1;
 mod learned_strict;
 mod reference;
 mod world_model;
 
+#[cfg(all(test, not(feature = "qualification-unverified-input")))]
+pub(crate) use self::learned::fit_tabular_operator;
+pub use admission::ClassifyOperatorAdmissionFailure;
+pub use admission::OperatorAdmissionStageV1;
+pub use admission::OperatorFailureDispositionV1;
+pub use admission::OperatorFailureScopeV1;
+pub use admission::OperatorRecoveryActionV1;
 pub use authenticated::AuthenticatedApplicabilityAdmissionV2;
 pub use authenticated::AuthenticatedOperatorError;
 pub use authenticated::AuthenticatedOperatorRegularityAdmissionV2;
 pub use authenticated::SignedOperatorEvidenceV2;
 pub use authenticated::admit_operator_regularity_with_signed_evidence_v2;
 pub use authenticated::validate_applicability_with_signed_evidence_v2;
+pub use dataset_bound::MAX_SIGNED_OPERATOR_ROWS;
 pub use dataset_bound::OperatorDatasetBindingError;
+pub use dataset_bound::OwnerDatasetFailureV1;
+pub use dataset_bound::OwnerDatasetOperationV1;
+#[cfg(feature = "qualification-unverified-input")]
 pub use dataset_bound::VerifiedTabularOperatorPlanV2;
+#[cfg(feature = "qualification-unverified-input")]
+pub use dataset_bound::VerifiedTabularOperatorPlanV3;
+#[cfg(feature = "qualification-unverified-input")]
 pub use dataset_bound::VerifiedWorldModelDatasetV2;
+#[cfg(feature = "qualification-unverified-input")]
+pub use dataset_bound::VerifiedWorldModelDatasetV3;
+#[cfg(feature = "qualification-unverified-input")]
 pub use dataset_bound::fit_tabular_operator_verified_v2;
+#[cfg(feature = "qualification-unverified-input")]
+pub use dataset_bound::fit_tabular_operator_verified_v3;
+#[cfg(feature = "qualification-unverified-input")]
 pub use dataset_bound::fit_transition_model_verified_v2;
+#[cfg(feature = "qualification-unverified-input")]
+pub use dataset_bound::fit_transition_model_verified_v3;
+#[cfg(feature = "qualification-unverified-input")]
+pub use dataset_bound::tabular_training_signing_payload_v2;
+#[cfg(feature = "qualification-unverified-input")]
 pub use dataset_bound::verify_tabular_operator_plan_v2;
+pub use dataset_bound::verify_tabular_operator_plan_v3;
+#[cfg(feature = "qualification-unverified-input")]
 pub use dataset_bound::verify_world_model_dataset_v2;
+pub use dataset_bound::verify_world_model_dataset_v3;
+pub use dataset_bound::world_model_training_signing_payload_v2;
 pub use learned::LearnedOperatorError;
 pub use learned::TabularOperatorArtifactV1;
 pub use learned::TabularOperatorCellV1;
 pub use learned::TabularOperatorPlanV1;
 pub use learned::TabularOperatorPredictionV1;
 pub use learned::TabularOperatorSampleV1;
+#[cfg(feature = "qualification-unverified-input")]
 pub use learned::fit_tabular_operator;
+#[cfg(feature = "qualification-unverified-input")]
 pub use learned::predict_tabular_operator;
 pub use learned_strict::StrictLearnedOperatorError;
+#[cfg(feature = "qualification-unverified-input")]
 pub use learned_strict::fit_tabular_operator_strict_v2;
+// The owner-derived V1 terminal path still invokes this private fitter.
+#[cfg(all(test, not(feature = "qualification-unverified-input")))]
+pub(crate) use self::world_model::fit_transition_model;
+#[cfg(not(feature = "qualification-unverified-input"))]
+pub(crate) use learned_strict::fit_tabular_operator_strict_v2;
+#[cfg(feature = "qualification-unverified-input")]
 pub use learned_strict::predict_tabular_operator_indexed_v2;
 pub use reference::ApplicabilityDecisionV1;
 pub use reference::BellmanReferenceCellV1;
@@ -83,8 +128,19 @@ pub use world_model::TransitionEstimateV1;
 pub use world_model::WorldModelError;
 pub use world_model::WorldModelPredictionV1;
 pub use world_model::WorldModelSampleV1;
+#[cfg(feature = "qualification-unverified-input")]
 pub use world_model::fit_transition_model;
+#[cfg(feature = "qualification-unverified-input")]
 pub use world_model::predict_transition;
+
+mod terminal_v3;
+mod training_preflight;
+pub use terminal_v3::PreparedTerminalCellV3;
+pub use terminal_v3::VerifiedTerminalCellV3;
+pub use terminal_v3::fit_terminal_cell_verified_v3;
+pub use terminal_v3::prepare_terminal_cell_from_owner_v3;
+pub use training_preflight::preflight_signed_tabular_v3;
+pub(crate) use training_preflight::validate_shape as validate_signed_tabular_shape_v3;
 
 const MAX_SAMPLES: usize = 16_384;
 const SCALE: i128 = 1_i128 << 32;
@@ -123,9 +179,8 @@ pub struct BellmanTarget {
     pub target: FixedQ32,
 }
 
-/// Legacy target-builder diagnostics. This is deliberately not the complete
-/// operator regularity certificate; use `OperatorRegularityAssessmentV1` for
-/// rank, reconstruction, shape, OOD and total-error admission.
+/// Legacy target-builder diagnostics. For operator regularity admission use
+/// `OperatorRegularityAssessmentV1` instead of treating these as a certificate.
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct RegularityProfile {
     pub sample_count: u32,
@@ -193,7 +248,6 @@ pub fn build_targets(mut request: TrainingRequest) -> Result<BellmanOperatorArti
             return Err(Error::EmptyDigest("sample support"));
         }
     }
-
     let mut targets = Vec::with_capacity(request.dataset.transitions.len());
     let mut maximum = 0_i64;
     let mut terminal_count = 0_u64;
@@ -211,7 +265,6 @@ pub fn build_targets(mut request: TrainingRequest) -> Result<BellmanOperatorArti
             target,
         });
     }
-
     let count = i128::try_from(targets.len()).map_err(|_| Error::Arithmetic)?;
     let terminal_raw = (i128::from(terminal_count) * SCALE) / count;
     let regularity = RegularityProfile {
@@ -235,21 +288,23 @@ pub fn build_targets(mut request: TrainingRequest) -> Result<BellmanOperatorArti
     })
 }
 
-/// Compatibility alias for the original API. The implementation remains a
-/// deterministic target builder and does not imply a learned operator.
+/// Compatibility alias for the original deterministic target builder.
+#[cfg(any(test, feature = "qualification-unverified-input"))]
 pub fn train(request: TrainingRequest) -> Result<BellmanOperatorArtifact, Error> {
     build_targets(request)
 }
 
 fn mul_q32(left: FixedQ32, right: FixedQ32) -> Result<FixedQ32, Error> {
     let product = i128::from(left.raw()) * i128::from(right.raw());
-    let adjusted = if product >= 0 {
-        product + SCALE / 2
+    let quotient = product / SCALE;
+    let twice_remainder = (product % SCALE).abs() * 2;
+    let rounded = if twice_remainder > SCALE || (twice_remainder == SCALE && quotient % 2 != 0) {
+        quotient + product.signum()
     } else {
-        product - SCALE / 2
+        quotient
     };
     Ok(FixedQ32::from_raw(
-        i64::try_from(adjusted / SCALE).map_err(|_| Error::Arithmetic)?,
+        i64::try_from(rounded).map_err(|_| Error::Arithmetic)?,
     ))
 }
 
@@ -285,7 +340,9 @@ fn digest_artifact(
     regularity: &RegularityProfile,
 ) -> Digest32 {
     let mut bytes = Vec::new();
-    bytes.extend_from_slice(b"hepta.bellman-operator.artifact.v1");
+    // V2 identifies the nearest-ties-even arithmetic profile. Rebuild legacy
+    // artifacts rather than treating a V1 digest as a pin for this profile.
+    bytes.extend_from_slice(b"hepta.bellman-operator.artifact.v2");
     push_id(&mut bytes, &request.artifact_id);
     push_id(&mut bytes, &request.producer_id);
     bytes.extend_from_slice(&request.generation.get().to_be_bytes());

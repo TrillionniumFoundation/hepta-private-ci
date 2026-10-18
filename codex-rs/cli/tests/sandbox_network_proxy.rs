@@ -82,6 +82,19 @@ fn sandbox_with_network_proxy_allows_explicit_loopback_access() -> Result<()> {
         loop {
             match listener.accept() {
                 Ok((mut stream, _)) => {
+                    stream.set_read_timeout(Some(Duration::from_secs(2)))?;
+                    let mut request = Vec::new();
+                    let mut buffer = [0; 1024];
+                    while !request.windows(4).any(|end| end == b"\r\n\r\n") {
+                        let count = std::io::Read::read(&mut stream, &mut buffer)?;
+                        if count == 0 || request.len() + count > 16 * 1024 {
+                            return Err(std::io::Error::new(
+                                std::io::ErrorKind::InvalidData,
+                                "incomplete or oversized loopback request",
+                            ));
+                        }
+                        request.extend_from_slice(&buffer[..count]);
+                    }
                     std::io::Write::write_all(
                         &mut stream,
                         b"HTTP/1.1 204 No Content\r\nContent-Length: 0\r\n\r\n",

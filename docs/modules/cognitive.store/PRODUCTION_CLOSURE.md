@@ -81,20 +81,32 @@ anchors before and after reopen.
 
 `ProductionCognitiveStore::open_with_recovery` delegates to the descriptor-safe
 recovery boundary. It never falls back to ordinary open when recovery semantics
-were requested. The current `codex-state` backend still intentionally returns
-`Unavailable` for writer recovery until a descriptor-backed SQLite VFS,
-non-reconnecting writer connection and current writer fence are implemented.
+were requested. The current path holds the exclusive `CognitiveStoreOpenGuard`,
+retains identity-bound descriptors for the source database and sidecars, and
+materializes a fresh private generation. SQLite opens and recovers that copy.
+The suspect source is preserved and is never reopened by SQLite.
 
-Therefore an exact-current-cut anchor is currently qualification evidence and a
-cold-image integrity input, not permission to resume a writer. No document may
-claim descriptor-bound writer recovery is complete until that backend exists and
-its fault-injection tests pass.
+The copy must pass complete schema/owner/current-cut equality and integrity
+checks, a FULL checkpoint, and a second exact-cut check after reopen. After all
+asynchronous preparation, the same external live verifier and original lease
+expiry/token checks run immediately before the atomic active-pointer publication.
+The exclusive guard stays held for the returned recovered generation's lifetime.
+An unpublished rejected copy is removed; an ambiguous post-rename failure remains
+`Indeterminate` and retains the possibly active copy for trusted reconciliation.
+
+The older `codex-state::SqliteConfig::open_identity_bound_durable_evidence_pool`
+entry remains closed and is not used by this recovery path. An exact-cut anchor
+alone still grants no write authority. The Agentd production host opens the
+recovered writer with the same external live verifier, with no raw-store fallback.
+The owner recovery tests exercise writable reopen, source identity attacks,
+exclusive fencing, and authority withdrawal/expiry during a real recovery wait;
+installed authority composition remains separate from native source qualification.
 
 ## 5. Legacy-to-owner cutover
 
-The repository currently uses the same `cognitive_1.sqlite3` durable format, so
-this convergence does not require copying durable records into a second database.
-The migration is a route/authority cutover, not a data duplication migration.
+The durable logical format and original owner namespace remain the same.
+Recovery stages a private generation within that owner and atomically selects
+its active database; it does not create a parallel store or independent writer.
 
 For an existing installation:
 

@@ -163,3 +163,138 @@ fn op_02_regularity_admission_enforces_gain_shape_ood_and_error_budget() {
         Err(OperatorClosureError::ReconstructionGain)
     );
 }
+
+#[test]
+fn sensor_geometry_rounds_coverage_and_mesh_ratio_conservatively() {
+    let mut design = SensorCoreDesignV1 {
+        sensor_core_id: id("sensor-core"),
+        state_axis_digest: digest("axis"),
+        candidate_design_digest: digest("design"),
+        seed_digest: digest("seed"),
+        requested_count: 2,
+        candidates: vec![
+            point("a", /*raw*/ 0),
+            point("b", /*raw*/ 4),
+            point("c", /*raw*/ 8),
+        ],
+    };
+    for candidate in &mut design.candidates {
+        candidate.coordinates.push(candidate.coordinates[0]);
+    }
+    let manifest = build_sensor_core(design.clone()).expect("valid finite design");
+    assert_eq!(
+        (
+            manifest.fill_distance_q32,
+            manifest.separation_radius_q32,
+            manifest.mesh_ratio_q32,
+        ),
+        (
+            FixedQ32::from_raw(6),
+            FixedQ32::from_raw(5),
+            FixedQ32::from_raw(5_153_960_756),
+        )
+    );
+    design.candidates.reverse();
+    assert_eq!(build_sensor_core(design), Ok(manifest));
+}
+
+#[test]
+fn sensor_manifest_binds_unselected_candidate_coordinates() {
+    let design = SensorCoreDesignV1 {
+        sensor_core_id: id("sensor-core"),
+        state_axis_digest: digest("axis"),
+        candidate_design_digest: digest("claimed-design"),
+        seed_digest: digest("seed"),
+        requested_count: 2,
+        candidates: vec![
+            point("a", /*raw*/ 0),
+            point("b", FixedQ32::ONE.raw() / 4),
+            point("c", FixedQ32::ONE.raw()),
+        ],
+    };
+    let original = build_sensor_core(design.clone()).expect("valid design");
+    let mut changed = design.clone();
+    changed.candidates[1].coordinates[0] = FixedQ32::from_raw(3 * FixedQ32::ONE.raw() / 4);
+    let altered = build_sensor_core(changed).expect("valid changed design");
+    assert_eq!(original.selected_points, altered.selected_points);
+    assert_eq!(original.fill_distance_q32, altered.fill_distance_q32);
+    assert_ne!(original.manifest_digest, altered.manifest_digest);
+
+    let mut duplicate = design;
+    duplicate.candidates[1].coordinates = duplicate.candidates[0].coordinates.clone();
+    assert_eq!(
+        build_sensor_core(duplicate),
+        Err(OperatorClosureError::DuplicateSensorCoordinates)
+    );
+}
+
+#[test]
+fn sensor_separation_tracks_all_prior_selected_points() {
+    let design = SensorCoreDesignV1 {
+        sensor_core_id: id("sensor-core"),
+        state_axis_digest: digest("axis"),
+        candidate_design_digest: digest("design"),
+        seed_digest: digest("seed"),
+        requested_count: 3,
+        candidates: vec![
+            point("a", /*raw*/ 0),
+            point("b", /*raw*/ 4),
+            point("c", /*raw*/ 6),
+            point("d", /*raw*/ 12),
+        ],
+    };
+    let manifest = build_sensor_core(design).expect("valid design");
+    assert_eq!(
+        (
+            manifest.selected_points,
+            manifest.fill_distance_q32,
+            manifest.separation_radius_q32,
+            manifest.mesh_ratio_q32,
+        ),
+        (
+            vec![
+                point("a", /*raw*/ 0),
+                point("d", /*raw*/ 12),
+                point("c", /*raw*/ 6)
+            ],
+            FixedQ32::from_raw(2),
+            FixedQ32::from_raw(3),
+            FixedQ32::from_raw(2_863_311_531),
+        )
+    );
+}
+
+#[test]
+fn reference_receipt_binds_source_evidence_and_equal_output_inputs() {
+    let plan = BellmanReferencePlanV1 {
+        plan_id: id("reference-plan"),
+        objective_digest: digest("objective"),
+        sensor_core_digest: digest("sensor-core"),
+        gamma: FixedQ32::ONE,
+        sensor_ids: vec![id("sensor")],
+        action_ids: vec![id("a"), id("b")],
+        cells: vec![
+            cell("sensor", "a", /*reward*/ 10, /*continuation*/ 0),
+            cell("sensor", "b", /*reward*/ 20, /*continuation*/ 0),
+        ],
+    };
+    let original = evaluate_bellman_reference(plan.clone()).expect("valid reference");
+    let mut reordered = plan.clone();
+    reordered.action_ids.reverse();
+    reordered.cells.reverse();
+    assert_eq!(evaluate_bellman_reference(reordered), Ok(original.clone()));
+
+    let mut altered_evidence = plan.clone();
+    altered_evidence.cells[0].evidence_digest = digest("replacement-evidence");
+    let mut altered_decomposition = plan.clone();
+    altered_decomposition.cells[0].reward = FixedQ32::from_raw(1);
+    altered_decomposition.cells[0].continuation_value = FixedQ32::from_raw(9);
+    let mut altered_terminal = plan;
+    altered_terminal.cells[0].terminal = true;
+    for altered_plan in [altered_evidence, altered_decomposition, altered_terminal] {
+        let altered = evaluate_bellman_reference(altered_plan).expect("same valid targets");
+        assert_eq!(original.targets, altered.targets);
+        assert_eq!(original.greedy_actions, altered.greedy_actions);
+        assert_ne!(original.evidence_digest, altered.evidence_digest);
+    }
+}

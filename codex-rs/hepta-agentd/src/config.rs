@@ -4,14 +4,31 @@ use std::fs::OpenOptions;
 use std::path::Path;
 use std::path::PathBuf;
 
-use codex_hepta_contracts::AgentId;
-use codex_hepta_fleet::AgentLifecycle;
-use codex_hepta_fleet::FleetRegistry;
-use codex_hepta_fleet::ResourceBudget;
-use codex_hepta_paths::HeptaAgentLayout;
-use codex_hepta_paths::HeptaFleetRoot;
+use codex_hepta_agent_components::contracts::AgentId;
+use codex_hepta_agent_components::fleet::AgentLifecycle;
+use codex_hepta_agent_components::fleet::FleetRegistry;
+use codex_hepta_agent_components::fleet::ResourceBudget;
+use codex_hepta_agent_components::paths::HeptaAgentLayout;
+use codex_hepta_agent_components::paths::HeptaFleetRoot;
 
 use crate::AgentdError;
+
+#[path = "native_model_receipt.rs"]
+mod native_model_receipt;
+#[path = "prepared_generation_reader.rs"]
+mod prepared_generation_reader;
+pub use prepared_generation_reader::AgentdPreparedGenerationReaderV2;
+pub(crate) use prepared_generation_reader::response_limit as prepared_generation_response_limit;
+#[path = "self_iteration_model_owner.rs"]
+mod self_iteration_model_owner;
+pub use native_model_receipt::AgentdNativeModelReceiptReaderV1;
+pub use self_iteration_model_owner::AgentdSelfIterationModelOwnerContextV2;
+use self_iteration_model_owner::SelfIterationModelOwner;
+
+#[path = "run_store_restart_admission.rs"]
+mod run_store_restart_admission;
+pub(crate) use run_store_restart_admission::VerifiedRunStoreRestart;
+pub(crate) use run_store_restart_admission::runtime_composition;
 
 pub const HEPTA_AGENT_ID_ENV: &str = "HEPTA_AGENT_ID";
 pub const HEPTA_AGENT_GENERATION_ENV: &str = "HEPTA_AGENT_GENERATION";
@@ -36,13 +53,18 @@ pub struct AgentdIdentity {
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub enum CognitiveRetrievalMode {
     Compatibility,
+    HnmfShadow,
+    HnmfCanary,
     HnmfRequired,
 }
 
 impl CognitiveRetrievalMode {
     #[must_use]
     pub const fn requires_current_context(self) -> bool {
-        matches!(self, Self::HnmfRequired)
+        matches!(
+            self,
+            Self::HnmfShadow | Self::HnmfCanary | Self::HnmfRequired
+        )
     }
 }
 
@@ -59,9 +81,11 @@ fn parse_cognitive_retrieval_mode(
     })?;
     match value.as_str() {
         "compatibility" => Ok(CognitiveRetrievalMode::Compatibility),
+        "hnmf-shadow" => Ok(CognitiveRetrievalMode::HnmfShadow),
+        "hnmf-canary" => Ok(CognitiveRetrievalMode::HnmfCanary),
         "hnmf-required" => Ok(CognitiveRetrievalMode::HnmfRequired),
         _ => Err(AgentdError::Invalid(format!(
-            "{HEPTA_COGNITIVE_RETRIEVAL_MODE_ENV} must be compatibility or hnmf-required"
+            "{HEPTA_COGNITIVE_RETRIEVAL_MODE_ENV} must be compatibility, hnmf-shadow, hnmf-canary or hnmf-required"
         ))),
     }
 }
@@ -72,12 +96,18 @@ fn cognitive_retrieval_mode_from_process_environment() -> Result<CognitiveRetrie
 }
 
 pub struct AgentdConfig {
+    prepared_generation_reader: Option<std::sync::Arc<dyn AgentdPreparedGenerationReaderV2>>,
+    native_model_receipt_reader: Option<std::sync::Arc<dyn AgentdNativeModelReceiptReaderV1>>,
+    self_iteration_model_owner: Option<SelfIterationModelOwner>,
+    self_iteration_runtime: Option<crate::AgentdSelfIterationRuntimeConfigV1>,
+    neuron_runtime_v2: Option<crate::AgentdNeuronRuntimeV2Config>,
     identity: AgentdIdentity,
     registry: FleetRegistry,
     _writer_lock: File,
     authbus_trust_file: Option<PathBuf>,
     evidence_trust_file: Option<PathBuf>,
     automation_effect_host_file: Option<PathBuf>,
+    secrets_runtime_client_file: Option<PathBuf>,
     evidence_recovery_frontier_file: Option<PathBuf>,
     evidence_recovery_frontier_trust_file: Option<PathBuf>,
     objective_profile_file: Option<PathBuf>,
@@ -86,6 +116,7 @@ pub struct AgentdConfig {
     production_operations: Option<crate::AgentdProductionOperationRuntimeConfig>,
     production_writer_host: Option<std::sync::Arc<crate::AgentdProductionWriterHost>>,
     cognitive_retrieval_mode: CognitiveRetrievalMode,
+    runtime_module_profile: crate::RuntimeModuleProfileV1,
     cognitive_retrieval_context: Option<std::sync::Arc<dyn crate::CurrentMemoryRetrievalContext>>,
     cognitive_retrieval_learning: Option<std::sync::Arc<crate::CognitiveRetrievalLearningSink>>,
     plasticity_bootstrap: Option<crate::PlasticityRuntimeBootstrapV1>,
@@ -96,9 +127,19 @@ pub struct AgentdConfig {
 }
 
 impl AgentdConfig {
+    /// Bind optional startup modules to the existing Supervisor serving selection.
+    pub fn with_runtime_module_profile(mut self, profile: crate::RuntimeModuleProfileV1) -> Self {
+        self.runtime_module_profile = profile;
+        self
+    }
+
+    pub(crate) fn runtime_module_profile(&self) -> crate::RuntimeModuleProfileV1 {
+        self.runtime_module_profile
+    }
+
     pub fn from_process_environment() -> Result<Self, AgentdError> {
         let cognitive_retrieval_mode = cognitive_retrieval_mode_from_process_environment()?;
-        let fleet_root = required_path(codex_hepta_paths::HEPTA_FLEET_ROOT_ENV)?;
+        let fleet_root = required_path(codex_hepta_agent_components::paths::HEPTA_FLEET_ROOT_ENV)?;
         let agent_id = required_utf8(HEPTA_AGENT_ID_ENV)?;
         let spawn_generation = required_utf8(HEPTA_AGENT_GENERATION_ENV)?
             .parse::<u64>()
@@ -141,12 +182,8 @@ impl AgentdConfig {
         let typed_fleet_root = HeptaFleetRoot::parse(fleet_root.clone())
             .map_err(|error| AgentdError::Invalid(error.to_string()))?;
         require_canonical(&fleet_root, "fleet root")?;
-        let registry = FleetRegistry::open_existing(typed_fleet_root)?;
-        let record = registry
-            .load()?
-            .agent(&agent_id)
-            .cloned()
-            .ok_or_else(|| AgentdError::Invalid(format!("unknown fleet agent {agent_id}")))?;
+        let registry = FleetRegistry::open_existing_for_agent(typed_fleet_root, &agent_id)?;
+        let record = registry.load_agent(&agent_id)?;
 
         if record.lifecycle.lifecycle != AgentLifecycle::Starting
             || record.lifecycle.generation != spawn_generation
@@ -201,6 +238,7 @@ impl AgentdConfig {
             authbus_trust_file: None,
             evidence_trust_file: None,
             automation_effect_host_file: None,
+            secrets_runtime_client_file: None,
             evidence_recovery_frontier_file: None,
             evidence_recovery_frontier_trust_file: None,
             objective_profile_file: None,
@@ -209,11 +247,17 @@ impl AgentdConfig {
             production_operations: None,
             production_writer_host: None,
             cognitive_retrieval_mode: CognitiveRetrievalMode::Compatibility,
+            runtime_module_profile: crate::RuntimeModuleProfileV1::Compiled,
             cognitive_retrieval_context: None,
             cognitive_retrieval_learning: None,
             plasticity_bootstrap: None,
             intuition_policy_host: None,
             intelligence_product_runner: None,
+            neuron_runtime_v2: None,
+            self_iteration_runtime: None,
+            self_iteration_model_owner: None,
+            native_model_receipt_reader: None,
+            prepared_generation_reader: None,
             intelligence_invocation_provider: None,
         })
     }
@@ -271,6 +315,16 @@ impl AgentdConfig {
 
     pub(crate) fn automation_effect_host_file(&self) -> Option<&Path> {
         self.automation_effect_host_file.as_deref()
+    }
+
+    /// Enroll this original Agent in the single protected secrets daemon.
+    pub fn with_secrets_runtime_client_file(mut self, path: PathBuf) -> Self {
+        self.secrets_runtime_client_file = Some(path);
+        self
+    }
+
+    pub(crate) fn secrets_runtime_client_file(&self) -> Option<&Path> {
+        self.secrets_runtime_client_file.as_deref()
     }
 
     /// Explicit owner-managed objective admission profile. A request cannot
@@ -532,6 +586,70 @@ impl AgentdConfig {
         &self,
     ) -> Option<std::sync::Arc<dyn crate::AgentdIntelligenceInvocationProviderV1>> {
         self.intelligence_invocation_provider.clone()
+    }
+
+    /// Reject a partially requested canonical profile before daemon services or
+    /// durable owners are opened. No configured component is silently ignored.
+    pub(crate) fn require_intelligence_composition(&self) -> Result<(), AgentdError> {
+        match (
+            self.intelligence_product_runner.as_ref(),
+            self.intelligence_invocation_provider.as_ref(),
+        ) {
+            (None, None) => Ok(()),
+            (Some(_), Some(_)) => {
+                if self.objective_profile_file().is_none()
+                    || self.authbus_trust_file().is_none()
+                    || self.authbus_checkpoint_file().is_none()
+                {
+                    return Err(AgentdError::Invalid(
+                        "canonical intelligence requires an Objective profile, AuthBus trust and AuthBus replay checkpoint".to_string(),
+                    ));
+                }
+                Ok(())
+            }
+            (Some(_), None) | (None, Some(_)) => Err(AgentdError::Invalid(
+                "canonical intelligence runner and invocation provider must be configured together; refusing compatibility fallback".to_string(),
+            )),
+        }
+    }
+
+    /// Attach the single daemon-owned V2 Neuron runtime. The ordinary process
+    /// environment path never manufactures model, storage or tick authority.
+    pub fn with_neuron_runtime_v2(
+        mut self,
+        runtime: crate::neuron_runtime_v2::AgentdNeuronRuntimeV2Config,
+    ) -> Result<Self, AgentdError> {
+        if self.neuron_runtime_v2.is_some() {
+            return Err(AgentdError::Invalid(
+                "Neuron V2 runtime already configured".to_string(),
+            ));
+        }
+        self.neuron_runtime_v2 = Some(runtime);
+        Ok(self)
+    }
+
+    pub(crate) fn take_neuron_runtime_v2(
+        &mut self,
+    ) -> Option<crate::neuron_runtime_v2::AgentdNeuronRuntimeV2Config> {
+        self.neuron_runtime_v2.take()
+    }
+
+    pub fn with_self_iteration_runtime(
+        mut self,
+        runtime: crate::AgentdSelfIterationRuntimeConfigV1,
+    ) -> Result<Self, AgentdError> {
+        if self.self_iteration_runtime.is_some() {
+            return Err(AgentdError::Invalid(
+                "self-iteration runtime already configured".into(),
+            ));
+        }
+        self.self_iteration_runtime = Some(runtime);
+        Ok(self)
+    }
+    pub(crate) fn take_self_iteration_runtime(
+        &mut self,
+    ) -> Option<crate::AgentdSelfIterationRuntimeConfigV1> {
+        self.self_iteration_runtime.take()
     }
 
     pub fn identity(&self) -> &AgentdIdentity {

@@ -73,7 +73,10 @@ model bytes are never executed. Artifact-registry, withdrawal and lifecycle
 state share `MAX_DURABLE_ARTIFACT_RECORDS = 4096`; this aligns the logical
 record ceiling with the supported durable representation. V1 registry and
 auxiliary snapshots are bounded at 8 MiB and candidate payloads at 64 MiB.
-Snapshot creation/replay is O(history), bounded by the source cap; this is not a
+Snapshot creation/replay performs a bounded number of record operations with
+balanced-tree index lookups. Lineage eligibility is rebuilt as a private cache;
+revocation/quarantine iteratively exclude descendants without recursive walks.
+The cache adds no wire field or separate durable authority. This is not a
 high-frequency journal or hard-real-time controller.
 
 ## Failure and retry semantics
@@ -117,6 +120,16 @@ filesystem transaction. The host must durably persist each transaction snapshot
 under its writer fence before treating the phase as durable. A crash before
 witness publication may leave durable bytes or a registry generation, but never
 a valid acknowledged publication.
+
+The composed owner-host path validates the next phase before final-file
+publication and uses synchronized temporary records plus no-replace hard links
+for payloads, snapshots, witnesses, complete admissions, signed heads and
+checkpoints. On Unix it synchronizes the containing directory before the next
+phase checkpoint. An interrupted temporary write leaves the final name available
+for exact reconciliation; existing final bytes must match completely. This does
+not change the retained capability APIs' indeterminate/orphan behavior above or
+establish target-host power-loss qualification. See
+[`OWNER_SERVICE.md`](OWNER_SERVICE.md) for the full protocol.
 
 `create_new` protects the final path component from an existence-check race.
 `create_beneath_trusted_root` additionally rejects lexical escape and symlink

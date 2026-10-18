@@ -8,28 +8,30 @@ use std::sync::atomic::AtomicUsize;
 use std::sync::atomic::Ordering;
 use std::time::Duration;
 
-use codex_hepta_automation::AutomationAdmission;
-use codex_hepta_automation::AutomationError;
-use codex_hepta_automation::AutomationFuture;
-use codex_hepta_automation::AutomationQueueReceipt;
-use codex_hepta_automation::AutomationSchedule;
-use codex_hepta_automation::AutomationScheduler;
-use codex_hepta_automation::AutomationStore;
-use codex_hepta_automation::AutomationTaskDraft;
-use codex_hepta_automation::AutomationTurnQueue;
-use codex_hepta_automation::TimerPhase;
-use codex_hepta_contracts::AgentId;
-use codex_hepta_fleet::AgentLifecycle;
-use codex_hepta_fleet::AgentManifest;
-use codex_hepta_fleet::FleetRegistry;
-use codex_hepta_fleet::ResourceBudget;
-use codex_hepta_fleet::WorkspaceBinding;
-use codex_hepta_paths::HeptaFleetRoot;
-use codex_hepta_types::Generation;
+use codex_hepta_agent_components::automation::AutomationAdmission;
+use codex_hepta_agent_components::automation::AutomationError;
+use codex_hepta_agent_components::automation::AutomationFuture;
+use codex_hepta_agent_components::automation::AutomationQueueReceipt;
+use codex_hepta_agent_components::automation::AutomationSchedule;
+use codex_hepta_agent_components::automation::AutomationScheduler;
+use codex_hepta_agent_components::automation::AutomationStore;
+use codex_hepta_agent_components::automation::AutomationTaskDraft;
+use codex_hepta_agent_components::automation::AutomationTurnQueue;
+use codex_hepta_agent_components::automation::TimerPhase;
+use codex_hepta_agent_components::contracts::AgentId;
+use codex_hepta_agent_components::fleet::AgentLifecycle;
+use codex_hepta_agent_components::fleet::AgentManifest;
+use codex_hepta_agent_components::fleet::FleetRegistry;
+use codex_hepta_agent_components::fleet::ResourceBudget;
+use codex_hepta_agent_components::fleet::WorkspaceBinding;
+use codex_hepta_agent_components::paths::HeptaFleetRoot;
+use codex_hepta_agent_components::types::Generation;
 use tokio::sync::Notify;
 use tokio::time::timeout;
 use tokio_util::sync::CancellationToken;
 
+use super::AgentdAutomationQueue;
+use super::AutomationService;
 use super::run_scheduler_loop;
 use super::spawn_automation_service;
 use crate::AgentdIdentity;
@@ -104,7 +106,12 @@ async fn install(fixture: &Fixture, tasks: &mut RuntimeTasks, stop: &Cancellatio
         Some(fixture.store.clone()),
         Arc::clone(&fixture.state),
         fixture.identity.clone(),
+        Arc::new(AgentdAutomationQueue::new(
+            Arc::clone(&fixture.state),
+            fixture.identity.clone(),
+        )),
         stop.clone(),
+        Generation::new(fixture.identity.spawn_generation).expect("generation"),
     )
     .await
     .expect("production constructor");
@@ -132,7 +139,12 @@ async fn production_constructor_rejects_mismatched_identity_before_spawn() {
             Some(fixture.store.clone()),
             Arc::clone(&fixture.state),
             wrong,
+            Arc::new(AgentdAutomationQueue::new(
+                Arc::clone(&fixture.state),
+                fixture.identity.clone(),
+            )),
             stop.clone(),
+            Generation::new(fixture.identity.spawn_generation).expect("generation"),
         )
         .await
         .is_err()
@@ -300,10 +312,11 @@ async fn cancellation_preserves_in_flight_queue_ack_before_scheduler_exit() {
         .compare_and_transition(&fixture.identity.agent_id, 1, AgentLifecycle::Running)
         .expect("running");
     fixture.state.refresh_generation().expect("generation");
-    let cognitive =
-        codex_hepta_cognitive_store::DurableCognitiveStore::open(&fixture.identity.layout)
-            .await
-            .expect("real cognitive owner");
+    let cognitive = codex_hepta_agent_components::cognitive_store::DurableCognitiveStore::open(
+        &fixture.identity.layout,
+    )
+    .await
+    .expect("real cognitive owner");
     fixture
         .state
         .attach_cognitive_store(Arc::new(cognitive))
@@ -370,20 +383,16 @@ async fn production_constructor_keeps_retired_timer_absent_after_reopen() {
         AgentdState::new(fixture.identity.clone(), fixture.registry.clone(), 128)
             .expect("restarted host"),
     );
-    state
-        .attach_automation_store(reopened.clone())
-        .expect("readable owner attachment");
+    let service =
+        AutomationService::open(Arc::clone(&state), crate::RuntimeModuleProfileV1::Compiled)
+            .await
+            .expect("readable owner factory");
     let (mut tasks, stop) = host();
     tasks.spawn_required("core", pending()).expect("sibling");
-    spawn_automation_service(
-        &mut tasks,
-        Some(reopened.clone()),
-        Arc::clone(&state),
-        fixture.identity.clone(),
-        stop.clone(),
-    )
-    .await
-    .expect("retired module must not prevent core startup");
+    service
+        .spawn(&mut tasks, stop.clone())
+        .await
+        .expect("retired module must not prevent core startup");
 
     assert_eq!(tasks.active_count(), 1);
     assert!(!stop.is_cancelled());
@@ -420,4 +429,52 @@ async fn production_constructor_never_resumes_a_draining_owner() {
     tasks.shutdown().await;
     assert!(!fixture.state.is_fenced().expect("host fence"));
     fixture.store.close().await;
+}
+
+#[path = "automation_factory_tests.rs"]
+mod factory_tests;
+
+#[tokio::test]
+async fn scheduler_cadence_waits_before_first_tick_without_busy_polling() {
+    let period = Duration::from_secs(3_600);
+    let mut ticks = super::scheduler_ticks(period).expect("bounded cadence");
+    assert_eq!(ticks.period(), period);
+    assert_eq!(
+        ticks.missed_tick_behavior(),
+        tokio::time::MissedTickBehavior::Skip
+    );
+    let pending = std::future::poll_fn(|context| {
+        std::task::Poll::Ready(ticks.poll_tick(context).is_pending())
+    })
+    .await;
+    assert!(pending, "startup must not dispatch an immediate extra tick");
+}
+
+#[tokio::test]
+async fn scheduler_cadence_skips_overrun_without_catch_up_dispatch_burst() {
+    let period = Duration::from_secs(3_600);
+    let mut ticks = super::scheduler_ticks(period).expect("bounded cadence");
+    // Move only this test timer's schedule, not the runtime clock or owner
+    // generation. The returned deadline is deterministic despite host load.
+    let overdue = tokio::time::Instant::now() - period * 3;
+    ticks.reset_at(overdue);
+    assert_eq!(ticks.tick().await, overdue);
+    let pending = std::future::poll_fn(|context| {
+        std::task::Poll::Ready(ticks.poll_tick(context).is_pending())
+    })
+    .await;
+    assert!(
+        pending,
+        "missed ticks must not become an immediate dispatch burst"
+    );
+}
+
+#[tokio::test]
+async fn scheduler_cadence_rejects_zero_and_overflow_instead_of_panicking() {
+    for period in [Duration::ZERO, Duration::MAX] {
+        assert!(matches!(
+            super::scheduler_ticks(period),
+            Err(crate::AgentdError::Invalid(_))
+        ));
+    }
 }

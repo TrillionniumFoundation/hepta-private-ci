@@ -6,30 +6,31 @@
 //! This adapter owns no database, authority issuer, effect executor or live model
 //! selection. Laya and multi-source causal training are separate profiles.
 
-use codex_hepta_bellman_operator::LoadedTabularOperatorV1;
-use codex_hepta_bellman_operator::TabularOperatorArtifactV1;
-use codex_hepta_bellman_operator::TabularOperatorPredictionV1;
-use codex_hepta_bellman_operator::TabularPayloadPinV1;
-use codex_hepta_bellman_operator::TerminalCellError;
-use codex_hepta_bellman_operator::TerminalCellProfileV1;
-use codex_hepta_bellman_operator::encode_tabular_payload_v1;
-use codex_hepta_bellman_operator::fit_terminal_cell_from_owner_v1;
-use codex_hepta_bellman_operator::freeze_terminal_cell_from_owner_v1;
-use codex_hepta_contracts::AgentId;
-use codex_hepta_contracts::Sha256Digest;
-use codex_hepta_learning_artifacts::ArtifactKind;
-use codex_hepta_learning_artifacts::ArtifactRegistry;
-use codex_hepta_learning_ledger::DatasetSnapshotReceiptV3;
-use codex_hepta_learning_ledger::LedgerEvent;
-use codex_hepta_learning_ledger::LedgerWriter;
-use codex_hepta_learning_ledger::ProductionLedgerError;
-use codex_hepta_memory::CognitiveStore;
-use codex_hepta_memory::CognitiveStoreError;
-use codex_hepta_memory::FederationConsumerAccess;
-use codex_hepta_memory::SharedExperiencePurposeV1;
-use codex_hepta_memory::SharedExperienceUseV1;
-use codex_hepta_types::Digest32;
-use codex_hepta_types::StableId;
+use codex_hepta_agent_components::bellman_operator::LoadedTabularOperatorV1;
+use codex_hepta_agent_components::bellman_operator::TabularOperatorArtifactV1;
+use codex_hepta_agent_components::bellman_operator::TabularOperatorPredictionV1;
+use codex_hepta_agent_components::bellman_operator::TabularPayloadPinV1;
+use codex_hepta_agent_components::bellman_operator::TerminalCellError;
+use codex_hepta_agent_components::bellman_operator::TerminalCellProfileV1;
+use codex_hepta_agent_components::bellman_operator::encode_tabular_payload_v1;
+use codex_hepta_agent_components::bellman_operator::fit_terminal_cell_from_owner_v1;
+use codex_hepta_agent_components::bellman_operator::freeze_terminal_cell_from_owner_v1;
+use codex_hepta_agent_components::contracts::AgentId;
+use codex_hepta_agent_components::contracts::Sha256Digest;
+use codex_hepta_agent_components::learning_artifacts::ArtifactKind;
+use codex_hepta_agent_components::learning_artifacts::ArtifactRegistry;
+use codex_hepta_agent_components::learning_artifacts::VerifiedCurrentRegistryUseWindowV1;
+use codex_hepta_agent_components::learning_ledger::DatasetSnapshotReceiptV3;
+use codex_hepta_agent_components::learning_ledger::LedgerEvent;
+use codex_hepta_agent_components::learning_ledger::LedgerWriter;
+use codex_hepta_agent_components::learning_ledger::ProductionLedgerError;
+use codex_hepta_agent_components::memory::CognitiveStore;
+use codex_hepta_agent_components::memory::CognitiveStoreError;
+use codex_hepta_agent_components::memory::FederationConsumerAccess;
+use codex_hepta_agent_components::memory::SharedExperiencePurposeV1;
+use codex_hepta_agent_components::memory::SharedExperienceUseV1;
+use codex_hepta_agent_components::types::Digest32;
+use codex_hepta_agent_components::types::StableId;
 use std::sync::Arc;
 
 #[derive(Debug, thiserror::Error)]
@@ -73,6 +74,7 @@ pub struct AgentdSharedReplayHostV1 {
     source: Arc<CognitiveStore>,
     consumer: FederationConsumerAccess,
     purpose: SharedExperiencePurposeV1,
+    current_artifacts: Option<crate::CurrentArtifactRegistrySourceV1>,
 }
 
 impl AgentdSharedReplayHostV1 {
@@ -96,7 +98,18 @@ impl AgentdSharedReplayHostV1 {
                 parameter_scope,
                 artifact_consumer,
             },
+            current_artifacts: None,
         })
+    }
+
+    /// Supply the original protected, read-only artifact owner. Training may
+    /// produce a candidate without it; loading or using a model requires it.
+    pub fn with_current_artifacts(
+        mut self,
+        source: crate::CurrentArtifactRegistrySourceV1,
+    ) -> Self {
+        self.current_artifacts = Some(source);
+        self
     }
 
     pub async fn train(
@@ -155,6 +168,7 @@ impl AgentdSharedReplayHostV1 {
     ) -> Result<SharedTerminalModelV1, SharedTerminalCellError> {
         self.revalidate(&candidate, ledger, now).await?;
         Self::validate_registry(&candidate, registry)?;
+        let current = self.current_window(&candidate, registry)?;
         let expected = encode_tabular_payload_v1(&candidate.artifact)
             .map_err(|_| SharedTerminalCellError::Binding("artifact encoding"))?;
         if payload != expected {
@@ -172,6 +186,7 @@ impl AgentdSharedReplayHostV1 {
         };
         let loaded = LoadedTabularOperatorV1::from_pinned_payload(payload, &pin)
             .map_err(|_| SharedTerminalCellError::Binding("artifact pin"))?;
+        Self::finish_current_use(&current)?;
         Ok(SharedTerminalModelV1 { candidate, loaded })
     }
 
@@ -186,10 +201,50 @@ impl AgentdSharedReplayHostV1 {
     ) -> Result<TabularOperatorPredictionV1, SharedTerminalCellError> {
         self.revalidate(&model.candidate, ledger, now).await?;
         Self::validate_registry(&model.candidate, registry)?;
-        model
+        let current = self.current_window(&model.candidate, registry)?;
+        let prediction = model
             .loaded
             .predict(sensor, action)
-            .map_err(|_| SharedTerminalCellError::Binding("prediction cell"))
+            .map_err(|_| SharedTerminalCellError::Binding("prediction cell"))?;
+        Self::finish_current_use(&current)?;
+        Ok(prediction)
+    }
+
+    fn current_window(
+        &self,
+        candidate: &SharedTerminalCandidateV1,
+        registry: &ArtifactRegistry,
+    ) -> Result<VerifiedCurrentRegistryUseWindowV1, SharedTerminalCellError> {
+        let source = self
+            .current_artifacts
+            .as_ref()
+            .ok_or(SharedTerminalCellError::Binding(
+                "artifact CURRENT not configured",
+            ))?;
+        let current = source
+            .current()
+            .map_err(|_| SharedTerminalCellError::Binding("artifact CURRENT unavailable"))?;
+        let id = &candidate.artifact.artifact_id;
+        if current.eligible_manifest(id).is_none()
+            || current.eligible_manifest(id) != registry.manifest(id)
+        {
+            return Err(SharedTerminalCellError::Binding(
+                "artifact revoked or incompatible",
+            ));
+        }
+        current
+            .use_window()
+            .map_err(|_| SharedTerminalCellError::Binding("artifact CURRENT unavailable"))
+    }
+
+    fn finish_current_use(
+        current: &VerifiedCurrentRegistryUseWindowV1,
+    ) -> Result<(), SharedTerminalCellError> {
+        let now = crate::authbus_ingress::now_ms()
+            .map_err(|_| SharedTerminalCellError::Binding("artifact CURRENT clock unavailable"))?;
+        current
+            .revalidate_at(now)
+            .map_err(|_| SharedTerminalCellError::Binding("artifact CURRENT expired"))
     }
 
     fn validate_registry(
@@ -239,3 +294,7 @@ impl AgentdSharedReplayHostV1 {
         Ok(())
     }
 }
+
+#[cfg(test)]
+#[path = "shared_terminal_cell_current_tests.rs"]
+mod tests;

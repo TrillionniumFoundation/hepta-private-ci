@@ -16,33 +16,52 @@ from pathlib import Path
 from pathlib import PurePosixPath
 from typing import Iterable
 
+ROOT = Path(__file__).resolve().parents[1]
 GROUPS = frozenset({"inference", "effects", "lifecycle", "learning", "objective"})
-PACKAGE_GROUPS = {
-    "hepta-infer-core": {"inference"},
-    "hepta-operations": {"effects", "lifecycle"},
-    "hepta-automation": {"effects", "lifecycle"},
-    "hepta-contracts": set(GROUPS),
-    "hepta-control-plane": {"lifecycle", "effects", "objective"},
-    "hepta-supervisor": {"lifecycle", "effects"},
-    "hepta-fleet": {"lifecycle"},
-    "hepta-agentd": set(GROUPS),
-    "hepta-types": set(GROUPS),
-    "hepta-learning-ledger": {"learning"},
-    "hepta-learning-artifacts": {"learning"},
-    "hepta-intelligence-eval": {"learning"},
-    "hepta-objective": {"objective", "learning"},
-    "hepta-prompt-optimizer": {"objective", "learning"},
-    "hepta-plasticity": {"learning", "lifecycle"},
-    "hepta-intelligence": {"objective", "learning"},
-    "hepta-intuition": {"objective", "learning"},
-    "hepta-neuron": {"learning"},
-    "hepta-ndu": {"objective", "learning"},
-    "hepta-cognitive-read": {"learning"},
-    "hepta-cognitive-store": {"learning", "lifecycle"},
-    "hepta-memory-retrieval": {"learning"},
-    "hepta-memory-federation": {"learning", "lifecycle"},
-    "hepta-prompt-registry": {"objective", "learning"},
-}
+
+
+def generated_package_groups(root: Path = ROOT) -> dict[str, set[str]]:
+    """Load package-to-risk ownership from the generated module manifest view.
+
+    CI scope is not a second hand-maintained module registry.  New packages and
+    changed risk groups become visible only through module.toml -> CI_MATRIX.
+    A malformed or missing projection fails import rather than silently running
+    too little CI.
+    """
+    path = root / "docs/modules/CI_MATRIX.json"
+    document = json.loads(path.read_text(encoding="utf-8"))
+    if document.get("schema") != "hepta.module-ci-matrix.v1":
+        raise ValueError(f"{path}: unsupported CI matrix schema")
+    if set(document.get("groups", [])) != GROUPS:
+        raise ValueError(f"{path}: CI group closure mismatch")
+    result: dict[str, set[str]] = {}
+    for row in document.get("packages", []):
+        package_path = row.get("packagePath")
+        groups = row.get("ciGroups")
+        if (
+            not isinstance(package_path, str)
+            or not package_path.startswith("codex-rs/")
+            or not isinstance(row.get("packageName"), str)
+            or not row["packageName"].startswith("codex-hepta-")
+            or not isinstance(groups, list)
+            or any(group not in GROUPS for group in groups)
+        ):
+            raise ValueError(f"{path}: invalid package row")
+        package_root = package_path.removeprefix("codex-rs/").rstrip("/")
+        if not package_root or package_root in result:
+            raise ValueError(f"{path}: duplicate or empty package root {package_root}")
+        result[package_root] = set(groups)
+    if not result:
+        raise ValueError(f"{path}: empty package matrix")
+    return result
+
+
+PACKAGE_GROUPS = generated_package_groups()
+MODULE_MANIFEST = re.compile(r"docs/modules/[a-z0-9_.-]+/module\.toml\Z")
+MODULE_GROUPS: dict[str, set[str]] = {}
+for _row in json.loads((ROOT / "docs/modules/CI_MATRIX.json").read_text())["packages"]:
+    MODULE_GROUPS.setdefault(_row["module"], set()).update(_row["ciGroups"])
+
 
 DERIVED_ONLY_DOCS = frozenset(
     {
@@ -83,6 +102,7 @@ def select(paths: Iterable[str], *, force_full: bool = False) -> dict[str, bool]
     selected = set(GROUPS) if force_full else set()
     derived = force_full
     full_repo = force_full
+    native_desktop = force_full
 
     for path in paths:
         parts = PurePosixPath(path).parts
@@ -95,6 +115,20 @@ def select(paths: Iterable[str], *, force_full: bool = False) -> dict[str, bool]
         ):
             raise ValueError(f"invalid repository path: {path!r}")
 
+        # This application has its own Cargo graph. A workspace-only test
+        # cannot compile it, and an application-only edit needs no CLI rebuild.
+        if path.startswith("apps/hepta-native/"):
+            native_desktop = True
+            continue
+        if path.startswith(
+            (
+                "codex-rs/hepta-contracts/",
+                "codex-rs/hepta-private-state/",
+                "codex-rs/keyring-store/",
+            )
+        ):
+            native_desktop = True
+
         if path in DERIVED_ONLY_DOCS or path.startswith(
             "qualification/module-execution-dossiers/detail/"
         ):
@@ -104,6 +138,16 @@ def select(paths: Iterable[str], *, force_full: bool = False) -> dict[str, bool]
         if path in {"README.md", "CONTRIBUTING.md"} or (
             path.startswith("docs/") and path.endswith(".md")
         ):
+            continue
+
+        if MODULE_MANIFEST.fullmatch(path):
+            # This is the canonical module input, not an unfamiliar TOML file.
+            # Keep lifecycle validation and the module's owner lanes. Deleted
+            # or newly introduced owners conservatively keep all Hepta lanes,
+            # but never become a non-Hepta/full-repository change by suffix.
+            selected.update(MODULE_GROUPS.get(parts[2], GROUPS))
+            selected.add("lifecycle")
+            derived = True
             continue
 
         if path in CANONICAL_DOC_GROUPS:
@@ -136,11 +180,19 @@ def select(paths: Iterable[str], *, force_full: bool = False) -> dict[str, bool]
             continue
 
         if len(parts) > 2 and parts[0] == "codex-rs":
-            package = parts[1]
-            if package in PACKAGE_GROUPS:
-                selected.update(PACKAGE_GROUPS[package])
+            relative = "/".join(parts[1:])
+            matching_roots = [
+                package_root
+                for package_root in PACKAGE_GROUPS
+                if relative == package_root or relative.startswith(package_root + "/")
+            ]
+            if matching_roots:
+                package_root = max(matching_roots, key=len)
+                selected.update(PACKAGE_GROUPS[package_root])
                 continue
-            if package.startswith("hepta-"):
+            if parts[1].startswith("hepta-") or (
+                parts[1] == "ext" and len(parts) > 2 and parts[2].startswith("hepta-")
+            ):
                 # A newly introduced Hepta package stays inside architecture
                 # qualification; workspace manifest/lock edits separately force
                 # full repository validation.
@@ -185,6 +237,7 @@ def select(paths: Iterable[str], *, force_full: bool = False) -> dict[str, bool]
         "native": bool(selected),
         "derived": derived,
         "full_repo": full_repo,
+        "native_desktop": native_desktop or full_repo,
     }
 
 
@@ -231,10 +284,19 @@ def include_input_scope(
     """
     if scope["full_repo"]:
         return scope
-    static_paths = [path for path in paths if not select([path])["native"]]
+    static_paths = []
+    for path in paths:
+        boundary = select([path])
+        if not boundary["native"] and not boundary["native_desktop"]:
+            static_paths.append(path)
     if not static_paths:
         return scope
-    from hepta_ci_dependencies import graph, select_packages
+    try:
+        from scripts.hepta_ci_dependencies import graph, select_packages
+    except ModuleNotFoundError as error:
+        if error.name != "scripts":
+            raise
+        from hepta_ci_dependencies import graph, select_packages
     import tomllib
 
     # An invalid candidate graph is a failure, never an empty test plan.
@@ -275,6 +337,60 @@ def include_input_scope(
     return {key: value or extra[key] for key, value in scope.items()}
 
 
+def include_module_scope(
+    scope: dict[str, bool],
+    paths: list[str],
+    base: str,
+    head: str,
+    *,
+    root: Path = ROOT,
+) -> dict[str, bool]:
+    """Keep old owner lanes and semantic safety tests when manifests change.
+
+    A high risk label alone does not run tests: workflow steps consume these
+    booleans. Neither removing a CI group nor changing an authority field may
+    omit its actual effect/recovery tests. Impact breadth remains independent.
+    """
+    manifests = [path for path in paths if MODULE_MANIFEST.fullmatch(path)]
+    if not manifests:
+        return scope
+    try:
+        from scripts.hepta_ci_modules import load_catalog, manifest_risk
+    except ModuleNotFoundError as error:
+        if error.name != "scripts":
+            raise
+        from hepta_ci_modules import load_catalog, manifest_risk
+    import tomllib
+
+    after = load_catalog(root, head)
+    try:
+        before = load_catalog(root, base)
+    except (ValueError, subprocess.CalledProcessError, tomllib.TOMLDecodeError):
+        return select([], force_full=True)
+    result = dict(scope)
+    for path in manifests:
+        old, new = before.get(path), after.get(path)
+        if old is None and new is None:
+            raise ValueError(f"changed manifest absent from both exact trees: {path}")
+        for row in (old, new):
+            if row is None:
+                continue
+            for package in row.get("cargoPackages", []):
+                groups = package.get("ciGroups", [])
+                if not isinstance(groups, list) or any(
+                    group not in GROUPS for group in groups
+                ):
+                    raise ValueError(f"invalid module CI groups: {path}")
+                result.update({group: True for group in groups})
+        risk = manifest_risk(old, new)
+        if risk in {"stateful", "effect", "release"}:
+            result["lifecycle"] = True
+        if risk in {"effect", "release"}:
+            result["effects"] = True
+    result["native"] = any(result[group] for group in GROUPS)
+    return result
+
+
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--base")
@@ -290,6 +406,7 @@ def main() -> None:
     scope = select(paths, force_full=args.full)
     if not args.full:
         scope = include_input_scope(scope, paths, args.base, args.head)
+        scope = include_module_scope(scope, paths, args.base, args.head)
     print(
         json.dumps(
             {

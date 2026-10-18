@@ -269,6 +269,8 @@ async fn native_request_handles_remote_proxy_config_for_platform() {
         .expect("absolute cwd");
     let mut config = NetworkProxyConfig {
         enabled: true,
+        // This test checks proxy installation and allowlist rejection, not DNS.
+        allow_local_binding: true,
         ..NetworkProxyConfig::default()
     };
     config.set_allowed_domains(vec!["allowed.example".to_string()]);

@@ -193,6 +193,12 @@ impl FileSystemHandler {
                         .to_string(),
                 )
             })?;
+        if !crate::local_file_system::stable_handle_authorized_read_available() {
+            return Err(map_fs_error(io::Error::new(
+                io::ErrorKind::Unsupported,
+                "bounded authorized file reads are unsupported",
+            )));
+        }
         let bytes = self
             .file_system
             .read_file_bounded_authorized(&params.path, &params.sandbox, max_bytes)

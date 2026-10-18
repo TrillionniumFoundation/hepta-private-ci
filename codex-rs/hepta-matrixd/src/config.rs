@@ -325,11 +325,8 @@ fn running_record(
     require_canonical(fleet_root, "fleet root")?;
     let typed_root = HeptaFleetRoot::parse(fleet_root.to_path_buf())
         .map_err(|error| MatrixdConfigError::Invalid(error.to_string()))?;
-    let registry = FleetRegistry::open_existing(typed_root)?;
-    let record =
-        registry.load()?.agent(agent_id).cloned().ok_or_else(|| {
-            MatrixdConfigError::Invalid(format!("unknown fleet agent {agent_id}"))
-        })?;
+    let registry = FleetRegistry::open_existing_for_agent(typed_root, agent_id)?;
+    let record = registry.load_agent(agent_id)?;
     let expected_running_generation = spawn_generation.checked_add(1).ok_or_else(|| {
         MatrixdConfigError::Invalid("Matrix Agent generation overflow".to_string())
     })?;

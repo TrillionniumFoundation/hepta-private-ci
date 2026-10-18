@@ -48,6 +48,63 @@ fn local_read_ignores_corrupt_peers_but_global_audit_still_rejects_them() {
 }
 
 #[test]
+fn workload_open_does_not_migrate_peers_and_keeps_own_control_validation() {
+    let (_temp, registry, record) = fixture();
+    let peer_id = AgentId::parse("018f4f72-5f8f-7cc1-8f55-df9fb3aa2c13").unwrap();
+    let peer_layout = registry.layout().agent(&peer_id);
+    fs::create_dir(peer_layout.agent_root()).unwrap();
+    let opened = FleetRegistry::open_existing_for_agent(
+        registry.layout().fleet_root().clone(),
+        &record.manifest.agent_id,
+    )
+    .expect("current Agent is readable despite incomplete peer");
+    assert_eq!(
+        opened.load_agent(&record.manifest.agent_id).unwrap(),
+        record
+    );
+    assert_eq!(
+        opened.registered_agent_layouts().unwrap(),
+        vec![record.layout.clone(), peer_layout.clone()]
+    );
+    assert!(
+        !peer_layout.matrix_root().exists(),
+        "workload open must not migrate peers"
+    );
+    assert!(
+        opened.load().is_err(),
+        "Supervisor global audit still rejects the incomplete peer"
+    );
+    fs::write(record.layout.agent_config(), b"invalid manifest").unwrap();
+    assert!(
+        FleetRegistry::open_existing_for_agent(
+            registry.layout().fleet_root().clone(),
+            &record.manifest.agent_id
+        )
+        .is_err()
+    );
+}
+
+#[test]
+fn public_registration_read_does_not_require_private_peer_state() {
+    let (_temp, registry, record) = fixture();
+    fs::remove_dir_all(record.layout.matrix_root()).unwrap();
+    fs::remove_dir_all(record.layout.owner_run_root()).unwrap();
+    assert_eq!(
+        registry
+            .load_agent_manifest(&record.manifest.agent_id)
+            .unwrap(),
+        record.manifest
+    );
+    assert!(registry.load_agent(&record.manifest.agent_id).is_err());
+    fs::write(record.layout.agent_config(), b"invalid manifest").unwrap();
+    assert!(
+        registry
+            .load_agent_manifest(&record.manifest.agent_id)
+            .is_err()
+    );
+}
+
+#[test]
 fn local_read_observes_a_new_generation_without_cached_authority() {
     let (_temp, registry, mut expected) = fixture();
     expected.lifecycle = registry
@@ -66,9 +123,55 @@ fn local_read_observes_a_new_generation_without_cached_authority() {
 }
 
 #[test]
+fn historical_starting_read_requires_the_complete_exact_agent_history() {
+    let (_temp, registry, record) = fixture();
+    let id = &record.manifest.agent_id;
+    for (generation, lifecycle) in [
+        (0, AgentLifecycle::Starting),
+        (1, AgentLifecycle::Failed),
+        (2, AgentLifecycle::Stopped),
+        (3, AgentLifecycle::Starting),
+    ] {
+        registry
+            .compare_and_transition(id, generation, lifecycle)
+            .expect("real lifecycle transition");
+    }
+    let prior = registry
+        .load_agent_lifecycle_generation(id, 1)
+        .expect("original Starting event");
+    assert_eq!(prior.lifecycle, AgentLifecycle::Starting);
+    assert_eq!(prior.generation, 1);
+    assert_eq!(
+        registry
+            .load_agent(id)
+            .expect("current owner")
+            .lifecycle
+            .generation,
+        4
+    );
+    assert_eq!(
+        registry
+            .load_agent_lifecycle_generation(id, 3)
+            .expect("historical Stopped")
+            .lifecycle,
+        AgentLifecycle::Stopped
+    );
+    assert!(registry.load_agent_lifecycle_generation(id, 5).is_err());
+    // A real-looking older event from another Agent cannot become a restart
+    // grant merely because the current event and requested index still exist.
+    let path = lifecycle_path(record.layout.owner_run_root(), 1);
+    let mut unrelated = prior;
+    unrelated.agent_id = AgentId::parse("018f4f72-5f8f-7cc1-8f55-df9fb3aa2c13").expect("other id");
+    fs::write(path, serde_json::to_vec(&unrelated).expect("fixture event"))
+        .expect("fixture corruption");
+    assert!(registry.load_agent_lifecycle_generation(id, 1).is_err());
+    assert!(registry.load_agent(id).is_err());
+}
+
+#[test]
 fn local_read_still_rejects_its_own_corrupt_lifecycle_and_missing_manifest() {
     let (_temp, registry, record) = fixture();
-    let path = lifecycle_path(record.layout.run_root(), /*generation*/ 0);
+    let path = lifecycle_path(record.layout.owner_run_root(), /*generation*/ 0);
     let original = fs::read(&path).expect("original lifecycle");
     fs::write(&path, b"not-json").expect("corrupt local lifecycle");
     assert!(registry.load_agent(&record.manifest.agent_id).is_err());
@@ -86,4 +189,40 @@ fn local_read_rejects_a_symlinked_control_file() {
     fs::rename(path, &target).expect("move fixture manifest");
     std::os::unix::fs::symlink(target, path).expect("fixture symlink");
     assert!(registry.load_agent(&record.manifest.agent_id).is_err());
+}
+
+#[cfg(unix)]
+#[test]
+fn retirement_reclaims_shared_read_permissions_and_preserves_identity_history() {
+    use std::os::unix::fs::PermissionsExt;
+
+    let (_temp, registry, record) = fixture();
+    fs::set_permissions(
+        record.layout.agent_root(),
+        fs::Permissions::from_mode(0o750),
+    )
+    .expect("protected workload read access");
+    let evidence = record.layout.home_root().join("historical-evidence");
+    fs::write(&evidence, b"actual retained history").expect("historical record");
+    let archived = registry
+        .retire_agent(&record.manifest.agent_id, /*expected_generation*/ 0)
+        .expect("terminal archive");
+    assert_eq!(
+        registry
+            .retired_agent_path(&record.manifest.agent_id)
+            .expect("retirement receipt after publication"),
+        Some(archived.clone())
+    );
+    assert_eq!(
+        fs::metadata(&archived).unwrap().permissions().mode() & 0o777,
+        0o700
+    );
+    assert_eq!(
+        fs::read(archived.join("home").join("historical-evidence")).unwrap(),
+        b"actual retained history"
+    );
+    assert!(matches!(
+        registry.register(record.manifest.clone()),
+        Err(super::FleetRegistryError::AlreadyRegistered(agent)) if agent == record.manifest.agent_id
+    ));
 }

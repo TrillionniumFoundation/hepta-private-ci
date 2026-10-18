@@ -1,3 +1,4 @@
+#![cfg(feature = "server")]
 #![cfg(unix)]
 
 use std::path::Path;
@@ -7,7 +8,7 @@ use std::time::Instant;
 use anyhow::Context;
 use anyhow::Result;
 use anyhow::ensure;
-use codex_hepta_fleet::AgentLifecycle;
+use codex_hepta_agent_components::fleet::AgentLifecycle;
 use codex_hepta_supervisor::AgentCommand;
 use codex_hepta_supervisor::ProcessStream;
 use tokio::time::timeout;

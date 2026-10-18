@@ -1,3 +1,4 @@
+use std::io;
 use std::process::Output;
 use std::process::Stdio;
 use std::time::Duration;
@@ -29,7 +30,7 @@ impl Drop for KillGitProcessTreeOnDrop {
     }
 }
 
-fn spawn_git_command(command: &mut Command) -> Option<(Child, KillGitProcessTreeOnDrop)> {
+fn spawn_git_command(command: &mut Command) -> io::Result<(Child, KillGitProcessTreeOnDrop)> {
     scrub_non_inheritable_env_vars(command.as_std_mut());
     #[cfg(unix)]
     command.process_group(0);
@@ -48,57 +49,69 @@ fn spawn_git_command(command: &mut Command) -> Option<(Child, KillGitProcessTree
         Err(_) => {
             // A failed contained spawn leaves CREATE_SUSPENDED on the command.
             command.creation_flags(0);
-            (command.spawn().ok()?, None)
+            (command.spawn()?, None)
         }
     };
     #[cfg(not(windows))]
-    let child = command.spawn().ok()?;
+    let child = command.spawn()?;
 
     let process_tree = KillGitProcessTreeOnDrop {
         #[cfg(unix)]
-        process_id: child.id()?,
+        process_id: child
+            .id()
+            .ok_or_else(|| io::Error::other("Git child has no process ID"))?,
         #[cfg(windows)]
         job,
         #[cfg(unix)]
         armed: true,
     };
 
-    Some((child, process_tree))
+    Ok((child, process_tree))
 }
 
 async fn wait_for_git_command_with_timeout_output(
     child: Child,
     process_tree: KillGitProcessTreeOnDrop,
     timeout_duration: Duration,
-) -> Option<Output> {
+) -> io::Result<Output> {
     #[cfg(unix)]
     let mut process_tree = process_tree;
 
-    let result = timeout(timeout_duration, child.wait_with_output()).await;
+    // wait_with_output drains both pipes concurrently. The deadline also covers
+    // descendants that keep those pipes open after the Git wrapper has exited.
+    let output = timeout(timeout_duration, child.wait_with_output())
+        .await
+        .map_err(|_| io::Error::new(io::ErrorKind::TimedOut, "Git process tree timed out"))??;
 
-    match result {
-        Ok(Ok(output)) => {
-            #[cfg(windows)]
-            if let Some(job) = &process_tree.job {
-                job.preserve_descendants().ok()?;
-            }
-
-            #[cfg(unix)]
-            {
-                process_tree.armed = false;
-            }
-            Some(output)
-        }
-        _ => None,
+    #[cfg(windows)]
+    if let Some(job) = &process_tree.job {
+        job.preserve_descendants()?;
     }
+    #[cfg(unix)]
+    {
+        process_tree.armed = false;
+    }
+    Ok(output)
+}
+
+/// Run Git with concurrent output draining and a deadline for the whole process
+/// tree. Cancellation, timeout, or an I/O failure drops the original process-tree
+/// guard; spawn and timeout errors remain distinguishable.
+pub async fn run_git_command_with_timeout_output_checked(
+    command: &mut Command,
+    timeout_duration: Duration,
+) -> io::Result<Output> {
+    let (child, process_tree) = spawn_git_command(command)?;
+    wait_for_git_command_with_timeout_output(child, process_tree, timeout_duration).await
 }
 
 pub(crate) async fn run_git_command_with_timeout_output(
     command: &mut Command,
     timeout_duration: Duration,
 ) -> Option<Output> {
-    let (child, process_tree) = spawn_git_command(command)?;
-    wait_for_git_command_with_timeout_output(child, process_tree, timeout_duration).await
+    run_git_command_with_timeout_output_checked(command, timeout_duration)
+        .await
+        .ok()
 }
 
 #[cfg(test)]

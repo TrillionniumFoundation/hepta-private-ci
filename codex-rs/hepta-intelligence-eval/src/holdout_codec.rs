@@ -103,3 +103,25 @@ pub(crate) fn decode(mut bytes: &[u8]) -> Result<CrossFoldPlanReceiptV1, Evaluat
     validate_frozen_plan_receipt_integrity(&plan)?;
     Ok(plan)
 }
+
+// Crate-private archive decoding preserves the original seal. It cannot expose
+// a deserializing constructor for the public receipt. Signed recovery validates
+// both this seal and all frozen-plan/use bindings before a decision is published.
+crate::recorded_publication::archive::codec::structure!(HoldoutUseReceiptV1 {
+    disposition,
+    holdout_digest,
+    plan_id,
+    claim_scope,
+    plan_digest,
+    candidate_id,
+    baseline_id,
+    objective_digest,
+    dataset_digest,
+    estimand_digest,
+    metric_contract_digest,
+    final_holdout_window_id,
+    registry_digest,
+    use_digest,
+    authority,
+    receipt_seal,
+});

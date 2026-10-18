@@ -241,9 +241,12 @@ async fn queue_rejects_overrides_that_bypass_local_daemon() -> Result<()> {
             .context("missing socket parent")?,
     )?;
     let listener = tokio::net::UnixListener::bind(socket_path.as_path())?;
+    let (release_listener, keep_listener) = tokio::sync::oneshot::channel();
     let server = tokio::spawn(async move {
         let (probe, _) = listener.accept().await?;
         drop(probe);
+        let _ = keep_listener.await;
+        drop(listener);
         Ok::<_, std::io::Error>(())
     });
 
@@ -260,12 +263,20 @@ async fn queue_rejects_overrides_that_bypass_local_daemon() -> Result<()> {
         ])
         .output()
         .await?;
+    let _ = release_listener.send(());
     server.await??;
 
-    assert!(!output.status.success());
+    let stdout = String::from_utf8_lossy(&output.stdout);
+    let stderr = String::from_utf8_lossy(&output.stderr);
     assert!(
-        String::from_utf8(output.stderr)?
-            .contains("embedded app server while a local app-server daemon is running")
+        !output.status.success(),
+        "expected daemon override rejection; status={:?}; stdout={stdout}; stderr={stderr}",
+        output.status.code(),
+    );
+    assert!(
+        stderr.contains("embedded app server while a local app-server daemon is running"),
+        "unexpected daemon override error; status={:?}; stdout={stdout}; stderr={stderr}",
+        output.status.code(),
     );
     Ok(())
 }

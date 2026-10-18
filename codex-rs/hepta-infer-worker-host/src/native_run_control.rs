@@ -1,5 +1,8 @@
 //! Local durable admission around the actual App Server driver.
 
+use codex_hepta_agentd::AgentRunPhase;
+use codex_hepta_agentd::AgentRunReceipt;
+use codex_hepta_agentd::AgentdClient;
 use codex_hepta_infer_core::durable_control::DurableInferenceControl;
 use codex_hepta_infer_core::durable_control::native::NativeRequest;
 use codex_hepta_infer_core::durable_control::native::NativeReservationState;
@@ -24,10 +27,127 @@ pub struct NativeAdmission {
 /// physical App Server turn can start.
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct NativeIntelligenceRunBinding {
-    pub run_id: String,
-    pub expected_revision: u64,
-    pub context_digest: String,
-    pub envelope_digest: String,
+    pub(super) run_id: String,
+    pub(super) expected_revision: u64,
+    pub(super) agent_generation: u64,
+    pub(super) absolute_deadline_ms: u64,
+    pub(super) context_digest: String,
+    pub(super) envelope_digest: String,
+}
+
+impl NativeIntelligenceRunBinding {
+    /// Load the immutable product binding through the exact Agentd process.
+    /// The current lifecycle generation comes from that same owner response.
+    ///
+    /// runtime.codex-agentd-admitted-loader-v1: this is the only public
+    /// constructor. Callers select a durable run ID but cannot supply its
+    /// revision, context or compilation identity.
+    pub async fn load_from_agentd(
+        socket_path: std::path::PathBuf,
+        agent_id: codex_hepta_contracts::AgentId,
+        spawn_generation: u64,
+        run_id: String,
+    ) -> Result<Self> {
+        let (current_generation, receipt) =
+            AgentdClient::new(socket_path, agent_id, spawn_generation)?
+                .run_status_with_generation(run_id.clone())
+                .await?;
+        let receipt = receipt.ok_or("Agentd has no durable admitted work for the requested run")?;
+        Self::from_agentd_receipt(&run_id, current_generation, receipt)
+    }
+
+    /// Validate a receipt already obtained through the exact Agentd client.
+    ///
+    /// runtime.codex-agentd-admitted-binding-v1: callers may select a run ID,
+    /// but cannot mint its revision or content identities. `Dispatched` is
+    /// accepted only to reopen and reconcile the same operation; its original
+    /// pre-dispatch revision is derived by removing the single dispatch CAS.
+    fn from_agentd_receipt(
+        expected_run_id: &str,
+        expected_generation: u64,
+        receipt: AgentRunReceipt,
+    ) -> Result<Self> {
+        if expected_run_id.is_empty()
+            || expected_run_id.len() > 256
+            || expected_run_id.as_bytes().contains(&0)
+            || receipt.run_id != expected_run_id
+        {
+            return Err("Agentd admitted run identity mismatch".into());
+        }
+        if expected_generation == 0 || receipt.generation != expected_generation {
+            return Err("Agentd admitted run generation mismatch".into());
+        }
+        if receipt.terminal_observed {
+            return Err("Agentd admitted run is already terminal".into());
+        }
+        let expected_revision = match receipt.phase {
+            AgentRunPhase::ContextAttached => {
+                if receipt.dispatch_binding_digest.is_some()
+                    || receipt.pre_effect_abort_commitment_digest.is_some()
+                    || receipt.pre_effect_abort_proof_digest.is_some()
+                {
+                    return Err("Agentd context-attached run contains dispatch state".into());
+                }
+                receipt.revision
+            }
+            AgentRunPhase::Dispatched => {
+                if receipt.dispatch_binding_digest.is_none()
+                    || receipt.pre_effect_abort_commitment_digest.is_none()
+                    || receipt.pre_effect_abort_proof_digest.is_some()
+                {
+                    return Err("Agentd dispatched run lacks its exact recovery binding".into());
+                }
+                receipt
+                    .revision
+                    .checked_sub(1)
+                    .ok_or("Agentd dispatch revision underflow")?
+            }
+            _ => {
+                return Err(
+                    "Agentd run is not eligible for runtime.codex execution or reconciliation"
+                        .into(),
+                );
+            }
+        };
+        if expected_revision == 0 {
+            return Err("Agentd admitted run revision is zero".into());
+        }
+        if receipt.deadline_ms == 0 {
+            return Err("Agentd admitted run deadline is zero".into());
+        }
+        let context_digest = receipt
+            .context_digest
+            .ok_or("Agentd admitted run omitted its context digest")?;
+        let envelope_digest = receipt
+            .compilation_receipt_digest
+            .ok_or("Agentd admitted run omitted its compilation receipt digest")?;
+        if !runtime_codex_sha256_hex(&context_digest) || !runtime_codex_sha256_hex(&envelope_digest)
+        {
+            return Err("Agentd admitted run contains a non-canonical digest".into());
+        }
+        Ok(Self {
+            run_id: receipt.run_id,
+            expected_revision,
+            agent_generation: receipt.generation,
+            absolute_deadline_ms: receipt.deadline_ms,
+            context_digest,
+            envelope_digest,
+        })
+    }
+}
+
+fn runtime_codex_sha256_hex(value: &str) -> bool {
+    value.len() == 64
+        && value
+            .as_bytes()
+            .iter()
+            .all(|byte| byte.is_ascii_digit() || (b'a'..=b'f').contains(byte))
+}
+
+#[derive(Clone, Copy)]
+pub(crate) enum NativeDeadlinePolicy {
+    Profile,
+    Absolute(u64),
 }
 
 impl AppServerModelDriver {
@@ -48,6 +168,7 @@ impl AppServerModelDriver {
             prompt,
             context_query,
             /*intelligence*/ None,
+            NativeDeadlinePolicy::Profile,
             cancellation,
         )
         .await
@@ -70,6 +191,29 @@ impl AppServerModelDriver {
             prompt,
             context_query,
             Some(&intelligence),
+            NativeDeadlinePolicy::Profile,
+            cancellation,
+        )
+        .await
+    }
+
+    /// Execute an authority-neutral model request within its original absolute
+    /// deadline. Queueing or reopening cannot create a fresh execution budget.
+    pub async fn run_with_deadline(
+        &self,
+        control: &mut DurableInferenceControl,
+        admission: NativeAdmission,
+        prompt: String,
+        deadline_ms: u64,
+        cancellation: &CancellationToken,
+    ) -> Result<NativeRunOutput> {
+        self.run_bound(
+            control,
+            admission,
+            prompt,
+            /*context_query*/ None,
+            /*intelligence*/ None,
+            NativeDeadlinePolicy::Absolute(deadline_ms),
             cancellation,
         )
         .await
@@ -82,6 +226,7 @@ impl AppServerModelDriver {
         prompt: String,
         context_query: Option<String>,
         intelligence: Option<&NativeIntelligenceRunBinding>,
+        deadline: NativeDeadlinePolicy,
         cancellation: &CancellationToken,
     ) -> Result<NativeRunOutput> {
         if prompt.is_empty() || prompt.len() > super::MAX_PROMPT_BYTES {
@@ -104,9 +249,37 @@ impl AppServerModelDriver {
                 &self.config.agentd_socket,
                 self.config.timeout.as_millis(),
                 intelligence,
+                deadline,
             )?,
         };
+        // Retirement follows ordinary traffic as well as the idle timer. A
+        // busy worker must not consume resident history faster than it retires
+        // it; unresolved effects and unacknowledged owner outboxes stay held.
+        let history_now_ms = super::unix_time_ms()?;
+        let history_budget = match deadline {
+            NativeDeadlinePolicy::Absolute(deadline_ms) => {
+                std::time::Duration::from_millis(deadline_ms.saturating_sub(history_now_ms))
+            }
+            NativeDeadlinePolicy::Profile => intelligence.map_or(self.config.timeout, |binding| {
+                std::time::Duration::from_millis(
+                    binding.absolute_deadline_ms.saturating_sub(history_now_ms),
+                )
+            }),
+        };
+        if !history_budget.is_zero() {
+            control.maintain_native_history(
+                1,
+                history_budget.min(std::time::Duration::from_secs(1)),
+            )?;
+        }
         let record = control.reserve_native(request, admission.maximum_in_flight)?;
+        if record.state == NativeReservationState::AbortPending {
+            self.reconcile_pending_pre_effect_abort(control, &record)
+                .await?;
+            return Err(
+                "request was acknowledged aborted before effect; no provider replay".into(),
+            );
+        }
         if let Some(reason) = &record.pre_dispatch_stop {
             return Err(format!("request stopped before dispatch: {reason}").into());
         }
@@ -122,16 +295,25 @@ impl AppServerModelDriver {
                 .observation
                 .as_ref()
                 .filter(|output| output.terminal_observed)
+                .cloned()
             {
-                return Ok(output.clone());
+                self.publish_pending_intelligence_terminal(control, &record.request.request_id)
+                    .await?;
+                return Ok(output);
             }
             if let Some(reconciled) = self.reconcile_existing(&record, &prompt).await? {
-                let settled = control.settle_native(&record.request.request_id, reconciled)?;
-                return settled.observation.ok_or_else(|| {
-                    "durable reconciliation omitted its normalized observation".into()
-                });
+                let request_id = record.request.request_id.clone();
+                let settled = control.settle_native(&request_id, reconciled)?;
+                let output = settled
+                    .observation
+                    .ok_or("durable reconciliation omitted its normalized observation")?;
+                self.publish_pending_intelligence_terminal(control, &request_id)
+                    .await?;
+                return Ok(output);
             }
             if let Some(output) = record.observation {
+                self.publish_pending_intelligence_terminal(control, &record.request.request_id)
+                    .await?;
                 return Ok(output);
             }
             let dispatch = record
@@ -156,6 +338,8 @@ impl AppServerModelDriver {
                 codex_terminal_correlation_digest: None,
             };
             control.settle_native(&record.request.request_id, output.clone())?;
+            self.publish_pending_intelligence_terminal(control, &record.request.request_id)
+                .await?;
             return Ok(output);
         }
         let request_id = record.request.request_id;
@@ -166,6 +350,7 @@ impl AppServerModelDriver {
                 prompt,
                 context_query,
                 intelligence,
+                deadline,
                 cancellation,
             )
             .await
@@ -175,9 +360,12 @@ impl AppServerModelDriver {
                     control.cancel_native(&request_id)?;
                 }
                 let settled = control.settle_native(&request_id, output)?;
-                settled.observation.ok_or_else(|| {
-                    "durable execution settlement omitted its normalized observation".into()
-                })
+                let output = settled
+                    .observation
+                    .ok_or("durable execution settlement omitted its normalized observation")?;
+                self.publish_pending_intelligence_terminal(control, &request_id)
+                    .await?;
+                Ok(output)
             }
             Err(error) => {
                 if control
@@ -194,32 +382,46 @@ impl AppServerModelDriver {
     }
 }
 
-fn native_source_payload_digest(
+pub(crate) fn native_source_payload_digest(
     prompt: &str,
     context_query: &Option<String>,
     socket: &std::path::Path,
     timeout_ms: u128,
     intelligence: Option<&NativeIntelligenceRunBinding>,
+    deadline: NativeDeadlinePolicy,
 ) -> Result<String> {
-    let bytes = match intelligence {
-        None => serde_json::to_vec(&(
+    let bytes = match (intelligence, deadline) {
+        (None, NativeDeadlinePolicy::Absolute(deadline_ms)) => serde_json::to_vec(&(
+            "hepta.native-assessment-request.v1",
+            prompt,
+            context_query,
+            socket,
+            timeout_ms,
+            deadline_ms,
+        ))?,
+        (None, NativeDeadlinePolicy::Profile) => serde_json::to_vec(&(
             "hepta.native-request.v1",
             prompt,
             context_query,
             socket,
             timeout_ms,
         ))?,
-        Some(binding) => serde_json::to_vec(&(
-            "hepta.native-intelligence-request.v2",
+        (Some(binding), NativeDeadlinePolicy::Profile) => serde_json::to_vec(&(
+            "hepta.native-intelligence-request.v3",
             prompt,
             context_query,
             socket,
             timeout_ms,
             &binding.run_id,
             binding.expected_revision,
+            binding.agent_generation,
             &binding.context_digest,
             &binding.envelope_digest,
+            binding.absolute_deadline_ms,
         ))?,
+        (Some(_), NativeDeadlinePolicy::Absolute(_)) => {
+            return Err("intelligence deadline is owned by its admitted binding".into());
+        }
     };
     Ok(digest(&bytes))
 }

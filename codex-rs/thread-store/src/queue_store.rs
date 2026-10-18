@@ -11,6 +11,7 @@ use codex_state::QueuedClientBindingFinalizeMode;
 use codex_state::QueuedClientBindingFinalizeOutcome;
 use codex_state::QueuedClientBindingFinalizeRequest;
 use codex_state::QueuedClientBindingLease;
+use codex_state::QueuedClientBindingObservation;
 use codex_state::QueuedClientBindingReserveOutcome;
 use codex_state::QueuedClientDispatchClaimOutcome;
 use codex_state::QueuedClientDispatchLease;
@@ -25,6 +26,23 @@ use crate::ThreadStoreFuture;
 
 /// Storage-neutral persistence for ordered, thread-scoped user messages.
 pub trait QueueStore: Send + Sync {
+    /// Observe an exact durable binding without reserving, admitting, or
+    /// dispatching. Absence is not terminal evidence. Unsupported stores fail
+    /// closed instead of falling back to a mutating reconciliation path.
+    fn observe_client_binding<'a>(
+        &'a self,
+        thread_id: ThreadId,
+        client_id: &'a str,
+        expected_payload_sha256: &'a str,
+    ) -> ThreadStoreFuture<'a, Option<QueuedClientBindingObservation>> {
+        let _ = (thread_id, client_id, expected_payload_sha256);
+        Box::pin(async {
+            Err(ThreadStoreError::Unsupported {
+                operation: "queue_client_binding_observe",
+            })
+        })
+    }
+
     /// Return a stable revision that changes when another connection updates the queue.
     fn change_version(&self) -> ThreadStoreFuture<'_, i64>;
 
@@ -289,6 +307,19 @@ where
 }
 
 impl QueueStore for LocalQueueStore {
+    fn observe_client_binding<'a>(
+        &'a self,
+        thread_id: ThreadId,
+        client_id: &'a str,
+        expected_payload_sha256: &'a str,
+    ) -> ThreadStoreFuture<'a, Option<QueuedClientBindingObservation>> {
+        queue_future(self.queue().observe_client_binding(
+            thread_id,
+            client_id,
+            expected_payload_sha256,
+        ))
+    }
+
     fn change_version(&self) -> ThreadStoreFuture<'_, i64> {
         queue_future(self.queue().change_version())
     }

@@ -1,3 +1,9 @@
+#[path = "ephemeral_disposal.rs"]
+mod ephemeral_disposal;
+
+#[path = "ephemeral_retention.rs"]
+mod ephemeral_retention;
+
 use super::persisted_resume_settings::PersistedResumeSettings;
 use super::persisted_resume_settings::latest_persisted_resume_settings;
 use super::thread_enrichment::enrich_loaded_threads;
@@ -586,7 +592,7 @@ pub(crate) struct ThreadRequestProcessor {
     pub(super) turn_cost_worker: Option<crate::turn_cost_worker::TurnCostWorkerHandle>,
     pub(super) initial_config_warnings: Arc<Vec<ConfigWarningNotification>>,
     pub(super) hepta_qualification_turn_writer:
-        Option<codex_hepta_memory_extension::QualificationTurnWriterHost>,
+        Option<codex_hepta_app_bridge::memory_extension::QualificationTurnWriterHost>,
 }
 
 /// Outcome of trying to satisfy a resume request from an already loaded thread.
@@ -621,7 +627,7 @@ impl ThreadRequestProcessor {
         turn_cost_worker: Option<crate::turn_cost_worker::TurnCostWorkerHandle>,
         initial_config_warnings: Vec<ConfigWarningNotification>,
         hepta_qualification_turn_writer: Option<
-            codex_hepta_memory_extension::QualificationTurnWriterHost,
+            codex_hepta_app_bridge::memory_extension::QualificationTurnWriterHost,
         >,
     ) -> Self {
         Self {
@@ -1119,6 +1125,11 @@ impl ThreadRequestProcessor {
     ) -> Result<ThreadUnsubscribeResponse, JSONRPCErrorError> {
         let thread_id = ThreadId::from_string(&params.thread_id)
             .map_err(|err| invalid_request(format!("invalid thread id: {err}")))?;
+        if let Some(disposal) = params.ephemeral_disposal {
+            return self
+                .dispose_ephemeral(thread_id, connection_id, disposal)
+                .await;
+        }
 
         if self.thread_manager.get_thread(thread_id).await.is_err() {
             self.finalize_thread_teardown(thread_id).await;
@@ -1374,7 +1385,9 @@ impl ThreadRequestProcessor {
         client_mcp_extensions: ClientMcpExtensions,
         request_context: RequestContext,
     ) -> Result<(), JSONRPCErrorError> {
+        let creation_parameters = params.idempotency_key.as_ref().map(|_| params.clone());
         let ThreadStartParams {
+            idempotency_key: _,
             model,
             model_provider,
             allow_provider_model_fallback,
@@ -1437,6 +1450,18 @@ impl ThreadRequestProcessor {
         let runtime_workspace_roots = runtime_workspace_roots.map(resolve_runtime_workspace_roots);
         let environments =
             resolve_turn_environment_selections(self.thread_manager.as_ref(), environments)?;
+        let identified_creation = if let Some(creation_parameters) = creation_parameters.as_ref() {
+            match self.admit_identified_creation(creation_parameters).await? {
+                super::thread_creation::CreationAdmission::Unidentified => None,
+                super::thread_creation::CreationAdmission::Reserved(creation) => Some(creation),
+                super::thread_creation::CreationAdmission::Completed(response) => {
+                    self.outgoing.send_response(request_id, response).await;
+                    return Ok(());
+                }
+            }
+        } else {
+            None
+        };
         let mut typesafe_overrides = self.build_thread_config_overrides(
             model,
             model_provider,
@@ -1477,6 +1502,7 @@ impl ThreadRequestProcessor {
                 qualification_turn_writer,
                 thread_store,
                 config_manager,
+                identified_creation,
                 request_id,
                 app_server_client_name,
                 app_server_client_version,
@@ -1506,31 +1532,27 @@ impl ThreadRequestProcessor {
         Ok(())
     }
 
-    pub(crate) async fn drain_background_tasks(&self) {
-        self.background_tasks.close();
-        if tokio::time::timeout(Duration::from_secs(10), self.background_tasks.wait())
-            .await
-            .is_err()
-        {
-            warn!("timed out waiting for background tasks to shut down; proceeding");
-        }
+    pub(crate) async fn drain_background_tasks(&self) -> bool {
+        crate::historical_observation::join_thread_background_tasks(&self.background_tasks).await
     }
 
     pub(crate) async fn clear_all_thread_listeners(&self) {
         self.thread_state_manager.clear_all_listeners().await;
     }
 
-    pub(crate) async fn shutdown_threads(&self) {
+    pub(crate) async fn shutdown_threads(&self) -> bool {
         let report = self
             .thread_manager
             .shutdown_all_threads_bounded(Duration::from_secs(10))
             .await;
+        let complete = report.submit_failed.is_empty() && report.timed_out.is_empty();
         for thread_id in report.submit_failed {
             warn!("failed to submit Shutdown to thread {thread_id}");
         }
         for thread_id in report.timed_out {
             warn!("timed out waiting for thread {thread_id} to shut down");
         }
+        complete
     }
 
     async fn request_trace_context(
@@ -1555,10 +1577,11 @@ impl ThreadRequestProcessor {
     async fn thread_start_task(
         listener_task_context: ListenerTaskContext,
         qualification_turn_writer: Option<
-            codex_hepta_memory_extension::QualificationTurnWriterHost,
+            codex_hepta_app_bridge::memory_extension::QualificationTurnWriterHost,
         >,
         thread_store: Arc<dyn ThreadStore>,
         config_manager: ConfigManager,
+        identified_creation: Option<super::thread_creation::IdentifiedCreation>,
         request_id: ConnectionRequestId,
         app_server_client_name: Option<String>,
         app_server_client_version: Option<String>,
@@ -1684,7 +1707,7 @@ impl ThreadRequestProcessor {
             .sum();
         let mut thread_extension_init = ExtensionDataInit::new();
         if let Some(host) = qualification_turn_writer {
-            codex_hepta_memory_extension::insert_qualification_turn_writer_host(
+            codex_hepta_app_bridge::memory_extension::insert_qualification_turn_writer_host(
                 &mut thread_extension_init,
                 host,
             );
@@ -1693,7 +1716,28 @@ impl ThreadRequestProcessor {
             thread_extension_init.insert(selected_capability_roots);
         }
         let mut start_options = StartThreadOptions::new(config);
-        let reserved_thread_id = if start_options.config.ephemeral {
+        let reserved_thread_id = if let Some(creation) = &identified_creation {
+            if start_options.config.ephemeral
+                || start_options.config.cwd.as_path() != creation.reservation.cwd
+            {
+                return Err(invalid_request(
+                    "effective creation configuration changed its original cwd or durability",
+                ));
+            }
+            if let Some(project_id) = &project_id {
+                thread_store
+                    .stage_pending_thread_metadata(
+                        creation.reservation.thread_id,
+                        StoreThreadMetadataPatch {
+                            project_id: Some(Some(project_id.clone())),
+                            ..Default::default()
+                        },
+                    )
+                    .await
+                    .map_err(|error| internal_error(error.to_string()))?;
+            }
+            Some(creation.reservation.thread_id)
+        } else if start_options.config.ephemeral {
             None
         } else {
             stage_pending_project_metadata(
@@ -1842,6 +1886,9 @@ impl ThreadRequestProcessor {
             reasoning_effort: config_snapshot.reasoning_effort,
             multi_agent_mode: MultiAgentMode::ExplicitRequestOnly,
         };
+        if let Some(creation) = &identified_creation {
+            creation.finish(thread_store.as_ref(), &response).await?;
+        }
         let notif = thread_started_notification(thread);
         listener_task_context
             .outgoing

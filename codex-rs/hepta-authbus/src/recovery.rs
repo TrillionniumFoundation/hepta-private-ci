@@ -336,6 +336,16 @@ async fn authority_frontier_digest_tx(
          FROM authbus_issuer_registry ORDER BY issuer_id, purpose, key_epoch",
     )
     .await?;
+    // Preserve the pre-migration digest when the new table is empty. Once a
+    // seal exists its complete identity participates in the external frontier.
+    let seals: i64 = sqlx::query_scalar("SELECT COUNT(*) FROM authbus_operation_admission_fence")
+        .fetch_one(&mut **tx)
+        .await
+        .map_err(storage)?;
+    if seals != 0 {
+        append_rows(tx, &mut bytes, "operation_admission_fence",
+            "SELECT operation_id||'|'||hex(effect_digest) FROM authbus_operation_admission_fence ORDER BY operation_id").await?;
+    }
     Ok(Digest32::of_bytes(&bytes))
 }
 

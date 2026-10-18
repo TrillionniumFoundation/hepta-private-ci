@@ -9,13 +9,25 @@ from __future__ import annotations
 
 import os
 from pathlib import Path
-import re
 import subprocess
 import tempfile
 import unittest
 
+from scripts.hepta_workflow_commands import (
+    load_workflow,
+    run_scalar_commands,
+    workflow_contains_key,
+    workflow_expression_references,
+    workflow_job,
+    workflow_needs,
+    workflow_run,
+    workflow_step_by_id,
+    workflow_steps,
+)
+
 ROOT = Path(__file__).resolve().parents[1]
 WORKFLOW = ROOT / ".github/workflows/rust-ci.yml"
+WORKFLOW_DOCUMENT = load_workflow(WORKFLOW.read_text(encoding="utf-8"))
 FLAGS = ("CODEX", "WORKFLOWS", "ARGUMENT_COMMENT_LINT_PACKAGE")
 RESULTS = (
     "MANIFEST_RESULT",
@@ -26,26 +38,24 @@ RESULTS = (
 )
 
 
-def job_block(name: str) -> str:
-    text = WORKFLOW.read_text(encoding="utf-8")
-    match = re.search(
-        r"(?ms)^  " + re.escape(name) + r":\n(.*?)(?=^  [\w-]+:|\Z)", text
-    )
-    if match is None:
-        raise AssertionError(f"missing workflow job: {name}")
-    return match.group(1)
+def job(name: str) -> dict:
+    return workflow_job(WORKFLOW_DOCUMENT, name)
 
 
-def shell_block(job: str, step: str) -> str:
-    text = job_block(job)
-    text = text.split("      - name: " + step + "\n", 1)[1]
-    text = text.split("        run: |\n", 1)[1]
-    lines = []
-    for line in text.splitlines():
-        if line and not line.startswith("          "):
-            break
-        lines.append(line[10:] if line else "")
-    return "\n".join(lines) + "\n"
+def shell_block(job_name: str, step_id: str) -> str:
+    return workflow_run(workflow_step_by_id(WORKFLOW_DOCUMENT, job_name, step_id))
+
+
+def command_lines(job_name: str) -> list[list[str]]:
+    return [
+        command
+        for step in workflow_steps(WORKFLOW_DOCUMENT, job_name)
+        for command in run_scalar_commands(step.get("run", ""))
+    ]
+
+
+def contains_command(job_name: str, expected: list[str]) -> bool:
+    return any(command == expected for command in command_lines(job_name))
 
 
 class FastFeedbackTests(unittest.TestCase):
@@ -102,11 +112,7 @@ class FastFeedbackTests(unittest.TestCase):
         output = Path(self.env["GITHUB_OUTPUT"])
         output.unlink(missing_ok=True)
         result = subprocess.run(
-            [
-                "bash",
-                "-c",
-                shell_block("changed", "Detect changed paths (no external action)"),
-            ],
+            ["bash", "-c", shell_block("changed", "detect")],
             cwd=self.repo,
             env={
                 **self.env,
@@ -133,7 +139,7 @@ class FastFeedbackTests(unittest.TestCase):
             **overrides,
         }
         return subprocess.run(
-            ["bash", "-c", shell_block("results", "Summarize")],
+            ["bash", "-c", shell_block("results", "summary")],
             cwd=self.repo,
             env=env,
             text=True,
@@ -249,7 +255,7 @@ class FastFeedbackTests(unittest.TestCase):
             0,
         )
 
-    def test_selected_workflows_still_require_native_rust_checks(self):
+    def test_selected_workflows_require_native_checks(self):
         self.assertNotEqual(
             self.summarize(
                 NEEDS_CHANGED_OUTPUTS_WORKFLOWS="true",
@@ -262,48 +268,87 @@ class FastFeedbackTests(unittest.TestCase):
             0,
         )
 
-    def test_parameter_comment_diagnostics_do_not_compile_every_pr_three_times(self):
-        self.assertNotIn("argument_comment_lint_prebuilt", WORKFLOW.read_text())
-        full = ROOT / ".github/workflows/rust-ci-full.yml"
-        text = full.read_text()
-        self.assertIn(
-            "  argument_comment_lint_prebuilt:\n    continue-on-error: true", text
+    def test_scheduled_parameter_style_diagnostic_is_nonblocking(self):
+        full = load_workflow((ROOT / ".github/workflows/rust-ci-full.yml").read_text())
+        self.assertEqual(
+            workflow_job(full, "argument_comment_lint_prebuilt")["continue-on-error"],
+            "true",
         )
-        summary = text.split("  results:\n", 1)[1]
-        self.assertNotIn("needs.argument_comment_lint_prebuilt", summary)
+        self.assertNotIn(
+            "argument_comment_lint_prebuilt",
+            workflow_needs(workflow_job(full, "results")),
+        )
 
     def test_benchmark_is_preserved_but_does_not_delay_format_result(self):
-        self.assertNotIn("bench-smoke", job_block("general"))
-        self.assertIn("run: just bench-smoke", job_block("benchmark_smoke"))
-        self.assertIn(
-            "needs: [changed, workspace_manifest]", job_block("benchmark_smoke")
+        self.assertFalse(contains_command("general", ["just", "bench-smoke"]))
+        self.assertTrue(contains_command("benchmark_smoke", ["just", "bench-smoke"]))
+        self.assertEqual(
+            workflow_needs(job("benchmark_smoke")), {"changed", "workspace_manifest"}
         )
-        self.assertIn("needs: changed", job_block("general"))
-        self.assertIn("benchmark_smoke,", job_block("results"))
-        self.assertIn("workspace_manifest,", job_block("results"))
-        self.assertEqual(WORKFLOW.read_text().count("run: just bench-smoke"), 1)
+        self.assertEqual(workflow_needs(job("general")), {"changed"})
+        self.assertTrue(
+            {"benchmark_smoke", "workspace_manifest"} <= workflow_needs(job("results"))
+        )
+        occurrences = sum(
+            command == ["just", "bench-smoke"]
+            for name in WORKFLOW_DOCUMENT["jobs"]
+            for command in command_lines(name)
+        )
+        self.assertEqual(occurrences, 1)
 
     def test_manifest_preflight_precedes_toolchain_and_does_not_compile(self):
-        text = job_block("workspace_manifest")
-        self.assertLess(
-            text.index("python3 scripts/hepta_workspace.py"),
-            text.index("dtolnay/rust-toolchain"),
+        steps = workflow_steps(WORKFLOW_DOCUMENT, "workspace_manifest")
+        preflight = workflow_step_by_id(
+            WORKFLOW_DOCUMENT, "workspace_manifest", "manifest-preflight"
         )
-        self.assertIn("cargo metadata --locked --no-deps --format-version 1", text)
-        self.assertNotIn("cargo check", text)
-        self.assertNotIn("continue-on-error", text)
+        toolchain = [
+            step
+            for step in steps
+            if str(step.get("uses", "")).startswith("dtolnay/rust-toolchain@")
+        ]
+        self.assertEqual(len(toolchain), 1)
+        self.assertLess(steps.index(preflight), steps.index(toolchain[0]))
+        self.assertIn(
+            ["python3", "scripts/hepta_workspace.py"],
+            run_scalar_commands(preflight["run"]),
+        )
+        commands = command_lines("workspace_manifest")
+        self.assertTrue(
+            any(
+                command[:6]
+                == [
+                    "cargo",
+                    "metadata",
+                    "--locked",
+                    "--no-deps",
+                    "--format-version",
+                    "1",
+                ]
+                for command in commands
+            )
+        )
+        self.assertFalse(any(command[:2] == ["cargo", "check"] for command in commands))
+        self.assertFalse(
+            workflow_contains_key(job("workspace_manifest"), "continue-on-error")
+        )
 
     def test_result_bindings_cover_new_required_jobs(self):
-        text = job_block("results")
-        self.assertIn("CHANGED_RESULT: ${{ needs.changed.result }}", text)
-        self.assertIn("MANIFEST_RESULT: ${{ needs.workspace_manifest.result }}", text)
-        self.assertIn("BENCHMARK_RESULT: ${{ needs.benchmark_smoke.result }}", text)
+        environment = workflow_step_by_id(WORKFLOW_DOCUMENT, "results", "summary")[
+            "env"
+        ]
+        expected = {
+            "CHANGED_RESULT": "needs.changed.result",
+            "MANIFEST_RESULT": "needs.workspace_manifest.result",
+            "BENCHMARK_RESULT": "needs.benchmark_smoke.result",
+        }
+        for key, reference in expected.items():
+            with self.subTest(key=key):
+                self.assertEqual(
+                    workflow_expression_references(environment[key]), {reference}
+                )
 
     def test_gate_shell_syntax(self):
-        for job, step in (
-            ("changed", "Detect changed paths (no external action)"),
-            ("results", "Summarize"),
-        ):
+        for job, step in (("changed", "detect"), ("results", "summary")):
             with self.subTest(job=job):
                 result = subprocess.run(
                     ["bash", "-n"],

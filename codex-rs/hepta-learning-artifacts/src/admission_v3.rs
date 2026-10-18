@@ -72,6 +72,12 @@ pub fn verify_artifact_admission_v3(
     if admission.admitted_at > now {
         return Err(ArtifactAdmissionError::AdmissionTimeWindow);
     }
+    // The claimed admission instant must also lie within the manifest's
+    // lifetime. A public receipt and its hash are bookkeeping, not authority.
+    validate_artifact_manifest_v2(
+        admission.validated_manifest.manifest.clone(),
+        admission.admitted_at,
+    )?;
     let revalidated =
         validate_artifact_manifest_v2(admission.validated_manifest.manifest.clone(), now)?;
     if revalidated.manifest_digest != admission.validated_manifest.manifest_digest {
@@ -103,7 +109,11 @@ pub fn validate_artifact_publication_v3(
     if admission.withdrawal_scope_digest != scope_digest {
         return Err(ArtifactAdmissionError::WithdrawalScopeChanged);
     }
-    verify_artifact_admission_v3(admission, registry.head_digest(), now)
+    verify_artifact_admission_v3(admission, registry.head_digest(), now)?;
+    // Revalidate semantic admission against the live owner state. Merely
+    // recomputing a public receipt digest cannot erase a withdrawal.
+    registry.admit_manifest(admission.validated_manifest.manifest.clone(), now)?;
+    Ok(())
 }
 
 fn digest_admission(
@@ -161,6 +171,8 @@ impl From<ArtifactClosureError> for ArtifactAdmissionError {
 
 #[cfg(test)]
 mod tests {
+    use pretty_assertions::assert_eq;
+
     use super::*;
     use crate::test_support::FixtureValue;
     use codex_hepta_types::Generation;
@@ -283,6 +295,71 @@ mod tests {
         assert_eq!(
             validate_artifact_publication_v3(&admission, &registry, 21),
             Err(ArtifactAdmissionError::WithdrawalHeadChanged)
+        );
+    }
+
+    #[test]
+    fn publication_rechecks_withdrawal_after_receipt_hash_is_recomputed() {
+        let dataset = digest("dataset");
+        let mut registry = DatasetWithdrawalRegistry::new_scoped(scope("a"));
+        let mut admission = admit_manifest_at_withdrawal_head_v3(
+            &registry,
+            registry.head_digest(),
+            manifest(dataset),
+            /*now*/ 20,
+        )
+        .fixture("initial admission succeeds");
+        registry
+            .append(DatasetWithdrawalNoticeV1 {
+                notice_id: id("notice"),
+                dataset_digest: dataset,
+                source_tombstone_digest: digest("tombstone"),
+                authority_id: id("authority"),
+                credential_chain_digest: digest("credential"),
+                signing_key_digest: digest("key"),
+                authority_epoch: 1,
+                issued_at: 21,
+            })
+            .fixture("withdrawal appends");
+        admission.withdrawal_head_digest = registry.head_digest();
+        admission.admission_digest = digest_admission(
+            admission.validated_manifest.manifest_digest,
+            admission.withdrawal_scope_digest,
+            admission.withdrawal_head_digest,
+            admission.admitted_at,
+        );
+        verify_artifact_admission_v3(&admission, registry.head_digest(), /*now*/ 21)
+            .fixture("public hashes alone are not withdrawal authority");
+        assert_eq!(
+            validate_artifact_publication_v3(&admission, &registry, /*now*/ 21),
+            Err(ArtifactAdmissionError::Manifest(
+                ArtifactClosureError::WithdrawnDataset
+            ))
+        );
+    }
+
+    #[test]
+    fn admission_time_must_match_the_manifest_lifetime() {
+        let registry = DatasetWithdrawalRegistry::new_scoped(scope("a"));
+        let mut admission = admit_manifest_at_withdrawal_head_v3(
+            &registry,
+            registry.head_digest(),
+            manifest(digest("dataset")),
+            /*now*/ 20,
+        )
+        .fixture("initial admission succeeds");
+        admission.admitted_at = 9;
+        admission.admission_digest = digest_admission(
+            admission.validated_manifest.manifest_digest,
+            admission.withdrawal_scope_digest,
+            admission.withdrawal_head_digest,
+            admission.admitted_at,
+        );
+        assert_eq!(
+            verify_artifact_admission_v3(&admission, registry.head_digest(), /*now*/ 20),
+            Err(ArtifactAdmissionError::Manifest(
+                ArtifactClosureError::ManifestTimeWindow
+            ))
         );
     }
 }

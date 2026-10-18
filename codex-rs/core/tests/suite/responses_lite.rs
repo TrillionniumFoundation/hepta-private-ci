@@ -122,6 +122,7 @@ async fn responses_lite_uses_input_items_for_instructions_and_tools() -> Result<
     let input = body["input"]
         .as_array()
         .context("Responses request input should be an array")?;
+    super::durable_metadata::assert_wire_has_no_local_metadata(input);
     assert_eq!(input[0]["type"], "additional_tools");
     assert_eq!(input[0]["role"], "developer");
     assert_eq!(
@@ -133,9 +134,6 @@ async fn responses_lite_uses_input_items_for_instructions_and_tools() -> Result<
                 "type": "input_text",
                 "text": "test instructions",
             }],
-            "internal_chat_message_metadata_passthrough": {
-                "content_item_kinds": ["model.base_instructions"],
-            },
         })
     );
 
@@ -271,7 +269,12 @@ async fn responses_lite_prepares_images() -> Result<()> {
     .await;
 
     let request = response_mock.single_request();
-    assert!(request.has_content_kinds(&["user.image", "images.preparation_error"]));
+    super::durable_metadata::assert_content_kinds(
+        &test.codex,
+        &request,
+        &["user.image", "images.preparation_error"],
+    )
+    .await?;
     let user_content = request
         .input()
         .into_iter()

@@ -238,6 +238,47 @@ fn every_partial_frame_boundary_recovers_only_the_predecessor() {
 }
 
 #[test]
+fn complete_segment_recovery_never_repairs_a_missing_acknowledged_frame() {
+    let fixture = Fixture::new();
+    let anchor = {
+        let mut journal = fixture.open();
+        let first = checked(journal.commit(Digest32::ZERO, &tick(1)));
+        let second = checked(journal.commit(first.checkpoint_after, &tick(2)));
+        second.checkpoint_after
+    };
+    let full = checked(fs::read(fixture.path()));
+    let frame = 304 + 16 * config().width;
+    for cut in 0..full.len() {
+        checked(fs::write(fixture.path(), &full[..cut]));
+        assert!(
+            SparseJournal::open_complete(fixture.file(), config(), scope(), /*max_records*/ 2,)
+                .is_err()
+        );
+        assert_eq!(checked(fs::read(fixture.path())), full[..cut]);
+    }
+    checked(fs::write(fixture.path(), &full));
+    let recovered = checked(SparseJournal::open_complete(
+        fixture.file(),
+        config(),
+        scope(),
+        /*max_records*/ 2,
+    ));
+    assert_eq!(
+        checked(recovered.current()).map(SparseCheckpoint::digest),
+        Some(anchor)
+    );
+    drop(recovered);
+    let mut unexpected_tail = full;
+    unexpected_tail.extend_from_slice(&vec![0; frame - 1]);
+    checked(fs::write(fixture.path(), &unexpected_tail));
+    assert_eq!(
+        SparseJournal::open_complete(fixture.file(), config(), scope(), /*max_records*/ 2,).err(),
+        Some(JournalError::Corrupt)
+    );
+    assert_eq!(checked(fs::read(fixture.path())), unexpected_tail);
+}
+
+#[test]
 fn complete_corruption_is_rejected_without_truncation() {
     let fixture = Fixture::new();
     checked(fixture.open().commit(Digest32::ZERO, &tick(1)));

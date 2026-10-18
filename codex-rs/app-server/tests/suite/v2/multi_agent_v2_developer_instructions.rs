@@ -706,6 +706,7 @@ async fn cold_resume_preserves_effective_developer_instructions_for_worker(
             .request(|request_id| ClientRequest::ThreadUnsubscribe {
                 request_id,
                 params: ThreadUnsubscribeParams {
+                    ephemeral_disposal: None,
                     thread_id: child_thread_id.clone(),
                 },
             })

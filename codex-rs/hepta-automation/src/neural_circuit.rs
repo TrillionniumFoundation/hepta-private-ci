@@ -122,6 +122,10 @@ pub struct CircuitCompilationReceiptV1 {
 }
 
 impl NeuralCircuitCandidateV1 {
+    #[allow(
+        clippy::too_many_arguments,
+        reason = "the immutable circuit manifest binds topology, policy, and resource identities at construction"
+    )]
     pub fn new(
         circuit_id: impl Into<String>,
         version: u32,

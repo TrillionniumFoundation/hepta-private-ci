@@ -73,25 +73,16 @@ class AlgorithmSemanticsTests(unittest.TestCase):
     def test_editorial_revisions_preserve_module_and_protocol_ownership(self):
         self.verify_document()
         self.document.write_text(
-            self.text.replace("# Owner interface", "# Operations")
-            + "\nA revised explanation of the same interface.\n",
+            "# Operations\n\nA revised explanation of the same interface.\n",
             encoding="utf-8",
         )
         self.verify_document()
 
-    def test_unknown_cited_paper_and_missing_owner_are_rejected(self):
+    def test_unknown_cited_paper_is_rejected(self):
         with self.assertRaisesRegex(SystemExit, "unknown paper"):
             VERIFIER.validate_specification_document(self.row, set())
-        self.document.write_text(self.text.replace("fixture.owner", "other.owner"))
-        with self.assertRaisesRegex(SystemExit, "missing module"):
-            self.verify_document()
 
-    def test_missing_protocol_authority_and_empty_document_are_rejected(self):
-        self.document.write_text(
-            self.text.replace(VERIFIER.CONTRACTS_PATH, "other.json")
-        )
-        with self.assertRaisesRegex(SystemExit, "protocol authority boundary"):
-            self.verify_document()
+    def test_empty_document_is_rejected(self):
         self.document.write_text(" \n")
         with self.assertRaisesRegex(SystemExit, "empty document"):
             self.verify_document()

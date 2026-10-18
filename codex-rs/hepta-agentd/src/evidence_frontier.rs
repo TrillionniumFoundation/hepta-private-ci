@@ -5,18 +5,16 @@
 //! as part of the same local state bundle.
 
 #[cfg(unix)]
-use std::fs::File;
-#[cfg(unix)]
 use std::io::Read;
 use std::path::Path;
 use std::time::SystemTime;
 use std::time::UNIX_EPOCH;
 
-use codex_hepta_evidence::EVIDENCE_DATABASE_LINEAGE;
-use codex_hepta_evidence::EvidenceRecoverySnapshotV1;
-use codex_hepta_evidence::HeptaEvidenceStore;
-use codex_hepta_types::Generation;
-use codex_hepta_types::StableId;
+use codex_hepta_agent_components::evidence::EVIDENCE_DATABASE_LINEAGE;
+use codex_hepta_agent_components::evidence::EvidenceRecoverySnapshotV1;
+use codex_hepta_agent_components::evidence::HeptaEvidenceStore;
+use codex_hepta_agent_components::types::Generation;
+use codex_hepta_agent_components::types::StableId;
 use ed25519_dalek::Signature;
 use ed25519_dalek::VerifyingKey;
 use serde::Deserialize;
@@ -25,6 +23,8 @@ use serde::Serialize;
 use crate::AgentdError;
 use crate::AgentdIdentity;
 use crate::authbus_trust::hex_bytes;
+#[cfg(unix)]
+use crate::operator_namespace::OperatorNamespace;
 
 const MAX_FRONTIER_FILE_BYTES: u64 = 64 * 1024;
 const MAX_FRONTIER_TRUST_FILE_BYTES: u64 = 8 * 1024;
@@ -205,7 +205,8 @@ fn read_external_file(
             "recovery frontier files must be bounded, regular and not writable by group/other",
         ));
     }
-    let mut file = File::open(path)?;
+    let namespace = OperatorNamespace::capture(path, &before)?;
+    let mut file = namespace.open_regular(path, &before)?;
     let opened = file.metadata()?;
     let identity_tuple = |metadata: &std::fs::Metadata| {
         (
@@ -226,6 +227,7 @@ fn read_external_file(
         .take(maximum_bytes.saturating_add(1))
         .read_to_end(&mut bytes)?;
     let after = std::fs::symlink_metadata(path)?;
+    namespace.verify(path, &after)?;
     if u64::try_from(bytes.len()).unwrap_or(u64::MAX) > maximum_bytes
         || !after.is_file()
         || identity_tuple(&after) != identity_tuple(&before)
@@ -273,7 +275,7 @@ fn push_part(bytes: &mut Vec<u8>, part: &[u8]) {
     bytes.extend_from_slice(part);
 }
 
-fn evidence_error(error: codex_hepta_evidence::EvidenceError) -> AgentdError {
+fn evidence_error(error: codex_hepta_agent_components::evidence::EvidenceError) -> AgentdError {
     recovery_required(&error.to_string())
 }
 

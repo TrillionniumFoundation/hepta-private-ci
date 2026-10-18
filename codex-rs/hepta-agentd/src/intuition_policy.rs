@@ -2,17 +2,17 @@ use std::error::Error as StdError;
 use std::fmt;
 use std::sync::Arc;
 
-use codex_hepta_contracts::AgentId;
-use codex_hepta_intelligence::AuthenticatedIntuitionDecisionV2;
-use codex_hepta_intelligence::IntuitionQualificationError;
-use codex_hepta_intelligence::IntuitionQualificationEvidenceV2;
-use codex_hepta_intelligence::decide_authenticated_intuition_v2;
-use codex_hepta_intuition::AssignmentCommitmentV1;
-use codex_hepta_intuition::CalibratedDecisionRequestV1;
-use codex_hepta_intuition::CanonicalPolicyProfileV1;
-use codex_hepta_intuition::ScoringCommitmentV1;
-use codex_hepta_learning_ledger::LearningEvidenceVerifierV1;
-use codex_hepta_types::Digest32;
+use codex_hepta_agent_components::contracts::AgentId;
+use codex_hepta_agent_components::intelligence::AuthenticatedIntuitionDecisionV2;
+use codex_hepta_agent_components::intelligence::IntuitionQualificationError;
+use codex_hepta_agent_components::intelligence::IntuitionQualificationEvidenceV2;
+use codex_hepta_agent_components::intelligence::decide_authenticated_intuition_v2;
+use codex_hepta_agent_components::intuition::AssignmentCommitmentV1;
+use codex_hepta_agent_components::intuition::CalibratedDecisionRequestV1;
+use codex_hepta_agent_components::intuition::CanonicalPolicyProfileV1;
+use codex_hepta_agent_components::intuition::ScoringCommitmentV1;
+use codex_hepta_agent_components::learning_ledger::LearningEvidenceVerifierV1;
+use codex_hepta_agent_components::types::Digest32;
 
 /// Immutable owner identities admitted by the Agentd product composition.
 ///
@@ -84,7 +84,7 @@ impl AgentdIntuitionPolicyHostV1 {
         }
         if pins
             .rng_owner_digest
-            .is_some_and(codex_hepta_types::Digest32::is_zero)
+            .is_some_and(codex_hepta_agent_components::types::Digest32::is_zero)
         {
             return Err(AgentdIntuitionPolicyError::InvalidHost("rng owner pin"));
         }
@@ -178,11 +178,11 @@ impl AgentdIntuitionPolicyHostV1 {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use codex_hepta_learning_ledger::AuthenticatedPrincipalV1;
-    use codex_hepta_learning_ledger::LearningEvidenceRoleV1;
-    use codex_hepta_learning_ledger::LearningEvidenceTrustV1;
-    use codex_hepta_learning_ledger::TrustedLearningSignerV1;
-    use codex_hepta_types::StableId;
+    use codex_hepta_agent_components::learning_ledger::AuthenticatedPrincipalV1;
+    use codex_hepta_agent_components::learning_ledger::LearningEvidenceRoleV1;
+    use codex_hepta_agent_components::learning_ledger::LearningEvidenceTrustV1;
+    use codex_hepta_agent_components::learning_ledger::TrustedLearningSignerV1;
+    use codex_hepta_agent_components::types::StableId;
     use ed25519_dalek::SigningKey;
 
     fn digest(value: &str) -> Digest32 {

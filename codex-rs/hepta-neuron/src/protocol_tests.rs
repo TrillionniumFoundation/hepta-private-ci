@@ -1,6 +1,7 @@
 use super::*;
 
 use codex_hepta_types::Digest32;
+use pretty_assertions::assert_eq;
 
 use crate::NeuronCalibrationProfileV1;
 use crate::NeuronResourceEnvelopeV1;
@@ -307,4 +308,184 @@ fn canonical_runtime_config_roundtrip_rejects_unknown_fields() {
         decode_neuron_runtime_config_v1(&changed).err(),
         Some(NeuronProtocolError::Json)
     );
+}
+
+#[test]
+fn zero_saturation_tolerance_roundtrips_a_valid_owner_config() {
+    let native = native_config();
+    let mut config = runtime_config(&native);
+    config.calibration.maximum_projection_count = 0;
+    let value = checked(canonical_runtime_config_v1(
+        &config,
+        &native,
+        "2030-01-01T00:00:00Z",
+    ));
+    assert_eq!(
+        checked(decode_neuron_runtime_config_v1(&checked(
+            encode_neuron_runtime_config_v1(&value)
+        ))),
+        value
+    );
+}
+
+#[test]
+fn checkpoint_publication_rejects_foreign_configuration() {
+    let (mut config, checkpoint, tick) = committed();
+    let mut other_native = native_config();
+    other_native.temporal_decay_q24 = Q / 4;
+    config.native_config_digest = checked(other_native.digest());
+    assert_eq!(
+        canonical_checkpoint_v1(&config, &checkpoint, &tick, 1_900_000_000_000),
+        Err(NeuronProtocolError::BindingMismatch("checkpoint lineage"))
+    );
+}
+
+#[test]
+fn checkpoint_publication_rejects_forged_non_initial_predecessor() {
+    let (config, first, mut tick) = committed();
+    let input = SparseTick {
+        scope_digest: Digest32::of_bytes(b"scope"),
+        objective_digest: Digest32::of_bytes(b"objective"),
+        ndu_digest: Digest32::of_bytes(b"ndu"),
+        body_digest: Digest32::of_bytes(b"body"),
+        input_digest: Digest32::of_bytes(b"second input"),
+        sequence: 2,
+        monotonic_micros: 20,
+        drive_q24: vec![Q, Q / 2, 0, 0, 0],
+        prediction_q24: vec![0; 5],
+    };
+    let (second, receipt) = checked(sparse_tick(&native_config(), &input, Some(&first)));
+    tick.checkpoint_before = receipt.checkpoint_before;
+    tick.checkpoint_after = receipt.checkpoint_after;
+    tick.activation_digest = second.activation_digest();
+    tick.threshold_digest = second.threshold_digest();
+    tick.eligibility_digest = second.eligibility_digest();
+    tick.active_indices = checked(committed_active_indices(&second));
+    tick.sparsity_ppm = receipt.active_fraction_ppm;
+    let published = checked(canonical_checkpoint_v1(
+        &config,
+        &second,
+        &tick,
+        1_900_000_000_000,
+    ));
+    assert_eq!(
+        published.predecessor_id,
+        Some(checked(digest_id("checkpoint", first.digest())))
+    );
+
+    tick.checkpoint_before = Digest32::of_bytes(b"unrelated predecessor");
+    assert_eq!(
+        canonical_checkpoint_v1(&config, &second, &tick, 1_900_000_000_000),
+        Err(NeuronProtocolError::BindingMismatch("checkpoint lineage"))
+    );
+}
+
+#[test]
+fn runtime_config_decoder_rejects_out_of_profile_limits() {
+    let native = native_config();
+    let config = runtime_config(&native);
+    let value = checked(canonical_runtime_config_v1(
+        &config,
+        &native,
+        "2099-01-01T00:00:00Z",
+    ));
+    let bytes = checked(encode_neuron_runtime_config_v1(&value));
+    for (section, field, invalid) in [
+        (
+            "stateDimensions",
+            "inhibitionEdges",
+            serde_json::json!(u32::MAX),
+        ),
+        ("topKPolicy", "minimumRatioPpm", serde_json::json!(1)),
+        (
+            "eligibilityProfile",
+            "maximumNormQ24",
+            serde_json::json!(i64::MAX),
+        ),
+    ] {
+        let mut json: serde_json::Value = checked(serde_json::from_slice(&bytes));
+        json[section][field] = invalid;
+        assert_eq!(
+            decode_neuron_runtime_config_v1(&checked(serde_json::to_vec(&json))),
+            Err(NeuronProtocolError::InvalidField("runtime config"))
+        );
+    }
+}
+
+#[test]
+fn tick_receipt_decoder_rejects_invalid_indices_and_prediction_error() {
+    let (_, _, tick) = committed();
+    let wire = checked(canonical_tick_receipt_v1(&tick));
+    let bytes = checked(encode_neuron_tick_receipt_v1(&wire));
+    for (field, invalid) in [
+        ("activeIndices", serde_json::json!([u32::MAX])),
+        ("predictionErrorQ24", serde_json::json!(-1)),
+        ("predictionErrorQ24", serde_json::json!(i64::MAX)),
+    ] {
+        let mut json: serde_json::Value = checked(serde_json::from_slice(&bytes));
+        json[field] = invalid;
+        assert_eq!(
+            decode_neuron_tick_receipt_v1(&checked(serde_json::to_vec(&json))),
+            Err(NeuronProtocolError::InvalidField("tick receipt"))
+        );
+    }
+}
+
+#[test]
+fn checkpoint_decoder_rejects_out_of_profile_activation_index() {
+    let (config, checkpoint, tick) = committed();
+    let value = checked(canonical_checkpoint_v1(
+        &config,
+        &checkpoint,
+        &tick,
+        1_900_000_000_000,
+    ));
+    let bytes = checked(encode_neuron_checkpoint_v1(&value));
+    let mut json: serde_json::Value = checked(serde_json::from_slice(&bytes));
+    json["activationSummary"]["activeIndices"] = serde_json::json!([u32::MAX]);
+    assert_eq!(
+        decode_neuron_checkpoint_v1(&checked(serde_json::to_vec(&json))),
+        Err(NeuronProtocolError::InvalidField("checkpoint"))
+    );
+}
+
+#[test]
+fn runtime_config_expiry_requires_a_real_utc_calendar_timestamp() {
+    let native = native_config();
+    let config = runtime_config(&native);
+    let valid = checked(canonical_runtime_config_v1(
+        &config,
+        &native,
+        "2099-01-01T00:00:00Z",
+    ));
+    let bytes = checked(encode_neuron_runtime_config_v1(&valid));
+    for expiry in [
+        "TZ",
+        "2099-02-29T00:00:00Z",
+        "2100-02-29T00:00:00Z",
+        "2099-04-31T00:00:00Z",
+        "2099-13-01T00:00:00Z",
+        "2099-01-00T00:00:00Z",
+        "2099-01-01T24:00:00Z",
+        "2099-01-01T00:60:00Z",
+        "2099-01-01T00:00:99Z",
+        "2099-01-01T00:00:00.Z",
+        "2099-01-01T00:00:00.noZ",
+    ] {
+        assert_eq!(
+            canonical_runtime_config_v1(&config, &native, expiry),
+            Err(NeuronProtocolError::InvalidField("runtime config"))
+        );
+        let mut json: serde_json::Value = checked(serde_json::from_slice(&bytes));
+        json["expiry"] = serde_json::json!(expiry);
+        assert_eq!(
+            decode_neuron_runtime_config_v1(&checked(serde_json::to_vec(&json))),
+            Err(NeuronProtocolError::InvalidField("runtime config"))
+        );
+    }
+    for expiry in ["2000-02-29T23:59:59Z", "2096-02-29T12:34:56.123456Z"] {
+        let valid = checked(canonical_runtime_config_v1(&config, &native, expiry));
+        let encoded = checked(encode_neuron_runtime_config_v1(&valid));
+        assert_eq!(checked(decode_neuron_runtime_config_v1(&encoded)), valid);
+    }
 }

@@ -13,5 +13,9 @@ doctest = false
 [lints]
 workspace = true
 
+[features]
+default = []
+legacy-v1 = []
+
 [dependencies]
 codex-hepta-types = { path = "../hepta-types" }

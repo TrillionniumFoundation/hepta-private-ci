@@ -1,3 +1,4 @@
+#![cfg(feature = "server")]
 #![cfg(unix)]
 
 use std::os::unix::fs::OpenOptionsExt;
@@ -21,6 +22,8 @@ use codex_app_server_protocol::ThreadStartParams;
 use codex_app_server_protocol::ThreadStartResponse;
 use codex_app_server_protocol::TurnStatus;
 use codex_app_server_protocol::UserInput;
+use codex_hepta_agent_components::contracts::AgentId;
+use codex_hepta_agent_components::evidence::HeptaEvidenceStore;
 use codex_hepta_agentd::AgentdClient;
 use codex_hepta_agentd::AgentdError;
 use codex_hepta_agentd::AuthBusTextBody;
@@ -28,8 +31,6 @@ use codex_hepta_agentd::AuthBusTextIngress;
 use codex_hepta_agentd::AuthBusTextState;
 use codex_hepta_agentd::AuthBusTextStatus;
 use codex_hepta_agentd::authbus_text_claims;
-use codex_hepta_contracts::AgentId;
-use codex_hepta_evidence::HeptaEvidenceStore;
 use codex_state::SqliteConfig;
 use codex_utils_absolute_path::AbsolutePathBuf;
 use core_test_support::responses;
@@ -38,6 +39,9 @@ use ed25519_dalek::SigningKey;
 use tokio::time::timeout;
 
 mod support;
+
+#[path = "support/canonical_objective_product.rs"]
+mod canonical_objective_product;
 
 use support::fleet::FleetHarness;
 use support::fleet::connect_app_server_with_experimental;
@@ -244,7 +248,7 @@ fn write_checkpoint(
     path: &Path,
     agent_id: &AgentId,
     generation: u64,
-    digest: codex_hepta_types::Digest32,
+    digest: codex_hepta_agent_components::types::Digest32,
 ) -> Result<()> {
     use std::io::Write;
 

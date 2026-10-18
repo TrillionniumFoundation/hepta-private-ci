@@ -280,12 +280,14 @@ pub(crate) struct MessageProcessorArgs {
     pub(crate) config_warnings: Vec<ConfigWarningNotification>,
     pub(crate) session_source: SessionSource,
     pub(crate) auth_manager: Arc<AuthManager>,
+    pub(crate) auth_profile_owned_by_host: bool,
     pub(crate) installation_id: String,
     pub(crate) code_mode_session_provider: Option<Arc<dyn CodeModeSessionProvider>>,
     pub(crate) rpc_transport: AppServerRpcTransport,
     pub(crate) remote_control_handle: Option<RemoteControlHandle>,
     pub(crate) plugin_startup_tasks: crate::PluginStartupTasks,
     pub(crate) turn_queue_capacity: Option<NonZeroUsize>,
+    pub(crate) graceful_drain: Option<crate::AppServerDrainHandle>,
     pub(crate) hepta: HeptaExtensionBindings,
 }
 
@@ -306,12 +308,14 @@ impl MessageProcessor {
             config_warnings,
             session_source,
             auth_manager,
+            auth_profile_owned_by_host,
             installation_id,
             code_mode_session_provider,
             rpc_transport,
             remote_control_handle,
             plugin_startup_tasks,
             turn_queue_capacity,
+            graceful_drain,
             hepta,
         } = args;
         let hepta = hepta.validated();
@@ -335,6 +339,17 @@ impl MessageProcessor {
             ThreadStoreConfig::InMemory { .. } => None,
         };
         let environment_manager_for_requests = Arc::clone(&environment_manager);
+        if let (Some(drain), Some(queue), Some(database)) = (
+            graceful_drain.as_ref(),
+            queue_store.as_ref(),
+            state_db.as_ref(),
+        ) {
+            drain.bind_historical_owner(
+                config.codex_home.as_path().to_path_buf(),
+                Arc::clone(database),
+                Arc::clone(queue),
+            );
+        }
         let environment_manager_for_extensions = Arc::clone(&environment_manager);
         let restriction_product = session_source.restriction_product();
         let executor_skill_provider: Arc<dyn codex_skills_extension::SkillProvider> = Arc::new(
@@ -436,6 +451,7 @@ impl MessageProcessor {
             );
         let account_processor = AccountRequestProcessor::new(
             auth_manager.clone(),
+            auth_profile_owned_by_host,
             Arc::clone(&thread_manager),
             outgoing.clone(),
             Arc::clone(&config),
@@ -523,6 +539,7 @@ impl MessageProcessor {
             Arc::clone(&thread_store),
             outgoing.clone(),
             queue_service,
+            state_db.clone(),
         );
         let project_processor = ProjectRequestProcessor::new(
             Arc::clone(&thread_store),
@@ -812,12 +829,12 @@ impl MessageProcessor {
             .await;
     }
 
-    pub(crate) async fn drain_background_tasks(&self) {
+    pub(crate) async fn drain_background_tasks(&self) -> bool {
         self.models_refresh_worker.shutdown();
         if let Some(worker) = &self.turn_cost_worker {
             worker.shutdown();
         }
-        self.thread_processor.drain_background_tasks().await;
+        self.thread_processor.drain_background_tasks().await
     }
 
     pub(crate) async fn cancel_active_login(&self) {
@@ -828,8 +845,8 @@ impl MessageProcessor {
         self.thread_processor.clear_all_thread_listeners().await;
     }
 
-    pub(crate) async fn shutdown_threads(&self) {
-        self.thread_processor.shutdown_threads().await;
+    pub(crate) async fn shutdown_threads(&self) -> bool {
+        self.thread_processor.shutdown_threads().await
     }
 
     pub(crate) async fn connection_closed(
@@ -1237,6 +1254,11 @@ impl MessageProcessor {
                     .thread_unsubscribe(&request_id, params)
                     .await
             },
+            ClientRequest::ThreadEphemeralRetain { params, .. } => {
+                processor.thread_processor
+                    .thread_ephemeral_retain(&request_id, params)
+                    .await
+            },
             ClientRequest::ThreadResume { params, .. } => {
                 processor.thread_processor
                     .thread_resume(
@@ -1305,6 +1327,14 @@ impl MessageProcessor {
             ClientRequest::ThreadQueueReconcile { params, .. } => processor
                 .thread_queue_processor
                 .reconcile(params)
+                .await
+                .map(|response| Some(response.into())),
+            ClientRequest::ThreadCreationObserve { params, .. } => processor.thread_processor.observe_thread_creation(params).await.map(|response| Some(response.into())),
+            ClientRequest::ThreadCreationReconcile { params, .. } => processor.thread_processor.reconcile_thread_creation(params).await.map(|response| Some(codex_app_server_protocol::ClientResponsePayload::ThreadCreationReconcile(response))),
+            ClientRequest::ThreadCreationAbandon { params, .. } => processor.thread_processor.abandon_thread_creation(params).await.map(|response| Some(codex_app_server_protocol::ClientResponsePayload::ThreadCreationAbandon(response))),
+            ClientRequest::ThreadQueueObserve { params, .. } => processor
+                .thread_queue_processor
+                .observe(params)
                 .await
                 .map(|response| Some(response.into())),
             ClientRequest::ThreadQueueList { params, .. } => processor
@@ -1407,6 +1437,9 @@ impl MessageProcessor {
             },
             ClientRequest::ProjectRead { params, .. } => {
                 processor.project_processor.project_read(params).await
+            },
+            ClientRequest::ProjectReadByIdempotencyKey { params, .. } => {
+                processor.project_processor.project_read_by_idempotency_key(params).await
             },
             ClientRequest::ProjectCreate { params, .. } => {
                 processor.project_processor.project_create(params).await

@@ -152,6 +152,15 @@ impl ThreadRequestProcessor {
             return Err(thread_queue_delete_fence_error(error));
         }
 
+        state_db
+            .tombstone_thread_creations(&thread_ids)
+            .await
+            .map_err(|error| {
+                internal_error(format!(
+                    "failed to tombstone original creation keys: {error}"
+                ))
+            })?;
+
         let mut delete_order: Vec<_> = thread_ids.iter().skip(1).rev().copied().collect();
         delete_order.push(thread_id);
 

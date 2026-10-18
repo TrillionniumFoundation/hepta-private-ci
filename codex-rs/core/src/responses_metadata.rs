@@ -383,6 +383,27 @@ impl CodexResponsesMetadata {
         }
     }
 
+    /// A prewarm prepares the same transport as an ordinary turn. Per-frame
+    /// parent attribution and a root turn's own request ID do not select socket
+    /// authority. Inherited root scope and behavior fields remain bound here;
+    /// the recovery fingerprint keeps the full original request context.
+    pub(crate) fn websocket_connection_compatibility_projection(
+        &self,
+    ) -> TurnRecoveryCompatibilityProjection<'_> {
+        let mut projection = self.turn_recovery_compatibility_projection();
+        if matches!(self.request_kind, Some(CodexResponsesRequestKind::Prewarm)) {
+            projection.request_kind = None;
+        }
+        if self.parent_turn_id.is_none()
+            && self.root_turn_id.is_some()
+            && self.root_turn_id == self.turn_id
+        {
+            projection.root_turn_id = None;
+        }
+        projection.parent_turn_id = None;
+        projection
+    }
+
     pub(crate) fn turn_recovery_start_state(
         &self,
         final_output_json_schema: Option<Value>,

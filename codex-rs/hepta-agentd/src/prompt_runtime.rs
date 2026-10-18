@@ -22,31 +22,31 @@ use std::sync::PoisonError;
 use std::sync::atomic::AtomicBool;
 use std::sync::atomic::Ordering;
 
-use codex_hepta_codex_adapter::PromptRuntimeAttachmentV1;
-use codex_hepta_codex_adapter::PromptRuntimeDeveloperFragmentV1;
-use codex_hepta_codex_adapter::PromptRuntimeDispatchFuture;
-use codex_hepta_codex_adapter::PromptRuntimeDispatchRecordV1;
-use codex_hepta_codex_adapter::PromptRuntimeHost;
-use codex_hepta_codex_adapter::PromptRuntimeHostError;
-use codex_hepta_codex_adapter::PromptRuntimePrepareFuture;
-use codex_hepta_codex_adapter::PromptRuntimePrepareRequest;
-use codex_hepta_codex_adapter::PromptRuntimeRecordFuture;
-use codex_hepta_codex_adapter::PromptRuntimeTerminalOutcomeV1;
-use codex_hepta_codex_adapter::PromptRuntimeTerminalRecordV1;
-use codex_hepta_intelligence::PromptRegistryCompilationRequestV2;
-use codex_hepta_intelligence::PromptRegistryCompiledContextV2;
-use codex_hepta_intelligence::compile_prompt_registry_v2;
-use codex_hepta_prompt_optimizer::canonical::EnumeratedPromptCandidatesV1;
-use codex_hepta_prompt_optimizer::canonical::PromptEnumerationRequestV1;
-use codex_hepta_prompt_optimizer::canonical::PromptExerciseRequestV1;
-use codex_hepta_prompt_optimizer::canonical::SelectedPromptPortfolioV1;
-use codex_hepta_prompt_optimizer::canonical::enumerate_factors_v1;
-use codex_hepta_prompt_registry::DurablePromptRegistry;
-use codex_hepta_prompt_registry::PromptRoleV2;
-use codex_hepta_types::Digest32;
-use codex_hepta_types::PromptDeliveryObservationV1;
-use codex_hepta_types::PromptDeliveryRejectReasonV1;
-use codex_hepta_types::StableId;
+use codex_hepta_agent_components::codex_adapter::PromptRuntimeAttachmentV1;
+use codex_hepta_agent_components::codex_adapter::PromptRuntimeDeveloperFragmentV1;
+use codex_hepta_agent_components::codex_adapter::PromptRuntimeDispatchFuture;
+use codex_hepta_agent_components::codex_adapter::PromptRuntimeDispatchRecordV1;
+use codex_hepta_agent_components::codex_adapter::PromptRuntimeHost;
+use codex_hepta_agent_components::codex_adapter::PromptRuntimeHostError;
+use codex_hepta_agent_components::codex_adapter::PromptRuntimePrepareFuture;
+use codex_hepta_agent_components::codex_adapter::PromptRuntimePrepareRequest;
+use codex_hepta_agent_components::codex_adapter::PromptRuntimeRecordFuture;
+use codex_hepta_agent_components::codex_adapter::PromptRuntimeTerminalOutcomeV1;
+use codex_hepta_agent_components::codex_adapter::PromptRuntimeTerminalRecordV1;
+use codex_hepta_agent_components::intelligence::PromptRegistryCompilationRequestV2;
+use codex_hepta_agent_components::intelligence::PromptRegistryCompiledContextV2;
+use codex_hepta_agent_components::intelligence::compile_prompt_registry_v2;
+use codex_hepta_agent_components::prompt_optimizer::canonical::EnumeratedPromptCandidatesV1;
+use codex_hepta_agent_components::prompt_optimizer::canonical::PromptEnumerationRequestV1;
+use codex_hepta_agent_components::prompt_optimizer::canonical::PromptExerciseRequestV1;
+use codex_hepta_agent_components::prompt_optimizer::canonical::SelectedPromptPortfolioV1;
+use codex_hepta_agent_components::prompt_optimizer::canonical::enumerate_factors_v1;
+use codex_hepta_agent_components::prompt_registry::DurablePromptRegistry;
+use codex_hepta_agent_components::prompt_registry::PromptRoleV2;
+use codex_hepta_agent_components::types::Digest32;
+use codex_hepta_agent_components::types::PromptDeliveryObservationV1;
+use codex_hepta_agent_components::types::PromptDeliveryRejectReasonV1;
+use codex_hepta_agent_components::types::StableId;
 use serde::Deserialize;
 use serde::Serialize;
 
@@ -574,14 +574,21 @@ impl AgentdPromptPipelineOwner {
         portfolio: &SelectedPromptPortfolioV1,
         exercise_request: &PromptExerciseRequestV1,
         compilation_request: PromptRegistryCompilationRequestV2,
+        tokenizer: &impl codex_hepta_agent_components::context_compiler::ExactTokenizerV2,
     ) -> Result<PromptRuntimeStageDisposition, AgentdPromptPipelineError> {
         let compiled = {
             let registry = self
                 .registry
                 .lock()
                 .map_err(|_| AgentdPromptPipelineError::StatePoisoned)?;
-            compile_prompt_registry_v2(&registry, portfolio, exercise_request, compilation_request)
-                .map_err(|error| AgentdPromptPipelineError::Compilation(error.to_string()))?
+            compile_prompt_registry_v2(
+                &registry,
+                portfolio,
+                exercise_request,
+                compilation_request,
+                tokenizer,
+            )
+            .map_err(|error| AgentdPromptPipelineError::Compilation(error.to_string()))?
         };
         self.runtime
             .stage_compiled_prompt_context(

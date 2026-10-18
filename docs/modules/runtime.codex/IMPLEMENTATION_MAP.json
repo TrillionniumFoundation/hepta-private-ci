@@ -2,19 +2,23 @@
   "schema": "hepta.module-implementation-map.v3",
   "schemaVersion": 3,
   "sourceBase": {
-    "commit": "8914a46dfc5984532f03dd2d559bf547ca4f1e69",
-    "tree": "1bd6444d2d980a9fdf06358dbee973b34722f0e1"
+    "commit": "e5dd19789973e1e142f8f6147a9909fc79b4cef0",
+    "tree": "d38be4883b9e251279bccae1449b4a7735c3316d"
   },
   "laneId": "LANE-B-RUNTIME",
   "module": "runtime.codex",
   "sourceMaturity": "native_execution_spine",
   "declaredRoots": [
-    "codex-rs/codex-app-server",
-    "codex-rs/hepta-codex-adapter"
+    "codex-rs/app-server",
+    "codex-rs/hepta-codex-adapter",
+    "codex-rs/hepta-app-bridge",
+    "codex-rs/hepta-app-host"
   ],
   "resolvedRoots": [
     "codex-rs/app-server",
-    "codex-rs/hepta-codex-adapter"
+    "codex-rs/hepta-codex-adapter",
+    "codex-rs/hepta-app-bridge",
+    "codex-rs/hepta-app-host"
   ],
   "stateOwnerDisposition": "The existing App Server and Codex core remain the sole thread, turn, model, and tool execution spine.",
   "terminalObserverDisposition": "The App Server/client path supplies typed process-local terminal and request-level observations; runtime.codex validates exact correlation. External tool/provider terminality remains with its effect owner and target-host trust is independently qualified.",
@@ -163,13 +167,15 @@
   "deputy": "agent-runtime",
   "technicalGuide": "docs/modules/runtime.codex/TECHNICAL.md",
   "sourceRoot": [
-    "codex-rs/codex-app-server",
-    "codex-rs/hepta-codex-adapter"
+    "codex-rs/app-server",
+    "codex-rs/hepta-codex-adapter",
+    "codex-rs/hepta-app-bridge",
+    "codex-rs/hepta-app-host"
   ],
   "productionCallerBindings": [
     {
       "role": "production_caller",
-      "path": "codex-rs/hepta-infer-worker-host/src/native_app_server.rs",
+      "path": "codex-rs/hepta-infer-worker-host/src/native_execution.rs",
       "symbol": "async fn run_once(",
       "buildTarget": "codex-hepta-infer-worker-host",
       "semantics": "Named native caller sends the real App Server v2 thread/start and turn/start path. It requires independently signed final-use authority for the exact TurnStartParams binding, rechecks cancellation/deadline/Agent readiness/ingress after authority acquisition, commits the authority/request witness durably before the network await, maps typed App Server outcomes through hepta-codex-adapter, and never blindly replays an unknown acknowledgement."
@@ -309,11 +315,11 @@
   "sourceObjects": [
     {
       "path": "codex-rs/app-server",
-      "object": "369db165729574a745833cb651a17faf3fd00a46"
+      "object": "c52bb34ce3aab55e404d346b8baa95915c349c02"
     },
     {
       "path": "codex-rs/app-server/src/request_processors/thread_processor.rs",
-      "object": "6126faf53271e6108c96394b0217bc763213cf86"
+      "object": "e6ab2806d4a7d3fea3b679c2c857aaf815bc4aac"
     },
     {
       "path": "codex-rs/app-server/src/request_processors/turn_processor.rs",
@@ -345,7 +351,15 @@
     },
     {
       "path": "codex-rs/hepta-agentd/src/app_runtime.rs",
-      "object": "b25375be9219be18baba2ab4d3488658d0040897"
+      "object": "dadabb4b16a9bc1203cad5b813f627fb02636d51"
+    },
+    {
+      "path": "codex-rs/hepta-app-bridge",
+      "object": "d25fad8cda95cd56666876feda7e8c3f10f008f9"
+    },
+    {
+      "path": "codex-rs/hepta-app-host",
+      "object": "b931976b50e941adf7d7cf97b9834d4e0bea0f60"
     },
     {
       "path": "codex-rs/hepta-codex-adapter",

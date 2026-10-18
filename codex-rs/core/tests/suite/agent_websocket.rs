@@ -14,6 +14,7 @@ use core_test_support::responses::ev_response_created;
 use core_test_support::responses::start_websocket_server;
 use core_test_support::responses::start_websocket_server_with_headers;
 use core_test_support::skip_if_no_network;
+use core_test_support::test_codex::TestCodex;
 use core_test_support::test_codex::test_codex;
 use core_test_support::wait_for_event;
 use pretty_assertions::assert_eq;
@@ -22,15 +23,41 @@ use std::time::Duration;
 
 const WS_V2_BETA_HEADER_VALUE: &str = "responses_websockets=2026-02-06";
 
+async fn submit_service_tier_without_permission_change(
+    test: &TestCodex,
+    prompt: &str,
+    tier: Option<&str>,
+) -> Result<()> {
+    test.codex
+        .start_or_steer_turn(
+            TurnInputRequest::user_input(vec![UserInput::Text {
+                text: prompt.to_string(),
+                text_elements: Vec::new(),
+            }])
+            .with_thread_settings(ThreadSettingsOverrides {
+                service_tier: Some(tier.map(str::to_string)),
+                ..Default::default()
+            }),
+        )
+        .await?;
+    wait_for_event(&test.codex, |event| {
+        matches!(event, EventMsg::TurnComplete(_))
+    })
+    .await;
+    Ok(())
+}
+
 #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
 async fn websocket_model_switch_to_responses_lite_omits_top_level_tools() -> Result<()> {
     skip_if_no_network!(Ok(()));
 
-    let server = start_websocket_server(vec![vec![
-        vec![ev_response_created("warm-1"), ev_completed("warm-1")],
-        vec![ev_response_created("resp-1"), ev_completed("resp-1")],
-        vec![ev_response_created("resp-2"), ev_completed("resp-2")],
-    ]])
+    let server = start_websocket_server(vec![
+        vec![
+            vec![ev_response_created("warm-1"), ev_completed("warm-1")],
+            vec![ev_response_created("resp-1"), ev_completed("resp-1")],
+        ],
+        vec![vec![ev_response_created("resp-2"), ev_completed("resp-2")]],
+    ])
     .await;
 
     let mut builder = test_codex()
@@ -46,7 +73,7 @@ async fn websocket_model_switch_to_responses_lite_omits_top_level_tools() -> Res
         .with_model("gpt-5.2");
     let test = builder.build_with_websocket_server(&server).await?;
 
-    test.submit_turn("non-lite turn").await?;
+    test.submit_text_turn("non-lite turn").await?;
     test.codex
         .start_or_steer_turn(
             TurnInputRequest::user_input(vec![UserInput::Text {
@@ -64,17 +91,14 @@ async fn websocket_model_switch_to_responses_lite_omits_top_level_tools() -> Res
     })
     .await;
 
-    assert_eq!(server.handshakes().len(), 1);
-    let connection = server.single_connection();
-    assert_eq!(connection.len(), 3);
-    let non_lite_turn = connection
-        .get(1)
-        .expect("missing non-lite turn request")
-        .body_json();
-    let lite_turn = connection
-        .get(2)
-        .expect("missing lite turn request")
-        .body_json();
+    // The new model changes the actual REPL authority flags.
+    assert_eq!(server.handshakes().len(), 2);
+    let connections = server.connections();
+    assert_eq!(connections.len(), 2);
+    assert_eq!(connections[0].len(), 2);
+    assert_eq!(connections[1].len(), 1);
+    let non_lite_turn = connections[0][1].body_json();
+    let lite_turn = connections[1][0].body_json();
 
     assert_eq!(non_lite_turn["model"].as_str(), Some("gpt-5.2"));
     assert_eq!(lite_turn["model"].as_str(), Some("gpt-5.4"));
@@ -161,6 +185,64 @@ async fn websocket_test_codex_shell_chain() -> Result<()> {
         .expect("second response.create input array");
     assert!(!input_items.is_empty());
 
+    server.shutdown().await;
+    Ok(())
+}
+
+#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+async fn websocket_startup_and_turn_rebound_transport_retains_full_request_metadata() -> Result<()>
+{
+    skip_if_no_network!(Ok(()));
+
+    let server = start_websocket_server(vec![
+        vec![vec![
+            ev_response_created("warm-metadata"),
+            ev_completed("warm-metadata"),
+        ]],
+        vec![vec![
+            ev_response_created("turn-metadata"),
+            ev_assistant_message("msg-metadata", "complete metadata observed"),
+            ev_completed("turn-metadata"),
+        ]],
+    ])
+    .await;
+    let mut builder = test_codex();
+    let test = builder.build_with_websocket_server(&server).await?;
+    test.submit_turn_with_policy(
+        "retain the actual request metadata",
+        test.config.legacy_sandbox_policy(),
+    )
+    .await?;
+
+    let connections = server.connections();
+    assert_eq!(connections.len(), 2);
+    assert_eq!(connections[0].len(), 1);
+    assert_eq!(connections[1].len(), 1);
+    let warmup = connections[0][0].body_json();
+    let turn = connections[1][0].body_json();
+    let warmup_metadata: Value = serde_json::from_str(
+        warmup["client_metadata"]["x-codex-turn-metadata"]
+            .as_str()
+            .unwrap(),
+    )?;
+    let turn_metadata: Value = serde_json::from_str(
+        turn["client_metadata"]["x-codex-turn-metadata"]
+            .as_str()
+            .unwrap(),
+    )?;
+    assert_eq!(warmup_metadata["request_kind"], "prewarm");
+    assert_eq!(turn_metadata["request_kind"], "turn");
+    assert_eq!(
+        warmup_metadata["turn_id"],
+        warmup["client_metadata"]["turn_id"]
+    );
+    assert_eq!(turn_metadata["turn_id"], turn["client_metadata"]["turn_id"]);
+    assert_eq!(turn_metadata["root_turn_id"], turn_metadata["turn_id"]);
+    assert!(warmup_metadata.get("root_turn_id").is_none());
+    eprintln!("actual startup metadata: {warmup_metadata}");
+    eprintln!("actual ordinary turn metadata: {turn_metadata}");
+
+    test.codex.shutdown_and_wait().await?;
     server.shutdown().await;
     Ok(())
 }
@@ -388,8 +470,12 @@ async fn websocket_v2_first_turn_uses_updated_fast_tier_after_startup_prewarm() 
     assert_eq!(warmup["generate"].as_bool(), Some(false));
     assert_eq!(warmup.get("service_tier"), None);
 
-    test.submit_turn_with_service_tier("hello", Some(ServiceTier::Fast.request_value()))
-        .await?;
+    submit_service_tier_without_permission_change(
+        &test,
+        "hello",
+        Some(ServiceTier::Fast.request_value()),
+    )
+    .await?;
 
     assert_eq!(server.handshakes().len(), 1);
     let connection = server.single_connection();
@@ -444,8 +530,7 @@ async fn websocket_v2_first_turn_drops_fast_tier_after_startup_prewarm() -> Resu
     assert_eq!(warmup["generate"].as_bool(), Some(false));
     assert_eq!(warmup["service_tier"].as_str(), Some("priority"));
 
-    test.submit_turn_with_service_tier("hello", /*service_tier*/ None)
-        .await?;
+    submit_service_tier_without_permission_change(&test, "hello", /*service_tier*/ None).await?;
 
     assert_eq!(server.handshakes().len(), 1);
     let connection = server.single_connection();
@@ -504,10 +589,13 @@ async fn websocket_v2_next_turn_uses_updated_service_tier() -> Result<()> {
     assert_eq!(warmup["generate"].as_bool(), Some(false));
     assert_eq!(warmup.get("service_tier"), None);
 
-    test.submit_turn_with_service_tier("first", Some(ServiceTier::Fast.request_value()))
-        .await?;
-    test.submit_turn_with_service_tier("second", /*service_tier*/ None)
-        .await?;
+    submit_service_tier_without_permission_change(
+        &test,
+        "first",
+        Some(ServiceTier::Fast.request_value()),
+    )
+    .await?;
+    submit_service_tier_without_permission_change(&test, "second", /*service_tier*/ None).await?;
 
     assert_eq!(server.handshakes().len(), 1);
     let connection = server.single_connection();

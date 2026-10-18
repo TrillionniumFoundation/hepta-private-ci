@@ -4073,6 +4073,44 @@
       ],
       "type": "object"
     },
+    "ThreadEphemeralDisposalParams": {
+      "description": "Disposal never archives or deletes persistent thread history. The expected session fences delayed cleanup against a replacement runtime.",
+      "properties": {
+        "expectedSessionId": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "expectedSessionId"
+      ],
+      "type": "object"
+    },
+    "ThreadEphemeralRetainParams": {
+      "description": "Opt-in V1 residency until explicit exact-session disposal. This grants no execution, terminal observation or history-deletion authority.",
+      "properties": {
+        "expectedSessionId": {
+          "type": "string"
+        },
+        "operationId": {
+          "type": "string"
+        },
+        "protocolVersion": {
+          "format": "uint32",
+          "minimum": 0.0,
+          "type": "integer"
+        },
+        "threadId": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "expectedSessionId",
+        "operationId",
+        "protocolVersion",
+        "threadId"
+      ],
+      "type": "object"
+    },
     "ThreadForkParams": {
       "description": "There are two ways to fork a thread: 1. By thread_id: load the thread from disk by thread_id and fork it into a new thread. 2. By path: load the thread from disk by path and fork it into a new thread.\n\nIf using a non-empty path, the thread_id param will be ignored. Empty string path values are treated as absent.\n\nPrefer using thread_id whenever possible.",
       "properties": {
@@ -5093,6 +5131,17 @@
     },
     "ThreadUnsubscribeParams": {
       "properties": {
+        "ephemeralDisposal": {
+          "anyOf": [
+            {
+              "$ref": "#/definitions/ThreadEphemeralDisposalParams"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "description": "Explicit disposal of an idle ephemeral runtime. Omitted/null keeps the ordinary unsubscribe and idle-cache behavior."
+        },
         "threadId": {
           "type": "string"
         }
@@ -5708,6 +5757,30 @@
         "params"
       ],
       "title": "Thread/unsubscribeRequest",
+      "type": "object"
+    },
+    {
+      "properties": {
+        "id": {
+          "$ref": "#/definitions/RequestId"
+        },
+        "method": {
+          "enum": [
+            "thread/ephemeral/retain"
+          ],
+          "title": "Thread/ephemeral/retainRequestMethod",
+          "type": "string"
+        },
+        "params": {
+          "$ref": "#/definitions/ThreadEphemeralRetainParams"
+        }
+      },
+      "required": [
+        "id",
+        "method",
+        "params"
+      ],
+      "title": "Thread/ephemeral/retainRequest",
       "type": "object"
     },
     {

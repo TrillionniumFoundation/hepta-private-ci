@@ -14,7 +14,12 @@ mod outbound;
 #[cfg(feature = "qualification-failpoints")]
 mod qualification;
 mod sdk;
+#[cfg(test)]
+#[path = "sdk_context_tests.rs"]
+mod sdk_context_tests;
 mod sync;
+#[cfg(all(test, not(target_family = "wasm")))]
+mod transport_security_tests;
 
 pub use config::MatrixSdkPaths;
 pub use config::MatrixSidecarConfig;

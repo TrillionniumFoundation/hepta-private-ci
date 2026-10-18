@@ -10,6 +10,7 @@ use serde::Deserialize;
 use serde::Serialize;
 
 pub const AGENTD_CAPABILITY_SCHEMA_VERSION: u32 = 1;
+pub const AGENTD_CAPABILITY_AUTOMATION_LIST_PAGE_V1: &str = "automation.list_page_v1";
 pub const AGENTD_CAPABILITY_AUTOMATION_CALENDAR_V2: &str = "automation.calendar_v2";
 pub const AGENTD_CAPABILITY_AUTOMATION_EXTERNAL_EFFECT: &str = "automation.external_effect";
 pub const AGENTD_CAPABILITY_CANONICAL_INTELLIGENCE_V1: &str = "intelligence.canonical_v1";

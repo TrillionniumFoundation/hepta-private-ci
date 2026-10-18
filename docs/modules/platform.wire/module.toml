@@ -1,0 +1,41 @@
+schema = "hepta.module-manifest.v1"
+order = 1
+id = "platform.wire"
+plane = "foundation"
+kind = "wire"
+lifecycle = "existing"
+state = "stateless"
+architectureRole = "contract"
+writes = []
+uses = ["platform.types"]
+owner = "kernel-contracts"
+deputy = "integration"
+denies = ["sql", "domain_runtime", "daemon"]
+localHotPathCentralRpc = "not_applicable_or_bounded"
+sourceStatus = "existing_bound"
+source_root_present = true
+production_implementation = false
+sourceEvidenceRoots = ["codex-rs/hepta-wire"]
+missingDeclaredRoots = []
+bootstrapWorkPackage = "P0.7E-DEPENDENCY-INVERSION"
+technicalDocument = "docs/modules/platform.wire/TECHNICAL.md"
+documentationReady = true
+
+[hotPathPolicy]
+centralSynchronousRpcAllowed = false
+boundedCachedControlInputAllowed = true
+fallbackRequired = true
+
+[publicSurfacePolicy]
+typedContractsOnly = true
+denyUnknownCriticalFields = true
+rawModelOrSecretPayloadExportAllowed = false
+
+[[rootBindings]]
+path = "codex-rs/hepta-wire"
+mode = "exclusive"
+
+[[cargoPackages]]
+path = "codex-rs/hepta-wire"
+compileLayer = 1
+ciGroups = ["effects", "inference", "learning", "lifecycle", "objective"]

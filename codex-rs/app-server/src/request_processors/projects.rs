@@ -50,6 +50,29 @@ pub(crate) struct ProjectRequestProcessor {
 }
 
 impl ProjectRequestProcessor {
+    pub(crate) async fn project_read_by_idempotency_key(
+        &self,
+        params: codex_app_server_protocol::ProjectReadByIdempotencyKeyParams,
+    ) -> Result<Option<ClientResponsePayload>, JSONRPCErrorError> {
+        if params.idempotency_key.is_empty()
+            || params.idempotency_key.len() > 256
+            || params.idempotency_key.chars().any(char::is_control)
+        {
+            return Err(invalid_params("invalid project idempotency key"));
+        }
+        let project = self
+            .thread_store
+            .read_project_by_idempotency_key(params.idempotency_key)
+            .await
+            .map_err(|error| project_store_error("project/readByIdempotencyKey", error))?
+            .ok_or_else(|| invalid_params("original project idempotency binding is absent"))?;
+        Ok(Some(ClientResponsePayload::ProjectReadByIdempotencyKey(
+            ProjectReadResponse {
+                project: api_project(project)?,
+            },
+        )))
+    }
+
     pub(crate) fn new(
         thread_store: Arc<dyn ThreadStore>,
         outgoing: Arc<OutgoingMessageSender>,

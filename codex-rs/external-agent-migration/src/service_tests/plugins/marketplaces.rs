@@ -1,4 +1,5 @@
 use super::super::*;
+use crate::source_cla;
 use pretty_assertions::assert_eq;
 
 #[tokio::test]
@@ -495,6 +496,56 @@ async fn import_plugins_infers_external_official_marketplace_when_missing_from_s
         ),
     )
     .expect("write settings");
+
+    let settings = serde_json::from_str(
+        &fs::read_to_string(external_agent_home.join("settings.json")).expect("read settings"),
+    )
+    .expect("parse settings");
+    assert_eq!(
+        source_cla::marketplace_import_sources(
+            &settings,
+            &external_agent_home,
+            &external_agent_home,
+        ),
+        std::collections::BTreeMap::from([(
+            EXTERNAL_OFFICIAL_MARKETPLACE_NAME.to_string(),
+            crate::migration_source::MarketplaceImportSource {
+                source: source_cla::OFFICIAL_MARKETPLACE_SOURCE.to_string(),
+                ref_name: None,
+            },
+        )]),
+    );
+    // Use the real configured-marketplace path for the import. Source inference
+    // above remains exact, while this fixture does not clone a changing remote.
+    let marketplace_root = external_agent_home.join("official-marketplace");
+    fs::create_dir_all(marketplace_root.join(".agents/plugins"))
+        .expect("create marketplace manifest dir");
+    fs::create_dir_all(marketplace_root.join("plugins/fixture-other/.codex-plugin"))
+        .expect("create fixture plugin dir");
+    fs::write(
+        marketplace_root.join("plugins/fixture-other/.codex-plugin/plugin.json"),
+        r#"{"name":"fixture-other","version":"0.1.0"}"#,
+    )
+    .expect("write fixture plugin manifest");
+    fs::write(
+        marketplace_root.join(".agents/plugins/marketplace.json"),
+        serde_json::to_vec(&serde_json::json!({
+            "name": EXTERNAL_OFFICIAL_MARKETPLACE_NAME,
+            "plugins": [{
+                "name": "fixture-other",
+                "source": {"source": "local", "path": "./plugins/fixture-other"},
+            }],
+        }))
+        .expect("serialize marketplace"),
+    )
+    .expect("write marketplace manifest");
+    fs::write(
+        codex_home.join("config.toml"),
+        format!(
+            "[features]\nplugins = true\n[marketplaces.{EXTERNAL_OFFICIAL_MARKETPLACE_NAME}]\nsource_type = \"local\"\nsource = {marketplace_root:?}\n"
+        ),
+    )
+    .expect("write Codex config");
 
     let outcome = service_for_paths(external_agent_home, codex_home)
         .import_plugins(

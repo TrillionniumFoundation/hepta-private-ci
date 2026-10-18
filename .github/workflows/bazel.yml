@@ -23,7 +23,9 @@ jobs:
     # signal without putting PR latency back on the critical path. When
     # Code-mode unit tests run on every Bazel target. When authenticated RBE
     # is available, the Windows-cross shards exercise the source-built V8 path.
-    timeout-minutes: 60
+    # Full cold workspace compilation and tests exceeded the previous hour.
+    # Keep individual test deadlines and the complete target set unchanged.
+    timeout-minutes: 120
     strategy:
       fail-fast: false
       matrix:
@@ -136,7 +138,7 @@ jobs:
     # Split the native Windows Bazel test leg across separate Windows hosts.
     # Build actions and host-loaded proc macros use the same MSVC ABI as the
     # test binaries, avoiding cross-ABI native archive linkage.
-    timeout-minutes: 60
+    timeout-minutes: 120
     strategy:
       fail-fast: false
       matrix:
@@ -341,7 +343,7 @@ jobs:
         uses: ./.github/actions/check-clean-worktree
 
   clippy:
-    timeout-minutes: 60
+    timeout-minutes: 120
     strategy:
       fail-fast: false
       matrix:
@@ -432,7 +434,7 @@ jobs:
         uses: ./.github/actions/check-clean-worktree
 
   verify-release-build:
-    timeout-minutes: 60
+    timeout-minutes: 120
     strategy:
       fail-fast: false
       matrix:

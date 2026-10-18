@@ -47,9 +47,13 @@ anchored open through the unanchored method. The closure line now provides `File
 The host transaction order is: durably commit the journal, durably retain its
 acknowledgement witness, then acknowledge externally. If witness publication is
 uncertain, reconcile the already committed tick before retrying. An anchor cannot
-protect acknowledgements that the host failed to retain. Concurrent witness
-updates, segment rotation, deletion/unlearning, backup erasure, physical power
-loss, and target latency require separate implementation and qualification.
+protect acknowledgements that the host failed to retain. File witness updates,
+bounded successor-segment rotation/recovery and fresh-generation deletion
+admission are implemented source mechanisms. The host must still own segment
+inventory and directory durability, authenticate the selected artifact and current
+withdrawal evidence, and qualify their combined lifecycle. Compaction, complete
+deletion/unlearning and backup erasure, physical power loss, and target latency
+remain separate integration or evidence gates.
 
 ## Regression coverage
 

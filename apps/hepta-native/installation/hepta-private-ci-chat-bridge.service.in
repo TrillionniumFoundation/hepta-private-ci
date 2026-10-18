@@ -1,0 +1,34 @@
+[Unit]
+Description=Hepta current-owner native chat bridge
+Requires=hepta-private-ci-supervisor.service
+After=hepta-private-ci-supervisor.service
+
+[Service]
+Type=simple
+User=root
+Group=@ENROLLED_GATEWAY_GROUP@
+ExecStart=@IMMUTABLE_PROGRAM@ --configuration /etc/hepta-private-ci/native-chat-bridge.json
+Restart=on-failure
+RestartSec=2
+RuntimeDirectory=hepta-private-ci-chat-bridge
+RuntimeDirectoryMode=0750
+UMask=0027
+NoNewPrivileges=yes
+CapabilityBoundingSet=CAP_SYS_PTRACE CAP_DAC_OVERRIDE
+AmbientCapabilities=CAP_SYS_PTRACE CAP_DAC_OVERRIDE
+RestrictAddressFamilies=AF_UNIX
+RestrictNamespaces=yes
+PrivateTmp=yes
+PrivateDevices=yes
+ProtectSystem=strict
+ProtectHome=read-only
+ProtectKernelTunables=yes
+ProtectKernelModules=yes
+ProtectKernelLogs=yes
+ProtectControlGroups=yes
+LockPersonality=yes
+RestrictRealtime=yes
+ReadWritePaths=/run/hepta-private-ci-chat-bridge
+
+[Install]
+WantedBy=multi-user.target

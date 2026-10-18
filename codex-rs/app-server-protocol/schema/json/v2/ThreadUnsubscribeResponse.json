@@ -2,12 +2,23 @@
   "$schema": "http://json-schema.org/draft-07/schema#",
   "definitions": {
     "ThreadUnsubscribeStatus": {
-      "enum": [
-        "notLoaded",
-        "notSubscribed",
-        "unsubscribed"
-      ],
-      "type": "string"
+      "oneOf": [
+        {
+          "enum": [
+            "notLoaded",
+            "notSubscribed",
+            "unsubscribed"
+          ],
+          "type": "string"
+        },
+        {
+          "description": "The exact idle ephemeral session completed shutdown and was removed from the live registry. This does not promise allocator RSS reclamation.",
+          "enum": [
+            "ephemeralDisposed"
+          ],
+          "type": "string"
+        }
+      ]
     }
   },
   "properties": {

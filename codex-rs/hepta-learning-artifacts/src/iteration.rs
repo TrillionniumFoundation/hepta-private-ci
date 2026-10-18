@@ -106,6 +106,9 @@ impl IterationCandidateV1 {
         {
             return Err("candidate digests must be non-zero".to_string());
         }
+        if self.predecessor.as_ref() == Some(&self.candidate_id) {
+            return Err("candidate cannot roll back to itself".to_string());
+        }
         if self.state != IterationCandidateStateV1::Drafted && self.predecessor.is_none() {
             return Err("candidate state requires an exact rollback predecessor".to_string());
         }
@@ -119,7 +122,10 @@ impl IterationCandidateV1 {
     ) -> Result<(), String> {
         self.validate(envelope)?;
         validate_iteration_transition(self.state, next)?;
-        self.state = next;
+        let mut successor = self.clone();
+        successor.state = next;
+        successor.validate(envelope)?;
+        *self = successor;
         Ok(())
     }
 }
@@ -170,6 +176,8 @@ pub fn validate_iteration_transition(
 
 #[cfg(test)]
 mod tests {
+    use pretty_assertions::assert_eq;
+
     use super::*;
     use crate::test_support::FixtureValue;
 
@@ -234,5 +242,28 @@ mod tests {
             )
             .is_err()
         );
+    }
+
+    #[test]
+    fn transition_validates_the_successor_before_mutating_candidate() {
+        let mut candidate = IterationCandidateV1 {
+            candidate_id: id("candidate-1"),
+            envelope_id: id("envelope-1"),
+            generator_identity: id("generator-1"),
+            semantic_diff_digest: digest(5),
+            test_plan_digest: digest(6),
+            rollback_digest: digest(7),
+            predecessor: None,
+            state: IterationCandidateStateV1::Drafted,
+        };
+        let before = candidate.clone();
+        assert!(
+            candidate
+                .transition(&envelope(), IterationCandidateStateV1::StaticallyValidated)
+                .is_err()
+        );
+        assert_eq!(candidate, before);
+        candidate.predecessor = Some(candidate.candidate_id.clone());
+        assert!(candidate.validate(&envelope()).is_err());
     }
 }

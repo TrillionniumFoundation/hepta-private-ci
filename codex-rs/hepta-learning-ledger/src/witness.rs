@@ -53,6 +53,11 @@ pub struct LedgerWitnessStore {
 }
 
 impl LedgerWitnessStore {
+    #[cfg(test)]
+    pub(crate) fn held_fixture_bytes(&self) -> Vec<u8> {
+        crate::held_fixture_bytes(&self.file)
+    }
+
     pub fn create(file: File, binding: Digest32) -> Result<Self, DurableLedgerError> {
         validate_binding(binding)?;
         let mut file = LockedFile::acquire(file)?;
@@ -84,29 +89,7 @@ impl LedgerWitnessStore {
         if length < HEADER as u64 {
             return Err(DurableLedgerError::MissingHeader);
         }
-        file.seek(SeekFrom::Start(0))?;
-        let mut header = [0_u8; HEADER];
-        file.read_exact(&mut header)?;
-        if &header[..8] != MAGIC
-            || &header[8..40] != binding.as_array()
-            || Digest32::of_bytes(&header[..40]).as_array() != &header[40..]
-        {
-            return Err(DurableLedgerError::BindingMismatch);
-        }
-
-        let mut cursor = HEADER as u64;
-        let mut frontier = LedgerWitnessFrontier::empty();
-        while length - cursor >= FRAME as u64 {
-            let mut frame = [0_u8; FRAME];
-            file.read_exact(&mut frame)?;
-            if Digest32::of_bytes(&frame[..FRAME - 32]).as_array() != &frame[FRAME - 32..] {
-                return Err(DurableLedgerError::Corrupt);
-            }
-            let next = decode_frontier(&frame[..FRAME - 32])?;
-            validate_advance(frontier, next)?;
-            frontier = next;
-            cursor += FRAME as u64;
-        }
+        let (frontier, cursor) = read_frontiers(&mut file, binding, length)?;
         if cursor != length {
             file.set_len(cursor)
                 .and_then(|()| file.sync_all())
@@ -166,6 +149,70 @@ impl LedgerWitnessStore {
         self.poisoned = false;
         Ok(next)
     }
+}
+
+/// Inspect the independent acknowledgement frontier using an OS read-only
+/// handle and shared lock. Incomplete tails are rejected without recovery,
+/// truncation, signing or acknowledgement. The host still authorizes custody.
+pub fn inspect_ledger_witness_frontier(
+    file: File,
+    binding: Digest32,
+    maximum_frames: usize,
+) -> Result<LedgerWitnessFrontier, DurableLedgerError> {
+    validate_binding(binding)?;
+    let maximum_length = u64::try_from(maximum_frames)
+        .ok()
+        .filter(|value| *value != 0)
+        .and_then(|value| value.checked_mul(FRAME as u64))
+        .and_then(|value| value.checked_add(HEADER as u64))
+        .ok_or(DurableLedgerError::InvalidLimit)?;
+    let mut file = LockedFile::acquire_shared(file)?;
+    let length = file.metadata()?.len();
+    if length > maximum_length {
+        return Err(DurableLedgerError::Capacity);
+    }
+    let (frontier, cursor) = read_frontiers(&mut file, binding, length)?;
+    if cursor != length {
+        return Err(DurableLedgerError::IncompleteTail);
+    }
+    if file.metadata()?.len() != length {
+        return Err(DurableLedgerError::Conflict);
+    }
+    Ok(frontier)
+}
+
+fn read_frontiers(
+    file: &mut LockedFile,
+    binding: Digest32,
+    length: u64,
+) -> Result<(LedgerWitnessFrontier, u64), DurableLedgerError> {
+    if length < HEADER as u64 {
+        return Err(DurableLedgerError::MissingHeader);
+    }
+    file.seek(SeekFrom::Start(0))?;
+    let mut header = [0_u8; HEADER];
+    file.read_exact(&mut header)?;
+    if &header[..8] != MAGIC
+        || &header[8..40] != binding.as_array()
+        || Digest32::of_bytes(&header[..40]).as_array() != &header[40..]
+    {
+        return Err(DurableLedgerError::BindingMismatch);
+    }
+
+    let mut cursor = HEADER as u64;
+    let mut frontier = LedgerWitnessFrontier::empty();
+    while length - cursor >= FRAME as u64 {
+        let mut frame = [0_u8; FRAME];
+        file.read_exact(&mut frame)?;
+        if Digest32::of_bytes(&frame[..FRAME - 32]).as_array() != &frame[FRAME - 32..] {
+            return Err(DurableLedgerError::Corrupt);
+        }
+        let next = decode_frontier(&frame[..FRAME - 32])?;
+        validate_advance(frontier, next)?;
+        frontier = next;
+        cursor += FRAME as u64;
+    }
+    Ok((frontier, cursor))
 }
 
 fn validate_binding(binding: Digest32) -> Result<(), DurableLedgerError> {

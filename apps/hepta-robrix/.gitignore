@@ -1,0 +1,17 @@
+## Cargo generated directory
+/target
+## cargo-packager generated directory
+/dist
+
+.vscode
+.DS_Store
+CLAUDE.md
+proxychains.conf
+testflight.sh
+
+## Filled-in release secrets for upload-release-secrets.sh (never commit)
+/packaging/release-secrets.env
+
+## Rendered by packaging/aur/render-pkgbuild.sh, never committed.
+packaging/aur/PKGBUILD
+packaging/aur/.SRCINFO

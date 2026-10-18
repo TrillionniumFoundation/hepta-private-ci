@@ -135,7 +135,7 @@ fn corrupt_lifecycle_state_fails_closed() -> Result<(), FleetRegistryError> {
     let agent_id = manifest.agent_id.clone();
     let record = fleet.registry.register(manifest)?;
     fs::write(
-        lifecycle_path(record.layout.run_root(), 0),
+        lifecycle_path(record.layout.owner_run_root(), 0),
         format!(
             "{{\"schema_version\":1,\"agent_id\":\"{agent_id}\",\"generation\":0,\"lifecycle\":\"running\"}}\n"
         ),
@@ -155,7 +155,10 @@ fn crash_leftovers_are_ignored_but_published_state_reloads() -> Result<(), Fleet
     let agent_id = manifest.agent_id.clone();
     let record = fleet.registry.register(manifest)?;
     fs::write(
-        record.layout.run_root().join(".lifecycle-crashed.tmp"),
+        record
+            .layout
+            .owner_run_root()
+            .join(".lifecycle-crashed.tmp"),
         b"partial",
     )?;
     fs::create_dir(
@@ -272,7 +275,7 @@ fn workspace_sweep_agrees_with_pairwise_oracle_for_nested_and_sibling_paths()
         .map(|name| {
             let path = fleet._temp.path().join("sweep").join(name);
             fs::create_dir_all(&path)?;
-            WorkspaceBinding::new(&path, &fleet.root)
+            WorkspaceBinding::new(path.canonicalize()?, &fleet.root)
         })
         .collect::<Result<Vec<_>, FleetRegistryError>>()?;
     // Every subset and both identity orders exercise parents, descendants,
@@ -326,7 +329,7 @@ fn fresh_agent_roots_satisfy_private_owner_contract() -> Result<(), FleetRegistr
     for root in [
         record.layout.agent_root(),
         record.layout.home_root(),
-        record.layout.run_root(),
+        record.layout.owner_run_root(),
         record.layout.logs_root(),
         record.layout.releases_root(),
         record.layout.cognitive_root(),

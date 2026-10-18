@@ -87,16 +87,16 @@ pub struct RetrievalAssignmentFact {
     pub enumerated_candidate_digests: Vec<Digest32>,
     pub legal_candidate_indices: Vec<u32>,
     pub selected_candidate_indices: Vec<u32>,
-    /// Exact subset published by the owner to the named product consumer after
-    /// downstream learned reranking, response budget, NDU planning and final
-    /// owner/currentness fences. Provider/model attachment is proved separately
-    /// by the inference journal; this field alone does not claim model delivery.
+    /// Legacy asserted delivery order. Preserve the exact stored values and
+    /// positions; do not silently reinterpret historical tag-9 records.
     pub delivered_candidate_indices: Vec<u32>,
-    /// Whether a non-empty retrieval context was published to that consumer.
+    /// Legacy assertion, not independently authenticated publication evidence.
+    /// Some historical producer revisions reused this bit for preparation.
+    /// Such records must never be automatically promoted to physical exposure.
+    /// New product preparation writes use RetrievalPrepared (tag 10).
     pub context_exposed: bool,
-    /// Digest of the exact serialized CognitiveContextSnapshot returned by the
-    /// owner. The inference journal carries the same digest so a later
-    /// native_started receipt can prove actual turn/start attachment.
+    /// Historical asserted context identity. Actual publication/native use
+    /// requires independently owned consumer evidence, not this digest alone.
     pub published_context_digest: Option<Digest32>,
     pub omitted_by_policy_limits: u32,
     pub assignment_propensity: ProbabilityQ32,
@@ -282,6 +282,7 @@ pub struct UnlearningLineageEventV1 {
 pub enum LedgerEvent {
     Decision(EpisodeDecision),
     RetrievalAssignment(RetrievalAssignmentFact),
+    RetrievalPrepared(crate::RetrievalPreparationFactV1),
     Outcome(OutcomeObservation),
     Credit(CreditAssignment),
     PromptDelivery(PromptDeliveryObservation),
@@ -297,6 +298,7 @@ impl LedgerEvent {
         match self {
             Self::Decision(value) => &value.record_id,
             Self::RetrievalAssignment(value) => &value.record_id,
+            Self::RetrievalPrepared(value) => &value.assignment.record_id,
             Self::Outcome(value) => &value.record_id,
             Self::Credit(value) => &value.record_id,
             Self::PromptDelivery(value) => &value.record_id,

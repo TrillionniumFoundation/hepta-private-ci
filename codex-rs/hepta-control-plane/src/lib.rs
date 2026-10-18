@@ -46,9 +46,12 @@ pub use module_runtime::MAX_MODULE_EFFECTS;
 pub use module_runtime::MAX_MODULE_PORTS;
 pub use module_runtime::MAX_RUNTIME_MODULES;
 pub use module_runtime::RuntimeModuleAbiV1;
+pub use module_runtime::RuntimeModuleActiveReservationV1;
+pub use module_runtime::RuntimeModuleGenerationFenceV1;
 pub use module_runtime::RuntimeModuleLifecycleV1;
 pub use module_runtime::RuntimeModulePromotionWitnessV1;
 pub use module_runtime::RuntimeModuleRecordV1;
+pub use module_runtime::RuntimeModuleRegistryCheckpointV1;
 pub use module_runtime::RuntimeModuleRegistryError;
 pub use module_runtime::RuntimeModuleRegistryV1;
 pub use module_runtime::RuntimeModuleStateClassV1;
@@ -281,6 +284,10 @@ fn digest_state(state: &ControlState, intent: &ControlIntent) -> Digest32 {
     bytes.extend_from_slice(intent.payload_digest.as_array());
     Digest32::of_bytes(&bytes)
 }
+
+#[cfg(test)]
+#[path = "organ_extension_lifecycle_tests.rs"]
+mod organ_extension_lifecycle_tests;
 
 #[cfg(test)]
 #[path = "lib_tests.rs"]

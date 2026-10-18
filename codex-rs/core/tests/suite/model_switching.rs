@@ -345,9 +345,11 @@ async fn rollback_first_turn_model_change_removes_its_instructions(
 
     let request = &response_mock.requests()[1];
     assert_eq!(request.body_json()["model"], followup_model);
-    let misaligned_messages = request
-        .inputs_of_type("message")
+    super::durable_metadata::assert_wire_has_no_local_metadata(&request.input());
+    let durable = super::durable_metadata::read_items(&test.codex).await?;
+    let misaligned_messages = durable
         .into_iter()
+        .filter(|item| item["type"] == "message")
         .filter(|message| {
             message["internal_chat_message_metadata_passthrough"]["content_item_kinds"]
                 .as_array()
@@ -425,7 +427,12 @@ async fn model_change_appends_model_instructions_developer_message() -> Result<(
     assert_eq!(requests.len(), 2, "expected two model requests");
 
     let second_request = requests.last().expect("expected second request");
-    assert!(second_request.has_content_kinds(&["model_switch.instructions"]));
+    super::durable_metadata::assert_content_kinds(
+        &test.codex,
+        second_request,
+        &["model_switch.instructions"],
+    )
+    .await?;
     let developer_texts = second_request.message_input_texts("developer");
     let model_switch_text = developer_texts
         .iter()
@@ -992,7 +999,12 @@ async fn model_change_from_multimodal_to_text_strips_prior_media_content() -> Re
     assert_eq!(requests.len(), 2, "expected two model requests");
 
     let first_request = requests.first().expect("expected first request");
-    assert!(first_request.has_content_kinds(&["user.image", "user.audio", "user.text"]));
+    super::durable_metadata::assert_content_kinds(
+        &test.codex,
+        first_request,
+        &["user.image", "user.audio", "user.text"],
+    )
+    .await?;
     assert!(
         !first_request.message_input_image_urls("user").is_empty(),
         "first request should include the uploaded image"
@@ -1003,11 +1015,9 @@ async fn model_change_from_multimodal_to_text_strips_prior_media_content() -> Re
     );
 
     let second_request = requests.last().expect("expected second request");
-    assert!(second_request.has_content_kinds(&[
-        "images.unsupported",
-        "audio.unsupported",
-        "user.text",
-    ]));
+    // Unsupported-media replacement belongs to the model request copy;
+    // the original durable media history remains intact.
+    super::durable_metadata::assert_wire_has_no_local_metadata(&second_request.input());
     assert!(
         second_request.message_input_image_urls("user").is_empty(),
         "second request should strip unsupported image content"

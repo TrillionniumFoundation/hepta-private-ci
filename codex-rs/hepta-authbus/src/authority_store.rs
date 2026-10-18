@@ -23,6 +23,10 @@ pub struct AuthBusAuthorityStore {
 }
 
 impl AuthBusAuthorityStore {
+    pub async fn close(&self) {
+        self.pool.close().await;
+    }
+
     pub async fn open(path: &Path) -> Result<Self, AuthBusAuthorityError> {
         let pool = crate::sqlite::open_durable_pool(path).await?;
         let quick_check: String = sqlx::query_scalar("PRAGMA quick_check")
@@ -76,6 +80,16 @@ impl AuthBusAuthorityStore {
         .await
         .map_err(storage)?;
         row.map(|row| trusted_time_from_row(&row)).transpose()
+    }
+
+    pub async fn policy_snapshot(
+        &self,
+        policy_id: &StableId,
+    ) -> Result<AuthPolicy, AuthBusAuthorityError> {
+        let mut tx = begin(&self.pool).await?;
+        let policy = load_policy_by_id(&mut tx, policy_id).await?;
+        tx.commit().await.map_err(storage)?;
+        Ok(policy)
     }
 
     pub async fn create_policy(

@@ -34,6 +34,7 @@ use codex_protocol::openai_models::ModelInfo;
 use codex_protocol::openai_models::ModelServiceTier;
 use codex_protocol::openai_models::ReasoningEffort as ReasoningEffortConfig;
 use codex_protocol::protocol::EventMsg;
+use codex_protocol::protocol::SandboxPolicy;
 use codex_protocol::protocol::SessionSource;
 use codex_protocol::protocol::W3cTraceContext;
 use codex_protocol::user_input::UserInput;
@@ -582,6 +583,85 @@ async fn responses_websocket_request_prewarm_reuses_connection() {
         Some("sequential_cutoff")
     );
 
+    server.shutdown().await;
+}
+
+#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+async fn responses_websocket_changed_permission_authority_retires_previous_connection() {
+    skip_if_no_network!();
+
+    let server = start_websocket_server(vec![
+        vec![
+            vec![
+                ev_response_created("warm-original-permission"),
+                ev_completed("warm-original-permission"),
+            ],
+            vec![
+                ev_response_created("original-permission-reply"),
+                ev_completed("original-permission-reply"),
+            ],
+            // This slot must remain unused when the permission scope changes.
+            vec![
+                ev_response_created("wrong-old-permission"),
+                ev_completed("wrong-old-permission"),
+            ],
+        ],
+        vec![vec![
+            ev_response_created("new-permission-reply"),
+            ev_completed("new-permission-reply"),
+        ]],
+    ])
+    .await;
+    let mut builder = test_codex();
+    let test = builder.build_with_websocket_server(&server).await.unwrap();
+    test.submit_turn_with_policy("original permission", test.config.legacy_sandbox_policy())
+        .await
+        .unwrap();
+    test.submit_turn_with_policy("changed permission", SandboxPolicy::DangerFullAccess)
+        .await
+        .unwrap();
+
+    assert_eq!(
+        server.handshakes().len(),
+        2,
+        "changed permission must open a new transport"
+    );
+    let connections = server.connections();
+    assert_eq!(connections.len(), 2);
+    assert_eq!(
+        connections[0].len(),
+        2,
+        "the old permission scope must receive no further request"
+    );
+    assert_eq!(connections[1].len(), 1);
+    let original = connections[0][1].body_json();
+    let changed = connections[1][0].body_json();
+    let original_metadata: serde_json::Value = serde_json::from_str(
+        original["client_metadata"]["x-codex-turn-metadata"]
+            .as_str()
+            .unwrap(),
+    )
+    .unwrap();
+    let changed_metadata: serde_json::Value = serde_json::from_str(
+        changed["client_metadata"]["x-codex-turn-metadata"]
+            .as_str()
+            .unwrap(),
+    )
+    .unwrap();
+    assert_ne!(
+        original_metadata["sandbox_mode"],
+        changed_metadata["sandbox_mode"]
+    );
+    assert_eq!(changed_metadata["sandbox_mode"], "danger-full-access");
+    assert!(
+        changed.get("previous_response_id").is_none(),
+        "the old scope's response must not seed the new transport"
+    );
+    assert_eq!(
+        changed_metadata["root_turn_id"],
+        changed_metadata["turn_id"]
+    );
+    test.codex.shutdown_and_wait().await.unwrap();
     server.shutdown().await;
 }
 

@@ -145,13 +145,17 @@ this target. [HNMF](../../hnmf/TECHNICAL.md) owns contribution/learning semantic
 consumes existing Memory, ledger and artifact owners. It binds Replay to the
 consumer/workspace/parameter scope, and binds each training decision to the exact
 owner/Memory/revision support rather than equal text. Train, load and prediction
-revalidate source use and frozen ledger. Load/prediction also check the supplied
-artifact-owner registry and exact bytes. The embedding owner must supply the
-current registry; this candidate API does not mint signed production CURRENT.
+revalidate source use and frozen ledger. Load and prediction require the host's
+`with_current_artifacts` protected owner source, reopened at the actual use time.
+The caller's registry supplies the expected complete manifest, which must match
+authenticated eligible CURRENT and the exact bytes. Missing, withdrawn, changed
+or expired CURRENT rejects even if the caller retains an old eligible snapshot.
+The authenticated use window is checked again after loading or prediction.
 
 The integration test uses separate source/receiver stores and covers no sharing,
 Recall-only, Replay-only, both, altered bytes/targets/workspaces, independent
-artifact revocation and support withdrawal after loading. This is an owner-path
+artifact revocation in a separate CURRENT source and support withdrawal after
+loading. This is an owner-path
 behavioral test, not a real-task transfer study, process-isolation proof or
 production Laya service. Selected model state and effect authority are unchanged.
 
@@ -209,7 +213,7 @@ Projection domains rebuild from declared sources and publish complete generation
 
 `AgentdState` owns exactly one mutex-protected `AgentRunCoordinator` for the process generation. Its active-run ceiling is the supervisor/Fleet `ResourceBudget.max_concurrent_turns` for this Agent (within the supported local bound), and it retains at most 1024 records until the terminal consumer explicitly releases a closed record. The coordinator freezes request/objective/body/artifact digests together with authority epoch and deadline; context attachment must repeat that complete tuple exactly. Attachment and dispatch re-check the deadline, cancellation records a bounded reason, and the runtime monitor continuously advances deadlines. Post-dispatch cancellation has a 3-second acknowledgement deadline; if no terminal owner observation arrives, the run becomes `Indeterminate`. Terminal observations preserve the dispatch-boundary distinction, and `RunReleaseClosed` removes a closed record only with its exact expected revision. Existing identical operations are idempotent; reused identities with changed semantics conflict.
 
-The run map is intentionally ephemeral and is not a second durable execution ledger. After process loss an external durable execution owner may supply the exact prior snapshot/revision/context/receipt identity through the recovery method; Agentd rehydrates it only as `Indeterminate`. No restart path may infer completion or redispatch from an absent local record.
+The live run map is a bounded runtime projection, not a second authoritative execution ledger. Its schema-2 `runtime-codex-agent-runs-v1.json` preserves complete snapshots and closed-record tombstones under the native file lock, canonical content digest and exact revision CAS. An external execution owner may still supply the exact prior snapshot/revision/context/receipt identity through explicit recovery; Agentd rehydrates dispatched uncertainty only as `Indeterminate`. No restart path may infer completion or redispatch from an absent local record.
 
 [Shared concurrency and transaction requirements](../README.md#shared-concurrency-and-transactions) apply at the corresponding owner boundary.
 
@@ -222,6 +226,32 @@ The daemon coordinator exposes the owner-internal `start_revalidated_run_start` 
 Run deadlines remain live after admission: expiration before dispatch becomes a local terminal cancellation; expiration after dispatch moves the run to `Cancelling` and still requires owner terminal observation. Shutdown closes new admission before teardown, converts pre-dispatch work to local cancellation, moves dispatched work to cancelling, and keeps the control path running for a bounded drain. After the drain deadline, unresolved dispatched/cancelling work becomes `Indeterminate`; a second bounded reconciliation window accepts exact terminal observations. If uncertainty remains, shutdown reports recovery-required rather than fabricating success/failure.
 
 Recovery after process loss is explicit and non-authoritative: a durable external owner must provide the exact prior operation identity, and the new Agentd process can only rehydrate it as `Indeterminate`; the recovery API cannot redispatch. The local control server also distinguishes saturation from disappearance by returning a typed overload/retry frame instead of dropping the connection. `run.lifecycle/1.1` adds explicit closed-record release and exposes the pending cancellation-ack deadline in receipts so callers can reconcile rather than guess.
+
+### Verified same-Agent process restart
+
+Normal daemon startup may advance this existing projection only through the private
+`AgentdConfig` restart admission. It retains the original exclusive writer file
+description and freshly checks the exact same Agent, roots, immutable manifest,
+resources, sockets and current Fleet `Starting` event. An older composition must
+match the original composition formula for a real historical `Starting` event in
+that Agent's complete validated lifecycle history. A stopped event, future or
+different Agent, changed configuration/ports/resources, replaced lock path, or
+stale current lifecycle cannot authorize migration. The public strict store-open
+API continues to reject mixed compositions.
+
+The same store advances by one revision with the actual previous canonical SHA
+as its predecessor, after rechecking the full original SHA/revision and current
+launch fence under the native store lock. Every snapshot and tombstone survives;
+dispatched/cancelling records become `Indeterminate` with their original tuple and
+dispatch bindings, and are never automatically dispatched again. Unsent records
+retain their original phase and identity. Both dispatch methods require the
+current ready runtime and the original receipt's current generation/fence.
+Same-generation reopen does not write another revision.
+
+The existing format retains the immediately preceding digest, not older revision
+preimages or an independently signed historical chain. Migration validates the
+actual complete current predecessor and does not claim to authenticate unavailable
+older preimages. This path adds no store, signer, reset, or new external wire API.
 
 [Shared failure, recovery and rollback requirements](../README.md#shared-failure-and-recovery) remain mandatory.
 
@@ -261,6 +291,8 @@ Current focused test sources (source references, not pass receipts):
 
 - [codex-rs/hepta-agentd/src/lane_b_runtime_tests.rs](../../../codex-rs/hepta-agentd/src/lane_b_runtime_tests.rs) covers complete frozen-tuple binding, post-admission deadlines, reasoned cancellation, drain and explicit indeterminate recovery.
 - [codex-rs/hepta-agentd/src/state_isolation_tests.rs](../../../codex-rs/hepta-agentd/src/state_isolation_tests.rs) exercises the lifecycle methods through the real daemon control dispatch and verifies capability advertisement and terminal reconciliation during drain.
+- [codex-rs/hepta-agentd/src/lane_b_restart_tests.rs](../../../codex-rs/hepta-agentd/src/lane_b_restart_tests.rs) covers verified failed-spawn restart, complete snapshot/tombstone preservation, stale writer rejection and unrelated predecessor refusal.
+- [codex-rs/hepta-agentd/src/run_store_dispatch_tests.rs](../../../codex-rs/hepta-agentd/src/run_store_dispatch_tests.rs) verifies both dispatch methods reject retained old-generation or wrong-fence receipts without changing durable bytes.
 - [codex-rs/hepta-agentd/src/runtime_tests.rs](../../../codex-rs/hepta-agentd/src/runtime_tests.rs) verifies that bounded shutdown keeps reconciliation live until terminal observation.
 - [codex-rs/hepta-agentd/src/cognitive_context_tests.rs](../../../codex-rs/hepta-agentd/src/cognitive_context_tests.rs); named case: `context_reads_real_owner_content_and_removes_committed_tombstones`.
 - [codex-rs/hepta-agentd/src/authbus_dispatch_tests.rs](../../../codex-rs/hepta-agentd/src/authbus_dispatch_tests.rs); named case: `lost_queue_reply_recovers_from_sqlite_using_lookup_only_and_exact_receipt`.
@@ -394,6 +426,24 @@ The default `runtime.rs` path registers long-lived components through the existi
 
 The configured product profile now routes authenticated `ObjectiveStart` through the canonical runner and a host-owned invocation provider, then freezes the exact prepared envelope into the existing Agentd run/context lifecycle. Bare/compatibility profiles do not install that provider, do not advertise `intelligence.canonical_v1`, and compatibility `RunStart` is never counted as canonical execution. Real provider dispatch, durable product Decision/Outcome recovery and target-host qualification remain separate boundaries.
 
+### Conservative canonical CLI profile
+
+`--canonical-intelligence-provider-profile durable-safe-abstain-v1` selects the
+concrete durable-RunStart provider together with its signed seven-owner authority
+file, signer and verification key. The normal CLI also requires the explicit
+Objective profile and AuthBus trust/checkpoint configuration. This profile
+returns `canonical_abstained`; it is not an action-selecting or learned policy.
+
+The ordinary binary/control-socket regression lives in
+`codex-rs/hepta-agentd/tests/support/canonical_objective_product.rs`, under the
+existing `authbus_text_product` target. Its independent test producer supplies
+signed input through `ObjectiveStart`, not internal owner objects. The checks
+cover canonical disposition, byte-stable durable retry, missing-owner rejection,
+repair followed by exact retry, tampered-input rejection and zero model sends.
+These checks establish the conservative product route only. Real learned action
+selection, durable Decision/Outcome recovery and long-run efficacy remain
+separate work; the test transport does not establish provider qualification.
+
 ## 17. Source implementation receipt
 
 This receipt records repository source bindings for the current documentation candidate. It is navigation evidence only; it does not claim product composition, deployment, or external effect authority.
@@ -409,3 +459,77 @@ This receipt records repository source bindings for the current documentation ca
 - Exact module-local source/test provenance is recorded as `currentSourceEvidence` and is verified by the Agentd process qualification workflow; the legacy repository-wide `sourceBase` remains a separate common baseline until the repository-wide migration.
 - Consumer callsites and durable owner stores remain an explicit follow-up when not listed above.
 - Production implementation, runtime composition, independent acceptance, activation, and release remain false until their separate evidence gates pass.
+
+### Exact profile boundary
+
+The client-only Cargo profile omits Agentd server/components/App Server and the
+transitive Automation/Evidence storage implementations. Their existing public
+DTO identities and serde formats stay in their owning crates; disabling defaults
+selects storage-free values, not duplicate protocol or authority implementations.
+Both owner crates retain `runtime` in their default features. Default Agentd
+explicitly enables those runtime features; no migration or persistent format changes.
+
+`python3 scripts/hepta_architecture_graph.py --check-client-profile` resolves the
+actual normal/build Cargo tree and rejects SQL/state owners or runtime feature
+re-enablement, including transitive feature unification. Dev-dependency features
+are deliberately not evidence for a production client. The native architecture
+lane compiles the client independently and exercises both DTO-only library suites.
+
+### Client-only Cargo composition
+
+The default Agentd profile retains `server` and `production-cognitive-write`.
+`--no-default-features --lib` builds the existing bounded control client without
+the daemon composition, App Host or agent-components dependency. It does not
+start owners or grant additional authority. The inference worker's production
+dependency selects that client-only profile; its integration fixtures explicitly
+retain the full daemon. Client request/response identities, frame limits, paging
+and overload semantics remain shared, not reimplemented in a second transport.
+
+This is a Cargo client boundary, not general optional learning/automation profiles
+or a minimal inference runtime: App Server adapter dependencies remain. Default
+Bazel product targets keep the full server feature explicitly. Separate client-only
+Bazel deployment is not established by the Cargo dependency reduction.
+
+### Supervisor-selected compiled module startup
+
+The ordinary `codex-hepta-agentd` binary accepts `--runtime-module-profile
+supervisor-selected`. The default `compiled` profile preserves existing startup.
+The selected profile reads `runtime_module_selection` through the owner-local
+Supervisor socket, from the already-open durable runtime-module owner. It never
+opens a second topology store, writes a selection file, or issues activation.
+
+The initial supported consumer is the existing Automation factory. Before opening
+its store, it binds the selected owner, generation, state class, dependencies and
+domains to the canonical module definition and the actual loaded executable.
+Unknown ports/effect scopes are unsupported, not silently admitted. An absent
+selection leaves a new Automation module unopened and no idle scheduler is
+advertised. Existing files are not evidence of retirement: an absent selection
+with retained Automation state is rejected for explicit owner recovery/retirement.
+This bounded profile does not silently convert an existing compiled owner into
+a removed module. A non-serving selected writer reservation also rejects, rather
+than being flattened into absence.
+An explicitly selected owner that is unavailable or corrupt rejects startup with
+an owner-recovery diagnostic; it is not converted into an absent optional module.
+The default compiled profile retains its existing optional-degradation policy.
+Attachment state distinguishes verified empty absence, a serving owner, a withdrawn
+route with its retained drain reader, and unavailable state. Graceful restart may
+drain verified absence; unavailable state still blocks. Withdrawn or permanently
+retired timer routes query the existing owner's drain policy rather than being
+assumed empty. This does not retire TaskFlow data or erase uncertain effects.
+The ordinary-binary tests separately exercise selected restart, absent restart,
+wrong executable, retained-but-unselected state, selected corruption and permanent
+timer retirement. They do not certify automatic topology adoption or cross-schema
+writer migration; the selected dependency records are structural fixtures.
+
+The factory reobserves the same selection after bounded owner startup and before
+publishing its attachment or scheduling work. Failed publication leaves no live
+attachment. The local task generation is the selected module generation, not the
+Agent process generation; existing owner epochs remain separate writer fences.
+
+This is startup composition under the existing host trust boundary, not a hot-path
+permission cache or a live topology watcher. Active processes retain their frozen
+configuration. A replacement still requires the existing independently admitted
+selection, explicit drain, owner handoff and supervised process-generation path.
+The query cannot grant effects, reset an owner, reactivate retired timers, or
+replace state schemas. General module routing and live multi-owner replacement
+are not implied by this bounded profile.
