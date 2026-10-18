@@ -65,6 +65,15 @@ def digest(value: Any) -> str:
     return hashlib.sha256(canonical_bytes(value)).hexdigest()
 
 
+def sha256_file(path: Path) -> str:
+    """Bound hash verification RSS regardless of frozen workload file size."""
+    hasher = hashlib.sha256()
+    with path.open("rb") as stream:
+        for block in iter(lambda: stream.read(1024 * 1024), b""):
+            hasher.update(block)
+    return hasher.hexdigest()
+
+
 def matrix_cases() -> list[dict[str, str]]:
     names = [name for name, _ in FACTORS]
     choices = [values for _, values in FACTORS]
@@ -167,7 +176,7 @@ def run_matrix(
         if checkout.stdout.strip() != source_commit:
             raise ValueError("measured source commit does not match repository HEAD")
     if workload_path is not None:
-        actual_workload_digest = hashlib.sha256(workload_path.read_bytes()).hexdigest()
+        actual_workload_digest = sha256_file(workload_path)
         if actual_workload_digest != workload_digest:
             raise ValueError("workload path does not match the frozen workload digest")
     host = host_id or platform.node() or "unknown-host"
@@ -201,7 +210,7 @@ def run_matrix(
             **{f"HEPTA_MATRIX_{key.upper()}": value for key, value in case.items() if key != "caseId"},
         })
         try:
-            if hashlib.sha256(workload_path.read_bytes()).hexdigest() != workload_digest:
+            if sha256_file(workload_path) != workload_digest:
                 raise ValueError("frozen workload changed before case execution")
             result = subprocess.run(
                 _command(
@@ -218,7 +227,7 @@ def run_matrix(
                 timeout=timeout_seconds,
                 env=env,
             )
-            if hashlib.sha256(workload_path.read_bytes()).hexdigest() != workload_digest:
+            if sha256_file(workload_path) != workload_digest:
                 raise ValueError("frozen workload changed during case execution")
             if result.returncode != 0:
                 raise ValueError(f"workload exited {result.returncode}: {result.stderr[-512:]}")
