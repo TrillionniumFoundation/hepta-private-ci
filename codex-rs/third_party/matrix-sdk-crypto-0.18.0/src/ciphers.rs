@@ -248,7 +248,7 @@ impl AesHmacSha2Key {
     /// the ciphertext.
     fn generate_iv() -> [u8; IV_SIZE] {
         let mut rng = rng();
-        let mut iv = [0u8; IV_SIZE];
+        let mut iv = <[u8; IV_SIZE]>::default();
 
         rng.fill_bytes(&mut iv);
 
@@ -288,7 +288,8 @@ mod test {
     fn encryption_roundtrip() {
         let plaintext = "It's a secret to everybody";
 
-        let salt = [0u8; SALT_SIZE];
+        let mut salt = <[u8; SALT_SIZE]>::default();
+        rng().fill_bytes(&mut salt);
         let key = AesHmacSha2Key::from_passphrase("My passphrase", 10, &salt);
 
         let (ciphertext, iv) = key.encrypt(plaintext.as_bytes().to_vec());
