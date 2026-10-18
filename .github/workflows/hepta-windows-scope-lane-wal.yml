@@ -1,0 +1,64 @@
+name: Hepta Windows scope-lane WAL recovery
+
+on:
+  pull_request:
+    paths:
+      - "codex-rs/hepta-control-plane/src/scope_lane_wal.rs"
+      - "codex-rs/hepta-control-plane/src/scope_lane_wal_tests.rs"
+      - "codex-rs/Cargo.lock"
+      - ".github/workflows/hepta-windows-scope-lane-wal.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: hepta-windows-scope-wal-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+env:
+  CARGO_INCREMENTAL: "0"
+  CARGO_BUILD_JOBS: "2"
+  CARGO_PROFILE_TEST_DEBUG: "0"
+  CARGO_PROFILE_DEV_DEBUG: "0"
+
+jobs:
+  windows-crash-tail:
+    runs-on: windows-latest
+    timeout-minutes: 70
+    steps:
+      - name: Checkout exact candidate
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - name: Install pinned Rust toolchain
+        uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582
+        with:
+          components: rustfmt
+      - name: Verify immutable checkout and Cargo graph
+        shell: bash
+        env:
+          EXPECTED_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$EXPECTED_SHA"
+          rustc --version
+          cargo metadata --manifest-path codex-rs/Cargo.toml --locked --no-deps --format-version 1 > /dev/null
+      - name: Run actual Windows scope-lane WAL crash recovery
+        shell: bash
+        run: |
+          set -euo pipefail
+          cargo test --manifest-path codex-rs/Cargo.toml --locked --lib -p codex-hepta-control-plane scope_lane_wal -- --test-threads=1
+      - name: Check control-plane source formatting
+        shell: bash
+        run: |
+          set -euo pipefail
+          cargo fmt --manifest-path codex-rs/Cargo.toml --package codex-hepta-control-plane -- --check
+      - name: Confirm checkout unchanged
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          git diff --exit-code
+          git diff --cached --exit-code

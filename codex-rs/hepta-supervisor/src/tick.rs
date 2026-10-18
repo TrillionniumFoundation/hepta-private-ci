@@ -105,15 +105,29 @@ impl<D: ProcessDriver> Supervisor<D> {
                     Err(error) => return Some(error),
                 };
                 slot.restart_pending = true;
+                // Report the durable attempt identity, not the generic
+                // operator-triggered RestartQueued event. A recovery test
+                // must observe the same attempt/backoff after process loss.
                 slot.event(
                     record.lifecycle.generation,
-                    SupervisorEventKind::RestartQueued,
+                    SupervisorEventKind::AutomaticRestartQueued {
+                        attempt: claim.attempt,
+                    },
                 );
                 None
             }
             Err(RestartBudgetError::Exhausted) => {
                 slot.restart_pending = false;
                 slot.restart_not_before = None;
+                slot.restart_attempt = self.config.restart_max_attempts;
+                // Publish the typed terminal event and retain the operator-visible
+                // fault. Never schedule another spawn or reset the durable budget.
+                slot.event(
+                    record.lifecycle.generation,
+                    SupervisorEventKind::AutomaticRestartBudgetExhausted {
+                        attempts: self.config.restart_max_attempts,
+                    },
+                );
                 Some(SupervisorError::RestartBudgetExhausted(agent_id.clone()))
             }
             Err(error) => {

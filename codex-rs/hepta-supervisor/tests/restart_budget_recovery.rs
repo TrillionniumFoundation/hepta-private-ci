@@ -254,7 +254,10 @@ fn restart_budget_survives_repeated_supervisord_recovery() -> Result<(), Supervi
             .expect("snapshot")
             .events
             .iter()
-            .any(|event| matches!(&event.kind, SupervisorEventKind::RestartQueued))
+            .any(|event| matches!(
+                &event.kind,
+                SupervisorEventKind::AutomaticRestartQueued { attempt: 2 }
+            ))
     );
     assert_eq!(
         supervisor.tick(now + Duration::from_millis(499)),
@@ -281,7 +284,10 @@ fn restart_budget_survives_repeated_supervisord_recovery() -> Result<(), Supervi
             .expect("snapshot")
             .events
             .iter()
-            .any(|event| matches!(&event.kind, SupervisorEventKind::RestartQueued))
+            .any(|event| matches!(
+                &event.kind,
+                SupervisorEventKind::AutomaticRestartQueued { attempt: 3 }
+            ))
     );
     // A recovered third attempt must retain its 1,000 ms durable backoff,
     // and must not spawn at 999 ms; this tests the budget, not just the event.
@@ -308,7 +314,11 @@ fn restart_budget_survives_repeated_supervisord_recovery() -> Result<(), Supervi
     let report = supervisor.tick(now);
     assert_eq!(report.faults.len(), 1);
     assert_eq!(report.faults[0].agent_id, agent_id);
-    assert!(report.faults[0].message.contains("exhausted its restart budget"));
+    assert!(
+        report.faults[0]
+            .message
+            .contains("exhausted its restart budget")
+    );
     let snapshot = supervisor.snapshot(&agent_id).expect("snapshot");
     assert!(!snapshot.active);
     assert!(snapshot.events.iter().any(|event| matches!(
