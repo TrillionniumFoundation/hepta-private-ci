@@ -16,6 +16,7 @@ pub use authbus::AuthBusTextStatus;
 pub use authbus::ObjectiveRunAdmission;
 pub use authbus::ObjectiveStartOutcome;
 pub use automation_chain::AutomationAcceptedTaskObservation;
+pub use automation_chain::AUTOMATION_TERMINAL_OBSERVATION_CAPABILITY;
 pub use capabilities::AGENTD_CAPABILITY_AUTOMATION_CALENDAR_V2;
 pub use capabilities::AGENTD_CAPABILITY_AUTOMATION_EXTERNAL_EFFECT;
 pub use capabilities::AGENTD_CAPABILITY_CANONICAL_INTELLIGENCE_V1;
@@ -666,6 +667,10 @@ pub enum AgentdMethod {
         run_id: String,
         step_id: String,
         attempt: u32,
+    },
+    AutomationObserveEffect {
+        intent: AuthorizedEffectIntent,
+        command_id: String,
     },
     AutomationList {
         limit: u16,

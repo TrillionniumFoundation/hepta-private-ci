@@ -47,6 +47,8 @@ use crate::SessionIngress;
 
 #[path = "client_cognitive_model.rs"]
 mod cognitive_model;
+#[path = "client_automation_observation.rs"]
+mod automation_observation;
 
 pub struct AgentdClient {
     socket_path: PathBuf,

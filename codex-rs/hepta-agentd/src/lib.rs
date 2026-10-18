@@ -103,6 +103,7 @@ pub use codex_hepta_agent_protocol::AuthBusTextState;
 pub use codex_hepta_agent_protocol::AuthBusTextStatus;
 pub use codex_hepta_agent_protocol::AutomationEffectChainObservation;
 pub use codex_hepta_agent_protocol::AutomationAcceptedTaskObservation;
+pub use codex_hepta_agent_protocol::AUTOMATION_TERMINAL_OBSERVATION_CAPABILITY;
 pub use codex_hepta_agent_protocol::AutomationEffectObservation;
 pub use codex_hepta_agent_protocol::AutomationEffectReconcileSnapshot;
 pub use codex_hepta_agent_protocol::AutomationEffectReconcileState;

@@ -65,6 +65,11 @@ mod pon_executable;
 mod pon_process;
 #[path = "automation_effect_host_task_observation.rs"]
 mod task_observation;
+#[path = "automation_effect_terminal_observation.rs"]
+mod terminal_observation;
+#[cfg(all(test, unix))]
+#[path = "automation_effect_terminal_restart_tests.rs"]
+mod terminal_restart_tests;
 
 #[cfg(test)]
 #[path = "automation_effect_host_task_observation_tests.rs"]
@@ -2289,6 +2294,10 @@ mod tests {
             .await
             .is_err()
         );
+        drop(host);
+        super::terminal_restart_tests::observe_reopened_terminal_through_socket(
+            &fixture.identity, &host_file, &intent, &receipt, now_ms,
+        ).await?;
         server.verify().await;
         Ok(())
     }

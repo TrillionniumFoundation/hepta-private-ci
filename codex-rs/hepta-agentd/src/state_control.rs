@@ -32,6 +32,8 @@ use super::run_error;
 
 #[path = "state_cognitive_model.rs"]
 mod cognitive_model;
+#[path = "state_automation_observation.rs"]
+mod automation_observation;
 
 const AUTOMATION_UNAVAILABLE_CODE: &str = "automation_unavailable";
 const AUTOMATION_UNAVAILABLE_MESSAGE: &str =
@@ -97,6 +99,9 @@ impl AgentdState {
                     .map_err(AgentdError::Protocol)?,
                 ];
                 if self.automation_effect_host().is_some() {
+                    capabilities.push(crate::AgentdCapability::new(
+                        crate::AUTOMATION_TERMINAL_OBSERVATION_CAPABILITY, 1, 0,
+                    ).map_err(AgentdError::Protocol)?);
                     capabilities.push(
                         crate::AgentdCapability::new(
                             crate::AGENTD_CAPABILITY_AUTOMATION_EXTERNAL_EFFECT,
@@ -642,6 +647,11 @@ impl AgentdState {
                     .await?;
                 self.fence_after_durable_change()?;
                 AgentdPayload::AutomationEffect(effect_snapshot(receipt)?)
+            }
+            crate::AgentdMethod::AutomationObserveEffect { intent, command_id } => {
+                AgentdPayload::AutomationEffectReconcile(
+                    self.observe_automation_effect(&intent, &command_id).await?,
+                )
             }
             crate::AgentdMethod::AutomationReconcileEffect {
                 run_id,
