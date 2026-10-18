@@ -521,7 +521,10 @@ def run_matrix(
         # after the worker cases. Recheck it before issuing the final report.
         if workload_path is not None:
             try:
-                if hashlib.sha256(workload_path.read_bytes()).hexdigest() != workload_digest:
+                observed_workload_digest = hashlib.sha256(
+                    workload_path.read_bytes()
+                ).hexdigest()
+                if observed_workload_digest != workload_digest:
                     blocked.append("frozen-workload")
             except OSError:
                 blocked.append("frozen-workload")
