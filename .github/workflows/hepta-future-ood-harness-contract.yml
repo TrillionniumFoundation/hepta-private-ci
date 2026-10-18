@@ -65,6 +65,56 @@ jobs:
           python3 -m pip install --disable-pip-version-check --only-binary=:all: numpy==2.2.6 safetensors==0.8.0 transformers==4.57.6 huggingface_hub==0.36.0
           python3 -m pip install --disable-pip-version-check --no-deps laya==0.3.20
           python3 -m pip check
+      - name: Apply audited Torch CSE compatibility patch
+        env:
+          RUNTIME_RECEIPT_PATH: ${{ runner.temp }}/hepta-runtime-receipt.json
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import hashlib
+          import importlib.metadata
+          import json
+          import os
+          import platform
+          from pathlib import Path
+          import torch
+
+          package_dir = Path(torch.__file__).resolve().parent
+          target = package_dir / "_inductor" / "codegen" / "cutedsl" / "cutedsl_kernel.py"
+          if not target.is_file():
+              raise SystemExit(f"expected Torch CuTeDSL source missing: {target}")
+          original = target.read_bytes()
+          needle = b"CSE[Any]"
+          replacement = b"CSE[Any, Any]"
+          matches = original.count(needle)
+          if matches != 1:
+              raise SystemExit(f"expected exactly one audited CSE annotation, found {matches}")
+          patched = original.replace(needle, replacement, 1)
+          target.write_bytes(patched)
+          receipt = {
+              "schema": "hepta.sngr.runtime-compatibility-receipt.v1",
+              "runtime_kind": "real_reader_cpu",
+              "torch_version": torch.__version__,
+              "python_version": platform.python_version(),
+              "transformers_version": importlib.metadata.version("transformers"),
+              "laya_version": importlib.metadata.version("laya"),
+              "patch_path": target.relative_to(package_dir).as_posix(),
+              "match_count": matches,
+              "source_sha256": hashlib.sha256(original).hexdigest(),
+              "patched_sha256": hashlib.sha256(patched).hexdigest(),
+              "patch_id": "torch-cutedsl-cse-two-args-v1",
+              "production_selection_authority": False,
+          }
+          Path(os.environ["RUNTIME_RECEIPT_PATH"]).write_text(
+              json.dumps(receipt, sort_keys=True, indent=2) + "\n",
+              encoding="utf-8",
+          )
+          print(json.dumps(receipt, sort_keys=True))
+          PY
+          python3 - <<'PY'
+          from torch._inductor.codegen.cutedsl.cutedsl_kernel import CuteDSLTemplateKernel
+          print(f"torch_cse_compatibility_smoke=ok:{CuteDSLTemplateKernel.__name__}")
+          PY
       - name: Download only the pinned public checkpoint revision
         env:
           HF_REPO: convaiinnovations/laya
@@ -98,6 +148,7 @@ jobs:
           CHECKPOINT_DIR: ${{ runner.temp }}/hepta-laya421
           REPORT_PATH: ${{ runner.temp }}/hepta-reader-report.json
           SUMMARY_PATH: ${{ runner.temp }}/hepta-reader-summary.json
+          RUNTIME_RECEIPT_PATH: ${{ runner.temp }}/hepta-runtime-receipt.json
         run: |
           set -u
           set +e
@@ -121,6 +172,7 @@ jobs:
           path: |
             ${{ runner.temp }}/hepta-reader-report.json
             ${{ runner.temp }}/hepta-reader-summary.json
+            ${{ runner.temp }}/hepta-runtime-receipt.json
           if-no-files-found: warn
           retention-days: 14
           compression-level: 0
