@@ -146,6 +146,7 @@ pub struct VerifiedCurrentRegistryViewV1 {
     witness_digest: Digest32,
     trust_digest: Digest32,
     validity: CurrentRegistryValidityV1,
+    withdrawal_frontier: Option<crate::DatasetWithdrawalRegistry>,
 }
 
 /// Original signed CURRENT and signer time bounds, retained after verification.
@@ -201,6 +202,7 @@ impl VerifiedCurrentRegistryViewV1 {
             witness_digest,
             trust_digest,
             validity,
+            withdrawal_frontier: None,
         }
     }
 
@@ -222,6 +224,22 @@ impl VerifiedCurrentRegistryViewV1 {
     #[must_use]
     pub const fn validity(&self) -> CurrentRegistryValidityV1 {
         self.validity
+    }
+
+    pub(crate) fn with_withdrawal_frontier(mut self, frontier: crate::DatasetWithdrawalRegistry) -> Self {
+        self.withdrawal_frontier = Some(frontier);
+        self
+    }
+
+    /// Validate declared source datasets against the existing named writer's
+    /// durable frontier. Bare signed-registry verification has no such frontier
+    /// and cannot satisfy the ordinary published-model consumption boundary.
+    pub fn require_source_datasets_available(&self, datasets: &[Digest32]) -> Result<(), PinnedCandidateLoadError> {
+        let frontier = self.withdrawal_frontier.as_ref().ok_or(PinnedCandidateLoadError::FrontierMismatch)?;
+        if datasets.iter().any(|dataset| frontier.is_withdrawn(*dataset)) {
+            return Err(PinnedCandidateLoadError::Ineligible);
+        }
+        Ok(())
     }
 
     pub(crate) fn registry(&self) -> &ArtifactRegistry {

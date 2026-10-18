@@ -384,6 +384,7 @@ impl ArtifactOwnerVerifierV1 {
 pub struct LearningArtifactOwnerHost {
     root: PathBuf,
     writer_fence: File,
+    new_writer_store: bool,
     observation_fence: File,
     verifier: ArtifactOwnerVerifierV1,
     lease: SignedArtifactWriterLeaseV1,
@@ -475,7 +476,13 @@ impl LearningArtifactOwnerHost {
         options.read(true).write(true).create(true);
         #[cfg(unix)]
         options.mode(0o600);
-        let writer_fence = options.open(fence_path)?;
+        let (writer_fence, new_writer_store) = match options.create_new(true).open(&fence_path) {
+            Ok(file) => (file, true),
+            Err(error) if error.kind() == std::io::ErrorKind::AlreadyExists => {
+                (options.create_new(false).create(false).open(&fence_path)?, false)
+            }
+            Err(error) => return Err(error.into()),
+        };
         match writer_fence.try_lock() {
             Ok(()) => {}
             Err(TryLockError::WouldBlock) => return Err(ArtifactOwnerHostError::WriterFenceBusy),
@@ -485,6 +492,7 @@ impl LearningArtifactOwnerHost {
         Ok(Self {
             root,
             writer_fence,
+            new_writer_store,
             observation_fence,
             verifier,
             lease,
@@ -637,6 +645,12 @@ impl LearningArtifactOwnerHost {
         now: u64,
     ) -> Result<RegistrySnapshotReceipt, ArtifactOwnerHostError> {
         self.require_current_writer(now)?;
+        self.persist_withdrawal_frontier(
+            withdrawal_registry,
+            binding,
+            transaction.intent().expected_registry_predecessor_head.is_zero(),
+            now,
+        )?;
         let receipt = self.persist_registry_snapshot(registry, binding)?;
         transaction.record_registry_durable(registry, receipt, withdrawal_registry, now)?;
         self.persist_checkpoint(transaction)?;

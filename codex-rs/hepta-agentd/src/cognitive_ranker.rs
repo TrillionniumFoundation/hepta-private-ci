@@ -186,6 +186,7 @@ pub struct PinnedCognitiveRanker {
     admission: RankerEvaluationAdmission,
     source_window: Option<(u64, u64)>,
     source_manifest_digest: Option<Digest32>,
+    source_datasets: Option<Vec<Digest32>>,
     cache: Mutex<Option<RevalidatingCandidate>>,
 }
 
@@ -252,7 +253,7 @@ impl PinnedCognitiveRanker {
         current: Arc<dyn CurrentCognitiveRegistry>,
         source: Option<LearningArtifactManifestV2>,
     ) -> Result<Self, String> {
-        let (source_window, source_manifest_digest) = match source {
+        let (source_window, source_manifest_digest, source_datasets) = match source {
             Some(source) => {
                 let validated = validate_published_artifact_manifest_v2(
                     &selected.manifest,
@@ -272,13 +273,14 @@ impl PinnedCognitiveRanker {
                 (
                     Some((validated.manifest.created_at, validated.manifest.expires_at)),
                     Some(validated.manifest_digest),
+                    Some(validated.manifest.source_dataset_digests),
                 )
             }
             None => {
                 if selected.manifest.support_digest != model_pin.dataset_digest {
                     return Err("legacy ranker dataset pin mismatch".to_owned());
                 }
-                (None, None)
+                (None, None, None)
             }
         };
         if selected.manifest.kind != codex_hepta_learning_artifacts::ArtifactKind::Policy
@@ -297,6 +299,9 @@ impl PinnedCognitiveRanker {
             return Err("model identity differs from selected registry artifact".to_string());
         }
         let current_view = current.current()?;
+        if let Some(datasets) = &source_datasets {
+            current_view.require_source_datasets_available(datasets).map_err(|error| error.to_string())?;
+        }
         let current_owner_trust_digest = current_view.trust_digest();
         let mut candidate = RevalidatingCandidate::new(candidate);
         candidate
@@ -313,6 +318,7 @@ impl PinnedCognitiveRanker {
             admission: RankerEvaluationAdmission::HostPinned,
             source_window,
             source_manifest_digest,
+            source_datasets,
             cache: Mutex::new(Some(candidate)),
         })
     }
@@ -497,6 +503,9 @@ impl PinnedCognitiveRanker {
         // The provider cannot inject a bare file/receipt: the artifact authority
         // must first issue an opaque verified CURRENT view.
         let current = self.current.current()?;
+        if let Some(datasets) = &self.source_datasets {
+            current.require_source_datasets_available(datasets).map_err(|error| error.to_string())?;
+        }
         let current_validity = current.validity();
         if current.trust_digest() != self.current_owner_trust_digest {
             return Err(
@@ -511,6 +520,9 @@ impl PinnedCognitiveRanker {
         // same frontier and leave this exact candidate eligible. The outer
         // product FinalUse fence still owns serialization with actual effects.
         let current_after = self.current.current()?;
+        if let Some(datasets) = &self.source_datasets {
+            current_after.require_source_datasets_available(datasets).map_err(|error| error.to_string())?;
+        }
         let validity_after = current_after.validity();
         if current_after.trust_digest() != self.current_owner_trust_digest {
             return Err("ranker CURRENT owner trust changed during read".to_owned());

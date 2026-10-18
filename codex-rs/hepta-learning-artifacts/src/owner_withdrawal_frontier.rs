@@ -24,6 +24,18 @@ impl LearningArtifactOwnerHost {
         }
         let current = self.root.join("writer/withdrawal-frontier.snapshot");
         let pending = self.root.join("writer/withdrawal-frontier.pending");
+        let marker = self.root.join("writer/withdrawal-frontier.initialized");
+        let marker_bytes = marker_bytes(binding, self.verifier.trust.withdrawal_scope_digest);
+        let initialized = match fs::symlink_metadata(&marker) {
+            Ok(_) => {
+                if read_small_record(&marker, MAX_SMALL_RECORD_BYTES)? != marker_bytes {
+                    return Err(ArtifactOwnerHostError::IdentityConflict);
+                }
+                true
+            }
+            Err(error) if error.kind() == std::io::ErrorKind::NotFound => false,
+            Err(error) => return Err(error.into()),
+        };
         let mut previous: Option<DatasetWithdrawalRegistry> = None;
         let mut pending_exists = false;
         for path in [&current, &pending] {
@@ -45,9 +57,10 @@ impl LearningArtifactOwnerHost {
             previous = Some(frontier);
             pending_exists = path == &pending;
         }
-        if previous.is_none() && !registry_is_empty {
+        if previous.is_none() && (initialized || !self.new_writer_store || !registry_is_empty) {
             return Err(ArtifactOwnerHostError::IdentityConflict);
         }
+        write_create_only_or_exact(&marker, &marker_bytes)?;
         if pending_exists {
             fs::rename(&pending, &current)
                 .map_err(|_| ArtifactOwnerHostError::Indeterminate)?;
@@ -67,6 +80,35 @@ impl LearningArtifactOwnerHost {
             .map_err(|_| ArtifactOwnerHostError::Indeterminate)?;
         durability::sync_parent(&current)
     }
+}
+
+pub(super) fn read_current_frontier(
+    root: &Path,
+    binding: Digest32,
+    scope: Digest32,
+) -> Result<DatasetWithdrawalRegistry, ArtifactOwnerHostError> {
+    let marker = root.join("writer/withdrawal-frontier.initialized");
+    if read_small_record(&marker, MAX_SMALL_RECORD_BYTES)? != marker_bytes(binding, scope) {
+        return Err(ArtifactOwnerHostError::IdentityConflict);
+    }
+    match fs::symlink_metadata(root.join("writer/withdrawal-frontier.pending")) {
+        Ok(_) => return Err(ArtifactOwnerHostError::CurrentObservationUnsettled),
+        Err(error) if error.kind() == std::io::ErrorKind::NotFound => {}
+        Err(error) => return Err(error.into()),
+    }
+    let path = root.join("writer/withdrawal-frontier.snapshot");
+    let bytes = read_small_record(&path, MAX_FRONTIER_BYTES)?;
+    let frontier = decode_withdrawal_snapshot(&bytes, binding)?;
+    if frontier.scope_digest() != Some(scope) || encode_withdrawal_snapshot(&frontier, binding)? != bytes {
+        return Err(ArtifactOwnerHostError::IdentityConflict);
+    }
+    durability::sync_file_and_parent(&path)?;
+    durability::sync_file_and_parent(&marker)?;
+    Ok(frontier)
+}
+
+fn marker_bytes(binding: Digest32, scope: Digest32) -> Vec<u8> {
+    format!("HEPTA-ARTIFACT-WITHDRAWAL-FRONTIER-V1\n{binding}\n{scope}\n").into_bytes()
 }
 
 fn extends(previous: &DatasetWithdrawalRegistry, next: &DatasetWithdrawalRegistry) -> bool {

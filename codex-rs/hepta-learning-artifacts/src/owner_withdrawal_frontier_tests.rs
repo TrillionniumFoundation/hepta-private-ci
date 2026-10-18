@@ -88,3 +88,48 @@ fn frontier_write_failure_fences_publication_until_original_recovery() {
     config.withdrawal_registry = next;
     assert!(LearningArtifactOwnerService::open(config).is_err(), "reopen cannot silently use old bytes");
 }
+
+#[test]
+fn empty_artifact_registry_cannot_erase_a_previously_installed_withdrawal() {
+    use super::tests::TestDir;
+    use super::tests::key;
+    use super::tests::lease;
+    use super::tests::scope;
+    use super::tests::trust;
+    let directory = TestDir::new();
+    let key = key();
+    let withdrawals = DatasetWithdrawalRegistry::new_scoped(scope());
+    let scope = withdrawals.scope_digest().fixture("scope");
+    let config = LearningArtifactOwnerServiceConfigV1 {
+        root: directory.0.clone(), trust: trust(&key, scope), writer_lease: lease(&key, scope),
+        required_current_head: None, withdrawal_registry: withdrawals,
+        storage_binding: digest("binding"), now: 20,
+    };
+    let mut service = LearningArtifactOwnerService::open(config.clone()).fixture("fresh writer");
+    let next = withdrawn(service.withdrawal_registry(), "prepublication-withdrawal");
+    service.install_withdrawal_frontier(next, /*now*/ 20).fixture("persist withdrawal before any artifact");
+    assert!(service.registry().records().is_empty());
+    drop(service);
+    let path = directory.0.join("writer/withdrawal-frontier.snapshot");
+    std::fs::remove_file(&path).fixture("lose frontier");
+    assert!(LearningArtifactOwnerService::open(config).is_err());
+    assert!(!path.exists(), "the original initialized namespace must not bootstrap from stale input");
+}
+
+#[test]
+fn independent_current_reader_observes_dataset_denial_and_pending_uncertainty() {
+    let (directory, config, mut service, _) = published();
+    let anchor = service.host.discover_current_head(/*now*/ 20).fixture("head").fixture("published").signed;
+    let reader = crate::ArtifactOwnerCurrentReaderV1::open(&directory.0, config.trust, anchor).fixture("reader");
+    let original = reader.current_registry_view(/*now*/ 20).fixture("current");
+    original.require_source_datasets_available(&[digest("dataset")]).fixture("available dataset");
+    let next = withdrawn(service.withdrawal_registry(), "read-denial");
+    service.install_withdrawal_frontier(next, /*now*/ 20).fixture("install withdrawal");
+    let current = reader.current_registry_view(/*now*/ 20).fixture("current with withdrawal");
+    assert_eq!(current.receipt(), original.receipt(), "dataset denial does not forge a registry Revoke");
+    assert!(current.require_source_datasets_available(&[digest("dataset")]).is_err());
+    assert!(current.require_source_datasets_available(&[digest("unrelated")]).is_ok());
+    drop(service);
+    std::fs::write(directory.0.join("writer/withdrawal-frontier.pending"), b"uncertain").fixture("pending bytes");
+    assert!(reader.current_registry_view(/*now*/ 20).is_err(), "another reader cannot use the old view after interrupted frontier replacement");
+}

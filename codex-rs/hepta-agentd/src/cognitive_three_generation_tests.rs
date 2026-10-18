@@ -371,6 +371,13 @@ async fn three_actual_fits_installations_future_instances_no_update_and_revocati
             Some(&published.selected.manifest),
             &mut roles,
         );
+        let parent_after_publication = ranker.readback().expect("eligible predecessor survives CURRENT extension");
+        assert_eq!(parent_after_publication.model, crate::CognitiveModelIdentity {
+            artifact_id: published.selected.manifest.artifact_id.to_string(),
+            artifact_generation: published.selected.manifest.generation.get(),
+            payload_sha256: published.selected.manifest.content_digest.to_string(),
+        });
+        save(&directory.join("predecessor-after-publication.json"), &serde_json::to_value(parent_after_publication).unwrap());
         host.prove_candidate_withdrawal(&directory, &candidate, &mut roles)
             .await;
         let predicted = admission::choices(&candidate, &actions);

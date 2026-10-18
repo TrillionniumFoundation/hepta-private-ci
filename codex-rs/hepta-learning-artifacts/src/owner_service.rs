@@ -174,6 +174,9 @@ impl LearningArtifactOwnerService {
         next: DatasetWithdrawalRegistry,
         now: u64,
     ) -> Result<(), LearningArtifactOwnerServiceError> {
+        if let Some(operation) = &self.recovery_required {
+            return Err(LearningArtifactOwnerServiceError::RecoveryRequired(operation.clone()));
+        }
         if next.scope_digest() != self.withdrawal_registry.scope_digest() {
             return Err(LearningArtifactOwnerServiceError::WithdrawalFrontierConflict);
         }
@@ -184,6 +187,7 @@ impl LearningArtifactOwnerService {
         {
             return Err(LearningArtifactOwnerServiceError::WithdrawalFrontierConflict);
         }
+        self.ensure_observation_guard()?;
         if let Err(error) = self.host.persist_withdrawal_frontier(
             &next,
             self.storage_binding,
@@ -195,6 +199,7 @@ impl LearningArtifactOwnerService {
         }
         self.withdrawal_registry = next;
         self.withdrawal_frontier_failed = false;
+        self.observation_guard = None;
         Ok(())
     }
 
