@@ -302,7 +302,9 @@ impl ScopeLaneFileWalV1 {
         // seek-to-end under our exclusive file lock for each committed frame.
         // Keep O_APPEND on Unix, preserving its stronger append-only semantics.
         let mut options = OpenOptions::new();
-        options.create(true).read(true);
+        // Existing WAL bytes must survive reopen; state this explicitly for
+        // both durability and strict suspicious_open_options lint checks.
+        options.create(true).read(true).truncate(false);
         #[cfg(windows)]
         options.write(true);
         #[cfg(not(windows))]
