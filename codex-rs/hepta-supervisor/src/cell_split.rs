@@ -439,7 +439,7 @@ impl FileCellSplitArtifactCasV1 {
                 // The final digest name is occupied by this process only
                 // after an atomic rename. A crash during the write therefore
                 // cannot leave a partial object at the CAS name.
-                return self.install_new_artifact(&path, &temporary, bytes, plan);
+                self.install_new_artifact(&path, &temporary, bytes, plan)?;
             }
             Ok(_) => {
                 // `create_new` treats an existing symlink as an occupied
