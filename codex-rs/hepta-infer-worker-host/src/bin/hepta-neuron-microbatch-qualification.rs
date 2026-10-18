@@ -62,7 +62,9 @@ fn resident_bytes() -> Option<u64> {
 }
 
 fn now_ms() -> Result<u64, Box<dyn std::error::Error>> {
-    Ok(u64::try_from(SystemTime::now().duration_since(UNIX_EPOCH)?.as_millis())?)
+    Ok(u64::try_from(
+        SystemTime::now().duration_since(UNIX_EPOCH)?.as_millis(),
+    )?)
 }
 
 fn run() -> Result<(), Box<dyn std::error::Error>> {
@@ -90,7 +92,11 @@ fn run() -> Result<(), Box<dyn std::error::Error>> {
     ));
     let metadata_path = filename.clone();
     let report = (|| -> Result<serde_json::Value, Box<dyn std::error::Error>> {
-        let file = OpenOptions::new().create_new(true).read(true).write(true).open(&metadata_path)?;
+        let file = OpenOptions::new()
+            .create_new(true)
+            .read(true)
+            .write(true)
+            .open(&metadata_path)?;
         let metrics = NeuronMetricsGroupCommitWriterV1::open(file, scope, generation)?;
         let mut worker = NeuronMicrobatchWorkerV1::new(
             id("worker.reference.qualification".into())?,
@@ -108,15 +114,17 @@ fn run() -> Result<(), Box<dyn std::error::Error>> {
         let mut commits = 0_u64;
         for (batch_no, offset) in (0..cells).step_by(256).enumerate() {
             let count = (cells - offset).min(256);
-            let heads = (0..count).map(|row| {
-                let cell = offset + row;
-                Ok(NeuronBatchHeadV1 {
-                    request_id: id(format!("qualification.request.{cell}"))?,
-                    reservation_id: id(format!("qualification.reservation.{cell}"))?,
-                    head_digest: Digest32::of_bytes(format!("head.{cell}").as_bytes()),
-                    expected_width: 4,
+            let heads = (0..count)
+                .map(|row| {
+                    let cell = offset + row;
+                    Ok(NeuronBatchHeadV1 {
+                        request_id: id(format!("qualification.request.{cell}"))?,
+                        reservation_id: id(format!("qualification.reservation.{cell}"))?,
+                        head_digest: Digest32::of_bytes(format!("head.{cell}").as_bytes()),
+                        expected_width: 4,
+                    })
                 })
-            }).collect::<Result<Vec<_>, Box<dyn std::error::Error>>>()?;
+                .collect::<Result<Vec<_>, Box<dyn std::error::Error>>>()?;
             let plan = NeuronMicrobatchPlanV1::freeze(
                 id("worker.reference.qualification".into())?,
                 Arc::clone(&snapshot),
@@ -131,7 +139,8 @@ fn run() -> Result<(), Box<dyn std::error::Error>> {
                 NeuronHostResourceSampleV1::default(),
             )?;
             observed_batch_us.push(u64::try_from(t.elapsed().as_micros())?);
-            if receipt.results.len() != count || receipt.metric_sequence != (batch_no as u64 + 1)
+            if receipt.results.len() != count
+                || receipt.metric_sequence != (batch_no as u64 + 1)
                 || receipt.authority.grants_any()
             {
                 return Err("non-authorizing batch or durable metric mismatch".into());
@@ -150,13 +159,19 @@ fn run() -> Result<(), Box<dyn std::error::Error>> {
 
         // Simulate an interrupted append and verify that a fresh owner accepts
         // only the intact, previously fsynced chain.
-        let mut file = OpenOptions::new().read(true).write(true).open(&metadata_path)?;
+        let mut file = OpenOptions::new()
+            .read(true)
+            .write(true)
+            .open(&metadata_path)?;
         file.seek(SeekFrom::End(0))?;
         file.write_all(&[0_u8, 0_u8])?;
         file.sync_data()?;
         drop(file);
         let recovered = NeuronMetricsGroupCommitWriterV1::open(
-            OpenOptions::new().read(true).write(true).open(&metadata_path)?,
+            OpenOptions::new()
+                .read(true)
+                .write(true)
+                .open(&metadata_path)?,
             scope,
             generation,
         )?;
@@ -170,7 +185,8 @@ fn run() -> Result<(), Box<dyn std::error::Error>> {
         observed_batch_us.sort_unstable();
         let percentile = |percent: usize| -> u64 {
             observed_batch_us[(observed_batch_us.len() * percent)
-                .div_ceil(100).saturating_sub(1)]
+                .div_ceil(100)
+                .saturating_sub(1)]
         };
         let reference_rate = if elapsed_micros == 0 {
             None

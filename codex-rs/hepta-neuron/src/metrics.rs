@@ -67,7 +67,10 @@ pub struct NeuronBatchMetricV1 {
 }
 
 fn dispatch_intent_digest(plan: Digest32) -> Digest32 {
-    Digest32::of_parts(&[b"hepta.neuron.metrics.dispatch-intent.v1\0", plan.as_array()])
+    Digest32::of_parts(&[
+        b"hepta.neuron.metrics.dispatch-intent.v1\0",
+        plan.as_array(),
+    ])
 }
 
 impl NeuronBatchMetricV1 {
@@ -275,8 +278,13 @@ impl NeuronMetricsGroupCommitWriterV1 {
             }
             let is_intent = execution_digest == dispatch_intent_digest(plan_digest);
             if is_intent
-                && (elapsed != 0 || cpu != 0 || rss != 0 || latency_p95 != 0
-                    || latency_p99 != 0 || lock_wait != 0 || mask != 0)
+                && (elapsed != 0
+                    || cpu != 0
+                    || rss != 0
+                    || latency_p95 != 0
+                    || latency_p99 != 0
+                    || lock_wait != 0
+                    || mask != 0)
             {
                 return Err(NeuronMetricsErrorV1::Corrupt);
             }
