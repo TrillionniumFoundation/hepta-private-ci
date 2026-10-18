@@ -79,6 +79,13 @@ pub struct CellSplitProposalSignalV1 {
     signal_digest: Digest32,
 }
 
+/// Source-bound sequencing is one logical observation, not two unrelated knobs.
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+pub struct CellSplitObservationClockV1 {
+    pub observation_sequence: u64,
+    pub observed_at_micros: u64,
+}
+
 impl CellSplitProposalSignalV1 {
     pub fn new(
         parent_cell_id: StableId,
@@ -87,9 +94,12 @@ impl CellSplitProposalSignalV1 {
         trigger: CellSplitProposalTriggerV1,
         trigger_evidence_digest: Digest32,
         policy_digest: Digest32,
-        observation_sequence: u64,
-        observed_at_micros: u64,
+        clock: CellSplitObservationClockV1,
     ) -> Result<Self, CellSplitAutomationErrorV1> {
+        let CellSplitObservationClockV1 {
+            observation_sequence,
+            observed_at_micros,
+        } = clock;
         if parent_cell_id.as_str().is_empty()
             || parent_bundle_digest.is_zero()
             || trigger_evidence_digest.is_zero()
@@ -261,14 +271,13 @@ impl CellSplitAutomationJournalOwnerV1 for CellSplitInMemoryJournalOwnerV1 {
                 "journal replay does not match commit".to_string(),
             ));
         }
-        if let Some(previous) = self.journals.get(&journal.split_id) {
-            if previous.events.len() > journal.events.len()
-                || previous.events != journal.events[..previous.events.len()]
-            {
-                return Err(CellSplitAutomationErrorV1::Store(
-                    "journal append regressed or rewrote history".to_string(),
-                ));
-            }
+        if let Some(previous) = self.journals.get(&journal.split_id)
+            && (previous.events.len() > journal.events.len()
+                || previous.events != journal.events[..previous.events.len()])
+        {
+            return Err(CellSplitAutomationErrorV1::Store(
+                "journal append regressed or rewrote history".to_string(),
+            ));
         }
         self.journals
             .insert(journal.split_id.clone(), journal.clone());
@@ -365,12 +374,12 @@ impl CellSplitLearningLedgerJournalOwnerV1 {
                 let records = self.ledger.records().map_err(learning_ledger_error)?;
                 let persisted = records
                     .iter()
-                    .filter(|record| &record.split_id == &journal.split_id)
-                    .filter_map(|record| {
+                    .rev()
+                    .filter(|record| record.split_id == journal.split_id)
+                    .find_map(|record| {
                         (!record.role_qualification_payload.is_empty())
                             .then_some(record.role_qualification_payload.as_slice())
-                    })
-                    .last();
+                    });
                 if persisted != Some(payload) {
                     return Err(CellSplitAutomationErrorV1::Store(
                         "role qualification payload differs on idempotent retry".to_string(),
@@ -721,7 +730,7 @@ impl CellSplitTaskFlowJournalOwnerV1 {
     ) -> Result<(), CellSplitAutomationErrorV1> {
         let payload = evidence
             .encode_bounded()
-            .map_err(|message| CellSplitAutomationErrorV1::Binding(message))?;
+            .map_err(CellSplitAutomationErrorV1::Binding)?;
         self.commit_async_with_role_qualification_payload(journal, &payload, now_ms)
             .await
     }
@@ -1216,7 +1225,7 @@ fn hex_encode(bytes: &[u8]) -> String {
 }
 
 fn hex_decode(value: &str) -> Result<Vec<u8>, CellSplitAutomationErrorV1> {
-    if value.len() % 2 != 0 {
+    if !value.len().is_multiple_of(2) {
         return Err(CellSplitAutomationErrorV1::TaskFlow(
             "role qualification payload is not even-length hex".to_string(),
         ));
@@ -1591,6 +1600,7 @@ impl From<CellSplitLifecycleErrorV1> for CellSplitAutomationErrorV1 {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::CellSplitCanarySampleV1;
     use crate::CellSplitEvaluationDispositionV1;
     use codex_hepta_contracts::AgentId;
     use codex_hepta_fleet::AgentManifest;
@@ -1790,9 +1800,11 @@ mod tests {
                 digest(31),
                 digest(32),
                 digest(33),
-                10,
-                self.canary_failures,
-                true,
+                CellSplitCanarySampleV1 {
+                    observed_requests: 10,
+                    failed_requests: self.canary_failures,
+                    rollback_verified: true,
+                },
             )
             .expect("canary"))
         }
@@ -1811,8 +1823,10 @@ mod tests {
             CellSplitProposalTriggerV1::TaskCoverageOpportunity,
             digest(41),
             digest(42),
-            1,
-            10,
+            CellSplitObservationClockV1 {
+                observation_sequence: 1,
+                observed_at_micros: 10,
+            },
         )
         .expect("signal");
         CellSplitProposalSourceV1
@@ -1917,9 +1931,11 @@ mod tests {
             digest(151),
             digest(152),
             digest(153),
-            10,
-            0,
-            true,
+            CellSplitCanarySampleV1 {
+                observed_requests: 10,
+                failed_requests: 0,
+                rollback_verified: true,
+            },
         )
         .expect("canary receipt");
         journal.finish_canary(&canary).expect("canary finish");
@@ -1962,8 +1978,10 @@ mod tests {
             CellSplitProposalTriggerV1::ResourcePressure,
             digest(41),
             digest(42),
-            1,
-            10,
+            CellSplitObservationClockV1 {
+                observation_sequence: 1,
+                observed_at_micros: 10,
+            },
         )
         .expect("signal");
         assert_eq!(
@@ -2262,9 +2280,11 @@ mod tests {
             digest(172),
             digest(173),
             digest(174),
-            10,
-            0,
-            true,
+            CellSplitCanarySampleV1 {
+                observed_requests: 10,
+                failed_requests: 0,
+                rollback_verified: true,
+            },
         )
         .expect("canary");
         journal.finish_canary(&canary).expect("retained");
