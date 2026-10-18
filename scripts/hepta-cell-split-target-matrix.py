@@ -305,9 +305,7 @@ def run_matrix(
                 or emitted.get("sourceCommit") != source_commit
                 or emitted.get("workloadDigest") != workload_digest
                 or emitted.get("workloadSourceDigest") != workload_digest
-                or any(
-                    emitted.get(name) != case[name] for name, _ in FACTORS
-                )
+                or any(emitted.get(name) != case[name] for name, _ in FACTORS)
             ):
                 raise ValueError("workload identity does not bind the requested case")
             metrics = validate_metrics(emitted["metrics"])
