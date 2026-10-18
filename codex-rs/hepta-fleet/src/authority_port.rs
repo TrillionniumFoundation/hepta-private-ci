@@ -203,16 +203,16 @@ mod tests {
     fn ledger() -> LeaseLedger {
         let mut ledger = LeaseLedger::new();
         must(ledger.admit_host(HostObservation {
-                host_id: "host-one".into(),
-                failure_domain_id: "rack-one".into(),
-                generation: 1,
-                observed_at_ms: 1_000,
-                valid_until_ms: 10_000,
-                capacity: Resources {
-                    cpu_millis: 1_000,
-                    memory_bytes: 1 << 20,
-                    accelerator_millis: 1_000,
-                },
+            host_id: "host-one".into(),
+            failure_domain_id: "rack-one".into(),
+            generation: 1,
+            observed_at_ms: 1_000,
+            valid_until_ms: 10_000,
+            capacity: Resources {
+                cpu_millis: 1_000,
+                memory_bytes: 1 << 20,
+                accelerator_millis: 1_000,
+            },
         }));
         ledger
     }
@@ -233,16 +233,16 @@ mod tests {
         let grant = grant();
         let binding = must(FleetAuthorityPort::binding_for_issue(&grant));
         must(registry.put_lease(
-                AuthorityLease {
-                    schema_version: 1,
-                    lease_id: "fleet-issue-one".into(),
-                    authority_epoch: 7,
-                    revision: 1,
-                    binding,
-                    issued_at_unix_ms: 1_000,
-                    expires_at_unix_ms: 8_000,
-                },
-                0,
+            AuthorityLease {
+                schema_version: 1,
+                lease_id: "fleet-issue-one".into(),
+                authority_epoch: 7,
+                revision: 1,
+                binding,
+                issued_at_unix_ms: 1_000,
+                expires_at_unix_ms: 8_000,
+            },
+            0,
         ));
         let port = FleetAuthorityPort::new(registry.verifier());
         let mut ledger = ledger();
