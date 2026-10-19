@@ -121,6 +121,11 @@ impl CognitiveTestHost {
         )?);
         let store = Arc::new(CognitiveStore::open(&identity.layout).await?);
         state.attach_cognitive_store(Arc::clone(&store))?;
+        // Match the production owner's readiness sequence. Attaching the
+        // cognitive store alone does not open critical_store/revocation gates;
+        // without this zero-authority prerequisite fence, health never
+        // becomes ready even after the real App Server socket is listening.
+        state.mark_runtime_prerequisites_ready()?;
         registry.compare_and_transition(&agent_id, 1, AgentLifecycle::Running)?;
         state.refresh_generation()?;
 
