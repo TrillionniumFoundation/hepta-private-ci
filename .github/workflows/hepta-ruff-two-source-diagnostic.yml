@@ -1,0 +1,45 @@
+name: hepta-ruff-two-source-diagnostic
+on:
+  push:
+    branches:
+      - maintenance/ruff-two-source-artifact-20261019
+permissions:
+  contents: read
+jobs:
+  exact-ruff:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - name: Checkout exact isolated formatter input
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          persist-credentials: false
+      - name: Install pinned uv
+        uses: astral-sh/setup-uv@08807647e7069bb48b6ef5acd8ec9567f424441b
+      - name: Verify input and run actual pinned Ruff
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD^)" = "33ae796e402ee614c956b361e3ab951f8b73c050"
+          test "$(git hash-object scripts/hepta_sngr_two_source_eval.py)" = "a8f9e542fbdad1105f027b1544331afa158a6268"
+          test "$(git hash-object scripts/test_hepta_sngr_two_source_eval.py)" = "a1ea60983d91034df700e955ff2a4e42be146db1"
+          uv run --frozen --project scripts ruff --version | grep -Fx "ruff 0.15.13"
+          uv run --frozen --project scripts ruff format scripts/hepta_sngr_two_source_eval.py scripts/test_hepta_sngr_two_source_eval.py
+          uv run --frozen --project scripts ruff format --check scripts/hepta_sngr_two_source_eval.py scripts/test_hepta_sngr_two_source_eval.py
+          git diff --check
+          python3 - <<'PY'
+          import ast
+          import hashlib
+          import json
+          import subprocess
+          from pathlib import Path
+          names = ("scripts/hepta_sngr_two_source_eval.py", "scripts/test_hepta_sngr_two_source_eval.py")
+          changed = set(subprocess.check_output(["git", "diff", "--name-only", "-z"]).decode().strip("\0").split("\0"))
+          assert changed == set(names), f"Unexpected Ruff diff: {changed}"
+          result = {}
+          for name in names:
+              raw = Path(name).read_bytes()
+              ast.parse(raw, filename=name)
+              result[name] = {"sha256": hashlib.sha256(raw).hexdigest(), "content": raw.decode("utf-8")}
+          print("HEPTA_RUFF_POSTIMAGE_JSON=" + json.dumps(result, ensure_ascii=True, separators=(",", ":")))
+          PY
