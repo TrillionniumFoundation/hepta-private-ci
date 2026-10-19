@@ -174,9 +174,9 @@ fn open_host_owned_metrics_file(path: &Path) -> Result<File, MetricsError> {
             || current.nlink() != 1
             || opened.dev() != current.dev()
             || opened.ino() != current.ino()
-            || previous.as_ref().is_some_and(|before| {
-                before.dev() != opened.dev() || before.ino() != opened.ino()
-            })
+            || previous
+                .as_ref()
+                .is_some_and(|before| before.dev() != opened.dev() || before.ino() != opened.ino())
         {
             return Err(MetricsError::NotRegular);
         }
