@@ -2,7 +2,6 @@
 //! The tiny C provider records bytes/contact and supplies controlled observations;
 //! it is not Chain, Supervisor installation or neural improvement evidence.
 use super::*;
-use pretty_assertions::assert_eq;
 use tokio::io::AsyncBufReadExt;
 
 const CHILD: &str = r#"
