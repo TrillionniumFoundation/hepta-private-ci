@@ -1,0 +1,73 @@
+name: Hepta P0 Windows WAL and Supervisor recovery (qualification only)
+
+on:
+  pull_request:
+    paths:
+      - "codex-rs/hepta-control-plane/src/scope_lane_wal.rs"
+      - "codex-rs/hepta-control-plane/src/scope_lane_wal_tests.rs"
+      - "codex-rs/hepta-supervisor/src/tick.rs"
+      - "codex-rs/hepta-supervisor/tests/restart_budget.rs"
+      - "codex-rs/hepta-supervisor/tests/restart_budget_recovery.rs"
+      - "codex-rs/Cargo.lock"
+      - ".github/workflows/hepta-p0-windows-wal-restart-20261019.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  native-crash-recovery:
+    name: WAL and restart recovery on ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-24.04, windows-latest]
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 80
+    env:
+      CARGO_INCREMENTAL: "0"
+      CARGO_BUILD_JOBS: "2"
+      CARGO_PROFILE_TEST_DEBUG: "0"
+      CARGO_PROFILE_DEV_DEBUG: "0"
+    steps:
+      - name: Check out exact source
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - name: Install pinned Rust 1.95
+        uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582
+        with:
+          components: rustfmt
+      - name: Verify exact checkout and locked workspace
+        shell: bash
+        env:
+          EXPECTED_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$EXPECTED_SHA"
+          rustc --version
+          cargo metadata --manifest-path codex-rs/Cargo.toml --locked --no-deps --format-version 1 >/dev/null
+      - name: Exercise real scope WAL crash-tail reopen and replay
+        shell: bash
+        run: |
+          set -euo pipefail
+          cargo test --manifest-path codex-rs/Cargo.toml --locked -p codex-hepta-control-plane --lib scope_lane_wal -- --test-threads=1
+      - name: Exercise Supervisor durable restart and exhaustion
+        shell: bash
+        run: |
+          set -euo pipefail
+          cargo test --manifest-path codex-rs/Cargo.toml --locked -p codex-hepta-supervisor --test restart_budget -- --test-threads=1
+          cargo test --manifest-path codex-rs/Cargo.toml --locked -p codex-hepta-supervisor --test restart_budget_recovery -- --test-threads=1
+      - name: Enforce source formatting
+        shell: bash
+        run: |
+          set -euo pipefail
+          cargo fmt --manifest-path codex-rs/Cargo.toml --package codex-hepta-control-plane --package codex-hepta-supervisor -- --check
+      - name: Verify tests did not modify source
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          git diff --exit-code
+          git diff --cached --exit-code
