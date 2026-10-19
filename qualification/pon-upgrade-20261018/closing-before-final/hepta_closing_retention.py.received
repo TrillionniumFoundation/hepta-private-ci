@@ -1,0 +1,780 @@
+#!/usr/bin/env python3
+"""Select, retain and verify explicitly scoped Hepta observations.
+
+Python standard library only. Outputs are create-only. Native execution results
+are never inferred from successful file selection or archive verification.
+No archive extraction, process execution, repository writes or network calls.
+"""
+
+import argparse
+import collections
+import datetime
+import fnmatch
+import gzip
+import hashlib
+import json
+import os
+from pathlib import Path, PurePosixPath
+import re
+import stat
+import sys
+import tarfile
+import uuid
+
+
+MAX_MEMBER_BYTES = 4 * 1024 * 1024
+CHUNK_BYTES = 1024 * 1024
+DEFAULT_ROOT = "/home/qian-qi/work/pon-upgrade-implementation-20261018"
+DEFAULT_TREES = (
+    "hepta-final-original-closing-20261018",
+    "hepta-final-bazel-lock-check-20261018",
+    "hepta-history-incremental-20261018",
+    "hepta-history-incremental4096-20261018",
+    "hepta-history-incremental8192-20261018",
+    "hepta-history-incremental32768-20261018",
+    "hepta-19df-original-map-migration",
+    "hepta-exact-map-object-hydration-20261018",
+    "native-rebuild-owned-20261018",
+    "hepta-native-release-products-20261018",
+    "hepta-native-release-supervisor-20261018",
+    "supervisor-preparation-diagnostic-20261018",
+    "hepta-release-resolve-stage-diagnostic-20261018",
+    "hepta-release-resolve-stage-diagnostic-v2-20261018",
+    "hepta-release-ordinary-upgrade-20261018",
+)
+OBSERVATION_SUFFIXES = {
+    ".json", ".jsonl", ".log", ".txt", ".md", ".csv", ".tsv", ".xml",
+    ".yaml", ".yml", ".toml", ".stdout", ".stderr", ".out", ".err",
+    ".sha256", ".sha256sum", ".status", ".rc", ".diff", ".patch", ".py", ".sh",
+}
+OBSERVATION_NAMES = {"stdout", "stderr", "status", "result", "results", "exit-code"}
+ARCHIVE_SUFFIXES = (".tar.gz", ".tgz", ".tar", ".tar.zst", ".tar.xz", ".zip")
+SECRET_TOKEN = re.compile(
+    r"(^|[-_.])(keys?|secrets?|credentials?|tokens?|private)([-_.]|$)", re.I
+)
+HEX256 = re.compile(r"^[0-9a-f]{64}$")
+
+
+def absolute(value):
+    p = Path(value)
+    if not p.is_absolute() or ".." in p.parts:
+        raise ValueError("an absolute path without '..' is required: " + str(p))
+    return p
+
+
+def utc_now():
+    return datetime.datetime.now(datetime.timezone.utc).isoformat()
+
+
+def json_bytes(value):
+    return (json.dumps(value, indent=2, sort_keys=True) + "\n").encode("utf-8")
+
+
+def file_identity(s):
+    return (s.st_dev, s.st_ino, s.st_mode, s.st_nlink, s.st_size,
+            s.st_mtime_ns, s.st_ctime_ns)
+
+
+def kind_of(s):
+    if stat.S_ISREG(s.st_mode):
+        return "regular"
+    if stat.S_ISDIR(s.st_mode):
+        return "directory"
+    if stat.S_ISLNK(s.st_mode):
+        return "symlink"
+    return "non_regular"
+
+
+def secure_directory(path):
+    """Open every absolute directory component without following symlinks."""
+    path = absolute(path)
+    flags = os.O_RDONLY | os.O_DIRECTORY | os.O_NOFOLLOW | os.O_CLOEXEC
+    fd = os.open("/", flags)
+    try:
+        for part in path.parts[1:]:
+            newer = os.open(part, flags, dir_fd=fd)
+            os.close(fd)
+            fd = newer
+        return fd
+    except BaseException:
+        os.close(fd)
+        raise
+
+
+def secure_file(path):
+    path = absolute(path)
+    parent = secure_directory(path.parent)
+    try:
+        fd = os.open(path.name, os.O_RDONLY | os.O_NOFOLLOW | os.O_CLOEXEC
+                     | os.O_NONBLOCK, dir_fd=parent)
+    finally:
+        os.close(parent)
+    s = os.fstat(fd)
+    if not stat.S_ISREG(s.st_mode):
+        os.close(fd)
+        raise ValueError("not a regular file: " + str(path))
+    return os.fdopen(fd, "rb"), s
+
+
+def forbidden_component(name, directory=False):
+    lower = name.lower()
+    if lower in {".git", ".cargo", "git", "cargo", "cargo.toml", "cargo.lock"}:
+        return "git_or_cargo"
+    if lower.startswith(".git") or lower.endswith(".bundle"):
+        return "git_metadata_or_transfer"
+    if SECRET_TOKEN.search(lower) or lower.startswith(("id_rsa", "id_ed25519")):
+        return "key_or_credential_name"
+    if lower.endswith((".pem", ".key", ".p12", ".pfx", ".keystore", ".age", ".gpg")):
+        return "key_or_credential_extension"
+    if directory:
+        if lower == "fleet" or lower.startswith(("fleet-", "fleet_", ".fleet")):
+            return "fleet_subtree"
+        if lower in {"target", "targets", "node_modules", "bazel-bin",
+                     "bazel-out", "bazel-testlogs"} or lower.startswith("target-"):
+            return "build_product_subtree"
+    return None
+
+
+def forbidden_path(path):
+    for part in path.parts[1:-1]:
+        reason = forbidden_component(part, directory=True)
+        if reason:
+            return reason
+    return forbidden_component(path.name)
+
+
+def forbidden_header(data):
+    if data.startswith(b"\x7fELF"):
+        return "elf"
+    if b"-----BEGIN " in data[:256] and b"PRIVATE KEY-----" in data[:256]:
+        return "private_key_header"
+    return None
+
+
+def digest_regular(path, maximum=None, observation=False):
+    stream, before = secure_file(path)
+    try:
+        if maximum is not None and before.st_size > maximum:
+            raise ValueError("size_exceeds_4_mib")
+        if observation and before.st_mode & 0o111:
+            raise ValueError("executable_mode")
+        h = hashlib.sha256()
+        count = 0
+        first = True
+        while True:
+            block = stream.read(CHUNK_BYTES)
+            if not block:
+                break
+            if first and observation:
+                reason = forbidden_header(block)
+                if reason:
+                    raise ValueError(reason)
+            first = False
+            count += len(block)
+            if maximum is not None and count > maximum:
+                raise ValueError("size_exceeds_4_mib")
+            h.update(block)
+        after = os.fstat(stream.fileno())
+        if file_identity(before) != file_identity(after) or count != before.st_size:
+            raise ValueError("file_changed_during_read")
+        return {
+            "path": str(path), "bytes": count, "sha256": h.hexdigest(),
+            "mtime_ns": before.st_mtime_ns,
+            "mode_octal": oct(stat.S_IMODE(before.st_mode)),
+        }
+    finally:
+        stream.close()
+
+
+def archive_name(path):
+    # An injective, relative mapping; does not flatten equal basenames.
+    return "files/" + str(absolute(path)).lstrip("/")
+
+
+class NewOutput:
+    """Publish one complete output by create-only link within its directory."""
+    def __init__(self, path):
+        self.path = absolute(path)
+        self.dirfd = secure_directory(self.path.parent)
+        self.temp = "." + self.path.name + ".pending-" + uuid.uuid4().hex
+        self.published = False
+        try:
+            try:
+                os.stat(self.path.name, dir_fd=self.dirfd, follow_symlinks=False)
+            except FileNotFoundError:
+                pass
+            else:
+                raise FileExistsError(str(self.path))
+            fd = os.open(self.temp, os.O_RDWR | os.O_CREAT | os.O_EXCL
+                         | os.O_NOFOLLOW | os.O_CLOEXEC, 0o600, dir_fd=self.dirfd)
+            self.stream = os.fdopen(fd, "w+b")
+        except BaseException:
+            os.close(self.dirfd)
+            raise
+
+    def digest(self):
+        self.stream.flush()
+        os.fsync(self.stream.fileno())
+        self.stream.seek(0)
+        h = hashlib.sha256()
+        count = 0
+        for block in iter(lambda: self.stream.read(CHUNK_BYTES), b""):
+            h.update(block)
+            count += len(block)
+        return {"bytes": count, "sha256": h.hexdigest()}
+
+    def publish(self):
+        self.stream.flush()
+        os.fsync(self.stream.fileno())
+        os.link(self.temp, self.path.name, src_dir_fd=self.dirfd,
+                dst_dir_fd=self.dirfd, follow_symlinks=False)
+        self.published = True
+        os.unlink(self.temp, dir_fd=self.dirfd)
+        os.fsync(self.dirfd)
+
+    def close(self):
+        self.stream.close()
+        if not self.published:
+            # Only this invocation's unpublished output, never an input.
+            try:
+                os.unlink(self.temp, dir_fd=self.dirfd)
+            except FileNotFoundError:
+                pass
+        os.close(self.dirfd)
+
+
+def write_new_json(path, value):
+    output = NewOutput(path)
+    try:
+        output.stream.write(json_bytes(value))
+        identity = output.digest()
+        output.publish()
+        return {"path": str(output.path), **identity}
+    finally:
+        output.close()
+
+
+class Selection:
+    def __init__(self, root):
+        self.root = root
+        self.selected = {}
+        self.excluded = {}
+        self.missing = {}
+        self.errors = []
+        self.scopes = []
+        self.references = {}
+        self.walked = set()
+
+    def exclude(self, path, reason, s=None):
+        row = self.excluded.setdefault(str(path), {
+            "path": str(path), "reasons": [], "sha256": None,
+        })
+        if reason not in row["reasons"]:
+            row["reasons"].append(reason)
+        if s is not None:
+            row.update(kind=kind_of(s), bytes=s.st_size)
+
+    def absent(self, path, requested_by):
+        row = self.missing.setdefault(str(path), {
+            "path": str(path), "requested_by": [], "status": "missing",
+        })
+        if requested_by not in row["requested_by"]:
+            row["requested_by"].append(requested_by)
+
+    def record_error(self, path, exc):
+        self.errors.append({
+            "path": str(path), "error_type": type(exc).__name__, "error": str(exc),
+        })
+
+    def file(self, path, requested_by, explicit=False):
+        path = absolute(path)
+        try:
+            s = path.lstat()
+        except FileNotFoundError:
+            self.absent(path, requested_by)
+            return
+        except OSError as exc:
+            self.record_error(path, exc)
+            return
+        reasons = []
+        reason = forbidden_path(path)
+        if reason:
+            reasons.append(reason)
+        if not stat.S_ISREG(s.st_mode):
+            reasons.append("non_regular")
+        else:
+            if s.st_size > MAX_MEMBER_BYTES:
+                reasons.append("size_exceeds_4_mib")
+            if s.st_mode & 0o111:
+                reasons.append("executable_mode")
+            if path.name.lower().endswith(ARCHIVE_SUFFIXES):
+                reasons.append("nested_archive_not_selected")
+            if not explicit and path.suffix.lower() not in OBSERVATION_SUFFIXES \
+                    and path.name.lower() not in OBSERVATION_NAMES:
+                reasons.append("not_an_outer_observation_filename")
+        if reasons:
+            for reason in reasons:
+                self.exclude(path, reason, s)
+            return
+        if str(path) in self.selected:
+            labels = self.selected[str(path)]["selected_by"]
+            if requested_by not in labels:
+                labels.append(requested_by)
+            return
+        try:
+            row = digest_regular(path, MAX_MEMBER_BYTES, observation=True)
+            row.update(archive_path=archive_name(path), selected_by=[requested_by])
+            self.selected[str(path)] = row
+        except ValueError as exc:
+            self.exclude(path, str(exc), s)
+        except OSError as exc:
+            self.record_error(path, exc)
+
+    def directory(self, path, outer=False, requested=True):
+        path = absolute(path)
+        if requested:
+            self.scopes.append({"path": str(path), "mode": "outer" if outer else "tree"})
+        key = (str(path), outer)
+        if key in self.walked:
+            return
+        self.walked.add(key)
+        try:
+            s = path.lstat()
+            reason = forbidden_path(path) or forbidden_component(path.name, True)
+            if reason or not stat.S_ISDIR(s.st_mode):
+                self.exclude(path, reason or "non_directory", s)
+                return
+            fd = secure_directory(path)
+            try:
+                entries = sorted(os.scandir(fd), key=lambda e: e.name)
+                names = {entry.name for entry in entries}
+                if ".git" in names or "Cargo.toml" in names:
+                    self.exclude(path, "repository_or_cargo_workspace", s)
+                    return
+                for entry in entries:
+                    child = path / entry.name
+                    child_stat = entry.stat(follow_symlinks=False)
+                    if stat.S_ISDIR(child_stat.st_mode):
+                        reason = forbidden_component(entry.name, True)
+                        if reason or outer:
+                            self.exclude(child, reason or "outside_outer_file_scope", child_stat)
+                        else:
+                            self.directory(child, requested=False)
+                    else:
+                        self.file(child, str(path))
+            finally:
+                os.close(fd)
+        except FileNotFoundError:
+            self.absent(path, "requested observation directory")
+        except (OSError, ValueError) as exc:
+            self.record_error(path, exc)
+
+    def upgrade(self, path):
+        path = absolute(path)
+        self.scopes.append({"path": str(path), "mode": "upgrade_outer_patterns"})
+        for name in ("native-failure.json", "native-cleanup.json"):
+            self.file(path / name, "upgrade diagnostic", explicit=True)
+        for suffix in (".execution.json", ".native.log"):
+            self.file(Path(str(path) + suffix), "upgrade outer execution record", explicit=True)
+        found = False
+        try:
+            fd = secure_directory(path)
+            try:
+                for entry in sorted(os.scandir(fd), key=lambda e: e.name):
+                    if fnmatch.fnmatchcase(entry.name, "09-inspect*.json") or \
+                            fnmatch.fnmatchcase(entry.name, "09-inspect*-json"):
+                        found = True
+                        self.file(path / entry.name, "09-inspect outer record", explicit=True)
+            finally:
+                os.close(fd)
+        except FileNotFoundError:
+            self.absent(path, "upgrade outer directory")
+        except (OSError, ValueError) as exc:
+            self.record_error(path, exc)
+        if not found:
+            self.absent(path / "09-inspect*.json", "pattern with no observed match")
+
+    def reference_archive(self, path):
+        path = absolute(path)
+        if str(path) in self.references:
+            return
+        try:
+            s = path.lstat()
+            reason = forbidden_path(path)
+            if reason or not stat.S_ISREG(s.st_mode):
+                self.exclude(path, reason or "reference_archive_non_regular", s)
+                return
+            row = digest_regular(path)
+            row["retention"] = "reference_sha_and_size_only; body_not_in_new_archive"
+            self.references[str(path)] = row
+            self.exclude(path, "large_original_archive_reference_only", s)
+        except FileNotFoundError:
+            self.absent(path, "reference-only original archive")
+        except (OSError, ValueError) as exc:
+            self.record_error(path, exc)
+
+
+def select_command(args):
+    root = absolute(args.root)
+    output_path = absolute(args.output)
+    source_context = json.loads(args.source_context)
+    if not isinstance(source_context, dict):
+        raise ValueError("--source-context must be a JSON object")
+    selector = Selection(root)
+    for name in DEFAULT_TREES:
+        selector.directory(root / name)
+    related = []
+    try:
+        fd = secure_directory(root)
+        try:
+            for entry in sorted(os.scandir(fd), key=lambda e: e.name):
+                if entry.name.startswith(("hepta-", "native-", "bazel-", "clippy-")) \
+                        and ("bazel" in entry.name.lower() or "clippy" in entry.name.lower()):
+                    s = entry.stat(follow_symlinks=False)
+                    related.append({"path": str(root / entry.name), "kind": kind_of(s),
+                                    "bytes": s.st_size})
+        finally:
+            os.close(fd)
+    except (OSError, ValueError) as exc:
+        selector.record_error(root, exc)
+    for item in related:
+        if item["kind"] == "directory":
+            selector.directory(Path(item["path"]))
+        else:
+            selector.file(Path(item["path"]), "root-level Bazel/Clippy observation")
+
+    retained = root / "ordinary-rebuild-retained-20261018"
+    selector.file(retained / "MANIFEST.json", "original large archive manifest", explicit=True)
+    try:
+        fd = secure_directory(retained)
+        try:
+            original_archives = [
+                retained / e.name for e in sorted(os.scandir(fd), key=lambda e: e.name)
+                if e.name.lower().endswith(ARCHIVE_SUFFIXES)
+            ]
+        finally:
+            os.close(fd)
+        if not original_archives:
+            selector.absent(retained / "<original-archive>", "one-level reference discovery")
+        for path in original_archives:
+            selector.reference_archive(path)
+    except FileNotFoundError:
+        selector.absent(retained, "one-level reference discovery")
+    except (OSError, ValueError) as exc:
+        selector.record_error(retained, exc)
+
+    ordinary = Path("/tmp/pon-ordinary-rebuild-20261018")
+    selector.file(ordinary / "future/summary.json", "original future summary", explicit=True)
+    for suffix in (".execution.json", ".native.log"):
+        selector.file(ordinary / ("future" + suffix), "original future execution", explicit=True)
+    for path in (ordinary / "upgrade", Path("/tmp/pon-rel-20261018/u")):
+        selector.upgrade(path)
+    for name in ("debug", "release"):
+        path = Path("/tmp/hsprobe18") / name
+        selector.directory(path, outer=True)
+        for filename in ("result.json", "source-preservation.json"):
+            selector.file(path / filename, "original source preservation diagnostic", explicit=True)
+    for path in args.extra_dir:
+        selector.directory(absolute(path))
+    for path in args.extra_outer_dir:
+        selector.directory(absolute(path), outer=True)
+    for path in args.upgrade_dir:
+        selector.upgrade(absolute(path))
+    for path in args.extra_file:
+        selector.scopes.append({"path": str(absolute(path)), "mode": "explicit_file"})
+        selector.file(absolute(path), "explicit additional observation", explicit=True)
+    for path in args.reference_archive:
+        selector.reference_archive(absolute(path))
+
+    files = sorted(selector.selected.values(), key=lambda row: row["path"])
+    if str(output_path) in selector.selected:
+        raise ValueError("selection output cannot also be an input")
+    reason_counts = collections.Counter(
+        reason for row in selector.excluded.values() for reason in row["reasons"]
+    )
+    result = {
+        "schema": "hepta-closing-retention-selection-v1",
+        "created_utc": utc_now(),
+        "root": str(root),
+        "status": "selection_for_review_not_a_test_verdict",
+        "source_context_supplied_by_invoker": source_context,
+        "source_context_scope": (
+            "Navigation only; does not rebind older execution records to a newer source."
+        ),
+        "experiment_verdict": None,
+        "policy": {
+            "max_selected_member_bytes": MAX_MEMBER_BYTES,
+            "output_create_only": True,
+            "regular_files_only": True,
+            "symlink_components_followed": False,
+            "executable_mode_selected": False,
+            "elf_selected": False,
+            "fleet_keys_cargo_git_selected": False,
+            "nested_archive_contents_extracted": False,
+            "large_original_archive": "manifest plus actual body SHA/size; no repeated body",
+            "default_observation_suffixes": sorted(OBSERVATION_SUFFIXES),
+            "explicit_files_still_obey_size_type_header_and_secret_path_exclusions": True,
+        },
+        "requested_scopes": selector.scopes,
+        "bazel_clippy_discovery": {
+            "directory": str(root), "maximum_depth": 1,
+            "prefixes": ["hepta-", "native-", "bazel-", "clippy-"],
+            "required_name_substrings": ["bazel", "clippy"],
+            "actual_candidates": related,
+            "success_inferred_from_directory_name": False,
+        },
+        "selected_files": files,
+        "reference_archives": sorted(selector.references.values(), key=lambda row: row["path"]),
+        "excluded": sorted(selector.excluded.values(), key=lambda row: row["path"]),
+        "missing": sorted(selector.missing.values(), key=lambda row: row["path"]),
+        "read_errors": selector.errors,
+        "summary": {
+            "selected_files": len(files),
+            "selected_bytes": sum(row["bytes"] for row in files),
+            "reference_archive_count": len(selector.references),
+            "excluded_paths": len(selector.excluded),
+            "excluded_reason_counts": dict(sorted(reason_counts.items())),
+            "missing_requested_paths_or_patterns": len(selector.missing),
+            "read_errors": len(selector.errors),
+            "native_execution_success": None,
+        },
+    }
+    identity = write_new_json(output_path, result)
+    print(json.dumps({"selection": identity, "summary": result["summary"],
+                      "bazel_clippy_candidates": related}, sort_keys=True))
+
+
+def read_json(path):
+    stream, s = secure_file(absolute(path))
+    try:
+        if s.st_size > 32 * 1024 * 1024:
+            raise ValueError("metadata JSON exceeds 32 MiB")
+        raw = stream.read()
+        if file_identity(s) != file_identity(os.fstat(stream.fileno())):
+            raise ValueError("metadata changed during read")
+    finally:
+        stream.close()
+    return json.loads(raw), {"path": str(path), "bytes": len(raw),
+                             "sha256": hashlib.sha256(raw).hexdigest()}
+
+
+def validate_rows(rows):
+    source_paths, archive_paths = set(), set()
+    for row in rows:
+        path = absolute(row["path"])
+        name = row["archive_path"]
+        if name != archive_name(path) or name in archive_paths or str(path) in source_paths:
+            raise ValueError("duplicate or invalid source/member mapping")
+        if type(row["bytes"]) is not int or not 0 <= row["bytes"] <= MAX_MEMBER_BYTES:
+            raise ValueError("member byte bound violated")
+        if not HEX256.fullmatch(row["sha256"]):
+            raise ValueError("invalid member SHA-256")
+        if forbidden_path(path):
+            raise ValueError("forbidden source path in selection: " + str(path))
+        source_paths.add(str(path))
+        archive_paths.add(name)
+
+
+class VerifiedReader:
+    def __init__(self, row):
+        self.row = row
+        self.stream, self.before = secure_file(Path(row["path"]))
+        self.hash = hashlib.sha256()
+        self.count = 0
+        if self.before.st_size != row["bytes"] or self.before.st_mode & 0o111:
+            self.stream.close()
+            raise ValueError("source size/mode changed: " + row["path"])
+
+    def read(self, size):
+        block = self.stream.read(size)
+        if self.count == 0 and forbidden_header(block):
+            raise ValueError("forbidden source header: " + self.row["path"])
+        self.hash.update(block)
+        self.count += len(block)
+        return block
+
+    def finish(self):
+        if self.count != self.row["bytes"] or self.hash.hexdigest() != self.row["sha256"] \
+                or file_identity(self.before) != file_identity(os.fstat(self.stream.fileno())):
+            raise ValueError("source digest/identity changed: " + self.row["path"])
+
+    def close(self):
+        self.stream.close()
+
+
+def pack_command(args):
+    selection, selection_identity = read_json(absolute(args.selection))
+    if selection.get("schema") != "hepta-closing-retention-selection-v1":
+        raise ValueError("wrong selection schema")
+    canonical = json_bytes(selection)
+    if len(canonical) != selection_identity["bytes"] or \
+            hashlib.sha256(canonical).hexdigest() != selection_identity["sha256"]:
+        raise ValueError("use the unchanged canonical JSON produced by select")
+    rows = selection["selected_files"]
+    validate_rows(rows)
+    archive_path, manifest_path = absolute(args.archive), absolute(args.manifest)
+    if archive_path == manifest_path or str(archive_path) in {row["path"] for row in rows} \
+            or str(manifest_path) in {row["path"] for row in rows}:
+        raise ValueError("output paths must be distinct from each other and all inputs")
+    # Reserve private outputs before reading data; existing destinations refuse.
+    archive = NewOutput(archive_path)
+    manifest = None
+    try:
+        manifest = NewOutput(manifest_path)
+        members = []
+        with gzip.GzipFile(filename="", mode="wb", fileobj=archive.stream,
+                           compresslevel=args.compresslevel, mtime=0) as compressed:
+            with tarfile.open(mode="w|", fileobj=compressed,
+                              format=tarfile.PAX_FORMAT) as tar:
+                for row in rows:
+                    reader = VerifiedReader(row)
+                    try:
+                        info = tarfile.TarInfo(row["archive_path"])
+                        info.size = row["bytes"]
+                        info.mode, info.mtime, info.uid, info.gid = 0o644, 0, 0, 0
+                        tar.addfile(info, fileobj=reader)
+                        reader.finish()
+                    finally:
+                        reader.close()
+                    members.append({
+                        "path": row["archive_path"], "source_path": row["path"],
+                        "bytes": row["bytes"], "sha256": row["sha256"],
+                    })
+        archive_identity = archive.digest()
+        result = {
+            "schema": "hepta-closing-compressed-retention-v1",
+            "created_utc": utc_now(),
+            "scope": "Archive byte integrity; no native software or study verdict.",
+            "archive": {"filename": archive_path.name, **archive_identity},
+            "selection_identity": selection_identity,
+            "selection": selection,
+            "members": members,
+            "member_count": len(members),
+            "uncompressed_member_bytes": sum(row["bytes"] for row in members),
+            "archive_metadata_normalization": "regular, mode0644, uid/gid0, mtime0; payload bytes exact",
+            "large_reference_archive_bodies_included": False,
+            "native_execution_success": None,
+        }
+        manifest.stream.write(json_bytes(result))
+        manifest_identity = manifest.digest()
+        archive.publish()
+        # Each publication is create-only; the two paths are not a filesystem transaction.
+        manifest.publish()
+        print(json.dumps({
+            "archive": {"path": str(archive_path), **archive_identity},
+            "manifest": {"path": str(manifest_path), **manifest_identity},
+            "member_count": len(members),
+            "uncompressed_member_bytes": result["uncompressed_member_bytes"],
+            "missing_requested_paths_or_patterns": len(selection["missing"]),
+            "read_errors_in_selection": len(selection["read_errors"]),
+            "scope": result["scope"],
+        }, sort_keys=True))
+    finally:
+        if manifest is not None:
+            manifest.close()
+        archive.close()
+
+
+def verify_command(args):
+    manifest, manifest_identity = read_json(absolute(args.manifest))
+    if manifest.get("schema") != "hepta-closing-compressed-retention-v1":
+        raise ValueError("wrong archive manifest schema")
+    archive_path = absolute(args.archive)
+    archive_identity = digest_regular(archive_path)
+    for field in ("bytes", "sha256"):
+        if archive_identity[field] != manifest["archive"][field]:
+            raise ValueError("compressed archive " + field + " mismatch")
+    selection = manifest["selection"]
+    if hashlib.sha256(json_bytes(selection)).hexdigest() != manifest["selection_identity"]["sha256"] \
+            or len(json_bytes(selection)) != manifest["selection_identity"]["bytes"]:
+        raise ValueError("embedded canonical selection does not match its retained identity")
+    rows = selection["selected_files"]
+    validate_rows(rows)
+    expected = {
+        row["archive_path"]: {"path": row["archive_path"], "source_path": row["path"],
+                             "bytes": row["bytes"], "sha256": row["sha256"]}
+        for row in rows
+    }
+    actual_manifest = {}
+    for row in manifest["members"]:
+        if row["path"] in actual_manifest:
+            raise ValueError("duplicate member in external manifest")
+        actual_manifest[row["path"]] = row
+    if actual_manifest != expected:
+        raise ValueError("external member list differs from selection")
+    seen, total = set(), 0
+    source, before = secure_file(archive_path)
+    try:
+        with tarfile.open(fileobj=source, mode="r|gz") as tar:
+            for member in tar:
+                name = member.name
+                if not member.isfile() or PurePosixPath(name).is_absolute() \
+                        or ".." in PurePosixPath(name).parts or name in seen:
+                    raise ValueError("unsafe, nonregular or duplicate archive member")
+                if name not in expected or member.size != expected[name]["bytes"]:
+                    raise ValueError("unexpected member or size: " + name)
+                h, count = hashlib.sha256(), 0
+                stream = tar.extractfile(member)
+                for block in iter(lambda: stream.read(CHUNK_BYTES), b""):
+                    h.update(block)
+                    count += len(block)
+                if count != member.size or h.hexdigest() != expected[name]["sha256"]:
+                    raise ValueError("member digest mismatch: " + name)
+                seen.add(name)
+                total += count
+        if file_identity(before) != file_identity(os.fstat(source.fileno())):
+            raise ValueError("archive changed during verification")
+    finally:
+        source.close()
+    if seen != set(expected) or len(seen) != manifest["member_count"] \
+            or total != manifest["uncompressed_member_bytes"]:
+        raise ValueError("missing member or total mismatch")
+    print(json.dumps({
+        "verification_result": "PASS",
+        "scope": "Only compressed archive and member byte integrity; not native execution.",
+        "archive": archive_identity, "manifest": manifest_identity,
+        "member_count": len(seen), "uncompressed_member_bytes": total,
+        "missing_requested_paths_or_patterns": len(selection["missing"]),
+        "selection_read_errors": len(selection["read_errors"]),
+        "native_execution_success": None,
+    }, sort_keys=True))
+
+
+def main():
+    parser = argparse.ArgumentParser(description=__doc__)
+    commands = parser.add_subparsers(dest="command", required=True)
+    select = commands.add_parser("select", help="observe only; create an auditable selection JSON")
+    select.add_argument("--root", default=DEFAULT_ROOT)
+    select.add_argument("--output", required=True)
+    select.add_argument("--source-context", default="{}",
+                        help="JSON object; invocation context, never an execution rebind")
+    select.add_argument("--extra-dir", action="append", default=[], help="additional explicit observation tree")
+    select.add_argument("--extra-outer-dir", action="append", default=[], help="additional outer files only")
+    select.add_argument("--upgrade-dir", action="append", default=[], help="additional exact upgrade directory")
+    select.add_argument("--extra-file", action="append", default=[])
+    select.add_argument("--reference-archive", action="append", default=[],
+                        help="record actual SHA/size only, never include the body")
+    select.set_defaults(run=select_command)
+    pack = commands.add_parser("pack", help="retain a reviewed selection; inputs must still match")
+    pack.add_argument("--selection", required=True)
+    pack.add_argument("--archive", required=True)
+    pack.add_argument("--manifest", required=True)
+    pack.add_argument("--compresslevel", type=int, choices=range(1, 10), default=6)
+    pack.set_defaults(run=pack_command)
+    verify = commands.add_parser("verify", help="stream-check compressed archive without extracting")
+    verify.add_argument("--archive", required=True)
+    verify.add_argument("--manifest", required=True)
+    verify.set_defaults(run=verify_command)
+    args = parser.parse_args()
+    try:
+        args.run(args)
+    except (OSError, ValueError, KeyError, TypeError, tarfile.TarError, EOFError) as exc:
+        print(json.dumps({"status": "ERROR", "operation": args.command,
+                          "error_type": type(exc).__name__, "error": str(exc),
+                          "native_execution_success": None}), file=sys.stderr)
+        return 2
+    return 0
+
+
+if __name__ == "__main__":
+    sys.exit(main())

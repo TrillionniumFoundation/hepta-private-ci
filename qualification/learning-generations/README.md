@@ -1,4 +1,4 @@
-# Bounded, executed three-generation learning study
+# Bounded synthetic three-generation protocol study
 
 The original `generations` scenario below remains available. The additional
 ordinary operator entry, timed first reservation, actual service/Chain scenario,
@@ -6,13 +6,44 @@ and the limits of its installed-update counter are documented in
 [ordinary-upgrade.md](ordinary-upgrade.md). A scenario's source is not evidence
 that its native run passed; retain its exact binary, source and execution receipt.
 
-This qualification exercises real native fitting, publication, independent role
+The `generations` scenario exercises native fitting, publication, independent role
 signatures, selection, process-input reconstruction and cognitive consumption.
 It is a synthetic arithmetic instruction-retrieval task, not an LLM benchmark or
 production authorization. Selection now requires the original product evaluation
 runner, fenced file CAS, derived intervals and durable qualification sink. These
 mechanisms do not establish general model efficacy or production governance.
 Its process keys share one administrator and host.
+
+## Retained execution and claim boundary
+
+The retained native run is bound to source
+`2c4f21bfb309f92e110facdfd1732b838e8e21de`, tree
+`f2133b983f4a73ad9627ac43290ab3bc9d4c5613`. Its
+[execution result](../pon-upgrade-20261018/observations/hepta-2c4-explicit-study/results.json),
+[raw summary](../pon-upgrade-20261018/observations/hepta-2c4-explicit-study/study/summary.json)
+and [process-cost receipt](../pon-upgrade-20261018/observations/hepta-2c4-explicit-study/study.execution.json)
+remain historical evidence for that exact run. They are not execution receipts
+for the current source or either ordinary CLI scenario.
+
+The summary's `installed_generations = 3` counts component, configuration and
+process-reader consumption of three immutable tabular candidates. The native
+qualification process observed these values:
+
+| Study generation | Model generation | Configured launch generation | Actual consumer count |
+| --- | --- | --- | --- |
+| 1 | 2 | 5 | 16 |
+| 2 | 3 | 9 | 24 |
+| 3 | 4 | 13 | 32 |
+
+Those configured epochs do not establish three Supervisor product upgrades or
+three separately started Agentd services. The original raw summary keeps
+`full_service_startup`, `general_neural_model_efficacy`,
+`organizational_independence` and `production_qualification` false. Its no-update
+result remains `EvaluationRejected`, its two process-descriptor reload epochs
+remain 17 and 21, and `revoked_reads_refused` remains 2. A later ordinary service
+run must earn its own installation and post-install qualification results.
+
+## Protocol and material
 
 Four actual SQLite memory records contain arithmetic instructions. The initial
 model supports one query family; each of three candidate fits receives fresh
@@ -127,22 +158,27 @@ freezes the executed custodian source beside the report, and runs
 
 Whole-process wall time, waited descendant CPU and retained storage cover
 fitting, native admission, publication, installation, inference and revocation.
-The reported memory value is the maximum waited-process high-water mark;
-simultaneous whole-tree RSS is unavailable because this host mounts a different
-PID namespace under `/proc`. Compilation, external verification, energy and financial charges are outside
-that measurement. Per-role CPU overlaps the whole-process total and must not be
+The reported memory value is the maximum waited-process high-water mark.
+In the retained `2c4f21b...` run, the receipt records
+`waited_child_peak_rss_bytes = 275132416` and
+`sampled_native_peak_rss_bytes = null`: the numeric child PID was not authenticated
+in that run's mounted `/proc` namespace. This is a limitation of that observation,
+not a claim about the current host. Compilation, external verification, energy
+and financial charges are outside that measurement. Per-role CPU overlaps the whole-process total and must not be
 added again. Native IPS intervals use the original conservative cluster bound,
 maximum importance weight four and family alpha 0.05. Direct arithmetic success
 counts and their descriptive intervals remain separate raw observations.
 
-Full Agentd/App Server startup is a separate qualification: AF_UNIX socket
-creation is denied on this host. This component study neither skips that fact
-nor reports service readiness. It does not establish decentralized consensus,
+Full Agentd/App Server startup is a separate qualification. This component
+scenario does not measure service readiness, and a historical socket-creation
+failure cannot establish the capabilities of another run or current host.
+Retain any such failure with its actual environment and source. This study does
+not establish decentralized consensus,
 continuous open-world learning, superiority over training from scratch, broad
 model quality, independent production governance, or three-generation neural
 training. Future windows occur after commitment in real local time within one
 bounded run; they are not multi-day deployment or distribution-drift evidence. Those require their own material and experiments.
 
-Historical runs before this material-binding correction consumed a protocol-label
+Historical runs before the material-binding correction consumed a protocol-label
 digest rather than the actual sealed holdout-material manifest. Those runs remain
-retained failure/limited-component evidence and cannot qualify this final study.
+retained failure/limited-component evidence and cannot qualify the corrected scenario.
