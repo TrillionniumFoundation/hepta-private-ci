@@ -191,6 +191,10 @@ async fn prepare_socket(socket_path: &Path) -> Result<(), AgentdError> {
             ));
         }
     }
+    // Windows may report ConnectionRefused for a path that does not exist yet.
+    if !socket_path.try_exists()? {
+        return Ok(());
+    }
     if codex_uds::is_stale_socket_path(socket_path)
         .await
         .map_err(|error| io_context("inspect stale agentd control socket", socket_path, error))?
@@ -230,3 +234,7 @@ async fn set_owner_only(path: &Path) -> Result<(), AgentdError> {
 async fn set_owner_only(_path: &Path) -> Result<(), AgentdError> {
     Ok(())
 }
+
+#[cfg(test)]
+#[path = "control_socket_tests.rs"]
+mod socket_tests;

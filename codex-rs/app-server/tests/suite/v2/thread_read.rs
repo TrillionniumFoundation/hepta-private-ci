@@ -2298,3 +2298,6 @@ fn store_history_items() -> Vec<RolloutItem> {
         },
     ))]
 }
+
+#[path = "bounded_history_tests.rs"]
+mod bounded_history_tests;

@@ -688,6 +688,15 @@ impl ThreadRequestProcessor {
         app_server_client_version: Option<String>,
         client_mcp_extensions: ClientMcpExtensions,
     ) -> Result<Option<ClientResponsePayload>, JSONRPCErrorError> {
+        if params
+            .initial_turns_page
+            .as_ref()
+            .is_some_and(|page| page.items_view == Some(TurnItemsView::BoundedFull))
+        {
+            return Err(invalid_request(
+                "boundedFull is only supported by thread/turns/list",
+            ));
+        }
         self.thread_resume_inner(
             request_id,
             params,
@@ -3275,6 +3284,11 @@ impl ThreadRequestProcessor {
         } = params;
         let thread_uuid = ThreadId::from_string(&thread_id)
             .map_err(|err| invalid_request(format!("invalid thread id: {err}")))?;
+        if items_view == Some(TurnItemsView::BoundedFull) {
+            return self
+                .bounded_thread_turns_page(thread_uuid, cursor, limit, sort_direction)
+                .await;
+        }
         match self
             .thread_store
             .read_thread(StoreReadThreadParams {
@@ -3427,6 +3441,11 @@ impl ThreadRequestProcessor {
             TurnItemsView::NotLoaded => StoredTurnItemsView::NotLoaded,
             TurnItemsView::Summary => StoredTurnItemsView::Summary,
             TurnItemsView::Full => StoredTurnItemsView::NotLoaded,
+            TurnItemsView::BoundedFull => {
+                return Err(invalid_request(
+                    "boundedFull requires the bounded history reader",
+                ));
+            }
         };
         let page = self
             .thread_store
@@ -5862,7 +5881,7 @@ pub(super) fn build_thread_resume_initial_turns_page(
 pub(super) fn apply_thread_turns_items_view(turns: &mut [Turn], items_view: TurnItemsView) {
     for turn in turns {
         match items_view {
-            TurnItemsView::NotLoaded => {
+            TurnItemsView::NotLoaded | TurnItemsView::BoundedFull => {
                 turn.items.clear();
                 turn.items_view = TurnItemsView::NotLoaded;
             }
@@ -5949,7 +5968,7 @@ fn thread_read_view_error(err: ThreadReadViewError) -> JSONRPCErrorError {
     }
 }
 
-fn paginated_history_list_error(err: ThreadStoreError) -> JSONRPCErrorError {
+pub(super) fn paginated_history_list_error(err: ThreadStoreError) -> JSONRPCErrorError {
     match err {
         ThreadStoreError::InvalidRequest { message } => invalid_request(message),
         ThreadStoreError::Unsupported { operation } => {
@@ -5973,7 +5992,7 @@ fn deserialize_stored_thread_item(
     })
 }
 
-fn stored_turn_to_api_turn(
+pub(super) fn stored_turn_to_api_turn(
     turn: StoredTurn,
     items_view: TurnItemsView,
 ) -> Result<Turn, JSONRPCErrorError> {
