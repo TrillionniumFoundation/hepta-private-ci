@@ -238,7 +238,10 @@ fn nonstreaming_completed_message_preserves_exact_bound_output_and_byte_budget()
         complete_message("thread-a", "turn-a", "fresh context accepted".to_string()),
     )
     .unwrap();
-    assert_eq!(streamed.output, "fresh ", "do not double-count completed items");
+    assert_eq!(
+        streamed.output, "fresh ",
+        "do not double-count completed items"
+    );
     let mut completion = terminal("thread-a", "turn-a", TurnStatus::Completed);
     if let ServerNotification::TurnCompleted(ref mut event) = completion {
         event.turn.items.push(ThreadItem::AgentMessage {
