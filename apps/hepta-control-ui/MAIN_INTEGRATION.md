@@ -33,6 +33,7 @@ in `rust/robrix-ui/UPSTREAM.json` and the owned SDK patch manifests.
 | `codex-rs/hepta-native-gateway/examples/ui_product_preview.rs` | Real gateway executable used by browser CI |
 | `apps/hepta-native/resources/NATIVE-ASSETS.json`, `resources/notices/Noto-Sans-CJK-2.004-OFL.txt` | Existing shared font contract inputs; no product native host is imported |
 | `.github/workflows/ui-product-foundation.yml`, `scripts/test_ui_product_foundation_ci.py` | UI-owned source/base-merge execution and strict dependency-trigger regression |
+| `scripts/hepta_ci_module_paths.py`, `scripts/test_hepta_ci_module_path_scopes.py` | Bounded lexical proof and negative controls for literal module paths required by the gateway dependency closure |
 | `docs/modules/ui.control/TECHNICAL.md` | Current implementation and execution boundaries |
 
 The main root `Cargo.lock` receives only the three gateway dependency edges to
@@ -42,8 +43,9 @@ locked build and the canonical Bazel lock generation/check remain required.
 
 Fleet, Memory, Supervisor, production initializer, issuer/journal replacements,
 global CI workflows, root Rust toolchain changes and the old backend Cargo.lock
-are outside this selection. The existing canonical CI helpers and synthetic
-merge action are used without modification.
+are outside this selection. The canonical dependency helper receives only the
+module-path scan adaptation described below. The synthetic merge action and
+other canonical CI helpers retain their main implementations.
 
 ## Canonical adaptations
 
@@ -57,8 +59,23 @@ checks still select Rust1.95.0, and Makepad retains its separately verified
 
 `scripts/hepta_ci_dependencies.py` on main provides the existing owners, edges,
 embedded inputs and opaque-input fields used by the UI closure regression.
+Its prior whole-file test treated an inline module anywhere in a file as making
+every `#[path]` in that file ambiguous. This rejected three existing gateway
+dependencies even though their literal path attributes were file-level siblings
+of the inline tests. The selected `hepta_ci_module_paths.py` performs a bounded
+lexical scan before the existing exact-tree path resolution. It handles comments,
+strings and delimiters, while actual nested paths, conditional or unknown module
+attributes, macro tokens, unsupported syntax and exceeded bounds remain opaque.
+Computed includes, build scripts and old-graph unknown inputs retain their
+original conservative selection. Both UI lanes execute the selected scope tests;
+the strict dependency-input coverage assertion remains unchanged.
+
+The lexer and its scope tests are selected byte-for-byte from the frozen UI
+source listed above. The source stack's Git-object reader and the remainder of
+its dependency helper are not imported.
+
 `scripts/hepta_ci_exec.py` supplies the canonical source/base/tested identity
-receipts. There is no replacement implementation of either helper in this port.
+receipts and retains its main implementation.
 
 ## Current product source map
 
@@ -105,6 +122,12 @@ lanes must determine whether the observed Firefox WebGL2 startup failure recurs.
 A separate temporary CI job invokes the original `just bazel-lock-update` and
 `scripts/check-module-bazel-lock.sh` using the existing pinned Bazel setup. It
 retains the actual generated lock, source identities, inputs, raw generation
-exit and complete diff for review. No generated lock is claimed yet; it must
-be reviewed and committed before this candidate is eligible to merge. The
-ordinary source-bound UI job and the repository blocking checks remain in place.
+exit and complete diff for review. The actual generation and original drift
+check succeeded for source `85c03628f108290a02ae1ee48a6b5711352cbc38` in
+[run 39212179711](https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/39212179711),
+job `117927821291`. The generated lock has SHA-256
+`94f6143d2e1f68d59fa9cbfd223a676a8dddf61fe8ec92b5219ecd0ac67f29d0`,
+identical to the input lock; the lock diff, complete tracked diff and tracked
+status are all empty. No lock update is needed for those exact Cargo inputs.
+The ordinary source-bound UI job and repository blocking checks remain required
+for the subsequent source candidate.

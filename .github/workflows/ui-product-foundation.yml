@@ -27,6 +27,7 @@ on:
       - scripts/hepta_ci_exec.py
       - scripts/hepta_ci_git_objects.py
       - scripts/hepta_ci_module_paths.py
+      - scripts/test_hepta_ci_module_path_scopes.py
       - apps/hepta-native/resources/NATIVE-ASSETS.json
       - apps/hepta-native/resources/notices/Noto-Sans-CJK-2.004-OFL.txt
       - .github/workflows/ui-product-foundation.yml
@@ -80,6 +81,7 @@ jobs:
       - name: Verify immutable merge checkout regression
         run: |
           python3 -m unittest discover -s scripts -p test_ui_product_foundation_ci.py -v
+          python3 -m unittest discover -s scripts -p test_hepta_ci_module_path_scopes.py -v
           python3 -m unittest discover -s apps/hepta-control-ui/test -p test_build_product_preview.py -v
       - uses: actions/setup-node@53b83947a5a98c8d113130e565377fae1a50d02f
         with:
