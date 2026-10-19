@@ -1,6 +1,7 @@
 """Model-free contract checks for the disjoint Qwen source-pinned workflow."""
 
 from pathlib import Path
+import re
 import unittest
 
 
@@ -41,7 +42,15 @@ class ShardedWorkflowContractTests(unittest.TestCase):
         self.assertIn("cancel-in-progress: false", self.value)
         self.assertEqual(self.value.count("reader_reference.py stage qwen-3b"), 2)
         self.assertEqual(self.value.count("strong_rag_sharded_ci.py align"), 2)
-        self.assertEqual(self.value.count("strong_rag_host_gate.py"), 2)
+        self.assertEqual(
+            self.value.count("python3 scripts/memory_cell/strong_rag_host_gate.py"), 2
+        )
+        for source in (
+            "strong_rag_host_gate.py",
+            "test_strong_rag_host_gate.py",
+            "test_strong_rag_sharded_workflow.py",
+        ):
+            self.assertIn(f'      - "scripts/memory_cell/{source}"', self.value)
         self.assertIn("timeout-minutes: 360", self.value)
         self.assertNotIn("workflow_dispatch:", self.value)
 
@@ -52,6 +61,33 @@ class ShardedWorkflowContractTests(unittest.TestCase):
         self.assertIn("if-no-files-found: warn", self.value)
         self.assertNotIn("continue-on-error: true", self.value)
         self.assertNotIn("production_accepted: true", self.value)
+
+    def test_rejected_hosts_retain_source_bound_receipts_for_both_stages(self):
+        for stage in ("calibration", "evaluation"):
+            with self.subTest(stage=stage):
+                job = self.value.split(f"\n  {stage}-shard:\n", 1)[1].split(
+                    f"\n  {stage}-collect:\n", 1
+                )[0]
+                gate = job.index("python3 scripts/memory_cell/strong_rag_host_gate.py")
+                self.assertIn(
+                    "git rev-parse HEAD > /tmp/rag-host-tested-commit.txt", job[:gate]
+                )
+                self.assertIn(
+                    'test "$(cat /tmp/rag-host-tested-commit.txt)" = "$HEPTA_MEMORY_TESTED_COMMIT"',
+                    job[:gate],
+                )
+                self.assertLess(gate, job.index("reader_reference.py stage qwen-3b"))
+                uploads = re.split(r"\n      - uses: actions/upload-artifact@", job)[1:]
+                host_uploads = [
+                    upload
+                    for upload in uploads
+                    if f"name: memory-strong-rag-shard-host-{stage}-" in upload
+                ]
+                self.assertEqual(len(host_uploads), 1)
+                self.assertIn("if: always()", host_uploads[0])
+                self.assertIn("/tmp/rag-host-receipt.json", host_uploads[0])
+                self.assertIn("/tmp/rag-host-tested-commit.txt", host_uploads[0])
+                self.assertNotIn("/tmp/rag-stage-observation.json", host_uploads[0])
 
 
 if __name__ == "__main__":

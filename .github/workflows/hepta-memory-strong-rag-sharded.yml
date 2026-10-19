@@ -9,6 +9,9 @@ on:
       - "scripts/memory_cell/test_strong_rag_sharded_ci.py"
       - "scripts/memory_cell/strong_rag_shards.py"
       - "scripts/memory_cell/test_strong_rag_shards.py"
+      - "scripts/memory_cell/strong_rag_host_gate.py"
+      - "scripts/memory_cell/test_strong_rag_host_gate.py"
+      - "scripts/memory_cell/test_strong_rag_sharded_workflow.py"
 permissions:
   contents: read
   actions: read
@@ -148,6 +151,8 @@ jobs:
           test "$(cat /tmp/rag-prep/tested-commit.txt)" = "$HEPTA_MEMORY_TESTED_COMMIT"
           cp /tmp/rag-prep/environment.txt /tmp/rag-environment.txt
           cp -a /tmp/rag-prep/canonical-model /tmp/rag-canonical
+          git rev-parse HEAD > /tmp/rag-host-tested-commit.txt
+          test "$(cat /tmp/rag-host-tested-commit.txt)" = "$HEPTA_MEMORY_TESTED_COMMIT"
           python3 scripts/memory_cell/strong_rag_host_gate.py --output /tmp/rag-host-receipt.json
           python3 -m venv /tmp/rag-python
           /tmp/rag-python/bin/pip install torch==2.5.1 --index-url https://download.pytorch.org/whl/cpu
@@ -176,6 +181,14 @@ jobs:
         with:
           name: memory-strong-rag-shard-stage-calibration-${{ matrix.case }}-${{ matrix.part }}
           path: /tmp/rag-stage-observation.json
+          if-no-files-found: warn
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: memory-strong-rag-shard-host-calibration-${{ matrix.case }}-${{ matrix.part }}
+          path: |
+            /tmp/rag-host-receipt.json
+            /tmp/rag-host-tested-commit.txt
           if-no-files-found: warn
 
   calibration-collect:
@@ -250,6 +263,8 @@ jobs:
           test "$(cat /tmp/rag-cal-joined/tested-commit.txt)" = "$HEPTA_MEMORY_TESTED_COMMIT"
           cp /tmp/rag-cal-joined/environment.txt /tmp/rag-environment.txt
           cp -a /tmp/rag-cal-joined/canonical-model /tmp/rag-canonical
+          git rev-parse HEAD > /tmp/rag-host-tested-commit.txt
+          test "$(cat /tmp/rag-host-tested-commit.txt)" = "$HEPTA_MEMORY_TESTED_COMMIT"
           python3 scripts/memory_cell/strong_rag_host_gate.py --output /tmp/rag-host-receipt.json
           python3 -m venv /tmp/rag-python
           /tmp/rag-python/bin/pip install torch==2.5.1 --index-url https://download.pytorch.org/whl/cpu
@@ -278,6 +293,14 @@ jobs:
         with:
           name: memory-strong-rag-shard-stage-evaluation-${{ matrix.case }}-${{ matrix.part }}
           path: /tmp/rag-stage-observation.json
+          if-no-files-found: warn
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: memory-strong-rag-shard-host-evaluation-${{ matrix.case }}-${{ matrix.part }}
+          path: |
+            /tmp/rag-host-receipt.json
+            /tmp/rag-host-tested-commit.txt
           if-no-files-found: warn
 
   evaluation-collect:

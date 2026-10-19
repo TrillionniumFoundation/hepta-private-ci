@@ -26,23 +26,45 @@ def assess(cpuinfo, *, machine, runner_arch=None):
     """
     if not isinstance(cpuinfo, str) or not isinstance(machine, str):
         raise ValueError("CPU information and architecture must be strings")
-    if not cpuinfo or len(cpuinfo.encode()) > 256 * 1024:
+    if not cpuinfo.strip() or len(cpuinfo.encode()) > 256 * 1024:
         raise ValueError("bounded nonempty Linux CPU information required")
-    feature_lines = re.findall(r"^\s*flags\s*:\s*(.+)$", cpuinfo, re.MULTILINE)
-    cpus = [frozenset(line.lower().split()) for line in feature_lines]
-    model_names = sorted(
-        set(re.findall(r"^\s*model name\s*:\s*(.+)$", cpuinfo, re.MULTILINE))
-    )
+    records = re.split(r"\r?\n[ \t]*\r?\n", cpuinfo.strip())
+    records = [record for record in records if record.strip()]
+    identities = set()
+    model_names = set()
+    cpus = []
+    complete = True
+    for record in records:
+        fields = {"processor": [], "model name": [], "flags": []}
+        for line in record.splitlines():
+            if not line.strip():
+                continue
+            key, separator, value = line.partition(":")
+            if not separator:
+                complete = False
+            if key.strip() in fields:
+                fields[key.strip()].append(value.strip())
+        if any(len(values) != 1 or not values[0] for values in fields.values()):
+            complete = False
+            cpus.append(frozenset())
+            continue
+        identity = fields["processor"][0]
+        if not re.fullmatch(r"[0-9]+", identity) or int(identity) in identities:
+            complete = False
+        else:
+            identities.add(int(identity))
+        model_names.add(fields["model name"][0])
+        cpus.append(frozenset(fields["flags"][0].lower().split()))
     shared = set.intersection(*(set(cpu) for cpu in cpus)) if cpus else set()
-    all_accelerated = bool(cpus) and all(set(cpu) & ACCELERATED for cpu in cpus)
+    all_accelerated = (
+        complete and bool(cpus) and all(set(cpu) & ACCELERATED for cpu in cpus)
+    )
     supported = bool(
         machine == "x86_64"
         and (runner_arch is None or runner_arch == "X64")
-        and cpus
         and all_accelerated
+        and shared & ACCELERATED
     )
-    if supported and not model_names:
-        supported = False
     return {
         "schema": SCHEMA,
         "policy": "x86_64-original-qwen-torch2.5.1-cpu-bfloat16-eager",
@@ -50,7 +72,7 @@ def assess(cpuinfo, *, machine, runner_arch=None):
         "machine": machine,
         "runner_arch": runner_arch,
         "logical_cpu_records": len(cpus),
-        "cpu_models": model_names[:8],
+        "cpu_models": sorted(model_names)[:8],
         "all_cpus_bf16_accelerated": all_accelerated,
         "shared_acceleration_features": sorted(shared & ACCELERATED),
         "cpuinfo_sha256": hashlib.sha256(cpuinfo.encode()).hexdigest(),

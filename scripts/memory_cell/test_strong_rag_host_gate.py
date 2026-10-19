@@ -45,6 +45,59 @@ class Bf16RunnerGateTests(unittest.TestCase):
         self.assertFalse(result["host_eligible"])
         self.assertEqual(result["shared_acceleration_features"], [])
 
+    def test_individually_accelerated_cpus_require_a_shared_bf16_isa(self):
+        data = cpu_info([["avx512_bf16"], ["amx_bf16"]])
+        receipt = assess(data, machine="x86_64", runner_arch="X64")
+        self.assertFalse(receipt["host_eligible"])
+        self.assertEqual(receipt["shared_acceleration_features"], [])
+
+    def test_every_cpu_record_requires_its_own_complete_fields(self):
+        first, second = cpu_info([["avx512_bf16"]] * 2).split("\n\n")
+        for field in ("processor", "model name", "flags"):
+            for change in ("missing", "empty", "duplicate"):
+                with self.subTest(field=field, change=change):
+                    lines = second.splitlines()
+                    target = next(line for line in lines if line.startswith(field))
+                    if change == "missing":
+                        lines.remove(target)
+                    elif change == "empty":
+                        lines[lines.index(target)] = f"{field} : "
+                    else:
+                        lines.append(target)
+                    receipt = assess(
+                        first + "\n\n" + "\n".join(lines), machine="x86_64"
+                    )
+                    self.assertFalse(receipt["host_eligible"])
+                    self.assertFalse(receipt["production_accepted"])
+                    self.assertEqual(receipt["new_model_calls"], 0)
+
+    def test_processor_identities_must_be_decimal_and_distinct(self):
+        original = cpu_info([["avx512_bf16"]] * 2)
+        for identity in ("0", "00", "-1", "one", "1 2"):
+            with self.subTest(identity=identity):
+                info = original.replace("processor : 1", f"processor : {identity}")
+                self.assertFalse(assess(info, machine="x86_64")["host_eligible"])
+
+    def test_offline_cpu_identity_gaps_preserve_shared_capability(self):
+        info = cpu_info([["avx2", "avx512_bf16"]] * 2).replace(
+            "processor : 1", "processor : 7"
+        )
+        receipt = assess(info, machine="x86_64", runner_arch="X64")
+        self.assertTrue(receipt["host_eligible"])
+        self.assertEqual(receipt["logical_cpu_records"], 2)
+        self.assertEqual(receipt["shared_acceleration_features"], ["avx512_bf16"])
+        self.assertFalse(receipt["full_inference_latency_qualified"])
+
+    def test_truncated_lines_and_whitespace_only_input_fail_closed(self):
+        complete = cpu_info([["avx512_bf16"]])
+        for truncated in ("\nprocessor", "\n\nprocessor : 1", "\nflags"):
+            with self.subTest(truncated=truncated):
+                self.assertFalse(
+                    assess(complete + truncated, machine="x86_64")["host_eligible"]
+                )
+        with self.assertRaises(ValueError):
+            assess(" \t\n\n", machine="x86_64")
+
     def test_architecture_and_runner_label_are_bound(self):
         cpu = cpu_info([["avx512_bf16"]])
         self.assertFalse(
@@ -84,6 +137,26 @@ class Bf16RunnerGateTests(unittest.TestCase):
             receipt = json.loads(output.read_text())
             self.assertFalse(receipt["host_eligible"])
             self.assertEqual(receipt["new_model_calls"], 0)
+
+    def test_cli_preserves_receipt_for_a_truncated_second_cpu(self):
+        info = cpu_info([["avx512_bf16"]]) + "\n\nprocessor : 1\nmodel name : CPU"
+        with tempfile.TemporaryDirectory() as tmp:
+            output = Path(tmp) / "host.json"
+            with (
+                patch("sys.argv", ["gate", "--output", str(output)]),
+                patch("strong_rag_host_gate.sys.platform", "linux"),
+                patch("strong_rag_host_gate.platform.machine", return_value="x86_64"),
+                patch("strong_rag_host_gate.Path.read_text", return_value=info),
+                patch.dict("strong_rag_host_gate.os.environ", {"RUNNER_ARCH": "X64"}),
+            ):
+                with self.assertRaises(SystemExit) as err:
+                    main()
+            self.assertEqual(err.exception.code, 3)
+            receipt = json.loads(output.read_text())
+            self.assertFalse(receipt["host_eligible"])
+            self.assertEqual(receipt["logical_cpu_records"], 2)
+            self.assertEqual(receipt["new_model_calls"], 0)
+            self.assertFalse(receipt["production_accepted"])
 
 
 if __name__ == "__main__":
