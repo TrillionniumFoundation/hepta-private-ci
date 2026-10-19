@@ -328,8 +328,8 @@ def codex_rust_crate(
             name = name,
             crate_name = crate_name,
             crate_features = crate_features,
-            # Retain Cargo dependency rename spellings (e.g. serde_yaml -> noyalib-serde-yaml).
-            aliases = aliases(),
+            # Retain only the serde_yaml Cargo rename to avoid unrelated dependency edges.
+            aliases = {dep: name for dep, name in aliases().items() if name == "serde_yaml"},
             deps = all_crate_deps() + maybe_deps + deps_extra,
             compile_data = compile_data,
             data = lib_data_extra,
