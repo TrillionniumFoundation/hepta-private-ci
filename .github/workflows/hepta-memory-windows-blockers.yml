@@ -57,6 +57,21 @@ jobs:
           set -euo pipefail
           cargo test --locked -p codex-tui resume_picker::transcript_preview::tests -- --nocapture
 
+      # Keep the original aggregate command unchanged: this step only identifies
+      # which Windows async case overflows a Tokio worker stack after it fails.
+      - name: Diagnose Windows Tokio async cases individually (no waiver)
+        if: ${{ failure() && runner.os == 'Windows' }}
+        working-directory: codex-rs
+        shell: bash
+        run: |
+          set +e
+          cargo test --locked -p codex-tui --lib 'resume_picker::transcript_preview::tests::transcript_preview_preserves_legacy_and_paginated_output' -- --exact --nocapture
+          legacy_status=$?
+          cargo test --locked -p codex-tui --lib 'resume_picker::transcript_preview::tests::paginated_transcript_preview_pages_past_old_item_budget' -- --exact --nocapture
+          paginated_status=$?
+          printf 'Exact Windows async test exit codes: legacy=%s paginated=%s\n' "$legacy_status" "$paginated_status"
+          test "$legacy_status" -eq 0 && test "$paginated_status" -eq 0
+
       - name: Verify Rust formatting
         if: always()
         shell: bash
