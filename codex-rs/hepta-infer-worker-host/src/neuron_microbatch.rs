@@ -26,6 +26,8 @@ use codex_hepta_types::StableId;
 const MAX_BATCH: usize = 256;
 const MAX_DIM: usize = 4096;
 const MAX_WIDTH: usize = 512;
+// Match the canonical NeuronFeatureRequest/Observation Q24 saturation boundary.
+const Q24_STATE_LIMIT: i64 = 8 * (1_i64 << 24);
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub enum NeuronMicrobatchErrorV1 {
@@ -93,6 +95,9 @@ impl NeuronFrozenFeatureV1 {
         features: Vec<i64>,
     ) -> Result<Self, NeuronMicrobatchErrorV1> {
         if !(1..=MAX_DIM).contains(&features.len())
+            || features
+                .iter()
+                .any(|value| !(-Q24_STATE_LIMIT..=Q24_STATE_LIMIT).contains(value))
             || identity.authority_epoch == 0
             || [
                 identity.scope_digest,
@@ -439,6 +444,11 @@ impl NeuronMicrobatchWorkerV1 {
                 || output.head_digest != head.head_digest
                 || output.drive_q24.len() != head.expected_width
                 || output.prediction_q24.len() != head.expected_width
+                || output
+                    .drive_q24
+                    .iter()
+                    .chain(&output.prediction_q24)
+                    .any(|value| !(-Q24_STATE_LIMIT..=Q24_STATE_LIMIT).contains(value))
             {
                 return Err(NeuronMicrobatchErrorV1::BackendOutputMismatch);
             }
