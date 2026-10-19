@@ -2,9 +2,10 @@ use std::cell::RefCell;
 use std::rc::Rc;
 
 use super::*;
-use crate::composition::{
-    CellHeadManifest, CompositionKey, CompositionRunObservation, SharedEncoderPool,
-};
+use crate::composition::CellHeadManifest;
+use crate::composition::CompositionKey;
+use crate::composition::CompositionRunObservation;
+use crate::composition::SharedEncoderPool;
 
 #[derive(Default)]
 struct Counters {
