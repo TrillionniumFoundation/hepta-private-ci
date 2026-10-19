@@ -149,7 +149,8 @@ test('diagnostic pixel plans require all projects, captures and source identity'
 test('optional bounded diagnostics follow primary evidence and retain pixel failure reports',async()=>{
  const workflow=await readFile(new URL('../../../.github/workflows/ui-product-foundation.yml',import.meta.url),'utf8');
  assert.ok(workflow.indexOf('- id: font_diagnostic_browser')>workflow.indexOf('path: apps/hepta-control-ui/test-results/evidence-groups/summary/'));
- const diagnostic=workflow.slice(workflow.indexOf('- id: font_diagnostic_browser'));
+ // Later jobs own separate time budgets; only this job contains the diagnostic arms.
+ const diagnostic=workflow.slice(workflow.indexOf('- id: font_diagnostic_browser')).split(/\n  [A-Za-z_][A-Za-z0-9_-]*:\s*\n/)[0];
  assert.equal((diagnostic.match(/timeout-minutes:/g)??[]).length,5);
  assert.match(workflow,/timeout-minutes: 60/);
  assert.ok(diagnostic.indexOf('verify-font-diagnostic-evidence.mjs')<diagnostic.indexOf('Preserve failed and successful font diagnostic arms'));
