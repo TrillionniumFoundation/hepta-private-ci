@@ -275,6 +275,20 @@ impl SqliteConfig {
         Ok(pool)
     }
 
+    /// Open a single-connection, private in-memory SQLite pool for migration tests.
+    ///
+    /// This centralizes SQLite opening policy even for historical fixture owners.
+    pub async fn open_in_memory_pool_for_testing() -> Result<SqlitePool, Error> {
+        let options = SqliteConnectOptions::new()
+            .in_memory(true)
+            .foreign_keys(true)
+            .log_statements(LevelFilter::Off);
+        SqlitePoolOptions::new()
+            .max_connections(1)
+            .connect_with(options)
+            .await
+    }
+
     /// Open a writable Codex SQLite database, creating it if necessary.
     pub async fn open_read_write_pool(&self, path: &Path) -> Result<SqlitePool, Error> {
         let options = SqliteConnectOptions::new()
