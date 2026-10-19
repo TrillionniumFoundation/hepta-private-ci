@@ -207,7 +207,7 @@ mod tests {
                     accelerator_millis: 1_000,
                 },
             })
-            .expect("valid fixture host");
+            .unwrap_or_else(|error| panic!("valid fixture host: {error:?}"));
         ledger
     }
 
