@@ -34,15 +34,7 @@ jobs:
           test -s "${RUNNER_TEMP}/Cargo.lock.patch"
           cp codex-rs/Cargo.lock "${RUNNER_TEMP}/Cargo.lock"
           grep -q '^name = "keyring"$' codex-rs/Cargo.lock
-          if grep -q '^name = "zbus"      - name: Upload real Cargo.lock postimage
-        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
-        with:
-          name: keyring-sync-cargo-lock-${{ github.run_id }}-${{ github.run_attempt }}
-          path: |
-            ${{ runner.temp }}/Cargo.lock
-            ${{ runner.temp }}/Cargo.lock.patch
-          retention-days: 7
- codex-rs/Cargo.lock; then
+          if grep -q '^name = "zbus"$' codex-rs/Cargo.lock; then
             echo "::warning::zbus remains in the resolved graph; retain the postimage for dependency-path review"
           fi
       - name: Upload real Cargo.lock postimage
