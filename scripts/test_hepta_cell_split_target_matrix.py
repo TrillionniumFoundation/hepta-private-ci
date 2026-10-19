@@ -522,6 +522,34 @@ def test_full_scale_cannot_be_forged_from_one_count(tmp_path: Path) -> None:
         MODULE.validate_report(forged)
 
 
+@pytest.mark.parametrize(
+    "untrusted_root",
+    (None, "00" * 32, "ff" * 32, "not-a-public-key"),
+)
+def test_untrusted_observer_cannot_launch_without_pinned_prime_order_key(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, untrusted_root: str | None
+) -> None:
+    def forbidden_launch(*args: object, **kwargs: object) -> None:
+        raise AssertionError("observer launched without a trusted public key")
+
+    monkeypatch.setattr(MODULE, "run_isolated_command", forbidden_launch)
+    report = MODULE.run_matrix(
+        workload_command=None,
+        observer_command="untrusted-observer",
+        workload_digest="a" * 64,
+        source_commit="f" * 40,
+        output=tmp_path / "untrusted-observer.json",
+        trusted_observer_public_key=untrusted_root,
+    )
+    assert report["status"] == "blocked"
+    assert "independent-observer" in report["blockingCases"]
+    assert report["observer"] == {
+        "verified": False,
+        "reason": "trusted independent Ed25519 observer public key is required",
+    }
+    MODULE.validate_report(report)
+
+
 def test_signed_observer_requires_out_of_band_trust_root() -> None:
     private = Ed25519PrivateKey.generate()
     trusted_key = (
