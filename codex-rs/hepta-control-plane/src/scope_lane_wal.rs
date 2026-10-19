@@ -296,13 +296,18 @@ pub struct ScopeLaneFileWalV1 {
 
 impl ScopeLaneFileWalV1 {
     pub fn open(path: impl AsRef<Path>) -> Result<Self, ScopeLaneWalError> {
-        let file = OpenOptions::new()
-            .create(true)
-            .read(true)
-            // Windows append-only handles cannot truncate a torn WAL tail.
-            // Request write access as well, while retaining append semantics.
-            .write(true)
-            .append(true)
+        // The durable writer is guarded by the exclusive LockedFile lease.
+        // On Windows, append(true) opens FILE_APPEND_DATA without FILE_WRITE_DATA
+        // even when write(true) is also set, so set_len() cannot repair a torn
+        // frame. Use a truncation-capable handle on Windows and explicitly seek
+        // to EOF inside append_frame under the lock. Keep O_APPEND on Unix.
+        let mut options = OpenOptions::new();
+        options.create(true).read(true).truncate(false);
+        #[cfg(windows)]
+        options.write(true);
+        #[cfg(not(windows))]
+        options.append(true);
+        let file = options
             .open(path.as_ref())
             .map_err(ScopeLaneWalError::from)?;
         let mut file = LockedFile::acquire(file)?;
