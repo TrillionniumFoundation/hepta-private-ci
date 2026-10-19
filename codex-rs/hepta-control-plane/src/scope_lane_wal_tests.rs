@@ -156,6 +156,35 @@ fn file_wal_repairs_incomplete_length_before_new_commits() {
     assert_eq!(reopened.wal().record_count(), 2);
 }
 
+#[cfg(windows)]
+#[test]
+fn file_wal_windows_recovery_truncates_partial_body_before_next_commit() {
+    let directory = must(tempdir());
+    let path = directory.path().join("windows-torn-scope-lanes.wal");
+    {
+        let mut writer = must(ScopeLaneFileWalV1::open(&path));
+        let receipt = must(writer.append(envelope("scope-a", "owner-a", 1, "first")));
+        assert_eq!(receipt.sequence, 1);
+    }
+    let committed_len = must(std::fs::metadata(&path)).len();
+    {
+        let mut interrupted = must(OpenOptions::new().append(true).open(&path));
+        // A complete length prefix but incomplete body must never be replayed.
+        must(interrupted.write_all(&[0, 0, 0, 64, 0xaa]));
+        must(interrupted.sync_all());
+    }
+
+    let mut recovered = must(ScopeLaneFileWalV1::open(&path));
+    assert_eq!(must(std::fs::metadata(&path)).len(), committed_len);
+    assert_eq!(recovered.wal().record_count(), 1);
+    let receipt = must(recovered.append(envelope("scope-a", "owner-a", 1, "second")));
+    assert_eq!(receipt.sequence, 2);
+    drop(recovered);
+
+    let reopened = must(ScopeLaneFileWalV1::open(&path));
+    assert_eq!(reopened.wal().record_count(), 2);
+}
+
 #[test]
 fn incremental_scope_lanes_replay_many_distinct_committed_frames() {
     let directory = must(tempdir());
