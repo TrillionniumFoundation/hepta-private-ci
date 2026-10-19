@@ -1,0 +1,155 @@
+name: MemoryCell pinned source-write research disposition
+on:
+  push:
+    branches: ["codex/memory-cell-evidence-20261008"]
+    paths:
+      - "scripts/memory_cell/source_write_effects.py"
+      - "scripts/memory_cell/source_write_disposition.py"
+      - "scripts/memory_cell/test_source_write_disposition.py"
+      - ".github/workflows/hepta-memory-source-disposition.yml"
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: memory-source-disposition-${{ github.sha }}
+  cancel-in-progress: false
+jobs:
+  replay:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    env:
+      PYTHONPATH: scripts/memory_cell
+      GH_TOKEN: ${{ github.token }}
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - uses: ./.github/actions/setup-ci
+      - name: Exact syntax, format, and synthetic candidate decisions
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/source-disposition
+          git rev-parse HEAD > /tmp/source-disposition/tested-commit.txt
+          python3 -m pip install uv==0.8.22
+          uv run --frozen --project scripts ruff format --check \
+            scripts/memory_cell/source_write_effects.py \
+            scripts/memory_cell/source_write_disposition.py \
+            scripts/memory_cell/test_source_write_disposition.py
+          python3 -m unittest -v test_source_write_effects test_source_write_disposition \
+            2>&1 | tee /tmp/source-disposition/tests.log
+      - name: Restore exact original Qwen tasks and author-provided source bytes
+        run: |
+          set -euo pipefail
+          mkdir /tmp/disposition-input /tmp/disposition-original
+          gh api repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/11832693482/zip > /tmp/source-result.zip
+          gh api repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/11669174727/zip > /tmp/source-input.zip
+          echo '152de5aa9008a886b27ad620f3300a38732c9e368be7498309d42366b2992fbb  /tmp/source-result.zip' | sha256sum -c -
+          echo '23e9d44b8d2dbe756c7c33031e18853c83326458a37925d4d368881145bf142b  /tmp/source-input.zip' | sha256sum -c -
+          python3 - <<'PY'
+          from pathlib import Path, PurePosixPath
+          import stat
+          import zipfile
+          for zip_name, folder in (('/tmp/source-result.zip', '/tmp/disposition-original'),
+                                   ('/tmp/source-input.zip', '/tmp/disposition-input')):
+              with zipfile.ZipFile(zip_name) as archive:
+                  records = archive.infolist()
+                  if len(records) > 8192 or sum(r.file_size for r in records) > 128 * 1024 * 1024:
+                      raise ValueError('unbounded source artifact')
+                  seen = set()
+                  for record in records:
+                      part = PurePosixPath(record.filename)
+                      if (part.is_absolute() or '..' in part.parts
+                          or '\\' in record.filename or stat.S_ISLNK(record.external_attr >> 16)
+                          or (not record.is_dir() and str(part) in seen)):
+                          raise ValueError('unsafe original artifact member')
+                      if record.is_dir():
+                          continue
+                      seen.add(str(part))
+                      output = Path(folder) / part
+                      output.parent.mkdir(parents=True, exist_ok=True)
+                      output.write_bytes(archive.read(record))
+          PY
+      - name: Lock original CPU Python dependencies without loading a reader model
+        run: |
+          set -euo pipefail
+          python3 -m venv /tmp/source-disposition-python
+          /tmp/source-disposition-python/bin/pip install torch==2.5.1 --index-url https://download.pytorch.org/whl/cpu
+          /tmp/source-disposition-python/bin/pip install -r /tmp/disposition-input/environment.txt
+          /tmp/source-disposition-python/bin/pip freeze > /tmp/source-disposition/environment.txt
+          diff -u /tmp/disposition-input/environment.txt /tmp/source-disposition/environment.txt
+      - name: Replay original 56 answers, verify old results, and reject unearned improvements
+        run: |
+          set -euo pipefail
+          /tmp/source-disposition-python/bin/python - <<'PY' 2>&1 | tee /tmp/source-disposition/replay.log
+          from hashlib import sha256
+          import json
+          from pathlib import Path
+          from source_write_effects import audit
+          original = Path('/tmp/disposition-original')
+          input_root = Path('/tmp/disposition-input')
+          historical_path = original / 'tasks/source-effects.json'
+          if not historical_path.is_file():
+              raise ValueError('missing original successful Qwen research effect census')
+          historical = json.loads(historical_path.read_text())
+          original_hash = sha256(historical_path.read_bytes()).hexdigest()
+          historical_path.rename(original / 'tasks/source-effects.original.json')
+          snapshot = original / 'snapshot/READY.json'
+          report = audit(input_root / 'plan', input_root / 'observations', original,
+                         plan_sha='9840a25487af444914dca24c818d98ff798ebc1610ea8dfdd827187c31ad1897',
+                         ready_sha=sha256(snapshot.read_bytes()).hexdigest(),
+                         source_commit='9079ca948475b5026e89990e06606f9c578faf20')
+          for key, value in historical.items():
+              if key == 'contrasts':
+                  for pair, previous in value.items():
+                      if report['contrasts'].get(pair) != previous:
+                          raise ValueError('historical paired task result changed')
+              elif report.get(key) != value:
+                  raise ValueError('historical result or original inputs changed: ' + key)
+          decisions = report['candidate_research_dispositions']
+          candidates = decisions['candidates']
+          if (report['actual_tasks'] != 8 or report['original_answer_executions'] != 56
+              or candidates['knowledge']['disposition'] != 'reject_no_increment_over_controls'
+              or candidates['learned_policy']['disposition'] != 'reject_no_increment_over_controls'
+              or candidates['knowledge']['strongest_control_saturated'] is not True
+              or candidates['parameter_only']['disposition'] != 'compression_boundary_only'
+              or candidates['parameter_only']['citations_without_any_evidence'] < 1
+              or decisions['production_accepted'] is not False):
+              raise ValueError('frozen source tasks do not justify expected disposition')
+          receipt = dict(schema='hepta.source-write.disposition-replay.v1',
+                         original_artifact_sha256='152de5aa9008a886b27ad620f3300a38732c9e368be7498309d42366b2992fbb',
+                         original_source=report['generating_source'],
+                         original_effects_sha256=original_hash,
+                         auditor_source=Path('/tmp/source-disposition/tested-commit.txt').read_text().strip(),
+                         reproduced_source_spans=report['source_spans_verified'],
+                         actual_procedure_rechecks=report['repeated_procedure_checks'],
+                         original_answers=report['original_answer_executions'],
+                         original_results_unchanged=True, new_model_calls=0,
+                         independent_reviews=0, semantic_citation_precision=None,
+                         production_accepted=False, research_dispositions=decisions)
+          path = Path('/tmp/source-disposition/replay-disposition.json')
+          path.write_text(json.dumps(receipt, sort_keys=True, indent=2) + '\n')
+          print(json.dumps(receipt, sort_keys=True))
+          PY
+      - name: Preserve source, input identity and full failure evidence
+        if: always()
+        run: |
+          set -euo pipefail
+          cp scripts/memory_cell/source_write_effects.py \
+             scripts/memory_cell/source_write_disposition.py \
+             scripts/memory_cell/test_source_write_disposition.py \
+             /tmp/source-disposition/
+          for file in tasks/source-effects.original.json tasks/source-effects.json; do
+            if test -f "/tmp/disposition-original/$file"; then
+              cp "/tmp/disposition-original/$file" /tmp/source-disposition/
+            fi
+          done
+          (cd /tmp/source-disposition && find . -type f ! -name SHA256SUMS \
+            -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS)
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: memory-source-write-disposition-replay
+          path: /tmp/source-disposition
+          if-no-files-found: error

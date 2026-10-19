@@ -1,0 +1,68 @@
+{
+  "schema": "hepta.memory-cell.stem-native-two-run-negative-gate.v1",
+  "research_only": true,
+  "runs": [
+    {
+      "run_id": 38114716982,
+      "commit": "675970bb610c70bb0ec30a2dee05c025440510e6",
+      "artifact_zip_sha256": "1db7f8f7c13a1f718d5065956f14d554d3fe328c415fac4bb145d1eaf9d913c8",
+      "verified_inner_files": 130,
+      "logical_policy_attempts": 576,
+      "status": "success"
+    },
+    {
+      "run_id": 38116089672,
+      "commit": "95a20c4287bd6e9ab3fefd95774a2d9c8212d73f",
+      "artifact_zip_sha256": "a3322c5dec5f0d2a7453e90a97095e746e206a01c102749b458e3ed816573cc6",
+      "verified_inner_files": 133,
+      "logical_policy_attempts": 576,
+      "status": "success"
+    }
+  ],
+  "exact_cross_run_replayed_policy_rows": 576,
+  "cross_run_mismatches": {
+    "answer": 0,
+    "citation_structure": 0,
+    "diagnostic_answer_f1": 0,
+    "encoder_identity": 0,
+    "feature_digest": 0,
+    "head_sha256": 0,
+    "pool_digest": 0,
+    "selected": 0,
+    "source_choice_correct": 0,
+    "status": 0
+  },
+  "checkpoints": [
+    16,
+    32,
+    48
+  ],
+  "unique_registered_questions_per_checkpoint": 32,
+  "test_and_transfer_unique_questions_per_checkpoint": 16,
+  "test_and_transfer_repeated_stage_pairs_per_learned_arm": 48,
+  "learned_arms": [
+    "prototype",
+    "linear",
+    "gated",
+    "lineage_lora_gated",
+    "independent_lora_gated"
+  ],
+  "heldout_development_source_selection_wins_per_arm": 0,
+  "heldout_development_answer_changes_per_arm": 0,
+  "planned_heldout_development_rerank_rows_per_arm": 48,
+  "second_run_test_transfer": {
+    "frozen_source_choice_correct_count": 27,
+    "planned_count": 48,
+    "mean_answer_token_f1_over_planned_count": 0.052128,
+    "non_null_f1_count": 42,
+    "missing_f1_count": 6,
+    "answer_citation_markers_count": 0,
+    "all_five_learned_arms_same_observations": true
+  },
+  "matching_three_safetensors_payload_digests_between_runs": true,
+  "independently_authenticated_prospective_source_families": 0,
+  "semantic_citation_precision_certified": false,
+  "parametric_memory_advantage_established": false,
+  "production_accepted": false,
+  "note": "These are 576 logical policy attempts per run, not 576 independent tasks or unique reader generations; the 48 heldout development pairs per arm repeat 16 questions at 3 checkpoints."
+}

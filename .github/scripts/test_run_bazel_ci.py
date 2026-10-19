@@ -388,6 +388,7 @@ class RunBazelCiIntegrationTest(unittest.TestCase):
             "--",
             "test",
             "--platforms=//:custom-target",
+            "--skip_incompatible_explicit_targets",
             "--",
             "//fake:target",
         )
@@ -408,6 +409,7 @@ class RunBazelCiIntegrationTest(unittest.TestCase):
         self.assertIn("undefined symbol: __stack_chk_fail", summary)
         self.assertIn(">>> referenced by native-archive.o", summary)
         self.assertIn("actual failing test diagnostic", result.stdout)
+        self.assertIn("--skip_incompatible_explicit_targets", calls[0])
 
 
 if __name__ == "__main__":

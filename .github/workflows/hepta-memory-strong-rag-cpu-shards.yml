@@ -1,0 +1,376 @@
+name: MemoryCell sharded frozen Qwen CPU evidence
+on:
+  push:
+    branches:
+      - codex/memory-cell-evidence-20261008
+    paths:
+      - "scripts/memory_cell/strong_rag_shards.py"
+      - "scripts/memory_cell/test_strong_rag_shards.py"
+      - "scripts/memory_cell/test_strong_rag_shard_host_workflow.py"
+      - "scripts/memory_cell/strong_rag_host_gate.py"
+      - "scripts/memory_cell/canonical_model_stage.py"
+      - "scripts/memory_cell/test_canonical_model_stage.py"
+      - ".github/workflows/hepta-memory-strong-rag-cpu-shards.yml"
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: memorycell-frozen-qwen-shards-${{ github.sha }}
+  cancel-in-progress: false
+jobs:
+  prepare:
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    env:
+      PYTHONPATH: scripts/memory_cell
+      HEPTA_MEMORY_TESTED_COMMIT: ${{ github.sha }}
+      HF_HUB_DISABLE_IMPLICIT_TOKEN: "1"
+      HF_HUB_DISABLE_XET: "1"
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - name: Verify model-free CPU shard census before any model staging
+        run: |
+          set -euo pipefail
+          python3 -m py_compile scripts/memory_cell/strong_rag_shards.py scripts/memory_cell/test_strong_rag_shards.py
+          python3 -m unittest discover -s scripts/memory_cell -p 'test_strong_rag_shards.py' -v
+          python3 -m unittest discover -s scripts/memory_cell -p 'test_strong_rag_shard_host_workflow.py' -v
+          python3 -m unittest discover -s scripts/memory_cell -p 'test_strong_rag_host_gate.py' -v
+          python3 -m unittest discover -s scripts/memory_cell -p 'test_canonical_model_stage.py' -v
+      - name: Restore and authenticate the original observed event experiment
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          gh api repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/11669174727/zip > /tmp/frozen-original.zip
+          python3 - <<'PY'
+          from pathlib import Path, PurePosixPath
+          import hashlib, re, stat, zipfile
+          archive=Path('/tmp/frozen-original.zip')
+          assert hashlib.sha256(archive.read_bytes()).hexdigest() == '23e9d44b8d2dbe756c7c33031e18853c83326458a37925d4d368881145bf142b'
+          root=Path('/tmp/frozen-original')
+          root.mkdir()
+          with zipfile.ZipFile(archive) as z:
+              entries=z.infolist()
+              assert 1 <= len(entries) <= 256
+              assert sum(i.file_size for i in entries) <= 32*1024*1024
+              seen=set()
+              for item in entries:
+                  p=PurePosixPath(item.filename)
+                  assert not p.is_absolute() and '..' not in p.parts and '\\' not in item.filename
+                  assert not item.is_dir() and not stat.S_ISLNK(item.external_attr >> 16)
+                  assert str(p) not in seen
+                  seen.add(str(p))
+                  dest=root/str(p)
+                  dest.parent.mkdir(parents=True,exist_ok=True)
+                  dest.write_bytes(z.read(item))
+          specified=set()
+          for row in (root/'SHA256SUMS').read_text().splitlines():
+              hit=re.fullmatch(r'([0-9a-f]{64})  (?:\./)?(.+)',row)
+              assert hit is not None
+              expected,filename=hit.groups()
+              assert filename not in specified and '..' not in PurePosixPath(filename).parts
+              specified.add(filename)
+              assert hashlib.sha256((root/filename).read_bytes()).hexdigest()==expected
+          assert specified==seen-{'SHA256SUMS'}
+          assert (root/'tested-commit.txt').read_text().strip() == 'c9dd3aeff958fbdc4356a98718e96dec47f9b820'
+          assert hashlib.sha256((root/'plan/plan.json').read_bytes()).hexdigest() == '9840a25487af444914dca24c818d98ff798ebc1610ea8dfdd827187c31ad1897'
+          PY
+      - name: Reproduce frozen encoder and publish calibration source-only artifact
+        run: |
+          set -euo pipefail
+          python3 -m venv /tmp/python-model
+          /tmp/python-model/bin/pip install torch==2.5.1 --index-url https://download.pytorch.org/whl/cpu
+          /tmp/python-model/bin/pip install -r /tmp/frozen-original/environment.txt
+          /tmp/python-model/bin/python scripts/memory_cell/event_memory_trial.py encoder /tmp/encoder
+          /tmp/python-model/bin/python scripts/memory_cell/strong_rag_trial.py prepare /tmp/frozen-original/observations /tmp/frozen-original/plan /tmp/encoder /tmp/prepared --plan-sha 9840a25487af444914dca24c818d98ff798ebc1610ea8dfdd827187c31ad1897
+          mkdir -p /tmp/prepared-public /tmp/prepared-labels /tmp/python-lock
+          cp /tmp/frozen-original/environment.txt /tmp/python-lock/
+          cp /tmp/prepared/calibration-plan.json /tmp/prepared/calibration-sources.json /tmp/prepared-public/
+          cp /tmp/prepared/calibration-labels.json /tmp/prepared-labels/
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: memory-strong-rag-original-source
+          path: /tmp/frozen-original
+          if-no-files-found: error
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: memory-strong-rag-python-lock
+          path: /tmp/python-lock
+          if-no-files-found: error
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: memory-strong-rag-calibration-public
+          path: /tmp/prepared-public
+          if-no-files-found: error
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: memory-strong-rag-calibration-labels
+          path: /tmp/prepared-labels
+          if-no-files-found: error
+
+  calibration-shards:
+    needs: prepare
+    runs-on: ubuntu-22.04
+    timeout-minutes: 360
+    strategy:
+      fail-fast: false
+      max-parallel: 8
+      matrix:
+        case: [0, 1, 2, 3, 4, 5, 6, 7]
+        part: [0, 1]
+    env:
+      PYTHONPATH: scripts/memory_cell
+      HEPTA_MEMORY_TESTED_COMMIT: ${{ github.sha }}
+      HF_HUB_DISABLE_IMPLICIT_TOKEN: "1"
+      HF_HUB_DISABLE_XET: "1"
+      TOKENIZERS_PARALLELISM: "false"
+      OMP_NUM_THREADS: "2"
+      MKL_NUM_THREADS: "2"
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405 # v6.2.0
+        with:
+          python-version: "3.12"
+      - name: Verify actual allocated BF16 CPU before downloading Qwen weights
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/frozen-qwen-host
+          printf '%s\n' "${{ github.sha }}" > /tmp/frozen-qwen-host/tested-commit.txt
+          python3 scripts/memory_cell/strong_rag_host_gate.py --output /tmp/frozen-qwen-host/host-qualification.json
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          name: memory-strong-rag-calibration-public
+          path: /tmp/prepared
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          name: memory-strong-rag-python-lock
+          path: /tmp/python-lock
+      - name: Stage exact research reader; never upload model weights
+        run: |
+          set -euo pipefail
+          python3 -m venv /tmp/python-model
+          /tmp/python-model/bin/pip install torch==2.5.1 --index-url https://download.pytorch.org/whl/cpu
+          /tmp/python-model/bin/pip install -r /tmp/python-lock/environment.txt
+          /tmp/python-model/bin/python scripts/memory_cell/reader_reference.py stage qwen-3b /tmp/model
+          /tmp/python-model/bin/python scripts/memory_cell/canonical_model_stage.py normalize /tmp/model
+      - name: Read exactly one calibration case and one precommitted arm group
+        env:
+          HF_HUB_OFFLINE: "1"
+          TRANSFORMERS_OFFLINE: "1"
+        run: |
+          set -euo pipefail
+          /tmp/python-model/bin/python scripts/memory_cell/strong_rag_shards.py calibration-shard /tmp/prepared /tmp/absent-plan /tmp/absent-inputs /tmp/model /tmp/not-yet-frozen /tmp/one-shard --case ${{ matrix.case }} --part ${{ matrix.part }} --prep-sha "$(sha256sum /tmp/prepared/calibration-plan.json | cut -d' ' -f1)" --stage-sha "$(sha256sum /tmp/model/stage.json | cut -d' ' -f1)"
+          cp /tmp/model/stage-observation.json /tmp/one-shard/stage-observation.json
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: memory-calibration-${{ matrix.case }}-${{ matrix.part }}
+          path: /tmp/one-shard
+          if-no-files-found: warn
+
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: memory-calibration-host-${{ matrix.case }}-${{ matrix.part }}
+          path: /tmp/frozen-qwen-host
+          if-no-files-found: warn
+  calibration-collect:
+    needs: calibration-shards
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      PYTHONPATH: scripts/memory_cell
+      HEPTA_MEMORY_TESTED_COMMIT: ${{ github.sha }}
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          pattern: memory-calibration-*
+          path: /tmp/cal-shards
+          merge-multiple: false
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          name: memory-strong-rag-calibration-public
+          path: /tmp/prepared
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          name: memory-strong-rag-calibration-labels
+          path: /tmp/prepared
+      - name: Open calibration labels only after all 40 original answers are sealed
+        run: |
+          set -euo pipefail
+          python3 scripts/memory_cell/strong_rag_shards.py calibration-collect /tmp/prepared /tmp/unneeded /tmp/unneeded /tmp/unneeded /tmp/cal-shards /tmp/calibration --prep-sha "$(sha256sum /tmp/prepared/calibration-plan.json | cut -d' ' -f1)"
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: memory-strong-rag-calibration-frozen
+          path: /tmp/calibration
+          if-no-files-found: error
+
+  evaluation-shards:
+    needs: calibration-collect
+    runs-on: ubuntu-22.04
+    timeout-minutes: 360
+    strategy:
+      fail-fast: false
+      max-parallel: 8
+      matrix:
+        case: [0, 1, 2, 3, 4, 5, 6, 7]
+        part: [0, 1]
+    env:
+      PYTHONPATH: scripts/memory_cell
+      HEPTA_MEMORY_TESTED_COMMIT: ${{ github.sha }}
+      HF_HUB_DISABLE_IMPLICIT_TOKEN: "1"
+      HF_HUB_DISABLE_XET: "1"
+      TOKENIZERS_PARALLELISM: "false"
+      OMP_NUM_THREADS: "2"
+      MKL_NUM_THREADS: "2"
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405 # v6.2.0
+        with:
+          python-version: "3.12"
+      - name: Verify actual allocated BF16 CPU before downloading Qwen weights
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/frozen-qwen-host
+          printf '%s\n' "${{ github.sha }}" > /tmp/frozen-qwen-host/tested-commit.txt
+          python3 scripts/memory_cell/strong_rag_host_gate.py --output /tmp/frozen-qwen-host/host-qualification.json
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          name: memory-strong-rag-original-source
+          path: /tmp/original
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          name: memory-strong-rag-calibration-frozen
+          path: /tmp/calibration
+      - name: Stage pinned research-only Qwen from independently verified inventory
+        run: |
+          set -euo pipefail
+          python3 -m venv /tmp/python-model
+          /tmp/python-model/bin/pip install torch==2.5.1 --index-url https://download.pytorch.org/whl/cpu
+          /tmp/python-model/bin/pip install -r /tmp/original/environment.txt
+          /tmp/python-model/bin/python scripts/memory_cell/reader_reference.py stage qwen-3b /tmp/model
+          /tmp/python-model/bin/python scripts/memory_cell/canonical_model_stage.py normalize /tmp/model
+      - name: Generate one preregistered evaluation case/arm group with frozen k
+        env:
+          HF_HUB_OFFLINE: "1"
+          TRANSFORMERS_OFFLINE: "1"
+        run: |
+          set -euo pipefail
+          /tmp/python-model/bin/python scripts/memory_cell/strong_rag_shards.py evaluation-shard /tmp/no-prep /tmp/original/plan /tmp/original/observations /tmp/model /tmp/calibration /tmp/one-shard --case ${{ matrix.case }} --part ${{ matrix.part }} --plan-sha 9840a25487af444914dca24c818d98ff798ebc1610ea8dfdd827187c31ad1897 --stage-sha "$(sha256sum /tmp/model/stage.json | cut -d' ' -f1)" --policy-sha "$(sha256sum /tmp/calibration/frozen-policy.json | cut -d' ' -f1)"
+          cp /tmp/model/stage-observation.json /tmp/one-shard/stage-observation.json
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: memory-evaluation-${{ matrix.case }}-${{ matrix.part }}
+          path: /tmp/one-shard
+          if-no-files-found: warn
+
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: memory-evaluation-host-${{ matrix.case }}-${{ matrix.part }}
+          path: /tmp/frozen-qwen-host
+          if-no-files-found: warn
+  evaluation-collect:
+    needs: evaluation-shards
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    env:
+      PYTHONPATH: scripts/memory_cell
+      HEPTA_MEMORY_TESTED_COMMIT: ${{ github.sha }}
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          pattern: memory-calibration-*
+          path: /tmp/cal-shards
+          merge-multiple: false
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          pattern: memory-evaluation-*
+          path: /tmp/eval-shards
+          merge-multiple: false
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          name: memory-strong-rag-original-source
+          path: /tmp/original
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          name: memory-strong-rag-calibration-frozen
+          path: /tmp/calibration
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          name: memory-strong-rag-calibration-public
+          path: /tmp/prepared
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          name: memory-strong-rag-calibration-labels
+          path: /tmp/prepared
+      - name: Score and seal after all 72 generated answer rows have been committed
+        run: |
+          set -euo pipefail
+          python3 scripts/memory_cell/strong_rag_shards.py evaluation-collect /tmp/original/plan /tmp/original/observations /tmp/prepared /tmp/calibration /tmp/eval-shards /tmp/evaluation --plan-sha 9840a25487af444914dca24c818d98ff798ebc1610ea8dfdd827187c31ad1897 --policy-sha "$(sha256sum /tmp/calibration/frozen-policy.json | cut -d' ' -f1)"
+          mkdir -p /tmp/finished/prep /tmp/finished/shards
+          cp -a /tmp/calibration /tmp/finished/calibration
+          cp -a /tmp/evaluation /tmp/finished/evaluation
+          cp /tmp/prepared/calibration-*.json /tmp/finished/prep/
+          cp /tmp/calibration/stage.json /tmp/calibration/inventory.json /tmp/calibration/publisher.json /tmp/finished/
+          cp -a /tmp/cal-shards /tmp/finished/shards/calibration
+          cp -a /tmp/eval-shards /tmp/finished/shards/evaluation
+          python3 scripts/memory_cell/canonical_model_stage.py verify /tmp/finished --output /tmp/finished/staging-costs.json
+          printf '%s\n' "$HEPTA_MEMORY_TESTED_COMMIT" > /tmp/finished/tested-commit.txt
+          (cd /tmp/finished && find . -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS)
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: memory-strong-rag-fully-sharded-original-answers
+          path: /tmp/finished
+          if-no-files-found: error
+
+  independent-replay:
+    needs: evaluation-collect
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    env:
+      PYTHONPATH: scripts/memory_cell
+      HEPTA_MEMORY_TESTED_COMMIT: ${{ github.sha }}
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          name: memory-strong-rag-fully-sharded-original-answers
+          path: /tmp/finished
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          name: memory-strong-rag-original-source
+          path: /tmp/original
+      - name: Recheck original answer/evidence bytes and recompute exact effects
+        run: |
+          set -euo pipefail
+          python3 scripts/memory_cell/strong_rag_shards.py verify-release /tmp/finished /tmp/original
+          python3 scripts/memory_cell/canonical_model_stage.py verify /tmp/finished --expected /tmp/finished/staging-costs.json
+          python3 scripts/memory_cell/strong_rag_receipt.py /tmp/finished /tmp/original --generating-commit "$HEPTA_MEMORY_TESTED_COMMIT" --output /tmp/shard-replay.json
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: memory-strong-rag-sharded-independent-replay
+          path: /tmp/shard-replay.json
+          if-no-files-found: warn

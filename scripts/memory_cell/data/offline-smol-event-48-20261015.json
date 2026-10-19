@@ -1,0 +1,252 @@
+{
+  "schema": "hepta.offline-smol-reader-48.receipt.v1",
+  "generating_source_commit": "5a0cd626df2c6a1a6f4d2a554f89bf88b860ed84",
+  "preregistered": {
+    "source_commit": "5a0cd626df2c6a1a6f4d2a554f89bf88b860ed84",
+    "source_files": {
+      "offline_event_reader_trial.py": "fb7e827b4045a316161600672b5cc5e1a219d8e70e91d9af6482f0deae88f490",
+      "offline_smol_reader.py": "1c43e120fcb8c2510e9ce4ff7cfa1ab71ee00a21e4d076e47ae0f70eeac034d8"
+    },
+    "original_input_artifact": 11827287296,
+    "original_input_archive_sha256": "31c6f191ecf62095779f7c9a5dd6c5b2f89c6ae408fe9c26f74e017a2d62c47a",
+    "model_pins": {
+      "model.safetensors": "5af571cbf074e6d21a03528d2330792e532ca608f24ac70a143f6b369968ab8c",
+      "config.json": "8eb740e8bbe4cff95ea7b4588d17a2432deb16e8075bc5828ff7ba9be94d982a",
+      "tokenizer.json": "9ca9acddb6525a194ec8ac7a87f24fbba7232a9a15ffa1af0c1224fcd888e47c",
+      "tokenizer_config.json": "4ec77d44f62efeb38d7e044a1db318f6a939438425312dfa333b8382dbad98df"
+    },
+    "profile": "hepta.offline-original-smol135-fp32.v1",
+    "cases": [
+      "controlled_faedc8b9",
+      "controlled_cbfd4ba5",
+      "controlled_c71dcd6f",
+      "controlled_7fc7f8c2",
+      "controlled_7fadc16e",
+      "controlled_f0609607",
+      "controlled_bcb9165b",
+      "controlled_52a0bb15"
+    ],
+    "arms": [
+      "empty",
+      "hybrid",
+      "entity_time",
+      "organized",
+      "program_support",
+      "without_prerequisite"
+    ],
+    "token_limit": 2048,
+    "max_new_tokens": 64,
+    "do_sample": false,
+    "fixed_before_inference": true,
+    "training_permitted": false,
+    "prior_public_exposure": true,
+    "human_sufficiency_certified": false,
+    "hf_implementation_parity_verified": false,
+    "stronger_reference_executed": false,
+    "production_accepted": false,
+    "observed_at": "2026-10-15T13:56:15.728518+00:00",
+    "python": "3.13.5 (main, Jul 15 2026, 20:25:40) [GCC 14.2.0]",
+    "torch": "2.10.0+cpu",
+    "threads": 2,
+    "host": "isolated_analysis_not_user_dot"
+  },
+  "original_model_archive": {
+    "artifact_id": 11586991191,
+    "sha256": "07b357cbb3362f4afa4dc1872ab7e28e8a46daaf338f2636fed8d40fbcee76af",
+    "bytes": 376363859
+  },
+  "parameter_count": 134515008,
+  "attempts": 48,
+  "generation_succeeded": 48,
+  "generation_failed": 0,
+  "arm_results": {
+    "empty": {
+      "planned": 8,
+      "succeeded": 8,
+      "failed": 0,
+      "strict_task_successes": 0,
+      "target_identifier_mentioned": 0,
+      "complete_declared_support_cited": 0,
+      "input_tokens": 1581,
+      "generated_tokens": 254,
+      "generation_seconds": 19.40997121500027
+    },
+    "hybrid": {
+      "planned": 8,
+      "succeeded": 8,
+      "failed": 0,
+      "strict_task_successes": 0,
+      "target_identifier_mentioned": 0,
+      "complete_declared_support_cited": 0,
+      "input_tokens": 5967,
+      "generated_tokens": 281,
+      "generation_seconds": 38.723427435000076
+    },
+    "entity_time": {
+      "planned": 8,
+      "succeeded": 8,
+      "failed": 0,
+      "strict_task_successes": 0,
+      "target_identifier_mentioned": 1,
+      "complete_declared_support_cited": 0,
+      "input_tokens": 3555,
+      "generated_tokens": 221,
+      "generation_seconds": 23.210124656000062
+    },
+    "organized": {
+      "planned": 8,
+      "succeeded": 8,
+      "failed": 0,
+      "strict_task_successes": 0,
+      "target_identifier_mentioned": 2,
+      "complete_declared_support_cited": 0,
+      "input_tokens": 3278,
+      "generated_tokens": 260,
+      "generation_seconds": 24.529722137000135
+    },
+    "program_support": {
+      "planned": 8,
+      "succeeded": 8,
+      "failed": 0,
+      "strict_task_successes": 0,
+      "target_identifier_mentioned": 2,
+      "complete_declared_support_cited": 0,
+      "input_tokens": 3278,
+      "generated_tokens": 260,
+      "generation_seconds": 24.773719707999817
+    },
+    "without_prerequisite": {
+      "planned": 8,
+      "succeeded": 8,
+      "failed": 0,
+      "strict_task_successes": 0,
+      "target_identifier_mentioned": 0,
+      "complete_declared_support_cited": 0,
+      "input_tokens": 2142,
+      "generated_tokens": 259,
+      "generation_seconds": 21.248003425999514
+    }
+  },
+  "raw_journal": {
+    "path": "offline-smol-event-48-20261015.raw.jsonl.xz",
+    "sha256": "1e80c66867c5cedb84bf78bf0f477938e79d0b9fdb86be9c1b4f77ed8071617c",
+    "uncompressed_bytes": 279107,
+    "xz_sha256": "7e3c70f8b3d8b95d61638281530f5038ef2aa0173e18ed1d42d02ff7ad42e007",
+    "xz_bytes": 9016,
+    "git_blob_sha": "84b240d3410e2017ddb28f0b287502ce47769f53"
+  },
+  "source_request_replay": {
+    "schema": "hepta.offline-original-smol-local-replay.v1",
+    "verifier_source_sha256": "98e112eb15f832dd2e9dec0345be88c1b2a702ba1e7b46b040f5d2083fd764ab",
+    "generating_commit": "5a0cd626df2c6a1a6f4d2a554f89bf88b860ed84",
+    "raw_journal_sha256": "1e80c66867c5cedb84bf78bf0f477938e79d0b9fdb86be9c1b4f77ed8071617c",
+    "original_archive_sha256": "31c6f191ecf62095779f7c9a5dd6c5b2f89c6ae408fe9c26f74e017a2d62c47a",
+    "verified_original_requests_and_answers": 48,
+    "reexecuted_original_program_checks": 12,
+    "new_model_calls": 0,
+    "separate_process_replay": true,
+    "independent_human_reviewer": false,
+    "hf_implementation_parity_verified": false,
+    "production_accepted": false
+  },
+  "program_verification": {
+    "original_checks": 12,
+    "original_successes": 0,
+    "separate_replay_checks": 12,
+    "reader_tool_calls": 0,
+    "real_project_tasks": false,
+    "recovery_success": null
+  },
+  "costs": {
+    "input_tokens": 19801,
+    "generated_tokens": 1535,
+    "model_load_seconds": 2.458364018000111,
+    "execution_wall_seconds": 155.07474044499986,
+    "generation_seconds": 151.89496857699987,
+    "original_retained_input_archive_bytes": 252344,
+    "original_source_text_bytes": 19584,
+    "training_seconds": 0,
+    "fresh_retrieval_calls": 0,
+    "original_extraction_index_remeasured": false,
+    "maintenance_revocation_recovery_seconds": null,
+    "complete_lifecycle_cost": null
+  },
+  "decision": {
+    "strict_task_successes": 0,
+    "complete_program_declared_support_citations": 0,
+    "support_target_mentioned": 2,
+    "do_not_expand_parameter_training": true,
+    "current_priority": "validate_engine_parity_then_reader_prompt_task_capability",
+    "human_sufficiency_certified": false,
+    "hf_implementation_parity_verified": false,
+    "stronger_reference_executed": false,
+    "independent_source_families_certified": 0,
+    "same_host_native_reference_capacity_comparison": false,
+    "memory_gain_established": false,
+    "production_accepted": false
+  },
+  "tests": {
+    "factorial_regressions": 15,
+    "actual_pinned_weight_numeric_regressions": 6,
+    "full_repository_suite_run": false,
+    "ruff_executed": false
+  },
+  "original_support_answers": [
+    {
+      "question_id": "controlled_faedc8b9",
+      "kind": "new_fact",
+      "answer": "{\"question\": \"For service_faedc8b9 at logical revision 2, what is the location? Reply with only the single recorded site_ or mode_ identifier followed by supporting [E1], [E2] labels, without other words. Respect explicit supersedes events; later effective revisions do",
+      "strict_task_success": false,
+      "target_identifier_mentioned": false
+    },
+    {
+      "question_id": "controlled_cbfd4ba5",
+      "kind": "correction",
+      "answer": "The location of service_cbfd4ba5 at logical revision 2 is site_2749e2c9.",
+      "strict_task_success": false,
+      "target_identifier_mentioned": true
+    },
+    {
+      "question_id": "controlled_c71dcd6f",
+      "kind": "composition",
+      "answer": "The location of the assigned component is the \"component\" in the provided evidence.",
+      "strict_task_success": false,
+      "target_identifier_mentioned": false
+    },
+    {
+      "question_id": "controlled_7fc7f8c2",
+      "kind": "procedure",
+      "answer": "The mode that actually succeeded for the assigned component is \"successful_mode\" in the evidence.",
+      "strict_task_success": false,
+      "target_identifier_mentioned": false
+    },
+    {
+      "question_id": "controlled_7fadc16e",
+      "kind": "new_fact",
+      "answer": "The location of service_7fadc16e at logical revision 2 is the site_cbdf1716.",
+      "strict_task_success": false,
+      "target_identifier_mentioned": true
+    },
+    {
+      "question_id": "controlled_f0609607",
+      "kind": "correction",
+      "answer": "{\"question\": \"For service_f0609607 at logical revision 2, what is the location? Reply with only the single recorded site_ or mode_ identifier followed by supporting [E1], [E2] labels, without other words. Respect explicit supersedes events; later effective",
+      "strict_task_success": false,
+      "target_identifier_mentioned": false
+    },
+    {
+      "question_id": "controlled_bcb9165b",
+      "kind": "composition",
+      "answer": "The location of the assigned component is the \"component\" in the provided evidence.",
+      "strict_task_success": false,
+      "target_identifier_mentioned": false
+    },
+    {
+      "question_id": "controlled_52a0bb15",
+      "kind": "procedure",
+      "answer": "The mode that actually succeeded for the assigned component is \"successful_mode\" in the evidence.",
+      "strict_task_success": false,
+      "target_identifier_mentioned": false
+    }
+  ]
+}

@@ -1,0 +1,58 @@
+name: MemoryCell source-only in-sample recall contracts
+on:
+  push:
+    branches:
+      - "codex/memory-cell-evidence-20261008"
+    paths:
+      - "scripts/memory_cell/source_recall_probe.py"
+      - "scripts/memory_cell/test_source_recall_probe.py"
+      - "scripts/memory_cell/source_paraphrase_probe.py"
+      - "scripts/memory_cell/test_source_paraphrase_probe.py"
+      - ".github/workflows/hepta-memory-source-recall.yml"
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  source-recall-smoke:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      PYTHONPATH: scripts/memory_cell
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          persist-credentials: false
+      - name: Run deterministic, non-pretrained source probe contracts
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/source-recall-check
+          python3 -m unittest discover -s scripts/memory_cell -p 'test_source_recall_probe.py' -v 2>&1 | tee /tmp/source-recall-check/tests.log
+          python3 -m unittest discover -s scripts/memory_cell -p 'test_source_paraphrase_probe.py' -v 2>&1 | tee /tmp/source-recall-check/paraphrase-tests.log
+      - name: Check exact Python formatting and retain any formatter diff
+        run: |
+          set -euo pipefail
+          python3 -m pip install uv==0.8.22
+          set +e
+          uv run --frozen --project scripts ruff format --check scripts/memory_cell/source_recall_probe.py scripts/memory_cell/test_source_recall_probe.py scripts/memory_cell/source_paraphrase_probe.py scripts/memory_cell/test_source_paraphrase_probe.py > /tmp/source-recall-check/format.log 2>&1
+          status=$?
+          set -e
+          cat /tmp/source-recall-check/format.log
+          if [ "$status" -ne 0 ]; then
+            uv run --frozen --project scripts ruff format --diff scripts/memory_cell/source_recall_probe.py scripts/memory_cell/test_source_recall_probe.py scripts/memory_cell/source_paraphrase_probe.py scripts/memory_cell/test_source_paraphrase_probe.py > /tmp/source-recall-check/format.diff || true
+            cat /tmp/source-recall-check/format.diff
+          fi
+          exit "$status"
+      - name: Preserve tested source, original failure logs and SHA
+        if: always()
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/source-recall-check/source
+          cp scripts/memory_cell/source_recall_probe.py scripts/memory_cell/test_source_recall_probe.py scripts/memory_cell/source_paraphrase_probe.py scripts/memory_cell/test_source_paraphrase_probe.py /tmp/source-recall-check/source/
+          git rev-parse HEAD > /tmp/source-recall-check/tested-commit.txt
+          (cd /tmp/source-recall-check && find . -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS)
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: memory-source-recall-contracts
+          path: /tmp/source-recall-check
+          if-no-files-found: error

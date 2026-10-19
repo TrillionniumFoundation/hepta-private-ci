@@ -1,0 +1,75 @@
+name: MemoryCell three strict native successes audit
+on:
+  push:
+    branches:
+      - "codex/memory-cell-evidence-20261008"
+    paths:
+      - "scripts/memory_cell/stem_strict_three_success.py"
+      - "scripts/memory_cell/test_stem_strict_three_success.py"
+      - ".github/workflows/hepta-memory-stem-three-success-audit.yml"
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: memory-stem-strict-three-${{ github.sha }}
+  cancel-in-progress: false
+jobs:
+  immutable-native-reproducibility:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      PYTHONPATH: scripts/memory_cell
+      PYTHONDONTWRITEBYTECODE: "1"
+      STEM_REPRO_INPUT_DIR: /tmp/stem-repro/inputs
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - name: Retain exact tested source identities
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/stem-repro/inputs /tmp/stem-repro/source
+          git rev-parse HEAD > /tmp/stem-repro/auditing-commit.txt
+          git rev-parse HEAD^{tree} > /tmp/stem-repro/auditing-tree.txt
+      - name: Download all three completed original-model archives
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          gh api repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/11693862650/zip > /tmp/stem-repro/inputs/38114107704.zip
+          gh api repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/11694034373/zip > /tmp/stem-repro/inputs/38114504922.zip
+          gh api repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/11693693993/zip > /tmp/stem-repro/inputs/38114716982.zip
+          printf '%s  %s\n' \
+            a45c4b397b573662715a45f80bfc118446e41f6ceedf88052188bbfd9d131ca5 /tmp/stem-repro/inputs/38114107704.zip \
+            2728ff0f9ef7eef01cf8a3d8ee99dc16600265ffd7ac5a4740baebe46d874ec5 /tmp/stem-repro/inputs/38114504922.zip \
+            1db7f8f7c13a1f718d5065956f14d554d3fe328c415fac4bb145d1eaf9d913c8 /tmp/stem-repro/inputs/38114716982.zip | sha256sum -c -
+      - name: Reject mutated archives, missing attempts and Reader-provenance drift
+        run: |
+          set -euo pipefail
+          python3 -m unittest -v test_stem_strict_three_success 2>&1 | tee /tmp/stem-repro/regressions.log
+      - name: Compare all 1728 original output rows and independent Head snapshots
+        run: |
+          set -euo pipefail
+          python3 scripts/memory_cell/stem_strict_three_success.py \
+            --run-38114107704 /tmp/stem-repro/inputs/38114107704.zip \
+            --run-38114504922 /tmp/stem-repro/inputs/38114504922.zip \
+            --run-38114716982 /tmp/stem-repro/inputs/38114716982.zip \
+            --output /tmp/stem-repro/triple-execution-receipt.json \
+            2>&1 | tee /tmp/stem-repro/compare.log
+      - name: Retain bounded, source-only independent audit
+        if: always()
+        run: |
+          set -euo pipefail
+          cp scripts/memory_cell/stem_strict_three_success.py /tmp/stem-repro/source/
+          cp scripts/memory_cell/test_stem_strict_three_success.py /tmp/stem-repro/source/
+          cp scripts/memory_cell/stem_audit_archive.py /tmp/stem-repro/source/
+          cp .github/workflows/hepta-memory-stem-three-success-audit.yml /tmp/stem-repro/source/
+          rm -rf /tmp/stem-repro/inputs
+          (cd /tmp/stem-repro && find . -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS)
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: memory-stem-strict-three-repro
+          path: /tmp/stem-repro
+          if-no-files-found: error

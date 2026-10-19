@@ -1,0 +1,52 @@
+name: MemoryCell immutable cross-cohort no-go gate
+on:
+  push:
+    branches: ["codex/memory-cell-evidence-20261008"]
+    paths:
+      - "scripts/memory_cell/stem_cross_cohort_gate.py"
+      - "scripts/memory_cell/test_stem_cross_cohort_gate.py"
+      - "scripts/memory_cell/data/locomo-ninearm-offline-20261012.json"
+      - "scripts/memory_cell/data/stem-two-run-negative-gate-20261011.json"
+      - "scripts/memory_cell/data/strong-rag-four-run-replication-20261012.json"
+      - ".github/workflows/hepta-memory-cross-cohort-gate.yml"
+permissions:
+  contents: read
+concurrency:
+  group: memory-cross-cohort-${{ github.sha }}
+  cancel-in-progress: false
+jobs:
+  pinned-no-go:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    env:
+      PYTHONPATH: scripts/memory_cell
+      PYTHONDONTWRITEBYTECODE: "1"
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - name: Fail-closed stdlib tests and immutable source verification
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/memory-cross-cohort/source
+          git rev-parse HEAD > /tmp/memory-cross-cohort/tested-commit.txt
+          git rev-parse HEAD^{tree} > /tmp/memory-cross-cohort/tested-tree.txt
+          python3 -m compileall -q scripts/memory_cell/stem_cross_cohort_gate.py scripts/memory_cell/test_stem_cross_cohort_gate.py
+          python3 -m unittest -v test_stem_cross_cohort_gate 2>&1 | tee /tmp/memory-cross-cohort/tests.log
+          python3 scripts/memory_cell/stem_cross_cohort_gate.py --output /tmp/memory-cross-cohort/verified-decision.json 2>&1 | tee /tmp/memory-cross-cohort/audit.log
+      - name: Retain exact tested sources, pinned evidence bytes and failures
+        if: always()
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/memory-cross-cohort/source /tmp/memory-cross-cohort/evidence
+          cp scripts/memory_cell/stem_cross_cohort_gate.py scripts/memory_cell/test_stem_cross_cohort_gate.py /tmp/memory-cross-cohort/source/
+          cp scripts/memory_cell/data/locomo-ninearm-offline-20261012.json scripts/memory_cell/data/stem-two-run-negative-gate-20261011.json scripts/memory_cell/data/strong-rag-four-run-replication-20261012.json /tmp/memory-cross-cohort/evidence/
+          cp .github/workflows/hepta-memory-cross-cohort-gate.yml /tmp/memory-cross-cohort/source/
+          (cd /tmp/memory-cross-cohort && find . -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS)
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: memory-cell-cross-cohort-no-go
+          path: /tmp/memory-cross-cohort
+          if-no-files-found: error

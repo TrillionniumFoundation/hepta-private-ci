@@ -1,0 +1,718 @@
+{
+  "schema": "hepta.memory-strong-rag.cross-run-replication.v1",
+  "input": {
+    "A": {
+      "github_actions_run": 38148514657,
+      "source_commit": "8250698244417eb14994518af05fa6f79e783066",
+      "full_archive_sha256": "7c991f0996fc24c650efb28f6266da51ed1655b78585e11b78dbc424707b7b7f",
+      "independent_replay_sha256": "7e390bddfb1c59e0bb82999b01747a180eb1ec1f84d9f863a536dd036ec483f1",
+      "verified_manifest_entries": 267,
+      "independent_replay_manifest_entries": 1,
+      "whole_workflow_success": true,
+      "original_calibration_journal_sha256": "368b8d0449f62291ceb3f235b7f4896c416ce9c94ad07033659367151d706324",
+      "original_evaluation_journal_sha256": "7d0766bd8a118ef939061cc9c42fbb075e2e125ddd57fbb665320f1f9aa02a81"
+    },
+    "B": {
+      "github_actions_run": 38146546731,
+      "source_commit": "eba9af092cca1c2875552ffaea2219678143a73c",
+      "full_archive_sha256": "b4cf1346ce4c5b1625cdc57845bcca33fcf82f84340433b602d76258c10c1138",
+      "independent_replay_sha256": "4c64e9c01bef56d0f311e633af53c7a246102e7083a272122286fb7ff66085a3",
+      "verified_manifest_entries": 267,
+      "independent_replay_manifest_entries": 1,
+      "whole_workflow_success": true,
+      "original_calibration_journal_sha256": "aa511613565e9c57789f6d7e6514e2eafd907a15625f1762df2fbfa76b3c2b69",
+      "original_evaluation_journal_sha256": "d79384fa928ca478eb56a03d86bb8e6187da808b0af67e81403c894dcf4371a3"
+    },
+    "C": {
+      "github_actions_run": 38114667490,
+      "source_commit": "c24fad24b65984a6255a8854c6714c141911ff79",
+      "full_archive_sha256": "2d71f40e553e7d28cad9d8e16803f52b7a99e771b5bf54f55c89bc9468702107",
+      "independent_replay_sha256": "fe710be3f987e34ec3cda48be37509e20a01b48db090907c98ce33cfff198225",
+      "verified_manifest_entries": 38,
+      "independent_replay_manifest_entries": 8,
+      "whole_workflow_success": false,
+      "original_calibration_journal_sha256": "e07d00a8bdf3a876aa7bab977b5b8210b5a9e23b7e61c03d999e662fad206385",
+      "original_evaluation_journal_sha256": "e9acb97ec959a464209ae40d3f75bc4a798c7ddc7d27e36da464fcf0f545807f"
+    }
+  },
+  "frozen_model_identity": "f9aa334d3a02cabececea367c283caf66ef9875132907ebc34dac1c8d3a7f225",
+  "frozen_plan_sha256": "9840a25487af444914dca24c818d98ff798ebc1610ea8dfdd827187c31ad1897",
+  "runs": 3,
+  "original_calibration_generations_per_run": 40,
+  "original_evaluation_generations_per_run": 72,
+  "total_actual_model_generations": 336,
+  "identical_original_prompts_across_all_runs": {
+    "calibration": 40,
+    "evaluation": 72
+  },
+  "pairwise_output_differences": {
+    "A_versus_B": {
+      "calibration": [
+        {
+          "question_id": "controlled_bc770867",
+          "arm": "k3",
+          "answer_a": "site_0d31723e [E1]",
+          "answer_b": "site_0d31723e",
+          "generated_ids_digest_a": "8b63486aee881db7fb5b0865ed4c67c3c620eb837ff192fd2a0574b322afb8d0",
+          "generated_ids_digest_b": "72d5c980dfaa70d4742fc32c952ffd33a4348257457e1840a5224a6fac80d42a",
+          "strict_success_a": false,
+          "strict_success_b": false
+        },
+        {
+          "question_id": "controlled_bc770867",
+          "arm": "k4",
+          "answer_a": "site_0d31723e [E1]",
+          "answer_b": "site_0d31723e",
+          "generated_ids_digest_a": "8b63486aee881db7fb5b0865ed4c67c3c620eb837ff192fd2a0574b322afb8d0",
+          "generated_ids_digest_b": "72d5c980dfaa70d4742fc32c952ffd33a4348257457e1840a5224a6fac80d42a",
+          "strict_success_a": false,
+          "strict_success_b": false
+        },
+        {
+          "question_id": "controlled_4446bde9",
+          "arm": "k2",
+          "answer_a": "mode_05747e55[E1]",
+          "answer_b": "mode_05747e55 [E1]",
+          "generated_ids_digest_a": "e16ba370dfc84e3df99917bf7bee1687f01cd8cc160bb389f46018898172b49a",
+          "generated_ids_digest_b": "b973a14bb75c98be299e15d136dd42532c4f9f2e02e67c6db1a06da0aa762e7d",
+          "strict_success_a": true,
+          "strict_success_b": true
+        }
+      ],
+      "evaluation": [
+        {
+          "question_id": "controlled_cbfd4ba5",
+          "arm": "empty",
+          "answer_a": "I do not have enough evidence",
+          "answer_b": "I do not have enough evidence.",
+          "generated_ids_digest_a": "dce1c24c0aa984c88031774ff95d7fe8009e6f32f1b4c0e9d6ee97aec816cc56",
+          "generated_ids_digest_b": "b2a63969a6a48d4da71418a73d5a049210281d96f89c5b5f5a3555acf7f59004",
+          "strict_success_a": false,
+          "strict_success_b": false
+        },
+        {
+          "question_id": "controlled_c71dcd6f",
+          "arm": "empty",
+          "answer_a": "I do not have enough evidence.",
+          "answer_b": "I do not have enough evidence",
+          "generated_ids_digest_a": "b2a63969a6a48d4da71418a73d5a049210281d96f89c5b5f5a3555acf7f59004",
+          "generated_ids_digest_b": "dce1c24c0aa984c88031774ff95d7fe8009e6f32f1b4c0e9d6ee97aec816cc56",
+          "strict_success_a": false,
+          "strict_success_b": false
+        },
+        {
+          "question_id": "controlled_7fadc16e",
+          "arm": "empty",
+          "answer_a": "I do not have enough evidence.",
+          "answer_b": "I do not have enough evidence",
+          "generated_ids_digest_a": "b2a63969a6a48d4da71418a73d5a049210281d96f89c5b5f5a3555acf7f59004",
+          "generated_ids_digest_b": "dce1c24c0aa984c88031774ff95d7fe8009e6f32f1b4c0e9d6ee97aec816cc56",
+          "strict_success_a": false,
+          "strict_success_b": false
+        },
+        {
+          "question_id": "controlled_f0609607",
+          "arm": "hybrid_k4_reversed",
+          "answer_a": "site_5846ffe7",
+          "answer_b": "site_639dab67 [E4]",
+          "generated_ids_digest_a": "905dd9ea4cbccc0b0529b8716e1ab60ab1a1b6c6920bfdfae38736cc748d4f7c",
+          "generated_ids_digest_b": "2c876b6bac8d46fc9e80fbe689acc3d267430497d702177b95d474ff62c5a5c8",
+          "strict_success_a": false,
+          "strict_success_b": true
+        },
+        {
+          "question_id": "controlled_bcb9165b",
+          "arm": "empty",
+          "answer_a": "I do not have enough evidence.",
+          "answer_b": "I do not have enough evidence",
+          "generated_ids_digest_a": "b2a63969a6a48d4da71418a73d5a049210281d96f89c5b5f5a3555acf7f59004",
+          "generated_ids_digest_b": "dce1c24c0aa984c88031774ff95d7fe8009e6f32f1b4c0e9d6ee97aec816cc56",
+          "strict_success_a": false,
+          "strict_success_b": false
+        },
+        {
+          "question_id": "controlled_52a0bb15",
+          "arm": "hybrid_k6",
+          "answer_a": "mode_cf75c59e [E1]",
+          "answer_b": "mode_cf75c59e[E1]",
+          "generated_ids_digest_a": "3bfb0c782f89c5d64e57845611830a1eaaae10e90a1edd6eba3f9adec83308a6",
+          "generated_ids_digest_b": "29bbe02976e4a70c1f2f8b32d2f78df767eff7b5a1e299afee351792c4ade770",
+          "strict_success_a": true,
+          "strict_success_b": true
+        }
+      ]
+    },
+    "A_versus_C": {
+      "calibration": [
+        {
+          "question_id": "controlled_2310bd63",
+          "arm": "k3",
+          "answer_a": "site_49a64717[E1]",
+          "answer_b": "site_49a64717 [E1]",
+          "generated_ids_digest_a": "0f42518c2b66d49595990d9e54c6870989ec30713f38c6fa3495c8f5f0b657a6",
+          "generated_ids_digest_b": "c29fd3bcd0db99ff05c87da1e05d9ea8d788e5a612f9a860f64106ce3c441b4d",
+          "strict_success_a": true,
+          "strict_success_b": true
+        }
+      ],
+      "evaluation": [
+        {
+          "question_id": "controlled_faedc8b9",
+          "arm": "hybrid_k6",
+          "answer_a": "site_849f0372[E2]",
+          "answer_b": "[site_849f0372]",
+          "generated_ids_digest_a": "bf9edfe6e05cb010bcd4bf21e0d3e8fb56905beb77cd73f0d4b9338caf2e382c",
+          "generated_ids_digest_b": "700663e7a4fb27edf83bd5f0302e3cb314a94229b63ad12985d862e03ffd869f",
+          "strict_success_a": false,
+          "strict_success_b": false
+        },
+        {
+          "question_id": "controlled_cbfd4ba5",
+          "arm": "hybrid_k6",
+          "answer_a": "site_2749e2c9 [E2]",
+          "answer_b": "[site_2749e2c9]",
+          "generated_ids_digest_a": "c348ba31d4ec266a25e92f5c6d280bdc37bfd016d1f01032c421f26c50206055",
+          "generated_ids_digest_b": "261d6cb47b2a8869d0bc57039fbd27249d6c53413ff5dceaa9f44578de612eee",
+          "strict_success_a": true,
+          "strict_success_b": false
+        },
+        {
+          "question_id": "controlled_cbfd4ba5",
+          "arm": "hybrid_k4_reversed",
+          "answer_a": "site_73c4e597 [E1]",
+          "answer_b": "site_73c4e597",
+          "generated_ids_digest_a": "7c94773fa30cf5595fd40775b62e1f5e997a46ea3d058c75beeb920a129d3ff5",
+          "generated_ids_digest_b": "b54923b384a5b1f3589f0b2b9c45a99d6ac71f123e8e68c7a415ab70922bd55a",
+          "strict_success_a": false,
+          "strict_success_b": false
+        },
+        {
+          "question_id": "controlled_f0609607",
+          "arm": "hybrid_k4_reversed",
+          "answer_a": "site_5846ffe7",
+          "answer_b": "site_639dab67 [E4]",
+          "generated_ids_digest_a": "905dd9ea4cbccc0b0529b8716e1ab60ab1a1b6c6920bfdfae38736cc748d4f7c",
+          "generated_ids_digest_b": "2c876b6bac8d46fc9e80fbe689acc3d267430497d702177b95d474ff62c5a5c8",
+          "strict_success_a": false,
+          "strict_success_b": true
+        },
+        {
+          "question_id": "controlled_bcb9165b",
+          "arm": "empty",
+          "answer_a": "I do not have enough evidence.",
+          "answer_b": "I do not have enough evidence",
+          "generated_ids_digest_a": "b2a63969a6a48d4da71418a73d5a049210281d96f89c5b5f5a3555acf7f59004",
+          "generated_ids_digest_b": "dce1c24c0aa984c88031774ff95d7fe8009e6f32f1b4c0e9d6ee97aec816cc56",
+          "strict_success_a": false,
+          "strict_success_b": false
+        },
+        {
+          "question_id": "controlled_52a0bb15",
+          "arm": "hybrid_k6",
+          "answer_a": "mode_cf75c59e [E1]",
+          "answer_b": "mode_cf75c59e[E1]",
+          "generated_ids_digest_a": "3bfb0c782f89c5d64e57845611830a1eaaae10e90a1edd6eba3f9adec83308a6",
+          "generated_ids_digest_b": "29bbe02976e4a70c1f2f8b32d2f78df767eff7b5a1e299afee351792c4ade770",
+          "strict_success_a": true,
+          "strict_success_b": true
+        }
+      ]
+    },
+    "B_versus_C": {
+      "calibration": [
+        {
+          "question_id": "controlled_2310bd63",
+          "arm": "k3",
+          "answer_a": "site_49a64717[E1]",
+          "answer_b": "site_49a64717 [E1]",
+          "generated_ids_digest_a": "0f42518c2b66d49595990d9e54c6870989ec30713f38c6fa3495c8f5f0b657a6",
+          "generated_ids_digest_b": "c29fd3bcd0db99ff05c87da1e05d9ea8d788e5a612f9a860f64106ce3c441b4d",
+          "strict_success_a": true,
+          "strict_success_b": true
+        },
+        {
+          "question_id": "controlled_bc770867",
+          "arm": "k3",
+          "answer_a": "site_0d31723e",
+          "answer_b": "site_0d31723e [E1]",
+          "generated_ids_digest_a": "72d5c980dfaa70d4742fc32c952ffd33a4348257457e1840a5224a6fac80d42a",
+          "generated_ids_digest_b": "8b63486aee881db7fb5b0865ed4c67c3c620eb837ff192fd2a0574b322afb8d0",
+          "strict_success_a": false,
+          "strict_success_b": false
+        },
+        {
+          "question_id": "controlled_bc770867",
+          "arm": "k4",
+          "answer_a": "site_0d31723e",
+          "answer_b": "site_0d31723e [E1]",
+          "generated_ids_digest_a": "72d5c980dfaa70d4742fc32c952ffd33a4348257457e1840a5224a6fac80d42a",
+          "generated_ids_digest_b": "8b63486aee881db7fb5b0865ed4c67c3c620eb837ff192fd2a0574b322afb8d0",
+          "strict_success_a": false,
+          "strict_success_b": false
+        },
+        {
+          "question_id": "controlled_4446bde9",
+          "arm": "k2",
+          "answer_a": "mode_05747e55 [E1]",
+          "answer_b": "mode_05747e55[E1]",
+          "generated_ids_digest_a": "b973a14bb75c98be299e15d136dd42532c4f9f2e02e67c6db1a06da0aa762e7d",
+          "generated_ids_digest_b": "e16ba370dfc84e3df99917bf7bee1687f01cd8cc160bb389f46018898172b49a",
+          "strict_success_a": true,
+          "strict_success_b": true
+        }
+      ],
+      "evaluation": [
+        {
+          "question_id": "controlled_faedc8b9",
+          "arm": "hybrid_k6",
+          "answer_a": "site_849f0372[E2]",
+          "answer_b": "[site_849f0372]",
+          "generated_ids_digest_a": "bf9edfe6e05cb010bcd4bf21e0d3e8fb56905beb77cd73f0d4b9338caf2e382c",
+          "generated_ids_digest_b": "700663e7a4fb27edf83bd5f0302e3cb314a94229b63ad12985d862e03ffd869f",
+          "strict_success_a": false,
+          "strict_success_b": false
+        },
+        {
+          "question_id": "controlled_cbfd4ba5",
+          "arm": "hybrid_k6",
+          "answer_a": "site_2749e2c9 [E2]",
+          "answer_b": "[site_2749e2c9]",
+          "generated_ids_digest_a": "c348ba31d4ec266a25e92f5c6d280bdc37bfd016d1f01032c421f26c50206055",
+          "generated_ids_digest_b": "261d6cb47b2a8869d0bc57039fbd27249d6c53413ff5dceaa9f44578de612eee",
+          "strict_success_a": true,
+          "strict_success_b": false
+        },
+        {
+          "question_id": "controlled_cbfd4ba5",
+          "arm": "hybrid_k4_reversed",
+          "answer_a": "site_73c4e597 [E1]",
+          "answer_b": "site_73c4e597",
+          "generated_ids_digest_a": "7c94773fa30cf5595fd40775b62e1f5e997a46ea3d058c75beeb920a129d3ff5",
+          "generated_ids_digest_b": "b54923b384a5b1f3589f0b2b9c45a99d6ac71f123e8e68c7a415ab70922bd55a",
+          "strict_success_a": false,
+          "strict_success_b": false
+        },
+        {
+          "question_id": "controlled_cbfd4ba5",
+          "arm": "empty",
+          "answer_a": "I do not have enough evidence.",
+          "answer_b": "I do not have enough evidence",
+          "generated_ids_digest_a": "b2a63969a6a48d4da71418a73d5a049210281d96f89c5b5f5a3555acf7f59004",
+          "generated_ids_digest_b": "dce1c24c0aa984c88031774ff95d7fe8009e6f32f1b4c0e9d6ee97aec816cc56",
+          "strict_success_a": false,
+          "strict_success_b": false
+        },
+        {
+          "question_id": "controlled_c71dcd6f",
+          "arm": "empty",
+          "answer_a": "I do not have enough evidence",
+          "answer_b": "I do not have enough evidence.",
+          "generated_ids_digest_a": "dce1c24c0aa984c88031774ff95d7fe8009e6f32f1b4c0e9d6ee97aec816cc56",
+          "generated_ids_digest_b": "b2a63969a6a48d4da71418a73d5a049210281d96f89c5b5f5a3555acf7f59004",
+          "strict_success_a": false,
+          "strict_success_b": false
+        },
+        {
+          "question_id": "controlled_7fadc16e",
+          "arm": "empty",
+          "answer_a": "I do not have enough evidence",
+          "answer_b": "I do not have enough evidence.",
+          "generated_ids_digest_a": "dce1c24c0aa984c88031774ff95d7fe8009e6f32f1b4c0e9d6ee97aec816cc56",
+          "generated_ids_digest_b": "b2a63969a6a48d4da71418a73d5a049210281d96f89c5b5f5a3555acf7f59004",
+          "strict_success_a": false,
+          "strict_success_b": false
+        }
+      ]
+    }
+  },
+  "distinct_inputs_with_output_variability": {
+    "calibration": 4,
+    "evaluation": 9
+  },
+  "unstable_original_prompt_cases": {
+    "calibration": [
+      {
+        "question_id": "controlled_2310bd63",
+        "arm": "k3",
+        "answers": {
+          "A": "site_49a64717[E1]",
+          "B": "site_49a64717[E1]",
+          "C": "site_49a64717 [E1]"
+        },
+        "strict_success": {
+          "A": true,
+          "B": true,
+          "C": true
+        },
+        "strict_task_outcome_changed": false,
+        "same_exact_original_prompt_in_all_runs": true
+      },
+      {
+        "question_id": "controlled_4446bde9",
+        "arm": "k2",
+        "answers": {
+          "A": "mode_05747e55[E1]",
+          "B": "mode_05747e55 [E1]",
+          "C": "mode_05747e55[E1]"
+        },
+        "strict_success": {
+          "A": true,
+          "B": true,
+          "C": true
+        },
+        "strict_task_outcome_changed": false,
+        "same_exact_original_prompt_in_all_runs": true
+      },
+      {
+        "question_id": "controlled_bc770867",
+        "arm": "k3",
+        "answers": {
+          "A": "site_0d31723e [E1]",
+          "B": "site_0d31723e",
+          "C": "site_0d31723e [E1]"
+        },
+        "strict_success": {
+          "A": false,
+          "B": false,
+          "C": false
+        },
+        "strict_task_outcome_changed": false,
+        "same_exact_original_prompt_in_all_runs": true
+      },
+      {
+        "question_id": "controlled_bc770867",
+        "arm": "k4",
+        "answers": {
+          "A": "site_0d31723e [E1]",
+          "B": "site_0d31723e",
+          "C": "site_0d31723e [E1]"
+        },
+        "strict_success": {
+          "A": false,
+          "B": false,
+          "C": false
+        },
+        "strict_task_outcome_changed": false,
+        "same_exact_original_prompt_in_all_runs": true
+      }
+    ],
+    "evaluation": [
+      {
+        "question_id": "controlled_52a0bb15",
+        "arm": "hybrid_k6",
+        "answers": {
+          "A": "mode_cf75c59e [E1]",
+          "B": "mode_cf75c59e[E1]",
+          "C": "mode_cf75c59e[E1]"
+        },
+        "strict_success": {
+          "A": true,
+          "B": true,
+          "C": true
+        },
+        "strict_task_outcome_changed": false,
+        "same_exact_original_prompt_in_all_runs": true
+      },
+      {
+        "question_id": "controlled_7fadc16e",
+        "arm": "empty",
+        "answers": {
+          "A": "I do not have enough evidence.",
+          "B": "I do not have enough evidence",
+          "C": "I do not have enough evidence."
+        },
+        "strict_success": {
+          "A": false,
+          "B": false,
+          "C": false
+        },
+        "strict_task_outcome_changed": false,
+        "same_exact_original_prompt_in_all_runs": true
+      },
+      {
+        "question_id": "controlled_bcb9165b",
+        "arm": "empty",
+        "answers": {
+          "A": "I do not have enough evidence.",
+          "B": "I do not have enough evidence",
+          "C": "I do not have enough evidence"
+        },
+        "strict_success": {
+          "A": false,
+          "B": false,
+          "C": false
+        },
+        "strict_task_outcome_changed": false,
+        "same_exact_original_prompt_in_all_runs": true
+      },
+      {
+        "question_id": "controlled_c71dcd6f",
+        "arm": "empty",
+        "answers": {
+          "A": "I do not have enough evidence.",
+          "B": "I do not have enough evidence",
+          "C": "I do not have enough evidence."
+        },
+        "strict_success": {
+          "A": false,
+          "B": false,
+          "C": false
+        },
+        "strict_task_outcome_changed": false,
+        "same_exact_original_prompt_in_all_runs": true
+      },
+      {
+        "question_id": "controlled_cbfd4ba5",
+        "arm": "empty",
+        "answers": {
+          "A": "I do not have enough evidence",
+          "B": "I do not have enough evidence.",
+          "C": "I do not have enough evidence"
+        },
+        "strict_success": {
+          "A": false,
+          "B": false,
+          "C": false
+        },
+        "strict_task_outcome_changed": false,
+        "same_exact_original_prompt_in_all_runs": true
+      },
+      {
+        "question_id": "controlled_cbfd4ba5",
+        "arm": "hybrid_k4_reversed",
+        "answers": {
+          "A": "site_73c4e597 [E1]",
+          "B": "site_73c4e597 [E1]",
+          "C": "site_73c4e597"
+        },
+        "strict_success": {
+          "A": false,
+          "B": false,
+          "C": false
+        },
+        "strict_task_outcome_changed": false,
+        "same_exact_original_prompt_in_all_runs": true
+      },
+      {
+        "question_id": "controlled_cbfd4ba5",
+        "arm": "hybrid_k6",
+        "answers": {
+          "A": "site_2749e2c9 [E2]",
+          "B": "site_2749e2c9 [E2]",
+          "C": "[site_2749e2c9]"
+        },
+        "strict_success": {
+          "A": true,
+          "B": true,
+          "C": false
+        },
+        "strict_task_outcome_changed": true,
+        "same_exact_original_prompt_in_all_runs": true
+      },
+      {
+        "question_id": "controlled_f0609607",
+        "arm": "hybrid_k4_reversed",
+        "answers": {
+          "A": "site_5846ffe7",
+          "B": "site_639dab67 [E4]",
+          "C": "site_639dab67 [E4]"
+        },
+        "strict_success": {
+          "A": false,
+          "B": true,
+          "C": true
+        },
+        "strict_task_outcome_changed": true,
+        "same_exact_original_prompt_in_all_runs": true
+      },
+      {
+        "question_id": "controlled_faedc8b9",
+        "arm": "hybrid_k6",
+        "answers": {
+          "A": "site_849f0372[E2]",
+          "B": "site_849f0372[E2]",
+          "C": "[site_849f0372]"
+        },
+        "strict_success": {
+          "A": false,
+          "B": false,
+          "C": false
+        },
+        "strict_task_outcome_changed": false,
+        "same_exact_original_prompt_in_all_runs": true
+      }
+    ]
+  },
+  "calibrated_k_by_run": {
+    "A": 1,
+    "B": 1,
+    "C": 1
+  },
+  "strict_success_and_citation_by_arm": {
+    "selected_k": {
+      "A": {
+        "correct": 5,
+        "correct_with_full_program_declared_citations": 3,
+        "input_tokens": 3961
+      },
+      "B": {
+        "correct": 5,
+        "correct_with_full_program_declared_citations": 3,
+        "input_tokens": 3961
+      },
+      "C": {
+        "correct": 5,
+        "correct_with_full_program_declared_citations": 3,
+        "input_tokens": 3961
+      }
+    },
+    "hybrid_k4": {
+      "A": {
+        "correct": 3,
+        "correct_with_full_program_declared_citations": 1,
+        "input_tokens": 10806
+      },
+      "B": {
+        "correct": 3,
+        "correct_with_full_program_declared_citations": 1,
+        "input_tokens": 10806
+      },
+      "C": {
+        "correct": 3,
+        "correct_with_full_program_declared_citations": 1,
+        "input_tokens": 10806
+      }
+    },
+    "hybrid_k6": {
+      "A": {
+        "correct": 3,
+        "correct_with_full_program_declared_citations": 1,
+        "input_tokens": 15463
+      },
+      "B": {
+        "correct": 3,
+        "correct_with_full_program_declared_citations": 1,
+        "input_tokens": 15463
+      },
+      "C": {
+        "correct": 2,
+        "correct_with_full_program_declared_citations": 0,
+        "input_tokens": 15463
+      }
+    },
+    "hybrid_k4_reversed": {
+      "A": {
+        "correct": 2,
+        "correct_with_full_program_declared_citations": 0,
+        "input_tokens": 10806
+      },
+      "B": {
+        "correct": 3,
+        "correct_with_full_program_declared_citations": 1,
+        "input_tokens": 10806
+      },
+      "C": {
+        "correct": 3,
+        "correct_with_full_program_declared_citations": 1,
+        "input_tokens": 10806
+      }
+    },
+    "single_hop": {
+      "A": {
+        "correct": 4,
+        "correct_with_full_program_declared_citations": 4,
+        "input_tokens": 4575
+      },
+      "B": {
+        "correct": 4,
+        "correct_with_full_program_declared_citations": 4,
+        "input_tokens": 4575
+      },
+      "C": {
+        "correct": 4,
+        "correct_with_full_program_declared_citations": 4,
+        "input_tokens": 4575
+      }
+    },
+    "entity_time": {
+      "A": {
+        "correct": 8,
+        "correct_with_full_program_declared_citations": 4,
+        "input_tokens": 5752
+      },
+      "B": {
+        "correct": 8,
+        "correct_with_full_program_declared_citations": 4,
+        "input_tokens": 5752
+      },
+      "C": {
+        "correct": 8,
+        "correct_with_full_program_declared_citations": 4,
+        "input_tokens": 5752
+      }
+    },
+    "organized": {
+      "A": {
+        "correct": 8,
+        "correct_with_full_program_declared_citations": 4,
+        "input_tokens": 5179
+      },
+      "B": {
+        "correct": 8,
+        "correct_with_full_program_declared_citations": 4,
+        "input_tokens": 5179
+      },
+      "C": {
+        "correct": 8,
+        "correct_with_full_program_declared_citations": 4,
+        "input_tokens": 5179
+      }
+    },
+    "program_support": {
+      "A": {
+        "correct": 8,
+        "correct_with_full_program_declared_citations": 4,
+        "input_tokens": 5179
+      },
+      "B": {
+        "correct": 8,
+        "correct_with_full_program_declared_citations": 4,
+        "input_tokens": 5179
+      },
+      "C": {
+        "correct": 8,
+        "correct_with_full_program_declared_citations": 4,
+        "input_tokens": 5179
+      }
+    },
+    "empty": {
+      "A": {
+        "correct": 0,
+        "correct_with_full_program_declared_citations": 0,
+        "input_tokens": 1630
+      },
+      "B": {
+        "correct": 0,
+        "correct_with_full_program_declared_citations": 0,
+        "input_tokens": 1630
+      },
+      "C": {
+        "correct": 0,
+        "correct_with_full_program_declared_citations": 0,
+        "input_tokens": 1630
+      }
+    }
+  },
+  "all_runs_exact_output_equivalent": false,
+  "independent_new_source_families": 0,
+  "independent_semantic_citation_adjudication": false,
+  "parametric_training_performed": false,
+  "organization_extra_task_success_over_entity_time": {
+    "A": 0,
+    "B": 0,
+    "C": 0
+  },
+  "production_accepted": false,
+  "statistical_superiority": false,
+  "disposition": "NO-GO: no incremental organizer task/citation-chain gain over full-path filtering on exposed authored tasks"
+}

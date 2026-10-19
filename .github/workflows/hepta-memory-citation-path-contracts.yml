@@ -1,0 +1,54 @@
+name: MemoryCell formal citation path contracts
+on:
+  push:
+    branches:
+      - "codex/memory-cell-evidence-20261008"
+    paths:
+      - "scripts/memory_cell/historical_event_citation_chain.py"
+      - "scripts/memory_cell/test_historical_event_citation_chain.py"
+      - ".github/workflows/hepta-memory-citation-path-contracts.yml"
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  formal-paths:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      PYTHONPATH: scripts/memory_cell
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - name: Preserve exact source identity
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/formal-path-review
+          git rev-parse HEAD > /tmp/formal-path-review/tested-commit.txt
+          git rev-parse HEAD^{tree} > /tmp/formal-path-review/tested-tree.txt
+          cp scripts/memory_cell/historical_event_citation_chain.py /tmp/formal-path-review/
+          cp scripts/memory_cell/test_historical_event_citation_chain.py /tmp/formal-path-review/
+      - name: Run actual citation chain tests including unrelated and dangling labels
+        run: |
+          set -euo pipefail
+          python3 -m unittest discover -s scripts/memory_cell -p test_historical_event_citation_chain.py -v 2>&1 | tee /tmp/formal-path-review/tests.log
+      - name: Enforce source formatting without weakening repository gates
+        run: |
+          set -euo pipefail
+          python3 -m pip install uv==0.8.22
+          uv run --frozen --project scripts ruff format --check scripts/memory_cell/historical_event_citation_chain.py scripts/memory_cell/test_historical_event_citation_chain.py 2>&1 | tee /tmp/formal-path-review/format.log
+      - name: Preserve failure evidence and exact source hashes
+        if: always()
+        run: |
+          set -euo pipefail
+          if command -v uv >/dev/null 2>&1; then
+            uv run --frozen --project scripts ruff format --diff scripts/memory_cell/historical_event_citation_chain.py scripts/memory_cell/test_historical_event_citation_chain.py > /tmp/formal-path-review/format.patch 2>&1 || true
+          fi
+          (cd /tmp/formal-path-review && find . -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS)
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: memory-formal-citation-path-contracts
+          path: /tmp/formal-path-review
+          if-no-files-found: error

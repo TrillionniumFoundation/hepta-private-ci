@@ -1,0 +1,1005 @@
+{
+  "schema": "hepta.memorycell.real-project-pr-source-cut.v1",
+  "source_cut_utc": "2026-10-12T09:45:00Z",
+  "policy": {
+    "source_type": "public-github-open-pull-requests",
+    "source_content": "immutable_git_commit_trees_and_file_blob_refs",
+    "candidate_selection": "two_updated_before_cut_per_project_fixed_before_review",
+    "full_code_and_human_label_not_in_this_manifest": true,
+    "published_source_pretraining_contamination_unknown": true,
+    "reopened_pr_chronology_not_certified": true
+  },
+  "partitions": {
+    "rust-lang/rust": "train",
+    "kubernetes/kubernetes": "selection",
+    "numpy/numpy": "evaluation",
+    "astral-sh/ruff": "evaluation"
+  },
+  "task_types": [
+    "change_intent",
+    "verification_gap"
+  ],
+  "no_answers_or_labels": true,
+  "independent_review_certified": false,
+  "prospective_outcomes_observed": false,
+  "task_improvement_established": false,
+  "model_executions": 0,
+  "production_accepted": false,
+  "cases": [
+    {
+      "repo": "rust-lang/rust",
+      "partition": "train",
+      "pull_number": 164037,
+      "pull_url": "https://github.com/rust-lang/rust/pull/164037",
+      "title": "Restrict application of optimization attributes from instance",
+      "created_at": "2026-10-09T13:04:09Z",
+      "last_updated_at": "2026-10-12T09:35:58Z",
+      "state_at_capture": "open",
+      "head_sha": "8a081e21c734fa76b71931468e22bf8e1c34505f",
+      "tree_sha": "cc12aec03fcddeb27caef2f3a5cb8ba32537232b",
+      "parents": [
+        "76c90957b7e422c4b9c45192b0197214d7de5a54"
+      ],
+      "head_committed_at": "2026-10-09T14:52:06Z",
+      "commits": [
+        {
+          "sha": "8a081e21c734fa76b71931468e22bf8e1c34505f",
+          "committed_at": "2026-10-09T14:52:06Z",
+          "summary": "Restrict application of optimization attributes from instance"
+        }
+      ],
+      "files": [
+        {
+          "path": "compiler/rustc_ty_utils/src/abi.rs",
+          "status": "modified",
+          "blob_sha": "5c72f6cba398973bd1617b06ff7bf1aa0c7c9b72",
+          "additions": 31,
+          "deletions": 33
+        },
+        {
+          "path": "tests/codegen-llvm/virtual-attrs.rs",
+          "status": "added",
+          "blob_sha": "1cfaee913dd5c65e859870f655ea0e5396f96a1f",
+          "additions": 20,
+          "deletions": 0
+        }
+      ],
+      "description_sha256": "9c3fb31529443fbe64ebca8158e1d5c7642016145188d74790cce57399b8e699"
+    },
+    {
+      "repo": "rust-lang/rust",
+      "partition": "train",
+      "pull_number": 162467,
+      "pull_url": "https://github.com/rust-lang/rust/pull/162467",
+      "title": "handle trait solver overflow when checking mono item instantiability",
+      "created_at": "2026-09-08T10:36:35Z",
+      "last_updated_at": "2026-10-12T09:33:59Z",
+      "state_at_capture": "open",
+      "head_sha": "13545d4f9b76ea73191de759e33256eb3ce4ec31",
+      "tree_sha": "3b567ce191cebea4916d5f1c93d8b1161f705832",
+      "parents": [
+        "4359fd9a225a43083afda0e60531a58825dd47ff"
+      ],
+      "head_committed_at": "2026-10-12T09:09:38Z",
+      "commits": [
+        {
+          "sha": "ab15de44d9c495937e33845a57eda270b79d0038",
+          "committed_at": "2026-10-10T10:09:04Z",
+          "summary": "avoid collecting uninstantiable mono items"
+        },
+        {
+          "sha": "1e3c4d3dc88cce406f94ca3bf6e1eb0728e040ca",
+          "committed_at": "2026-10-10T10:09:04Z",
+          "summary": "handle trait solver overflow during mono item collection"
+        },
+        {
+          "sha": "4359fd9a225a43083afda0e60531a58825dd47ff",
+          "committed_at": "2026-10-10T10:09:05Z",
+          "summary": "keep symbol exports in sync with mono item instantiability"
+        },
+        {
+          "sha": "13545d4f9b76ea73191de759e33256eb3ce4ec31",
+          "committed_at": "2026-10-12T09:09:38Z",
+          "summary": "report trait solver overflow during codegen"
+        }
+      ],
+      "files": [
+        {
+          "path": "compiler/rustc_codegen_ssa/src/back/symbol_export.rs",
+          "status": "modified",
+          "blob_sha": "6cdc8509ac418f45a8dc62191373a92c6b06fcf9",
+          "additions": 11,
+          "deletions": 0
+        },
+        {
+          "path": "compiler/rustc_traits/src/codegen.rs",
+          "status": "modified",
+          "blob_sha": "891043c05987c4625682693f6ee31b72d0c06c90",
+          "additions": 26,
+          "deletions": 8
+        },
+        {
+          "path": "tests/ui/codegen/impossible-where-clause-symbol-export.rs",
+          "status": "added",
+          "blob_sha": "67a185c609106e9133a1f96e54809a03d9531676",
+          "additions": 12,
+          "deletions": 0
+        },
+        {
+          "path": "tests/ui/codegen/normalization-overflow/recursion-issue-92004.current.stderr",
+          "status": "renamed",
+          "blob_sha": "74a2467fc96ef53d9a489e66bfdc76659cef1b0d",
+          "additions": 1,
+          "deletions": 1
+        },
+        {
+          "path": "tests/ui/codegen/normalization-overflow/recursion-issue-92004.next.stderr",
+          "status": "added",
+          "blob_sha": "7db013bad3dab3f65a570c1c66c79464803a749a",
+          "additions": 33,
+          "deletions": 0
+        },
+        {
+          "path": "tests/ui/codegen/normalization-overflow/recursion-issue-92004.rs",
+          "status": "modified",
+          "blob_sha": "4b1a952f39981c265e96f6fface53baba7a2d62f",
+          "additions": 7,
+          "deletions": 1
+        },
+        {
+          "path": "tests/ui/traits/next-solver/corecursive-trait-solver-issue-162343-codegen-overflow.rs",
+          "status": "added",
+          "blob_sha": "aef7a6a2314a3604d8efb4f6039602ab7636eed8",
+          "additions": 25,
+          "deletions": 0
+        },
+        {
+          "path": "tests/ui/traits/next-solver/corecursive-trait-solver-issue-162343-codegen-overflow.stderr",
+          "status": "added",
+          "blob_sha": "881f4cc9f101c7cee046dc03d5ff97144fb3070e",
+          "additions": 11,
+          "deletions": 0
+        }
+      ],
+      "description_sha256": "f49ef1d710f7474c4ce252ca312430f78f7eeec72d82818a9cd7b0956bce41be"
+    },
+    {
+      "repo": "kubernetes/kubernetes",
+      "partition": "selection",
+      "pull_number": 142136,
+      "pull_url": "https://github.com/kubernetes/kubernetes/pull/142136",
+      "title": "Fix assume performance penalty for single podgroups and composite podgroups",
+      "created_at": "2026-09-16T10:20:27Z",
+      "last_updated_at": "2026-10-12T09:44:09Z",
+      "state_at_capture": "open",
+      "head_sha": "04c3e10a9fc4dde9a9c9ccd06ebc220ec38381de",
+      "tree_sha": "eca421aad81b0b3dca31a7377fc11430a5dc2bb6",
+      "parents": [
+        "d371e3b3879f8bfea03ac8309806c34e33103946"
+      ],
+      "head_committed_at": "2026-10-12T09:36:09Z",
+      "commits": [
+        {
+          "sha": "04c3e10a9fc4dde9a9c9ccd06ebc220ec38381de",
+          "committed_at": "2026-10-12T09:36:09Z",
+          "summary": "Fix assume performance penalty for single podgroups and composite podgroups scheduling"
+        }
+      ],
+      "files": [
+        {
+          "path": "pkg/scheduler/schedule_one_podgroup.go",
+          "status": "modified",
+          "blob_sha": "74ca945c2e928578b29463718c9ff4e0eff1a459",
+          "additions": 38,
+          "deletions": 45
+        },
+        {
+          "path": "pkg/scheduler/schedule_one_podgroup_test.go",
+          "status": "modified",
+          "blob_sha": "6076c7ba07b2702e05556f7a2c5ef183127aaa66",
+          "additions": 286,
+          "deletions": 12
+        }
+      ],
+      "description_sha256": "d3637526a38a212eab610a0f4d4213c726baa5b145c21cc21d696b66117c3f69"
+    },
+    {
+      "repo": "kubernetes/kubernetes",
+      "partition": "selection",
+      "pull_number": 142932,
+      "pull_url": "https://github.com/kubernetes/kubernetes/pull/142932",
+      "title": "Implement pod group preemption",
+      "created_at": "2026-10-12T09:09:42Z",
+      "last_updated_at": "2026-10-12T09:42:35Z",
+      "state_at_capture": "open",
+      "head_sha": "99540e10a793af2991d34fb15dcb10fd28363ac8",
+      "tree_sha": "2db80710c40beadba28d0834323f0aa73752a559",
+      "parents": [
+        "e675a222e58ea7f38c2930c02d624d7fea7cf6db"
+      ],
+      "head_committed_at": "2026-10-12T08:31:45Z",
+      "commits": [
+        {
+          "sha": "09b3e27bdf91f008162458d3d6ab37af9407dfff",
+          "committed_at": "2026-10-09T14:08:08Z",
+          "summary": "Add PodGroupPreemptionState to track victims during PodGroup preemption"
+        },
+        {
+          "sha": "46fd2a48bc856089745c78230335f82c6dbc2586",
+          "committed_at": "2026-10-09T14:08:08Z",
+          "summary": "Add PodGroup preemption scoring and reservation in DefaultPreemption"
+        },
+        {
+          "sha": "a744dda8c17e3a20e278072d91fbbdc59153a9b7",
+          "committed_at": "2026-10-12T08:31:44Z",
+          "summary": "Plumb PodGroupPreemptionState via PodGroupCycleState"
+        },
+        {
+          "sha": "60a65a4714087f4cf0a420c43f86a4eff47c69ec",
+          "committed_at": "2026-10-12T08:31:44Z",
+          "summary": "Set DefaultPreemption Score weight to 100 in default plugin configuration"
+        },
+        {
+          "sha": "3aafb9d54835baa9a7a8928233cf15cfbd5bf827",
+          "committed_at": "2026-10-12T08:31:44Z",
+          "summary": "Disable opportunistic batching during PodGroupPostFilter"
+        },
+        {
+          "sha": "e675a222e58ea7f38c2930c02d624d7fea7cf6db",
+          "committed_at": "2026-10-12T08:31:44Z",
+          "summary": "Add integration tests for PodGroup preemption scoring"
+        },
+        {
+          "sha": "99540e10a793af2991d34fb15dcb10fd28363ac8",
+          "committed_at": "2026-10-12T08:31:45Z",
+          "summary": "Wrap custom-named DefaultPreemption plugins in integration tests"
+        }
+      ],
+      "files": [
+        {
+          "path": "cmd/kube-scheduler/app/server_test.go",
+          "status": "modified",
+          "blob_sha": "11b8ffb4d952047b25d1e61e8afb613e8e9c89c0",
+          "additions": 7,
+          "deletions": 0
+        },
+        {
+          "path": "pkg/scheduler/apis/config/testing/defaults/defaults.go",
+          "status": "modified",
+          "blob_sha": "e937cc34cd72dc702b5e4fa8c6b444b32b19ea91",
+          "additions": 4,
+          "deletions": 1
+        },
+        {
+          "path": "pkg/scheduler/apis/config/v1/default_plugins.go",
+          "status": "modified",
+          "blob_sha": "50981cc4c7f86ea492b914b3a2ed80fdfd4459f8",
+          "additions": 1,
+          "deletions": 1
+        },
+        {
+          "path": "pkg/scheduler/apis/config/v1/default_plugins_test.go",
+          "status": "modified",
+          "blob_sha": "9135022252d9676d91d18af891ff8dfafbf4de6f",
+          "additions": 5,
+          "deletions": 5
+        },
+        {
+          "path": "pkg/scheduler/apis/config/v1/defaults_test.go",
+          "status": "modified",
+          "blob_sha": "0f8a8ee28930b0c4f9c7199415b133c4069dd6b7",
+          "additions": 1,
+          "deletions": 1
+        },
+        {
+          "path": "pkg/scheduler/framework/plugins/defaultpreemption/default_preemption.go",
+          "status": "modified",
+          "blob_sha": "c3838537817d9c4ac8baf6003ed725c675a7787c",
+          "additions": 192,
+          "deletions": 4
+        },
+        {
+          "path": "pkg/scheduler/framework/plugins/defaultpreemption/default_preemption_test.go",
+          "status": "modified",
+          "blob_sha": "a2de7a31f0fb91ad03b0be8c2296d931a17dae4f",
+          "additions": 186,
+          "deletions": 1
+        },
+        {
+          "path": "pkg/scheduler/framework/preemption/podgrouppreemption.go",
+          "status": "modified",
+          "blob_sha": "d99360ba2cfa3b912b8365c070474b548de9d035",
+          "additions": 4,
+          "deletions": 3
+        },
+        {
+          "path": "pkg/scheduler/framework/preemption/podgrouppreemption_state.go",
+          "status": "added",
+          "blob_sha": "839bfd143133181f93b59d6fe300f34b7f0df9de",
+          "additions": 129,
+          "deletions": 0
+        },
+        {
+          "path": "pkg/scheduler/framework/preemption/podgrouppreemption_state_test.go",
+          "status": "added",
+          "blob_sha": "bd67c2cc8f5d868279e8199e95e1074694a118f7",
+          "additions": 105,
+          "deletions": 0
+        },
+        {
+          "path": "pkg/scheduler/framework/preemption/podgrouppreemption_test.go",
+          "status": "modified",
+          "blob_sha": "1bb34579396e13efb19045b82d6ad7ace13aba78",
+          "additions": 4,
+          "deletions": 4
+        },
+        {
+          "path": "pkg/scheduler/framework/preemption/util.go",
+          "status": "modified",
+          "blob_sha": "d4d07b4807dc4f71161c007730db993b4692a868",
+          "additions": 51,
+          "deletions": 13
+        },
+        {
+          "path": "pkg/scheduler/framework/preemption/util_test.go",
+          "status": "modified",
+          "blob_sha": "fa068d6280775f89ae50b21c04471b7d54dd9a26",
+          "additions": 92,
+          "deletions": 0
+        },
+        {
+          "path": "pkg/scheduler/framework/runtime/batch.go",
+          "status": "modified",
+          "blob_sha": "80c6a5dfd23bad2ce560a64c6c45a08eed4d9162",
+          "additions": 14,
+          "deletions": 0
+        },
+        {
+          "path": "pkg/scheduler/framework/runtime/batch_test.go",
+          "status": "modified",
+          "blob_sha": "f3849bff8f7b8e0ce6ad2e68b09426615e7feabc",
+          "additions": 52,
+          "deletions": 0
+        },
+        {
+          "path": "pkg/scheduler/framework/runtime/framework.go",
+          "status": "modified",
+          "blob_sha": "51a35f48f9fa243ab055ce80a69b92cb4eef8eb6",
+          "additions": 7,
+          "deletions": 0
+        },
+        {
+          "path": "pkg/scheduler/schedule_one_podgroup.go",
+          "status": "modified",
+          "blob_sha": "2da798d134bc2bb76158be075ac6198b3e68f80f",
+          "additions": 1,
+          "deletions": 1
+        },
+        {
+          "path": "test/integration/scheduler/nominated_node_name/nominated_node_name_test.go",
+          "status": "modified",
+          "blob_sha": "4e3334b4228e9a832879c34a8c3e05b2d70dfc44",
+          "additions": 12,
+          "deletions": 1
+        },
+        {
+          "path": "test/integration/scheduler/preemption/asyncframework/async_framework.go",
+          "status": "modified",
+          "blob_sha": "b0e071e6ae37a9de84281b6a0cf112e15970b496",
+          "additions": 12,
+          "deletions": 1
+        },
+        {
+          "path": "test/integration/scheduler/preemption/podgroup/podgrouppreemption_test.go",
+          "status": "modified",
+          "blob_sha": "a70ca450285d30e41d61a904ace8e0aa57d20a49",
+          "additions": 95,
+          "deletions": 6
+        }
+      ],
+      "description_sha256": "7c14edfe249c70158e4be03ebf5487954bb902d6bfdff321dbd5d8c276780313"
+    },
+    {
+      "repo": "numpy/numpy",
+      "partition": "evaluation",
+      "pull_number": 32523,
+      "pull_url": "https://github.com/numpy/numpy/pull/32523",
+      "title": "ENH: Fast dispatcher",
+      "created_at": "2026-09-06T20:18:56Z",
+      "last_updated_at": "2026-10-12T08:46:38Z",
+      "state_at_capture": "open",
+      "head_sha": "b9a2bf9f6ad801fa97eeaaf2a8a15aee405a951b",
+      "tree_sha": "f1d0252d856ec812eb1938864dd0568b25b96b00",
+      "parents": [
+        "538d1df071cccfa444dcbb9f8772e9cfcde840e6",
+        "4ac72345a07fd760e6b595345937773ba6979bcc"
+      ],
+      "head_committed_at": "2026-09-21T07:51:04Z",
+      "commits": [
+        {
+          "sha": "54664d5a9870d0a22a365d6d300d88d0bd323b7f",
+          "committed_at": "2026-09-06T19:26:54Z",
+          "summary": "ENH: Tuple-spec array_function_dispatch with C-level fast paths"
+        },
+        {
+          "sha": "b73540aaebc153da783bf4f4291b142b8bf1219a",
+          "committed_at": "2026-09-06T19:26:54Z",
+          "summary": "MAINT: Convert remaining array_function_dispatch users to tuple-specs"
+        },
+        {
+          "sha": "340fbd330eda9da2325f6a6cc29ad232d9514886",
+          "committed_at": "2026-09-06T20:43:34Z",
+          "summary": "TYP: mark unique_all/counts/inverse/values x parameter positional-only"
+        },
+        {
+          "sha": "b81fe86af700fa58e69c23af4ed2a4fb3e792f8c",
+          "committed_at": "2026-09-11T10:11:02Z",
+          "summary": "Merge upstream/main into fast_dispatcher_loop_fastpath"
+        },
+        {
+          "sha": "8037eb91c8fbc7006854e4294575f84320044d55",
+          "committed_at": "2026-09-11T10:43:00Z",
+          "summary": "STY: fit _REDUCE_SLOT_NAMES on one line"
+        },
+        {
+          "sha": "b0e9ebf46eab8c765468c798aa4624b0fa9d4321",
+          "committed_at": "2026-09-11T11:49:56Z",
+          "summary": "MAINT: reject a forward default that contradicts the signature"
+        },
+        {
+          "sha": "dd814cbb5b94ddfa81877e976dbb7153e65e6381",
+          "committed_at": "2026-09-11T12:04:50Z",
+          "summary": "MAINT: drop the no-op set_module on np.max"
+        },
+        {
+          "sha": "df72e2d3c6b8d379397c4c767c1fc673cce31c54",
+          "committed_at": "2026-09-12T21:04:21Z",
+          "summary": "MAINT: address review of the dispatcher fast paths"
+        },
+        {
+          "sha": "7a1dd0e843f76ec6d1b48ab2ec6bde55316b3bdc",
+          "committed_at": "2026-09-12T21:04:21Z",
+          "summary": "MAINT: validate forwarded args with a per-slot check table"
+        },
+        {
+          "sha": "22879d9e52a89b59101c04a8b6e30ac5287a8f90",
+          "committed_at": "2026-09-12T21:04:21Z",
+          "summary": "MAINT: check only passed forward args, with two slot masks"
+        },
+        {
+          "sha": "19e4cbb041aae1131223c1c6f9c6c5048cff725c",
+          "committed_at": "2026-09-13T20:29:49Z",
+          "summary": "MAINT: use inspect.signature in _signature_items, trim comments"
+        },
+        {
+          "sha": "f1771dc6dcaae3d8da0647e829e4d62857650de0",
+          "committed_at": "2026-09-13T20:41:27Z",
+          "summary": "Merge remote-tracking branch 'origin/main' into fast_dispatcher_loop_fastpath"
+        },
+        {
+          "sha": "538d1df071cccfa444dcbb9f8772e9cfcde840e6",
+          "committed_at": "2026-09-17T19:17:06Z",
+          "summary": "Merge branch 'main' into fast_dispatcher_loop_fastpath"
+        },
+        {
+          "sha": "b9a2bf9f6ad801fa97eeaaf2a8a15aee405a951b",
+          "committed_at": "2026-09-21T07:51:04Z",
+          "summary": "Merge branch 'main' into fast_dispatcher_loop_fastpath"
+        }
+      ],
+      "files": [
+        {
+          "path": "doc/release/upcoming_changes/31943.change.rst",
+          "status": "added",
+          "blob_sha": "f928e72ec38683c751de54c02ee78befa798b87d",
+          "additions": 6,
+          "deletions": 0
+        },
+        {
+          "path": "numpy/_core/defchararray.py",
+          "status": "modified",
+          "blob_sha": "14af28ce5afd8eec4b25eca2d1350b3cc0717285",
+          "additions": 6,
+          "deletions": 10
+        },
+        {
+          "path": "numpy/_core/fromnumeric.py",
+          "status": "modified",
+          "blob_sha": "97418294a6278ed48d6a07c9ed5d92ded199f16b",
+          "additions": 78,
+          "deletions": 254
+        },
+        {
+          "path": "numpy/_core/function_base.py",
+          "status": "modified",
+          "blob_sha": "a6e711934a9fc75a07699fc2a99100f24e88f848",
+          "additions": 3,
+          "deletions": 18
+        },
+        {
+          "path": "numpy/_core/numeric.py",
+          "status": "modified",
+          "blob_sha": "805cee604f271d9c2eaadeaa6639f81bff1fb98e",
+          "additions": 19,
+          "deletions": 108
+        },
+        {
+          "path": "numpy/_core/overrides.py",
+          "status": "modified",
+          "blob_sha": "2d56011b60e176b2398e4e2c25a95e6b3f1428ad",
+          "additions": 272,
+          "deletions": 43
+        },
+        {
+          "path": "numpy/_core/overrides.pyi",
+          "status": "modified",
+          "blob_sha": "1f1fcf4a3ea9aafb5b14f96853326596ffe9254c",
+          "additions": 5,
+          "deletions": 7
+        },
+        {
+          "path": "numpy/_core/shape_base.py",
+          "status": "modified",
+          "blob_sha": "d3e975704583d33b651e8118e0f63346b1aef548",
+          "additions": 1,
+          "deletions": 3
+        },
+        {
+          "path": "numpy/_core/src/multiarray/arrayfunction_override.c",
+          "status": "modified",
+          "blob_sha": "ece890e4a8251c91aae68ff14d833c6743d6b583",
+          "additions": 557,
+          "deletions": 147
+        },
+        {
+          "path": "numpy/_core/strings.py",
+          "status": "modified",
+          "blob_sha": "3ad54a2a21958ebaccdbc82d3c32723fc2cd8f59",
+          "additions": 22,
+          "deletions": 74
+        },
+        {
+          "path": "numpy/_core/tests/test_overrides.py",
+          "status": "modified",
+          "blob_sha": "26bbf9664ee644b7f7251ac3789a29154d065aa4",
+          "additions": 518,
+          "deletions": 30
+        },
+        {
+          "path": "numpy/fft/_pocketfft.py",
+          "status": "modified",
+          "blob_sha": "adaeccf0706af5c9bacad77b851d8f3e0e539030",
+          "additions": 14,
+          "deletions": 22
+        },
+        {
+          "path": "numpy/lib/_arraysetops_impl.py",
+          "status": "modified",
+          "blob_sha": "02e36b7533d9acabf618f8d7431f59433093a601",
+          "additions": 15,
+          "deletions": 63
+        },
+        {
+          "path": "numpy/lib/_arraysetops_impl.pyi",
+          "status": "modified",
+          "blob_sha": "2472505a12839ccf3757e4843a2b371eaaa6ede6",
+          "additions": 8,
+          "deletions": 8
+        },
+        {
+          "path": "numpy/lib/_function_base_impl.py",
+          "status": "modified",
+          "blob_sha": "9b1b452f2e572d4718f32c8e63076ec1f88e3473",
+          "additions": 22,
+          "deletions": 116
+        },
+        {
+          "path": "numpy/lib/_histograms_impl.py",
+          "status": "modified",
+          "blob_sha": "26eef1477f5a8a15d49235cd167d537bbd01777f",
+          "additions": 2,
+          "deletions": 11
+        },
+        {
+          "path": "numpy/lib/_index_tricks_impl.py",
+          "status": "modified",
+          "blob_sha": "ffe8a6207c3a4d3262fd6700a52d660326207046",
+          "additions": 1,
+          "deletions": 5
+        },
+        {
+          "path": "numpy/lib/_nanfunctions_impl.py",
+          "status": "modified",
+          "blob_sha": "94f8e451a0740c1bab81ecadbac9df5975b1b523",
+          "additions": 14,
+          "deletions": 83
+        },
+        {
+          "path": "numpy/lib/_npyio_impl.py",
+          "status": "modified",
+          "blob_sha": "78f3bce80fc73c8f6f2dce28a4390b1c295f2576",
+          "additions": 2,
+          "deletions": 12
+        },
+        {
+          "path": "numpy/lib/_polynomial_impl.py",
+          "status": "modified",
+          "blob_sha": "77a3701a9c3dd6715c486369a57cf565269d8f50",
+          "additions": 8,
+          "deletions": 32
+        },
+        {
+          "path": "numpy/lib/_scimath_impl.py",
+          "status": "modified",
+          "blob_sha": "106a5b8229c017e50354d33cf11dcc4ae14f5658",
+          "additions": 9,
+          "deletions": 21
+        },
+        {
+          "path": "numpy/lib/_shape_base_impl.py",
+          "status": "modified",
+          "blob_sha": "e45d2e2e3b66597d6560e62600b9ff3f02444490",
+          "additions": 11,
+          "deletions": 47
+        },
+        {
+          "path": "numpy/lib/_twodim_base_impl.py",
+          "status": "modified",
+          "blob_sha": "d5a111683177b5511ff269901f09664046bf7b82",
+          "additions": 9,
+          "deletions": 29
+        },
+        {
+          "path": "numpy/lib/_type_check_impl.py",
+          "status": "modified",
+          "blob_sha": "ec2f8521478f7dbda485a35e203f2ae219699860",
+          "additions": 8,
+          "deletions": 27
+        },
+        {
+          "path": "numpy/lib/recfunctions.py",
+          "status": "modified",
+          "blob_sha": "125c0af4276d65d89247aefbce527588bfe37719",
+          "additions": 13,
+          "deletions": 64
+        },
+        {
+          "path": "numpy/linalg/_linalg.py",
+          "status": "modified",
+          "blob_sha": "b4578d41c3a596ec7636bdbdf9c45547e1d796a8",
+          "additions": 30,
+          "deletions": 112
+        }
+      ],
+      "description_sha256": "51a0fbf1538303cf27a387db89142d6ceda9945bffadb08148e854dc581ae26d"
+    },
+    {
+      "repo": "numpy/numpy",
+      "partition": "evaluation",
+      "pull_number": 32910,
+      "pull_url": "https://github.com/numpy/numpy/pull/32910",
+      "title": "ENH: Release GIL in np.repeat when Python API is not needed",
+      "created_at": "2026-10-06T17:41:12Z",
+      "last_updated_at": "2026-10-11T23:16:42Z",
+      "state_at_capture": "open",
+      "head_sha": "8807f4af3d58b4a6c883e8f3e66764696ee4bd46",
+      "tree_sha": "28f8a18b0b6e0c0cf5e4d4ba7186e7abc3dd7aca",
+      "parents": [
+        "13f325849265da02b8068b358457919e4f7d3dc6"
+      ],
+      "head_committed_at": "2026-10-11T23:16:27Z",
+      "commits": [
+        {
+          "sha": "509e0cd9d85eb72dcafea2413f76c63414faf181",
+          "committed_at": "2026-10-11T15:59:28Z",
+          "summary": "Add benchmark for PyArray_Repeat"
+        },
+        {
+          "sha": "fcd419a9f331d7c2904a0bbf67f18f81cd7ba15e",
+          "committed_at": "2026-10-11T15:59:28Z",
+          "summary": "Update benchmark based on review comments"
+        },
+        {
+          "sha": "72df745cd422c9a4b65a34d4e4cade87a35f04eb",
+          "committed_at": "2026-10-11T15:59:28Z",
+          "summary": "ENH: Release GIL in np.repeat when items are memcpyable"
+        },
+        {
+          "sha": "13f325849265da02b8068b358457919e4f7d3dc6",
+          "committed_at": "2026-10-11T15:59:28Z",
+          "summary": "Release GIL just like npy_fasttake_impl does"
+        },
+        {
+          "sha": "8807f4af3d58b4a6c883e8f3e66764696ee4bd46",
+          "committed_at": "2026-10-11T23:16:27Z",
+          "summary": "Add release note"
+        }
+      ],
+      "files": [
+        {
+          "path": "benchmarks/benchmarks/bench_itemselection.py",
+          "status": "modified",
+          "blob_sha": "5e20089db80c7a2ff08a5ad2afd96633baf4ebae",
+          "additions": 16,
+          "deletions": 0
+        },
+        {
+          "path": "doc/release/upcoming_changes/32910.performance.rst",
+          "status": "added",
+          "blob_sha": "01aa0eb8296cbbae95d014fdc43722b617981794",
+          "additions": 1,
+          "deletions": 0
+        },
+        {
+          "path": "numpy/_core/src/multiarray/item_selection.c",
+          "status": "modified",
+          "blob_sha": "f34132b940bfab549ca073a0208469f361f21158",
+          "additions": 9,
+          "deletions": 2
+        }
+      ],
+      "description_sha256": "e9ebc4d800e254cb48296bd752b027d86e4aabd9fecd6aa5105b0c9900a4caef"
+    },
+    {
+      "repo": "astral-sh/ruff",
+      "partition": "evaluation",
+      "pull_number": 29127,
+      "pull_url": "https://github.com/astral-sh/ruff/pull/29127",
+      "title": "[ty] Enforce nonempty generic contexts",
+      "created_at": "2026-10-06T10:54:17Z",
+      "last_updated_at": "2026-10-12T08:22:49Z",
+      "state_at_capture": "open",
+      "head_sha": "48eaf622313547d621c6bdafe4cad91f84070144",
+      "tree_sha": "f57eb01a6a7c2e8acc1a31961682be415459aaa5",
+      "parents": [
+        "57a6e86342a46844dfbc8f039273abbc718f2502"
+      ],
+      "head_committed_at": "2026-10-09T10:32:17Z",
+      "commits": [
+        {
+          "sha": "48eaf622313547d621c6bdafe4cad91f84070144",
+          "committed_at": "2026-10-09T10:32:17Z",
+          "summary": "[ty] Make GenericContext nonempty by construction"
+        }
+      ],
+      "files": [
+        {
+          "path": "crates/ty_python_semantic/resources/mdtest/generics/legacy/classes.md",
+          "status": "modified",
+          "blob_sha": "18b33b734f3f277afe38e9992c2e06e17d9a8bc7",
+          "additions": 5,
+          "deletions": 0
+        },
+        {
+          "path": "crates/ty_python_semantic/src/types.rs",
+          "status": "modified",
+          "blob_sha": "ffe01511ad6458f30df7eee4215efe8410eb0d3d",
+          "additions": 41,
+          "deletions": 32
+        },
+        {
+          "path": "crates/ty_python_semantic/src/types/class/static_literal.rs",
+          "status": "modified",
+          "blob_sha": "4a4c0f9d036653538c5256da3f210d0b49916916",
+          "additions": 51,
+          "deletions": 11
+        },
+        {
+          "path": "crates/ty_python_semantic/src/types/display.rs",
+          "status": "modified",
+          "blob_sha": "92abc98673191d5bd3ce1e3319255a7d4449fbac",
+          "additions": 12,
+          "deletions": 2
+        },
+        {
+          "path": "crates/ty_python_semantic/src/types/function.rs",
+          "status": "modified",
+          "blob_sha": "eb4d9b347ab18e830fc65f6594b8aa2ffe263b9e",
+          "additions": 6,
+          "deletions": 3
+        },
+        {
+          "path": "crates/ty_python_semantic/src/types/generics.rs",
+          "status": "modified",
+          "blob_sha": "32be385760fa86a71f9f976a62959e836cb40191",
+          "additions": 47,
+          "deletions": 26
+        },
+        {
+          "path": "crates/ty_python_semantic/src/types/infer/builder.rs",
+          "status": "modified",
+          "blob_sha": "ddd0d5aab95becfee6a9ea4a80e92ac0385bacfb",
+          "additions": 6,
+          "deletions": 9
+        },
+        {
+          "path": "crates/ty_python_semantic/src/types/infer/builder/post_inference/static_class.rs",
+          "status": "modified",
+          "blob_sha": "268bba47a668c5d7a5bd8d81ffb455f0dd20e033",
+          "additions": 11,
+          "deletions": 12
+        },
+        {
+          "path": "crates/ty_python_semantic/src/types/infer/builder/subscript.rs",
+          "status": "modified",
+          "blob_sha": "4d79b88dec994db5618c7059e0a1e8640d2aa512",
+          "additions": 26,
+          "deletions": 16
+        },
+        {
+          "path": "crates/ty_python_semantic/src/types/infer/builder/type_expression.rs",
+          "status": "modified",
+          "blob_sha": "ea78570840d5f1ac72651bd5cf2d2cdeaf1b1658",
+          "additions": 7,
+          "deletions": 7
+        },
+        {
+          "path": "crates/ty_python_semantic/src/types/known_instance.rs",
+          "status": "modified",
+          "blob_sha": "f342d0d261f84a76272154dddf48f3aa114cba6f",
+          "additions": 11,
+          "deletions": 3
+        },
+        {
+          "path": "crates/ty_python_semantic/src/types/protocol_class.rs",
+          "status": "modified",
+          "blob_sha": "c575a2265d0d4c75c98052d50334988a0516ec5c",
+          "additions": 1,
+          "deletions": 1
+        },
+        {
+          "path": "crates/ty_python_semantic/src/types/signatures.rs",
+          "status": "modified",
+          "blob_sha": "b1d2b01e9ab457e28c5d72722591cd81ff286bbf",
+          "additions": 6,
+          "deletions": 6
+        },
+        {
+          "path": "crates/ty_python_semantic/src/types/type_alias.rs",
+          "status": "modified",
+          "blob_sha": "76ed801e2a775351f49a7eb1ad219b6e0f911741",
+          "additions": 2,
+          "deletions": 2
+        }
+      ],
+      "description_sha256": "ff4c67525c8a17dcb04a59cf8a00ccb5e894ed4da8cbf206bfba1c3197526aa3"
+    },
+    {
+      "repo": "astral-sh/ruff",
+      "partition": "evaluation",
+      "pull_number": 28828,
+      "pull_url": "https://github.com/astral-sh/ruff/pull/28828",
+      "title": "[ty] Infer ParamSpecs from call-wide constraints",
+      "created_at": "2026-09-23T12:36:38Z",
+      "last_updated_at": "2026-10-12T08:21:35Z",
+      "state_at_capture": "open",
+      "head_sha": "800e6a634af3c02b9ea2603475845457c1a06ce9",
+      "tree_sha": "a0a6a48732d30888d9b72b5e1e07015bc43147c5",
+      "parents": [
+        "7d72fb72eae1d1db8d0809629707406af1e74e70",
+        "eb625e43e489bc090aae9c4aa4a407cf389f65d0"
+      ],
+      "head_committed_at": "2026-10-12T05:55:39Z",
+      "commits": [
+        {
+          "sha": "65a18cbb903cb3995e6e7d81e33fddb6b013d80f",
+          "committed_at": "2026-10-06T06:15:27Z",
+          "summary": "[ty] Preserve captured variables in ParamSpec comparisons"
+        },
+        {
+          "sha": "e7a760fb572022f3d54422d8b47c5287d5dba749",
+          "committed_at": "2026-10-06T06:15:27Z",
+          "summary": "[ty] Adapt captured ParamSpecs to signature flags"
+        },
+        {
+          "sha": "fb456ef305614bd62c42543daad3f63cb36efdaf",
+          "committed_at": "2026-10-06T06:15:39Z",
+          "summary": "[ty] Test ParamSpec constraint inference"
+        },
+        {
+          "sha": "b2c174a465690d734081261fc5fc37329f4fa842",
+          "committed_at": "2026-10-06T06:15:40Z",
+          "summary": "[ty] Infer ParamSpecs from call-wide constraints"
+        },
+        {
+          "sha": "9b63b525a3db02e8a9ec15900d923be6f1f207f7",
+          "committed_at": "2026-10-06T06:15:40Z",
+          "summary": "[ty] Format ParamSpec in inference documentation"
+        },
+        {
+          "sha": "89134b0c1f684f68db8f0981c13b0ba3bbc04a1d",
+          "committed_at": "2026-10-06T06:35:06Z",
+          "summary": "[ty] Test ParamSpec constraint inference"
+        },
+        {
+          "sha": "005d2202c78b89c65b38840d17f12d1eaa7a59cc",
+          "committed_at": "2026-10-06T06:35:06Z",
+          "summary": "[ty] Infer ParamSpecs from call-wide constraints"
+        },
+        {
+          "sha": "582539bb0c0777dfa90771f78b722eb80829f1ab",
+          "committed_at": "2026-10-06T06:35:06Z",
+          "summary": "[ty] Format ParamSpec in inference documentation"
+        },
+        {
+          "sha": "aabd68e86e27a9a506108ff21f65f0e2cad6ef79",
+          "committed_at": "2026-10-06T06:37:14Z",
+          "summary": "[ty] Merge updated ParamSpec base after captured variables landed"
+        },
+        {
+          "sha": "26d0d7a19e919876fa2020a03f66d8f053ca8036",
+          "committed_at": "2026-10-06T10:54:03Z",
+          "summary": "[ty] Normalize empty generic contexts after binding Self"
+        },
+        {
+          "sha": "52a511bdcdcfa63fa95c34183bbd36c2723e8950",
+          "committed_at": "2026-10-07T05:57:53Z",
+          "summary": "[ty] Clarify merged inference documentation"
+        },
+        {
+          "sha": "08688ed9f15b48dd4e04675e240f67170ebc3228",
+          "committed_at": "2026-10-07T06:02:39Z",
+          "summary": "[ty] Add GenericContext emptiness helper"
+        },
+        {
+          "sha": "294c982051ac7d1fda93f479ac83d34286129d32",
+          "committed_at": "2026-10-07T06:31:48Z",
+          "summary": "[ty] Merge latest main into ParamSpec inference"
+        },
+        {
+          "sha": "0bcbf32c24e9618f66c9f76b1b0041529cea581f",
+          "committed_at": "2026-10-08T08:04:31Z",
+          "summary": "[ty] Merge latest main into ParamSpec inference"
+        },
+        {
+          "sha": "7d72fb72eae1d1db8d0809629707406af1e74e70",
+          "committed_at": "2026-10-09T11:52:58Z",
+          "summary": "[ty] Merge latest main into ParamSpec inference"
+        },
+        {
+          "sha": "800e6a634af3c02b9ea2603475845457c1a06ce9",
+          "committed_at": "2026-10-12T05:55:39Z",
+          "summary": "[ty] Merge latest main into ParamSpec inference"
+        }
+      ],
+      "files": [
+        {
+          "path": "crates/ty_python_semantic/resources/mdtest/generics/legacy/paramspec.md",
+          "status": "modified",
+          "blob_sha": "215a3462f71eb6598067f77b989b24d5cb594609",
+          "additions": 308,
+          "deletions": 4
+        },
+        {
+          "path": "crates/ty_python_semantic/resources/mdtest/generics/pep695/functions.md",
+          "status": "modified",
+          "blob_sha": "31c83ee0f52d16dc91adbeddf2ed2ed6b0bd8c09",
+          "additions": 6,
+          "deletions": 4
+        },
+        {
+          "path": "crates/ty_python_semantic/resources/mdtest/generics/pep695/paramspec.md",
+          "status": "modified",
+          "blob_sha": "e66007898a08e3fd59d5000d26c20d3868da48ac",
+          "additions": 234,
+          "deletions": 0
+        },
+        {
+          "path": "crates/ty_python_semantic/src/types/generics.rs",
+          "status": "modified",
+          "blob_sha": "1236f3493d148a9e31f8e63eb6d460829350bfd4",
+          "additions": 118,
+          "deletions": 26
+        },
+        {
+          "path": "crates/ty_python_semantic/src/types/signatures.rs",
+          "status": "modified",
+          "blob_sha": "eb87e6de18ada18ac7e81ed357a5c545426837e2",
+          "additions": 16,
+          "deletions": 6
+        }
+      ],
+      "description_sha256": "1222179c97a7c01b0e6a28403e1f926443e24b3248fc4f91375e5aeddde7fa3a"
+    }
+  ]
+}

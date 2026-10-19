@@ -1,0 +1,82 @@
+name: MemoryCell original reader failure admission audit
+on:
+  push:
+    branches: ["codex/memory-cell-evidence-20261008"]
+    paths:
+      - "scripts/memory_cell/reader_reference_run_gate.py"
+      - "scripts/memory_cell/test_reader_reference_run_gate.py"
+      - ".github/workflows/hepta-memory-reader-reference-run-gate.yml"
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: memory-reference-run-admission-${{ github.sha }}
+  cancel-in-progress: false
+jobs:
+  immutable-source-failure-audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    env:
+      PYTHONPATH: scripts/memory_cell
+      GH_TOKEN: ${{ github.token }}
+      PYTHONDONTWRITEBYTECODE: "1"
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - name: Pinned source and synthetic mutation regressions
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/reader-reference-failure-census
+          git rev-parse HEAD > /tmp/reader-reference-failure-census/verified-commit.txt
+          git rev-parse HEAD^{tree} > /tmp/reader-reference-failure-census/verified-tree.txt
+          python3 -m unittest -v test_reader_reference_run_gate 2>&1 | tee /tmp/reader-reference-failure-census/tests.log
+      - name: Verify exact historic generating-run failure without claiming success
+        run: |
+          set -euo pipefail
+          gh api repos/TrillionniumFoundation/hepta-private-ci/actions/runs/38046364381 > /tmp/reader-reference-failure-census/generating-run.json
+          gh api 'repos/TrillionniumFoundation/hepta-private-ci/actions/runs/38046364381/artifacts?per_page=100' > /tmp/reader-reference-failure-census/artifact-metadata.json
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+          from reader_reference_run_gate import admit_run
+          root = Path("/tmp/reader-reference-failure-census")
+          run = json.loads((root / "generating-run.json").read_text())
+          artifacts = json.loads((root / "artifact-metadata.json").read_text())
+          report = admit_run(
+              run, artifacts, expected_run_id=38046364381,
+              expected_source="1879c0c52748e29739a12e4d4217a17dd7ac24c6",
+              inputs=dict(
+                  id=11666570882,
+                  sha="88b9be8d5be4c9935d60e05105df61130ea4e7caeaa961b313f6f25f656a3170",
+              ),
+          )
+          if (
+              report["eligible_for_complete_replay"]
+              or report["generating_conclusion"] != "failure"
+              or report["blocked_reasons"] != ["generating_run_not_successful"]
+              or report["replay_download_pins"] is not None
+          ):
+              raise ValueError("known failing generating run falsely admitted")
+          (root / "verified-nonqualification.json").write_text(
+              json.dumps(report, indent=2, sort_keys=True, allow_nan=False) + "\n"
+          )
+          print("Original generating run remains failed; both artifact metadata "
+                "identities may be reported but no completed Reader outcome issued")
+          PY
+      - name: Retain tested source and all incomplete-origin evidence
+        if: always()
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/reader-reference-failure-census/source
+          cp scripts/memory_cell/reader_reference_run_gate.py /tmp/reader-reference-failure-census/source/
+          cp scripts/memory_cell/test_reader_reference_run_gate.py /tmp/reader-reference-failure-census/source/
+          cp .github/workflows/hepta-memory-reader-reference-run-gate.yml /tmp/reader-reference-failure-census/source/
+          (cd /tmp/reader-reference-failure-census && find . -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS)
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: memory-original-reference-failure-census
+          path: /tmp/reader-reference-failure-census
+          if-no-files-found: error

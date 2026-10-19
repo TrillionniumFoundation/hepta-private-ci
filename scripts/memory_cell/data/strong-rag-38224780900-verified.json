@@ -1,0 +1,198 @@
+{
+  "schema": "hepta.memory-cell.archived-qwen-disposition.v1",
+  "generating_run_id": 38224780900,
+  "generating_commit": "6304b451268c73f3d1a605985226b102df841bbf",
+  "artifacts_sha256": {
+    "original": "23e9d44b8d2dbe756c7c33031e18853c83326458a37925d4d368881145bf142b",
+    "reader": "7a99db30fb5b1202fcd43073d22589b84315046dd34044277cc46351f1cbece8",
+    "replay": "2445895a7d51e3173837471aa462cebede29eb3ec89653af3bd17e73b6114071"
+  },
+  "artifact_manifest_file_counts": {
+    "original": 35,
+    "reader": 43,
+    "replay": 8
+  },
+  "model": "Qwen2.5-3B-Instruct / pinned revision / research-only",
+  "model_training_executed": false,
+  "reader_identity": "f9aa334d3a02cabececea367c283caf66ef9875132907ebc34dac1c8d3a7f225",
+  "selected_k": 1,
+  "calibration_replayed": {
+    "attempts": 40,
+    "all_generated": true,
+    "arms": {
+      "k1": {
+        "planned": 8,
+        "strict_task_success": 4,
+        "correct_and_source_covered": 2,
+        "correct_and_full_source_cited": 2,
+        "input_tokens": 4045,
+        "output_tokens": 100,
+        "reader_seconds": 62.34706515900001
+      },
+      "k2": {
+        "planned": 8,
+        "strict_task_success": 4,
+        "correct_and_source_covered": 2,
+        "correct_and_full_source_cited": 2,
+        "input_tokens": 6328,
+        "output_tokens": 105,
+        "reader_seconds": 89.48498576700018
+      },
+      "k3": {
+        "planned": 8,
+        "strict_task_success": 4,
+        "correct_and_source_covered": 4,
+        "correct_and_full_source_cited": 2,
+        "input_tokens": 8698,
+        "output_tokens": 113,
+        "reader_seconds": 114.27811869000004
+      },
+      "k4": {
+        "planned": 8,
+        "strict_task_success": 4,
+        "correct_and_source_covered": 4,
+        "correct_and_full_source_cited": 2,
+        "input_tokens": 10970,
+        "output_tokens": 108,
+        "reader_seconds": 139.07572035099992
+      },
+      "k6": {
+        "planned": 8,
+        "strict_task_success": 2,
+        "correct_and_source_covered": 2,
+        "correct_and_full_source_cited": 0,
+        "input_tokens": 15708,
+        "output_tokens": 107,
+        "reader_seconds": 198.12731769900023
+      }
+    },
+    "raw_sha256": "1b5c774d97656fbbbba9ae668df6e93ea4ca5c75f588bbd0a7424a0fa2be3fc3"
+  },
+  "evaluation_replayed": {
+    "attempts": 72,
+    "all_generated": true,
+    "arms": {
+      "selected_k": {
+        "planned": 8,
+        "strict_task_success": 5,
+        "correct_and_source_covered": 3,
+        "correct_and_full_source_cited": 3,
+        "input_tokens": 3961,
+        "output_tokens": 101,
+        "reader_seconds": 62.50969172199973
+      },
+      "hybrid_k4": {
+        "planned": 8,
+        "strict_task_success": 3,
+        "correct_and_source_covered": 3,
+        "correct_and_full_source_cited": 1,
+        "input_tokens": 10806,
+        "output_tokens": 104,
+        "reader_seconds": 136.04442664999965
+      },
+      "hybrid_k6": {
+        "planned": 8,
+        "strict_task_success": 2,
+        "correct_and_source_covered": 2,
+        "correct_and_full_source_cited": 0,
+        "input_tokens": 15463,
+        "output_tokens": 103,
+        "reader_seconds": 194.10393084600014
+      },
+      "hybrid_k4_reversed": {
+        "planned": 8,
+        "strict_task_success": 3,
+        "correct_and_source_covered": 3,
+        "correct_and_full_source_cited": 1,
+        "input_tokens": 10806,
+        "output_tokens": 105,
+        "reader_seconds": 135.83138606300054
+      },
+      "single_hop": {
+        "planned": 8,
+        "strict_task_success": 4,
+        "correct_and_source_covered": 4,
+        "correct_and_full_source_cited": 4,
+        "input_tokens": 4575,
+        "output_tokens": 90,
+        "reader_seconds": 66.03741896299994
+      },
+      "entity_time": {
+        "planned": 8,
+        "strict_task_success": 8,
+        "correct_and_source_covered": 8,
+        "correct_and_full_source_cited": 4,
+        "input_tokens": 5752,
+        "output_tokens": 105,
+        "reader_seconds": 79.19579882299968
+      },
+      "organized": {
+        "planned": 8,
+        "strict_task_success": 8,
+        "correct_and_source_covered": 8,
+        "correct_and_full_source_cited": 4,
+        "input_tokens": 5179,
+        "output_tokens": 105,
+        "reader_seconds": 73.5168944840002
+      },
+      "program_support": {
+        "planned": 8,
+        "strict_task_success": 8,
+        "correct_and_source_covered": 8,
+        "correct_and_full_source_cited": 4,
+        "input_tokens": 5179,
+        "output_tokens": 105,
+        "reader_seconds": 73.11497467100003
+      },
+      "empty": {
+        "planned": 8,
+        "strict_task_success": 0,
+        "correct_and_source_covered": 0,
+        "correct_and_full_source_cited": 0,
+        "input_tokens": 1630,
+        "output_tokens": 60,
+        "reader_seconds": 36.13893213699998
+      }
+    },
+    "raw_sha256": "536cae1bf9807bc9caf9ef42d0a4d541152bfbc5ab798146550fdc7d7901b5e9"
+  },
+  "replayed_paired_effects": {
+    "selected_minus_hybrid4": {
+      "wins": 2,
+      "losses": 0,
+      "ties": 6
+    },
+    "entity_time_minus_single_hop": {
+      "wins": 4,
+      "losses": 0,
+      "ties": 4
+    },
+    "organized_minus_entity_time": {
+      "wins": 0,
+      "losses": 0,
+      "ties": 8
+    }
+  },
+  "identical_input_repeatability": {
+    "matched_prompt_pairs": 39,
+    "answer_disagreements": 0,
+    "generated_token_disagreements": 0
+  },
+  "model_task_independent_semantic_review": false,
+  "observations": {
+    "calibrated_rag_minus_hybrid4_task_wins": 2,
+    "calibrated_rag_correct_without_full_support": 2,
+    "full_path_minus_single_hop_task_wins": 4,
+    "organized_minus_full_path_task_wins": 0,
+    "organized_input_token_saving_vs_full_path": 573,
+    "organized_correct_without_full_chain_citation": 4
+  },
+  "calibration_loo_stable": false,
+  "independent_future_source_families": 0,
+  "independent_semantic_entailment_adjudication": false,
+  "total_deployed_lifecycle_cost_established": false,
+  "parametric_memory_gain_established": false,
+  "memory_cell_learning_promotion_qualified": false,
+  "production_accepted": false,
+  "interpretation": "Actual 40+72 frozen Qwen calls and separate-process replay succeeded; only eight exposed authored tasks. Grounded attribution, prospective transfer, semantic entailment and lifecycle cost remain unqualified."
+}

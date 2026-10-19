@@ -1,0 +1,59 @@
+{
+  "arms": {
+    "lexical_k4": {
+      "actual_generated_tokens": 705,
+      "actual_input_tokens": 6254,
+      "answers_with_undelivered_marker": 0,
+      "diagnostic_scored": 16,
+      "diagnostic_unscored": 0,
+      "emitted_citation_markers": 11,
+      "exact_matches": 1,
+      "mean_normalized_token_f1": 0.17208258098192508,
+      "model_calls_succeeded": 16,
+      "observed_generation_seconds": 247.73800584500032,
+      "planned": 16
+    },
+    "lexical_k8": {
+      "actual_generated_tokens": 824,
+      "actual_input_tokens": 10473,
+      "answers_with_undelivered_marker": 0,
+      "diagnostic_scored": 16,
+      "diagnostic_unscored": 0,
+      "emitted_citation_markers": 15,
+      "exact_matches": 0,
+      "mean_normalized_token_f1": 0.11148190095003518,
+      "model_calls_succeeded": 16,
+      "observed_generation_seconds": 310.8207153499998,
+      "planned": 16
+    }
+  },
+  "family_proxy_count": 2,
+  "immutable_outer_zip_sha256": {
+    "decisions": "3fb1c3272314d31b42ece1c74aa0250e2ecb06c6060cb011071d4654fef6f097",
+    "evaluation": "d09823324003ab431301e60fbbb280e216ca03b686e178d4f36fb6d492981978",
+    "public": "51e18514c68f31220f4dcd072914f6e015aa9733b6c5b4a4d4e3b14dac25ec37",
+    "reader": "7160ede72114b04135e544fb687a804dc0c4852834cf1695440a75b85214bf48"
+  },
+  "independent_archive_member_hashes_verified": true,
+  "independent_semantic_citation_judgement": false,
+  "independent_source_family_statistical_superiority": false,
+  "labels_opened_only_after_original_generation_verified": true,
+  "logical_real_model_generations": 32,
+  "original_generated_commit": "96b5ec37b82f87d445740403e07e3705e9850955",
+  "original_generated_run": 38280267308,
+  "original_model_inventory_digest": "f9aa334d3a02cabececea367c283caf66ef9875132907ebc34dac1c8d3a7f225",
+  "original_model_profile": "2fd394cbd23ce9d9dfb9f94def31df1b52d9e437e5be0fd6a91e5cd8736a1abe",
+  "original_question_count": 16,
+  "paired": {
+    "complete_scored": 16,
+    "extra_input_tokens": 4219,
+    "losses_k8": 7,
+    "observed_mean_f1_delta_k8_minus_k4": -0.060600680031889904,
+    "planned": 16,
+    "ties": 6,
+    "wins_k8": 3
+  },
+  "production_accepted": false,
+  "schema": "hepta.memorycell.locomo-readonly-interim.v1",
+  "training_qualified": false
+}

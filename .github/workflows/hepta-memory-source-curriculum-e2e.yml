@@ -1,0 +1,206 @@
+name: MemoryCell actual source-only two-hop training comparison
+# Exact-source experiment trigger: independently compare direct and two-hop source-only writers.
+# No task labels enter either write, and outputs are research-only until all paired receipts finish.
+
+on:
+  push:
+    branches:
+      - "codex/memory-cell-evidence-20261008"
+    paths:
+      - ".github/workflows/hepta-memory-source-curriculum-e2e.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: read
+
+concurrency:
+  group: source-two-hop-${{ github.sha }}
+  cancel-in-progress: false
+
+jobs:
+  source-contracts:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      PYTHONPATH: scripts/memory_cell
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - uses: ./.github/actions/setup-ci
+      - name: Verify unchanged source-only learning and revision contracts
+        run: |
+          set -euo pipefail
+          python3 -m unittest discover -s scripts/memory_cell -p 'test_source_composition_curriculum.py' -v
+          python3 -m unittest discover -s scripts/memory_cell -p 'test_experience_memory.py' -v
+          python3 -m unittest discover -s scripts/memory_cell -p 'test_source_write_coverage.py' -v
+          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+  actual-curricula:
+    needs: source-contracts
+    runs-on: ubuntu-latest
+    timeout-minutes: 330
+    env:
+      PYTHONPATH: scripts/memory_cell
+      HF_HUB_DISABLE_IMPLICIT_TOKEN: "1"
+      TOKENIZERS_PARALLELISM: "false"
+      OMP_NUM_THREADS: "2"
+      MKL_NUM_THREADS: "2"
+      HEPTA_MEMORY_TESTED_COMMIT: ${{ github.sha }}
+      PLAN_SHA: 9840a25487af444914dca24c818d98ff798ebc1610ea8dfdd827187c31ad1897
+      SOURCE_SHA: 35756b456f75718cc422d8678ec7ae97790ca36ced625501d24884698fddab24
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - name: Download verified existing source corpus without test label access
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/curriculum-result
+          gh api repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/11669174727/zip > /tmp/curriculum-input.zip
+          python3 - <<'PY'
+          import hashlib, stat, zipfile
+          from pathlib import Path, PurePosixPath
+          raw = Path('/tmp/curriculum-input.zip').read_bytes()
+          assert 0 < len(raw) < 64 * 1024 * 1024
+          assert hashlib.sha256(raw).hexdigest() == '23e9d44b8d2dbe756c7c33031e18853c83326458a37925d4d368881145bf142b'
+          root = Path('/tmp/curriculum-input')
+          root.mkdir()
+          with zipfile.ZipFile('/tmp/curriculum-input.zip') as z:
+              assert len(z.infolist()) <= 512
+              assert sum(x.file_size for x in z.infolist()) < 64 * 1024 * 1024
+              seen = set()
+              for item in z.infolist():
+                  p = PurePosixPath(item.filename)
+                  assert not p.is_absolute() and '..' not in p.parts
+                  assert '\\' not in item.filename and not stat.S_ISLNK(item.external_attr >> 16)
+                  if item.is_dir():
+                      continue
+                  assert str(p) not in seen
+                  seen.add(str(p))
+                  dest = root / p
+                  dest.parent.mkdir(parents=True, exist_ok=True)
+                  dest.write_bytes(z.read(item))
+          assert hashlib.sha256((root / 'observations/sources.json').read_bytes()).hexdigest() == '35756b456f75718cc422d8678ec7ae97790ca36ced625501d24884698fddab24'
+          PY
+      - name: Lock dependency census and run all Python regressions
+        run: |
+          set -euo pipefail
+          python3 -m venv /tmp/curriculum-python
+          /tmp/curriculum-python/bin/pip install torch==2.5.1 --index-url https://download.pytorch.org/whl/cpu
+          /tmp/curriculum-python/bin/pip install -r /tmp/curriculum-input/environment.txt
+          /tmp/curriculum-python/bin/pip freeze > /tmp/curriculum-result/environment.txt
+          diff -u /tmp/curriculum-input/environment.txt /tmp/curriculum-result/environment.txt
+          /tmp/curriculum-python/bin/python -m unittest discover -s scripts/memory_cell -p 'test_*.py' -v 2>&1 | tee /tmp/curriculum-result/tests.log
+      - name: Stage the exact same Qwen model for both writers
+        run: |
+          set -euo pipefail
+          /tmp/curriculum-python/bin/python scripts/memory_cell/reader_reference.py stage qwen-3b /tmp/curriculum-model
+          cp /tmp/curriculum-model/stage.json /tmp/curriculum-model/inventory.json /tmp/curriculum-model/publisher.json /tmp/curriculum-result/
+          sha256sum /tmp/curriculum-model/stage.json > /tmp/curriculum-result/stage-pin.txt
+      - name: Freeze BOTH knowledge adapters before opening any task plan
+        env:
+          HF_HUB_OFFLINE: "1"
+          TRANSFORMERS_OFFLINE: "1"
+        run: |
+          set -euo pipefail
+          STAGE_SHA="$(cut -d ' ' -f1 /tmp/curriculum-result/stage-pin.txt)"
+          for KIND in single_hop source_two_hop; do
+            ROOT="/tmp/curriculum-result/$KIND"
+            mkdir -p "$ROOT"
+            /usr/bin/time -v -o "$ROOT/write-resource.txt" /tmp/curriculum-python/bin/python scripts/memory_cell/experience_write_trial.py write /tmp/curriculum-input/observations/sources.json /tmp/curriculum-model "$ROOT/snapshot" --source-sha "$SOURCE_SHA" --stage-sha "$STAGE_SHA" --loss-backend full --curriculum "$KIND" 2>&1 | tee "$ROOT/write.log"
+            sha256sum "$ROOT/snapshot/READY.json" > "$ROOT/snapshot-pin.txt"
+          done
+      - name: Fit ONE read policy using calibration sources only
+        run: |
+          set -euo pipefail
+          /tmp/curriculum-python/bin/python - <<'PY'
+          import json
+          from pathlib import Path
+          from event_experience import SEED
+          from native import digest
+          Path('/tmp/curriculum-result/policy-scopes.json').write_text(json.dumps(['controlled_' + digest((SEED, i))[:8] for i in range(8)]))
+          PY
+          BASE_ID="$(/tmp/curriculum-python/bin/python -c "import json; print(json.load(open('/tmp/curriculum-result/single_hop/snapshot/READY.json'))['base_identity'])")"
+          /tmp/curriculum-python/bin/python scripts/memory_cell/experience_policy.py /tmp/curriculum-input/observations/sources.json /tmp/curriculum-result/policy-scopes.json /tmp/curriculum-result/read-policy.json --source-sha "$SOURCE_SHA" --scopes-sha "$(sha256sum /tmp/curriculum-result/policy-scopes.json | cut -d ' ' -f1)" --reader-identity "$BASE_ID"
+      - name: Reload adapters in separate processes and generate ALL 112 answers
+        env:
+          HF_HUB_OFFLINE: "1"
+          TRANSFORMERS_OFFLINE: "1"
+        run: |
+          set -euo pipefail
+          STAGE_SHA="$(cut -d ' ' -f1 /tmp/curriculum-result/stage-pin.txt)"
+          POLICY_SHA="$(sha256sum /tmp/curriculum-result/read-policy.json | cut -d ' ' -f1)"
+          for KIND in single_hop source_two_hop; do
+            ROOT="/tmp/curriculum-result/$KIND"
+            /usr/bin/time -v -o "$ROOT/read-resource.txt" /tmp/curriculum-python/bin/python scripts/memory_cell/experience_write_trial.py read /tmp/curriculum-input/plan /tmp/curriculum-input/observations /tmp/curriculum-model "$ROOT/snapshot" "$ROOT/tasks" --plan-sha "$PLAN_SHA" --stage-sha "$STAGE_SHA" --ready-sha "$(cut -d ' ' -f1 "$ROOT/snapshot-pin.txt")" --policy /tmp/curriculum-result/read-policy.json --policy-sha "$POLICY_SHA" 2>&1 | tee "$ROOT/read.log"
+          done
+      - name: Recompute each original answer and both seven-arm effect matrices
+        run: |
+          set -euo pipefail
+          for KIND in single_hop source_two_hop; do
+            ROOT="/tmp/curriculum-result/$KIND"
+            /tmp/curriculum-python/bin/python scripts/memory_cell/source_write_effects.py /tmp/curriculum-input/plan /tmp/curriculum-input/observations "$ROOT" --plan-sha "$PLAN_SHA" --ready-sha "$(cut -d ' ' -f1 "$ROOT/snapshot-pin.txt")" --source-commit "$HEPTA_MEMORY_TESTED_COMMIT" 2>&1 | tee "$ROOT/effects.log"
+          done
+          /tmp/curriculum-python/bin/python - <<'PY'
+          import hashlib, json
+          from pathlib import Path
+          root=Path('/tmp/curriculum-result')
+          results=[]
+          for kind in ('single_hop','source_two_hop'):
+              parent=root/kind
+              ready=json.loads((parent/'snapshot/READY.json').read_text())
+              effect=json.loads((parent/'tasks/source-effects.json').read_text())
+              original=(parent/'tasks/raw-answers.jsonl').read_bytes()
+              scored=json.loads((parent/'tasks/scored-answers.json').read_text())
+              assert ready['training']['curriculum']==kind
+              assert ready['training']['loss_backend']=='full'
+              assert len(original.splitlines())==56==len(scored)==effect['original_answer_executions']
+              assert hashlib.sha256(original).hexdigest()==effect['raw_answers_sha256']
+              indexed={(row['question_id'],row['arm']):row for row in scored}
+              assert len(indexed)==56 and len({q for q,a in indexed})==8
+              results.append((ready,effect,indexed))
+          (ready_a,_,a),(ready_b,_,b)=results
+          for key in ('base_identity','reader_profile','source_sha','source_documents_digest','roots','scopes'):
+              assert ready_a[key]==ready_b[key], key
+          arms=('hybrid','organized','knowledge','parameter_only','empty','policy_initial','policy')
+          metrics={}
+          for arm in arms:
+              wins=losses=missing=changed=0
+              for q in sorted({key[0] for key in a}):
+                  x,y=a[q,arm],b[q,arm]
+                  assert x['selected']==y['selected'] and x['candidate_digest']==y['candidate_digest']
+                  if x['status']!='succeeded' or y['status']!='succeeded':
+                      missing+=1; continue
+                  rx,ry=x['receipt'],y['receipt']
+                  for k in ('reader_identity','reader_profile','input_ids_digest','delivered_evidence','derived_evidence'):
+                      assert rx[k]==ry[k], k
+                  if arm not in ('knowledge','parameter_only'):
+                      assert x['answer']==y['answer'] and x['strict_task_success']==y['strict_task_success']
+                  changed+=x['answer']!=y['answer']
+                  wins+=bool(y['strict_task_success']) and not x['strict_task_success']
+                  losses+=bool(x['strict_task_success']) and not y['strict_task_success']
+              metrics[arm]=dict(planned=8,complete=8-missing,missing=missing,wins=wins,losses=losses,changed_answers=changed,all_planned_gain_bounds=[(wins-losses-missing)/8,(wins-losses+missing)/8])
+          report=dict(schema='hepta.source-only.two-hop-actual-effects.v1',generating_commit=ready_a['writer_source'],model_identity=ready_a['base_identity'],training_curricula=['single_hop','source_two_hop'],training_steps=[ready_a['training']['steps'],ready_b['training']['steps']],training_input_tokens=[ready_a['training']['input_tokens'],ready_b['training']['input_tokens']],training_seconds=[ready_a['training']['training_seconds'],ready_b['training']['training_seconds']],same_reader_same_delivered_evidence=True,same_budget_ceiling_not_equal_actual_compute=True,matched_effects=metrics,independent_future_families=0,semantic_citation_precision=None,statistical_superiority=False,production_accepted=False)
+          (root/'curriculum-effects.json').write_text(json.dumps(report,indent=2,allow_nan=False)+'\n')
+          print(json.dumps(report,allow_nan=False))
+          PY
+      - name: Preserve original model answers and failure receipts, never model weights
+        if: always()
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/curriculum-result/source
+          cp scripts/memory_cell/experience_memory.py scripts/memory_cell/experience_write_trial.py scripts/memory_cell/source_composition_curriculum.py scripts/memory_cell/source_write_effects.py /tmp/curriculum-result/source/
+          git rev-parse HEAD > /tmp/curriculum-result/tested-commit.txt
+          find /tmp/curriculum-result -type f -name '*.safetensors' -delete
+          (cd /tmp/curriculum-result && find . -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS)
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: memory-source-only-two-hop-actual
+          path: /tmp/curriculum-result
+          if-no-files-found: error

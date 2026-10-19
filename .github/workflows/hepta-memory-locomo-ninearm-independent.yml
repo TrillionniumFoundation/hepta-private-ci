@@ -1,0 +1,71 @@
+name: MemoryCell pinned LoCoMo nine-arm source-only replay
+on:
+  push:
+    branches:
+      - codex/memory-cell-evidence-20261008
+    paths:
+      - "scripts/memory_cell/locomo_ninearm_source_replay.py"
+      - "scripts/memory_cell/test_locomo_ninearm_source_replay.py"
+      - "scripts/memory_cell/data/locomo-ninearm-offline-20261012.json"
+      - "codex-rs/hepta-intelligence-eval/MEMORY_CELL_LOCOMO_NINEARM_OFFLINE_20261012.md"
+      - ".github/workflows/hepta-memory-locomo-ninearm-independent.yml"
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: memorycell-locomo-ninearm-exact-${{ github.sha }}
+  cancel-in-progress: false
+jobs:
+  source-only-independent-replay:
+    if: github.event_name == 'push' && github.ref == 'refs/heads/codex/memory-cell-evidence-20261008'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 40
+    env:
+      PYTHONPATH: scripts/memory_cell
+      HEPTA_LOCOMO_NINEARM_ROOT: /tmp/locomo-ninearm
+      GH_TOKEN: ${{ github.token }}
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - name: Restore only externally pinned published source and frozen original decisions
+        run: |
+          set -euo pipefail
+          mkdir -p "$HEPTA_LOCOMO_NINEARM_ROOT/public"
+          gh api repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/11728164433/zip > "$HEPTA_LOCOMO_NINEARM_ROOT/public/locomo-public-38206328621.zip"
+          gh api repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/11729394703/zip > "$HEPTA_LOCOMO_NINEARM_ROOT/public/locomo-frozen-decisions-38206328621.zip"
+          python3 scripts/memory_cell/locomo_ninearm_source_replay.py retrieve \
+            "$HEPTA_LOCOMO_NINEARM_ROOT/public" "$HEPTA_LOCOMO_NINEARM_ROOT/result"
+      - name: Freeze the nine-arm read policy from selection-family labels only
+        run: |
+          set -euo pipefail
+          mkdir -p "$HEPTA_LOCOMO_NINEARM_ROOT/selection"
+          gh api repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/11728632417/zip > "$HEPTA_LOCOMO_NINEARM_ROOT/selection/locomo-selection-targets-38206328621.zip"
+          python3 scripts/memory_cell/locomo_ninearm_source_replay.py select \
+            "$HEPTA_LOCOMO_NINEARM_ROOT/public" "$HEPTA_LOCOMO_NINEARM_ROOT/selection" \
+            "$HEPTA_LOCOMO_NINEARM_ROOT/result"
+      - name: Only now restore held-out original targets and source-only reference reports
+        run: |
+          set -euo pipefail
+          mkdir -p "$HEPTA_LOCOMO_NINEARM_ROOT/evaluation"
+          gh api repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/11728856834/zip > "$HEPTA_LOCOMO_NINEARM_ROOT/evaluation/locomo-evaluation-targets-38206328621.zip"
+          gh api repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/11732100501/zip > "$HEPTA_LOCOMO_NINEARM_ROOT/evaluation/locomo-selected-policy-38206328621.zip"
+          gh api repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/11732038439/zip > "$HEPTA_LOCOMO_NINEARM_ROOT/evaluation/locomo-heldout-coverage-38206328621.zip"
+          python3 scripts/memory_cell/locomo_ninearm_source_replay.py evaluate \
+            "$HEPTA_LOCOMO_NINEARM_ROOT/public" "$HEPTA_LOCOMO_NINEARM_ROOT/selection" \
+            "$HEPTA_LOCOMO_NINEARM_ROOT/evaluation" "$HEPTA_LOCOMO_NINEARM_ROOT/result"
+      - name: Rerun exact 720-row tests and compare complete frozen report bytes
+        run: |
+          set -euo pipefail
+          python3 -m py_compile scripts/memory_cell/locomo_ninearm_source_replay.py scripts/memory_cell/test_locomo_ninearm_source_replay.py
+          python3 -m unittest discover -s scripts/memory_cell -p 'test_locomo_ninearm_source_replay.py' -v 2>&1 | tee "$HEPTA_LOCOMO_NINEARM_ROOT/result/tests.log"
+          cmp "$HEPTA_LOCOMO_NINEARM_ROOT/result/report.json" scripts/memory_cell/data/locomo-ninearm-offline-20261012.json
+          git rev-parse HEAD > "$HEPTA_LOCOMO_NINEARM_ROOT/result/auditor-source-commit.txt"
+          (cd "$HEPTA_LOCOMO_NINEARM_ROOT/result" && find . -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS)
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: memory-locomo-ninearm-original-source-replay
+          path: /tmp/locomo-ninearm/result
+          if-no-files-found: warn

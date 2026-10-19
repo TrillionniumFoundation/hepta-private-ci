@@ -1,0 +1,61 @@
+name: MemoryCell completed premise prompt original-answer replay
+on:
+  push:
+    branches:
+      - codex/memory-cell-evidence-20261008
+    paths:
+      - "scripts/memory_cell/strong_rag_premise_readonly.py"
+      - "scripts/memory_cell/test_strong_rag_premise_readonly.py"
+      - "scripts/memory_cell/data/observed-premise-prompt-38385138211.json"
+      - "codex-rs/hepta-intelligence-eval/MEMORY_CELL_PREMISE_PROMPT_ACTUAL_20261013.md"
+      - ".github/workflows/hepta-memory-premise-prompt-replay.yml"
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: memorycell-premise-original-replay-${{ github.sha }}
+  cancel-in-progress: false
+jobs:
+  original-answer-replay:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      PYTHONPATH: scripts/memory_cell
+      HEPTA_MEMORY_PREMISE_ARCHIVES: /tmp/memory-premise-original
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - name: Verify syntax and offline tamper contracts before loading artifacts
+        run: |
+          set -euo pipefail
+          python3 -m py_compile scripts/memory_cell/strong_rag_premise_readonly.py scripts/memory_cell/test_strong_rag_premise_readonly.py
+          python3 -m unittest discover -s scripts/memory_cell -p 'test_strong_rag_premise_readonly.py' -v
+      - name: Download only immutable existing original source and Qwen result ZIPs
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          mkdir -p "$HEPTA_MEMORY_PREMISE_ARCHIVES"
+          gh api repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/11807202555/zip > "$HEPTA_MEMORY_PREMISE_ARCHIVES/memory-premise-actual-64-38385138211.zip"
+          gh api repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/11669174727/zip > "$HEPTA_MEMORY_PREMISE_ARCHIVES/event-inputs-20261010.zip"
+      - name: Independently replay all 64 recorded answers and compare registered receipts
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/memory-premise-replayed
+          python3 -m unittest discover -s scripts/memory_cell -p 'test_strong_rag_premise_readonly.py' -v 2>&1 | tee /tmp/memory-premise-replayed/tests.log
+          python3 scripts/memory_cell/strong_rag_premise_readonly.py \
+            "$HEPTA_MEMORY_PREMISE_ARCHIVES/memory-premise-actual-64-38385138211.zip" \
+            "$HEPTA_MEMORY_PREMISE_ARCHIVES/event-inputs-20261010.zip" \
+            --output /tmp/memory-premise-replayed/observed-premise-prompt-38385138211.json
+          cmp /tmp/memory-premise-replayed/observed-premise-prompt-38385138211.json \
+            scripts/memory_cell/data/observed-premise-prompt-38385138211.json
+          git rev-parse HEAD > /tmp/memory-premise-replayed/auditor-commit.txt
+          (cd /tmp/memory-premise-replayed && find . -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS)
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: memory-premise-readonly-original-replay
+          path: /tmp/memory-premise-replayed
+          if-no-files-found: warn

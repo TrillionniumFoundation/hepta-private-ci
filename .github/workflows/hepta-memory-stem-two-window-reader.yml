@@ -1,0 +1,135 @@
+name: MemoryCell same-host frozen Reader two-session capacity
+on:
+  push:
+    branches:
+      - "codex/memory-cell-evidence-20261008"
+    paths:
+      - "scripts/memory_cell/stem_two_window_reader_plan.py"
+      - "scripts/memory_cell/test_stem_two_window_reader_plan.py"
+      - "scripts/memory_cell/stem_two_window_reader_trial.py"
+      - "scripts/memory_cell/test_stem_two_window_reader_trial.py"
+      - ".github/workflows/hepta-memory-stem-two-window-reader.yml"
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: memory-stem-two-session-${{ github.sha }}
+  cancel-in-progress: false
+jobs:
+  pinned-frozen-reader-two-session:
+    if: github.repository == 'TrillionniumFoundation/hepta-private-ci'
+    runs-on: ubuntu-latest
+    timeout-minutes: 75
+    env:
+      OMP_NUM_THREADS: "2"
+      MKL_NUM_THREADS: "2"
+      TOKENIZERS_PARALLELISM: "false"
+      HF_HUB_DISABLE_IMPLICIT_TOKEN: "1"
+      PYTHONPATH: scripts/memory_cell
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - name: Install exactly pinned CPU research environment
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/stem-two-session
+          git rev-parse HEAD > /tmp/stem-two-session/auditor-commit.txt
+          git rev-parse HEAD^{tree} > /tmp/stem-two-session/auditor-tree.txt
+          python3 -m venv /tmp/stem-two-python
+          /tmp/stem-two-python/bin/pip install torch==2.5.1 --index-url https://download.pytorch.org/whl/cpu
+          /tmp/stem-two-python/bin/pip install -r scripts/memory_cell/requirements.txt ruff==0.15.8
+          /tmp/stem-two-python/bin/pip freeze > /tmp/stem-two-session/environment.txt
+      - name: Test strict two-source and actual decoder contract without pretrained models
+        run: |
+          set -euo pipefail
+          /tmp/stem-two-python/bin/python -m unittest -v \
+            test_stem_two_window_reader_plan test_stem_two_window_reader_trial \
+            2>&1 | tee /tmp/stem-two-session/tests.log
+          /tmp/stem-two-python/bin/ruff check --select F,E9 \
+            scripts/memory_cell/stem_two_window_reader_plan.py \
+            scripts/memory_cell/test_stem_two_window_reader_plan.py \
+            scripts/memory_cell/stem_two_window_reader_trial.py \
+            scripts/memory_cell/test_stem_two_window_reader_trial.py \
+            2>&1 | tee /tmp/stem-two-session/lint.log
+      - name: Download immutable original strict run and staged native inputs
+        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          name: memory-native-staged-inputs
+          run-id: 37862780268
+          github-token: ${{ github.token }}
+          path: /tmp
+      - name: Validate pinned archive and original pretrained model inputs
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          gh api repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/11693693993/zip > /tmp/stem-675970bb.zip
+          printf '%s  %s\n' \
+            1db7f8f7c13a1f718d5065956f14d554d3fe328c415fac4bb145d1eaf9d913c8 \
+            /tmp/stem-675970bb.zip | sha256sum -c -
+          /tmp/stem-two-python/bin/python - <<'PY'
+          from pathlib import Path, PurePosixPath
+          import tarfile
+          from huggingface_hub import snapshot_download
+          from native import digest
+          from pretrained import file_inventory
+          from relevance_ranker import RANKER_ID, RANKER_REVISION, RANKER_TENSOR_SHA256
+          with tarfile.open('/tmp/memory-inputs.tar.gz', 'r:gz') as archive:
+              members = archive.getmembers()
+              if sum(m.size for m in members) > 2 * 1024**3 or len(members) > 10000:
+                  raise ValueError('bounded staged original native input required')
+              for member in members:
+                  path = PurePosixPath(member.name)
+                  if (path.is_absolute() or '..' in path.parts or not path.parts
+                      or path.parts[0] != 'memory-inputs'
+                      or not (member.isfile() or member.isdir())):
+                      raise ValueError('unsafe staged archive member')
+              archive.extractall('/tmp', members=members, filter='data')
+          if digest(file_inventory(Path('/tmp/memory-inputs/encoder'))) != '5afecdd6098fec07380bc10a30fd8debcffcd147274b3ffd18143f1fa86dc12a':
+              raise ValueError('frozen retriever inventory drift')
+          snapshot_download(
+              RANKER_ID, revision=RANKER_REVISION, local_dir='/tmp/stem-ranker',
+              allow_patterns=[
+                  'config.json', 'model.safetensors', 'tokenizer.json',
+                  'tokenizer_config.json', 'special_tokens_map.json', 'vocab.txt',
+              ], token=False,
+          )
+          if file_inventory(Path('/tmp/stem-ranker'))['model.safetensors']['sha256'] != RANKER_TENSOR_SHA256:
+              raise ValueError('frozen pair ranker tensor drift')
+          PY
+      - name: Execute real same-host original E1 versus E1 plus distinct-session E2
+        env:
+          HF_HUB_OFFLINE: "1"
+          TRANSFORMERS_OFFLINE: "1"
+        run: |
+          set -euo pipefail
+          /usr/bin/time -v -o /tmp/stem-two-session/resource.log \
+            /tmp/stem-two-python/bin/python \
+            scripts/memory_cell/stem_two_window_reader_trial.py \
+            --staged /tmp/memory-inputs \
+            --ranker /tmp/stem-ranker \
+            --original-zip /tmp/stem-675970bb.zip \
+            --output /tmp/stem-two-session/comparison \
+            2>&1 | tee /tmp/stem-two-session/model.log
+      - name: Retain exact source, real answers, error census and SHA256 manifests
+        if: always()
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/stem-two-session/source
+          cp scripts/memory_cell/stem_two_window_reader_plan.py \
+             scripts/memory_cell/test_stem_two_window_reader_plan.py \
+             scripts/memory_cell/stem_two_window_reader_trial.py \
+             scripts/memory_cell/test_stem_two_window_reader_trial.py \
+             /tmp/stem-two-session/source/
+          cp .github/workflows/hepta-memory-stem-two-window-reader.yml \
+             /tmp/stem-two-session/source/
+          (cd /tmp/stem-two-session && find . -type f ! -name SHA256SUMS \
+            -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS)
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: memory-stem-real-two-session-reader
+          path: /tmp/stem-two-session
+          if-no-files-found: error

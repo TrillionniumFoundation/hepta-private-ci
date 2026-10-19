@@ -1,0 +1,69 @@
+name: MemoryCell original Qwen source-write projection parity
+on:
+  push:
+    branches:
+      - "codex/memory-cell-evidence-20261008"
+    paths:
+      - "scripts/memory_cell/source_projection_pair.py"
+      - "scripts/memory_cell/test_source_projection_pair.py"
+      - ".github/workflows/hepta-memory-projection-pair.yml"
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+jobs:
+  original-real-run-audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      PYTHONPATH: scripts/memory_cell
+      FULL_PIN: 4dab11e3ceb297e8160fa342982ff68d93d86c98537b83925db857c4f0e8958c
+      SPARSE_PIN: bb90d42cc20b1e0a4088904e3c464f10a1c2624f662440044f4d1d28638d14e5
+      FULL_COMMIT: 2c6dae45782b1ba07ba9af237f01bdecc0c5640b
+      SPARSE_COMMIT: 7d417d2d6648c0bdeaca4bfc0b658d64b0d4f453
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          persist-credentials: false
+      - name: Test paired validation and tamper resistance
+        run: |
+          set -euo pipefail
+          mkdir /tmp/source-pair
+          python3 -m unittest discover -s scripts/memory_cell -p 'test_source_projection_pair.py' -v 2>&1 | tee /tmp/source-pair/tests.log
+      - name: Download and pin two original completed Qwen runs
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          gh api repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/11689893524/zip > /tmp/source-pair/full.zip
+          gh api repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/11686688483/zip > /tmp/source-pair/sparse.zip
+          printf '%s  %s\n' "$FULL_PIN" /tmp/source-pair/full.zip "$SPARSE_PIN" /tmp/source-pair/sparse.zip | sha256sum --check
+      - name: Replay original results and exact same-input training exposure
+        run: |
+          set -euo pipefail
+          python3 scripts/memory_cell/source_projection_pair.py \
+            /tmp/source-pair/full.zip /tmp/source-pair/sparse.zip /tmp/source-pair/report.json \
+            --full-sha "$FULL_PIN" --sparse-sha "$SPARSE_PIN" \
+            --full-commit "$FULL_COMMIT" --sparse-commit "$SPARSE_COMMIT" \
+            2>&1 | tee /tmp/source-pair/audit.log
+      - name: Validate scoped source formatting; do not change global PR gates
+        run: |
+          set -euo pipefail
+          python3 -m pip install --user uv==0.8.22
+          uv run --frozen --project scripts ruff format --check \
+            scripts/memory_cell/source_projection_pair.py \
+            scripts/memory_cell/test_source_projection_pair.py
+      - name: Preserve audit inputs' original identities and all failure records
+        if: always()
+        run: |
+          set -euo pipefail
+          cp scripts/memory_cell/source_projection_pair.py scripts/memory_cell/test_source_projection_pair.py /tmp/source-pair/
+          git rev-parse HEAD > /tmp/source-pair/audit-source.txt
+          rm -f /tmp/source-pair/full.zip /tmp/source-pair/sparse.zip
+          (cd /tmp/source-pair && find . -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS)
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: memory-source-projection-pair
+          path: /tmp/source-pair
+          if-no-files-found: error

@@ -1,0 +1,42 @@
+{
+  "schema": "hepta.memory-cell.locomo-format-original-answer-audit.v1",
+  "historical_commit": "2db775a9b423f5d53c2ec1cf69d4e67da02e35bd",
+  "new_generating_commit": "c34e73312e9ef1626712f984d4c70c50af335aef",
+  "historical_reader_artifact_id": 11792880133,
+  "historical_reader_zip_sha256": "14dc63bfb0e25b8b15f7b48ba8e1afd4cef4d13f8617d08d28a533baa7a202a0",
+  "new_reader_artifact_id": 11801623797,
+  "new_reader_zip_sha256": "25e7fc3d60e53328a49efabcd34df4a6e223a43e16cc2aff1790824a31150b74",
+  "new_reader_run_id": 38370785532,
+  "new_reader_run_attempt": 2,
+  "original_member_hashes_verified_per_artifact": 11,
+  "model_identity": "f9aa334d3a02cabececea367c283caf66ef9875132907ebc34dac1c8d3a7f225",
+  "paired_original_question_count": 16,
+  "paired_original_delivered_evidence_identical": true,
+  "answer_text_changed": 14,
+  "historical_unmodified_answers": {
+    "answers_with_delivered_citations": 14,
+    "exact_refusal": 1,
+    "refusal_mixed_with_other_text": 5,
+    "undelivered_citation_labels": 0,
+    "input_tokens": 3427,
+    "output_tokens": 675,
+    "cumulative_reader_seconds": 201.52927223200095
+  },
+  "new_unmodified_answers": {
+    "answers_with_delivered_citations": 16,
+    "exact_refusal": 0,
+    "refusal_mixed_with_other_text": 10,
+    "undelivered_citation_labels": 0,
+    "input_tokens": 3987,
+    "output_tokens": 256,
+    "cumulative_reader_seconds": 108.1056454290001
+  },
+  "exact_refusal_improved": false,
+  "mixed_refusal_reduced": false,
+  "original_gold_answers_read": false,
+  "new_model_calls_in_this_audit": 0,
+  "independent_semantic_judge": false,
+  "source_selection_publisher_privileged": true,
+  "parametric_memory_gain_established": false,
+  "production_accepted": false
+}

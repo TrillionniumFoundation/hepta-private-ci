@@ -1,0 +1,159 @@
+name: MemoryCell pinned publisher-source Reader capacity
+on:
+  push:
+    branches: ["codex/memory-cell-evidence-20261008"]
+    paths:
+      - "scripts/memory_cell/stem_source_only_reference.py"
+      - "scripts/memory_cell/test_stem_source_only_reference.py"
+      - "scripts/memory_cell/stem_source_only_reader_trial.py"
+      - "scripts/memory_cell/test_stem_source_only_reader_trial.py"
+      - ".github/workflows/hepta-memory-stem-source-only-reader.yml"
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: stem-published-source-reader-${{ github.sha }}
+  cancel-in-progress: false
+jobs:
+  source-only-contract:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    env:
+      PYTHONPATH: scripts/memory_cell
+      PYTHONDONTWRITEBYTECODE: "1"
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - name: No model, original source admission and 32 Reader condition regressions
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/published-source-reader-fast
+          git rev-parse HEAD > /tmp/published-source-reader-fast/tested-commit.txt
+          git rev-parse HEAD^{tree} > /tmp/published-source-reader-fast/tested-tree.txt
+          python3 -m compileall -q \
+            scripts/memory_cell/stem_source_only_reference.py \
+            scripts/memory_cell/test_stem_source_only_reference.py \
+            scripts/memory_cell/stem_source_only_reader_trial.py \
+            scripts/memory_cell/test_stem_source_only_reader_trial.py
+          python3 -m unittest -v \
+            test_stem_source_only_reference \
+            test_stem_source_only_reader_trial \
+            2>&1 | tee /tmp/published-source-reader-fast/tests.log
+      - name: Preserve every result and original test source
+        if: always()
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/published-source-reader-fast/source
+          cp scripts/memory_cell/stem_source_only_reference.py \
+             scripts/memory_cell/test_stem_source_only_reference.py \
+             scripts/memory_cell/stem_source_only_reader_trial.py \
+             scripts/memory_cell/test_stem_source_only_reader_trial.py \
+             .github/workflows/hepta-memory-stem-source-only-reader.yml \
+             /tmp/published-source-reader-fast/source/
+          (cd /tmp/published-source-reader-fast && find . -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS)
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: stem-published-source-reader-unit
+          path: /tmp/published-source-reader-fast
+          if-no-files-found: error
+  actual-same-frozen-reader:
+    needs: source-only-contract
+    if: github.repository == 'TrillionniumFoundation/hepta-private-ci'
+    runs-on: ubuntu-latest
+    timeout-minutes: 50
+    env:
+      OMP_NUM_THREADS: "2"
+      MKL_NUM_THREADS: "2"
+      HF_HUB_DISABLE_IMPLICIT_TOKEN: "1"
+      TOKENIZERS_PARALLELISM: "false"
+      HF_HUB_OFFLINE: "1"
+      TRANSFORMERS_OFFLINE: "1"
+      PYTHONPATH: scripts/memory_cell
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - name: Fixed CPU Reader runtime
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/source-only-reader
+          git rev-parse HEAD > /tmp/source-only-reader/tested-commit.txt
+          git rev-parse HEAD^{tree} > /tmp/source-only-reader/tested-tree.txt
+          python3 -m venv /tmp/stem-frozen-python
+          /tmp/stem-frozen-python/bin/pip install torch==2.5.1 --index-url https://download.pytorch.org/whl/cpu
+          /tmp/stem-frozen-python/bin/pip install -r scripts/memory_cell/requirements.txt
+          /tmp/stem-frozen-python/bin/pip freeze > /tmp/source-only-reader/environment.txt
+      - name: Download separately completed unchanged original policy and staged models
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          gh api repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/11693693993/zip > /tmp/original-strict-stem.zip
+          printf '%s  %s\n' \
+            1db7f8f7c13a1f718d5065956f14d554d3fe328c415fac4bb145d1eaf9d913c8 \
+            /tmp/original-strict-stem.zip | sha256sum -c -
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          name: memory-native-staged-inputs
+          run-id: 37862780268
+          github-token: ${{ github.token }}
+          path: /tmp
+      - name: Extract only original Reader and native source data under exact path bounds
+        run: |
+          set -euo pipefail
+          /tmp/stem-frozen-python/bin/python - <<'PY'
+          from pathlib import PurePosixPath
+          import tarfile
+          tar = '/tmp/memory-inputs.tar.gz'
+          with tarfile.open(tar, 'r:gz') as archive:
+              members = archive.getmembers()
+              if len(members) > 10000 or sum(m.size for m in members) > 2*1024**3:
+                  raise ValueError('staged source/model archive exceeds bound')
+              chosen = []
+              for m in members:
+                  path = PurePosixPath(m.name)
+                  if (path.is_absolute() or '..' in path.parts or not path.parts
+                      or path.parts[0] != 'memory-inputs'
+                      or not (m.isfile() or m.isdir())):
+                      raise ValueError('untrusted staged source member')
+                  if (
+                      len(path.parts) == 2
+                      and path.parts[1] in ('locomo.json', 'longmemeval.json', 'staging.json')
+                  ) or (len(path.parts) >= 2 and path.parts[1] == 'reader'):
+                      chosen.append(m)
+              if not chosen:
+                  raise ValueError('missing frozen Reader and source inputs')
+              archive.extractall('/tmp', members=chosen, filter='data')
+          PY
+      - name: Original-question publisher-source-only Reader, never policy replacement
+        run: |
+          set -euo pipefail
+          /usr/bin/time -v -o /tmp/source-only-reader/process-resources.txt \
+            /tmp/stem-frozen-python/bin/python \
+              scripts/memory_cell/stem_source_only_reader_trial.py \
+              --staged /tmp/memory-inputs \
+              --original /tmp/original-strict-stem.zip \
+              --output /tmp/source-only-reader/comparison \
+            2>&1 | tee /tmp/source-only-reader/execution.log
+      - name: Preserve original source, failures and checksums without changing main
+        if: always()
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/source-only-reader/source
+          cp scripts/memory_cell/stem_source_only_reference.py \
+             scripts/memory_cell/stem_source_only_reader_trial.py \
+             scripts/memory_cell/test_stem_source_only_reference.py \
+             scripts/memory_cell/test_stem_source_only_reader_trial.py \
+             .github/workflows/hepta-memory-stem-source-only-reader.yml \
+             /tmp/source-only-reader/source/
+          (cd /tmp/source-only-reader && find . -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS)
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: stem-published-source-only-frozen-reader
+          path: /tmp/source-only-reader
+          if-no-files-found: error

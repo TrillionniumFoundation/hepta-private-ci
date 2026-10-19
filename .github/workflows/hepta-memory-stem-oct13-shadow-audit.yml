@@ -1,0 +1,61 @@
+name: MemoryCell Oct13 strict shadow effect audit
+on:
+  push:
+    branches: ["codex/memory-cell-evidence-20261008"]
+    paths:
+      - "scripts/memory_cell/stem_oct13_shadow_result_audit.py"
+      - "scripts/memory_cell/test_stem_oct13_shadow_result_audit.py"
+      - ".github/workflows/hepta-memory-stem-oct13-shadow-audit.yml"
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: memory-stem-oct13-shadow-${{ github.sha }}
+  cancel-in-progress: false
+jobs:
+  audit-complete-strict-shadow:
+    runs-on: ubuntu-latest
+    timeout-minutes: 22
+    env:
+      PYTHONPATH: scripts/memory_cell
+      PYTHONDONTWRITEBYTECODE: "1"
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - name: Verify immutable auditor test contracts without model packages
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/stem-oct13-shadow-audit
+          git rev-parse HEAD > /tmp/stem-oct13-shadow-audit/auditing-commit.txt
+          git rev-parse HEAD^{tree} > /tmp/stem-oct13-shadow-audit/auditing-tree.txt
+          python3 -m compileall -q scripts/memory_cell/stem_oct13_shadow_result_audit.py scripts/memory_cell/test_stem_oct13_shadow_result_audit.py
+          python3 -m unittest -v test_stem_oct13_shadow_result_audit 2>&1 | tee /tmp/stem-oct13-shadow-audit/tests.log
+      - name: Download only pinned original successful Oct13 native run
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          gh api repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/11832820287/zip > /tmp/stem-1081d37.zip
+          printf '%s  %s\n' c32408fa3d1f8fdea66c208069e18b10ab44c4232d92604c7a5f4beb84c4902a /tmp/stem-1081d37.zip | sha256sum -c -
+      - name: Compute exact frozen versus shadow source and Reader effects
+        run: |
+          set -euo pipefail
+          python3 scripts/memory_cell/stem_oct13_shadow_result_audit.py /tmp/stem-1081d37.zip /tmp/stem-oct13-shadow-audit/frozen-vs-shadow.json 2>&1 | tee /tmp/stem-oct13-shadow-audit/summary.log
+      - name: Retain all failures, exact source and checksum census
+        if: always()
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/stem-oct13-shadow-audit/source
+          cp scripts/memory_cell/stem_oct13_shadow_result_audit.py /tmp/stem-oct13-shadow-audit/source/
+          cp scripts/memory_cell/test_stem_oct13_shadow_result_audit.py /tmp/stem-oct13-shadow-audit/source/
+          cp scripts/memory_cell/stem_audit_archive.py /tmp/stem-oct13-shadow-audit/source/
+          cp .github/workflows/hepta-memory-stem-oct13-shadow-audit.yml /tmp/stem-oct13-shadow-audit/source/
+          (cd /tmp/stem-oct13-shadow-audit && find . -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS)
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: stem-oct13-strict-shadow-effect-audit
+          path: /tmp/stem-oct13-shadow-audit
+          if-no-files-found: error

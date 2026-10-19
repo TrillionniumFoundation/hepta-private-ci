@@ -1,0 +1,201 @@
+name: MemoryCell small pretrained source write and frozen read
+on:
+  push:
+    branches:
+      - "codex/memory-cell-evidence-20261008"
+    paths:
+      - ".github/workflows/hepta-memory-small-source-trial.yml"
+      - "scripts/memory_cell/test_small_source_workflow.py"
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: memory-small-source-write-${{ github.sha }}
+  cancel-in-progress: false
+jobs:
+  source-contracts:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      PYTHONPATH: scripts/memory_cell
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - uses: ./.github/actions/setup-ci
+      - name: Admit exact trial protocol and scoped formatting
+        run: |
+          set -euo pipefail
+          python3 -m pip install uv==0.8.22 PyYAML==6.0.3
+          uv run --frozen --project scripts ruff format --check scripts/memory_cell/test_small_source_workflow.py
+          uv run --frozen --project scripts ruff check scripts/memory_cell/test_small_source_workflow.py
+          python3 -m unittest discover -s scripts/memory_cell -p 'test_small_source_workflow.py' -v
+          python3 -m compileall -q scripts/memory_cell
+          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+  repository-format:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - uses: ./.github/actions/setup-ci
+      - name: Retain existing repository-wide formatting requirements
+        run: |
+          set -euo pipefail
+          python3 -m pip install uv==0.8.22
+          git fetch --no-tags --depth=1 origin 78fdb0cf8537e3a84fc6e0a849707559c80881e8
+          just fmt --check --base 78fdb0cf8537e3a84fc6e0a849707559c80881e8
+  small-source-write-and-read:
+    needs: source-contracts
+    runs-on: ubuntu-latest
+    timeout-minutes: 180
+    env:
+      PYTHONPATH: scripts/memory_cell
+      HF_HUB_DISABLE_IMPLICIT_TOKEN: "1"
+      TOKENIZERS_PARALLELISM: "false"
+      OMP_NUM_THREADS: "2"
+      MKL_NUM_THREADS: "2"
+      HEPTA_MEMORY_TESTED_COMMIT: ${{ github.sha }}
+      PLAN_SHA: 9840a25487af444914dca24c818d98ff798ebc1610ea8dfdd827187c31ad1897
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - name: Verify and extract the existing sealed original source corpus
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/memory-small-evidence
+          gh api repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/11669174727/zip > /tmp/memory-small-input.zip
+          python3 - <<'PY'
+          import hashlib
+          from pathlib import Path, PurePosixPath
+          import stat
+          import zipfile
+
+          blob = Path("/tmp/memory-small-input.zip").read_bytes()
+          assert len(blob) < 64 * 1024 * 1024
+          assert hashlib.sha256(blob).hexdigest() == "23e9d44b8d2dbe756c7c33031e18853c83326458a37925d4d368881145bf142b"
+          root = Path("/tmp/memory-small-input")
+          root.mkdir()
+          with zipfile.ZipFile("/tmp/memory-small-input.zip") as archive:
+              assert len(archive.infolist()) <= 512
+              assert sum(item.file_size for item in archive.infolist()) <= 64 * 1024 * 1024
+              seen = set()
+              for item in archive.infolist():
+                  path = PurePosixPath(item.filename)
+                  assert not path.is_absolute() and ".." not in path.parts
+                  assert "\\" not in item.filename
+                  assert not stat.S_ISLNK(item.external_attr >> 16)
+                  if item.is_dir():
+                      continue
+                  assert str(path) not in seen
+                  seen.add(str(path))
+                  dest = root / path
+                  dest.parent.mkdir(parents=True, exist_ok=True)
+                  dest.write_bytes(archive.read(item))
+          PY
+      - name: Install pinned environment and run the entire inherited regression suite
+        run: |
+          set -euo pipefail
+          python3 -m venv /tmp/memory-small-python
+          /tmp/memory-small-python/bin/pip install torch==2.5.1 --index-url https://download.pytorch.org/whl/cpu
+          /tmp/memory-small-python/bin/pip install -r /tmp/memory-small-input/environment.txt
+          /tmp/memory-small-python/bin/pip freeze > /tmp/memory-small-evidence/environment.txt
+          diff -u /tmp/memory-small-input/environment.txt /tmp/memory-small-evidence/environment.txt
+          /tmp/memory-small-python/bin/python -m unittest discover -s scripts/memory_cell -p 'test_*.py' -v 2>&1 | tee /tmp/memory-small-evidence/regressions.log
+      - name: Stage pinned SmolLM2 135M research reader, not the Qwen reader
+        run: |
+          set -euo pipefail
+          /tmp/memory-small-python/bin/python scripts/memory_cell/reader_reference.py stage smol-135m /tmp/memory-small-model
+          cp /tmp/memory-small-model/stage.json /tmp/memory-small-model/inventory.json /tmp/memory-small-model/publisher.json /tmp/memory-small-evidence/
+      - name: Write source-only adapter before any future task-plan access
+        env:
+          HF_HUB_OFFLINE: "1"
+          TRANSFORMERS_OFFLINE: "1"
+        run: |
+          set -euo pipefail
+          /usr/bin/time -v -o /tmp/memory-small-evidence/write-resource.txt /tmp/memory-small-python/bin/python scripts/memory_cell/experience_write_trial.py write /tmp/memory-small-input/observations/sources.json /tmp/memory-small-model /tmp/memory-small-evidence/snapshot --source-sha 35756b456f75718cc422d8678ec7ae97790ca36ced625501d24884698fddab24 --stage-sha "$(sha256sum /tmp/memory-small-model/stage.json | cut -d ' ' -f1)" --loss-backend full --curriculum single_hop 2>&1 | tee /tmp/memory-small-evidence/write.log
+          sha256sum /tmp/memory-small-evidence/snapshot/READY.json > /tmp/memory-small-evidence/snapshot-pin.txt
+      - name: Train the existing tiny read policy from calibration sources only
+        run: |
+          set -euo pipefail
+          /tmp/memory-small-python/bin/python - <<'PY'
+          import json
+          from pathlib import Path
+          from event_experience import SEED
+          from native import digest
+
+          scopes = ["controlled_" + digest((SEED, i))[:8] for i in range(8)]
+          Path("/tmp/memory-small-evidence/policy-scopes.json").write_text(json.dumps(scopes))
+          PY
+          BASE_ID=$(/tmp/memory-small-python/bin/python -c "import json; print(json.load(open('/tmp/memory-small-evidence/snapshot/READY.json'))['base_identity'])")
+          /tmp/memory-small-python/bin/python scripts/memory_cell/experience_policy.py /tmp/memory-small-input/observations/sources.json /tmp/memory-small-evidence/policy-scopes.json /tmp/memory-small-evidence/read-policy.json --source-sha 35756b456f75718cc422d8678ec7ae97790ca36ced625501d24884698fddab24 --scopes-sha "$(sha256sum /tmp/memory-small-evidence/policy-scopes.json | cut -d ' ' -f1)" --reader-identity "$BASE_ID"
+      - name: Fresh process loads committed adapter then executes all seven arms
+        env:
+          HF_HUB_OFFLINE: "1"
+          TRANSFORMERS_OFFLINE: "1"
+        run: |
+          set -euo pipefail
+          /usr/bin/time -v -o /tmp/memory-small-evidence/read-resource.txt /tmp/memory-small-python/bin/python scripts/memory_cell/experience_write_trial.py read /tmp/memory-small-input/plan /tmp/memory-small-input/observations /tmp/memory-small-model /tmp/memory-small-evidence/snapshot /tmp/memory-small-evidence/tasks --plan-sha "$PLAN_SHA" --stage-sha "$(sha256sum /tmp/memory-small-model/stage.json | cut -d ' ' -f1)" --ready-sha "$(cut -d ' ' -f1 /tmp/memory-small-evidence/snapshot-pin.txt)" --policy /tmp/memory-small-evidence/read-policy.json --policy-sha "$(sha256sum /tmp/memory-small-evidence/read-policy.json | cut -d ' ' -f1)" 2>&1 | tee /tmp/memory-small-evidence/read.log
+          test -s /tmp/memory-small-evidence/tasks/raw-answers.jsonl
+      - name: Replay original evidence and separate organization, policy, and knowledge
+        run: |
+          set -euo pipefail
+          /tmp/memory-small-python/bin/python scripts/memory_cell/source_write_effects.py /tmp/memory-small-input/plan /tmp/memory-small-input/observations /tmp/memory-small-evidence --plan-sha "$PLAN_SHA" --ready-sha "$(cut -d ' ' -f1 /tmp/memory-small-evidence/snapshot-pin.txt)" --source-commit "$HEPTA_MEMORY_TESTED_COMMIT" 2>&1 | tee /tmp/memory-small-evidence/effects.log
+          /tmp/memory-small-python/bin/python - <<'PY'
+          import json
+          from pathlib import Path
+
+          root = Path("/tmp/memory-small-evidence")
+          report = json.loads((root / "tasks/source-effects.json").read_text())
+          assert report["schema"] == "hepta.source-write.effects.v1"
+          assert report["actual_tasks"] == 8
+          assert report["original_answer_executions"] == 56
+          assert report["new_model_calls"] == 0
+          assert report["semantic_citation_precision"] is None
+          result = {}
+          for name, groups in report["contrasts"].items():
+              item = groups["all"]
+              assert item["planned_pairs"] == 8
+              result[name] = {
+                  "wins": item["wins"], "losses": item["losses"],
+                  "missing_pairs": item["missing_pairs"],
+                  "observed_gain": item["wins"] > item["losses"]
+                  and item["missing_pairs"] == 0,
+                  "significance_established": False,
+              }
+          (root / "small-reader-diagnostic.json").write_text(
+              json.dumps({
+                  "schema": "hepta.small-reader-source-write-diagnostic.v1",
+                  "actual_pretrained_model": "smol-135m",
+                  "same_reader_only": True, "previously_exposed_authored_tasks": True,
+                  "not_qwen_effect": True, "no_population_inference": True,
+                  "source_effects": result, "production_accepted": False,
+              }, indent=2) + "\n"
+          )
+          PY
+      - name: Preserve original answers, failures, costs and exact source identity
+        if: always()
+        run: |
+          set -euo pipefail
+          root=/tmp/memory-small-evidence
+          mkdir -p "$root/source"
+          cp scripts/memory_cell/experience_memory.py scripts/memory_cell/experience_write_trial.py scripts/memory_cell/source_completion_loss.py scripts/memory_cell/source_write_schedule.py scripts/memory_cell/source_write_effects.py scripts/memory_cell/test_small_source_workflow.py "$root/source/"
+          cp .github/workflows/hepta-memory-small-source-trial.yml "$root/source/"
+          git rev-parse HEAD > "$root/tested-commit.txt"
+          # Publisher weights and trained model tensors are not redistributed.
+          find "$root" -name '*.safetensors' -delete
+          (cd "$root" && find . -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS)
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: memory-small-source-written-experiment
+          path: /tmp/memory-small-evidence
+          if-no-files-found: error

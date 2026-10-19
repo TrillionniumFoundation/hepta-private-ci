@@ -1,0 +1,161 @@
+name: MemoryCell stem protocol fast checks
+on:
+  push:
+    branches: ["codex/memory-cell-evidence-20261008"]
+    paths:
+      - "scripts/memory_cell/stem_cell_time*.py"
+      - "scripts/memory_cell/test_stem_cell_time*.py"
+      - "scripts/memory_cell/stem_cell_temporal.py"
+      - "scripts/memory_cell/test_stem_cell_temporal.py"
+      - "scripts/memory_cell/stem_cell_geometry.py"
+      - "scripts/memory_cell/test_stem_cell_geometry.py"
+      - "scripts/memory_cell/stem_cell_training_probe.py"
+      - "scripts/memory_cell/test_stem_cell_training_probe.py"
+      - "scripts/memory_cell/stem_audit_candidate.py"
+      - "scripts/memory_cell/test_stem_audit_candidate.py"
+      - "scripts/memory_cell/stem_reader_zero_evidence.py"
+      - "scripts/memory_cell/test_stem_reader_zero_evidence.py"
+      - "scripts/memory_cell/stem_reader_paired_control.py"
+      - "scripts/memory_cell/test_stem_reader_paired_control.py"
+      - "scripts/memory_cell/stem_cell_trial.py"
+      - "scripts/memory_cell/stem_pairwise_reader_comparison.py"
+      - "scripts/memory_cell/test_stem_pairwise_reader_comparison.py"
+      - "scripts/memory_cell/stem_weak_window_reader.py"
+      - "scripts/memory_cell/test_stem_weak_window_reader.py"
+      # Fast, frozen and label-blind 9-arm fixture: catch an obsolete six-arm
+      # expectation before a 75-minute pretrained matrix is scheduled.
+      - "scripts/memory_cell/locomo_frozen_retrieval.py"
+      - "scripts/memory_cell/test_locomo_frozen_retrieval.py"
+      - "scripts/memory_cell/locomo_budget_frontier.py"
+      - "scripts/memory_cell/test_locomo_budget_frontier.py"
+      - "scripts/memory_cell/locomo_frozen_reader_pair.py"
+      - "scripts/memory_cell/test_locomo_frozen_reader_pair.py"
+      - "scripts/memory_cell/stem_postpolicy_integrity.py"
+      - "scripts/memory_cell/test_stem_postpolicy_integrity.py"
+      - "scripts/memory_cell/stem_score_replay.py"
+      - "scripts/memory_cell/test_stem_score_replay.py"
+      - "scripts/memory_cell/stem_cell_shadow_scale.py"
+      - "scripts/memory_cell/test_stem_cell_shadow_scale.py"
+      - "scripts/memory_cell/stem_train_heldout_bridge.py"
+      - "scripts/memory_cell/stem_effective_n.py"
+      - "scripts/memory_cell/test_stem_effective_n.py"
+      - "scripts/memory_cell/stem_native_null_ablation.py"
+      - "scripts/memory_cell/stem_null_reader_splice.py"
+      - "scripts/memory_cell/test_stem_null_reader_splice.py"
+      - "scripts/memory_cell/test_stem_native_null_ablation.py"
+      - "scripts/memory_cell/test_stem_train_heldout_bridge.py"
+      - "scripts/memory_cell/stem_head_fit_dynamics.py"
+      - "scripts/memory_cell/test_stem_head_fit_dynamics.py"
+      - "scripts/memory_cell/stem_cell_source_ceiling.py"
+      - "scripts/memory_cell/test_stem_cell_source_ceiling.py"
+      - "scripts/memory_cell/stem_cell_adapter_opportunity.py"
+      - "scripts/memory_cell/test_stem_cell_adapter_opportunity.py"
+      - ".github/workflows/hepta-memory-stem-protocol-smoke.yml"
+permissions:
+  contents: read
+# Keep the newest pending source test per branch without cancelling a test
+# that has already begun; the exact checkout SHA is retained in the artifact.
+concurrency:
+  group: memory-stem-protocol-${{ github.ref }}
+  cancel-in-progress: false
+jobs:
+  protocol-only:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    env:
+      PYTHONPATH: scripts/memory_cell
+      PYTHONDONTWRITEBYTECODE: "1"
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - name: Exact source and stdlib-only protocol regressions
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/stem-protocol
+          git rev-parse HEAD > /tmp/stem-protocol/tested-commit.txt
+          git rev-parse HEAD^{tree} > /tmp/stem-protocol/tested-tree.txt
+          python3 -m compileall -q             scripts/memory_cell/stem_cell_time.py             scripts/memory_cell/stem_cell_time_preflight.py             scripts/memory_cell/stem_cell_temporal.py             scripts/memory_cell/stem_cell_geometry.py             scripts/memory_cell/stem_cell_training_probe.py             scripts/memory_cell/stem_cell_trial.py \
+            scripts/memory_cell/stem_postpolicy_integrity.py \
+            scripts/memory_cell/test_stem_postpolicy_integrity.py \
+            scripts/memory_cell/stem_score_replay.py \
+            scripts/memory_cell/test_stem_score_replay.py \
+            scripts/memory_cell/stem_reader_zero_evidence.py \
+            scripts/memory_cell/stem_reader_paired_control.py \
+            scripts/memory_cell/stem_effective_n.py
+          python3 -m compileall -q scripts/memory_cell/stem_pairwise_reader_comparison.py scripts/memory_cell/test_stem_pairwise_reader_comparison.py
+          python3 -m compileall -q scripts/memory_cell/stem_weak_window_reader.py scripts/memory_cell/test_stem_weak_window_reader.py
+          python3 -m unittest -v             test_stem_cell_time_preflight             test_stem_cell_temporal             test_stem_cell_geometry             test_stem_cell_training_probe             test_stem_audit_candidate \
+            test_stem_reader_zero_evidence \
+            test_stem_reader_paired_control \
+            test_stem_cell_adapter_opportunity \
+            test_stem_cell_source_ceiling \
+            test_stem_head_fit_dynamics \
+            test_stem_train_heldout_bridge \
+            test_stem_native_null_ablation \
+            test_stem_effective_n \
+            test_stem_null_reader_splice \
+            test_stem_cell_shadow_scale \
+            test_stem_score_replay \
+            test_stem_postpolicy_integrity \
+            test_locomo_frozen_retrieval \
+            test_locomo_budget_frontier \
+            test_locomo_frozen_reader_pair \
+            test_stem_pairwise_reader_comparison \
+            test_stem_weak_window_reader             2>&1 | tee /tmp/stem-protocol/tests.log
+      - name: Retain source, failure logs and manifest
+        if: always()
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/stem-protocol/source
+          cp scripts/memory_cell/stem_cell_time*.py /tmp/stem-protocol/source/
+          cp scripts/memory_cell/stem_cell_temporal.py /tmp/stem-protocol/source/
+          cp scripts/memory_cell/stem_cell_geometry.py /tmp/stem-protocol/source/
+          cp scripts/memory_cell/stem_cell_training_probe.py /tmp/stem-protocol/source/
+          cp scripts/memory_cell/stem_audit_candidate.py /tmp/stem-protocol/source/
+          cp scripts/memory_cell/stem_cell_trial.py /tmp/stem-protocol/source/
+          cp scripts/memory_cell/stem_pairwise_reader_comparison.py scripts/memory_cell/test_stem_pairwise_reader_comparison.py /tmp/stem-protocol/source/
+          cp scripts/memory_cell/stem_weak_window_reader.py scripts/memory_cell/test_stem_weak_window_reader.py /tmp/stem-protocol/source/
+          cp scripts/memory_cell/stem_postpolicy_integrity.py scripts/memory_cell/test_stem_postpolicy_integrity.py /tmp/stem-protocol/source/
+          cp scripts/memory_cell/stem_score_replay.py /tmp/stem-protocol/source/
+          cp scripts/memory_cell/test_stem_score_replay.py /tmp/stem-protocol/source/
+          cp scripts/memory_cell/locomo_frozen_retrieval.py /tmp/stem-protocol/source/
+          cp scripts/memory_cell/test_locomo_frozen_retrieval.py /tmp/stem-protocol/source/
+          cp scripts/memory_cell/locomo_budget_frontier.py /tmp/stem-protocol/source/
+          cp scripts/memory_cell/test_locomo_budget_frontier.py /tmp/stem-protocol/source/
+          cp scripts/memory_cell/locomo_frozen_reader_pair.py /tmp/stem-protocol/source/
+          cp scripts/memory_cell/test_locomo_frozen_reader_pair.py /tmp/stem-protocol/source/
+          cp scripts/memory_cell/stem_cell_shadow_scale.py /tmp/stem-protocol/source/
+          cp scripts/memory_cell/test_stem_cell_shadow_scale.py /tmp/stem-protocol/source/
+          cp scripts/memory_cell/stem_cell_adapter_opportunity.py /tmp/stem-protocol/source/
+          cp scripts/memory_cell/test_stem_cell_adapter_opportunity.py /tmp/stem-protocol/source/
+          cp scripts/memory_cell/stem_cell_source_ceiling.py /tmp/stem-protocol/source/
+          cp scripts/memory_cell/test_stem_cell_source_ceiling.py /tmp/stem-protocol/source/
+          cp scripts/memory_cell/stem_head_fit_dynamics.py /tmp/stem-protocol/source/
+          cp scripts/memory_cell/test_stem_head_fit_dynamics.py /tmp/stem-protocol/source/
+          cp scripts/memory_cell/stem_train_heldout_bridge.py /tmp/stem-protocol/source/
+          cp scripts/memory_cell/test_stem_train_heldout_bridge.py /tmp/stem-protocol/source/
+          cp scripts/memory_cell/stem_effective_n.py /tmp/stem-protocol/source/
+          cp scripts/memory_cell/test_stem_effective_n.py /tmp/stem-protocol/source/
+          cp scripts/memory_cell/stem_native_null_ablation.py /tmp/stem-protocol/source/
+          cp scripts/memory_cell/test_stem_native_null_ablation.py /tmp/stem-protocol/source/
+          cp scripts/memory_cell/stem_null_reader_splice.py /tmp/stem-protocol/source/
+          cp scripts/memory_cell/test_stem_null_reader_splice.py /tmp/stem-protocol/source/
+          cp scripts/memory_cell/stem_reader_zero_evidence.py /tmp/stem-protocol/source/
+          cp scripts/memory_cell/test_stem_reader_zero_evidence.py /tmp/stem-protocol/source/
+          cp scripts/memory_cell/stem_reader_paired_control.py /tmp/stem-protocol/source/
+          cp scripts/memory_cell/test_stem_reader_paired_control.py /tmp/stem-protocol/source/
+          cp scripts/memory_cell/test_stem_cell_time*.py /tmp/stem-protocol/source/
+          cp scripts/memory_cell/test_stem_cell_temporal.py /tmp/stem-protocol/source/
+          cp scripts/memory_cell/test_stem_cell_geometry.py /tmp/stem-protocol/source/
+          cp scripts/memory_cell/test_stem_cell_training_probe.py /tmp/stem-protocol/source/
+          cp scripts/memory_cell/test_stem_audit_candidate.py /tmp/stem-protocol/source/
+          cp .github/workflows/hepta-memory-stem-protocol-smoke.yml /tmp/stem-protocol/source/
+          (cd /tmp/stem-protocol && find . -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS)
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: memory-stem-protocol-fast
+          path: /tmp/stem-protocol
+          if-no-files-found: error

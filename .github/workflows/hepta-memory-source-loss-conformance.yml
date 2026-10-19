@@ -1,0 +1,60 @@
+name: MemoryCell isolated source loss conformance
+on:
+  push:
+    branches:
+      - "codex/memory-cell-evidence-20261008"
+    paths:
+      - "scripts/memory_cell/source_completion_loss.py"
+      - "scripts/memory_cell/test_source_completion_*.py"
+      - "scripts/memory_cell/source_loss_admission.py"
+      - "scripts/memory_cell/test_source_loss_admission.py"
+      - ".github/workflows/hepta-memory-source-loss-conformance.yml"
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  pinned-qwen-peft:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      PYTHONPATH: scripts/memory_cell
+      HF_HUB_OFFLINE: "1"
+      TRANSFORMERS_OFFLINE: "1"
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          persist-credentials: false
+          ref: ${{ github.sha }}
+      - name: Pin framework and adapter libraries
+        run: |
+          set -euo pipefail
+          python3 -m venv /tmp/memory-source-loss
+          /tmp/memory-source-loss/bin/python -m pip install torch==2.5.1 --index-url https://download.pytorch.org/whl/cpu
+          /tmp/memory-source-loss/bin/python -m pip install transformers==4.57.1 peft==0.17.1 accelerate==1.10.1
+          /tmp/memory-source-loss/bin/python - <<'PY'
+          import torch, transformers, peft
+          assert torch.__version__ == "2.5.1+cpu"
+          assert transformers.__version__ == "4.57.1"
+          assert peft.__version__ == "0.17.1"
+          PY
+      - name: Test real random Qwen2 PEFT gradients and frozen parameters
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/memory-source-loss-proof
+          /tmp/memory-source-loss/bin/python -m unittest discover -s scripts/memory_cell -p 'test_source_completion_*.py' -v 2>&1 | tee /tmp/memory-source-loss-proof/tests.log
+          /tmp/memory-source-loss/bin/python -m unittest discover -s scripts/memory_cell -p 'test_source_loss_admission.py' -v 2>&1 | tee /tmp/memory-source-loss-proof/admission-tests.log
+          /tmp/memory-source-loss/bin/python -m pip freeze > /tmp/memory-source-loss-proof/environment.txt
+          git rev-parse HEAD > /tmp/memory-source-loss-proof/source-sha.txt
+          sha256sum scripts/memory_cell/source_completion_loss.py scripts/memory_cell/test_source_completion_*.py scripts/memory_cell/source_loss_admission.py scripts/memory_cell/test_source_loss_admission.py > /tmp/memory-source-loss-proof/source-sha256.txt
+      - name: Keep success and failure receipts
+        if: always()
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/memory-source-loss-proof
+          git rev-parse HEAD > /tmp/memory-source-loss-proof/source-sha.txt
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: memory-source-loss-conformance
+          path: /tmp/memory-source-loss-proof
+          if-no-files-found: error

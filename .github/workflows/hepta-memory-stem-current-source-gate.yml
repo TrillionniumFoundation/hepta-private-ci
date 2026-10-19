@@ -1,0 +1,74 @@
+name: MemoryCell current strict-source outcome audit
+on:
+  push:
+    branches: ["codex/memory-cell-evidence-20261008"]
+    paths:
+      - "scripts/memory_cell/stem_current_strict_readout_audit.py"
+      - "scripts/memory_cell/test_stem_current_strict_readout_audit.py"
+      - "scripts/memory_cell/stem_native_reader_stratification.py"
+      - "scripts/memory_cell/test_stem_native_reader_stratification.py"
+      - "scripts/memory_cell/stem_native_oracle_reader_capacity.py"
+      - "scripts/memory_cell/test_stem_native_oracle_reader_capacity.py"
+      - "scripts/memory_cell/test_stem_current_workflow_path_gates.py"
+      - ".github/workflows/hepta-memory-stem-current-source-gate.yml"
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: memory-stem-strict-outcome-${{ github.sha }}
+  cancel-in-progress: false
+jobs:
+  current-strict-native-gate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      PYTHONPATH: scripts/memory_cell
+      PYTHONDONTWRITEBYTECODE: "1"
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - name: Fail-closed source/Reader/family regression tests, no models
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/stem-current-source
+          git rev-parse HEAD > /tmp/stem-current-source/auditor-commit.txt
+          git rev-parse HEAD^{tree} > /tmp/stem-current-source/auditor-tree.txt
+          python3 -m unittest -v test_stem_current_strict_readout_audit test_stem_native_reader_stratification test_stem_native_oracle_reader_capacity test_stem_current_workflow_path_gates 2>&1 | tee /tmp/stem-current-source/tests.log
+          python3 -m compileall -q scripts/memory_cell/stem_current_strict_readout_audit.py scripts/memory_cell/test_stem_current_strict_readout_audit.py scripts/memory_cell/stem_native_reader_stratification.py scripts/memory_cell/test_stem_native_reader_stratification.py
+      - name: Fetch the exact completed 576-of-576 strict native experiment
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          gh api repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/11702192907/zip > /tmp/stem-native-current-cb9e983.zip
+          printf '%s  %s\n' \
+            be3393f448993451c7860e8867e28a79f5fb7f95d5773f79ed55b30d12a84776 /tmp/stem-native-current-cb9e983.zip | sha256sum -c -
+      - name: Reconcile all answers with post-policy weak-source ceilings
+        run: |
+          set -euo pipefail
+          python3 scripts/memory_cell/stem_current_strict_readout_audit.py \
+            --archive /tmp/stem-native-current-cb9e983.zip \
+            --output /tmp/stem-current-source/strict-source-outcome.json \
+            2>&1 | tee /tmp/stem-current-source/strict-source-outcome.log
+      - name: Keep exact auditing source, failure diagnostics, all hashes
+        if: always()
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/stem-current-source/source
+          cp scripts/memory_cell/stem_current_strict_readout_audit.py /tmp/stem-current-source/source/
+          cp scripts/memory_cell/test_stem_current_strict_readout_audit.py /tmp/stem-current-source/source/
+          cp scripts/memory_cell/stem_native_reader_stratification.py /tmp/stem-current-source/source/
+          cp scripts/memory_cell/test_stem_native_reader_stratification.py /tmp/stem-current-source/source/
+          cp scripts/memory_cell/stem_native_oracle_reader_capacity.py /tmp/stem-current-source/source/
+          cp scripts/memory_cell/test_stem_native_oracle_reader_capacity.py /tmp/stem-current-source/source/
+          cp scripts/memory_cell/stem_audit_archive.py /tmp/stem-current-source/source/
+          cp .github/workflows/hepta-memory-stem-current-source-gate.yml /tmp/stem-current-source/source/
+          (cd /tmp/stem-current-source && find . -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS)
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: memory-stem-current-source-outcome
+          path: /tmp/stem-current-source
+          if-no-files-found: error

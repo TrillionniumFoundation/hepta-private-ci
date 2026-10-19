@@ -1,0 +1,156 @@
+{
+  "schema": "hepta.memory.reader-ablation-archival-forensic.v1",
+  "derived_on_utc_date": "2026-10-17",
+  "source": "unchanged original GitHub Actions artifacts; independent local read-only recomputation, no new model inference",
+  "exact_artifact_sha256": {
+    "authored_source": "23e9d44b8d2dbe756c7c33031e18853c83326458a37925d4d368881145bf142b",
+    "smollm2_1_7b": "67d46247bd1881c8fb3f73ec6122415d0d15a0ec24b02f193fb1294e7ea63bae",
+    "qwen2_5_3b": "831ce9658bafcbaf04f4a15879982e58317322f7cd5137724498d7d20df7bb98",
+    "qwen_40_calibration_72_evaluation": "2d71f40e553e7d28cad9d8e16803f52b7a99e771b5bf54f55c89bc9468702107",
+    "independent_readonly_replay": "fe710be3f987e34ec3cda48be37509e20a01b48db090907c98ce33cfff198225"
+  },
+  "github_actions_artifact_ids": {
+    "authored_source": 11669174727,
+    "smollm2_1_7b": 11674486085,
+    "qwen2_5_3b": 11674741321,
+    "qwen_40_calibration_72_evaluation": 11696514149,
+    "independent_readonly_replay": 11696898778
+  },
+  "inherited_plan_sha256": "9840a25487af444914dca24c818d98ff798ebc1610ea8dfdd827187c31ad1897",
+  "audited_legacy_model_inference_rows": 208,
+  "paired_smollm_qwen_experiment_rows": 48,
+  "paired_delivered_evidence_identical": 48,
+  "original_48_48_raw_journals_match_score_preserved_answers": true,
+  "original_raw_journal_sha256": {
+    "smollm2_1_7b": "d600a6d9b2a728d0d230c44f75ef9f48e82ec6a47918e7e13b102a6b15f94c20",
+    "qwen2_5_3b": "7cf036617a0dec5436dadca0566459892cc2250b325a894b84a2b4b649f4c345"
+  },
+  "correctness_by_arm_on_eight_authored_cases": {
+    "smollm2_1_7b": {
+      "empty": 0,
+      "hybrid": 1,
+      "entity_time": 2,
+      "organized": 3,
+      "program_support": 3,
+      "without_prerequisite": 2
+    },
+    "qwen2_5_3b": {
+      "empty": 0,
+      "hybrid": 3,
+      "entity_time": 8,
+      "organized": 8,
+      "program_support": 8,
+      "without_prerequisite": 4
+    }
+  },
+  "qwen_40_72_evaluation": {
+    "selected_k": 5,
+    "hybrid_k4": 3,
+    "hybrid_k6": 2,
+    "hybrid_k4_reversed": 3,
+    "single_hop": 4,
+    "entity_time": 8,
+    "organized": 8,
+    "program_support": 8,
+    "empty": 0
+  },
+  "real_cross_run_qwen_identical_answers_on_unchanged_evidence": {
+    "arms": [
+      "empty",
+      "entity_time",
+      "organized",
+      "program_support"
+    ],
+    "question_arms": 32,
+    "original_answers_same": 32,
+    "evidence_bytes_same": 32
+  },
+  "ablation_original_evidence_cases": [
+    {
+      "id": "controlled_52a0bb15",
+      "kind": "procedure",
+      "answer_literal_survives": true,
+      "source_count": 1,
+      "smol_correct": true,
+      "qwen_correct": true
+    },
+    {
+      "id": "controlled_7fadc16e",
+      "kind": "new_fact",
+      "answer_literal_survives": false,
+      "source_count": 0,
+      "smol_correct": false,
+      "qwen_correct": false
+    },
+    {
+      "id": "controlled_7fc7f8c2",
+      "kind": "procedure",
+      "answer_literal_survives": true,
+      "source_count": 1,
+      "smol_correct": true,
+      "qwen_correct": true
+    },
+    {
+      "id": "controlled_bcb9165b",
+      "kind": "composition",
+      "answer_literal_survives": true,
+      "source_count": 1,
+      "smol_correct": false,
+      "qwen_correct": true
+    },
+    {
+      "id": "controlled_c71dcd6f",
+      "kind": "composition",
+      "answer_literal_survives": true,
+      "source_count": 1,
+      "smol_correct": false,
+      "qwen_correct": true
+    },
+    {
+      "id": "controlled_cbfd4ba5",
+      "kind": "correction",
+      "answer_literal_survives": false,
+      "source_count": 0,
+      "smol_correct": false,
+      "qwen_correct": false
+    },
+    {
+      "id": "controlled_f0609607",
+      "kind": "correction",
+      "answer_literal_survives": false,
+      "source_count": 0,
+      "smol_correct": false,
+      "qwen_correct": false
+    },
+    {
+      "id": "controlled_faedc8b9",
+      "kind": "new_fact",
+      "answer_literal_survives": false,
+      "source_count": 0,
+      "smol_correct": false,
+      "qwen_correct": false
+    }
+  ],
+  "visibility_confound": {
+    "literal_survives": 4,
+    "literal_absent": 4,
+    "qwen_correct_given_literal_survives": 4,
+    "qwen_correct_given_literal_absent": 0,
+    "smollm_correct_given_literal_survives": 2,
+    "smollm_correct_given_literal_absent": 0,
+    "each_literal_surviving_case_has_exactly_one_answer_like_identifier_in_raw_excerpt": true,
+    "changed_both_premise_and_answer_visibility": true,
+    "confounded_with_task_kind": true,
+    "independently_proves_necessity": false
+  },
+  "reader_only_observed_organized_gain_qwen_minus_smollm": 5,
+  "organized_minus_entity_time_qwen_correct_tasks": 0,
+  "organized_minus_entity_time_qwen_input_tokens": -573,
+  "statistical_independence_certified": false,
+  "human_sufficient_context_approved": false,
+  "human_semantic_citations_approved": false,
+  "total_lifecycle_cost_available": false,
+  "prospective_task_qualification": false,
+  "parametric_learning_gain_claimed": false,
+  "production_accepted": false
+}

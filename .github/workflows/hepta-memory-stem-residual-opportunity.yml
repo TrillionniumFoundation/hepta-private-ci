@@ -1,0 +1,65 @@
+name: MemoryCell pinned strict residual opportunity
+on:
+  push:
+    branches: ["codex/memory-cell-evidence-20261008"]
+    paths:
+      - "scripts/memory_cell/stem_strict_residual_opportunity.py"
+      - "scripts/memory_cell/test_stem_strict_residual_opportunity.py"
+      - ".github/workflows/hepta-memory-stem-residual-opportunity.yml"
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: memory-stem-residual-opportunity-${{ github.sha }}
+  cancel-in-progress: false
+jobs:
+  immutable-geometry:
+    if: github.repository == 'TrillionniumFoundation/hepta-private-ci'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      PYTHONPATH: scripts/memory_cell
+      PYTHONDONTWRITEBYTECODE: "1"
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - name: Run bounded synthetic census and malicious-input tests
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/stem-residual-audit
+          git rev-parse HEAD > /tmp/stem-residual-audit/auditing-commit.txt
+          git rev-parse HEAD^{tree} > /tmp/stem-residual-audit/auditing-tree.txt
+          python3 -m compileall -q scripts/memory_cell/stem_strict_residual_opportunity.py scripts/memory_cell/test_stem_strict_residual_opportunity.py
+          python3 -m unittest -v test_stem_strict_residual_opportunity 2>&1 | tee /tmp/stem-residual-audit/tests.log
+      - name: Retrieve externally pinned completed strict-as-of native ZIP
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          gh api repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/11695607348/zip > /tmp/stem-strict-48118e.zip
+          printf '%s  %s\n' d2147964d4b916a01bfa0051dec3a3e9aaedb5b2864625c5f2a25db0c44f20e0 /tmp/stem-strict-48118e.zip | sha256sum -c -
+      - name: Reconcile 576 policy choices and 60 counterfactual threshold cohorts
+        run: |
+          set -euo pipefail
+          python3 scripts/memory_cell/stem_strict_residual_opportunity.py \
+            --artifact /tmp/stem-strict-48118e.zip \
+            --output /tmp/stem-residual-audit/score-scale-opportunity.json \
+            2>&1 | tee /tmp/stem-residual-audit/audit.log
+      - name: Retain tested audit source, all failures and byte manifests
+        if: always()
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/stem-residual-audit/source
+          cp scripts/memory_cell/stem_strict_residual_opportunity.py /tmp/stem-residual-audit/source/
+          cp scripts/memory_cell/test_stem_strict_residual_opportunity.py /tmp/stem-residual-audit/source/
+          cp scripts/memory_cell/stem_audit_archive.py /tmp/stem-residual-audit/source/
+          cp .github/workflows/hepta-memory-stem-residual-opportunity.yml /tmp/stem-residual-audit/source/
+          (cd /tmp/stem-residual-audit && find . -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS)
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: memory-stem-residual-opportunity
+          path: /tmp/stem-residual-audit
+          if-no-files-found: error
