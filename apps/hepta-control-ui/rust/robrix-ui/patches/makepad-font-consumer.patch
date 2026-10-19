@@ -49,7 +49,7 @@
 +        crate::makepad_platform::hepta_font_consumer::parse_started(id.hepta_observation_id());
 --- /dev/null
 +++ b/makepad-platform/src/hepta_font_consumer.rs
-@@ -0,0 +1,160 @@
+@@ -0,0 +1,168 @@
 +//! Optional bounded observations of existing font work. Never loads, parses, or draws.
 +//! Only the diagnostic debugger enables this before application initialization.
 +use std::{cell::RefCell, collections::HashSet, sync::atomic::{AtomicBool, Ordering}};
@@ -115,6 +115,14 @@
 +}
 +
 +// These Rust entry points are not exported to WASM or reachable from page input.
++pub(crate) fn http_response_mapped(request: u64, public_request: u64) {
++    if !ENABLED.load(Ordering::Acquire) { return; }
++    STATE.with(|state| {
++        let mut state = state.borrow_mut();
++        if !state.active() { return; }
++        state.push(format!("\"stage\":\"http-response\",\"request\":\"{request}\",\"publicRequest\":\"{public_request}\""));
++    });
++}
 +pub(crate) fn adopted(request: u64, path: &str, bytes: &[u8]) {
 +    if !ENABLED.load(Ordering::Acquire) { return; }
 +    if !path.ends_with(".ttf") && !path.ends_with(".otf") { return; }
@@ -188,7 +196,7 @@
 +        if nonce == 0 || nonce != state.nonce || state.sealed { return 0; }
 +        state.sealed = true;
 +        ENABLED.store(false, Ordering::Release);
-+        let value = format!("{{\"version\":1,\"nonce\":{},\"sealed\":true,\"overflow\":{},\"hashedBytes\":{},\"events\":[{}]}}", state.nonce, state.overflow, state.hashed_bytes, state.events.join(","));
++        let value = format!("{{\"version\":2,\"nonce\":{},\"sealed\":true,\"overflow\":{},\"hashedBytes\":{},\"events\":[{}]}}", state.nonce, state.overflow, state.hashed_bytes, state.events.join(","));
 +        if value.len() > MAX_SNAPSHOT { state.overflow = true; return 0; }
 +        state.snapshot = value.into_bytes();
 +        1
@@ -222,3 +230,15 @@
 +                if let CxScriptResourceData::Loaded(bytes) = &res.data {
 +                    crate::hepta_font_consumer::adopted(request_id.0, &res.abs_path, bytes);
 +                }
+--- a/makepad-platform/src/os/web/web_network.rs
++++ b/makepad-platform/src/os/web/web_network.rs
+@@ -107,6 +107,9 @@
+             state.by_public.remove(&pending.public_request_id);
+             pending
+         };
++        crate::hepta_font_consumer::http_response_mapped(
++            internal_request_id.0, pending.public_request_id.0,
++        );
+         let _ = pending.sink.emit(NetworkResponse::HttpResponse {
+             request_id: pending.public_request_id,
+             response: HttpResponse::from_header_string(

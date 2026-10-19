@@ -1,6 +1,6 @@
 {
   "upstream": "337566c8b25d47f7e4fff6a202157b65bf183330",
-  "patchSha256": "50db20eab5d92d723d41e4f114ead37ca3477134e67e8f415efe21fdddd48f04",
+  "patchSha256": "07f195cbd22315f4ef692c3d1b055cd000932b39e7b32e8ef01437dedac03cc7",
   "files": [
     {
       "path": "makepad-draw/src/shader/draw_text.rs",
@@ -20,7 +20,7 @@
     {
       "path": "makepad-platform/src/hepta_font_consumer.rs",
       "beforeSha256": null,
-      "afterSha256": "b9e3921af8183ba87c5dd314526353b1b2a9bf4c1b89996eb5357e63ca4d8341"
+      "afterSha256": "b556adbb811ac879005536753d5b9a7730af65c3c3eefcb4fe42dcb9959bd5a6"
     },
     {
       "path": "makepad-platform/src/lib.rs",
@@ -31,7 +31,12 @@
       "path": "makepad-platform/src/script/res.rs",
       "beforeSha256": "30f5ea8653a393db7eb6547613c60f901ff0a2b01bb4d229b5fd3f09db797879",
       "afterSha256": "ffcdd4dec2643d969e2b8abd37dc07ab492d35f278dad6eb9321ffd65e210555"
+    },
+    {
+      "path": "makepad-platform/src/os/web/web_network.rs",
+      "beforeSha256": "24dffe35dba1218adaa6d9ab9a12f51631f796e8d9f31114ecb973db34417b14",
+      "afterSha256": "e9d75db43bda8fd8b58b360d83dcf0c4667c8a727ca633bf2a5a729e2663423b"
     }
   ],
-  "scope": "Disabled-by-default WASM-only observation of existing adoption, parser success and natural glyph instance emission; no acceptance authority"
+  "scope": "Disabled-by-default WASM-only observation of actual HTTP transport/public request mapping, existing adoption, parser success and natural glyph instance emission; no acceptance authority"
 }
