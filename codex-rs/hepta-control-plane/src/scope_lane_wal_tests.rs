@@ -244,3 +244,39 @@ fn newly_created_scope_wal_is_owner_only_on_unix() {
         0
     );
 }
+
+#[test]
+fn torn_tail_recovery_can_append_again_without_overwriting_predecessor() {
+    let directory = must(tempdir());
+    let path = directory.path().join("scope-lanes-reappend.wal");
+    let first = envelope("scope-a", "owner-a", 1, "first");
+    let second = envelope("scope-a", "owner-a", 1, "after-recovery");
+    {
+        let mut writer = must(ScopeLaneFileWalV1::open(&path));
+        assert_eq!(must(writer.append(first.clone())).sequence, 1);
+    }
+    let committed_len = must(std::fs::metadata(&path)).len();
+    // Simulate an interrupted, fsynced partial physical frame.
+    {
+        let mut partial = must(OpenOptions::new().append(true).open(&path));
+        must(partial.write_all(&[0, 0, 0, 64, 0xab]));
+        must(partial.sync_all());
+    }
+    {
+        let mut recovered = must(ScopeLaneFileWalV1::open(&path));
+        assert_eq!(must(std::fs::metadata(&path)).len(), committed_len);
+        assert_eq!(recovered.wal().record_count(), 1);
+        assert_eq!(must(recovered.append(second.clone())).sequence, 2);
+    }
+    let replay = must(ScopeLaneFileWalV1::open(&path));
+    let entries = replay.wal().entries(digest("scope-a"));
+    assert_eq!(entries.map(|rows| rows.len()), Some(2));
+    assert_eq!(
+        entries.and_then(|rows| rows.first()).map(|row| &row.envelope),
+        Some(&first)
+    );
+    assert_eq!(
+        entries.and_then(|rows| rows.get(1)).map(|row| &row.envelope),
+        Some(&second)
+    );
+}
