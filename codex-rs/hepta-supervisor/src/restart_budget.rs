@@ -111,6 +111,7 @@ pub fn complete_restart(run_root: &Path) -> Result<(), RestartBudgetError> {
     write_restart_budget(run_root, &state)
 }
 
+#[cfg(unix)]
 pub fn restart_available(
     run_root: &Path,
     maximum_attempts: u32,
