@@ -1387,14 +1387,18 @@ fn curated_repo_backup_archive_zip_bytes(sha: &str) -> Vec<u8> {
 fn extract_zipball_rejects_symlink_entries() {
     let cursor = std::io::Cursor::new(Vec::new());
     let mut writer = ZipWriter::new(cursor);
-    let options = SimpleFileOptions::default().unix_permissions(0o120777);
     writer
-        .start_file("root/link", options)
-        .expect("start symlink entry");
-    writer
-        .write_all(b"../../outside")
-        .expect("write symlink target");
+        .add_symlink("root/link", "../../outside", SimpleFileOptions::default())
+        .expect("add symlink entry");
     let bytes = writer.finish().expect("finish zip").into_inner();
+    let mut archive = ZipArchive::new(std::io::Cursor::new(&bytes)).expect("open symlink archive");
+    assert!(
+        archive
+            .by_name("root/link")
+            .expect("symlink archive entry")
+            .is_symlink(),
+        "test fixture must encode a real symlink"
+    );
     let destination = tempdir().expect("destination");
 
     let err = extract_zipball_to_dir(&bytes, destination.path())
