@@ -1,6 +1,7 @@
 use super::*;
 use codex_app_server_client::RemoteAppServerObservedEvent;
 use codex_app_server_protocol::AgentMessageDeltaNotification;
+use codex_app_server_protocol::ItemCompletedNotification;
 use codex_app_server_protocol::Turn;
 use codex_app_server_protocol::TurnCompletedNotification;
 use codex_app_server_protocol::TurnItemsView;
@@ -180,6 +181,87 @@ fn output_is_observed_bounded_and_never_predeclares_success() {
     );
     assert_eq!(output.output, "model output");
     assert!(!output.terminal_observed);
+}
+
+#[test]
+fn nonstreaming_completed_message_preserves_exact_bound_output_and_byte_budget() {
+    let complete_message = |thread: &str, turn: &str, text: String| {
+        ServerNotification::ItemCompleted(ItemCompletedNotification {
+            thread_id: thread.to_string(),
+            turn_id: turn.to_string(),
+            item: ThreadItem::AgentMessage {
+                id: "message-item".to_string(),
+                text,
+                phase: None,
+                memory_citation: None,
+                delivery: None,
+            },
+            completed_at_ms: 123,
+        })
+    };
+    let mut unstreamed = output();
+    observe_for_test(
+        &mut unstreamed,
+        complete_message("wrong-thread", "turn-a", "untrusted".to_string()),
+    )
+    .unwrap();
+    observe_for_test(
+        &mut unstreamed,
+        complete_message("thread-a", "wrong-turn", "untrusted".to_string()),
+    )
+    .unwrap();
+    assert!(unstreamed.output.is_empty());
+    assert!(
+        !observe_for_test(
+            &mut unstreamed,
+            complete_message("thread-a", "turn-a", "fresh context accepted".to_string()),
+        )
+        .unwrap()
+    );
+    assert_eq!(unstreamed.output, "fresh context accepted");
+    assert!(!unstreamed.terminal_observed);
+    assert_eq!(unstreamed.status, NativeRunStatus::Indeterminate);
+
+    let mut streamed = output();
+    observe_for_test(
+        &mut streamed,
+        ServerNotification::AgentMessageDelta(AgentMessageDeltaNotification {
+            thread_id: "thread-a".to_string(),
+            turn_id: "turn-a".to_string(),
+            item_id: "message-item".to_string(),
+            delta: "fresh ".to_string(),
+        }),
+    )
+    .unwrap();
+    observe_for_test(
+        &mut streamed,
+        complete_message("thread-a", "turn-a", "fresh context accepted".to_string()),
+    )
+    .unwrap();
+    assert_eq!(streamed.output, "fresh ", "do not double-count completed items");
+    let mut completion = terminal("thread-a", "turn-a", TurnStatus::Completed);
+    if let ServerNotification::TurnCompleted(ref mut event) = completion {
+        event.turn.items.push(ThreadItem::AgentMessage {
+            id: "message-item".to_string(),
+            text: "fresh context accepted".to_string(),
+            phase: None,
+            memory_citation: None,
+            delivery: None,
+        });
+    }
+    assert!(observe_for_test(&mut streamed, completion).unwrap());
+    assert_eq!(streamed.output, "fresh context accepted");
+    assert!(streamed.terminal_observed);
+
+    let mut oversized = output();
+    assert!(
+        observe_for_test(
+            &mut oversized,
+            complete_message("thread-a", "turn-a", "x".repeat(MAX_OUTPUT_BYTES + 1)),
+        )
+        .is_err()
+    );
+    assert!(oversized.output.is_empty());
 }
 
 #[test]
