@@ -45,7 +45,7 @@ jobs:
           curl --fail --silent --show-error --location \
             https://github.com/EmbarkStudios/cargo-deny/releases/download/0.19.0/cargo-deny-0.19.0-x86_64-unknown-linux-musl.tar.gz \
             | tar -xz -C "${RUNNER_TEMP}/cargo-deny" --strip-components=1 cargo-deny-0.19.0-x86_64-unknown-linux-musl/cargo-deny
-          "${RUNNER_TEMP}/cargo-deny/cargo-deny" check advisories --manifest-path codex-rs/Cargo.toml > "${RUNNER_TEMP}/cargo-deny/advisories.log" 2>&1 || true
+          (cd codex-rs && "${RUNNER_TEMP}/cargo-deny/cargo-deny" check advisories) > "${RUNNER_TEMP}/cargo-deny/advisories.log" 2>&1 || true
           grep -E "RUSTSEC-|advisories|error|warning|failed" "${RUNNER_TEMP}/cargo-deny/advisories.log" > "${RUNNER_TEMP}/cargo-deny/report.txt" || true
           cat "${RUNNER_TEMP}/cargo-deny/report.txt"
       - name: Upload real Cargo.lock postimage
