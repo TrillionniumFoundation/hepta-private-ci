@@ -29,8 +29,9 @@ for(const width of [1280,640])for(const scenario of ['timeout','navigation','bac
  // Diagnostic observers only: do not consume bodies, cancel requests, alter cache,
  // replace SDK APIs, or waive any existing font/console/lifecycle assertion.
  const diagnosticStart=performance.now(),fontRequests=[],fontEvents=[],fontResponseFinished=[],consoleEvents=[],cdpFontEvents=[],diagnosticWaits=[];
+ const apiNetworkEvents=[],apiWaits=[];
  let diagnosticComplete=false,diagnosticFailed=false;
- const diagnosticOverflow={fontRequests:0,fontEvents:0,consoleEvents:0,cdpFontEvents:0};
+ const diagnosticOverflow={fontRequests:0,fontEvents:0,consoleEvents:0,cdpFontEvents:0,apiNetworkEvents:0,apiWaits:0};
  const diagnosticMs=()=>Math.round((performance.now()-diagnosticStart)*1000)/1000;
  const appendDiagnostic=(name,values,value)=>{if(diagnosticComplete)return;if(values.length<512)values.push(value);else diagnosticOverflow[name]++;};
  const diagnosticPath=value=>{try{return new URL(value,baseURL).pathname.slice(0,512);}catch{return 'unavailable';}};
@@ -45,7 +46,7 @@ for(const width of [1280,640])for(const scenario of ['timeout','navigation','bac
    return settled;
   }finally{clearTimeout(timer);}
  }
- const fontRequestIds=new Map(),cdpFontIds=new Set();let cdp=null,browserLifecycle=null;
+ const fontRequestIds=new Map(),cdpFontIds=new Set(),cdpApiIds=new Set();let cdp=null,browserLifecycle=null;
  function fontRecord(request){
   if(!fontRequestIds.has(request)){
    if(diagnosticComplete||fontRequestIds.size>=512){diagnosticOverflow.fontRequests++;return null;}
@@ -63,11 +64,19 @@ for(const width of [1280,640])for(const scenario of ['timeout','navigation','bac
   appendDiagnostic('fontEvents',fontEvents,{id,event,phase,ms:diagnosticMs(),...details});
  }
  function cdpFontEvent(event,details){appendDiagnostic('cdpFontEvents',cdpFontEvents,{event,phase,ms:diagnosticMs(),...details});}
+ function cdpApiEvent(event,details){appendDiagnostic('apiNetworkEvents',apiNetworkEvents,{event,phase,ms:diagnosticMs(),...details});}
+ function apiWait(name,state){appendDiagnostic('apiWaits',apiWaits,{name,state,phase,ms:diagnosticMs()});}
  async function observeFontInitiators(){
   // The product config is Chromium-only. CDP is passive observation here: no
   // Fetch domain, request interception, cache overrides or response body reads.
   cdp=await page.context().newCDPSession(page);
   cdp.on('Network.requestWillBeSent',event=>{
+   if(!diagnosticComplete&&(event.request.url===ownerUrl||event.request.url===runtimeUrl)){
+    if(cdpApiIds.has(event.requestId)||cdpApiIds.size<128){
+     cdpApiIds.add(event.requestId);
+     cdpApiEvent('requestWillBeSent',{requestId:event.requestId,path:diagnosticPath(event.request.url),method:event.request.method,type:event.type,timestamp:event.timestamp});
+    }else diagnosticOverflow.apiNetworkEvents++;
+   }
    if(!/\.(?:ttf|otf)(?:[?#]|$)/i.test(event.request.url))return;
    if(diagnosticComplete)return;
    if(!cdpFontIds.has(event.requestId)&&cdpFontIds.size>=512){diagnosticOverflow.cdpFontEvents++;return;}
@@ -76,12 +85,24 @@ for(const width of [1280,640])for(const scenario of ['timeout','navigation','bac
    cdpFontEvent('requestWillBeSent',{requestId:event.requestId,path:diagnosticPath(event.request.url),method:event.request.method,type:event.type,loaderId:event.loaderId,frameId:event.frameId,documentPath:diagnosticPath(event.documentURL),timestamp:event.timestamp,initiator:{type:initiator.type,path:initiator.url?diagnosticPath(initiator.url):null,lineNumber:initiator.lineNumber,columnNumber:initiator.columnNumber,callFrames:initiator.stack?.callFrames?.slice(0,12).map(diagnosticFrame),parentCallFrames:initiator.stack?.parent?.callFrames?.slice(0,12).map(diagnosticFrame)}});
   });
   cdp.on('Network.responseReceived',event=>{
+   if(cdpApiIds.has(event.requestId)){
+    const response=event.response;
+    const header=name=>String(Object.entries(response.headers).find(([key])=>key.toLowerCase()===name)?.[1]??'').slice(0,256);
+    cdpApiEvent('responseReceived',{requestId:event.requestId,path:diagnosticPath(response.url),timestamp:event.timestamp,status:response.status,protocol:response.protocol,mimeType:response.mimeType,fromDiskCache:response.fromDiskCache,fromServiceWorker:response.fromServiceWorker,headers:{contentLength:header('content-length'),transferEncoding:header('transfer-encoding'),contentEncoding:header('content-encoding'),cacheControl:header('cache-control')}});
+   }
    if(!cdpFontIds.has(event.requestId))return;
    const response=event.response;
    cdpFontEvent('responseReceived',{requestId:event.requestId,timestamp:event.timestamp,type:event.type,path:diagnosticPath(response.url),status:response.status,mimeType:response.mimeType,protocol:response.protocol,fromDiskCache:response.fromDiskCache,fromServiceWorker:response.fromServiceWorker,encodedDataLength:response.encodedDataLength,timing:response.timing});
   });
-  cdp.on('Network.loadingFinished',event=>{if(cdpFontIds.has(event.requestId))cdpFontEvent('loadingFinished',{requestId:event.requestId,timestamp:event.timestamp,encodedDataLength:event.encodedDataLength});});
-  cdp.on('Network.loadingFailed',event=>{if(cdpFontIds.has(event.requestId))cdpFontEvent('loadingFailed',{requestId:event.requestId,timestamp:event.timestamp,type:event.type,errorText:diagnosticError(event.errorText),canceled:event.canceled,blockedReason:event.blockedReason,corsError:event.corsErrorStatus?.corsError});});
+  cdp.on('Network.dataReceived',event=>{if(cdpApiIds.has(event.requestId))cdpApiEvent('dataReceived',{requestId:event.requestId,timestamp:event.timestamp,dataLength:event.dataLength,encodedDataLength:event.encodedDataLength});});
+  cdp.on('Network.loadingFinished',event=>{
+   if(cdpApiIds.has(event.requestId))cdpApiEvent('loadingFinished',{requestId:event.requestId,timestamp:event.timestamp,encodedDataLength:event.encodedDataLength});
+   if(cdpFontIds.has(event.requestId))cdpFontEvent('loadingFinished',{requestId:event.requestId,timestamp:event.timestamp,encodedDataLength:event.encodedDataLength});
+  });
+  cdp.on('Network.loadingFailed',event=>{
+   if(cdpApiIds.has(event.requestId))cdpApiEvent('loadingFailed',{requestId:event.requestId,timestamp:event.timestamp,type:event.type,errorText:diagnosticError(event.errorText),canceled:event.canceled,blockedReason:event.blockedReason});
+   if(cdpFontIds.has(event.requestId))cdpFontEvent('loadingFailed',{requestId:event.requestId,timestamp:event.timestamp,type:event.type,errorText:diagnosticError(event.errorText),canceled:event.canceled,blockedReason:event.blockedReason,corsError:event.corsErrorStatus?.corsError});
+  });
   await cdp.send('Network.enable');
   await page.addInitScript(()=>{
    window.__heptaProductLifecycle=[];window.__heptaProductLifecycleOverflow=0;
@@ -99,7 +120,7 @@ for(const width of [1280,640])for(const scenario of ['timeout','navigation','bac
   if(!requestRecords.has(request)){const record={id:++nextRequestId,url:request.url(),method:request.method(),phase};requestRecords.set(request,record);requests.push(record);}
   return requestRecords.get(request);
  }
- function rawAudit(){return {binding,scenario,errors,requests,responses,failures:networkFailures,cancellations,proofs,sdkUrl,runtimeUrl,ownerUrl,faults,fontDiagnostics:{fontRequests,fontEvents,cdpFontEvents,consoleEvents,browserLifecycle,diagnosticOverflow,diagnosticWaits}};}
+ function rawAudit(){return {binding,scenario,errors,requests,responses,failures:networkFailures,cancellations,proofs,sdkUrl,runtimeUrl,ownerUrl,faults,apiDiagnostics:{network:apiNetworkEvents,waits:apiWaits},fontDiagnostics:{fontRequests,fontEvents,cdpFontEvents,consoleEvents,browserLifecycle,diagnosticOverflow,diagnosticWaits}};}
  async function audit(name){
   await Promise.all(finishedResponses);
   await settleFontObservations(name);
@@ -204,7 +225,8 @@ for(const width of [1280,640])for(const scenario of ['timeout','navigation','bac
   for(let index=0;index<3;index++)await page.mouse.click(refresh.x,refresh.y);
   await settle();expect(ownerCount()).toBe(beforeCancellation+1);
   await expect.poll(async()=> (await observedText('timed-out','timedOut')).passed,{timeout:15000,intervals:[250]}).toBe(true);
-  const timeoutReply=await timeoutLegacy;expect(timeoutReply.status()).toBe(503);expect(await timeoutReply.finished()).toBeNull();await timeoutSdk503;
+  const timeoutReply=await timeoutLegacy;expect(timeoutReply.status()).toBe(503);
+  apiWait('timeout-runtime.finished','start');expect(await timeoutReply.finished()).toBeNull();apiWait('timeout-runtime.finished','done');await timeoutSdk503;
   expectedState='timedOut';
  }else if(scenario==='navigation'){
   const currentTabs=await screenshotConversationTabs((await observedText('reading')).path,page.viewportSize(),{recordOcr:true});
@@ -218,7 +240,7 @@ for(const width of [1280,640])for(const scenario of ['timeout','navigation','bac
   await page.evaluate(()=>window.dispatchEvent(new PageTransitionEvent('pageshow',{persisted:true})));
   expectedState='noObservation';
  }
- await held.finish();expect(ownerCount()).toBe(beforeCancellation+1);
+ apiWait('held-owner.finish','start');await held.finish();apiWait('held-owner.finish','done');expect(ownerCount()).toBe(beforeCancellation+1);
  const late=await observedText('late-after-'+scenario,expectedState);expect(late.passed).toBe(true);
  await expect.poll(()=>networkFailures.filter(f=>f.id===held.requestId).length).toBe(1);
  cancellations.push({requestId:held.requestId,phase:scenario});
