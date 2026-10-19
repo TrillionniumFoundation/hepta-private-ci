@@ -1,0 +1,17 @@
+import "./deployment-asset-invariants.test.js";
+import "./deployment-security-invariants.test.js";
+import "./candidate-build-artifact.test.js";
+import "./external-evidence-validation.test.js";
+import "./external-evidence-assurance.test.js";
+import "./external-evidence-operational.test.js";
+import "./external-evidence-acceptance.test.js";
+import "./external-evidence-status-contract.test.js";
+import "./external-evidence-stage-ledger.test.js";
+import "./external-evidence-bundle-failure.test.js";
+import "./external-evidence-bundle-acceptance.test.js";
+import "./real-backend-invariants.test.js";
+import "./real-backend-contract-coverage.test.js";
+import "./external-preflight.test.js";
+import "./external-workflow-security.test.js";
+import "./external-workflow-observation.test.js";
+import "./qualification-workflow-observer.test.js";

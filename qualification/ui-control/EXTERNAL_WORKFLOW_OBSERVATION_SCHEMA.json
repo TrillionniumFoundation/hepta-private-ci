@@ -1,0 +1,327 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "hepta.ui-control.external-workflow-observation.v1",
+  "title": "ui.control external workflow observation",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "status",
+    "observedAt",
+    "observer",
+    "sourceRun",
+    "requestedCandidate",
+    "artifactInventory",
+    "artifactInventoryComplete",
+    "evidenceAvailability",
+    "observedOutcome",
+    "acceptedEvidence",
+    "failure",
+    "claims"
+  ],
+  "properties": {
+    "schema": {
+      "const": "hepta.ui-control.external-workflow-observation.v1"
+    },
+    "status": {
+      "enum": [
+        "passed",
+        "failed"
+      ]
+    },
+    "observedAt": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "observer": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "workflowSha",
+        "runId",
+        "runAttempt",
+        "repository"
+      ],
+      "properties": {
+        "workflowSha": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "pattern": "^[0-9a-f]{40}$"
+        },
+        "runId": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "minimum": 1
+        },
+        "runAttempt": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "minimum": 1
+        },
+        "repository": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "minLength": 1,
+          "maxLength": 256
+        }
+      }
+    },
+    "sourceRun": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "attempt",
+        "workflowId",
+        "workflowName",
+        "headSha",
+        "event",
+        "status",
+        "conclusion",
+        "displayTitle",
+        "htmlUrl"
+      ],
+      "properties": {
+        "id": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "minimum": 1
+        },
+        "attempt": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "minimum": 1
+        },
+        "workflowId": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "minimum": 1
+        },
+        "workflowName": {
+          "const": "ui.control external deployment qualification"
+        },
+        "event": {
+          "const": "workflow_dispatch"
+        },
+        "status": {
+          "const": "completed"
+        },
+        "conclusion": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "maxLength": 64
+        },
+        "displayTitle": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "maxLength": 512
+        },
+        "htmlUrl": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "maxLength": 2048
+        },
+        "headSha": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "pattern": "^[0-9a-f]{40}$"
+        }
+      }
+    },
+    "requestedCandidate": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "commit"
+      ],
+      "properties": {
+        "commit": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "pattern": "^[0-9a-f]{40}$"
+        }
+      }
+    },
+    "artifactInventory": {
+      "type": "array",
+      "maxItems": 1000,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "name",
+          "sizeInBytes",
+          "digest",
+          "expired"
+        ],
+        "properties": {
+          "id": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "name": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 256
+          },
+          "sizeInBytes": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 1073741824
+          },
+          "digest": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "pattern": "^sha256:[0-9a-f]{64}$"
+          },
+          "expired": {
+            "type": "boolean"
+          }
+        }
+      }
+    },
+    "artifactInventoryComplete": {
+      "type": "boolean"
+    },
+    "evidenceAvailability": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "repositoryPreflight",
+        "candidateBuild",
+        "protectedExternalEvidence"
+      ],
+      "properties": {
+        "repositoryPreflight": {
+          "type": "boolean"
+        },
+        "candidateBuild": {
+          "type": "boolean"
+        },
+        "protectedExternalEvidence": {
+          "type": "boolean"
+        }
+      }
+    },
+    "observedOutcome": {
+      "enum": [
+        "passed",
+        "failed"
+      ]
+    },
+    "acceptedEvidence": {
+      "const": false
+    },
+    "failure": {
+      "oneOf": [
+        {
+          "type": "null"
+        },
+        {
+          "type": "object",
+          "required": [
+            "stage",
+            "code",
+            "message"
+          ],
+          "properties": {
+            "stage": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 128
+            },
+            "code": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 128
+            },
+            "message": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 512
+            },
+            "checks": {
+              "type": "object"
+            }
+          },
+          "additionalProperties": false
+        }
+      ]
+    },
+    "claims": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "repositorySourceQualified",
+        "deterministicMergeQualified",
+        "deployedSecurityObserved",
+        "realBackendSemanticsQualified",
+        "durableCrashRestartQualified",
+        "independentAccessibilityAndOperatorAcceptanceSigned",
+        "independentSecurityReviewPassed",
+        "rollbackDisasterRecoveryMonitoringAndRedactionExercised",
+        "productionDeploymentApproved",
+        "releaseAuthorized"
+      ],
+      "properties": {
+        "repositorySourceQualified": {
+          "const": false
+        },
+        "deterministicMergeQualified": {
+          "const": false
+        },
+        "deployedSecurityObserved": {
+          "const": false
+        },
+        "realBackendSemanticsQualified": {
+          "const": false
+        },
+        "durableCrashRestartQualified": {
+          "const": false
+        },
+        "independentAccessibilityAndOperatorAcceptanceSigned": {
+          "const": false
+        },
+        "independentSecurityReviewPassed": {
+          "const": false
+        },
+        "rollbackDisasterRecoveryMonitoringAndRedactionExercised": {
+          "const": false
+        },
+        "productionDeploymentApproved": {
+          "const": false
+        },
+        "releaseAuthorized": {
+          "const": false
+        }
+      }
+    }
+  }
+}

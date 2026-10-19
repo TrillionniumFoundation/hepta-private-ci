@@ -1,0 +1,479 @@
+name: ui.control exact-head qualification observer
+
+on:
+  workflow_run:
+    workflows:
+      - ui.control exact-head qualification
+    types:
+      - completed
+
+permissions:
+  actions: read
+
+concurrency:
+  group: ui-control-qualification-observer-${{ github.event.workflow_run.id }}-${{ github.event.workflow_run.run_attempt }}
+  cancel-in-progress: false
+
+jobs:
+  observe:
+    name: secretless exact-head run observation
+    if: ${{ github.event.workflow_run.repository.full_name == github.repository && github.event.workflow_run.name == 'ui.control exact-head qualification' }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - id: subject
+        name: Bind the completed qualification run as metadata only
+        env:
+          EXPECTED_REPOSITORY: ${{ github.repository }}
+          SOURCE_REPOSITORY: ${{ github.event.workflow_run.repository.full_name }}
+          SOURCE_RUN_ID: ${{ github.event.workflow_run.id }}
+          SOURCE_RUN_ATTEMPT: ${{ github.event.workflow_run.run_attempt }}
+          SOURCE_WORKFLOW_NAME: ${{ github.event.workflow_run.name }}
+          SOURCE_RUN_EVENT: ${{ github.event.workflow_run.event }}
+          SOURCE_RUN_STATUS: ${{ github.event.workflow_run.status }}
+          SOURCE_RUN_CONCLUSION: ${{ github.event.workflow_run.conclusion }}
+          SOURCE_HEAD_SHA: ${{ github.event.workflow_run.head_sha }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$SOURCE_REPOSITORY" = "$EXPECTED_REPOSITORY"
+          test "$SOURCE_WORKFLOW_NAME" = 'ui.control exact-head qualification'
+          test "$SOURCE_RUN_STATUS" = completed
+          [[ "$SOURCE_RUN_ID" =~ ^[1-9][0-9]{0,18}$ ]]
+          [[ "$SOURCE_RUN_ATTEMPT" =~ ^[1-9][0-9]{0,9}$ ]]
+          [[ "$SOURCE_HEAD_SHA" =~ ^[0-9a-f]{40}$ ]]
+          case "$SOURCE_RUN_EVENT" in
+            push|pull_request|workflow_dispatch) ;;
+            *) exit 1 ;;
+          esac
+          test -n "$SOURCE_RUN_CONCLUSION"
+          mkdir -p ui-control-qualification-observer-evidence
+          printf 'run_id=%s\nrun_attempt=%s\nworkflow=%s\nevent=%s\nconclusion=%s\nhead_sha=%s\n' \
+            "$SOURCE_RUN_ID" "$SOURCE_RUN_ATTEMPT" "$SOURCE_WORKFLOW_NAME" \
+            "$SOURCE_RUN_EVENT" "$SOURCE_RUN_CONCLUSION" "$SOURCE_HEAD_SHA" \
+            > ui-control-qualification-observer-evidence/source.txt
+
+      - id: metadata
+        name: Fetch the exact run-attempt, job, and artifact metadata
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+          EXPECTED_REPOSITORY: ${{ github.repository }}
+          SOURCE_RUN_ID: ${{ github.event.workflow_run.id }}
+          SOURCE_RUN_ATTEMPT: ${{ github.event.workflow_run.run_attempt }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import json
+          import os
+          import pathlib
+          import urllib.request
+
+          repository = os.environ["EXPECTED_REPOSITORY"]
+          run_id = int(os.environ["SOURCE_RUN_ID"])
+          attempt = int(os.environ["SOURCE_RUN_ATTEMPT"])
+          api = os.environ["GITHUB_API_URL"].rstrip("/")
+          token = os.environ["GITHUB_TOKEN"]
+          output = pathlib.Path("ui-control-qualification-observer-evidence")
+          output.mkdir(parents=True, exist_ok=True)
+          maximum_response_bytes = 8 * 1024 * 1024
+          maximum_items = 1000
+
+          def fetch_json(url):
+              request = urllib.request.Request(
+                  url,
+                  headers={
+                      "Authorization": f"Bearer {token}",
+                      "Accept": "application/vnd.github+json",
+                      "X-GitHub-Api-Version": "2022-11-28",
+                      "User-Agent": "hepta-ui-control-qualification-observer",
+                  },
+              )
+              with urllib.request.urlopen(request, timeout=30) as response:
+                  payload = response.read(maximum_response_bytes + 1)
+              if len(payload) > maximum_response_bytes:
+                  raise RuntimeError("GitHub metadata response exceeded its byte budget")
+              return json.loads(payload)
+
+          base = f"{api}/repos/{repository}/actions/runs/{run_id}"
+          run = fetch_json(f"{base}/attempts/{attempt}")
+
+          def collect(url, field):
+              items = []
+              expected_total = None
+              for page in range(1, 11):
+                  document = fetch_json(f"{url}?per_page=100&page={page}")
+                  total = document.get("total_count")
+                  batch = document.get(field)
+                  if not isinstance(total, int) or total < 0 or total > maximum_items:
+                      raise RuntimeError(f"{field} total_count is invalid")
+                  if not isinstance(batch, list):
+                      raise RuntimeError(f"{field} inventory is invalid")
+                  if expected_total is None:
+                      expected_total = total
+                  elif expected_total != total:
+                      raise RuntimeError(f"{field} total_count changed while reading")
+                  items.extend(batch)
+                  if len(items) >= total:
+                      break
+              if expected_total is None or len(items) != expected_total:
+                  raise RuntimeError(f"{field} inventory is incomplete")
+              identifiers = [item.get("id") for item in items]
+              if any(not isinstance(value, int) or value < 1 for value in identifiers):
+                  raise RuntimeError(f"{field} inventory contains an invalid ID")
+              if len(set(identifiers)) != len(identifiers):
+                  raise RuntimeError(f"{field} inventory contains duplicate IDs")
+              return {"total_count": expected_total, field: items}
+
+          jobs = collect(f"{base}/attempts/{attempt}/jobs", "jobs")
+          artifacts = collect(f"{base}/artifacts", "artifacts")
+          (output / "workflow-run.json").write_text(
+              json.dumps(run, indent=2) + "\n",
+              encoding="utf-8",
+          )
+          (output / "jobs.json").write_text(
+              json.dumps(jobs, indent=2) + "\n",
+              encoding="utf-8",
+          )
+          (output / "artifacts.json").write_text(
+              json.dumps(artifacts, indent=2) + "\n",
+              encoding="utf-8",
+          )
+          PY
+
+      - id: semantic
+        name: Emit a non-authoritative exact-run observation
+        env:
+          EXPECTED_REPOSITORY: ${{ github.repository }}
+          SOURCE_RUN_ID: ${{ github.event.workflow_run.id }}
+          SOURCE_RUN_ATTEMPT: ${{ github.event.workflow_run.run_attempt }}
+          OBSERVER_WORKFLOW_SHA: ${{ github.workflow_sha }}
+          OBSERVER_RUN_ID: ${{ github.run_id }}
+          OBSERVER_RUN_ATTEMPT: ${{ github.run_attempt }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import datetime
+          import json
+          import os
+          import pathlib
+          import re
+
+          evidence = pathlib.Path("ui-control-qualification-observer-evidence")
+          run = json.loads((evidence / "workflow-run.json").read_text(encoding="utf-8"))
+          jobs_document = json.loads((evidence / "jobs.json").read_text(encoding="utf-8"))
+          artifacts_document = json.loads((evidence / "artifacts.json").read_text(encoding="utf-8"))
+          expected_run_id = int(os.environ["SOURCE_RUN_ID"])
+          expected_attempt = int(os.environ["SOURCE_RUN_ATTEMPT"])
+
+          def require(condition, message):
+              if not condition:
+                  raise RuntimeError(message)
+
+          def bounded(value, maximum, *, nullable=False):
+              if value is None and nullable:
+                  return None
+              require(isinstance(value, str) and 0 < len(value) <= maximum, "metadata string is invalid")
+              return value
+
+          require(run.get("id") == expected_run_id, "workflow run ID mismatch")
+          require(run.get("run_attempt") == expected_attempt, "workflow run attempt mismatch")
+          require(run.get("name") == "ui.control exact-head qualification", "unexpected workflow name")
+          require(run.get("status") == "completed", "workflow run is not completed")
+          require(run.get("event") in {"push", "pull_request", "workflow_dispatch"}, "unexpected workflow event")
+          head_sha = run.get("head_sha")
+          require(isinstance(head_sha, str) and re.fullmatch(r"[0-9a-f]{40}", head_sha), "invalid candidate SHA")
+          conclusion = bounded(run.get("conclusion"), 64)
+          run_jobs = jobs_document.get("jobs")
+          run_artifacts = artifacts_document.get("artifacts")
+          require(isinstance(run_jobs, list), "job inventory is invalid")
+          require(isinstance(run_artifacts, list), "artifact inventory is invalid")
+          require(jobs_document.get("total_count") == len(run_jobs), "job inventory is incomplete")
+          require(artifacts_document.get("total_count") == len(run_artifacts), "artifact inventory is incomplete")
+
+          job_inventory = []
+          job_ids = set()
+          for item in run_jobs:
+              identifier = item.get("id")
+              require(isinstance(identifier, int) and identifier > 0 and identifier not in job_ids, "job ID is invalid or duplicated")
+              job_ids.add(identifier)
+              job_inventory.append({
+                  "id": identifier,
+                  "name": bounded(item.get("name"), 512),
+                  "status": bounded(item.get("status"), 64),
+                  "conclusion": bounded(item.get("conclusion"), 64, nullable=True),
+                  "startedAt": bounded(item.get("started_at"), 64, nullable=True),
+                  "completedAt": bounded(item.get("completed_at"), 64, nullable=True),
+              })
+          job_inventory.sort(key=lambda item: item["id"])
+
+          artifact_inventory = []
+          artifact_ids = set()
+          artifact_names = set()
+          for item in run_artifacts:
+              identifier = item.get("id")
+              name = bounded(item.get("name"), 256)
+              size = item.get("size_in_bytes")
+              digest = item.get("digest")
+              expired = item.get("expired")
+              require(isinstance(identifier, int) and identifier > 0 and identifier not in artifact_ids, "artifact ID is invalid or duplicated")
+              require(name not in artifact_names, "artifact name is duplicated")
+              require(isinstance(size, int) and 0 <= size <= 1024 * 1024 * 1024, "artifact size is invalid")
+              require(isinstance(expired, bool), "artifact expiry state is invalid")
+              if digest is not None:
+                  require(isinstance(digest, str) and re.fullmatch(r"sha256:[0-9a-f]{64}", digest), "artifact digest is invalid")
+              artifact_ids.add(identifier)
+              artifact_names.add(name)
+              artifact_inventory.append({
+                  "id": identifier,
+                  "name": name,
+                  "sizeInBytes": size,
+                  "digest": digest,
+                  "expired": expired,
+              })
+          artifact_inventory.sort(key=lambda item: item["id"])
+
+          exact_name = f"ui-control-exact-head-{head_sha}"
+          exact_available = any(
+              item["name"] == exact_name and not item["expired"]
+              for item in artifact_inventory
+          )
+          merge_required = run.get("event") == "pull_request"
+          merge_available = any(
+              item["name"].startswith("ui-control-synthetic-merge-") and not item["expired"]
+              for item in artifact_inventory
+          )
+
+          missing = []
+          if not exact_available:
+              missing.append("exact-head")
+          if merge_required and not merge_available:
+              missing.append("synthetic-merge")
+
+          source_passed = conclusion == "success"
+          status = "passed" if source_passed and not missing else "failed"
+          failure = None
+          if not source_passed:
+              failure = {
+                  "stage": "source-workflow",
+                  "code": "UI_CONTROL_QUALIFICATION_WORKFLOW_FAILED",
+                  "message": f"exact-head qualification concluded {conclusion}",
+                  "checks": {
+                      item["name"]: item["conclusion"] or item["status"]
+                      for item in job_inventory
+                  },
+              }
+          elif missing:
+              failure = {
+                  "stage": "artifact-observation",
+                  "code": "UI_CONTROL_QUALIFICATION_ARTIFACT_MISSING",
+                  "message": "the completed successful workflow did not retain every expected observation artifact",
+                  "checks": {"missing": ",".join(missing)},
+              }
+
+          claims = {
+              "repositorySourceQualified": False,
+              "deterministicMergeQualified": False,
+              "deployedSecurityObserved": False,
+              "realBackendSemanticsQualified": False,
+              "durableCrashRestartQualified": False,
+              "independentAccessibilityAndOperatorAcceptanceSigned": False,
+              "independentSecurityReviewPassed": False,
+              "rollbackDisasterRecoveryMonitoringAndRedactionExercised": False,
+              "productionDeploymentApproved": False,
+              "releaseAuthorized": False,
+          }
+          receipt = {
+              "schema": "hepta.ui-control.qualification-workflow-observation.v1",
+              "status": status,
+              "observedAt": datetime.datetime.now(datetime.timezone.utc).isoformat().replace("+00:00", "Z"),
+              "observer": {
+                  "workflowSha": os.environ["OBSERVER_WORKFLOW_SHA"],
+                  "runId": int(os.environ["OBSERVER_RUN_ID"]),
+                  "runAttempt": int(os.environ["OBSERVER_RUN_ATTEMPT"]),
+                  "repository": os.environ["EXPECTED_REPOSITORY"],
+              },
+              "sourceRun": {
+                  "id": expected_run_id,
+                  "attempt": expected_attempt,
+                  "workflowId": run.get("workflow_id"),
+                  "workflowName": "ui.control exact-head qualification",
+                  "headSha": head_sha,
+                  "headBranch": bounded(run.get("head_branch"), 256, nullable=True),
+                  "event": run.get("event"),
+                  "status": run.get("status"),
+                  "conclusion": conclusion,
+                  "displayTitle": bounded(run.get("display_title"), 512, nullable=True),
+                  "htmlUrl": bounded(run.get("html_url"), 2048, nullable=True),
+              },
+              "jobInventory": job_inventory,
+              "jobInventoryComplete": True,
+              "artifactInventory": artifact_inventory,
+              "artifactInventoryComplete": True,
+              "expectedArtifacts": {
+                  "exactHeadName": exact_name,
+                  "syntheticMergeRequired": merge_required,
+              },
+              "evidenceAvailability": {
+                  "exactHeadObservation": exact_available,
+                  "syntheticMergeObservation": merge_available,
+              },
+              "observedOutcome": "passed" if source_passed else "failed",
+              "acceptedEvidence": False,
+              "failure": failure,
+              "claims": claims,
+          }
+          (evidence / "qualification-workflow-observation.json").write_text(
+              json.dumps(receipt, indent=2) + "\n",
+              encoding="utf-8",
+          )
+          PY
+
+      - name: Emit a fail-closed observer-infrastructure record when metadata observation is unavailable
+        if: always()
+        env:
+          EXPECTED_REPOSITORY: ${{ github.repository }}
+          SOURCE_RUN_ID: ${{ github.event.workflow_run.id }}
+          SOURCE_RUN_ATTEMPT: ${{ github.event.workflow_run.run_attempt }}
+          SOURCE_RUN_EVENT: ${{ github.event.workflow_run.event }}
+          SOURCE_RUN_STATUS: ${{ github.event.workflow_run.status }}
+          SOURCE_RUN_CONCLUSION: ${{ github.event.workflow_run.conclusion }}
+          SOURCE_HEAD_SHA: ${{ github.event.workflow_run.head_sha }}
+          SOURCE_HEAD_BRANCH: ${{ github.event.workflow_run.head_branch }}
+          SOURCE_DISPLAY_TITLE: ${{ github.event.workflow_run.display_title }}
+          SOURCE_HTML_URL: ${{ github.event.workflow_run.html_url }}
+          OBSERVER_WORKFLOW_SHA: ${{ github.workflow_sha }}
+          OBSERVER_RUN_ID: ${{ github.run_id }}
+          OBSERVER_RUN_ATTEMPT: ${{ github.run_attempt }}
+          SUBJECT_OUTCOME: ${{ steps.subject.outcome }}
+          METADATA_OUTCOME: ${{ steps.metadata.outcome }}
+          SEMANTIC_OUTCOME: ${{ steps.semantic.outcome }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          output=ui-control-qualification-observer-evidence/qualification-workflow-observation.json
+          if test -f "$output"; then exit 0; fi
+          mkdir -p "$(dirname "$output")"
+          python3 - "$output" <<'PY'
+          import datetime
+          import json
+          import os
+          import re
+          import sys
+
+          def positive_integer(name):
+              value = os.environ.get(name, "")
+              return int(value) if value.isdigit() and int(value) > 0 else None
+
+          def bounded(name, maximum):
+              value = os.environ.get(name)
+              if not value:
+                  return None
+              return value[:maximum]
+
+          head_sha = os.environ.get("SOURCE_HEAD_SHA", "")
+          if re.fullmatch(r"[0-9a-f]{40}", head_sha) is None:
+              head_sha = None
+          conclusion = bounded("SOURCE_RUN_CONCLUSION", 64)
+          exact_name = f"ui-control-exact-head-{head_sha}" if head_sha else None
+          receipt = {
+              "schema": "hepta.ui-control.qualification-workflow-observation.v1",
+              "status": "failed",
+              "observedAt": datetime.datetime.now(datetime.timezone.utc).isoformat().replace("+00:00", "Z"),
+              "observer": {
+                  "workflowSha": bounded("OBSERVER_WORKFLOW_SHA", 40),
+                  "runId": positive_integer("OBSERVER_RUN_ID"),
+                  "runAttempt": positive_integer("OBSERVER_RUN_ATTEMPT"),
+                  "repository": bounded("EXPECTED_REPOSITORY", 256),
+              },
+              "sourceRun": {
+                  "id": positive_integer("SOURCE_RUN_ID"),
+                  "attempt": positive_integer("SOURCE_RUN_ATTEMPT"),
+                  "workflowId": None,
+                  "workflowName": "ui.control exact-head qualification",
+                  "headSha": head_sha,
+                  "headBranch": bounded("SOURCE_HEAD_BRANCH", 256),
+                  "event": bounded("SOURCE_RUN_EVENT", 64),
+                  "status": bounded("SOURCE_RUN_STATUS", 64),
+                  "conclusion": conclusion,
+                  "displayTitle": bounded("SOURCE_DISPLAY_TITLE", 512),
+                  "htmlUrl": bounded("SOURCE_HTML_URL", 2048),
+              },
+              "jobInventory": [],
+              "jobInventoryComplete": False,
+              "artifactInventory": [],
+              "artifactInventoryComplete": False,
+              "expectedArtifacts": {
+                  "exactHeadName": exact_name,
+                  "syntheticMergeRequired": os.environ.get("SOURCE_RUN_EVENT") == "pull_request",
+              },
+              "evidenceAvailability": {
+                  "exactHeadObservation": False,
+                  "syntheticMergeObservation": False,
+              },
+              "observedOutcome": "failed",
+              "acceptedEvidence": False,
+              "failure": {
+                  "stage": "observer-infrastructure",
+                  "code": "UI_CONTROL_QUALIFICATION_OBSERVER_INFRASTRUCTURE",
+                  "message": "the qualification observer could not produce a complete semantic observation",
+                  "checks": {
+                      "subject": os.environ.get("SUBJECT_OUTCOME"),
+                      "metadata": os.environ.get("METADATA_OUTCOME"),
+                      "semantic": os.environ.get("SEMANTIC_OUTCOME"),
+                  },
+              },
+              "claims": {
+                  "repositorySourceQualified": False,
+                  "deterministicMergeQualified": False,
+                  "deployedSecurityObserved": False,
+                  "realBackendSemanticsQualified": False,
+                  "durableCrashRestartQualified": False,
+                  "independentAccessibilityAndOperatorAcceptanceSigned": False,
+                  "independentSecurityReviewPassed": False,
+                  "rollbackDisasterRecoveryMonitoringAndRedactionExercised": False,
+                  "productionDeploymentApproved": False,
+                  "releaseAuthorized": False,
+              },
+          }
+          with open(sys.argv[1], "w", encoding="utf-8") as handle:
+              json.dump(receipt, handle, indent=2)
+              handle.write("\n")
+          PY
+
+      - name: Publish the observer summary without promoting evidence
+        if: always()
+        shell: bash
+        run: |
+          python3 - <<'PY' >> "$GITHUB_STEP_SUMMARY"
+          import json
+          from pathlib import Path
+
+          path = Path("ui-control-qualification-observer-evidence/qualification-workflow-observation.json")
+          print("## ui.control exact-head workflow observation")
+          print()
+          if not path.is_file():
+              print("- Observation: unavailable")
+          else:
+              receipt = json.loads(path.read_text(encoding="utf-8"))
+              source = receipt.get("sourceRun", {})
+              availability = receipt.get("evidenceAvailability", {})
+              print(f"- Source run: `{source.get('id')}` / attempt `{source.get('attempt')}`")
+              print(f"- Candidate: `{source.get('headSha')}`")
+              print(f"- Source conclusion: `{source.get('conclusion')}`")
+              print(f"- Observation status: `{receipt.get('status')}`")
+              print(f"- Exact-head artifact observed: `{availability.get('exactHeadObservation')}`")
+              print(f"- Synthetic-merge artifact observed: `{availability.get('syntheticMergeObservation')}`")
+              print(f"- Accepted evidence: `{receipt.get('acceptedEvidence')}`")
+              print(f"- Failure: `{(receipt.get('failure') or {}).get('code', 'none')}`")
+          PY
+
+      - name: Upload the immutable qualification-run observation
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: ui-control-qualification-workflow-observation-${{ github.event.workflow_run.id }}-${{ github.event.workflow_run.run_attempt }}
+          path: ui-control-qualification-observer-evidence/
+          if-no-files-found: error
+          retention-days: 180

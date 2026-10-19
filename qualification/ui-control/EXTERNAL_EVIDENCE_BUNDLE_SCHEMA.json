@@ -1,0 +1,275 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "hepta.ui-control.external-evidence-bundle.v1",
+  "title": "ui.control externally observed production-evidence bundle",
+  "type": "object",
+  "additionalProperties": true,
+  "required": [
+    "schema",
+    "status",
+    "observedAt",
+    "candidate",
+    "backendDeploymentDigest",
+    "evidenceDigests",
+    "stageResults",
+    "claims"
+  ],
+  "properties": {
+    "schema": {
+      "const": "hepta.ui-control.external-evidence-bundle.v1"
+    },
+    "status": {
+      "enum": [
+        "accepted",
+        "failed"
+      ]
+    },
+    "observedAt": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "candidate": {
+      "type": "object",
+      "required": [
+        "commit",
+        "tree"
+      ],
+      "properties": {
+        "commit": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{40}$"
+        },
+        "tree": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{40}$"
+        }
+      }
+    },
+    "backendDeploymentDigest": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "evidenceDigests": {
+      "type": "object"
+    },
+    "stageResults": {
+      "type": "object",
+      "minProperties": 10,
+      "propertyNames": {
+        "enum": [
+          "deployment-identity",
+          "main-ancestry",
+          "repository-source-head",
+          "repository-synthetic-merge",
+          "deployment-security",
+          "real-backend",
+          "independent-accessibility-and-operator-acceptance",
+          "independent-security-review",
+          "operational-exercise",
+          "production-approval"
+        ]
+      },
+      "additionalProperties": {
+        "$ref": "#/$defs/stageResult"
+      }
+    },
+    "assuranceChain": {
+      "$ref": "#/$defs/assuranceChain"
+    },
+    "claims": {
+      "type": "object",
+      "properties": {
+        "independentAssurancePrincipals": {
+          "type": "boolean"
+        },
+        "evidenceChronologyBound": {
+          "type": "boolean"
+        }
+      }
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "status": {
+            "const": "accepted"
+          }
+        },
+        "required": [
+          "status"
+        ]
+      },
+      "then": {
+        "required": [
+          "assuranceChain"
+        ],
+        "properties": {
+          "claims": {
+            "required": [
+              "independentAssurancePrincipals",
+              "evidenceChronologyBound"
+            ],
+            "properties": {
+              "independentAssurancePrincipals": {
+                "const": true
+              },
+              "evidenceChronologyBound": {
+                "const": true
+              }
+            }
+          }
+        }
+      }
+    }
+  ],
+  "$defs": {
+    "stageResult": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "observedOutcome",
+        "acceptedEvidence",
+        "evidenceDigest"
+      ],
+      "properties": {
+        "observedOutcome": {
+          "enum": [
+            "not-observed",
+            "passed",
+            "failed",
+            "not-required"
+          ]
+        },
+        "acceptedEvidence": {
+          "type": "boolean"
+        },
+        "evidenceDigest": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        "failureCode": {
+          "type": "string",
+          "pattern": "^[A-Z0-9_]{3,96}$"
+        },
+        "reason": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 256
+        }
+      }
+    },
+    "assuranceChain": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schema",
+        "principalCount",
+        "reviewerIdentityDigests",
+        "approvalIdentityDigests",
+        "evidenceTimeline",
+        "reviewerSeparationVerified",
+        "evidenceChronologyBound"
+      ],
+      "properties": {
+        "schema": {
+          "const": "hepta.ui-control.assurance-chain.v1"
+        },
+        "principalCount": {
+          "const": 5
+        },
+        "reviewerIdentityDigests": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "independentAcceptance",
+            "independentSecurity"
+          ],
+          "properties": {
+            "independentAcceptance": {
+              "type": "string",
+              "pattern": "^[0-9a-f]{64}$"
+            },
+            "independentSecurity": {
+              "type": "string",
+              "pattern": "^[0-9a-f]{64}$"
+            }
+          }
+        },
+        "approvalIdentityDigests": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "deployment-authority",
+            "release-authority",
+            "security-authority"
+          ],
+          "properties": {
+            "deployment-authority": {
+              "type": "string",
+              "pattern": "^[0-9a-f]{64}$"
+            },
+            "release-authority": {
+              "type": "string",
+              "pattern": "^[0-9a-f]{64}$"
+            },
+            "security-authority": {
+              "type": "string",
+              "pattern": "^[0-9a-f]{64}$"
+            }
+          }
+        },
+        "evidenceTimeline": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "deploymentSecurityObservedAt",
+            "realBackendObservedAt",
+            "independentAcceptanceExecutedAt",
+            "independentSecurityExecutedAt",
+            "operationalExerciseExecutedAt",
+            "productionApprovedAt"
+          ],
+          "properties": {
+            "deploymentSecurityObservedAt": {
+              "type": "string",
+              "format": "date-time"
+            },
+            "realBackendObservedAt": {
+              "type": "string",
+              "format": "date-time"
+            },
+            "independentAcceptanceExecutedAt": {
+              "type": "string",
+              "format": "date-time"
+            },
+            "independentSecurityExecutedAt": {
+              "type": "string",
+              "format": "date-time"
+            },
+            "operationalExerciseExecutedAt": {
+              "type": "string",
+              "format": "date-time"
+            },
+            "productionApprovedAt": {
+              "type": "string",
+              "format": "date-time"
+            }
+          }
+        },
+        "reviewerSeparationVerified": {
+          "const": true
+        },
+        "evidenceChronologyBound": {
+          "const": true
+        }
+      }
+    }
+  }
+}
