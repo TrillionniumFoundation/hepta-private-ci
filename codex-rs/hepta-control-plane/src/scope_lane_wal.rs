@@ -297,8 +297,15 @@ pub struct ScopeLaneFileWalV1 {
 impl ScopeLaneFileWalV1 {
     pub fn open(path: impl AsRef<Path>) -> Result<Self, ScopeLaneWalError> {
         let mut options = OpenOptions::new();
-        // Windows recovery must be able to truncate an incomplete WAL tail.
-        options.create(true).read(true).write(true).append(true);
+        // On Windows, FILE_APPEND_DATA can deny SetEndOfFile when repairing a
+        // fsynced incomplete frame. Hold the exclusive WAL owner lock and use
+        // FILE_WRITE_DATA, with append_frame's explicit seek-to-end on writes.
+        // Retain O_APPEND on Unix alongside its no-follow inode protections.
+        options.create(true).read(true).truncate(false);
+        #[cfg(windows)]
+        options.write(true);
+        #[cfg(not(windows))]
+        options.append(true);
         // Never follow an attacker-swapped final component into an unrelated
         // file. This is defense in depth: callers still must own a trusted
         // parent directory and validate their run-root lineage.
