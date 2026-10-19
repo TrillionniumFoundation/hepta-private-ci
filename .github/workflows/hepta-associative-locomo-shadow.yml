@@ -1,0 +1,121 @@
+name: Hepta associative LoCoMo family shadow (research only)
+on:
+  pull_request:
+    branches: [codex/memory-cell-evidence-20261008]
+    paths:
+      - 'scripts/memory_cell/associative_locomo_shadow.py'
+      - 'scripts/memory_cell/associative_cell.py'
+      - 'scripts/memory_cell/associative_text_bridge.py'
+      - 'scripts/memory_cell/associative_minilm_offline.py'
+      - 'scripts/memory_cell/test_associative_locomo_shadow.py'
+      - 'codex-rs/hepta-intelligence-eval/ASSOCIATIVE_LOCOMO_SHADOW.md'
+      - '.github/workflows/hepta-associative-locomo-shadow.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: associative-locomo-shadow-${{ github.event.pull_request.head.sha || github.sha }}
+  cancel-in-progress: false
+jobs:
+  research-source-qa:
+    runs-on: ubuntu-latest
+    timeout-minutes: 110
+    env:
+      PYTHONPATH: scripts/memory_cell
+      HF_HUB_OFFLINE: '1'
+      TRANSFORMERS_OFFLINE: '1'
+      HF_HUB_DISABLE_IMPLICIT_TOKEN: '1'
+      OMP_NUM_THREADS: '2'
+      MKL_NUM_THREADS: '2'
+      TOKENIZERS_PARALLELISM: 'false'
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - name: Install pinned reference CPU environment
+        run: |
+          set -euo pipefail
+          python3 -m venv /tmp/locomo-python
+          /tmp/locomo-python/bin/pip install torch==2.5.1 --index-url https://download.pytorch.org/whl/cpu
+          /tmp/locomo-python/bin/pip install -r scripts/memory_cell/requirements.txt
+          mkdir -p /tmp/locomo-receipts
+          /tmp/locomo-python/bin/pip freeze > /tmp/locomo-receipts/python-lock.txt
+      - name: Focused isolated public/label source admission regressions
+        run: |
+          set -euo pipefail
+          /tmp/locomo-python/bin/python -m unittest discover -s scripts/memory_cell \
+            -p 'test_associative_locomo_shadow.py' -v 2>&1 \
+            | tee /tmp/locomo-receipts/unit-tests.log
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          name: memory-native-staged-inputs
+          run-id: 37862780268
+          github-token: ${{ github.token }}
+          path: /tmp/locomo-staged
+      - name: Extract only pinned benchmark and registered encoder files
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/locomo-source
+          tar -C /tmp/locomo-source -xzf /tmp/locomo-staged/memory-inputs.tar.gz \
+            memory-inputs/locomo.json \
+            memory-inputs/encoder/config.json \
+            memory-inputs/encoder/model.safetensors \
+            memory-inputs/encoder/tokenizer.json \
+            memory-inputs/encoder/tokenizer_config.json \
+            memory-inputs/encoder/special_tokens_map.json \
+            memory-inputs/encoder/vocab.txt
+          test "$(sha256sum /tmp/locomo-source/memory-inputs/locomo.json | cut -d ' ' -f 1)" = \
+            79fa87e90f04081343b8c8debecb80a9a6842b76a7aa537dc9fdf651ea698ff4
+      - name: Mandatory original Transformers tokenizer and embedding parity
+        run: |
+          set -euo pipefail
+          /tmp/locomo-python/bin/python - <<'PY' | tee /tmp/locomo-receipts/hf-parity.json
+          import json
+          from associative_minilm_offline import PARITY_TEXTS, compare_with_transformers
+          root = '/tmp/locomo-source/memory-inputs/encoder'
+          report = compare_with_transformers(root, PARITY_TEXTS)
+          if report['parity_verified'] is not True:
+              raise RuntimeError('no authenticated source-equivalent runtime')
+          print(json.dumps(report, sort_keys=True))
+          PY
+      - name: Materialize exact public input with physically isolated hidden labels
+        run: |
+          set -euo pipefail
+          /tmp/locomo-python/bin/python scripts/memory_cell/associative_locomo_shadow.py prepare \
+            /tmp/locomo-source/memory-inputs/locomo.json /tmp/locomo-prepared \
+            > /tmp/locomo-receipts/ingress.json
+          mkdir -p /tmp/locomo-public
+          cp /tmp/locomo-prepared/public.json /tmp/locomo-prepared/manifest.json \
+            /tmp/locomo-public/
+          test ! -e /tmp/locomo-public/private.json
+      - name: Run complete actual-weight eight-arm frozen research shadow
+        run: |
+          set -euo pipefail
+          /usr/bin/time -v -o /tmp/locomo-receipts/resources.txt \
+            /tmp/locomo-python/bin/python scripts/memory_cell/associative_locomo_shadow.py run \
+              /tmp/locomo-public /tmp/locomo-source/memory-inputs/encoder /tmp/locomo-run \
+            > /tmp/locomo-receipts/model-execution.json
+          /tmp/locomo-python/bin/python scripts/memory_cell/associative_locomo_shadow.py review \
+            /tmp/locomo-prepared /tmp/locomo-run /tmp/locomo-receipts/review.json \
+            > /tmp/locomo-receipts/review-summary.json
+          /tmp/locomo-python/bin/python scripts/memory_cell/associative_locomo_shadow.py frontier \
+            /tmp/locomo-source/memory-inputs/locomo.json /tmp/locomo-prepared \
+            /tmp/locomo-run /tmp/locomo-receipts/source-frontier.json \
+            > /tmp/locomo-receipts/frontier-summary.json
+          cp /tmp/locomo-run/journal.json /tmp/locomo-run/seal.json /tmp/locomo-receipts/
+      - name: Exact SHA256 and tested source receipt
+        if: always()
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/locomo-receipts
+          git rev-parse HEAD > /tmp/locomo-receipts/exact-head.txt
+          (cd /tmp/locomo-receipts && find . -type f ! -name SHA256SUMS -print0 \
+            | sort -z | xargs -0 sha256sum > SHA256SUMS)
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: associative-locomo-10-family-research-not-acceptance
+          path: /tmp/locomo-receipts
+          if-no-files-found: error

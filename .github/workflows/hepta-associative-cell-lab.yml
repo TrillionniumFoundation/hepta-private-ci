@@ -1,0 +1,60 @@
+name: Hepta associative cell research-only probe
+on:
+  pull_request:
+    branches: [codex/memory-cell-evidence-20261008]
+    paths:
+      - 'scripts/memory_cell/associative_cell.py'
+      - 'scripts/memory_cell/associative_cell_trial.py'
+      - 'scripts/memory_cell/test_associative_cell.py'
+      - 'scripts/memory_cell/associative_shadow_gate.py'
+      - 'scripts/memory_cell/test_associative_shadow_gate.py'
+      - 'scripts/memory_cell/ASSOCIATIVE_SHADOW_GATE.md'
+      - 'codex-rs/hepta-intelligence-eval/ASSOCIATIVE_CELL_LAB.md'
+      - '.github/workflows/hepta-associative-cell-lab.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: hepta-associative-cell-lab-${{ github.ref }}-${{ github.sha }}
+  cancel-in-progress: false
+jobs:
+  contract-and-synthetic-smoke:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          persist-credentials: false
+      - name: Install pinned CPU-only tensor runtime
+        run: |
+          python3 -m venv /tmp/associative-env
+          /tmp/associative-env/bin/pip install torch==2.5.1 --index-url https://download.pytorch.org/whl/cpu
+      - name: Run focused source/lineage/clean-reload/parameter tests
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/associative-receipt
+          export PYTHONPATH=scripts/memory_cell
+          /tmp/associative-env/bin/python -m unittest discover -s scripts/memory_cell \
+            -p 'test_associative_cell.py' -v 2>&1 | tee /tmp/associative-receipt/test.log
+      - name: Run frozen-vector cohort source-isolation and neighbor controls
+        run: |
+          set -euo pipefail
+          export PYTHONPATH=scripts/memory_cell
+          /tmp/associative-env/bin/python -m unittest discover -s scripts/memory_cell \
+            -p 'test_associative_shadow_gate.py' -v 2>&1 | tee /tmp/associative-receipt/cohort-tests.log
+      - name: Execute controlled synthetic five-arm contrast
+        run: |
+          set -euo pipefail
+          export PYTHONPATH=scripts/memory_cell
+          /tmp/associative-env/bin/python scripts/memory_cell/associative_cell_trial.py \
+            | tee /tmp/associative-receipt/controlled-fixture.json
+          git rev-parse HEAD > /tmp/associative-receipt/source-head.txt
+          /tmp/associative-env/bin/pip freeze > /tmp/associative-receipt/python-lock.txt
+          (cd /tmp/associative-receipt && find . -type f ! -name SHA256SUMS -print0 \
+            | sort -z | xargs -0 sha256sum > SHA256SUMS)
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: associative-cell-research-only-receipts
+          path: /tmp/associative-receipt
+          if-no-files-found: error
