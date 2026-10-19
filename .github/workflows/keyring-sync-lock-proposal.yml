@@ -1,0 +1,48 @@
+name: Keyring synchronous backend lock proposal
+
+on:
+  pull_request:
+    paths:
+      - "codex-rs/keyring-store/Cargo.toml"
+      - "codex-rs/Cargo.lock"
+      - ".github/workflows/keyring-sync-lock-proposal.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  cargo-lock:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - name: Check out exact candidate
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+          fetch-depth: 0
+      - uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582
+        with:
+          toolchain: 1.95.0
+      - name: Re-resolve Cargo graph after feature change
+        shell: bash
+        run: |
+          set -euo pipefail
+          cargo update --manifest-path codex-rs/Cargo.toml -p keyring --precise 3.6.3
+          git diff --check
+          git diff --binary -- codex-rs/Cargo.lock > "${RUNNER_TEMP}/Cargo.lock.patch"
+          test -s "${RUNNER_TEMP}/Cargo.lock.patch"
+          cp codex-rs/Cargo.lock "${RUNNER_TEMP}/Cargo.lock"
+          grep -q '^name = "keyring"$' codex-rs/Cargo.lock
+          if grep -q '^name = "zbus"$' codex-rs/Cargo.lock; then
+            echo "::error::zbus remains in the resolved graph"
+            exit 1
+          fi
+      - name: Upload real Cargo.lock postimage
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: keyring-sync-cargo-lock-${{ github.run_id }}-${{ github.run_attempt }}
+          path: |
+            ${{ runner.temp }}/Cargo.lock
+            ${{ runner.temp }}/Cargo.lock.patch
+          retention-days: 7
