@@ -265,8 +265,8 @@ mod tests {
             .unwrap_or_else(|_| panic!("test fixture operation failed"));
         assert_eq!(
             port.issue(&mut ledger, "fleet-issue-one", 2, 2_001, grant)
-                .unwrap_err(),
-            FleetAuthorityError::Authority(AuthorityLeaseError::Revoked)
+                .err(),
+            Some(FleetAuthorityError::Authority(AuthorityLeaseError::Revoked))
         );
     }
 

@@ -193,6 +193,15 @@ impl FileSystemHandler {
                         .to_string(),
                 )
             })?;
+        // The generic ExecutorFileSystem default is not a stable-handle
+        // authorized-read implementation. On Windows/Linux (and macOS without
+        // the required kernel primitives), reject before reaching that fallback.
+        // Keep this in lockstep with EnvironmentInfo's advertised capability.
+        if !crate::local_file_system::stable_handle_authorized_read_available() {
+            return Err(internal_error(
+                "bounded authorized file reads are unsupported".to_string(),
+            ));
+        }
         let bytes = self
             .file_system
             .read_file_bounded_authorized(&params.path, &params.sandbox, max_bytes)

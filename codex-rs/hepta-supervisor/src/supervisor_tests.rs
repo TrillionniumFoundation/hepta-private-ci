@@ -136,13 +136,6 @@ fn command() -> Result<AgentCommand, SupervisorError> {
     AgentCommand::new(fake_program("hepta-agentd"), Vec::new())
 }
 
-fn release(identity: &str, program: &str) -> Result<AgentRelease, SupervisorError> {
-    AgentRelease::new(
-        identity,
-        AgentCommand::new(fake_program(program), Vec::new())?,
-    )
-}
-
 fn config() -> SupervisorConfig {
     SupervisorConfig {
         health_timeout: Duration::from_millis(10),
