@@ -121,6 +121,13 @@ class GitGraphTests(unittest.TestCase):
         self.addCleanup(self.temp.cleanup)
         self.root = Path(self.temp.name)
         self.git("init", "-q")
+        # All synthetic Git history is short-lived. Newer Git versions can
+        # launch background maintenance after commit; that races with
+        # TemporaryDirectory.cleanup() and leaves a live .git directory.
+        # Disable it ONLY in these disposable test repositories, not in
+        # the real checkout or the CI dependency selector.
+        self.git("config", "gc.auto", "0")
+        self.git("config", "maintenance.auto", "false")
         self.git("config", "user.name", "CI regression")
         self.git("config", "user.email", "ci@example.invalid")
         self.write(
@@ -151,6 +158,12 @@ renamed = { package = "leaf", path = "leaf" }
         self.git("add", ".")
         self.git("commit", "-qm", "fixture")
         return self.git("rev-parse", "HEAD")
+
+    def test_git_fixture_never_spawns_background_maintenance(self):
+        # Keep this regression explicit: detached maintenance on Git 2.55+
+        # can intermittently mutate .git while temporary fixtures are removed.
+        self.assertEqual(self.git("config", "--get", "gc.auto"), "0")
+        self.assertEqual(self.git("config", "--get", "maintenance.auto"), "false")
 
     def test_workspace_alias_optional_target_and_build_dependencies(self):
         with (self.root / "codex-rs/owner/Cargo.toml").open("a") as stream:
@@ -217,6 +230,10 @@ class DocumentInputTests(unittest.TestCase):
         self.addCleanup(self.tmp.cleanup)
         self.root = Path(self.tmp.name)
         self.git("init", "-q")
+        # No detached Git housekeeping threads may outlive a temporary
+        # fixture and race its .git cleanup on the CI runner.
+        self.git("config", "gc.auto", "0")
+        self.git("config", "maintenance.auto", "false")
         self.git("config", "user.name", "Regression")
         self.git("config", "user.email", "regression@example.invalid")
         self.write(
