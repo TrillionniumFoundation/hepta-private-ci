@@ -1,0 +1,5 @@
+# The standalone UI workspace uses the repository just test entrypoint.
+# Its local profile has no retries or skipped-package overrides.
+[profile.local]
+retries = 0
+fail-fast = false

@@ -1,0 +1,1245 @@
+{
+  "source": "JavaScript ui.control reference modules; deterministic, no clock/random inputs",
+  "canonical": [
+    {
+      "name": "null",
+      "input": "null",
+      "limits": {},
+      "result": {
+        "ok": "null"
+      },
+      "parse": {
+        "ok": null
+      }
+    },
+    {
+      "name": "boolean",
+      "input": "true",
+      "limits": {},
+      "result": {
+        "ok": "true"
+      },
+      "parse": {
+        "ok": true
+      }
+    },
+    {
+      "name": "positive safe bound",
+      "input": "9007199254740991",
+      "limits": {},
+      "result": {
+        "ok": "9007199254740991"
+      },
+      "parse": {
+        "ok": 9007199254740991
+      }
+    },
+    {
+      "name": "negative safe bound",
+      "input": "-9007199254740991",
+      "limits": {},
+      "result": {
+        "ok": "-9007199254740991"
+      },
+      "parse": {
+        "ok": -9007199254740991
+      }
+    },
+    {
+      "name": "too positive",
+      "input": "9007199254740992",
+      "limits": {},
+      "result": {
+        "error": "UI_CONTROL_INVALID_INPUT",
+        "retryable": false
+      },
+      "parse": {
+        "error": "UI_CONTROL_INVALID_INPUT",
+        "retryable": false
+      }
+    },
+    {
+      "name": "too negative",
+      "input": "-9007199254740992",
+      "limits": {},
+      "result": {
+        "error": "UI_CONTROL_INVALID_INPUT",
+        "retryable": false
+      },
+      "parse": {
+        "error": "UI_CONTROL_INVALID_INPUT",
+        "retryable": false
+      }
+    },
+    {
+      "name": "negative zero",
+      "input": "-0",
+      "limits": {},
+      "result": {
+        "ok": "0"
+      },
+      "parse": {
+        "error": "UI_CONTROL_INVALID_INPUT",
+        "retryable": false
+      }
+    },
+    {
+      "name": "float negative zero",
+      "input": "-0.0",
+      "limits": {},
+      "result": {
+        "ok": "0"
+      },
+      "parse": {
+        "error": "UI_CONTROL_INVALID_INPUT",
+        "retryable": false
+      }
+    },
+    {
+      "name": "integral float",
+      "input": "12.0",
+      "limits": {},
+      "result": {
+        "ok": "12"
+      },
+      "parse": {
+        "error": "UI_CONTROL_INVALID_INPUT",
+        "retryable": false
+      }
+    },
+    {
+      "name": "fraction",
+      "input": "0.5",
+      "limits": {},
+      "result": {
+        "error": "UI_CONTROL_INVALID_INPUT",
+        "retryable": false
+      },
+      "parse": {
+        "error": "UI_CONTROL_INVALID_INPUT",
+        "retryable": false
+      }
+    },
+    {
+      "name": "integer rounded at epsilon",
+      "input": "1.0000000000000001",
+      "limits": {},
+      "result": {
+        "ok": "1"
+      },
+      "parse": {
+        "error": "UI_CONTROL_INVALID_INPUT",
+        "retryable": false
+      }
+    },
+    {
+      "name": "rounded safe ceiling",
+      "input": "9007199254740991.1",
+      "limits": {},
+      "result": {
+        "ok": "9007199254740991"
+      },
+      "parse": {
+        "error": "UI_CONTROL_INVALID_INPUT",
+        "retryable": false
+      }
+    },
+    {
+      "name": "halfway integral rounding",
+      "input": "9007199254740990.5",
+      "limits": {},
+      "result": {
+        "ok": "9007199254740990"
+      },
+      "parse": {
+        "error": "UI_CONTROL_INVALID_INPUT",
+        "retryable": false
+      }
+    },
+    {
+      "name": "underflow",
+      "input": "1e-324",
+      "limits": {},
+      "result": {
+        "ok": "0"
+      },
+      "parse": {
+        "error": "UI_CONTROL_INVALID_INPUT",
+        "retryable": false
+      }
+    },
+    {
+      "name": "negative underflow",
+      "input": "-1e-4000",
+      "limits": {},
+      "result": {
+        "ok": "0"
+      },
+      "parse": {
+        "error": "UI_CONTROL_INVALID_INPUT",
+        "retryable": false
+      }
+    },
+    {
+      "name": "numeric key order",
+      "input": "{\"2\":\"two\",\"10\":\"ten\"}",
+      "limits": {},
+      "result": {
+        "ok": "{\"10\":\"ten\",\"2\":\"two\"}"
+      },
+      "parse": {
+        "error": "UI_CONTROL_INVALID_INPUT",
+        "retryable": false
+      }
+    },
+    {
+      "name": "UTF-16 astral key order",
+      "input": "{\"\":1,\"😀\":2,\"𐀀\":3,\"a\":4}",
+      "limits": {},
+      "result": {
+        "ok": "{\"a\":4,\"𐀀\":3,\"😀\":2,\"\":1}"
+      },
+      "parse": {
+        "error": "UI_CONTROL_INVALID_INPUT",
+        "retryable": false
+      }
+    },
+    {
+      "name": "NFC",
+      "input": "\"é\"",
+      "limits": {},
+      "result": {
+        "ok": "\"é\""
+      },
+      "parse": {
+        "ok": "é"
+      }
+    },
+    {
+      "name": "not NFC",
+      "input": "\"e\\u0301\"",
+      "limits": {},
+      "result": {
+        "error": "UI_CONTROL_INVALID_INPUT",
+        "retryable": false
+      },
+      "parse": {
+        "error": "UI_CONTROL_INVALID_INPUT",
+        "retryable": false
+      }
+    },
+    {
+      "name": "lone high surrogate",
+      "input": "\"\\ud800\"",
+      "limits": {},
+      "result": {
+        "error": "UI_CONTROL_INVALID_INPUT",
+        "retryable": false
+      },
+      "parse": {
+        "error": "UI_CONTROL_INVALID_INPUT",
+        "retryable": false
+      }
+    },
+    {
+      "name": "lone low surrogate",
+      "input": "\"\\udc00\"",
+      "limits": {},
+      "result": {
+        "error": "UI_CONTROL_INVALID_INPUT",
+        "retryable": false
+      },
+      "parse": {
+        "error": "UI_CONTROL_INVALID_INPUT",
+        "retryable": false
+      }
+    },
+    {
+      "name": "control",
+      "input": "\"a\\n\"",
+      "limits": {},
+      "result": {
+        "error": "UI_CONTROL_INVALID_INPUT",
+        "retryable": false
+      },
+      "parse": {
+        "error": "UI_CONTROL_INVALID_INPUT",
+        "retryable": false
+      }
+    },
+    {
+      "name": "C1 control",
+      "input": "\"\\u0085\"",
+      "limits": {},
+      "result": {
+        "error": "UI_CONTROL_INVALID_INPUT",
+        "retryable": false
+      },
+      "parse": {
+        "error": "UI_CONTROL_INVALID_INPUT",
+        "retryable": false
+      }
+    },
+    {
+      "name": "bidi",
+      "input": "\"\\u202e\"",
+      "limits": {},
+      "result": {
+        "error": "UI_CONTROL_INVALID_INPUT",
+        "retryable": false
+      },
+      "parse": {
+        "error": "UI_CONTROL_INVALID_INPUT",
+        "retryable": false
+      }
+    },
+    {
+      "name": "zero width",
+      "input": "\"\\u200b\"",
+      "limits": {},
+      "result": {
+        "error": "UI_CONTROL_INVALID_INPUT",
+        "retryable": false
+      },
+      "parse": {
+        "error": "UI_CONTROL_INVALID_INPUT",
+        "retryable": false
+      }
+    },
+    {
+      "name": "BOM",
+      "input": "\"\\ufeff\"",
+      "limits": {},
+      "result": {
+        "error": "UI_CONTROL_INVALID_INPUT",
+        "retryable": false
+      },
+      "parse": {
+        "error": "UI_CONTROL_INVALID_INPUT",
+        "retryable": false
+      }
+    },
+    {
+      "name": "allowed separator",
+      "input": "\"a b c\"",
+      "limits": {},
+      "result": {
+        "ok": "\"a b c\""
+      },
+      "parse": {
+        "ok": "a b c"
+      }
+    },
+    {
+      "name": "empty key",
+      "input": "{\"\":1}",
+      "limits": {},
+      "result": {
+        "error": "UI_CONTROL_INVALID_INPUT",
+        "retryable": false
+      },
+      "parse": {
+        "error": "UI_CONTROL_INVALID_INPUT",
+        "retryable": false
+      }
+    },
+    {
+      "name": "prototype key",
+      "input": "{\"__proto__\":1}",
+      "limits": {},
+      "result": {
+        "error": "UI_CONTROL_INVALID_INPUT",
+        "retryable": false
+      },
+      "parse": {
+        "error": "UI_CONTROL_INVALID_INPUT",
+        "retryable": false
+      }
+    },
+    {
+      "name": "constructor key",
+      "input": "{\"constructor\":1}",
+      "limits": {},
+      "result": {
+        "error": "UI_CONTROL_INVALID_INPUT",
+        "retryable": false
+      },
+      "parse": {
+        "error": "UI_CONTROL_INVALID_INPUT",
+        "retryable": false
+      }
+    },
+    {
+      "name": "prototype field",
+      "input": "{\"prototype\":1}",
+      "limits": {},
+      "result": {
+        "error": "UI_CONTROL_INVALID_INPUT",
+        "retryable": false
+      },
+      "parse": {
+        "error": "UI_CONTROL_INVALID_INPUT",
+        "retryable": false
+      }
+    },
+    {
+      "name": "empty string",
+      "input": "\"\"",
+      "limits": {},
+      "result": {
+        "ok": "\"\""
+      },
+      "parse": {
+        "ok": ""
+      }
+    },
+    {
+      "name": "depth at zero",
+      "input": "[]",
+      "limits": {
+        "maxDepth": 0
+      },
+      "result": {
+        "ok": "[]"
+      },
+      "parse": {
+        "ok": []
+      }
+    },
+    {
+      "name": "depth over zero",
+      "input": "[0]",
+      "limits": {
+        "maxDepth": 0
+      },
+      "result": {
+        "error": "UI_CONTROL_INVALID_INPUT",
+        "retryable": false
+      },
+      "parse": {
+        "error": "UI_CONTROL_INVALID_INPUT",
+        "retryable": false
+      }
+    },
+    {
+      "name": "entry bound",
+      "input": "{\"a\":[1]}",
+      "limits": {
+        "maxEntries": 2
+      },
+      "result": {
+        "ok": "{\"a\":[1]}"
+      },
+      "parse": {
+        "ok": {
+          "a": [
+            1
+          ]
+        }
+      }
+    },
+    {
+      "name": "entry exceeded",
+      "input": "{\"a\":[1]}",
+      "limits": {
+        "maxEntries": 1
+      },
+      "result": {
+        "error": "UI_CONTROL_INVALID_INPUT",
+        "retryable": false
+      },
+      "parse": {
+        "error": "UI_CONTROL_INVALID_INPUT",
+        "retryable": false
+      }
+    },
+    {
+      "name": "array bound",
+      "input": "[1,2]",
+      "limits": {
+        "maxArrayLength": 2
+      },
+      "result": {
+        "ok": "[1,2]"
+      },
+      "parse": {
+        "ok": [
+          1,
+          2
+        ]
+      }
+    },
+    {
+      "name": "array exceeded",
+      "input": "[1,2]",
+      "limits": {
+        "maxArrayLength": 1
+      },
+      "result": {
+        "error": "UI_CONTROL_INVALID_INPUT",
+        "retryable": false
+      },
+      "parse": {
+        "error": "UI_CONTROL_INVALID_INPUT",
+        "retryable": false
+      }
+    },
+    {
+      "name": "UTF-8 bytes bound",
+      "input": "\"é\"",
+      "limits": {
+        "maxStringBytes": 2
+      },
+      "result": {
+        "ok": "\"é\""
+      },
+      "parse": {
+        "ok": "é"
+      }
+    },
+    {
+      "name": "UTF-8 bytes exceeded",
+      "input": "\"é\"",
+      "limits": {
+        "maxStringBytes": 1
+      },
+      "result": {
+        "error": "UI_CONTROL_INVALID_INPUT",
+        "retryable": false
+      },
+      "parse": {
+        "error": "UI_CONTROL_INVALID_INPUT",
+        "retryable": false
+      }
+    },
+    {
+      "name": "encoded bound",
+      "input": "[0]",
+      "limits": {
+        "maxEncodedBytes": 3
+      },
+      "result": {
+        "ok": "[0]"
+      },
+      "parse": {
+        "ok": [
+          0
+        ]
+      }
+    },
+    {
+      "name": "encoded exceeded",
+      "input": "[0]",
+      "limits": {
+        "maxEncodedBytes": 2
+      },
+      "result": {
+        "error": "UI_CONTROL_INVALID_INPUT",
+        "retryable": false
+      },
+      "parse": {
+        "error": "UI_CONTROL_INVALID_INPUT",
+        "retryable": false
+      }
+    },
+    {
+      "name": "invalid depth limit",
+      "input": "0",
+      "limits": {
+        "maxDepth": 65
+      },
+      "result": {
+        "error": "UI_CONTROL_INVALID_INPUT",
+        "retryable": false
+      },
+      "parse": {
+        "error": "UI_CONTROL_INVALID_INPUT",
+        "retryable": false
+      }
+    },
+    {
+      "name": "invalid entry limit",
+      "input": "0",
+      "limits": {
+        "maxEntries": 1000001
+      },
+      "result": {
+        "error": "UI_CONTROL_INVALID_INPUT",
+        "retryable": false
+      },
+      "parse": {
+        "error": "UI_CONTROL_INVALID_INPUT",
+        "retryable": false
+      }
+    },
+    {
+      "name": "invalid array limit",
+      "input": "0",
+      "limits": {
+        "maxArrayLength": 100001
+      },
+      "result": {
+        "error": "UI_CONTROL_INVALID_INPUT",
+        "retryable": false
+      },
+      "parse": {
+        "error": "UI_CONTROL_INVALID_INPUT",
+        "retryable": false
+      }
+    },
+    {
+      "name": "invalid string limit",
+      "input": "0",
+      "limits": {
+        "maxStringBytes": 16777217
+      },
+      "result": {
+        "error": "UI_CONTROL_INVALID_INPUT",
+        "retryable": false
+      },
+      "parse": {
+        "error": "UI_CONTROL_INVALID_INPUT",
+        "retryable": false
+      }
+    },
+    {
+      "name": "invalid encoded limit",
+      "input": "0",
+      "limits": {
+        "maxEncodedBytes": 33554433
+      },
+      "result": {
+        "error": "UI_CONTROL_INVALID_INPUT",
+        "retryable": false
+      },
+      "parse": {
+        "error": "UI_CONTROL_INVALID_INPUT",
+        "retryable": false
+      }
+    },
+    {
+      "name": "zero encoded limit",
+      "input": "0",
+      "limits": {
+        "maxEncodedBytes": 0
+      },
+      "result": {
+        "error": "UI_CONTROL_INVALID_INPUT",
+        "retryable": false
+      },
+      "parse": {
+        "error": "UI_CONTROL_INVALID_INPUT",
+        "retryable": false
+      }
+    },
+    {
+      "name": "strict parse {\"a\":1,\"a\":1}",
+      "input": "{\"a\":1,\"a\":1}",
+      "limits": {},
+      "parse": {
+        "error": "UI_CONTROL_INVALID_INPUT",
+        "retryable": false
+      }
+    },
+    {
+      "name": "strict parse {\"a\":1,\"a\":2}",
+      "input": "{\"a\":1,\"a\":2}",
+      "limits": {},
+      "parse": {
+        "error": "UI_CONTROL_INVALID_INPUT",
+        "retryable": false
+      }
+    },
+    {
+      "name": "strict parse {\"a\":{\"x\":1,\"x\":2}}",
+      "input": "{\"a\":{\"x\":1,\"x\":2}}",
+      "limits": {},
+      "parse": {
+        "error": "UI_CONTROL_INVALID_INPUT",
+        "retryable": false
+      }
+    },
+    {
+      "name": "strict parse  {\"a\":1}",
+      "input": " {\"a\":1}",
+      "limits": {},
+      "parse": {
+        "error": "UI_CONTROL_INVALID_INPUT",
+        "retryable": false
+      }
+    },
+    {
+      "name": "strict parse 1e0",
+      "input": "1e0",
+      "limits": {},
+      "parse": {
+        "error": "UI_CONTROL_INVALID_INPUT",
+        "retryable": false
+      }
+    },
+    {
+      "name": "strict parse \"\\u0061\"",
+      "input": "\"\\u0061\"",
+      "limits": {},
+      "parse": {
+        "error": "UI_CONTROL_INVALID_INPUT",
+        "retryable": false
+      }
+    },
+    {
+      "name": "strict parse \"\\/\"",
+      "input": "\"\\/\"",
+      "limits": {},
+      "parse": {
+        "error": "UI_CONTROL_INVALID_INPUT",
+        "retryable": false
+      }
+    },
+    {
+      "name": "strict parse [1,]",
+      "input": "[1,]",
+      "limits": {},
+      "parse": {
+        "error": "UI_CONTROL_INVALID_INPUT",
+        "retryable": false
+      }
+    }
+  ],
+  "domains": [
+    {
+      "domain": "hepta.ui-control.one.v1",
+      "value": {
+        "a": 1
+      },
+      "digest": "bfe5e678e651a84acdf10b3b23b9365c5f9556c67a6f7a254f06b66fc513e21f"
+    },
+    {
+      "domain": "hepta.ui-control.two.v1",
+      "value": {
+        "a": 1
+      },
+      "digest": "e83a66edc34695a5dd3e4cc671051d2bc9f143ae317be6607f60e3093fcb31e2"
+    }
+  ],
+  "runtime": {
+    "input": {
+      "generation": 2,
+      "revision": 3,
+      "modules": [
+        {
+          "id": "z.module",
+          "status": "ready",
+          "revision": 1,
+          "semanticDigest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+        },
+        {
+          "id": "a.module",
+          "status": "degraded",
+          "revision": 2,
+          "semanticDigest": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+        }
+      ]
+    },
+    "projection": {
+      "generation": 2,
+      "revision": 3,
+      "modules": [
+        {
+          "id": "a.module",
+          "status": "degraded",
+          "revision": 2,
+          "semanticDigest": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+        },
+        {
+          "id": "z.module",
+          "status": "ready",
+          "revision": 1,
+          "semanticDigest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+        }
+      ]
+    },
+    "digest": "8a849b772411bf14fd4156d18f1805f5c3a334dcf0b722b47343d501c7f4bb2b"
+  },
+  "operation": {
+    "input": {
+      "action": "request_reconcile",
+      "targetId": "a.module",
+      "generation": 2,
+      "displayedRevision": 3,
+      "reason": "Recover the degraded worker."
+    },
+    "intent": {
+      "action": "request_reconcile",
+      "targetId": "a.module",
+      "generation": 2,
+      "displayedRevision": 3,
+      "reason": "Recover the degraded worker."
+    },
+    "digest": "85e669e3ba3e01c574e317bffe0683ba2a22d1b5c145901444c0db0d7edc1111"
+  },
+  "session": {
+    "input": {
+      "authenticated": true,
+      "protocolVersion": "hepta.ui-control.v1",
+      "sessionId": "session-1",
+      "identityId": "operator-1",
+      "connectionGeneration": 1,
+      "permissionRevision": 1,
+      "expiresAt": 2000000,
+      "revoked": false,
+      "permissions": [
+        "hepta://ui.control/runtime.stop",
+        "hepta://ui.control/runtime.read",
+        "hepta://ui.control/runtime.request",
+        "hepta://ui.control/runtime.start"
+      ]
+    },
+    "normalized": {
+      "authenticated": true,
+      "protocolVersion": "hepta.ui-control.v1",
+      "sessionId": "session-1",
+      "identityId": "operator-1",
+      "connectionGeneration": 1,
+      "permissionRevision": 1,
+      "expiresAt": 2000000,
+      "revoked": false,
+      "permissions": [
+        "hepta://ui.control/runtime.read",
+        "hepta://ui.control/runtime.request",
+        "hepta://ui.control/runtime.start",
+        "hepta://ui.control/runtime.stop"
+      ]
+    }
+  },
+  "snapshot": {
+    "input": {
+      "sessionId": "session-1",
+      "connectionGeneration": 1,
+      "generation": 2,
+      "revision": 3,
+      "modules": [
+        {
+          "id": "z.module",
+          "status": "ready",
+          "revision": 1,
+          "semanticDigest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+        },
+        {
+          "id": "a.module",
+          "status": "degraded",
+          "revision": 2,
+          "semanticDigest": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+        }
+      ],
+      "observedAt": "2026-10-02T00:00:00.000Z"
+    },
+    "normalized": {
+      "sessionId": "session-1",
+      "connectionGeneration": 1,
+      "generation": 2,
+      "revision": 3,
+      "semanticDigest": "ebd38995a665e595872d6c9687b4b769c83a06df5087f8f170a0cc575788ca58",
+      "modules": [
+        {
+          "id": "a.module",
+          "status": "degraded",
+          "revision": 2,
+          "semanticDigest": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+        },
+        {
+          "id": "z.module",
+          "status": "ready",
+          "revision": 1,
+          "semanticDigest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+        }
+      ],
+      "observedAt": "2026-10-02T00:00:00.000Z"
+    }
+  },
+  "transitions": [
+    {
+      "name": "no prior",
+      "change": null,
+      "result": {
+        "ok": {
+          "sessionId": "session-1",
+          "connectionGeneration": 1,
+          "generation": 2,
+          "revision": 3,
+          "semanticDigest": "ebd38995a665e595872d6c9687b4b769c83a06df5087f8f170a0cc575788ca58",
+          "modules": [
+            {
+              "id": "a.module",
+              "status": "degraded",
+              "revision": 2,
+              "semanticDigest": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+            },
+            {
+              "id": "z.module",
+              "status": "ready",
+              "revision": 1,
+              "semanticDigest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+            }
+          ],
+          "observedAt": "2026-10-02T00:00:00.000Z"
+        }
+      }
+    },
+    {
+      "name": "unchanged",
+      "change": {},
+      "result": {
+        "ok": {
+          "sessionId": "session-1",
+          "connectionGeneration": 1,
+          "generation": 2,
+          "revision": 3,
+          "semanticDigest": "ebd38995a665e595872d6c9687b4b769c83a06df5087f8f170a0cc575788ca58",
+          "modules": [
+            {
+              "id": "a.module",
+              "status": "degraded",
+              "revision": 2,
+              "semanticDigest": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+            },
+            {
+              "id": "z.module",
+              "status": "ready",
+              "revision": 1,
+              "semanticDigest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+            }
+          ],
+          "observedAt": "2026-10-02T00:00:00.000Z"
+        }
+      }
+    },
+    {
+      "name": "observation only",
+      "change": {
+        "observedAt": "later"
+      },
+      "result": {
+        "ok": {
+          "sessionId": "session-1",
+          "connectionGeneration": 1,
+          "generation": 2,
+          "revision": 3,
+          "semanticDigest": "ebd38995a665e595872d6c9687b4b769c83a06df5087f8f170a0cc575788ca58",
+          "modules": [
+            {
+              "id": "a.module",
+              "status": "degraded",
+              "revision": 2,
+              "semanticDigest": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+            },
+            {
+              "id": "z.module",
+              "status": "ready",
+              "revision": 1,
+              "semanticDigest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+            }
+          ],
+          "observedAt": "2026-10-02T00:00:00.000Z"
+        }
+      }
+    },
+    {
+      "name": "session drift",
+      "change": {
+        "sessionId": "session-2"
+      },
+      "result": {
+        "error": "UI_CONTROL_STALE_GENERATION",
+        "retryable": true
+      }
+    },
+    {
+      "name": "connection rollback",
+      "change": {
+        "connectionGeneration": 0
+      },
+      "result": {
+        "error": "UI_CONTROL_STALE_GENERATION",
+        "retryable": true
+      }
+    },
+    {
+      "name": "connection rollover",
+      "change": {
+        "connectionGeneration": 2,
+        "generation": 1,
+        "revision": 1
+      },
+      "result": {
+        "ok": {
+          "sessionId": "session-1",
+          "connectionGeneration": 2,
+          "generation": 1,
+          "revision": 1,
+          "semanticDigest": "ebd38995a665e595872d6c9687b4b769c83a06df5087f8f170a0cc575788ca58",
+          "modules": [
+            {
+              "id": "a.module",
+              "status": "degraded",
+              "revision": 2,
+              "semanticDigest": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+            },
+            {
+              "id": "z.module",
+              "status": "ready",
+              "revision": 1,
+              "semanticDigest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+            }
+          ],
+          "observedAt": "2026-10-02T00:00:00.000Z"
+        }
+      }
+    },
+    {
+      "name": "generation rollback",
+      "change": {
+        "generation": 1
+      },
+      "result": {
+        "error": "UI_CONTROL_STALE_GENERATION",
+        "retryable": true
+      }
+    },
+    {
+      "name": "generation rollover",
+      "change": {
+        "generation": 3,
+        "revision": 1
+      },
+      "result": {
+        "ok": {
+          "sessionId": "session-1",
+          "connectionGeneration": 1,
+          "generation": 3,
+          "revision": 1,
+          "semanticDigest": "ebd38995a665e595872d6c9687b4b769c83a06df5087f8f170a0cc575788ca58",
+          "modules": [
+            {
+              "id": "a.module",
+              "status": "degraded",
+              "revision": 2,
+              "semanticDigest": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+            },
+            {
+              "id": "z.module",
+              "status": "ready",
+              "revision": 1,
+              "semanticDigest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+            }
+          ],
+          "observedAt": "2026-10-02T00:00:00.000Z"
+        }
+      }
+    },
+    {
+      "name": "revision rollback",
+      "change": {
+        "revision": 2
+      },
+      "result": {
+        "error": "UI_CONTROL_STALE_REVISION",
+        "retryable": true
+      }
+    },
+    {
+      "name": "revision advance",
+      "change": {
+        "revision": 4
+      },
+      "result": {
+        "ok": {
+          "sessionId": "session-1",
+          "connectionGeneration": 1,
+          "generation": 2,
+          "revision": 4,
+          "semanticDigest": "ebd38995a665e595872d6c9687b4b769c83a06df5087f8f170a0cc575788ca58",
+          "modules": [
+            {
+              "id": "a.module",
+              "status": "degraded",
+              "revision": 2,
+              "semanticDigest": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+            },
+            {
+              "id": "z.module",
+              "status": "ready",
+              "revision": 1,
+              "semanticDigest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+            }
+          ],
+          "observedAt": "2026-10-02T00:00:00.000Z"
+        }
+      }
+    },
+    {
+      "name": "content drift",
+      "change": {
+        "semanticDigest": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc"
+      },
+      "result": {
+        "error": "UI_CONTROL_SNAPSHOT_DRIFT",
+        "retryable": false
+      }
+    }
+  ],
+  "confirmation": {
+    "input": {
+      "action": "request_reconcile",
+      "targetId": "a.module",
+      "generation": 2,
+      "displayedRevision": 3,
+      "reason": "Recover the degraded worker.",
+      "operationId": "op-1"
+    },
+    "captured": {
+      "sessionId": "session-1",
+      "identityId": "operator-1",
+      "permissionRevision": 1,
+      "connectionGeneration": 1,
+      "generation": 2,
+      "displayedRevision": 3,
+      "snapshotDigest": "ebd38995a665e595872d6c9687b4b769c83a06df5087f8f170a0cc575788ca58",
+      "targetId": "a.module",
+      "targetRevision": 2,
+      "targetDigest": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+      "action": "request_reconcile",
+      "reason": "Recover the degraded worker.",
+      "operationId": "op-1"
+    },
+    "drift": [
+      {
+        "path": "sessionId",
+        "value": "session-2",
+        "result": {
+          "error": "UI_CONTROL_STALE_REVISION",
+          "retryable": true
+        }
+      },
+      {
+        "path": "identityId",
+        "value": "operator-2",
+        "result": {
+          "error": "UI_CONTROL_STALE_REVISION",
+          "retryable": true
+        }
+      },
+      {
+        "path": "permissionRevision",
+        "value": 2,
+        "result": {
+          "error": "UI_CONTROL_STALE_REVISION",
+          "retryable": true
+        }
+      },
+      {
+        "path": "connectionGeneration",
+        "value": 2,
+        "result": {
+          "error": "UI_CONTROL_STALE_REVISION",
+          "retryable": true
+        }
+      },
+      {
+        "path": "snapshot.generation",
+        "value": 3,
+        "result": {
+          "error": "UI_CONTROL_STALE_REVISION",
+          "retryable": true
+        }
+      },
+      {
+        "path": "snapshot.revision",
+        "value": 4,
+        "result": {
+          "error": "UI_CONTROL_STALE_REVISION",
+          "retryable": true
+        }
+      },
+      {
+        "path": "snapshot.semanticDigest",
+        "value": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+        "result": {
+          "error": "UI_CONTROL_STALE_REVISION",
+          "retryable": true
+        }
+      },
+      {
+        "path": "snapshot.modules.0.revision",
+        "value": 3,
+        "result": {
+          "error": "UI_CONTROL_STALE_REVISION",
+          "retryable": true
+        }
+      },
+      {
+        "path": "snapshot.modules.0.semanticDigest",
+        "value": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+        "result": {
+          "error": "UI_CONTROL_STALE_REVISION",
+          "retryable": true
+        }
+      },
+      {
+        "path": "input.targetId",
+        "value": "z.module",
+        "result": {
+          "error": "UI_CONTROL_STALE_REVISION",
+          "retryable": true
+        }
+      },
+      {
+        "path": "input.action",
+        "value": "request_stop",
+        "result": {
+          "error": "UI_CONTROL_STALE_REVISION",
+          "retryable": true
+        }
+      },
+      {
+        "path": "input.reason",
+        "value": "Changed",
+        "result": {
+          "error": "UI_CONTROL_STALE_REVISION",
+          "retryable": true
+        }
+      },
+      {
+        "path": "input.operationId",
+        "value": "op-2",
+        "result": {
+          "error": "UI_CONTROL_STALE_REVISION",
+          "retryable": true
+        }
+      },
+      {
+        "path": "connected",
+        "value": false,
+        "result": {
+          "error": "UI_CONTROL_STALE_REVISION",
+          "retryable": false
+        }
+      },
+      {
+        "path": "authenticated",
+        "value": false,
+        "result": {
+          "error": "UI_CONTROL_STALE_REVISION",
+          "retryable": false
+        }
+      },
+      {
+        "path": "stale",
+        "value": true,
+        "result": {
+          "error": "UI_CONTROL_STALE_REVISION",
+          "retryable": false
+        }
+      }
+    ]
+  }
+}
