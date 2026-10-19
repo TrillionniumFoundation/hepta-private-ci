@@ -47,6 +47,12 @@ jobs:
           version="$(python3 .github/scripts/rusty_v8_bazel.py resolved-v8-crate-version)"
           echo "version=${version}" >> "$GITHUB_OUTPUT"
 
+      - name: Verify fail-closed V8 range selection regressions
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -m unittest discover -s .github/scripts -p 'test_v8_canary_changes.py' -v
+
       - name: Detect V8 canary changes
         id: changes
         env:
