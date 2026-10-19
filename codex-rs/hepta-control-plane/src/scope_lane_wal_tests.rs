@@ -272,11 +272,15 @@ fn torn_tail_recovery_can_append_again_without_overwriting_predecessor() {
     let entries = replay.wal().entries(digest("scope-a"));
     assert_eq!(entries.map(|rows| rows.len()), Some(2));
     assert_eq!(
-        entries.and_then(|rows| rows.first()).map(|row| &row.envelope),
+        entries
+            .and_then(|rows| rows.first())
+            .map(|row| &row.envelope),
         Some(&first)
     );
     assert_eq!(
-        entries.and_then(|rows| rows.get(1)).map(|row| &row.envelope),
+        entries
+            .and_then(|rows| rows.get(1))
+            .map(|row| &row.envelope),
         Some(&second)
     );
 }
