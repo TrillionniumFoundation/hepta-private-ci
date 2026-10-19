@@ -8,6 +8,10 @@ on:
       - "codex-rs/hepta-agentd/**"
       - "codex-rs/hepta-infer-worker-host/**"
       - "codex-rs/Cargo.lock"
+      - "CALLERS.toml"
+      - "scripts/verify_hepta_callers.py"
+      - "qa/b4-no-bypass/KERNEL_AUTHORITY_BOUNDARIES.json"
+      - "qa/b4-no-bypass/test_kernel_authority_closed_world.py"
       - ".github/workflows/hepta-neuron-signed-admission.yml"
   workflow_dispatch:
 
@@ -71,6 +75,14 @@ jobs:
             cat "$RUNNER_TEMP/hepta-neuron-evidence/caller-proof.log"
             exit 1
           fi
+      - name: Validate independent B4 kernel authority closed set
+        id: independent_b4
+        continue-on-error: true
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -m unittest discover -s qa/b4-no-bypass -p 'test_kernel_authority_closed_world.py' -v
+
       - name: Check source formatting (no mutation)
         id: format
         continue-on-error: true
@@ -131,6 +143,7 @@ jobs:
         shell: bash
         env:
           CALLERS: ${{ steps.callers.outcome }}
+          INDEPENDENT_B4: ${{ steps.independent_b4.outcome }}
           FORMAT: ${{ steps.format.outcome }}
           TESTS: ${{ steps.tests.outcome }}
           COMPILE: ${{ steps.compile.outcome }}
@@ -138,7 +151,7 @@ jobs:
           CLIPPY: ${{ steps.clippy.outcome }}
         run: |
           set -euo pipefail
-          for result in "$CALLERS" "$FORMAT" "$TESTS" "$COMPILE" "$QUALIFICATION" "$CLIPPY"; do
+          for result in "$CALLERS" "$INDEPENDENT_B4" "$FORMAT" "$TESTS" "$COMPILE" "$QUALIFICATION" "$CLIPPY"; do
             test "$result" = 'success' || { echo "required gate is not success: $result"; exit 1; }
           done
       - name: Verify no test mutated source
