@@ -81,6 +81,50 @@ fn verified_snapshot_survives_asset_replacement_without_copying_bodies() -> Resu
 
 #[cfg(unix)]
 #[test]
+fn only_verified_fonts_allow_private_revalidated_storage() -> Result<()> {
+    let fixture = Fixture::new()?;
+    fixture.bundle()?;
+    let mut manifest: serde_json::Value =
+        serde_json::from_slice(&fs::read(fixture.0.join("build-manifest.json"))?)?;
+    for name in ["regular.otf", "bold.ttf"] {
+        let bytes = format!("selected font {name}").into_bytes();
+        fs::write(fixture.0.join(name), &bytes)?;
+        manifest["files"][name] = serde_json::json!({"bytes":bytes.len(),"sha256":digest(&bytes)});
+    }
+    let bundle = UiBundle::load(&fixture.manifest(&manifest)?)?;
+    for (path, expected_policy) in [
+        ("/regular.otf", "private, no-cache"),
+        ("/bold.ttf", "private, no-cache"),
+        ("/bootstrap.js", "no-store"),
+        ("/app.wasm", "no-store"),
+        ("/", "no-store"),
+        ("/build-manifest.json", "no-store"),
+    ] {
+        // Revalidation always receives this gateway's selected bytes. The
+        // stable asset URL is never accepted as proof of a cached generation.
+        let request = format!("GET {path} HTTP/1.1\r\nIf-None-Match: stale\r\n\r\n");
+        let response = crate::ui_response(request.as_bytes(), &bundle).context("selected asset")?;
+        let headers = std::str::from_utf8(&response.headers)?;
+        assert!(headers.starts_with("HTTP/1.1 200 OK\r\n"));
+        assert!(headers.contains(&format!("\r\nCache-Control: {expected_policy}\r\n")));
+        if path.ends_with(".otf") || path.ends_with(".ttf") {
+            assert_eq!(
+                &*response.body,
+                format!("selected font {}", &path[1..]).as_bytes()
+            );
+        }
+    }
+    assert!(bundle.response("/unlisted.ttf").is_none());
+    assert!(
+        bundle
+            .response("/api/hepta/runtime?asset=regular.otf")
+            .is_none()
+    );
+    Ok(())
+}
+
+#[cfg(unix)]
+#[test]
 fn malformed_requests_never_escape_the_selected_asset_map() -> Result<()> {
     let fixture = Fixture::new()?;
     let bundle = UiBundle::load(&fixture.bundle()?)?;

@@ -162,8 +162,17 @@ impl UiBundle {
             return None;
         }
         let asset = self.assets.get(relative)?;
+        // These manifest-verified font bytes contain no runtime/user state.
+        // Require origin validation on every reuse, and forbid shared caching.
+        // no-store streamed fonts hit Chromium 153's completion regression
+        // (crbug.com/568852319); API/status responses still use no-store.
+        let cache_control = if matches!(asset.mime, "font/ttf" | "font/otf") {
+            "private, no-cache"
+        } else {
+            "no-store"
+        };
         let headers = format!(
-            "HTTP/1.1 200 OK\r\nContent-Type: {}\r\nContent-Length: {}\r\nCache-Control: no-store\r\nConnection: close\r\nX-Content-Type-Options: nosniff\r\nReferrer-Policy: no-referrer\r\nContent-Security-Policy: {CSP}\r\n\r\n",
+            "HTTP/1.1 200 OK\r\nContent-Type: {}\r\nContent-Length: {}\r\nCache-Control: {cache_control}\r\nConnection: close\r\nX-Content-Type-Options: nosniff\r\nReferrer-Policy: no-referrer\r\nContent-Security-Policy: {CSP}\r\n\r\n",
             asset.mime, asset.bytes.len()
         ).into_bytes();
         Some(UiResponse {

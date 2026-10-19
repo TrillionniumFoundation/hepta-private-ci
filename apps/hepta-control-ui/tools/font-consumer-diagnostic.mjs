@@ -11,7 +11,7 @@ const pathOf=value=>{
 export function validateConsumer(snapshot,delivery,{nonce,requiredUsePaths,manifest}){
  try{
   assert.ok(uint(nonce)&&nonce>0&&nonce<=0xffffffff);
-  assert.ok(snapshot&&snapshot.version===1&&snapshot.nonce===nonce&&snapshot.sealed===true&&snapshot.overflow===false);
+  assert.ok(snapshot&&snapshot.version===2&&snapshot.nonce===nonce&&snapshot.sealed===true&&snapshot.overflow===false);
   assert.ok(uint(snapshot.hashedBytes)&&snapshot.hashedBytes<=256*1024*1024);
   assert.ok(Array.isArray(snapshot.events)&&snapshot.events.length>0&&snapshot.events.length<=512);
   assert.ok(Array.isArray(requiredUsePaths)&&requiredUsePaths.length>0&&requiredUsePaths.length<=32);
@@ -24,15 +24,25 @@ export function validateConsumer(snapshot,delivery,{nonce,requiredUsePaths,manif
    const pin=manifest.files[path.slice(1)];assert.ok(pin);
    assert.equal(value.dependencyPath,path.slice(1));assert.equal(value.bytes,pin.bytes);assert.equal(value.sha256,pin.sha256);
   }
-  const requests=new Map(),adoptions=new Map(),definitions=new Map(),attempts=new Map(),parses=new Map(),draws=new Map(),drawKeys=new Set();
+  const requests=new Map(),mappedRequests=new Set(),publicRequests=new Set(),fontRequests=new Map();
+  const adoptions=new Map(),definitions=new Map(),attempts=new Map(),parses=new Map(),draws=new Map(),drawKeys=new Set();
   for(const record of delivery.records){
    assert.ok(decimal(record.request));assert.ok(!requests.has(record.request));requests.set(record.request,record);
   }
   for(const [index,event]of snapshot.events.entries()){
    assert.equal(event.seq,index+1);
-   if(event.stage==='adopt'){
+   if(event.stage==='http-response'){
+    // The pinned Web shim allocates a transport ID and maps it back to the
+    // caller's ID before emitting its response. Observe that actual boundary;
+    // neither masking bits nor matching paths proves which request was adopted.
+    assert.ok(decimal(event.request)&&decimal(event.publicRequest));
+    assert.ok(!mappedRequests.has(event.request)&&!publicRequests.has(event.publicRequest));
+    mappedRequests.add(event.request);publicRequests.add(event.publicRequest);
+    const original=requests.get(event.request);
+    if(original)fontRequests.set(event.publicRequest,original);
+   }else if(event.stage==='adopt'){
     assert.ok(decimal(event.request)&&!adoptions.has(event.request));
-    const original=requests.get(event.request);assert.ok(original);
+    const original=fontRequests.get(event.request);assert.ok(original);
     const expected=manifest.fontConsumerResources[original.path];assert.ok(expected);
     assert.equal(pathOf(event.pathHex),expected.absolutePath);
     assert.equal(original.bytes,expected.bytes);assert.equal(original.sha256,expected.sha256);
@@ -63,11 +73,12 @@ export function validateConsumer(snapshot,delivery,{nonce,requiredUsePaths,manif
     if(!draws.has(event.font))draws.set(event.font,[]);draws.get(event.font).push(event);
    }else assert.fail('Unknown Rust consumer event');
   }
+  assert.equal(fontRequests.size,requests.size);
   assert.equal(adoptions.size,requests.size);
   for(const font of attempts.keys())assert.ok(parses.has(font),'Actual parser attempt did not succeed');
   const observations=[...adoptions.values()].map(adoption=>{
    const fonts=[...definitions.values()].filter(item=>item.adoption===adoption);
-   return {path:adoption.original.path,request:adoption.request,bytes:adoption.bytes,sha256:adoption.sha256,
+   return {path:adoption.original.path,request:adoption.original.request,publicRequest:adoption.request,bytes:adoption.bytes,sha256:adoption.sha256,
     adopted:true,defined:fonts.length>0,parsed:fonts.some(font=>parses.has(font.font)),
     naturallyEmitted:fonts.some(font=>draws.has(font.font)),fontIds:fonts.map(font=>font.font)};
   });

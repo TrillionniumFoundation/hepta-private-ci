@@ -151,6 +151,20 @@ honest missing-owner browser tests. It creates no SQL/HMAC fixture or owner.
 - HTTP boundary: loopback Host/optional Origin checks cover assets and APIs. They
   prevent browser-origin confusion and are not user authentication. Commands,
   signing, principal admission and production chat remain unavailable.
+- Font transport: only manifest-verified static TTF/OTF assets permit private
+  caching with mandatory origin validation (`private, no-cache`). Every
+  revalidation receives this gateway's selected bytes with HTTP 200; stable font
+  paths do not prove a cached bundle generation. Other assets, API observations,
+  errors and rejected/unlisted font paths retain `no-store`. This avoids
+  [Chromium's no-store stream completion regression](https://issues.chromium.org/issues/568852319),
+  also reproduced in [Playwright #42742](https://github.com/microsoft/playwright/issues/42742),
+  without changing bounded SDK reads or the strict original-request audit.
+- Optional font diagnostics bind the SDK's transport request ID to the actual
+  public request ID observed inside the Rust Web shim before response emission.
+  Snapshot version 2 then requires adoption, parsing and natural glyph emission
+  to retain that mapping and the selected font digest. Missing, late, reused or
+  mismatched IDs fail the diagnostic. The recorder stays disabled during normal
+  product operation; it does not load fonts or grant product acceptance.
 - Fixture demonstrations: rendered fixture transcripts are not live owner wiring.
   A real NotAttached response is not a fixture success-state or production readiness.
 - Platform/evidence limits: bundle loading is currently Unix-only; Windows needs

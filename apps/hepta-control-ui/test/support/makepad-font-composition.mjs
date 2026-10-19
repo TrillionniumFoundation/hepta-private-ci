@@ -10,6 +10,7 @@ const consumerPaths = [
   'makepad-platform/src/hepta_font_consumer.rs',
   'makepad-platform/src/lib.rs',
   'makepad-platform/src/script/res.rs',
+  'makepad-platform/src/os/web/web_network.rs',
 ];
 const digest = bytes => createHash('sha256').update(bytes).digest('hex');
 const validDigest = value => assert.match(value, /^[a-f0-9]{64}$/);

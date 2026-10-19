@@ -12,8 +12,12 @@ test('bounded SDK stream terminal controls',async({page,browser},testInfo)=>{
  await recordDiagnosticBrowser(browser,testInfo);
  const snapshot=await loadArtifactSnapshot(new URL('../dist/',import.meta.url).pathname);
  const server=await startControlServer(snapshot),results=[];
+ const controls=[
+  ...['complete','revalidated','truncated','abort','declared-limit','stream-limit'].map(kind=>({kind,cache:null})),
+  ...['truncated','abort','declared-limit','stream-limit'].map(kind=>({kind,cache:'private'})),
+ ];
  try{
-  for(const kind of ['complete','truncated','abort','declared-limit','stream-limit']){
+  for(const {kind,cache} of controls){
    await page.goto(server.origin+'/probe');
    const terminal=new Promise(resolve=>{
     const finish=request=>{if(!request.url().includes('/control?'))return;cleanup();resolve({event:'finished'});};
@@ -22,7 +26,7 @@ test('bounded SDK stream terminal controls',async({page,browser},testInfo)=>{
     page.on('requestfinished',finish);page.on('requestfailed',fail);
    });
    const headers=page.waitForResponse(response=>response.url().includes('/control?'));
-   const application=page.evaluate(async kind=>{
+   const application=page.evaluate(async({kind,cache})=>{
     const {WasmWebBrowser}=await import('/makepad_platform/web.js');
     const host=Object.create(WasmWebBrowser.prototype);let body,result,finish,lastString;
     const done=new Promise(resolve=>finish=resolve);
@@ -33,23 +37,24 @@ test('bounded SDK stream terminal controls',async({page,browser},testInfo)=>{
     const original=host.network_http_finish;
     host.network_http_finish=function(entry){original.call(this,entry);finish();};
     const entry={request_key:'diagnostic',request_id_lo:1,request_id_hi:0,metadata_id_lo:0,metadata_id_hi:0,
-     fetch_url:new URL('/control?kind='+kind,location.href).href,method:'GET',headers:new Headers(),body:undefined,
+     fetch_url:new URL('/control?kind='+kind+(cache?'&cache='+cache:''),location.href).href,method:'GET',headers:new Headers(),body:undefined,
      max_body:128,host_key:location.origin,is_archive:false,is_archive_range:false,tile_keys:'-',state:'queued',
      controller:null,stall_timer:null,response_bytes:0};
     window.__heptaControlEntry=entry;host.network_http_requests.set(entry.request_key,entry);host.network_http_dispatch(entry);
     await done;
     if(result.delivered){result.bytes=body.length;result.sha256=Array.from(new Uint8Array(await crypto.subtle.digest('SHA-256',body)),v=>v.toString(16).padStart(2,'0')).join('');}
     return {...result,finalState:entry.state,responseBytes:entry.response_bytes};
-   },kind);
-   await headers;
+   },{kind,cache});
+   const response=await headers,cacheControl=response.headers()['cache-control'];
+   expect(cacheControl).toBe(cache==='private'||kind==='revalidated'?'private, no-cache':'no-store');
    if(kind==='abort')await page.evaluate(()=>window.__heptaControlEntry.controller.abort('diagnostic explicit abort'));
    const app=await application;let timer;
    const native=await Promise.race([terminal,new Promise((_,reject)=>{timer=setTimeout(()=>reject(new Error('Native terminal observation missing')),3000);})]).finally(()=>clearTimeout(timer));
-   results.push({kind,app,native});
-   if(kind==='complete'){
+   results.push({kind,cacheControl,app,native});
+   if(kind==='complete'||kind==='revalidated'){
     expect(app).toEqual({delivered:true,bytes:CONTROL_BODY.length,sha256:createHash('sha256').update(CONTROL_BODY).digest('hex'),finalState:'done',responseBytes:CONTROL_BODY.length});
     // Baseline result remains recorded, never treated as successful transport.
-    if(testInfo.project.name.startsWith('fixed-'))expect(native).toEqual({event:'finished'});
+    if(kind==='revalidated'||testInfo.project.name.startsWith('fixed-'))expect(native).toEqual({event:'finished'});
    }else{
     const {error,...state}=app;expect(state).toEqual({delivered:false,finalState:'done',responseBytes:0});
     expect(error).toBeTruthy();
