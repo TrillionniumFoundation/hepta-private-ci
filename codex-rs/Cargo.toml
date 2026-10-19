@@ -662,6 +662,8 @@ inherits = "test"
 opt-level = 0
 
 [patch.crates-io]
+# Backport upstream Hickory 0.26 DNS APIs while retaining Rama alpha.4 and Rust 1.95.
+rama-dns = { path = "third_party/rama-dns-0.3.0-alpha.4" }
 # Preserve encrypted sync Secret Service while avoiding Cargo weak-feature lock edges.
 keyring = { path = "third_party/keyring-3.6.3" }
 # Matrix SDK 0.18 still exposes anymap2 in its event handler API. Keep that
