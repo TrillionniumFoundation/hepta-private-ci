@@ -1,3 +1,4 @@
+use std::collections::BTreeSet;
 use std::error::Error as StdError;
 use std::fmt;
 
@@ -92,6 +93,7 @@ pub enum GroupSystem2Error {
     IdTooLarge(&'static str),
     ZeroDigest(&'static str),
     ZeroGeneration,
+    TraceBindingMismatch(&'static str),
     ZeroResourceCeiling,
     TooManyCells(usize),
     TooManyCandidates(usize),
@@ -100,6 +102,7 @@ pub enum GroupSystem2Error {
     MultipleAbstainCandidates,
     IllegalAbstainCandidate,
     DuplicateCandidateId(String),
+    DuplicateCellId(String),
     NegativeUncertainty,
     NegativeCost,
     NegativeRisk,
@@ -200,10 +203,10 @@ fn validate_trace(
         return Err(GroupSystem2Error::IdTooLarge("run_id"));
     }
     if trace.subject_id != subject.subject_id {
-        return Err(GroupSystem2Error::EmptyId("trace subject binding"));
+        return Err(GroupSystem2Error::TraceBindingMismatch("subject_id"));
     }
     if trace.generation != subject.generation {
-        return Err(GroupSystem2Error::ZeroGeneration);
+        return Err(GroupSystem2Error::TraceBindingMismatch("generation"));
     }
     for (name, digest) in [
         ("input_digest", trace.input_digest),
@@ -227,8 +230,12 @@ fn validate_trace(
     }
 
     let mut used = 0_u64;
+    let mut cell_ids = BTreeSet::new();
     for cell in &trace.cells {
         validate_id("cell_id", &cell.cell_id)?;
+        if !cell_ids.insert(cell.cell_id.as_str()) {
+            return Err(GroupSystem2Error::DuplicateCellId(cell.cell_id.clone()));
+        }
         for (name, digest) in [
             ("head_digest", cell.head_digest),
             ("action_digest", cell.action_digest),
