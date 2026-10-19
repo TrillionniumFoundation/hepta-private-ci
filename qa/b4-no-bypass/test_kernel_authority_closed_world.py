@@ -178,6 +178,26 @@ class KernelAuthorityClosedWorldTests(unittest.TestCase):
             f"kernel.authority privileged boundaries missing from privileged_inventory: {sorted(canonical - required)}",
         )
 
+    def test_signed_neuron_final_use_callers_match_both_inventories(self) -> None:
+        manifest = tomllib.loads(MANIFEST.read_text(encoding="utf-8"))
+        declared = {row["id"]: row for row in manifest["boundary"]}
+        independent = {row["id"]: row for row in self.inventory()}
+        signed_neuron_callers = {
+            "codex-rs/hepta-infer-worker-host/src/neuron_microbatch.rs",
+            "codex-rs/hepta-neuron/src/runtime.rs",
+        }
+        for boundary_id, marker in (
+            ("final_use_claim", "claim_final_use("),
+            ("final_use_guarded_effect", "with_verified_effect("),
+        ):
+            with self.subTest(boundary=boundary_id):
+                manifest_callers = set(declared[boundary_id]["product_callers"])
+                independent_callers = set(independent[boundary_id]["allowedCallers"])
+                self.assertEqual(independent_callers, manifest_callers)
+                self.assertTrue(signed_neuron_callers.issubset(independent_callers))
+                for source_path in sorted(signed_neuron_callers):
+                    self.assertIn(marker, self.lexical_code(source_path))
+
     def test_type_anchored_callers_match_independent_closed_set(self) -> None:
         ignored = ("/tests/", "/examples/", "_tests.rs")
         rows = self.inventory()
