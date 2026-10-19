@@ -134,6 +134,29 @@ jobs:
           fetch-depth: 0
           persist-credentials: false
 
+      - name: Reclaim unused hosted-runner disk for exhaustive Rust reverse-consumer tests
+        shell: bash
+        run: |
+          set -euo pipefail
+          # This job runs exclusively on an ephemeral ubuntu-24.04 hosted
+          # runner. The selected Cargo owner/reverse-consumer graph must NOT
+          # be reduced to work around runner disk exhaustion.
+          printf '%s\n' 'Runner disk before native prerequisites:'
+          df -h "$RUNNER_TEMP"
+          for unused in /usr/local/lib/android /usr/share/dotnet /opt/ghc /usr/local/.ghcup; do
+            if [[ -d "$unused" ]]; then
+              echo "Removing unused preinstalled non-Rust toolchain: $unused"
+              sudo du -sh "$unused"
+              sudo rm -rf -- "$unused"
+            fi
+          done
+          printf '%s\n' 'Runner disk after reclaiming unused tools:'
+          df -h "$RUNNER_TEMP"
+          free_kib="$(df -Pk "$RUNNER_TEMP" | awk 'NR==2 {print $4}')"
+          if ! [[ "$free_kib" =~ ^[0-9]+$ ]] || (( free_kib < 6 * 1024 * 1024 )); then
+            echo '::error::Less than 6 GiB free for exact-SHA native reverse-consumer tests'
+            exit 1
+          fi
       - name: Prepare native test prerequisites before compilation
         run: |
           sudo apt-get update
