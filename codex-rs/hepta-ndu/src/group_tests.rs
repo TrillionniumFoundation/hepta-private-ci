@@ -143,3 +143,36 @@ fn missing_abstain_and_zero_digest_fail_closed() {
         Err(GroupSystem2Error::ZeroDigest("encoder_digest"))
     );
 }
+
+#[test]
+fn duplicate_cell_observations_fail_closed() {
+    let subject = subject();
+    let candidates = candidate_fixtures();
+    let mut trace = make_trace(&subject, &candidates);
+    trace.cells.push(trace.cells[0].clone());
+
+    assert_eq!(
+        decide_group_continuation_v1(&subject, &trace, &candidates),
+        Err(GroupSystem2Error::DuplicateCellId("cell:0".to_owned()))
+    );
+}
+
+#[test]
+fn trace_identity_and_generation_mismatch_fail_closed() {
+    let subject = subject();
+    let candidates = candidate_fixtures();
+    let mut trace = make_trace(&subject, &candidates);
+
+    trace.subject_id = "domain:other".to_owned();
+    assert_eq!(
+        decide_group_continuation_v1(&subject, &trace, &candidates),
+        Err(GroupSystem2Error::TraceBindingMismatch("subject_id"))
+    );
+
+    trace.subject_id = subject.subject_id.clone();
+    trace.generation += 1;
+    assert_eq!(
+        decide_group_continuation_v1(&subject, &trace, &candidates),
+        Err(GroupSystem2Error::TraceBindingMismatch("generation"))
+    );
+}
