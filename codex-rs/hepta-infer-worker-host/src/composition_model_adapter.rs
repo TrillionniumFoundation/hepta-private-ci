@@ -6,14 +6,19 @@
 
 use std::collections::BTreeMap;
 
-use crate::composition::{
-    CompositionDriver, CompositionError, CompositionKey, CompositionManifestV1, CompositionRequest,
-    CompositionWorker,
-};
-use crate::model_worker::{
-    DriverModelHandle, DriverRunObservation, Error, ModelDriver, ModelManifest, ResourceGrant,
-    WorkerRequest,
-};
+use crate::composition::CompositionDriver;
+use crate::composition::CompositionError;
+use crate::composition::CompositionKey;
+use crate::composition::CompositionManifestV1;
+use crate::composition::CompositionRequest;
+use crate::composition::CompositionWorker;
+use crate::model_worker::DriverModelHandle;
+use crate::model_worker::DriverRunObservation;
+use crate::model_worker::Error;
+use crate::model_worker::ModelDriver;
+use crate::model_worker::ModelManifest;
+use crate::model_worker::ResourceGrant;
+use crate::model_worker::WorkerRequest;
 
 #[derive(Clone)]
 struct Binding {
