@@ -18,6 +18,7 @@ use codex_hepta_fleet::WorkspaceBinding;
 use codex_hepta_paths::HeptaFleetRoot;
 use codex_hepta_supervisor::AdoptSpec;
 use codex_hepta_supervisor::Adoption;
+use codex_hepta_supervisor::AgentFault;
 use codex_hepta_supervisor::AgentRelease;
 use codex_hepta_supervisor::ManagedProcess;
 use codex_hepta_supervisor::ProcessDriver;
@@ -297,13 +298,22 @@ fn restart_budget_survives_repeated_supervisord_recovery() -> Result<(), Supervi
     drop(supervisor);
 
     // A fourth crash after yet another supervisord recovery is budget
-    // exhaustion, not a fresh attempt 1.
+    // exhaustion, not a fresh attempt 1. This is an observable fault, not a
+    // successful tick, and must retain the exact agent and error identity.
     let (mut supervisor, recovered) =
         Supervisor::recover(registry, control.driver(), config(), now)?;
     assert_eq!(recovered, TickReport::default());
     now += Duration::from_millis(1);
     control.crash(&agent_id);
-    assert_eq!(supervisor.tick(now), TickReport::default());
+    assert_eq!(
+        supervisor.tick(now),
+        TickReport {
+            faults: vec![AgentFault {
+                agent_id: agent_id.clone(),
+                message: SupervisorError::RestartBudgetExhausted(agent_id.clone()).to_string(),
+            }],
+        }
+    );
     let snapshot = supervisor.snapshot(&agent_id).expect("snapshot");
     assert!(!snapshot.active);
     assert!(snapshot.events.iter().any(|event| matches!(
