@@ -249,18 +249,23 @@ mod tests {
     use super::*;
 
     #[tokio::test]
-    async fn control_peer_check_runs_before_control_frames() -> std::io::Result<()> {
-        let temp_dir = tempfile::tempdir()?;
+    async fn control_peer_check_runs_before_control_frames() {
+        let temp_dir = tempfile::tempdir().expect("temporary directory");
         let socket_path = temp_dir.path().join("agentd-control.sock");
-        let listener = UnixListener::bind(&socket_path).await?;
+        let mut listener = UnixListener::bind(&socket_path)
+            .await
+            .expect("control listener should bind");
         let client_path = socket_path.clone();
         let client_task = tokio::spawn(async move { UnixStream::connect(client_path).await });
-        let (server_stream, _) = listener.accept().await?;
-        ensure_control_peer(&server_stream).map_err(|error| {
-            std::io::Error::other(format!("same-UID control peer should pass: {error}"))
-        })?;
-        let _client_stream = client_task.await.map_err(std::io::Error::other)??;
-        Ok(())
+        let server_stream = listener
+            .accept()
+            .await
+            .expect("control peer should connect");
+        ensure_control_peer(&server_stream).expect("same-UID control peer should pass");
+        let _client_stream = client_task
+            .await
+            .expect("client task should join")
+            .expect("client should connect");
     }
 
     #[test]
