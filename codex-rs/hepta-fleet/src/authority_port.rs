@@ -262,7 +262,8 @@ mod tests {
             .revoke("fleet-issue-one", 1, [9; 32])
             .unwrap_or_else(|e| panic!("{e:?}"));
         assert_eq!(
-            port.issue(&mut ledger, "fleet-issue-one", 2, 2_001, grant).err(),
+            port.issue(&mut ledger, "fleet-issue-one", 2, 2_001, grant)
+                .err(),
             Some(FleetAuthorityError::Authority(AuthorityLeaseError::Revoked))
         );
     }
