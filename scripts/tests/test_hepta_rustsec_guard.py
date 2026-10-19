@@ -20,7 +20,9 @@ class TrackedRustSecGuardTests(unittest.TestCase):
             with self.subTest(advisory_id=advisory_id):
                 self.assertEqual(
                     ignored_tracked_advisories(
-                        '[advisories]\nignore = [{ id = "' + advisory_id + '", reason = "temporary" }]\n'
+                        "[advisories]\\nignore = ["
+                        f'{{ id = "{advisory_id}", reason = "temporary" }}'
+                        "]\\n"
                     ),
                     [advisory_id],
                 )
@@ -29,14 +31,18 @@ class TrackedRustSecGuardTests(unittest.TestCase):
         for advisory_id in sorted(TRACKED_RUSTSEC):
             with self.subTest(advisory_id=advisory_id):
                 self.assertEqual(
-                    ignored_tracked_advisories('[advisories]\nignore = ["' + advisory_id + '"]\n'),
+                    ignored_tracked_advisories(
+                        f'[advisories]\\nignore = ["{advisory_id}"]\\n'
+                    ),
                     [advisory_id],
                 )
 
     def test_unrelated_existing_exceptions_are_not_silently_rewritten(self):
         self.assertEqual(
             ignored_tracked_advisories(
-                '[advisories]\nignore = [{ id = "RUSTSEC-2024-0388", reason = "tracked separately" }]\n'
+                "[advisories]\\nignore = ["
+                '{ id = "RUSTSEC-2024-0388", reason = "tracked separately" }'
+                "]\\n"
             ),
             [],
         )
@@ -52,9 +58,13 @@ class TrackedRustSecGuardTests(unittest.TestCase):
             (root / POLICIES[1]).write_text(
                 '[advisories]\nignore = ["RUSTSEC-2026-0370"]\n', encoding="utf-8"
             )
-            self.assertEqual(violations(root), {str(POLICIES[1]): ["RUSTSEC-2026-0370"]})
+            self.assertEqual(
+                violations(root), {str(POLICIES[1]): ["RUSTSEC-2026-0370"]}
+            )
             self.assertEqual(main(["--repo-root", str(root)]), 1)
-            (root / POLICIES[1]).write_text('[advisories]\nignore = [42]\n', encoding="utf-8")
+            (root / POLICIES[1]).write_text(
+                "[advisories]\\nignore = [42]\\n", encoding="utf-8"
+            )
             self.assertEqual(main(["--repo-root", str(root)]), 1)
 
 
