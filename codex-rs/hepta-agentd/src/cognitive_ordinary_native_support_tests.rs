@@ -160,13 +160,15 @@ pub(super) fn host_file(
     genesis: u64,
 ) -> Result<PathBuf> {
     let scope = Sha256Digest::for_bytes(b"ordinary-native-upgrade-final-use");
-    let contract = json!({"schema":"hepta-agentd-pon-provider-contract-v2",
+    // The Chain fixture creates this directory before either Agentd starts.
+    let packet_root = root.canonicalize()?.join("chain");
+    let contract = json!({"schema":"hepta-agentd-pon-provider-contract-v3",
         "provider_kind":"trillionnium-pon-local-v1","provider_scope":"pon/ordinary-study-v1","destination_id":"pon:ordinary-study",
-        "chain_binary":binary.path,"chain_binary_sha256":binary.digest,"chain_store":store,"chain_state_backend":"authenticated-v1",
+        "chain_binary":binary.path,"chain_binary_sha256":binary.digest,"chain_store":store,"pon_packet_root":packet_root,"chain_state_backend":"authenticated-v1",
         "chain_genesis_time":genesis,"chain_evaluation_policy":"legacy-first-two-v3","chain_task_profile":"legacy-task-v1",
         "chain_model_profile":"linear-expert-dev-v1","chain_workers":1,"chain_min_confirmation_depth":1,
         "chain_min_confirmation_work_depth_hex":format!("{}01","00".repeat(63)),"timeout_ms":5000});
-    let mut bytes = b"hepta.agentd.pon-provider-contract.v2\0".to_vec();
+    let mut bytes = b"hepta.agentd.pon-provider-contract.v3\0".to_vec();
     bytes.extend(serde_json::to_vec(&contract)?);
     let digest = Sha256Digest::for_bytes(&bytes);
     let contract_signer = SigningKey::from_bytes(&[23; 32]);
@@ -662,6 +664,7 @@ pub(super) async fn plan(
             intent,
             provider_effect_key,
             packet_path,
+            packet_byte_length: Some(packet.len() as u64),
             final_use_grant,
             command_id: "ordinary-native-accept".to_owned(),
         },

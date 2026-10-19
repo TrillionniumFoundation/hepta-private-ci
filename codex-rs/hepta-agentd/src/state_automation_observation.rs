@@ -19,7 +19,7 @@ impl AgentdState {
     pub(super) async fn resume_automation_effect(
         &self,
         intent: &AuthorizedEffectIntent,
-        wire_payload: &[u8],
+        material: crate::automation_effect_host::AgentdEffectMaterial<'_>,
         signed_grant: &codex_hepta_contracts::SignedFinalUseGrant,
         command_id: &str,
         deadline: std::time::Instant,
@@ -40,7 +40,7 @@ impl AgentdState {
                 self,
                 crate::automation_effect_host::AgentdEffectResumeInput {
                     intent,
-                    wire_payload,
+                    material,
                     signed_grant,
                     command_id,
                     deadline,

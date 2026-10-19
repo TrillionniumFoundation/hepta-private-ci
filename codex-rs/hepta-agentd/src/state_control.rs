@@ -103,7 +103,13 @@ impl AgentdState {
                     )
                     .map_err(AgentdError::Protocol)?,
                 ];
-                if self.automation_effect_host().is_some() {
+                if let Some(host) = self.automation_effect_host() {
+                    if host.pon_packet_files_enabled() {
+                        capabilities.push(
+                            crate::AgentdCapability::new(crate::AUTOMATION_PON_PACKET_FILE_CAPABILITY, 1, 0)
+                                .map_err(AgentdError::Protocol)?,
+                        );
+                    }
                     capabilities.push(
                         crate::AgentdCapability::new(
                             crate::AUTOMATION_EFFECT_RESUME_CAPABILITY,
@@ -679,7 +685,9 @@ impl AgentdState {
             } => AgentdPayload::AutomationEffectReconcile(
                 self.resume_automation_effect(
                     &intent,
-                    &decode_effect_wire_hex(&wire_payload_hex)?,
+                    crate::automation_effect_host::AgentdEffectMaterial::Inline(
+                        &decode_effect_wire_hex(&wire_payload_hex)?,
+                    ),
                     &signed_grant,
                     &command_id,
                     effect_deadline.ok_or_else(|| {
@@ -687,6 +695,22 @@ impl AgentdState {
                     })?,
                 )
                 .await?,
+            ),
+            crate::AgentdMethod::AutomationResumePonPacket {
+                intent,
+                packet,
+                signed_grant,
+                command_id,
+            } => AgentdPayload::AutomationEffectReconcile(
+                self.resume_automation_effect(
+                    &intent,
+                    crate::automation_effect_host::AgentdEffectMaterial::PonPacketFile(&packet),
+                    &signed_grant,
+                    &command_id,
+                    effect_deadline.ok_or_else(|| {
+                        AgentdError::Protocol("missing effect control budget".to_owned())
+                    })?,
+                ).await?,
             ),
             crate::AgentdMethod::AutomationReconcileEffect {
                 run_id,

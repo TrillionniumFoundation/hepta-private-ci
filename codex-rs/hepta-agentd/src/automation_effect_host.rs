@@ -67,6 +67,11 @@ mod pon_process;
 mod reconciliation;
 #[path = "automation_effect_resume.rs"]
 mod resume;
+#[path = "automation_effect_packet_material.rs"]
+mod packet_material;
+pub(crate) use packet_material::AgentdEffectMaterial;
+use packet_material::EffectMaterialProfile;
+use packet_material::PonPacketRoot;
 #[path = "automation_effect_host_task_observation.rs"]
 mod task_observation;
 pub(crate) use resume::AgentdEffectResumeInput;
@@ -111,6 +116,8 @@ struct AutomationEffectHostFileV3 {
     chain_binary: PathBuf,
     chain_binary_sha256: String,
     chain_store: PathBuf,
+    #[serde(default)]
+    pon_packet_root: Option<PathBuf>,
     chain_state_backend: String,
     chain_genesis_time: u64,
     chain_evaluation_policy: String,
@@ -794,7 +801,7 @@ fn verify_pinned_binary(path: &Path, expected: &Sha256Digest) -> Result<(), Agen
 }
 
 fn pon_contract_digest(config: &AutomationEffectHostFileV3) -> Result<Sha256Digest, AgentdError> {
-    let value = serde_json::json!({
+    let mut value = serde_json::json!({
         "schema":"hepta-agentd-pon-provider-contract-v2",
         "provider_kind":config.provider_kind,
         "provider_scope":config.provider_scope,
@@ -812,7 +819,15 @@ fn pon_contract_digest(config: &AutomationEffectHostFileV3) -> Result<Sha256Dige
         "chain_min_confirmation_work_depth_hex":config.chain_min_confirmation_work_depth_hex,
         "timeout_ms":config.timeout_ms,
     });
-    let mut bytes = b"hepta.agentd.pon-provider-contract.v2\0".to_vec();
+    // Legacy configurations retain their exact v2 contract bytes. Enabling
+    // filesystem transport requires a fresh signature over the explicit root.
+    let mut bytes = if let Some(root) = &config.pon_packet_root {
+        value["schema"] = serde_json::json!("hepta-agentd-pon-provider-contract-v3");
+        value["pon_packet_root"] = serde_json::json!(root);
+        b"hepta.agentd.pon-provider-contract.v3\0".to_vec()
+    } else {
+        b"hepta.agentd.pon-provider-contract.v2\0".to_vec()
+    };
     bytes.extend_from_slice(&serde_json::to_vec(&value)?);
     Ok(Sha256Digest::for_bytes(&bytes))
 }
@@ -839,6 +854,7 @@ pub(crate) struct AgentdAutomationEffectHost {
     revocation_refresh: Arc<Mutex<()>>,
     resume_serial: Arc<tokio::sync::Mutex<()>>,
     adapter: AgentdProviderEffectAdapter,
+    pon_packet_root: Option<PonPacketRoot>,
 }
 
 impl std::fmt::Debug for AgentdAutomationEffectHost {
@@ -984,6 +1000,7 @@ impl AgentdAutomationEffectHost {
             revocation_refresh: Arc::new(Mutex::new(())),
             resume_serial: Arc::new(tokio::sync::Mutex::new(())),
             adapter: AgentdProviderEffectAdapter::Http(adapter),
+            pon_packet_root: None,
         })
     }
 
@@ -1056,6 +1073,9 @@ impl AgentdAutomationEffectHost {
         )
         .map_err(AgentdError::Invalid)?;
 
+        let pon_packet_root = config.pon_packet_root.as_deref()
+            .map(|path| PonPacketRoot::open(path, identity)).transpose()?;
+
         if !config.final_use_revocations_file.is_absolute() {
             return Err(AgentdError::Invalid(
                 "final_use_revocations_file must be absolute".to_string(),
@@ -1111,6 +1131,7 @@ impl AgentdAutomationEffectHost {
             revocation_refresh: Arc::new(Mutex::new(())),
             resume_serial: Arc::new(tokio::sync::Mutex::new(())),
             adapter: AgentdProviderEffectAdapter::Pon(adapter),
+            pon_packet_root,
         })
     }
 
@@ -1132,6 +1153,7 @@ impl AgentdAutomationEffectHost {
                 command_id,
                 now_ms,
                 dispatch_budget: ProviderDispatchBudget::ConfiguredProvider,
+                material_profile: EffectMaterialProfile::Inline,
             },
         )
         .await
@@ -1149,8 +1171,9 @@ impl AgentdAutomationEffectHost {
             command_id,
             now_ms,
             dispatch_budget,
+            material_profile,
         } = input;
-        self.validate_intent(intent, wire_payload)?;
+        self.validate_intent(intent, wire_payload, material_profile)?;
         self.refresh_revocations()?;
         if let Some(receipt) = store
             .read_authorized_taskflow_effect_receipt(intent, command_id)
@@ -1264,12 +1287,36 @@ impl AgentdAutomationEffectHost {
         &self,
         intent: &AuthorizedEffectIntent,
         wire_payload: &[u8],
+        profile: EffectMaterialProfile,
     ) -> Result<(), AgentdError> {
-        if wire_payload.is_empty() || wire_payload.len() > crate::MAX_AUTOMATION_EFFECT_WIRE_BYTES {
+        let limit = match profile {
+            EffectMaterialProfile::Inline => crate::MAX_AUTOMATION_EFFECT_WIRE_BYTES,
+            EffectMaterialProfile::PonPacket if self.pon_packet_files_enabled() => {
+                codex_hepta_automation::MAX_EFFECT_DISPATCH_WIRE_BYTES
+            }
+            EffectMaterialProfile::PonPacket => return Err(AgentdError::Invalid(
+                "PoN packet file transport is disabled".to_owned(),
+            )),
+        };
+        if wire_payload.is_empty() || wire_payload.len() > limit {
             return Err(AgentdError::Invalid(
                 "automation effect wire payload is empty or too large".to_string(),
             ));
         }
+        self.validate_subject(intent)?;
+        if Sha256Digest::for_bytes(wire_payload) != intent.payload_digest {
+            return Err(AgentdError::Invalid(
+                "automation effect wire payload digest mismatch".to_string(),
+            ));
+        }
+        Ok(())
+    }
+
+    pub(crate) fn pon_packet_files_enabled(&self) -> bool {
+        self.pon_packet_root.is_some() && matches!(self.adapter, AgentdProviderEffectAdapter::Pon(_))
+    }
+
+    fn validate_subject(&self, intent: &AuthorizedEffectIntent) -> Result<(), AgentdError> {
         if intent.subject_id != self.agent_id.as_str()
             || intent.destination_id != self.destination_id
             || intent.final_use_scope_digest != self.final_use_scope_digest
@@ -1277,11 +1324,6 @@ impl AgentdAutomationEffectHost {
             return Err(AgentdError::GenerationFenced(
                 "automation effect intent is outside the host-owned subject/destination/scope"
                     .to_string(),
-            ));
-        }
-        if Sha256Digest::for_bytes(wire_payload) != intent.payload_digest {
-            return Err(AgentdError::Invalid(
-                "automation effect wire payload digest mismatch".to_string(),
             ));
         }
         Ok(())

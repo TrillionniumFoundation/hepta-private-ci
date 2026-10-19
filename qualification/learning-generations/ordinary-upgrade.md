@@ -1,5 +1,12 @@
 # Ordinary qualification and exact-task installation
 
+This document specifies the ordinary entry points and their native assertions.
+Only a retained passing receipt for the exact source and executable pair
+establishes that a scenario completed. The historical `generations` run at
+`2c4f21bfb309f92e110facdfd1732b838e8e21de` is the bounded synthetic component
+study described in [README.md](README.md); its three installed generations do
+not establish completion of this service and Chain path.
+
 `hepta-cognitive-upgrade` composes the original file evaluation owner, independent
 selector, artifact CURRENT owner, Agentd TaskFlow/FinalUse owner and signed
 Supervisor release owner. It has no signing key, replacement journal, mutable
@@ -112,6 +119,38 @@ by the original CURRENT/ranker/FinalUse path. Its initialized namespace rejects
 missing/corrupt/pending or conflicting withdrawal history; it does not claim to
 resist an administrator rolling back an entire trusted persistent namespace.
 
+An `Installed` result establishes that installation/readback boundary. It does
+not establish qualified subsequent performance; the separate post-install
+cohort gate below owns that result. A failure before that gate must preserve a
+null qualified-update count rather than count an attempted or installed update
+as qualified.
+
+## Bounded PoN packet file transport
+
+The PoN host can opt into `automation.effect.pon_packet_file` by configuring an
+absolute canonical `pon_packet_root` outside both directions of the Agent's
+home, run and workspace namespaces. Enabling the root requires a new signed
+`hepta-agentd-pon-provider-contract-v3` configuration. Configurations without a
+root retain their original v2 contract bytes and capabilities.
+
+New upgrade plans carry `packet_byte_length` measured from the actual packet.
+Agentd receives its path, length and original payload SHA, checks the file under
+the signed root and supplies the actual bytes to the existing FinalUse and
+dispatch owners. The file limit is the existing 64 KiB dispatch-ledger limit;
+the ordinary inline limit remains 24 KiB and the control frame remains 64 KiB.
+Wrong lengths, digests, aliases and out-of-root paths fail before a new dispatch.
+
+Once an attempt exists, its original receipt and durable bytes own recovery.
+Deleting or replacing the packet file does not permit another nonce claim or
+submission. The external file is not opened on that recovery path. Previously
+saved V1 plans without `packet_byte_length` retain their original bounded inline
+behavior; they do not acquire the new capability implicitly.
+
+The narrow native transport fixture uses an explicitly labelled ELF provider to
+observe raw bytes and controlled Unknown/terminal outcomes. It does not count as
+Chain acceptance or installation. The separate `ordinary-upgrade` scenario still
+must complete with the actual pinned Chain and Supervisor products.
+
 ## Retained native scenarios and exact inputs
 
 Use the existing build/test commands and retain the exact source, binary hash,
@@ -152,11 +191,13 @@ when invoking a libtest binary directly. Agentd starts its real embedded AppServ
 No standalone Codex CLI or HTTP provider mock substitutes for that service/Chain
 path. If host sandbox/readiness rules prevent it, preserve the failure.
 
-`ordinary-future` performs first timed acquisition and raw bootstrap reconstruction
-without claiming a service installation. `ordinary-upgrade` exercises real source
-launch 5 → target launch 9, exact task reconciliation across that process change,
-signed release installation, actual reorg/recovery, missing data and revocation.
-Its additional 32 newly offered application tasks enter the original
+`ordinary-future` defines assertions for first timed acquisition and raw bootstrap
+reconstruction without claiming a service installation. `ordinary-upgrade`
+defines assertions for real source launch 5 → target launch 9, exact task
+reconciliation across that process change, signed release installation, actual
+reorg/recovery, missing data and revocation. An early failure leaves later
+assertions unexecuted; source code describing them is not a passing observation.
+Its additional 32 newly offered application tasks must enter the original
 `LedgerWriter`: actual Agentd context → durable decision → current revalidation →
 independent role execution/outcome → complete offered cohort dataset freeze.
 Those tasks are an execution check, not an independent statistical qualification.

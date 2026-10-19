@@ -50,6 +50,7 @@ pub use authorized_effect::AuthorizedProviderEffectRequest;
 pub use authorized_effect::ProviderEffectTaskFlowDriver;
 pub use automation_taskflow::AutomationTaskFlowDispatch;
 pub use automation_taskflow::admission_receipt_digest;
+pub use effect_dispatch_ledger::MAX_EFFECT_DISPATCH_WIRE_BYTES;
 pub use lifecycle::AutomationMissedRunPolicy;
 pub use lifecycle::AutomationOccurrence;
 pub use lifecycle::AutomationOccurrenceState;

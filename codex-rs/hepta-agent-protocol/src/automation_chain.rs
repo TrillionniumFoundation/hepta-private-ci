@@ -5,6 +5,17 @@ use serde::Serialize;
 
 pub const AUTOMATION_TERMINAL_OBSERVATION_CAPABILITY: &str = "automation.effect.observe";
 pub const AUTOMATION_EFFECT_RESUME_CAPABILITY: &str = "automation.effect.resume";
+pub const AUTOMATION_PON_PACKET_FILE_CAPABILITY: &str = "automation.effect.pon_packet_file";
+
+/// Transport reference to exact provider bytes in an explicitly configured
+/// host-owned PoN directory. This is neither a grant nor a new payload digest.
+#[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
+#[serde(deny_unknown_fields)]
+pub struct AutomationPonPacketFile {
+    pub path: std::path::PathBuf,
+    pub byte_length: u64,
+    pub payload_sha256: codex_hepta_contracts::Sha256Digest,
+}
 
 impl crate::AgentdMethod {
     /// Two provider operations, each bounded by the host's 30-second maximum,
@@ -15,13 +26,36 @@ impl crate::AgentdMethod {
     pub fn effect_control_timeout_ms(&self) -> Option<u64> {
         matches!(
             self,
-            Self::AutomationResumeEffect { .. } | Self::AutomationObserveEffect { .. }
+            Self::AutomationResumeEffect { .. }
+                | Self::AutomationResumePonPacket { .. }
+                | Self::AutomationObserveEffect { .. }
         )
         .then_some(2 * 30_000 + 5_000)
     }
 }
 
 impl crate::AgentdRequest {
+    pub fn automation_resume_pon_packet(
+        request_id: u64,
+        spawn_generation: u64,
+        intent: codex_hepta_automation::AuthorizedEffectIntent,
+        packet: AutomationPonPacketFile,
+        signed_grant: codex_hepta_contracts::SignedFinalUseGrant,
+        command_id: String,
+    ) -> Self {
+        Self {
+            schema_version: crate::AGENTD_CONTROL_SCHEMA_VERSION,
+            request_id,
+            spawn_generation,
+            method: crate::AgentdMethod::AutomationResumePonPacket {
+                intent,
+                packet,
+                signed_grant: Box::new(signed_grant),
+                command_id,
+            },
+        }
+    }
+
     pub fn automation_resume_effect(
         request_id: u64,
         spawn_generation: u64,

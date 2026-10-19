@@ -142,24 +142,26 @@ pub async fn advance_published_cognitive_upgrade_v1(
             Some(&current.model) == commitment.installed.evaluated_predecessor.as_ref(),
             "running predecessor differs from independent selection"
         );
-        let packet = read_material(
-            &plan.effect.packet_path,
-            crate::MAX_AUTOMATION_EFFECT_WIRE_BYTES as u64,
-        )?;
-        ensure!(
-            Sha256Digest::for_bytes(&packet) == plan.effect.intent.payload_digest,
-            "task accept packet differs from the original FinalUse effect"
-        );
-        // The original owner prepares only before its durable dispatch barrier;
-        // exact uncertain attempts enter recovery without a second submission.
-        client
-            .automation_resume_effect(
+        if let Some(byte_length) = plan.effect.packet_byte_length {
+            // The original owner prepares only before its durable barrier;
+            // exact uncertain attempts recover durable bytes after file loss.
+            client.automation_resume_pon_packet(
                 plan.effect.intent.clone(),
-                &packet,
-                plan.effect.final_use_grant.clone(),
-                plan.effect.command_id.clone(),
-            )
-            .await?
+                crate::AutomationPonPacketFile {
+                    path: plan.effect.packet_path.clone(), byte_length,
+                    payload_sha256: plan.effect.intent.payload_digest.clone(),
+                },
+                plan.effect.final_use_grant.clone(), plan.effect.command_id.clone(),
+            ).await?
+        } else {
+            // Previously saved V1 plans keep their original 24 KiB inline
+            // behavior. No missing length is invented for the file profile.
+            let packet = read_material(&plan.effect.packet_path, crate::MAX_AUTOMATION_EFFECT_WIRE_BYTES as u64)?;
+            ensure!(Sha256Digest::for_bytes(&packet) == plan.effect.intent.payload_digest,
+                "task accept packet differs from the original FinalUse effect");
+            client.automation_resume_effect(plan.effect.intent.clone(), &packet,
+                plan.effect.final_use_grant.clone(), plan.effect.command_id.clone()).await?
+        }
     } else {
         client
             .automation_observe_effect(plan.effect.intent.clone(), plan.effect.command_id.clone())

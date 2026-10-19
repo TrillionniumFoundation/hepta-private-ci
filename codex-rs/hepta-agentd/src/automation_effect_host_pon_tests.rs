@@ -139,7 +139,7 @@ async fn pon_stdout_limit_nonzero_exit_and_partial_json_remain_unknown() -> anyh
     Ok(())
 }
 
-fn observation() -> Value {
+pub(super) fn observation() -> Value {
     json!({"result": {
         "schema": "pon-native-exact-packet-observation-v3",
         "block": "01".repeat(32), "stored_exact": true, "block_height": 5,

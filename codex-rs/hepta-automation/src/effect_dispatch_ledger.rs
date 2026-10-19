@@ -13,7 +13,9 @@ use sqlx::Row;
 use crate::AutomationStore;
 use crate::TaskFlowError;
 
-const MAX_EFFECT_DISPATCH_WIRE_BYTES: usize = 64 * 1024;
+/// Existing immutable dispatch material bound, shared with explicit transport
+/// profiles. Exporting this value does not enlarge the durable ledger limit.
+pub const MAX_EFFECT_DISPATCH_WIRE_BYTES: usize = 64 * 1024;
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub(crate) enum EffectDispatchObservationKind {

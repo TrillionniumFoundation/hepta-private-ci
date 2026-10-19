@@ -16,8 +16,10 @@ pub use authbus::AuthBusTextStatus;
 pub use authbus::ObjectiveRunAdmission;
 pub use authbus::ObjectiveStartOutcome;
 pub use automation_chain::AUTOMATION_EFFECT_RESUME_CAPABILITY;
+pub use automation_chain::AUTOMATION_PON_PACKET_FILE_CAPABILITY;
 pub use automation_chain::AUTOMATION_TERMINAL_OBSERVATION_CAPABILITY;
 pub use automation_chain::AutomationAcceptedTaskObservation;
+pub use automation_chain::AutomationPonPacketFile;
 pub use capabilities::AGENTD_CAPABILITY_AUTOMATION_CALENDAR_V2;
 pub use capabilities::AGENTD_CAPABILITY_AUTOMATION_EXTERNAL_EFFECT;
 pub use capabilities::AGENTD_CAPABILITY_CANONICAL_INTELLIGENCE_V1;
@@ -679,6 +681,12 @@ pub enum AgentdMethod {
         signed_grant: Box<SignedFinalUseGrant>,
         command_id: String,
     },
+    AutomationResumePonPacket {
+        intent: AuthorizedEffectIntent,
+        packet: AutomationPonPacketFile,
+        signed_grant: Box<SignedFinalUseGrant>,
+        command_id: String,
+    },
     AutomationList {
         limit: u16,
     },
@@ -1299,9 +1307,9 @@ mod tests {
         let request = AgentdRequest::automation_execute_effect(
             11,
             3,
-            intent,
+            intent.clone(),
             wire_payload_hex,
-            signed_grant,
+            signed_grant.clone(),
             "effect-command".to_string(),
         );
         let bytes = serde_json::to_vec(&request).expect("serialize effect request");
@@ -1314,6 +1322,24 @@ mod tests {
             serde_json::from_slice::<AgentdRequest>(&bytes).expect("parse effect request"),
             request
         );
+
+        let packet = vec![0xa5; 49_733];
+        let mut intent = intent;
+        intent.payload_digest = Sha256Digest::for_bytes(&packet);
+        let mut signed_grant = signed_grant;
+        signed_grant.grant.binding = intent.final_use_binding().expect("packet binding");
+        let packet = AutomationPonPacketFile {
+            path: PathBuf::from("/host/pon/accept.packet"), byte_length: packet.len() as u64,
+            payload_sha256: intent.payload_digest.clone(),
+        };
+        let request = AgentdRequest::automation_resume_pon_packet(12, 3, intent, packet, signed_grant, "packet-command".to_owned());
+        let bytes = serde_json::to_vec(&request).expect("serialize file reference");
+        assert!(bytes.len() as u64 <= MAX_CONTROL_FRAME_BYTES);
+        assert_eq!(serde_json::from_slice::<AgentdRequest>(&bytes).unwrap(), request);
+        assert!(request.method.effect_control_timeout_ms().is_some());
+        let mut changed = serde_json::to_value(request).expect("reference wire");
+        changed["method"]["packet"]["wire_payload_hex"] = serde_json::json!("00");
+        assert!(serde_json::from_value::<AgentdRequest>(changed).is_err());
 
         let response =
             AgentdPayload::AutomationEffectReconcile(AutomationEffectReconcileSnapshot {

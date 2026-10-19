@@ -1,6 +1,30 @@
 use super::*;
 
 impl AgentdClient {
+    /// Resume exact PoN bytes from the signed host's optional packet directory.
+    /// No local file read is required: durable attempts survive material loss.
+    pub async fn automation_resume_pon_packet(
+        &self,
+        intent: AuthorizedEffectIntent,
+        packet: crate::AutomationPonPacketFile,
+        signed_grant: SignedFinalUseGrant,
+        command_id: String,
+    ) -> Result<AutomationEffectReconcileSnapshot, AgentdError> {
+        if !self.capabilities().await?.capabilities.iter().any(|capability| {
+            capability.id == crate::AUTOMATION_PON_PACKET_FILE_CAPABILITY && capability.major == 1
+        }) {
+            return Err(AgentdError::Protocol(
+                "Agentd has no host-owned PoN packet file capability".to_owned(),
+            ));
+        }
+        match self.send(AgentdRequest::automation_resume_pon_packet(
+            self.request_id(), self.spawn_generation, intent, packet, signed_grant, command_id,
+        )).await?.payload {
+            AgentdPayload::AutomationEffectReconcile(observation) => Ok(observation),
+            payload => unexpected(payload),
+        }
+    }
+
     /// Resume one original-owner effect. This prepares a new single-step run
     /// only when no durable dispatch exists; uncertain attempts are reconciled.
     pub async fn automation_resume_effect(

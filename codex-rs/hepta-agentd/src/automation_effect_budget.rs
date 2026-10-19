@@ -34,6 +34,7 @@ impl ProviderDispatchBudget {
 pub(super) struct AgentdEffectExecution<'a> {
     pub intent: &'a AuthorizedEffectIntent,
     pub wire_payload: &'a [u8],
+    pub material_profile: EffectMaterialProfile,
     pub signed_grant: &'a SignedFinalUseGrant,
     pub command_id: &'a str,
     pub now_ms: u64,

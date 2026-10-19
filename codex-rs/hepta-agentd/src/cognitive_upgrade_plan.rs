@@ -84,6 +84,11 @@ pub struct CognitiveUpgradeEffectV1 {
     pub intent: AuthorizedEffectIntent,
     pub provider_effect_key: ProviderEffectKey,
     pub packet_path: PathBuf,
+    /// New file-transport plans fix the exact length before their first call;
+    /// recovery never reopens a file to reconstruct it. Absent length retains
+    /// the existing bounded inline path for previously saved V1 plans.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub packet_byte_length: Option<u64>,
     pub final_use_grant: SignedFinalUseGrant,
     pub command_id: String,
 }

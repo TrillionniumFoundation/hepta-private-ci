@@ -408,6 +408,17 @@ jobs:
           python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/pon-pair/hepta-effect-resume.json" --minimum-tests 3 -- just test --locked -p codex-hepta-agentd --lib -E 'test(automation_effect_host::resume_tests::)' --retries 0 --no-tests fail --no-capture
           python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/pon-pair/hepta-task-observation.json" --minimum-tests 1 -- just test --locked -p codex-hepta-agentd --lib -E 'test(=automation_effect_host::task_observation_tests::accepted_task_requires_the_exact_active_settled_observation)' --retries 0 --no-tests fail --no-capture
           python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/pon-pair/hepta-effect-terminal-reopen.json" --minimum-tests 1 -- just test --locked -p codex-hepta-agentd --lib -E 'test(=automation_effect_host::tests::host_dispatches_exact_wire_payload_once)' --retries 0 --no-tests fail --no-capture
+      - name: Require bounded PoN file transport and legacy plan compatibility
+        env:
+          CARGO_NET_OFFLINE: "true"
+          RUSTUP_TOOLCHAIN: "1.96.0"
+        run: |
+          set -euo pipefail
+          for selector in pon_packet_file_refuses_unowned_or_changed_material_before_effect pon_packet_file_unknown_reopens_without_file_or_second_dispatch pon_packet_file_root_is_opt_in_signed_and_separate_from_agent_namespaces; do
+            python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/pon-pair/$selector.json" --minimum-tests 1 -- just test --locked -p codex-hepta-agentd --lib -E "test(=automation_effect_host::resume_tests::packet_file_tests::$selector)" --retries 0 --no-tests fail --no-capture
+          done
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/pon-pair/hepta-effect-legacy-plan.json" --minimum-tests 1 -- just test --locked -p codex-hepta-agentd --lib -E 'test(=automation_effect_host::resume_tests::ordinary_effect_legacy_plan_keeps_absent_length_and_inline_resume)' --retries 0 --no-tests fail --no-capture
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/pon-pair/hepta-packet-protocol-wire.json" --minimum-tests 1 -- just test --locked -p codex-hepta-agent-protocol --lib -E 'test(=tests::automation_effect_wire_round_trip_is_strict_and_bounded)' --retries 0 --no-tests fail --no-capture
       - name: Require exact Supervisor revision readback without fabricating legacy authority
         env:
           CARGO_NET_OFFLINE: "true"

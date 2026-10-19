@@ -17,7 +17,7 @@ const LEASE_MS: u64 = 60_000;
 
 pub(crate) struct AgentdEffectResumeInput<'a> {
     pub intent: &'a AuthorizedEffectIntent,
-    pub wire_payload: &'a [u8],
+    pub material: AgentdEffectMaterial<'a>,
     pub signed_grant: &'a SignedFinalUseGrant,
     pub command_id: &'a str,
     pub deadline: Instant,
@@ -33,7 +33,7 @@ impl AgentdAutomationEffectHost {
         let _serial = self.resume_serial.lock().await;
         let AgentdEffectResumeInput {
             intent,
-            wire_payload,
+            material,
             signed_grant,
             command_id,
             deadline,
@@ -41,7 +41,7 @@ impl AgentdAutomationEffectHost {
         let now_ms = crate::state::control_time_ms()?;
         state.require_effect_ready()?;
         let identity = state.identity();
-        self.validate_intent(intent, wire_payload)?;
+        material.validate_request(self, intent)?;
         self.refresh_revocations()?;
         if identity.agent_id != self.agent_id
             || identity.spawn_generation == 0
@@ -89,27 +89,29 @@ impl AgentdAutomationEffectHost {
         }
         // This original read validates the exact command and FinalUse binding
         // even when it returns None for a nonterminal durable attempt.
-        if store
+        let terminal = store
             .read_authorized_taskflow_effect_receipt(intent, command_id)
             .await
             .map_err(protocol)?
-            .is_some()
-        {
-            return self.observe_terminal(store, intent, command_id).await;
-        }
+            .is_some();
         if let Some(pending) = store
             .authorized_taskflow_effect_attempt(&intent.run_id, &intent.step_id, intent.attempt)
             .await
             .map_err(protocol)?
         {
-            if pending.intent_digest != digest
-                || pending.wire_payload.as_deref() != Some(wire_payload)
-            {
+            if pending.intent_digest != digest {
                 return Err(AgentdError::GenerationFenced(
                     "durable attempt differs from exact effect input".to_owned(),
                 ));
             }
+            let bytes = pending.wire_payload.as_deref().ok_or_else(|| {
+                AgentdError::Protocol("durable attempt has no exact effect material".to_owned())
+            })?;
+            material.validate_durable(self, intent, bytes)?;
             self.provider_intent(&pending)?;
+            if terminal {
+                return self.observe_terminal(store, intent, command_id).await;
+            }
             let run = existing_run.ok_or_else(|| {
                 AgentdError::Protocol("durable attempt has no TaskFlow run".to_owned())
             })?;
@@ -130,6 +132,15 @@ impl AgentdAutomationEffectHost {
                 .reconcile_pending(store, &pending, &historical, now_ms)
                 .await;
         }
+
+        if terminal {
+            return Err(AgentdError::Protocol("terminal receipt has no durable attempt".to_owned()));
+        }
+        // Only original-store absence permits opening external material. A
+        // prior Unknown/terminal attempt uses its durable bytes even after loss.
+        let bytes = material.read_initial(self)?;
+        let wire_payload = bytes.as_ref();
+        self.validate_intent(intent, wire_payload, material.profile())?;
 
         let fence = identity_fence(&self.agent_id, identity.spawn_generation)?;
         let dispatch_budget = ProviderDispatchBudget::ControlDeadline(deadline);
@@ -252,6 +263,7 @@ impl AgentdAutomationEffectHost {
                 AgentdEffectExecution {
                     intent,
                     wire_payload,
+                    material_profile: material.profile(),
                     signed_grant,
                     command_id,
                     now_ms: dispatch_time_ms,

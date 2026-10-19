@@ -1,5 +1,9 @@
 //! Real Agentd AF_UNIX ingress, original SQLite/FinalUse and generation reopen.
 //! Only the HTTP provider is mocked; this is not a native Chain/Supervisor run.
+#[cfg(target_os = "linux")]
+#[path = "automation_effect_packet_file_tests.rs"]
+mod packet_file_tests;
+
 use super::tests::Fixture;
 use super::tests::WIRE;
 use super::tests::effect_intent;
@@ -192,6 +196,28 @@ impl RunningOwner {
 }
 
 #[tokio::test(flavor = "multi_thread", worker_threads = 4)]
+async fn ordinary_effect_legacy_plan_keeps_absent_length_and_inline_resume() -> anyhow::Result<()> {
+    let fixture = EffectFixture::new().await?;
+    let key = ProviderEffectKey::for_operation("provider/fixture-v1", &fixture.intent.run_id, "effect")
+        .map_err(|error| anyhow::anyhow!("provider key: {error:?}"))?;
+    let original = serde_json::json!({"intent":fixture.intent,"provider_effect_key":key,
+        "packet_path":"/host/legacy.packet","final_use_grant":fixture.grant,"command_id":"dispatch"});
+    let legacy: crate::CognitiveUpgradeEffectV1 = serde_json::from_value(original.clone())?;
+    assert_eq!(legacy.packet_byte_length, None);
+    assert_eq!(serde_json::to_value(&legacy)?, original);
+    Mock::given(method("POST")).and(path("/dispatch")).and(body_bytes(WIRE.to_vec()))
+        .respond_with(ResponseTemplate::new(503)).expect(1).mount(&fixture.provider).await;
+    fixture.fleet()?.compare_and_transition(&fixture.base.identity.agent_id, 0, AgentLifecycle::Starting)?;
+    let owner = fixture.start(1).await?;
+    assert!(!owner.client.capabilities().await?.capabilities.iter().any(|cap| cap.id == crate::AUTOMATION_PON_PACKET_FILE_CAPABILITY));
+    let result = owner.client.automation_resume_effect(legacy.intent, WIRE, legacy.final_use_grant, legacy.command_id).await?;
+    assert_eq!(result.state, crate::AutomationEffectReconcileState::Indeterminate);
+    assert_eq!(owner.host.authority.capacity()?.used_nonces, 1);
+    owner.stop().await?;
+    Ok(())
+}
+
+#[tokio::test(flavor = "multi_thread", worker_threads = 4)]
 async fn ordinary_effect_queue_budget_refuses_before_prepare_and_can_retry() -> anyhow::Result<()> {
     let fixture = EffectFixture::new().await?;
     Mock::given(method("POST"))
@@ -217,7 +243,7 @@ async fn ordinary_effect_queue_budget_refuses_before_prepare_and_can_retry() -> 
         &owner.state,
         AgentdEffectResumeInput {
             intent: &fixture.intent,
-            wire_payload: WIRE,
+            material: AgentdEffectMaterial::Inline(WIRE),
             signed_grant: &fixture.grant,
             command_id: "dispatch",
             deadline,
