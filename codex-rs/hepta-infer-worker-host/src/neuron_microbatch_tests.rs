@@ -409,3 +409,95 @@ fn signed_batch_expiry_must_not_outlive_plan_deadline() {
     ));
     assert_eq!(backend.batch_invocations, 0);
 }
+
+#[test]
+fn snapshot_freeze_rejects_non_q24_features_and_accepts_exact_boundaries() {
+    let identity = snapshot().identity().clone();
+    for invalid in [
+        i64::MIN,
+        -Q24_STATE_LIMIT - 1,
+        Q24_STATE_LIMIT + 1,
+        i64::MAX,
+    ] {
+        assert!(matches!(
+            NeuronFrozenFeatureV1::freeze(identity.clone(), vec![invalid]),
+            Err(NeuronMicrobatchErrorV1::InvalidSnapshot)
+        ));
+    }
+    assert!(
+        NeuronFrozenFeatureV1::freeze(identity, vec![-Q24_STATE_LIMIT, 0, Q24_STATE_LIMIT],)
+            .is_ok()
+    );
+}
+
+struct ExtremeOutputBackend {
+    value: i64,
+    corrupt_prediction: bool,
+    invocations: u32,
+}
+
+impl NeuronMicrobatchBackendV1 for ExtremeOutputBackend {
+    fn execute_batch(
+        &mut self,
+        _snapshot: &NeuronFrozenFeatureV1,
+        heads: &[NeuronBatchHeadV1],
+    ) -> Result<Vec<NeuronBatchHeadResultV1>, NeuronMicrobatchErrorV1> {
+        self.invocations += 1;
+        let mut outputs = heads
+            .iter()
+            .map(|head| NeuronBatchHeadResultV1 {
+                request_id: head.request_id.clone(),
+                head_digest: head.head_digest,
+                drive_q24: vec![0; head.expected_width],
+                prediction_q24: vec![0; head.expected_width],
+                elapsed_micros: 1,
+            })
+            .collect::<Vec<_>>();
+        if self.corrupt_prediction {
+            outputs[0].prediction_q24[0] = self.value;
+        } else {
+            outputs[0].drive_q24[0] = self.value;
+        }
+        Ok(outputs)
+    }
+}
+
+#[test]
+fn backend_output_extremes_fail_closed_without_metrics_ack() {
+    for (value, prediction) in [
+        (i64::MIN, false),
+        (-Q24_STATE_LIMIT - 1, true),
+        (Q24_STATE_LIMIT + 1, false),
+        (i64::MAX, true),
+    ] {
+        let fixture = Fixture::new();
+        let mut worker = make_worker(&fixture);
+        let mut backend = ExtremeOutputBackend {
+            value,
+            corrupt_prediction: prediction,
+            invocations: 0,
+        };
+        let frozen = plan();
+        assert!(matches!(
+            worker.execute(
+                1_000,
+                &frozen,
+                &mut backend,
+                NeuronHostResourceSampleV1::default(),
+            ),
+            Err(NeuronMicrobatchErrorV1::BackendOutputMismatch)
+        ));
+        assert_eq!(backend.invocations, 1);
+        assert_eq!(worker.metrics.recorded_sequence(), 0);
+        assert!(matches!(
+            worker.execute(
+                1_000,
+                &frozen,
+                &mut backend,
+                NeuronHostResourceSampleV1::default(),
+            ),
+            Err(NeuronMicrobatchErrorV1::PlanReplayed)
+        ));
+        assert_eq!(backend.invocations, 1);
+    }
+}
