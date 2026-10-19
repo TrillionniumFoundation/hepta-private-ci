@@ -14,10 +14,6 @@ on:
       - .github/workflows/automation-taskflow-focused.yml
   workflow_dispatch:
 
-concurrency:
-  group: ${{ github.workflow }}::${{ github.event.pull_request.head.ref || github.ref_name }}
-  cancel-in-progress: true
-
 permissions:
   contents: read
 

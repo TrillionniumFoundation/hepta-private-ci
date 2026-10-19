@@ -1,3 +1,4 @@
+<!-- Source-branch concurrency is intentionally shared by push and pull-request runs. -->
 # Workflow Strategy
 
 The workflows in this directory are split so that pull requests get fast, review-friendly signal while `main` still gets the full cross-platform verification pass.
@@ -35,3 +36,5 @@ The workflows in this directory are split so that pull requests get fast, review
 - If a build/test/clippy check can be expressed in Bazel, prefer putting the PR-time version in `bazel.yml`.
 - Keep `rust-ci.yml` fast enough that it usually does not dominate PR latency.
 - Reserve `rust-ci-full.yml` for heavyweight Cargo-native coverage that Bazel does not replace yet.
+
+<!-- Retrigger full matrix after single-job rerun cancellation. -->
