@@ -25,15 +25,15 @@ use codex_hepta_context_compiler::ContextModelProfileV2;
 use codex_hepta_context_compiler::ContextRealizedItemV2;
 use codex_hepta_context_compiler::ContextRoleV2;
 use codex_hepta_context_compiler::ContextSerializationReceiptV2;
-use codex_hepta_context_compiler::ContextSerializerV2;
 use codex_hepta_context_compiler::ExactTokenizerV2;
 use codex_hepta_context_compiler::MandatoryContextGroupV2;
 use codex_hepta_context_compiler::SerializedContextV2;
 use codex_hepta_context_compiler::TokenizationReceiptV2;
 use codex_hepta_context_compiler::VerifiedAdmissionSnapshotV2;
 use codex_hepta_context_compiler::build_attachment;
+use codex_hepta_context_compiler::canonical_context_bundle_bytes_v2;
 use codex_hepta_context_compiler::compile_v2;
-use codex_hepta_context_compiler::record_serialization;
+use codex_hepta_context_compiler::record_canonical_context_bundle_v2;
 use codex_hepta_context_compiler::verify_admission_snapshot_v2;
 use codex_hepta_context_compiler::verify_admission_v2;
 use codex_hepta_prompt_optimizer::canonical::PromptExerciseActionV1;
@@ -224,32 +224,6 @@ impl ExactTokenizerV2 for RegistryBoundTokenizer {
             .get(&Digest32::of_bytes(bytes))
             .copied()
             .ok_or(ContextCompilerV2Error::InvalidSerializedTokenCount)
-    }
-}
-
-#[derive(Clone, Debug)]
-struct ExactPreparedSerializer {
-    serializer_digest: Digest32,
-    template_digest: Digest32,
-    tool_schema_digest: Digest32,
-    payload: Vec<u8>,
-}
-
-impl ContextSerializerV2 for ExactPreparedSerializer {
-    fn serializer_digest(&self) -> Digest32 {
-        self.serializer_digest
-    }
-    fn template_digest(&self) -> Digest32 {
-        self.template_digest
-    }
-    fn tool_schema_digest(&self) -> Digest32 {
-        self.tool_schema_digest
-    }
-    fn serialize(
-        &self,
-        _items: &[ContextRealizedItemV2],
-    ) -> Result<Vec<u8>, ContextCompilerV2Error> {
-        Ok(self.payload.clone())
     }
 }
 
@@ -484,21 +458,17 @@ pub fn prepare_prompt_delivery_v1(
         tokenizer_digest: prepared.model_profile.tokenizer_digest,
         exact_counts: counts,
     };
-    let serializer = ExactPreparedSerializer {
-        serializer_digest: prepared.model_profile.serializer_digest,
-        template_digest: prepared.model_profile.template_digest,
-        tool_schema_digest: prepared.model_profile.tool_schema_digest,
-        payload: serialized_payload.clone(),
-    };
-    let serialized_context = record_serialization(
+    let serialized_context = record_canonical_context_bundle_v2(
         &prepared.compiled,
         &prepared.model_profile,
         serialization_id,
         realizations,
-        &serializer,
         &tokenizer,
     )
     .map_err(|error| PromptPipelineErrorV1::ContextCompiler(format!("{error:?}")))?;
+    if serialized_context.payload() != serialized_payload.as_slice() {
+        return Err(PromptPipelineErrorV1::SerializationProofDrift);
+    }
     let serialization = serialized_context.receipt().clone();
     let attachment = build_attachment(
         &prepared.compiled,
@@ -576,6 +546,37 @@ fn prove_prompt_serialization(
         .map_err(|error| PromptPipelineErrorV1::ContextCompiler(format!("{error:?}")))?;
     materialization.validate()?;
 
+    let by_id = materialization
+        .payloads
+        .iter()
+        .map(|payload| (payload.binding.realization_id.clone(), payload))
+        .collect::<BTreeMap<_, _>>();
+    let ordered_realizations = compiled
+        .receipt()
+        .selected_item_ids()
+        .iter()
+        .map(|item_id| {
+            let payload = by_id.get(item_id).ok_or_else(|| {
+                PromptPipelineErrorV1::SelectedRealizationMissing(item_id.to_string())
+            })?;
+            Ok(ContextRealizedItemV2 {
+                item_id: item_id.clone(),
+                role: match payload.binding.role {
+                    PromptRoleV2::ToolSchemaFragment => ContextRoleV2::Schema,
+                    PromptRoleV2::SystemInstruction
+                    | PromptRoleV2::DeveloperInstruction
+                    | PromptRoleV2::UserTemplate => ContextRoleV2::TrustedInstruction,
+                },
+                content: payload.payload.clone(),
+            })
+        })
+        .collect::<Result<Vec<_>, PromptPipelineErrorV1>>()?;
+    let canonical = canonical_context_bundle_bytes_v2(&ordered_realizations)
+        .map_err(|error| PromptPipelineErrorV1::ContextCompiler(format!("{error:?}")))?;
+    if canonical != serialized_payload {
+        return Err(PromptPipelineErrorV1::SerializationProofDrift);
+    }
+
     let mut cursor = 0_usize;
     let mut occurrences = Vec::with_capacity(materialization.payloads.len());
     for item_id in compiled.receipt().selected_item_ids() {
@@ -591,8 +592,15 @@ fn prove_prompt_serialization(
                 item_id.to_string(),
             ));
         }
-        let Some(relative_start) = find_subslice(&serialized_payload[cursor..], &payload.payload)
-        else {
+        let text = std::str::from_utf8(&payload.payload)
+            .map_err(|_| PromptPipelineErrorV1::SerializationProofDrift)?;
+        let encoded = serde_json::to_string(text)
+            .map_err(|_| PromptPipelineErrorV1::SerializationProofDrift)?;
+        let encoded = encoded
+            .as_bytes()
+            .get(1..encoded.len().saturating_sub(1))
+            .ok_or(PromptPipelineErrorV1::SerializationProofDrift)?;
+        let Some(relative_start) = find_subslice(&serialized_payload[cursor..], encoded) else {
             return Err(PromptPipelineErrorV1::SerializedPayloadMissing(
                 item_id.to_string(),
             ));
@@ -601,7 +609,7 @@ fn prove_prompt_serialization(
             .checked_add(relative_start)
             .ok_or(PromptPipelineErrorV1::Arithmetic)?;
         let end = start
-            .checked_add(payload.payload.len())
+            .checked_add(encoded.len())
             .ok_or(PromptPipelineErrorV1::Arithmetic)?;
         occurrences.push(PromptSerializationOccurrenceV1 {
             realization_id: item_id.clone(),
@@ -652,7 +660,7 @@ fn find_subslice(haystack: &[u8], needle: &[u8]) -> Option<usize> {
         .position(|window| window == needle)
 }
 
-fn prompt_payload_bundle_digest(payloads: &[RealizationDeliveryV2]) -> Digest32 {
+pub(crate) fn prompt_payload_bundle_digest(payloads: &[RealizationDeliveryV2]) -> Digest32 {
     let mut bytes = b"hepta.prompt-pipeline.payload-materialization.v1".to_vec();
     push_len(&mut bytes, payloads.len());
     for payload in payloads {

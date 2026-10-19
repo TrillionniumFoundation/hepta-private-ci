@@ -4,6 +4,13 @@
 //! We prefer this to using a crate feature to avoid building multiple
 //! permutations of the crate.
 
+mod turn_retirement;
+
+pub use turn_retirement::TurnRetirementObservationError;
+#[cfg(test)]
+pub(crate) use turn_retirement::wait_for_session_turn_retirement;
+pub use turn_retirement::wait_for_turn_retirement;
+
 use std::path::PathBuf;
 use std::sync::Arc;
 

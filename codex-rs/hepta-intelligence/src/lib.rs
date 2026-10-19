@@ -127,31 +127,64 @@ pub use capability_snapshot::CapabilitySnapshotErrorV2;
 pub use capability_snapshot::CapabilitySnapshotRequestV2;
 pub use capability_snapshot::CapabilitySnapshotV2;
 
+#[cfg(any(feature = "legacy-prompt-context-v1", test))]
 mod prompt_pipeline;
+mod prompt_product_v3;
 
+#[cfg(feature = "legacy-prompt-context-v1")]
 pub use prompt_pipeline::PreparedPromptContextV1;
+#[cfg(feature = "legacy-prompt-context-v1")]
 pub use prompt_pipeline::PreparedPromptDeliveryV1;
+#[cfg(feature = "legacy-prompt-context-v1")]
 pub use prompt_pipeline::PromptContextCompileRequestV1;
+#[cfg(feature = "legacy-prompt-context-v1")]
 pub use prompt_pipeline::PromptDeliveryPrepareRequestV1;
+#[cfg(feature = "legacy-prompt-context-v1")]
 pub use prompt_pipeline::PromptPayloadMaterializationV1;
+#[cfg(feature = "legacy-prompt-context-v1")]
 pub use prompt_pipeline::PromptPipelineErrorV1;
+#[cfg(feature = "legacy-prompt-context-v1")]
 pub use prompt_pipeline::PromptSerializationOccurrenceV1;
+#[cfg(feature = "legacy-prompt-context-v1")]
 pub use prompt_pipeline::PromptSerializationProofV1;
+#[cfg(feature = "legacy-prompt-context-v1")]
 pub use prompt_pipeline::compile_exercised_prompt_context_v1;
+#[cfg(feature = "legacy-prompt-context-v1")]
 pub use prompt_pipeline::observe_prompt_delivery_v1;
+#[cfg(feature = "legacy-prompt-context-v1")]
 pub use prompt_pipeline::prepare_prompt_delivery_v1;
 
 mod pipeline_v2;
+#[cfg(any(feature = "legacy-prompt-context-v1", test))]
 mod prompt_delivery;
 
 pub use pipeline_v2::LaneFRunRequestV2;
 pub use pipeline_v2::LaneFShadowPipelineReceiptV2;
 pub use pipeline_v2::PipelineErrorV2;
 pub use pipeline_v2::run_shadow_pipeline_v2;
+#[cfg(any(feature = "legacy-prompt-context-v1", test))]
 pub use prompt_delivery::PromptRegistryCompilationErrorV2;
+#[cfg(any(feature = "legacy-prompt-context-v1", test))]
 pub use prompt_delivery::PromptRegistryCompilationRequestV2;
+#[cfg(any(feature = "legacy-prompt-context-v1", test))]
 pub use prompt_delivery::PromptRegistryCompiledContextV2;
+#[cfg(any(feature = "legacy-prompt-context-v1", test))]
+pub use prompt_delivery::PromptRegistryDeliveryPreparationV2;
+#[cfg(any(feature = "legacy-prompt-context-v1", test))]
 pub use prompt_delivery::compile_prompt_registry_v2;
+#[cfg(any(feature = "legacy-prompt-context-v1", test))]
+pub use prompt_delivery::prepare_prompt_registry_delivery_v2;
+
+pub use prompt_product_v3::PreparedPromptDeliveryV3;
+pub use prompt_product_v3::PromptExactTokenizerV3;
+pub use prompt_product_v3::PromptExecutionProfileV3;
+pub use prompt_product_v3::PromptProductV3Error;
+pub use prompt_product_v3::PromptRegistryCompilationRequestV3;
+pub use prompt_product_v3::PromptRegistryCompiledContextV3;
+pub use prompt_product_v3::PromptTokenizerIdentityV3;
+pub use prompt_product_v3::compile_prompt_registry_v3;
+pub use prompt_product_v3::observe_prompt_delivery_v3;
+pub use prompt_product_v3::prepare_prompt_delivery_v3;
 
 mod pipeline;
 

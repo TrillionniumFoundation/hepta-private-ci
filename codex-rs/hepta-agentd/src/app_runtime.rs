@@ -107,7 +107,6 @@ pub(crate) fn app_server_runtime_options_for_agent(
 ) -> std::io::Result<AppServerRuntimeOptions> {
     let prompt_runtime_host = state
         .prompt_pipeline_owner()
-        .runtime_owner()
         .host()
         .map_err(std::io::Error::other)?;
     let graceful_drain = state.app_server_drain_handle();

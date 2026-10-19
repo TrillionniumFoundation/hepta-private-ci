@@ -10,6 +10,11 @@ name = "codex_hepta_prompt_registry"
 path = "src/lib.rs"
 doctest = false
 
+[features]
+default = ["prompt-context-v3"]
+prompt-context-v3 = []
+qualification-context-fixtures = ["prompt-context-v3"]
+
 [lints]
 workspace = true
 

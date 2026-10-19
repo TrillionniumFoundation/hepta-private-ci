@@ -1,3 +1,6 @@
+use std::fmt;
+use std::sync::Arc;
+
 use futures::future::BoxFuture;
 
 #[derive(Clone, Debug, Eq, PartialEq)]
@@ -15,7 +18,7 @@ pub enum EncodedRequestTerminal {
 /// core provider terminal path. A product owner can therefore bind the exact
 /// model request semantics to a terminal delivery disposition without granting
 /// the API layer any domain authority.
-pub trait EncodedRequestBodyObserver: Send + Sync + std::fmt::Debug {
+pub trait EncodedRequestBodyObserver: Send + Sync + fmt::Debug {
     fn observe_encoded_body<'a>(&'a self, body: &'a [u8]) -> BoxFuture<'a, Result<(), String>>;
 
     fn observe_terminal<'a>(
@@ -23,5 +26,36 @@ pub trait EncodedRequestBodyObserver: Send + Sync + std::fmt::Debug {
         _terminal: EncodedRequestTerminal,
     ) -> BoxFuture<'a, Result<(), String>> {
         Box::pin(async { Ok(()) })
+    }
+}
+
+/// Turn-scoped capability installed in extension data by a product owner.
+///
+/// Core retrieves this exact object only after turn context assembly. Presence
+/// forces the Responses HTTP path so every physical send crosses the canonical
+/// JSON body observer; WebSocket encoding cannot silently bypass the proof
+/// boundary. The wrapper grants no dispatch or provider authority.
+#[derive(Clone)]
+pub struct EncodedRequestBodyObserverAttachment {
+    observer: Arc<dyn EncodedRequestBodyObserver>,
+}
+
+impl EncodedRequestBodyObserverAttachment {
+    #[must_use]
+    pub fn new(observer: Arc<dyn EncodedRequestBodyObserver>) -> Self {
+        Self { observer }
+    }
+
+    #[must_use]
+    pub fn observer(&self) -> Arc<dyn EncodedRequestBodyObserver> {
+        Arc::clone(&self.observer)
+    }
+}
+
+impl fmt::Debug for EncodedRequestBodyObserverAttachment {
+    fn fmt(&self, formatter: &mut fmt::Formatter<'_>) -> fmt::Result {
+        formatter
+            .debug_struct("EncodedRequestBodyObserverAttachment")
+            .finish_non_exhaustive()
     }
 }

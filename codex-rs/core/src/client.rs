@@ -391,7 +391,7 @@ impl WebsocketConnectionIdentity {
         responses_metadata: &CodexResponsesMetadata,
     ) -> std::result::Result<Self, ApiError> {
         let compatibility_projection_json =
-            serde_json::to_vec(&responses_metadata.turn_recovery_compatibility_projection())
+            serde_json::to_vec(&responses_metadata.websocket_connection_compatibility_projection())
                 .map_err(|error| {
                     ApiError::Stream(format!(
                         "failed to bind websocket compatibility identity: {error}"
@@ -1592,6 +1592,21 @@ impl ModelClientSession {
         self.encoded_request_body_observer = None;
     }
 
+    fn encoded_request_body_observer_for_context(
+        &self,
+        provider_policy_context: Option<&ModelProviderPolicyContext<'_>>,
+    ) -> Option<Arc<dyn codex_api::EncodedRequestBodyObserver>> {
+        self.encoded_request_body_observer.clone().or_else(|| {
+            provider_policy_context
+                .and_then(|context| {
+                    context
+                        .turn_store
+                        .get::<codex_api::EncodedRequestBodyObserverAttachment>()
+                })
+                .map(|attachment| attachment.observer())
+        })
+    }
+
     fn reset_websocket_session(&mut self) {
         self.websocket_session.connection = None;
         self.websocket_session.last_request = None;
@@ -1920,6 +1935,9 @@ impl ModelClientSession {
                     model_info.use_responses_lite,
                 )
                 .await;
+            let encoded_request_body_observer =
+                self.encoded_request_body_observer_for_context(provider_policy_context);
+            options.encoded_body_observer = encoded_request_body_observer.clone();
 
             let mut request = self.client.build_responses_request(
                 prompt,
@@ -2106,7 +2124,7 @@ impl ModelClientSession {
                     }
                 }
             }
-            if self.encoded_request_body_observer.is_some() && admitted_provider_attempt.is_none() {
+            if encoded_request_body_observer.is_some() && admitted_provider_attempt.is_none() {
                 return Err(CodexErr::Fatal(
                     "exact encoded request observation requires an admitted provider-policy attempt"
                         .to_string(),
@@ -2175,7 +2193,7 @@ impl ModelClientSession {
                             .take()
                             .map(AdmittedProviderAttempt::into_owner),
                         has_ephemeral_input,
-                        self.encoded_request_body_observer.clone(),
+                        encoded_request_body_observer.clone(),
                     );
                     return Ok(stream);
                 }
@@ -2739,7 +2757,10 @@ impl ModelClientSession {
         if !self.client.responses_websocket_enabled() {
             return Ok(());
         }
-        if self.encoded_request_body_observer.is_some() {
+        if self
+            .encoded_request_body_observer_for_context(provider_policy_context)
+            .is_some()
+        {
             return Ok(());
         }
         // Turn-input contributors finish preparing their turn-local state before this
@@ -2930,12 +2951,14 @@ impl ModelClientSession {
         // existing sensitive HTTP path instead of silently losing attempt-local input.
         let ephemeral_model_input_requires_http =
             provider_policy_context.is_some_and(has_active_ephemeral_model_input_contributor);
+        let exact_encoded_body_observer =
+            self.encoded_request_body_observer_for_context(provider_policy_context);
         let wire_api = self.client.state.provider.info().wire_api;
         match wire_api {
             WireApi::Responses => {
                 if self.client.responses_websocket_enabled()
                     && !ephemeral_model_input_requires_http
-                    && self.encoded_request_body_observer.is_none()
+                    && exact_encoded_body_observer.is_none()
                 {
                     let request_trace = current_span_w3c_trace_context();
                     match self
@@ -3086,8 +3109,10 @@ fn map_response_stream(
         upstream_request_id: None,
     };
     map_response_events(
-        upstream_request_id,
-        api_stream,
+        UpstreamResponse {
+            upstream_request_id,
+            events: api_stream,
+        },
         session_telemetry,
         inference_trace_attempt,
         provider,
@@ -3097,9 +3122,15 @@ fn map_response_stream(
     )
 }
 
-fn map_response_events<S>(
+/// Keep the upstream identifier paired with the event source it describes.
+/// Generic streams remain available to direct cancellation and redaction tests.
+struct UpstreamResponse<S> {
     upstream_request_id: Option<String>,
-    api_stream: S,
+    events: S,
+}
+
+fn map_response_events<S>(
+    response: UpstreamResponse<S>,
     session_telemetry: SessionTelemetry,
     inference_trace_attempt: InferenceTraceAttempt,
     provider: SharedModelProvider,
@@ -3113,6 +3144,10 @@ where
         + Send
         + 'static,
 {
+    let UpstreamResponse {
+        upstream_request_id,
+        events: api_stream,
+    } = response;
     let (tx_event, rx_event) =
         mpsc::channel::<Result<ResponseEvent>>(RESPONSE_STREAM_CHANNEL_CAPACITY);
     let (tx_last_response, rx_last_response) = oneshot::channel::<LastResponse>();
