@@ -1,5 +1,3 @@
-#![recursion_limit = "256"]
-
 use clap::Args;
 use clap::CommandFactory;
 use clap::FromArgMatches;
