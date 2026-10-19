@@ -290,6 +290,7 @@ async fn transcript_preview_for_history_mode(
     history_mode: ThreadHistoryMode,
     invisible_newer_turns: usize,
 ) -> Vec<TranscriptPreviewLine> {
+    eprintln!("HEPTA_TRANSCRIPT_STAGE begin turns={invisible_newer_turns}");
     let model_response = responses::sse(vec![
         responses::ev_response_created("resp-1"),
         responses::ev_assistant_message("commentary", "commentary one\ncommentary two"),
@@ -305,6 +306,7 @@ async fn transcript_preview_for_history_mode(
         }))
         .collect();
     let server = create_mock_responses_server_sequence(model_responses).await;
+    eprintln!("HEPTA_TRANSCRIPT_STAGE mock-server-ready");
     let codex_home = tempdir().expect("tempdir");
     write_mock_responses_config_toml(
         codex_home.path(),
@@ -322,9 +324,11 @@ async fn transcript_preview_for_history_mode(
         .build()
         .await
         .expect("build config");
+    eprintln!("HEPTA_TRANSCRIPT_STAGE config-ready");
     let mut app_server = crate::start_embedded_app_server_for_picker(&config)
         .await
         .expect("start app server");
+    eprintln!("HEPTA_TRANSCRIPT_STAGE app-server-ready");
     let request_handle = app_server.request_handle();
     let started: ThreadStartResponse = request_handle
         .request_typed(ClientRequest::ThreadStart {
@@ -339,8 +343,12 @@ async fn transcript_preview_for_history_mode(
         })
         .await
         .expect("start thread");
+    eprintln!("HEPTA_TRANSCRIPT_STAGE thread-ready");
     let thread_id = ThreadId::from_string(&started.thread.id).expect("thread id");
     for index in 0..=invisible_newer_turns {
+        if index == 0 || index % 16 == 0 || index == invisible_newer_turns {
+            eprintln!("HEPTA_TRANSCRIPT_STAGE turn-begin index={index}");
+        }
         let input = if index == 0 {
             UserInput::Text {
                 text: String::from("recent user"),
@@ -386,6 +394,9 @@ async fn transcript_preview_for_history_mode(
         .await
         .expect("completed turn must become idle before the next starts");
         let _: TurnStartResponse = turn_start;
+        if index == 0 || index % 16 == 0 || index == invisible_newer_turns {
+            eprintln!("HEPTA_TRANSCRIPT_STAGE turn-accepted index={index}");
+        }
         tokio::time::timeout(std::time::Duration::from_secs(10), async {
             loop {
                 let Some(event) = app_server.next_event().await else {
@@ -402,6 +413,9 @@ async fn transcript_preview_for_history_mode(
         })
         .await
         .expect("turn should complete");
+        if index == 0 || index % 16 == 0 || index == invisible_newer_turns {
+            eprintln!("HEPTA_TRANSCRIPT_STAGE turn-completed index={index}");
+        }
     }
 
     if history_mode == ThreadHistoryMode::Paginated {
@@ -430,6 +444,7 @@ async fn transcript_preview_for_history_mode(
         assert!(first_page.next_cursor.is_some());
     }
 
+    eprintln!("HEPTA_TRANSCRIPT_STAGE preview-load-begin");
     load_transcript_preview(&mut app_server, thread_id, Some(&config))
         .await
         .expect("load transcript preview")
