@@ -134,6 +134,24 @@ jobs:
           fetch-depth: 0
           persist-credentials: false
 
+      - name: Reclaim unused hosted SDK space for full native impact coverage
+        shell: bash
+        run: |
+          set -euo pipefail
+          echo "Runner disk before native compilation:"
+          df -h "$GITHUB_WORKSPACE"
+          # The scoped lane executes native Rust owners and reverse consumers.
+          # These SDKs are unrelated to that Linux Rust test target; leave the
+          # checkout, Rust/Cargo toolchain, dependencies, and test plan intact.
+          for sdk in /usr/local/lib/android /usr/share/dotnet /opt/ghc; do
+            if [[ -d "$sdk" && ! -L "$sdk" ]]; then
+              sudo du -sh "$sdk"
+              sudo rm -rf --one-file-system -- "$sdk"
+            fi
+          done
+          echo "Runner disk after reclaiming unrelated SDKs:"
+          df -h "$GITHUB_WORKSPACE"
+
       - name: Prepare native test prerequisites before compilation
         run: |
           sudo apt-get update
