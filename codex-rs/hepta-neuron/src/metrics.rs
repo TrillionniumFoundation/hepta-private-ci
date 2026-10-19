@@ -66,12 +66,32 @@ pub struct NeuronBatchMetricV1 {
     pub measurements_mask: u8,
 }
 
+fn dispatch_intent_digest(plan: Digest32) -> Digest32 {
+    Digest32::of_parts(&[
+        b"hepta.neuron.metrics.dispatch-intent.v1\0",
+        plan.as_array(),
+    ])
+}
+
 impl NeuronBatchMetricV1 {
+    fn is_dispatch_intent(&self) -> bool {
+        self.execution_digest == dispatch_intent_digest(self.plan_digest)
+            && self.elapsed_micros == 0
+            && self.observed_cpu_micros == 0
+            && self.observed_rss_bytes == 0
+            && self.p95_micros == 0
+            && self.p99_micros == 0
+            && self.lock_wait_micros == 0
+            && self.measurements_mask == 0
+    }
+
     fn validate(&self) -> Result<(), NeuronMetricsErrorV1> {
         if self.plan_digest.is_zero()
             || self.execution_digest.is_zero()
             || !(1..=256).contains(&self.request_count)
             || self.p95_micros > self.p99_micros
+            || (self.execution_digest == dispatch_intent_digest(self.plan_digest)
+                && !self.is_dispatch_intent())
             || self.measurements_mask & !0b111 != 0
             || (self.measurements_mask & 0b001 == 0 && self.observed_cpu_micros != 0)
             || (self.measurements_mask & 0b010 == 0 && self.observed_rss_bytes != 0)
@@ -103,6 +123,7 @@ pub struct NeuronMetricsGroupCommitWriterV1 {
     sequence: u64,
     head: Digest32,
     seen_plans: BTreeSet<Digest32>,
+    completed_plans: BTreeSet<Digest32>,
     recovered_partial_tail: bool,
     poisoned: bool,
 }
@@ -145,6 +166,7 @@ impl NeuronMetricsGroupCommitWriterV1 {
                 sequence: 0,
                 head: Digest32::ZERO,
                 seen_plans: BTreeSet::new(),
+                completed_plans: BTreeSet::new(),
                 recovered_partial_tail: false,
                 poisoned: false,
             });
@@ -166,6 +188,7 @@ impl NeuronMetricsGroupCommitWriterV1 {
         let mut sequence = 0_u64;
         let mut head = Digest32::ZERO;
         let mut seen_plans = BTreeSet::new();
+        let mut completed_plans = BTreeSet::new();
         while offset < data.len() {
             if data.len() - offset < 4 {
                 break;
@@ -222,6 +245,11 @@ impl NeuronMetricsGroupCommitWriterV1 {
                     .map_err(|_| NeuronMetricsErrorV1::Corrupt)?,
             );
             let mask = body[156];
+            let elapsed = u64::from_be_bytes(
+                body[108..116]
+                    .try_into()
+                    .map_err(|_| NeuronMetricsErrorV1::Corrupt)?,
+            );
             let cpu = u64::from_be_bytes(
                 body[116..124]
                     .try_into()
@@ -245,9 +273,27 @@ impl NeuronMetricsGroupCommitWriterV1 {
                 || (mask & 0b001 == 0 && cpu != 0)
                 || (mask & 0b010 == 0 && rss != 0)
                 || (mask & 0b100 == 0 && lock_wait != 0)
-                || !seen_plans.insert(plan_digest)
             {
                 return Err(NeuronMetricsErrorV1::Corrupt);
+            }
+            let is_intent = execution_digest == dispatch_intent_digest(plan_digest);
+            if is_intent
+                && (elapsed != 0
+                    || cpu != 0
+                    || rss != 0
+                    || latency_p95 != 0
+                    || latency_p99 != 0
+                    || lock_wait != 0
+                    || mask != 0)
+            {
+                return Err(NeuronMetricsErrorV1::Corrupt);
+            }
+            if !seen_plans.insert(plan_digest) {
+                if is_intent || !completed_plans.insert(plan_digest) {
+                    return Err(NeuronMetricsErrorV1::Corrupt);
+                }
+            } else if !is_intent {
+                completed_plans.insert(plan_digest);
             }
             sequence = stored_sequence;
             head = checksum;
@@ -268,6 +314,7 @@ impl NeuronMetricsGroupCommitWriterV1 {
             sequence,
             head,
             seen_plans,
+            completed_plans,
             recovered_partial_tail: recovered,
             poisoned: false,
         })
@@ -284,12 +331,26 @@ impl NeuronMetricsGroupCommitWriterV1 {
             return Err(NeuronMetricsErrorV1::Capacity);
         }
         let mut batch_plans = BTreeSet::new();
+        let mut new_plans = BTreeSet::new();
+        let mut new_completed = BTreeSet::new();
         for event in events {
             event.validate()?;
-            if self.seen_plans.contains(&event.plan_digest)
-                || !batch_plans.insert(event.plan_digest)
-            {
+            if !batch_plans.insert(event.plan_digest) {
                 return Err(NeuronMetricsErrorV1::DuplicatePlan);
+            }
+            if event.is_dispatch_intent() {
+                if self.seen_plans.contains(&event.plan_digest) {
+                    return Err(NeuronMetricsErrorV1::DuplicatePlan);
+                }
+                new_plans.insert(event.plan_digest);
+            } else {
+                if self.completed_plans.contains(&event.plan_digest) {
+                    return Err(NeuronMetricsErrorV1::DuplicatePlan);
+                }
+                if !self.seen_plans.contains(&event.plan_digest) {
+                    new_plans.insert(event.plan_digest);
+                }
+                new_completed.insert(event.plan_digest);
             }
         }
         let bytes_needed = events
@@ -351,7 +412,8 @@ impl NeuronMetricsGroupCommitWriterV1 {
         self.length = bytes_needed;
         self.sequence = sequence;
         self.head = previous;
-        self.seen_plans.extend(batch_plans);
+        self.seen_plans.extend(new_plans);
+        self.completed_plans.extend(new_completed);
         Ok(NeuronMetricsCommitV1 {
             first_sequence: first,
             final_sequence: sequence,
@@ -374,8 +436,33 @@ impl NeuronMetricsGroupCommitWriterV1 {
         self.sequence
     }
 
-    pub fn contains_committed_plan(&self, plan_digest: Digest32) -> bool {
+    /// Write and fsync an intent witness before physical backend dispatch.
+    /// An unknown outcome is non-redispatchable pending owner reconciliation.
+    pub fn record_dispatch_intent(
+        &mut self,
+        plan_digest: Digest32,
+        request_count: u32,
+    ) -> Result<NeuronMetricsCommitV1, NeuronMetricsErrorV1> {
+        self.append_group(&[NeuronBatchMetricV1 {
+            plan_digest,
+            execution_digest: dispatch_intent_digest(plan_digest),
+            request_count,
+            elapsed_micros: 0,
+            observed_cpu_micros: 0,
+            observed_rss_bytes: 0,
+            p95_micros: 0,
+            p99_micros: 0,
+            lock_wait_micros: 0,
+            measurements_mask: 0,
+        }])
+    }
+
+    pub fn contains_recorded_plan(&self, plan_digest: Digest32) -> bool {
         self.seen_plans.contains(&plan_digest)
+    }
+
+    pub fn completed_execution_count(&self) -> usize {
+        self.completed_plans.len()
     }
 
     pub fn recovered_partial_tail(&self) -> bool {

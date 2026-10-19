@@ -102,6 +102,21 @@ fn make_worker(fixture: &Fixture) -> NeuronMicrobatchWorkerV1 {
     .expect("worker")
 }
 
+fn make_authorized_worker(
+    fixture: &Fixture,
+    authority: FinalUseAuthority,
+) -> NeuronMicrobatchWorkerV1 {
+    NeuronMicrobatchWorkerV1::new_authorized(
+        id("worker.1"),
+        generation(),
+        scope(),
+        NeuronMetricsGroupCommitWriterV1::open(fixture.open(), scope(), generation())
+            .expect("metrics"),
+        authority,
+    )
+    .expect("trusted worker construction")
+}
+
 #[test]
 fn reference_worker_executes_exactly_one_batch_and_commits_metrics() {
     let fixture = Fixture::new();
@@ -295,7 +310,7 @@ fn native_batch_authority_claims_exact_ndu_and_prevents_unauthorized_backend_use
             .to_vec(),
         grant,
     };
-    let mut owner = make_worker(&fixture);
+    let mut owner = make_authorized_worker(&fixture, authority.clone());
     let mut backend = ReferenceNeuronBatchBackendV1::default();
 
     let mut altered = snapshot().identity().clone();
@@ -314,7 +329,6 @@ fn native_batch_authority_claims_exact_ndu_and_prevents_unauthorized_backend_use
             .run_authorized(
                 now,
                 &tampered,
-                &authority,
                 &signed,
                 &mut backend,
                 NeuronHostResourceSampleV1::default()
@@ -327,14 +341,13 @@ fn native_batch_authority_claims_exact_ndu_and_prevents_unauthorized_backend_use
         .run_authorized(
             now,
             &plan,
-            &authority,
             &signed,
             &mut backend,
             NeuronHostResourceSampleV1::default(),
         )
         .expect("signed final-use");
     assert_eq!(backend.batch_invocations, 1);
-    assert_eq!(output.metric_sequence, 1);
+    assert_eq!(output.metric_sequence, 2);
     assert!(!output.authority.grants_any());
 
     assert!(
@@ -342,7 +355,6 @@ fn native_batch_authority_claims_exact_ndu_and_prevents_unauthorized_backend_use
             .run_authorized(
                 now,
                 &plan,
-                &authority,
                 &signed,
                 &mut backend,
                 NeuronHostResourceSampleV1::default()
@@ -394,13 +406,12 @@ fn signed_batch_expiry_must_not_outlive_plan_deadline() {
             .to_vec(),
         grant,
     };
-    let mut owner = make_worker(&fixture);
+    let mut owner = make_authorized_worker(&fixture, authority.clone());
     let mut backend = ReferenceNeuronBatchBackendV1::default();
     assert!(matches!(
         owner.run_authorized(
             now,
             &plan,
-            &authority,
             &signed,
             &mut backend,
             NeuronHostResourceSampleV1::default()
@@ -408,4 +419,239 @@ fn signed_batch_expiry_must_not_outlive_plan_deadline() {
         Err(NeuronMicrobatchErrorV1::InvalidPlan)
     ));
     assert_eq!(backend.batch_invocations, 0);
+}
+
+#[test]
+fn fsynced_dispatch_intent_rejects_replay_after_worker_restart() {
+    let fixture = Fixture::new();
+    let pending = plan();
+    let mut metrics = NeuronMetricsGroupCommitWriterV1::open(fixture.open(), scope(), generation())
+        .expect("metrics");
+    let receipt = metrics
+        .record_dispatch_intent(pending.digest(), pending.size() as u32)
+        .expect("durable pre-dispatch intent");
+    assert_eq!(receipt.final_sequence, 1);
+    drop(metrics);
+
+    let mut restarted = make_worker(&fixture);
+    let mut backend = ReferenceNeuronBatchBackendV1::default();
+    assert!(matches!(
+        restarted.run_reference(
+            1_000,
+            &pending,
+            &mut backend,
+            NeuronHostResourceSampleV1::default()
+        ),
+        Err(NeuronMicrobatchErrorV1::PlanReplayed)
+    ));
+    assert_eq!(backend.batch_invocations, 0);
+}
+
+#[test]
+fn reference_worker_rejects_native_dispatch_without_pinned_verifier() {
+    let fixture = Fixture::new();
+    let mut owner = make_worker(&fixture);
+    let mut custom_backend = BadBackend { invocations: 0 };
+    let frozen = plan();
+    let signed = SignedFinalUseGrant {
+        grant: FinalUseGrant {
+            schema_version: 1,
+            signer_id: "neuron.batch.issuer".into(),
+            authority_epoch: 1,
+            grant_id: "neuron.batch.untrusted".into(),
+            nonce: [46_u8; 32],
+            binding: frozen.final_use_binding(),
+            not_before_unix_ms: 100,
+            expires_at_unix_ms: 1_000,
+        },
+        signature: vec![0; 64],
+    };
+    let error = owner.run_authorized(
+        100,
+        &frozen,
+        &signed,
+        &mut custom_backend,
+        NeuronHostResourceSampleV1::default(),
+    );
+    assert!(matches!(
+        error,
+        Err(NeuronMicrobatchErrorV1::MissingAuthority)
+    ));
+    assert_eq!(custom_backend.invocations, 0);
+}
+
+#[test]
+fn failed_signed_native_batch_leaves_durable_pending_intent_and_poisoned_owner() {
+    let root = tempfile::tempdir().expect("authority directory");
+    let fixture = Fixture::new();
+    let signing = SigningKey::from_bytes(&[66_u8; 32]);
+    let authority = FinalUseAuthority::open_state_dir(
+        &root.path().join("authority"),
+        "neuron.batch.issuer".to_owned(),
+        signing.verifying_key().to_bytes(),
+        FinalUseRevocations {
+            authority_epoch: 1,
+            revision: 1,
+            revoked_grant_ids: BTreeSet::new(),
+        },
+    )
+    .expect("verifier");
+    let now = u64::try_from(
+        SystemTime::now()
+            .duration_since(UNIX_EPOCH)
+            .expect("epoch")
+            .as_millis(),
+    )
+    .expect("millis");
+    let frozen = NeuronMicrobatchPlanV1::freeze(id("worker.1"), snapshot(), now + 60_000, heads())
+        .expect("plan");
+    let grant = FinalUseGrant {
+        schema_version: 1,
+        signer_id: "neuron.batch.issuer".into(),
+        authority_epoch: 1,
+        grant_id: "neuron.batch.indeterminate".into(),
+        nonce: [67_u8; 32],
+        binding: frozen.final_use_binding(),
+        not_before_unix_ms: now.saturating_sub(1_000),
+        expires_at_unix_ms: now + 20_000,
+    };
+    let signed = SignedFinalUseGrant {
+        signature: signing
+            .sign(&grant.signing_bytes().expect("signing bytes"))
+            .to_bytes()
+            .to_vec(),
+        grant,
+    };
+    let mut owner = make_authorized_worker(&fixture, authority);
+    let mut malformed = BadBackend { invocations: 0 };
+    assert!(matches!(
+        owner.run_authorized(
+            now,
+            &frozen,
+            &signed,
+            &mut malformed,
+            NeuronHostResourceSampleV1::default(),
+        ),
+        Err(NeuronMicrobatchErrorV1::BackendOutputMismatch)
+    ));
+    assert_eq!(malformed.invocations, 1);
+
+    // A failed native outcome poisons this process owner.
+    let mut reference = ReferenceNeuronBatchBackendV1::default();
+    assert!(matches!(
+        owner.run_reference(
+            now,
+            &frozen,
+            &mut reference,
+            NeuronHostResourceSampleV1::default(),
+        ),
+        Err(NeuronMicrobatchErrorV1::Poisoned)
+    ));
+    drop(owner);
+
+    // The pre-dispatch intent was synced before invocation and survived
+    // restart, so a new process cannot silently repeat unknown work.
+    let mut recovered = make_worker(&fixture);
+    assert!(matches!(
+        recovered.run_reference(
+            now,
+            &frozen,
+            &mut reference,
+            NeuronHostResourceSampleV1::default(),
+        ),
+        Err(NeuronMicrobatchErrorV1::PlanReplayed)
+    ));
+    assert_eq!(reference.batch_invocations, 0);
+}
+
+#[test]
+fn snapshot_freeze_rejects_non_q24_features_and_accepts_exact_boundaries() {
+    let identity = snapshot().identity().clone();
+    for invalid in [
+        i64::MIN,
+        -Q24_STATE_LIMIT - 1,
+        Q24_STATE_LIMIT + 1,
+        i64::MAX,
+    ] {
+        assert!(matches!(
+            NeuronFrozenFeatureV1::freeze(identity.clone(), vec![invalid]),
+            Err(NeuronMicrobatchErrorV1::InvalidSnapshot)
+        ));
+    }
+    assert!(
+        NeuronFrozenFeatureV1::freeze(identity, vec![-Q24_STATE_LIMIT, 0, Q24_STATE_LIMIT],)
+            .is_ok()
+    );
+}
+
+struct ExtremeOutputBackend {
+    value: i64,
+    corrupt_prediction: bool,
+    invocations: u32,
+}
+
+impl NeuronMicrobatchBackendV1 for ExtremeOutputBackend {
+    fn execute_batch(
+        &mut self,
+        _snapshot: &NeuronFrozenFeatureV1,
+        heads: &[NeuronBatchHeadV1],
+    ) -> Result<Vec<NeuronBatchHeadResultV1>, NeuronMicrobatchErrorV1> {
+        self.invocations += 1;
+        let mut outputs = heads
+            .iter()
+            .map(|head| NeuronBatchHeadResultV1 {
+                request_id: head.request_id.clone(),
+                head_digest: head.head_digest,
+                drive_q24: vec![0; head.expected_width],
+                prediction_q24: vec![0; head.expected_width],
+                elapsed_micros: 1,
+            })
+            .collect::<Vec<_>>();
+        if self.corrupt_prediction {
+            outputs[0].prediction_q24[0] = self.value;
+        } else {
+            outputs[0].drive_q24[0] = self.value;
+        }
+        Ok(outputs)
+    }
+}
+
+#[test]
+fn backend_output_extremes_fail_closed_without_metrics_ack() {
+    for (value, prediction) in [
+        (i64::MIN, false),
+        (-Q24_STATE_LIMIT - 1, true),
+        (Q24_STATE_LIMIT + 1, false),
+        (i64::MAX, true),
+    ] {
+        let fixture = Fixture::new();
+        let mut worker = make_worker(&fixture);
+        let mut backend = ExtremeOutputBackend {
+            value,
+            corrupt_prediction: prediction,
+            invocations: 0,
+        };
+        let frozen = plan();
+        assert!(matches!(
+            worker.execute(
+                1_000,
+                &frozen,
+                &mut backend,
+                NeuronHostResourceSampleV1::default(),
+            ),
+            Err(NeuronMicrobatchErrorV1::BackendOutputMismatch)
+        ));
+        assert_eq!(backend.invocations, 1);
+        assert_eq!(worker.metrics.recorded_sequence(), 0);
+        assert!(matches!(
+            worker.execute(
+                1_000,
+                &frozen,
+                &mut backend,
+                NeuronHostResourceSampleV1::default(),
+            ),
+            Err(NeuronMicrobatchErrorV1::PlanReplayed)
+        ));
+        assert_eq!(backend.invocations, 1);
+    }
 }

@@ -23,6 +23,7 @@ where
 {
     runtime: NeuronRuntime<W>,
     inference_control: P,
+    authority: FinalUseAuthority,
 }
 
 impl<W, P> AgentdNeuronOwner<W, P>
@@ -30,34 +31,33 @@ where
     W: AnchorWitnessStore,
     P: NeuronInferenceControlPort,
 {
-    pub fn new(runtime: NeuronRuntime<W>, inference_control: P) -> Self {
+    /// Only the trusted Agentd composition root may install the pinned,
+    /// independently configured authority. Request payloads cannot swap
+    /// verifying keys or supply a different authority for a single tick.
+    pub fn new(
+        runtime: NeuronRuntime<W>,
+        inference_control: P,
+        authority: FinalUseAuthority,
+    ) -> Self {
         Self {
             runtime,
             inference_control,
+            authority,
         }
     }
 
     pub fn tick_authorized(
         &mut self,
-        authority: &FinalUseAuthority,
         signed: &SignedFinalUseGrant,
         input: NeuronTickInputV1,
     ) -> Result<NeuronRuntimeOutputV1, NeuronRuntimeError> {
         let mut model = InferenceControlModelPort::new(&mut self.inference_control);
         self.runtime
-            .tick_authorized(authority, signed, &mut model, input)
+            .tick_authorized(&self.authority, signed, &mut model, input)
     }
 
     pub fn runtime(&self) -> &NeuronRuntime<W> {
         &self.runtime
-    }
-
-    pub fn runtime_mut(&mut self) -> &mut NeuronRuntime<W> {
-        &mut self.runtime
-    }
-
-    pub fn inference_control_mut(&mut self) -> &mut P {
-        &mut self.inference_control
     }
 }
 

@@ -138,3 +138,40 @@ fn scope_mismatch_and_competing_writer_fail_closed() {
         Err(NeuronMetricsErrorV1::ScopeMismatch)
     ));
 }
+
+#[test]
+fn intent_survives_reopen_and_allows_one_reconciled_terminal_receipt() {
+    let fixture = Fixture::new();
+    let mut writer = NeuronMetricsGroupCommitWriterV1::open(fixture.file(), scope(), generation())
+        .expect("open");
+    let candidate = event(9);
+    let plan = candidate.plan_digest;
+    let intent = writer
+        .record_dispatch_intent(plan, 2)
+        .expect("pre-dispatch fsync");
+    assert_eq!(intent.final_sequence, 1);
+    assert!(writer.contains_recorded_plan(plan));
+    assert_eq!(writer.completed_execution_count(), 0);
+    assert!(matches!(
+        writer.record_dispatch_intent(plan, 2),
+        Err(NeuronMetricsErrorV1::DuplicatePlan)
+    ));
+    drop(writer);
+
+    let mut restarted =
+        NeuronMetricsGroupCommitWriterV1::open(fixture.file(), scope(), generation())
+            .expect("reopen");
+    assert!(restarted.contains_recorded_plan(plan));
+    assert_eq!(restarted.completed_execution_count(), 0);
+    let terminal = restarted
+        .append_group(&[candidate])
+        .expect("reconciled complete output");
+    assert_eq!(terminal.final_sequence, 2);
+    assert_eq!(restarted.completed_execution_count(), 1);
+    drop(restarted);
+
+    let replay = NeuronMetricsGroupCommitWriterV1::open(fixture.file(), scope(), generation())
+        .expect("reopen again");
+    assert!(replay.contains_recorded_plan(plan));
+    assert_eq!(replay.completed_execution_count(), 1);
+}

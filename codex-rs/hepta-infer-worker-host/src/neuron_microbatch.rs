@@ -26,6 +26,8 @@ use codex_hepta_types::StableId;
 const MAX_BATCH: usize = 256;
 const MAX_DIM: usize = 4096;
 const MAX_WIDTH: usize = 512;
+// Match the canonical NeuronFeatureRequest/Observation Q24 saturation boundary.
+const Q24_STATE_LIMIT: i64 = 8 * (1_i64 << 24);
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub enum NeuronMicrobatchErrorV1 {
@@ -43,6 +45,7 @@ pub enum NeuronMicrobatchErrorV1 {
     FinalUse(FinalUseError),
     Metrics(NeuronMetricsErrorV1),
     ClockUnavailable,
+    MissingAuthority,
     Poisoned,
 }
 
@@ -93,6 +96,9 @@ impl NeuronFrozenFeatureV1 {
         features: Vec<i64>,
     ) -> Result<Self, NeuronMicrobatchErrorV1> {
         if !(1..=MAX_DIM).contains(&features.len())
+            || features
+                .iter()
+                .any(|value| !(-Q24_STATE_LIMIT..=Q24_STATE_LIMIT).contains(value))
             || identity.authority_epoch == 0
             || [
                 identity.scope_digest,
@@ -314,6 +320,7 @@ pub struct NeuronMicrobatchWorkerV1 {
     generation: Generation,
     scope_digest: Digest32,
     metrics: NeuronMetricsGroupCommitWriterV1,
+    authority: Option<FinalUseAuthority>,
     attempted: BTreeSet<Digest32>,
     poisoned: bool,
 }
@@ -333,9 +340,25 @@ impl NeuronMicrobatchWorkerV1 {
             generation,
             scope_digest,
             metrics,
+            authority: None,
             attempted: BTreeSet::new(),
             poisoned: false,
         })
+    }
+
+    /// Trusted product composition supplies and pins the independently
+    /// configured verifier at worker construction, not per request. This
+    /// constructor does not itself establish protected key custody or release.
+    pub fn new_authorized(
+        worker_id: StableId,
+        generation: Generation,
+        scope_digest: Digest32,
+        metrics: NeuronMetricsGroupCommitWriterV1,
+        authority: FinalUseAuthority,
+    ) -> Result<Self, NeuronMicrobatchErrorV1> {
+        let mut worker = Self::new(worker_id, generation, scope_digest, metrics)?;
+        worker.authority = Some(authority);
+        Ok(worker)
     }
 
     /// Safe unsigned seam: its backend type is a fixed, explicit reference
@@ -356,11 +379,14 @@ impl NeuronMicrobatchWorkerV1 {
         &mut self,
         now_unix_ms: u64,
         plan: &NeuronMicrobatchPlanV1,
-        authority: &FinalUseAuthority,
         signed: &SignedFinalUseGrant,
         backend: &mut B,
         resources: NeuronHostResourceSampleV1,
     ) -> Result<NeuronMicrobatchExecutionV1, NeuronMicrobatchErrorV1> {
+        let authority = self
+            .authority
+            .clone()
+            .ok_or(NeuronMicrobatchErrorV1::MissingAuthority)?;
         // Reject an expired plan even if a caller supplied an old timestamp.
         // The signed grant must expire no later than the batch deadline;
         // FinalUseAuthority independently verifies its own protected clock.
@@ -379,10 +405,30 @@ impl NeuronMicrobatchWorkerV1 {
             return Err(NeuronMicrobatchErrorV1::InvalidPlan);
         }
         let expected = plan.final_use_binding();
-        let token = claim_final_use(authority, signed, &expected)?;
+        let token = claim_final_use(&authority, signed, &expected)?;
         authority
             .with_verified_effect(token, &expected, || {
-                self.execute(effective_now_ms, plan, backend, resources)
+                self.preflight(effective_now_ms, plan)?;
+                if !self.attempted.insert(plan.digest) {
+                    return Err(NeuronMicrobatchErrorV1::PlanReplayed);
+                }
+                // Fsync the intent before physical/custom backend invocation.
+                // Uncertain fsync poisons this worker: never invoke the backend.
+                if let Err(error) = self
+                    .metrics
+                    .record_dispatch_intent(plan.digest, plan.heads.len() as u32)
+                {
+                    self.poisoned = true;
+                    return Err(error.into());
+                }
+                let result = self.execute_after_admission(plan, backend, resources);
+                // Any failed/indeterminate native execution requires operator
+                // reconciliation; do not admit another physical plan in this
+                // worker generation after an uncertain effect boundary.
+                if result.is_err() {
+                    self.poisoned = true;
+                }
+                result
             })
             .map_err(NeuronMicrobatchErrorV1::FinalUse)?
     }
@@ -407,8 +453,7 @@ impl NeuronMicrobatchWorkerV1 {
         if now_unix_ms >= plan.deadline_unix_ms {
             return Err(NeuronMicrobatchErrorV1::DeadlineExpired);
         }
-        if self.attempted.contains(&plan.digest)
-            || self.metrics.contains_committed_plan(plan.digest)
+        if self.attempted.contains(&plan.digest) || self.metrics.contains_recorded_plan(plan.digest)
         {
             return Err(NeuronMicrobatchErrorV1::PlanReplayed);
         }
@@ -426,6 +471,15 @@ impl NeuronMicrobatchWorkerV1 {
         if !self.attempted.insert(plan.digest) {
             return Err(NeuronMicrobatchErrorV1::PlanReplayed);
         }
+        self.execute_after_admission(plan, backend, resources)
+    }
+
+    fn execute_after_admission<B: NeuronMicrobatchBackendV1>(
+        &mut self,
+        plan: &NeuronMicrobatchPlanV1,
+        backend: &mut B,
+        resources: NeuronHostResourceSampleV1,
+    ) -> Result<NeuronMicrobatchExecutionV1, NeuronMicrobatchErrorV1> {
         let began = Instant::now();
         let observed = backend.execute_batch(&plan.snapshot, &plan.heads)?;
         if observed.len() != plan.heads.len() {
@@ -439,6 +493,11 @@ impl NeuronMicrobatchWorkerV1 {
                 || output.head_digest != head.head_digest
                 || output.drive_q24.len() != head.expected_width
                 || output.prediction_q24.len() != head.expected_width
+                || output
+                    .drive_q24
+                    .iter()
+                    .chain(&output.prediction_q24)
+                    .any(|value| !(-Q24_STATE_LIMIT..=Q24_STATE_LIMIT).contains(value))
             {
                 return Err(NeuronMicrobatchErrorV1::BackendOutputMismatch);
             }
