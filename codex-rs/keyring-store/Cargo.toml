@@ -14,7 +14,7 @@ tracing = { workspace = true }
 [target.'cfg(target_os = "linux")'.dependencies]
 # The implementation uses synchronous Entry APIs; keep Linux on the matching D-Bus backend.
 # Keep the generated lock and cargo-deny evidence reviewable in this candidate.
-keyring = { workspace = true, features = ["linux-native-sync-persistent"] }
+keyring = { workspace = true, features = ["linux-native-sync-persistent", "vendored"] }
 
 [target.'cfg(target_os = "macos")'.dependencies]
 keyring = { workspace = true, features = ["apple-native"] }
