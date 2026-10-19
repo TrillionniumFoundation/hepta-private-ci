@@ -1,8 +1,10 @@
 // Deterministic real HTTP controls, isolated from product APIs and state.
 import {createServer} from 'node:http';
 export const CONTROL_BODY=Buffer.from('{"ok":true}');
-export function writeControl(response,kind,record){
- const headers={'Content-Type':'application/octet-stream','Cache-Control':'no-store','Connection':'close'};
+export function writeControl(response,kind,record,cacheControl='no-store'){
+ const headers={'Content-Type':'application/octet-stream','Cache-Control':cacheControl,'Connection':'close'};
+ if(kind==='revalidated')headers['Cache-Control']='private, no-cache';
+ record.cacheControl=headers['Cache-Control'];
  if(kind==='truncated')headers['Content-Length']='12';
  else if(kind==='declared-limit')headers['Content-Length']='256';
  else headers['Transfer-Encoding']='chunked';
@@ -26,8 +28,10 @@ export async function startControlServer(snapshot){
   if(url.pathname==='/probe'){response.setHeader('Content-Type','text/html');response.end('<!doctype html><title>SDK transport diagnostic</title>');return;}
   if(url.pathname==='/control'){
    const kind=url.searchParams.get('kind');
-   if(!['complete','truncated','abort','declared-limit','stream-limit'].includes(kind)||records.length>=128){response.writeHead(400);response.end();return;}
-   const record={kind};records.push(record);writeControl(response,kind,record);return;
+   const cache=url.searchParams.get('cache');
+   if(cache!==null&&cache!=='private'){response.writeHead(400);response.end();return;}
+   if(!['complete','revalidated','truncated','abort','declared-limit','stream-limit'].includes(kind)||records.length>=128){response.writeHead(400);response.end();return;}
+   const record={kind};records.push(record);writeControl(response,kind,record,cache==='private'?'private, no-cache':'no-store');return;
   }
   const bytes=snapshot.buffers.get(url.pathname.slice(1));
   if(!bytes){response.writeHead(404);response.end();return;}
