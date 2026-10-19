@@ -206,3 +206,37 @@ fn poisoned_scope_writer_cannot_acknowledge_even_an_old_duplicate() {
     must(recovered.append(envelope("scope-a", "owner-a", 1, "second")));
     assert_eq!(recovered.wal().record_count(), 2);
 }
+
+#[test]
+fn truncate_reappend_preserves_both_durable_scope_predecessors() {
+    let directory = must(tempdir());
+    let path = directory.path().join("reappend-after-torn-tail.wal");
+    let first = envelope("scope-a", "owner-a", 1, "first");
+    let second = envelope("scope-a", "owner-a", 1, "after-recovery");
+    {
+        let mut wal = must(ScopeLaneFileWalV1::open(&path));
+        assert_eq!(must(wal.append(first.clone())).sequence, 1);
+    }
+    let committed_len = must(std::fs::metadata(&path)).len();
+    {
+        let mut partial = must(OpenOptions::new().append(true).open(&path));
+        must(partial.write_all(&[0, 0, 0, 64, 0xab]));
+        must(partial.sync_all());
+    }
+    {
+        let mut recovered = must(ScopeLaneFileWalV1::open(&path));
+        assert_eq!(must(std::fs::metadata(&path)).len(), committed_len);
+        assert_eq!(recovered.wal().record_count(), 1);
+        assert_eq!(must(recovered.append(second.clone())).sequence, 2);
+    }
+    let replay = must(ScopeLaneFileWalV1::open(&path));
+    assert_eq!(
+        replay.wal().entries(digest("scope-a")).map(|entries| {
+            entries
+                .iter()
+                .map(|entry| entry.envelope.clone())
+                .collect::<Vec<_>>()
+        }),
+        Some(vec![first, second]),
+    );
+}
