@@ -168,7 +168,10 @@ fn metric_wal_rejects_symlinks_and_hardlink_aliases_before_writes() {
         NeuronMetricsGroupCommitWriterV1::open(&dangling, digest("scope"), generation(1)),
         Err(MetricsError::NotRegular)
     ));
-    assert!(!missing_target.exists(), "an alias must never create its target");
+    assert!(
+        !missing_target.exists(),
+        "an alias must never create its target"
+    );
 
     for file in [symlink, hardlink, dangling, target] {
         std::fs::remove_file(file).expect("cleanup");
@@ -181,12 +184,8 @@ fn metric_wal_new_file_is_private_to_the_owner() {
     use std::os::unix::fs::PermissionsExt;
     let p = path("private");
     {
-        let _writer = NeuronMetricsGroupCommitWriterV1::open(
-            &p,
-            digest("scope"),
-            generation(1),
-        )
-        .expect("new metrics WAL");
+        let _writer = NeuronMetricsGroupCommitWriterV1::open(&p, digest("scope"), generation(1))
+            .expect("new metrics WAL");
         let permissions = std::fs::metadata(&p)
             .expect("metadata")
             .permissions()
