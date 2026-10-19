@@ -13,9 +13,10 @@ Neuron Cells. It is deliberately deterministic and advisory.
 - 'GroupDecisionTraceV1' binds the input, route, behavior, terminal outcome,
   complete candidate-set digest, and every Cell observation.
 - 'decide_group_continuation_v1' requires one legal explicit abstain candidate,
-  rejects duplicate candidates, rejects negative cost/risk/uncertainty, enforces
-  Cell and candidate caps, and chooses a legal continuation only when its
-  deterministic net value is strictly positive.
+  rejects duplicate candidate IDs and duplicate Cell observations, rejects
+  negative cost/risk/uncertainty, verifies subject/generation bindings,
+  enforces Cell and candidate caps, and chooses a legal continuation only when
+  its deterministic net value is strictly positive.
 - The result always carries 'AuthorityPosture::DENY_ALL'. It cannot authorize
   model invocation, selection, promotion, release, external effects, or
   durable mutation.
