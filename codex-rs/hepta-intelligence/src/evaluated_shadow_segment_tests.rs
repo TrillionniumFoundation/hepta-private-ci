@@ -18,7 +18,21 @@ fn open(root: &std::path::Path, name: &str, create: bool) -> std::fs::File {
 }
 
 fn directory(root: &std::path::Path) -> std::fs::File {
-    std::fs::File::open(root).unwrap()
+    #[cfg(windows)]
+    {
+        use std::os::windows::fs::OpenOptionsExt;
+        OpenOptions::new()
+            .read(true)
+            .write(true)
+            .custom_flags(0x0200_0000) // FILE_FLAG_BACKUP_SEMANTICS
+            .open(root)
+            .unwrap_or_else(|err| panic!("open segmented ledger directory: {err}"))
+    }
+    #[cfg(not(windows))]
+    {
+        std::fs::File::open(root)
+            .unwrap_or_else(|err| panic!("open segmented ledger directory: {err}"))
+    }
 }
 
 fn writer(
