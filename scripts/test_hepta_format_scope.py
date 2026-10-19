@@ -21,7 +21,7 @@ class FormatterScopeTests(unittest.TestCase):
     def setUp(self):
         self.temp = tempfile.TemporaryDirectory()
         self.addCleanup(self.temp.cleanup)
-        self.root = Path(self.temp.name)
+        self.root = Path(self.temp.name).resolve()
         patcher = patch.object(FMT, "REPO_ROOT", self.root)
         patcher.start()
         self.addCleanup(patcher.stop)
@@ -128,6 +128,204 @@ class FormatterScopeTests(unittest.TestCase):
             command.args[-1], str(self.root / "codex-rs/example/src/lib.rs")
         )
         self.assertEqual(command.cwd, self.root / "codex-rs/example")
+
+    @unittest.skipIf(FMT.tomllib is None, "requires Python TOML reader")
+    def test_rust_batch_reuses_owner_edition_and_next_batch_sees_edits(self):
+        workspace = self.write(
+            "codex-rs/Cargo.toml", '[workspace.package]\nedition="2024"\n'
+        )
+        self.write(
+            "codex-rs/owner/Cargo.toml",
+            '[package]\nname="owner"\nedition.workspace=true\n',
+        )
+        self.write(
+            "qualification/fixture/Cargo.toml",
+            '[package]\nname="fixture"\nedition="2021"\n',
+        )
+        paths = [
+            "codex-rs/owner/src/lib.rs",
+            "codex-rs/owner/src/other.rs",
+            "qualification/fixture/src/lib.rs",
+        ]
+        for path in paths:
+            self.write(path, "pub fn entry() {}\n")
+        expected = tuple(FMT.rust_file_command(path, check=True) for path in paths)
+        original_read = Path.read_text
+        reads = []
+
+        def read(path, *args, **kwargs):
+            reads.append(path)
+            return original_read(path, *args, **kwargs)
+
+        with patch.object(Path, "read_text", read):
+            (group,) = FMT.scoped_formatter_groups(paths, check=True)
+        self.assertEqual(group.commands, expected)
+        self.assertEqual(reads.count(workspace), 1)
+
+        workspace.write_text('[workspace.package]\nedition="2021"\n')
+        (refreshed,) = FMT.scoped_formatter_groups(paths, check=True)
+        self.assertEqual(
+            refreshed.commands,
+            tuple(FMT.rust_file_command(path, check=True) for path in paths),
+        )
+        self.assertNotEqual(refreshed.commands[0], group.commands[0])
+
+    def test_rust_batch_fallback_runs_metadata_once_per_owner(self):
+        import json
+
+        paths = []
+        manifests = []
+        packages = []
+        for owner, edition in (("first", "2024"), ("other", "2021")):
+            manifest = self.write(
+                f"codex-rs/{owner}/Cargo.toml", f'[package]\nname="{owner}"\n'
+            )
+            manifests.append(manifest)
+            packages.append({"manifest_path": str(manifest), "edition": edition})
+            for name in ("lib", "other"):
+                path = f"codex-rs/{owner}/src/{name}.rs"
+                self.write(path, "pub fn entry() {}\n")
+                paths.append(path)
+        with (
+            patch.object(FMT, "tomllib", None),
+            patch.object(
+                FMT.subprocess,
+                "check_output",
+                return_value=json.dumps({"packages": packages}),
+            ) as metadata,
+        ):
+            (group,) = FMT.scoped_formatter_groups(paths, check=True)
+        self.assertEqual(metadata.call_count, 2)
+        self.assertEqual(
+            [Path(call.args[0][-1]) for call in metadata.call_args_list], manifests
+        )
+        self.assertEqual(
+            [
+                command.args[command.args.index("--edition") + 1]
+                for command in group.commands
+            ],
+            ["2024", "2024", "2021", "2021"],
+        )
+        self.assertEqual(
+            [command.cwd for command in group.commands],
+            [manifest.parent for manifest in manifests for _ in range(2)],
+        )
+
+    @unittest.skipIf(os.name == "nt", "POSIX symlink fixture")
+    def test_cached_rust_edition_still_checks_each_source_path(self):
+        self.write(
+            "codex-rs/owner/Cargo.toml", '[package]\nname="owner"\nedition="2024"\n'
+        )
+        self.write("codex-rs/owner/src/first.rs", "pub fn entry() {}\n")
+        with tempfile.TemporaryDirectory() as outside:
+            target = Path(outside) / "outside.rs"
+            target.write_text("pub fn outside() {}\n")
+            (self.root / "codex-rs/owner/src/second.rs").symlink_to(target)
+            with self.assertRaisesRegex(ValueError, "source escapes repository"):
+                FMT.scoped_formatter_groups(
+                    ["codex-rs/owner/src/first.rs", "codex-rs/owner/src/second.rs"],
+                    check=True,
+                )
+
+    def test_rust_check_batches_sources_without_crossing_owner_or_config_context(self):
+        for owner, edition in (("first", "2024"), ("other", "2021")):
+            self.write(
+                f"codex-rs/{owner}/Cargo.toml",
+                f'[package]\nname="{owner}"\nedition="{edition}"\n',
+            )
+        paths = [
+            "codex-rs/first/src/a.rs",
+            "codex-rs/first/src/b.rs",
+            "codex-rs/first/src/nested/c.rs",
+            "codex-rs/other/src/d.rs",
+        ]
+        for path in paths:
+            self.write(path, "pub fn entry() {}\n")
+        (group,) = FMT.scoped_formatter_groups(paths, check=True)
+        with patch.object(
+            FMT.subprocess,
+            "run",
+            return_value=subprocess.CompletedProcess((), 0, stdout=""),
+        ) as runner:
+            self.assertEqual(
+                FMT.run_formatter_group(group), FMT.FormatterResult("Rust", "", 0)
+            )
+        self.assertEqual(
+            [(call.args[0], call.kwargs["cwd"]) for call in runner.call_args_list],
+            [
+                (
+                    (*group.commands[0].args, group.commands[1].args[-1]),
+                    self.root / "codex-rs/first",
+                ),
+                (group.commands[2].args, self.root / "codex-rs/first"),
+                (group.commands[3].args, self.root / "codex-rs/other"),
+            ],
+        )
+
+    def test_rust_check_splits_long_unicode_arguments_without_losing_inputs(self):
+        self.write(
+            "codex-rs/owner/Cargo.toml", '[package]\nname="owner"\nedition="2024"\n'
+        )
+        paths = [f"codex-rs/owner/src/{'界' * 30}{i:03}.rs" for i in range(100)]
+        for path in paths:
+            self.write(path, "pub fn entry() {}\n")
+        (group,) = FMT.scoped_formatter_groups(paths, check=True)
+        with patch.object(
+            FMT.subprocess,
+            "run",
+            return_value=subprocess.CompletedProcess((), 0, stdout=""),
+        ) as runner:
+            self.assertEqual(FMT.run_formatter_group(group).returncode, 0)
+        args = [call.args[0] for call in runner.call_args_list]
+        self.assertGreater(len(args), 1)
+        self.assertLess(len(args), len(paths))
+        self.assertEqual(
+            [path for command in args for path in command[command.index("--") + 1 :]],
+            [command.args[-1] for command in group.commands],
+        )
+        for command in args:
+            self.assertLessEqual(
+                sum(2 * len(os.fsencode(arg)) + 3 for arg in command), 16000
+            )
+
+    def test_rust_check_batch_failure_is_reported(self):
+        self.write(
+            "codex-rs/owner/Cargo.toml", '[package]\nname="owner"\nedition="2024"\n'
+        )
+        paths = ["codex-rs/owner/src/a.rs", "codex-rs/owner/src/b.rs"]
+        (group,) = FMT.scoped_formatter_groups(paths, check=True)
+        with patch.object(
+            FMT.subprocess,
+            "run",
+            return_value=subprocess.CompletedProcess((), 1, stdout="parse error\n"),
+        ) as runner:
+            result = FMT.run_formatter_group(group)
+        self.assertEqual(runner.call_count, 1)
+        self.assertEqual(result.returncode, 1)
+        self.assertEqual(result.name, "Rust")
+        self.assertIn("parse error\n", result.output)
+        for path in paths:
+            self.assertIn(str(self.root / path), result.output)
+
+    def test_rust_fix_preserves_per_file_stop_on_failure(self):
+        self.write(
+            "codex-rs/owner/Cargo.toml", '[package]\nname="owner"\nedition="2024"\n'
+        )
+        paths = [f"codex-rs/owner/src/{name}.rs" for name in ("a", "b", "c")]
+        (group,) = FMT.scoped_formatter_groups(paths, check=False)
+        with patch.object(
+            FMT.subprocess,
+            "run",
+            side_effect=[
+                subprocess.CompletedProcess((), 0, stdout=""),
+                subprocess.CompletedProcess((), 1, stdout="parse error\n"),
+            ],
+        ) as runner:
+            self.assertEqual(FMT.run_formatter_group(group).returncode, 1)
+        self.assertEqual(
+            [call.args[0] for call in runner.call_args_list],
+            [command.args for command in group.commands[:2]],
+        )
 
     def test_rust_formatter_executes_in_owner_context_without_touching_neighbor(self):
         import json
