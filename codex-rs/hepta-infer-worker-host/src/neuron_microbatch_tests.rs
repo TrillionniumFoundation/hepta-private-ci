@@ -135,8 +135,23 @@ fn planner_rejects_empty_and_mixed_snapshot_batches() {
             DataPlaneError::InvalidMicrobatchPlan
         ))
     );
+    // Two requests with an identical semantic snapshot are a valid shared batch.
+    let mut same_snapshot = requests();
+    same_snapshot.push(HeadExecutionRequestV1 {
+        request_id: id("request-2"),
+        model_id: id("head"),
+        generation: generation(1),
+        snapshot: snapshot(),
+    });
+    let plan = worker
+        .plan(10, 100, same_snapshot)
+        .expect("identical snapshots form one shared-feature batch");
+    assert_eq!(plan.requests().len(), 2);
+
+    // Change an actual feature value: the old fixture duplicated the first
+    // snapshot and therefore incorrectly expected a valid plan to be denied.
     let mut mixed = requests();
-    let features = vec![Q24 / 2, -Q24 / 4];
+    let features = vec![Q24 / 2, -Q24 / 4 + 1];
     mixed.push(HeadExecutionRequestV1 {
         request_id: id("request-2"),
         model_id: id("head"),
