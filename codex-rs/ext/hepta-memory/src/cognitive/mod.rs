@@ -57,6 +57,7 @@ use crate::framing::path_identity_bytes;
 use crate::framing::workspace_digest;
 
 mod federation;
+mod federation_workspace;
 mod kg_extractor;
 mod tools;
 
@@ -271,6 +272,9 @@ pub(crate) struct CognitiveExtension {
 }
 
 impl CognitiveExtension {
+    /// Test-only convenience constructor; production composition explicitly
+    /// supplies the mutation/revocation capabilities via new_with_mutation.
+    #[cfg(test)]
     pub(crate) fn new(runtime: CognitiveRuntime) -> Self {
         Self::new_with_mutation(runtime, None, false)
     }

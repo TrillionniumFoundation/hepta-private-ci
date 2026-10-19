@@ -367,6 +367,19 @@ pub trait ThreadStore: Any + Send + Sync {
         })
     }
 
+    /// Returns complete turn items within hard cumulative row/byte limits, or refuses the read.
+    /// Implementations must never fall back to unbounded history replay or silently truncate.
+    fn list_full_turns_bounded(
+        &self,
+        _params: ListTurnsParams,
+    ) -> ThreadStoreFuture<'_, crate::FullTurnPage> {
+        Box::pin(async {
+            Err(ThreadStoreError::HistoryReadUnavailable {
+                reason: "unsupportedHistory",
+            })
+        })
+    }
+
     /// Lists persisted items within a stored thread, optionally filtered to a turn.
     fn list_items(&self, _params: ListItemsParams) -> ThreadStoreFuture<'_, ItemPage> {
         Box::pin(async {

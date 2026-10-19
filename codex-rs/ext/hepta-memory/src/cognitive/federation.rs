@@ -14,7 +14,6 @@ use codex_extension_api::ExtensionMetrics;
 use codex_extension_api::ModelProviderPolicyError;
 use codex_extension_api::ModelProviderPolicyFuture;
 use codex_extension_api::ModelProviderRequestKind;
-use codex_extension_api::ModelProviderSha256Digest;
 use codex_extension_api::TurnInputContext;
 use codex_extension_api::TurnInputContributor;
 use codex_hepta_contracts::AgentId;
@@ -38,6 +37,7 @@ use super::CognitiveExtension;
 use super::CognitiveProposalMaterial;
 use super::capture_directive;
 use super::chain_final_use_guards;
+use super::federation_workspace::restore_workspace_identity;
 use super::now_unix_seconds;
 use super::secret_like;
 use crate::extension::HeptaMemoryThreadState;
@@ -236,9 +236,10 @@ impl FederatedCognitiveExtension {
             return None;
         }
         let prepared = input.turn_store.get::<PreparedFederatedAttachment>()?;
+        let workspace = restore_workspace_identity(input.cwd)?;
         if prepared.thread_id != input.thread_id
             || prepared.turn_id != input.turn_id
-            || path_identity_bytes(prepared.workspace.as_path()) != path_identity_bytes(input.cwd)
+            || path_identity_bytes(prepared.workspace.as_path()) != path_identity_bytes(&workspace)
         {
             return None;
         }
@@ -253,7 +254,7 @@ impl FederatedCognitiveExtension {
         }
         let now = now_unix_seconds()?;
         let access =
-            FederationConsumerAccess::new(self.consumer_agent_id()?, workspace_digest(input.cwd));
+            FederationConsumerAccess::new(self.consumer_agent_id()?, workspace_digest(&workspace));
         let Ok(statuses) = self.revalidate_many(&access, &prepared.bindings, now).await else {
             return None;
         };
@@ -283,7 +284,7 @@ impl FederatedCognitiveExtension {
         let source_binding_sha256 = federation_source_binding(
             input.thread_id,
             input.turn_id,
-            input.cwd,
+            &workspace,
             &prepared.query_sha256,
             &prepared.coverage,
             &prepared.bindings,
@@ -390,10 +391,9 @@ impl TurnInputContributor for FederatedCognitiveExtension {
             if primary_environments.next().is_some() {
                 return Vec::new();
             }
-            let workspace = primary.cwd.to_path_buf();
-            if !workspace.is_absolute() {
+            let Some(workspace) = restore_workspace_identity(&primary.cwd.to_path_buf()) else {
                 return Vec::new();
-            }
+            };
             let capture = capture_directive(&input.user_input);
             let Some(query) = capture.query else {
                 return Vec::new();
@@ -861,12 +861,6 @@ fn federation_source_binding(
     ))
 }
 
-fn api_digest(
-    digest: &Sha256Digest,
-) -> Result<ModelProviderSha256Digest, ModelProviderPolicyError> {
-    ModelProviderSha256Digest::parse(digest.as_str())
-}
-
 fn final_use_capability_window_current(
     revalidation_started_at: i64,
     final_use_now: i64,
@@ -1331,6 +1325,27 @@ mod tests {
             max_content_bytes: EPHEMERAL_MODEL_INPUT_MAX_CONTENT_BYTES,
             max_content_tokens: EPHEMERAL_MODEL_INPUT_MAX_CONTENT_TOKENS,
         };
+        let uri_workspace = PathUri::from_host_native_path(&workspace)
+            .expect("workspace URI")
+            .to_path_buf();
+        let mut uri_input = input("model-provider-attempt:v1:uri-workspace");
+        uri_input.cwd = &uri_workspace;
+        assert!(
+            EphemeralModelInputContributor::contribute(&extension, uri_input)
+                .await
+                .expect("URI workspace contributor")
+                .is_some()
+        );
+        let wrong_workspace = temp.path().join("wrong-workspace");
+        std::fs::create_dir_all(&wrong_workspace).expect("wrong workspace");
+        let mut wrong_input = input("model-provider-attempt:v1:wrong-workspace");
+        wrong_input.cwd = &wrong_workspace;
+        assert!(
+            EphemeralModelInputContributor::contribute(&extension, wrong_input)
+                .await
+                .expect("wrong workspace contributor")
+                .is_none()
+        );
         let first = EphemeralModelInputContributor::contribute(
             &extension,
             input("model-provider-attempt:v1:before-revoke"),
