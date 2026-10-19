@@ -4,6 +4,7 @@ on:
   pull_request:
     paths:
       - "codex-rs/hepta-supervisor/**"
+      - "codex-rs/hepta-agent-protocol/**"
       - ".github/workflows/hepta-supervisor-p0-crossplatform.yml"
       - "codex-rs/Cargo.toml"
       - "codex-rs/Cargo.lock"
@@ -102,6 +103,36 @@ jobs:
                             "passed": len(cases), "required_tests": expected}, sort_keys=True))
           PYTEST
 
+      - name: Execute the complete Agentd protocol package
+        run: just test --locked -p codex-hepta-agent-protocol --profile default --test-threads 2 --no-tests fail --retries 0 --status-level all --final-status-level all
+
+      - name: Verify signed protocol wire regression evidence
+        shell: bash
+        run: |
+          python - <<'PYTEST'
+          import json
+          import os
+          from pathlib import Path
+          import platform
+          import subprocess
+          import xml.etree.ElementTree as ET
+
+          source_sha = subprocess.check_output(["git", "rev-parse", "HEAD"], text=True).strip()
+          if source_sha != os.environ["EXPECTED_SOURCE_SHA"]:
+              raise SystemExit("source HEAD changed during protocol tests")
+          report = Path(os.environ["GITHUB_WORKSPACE"]) / "codex-rs/target/nextest/default/junit.xml"
+          cases = ET.parse(report).findall(".//testcase")
+          required = "tests::automation_effect_wire_round_trip_is_strict_and_bounded"
+          matching = [case for case in cases if case.get("name") == required]
+          if len(matching) != 1:
+              raise SystemExit("missing unique signed protocol wire regression result")
+          for case in cases:
+              if any(case.find(tag) is not None for tag in ("failure", "error", "skipped")):
+                  raise SystemExit(f"protocol case did not pass: {case.get('name')}")
+          print(json.dumps({"source_sha": source_sha, "platform": platform.system(),
+                            "passed": len(cases), "required_test": required}, sort_keys=True))
+          PYTEST
+
       - name: Strict Supervisor Clippy
         run: cargo +1.95.0 clippy --locked -p codex-hepta-supervisor --all-targets -- -D warnings
 
@@ -121,6 +152,14 @@ jobs:
         with:
           name: hepta-supervisor-p0-${{ matrix.os }}-${{ github.event.pull_request.head.sha || github.sha }}
           path: codex-rs/target/nextest/local/junit.xml
+          if-no-files-found: error
+
+      - name: Preserve Agentd protocol JUnit evidence
+        if: always()
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f
+        with:
+          name: hepta-agent-protocol-${{ matrix.os }}-${{ github.event.pull_request.head.sha || github.sha }}
+          path: codex-rs/target/nextest/default/junit.xml
           if-no-files-found: error
 
       - name: Ensure test checkout remained immutable
