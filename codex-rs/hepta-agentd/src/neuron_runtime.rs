@@ -6,6 +6,8 @@
 //! supplying drive/prediction vectors directly.  Constructing this owner does
 //! not itself activate it in the daemon startup path.
 
+use codex_hepta_contracts::FinalUseAuthority;
+use codex_hepta_contracts::SignedFinalUseGrant;
 use codex_hepta_neuron::AnchorWitnessStore;
 use codex_hepta_neuron::InferenceControlModelPort;
 use codex_hepta_neuron::NeuronInferenceControlPort;
@@ -35,12 +37,15 @@ where
         }
     }
 
-    pub fn tick(
+    pub fn tick_authorized(
         &mut self,
+        authority: &FinalUseAuthority,
+        signed: &SignedFinalUseGrant,
         input: NeuronTickInputV1,
     ) -> Result<NeuronRuntimeOutputV1, NeuronRuntimeError> {
         let mut model = InferenceControlModelPort::new(&mut self.inference_control);
-        self.runtime.tick(&mut model, input)
+        self.runtime
+            .tick_authorized(authority, signed, &mut model, input)
     }
 
     pub fn runtime(&self) -> &NeuronRuntime<W> {

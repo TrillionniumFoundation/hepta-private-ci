@@ -8,6 +8,7 @@ use std::error::Error as StdError;
 use std::fmt;
 use std::io;
 
+use codex_hepta_contracts::FinalUseError;
 use codex_hepta_types::AuthorityPosture;
 use codex_hepta_types::Digest32;
 use codex_hepta_types::Generation;
@@ -404,6 +405,7 @@ pub enum NeuronRuntimeError {
     BootstrapWitnessPresent,
     RecoveryWitnessMismatch,
     PendingReconciliation,
+    FinalUse(FinalUseError),
     Model(NeuronModelError),
     Deletion(DeletionRebuildError),
     Journal(JournalError),
@@ -422,6 +424,12 @@ impl fmt::Display for NeuronRuntimeError {
 }
 
 impl StdError for NeuronRuntimeError {}
+
+impl From<FinalUseError> for NeuronRuntimeError {
+    fn from(error: FinalUseError) -> Self {
+        Self::FinalUse(error)
+    }
+}
 
 impl From<JournalError> for NeuronRuntimeError {
     fn from(error: JournalError) -> Self {

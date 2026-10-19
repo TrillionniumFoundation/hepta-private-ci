@@ -3,6 +3,10 @@
 use std::fs::File;
 use std::time::Instant;
 
+use codex_hepta_contracts::FinalUseAuthority;
+use codex_hepta_contracts::FinalUseBinding;
+use codex_hepta_contracts::SignedFinalUseGrant;
+use codex_hepta_contracts::claim_final_use;
 use codex_hepta_types::AuthorityPosture;
 use codex_hepta_types::Digest32;
 
@@ -16,6 +20,11 @@ use crate::SparseJournal;
 use crate::SparseTick;
 use crate::runtime_types::*;
 use crate::validate_deletion_rebuild;
+
+fn append_final_use_identity(bytes: &mut Vec<u8>, value: &str) {
+    bytes.extend_from_slice(&(value.len() as u64).to_be_bytes());
+    bytes.extend_from_slice(value.as_bytes());
+}
 
 #[derive(Clone)]
 struct PendingWitness {
@@ -236,7 +245,117 @@ impl<W: AnchorWitnessStore> NeuronRuntime<W> {
         Ok(())
     }
 
-    pub fn tick(
+    /// Canonical, fully scoped request to the independently operated final-use
+    /// issuer. This value is NOT a grant: only its matching, signed, current,
+    /// single-use token can authorize model invocation.
+    pub fn final_use_binding(
+        &self,
+        input: &NeuronTickInputV1,
+    ) -> Result<FinalUseBinding, NeuronRuntimeError> {
+        let request = self.model_request(input)?;
+
+        let mut scope = b"hepta.neuron.final-use.scope.v1\0".to_vec();
+        append_final_use_identity(&mut scope, input.subject_id.as_str());
+        append_final_use_identity(&mut scope, self.config.config_id.as_str());
+        append_final_use_identity(&mut scope, self.config.model_id.as_str());
+        scope.extend_from_slice(&self.config.generation.get().to_be_bytes());
+        scope.extend_from_slice(input.objective_digest.as_array());
+        scope.extend_from_slice(input.ndu_snapshot_digest.as_array());
+
+        // Freeze every model artifact, execution identity, state geometry,
+        // calibration and resource-limit setting, not only the short tick ID.
+        let mut payload = b"hepta.neuron.final-use.payload.v1\0".to_vec();
+        payload.extend_from_slice(request.input_digest.as_array());
+        for digest in [
+            self.config.model_manifest_digest,
+            self.config.encoder_digest,
+            self.config.head_digest,
+            self.config.weights_digest,
+            self.config.tokenizer_digest,
+            self.config.preprocessor_digest,
+            self.config.quantization_digest,
+            self.config.runtime_digest,
+            self.config.device_digest,
+            self.config.normalization_digest,
+            self.config.native_config_digest,
+            self.config.calibration.calibration_artifact_digest,
+            self.config.calibration.ood_artifact_digest,
+        ] {
+            payload.extend_from_slice(digest.as_array());
+        }
+        for dimension in [
+            self.config.input_feature_dimension,
+            self.config.state_width,
+            self.config.modulator_dimension,
+        ] {
+            payload.extend_from_slice(&(dimension as u64).to_be_bytes());
+        }
+        let calibration = &self.config.calibration;
+        for value in [
+            calibration.generation.get(),
+            calibration.valid_from_sequence,
+            calibration.expires_after_sequence,
+        ] {
+            payload.extend_from_slice(&value.to_be_bytes());
+        }
+        for value in [
+            calibration.zero_confidence_error_q24,
+            calibration.maximum_in_domain_error_q24,
+        ] {
+            payload.extend_from_slice(&value.to_be_bytes());
+        }
+        for value in [
+            calibration.minimum_confidence_ppm,
+            calibration.maximum_ood_ppm,
+            calibration.minimum_active_ppm,
+            calibration.maximum_active_ppm,
+            calibration.maximum_projection_count,
+            calibration.measured_ece_ppm,
+            calibration.maximum_ece_ppm,
+            calibration.measured_false_acceptance_ppm,
+            calibration.maximum_false_acceptance_ppm,
+        ] {
+            payload.extend_from_slice(&value.to_be_bytes());
+        }
+        let resource = &self.config.resource_envelope;
+        for value in [
+            resource.p95_latency_micros,
+            resource.p99_latency_micros,
+            resource.transient_allocation_bytes,
+            resource.checkpoint_bytes,
+        ] {
+            payload.extend_from_slice(&value.to_be_bytes());
+        }
+        payload.extend_from_slice(&resource.write_amplification_ppm.to_be_bytes());
+
+        Ok(FinalUseBinding {
+            subject_id: input.subject_id.as_str().to_owned(),
+            destination_id: "neuron.runtime.tick.v1".to_owned(),
+            request_sha256: *request.input_digest.as_array(),
+            scope_sha256: *Digest32::of_bytes(&scope).as_array(),
+            payload_sha256: *Digest32::of_bytes(&payload).as_array(),
+        })
+    }
+
+    /// The only product-facing tick entrypoint. The independent authority
+    /// authenticates the exact NDU/current generation and durably claims its
+    /// nonce. The effect guard revalidates and fences revocation across the model/journal call.
+    pub fn tick_authorized(
+        &mut self,
+        authority: &FinalUseAuthority,
+        signed: &SignedFinalUseGrant,
+        model: &mut impl NeuronModelPort,
+        input: NeuronTickInputV1,
+    ) -> Result<NeuronRuntimeOutputV1, NeuronRuntimeError> {
+        let expected = self.final_use_binding(&input)?;
+        let token = claim_final_use(authority, signed, &expected)?;
+        authority
+            .with_verified_effect(token, &expected, || self.tick(model, input))
+            .map_err(NeuronRuntimeError::FinalUse)?
+    }
+
+    /// Internal replay mechanism only; product callers must not bypass final-use.
+    pub(crate) fn tick(
         &mut self,
         model: &mut impl NeuronModelPort,
         input: NeuronTickInputV1,

@@ -1,6 +1,15 @@
 use super::*;
 
+use std::collections::BTreeSet;
 use std::fs::OpenOptions;
+use std::time::SystemTime;
+use std::time::UNIX_EPOCH;
+
+use codex_hepta_contracts::FinalUseGrant;
+use codex_hepta_contracts::FinalUseRevocations;
+use codex_hepta_contracts::SignedFinalUseGrant;
+use ed25519_dalek::Signer;
+use ed25519_dalek::SigningKey;
 use std::sync::Arc;
 use std::sync::Mutex;
 
@@ -56,13 +65,17 @@ impl AnchorWitnessStore for Witness {
     }
 }
 
-struct Model;
+#[derive(Default)]
+struct Model {
+    calls: usize,
+}
 
 impl NeuronModelPort for Model {
     fn execute(
         &mut self,
         request: &NeuronModelRequestV1,
     ) -> Result<NeuronModelOutputV1, NeuronModelError> {
+        self.calls += 1;
         let drive_q24 = vec![Q, Q / 2, 0, 0, 0];
         let prediction_q24 = vec![0; 5];
         let runtime_receipt = LocalModelRuntimeReceiptV1 {
@@ -196,28 +209,104 @@ fn tick() -> NeuronTickInputV1 {
     }
 }
 
-#[test]
-fn named_product_caller_runs_through_runtime_without_extra_authority() {
-    let root = tempfile::tempdir().expect("tempdir");
+fn signed_authority(root: &std::path::Path, signing: &SigningKey) -> FinalUseAuthority {
+    checked(FinalUseAuthority::open_state_dir(
+        &root.join("authority"),
+        "neuron.issuer".to_owned(),
+        signing.verifying_key().to_bytes(),
+        FinalUseRevocations {
+            authority_epoch: 1,
+            revision: 1,
+            revoked_grant_ids: BTreeSet::new(),
+        },
+    ))
+}
+
+fn sign_tick(
+    runtime: &NeuronRuntime<Witness>,
+    input: &NeuronTickInputV1,
+    signing: &SigningKey,
+) -> SignedFinalUseGrant {
+    let now = checked(SystemTime::now().duration_since(UNIX_EPOCH)).as_millis() as u64;
+    let grant = FinalUseGrant {
+        schema_version: 1,
+        signer_id: "neuron.issuer".to_owned(),
+        authority_epoch: 1,
+        grant_id: "neuron.grant.1".to_owned(),
+        nonce: [19; 32],
+        binding: checked(runtime.final_use_binding(input)),
+        not_before_unix_ms: now.saturating_sub(1_000),
+        expires_at_unix_ms: now + 20_000,
+    };
+    SignedFinalUseGrant {
+        signature: signing
+            .sign(&checked(grant.signing_bytes()))
+            .to_bytes()
+            .to_vec(),
+        grant,
+    }
+}
+
+fn bootstrap_product(root: &std::path::Path) -> NeuronRuntime<Witness> {
     let file = checked(
         OpenOptions::new()
             .read(true)
             .write(true)
             .create_new(true)
-            .open(root.path().join("journal")),
+            .open(root.join("journal")),
     );
     let native = native();
-    let mut runtime = checked(NeuronRuntime::bootstrap(
+    checked(NeuronRuntime::bootstrap(
         file,
         native.clone(),
         scope(),
         /*max_records*/ 8,
         config(&native),
         Witness::default(),
+    ))
+}
+
+#[test]
+fn named_product_caller_requires_signed_ndu_final_use_authority() {
+    let root = tempfile::tempdir().expect("tempdir");
+    let signing = SigningKey::from_bytes(&[7; 32]);
+    let authority = signed_authority(root.path(), &signing);
+    let mut runtime = bootstrap_product(root.path());
+    let tick = tick();
+    let signed = sign_tick(&runtime, &tick, &signing);
+    let mut model = Model::default();
+
+    let output = checked(run_neuron_tick_v1(
+        &mut runtime,
+        &authority,
+        &signed,
+        &mut model,
+        tick.clone(),
     ));
-    let output = checked(run_neuron_tick_v1(&mut runtime, &mut Model, tick()));
     assert_eq!(output.tick.sparsity_ppm, 200_000);
     assert!(!output.tick.abstain);
     assert!(!output.signal.authority.grants_any());
+    assert_eq!(model.calls, 1);
     assert!(checked(runtime.current_anchor()).is_some());
+
+    // A nonce cannot authorize another model/journal call even for identical input.
+    assert!(run_neuron_tick_v1(&mut runtime, &authority, &signed, &mut model, tick,).is_err());
+    assert_eq!(model.calls, 1);
+}
+
+#[test]
+fn tampered_ndu_binding_is_rejected_before_model_execution() {
+    let root = tempfile::tempdir().expect("tempdir");
+    let signing = SigningKey::from_bytes(&[8; 32]);
+    let authority = signed_authority(root.path(), &signing);
+    let mut runtime = bootstrap_product(root.path());
+    let tick = tick();
+    let signed = sign_tick(&runtime, &tick, &signing);
+    let mut changed = tick;
+    changed.ndu_snapshot_digest = Digest32::of_bytes(b"other-ndu");
+    let mut model = Model::default();
+
+    assert!(run_neuron_tick_v1(&mut runtime, &authority, &signed, &mut model, changed,).is_err());
+    assert_eq!(model.calls, 0);
+    assert!(checked(runtime.current_anchor()).is_none());
 }
