@@ -1,0 +1,115 @@
+name: runtime.codex target qualification
+
+on:
+  workflow_dispatch:
+    inputs:
+      candidate_sha:
+        description: Exact candidate commit to qualify
+        required: true
+        type: string
+      profile_id:
+        description: Registered target-host deployment profile
+        required: true
+        type: string
+      iterations:
+        description: Iterations per required fault case
+        required: true
+        default: "5"
+        type: string
+
+permissions:
+  contents: read
+  id-token: write
+  attestations: write
+
+env:
+  CANDIDATE_SHA: ${{ inputs.candidate_sha }}
+  PROFILE_ID: ${{ inputs.profile_id }}
+  ITERATIONS: ${{ inputs.iterations }}
+
+jobs:
+  target-host:
+    name: runtime.codex real-provider target host
+    environment: runtime-codex-production-qualification
+    runs-on: [self-hosted, linux, x64, runtime-codex-qualified]
+    timeout-minutes: 240
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+          ref: ${{ env.CANDIDATE_SHA }}
+
+      - name: Bind exact candidate and protected target profile
+        shell: bash
+        env:
+          RUNTIME_CODEX_TARGET_DRIVER: ${{ secrets.RUNTIME_CODEX_TARGET_DRIVER }}
+          RUNTIME_CODEX_TARGET_DRIVER_SHA256: ${{ secrets.RUNTIME_CODEX_TARGET_DRIVER_SHA256 }}
+          HEPTA_FINAL_USE_AUTHORITY_CONFIG: ${{ secrets.HEPTA_FINAL_USE_AUTHORITY_CONFIG }}
+          HEPTA_TARGET_HOST_ATTESTATION: ${{ secrets.HEPTA_TARGET_HOST_ATTESTATION }}
+          HEPTA_REAL_PROVIDER_PROFILE: ${{ secrets.HEPTA_REAL_PROVIDER_PROFILE }}
+          HEPTA_TRUSTED_CLOCK_ATTESTATION: ${{ secrets.HEPTA_TRUSTED_CLOCK_ATTESTATION }}
+          HEPTA_ANTI_ROLLBACK_ATTESTATION: ${{ secrets.HEPTA_ANTI_ROLLBACK_ATTESTATION }}
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "${CANDIDATE_SHA}"
+          test -n "${RUNTIME_CODEX_TARGET_DRIVER}"
+          test -x "${RUNTIME_CODEX_TARGET_DRIVER}"
+          test -n "${RUNTIME_CODEX_TARGET_DRIVER_SHA256}"
+          printf '%s  %s\n' "${RUNTIME_CODEX_TARGET_DRIVER_SHA256}" "${RUNTIME_CODEX_TARGET_DRIVER}" | sha256sum -c -
+          for required in \
+            HEPTA_FINAL_USE_AUTHORITY_CONFIG \
+            HEPTA_TARGET_HOST_ATTESTATION \
+            HEPTA_REAL_PROVIDER_PROFILE \
+            HEPTA_TRUSTED_CLOCK_ATTESTATION \
+            HEPTA_ANTI_ROLLBACK_ATTESTATION; do
+            path="${!required:-}"
+            test -n "${path}" || { echo "missing protected target input: ${required}" >&2; exit 1; }
+            test -r "${path}" || { echo "protected target input is not readable: ${required}" >&2; exit 1; }
+          done
+
+      - name: Emit exact target qualification plan
+        run: |
+          set -euo pipefail
+          mkdir -p .hepta-evidence/runtime-codex-target
+          python3 scripts/runtime-codex-target-qualification.py plan \
+            --candidate "${CANDIDATE_SHA}" \
+            --profile-id "${PROFILE_ID}" \
+            --iterations "${ITERATIONS}" \
+            --output .hepta-evidence/runtime-codex-target/plan.json
+
+      - name: Execute real issuer, provider and restart fault matrix
+        shell: bash
+        env:
+          RUNTIME_CODEX_TARGET_DRIVER: ${{ secrets.RUNTIME_CODEX_TARGET_DRIVER }}
+          HEPTA_FINAL_USE_AUTHORITY_CONFIG: ${{ secrets.HEPTA_FINAL_USE_AUTHORITY_CONFIG }}
+          HEPTA_TARGET_HOST_ATTESTATION: ${{ secrets.HEPTA_TARGET_HOST_ATTESTATION }}
+          HEPTA_REAL_PROVIDER_PROFILE: ${{ secrets.HEPTA_REAL_PROVIDER_PROFILE }}
+          HEPTA_TRUSTED_CLOCK_ATTESTATION: ${{ secrets.HEPTA_TRUSTED_CLOCK_ATTESTATION }}
+          HEPTA_ANTI_ROLLBACK_ATTESTATION: ${{ secrets.HEPTA_ANTI_ROLLBACK_ATTESTATION }}
+        run: |
+          set -euo pipefail
+          "${RUNTIME_CODEX_TARGET_DRIVER}" \
+            --plan .hepta-evidence/runtime-codex-target/plan.json \
+            --output .hepta-evidence/runtime-codex-target/observations.jsonl
+
+      - name: Validate exactly-once fault behavior and p95/p99 profile
+        run: |
+          set -euo pipefail
+          python3 scripts/runtime-codex-target-qualification.py verify \
+            --plan .hepta-evidence/runtime-codex-target/plan.json \
+            --evidence .hepta-evidence/runtime-codex-target/observations.jsonl \
+            --thresholds qualification/runtime-codex/target-thresholds.json \
+            --output .hepta-evidence/runtime-codex-target/receipt.json
+
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: runtime-codex-target-${{ env.CANDIDATE_SHA }}-${{ env.PROFILE_ID }}
+          path: .hepta-evidence/runtime-codex-target/
+          if-no-files-found: error
+          retention-days: 90
+
+      - name: Attest target qualification receipt
+        uses: actions/attest-build-provenance@4d101475d8b20a2381f78447822ac1eab6504dd8
+        with:
+          subject-path: .hepta-evidence/runtime-codex-target/receipt.json
