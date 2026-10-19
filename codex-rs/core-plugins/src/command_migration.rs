@@ -1,10 +1,10 @@
 mod plugin;
 mod render;
 
+use noyalib_serde_yaml::Value as YamlValue;
 use render::rewrite_terms;
 use render::slugify_name;
 use render::yaml_string;
-use noyalib_serde_yaml::Value as YamlValue;
 use std::collections::BTreeMap;
 use std::fs;
 use std::io;
