@@ -38,7 +38,9 @@ def ignored_tracked_advisories(text: str) -> list[str]:
 def violations(root: Path) -> dict[str, list[str]]:
     bad: dict[str, list[str]] = {}
     for relative in POLICIES:
-        matches = ignored_tracked_advisories((root / relative).read_text(encoding="utf-8"))
+        matches = ignored_tracked_advisories(
+            (root / relative).read_text(encoding="utf-8")
+        )
         if matches:
             bad[str(relative)] = matches
     return bad
@@ -46,17 +48,28 @@ def violations(root: Path) -> dict[str, list[str]]:
 
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--repo-root", type=Path, default=Path(__file__).resolve().parent.parent)
+    parser.add_argument(
+        "--repo-root", type=Path, default=Path(__file__).resolve().parent.parent
+    )
     args = parser.parse_args(argv)
     try:
         found = violations(args.repo_root)
     except (OSError, ValueError, tomllib.TOMLDecodeError) as error:
-        print(f"RustSec policy guard could not read or parse its inputs: {error}", file=sys.stderr)
+        print(
+            f"RustSec policy guard could not read or parse its inputs: {error}",
+            file=sys.stderr,
+        )
         return 1
     if found:
         for path, ids in found.items():
-            print(f"Forbidden tracked RustSec ignores in {path}: {', '.join(ids)}", file=sys.stderr)
-        print("Upgrade dependencies and validate all gates; do not mask advisories.", file=sys.stderr)
+            print(
+                f"Forbidden tracked RustSec ignores in {path}: {', '.join(ids)}",
+                file=sys.stderr,
+            )
+        print(
+            "Upgrade dependencies and validate all gates; do not mask advisories.",
+            file=sys.stderr,
+        )
         return 1
     print("RustSec policy guard: no tracked advisory suppressions")
     return 0
