@@ -38,25 +38,22 @@ async fn assert_timed_out_git_wrapper_does_not_leave_child_process_running(
     #[cfg(windows)]
     let mut command = {
         let mut command = Command::new("powershell.exe");
-        let child_command = "Set-Content -LiteralPath $env:CHILD_READY_FILE -Value ready; while (-not (Test-Path $env:RELEASE_CHILD_FILE)) { Start-Sleep -Milliseconds 25 }; Start-Sleep -Seconds 1; Set-Content -LiteralPath $env:CHILD_SURVIVED_FILE -Value survived; Start-Sleep -Seconds 60";
-        // Start-Process flattens ArgumentList into a single Windows command line.
-        // Forwarding a raw `-Command` string through that second layer loses
-        // quoting around semicolons, and the descendant never writes its ready
-        // marker. Encode the child script as PowerShell UTF-16LE instead: the
-        // true nested process must become ready before timeout cleanup is tested.
-        let child_launcher = "$encodedChild = [Convert]::ToBase64String([Text.Encoding]::Unicode.GetBytes($env:CHILD_PS_SCRIPT)); $child = Start-Process -FilePath powershell.exe -ArgumentList @('-NoProfile', '-NonInteractive', '-EncodedCommand', $encodedChild) -PassThru -NoNewWindow -ErrorAction Stop; [System.IO.File]::WriteAllText($env:CHILD_PID_FILE, [string]$child.Id);";
-        let wrapper_command = match wrapper_lifetime {
-            GitWrapperLifetime::WaitForChild => {
-                format!("{child_launcher} Wait-Process -Id $child.Id")
+        let child_command = "[System.IO.File]::WriteAllText($env:CHILD_READY_FILE, [string]::Empty); while (-not ([System.IO.File]::Exists($env:RELEASE_CHILD_FILE))) { Start-Sleep -Milliseconds 25 }; Start-Sleep -Seconds 1; [System.IO.File]::WriteAllText($env:CHILD_SURVIVED_FILE, [string]::Empty); Start-Sleep -Seconds 60";
+        // Start-Process -NoNewWindow is unreliable in non-interactive Windows
+        // test hosts. Launch through .NET directly, keeping the child in the
+        // wrapper's process tree so the JobObject cleanup is still exercised.
+        let mut wrapper_command = format!(
+            "$ErrorActionPreference = 'Stop'; $encoded = [Convert]::ToBase64String([System.Text.Encoding]::Unicode.GetBytes('{child_command}')); $start = [System.Diagnostics.ProcessStartInfo]::new(); $start.FileName = 'powershell.exe'; $start.Arguments = '-NoProfile -NonInteractive -EncodedCommand ' + $encoded; $start.UseShellExecute = $false; $start.CreateNoWindow = $true; $child = [System.Diagnostics.Process]::Start($start); if ($null -eq $child) {{ throw 'failed to start Git wrapper child' }}; [System.IO.File]::WriteAllText($env:CHILD_PID_FILE, [string]$child.Id)"
+        );
+        wrapper_command.push_str(match wrapper_lifetime {
+            GitWrapperLifetime::WaitForChild => "; $child.WaitForExit()",
+            GitWrapperLifetime::ExitBeforeTimeout => {
+                "; while (-not ([System.IO.File]::Exists($env:RELEASE_WRAPPER_FILE))) { Start-Sleep -Milliseconds 25 }"
             }
-            GitWrapperLifetime::ExitBeforeTimeout => format!(
-                "{child_launcher} while (-not (Test-Path $env:RELEASE_WRAPPER_FILE)) {{ Start-Sleep -Milliseconds 25 }}"
-            ),
-        };
+        });
         command
             .args(["-NoProfile", "-NonInteractive", "-Command"])
-            .arg(wrapper_command)
-            .env("CHILD_PS_SCRIPT", child_command);
+            .arg(wrapper_command);
         command
     };
     command
@@ -67,7 +64,7 @@ async fn assert_timed_out_git_wrapper_does_not_leave_child_process_running(
         .env("RELEASE_WRAPPER_FILE", &release_wrapper_file);
 
     let (mut wrapper, process_tree) = spawn_git_command(&mut command).expect("spawn Git wrapper");
-    let ready = tokio::time::timeout(Duration::from_secs(30), async {
+    let readiness = tokio::time::timeout(Duration::from_secs(30), async {
         loop {
             if let Ok(child_pid) = std::fs::read_to_string(&child_pid_file)
                 && !child_pid.trim().is_empty()
@@ -84,19 +81,18 @@ async fn assert_timed_out_git_wrapper_does_not_leave_child_process_running(
         }
     })
     .await;
-    let child_pid = match ready {
+    let child_pid = match readiness {
         Ok(Ok(pid)) => pid,
         other => {
-            // A failed fixture must not strand the descendant whose cleanup
-            // the test is intended to validate. Preserve the original 30s
-            // readiness and 100ms process-tree cleanup budgets.
-            let _ = wait_for_git_command_with_timeout_output(
-                wrapper,
-                process_tree,
-                Duration::from_millis(100),
-            )
-            .await;
-            panic!("Git wrapper never produced its descendant readiness marker: {other:?}");
+            let observed_pid = std::fs::read_to_string(&child_pid_file).ok();
+            let observed_status = wrapper.try_wait().ok().flatten();
+            let marker_exists = child_ready_file.exists();
+            // A failed fixture must not strand the descendant it was intended to test.
+            drop(wrapper);
+            drop(process_tree);
+            panic!(
+                "Git wrapper child never became ready: {other:?}; pid={observed_pid:?}; status={observed_status:?}; marker={marker_exists}"
+            );
         }
     };
 
