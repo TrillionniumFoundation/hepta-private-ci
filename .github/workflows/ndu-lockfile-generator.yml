@@ -15,7 +15,7 @@ jobs:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
           ref: ${{ github.event.pull_request.head.sha || github.sha }}
-          persist-credentials: false
+          persist-credentials: true
           fetch-depth: 0
       - name: Prepare Bazel CI
         uses: ./.github/actions/prepare-bazel-ci
