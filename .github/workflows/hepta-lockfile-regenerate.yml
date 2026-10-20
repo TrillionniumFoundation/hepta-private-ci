@@ -30,7 +30,7 @@ jobs:
         uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582 # 1.95.0
       - name: Regenerate Cargo lock against the exact candidate
         env:
-          CARGO_NET_GIT_FETCH_WITH_CLI: 'true'
+          CARGO_NET_GIT_FETCH_WITH_CLI: "true"
         run: cargo metadata --format-version 1 --manifest-path codex-rs/Cargo.toml > /dev/null
       - name: Prepare existing Bazel CI toolchain
         uses: ./.github/actions/prepare-bazel-ci
