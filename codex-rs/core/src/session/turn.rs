@@ -859,23 +859,25 @@ async fn turn_diff_display_roots(step_context: &StepContext) -> Vec<(String, Pat
         .enabled(Feature::CwdRelativeTurnDiffs);
     for turn_environment in step_context.environments.turn_environments() {
         let cwd = turn_environment.cwd();
-        let root = if cwd_relative {
-            cwd.clone()
-        } else {
-            // A turn cwd is expected to be a directory. If it is a file, the failed
-            // `<cwd>/.git` probe is ignored and ancestor search continues from its parent.
-            find_nearest_ancestor_with_markers(
-                turn_environment.environment.get_filesystem().as_ref(),
-                cwd,
-                vec![".git".to_string()],
-                FindUpErrorPolicy::Ignore,
-                /*sandbox*/ None,
-            )
-            .await
-            .ok()
-            .flatten()
-            .unwrap_or_else(|| cwd.clone())
-        };
+        // A turn cwd is expected to be a directory. If it is a file, the failed
+        // `<cwd>/.git` probe is ignored and ancestor search continues from its parent.
+        let root = find_nearest_ancestor_with_markers(
+            turn_environment.environment.get_filesystem().as_ref(),
+            cwd,
+            vec![".git".to_string()],
+            FindUpErrorPolicy::Ignore,
+            /*sandbox*/ None,
+        )
+        .await
+        .ok()
+        .flatten()
+        .unwrap_or_else(|| cwd.clone());
+        if cwd_relative && root != *cwd {
+            display_roots.push((
+                turn_environment.selection.environment_id.clone(),
+                cwd.clone(),
+            ));
+        }
         display_roots.push((turn_environment.selection.environment_id.clone(), root));
     }
     display_roots

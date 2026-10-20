@@ -1677,8 +1677,12 @@ async fn apply_patch_exec_command_heredoc_with_cd_emits_turn_diff() -> Result<()
     Ok(())
 }
 
+#[test_case(false; "disabled feature keeps parent repository paths relative")]
+#[test_case(true; "enabled feature keeps parent repository paths relative")]
 #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
-async fn apply_patch_turn_diff_paths_stay_repo_relative_when_session_cwd_is_nested() -> Result<()> {
+async fn apply_patch_turn_diff_paths_stay_repo_relative_when_session_cwd_is_nested(
+    cwd_relative_turn_diffs: bool,
+) -> Result<()> {
     // TODO(anp): Remove after apply_patch diff fixtures use target-native paths.
     skip_if_wine_exec!(Ok(()), "asserts POSIX repository paths");
     skip_if_no_network!(Ok(()));
@@ -1686,8 +1690,14 @@ async fn apply_patch_turn_diff_paths_stay_repo_relative_when_session_cwd_is_nest
     let harness = apply_patch_harness_with(|builder| {
         builder
             .with_model("gpt-5.4")
-            .with_config(|config| {
+            .with_config(move |config| {
                 config.cwd = config.cwd.join("subdir");
+                if cwd_relative_turn_diffs {
+                    config
+                        .features
+                        .enable(Feature::CwdRelativeTurnDiffs)
+                        .expect("enable turn diff root feature");
+                }
             })
             .with_workspace_setup(|cwd, fs| async move {
                 let cwd_uri = PathUri::from_host_native_path(&cwd)?;
