@@ -1,7 +1,9 @@
 mod compact;
+mod idle_work;
 mod lifecycle;
 mod regular;
 mod review;
+mod terminalization_completion;
 mod user_shell;
 
 use std::panic::AssertUnwindSafe;

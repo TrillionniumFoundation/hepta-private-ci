@@ -151,6 +151,20 @@ where
                 return;
             };
 
+            if let Some(manager) = self.thread_manager.upgrade()
+                && let Ok(thread) = manager.get_thread(runtime.thread_id()).await
+                && let Some(completion) = thread.pending_turn_terminalization()
+            {
+                let thread_id = runtime.thread_id();
+                if let Err(error) = thread.defer_idle_work(completion, async move {
+                    if let Err(error) = runtime.continue_if_idle().await {
+                        tracing::warn!(%thread_id, %error, "failed to continue deferred idle goal");
+                    }
+                }) {
+                    tracing::warn!(%thread_id, %error, "could not defer idle goal continuation");
+                }
+                return;
+            }
             if let Err(err) = runtime.continue_if_idle().await {
                 tracing::warn!(
                     "failed to continue active goal for idle thread {}: {err}",
