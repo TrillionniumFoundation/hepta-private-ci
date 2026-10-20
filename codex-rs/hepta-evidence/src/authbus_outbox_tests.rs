@@ -411,16 +411,18 @@ async fn bounded_capacity_prunes_only_terminal_history_and_keeps_replay_consumed
     // across eight synthetic issuers. The 512-active-per-issuer fence must
     // remain intact; it must not mask the separate 4096-row global limit.
     // These copied rows are never authenticated, leased, or dispatched.
-    sqlx::query("WITH RECURSIVE n(x) AS (SELECT 1 UNION ALL SELECT x+1 FROM n WHERE x < 4095)
+    sqlx::query(
+        "WITH RECURSIVE n(x) AS (SELECT 1 UNION ALL SELECT x+1 FROM n WHERE x < 4095)
         INSERT INTO authbus_outbox SELECT randomblob(32), 'issuer:fixture:' || (x % 8),
         key_epoch, 'fixture:' || x, subject_id, scope_digest, payload_digest,
         sequence, expires_at_ms, signature, payload, state, fence, attempts,
         worker_id, lease_until_ms, available_at_ms, created_at_ms, updated_at_ms,
-        terminal_at_ms, acknowledgement FROM authbus_outbox, n WHERE delivery_id = ?")
-        .bind(id.as_array().as_slice())
-        .execute(&store.pool)
-        .await
-        .unwrap();
+        terminal_at_ms, acknowledgement FROM authbus_outbox, n WHERE delivery_id = ?",
+    )
+    .bind(id.as_array().as_slice())
+    .execute(&store.pool)
+    .await
+    .unwrap();
     let global_count: i64 = sqlx::query_scalar("SELECT COUNT(*) FROM authbus_outbox")
         .fetch_one(&store.pool)
         .await

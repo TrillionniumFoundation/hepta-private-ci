@@ -18,8 +18,8 @@ mod paths;
 mod runtime;
 mod sqlite;
 mod sqlite_recovery;
-pub mod test_support;
 mod telemetry;
+pub mod test_support;
 
 pub use model::CreatedProject;
 pub use model::LogEntry;
