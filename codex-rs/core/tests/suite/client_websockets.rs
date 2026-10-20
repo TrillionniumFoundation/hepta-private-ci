@@ -106,6 +106,7 @@ fn assert_request_trace_matches(body: &serde_json::Value, expected_trace: &W3cTr
 
 struct WebsocketTestHarness {
     _codex_home: TempDir,
+    auth_manager: Arc<codex_login::AuthManager>,
     client: ModelClient,
     outbound_proxy_policy: OutboundProxyPolicy,
     session_id: SessionId,
@@ -503,6 +504,140 @@ async fn responses_websocket_preconnect_reuses_connection() {
     assert_eq!(connection.len(), 1);
 
     server.shutdown().await;
+}
+
+#[test_case::test_case("credential-a", 1; "unchanged credential reuses prewarm")]
+#[test_case::test_case("credential-b", 2; "changed credential replaces prewarm")]
+#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+async fn responses_websocket_prewarm_binds_resolved_credentials(
+    next_credential: &str,
+    expected_connections: usize,
+) -> anyhow::Result<()> {
+    skip_if_no_network!(Ok(()));
+    use anyhow::Context;
+    use futures::SinkExt;
+    use tokio_tungstenite::tungstenite::Message;
+    use tokio_tungstenite::tungstenite::handshake::server::Request;
+    use tokio_tungstenite::tungstenite::handshake::server::Response;
+
+    async fn next_business_request(
+        socket: &mut tokio_tungstenite::WebSocketStream<tokio::net::TcpStream>,
+    ) -> anyhow::Result<Option<serde_json::Value>> {
+        use tokio_tungstenite::tungstenite::Error;
+        use tokio_tungstenite::tungstenite::error::ProtocolError;
+        loop {
+            match socket.next().await {
+                Some(Ok(Message::Text(text))) => return Ok(Some(serde_json::from_str(&text)?)),
+                Some(Ok(Message::Binary(bytes))) => {
+                    return Ok(Some(serde_json::from_slice(&bytes)?));
+                }
+                Some(Ok(Message::Ping(_) | Message::Pong(_) | Message::Frame(_))) => {}
+                Some(Ok(Message::Close(_)))
+                | None
+                | Some(Err(Error::ConnectionClosed | Error::AlreadyClosed))
+                | Some(Err(Error::Protocol(ProtocolError::ResetWithoutClosingHandshake))) => {
+                    return Ok(None);
+                }
+                Some(Err(error)) => return Err(error.into()),
+            }
+        }
+    }
+
+    let listener = tokio::net::TcpListener::bind("127.0.0.1:0").await?;
+    let address = listener.local_addr()?;
+    let authorizations = Arc::new(std::sync::Mutex::new(Vec::new()));
+    let captured = Arc::clone(&authorizations);
+    let server = tokio::spawn(async move {
+        let record_handshake = move |request: &Request, response: Response| {
+            captured
+                .lock()
+                .unwrap()
+                .push(request.headers().get("authorization").cloned());
+            Ok(response)
+        };
+        let (first, _) = listener.accept().await?;
+        let mut first =
+            tokio_tungstenite::accept_hdr_async(first, record_handshake.clone()).await?;
+
+        // Keep the prewarmed socket alive. Both reuse and replacement can
+        // complete, so the credential assertion detects the original bug
+        // without relying on a server close or a timeout to force reconnect.
+        let mut first_open = true;
+        let (mut responding, request) = loop {
+            tokio::select! {
+                request = next_business_request(&mut first), if first_open => {
+                    match request? {
+                        Some(request) => break (first, request),
+                        None => first_open = false,
+                    }
+                }
+                incoming = listener.accept() => {
+                    let (second, _) = incoming?;
+                    let mut second =
+                        tokio_tungstenite::accept_hdr_async(second, record_handshake).await?;
+                    let request = next_business_request(&mut second).await?
+                        .context("replacement connection closed without response.create")?;
+                    break (second, request);
+                }
+            }
+        };
+        for event in [ev_response_created("resp-1"), ev_completed("resp-1")] {
+            responding
+                .send(Message::Text(event.to_string().into()))
+                .await?;
+        }
+        Ok::<_, anyhow::Error>(request)
+    });
+
+    let mut provider =
+        ModelProviderInfo::create_openai_provider(Some(format!("ws://{address}/v1")));
+    provider.request_max_retries = Some(0);
+    provider.stream_max_retries = Some(0);
+    provider.stream_idle_timeout_ms = Some(5_000);
+    let harness = websocket_harness_with_provider_options_and_auth(
+        provider,
+        /*runtime_metrics_enabled*/ false,
+        /*concurrent_reasoning_summaries_enabled*/ false,
+        /*enabled_features*/ &[],
+        Some(CodexAuth::from_api_key("credential-a")),
+    )
+    .await;
+    let mut session = harness.client.new_session();
+    session
+        .preconnect_websocket(
+            &harness.session_telemetry,
+            &websocket_connection_metadata(&harness),
+        )
+        .await?;
+    codex_login::login_with_api_key(
+        harness._codex_home.path(),
+        next_credential,
+        codex_login::AuthCredentialsStoreMode::File,
+        codex_login::AuthKeyringBackendKind::default(),
+    )?;
+    assert_eq!(
+        harness.auth_manager.reload().await,
+        next_credential != "credential-a"
+    );
+    let prompt = prompt_with_input(vec![message_item("hello")]);
+    tokio::time::timeout(
+        Duration::from_secs(5),
+        stream_until_complete(&mut session, &harness, &prompt),
+    )
+    .await?;
+    let request = tokio::time::timeout(Duration::from_secs(5), server).await???;
+
+    let actual: Vec<_> = authorizations.lock().unwrap().iter().cloned().collect();
+    let mut expected = vec![Some(http::HeaderValue::from_static("Bearer credential-a"))];
+    if expected_connections == 2 {
+        expected.push(Some(http::HeaderValue::from_str(&format!(
+            "Bearer {next_credential}"
+        ))?));
+    }
+    assert_eq!(actual, expected);
+    assert_eq!(request["input"], serde_json::to_value(&prompt.input)?);
+    assert!(request.get("previous_response_id").is_none());
+    Ok(())
 }
 
 #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
@@ -2481,7 +2616,12 @@ async fn websocket_harness_with_provider_options_and_auth(
     let model_info = codex_core::test_support::construct_model_info_offline(MODEL, &config);
     let thread_id = ThreadId::new();
     let session_id = SessionId::new();
-    let client_auth_manager = auth.map(codex_core::test_support::auth_manager_from_auth);
+    let client_auth_manager = auth.map(|auth| {
+        codex_core::test_support::auth_manager_from_auth_with_home(
+            auth,
+            codex_home.path().to_path_buf(),
+        )
+    });
     let auth_manager = client_auth_manager.clone().unwrap_or_else(|| {
         codex_core::test_support::auth_manager_from_auth(CodexAuth::from_api_key("Test API Key"))
     });
@@ -2528,6 +2668,7 @@ async fn websocket_harness_with_provider_options_and_auth(
 
     WebsocketTestHarness {
         _codex_home: codex_home,
+        auth_manager,
         client,
         outbound_proxy_policy,
         session_id,
