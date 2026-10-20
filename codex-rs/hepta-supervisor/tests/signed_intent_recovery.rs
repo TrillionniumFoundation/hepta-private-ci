@@ -100,9 +100,7 @@ impl ProcessDriver for AdoptedDriver {
     }
 
     fn adopt(&mut self, spec: &AdoptSpec) -> Result<Adoption<Self::Process>, ProcessDriverError> {
-        if spec.identity == self.control.identity
-            && self.control.alive.load(Ordering::SeqCst)
-        {
+        if spec.identity == self.control.identity && self.control.alive.load(Ordering::SeqCst) {
             Ok(Adoption::Adopted(AdoptedProcess {
                 alive: self.control.alive.clone(),
             }))
@@ -259,7 +257,6 @@ fn exact_digest_abort_terminalizes_unresolved_intent() -> Result<(), SupervisorE
     Ok(())
 }
 
-
 #[test]
 fn abort_recovery_fences_adopted_child_before_terminalization() -> Result<(), SupervisorError> {
     let fleet = fleet()?;
@@ -332,8 +329,12 @@ fn abort_recovery_fences_adopted_child_before_terminalization() -> Result<(), Su
         .expect("fenced intent");
     assert_eq!(fenced.status, SignedIntentStatus::RecoveryRequired);
 
-    let (_recovered, report) =
-        Supervisor::recover(fleet.registry, AdoptedDriver { control }, config(), Instant::now())?;
+    let (_recovered, report) = Supervisor::recover(
+        fleet.registry,
+        AdoptedDriver { control },
+        config(),
+        Instant::now(),
+    )?;
     assert!(report.faults.is_empty());
     let terminal = read_signed_intent(record.layout.run_root())
         .map_err(|error| SupervisorError::Invalid(error.to_string()))?
