@@ -8,8 +8,8 @@
 
 // Compatibility exports of the sole server-side extension implementation.
 use codex_hepta_prompt_extension as runtime_prompt;
-mod wire;
 mod execution_contract;
+mod wire;
 
 use std::error::Error as StdError;
 use std::fmt;
@@ -240,7 +240,8 @@ pub fn adapt_codex_cell_intent(
     now_ms: u64,
     cell: CellExecutionIntentV1,
 ) -> Result<CodexAdapterReceipt, Error> {
-    cell.validate().map_err(|_| Error::InvalidObservationIdentity("cell execution contract"))?;
+    cell.validate()
+        .map_err(|_| Error::InvalidObservationIdentity("cell execution contract"))?;
     if cell.kind != ExecutionIntentKindV1::CodexTurn {
         return Err(Error::CorrelationMismatch("intent kind"));
     }
