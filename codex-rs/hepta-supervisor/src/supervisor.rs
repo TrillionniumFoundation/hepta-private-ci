@@ -582,7 +582,9 @@ impl<D: ProcessDriver> Supervisor<D> {
             if slot.signed_intent.as_ref().is_some_and(|intent| {
                 !matches!(
                     intent.status,
-                    SignedIntentStatus::Committed | SignedIntentStatus::RolledBack
+                    SignedIntentStatus::Committed
+                        | SignedIntentStatus::RolledBack
+                        | SignedIntentStatus::Aborted
                 )
             }) {
                 return Err(SupervisorError::SignedIntentRecoveryRequired(
@@ -702,7 +704,9 @@ impl<D: ProcessDriver> Supervisor<D> {
         slot.signed_intent = Some(intent.clone());
         if matches!(
             intent.status,
-            SignedIntentStatus::Committed | SignedIntentStatus::RolledBack
+            SignedIntentStatus::Committed
+                        | SignedIntentStatus::RolledBack
+                        | SignedIntentStatus::Aborted
         ) {
             return Ok(());
         }
@@ -796,6 +800,52 @@ impl<D: ProcessDriver> Supervisor<D> {
                         agent_id.clone(),
                     ));
                 }
+
+                // An interrupted production transition may already have a
+                // durable release transaction in recovery_required. The abort
+                // ceremony must bind to that exact transaction and
+                // terminalize it before terminalizing the signed intent.
+                if let Some(transaction) = read_release_transaction(record.layout.run_root())
+                    .map_err(|error| SupervisorError::Invalid(error.to_string()))?
+                {
+                    let kind_matches = matches!(
+                        (intent.transition, transaction.kind),
+                        (
+                            H7H89ProductionTransition::Upgrade,
+                            ReleaseTransactionKind::Upgrade
+                        ) | (
+                            H7H89ProductionTransition::Rollback,
+                            ReleaseTransactionKind::ExplicitRollback
+                        )
+                    );
+                    if !kind_matches
+                        || transaction.agent_id != agent_id.to_string()
+                        || transaction.grant_sha256.as_ref() != Some(&intent.grant_sha256)
+                        || transaction.source_release != intent.source_release
+                        || transaction.target_release != intent.target_release
+                        || !matches!(
+                            transaction.phase,
+                            ReleaseTransactionPhase::RecoveryRequired
+                                | ReleaseTransactionPhase::Aborted
+                        )
+                    {
+                        return Err(SupervisorError::SignedIntentRecoveryRequired(
+                            agent_id.clone(),
+                        ));
+                    }
+                    if transaction.phase == ReleaseTransactionPhase::RecoveryRequired {
+                        let aborted_transaction = transaction
+                            .with_phase(ReleaseTransactionPhase::Aborted)
+                            .map_err(|error| SupervisorError::Invalid(error.to_string()))?;
+                        write_release_transaction(
+                            record.layout.run_root(),
+                            &aborted_transaction,
+                        )
+                        .map_err(|error| SupervisorError::Invalid(error.to_string()))?;
+                        slot.release_transaction = Some(aborted_transaction);
+                    }
+                }
+
                 let aborted = intent
                     .with_status(SignedIntentStatus::Aborted)
                     .map_err(|_| SupervisorError::SignedIntentRecoveryRequired(agent_id.clone()))?;
