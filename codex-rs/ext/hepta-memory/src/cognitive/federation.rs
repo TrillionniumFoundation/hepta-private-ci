@@ -1268,7 +1268,10 @@ mod tests {
         // Windows \\?\-prefixed alias.
         let workspace_uri = PathUri::from_host_native_path(&workspace).expect("workspace uri");
         let workspace = workspace_uri.to_path_buf();
-        assert!(workspace.is_absolute(), "provider workspace must stay absolute");
+        assert!(
+            workspace.is_absolute(),
+            "provider workspace must stay absolute"
+        );
         let capability = owner
             .grant_federated_recall(
                 &owner_access,
