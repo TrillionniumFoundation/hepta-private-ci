@@ -16,6 +16,7 @@ use codex_hepta_types::{Digest32, Generation, StableId};
 
 const FEATURE_WIDTH: usize = 8;
 const MAX_FEATURE_WIDTH: usize = 256;
+const MAX_BATCH_ITEMS: usize = 1_024;
 const MAX_QUEUE_ITEMS: usize = 16_384;
 
 /// An immutable feature snapshot that may be shared by many cell heads.
@@ -125,6 +126,9 @@ impl FeatureBatchV1 {
         let Some(first) = snapshots.first() else {
             return Err(CellBatchError::EmptyBatch);
         };
+        if snapshots.len() > MAX_BATCH_ITEMS {
+            return Err(CellBatchError::BatchCapacity);
+        }
         let generation = first.generation();
         if snapshots
             .iter()
@@ -392,6 +396,7 @@ impl FairCellQueueV1 {
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub enum CellBatchError {
     Arithmetic,
+    BatchCapacity,
     EmptyBatch,
     EmptyInput,
     FeatureWidth,
