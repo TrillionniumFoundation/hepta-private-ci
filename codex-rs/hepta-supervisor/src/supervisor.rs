@@ -837,11 +837,8 @@ impl<D: ProcessDriver> Supervisor<D> {
                         let aborted_transaction = transaction
                             .with_phase(ReleaseTransactionPhase::Aborted)
                             .map_err(|error| SupervisorError::Invalid(error.to_string()))?;
-                        write_release_transaction(
-                            record.layout.run_root(),
-                            &aborted_transaction,
-                        )
-                        .map_err(|error| SupervisorError::Invalid(error.to_string()))?;
+                        write_release_transaction(record.layout.run_root(), &aborted_transaction)
+                            .map_err(|error| SupervisorError::Invalid(error.to_string()))?;
                         slot.release_transaction = Some(aborted_transaction);
                     }
                 }
