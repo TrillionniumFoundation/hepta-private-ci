@@ -1,0 +1,25 @@
+{
+  "schema": "hepta.ci.cold-v8-build-budget-observation.v1",
+  "sourceHead": "87a40cb02f1595acc868bfcce22ac96b4d2d61dc",
+  "workflowRun": 39375735289,
+  "job": 118476509832,
+  "jobUrl": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/39375735289/job/118476509832",
+  "target": "x86_64-apple-darwin",
+  "previousJobBudgetMinutes": 60,
+  "observedAt": "2026-10-20T06:50:03.8789360Z",
+  "lastObservedBuild": {
+    "actionsCompleted": 12762,
+    "actionsPlanned": 16125,
+    "testsCompleted": 71,
+    "testsPlanned": 601,
+    "activeWork": "Compiling V8 generated intl-objects C++ source"
+  },
+  "stopObservedAt": "2026-10-20T06:50:05.1875490Z",
+  "stopMessage": "The operation was canceled.",
+  "rawJobLogSha256": "c5ce61d38ec9db12cf327149d946c2d29f471dd5a139c316dee4d05dedc5ae75",
+  "newOuterBuildBudgetMinutes": 120,
+  "policy": "Allow bounded cold compilation for complete Bazel test, Windows shard/native, Clippy and release-build jobs. Keep query-only budget, targets, gates, per-test deadlines and failure propagation unchanged.",
+  "validationScope": "Hosted build observation and outer compilation budget; not product execution, latency or capacity qualification",
+  "testsPassedClaimed": false,
+  "authorityGranted": false
+}
