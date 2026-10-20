@@ -38,6 +38,7 @@ use crate::signed_authority::ProductionMutationReceipt;
 use crate::signed_authority::ProductionMutationState;
 use crate::signed_authority::ProductionRecoveryDecision;
 use crate::signed_authority::ProductionRecoveryOutcome;
+use crate::signed_intent::SignedIntentRecoveryAction;
 use crate::signed_intent::SignedIntentStatus;
 use crate::signed_intent::SignedSupervisorIntent;
 use crate::signed_intent::read_intent;
@@ -768,6 +769,43 @@ impl<D: ProcessDriver> Supervisor<D> {
                 write_intent(record.layout.run_root(), &terminal)
                     .map_err(|error| SupervisorError::Invalid(error.to_string()))?;
                 slot.signed_intent = Some(terminal);
+                return Ok(());
+            }
+        }
+
+        let directive = read_recovery_directive(record.layout.run_root())
+            .map_err(|_| SupervisorError::SignedIntentRecoveryRequired(agent_id.clone()))?;
+        if let Some(directive) = directive {
+            if directive.intent_sha256 == intent.intent_sha256
+                && matches!(directive.action, SignedIntentRecoveryAction::Abort)
+            {
+                // An explicit abort may close the ambiguous grant, but only
+                // after all adopted children have been fenced and terminated.
+                // Never infer success from a matching release or liveness.
+                if slot.matrix.runtime.is_some() {
+                    let _ = self.kill_matrix_now(agent_id, slot);
+                }
+                if let Some(runtime) = slot.runtime.as_mut() {
+                    let _ = runtime.process.kill();
+                    runtime.fenced = true;
+                    runtime.phase = RuntimePhase::Killing;
+                }
+                if slot.runtime.is_some() || slot.matrix.runtime.is_some() {
+                    return Err(SupervisorError::SignedIntentRecoveryRequired(
+                        agent_id.clone(),
+                    ));
+                }
+                let aborted = intent
+                    .with_status(SignedIntentStatus::Aborted)
+                    .map_err(|_| SupervisorError::SignedIntentRecoveryRequired(agent_id.clone()))?;
+                write_intent(record.layout.run_root(), &aborted)
+                    .map_err(|_| SupervisorError::SignedIntentRecoveryRequired(agent_id.clone()))?;
+                slot.signed_intent = Some(aborted);
+                slot.restart_pending = false;
+                slot.restart_not_before = None;
+                slot.restart_retry_at = None;
+                slot.restart_automatic = false;
+                slot.restart_after_exit = false;
                 return Ok(());
             }
         }
