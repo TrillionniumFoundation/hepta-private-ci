@@ -52,7 +52,12 @@ fn ensure_default_store() -> Result<(), KeyringError> {
     if keyring_core::get_default_store().is_some() {
         return Ok(());
     }
-    keyring::Entry::store_status().map(|_| ())
+    keyring::Entry::store_status()
+        .as_ref()
+        .map(|_| ())
+        .map_err(|error| {
+            KeyringError::Invalid("default_store".to_string(), error.to_string())
+        })
 }
 
 impl KeyringStore for DefaultKeyringStore {
