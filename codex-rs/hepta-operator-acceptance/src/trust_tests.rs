@@ -53,6 +53,40 @@ fn sshsig_verifies_only_exact_namespace_against_pinned_policy() {
 }
 
 #[test]
+fn mutable_binding_cannot_replace_the_privately_pinned_signer() {
+    let fixture = TrustFixture::new();
+    let other = TrustFixture::new();
+    let mut anchor = fixture.load_anchor();
+    anchor.binding.key_fingerprint = other.policy_value.key_fingerprint.clone();
+    let statement = b"pinned signer must survive mutable display metadata";
+    let signature = other.sign(statement, SSHSIG_NAMESPACE, "other-signer");
+    assert!(anchor.verify(statement, &signature).is_err());
+}
+
+#[test]
+fn mutable_binding_cannot_relabel_the_pinned_principal() {
+    let fixture = TrustFixture::new();
+    let mut anchor = fixture.load_anchor();
+    anchor.binding.principal = "other@example".to_string();
+    let statement = b"pinned principal must survive mutable display metadata";
+    let signature = fixture.sign(statement, SSHSIG_NAMESPACE, "other-principal");
+    assert!(anchor.verify(statement, &signature).is_err());
+}
+
+#[test]
+fn stored_signature_base64_is_bounded_before_decoding() {
+    let fixture = TrustFixture::new();
+    let anchor = fixture.load_anchor();
+    let encoded = STANDARD.encode(vec![0; super::MAX_SIGNATURE_BYTES + 4]);
+    let error = anchor
+        .verify_base64(b"statement", &encoded)
+        .err()
+        .expect("reject oversized persisted signature before base64 allocation");
+    assert!(matches!(error, crate::AcceptanceError::Invalid(message)
+        if message == "stored SSHSIG base64 exceeds its read bound"));
+}
+
+#[test]
 fn trust_policy_digest_is_external_and_fail_closed() {
     let fixture = TrustFixture::new();
     let error = TrustAnchor::load(TrustInputs {
