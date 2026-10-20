@@ -1382,3 +1382,47 @@ fn curated_repo_backup_archive_zip_bytes(sha: &str) -> Vec<u8> {
 
     writer.finish().expect("finish zip writer").into_inner()
 }
+
+#[test]
+fn extract_zipball_rejects_symlink_entries() {
+    let cursor = std::io::Cursor::new(Vec::new());
+    let mut writer = ZipWriter::new(cursor);
+    let options = SimpleFileOptions::default().unix_permissions(0o120777);
+    writer
+        .start_file("root/link", options)
+        .expect("start symlink entry");
+    writer
+        .write_all(b"../../outside")
+        .expect("write symlink target");
+    let bytes = writer.finish().expect("finish zip").into_inner();
+    let destination = tempdir().expect("destination");
+
+    let err = extract_zipball_to_dir(&bytes, destination.path())
+        .expect_err("symlink archive entries must be rejected");
+    assert!(err.contains("is a symlink"));
+    assert!(!destination.path().join("link").exists());
+}
+
+#[cfg(unix)]
+#[test]
+fn extract_zipball_masks_special_permission_bits() {
+    use std::os::unix::fs::PermissionsExt;
+
+    let cursor = std::io::Cursor::new(Vec::new());
+    let mut writer = ZipWriter::new(cursor);
+    let options = SimpleFileOptions::default().unix_permissions(0o104755);
+    writer
+        .start_file("root/plugin", options)
+        .expect("start executable entry");
+    writer.write_all(b"plugin").expect("write plugin");
+    let bytes = writer.finish().expect("finish zip").into_inner();
+    let destination = tempdir().expect("destination");
+
+    extract_zipball_to_dir(&bytes, destination.path()).expect("extract archive");
+    let mode = std::fs::metadata(destination.path().join("plugin"))
+        .expect("plugin metadata")
+        .permissions()
+        .mode();
+    assert_eq!(mode & 0o7000, 0, "SUID/SGID/sticky bits must be masked");
+    assert_eq!(mode & 0o777, 0o755);
+}
