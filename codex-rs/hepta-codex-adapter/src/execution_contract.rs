@@ -11,7 +11,10 @@
 use std::fmt;
 use std::future::Future;
 
-use codex_hepta_types::{AuthorityPosture, Digest32, Generation, StableId};
+use codex_hepta_types::AuthorityPosture;
+use codex_hepta_types::Digest32;
+use codex_hepta_types::Generation;
+use codex_hepta_types::StableId;
 
 pub const EXECUTION_CONTRACT_VERSION_V1: &str = "hepta.execution.contract.v1";
 
@@ -239,9 +242,7 @@ impl ToolOutcomeV1 {
         if self.terminal_observed && self.stdout_digest.is_none() && self.stderr_digest.is_none() {
             return Err(ExecutionContractError::MissingTerminalOutcome);
         }
-        if self
-            .stdout_digest
-            .is_some_and(Digest32::is_zero)
+        if self.stdout_digest.is_some_and(Digest32::is_zero)
             || self.stderr_digest.is_some_and(Digest32::is_zero)
         {
             return Err(ExecutionContractError::ZeroDigest("tool output"));
