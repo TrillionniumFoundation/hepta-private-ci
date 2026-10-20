@@ -276,5 +276,6 @@ mod tests {
         let changed_binding = FleetAuthorityPort::binding_for_issue(&changed)?;
         assert_ne!(first_binding.scope_sha256, changed_binding.scope_sha256);
         assert_eq!(first_binding.payload_sha256, changed_binding.payload_sha256);
+        Ok(())
     }
 }
