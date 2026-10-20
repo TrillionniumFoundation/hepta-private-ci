@@ -4,6 +4,7 @@
 No Cargo build, GitHub API, credentials, or external-effect qualification is
 performed. These tests protect selection/exit semantics, not product execution.
 """
+
 from __future__ import annotations
 
 import os
@@ -15,18 +16,22 @@ import unittest
 
 ROOT = Path(__file__).resolve().parents[1]
 WORKFLOW = ROOT / ".github/workflows/rust-ci.yml"
-FLAGS = (
-    "ARGUMENT_COMMENT_LINT", "CODEX", "WORKFLOWS", "ARGUMENT_COMMENT_LINT_PACKAGE"
-)
+FLAGS = ("ARGUMENT_COMMENT_LINT", "CODEX", "WORKFLOWS", "ARGUMENT_COMMENT_LINT_PACKAGE")
 RESULTS = (
-    "MANIFEST_RESULT", "GENERAL_RESULT", "BENCHMARK_RESULT", "SHEAR_RESULT",
-    "ARGPKG_RESULT", "ARGLINT_RESULT",
+    "MANIFEST_RESULT",
+    "GENERAL_RESULT",
+    "BENCHMARK_RESULT",
+    "SHEAR_RESULT",
+    "ARGPKG_RESULT",
+    "ARGLINT_RESULT",
 )
 
 
 def job_block(name: str) -> str:
     text = WORKFLOW.read_text(encoding="utf-8")
-    match = re.search(r"(?ms)^  " + re.escape(name) + r":\n(.*?)(?=^  [\w-]+:|\Z)", text)
+    match = re.search(
+        r"(?ms)^  " + re.escape(name) + r":\n(.*?)(?=^  [\w-]+:|\Z)", text
+    )
     if match is None:
         raise AssertionError(f"missing workflow job: {name}")
     return match.group(1)
@@ -52,9 +57,13 @@ class FastFeedbackTests(unittest.TestCase):
         self.repo = self.root / "repo"
         self.repo.mkdir()
         self.env = {
-            "PATH": os.environ["PATH"], "HOME": str(self.root), "LC_ALL": "C",
-            "GIT_CONFIG_NOSYSTEM": "1", "GIT_CONFIG_GLOBAL": os.devnull,
-            "RUNNER_TEMP": str(self.root), "GITHUB_OUTPUT": str(self.root / "output"),
+            "PATH": os.environ["PATH"],
+            "HOME": str(self.root),
+            "LC_ALL": "C",
+            "GIT_CONFIG_NOSYSTEM": "1",
+            "GIT_CONFIG_GLOBAL": os.devnull,
+            "RUNNER_TEMP": str(self.root),
+            "GITHUB_OUTPUT": str(self.root / "output"),
         }
         self.git("init", "--quiet")
         (self.repo / "README.md").write_text("initial\n", encoding="utf-8")
@@ -62,8 +71,19 @@ class FastFeedbackTests(unittest.TestCase):
 
     def git(self, *args: str) -> str:
         return subprocess.run(
-            ["git", "-c", "user.name=CI fixture", "-c", "user.email=ci@example.invalid", *args],
-            cwd=self.repo, env=self.env, text=True, capture_output=True, check=True,
+            [
+                "git",
+                "-c",
+                "user.name=CI fixture",
+                "-c",
+                "user.email=ci@example.invalid",
+                *args,
+            ],
+            cwd=self.repo,
+            env=self.env,
+            text=True,
+            capture_output=True,
+            check=True,
         ).stdout.strip()
 
     def commit(self) -> str:
@@ -77,25 +97,48 @@ class FastFeedbackTests(unittest.TestCase):
         path.write_text("changed\n", encoding="utf-8")
         return self.commit()
 
-    def detect(self, head: str, *, base: str | None = None, event: str = "pull_request"):
+    def detect(
+        self, head: str, *, base: str | None = None, event: str = "pull_request"
+    ):
         output = Path(self.env["GITHUB_OUTPUT"])
         output.unlink(missing_ok=True)
         result = subprocess.run(
-            ["bash", "-c", shell_block("changed", "Detect changed paths (no external action)")],
-            cwd=self.repo, env={**self.env, "EVENT_NAME": event,
-                                "BASE_SHA": base or self.base, "HEAD_SHA": head},
-            text=True, capture_output=True,
+            [
+                "bash",
+                "-c",
+                shell_block("changed", "Detect changed paths (no external action)"),
+            ],
+            cwd=self.repo,
+            env={
+                **self.env,
+                "EVENT_NAME": event,
+                "BASE_SHA": base or self.base,
+                "HEAD_SHA": head,
+            },
+            text=True,
+            capture_output=True,
         )
-        values = dict(line.split("=", 1) for line in output.read_text().splitlines()) if output.exists() else {}
+        values = (
+            dict(line.split("=", 1) for line in output.read_text().splitlines())
+            if output.exists()
+            else {}
+        )
         return result, values
 
     def summarize(self, **overrides: str):
-        env = {**self.env, "CHANGED_RESULT": "success",
-               **{key: "success" for key in RESULTS},
-               **{"NEEDS_CHANGED_OUTPUTS_" + key: "false" for key in FLAGS}, **overrides}
+        env = {
+            **self.env,
+            "CHANGED_RESULT": "success",
+            **{key: "success" for key in RESULTS},
+            **{"NEEDS_CHANGED_OUTPUTS_" + key: "false" for key in FLAGS},
+            **overrides,
+        }
         return subprocess.run(
             ["bash", "-c", shell_block("results", "Summarize")],
-            cwd=self.repo, env=env, text=True, capture_output=True,
+            cwd=self.repo,
+            env=env,
+            text=True,
+            capture_output=True,
         )
 
     def test_valid_empty_diff_is_not_an_error(self):
@@ -133,9 +176,14 @@ class FastFeedbackTests(unittest.TestCase):
         self.assertEqual(set(flags.values()), {"false"})
 
     def test_shared_build_inputs_select_manifest_checks(self):
-        for path in ("justfile", ".cargo/config.toml", "rust-toolchain.toml",
-                     "scripts/hepta_workspace.py", "scripts/test_hepta_workspace.py",
-                     "scripts/test_hepta_rust_ci_feedback.py"):
+        for path in (
+            "justfile",
+            ".cargo/config.toml",
+            "rust-toolchain.toml",
+            "scripts/hepta_workspace.py",
+            "scripts/test_hepta_workspace.py",
+            "scripts/test_hepta_rust_ci_feedback.py",
+        ):
             with self.subTest(path=path):
                 result, flags = self.detect(self.changed(path))
                 self.assertEqual(result.returncode, 0, result.stderr)
@@ -160,44 +208,80 @@ class FastFeedbackTests(unittest.TestCase):
         for flag in FLAGS:
             for value in ("", "yes", "TRUE", "unknown"):
                 with self.subTest(flag=flag, value=value):
-                    self.assertNotEqual(self.summarize(**{
-                        "NEEDS_CHANGED_OUTPUTS_" + flag: value,
-                    }).returncode, 0)
+                    self.assertNotEqual(
+                        self.summarize(
+                            **{
+                                "NEEDS_CHANGED_OUTPUTS_" + flag: value,
+                            }
+                        ).returncode,
+                        0,
+                    )
 
     def test_confirmed_prose_only_change_can_pass(self):
         self.assertEqual(self.summarize().returncode, 0)
 
     def test_selected_rust_requires_all_four_results(self):
-        for key in ("MANIFEST_RESULT", "GENERAL_RESULT", "BENCHMARK_RESULT", "SHEAR_RESULT"):
+        for key in (
+            "MANIFEST_RESULT",
+            "GENERAL_RESULT",
+            "BENCHMARK_RESULT",
+            "SHEAR_RESULT",
+        ):
             for result in ("failure", "cancelled", "skipped", ""):
                 with self.subTest(key=key, result=result):
-                    self.assertNotEqual(self.summarize(**{
-                        "NEEDS_CHANGED_OUTPUTS_CODEX": "true", key: result,
-                    }).returncode, 0)
-        self.assertEqual(self.summarize(NEEDS_CHANGED_OUTPUTS_CODEX="true").returncode, 0)
+                    self.assertNotEqual(
+                        self.summarize(
+                            **{
+                                "NEEDS_CHANGED_OUTPUTS_CODEX": "true",
+                                key: result,
+                            }
+                        ).returncode,
+                        0,
+                    )
+        self.assertEqual(
+            self.summarize(NEEDS_CHANGED_OUTPUTS_CODEX="true").returncode, 0
+        )
 
     def test_isolated_lint_package_flag_is_not_no_changes(self):
-        self.assertNotEqual(self.summarize(
-            NEEDS_CHANGED_OUTPUTS_ARGUMENT_COMMENT_LINT_PACKAGE="true", ARGPKG_RESULT="skipped",
-        ).returncode, 0)
+        self.assertNotEqual(
+            self.summarize(
+                NEEDS_CHANGED_OUTPUTS_ARGUMENT_COMMENT_LINT_PACKAGE="true",
+                ARGPKG_RESULT="skipped",
+            ).returncode,
+            0,
+        )
 
     def test_selected_lint_requires_success(self):
-        self.assertNotEqual(self.summarize(
-            NEEDS_CHANGED_OUTPUTS_ARGUMENT_COMMENT_LINT="true", ARGLINT_RESULT="failure",
-        ).returncode, 0)
+        self.assertNotEqual(
+            self.summarize(
+                NEEDS_CHANGED_OUTPUTS_ARGUMENT_COMMENT_LINT="true",
+                ARGLINT_RESULT="failure",
+            ).returncode,
+            0,
+        )
 
     def test_selected_workflows_require_both_lint_and_rust(self):
-        self.assertNotEqual(self.summarize(
-            NEEDS_CHANGED_OUTPUTS_WORKFLOWS="true", ARGLINT_RESULT="skipped",
-        ).returncode, 0)
-        self.assertNotEqual(self.summarize(
-            NEEDS_CHANGED_OUTPUTS_WORKFLOWS="true", BENCHMARK_RESULT="failure",
-        ).returncode, 0)
+        self.assertNotEqual(
+            self.summarize(
+                NEEDS_CHANGED_OUTPUTS_WORKFLOWS="true",
+                ARGLINT_RESULT="skipped",
+            ).returncode,
+            0,
+        )
+        self.assertNotEqual(
+            self.summarize(
+                NEEDS_CHANGED_OUTPUTS_WORKFLOWS="true",
+                BENCHMARK_RESULT="failure",
+            ).returncode,
+            0,
+        )
 
     def test_benchmark_is_preserved_but_does_not_delay_format_result(self):
         self.assertNotIn("bench-smoke", job_block("general"))
         self.assertIn("run: just bench-smoke", job_block("benchmark_smoke"))
-        self.assertIn("needs: [changed, workspace_manifest]", job_block("benchmark_smoke"))
+        self.assertIn(
+            "needs: [changed, workspace_manifest]", job_block("benchmark_smoke")
+        )
         self.assertIn("needs: changed", job_block("general"))
         self.assertIn("benchmark_smoke,", job_block("results"))
         self.assertIn("workspace_manifest,", job_block("results"))
@@ -205,7 +289,10 @@ class FastFeedbackTests(unittest.TestCase):
 
     def test_manifest_preflight_precedes_toolchain_and_does_not_compile(self):
         text = job_block("workspace_manifest")
-        self.assertLess(text.index("python3 scripts/hepta_workspace.py"), text.index("dtolnay/rust-toolchain"))
+        self.assertLess(
+            text.index("python3 scripts/hepta_workspace.py"),
+            text.index("dtolnay/rust-toolchain"),
+        )
         self.assertIn("cargo metadata --locked --no-deps --format-version 1", text)
         self.assertNotIn("cargo check", text)
         self.assertNotIn("continue-on-error", text)
@@ -217,11 +304,17 @@ class FastFeedbackTests(unittest.TestCase):
         self.assertIn("BENCHMARK_RESULT: ${{ needs.benchmark_smoke.result }}", text)
 
     def test_gate_shell_syntax(self):
-        for job, step in (("changed", "Detect changed paths (no external action)"),
-                          ("results", "Summarize")):
+        for job, step in (
+            ("changed", "Detect changed paths (no external action)"),
+            ("results", "Summarize"),
+        ):
             with self.subTest(job=job):
-                result = subprocess.run(["bash", "-n"], input=shell_block(job, step),
-                                        text=True, capture_output=True)
+                result = subprocess.run(
+                    ["bash", "-n"],
+                    input=shell_block(job, step),
+                    text=True,
+                    capture_output=True,
+                )
                 self.assertEqual(result.returncode, 0, result.stderr)
 
 

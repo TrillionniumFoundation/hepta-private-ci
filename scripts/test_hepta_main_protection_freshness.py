@@ -1,4 +1,5 @@
 """Exercise stale/racing GitHub evidence; fake API, not live enforcement."""
+
 import copy
 from pathlib import Path
 import subprocess
@@ -12,8 +13,13 @@ from test_hepta_main_protection import APP, HEAD, FakeAPI, evidence
 
 def complete_evidence():
     checks, runs = evidence()
-    runs[0].update(id=100, run_attempt=1, head_branch="main", event="push",
-                   repository={"full_name": "TrillionniumFoundation/hepta-private-ci"})
+    runs[0].update(
+        id=100,
+        run_attempt=1,
+        head_branch="main",
+        event="push",
+        repository={"full_name": "TrillionniumFoundation/hepta-private-ci"},
+    )
     return checks, runs
 
 
@@ -26,15 +32,28 @@ class CompleteAPI(FakeAPI):
 class FreshnessTests(unittest.TestCase):
     def test_newer_pending_workflow_cannot_reuse_old_green_gate(self):
         checks, runs = complete_evidence()
-        runs.append({**copy.deepcopy(runs[0]), "id": 101, "check_suite_id": 43,
-                     "status": "in_progress", "conclusion": None})
+        runs.append(
+            {
+                **copy.deepcopy(runs[0]),
+                "id": 101,
+                "check_suite_id": 43,
+                "status": "in_progress",
+                "conclusion": None,
+            }
+        )
         with self.assertRaises(ProtectionError):
             verified_gate_app(checks, runs, HEAD)
 
     def test_newer_failed_workflow_cannot_reuse_old_green_gate(self):
         checks, runs = complete_evidence()
-        runs.append({**copy.deepcopy(runs[0]), "id": 101, "check_suite_id": 43,
-                     "conclusion": "failure"})
+        runs.append(
+            {
+                **copy.deepcopy(runs[0]),
+                "id": 101,
+                "check_suite_id": 43,
+                "conclusion": "failure",
+            }
+        )
         with self.assertRaises(ProtectionError):
             verified_gate_app(checks, runs, HEAD)
 
@@ -46,8 +65,14 @@ class FreshnessTests(unittest.TestCase):
 
     def test_latest_attempt_must_be_complete(self):
         checks, runs = complete_evidence()
-        runs.append({**copy.deepcopy(runs[0]), "run_attempt": 2,
-                     "status": "in_progress", "conclusion": None})
+        runs.append(
+            {
+                **copy.deepcopy(runs[0]),
+                "run_attempt": 2,
+                "status": "in_progress",
+                "conclusion": None,
+            }
+        )
         with self.assertRaises(ProtectionError):
             verified_gate_app(checks, runs, HEAD)
 
@@ -69,7 +94,10 @@ class FreshnessTests(unittest.TestCase):
             for value in (None, True, "100", -1, 0):
                 checks, runs = complete_evidence()
                 runs[0][field] = value
-                with self.subTest(field=field, value=value), self.assertRaises(ProtectionError):
+                with (
+                    self.subTest(field=field, value=value),
+                    self.assertRaises(ProtectionError),
+                ):
                     verified_gate_app(checks, runs, HEAD)
 
     def test_null_app_is_an_explicit_failure(self):
@@ -87,8 +115,14 @@ class FreshnessTests(unittest.TestCase):
 
     def test_unrelated_workflow_does_not_mask_valid_gate(self):
         checks, runs = complete_evidence()
-        runs.append({**copy.deepcopy(runs[0]), "id": 200, "path": ".github/workflows/other.yml",
-                     "conclusion": "failure"})
+        runs.append(
+            {
+                **copy.deepcopy(runs[0]),
+                "id": 200,
+                "path": ".github/workflows/other.yml",
+                "conclusion": "failure",
+            }
+        )
         self.assertEqual(verified_gate_app(checks, runs, HEAD), APP)
 
     def test_gate_can_come_from_exact_main_manual_run(self):
@@ -99,12 +133,16 @@ class FreshnessTests(unittest.TestCase):
     def test_gate_race_before_write_performs_no_mutation(self):
         class Rerunning(CompleteAPI):
             calls = 0
+
             def pages(self, path, key=None):
                 if path.startswith("actions/workflows/"):
                     self.calls += 1
                     if self.calls > 1:
-                        self.runs[0].update(status="in_progress", conclusion=None, run_attempt=2)
+                        self.runs[0].update(
+                            status="in_progress", conclusion=None, run_attempt=2
+                        )
                 return super().pages(path, key)
+
         api = Rerunning()
         with tempfile.TemporaryDirectory() as tmp, self.assertRaises(ProtectionError):
             execute(api, HEAD, Path(tmp), True)
@@ -113,12 +151,14 @@ class FreshnessTests(unittest.TestCase):
     def test_new_green_attempt_still_invalidates_preflight_identity(self):
         class ChangedIdentity(CompleteAPI):
             calls = 0
+
             def pages(self, path, key=None):
                 if path.startswith("actions/workflows/"):
                     self.calls += 1
                     if self.calls > 1:
                         self.runs[0]["run_attempt"] = 2
                 return super().pages(path, key)
+
         api = ChangedIdentity()
         with tempfile.TemporaryDirectory() as tmp, self.assertRaises(ProtectionError):
             execute(api, HEAD, Path(tmp), True)
@@ -131,6 +171,7 @@ class FreshnessTests(unittest.TestCase):
                 if method == "POST":
                     self.checks[0]["conclusion"] = "failure"
                 return value
+
         api = PostwriteFailure()
         with tempfile.TemporaryDirectory() as tmp, self.assertRaises(ProtectionError):
             execute(api, HEAD, Path(tmp), True)
@@ -139,9 +180,13 @@ class FreshnessTests(unittest.TestCase):
         self.assertIsNotNone(api.ruleset)
 
     def test_public_host_is_explicit_even_with_foreign_environment(self):
-        with patch.dict("os.environ", {"GH_HOST": "foreign.invalid"}), \
-             patch("hepta_main_protection.subprocess.run", return_value=
-                   subprocess.CompletedProcess([], 0, "{}", "")) as run:
+        with (
+            patch.dict("os.environ", {"GH_HOST": "foreign.invalid"}),
+            patch(
+                "hepta_main_protection.subprocess.run",
+                return_value=subprocess.CompletedProcess([], 0, "{}", ""),
+            ) as run,
+        ):
             API().call("GET", "branches/main")
         command = run.call_args.args[0]
         self.assertIn("--hostname", command)
@@ -162,9 +207,14 @@ class FreshnessTests(unittest.TestCase):
         self.assertEqual(api.writes, [])
 
     def test_attempt_job_requires_exact_head_run_and_success(self):
-        for field, value in (("head_sha", "b" * 40), ("run_id", 101),
-                             ("conclusion", "skipped"), ("name", "not the gate"),
-                             ("id", True), ("run_attempt", True)):
+        for field, value in (
+            ("head_sha", "b" * 40),
+            ("run_id", 101),
+            ("conclusion", "skipped"),
+            ("name", "not the gate"),
+            ("id", True),
+            ("run_attempt", True),
+        ):
             api = CompleteAPI()
             api.jobs[0][field] = value
             with self.subTest(field=field), tempfile.TemporaryDirectory() as tmp:
@@ -175,8 +225,9 @@ class FreshnessTests(unittest.TestCase):
     def test_missing_or_ambiguous_attempt_gate_performs_no_write(self):
         for kind in ("missing", "duplicate", "malformed"):
             api = CompleteAPI()
-            api.jobs = {"missing": [], "duplicate": api.jobs * 2,
-                        "malformed": [None]}[kind]
+            api.jobs = {"missing": [], "duplicate": api.jobs * 2, "malformed": [None]}[
+                kind
+            ]
             with self.subTest(kind=kind), tempfile.TemporaryDirectory() as tmp:
                 with self.assertRaises(ProtectionError):
                     execute(api, HEAD, Path(tmp), True)
@@ -193,8 +244,11 @@ class FreshnessTests(unittest.TestCase):
         api = CompleteAPI()
         api.runs[0]["run_attempt"] = 2
         api.checks[0]["id"] = 3
-        api.jobs[0].update(id=3, run_attempt=2,
-                          check_run_url=api.jobs[0]["check_run_url"].replace("/1", "/3"))
+        api.jobs[0].update(
+            id=3,
+            run_attempt=2,
+            check_run_url=api.jobs[0]["check_run_url"].replace("/1", "/3"),
+        )
         with tempfile.TemporaryDirectory() as tmp:
             execute(api, HEAD, Path(tmp), True)
         self.assertEqual(api.writes, [("POST", "rulesets")])

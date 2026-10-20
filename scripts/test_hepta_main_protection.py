@@ -1,12 +1,20 @@
 """Operator-policy tests with a fake GitHub API; not live enforcement evidence."""
+
 import copy
 from pathlib import Path
 import tempfile
 import unittest
 
 from hepta_main_protection import (
-    API, GATE, RULESET_NAME, WORKFLOW, ProtectionError,
-    desired_ruleset, execute, verified_gate_app, verify_ruleset,
+    API,
+    GATE,
+    RULESET_NAME,
+    WORKFLOW,
+    ProtectionError,
+    desired_ruleset,
+    execute,
+    verified_gate_app,
+    verify_ruleset,
 )
 
 HEAD = "a" * 40
@@ -14,13 +22,27 @@ APP = 99
 
 
 def evidence():
-    check = {"id": 1, "name": GATE, "head_sha": HEAD, "status": "completed",
-             "conclusion": "success", "app": {"slug": "github-actions", "id": APP},
-             "check_suite": {"id": 42}}
-    run = {"id": 100, "run_attempt": 1, "head_branch": "main", "event": "push",
-           "repository": {"full_name": "TrillionniumFoundation/hepta-private-ci"},
-           "head_sha": HEAD, "check_suite_id": 42, "status": "completed",
-           "conclusion": "success", "path": ".github/workflows/" + WORKFLOW}
+    check = {
+        "id": 1,
+        "name": GATE,
+        "head_sha": HEAD,
+        "status": "completed",
+        "conclusion": "success",
+        "app": {"slug": "github-actions", "id": APP},
+        "check_suite": {"id": 42},
+    }
+    run = {
+        "id": 100,
+        "run_attempt": 1,
+        "head_branch": "main",
+        "event": "push",
+        "repository": {"full_name": "TrillionniumFoundation/hepta-private-ci"},
+        "head_sha": HEAD,
+        "check_suite_id": 42,
+        "status": "completed",
+        "conclusion": "success",
+        "path": ".github/workflows/" + WORKFLOW,
+    }
     return [check], [run]
 
 
@@ -30,10 +52,19 @@ class FakeAPI:
         self.ruleset = None
         self.writes = []
         self.checks, self.runs = evidence()
-        self.jobs = [{"id": 1, "run_id": 100, "run_attempt": 1, "head_sha": HEAD,
-                      "name": GATE, "status": "completed", "conclusion": "success",
-                      "check_run_url": "https://api.github.com/repos/"
-                      "TrillionniumFoundation/hepta-private-ci/check-runs/1"}]
+        self.jobs = [
+            {
+                "id": 1,
+                "run_id": 100,
+                "run_attempt": 1,
+                "head_sha": HEAD,
+                "name": GATE,
+                "status": "completed",
+                "conclusion": "success",
+                "check_run_url": "https://api.github.com/repos/"
+                "TrillionniumFoundation/hepta-private-ci/check-runs/1",
+            }
+        ]
 
     def call(self, method, path, body=None):
         if method == "GET" and path == "branches/main":
@@ -59,7 +90,9 @@ class FakeAPI:
 
 
 def review(value):
-    return next(row for row in value["rules"] if row["type"] == "pull_request")["parameters"]
+    return next(row for row in value["rules"] if row["type"] == "pull_request")[
+        "parameters"
+    ]
 
 
 class ProtectionTests(unittest.TestCase):
@@ -76,8 +109,12 @@ class ProtectionTests(unittest.TestCase):
         self.assertEqual((GATE, WORKFLOW), ("CI required", "blocking-ci.yml"))
 
     def test_every_review_control_is_checked_on_readback(self):
-        fields = ("dismiss_stale_reviews_on_push", "require_code_owner_review",
-                  "require_last_push_approval", "required_review_thread_resolution")
+        fields = (
+            "dismiss_stale_reviews_on_push",
+            "require_code_owner_review",
+            "require_last_push_approval",
+            "required_review_thread_resolution",
+        )
         for field in fields:
             for replacement in (False, None, 1, "true"):
                 value = desired_ruleset(APP)
@@ -107,8 +144,11 @@ class ProtectionTests(unittest.TestCase):
             verified_gate_app(checks, runs, HEAD)
 
     def test_wrong_commit_app_or_suite_rejected(self):
-        replacements = {"head_sha": "b" * 40, "app": {"slug": "other", "id": APP},
-                        "check_suite": {"id": 123}}
+        replacements = {
+            "head_sha": "b" * 40,
+            "app": {"slug": "other", "id": APP},
+            "check_suite": {"id": 123},
+        }
         for field, replacement in replacements.items():
             checks, runs = evidence()
             checks[0][field] = replacement
@@ -124,7 +164,9 @@ class ProtectionTests(unittest.TestCase):
 
     def test_bypass_and_missing_check_rejected(self):
         value = desired_ruleset(APP)
-        value["bypass_actors"] = [{"actor_type": "OrganizationAdmin", "bypass_mode": "always"}]
+        value["bypass_actors"] = [
+            {"actor_type": "OrganizationAdmin", "bypass_mode": "always"}
+        ]
         with self.assertRaises(ProtectionError):
             verify_ruleset(value, APP)
         value = desired_ruleset(APP)
@@ -150,7 +192,10 @@ class ProtectionTests(unittest.TestCase):
             api = FakeAPI()
             api.ruleset = {**desired_ruleset(APP), "id": 7}
             review(api.ruleset)["required_approving_review_count"] = 0
-            with tempfile.TemporaryDirectory() as tmp, self.assertRaises(ProtectionError):
+            with (
+                tempfile.TemporaryDirectory() as tmp,
+                self.assertRaises(ProtectionError),
+            ):
                 execute(api, HEAD, Path(tmp), apply)
             self.assertFalse(api.writes)
 
@@ -194,6 +239,7 @@ class ProtectionTests(unittest.TestCase):
                 if path.startswith("actions/"):
                     self.head = "b" * 40
                 return value
+
         api = MovingMain()
         with tempfile.TemporaryDirectory() as tmp, self.assertRaises(ProtectionError):
             execute(api, HEAD, Path(tmp), True)
@@ -206,6 +252,7 @@ class ProtectionTests(unittest.TestCase):
                 if method == "POST":
                     review(self.ruleset)["require_last_push_approval"] = False
                 return value
+
         api = WeakReadback()
         with tempfile.TemporaryDirectory() as tmp, self.assertRaises(ProtectionError):
             execute(api, HEAD, Path(tmp), True)
@@ -215,6 +262,7 @@ class ProtectionTests(unittest.TestCase):
         class Endless(API):
             def call(self, method, path, body=None):
                 return [{}] * 100
+
         with self.assertRaises(ProtectionError):
             Endless().pages("rulesets")
 

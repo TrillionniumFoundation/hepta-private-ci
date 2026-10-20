@@ -59,7 +59,9 @@ class CleanupConsumerTests(unittest.TestCase):
             with patch.object(VERIFIER, "ROOT", root):
                 VERIFIER.verify_exact_workflow_references()
 
-    def check_history(self, text, name=FIXTURE_NAME, wrong_count=False, copied_name="copied.txt"):
+    def check_history(
+        self, text, name=FIXTURE_NAME, wrong_count=False, copied_name="copied.txt"
+    ):
         with tempfile.TemporaryDirectory(prefix="hepta-cleanup-test-") as directory:
             root = Path(directory)
 
@@ -110,7 +112,9 @@ class CleanupConsumerTests(unittest.TestCase):
 
     def test_exact_copied_snapshot_consumer_is_rejected(self):
         with self.assertRaisesRegex(SystemExit, "deleted JSON consumer"):
-            self.check_history('open("legacy/snapshot/registry.json")', copied_name="registry.json")
+            self.check_history(
+                'open("legacy/snapshot/registry.json")', copied_name="registry.json"
+            )
 
     def test_longer_filename_prefix_is_not_a_consumer(self):
         self.check_history('url = "https://example.invalid/bazel_' + FIXTURE_NAME + '"')
