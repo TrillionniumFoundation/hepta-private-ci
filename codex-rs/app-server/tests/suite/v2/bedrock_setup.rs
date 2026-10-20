@@ -657,3 +657,114 @@ async fn bedrock_endpoints_reject_external_chatgpt_auth_without_changes() -> Res
     )
     .await
 }
+
+#[test_case::test_case(false; "environment replaces editable command auth")]
+#[test_case::test_case(true; "profile replaces editable command auth")]
+#[tokio::test]
+async fn setup_bedrock_replaces_user_command_auth(use_profile: bool) -> Result<()> {
+    let codex_home = private_codex_home()?;
+    let config_path = codex_home.path().join("config.toml");
+    let dotenv_path = codex_home.path().join(".env");
+    std::fs::write(
+        &config_path,
+        "[model_providers.amazon-bedrock]\nhttp_headers = { X-Existing = \"preserved\" }\n\
+         [model_providers.amazon-bedrock.auth]\ncommand = \"unused-bedrock-auth-command\"\n",
+    )?;
+    let existing_dotenv = "UNRELATED=preserved\n";
+    std::fs::write(&dotenv_path, existing_dotenv)?;
+    let mut app_server = bedrock_app_server(
+        codex_home.path(),
+        &[
+            ("AWS_ACCESS_KEY_ID", Some("environment-id")),
+            ("AWS_SECRET_ACCESS_KEY", Some("environment-secret")),
+        ],
+    )
+    .await?;
+    let params = if use_profile {
+        BedrockSetupParams::Profile {
+            profile: "engineering".to_string(),
+            region: "us-west-2".to_string(),
+        }
+    } else {
+        BedrockSetupParams::Environment {
+            region: "us-west-2".to_string(),
+        }
+    };
+    let response: BedrockSetupResponse = app_server
+        .request(|request_id| ClientRequest::BedrockSetup { request_id, params })
+        .await?;
+    assert_eq!(response, BedrockSetupResponse {});
+
+    let config: toml::Value = toml::from_str(&std::fs::read_to_string(&config_path)?)?;
+    let mut aws = json!({"region": "us-west-2"});
+    if use_profile {
+        aws["profile"] = json!("engineering");
+    }
+    assert_eq!(
+        serde_json::to_value(config)?,
+        json!({
+            "model_provider": "amazon-bedrock",
+            "model_providers": {
+                "amazon-bedrock": {
+                    "http_headers": {"X-Existing": "preserved"},
+                    "aws": aws
+                }
+            }
+        })
+    );
+    assert_eq!(std::fs::read_to_string(&dotenv_path)?, existing_dotenv);
+    assert!(!codex_home.path().join("auth.json").exists());
+    Ok(())
+}
+
+#[tokio::test]
+async fn setup_bedrock_rejects_command_auth_from_cli_without_writes() -> Result<()> {
+    let codex_home = private_codex_home()?;
+    let config_path = codex_home.path().join("config.toml");
+    let dotenv_path = codex_home.path().join(".env");
+    let existing_config = "# Command-line authentication cannot be edited here.\n";
+    let existing_dotenv = "UNRELATED=preserved\n";
+    std::fs::write(&config_path, existing_config)?;
+    std::fs::write(&dotenv_path, existing_dotenv)?;
+    let mut app_server = TestAppServer::builder()
+        .with_codex_home(codex_home.path())
+        .without_auto_env()
+        .with_args(&[
+            "-c",
+            r#"model_providers.amazon-bedrock.auth.command="unused-bedrock-auth-command""#,
+        ])
+        .build_initialized_with_timeout(READ_TIMEOUT)
+        .await?;
+
+    for params in [
+        json!({"type": "environment", "region": "us-west-2"}),
+        json!({"type": "profile", "profile": "engineering", "region": "us-west-2"}),
+    ] {
+        let request_id = app_server
+            .send_raw_request("account/bedrock/setup", Some(params))
+            .await?;
+        let error = timeout(
+            READ_TIMEOUT,
+            app_server.read_stream_until_error_message(RequestId::Integer(request_id)),
+        )
+        .await??;
+        assert_eq!(error.error.code, -32600);
+        assert!(
+            error
+                .error
+                .message
+                .starts_with("Amazon Bedrock login cannot replace command authentication because ")
+        );
+        assert!(
+            error
+                .error
+                .message
+                .ends_with(" sets `model_providers.amazon-bedrock.auth`")
+        );
+        assert_eq!(error.error.data, None);
+        assert_eq!(std::fs::read_to_string(&config_path)?, existing_config);
+        assert_eq!(std::fs::read_to_string(&dotenv_path)?, existing_dotenv);
+        assert!(!codex_home.path().join("auth.json").exists());
+    }
+    Ok(())
+}
