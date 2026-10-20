@@ -267,7 +267,11 @@ fn unexpected_agent_crashes_back_off_and_stop_after_three_restarts() -> Result<(
     let exhaustion = supervisor.tick(now);
     assert_eq!(exhaustion.faults.len(), 1);
     assert_eq!(exhaustion.faults[0].agent_id, agent_id);
-    assert!(exhaustion.faults[0].message.contains("exhausted its restart budget"));
+    assert!(
+        exhaustion.faults[0]
+            .message
+            .contains("exhausted its restart budget")
+    );
     assert_eq!(control.spawn_count(&agent_id), 4);
     let snapshot = supervisor.snapshot(&agent_id).expect("snapshot");
     assert!(!snapshot.active);
