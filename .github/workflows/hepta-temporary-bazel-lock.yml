@@ -185,7 +185,222 @@ jobs:
           run_logged bazel-lock-update just bazel-lock-update
           sha256sum codex-rs/Cargo.lock MODULE.bazel.lock > "${CANDIDATE_DIR}/generated-locks.sha256"
           run_logged bazel-lock-check just bazel-lock-check
-          run_logged rama-dns-tests just test -p rama-dns --locked
+          export RAMA_DNS_TEST_DIR="$RUNNER_TEMP/hepta-rama-dns-tests"
+          run_logged rama-dns-test-prepare python3 -I -B - <<'PY'
+          import hashlib
+          import json
+          import os
+          from pathlib import Path
+
+          output = Path(os.environ["CANDIDATE_DIR"])
+          target = Path(os.environ["RAMA_DNS_TEST_DIR"]).resolve()
+          if target.is_relative_to(Path.cwd().resolve()):
+              raise SystemExit("standalone tests must not write the source checkout")
+          target.mkdir()
+          before = json.loads((output / "source-before.json").read_text())
+          prefix = "codex-rs/third_party/rama-dns-0.3.0-alpha.4/"
+          files = {}
+          for source, expected in before["files"].items():
+              if not source.startswith(prefix):
+                  continue
+              relative = source.removeprefix(prefix)
+              content = Path(source).read_bytes()
+              if hashlib.sha256(content).hexdigest() != expected:
+                  raise SystemExit(f"Rama DNS source changed before test copy: {source}")
+              destination = target / relative
+              destination.parent.mkdir(parents=True, exist_ok=True)
+              destination.write_bytes(content)
+              files[relative] = expected
+          if not {"Cargo.toml", "src/lib.rs", "src/hickory.rs", "src/hickory_tests.rs"} <= files.keys():
+              raise SystemExit("standalone copy is missing the real Rama DNS source or regressions")
+          seed = Path("codex-rs/Cargo.lock").read_bytes()
+          (target / "Cargo.lock").write_bytes(seed)
+          production = json.loads((output / "cargo-metadata.stdout").read_text())
+          dns = [p for p in production["packages"] if p["name"] == "rama-dns"]
+          if len(dns) != 1:
+              raise SystemExit("production Rama DNS package is not unique")
+          node = next(n for n in production["resolve"]["nodes"] if n["id"] == dns[0]["id"])
+          features = sorted(node["features"])
+          if not set(features) <= dns[0]["features"].keys() or any("\n" in f or "," in f for f in features):
+              raise SystemExit("production Rama DNS feature selection is not explicit")
+          feature_args = ["--no-default-features"]
+          if features:
+              feature_args += ["--features", ",".join(features)]
+          (output / "rama-dns-test-features.args").write_text("\n".join(feature_args) + "\n")
+          record = {"source_head": before["head"], "source_tree": before["tree"],
+                    "test_root": str(target), "files": files,
+                    "production_root_features": features, "feature_args": feature_args,
+                    "seed_workspace_lock_sha256": hashlib.sha256(seed).hexdigest()}
+          (output / "rama-dns-test-source.json").write_text(json.dumps(record, indent=2) + "\n")
+          (output / "rama-dns-test-source.sha256").write_text("".join(
+              f"{digest}  {path}\n" for path, digest in sorted(files.items())))
+          PY
+          mapfile -t rama_dns_feature_args < "${CANDIDATE_DIR}/rama-dns-test-features.args"
+          run_logged rama-dns-test-metadata env CARGO_TARGET_DIR="$RUNNER_TEMP/hepta-rama-dns-target" \
+            cargo +1.95.0 metadata \
+            --manifest-path "$RAMA_DNS_TEST_DIR/Cargo.toml" "${rama_dns_feature_args[@]}" --format-version=1
+          run_logged verify-rama-dns-test-graph python3 -I -B - <<'PY'
+          import hashlib
+          import json
+          import os
+          from pathlib import Path
+
+          def require(condition, message):
+              if not condition:
+                  raise SystemExit(message)
+
+          def runtime_edges(node):
+              for dependency in node["deps"]:
+                  for kind in dependency["dep_kinds"]:
+                      require(kind["kind"] in (None, "build", "dev"), "unknown Cargo dependency kind")
+                      if kind["kind"] != "dev":
+                          yield (dependency["name"], dependency["pkg"], kind["kind"], kind["target"])
+
+          output = Path(os.environ["CANDIDATE_DIR"])
+          target = Path(os.environ["RAMA_DNS_TEST_DIR"]).resolve()
+          source = json.loads((output / "rama-dns-test-source.json").read_text())
+          test_lock = (target / "Cargo.lock").read_bytes()
+          (output / "rama-dns-tests.Cargo.lock").write_bytes(test_lock)
+          production = json.loads((output / "cargo-metadata.stdout").read_text())
+          tests = json.loads((output / "rama-dns-test-metadata.stdout").read_text())
+          production_packages = {p["id"]: p for p in production["packages"]}
+          test_packages = {p["id"]: p for p in tests["packages"]}
+          production_nodes = {n["id"]: n for n in production["resolve"]["nodes"]}
+          test_nodes = {n["id"]: n for n in tests["resolve"]["nodes"]}
+          production_dns = [p for p in production_packages.values() if p["name"] == "rama-dns"]
+          test_dns = [p for p in test_packages.values() if p["name"] == "rama-dns"]
+          require(len(production_dns) == len(test_dns) == 1, "Rama DNS package is not unique")
+          production_dns, test_dns = production_dns[0], test_dns[0]
+          require(test_dns["source"] is None and test_dns["version"] == "0.3.0-alpha.4"
+                  and Path(test_dns["manifest_path"]).resolve() == target / "Cargo.toml",
+                  "standalone tests do not select the copied Rama DNS package")
+          require(tests["workspace_members"] == [test_dns["id"]]
+                  and tests["resolve"]["root"] == test_dns["id"],
+                  "standalone test workspace has unexpected members or root")
+          require(Path(tests["target_directory"]).resolve() ==
+                  (Path(os.environ["RUNNER_TEMP"]) / "hepta-rama-dns-target").resolve(),
+                  "standalone test build output is not in its dedicated runner temporary directory")
+          require(sorted(test_nodes[test_dns["id"]]["features"]) ==
+                  source["production_root_features"] == sorted(production_nodes[production_dns["id"]]["features"]),
+                  "standalone Rama DNS feature selection differs from the production candidate")
+          require(any(t["kind"] == ["lib"] and t["test"]
+                      and Path(t["src_path"]).resolve() == target / "src/lib.rs"
+                      for t in test_dns["targets"]), "real Rama DNS library test target is missing")
+          require(source["seed_workspace_lock_sha256"] ==
+                  hashlib.sha256(Path("codex-rs/Cargo.lock").read_bytes()).hexdigest(),
+                  "production lock changed while deriving the test lock")
+
+          def production_id(package_id):
+              return production_dns["id"] if package_id == test_dns["id"] else package_id
+
+          runtime = set()
+          pending = [test_dns["id"]]
+          bindings = []
+          feature_bindings = []
+          while pending:
+              package_id = pending.pop()
+              if package_id in runtime:
+                  continue
+              runtime.add(package_id)
+              mapped_id = production_id(package_id)
+              require(mapped_id in production_packages and mapped_id in production_nodes,
+                      f"standalone runtime package drift: {package_id}")
+              package = test_packages[package_id]
+              expected = production_packages[mapped_id]
+              require(all(package[key] == expected[key] for key in ["name", "version", "source"]),
+                      f"standalone runtime version/source drift: {package_id}")
+              actual_features = set(test_nodes[package_id]["features"])
+              expected_features = set(production_nodes[mapped_id]["features"])
+              require(actual_features <= expected_features,
+                      f"standalone runtime features outside production candidate: {package_id}: "
+                      f"{sorted(actual_features - expected_features)}")
+              feature_bindings.append({"package": mapped_id, "test_features": sorted(actual_features),
+                                       "production_features": sorted(expected_features),
+                                       "production_features_not_selected": sorted(expected_features - actual_features)})
+              expected_edges = set(runtime_edges(production_nodes[mapped_id]))
+              actual_edges = {(name, production_id(child), kind, condition)
+                              for name, child, kind, condition in runtime_edges(test_nodes[package_id])}
+              if package_id == test_dns["id"]:
+                  require(actual_edges == expected_edges, "Rama DNS normal/build dependency selection drift")
+              for name, child, kind, target_condition in runtime_edges(test_nodes[package_id]):
+                  mapped_edge = (name, production_id(child), kind, target_condition)
+                  require(mapped_edge in expected_edges,
+                          f"standalone runtime dependency drift: {package_id} -> {child}")
+                  bindings.append({"parent": mapped_id, "dependency": name,
+                                   "child": production_id(child), "kind": kind,
+                                   "target": target_condition})
+                  pending.append(child)
+
+          dev_edges = [d for d in test_nodes[test_dns["id"]]["deps"]
+                       if any(k["kind"] == "dev" for k in d["dep_kinds"])]
+          declared_dev = {(d.get("rename") or d["name"]).replace("-", "_")
+                          for d in test_dns["dependencies"] if d["kind"] == "dev"}
+          require(declared_dev <= {d["name"] for d in dev_edges},
+                  "declared Rama DNS development dependencies are missing")
+          development = set()
+          pending = [d["pkg"] for d in dev_edges]
+          while pending:
+              package_id = pending.pop()
+              if package_id in development:
+                  continue
+              development.add(package_id)
+              pending.extend(child for _, child, _, _ in runtime_edges(test_nodes[package_id]))
+          require(set(test_nodes) == runtime | development,
+                  "standalone graph contains packages outside runtime or development closures")
+          for package in test_packages.values():
+              declared = package.get("rust_version")
+              if declared:
+                  require(tuple(int(part) for part in declared.split(".")) <= (1, 95, 0),
+                          f"test dependency exceeds Rust 1.95: {package['name']} {declared}")
+          for relative, digest in source["files"].items():
+              require(hashlib.sha256((target / relative).read_bytes()).hexdigest() == digest,
+                      f"standalone source drift before tests: {relative}")
+          report = {"source_head": source["source_head"], "source_tree": source["source_tree"],
+                    "production_lock_sha256": source["seed_workspace_lock_sha256"],
+                    "production_metadata_sha256": hashlib.sha256((output / "cargo-metadata.stdout").read_bytes()).hexdigest(),
+                    "test_lock_sha256": hashlib.sha256(test_lock).hexdigest(),
+                    "test_metadata_sha256": hashlib.sha256((output / "rama-dns-test-metadata.stdout").read_bytes()).hexdigest(),
+                    "root_features": source["production_root_features"], "feature_args": source["feature_args"],
+                    "test_target_directory": tests["target_directory"],
+                    "runtime_packages": [{key: test_packages[p].get(key) for key in ["id", "name", "version", "source"]}
+                                         for p in sorted(runtime)],
+                    "runtime_bindings": bindings, "runtime_feature_bindings": feature_bindings,
+                    "root_dev_edges": dev_edges,
+                    "root_dev_feature_requests": [d for d in test_dns["dependencies"] if d["kind"] == "dev"],
+                    "runtime_dev_overlap": sorted(runtime & development),
+                    "dev_only_packages": [{key: test_packages[p].get(key) for key in ["id", "name", "version", "source"]}
+                                          for p in sorted(development - runtime)],
+                    "scope": "Same Rama DNS root features and production version/source bindings; standalone dev tests, not the full workspace feature union"}
+          (output / "rama-dns-test-graph.json").write_text(json.dumps(report, indent=2) + "\n")
+          PY
+          rama_dns_test_status=0
+          run_logged rama-dns-tests env CARGO_TARGET_DIR="$RUNNER_TEMP/hepta-rama-dns-target" \
+            just test \
+            --manifest-path "$RAMA_DNS_TEST_DIR/Cargo.toml" -p rama-dns --locked \
+            "${rama_dns_feature_args[@]}" --profile default --retries=0 --no-tests=fail || rama_dns_test_status=$?
+          run_logged verify-rama-dns-test-inputs python3 -I -B - <<'PY'
+          import hashlib
+          import json
+          import os
+          from pathlib import Path
+
+          output = Path(os.environ["CANDIDATE_DIR"])
+          target = Path(os.environ["RAMA_DNS_TEST_DIR"])
+          source = json.loads((output / "rama-dns-test-source.json").read_text())
+          graph = json.loads((output / "rama-dns-test-graph.json").read_text())
+          actual = {path.relative_to(target).as_posix() for path in target.rglob("*") if path.is_file()}
+          if actual != set(source["files"]) | {"Cargo.lock"}:
+              raise SystemExit("standalone tests created or removed source-tree files")
+          for relative, expected in source["files"].items():
+              if hashlib.sha256((target / relative).read_bytes()).hexdigest() != expected:
+                  raise SystemExit(f"standalone tests changed frozen source: {relative}")
+          for lock in [target / "Cargo.lock", output / "rama-dns-tests.Cargo.lock"]:
+              if hashlib.sha256(lock.read_bytes()).hexdigest() != graph["test_lock_sha256"]:
+                  raise SystemExit("standalone test lock changed during --locked tests")
+          PY
+          if (( rama_dns_test_status != 0 )); then
+            exit "$rama_dns_test_status"
+          fi
           run_logged network-proxy-tests just test -p codex-network-proxy --locked
           run_logged bazel-tests ./.github/scripts/run_bazel_with_buildbuddy.py test \
             //codex-rs/third_party/rama-dns-0.3.0-alpha.4/... //codex-rs/network-proxy/... \
@@ -208,6 +423,11 @@ jobs:
           before = json.loads((output / "source-before.json").read_text())
           for name, path in [("Cargo.lock", "codex-rs/Cargo.lock"), ("MODULE.bazel.lock", "MODULE.bazel.lock")]:
               (output / name).write_bytes(Path(path).read_bytes())
+          test_source_path = output / "rama-dns-test-source.json"
+          if test_source_path.is_file():
+              test_lock = Path(json.loads(test_source_path.read_text())["test_root"]) / "Cargo.lock"
+              if test_lock.is_file():
+                  (output / "rama-dns-tests.Cargo.lock.after").write_bytes(test_lock.read_bytes())
           changed = subprocess.check_output(["git", "diff", "HEAD", "--name-only", "-z"]).decode().strip("\0").split("\0")
           changed = [p for p in changed if p]
           untracked = subprocess.check_output(["git", "ls-files", "--others", "--exclude-standard", "-z"]).decode()
@@ -216,7 +436,8 @@ jobs:
                                  for path, digest in before["files"].items() if path not in allowed)
           stages = ["rustc-version", "cargo-version", "bazel-version", "nextest-version", "cargo-update",
                     "cargo-metadata", "verify-resolved-graph", "bazel-lock-update", "bazel-lock-check",
-                    "rama-dns-tests", "network-proxy-tests", "bazel-tests"]
+                    "rama-dns-test-prepare", "rama-dns-test-metadata", "verify-rama-dns-test-graph",
+                    "rama-dns-tests", "verify-rama-dns-test-inputs", "network-proxy-tests", "bazel-tests"]
           exits = {name: (output / f"{name}.exit").read_text().strip() if (output / f"{name}.exit").is_file() else None
                    for name in stages}
           head = subprocess.check_output(["git", "rev-parse", "HEAD"], text=True).strip()
