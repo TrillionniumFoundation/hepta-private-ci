@@ -90,7 +90,7 @@ impl<D: ProcessDriver> Supervisor<D> {
                 let process_fault = supervisor.recover_slot(&agent_id, slot, &record, now).err();
                 supervisor.recover_restart_budget(&agent_id, slot, now)?;
                 supervisor.recover_release_transaction(&agent_id, slot, now)?;
-                supervisor.recover_signed_intent(&agent_id, slot, &record)?;
+                supervisor.recover_signed_intent(&agent_id, slot, &record, process_fault.is_some())?;
                 Ok(process_fault)
             });
             match result {
@@ -690,6 +690,7 @@ impl<D: ProcessDriver> Supervisor<D> {
         agent_id: &AgentId,
         slot: &mut AgentSlot<D::Process>,
         record: &AgentRecord,
+        child_recovery_failed: bool,
     ) -> Result<(), SupervisorError> {
         let intent = read_intent(record.layout.run_root())
             .map_err(|error| SupervisorError::Invalid(error.to_string()))?;
@@ -778,84 +779,14 @@ impl<D: ProcessDriver> Supervisor<D> {
             }
         }
 
-        let directive = read_recovery_directive(record.layout.run_root())
-            .map_err(|_| SupervisorError::SignedIntentRecoveryRequired(agent_id.clone()))?;
-        if let Some(directive) = directive {
-            if directive.intent_sha256 == intent.intent_sha256
-                && matches!(directive.action, SignedIntentRecoveryAction::Abort)
-            {
-                // An explicit abort may close the ambiguous grant, but only
-                // after all adopted children have been fenced and terminated.
-                // Never infer success from a matching release or liveness.
-                if slot.matrix.runtime.is_some() {
-                    let _ = self.kill_matrix_now(agent_id, slot);
-                }
-                if let Some(runtime) = slot.runtime.as_mut() {
-                    let _ = runtime.process.kill();
-                    runtime.fenced = true;
-                    runtime.phase = RuntimePhase::Killing;
-                }
-                if slot.runtime.is_some() || slot.matrix.runtime.is_some() {
-                    return Err(SupervisorError::SignedIntentRecoveryRequired(
-                        agent_id.clone(),
-                    ));
-                }
-
-                // An interrupted production transition may already have a
-                // durable release transaction in recovery_required. The abort
-                // ceremony must bind to that exact transaction and
-                // terminalize it before terminalizing the signed intent.
-                if let Some(transaction) = read_release_transaction(record.layout.run_root())
-                    .map_err(|error| SupervisorError::Invalid(error.to_string()))?
-                {
-                    let kind_matches = matches!(
-                        (intent.transition, transaction.kind),
-                        (
-                            H7H89ProductionTransition::Upgrade,
-                            ReleaseTransactionKind::Upgrade
-                        ) | (
-                            H7H89ProductionTransition::Rollback,
-                            ReleaseTransactionKind::ExplicitRollback
-                        )
-                    );
-                    if !kind_matches
-                        || transaction.agent_id != agent_id.to_string()
-                        || transaction.grant_sha256.as_ref() != Some(&intent.grant_sha256)
-                        || transaction.source_release != intent.source_release
-                        || transaction.target_release != intent.target_release
-                        || !matches!(
-                            transaction.phase,
-                            ReleaseTransactionPhase::RecoveryRequired
-                                | ReleaseTransactionPhase::Aborted
-                        )
-                    {
-                        return Err(SupervisorError::SignedIntentRecoveryRequired(
-                            agent_id.clone(),
-                        ));
-                    }
-                    if transaction.phase == ReleaseTransactionPhase::RecoveryRequired {
-                        let aborted_transaction = transaction
-                            .with_phase(ReleaseTransactionPhase::Aborted)
-                            .map_err(|error| SupervisorError::Invalid(error.to_string()))?;
-                        write_release_transaction(record.layout.run_root(), &aborted_transaction)
-                            .map_err(|error| SupervisorError::Invalid(error.to_string()))?;
-                        slot.release_transaction = Some(aborted_transaction);
-                    }
-                }
-
-                let aborted = intent
-                    .with_status(SignedIntentStatus::Aborted)
-                    .map_err(|_| SupervisorError::SignedIntentRecoveryRequired(agent_id.clone()))?;
-                write_intent(record.layout.run_root(), &aborted)
-                    .map_err(|_| SupervisorError::SignedIntentRecoveryRequired(agent_id.clone()))?;
-                slot.signed_intent = Some(aborted);
-                slot.restart_pending = false;
-                slot.restart_not_before = None;
-                slot.restart_retry_at = None;
-                slot.restart_automatic = false;
-                slot.restart_after_exit = false;
-                return Ok(());
-            }
+        if self.try_abort_signed_intent(
+            agent_id,
+            slot,
+            record,
+            &intent,
+            child_recovery_failed,
+        )? {
+            return Ok(());
         }
 
         // Keep the daemon reachable for the status/recovery ceremony while
