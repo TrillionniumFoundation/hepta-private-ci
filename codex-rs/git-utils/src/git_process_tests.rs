@@ -1,8 +1,8 @@
 use super::spawn_git_command;
 use super::wait_for_git_command_with_timeout_output;
-use pretty_assertions::assert_eq;
 #[cfg(windows)]
 use base64::Engine as _;
+use pretty_assertions::assert_eq;
 #[cfg(windows)]
 use std::process::Stdio;
 use std::time::Duration;
@@ -50,7 +50,9 @@ async fn assert_timed_out_git_wrapper_does_not_leave_child_process_running(
                 .flat_map(u16::to_le_bytes)
                 .collect::<Vec<_>>(),
         );
-        let launch_child = format!("$child = Start-Process -FilePath powershell.exe -ArgumentList @('-NoProfile', '-NonInteractive', '-EncodedCommand', '{encoded_child}') -PassThru -NoNewWindow; [System.IO.File]::WriteAllText($env:CHILD_PID_FILE, [string]$child.Id); ");
+        let launch_child = format!(
+            "$child = Start-Process -FilePath powershell.exe -ArgumentList @('-NoProfile', '-NonInteractive', '-EncodedCommand', '{encoded_child}') -PassThru -NoNewWindow; [System.IO.File]::WriteAllText($env:CHILD_PID_FILE, [string]$child.Id); "
+        );
         let wrapper_command = match wrapper_lifetime {
             GitWrapperLifetime::WaitForChild => {
                 format!("{launch_child}Wait-Process -Id $child.Id")

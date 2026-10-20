@@ -24,11 +24,20 @@ async fn deferred_idle_contributors_wait_for_fence_and_preserve_registration_ord
         })
         .expect("second contributor");
     tokio::task::yield_now().await;
-    assert_eq!(started_rx.try_recv(), Err(oneshot::error::TryRecvError::Empty));
-    assert_eq!(second_rx.try_recv(), Err(oneshot::error::TryRecvError::Empty));
+    assert_eq!(
+        started_rx.try_recv(),
+        Err(oneshot::error::TryRecvError::Empty)
+    );
+    assert_eq!(
+        second_rx.try_recv(),
+        Err(oneshot::error::TryRecvError::Empty)
+    );
     fence_tx.send(()).expect("release exact fence");
     started_rx.await.expect("first contributor should start");
-    assert_eq!(second_rx.try_recv(), Err(oneshot::error::TryRecvError::Empty));
+    assert_eq!(
+        second_rx.try_recv(),
+        Err(oneshot::error::TryRecvError::Empty)
+    );
     release_tx.send(()).expect("settle first dispatch");
     second_rx.await.expect("second contributor should run");
 }

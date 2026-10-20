@@ -335,9 +335,14 @@ fn unexpected_agent_crashes_back_off_and_stop_after_three_restarts() -> Result<(
         &event.kind, SupervisorEventKind::DriverFault(message) if message == &budget_fault
     )));
     assert_eq!(
-        snapshot.events.iter().filter(|event| matches!(
-            event.kind, SupervisorEventKind::AutomaticRestartBudgetExhausted { attempts: 3 }
-        )).count(),
+        snapshot
+            .events
+            .iter()
+            .filter(|event| matches!(
+                event.kind,
+                SupervisorEventKind::AutomaticRestartBudgetExhausted { attempts: 3 }
+            ))
+            .count(),
         1
     );
     assert_eq!(

@@ -32,7 +32,9 @@ impl DeferredIdleWork {
     ) -> CodexResult<()> {
         let permit = Arc::clone(&self.capacity)
             .try_acquire_owned()
-            .map_err(|_| CodexErr::InvalidRequest("too many deferred idle contributions".to_string()))?;
+            .map_err(|_| {
+                CodexErr::InvalidRequest("too many deferred idle contributions".to_string())
+            })?;
         let (finished, next) = oneshot::channel();
         let previous = self
             .tail

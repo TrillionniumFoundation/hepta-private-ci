@@ -315,9 +315,14 @@ fn restart_budget_survives_repeated_supervisord_recovery() -> Result<(), Supervi
     let queued = supervisor.snapshot(&agent_id).expect("queued snapshot");
     assert!(!queued.active);
     assert_eq!(
-        queued.events.iter().filter(|event| matches!(
-            event.kind, SupervisorEventKind::AutomaticRestartQueued { attempt: 2 }
-        )).count(),
+        queued
+            .events
+            .iter()
+            .filter(|event| matches!(
+                event.kind,
+                SupervisorEventKind::AutomaticRestartQueued { attempt: 2 }
+            ))
+            .count(),
         1
     );
     assert!(
@@ -368,9 +373,16 @@ fn restart_budget_survives_repeated_supervisord_recovery() -> Result<(), Supervi
         }
     );
     assert_eq!(
-        supervisor.snapshot(&agent_id).expect("queued snapshot").events.iter().filter(|event| matches!(
-            event.kind, SupervisorEventKind::AutomaticRestartQueued { attempt: 3 }
-        )).count(),
+        supervisor
+            .snapshot(&agent_id)
+            .expect("queued snapshot")
+            .events
+            .iter()
+            .filter(|event| matches!(
+                event.kind,
+                SupervisorEventKind::AutomaticRestartQueued { attempt: 3 }
+            ))
+            .count(),
         1
     );
     assert_eq!(
@@ -424,9 +436,14 @@ fn restart_budget_survives_repeated_supervisord_recovery() -> Result<(), Supervi
         &event.kind, SupervisorEventKind::DriverFault(message) if message == &budget_fault
     )));
     assert_eq!(
-        snapshot.events.iter().filter(|event| matches!(
-            event.kind, SupervisorEventKind::AutomaticRestartBudgetExhausted { attempts: 3 }
-        )).count(),
+        snapshot
+            .events
+            .iter()
+            .filter(|event| matches!(
+                event.kind,
+                SupervisorEventKind::AutomaticRestartBudgetExhausted { attempts: 3 }
+            ))
+            .count(),
         1
     );
     assert_eq!(

@@ -5,8 +5,8 @@ use crate::session::session::Session;
 
 impl Session {
     pub(crate) fn pending_turn_terminalization(&self) -> Option<BoxFuture<'static, ()>> {
-        let completions = self
-            .pending_task_terminalization_completions_except(/*excluded_identity*/ None);
+        let completions =
+            self.pending_task_terminalization_completions_except(/*excluded_identity*/ None);
         if completions.is_empty() {
             return None;
         }
