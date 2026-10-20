@@ -1,6 +1,14 @@
 name: Hepta diagnostic source export
 
 on:
+  pull_request:
+    paths:
+      - "MODULE.bazel"
+      - "MODULE.bazel.lock"
+      - "codex-rs/keyring-store/Cargo.toml"
+      - "codex-rs/rmcp-client/Cargo.toml"
+      - "codex-rs/Cargo.lock"
+      - ".github/workflows/hepta-diagnostic-source-export.yml"
   # Automatic pull-request and main-branch fan-out is owned by the two
   # aggregate checks. Deep qualifications remain reusable and manually runnable.
   workflow_call:
