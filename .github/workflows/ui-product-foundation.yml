@@ -1,0 +1,441 @@
+name: Rust UI product foundation
+on:
+  pull_request:
+    paths:
+      - apps/hepta-control-ui/**
+      # Conservative gateway Cargo closure; drift-checked against the shared graph.
+      - codex-rs/hepta-contracts/**
+      - codex-rs/hepta-control-plane/**
+      - codex-rs/hepta-native-gateway/**
+      - codex-rs/hepta-ndu/**
+      - codex-rs/hepta-paths/**
+      - codex-rs/hepta-plasticity/**
+      - codex-rs/hepta-runtime/**
+      - codex-rs/hepta-types/**
+      - codex-rs/hepta-wire/**
+      - codex-rs/utils/absolute-path/**
+      - codex-rs/utils/path-utils/**
+      - codex-rs/Cargo.toml
+      - codex-rs/Cargo.lock
+      - codex-rs/rust-toolchain.toml
+      - codex-rs/.cargo/**
+      - codex-rs/.config/nextest.toml
+      - justfile
+      - scripts/run-nextest.py
+      - scripts/just-shell.py
+      - scripts/hepta_ci_dependencies.py
+      - scripts/hepta_ci_exec.py
+      - scripts/hepta_ci_git_objects.py
+      - scripts/hepta_ci_module_paths.py
+      - scripts/test_hepta_ci_module_path_scopes.py
+      - apps/hepta-native/resources/NATIVE-ASSETS.json
+      - apps/hepta-native/resources/notices/Noto-Sans-CJK-2.004-OFL.txt
+      - .github/workflows/ui-product-foundation.yml
+      - .github/actions/hepta-synthetic-merge/**
+      - scripts/test_ui_product_foundation_ci.py
+permissions:
+  contents: read
+concurrency:
+  group: rust-ui-product-${{ github.event.pull_request.number }}
+  cancel-in-progress: false
+jobs:
+  robrix-host:
+    if: github.event.pull_request.head.repo.full_name == github.repository
+    strategy:
+      fail-fast: false
+      matrix:
+        lane: [source-head, base-merge]
+    name: Rust UI foundation / ${{ matrix.lane }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
+    env:
+      RUSTUP_TOOLCHAIN: 1.95.0
+      CARGO_BUILD_JOBS: 1
+      CARGO_INCREMENTAL: 0
+      CARGO_PROFILE_DEV_DEBUG: 0
+      CARGO_PROFILE_RELEASE_DEBUG: 0
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          persist-credentials: false
+          fetch-depth: 0
+      - name: Construct separately identified product merge
+        if: matrix.lane == 'base-merge'
+        uses: ./.github/actions/hepta-synthetic-merge
+        with:
+          base-sha: ${{ github.event.pull_request.base.sha }}
+          source-sha: ${{ github.event.pull_request.head.sha }}
+          pr-number: ${{ github.event.pull_request.number }}
+          author-name: Rust UI product CI
+          author-email: rust-ui-product-ci@invalid
+          message: Synthetic Rust UI product merge
+      - name: Bind exact source and preserve backend toolchain
+        shell: bash
+        run: |
+          set -euo pipefail
+          echo "SOURCE_SHA=$(git rev-parse HEAD)" >> "$GITHUB_ENV"
+          echo "PR_SOURCE_SHA=${{ github.event.pull_request.head.sha }}" >> "$GITHUB_ENV"
+          BACKEND_TOOLCHAIN="$(python3 apps/hepta-control-ui/tools/build-product-preview.py --print-toolchain)"
+          echo "BACKEND_TOOLCHAIN=$BACKEND_TOOLCHAIN" >> "$GITHUB_ENV"
+      - name: Verify immutable merge checkout regression
+        run: |
+          python3 -m unittest discover -s scripts -p test_ui_product_foundation_ci.py -v
+          python3 -m unittest discover -s scripts -p test_hepta_ci_module_path_scopes.py -v
+          python3 -m unittest discover -s apps/hepta-control-ui/test -p test_build_product_preview.py -v
+      - uses: actions/setup-node@53b83947a5a98c8d113130e565377fae1a50d02f
+        with:
+          node-version: 22
+      - name: Install and verify official build inputs
+        env:
+          CARGO_BUILD_JOBS: 2
+        shell: bash
+        run: |
+          set -euo pipefail
+          rustup toolchain install 1.95.0 --profile minimal --component rustfmt,clippy --target wasm32-unknown-unknown
+          rustup toolchain install nightly-2026-10-02 --profile minimal --component rust-src
+          test "$(rustup run nightly-2026-10-02 rustc --version)" = "rustc 1.101.0-nightly (c36f14571 2026-10-01)"
+          test "$(rustc --version)" = "rustc 1.95.0 (59807616e 2026-04-14)"
+      # Cache only pinned official tool installations. Nextest has archive and binary
+      # digests; source-built tools retain --locked. No product binaries or receipts.
+      - id: official-tools-cache
+        uses: actions/cache/restore@668228422ae6a00e4ad889ee87cd7109ec5666a7
+        with:
+          path: ${{ runner.temp }}/ui-official-tools-robrix
+          key: ui-official-tools-v3-runner-temp-ubuntu24.04-${{ runner.os }}-${{ runner.arch }}-rustc59807616e-just1.58.0-nextest0.9.146-prebuilt-aac21fea
+      - name: Install missing pinned official tools
+        if: steps.official-tools-cache.outputs.cache-hit != 'true'
+        env:
+          TOOL_ROOT: ${{ runner.temp }}/ui-official-tools-robrix
+          CARGO_BUILD_JOBS: 2
+        run: |
+          set -euo pipefail
+          cargo install just --locked --version 1.58.0 --root "$TOOL_ROOT"
+          python3 apps/hepta-control-ui/tools/install-official-nextest.py "$TOOL_ROOT"
+      - name: Verify installed tool versions on every cache hit or miss
+        env:
+          TOOL_ROOT: ${{ runner.temp }}/ui-official-tools-robrix
+        run: |
+          set -euo pipefail
+          test -x "$TOOL_ROOT/bin/just"
+          test -x "$TOOL_ROOT/bin/cargo-nextest"
+          export PATH="$TOOL_ROOT/bin:$PATH"
+          test "$(command -v just)" = "$TOOL_ROOT/bin/just"
+          test "$(command -v cargo-nextest)" = "$TOOL_ROOT/bin/cargo-nextest"
+          test "$(just --version)" = "just 1.58.0"
+          python3 apps/hepta-control-ui/tools/install-official-nextest.py --verify "$TOOL_ROOT"
+          cargo nextest --version | grep -E '^cargo-nextest 0\.9\.146([[:space:]]|$)'
+          echo "$TOOL_ROOT/bin" >> "$GITHUB_PATH"
+      - uses: actions/cache/save@668228422ae6a00e4ad889ee87cd7109ec5666a7
+        if: steps.official-tools-cache.outputs.cache-hit != 'true'
+        with:
+          path: ${{ runner.temp }}/ui-official-tools-robrix
+          key: ui-official-tools-v3-runner-temp-ubuntu24.04-${{ runner.os }}-${{ runner.arch }}-rustc59807616e-just1.58.0-nextest0.9.146-prebuilt-aac21fea
+      - name: Verify shared Rust presentation and renderer
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -m unittest discover -s apps/hepta-control-ui/test -p test_prepare_fonts.py -v
+          cargo fmt --manifest-path apps/hepta-control-ui/rust/Cargo.toml --all -- --check
+          just test --manifest-path ../apps/hepta-control-ui/rust/Cargo.toml -p hepta-control-core -p hepta-robrix-ui --no-default-features
+          cargo clippy --manifest-path apps/hepta-control-ui/rust/Cargo.toml -p hepta-robrix-ui --target wasm32-unknown-unknown -- -D warnings
+          node --test apps/hepta-control-ui/test/artifact-lifetime.test.mjs
+          python3 -m unittest discover -s apps/hepta-control-ui/test -p test_font_diagnostic_browser.py -v
+          node --test apps/hepta-control-ui/test/font-delivery-diagnostic.test.mjs
+          node --test apps/hepta-control-ui/test/product-status-pixels.test.mjs apps/hepta-control-ui/test/product-console-audit.test.mjs
+          node --test apps/hepta-control-ui/test/static-makepad-bridge.test.mjs apps/hepta-control-ui/test/makepad-dsl.test.mjs apps/hepta-control-ui/test/visual-theme-contract.test.mjs apps/hepta-control-ui/test/robrix-font-readiness.test.mjs
+      - id: default_build
+        name: Build canonical strict-CSP no-threads artifact
+        run: |
+          npm ci --prefix apps/hepta-control-ui --ignore-scripts --no-audit --no-fund
+          npm run build --prefix apps/hepta-control-ui
+          node --test apps/hepta-control-ui/test/packaged-resource-set.test.mjs
+          node --test apps/hepta-control-ui/test/makepad-font-patch.test.mjs apps/hepta-control-ui/test/makepad-instance-layout.test.mjs apps/hepta-control-ui/test/makepad-ime-bridge.test.mjs apps/hepta-control-ui/test/makepad-network-memory.test.mjs apps/hepta-control-ui/test/makepad-widget-borrow.test.mjs apps/hepta-control-ui/test/makepad-ime-router.test.mjs apps/hepta-control-ui/test/makepad-cjk-font.test.mjs
+          python3 apps/hepta-control-ui/test/check-makepad-ime-dto.py
+          cd apps/hepta-control-ui
+          npx playwright install --with-deps chromium firefox webkit
+          sudo apt-get install -y tesseract-ocr tesseract-ocr-eng tesseract-ocr-chi-sim python3-pil
+          dpkg-query -W tesseract-ocr tesseract-ocr-eng tesseract-ocr-chi-sim python3-pil
+          node --test test/screenshot-readability.test.mjs test/robrix-pixel-plan.test.mjs
+      - id: default_browser
+        name: Run actual browser renderer and capture layouts
+        working-directory: apps/hepta-control-ui
+        run: xvfb-run -a npm run test:robrix
+      - name: Require every default screenshot pixel check
+        if: always() && steps.default_build.outcome == 'success'
+        env:
+          SOURCE_SHA: ${{ env.SOURCE_SHA }}
+        run: node apps/hepta-control-ui/tools/verify-robrix-evidence.mjs apps/hepta-control-ui/test-results/robrix-default default
+      - id: product_gateway_build
+        name: Build source-bound actual gateway preview
+        run: |
+          rustup toolchain install "$BACKEND_TOOLCHAIN" --profile minimal
+          python3 apps/hepta-control-ui/tools/build-product-preview.py --target-dir "$RUNNER_TEMP/product-gateway-target"
+      - id: product_gateway_transport_tests
+        name: Execute bounded gateway transport and boundary regressions
+        env:
+          RUSTUP_TOOLCHAIN: ${{ env.BACKEND_TOOLCHAIN }}
+          CARGO_TARGET_DIR: ${{ runner.temp }}/product-gateway-target
+          CARGO_PROFILE_TEST_DEBUG: 0
+          SOURCE_SHA: ${{ github.event.pull_request.head.sha }}
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          HEPTA_CI_LANE: ${{ matrix.lane }}
+        run: |
+          TESTED_SHA="$(git rev-parse HEAD)" python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/gateway-transport-${{ matrix.lane }}.json" --minimum-tests 9 --timeout-seconds 600 -- just test --locked -p codex-hepta-native-gateway --lib -E 'test(http_transport::tests::)'
+          TESTED_SHA="$(git rev-parse HEAD)" python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/gateway-boundary-owner-status-${{ matrix.lane }}.json" --minimum-tests 5 --timeout-seconds 600 -- just test --locked -p codex-hepta-native-gateway --lib -E 'test(owner_status::tests::)'
+          TESTED_SHA="$(git rev-parse HEAD)" python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/gateway-boundary-ui-bundle-${{ matrix.lane }}.json" --minimum-tests 11 --timeout-seconds 600 -- just test --locked -p codex-hepta-native-gateway --lib -E 'test(ui_bundle::tests::)'
+          TESTED_SHA="$(git rev-parse HEAD)" python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/gateway-boundary-http-origin-${{ matrix.lane }}.json" --minimum-tests 2 --timeout-seconds 600 -- just test --locked -p codex-hepta-native-gateway --lib -E 'test(http_origin::tests::)'
+      - id: product_gateway_browser
+        name: Exercise real gateway unavailable status and cancellation
+        working-directory: apps/hepta-control-ui
+        env:
+          HEPTA_GATEWAY_EXAMPLE: ${{ runner.temp }}/product-gateway-target/debug/examples/ui_product_preview
+        run: xvfb-run -a npx playwright test --config=playwright.product.config.mjs
+      - name: Preserve actual gateway evidence separately
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: product-gateway-${{ matrix.lane }}-${{ env.SOURCE_SHA }}
+          path: |
+            apps/hepta-control-ui/test-results/product-status/
+            apps/hepta-control-ui/test-results/product-status-results.json
+            ${{ runner.temp }}/product-gateway-target/debug/examples/ui_product_preview.hepta-build.json
+            ${{ runner.temp }}/gateway-transport-${{ matrix.lane }}.json*
+            ${{ runner.temp }}/gateway-boundary-*-${{ matrix.lane }}.json*
+          if-no-files-found: warn
+      - id: fixture_build
+        if: always() && steps.default_build.outcome == 'success'
+        name: Build explicitly labeled owner-fixture through the same renderer
+        run: node apps/hepta-control-ui/tools/build-robrix.mjs --fixtures
+      - if: always() && steps.fixture_build.outcome == 'success'
+        name: Capture populated fixture and responsive transitions
+        working-directory: apps/hepta-control-ui
+        env:
+          HEPTA_ROBRIX_FIXTURES: "1"
+        run: xvfb-run -a npm run test:robrix
+      - name: Require every populated screenshot pixel check
+        if: always() && steps.fixture_build.outcome == 'success'
+        env:
+          SOURCE_SHA: ${{ env.SOURCE_SHA }}
+        run: node apps/hepta-control-ui/tools/verify-robrix-evidence.mjs apps/hepta-control-ui/test-results/robrix-fixtures fixtures
+      - name: Diagnose WebKit drawing buffer without changing product defaults
+        if: always() && steps.fixture_build.outcome == 'success'
+        working-directory: apps/hepta-control-ui
+        env:
+          HEPTA_ROBRIX_DIAGNOSTICS: "1"
+          HEPTA_ROBRIX_FIXTURES: "1"
+        run: xvfb-run -a npm run test:robrix -- --project=webkit --output=test-results/robrix-buffer-diagnostic
+      - if: always() && steps.default_build.outcome == 'success'
+        name: Confirm exact source after build and browser checks
+        env:
+          SOURCE_SHA: ${{ env.SOURCE_SHA }}
+        run: |
+          test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
+          git diff --exit-code HEAD
+      - name: Inventory every source-bound browser evidence file
+        if: always()
+        env:
+          SOURCE_SHA: ${{ env.SOURCE_SHA }}
+        run: |
+          python3 -m unittest discover -s apps/hepta-control-ui/test -p 'test_group_robrix_evidence.py' -v
+          python3 apps/hepta-control-ui/tools/group-robrix-evidence.py
+      - if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: product-robrix-${{ matrix.lane }}-default-chromium-${{ env.SOURCE_SHA }}
+          path: apps/hepta-control-ui/test-results/evidence-groups/default-chromium/
+          include-hidden-files: true
+          if-no-files-found: warn
+      - if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: product-robrix-${{ matrix.lane }}-default-firefox-${{ env.SOURCE_SHA }}
+          path: apps/hepta-control-ui/test-results/evidence-groups/default-firefox/
+          include-hidden-files: true
+          if-no-files-found: warn
+      - if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: product-robrix-${{ matrix.lane }}-default-webkit-${{ env.SOURCE_SHA }}
+          path: apps/hepta-control-ui/test-results/evidence-groups/default-webkit/
+          include-hidden-files: true
+          if-no-files-found: warn
+      - if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: product-robrix-${{ matrix.lane }}-fixtures-chromium-${{ env.SOURCE_SHA }}
+          path: apps/hepta-control-ui/test-results/evidence-groups/fixtures-chromium/
+          include-hidden-files: true
+          if-no-files-found: warn
+      - if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: product-robrix-${{ matrix.lane }}-fixtures-firefox-${{ env.SOURCE_SHA }}
+          path: apps/hepta-control-ui/test-results/evidence-groups/fixtures-firefox/
+          include-hidden-files: true
+          if-no-files-found: warn
+      - if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: product-robrix-${{ matrix.lane }}-fixtures-webkit-${{ env.SOURCE_SHA }}
+          path: apps/hepta-control-ui/test-results/evidence-groups/fixtures-webkit/
+          include-hidden-files: true
+          if-no-files-found: warn
+      - if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: product-robrix-${{ matrix.lane }}-sidebar-chromium-${{ env.SOURCE_SHA }}
+          path: apps/hepta-control-ui/test-results/evidence-groups/sidebar-chromium/
+          include-hidden-files: true
+          if-no-files-found: warn
+      - if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: product-robrix-${{ matrix.lane }}-sidebar-firefox-${{ env.SOURCE_SHA }}
+          path: apps/hepta-control-ui/test-results/evidence-groups/sidebar-firefox/
+          include-hidden-files: true
+          if-no-files-found: warn
+      - if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: product-robrix-${{ matrix.lane }}-sidebar-webkit-${{ env.SOURCE_SHA }}
+          path: apps/hepta-control-ui/test-results/evidence-groups/sidebar-webkit/
+          include-hidden-files: true
+          if-no-files-found: warn
+      - if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: product-robrix-${{ matrix.lane }}-diagnostic-${{ env.SOURCE_SHA }}
+          path: apps/hepta-control-ui/test-results/evidence-groups/diagnostic/
+          include-hidden-files: true
+          if-no-files-found: warn
+      - if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: product-robrix-${{ matrix.lane }}-summary-${{ env.SOURCE_SHA }}
+          path: apps/hepta-control-ui/test-results/evidence-groups/summary/
+          include-hidden-files: true
+          if-no-files-found: warn
+      # All ordinary acceptance checks and evidence uploads precede optional work.
+      # Opt-in evidence only: no required acceptance step is waived or replaced.
+      - id: font_diagnostic_browser
+        name: Install hash-pinned diagnostic browser (not acceptance)
+        if: always() && steps.product_gateway_build.outcome == 'success' && contains(github.event.pull_request.labels.*.name, 'ui-font-diagnostic')
+        continue-on-error: true
+        timeout-minutes: 3
+        run: |
+          python3 apps/hepta-control-ui/tools/install-font-diagnostic-browser.py "$RUNNER_TEMP/font-diagnostic-browser"
+          echo "HEPTA_FONT_DIAGNOSTIC_BROWSER=$RUNNER_TEMP/font-diagnostic-browser/chrome-headless-shell-linux64/chrome-headless-shell" >> "$GITHUB_ENV"
+      - name: Compare unchanged product assertions and SDK transport (not acceptance)
+        if: always() && steps.font_diagnostic_browser.outcome == 'success'
+        continue-on-error: true
+        timeout-minutes: 12
+        working-directory: apps/hepta-control-ui
+        env:
+          HEPTA_GATEWAY_EXAMPLE: ${{ runner.temp }}/product-gateway-target/debug/examples/ui_product_preview
+        run: xvfb-run -a npx playwright test --config=playwright.font-diagnostic.config.mjs
+      - name: Compare Rust fixture font use and pixels (not acceptance)
+        if: always() && steps.fixture_build.outcome == 'success' && steps.font_diagnostic_browser.outcome == 'success'
+        continue-on-error: true
+        timeout-minutes: 8
+        working-directory: apps/hepta-control-ui
+        env:
+          HEPTA_ROBRIX_FIXTURES: "1"
+          HEPTA_FONT_DIAGNOSTIC_SUITE: fixture
+        run: xvfb-run -a npx playwright test --config=playwright.font-diagnostic.config.mjs
+      - name: Require every diagnostic fixture semantic pixel check (not acceptance)
+        if: always() && steps.fixture_build.outcome == 'success' && steps.font_diagnostic_browser.outcome == 'success'
+        continue-on-error: true
+        timeout-minutes: 6
+        env:
+          SOURCE_SHA: ${{ env.SOURCE_SHA }}
+        run: node apps/hepta-control-ui/tools/verify-font-diagnostic-evidence.mjs apps/hepta-control-ui/test-results/font-diagnostic-fixture
+      - name: Preserve failed and successful font diagnostic arms without changing acceptance
+        if: always() && contains(github.event.pull_request.labels.*.name, 'ui-font-diagnostic')
+        timeout-minutes: 2
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: font-diagnostic-only-${{ matrix.lane }}-${{ env.SOURCE_SHA }}
+          path: |
+            apps/hepta-control-ui/test-results/font-diagnostic-*/
+            apps/hepta-control-ui/test-results/font-diagnostic-*-results.json
+          if-no-files-found: warn
+
+  ui-bazel-lock-generation:
+    name: Generate UI dependency lock for review
+    if: github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
+    permissions:
+      contents: read
+    environment:
+      name: bazel
+      deployment: false
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+
+      - name: Bind the source before dependency generation
+        shell: bash
+        env:
+          LOCKGEN_EXPECTED_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$LOCKGEN_EXPECTED_SHA"
+          test -z "$(git status --porcelain --untracked-files=no)"
+          mkdir -p "$RUNNER_TEMP/ui-bazel-lock-evidence"
+          git rev-parse HEAD > "$RUNNER_TEMP/ui-bazel-lock-evidence/source-head.txt"
+          git rev-parse 'HEAD^{tree}' > "$RUNNER_TEMP/ui-bazel-lock-evidence/source-tree.txt"
+          sha256sum .bazelversion MODULE.bazel MODULE.bazel.lock codex-rs/Cargo.toml codex-rs/Cargo.lock justfile \
+            > "$RUNNER_TEMP/ui-bazel-lock-evidence/inputs.sha256"
+
+      - name: Prepare the original Bazel CI environment
+        uses: ./.github/actions/prepare-bazel-ci
+        with:
+          target: x86_64-unknown-linux-gnu
+          cache-scope: ui-bazel-lock-generation
+
+      - name: Generate the lock using the repository entry point
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -z "$(git status --porcelain --untracked-files=no)"
+          bazel --version | tee "$RUNNER_TEMP/ui-bazel-lock-evidence/bazel-version.txt"
+          just --version | tee "$RUNNER_TEMP/ui-bazel-lock-evidence/just-version.txt"
+          set +e
+          just bazel-lock-update 2>&1 | tee "$RUNNER_TEMP/ui-bazel-lock-evidence/generation.log"
+          lockgen_status=${PIPESTATUS[0]}
+          set -e
+          printf '%s\n' "$lockgen_status" > "$RUNNER_TEMP/ui-bazel-lock-evidence/generation-exit-code.txt"
+          git diff --binary HEAD -- MODULE.bazel.lock > "$RUNNER_TEMP/ui-bazel-lock-evidence/MODULE.bazel.lock.diff"
+          git diff --binary HEAD -- > "$RUNNER_TEMP/ui-bazel-lock-evidence/all-tracked.diff"
+          git status --porcelain --untracked-files=no > "$RUNNER_TEMP/ui-bazel-lock-evidence/tracked-status.txt"
+          sha256sum MODULE.bazel.lock > "$RUNNER_TEMP/ui-bazel-lock-evidence/generated-lock.sha256"
+          cp MODULE.bazel.lock "$RUNNER_TEMP/ui-bazel-lock-evidence/MODULE.bazel.lock"
+          python3 - <<'PY'
+          import os
+          import pathlib
+          import subprocess
+          evidence = pathlib.Path(os.environ['RUNNER_TEMP']) / 'ui-bazel-lock-evidence'
+          git = lambda *args: subprocess.check_output(['git', *args], text=True).strip()
+          assert git('rev-parse', 'HEAD') == (evidence / 'source-head.txt').read_text().strip()
+          changed = git('diff', '--name-only', 'HEAD', '--').splitlines()
+          assert set(changed) <= {'MODULE.bazel.lock'}, f'unexpected generated changes: {changed}'
+          PY
+          exit "$lockgen_status"
+
+      - name: Validate the generated lock with the original drift check
+        shell: bash
+        run: |
+          set -euo pipefail
+          ./scripts/check-module-bazel-lock.sh 2>&1 | tee "$RUNNER_TEMP/ui-bazel-lock-evidence/lock-check.log"
+
+      - name: Upload the unchanged generation evidence for review
+        if: always()
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f # v7.0.0
+        with:
+          name: ui-bazel-lock-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/ui-bazel-lock-evidence
+          if-no-files-found: error

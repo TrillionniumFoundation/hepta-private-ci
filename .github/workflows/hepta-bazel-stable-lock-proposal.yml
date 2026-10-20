@@ -1,0 +1,118 @@
+name: Bazel stable lock proposal
+
+on:
+  pull_request:
+    paths:
+      - ".bazelversion"
+      - "MODULE.bazel"
+      - "MODULE.bazel.lock"
+      - ".github/workflows/hepta-bazel-stable-lock-proposal.yml"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: bazel-stable-lock-proposal-${{ github.event.pull_request.head.ref }}
+  cancel-in-progress: true
+
+jobs:
+  lock-candidate:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    env:
+      CANDIDATE_SHA: ${{ github.event.pull_request.head.sha }}
+    steps:
+      - name: Check out exact candidate
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ env.CANDIDATE_SHA }}
+          persist-credentials: false
+          fetch-depth: 0
+
+      - name: Prepare the existing Bazel CI environment
+        uses: ./.github/actions/prepare-bazel-ci
+        with:
+          target: x86_64-unknown-linux-gnu
+          cache-scope: stable-lock-proposal
+
+      - name: Freeze source and the actual selected Bazel version
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$CANDIDATE_SHA"
+          test -z "$(git status --porcelain --untracked-files=no)"
+          evidence="$RUNNER_TEMP/bazel-stable-lock"
+          mkdir -p "$evidence"
+          cp .bazelversion "$evidence/bazelversion"
+          cp MODULE.bazel.lock "$evidence/MODULE.bazel.lock.before"
+          git rev-parse 'HEAD^{tree}' > "$evidence/source-tree.txt"
+          git rev-parse HEAD > "$evidence/source-head.txt"
+          bazel version --gnu_format 2>&1 | tee "$evidence/bazel-version.log"
+          expected_version="$(tr -d '\r\n' < .bazelversion)"
+          grep -Fx "bazel $expected_version" "$evidence/bazel-version.log"
+
+      - name: Generate the complete lock with the original project command
+        shell: bash
+        run: |
+          set -euo pipefail
+          evidence="$RUNNER_TEMP/bazel-stable-lock"
+          set +e
+          ./scripts/check-module-bazel-lock.sh > "$evidence/lock-before.log" 2>&1
+          before_status=$?
+          set -e
+          printf '%s\n' "$before_status" > "$evidence/lock-before.exit"
+          just bazel-lock-update 2>&1 | tee "$evidence/lock-update.log"
+          cp MODULE.bazel.lock "$evidence/MODULE.bazel.lock"
+          ./scripts/check-module-bazel-lock.sh 2>&1 | tee "$evidence/lock-after.log"
+          just bazel-lock-update 2>&1 | tee "$evidence/lock-repeat.log"
+          cmp MODULE.bazel.lock "$evidence/MODULE.bazel.lock"
+          test "$(git rev-parse HEAD)" = "$CANDIDATE_SHA"
+          git diff --check
+          git diff --binary -- MODULE.bazel.lock > "$evidence/MODULE.bazel.lock.patch"
+          python3 - <<'PY'
+          import hashlib
+          import json
+          import os
+          import pathlib
+          import subprocess
+
+          root = pathlib.Path(os.environ["RUNNER_TEMP"]) / "bazel-stable-lock"
+          changed = subprocess.check_output(
+              ["git", "diff", "--name-only", "-z"], text=True
+          ).split("\0")
+          changed = [path for path in changed if path]
+          if changed not in ([], ["MODULE.bazel.lock"]):
+              raise SystemExit(f"unexpected source changes: {changed!r}")
+          files = {}
+          for path in sorted(root.iterdir()):
+              if path.is_file():
+                  data = path.read_bytes()
+                  files[path.name] = {
+                      "bytes": len(data),
+                      "sha256": hashlib.sha256(data).hexdigest(),
+                  }
+          before = json.loads((root / "MODULE.bazel.lock.before").read_text())
+          after = json.loads((root / "MODULE.bazel.lock").read_text())
+          result = {
+              "source_head": os.environ["CANDIDATE_SHA"],
+              "source_tree": (root / "source-tree.txt").read_text().strip(),
+              "bazel_version": (root / "bazelversion").read_text().strip(),
+              "lock_format_before": before["lockFileVersion"],
+              "lock_format_after": after["lockFileVersion"],
+              "changed_files": changed,
+              "second_generation_identical": True,
+              "original_lock_check_passed": True,
+              "full_platform_qualification": False,
+              "files": files,
+          }
+          (root / "verification.json").write_text(json.dumps(result, indent=2) + "\n")
+          PY
+
+      - name: Retain the exact lock candidate and original command logs
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: bazel-stable-lock-${{ env.CANDIDATE_SHA }}-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/bazel-stable-lock/
+          if-no-files-found: error
+          retention-days: 7

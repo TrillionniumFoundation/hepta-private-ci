@@ -194,8 +194,8 @@ mod tests {
 
     fn ledger() -> LeaseLedger {
         let mut ledger = LeaseLedger::new();
-        ledger
-            .admit_host(HostObservation {
+        assert_eq!(
+            ledger.admit_host(HostObservation {
                 host_id: "host-one".into(),
                 failure_domain_id: "rack-one".into(),
                 generation: 1,
@@ -206,8 +206,9 @@ mod tests {
                     memory_bytes: 1 << 20,
                     accelerator_millis: 1_000,
                 },
-            })
-            .unwrap_or_else(|_| panic!("test fixture operation failed"));
+            }),
+            Ok(())
+        );
         ledger
     }
 
