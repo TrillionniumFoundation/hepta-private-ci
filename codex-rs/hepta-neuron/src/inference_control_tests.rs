@@ -68,7 +68,7 @@ impl NeuronInferenceControlPort for Control {
     }
 }
 
-fn request() -> NeuronModelRequestV1 {
+fn inference_request() -> NeuronModelRequestV1 {
     NeuronModelRequestV1 {
         request_id: checked(StableId::new("tick:1")),
         config_id: checked(StableId::new("config:1")),
@@ -90,7 +90,7 @@ fn inference_control_receipt_maps_to_exact_local_runtime_evidence() {
         status: NeuronFeatureTerminalStatusV1::Succeeded,
     };
     let mut port = InferenceControlModelPort::new(&mut control);
-    let output = checked(port.execute(&request()));
+    let output = checked(port.execute(&inference_request()));
     assert_eq!(
         output.runtime_receipt.model_manifest_digest,
         Digest32::of_bytes(b"manifest")
@@ -113,7 +113,10 @@ fn corrupted_or_indeterminate_control_receipt_fails_closed() {
         status: NeuronFeatureTerminalStatusV1::Succeeded,
     };
     let mut port = InferenceControlModelPort::new(&mut control);
-    assert_eq!(port.execute(&request()), Err(NeuronModelError::Rejected));
+    assert_eq!(
+        port.execute(&inference_request()),
+        Err(NeuronModelError::Rejected)
+    );
 
     let mut control = Control {
         corrupt_receipt: false,
@@ -121,7 +124,7 @@ fn corrupted_or_indeterminate_control_receipt_fails_closed() {
     };
     let mut port = InferenceControlModelPort::new(&mut control);
     assert_eq!(
-        port.execute(&request()),
+        port.execute(&inference_request()),
         Err(NeuronModelError::Indeterminate)
     );
 }

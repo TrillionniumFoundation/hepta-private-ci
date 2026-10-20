@@ -2,10 +2,9 @@ load("//:defs.bzl", "codex_rust_crate")
 
 codex_rust_crate(
     name = "v8-poc",
-    crate_features = select({
-        "@llvm//constraints/windows/abi:msvc": [],
-        "//conditions:default": ["sandbox"],
-    }),
+    # MODULE.bazel enables the linked V8 sandbox for Windows MSVC too.
+    # Keep the crate feature aligned with the linked library.
+    crate_features = ["sandbox"],
     crate_name = "codex_v8_poc",
     deps_extra = ["@crates//:v8"],
 )

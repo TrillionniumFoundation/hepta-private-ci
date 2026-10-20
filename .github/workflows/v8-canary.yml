@@ -10,7 +10,7 @@ on:
   workflow_dispatch:
 
 concurrency:
-  group: ${{ github.workflow }}::${{ github.event.pull_request.head.ref || github.ref_name }}
+  group: ${{ github.workflow }}::${{ github.event.pull_request.head.ref || github.ref_name }}::${{ github.event.pull_request.head.sha || 'main' }}
   cancel-in-progress: ${{ github.ref_name != 'main' }}
 
 permissions:
@@ -19,7 +19,7 @@ permissions:
 jobs:
   metadata:
     timeout-minutes: 30
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04-arm
     outputs:
       # Older revisions can contain a detector that does not emit this output.
       # Missing must mean "run" so they cannot silently skip the expensive V8

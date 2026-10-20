@@ -21,6 +21,19 @@ use zip::write::SimpleFileOptions;
 
 const TEST_CURATED_PLUGIN_SHA: &str = "0123456789abcdef0123456789abcdef01234567";
 
+#[cfg(unix)]
+#[test]
+fn downloaded_zip_permissions_do_not_preserve_privileged_bits() {
+    use std::os::unix::fs::PermissionsExt;
+
+    let directory = tempfile::tempdir().unwrap_or_else(|error| panic!("{error:?}"));
+    let path = directory.path().join("payload");
+    std::fs::write(&path, b"fixture").unwrap_or_else(|error| panic!("{error:?}"));
+    apply_zip_permissions(Some(0o104755), &path).unwrap_or_else(|error| panic!("{error:?}"));
+    let metadata = std::fs::metadata(&path).unwrap_or_else(|error| panic!("{error:?}"));
+    assert_eq!(metadata.permissions().mode() & 0o7777, 0o755);
+}
+
 #[tokio::test]
 async fn github_http_routes_repository_ref_and_zipball_urls() {
     let server = MockServer::start().await;

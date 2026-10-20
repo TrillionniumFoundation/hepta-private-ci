@@ -1,0 +1,70 @@
+name: Hepta exact-head lockfile regeneration
+
+# One-time maintenance on this research branch. Do not weaken blocking-ci.
+# Revision: rustsec-zip9-sync-keyring-20261018
+on:
+  push:
+    branches:
+      - codex/group-ndu-deterministic-20261017
+    paths:
+      - .github/workflows/hepta-lockfile-regenerate.yml
+
+permissions:
+  contents: write
+
+concurrency:
+  group: hepta-lock-refresh-${{ github.ref_name }}
+  cancel-in-progress: true
+
+jobs:
+  refresh-locks:
+    if: github.repository == 'TrillionniumFoundation/hepta-private-ci'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    steps:
+      - name: Checkout exact candidate without credentials
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          persist-credentials: false
+      - name: Install pinned Rust toolchain
+        uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582 # 1.95.0
+      - name: Regenerate Cargo lock against the exact candidate
+        env:
+          CARGO_NET_GIT_FETCH_WITH_CLI: "true"
+        run: cargo metadata --format-version 1 --manifest-path codex-rs/Cargo.toml > /dev/null
+      - name: Prepare existing Bazel CI toolchain
+        uses: ./.github/actions/prepare-bazel-ci
+        with:
+          target: x86_64-unknown-linux-gnu
+          cache-scope: lockfile-refresh
+      - name: Regenerate Bazel module lock
+        run: bazel mod deps --lockfile_mode=update
+      - name: Check exact regenerated Bazel lock
+        run: ./scripts/check-module-bazel-lock.sh
+      - name: Retain regenerated locks for independent audit
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f # v7.0.0
+        with:
+          name: hepta-refreshed-lockfiles-${{ github.sha }}
+          retention-days: 7
+          path: |
+            MODULE.bazel.lock
+            codex-rs/Cargo.lock
+      - name: Commit generated lockfiles only if head is unchanged
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          git add -- MODULE.bazel.lock codex-rs/Cargo.lock
+          if git diff --cached --quiet; then
+            echo 'Exact-head lockfiles were already current.'
+            exit 0
+          fi
+          gh auth setup-git
+          remote_head="$(git ls-remote origin "refs/heads/${GITHUB_REF_NAME}" | cut -f1)"
+          if [[ "${remote_head}" != "${GITHUB_SHA}" ]]; then
+            echo '::error::Branch HEAD advanced; refusing stale lockfile push.'
+            exit 1
+          fi
+          git -c user.name='github-actions[bot]' -c user.email='41898282+github-actions[bot]@users.noreply.github.com' commit -m 'chore(ci): refresh exact-source Cargo and Bazel lockfiles'
+          git push origin "HEAD:refs/heads/${GITHUB_REF_NAME}"
