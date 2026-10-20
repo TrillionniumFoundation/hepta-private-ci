@@ -2,6 +2,8 @@ use super::spawn_git_command;
 use super::wait_for_git_command_with_timeout_output;
 use pretty_assertions::assert_eq;
 #[cfg(windows)]
+use base64::Engine as _;
+#[cfg(windows)]
 use std::process::Stdio;
 use std::time::Duration;
 use tokio::process::Command;
@@ -42,22 +44,32 @@ async fn assert_timed_out_git_wrapper_does_not_leave_child_process_running(
         // Start-Process joins -ArgumentList into one command line. Quoting a
         // multiword -Command script is not preserved on Windows; use a single
         // space-free UTF-16LE -EncodedCommand argument for the child.
-        let encoded_child = format!(
-            "$child_script = @'\n{child_command}\n'@\n$encoded = [Convert]::ToBase64String([Text.Encoding]::Unicode.GetBytes($child_script)); "
+        let encoded_child = base64::engine::general_purpose::STANDARD.encode(
+            child_command
+                .encode_utf16()
+                .flat_map(u16::to_le_bytes)
+                .collect::<Vec<_>>(),
         );
-        let launch_child = "$child = Start-Process -FilePath powershell.exe -ArgumentList @('-NoProfile', '-NonInteractive', '-EncodedCommand', $encoded) -PassThru -NoNewWindow; [System.IO.File]::WriteAllText($env:CHILD_PID_FILE, [string]$child.Id); ";
+        let launch_child = format!("$child = Start-Process -FilePath powershell.exe -ArgumentList @('-NoProfile', '-NonInteractive', '-EncodedCommand', '{encoded_child}') -PassThru -NoNewWindow; [System.IO.File]::WriteAllText($env:CHILD_PID_FILE, [string]$child.Id); ");
         let wrapper_command = match wrapper_lifetime {
             GitWrapperLifetime::WaitForChild => {
-                format!("{encoded_child}{launch_child}Wait-Process -Id $child.Id")
+                format!("{launch_child}Wait-Process -Id $child.Id")
             }
             GitWrapperLifetime::ExitBeforeTimeout => format!(
-                "{encoded_child}{launch_child}while (-not (Test-Path $env:RELEASE_WRAPPER_FILE)) {{ Start-Sleep -Milliseconds 25 }}"
+                "{launch_child}while (-not (Test-Path $env:RELEASE_WRAPPER_FILE)) {{ Start-Sleep -Milliseconds 25 }}"
             ),
         };
+        // Encode the parent as well: its child-launch expression contains
+        // quotes and must survive Rust's native Windows argv serialization.
+        let encoded_wrapper = base64::engine::general_purpose::STANDARD.encode(
+            wrapper_command
+                .encode_utf16()
+                .flat_map(u16::to_le_bytes)
+                .collect::<Vec<_>>(),
+        );
         command
-            .args(["-NoProfile", "-NonInteractive", "-Command"])
-            .arg(wrapper_command)
-            .env("CHILD_PS_SCRIPT", child_command);
+            .args(["-NoProfile", "-NonInteractive", "-EncodedCommand"])
+            .arg(encoded_wrapper);
         command
     };
     command
@@ -91,13 +103,13 @@ async fn assert_timed_out_git_wrapper_does_not_leave_child_process_running(
             // A failed fixture must not strand the descendant whose cleanup
             // the test is intended to validate. Preserve the original 30s
             // readiness and 100ms process-tree cleanup budgets.
-            let _ = wait_for_git_command_with_timeout_output(
+            let cleanup_output = wait_for_git_command_with_timeout_output(
                 wrapper,
                 process_tree,
                 Duration::from_millis(100),
             )
             .await;
-            panic!("Git wrapper never produced its descendant readiness marker: {other:?}");
+            panic!("Git wrapper never produced its descendant readiness marker: {other:?}; cleanup output: {cleanup_output:?}");
         }
     };
 

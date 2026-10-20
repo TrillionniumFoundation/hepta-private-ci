@@ -1229,8 +1229,9 @@ url = "ws://127.0.0.1:8765"
             .with_span_events(FmtSpan::NEW)
             .with_writer(MockWriter::new(buffer))
             .finish();
-        let _subscriber_guard = tracing::subscriber::set_default(subscriber);
-
+        // Bind the collector to every poll, rather than keeping a thread-local
+        // default guard alive across suspension and spawned environment work.
+        async {
         let listener = TcpListener::bind("127.0.0.1:0")
             .await
             .expect("bind websocket listener");
@@ -1298,6 +1299,9 @@ url = "ws://127.0.0.1:8765"
             ),
             "environment resolution should contain the remote environment-info span: {logs}"
         );
+        }
+        .with_subscriber(subscriber)
+        .await;
     }
 
     #[tokio::test]
