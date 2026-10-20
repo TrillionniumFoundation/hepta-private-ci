@@ -1,0 +1,22 @@
+{
+  "schema": "hepta.ci.bazel-input-map-crash-observation.v1",
+  "sourceHead": "1d03eee1e277590876c6e5bd8902b22198a28f31",
+  "workflowRun": 39393162793,
+  "job": 118529556431,
+  "jobUrl": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/39393162793/job/118529556431",
+  "platform": "aarch64-apple-darwin",
+  "observedBazelVersion": "9.0.0",
+  "observedAt": "2026-10-20T08:27:47.7320090Z",
+  "exitCode": 37,
+  "failure": "ActionInputMap.getIndex NullPointerException while RemoteExecutionService uploads action outputs asynchronously",
+  "actionFailuresReported": false,
+  "upstreamIssue": "https://github.com/bazelbuild/bazel/issues/30683",
+  "upstreamFix": "https://github.com/bazelbuild/bazel/pull/30693",
+  "releaseBackport": "https://github.com/bazelbuild/bazel/pull/30991",
+  "releaseBackportCommit": "0f874dec6b9e1eecbe1b65443145f5aa48caef00",
+  "selectedStableVersion": "9.3.0",
+  "policy": "Pin the stable release containing the upstream input-map concurrency fix. Preserve all build and test targets, deadlines, failure propagation and required merge checks.",
+  "validationScope": "Build infrastructure availability; not product execution or production qualification",
+  "testsPassedClaimed": false,
+  "authorityGranted": false
+}
