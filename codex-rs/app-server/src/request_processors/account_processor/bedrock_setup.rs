@@ -13,6 +13,8 @@ use codex_app_server_protocol::BedrockSetupParams;
 use codex_app_server_protocol::BedrockSetupResponse;
 use codex_app_server_protocol::ClientResponsePayload;
 use codex_app_server_protocol::JSONRPCErrorError;
+use codex_aws_auth::AwsAuthConfig;
+use codex_aws_auth::AwsAuthContext;
 use codex_login::CodexAuth;
 use codex_model_provider::is_supported_amazon_bedrock_region;
 
@@ -112,9 +114,22 @@ impl AccountRequestProcessor {
                 let has_access_keys = non_empty_env_var(AWS_ACCESS_KEY_ID).is_some()
                     && non_empty_env_var(AWS_SECRET_ACCESS_KEY).is_some();
                 if !has_bedrock_api_key && !has_access_keys {
-                    return Err(invalid_request(
-                        "No AWS credentials found. Please Configure AWS credentials or complete AWS sign-in, then try again.",
-                    ));
+                    let missing_credentials = || {
+                        invalid_request(
+                            "No AWS credentials found. Please Configure AWS credentials or complete AWS sign-in, then try again.",
+                        )
+                    };
+                    let context = AwsAuthContext::load(AwsAuthConfig {
+                        profile: None,
+                        region: Some(region.to_string()),
+                        service: "bedrock".to_string(),
+                    })
+                    .await
+                    .map_err(|_| missing_credentials())?;
+                    context
+                        .validate_credentials()
+                        .await
+                        .map_err(|_| missing_credentials())?;
                 }
                 None
             }

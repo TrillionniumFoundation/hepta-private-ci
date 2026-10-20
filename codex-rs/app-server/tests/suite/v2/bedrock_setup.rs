@@ -23,7 +23,12 @@ use std::path::Path;
 use std::time::Duration;
 use tempfile::TempDir;
 use tokio::time::timeout;
+use wiremock::Mock;
 use wiremock::MockServer;
+use wiremock::ResponseTemplate;
+use wiremock::matchers::header;
+use wiremock::matchers::method;
+use wiremock::matchers::path;
 
 const READ_TIMEOUT: Duration = Duration::from_secs(/*secs*/ 60);
 
@@ -67,6 +72,14 @@ async fn bedrock_app_server(
                 Some(aws_credentials_path.as_ref()),
             ),
             ("AWS_PROFILE", None),
+            ("AWS_DEFAULT_PROFILE", None),
+            ("AWS_WEB_IDENTITY_TOKEN_FILE", None),
+            ("AWS_ROLE_ARN", None),
+            ("AWS_ROLE_SESSION_NAME", None),
+            ("AWS_CONTAINER_CREDENTIALS_RELATIVE_URI", None),
+            ("AWS_CONTAINER_CREDENTIALS_FULL_URI", None),
+            ("AWS_CONTAINER_AUTHORIZATION_TOKEN", None),
+            ("AWS_CONTAINER_AUTHORIZATION_TOKEN_FILE", None),
             ("AWS_ACCESS_KEY_ID", None),
             ("AWS_SECRET_ACCESS_KEY", None),
             ("AWS_SESSION_TOKEN", None),
@@ -139,6 +152,119 @@ async fn discover_bedrock_profiles_and_environment_credentials() -> Result<()> {
         .into()
     );
     assert!(!codex_home.path().join(".env").exists());
+
+    Ok(())
+}
+
+#[tokio::test]
+async fn setup_bedrock_environment_resolves_sdk_container_credentials() -> Result<()> {
+    let credentials_server = MockServer::start().await;
+    Mock::given(method("GET"))
+        .and(path("/credentials"))
+        .and(header("authorization", "container-authorization-token"))
+        .respond_with(ResponseTemplate::new(/*s*/ 200).set_body_json(json!({
+            "AccessKeyId": "container-access-key",
+            "SecretAccessKey": "container-secret-key",
+            "Token": "container-session-token",
+            "Expiration": "2099-01-01T00:00:00Z"
+        })))
+        .expect(/*r*/ 1)
+        .mount(&credentials_server)
+        .await;
+    let credentials_uri = format!("{}/credentials", credentials_server.uri());
+    let codex_home = private_codex_home()?;
+    let mut app_server = bedrock_app_server(
+        codex_home.path(),
+        &[
+            (
+                "AWS_CONTAINER_CREDENTIALS_FULL_URI",
+                Some(credentials_uri.as_str()),
+            ),
+            (
+                "AWS_CONTAINER_AUTHORIZATION_TOKEN",
+                Some("container-authorization-token"),
+            ),
+        ],
+    )
+    .await?;
+
+    let response: BedrockSetupResponse = app_server
+        .request(|request_id| ClientRequest::BedrockSetup {
+            request_id,
+            params: BedrockSetupParams::Environment {
+                region: "us-west-2".to_string(),
+            },
+        })
+        .await?;
+    assert_eq!(response, BedrockSetupResponse {});
+    credentials_server.verify().await;
+
+    let config: toml::Value = toml::from_str(&std::fs::read_to_string(
+        codex_home.path().join("config.toml"),
+    )?)?;
+    assert_eq!(
+        config,
+        toml::toml! {
+            model_provider = "amazon-bedrock"
+            [model_providers.amazon-bedrock.aws]
+            region = "us-west-2"
+        }
+        .into()
+    );
+    assert!(!codex_home.path().join("auth.json").exists());
+    assert!(!codex_home.path().join(".env").exists());
+
+    Ok(())
+}
+
+#[tokio::test]
+async fn setup_bedrock_environment_rejects_failed_sdk_credentials_without_changes() -> Result<()> {
+    let credentials_server = MockServer::start().await;
+    Mock::given(method("GET"))
+        .and(path("/credentials"))
+        .respond_with(ResponseTemplate::new(/*s*/ 403))
+        .expect(/*r*/ 1)
+        .mount(&credentials_server)
+        .await;
+    let credentials_uri = format!("{}/credentials", credentials_server.uri());
+    let codex_home = private_codex_home()?;
+    let config_path = codex_home.path().join("config.toml");
+    let dotenv_path = codex_home.path().join(".env");
+    let existing_config = "# Existing configuration must survive failed setup.\n";
+    let existing_dotenv = "UNRELATED=preserved\n";
+    std::fs::write(&config_path, existing_config)?;
+    std::fs::write(&dotenv_path, existing_dotenv)?;
+    let mut app_server = bedrock_app_server(
+        codex_home.path(),
+        &[(
+            "AWS_CONTAINER_CREDENTIALS_FULL_URI",
+            Some(credentials_uri.as_str()),
+        )],
+    )
+    .await?;
+
+    let request_id = app_server
+        .send_raw_request(
+            "account/bedrock/setup",
+            Some(json!({"type": "environment", "region": "us-west-2"})),
+        )
+        .await?;
+    let error = timeout(
+        READ_TIMEOUT,
+        app_server.read_stream_until_error_message(RequestId::Integer(request_id)),
+    )
+    .await??;
+    assert_eq!(
+        serde_json::to_value(error.error)?,
+        json!({
+            "code": -32600,
+            "message": "No AWS credentials found. Please Configure AWS credentials or complete AWS sign-in, then try again."
+        })
+    );
+    credentials_server.verify().await;
+    assert_eq!(std::fs::read_to_string(&config_path)?, existing_config);
+    assert_eq!(std::fs::read_to_string(&dotenv_path)?, existing_dotenv);
+    assert!(!codex_home.path().join("auth.json").exists());
 
     Ok(())
 }
