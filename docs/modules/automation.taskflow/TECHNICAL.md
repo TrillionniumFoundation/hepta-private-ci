@@ -64,6 +64,12 @@ The module accepts registered, bounded, versioned inputs, freezes schedule/occur
 
 ## 4. Internal architecture and component decomposition
 
+Integrate Neural Circuit behavior on the existing durable run/step/outbox and
+reconciliation foundation. Preserve V1 DAG bytes and recorded route choices until
+an explicitly versioned migration is qualified. Calendar wake-up, circuit
+decisions and effect execution remain distinct owners. Shared Cell execution and
+Memory projections must not add another scheduler or infer success from dispatch.
+
 The active implementation is one composed owner path, not parallel engines:
 
 ```text

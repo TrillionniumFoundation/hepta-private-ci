@@ -71,6 +71,13 @@ Non-goals include becoming a general state store, bypassing the Codex execution 
 
 ## 4. Internal architecture and component decomposition
 
+An execution-port seam may normalize bounded requests, observations and original-
+operation reconciliation inside the existing contracts and adapter owners. The
+current App Server remains the execution spine. A neutral contract does not
+authorize dispatch, equate model-only turns with process/tool execution, or install
+another executor. Any later backend change must preserve final-use binding,
+terminal uncertainty and persisted-history compatibility at equal measured work.
+
 The bounded components are:
 
 - `contract translator`

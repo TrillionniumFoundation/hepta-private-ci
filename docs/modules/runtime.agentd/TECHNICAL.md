@@ -71,6 +71,13 @@ Non-goals include becoming a general state store, bypassing the Codex execution 
 
 ## 4. Internal architecture and component decomposition
 
+Integration priority is the existing authenticated Objective ingress through
+bounded Memory/Context preparation, the Codex execution spine and original terminal
+observation. Exercise cancellation and restart on that same path. Keep Encoder,
+Memory Cell, inference and learning construction in their named owners; new
+features must not add another durable product store or independent execution loop
+to this lifecycle host. See the [global delivery order](../../DEVELOPMENT.md#19-delivery-roadmap).
+
 The bounded components are:
 
 - `bootstrap and configuration loader`

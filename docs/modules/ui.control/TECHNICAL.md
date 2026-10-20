@@ -65,6 +65,12 @@ Non-goals include becoming a general state store, bypassing the Codex execution 
 
 ## 4. Internal architecture and component decomposition
 
+Prioritize one live read-only task through authenticated Agentd ingress and
+original terminal observations. Shared Rust/web/native presentation may reuse
+view state and resources, but fixture messages, preview rendering and draft
+intents do not establish a live connection. Expose unavailable owner state
+explicitly and qualify cancel/restart behavior before enabling mutations.
+
 The bounded components are:
 
 - `generated protocol client`

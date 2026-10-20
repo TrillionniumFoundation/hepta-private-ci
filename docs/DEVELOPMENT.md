@@ -3,7 +3,7 @@
 **Plan ID:** `HEPTA-GLOBAL-MODULAR-DEVELOPMENT-PLAN`
 **Version:** `8.0.0`
 **Date:** 2026-09-23
-**Design amendment:** multiscale Cell/Circuit architecture, capacity/learning contracts, shared experience and isolated multi-Agent workspaces; runtime and capability claims unchanged.
+**Implementation amendment:** V8 integration and maturity reconciliation, 2026-10-20. Preserve the forty-module Cell/Circuit design, shared experience and isolated Agent workspaces; source integration, product execution, learning efficacy and release remain separate facts.
 **Status:** canonical policy and static registries are defined by this document set; live branch, pull-request, CI, selection and default-branch facts are resolved only from current exact-candidate receipts and are never cached here.
 
 This is the only global human-readable development authority in the working tree. Machine registries own bounded facts and `docs/STATUS.md` is generated. This document grants no runtime, model, provider, tool, network, filesystem, secret, Matrix, fleet, operator, promotion, or release authority.
@@ -154,6 +154,13 @@ Source states are deliberately truthful: a module may be `existing_bound`, `exis
 
 The module registries expose two separate boolean facts for every module: `source_root_present` records only that a declared source root exists in the exact candidate tree, while `production_implementation` is true only after a named product caller and executable product tests are evidenced. A present source root therefore cannot be read as a production implementation. The two facts are projected identically through `MODULES.json`, `SOURCE_BINDINGS.json` and `MODULE_DOCS.json` and are validated against `docs/readiness/STATUS_MODEL.json`.
 
+The corresponding `sourceRootPresent` and `productionImplementation` fields in
+each module's `IMPLEMENTATION_MAP.json` must agree with those registry projections
+and its claim boundary. Update them together when the named caller, source mapping
+and product tests justify a change. Historical map anchors remain provenance;
+they cannot supply a conflicting current completion flag. A development-profile
+pass checks consistency and navigation, not execution or activation.
+
 ## 5B. Adaptive algorithm closed world
 
 The implementation-level adaptive document set is globally governed, not an independent prose island. `docs/learning/ALGORITHM_SPECS.json` binds the six specifications, exact Git blob identities, paper claim anchors, canonical contracts and protocol schemas, data-authority domains, quantitative experiments, artifact lifecycle, work package `DOC-3D-ADAPTIVE-ALGORITHM-DOC-CLOSED-WORLD`, and both read-only CI workflows.
@@ -277,6 +284,22 @@ shared inference workers and bounded training jobs are the default physical
 realization. Weight sharing does not imply reusable embeddings across different
 question/option inputs. Learned cells are for uncertain semantic choices, not
 signature verification, transactions, truth ownership, arithmetic or safety vetoes.
+
+The implementation baseline is shared Encoder execution with bounded per-Cell
+heads, scoped immutable feature snapshots and sparse activation. Laya remains an
+initial candidate profile. Select any replacement with a frozen-head, equal-total-
+budget comparison that accounts for encoding, inference, training, evaluation and
+migration. An Encoder driver trait, deterministic Head or declared Cell count is
+source implementation, not proof of a real pretrained forward or learned benefit.
+Feature reuse binds the actual input, model/preprocessing identity, scope and
+generation; different requests do not share embeddings merely because weights match.
+
+Keep the execution request and observation boundary backend-neutral inside the
+existing owners while retaining the current Codex App Server execution spine.
+Admission, final-use authorization, dispatch and original-operation reconciliation
+remain explicit. Introducing an execution-port contract does not install a second
+executor or change the owner of model, tool or terminal effects. Any later backend
+change needs equal-work measurements and compatibility/recovery evidence.
 
 An organ encapsulates a typed graph of cells, a joint task/utility contract,
 resource accounting, terminal observation, bounded feedback and an external port.
@@ -584,31 +607,49 @@ Every package declares exact paths, predecessors, exit criteria, stop conditions
 
 ## 19. Delivery roadmap
 
-### P0 — V8 document convergence
+### P0 — reproducible integration baseline
 
-- Materialize this complete V8 set as one commit on the observed default baseline.
-- Remove at least the 139 known historical development paths and every additional forbidden legacy path.
-- Run exact-head and merge-candidate document gates.
-- Obtain independent review and select only V8 into the default branch.
-- Restack active implementation candidates without reintroducing deleted development documents.
+- Maintain this V8 document set in place; preserve the original cleanup ancestry
+  and its exact deletion inventory without repeating historical cleanup work.
+- Reconcile module registry facts with implementation maps and actual source roots.
+- Integrate common dependency-security, build-storage and cross-platform recovery
+  repairs through normal PRs with their applicable checks. Attribute baseline,
+  candidate and infrastructure failures separately; required failures are not waived.
+- Consolidate one primary integration candidate per work package. Preserve useful
+  branch history and experimental evidence without restoring deleted global plans.
 
-### P1 — authority and modular foundation
+### P1 — one real product path and durable foundation
 
-- Qualify runtime bootstrap, common VerifiedUse, provider/model/tool/network/filesystem/secret/Matrix/fleet boundaries and B4 AST/call-site proof.
-- Extract cognitive types, store, read ports, retrieval, federation, Rust KG and compact engine.
-- Close dependency inversion, readiness, resource and common durable fault matrices.
+- Use `P0.8D-VERTICAL-SLICE` to connect authenticated UI/API ingress, Objective,
+  bounded Memory/Context, the existing execution spine and observed terminal output.
+- Retain common VerifiedUse, B4 call-site proof and single-writer boundaries.
+  Exercise cancellation, lost acknowledgements, restart, revocation and rollback.
+- Existing source roots stay source facts. Close remaining caller, writer,
+  dependency-inversion, readiness and resource obligations with executable tests.
+- UI fixture messages, dispatch acknowledgement and generated answers remain
+  distinct from live task completion and external-effect success.
 
-### P2 — longitudinal-intelligence contracts and stores
+### P2 — shared compute and immutable learning inputs
 
-- Complete Objective, NDU, Prompt, Bellman, Neuron/Intuition and causal-learning contracts.
-- Build Objective Compiler, durable learning ledger, artifact registry and PromptFactor registry.
-- Implement a deterministic NDU baseline before adaptive NDU claims.
+- Integrate one shared Encoder/Cell/worker implementation through the existing
+  Neuron, inference and organ owners. Use bounded queues and sparse microbatches.
+- Measure real 64/256/1024/4096 logical-Cell profiles with active concurrency
+  recorded separately, including quality, CPU/RSS, p50/p95/p99 and total cost.
+- Compose Objective, deterministic NDU, Prompt, causal episode ledger and immutable
+  artifact inputs through named callers rather than adding parallel stores.
+- Memory Cells remain rebuildable HNMF/source projections. Preserve source and
+  forget frontiers, correction lineage and revalidation before retrieval use.
 
-### P3 — shadow intelligence
+### P3 — comparable shadow intelligence
 
-- Build operator sensor core and Bellman shadow learner.
-- Select and prove a real local model before attaching Neuron.
-- Implement temporal Neuron, calibrated Intuition, prompt pricing/portfolio/timing and Context Compiler in shadow-only mode.
+- Compare real local-model profiles against deterministic and strong retrieval
+  baselines at equal total budgets before selecting a model or learned policy.
+- Integrate Neuron, Intuition, prompt optimization and Bellman/NDU research as
+  bounded shadow candidates. A numerical fixture is not a trained stochastic solver.
+- Separate answer-generation completion, Reader capacity, retrieval quality,
+  parameter-learning benefit, citation entailment and independent acceptance.
+- Retain negative and unavailable observations in the planned population. Freeze
+  evaluation inputs and keep scorer/selector ownership separate from the proposer.
 
 ### P4 — first bounded closed loop
 
@@ -699,16 +740,38 @@ promotion != release
 
 ## 23. Immediate queue
 
-1. Qualify `DOC-3E-PRECODING-READINESS-CLOSED-WORLD` through the dedicated and global exact-source and synthetic-merge jobs, then obtain independent semantic review.
-2. Resolve the current canonical source and target branch only from fresh receipts; do not reuse a cached pull-request number or historical branch relationship.
-3. Begin `LANE-A-FOUNDATION`, `LANE-C-MEMORY` and `LANE-G-ENGINEERING` contract-first packages against frozen readiness and contract digests.
-4. Close AuthBus semantic review, Browser identity reconciliation, dependency inversion, runtime bootstrap, B4 call-site proof and common fault/resource gates.
-5. Materialize Objective, deterministic NDU, episode ledger, artifact registry, PromptFactor registry and the first read-only vertical slice.
-6. Add Bellman, Neuron, Intuition and prompt optimization only in shadow mode after immutable stores and independent evaluation exist.
-7. Require future-window, retention, rollback and unlearning evidence before any longitudinal, biomimicry or structural-plasticity claim.
-8. Start `EMB-0` through `EMB-3` in simulator-only mode; real sensors, actuators and hardware-in-loop acceptance remain external gates.
-9. Start `ASM-0` through `ASM-4` only with explicit external-system owner consent and a non-privileged Debian/POSIX fixture; autonomous propagation remains forbidden.
-10. Keep acceptance, selection, merge, promotion and release in distinct identities and receipts.
+1. Reconcile this V8 implementation baseline and its generated projections. Keep
+   unfinished semantic and external evidence gates open; document maintenance
+   does not close `DOC-3E` or any production qualification by itself.
+2. Resolve the actual `main` head/tree and applicable checks from Git/GitHub.
+   Integrate common security and platform repairs before dependent feature cohorts.
+3. Advance `P0.8D-VERTICAL-SLICE` and `INT-2-AGENTD-CODEX-COMPOSITION` through the
+   original owners, preserving AuthBus, Browser, B4 and durable recovery obligations.
+4. Integrate bounded shared Encoder/Cell contracts and the real worker caller;
+   keep model selection, learned efficacy and structural activation separately gated.
+5. Execute `C1-PROMPTED-MEMORY-RETRIEVAL-RANK` against strong read-only baselines,
+   then qualify next-snapshot reload/rollback and future-window learning.
+6. Keep structural Cell Split, distributed embodiment and autonomous source
+   evolution downstream of their actual dependencies. Simulator research and
+   explicitly authorized assimilation retain their existing scopes.
+
+For branch integration, inspect the net candidate against the current main tree,
+its source owners and semantic dependencies. A PR title, a merged side-stack PR or
+an earlier green head cannot replace that comparison. Prefer normal merge commits
+that preserve reviewed ancestry. Review conflicts at each durable-domain boundary;
+do not resolve them by taking one branch wholesale or disabling required checks.
+
+Common security/build repairs may be shared by multiple feature candidates, but
+must have one reviewed implementation. Append routine fixes to the owning PR
+instead of creating another competing integration line for each failed run.
+Keep necessary stacks small enough to review and revalidate as coherent stages;
+there is no changed-path quota for ordinary authorized development.
+
+Classify retained refs as integrated, active implementation, research, diagnostic
+or superseded from exact commits and content, not age/name alone. Before deleting
+any ref, confirm its unique source and required evidence are preserved. Store live
+classification/CI reports outside canonical documents; Git ancestry and immutable
+artifacts preserve provenance without new in-tree historical plans.
 
 All authority flags remain false in this document set.
 

@@ -4,6 +4,13 @@
 
 The sole global development authority remains [`docs/DEVELOPMENT.md`](docs/DEVELOPMENT.md). Its recorded administrative default at the V8 cleanup baseline is historical provenance; changing the repository's live default branch is a separate repository-administration action and must be verified from GitHub.
 
+The current delivery order is a reproducible integration baseline, one real
+read-only product path, shared Encoder/Cell execution, and independently evaluated
+next-generation learning. Follow the [delivery sequence](docs/DEVELOPMENT.md#19-delivery-roadmap)
+and [integration policy](docs/DEVELOPMENT.md#23-immediate-queue).
+Feature, research and diagnostic branches retain their own source identities;
+their existence does not change the integrated module or capability state.
+
 Module teams start at [`docs/modules/README.md`](docs/modules/README.md), which links the forty stable technical development guides and their closed-world source-binding index. These specifications remain subordinate to the one global plan. A source directory, canonical alias or external-source pin is not a production integration. The sixteen newly imported module candidates do not change existing work-package decisions: original pending execution, semantic review, physical and independent-acceptance requirements remain in force. Section 17 source-location receipts in module guides are not test-pass receipts.
 
 The exact incremental import and conflict decisions are recorded in [`qualification/main-consolidation/SOURCE_IMPORT.json`](qualification/main-consolidation/SOURCE_IMPORT.json). The additional read-only consolidated-source workflow checks the sixteen Rust packages through the repository's `just test` entry point. Existing product, source-owner and learning qualification gates are retained; none are waived by consolidation.

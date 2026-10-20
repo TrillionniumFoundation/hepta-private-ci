@@ -70,6 +70,13 @@ Non-goals include becoming a general state store, bypassing the Codex execution 
 
 ## 4. Internal architecture and component decomposition
 
+Shared Encoder and Cell requests enter through the existing inference owner with
+bounded queue, batch and memory budgets. A physical forward must bind the selected
+weights, preprocessing, runtime, device, input and observed resource use. Preserve
+cancellation, generation fencing and original-run reconciliation across batching;
+an unavailable backend cannot be replaced with a fixture under the same identity.
+Process placement follows isolation and resource needs rather than logical Cell count.
+
 The bounded components are:
 
 - `bounded ingress`

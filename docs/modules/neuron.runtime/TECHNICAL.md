@@ -70,6 +70,13 @@ Non-goals include becoming a general state store, bypassing the Codex execution 
 
 ## 4. Internal architecture and component decomposition
 
+Converge one shared Encoder owner and bounded per-Cell Head path before structural
+Cell evolution. Feature snapshots bind actual input, model/preprocessing identity,
+scope and generation. Record logical Cell count separately from active concurrency;
+measure the 64/256/1024/4096 profiles with real backend-forward and resource evidence.
+A driver interface or deterministic fixture does not establish pretrained-model
+use or learned efficacy. Preserve the existing runtime and inference owners.
+
 The bounded components are:
 
 - `frozen encoder adapter`

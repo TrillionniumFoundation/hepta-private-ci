@@ -70,6 +70,13 @@ Non-goals include becoming a general state store, bypassing the Codex execution 
 
 ## 4. Internal architecture and component decomposition
 
+Memory Cell recall is a rebuildable projection over the existing source/revision
+and HNMF owners. Bind source/forget frontiers, model and graph generations and
+revalidate delivered evidence at use. Keep Reader capacity, retrieval quality,
+parameter adaptation and citation entailment as separate evaluations. Preserve
+strong retrieval baselines and unavailable planned cases rather than filtering
+them from the denominator or relabelling lexical scores as vector evidence.
+
 The bounded components are:
 
 - `bounded input stage`
