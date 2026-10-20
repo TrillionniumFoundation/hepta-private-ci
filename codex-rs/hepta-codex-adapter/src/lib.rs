@@ -9,6 +9,7 @@
 // Compatibility exports of the sole server-side extension implementation.
 use codex_hepta_prompt_extension as runtime_prompt;
 mod wire;
+mod execution_contract;
 
 use std::error::Error as StdError;
 use std::fmt;
@@ -54,6 +55,20 @@ pub use wire::adapt_wire_v2;
 pub use wire::codex_operation_intent_wire_schema_v2;
 pub use wire::decode_codex_operation_intent_wire_v2;
 pub use wire::encode_codex_operation_intent_wire_v2;
+pub use execution_contract::CellExecutionIntentV1;
+pub use execution_contract::CodexTurnBindingV1;
+pub use execution_contract::ExecutionContractError;
+pub use execution_contract::ExecutionIntentKindV1;
+pub use execution_contract::ExecutionReceiptV1;
+pub use execution_contract::ExecutionStatusV1;
+pub use execution_contract::FinalPayloadDigestV1;
+pub use execution_contract::GenerationFenceWitnessV1;
+pub use execution_contract::NativeExecutionAdapter;
+pub use execution_contract::RecoveryDispositionV1;
+pub use execution_contract::RuntimeExecutionError;
+pub use execution_contract::RuntimeReceiptV1;
+pub use execution_contract::RuntimeToolIntentV1;
+pub use execution_contract::ToolOutcomeV1;
 
 const MAX_APP_SERVER_VERSION_BYTES: usize = 128;
 pub const APP_SERVER_V2_PROTOCOL_ID: &str = "codex.app-server.v2";
@@ -214,6 +229,47 @@ pub fn observe_prompt_delivery_v1(
         .validate()
         .map_err(|_| Error::InvalidPromptDeliveryObservation)?;
     Ok(result)
+}
+
+/// Adapt a versioned cell intent into the existing Codex App Server spine.
+///
+/// This is the only cell-facing Codex entry point. It preserves the existing
+/// request/reconciliation logic while making the new contract the admission
+/// boundary; cells never construct App Server client types directly.
+pub fn adapt_codex_cell_intent(
+    now_ms: u64,
+    cell: CellExecutionIntentV1,
+) -> Result<CodexAdapterReceipt, Error> {
+    cell.validate().map_err(|_| Error::InvalidObservationIdentity("cell execution contract"))?;
+    if cell.kind != ExecutionIntentKindV1::CodexTurn {
+        return Err(Error::CorrelationMismatch("intent kind"));
+    }
+    let binding = cell
+        .codex_binding
+        .as_ref()
+        .ok_or(Error::ProductBindingRequired)?;
+    let method_id = StableId::new(TURN_START_METHOD_ID)
+        .map_err(|_| Error::InvalidObservationIdentity("turn method"))?;
+    let intent = CodexOperationIntent {
+        operation_id: cell.operation_id,
+        thread_id: binding.thread_id.clone(),
+        method_id,
+        payload_digest: cell.final_payload.digest,
+        lease_payload_digest: cell.final_payload.digest,
+        deadline_ms: cell.deadline_ms,
+        app_server_binding: Some(AppServerRequestBinding {
+            source_admission_digest: binding.source_admission_digest,
+            agent_generation: cell.generation,
+            session_id: binding.session_id.clone(),
+            client_user_message_id: binding.client_user_message_id.clone(),
+            user_input_digest: binding.user_input_digest,
+            protocol_id: binding.protocol_id.clone(),
+            app_server_version: binding.app_server_version.clone(),
+            codex_home_digest: binding.codex_home_digest,
+            connection_id: binding.connection_id,
+        }),
+    };
+    adapt_request(now_ms, intent)
 }
 
 pub fn adapt_request(

@@ -6,6 +6,7 @@
 
 /// Reusable state machine; does not install a second runtime owner.
 pub mod durable_control;
+pub mod cell_batch;
 mod neuron_feature;
 
 pub use neuron_feature::NeuronFeatureContractError;
