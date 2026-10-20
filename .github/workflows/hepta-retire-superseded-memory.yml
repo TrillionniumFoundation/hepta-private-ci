@@ -1,0 +1,273 @@
+name: Retire one superseded Memory run
+
+on:
+  push:
+    branches: [agents/20261020/retire-memory-superseded-run]
+    paths: [.github/workflows/hepta-retire-superseded-memory.yml]
+
+permissions:
+  contents: read
+  pull-requests: read
+  actions: write
+
+concurrency:
+  group: hepta-retire-memory-39393660244
+  cancel-in-progress: false
+
+jobs:
+  retire:
+    if: github.repository == 'TrillionniumFoundation/hepta-private-ci' && github.event_name == 'push'
+    runs-on: ubuntu-24.04-arm
+    timeout-minutes: 5
+    steps:
+      - name: Verify exact old payload and request ordinary cancellation
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          python3 - <<'PYCODE'
+          """Retire one superseded Memory run only after its payload jobs are terminal."""
+          import datetime
+          import json
+          import os
+          from pathlib import Path
+          import re
+          import time
+          import urllib.error
+          import urllib.request
+
+          REPO = "TrillionniumFoundation/hepta-private-ci"
+          REPO_ID = 1320694176
+          BRANCH = "codex/memory-four-stage-premise-integrity-20261017"
+          CONTROL_BRANCH = "agents/20261020/retire-memory-superseded-run"
+          CONTROL_PATH = ".github/workflows/hepta-retire-superseded-memory.yml"
+          OLD_RUN = 39393660244
+          OLD_HEAD = "9bf58f7fb869953f49284739e3cf8007dce3fb0b"
+          NEW_RUN = 39401990256
+          NEW_HEAD = "c8f4f14938acc92d1e3e62349ca07da6e0bd6a7f"
+          WORKFLOW_ID = 336746106
+          WORKFLOW_PATH = ".github/workflows/blocking-ci.yml"
+          ROLLUP_JOB = 118565266367
+          ACTOR_ID = 273670192
+
+
+          def require(condition, message):
+              if not condition:
+                  raise RuntimeError(message)
+
+
+          def validate_run(run, run_id, source):
+              require(run["id"] == run_id, "Run ID changed")
+              require(run["head_sha"] == source, "Source identity changed")
+              require(run["head_branch"] == BRANCH, "Source branch changed")
+              require(run["event"] == "pull_request", "Unexpected run event")
+              require(run["run_attempt"] == 1, "Run attempt changed")
+              require(run["workflow_id"] == WORKFLOW_ID, "Workflow ID changed")
+              require(run["path"] == WORKFLOW_PATH, "Workflow path changed")
+              for key in ("repository", "head_repository"):
+                  require(run[key]["id"] == REPO_ID, "Repository ID changed")
+                  require(run[key]["full_name"] == REPO, "Repository name changed")
+              require(run["actor"]["id"] == ACTOR_ID, "Run actor changed")
+
+
+          def validate_jobs(payload, run_id, source, expected_count):
+              jobs = payload["jobs"]
+              require(payload["total_count"] == expected_count, "Job count changed")
+              require(len(jobs) == expected_count, "Incomplete job page")
+              require(len({job["id"] for job in jobs}) == len(jobs), "Duplicate jobs")
+              for job in jobs:
+                  require(job["run_id"] == run_id, "Job run changed")
+                  require(job["run_attempt"] == 1, "Job attempt changed")
+                  require(job["head_sha"] == source, "Job source changed")
+              return jobs
+
+
+          def eligible(snapshot):
+              old, new = snapshot["old"], snapshot["new"]
+              validate_run(old, OLD_RUN, OLD_HEAD)
+              validate_run(new, NEW_RUN, NEW_HEAD)
+              pr = snapshot["pr"]
+              require(pr["number"] == 2607 and pr["state"] == "open", "PR changed")
+              require(pr["head"]["ref"] == BRANCH, "PR branch changed")
+              require(pr["head"]["sha"] == NEW_HEAD, "PR source advanced")
+              require(pr["head"]["repo"]["id"] == REPO_ID, "PR repository changed")
+              refs = snapshot["refs"]
+              require(len(refs) == 1, "Ambiguous branch")
+              require(refs[0]["ref"] == "refs/heads/" + BRANCH, "Ref changed")
+              require(refs[0]["object"]["sha"] == NEW_HEAD, "Live source advanced")
+              if old["status"] == "completed":
+                  return "no_action_old_run_terminal"
+              if new["status"] != "pending":
+                  return "no_action_new_run_already_admitted"
+              require(old["status"] == "queued", "Old run state changed")
+              require(old["conclusion"] is None and new["conclusion"] is None,
+                      "Unexpected terminal conclusion")
+              jobs = validate_jobs(snapshot["old_jobs"], OLD_RUN, OLD_HEAD, 37)
+              validate_jobs(snapshot["new_jobs"], NEW_RUN, NEW_HEAD, 0)
+              active = [job for job in jobs if job["status"] != "completed"]
+              require(len(active) == 1, "Payload still running or queue changed")
+              rollup = active[0]
+              require(rollup["id"] == ROLLUP_JOB and rollup["name"] == "CI required",
+                      "Unexpected remaining job")
+              require(rollup["status"] == "queued" and rollup["conclusion"] is None,
+                      "Rollup has started or completed")
+              require(rollup["runner_id"] == 0 and rollup["runner_name"] == "",
+                      "Rollup runner assigned")
+              require(rollup["steps"] == [], "Rollup execution has started")
+              terminal = [job for job in jobs if job["status"] == "completed"]
+              require(all(job["conclusion"] is not None for job in terminal),
+                      "Terminal payload missing conclusion")
+              require(any(job["conclusion"] == "failure" for job in terminal),
+                      "Expected failed old payload not found")
+              return "eligible"
+
+
+          def main():
+              output = Path(os.environ["RUNNER_TEMP"]) / "retire-memory-receipt"
+              output.mkdir(mode=0o700, parents=True, exist_ok=True)
+              result = {
+                  "started_at": datetime.datetime.now(datetime.timezone.utc).isoformat(),
+                  "old_run": OLD_RUN,
+                  "old_head": OLD_HEAD,
+                  "new_run": NEW_RUN,
+                  "new_head": NEW_HEAD,
+                  "cancel_attempted": False,
+                  "cancel_accepted": False,
+                  "qualified_as_test_success": False,
+                  "race_boundary": "GitHub cancel has no compare-and-swap. A queued old "
+                                  "rollup can start between final observation and POST; "
+                                  "it only summarizes already-terminal superseded payload.",
+              }
+
+              def save(name, value):
+                  (output / (name + ".json")).write_text(
+                      json.dumps(value, indent=2) + "\n", encoding="utf-8")
+
+              class NoRedirect(urllib.request.HTTPRedirectHandler):
+                  def redirect_request(self, req, fp, code, msg, headers, newurl):
+                      return None
+
+              opener = urllib.request.build_opener(NoRedirect)
+
+              def api(method, path, name):
+                  require(path.startswith("/") and not path.startswith("//") and
+                          ".." not in path.split("?", 1)[0].split("/"),
+                          "Invalid API path")
+                  if method != "GET":
+                      require(method == "POST" and
+                              path == "/actions/runs/" + str(OLD_RUN) + "/cancel",
+                              "Mutation outside exact ordinary cancel endpoint")
+                  request = urllib.request.Request(
+                      "https://api.github.com/repos/" + REPO + path,
+                      method=method,
+                      data=b"{}" if method == "POST" else None,
+                      headers={
+                          "Accept": "application/vnd.github+json",
+                          "Authorization": "Bearer " + os.environ["GH_TOKEN"],
+                          "X-GitHub-Api-Version": "2022-11-28",
+                          "Content-Type": "application/json",
+                      },
+                  )
+                  try:
+                      with opener.open(request, timeout=10) as response:
+                          raw = response.read(2 * 1024 * 1024 + 1)
+                          require(len(raw) <= 2 * 1024 * 1024, "API response too large")
+                          body = json.loads(raw) if raw else None
+                          save(name, {"http_status": response.status, "body": body})
+                          return response.status, body
+                  except urllib.error.HTTPError as error:
+                      save(name, {"http_status": error.code,
+                                  "request_path": path, "method": method})
+                      if method == "POST":
+                          result["cancel_http_status"] = error.code
+                          if error.code in (403, 409):
+                              result["outcome"] = "cancel_rejected"
+                      raise RuntimeError("GitHub API returned HTTP " + str(error.code)) from None
+
+              def snapshot(label):
+                  paths = {
+                      "old": "/actions/runs/" + str(OLD_RUN),
+                      "new": "/actions/runs/" + str(NEW_RUN),
+                      "old_jobs": "/actions/runs/" + str(OLD_RUN) + "/attempts/1/jobs?per_page=100",
+                      "new_jobs": "/actions/runs/" + str(NEW_RUN) + "/attempts/1/jobs?per_page=100",
+                      "pr": "/pulls/2607",
+                      "refs": "/git/matching-refs/heads/" + BRANCH,
+                  }
+                  return {key: api("GET", path, label + "-" + key)[1]
+                          for key, path in paths.items()}
+
+              try:
+                  require(os.environ["GITHUB_REPOSITORY"] == REPO, "Wrong repository")
+                  require(os.environ["GITHUB_REF"] == "refs/heads/" + CONTROL_BRANCH,
+                          "Wrong control branch")
+                  require(os.environ["GITHUB_EVENT_NAME"] == "push", "Wrong event")
+                  require(os.environ["GITHUB_RUN_ATTEMPT"] == "1", "Control attempt changed")
+                  control_sha = os.environ["GITHUB_SHA"]
+                  require(re.fullmatch(r"[0-9a-f]{40}", control_sha) is not None,
+                          "Invalid control commit SHA")
+                  result["control_sha"] = control_sha
+                  commit = api("GET", "/git/commits/" + control_sha, "control-commit")[1]
+                  require([parent["sha"] for parent in commit["parents"]] == [NEW_HEAD],
+                          "Control commit has unexpected parents")
+                  compare = api("GET", "/compare/" + NEW_HEAD + "..." + control_sha,
+                                "control-compare")[1]
+                  require(compare["ahead_by"] == 1 and compare["behind_by"] == 0,
+                          "Control ancestry changed")
+                  require([file["filename"] for file in compare["files"]] == [CONTROL_PATH],
+                          "Control changes source outside one workflow")
+
+                  first = eligible(snapshot("before"))
+                  result["first_decision"] = first
+                  if first != "eligible":
+                      result["outcome"] = first
+                      return
+                  second = eligible(snapshot("immediately-before"))
+                  result["final_decision"] = second
+                  if second != "eligible":
+                      result["outcome"] = second
+                      return
+                  result["cancel_attempted"] = True
+                  result["outcome"] = "cancel_attempted_acceptance_unknown"
+                  save("result", result)
+                  status, _ = api("POST", "/actions/runs/" + str(OLD_RUN) + "/cancel",
+                                  "cancel-response")
+                  result["cancel_http_status"] = status
+                  require(status == 202, "Cancellation was not accepted")
+                  result["cancel_accepted"] = True
+                  result["outcome"] = "cancel_request_accepted_terminal_state_unverified"
+                  for index in range(6):
+                      time.sleep(5)
+                      old = api("GET", "/actions/runs/" + str(OLD_RUN),
+                                "after-old-" + str(index))[1]
+                      validate_run(old, OLD_RUN, OLD_HEAD)
+                      if old["status"] == "completed":
+                          result["outcome"] = "old_run_terminal_after_cancel_request"
+                          result["old_conclusion"] = old["conclusion"]
+                          break
+                  new = api("GET", "/actions/runs/" + str(NEW_RUN), "after-new")[1]
+                  validate_run(new, NEW_RUN, NEW_HEAD)
+                  result["new_status"] = new["status"]
+                  api("GET", "/actions/runs/" + str(NEW_RUN) +
+                      "/attempts/1/jobs?per_page=100", "after-new-jobs")
+              except Exception as error:
+                  result["error"] = type(error).__name__ + ": " + str(error)
+                  result.setdefault("outcome", "guard_or_api_failure")
+                  raise
+              finally:
+                  result["finished_at"] = datetime.datetime.now(datetime.timezone.utc).isoformat()
+                  save("result", result)
+                  print(json.dumps(result, sort_keys=True))
+
+
+          if __name__ == "__main__":
+              main()
+          PYCODE
+      - name: Preserve exact cancellation evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: retire-memory-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/retire-memory-receipt
+          if-no-files-found: error
+          retention-days: 14
