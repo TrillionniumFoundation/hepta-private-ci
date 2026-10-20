@@ -1,14 +1,15 @@
 use sqlx::migrate::Migrate;
-use sqlx::sqlite::SqlitePoolOptions;
+use codex_utils_absolute_path::test_support::PathExt;
 
 use super::*;
 
 async fn historical_pool(displaced: bool) -> SqlitePool {
-    let pool = SqlitePoolOptions::new()
-        .max_connections(1)
-        .connect("sqlite::memory:")
-        .await
-        .expect("SQLite owner");
+    let pool = codex_state::SqliteConfig::new_for_testing(
+        std::env::temp_dir().as_path().abs(),
+    )
+    .open_read_write_pool(std::path::Path::new(":memory:"))
+    .await
+    .expect("SQLite owner through the centralized shim");
     let mut connection = pool.acquire().await.expect("owner connection");
     connection
         .ensure_migrations_table("_sqlx_migrations")
