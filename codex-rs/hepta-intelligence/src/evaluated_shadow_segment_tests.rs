@@ -18,7 +18,7 @@ fn open(root: &std::path::Path, name: &str, create: bool) -> std::fs::File {
 }
 
 fn directory(root: &std::path::Path) -> std::fs::File {
-    crate::test_directory_handle::open_directory(root).unwrap()
+    std::fs::File::open(root).unwrap()
 }
 
 fn writer(

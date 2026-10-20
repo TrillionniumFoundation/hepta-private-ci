@@ -40,8 +40,6 @@ pub use canonical::prepare_intelligence_run;
 pub use canonical::validate_current_snapshot;
 
 mod evaluated_shadow;
-#[cfg(test)]
-mod test_directory_handle;
 mod ndu_stochastic_admission;
 mod neuron_runtime;
 mod outcome_credit_v2;

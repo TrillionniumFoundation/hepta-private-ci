@@ -126,8 +126,8 @@ fn ledger_at(path: &std::path::Path, fixture: &Fixture) -> LedgerWriter {
         .open(witness_path(path))
         .unwrap();
     let witness = LedgerWitnessStore::create(witness, digest("host-authorized-ledger")).unwrap();
-    let ledger_directory = crate::test_directory_handle::open_directory(path.parent().unwrap()).unwrap();
-    let witness_directory = crate::test_directory_handle::open_directory(path.parent().unwrap()).unwrap();
+    let ledger_directory = std::fs::File::open(path.parent().unwrap()).unwrap();
+    let witness_directory = std::fs::File::open(path.parent().unwrap()).unwrap();
     LedgerWriter::from_durable(
         ledger,
         witness,
@@ -189,8 +189,8 @@ fn durable_stage_records_a_decision_and_retries_after_reopen_without_new_bytes()
         .open(witness_path(&path))
         .unwrap();
     let witness = LedgerWitnessStore::recover(witness, digest("host-authorized-ledger")).unwrap();
-    let ledger_directory = crate::test_directory_handle::open_directory(path.parent().unwrap()).unwrap();
-    let witness_directory = crate::test_directory_handle::open_directory(path.parent().unwrap()).unwrap();
+    let ledger_directory = std::fs::File::open(path.parent().unwrap()).unwrap();
+    let witness_directory = std::fs::File::open(path.parent().unwrap()).unwrap();
     let mut reopened = LedgerWriter::from_durable(
         reopened_ledger,
         witness,
