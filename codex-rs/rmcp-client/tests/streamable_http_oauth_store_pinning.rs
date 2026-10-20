@@ -144,7 +144,7 @@ impl CredentialApi for TestCredential {
             .ok_or(KeyringError::NoEntry)
     }
 
-    fn delete_credential(&self) -> keyring::Result<()> {
+    fn delete_credential(&self) -> keyring_core::Result<()> {
         self.state
             .secret
             .lock()
