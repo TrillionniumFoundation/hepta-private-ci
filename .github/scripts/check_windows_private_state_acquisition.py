@@ -14,10 +14,10 @@ FIXTURES = ROOT / ".github/fixtures/windows-private-state-acquisition"
 PREFIX = "private_state_windows::directory::tests::"
 CREATION = PREFIX + "rejects_junction_before_creating_private_leaf"
 SUBSTITUTION = PREFIX + "rejects_ancestor_substitution_at_retained_open"
-SOURCE_SHA256 = "e0e7468e8e175acd3b063ad970ce7f5b060f56712de8dac0a41dc4d89e4d4950"
+SOURCE_SHA256 = "05f8abf49d5a0d5f099695d6138e01525ac9b5e0b369e5172e0dd8f342e2f2a6"
 PATCHES = {
     "unchecked-create": "93ed0742de0e4cfe226334fd2f71f1129ee42125f214ecf77297916d97696369",
-    "path-check-open": "133f7b6c50dc8f21edc2e9b949876c21de93aa1616622d1d1998e301b63f0f84",
+    "path-check-open": "24efb0448aaac1cc0a1b70bf661ad590fe0d1ee407d7787ea5b33c9923f2b320",
 }
 COMMAND = [
     "just",

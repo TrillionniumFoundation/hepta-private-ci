@@ -74,7 +74,10 @@ pub(super) fn open(root: &Path) -> io::Result<File> {
         }
     }
     let maximum_length = u16::try_from(name.len() * size_of::<u16>()).map_err(|_| {
-        io::Error::new(io::ErrorKind::InvalidInput, "private state path is too long")
+        io::Error::new(
+            io::ErrorKind::InvalidInput,
+            "private state path is too long",
+        )
     })?;
     let object_name = UNICODE_STRING {
         Length: maximum_length - size_of::<u16>() as u16,
