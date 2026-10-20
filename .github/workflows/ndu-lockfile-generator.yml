@@ -1,0 +1,45 @@
+name: ndu-lockfile-generator
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: write
+
+jobs:
+  generate:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: true
+          fetch-depth: 0
+      - name: Prepare Bazel CI
+        uses: ./.github/actions/prepare-bazel-ci
+        with:
+          target: x86_64-unknown-linux-gnu
+          cache-scope: ndu-lock-generator-current
+      - name: Generate lock candidate
+        shell: bash
+        run: |
+          set -euo pipefail
+          just bazel-lock-update
+          test -s MODULE.bazel.lock
+      - name: Commit generated lock to temporary branch
+        shell: bash
+        env:
+          BRANCH: ${{ github.event.pull_request.head.ref || github.ref_name }}
+        run: |
+          set -euo pipefail
+          git config user.name "Hepta lock generator"
+          git config user.email "hepta-lock-generator@users.noreply.github.com"
+          git add MODULE.bazel.lock
+          if git diff --cached --quiet; then
+            echo "MODULE.bazel.lock already matches generated output."
+            exit 0
+          fi
+          git commit -m "ci: retain generated Bazel lock candidate"
+          git push origin "HEAD:${BRANCH}"
