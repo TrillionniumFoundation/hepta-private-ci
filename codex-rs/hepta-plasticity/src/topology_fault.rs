@@ -63,11 +63,13 @@ pub fn topology_fault_scenarios_v1() -> Vec<TopologyFaultScenarioV1> {
     TOPOLOGY_OPERATIONS
         .into_iter()
         .flat_map(|operation| {
-            FAULT_POINTS.into_iter().map(move |point| TopologyFaultScenarioV1 {
-                operation,
-                point,
-                disposition: disposition_for(point),
-            })
+            FAULT_POINTS
+                .into_iter()
+                .map(move |point| TopologyFaultScenarioV1 {
+                    operation,
+                    point,
+                    disposition: disposition_for(point),
+                })
         })
         .collect()
 }
