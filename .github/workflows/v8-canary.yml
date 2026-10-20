@@ -334,7 +334,7 @@ jobs:
             CARGO_TARGET_DIR="${RUNNER_TEMP}/rusty-v8-cargo-smoke-${TARGET}-${SANDBOX}" \
             RUSTY_V8_ARCHIVE="${GITHUB_WORKSPACE}/${archive}" \
             RUSTY_V8_SRC_BINDING_PATH="${GITHUB_WORKSPACE}/${binding}" \
-            "${CARGO_1_95}" "${cargo_args[@]}"
+            "${CARGO_1_95}" "${cargo_args[@]}" --locked
           )
 
       - name: Upload staged artifacts
@@ -484,7 +484,7 @@ jobs:
             cd codex-rs
             RUSTY_V8_ARCHIVE="${GITHUB_WORKSPACE}/${archive}" \
             RUSTY_V8_SRC_BINDING_PATH="${GITHUB_WORKSPACE}/${binding}" \
-            cargo +1.95.0 test -p codex-v8-poc --target "${TARGET}" --features sandbox --no-run
+            cargo +1.95.0 test -p codex-v8-poc --target "${TARGET}" --features sandbox --locked --no-run
           )
 
       - name: Upload staged artifacts
