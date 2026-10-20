@@ -3,13 +3,18 @@
 //! These types keep logical cells in one host worker pool. They contain no OS
 //! process creation, model authority or online parameter mutation.
 
-use std::collections::{BTreeMap, BTreeSet};
+use std::collections::BTreeMap;
+use std::collections::BTreeSet;
 use std::fmt;
 
-use codex_hepta_types::{Digest32, Generation, StableId};
+use codex_hepta_types::Digest32;
+use codex_hepta_types::Generation;
+use codex_hepta_types::StableId;
 
-use crate::cell_batch::{FairCellQueueV1, ImmutableFeatureSnapshotV1, QueuedCellRequestV1};
 use crate::cell_batch::CellBatchError;
+use crate::cell_batch::FairCellQueueV1;
+use crate::cell_batch::ImmutableFeatureSnapshotV1;
+use crate::cell_batch::QueuedCellRequestV1;
 
 const MAX_INDEX_ENTRIES: usize = 16_384;
 
@@ -167,10 +172,7 @@ pub struct SharedWorkerPoolV1 {
 }
 
 impl SharedWorkerPoolV1 {
-    pub fn new(
-        maximum_queue: usize,
-        maximum_batch: usize,
-    ) -> Result<Self, CellWorkerError> {
+    pub fn new(maximum_queue: usize, maximum_batch: usize) -> Result<Self, CellWorkerError> {
         if maximum_batch == 0 {
             return Err(CellWorkerError::ZeroBatchSize);
         }
