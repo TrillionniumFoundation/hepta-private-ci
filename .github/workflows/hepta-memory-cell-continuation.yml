@@ -141,6 +141,11 @@ jobs:
       - uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
         with:
           tool: cargo-nextest
+      - name: Install native D-Bus build dependency
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends libdbus-1-dev pkg-config
+          pkg-config --atleast-version=1.6 dbus-1
       - name: Compile and test the actual owning crates
         run: just test -p codex-hepta-learning-artifacts -p codex-hepta-intelligence-eval -p codex-hepta-bellman-operator -p codex-hepta-infer-worker-host
       - name: Test source-admitted candidate owner boundaries
