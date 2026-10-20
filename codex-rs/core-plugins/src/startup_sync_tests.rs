@@ -16,10 +16,25 @@ use wiremock::ResponseTemplate;
 use wiremock::matchers::header_exists;
 use wiremock::matchers::method;
 use wiremock::matchers::path;
+#[cfg(unix)]
+use zip::HasZipMetadata;
 use zip::ZipWriter;
 use zip::write::SimpleFileOptions;
 
 const TEST_CURATED_PLUGIN_SHA: &str = "0123456789abcdef0123456789abcdef01234567";
+
+#[cfg(unix)]
+#[test]
+fn downloaded_zip_permissions_do_not_preserve_privileged_bits() {
+    use std::os::unix::fs::PermissionsExt;
+
+    let directory = tempfile::tempdir().unwrap_or_else(|error| panic!("{error:?}"));
+    let path = directory.path().join("payload");
+    std::fs::write(&path, b"fixture").unwrap_or_else(|error| panic!("{error:?}"));
+    apply_zip_permissions(Some(0o104755), &path).unwrap_or_else(|error| panic!("{error:?}"));
+    let metadata = std::fs::metadata(&path).unwrap_or_else(|error| panic!("{error:?}"));
+    assert_eq!(metadata.permissions().mode() & 0o7777, 0o755);
+}
 
 #[tokio::test]
 async fn github_http_routes_repository_ref_and_zipball_urls() {
@@ -1387,14 +1402,16 @@ fn curated_repo_backup_archive_zip_bytes(sha: &str) -> Vec<u8> {
 fn extract_zipball_rejects_symlink_entries() {
     let cursor = std::io::Cursor::new(Vec::new());
     let mut writer = ZipWriter::new(cursor);
-    let options = SimpleFileOptions::default().unix_permissions(0o120777);
     writer
-        .start_file("root/link", options)
-        .expect("start symlink entry");
-    writer
-        .write_all(b"../../outside")
-        .expect("write symlink target");
+        .add_symlink(
+            "root/link",
+            "../../outside",
+            SimpleFileOptions::default().system(zip::System::Unix),
+        )
+        .expect("add actual symlink entry");
     let bytes = writer.finish().expect("finish zip").into_inner();
+    let mut archive = ZipArchive::new(std::io::Cursor::new(&bytes)).expect("read fixture");
+    assert!(archive.by_index(0).expect("fixture entry").is_symlink());
     let destination = tempdir().expect("destination");
 
     let err = extract_zipball_to_dir(&bytes, destination.path())
@@ -1410,12 +1427,24 @@ fn extract_zipball_masks_special_permission_bits() {
 
     let cursor = std::io::Cursor::new(Vec::new());
     let mut writer = ZipWriter::new(cursor);
-    let options = SimpleFileOptions::default().unix_permissions(0o104755);
+    let options = SimpleFileOptions::default()
+        .system(zip::System::Unix)
+        .external_attributes(0o104755_u32 << 16);
     writer
         .start_file("root/plugin", options)
         .expect("start executable entry");
     writer.write_all(b"plugin").expect("write plugin");
     let bytes = writer.finish().expect("finish zip").into_inner();
+    // Inspect the original archive attributes: ZIP 9's unix_mode() already
+    // clears special bits, while the direct permission test covers our mask.
+    let mut archive = ZipArchive::new(std::io::Cursor::new(&bytes)).expect("read fixture");
+    let raw_mode = archive
+        .by_index(0)
+        .expect("fixture entry")
+        .get_metadata()
+        .external_attributes
+        >> 16;
+    assert_ne!(raw_mode & 0o4000, 0, "fixture must contain SUID");
     let destination = tempdir().expect("destination");
 
     extract_zipball_to_dir(&bytes, destination.path()).expect("extract archive");
