@@ -62,9 +62,8 @@ fn feature_and_activation_batches_preserve_generation() {
     let second = ImmutableFeatureSnapshotV1::new(generation(1), digest("encoder"), vec![3, 2, 1])
         .expect("snapshot");
     let batch = FeatureBatchV1::new(vec![first, second]).expect("feature batch");
-    let head =
-        CellAdapterHeadV1::new(id("cell:a"), id("organ:a"), generation(1), vec![1, 1, 1], 0)
-            .expect("head");
+    let head = CellAdapterHeadV1::new(id("cell:a"), id("organ:a"), generation(1), vec![1, 1, 1], 0)
+        .expect("head");
     let activations = head.activate_batch(&batch).expect("activation batch");
     assert_eq!(activations.feature_generation, generation(1));
     assert_eq!(activations.activations.len(), 2);
