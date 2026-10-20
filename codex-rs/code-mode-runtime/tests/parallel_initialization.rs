@@ -24,19 +24,16 @@ fn concurrent_first_sessions_initialize_one_shared_array_buffer_pool() {
                     barrier.wait();
                     runtime.block_on(async {
                         let session = InProcessCodeModeSession::new();
-                        let started = session
-                            .execute(ExecuteRequest {
-                                tool_call_id: format!("parallel-{index}"),
-                                enabled_tools: Vec::new(),
-                                source: format!(
-                                    "const sum = new Uint8Array(64).fill({index}).reduce((sum, value) => sum + value, 0); if (sum !== {}) throw new Error('cross-session allocation');",
-                                    64 * index,
-                                ),
-                                yield_time_ms: None,
-                                max_output_tokens: None,
-                            })
-                            .await
-                            .expect("start session cell");
+                        let started = session.execute(ExecuteRequest {
+                            tool_call_id: format!("parallel-{index}"),
+                            enabled_tools: Vec::new(),
+                            source: format!(
+                                "const sum = new Uint8Array(64).fill({index}).reduce((sum, value) => sum + value, 0); if (sum !== {}) throw new Error('cross-session allocation');",
+                                64 * index,
+                            ),
+                            yield_time_ms: None,
+                            max_output_tokens: None,
+                        }).await.expect("start session cell");
                         let cell_id = started.cell_id.clone();
                         assert_eq!(
                             started.initial_response().await.expect("cell result"),
