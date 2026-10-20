@@ -11,6 +11,9 @@ on:
       - "codex-rs/Cargo.lock"
       - "codex-rs/rust-toolchain.toml"
       - ".github/workflows/hepta-windows-private-state-native.yml"
+      - ".github/scripts/check_windows_private_state_acquisition.py"
+      - ".github/scripts/test_check_windows_private_state_acquisition.py"
+      - ".github/fixtures/windows-private-state-acquisition/**"
   workflow_dispatch:
 
 permissions:
@@ -84,6 +87,13 @@ jobs:
           Set-Location codex-rs
           cargo fmt --package codex-utils-path --package codex-hepta-prompt-registry --package codex-hepta-contracts --package codex-hepta-agentd -- --check
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+      - name: Prove directory acquisition rejects both original native attacks
+        shell: pwsh
+        run: |
+          python -m unittest discover -s .github/scripts -p test_check_windows_private_state_acquisition.py
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          python .github/scripts/check_windows_private_state_acquisition.py "$env:RUNNER_TEMP/private-state-acquisition"
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
       - name: Confirm no generated or modified tracked source
         if: always()
         shell: pwsh
@@ -95,3 +105,11 @@ jobs:
           $trackedChanges = @(git status --porcelain --untracked-files=no)
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
           if ($trackedChanges.Count -ne 0) { throw "unqualified worktree mutation" }
+      - name: Preserve exact source and all acquisition qualification logs
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: windows-private-state-acquisition-${{ github.event.pull_request.head.sha || github.sha }}-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/private-state-acquisition
+          if-no-files-found: warn
+          retention-days: 14
