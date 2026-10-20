@@ -4,4 +4,5 @@ codex_rust_crate(
     name = "guardian-v2",
     compile_data = ["src/async_scorer/classifier_instructions.md"],
     crate_name = "codex_guardian_v2",
+    unit_test_extra_binaries = ["//codex-rs/cli:codex"],
 )
