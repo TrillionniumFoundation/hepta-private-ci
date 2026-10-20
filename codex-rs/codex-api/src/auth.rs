@@ -41,6 +41,21 @@ pub trait AuthProvider: Send + Sync {
         headers
     }
 
+    /// Optional stable identity for a WebSocket Authorization proof.
+    ///
+    /// The caller captures `headers` once and uses that same snapshot for the
+    /// upgrade. By default the exact headers bind connection reuse. Providers
+    /// whose Authorization proof contains a changing timestamp or nonce may
+    /// return an opaque binding covering the auth scheme, credential, account,
+    /// and task that produced these headers. It must change when any of those
+    /// security boundaries changes. All other headers, including custom
+    /// security headers, remain compared exactly. Return None on uncertainty.
+    /// Returned bytes may contain secrets: compare in memory only, never log,
+    /// expose through Debug, or persist them.
+    fn websocket_auth_identity(&self, _headers: &HeaderMap) -> Option<Vec<u8>> {
+        None
+    }
+
     /// Resolves auth headers for an outbound request.
     ///
     /// Unlike [`Self::to_auth_headers`], implementations may perform asynchronous work to refresh
