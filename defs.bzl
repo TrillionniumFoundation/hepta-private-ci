@@ -309,6 +309,11 @@ def codex_rust_crate(
 
     binaries = DEP_DATA.get(native.package_name())["binaries"]
 
+    unit_test_cargo_env_runfiles = {}
+    for binary_label in unit_test_extra_binaries:
+        binary = Label(binary_label).name
+        unit_test_cargo_env_runfiles[binary_label] = "CARGO_BIN_EXE_" + binary
+
     lib_srcs = crate_srcs or native.glob(["src/**/*.rs"], exclude = binaries.values(), allow_empty = True)
 
     maybe_deps = []
@@ -412,13 +417,14 @@ def codex_rust_crate(
 
         maybe_deps += [name]
 
-    sanitized_binaries = []
-    cargo_env = {}
-    cargo_env_runfiles = {}
     unit_test_cargo_env_runfiles = {}
     for binary_label in unit_test_extra_binaries:
         binary = Label(binary_label).name
         unit_test_cargo_env_runfiles[binary_label] = "CARGO_BIN_EXE_" + binary
+
+    sanitized_binaries = []
+    cargo_env = {}
+    cargo_env_runfiles = {}
     for binary, main in binaries.items():
         #binary = binary.replace("-", "_")
         sanitized_binaries.append(binary)
