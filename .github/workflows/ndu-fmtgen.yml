@@ -1,6 +1,8 @@
 name: NDU formatting generator
 
 on:
+  push:
+    branches: [codex/ndu-fmtgen-current-20261020]
   workflow_dispatch:
 
 permissions:
