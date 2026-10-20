@@ -208,12 +208,16 @@ const REQUIRED_SCHEMA_OBJECTS: &[(&str, &str)] = &[
         "trigger",
     ),
     (
+        "cognitive_operation_destination_terminal_no_reinsert",
+        "trigger",
+    ),
+    (
         "cognitive_operation_destination_terminal_disposition_lookup",
         "index",
     ),
 ];
 const REQUIRED_SCHEMA_ORACLE_SHA256: &str =
-    "f76aecab2b3d5a969ca1ac58b6543b64549a437d49ab7c6eeb7d246dd6ab1a66";
+    "62fcc0bd03c0915c295ed0696a8e40693113bdaeeb9c841773f0822eac62de3e";
 
 #[derive(Debug, thiserror::Error)]
 pub enum CognitiveStoreError {
