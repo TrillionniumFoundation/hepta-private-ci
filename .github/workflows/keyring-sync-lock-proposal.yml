@@ -48,6 +48,17 @@ jobs:
           (cd codex-rs && "${RUNNER_TEMP}/cargo-deny/cargo-deny" check advisories) > "${RUNNER_TEMP}/cargo-deny/advisories.log" 2>&1 || true
           grep -E "RUSTSEC-|advisories|error|warning|failed" "${RUNNER_TEMP}/cargo-deny/advisories.log" > "${RUNNER_TEMP}/cargo-deny/report.txt" || true
           cat "${RUNNER_TEMP}/cargo-deny/report.txt"
+      - name: Emit exact Cargo.lock postimage for review
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          from pathlib import Path
+
+          for index, line in enumerate(Path("codex-rs/Cargo.lock").read_text().splitlines(), start=1):
+              print(f"HEPTA_LOCK_LINE:{index:06d}:{line}")
+          PY
+
       - name: Upload real Cargo.lock postimage
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
