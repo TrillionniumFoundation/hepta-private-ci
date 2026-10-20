@@ -14,14 +14,15 @@ jobs:
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
           persist-credentials: false
-          fetch-depth: 2
+          fetch-depth: 4
       - name: Install pinned uv
         uses: astral-sh/setup-uv@08807647e7069bb48b6ef5acd8ec9567f424441b
       - name: Verify input and run actual pinned Ruff
         shell: bash
         run: |
           set -euo pipefail
-          test "$(git rev-parse HEAD^)" = "33ae796e402ee614c956b361e3ab951f8b73c050"
+          test "$(git rev-parse HEAD^)" = "445c78c42eca5c41678530399df7a9723c790510"
+          test "$(git rev-parse HEAD~3)" = "33ae796e402ee614c956b361e3ab951f8b73c050"
           test "$(git hash-object scripts/hepta_sngr_two_source_eval.py)" = "a8f9e542fbdad1105f027b1544331afa158a6268"
           test "$(git hash-object scripts/test_hepta_sngr_two_source_eval.py)" = "a1ea60983d91034df700e955ff2a4e42be146db1"
           uv run --frozen --project scripts ruff --version | grep -Fx "ruff 0.15.13"
