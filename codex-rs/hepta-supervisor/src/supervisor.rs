@@ -829,7 +829,7 @@ impl<D: ProcessDriver> Supervisor<D> {
                 runtime.phase = RuntimePhase::Killing;
             }
         }
-        Ok(())
+        Err(SupervisorError::SignedIntentRecoveryRequired(agent_id.clone()))
     }
 
     pub fn production_recovery_required(
