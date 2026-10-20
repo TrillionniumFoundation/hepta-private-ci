@@ -276,3 +276,13 @@ The bootstrap source-location obligation for `cognitive.types` is implemented by
 - `codex-rs/hepta-cognitive-types`
 
 The source candidate is checked by `.github/workflows/hepta-consolidated-source.yml`, including closed-world inventory, package tests, all-target compilation, strict Clippy and clean tracked state. This receipt is source implementation evidence only. It grants no runtime, production-writer, model-provider, external-effect, independent-acceptance, selection, promotion, merge or release authority.
+
+### Memory Cell wire projections
+
+The cognitive wire registry includes the Memory Cell manifest, tick input,
+tick receipt and split proposal as strict typed messages. Identity, graph/model
+generation, source/forget frontiers, bounded state and candidate lineage remain
+explicit. A receipt represents resource evidence with `resourceUsage`:
+`unavailable` carries no byte values; `measured` carries validated resident and
+transient values. These newly introduced projection messages do not convert a
+candidate checkpoint or split proposal into a durable fact or an activation.

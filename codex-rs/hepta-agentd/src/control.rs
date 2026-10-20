@@ -62,6 +62,14 @@ impl AgentdControlServer {
                 _ = self.cancellation.cancelled() => return Ok(()),
                 accepted = self.listener.accept() => accepted?,
             };
+            // The socket path and 0700/0600 permissions protect the rendezvous,
+            // but the connected user identity still requires kernel proof. Check the kernel
+            // peer credentials before consuming a connection permit or reading
+            // any control bytes.  Unsupported platforms fail closed here.
+            if let Err(error) = ensure_control_peer(&stream) {
+                eprintln!("rejecting unauthenticated Agentd control peer: {error}");
+                continue;
+            }
             let Ok(permit) = Arc::clone(&self.connections).try_acquire_owned() else {
                 let mut stream = stream;
                 let _ = timeout(OVERLOAD_WRITE_TIMEOUT, async {
@@ -230,3 +238,11 @@ async fn set_owner_only(path: &Path) -> Result<(), AgentdError> {
 async fn set_owner_only(_path: &Path) -> Result<(), AgentdError> {
     Ok(())
 }
+
+fn ensure_control_peer(stream: &UnixStream) -> Result<(), AgentdError> {
+    stream.ensure_current_user_peer().map_err(AgentdError::Io)
+}
+
+#[cfg(all(test, unix))]
+#[path = "control_peer_tests.rs"]
+mod peer_auth_tests;

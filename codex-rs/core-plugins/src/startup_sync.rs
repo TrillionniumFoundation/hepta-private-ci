@@ -1036,6 +1036,15 @@ fn read_sha_file(sha_path: &Path) -> Option<String> {
 }
 
 fn extract_zipball_to_dir(bytes: &[u8], destination: &Path) -> Result<(), String> {
+    if let Ok(metadata) = std::fs::symlink_metadata(destination)
+        && metadata.file_type().is_symlink()
+    {
+        return Err(format!(
+            "curated plugins extraction root {} is a symbolic link",
+            destination.display()
+        ));
+    }
+
     std::fs::create_dir_all(destination).map_err(|err| {
         format!(
             "failed to create curated plugins extraction directory {}: {err}",
@@ -1086,6 +1095,18 @@ fn extract_zipball_to_dir(bytes: &[u8], destination: &Path) -> Result<(), String
         }
 
         let output_path = destination.join(&output_relative);
+        let mut checked_path = destination.to_path_buf();
+        for component in output_relative.components() {
+            checked_path.push(component);
+            if let Ok(metadata) = std::fs::symlink_metadata(&checked_path)
+                && metadata.file_type().is_symlink()
+            {
+                return Err(format!(
+                    "curated plugins zip path {} traverses a symbolic link",
+                    checked_path.display()
+                ));
+            }
+        }
         if entry.is_dir() {
             std::fs::create_dir_all(&output_path).map_err(|err| {
                 format!(

@@ -74,6 +74,15 @@ async fn run_control_socket_acceptor(
             }
         };
 
+        // The private rendezvous directory and 0600 socket mode prevent
+        // unrelated users from opening this endpoint. Verify the connected user
+        // with kernel peer credentials before the WebSocket upgrade.
+        // Unsupported platforms fail closed in codex-uds.
+        if let Err(error) = ensure_control_peer(&stream) {
+            warn!("rejecting unauthenticated app-server control peer: {error}");
+            continue;
+        }
+
         let transport_event_tx = transport_event_tx.clone();
         tokio::spawn(async move {
             let websocket_stream = match accept_async(stream).await {
@@ -170,6 +179,14 @@ async fn set_control_socket_permissions(socket_path: &Path) -> IoResult<()> {
 async fn set_control_socket_permissions(_socket_path: &Path) -> IoResult<()> {
     Ok(())
 }
+
+fn ensure_control_peer(stream: &UnixStream) -> IoResult<()> {
+    codex_uds::ensure_current_user_peer(stream)
+}
+
+#[cfg(all(test, unix))]
+#[path = "unix_socket_peer_tests.rs"]
+mod peer_auth_tests;
 
 struct ControlSocketFileGuard {
     socket_path: AbsolutePathBuf,

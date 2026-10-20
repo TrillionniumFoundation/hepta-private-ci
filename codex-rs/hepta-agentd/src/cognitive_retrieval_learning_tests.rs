@@ -160,10 +160,11 @@ fn open_directory_for_sync(path: &std::path::Path) -> std::io::Result<File> {
         use std::os::windows::fs::OpenOptionsExt;
 
         const FILE_FLAG_BACKUP_SEMANTICS: u32 = 0x0200_0000;
+        const FILE_FLAG_OPEN_REPARSE_POINT: u32 = 0x0020_0000;
         OpenOptions::new()
             .read(true)
             .write(true)
-            .custom_flags(FILE_FLAG_BACKUP_SEMANTICS)
+            .custom_flags(FILE_FLAG_BACKUP_SEMANTICS | FILE_FLAG_OPEN_REPARSE_POINT)
             .open(path)
     }
     #[cfg(not(windows))]

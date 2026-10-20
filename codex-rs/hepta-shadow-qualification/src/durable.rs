@@ -1,3 +1,4 @@
+#[cfg(not(windows))]
 use std::fs::File;
 use std::fs::OpenOptions;
 use std::io::Read;
@@ -118,7 +119,30 @@ pub(crate) fn verify_private_tree(root: &Path) -> Result<(), QualificationError>
 }
 
 pub(crate) fn sync_directory(path: &Path) -> Result<(), QualificationError> {
-    File::open(path)?.sync_all()?;
+    #[cfg(windows)]
+    let directory = {
+        use std::os::windows::fs::OpenOptionsExt;
+
+        // Unlike Unix, Windows needs a directory handle opened with backup
+        // semantics before FlushFileBuffers can persist directory metadata.
+        // Keep write access and propagate sync failures; never treat an
+        // unsuccessful flush as durable evidence.
+        const FILE_FLAG_BACKUP_SEMANTICS: u32 = 0x0200_0000;
+        const FILE_FLAG_OPEN_REPARSE_POINT: u32 = 0x0020_0000;
+        verify_private_directory(path)?;
+        let directory = OpenOptions::new()
+            .read(true)
+            .write(true)
+            .custom_flags(FILE_FLAG_BACKUP_SEMANTICS | FILE_FLAG_OPEN_REPARSE_POINT)
+            .open(path)?;
+        if !directory.metadata()?.is_dir() {
+            return Err(invalid("private directory sync handle must be a directory"));
+        }
+        directory
+    };
+    #[cfg(not(windows))]
+    let directory = File::open(path)?;
+    directory.sync_all()?;
     Ok(())
 }
 
@@ -166,3 +190,7 @@ fn verify_private_mode(
 fn invalid(message: impl Into<String>) -> QualificationError {
     QualificationError::Invalid(message.into())
 }
+
+#[cfg(all(test, windows))]
+#[path = "durable_windows_tests.rs"]
+mod windows_directory_sync_tests;
