@@ -32,6 +32,11 @@ use crate::TaskFlowReconcileOutcome;
 use crate::TaskFlowRun;
 use crate::taskflow::load_taskflow_definition_tx;
 use crate::taskflow::load_taskflow_run_tx;
+use crate::taskflow_guard::reject_unresolved_steps;
+
+#[path = "taskflow_step_identity.rs"]
+mod identity;
+pub(crate) use identity::StepAuthoringIdentity;
 
 /// Qualification APIs remain available, while the same durable ledger is
 /// now installed by the normal automation schema and used by the composed
@@ -84,6 +89,16 @@ pub enum TaskFlowStepObservation {
     Succeeded,
     Failed,
     Indeterminate,
+}
+
+#[derive(Clone, Copy)]
+enum StepReadMode<'a> {
+    Fence(&'a TaskFlowFence),
+    Terminal,
+    ProvenAbsent {
+        proof_digest: &'a Sha256Digest,
+        requeue_command_id: &'a str,
+    },
 }
 
 impl TaskFlowStepObservation {
@@ -227,7 +242,7 @@ impl AutomationStore {
         )?;
         validate_fence(self, fence)?;
         ensure_step_schema(self).await?;
-        let mut tx = self.begin_step_tx().await?;
+        let mut tx = self.begin_step_write_tx().await?;
         let run = load_run(&mut tx, self, run_id).await?;
         let definition = load_definition(&mut tx, self, &run).await?;
         validate_step_node(&definition, step_id)?;
@@ -267,6 +282,13 @@ impl AutomationStore {
                 "TaskFlow step intent is already bound to different bytes".to_string(),
             ));
         }
+        reject_unresolved_steps(
+            &mut tx,
+            self.taskflow_owner_agent_id(),
+            run_id,
+            Some(step_id),
+        )
+        .await?;
         let event = append_step_event(
             &mut tx,
             self,
@@ -418,7 +440,7 @@ impl AutomationStore {
         validate_fence(self, fence)?;
         validate_digest(proof_digest, "provider absence proof digest")?;
         ensure_step_schema(self).await?;
-        let mut tx = self.begin_step_tx().await?;
+        let mut tx = self.begin_step_write_tx().await?;
         let run = load_run(&mut tx, self, run_id).await?;
         let definition = load_definition(&mut tx, self, &run).await?;
         validate_step_node(&definition, step_id)?;
@@ -475,6 +497,38 @@ impl AutomationStore {
                 "provider-absence cancellation requires prepared or claimed state",
             ));
         }
+        // Queue absence cannot erase an independently started provider effect.
+        // Keep this check in the append transaction so dispatch admission and
+        // cancellation cannot both commit over the same claimed step.
+        let incompatible_contact: bool = sqlx::query_scalar(
+            "SELECT EXISTS (
+                SELECT 1 FROM taskflow_effect_dispatch_attempts a
+                LEFT JOIN taskflow_effect_dispatch_observations o
+                  ON o.owner_agent_id = a.owner_agent_id AND o.run_id = a.run_id
+                    AND o.step_id = a.step_id AND o.attempt = a.attempt
+                LEFT JOIN taskflow_effect_dispatch_reconciliations r
+                  ON r.owner_agent_id = a.owner_agent_id AND r.run_id = a.run_id
+                    AND r.step_id = a.step_id AND r.attempt = a.attempt
+                WHERE a.owner_agent_id = ? AND a.run_id = ? AND a.step_id = ?
+                  AND a.attempt = ? AND (
+                    COALESCE(r.observation, o.observation, '') != 'proven_absent'
+                    OR COALESCE(r.evidence_digest, o.evidence_digest, '') != ?
+                  )
+            )",
+        )
+        .bind(self.taskflow_owner_agent_id().as_str())
+        .bind(run_id)
+        .bind(step_id)
+        .bind(i64::from(attempt))
+        .bind(proof_digest.as_str())
+        .fetch_one(&mut *tx)
+        .await
+        .map_err(|_| TaskFlowError::Unavailable)?;
+        if incompatible_contact {
+            return Err(TaskFlowError::Conflict(
+                "step has provider-contact evidence without matching absence proof".to_string(),
+            ));
+        }
         let event = append_step_event(
             &mut tx,
             self,
@@ -518,7 +572,7 @@ impl AutomationStore {
         attempt: u32,
         fence: &TaskFlowFence,
     ) -> Result<Option<TaskFlowStepReceipt>, TaskFlowError> {
-        self.read_verified_step(run_id, step_id, attempt, Some(fence))
+        self.read_verified_step(run_id, step_id, attempt, StepReadMode::Fence(fence))
             .await
     }
 
@@ -528,8 +582,28 @@ impl AutomationStore {
         step_id: &str,
         attempt: u32,
     ) -> Result<Option<TaskFlowStepReceipt>, TaskFlowError> {
-        self.read_verified_step(run_id, step_id, attempt, None)
+        self.read_verified_step(run_id, step_id, attempt, StepReadMode::Terminal)
             .await
+    }
+
+    pub(crate) async fn read_absent_taskflow_step(
+        &self,
+        run_id: &str,
+        step_id: &str,
+        attempt: u32,
+        proof_digest: &Sha256Digest,
+        requeue_command_id: &str,
+    ) -> Result<Option<TaskFlowStepReceipt>, TaskFlowError> {
+        self.read_verified_step(
+            run_id,
+            step_id,
+            attempt,
+            StepReadMode::ProvenAbsent {
+                proof_digest,
+                requeue_command_id,
+            },
+        )
+        .await
     }
 
     async fn read_verified_step(
@@ -537,14 +611,22 @@ impl AutomationStore {
         run_id: &str,
         step_id: &str,
         attempt: u32,
-        fence: Option<&TaskFlowFence>,
+        mode: StepReadMode<'_>,
     ) -> Result<Option<TaskFlowStepReceipt>, TaskFlowError> {
         validate_common_without_digests(run_id, step_id, attempt, "read")?;
-        if let Some(fence) = fence {
-            validate_fence(self, fence)?;
+        match mode {
+            StepReadMode::Fence(fence) => validate_fence(self, fence)?,
+            StepReadMode::ProvenAbsent { proof_digest, .. } => {
+                validate_digest(proof_digest, "provider absence proof digest")?;
+            }
+            StepReadMode::Terminal => {}
         }
         ensure_step_schema(self).await?;
-        let mut tx = self.begin_step_tx().await?;
+        let mut tx = self
+            .taskflow_pool()
+            .begin()
+            .await
+            .map_err(|_| TaskFlowError::Unavailable)?;
         let run = load_run(&mut tx, self, run_id).await?;
         let definition = load_definition(&mut tx, self, &run).await?;
         validate_step_node(&definition, step_id)?;
@@ -560,7 +642,7 @@ impl AutomationStore {
             attempt,
             &events,
         )?;
-        if let Some(fence) = fence {
+        if let StepReadMode::Fence(fence) = mode {
             if receipt.state == TaskFlowStepState::Reconciled {
                 // Recovery may legitimately re-fence a still-Running run projection
                 // after this immutable step has already reached its terminal
@@ -572,8 +654,8 @@ impl AutomationStore {
                 check_historical_fence(&run, &receipt.fence, fence)?;
             }
         } else {
-            // This owner-local path only observes a completed run. It cannot
-            // settle an uncertain effect or authorize a new provider attempt.
+            // These owner-local paths only observe completed evidence. They
+            // cannot settle uncertainty or authorize a new provider attempt.
             let terminal = matches!(
                 (run.state, receipt.observation, receipt.final_outcome),
                 (
@@ -594,12 +676,48 @@ impl AutomationStore {
                     Some(TaskFlowReconcileOutcome::Failed)
                 )
             );
-            if !terminal
-                || !matches!(
-                    receipt.state,
-                    TaskFlowStepState::Recorded | TaskFlowStepState::Reconciled
-                )
-            {
+            let readable = match mode {
+                StepReadMode::Terminal => {
+                    terminal
+                        && matches!(
+                            receipt.state,
+                            TaskFlowStepState::Recorded | TaskFlowStepState::Reconciled
+                        )
+                }
+                StepReadMode::ProvenAbsent {
+                    proof_digest,
+                    requeue_command_id,
+                } => {
+                    // The run chain was verified in this transaction. Require
+                    // this exact attempt's committed absence requeue event so
+                    // a cancelled step alone cannot skip projection repair.
+                    let payload: Option<String> = sqlx::query_scalar(
+                        "SELECT payload_json FROM taskflow_events
+                         WHERE owner_agent_id = ? AND run_id = ? AND command_id = ?
+                           AND transition = 'requeued_proven_absent'",
+                    )
+                    .bind(self.taskflow_owner_agent_id().as_str())
+                    .bind(run_id)
+                    .bind(requeue_command_id)
+                    .fetch_optional(&mut *tx)
+                    .await
+                    .map_err(|_| TaskFlowError::Unavailable)?;
+                    let requeue = payload
+                        .as_deref()
+                        .map(serde_json::from_str::<crate::TaskFlowTransition>)
+                        .transpose()
+                        .map_err(|_| corrupt("provider absence requeue payload"))?;
+                    receipt.state == TaskFlowStepState::Reconciled
+                        && receipt.final_outcome == Some(TaskFlowReconcileOutcome::Cancelled)
+                        && receipt.receipt_digest.as_ref() == Some(proof_digest)
+                        && matches!(requeue,
+                            Some(crate::TaskFlowTransition::RequeueProvenAbsent {
+                                proof_digest: stored,
+                            }) if stored == *proof_digest)
+                }
+                StepReadMode::Fence(_) => unreachable!(),
+            };
+            if !readable {
                 tx.commit().await.map_err(|_| TaskFlowError::Unavailable)?;
                 return Ok(None);
             }
@@ -714,7 +832,7 @@ impl AutomationStore {
             validate_digest(receipt_digest, "step receipt digest")?;
         }
         ensure_step_schema(self).await?;
-        let mut tx = self.begin_step_tx().await?;
+        let mut tx = self.begin_step_write_tx().await?;
         let run = load_run(&mut tx, self, run_id).await?;
         let definition = load_definition(&mut tx, self, &run).await?;
         validate_step_node(&definition, step_id)?;
@@ -788,6 +906,48 @@ impl AutomationStore {
             }
             _ => unreachable!("operation validated above"),
         }
+        let terminal_kind = match (observation, final_outcome) {
+            (Some(TaskFlowStepObservation::Succeeded), _)
+            | (_, Some(TaskFlowReconcileOutcome::Succeeded)) => Some("succeeded"),
+            (Some(TaskFlowStepObservation::Failed), _)
+            | (_, Some(TaskFlowReconcileOutcome::Failed)) => Some("failed"),
+            (_, Some(TaskFlowReconcileOutcome::Cancelled)) => Some("proven_absent"),
+            _ => None,
+        };
+        if let Some(terminal_kind) = terminal_kind {
+            // Provider evidence may commit before its step projection. Check
+            // the reverse crash cut in this append transaction, complementing
+            // the ledger's guard against contradicting an already settled step.
+            let incompatible_provider_terminal: bool = sqlx::query_scalar(
+                "SELECT EXISTS (
+                    SELECT 1 FROM taskflow_effect_dispatch_attempts a
+                    LEFT JOIN taskflow_effect_dispatch_observations o
+                      USING (owner_agent_id, run_id, step_id, attempt)
+                    LEFT JOIN taskflow_effect_dispatch_reconciliations r
+                      USING (owner_agent_id, run_id, step_id, attempt)
+                    WHERE a.owner_agent_id = ? AND a.run_id = ? AND a.step_id = ?
+                      AND a.attempt = ?
+                      AND COALESCE(r.observation, o.observation) IN
+                        ('succeeded', 'failed', 'proven_absent')
+                      AND (COALESCE(r.observation, o.observation) != ?
+                        OR COALESCE(r.evidence_digest, o.evidence_digest) != ?)
+                )",
+            )
+            .bind(self.taskflow_owner_agent_id().as_str())
+            .bind(run_id)
+            .bind(step_id)
+            .bind(i64::from(attempt))
+            .bind(terminal_kind)
+            .bind(receipt_digest.map(Sha256Digest::as_str))
+            .fetch_one(&mut *tx)
+            .await
+            .map_err(|_| TaskFlowError::Unavailable)?;
+            if incompatible_provider_terminal {
+                return Err(TaskFlowError::Conflict(
+                    "terminal step contradicts durable provider evidence".to_string(),
+                ));
+            }
+        }
         let state = match operation {
             "claim" => TaskFlowStepState::Claimed,
             "record" => TaskFlowStepState::Recorded,
@@ -827,9 +987,12 @@ impl AutomationStore {
         })
     }
 
-    async fn begin_step_tx(&self) -> Result<sqlx::Transaction<'_, sqlx::Sqlite>, TaskFlowError> {
+    async fn begin_step_write_tx(
+        &self,
+    ) -> Result<sqlx::Transaction<'_, sqlx::Sqlite>, TaskFlowError> {
         self.taskflow_pool()
-            .begin()
+            // Step mutation shares the writer snapshot with final fence checks.
+            .begin_with("BEGIN IMMEDIATE")
             .await
             .map_err(|_| TaskFlowError::Unavailable)
     }
@@ -1503,7 +1666,7 @@ fn validate_common(
     validate_digest(payload_digest, "step payload digest")
 }
 
-fn validate_common_without_digests(
+pub(super) fn validate_common_without_digests(
     run_id: &str,
     step_id: &str,
     attempt: u32,
@@ -1565,6 +1728,14 @@ fn check_active_run_fence(
         .is_none_or(|expires| expires <= now_ms)
     {
         return Err(TaskFlowError::StaleFence);
+    }
+    if !matches!(
+        run.state,
+        crate::TaskFlowRunState::Queued | crate::TaskFlowRunState::Running
+    ) {
+        return Err(TaskFlowError::Conflict(
+            "TaskFlow run is not admitting new step work".to_string(),
+        ));
     }
     Ok(())
 }

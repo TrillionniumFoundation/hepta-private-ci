@@ -16,6 +16,7 @@ use codex_app_server_protocol::UserInput;
 use codex_hepta_automation::AutomationAdmission;
 use codex_hepta_automation::AutomationError;
 use codex_hepta_automation::AutomationFuture;
+use codex_hepta_automation::AutomationQueueContact;
 use codex_hepta_automation::AutomationQueueReceipt;
 use codex_hepta_automation::AutomationScheduler;
 use codex_hepta_automation::AutomationStore;
@@ -58,6 +59,7 @@ impl AgentdAutomationQueue {
     async fn enqueue_inner(
         &self,
         admission: AutomationAdmission,
+        contact: AutomationQueueContact,
     ) -> Result<AutomationQueueReceipt, QueueFailure> {
         if admission.agent_id != self.identity.agent_id {
             return Err(QueueFailure::BeforeAdmission(
@@ -113,18 +115,45 @@ impl AgentdAutomationQueue {
         let input = automation_input(&admission);
         let expected_payload_sha256 =
             automation_recovery::input_digest(&input).map_err(QueueFailure::BeforeAdmission)?;
+        let contact_admission = admission.clone();
+        let contact_state = Arc::clone(&self.state);
         let response: ThreadQueueReconcileResponse = client
             .request_handle()
-            .request_typed(ClientRequest::ThreadQueueReconcile {
-                request_id: RequestId::Integer(1),
-                params: ThreadQueueReconcileParams {
-                    thread_id: admission.thread_id.clone(),
-                    input,
-                    client_user_message_id: admission.client_user_message_id.clone(),
-                    expected_payload_sha256: expected_payload_sha256.clone(),
-                    mode: ThreadQueueReconcileMode::AllowIfAbsent,
+            .request_typed_before_send(
+                ClientRequest::ThreadQueueReconcile {
+                    request_id: RequestId::Integer(1),
+                    params: ThreadQueueReconcileParams {
+                        thread_id: admission.thread_id.clone(),
+                        input,
+                        client_user_message_id: admission.client_user_message_id.clone(),
+                        expected_payload_sha256: expected_payload_sha256.clone(),
+                        mode: ThreadQueueReconcileMode::AllowIfAbsent,
+                    },
                 },
-            })
+                async move {
+                    // The transport polls this only after connection/initialization,
+                    // command-queue and WebSocket readiness waits. Rejecting keeps
+                    // the existing durable uncertainty for exact-id reconciliation.
+                    contact
+                        .verify_before_contact(&contact_admission, || {
+                            if !contact_state
+                                .automation_is_available()
+                                .map_err(|_| AutomationError::AccessDenied)?
+                                || !contact_state
+                                    .automation_admission_ready()
+                                    .map_err(|_| AutomationError::AccessDenied)?
+                            {
+                                return Err(AutomationError::AccessDenied);
+                            }
+                            Ok(())
+                        })
+                        .await
+                        .map_err(|error| {
+                            std::io::Error::new(std::io::ErrorKind::PermissionDenied, error)
+                        })?;
+                    Ok(())
+                },
+            )
             .await
             .map_err(|_| QueueFailure::OutcomeUnknown)?;
         let _ = client.shutdown().await;
@@ -198,10 +227,19 @@ fn queue_failure_to_automation_error(failure: QueueFailure) -> AutomationError {
 impl AutomationTurnQueue for AgentdAutomationQueue {
     fn enqueue(
         &self,
+        _admission: AutomationAdmission,
+    ) -> AutomationFuture<'_, AutomationQueueReceipt> {
+        // Product contact requires the scheduler's exact prepared admission.
+        Box::pin(async { Err(AutomationError::AccessDenied) })
+    }
+
+    fn enqueue_with_contact(
+        &self,
         admission: AutomationAdmission,
+        contact: AutomationQueueContact,
     ) -> AutomationFuture<'_, AutomationQueueReceipt> {
         Box::pin(async move {
-            match self.enqueue_inner(admission).await {
+            match self.enqueue_inner(admission, contact).await {
                 Ok(receipt) => Ok(receipt),
                 Err(error) => Err(queue_failure_to_automation_error(error)),
             }
@@ -289,9 +327,15 @@ async fn run_scheduler_loop<Q: AutomationTurnQueue>(
         if cancellation.is_cancelled() {
             return Ok(());
         }
+        // Recovery may await connection and provider observations. New leases
+        // must start from a fresh wall-clock sample after that historical work.
+        let admission_now_ms = match unix_time_ms() {
+            Ok(now_ms) => now_ms,
+            Err(error) => return stop_after_automation_error(error, &state, &cancellation).await,
+        };
         // Once admitted, the tick must record the queue outcome. Dropping this
         // future on cancellation could lose an acknowledgement after dispatch.
-        match scheduler.tick(now_ms).await {
+        match scheduler.tick(admission_now_ms).await {
             Ok(tick) => {
                 if handle_automation_tick(tick, &mut retry_budget, &state, &cancellation).await? {
                     return Ok(());

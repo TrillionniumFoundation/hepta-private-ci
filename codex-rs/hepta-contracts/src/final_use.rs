@@ -22,8 +22,11 @@ use serde::Serialize;
 use sha2::Digest;
 use sha2::Sha256;
 
+#[path = "final_use_async_prepare.rs"]
+mod async_prepare;
 #[path = "final_use_store.rs"]
 mod store;
+pub use async_prepare::VerifiedPreparationEvidence;
 
 const MAX_CLAIMS: usize = 1_048_576;
 const MAX_REVOKED_GRANTS: usize = 16_384;
@@ -691,7 +694,7 @@ impl FinalUseAuthority {
         expected: &FinalUseBinding,
         consumer: impl FnOnce() -> T,
     ) -> Result<T, FinalUseError> {
-        let guard = self.enter_verified_effect(token, expected)?;
+        let guard = self.enter_verified_effect(&token, expected)?;
         let result = consumer();
         drop(guard);
         Ok(result)
@@ -709,7 +712,7 @@ impl FinalUseAuthority {
     where
         F: Future<Output = T>,
     {
-        let guard = self.enter_verified_effect(token, expected)?;
+        let guard = self.enter_verified_effect(&token, expected)?;
         let result = consumer().await;
         drop(guard);
         Ok(result)
@@ -717,7 +720,7 @@ impl FinalUseAuthority {
 
     fn enter_verified_effect(
         &self,
-        token: VerifiedUseToken,
+        token: &VerifiedUseToken,
         expected: &FinalUseBinding,
     ) -> Result<ActiveDispatchGuard, FinalUseError> {
         if !Arc::ptr_eq(&self.0, &token.owner) || &token.grant.binding != expected {

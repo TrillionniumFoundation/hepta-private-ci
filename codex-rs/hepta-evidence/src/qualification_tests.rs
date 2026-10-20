@@ -32,6 +32,9 @@ use crate::evidence_set_digest;
 use crate::qualification_append_scope_digest;
 use crate::qualification_subject;
 
+#[path = "recovery_frontier_tests.rs"]
+mod recovery_frontier_tests;
+
 fn config(temp: &TempDir) -> SqliteConfig {
     SqliteConfig::new_for_testing(
         AbsolutePathBuf::try_from(temp.path().to_path_buf()).expect("absolute temp path"),

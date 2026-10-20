@@ -11,6 +11,7 @@ mod authbus_ingress;
 mod authbus_trust;
 mod automation;
 mod automation_effect_host;
+mod automation_protected_file;
 mod automation_recovery;
 mod browser_servo;
 mod client;

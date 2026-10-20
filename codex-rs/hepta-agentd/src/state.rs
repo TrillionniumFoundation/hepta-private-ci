@@ -56,6 +56,9 @@ pub(crate) struct AgentdState {
     runtime: Mutex<RuntimeState>,
     events: Mutex<EventBuffer>,
     automation: Mutex<Option<AutomationStore>>,
+    // Scheduler retirement closes its admission but keeps the original owner
+    // available to reconcile already-admitted external effect attempts.
+    automation_recovery: std::sync::OnceLock<AutomationStore>,
     cognitive: Mutex<Option<Arc<CognitiveStore>>>,
     runs: Mutex<AgentRunCoordinator>,
     app_server_drain: AppServerDrainHandle,
@@ -153,6 +156,7 @@ impl AgentdState {
             registry,
             events: Mutex::new(events),
             automation: Mutex::new(None),
+            automation_recovery: std::sync::OnceLock::new(),
             cognitive: Mutex::new(None),
             runs: Mutex::new(run_coordinator),
             app_server_drain: AppServerDrainHandle::new(),
@@ -257,6 +261,9 @@ impl AgentdState {
                 "automation store was attached more than once".to_string(),
             ));
         }
+        self.automation_recovery.set(store.clone()).map_err(|_| {
+            AgentdError::Protocol("automation store was attached more than once".to_string())
+        })?;
         *automation = Some(store);
         Ok(())
     }
@@ -283,6 +290,10 @@ impl AgentdState {
 
     pub(crate) fn automation_is_available(&self) -> Result<bool, AgentdError> {
         Ok(self.automation.lock().map_err(poisoned_state)?.is_some())
+    }
+
+    pub(crate) fn automation_recovery_store(&self) -> Option<&AutomationStore> {
+        self.automation_recovery.get()
     }
 
     pub(crate) fn identity(&self) -> &AgentdIdentity {

@@ -36,7 +36,8 @@
         "open_state_dir_with_issuer_keys": "final_use_open_state",
         "with_verified_effect": "final_use_guarded_effect",
         "with_verified_use_async": "final_use_async_dispatch_fence",
-        "enter_verified_use": "final_use_delivery_raw"
+        "enter_verified_use": "final_use_delivery_raw",
+        "with_prepared_verified_use_async": "final_use_prepared_dispatch_fence"
       },
       "nonPrivilegedMethods": [
         "issuer_key_ids",
@@ -146,6 +147,15 @@
       },
       "nonPrivilegedMethods": [
         "consumer_count"
+      ]
+    },
+    {
+      "typeName": "VerifiedPreparationEvidence",
+      "sourcePath": "codex-rs/hepta-contracts/src/final_use_async_prepare.rs",
+      "privilegedMethods": {},
+      "nonPrivilegedMethods": [
+        "grant",
+        "observation"
       ]
     }
   ],
@@ -502,9 +512,7 @@
         "\\.\\s*with_verified_effect\\s*\\(",
         "FinalUseAuthority\\s*::\\s*with_verified_effect\\s*\\("
       ],
-      "allowedCallers": [
-        "codex-rs/hepta-automation/src/authorized_effect.rs"
-      ]
+      "allowedCallers": []
     },
     {
       "id": "final_use_async_dispatch_fence",
@@ -513,6 +521,16 @@
       "callPatterns": [
         "\\.\\s*with_verified_use_async\\s*\\(",
         "FinalUseAuthority\\s*::\\s*with_verified_use_async\\s*\\("
+      ],
+      "allowedCallers": []
+    },
+    {
+      "id": "final_use_prepared_dispatch_fence",
+      "typeMarker": "FinalUseAuthority",
+      "definitionPath": "codex-rs/hepta-contracts/src/final_use_async_prepare.rs",
+      "callPatterns": [
+        "\\.\\s*with_prepared_verified_use_async\\s*\\(",
+        "FinalUseAuthority\\s*::\\s*with_prepared_verified_use_async\\s*\\("
       ],
       "allowedCallers": [
         "codex-rs/hepta-automation/src/authorized_effect.rs"
