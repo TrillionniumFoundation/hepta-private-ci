@@ -57,8 +57,7 @@ def audit(directory, labels_file, *, source=SOURCE):
         and registration.get("source") == source
         and registration.get("original_pins") == PINS
         and registration.get("conditions") == list(ARMS)
-        and registration.get("tiers", {}).get("smol-135m")
-        == list(MODELS["smol-135m"])
+        and registration.get("tiers", {}).get("smol-135m") == list(MODELS["smol-135m"])
         and registration.get("training") == 0
         and registration.get("production_accepted") is False
         and len(registration.get("slices", [])) == 4
@@ -100,7 +99,8 @@ def audit(directory, labels_file, *, source=SOURCE):
             and frozen_bytes == plan_bytes
             and len(plan["cases"]) == 2
             and [c["question"]["identity"] for c in plan["cases"]]
-            == spec["ids"] == ids[2 * i : 2 * i + 2]
+            == spec["ids"]
+            == ids[2 * i : 2 * i + 2]
             and owner["head"] == source
             and owner["tier"] == "smol-135m"
             and owner["shard"] == i
@@ -118,9 +118,7 @@ def audit(directory, labels_file, *, source=SOURCE):
             and read_bytes(folder / "tested-head.txt").decode().strip() == source,
             "original worker/model/plan/labels identity changed",
         )
-        receipt = verify_frozen_shard_attempts(
-            plan, list(ARMS), owner, raw, scored
-        )
+        receipt = verify_frozen_shard_attempts(plan, list(ARMS), owner, raw, scored)
         profile.add(owner["model_digest"])
         for j, row in enumerate(scored):
             case = plan["cases"][j // 4]
@@ -184,9 +182,7 @@ def audit(directory, labels_file, *, source=SOURCE):
     ):
         all_pairs = [(scores[(qid, left)], scores[(qid, right)]) for qid in ids]
         observed = [
-            (a, b)
-            for a, b in all_pairs
-            if a["status"] == b["status"] == "succeeded"
+            (a, b) for a, b in all_pairs if a["status"] == b["status"] == "succeeded"
         ]
         delta = [b["f1"] - a["f1"] for a, b in observed]
         unknown = len(all_pairs) - len(observed)
@@ -197,9 +193,7 @@ def audit(directory, labels_file, *, source=SOURCE):
             "wins": sum(v > 1e-12 for v in delta),
             "losses": sum(v < -1e-12 for v in delta),
             "ties": sum(abs(v) <= 1e-12 for v in delta),
-            "observed_diagnostic_delta": (
-                sum(delta) / len(delta) if delta else None
-            ),
+            "observed_diagnostic_delta": (sum(delta) / len(delta) if delta else None),
             "planned_delta_bounds": [
                 (sum(delta) - unknown) / 8,
                 (sum(delta) + unknown) / 8,
@@ -218,9 +212,7 @@ def audit(directory, labels_file, *, source=SOURCE):
         "missing_or_unavailable": sum(
             x["unavailable"] + x["failed"] for x in arms.values()
         ),
-        "declared_source_families": len(
-            {case["family"] for case in full["cases"]}
-        ),
+        "declared_source_families": len({case["family"] for case in full["cases"]}),
         "independent_source_families_authenticated": False,
         "arms": arms,
         "paired_evidence_diagnostics": paired,

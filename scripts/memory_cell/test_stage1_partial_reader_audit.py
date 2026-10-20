@@ -1,4 +1,5 @@
 """Fail-closed cancellation accounting on fixed original-prefix fixtures."""
+
 import copy
 import math
 import unittest
@@ -11,15 +12,17 @@ def fixture():
     for index in range(8):
         qid = f"q{index}"
         evidence = [{"label": "E1", "excerpt": f"answer {index}"}]
-        cases.append({
-            "question": {"identity": qid},
-            "family": f"group-{index}",
-            "phase": "capability",
-            "conditions": {
-                "retrieved1": {"delivered_evidence": evidence},
-                "empty": {"delivered_evidence": []},
-            },
-        })
+        cases.append(
+            {
+                "question": {"identity": qid},
+                "family": f"group-{index}",
+                "phase": "capability",
+                "conditions": {
+                    "retrieved1": {"delivered_evidence": evidence},
+                    "empty": {"delivered_evidence": []},
+                },
+            }
+        )
         labels[qid] = {"answer": f"answer {index}", "unanswerable": False}
         for arm in ("retrieved1", "empty"):
             row = {
@@ -37,31 +40,36 @@ def fixture():
             }
             row.update(answer_scores(row["answer"], (labels[qid]["answer"],), False))
             original[(qid, arm)] = row
-    partial.append({
-        "question_id": "q0",
-        "arm": "retrieved1",
-        "family": "group-0",
-        "phase": "capability",
-        "status": "succeeded",
-        "answer": "answer 0",
-        "receipt": {
-            "delivered_evidence": copy.deepcopy(
-                cases[0]["conditions"]["retrieved1"]["delivered_evidence"]
-            ),
-            "reader_identity": "distinct-reference-model",
-            "trainable_parameters": 0,
-            "answer_postprocessed": False,
-            "seconds": 12.5,
-            "generated_tokens": 5,
-        },
-    })
+    partial.append(
+        {
+            "question_id": "q0",
+            "arm": "retrieved1",
+            "family": "group-0",
+            "phase": "capability",
+            "status": "succeeded",
+            "answer": "answer 0",
+            "receipt": {
+                "delivered_evidence": copy.deepcopy(
+                    cases[0]["conditions"]["retrieved1"]["delivered_evidence"]
+                ),
+                "reader_identity": "distinct-reference-model",
+                "trainable_parameters": 0,
+                "answer_postprocessed": False,
+                "seconds": 12.5,
+                "generated_tokens": 5,
+            },
+        }
+    )
     return {"cases": cases}, partial, original, labels
 
 
 class CancelledReaderCensusTests(unittest.TestCase):
     def run_fixture(self, plan, partial, original, labels):
         return evaluate_prefix(
-            plan, partial, original, labels,
+            plan,
+            partial,
+            original,
+            labels,
             reference_identity="distinct-reference-model",
         )
 
@@ -105,8 +113,9 @@ class CancelledReaderCensusTests(unittest.TestCase):
         for field, value in (("seconds", math.nan), ("trainable_parameters", 8)):
             plan, partial, original, labels = fixture()
             partial[0]["receipt"][field] = value
-            with self.subTest(field=field), self.assertRaisesRegex(
-                ValueError, "actual reference inference"
+            with (
+                self.subTest(field=field),
+                self.assertRaisesRegex(ValueError, "actual reference inference"),
             ):
                 self.run_fixture(plan, partial, original, labels)
 

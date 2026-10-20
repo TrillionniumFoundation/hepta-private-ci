@@ -118,8 +118,9 @@ class ShardIntegrityTests(unittest.TestCase):
             args = list(fixture())
             for records in args[3:]:
                 records[0]["receipt"][name] = invalid
-            with self.subTest(name=name), self.assertRaisesRegex(
-                ValueError, "resource receipt"
+            with (
+                self.subTest(name=name),
+                self.assertRaisesRegex(ValueError, "resource receipt"),
             ):
                 verify_frozen_shard_attempts(*args)
 

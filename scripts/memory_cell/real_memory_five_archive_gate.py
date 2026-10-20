@@ -3,6 +3,7 @@
 No model inference, training, approval signatures or deployment. Reuses the
 existing original-answer validator and independent 40+72 RAG archive validator.
 """
+
 import argparse
 from collections import defaultdict
 import hashlib
@@ -15,7 +16,13 @@ import sys
 import tempfile
 
 from historical_reader_failure_modes import (
-    ARMS, GENERATING_SOURCE, MODELS, PLAN_SHA, SOURCE_SHA, diagnose, sealed_zip,
+    ARMS,
+    GENERATING_SOURCE,
+    MODELS,
+    PLAN_SHA,
+    SOURCE_SHA,
+    diagnose,
+    sealed_zip,
 )
 from reader_admission_gate import audit as audit_strong_rag
 
@@ -42,81 +49,121 @@ def analyze(source_zip, smol_zip, qwen_zip, strong_zip, replay_zip):
     failure = diagnose(source_zip, qwen_zip, smol_zip)
     rag = audit_strong_rag(source_zip, strong_zip, replay_zip)
     src = sealed_zip(source_zip, SOURCE_SHA)
-    ensure(hashlib.sha256(src["plan/plan.json"]).hexdigest() == PLAN_SHA,
-           "source plan changed")
-    labels = {r["id"]: r for r in json.loads(src["observations/labels.json"])
-              if r["phase"] == "test"}
+    ensure(
+        hashlib.sha256(src["plan/plan.json"]).hexdigest() == PLAN_SHA,
+        "source plan changed",
+    )
+    labels = {
+        r["id"]: r
+        for r in json.loads(src["observations/labels.json"])
+        if r["phase"] == "test"
+    }
     ensure(len(labels) == 8, "development question population changed")
     docs = {r["identity"]: r for r in json.loads(src["plan/source-view.json"])}
     ensure(len(docs) == 108, "original experience corpus changed")
     outputs, models = {}, {}
     reexecuted = 0
     with tempfile.TemporaryDirectory() as temporary:
-        worker = Path(temporary)/"event_probe.py"
+        worker = Path(temporary) / "event_probe.py"
         worker.write_bytes(src["source/event_probe.py"])
         for name, path in (("smol-1.7b", smol_zip), ("qwen-3b", qwen_zip)):
             zipped = sealed_zip(path, MODELS[name])
-            ensure(zipped["tested-commit.txt"].decode().strip() == GENERATING_SOURCE,
-                   "real Reader generation SHA changed")
+            ensure(
+                zipped["tested-commit.txt"].decode().strip() == GENERATING_SOURCE,
+                "real Reader generation SHA changed",
+            )
             inv = json.loads(zipped["inventory.json"])
             ensure(inv["tier"] == name, "Reader tier drift")
             records = json.loads(zipped["run/scored-answers.json"])
             ensure(len(records) == 48, "incomplete model census")
             matched = {}
             by_case = defaultdict(dict)
-            cost = {a: dict(success=0, planned=8, input_tokens=0,
-                            output_tokens=0, measured_seconds=0.0) for a in ARMS}
+            cost = {
+                a: dict(
+                    success=0,
+                    planned=8,
+                    input_tokens=0,
+                    output_tokens=0,
+                    measured_seconds=0.0,
+                )
+                for a in ARMS
+            }
             for row in records:
                 key = (row["question_id"], row["arm"])
-                ensure(key not in matched and key[0] in labels and key[1] in ARMS
-                       and row["status"] == "succeeded", "invalid real answer row")
+                ensure(
+                    key not in matched
+                    and key[0] in labels
+                    and key[1] in ARMS
+                    and row["status"] == "succeeded",
+                    "invalid real answer row",
+                )
                 receipt = row["receipt"]
-                ensure(receipt["reader_identity"] == inv["inventory_digest"]
-                       and receipt["trainable_parameters"] == 0
-                       and receipt["answer_postprocessed"] is False
-                       and receipt["token_limit"] == 2048,
-                       "Reader weights or token ceiling differ")
+                ensure(
+                    receipt["reader_identity"] == inv["inventory_digest"]
+                    and receipt["trainable_parameters"] == 0
+                    and receipt["answer_postprocessed"] is False
+                    and receipt["token_limit"] == 2048,
+                    "Reader weights or token ceiling differ",
+                )
                 second = receipt["seconds"]
-                ensure(type(second) in (int,float) and math.isfinite(second)
-                       and second >= 0
-                       and type(receipt["input_tokens"]) is int
-                       and 0 <= receipt["input_tokens"] <= 2048
-                       and type(receipt["generated_tokens"]) is int
-                       and 0 <= receipt["generated_tokens"] <= 64,
-                       "unmeasured or unbounded model inference cost")
+                ensure(
+                    type(second) in (int, float)
+                    and math.isfinite(second)
+                    and second >= 0
+                    and type(receipt["input_tokens"]) is int
+                    and 0 <= receipt["input_tokens"] <= 2048
+                    and type(receipt["generated_tokens"]) is int
+                    and 0 <= receipt["generated_tokens"] <= 64,
+                    "unmeasured or unbounded model inference cost",
+                )
                 delivered = receipt["delivered_evidence"]
-                ensure([v["original_id"] for v in delivered] == row["selected"],
-                       "source selection changed")
+                ensure(
+                    [v["original_id"] for v in delivered] == row["selected"],
+                    "source selection changed",
+                )
                 for item in delivered:
                     original = docs[item["original_id"]]
-                    ensure(item["excerpt"] == original["content"]
-                           and item["root"] == original["root"]
-                           and item["scope"] == original["scope"],
-                           "delivered evidence not original")
+                    ensure(
+                        item["excerpt"] == original["content"]
+                        and item["root"] == original["root"]
+                        and item["scope"] == original["scope"],
+                        "delivered evidence not original",
+                    )
                 parsed = STRICT.fullmatch(row["answer"])
                 identifier = parsed.group(1) if parsed else None
-                ensure(identifier == row["parsed_identifier"],
-                       "original model answer repaired")
+                ensure(
+                    identifier == row["parsed_identifier"],
+                    "original model answer repaired",
+                )
                 success = identifier == labels[key[0]]["expected"]
                 if row["kind"] == "procedure":
-                    request = dict(operation="execute",
-                                   recipe=labels[key[0]]["procedure"],
-                                   supplied=identifier or "invalid_response")
+                    request = dict(
+                        operation="execute",
+                        recipe=labels[key[0]]["procedure"],
+                        supplied=identifier or "invalid_response",
+                    )
                     result = subprocess.run(
                         [sys.executable, "-I", "-S", str(worker)],
                         input=json.dumps(request, sort_keys=True),
-                        text=True, capture_output=True, timeout=10, check=False,
+                        text=True,
+                        capture_output=True,
+                        timeout=10,
+                        check=False,
                     )
                     receipt_program = row["procedure_verification"]
-                    ensure(receipt_program["request"] == request
-                           and receipt_program["exit_code"] == result.returncode
-                           and receipt_program["stdout"] == result.stdout
-                           and receipt_program["stderr"] == result.stderr,
-                           "real program task execution cannot be replayed")
+                    ensure(
+                        receipt_program["request"] == request
+                        and receipt_program["exit_code"] == result.returncode
+                        and receipt_program["stdout"] == result.stdout
+                        and receipt_program["stderr"] == result.stderr,
+                        "real program task execution cannot be replayed",
+                    )
                     success = result.returncode == 0
                     reexecuted += 1
-                ensure(row["strict_task_success"] is success,
-                       "scorer changed actual task result")
+                ensure(
+                    row["strict_task_success"] is success,
+                    "scorer changed actual task result",
+                )
                 v = cost[key[1]]
                 v["success"] += int(success)
                 v["input_tokens"] += receipt["input_tokens"]
@@ -138,34 +185,41 @@ def analyze(source_zip, smol_zip, qwen_zip, strong_zip, replay_zip):
             outputs[name] = matched
     for key, a in outputs["smol-1.7b"].items():
         b = outputs["qwen-3b"][key]
-        ensure(a["selected"] == b["selected"]
-               and a["candidate_digest"] == b["candidate_digest"]
-               and a["receipt"]["query_digest"] == b["receipt"]["query_digest"]
-               and a["receipt"]["bundle_digest"] == b["receipt"]["bundle_digest"]
-               and a["receipt"]["token_limit"] == b["receipt"]["token_limit"]
-               and a["receipt"]["delivered_evidence"]
-               == b["receipt"]["delivered_evidence"],
-               "Reader capacity comparison received unmatched evidence")
+        ensure(
+            a["selected"] == b["selected"]
+            and a["candidate_digest"] == b["candidate_digest"]
+            and a["receipt"]["query_digest"] == b["receipt"]["query_digest"]
+            and a["receipt"]["bundle_digest"] == b["receipt"]["bundle_digest"]
+            and a["receipt"]["token_limit"] == b["receipt"]["token_limit"]
+            and a["receipt"]["delivered_evidence"]
+            == b["receipt"]["delivered_evidence"],
+            "Reader capacity comparison received unmatched evidence",
+        )
     literal_still_visible = 0
     for qid, item in labels.items():
         remaining = outputs["qwen-3b"][qid, "without_prerequisite"]["receipt"][
             "delivered_evidence"
         ]
         original = " ".join(source["excerpt"] for source in remaining)
-        literal_still_visible += bool(re.search(
-            rf"(?<![A-Za-z0-9_-]){re.escape(item['expected'])}(?![A-Za-z0-9_-])",
-            original,
-        ))
+        literal_still_visible += bool(
+            re.search(
+                rf"(?<![A-Za-z0-9_-]){re.escape(item['expected'])}(?![A-Za-z0-9_-])",
+                original,
+            )
+        )
     ensure(literal_still_visible == 4, "frozen lesion cohort changed")
-    ensure(rag["complete_calibration"] == 40 and rag["complete_evaluation"] == 72,
-           "real 40+72 census incomplete")
+    ensure(
+        rag["complete_calibration"] == 40 and rag["complete_evaluation"] == 72,
+        "real 40+72 census incomplete",
+    )
     return dict(
         schema="hepta.memory.real-four-stage-source-verified.v1",
-        actual_inference_records=48+48+40+72,
+        actual_inference_records=48 + 48 + 40 + 72,
         original_reader_pairs=48,
         independent_program_worker_reexecutions=reexecuted,
-        exact_zip_sha256=dict(source=SOURCE_SHA, **MODELS,
-                              strong_rag=rag["outer_artifact_sha256"]),
+        exact_zip_sha256=dict(
+            source=SOURCE_SHA, **MODELS, strong_rag=rag["outer_artifact_sha256"]
+        ),
         actual_model_costs=models,
         stage1=dict(
             model_capacity_not_memory_learning=True,
@@ -174,7 +228,7 @@ def analyze(source_zip, smol_zip, qwen_zip, strong_zip, replay_zip):
             human_verified_sufficiency=False,
             necessary_premise_proven=False,
             ablation_answer_visible=literal_still_visible,
-            ablation_answer_removed=8-literal_still_visible,
+            ablation_answer_removed=8 - literal_still_visible,
             independent_sources_certified=False,
         ),
         stage2=dict(
@@ -223,8 +277,9 @@ def main():
     if args.output.exists() or args.output.is_symlink():
         raise ValueError("refuse to overwrite original real audit")
     result = analyze(args.source, args.smol, args.qwen, args.strong, args.replay)
-    args.output.write_text(json.dumps(result, indent=2, sort_keys=True,
-                                      allow_nan=False)+"\n")
+    args.output.write_text(
+        json.dumps(result, indent=2, sort_keys=True, allow_nan=False) + "\n"
+    )
 
 
 if __name__ == "__main__":

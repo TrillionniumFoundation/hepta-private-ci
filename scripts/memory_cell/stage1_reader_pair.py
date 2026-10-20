@@ -96,7 +96,6 @@ def verify_inventory(root):
     return declared
 
 
-
 def verify_frozen_shard_attempts(plan, conditions, identity, original_rows, scored):
     """Reject reordered, rewritten, or false-success original Reader attempts.
 
@@ -130,11 +129,7 @@ def verify_frozen_shard_attempts(plan, conditions, identity, original_rows, scor
             and isinstance(row, dict)
             and (row.get("question_id"), row.get("arm")) == expected[index]
             and (original.get("question_id"), original.get("arm")) == expected[index]
-            and {
-                key: value
-                for key, value in row.items()
-                if key not in ALLOWED_SCORING
-            }
+            and {key: value for key, value in row.items() if key not in ALLOWED_SCORING}
             == original,
             "raw/scored answer or frozen slot order changed",
         )

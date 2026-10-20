@@ -3,6 +3,7 @@
 Durably journaled prefix rows are genuine observations, but the remaining calls
 are unknown. This tool neither runs a model nor issues production qualification.
 """
+
 import argparse
 import json
 import math
@@ -10,7 +11,14 @@ from pathlib import Path
 import statistics
 from reader_reference import MODELS, PINS
 from stage1_reader_score import answer_scores
-from stage1_reader_pair import digest, insist, read_json, records_from_run, strict_json, verify_inventory
+from stage1_reader_pair import (
+    digest,
+    insist,
+    read_json,
+    records_from_run,
+    strict_json,
+    verify_inventory,
+)
 
 GENERATING_SOURCE = "5c9acdb340975adc2d16927fdb744023bd973bd8"
 GENERATING_RUN = 39007522955
@@ -20,7 +28,9 @@ MAX_NEW_TOKENS = 64
 def score_original(row, labels):
     item = labels[row["question_id"]]
     answer = item["answer"]
-    return answer_scores(row["answer"], (answer,) if answer is not None else None, item["unanswerable"])
+    return answer_scores(
+        row["answer"], (answer,) if answer is not None else None, item["unanswerable"]
+    )
 
 
 def evaluate_prefix(plan, partial, original, labels, *, reference_identity):
@@ -30,7 +40,9 @@ def evaluate_prefix(plan, partial, original, labels, *, reference_identity):
         for case in cases
         for arm in case["conditions"]
     ]
-    insist(len(cases) == 8 and len(expected) == len(set(expected)), "duplicate frozen plan")
+    insist(
+        len(cases) == 8 and len(expected) == len(set(expected)), "duplicate frozen plan"
+    )
     insist(0 < len(partial) <= len(expected), "empty or oversized durable prefix")
     insist(set(original) == set(expected), "incomplete frozen baseline")
     lookup = {case["question"]["identity"]: case for case in cases}
@@ -39,7 +51,9 @@ def evaluate_prefix(plan, partial, original, labels, *, reference_identity):
     for index, row in enumerate(partial):
         insist(isinstance(row, dict), "original journal row must be an object")
         key = (row.get("question_id"), row.get("arm"))
-        insist(key == expected[index], "partial journal not an untouched original prefix")
+        insist(
+            key == expected[index], "partial journal not an untouched original prefix"
+        )
         case, baseline = lookup[key[0]], original[key]
         insist(
             row.get("family") == case["family"] == baseline["family"]
@@ -86,7 +100,10 @@ def evaluate_prefix(plan, partial, original, labels, *, reference_identity):
                     == baseline["receipt"]["delivered_evidence"],
                     "reference reader received different original evidence",
                 )
-                score_a, score_b = score_original(baseline, labels), score_original(row, labels)
+                score_a, score_b = (
+                    score_original(baseline, labels),
+                    score_original(row, labels),
+                )
                 insist(
                     score_a["f1"] == baseline["f1"]
                     and score_a["exact_match"] == baseline["exact_match"],
@@ -98,7 +115,10 @@ def evaluate_prefix(plan, partial, original, labels, *, reference_identity):
                 known_sum += result["diagnostic_f1_delta"]
                 compared += 1
         else:
-            insist(not row.get("answer") and "receipt" not in row, "unexecuted model answer")
+            insist(
+                not row.get("answer") and "receipt" not in row,
+                "unexecuted model answer",
+            )
         rows.append(result)
     total, unknown = len(expected), len(expected) - compared
     return {
@@ -110,7 +130,9 @@ def evaluate_prefix(plan, partial, original, labels, *, reference_identity):
         "actual_failures": sum(r["status"] == "failed" for r in partial),
         "actually_paired": compared,
         "unpaired_or_not_attempted": unknown,
-        "paired_observed_diagnostic_f1_delta": known_sum / compared if compared else None,
+        "paired_observed_diagnostic_f1_delta": known_sum / compared
+        if compared
+        else None,
         "full_planned_delta_lower_bound": (known_sum - unknown) / total,
         "full_planned_delta_upper_bound": (known_sum + unknown) / total,
         "inference_seconds_observed": sum(durations),
@@ -138,7 +160,10 @@ def audit(root, labels_path, *, expected_source=GENERATING_SOURCE):
         small, tier="smol-135m", expected_source=expected_source
     )
     inventory = verify_inventory(large)
-    insist((large / "tested-commit.txt").read_text().strip() == expected_source, "source drift")
+    insist(
+        (large / "tested-commit.txt").read_text().strip() == expected_source,
+        "source drift",
+    )
     stage, model = read_json(large / "stage.json"), read_json(large / "inventory.json")
     registration = read_json(large / "run/preregistered.json")
     execution = read_json(large / "run/diagnostic/execution/execution.json")
@@ -151,7 +176,8 @@ def audit(root, labels_path, *, expected_source=GENERATING_SOURCE):
         and stage["inventory_sha256"] == digest((large / "inventory.json").read_bytes())
         and stage["publisher_sha256"] == digest((large / "publisher.json").read_bytes())
         and registration["source_commit"] == expected_source
-        and registration["input_pins"] == PINS | {"inventory": stage["inventory_sha256"]}
+        and registration["input_pins"]
+        == PINS | {"inventory": stage["inventory_sha256"]}
         and registration["optimization_permitted"] is False
         and execution["tested_commit"] == expected_source
         and execution["labels_sha256"] == PINS["labels"]
@@ -159,19 +185,28 @@ def audit(root, labels_path, *, expected_source=GENERATING_SOURCE):
         "partial model revision, source, dataset or no-training contract mismatch",
     )
     labels_path = Path(labels_path)
-    insist(labels_path.is_file() and not labels_path.is_symlink(), "regular label source")
+    insist(
+        labels_path.is_file() and not labels_path.is_symlink(), "regular label source"
+    )
     label_bytes = labels_path.read_bytes()
-    insist(digest(label_bytes) == PINS["labels"], "historical original answer pin drift")
+    insist(
+        digest(label_bytes) == PINS["labels"], "historical original answer pin drift"
+    )
     labels = strict_json(label_bytes)
     expected_ids = {case["question"]["identity"] for case in frozen_plan["cases"]}
     insist(set(labels) == expected_ids, "missing, replaced or extra answer labels")
     journal_path = large / "run/diagnostic/execution/raw-answers.jsonl"
     insist(journal_path.is_file() and not journal_path.is_symlink(), "regular journal")
     journal = journal_path.read_bytes()
-    insist(journal.endswith(b"\n") and len(journal) < 64 * 1024 * 1024, "truncated journal")
+    insist(
+        journal.endswith(b"\n") and len(journal) < 64 * 1024 * 1024, "truncated journal"
+    )
     original_rows = [strict_json(line) for line in journal.splitlines()]
     result = evaluate_prefix(
-        frozen_plan, original_rows, original, labels,
+        frozen_plan,
+        original_rows,
+        original,
+        labels,
         reference_identity=model["inventory_digest"],
     )
     return {
@@ -207,7 +242,9 @@ def main():
     result = audit(args.root, args.labels, expected_source=args.source)
     target = Path(args.output)
     insist(not target.exists(), "refuse to overwrite audit")
-    target.write_text(json.dumps(result, sort_keys=True, indent=2, allow_nan=False) + "\n")
+    target.write_text(
+        json.dumps(result, sort_keys=True, indent=2, allow_nan=False) + "\n"
+    )
 
 
 if __name__ == "__main__":

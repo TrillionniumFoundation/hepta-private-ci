@@ -73,9 +73,7 @@ class CompleteLifecycleScenarioTests(unittest.TestCase):
         self.assertIsNone(
             report["horizons"][0]["arms"]["candidate_cheaper_on_supplied_assumptions"]
         )
-        self.assertIn(
-            "per_window_usd.revocation", candidate["unknown_cost_components"]
-        )
+        self.assertIn("per_window_usd.revocation", candidate["unknown_cost_components"])
 
     def test_omitted_or_fake_zero_raw_source_storage_rejected(self):
         for bad in (0, True, -1, 1.0, 10**16):
