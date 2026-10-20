@@ -1,5 +1,5 @@
-use crate::adapt_codex_cell_intent;
 use super::*;
+use crate::adapt_codex_cell_intent;
 
 fn id(value: &str) -> StableId {
     StableId::new(value).expect("valid stable id")
