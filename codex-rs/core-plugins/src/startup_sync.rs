@@ -1056,7 +1056,7 @@ fn extract_zipball_to_dir(bytes: &[u8], destination: &Path) -> Result<(), String
                 "curated plugins zip entry `{}` escapes extraction root",
                 entry
                     .name()
-                    .map(|name| name.into_owned())
+                    .map(std::borrow::Cow::into_owned)
                     .unwrap_or_else(|_| "<invalid>".to_string())
             ));
         };
@@ -1065,7 +1065,7 @@ fn extract_zipball_to_dir(bytes: &[u8], destination: &Path) -> Result<(), String
                 "curated plugins zip entry `{}` is a symlink",
                 entry
                     .name()
-                    .map(|name| name.into_owned())
+                    .map(std::borrow::Cow::into_owned)
                     .unwrap_or_else(|_| "<invalid>".to_string())
             ));
         }
