@@ -24,6 +24,15 @@ REMOTE_EXECUTION_CONFIGS = {
     "--config=ci-v8",
     "--config=ci-windows-cross",
 }
+BUILD_ACTION_COMMANDS = {
+    "build",
+    "test",
+    "run",
+    "coverage",
+    "cquery",
+    "aquery",
+    "info",
+}
 # A keyless Windows cross build must reconstruct the local half of the split
 # declared by `ci-windows-cross`: MSVC executes host-loaded actions while the
 # target remains GNU LLVM. The custom test toolchain is required because Bazel
@@ -140,7 +149,7 @@ def option_contains_value(args: Sequence[str], option: str, value: str) -> bool:
 def bazel_args_without_remote_execution(
     args: Sequence[str], env: Mapping[str, str]
 ) -> list[str]:
-    """Remove credentialed RBE configs and select a coherent local Windows ABI.
+    """Keep public CI policy and select a coherent local Windows ABI.
 
     The pinned hermetic LLVM toolchain builds GNU Windows target C/C++ inputs,
     while native MSVC Rust targets and host-loaded proc macros must consume
@@ -160,26 +169,26 @@ def bazel_args_without_remote_execution(
     requested_native_windows_msvc = option_contains_value(
         prefix, "--platforms", "//:windows_x86_64_msvc"
     )
-    prefix = [arg for arg in prefix if arg not in REMOTE_EXECUTION_CONFIGS]
     suffix = list(args[separator_idx:])
     if env.get("RUNNER_OS") != "Windows":
+        command = next((arg for arg in prefix if not arg.startswith("-")), None)
+        if command in BUILD_ACTION_COMMANDS:
+            prefix = [
+                "--config=ci-common" if arg in REMOTE_EXECUTION_CONFIGS else arg
+                for arg in prefix
+            ]
+        else:
+            prefix = [arg for arg in prefix if arg not in REMOTE_EXECUTION_CONFIGS]
         return [*prefix, *suffix]
 
+    prefix = [arg for arg in prefix if arg not in REMOTE_EXECUTION_CONFIGS]
     command_idx = next(
         (idx for idx, arg in enumerate(prefix) if not arg.startswith("-")),
         None,
     )
     # Queries and administrative commands do not configure build actions.
     # Do not inject CI build options or runtime skip filters into those calls.
-    if command_idx is None or prefix[command_idx] not in {
-        "build",
-        "test",
-        "run",
-        "coverage",
-        "cquery",
-        "aquery",
-        "info",
-    }:
+    if command_idx is None or prefix[command_idx] not in BUILD_ACTION_COMMANDS:
         return [*prefix, *suffix]
 
     injected_args: list[str] = []
