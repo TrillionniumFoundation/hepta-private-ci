@@ -25,7 +25,6 @@ jobs:
       RUSTUP_TOOLCHAIN: 1.95.0
       CARGO_INCREMENTAL: "0"
       PYTHONDONTWRITEBYTECODE: "1"
-      CANDIDATE_DIR: ${{ runner.temp }}/hepta-lock-candidate
       SOURCE_HEAD: ${{ github.event.pull_request.head.sha }}
     steps:
       - name: Check out exact pull-request source
@@ -38,6 +37,8 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
+          export CANDIDATE_DIR="$RUNNER_TEMP/hepta-lock-candidate"
+          printf 'CANDIDATE_DIR=%s\n' "$CANDIDATE_DIR" >> "$GITHUB_ENV"
           python3 -I -B - <<'PY'
           import hashlib
           import json
