@@ -1,7 +1,7 @@
 import {test} from 'node:test';
 import assert from 'node:assert/strict';
 import {createHash} from 'node:crypto';
-import {recordDiagnosticBrowser} from '../tools/font-diagnostic-browser-identity.mjs';
+import {recordDiagnosticBrowser,recordPinnedChromium,FIXED_BROWSER_VERSION} from '../tools/font-diagnostic-browser-identity.mjs';
 
 const DATA=Buffer.from('mock running executable');
 function fixture(options={}){
@@ -28,7 +28,7 @@ function fixture(options={}){
   async detach(){detached++;},
  };
  const browser={async newBrowserCDPSession(){calls.push('browser-session');return session;},version:()=>options.version??'153.0.8010.12'};
- const testInfo={project:{name:options.project??'baseline-untouched',metadata:{diagnosticOnly:options.diagnosticOnly??true,expectedBrowser:'153.0.8010.12'}},outputPath:name=>name};
+ const testInfo={project:{name:options.project??'baseline-untouched',metadata:{diagnosticOnly:options.diagnosticOnly??true,pinnedChromium:options.pinnedChromium??false,expectedBrowser:'153.0.8010.12'}},outputPath:name=>name};
  const io={
   platform:options.platform??'linux',
   async open(path,mode){calls.push(['open',path,mode]);if(options.openError)throw new Error('mock open failed');return executable;},
@@ -36,7 +36,7 @@ function fixture(options={}){
   async writeFile(path,value){assert.equal(path,'browser-identity.json');records.push(JSON.parse(value));},
   getPlaywrightVersion:()=> '1.63.0',
  };
- return {run:()=>recordDiagnosticBrowser(browser,testInfo,io),calls,records,closed:()=>closed,detached:()=>detached};
+ return {run:()=>recordDiagnosticBrowser(browser,testInfo,io),runPinned:()=>recordPinnedChromium(browser,testInfo,io),calls,records,closed:()=>closed,detached:()=>detached};
 }
 
 test('records actual browser process executable through one bounded open handle',async()=>{
@@ -54,6 +54,21 @@ test('records actual browser process executable through one bounded open handle'
 test('primary runs return without CDP or filesystem access',async()=>{
  const f=fixture({diagnosticOnly:false});await f.run();
  assert.deepEqual(f.calls,[]);assert.deepEqual(f.records,[]);
+});
+
+test('pinned acceptance cannot inherit a diagnostic expected version or omit the running-image hash',async()=>{
+ for(const [options,message] of [[{},/version mismatch/],[{version:FIXED_BROWSER_VERSION},/digest mismatch/]]){
+  const f=fixture({diagnosticOnly:false,pinnedChromium:true,...options});
+  await assert.rejects(f.runPinned(),message);
+  assert.equal(f.records[0].diagnosticOnly,false);assert.equal(f.records[0].verified,false);
+  assert.equal(f.closed(),1);assert.equal(f.detached(),1);
+ }
+});
+
+test('pinned process verification does not relabel diagnostic or other-engine runs',async()=>{
+ for(const options of [{diagnosticOnly:true,pinnedChromium:true},{diagnosticOnly:false,pinnedChromium:false}]){
+  const f=fixture(options);await f.runPinned();assert.deepEqual(f.calls,[]);assert.deepEqual(f.records,[]);
+ }
 });
 
 test('unsupported diagnostic platforms fail before CDP queries or executable access',async()=>{

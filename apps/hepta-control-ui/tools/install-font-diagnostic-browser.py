@@ -1,4 +1,8 @@
-"""Linux-only diagnostic browser; observed vendor-download digests, not signatures."""
+"""Pinned Linux Chromium; observed vendor-download digests, not signatures.
+
+The shared renderer uses this release for its upstream response-completion fix.
+The opt-in font diagnostic also uses it while retaining the old browser baseline.
+"""
 
 import argparse
 import hashlib

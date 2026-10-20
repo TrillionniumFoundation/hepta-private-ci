@@ -56,6 +56,14 @@ reads and verifies the canonical `codex-rs/rust-toolchain.toml` release pin, whi
 is Rust1.95.0 at this import's main base. Its source receipt includes that manifest
 and the backend lock. The UI workflow does not rewrite either toolchain manifest.
 
+The required Linux Chromium projects use the hash-pinned official
+157.0.8099.0 headless shell, which includes the upstream response-completion fix.
+Set `HEPTA_CHROMIUM_EXECUTABLE` to the verified installation before running
+browser qualification. [BROWSER_COMPATIBILITY.md](BROWSER_COMPATIBILITY.md)
+documents installation, exact source provenance, the unchanged real UI gates,
+and the additional 60 stream scenarios plus 36 hard negatives. Firefox and
+WebKit retain the existing Playwright pin.
+
 The builder verifies SDK patches, lockfiles, generated bridge and source/resource
 identities. The preview rejects stale artifacts. Do not bypass source guards.
 All theme/layout/interaction logic remains Rust.

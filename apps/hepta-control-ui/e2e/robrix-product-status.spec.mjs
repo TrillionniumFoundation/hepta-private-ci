@@ -1,7 +1,7 @@
 // Real Rust UI + real gateway NotAttached path. This does not create a production host.
 import {test,expect} from '@playwright/test';
 import {observeFontDelivery} from '../tools/font-delivery-diagnostic.mjs';
-import {recordDiagnosticBrowser} from '../tools/font-diagnostic-browser-identity.mjs';
+import {recordDiagnosticBrowser,recordPinnedChromium} from '../tools/font-diagnostic-browser-identity.mjs';
 import {readFile,writeFile} from 'node:fs/promises';
 import {robrixSourceIdentity} from '../tools/robrix-source-identity.mjs';
 import {createHash} from 'node:crypto';
@@ -11,6 +11,7 @@ import {holdOwnerResponse} from '../tools/hold-owner-response.mjs';
 import {execFileSync} from 'node:child_process';
 import {readScreenshotText,screenshotConversationTabs,screenshotWordCenter} from '../tools/verify-robrix-pixels.mjs';
 for(const width of [1280,640])for(const scenario of ['timeout','navigation','background'])test(`actual missing-owner status ${width} ${scenario}`,async({page,baseURL,browser},testInfo)=>{
+ await recordPinnedChromium(browser,testInfo);
  await recordDiagnosticBrowser(browser,testInfo);
  let sdkDelivery;
  const sourceSha=execFileSync('git',['rev-parse','HEAD'],{encoding:'utf8'}).trim();

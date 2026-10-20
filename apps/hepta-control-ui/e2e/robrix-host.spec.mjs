@@ -1,7 +1,7 @@
 // Real canvas evidence. OCR is a necessary glyph regression, not full visual/a11y acceptance.
 import {test,expect} from '@playwright/test';
 import {observeFontDelivery} from '../tools/font-delivery-diagnostic.mjs';
-import {recordDiagnosticBrowser} from '../tools/font-diagnostic-browser-identity.mjs';
+import {recordDiagnosticBrowser,recordPinnedChromium} from '../tools/font-diagnostic-browser-identity.mjs';
 import {sharedFontFamilyReady} from '../tools/robrix-font-readiness.mjs';
 import {readFile,writeFile} from 'node:fs/promises';
 import {createHash} from 'node:crypto';
@@ -10,6 +10,7 @@ import {captureSchedule} from '../tools/robrix-pixel-plan.mjs';
 import {screenshotWordCenter,screenshotConversationTabs} from '../tools/verify-robrix-pixels.mjs';
 for(const viewport of [{width:1280,height:800},{width:640,height:800}]) {
  test(`Robrix host starts under strict CSP ${viewport.width}`,async({page,browserName,browser},testInfo)=>{
+  await recordPinnedChromium(browser,testInfo);
   await recordDiagnosticBrowser(browser,testInfo);
   let sdkDelivery;
   let phase='application';

@@ -1,6 +1,7 @@
 // Additional fixture-only real-input regression; the original six host cases and
 // their capture/OCR contract remain unchanged. No command or state-setting hook.
 import {test,expect} from '@playwright/test';
+import {recordPinnedChromium} from '../tools/font-diagnostic-browser-identity.mjs';
 import {sharedFontFamilyReady} from '../tools/robrix-font-readiness.mjs';
 import {readFile,writeFile} from 'node:fs/promises';
 import {createHash} from 'node:crypto';
@@ -8,7 +9,8 @@ import {execFileSync} from 'node:child_process';
 import {prepareVerifiedRegionForOcr,readScreenshotText} from '../tools/verify-robrix-pixels.mjs';
 import {validateSidebarSurface,requireSidebarLabel,observedAreaCenter} from '../tools/robrix-sidebar-evidence.mjs';
 
-test('Compact sidebar creates once and preserves both conversations',async({page,browserName},testInfo)=>{
+test('Compact sidebar creates once and preserves both conversations',async({page,browserName,browser},testInfo)=>{
+ await recordPinnedChromium(browser,testInfo);
  expect(process.env.HEPTA_ROBRIX_FIXTURES).toBe('1');
  const sourceSha=execFileSync('git',['rev-parse','HEAD'],{encoding:'utf8'}).trim();
  const states=[],geometry=[],captures=[],captureTimings=[],inputs=[],errors=[],logs=[],fonts=[],uploads=[];

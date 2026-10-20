@@ -1,4 +1,4 @@
-// Additional diagnostic matrix only. Primary acceptance imports neither this file nor this pin.
+// Additional diagnostic matrix only. The baseline explicitly retains bundled Chromium 153.
 import product from './playwright.product.config.mjs';
 import fixture from './playwright.robrix.config.mjs';
 import {resolve} from 'node:path';
@@ -17,6 +17,6 @@ export default {
  projects:['baseline','fixed'].flatMap(browser=>[false,true].map(instrumented=>({
   name:browser+(instrumented?'-sdk-observed':'-untouched'),
   metadata:{diagnosticOnly:true,fontDeliveryObserver:instrumented,expectedBrowser:browser==='fixed'?'157.0.8099.0':'153.0.8010.12'},
-  use:{...source.projects[0].use,...(browser==='fixed'?{launchOptions:{executablePath:resolve(executablePath)}}:{})},
+  use:{...source.projects[0].use,launchOptions:browser==='fixed'?{executablePath:resolve(executablePath)}:{}},
  }))),
 };

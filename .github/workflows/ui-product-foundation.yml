@@ -141,6 +141,7 @@ jobs:
           cargo clippy --manifest-path apps/hepta-control-ui/rust/Cargo.toml -p hepta-robrix-ui --target wasm32-unknown-unknown -- -D warnings
           node --test apps/hepta-control-ui/test/artifact-lifetime.test.mjs
           python3 -m unittest discover -s apps/hepta-control-ui/test -p test_font_diagnostic_browser.py -v
+          node --test apps/hepta-control-ui/test/http-boundary-fixture.test.mjs
           node --test apps/hepta-control-ui/test/font-delivery-diagnostic.test.mjs
           node --test apps/hepta-control-ui/test/product-status-pixels.test.mjs apps/hepta-control-ui/test/product-console-audit.test.mjs
           node --test apps/hepta-control-ui/test/static-makepad-bridge.test.mjs apps/hepta-control-ui/test/makepad-dsl.test.mjs apps/hepta-control-ui/test/visual-theme-contract.test.mjs apps/hepta-control-ui/test/robrix-font-readiness.test.mjs
@@ -154,6 +155,8 @@ jobs:
           python3 apps/hepta-control-ui/test/check-makepad-ime-dto.py
           cd apps/hepta-control-ui
           npx playwright install --with-deps chromium firefox webkit
+          python3 tools/install-font-diagnostic-browser.py "$RUNNER_TEMP/robrix-chromium"
+          echo "HEPTA_CHROMIUM_EXECUTABLE=$RUNNER_TEMP/robrix-chromium/chrome-headless-shell-linux64/chrome-headless-shell" >> "$GITHUB_ENV"
           sudo apt-get install -y tesseract-ocr tesseract-ocr-eng tesseract-ocr-chi-sim python3-pil
           dpkg-query -W tesseract-ocr tesseract-ocr-eng tesseract-ocr-chi-sim python3-pil
           node --test test/screenshot-readability.test.mjs test/robrix-pixel-plan.test.mjs
@@ -202,6 +205,19 @@ jobs:
             ${{ runner.temp }}/product-gateway-target/debug/examples/ui_product_preview.hepta-build.json
             ${{ runner.temp }}/gateway-transport-${{ matrix.lane }}.json*
             ${{ runner.temp }}/gateway-boundary-*-${{ matrix.lane }}.json*
+          if-no-files-found: warn
+      - id: http_boundaries
+        name: Require unchanged SDK stream limits and native completion on fixed Chromium
+        if: always() && steps.default_build.outcome == 'success'
+        timeout-minutes: 10
+        working-directory: apps/hepta-control-ui
+        run: node tools/verify-http-boundaries.mjs
+      - name: Preserve every HTTP boundary result and running browser identity
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: product-http-boundaries-${{ matrix.lane }}-${{ env.SOURCE_SHA }}
+          path: apps/hepta-control-ui/test-results/http-boundaries/
           if-no-files-found: warn
       - id: fixture_build
         if: always() && steps.default_build.outcome == 'success'
