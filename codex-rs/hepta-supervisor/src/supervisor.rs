@@ -705,8 +705,8 @@ impl<D: ProcessDriver> Supervisor<D> {
         if matches!(
             intent.status,
             SignedIntentStatus::Committed
-                        | SignedIntentStatus::RolledBack
-                        | SignedIntentStatus::Aborted
+                | SignedIntentStatus::RolledBack
+                | SignedIntentStatus::Aborted
         ) {
             return Ok(());
         }
