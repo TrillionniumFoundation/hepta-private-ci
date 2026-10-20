@@ -32,7 +32,6 @@ jobs:
     timeout-minutes: 60
     env:
       SOURCE_SHA: ${{ github.event.pull_request.head.sha }}
-      SCHEMA_EVIDENCE_DIR: ${{ runner.temp }}/app-server-schema-refresh
       CARGO_TERM_COLOR: never
     steps:
       - name: Check out exact source
@@ -46,6 +45,8 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
+          export SCHEMA_EVIDENCE_DIR="$RUNNER_TEMP/app-server-schema-refresh"
+          printf 'SCHEMA_EVIDENCE_DIR=%s\n' "$SCHEMA_EVIDENCE_DIR" >> "$GITHUB_ENV"
           test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
           git diff --exit-code
           python3 - <<'PY'
