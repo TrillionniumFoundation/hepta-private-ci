@@ -37,6 +37,10 @@ jobs:
         with:
           ref: ${{ github.event.pull_request.head.sha || github.sha }}
           persist-credentials: false
+      - name: Install repository test runners
+        uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
+        with:
+          tool: just@1.51.0,nextest@0.9.103
       - name: Verify exact source identity and pinned native compiler
         shell: pwsh
         run: |
@@ -52,27 +56,27 @@ jobs:
         shell: pwsh
         run: |
           Set-Location codex-rs
-          cargo test --locked -p codex-utils-path --lib private_state_windows:: -- --test-threads=1
+          just test --locked -p codex-utils-path --lib -E 'test(private_state_windows::)' --test-threads 1 --no-tests fail --retries 0
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
       - name: Exercise actual Prompt Registry Windows durable owner
         shell: pwsh
         run: |
           Set-Location codex-rs
-          cargo test --locked -p codex-hepta-prompt-registry --lib durable::windows::tests:: -- --test-threads=1
+          just test --locked -p codex-hepta-prompt-registry --lib -E 'test(durable::windows::tests::)' --test-threads 1 --no-tests fail --retries 0
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
       - name: Exercise signed final-use and authority-lease durable stores
         shell: pwsh
         run: |
           Set-Location codex-rs
-          cargo test --locked -p codex-hepta-contracts --lib final_use::store::windows::tests:: -- --test-threads=1
+          just test --locked -p codex-hepta-contracts --lib -E 'test(final_use::store::windows::tests::)' --test-threads 1 --no-tests fail --retries 0
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
-          cargo test --locked -p codex-hepta-contracts --lib authority_lease::windows::tests:: -- --test-threads=1
+          just test --locked -p codex-hepta-contracts --lib -E 'test(authority_lease::windows::tests::)' --test-threads 1 --no-tests fail --retries 0
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
       - name: Validate Agentd Prompt Runtime integration and reopened state
         shell: pwsh
         run: |
           Set-Location codex-rs
-          cargo test --locked -p codex-hepta-agentd --lib prompt_runtime::tests:: -- --test-threads=1
+          just test --locked -p codex-hepta-agentd --lib -E 'test(prompt_runtime::tests::)' --test-threads 1 --no-tests fail --retries 0
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
       - name: Enforce source-level Rust formatting for durable owners
         shell: pwsh

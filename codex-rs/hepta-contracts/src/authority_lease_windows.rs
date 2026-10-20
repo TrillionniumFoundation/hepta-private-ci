@@ -165,7 +165,7 @@ mod tests {
         assert!(matches!(
             AuthorityLeaseRegistry::open_state_dir_with_clock(
                 &state_dir,
-                owner.clone(),
+                owner,
                 false_future,
                 Arc::clone(&clock),
             ),

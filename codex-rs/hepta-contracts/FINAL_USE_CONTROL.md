@@ -215,7 +215,6 @@ The repository-controlled candidate implements the primitives above but does
 The canonical target/current/product/evidence table is
 [`TRACEABILITY.md`](../../docs/modules/kernel.authority/TRACEABILITY.md).
 
-
 ### Windows AuthorityLease private-state owner
 
 On Windows, `AuthorityLeaseRegistry` now uses the same native

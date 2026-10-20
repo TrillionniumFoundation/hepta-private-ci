@@ -41,7 +41,7 @@ use crate::PromptRegistryV2Error;
 use crate::PromptRoleV2;
 use crate::RealizationDeliveryV2;
 use crate::RegistryReceipt;
-#[cfg(test)]
+#[cfg(all(test, unix))]
 use crate::VerifiedAdmission;
 use crate::admission::map_final_use_error;
 use crate::final_use_realization_binding;
@@ -109,7 +109,7 @@ impl DurablePromptRegistry {
         Ok(&self.registry)
     }
 
-    #[cfg(test)]
+    #[cfg(all(test, unix))]
     fn diagnostic_registry(&self) -> &PromptRegistry {
         &self.registry
     }
@@ -126,12 +126,12 @@ impl DurablePromptRegistry {
         Ok(())
     }
 
-    #[cfg(test)]
+    #[cfg(all(test, unix))]
     fn fail_directory_sync_after_rename_once(&self) {
         self.store.fail_directory_sync_after_rename_once.set(true);
     }
 
-    #[cfg(test)]
+    #[cfg(all(test, unix))]
     fn fail_storage_full_before_rename_once(&self) {
         self.store.fail_storage_full_before_rename_once.set(true);
     }
@@ -143,7 +143,7 @@ impl DurablePromptRegistry {
         self.commit(|registry| registry.register_factor(factor))
     }
 
-    #[cfg(test)]
+    #[cfg(all(test, unix))]
     pub(crate) fn admit_factor_verified(
         &mut self,
         admission: VerifiedAdmission,
@@ -180,7 +180,7 @@ impl DurablePromptRegistry {
             .map_err(DurableRegistryError::Admission)?
     }
 
-    #[cfg(test)]
+    #[cfg(all(test, unix))]
     pub(crate) fn register_realization_payload_v2(
         &mut self,
         binding: PromptRealizationBindingV2,
@@ -243,7 +243,7 @@ impl DurablePromptRegistry {
             .map_err(DurableRegistryError::Admission)?
     }
 
-    #[cfg(test)]
+    #[cfg(all(test, unix))]
     pub(crate) fn retire_factor(
         &mut self,
         factor_id: &StableId,
@@ -257,7 +257,7 @@ impl DurablePromptRegistry {
         })
     }
 
-    #[cfg(test)]
+    #[cfg(all(test, unix))]
     pub(crate) fn revoke_factor(
         &mut self,
         factor_id: &StableId,
@@ -550,7 +550,7 @@ struct StoredLifecycleEvent {
     event_digest: [u8; 32],
 }
 
-#[cfg(test)]
+#[cfg(all(test, unix))]
 fn stored_v2(registry: &PromptRegistry) -> StoredV2 {
     let mut stored = stored_metadata(registry);
     stored.payloads = registry

@@ -11,10 +11,12 @@ use std::collections::BTreeSet;
 use std::collections::VecDeque;
 use std::fmt;
 use std::fs::File;
+#[cfg(not(windows))]
 use std::fs::OpenOptions;
 use std::io::Read;
 use std::io::Write;
 use std::path::Path;
+#[cfg(not(windows))]
 use std::path::PathBuf;
 use std::sync::Arc;
 use std::sync::Mutex;
@@ -825,6 +827,7 @@ struct StoredObservation {
 }
 
 struct PromptRuntimeStore {
+    #[cfg(not(windows))]
     root: PathBuf,
     _lock: File,
     // Windows child files must always resolve beneath one retained, ACL-
@@ -865,6 +868,7 @@ impl PromptRuntimeStore {
         lock.try_lock()
             .map_err(|_| AgentdPromptRuntimeError::StateLocked)?;
         let store = Self {
+            #[cfg(not(windows))]
             root: directory.to_path_buf(),
             _lock: lock,
             #[cfg(windows)]
@@ -1229,6 +1233,7 @@ fn parse_id(value: String) -> Result<StableId, AgentdPromptRuntimeError> {
     StableId::new(value).map_err(|_| AgentdPromptRuntimeError::CorruptState)
 }
 
+#[cfg(not(windows))]
 fn prepare_state_directory(path: &Path) -> Result<(), AgentdPromptRuntimeError> {
     if let Err(error) = std::fs::create_dir(path)
         && error.kind() != std::io::ErrorKind::AlreadyExists
@@ -1250,7 +1255,7 @@ fn set_private_directory_permissions(path: &Path) -> Result<(), AgentdPromptRunt
         .map_err(|_| AgentdPromptRuntimeError::Unavailable)
 }
 
-#[cfg(not(unix))]
+#[cfg(all(not(unix), not(windows)))]
 fn set_private_directory_permissions(_path: &Path) -> Result<(), AgentdPromptRuntimeError> {
     Ok(())
 }
@@ -1262,7 +1267,7 @@ fn set_private_file_permissions(path: &Path) -> Result<(), AgentdPromptRuntimeEr
         .map_err(|_| AgentdPromptRuntimeError::Unavailable)
 }
 
-#[cfg(not(unix))]
+#[cfg(all(not(unix), not(windows)))]
 fn set_private_file_permissions(_path: &Path) -> Result<(), AgentdPromptRuntimeError> {
     Ok(())
 }
@@ -1274,7 +1279,7 @@ fn sync_state_directory(path: &Path) -> Result<(), AgentdPromptRuntimeError> {
         .map_err(|_| AgentdPromptRuntimeError::IndeterminateDurability)
 }
 
-#[cfg(not(unix))]
+#[cfg(all(not(unix), not(windows)))]
 fn sync_state_directory(_path: &Path) -> Result<(), AgentdPromptRuntimeError> {
     Ok(())
 }
