@@ -213,10 +213,16 @@ for(const width of [1280,640])for(const scenario of ['timeout','navigation','bac
   await settle();expect(ownerCount()).toBe(beforeCancellation+1);
   await expect.poll(async()=> (await observedText('timed-out','timedOut')).passed,{timeout:15000,intervals:[250]}).toBe(true);
   const timeoutReply=await timeoutLegacy;expect(timeoutReply.status()).toBe(503);
-  await timeoutReply.finished();
+  // The held owner response is the real single-flight gate. Release it before
+  // waiting for the runtime response to settle; otherwise the browser can keep
+  // the 503 body open while the SDK is waiting for owner cancellation.
+  apiWait('held-owner.finish','start');await held.finish();apiWait('held-owner.finish','done');
+  let timeoutReplySettled=false;
+  timeoutReply.finished().then(()=>{timeoutReplySettled=true;},()=>{timeoutReplySettled=true;});
   apiWait('timeout-runtime.finished','start');
   await expect.poll(
-   () => responses.some(event => new URL(event.url).pathname === '/api/hepta/runtime' && event.phase === 'timeout' && event.status === 503 && event.finished === true) ||
+   () => timeoutReplySettled ||
+    responses.some(event => new URL(event.url).pathname === '/api/hepta/runtime' && event.phase === 'timeout' && event.status === 503 && event.finished === true) ||
     apiNetworkEvents.some(event => event.path === '/api/hepta/runtime' && event.phase === 'timeout' && (event.event === 'loadingFinished' || event.event === 'loadingFailed')),
    {timeout:5000,intervals:[100]}
   ).toBe(true);
