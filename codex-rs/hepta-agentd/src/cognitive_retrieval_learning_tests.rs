@@ -30,7 +30,7 @@ fn open_directory(path: &Path) -> std::io::Result<File> {
     use std::os::windows::fs::OpenOptionsExt;
     OpenOptions::new()
         .read(true)
-        .custom_flags(0x0200_0000); // FILE_FLAG_BACKUP_SEMANTICS
+        .custom_flags(0x0200_0000) // FILE_FLAG_BACKUP_SEMANTICS
         .open(path)
 }
 
