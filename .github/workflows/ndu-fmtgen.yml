@@ -1,0 +1,40 @@
+name: NDU formatting generator
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  format:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          ref: codex/ndu-fmtgen-current-20261020
+          fetch-depth: 0
+          persist-credentials: true
+      - uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582
+        with:
+          toolchain: 1.95.0
+          components: rustfmt
+      - name: Format repository
+        shell: bash
+        run: |
+          set -euo pipefail
+          cargo fmt -- --config imports_granularity=Item
+      - name: Commit generated formatting
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          if git diff --quiet --exit-code; then
+            echo "format already clean"
+            exit 0
+          fi
+          git add -A
+          git commit -m "style: apply repository rustfmt [fmtgen]"
+          git push origin "HEAD:codex/ndu-fmtgen-current-20261020"
