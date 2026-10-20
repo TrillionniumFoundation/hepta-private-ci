@@ -88,7 +88,11 @@ class CommandDeadlineTests(unittest.TestCase):
                 break
             time.sleep(0.01)
         else:
-            os.kill(child_pid, signal.SIGKILL)
+            try:
+                os.kill(child_pid, signal.SIGKILL)
+            except ProcessLookupError:
+                # The descendant exited between the final /proc check and cleanup.
+                return
             self.fail("descendant survived process-group cancellation")
 
     @unittest.skipUnless(os.name == "posix", "POSIX session semantics")

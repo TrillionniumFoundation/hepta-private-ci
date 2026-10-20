@@ -39,17 +39,22 @@ async fn assert_timed_out_git_wrapper_does_not_leave_child_process_running(
     let mut command = {
         let mut command = Command::new("powershell.exe");
         let child_command = "Set-Content -LiteralPath $env:CHILD_READY_FILE -Value ready; while (-not (Test-Path $env:RELEASE_CHILD_FILE)) { Start-Sleep -Milliseconds 25 }; Start-Sleep -Seconds 1; Set-Content -LiteralPath $env:CHILD_SURVIVED_FILE -Value survived; Start-Sleep -Seconds 60";
+        // Start-Process flattens ArgumentList into a single Windows command line.
+        // Keep the actual nested script in an environment variable and pass only
+        // a single UTF-16LE encoded argument through the second process layer.
+        let child_launcher = "$encodedChild = [Convert]::ToBase64String([Text.Encoding]::Unicode.GetBytes($env:CHILD_PS_SCRIPT)); $child = Start-Process -FilePath powershell.exe -ArgumentList @('-NoProfile', '-NonInteractive', '-EncodedCommand', $encodedChild) -PassThru -NoNewWindow -ErrorAction Stop; [System.IO.File]::WriteAllText($env:CHILD_PID_FILE, [string]$child.Id);";
         let wrapper_command = match wrapper_lifetime {
-            GitWrapperLifetime::WaitForChild => format!(
-                "$child = Start-Process -FilePath powershell.exe -ArgumentList @('-NoProfile', '-NonInteractive', '-Command', '{child_command}') -PassThru -NoNewWindow; [System.IO.File]::WriteAllText($env:CHILD_PID_FILE, [string]$child.Id); Wait-Process -Id $child.Id"
-            ),
+            GitWrapperLifetime::WaitForChild => {
+                format!("{child_launcher} Wait-Process -Id $child.Id")
+            }
             GitWrapperLifetime::ExitBeforeTimeout => format!(
-                "$child = Start-Process -FilePath powershell.exe -ArgumentList @('-NoProfile', '-NonInteractive', '-Command', '{child_command}') -PassThru -NoNewWindow; [System.IO.File]::WriteAllText($env:CHILD_PID_FILE, [string]$child.Id); while (-not (Test-Path $env:RELEASE_WRAPPER_FILE)) {{ Start-Sleep -Milliseconds 25 }}"
+                "{child_launcher} while (-not (Test-Path $env:RELEASE_WRAPPER_FILE)) {{ Start-Sleep -Milliseconds 25 }}"
             ),
         };
         command
             .args(["-NoProfile", "-NonInteractive", "-Command"])
-            .arg(wrapper_command);
+            .arg(wrapper_command)
+            .env("CHILD_PS_SCRIPT", child_command);
         command
     };
     command
@@ -60,19 +65,35 @@ async fn assert_timed_out_git_wrapper_does_not_leave_child_process_running(
         .env("RELEASE_WRAPPER_FILE", &release_wrapper_file);
 
     let (mut wrapper, process_tree) = spawn_git_command(&mut command).expect("spawn Git wrapper");
-    let child_pid = tokio::time::timeout(Duration::from_secs(30), async {
+    let ready = tokio::time::timeout(Duration::from_secs(30), async {
         loop {
             if let Ok(child_pid) = std::fs::read_to_string(&child_pid_file)
                 && !child_pid.trim().is_empty()
                 && child_ready_file.exists()
             {
-                break child_pid.trim().to_string();
+                break Ok(child_pid.trim().to_string());
+            }
+            if let Some(status) = wrapper.try_wait().expect("poll Git wrapper readiness") {
+                break Err(format!(
+                    "Git wrapper exited before descendant readiness: {status}"
+                ));
             }
             tokio::time::sleep(Duration::from_millis(25)).await;
         }
     })
-    .await
-    .expect("wait for Git wrapper child readiness");
+    .await;
+    let child_pid = match ready {
+        Ok(Ok(pid)) => pid,
+        other => {
+            let _ = wait_for_git_command_with_timeout_output(
+                wrapper,
+                process_tree,
+                Duration::from_millis(100),
+            )
+            .await;
+            panic!("Git wrapper never produced its descendant readiness marker: {other:?}");
+        }
+    };
 
     if matches!(wrapper_lifetime, GitWrapperLifetime::ExitBeforeTimeout) {
         std::fs::write(&release_wrapper_file, "release").expect("release Git wrapper");

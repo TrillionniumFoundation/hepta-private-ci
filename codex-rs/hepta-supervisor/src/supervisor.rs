@@ -38,9 +38,11 @@ use crate::signed_authority::ProductionMutationReceipt;
 use crate::signed_authority::ProductionMutationState;
 use crate::signed_authority::ProductionRecoveryDecision;
 use crate::signed_authority::ProductionRecoveryOutcome;
+use crate::signed_intent::SignedIntentRecoveryAction;
 use crate::signed_intent::SignedIntentStatus;
 use crate::signed_intent::SignedSupervisorIntent;
 use crate::signed_intent::read_intent;
+use crate::signed_intent::read_recovery_directive;
 use crate::signed_intent::write_intent;
 
 /// Lifecycle-only controller with one process handle and bounded buffers per agent.
@@ -88,7 +90,7 @@ impl<D: ProcessDriver> Supervisor<D> {
                 let process_fault = supervisor.recover_slot(&agent_id, slot, &record, now).err();
                 supervisor.recover_restart_budget(&agent_id, slot, now)?;
                 supervisor.recover_release_transaction(&agent_id, slot, now)?;
-                supervisor.recover_signed_intent(&agent_id, slot, &record)?;
+                supervisor.recover_signed_intent(&agent_id, slot, &record, process_fault.is_some())?;
                 Ok(process_fault)
             });
             match result {
@@ -580,7 +582,9 @@ impl<D: ProcessDriver> Supervisor<D> {
             if slot.signed_intent.as_ref().is_some_and(|intent| {
                 !matches!(
                     intent.status,
-                    SignedIntentStatus::Committed | SignedIntentStatus::RolledBack
+                    SignedIntentStatus::Committed
+                        | SignedIntentStatus::RolledBack
+                        | SignedIntentStatus::Aborted
                 )
             }) {
                 return Err(SupervisorError::SignedIntentRecoveryRequired(
@@ -686,6 +690,7 @@ impl<D: ProcessDriver> Supervisor<D> {
         agent_id: &AgentId,
         slot: &mut AgentSlot<D::Process>,
         record: &AgentRecord,
+        child_recovery_failed: bool,
     ) -> Result<(), SupervisorError> {
         let intent = read_intent(record.layout.run_root())
             .map_err(|error| SupervisorError::Invalid(error.to_string()))?;
@@ -700,7 +705,9 @@ impl<D: ProcessDriver> Supervisor<D> {
         slot.signed_intent = Some(intent.clone());
         if matches!(
             intent.status,
-            SignedIntentStatus::Committed | SignedIntentStatus::RolledBack
+            SignedIntentStatus::Committed
+                | SignedIntentStatus::RolledBack
+                | SignedIntentStatus::Aborted
         ) {
             return Ok(());
         }
@@ -772,6 +779,16 @@ impl<D: ProcessDriver> Supervisor<D> {
             }
         }
 
+        if self.try_abort_signed_intent(
+            agent_id,
+            slot,
+            record,
+            &intent,
+            child_recovery_failed,
+        )? {
+            return Ok(());
+        }
+
         // Keep the daemon reachable for the status/recovery ceremony while
         // quarantining this Agent generation. Ordinary mutation admission is
         // blocked until the signed intent reaches a terminal state.
@@ -812,7 +829,7 @@ impl<D: ProcessDriver> Supervisor<D> {
                 runtime.phase = RuntimePhase::Killing;
             }
         }
-        Ok(())
+        Err(SupervisorError::SignedIntentRecoveryRequired(agent_id.clone()))
     }
 
     pub fn production_recovery_required(

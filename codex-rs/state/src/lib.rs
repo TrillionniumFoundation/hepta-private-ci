@@ -19,6 +19,7 @@ mod runtime;
 mod sqlite;
 mod sqlite_recovery;
 mod telemetry;
+pub mod test_support;
 
 pub use model::CreatedProject;
 pub use model::LogEntry;
