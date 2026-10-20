@@ -1,12 +1,10 @@
+use codex_state::SqliteConfig;
 use sqlx::migrate::Migrate;
-use sqlx::sqlite::SqlitePoolOptions;
 
 use super::*;
 
 async fn historical_pool(displaced: bool) -> SqlitePool {
-    let pool = SqlitePoolOptions::new()
-        .max_connections(1)
-        .connect("sqlite::memory:")
+    let pool = SqliteConfig::open_in_memory_pool_for_testing()
         .await
         .expect("SQLite owner");
     let mut connection = pool.acquire().await.expect("owner connection");
@@ -129,6 +127,9 @@ async fn reopen_persisted_history(displaced: bool, after_rebind: bool) {
     let temp = tempfile::tempdir().expect("private owner root");
     let root = temp.path().join("owner");
     std::fs::create_dir(&root).expect("owner directory");
+    // Windows temporary-directory paths may have a lexical drive prefix;
+    // retain the owner's strict canonical-root validation.
+    let root = root.canonicalize().expect("canonical private owner root");
     // open_root rejects noncanonical state roots. On Windows, canonicalization
     // also supplies the verbatim-volume prefix needed for an exact path match.
     let root = root.canonicalize().expect("canonical private owner root");
