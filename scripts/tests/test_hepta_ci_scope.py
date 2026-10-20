@@ -1,6 +1,7 @@
 import os
 import subprocess
 import tempfile
+import tomllib
 import unittest
 from pathlib import Path
 from unittest.mock import patch
@@ -9,6 +10,18 @@ from scripts.hepta_ci_scope import GROUPS, changed_paths, select
 
 
 class ScopeTests(unittest.TestCase):
+    def test_rama_error_lock_matches_prerelease_core_api(self):
+        # A stable rama-error release omits OpaqueError used by rama-core alpha.
+        lock = Path(__file__).resolve().parents[2] / "codex-rs" / "Cargo.lock"
+        packages = tomllib.loads(lock.read_text(encoding="utf-8"))["package"]
+        versions = {
+            package["name"]: package["version"]
+            for package in packages
+            if package["name"] in {"rama-core", "rama-error"}
+        }
+        self.assertEqual(set(versions), {"rama-core", "rama-error"})
+        self.assertEqual(versions["rama-error"], versions["rama-core"])
+
     def test_repository_policy_regressions_keep_their_python_scope(self):
         paths = [
             "scripts/hepta_repository_controls.py",
