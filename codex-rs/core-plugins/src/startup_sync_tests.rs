@@ -21,6 +21,55 @@ use zip::write::SimpleFileOptions;
 
 const TEST_CURATED_PLUGIN_SHA: &str = "0123456789abcdef0123456789abcdef01234567";
 
+#[cfg(unix)]
+#[test]
+fn zip_archive_never_restores_privileged_mode_bits() {
+    assert_eq!(safe_zip_file_mode(0o104755), 0o755);
+    assert_eq!(safe_zip_file_mode(0o102644), 0o644);
+    assert_eq!(safe_zip_file_mode(0o17777), 0o777);
+}
+
+#[cfg(unix)]
+#[test]
+fn zip_archive_rejects_symlinked_extraction_root() {
+    let temp = tempdir().expect("create staging parent");
+    let destination = temp.path().join("staging");
+    let outside = temp.path().join("outside");
+    std::fs::create_dir_all(&outside).expect("create outside");
+    std::os::unix::fs::symlink(&outside, &destination).expect("symlink staging");
+    let archive = curated_repo_zipball_bytes(TEST_CURATED_PLUGIN_SHA);
+
+    let error = extract_zipball_to_dir(&archive, &destination)
+        .expect_err("staging symlink must not redirect extraction");
+    assert!(error.contains("symbolic link"), "{error}");
+    assert!(!outside.join(".agents").exists());
+}
+
+#[cfg(unix)]
+#[test]
+fn zip_archive_rejects_preexisting_symlink_in_staging_tree() {
+    let temp = tempdir().expect("create staging parent");
+    let destination = temp.path().join("staging");
+    let outside = temp.path().join("outside");
+    std::fs::create_dir_all(&destination).expect("create staging");
+    std::fs::create_dir_all(&outside).expect("create outside");
+    std::os::unix::fs::symlink(&outside, destination.join("plugins"))
+        .expect("symlink directory");
+
+    let cursor = std::io::Cursor::new(Vec::new());
+    let mut writer = ZipWriter::new(cursor);
+    writer
+        .start_file("root/plugins/untrusted.txt", SimpleFileOptions::default())
+        .expect("start archive file");
+    writer.write_all(b"must not escape").expect("write archive file");
+    let archive = writer.finish().expect("finish archive").into_inner();
+
+    let error = extract_zipball_to_dir(&archive, &destination)
+        .expect_err("preexisting symlink must not be traversed");
+    assert!(error.contains("symbolic link"), "{error}");
+    assert!(!outside.join("untrusted.txt").exists());
+}
+
 #[tokio::test]
 async fn github_http_routes_repository_ref_and_zipball_urls() {
     let server = MockServer::start().await;
@@ -1387,14 +1436,18 @@ fn curated_repo_backup_archive_zip_bytes(sha: &str) -> Vec<u8> {
 fn extract_zipball_rejects_symlink_entries() {
     let cursor = std::io::Cursor::new(Vec::new());
     let mut writer = ZipWriter::new(cursor);
-    let options = SimpleFileOptions::default().unix_permissions(0o120777);
     writer
-        .start_file("root/link", options)
-        .expect("start symlink entry");
-    writer
-        .write_all(b"../../outside")
-        .expect("write symlink target");
+        .add_symlink("root/link", "../../outside", SimpleFileOptions::default())
+        .expect("add symlink entry");
     let bytes = writer.finish().expect("finish zip").into_inner();
+    let mut archive = ZipArchive::new(std::io::Cursor::new(&bytes)).expect("open symlink archive");
+    assert!(
+        archive
+            .by_name("root/link")
+            .expect("symlink archive entry")
+            .is_symlink(),
+        "test fixture must encode a real symlink"
+    );
     let destination = tempdir().expect("destination");
 
     let err = extract_zipball_to_dir(&bytes, destination.path())

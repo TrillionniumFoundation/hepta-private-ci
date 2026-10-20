@@ -1036,6 +1036,15 @@ fn read_sha_file(sha_path: &Path) -> Option<String> {
 }
 
 fn extract_zipball_to_dir(bytes: &[u8], destination: &Path) -> Result<(), String> {
+    // A private staging path must not redirect extraction through a symlink.
+    if let Ok(metadata) = std::fs::symlink_metadata(destination)
+        && metadata.file_type().is_symlink()
+    {
+        return Err(format!(
+            "curated plugins extraction root {} is a symbolic link",
+            destination.display()
+        ));
+    }
     std::fs::create_dir_all(destination).map_err(|err| {
         format!(
             "failed to create curated plugins extraction directory {}: {err}",
@@ -1086,6 +1095,19 @@ fn extract_zipball_to_dir(bytes: &[u8], destination: &Path) -> Result<(), String
         }
 
         let output_path = destination.join(&output_relative);
+        // Do not follow a preexisting symlink within the staging tree.
+        let mut checked_path = destination.to_path_buf();
+        for component in output_relative.components() {
+            checked_path.push(component);
+            if let Ok(metadata) = std::fs::symlink_metadata(&checked_path)
+                && metadata.file_type().is_symlink()
+            {
+                return Err(format!(
+                    "curated plugins zip path {} traverses a symbolic link",
+                    checked_path.display()
+                ));
+            }
+        }
         if entry.is_dir() {
             std::fs::create_dir_all(&output_path).map_err(|err| {
                 format!(
@@ -1132,12 +1154,20 @@ fn apply_zip_permissions<R: std::io::Read + ?Sized>(
     let Some(mode) = entry.unix_mode() else {
         return Ok(());
     };
-    std::fs::set_permissions(output_path, std::fs::Permissions::from_mode(mode)).map_err(|err| {
+    // Preserve only ordinary rwx permissions; never adopt SUID/SGID/sticky
+    // bits supplied by an archive.
+    let safe_mode = safe_zip_file_mode(mode);
+    std::fs::set_permissions(output_path, std::fs::Permissions::from_mode(safe_mode)).map_err(|err| {
         format!(
             "failed to set permissions on curated plugins file {}: {err}",
             output_path.display()
         )
     })
+}
+
+#[cfg(unix)]
+fn safe_zip_file_mode(mode: u32) -> u32 {
+    mode & 0o777
 }
 
 #[cfg(not(unix))]
