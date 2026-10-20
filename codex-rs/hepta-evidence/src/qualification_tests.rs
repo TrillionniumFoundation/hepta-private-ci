@@ -4,6 +4,7 @@ use std::time::UNIX_EPOCH;
 use codex_hepta_authbus::IssuerRegistration;
 use codex_hepta_authbus::SignedMessage;
 use codex_hepta_authbus::SignedMessageClaims;
+use codex_hepta_contracts::Sha256Digest;
 use codex_hepta_types::Digest32;
 use codex_hepta_types::Generation;
 use codex_hepta_types::StableId;
@@ -1179,7 +1180,25 @@ async fn claim_query_rejects_more_than_512_references() {
     let observed = now_ms();
     let (issuer, key) = issuer("principal:query-bound", 51);
 
-    for index in 0_u64..=512 {
+    let seed = evidence(
+        "evidence:query-bound:0",
+        candidate.clone(),
+        EvidenceClaimClassV1::MandatoryTests,
+        EvidenceIssuerRoleV1::Evaluator,
+        observed,
+        None,
+        json!({"index": 0}),
+    );
+    append(&store, &issuer, &key, &seed, 1)
+        .await
+        .expect("append authenticated seed");
+
+    // This exercises query cardinality, not repeated authenticated append.
+    // The append path recomputes the entire candidate evidence set each time.
+    // Build consistent synthetic rows in a transaction while retaining every
+    // schema/immutability trigger and the real query's 512-reference fence.
+    let mut transaction = store.pool.begin().await.expect("fixture transaction");
+    for index in 1_u64..=512 {
         let receipt = evidence(
             &format!("evidence:query-bound:{index}"),
             candidate.clone(),
@@ -1189,10 +1208,53 @@ async fn claim_query_rejects_more_than_512_references() {
             None,
             json!({"index": index}),
         );
-        append(&store, &issuer, &key, &receipt, index + 1)
-            .await
-            .expect("append bounded evidence");
+        let envelope = crate::canonical::canonical_json(&receipt).expect("canonical envelope");
+        let payload =
+            crate::canonical::canonical_json(&receipt.payload).expect("canonical payload");
+        sqlx::query(
+            "INSERT INTO qualification_evidence (
+                evidence_id, schema_version, candidate_id, source_commit, source_tree,
+                claim_class, receipt_kind, issuer_role, issuer_principal_id,
+                issuer_key_epoch, issuer_signing_identity_sha256, auth_message_id,
+                auth_sequence, auth_expires_at_ms, payload_sha256, envelope_sha256,
+                predecessor_evidence_id, target_evidence_id, observed_at_ms, expires_at_ms,
+                asset_count, envelope_json, recorded_at_ms
+             ) SELECT ?, schema_version, candidate_id, source_commit, source_tree,
+                claim_class, receipt_kind, issuer_role, issuer_principal_id,
+                issuer_key_epoch, issuer_signing_identity_sha256, ?, ?, auth_expires_at_ms,
+                ?, ?, predecessor_evidence_id, target_evidence_id, observed_at_ms,
+                expires_at_ms, asset_count, ?, recorded_at_ms
+             FROM qualification_evidence WHERE evidence_id = ?",
+        )
+        .bind(receipt.evidence_id.as_str())
+        .bind(format!("query-fixture:{index}"))
+        .bind((index + 1).to_be_bytes().to_vec())
+        .bind(Sha256Digest::for_bytes(&payload).as_str())
+        .bind(Sha256Digest::for_bytes(&envelope).as_str())
+        .bind(String::from_utf8(envelope).expect("UTF-8 envelope"))
+        .bind(seed.evidence_id.as_str())
+        .execute(&mut *transaction)
+        .await
+        .expect("insert cardinality fixture");
+        if index == 511 {
+            transaction.commit().await.expect("commit exact limit");
+            assert_eq!(
+                store
+                    .qualification()
+                    .query_claim(&candidate, EvidenceClaimClassV1::MandatoryTests)
+                    .await
+                    .expect("exactly 512 consistent references remain queryable")
+                    .len(),
+                512,
+            );
+            transaction = store
+                .pool
+                .begin()
+                .await
+                .expect("overflow fixture transaction");
+        }
     }
+    transaction.commit().await.expect("commit overflow fixture");
 
     assert!(matches!(
         store

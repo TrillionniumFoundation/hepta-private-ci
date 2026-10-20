@@ -394,11 +394,13 @@ For `neuron.runtime`, this document grants no runtime, production, model, provid
 - `unbounded_resource_or_retry`
 
 <!-- BEGIN GENERATED EXACT REGISTRY PROJECTION -->
+
 ### Exact closed-world registry projection
 
 This generated projection binds `neuron.runtime` to the current canonical contract, protocol, data, delivery and threat registries. The registries remain authoritative; this block is a digest-checked documentation projection.
 
 **Produced contracts:**
+
 - `DomainRead::eligibility_trace_checkpointV1`
 - `DomainRead::neuron_state_checkpointV1`
 - `LocalModelRuntimeReceiptV1`
@@ -408,6 +410,7 @@ This generated projection binds `neuron.runtime` to the current canonical contra
 - `NeuronSignalReceiptV1`
 
 **Consumed contracts:**
+
 - `DomainRead::inference_receiptV1`
 - `DomainRead::inference_requestV1`
 - `DomainRead::inference_reservationV1`
@@ -422,6 +425,7 @@ This generated projection binds `neuron.runtime` to the current canonical contra
 - `RunStartSnapshotV1`
 
 **Typed protocols:**
+
 - `GoldenFixtureManifestV1`
 - `LocalModelRuntimeReceiptV1`
 - `NeuronCheckpointV1`
@@ -430,11 +434,13 @@ This generated projection binds `neuron.runtime` to the current canonical contra
 - `RunStartSnapshotV1`
 
 **Owned data domains:**
+
 - `eligibility_trace_checkpoint`
 - `neuron_checkpoint_v1`
 - `neuron_state_checkpoint`
 
 **Read data domains:**
+
 - `golden_fixture_manifest_v1`
 - `inference_receipt`
 - `inference_request`
@@ -444,12 +450,14 @@ This generated projection binds `neuron.runtime` to the current canonical contra
 - `random_stream_manifest_v1`
 
 **Work packages:**
+
 - `BIO-0-NEURON-INTUITION-CONTRACTS`
 - `BIO-1-ELIGIBILITY-HOMEOSTASIS`
 - `NEU-1-LOCAL-MODEL-BAKEOFF`
 - `NEU-2-TEMPORAL-SIGNAL-RUNTIME`
 
 **Owned threats:**
+
 - `local_model_identity_drift`
 - `model_tokenizer_mismatch`
 - `neuron_state_collapse`
@@ -484,3 +492,18 @@ The bootstrap source-location obligation for `neuron.runtime` is implemented by 
 - `codex-rs/hepta-neuron`
 
 The source candidate is checked by `.github/workflows/hepta-consolidated-source.yml`, including closed-world inventory, package tests, all-target compilation, strict Clippy and clean tracked state. This receipt is source implementation evidence only. It grants no runtime, production-writer, model-provider, external-effect, independent-acceptance, selection, promotion, merge or release authority.
+
+### Shared Encoder and independent Cell heads
+
+`SharedEncoderOwnerV1` invokes its driver once per input and shares one immutable
+feature slice across the admitted Cell IDs. Each `CellHeadV1` retains its own
+parameters, head/action digests and abstention threshold. Multimodal stems bind
+ordered modality inputs and missing masks; Cell evidence can be projected into
+the Group NDU continuation gate, whose result always grants no authority.
+
+The driver trait and deterministic Q24 fixtures establish interfaces and fences.
+A production host must bind real model receipts and full scope/workspace/purpose,
+source frontier, model/adapter/tokenizer/normalizer/calibration and generation
+identity before reusing features across requests. Model throughput, trained
+critics, online learning and production Cell Split still require their separate
+execution and acceptance evidence.

@@ -36,6 +36,52 @@ fn downloaded_zip_permissions_do_not_preserve_privileged_bits() {
     assert_eq!(metadata.permissions().mode() & 0o7777, 0o755);
 }
 
+#[cfg(unix)]
+#[test]
+fn zip_archive_rejects_symlinked_extraction_root() {
+    let tmp = tempdir().expect("create tempdir");
+    let destination = tmp.path().join("staging");
+    let outside = tmp.path().join("outside");
+    std::fs::create_dir_all(&outside).expect("create outside");
+    std::os::unix::fs::symlink(&outside, &destination).expect("create symlink root");
+
+    let archive = curated_repo_zipball_bytes(TEST_CURATED_PLUGIN_SHA);
+    let error = extract_zipball_to_dir(&archive, &destination)
+        .expect_err("symlinked extraction root must be rejected");
+    assert!(error.contains("symbolic link"), "{error}");
+    assert!(!outside.join(".agents").exists());
+}
+
+#[cfg(unix)]
+#[test]
+fn zip_archive_rejects_preexisting_symlink_path() {
+    let tmp = tempdir().expect("create tempdir");
+    let destination = tmp.path().join("staging");
+    let outside = tmp.path().join("outside");
+    std::fs::create_dir_all(&destination).expect("create staging");
+    std::fs::create_dir_all(&outside).expect("create outside");
+    std::os::unix::fs::symlink(&outside, destination.join("plugins"))
+        .expect("create staging symlink");
+
+    let cursor = std::io::Cursor::new(Vec::new());
+    let mut writer = ZipWriter::new(cursor);
+    writer
+        .start_file(
+            "repo-root/plugins/untrusted.txt",
+            SimpleFileOptions::default(),
+        )
+        .expect("start zip file");
+    writer
+        .write_all(b"should not escape")
+        .expect("write zip file");
+    let archive = writer.finish().expect("finish zip").into_inner();
+
+    let error = extract_zipball_to_dir(&archive, &destination)
+        .expect_err("symlink ancestor must be rejected");
+    assert!(error.contains("symbolic link"), "{error}");
+    assert!(!outside.join("untrusted.txt").exists());
+}
+
 #[tokio::test]
 async fn github_http_routes_repository_ref_and_zipball_urls() {
     let server = MockServer::start().await;

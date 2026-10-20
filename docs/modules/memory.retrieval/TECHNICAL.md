@@ -296,3 +296,17 @@ The source candidate is checked by `.github/workflows/hepta-consolidated-source.
 ### Canonical HNMF recall migration
 
 The current `generation_bound::RecallPacketV1` remains the compatibility receipt during migration; it is **not** silently reinterpreted as `cognitive.types::hnmf_learning::RecallPacketV1`. `adapt_generation_bound_recall_to_canonical_shadow_v1` emits only a shadow canonical packet and requires an explicit bridge that binds the exact legacy cue/candidate-union/generation-vector digests plus every selected legacy record ID/revision/digest to an independently supplied canonical event identity/revision/digest. A legacy binary cue digest is never reused as the canonical JSON cue digest, and a legacy record ID is never inferred to be a canonical event ID. The adapter carries no attachment, model-call, writer, selection, promotion, or release authority. Product replacement remains false until downstream owner callsites have migrated and exact-candidate qualification is current.
+
+### Memory Cell shadow contract
+
+`run_memory_cell_tick` consumes the canonical Memory Cell manifest/input and
+existing immutable generated-candidate and engram snapshots. It validates cell,
+graph/model generation, cue, objective and source/forget frontier bindings before
+calling the existing recall path. The successor checkpoint is a candidate digest;
+this adapter neither persists it nor applies a topology proposal.
+
+`MemoryCellTickReceiptV1.resourceUsage` distinguishes `unavailable` from measured
+resident/transient bytes. The pure shadow adapter reports `unavailable`; it does
+not fabricate zero usage. Host measurements must satisfy the receipt caps and the
+owner's admitted manifest budget, and require independent evidence before any
+capacity or promotion claim. Split proposals remain candidate-only.
