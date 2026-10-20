@@ -53,6 +53,7 @@ fn listen_unix_socket_accepts_relative_custom_path() {
     );
 }
 
+#[cfg(unix)]
 #[tokio::test]
 async fn control_socket_acceptor_upgrades_and_forwards_websocket_text_messages_and_pings() {
     let temp_dir = tempfile::TempDir::new().expect("temp dir");
