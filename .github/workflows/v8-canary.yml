@@ -289,6 +289,9 @@ jobs:
 
       - name: Smoke test staged artifact with Cargo
         env:
+          # Match pinned Cargo/Rust 1.95.0 to avoid mixed-rustc build
+          # script artifacts in native V8 smoke validation (E0514).
+          RUSTUP_TOOLCHAIN: "1.95.0"
           SANDBOX: ${{ matrix.sandbox }}
           TARGET: ${{ matrix.target }}
         shell: bash
@@ -337,7 +340,7 @@ jobs:
         uses: ./.github/actions/check-clean-worktree
 
   build-windows-source:
-    timeout-minutes: 90
+    timeout-minutes: 180
     name: Build ptrcomp-sandbox ${{ matrix.target }} from source
     needs: metadata
     if: ${{ needs.metadata.outputs.windows_source_required == 'true' }}
