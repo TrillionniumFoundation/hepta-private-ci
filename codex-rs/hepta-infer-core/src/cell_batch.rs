@@ -8,11 +8,15 @@
 
 #![allow(clippy::module_name_repetitions)]
 
-use std::collections::{BTreeMap, BTreeSet, VecDeque};
+use std::collections::BTreeMap;
+use std::collections::BTreeSet;
+use std::collections::VecDeque;
 use std::fmt;
 use std::sync::Arc;
 
-use codex_hepta_types::{Digest32, Generation, StableId};
+use codex_hepta_types::Digest32;
+use codex_hepta_types::Generation;
+use codex_hepta_types::StableId;
 
 const FEATURE_WIDTH: usize = 8;
 const MAX_FEATURE_WIDTH: usize = 256;
@@ -76,7 +80,12 @@ impl ImmutableFeatureSnapshotV1 {
                 ]))
             })
             .collect();
-        Self::new_for_input(generation, encoder_digest, Digest32::of_bytes(input), features)
+        Self::new_for_input(
+            generation,
+            encoder_digest,
+            Digest32::of_bytes(input),
+            features,
+        )
     }
 
     pub fn new_for_input(
@@ -227,15 +236,18 @@ impl CellAdapterHeadV1 {
         if self.weights.len() != snapshot.features().len() {
             return Err(CellBatchError::FeatureWidth);
         }
-        let score = self
-            .weights
-            .iter()
-            .zip(snapshot.features())
-            .try_fold(self.bias, |score, (weight, feature)| {
+        let score = self.weights.iter().zip(snapshot.features()).try_fold(
+            self.bias,
+            |score, (weight, feature)| {
                 score
-                    .checked_add(weight.checked_mul(*feature).ok_or(CellBatchError::Arithmetic)?)
+                    .checked_add(
+                        weight
+                            .checked_mul(*feature)
+                            .ok_or(CellBatchError::Arithmetic)?,
+                    )
                     .ok_or(CellBatchError::Arithmetic)
-            })?;
+            },
+        )?;
         Ok(CellActivationV1 {
             cell_id: self.cell_id.clone(),
             scope_id: self.scope_id.clone(),
@@ -292,10 +304,7 @@ pub struct CellStateV1 {
 }
 
 impl CellStateV1 {
-    pub fn migrate_to(
-        &self,
-        successor_generation: Generation,
-    ) -> Result<Self, CellBatchError> {
+    pub fn migrate_to(&self, successor_generation: Generation) -> Result<Self, CellBatchError> {
         if self.generation.next() != Ok(successor_generation) {
             return Err(CellBatchError::GenerationNotSuccessor);
         }
