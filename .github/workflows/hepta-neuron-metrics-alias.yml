@@ -1,0 +1,53 @@
+name: Hepta Neuron Metrics WAL alias qualification
+
+on:
+  pull_request:
+    paths:
+      - "codex-rs/hepta-neuron/src/metrics.rs"
+      - "codex-rs/hepta-neuron/src/metrics_tests.rs"
+      - ".github/workflows/hepta-neuron-metrics-alias.yml"
+  workflow_dispatch: {}
+
+permissions:
+  contents: read
+
+jobs:
+  exact-neuron-metrics:
+    name: Exact-source Neuron metrics WAL security regressions
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    env:
+      EXPECTED_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+      CARGO_BUILD_JOBS: "2"
+      CARGO_INCREMENTAL: "0"
+    steps:
+      - name: Check out exact candidate
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          ref: ${{ env.EXPECTED_SHA }}
+          fetch-depth: 1
+          persist-credentials: false
+      - name: Install locked Rust toolchain
+        shell: bash
+        run: |
+          set -euo pipefail
+          rustup toolchain install 1.95.0 --profile minimal --component rustfmt
+      - name: Check modified Rust files with canonical formatter
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$EXPECTED_SHA"
+          rustfmt +1.95.0 --check --edition 2024 --config-path codex-rs/rustfmt.toml \
+            codex-rs/hepta-neuron/src/metrics.rs \
+            codex-rs/hepta-neuron/src/metrics_tests.rs
+      - name: Run exact native Metrics WAL alias regressions
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$EXPECTED_SHA"
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/neuron-metrics-alias.json" --minimum-tests 5 -- \
+            cargo +1.95.0 test --locked --manifest-path codex-rs/Cargo.toml \
+            -p codex-hepta-neuron --lib metrics::tests:: -- --test-threads=1
+      - name: Confirm source unchanged by qualification
+        if: always() && !cancelled()
+        uses: ./.github/actions/check-clean-worktree
