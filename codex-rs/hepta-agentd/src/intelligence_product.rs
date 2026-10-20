@@ -3,28 +3,13 @@
 //! The runner is the named product caller for `intelligence.control`. Owner
 //! algorithms remain in their authoritative crates. Cognition runs in an
 //! isolated blocking worker and cannot publish a dispatch proposal or learning
-//! fact. Only the Agentd caller, after a final currentness fence, may publish the
-//! proposal digest or append the exact Decision/Outcome event.
+//! fact. Only the Agentd caller, after a final currentness fence, may publish
+//! the proposal digest; durable learning writes belong to the dedicated typed
+//! LedgerWriter owner path.
 //!
 //! A timed-out worker may finish pure computation later, but its result is
-//! dropped and it has no effect/ledger capability. Durable ledger uncertainty is
-//! represented explicitly and reconciled only by replaying the exact event with
-//! its original predecessor through a freshly recovered journal.
+//! dropped and it has no effect or ledger capability.
 
-#[cfg(feature = "qualification-legacy-learning-write")]
-use codex_hepta_intelligence::AdvisoryDecisionV1;
-#[cfg(feature = "qualification-legacy-learning-write")]
-use codex_hepta_learning_ledger::AppendReceipt;
-#[cfg(feature = "qualification-legacy-learning-write")]
-use codex_hepta_learning_ledger::CandidateSetCompleteness;
-#[cfg(feature = "qualification-legacy-learning-write")]
-use codex_hepta_learning_ledger::EpisodeDecision;
-#[cfg(feature = "qualification-legacy-learning-write")]
-use codex_hepta_learning_ledger::OutcomeFinality;
-#[cfg(feature = "qualification-legacy-learning-write")]
-use codex_hepta_learning_ledger::OutcomeObservation;
-#[cfg(feature = "qualification-legacy-learning-write")]
-use codex_hepta_types::FixedQ32;
 
 #[path = "intelligence_evaluation.rs"]
 mod evaluation;
@@ -66,12 +51,6 @@ use codex_hepta_intelligence_eval::EvaluationRequest;
 use codex_hepta_intuition::CalibratedDecisionRequestV1;
 use codex_hepta_intuition::CalibratedDispositionV1;
 use codex_hepta_intuition::decide_calibrated_v2;
-#[cfg(feature = "qualification-legacy-learning-write")]
-use codex_hepta_learning_ledger::DurableLearningJournal;
-#[cfg(feature = "qualification-legacy-learning-write")]
-use codex_hepta_learning_ledger::DurableLedger;
-use codex_hepta_learning_ledger::DurableLedgerError;
-use codex_hepta_learning_ledger::LedgerEvent;
 use codex_hepta_ndu::ContributionSet;
 use codex_hepta_ndu::EvaluationPolicyV1;
 use codex_hepta_ndu::ScalarizationProfile;
@@ -710,29 +689,6 @@ fn wall_clock_ms() -> Result<u64, AgentdIntelligenceProductError> {
         .as_millis();
     u64::try_from(millis).map_err(|_| AgentdIntelligenceProductError::Clock)
 }
-
-#[derive(Clone, Debug, Eq, PartialEq)]
-pub struct PendingIntelligenceLedgerAppendV1 {
-    pub expected_predecessor: Digest32,
-    snapshot: CanonicalIntelligenceSnapshotV1,
-    pub event: LedgerEvent,
-}
-
-#[derive(Debug)]
-pub enum AgentdIntelligenceLedgerError {
-    Currentness(CanonicalIntelligenceError),
-    Ledger(DurableLedgerError),
-    Indeterminate(PendingIntelligenceLedgerAppendV1),
-    NotSelected,
-    InvalidOutcome,
-}
-
-impl fmt::Display for AgentdIntelligenceLedgerError {
-    fn fmt(&self, formatter: &mut fmt::Formatter<'_>) -> fmt::Result {
-        write!(formatter, "{self:?}")
-    }
-}
-impl StdError for AgentdIntelligenceLedgerError {}
 
 #[cfg(test)]
 #[path = "intelligence_product_tests.rs"]

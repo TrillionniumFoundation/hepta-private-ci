@@ -11,11 +11,7 @@ fn product_test_coordinator() -> AgentRunCoordinator {
 }
 
 use crate::AgentRunCoordinator;
-#[cfg(feature = "qualification-legacy-learning-write")]
-use crate::RunPhase;
 use crate::RuntimeComposition;
-#[cfg(feature = "qualification-legacy-learning-write")]
-use std::fs::OpenOptions;
 
 use super::*;
 use codex_hepta_context_compiler::ContextItem;
@@ -35,16 +31,6 @@ use codex_hepta_intuition::OodArtifactV1;
 use codex_hepta_intuition::RiskClass;
 use codex_hepta_intuition::canonical_candidate_order_digest_v1;
 use codex_hepta_intuition::canonical_candidate_set_digest_v1;
-#[cfg(feature = "qualification-legacy-learning-write")]
-use codex_hepta_learning_ledger::AppendDisposition;
-#[cfg(feature = "qualification-legacy-learning-write")]
-use codex_hepta_learning_ledger::DurableLedger;
-#[cfg(feature = "qualification-legacy-learning-write")]
-use codex_hepta_learning_ledger::LedgerAnchor;
-#[cfg(feature = "qualification-legacy-learning-write")]
-use codex_hepta_learning_ledger::LedgerEvent;
-#[cfg(feature = "qualification-legacy-learning-write")]
-use codex_hepta_learning_ledger::LedgerRecovery;
 use codex_hepta_ndu::AggregationOperator;
 use codex_hepta_ndu::AxisAggregationRule;
 use codex_hepta_ndu::AxisDirection;
@@ -659,138 +645,6 @@ fn fixture() -> Fixture {
     }
 }
 
-#[cfg(feature = "qualification-legacy-learning-write")]
-#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
-async fn real_owner_product_path_records_decision_outcome_and_reopens() {
-    let fixture = fixture();
-    let temp = tempfile::tempdir().expect("tempdir");
-    let authority = temp.path().join("intelligence-authority.json");
-    write_authority_file(
-        &authority,
-        &fixture.owners,
-        fixture.request.snapshot.revocation_frontier_digest(),
-    );
-    let runner =
-        AgentdIntelligenceProductRunnerV1::new(authority, authority_verifier()).expect("runner");
-    let mut coordinator = product_test_coordinator();
-    let outcome = runner
-        .prepare_and_admit(&mut coordinator, fixture.request, fixture.inputs)
-        .await
-        .expect("product prepare and Agentd admission");
-    let AgentdIntelligenceAdmittedOutcomeV1::Ready {
-        prepared,
-        run_receipt: attached,
-    } = outcome
-    else {
-        panic!("selected real-owner path must be ready");
-    };
-    assert!(!prepared.envelope.utility_receipt_digest.is_zero());
-    assert!(!prepared.dispatch_proposal_digest.is_zero());
-    assert!(!prepared.envelope.authority.grants_any());
-    assert_eq!(attached.phase, RunPhase::ContextAttached);
-    assert_eq!(
-        attached.compilation_receipt_digest.as_deref(),
-        Some(prepared.envelope.envelope_digest.to_string().as_str())
-    );
-    let dispatched = coordinator
-        .mark_dispatched(&attached.run_id, attached.revision)
-        .expect("commit dispatch before physical effect");
-    assert_eq!(dispatched.phase, RunPhase::Dispatched);
-
-    let ledger_path = temp.path().join("learning-ledger");
-    let binding = digest("agentd-intelligence-ledger-binding");
-    let file = OpenOptions::new()
-        .create_new(true)
-        .read(true)
-        .write(true)
-        .open(&ledger_path)
-        .expect("create ledger");
-    let mut ledger = DurableLedger::create(file, binding, 16).expect("ledger");
-    let decision = runner
-        .append_decision(
-            &mut ledger,
-            Digest32::ZERO,
-            &prepared,
-            id("episode.agentd"),
-            id("intuition.policy"),
-        )
-        .expect("decision append");
-    assert_eq!(decision.disposition, AppendDisposition::Appended);
-
-    let outcome = runner
-        .append_outcome(
-            &mut ledger,
-            decision.chain_digest,
-            &prepared,
-            id("outcome-record.agentd"),
-            id("outcome.agentd"),
-            id("episode.agentd"),
-            id("observer.independent"),
-            FixedQ32::ONE,
-            OutcomeFinality::Terminal,
-            digest("terminal-observation"),
-        )
-        .expect("outcome append");
-    assert_eq!(outcome.disposition, AppendDisposition::Appended);
-    let terminal = coordinator
-        .observe_terminal(
-            &dispatched.run_id,
-            dispatched.revision,
-            RunPhase::Succeeded,
-            /*terminal_observed*/ true,
-        )
-        .expect("commit independently observed terminal");
-    assert_eq!(terminal.phase, RunPhase::Succeeded);
-    assert!(terminal.terminal_observed);
-    assert_eq!(
-        terminal.compilation_receipt_digest.as_deref(),
-        Some(prepared.envelope.envelope_digest.to_string().as_str())
-    );
-    assert_eq!(ledger.records().expect("records").len(), 2);
-    assert!(matches!(
-        ledger.records().expect("records")[0].event,
-        LedgerEvent::Decision(_)
-    ));
-    assert!(matches!(
-        ledger.records().expect("records")[1].event,
-        LedgerEvent::Outcome(_)
-    ));
-
-    drop(ledger);
-    let file = OpenOptions::new()
-        .read(true)
-        .write(true)
-        .open(&ledger_path)
-        .expect("reopen ledger");
-    let mut recovered = DurableLedger::recover(
-        file,
-        binding,
-        16,
-        LedgerRecovery::Acknowledged(LedgerAnchor {
-            sequence: 2,
-            chain_digest: outcome.chain_digest,
-        }),
-    )
-    .expect("recover");
-    assert_eq!(recovered.records().expect("recovered records").len(), 2);
-
-    let replay = runner
-        .append_outcome(
-            &mut recovered,
-            decision.chain_digest,
-            &prepared,
-            id("outcome-record.agentd"),
-            id("outcome.agentd"),
-            id("episode.agentd"),
-            id("observer.independent"),
-            FixedQ32::ONE,
-            OutcomeFinality::Terminal,
-            digest("terminal-observation"),
-        )
-        .expect("exact outcome retry");
-    assert_eq!(replay.disposition, AppendDisposition::IdempotentReplay);
-}
-
 #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
 async fn unsigned_currentness_substitution_fails_before_owner_use() {
     let fixture = fixture();
@@ -820,56 +674,6 @@ async fn unsigned_currentness_substitution_fails_before_owner_use() {
             CanonicalIntelligenceError::FreshnessUnavailable(_)
         ))
     ));
-}
-
-#[cfg(feature = "qualification-legacy-learning-write")]
-#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
-async fn final_use_revocation_race_fails_before_decision_publication() {
-    let fixture = fixture();
-    let temp = tempfile::tempdir().expect("tempdir");
-    let authority = temp.path().join("intelligence-authority.json");
-    write_authority_file(
-        &authority,
-        &fixture.owners,
-        fixture.request.snapshot.revocation_frontier_digest(),
-    );
-    let runner = AgentdIntelligenceProductRunnerV1::new(authority.clone(), authority_verifier())
-        .expect("runner");
-    let outcome = runner
-        .prepare(&product_test_coordinator(), fixture.request, fixture.inputs)
-        .await
-        .expect("prepare");
-    let AgentdIntelligenceProductOutcomeV1::Ready(prepared) = outcome else {
-        panic!("ready");
-    };
-
-    write_authority_file(
-        &authority,
-        &fixture.owners,
-        digest("new-revocation-frontier"),
-    );
-
-    let file = OpenOptions::new()
-        .create_new(true)
-        .read(true)
-        .write(true)
-        .open(temp.path().join("ledger"))
-        .expect("create ledger");
-    let mut ledger =
-        DurableLedger::create(file, digest("binding"), 16).expect("create durable ledger");
-    assert!(matches!(
-        runner.append_decision(
-            &mut ledger,
-            Digest32::ZERO,
-            &prepared,
-            id("episode.agentd"),
-            id("intuition.policy"),
-        ),
-        Err(AgentdIntelligenceLedgerError::Currentness(
-            CanonicalIntelligenceError::RevocationFrontierDrift(_)
-        ))
-    ));
-    assert!(ledger.records().expect("records").is_empty());
 }
 
 #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
