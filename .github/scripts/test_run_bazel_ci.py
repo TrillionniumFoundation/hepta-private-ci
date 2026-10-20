@@ -123,6 +123,91 @@ class RunBazelCiIntegrationTest(unittest.TestCase):
         ]
         return result, calls
 
+    def test_clippy_workflow_keeps_native_targets_and_compiler_failures(self) -> None:
+        workflow = (SCRIPTS.parent / "workflows" / "bazel.yml").read_text(
+            encoding="utf-8"
+        )
+        step = workflow.split(
+            "      - name: bazel build --config=clippy lint targets\n", 1
+        )[1]
+        body = step.split("        run: |\n", 1)[1]
+        script_lines = []
+        for line in body.splitlines():
+            if line.strip() and not line.startswith("          "):
+                break
+            script_lines.append(line[10:])
+        script = "\n".join(script_lines) + "\n"
+
+        repository = self.root / "workflow repository"
+        copied_scripts = repository / ".github" / "scripts"
+        copied_scripts.mkdir(parents=True)
+        for name in (
+            "run-bazel-ci.sh",
+            "run-bazel-query-ci.sh",
+            "run_bazel_with_buildbuddy.py",
+        ):
+            shutil.copy2(SCRIPTS / name, copied_scripts / name)
+        (repository / "scripts").mkdir()
+        shutil.copy2(
+            SCRIPTS.parent.parent / "scripts" / "list-bazel-clippy-targets.sh",
+            repository / "scripts" / "list-bazel-clippy-targets.sh",
+        )
+        native = "//codex-rs/fake:fake-all-test-bin"
+        cross = "//codex-rs/fake:fake-all-test-windows-cross-bin"
+        cognitive = (
+            "//codex-rs/hepta-agentd:"
+            "hepta-agentd-cognitive-product-qualification-test-bin"
+        )
+        targets = [native, cross, cognitive]
+        roster = self.root / "clippy query labels.txt"
+        roster.write_text("\n".join(targets) + "\n", encoding="utf-8")
+
+        for runner in ("Windows", "Linux", "macOS"):
+            for fail in (False, True):
+                with self.subTest(runner=runner, compiler_failure=fail):
+                    self.log.unlink(missing_ok=True)
+                    environment = {
+                        **self.env,
+                        "RUNNER_OS": runner,
+                        "GITHUB_SHA": "f" * 40,
+                        "BAZEL_PROBE_QUERY_FILE": str(roster),
+                        "BAZEL_PROBE_FAIL": "1" if fail else "0",
+                    }
+                    result = subprocess.run(
+                        [self.bash, "-e", "-o", "pipefail", "-c", script],
+                        cwd=repository,
+                        env=environment,
+                        check=False,
+                        capture_output=True,
+                        text=True,
+                        timeout=60,
+                    )
+                    self.assertEqual(
+                        result.returncode,
+                        37 if fail else 0,
+                        result.stdout + result.stderr,
+                    )
+                    calls = [
+                        json.loads(line)
+                        for line in self.log.read_text(encoding="utf-8").splitlines()
+                    ]
+                    self.assertEqual(len(calls), 2)
+                    query, build = calls
+                    self.assertIn("query", query)
+                    self.assertIn("build", build)
+                    self.assertIn("--config=clippy", build)
+                    self.assertIn("--skip_incompatible_explicit_targets", build)
+                    self.assertNotIn("--skip_incompatible_explicit_targets", query)
+                    expected = targets if runner == "Windows" else [native, cognitive]
+                    self.assertEqual(
+                        build[build.index("--") + 1 :],
+                        ["//codex-rs/...", "-//codex-rs/v8-poc:all", *expected],
+                    )
+                    if fail:
+                        self.assertIn(
+                            "undefined symbol: __stack_chk_fail", result.stdout
+                        )
+
     def test_keyless_cross_uses_msvc_exec_and_gnullvm_target(self) -> None:
         result, calls = self.run_wrapper(
             "--windows-cross-compile",
