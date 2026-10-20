@@ -129,7 +129,7 @@ async fn unknown_or_dirty_history_is_not_relabelled() {
     }
 }
 
-async fn reopen_persisted_history(displaced: bool, after_rebind: bool) {
+async fn reopen_persisted_history(displaced: bool, after_rebind: bool) -> std::io::Result<()> {
     let temp = tempfile::tempdir().expect("private owner root");
     let root = temp.path().join("owner");
     std::fs::create_dir(&root).expect("owner directory");
@@ -154,6 +154,7 @@ async fn reopen_persisted_history(displaced: bool, after_rebind: bool) {
         .await
         .expect("persist historical cut");
     pool.close().await;
+    let root = root.canonicalize()?;
     let owner = AgentId::parse("018f4f72-5f8f-7cc1-8f55-df9fb3aa2c12").expect("owner ID");
     let store = AutomationStore::open_root(root.clone(), owner.clone())
         .await
@@ -171,28 +172,29 @@ async fn reopen_persisted_history(displaced: bool, after_rebind: bool) {
         .expect("idempotent restart");
     assert!(reopened.timer_epoch() > 0);
     reopened.close().await;
+    Ok(())
 }
 
 // Independent on-disk histories retain the default per-test watchdog and all
 // checksum/restart assertions; one case cannot consume another case's budget.
 #[tokio::test]
-async fn canonical_cut_before_rebind_reopens() {
-    reopen_persisted_history(false, false).await;
+async fn canonical_cut_before_rebind_reopens() -> std::io::Result<()> {
+    reopen_persisted_history(false, false).await
 }
 
 #[tokio::test]
-async fn canonical_cut_after_rebind_reopens() {
-    reopen_persisted_history(false, true).await;
+async fn canonical_cut_after_rebind_reopens() -> std::io::Result<()> {
+    reopen_persisted_history(false, true).await
 }
 
 #[tokio::test]
-async fn displaced_cut_before_rebind_reopens() {
-    reopen_persisted_history(true, false).await;
+async fn displaced_cut_before_rebind_reopens() -> std::io::Result<()> {
+    reopen_persisted_history(true, false).await
 }
 
 #[tokio::test]
-async fn displaced_cut_after_rebind_reopens() {
-    reopen_persisted_history(true, true).await;
+async fn displaced_cut_after_rebind_reopens() -> std::io::Result<()> {
+    reopen_persisted_history(true, true).await
 }
 
 #[tokio::test]

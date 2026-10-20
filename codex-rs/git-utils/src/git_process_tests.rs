@@ -80,7 +80,7 @@ async fn assert_timed_out_git_wrapper_does_not_leave_child_process_running(
         .env("RELEASE_WRAPPER_FILE", &release_wrapper_file);
 
     let (mut wrapper, process_tree) = spawn_git_command(&mut command).expect("spawn Git wrapper");
-    let ready = tokio::time::timeout(Duration::from_secs(30), async {
+    let child_readiness = tokio::time::timeout(Duration::from_secs(30), async {
         loop {
             if let Ok(child_pid) = std::fs::read_to_string(&child_pid_file)
                 && !child_pid.trim().is_empty()
@@ -97,19 +97,32 @@ async fn assert_timed_out_git_wrapper_does_not_leave_child_process_running(
         }
     })
     .await;
-    let child_pid = match ready {
-        Ok(Ok(pid)) => pid,
-        other => {
-            // A failed fixture must not strand the descendant whose cleanup
-            // the test is intended to validate. Preserve the original 30s
-            // readiness and 100ms process-tree cleanup budgets.
-            let cleanup_output = wait_for_git_command_with_timeout_output(
-                wrapper,
-                process_tree,
-                Duration::from_millis(100),
-            )
-            .await;
-            panic!("Git wrapper never produced its descendant readiness marker: {other:?}; cleanup output: {cleanup_output:?}");
+    let child_pid = match child_readiness {
+        Ok(Ok(child_pid)) => child_pid,
+        failure => {
+            let wrapper_status = wrapper.try_wait();
+            let child_pid_contents = std::fs::read_to_string(&child_pid_file);
+            let child_ready = child_ready_file.try_exists();
+            // Close the process tree before collecting pipes that descendants may hold open.
+            drop(process_tree);
+            let output_future = wrapper.wait_with_output();
+            let output = match tokio::time::timeout(Duration::from_secs(5), output_future).await {
+                Ok(Ok(output)) => format!(
+                    "status: {}; stdout:\n{}\nstderr:\n{}",
+                    output.status,
+                    String::from_utf8_lossy(&output.stdout),
+                    String::from_utf8_lossy(&output.stderr),
+                ),
+                Ok(Err(error)) => format!("could not collect wrapper output: {error}"),
+                Err(error) => format!("timed out collecting wrapper output: {error}"),
+            };
+            panic!(
+                "wait for Git wrapper child readiness: {failure:?}; \
+                 wrapper status before cleanup: {wrapper_status:?}; \
+                 child PID file {child_pid_file:?}: {child_pid_contents:?}; \
+                 child ready file {child_ready_file:?}: {child_ready:?}; \
+                 wrapper output after cleanup: {output}"
+            );
         }
     };
 

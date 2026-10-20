@@ -4,6 +4,7 @@
 )]
 
 use std::collections::BTreeMap;
+use std::path::Path;
 use std::sync::Arc;
 use std::sync::Mutex;
 use std::time::Duration;
@@ -34,6 +35,8 @@ use codex_hepta_supervisor::SupervisorConfig;
 use codex_hepta_supervisor::SupervisorError;
 use codex_hepta_supervisor::SupervisorEventKind;
 use codex_hepta_supervisor::TickReport;
+use pretty_assertions::assert_eq;
+use serde::Deserialize;
 
 const AGENT_ID: &str = "018f4f72-5f8f-7cc1-8f55-df9fb3aa2c12";
 
@@ -197,6 +200,25 @@ fn config() -> SupervisorConfig {
     }
 }
 
+#[derive(Debug, Deserialize, Eq, PartialEq)]
+struct RestartBudgetProjection {
+    attempts: u32,
+    pending: bool,
+}
+
+#[derive(Deserialize)]
+struct RestartRecordProjection {
+    main: RestartBudgetProjection,
+}
+
+fn persisted_restart_budget(run_root: &Path) -> Result<RestartBudgetProjection, SupervisorError> {
+    // Observe the actual durable owner record without widening private control APIs.
+    let bytes = std::fs::read(run_root.join("supervisor-restart-budget.json"))?;
+    let record: RestartRecordProjection = serde_json::from_slice(&bytes)
+        .map_err(|error| SupervisorError::Invalid(error.to_string()))?;
+    Ok(record.main)
+}
+
 #[test]
 fn restart_budget_survives_repeated_supervisord_recovery() -> Result<(), SupervisorError> {
     let temp = tempfile::tempdir()?;
@@ -212,6 +234,13 @@ fn restart_budget_survives_repeated_supervisord_recovery() -> Result<(), Supervi
         WorkspaceBinding::new(workspace.canonicalize()?, &root)?,
         ResourceBudget::local_default(),
     )?)?;
+    let run_root = registry
+        .load()?
+        .agent(&agent_id)
+        .expect("registered agent")
+        .layout
+        .run_root()
+        .to_path_buf();
 
     let release_id = ReleaseId::parse("restart-budget-release")?;
     let release_source = temp.path().join("restart-budget-release");
@@ -233,11 +262,31 @@ fn restart_budget_survives_repeated_supervisord_recovery() -> Result<(), Supervi
     now += Duration::from_millis(1);
     control.crash(&agent_id);
     assert_eq!(supervisor.tick(now), TickReport::default());
+    assert_eq!(
+        persisted_restart_budget(&run_root)?,
+        RestartBudgetProjection {
+            attempts: 1,
+            pending: true,
+        }
+    );
+    assert_eq!(control.spawn_count(&agent_id), 1);
+    assert_eq!(
+        supervisor.tick(now + Duration::from_millis(249)),
+        TickReport::default()
+    );
+    assert_eq!(control.spawn_count(&agent_id), 1);
     now += Duration::from_millis(250);
     assert_eq!(supervisor.tick(now), TickReport::default());
     assert_eq!(control.spawn_count(&agent_id), 2);
     control.healthy(&agent_id);
     assert_eq!(supervisor.tick(now), TickReport::default());
+    assert_eq!(
+        persisted_restart_budget(&run_root)?,
+        RestartBudgetProjection {
+            attempts: 1,
+            pending: false,
+        }
+    );
     drop(supervisor);
 
     // Recover supervisord around the same live child. The next failure must
@@ -246,19 +295,36 @@ fn restart_budget_survives_repeated_supervisord_recovery() -> Result<(), Supervi
         Supervisor::recover(registry.clone(), control.driver(), config(), now)?;
     assert_eq!(recovered, TickReport::default());
     assert!(supervisor.snapshot(&agent_id).expect("snapshot").active);
+    assert_eq!(
+        persisted_restart_budget(&run_root)?,
+        RestartBudgetProjection {
+            attempts: 1,
+            pending: false,
+        }
+    );
     now += Duration::from_millis(1);
     control.crash(&agent_id);
     assert_eq!(supervisor.tick(now), TickReport::default());
+    assert_eq!(
+        persisted_restart_budget(&run_root)?,
+        RestartBudgetProjection {
+            attempts: 2,
+            pending: true,
+        }
+    );
+    let queued = supervisor.snapshot(&agent_id).expect("queued snapshot");
+    assert!(!queued.active);
+    assert_eq!(
+        queued.events.iter().filter(|event| matches!(
+            event.kind, SupervisorEventKind::AutomaticRestartQueued { attempt: 2 }
+        )).count(),
+        1
+    );
     assert!(
-        supervisor
-            .snapshot(&agent_id)
-            .expect("snapshot")
+        queued
             .events
             .iter()
-            .any(|event| matches!(
-                &event.kind,
-                SupervisorEventKind::AutomaticRestartQueued { attempt: 2 }
-            ))
+            .any(|event| matches!(&event.kind, SupervisorEventKind::RestartQueued))
     );
     assert_eq!(
         supervisor.tick(now + Duration::from_millis(499)),
@@ -270,31 +336,60 @@ fn restart_budget_survives_repeated_supervisord_recovery() -> Result<(), Supervi
     assert_eq!(control.spawn_count(&agent_id), 3);
     control.healthy(&agent_id);
     assert_eq!(supervisor.tick(now), TickReport::default());
+    assert_eq!(
+        persisted_restart_budget(&run_root)?,
+        RestartBudgetProjection {
+            attempts: 2,
+            pending: false,
+        }
+    );
     drop(supervisor);
 
     // Repeat once more: the recovered counter must advance to attempt 3.
     let (mut supervisor, recovered) =
         Supervisor::recover(registry.clone(), control.driver(), config(), now)?;
     assert_eq!(recovered, TickReport::default());
+    assert!(supervisor.snapshot(&agent_id).expect("snapshot").active);
+    assert_eq!(
+        persisted_restart_budget(&run_root)?,
+        RestartBudgetProjection {
+            attempts: 2,
+            pending: false,
+        }
+    );
     now += Duration::from_millis(1);
     control.crash(&agent_id);
     assert_eq!(supervisor.tick(now), TickReport::default());
-    assert!(
-        supervisor
-            .snapshot(&agent_id)
-            .expect("snapshot")
-            .events
-            .iter()
-            .any(|event| matches!(
-                &event.kind,
-                SupervisorEventKind::AutomaticRestartQueued { attempt: 3 }
-            ))
+    assert_eq!(
+        persisted_restart_budget(&run_root)?,
+        RestartBudgetProjection {
+            attempts: 3,
+            pending: true,
+        }
     );
+    assert_eq!(
+        supervisor.snapshot(&agent_id).expect("queued snapshot").events.iter().filter(|event| matches!(
+            event.kind, SupervisorEventKind::AutomaticRestartQueued { attempt: 3 }
+        )).count(),
+        1
+    );
+    assert_eq!(
+        supervisor.tick(now + Duration::from_millis(999)),
+        TickReport::default()
+    );
+    assert_eq!(control.spawn_count(&agent_id), 3);
     now += Duration::from_secs(1);
     assert_eq!(supervisor.tick(now), TickReport::default());
     assert_eq!(control.spawn_count(&agent_id), 4);
     control.healthy(&agent_id);
     assert_eq!(supervisor.tick(now), TickReport::default());
+    assert_eq!(
+        persisted_restart_budget(&run_root)?,
+        RestartBudgetProjection {
+            attempts: 3,
+            pending: false,
+        }
+    );
     drop(supervisor);
 
     // A fourth crash after yet another supervisord recovery is budget
@@ -303,23 +398,49 @@ fn restart_budget_survives_repeated_supervisord_recovery() -> Result<(), Supervi
     let (mut supervisor, recovered) =
         Supervisor::recover(registry, control.driver(), config(), now)?;
     assert_eq!(recovered, TickReport::default());
+    assert!(supervisor.snapshot(&agent_id).expect("snapshot").active);
+    assert_eq!(
+        persisted_restart_budget(&run_root)?,
+        RestartBudgetProjection {
+            attempts: 3,
+            pending: false,
+        }
+    );
     now += Duration::from_millis(1);
     control.crash(&agent_id);
+    let budget_fault = SupervisorError::RestartBudgetExhausted(agent_id.clone()).to_string();
     assert_eq!(
         supervisor.tick(now),
         TickReport {
             faults: vec![AgentFault {
                 agent_id: agent_id.clone(),
-                message: SupervisorError::RestartBudgetExhausted(agent_id.clone()).to_string(),
+                message: budget_fault.clone(),
             }],
         }
     );
     let snapshot = supervisor.snapshot(&agent_id).expect("snapshot");
     assert!(!snapshot.active);
     assert!(snapshot.events.iter().any(|event| matches!(
-        &event.kind,
-        SupervisorEventKind::AutomaticRestartBudgetExhausted { attempts: 3 }
+        &event.kind, SupervisorEventKind::DriverFault(message) if message == &budget_fault
     )));
+    assert_eq!(
+        snapshot.events.iter().filter(|event| matches!(
+            event.kind, SupervisorEventKind::AutomaticRestartBudgetExhausted { attempts: 3 }
+        )).count(),
+        1
+    );
+    assert_eq!(
+        persisted_restart_budget(&run_root)?,
+        RestartBudgetProjection {
+            attempts: 3,
+            pending: false,
+        }
+    );
+    assert_eq!(control.spawn_count(&agent_id), 4);
+    assert_eq!(
+        supervisor.tick(now + Duration::from_secs(10)),
+        TickReport::default()
+    );
     assert_eq!(control.spawn_count(&agent_id), 4);
     Ok(())
 }
