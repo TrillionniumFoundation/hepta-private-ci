@@ -162,8 +162,7 @@ fn metric_wal_rejects_symlinks_and_hardlink_aliases_before_writes() {
     ));
     assert_eq!(std::fs::read(&target).expect("read target"), sentinel);
 
-    std::os::unix::fs::symlink(&missing_target, &dangling)
-        .expect("create dangling symlink");
+    std::os::unix::fs::symlink(&missing_target, &dangling).expect("create dangling symlink");
     assert!(matches!(
         NeuronMetricsGroupCommitWriterV1::open(&dangling, digest("scope"), generation(1)),
         Err(MetricsError::NotRegular)
