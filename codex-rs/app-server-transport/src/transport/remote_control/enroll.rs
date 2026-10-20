@@ -446,6 +446,14 @@ mod tests {
     use tokio::time::timeout;
 
     async fn remote_control_state_runtime(codex_home: &TempDir) -> Arc<StateRuntime> {
+        #[cfg(unix)]
+        {
+            use std::os::unix::fs::PermissionsExt;
+
+            // This helper owns the fresh fixture home; its privacy must not depend on umask.
+            std::fs::set_permissions(codex_home.path(), std::fs::Permissions::from_mode(0o700))
+                .expect("private SQLite fixture home");
+        }
         StateRuntime::init(
             codex_state::SqliteConfig::new_for_testing(codex_home.path().abs()),
             "test-provider".to_string(),

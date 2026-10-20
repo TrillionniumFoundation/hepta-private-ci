@@ -168,7 +168,7 @@ pub fn run_memory_cell_tick(
         model_generation: input.model_generation,
         logical_sequence: input.logical_sequence,
         status,
-        predecessor_checkpoint_digest: input.predecessor_checkpoint_digest.clone(),
+        predecessor_checkpoint_digest: input.predecessor_checkpoint_digest,
         successor_checkpoint_digest,
         recall_packet_digest,
         candidate_digest: Some(candidate_digest),

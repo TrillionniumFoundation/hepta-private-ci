@@ -92,4 +92,6 @@ jobs:
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
           git diff --exit-code
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
-          if ((git status --porcelain --untracked-files=no) -ne "") { throw "unqualified worktree mutation" }
+          $trackedChanges = @(git status --porcelain --untracked-files=no)
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          if ($trackedChanges.Count -ne 0) { throw "unqualified worktree mutation" }

@@ -232,3 +232,40 @@ fn assert_socket_path_removed(_socket_path: &Path) {
     // uds_windows uses a regular filesystem path as its rendezvous point,
     // but there is no Unix socket filesystem node to assert on.
 }
+
+#[cfg(not(unix))]
+#[tokio::test]
+async fn unverifiable_control_peer_cannot_upgrade_or_publish_transport_events() {
+    let temp_dir = tempfile::TempDir::new().expect("temp dir");
+    let socket_path = test_socket_path(temp_dir.path());
+    let (transport_event_tx, mut transport_event_rx) =
+        mpsc::channel::<TransportEvent>(CHANNEL_CAPACITY);
+    let shutdown_token = CancellationToken::new();
+    let accept_handle = start_control_socket_acceptor(
+        socket_path.clone(),
+        transport_event_tx,
+        shutdown_token.clone(),
+    )
+    .await
+    .expect("control socket acceptor should start");
+    let stream = connect_to_socket(socket_path.as_path())
+        .await
+        .expect("rendezvous should connect");
+    let upgrade = timeout(
+        Duration::from_secs(1),
+        client_async("ws://localhost/rpc", stream),
+    )
+    .await
+    .expect("unverifiable peer must be closed promptly");
+    assert!(
+        upgrade.is_err(),
+        "unverified peers cannot complete the handshake"
+    );
+    assert!(
+        transport_event_rx.try_recv().is_err(),
+        "no control transport event may be published"
+    );
+    shutdown_token.cancel();
+    accept_handle.await.expect("acceptor should join");
+    assert_socket_path_removed(socket_path.as_path());
+}

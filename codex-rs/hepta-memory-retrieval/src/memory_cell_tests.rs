@@ -122,7 +122,7 @@ fn checkpoint_is_deterministic_and_binds_all_tick_inputs() {
     changed.ndu_state_digest = digest("next-ndu");
     assert_ne!(original, checkpoint(&manifest, &changed));
 
-    let mut changed = input.clone();
+    let mut changed = input;
     changed.predecessor_checkpoint_digest = Some(digest("prior"));
     assert_ne!(original, checkpoint(&manifest, &changed));
 }
@@ -149,7 +149,7 @@ fn checkpoint_binds_artifact_role_and_lineage() {
     changed.parent_cell_id = Some(id("memory-cell:parent"));
     assert_ne!(original, checkpoint(&changed, &input));
 
-    let mut changed = manifest.clone();
+    let mut changed = manifest;
     changed.lineage_digest = digest("other-lineage");
     assert_ne!(original, checkpoint(&changed, &input));
 }
@@ -174,7 +174,7 @@ fn checkpoint_binds_population_modality_and_resource_limits() {
     changed.max_active_cells += 1;
     assert_ne!(original, checkpoint(&changed, &input));
 
-    let mut changed = manifest.clone();
+    let mut changed = manifest;
     changed.max_state_bytes += 1;
     assert_ne!(original, checkpoint(&changed, &input));
 }
