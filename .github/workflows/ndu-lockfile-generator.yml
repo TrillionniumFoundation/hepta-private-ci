@@ -1,0 +1,36 @@
+name: ndu-lockfile-generator
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  generate:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - name: Prepare Bazel CI
+        uses: ./.github/actions/prepare-bazel-ci
+        with:
+          target: x86_64-unknown-linux-gnu
+          cache-scope: ndu-lock-generator
+      - name: Generate lock candidate
+        shell: bash
+        run: |
+          set -euo pipefail
+          just bazel-lock-update
+          test -s MODULE.bazel.lock
+      - name: Upload lock candidate
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: ndu-module-bazel-lock
+          path: MODULE.bazel.lock
+          if-no-files-found: error
+          retention-days: 1
