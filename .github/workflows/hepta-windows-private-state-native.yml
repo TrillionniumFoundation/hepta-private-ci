@@ -7,6 +7,7 @@ on:
       - "codex-rs/hepta-prompt-registry/**"
       - "codex-rs/hepta-contracts/**"
       - "codex-rs/hepta-agentd/**"
+      - "codex-rs/uds/**"
       - "codex-rs/Cargo.toml"
       - "codex-rs/Cargo.lock"
       - "codex-rs/rust-toolchain.toml"
@@ -77,6 +78,12 @@ jobs:
         run: |
           Set-Location codex-rs
           just test --locked -p codex-hepta-agentd --lib -E 'test(prompt_runtime::tests::)' --test-threads 1 --no-tests fail --retries 0
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+      - name: Verify native socket cleanup and fail-closed kernel peer boundary
+        shell: pwsh
+        run: |
+          Set-Location codex-rs
+          just test --locked -p codex-uds -p codex-hepta-agentd --lib -E 'package(codex-uds) | test(control::peer_auth_tests::)' --test-threads 1 --no-tests fail --retries 0
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
       - name: Enforce source-level Rust formatting for durable owners
         shell: pwsh

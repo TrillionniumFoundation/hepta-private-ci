@@ -89,6 +89,14 @@ The bounded components are:
 
 Ingress validates identity, version, size, scope and revision before domain logic. The deterministic core receives typed values and is testable without network, filesystem or process-global state unless the module owns that boundary. State-bearing components use one transaction boundary per logical mutation. Publication occurs only after invariants and lineage checks pass.
 
+The local control socket authenticates the connected user with kernel peer
+credentials before allocating a request permit or reading control frames. The
+current Unix implementation supports this boundary. Windows AF_UNIX does not
+provide the required credentials through the current transport and rejects
+control connections as unsupported. Native Windows private-state, ACL and
+socket-cleanup qualification does not establish a working Agentd control path;
+that path requires a transport with independently verified kernel identity.
+
 Adapters translate one registered contract, verify final payload and grant immediately before the boundary, invoke one downstream capability, and map the observed terminal outcome. Queue acceptance or handler completion is never inferred as external success. Component interfaces support deterministic fixtures and fault injection.
 
 The default daemon in `codex-rs/hepta-agentd/src/runtime.rs` supervises its tasks through the existing `RuntimeTasks` host. The composition registers required tasks and invokes the automation-owned constructor; adding a normal optional task no longer adds a central completion enum or cleanup branch. Optional failure invokes its owner-local quarantine callback, while a failed quarantine, writer error or generation fence stops the host. Retirement uses cooperative cancellation and acknowledged owner cleanup, not a timeout relabeled as success.

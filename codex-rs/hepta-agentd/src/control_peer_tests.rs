@@ -13,7 +13,16 @@ async fn control_peer_check_runs_before_control_frames() {
         .accept()
         .await
         .expect("control peer should connect");
+    #[cfg(unix)]
     ensure_control_peer(&server_stream).expect("same-UID control peer should pass");
+    #[cfg(windows)]
+    assert!(
+        matches!(
+            ensure_control_peer(&server_stream),
+            Err(AgentdError::Io(error)) if error.kind() == ErrorKind::Unsupported
+        ),
+        "Windows AF_UNIX cannot authorize frames without kernel peer credentials"
+    );
     let _client_stream = client_task
         .await
         .expect("client task should join")

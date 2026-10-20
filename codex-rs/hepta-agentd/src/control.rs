@@ -243,6 +243,6 @@ fn ensure_control_peer(stream: &UnixStream) -> Result<(), AgentdError> {
     stream.ensure_current_user_peer().map_err(AgentdError::Io)
 }
 
-#[cfg(all(test, unix))]
+#[cfg(test)]
 #[path = "control_peer_tests.rs"]
 mod peer_auth_tests;

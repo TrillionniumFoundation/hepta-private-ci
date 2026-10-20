@@ -77,6 +77,28 @@ async fn bound_listener_path_is_stale_socket_path() {
 }
 
 #[tokio::test]
+async fn stopped_listener_path_can_be_cleaned_and_rebound() {
+    let temp_dir = tempfile::TempDir::new().expect("temp dir");
+    let socket_path = temp_dir.path().join("rebind");
+    let listener = UnixListener::bind(&socket_path)
+        .await
+        .expect("first listener should bind");
+    drop(listener);
+
+    assert!(
+        is_stale_socket_path(&socket_path)
+            .await
+            .expect("inspect the rendezvous entry itself")
+    );
+    tokio::fs::remove_file(&socket_path)
+        .await
+        .expect("remove stopped listener rendezvous");
+    let _rebound = UnixListener::bind(&socket_path)
+        .await
+        .expect("the same owned path should bind again");
+}
+
+#[tokio::test]
 async fn stream_round_trips_data_between_listener_and_client() {
     let temp_dir = tempfile::TempDir::new().expect("temp dir");
     let socket_path = temp_dir.path().join("socket");
