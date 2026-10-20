@@ -3,6 +3,18 @@ use super::*;
 use codex_hepta_types::Digest32;
 use codex_hepta_types::StableId;
 
+#[tokio::test]
+async fn destination_constructor_preserves_all_connection_policies()
+-> Result<(), Box<dyn std::error::Error>> {
+    let directory = tempfile::tempdir()?;
+    let store =
+        DestinationDedupeStore::open_standalone(&directory.path().join("destination.sqlite3"))
+            .await?;
+    crate::sqlite::tests::assert_operation_policy(&store.pool).await?;
+    store.close().await;
+    Ok(())
+}
+
 fn stable_id(value: &str) -> StableId {
     StableId::new(value).expect("test identifier")
 }

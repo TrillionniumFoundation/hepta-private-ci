@@ -4,6 +4,10 @@ use sqlx::sqlite::SqlitePoolOptions;
 use super::*;
 
 #[tokio::test]
+#[expect(
+    clippy::disallowed_methods,
+    reason = "fixed in-memory compiled schema oracle never opens an owner path"
+)]
 async fn compiled_migrations_match_schema_oracle_and_weakened_trigger_is_rejected() {
     let pool = SqlitePoolOptions::new()
         .max_connections(1)

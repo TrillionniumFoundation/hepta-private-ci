@@ -33,6 +33,11 @@ use crate::CognitiveStore;
 use crate::CognitiveStoreError;
 use crate::framing::frame_part;
 
+#[path = "local_lease_outbox_dispatch_settlement.rs"]
+mod dispatch_settlement;
+#[path = "local_lease_outbox_observer_origin.rs"]
+mod observer_origin;
+
 pub const LOCAL_LEASE_OUTBOX_NAMESPACE: &str = "local_development_only";
 pub const LOCAL_LEASE_OUTBOX_SCHEMA_VERSION: u32 = 1;
 pub const LOCAL_LEASE_OUTBOX_EXTERNAL_EFFECTS: bool = false;
@@ -40,6 +45,9 @@ pub const LOCAL_LEASE_OUTBOX_KG_WRITE_AUTHORITY: bool = false;
 pub const LOCAL_LEASE_OUTBOX_PRODUCTION_CALLER: bool = false;
 
 const MAX_LEASE_ROWS: usize = 4_096;
+#[cfg(test)]
+#[path = "local_lease_outbox_capacity_tests.rs"]
+mod capacity_tests;
 /// Production owner ceiling for one lease/shard. This is deliberately above
 /// the 100k pending-operation target because one operation appends admission,
 /// dispatch and terminal/reconciliation events.
@@ -593,10 +601,7 @@ impl LocalLeaseOutbox {
                 }
             }
         };
-        transaction
-            .commit()
-            .await
-            .map_err(crate::cognitive_store::unavailable)?;
+        crate::cognitive_store::commit_admitted(transaction).await?;
         let handle = Self::from_lease(store, &state)?;
         Ok(if replay {
             LocalLeaseAcquire::Replay(handle)
@@ -814,10 +819,7 @@ impl LocalLeaseOutbox {
             binding.as_ref(),
         )
         .await?;
-        transaction
-            .commit()
-            .await
-            .map_err(crate::cognitive_store::unavailable)?;
+        crate::cognitive_store::commit_admitted(transaction).await?;
         Ok(LocalLeaseAcquire::Acquired(Self::from_lease(
             store, &lease,
         )?))
@@ -1277,10 +1279,7 @@ impl LocalLeaseOutbox {
             Some(&persisted_binding),
         )
         .await?;
-        transaction
-            .commit()
-            .await
-            .map_err(crate::cognitive_store::unavailable)?;
+        crate::cognitive_store::commit_admitted(transaction).await?;
         Ok(lease)
     }
 
@@ -1333,10 +1332,7 @@ impl LocalLeaseOutbox {
             binding.as_ref(),
         )
         .await?;
-        transaction
-            .commit()
-            .await
-            .map_err(crate::cognitive_store::unavailable)?;
+        crate::cognitive_store::commit_admitted(transaction).await?;
         Ok(lease)
     }
 
@@ -1441,10 +1437,7 @@ impl LocalLeaseOutbox {
                 fault,
             )
             .await?;
-        transaction
-            .commit()
-            .await
-            .map_err(crate::cognitive_store::unavailable)?;
+        crate::cognitive_store::commit_admitted(transaction).await?;
         Ok(admission)
     }
 
@@ -2109,10 +2102,7 @@ impl LocalLeaseOutbox {
             },
         )
         .await?;
-        transaction
-            .commit()
-            .await
-            .map_err(crate::cognitive_store::unavailable)?;
+        crate::cognitive_store::commit_admitted(transaction).await?;
         Ok(LocalOutcomeReceipt {
             lease_id: self.lease_id.clone(),
             occurrence_key: occurrence_key.to_string(),
@@ -2337,7 +2327,9 @@ impl LocalLeaseOutbox {
     /// `StillIndeterminate` remains an idempotent observation. If an earlier
     /// generation already recorded that observation, a successor may return
     /// the existing receipt and later record the terminal observation under
-    /// its current fence.
+    /// its current fence. A same-result terminal observation, or an unknown
+    /// observation overtaken by a terminal ACK, also reuses the verified
+    /// terminal receipt. Opposite terminal results remain an error.
     pub async fn reconcile(
         &self,
         occurrence_key: impl Into<String>,
@@ -2408,13 +2400,6 @@ impl LocalLeaseOutbox {
             &self.owner_agent_id,
         )
         .await?;
-        if current != LocalOutcomeState::Indeterminate {
-            return Err(LocalLeaseOutboxError::IllegalTransition(format!(
-                "occurrence is already in {} state",
-                current.as_str()
-            )));
-        }
-
         let latest = latest_occurrence_event(
             &mut transaction,
             &self.lease_id,
@@ -2446,6 +2431,34 @@ impl LocalLeaseOutbox {
                 ));
         }
 
+        // A normal target ACK may have settled this occurrence after observer
+        // discovery. Reuse only the same terminal result, or a terminal result
+        // that supersedes an unknown observation, after checking its fence.
+        if current != LocalOutcomeState::Indeterminate {
+            if matches!(
+                current,
+                LocalOutcomeState::Committed | LocalOutcomeState::Rejected
+            ) && (current == resulting_state
+                || outcome == LocalReconcileOutcome::StillIndeterminate)
+            {
+                transaction
+                    .commit()
+                    .await
+                    .map_err(crate::cognitive_store::unavailable)?;
+                return Ok(LocalOutcomeReceipt {
+                    lease_id: self.lease_id.clone(),
+                    occurrence_key,
+                    state: current,
+                    event_id: latest.event_id,
+                    external_effect: false,
+                });
+            }
+            return Err(LocalLeaseOutboxError::IllegalTransition(format!(
+                "occurrence is already in {} state",
+                current.as_str()
+            )));
+        }
+
         if let Some(existing) = find_transition(
             &mut transaction,
             &self.lease_id,
@@ -2475,7 +2488,7 @@ impl LocalLeaseOutbox {
 
         let sequence = next_event_sequence(&mut transaction, &self.lease_id).await?;
         let previous = event_head(&mut transaction, &self.lease_id).await?;
-        let event_id = journal_row_id("event", &self.lease_id, sequence);
+        let event_id = observer_origin::observer_event_id(&self.lease_id, sequence);
         let digest = event_digest(
             &self.lease_id,
             sequence,
@@ -2506,10 +2519,7 @@ impl LocalLeaseOutbox {
             },
         )
         .await?;
-        transaction
-            .commit()
-            .await
-            .map_err(crate::cognitive_store::unavailable)?;
+        crate::cognitive_store::commit_admitted(transaction).await?;
         Ok(LocalOutcomeReceipt {
             lease_id: self.lease_id.clone(),
             occurrence_key,
@@ -2586,10 +2596,7 @@ impl LocalLeaseOutbox {
                 allow_exact_replay,
             )
             .await?;
-        transaction
-            .commit()
-            .await
-            .map_err(crate::cognitive_store::unavailable)?;
+        crate::cognitive_store::commit_admitted(transaction).await?;
         Ok(outcome)
     }
 
@@ -2615,6 +2622,10 @@ impl LocalLeaseOutbox {
         .await
     }
 
+    #[expect(
+        clippy::too_many_arguments,
+        reason = "the caller-owned transaction, occurrence binding, transition payload and replay/state rules remain explicit at the atomic journal boundary"
+    )]
     async fn append_outcome_in_transaction(
         &self,
         transaction: &mut Transaction<'_, Sqlite>,
@@ -3000,10 +3011,7 @@ impl LocalLeaseOutbox {
             binding.as_ref(),
         )
         .await?;
-        transaction
-            .commit()
-            .await
-            .map_err(crate::cognitive_store::unavailable)?;
+        crate::cognitive_store::commit_admitted(transaction).await?;
         Ok(LocalReplayFinalization::Released {
             outcome,
             lease: released,
@@ -3391,7 +3399,15 @@ pub(crate) async fn append_lease(
     previous: Option<&LocalLease>,
     binding: Option<&LocalLeaseBinding>,
 ) -> Result<LocalLease, LocalLeaseOutboxError> {
-    let sequence = previous.map_or(1, |lease| lease.lease_sequence + 1);
+    let sequence = bounded_next_sequence(
+        previous
+            .map(|lease| to_i64(lease.lease_sequence, "lease sequence"))
+            .transpose()?
+            .unwrap_or(0),
+        MAX_LEASE_ROWS,
+        "lease journal",
+        "lease sequence",
+    )?;
     let previous_sha256 = previous
         .map(|lease| lease.lease_sha256.clone())
         .unwrap_or_else(|| Sha256Digest::for_bytes(GENESIS_LEASE_SHA256));
@@ -4127,6 +4143,13 @@ async fn verify_event_chain(
         let payload_json: String = row
             .try_get("payload_json")
             .map_err(crate::cognitive_store::unavailable)?;
+        observer_origin::verify_observer_event_origin(
+            lease_id,
+            sequence,
+            &event_id,
+            &kind,
+            &payload_json,
+        )?;
         let payload_sha256 = digest_from_row(row, "payload_sha256")?;
         if Sha256Digest::for_bytes(payload_json.as_bytes()) != payload_sha256 {
             return Err(corrupt("event payload digest mismatch"));
@@ -4531,6 +4554,13 @@ fn checked_event_row(
         previous_sha256: digest_from_row(row, "previous_sha256")?,
         event_sha256: digest_from_row(row, "event_sha256")?,
     };
+    observer_origin::verify_observer_event_origin(
+        lease_id,
+        event.sequence,
+        &event.event_id,
+        &event.kind,
+        &event.payload_json,
+    )?;
     if Sha256Digest::for_bytes(event.payload_json.as_bytes()) != event.payload_sha256 {
         return Err(corrupt("incremental event payload digest mismatch"));
     }
@@ -5394,6 +5424,7 @@ pub(crate) async fn verify_local_lease_outbox(
         .begin()
         .await
         .map_err(crate::cognitive_store::unavailable)?;
+    crate::cognitive_store::verify_journal_snapshot(&mut transaction).await?;
     let lease_ids: Vec<String> = sqlx::query_scalar(
         "SELECT DISTINCT lease_id FROM cognitive_local_leases ORDER BY lease_id",
     )

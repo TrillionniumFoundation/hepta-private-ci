@@ -2,8 +2,8 @@
   "schema": "hepta.module-implementation-map.v3",
   "schemaVersion": 3,
   "sourceBase": {
-    "commit": "8914a46dfc5984532f03dd2d559bf547ca4f1e69",
-    "tree": "1bd6444d2d980a9fdf06358dbee973b34722f0e1"
+    "commit": "addae413d676a1e1914411a3f3fef9291ff65db9",
+    "tree": "9c5cfba5a56b7cdbbedd114a41c0f86246a7f098"
   },
   "laneId": "LANE-B-RUNTIME",
   "module": "automation.taskflow",
@@ -231,8 +231,8 @@
     "codex-rs/hepta-automation"
   ],
   "observedAtHead": {
-    "commit": "8914a46dfc5984532f03dd2d559bf547ca4f1e69",
-    "tree": "1bd6444d2d980a9fdf06358dbee973b34722f0e1"
+    "commit": "addae413d676a1e1914411a3f3fef9291ff65db9",
+    "tree": "9c5cfba5a56b7cdbbedd114a41c0f86246a7f098"
   },
   "sourceIdentityPolicy": "candidate_or_exact_observation_v1",
   "exactSourceEvidence": {
@@ -316,7 +316,7 @@
     },
     {
       "path": "codex-rs/hepta-automation",
-      "object": "90409d9839266b2992986bb98343f41f40bed4ae"
+      "object": "0a936d2353e7e39ef95da3c861992ece27481243"
     },
     {
       "path": "codex-rs/hepta-automation/src/authorized_effect.rs",
@@ -352,15 +352,31 @@
     },
     {
       "path": "codex-rs/hepta-automation/tests/automation.rs",
-      "object": "59e1f81d0efb3633a32edfbe37bdf599852919c2"
+      "object": "2d465dd4fb81e2d81ac32a7a7515386889d533aa"
     },
     {
       "path": "codex-rs/hepta-automation/tests/durable_causal_chain.rs",
-      "object": "7e590c4e400adbfd86cb630728bbde0b6f845a47"
+      "object": "967c69e9754735aa163bcc1f1697a93b697d8c2e"
     },
     {
       "path": "docs/modules/automation.taskflow/TECHNICAL.md",
       "object": "a18df0b8b1f375191e0918da82a3a979f7ae89dc"
     }
-  ]
+  ],
+  "historicalEvidence": {
+    "preRebind20261001": {
+      "sourceBase": {
+        "commit": "41b2da214f5541da09e0313e7b8576add6ed3839",
+        "tree": "40164d74489d479d4d3a17bb4f79bc7fdf83541c"
+      },
+      "observedAtHead": {
+        "commit": "41b2da214f5541da09e0313e7b8576add6ed3839",
+        "tree": "40164d74489d479d4d3a17bb4f79bc7fdf83541c"
+      },
+      "sourceBaseRole": null,
+      "scope": "retained pre-rebind source provenance; not current-candidate execution evidence",
+      "currentCandidateQualificationTransferred": false
+    }
+  },
+  "sourceBaseRole": "current_source_navigation_anchor"
 }

@@ -10,6 +10,8 @@ mod cognitive_kg_store;
 mod cognitive_memory_store;
 mod cognitive_model;
 mod cognitive_path;
+#[cfg(feature = "cognitive-perf-observe")]
+pub mod cognitive_perf_observation;
 mod cognitive_retrieval;
 mod cognitive_retrieval_adapter;
 mod cognitive_runtime;

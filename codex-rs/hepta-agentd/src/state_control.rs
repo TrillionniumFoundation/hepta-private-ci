@@ -294,6 +294,9 @@ impl AgentdState {
                         runtime.fenced,
                     )?;
                 }
+                // The context adapter validates its complete owner witness
+                // after its last provider/sink await. Keep publication here
+                // synchronous after the lifecycle fence.
                 match result {
                     Ok(snapshot) => AgentdPayload::CognitiveContext(snapshot),
                     Err(CognitiveContextError::Store(error)) => {
@@ -375,6 +378,8 @@ impl AgentdState {
                         runtime.fenced,
                     )?;
                 }
+                // Final-use receipts carry the adapter's last owner-cut
+                // revalidation; lifecycle generation alone is not that proof.
                 match result {
                     Ok(revalidation) => AgentdPayload::CognitiveContextRevalidated(revalidation),
                     Err(CognitiveContextError::Store(error)) => {

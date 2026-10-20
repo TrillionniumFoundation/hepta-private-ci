@@ -22,7 +22,10 @@ use codex_hepta_types::Generation;
 use codex_hepta_types::StableId;
 use ed25519_dalek::Signer;
 use ed25519_dalek::SigningKey;
+use pretty_assertions::assert_eq;
 use tempfile::TempDir;
+use tokio::sync::Notify;
+use tokio::time::timeout;
 
 use crate::LocalOutcomeState;
 use crate::ProductionAuthorityLease;
@@ -212,11 +215,16 @@ fn final_use(temp: &TempDir, issuer: &SigningKey) -> FinalUseAuthority {
 #[derive(Clone, Debug)]
 struct LostAckTarget {
     inner: CognitiveSourceOutboxTarget,
+    pause: Option<(Arc<Notify>, Arc<Notify>)>,
 }
 
 impl ProductionOutboxTarget for LostAckTarget {
     fn dispatch<'a>(&'a self, request: ProductionDispatchRequest) -> ProductionDispatchFuture<'a> {
         Box::pin(async move {
+            if let Some((started, resume)) = &self.pause {
+                started.notify_one();
+                resume.notified().await;
+            }
             match self.inner.dispatch(request).await {
                 ProductionTargetOutcome::Committed { .. } => {
                     ProductionTargetOutcome::Indeterminate {
@@ -246,7 +254,8 @@ impl crate::FinalUseProductionOutboxTarget for LostAckTarget {
                 }
                 CognitiveSourceTerminalObservation::NotApplied => {
                     ProductionTerminalObservation::NotApplied {
-                        reason: "destination has no committed source row".to_string(),
+                        reason: "create-only destination rejects the requested predecessor"
+                            .to_string(),
                     }
                 }
                 CognitiveSourceTerminalObservation::Quarantined { reason } => {
@@ -320,6 +329,169 @@ async fn predecessor_mismatch_is_deterministic_not_applied_inside_destination_tr
 }
 
 #[tokio::test]
+async fn exact_source_replay_cannot_satisfy_a_changed_operation_predecessor() {
+    let temp = TempDir::new().expect("temp");
+    let store = store(&temp).await;
+    let owner = store.owner_agent_id().clone();
+    let target =
+        CognitiveSourceOutboxTarget::new(store, CognitiveAccess::agent_private(owner.clone()))
+            .expect("target");
+    let operation_id = "operation:cognitive-cas-replay";
+    let (draft, payload) = source_payload(operation_id, b"already-published-source");
+    let initial = direct_request(
+        &operation(&owner, operation_id, &payload, &draft, None),
+        payload.clone(),
+    );
+    assert!(matches!(
+        target.dispatch(initial.clone()).await,
+        ProductionTargetOutcome::Committed { .. }
+    ));
+    let changed = direct_request(
+        &operation(
+            &owner,
+            operation_id,
+            &payload,
+            &draft,
+            Some(Digest32::of_bytes(b"changed-cas-predecessor")),
+        ),
+        payload,
+    );
+    assert!(matches!(
+        target.dispatch(changed.clone()).await,
+        ProductionTargetOutcome::NotApplied { .. }
+    ));
+    assert_eq!(
+        target.observe_terminal(&changed).await,
+        CognitiveSourceTerminalObservation::NotApplied
+    );
+    assert!(matches!(
+        target.observe_terminal(&initial).await,
+        CognitiveSourceTerminalObservation::Applied { .. }
+    ));
+}
+
+#[tokio::test]
+async fn observer_cannot_settle_absence_while_destination_dispatch_is_in_flight() {
+    let temp = TempDir::new().expect("temp");
+    let store = store(&temp).await;
+    let owner = store.owner_agent_id().clone();
+    let writer = Arc::new(
+        ProductionDurableWriter::open(
+            store.clone(),
+            production_authority(owner.clone()),
+            &AllowVerifier,
+            "production:h4:in-flight-cognitive-source",
+            1,
+        )
+        .await
+        .expect("production writer"),
+    );
+    let real_target =
+        CognitiveSourceOutboxTarget::new(store, CognitiveAccess::agent_private(owner.clone()))
+            .expect("real target");
+    let started = Arc::new(Notify::new());
+    let resume = Arc::new(Notify::new());
+    let target = Arc::new(LostAckTarget {
+        inner: real_target,
+        pause: Some((Arc::clone(&started), Arc::clone(&resume))),
+    });
+    let issuer = SigningKey::from_bytes(&[92; 32]);
+    let dispatcher = ProductionFinalUseOutboxDispatcher::attach(final_use(&temp, &issuer), target);
+    let operation_id = "operation:cognitive-in-flight";
+    let (draft, payload) = source_payload(operation_id, b"late-destination-commit");
+    let queued = writer
+        .prepare_operation(
+            operation(&owner, operation_id, &payload, &draft, None),
+            COGNITIVE_SOURCE_TOPIC_V1,
+            &payload,
+        )
+        .await
+        .expect("prepare operation");
+    let binding = writer
+        .final_use_binding(&queued, COGNITIVE_SOURCE_DESTINATION_V1)
+        .await
+        .expect("binding");
+    let signed = signed_final_use(&issuer, binding.clone(), "in-flight-grant");
+    let dispatch_writer = Arc::clone(&writer);
+    let dispatch_dispatcher = dispatcher.clone();
+    let dispatch = tokio::spawn(async move {
+        dispatch_dispatcher
+            .dispatch(&dispatch_writer, &signed, &binding, queued)
+            .await
+    });
+    timeout(std::time::Duration::from_secs(5), started.notified())
+        .await
+        .expect("dispatch must reach the destination gate");
+
+    assert_eq!(
+        dispatcher
+            .reconcile(&writer, 8)
+            .await
+            .expect("observe absence"),
+        0
+    );
+    assert_eq!(
+        writer.status(operation_id).await.expect("pending status"),
+        LocalOutcomeState::Indeterminate
+    );
+    resume.notify_one();
+    let receipt = dispatch
+        .await
+        .expect("dispatch task")
+        .expect("lost ack result");
+    assert_eq!(receipt.state, LocalOutcomeState::Indeterminate);
+    assert_eq!(
+        dispatcher
+            .reconcile(&writer, 8)
+            .await
+            .expect("positive receipt"),
+        1
+    );
+    assert_eq!(
+        writer.status(operation_id).await.expect("terminal status"),
+        LocalOutcomeState::Committed
+    );
+}
+
+#[tokio::test]
+async fn observer_uses_one_read_cut_while_exact_source_commits_race_with_observation() {
+    let temp = TempDir::new().expect("temp");
+    let store = store(&temp).await;
+    let owner = store.owner_agent_id().clone();
+    let target =
+        CognitiveSourceOutboxTarget::new(store, CognitiveAccess::agent_private(owner.clone()))
+            .expect("target");
+    for index in 0..32 {
+        let operation_id = format!("operation:cognitive-observer-race:{index}");
+        let (draft, payload) = source_payload(&operation_id, b"exact-late-commit");
+        let request = direct_request(
+            &operation(&owner, &operation_id, &payload, &draft, None),
+            payload,
+        );
+        let (observed, dispatched) = tokio::join!(
+            target.observe_terminal(&request),
+            target.dispatch(request.clone())
+        );
+        assert!(
+            matches!(
+                observed,
+                CognitiveSourceTerminalObservation::Applied { .. }
+                    | CognitiveSourceTerminalObservation::Unavailable { .. }
+            ),
+            "an exact concurrent commit must never be quarantined: {observed:?}"
+        );
+        let receipt = match dispatched {
+            ProductionTargetOutcome::Committed { receipt } => receipt,
+            other => panic!("exact source must commit: {other:?}"),
+        };
+        assert_eq!(
+            target.observe_terminal(&request).await,
+            CognitiveSourceTerminalObservation::Applied { receipt }
+        );
+    }
+}
+
+#[tokio::test]
 async fn full_durable_final_use_slice_reconciles_lost_ack_without_redispatch() {
     let temp = TempDir::new().expect("temp");
     let store = store(&temp).await;
@@ -338,6 +510,7 @@ async fn full_durable_final_use_slice_reconciles_lost_ack_without_redispatch() {
             .expect("real target");
     let target = Arc::new(LostAckTarget {
         inner: real_target.clone(),
+        pause: None,
     });
     let issuer = SigningKey::from_bytes(&[91; 32]);
     let dispatcher = ProductionFinalUseOutboxDispatcher::attach(final_use(&temp, &issuer), target);

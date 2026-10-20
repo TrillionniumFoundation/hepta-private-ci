@@ -609,6 +609,23 @@ def validate_claim_types(row: dict) -> bool:
     return any(claim.get(name) is True for claim in claims for name in EXECUTION_CLAIMS)
 
 
+def validate_status_projection(row: dict, module: dict) -> None:
+    """Reject a map that contradicts its canonical source/completion facts."""
+    for canonical, projected in (
+        ("source_root_present", "sourceRootPresent"),
+        ("production_implementation", "productionImplementation"),
+    ):
+        expected = module.get(canonical)
+        if type(expected) is not bool or row.get(projected) is not expected:
+            raise ValueError(f"{projected} contradicts canonical {canonical}")
+        for section in ("claimBoundary", "completion"):
+            claim = row.get(section, {})
+            if projected in claim and claim[projected] is not expected:
+                raise ValueError(
+                    f"{section}.{projected} contradicts canonical {canonical}"
+                )
+
+
 def canonical_product_callers(callers: list) -> list[dict]:
     """Normalize legacy navigation spellings without inventing composition."""
     if not isinstance(callers, list):
@@ -1282,6 +1299,7 @@ def verify(
         try:
             row = load(f"docs/modules/{mid}/IMPLEMENTATION_MAP.json")
             validate_claim_types(row)
+            validate_status_projection(row, module)
             validate_closed_world_bindings(row)
             if (
                 row.get("schema") != "hepta.module-implementation-map.v3"

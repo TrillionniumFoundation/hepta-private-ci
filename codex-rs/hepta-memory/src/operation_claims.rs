@@ -71,14 +71,13 @@ pub(crate) async fn claim(
     operation_id: &str,
     owner_generation: u64,
     fencing_token: &str,
-    now_unix_ms: u64,
+    resolve_now: impl FnOnce() -> Result<u64, LocalLeaseOutboxError> + Send,
     lease_duration_ms: u64,
 ) -> Result<DurableDispatchClaim, LocalLeaseOutboxError> {
     validate_claim_input(
         operation_id,
         owner_generation,
         fencing_token,
-        now_unix_ms,
         lease_duration_ms,
     )?;
     let mut transaction = store
@@ -86,7 +85,7 @@ pub(crate) async fn claim(
         .begin_with("BEGIN IMMEDIATE")
         .await
         .map_err(crate::cognitive_store::unavailable)?;
-    verify_operation_fence(
+    let writer_deadline = verify_operation_fence(
         &mut transaction,
         store,
         operation_id,
@@ -95,6 +94,8 @@ pub(crate) async fn claim(
     )
     .await?;
     let previous = latest_claim(&mut transaction, operation_id).await?;
+    let now_unix_ms = resolve_claim_time(resolve_now)?;
+    ensure_writer_lease_live(writer_deadline, now_unix_ms)?;
 
     if let Some(previous) = previous.as_ref() {
         match previous.state {
@@ -173,24 +174,20 @@ pub(crate) async fn claim(
         now_unix_ms,
     )
     .await?;
-    transaction
-        .commit()
-        .await
-        .map_err(crate::cognitive_store::unavailable)?;
+    crate::cognitive_store::commit_admitted(transaction).await?;
     Ok(to_receipt(operation_id, &row))
 }
 
 pub(crate) async fn renew(
     store: &CognitiveStore,
     claim: &DurableDispatchClaim,
-    now_unix_ms: u64,
+    resolve_now: impl FnOnce() -> Result<u64, LocalLeaseOutboxError> + Send,
     lease_duration_ms: u64,
 ) -> Result<DurableDispatchClaim, LocalLeaseOutboxError> {
     validate_claim_input(
         &claim.operation_id,
         claim.owner_generation,
         &claim.fencing_token,
-        now_unix_ms,
         lease_duration_ms,
     )?;
     let mut transaction = store
@@ -198,7 +195,7 @@ pub(crate) async fn renew(
         .begin_with("BEGIN IMMEDIATE")
         .await
         .map_err(crate::cognitive_store::unavailable)?;
-    verify_operation_fence(
+    let writer_deadline = verify_operation_fence(
         &mut transaction,
         store,
         &claim.operation_id,
@@ -211,6 +208,8 @@ pub(crate) async fn renew(
         .ok_or_else(|| {
             LocalLeaseOutboxError::StaleFence("dispatch claim is missing".to_string())
         })?;
+    let now_unix_ms = resolve_claim_time(resolve_now)?;
+    ensure_writer_lease_live(writer_deadline, now_unix_ms)?;
     if !matches!(previous.state, ClaimState::Claimed | ClaimState::Renewed)
         || previous.attempt != claim.attempt
         || previous.owner_generation != claim.owner_generation
@@ -252,46 +251,38 @@ pub(crate) async fn renew(
         now_unix_ms,
     )
     .await?;
-    transaction
-        .commit()
-        .await
-        .map_err(crate::cognitive_store::unavailable)?;
+    crate::cognitive_store::commit_admitted(transaction).await?;
     Ok(to_receipt(&claim.operation_id, &row))
 }
 
 pub(crate) async fn mark_entered(
     store: &CognitiveStore,
     claim: &DurableDispatchClaim,
-    now_unix_ms: u64,
+    resolve_now: impl FnOnce() -> Result<u64, LocalLeaseOutboxError> + Send,
 ) -> Result<DurableDispatchClaim, LocalLeaseOutboxError> {
-    transition_claim(store, claim, now_unix_ms, ClaimState::Entered).await
+    transition_claim(store, claim, resolve_now, ClaimState::Entered).await
 }
 
 pub(crate) async fn mark_settled(
     store: &CognitiveStore,
     claim: &DurableDispatchClaim,
-    now_unix_ms: u64,
+    resolve_now: impl FnOnce() -> Result<u64, LocalLeaseOutboxError> + Send,
 ) -> Result<DurableDispatchClaim, LocalLeaseOutboxError> {
-    transition_claim(store, claim, now_unix_ms, ClaimState::Settled).await
+    transition_claim(store, claim, resolve_now, ClaimState::Settled).await
 }
 
 async fn transition_claim(
     store: &CognitiveStore,
     claim: &DurableDispatchClaim,
-    now_unix_ms: u64,
+    resolve_now: impl FnOnce() -> Result<u64, LocalLeaseOutboxError> + Send,
     target: ClaimState,
 ) -> Result<DurableDispatchClaim, LocalLeaseOutboxError> {
-    if now_unix_ms == 0 {
-        return Err(LocalLeaseOutboxError::Invalid(
-            "dispatch claim timestamp must be non-zero".to_string(),
-        ));
-    }
     let mut transaction = store
         .pool
         .begin_with("BEGIN IMMEDIATE")
         .await
         .map_err(crate::cognitive_store::unavailable)?;
-    verify_operation_fence(
+    let writer_deadline = verify_operation_fence(
         &mut transaction,
         store,
         &claim.operation_id,
@@ -304,6 +295,12 @@ async fn transition_claim(
         .ok_or_else(|| {
             LocalLeaseOutboxError::StaleFence("dispatch claim is missing".to_string())
         })?;
+    let now_unix_ms = resolve_claim_time(resolve_now)?;
+    // Settling a previously entered effect is convergence metadata. It may
+    // finish after the writer deadline, while retaining the exact active fence.
+    if target == ClaimState::Entered {
+        ensure_writer_lease_live(writer_deadline, now_unix_ms)?;
+    }
 
     if target == ClaimState::Settled
         && previous.state == ClaimState::Settled
@@ -351,10 +348,7 @@ async fn transition_claim(
         now_unix_ms,
     )
     .await?;
-    transaction
-        .commit()
-        .await
-        .map_err(crate::cognitive_store::unavailable)?;
+    crate::cognitive_store::commit_admitted(transaction).await?;
     Ok(to_receipt(&claim.operation_id, &row))
 }
 
@@ -364,7 +358,7 @@ async fn verify_operation_fence(
     operation_id: &str,
     owner_generation: u64,
     fencing_token: &str,
-) -> Result<(), LocalLeaseOutboxError> {
+) -> Result<Option<u64>, LocalLeaseOutboxError> {
     let operation = sqlx::query(
         "SELECT lease_id, owner_agent_id FROM cognitive_operation_ledger WHERE operation_id = ?",
     )
@@ -389,7 +383,7 @@ async fn verify_operation_fence(
         ));
     }
     let lease = sqlx::query(
-        "SELECT generation, fencing_token, state
+        "SELECT generation, fencing_token, state, lease_expires_at_unix_seconds
          FROM cognitive_local_leases
          WHERE lease_id = ?
          ORDER BY lease_sequence DESC LIMIT 1",
@@ -414,6 +408,31 @@ async fn verify_operation_fence(
     {
         return Err(LocalLeaseOutboxError::StaleFence(
             "durable dispatch claim does not match the current active owner fence".to_string(),
+        ));
+    }
+    lease
+        .try_get::<Option<i64>, _>("lease_expires_at_unix_seconds")
+        .map_err(crate::cognitive_store::unavailable)?
+        .map(|deadline| {
+            u64::try_from(deadline)
+                .ok()
+                .filter(|deadline| *deadline != 0)
+                .ok_or_else(|| {
+                    LocalLeaseOutboxError::Corrupt(
+                        "durable dispatch writer lease deadline is invalid".to_string(),
+                    )
+                })
+        })
+        .transpose()
+}
+
+fn ensure_writer_lease_live(
+    deadline_unix_seconds: Option<u64>,
+    now_unix_ms: u64,
+) -> Result<(), LocalLeaseOutboxError> {
+    if deadline_unix_seconds.is_some_and(|deadline| now_unix_ms / 1_000 >= deadline) {
+        return Err(LocalLeaseOutboxError::StaleFence(
+            "writer lease expired before dispatch claim mutation".to_string(),
         ));
     }
     Ok(())
@@ -584,7 +603,6 @@ fn validate_claim_input(
     operation_id: &str,
     owner_generation: u64,
     fencing_token: &str,
-    now_unix_ms: u64,
     lease_duration_ms: u64,
 ) -> Result<(), LocalLeaseOutboxError> {
     if operation_id.trim().is_empty()
@@ -600,13 +618,27 @@ fn validate_claim_input(
             "dispatch claim owner fence is invalid".to_string(),
         ));
     }
-    if now_unix_ms == 0 || lease_duration_ms == 0 || lease_duration_ms > MAX_DURABLE_CLAIM_LEASE_MS
-    {
+    if lease_duration_ms == 0 || lease_duration_ms > MAX_DURABLE_CLAIM_LEASE_MS {
         return Err(LocalLeaseOutboxError::Invalid(format!(
-            "dispatch claim lease must be 1..={MAX_DURABLE_CLAIM_LEASE_MS} ms with non-zero current time"
+            "dispatch claim lease must be 1..={MAX_DURABLE_CLAIM_LEASE_MS} ms"
         )));
     }
     Ok(())
+}
+
+// Resolve only after BEGIN IMMEDIATE and the fenced claim-head reads. A
+// production wall clock sampled before lock acquisition can accept expiry
+// while waiting for SQLite; an explicitly supplied clock keeps its semantics.
+fn resolve_claim_time(
+    resolve_now: impl FnOnce() -> Result<u64, LocalLeaseOutboxError>,
+) -> Result<u64, LocalLeaseOutboxError> {
+    let now = resolve_now()?;
+    if now == 0 {
+        return Err(LocalLeaseOutboxError::Invalid(
+            "dispatch claim timestamp must be non-zero".to_string(),
+        ));
+    }
+    Ok(now)
 }
 
 fn retry_backoff_ms(attempt: u32) -> u64 {

@@ -4,6 +4,7 @@ use std::path::Path;
 use std::path::PathBuf;
 
 use codex_hepta_automation::AutomationError;
+use codex_hepta_cognitive_store::CognitiveRecoveryError;
 use codex_hepta_cognitive_store::DurableCognitiveStoreError;
 use codex_hepta_fleet::FleetRegistryError;
 use codex_hepta_memory::ProductionCognitiveMutationError;
@@ -35,6 +36,10 @@ pub enum AgentdError {
     ProductionCognitiveMutation(#[from] ProductionCognitiveMutationError),
     #[error(transparent)]
     CognitiveStore(#[from] DurableCognitiveStoreError),
+    /// Preserve recovery disposition and its cause across the product boundary.
+    /// Indeterminate requires reconciliation, not an ordinary open retry.
+    #[error("recover production cognitive store: {0}")]
+    CognitiveRecovery(#[from] CognitiveRecoveryError),
 }
 
 #[derive(Debug)]

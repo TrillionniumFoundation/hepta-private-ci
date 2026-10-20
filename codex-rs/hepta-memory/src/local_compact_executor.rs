@@ -439,13 +439,15 @@ impl LocalCompactExecutor {
         let mut journal = self.load_journal(&mut transaction).await?;
         let before = journal.entries().len();
         let result = mutation(&mut journal)?;
+        if journal.entries().len() > MAX_JOURNAL_EVENTS {
+            return Err(LocalCompactExecutorError::Invalid(format!(
+                "journal append exceeds {MAX_JOURNAL_EVENTS} event reopen limit"
+            )));
+        }
         for entry in &journal.entries()[before..] {
             self.insert_event(&mut transaction, entry).await?;
         }
-        transaction
-            .commit()
-            .await
-            .map_err(crate::cognitive_store::unavailable)?;
+        crate::cognitive_store::commit_admitted(transaction).await?;
         Ok(result)
     }
 
@@ -648,6 +650,13 @@ impl LocalCompactExecutor {
         transaction: &mut Transaction<'_, Sqlite>,
         entry: &CompactPersistenceEvent,
     ) -> Result<(), LocalCompactExecutorError> {
+        // Atomic witness writes also call this helper without using mutate.
+        // A verified contiguous journal's sequence is its retained row count.
+        if !usize::try_from(entry.sequence).is_ok_and(|sequence| sequence <= MAX_JOURNAL_EVENTS) {
+            return Err(LocalCompactExecutorError::Invalid(format!(
+                "journal append exceeds {MAX_JOURNAL_EVENTS} event reopen limit"
+            )));
+        }
         let event_json = serde_json::to_string(entry)
             .map_err(|error| LocalCompactExecutorError::Serialization(error.to_string()))?;
         let recorded_at_unix_seconds = SystemTime::now()
@@ -1020,6 +1029,7 @@ pub(crate) async fn verify_local_compact_events(
         .begin()
         .await
         .map_err(crate::cognitive_store::unavailable)?;
+    crate::cognitive_store::verify_journal_snapshot(&mut transaction).await?;
     let journal_ids: Vec<String> = sqlx::query_scalar(
         "SELECT DISTINCT journal_id FROM cognitive_compact_events ORDER BY journal_id",
     )
@@ -1186,3 +1196,7 @@ fn validate_text(
     }
     Ok(())
 }
+
+#[cfg(test)]
+#[path = "local_compact_executor_capacity_tests.rs"]
+mod capacity_tests;

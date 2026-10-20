@@ -28,8 +28,10 @@ use sqlx::ValueRef;
 use super::CognitiveStore;
 use super::CognitiveStoreError;
 use super::CognitiveStoreOpenGuard;
-use super::REQUIRED_SCHEMA_OBJECTS;
 use super::REQUIRED_SCHEMA_ORACLE_SHA256;
+use super::budget::MAX_BYTES;
+use super::budget::MAX_ROW_BYTES;
+use super::budget::MAX_ROWS;
 use super::protect_database_file;
 use super::publish_active_database;
 use super::recovered_database_filename;
@@ -46,9 +48,6 @@ mod read_only;
 pub use read_only::RecoveredCognitiveReadOnly;
 
 const PROFILE: &str = "hepta:cognitive:exact-current-cut:v1";
-const MAX_ROWS: i64 = 262_144;
-const MAX_BYTES: i64 = 128 * 1024 * 1024;
-const MAX_ROW_BYTES: i64 = 2 * 1024 * 1024;
 const MAX_SCHEMA_BYTES: i64 = 1024 * 1024;
 
 /// An exact logical state cut, including all registered owner tables and their
@@ -102,6 +101,7 @@ impl CognitiveStore {
             .await
             .map_err(unavailable)?;
         let anchor = capture(&mut transaction, &self.owner_agent_id).await?;
+        verify_captured_integrity(&mut transaction).await?;
         transaction.commit().await.map_err(unavailable)?;
         Ok(anchor)
     }
@@ -142,8 +142,8 @@ impl CognitiveStore {
         let canonical_root = canonical_path_without_redirection(root)
             .map_err(|error| CognitiveRecoveryError::Indeterminate(error.to_string()))?
             .ok_or_else(|| {
-                CognitiveRecoveryError::Unavailable(
-                    "cognitive recovery root does not exist".to_string(),
+                CognitiveRecoveryError::Indeterminate(
+                    "cognitive recovery root is redirected".to_string(),
                 )
             })?;
         if canonical_root != root {
@@ -173,9 +173,6 @@ impl CognitiveStore {
                 .await
                 .map_err(|error| CognitiveRecoveryError::Unavailable(error.to_string()))?;
             let authenticated = async {
-                verify_store(&pool, layout.agent_id())
-                    .await
-                    .map_err(|error| CognitiveRecoveryError::Indeterminate(error.to_string()))?;
                 let mut transaction = pool
                     .begin_with("BEGIN IMMEDIATE")
                     .await
@@ -189,20 +186,24 @@ impl CognitiveStore {
                             .to_string(),
                     ));
                 }
-                let integrity: Vec<String> = sqlx::query_scalar("PRAGMA integrity_check(1)")
-                    .fetch_all(&mut *transaction)
+                verifier
+                    .verify(authority, layout.agent_id())
+                    .map_err(CognitiveRecoveryError::AccessDenied)?;
+                authority
+                    .validate_for_agent(layout.agent_id())
+                    .map_err(|error| CognitiveRecoveryError::AccessDenied(error.to_string()))?;
+                verify_captured_integrity(&mut transaction)
                     .await
                     .map_err(|error| CognitiveRecoveryError::Indeterminate(error.to_string()))?;
-                if integrity != ["ok"] {
-                    return Err(CognitiveRecoveryError::Indeterminate(
-                        "recovery candidate failed SQLite integrity_check".to_string(),
-                    ));
-                }
                 transaction
                     .commit()
                     .await
                     .map_err(|error| CognitiveRecoveryError::Unavailable(error.to_string()))?;
-
+                // Authenticate the bounded complete cut before startup
+                // verification can materialize owner-controlled histories.
+                verify_store(&pool, layout.agent_id())
+                    .await
+                    .map_err(|error| CognitiveRecoveryError::Indeterminate(error.to_string()))?;
                 Ok(())
             }
             .await;
@@ -232,9 +233,6 @@ impl CognitiveStore {
                 .await
                 .map_err(|error| CognitiveRecoveryError::Unavailable(error.to_string()))?;
             let final_check = async {
-                verify_store(&pool, layout.agent_id())
-                    .await
-                    .map_err(|error| CognitiveRecoveryError::Indeterminate(error.to_string()))?;
                 let mut transaction = pool
                     .begin_with("BEGIN IMMEDIATE")
                     .await
@@ -242,15 +240,36 @@ impl CognitiveStore {
                 let observed = capture(&mut transaction, layout.agent_id())
                     .await
                     .map_err(|error| CognitiveRecoveryError::Indeterminate(error.to_string()))?;
-                transaction
-                    .commit()
-                    .await
-                    .map_err(|error| CognitiveRecoveryError::Unavailable(error.to_string()))?;
                 if observed != *expected {
                     return Err(CognitiveRecoveryError::Indeterminate(
                         "recovered generation changed during checkpoint/reopen".to_string(),
                     ));
                 }
+                verifier
+                    .verify(authority, layout.agent_id())
+                    .map_err(CognitiveRecoveryError::AccessDenied)?;
+                authority
+                    .validate_for_agent(layout.agent_id())
+                    .map_err(|error| CognitiveRecoveryError::AccessDenied(error.to_string()))?;
+                verify_captured_integrity(&mut transaction)
+                    .await
+                    .map_err(|error| CognitiveRecoveryError::Indeterminate(error.to_string()))?;
+                transaction
+                    .commit()
+                    .await
+                    .map_err(|error| CognitiveRecoveryError::Unavailable(error.to_string()))?;
+                verify_store(&pool, layout.agent_id())
+                    .await
+                    .map_err(|error| CognitiveRecoveryError::Indeterminate(error.to_string()))?;
+                // Recovery can span a copy, integrity scan and checkpoint.
+                // Recheck independently current authority at activation, so
+                // a lease revoked or expired during that work cannot publish.
+                verifier
+                    .verify(authority, layout.agent_id())
+                    .map_err(CognitiveRecoveryError::AccessDenied)?;
+                authority
+                    .validate_for_agent(layout.agent_id())
+                    .map_err(|error| CognitiveRecoveryError::AccessDenied(error.to_string()))?;
                 Ok(())
             }
             .await;
@@ -367,49 +386,8 @@ async fn capture(
     connection: &mut SqliteConnection,
     owner: &AgentId,
 ) -> Result<CognitiveRecoveryAnchor, CognitiveStoreError> {
-    let mut schema = REQUIRED_SCHEMA_OBJECTS.to_vec();
-    schema.sort_unstable_by_key(|(name, _)| *name);
-    let mut schema_hasher = Sha256::new();
-    frame_part(
-        &mut schema_hasher,
-        b"hepta:cognitive:required-schema-oracle:v1",
-    );
-    frame_part(&mut schema_hasher, &(schema.len() as u64).to_be_bytes());
-    let mut schema_bytes = 0_i64;
-    for (name, kind) in &schema {
-        let length: Option<i64> = sqlx::query_scalar(
-            "SELECT length(CAST(sql AS BLOB)) FROM sqlite_schema WHERE name = ? AND type = ?",
-        )
-        .bind(name)
-        .bind(kind)
-        .fetch_optional(&mut *connection)
-        .await
-        .map_err(unavailable)?
-        .flatten();
-        let length = length.filter(|value| *value > 0).ok_or_else(|| {
-            CognitiveStoreError::Corrupt("missing cognitive recovery schema object".to_string())
-        })?;
-        schema_bytes = schema_bytes
-            .checked_add(length)
-            .filter(|value| *value <= MAX_SCHEMA_BYTES)
-            .ok_or_else(|| {
-                CognitiveStoreError::Invalid("cognitive recovery schema exceeds bounds".to_string())
-            })?;
-        let sql: String = sqlx::query_scalar("SELECT sql FROM sqlite_schema WHERE name = ?")
-            .bind(name)
-            .fetch_one(&mut *connection)
-            .await
-            .map_err(unavailable)?;
-        frame_part(&mut schema_hasher, name.as_bytes());
-        frame_part(&mut schema_hasher, kind.as_bytes());
-        frame_part(&mut schema_hasher, sql.as_bytes());
-    }
-    let schema_digest = Sha256Digest::from_sha256_output(schema_hasher.finalize());
-    if schema_digest.as_str() != REQUIRED_SCHEMA_ORACLE_SHA256 {
-        return Err(CognitiveStoreError::Corrupt(
-            "cognitive recovery schema mismatch".to_string(),
-        ));
-    }
+    let verified = super::schema::verify_schema(connection).await?;
+    let schema_digest = verified.digest;
     let stored_owner: String = sqlx::query_scalar("SELECT owner_agent_id FROM cognitive_meta WHERE singleton = 1 AND length(owner_agent_id) = 36")
         .fetch_one(&mut *connection).await.map_err(unavailable)?;
     if stored_owner != owner.as_str() {
@@ -417,25 +395,7 @@ async fn capture(
             "cognitive recovery database owner mismatch".to_string(),
         ));
     }
-    let mut tables: Vec<&str> = schema
-        .iter()
-        .filter_map(|(name, kind)| (*kind == "table").then_some(*name))
-        .collect();
-    tables.push("_sqlx_migrations");
-    tables.sort_unstable();
-    let actual_tables: Vec<String> = sqlx::query_scalar(
-        "SELECT substr(name, 1, 129) FROM pragma_table_list
-         WHERE schema = 'main' AND type IN ('table', 'virtual')
-           AND name NOT LIKE 'sqlite_%' ORDER BY name LIMIT 256",
-    )
-    .fetch_all(&mut *connection)
-    .await
-    .map_err(unavailable)?;
-    if actual_tables != tables {
-        return Err(CognitiveStoreError::Corrupt(
-            "unregistered cognitive recovery table".to_string(),
-        ));
-    }
+    let mut tables = verified.tables;
     // Bind complete logical schema too, including extra triggers and indexes.
     // Physical root pages are deliberately excluded so checkpoint/backup does
     // not masquerade as an owner mutation. FTS shadows are covered through the
@@ -593,9 +553,20 @@ async fn capture(
             }
         }
     }
-    // Keep both integrity gates in the same serialized snapshot. Run them only
-    // after bounded logical reads, which also establish the current FTS view on
-    // pooled connections; never expose the calculated digest before they pass.
+    Ok(CognitiveRecoveryAnchor {
+        profile: PROFILE.to_string(),
+        owner_agent_id: owner.clone(),
+        schema_digest,
+        state_digest: Sha256Digest::from_sha256_output(state.finalize()),
+    })
+}
+
+async fn verify_captured_integrity(
+    connection: &mut SqliteConnection,
+) -> Result<(), CognitiveStoreError> {
+    // Admission callers have matched the external current-cut witness before
+    // this scan. A live owner's recovery_anchor calls it after schema checks
+    // to establish internal integrity; that self-check is no external witness.
     let check: String = sqlx::query_scalar("PRAGMA quick_check(1)")
         .fetch_one(&mut *connection)
         .await
@@ -615,12 +586,16 @@ async fn capture(
             "cognitive recovery foreign-key check failed".to_string(),
         ));
     }
-    Ok(CognitiveRecoveryAnchor {
-        profile: PROFILE.to_string(),
-        owner_agent_id: owner.clone(),
-        schema_digest,
-        state_digest: Sha256Digest::from_sha256_output(state.finalize()),
-    })
+    let integrity: Vec<String> = sqlx::query_scalar("PRAGMA integrity_check(1)")
+        .fetch_all(&mut *connection)
+        .await
+        .map_err(unavailable)?;
+    if integrity != ["ok"] {
+        return Err(CognitiveStoreError::Corrupt(
+            "cognitive recovery integrity check failed".to_string(),
+        ));
+    }
+    Ok(())
 }
 
 #[cfg(test)]

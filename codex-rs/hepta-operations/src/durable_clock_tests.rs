@@ -134,6 +134,14 @@ async fn dispatch_waiter_rejects_a_lease_that_expired_behind_the_writer() {
         .expect("writer");
     let mut waiting = std::pin::pin!(store.authorize_dispatch(&authority, &signed, &claim));
     poll_waiter(waiting.as_mut()).await;
+    assert_eq!(
+        authority
+            .capacity()
+            .expect("nonce capacity while blocked")
+            .used_nonces,
+        0,
+        "waiting for the SQLite writer must not consume final-use authority"
+    );
     let expires_at = now_millis().expect("expiry clock") + 1;
     sqlx::query("UPDATE cross_owner_outbox SET lease_until_ms = ?")
         .bind(expires_at)
@@ -148,6 +156,17 @@ async fn dispatch_waiter_rejects_a_lease_that_expired_behind_the_writer() {
         waiting.await,
         Err(DurableOperationError::StaleLease)
     ));
+    assert_eq!(
+        authority
+            .capacity()
+            .expect("nonce capacity after rejection")
+            .used_nonces,
+        0,
+        "a lease rejected before admission must leave its authority nonce unused"
+    );
+    let _unconsumed = authority
+        .claim(&signed, &signed.grant.binding)
+        .expect("the unadmitted grant remains independently claimable");
     assert_eq!(
         store
             .operation(&operation.scope_id, &operation.operation_id)

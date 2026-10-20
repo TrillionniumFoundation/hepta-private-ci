@@ -12,6 +12,10 @@ doctest = false
 [lints]
 workspace = true
 
+[features]
+# Diagnostic timing only; never enabled by default.
+cognitive-perf-observe = []
+
 [dependencies]
 base64 = { workspace = true }
 codex-hepta-cognitive-read = { path = "../hepta-cognitive-read" }
