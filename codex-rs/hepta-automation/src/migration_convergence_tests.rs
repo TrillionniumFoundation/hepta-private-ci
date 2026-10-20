@@ -1,10 +1,11 @@
 use codex_state::SqliteConfig;
+use codex_state::test_support::open_in_memory_pool_for_testing;
 use sqlx::migrate::Migrate;
 
 use super::*;
 
 async fn historical_pool(displaced: bool) -> SqlitePool {
-    let pool = SqliteConfig::open_in_memory_pool_for_testing()
+    let pool = open_in_memory_pool_for_testing()
         .await
         .expect("SQLite owner");
     let mut connection = pool.acquire().await.expect("owner connection");

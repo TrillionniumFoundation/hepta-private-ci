@@ -17,6 +17,7 @@ mod model;
 mod paths;
 mod runtime;
 mod sqlite;
+pub mod test_support;
 mod sqlite_recovery;
 mod telemetry;
 
