@@ -38,6 +38,13 @@ jobs:
           set -euo pipefail
           test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
           test -z "$(git status --porcelain)"
+      - name: Install Linux D-Bus development headers for real native compilation
+        if: runner.os == 'Linux'
+        shell: bash
+        run: |
+          set -euo pipefail
+          sudo apt-get update -qq
+          sudo apt-get install -y libdbus-1-dev pkg-config
       - name: Install pinned Rust
         uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582
         with:
