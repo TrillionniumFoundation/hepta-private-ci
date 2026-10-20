@@ -62,13 +62,17 @@ class AcquisitionOracleTests(unittest.TestCase):
                 "\n".join(
                     line for line in output.splitlines() if "Summary" not in line
                 ),
-                output + "PRIVATE_STATE_ACQUISITION creation denied=true created=false\n",
+                output
+                + "PRIVATE_STATE_ACQUISITION creation denied=true created=false\n",
                 output.replace("1 failed", "1 failed, 1 flaky"),
             )
             for changed in changes:
                 if changed == output:
                     continue
-                with self.subTest(lane=lane, changed=changed), self.assertRaises(RuntimeError):
+                with (
+                    self.subTest(lane=lane, changed=changed),
+                    self.assertRaises(RuntimeError),
+                ):
                     check_result(lane, 0 if lane == "positive" else 1, changed)
 
     def test_rejects_inverted_command_exit(self):
