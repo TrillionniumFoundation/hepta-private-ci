@@ -4,7 +4,9 @@ on:
   pull_request:
     paths:
       - .github/workflows/hepta-temporary-bazel-lock.yml
+      - codex-rs/Cargo.toml
       - codex-rs/Cargo.lock
+      - codex-rs/third_party/rama-dns-0.3.0-alpha.4/**
       - MODULE.bazel
       - MODULE.bazel.lock
 
@@ -18,7 +20,12 @@ concurrency:
 jobs:
   generate:
     runs-on: ubuntu-24.04
-    timeout-minutes: 30
+    timeout-minutes: 60
+    env:
+      RUSTUP_TOOLCHAIN: 1.95.0
+      CARGO_INCREMENTAL: "0"
+      PYTHONDONTWRITEBYTECODE: "1"
+      SOURCE_HEAD: ${{ github.event.pull_request.head.sha }}
     steps:
       - name: Check out exact pull-request source
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
@@ -26,22 +33,442 @@ jobs:
           ref: ${{ github.event.pull_request.head.sha }}
           fetch-depth: 0
           persist-credentials: false
+      - name: Freeze exact source and original lock inputs
+        shell: bash
+        run: |
+          set -euo pipefail
+          export CANDIDATE_DIR="$RUNNER_TEMP/hepta-lock-candidate"
+          printf 'CANDIDATE_DIR=%s\n' "$CANDIDATE_DIR" >> "$GITHUB_ENV"
+          python3 -I -B - <<'PY'
+          import hashlib
+          import json
+          import os
+          from pathlib import Path
+          import subprocess
+
+          output = Path(os.environ["CANDIDATE_DIR"])
+          output.mkdir()
+          head = subprocess.check_output(["git", "rev-parse", "HEAD"], text=True).strip()
+          status = subprocess.check_output(["git", "status", "--porcelain=v1", "--untracked-files=all"], text=True)
+          if head != os.environ["SOURCE_HEAD"] or status:
+              raise SystemExit("checkout is not the exact clean pull-request head")
+          paths = ["codex-rs/Cargo.toml", "codex-rs/Cargo.lock", "MODULE.bazel", "MODULE.bazel.lock",
+                   "codex-rs/rust-toolchain.toml", "codex-rs/deny.toml", "codex-rs/.cargo/audit.toml",
+                   "codex-rs/third_party/rama-dns-0.3.0-alpha.4", "justfile", "scripts/run-nextest.py",
+                   "scripts/check-module-bazel-lock.sh", ".github/scripts/run_bazel_with_buildbuddy.py"]
+          files = subprocess.check_output(["git", "ls-files", "-z", "--", *paths]).split(b"\0")
+          hashes = {os.fsdecode(p): hashlib.sha256(Path(os.fsdecode(p)).read_bytes()).hexdigest() for p in files if p}
+          source = {"head": head, "tree": subprocess.check_output(["git", "rev-parse", "HEAD^{tree}"], text=True).strip(),
+                    "status": status, "files": hashes}
+          (output / "source-before.json").write_text(json.dumps(source, indent=2) + "\n")
+          for name, path in [("Cargo.lock.input", "codex-rs/Cargo.lock"), ("MODULE.bazel.lock.input", "MODULE.bazel.lock")]:
+              (output / name).write_bytes(Path(path).read_bytes())
+          (output / "inputs.sha256").write_text("".join(
+              f"{hashlib.sha256((output / name).read_bytes()).hexdigest()}  {name}\n"
+              for name in ["Cargo.lock.input", "MODULE.bazel.lock.input", "source-before.json"]))
+          PY
+      - name: Install the fixed Rust 1.95 toolchain
+        uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582 # 1.95.0
+        with:
+          targets: x86_64-unknown-linux-gnu
       - name: Prepare Bazel CI
         uses: ./.github/actions/prepare-bazel-ci
         with:
           target: x86_64-unknown-linux-gnu
           cache-scope: temporary-lock-candidate
-      - name: Generate exact MODULE.bazel.lock candidate
+      - name: Install repository nextest version
+        uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532 # v2.62.49
+        with:
+          tool: nextest
+          version: 0.9.103
+      - name: Install scoped Linux native build dependencies
         shell: bash
         run: |
           set -euo pipefail
-          mkdir -p "${RUNNER_TEMP}/hepta-lock-candidate"
-          just bazel-lock-update > "${RUNNER_TEMP}/hepta-lock-candidate/bazel-lock-update.log" 2>&1
-          cp MODULE.bazel.lock "${RUNNER_TEMP}/hepta-lock-candidate/MODULE.bazel.lock"
+          sudo apt-get update -y
+          sudo apt-get install -y --no-install-recommends build-essential cmake pkg-config perl
+      - name: Resolve and verify the real Cargo and Bazel candidate
+        id: qualify
+        shell: bash
+        run: |
+          set -euo pipefail
+          run_logged() {
+            local stage="$1"
+            shift
+            set +e
+            "$@" > "${CANDIDATE_DIR}/${stage}.stdout" 2> "${CANDIDATE_DIR}/${stage}.stderr"
+            local status=$?
+            set -e
+            printf '%s\n' "${status}" > "${CANDIDATE_DIR}/${stage}.exit"
+            cat "${CANDIDATE_DIR}/${stage}.stderr"
+            return "${status}"
+          }
+          run_logged rustc-version rustc +1.95.0 --version --verbose
+          run_logged cargo-version cargo +1.95.0 --version --verbose
+          run_logged bazel-version bazel --version
+          run_logged nextest-version cargo +1.95.0 nextest --version
+          run_logged cargo-update cargo +1.95.0 update --manifest-path codex-rs/Cargo.toml -p rama-dns --precise 0.3.0-alpha.4
+          run_logged cargo-metadata cargo +1.95.0 metadata --manifest-path codex-rs/Cargo.toml --locked --all-features --format-version=1
+          run_logged verify-resolved-graph python3 -I -B - <<'PY'
+          from collections import Counter
+          import hashlib
+          import json
+          import os
+          from pathlib import Path
+          import tomllib
+
+          def require(condition, message):
+              if not condition:
+                  raise SystemExit(message)
+
+          output = Path(os.environ["CANDIDATE_DIR"])
+          before = tomllib.loads((output / "Cargo.lock.input").read_text())["package"]
+          after = tomllib.loads(Path("codex-rs/Cargo.lock").read_text())["package"]
+          metadata = json.loads((output / "cargo-metadata.stdout").read_text())
+          original_rama = [p for p in before if p["name"].startswith("rama-")]
+          rama = [p for p in after if p["name"].startswith("rama-")]
+          require(len(original_rama) == len({p["name"] for p in original_rama}) == 16
+                  and all(p["version"] == "0.3.0-alpha.4" for p in original_rama),
+                  "input does not contain the original 16 Rama alpha.4 packages")
+          require(Counter((p["name"], p["version"]) for p in rama) ==
+                  Counter((p["name"], p["version"]) for p in original_rama), "Rama package/version drift")
+          for original in original_rama:
+              package = next(p for p in rama if p["name"] == original["name"])
+              if package["name"] == "rama-dns":
+                  require("source" not in package and "checksum" not in package, "Rama DNS patch is not selected")
+              else:
+                  require((package.get("source"), package.get("checksum")) ==
+                          (original.get("source"), original.get("checksum")), "unrelated Rama source drift")
+          hickory_names = {"hickory-proto", "hickory-net", "hickory-resolver"}
+          hickory = [p for p in after if p["name"].startswith("hickory-")]
+          require(Counter((p["name"], p["version"]) for p in hickory) ==
+                  Counter((name, "0.26.3") for name in hickory_names), "old, missing, or duplicated Hickory path")
+          registry = "registry+https://github.com/rust-lang/crates.io-index"
+          require(all(p.get("source") == registry and len(p.get("checksum", "")) == 64 for p in hickory),
+                  "Hickory must use published registry bytes with Cargo checksums")
+          packages = {p["id"]: p for p in metadata["packages"]}
+          nodes = {n["id"]: n for n in metadata["resolve"]["nodes"]}
+          names = hickory_names | {"rama-dns", "rama-tcp", "codex-network-proxy"}
+          selected = {}
+          for name in names:
+              matches = [p for p in packages.values() if p["name"] == name]
+              require(len(matches) == 1, f"resolved graph does not uniquely contain {name}")
+              selected[name] = matches[0]
+          dns = selected["rama-dns"]
+          require(dns["source"] is None and Path(dns["manifest_path"]).resolve() ==
+                  Path("codex-rs/third_party/rama-dns-0.3.0-alpha.4/Cargo.toml").resolve(), "wrong DNS source in actual graph")
+          edges = [("codex-network-proxy", "rama-tcp"), ("rama-tcp", "rama-dns"),
+                   ("rama-dns", "hickory-resolver"), ("hickory-resolver", "hickory-net"),
+                   ("hickory-resolver", "hickory-proto"), ("hickory-net", "hickory-proto")]
+          for parent, child in edges:
+              require(selected[child]["id"] in nodes[selected[parent]["id"]]["dependencies"],
+                      f"missing actual dependency edge {parent} -> {child}")
+          require(all(selected[name]["version"] == "0.26.3" for name in hickory_names), "metadata Hickory version drift")
+          require(all(selected[name]["source"] == registry for name in hickory_names), "non-registry Hickory in metadata")
+          original_versions = {(p["name"], p["version"]) for p in before}
+          introduced = [p for p in packages.values() if (p["name"], p["version"]) not in original_versions]
+          for package in introduced:
+              declared = package.get("rust_version")
+              if declared:
+                  require(tuple(int(part) for part in declared.split(".")) <= (1, 95, 0),
+                          f"introduced package exceeds Rust 1.95: {package['name']} {declared}")
+          for path in ["codex-rs/deny.toml", "codex-rs/.cargo/audit.toml"]:
+              require(tomllib.loads(Path(path).read_text())["advisories"]["ignore"] == [], "advisory waiver is present")
+          report = {"input_cargo_sha256": hashlib.sha256((output / "Cargo.lock.input").read_bytes()).hexdigest(),
+                    "generated_cargo_sha256": hashlib.sha256(Path("codex-rs/Cargo.lock").read_bytes()).hexdigest(),
+                    "metadata_sha256": hashlib.sha256((output / "cargo-metadata.stdout").read_bytes()).hexdigest(),
+                    "rama": rama, "hickory": hickory, "edges": edges,
+                    "introduced_packages": [{key: p.get(key) for key in ["name", "version", "source", "rust_version"]}
+                                            for p in introduced]}
+          (output / "resolved-graph.json").write_text(json.dumps(report, indent=2) + "\n")
+          PY
+          run_logged bazel-lock-update just bazel-lock-update
+          sha256sum codex-rs/Cargo.lock MODULE.bazel.lock > "${CANDIDATE_DIR}/generated-locks.sha256"
+          run_logged bazel-lock-check just bazel-lock-check
+          export RAMA_DNS_TEST_DIR="$RUNNER_TEMP/hepta-rama-dns-tests"
+          run_logged rama-dns-test-prepare python3 -I -B - <<'PY'
+          import hashlib
+          import json
+          import os
+          from pathlib import Path
+
+          output = Path(os.environ["CANDIDATE_DIR"])
+          target = Path(os.environ["RAMA_DNS_TEST_DIR"]).resolve()
+          if target.is_relative_to(Path.cwd().resolve()):
+              raise SystemExit("standalone tests must not write the source checkout")
+          target.mkdir()
+          before = json.loads((output / "source-before.json").read_text())
+          prefix = "codex-rs/third_party/rama-dns-0.3.0-alpha.4/"
+          files = {}
+          for source, expected in before["files"].items():
+              if not source.startswith(prefix):
+                  continue
+              relative = source.removeprefix(prefix)
+              content = Path(source).read_bytes()
+              if hashlib.sha256(content).hexdigest() != expected:
+                  raise SystemExit(f"Rama DNS source changed before test copy: {source}")
+              destination = target / relative
+              destination.parent.mkdir(parents=True, exist_ok=True)
+              destination.write_bytes(content)
+              files[relative] = expected
+          if not {"Cargo.toml", "src/lib.rs", "src/hickory.rs", "src/hickory_tests.rs"} <= files.keys():
+              raise SystemExit("standalone copy is missing the real Rama DNS source or regressions")
+          seed = Path("codex-rs/Cargo.lock").read_bytes()
+          (target / "Cargo.lock").write_bytes(seed)
+          production = json.loads((output / "cargo-metadata.stdout").read_text())
+          dns = [p for p in production["packages"] if p["name"] == "rama-dns"]
+          if len(dns) != 1:
+              raise SystemExit("production Rama DNS package is not unique")
+          node = next(n for n in production["resolve"]["nodes"] if n["id"] == dns[0]["id"])
+          features = sorted(node["features"])
+          if not set(features) <= dns[0]["features"].keys() or any("\n" in f or "," in f for f in features):
+              raise SystemExit("production Rama DNS feature selection is not explicit")
+          feature_args = ["--no-default-features"]
+          if features:
+              feature_args += ["--features", ",".join(features)]
+          (output / "rama-dns-test-features.args").write_text("\n".join(feature_args) + "\n")
+          record = {"source_head": before["head"], "source_tree": before["tree"],
+                    "test_root": str(target), "files": files,
+                    "production_root_features": features, "feature_args": feature_args,
+                    "seed_workspace_lock_sha256": hashlib.sha256(seed).hexdigest()}
+          (output / "rama-dns-test-source.json").write_text(json.dumps(record, indent=2) + "\n")
+          (output / "rama-dns-test-source.sha256").write_text("".join(
+              f"{digest}  {path}\n" for path, digest in sorted(files.items())))
+          PY
+          mapfile -t rama_dns_feature_args < "${CANDIDATE_DIR}/rama-dns-test-features.args"
+          run_logged rama-dns-test-metadata env CARGO_TARGET_DIR="$RUNNER_TEMP/hepta-rama-dns-target" \
+            cargo +1.95.0 metadata \
+            --manifest-path "$RAMA_DNS_TEST_DIR/Cargo.toml" "${rama_dns_feature_args[@]}" --format-version=1
+          run_logged verify-rama-dns-test-graph python3 -I -B - <<'PY'
+          import hashlib
+          import json
+          import os
+          from pathlib import Path
+
+          def require(condition, message):
+              if not condition:
+                  raise SystemExit(message)
+
+          def runtime_edges(node):
+              for dependency in node["deps"]:
+                  for kind in dependency["dep_kinds"]:
+                      require(kind["kind"] in (None, "build", "dev"), "unknown Cargo dependency kind")
+                      if kind["kind"] != "dev":
+                          yield (dependency["name"], dependency["pkg"], kind["kind"], kind["target"])
+
+          output = Path(os.environ["CANDIDATE_DIR"])
+          target = Path(os.environ["RAMA_DNS_TEST_DIR"]).resolve()
+          source = json.loads((output / "rama-dns-test-source.json").read_text())
+          test_lock = (target / "Cargo.lock").read_bytes()
+          (output / "rama-dns-tests.Cargo.lock").write_bytes(test_lock)
+          production = json.loads((output / "cargo-metadata.stdout").read_text())
+          tests = json.loads((output / "rama-dns-test-metadata.stdout").read_text())
+          production_packages = {p["id"]: p for p in production["packages"]}
+          test_packages = {p["id"]: p for p in tests["packages"]}
+          production_nodes = {n["id"]: n for n in production["resolve"]["nodes"]}
+          test_nodes = {n["id"]: n for n in tests["resolve"]["nodes"]}
+          production_dns = [p for p in production_packages.values() if p["name"] == "rama-dns"]
+          test_dns = [p for p in test_packages.values() if p["name"] == "rama-dns"]
+          require(len(production_dns) == len(test_dns) == 1, "Rama DNS package is not unique")
+          production_dns, test_dns = production_dns[0], test_dns[0]
+          require(test_dns["source"] is None and test_dns["version"] == "0.3.0-alpha.4"
+                  and Path(test_dns["manifest_path"]).resolve() == target / "Cargo.toml",
+                  "standalone tests do not select the copied Rama DNS package")
+          require(tests["workspace_members"] == [test_dns["id"]]
+                  and tests["resolve"]["root"] == test_dns["id"],
+                  "standalone test workspace has unexpected members or root")
+          require(Path(tests["target_directory"]).resolve() ==
+                  (Path(os.environ["RUNNER_TEMP"]) / "hepta-rama-dns-target").resolve(),
+                  "standalone test build output is not in its dedicated runner temporary directory")
+          require(sorted(test_nodes[test_dns["id"]]["features"]) ==
+                  source["production_root_features"] == sorted(production_nodes[production_dns["id"]]["features"]),
+                  "standalone Rama DNS feature selection differs from the production candidate")
+          require(any(t["kind"] == ["lib"] and t["test"]
+                      and Path(t["src_path"]).resolve() == target / "src/lib.rs"
+                      for t in test_dns["targets"]), "real Rama DNS library test target is missing")
+          require(source["seed_workspace_lock_sha256"] ==
+                  hashlib.sha256(Path("codex-rs/Cargo.lock").read_bytes()).hexdigest(),
+                  "production lock changed while deriving the test lock")
+
+          def production_id(package_id):
+              return production_dns["id"] if package_id == test_dns["id"] else package_id
+
+          runtime = set()
+          pending = [test_dns["id"]]
+          bindings = []
+          feature_bindings = []
+          while pending:
+              package_id = pending.pop()
+              if package_id in runtime:
+                  continue
+              runtime.add(package_id)
+              mapped_id = production_id(package_id)
+              require(mapped_id in production_packages and mapped_id in production_nodes,
+                      f"standalone runtime package drift: {package_id}")
+              package = test_packages[package_id]
+              expected = production_packages[mapped_id]
+              require(all(package[key] == expected[key] for key in ["name", "version", "source"]),
+                      f"standalone runtime version/source drift: {package_id}")
+              actual_features = set(test_nodes[package_id]["features"])
+              expected_features = set(production_nodes[mapped_id]["features"])
+              require(actual_features <= expected_features,
+                      f"standalone runtime features outside production candidate: {package_id}: "
+                      f"{sorted(actual_features - expected_features)}")
+              feature_bindings.append({"package": mapped_id, "test_features": sorted(actual_features),
+                                       "production_features": sorted(expected_features),
+                                       "production_features_not_selected": sorted(expected_features - actual_features)})
+              expected_edges = set(runtime_edges(production_nodes[mapped_id]))
+              actual_edges = {(name, production_id(child), kind, condition)
+                              for name, child, kind, condition in runtime_edges(test_nodes[package_id])}
+              if package_id == test_dns["id"]:
+                  require(actual_edges == expected_edges, "Rama DNS normal/build dependency selection drift")
+              for name, child, kind, target_condition in runtime_edges(test_nodes[package_id]):
+                  mapped_edge = (name, production_id(child), kind, target_condition)
+                  require(mapped_edge in expected_edges,
+                          f"standalone runtime dependency drift: {package_id} -> {child}")
+                  bindings.append({"parent": mapped_id, "dependency": name,
+                                   "child": production_id(child), "kind": kind,
+                                   "target": target_condition})
+                  pending.append(child)
+
+          dev_edges = [d for d in test_nodes[test_dns["id"]]["deps"]
+                       if any(k["kind"] == "dev" for k in d["dep_kinds"])]
+          declared_dev = {(d.get("rename") or d["name"]).replace("-", "_")
+                          for d in test_dns["dependencies"] if d["kind"] == "dev"}
+          require(declared_dev <= {d["name"] for d in dev_edges},
+                  "declared Rama DNS development dependencies are missing")
+          development = set()
+          pending = [d["pkg"] for d in dev_edges]
+          while pending:
+              package_id = pending.pop()
+              if package_id in development:
+                  continue
+              development.add(package_id)
+              pending.extend(child for _, child, _, _ in runtime_edges(test_nodes[package_id]))
+          require(set(test_nodes) == runtime | development,
+                  "standalone graph contains packages outside runtime or development closures")
+          for package in test_packages.values():
+              declared = package.get("rust_version")
+              if declared:
+                  require(tuple(int(part) for part in declared.split(".")) <= (1, 95, 0),
+                          f"test dependency exceeds Rust 1.95: {package['name']} {declared}")
+          for relative, digest in source["files"].items():
+              require(hashlib.sha256((target / relative).read_bytes()).hexdigest() == digest,
+                      f"standalone source drift before tests: {relative}")
+          report = {"source_head": source["source_head"], "source_tree": source["source_tree"],
+                    "production_lock_sha256": source["seed_workspace_lock_sha256"],
+                    "production_metadata_sha256": hashlib.sha256((output / "cargo-metadata.stdout").read_bytes()).hexdigest(),
+                    "test_lock_sha256": hashlib.sha256(test_lock).hexdigest(),
+                    "test_metadata_sha256": hashlib.sha256((output / "rama-dns-test-metadata.stdout").read_bytes()).hexdigest(),
+                    "root_features": source["production_root_features"], "feature_args": source["feature_args"],
+                    "test_target_directory": tests["target_directory"],
+                    "runtime_packages": [{key: test_packages[p].get(key) for key in ["id", "name", "version", "source"]}
+                                         for p in sorted(runtime)],
+                    "runtime_bindings": bindings, "runtime_feature_bindings": feature_bindings,
+                    "root_dev_edges": dev_edges,
+                    "root_dev_feature_requests": [d for d in test_dns["dependencies"] if d["kind"] == "dev"],
+                    "runtime_dev_overlap": sorted(runtime & development),
+                    "dev_only_packages": [{key: test_packages[p].get(key) for key in ["id", "name", "version", "source"]}
+                                          for p in sorted(development - runtime)],
+                    "scope": "Same Rama DNS root features and production version/source bindings; standalone dev tests, not the full workspace feature union"}
+          (output / "rama-dns-test-graph.json").write_text(json.dumps(report, indent=2) + "\n")
+          PY
+          rama_dns_test_status=0
+          run_logged rama-dns-tests env CARGO_TARGET_DIR="$RUNNER_TEMP/hepta-rama-dns-target" \
+            just test \
+            --manifest-path "$RAMA_DNS_TEST_DIR/Cargo.toml" -p rama-dns --locked \
+            "${rama_dns_feature_args[@]}" --profile default --retries=0 --no-tests=fail || rama_dns_test_status=$?
+          run_logged verify-rama-dns-test-inputs python3 -I -B - <<'PY'
+          import hashlib
+          import json
+          import os
+          from pathlib import Path
+
+          output = Path(os.environ["CANDIDATE_DIR"])
+          target = Path(os.environ["RAMA_DNS_TEST_DIR"])
+          source = json.loads((output / "rama-dns-test-source.json").read_text())
+          graph = json.loads((output / "rama-dns-test-graph.json").read_text())
+          actual = {path.relative_to(target).as_posix() for path in target.rglob("*") if path.is_file()}
+          if actual != set(source["files"]) | {"Cargo.lock"}:
+              raise SystemExit("standalone tests created or removed source-tree files")
+          for relative, expected in source["files"].items():
+              if hashlib.sha256((target / relative).read_bytes()).hexdigest() != expected:
+                  raise SystemExit(f"standalone tests changed frozen source: {relative}")
+          for lock in [target / "Cargo.lock", output / "rama-dns-tests.Cargo.lock"]:
+              if hashlib.sha256(lock.read_bytes()).hexdigest() != graph["test_lock_sha256"]:
+                  raise SystemExit("standalone test lock changed during --locked tests")
+          PY
+          if (( rama_dns_test_status != 0 )); then
+            exit "$rama_dns_test_status"
+          fi
+          run_logged network-proxy-tests just test -p codex-network-proxy --locked
+          run_logged bazel-tests ./.github/scripts/run_bazel_with_buildbuddy.py test \
+            //codex-rs/third_party/rama-dns-0.3.0-alpha.4/... //codex-rs/network-proxy/... \
+            --test_output=errors --cache_test_results=no
+      - name: Retain generated bytes and verify source conservation
+        if: always()
+        shell: bash
+        env:
+          QUALIFICATION_OUTCOME: ${{ steps.qualify.outcome }}
+        run: |
+          set -euo pipefail
+          python3 -I -B - <<'PY'
+          import hashlib
+          import json
+          import os
+          from pathlib import Path
+          import subprocess
+
+          output = Path(os.environ["CANDIDATE_DIR"])
+          before = json.loads((output / "source-before.json").read_text())
+          for name, path in [("Cargo.lock", "codex-rs/Cargo.lock"), ("MODULE.bazel.lock", "MODULE.bazel.lock")]:
+              (output / name).write_bytes(Path(path).read_bytes())
+          test_source_path = output / "rama-dns-test-source.json"
+          if test_source_path.is_file():
+              test_lock = Path(json.loads(test_source_path.read_text())["test_root"]) / "Cargo.lock"
+              if test_lock.is_file():
+                  (output / "rama-dns-tests.Cargo.lock.after").write_bytes(test_lock.read_bytes())
+          changed = subprocess.check_output(["git", "diff", "HEAD", "--name-only", "-z"]).decode().strip("\0").split("\0")
+          changed = [p for p in changed if p]
+          untracked = subprocess.check_output(["git", "ls-files", "--others", "--exclude-standard", "-z"]).decode()
+          allowed = {"codex-rs/Cargo.lock", "MODULE.bazel.lock"}
+          source_unchanged = all(Path(path).is_file() and hashlib.sha256(Path(path).read_bytes()).hexdigest() == digest
+                                 for path, digest in before["files"].items() if path not in allowed)
+          stages = ["rustc-version", "cargo-version", "bazel-version", "nextest-version", "cargo-update",
+                    "cargo-metadata", "verify-resolved-graph", "bazel-lock-update", "bazel-lock-check",
+                    "rama-dns-test-prepare", "rama-dns-test-metadata", "verify-rama-dns-test-graph",
+                    "rama-dns-tests", "verify-rama-dns-test-inputs", "network-proxy-tests", "bazel-tests"]
+          exits = {name: (output / f"{name}.exit").read_text().strip() if (output / f"{name}.exit").is_file() else None
+                   for name in stages}
+          head = subprocess.check_output(["git", "rev-parse", "HEAD"], text=True).strip()
+          frozen_inputs_ok = subprocess.run(["sha256sum", "--check", "inputs.sha256"], cwd=output).returncode == 0
+          generated_locks_ok = ((output / "generated-locks.sha256").is_file() and
+                                subprocess.run(["sha256sum", "--check", str(output / "generated-locks.sha256")]).returncode == 0)
+          graph_path = output / "resolved-graph.json"
+          graph = json.loads(graph_path.read_text()) if graph_path.is_file() else {}
+          graph_inputs_ok = (graph.get("input_cargo_sha256") == hashlib.sha256((output / "Cargo.lock.input").read_bytes()).hexdigest()
+                             and graph.get("generated_cargo_sha256") == hashlib.sha256(Path("codex-rs/Cargo.lock").read_bytes()).hexdigest()
+                             and (output / "cargo-metadata.stdout").is_file()
+                             and graph.get("metadata_sha256") == hashlib.sha256((output / "cargo-metadata.stdout").read_bytes()).hexdigest())
+          qualified = (os.environ["QUALIFICATION_OUTCOME"] == "success" and all(value == "0" for value in exits.values())
+                       and head == before["head"] == os.environ["SOURCE_HEAD"] and frozen_inputs_ok
+                       and generated_locks_ok and graph_inputs_ok
+                       and source_unchanged and set(changed) <= allowed and not untracked)
+          report = {"head": head, "changed": changed, "untracked": untracked, "source_unchanged": source_unchanged,
+                    "frozen_inputs_ok": frozen_inputs_ok, "generated_locks_ok": generated_locks_ok,
+                    "graph_inputs_ok": graph_inputs_ok, "command_exits": exits, "qualified": qualified}
+          (output / "source-after.json").write_text(json.dumps(report, indent=2) + "\n")
+          (output / "artifact-files.sha256").write_text("".join(
+              f"{hashlib.sha256(path.read_bytes()).hexdigest()}  {path.name}\n"
+              for path in sorted(output.iterdir()) if path.is_file()))
+          if not qualified:
+              raise SystemExit("candidate is incomplete, failed, or changed non-lock source; retain all raw evidence")
+          PY
       - name: Retain exact lock candidate
+        if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
           name: hepta-temporary-bazel-lock-${{ github.event.pull_request.head.sha }}
           path: ${{ runner.temp }}/hepta-lock-candidate
           if-no-files-found: error
-          retention-days: 2
+          retention-days: 7
