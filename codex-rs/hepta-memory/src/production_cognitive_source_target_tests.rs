@@ -399,6 +399,98 @@ async fn destination_recomputes_full_semantics_and_deduplicates_exact_replay() {
 }
 
 #[tokio::test]
+async fn destination_terminal_proof_rejects_replace_without_recursive_triggers() {
+    let temp = TempDir::new().expect("temp");
+    let store = store(&temp).await;
+    let owner = store.owner_agent_id().clone();
+    let target =
+        CognitiveSourceOutboxTarget::new(store, CognitiveAccess::agent_private(owner.clone()))
+            .expect("target");
+    let operation_id = "operation:cognitive-terminal-replace";
+    let (draft, payload) = source_payload(operation_id, b"immutable-terminal-proof");
+    let intent = operation(&owner, operation_id, &payload, &draft, None);
+    let request = direct_request(&intent, payload);
+    let receipt = match target.dispatch(request.clone()).await {
+        ProductionTargetOutcome::Committed { receipt } => receipt,
+        other => panic!("unexpected first outcome: {other:?}"),
+    };
+
+    let mut connection = target.store.pool.acquire().await.expect("owner connection");
+    sqlx::query("PRAGMA recursive_triggers = OFF")
+        .execute(&mut *connection)
+        .await
+        .expect("disable recursive triggers on the attack connection");
+    let recursive: i64 = sqlx::query_scalar("PRAGMA recursive_triggers")
+        .fetch_one(&mut *connection)
+        .await
+        .expect("recursive trigger setting");
+    assert_eq!(recursive, 0);
+    let original: (String, String, String, i64) = sqlx::query_as(
+        "SELECT semantic_sha256, disposition, evidence, recorded_at_unix_ms
+         FROM cognitive_operation_destination_terminal
+         WHERE destination_id = ? AND operation_id = ?",
+    )
+    .bind(COGNITIVE_SOURCE_DESTINATION_V1)
+    .bind(operation_id)
+    .fetch_one(&mut *connection)
+    .await
+    .expect("original terminal proof");
+    assert_eq!(original.1, "applied");
+    assert_eq!(original.2, receipt);
+
+    for statement in [
+        "INSERT OR REPLACE INTO cognitive_operation_destination_terminal (
+            destination_id, operation_id, semantic_sha256, disposition,
+            evidence, recorded_at_unix_ms
+         ) VALUES (?, ?, ?, ?, ?, ?)",
+        "REPLACE INTO cognitive_operation_destination_terminal (
+            destination_id, operation_id, semantic_sha256, disposition,
+            evidence, recorded_at_unix_ms
+         ) VALUES (?, ?, ?, ?, ?, ?)",
+    ] {
+        let error = sqlx::query(statement)
+            .bind(COGNITIVE_SOURCE_DESTINATION_V1)
+            .bind(operation_id)
+            .bind("b".repeat(64))
+            .bind("not_applied")
+            .bind("forged-terminal-proof")
+            .bind(2_i64)
+            .execute(&mut *connection)
+            .await
+            .expect_err("REPLACE must not rewrite a terminal proof");
+        assert_eq!(
+            error
+                .as_database_error()
+                .map(sqlx::error::DatabaseError::message),
+            Some("operation destination terminal proof is immutable")
+        );
+        let retained: (String, String, String, i64) = sqlx::query_as(
+            "SELECT semantic_sha256, disposition, evidence, recorded_at_unix_ms
+             FROM cognitive_operation_destination_terminal
+             WHERE destination_id = ? AND operation_id = ?",
+        )
+        .bind(COGNITIVE_SOURCE_DESTINATION_V1)
+        .bind(operation_id)
+        .fetch_one(&mut *connection)
+        .await
+        .expect("retained terminal proof");
+        assert_eq!(retained, original);
+    }
+    drop(connection);
+
+    // Legitimate replay observes the existing proof before any INSERT.
+    assert!(matches!(
+        target.dispatch(request.clone()).await,
+        ProductionTargetOutcome::Committed { receipt: replay } if replay == receipt
+    ));
+    assert_eq!(
+        target.observe_terminal(&request).await,
+        CognitiveSourceTerminalObservation::Applied { receipt }
+    );
+    target.store.pool.close().await;
+}
+
+#[tokio::test]
 async fn predecessor_mismatch_is_deterministic_not_applied_inside_destination_transaction() {
     let temp = TempDir::new().expect("temp");
     let store = store(&temp).await;
