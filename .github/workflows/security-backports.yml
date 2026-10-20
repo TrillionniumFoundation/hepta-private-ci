@@ -51,13 +51,25 @@ jobs:
           tool: just@1.51.0,nextest@0.9.103
 
       - name: Test both Matrix identity rejection paths
-        run: >-
-          python3 scripts/hepta_ci_exec.py
-          --output "$RUNNER_TEMP/security-backports-matrix.json" --minimum-tests 2 --
-          just test --locked --manifest-path third_party/matrix-sdk-crypto-0.18.0/Cargo.toml
-          -p matrix-sdk-crypto --lib --features experimental-send-custom-to-device
-          --config-file ../.github/security-backports-nextest.toml --profile default --no-tests=fail
-          -E 'test(=machine::tests::send_encrypted_to_device::test_share_strategy_prevents_encryption) | test(=session_manager::group_sessions::share_strategy::tests::test_identity_based_split_withholds_unsigned_and_ownerless_devices)'
+        run: |
+          python3 - <<'PYTHON'
+          import json
+          import os
+          from pathlib import Path
+
+          temporary = Path(os.environ["RUNNER_TEMP"])
+          config = Path(".github/security-backports-nextest.toml").read_text()
+          store = json.dumps(str(temporary / "security-backports-nextest"), ensure_ascii=False)
+          (temporary / "security-backports-nextest.toml").write_text(
+              f"[store]\ndir = {store}\n\n{config}"
+          )
+          PYTHON
+          python3 scripts/hepta_ci_exec.py \
+            --output "$RUNNER_TEMP/security-backports-matrix.json" --minimum-tests 2 -- \
+            just test --locked --manifest-path third_party/matrix-sdk-crypto-0.18.0/Cargo.toml \
+            -p matrix-sdk-crypto --lib --features experimental-send-custom-to-device \
+            --config-file "$RUNNER_TEMP/security-backports-nextest.toml" --profile default --no-tests=fail \
+            -E 'test(=machine::tests::send_encrypted_to_device::test_share_strategy_prevents_encryption) | test(=session_manager::group_sessions::share_strategy::tests::test_identity_based_split_withholds_unsigned_and_ownerless_devices)'
 
       - name: Test native Secret Service round trip and encrypted negotiation
         run: >-
