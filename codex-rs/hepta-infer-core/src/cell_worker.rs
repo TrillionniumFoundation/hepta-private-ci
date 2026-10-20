@@ -62,14 +62,14 @@ impl FeatureCacheV1 {
         scope_id: StableId,
         snapshot: ImmutableFeatureSnapshotV1,
     ) -> Result<(), CellWorkerError> {
-        if self.entries.len() >= MAX_INDEX_ENTRIES {
-            return Err(CellWorkerError::IndexCapacity);
-        }
         let key = FeatureCacheKeyV1 {
             scope_id,
             encoder_digest: snapshot.encoder_digest(),
             input_digest: snapshot.input_digest(),
         };
+        if !self.entries.contains_key(&key) && self.entries.len() >= MAX_INDEX_ENTRIES {
+            return Err(CellWorkerError::IndexCapacity);
+        }
         self.entries.insert(key, snapshot);
         Ok(())
     }
@@ -123,7 +123,13 @@ impl CompatibleModelIndexV1 {
         if key.model_digest.is_zero() || key.encoder_digest.is_zero() || key.output_width == 0 {
             return Err(CellWorkerError::InvalidModelKey);
         }
-        if self.entries.values().map(BTreeSet::len).sum::<usize>() >= MAX_INDEX_ENTRIES {
+        let already_registered = self
+            .entries
+            .get(&key)
+            .is_some_and(|cells| cells.contains(&cell_id));
+        if !already_registered
+            && self.entries.values().map(BTreeSet::len).sum::<usize>() >= MAX_INDEX_ENTRIES
+        {
             return Err(CellWorkerError::IndexCapacity);
         }
         self.entries.entry(key).or_default().insert(cell_id);
