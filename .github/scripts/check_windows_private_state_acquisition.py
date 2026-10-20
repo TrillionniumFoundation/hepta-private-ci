@@ -64,7 +64,10 @@ def check_result(lane, returncode, output):
         clean,
         re.MULTILINE,
     ):
-        require(name not in statuses or statuses[name] == status, "inconsistent test status")
+        require(
+            name not in statuses or statuses[name] == status,
+            "inconsistent test status",
+        )
         statuses[name] = status
     expected = {CREATION: "PASS", SUBSTITUTION: "PASS"}
     if lane == "unchecked-create":
@@ -148,7 +151,9 @@ def main():
                 if lane != "positive":
                     patch = FIXTURES / f"{lane}.patch"
                     record["patch_sha256"] = sha256(patch.read_bytes())
-                    require(record["patch_sha256"] == PATCHES[lane], "frozen patch changed")
+                    require(
+                        record["patch_sha256"] == PATCHES[lane], "frozen patch changed"
+                    )
                     # The full source SHA pins zero-context patch locations;
                     # context-only spaces would fail repository diff checks.
                     subprocess.run(
@@ -166,7 +171,9 @@ def main():
                         "negative control must change exactly the acquisition implementation",
                     )
                     (evidence / f"{lane}.patch").write_bytes(patch.read_bytes())
-                require(git("diff", "--cached") == "", "negative control changed the index")
+                require(
+                    git("diff", "--cached") == "", "negative control changed the index"
+                )
                 record["production_sha256"] = sha256(source.read_bytes())
                 (evidence / f"{lane}.rs").write_bytes(source.read_bytes())
                 log = evidence / f"{lane}.log"
@@ -183,7 +190,9 @@ def main():
                 raw = log.read_bytes()
                 record["log_sha256"] = sha256(raw)
                 record.update(
-                    check_result(lane, result.returncode, raw.decode("utf-8", "replace"))
+                    check_result(
+                        lane, result.returncode, raw.decode("utf-8", "replace")
+                    )
                 )
                 print(json.dumps(record, sort_keys=True), flush=True)
             finally:
