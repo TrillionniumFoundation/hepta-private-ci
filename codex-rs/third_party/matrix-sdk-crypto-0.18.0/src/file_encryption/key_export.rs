@@ -12,19 +12,26 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-use std::io::{Cursor, Read, Seek, SeekFrom};
+use std::io::Cursor;
+use std::io::Read;
+use std::io::Seek;
+use std::io::SeekFrom;
 
-use byteorder::{BigEndian, ReadBytesExt};
-use rand::{Rng, rng};
+use byteorder::BigEndian;
+use byteorder::ReadBytesExt;
+use rand::Rng;
+use rand::rng;
 use serde_json::Error as SerdeError;
 use thiserror::Error;
-use vodozemac::{base64_decode, base64_encode};
+use vodozemac::base64_decode;
+use vodozemac::base64_encode;
 use zeroize::Zeroize;
 
-use crate::{
-    ciphers::{AesHmacSha2Key, IV_SIZE, MAC_SIZE, SALT_SIZE},
-    olm::ExportedRoomKey,
-};
+use crate::ciphers::AesHmacSha2Key;
+use crate::ciphers::IV_SIZE;
+use crate::ciphers::MAC_SIZE;
+use crate::ciphers::SALT_SIZE;
+use crate::olm::ExportedRoomKey;
 
 const VERSION: u8 = 1;
 
@@ -89,8 +96,10 @@ pub fn decrypt_room_key_export(
         return Err(KeyExportError::InvalidHeaders);
     }
 
-    let payload: String =
-        x.lines().filter(|l| !(l.starts_with(HEADER) || l.starts_with(FOOTER))).collect();
+    let payload: String = x
+        .lines()
+        .filter(|l| !(l.starts_with(HEADER) || l.starts_with(FOOTER)))
+        .collect();
 
     let mut decrypted = decrypt_helper(&payload, passphrase)?;
 
@@ -148,7 +157,7 @@ pub fn encrypt_room_key_export(
 }
 
 fn encrypt_helper(plaintext: &[u8], passphrase: &str, rounds: u32) -> String {
-    let mut salt = [0u8; SALT_SIZE];
+    let mut salt = <[u8; SALT_SIZE]>::default();
     let mut rng = rng();
 
     rng.fill_bytes(&mut salt);
@@ -177,8 +186,8 @@ fn decrypt_helper(ciphertext: &str, passphrase: &str) -> Result<String, KeyExpor
     let mut decoded = Cursor::new(decoded);
 
     let mut salt = [0u8; SALT_SIZE];
-    let mut iv = [0u8; IV_SIZE];
-    let mut mac = [0u8; MAC_SIZE];
+    let mut iv = <[u8; IV_SIZE]>::default();
+    let mut mac = <[u8; MAC_SIZE]>::default();
 
     let version = decoded.read_u8()?;
     decoded.read_exact(&mut salt)?;
@@ -199,7 +208,8 @@ fn decrypt_helper(ciphertext: &str, passphrase: &str) -> Result<String, KeyExpor
     }
 
     let key = AesHmacSha2Key::from_passphrase(passphrase, rounds, &salt);
-    key.verify_mac(&decoded[0..ciphertext_end], &mac).map_err(|_| KeyExportError::InvalidMac)?;
+    key.verify_mac(&decoded[0..ciphertext_end], &mac)
+        .map_err(|_| KeyExportError::InvalidMac)?;
 
     let ciphertext = &mut decoded[ciphertext_start..ciphertext_end];
     let plaintext = key.decrypt(ciphertext.to_owned(), &iv);
@@ -212,7 +222,8 @@ fn decrypt_helper(ciphertext: &str, passphrase: &str) -> Result<String, KeyExpor
 mod proptests {
     use proptest::prelude::*;
 
-    use super::{decrypt_helper, encrypt_helper};
+    use super::decrypt_helper;
+    use super::encrypt_helper;
 
     proptest! {
         #[test]
@@ -229,22 +240,22 @@ mod proptests {
 
 #[cfg(test)]
 mod tests {
-    use std::{
-        collections::{BTreeMap, BTreeSet},
-        io::Cursor,
-    };
+    use std::collections::BTreeMap;
+    use std::collections::BTreeSet;
+    use std::io::Cursor;
 
     use matrix_sdk_test::async_test;
-    use ruma::{room_id, user_id};
+    use ruma::room_id;
+    use ruma::user_id;
 
-    use super::{
-        base64_decode, decrypt_helper, decrypt_room_key_export, encrypt_helper,
-        encrypt_room_key_export,
-    };
-    use crate::{
-        RoomKeyImportResult, error::OlmResult,
-        machine::test_helpers::get_prepared_machine_test_helper,
-    };
+    use super::base64_decode;
+    use super::decrypt_helper;
+    use super::decrypt_room_key_export;
+    use super::encrypt_helper;
+    use super::encrypt_room_key_export;
+    use crate::RoomKeyImportResult;
+    use crate::error::OlmResult;
+    use crate::machine::test_helpers::get_prepared_machine_test_helper;
 
     const PASSPHRASE: &str = "1234";
 
@@ -266,7 +277,10 @@ mod tests {
     ";
 
     fn export_without_headers() -> String {
-        TEST_EXPORT.lines().filter(|l| !l.starts_with("-----")).collect()
+        TEST_EXPORT
+            .lines()
+            .filter(|l| !l.starts_with("-----"))
+            .collect()
     }
 
     #[test]
@@ -292,8 +306,15 @@ mod tests {
         let (machine, _) = get_prepared_machine_test_helper(user_id, false).await;
         let room_id = room_id!("!test:localhost");
 
-        machine.create_outbound_group_session_with_defaults_test_helper(room_id).await.unwrap();
-        let export = machine.store().export_room_keys(|s| s.room_id() == room_id).await.unwrap();
+        machine
+            .create_outbound_group_session_with_defaults_test_helper(room_id)
+            .await
+            .unwrap();
+        let export = machine
+            .store()
+            .export_room_keys(|s| s.room_id() == room_id)
+            .await
+            .unwrap();
 
         assert!(!export.is_empty());
 
@@ -301,11 +322,18 @@ mod tests {
         let decrypted = decrypt_room_key_export(Cursor::new(encrypted), "1234").unwrap();
 
         for (exported, decrypted) in export.iter().zip(decrypted.iter()) {
-            assert_eq!(exported.session_key.to_base64(), decrypted.session_key.to_base64());
+            assert_eq!(
+                exported.session_key.to_base64(),
+                decrypted.session_key.to_base64()
+            );
         }
 
         assert_eq!(
-            machine.store().import_exported_room_keys(decrypted, |_, _| {}).await.unwrap(),
+            machine
+                .store()
+                .import_exported_room_keys(decrypted, |_, _| {})
+                .await
+                .unwrap(),
             RoomKeyImportResult::new(0, 1, BTreeMap::new())
         );
     }
@@ -332,18 +360,30 @@ mod tests {
             )]),
         );
 
-        assert_eq!(machine.store().import_exported_room_keys(export, |_, _| {}).await?, keys);
+        assert_eq!(
+            machine
+                .store()
+                .import_exported_room_keys(export, |_, _| {})
+                .await?,
+            keys
+        );
 
         let export = vec![session.export_at_index(10).await];
         assert_eq!(
-            machine.store().import_exported_room_keys(export, |_, _| {}).await?,
+            machine
+                .store()
+                .import_exported_room_keys(export, |_, _| {})
+                .await?,
             RoomKeyImportResult::new(0, 1, BTreeMap::new())
         );
 
         let better_export = vec![session.export().await];
 
         assert_eq!(
-            machine.store().import_exported_room_keys(better_export, |_, _| {}).await?,
+            machine
+                .store()
+                .import_exported_room_keys(better_export, |_, _| {})
+                .await?,
             keys
         );
 
@@ -362,7 +402,13 @@ mod tests {
             )]),
         );
 
-        assert_eq!(machine.store().import_exported_room_keys(export, |_, _| {}).await?, keys);
+        assert_eq!(
+            machine
+                .store()
+                .import_exported_room_keys(export, |_, _| {})
+                .await?,
+            keys
+        );
 
         Ok(())
     }

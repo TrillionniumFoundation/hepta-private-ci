@@ -244,6 +244,16 @@ impl LocalOutcomeState {
     }
 }
 
+/// Original one-transaction outcome policy. Keep the exact transition
+/// precondition set and replay rule together so callers cannot accidentally
+/// mix a transition kind with a different replay authorization.
+struct LocalOutcomeTransitionV1<'a> {
+    kind: &'a str,
+    allowed: &'a [LocalOutcomeState],
+    resulting_state: LocalOutcomeState,
+    allow_exact_replay: bool,
+}
+
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct QueuedReceipt {
     pub lease_id: String,
@@ -2579,11 +2589,13 @@ impl LocalLeaseOutbox {
             .append_outcome_in_transaction(
                 &mut transaction,
                 occurrence_key,
-                kind,
                 payload,
-                allowed,
-                resulting_state,
-                allow_exact_replay,
+                LocalOutcomeTransitionV1 {
+                    kind,
+                    allowed,
+                    resulting_state,
+                    allow_exact_replay,
+                },
             )
             .await?;
         transaction
@@ -2606,11 +2618,13 @@ impl LocalLeaseOutbox {
         self.append_outcome_in_transaction(
             transaction,
             occurrence_key,
-            "reconcile_committed",
             receipt,
-            &[LocalOutcomeState::Queued, LocalOutcomeState::Indeterminate],
-            LocalOutcomeState::Committed,
-            /*allow_exact_replay*/ true,
+            LocalOutcomeTransitionV1 {
+                kind: "reconcile_committed",
+                allowed: &[LocalOutcomeState::Queued, LocalOutcomeState::Indeterminate],
+                resulting_state: LocalOutcomeState::Committed,
+                allow_exact_replay: true,
+            },
         )
         .await
     }
@@ -2619,12 +2633,15 @@ impl LocalLeaseOutbox {
         &self,
         transaction: &mut Transaction<'_, Sqlite>,
         occurrence_key: String,
-        kind: &str,
         payload: String,
-        allowed: &[LocalOutcomeState],
-        resulting_state: LocalOutcomeState,
-        allow_exact_replay: bool,
+        policy: LocalOutcomeTransitionV1<'_>,
     ) -> Result<LocalOutcomeReceipt, LocalLeaseOutboxError> {
+        let LocalOutcomeTransitionV1 {
+            kind,
+            allowed,
+            resulting_state,
+            allow_exact_replay,
+        } = policy;
         validate_text(&occurrence_key, "occurrence key", /*max_bytes*/ 512)?;
         validate_text(&payload, "outcome payload", /*max_bytes*/ 65_536)?;
         let payload_sha256 = Sha256Digest::for_bytes(payload.as_bytes());

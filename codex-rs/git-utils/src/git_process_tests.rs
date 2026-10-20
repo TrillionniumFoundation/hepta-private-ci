@@ -56,7 +56,8 @@ async fn assert_timed_out_git_wrapper_does_not_leave_child_process_running(
         };
         command
             .args(["-NoProfile", "-NonInteractive", "-Command"])
-            .arg(wrapper_command);
+            .arg(wrapper_command)
+            .env("CHILD_PS_SCRIPT", child_command);
         command
     };
     command
@@ -67,19 +68,38 @@ async fn assert_timed_out_git_wrapper_does_not_leave_child_process_running(
         .env("RELEASE_WRAPPER_FILE", &release_wrapper_file);
 
     let (mut wrapper, process_tree) = spawn_git_command(&mut command).expect("spawn Git wrapper");
-    let child_pid = tokio::time::timeout(Duration::from_secs(30), async {
+    let ready = tokio::time::timeout(Duration::from_secs(30), async {
         loop {
             if let Ok(child_pid) = std::fs::read_to_string(&child_pid_file)
                 && !child_pid.trim().is_empty()
                 && child_ready_file.exists()
             {
-                break child_pid.trim().to_string();
+                break Ok(child_pid.trim().to_string());
+            }
+            if let Some(status) = wrapper.try_wait().expect("poll Git wrapper readiness") {
+                break Err(format!(
+                    "Git wrapper exited before descendant readiness: {status}"
+                ));
             }
             tokio::time::sleep(Duration::from_millis(25)).await;
         }
     })
-    .await
-    .expect("wait for Git wrapper child readiness");
+    .await;
+    let child_pid = match ready {
+        Ok(Ok(pid)) => pid,
+        other => {
+            // A failed fixture must not strand the descendant whose cleanup
+            // the test is intended to validate. Preserve the original 30s
+            // readiness and 100ms process-tree cleanup budgets.
+            let _ = wait_for_git_command_with_timeout_output(
+                wrapper,
+                process_tree,
+                Duration::from_millis(100),
+            )
+            .await;
+            panic!("Git wrapper never produced its descendant readiness marker: {other:?}");
+        }
+    };
 
     if matches!(wrapper_lifetime, GitWrapperLifetime::ExitBeforeTimeout) {
         std::fs::write(&release_wrapper_file, "release").expect("release Git wrapper");

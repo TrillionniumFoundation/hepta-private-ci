@@ -235,17 +235,26 @@ fn unexpected_agent_crashes_back_off_and_stop_after_three_restarts() -> Result<(
         control.crash(&agent_id);
         assert_eq!(supervisor.tick(now), TickReport::default());
         let expected_attempt = u32::try_from(index + 1).expect("small attempt");
-        assert!(
-            supervisor
-                .snapshot(&agent_id)
-                .expect("snapshot")
+        let snapshot = supervisor.snapshot(&agent_id).expect("snapshot");
+        assert_eq!(
+            snapshot
                 .events
                 .iter()
-                .any(|event| matches!(
+                .filter(|event| matches!(
                     &event.kind,
                     SupervisorEventKind::AutomaticRestartQueued { attempt }
                         if *attempt == expected_attempt
                 ))
+                .count(),
+            1
+        );
+        assert_eq!(
+            snapshot
+                .events
+                .iter()
+                .filter(|event| matches!(event.kind, SupervisorEventKind::RestartQueued))
+                .count(),
+            index + 1
         );
         assert_eq!(control.spawn_count(&agent_id), index + 1);
 

@@ -28,35 +28,36 @@ use std::fmt;
 use hmac::Hmac;
 pub use hmac::digest::MacError;
 use pbkdf2::pbkdf2;
-use rand::{
-    Rng,
-    distr::{Alphanumeric, SampleString},
-    rng,
-};
-use ruma::{
-    UInt,
-    events::{
-        GlobalAccountDataEventContent, GlobalAccountDataEventType,
-        secret::request::SecretName,
-        secret_storage::{
-            key::{
-                PassPhrase, SecretStorageEncryptionAlgorithm, SecretStorageKeyEventContent,
-                SecretStorageV1AesHmacSha2Properties,
-            },
-            secret::{
-                AesHmacSha2EncryptedData as RumaAesHmacSha2EncryptedData, SecretEncryptedData,
-            },
-        },
-    },
-    serde::{Base64, JsonCastable},
-};
-use serde::{Deserialize, Serialize, de::Error};
+use rand::Rng;
+use rand::distr::Alphanumeric;
+use rand::distr::SampleString;
+use rand::rng;
+use ruma::UInt;
+use ruma::events::GlobalAccountDataEventContent;
+use ruma::events::GlobalAccountDataEventType;
+use ruma::events::secret::request::SecretName;
+use ruma::events::secret_storage::key::PassPhrase;
+use ruma::events::secret_storage::key::SecretStorageEncryptionAlgorithm;
+use ruma::events::secret_storage::key::SecretStorageKeyEventContent;
+use ruma::events::secret_storage::key::SecretStorageV1AesHmacSha2Properties;
+use ruma::events::secret_storage::secret::AesHmacSha2EncryptedData as RumaAesHmacSha2EncryptedData;
+use ruma::events::secret_storage::secret::SecretEncryptedData;
+use ruma::serde::Base64;
+use ruma::serde::JsonCastable;
+use serde::Deserialize;
+use serde::Serialize;
+use serde::de::Error;
 use sha2::Sha512;
 use subtle::ConstantTimeEq;
 use thiserror::Error;
-use zeroize::{Zeroize, ZeroizeOnDrop};
+use zeroize::Zeroize;
+use zeroize::ZeroizeOnDrop;
 
-use crate::ciphers::{AesHmacSha2Key, HmacSha256Mac, IV_SIZE, KEY_SIZE, MAC_SIZE};
+use crate::ciphers::AesHmacSha2Key;
+use crate::ciphers::HmacSha256Mac;
+use crate::ciphers::IV_SIZE;
+use crate::ciphers::KEY_SIZE;
+use crate::ciphers::MAC_SIZE;
 
 /// Error type for the decoding of a [`SecretStorageKey`].
 ///
@@ -171,7 +172,10 @@ impl fmt::Debug for SecretStorageKey {
 
 /// Encrypted data for the AES-CTR/HMAC-SHA-256 secret storage algorithm.
 #[derive(Clone, Debug, Deserialize, Serialize)]
-#[serde(into = "RumaAesHmacSha2EncryptedData", try_from = "RumaAesHmacSha2EncryptedData")]
+#[serde(
+    into = "RumaAesHmacSha2EncryptedData",
+    try_from = "RumaAesHmacSha2EncryptedData"
+)]
 pub struct AesHmacSha2EncryptedData {
     /// The initialization vector that was used to encrypt the ciphertext.
     pub iv: [u8; IV_SIZE],
@@ -186,7 +190,12 @@ impl TryFrom<RumaAesHmacSha2EncryptedData> for AesHmacSha2EncryptedData {
     type Error = serde_json::Error;
 
     fn try_from(value: RumaAesHmacSha2EncryptedData) -> Result<Self, Self::Error> {
-        let RumaAesHmacSha2EncryptedData { iv, ciphertext, mac, .. } = value;
+        let RumaAesHmacSha2EncryptedData {
+            iv,
+            ciphertext,
+            mac,
+            ..
+        } = value;
         let iv_length = iv.as_bytes().len();
         let mac_length = mac.as_bytes().len();
 
@@ -205,14 +214,22 @@ impl TryFrom<RumaAesHmacSha2EncryptedData> for AesHmacSha2EncryptedData {
             mac_array.copy_from_slice(mac.as_bytes());
             iv_array.copy_from_slice(iv.as_bytes());
 
-            Ok(Self { iv: iv_array, ciphertext, mac: mac_array })
+            Ok(Self {
+                iv: iv_array,
+                ciphertext,
+                mac: mac_array,
+            })
         }
     }
 }
 
 impl From<AesHmacSha2EncryptedData> for RumaAesHmacSha2EncryptedData {
     fn from(value: AesHmacSha2EncryptedData) -> Self {
-        Self::new(Base64::new(value.iv.to_vec()), value.ciphertext, Base64::new(value.mac.to_vec()))
+        Self::new(
+            Base64::new(value.iv.to_vec()),
+            value.ciphertext,
+            Base64::new(value.mac.to_vec()),
+        )
     }
 }
 
@@ -272,7 +289,7 @@ impl SecretStorageKey {
                     return Err(DecodeError::IvLength(IV_SIZE, iv_length));
                 }
 
-                let mut iv_array = [0u8; 16];
+                let mut iv_array = <[u8; 16]>::default();
                 iv_array.copy_from_slice(iv);
 
                 // I'm not particularly convinced that this couldn't have been done simpler.
@@ -291,7 +308,9 @@ impl SecretStorageKey {
 
                 Ok(())
             }
-            custom => Err(DecodeError::UnsupportedAlgorithm(custom.algorithm().to_owned())),
+            custom => Err(DecodeError::UnsupportedAlgorithm(
+                custom.algorithm().to_owned(),
+            )),
         }
     }
 
@@ -355,7 +374,10 @@ impl SecretStorageKey {
     pub(crate) fn from_bytes(key_id: String, key: Box<[u8; KEY_SIZE]>) -> Self {
         let storage_key_info = Self::create_event_content(key_id, &key);
 
-        Self { storage_key_info, secret_key: key }
+        Self {
+            storage_key_info,
+            secret_key: key,
+        }
     }
 
     /// Restore a [`SecretStorageKey`] from the given input and the description
@@ -408,7 +430,10 @@ impl SecretStorageKey {
              HMAC being able to be initialized with any input size",
         );
 
-        let key = Self { storage_key_info: key_info.to_owned(), secret_key: key };
+        let key = Self {
+            storage_key_info: key_info.to_owned(),
+            secret_key: key,
+        };
         key.check_zero_message()?;
 
         Ok(key)
@@ -426,7 +451,9 @@ impl SecretStorageKey {
         // Spec link: https://spec.matrix.org/unstable/client-server-api/#key-representation
         let value: String = value.chars().filter(|c| !c.is_whitespace()).collect();
 
-        let mut decoded = bs58::decode(value).with_alphabet(bs58::Alphabet::BITCOIN).into_vec()?;
+        let mut decoded = bs58::decode(value)
+            .with_alphabet(bs58::Alphabet::BITCOIN)
+            .into_vec()?;
 
         let mut prefix = [0u8; 2];
         let mut key = Box::new([0u8; 32]);
@@ -434,7 +461,10 @@ impl SecretStorageKey {
         let decoded_len = decoded.len();
 
         if decoded_len != Self::DECODED_BASE58_KEY_LEN {
-            Err(DecodeError::KeyLength(Self::DECODED_BASE58_KEY_LEN, decoded_len))
+            Err(DecodeError::KeyLength(
+                Self::DECODED_BASE58_KEY_LEN,
+                decoded_len,
+            ))
         } else {
             prefix.copy_from_slice(&decoded[0..2]);
             key.copy_from_slice(&decoded[2..34]);
@@ -463,7 +493,10 @@ impl SecretStorageKey {
         key_info: &SecretStorageKeyEventContent,
     ) -> Result<Self, DecodeError> {
         let secret_key = Self::parse_base58_key(value)?;
-        let key = Self { storage_key_info: key_info.to_owned(), secret_key };
+        let key = Self {
+            storage_key_info: key_info.to_owned(),
+            secret_key,
+        };
         key.check_zero_message()?;
 
         Ok(key)
@@ -493,8 +526,9 @@ impl SecretStorageKey {
 
         // The byte string is encoded using Base58, using the same mapping as is used
         // for Bitcoin addresses.
-        let base_58 =
-            bs58::encode(bytes.as_slice()).with_alphabet(bs58::Alphabet::BITCOIN).into_string();
+        let base_58 = bs58::encode(bytes.as_slice())
+            .with_alphabet(bs58::Alphabet::BITCOIN)
+            .into_string();
 
         bytes.zeroize();
 
@@ -539,7 +573,11 @@ impl SecretStorageKey {
         let mac = key.create_mac_tag(&ciphertext).into_bytes();
         let ciphertext = Base64::new(ciphertext);
 
-        AesHmacSha2EncryptedData { iv, ciphertext, mac }
+        AesHmacSha2EncryptedData {
+            iv,
+            ciphertext,
+            mac,
+        }
     }
 
     /// Decrypt the given [`AesHmacSha2EncryptedData`] containing a secret with
@@ -599,7 +637,8 @@ mod test {
     use assert_matches::assert_matches;
     use assert_matches2::assert_let;
     use ruma::events::EventContentFromType;
-    use serde_json::{json, value::to_raw_value};
+    use serde_json::json;
+    use serde_json::value::to_raw_value;
 
     use super::*;
 
@@ -741,7 +780,11 @@ mod test {
         let key = SecretStorageKey::from_account_data(base58_key, content)
             .expect("We should be able to restore the secret storage key");
 
-        assert_eq!(key_id, key.key_id(), "The key should correctly remember the key ID");
+        assert_eq!(
+            key_id,
+            key.key_id(),
+            "The key should correctly remember the key ID"
+        );
     }
 
     #[test]
@@ -786,8 +829,10 @@ mod test {
                 SecretStorageV1AesHmacSha2Properties::new(None, None),
             ),
         );
-        content.passphrase =
-            Some(PassPhrase::new("salty goodness".to_owned(), UInt::new_saturating(100)));
+        content.passphrase = Some(PassPhrase::new(
+            "salty goodness".to_owned(),
+            UInt::new_saturating(100),
+        ));
 
         SecretStorageKey::from_account_data("It's a secret to nobody", content)
             .expect("Should accept any passphrase");
@@ -862,13 +907,20 @@ mod test {
         );
         assert_eq!(
             encrypted_data.iv,
-            [109, 215, 194, 194, 239, 132, 9, 136, 25, 254, 53, 147, 144, 106, 208, 252]
+            [
+                109, 215, 194, 194, 239, 132, 9, 136, 25, 254, 53, 147, 144, 106, 208, 252
+            ]
         );
 
         let secret_encrypted_data: RumaAesHmacSha2EncryptedData = encrypted_data.to_owned().into();
 
         assert_let!(
-            RumaAesHmacSha2EncryptedData { iv, ciphertext, mac, .. } = secret_encrypted_data
+            RumaAesHmacSha2EncryptedData {
+                iv,
+                ciphertext,
+                mac,
+                ..
+            } = secret_encrypted_data
         );
         assert_eq!(mac.as_bytes(), encrypted_data.mac.as_slice());
         assert_eq!(iv.as_bytes(), encrypted_data.iv.as_slice());

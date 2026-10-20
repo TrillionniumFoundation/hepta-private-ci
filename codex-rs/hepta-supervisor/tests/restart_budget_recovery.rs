@@ -289,6 +289,13 @@ fn restart_budget_survives_repeated_supervisord_recovery() -> Result<(), Supervi
                 SupervisorEventKind::AutomaticRestartQueued { attempt: 3 }
             ))
     );
+    // A recovered third attempt must retain its 1,000 ms durable backoff,
+    // and must not spawn at 999 ms; this tests the budget, not just the event.
+    assert_eq!(
+        supervisor.tick(now + Duration::from_millis(999)),
+        TickReport::default()
+    );
+    assert_eq!(control.spawn_count(&agent_id), 3);
     now += Duration::from_secs(1);
     assert_eq!(supervisor.tick(now), TickReport::default());
     assert_eq!(control.spawn_count(&agent_id), 4);

@@ -208,6 +208,7 @@ impl<D: ProcessDriver> Supervisor<D> {
             })
     }
 
+    #[cfg(unix)]
     pub(crate) fn next_control_revision(&self, agent_id: &AgentId) -> Result<u64, SupervisorError> {
         self.slots
             .get(agent_id)
@@ -217,6 +218,7 @@ impl<D: ProcessDriver> Supervisor<D> {
             .ok_or_else(|| SupervisorError::Invalid("control revision overflow".to_string()))
     }
 
+    #[cfg(unix)]
     pub(crate) fn set_control_revision(
         &mut self,
         agent_id: &AgentId,

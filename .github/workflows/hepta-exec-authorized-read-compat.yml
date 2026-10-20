@@ -1,0 +1,133 @@
+name: Hepta exec authorized-read capability conformance
+
+on:
+  pull_request:
+    paths:
+      - "codex-rs/exec-server/**"
+      - ".github/workflows/hepta-exec-authorized-read-compat.yml"
+      - "codex-rs/Cargo.toml"
+      - "codex-rs/Cargo.lock"
+      - "codex-rs/rust-toolchain.toml"
+      - "codex-rs/.config/nextest.toml"
+      - "scripts/run-nextest.py"
+      - "justfile"
+      - ".github/actions/setup-ci-tools/**"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: hepta-exec-authorized-read-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  capability:
+    name: Authorized read rejects unsupported fallback (${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 65
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-24.04, windows-latest]
+    env:
+      CARGO_INCREMENTAL: "0"
+      CARGO_BUILD_JOBS: "2"
+      CARGO_PROFILE_TEST_DEBUG: "0"
+      EXPECTED_SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+    steps:
+      - name: Checkout exact SHA without credentials
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Verify exact source identity
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -n "$EXPECTED_SOURCE_SHA"
+          test "$(git rev-parse HEAD)" = "$EXPECTED_SOURCE_SHA"
+          git show -s --format='source=%H tree=%T parents=%P'
+          git diff --check
+
+      - name: Initialize isolated Cargo target directory
+        shell: bash
+        run: |
+          set -euo pipefail
+          printf 'CARGO_TARGET_DIR=%s/hepta-exec-authorized-read-target\n' "$RUNNER_TEMP" >> "$GITHUB_ENV"
+
+      - name: Install repository CI tools
+        uses: ./.github/actions/setup-ci-tools
+
+      - name: Install pinned nextest
+        uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
+        with:
+          tool: nextest@0.9.103
+
+      - name: Install pinned Rust 1.95
+        working-directory: codex-rs
+        shell: bash
+        run: rustup toolchain install 1.95.0 --profile minimal --component rustfmt,clippy,rust-src
+
+      - name: Compile and execute real authorized-read RPC integration
+        working-directory: codex-rs
+        shell: bash
+        run: |
+          set -euo pipefail
+          just test --locked -p codex-exec-server --test authorized_read_rpc --no-tests fail --retries 0 --status-level all --final-status-level all
+
+      - name: Verify named native test evidence
+        shell: bash
+        run: |
+          python - <<'PYTEST'
+          import json
+          import os
+          from pathlib import Path
+          import platform
+          import subprocess
+          import xml.etree.ElementTree as ET
+
+          expected_sha = os.environ["EXPECTED_SOURCE_SHA"]
+          source_sha = subprocess.check_output(["git", "rev-parse", "HEAD"], text=True).strip()
+          if source_sha != expected_sha:
+              raise SystemExit("source HEAD changed during native tests")
+          report = Path(os.environ["GITHUB_WORKSPACE"]) / "codex-rs/target/nextest/local/junit.xml"
+          cases = ET.parse(report).findall(".//testcase")
+          expected = ['authorized_read_rpc_is_capability_gated_and_denies_outside_root']
+          for name in expected:
+              matching = [case for case in cases if case.get("name") == name]
+              if len(matching) != 1:
+                  raise SystemExit(f"expected exactly one native result for {name}")
+          for case in cases:
+              if any(case.find(tag) is not None for tag in ("failure", "error", "skipped")):
+                  raise SystemExit(f"native case did not pass: {case.get('name')}")
+          print(json.dumps({"source_sha": source_sha, "platform": platform.system(),
+                            "passed": len(cases), "required_tests": expected}, sort_keys=True))
+          PYTEST
+
+      - name: Verify Rust formatting
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          cargo +1.95.0 fmt --manifest-path codex-rs/Cargo.toml --package codex-exec-server -- --check
+
+      - name: Preserve native JUnit evidence
+        if: always()
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f
+        with:
+          name: hepta-exec-authorized-read-${{ matrix.os }}-${{ github.event.pull_request.head.sha || github.sha }}
+          path: codex-rs/target/nextest/local/junit.xml
+          if-no-files-found: error
+
+      - name: Ensure test checkout remained immutable
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$EXPECTED_SOURCE_SHA"
+          git diff --check
+          git diff --exit-code
+          test -z "$(git status --porcelain --untracked-files=no)"

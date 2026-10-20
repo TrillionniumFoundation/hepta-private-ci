@@ -12,22 +12,25 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-use std::io::{Error as IoError, Read};
+use std::io::Error as IoError;
+use std::io::Read;
 
-use aes::{
-    Aes256,
-    cipher::{KeyIvInit, StreamCipher},
-};
-use rand::{Rng, rng};
-use ruma::{
-    events::room::{
-        EncryptedFile, EncryptedFileHash, EncryptedFileHashAlgorithm, EncryptedFileHashes,
-        EncryptedFileInfo, V2EncryptedFileInfo,
-    },
-    serde::Base64,
-};
-use serde::{Deserialize, Serialize};
-use sha2::{Digest, Sha256};
+use aes::Aes256;
+use aes::cipher::KeyIvInit;
+use aes::cipher::StreamCipher;
+use rand::Rng;
+use rand::rng;
+use ruma::events::room::EncryptedFile;
+use ruma::events::room::EncryptedFileHash;
+use ruma::events::room::EncryptedFileHashAlgorithm;
+use ruma::events::room::EncryptedFileHashes;
+use ruma::events::room::EncryptedFileInfo;
+use ruma::events::room::V2EncryptedFileInfo;
+use ruma::serde::Base64;
+use serde::Deserialize;
+use serde::Serialize;
+use sha2::Digest;
+use sha2::Sha256;
 use thiserror::Error;
 
 const IV_SIZE: usize = 16;
@@ -143,7 +146,12 @@ impl<'a, R: Read + 'a> AttachmentDecryptor<'a, R> {
 
         let aes = Aes256Ctr::new(key.into(), iv.into());
 
-        Ok(AttachmentDecryptor { inner: input, expected_hash: hash, sha, aes })
+        Ok(AttachmentDecryptor {
+            inner: input,
+            expected_hash: hash,
+            sha,
+            aes,
+        })
     }
 }
 
@@ -213,8 +221,8 @@ impl<'a, R: Read + ?Sized + 'a> AttachmentEncryptor<'a, R> {
     /// let key = encryptor.finish();
     /// ```
     pub fn new(reader: &'a mut R) -> Self {
-        let mut key = [0u8; KEY_SIZE];
-        let mut iv = [0u8; IV_SIZE];
+        let mut key = <[u8; KEY_SIZE]>::default();
+        let mut iv = <[u8; IV_SIZE]>::default();
 
         let mut rng = rng();
 
@@ -241,7 +249,8 @@ impl<'a, R: Read + ?Sized + 'a> AttachmentEncryptor<'a, R> {
     /// Consume the encryptor and get the encryption key.
     pub fn finish(mut self) -> MediaEncryptionInfo {
         let hash = self.sha.finalize();
-        self.hashes.insert(EncryptedFileHash::Sha256(Base64::new(hash.into())));
+        self.hashes
+            .insert(EncryptedFileHash::Sha256(Base64::new(hash.into())));
 
         MediaEncryptionInfo {
             encryption_info: V2EncryptedFileInfo::encode(self.key, self.iv).into(),
@@ -263,17 +272,23 @@ pub struct MediaEncryptionInfo {
 
 impl From<EncryptedFile> for MediaEncryptionInfo {
     fn from(file: EncryptedFile) -> Self {
-        Self { encryption_info: file.info, hashes: file.hashes }
+        Self {
+            encryption_info: file.info,
+            hashes: file.hashes,
+        }
     }
 }
 
 #[cfg(test)]
 mod tests {
-    use std::io::{Cursor, Read};
+    use std::io::Cursor;
+    use std::io::Read;
 
     use serde_json::json;
 
-    use super::{AttachmentDecryptor, AttachmentEncryptor, MediaEncryptionInfo};
+    use super::AttachmentDecryptor;
+    use super::AttachmentEncryptor;
+    use super::MediaEncryptionInfo;
 
     const EXAMPLE_DATA: &[u8] = &[
         179, 154, 118, 127, 186, 127, 110, 33, 203, 33, 33, 134, 67, 100, 173, 46, 235, 27, 215,
