@@ -3,6 +3,10 @@ name: Hepta Neuron signed admission and worker qualification
 on:
   pull_request:
     paths:
+      - "CALLERS.toml"
+      - "qa/b4-no-bypass/**"
+      - "scripts/verify_hepta_callers.py"
+      - "scripts/hepta_typed_callers.py"
       - "codex-rs/hepta-neuron/**"
       - "codex-rs/hepta-intelligence/**"
       - "codex-rs/hepta-agentd/**"
