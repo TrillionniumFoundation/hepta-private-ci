@@ -73,7 +73,9 @@ async fn assert_timed_out_git_wrapper_does_not_leave_child_process_running(
                 break Ok(child_pid.trim().to_string());
             }
             if let Some(status) = wrapper.try_wait().expect("poll Git wrapper readiness") {
-                break Err(format!("Git wrapper exited before descendant readiness: {status}"));
+                break Err(format!(
+                    "Git wrapper exited before descendant readiness: {status}"
+                ));
             }
             tokio::time::sleep(Duration::from_millis(25)).await;
         }
