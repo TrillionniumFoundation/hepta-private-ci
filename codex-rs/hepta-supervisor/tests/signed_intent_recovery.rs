@@ -327,6 +327,10 @@ fn abort_recovery_fences_adopted_child_before_terminalization() -> Result<(), Su
             if agent_id == fleet.agent_id
     ));
     assert!(!control.alive.load(Ordering::SeqCst));
+    let fenced = read_signed_intent(record.layout.run_root())
+        .map_err(|error| SupervisorError::Invalid(error.to_string()))?
+        .expect("fenced intent");
+    assert_eq!(fenced.status, SignedIntentStatus::RecoveryRequired);
 
     let (_recovered, report) =
         Supervisor::recover(fleet.registry, AdoptedDriver { control }, config(), Instant::now())?;
