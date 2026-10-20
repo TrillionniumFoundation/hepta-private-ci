@@ -1398,7 +1398,10 @@ fn extract_zipball_rejects_symlink_entries() {
         let mut archive =
             ZipArchive::new(std::io::Cursor::new(&bytes)).expect("read symlink fixture");
         let entry = archive.by_name("root/link").expect("read symlink entry");
-        assert!(entry.is_symlink(), "fixture must contain a real symlink entry");
+        assert!(
+            entry.is_symlink(),
+            "fixture must contain a real symlink entry"
+        );
     }
     let destination = tempdir().expect("destination");
 
@@ -1433,7 +1436,9 @@ fn extract_zipball_masks_special_permission_bits() {
     {
         let mut archive =
             ZipArchive::new(std::io::Cursor::new(&bytes)).expect("read permission fixture");
-        let entry = archive.by_name("root/plugin").expect("read executable entry");
+        let entry = archive
+            .by_name("root/plugin")
+            .expect("read executable entry");
         assert_eq!(
             entry.unix_mode(),
             Some(entry_mode),
