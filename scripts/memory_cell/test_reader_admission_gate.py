@@ -69,10 +69,15 @@ def synthetic():
 
 
 class ExactResearchGateTests(unittest.TestCase):
-    def test_real_complete_model_result_fails_closed_on_graph_task_gain(self):
+    def test_aggregate_summary_does_not_certify_original_sample_census(self):
         report = gate.assess_reproduced(**synthetic())
-        self.assertEqual(report["complete_calibration"], 40)
-        self.assertEqual(report["complete_evaluation"], 72)
+        self.assertIsNone(report["complete_calibration"])
+        self.assertIsNone(report["complete_evaluation"])
+        self.assertIsNone(report["authored_question_scope_count"])
+        self.assertEqual(report["reported_calibration_attempts"], 40)
+        self.assertEqual(report["reported_evaluation_attempts"], 72)
+        self.assertFalse(report["census_verified"])
+        self.assertFalse(report["independent_readonly_replay_complete"])
         self.assertEqual(report["incremental_graph_task_success"], 0)
         self.assertEqual(report["incremental_graph_complete_citations"], 0)
         self.assertEqual(report["organized_input_tokens_saved"], 573)
@@ -81,6 +86,45 @@ class ExactResearchGateTests(unittest.TestCase):
         self.assertFalse(report["graph_task_gain_qualified"])
         self.assertFalse(report["production_accepted"])
         self.assertIsNone(report["independent_semantic_citation_precision"])
+
+    def test_missing_or_unregistered_summary_arms_fail(self):
+        for phase, arm in (("cal", "k6"), ("evaluation", "empty")):
+            for mutation in ("missing", "extra"):
+                with self.subTest(phase=phase, mutation=mutation):
+                    fixture = synthetic()
+                    if mutation == "missing":
+                        del fixture[phase][arm]
+                    else:
+                        extra = "k8" if phase == "cal" else "unregistered"
+                        fixture[phase][extra] = dict(fixture[phase][arm])
+                    with self.assertRaisesRegex(ValueError, "arm census"):
+                        gate.assess_reproduced(**fixture)
+
+    def test_summary_counts_are_bounded_integers(self):
+        for phase, arm in (("cal", "k6"), ("evaluation", "entity_time")):
+            for field, value in (
+                ("planned", 8.0),
+                ("strict_success", -1),
+                ("strict_success", 9),
+                ("strict_success", True),
+                ("input_tokens", -1),
+                ("input_tokens", True),
+            ):
+                with self.subTest(phase=phase, field=field, value=value):
+                    fixture = synthetic()
+                    fixture[phase][arm][field] = value
+                    if phase == "evaluation" and field == "strict_success":
+                        fixture["citation"]["by_arm"][arm]["strict_task_success"] = (
+                            value
+                        )
+                    with self.assertRaises(ValueError):
+                        gate.assess_reproduced(**fixture)
+
+    def test_boolean_calibration_choice_is_not_an_integer_policy(self):
+        fixture = synthetic()
+        fixture["frozen_k"] = True
+        with self.assertRaisesRegex(ValueError, "different frozen experiment"):
+            gate.assess_reproduced(**fixture)
 
     def test_wrong_calibration_policy_fails(self):
         fixture = synthetic()
@@ -190,6 +234,50 @@ class ExactResearchGateTests(unittest.TestCase):
                 with self.assertRaisesRegex(ValueError, "archive digest"):
                     gate.verified_zip(file, kind="original")
 
+    def test_each_registered_arm_requires_each_unique_question_and_success(self):
+        rows = [
+            dict(
+                question_id=f"q{i}",
+                arm=arm,
+                status="succeeded",
+                answer="synthetic fixture only",
+                receipt=dict(reader_identity=gate.MODEL_ID, input_tokens=10),
+            )
+            for arm in gate.TEST_ARMS
+            for i in range(8)
+        ]
+
+        def container(raw):
+            scored = [
+                row | dict(strict_task_success=True, required_sources_covered=True)
+                for row in raw
+            ]
+            return {
+                "evaluation/raw-answers.jsonl": (
+                    "\n".join(json.dumps(row) for row in raw) + "\n"
+                ).encode(),
+                "evaluation/scored-answers.json": json.dumps(scored).encode(),
+            }
+
+        received, _, ids = gate._rows(container(rows), "evaluation", gate.TEST_ARMS)
+        self.assertEqual(len(received), 72)
+        self.assertEqual(len(ids), 8)
+        for mutation in ("missing_row", "missing_arm", "duplicate", "arm", "failed"):
+            with self.subTest(mutation=mutation):
+                changed = deepcopy(rows)
+                if mutation == "missing_row":
+                    changed.pop()
+                elif mutation == "missing_arm":
+                    changed = [row for row in changed if row["arm"] != "empty"]
+                elif mutation == "duplicate":
+                    changed[-1]["question_id"] = changed[-2]["question_id"]
+                elif mutation == "arm":
+                    changed[-1]["arm"] = "unregistered"
+                else:
+                    changed[-1]["status"] = "failed"
+                with self.assertRaises(ValueError):
+                    gate._rows(container(changed), "evaluation", gate.TEST_ARMS)
+
     @unittest.skipUnless(
         os.environ.get("HEPTA_REAL_STRONG_RAG_ARTIFACTS"),
         "real archived GitHub artifacts not mounted",
@@ -203,6 +291,9 @@ class ExactResearchGateTests(unittest.TestCase):
         )
         self.assertEqual(value["complete_calibration"], 40)
         self.assertEqual(value["complete_evaluation"], 72)
+        self.assertEqual(value["authored_question_scope_count"], 8)
+        self.assertTrue(value["census_verified"])
+        self.assertTrue(value["independent_readonly_replay_complete"])
         self.assertEqual(value["incremental_graph_task_success"], 0)
         self.assertFalse(value["production_accepted"])
 

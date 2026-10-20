@@ -104,6 +104,10 @@ def validate_plan(plan):
         "at least two stated source families required",
     )
     require(
+        {c["task"] for c in cases} == set(TASKS),
+        "every preregistered task family needs held-out cases",
+    )
+    require(
         plan.get("registered_before_exposure") is True,
         "must preregister before task exposure",
     )
@@ -148,12 +152,14 @@ def analyze(plan, rows):
         )
         require(
             isinstance(row.get("answer_digest"), str)
-            and len(row["answer_digest"]) == 64,
+            and len(row["answer_digest"]) == 64
+            and all(c in "0123456789abcdef" for c in row["answer_digest"]),
             "original answer hash missing",
         )
         require(
             isinstance(row.get("source_digest"), str)
-            and len(row["source_digest"]) == 64,
+            and len(row["source_digest"]) == 64
+            and all(c in "0123456789abcdef" for c in row["source_digest"]),
             "delivered evidence hash missing",
         )
         require(
@@ -162,7 +168,8 @@ def analyze(plan, rows):
         )
         require(
             isinstance(row.get("prompt_digest"), str)
-            and len(row["prompt_digest"]) == 64,
+            and len(row["prompt_digest"]) == 64
+            and all(c in "0123456789abcdef" for c in row["prompt_digest"]),
             "prompt hash missing",
         )
         require(
@@ -191,6 +198,23 @@ def analyze(plan, rows):
         by_key[key] = row
     missing = expected - seen
     require(not missing, f"incomplete matrix: {len(missing)} observations missing")
+    # A removed-premise condition cannot diagnose necessity when its delivered
+    # evidence is byte-identical to the sufficient-evidence condition. This
+    # guards mislabeled, no-op lesions, not the semantic quality of the lesion.
+    # The two controls must also be distinguishable from the no-evidence arm.
+    for cid in cases:
+        for arm in ARMS:
+            for reader in READERS:
+                evidence = {
+                    condition: by_key[(cid, arm, condition, reader)]["source_digest"]
+                    for condition in CONDITIONS
+                }
+                if arm != "knowledge_only":
+                    require(
+                        evidence["oracle"] != evidence["ablated"]
+                        and evidence["oracle"] != evidence["none"],
+                        "oracle/ablation/no-evidence payload collision",
+                    )
     # Across evidence conditions, lock the actual reader revision and prompt per arm
     # while allowing the evidence payload to change.
     for cid in cases:
@@ -213,6 +237,13 @@ def analyze(plan, rows):
             len({r["reader_revision"] for r in rows if r["reader"] == reader}) == 1,
             "base reader changed between cases or memory arms",
         )
+    require(
+        by_key[(next(iter(cases)), "hybrid_rag", "none", "frozen")]["reader_revision"]
+        != by_key[(next(iter(cases)), "hybrid_rag", "none", "reference")][
+            "reader_revision"
+        ],
+        "frozen and reference reader must be distinct immutable revisions",
+    )
     for cid in cases:
         for condition in CONDITIONS:
             matched = [by_key[(cid, a, condition, r)] for a in ARMS for r in READERS]

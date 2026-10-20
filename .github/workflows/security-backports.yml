@@ -1,0 +1,91 @@
+name: Security backport regressions
+
+on:
+  workflow_call:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  regressions:
+    name: Security regressions (${{ matrix.lane }})
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    strategy:
+      fail-fast: false
+      matrix:
+        lane: ${{ fromJSON(github.event_name == 'pull_request' && '["source-head","base-merge"]' || '["source-head"]') }}
+    env:
+      SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+      BASE_SHA: ${{ github.event.pull_request.base.sha || github.event.before }}
+      HEPTA_CI_LANE: ${{ matrix.lane }}
+    steps:
+      - name: Checkout exact candidate
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          ref: ${{ matrix.lane == 'source-head' && (github.event.pull_request.head.sha || github.sha) || github.sha }}
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Record candidate and lock identities
+        shell: bash
+        run: |
+          set -euo pipefail
+          echo "TESTED_SHA=$(git rev-parse HEAD)" >> "$GITHUB_ENV"
+          git show -s --format=fuller HEAD > "$RUNNER_TEMP/security-backports-identity.txt"
+          sha256sum codex-rs/Cargo.lock codex-rs/third_party/matrix-sdk-crypto-0.18.0/Cargo.lock \
+            >> "$RUNNER_TEMP/security-backports-identity.txt"
+
+      - uses: ./.github/actions/setup-ci-build
+
+      - name: Install native credential service prerequisites
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y build-essential pkg-config libdbus-1-dev dbus-x11 gnome-keyring
+
+      - uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582 # 1.95.0
+
+      - uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
+        with:
+          tool: just@1.51.0,nextest@0.9.103
+
+      - name: Test both Matrix identity rejection paths
+        run: |
+          python3 - <<'PYTHON'
+          import json
+          import os
+          from pathlib import Path
+
+          temporary = Path(os.environ["RUNNER_TEMP"])
+          config = Path(".github/security-backports-nextest.toml").read_text()
+          store = json.dumps(str(temporary / "security-backports-nextest"), ensure_ascii=False)
+          (temporary / "security-backports-nextest.toml").write_text(
+              f"[store]\ndir = {store}\n\n{config}"
+          )
+          PYTHON
+          python3 scripts/hepta_ci_exec.py \
+            --output "$RUNNER_TEMP/security-backports-matrix.json" --minimum-tests 2 -- \
+            just test --locked --manifest-path third_party/matrix-sdk-crypto-0.18.0/Cargo.toml \
+            -p matrix-sdk-crypto --lib --features experimental-send-custom-to-device \
+            --config-file "$RUNNER_TEMP/security-backports-nextest.toml" --profile default --no-tests=fail \
+            -E 'test(=machine::tests::send_encrypted_to_device::test_share_strategy_prevents_encryption) | test(=session_manager::group_sessions::share_strategy::tests::test_identity_based_split_withholds_unsigned_and_ownerless_devices)'
+
+      - name: Test native Secret Service round trip and encrypted negotiation
+        run: >-
+          python3 scripts/hepta_ci_exec.py
+          --output "$RUNNER_TEMP/security-backports-keyring.json" --minimum-tests 1 --
+          dbus-run-session -- bash scripts/test-keyring-secret-service.sh
+
+      - name: Retain exact execution and negotiation evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: security-backports-${{ matrix.lane }}-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/security-backports-*
+          if-no-files-found: error
+          retention-days: 14
+
+      - name: Check for a clean worktree
+        if: always() && !cancelled()
+        uses: ./.github/actions/check-clean-worktree

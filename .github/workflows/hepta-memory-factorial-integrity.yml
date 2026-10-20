@@ -1,0 +1,62 @@
+name: MemoryCell factorial transcript integrity
+on:
+  pull_request:
+    paths:
+      - "scripts/memory_cell/factorial_evidence_gate.py"
+      - "scripts/memory_cell/factorial_transcript_integrity.py"
+      - "scripts/memory_cell/test_factorial*.py"
+      - "scripts/memory_cell/stage1_reader_pair.py"
+      - "scripts/memory_cell/test_stage1_reader_pair.py"
+      - "scripts/memory_cell/stage1_partial_reader_audit.py"
+      - "scripts/memory_cell/test_stage1_partial_reader_audit.py"
+      - "scripts/memory_cell/stage1_reader_score.py"
+      - "scripts/memory_cell/test_stage1_reader_score.py"
+      - "scripts/memory_cell/test_stage1_shard_integrity.py"
+      - "scripts/memory_cell/test_stage1_native_workflow.py"
+      - ".github/workflows/hepta-memory-stage1-sharded-native.yml"
+      - ".github/workflows/hepta-memory-factorial-integrity.yml"
+permissions:
+  contents: read
+concurrency:
+  group: memory-factorial-integrity-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+jobs:
+  fail-closed-regressions:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          persist-credentials: false
+      - name: Bind exact source, run real Python gate tests
+        env:
+          EXPECTED_HEAD: ${{ github.event.pull_request.head.sha }}
+          PYTHONPATH: scripts/memory_cell
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/memory-factorial-integrity
+          test "$(git rev-parse HEAD)" = "$EXPECTED_HEAD"
+          git rev-parse HEAD > /tmp/memory-factorial-integrity/tested-commit.txt
+          python3 -m compileall -q scripts/memory_cell/factorial_evidence_gate.py scripts/memory_cell/factorial_transcript_integrity.py scripts/memory_cell/test_factorial*.py scripts/memory_cell/stage1_reader_pair.py scripts/memory_cell/test_stage1_reader_pair.py
+          python3 -m unittest discover -s scripts/memory_cell -p 'test_factorial*.py' -v 2>&1 | tee /tmp/memory-factorial-integrity/tests.log
+          python3 -m unittest discover -s scripts/memory_cell -p 'test_stage1_reader_pair.py' -v 2>&1 | tee -a /tmp/memory-factorial-integrity/tests.log
+          python3 -m unittest discover -s scripts/memory_cell -p 'test_stage1_partial_reader_audit.py' -v 2>&1 | tee -a /tmp/memory-factorial-integrity/tests.log
+          python3 -m unittest discover -s scripts/memory_cell -p 'test_stage1_reader_score.py' -v 2>&1 | tee -a /tmp/memory-factorial-integrity/tests.log
+          python3 -m unittest discover -s scripts/memory_cell -p 'test_stage1_native_workflow.py' -v 2>&1 | tee -a /tmp/memory-factorial-integrity/tests.log
+          python3 -m unittest discover -s scripts/memory_cell -p 'test_stage1_shard_integrity.py' -v 2>&1 | tee -a /tmp/memory-factorial-integrity/tests.log
+          printf '%s\n' 'This checks protocol invariants only; no model inference or human adjudication was performed.' > /tmp/memory-factorial-integrity/scope.txt
+      - name: Retain tested code identities and test receipts
+        if: always()
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/memory-factorial-integrity
+          git rev-parse HEAD > /tmp/memory-factorial-integrity/tested-commit.txt
+          sha256sum scripts/memory_cell/factorial_evidence_gate.py scripts/memory_cell/factorial_transcript_integrity.py scripts/memory_cell/test_factorial*.py scripts/memory_cell/stage1_reader_pair.py scripts/memory_cell/test_stage1_reader_pair.py scripts/memory_cell/stage1_partial_reader_audit.py scripts/memory_cell/test_stage1_partial_reader_audit.py scripts/memory_cell/stage1_reader_score.py scripts/memory_cell/test_stage1_reader_score.py scripts/memory_cell/test_stage1_native_workflow.py scripts/memory_cell/test_stage1_shard_integrity.py .github/workflows/hepta-memory-stage1-sharded-native.yml > /tmp/memory-factorial-integrity/code-SHA256SUMS
+          (cd /tmp/memory-factorial-integrity && find . -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS)
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: memory-factorial-integrity
+          path: /tmp/memory-factorial-integrity
+          if-no-files-found: error

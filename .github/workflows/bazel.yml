@@ -76,7 +76,36 @@ jobs:
       - name: Check MODULE.bazel.lock is up to date
         if: matrix.os == 'ubuntu-24.04' && matrix.target == 'x86_64-unknown-linux-gnu'
         shell: bash
-        run: ./scripts/check-module-bazel-lock.sh
+        run: |
+          set -euo pipefail
+          diagnostics="$RUNNER_TEMP/bazel-lock-diagnostics"
+          mkdir -p "$diagnostics"
+          if ./scripts/check-module-bazel-lock.sh > "$diagnostics/check.log" 2>&1; then
+            cat "$diagnostics/check.log"
+            exit 0
+          fi
+          cat "$diagnostics/check.log"
+          # Keep the gate failed. Retain a generator-produced candidate so a
+          # lock drift can be reviewed and fixed from this exact checkout.
+          git show -s --format=fuller HEAD > "$diagnostics/identity.txt"
+          sha256sum codex-rs/Cargo.lock MODULE.bazel MODULE.bazel.lock > "$diagnostics/inputs.sha256"
+          set +e
+          just bazel-lock-update > "$diagnostics/update.log" 2>&1
+          update_status=$?
+          set -e
+          printf '%s\n' "$update_status" > "$diagnostics/update.exit"
+          cp MODULE.bazel.lock "$diagnostics/MODULE.bazel.lock"
+          git diff -- MODULE.bazel.lock > "$diagnostics/MODULE.bazel.lock.diff"
+          exit 1
+
+      - name: Retain generated lock diagnostics on failure
+        if: failure() && matrix.os == 'ubuntu-24.04' && matrix.target == 'x86_64-unknown-linux-gnu'
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: bazel-lock-diagnostics-${{ github.sha }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/bazel-lock-diagnostics
+          if-no-files-found: ignore
+          retention-days: 14
 
       - name: bazel test //...
         env:

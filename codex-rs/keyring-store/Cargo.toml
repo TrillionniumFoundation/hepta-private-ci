@@ -7,12 +7,18 @@ license.workspace = true
 [lints]
 workspace = true
 
+[features]
+# The required security-backport lane supplies an isolated native Secret Service.
+secret-service-qualification = []
+
 [dependencies]
-keyring = { workspace = true, features = ["crypto-rust"] }
+keyring = { workspace = true, features = ["crypto-rust-sync"] }
 tracing = { workspace = true }
 
 [target.'cfg(target_os = "linux")'.dependencies]
-keyring = { workspace = true, features = ["linux-native-async-persistent"] }
+# keyring 3.x sync Secret Service avoids the unmaintained zbus 4 family.
+# This still requires independent Linux/BSD native libdbus qualification.
+keyring = { workspace = true, features = ["linux-native-sync-persistent"] }
 
 [target.'cfg(target_os = "macos")'.dependencies]
 keyring = { workspace = true, features = ["apple-native"] }
@@ -26,3 +32,8 @@ keyring = { workspace = true, features = ["sync-secret-service"] }
 [lib]
 test = false
 doctest = false
+
+[[test]]
+name = "secret_service"
+path = "tests/qualification/secret_service.rs"
+required-features = ["secret-service-qualification"]

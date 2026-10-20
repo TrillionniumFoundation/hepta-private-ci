@@ -156,6 +156,10 @@ exceptions = [
     # Each entry is the crate and version constraint, and its specific allow
     # list
     #{ allow = ["Zlib"], crate = "adler32" },
+    # zip 9 uses this bzip2 backend. Its reviewed LICENSE permits redistribution
+    # with copyright/origin preservation, marked changes, and no endorsement.
+    # Accept only this exact crate version; a future update needs another review.
+    { crate = "libbz2-rs-sys@0.2.5", allow = ["bzip2-1.0.6"] },
 ]
 
 # Some crates don't have (easily) machine readable licensing information,

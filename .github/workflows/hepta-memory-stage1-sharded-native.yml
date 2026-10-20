@@ -1,0 +1,354 @@
+name: MemoryCell Stage1 four-condition sharded real Reader
+on:
+  pull_request:
+    types: [labeled]
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: stage1-native-${{ github.event.pull_request.head.sha }}
+  cancel-in-progress: false
+jobs:
+  freeze:
+    if: >-
+      github.event.pull_request.number == 2607 &&
+      github.head_ref == 'codex/memory-four-stage-premise-integrity-20261017' &&
+      github.event.pull_request.head.repo.full_name == github.repository &&
+      github.event.label.name == 'memory-cell-preserved-native'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          persist-credentials: false
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          name: memory-audited-source-inputs
+          run-id: 38043602289
+          github-token: ${{ github.token }}
+          path: /tmp/original
+      - name: Freeze exact eight-question corpus before touching any model
+        env:
+          PYTHONPATH: scripts/memory_cell
+          SOURCE: ${{ github.event.pull_request.head.sha }}
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$SOURCE"
+          python3 - <<'PY'
+          import hashlib,json,os
+          from pathlib import Path
+          from reader_reference import PINS,MODELS
+          from reviewed_bundle import strict_read,MAX_REVIEW_BYTES
+          from reviewed_diagnostic import capability_plan
+          from bundle_trial import write
+          inp=Path('/tmp/original'); out=Path('/tmp/frozen');out.mkdir()
+          def sha(p):return hashlib.sha256(p.read_bytes()).hexdigest()
+          for name,digest in PINS.items():
+              if (inp/(name+'.json')).is_symlink() or sha(inp/(name+'.json'))!=digest:
+                  raise ValueError('source binding drift: '+name)
+          plan=strict_read(inp/'plan.json',PINS['plan'],64*1024*1024)
+          reviews=strict_read(inp/'reviews.json',PINS['reviews'],MAX_REVIEW_BYTES)
+          removed=strict_read(inp/'withdrawals.json',PINS['withdrawals'],MAX_REVIEW_BYTES)
+          if len(set(removed))!=len(removed):raise ValueError('duplicate revocation')
+          full=capability_plan(plan,reviews,set(removed))
+          if len(full['cases'])!=8 or len({c['question']['identity'] for c in full['cases']})!=8:
+              raise ValueError('original eight-question census changed')
+          write(out/'full.json',full)
+          arms=('empty','retrieved1','reviewed_minimal','reviewed_without_premise1')
+          slices=[]
+          for shard in range(4):
+              cases=[]
+              for c in full['cases'][2*shard:2*shard+2]:
+                  orig=c['conditions']
+                  if any(k not in orig for k in arms[:3]):
+                      raise ValueError('missing original condition')
+                  modes={}
+                  for arm in arms:
+                      if arm in orig:modes[arm]=orig[arm]
+                      elif orig['reviewed_minimal'].get('status')=='unavailable':
+                          modes[arm]={'status':'unavailable','reason':'missing_original_review'}
+                      else:raise ValueError('missing reviewed lesion')
+                  cases.append(c|{'conditions':modes})
+              path=out/f'shard-{shard}.json';write(path,full|{'cases':cases})
+              slices.append(dict(shard=shard,sha256=sha(path),ids=[c['question']['identity'] for c in cases]))
+          write(out/'registration.json',dict(
+              source=os.environ['SOURCE'],original_pins=PINS,
+              original_projected_sha256=sha(out/'full.json'),
+              conditions=arms,slices=slices,training=0,
+              tiers={t:MODELS[t] for t in ('smol-135m','smol-1.7b')},
+              original_run=38043602289,production_accepted=False))
+          PY
+          (cd /tmp/frozen && find . -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS)
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: stage1-immutable-preregistered-plan
+          path: /tmp/frozen
+          if-no-files-found: error
+  infer:
+    needs: freeze
+    runs-on: ubuntu-latest
+    timeout-minutes: 85
+    strategy:
+      fail-fast: false
+      max-parallel: 4
+      matrix:
+        model: [smol-135m, smol-1.7b]
+        shard: [0, 1, 2, 3]
+    env:
+      PYTHONPATH: scripts/memory_cell
+      SOURCE: ${{ github.event.pull_request.head.sha }}
+      TIER: ${{ matrix.model }}
+      SHARD: ${{ matrix.shard }}
+      OMP_NUM_THREADS: "2"
+      MKL_NUM_THREADS: "2"
+      HF_HUB_DISABLE_IMPLICIT_TOKEN: "1"
+      HF_HUB_DISABLE_XET: "1"
+      TOKENIZERS_PARALLELISM: "false"
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          persist-credentials: false
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          name: memory-audited-source-inputs
+          run-id: 38043602289
+          github-token: ${{ github.token }}
+          path: /tmp/original
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          name: stage1-immutable-preregistered-plan
+          path: /tmp/frozen
+      - name: Reject incomplete or changed preregistration before model downloads
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$SOURCE"
+          (cd /tmp/frozen && sha256sum -c SHA256SUMS)
+          python3 - <<'PY'
+          import os,json,hashlib
+          from pathlib import Path
+          from reader_reference import PINS,MODELS
+          root=Path('/tmp/frozen'); inp=Path('/tmp/original')
+          x=json.loads((root/'registration.json').read_text())
+          i=int(os.environ['SHARD']);t=os.environ['TIER']
+          def sha(p):return hashlib.sha256(p.read_bytes()).hexdigest()
+          if (x['source']!=os.environ['SOURCE'] or x['training']!=0 or x['production_accepted'] or
+              x['original_pins']!=PINS or x['tiers'][t]!=list(MODELS[t]) or
+              len(x['slices'])!=4 or not 0<=i<4 or x['slices'][i]['shard']!=i or
+              x['slices'][i]['sha256']!=sha(root/f'shard-{i}.json')):
+              raise ValueError('frozen real Reader experiment drift')
+          if any(sha(inp/(k+'.json'))!=v for k,v in PINS.items()):
+              raise ValueError('pinned original input changed')
+          PY
+      - name: Install frozen CPU inference packages
+        run: |
+          set -euo pipefail
+          python3 -m venv /tmp/reader-python
+          /tmp/reader-python/bin/pip install torch==2.5.1 --index-url https://download.pytorch.org/whl/cpu
+          /tmp/reader-python/bin/pip install -r /tmp/original/environment.txt
+          mkdir -p /tmp/output
+          /tmp/reader-python/bin/pip freeze > /tmp/output/python-lock.txt
+      - name: Stage exact publisher model revision with verified network fetch
+        run: |
+          set -euo pipefail
+          /usr/bin/time -v -o /tmp/output/staging-resource.txt /tmp/reader-python/bin/python scripts/memory_cell/reader_reference.py stage "$TIER" /tmp/model
+      - name: Execute real four-condition shard offline
+        env:
+          HEPTA_MEMORY_TESTED_COMMIT: ${{ github.event.pull_request.head.sha }}
+          HF_HUB_OFFLINE: "1"
+          TRANSFORMERS_OFFLINE: "1"
+        run: |
+          set -euo pipefail
+          /usr/bin/time -v -o /tmp/output/inference-resource.txt /tmp/reader-python/bin/python - <<'PY'
+          import hashlib,json,os
+          from pathlib import Path
+          from reader_reference import MODELS,PINS,ReferenceReader,verify_files
+          from reviewed_bundle import strict_read,MAX_REVIEW_BYTES
+          from reviewed_diagnostic import CurrentReviewReader
+          from bundle_trial import run_reader,write
+          from pretrained import file_inventory
+          from native import digest
+          stage=Path('/tmp/model'); tier=os.environ['TIER'];i=int(os.environ['SHARD'])
+          def sha(p):return hashlib.sha256(p.read_bytes()).hexdigest()
+          manifest=json.loads((stage/'stage.json').read_text())
+          pub=json.loads((stage/'publisher.json').read_text())
+          info=json.loads((stage/'inventory.json').read_text())
+          if ((manifest['repository'],manifest['revision'])!=MODELS[tier] or
+              (pub['repository'],pub['revision'])!=MODELS[tier] or
+              manifest['publisher_sha256']!=sha(stage/'publisher.json') or
+              manifest['inventory_sha256']!=sha(stage/'inventory.json')):
+              raise ValueError('wrong pinned model publisher')
+          verify_files(stage/'reader',pub['files'])
+          if info['inventory']!=file_inventory(stage/'reader') or info['inventory_digest']!=digest(info['inventory']):
+              raise ValueError('model file inventory changed')
+          target=Path('/tmp/output/shard');target.mkdir()
+          frozen=Path('/tmp/frozen')/f'shard-{i}.json'
+          write(target/'plan.json',json.loads(frozen.read_text()))
+          if sha(target/'plan.json')!=sha(frozen):
+              raise ValueError('actual model task plan changed')
+          source=Path('/tmp/original')
+          def withdrawals():
+              value=strict_read(source/'withdrawals.json',PINS['withdrawals'],MAX_REVIEW_BYTES)
+              if not isinstance(value,list) or len(value)!=len(set(value)):
+                  raise ValueError('revocations changed')
+              return set(value)
+          write(target/'identity.json',dict(
+              head=os.environ['HEPTA_MEMORY_TESTED_COMMIT'],tier=tier,shard=i,
+              original_plan_sha256=sha(frozen),registration_sha256=sha(Path('/tmp/frozen/registration.json')),
+              model_digest=info['inventory_digest'],revision=manifest['revision'],
+              training=0,production_accepted=False))
+          reader=ReferenceReader(stage/'reader',expected_inventory=info['inventory_digest'])
+          run_reader(target/'plan.json',source/'labels.json',CurrentReviewReader(reader,withdrawals),
+              target/'execution',plan_sha=sha(frozen),labels_sha=PINS['labels'])
+          PY
+      - name: Retain original answers, partial failures and process resource costs
+        if: always()
+        run: |
+          set -euo pipefail
+          mkdir -p "/tmp/final/stage1-$TIER-shard-$SHARD"
+          if test -d /tmp/output/shard; then cp -a /tmp/output/shard/. "/tmp/final/stage1-$TIER-shard-$SHARD/"; fi
+          cp /tmp/output/*.txt "/tmp/final/stage1-$TIER-shard-$SHARD/" 2>/dev/null || true
+          git rev-parse HEAD > "/tmp/final/stage1-$TIER-shard-$SHARD/tested-head.txt"
+          (cd "/tmp/final/stage1-$TIER-shard-$SHARD" && find . -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS)
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: stage1-${{ matrix.model }}-shard-${{ matrix.shard }}
+          path: /tmp/final/stage1-${{ matrix.model }}-shard-${{ matrix.shard }}
+          if-no-files-found: error
+  audit:
+    needs: [freeze, infer]
+    if: always() && !cancelled() && needs.freeze.result == 'success'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          persist-credentials: false
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          name: stage1-immutable-preregistered-plan
+          path: /tmp/frozen
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          pattern: stage1-*-shard-*
+          path: /tmp/shards
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          name: memory-audited-source-inputs
+          run-id: 38043602289
+          github-token: ${{ github.token }}
+          path: /tmp/original
+      - name: Verify every original answer and 32 matched question-condition slots
+        env:
+          PYTHONPATH: scripts/memory_cell
+          SOURCE: ${{ github.event.pull_request.head.sha }}
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$SOURCE"
+          mkdir -p /tmp/review
+          python3 - <<'PY'
+          import hashlib,json,math,os
+          from pathlib import Path
+          from reader_reference import PINS,MODELS
+          from stage1_reader_pair import verify_inventory,strict_json,verify_frozen_shard_attempts
+          from stage1_reader_score import answer_scores
+          def sha(p):return hashlib.sha256(p.read_bytes()).hexdigest()
+          frozen=Path('/tmp/frozen')
+          reg=strict_json((frozen/'registration.json').read_bytes())
+          if reg['source']!=os.environ['SOURCE'] or reg['original_pins']!=PINS:
+              raise ValueError('original source plan changed')
+          original=Path('/tmp/original/labels.json')
+          if sha(original)!=PINS['labels']:raise ValueError('original answer label drift')
+          labels=strict_json(original.read_bytes())
+          by={}
+          seconds={t:0.0 for t in ('smol-135m','smol-1.7b')}
+          for tier in ('smol-135m','smol-1.7b'):
+              for i in range(4):
+                  folder=Path('/tmp/shards')/f'stage1-{tier}-shard-{i}'
+                  verify_inventory(folder)
+                  ident=strict_json((folder/'identity.json').read_bytes())
+                  plan=strict_json((folder/'plan.json').read_bytes())
+                  if (ident['head']!=os.environ['SOURCE'] or ident['tier']!=tier or
+                      ident['shard']!=i or ident['revision']!=MODELS[tier][1] or
+                      ident['registration_sha256']!=sha(frozen/'registration.json') or
+                      ident['original_plan_sha256']!=sha(frozen/f'shard-{i}.json') or
+                      sha(folder/'plan.json')!=sha(frozen/f'shard-{i}.json') or
+                      ident['training']!=0 or ident['production_accepted']):
+                      raise ValueError('unmatched original worker identity')
+                  raw=(folder/'execution/raw-answers.jsonl').read_bytes()
+                  if not raw.endswith(b'\n'):raise ValueError('interrupted raw answer')
+                  originals=[strict_json(line) for line in raw.splitlines()]
+                  scored=strict_json((folder/'execution/scored-answers.json').read_bytes())
+                  verify_frozen_shard_attempts(plan,reg['conditions'],ident,originals,scored)
+                  expected={(c['question']['identity'],a) for c in plan['cases'] for a in reg['conditions']}
+                  if (len(originals)!=len(scored) or len(scored)!=8 or
+                      {(row['question_id'],row['arm']) for row in scored}!=expected):
+                      raise ValueError('incomplete eight-attempt shard')
+                  for a,b in zip(originals,scored,strict=True):
+                      if {k:v for k,v in b.items() if k not in ('f1','exact_match','target_unanswerable')}!=a:
+                          raise ValueError('original model answer rewritten')
+                      q,arm=b['question_id'],b['arm']
+                      case=next(c for c in plan['cases'] if c['question']['identity']==q)
+                      evidence=case['conditions'][arm]
+                      if evidence.get('status')=='unavailable' and b['status']!='unavailable':
+                          raise ValueError('original unavailable review invented')
+                      if b['status']=='succeeded':
+                          rec=b['receipt']
+                          if (rec['reader_identity']!=ident['model_digest'] or
+                              rec['trainable_parameters']!=0 or
+                              rec['answer_postprocessed'] is not False or
+                              rec['delivered_evidence']!=evidence['delivered_evidence']):
+                              raise ValueError('delivered original source or model changed')
+                          t=labels[q];ans=t['answer']
+                          result=answer_scores(b['answer'],(ans,) if ans is not None else None,t['unanswerable'])
+                          if b['f1']!=result['f1'] or b['exact_match']!=result['exact_match']:
+                              raise ValueError('raw answer was mis-scored')
+                          if not isinstance(rec['seconds'],(int,float)) or not math.isfinite(rec['seconds']):
+                              raise ValueError('unmeasured model inference')
+                          seconds[tier]+=rec['seconds']
+                      elif b.get('f1') is not None or 'answer' in b:
+                          raise ValueError('failed inference forged as answer')
+                      slot=by.setdefault((q,arm),{})
+                      if tier in slot:raise ValueError('duplicate Reader attempt')
+                      slot[tier]=b
+          if len(by)!=32 or any(set(x)!={'smol-135m','smol-1.7b'} for x in by.values()):
+              raise ValueError('incomplete paired original census')
+          paired=0; delta=0.0
+          for pair in by.values():
+              a=pair['smol-135m'];b=pair['smol-1.7b']
+              if a['status']==b['status']=='succeeded':
+                  if a['receipt']['delivered_evidence']!=b['receipt']['delivered_evidence']:
+                      raise ValueError('Reader capacity comparison changed evidence')
+                  paired+=1;delta+=b['f1']-a['f1']
+          missing=32-paired
+          report={'schema':'hepta.memory.stage1.sharded-native.v1',
+              'generating_source':os.environ['SOURCE'],'planned_pairs':32,
+              'paired_successes':paired,'missing_or_unavailable':missing,
+              'paired_diagnostic_delta':delta/paired if paired else None,
+              'planned_delta_bounds':[(delta-missing)/32,(delta+missing)/32],
+              'missing_bounds_not_statistical_intervals':True,
+              'observed_model_inference_seconds':seconds,
+              'independently_reviewed_oracle':False,
+              'reader_capacity_is_memory_gain':False,
+              'production_accepted':False}
+          (Path('/tmp/review/report.json')).write_text(json.dumps(report,indent=2,allow_nan=False)+'\n')
+          if any(x['status']=='failed' for pair in by.values() for x in pair.values()):
+              raise ValueError('unresolved failed original model call')
+          PY
+      - name: Retain audited source and failures
+        if: always()
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/review
+          git rev-parse HEAD > /tmp/review/auditor-head.txt
+          printf '%s\n' 'Exposed development cases only; no independent semantic review or production promotion.' > /tmp/review/scope.txt
+          (cd /tmp/review && find . -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS)
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: stage1-native-independent-paired-review
+          path: /tmp/review
+          if-no-files-found: error

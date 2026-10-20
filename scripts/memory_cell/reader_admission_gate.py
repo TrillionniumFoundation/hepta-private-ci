@@ -197,9 +197,26 @@ def _pairs(rows, left, right):
 def assess_reproduced(
     cal, evaluation, *, frozen_k, loo, citation, replay, policy, source
 ):
-    """Study-specific task/replay conclusion, never a general admission issuer."""
-    if source != GENERATION_COMMIT or frozen_k not in (1, 2, 3, 4, 6):
+    """Assess reported aggregates; only audit() verifies the original sample census."""
+    if (
+        source != GENERATION_COMMIT
+        or type(frozen_k) is not int
+        or frozen_k not in (1, 2, 3, 4, 6)
+    ):
         raise ValueError("different frozen experiment")
+    for stats, arms in ((cal, CAL_ARMS), (evaluation, TEST_ARMS)):
+        if set(stats) != set(arms):
+            raise ValueError("incomplete or unregistered arm census")
+        for row in stats.values():
+            if type(row.get("planned")) is not int or row["planned"] != 8:
+                raise ValueError("incomplete planned population")
+            if (
+                type(row.get("strict_success")) is not int
+                or not 0 <= row["strict_success"] <= row["planned"]
+                or type(row.get("input_tokens")) is not int
+                or row["input_tokens"] < 0
+            ):
+                raise ValueError("invalid reported outcome or token count")
     chosen = min(
         (int(arm[1:]) for arm in cal),
         key=lambda k: (
@@ -210,8 +227,6 @@ def assess_reproduced(
     )
     if chosen != frozen_k:
         raise ValueError("top-k freeze not derived from real calibration outcomes")
-    if not all(v["planned"] == 8 for v in [*cal.values(), *evaluation.values()]):
-        raise ValueError("incomplete planned population")
     if (
         loo.get("planned_calibration_questions") != 8
         or len(loo.get("folds", [])) != 8
@@ -249,10 +264,13 @@ def assess_reproduced(
         schema=SCHEMA,
         generating_commit=GENERATION_COMMIT,
         frozen_k=frozen_k,
-        complete_calibration=40,
-        complete_evaluation=72,
-        independent_readonly_replay_complete=True,
-        authored_question_scope_count=8,
+        reported_calibration_attempts=sum(row["planned"] for row in cal.values()),
+        reported_evaluation_attempts=sum(row["planned"] for row in evaluation.values()),
+        complete_calibration=None,
+        complete_evaluation=None,
+        census_verified=False,
+        independent_readonly_replay_complete=False,
+        authored_question_scope_count=None,
         independent_future_source_families=0,
         full_path_task_success=simple["strict_success"],
         organized_task_success=graph["strict_success"],
@@ -370,6 +388,13 @@ def audit(original: Path, reader: Path, replay: Path):
         replay=separate,
         policy=policy,
         source=assert_source,
+    )
+    decision.update(
+        complete_calibration=len(c_raw),
+        complete_evaluation=len(e_raw),
+        census_verified=True,
+        independent_readonly_replay_complete=True,
+        authored_question_scope_count=len(e_ids),
     )
     decision["original_plan_sha256"] = PLAN_SHA
     decision["model_inventory_digest"] = MODEL_ID

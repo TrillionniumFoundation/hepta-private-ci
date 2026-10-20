@@ -94,6 +94,12 @@ jobs:
     uses: ./.github/workflows/cargo-deny.yml
     secrets: inherit
 
+  security-backports:
+    name: Security backport regressions
+    needs: scope
+    if: needs.scope.outputs.full_repo == 'true'
+    uses: ./.github/workflows/security-backports.yml
+
   codespell:
     name: Codespell
     uses: ./.github/workflows/codespell.yml
@@ -137,7 +143,7 @@ jobs:
       - name: Prepare native test prerequisites before compilation
         run: |
           sudo apt-get update
-          sudo apt-get install -y build-essential bubblewrap libcap-dev pkg-config
+          sudo apt-get install -y build-essential bubblewrap libcap-dev pkg-config libdbus-1-dev
           sudo sysctl -w kernel.unprivileged_userns_clone=1
           if sysctl kernel.apparmor_restrict_unprivileged_userns >/dev/null 2>&1; then
             sudo sysctl -w kernel.apparmor_restrict_unprivileged_userns=0
@@ -214,6 +220,7 @@ jobs:
       - bazel
       - blob-size-policy
       - cargo-deny
+      - security-backports
       - codespell
       - repo-checks
       - rust-ci
@@ -244,7 +251,7 @@ jobs:
           if not (native or full):
               allowed.append("hepta-contract-gate")
           if not full:
-              allowed += ["bazel", "cargo-deny", "repo-checks", "rust-ci", "sdk"]
+              allowed += ["bazel", "cargo-deny", "security-backports", "repo-checks", "rust-ci", "sdk"]
           if not (native and not full):
               allowed.append("hepta-scoped")
           if not (not native and not full):

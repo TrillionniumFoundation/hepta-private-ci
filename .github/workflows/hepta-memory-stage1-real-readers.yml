@@ -1,0 +1,143 @@
+name: MemoryCell stage-1 real reader capability
+on:
+  pull_request:
+    types: [labeled]
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: memory-stage1-real-reader-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+jobs:
+  reader:
+    if: >-
+      github.event.pull_request.number == 2607 &&
+      github.event.pull_request.head.repo.full_name == github.repository &&
+      github.head_ref == 'codex/memory-four-stage-premise-integrity-20261017' &&
+      github.event.label.name == 'memory-cell-legacy-full-reader-only'
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    strategy:
+      fail-fast: false
+      max-parallel: 2
+      matrix:
+        tier: [smol-135m, smol-1.7b]
+    env:
+      PYTHONPATH: scripts/memory_cell
+      HF_HUB_DISABLE_IMPLICIT_TOKEN: "1"
+      HF_HUB_DISABLE_XET: "1"
+      TOKENIZERS_PARALLELISM: "false"
+      OMP_NUM_THREADS: "2"
+      MKL_NUM_THREADS: "2"
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          persist-credentials: false
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          name: memory-audited-source-inputs
+          run-id: 38043602289
+          github-token: ${{ github.token }}
+          path: /tmp/stage1-inputs
+      - name: Verify exact head and pinned original development inputs
+        env:
+          EXPECTED_HEAD: ${{ github.event.pull_request.head.sha }}
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/stage1-receipt
+          test "$(git rev-parse HEAD)" = "$EXPECTED_HEAD"
+          git rev-parse HEAD > /tmp/stage1-receipt/tested-commit.txt
+          python3 - <<'PY'
+          import hashlib
+          from pathlib import Path
+          from reader_reference import PINS
+          for name, expected in PINS.items():
+              file = Path('/tmp/stage1-inputs') / (name + '.json')
+              if file.is_symlink() or not file.is_file():
+                  raise ValueError('missing pinned development source ' + name)
+              if hashlib.sha256(file.read_bytes()).hexdigest() != expected:
+                  raise ValueError('historical development source changed ' + name)
+          PY
+      - name: Install pinned CPU inference environment
+        run: |
+          set -euo pipefail
+          python3 -m venv /tmp/stage1-python
+          /tmp/stage1-python/bin/pip install torch==2.5.1 --index-url https://download.pytorch.org/whl/cpu
+          /tmp/stage1-python/bin/pip install -r /tmp/stage1-inputs/environment.txt
+          /tmp/stage1-python/bin/pip freeze > /tmp/stage1-receipt/python-lock.txt
+      - name: Stage exact public model revision with publisher file verification
+        run: |
+          set -euo pipefail
+          /usr/bin/time -v -o /tmp/stage1-receipt/staging-resource.txt /tmp/stage1-python/bin/python scripts/memory_cell/reader_reference.py stage '${{ matrix.tier }}' /tmp/stage1-model
+          cp /tmp/stage1-model/stage.json /tmp/stage1-model/publisher.json /tmp/stage1-model/inventory.json /tmp/stage1-receipt/
+          sha256sum /tmp/stage1-model/stage.json > /tmp/stage1-receipt/stage-pin.txt
+      - name: Execute actual no-training reader capability conditions
+        env:
+          HEPTA_MEMORY_TESTED_COMMIT: ${{ github.event.pull_request.head.sha }}
+          HF_HUB_OFFLINE: "1"
+          TRANSFORMERS_OFFLINE: "1"
+        run: |
+          set -euo pipefail
+          /usr/bin/time -v -o /tmp/stage1-receipt/inference-resource.txt /tmp/stage1-python/bin/python scripts/memory_cell/reader_reference.py run /tmp/stage1-inputs /tmp/stage1-model /tmp/stage1-receipt/run --stage-sha "$(cut -d ' ' -f1 /tmp/stage1-receipt/stage-pin.txt)" 2>&1 | tee /tmp/stage1-receipt/inference.log
+          cat /tmp/stage1-receipt/run/reference-report.json
+      - name: Retain exact raw outputs, resources and failure modes
+        if: always()
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/stage1-receipt
+          git rev-parse HEAD > /tmp/stage1-receipt/tested-commit.txt
+          printf '%s\n' 'Previously exposed development tasks. Reader capacity is not a MemoryCell gain. No independent semantic or production acceptance.' > /tmp/stage1-receipt/scope.txt
+          (cd /tmp/stage1-receipt && find . -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS)
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: memory-stage1-real-${{ matrix.tier }}
+          path: /tmp/stage1-receipt
+          if-no-files-found: error
+
+  paired-capacity:
+    needs: reader
+    if: >-
+      always() && !cancelled() &&
+      needs.reader.result == 'success' &&
+      github.event.pull_request.number == 2607
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          persist-credentials: false
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          pattern: memory-stage1-real-*
+          path: /tmp/stage1-paired
+      - name: Check strict read-only paired-audit regressions
+        env:
+          PYTHONPATH: scripts/memory_cell
+        run: python3 -m unittest discover -s scripts/memory_cell -p 'test_stage1_reader_pair.py' -v
+      - name: Compare all original attempts without dropping unavailable cases
+        env:
+          EXPECTED_HEAD: ${{ github.event.pull_request.head.sha }}
+          PYTHONPATH: scripts/memory_cell
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/stage1-comparison
+          python3 scripts/memory_cell/stage1_reader_pair.py \
+            --root /tmp/stage1-paired \
+            --source "$EXPECTED_HEAD" \
+            --output /tmp/stage1-comparison/paired-report.json
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+          result = json.loads(Path('/tmp/stage1-comparison/paired-report.json').read_text())
+          print(json.dumps({k: v for k, v in result.items() if k != 'rows'}))
+          PY
+          (cd /tmp/stage1-comparison && find . -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS)
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: memory-stage1-real-paired-capacity
+          path: /tmp/stage1-comparison
+          if-no-files-found: warn

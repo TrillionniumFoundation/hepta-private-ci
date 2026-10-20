@@ -1,0 +1,78 @@
+name: MemoryCell pinned real 135M source-only audit
+on:
+  pull_request:
+    paths:
+      - "scripts/memory_cell/stage1_135m_four_condition_review.py"
+      - "scripts/memory_cell/test_stage1_135m_four_condition_review.py"
+      - ".github/workflows/hepta-memory-stage1-135m-readonly.yml"
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: memory-real135m-audit-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+jobs:
+  audited-census:
+    if: >-
+      github.event.pull_request.number == 2607 &&
+      github.event.pull_request.head.repo.full_name == github.repository &&
+      github.head_ref == 'codex/memory-four-stage-premise-integrity-20261017'
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    env:
+      REVIEWER_HEAD: ${{ github.event.pull_request.head.sha }}
+      ORIGINAL_SOURCE: e32546207ecca603c6f93c9a20388a83d440cc49
+      PYTHONPATH: scripts/memory_cell
+      HEPTA_135M_SHARDS: /tmp/real135m
+      HEPTA_135M_LABELS: /tmp/original/labels.json
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          persist-credentials: false
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          name: stage1-immutable-preregistered-plan
+          run-id: 39022071419
+          github-token: ${{ github.token }}
+          path: /tmp/frozen
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          pattern: stage1-smol-135m-shard-*
+          run-id: 39022071419
+          github-token: ${{ github.token }}
+          path: /tmp/shard-artifacts
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          name: memory-audited-source-inputs
+          run-id: 38043602289
+          github-token: ${{ github.token }}
+          path: /tmp/original
+      - name: Reconstitute the complete immutable original 135M population
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$REVIEWER_HEAD"
+          mkdir -p /tmp/real135m /tmp/real135m-review
+          cp -a /tmp/frozen /tmp/real135m/freeze
+          for shard in 0 1 2 3; do
+            cp -a "/tmp/shard-artifacts/stage1-smol-135m-shard-$shard" "/tmp/real135m/shard-$shard"
+          done
+      - name: Audit original model answers, budget and source-linked labels
+        run: |
+          set -euo pipefail
+          python3 -m unittest discover -s scripts/memory_cell -p 'test_stage1_135m_four_condition_review.py' -v 2>&1 | tee /tmp/real135m-review/tests.log
+          python3 scripts/memory_cell/stage1_135m_four_condition_review.py \
+            --root /tmp/real135m \
+            --labels /tmp/original/labels.json \
+            --source "$ORIGINAL_SOURCE" \
+            --output /tmp/real135m-review/real-source-receipt.json
+          printf '%s\n' "$REVIEWER_HEAD" > /tmp/real135m-review/reviewer-head.txt
+          printf '%s\n' "$ORIGINAL_SOURCE" > /tmp/real135m-review/original-generating-head.txt
+          printf '%s\n' 'Previously exposed real development questions; no human sufficiency or production qualification' > /tmp/real135m-review/scope.txt
+          (cd /tmp/real135m-review && find . -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS)
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: memory-real135m-original-census-readonly
+          path: /tmp/real135m-review
+          if-no-files-found: warn

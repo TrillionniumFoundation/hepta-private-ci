@@ -29,7 +29,7 @@ codex-utils-home-dir = { workspace = true }
 bytes = { workspace = true }
 futures = { workspace = true, default-features = false, features = ["std"] }
 http = { workspace = true }
-keyring = { workspace = true, features = ["crypto-rust"] }
+keyring = { workspace = true, features = ["crypto-rust-sync"] }
 memchr = { workspace = true }
 oauth2 = "5"
 rmcp = { workspace = true, default-features = false, features = [
@@ -77,7 +77,7 @@ wiremock = { workspace = true }
 libc = { workspace = true }
 
 [target.'cfg(target_os = "linux")'.dependencies]
-keyring = { workspace = true, features = ["linux-native-async-persistent"] }
+keyring = { workspace = true, features = ["linux-native-sync-persistent"] }
 
 [target.'cfg(target_os = "macos")'.dependencies]
 keyring = { workspace = true, features = ["apple-native"] }
