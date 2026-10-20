@@ -48,6 +48,8 @@ async fn historical_pool(displaced: bool) -> (tempfile::TempDir, SqlitePool) {
             .expect("historical branch migration");
     }
     drop(connection);
+    // Keep the database directory alive until the caller has closed its pool.
+    // Returning only the pool would unlink the database and its WAL here.
     (directory, pool)
 }
 
@@ -109,7 +111,7 @@ async fn unknown_or_dirty_history_is_not_relabelled() {
         "UPDATE _sqlx_migrations SET checksum = x'00' WHERE version=4",
         "UPDATE _sqlx_migrations SET success=0 WHERE version=5",
     ] {
-        let (directory, pool) = historical_pool(true).await;
+        let (directory, pool) = historical_pool(/*displaced*/ true).await;
         sqlx::query(mutation)
             .execute(&pool)
             .await
@@ -133,6 +135,8 @@ async fn reopen_persisted_history(displaced: bool, after_rebind: bool) -> std::i
     let temp = tempfile::tempdir().expect("private owner root");
     let root = temp.path().join("owner");
     std::fs::create_dir(&root).expect("owner directory");
+    // open_root requires an exact canonical root. Windows may add a verbatim-volume prefix.
+    let root = root.canonicalize()?;
     let (directory, pool) = historical_pool(displaced).await;
     let before: Vec<Vec<u8>> =
         sqlx::query_scalar("SELECT checksum FROM _sqlx_migrations ORDER BY version")
@@ -153,7 +157,6 @@ async fn reopen_persisted_history(displaced: bool, after_rebind: bool) -> std::i
         .expect("persist historical cut");
     pool.close().await;
     drop(directory);
-    let root = root.canonicalize()?;
     let owner = AgentId::parse("018f4f72-5f8f-7cc1-8f55-df9fb3aa2c12").expect("owner ID");
     let store = AutomationStore::open_root(root.clone(), owner.clone())
         .await

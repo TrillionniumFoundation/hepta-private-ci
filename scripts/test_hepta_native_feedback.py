@@ -161,19 +161,26 @@ class NativeFeedbackPolicyTests(unittest.TestCase):
             self.assertTrue(fnmatch.fnmatchcase("owner-test.json", pattern))
             self.assertTrue(fnmatch.fnmatchcase("owner-test.json.1234.log", pattern))
 
-    def test_build_inputs_cannot_miss_the_outer_path_filter(self):
-        text = WORKFLOW.read_text().split("permissions:", 1)[0]
-        for path in (
-            ".cargo/**",
-            "codex-rs/.cargo/**",
-            "rust-toolchain",
-            "rust-toolchain.toml",
-            "codex-rs/rust-toolchain",
-            "codex-rs/rust-toolchain.toml",
-            "scripts/hepta_workspace.py",
-            "scripts/test_hepta_native_feedback.py",
-        ):
-            self.assertIn('      - "' + path + '"', text)
+    def test_build_inputs_cannot_miss_the_outer_pull_request_trigger(self):
+        # The aggregate owns automatic admission; the consolidated workflow is
+        # reusable. An empty PR mapping admits build and feedback-script inputs
+        # without a workflow-level path, branch or event-type filter.
+        text = (ROOT / ".github/workflows/blocking-ci.yml").read_text()
+        events = text.split("\non:\n", 1)[1].split("\npermissions:", 1)[0]
+        event = re.search(r"(?ms)^  pull_request:(.*?)(?=^  [\w-]+:|\Z)", events)
+        self.assertIsNotNone(event)
+        self.assertEqual(event.group(1).strip(), "{}")
+        scope = text.split("  scope:\n", 1)[1].split("  hepta-contract-gate:\n", 1)[0]
+        self.assertNotRegex(scope, r"(?m)^    if:")
+        self.assertIn(
+            'args=(--head "$HEAD_SHA" --github-output "$GITHUB_OUTPUT")', scope
+        )
+        self.assertIn(
+            'if [ "$EVENT_NAME" = "pull_request" ]; then\n'
+            '            args+=(--base "$BASE_SHA")',
+            scope,
+        )
+        self.assertIn('python3 scripts/hepta_ci_scope.py "${args[@]}"', scope)
 
 
 class NativeFeedbackExecutionTests(unittest.TestCase):
@@ -257,6 +264,93 @@ raise SystemExit(int(os.environ.get("FAIL_" + phase.upper(), "0")))
         self.git("add", ".")
         self.git("commit", "--quiet", "-m", "workflow fixture")
         return self.git("rev-parse", "HEAD")
+
+    def test_admitted_build_inputs_retain_real_native_package_coverage(self):
+        for path, native in (
+            (".cargo/config.toml", True),
+            ("codex-rs/.cargo/config.toml", True),
+            ("rust-toolchain", True),
+            ("rust-toolchain.toml", True),
+            ("codex-rs/rust-toolchain", True),
+            ("codex-rs/rust-toolchain.toml", True),
+            ("scripts/hepta_workspace.py", False),
+            ("scripts/test_hepta_native_feedback.py", False),
+        ):
+            with self.subTest(path=path):
+                base = self.git("rev-parse", "HEAD")
+                target = self.repo / path
+                target.parent.mkdir(parents=True, exist_ok=True)
+                target.write_text("# changed build or feedback input\n")
+                head = self.commit()
+                result = subprocess.run(
+                    [
+                        sys.executable,
+                        str(ROOT / "scripts/hepta_ci_scope.py"),
+                        "--base",
+                        base,
+                        "--head",
+                        head,
+                    ],
+                    cwd=self.repo,
+                    env=self.env,
+                    text=True,
+                    capture_output=True,
+                    timeout=20,
+                )
+                self.assertEqual(result.returncode, 0, result.stderr)
+                selected = json.loads(result.stdout)
+                self.assertEqual(selected["paths"], [path])
+                self.assertEqual(selected["base"], base)
+                self.assertEqual(selected["source_head"], head)
+                scope = selected["scope"]
+                keys = (
+                    "inference",
+                    "effects",
+                    "lifecycle",
+                    "learning",
+                    "objective",
+                    "native",
+                    "full_repo",
+                )
+                self.assertEqual(
+                    {key: scope[key] for key in keys},
+                    {key: native for key in keys},
+                )
+                if not native:
+                    # Script-only feedback keeps the existing Python/derived
+                    # boundary instead of preparing unrelated Rust dependencies.
+                    self.assertTrue(scope["derived"])
+                    continue
+                output = self.root / "build-input-impact.json"
+                previous_calls = len(self.calls())
+                result = subprocess.run(
+                    [
+                        sys.executable,
+                        str(ROOT / "scripts/hepta_ci_dependencies.py"),
+                        "--base",
+                        base,
+                        "--tested",
+                        head,
+                        "--output",
+                        str(output),
+                        "--run",
+                    ],
+                    cwd=self.repo,
+                    env=self.env,
+                    text=True,
+                    capture_output=True,
+                    timeout=20,
+                )
+                self.assertEqual(result.returncode, 0, result.stderr)
+                impact = json.loads(output.read_text())
+                self.assertTrue(impact["full_workspace"])
+                self.assertEqual(
+                    impact["packages"], ["owner-a", "owner-b", "unrelated"]
+                )
+                self.assertEqual(
+                    self.calls()[previous_calls:],
+                    [["just", "test", "--locked", "--workspace"]],
+                )
 
     def invoke(self, name, **extra):
         cwd = (
