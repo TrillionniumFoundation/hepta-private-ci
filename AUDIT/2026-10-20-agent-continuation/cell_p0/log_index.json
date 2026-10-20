@@ -1,0 +1,126 @@
+[
+  {
+    "job_id": 117826243985,
+    "decoded_bytes": 804433,
+    "sha256": "1d819d740347258bb8764e167bcb2aef6ddbc37403e56df9c3d9534ac83b8c79",
+    "gzip_bytes": 104003,
+    "excerpts": [
+      {
+        "line": 3496,
+        "text": "2026-10-19T00:18:04.2166165Z ---- scope_lane_wal::tests::file_wal_repairs_incomplete_length_before_new_commits stdout ----\n2026-10-19T00:18:04.2333002Z \n2026-10-19T00:18:04.2841734Z thread 'scope_lane_wal::tests::file_wal_repairs_incomplete_length_before_new_commits' (9624) panicked at hepta-control-plane/src\\scope_lane_wal_tests.rs:16:34:\n2026-10-19T00:18:04.3011412Z unexpected result: Io(PermissionDenied)\n2026-10-19T00:18:04.3427712Z note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace\n2026-10-19T00:18:04.3591145Z \n2026-10-19T00:18:04.4245210Z ---- scope_lane_wal::tests::file_wal_syncs_frames_and_repairs_torn_tail stdout ----\n2026-10-19T00:18:04.4674372Z "
+      },
+      {
+        "line": 3502,
+        "text": "2026-10-19T00:18:04.4245210Z ---- scope_lane_wal::tests::file_wal_syncs_frames_and_repairs_torn_tail stdout ----\n2026-10-19T00:18:04.4674372Z \n2026-10-19T00:18:04.5100030Z thread 'scope_lane_wal::tests::file_wal_syncs_frames_and_repairs_torn_tail' (2260) panicked at hepta-control-plane/src\\scope_lane_wal_tests.rs:16:34:\n2026-10-19T00:18:04.5439795Z unexpected result: Io(PermissionDenied)\n2026-10-19T00:18:04.5879013Z \n2026-10-19T00:18:04.6212669Z \n2026-10-19T00:18:04.6668569Z failures:\n2026-10-19T00:18:04.6976845Z     scope_lane_wal::tests::file_wal_repairs_incomplete_length_before_new_commits"
+      },
+      {
+        "line": 4637,
+        "text": "2026-10-19T00:25:42.9254706Z ##[error]Process completed with exit code 3.\n2026-10-19T00:25:43.1449270Z ##[group]Run actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f\n2026-10-19T00:25:43.1449592Z with:"
+      },
+      {
+        "line": 137,
+        "text": "2026-10-18T23:56:27.2142196Z HEAD is now at cb55c1e Merge dc271d4f47028e941decce70cc8ef81fb24d2141 into f8c9419df6ddeb36ff8b522a50219981fb8d9345\n2026-10-18T23:56:27.2254876Z ##[endgroup]\n2026-10-18T23:56:27.2640984Z [command]\"C:\\Program Files\\Git\\bin\\git.exe\" log -1 --format=%H"
+      }
+    ]
+  },
+  {
+    "job_id": 118041065193,
+    "decoded_bytes": 968937,
+    "sha256": "242ac42fab2c6581d62934506ddbfe15afd86db71a6cd6d83cfe0ffbcf9d3934",
+    "gzip_bytes": 140413,
+    "excerpts": [
+      {
+        "line": 3707,
+        "text": "2026-10-19T12:11:17.5918512Z ---- scope_lane_wal::tests::file_wal_repairs_incomplete_length_before_new_commits stdout ----\n2026-10-19T12:11:17.5918924Z \n2026-10-19T12:11:17.5919443Z thread 'scope_lane_wal::tests::file_wal_repairs_incomplete_length_before_new_commits' (9860) panicked at hepta-control-plane/src\\scope_lane_wal_tests.rs:16:34:\n2026-10-19T12:11:17.5920358Z unexpected result: Io(PermissionDenied)\n2026-10-19T12:11:17.5920805Z note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace\n2026-10-19T12:11:17.5921201Z \n2026-10-19T12:11:17.5921464Z ---- scope_lane_wal::tests::file_wal_syncs_frames_and_repairs_torn_tail stdout ----\n2026-10-19T12:11:17.6050339Z "
+      },
+      {
+        "line": 3713,
+        "text": "2026-10-19T12:11:17.5921464Z ---- scope_lane_wal::tests::file_wal_syncs_frames_and_repairs_torn_tail stdout ----\n2026-10-19T12:11:17.6050339Z \n2026-10-19T12:11:17.6051185Z thread 'scope_lane_wal::tests::file_wal_syncs_frames_and_repairs_torn_tail' (7888) panicked at hepta-control-plane/src\\scope_lane_wal_tests.rs:16:34:\n2026-10-19T12:11:17.6075798Z unexpected result: Io(PermissionDenied)\n2026-10-19T12:11:17.6076055Z \n2026-10-19T12:11:17.6076062Z \n2026-10-19T12:11:17.6076175Z failures:\n2026-10-19T12:11:17.6076547Z     scope_lane_wal::tests::file_wal_repairs_incomplete_length_before_new_commits"
+      },
+      {
+        "line": 6168,
+        "text": "2026-10-19T12:19:28.5710814Z ##[error]Process completed with exit code 3.\n2026-10-19T12:19:28.6901377Z ##[group]Run actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f\n2026-10-19T12:19:28.6901653Z with:"
+      },
+      {
+        "line": 151,
+        "text": "2026-10-19T11:45:45.8718971Z HEAD is now at 55a4c96 Merge 33e8302efd89a385c168199b4cba2c9c96d5708e into dc271d4f47028e941decce70cc8ef81fb24d2141\n2026-10-19T11:45:45.8841271Z ##[endgroup]\n2026-10-19T11:45:45.9214555Z [command]\"C:\\Program Files\\Git\\bin\\git.exe\" log -1 --format=%H"
+      }
+    ]
+  },
+  {
+    "job_id": 118059888568,
+    "decoded_bytes": 133830,
+    "sha256": "798d518bc0aaec73ce58f2e8cf11e2e81023870c60994f2ef7004a37ac6fe464",
+    "gzip_bytes": 27381,
+    "excerpts": [
+      {
+        "line": 1649,
+        "text": "2026-10-19T12:57:59.2690246Z test result: ok. 7 passed; 0 failed; 0 ignored; 0 measured; 110 filtered out; finished in 0.28s\n2026-10-19T12:57:59.2690734Z \n2026-10-19T12:57:59.3277914Z ##[group]Run set -euo pipefail"
+      },
+      {
+        "line": 186,
+        "text": "2026-10-19T12:50:07.9141222Z HEAD is now at 5993cb9 style(control): apply exact hosted rustfmt to scope WAL replay assertions\n2026-10-19T12:50:07.9310815Z ##[endgroup]\n2026-10-19T12:50:07.9861476Z [command]\"C:\\Program Files\\Git\\bin\\git.exe\" log -1 --format=%H"
+      }
+    ]
+  },
+  {
+    "job_id": 118069853019,
+    "decoded_bytes": 1202270,
+    "sha256": "f07a6894b7432e4b101f809a11c8d19ba4e7972aeaae67dc40ea54d0ee43733c",
+    "gzip_bytes": 144470,
+    "excerpts": [
+      {
+        "line": 7911,
+        "text": "2026-10-19T14:03:09.8697267Z error: couldn't create a temp dir: No space left on device (os error 28) at path \"/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/target/debug/deps/rmetaR4ZZf9\"\n2026-10-19T14:03:09.8732563Z \n2026-10-19T14:03:09.9529804Z error: could not compile `codex-goal-extension` (test \"goal_extension_backend\") due to 1 previous error"
+      },
+      {
+        "line": 7916,
+        "text": "2026-10-19T14:03:12.1270918Z ##[error]Process completed with exit code 2.\n2026-10-19T14:03:12.3422071Z ##[group]Run actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02\n2026-10-19T14:03:12.3431651Z with:"
+      },
+      {
+        "line": 5048,
+        "text": "2026-10-19T13:43:27.3427694Z HEAD is now at 5993cb9095 style(control): apply exact hosted rustfmt to scope WAL replay assertions\n2026-10-19T13:43:27.3505083Z ##[endgroup]\n2026-10-19T13:43:27.3567994Z [command]/usr/bin/git log -1 --format=%H"
+      }
+    ]
+  },
+  {
+    "job_id": 118054244669,
+    "decoded_bytes": 135157,
+    "sha256": "265113a7d55f23531ebc39b1c4a0317c20f0ac0a6fdb5e54b3190e40d4cd2728",
+    "gzip_bytes": 27627,
+    "excerpts": [
+      {
+        "line": 1646,
+        "text": "2026-10-19T12:26:09.6246373Z test result: ok. 7 passed; 0 failed; 0 ignored; 0 measured; 110 filtered out; finished in 2.13s\n2026-10-19T12:26:09.6247344Z \n2026-10-19T12:26:09.6834366Z ##[group]Run set -euo pipefail"
+      },
+      {
+        "line": 1682,
+        "text": "2026-10-19T12:26:12.1548577Z ##[error]Process completed with exit code 1.\n2026-10-19T12:26:12.1723441Z ##[group]Run set -euo pipefail\n2026-10-19T12:26:12.1723808Z \u001b[36;1mset -euo pipefail\u001b[0m"
+      },
+      {
+        "line": 183,
+        "text": "2026-10-19T12:17:59.3132111Z HEAD is now at 1689f74 ci(control-wal): reuse exact pinned native Windows crash-tail qualification workflow\n2026-10-19T12:17:59.3280032Z ##[endgroup]\n2026-10-19T12:17:59.4047300Z [command]\"C:\\Program Files\\Git\\bin\\git.exe\" log -1 --format=%H"
+      }
+    ]
+  },
+  {
+    "job_id": 118069436384,
+    "decoded_bytes": 1201818,
+    "sha256": "cbd7c5d9735b27b6401cb06f57433dcd1b33dd44dcc100e183b38c1cf9f2f6fe",
+    "gzip_bytes": 142927,
+    "excerpts": [
+      {
+        "line": 7911,
+        "text": "2026-10-19T13:48:30.3063240Z CI command not dispatched: [Errno 28] No space left on device\n2026-10-19T13:48:31.2241302Z ##[error]Process completed with exit code 2.\n2026-10-19T13:48:31.3808805Z ##[group]Run actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02"
+      },
+      {
+        "line": 7912,
+        "text": "2026-10-19T13:48:31.2241302Z ##[error]Process completed with exit code 2.\n2026-10-19T13:48:31.3808805Z ##[group]Run actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02\n2026-10-19T13:48:31.3809176Z with:"
+      },
+      {
+        "line": 5048,
+        "text": "2026-10-19T13:31:33.9513962Z HEAD is now at 27da01c95b test(wal): regress Windows partial-body truncate and post-recovery append\n2026-10-19T13:31:33.9610412Z ##[endgroup]\n2026-10-19T13:31:33.9710195Z [command]/usr/bin/git log -1 --format=%H"
+      }
+    ]
+  }
+]

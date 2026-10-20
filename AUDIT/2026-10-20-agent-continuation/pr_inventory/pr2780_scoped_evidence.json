@@ -1,0 +1,41 @@
+{
+  "pr": 2780,
+  "source_head_sha": "f9f8502b96aebc56ad537176058493641c05b324",
+  "job": {
+    "id": 117617900226,
+    "run_id": 39106716394,
+    "workflow_name": "blocking-ci",
+    "head_branch": "maintenance/scoped-cargo-disk-budget-20261018",
+    "run_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/runs/39106716394",
+    "run_attempt": 1,
+    "node_id": "CR_kwDOTrgxoM8AAAAbYpK6wg",
+    "head_sha": "f9f8502b96aebc56ad537176058493641c05b324",
+    "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/jobs/117617900226",
+    "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/39106716394/job/117617900226",
+    "status": "completed",
+    "conclusion": "skipped",
+    "created_at": "2026-10-18T07:31:39Z",
+    "started_at": "2026-10-18T07:31:39Z",
+    "completed_at": "2026-10-18T07:31:39Z",
+    "name": "Hepta scoped native checks",
+    "steps": [],
+    "check_run_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/check-runs/117617900226",
+    "labels": [
+      "ubuntu-24.04"
+    ],
+    "runner_id": null,
+    "runner_name": null,
+    "runner_group_id": null,
+    "runner_group_name": null
+  },
+  "scope_log_job_id": 117614032937,
+  "scope_log_exact_result": "2026-10-18T07:31:36.7969177Z {\"base\": \"f8c9419df6ddeb36ff8b522a50219981fb8d9345\", \"paths\": [\".github/workflows/blocking-ci.yml\"], \"scope\": {\"derived\": true, \"effects\": true, \"full_repo\": true, \"inference\": true, \"learning\": true, \"lifecycle\": true, \"native\": true, \"objective\": true}, \"source_head\": \"f9f8502b96aebc56ad537176058493641c05b324\"}",
+  "scoped_job_logs": {
+    "http_status": 404,
+    "error": "BlobNotFound",
+    "interpretation": "Skipped job has zero steps and no runner assignment; no native test receipt exists."
+  },
+  "conclusion": "UNVERIFIED_LOW_DISK_EXECUTION",
+  "code_reuse": "Job env patch may be reused; exact scoped native job must be exercised on the new source."
+}
+

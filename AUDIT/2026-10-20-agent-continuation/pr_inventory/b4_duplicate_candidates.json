@@ -1,0 +1,306 @@
+[
+  {
+    "pr": 2920,
+    "number": 2920,
+    "title": "fix(b4): reconcile both independent signed Neuron caller inventories at current HEAD",
+    "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/2920",
+    "state": "open",
+    "draft": true,
+    "author": "ProfHepta",
+    "assignees": [],
+    "reviewers": [],
+    "labels": [],
+    "created_at": "2026-10-20T01:55:07Z",
+    "updated_at": "2026-10-20T01:55:07Z",
+    "head_ref": "fix/neuron-dual-b4-head-20261019",
+    "source_head_sha": "20bf22ba773148a28a1e6b0d16b8401b731d37db",
+    "head_repo": "TrillionniumFoundation/hepta-private-ci",
+    "base_ref": "feat/neuron-final-use-production-gate-20261018",
+    "pr_recorded_base_sha": "b920d259bfc55c4afb6f0f9ab0f9698e72db1add",
+    "live_base_ref_sha": "b920d259bfc55c4afb6f0f9ab0f9698e72db1add",
+    "live_base_ref_read": true,
+    "synthetic_merge_sha": "8006ff8b98f909da01b4b77fd3ae9e2eac7165d3",
+    "actual_host_owner": "UNKNOWN",
+    "local_runtime": "LOCAL_RUNTIME_NOT_OBSERVABLE",
+    "commit": {
+      "sha": "20bf22ba773148a28a1e6b0d16b8401b731d37db",
+      "node_id": "C_kwDOTrgxoNoAKDIwYmYyMmJhNzczMTQ4YTI4YTFlNmIwZDE2Yjg0MDFiNzMxZDM3ZGI",
+      "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/commits/20bf22ba773148a28a1e6b0d16b8401b731d37db",
+      "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/commit/20bf22ba773148a28a1e6b0d16b8401b731d37db",
+      "author": {
+        "name": "Qian QI",
+        "email": "102159240+ProfHepta@users.noreply.github.com",
+        "date": "2026-10-20T01:55:03Z"
+      },
+      "committer": {
+        "name": "Qian QI",
+        "email": "102159240+ProfHepta@users.noreply.github.com",
+        "date": "2026-10-20T01:55:03Z"
+      },
+      "tree": {
+        "sha": "1c9ae3352d8f7c779ba6683af3b96d9d6f1a088a",
+        "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/trees/1c9ae3352d8f7c779ba6683af3b96d9d6f1a088a"
+      },
+      "message": "ci(b4): revalidate both caller proofs on manifest changes",
+      "parents": [
+        {
+          "sha": "cc17ba5986109367328762a5228c994ebb2bef83",
+          "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/commits/cc17ba5986109367328762a5228c994ebb2bef83",
+          "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/commit/cc17ba5986109367328762a5228c994ebb2bef83"
+        }
+      ],
+      "verification": {
+        "verified": false,
+        "reason": "unsigned",
+        "signature": null,
+        "payload": null,
+        "verified_at": null
+      }
+    },
+    "files": [
+      {
+        "sha": "5384c7dd60df5d6dc684dd93c1b3f38290be069d",
+        "filename": ".github/workflows/hepta-neuron-signed-admission.yml",
+        "status": "modified",
+        "additions": 4,
+        "deletions": 0,
+        "changes": 4,
+        "blob_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/20bf22ba773148a28a1e6b0d16b8401b731d37db/.github%2Fworkflows%2Fhepta-neuron-signed-admission.yml",
+        "raw_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/raw/20bf22ba773148a28a1e6b0d16b8401b731d37db/.github%2Fworkflows%2Fhepta-neuron-signed-admission.yml",
+        "contents_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/contents/.github%2Fworkflows%2Fhepta-neuron-signed-admission.yml?ref=20bf22ba773148a28a1e6b0d16b8401b731d37db",
+        "patch": "@@ -3,6 +3,10 @@ name: Hepta Neuron signed admission and worker qualification\n on:\n   pull_request:\n     paths:\n+      - \"CALLERS.toml\"\n+      - \"qa/b4-no-bypass/**\"\n+      - \"scripts/verify_hepta_callers.py\"\n+      - \"scripts/hepta_typed_callers.py\"\n       - \"codex-rs/hepta-neuron/**\"\n       - \"codex-rs/hepta-intelligence/**\"\n       - \"codex-rs/hepta-agentd/**\""
+      },
+      {
+        "sha": "494c0b6b90fe4baf764d8503296738b2cbe2471f",
+        "filename": "CALLERS.toml",
+        "status": "modified",
+        "additions": 1,
+        "deletions": 1,
+        "changes": 2,
+        "blob_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/20bf22ba773148a28a1e6b0d16b8401b731d37db/CALLERS.toml",
+        "raw_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/raw/20bf22ba773148a28a1e6b0d16b8401b731d37db/CALLERS.toml",
+        "contents_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/contents/CALLERS.toml?ref=20bf22ba773148a28a1e6b0d16b8401b731d37db",
+        "patch": "@@ -158,7 +158,7 @@ id = \"final_use_claim\"\n symbol = \"claim_final_use\"\n definition_path = \"codex-rs/hepta-contracts/src/final_use.rs\"\n definition_markers = [\"pub fn claim_final_use(\", \"authority.claim(signed, expected)\"]\n-product_callers = [\"codex-rs/hepta-bao-adapter/src/https_consumer.rs\", \"codex-rs/hepta-agentd/src/browser_servo.rs\"]\n+product_callers = [\"codex-rs/hepta-bao-adapter/src/https_consumer.rs\", \"codex-rs/hepta-agentd/src/browser_servo.rs\", \"codex-rs/hepta-infer-worker-host/src/neuron_microbatch.rs\", \"codex-rs/hepta-neuron/src/runtime.rs\"]\n caller_markers = [\"claim_final_use\"]\n \n [[boundary]]"
+      },
+      {
+        "sha": "2c4875c1fd5793c0f09f20a0bf5be32003a148b3",
+        "filename": "qa/b4-no-bypass/KERNEL_AUTHORITY_BOUNDARIES.json",
+        "status": "modified",
+        "additions": 6,
+        "deletions": 2,
+        "changes": 8,
+        "blob_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/20bf22ba773148a28a1e6b0d16b8401b731d37db/qa%2Fb4-no-bypass%2FKERNEL_AUTHORITY_BOUNDARIES.json",
+        "raw_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/raw/20bf22ba773148a28a1e6b0d16b8401b731d37db/qa%2Fb4-no-bypass%2FKERNEL_AUTHORITY_BOUNDARIES.json",
+        "contents_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/contents/qa%2Fb4-no-bypass%2FKERNEL_AUTHORITY_BOUNDARIES.json?ref=20bf22ba773148a28a1e6b0d16b8401b731d37db",
+        "patch": "@@ -171,8 +171,10 @@\n         \"\\\\bclaim_final_use\\\\s*\\\\(\"\n       ],\n       \"allowedCallers\": [\n+        \"codex-rs/hepta-agentd/src/browser_servo.rs\",\n         \"codex-rs/hepta-bao-adapter/src/https_consumer.rs\",\n-        \"codex-rs/hepta-agentd/src/browser_servo.rs\"\n+        \"codex-rs/hepta-infer-worker-host/src/neuron_microbatch.rs\",\n+        \"codex-rs/hepta-neuron/src/runtime.rs\"\n       ]\n     },\n     {\n@@ -503,7 +505,9 @@\n         \"FinalUseAuthority\\\\s*::\\\\s*with_verified_effect\\\\s*\\\\(\"\n       ],\n       \"allowedCallers\": [\n-        \"codex-rs/hepta-automation/src/authorized_effect.rs\"\n+        \"codex-rs/hepta-automation/src/authorized_effect.rs\",\n+        \"codex-rs/hepta-infer-worker-host/src/neuron_microbatch.rs\",\n+        \"codex-rs/hepta-neuron/src/runtime.rs\"\n       ]\n     },\n     {"
+      }
+    ]
+  },
+  {
+    "pr": 2921,
+    "number": 2921,
+    "title": "[DRAFT][B4] Close both independent FinalUse caller inventories on latest Neuron head",
+    "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/2921",
+    "state": "open",
+    "draft": true,
+    "author": "ProfHepta",
+    "assignees": [],
+    "reviewers": [],
+    "labels": [],
+    "created_at": "2026-10-20T01:56:08Z",
+    "updated_at": "2026-10-20T01:56:08Z",
+    "head_ref": "fix/neuron-b4-both-inventories-current-head-20261019",
+    "source_head_sha": "22293e588c95f4fcb5b45907eb4fed3b73fdb755",
+    "head_repo": "TrillionniumFoundation/hepta-private-ci",
+    "base_ref": "feat/neuron-final-use-production-gate-20261018",
+    "pr_recorded_base_sha": "b920d259bfc55c4afb6f0f9ab0f9698e72db1add",
+    "live_base_ref_sha": "b920d259bfc55c4afb6f0f9ab0f9698e72db1add",
+    "live_base_ref_read": true,
+    "synthetic_merge_sha": "64dfd477668c495a03bff2e07b02e701dfdeba2e",
+    "actual_host_owner": "UNKNOWN",
+    "local_runtime": "LOCAL_RUNTIME_NOT_OBSERVABLE",
+    "commit": {
+      "sha": "22293e588c95f4fcb5b45907eb4fed3b73fdb755",
+      "node_id": "C_kwDOTrgxoNoAKDIyMjkzZTU4OGM5NWY0ZmNiNWI0NTkwN2ViNGZlZDNiNzNmZGI3NTU",
+      "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/commits/22293e588c95f4fcb5b45907eb4fed3b73fdb755",
+      "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/commit/22293e588c95f4fcb5b45907eb4fed3b73fdb755",
+      "author": {
+        "name": "Qian QI",
+        "email": "102159240+ProfHepta@users.noreply.github.com",
+        "date": "2026-10-20T01:55:19Z"
+      },
+      "committer": {
+        "name": "Qian QI",
+        "email": "102159240+ProfHepta@users.noreply.github.com",
+        "date": "2026-10-20T01:55:19Z"
+      },
+      "tree": {
+        "sha": "57df67bc287f94fcfa4f6e843c5993ac246833f1",
+        "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/trees/57df67bc287f94fcfa4f6e843c5993ac246833f1"
+      },
+      "message": "fix(neuron): converge both independent B4 inventories and trigger signed CI",
+      "parents": [
+        {
+          "sha": "b920d259bfc55c4afb6f0f9ab0f9698e72db1add",
+          "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/commits/b920d259bfc55c4afb6f0f9ab0f9698e72db1add",
+          "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/commit/b920d259bfc55c4afb6f0f9ab0f9698e72db1add"
+        }
+      ],
+      "verification": {
+        "verified": false,
+        "reason": "unsigned",
+        "signature": null,
+        "payload": null,
+        "verified_at": null
+      }
+    },
+    "files": [
+      {
+        "sha": "be0e3e8c8c5022135a188c834bdd158c7c2a559d",
+        "filename": ".github/workflows/hepta-neuron-signed-admission.yml",
+        "status": "modified",
+        "additions": 2,
+        "deletions": 0,
+        "changes": 2,
+        "blob_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/22293e588c95f4fcb5b45907eb4fed3b73fdb755/.github%2Fworkflows%2Fhepta-neuron-signed-admission.yml",
+        "raw_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/raw/22293e588c95f4fcb5b45907eb4fed3b73fdb755/.github%2Fworkflows%2Fhepta-neuron-signed-admission.yml",
+        "contents_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/contents/.github%2Fworkflows%2Fhepta-neuron-signed-admission.yml?ref=22293e588c95f4fcb5b45907eb4fed3b73fdb755",
+        "patch": "@@ -9,6 +9,8 @@ on:\n       - \"codex-rs/hepta-infer-worker-host/**\"\n       - \"codex-rs/Cargo.lock\"\n       - \".github/workflows/hepta-neuron-signed-admission.yml\"\n+      - \"CALLERS.toml\"\n+      - \"scripts/verify_hepta_callers.py\"\n   workflow_dispatch:\n \n permissions:"
+      },
+      {
+        "sha": "9171cd7059507cb70b91440a4c2d6c4f1dc72c9a",
+        "filename": "CALLERS.toml",
+        "status": "modified",
+        "additions": 2,
+        "deletions": 2,
+        "changes": 4,
+        "blob_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/22293e588c95f4fcb5b45907eb4fed3b73fdb755/CALLERS.toml",
+        "raw_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/raw/22293e588c95f4fcb5b45907eb4fed3b73fdb755/CALLERS.toml",
+        "contents_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/contents/CALLERS.toml?ref=22293e588c95f4fcb5b45907eb4fed3b73fdb755",
+        "patch": "@@ -158,7 +158,7 @@ id = \"final_use_claim\"\n symbol = \"claim_final_use\"\n definition_path = \"codex-rs/hepta-contracts/src/final_use.rs\"\n definition_markers = [\"pub fn claim_final_use(\", \"authority.claim(signed, expected)\"]\n-product_callers = [\"codex-rs/hepta-bao-adapter/src/https_consumer.rs\", \"codex-rs/hepta-agentd/src/browser_servo.rs\"]\n+product_callers = [\"codex-rs/hepta-bao-adapter/src/https_consumer.rs\", \"codex-rs/hepta-agentd/src/browser_servo.rs\", \"codex-rs/hepta-infer-worker-host/src/neuron_microbatch.rs\", \"codex-rs/hepta-neuron/src/runtime.rs\"]\n caller_markers = [\"claim_final_use\"]\n \n [[boundary]]\n@@ -518,5 +518,5 @@ symbol = \"FinalUseAuthority::with_verified_effect\"\n call_pattern = '\\bauthority\\s*\\.\\s*with_verified_effect\\s*\\('\n definition_path = \"codex-rs/hepta-contracts/src/final_use.rs\"\n definition_markers = [\"pub fn with_verified_effect\", \"enter_verified_effect\", \"active_dispatches\"]\n-product_callers = [\"codex-rs/hepta-automation/src/authorized_effect.rs\"]\n+product_callers = [\"codex-rs/hepta-automation/src/authorized_effect.rs\", \"codex-rs/hepta-infer-worker-host/src/neuron_microbatch.rs\", \"codex-rs/hepta-neuron/src/runtime.rs\"]\n caller_markers = [\"with_verified_effect\"]"
+      },
+      {
+        "sha": "2c4875c1fd5793c0f09f20a0bf5be32003a148b3",
+        "filename": "qa/b4-no-bypass/KERNEL_AUTHORITY_BOUNDARIES.json",
+        "status": "modified",
+        "additions": 6,
+        "deletions": 2,
+        "changes": 8,
+        "blob_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/22293e588c95f4fcb5b45907eb4fed3b73fdb755/qa%2Fb4-no-bypass%2FKERNEL_AUTHORITY_BOUNDARIES.json",
+        "raw_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/raw/22293e588c95f4fcb5b45907eb4fed3b73fdb755/qa%2Fb4-no-bypass%2FKERNEL_AUTHORITY_BOUNDARIES.json",
+        "contents_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/contents/qa%2Fb4-no-bypass%2FKERNEL_AUTHORITY_BOUNDARIES.json?ref=22293e588c95f4fcb5b45907eb4fed3b73fdb755",
+        "patch": "@@ -171,8 +171,10 @@\n         \"\\\\bclaim_final_use\\\\s*\\\\(\"\n       ],\n       \"allowedCallers\": [\n+        \"codex-rs/hepta-agentd/src/browser_servo.rs\",\n         \"codex-rs/hepta-bao-adapter/src/https_consumer.rs\",\n-        \"codex-rs/hepta-agentd/src/browser_servo.rs\"\n+        \"codex-rs/hepta-infer-worker-host/src/neuron_microbatch.rs\",\n+        \"codex-rs/hepta-neuron/src/runtime.rs\"\n       ]\n     },\n     {\n@@ -503,7 +505,9 @@\n         \"FinalUseAuthority\\\\s*::\\\\s*with_verified_effect\\\\s*\\\\(\"\n       ],\n       \"allowedCallers\": [\n-        \"codex-rs/hepta-automation/src/authorized_effect.rs\"\n+        \"codex-rs/hepta-automation/src/authorized_effect.rs\",\n+        \"codex-rs/hepta-infer-worker-host/src/neuron_microbatch.rs\",\n+        \"codex-rs/hepta-neuron/src/runtime.rs\"\n       ]\n     },\n     {"
+      }
+    ]
+  },
+  {
+    "pr": 2913,
+    "number": 2913,
+    "title": "[DRAFT][B4] Reconcile signed Neuron FinalUse caller inventories on current owner",
+    "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/2913",
+    "state": "open",
+    "draft": true,
+    "author": "ProfHepta",
+    "assignees": [],
+    "reviewers": [],
+    "labels": [],
+    "created_at": "2026-10-19T13:53:55Z",
+    "updated_at": "2026-10-19T13:53:55Z",
+    "head_ref": "fix/neuron-exact-b4-parity-current-owner-20261019",
+    "source_head_sha": "26105daf252e2d6aa416b881c650d6db2c8a9e81",
+    "head_repo": "TrillionniumFoundation/hepta-private-ci",
+    "base_ref": "feat/neuron-final-use-production-gate-20261018",
+    "pr_recorded_base_sha": "b920d259bfc55c4afb6f0f9ab0f9698e72db1add",
+    "live_base_ref_sha": "b920d259bfc55c4afb6f0f9ab0f9698e72db1add",
+    "live_base_ref_read": true,
+    "synthetic_merge_sha": "1bc4bb24717256698e18eb4ef4645a71aded33e2",
+    "actual_host_owner": "UNKNOWN",
+    "local_runtime": "LOCAL_RUNTIME_NOT_OBSERVABLE",
+    "commit": {
+      "sha": "26105daf252e2d6aa416b881c650d6db2c8a9e81",
+      "node_id": "C_kwDOTrgxoNoAKDI2MTA1ZGFmMjUyZTJkNmFhNDE2Yjg4MWM2NTBkNmRiMmM4YTllODE",
+      "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/commits/26105daf252e2d6aa416b881c650d6db2c8a9e81",
+      "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/commit/26105daf252e2d6aa416b881c650d6db2c8a9e81",
+      "author": {
+        "name": "Qian QI",
+        "email": "102159240+ProfHepta@users.noreply.github.com",
+        "date": "2026-10-19T13:53:07Z"
+      },
+      "committer": {
+        "name": "Qian QI",
+        "email": "102159240+ProfHepta@users.noreply.github.com",
+        "date": "2026-10-19T13:53:07Z"
+      },
+      "tree": {
+        "sha": "5160f8ba4d6cfef5fba27279b9ce7356c8c89a74",
+        "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/trees/5160f8ba4d6cfef5fba27279b9ce7356c8c89a74"
+      },
+      "message": "fix(neuron): reconcile canonical and independent B4 caller inventory on current FinalUse owner",
+      "parents": [
+        {
+          "sha": "b920d259bfc55c4afb6f0f9ab0f9698e72db1add",
+          "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/commits/b920d259bfc55c4afb6f0f9ab0f9698e72db1add",
+          "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/commit/b920d259bfc55c4afb6f0f9ab0f9698e72db1add"
+        }
+      ],
+      "verification": {
+        "verified": false,
+        "reason": "unsigned",
+        "signature": null,
+        "payload": null,
+        "verified_at": null
+      }
+    },
+    "files": [
+      {
+        "sha": "e72acd743fba24b368152f4321be2a72a7afa849",
+        "filename": ".github/workflows/hepta-neuron-signed-admission.yml",
+        "status": "modified",
+        "additions": 14,
+        "deletions": 1,
+        "changes": 15,
+        "blob_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/26105daf252e2d6aa416b881c650d6db2c8a9e81/.github%2Fworkflows%2Fhepta-neuron-signed-admission.yml",
+        "raw_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/raw/26105daf252e2d6aa416b881c650d6db2c8a9e81/.github%2Fworkflows%2Fhepta-neuron-signed-admission.yml",
+        "contents_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/contents/.github%2Fworkflows%2Fhepta-neuron-signed-admission.yml?ref=26105daf252e2d6aa416b881c650d6db2c8a9e81",
+        "patch": "@@ -8,6 +8,10 @@ on:\n       - \"codex-rs/hepta-agentd/**\"\n       - \"codex-rs/hepta-infer-worker-host/**\"\n       - \"codex-rs/Cargo.lock\"\n+      - \"CALLERS.toml\"\n+      - \"scripts/verify_hepta_callers.py\"\n+      - \"qa/b4-no-bypass/KERNEL_AUTHORITY_BOUNDARIES.json\"\n+      - \"qa/b4-no-bypass/test_kernel_authority_closed_world.py\"\n       - \".github/workflows/hepta-neuron-signed-admission.yml\"\n   workflow_dispatch:\n \n@@ -71,6 +75,14 @@ jobs:\n             cat \"$RUNNER_TEMP/hepta-neuron-evidence/caller-proof.log\"\n             exit 1\n           fi\n+      - name: Validate independent B4 kernel authority closed set\n+        id: independent_b4\n+        continue-on-error: true\n+        shell: bash\n+        run: |\n+          set -euo pipefail\n+          python3 -m unittest discover -s qa/b4-no-bypass -p 'test_kernel_authority_closed_world.py' -v\n+\n       - name: Check source formatting (no mutation)\n         id: format\n         continue-on-error: true\n@@ -131,14 +143,15 @@ jobs:\n         shell: bash\n         env:\n           CALLERS: ${{ steps.callers.outcome }}\n+          INDEPENDENT_B4: ${{ steps.independent_b4.outcome }}\n           FORMAT: ${{ steps.format.outcome }}\n           TESTS: ${{ steps.tests.outcome }}\n           COMPILE: ${{ steps.compile.outcome }}\n           QUALIFICATION: ${{ steps.qualification.outcome }}\n           CLIPPY: ${{ steps.clippy.outcome }}\n         run: |\n           set -euo pipefail\n-          for result in \"$CALLERS\" \"$FORMAT\" \"$TESTS\" \"$COMPILE\" \"$QUALIFICATION\" \"$CLIPPY\"; do\n+          for result in \"$CALLERS\" \"$INDEPENDENT_B4\" \"$FORMAT\" \"$TESTS\" \"$COMPILE\" \"$QUALIFICATION\" \"$CLIPPY\"; do\n             test \"$result\" = 'success' || { echo \"required gate is not success: $result\"; exit 1; }\n           done\n       - name: Verify no test mutated source"
+      },
+      {
+        "sha": "9171cd7059507cb70b91440a4c2d6c4f1dc72c9a",
+        "filename": "CALLERS.toml",
+        "status": "modified",
+        "additions": 2,
+        "deletions": 2,
+        "changes": 4,
+        "blob_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/26105daf252e2d6aa416b881c650d6db2c8a9e81/CALLERS.toml",
+        "raw_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/raw/26105daf252e2d6aa416b881c650d6db2c8a9e81/CALLERS.toml",
+        "contents_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/contents/CALLERS.toml?ref=26105daf252e2d6aa416b881c650d6db2c8a9e81",
+        "patch": "@@ -158,7 +158,7 @@ id = \"final_use_claim\"\n symbol = \"claim_final_use\"\n definition_path = \"codex-rs/hepta-contracts/src/final_use.rs\"\n definition_markers = [\"pub fn claim_final_use(\", \"authority.claim(signed, expected)\"]\n-product_callers = [\"codex-rs/hepta-bao-adapter/src/https_consumer.rs\", \"codex-rs/hepta-agentd/src/browser_servo.rs\"]\n+product_callers = [\"codex-rs/hepta-bao-adapter/src/https_consumer.rs\", \"codex-rs/hepta-agentd/src/browser_servo.rs\", \"codex-rs/hepta-infer-worker-host/src/neuron_microbatch.rs\", \"codex-rs/hepta-neuron/src/runtime.rs\"]\n caller_markers = [\"claim_final_use\"]\n \n [[boundary]]\n@@ -518,5 +518,5 @@ symbol = \"FinalUseAuthority::with_verified_effect\"\n call_pattern = '\\bauthority\\s*\\.\\s*with_verified_effect\\s*\\('\n definition_path = \"codex-rs/hepta-contracts/src/final_use.rs\"\n definition_markers = [\"pub fn with_verified_effect\", \"enter_verified_effect\", \"active_dispatches\"]\n-product_callers = [\"codex-rs/hepta-automation/src/authorized_effect.rs\"]\n+product_callers = [\"codex-rs/hepta-automation/src/authorized_effect.rs\", \"codex-rs/hepta-infer-worker-host/src/neuron_microbatch.rs\", \"codex-rs/hepta-neuron/src/runtime.rs\"]\n caller_markers = [\"with_verified_effect\"]"
+      },
+      {
+        "sha": "3bc0927b935c6aac429d59964fe7210b4af96052",
+        "filename": "qa/b4-no-bypass/KERNEL_AUTHORITY_BOUNDARIES.json",
+        "status": "modified",
+        "additions": 6,
+        "deletions": 2,
+        "changes": 8,
+        "blob_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/26105daf252e2d6aa416b881c650d6db2c8a9e81/qa%2Fb4-no-bypass%2FKERNEL_AUTHORITY_BOUNDARIES.json",
+        "raw_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/raw/26105daf252e2d6aa416b881c650d6db2c8a9e81/qa%2Fb4-no-bypass%2FKERNEL_AUTHORITY_BOUNDARIES.json",
+        "contents_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/contents/qa%2Fb4-no-bypass%2FKERNEL_AUTHORITY_BOUNDARIES.json?ref=26105daf252e2d6aa416b881c650d6db2c8a9e81",
+        "patch": "@@ -172,7 +172,9 @@\n       ],\n       \"allowedCallers\": [\n         \"codex-rs/hepta-bao-adapter/src/https_consumer.rs\",\n-        \"codex-rs/hepta-agentd/src/browser_servo.rs\"\n+        \"codex-rs/hepta-agentd/src/browser_servo.rs\",\n+        \"codex-rs/hepta-infer-worker-host/src/neuron_microbatch.rs\",\n+        \"codex-rs/hepta-neuron/src/runtime.rs\"\n       ]\n     },\n     {\n@@ -503,7 +505,9 @@\n         \"FinalUseAuthority\\\\s*::\\\\s*with_verified_effect\\\\s*\\\\(\"\n       ],\n       \"allowedCallers\": [\n-        \"codex-rs/hepta-automation/src/authorized_effect.rs\"\n+        \"codex-rs/hepta-automation/src/authorized_effect.rs\",\n+        \"codex-rs/hepta-infer-worker-host/src/neuron_microbatch.rs\",\n+        \"codex-rs/hepta-neuron/src/runtime.rs\"\n       ]\n     },\n     {"
+      },
+      {
+        "sha": "ae103e8c1d37be989fe4e03bb043ab9e158abb81",
+        "filename": "qa/b4-no-bypass/test_kernel_authority_closed_world.py",
+        "status": "modified",
+        "additions": 20,
+        "deletions": 0,
+        "changes": 20,
+        "blob_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/26105daf252e2d6aa416b881c650d6db2c8a9e81/qa%2Fb4-no-bypass%2Ftest_kernel_authority_closed_world.py",
+        "raw_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/raw/26105daf252e2d6aa416b881c650d6db2c8a9e81/qa%2Fb4-no-bypass%2Ftest_kernel_authority_closed_world.py",
+        "contents_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/contents/qa%2Fb4-no-bypass%2Ftest_kernel_authority_closed_world.py?ref=26105daf252e2d6aa416b881c650d6db2c8a9e81",
+        "patch": "@@ -178,6 +178,26 @@ def test_canonical_kernel_authority_inventory_is_declared_in_callers_manifest(se\n             f\"kernel.authority privileged boundaries missing from privileged_inventory: {sorted(canonical - required)}\",\n         )\n \n+    def test_signed_neuron_final_use_callers_match_both_inventories(self) -> None:\n+        manifest = tomllib.loads(MANIFEST.read_text(encoding=\"utf-8\"))\n+        declared = {row[\"id\"]: row for row in manifest[\"boundary\"]}\n+        independent = {row[\"id\"]: row for row in self.inventory()}\n+        signed_neuron_callers = {\n+            \"codex-rs/hepta-infer-worker-host/src/neuron_microbatch.rs\",\n+            \"codex-rs/hepta-neuron/src/runtime.rs\",\n+        }\n+        for boundary_id, marker in (\n+            (\"final_use_claim\", \"claim_final_use(\"),\n+            (\"final_use_guarded_effect\", \"with_verified_effect(\"),\n+        ):\n+            with self.subTest(boundary=boundary_id):\n+                manifest_callers = set(declared[boundary_id][\"product_callers\"])\n+                independent_callers = set(independent[boundary_id][\"allowedCallers\"])\n+                self.assertEqual(independent_callers, manifest_callers)\n+                self.assertTrue(signed_neuron_callers.issubset(independent_callers))\n+                for source_path in sorted(signed_neuron_callers):\n+                    self.assertIn(marker, self.lexical_code(source_path))\n+\n     def test_type_anchored_callers_match_independent_closed_set(self) -> None:\n         ignored = (\"/tests/\", \"/examples/\", \"_tests.rs\")\n         rows = self.inventory()"
+      }
+    ]
+  }
+]
+

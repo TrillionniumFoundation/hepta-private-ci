@@ -1,0 +1,160 @@
+diff --git a/codex-rs/Cargo.lock b/codex-rs/Cargo.lock
+index 8c0b0635664cd77f4313838bbf7618ca2a89f8f5..232fc40e53a20d597a5faa7b0737d642909d26ed 100644
+--- a/codex-rs/Cargo.lock
++++ b/codex-rs/Cargo.lock
+@@ -3684,6 +3684,7 @@ dependencies = [
+  "codex-hepta-operations",
+  "codex-hepta-types",
+  "ed25519-dalek",
++ "libc",
+  "pretty_assertions",
+  "tempfile",
+  "tokio",
+diff --git a/codex-rs/hepta-control-plane/Cargo.toml b/codex-rs/hepta-control-plane/Cargo.toml
+index 37cd75393a4ef4164d96ba827a3531f37d668d15..eac52190589d64a7b6809c313c044d28d70e1252 100644
+--- a/codex-rs/hepta-control-plane/Cargo.toml
++++ b/codex-rs/hepta-control-plane/Cargo.toml
+@@ -16,6 +16,7 @@ workspace = true
+ [dependencies]
+ codex-hepta-ndu = { path = "../hepta-ndu" }
+ codex-hepta-types = { path = "../hepta-types" }
++libc = { workspace = true }
+ 
+ [dev-dependencies]
+ codex-hepta-contracts = { workspace = true }
+diff --git a/codex-rs/hepta-control-plane/src/scope_lane_wal.rs b/codex-rs/hepta-control-plane/src/scope_lane_wal.rs
+index 23e91d965db5aa697b2f3e6aa64d431b8a27c6a0..39add8ab37a9d93f7502e8e8b3122eaba99aa4b6 100644
+--- a/codex-rs/hepta-control-plane/src/scope_lane_wal.rs
++++ b/codex-rs/hepta-control-plane/src/scope_lane_wal.rs
+@@ -296,16 +296,38 @@ pub struct ScopeLaneFileWalV1 {
+ 
+ impl ScopeLaneFileWalV1 {
+     pub fn open(path: impl AsRef<Path>) -> Result<Self, ScopeLaneWalError> {
+-        let file = OpenOptions::new()
+-            .create(true)
+-            .read(true)
+-            // Windows append-only handles cannot truncate a torn WAL tail.
+-            // Request write access as well, while retaining append semantics.
+-            .write(true)
+-            .append(true)
++        let mut options = OpenOptions::new();
++        // On Windows, FILE_APPEND_DATA can deny SetEndOfFile when repairing a
++        // fsynced incomplete frame. Hold the exclusive WAL owner lock and use
++        // FILE_WRITE_DATA, with append_frame's explicit seek-to-end on writes.
++        // Retain O_APPEND on Unix alongside its no-follow inode protections.
++        options.create(true).read(true).truncate(false);
++        #[cfg(windows)]
++        options.write(true);
++        #[cfg(not(windows))]
++        options.append(true);
++        // Never follow an attacker-swapped final component into an unrelated
++        // file. This is defense in depth: callers still must own a trusted
++        // parent directory and validate their run-root lineage.
++        #[cfg(unix)]
++        {
++            use std::os::unix::fs::OpenOptionsExt;
++            options.custom_flags(libc::O_NOFOLLOW);
++            options.mode(0o600);
++        }
++        let file = options
+             .open(path.as_ref())
+             .map_err(ScopeLaneWalError::from)?;
+         let mut file = LockedFile::acquire(file)?;
++        #[cfg(unix)]
++        {
++            use std::os::unix::fs::MetadataExt;
++            // A hard-linked inode has aliases even with O_NOFOLLOW; do not
++            // append a WAL header or frame through an aliased inode.
++            if file.0.metadata().map_err(ScopeLaneWalError::from)?.nlink() != 1 {
++                return Err(ScopeLaneWalError::NotRegular);
++            }
++        }
+         let physical_len = file.0.metadata().map_err(ScopeLaneWalError::from)?.len();
+         if physical_len == 0 {
+             file.0.write_all(MAGIC).map_err(ScopeLaneWalError::from)?;
+diff --git a/codex-rs/hepta-control-plane/src/scope_lane_wal_tests.rs b/codex-rs/hepta-control-plane/src/scope_lane_wal_tests.rs
+index 47b1b226659899609826a24ba3bf54b77c1d43be..67a34edc7993dc33feb22c8f3bb45c1fbac428ae 100644
+--- a/codex-rs/hepta-control-plane/src/scope_lane_wal_tests.rs
++++ b/codex-rs/hepta-control-plane/src/scope_lane_wal_tests.rs
+@@ -206,3 +206,81 @@ fn poisoned_scope_writer_cannot_acknowledge_even_an_old_duplicate() {
+     must(recovered.append(envelope("scope-a", "owner-a", 1, "second")));
+     assert_eq!(recovered.wal().record_count(), 2);
+ }
++
++#[cfg(unix)]
++#[test]
++fn file_wal_rejects_symlink_and_hardlink_before_writing_header() {
++    use std::os::unix::fs::symlink;
++
++    let directory = must(tempdir());
++    let target = directory.path().join("unrelated-target");
++    must(std::fs::write(&target, []));
++    let symlink_path = directory.path().join("scope-symlink.wal");
++    must(symlink(&target, &symlink_path));
++
++    assert!(ScopeLaneFileWalV1::open(&symlink_path).is_err());
++    assert_eq!(must(std::fs::read(&target)), Vec::<u8>::new());
++
++    let hardlink_path = directory.path().join("scope-hardlink.wal");
++    must(std::fs::hard_link(&target, &hardlink_path));
++    assert!(matches!(
++        ScopeLaneFileWalV1::open(&hardlink_path),
++        Err(ScopeLaneWalError::NotRegular)
++    ));
++    assert_eq!(must(std::fs::read(&target)), Vec::<u8>::new());
++}
++
++#[cfg(unix)]
++#[test]
++fn newly_created_scope_wal_is_owner_only_on_unix() {
++    use std::os::unix::fs::PermissionsExt;
++
++    let directory = must(tempdir());
++    let path = directory.path().join("secure-scope.wal");
++    let wal = must(ScopeLaneFileWalV1::open(&path));
++    assert_eq!(wal.wal().record_count(), 0);
++    assert_eq!(
++        must(std::fs::metadata(path)).permissions().mode() & 0o077,
++        0
++    );
++}
++
++#[test]
++fn torn_tail_recovery_can_append_again_without_overwriting_predecessor() {
++    let directory = must(tempdir());
++    let path = directory.path().join("scope-lanes-reappend.wal");
++    let first = envelope("scope-a", "owner-a", 1, "first");
++    let second = envelope("scope-a", "owner-a", 1, "after-recovery");
++    {
++        let mut writer = must(ScopeLaneFileWalV1::open(&path));
++        assert_eq!(must(writer.append(first.clone())).sequence, 1);
++    }
++    let committed_len = must(std::fs::metadata(&path)).len();
++    // Simulate an interrupted, fsynced partial physical frame.
++    {
++        let mut partial = must(OpenOptions::new().append(true).open(&path));
++        must(partial.write_all(&[0, 0, 0, 64, 0xab]));
++        must(partial.sync_all());
++    }
++    {
++        let mut recovered = must(ScopeLaneFileWalV1::open(&path));
++        assert_eq!(must(std::fs::metadata(&path)).len(), committed_len);
++        assert_eq!(recovered.wal().record_count(), 1);
++        assert_eq!(must(recovered.append(second.clone())).sequence, 2);
++    }
++    let replay = must(ScopeLaneFileWalV1::open(&path));
++    let entries = replay.wal().entries(digest("scope-a"));
++    assert_eq!(entries.map(|rows| rows.len()), Some(2));
++    assert_eq!(
++        entries
++            .and_then(|rows| rows.first())
++            .map(|row| &row.envelope),
++        Some(&first)
++    );
++    assert_eq!(
++        entries
++            .and_then(|rows| rows.get(1))
++            .map(|row| &row.envelope),
++        Some(&second)
++    );
++}
