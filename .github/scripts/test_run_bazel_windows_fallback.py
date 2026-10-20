@@ -260,7 +260,7 @@ class WindowsLocalFallbackTest(unittest.TestCase):
         args = ["build", "--config=ci-linux", "--", "//..."]
         self.assertEqual(
             wrapper.bazel_args_with_remote_config(args, {"RUNNER_OS": "Linux"}),
-            ["build", "--", "//..."],
+            ["build", "--config=ci-common", "--", "//..."],
         )
 
     def test_non_windows_cross_request_does_not_enable_local_msvc(self) -> None:
@@ -271,7 +271,7 @@ class WindowsLocalFallbackTest(unittest.TestCase):
                     wrapper.bazel_args_with_remote_config(
                         args, {"RUNNER_OS": runner_os}
                     ),
-                    ["build", "--", "//..."],
+                    ["build", "--config=ci-common", "--", "//..."],
                 )
 
     def test_authenticated_cross_request_remains_rbe(self) -> None:

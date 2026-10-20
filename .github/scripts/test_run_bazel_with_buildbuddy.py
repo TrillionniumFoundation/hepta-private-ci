@@ -2,6 +2,7 @@
 
 import json
 import os
+import shlex
 import subprocess
 import sys
 import unittest
@@ -12,6 +13,91 @@ import run_bazel_with_buildbuddy
 
 
 class RunBazelWithBuildBuddyTest(unittest.TestCase):
+    def common_bazel_options(self, args: list[str]) -> list[str]:
+        sections: dict[str, list[str]] = {}
+        bazelrc = Path(__file__).resolve().parents[2] / ".bazelrc"
+        for line in bazelrc.read_text(encoding="utf-8").splitlines():
+            fields = shlex.split(line, comments=True)
+            if fields and (fields[0] == "common" or fields[0].startswith("common:")):
+                sections.setdefault(fields[0], []).extend(fields[1:])
+
+        def expand(options: list[str]) -> list[str]:
+            result = []
+            for option in options:
+                if option.startswith("--config="):
+                    result.extend(expand(sections["common:" + option.split("=", 1)[1]]))
+                else:
+                    result.append(option)
+            return result
+
+        prefix = args[: args.index("--")] if "--" in args else args
+        return expand([*sections.get("common", []), *prefix])
+
+    def test_keyless_ci_preserves_shared_policy_and_local_cache(self) -> None:
+        defaults = self.common_bazel_options([])
+        shared_policy = [
+            option
+            for option in self.common_bazel_options(["--config=ci"])
+            if option not in defaults and not option.startswith("--disk_cache=")
+        ]
+        self.assertTrue(shared_policy)
+        targets = [
+            "//...",
+            "-//third_party/v8:all",
+            "-//codex-rs/v8-poc:v8-poc-unit-tests",
+        ]
+        for runner_os in ("Linux", "macOS"):
+            for config in ("ci-linux", "ci-macos", "ci-v8", "ci-windows-cross"):
+                with self.subTest(runner_os=runner_os, config=config):
+                    args = ["test", f"--config={config}", "--", *targets]
+                    actual = run_bazel_with_buildbuddy.bazel_args_with_remote_config(
+                        args, {"RUNNER_OS": runner_os}
+                    )
+                    options = self.common_bazel_options(actual)
+                    self.assertEqual(
+                        [option for option in shared_policy if option not in options],
+                        [],
+                    )
+                    self.assertEqual(
+                        [o for o in options if o.startswith("--disk_cache=")][-1],
+                        [o for o in defaults if o.startswith("--disk_cache=")][-1],
+                    )
+                    self.assertEqual(actual[actual.index("--") + 1 :], targets)
+                    self.assertFalse(
+                        any(
+                            o.startswith(
+                                ("--remote_executor=", "--remote_cache=", "--bes_")
+                            )
+                            or o == "--platforms=//:rbe"
+                            for o in options
+                        )
+                    )
+
+    def test_keyless_ci_keeps_caller_overrides_and_program_arguments(self) -> None:
+        payload = ["--config=ci-linux", "--disk_cache=program-value"]
+        args = [
+            "run",
+            "--config=ci-macos",
+            "--disk_cache=/caller/cache",
+            "--keep_going=false",
+            "//:tool",
+            "--",
+            *payload,
+        ]
+        actual = run_bazel_with_buildbuddy.bazel_args_with_remote_config(
+            args, {"RUNNER_OS": "macOS"}
+        )
+        options = self.common_bazel_options(actual)
+        self.assertEqual(
+            [o for o in options if o.startswith("--disk_cache=")][-1],
+            "--disk_cache=/caller/cache",
+        )
+        self.assertEqual(
+            [o for o in options if o.startswith("--keep_going")][-1],
+            "--keep_going=false",
+        )
+        self.assertEqual(actual[actual.index("--") + 1 :], payload)
+
     def test_raw_target_patterns_still_reject_embedded_and_trailing_line_breaks(
         self,
     ) -> None:
@@ -66,7 +152,7 @@ class RunBazelWithBuildBuddyTest(unittest.TestCase):
             "GITHUB_REPOSITORY": repository,
         }
 
-    def test_keyless_invocation_drops_remote_ci_configuration(self) -> None:
+    def test_keyless_invocation_preserves_public_ci_configuration(self) -> None:
         self.assertIsNone(
             run_bazel_with_buildbuddy.remote_config(
                 ["build", "--config=ci-linux", "//codex-rs/cli:codex"],
@@ -78,8 +164,27 @@ class RunBazelWithBuildBuddyTest(unittest.TestCase):
                 ["build", "--config=ci-linux", "--", "//codex-rs/cli:codex"],
                 {},
             ),
-            ["build", "--", "//codex-rs/cli:codex"],
+            ["build", "--config=ci-common", "--", "//codex-rs/cli:codex"],
         )
+
+    def test_local_and_non_build_commands_keep_original_options(self) -> None:
+        for runner_os in ("Linux", "macOS"):
+            with self.subTest(runner_os=runner_os, command="build"):
+                args = ["build", "--disk_cache=/caller/cache", "--", "//..."]
+                self.assertEqual(
+                    run_bazel_with_buildbuddy.bazel_args_with_remote_config(
+                        args, {"RUNNER_OS": runner_os}
+                    ),
+                    args,
+                )
+            for command in ("query", "clean", "version"):
+                with self.subTest(runner_os=runner_os, command=command):
+                    self.assertEqual(
+                        run_bazel_with_buildbuddy.bazel_args_with_remote_config(
+                            [command, "--config=ci-linux"], {"RUNNER_OS": runner_os}
+                        ),
+                        [command],
+                    )
 
     def test_program_arguments_after_separator_do_not_select_or_lose_rbe(self) -> None:
         args = ["run", "//codex-rs/cli:codex", "--", "--config=remote"]
