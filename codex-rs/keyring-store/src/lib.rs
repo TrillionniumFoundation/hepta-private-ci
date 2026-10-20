@@ -163,7 +163,10 @@ pub mod tests {
         }
 
         pub fn set_error(&self, error: KeyringError) {
-            self.state.lock().unwrap_or_else(PoisonError::into_inner).next_error = Some(error);
+            self.state
+            .lock()
+            .unwrap_or_else(PoisonError::into_inner)
+            .next_error = Some(error);
         }
     }
 
