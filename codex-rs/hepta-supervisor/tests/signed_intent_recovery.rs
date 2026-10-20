@@ -296,7 +296,7 @@ fn abort_recovery_fences_adopted_child_before_terminalization() -> Result<(), Su
         record.layout.run_root().join("supervisor-process.json"),
         serde_json::json!({
             "schema_version": 2,
-            "agent_id": fleet.agent_id,
+            "agent_id": fleet.agent_id.to_string(),
             "spawn_generation": 1,
             "release_id": "unversioned",
             "identity": identity,
