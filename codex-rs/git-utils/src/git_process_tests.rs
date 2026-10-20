@@ -54,7 +54,8 @@ async fn assert_timed_out_git_wrapper_does_not_leave_child_process_running(
         command
             .args(["-NoProfile", "-NonInteractive", "-Command"])
             .arg(wrapper_command)
-            .env("CHILD_PS_SCRIPT", child_command);        command
+            .env("CHILD_PS_SCRIPT", child_command);
+        command
     };
     command
         .env("CHILD_PID_FILE", &child_pid_file)

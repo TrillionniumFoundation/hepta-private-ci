@@ -465,8 +465,8 @@ impl Drop for CurrentUser {
 }
 
 #[cfg(test)]
-#[path = "private_state_windows_tests.rs"]
-mod tests;
-#[cfg(test)]
 #[path = "private_state_windows_security_tests.rs"]
 mod security_tests;
+#[cfg(test)]
+#[path = "private_state_windows_tests.rs"]
+mod tests;
