@@ -10,7 +10,6 @@
 //! A timed-out worker may finish pure computation later, but its result is
 //! dropped and it has no effect or ledger capability.
 
-
 #[path = "intelligence_evaluation.rs"]
 mod evaluation;
 pub use evaluation::AgentdEvaluationBindingV1;
