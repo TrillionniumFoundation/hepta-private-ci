@@ -4,4 +4,5 @@ codex_rust_crate(
     name = "agent",
     crate_name = "codex_agent_extension",
     unit_test_extra_binaries = ["//codex-rs/cli:codex"],
+    extra_binaries = ["//codex-rs/cli:codex"],
 )
