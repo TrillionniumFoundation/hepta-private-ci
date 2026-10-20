@@ -46,7 +46,7 @@ class ShardedNativeWorkflowTests(unittest.TestCase):
         infer = self.source.index("name: Execute real four-condition shard offline")
         self.assertLess(stage, infer)
         self.assertNotIn("HF_HUB_OFFLINE", self.source[stage:infer])
-        self.assertIn("HF_HUB_OFFLINE: '1'", self.source[infer:])
+        self.assertIn('HF_HUB_OFFLINE: "1"', self.source[infer:])
 
     def test_before_pairing_the_collector_checks_original_slot_order(self):
         self.assertIn("verify_frozen_shard_attempts", self.source)

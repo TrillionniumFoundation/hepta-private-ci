@@ -100,11 +100,11 @@ jobs:
       SOURCE: ${{ github.event.pull_request.head.sha }}
       TIER: ${{ matrix.model }}
       SHARD: ${{ matrix.shard }}
-      OMP_NUM_THREADS: '2'
-      MKL_NUM_THREADS: '2'
-      HF_HUB_DISABLE_IMPLICIT_TOKEN: '1'
-      HF_HUB_DISABLE_XET: '1'
-      TOKENIZERS_PARALLELISM: 'false'
+      OMP_NUM_THREADS: "2"
+      MKL_NUM_THREADS: "2"
+      HF_HUB_DISABLE_IMPLICIT_TOKEN: "1"
+      HF_HUB_DISABLE_XET: "1"
+      TOKENIZERS_PARALLELISM: "false"
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
         with:
@@ -156,8 +156,8 @@ jobs:
       - name: Execute real four-condition shard offline
         env:
           HEPTA_MEMORY_TESTED_COMMIT: ${{ github.event.pull_request.head.sha }}
-          HF_HUB_OFFLINE: '1'
-          TRANSFORMERS_OFFLINE: '1'
+          HF_HUB_OFFLINE: "1"
+          TRANSFORMERS_OFFLINE: "1"
         run: |
           set -euo pipefail
           /usr/bin/time -v -o /tmp/output/inference-resource.txt /tmp/reader-python/bin/python - <<'PY'
