@@ -1,0 +1,95 @@
+name: Hepta Windows private-state native (security qualification only)
+
+on:
+  pull_request:
+    paths:
+      - "codex-rs/utils/path-utils/**"
+      - "codex-rs/hepta-prompt-registry/**"
+      - "codex-rs/hepta-contracts/**"
+      - "codex-rs/hepta-agentd/**"
+      - "codex-rs/Cargo.toml"
+      - "codex-rs/Cargo.lock"
+      - "codex-rs/rust-toolchain.toml"
+      - ".github/workflows/hepta-windows-private-state-native.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: hepta-windows-private-state-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+env:
+  CARGO_INCREMENTAL: "0"
+  CARGO_BUILD_JOBS: "2"
+  CARGO_PROFILE_TEST_DEBUG: "0"
+  CARGO_PROFILE_DEV_DEBUG: "0"
+
+jobs:
+  windows-secure-private-state:
+    name: ACL, anti-reparse, signed-owner durability and recovery on Windows
+    runs-on: windows-latest
+    timeout-minutes: 65
+    steps:
+      - name: Checkout immutable PR head without saved credentials
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - name: Install repository test runners
+        uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
+        with:
+          tool: just@1.51.0,nextest@0.9.103
+      - name: Verify exact source identity and pinned native compiler
+        shell: pwsh
+        run: |
+          if ((git rev-parse HEAD).Trim() -ne "${{ github.event.pull_request.head.sha || github.sha }}") { throw "unqualified head SHA" }
+          git diff --check
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          Set-Location codex-rs
+          rustc --version --verbose
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          cargo --version
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+      - name: Exercise private file handles, ACL, reparse and hardlink invariants
+        shell: pwsh
+        run: |
+          Set-Location codex-rs
+          just test --locked -p codex-utils-path --lib -E 'test(private_state_windows::)' --test-threads 1 --no-tests fail --retries 0
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+      - name: Exercise actual Prompt Registry Windows durable owner
+        shell: pwsh
+        run: |
+          Set-Location codex-rs
+          just test --locked -p codex-hepta-prompt-registry --lib -E 'test(durable::windows::tests::)' --test-threads 1 --no-tests fail --retries 0
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+      - name: Exercise signed final-use and authority-lease durable stores
+        shell: pwsh
+        run: |
+          Set-Location codex-rs
+          just test --locked -p codex-hepta-contracts --lib -E 'test(final_use::store::windows::tests::)' --test-threads 1 --no-tests fail --retries 0
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          just test --locked -p codex-hepta-contracts --lib -E 'test(authority_lease::windows::tests::)' --test-threads 1 --no-tests fail --retries 0
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+      - name: Validate Agentd Prompt Runtime integration and reopened state
+        shell: pwsh
+        run: |
+          Set-Location codex-rs
+          just test --locked -p codex-hepta-agentd --lib -E 'test(prompt_runtime::tests::)' --test-threads 1 --no-tests fail --retries 0
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+      - name: Enforce source-level Rust formatting for durable owners
+        shell: pwsh
+        run: |
+          Set-Location codex-rs
+          cargo fmt --package codex-utils-path --package codex-hepta-prompt-registry --package codex-hepta-contracts --package codex-hepta-agentd -- --check
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+      - name: Confirm no generated or modified tracked source
+        if: always()
+        shell: pwsh
+        run: |
+          git diff --check
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          git diff --exit-code
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          if ((git status --porcelain --untracked-files=no) -ne "") { throw "unqualified worktree mutation" }
