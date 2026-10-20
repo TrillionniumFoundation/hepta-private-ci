@@ -246,7 +246,7 @@ where
             continue;
         }
 
-        let active_start = Instant::now();
+        let active_start = time::Instant::now();
         tokio::select! {
             result = &mut operation => return Ok(result),
             _ = time::sleep(remaining) => {
@@ -1585,7 +1585,7 @@ mod tests {
         assert_eq!(error.to_string(), "timed out awaiting tools/list after 30s");
     }
 
-    #[tokio::test]
+    #[tokio::test(start_paused = true)]
     async fn active_time_timeout_pauses_while_elicitation_is_pending() {
         let pause_state = ElicitationPauseState::new();
         let pause = pause_state.enter();
@@ -1602,5 +1602,30 @@ mod tests {
             .await;
 
         assert_eq!(Ok("done"), result);
+    }
+
+    #[tokio::test(start_paused = true)]
+    async fn active_time_timeout_preserves_budget_across_multiple_pauses() {
+        let pause_state = ElicitationPauseState::new();
+        let controller = pause_state.clone();
+        tokio::spawn(async move {
+            time::sleep(Duration::from_millis(20)).await;
+            let first_pause = controller.enter();
+            time::sleep(Duration::from_millis(75)).await;
+            drop(first_pause);
+            time::sleep(Duration::from_millis(20)).await;
+            let second_pause = controller.enter();
+            time::sleep(Duration::from_millis(75)).await;
+            drop(second_pause);
+        });
+
+        let result = active_time_timeout(
+            Duration::from_millis(50),
+            pause_state.subscribe(),
+            time::sleep(Duration::from_millis(205)),
+        )
+        .await;
+
+        assert_eq!(Err(()), result);
     }
 }

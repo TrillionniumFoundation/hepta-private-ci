@@ -33,6 +33,7 @@ use codex_config::types::McpServerConfig;
 use codex_config::types::McpServerTransportConfig;
 use codex_config::types::ToolSuggestDisabledTool;
 use core_test_support::test_codex::TurnInputRequest as ExternalTurnInputRequest;
+use futures::FutureExt;
 
 use codex_features::Feature;
 use codex_http_client::ClientRouteClass;
@@ -12149,10 +12150,20 @@ async fn cancelled_finish_owner_keeps_terminalizer_alive() {
         .await
         .expect("finish terminalizer should reach idle lifecycle");
     assert!(session.has_pending_task_terminalization());
+    let completion = session
+        .pending_turn_terminalization()
+        .expect("idle publication must retain its exact completion witness");
+    tokio::pin!(completion);
+    assert!(completion.as_mut().now_or_never().is_none());
 
     finish_owner.abort();
     let _ = finish_owner.await;
     idle_release.notify_one();
+
+    timeout(Duration::from_secs(2), completion)
+        .await
+        .expect("observer should wake when the detached owner actually finishes");
+    assert!(!session.has_pending_task_terminalization());
 
     timeout(Duration::from_secs(2), async {
         loop {
@@ -12303,6 +12314,10 @@ async fn hung_finish_terminalizer_watchdog_retains_fence() {
         started.elapsed() >= crate::tasks::TERMINALIZER_WATCHDOG_TIMEOUT,
         "finish owner returned before its bounded watchdog elapsed"
     );
+    session
+        .pending_turn_terminalization()
+        .expect("failed owner must retain an observable fence")
+        .await;
     assert!(session.has_pending_task_terminalization());
     assert!(
         session

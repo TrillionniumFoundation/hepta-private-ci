@@ -1347,6 +1347,24 @@ where
                 );
                 return;
             };
+            if let Some(manager) = self.thread_manager.upgrade()
+                && let Ok(thread) = manager.get_thread(thread_id).await
+                && let Some(completion) = thread.pending_turn_terminalization()
+            {
+                // Core retains its exact completion fence through this
+                // callback. Returning lets that owner finish; the durable
+                // queue is dispatched afterward through normal admission.
+                let service = self.clone();
+                if let Err(error) = thread.defer_idle_work(completion, async move {
+                    let _guard = service.dispatch_guard(thread_id).await;
+                    if let Err(error) = service.dispatch_if_idle(thread_id).await {
+                        tracing::warn!(%thread_id, %error, "failed to dispatch queued user input after terminalization");
+                    }
+                }) {
+                    tracing::warn!(%thread_id, %error, "could not defer queued idle work");
+                }
+                return;
+            }
             let _guard = self.dispatch_guard(thread_id).await;
             if let Err(error) = self.dispatch_if_idle(thread_id).await {
                 tracing::warn!(%thread_id, %error, "failed to dispatch queued user input");

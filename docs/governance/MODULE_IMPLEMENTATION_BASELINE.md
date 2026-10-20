@@ -18,6 +18,19 @@ The following states are independent and must not share one `complete` flag:
 
 A source directory or green unit test proves none of the later states. Each module records the dimensions in a machine-readable maturity projection.
 
+`MODULES.json` owns the declared registry facts; `SOURCE_BINDINGS.json` and
+`MODULE_DOCS.json` are generated projections. Their `source_root_present` and
+`production_implementation` values must match `sourceRootPresent` and
+`productionImplementation` in the module's implementation map and claim boundary.
+Changes require corresponding caller/source/test evidence and an explicit state
+update in the same candidate. A historical anchor is retained with its historical
+evidence rather than used as a conflicting current maturity declaration.
+
+Document and navigation checks do not execute that evidence. In particular,
+production composition, target-host qualification, model use, learning efficacy,
+acceptance and release remain separately observable dimensions. Live CI results
+belong in exact-candidate reports, not copied into this static baseline.
+
 ## 2. Deterministic kernel and bounded adapters
 
 Module computation follows:

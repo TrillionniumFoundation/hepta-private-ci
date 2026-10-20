@@ -92,6 +92,26 @@ def false_authority(value, label):
     )
 
 
+def verify_implementation_status(module, implementation):
+    mid = module["id"]
+    need(implementation.get("module") == mid, mid + " implementation-map identity")
+    claim = implementation.get("claimBoundary")
+    need(isinstance(claim, dict), mid + " implementation-map claim boundary")
+    for registry_field, map_field in (
+        ("source_root_present", "sourceRootPresent"),
+        ("production_implementation", "productionImplementation"),
+    ):
+        need(
+            type(implementation.get(map_field)) is bool
+            and type(claim.get(map_field)) is bool,
+            mid + " implementation-map status fact " + map_field,
+        )
+        need(
+            module[registry_field] == implementation[map_field] == claim[map_field],
+            mid + " implementation-map status agreement " + map_field,
+        )
+
+
 def verify_local_links(path, text):
     """Keep native-source, test, operating-guide and shared-rule links usable.
 
@@ -337,6 +357,9 @@ def verify(profile="qualification"):
             == b["production_implementation"]
             == row["production_implementation"],
             mid + " production implementation agreement",
+        )
+        verify_implementation_status(
+            m, load(f"docs/modules/{mid}/IMPLEMENTATION_MAP.json")
         )
         need(m.get("bootstrapWorkPackage") in pkgids, mid + " bootstrap")
         need(

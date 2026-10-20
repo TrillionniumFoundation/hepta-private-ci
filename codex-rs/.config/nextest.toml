@@ -8,8 +8,9 @@ retries = 1
 [profile.default.junit]
 path = "junit.xml"
 
-[profile.local]
-inherits = "default"
+[profile.local.junit]
+# nextest 0.9.103 requires an explicit JUnit path for custom profiles.
+path = "junit.xml"
 
 [test-groups.app_server_protocol_codegen]
 max-threads = 1

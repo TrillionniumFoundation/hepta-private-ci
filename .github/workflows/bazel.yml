@@ -16,6 +16,8 @@ concurrency:
   group: concurrency-group::${{ github.workflow }}::${{ github.event.pull_request.number > 0 && format('pr-{0}', github.event.pull_request.number) || github.ref_name }}${{ github.ref_name == 'main' && format('::{0}', github.run_id) || ''}}
   cancel-in-progress: ${{ github.ref_name != 'main' }}
 
+# These bounds include cold V8/toolchain compilation on hosted runners.
+# Test selection and each test's own deadline remain unchanged.
 jobs:
   test:
     # PRs use the sharded Windows cross-compiled test jobs below. Post-merge
@@ -23,7 +25,7 @@ jobs:
     # signal without putting PR latency back on the critical path. When
     # Code-mode unit tests run on every Bazel target. When authenticated RBE
     # is available, the Windows-cross shards exercise the source-built V8 path.
-    timeout-minutes: 60
+    timeout-minutes: 120
     strategy:
       fail-fast: false
       matrix:
@@ -136,7 +138,7 @@ jobs:
     # Split the native Windows Bazel test leg across separate Windows hosts.
     # Build actions and host-loaded proc macros use the same MSVC ABI as the
     # test binaries, avoiding cross-ABI native archive linkage.
-    timeout-minutes: 60
+    timeout-minutes: 120
     strategy:
       fail-fast: false
       matrix:
@@ -266,7 +268,7 @@ jobs:
     # 30-minute PR budget. Run this only for post-merge commits to main and give
     # it a larger timeout.
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
-    timeout-minutes: 40
+    timeout-minutes: 120
     runs-on: windows-latest
     name: Bazel test on windows-latest for x86_64-pc-windows-msvc (native main)
     environment:
@@ -341,7 +343,7 @@ jobs:
         uses: ./.github/actions/check-clean-worktree
 
   clippy:
-    timeout-minutes: 60
+    timeout-minutes: 120
     strategy:
       fail-fast: false
       matrix:
@@ -432,7 +434,7 @@ jobs:
         uses: ./.github/actions/check-clean-worktree
 
   verify-release-build:
-    timeout-minutes: 60
+    timeout-minutes: 120
     strategy:
       fail-fast: false
       matrix:

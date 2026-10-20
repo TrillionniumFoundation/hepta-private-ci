@@ -14,6 +14,7 @@ use std::sync::Mutex;
 use std::thread;
 use std::time::Duration;
 
+use codex_hepta_automation::AuthorizedEffectDispatchInput;
 use codex_hepta_automation::AuthorizedEffectDriver;
 use codex_hepta_automation::AuthorizedEffectDriverError;
 use codex_hepta_automation::AuthorizedEffectIntent;
@@ -259,13 +260,15 @@ impl AgentdAutomationEffectHost {
             .execute_authorized_taskflow_effect(
                 &self.authority,
                 &mut driver,
-                intent,
-                wire_payload,
-                &fence,
-                signed_grant,
-                &binding,
-                command_id,
-                now_ms,
+                AuthorizedEffectDispatchInput {
+                    intent,
+                    wire_payload,
+                    fence: &fence,
+                    signed_grant,
+                    expected_binding: &binding,
+                    command_id,
+                    now_ms,
+                },
             )
             .await
             .map_err(|error| {
@@ -316,7 +319,7 @@ impl AgentdAutomationEffectHost {
                 AuthorizedEffectRecoveryResult::Observed(receipt)
                     if receipt.observation != Some(TaskFlowStepObservation::Indeterminate) =>
                 {
-                    return Ok(AgentdAutomationEffectReconcileOutcome::Observed(receipt));
+                    return Ok(AgentdAutomationEffectReconcileOutcome::Observed(*receipt));
                 }
                 AuthorizedEffectRecoveryResult::ProvenAbsent => {
                     return Ok(AgentdAutomationEffectReconcileOutcome::ProvenAbsent);
@@ -346,7 +349,7 @@ impl AgentdAutomationEffectHost {
                         ))
                     })? {
                     AuthorizedEffectRecoveryResult::Observed(receipt) => {
-                        Ok(AgentdAutomationEffectReconcileOutcome::Observed(receipt))
+                        Ok(AgentdAutomationEffectReconcileOutcome::Observed(*receipt))
                     }
                     AuthorizedEffectRecoveryResult::ProvenAbsent => Err(AgentdError::Protocol(
                         "status lookup cannot manufacture provider absence".to_string(),
@@ -713,23 +716,35 @@ mod tests {
 
     impl Fixture {
         async fn new() -> Self {
-            let temp = tempfile::tempdir().expect("temp root");
-            let root = temp.path().canonicalize().expect("canonical temp root");
+            let temp = tempfile::tempdir().unwrap_or_else(|_| panic!("temp root"));
+            let root = temp
+                .path()
+                .canonicalize()
+                .unwrap_or_else(|_| panic!("canonical temp root"));
             let fleet_path = root.join("fleet");
-            let fleet_root = HeptaFleetRoot::parse(fleet_path.clone()).expect("fleet root");
-            let registry = FleetRegistry::initialize(fleet_root.clone()).expect("fleet registry");
+            let fleet_root =
+                HeptaFleetRoot::parse(fleet_path.clone()).unwrap_or_else(|_| panic!("fleet root"));
+            let registry = FleetRegistry::initialize(fleet_root.clone())
+                .unwrap_or_else(|_| panic!("fleet registry"));
             let workspace = root.join("workspace");
-            fs::create_dir(&workspace).expect("workspace");
-            let workspace = workspace.canonicalize().expect("canonical workspace");
-            let agent_id = codex_hepta_contracts::AgentId::parse(AGENT_ID).expect("agent id");
+            fs::create_dir(&workspace).unwrap_or_else(|_| panic!("workspace"));
+            let workspace = workspace
+                .canonicalize()
+                .unwrap_or_else(|_| panic!("canonical workspace"));
+            let agent_id = codex_hepta_contracts::AgentId::parse(AGENT_ID)
+                .unwrap_or_else(|_| panic!("agent id"));
             let resources = ResourceBudget::local_default();
             let manifest = AgentManifest::new(
                 agent_id.clone(),
-                WorkspaceBinding::new(workspace.clone(), &fleet_root).expect("workspace binding"),
+                WorkspaceBinding::new(workspace.clone(), &fleet_root)
+                    .unwrap_or_else(|_| panic!("workspace binding")),
                 resources.clone(),
             )
-            .expect("manifest");
-            let layout = registry.register(manifest).expect("register agent").layout;
+            .unwrap_or_else(|_| panic!("manifest"));
+            let layout = registry
+                .register(manifest)
+                .unwrap_or_else(|_| panic!("register agent"))
+                .layout;
             let identity = AgentdIdentity {
                 agent_id: agent_id.clone(),
                 layout: layout.clone(),
@@ -744,7 +759,7 @@ mod tests {
             };
             let store = AutomationStore::open(&layout)
                 .await
-                .expect("automation store");
+                .unwrap_or_else(|_| panic!("automation store"));
             Self {
                 _temp: temp,
                 identity,
@@ -770,7 +785,7 @@ mod tests {
             vec!["provider.deliver".to_string()],
             Sha256Digest::for_bytes(b"agentd-product-effect-policy"),
         )
-        .expect("definition")
+        .unwrap_or_else(|_| panic!("definition"))
     }
 
     fn effect_intent(scope: &Sha256Digest) -> AuthorizedEffectIntent {
@@ -803,12 +818,12 @@ mod tests {
             1,
             "agentd-product-effect-fence",
         )
-        .expect("fence");
+        .unwrap_or_else(|_| panic!("fence"));
         fixture
             .store
             .register_taskflow_definition(&definition, &fence, now_ms)
             .await
-            .expect("register definition");
+            .unwrap_or_else(|_| panic!("register definition"));
         fixture
             .store
             .create_taskflow_run(
@@ -820,12 +835,12 @@ mod tests {
                 now_ms,
             )
             .await
-            .expect("create run");
+            .unwrap_or_else(|_| panic!("create run"));
         let claimed = fixture
             .store
             .claim_taskflow_run(&intent.run_id, &fence, now_ms + 1, 60_000)
             .await
-            .expect("claim run");
+            .unwrap_or_else(|_| panic!("claim run"));
         fixture
             .store
             .apply_taskflow_command(
@@ -837,11 +852,11 @@ mod tests {
                     TaskFlowTransition::Start,
                     now_ms + 2,
                 )
-                .expect("start command"),
+                .unwrap_or_else(|_| panic!("start command")),
             )
             .await
-            .expect("start run");
-        let digest = intent.digest().expect("intent digest");
+            .unwrap_or_else(|_| panic!("start run"));
+        let digest = intent.digest().unwrap_or_else(|_| panic!("intent digest"));
         fixture
             .store
             .prepare_taskflow_step(
@@ -855,7 +870,7 @@ mod tests {
                 now_ms + 3,
             )
             .await
-            .expect("prepare step");
+            .unwrap_or_else(|_| panic!("prepare step"));
         fixture
             .store
             .claim_taskflow_step(
@@ -869,7 +884,7 @@ mod tests {
                 now_ms + 4,
             )
             .await
-            .expect("claim step");
+            .unwrap_or_else(|_| panic!("claim step"));
         fence
     }
 
@@ -878,7 +893,9 @@ mod tests {
         now_ms: u64,
         signing_key: &SigningKey,
     ) -> SignedFinalUseGrant {
-        let binding = intent.final_use_binding().expect("final-use binding");
+        let binding = intent
+            .final_use_binding()
+            .unwrap_or_else(|_| panic!("final-use binding"));
         let grant = FinalUseGrant {
             schema_version: 1,
             signer_id: "automation-security-owner".to_string(),
@@ -890,14 +907,18 @@ mod tests {
             expires_at_unix_ms: now_ms + 30_000,
         };
         let signature = signing_key
-            .sign(&grant.signing_bytes().expect("signing bytes"))
+            .sign(
+                &grant
+                    .signing_bytes()
+                    .unwrap_or_else(|_| panic!("signing bytes")),
+            )
             .to_bytes()
             .to_vec();
         SignedFinalUseGrant { grant, signature }
     }
 
     fn digest_bytes_for_test(digest: &Sha256Digest) -> [u8; 32] {
-        decode_hex_array::<32>(digest.as_str(), "digest").expect("digest bytes")
+        decode_hex_array::<32>(digest.as_str(), "digest").unwrap_or_else(|_| panic!("digest bytes"))
     }
 
     fn hex(bytes: &[u8]) -> String {
@@ -916,10 +937,10 @@ mod tests {
         let now_ms = u64::try_from(
             SystemTime::now()
                 .duration_since(UNIX_EPOCH)
-                .expect("wall clock")
+                .unwrap_or_else(|_| panic!("wall clock"))
                 .as_millis(),
         )
-        .expect("millis");
+        .unwrap_or_else(|_| panic!("millis"));
         let scope = Sha256Digest::for_bytes(b"provider-fixture-scope");
         let intent = effect_intent(&scope);
         prepare_effect(&fixture, now_ms, &intent).await;
@@ -930,7 +951,7 @@ mod tests {
             &intent.run_id,
             &intent.step_id,
         )
-        .expect("provider key");
+        .unwrap_or_else(|_| panic!("provider key"));
         let provider_operation = Sha256Digest::for_bytes(b"provider-operation");
         let ack = serde_json::json!({
             "effect_key": provider_key.as_str(),
@@ -962,7 +983,7 @@ mod tests {
         };
         let contract_digest = unsigned_provider_config
             .contract_sha256()
-            .expect("contract digest");
+            .unwrap_or_else(|_| panic!("contract digest"));
         let statement = HttpProviderEffectContractAttestation::statement_for(
             "agentd-product-effect-contract",
             &contract_digest,
@@ -981,11 +1002,11 @@ mod tests {
                 revision: 1,
                 revoked_grant_ids: BTreeSet::new(),
             })
-            .expect("revocations json"),
+            .unwrap_or_else(|_| panic!("revocations json")),
         )
-        .expect("write revocations file");
+        .unwrap_or_else(|_| panic!("write revocations file"));
         fs::set_permissions(&revocations_file, fs::Permissions::from_mode(0o600))
-            .expect("revocations file permissions");
+            .unwrap_or_else(|_| panic!("revocations file permissions"));
 
         let host_file = fixture
             .identity
@@ -1012,14 +1033,14 @@ mod tests {
         });
         fs::write(
             &host_file,
-            serde_json::to_vec(&host_json).expect("host json"),
+            serde_json::to_vec(&host_json).unwrap_or_else(|_| panic!("host json")),
         )
-        .expect("write host file");
+        .unwrap_or_else(|_| panic!("write host file"));
         fs::set_permissions(&host_file, fs::Permissions::from_mode(0o600))
-            .expect("host file permissions");
+            .unwrap_or_else(|_| panic!("host file permissions"));
 
-        let host =
-            AgentdAutomationEffectHost::open(&fixture.identity, &host_file).expect("effect host");
+        let host = AgentdAutomationEffectHost::open(&fixture.identity, &host_file)
+            .unwrap_or_else(|_| panic!("effect host"));
         let grant = signed_final_use(&intent, now_ms, &final_use_signer);
         let receipt = host
             .execute(
@@ -1031,7 +1052,7 @@ mod tests {
                 now_ms + 5,
             )
             .await
-            .expect("effect dispatch");
+            .unwrap_or_else(|_| panic!("effect dispatch"));
         assert_eq!(
             receipt.observation,
             Some(TaskFlowStepObservation::Succeeded)
@@ -1047,7 +1068,7 @@ mod tests {
                 now_ms + 6,
             )
             .await
-            .expect("settled replay");
+            .unwrap_or_else(|_| panic!("settled replay"));
         assert_eq!(replay.receipt_digest, receipt.receipt_digest);
         // A terminal read is not permission to substitute bytes or command
         // identity, even though the live lease has already been cleared.
