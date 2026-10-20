@@ -29,6 +29,8 @@ jobs:
         with:
           rust-version: 1.95.0
           manifest-path: ./codex-rs/Cargo.toml
+          # Keep Cargo dependency resolution byte-for-byte locked in CI.
+          arguments: --all-features --locked
 
       - name: Check for a clean worktree
         if: always() && !cancelled()
