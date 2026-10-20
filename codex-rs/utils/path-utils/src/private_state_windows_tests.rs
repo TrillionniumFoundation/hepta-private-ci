@@ -125,4 +125,3 @@
         std::fs::rename(&ancestor, temporary.path().join("moved-ancestor"))
             .expect("ancestor released after drop");
     }
-}
