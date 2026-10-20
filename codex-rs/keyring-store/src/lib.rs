@@ -55,9 +55,7 @@ fn ensure_default_store() -> Result<(), KeyringError> {
     keyring::Entry::store_status()
         .as_ref()
         .map(|_| ())
-        .map_err(|error| {
-            KeyringError::Invalid("default_store".to_string(), error.to_string())
-        })
+        .map_err(|error| KeyringError::Invalid("default_store".to_string(), error.to_string()))
 }
 
 impl KeyringStore for DefaultKeyringStore {
@@ -169,9 +167,9 @@ pub mod tests {
 
         pub fn set_error(&self, error: KeyringError) {
             self.state
-            .lock()
-            .unwrap_or_else(PoisonError::into_inner)
-            .next_error = Some(error);
+                .lock()
+                .unwrap_or_else(PoisonError::into_inner)
+                .next_error = Some(error);
         }
     }
 
