@@ -17,8 +17,8 @@ mod model;
 mod paths;
 mod runtime;
 mod sqlite;
-pub mod test_support;
 mod sqlite_recovery;
+pub mod test_support;
 mod telemetry;
 
 pub use model::CreatedProject;
