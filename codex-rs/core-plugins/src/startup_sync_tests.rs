@@ -53,15 +53,16 @@ fn zip_archive_rejects_preexisting_symlink_in_staging_tree() {
     let outside = temp.path().join("outside");
     std::fs::create_dir_all(&destination).expect("create staging");
     std::fs::create_dir_all(&outside).expect("create outside");
-    std::os::unix::fs::symlink(&outside, destination.join("plugins"))
-        .expect("symlink directory");
+    std::os::unix::fs::symlink(&outside, destination.join("plugins")).expect("symlink directory");
 
     let cursor = std::io::Cursor::new(Vec::new());
     let mut writer = ZipWriter::new(cursor);
     writer
         .start_file("root/plugins/untrusted.txt", SimpleFileOptions::default())
         .expect("start archive file");
-    writer.write_all(b"must not escape").expect("write archive file");
+    writer
+        .write_all(b"must not escape")
+        .expect("write archive file");
     let archive = writer.finish().expect("finish archive").into_inner();
 
     let error = extract_zipball_to_dir(&archive, &destination)
