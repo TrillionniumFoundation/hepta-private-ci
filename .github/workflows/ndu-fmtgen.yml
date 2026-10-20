@@ -26,7 +26,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          cargo fmt --manifest-path codex-rs/Cargo.toml -- --config imports_granularity=Item
+          cargo fmt --manifest-path codex-rs/Cargo.toml --all -- --config imports_granularity=Item
       - name: Commit generated formatting
         shell: bash
         run: |
