@@ -1,0 +1,182 @@
+name: Hepta protocol schema candidate
+
+on:
+  push:
+    branches:
+      - agents/20261020/protocol-schema-candidate
+    paths:
+      - .github/workflows/hepta-protocol-schema-candidate.yml
+
+permissions:
+  contents: read
+
+concurrency:
+  group: hepta-protocol-schema-candidate-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  generate:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    env:
+      RUSTUP_TOOLCHAIN: 1.95.0
+      CARGO_INCREMENTAL: "0"
+      CARGO_PROFILE_DEV_DEBUG: "0"
+      CARGO_PROFILE_TEST_DEBUG: "0"
+      PYTHONDONTWRITEBYTECODE: "1"
+      SOURCE_HEAD: ${{ github.sha }}
+    steps:
+      - name: Check out the exact candidate source
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Freeze the source and output directory
+        shell: bash
+        run: |
+          set -euo pipefail
+          export CANDIDATE_DIR="$RUNNER_TEMP/hepta-protocol-schema"
+          printf 'CANDIDATE_DIR=%s\n' "$CANDIDATE_DIR" >> "$GITHUB_ENV"
+          printf 'CARGO_TARGET_DIR=%s\n' "$RUNNER_TEMP/hepta-protocol-schema-target" >> "$GITHUB_ENV"
+          python3 -I -B - <<'PY'
+          import hashlib
+          import json
+          import os
+          from pathlib import Path
+          import subprocess
+
+          output = Path(os.environ["CANDIDATE_DIR"])
+          output.mkdir()
+          def git(*args):
+              return subprocess.check_output(["git", *args], text=True).strip()
+          head = git("rev-parse", "HEAD")
+          origin_source = "9b7d72c0b8e3a6539e2b8c702a064f63a2c1c8ff"
+          parents = git("show", "-s", "--format=%P", "HEAD").split()
+          expected_path = ".github/workflows/hepta-protocol-schema-candidate.yml"
+          if head != os.environ["SOURCE_HEAD"] or git("status", "--porcelain=v1", "--untracked-files=all"):
+              raise SystemExit("source must be the exact clean pushed source head")
+          if parents != [origin_source] or git("diff", "--name-only", origin_source, head).splitlines() != [expected_path]:
+              raise SystemExit("this one-time generator must preserve the frozen integration source")
+          paths = ["codex-rs/Cargo.lock", "MODULE.bazel.lock", "codex-rs/rust-toolchain.toml",
+                   "codex-rs/app-server-protocol/scripts/write_schema_fixtures.py"]
+          source = {"head": head, "tree": git("rev-parse", "HEAD^{tree}"),
+                    "parents": parents, "origin_source": origin_source,
+                    "run_id": os.environ["GITHUB_RUN_ID"], "run_attempt": os.environ["GITHUB_RUN_ATTEMPT"],
+                    "input_sha256": {p: hashlib.sha256(Path(p).read_bytes()).hexdigest() for p in paths}}
+          (output / "source-before.json").write_text(json.dumps(source, indent=2) + "\n")
+          PY
+
+      - name: Install the fixed Rust toolchain
+        uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582 # 1.95.0
+
+      - name: Install repository task and test runners
+        uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
+        with:
+          tool: just@1.51.0,nextest@0.9.103
+
+      - name: Install native build dependencies
+        shell: bash
+        run: |
+          set -euo pipefail
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends build-essential cmake pkg-config libssl-dev libdbus-1-dev protobuf-compiler
+
+      - name: Reproduce, regenerate and test the protocol
+        id: qualify
+        shell: bash
+        run: |
+          set -euo pipefail
+          run_logged() {
+            local stage="$1"
+            shift
+            set +e
+            "$@" > "$CANDIDATE_DIR/$stage.stdout" 2> "$CANDIDATE_DIR/$stage.stderr"
+            local status=$?
+            set -e
+            printf '%s\n' "$status" > "$CANDIDATE_DIR/$stage.exit"
+            cat "$CANDIDATE_DIR/$stage.stdout" "$CANDIDATE_DIR/$stage.stderr"
+            return "$status"
+          }
+          rustc --version --verbose > "$CANDIDATE_DIR/rustc-version.txt"
+          cargo --version --verbose > "$CANDIDATE_DIR/cargo-version.txt"
+          cargo nextest --version > "$CANDIDATE_DIR/nextest-version.txt"
+          df -h > "$CANDIDATE_DIR/disk-before.txt"
+          df -i > "$CANDIDATE_DIR/inodes-before.txt"
+          # This diagnostic preserves the original failure; it is not an acceptance gate.
+          run_logged baseline-schemas just test --locked -p codex-app-server-protocol --lib --retries=0 --no-tests=fail -E 'test(schema_fixtures_tests::)' || true
+          run_logged generate-stable just write-app-server-schema
+          run_logged generate-experimental just write-app-server-schema --experimental
+          run_logged protocol-tests just test --locked -p codex-app-server-protocol --retries=0 --no-tests=fail
+          git diff --check
+
+      - name: Retain exact generated bytes and conservation evidence
+        if: always()
+        shell: bash
+        env:
+          QUALIFICATION_OUTCOME: ${{ steps.qualify.outcome }}
+        run: |
+          set -euo pipefail
+          df -h > "$CANDIDATE_DIR/disk-after.txt"
+          df -i > "$CANDIDATE_DIR/inodes-after.txt"
+          python3 -I -B - <<'PY'
+          import hashlib
+          import json
+          import os
+          from pathlib import Path
+          import subprocess
+          import tarfile
+
+          output = Path(os.environ["CANDIDATE_DIR"])
+          before = json.loads((output / "source-before.json").read_text())
+          def git(*args):
+              return subprocess.check_output(["git", *args])
+          head = git("rev-parse", "HEAD").decode().strip()
+          changed = [os.fsdecode(p) for p in git("diff", "HEAD", "--name-only", "-z").split(b"\0") if p]
+          untracked = [os.fsdecode(p) for p in git("ls-files", "--others", "--exclude-standard", "-z").split(b"\0") if p]
+          schema_prefix = "codex-rs/app-server-protocol/schema/"
+          deleted = [os.fsdecode(p) for p in git("diff", "HEAD", "--diff-filter=D", "--name-only", "-z", "--", schema_prefix).split(b"\0") if p]
+          (output / "deleted-schema-files.json").write_text(json.dumps(deleted, indent=2) + "\n")
+          outside_schema = [p for p in changed + untracked if not p.startswith(schema_prefix)]
+          inputs_unchanged = all(Path(p).is_file() and hashlib.sha256(Path(p).read_bytes()).hexdigest() == digest
+                                 for p, digest in before["input_sha256"].items())
+          (output / "generated-schema.patch").write_bytes(
+              git("diff", "--binary", "--full-index", "HEAD", "--", schema_prefix))
+          schema_root = Path(schema_prefix)
+          schema_hashes = {str(p): hashlib.sha256(p.read_bytes()).hexdigest()
+                           for p in sorted(schema_root.rglob("*")) if p.is_file()}
+          (output / "generated-schema-sha256.json").write_text(json.dumps(schema_hashes, indent=2) + "\n")
+          with tarfile.open(output / "generated-schema.tar.gz", "w:gz") as archive:
+              archive.add(schema_root, arcname=schema_prefix.rstrip("/"))
+          stages = ["baseline-schemas", "generate-stable", "generate-experimental", "protocol-tests"]
+          exits = {s: (output / f"{s}.exit").read_text().strip() if (output / f"{s}.exit").is_file() else None
+                   for s in stages}
+          required = ["generate-stable", "generate-experimental", "protocol-tests"]
+          qualified = (os.environ["QUALIFICATION_OUTCOME"] == "success"
+                       and all(exits[s] == "0" for s in required)
+                       and head == before["head"] == os.environ["SOURCE_HEAD"]
+                       and inputs_unchanged and not outside_schema)
+          report = {"head": head, "tree": before["tree"], "run_id": before["run_id"],
+                    "run_attempt": before["run_attempt"], "changed": changed, "untracked": untracked,
+                    "origin_source": before["origin_source"], "deleted_schema_files": deleted,
+                    "outside_schema": outside_schema, "input_bytes_unchanged": inputs_unchanged,
+                    "complete_bytes": "Use the complete tar, SHA manifest and deleted-file list; the binary diff alone excludes untracked new schema files.",
+                    "command_exits": exits, "qualified": qualified,
+                    "boundary": "Generated candidate only; existing required CI and API semantic review remain mandatory."}
+          (output / "source-after.json").write_text(json.dumps(report, indent=2) + "\n")
+          (output / "artifact-files.sha256").write_text("".join(
+              f"{hashlib.sha256(p.read_bytes()).hexdigest()}  {p.name}\n"
+              for p in sorted(output.iterdir()) if p.is_file()))
+          if not qualified:
+              raise SystemExit("schema candidate failed, is incomplete, or changed non-schema source")
+          PY
+
+      - name: Upload exact schema candidate and logs
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: hepta-protocol-schema-${{ github.sha }}-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/hepta-protocol-schema
+          if-no-files-found: error
+          retention-days: 14
