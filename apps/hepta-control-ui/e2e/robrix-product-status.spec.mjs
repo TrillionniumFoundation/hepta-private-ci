@@ -213,7 +213,12 @@ for(const width of [1280,640])for(const scenario of ['timeout','navigation','bac
   await settle();expect(ownerCount()).toBe(beforeCancellation+1);
   await expect.poll(async()=> (await observedText('timed-out','timedOut')).passed,{timeout:15000,intervals:[250]}).toBe(true);
   const timeoutReply=await timeoutLegacy;expect(timeoutReply.status()).toBe(503);
-  apiWait('timeout-runtime.finished','start');expect(await timeoutReply.finished()).toBeNull();apiWait('timeout-runtime.finished','done');await timeoutSdk503;
+  apiWait('timeout-runtime.finished','start');
+  await expect.poll(
+   () => apiNetworkEvents.some(event => event.path === '/api/hepta/runtime' && event.phase === 'timeout' && (event.event === 'loadingFinished' || event.event === 'loadingFailed')),
+   {timeout:5000,intervals:[100]}
+  ).toBe(true);
+  apiWait('timeout-runtime.finished','done');await timeoutSdk503;
   expectedState='timedOut';
  }else if(scenario==='navigation'){
   const currentTabs=await screenshotConversationTabs((await observedText('reading')).path,page.viewportSize(),{recordOcr:true});

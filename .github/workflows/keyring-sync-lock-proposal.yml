@@ -28,7 +28,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          cargo update --manifest-path codex-rs/Cargo.toml -p keyring --precise 3.6.3
+          cargo update --manifest-path codex-rs/Cargo.toml -p keyring --precise 4.2.0
           git diff --check
           git diff --binary -- codex-rs/Cargo.lock > "${RUNNER_TEMP}/Cargo.lock.patch"
           test -s "${RUNNER_TEMP}/Cargo.lock.patch"

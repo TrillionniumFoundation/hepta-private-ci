@@ -427,7 +427,8 @@ inventory = "0.3.19"
 itertools = "0.14.0"
 jsonptr = { version = "0.7.1", default-features = false }
 jsonwebtoken = "9.3.1"
-keyring = { version = "3.6", default-features = false }
+keyring = { version = "4.2", default-features = false, features = ["v1"] }
+keyring-core = "1.0.0"
 landlock = "0.4.4"
 lazy_static = "1"
 libc = "0.2.182"
