@@ -7,6 +7,7 @@ import {robrixSourceIdentity} from '../tools/robrix-source-identity.mjs';
 import {createHash} from 'node:crypto';
 import {readProductStatusPixels} from '../tools/product-status-pixels.mjs';
 import {auditProductConsole} from '../tools/product-console-audit.mjs';
+import {holdOwnerResponse} from '../tools/hold-owner-response.mjs';
 import {execFileSync} from 'node:child_process';
 import {readScreenshotText,screenshotConversationTabs,screenshotWordCenter} from '../tools/verify-robrix-pixels.mjs';
 for(const width of [1280,640])for(const scenario of ['timeout','navigation','background'])test(`actual missing-owner status ${width} ${scenario}`,async({page,baseURL,browser},testInfo)=>{
@@ -193,25 +194,11 @@ for(const width of [1280,640])for(const scenario of ['timeout','navigation','bac
   await writeFile(testInfo.outputPath(name+'-ocr.json'),JSON.stringify(observation,null,2)+'\n');
   return {path,...observation};
  }
- const pendingReleases=new Set();
+ const pendingHolds=new Set();
  async function holdOwner(name){
-  let release,entered,rejectReady,finished,requestId=null;const gate=new Promise(resolve=>{release=resolve;});
-  const ready=new Promise((resolve,reject)=>{entered=resolve;rejectReady=reject;});const done=new Promise(resolve=>{finished=resolve;});
-  const record={name,mode:'hold actual gateway response bytes',lateFulfillReturned:false};pendingReleases.add(release);
-  const handler=async route=>{
-   try{
-    if(requestId!==null)throw new Error('More than one held owner request in a fresh-page case');
-    requestId=requestRecord(route.request()).id;record.requestId=requestId;
-    const response=await route.fetch({timeout:5000});expect(response.status()).toBe(200);
-    expect(await response.json()).toEqual({schema:'hepta.owner-lease-observation.v1',observation:{status:'not_attached'}});
-    entered();await gate;
-    try{await route.fulfill({response});record.lateFulfillReturned=true;}
-    catch(error){record.lateFulfillError=String(error).slice(0,500);}
-   }catch(error){rejectReady(error);try{await route.abort();}catch{}}
-   finally{pendingReleases.delete(release);finished();}
-  };
-  await page.route('**/api/hepta/owner-status',handler);
-  return {ready,get requestId(){return requestId;},async finish(){release();await done;await page.unroute('**/api/hepta/owner-status',handler);faultCases.push(record);}};
+  const held=await holdOwnerResponse(page,ownerUrl,request=>requestRecord(request).id,name);
+  pendingHolds.add(held);
+  return {ready:held.ready,get requestId(){return held.requestId;},async finish(){const record=await held.finish();pendingHolds.delete(held);faultCases.push(record);}};
  }
  // Hold a real response, then exercise the actual Rust five-second timeout and
  // disabled/single-flight control. No fabricated success body is injected.
@@ -245,7 +232,7 @@ for(const width of [1280,640])for(const scenario of ['timeout','navigation','bac
  await expect.poll(()=>networkFailures.filter(f=>f.id===held.requestId).length).toBe(1);
  cancellations.push({requestId:held.requestId,phase:scenario});
  proofs[scenario]={ownerState:expectedState,ownerVerified:late.passed,transportVerified:/runtime unavailable\s*\(Transport\)/i.test(late.text)};
- }finally{for(const release of pendingReleases)release();await page.unrouteAll({behavior:'ignoreErrors'});}
+ }finally{await Promise.allSettled([...pendingHolds].map(held=>held.finish()));}
  await Promise.all(finishedResponses);
  expect(requests.map(item=>({method:item.method,path:new URL(item.url).pathname,phase:item.phase}))).toEqual([
   {method:'GET',path:'/api/hepta/owner-status',phase:'initial'},

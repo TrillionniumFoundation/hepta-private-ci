@@ -1,0 +1,177 @@
+name: App-server schema refresh
+
+# Temporary generation evidence for this PR. The original CI gates still apply.
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+    paths:
+      - .github/workflows/hepta-app-server-schema-refresh.yml
+      - codex-rs/app-server-protocol/**
+      - codex-rs/Cargo.lock
+      - codex-rs/Cargo.toml
+      - codex-rs/rust-toolchain.toml
+      - justfile
+      - scripts/just-shell.py
+      - scripts/run-nextest.py
+
+permissions:
+  contents: read
+
+concurrency:
+  group: app-server-schema-refresh-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+jobs:
+  generate-and-verify:
+    name: Generate schemas and run complete protocol tests
+    if: >-
+      github.event.pull_request.number == 2885 &&
+      github.event.pull_request.head.repo.full_name == github.repository &&
+      github.event.pull_request.head.ref == 'agents/a00-ui-main-20261019'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
+    env:
+      SOURCE_SHA: ${{ github.event.pull_request.head.sha }}
+      SCHEMA_EVIDENCE_DIR: ${{ runner.temp }}/app-server-schema-refresh
+      CARGO_TERM_COLOR: never
+    steps:
+      - name: Check out exact source
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          ref: ${{ env.SOURCE_SHA }}
+          persist-credentials: false
+
+      - name: Bind source and repository toolchain
+        id: source
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
+          git diff --exit-code
+          python3 - <<'PY'
+          import json
+          import os
+          from pathlib import Path
+          import subprocess
+          import tomllib
+
+          evidence = Path(os.environ["SCHEMA_EVIDENCE_DIR"])
+          evidence.mkdir(parents=True)
+          toolchain = tomllib.loads(Path("codex-rs/rust-toolchain.toml").read_text())["toolchain"]
+          identity = {
+              "source_sha": os.environ["SOURCE_SHA"],
+              "source_tree": subprocess.check_output(["git", "rev-parse", "HEAD^{tree}"], text=True).strip(),
+              "toolchain": toolchain,
+              "run_id": os.environ["GITHUB_RUN_ID"],
+              "run_attempt": os.environ["GITHUB_RUN_ATTEMPT"],
+          }
+          (evidence / "source.json").write_text(json.dumps(identity, indent=2) + "\n")
+          with open(os.environ["GITHUB_OUTPUT"], "a") as output:
+              print(f'toolchain={toolchain["channel"]}', file=output)
+              print(f'components={",".join(toolchain["components"])}', file=output)
+          PY
+
+      - uses: ./.github/actions/setup-ci
+
+      - name: Install the repository Rust toolchain
+        uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582
+        with:
+          toolchain: ${{ steps.source.outputs.toolchain }}
+          components: ${{ steps.source.outputs.components }}
+
+      - name: Install the existing test runner version
+        uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532 # v2.62.49
+        with:
+          tool: nextest@0.9.103
+
+      - name: Generate stable and experimental schemas, then run all owning tests
+        working-directory: codex-rs
+        shell: bash
+        run: |
+          set -euo pipefail
+          {
+            rustc --version
+            cargo --version
+            just --version
+            cargo nextest --version
+          } > "$SCHEMA_EVIDENCE_DIR/tool-versions.txt"
+          python3 - <<'PY'
+          import json
+          import os
+          from pathlib import Path
+          import shlex
+          import subprocess
+
+          evidence = Path(os.environ["SCHEMA_EVIDENCE_DIR"])
+          commands = [
+              {"name": "stable", "argv": ["just", "write-app-server-schema"], "exit_code": None},
+              {"name": "experimental", "argv": ["just", "write-app-server-schema", "--experimental"], "exit_code": None},
+              {"name": "owning-tests", "argv": ["just", "test", "-p", "codex-app-server-protocol"], "exit_code": None},
+          ]
+          for command in commands:
+              command["cwd"] = "codex-rs"
+              command["log"] = command["name"] + ".log"
+          record = evidence / "commands.json"
+          record.write_text(json.dumps(commands, indent=2) + "\n")
+          for command in commands:
+              print("Running " + shlex.join(command["argv"]), flush=True)
+              with (evidence / command["log"]).open("wb") as log:
+                  result = subprocess.run(command["argv"], stdout=log, stderr=subprocess.STDOUT, check=False)
+              command["exit_code"] = result.returncode
+              record.write_text(json.dumps(commands, indent=2) + "\n")
+              print(f'{command["name"]} exit code: {result.returncode}; complete output: {command["log"]}', flush=True)
+              if result.returncode != 0:
+                  raise SystemExit(result.returncode)
+          PY
+
+      - name: Preserve generated files, full logs and source-bound differences
+        if: always() && steps.source.outcome == 'success'
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import hashlib
+          import json
+          import os
+          from pathlib import Path
+          import shutil
+          import subprocess
+
+          evidence = Path(os.environ["SCHEMA_EVIDENCE_DIR"])
+          schema = Path("codex-rs/app-server-protocol/schema")
+          actual_sha = subprocess.check_output(["git", "rev-parse", "HEAD"], text=True).strip()
+          changed = subprocess.check_output(["git", "diff", "--name-only", "-z", "HEAD"]).decode().split("\0")
+          untracked = subprocess.check_output(["git", "ls-files", "--others", "--exclude-standard", "-z"]).decode().split("\0")
+          unexpected = [path for path in changed + untracked if path and not path.startswith(str(schema) + "/")]
+          with (evidence / "schema.patch").open("wb") as patch:
+              subprocess.run(["git", "diff", "--binary", "--", str(schema)], stdout=patch, check=True)
+          with (evidence / "diff-check.log").open("wb") as log:
+              diff_check = subprocess.run(["git", "diff", "--check", "--", str(schema)], stdout=log, stderr=subprocess.STDOUT, check=False)
+          shutil.copytree(schema, evidence / "generated" / schema)
+          files = [
+              {"path": str(path), "sha256": hashlib.sha256(path.read_bytes()).hexdigest(), "size": path.stat().st_size}
+              for path in sorted(schema.rglob("*")) if path.is_file()
+          ]
+          manifest = {
+              "source_sha": actual_sha,
+              "changed_tracked_paths": [path for path in changed if path],
+              "untracked_paths": [path for path in untracked if path],
+              "unexpected_paths": unexpected,
+              "diff_check_exit_code": diff_check.returncode,
+              "generated_files": files,
+          }
+          (evidence / "generated-manifest.json").write_text(json.dumps(manifest, indent=2) + "\n")
+          if actual_sha != os.environ["SOURCE_SHA"] or unexpected:
+              raise SystemExit("Source identity changed or files outside the owned schema tree were modified")
+          if diff_check.returncode != 0:
+              raise SystemExit(diff_check.returncode)
+          PY
+
+      - name: Upload source-bound schema generation evidence
+        if: always() && steps.source.outcome == 'success'
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f # v7.0.0
+        with:
+          name: app-server-schema-${{ env.SOURCE_SHA }}-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ env.SCHEMA_EVIDENCE_DIR }}
+          if-no-files-found: error
+          retention-days: 7

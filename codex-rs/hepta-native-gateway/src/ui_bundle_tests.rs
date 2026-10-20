@@ -219,11 +219,16 @@ fn nonregular_and_oversize_resources_fail_before_unbounded_read() -> Result<()> 
     let directory = reader::Directory::open(&fixture.0)?;
     assert!(directory.read("large.txt", 4).is_err());
     assert!(directory.read("large.txt", 0).is_err());
-    rustix::fs::mkfifoat(
-        rustix::fs::CWD,
-        fixture.0.join("pipe.txt"),
-        rustix::fs::Mode::RUSR | rustix::fs::Mode::WUSR,
-    )?;
+    let output = std::process::Command::new("mkfifo")
+        .args(["-m", "600"])
+        .arg(fixture.0.join("pipe.txt"))
+        .output()?;
+    anyhow::ensure!(
+        output.status.success(),
+        "mkfifo failed: stdout={} stderr={}",
+        String::from_utf8_lossy(&output.stdout).trim(),
+        String::from_utf8_lossy(&output.stderr).trim()
+    );
     assert!(directory.read("pipe.txt", 16).is_err());
     assert!(
         reader::Directory::open(Path::new("/dev"))?

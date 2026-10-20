@@ -84,6 +84,16 @@ disabled-click/draft-retention evidence at97c0631364cd6e731d0fdf89fbceaa9b34e4d2
 Those results do not qualify this product port. The source+merge product workflow
 must rebuild and recapture the exact new tree. SDK tests do not replace pixels.
 
+The product missing-owner regression in `e2e/robrix-product-status.spec.mjs`
+exercises timeout, navigation and background cancellation at both 1280 and
+640 pixels. `tools/hold-owner-response.mjs` pauses the original owner response
+at the CDP Fetch response stage and checks its status, bounded body and digest.
+The runtime request keeps its original network path; its expected 503 response
+must finish completely. Each scenario still verifies the exact owner request
+cancellation, Rust-rendered state, screenshots and console/network evidence.
+The source-head and merge-head cloud runs must pass all six cases for a new
+candidate to qualify.
+
 IME routing guards observed preedit for composer/search, navigation/edit keys,
 stale owners and outside pointer events. Physical IME, inside-field selection
 cancellation, hidden cached-page focus, full touch lifecycle and assistive
