@@ -1261,6 +1261,9 @@ mod tests {
         let workspace = temp.path().join("consumer-workspace");
         std::fs::create_dir_all(&workspace).expect("consumer workspace");
         let workspace = workspace.canonicalize().expect("canonical workspace");
+        let workspace_uri = PathUri::from_host_native_path(&workspace).expect("workspace uri");
+        // Grant and physical send use the same native path carried by the turn URI.
+        let workspace = workspace_uri.to_path_buf();
         let capability = owner
             .grant_federated_recall(
                 &owner_access,
@@ -1294,7 +1297,7 @@ mod tests {
                 }],
                 environments: vec![TurnInputEnvironment {
                     environment_id: "primary".to_string(),
-                    cwd: PathUri::from_host_native_path(&workspace).expect("workspace uri"),
+                    cwd: workspace_uri,
                     is_primary: true,
                 }],
             },
