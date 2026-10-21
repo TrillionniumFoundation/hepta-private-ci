@@ -1,0 +1,105 @@
+import pathlib
+import sys
+import tempfile
+import unittest
+
+try:
+    import torch
+except ImportError:
+    torch = None
+
+sys.path.insert(0, str(pathlib.Path(__file__).parent))
+from teacher_forward import TeacherForwardError, validate_records
+
+if torch is not None:
+    from teacher_forward import mean_pool
+
+
+class TeacherForwardPreflightTests(unittest.TestCase):
+    def test_text_and_local_multimodal_input_is_bounded_and_digest_bound(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            base = pathlib.Path(tmp)
+            (base / "cat.png").write_bytes(b"fake image bytes; no decoder executes")
+            rows = [{"text": "cat", "image": "cat.png"},
+                    {"text": "dog"}]
+            conversations, digest = validate_records(rows, base, "embeddinggemma2_740m")
+            self.assertEqual(len(conversations), 2)
+            self.assertEqual([row["type"] for row in conversations[0][0]["content"]],
+                             ["text", "image"])
+            self.assertEqual(len(digest), 64)
+            (base / "cat.png").write_bytes(b"changed fake image bytes")
+            self.assertNotEqual(validate_records(rows, base, "embeddinggemma2_740m")[1],
+                                digest)
+
+    def test_media_urls_absolute_and_traversal_refused(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            base = pathlib.Path(tmp)
+            (base / "valid.png").write_bytes(b"raw")
+            for forbidden in ("https://example.org/image.png", "../valid.png",
+                              "/etc/passwd", "file:///etc/passwd", ""):
+                with self.subTest(forbidden=forbidden):
+                    with self.assertRaises(TeacherForwardError):
+                        validate_records([{"image": forbidden}], base,
+                                         "embeddinggemma2_740m")
+            (base / "alias.png").symlink_to(base / "valid.png")
+            with self.assertRaises(TeacherForwardError):
+                validate_records([{"image": "alias.png"}], base,
+                                 "embeddinggemma2_740m")
+
+    def test_reject_empty_unknown_modality_and_unsafe_text(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            base = pathlib.Path(tmp)
+            for records in (
+                [],
+                [{}],
+                [{"unknown": "x"}],
+                [{"text": ""}],
+                [{"text": "x" * 20000}],
+                [{"text": 42}],
+                [{"text": "hi"}] * 9,
+            ):
+                with self.subTest(records=repr(records)[:70]):
+                    with self.assertRaises(TeacherForwardError):
+                        validate_records(records, base, "embeddinggemma2_740m")
+
+    def test_t5_encoder_vision_or_audio_not_falsely_claimed(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            base = pathlib.Path(tmp)
+            with self.assertRaisesRegex(TeacherForwardError, "does not attest"):
+                validate_records([{"text": "hi", "image": "photo.png"}], base,
+                                 "t5gemma2_encoder_270m")
+            self.assertEqual(len(validate_records([{"text": "hi"}], base,
+                                                   "t5gemma2_encoder_270m")[0]), 1)
+
+
+@unittest.skipUnless(torch is not None, "optional PyTorch local feature tests")
+class TeacherPoolingTests(unittest.TestCase):
+    def test_mask_aware_pooling_and_matryoshka_renormalize(self):
+        t = torch.zeros(2, 3, 768)
+        t[0, 0, 0] = 3.0
+        t[0, 0, 1] = 4.0
+        t[0, 1, :] = 999.0  # padded token must have zero influence
+        t[1, 0, 2] = 1.0
+        t[1, 1, 2] = 1.0
+        mask = torch.tensor([[1, 0, 0], [1, 1, 0]])
+        pooled = mean_pool(t, mask, truncate_dim=256)
+        self.assertEqual(pooled.shape, (2, 256))
+        self.assertTrue(torch.allclose(pooled.norm(dim=1), torch.ones(2)))
+        self.assertAlmostEqual(float(pooled[0, 0]), 0.6, places=5)
+        self.assertAlmostEqual(float(pooled[0, 1]), 0.8, places=5)
+
+    def test_invalid_mask_nonfinite_and_bad_dimension_refused(self):
+        tokens = torch.randn(2, 3, 768)
+        for mask in (torch.tensor([[1, 0, 0], [0, 0, 0]]),
+                     torch.tensor([[1, 0, 2], [1, 0, 0]])):
+            with self.assertRaises(TeacherForwardError):
+                mean_pool(tokens, mask)
+        tokens[0, 0, 0] = float("nan")
+        with self.assertRaises(TeacherForwardError):
+            mean_pool(tokens, torch.ones(2, 3))
+        with self.assertRaises(TeacherForwardError):
+            mean_pool(torch.zeros(2, 2, 32), torch.ones(2, 2), truncate_dim=256)
+
+
+if __name__ == "__main__":
+    unittest.main()
