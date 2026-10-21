@@ -1,0 +1,13 @@
+{
+  "source_head": "1022172082781366a85935043b951872afda9f5f",
+  "source_path": "codex-rs/git-utils/src/git_process.rs",
+  "started_at_utc": "2026-10-21T13:20:28.272409+00:00",
+  "original_sha256": "8961e2748659fca01ea0a4b51baff983b76207e3ca3222f6a637a91360288d06",
+  "mutant_sha256": "80d4423fecc3d7e1569912b92fab50bfcb16785584358ed9ed92cfe4d5dc6ba5",
+  "mutation": "Only the timeout/error arm leaks its process-tree cleanup guard. Direct Child kill_on_drop, inherited pipes, readiness, and all test assertions remain unchanged.",
+  "scope": "isolated checkout only; temporary negative control, never committed or published",
+  "exit_code": 100,
+  "restored_sha256": "8961e2748659fca01ea0a4b51baff983b76207e3ca3222f6a637a91360288d06",
+  "restored_exactly": true,
+  "finished_at_utc": "2026-10-21T13:20:39.431585+00:00"
+}

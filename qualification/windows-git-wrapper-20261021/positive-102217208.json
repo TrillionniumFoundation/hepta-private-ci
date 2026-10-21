@@ -1,0 +1,74 @@
+{
+  "command": [
+    "just",
+    "test",
+    "-p",
+    "codex-git-utils",
+    "--locked"
+  ],
+  "cwd": "/workspace/scratch/337c309bc660/os-git-wrapper-work",
+  "started_at_utc": "2026-10-21T13:18:00.366105+00:00",
+  "head_at_start": "1022172082781366a85935043b951872afda9f5f",
+  "source_hashes_before": {
+    "MODULE.bazel.lock": {
+      "bytes": 1745183,
+      "sha256": "f6c5dd1f2a09c66d6a4c387ff40d11afb7ed2309e541dcb6bff9ad5f410996c3"
+    },
+    "codex-rs/Cargo.lock": {
+      "bytes": 413681,
+      "sha256": "4a89de595739e85d8d0e01944914c62217287d2c7daccee8e6d85b1cb4afc941"
+    },
+    "codex-rs/git-utils/src/git_process.rs": {
+      "bytes": 2716,
+      "sha256": "8961e2748659fca01ea0a4b51baff983b76207e3ca3222f6a637a91360288d06"
+    },
+    "codex-rs/git-utils/src/git_process_tests.rs": {
+      "bytes": 11518,
+      "sha256": "964e8fd8286fef6cd0a96f4901911f8c3d3fccc4756f8055a0943c4ed069dde2"
+    }
+  },
+  "limits": {
+    "cargo_jobs": 2,
+    "dev_debug": 0,
+    "test_debug": 0,
+    "incremental": 0
+  },
+  "platform": "linux",
+  "memory_events_before": "low 0\nhigh 0\nmax 1224874\noom 0\noom_kill 0\noom_group_kill 0\n",
+  "pid": 213555,
+  "exit_code": 0,
+  "elapsed_seconds": 82.06517979100317,
+  "finished_at_utc": "2026-10-21T13:19:22.438518+00:00",
+  "source_hashes_after": {
+    "MODULE.bazel.lock": {
+      "bytes": 1745183,
+      "sha256": "f6c5dd1f2a09c66d6a4c387ff40d11afb7ed2309e541dcb6bff9ad5f410996c3"
+    },
+    "codex-rs/Cargo.lock": {
+      "bytes": 413681,
+      "sha256": "4a89de595739e85d8d0e01944914c62217287d2c7daccee8e6d85b1cb4afc941"
+    },
+    "codex-rs/git-utils/src/git_process.rs": {
+      "bytes": 2716,
+      "sha256": "8961e2748659fca01ea0a4b51baff983b76207e3ca3222f6a637a91360288d06"
+    },
+    "codex-rs/git-utils/src/git_process_tests.rs": {
+      "bytes": 11518,
+      "sha256": "964e8fd8286fef6cd0a96f4901911f8c3d3fccc4756f8055a0943c4ed069dde2"
+    }
+  },
+  "peak_cgroup_bytes": {
+    "anon": 1878159360,
+    "file": 6734741504,
+    "kernel": 1077932032
+  },
+  "minimum_free_bytes": 574492672,
+  "memory_events_after": "low 0\nhigh 0\nmax 1237781\noom 0\noom_kill 0\noom_group_kill 0\n",
+  "raw_log": {
+    "file": "positive-102217208.log.xz",
+    "bytes": 19459,
+    "sha256": "e06a6c3e7848188e379fb00364597fb2a871bd20742beb9a8395168086026f71",
+    "compressed_bytes": 3496,
+    "compressed_sha256": "e19c1e992680a948e2ffde48017eeebdf795c58444f3e466758aef3c6f277822"
+  }
+}
