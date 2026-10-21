@@ -13,7 +13,8 @@ permissions:
   actions: read
 concurrency:
   group: hepta-pon-pair-${{ github.event.pull_request.number }}
-  cancel-in-progress: true
+  # Keep an executing source's observations; a successor waits in this group.
+  cancel-in-progress: false
 jobs:
   pair:
     strategy:
@@ -304,6 +305,13 @@ jobs:
           # Avoid shared HTTP/2 streams after the actual radix_trie curl(16) failure.
           python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/pon-pair/hepta-dependency-fetch.json" --timeout-seconds 600 -- \
             bash -c 'cd codex-rs || exit; for attempt in 1 2 3; do cargo fetch --locked && exit 0; code=$?; if test "$attempt" -eq 3; then exit "$code"; fi; printf "locked Cargo prefetch attempt %s failed with exit %s; retrying\n" "$attempt" "$code" >&2; sleep 3; done'
+      - name: Require native compile-only and execution wrapper controls
+        env:
+          CARGO_NET_OFFLINE: "true"
+          RUSTUP_TOOLCHAIN: "1.96.0"
+        run: |
+          set -euo pipefail
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/pon-pair/nextest-wrapper-controls.json" --minimum-tests 12 -- python3 scripts/test_run_nextest.py -v
       - name: Require witness recovery barriers and evaluated ledger ownership
         env:
           CARGO_NET_OFFLINE: "true"
