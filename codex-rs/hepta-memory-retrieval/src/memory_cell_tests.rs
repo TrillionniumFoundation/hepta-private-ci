@@ -1206,3 +1206,39 @@ fn shadow_generated_preflight_rejects_late_invalid_batch_before_first_recall() {
         }) if cell_id == second_id
     ));
 }
+
+#[test]
+fn checked_pre_tick_rejects_late_invalid_generator_before_ledger_callback() {
+    let fixture = shadow_fixture(true);
+    let first = meta_spec(&fixture);
+    let mut second = meta_spec(&fixture);
+    second.manifest.cell_id = id("memory-cell:semantic:2");
+    second.manifest.role = MemoryCellRoleV1::Semantic;
+    second.tick_input.cell_id = second.manifest.cell_id.clone();
+    let invalid_cell_id = second.manifest.cell_id.clone();
+    second.generated_input.batches.clear();
+
+    let mut verifier_calls = 0_usize;
+    let rejected = crate::run_memory_meta_preselected_evidence_checked_shadow_v1(
+        &meta_policy(&fixture),
+        &fixture.cue,
+        &fixture.policy,
+        &fixture.snapshot,
+        &fixture.dynamics,
+        &[first, second],
+        |_| {
+            verifier_calls += 1;
+            true
+        },
+    );
+    assert!(matches!(
+        rejected,
+        Err(crate::MemoryMetaBatchErrorV1::Tick {
+            cell_id,
+            source: crate::MemoryCellRuntimeErrorV1::Retrieval(
+                crate::GeneratorErrorV1::InvalidGeneratorCount
+            ),
+        }) if cell_id == invalid_cell_id
+    ));
+    assert_eq!(verifier_calls, 0);
+}
