@@ -130,13 +130,13 @@ async fn later_queued_input_precedes_automatic_work_observing_the_same_fence() {
         .expect("queued registration order is retained");
 
     fence_tx.send(()).expect("all idle callbacks have returned");
-    tokio::time::timeout(std::time::Duration::from_secs(5), queued_rx)
+    tokio::time::timeout(std::time::Duration::from_secs(/*secs*/ 5), queued_rx)
         .await
         .expect("queue must not wait for earlier automatic work")
         .expect("queue should start");
     assert_eq!(*order.lock().unwrap(), vec!["queued-1"]);
     release_tx.send(()).expect("settle queued admission");
-    tokio::time::timeout(std::time::Duration::from_secs(5), finished_rx)
+    tokio::time::timeout(std::time::Duration::from_secs(/*secs*/ 5), finished_rx)
         .await
         .expect("automatic work should follow queued input")
         .expect("automatic work should finish");

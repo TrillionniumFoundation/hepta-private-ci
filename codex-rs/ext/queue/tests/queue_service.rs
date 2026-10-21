@@ -2982,7 +2982,7 @@ async fn queued_input_precedes_an_older_automatic_notification_at_the_same_fence
     impl ThreadLifecycleContributor<codex_core::config::Config> for BeforeQueueGate {
         fn on_thread_idle<'a>(&'a self, _input: ThreadIdleInput<'a>) -> ExtensionFuture<'a, ()> {
             Box::pin(async move {
-                if self.first.swap(false, Ordering::SeqCst) {
+                if self.first.swap(/*val*/ false, Ordering::SeqCst) {
                     self.entered.notify_one();
                     self.release.notified().await;
                 }
@@ -3013,7 +3013,7 @@ async fn queued_input_precedes_an_older_automatic_notification_at_the_same_fence
     let release = Arc::new(tokio::sync::Notify::new());
     let mut extensions = ExtensionRegistryBuilder::<codex_core::config::Config>::new();
     extensions.thread_lifecycle_contributor(Arc::new(BeforeQueueGate {
-        first: AtomicBool::new(true),
+        first: AtomicBool::new(/*v*/ true),
         entered: Arc::clone(&entered),
         release: Arc::clone(&release),
     }));
@@ -3034,7 +3034,7 @@ async fn queued_input_precedes_an_older_automatic_notification_at_the_same_fence
         .await?;
     let queue = install_registered_queue(&test, installed.as_ref())?;
 
-    tokio::time::timeout(Duration::from_secs(10), async {
+    tokio::time::timeout(Duration::from_secs(/*secs*/ 10), async {
         test.submit_text_turn("initial user A").await?;
         entered.notified().await;
         let completion = test
