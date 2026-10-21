@@ -1,0 +1,140 @@
+{
+  "schema_version": 1,
+  "source_commits": [
+    "d358049be1e0e712756bff34426e006521ae00ca",
+    "aa18f31d5e628299613105925b9b47e371ff5195"
+  ],
+  "base_commit": "97dbdb200085d1d1adec5c9301ba0080a0522874",
+  "keyless_owner": {
+    "pr": 2961,
+    "head": "c210d26350ac57e527b4ff59663e5c8d518ff95a"
+  },
+  "checks": [
+    {
+      "command": "python -m unittest discover -s .github/scripts -p test_run_bazel_with_buildbuddy.py -v",
+      "state": "new tests against original source",
+      "exit": 1,
+      "tests": 19,
+      "failed_assertions": 9,
+      "log": "keyless-ci-baseline.log.xz"
+    },
+    {
+      "command": "python -m unittest discover -s .github/scripts -p test_run_bazel_with_buildbuddy.py -v",
+      "state": "fixed source",
+      "exit": 0,
+      "tests": 19,
+      "log": "keyless-ci-fixed.log.xz"
+    },
+    {
+      "command": "python -m unittest discover -s .github/scripts -p test_run_bazel_ci.py -v",
+      "state": "new tests against original target selection",
+      "exit": 1,
+      "tests": 11,
+      "failed_assertions": 1,
+      "log": "clippy-selection-baseline.log.xz"
+    },
+    {
+      "command": "just test-github-scripts",
+      "state": "first complete run: four pre-existing consumer assertions still expected discarded CI options",
+      "exit": 1,
+      "tests": 106,
+      "failed_assertions": 4,
+      "log": "ci-policy-original-suite.log.xz"
+    },
+    {
+      "command": "just test-github-scripts",
+      "state": "all corresponding consumer expectations updated; native/cross/query-failure coverage retained",
+      "exit": 0,
+      "tests": 106,
+      "log": "ci-policy-original-suite-fixed.log.xz"
+    },
+    {
+      "command": "just fmt",
+      "exit": 1,
+      "reason": "default uv cache path was read-only",
+      "log": "ci-policy-fmt.log.xz"
+    },
+    {
+      "command": "UV_CACHE_DIR=/workspace/scratch/337c309bc660/dependency-cache/uv just fmt",
+      "exit": 1,
+      "reason": "sandbox network prevented fetching the repository-locked Ruff 0.15.13",
+      "log": "ci-policy-fmt-fixed.log.xz"
+    },
+    {
+      "command": "UV_CACHE_DIR=/workspace/scratch/337c309bc660/dependency-cache/uv just fmt",
+      "exit": 0,
+      "reason": "normal approved network execution; existing uv.lock retained",
+      "log": "ci-policy-fmt-network.log.xz"
+    },
+    {
+      "command": "git diff --check",
+      "exit": 0
+    }
+  ],
+  "scope": [
+    "Actual repository just test-github-scripts entry point was executed.",
+    "Shell integration executes list-bazel-clippy-targets.sh and the existing Bazel wrappers with a recording external process.",
+    "Native Linux, macOS and MSVC selections keep native, unit and unrelated manual helpers. Explicit Windows cross mode keeps its cross helpers and unit coverage. Query failure still exits 37 with no partial target list.",
+    "The production target-selection change adds no skip-incompatible flag and removes no compatible native test from the Clippy roster.",
+    "No native Rust compilation or Bazel analysis/build was launched; hosted original jobs remain necessary.",
+    "The final repository formatter ran after the successful suite, following AGENTS.md. Only Python layout changed during formatting."
+  ],
+  "files": {
+    "keyless-ci-baseline.log.xz": {
+      "raw_bytes": 15560,
+      "raw_sha256": "e5d7b69beae9d03d5ef87862f84a8ba5c3c5bb24eb8a34a04934b774dd2a5f2d",
+      "compressed_bytes": 1444,
+      "compressed_sha256": "8f89b1d82ea3cfcbdc7dcbadfb0163596c9f873b25f5f3ed36506bda627f7be8",
+      "roundtrip_identical": true
+    },
+    "keyless-ci-fixed.log.xz": {
+      "raw_bytes": 3600,
+      "raw_sha256": "ec112210818919132c296f29a7da2b79de51635aadeccf7c3bfe02c8e6ec4d7f",
+      "compressed_bytes": 780,
+      "compressed_sha256": "ccb1c764dd4e8bd9664a1c088eef26efdc9028d92998a98ba16c7d50d402513a",
+      "roundtrip_identical": true
+    },
+    "clippy-selection-baseline.log.xz": {
+      "raw_bytes": 3606,
+      "raw_sha256": "9c42e737d18f390d6b96548cc5827c2a5666d19bbc8e4a0f2ce2deadfdbc8e7a",
+      "compressed_bytes": 972,
+      "compressed_sha256": "e5452372e9955b2b83b3bbd5bad51e5b4d1d471a6347d70460c168a604430f46",
+      "roundtrip_identical": true
+    },
+    "ci-policy-original-suite.log.xz": {
+      "raw_bytes": 4548,
+      "raw_sha256": "be995376eb7eb5d476e4d8e57234934ccaf2f7117bd2c8a5c2b8051b36a59539",
+      "compressed_bytes": 928,
+      "compressed_sha256": "e1200a44405ea3fb9bb0b2ca21be4c68f9e1e7375755d5eae33eb227f14d607f",
+      "roundtrip_identical": true
+    },
+    "ci-policy-original-suite-fixed.log.xz": {
+      "raw_bytes": 793,
+      "raw_sha256": "925eb3889e08b701124477ee5238d57fc377a5fc7bda97b19af9d2f084c4a379",
+      "compressed_bytes": 352,
+      "compressed_sha256": "481edb46162d460ade1e81be6169fc7f041ea303269e29669786bcc66885606e",
+      "roundtrip_identical": true
+    },
+    "ci-policy-fmt.log.xz": {
+      "raw_bytes": 551,
+      "raw_sha256": "df0142c91a29430fdbb4e2512a05efb291002b0fbadd320fff97412669867f92",
+      "compressed_bytes": 368,
+      "compressed_sha256": "9c023af58246ec34c10f83ada6745ed22aa7c142c08ad3268d33e14cfb8ee814",
+      "roundtrip_identical": true
+    },
+    "ci-policy-fmt-fixed.log.xz": {
+      "raw_bytes": 1326,
+      "raw_sha256": "30e6ae7ab9fd1278931ea5521a0ccfaa35f2fc0c4dac13d2247483d239198158",
+      "compressed_bytes": 724,
+      "compressed_sha256": "33ed3eac758ec996d47b53ff012fdc360de3bf42c7acb5baae786c4545ad9b8c",
+      "roundtrip_identical": true
+    },
+    "ci-policy-fmt-network.log.xz": {
+      "raw_bytes": 0,
+      "raw_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "compressed_bytes": 32,
+      "compressed_sha256": "0040f94d11d0039505328a90b2ff48968db873e9e7967307631bf40ef5679275",
+      "roundtrip_identical": true
+    }
+  }
+}
