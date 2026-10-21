@@ -393,5 +393,9 @@ fn windows_trust_verification_fails_closed_without_unix_descriptors() {
     let error = InheritedPipe::new(b"test-only signer data")
         .err()
         .expect("Windows must reject unsupported SSHSIG inherited pipes");
-    assert!(error.to_string().contains("requires Unix inherited descriptors"));
+    assert!(
+        error
+            .to_string()
+            .contains("requires Unix inherited descriptors")
+    );
 }
