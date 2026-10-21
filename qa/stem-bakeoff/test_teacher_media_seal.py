@@ -339,5 +339,139 @@ class TeacherMediaSealIntegrationTests(unittest.TestCase):
             self.assertEqual(report["owner_model_forward_hook_calls"], 1)
             self.assertFalse(report["production_activation_allowed"])
 
+    def test_t5_image_processor_consumes_sealed_pixels_and_forwards_vision(self):
+        from types import SimpleNamespace
+        import types
+        import teacher_forward
+
+        class FakeEncoder(torch.nn.Module):
+            def __init__(self):
+                super().__init__()
+                self.call_pixels = []
+
+            def forward(self, *, input_ids, attention_mask, pixel_values):
+                self.call_pixels.append(pixel_values.detach().clone())
+                return SimpleNamespace(last_hidden_state=torch.ones(
+                    input_ids.shape[0], input_ids.shape[1], 16))
+
+        class FakeT5(torch.nn.Module):
+            def __init__(self):
+                super().__init__()
+                self.encoder = FakeEncoder()
+
+            def get_encoder(self):
+                return self.encoder
+
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            source = root / "photo.png"
+            source.write_bytes(b"verified-image-input")
+            rows = [{"text": "<start_of_image> tell me", "image": "photo.png"}]
+            _, expected = teacher_forward.validate_records(
+                rows, root, "t5gemma2_encoder_270m")
+            seen = {}
+            fake_model = FakeT5()
+
+            class FakeOpened:
+                def __init__(self, path):
+                    self.path = Path(path)
+                    self.size = (4, 4)
+
+                def __enter__(self):
+                    return self
+
+                def __exit__(self, *_args):
+                    return False
+
+                def convert(self, mode):
+                    assert mode == "RGB"
+                    seen["path"] = self.path
+                    seen["payload"] = self.path.read_bytes()
+                    self.payload = seen["payload"]
+                    return self
+
+                def copy(self):
+                    return self
+
+            image_module = types.ModuleType("PIL.Image")
+            image_module.open = lambda path: FakeOpened(path)
+            pil_module = types.ModuleType("PIL")
+            pil_module.Image = image_module
+
+            class FakeProcessor:
+                def __call__(self, *, text, images, **_kwargs):
+                    seen["prompt"] = list(text)
+                    seen["image"] = images[0].payload
+                    source.write_bytes(b"changed-after-sealing")
+                    assert images[0].payload == b"verified-image-input"
+                    return {"input_ids": torch.tensor([[4, 5]]),
+                            "attention_mask": torch.tensor([[1, 1]]),
+                            "pixel_values": torch.ones(1, 3, 4, 4)}
+
+            modules = types.ModuleType("transformers")
+            modules.AutoModel = object()
+            modules.AutoTokenizer = object()
+            modules.AutoProcessor = SimpleNamespace(
+                from_pretrained=lambda *_a, **_kw: FakeProcessor())
+            modules.AutoModelForSeq2SeqLM = SimpleNamespace(
+                from_pretrained=lambda *_a, **_kw: fake_model)
+            with (mock.patch.dict(sys.modules, {"transformers": modules,
+                                               "PIL": pil_module,
+                                               "PIL.Image": image_module}),
+                  mock.patch.object(teacher_forward, "verify_snapshot",
+                                    return_value={"revision": "a" * 40,
+                                                  "inventory_sha256": "b" * 64})):
+                report = teacher_forward.run_forward(
+                    candidate="t5gemma2_encoder_270m", snapshot=root,
+                    media_root=root, records=rows, revision="a" * 40,
+                    expected_inventory_sha256="b" * 64,
+                    operator_accepted_terms=True, device="cpu")
+            self.assertEqual(seen["prompt"], ["<start_of_image> tell me"])
+            self.assertEqual(seen["image"], b"verified-image-input")
+            self.assertNotEqual(seen["path"], source)
+            self.assertFalse(seen["path"].exists())
+            self.assertEqual(len(fake_model.encoder.call_pixels), 1)
+            self.assertEqual(report["ordered_source_manifest_sha256"], expected)
+            self.assertEqual(report["owner_model_forward_hook_calls"], 1)
+            self.assertFalse(report["production_activation_allowed"])
+
+    def test_t5_image_model_load_mutation_invalidates_original_digest(self):
+        from types import SimpleNamespace
+        import types
+        import teacher_forward
+
+        class FakeT5(torch.nn.Module):
+            def get_encoder(self):
+                return torch.nn.Linear(3, 3)
+
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            source = root / "photo.png"
+            source.write_bytes(b"original-image")
+            records = [{"text": "<start_of_image> query", "image": "photo.png"}]
+
+            def load_model(*_args, **_kwargs):
+                source.write_bytes(b"modified-image")
+                return FakeT5()
+
+            modules = types.ModuleType("transformers")
+            modules.AutoModel = object()
+            modules.AutoTokenizer = object()
+            modules.AutoProcessor = SimpleNamespace(
+                from_pretrained=lambda *_a, **_kw: object())
+            modules.AutoModelForSeq2SeqLM = SimpleNamespace(
+                from_pretrained=load_model)
+            with (mock.patch.dict(sys.modules, {"transformers": modules}),
+                  mock.patch.object(teacher_forward, "verify_snapshot",
+                                    return_value={"revision": "a" * 40,
+                                                  "inventory_sha256": "b" * 64})):
+                with self.assertRaisesRegex(
+                        TeacherMediaSealError, "changed after digest"):
+                    teacher_forward.run_forward(
+                        candidate="t5gemma2_encoder_270m", snapshot=root,
+                        media_root=root, records=records, revision="a" * 40,
+                        expected_inventory_sha256="b" * 64,
+                        operator_accepted_terms=True, device="cpu")
+
 if __name__ == "__main__":
     unittest.main()
