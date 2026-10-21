@@ -75,3 +75,41 @@ fn shared_pool_reports_group_and_drop_metrics() {
     assert_eq!(pool.metrics().activations_committed, 1);
     assert_eq!(pool.metrics().dropped_requests, 1);
 }
+
+#[test]
+fn group_digest_distinguishes_ambiguous_id_concatenations() {
+    // The V1 unframed digest treated ("ab", "c") and ("a", "bc")
+    // as the same request/scope byte stream. V2 must reject this alias.
+    let original = QueuedCellRequestV1 {
+        request_id: id("ab"),
+        cell_id: id("cell:a"),
+        scope_id: id("c"),
+        feature_generation: generation(1),
+    };
+    let different_boundary = QueuedCellRequestV1 {
+        request_id: id("a"),
+        scope_id: id("bc"),
+        ..original.clone()
+    };
+    assert_ne!(
+        digest_batch(&[original.clone()]),
+        digest_batch(&[different_boundary])
+    );
+
+    // A cell change is a different routed operation even if request,
+    // scope and feature generation are identical.
+    let different_cell = QueuedCellRequestV1 {
+        cell_id: id("cell:b"),
+        ..original.clone()
+    };
+    assert_ne!(
+        digest_batch(&[original.clone()]),
+        digest_batch(&[different_cell])
+    );
+
+    // Preserve order and distinguish one-item batches from two-item batches.
+    assert_ne!(
+        digest_batch(&[original.clone()]),
+        digest_batch(&[original.clone(), original])
+    );
+}
