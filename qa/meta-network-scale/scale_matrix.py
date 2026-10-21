@@ -88,6 +88,16 @@ def build_plan() -> dict[str, Any]:
     }
 
 
+def _finite_number(value: Any) -> bool:
+    """Return whether a JSON number is finite without coercion crashes."""
+    if isinstance(value, bool) or not isinstance(value, (int, float)):
+        return False
+    try:
+        return math.isfinite(value)
+    except (OverflowError, ValueError):
+        return False
+
+
 def validate_result(result: dict[str, Any]) -> list[str]:
     errors: list[str] = []
     if result.get("schema") != "hepta.cell-execution-scale-result.v1":
@@ -137,9 +147,7 @@ def validate_result(result: dict[str, Any]) -> list[str]:
                 errors.append(f"metrics.{key} is required")
                 continue
             value = metrics[key]
-            if isinstance(value, bool) or not isinstance(value, (int, float)):
-                errors.append(f"metrics.{key} must be a finite number")
-            elif not math.isfinite(value):
+            if not _finite_number(value):
                 errors.append(f"metrics.{key} must be a finite number")
             elif key != "task_utility" and value < 0:
                 errors.append(f"metrics.{key} must be non-negative")
