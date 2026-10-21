@@ -44,7 +44,13 @@ test('opt-in config cannot replace primary config or omit strict product cases',
  assert.match(config,/\['baseline','fixed'\]/);assert.match(config,/\[false,true\]/);
  assert.match(config,/robrix-product-status\.spec\.mjs/);
  const primary=await readFile(new URL('../playwright.product.config.mjs',import.meta.url),'utf8');
- assert.doesNotMatch(primary,/DIAGNOSTIC|executablePath|continue-on-error/);
+ // Keep diagnostic-only flags out of mandatory acceptance without rejecting
+ // the reviewed, SHA-pinned product browser and its independently verified path.
+ assert.doesNotMatch(primary,/HEPTA_FONT_DIAGNOSTIC_(?:BROWSER|SUITE)|diagnosticOnly\s*:\s*true|fontDeliveryObserver\s*:\s*true|continue-on-error/);
+ assert.match(primary,/HEPTA_PRODUCT_BROWSER/);
+ assert.match(primary,/hashDiagnosticFile\(executablePath\)!==FIXED_BINARY_SHA/);
+ assert.match(primary,/productBrowserQualification:true/);
+ assert.match(primary,/expectedBrowser:FIXED_BROWSER_VERSION/);
  const spec=await readFile(new URL('../e2e/robrix-product-status.spec.mjs',import.meta.url),'utf8');
  assert.match(spec,/expect\(faults\)\.toEqual\(\[\]\)/);
  assert.match(spec,/expect\(requests\)\.toEqual\(\[\]\)/);
