@@ -240,12 +240,7 @@ impl MemoryMetaPreTickPlanV1 {
                 HnmfContractError::Conflict("memory meta pre-tick authority"),
             ));
         }
-        let expected = plan_memory_meta_pre_ticks_shadow_v1(
-            policy,
-            cue,
-            engram_snapshot,
-            cells,
-        )?;
+        let expected = plan_memory_meta_pre_ticks_shadow_v1(policy, cue, engram_snapshot, cells)?;
         if *self != expected {
             return Err(MemoryMetaBatchErrorV1::Contract(
                 HnmfContractError::Conflict("memory meta pre-tick source binding"),
