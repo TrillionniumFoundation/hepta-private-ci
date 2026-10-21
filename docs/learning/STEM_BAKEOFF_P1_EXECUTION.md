@@ -241,3 +241,19 @@ blockers remain open.
 fail-closed errors for malformed JSON root objects and non-array Cell
 components, rather than allowing unexpected Python type errors to interrupt
 the receipt assessment. No malformed receipt gains authority.
+
+
+### P4 checkpoint-custody regression fix
+
+The local snapshot inventory now rejects hardlinked regular files, not just
+symlinks. Otherwise a supposedly isolated checkpoint can alias a writable
+file outside its snapshot directory. After computing and comparing the
+independently pinned inventory digest, the verifier also rehashes bounded
+`config.json` bytes immediately before parsing `model_type`; a file swap
+between the inventory and parser is rejected. Both conditions have negative
+unit tests.
+
+These checks improve the local byte-custody boundary only. They do **not**
+make a mutable filesystem inherently immutable, prove upstream publisher
+identity, or replace a read-only mount/content-addressed verified
+materialization followed by independent source attestation.
