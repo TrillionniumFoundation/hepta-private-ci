@@ -333,7 +333,11 @@ def _guarded_offline_optimizer_step(optimizer: torch.optim.Optimizer,
     """
     if ("step" in vars(optimizer)
             or optimizer._optimizer_step_pre_hooks
-            or optimizer._optimizer_step_post_hooks):
+            or optimizer._optimizer_step_post_hooks
+            or optimizer._optimizer_state_dict_pre_hooks
+            or optimizer._optimizer_state_dict_post_hooks
+            or optimizer._optimizer_load_state_dict_pre_hooks
+            or optimizer._optimizer_load_state_dict_post_hooks):
         raise LatentBridgeError("instrumented offline optimizer step is unsupported")
     parameters = [p for group in optimizer.param_groups for p in group["params"]]
     if tuple(id(p) for p in parameters) != expected_ids:
