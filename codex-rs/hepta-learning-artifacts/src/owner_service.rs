@@ -675,16 +675,17 @@ mod tests {
         let current = request.signed_current_head.clone();
         drop(service);
 
-        let mut reopened = LearningArtifactOwnerService::open(LearningArtifactOwnerServiceConfigV1 {
-            root: directory.0.clone(),
-            trust: trust(&key, scope_digest),
-            writer_lease: lease(&key, scope_digest),
-            required_current_head: Some(current),
-            withdrawal_registry: withdrawals,
-            storage_binding: digest("binding"),
-            now: 21,
-        })
-        .fixture("reopen service");
+        let mut reopened =
+            LearningArtifactOwnerService::open(LearningArtifactOwnerServiceConfigV1 {
+                root: directory.0.clone(),
+                trust: trust(&key, scope_digest),
+                writer_lease: lease(&key, scope_digest),
+                required_current_head: Some(current),
+                withdrawal_registry: withdrawals,
+                storage_binding: digest("binding"),
+                now: 21,
+            })
+            .fixture("reopen service");
         assert_eq!(
             reopened.registry().snapshot().head_digest,
             receipt.registry_head_digest
