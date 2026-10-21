@@ -42,6 +42,11 @@ fn candidate(
         candidate_id: id(name),
         candidate_digest: Digest32::of_bytes(name.as_bytes()),
         snapshot_digest: Digest32::of_bytes(b"snapshot"),
+        composition_domain_digest: if is_no_change {
+            Digest32::ZERO
+        } else {
+            Digest32::of_bytes(b"shared-output-space")
+        },
         protocol: if is_no_change {
             OutputProtocolV1::NoChange
         } else {
@@ -253,6 +258,36 @@ fn incompatible_generation_protocols_cannot_share_one_allocation() {
     assert!(receipt.allocations.iter().any(|item| item.candidate_id == id("text")));
     assert!(receipt.allocations.iter().any(|item| item.candidate_id == id("baseline")));
     assert!(!receipt.allocations.iter().any(|item| item.candidate_id == id("flow")));
+}
+
+#[test]
+fn incompatible_composition_domains_cannot_be_blended() {
+    let mut first = candidate("first", 80, 0, false);
+    first.weight_cap = q(40);
+    let mut different_space = candidate("different-space", 70, 0, false);
+    different_space.composition_domain_digest = Digest32::of_bytes(b"other-tokenizer");
+    let receipt = select_output_portfolio_v1(
+        &context(3),
+        &budget(3),
+        &[candidate("baseline", 0, 0, true), first, different_space],
+    )
+    .expect("domain-aware advisory routing");
+    assert!(receipt.allocations.iter().any(|item| item.candidate_id == id("first")));
+    assert!(!receipt.allocations.iter().any(|item| item.candidate_id == id("different-space")));
+    assert!(receipt.allocations.iter().any(|item| item.candidate_id == id("baseline")));
+}
+
+#[test]
+fn missing_composition_domain_is_rejected() {
+    let mut unbound = candidate("unbound", 70, 0, false);
+    unbound.composition_domain_digest = Digest32::ZERO;
+    let error = select_output_portfolio_v1(
+        &context(2),
+        &budget(2),
+        &[candidate("baseline", 0, 0, true), unbound],
+    )
+    .expect_err("output geometry must be committed");
+    assert_eq!(error, NduError::InvalidSolverReceipt("composition domain digest"));
 }
 
 #[test]
