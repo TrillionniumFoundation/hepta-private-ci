@@ -384,7 +384,11 @@ impl FairCellQueueV1 {
             self.request_ids.remove(&request.request_id);
             self.length -= 1;
             batch.push(request);
-            if !queue.is_empty() {
+            if queue.is_empty() {
+                // Retire empty per-scope metadata. A bounded request queue must
+                // not retain every historical scope after its last dispatch.
+                self.queues.remove(&scope);
+            } else {
                 self.ready_scopes.push_back(scope);
             }
         }
@@ -429,3 +433,26 @@ impl std::error::Error for CellBatchError {}
 #[cfg(test)]
 #[path = "cell_batch_tests.rs"]
 mod tests;
+
+#[cfg(test)]
+#[test]
+fn draining_transient_scopes_reclaims_all_queue_metadata() {
+    let mut queue = FairCellQueueV1::new(2).expect("queue");
+    for index in 0..128 {
+        let request_id = StableId::new(format!("request:reclaim:{index}")).expect("request");
+        let scope_id = StableId::new(format!("scope:reclaim:{index}")).expect("scope");
+        queue
+            .push(QueuedCellRequestV1 {
+                request_id,
+                cell_id: StableId::new("cell:reclaim").expect("cell"),
+                scope_id,
+                feature_generation: Generation::new(1).expect("generation"),
+            })
+            .expect("bounded admission");
+        assert_eq!(queue.drain_batch(1).len(), 1);
+        assert!(queue.is_empty());
+        assert!(queue.queues.is_empty(), "stale scope metadata");
+        assert!(queue.ready_scopes.is_empty(), "stale ready-scope metadata");
+        assert!(queue.request_ids.is_empty(), "stale request dedup entry");
+    }
+}
