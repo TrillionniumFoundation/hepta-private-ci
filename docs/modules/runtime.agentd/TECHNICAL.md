@@ -155,6 +155,53 @@ artifact revocation and support withdrawal after loading. This is an owner-path
 behavioral test, not a real-task transfer study, process-isolation proof or
 production Laya service. Selected model state and effect authority are unchanged.
 
+### PoN executable and bounded exchange boundary
+
+The explicit `trillionnium-pon-local-v1` provider still uses the existing
+TaskFlow effect owner and FinalUseAuthority. Before dispatch, its compiled
+adapter copies bounded native executable bytes into one operation-local
+sealed object, seals before hashing, and compares the immutable bytes with
+the signed provider-contract binary digest. Invocation executes that held
+object, not a second lookup of the original installation path. This closes
+pathname replacement and original-inode rewriting after preparation.
+
+The current PoN immutable-executable implementation explicitly requires
+Linux x86_64/aarch64 and kernel support for executable memfd and execute-bit
+sealing (Linux 6.3+). Missing platform/kernel support refuses before dispatch;
+there is no pathname or interpreter-script fallback. This restriction is
+specific to this PoN provider, not a change to other Agentd providers.
+The kernel, process environment, dynamic loader and shared libraries remain
+trusted host inputs; the binary digest is not a dependency-closure or
+arbitrary local-administrator isolation claim. The 256 MiB binary bound
+also bounds the operation-local image, not total host memory under load.
+File reads and kernel calls are not physically preemptible; deadline checks
+between bounded reads prevent a late preparation from starting execution.
+
+The same original deadline covers stdin, bounded stdout/stderr and direct
+child completion. Expired pre-entry preparation is NotDispatched; incomplete
+output, timeout or failure after spawn is Unknown. The bounded cleanup grace
+does not create extra success time. Descendant-held pipes cannot extend the
+exchange indefinitely, but this adapter does not supervise arbitrary
+descendants. Exact durable effect/payload identity and the separately
+validated height/work observation remain required. Chain generations and
+local final-use generations are different namespaces, not equal integers.
+
+Native ELF fixture tests run through the real invoke/dispatch methods for
+blocked stdin, EOF, independent output limits, descendant-held pipes,
+nonzero exits, partial JSON and payload mismatch. Separate object tests cover
+replacement, rewriting and seal enforcement. Fixture compilation requires
+the native C compiler already used by the host build; absence is a failure,
+not a skipped success. These fixtures are not Chain nodes or ordinary model
+installation evidence. Existing script fixtures explicitly exercise only
+the lower pipe boundary and cannot qualify an executable for deployment.
+
+Model parameters still require artifact/evaluation/selection/withdrawal,
+final-use and resource owners. Topology/executable upgrades additionally
+require existing runtime/release/capability and compatibility/recovery
+decisions. Consensus/verifier/root changes require an explicit protocol
+context and migration/replay. A better score, vote, sealed binary or chain
+confirmation alone cannot authorize any higher-level upgrade.
+
 ## 5. Contracts, ports and compatibility
 
 Produced contracts:
