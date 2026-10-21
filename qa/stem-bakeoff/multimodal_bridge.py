@@ -1,0 +1,182 @@
+"""Shared differentiable latent slots from scoped frozen-teacher outputs.
+
+Research only. Accepts already-computed features, never downloads weights and
+never authenticates model origin from a caller-supplied digest. Modality towers
+are shared outside Neuron Cells; no per-Cell model or memory is created here.
+"""
+from __future__ import annotations
+
+from dataclasses import dataclass
+import hashlib
+import json
+import re
+from typing import Mapping
+
+import torch
+from torch import nn
+
+ALLOWED_MODALITIES = ("text", "image", "audio", "video", "ui_event")
+TEMPORAL_MODALITIES = frozenset(("audio", "video", "ui_event"))
+SHA256 = re.compile(r"[0-9a-f]{64}\Z")
+
+
+class LatentBridgeError(ValueError):
+    pass
+
+
+@dataclass(frozen=True)
+class LatentSlots:
+    slots: torch.Tensor
+    global_feature: torch.Tensor
+    missing_mask: tuple[bool, ...]
+    source_manifest_digest: str
+    generation: int
+    authority: str = "DENY_ALL"
+    production_activation_allowed: bool = False
+
+
+class MultimodalSlotizer(nn.Module):
+    """Trainable shared modality projectors + cross-attention slot bottleneck.
+
+    Pooled teacher vectors [batch,width] are treated as ONE token. This does
+    not invent lost visual regions, audio frames or model reasoning tokens.
+    """
+    def __init__(self, input_widths: Mapping[str, int], *, latent_width: int,
+                 slots: int = 16, heads: int = 4, max_tokens: int = 256):
+        super().__init__()
+        if (not isinstance(input_widths, dict) or not input_widths or
+                any(m not in ALLOWED_MODALITIES or type(d) is not int or not 0 < d <= 4096
+                    for m, d in input_widths.items()) or
+                type(latent_width) is not int or not 8 <= latent_width <= 4096 or
+                type(slots) is not int or not 1 <= slots <= 128 or
+                type(heads) is not int or heads < 1 or latent_width % heads or
+                type(max_tokens) is not int or not 1 <= max_tokens <= 4096):
+            raise LatentBridgeError("invalid shared modality registry or slot budget")
+        self.input_widths = dict(input_widths)
+        self.latent_width = latent_width
+        self.slots = slots
+        self.max_tokens = max_tokens
+        self.projectors = nn.ModuleDict({m: nn.Linear(d, latent_width)
+                                         for m, d in self.input_widths.items()})
+        self.tags = nn.ParameterDict({m: nn.Parameter(torch.zeros(latent_width))
+                                      for m in self.input_widths})
+        self.queries = nn.Parameter(torch.randn(slots, latent_width) * 0.02)
+        self.cross_attention = nn.MultiheadAttention(latent_width, heads,
+                                                       batch_first=True, dropout=0.0)
+        self.norm = nn.LayerNorm(latent_width)
+
+    def forward(self, features: Mapping[str, torch.Tensor], *,
+                source_digests: Mapping[str, str], generation: int,
+                timestamps: Mapping[str, torch.Tensor] | None = None) -> LatentSlots:
+        if (not isinstance(features, dict) or not features or
+                not isinstance(source_digests, dict) or
+                set(source_digests) != set(features) or
+                type(generation) is not int or generation < 1 or
+                not set(features).issubset(self.input_widths)):
+            raise LatentBridgeError("unregistered/cross-generation modality inputs")
+        timestamps = {} if timestamps is None else timestamps
+        if not isinstance(timestamps, dict) or not set(timestamps).issubset(features):
+            raise LatentBridgeError("unbound temporal tags")
+        for modality in features:
+            if modality in TEMPORAL_MODALITIES and modality not in timestamps:
+                raise LatentBridgeError("temporal modality requires ordered timestamps")
+            if not isinstance(source_digests[modality], str) or not SHA256.fullmatch(source_digests[modality]):
+                raise LatentBridgeError("invalid source digest")
+        batch = None
+        device = None
+        dtype = None
+        total_tokens = 0
+        parts = []
+        manifest = []
+        for modality in ALLOWED_MODALITIES:
+            if modality not in features:
+                continue
+            value = features[modality]
+            if not isinstance(value, torch.Tensor):
+                raise LatentBridgeError("modality features must be tensors")
+            if value.ndim == 2:  # EmbeddingGemma 2 pooled output = single slot
+                value = value.unsqueeze(1)
+            if (value.ndim != 3 or value.shape[-1] != self.input_widths[modality]
+                    or value.shape[0] < 1 or value.shape[1] < 1
+                    or value.shape[1] > self.max_tokens or not value.is_floating_point()
+                    or not torch.isfinite(value).all()):
+                raise LatentBridgeError("invalid/nonfinite latent token dimensions")
+            if batch is None:
+                batch, device, dtype = value.shape[0], value.device, value.dtype
+            elif batch != value.shape[0] or device != value.device or dtype != value.dtype:
+                raise LatentBridgeError("cross-modal batch/device/dtype mismatch")
+            total_tokens += value.shape[1]
+            if total_tokens > self.max_tokens:
+                raise LatentBridgeError("combined modality token budget exceeded")
+            t = timestamps.get(modality)
+            if t is not None:
+                if (not isinstance(t, torch.Tensor) or t.shape != value.shape[:2]
+                        or t.device != value.device or not torch.isfinite(t).all()
+                        or torch.any(t < 0) or torch.any(t > 1e9)
+                        or torch.any(t[:, 1:] < t[:, :-1])):
+                    raise LatentBridgeError("invalid unordered temporal spans")
+            # Teacher features intentionally DETACHED: no gradient or learning into
+            # upstream frozen modality model. Modality projectors still train.
+            projected = self.projectors[modality](value.detach()) + self.tags[modality]
+            if t is not None:
+                # Minimal bounded temporal phase. More expressive time adapters
+                # are an independent future bake-off arm.
+                projected = projected + 0.01 * torch.sin(t.to(dtype=projected.dtype).unsqueeze(-1) / 1000.0)
+            parts.append(projected)
+            manifest.append((modality, source_digests[modality], list(value.shape)))
+        if not parts:
+            raise LatentBridgeError("no present modalities")
+        tokens = torch.cat(parts, dim=1)
+        queries = self.queries.unsqueeze(0).expand(batch, -1, -1)
+        attended, _ = self.cross_attention(queries, tokens, tokens, need_weights=False)
+        slot_features = self.norm(queries + attended)
+        if not torch.isfinite(slot_features).all():
+            raise LatentBridgeError("nonfinite shared slots")
+        statement = {"generation": generation, "sources": manifest,
+                     "registered": list(self.input_widths.items()),
+                     "missing": [m not in features for m in ALLOWED_MODALITIES]}
+        manifest_digest = hashlib.sha256(json.dumps(statement, sort_keys=True,
+                                                     separators=(",", ":")).encode()).hexdigest()
+        return LatentSlots(slots=slot_features,
+                           global_feature=slot_features.mean(dim=1),
+                           missing_mask=tuple(m not in features for m in ALLOWED_MODALITIES),
+                           source_manifest_digest=manifest_digest,
+                           generation=generation)
+
+
+def shadow_distill_step(student: nn.Module, slotizer: MultimodalSlotizer,
+                        features: dict[str, torch.Tensor], source_digests: dict[str, str],
+                        teacher_global: torch.Tensor, optimizer: torch.optim.Optimizer,
+                        *, generation: int, timestamps: dict[str, torch.Tensor] | None = None) -> dict:
+    """One offline-only MSE/cosine step, never a production Cell update.
+
+    The caller must separately prove that teacher targets, checkpoint and
+    held-out data truly originate from approved non-overlapping sources.
+    """
+    if not any(p.requires_grad for p in student.parameters()):
+        raise LatentBridgeError("student must be explicitly trainable offline")
+    slots = slotizer(features, source_digests=source_digests,
+                     generation=generation, timestamps=timestamps)
+    target = teacher_global.detach()
+    if (target.shape != slots.global_feature.shape or
+            not torch.isfinite(target).all() or
+            target.device != slots.global_feature.device):
+        raise LatentBridgeError("teacher target incompatible with student")
+    optimizer.zero_grad(set_to_none=True)
+    predictions = student(slots.slots).mean(dim=1)
+    if not torch.isfinite(predictions).all():
+        raise LatentBridgeError("student output invalid")
+    mse = torch.nn.functional.mse_loss(predictions, target)
+    cosine = 1.0 - torch.nn.functional.cosine_similarity(
+        predictions, target, dim=-1, eps=1e-8).mean()
+    loss = mse + 0.1 * cosine
+    if not torch.isfinite(loss):
+        raise LatentBridgeError("nonfinite distillation loss")
+    loss.backward()
+    optimizer.step()
+    return {"loss": float(loss.detach()), "mse": float(mse.detach()),
+            "cosine_loss": float(cosine.detach()), "generation": generation,
+            "source_manifest_digest": slots.source_manifest_digest,
+            "training_posture": "OFFLINE_RESEARCH_ONLY", "authority": "DENY_ALL",
+            "evidence_class": "UNVERIFIED_TEACHER_FEATURES",
+            "checkpoint_qualified": False, "production_activation_allowed": False}
