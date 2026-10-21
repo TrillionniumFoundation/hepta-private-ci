@@ -42,6 +42,7 @@ class PairedCohort:
     teacher_shard: str | Path
     expected_source_sha256: str
     expected_npy_sha256: str
+    expected_slot_sha256: str
     sample_digests: tuple[str, ...]
 
 
@@ -79,6 +80,7 @@ def _prepare(cohorts: Mapping[str, PairedCohort], *, teacher_candidate: str,
             raise OfflineDistillError(f"{name}: missing, nonfinite or unbounded input slots")
         if (not _sha256(cohort.expected_source_sha256) or
                 not _sha256(cohort.expected_npy_sha256) or
+                not _sha256(cohort.expected_slot_sha256) or
                 cohort.expected_source_sha256 in seen_batches or
                 not isinstance(cohort.sample_digests, tuple) or
                 len(cohort.sample_digests) != slots.shape[0] or
@@ -87,6 +89,8 @@ def _prepare(cohorts: Mapping[str, PairedCohort], *, teacher_candidate: str,
                 seen_sources.intersection(cohort.sample_digests)):
             raise OfflineDistillError(f"{name}: missing/overlapping held-out source IDs")
         slot_sha = hashlib.sha256(slots.detach().contiguous().cpu().numpy().tobytes()).hexdigest()
+        if slot_sha != cohort.expected_slot_sha256:
+            raise OfflineDistillError(f"{name}: student source-slot digest mismatch")
         if slot_sha in seen_slot_bytes:
             raise OfflineDistillError(f"{name}: held-out slot data duplicates another split")
         seen_slot_bytes.add(slot_sha)
