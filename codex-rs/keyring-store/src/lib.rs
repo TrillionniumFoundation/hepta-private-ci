@@ -123,6 +123,7 @@ impl KeyringStore for DefaultKeyringStore {
             "keyring.save start, service={service}, account={account}, value_len={}",
             value.len()
         );
+        ensure_default_store()?;
         let entry = Entry::new(service, account).map_err(CredentialStoreError::new)?;
         match entry.set_password(value) {
             Ok(()) => {
@@ -138,13 +139,14 @@ impl KeyringStore for DefaultKeyringStore {
 
     fn delete(&self, service: &str, account: &str) -> Result<bool, CredentialStoreError> {
         trace!("keyring.delete start, service={service}, account={account}");
+        ensure_default_store()?;
         let entry = Entry::new(service, account).map_err(CredentialStoreError::new)?;
         match entry.delete_credential() {
             Ok(()) => {
                 trace!("keyring.delete success, service={service}, account={account}");
                 Ok(true)
             }
-            Err(keyring::Error::NoEntry) => {
+            Err(KeyringError::NoEntry) => {
                 trace!("keyring.delete no entry, service={service}, account={account}");
                 Ok(false)
             }
