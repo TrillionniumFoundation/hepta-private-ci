@@ -186,3 +186,21 @@ across nonadjacent generations even where a two-generation
 over untrusted references, not signed Replay, evaluation independence,
 future-window performance, actual model training or activation authority.
 The qualification state remains **SHADOW_ONLY / DENY_ALL / HOLD_NO_GO**.
+
+## Rehydrated route and replay lineage checks (shadow only)
+
+A deserialized `MemoryMetaRouteReceiptV1` can have internally consistent
+accounting and a newly computed route digest while still misstating utility,
+source support or selection. The new `validate_against(policy, candidates)`
+replays deterministic routing over the **complete original candidate set**
+(in arbitrary input order) and rejects every divergence from the receipt.
+`validate()` remains a necessary **self-consistency** check only; callers
+must independently authenticate the supplied policy, candidates and external
+evidence ledger before treating a replay as an evidentiary claim.
+
+`MemoryCellNextSnapshotCandidateV1::validate_chain_against(manifest, chain)`
+now anchors the oldest proposal to the actual Cell manifest before checking
+the whole 3–64-generation offline chain. The chain rejects reused topology
+proposal digests even when the reuse is nonadjacent and per-hop replay and
+evaluator references are otherwise distinct. None of these methods signs an
+artifact, approves training, applies a graph change or authorizes production.
