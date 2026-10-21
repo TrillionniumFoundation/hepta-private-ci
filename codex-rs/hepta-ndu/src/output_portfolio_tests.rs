@@ -1,4 +1,8 @@
-use codex_hepta_types::{Digest32, FixedQ32, Generation, ProbabilityQ32, StableId};
+use codex_hepta_types::Digest32;
+use codex_hepta_types::FixedQ32;
+use codex_hepta_types::Generation;
+use codex_hepta_types::ProbabilityQ32;
+use codex_hepta_types::StableId;
 
 use super::*;
 
@@ -38,7 +42,11 @@ fn candidate(
         candidate_id: id(name),
         candidate_digest: Digest32::of_bytes(name.as_bytes()),
         snapshot_digest: Digest32::of_bytes(b"snapshot"),
-        protocol: if is_no_change { OutputProtocolV1::NoChange } else { OutputProtocolV1::TextLogit },
+        protocol: if is_no_change {
+            OutputProtocolV1::NoChange
+        } else {
+            OutputProtocolV1::TextLogit
+        },
         utility_delta: q(utility),
         risk: risk(risk_value),
         resource_cost: if is_no_change { FixedQ32::ZERO } else { q(10) },
@@ -80,7 +88,10 @@ fn negative_direction_falls_back_to_no_change() {
     let receipt = select_output_portfolio_v1(
         &context(2),
         &budget(1),
-        &[candidate("baseline", 0, 0, true), candidate("unsafe", 10, 30, false)],
+        &[
+            candidate("baseline", 0, 0, true),
+            candidate("unsafe", 10, 30, false),
+        ],
     )
     .expect("bounded selection");
     assert_eq!(receipt.disposition, OutputPortfolioDispositionV1::NoChange);
@@ -100,7 +111,10 @@ fn risk_adjusted_score_selects_the_lower_risk_direction() {
         ],
     )
     .expect("bounded selection");
-    assert_eq!(receipt.disposition, OutputPortfolioDispositionV1::AdvisorySelection);
+    assert_eq!(
+        receipt.disposition,
+        OutputPortfolioDispositionV1::AdvisorySelection
+    );
     assert_eq!(receipt.allocations.len(), 1);
     assert_eq!(receipt.allocations[0].candidate_id, id("stable"));
 }
@@ -112,7 +126,10 @@ fn covariance_dimension_and_snapshot_are_fail_closed() {
     let error = select_output_portfolio_v1(
         &bad_context,
         &budget(1),
-        &[candidate("baseline", 0, 0, true), candidate("x", 20, 1, false)],
+        &[
+            candidate("baseline", 0, 0, true),
+            candidate("x", 20, 1, false),
+        ],
     )
     .expect_err("dimension mismatch");
     assert_eq!(error, NduError::DimensionMismatch);
@@ -135,7 +152,10 @@ fn covariance_dimension_and_snapshot_are_fail_closed() {
         &[candidate("baseline", 0, 0, true), wrong_window],
     )
     .expect_err("future-window mismatch");
-    assert_eq!(error, NduError::InvalidSolverReceipt("future-window digest"));
+    assert_eq!(
+        error,
+        NduError::InvalidSolverReceipt("future-window digest")
+    );
 }
 
 #[test]
@@ -151,19 +171,33 @@ fn frontier_is_deterministic_and_excludes_dominated_candidate() {
     )
     .expect("frontier");
     assert!(points.iter().any(|point| point.candidate_id == id("good")));
-    assert!(points.iter().any(|point| point.candidate_id == id("risky-upside")));
-    assert!(!points.iter().any(|point| point.candidate_id == id("dominated")));
+    assert!(
+        points
+            .iter()
+            .any(|point| point.candidate_id == id("risky-upside"))
+    );
+    assert!(
+        !points
+            .iter()
+            .any(|point| point.candidate_id == id("dominated"))
+    );
 
     let first = select_output_portfolio_v1(
         &context(2),
         &budget(1),
-        &[candidate("baseline", 0, 0, true), candidate("x", 20, 1, false)],
+        &[
+            candidate("baseline", 0, 0, true),
+            candidate("x", 20, 1, false),
+        ],
     )
     .expect("receipt");
     let second = select_output_portfolio_v1(
         &context(2),
         &budget(1),
-        &[candidate("x", 20, 1, false), candidate("baseline", 0, 0, true)],
+        &[
+            candidate("x", 20, 1, false),
+            candidate("baseline", 0, 0, true),
+        ],
     )
     .expect("receipt");
     assert_eq!(first.selection_digest, second.selection_digest);
@@ -179,7 +213,10 @@ fn probability_is_represented_in_semantic_risk() {
         &[candidate("baseline", 0, 0, true), risky],
     )
     .expect("bounded selection");
-    assert_eq!(receipt.disposition, OutputPortfolioDispositionV1::AdvisorySelection);
+    assert_eq!(
+        receipt.disposition,
+        OutputPortfolioDispositionV1::AdvisorySelection
+    );
     assert!(receipt.total_risk > FixedQ32::ZERO);
 }
 
@@ -194,5 +231,8 @@ fn whole_candidate_protocol_requires_full_weight_cap() {
         &[candidate("baseline", 0, 0, true), tool],
     )
     .expect_err("tool action cannot be fractionally allocated");
-    assert_eq!(error, NduError::InvalidSolverReceipt("whole-candidate weight cap"));
+    assert_eq!(
+        error,
+        NduError::InvalidSolverReceipt("whole-candidate weight cap")
+    );
 }
