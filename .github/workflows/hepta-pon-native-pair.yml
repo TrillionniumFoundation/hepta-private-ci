@@ -4,6 +4,7 @@ on:
     paths:
       - codex-rs/**
       - scripts/**
+      - qualification/learning-generations/**
       - justfile
       - AGENTS.md
       - .github/workflows/hepta-pon-native-pair.yml
@@ -35,9 +36,9 @@ jobs:
       CARGO_PROFILE_TEST_DEBUG: "0"
       CARGO_PROFILE_DEV_DEBUG: "0"
       PYTHONDONTWRITEBYTECODE: "1"
-      CHAIN_SOURCE_SHA: 00733fb34b0cd8007862de373176c3dca4534805
+      CHAIN_SOURCE_SHA: 594536f75038f5154829eee1bdff5701249e2eac
       CHAIN_BASE_SHA: 9fedf7ecbbe07177069c030592b4e03dcffebb81
-      HEPTA_PON_CHAIN_SOURCE: ${{ matrix.lane == 'source-head' && '00733fb34b0cd8007862de373176c3dca4534805' || 'bb12346c5b53cb13526335b04078b1b8bc954a90' }}
+      HEPTA_PON_CHAIN_SOURCE: ${{ matrix.lane == 'source-head' && '594536f75038f5154829eee1bdff5701249e2eac' || 'dee1a1aaf445b182ae2b8404efc07c46bb47340c' }}
     steps:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
         with:
@@ -338,6 +339,62 @@ jobs:
           python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/pon-pair/independent-selection.json" --minimum-tests 117 -- just test --locked -p codex-hepta-intelligence-eval --lib --no-capture
           python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/pon-pair/evaluated-ranker.json" --minimum-tests 6 -- just test --locked -p codex-hepta-agentd --lib -E 'test(cognitive_ranker::tests)' --no-capture
           python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/pon-pair/selection-ranker-composition.json" --minimum-tests 4 -- just test --locked -p codex-hepta-agentd --lib -E 'test(cognitive_ranker::tests::evaluated_selection)' --no-capture
+      - name: Require the existing retained local three-generation study
+        env:
+          CARGO_NET_OFFLINE: "true"
+          NEXTEST_PROFILE: local
+        run: |
+          set -euo pipefail
+          out="$RUNNER_TEMP/pon-pair"
+          python3 scripts/hepta_ci_exec.py --output "$out/learning-generations-reader-controls.json" --timeout-seconds 60 --minimum-tests 10 -- "$RUNNER_TEMP/pon-model-env/bin/python" qualification/learning-generations/test_verify_study.py
+          python3 scripts/hepta_ci_exec.py --output "$out/learning-generations-build.json" -- just test --locked -p codex-hepta-agentd --lib --no-run
+          python3 scripts/hepta_ci_exec.py --output "$out/learning-generations-list.json" -- bash -euo pipefail -c '
+            cd codex-rs
+            cargo metadata --locked --no-deps --format-version=1 > "$RUNNER_TEMP/pon-pair/learning-generations-metadata.json"
+            cargo nextest list --locked -p codex-hepta-agentd --lib --list-type binaries-only --message-format json \
+              --cargo-metadata "$RUNNER_TEMP/pon-pair/learning-generations-metadata.json" > "$RUNNER_TEMP/pon-pair/learning-generations-binaries.json"
+          '
+          # Keep the original 600s study owner and independent reader unchanged.
+          # The outer owner also bounds receipt/verification work and reaps its group.
+          python3 scripts/hepta_ci_exec.py --output "$out/learning-generations.json" --timeout-seconds 660 --minimum-tests 1 -- "$RUNNER_TEMP/pon-model-env/bin/python" - "$out" <<'PY'
+          import hashlib
+          import json
+          import os
+          from pathlib import Path
+          import subprocess
+          import sys
+
+          root, out = Path.cwd().resolve(), Path(sys.argv[1]).resolve(strict=True)
+          metadata = json.loads((out / "learning-generations-metadata.json").read_text())
+          listing = json.loads((out / "learning-generations-binaries.json").read_text())
+          assert Path(metadata["workspace_root"]).resolve() == root / "codex-rs"
+          packages = [value for value in metadata["packages"] if value["name"] == "codex-hepta-agentd"]
+          assert len(packages) == 1 and packages[0]["id"] in metadata["workspace_members"]
+          assert Path(packages[0]["manifest_path"]).resolve() == root / "codex-rs/hepta-agentd/Cargo.toml"
+          binaries = list(listing["rust-binaries"].values())
+          assert len(binaries) == 1, "one actual Agentd library binary required"
+          selected = binaries[0]
+          assert selected["package-id"] == packages[0]["id"] and selected["kind"] == "lib"
+          assert selected["binary-name"] == "codex_hepta_agentd" and selected["build-platform"] == "target"
+          build = listing["rust-build-meta"]
+          target = Path(metadata["target_directory"]).resolve(strict=True)
+          assert Path(build["target-directory"]).resolve(strict=True) == target
+          assert build["base-output-directories"] == ["debug"], "unchanged native test profile required"
+          binary = Path(selected["binary-path"]).resolve(strict=True)
+          assert binary.parent == target / "debug/deps" and binary.is_file() and os.access(binary, os.X_OK)
+          assert binary.name.startswith("codex_hepta_agentd-")
+          with binary.open("rb") as handle:
+              digest = hashlib.file_digest(handle, "sha256").hexdigest()
+          with (out / "learning-generations-selected-binary.json").open("x") as handle:
+              json.dump(dict(binary=str(binary), sha256=digest, nextest=selected, build=build), handle, indent=2)
+              handle.write("\n")
+          study = out / "learning-generations-study"
+          subprocess.run([sys.executable, "qualification/learning-generations/run_study.py",
+                          "--binary", str(binary), "--output", str(study)], check=True)
+          receipt = json.loads(study.with_suffix(".execution.json").read_text())
+          assert receipt["binary_sha256"] == digest and receipt["binary_unchanged"] is True
+          assert receipt["native_exit_code"] == 0
+          PY
       - name: Require signed-intent recovery and exact local abort controls
         env:
           CARGO_NET_OFFLINE: "true"
@@ -394,7 +451,7 @@ jobs:
         run: |
           set -uo pipefail
           mkdir -p "$RUNNER_TEMP/pon-pair"
-          printf 'Exact paired local native %s observation only. No TaskFlow model installation, future efficacy, independent operators, WAN, physical power loss or production acceptance. Running/missing/failed receipts grant no credit.\n' "$HEPTA_CI_LANE" > "$RUNNER_TEMP/pon-pair/SCOPE.txt"
+          printf 'Exact paired local native %s observation only. The separately retained three-generation study covers synthetic local tabular fits and installations only when its native execution and independent reader pass. No TaskFlow or PoN model installation, open-world future efficacy, independent operators, WAN, physical power loss or production acceptance. Running/missing/failed receipts grant no credit.\n' "$HEPTA_CI_LANE" > "$RUNNER_TEMP/pon-pair/SCOPE.txt"
           failed=0
           test "$(git rev-parse HEAD)" = "$TESTED_SHA" || failed=1
           test "$(git -C ../chain rev-parse HEAD)" = "$HEPTA_PON_CHAIN_SOURCE" || failed=1
