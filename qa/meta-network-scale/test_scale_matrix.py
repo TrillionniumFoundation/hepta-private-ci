@@ -247,7 +247,7 @@ class ScaleMatrixTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "exceeds 4 MiB input limit"):
             scale_matrix.load_strict_json(oversized)
         with self.assertRaisesRegex(ValueError, "must be valid UTF-8"):
-            scale_matrix.load_strict_json(io.BytesIO(b"\\xff"))
+            scale_matrix.load_strict_json(io.BytesIO(bytes([0xFF])))
 
     def test_cli_rejects_duplicate_keys_without_traceback(self):
         with tempfile.TemporaryDirectory() as directory:
