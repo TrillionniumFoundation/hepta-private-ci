@@ -406,23 +406,34 @@ fn cognitive_final_use_revalidation_follows_durable_dispatch_and_precedes_turn_s
     let revalidation = source
         .find("owner.revalidate_cognitive_context(snapshot).await")
         .expect("final-use cognitive revalidation");
+    let token_entry = source
+        .find("verified_use.enter(&authority_binding)")
+        .expect("verified final-use entry");
     let turn_start = source
-        .find("client.request_typed::<TurnStartResponse>(ClientRequest::TurnStart")
-        .expect("physical turn start");
+        .find("send_authorized_turn_start(&mut client, entered_use, turn_params)")
+        .expect("physical send requires an entered-use token");
+    let guarded_helper = source
+        .find("async fn send_authorized_turn_start(")
+        .expect("typed turn-start helper");
+    let physical_send = source
+        .find(".request_typed_observed(ClientRequest::TurnStart {")
+        .expect("real physical turn-start call");
     let durable_stop = source
         .find("control.abort_native_before_effect(")
         .expect("durable pre-turn stop");
     assert!(durable_dispatch < revalidation);
-    assert!(revalidation < turn_start);
+    assert!(revalidation < token_entry);
+    assert!(token_entry < turn_start);
     assert!(durable_stop < turn_start);
+    assert!(turn_start < guarded_helper);
+    assert!(guarded_helper < physical_send);
 }
 
 #[cfg(unix)]
 #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
 async fn real_agentd_worker_accepts_fresh_context_and_rejects_final_use_tombstone() -> Result<()> {
+    use std::path::PathBuf;
     use std::sync::Arc;
-    use std::time::SystemTime;
-    use std::time::UNIX_EPOCH;
 
     use codex_hepta_agentd::test_support::CognitiveTestHost;
     use codex_hepta_infer_core::durable_control::DurableInferenceControl;
@@ -442,16 +453,30 @@ async fn real_agentd_worker_accepts_fresh_context_and_rejects_final_use_tombston
     let server = responses::start_mock_server().await;
     let response = responses::sse(vec![
         responses::ev_response_created("resp-cognitive-worker"),
+        responses::ev_message_item_added("msg-cognitive-worker", ""),
+        responses::ev_output_text_delta("fresh context accepted"),
         responses::ev_assistant_message("msg-cognitive-worker", "fresh context accepted"),
         responses::ev_completed("resp-cognitive-worker"),
     ]);
     let response_mock = responses::mount_sse_once(&server, response).await;
 
-    let nonce = SystemTime::now().duration_since(UNIX_EPOCH)?.as_nanos();
-    let root = std::env::temp_dir().join(format!("hepta-cognitive-worker-e2e-{nonce}"));
+    // Keep the journal and host inside the same exclusive fixture directory.
+    let test_namespace = tempfile::tempdir()?;
+    let root = test_namespace.path().join("agentd");
     let agent_id = codex_hepta_contracts::AgentId::parse(AGENT_ID)?;
-    let host =
-        CognitiveTestHost::start(root, agent_id, MODEL, &format!("{}/v1", server.uri())).await?;
+    // Hosted CI supplies a real built CLI; standalone lib tests supply an
+    // inert executable path only when no child re-exec is under test.
+    let codex_executable = std::env::var_os("HEPTA_TEST_CODEX_EXECUTABLE")
+        .map(PathBuf::from)
+        .map_or_else(std::env::current_exe, Ok)?;
+    let host = CognitiveTestHost::start(
+        root,
+        agent_id,
+        MODEL,
+        &format!("{}/v1", server.uri()),
+        codex_executable,
+    )
+    .await?;
     let _accepted_memory = host
         .seed_verified_memory("worker-final-use-accept", ACCEPT_MEMORY)
         .await?;
@@ -470,7 +495,7 @@ async fn real_agentd_worker_accepts_fresh_context_and_rejects_final_use_tombston
         timeout: Duration::from_secs(20),
     })?
     .with_turn_start_authorizer(Arc::new(authorizer));
-    let journal = std::env::temp_dir().join(format!("hepta-cognitive-worker-e2e-{nonce}.journal"));
+    let journal = test_namespace.path().join("native-inference-owner.journal");
     let mut durable = DurableInferenceControl::open(&journal, 8)?;
 
     let accepted = driver
