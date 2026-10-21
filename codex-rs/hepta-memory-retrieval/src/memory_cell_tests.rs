@@ -774,3 +774,100 @@ fn pre_tick_shadow_rejects_invalid_non_admitted_cue_and_stale_forget_frontier() 
         ))
     ));
 }
+
+#[test]
+fn checked_pre_tick_rejects_late_ledger_denial_before_any_tick() {
+    let fixture = shadow_fixture(true);
+    let first = meta_spec(&fixture);
+    let mut second = meta_spec(&fixture);
+    second.manifest.cell_id = id("memory-cell:semantic:2");
+    second.manifest.role = MemoryCellRoleV1::Semantic;
+    second.tick_input.cell_id = second.manifest.cell_id.clone();
+    // If this second Cell reaches a tick it fails as an unrelated retrieval
+    // error. The external denial must reject the *whole* batch first.
+    second.generated_input.batches.clear();
+    let denied_id = second.manifest.cell_id.clone();
+    let first_id = first.manifest.cell_id.clone();
+    let mut checked = Vec::new();
+
+    let rejected = crate::run_memory_meta_preselected_evidence_checked_shadow_v1(
+        &meta_policy(&fixture),
+        &fixture.cue,
+        &fixture.policy,
+        &fixture.snapshot,
+        &fixture.dynamics,
+        &[first, second],
+        |lookup| {
+            checked.push(lookup.cell_id.clone());
+            lookup.cell_id != denied_id
+        },
+    );
+    assert!(matches!(
+        rejected,
+        Err(crate::MemoryMetaBatchErrorV1::Contract(
+            codex_hepta_cognitive_types::hnmf::HnmfContractError::Conflict(
+                "memory meta external evidence rejected"
+            )
+        ))
+    ));
+    // Ranked admission order must be deterministic, and no ticks have run.
+    assert_eq!(checked, vec![first_id, denied_id]);
+}
+
+#[test]
+fn checked_pre_tick_binds_exact_ledger_snapshot_and_forget_frontier() {
+    let fixture = shadow_fixture(true);
+    let policy = meta_policy(&fixture);
+    let spec = meta_spec(&fixture);
+    let mut verified = 0_usize;
+
+    let result = crate::run_memory_meta_preselected_evidence_checked_shadow_v1(
+        &policy,
+        &fixture.cue,
+        &fixture.policy,
+        &fixture.snapshot,
+        &fixture.dynamics,
+        &[spec.clone()],
+        |lookup| {
+            verified += 1;
+            lookup.cell_id == spec.manifest.cell_id
+                && lookup.support_digest == spec.support_digest.unwrap()
+                && lookup.evidence_ledger_digest == policy.evidence_ledger_digest
+                && lookup.snapshot_digest == policy.snapshot_digest
+                && lookup.source_frontier_digest == policy.source_frontier_digest
+                && lookup.forget_frontier_digest == policy.forget_frontier_digest
+        },
+    )
+    .unwrap_or_else(|error| panic!("evidence-checked batch: {error:?}"));
+    assert_eq!(verified, 1);
+    assert_eq!(result.batch.cell_ticks.len(), 1);
+    assert_eq!(result.batch.routing.receipt.resource_used_units, 20);
+    assert!(!result.batch.routing.authority.grants_any());
+    assert!(!result.pre_tick_plan.production_activation_allowed);
+}
+
+#[test]
+fn checked_pre_tick_does_not_claim_unverified_deferred_support() {
+    let fixture = shadow_fixture(true);
+    let mut cell = meta_spec(&fixture);
+    cell.support_digest = None;
+    cell.generated_input.batches.clear();
+    let mut verified = 0_usize;
+    let result = crate::run_memory_meta_preselected_evidence_checked_shadow_v1(
+        &meta_policy(&fixture),
+        &fixture.cue,
+        &fixture.policy,
+        &fixture.snapshot,
+        &fixture.dynamics,
+        &[cell],
+        |_| {
+            verified += 1;
+            true
+        },
+    )
+    .unwrap_or_else(|error| panic!("deferred evidence-checked batch: {error:?}"));
+    assert_eq!(verified, 0);
+    assert!(result.pre_tick_plan.admitted_cell_ids.is_empty());
+    assert_eq!(result.batch.cell_ticks.len(), 0);
+    assert!(result.batch.routing.receipt.abstained);
+}
