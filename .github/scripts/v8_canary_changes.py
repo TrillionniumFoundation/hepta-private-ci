@@ -33,6 +33,9 @@ CANARY_PATH_PATTERNS = {
     "MODULE.bazel",
     "MODULE.bazel.lock",
     "codex-rs/Cargo.toml",
+    # Bazel features and Cargo defaults select the POC's linked V8 artifact.
+    "codex-rs/v8-poc/BUILD.bazel",
+    "codex-rs/v8-poc/Cargo.toml",
     "patches/BUILD.bazel",
     "patches/llvm_*.patch",
     "patches/rules_cc_*.patch",
@@ -49,6 +52,9 @@ WINDOWS_SOURCE_BUILD_PATHS = {
     ".github/scripts/v8_canary_changes.py",
     ".github/workflows/rusty-v8-release.yml",
     ".github/workflows/v8-canary.yml",
+    # These feature inputs can change without changing the rusty_v8 version.
+    "codex-rs/v8-poc/BUILD.bazel",
+    "codex-rs/v8-poc/Cargo.toml",
 }
 
 

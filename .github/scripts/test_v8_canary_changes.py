@@ -59,6 +59,17 @@ version = "149.2.0"
                     windows_source_required(changed_files, "149.2.0", "149.2.0")
                 )
 
+    def test_v8_poc_feature_inputs_require_both_matrices(self) -> None:
+        # Both Bazel selection and Cargo defaults affect the linked artifact.
+        for path in (
+            "codex-rs/v8-poc/BUILD.bazel",
+            "codex-rs/v8-poc/Cargo.toml",
+        ):
+            with self.subTest(path=path):
+                paths = {path}
+                self.assertTrue(canary_required(paths, "149.2.0", "149.2.0"))
+                self.assertTrue(windows_source_required(paths, "149.2.0", "149.2.0"))
+
     def test_manual_dispatch_requires_source_build(self) -> None:
         self.assertTrue(
             windows_source_required(
