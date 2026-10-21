@@ -664,7 +664,7 @@ pub fn run_memory_meta_preselected_record_checked_shadow_v1<FS, FR>(
     engram_snapshot: &EngramSnapshotV1,
     dynamics_policy: &EngramDynamicsPolicyV1,
     cells: &[MemoryMetaCellTickSpecV1],
-    verify_support: FS,
+    mut verify_support: FS,
     mut verify_record: FR,
 ) -> Result<MemoryMetaPreselectedShadowV1, MemoryMetaBatchErrorV1>
 where
@@ -680,9 +680,10 @@ where
         engram_snapshot,
         dynamics_policy,
         cells,
-        verify_support,
+        &mut verify_support,
     )?;
 
+    let mut checked_supports = Vec::with_capacity(outcome.batch.cell_ticks.len());
     for tick in &outcome.batch.cell_ticks {
         let cell = cells
             .iter()
@@ -695,6 +696,14 @@ where
                 "memory meta record support",
             )),
         )?;
+        checked_supports.push(MemoryMetaEvidenceLookupV1 {
+            cell_id: tick.receipt.cell_id.clone(),
+            support_digest: cell_support_digest,
+            evidence_ledger_digest: policy.evidence_ledger_digest,
+            snapshot_digest: policy.snapshot_digest,
+            source_frontier_digest: policy.source_frontier_digest,
+            forget_frontier_digest: policy.forget_frontier_digest,
+        });
         for selection in &tick.recall.packet.selections {
             let lookup = MemoryMetaRecordLookupV1 {
                 cell_id: tick.receipt.cell_id.clone(),
@@ -714,6 +723,22 @@ where
                     "memory meta external record rejected",
                 )));
             }
+        }
+    }
+    // Record verification can itself race with or trigger evidence revocation.
+    // Recheck every admitted support after all record callbacks, without
+    // returning a partially validated result. Only an external atomic ledger
+    // snapshot can eliminate the remaining check/return race.
+    if checked_supports.len() != outcome.pre_tick_plan.admitted_cell_ids.len() {
+        return Err(MemoryMetaBatchErrorV1::Contract(HnmfContractError::Conflict(
+            "memory meta record checked admission count",
+        )));
+    }
+    for lookup in &checked_supports {
+        if !verify_support(lookup) {
+            return Err(MemoryMetaBatchErrorV1::Contract(HnmfContractError::Conflict(
+                "memory meta external evidence changed after records",
+            )));
         }
     }
     Ok(outcome)
