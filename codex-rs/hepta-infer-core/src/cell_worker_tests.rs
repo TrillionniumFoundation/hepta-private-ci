@@ -75,3 +75,46 @@ fn shared_pool_reports_group_and_drop_metrics() {
     assert_eq!(pool.metrics().activations_committed, 1);
     assert_eq!(pool.metrics().dropped_requests, 1);
 }
+
+#[test]
+fn group_digest_binds_cell_identity_and_length_framed_request_scope() {
+    let original = request(1, "scope:a");
+    let mut different_cell = original.clone();
+    different_cell.cell_id = id("cell:other");
+    assert_ne!(
+        digest_batch(&[original.clone()]),
+        digest_batch(&[different_cell]),
+        "the selected cell must be included in the batch receipt"
+    );
+
+    // Under V1 both inputs serialized as b"abc" followed by generation 1.
+    let ambiguous_left = QueuedCellRequestV1 {
+        request_id: id("ab"),
+        cell_id: id("cell:1"),
+        scope_id: id("c"),
+        feature_generation: generation(1),
+    };
+    let ambiguous_right = QueuedCellRequestV1 {
+        request_id: id("a"),
+        cell_id: id("cell:1"),
+        scope_id: id("bc"),
+        feature_generation: generation(1),
+    };
+    assert_ne!(
+        digest_batch(&[ambiguous_left]),
+        digest_batch(&[ambiguous_right]),
+        "request/scope boundaries must be unambiguous"
+    );
+
+    let mut different_generation = original.clone();
+    different_generation.feature_generation = generation(2);
+    assert_ne!(
+        digest_batch(&[original.clone()]),
+        digest_batch(&[different_generation])
+    );
+    assert_ne!(
+        digest_batch(&[original.clone()]),
+        digest_batch(&[original, request(2, "scope:b")]),
+        "batch length and all members must be bound"
+    );
+}
