@@ -254,10 +254,28 @@ fn incompatible_generation_protocols_cannot_share_one_allocation() {
         &[candidate("baseline", 0, 0, true), flow, text],
     )
     .expect("protocol-specific advisory selection");
-    assert_eq!(receipt.disposition, OutputPortfolioDispositionV1::AdvisorySelection);
-    assert!(receipt.allocations.iter().any(|item| item.candidate_id == id("text")));
-    assert!(receipt.allocations.iter().any(|item| item.candidate_id == id("baseline")));
-    assert!(!receipt.allocations.iter().any(|item| item.candidate_id == id("flow")));
+    assert_eq!(
+        receipt.disposition,
+        OutputPortfolioDispositionV1::AdvisorySelection
+    );
+    assert!(
+        receipt
+            .allocations
+            .iter()
+            .any(|item| item.candidate_id == id("text"))
+    );
+    assert!(
+        receipt
+            .allocations
+            .iter()
+            .any(|item| item.candidate_id == id("baseline"))
+    );
+    assert!(
+        !receipt
+            .allocations
+            .iter()
+            .any(|item| item.candidate_id == id("flow"))
+    );
 }
 
 #[test]
@@ -272,9 +290,24 @@ fn incompatible_composition_domains_cannot_be_blended() {
         &[candidate("baseline", 0, 0, true), first, different_space],
     )
     .expect("domain-aware advisory routing");
-    assert!(receipt.allocations.iter().any(|item| item.candidate_id == id("first")));
-    assert!(!receipt.allocations.iter().any(|item| item.candidate_id == id("different-space")));
-    assert!(receipt.allocations.iter().any(|item| item.candidate_id == id("baseline")));
+    assert!(
+        receipt
+            .allocations
+            .iter()
+            .any(|item| item.candidate_id == id("first"))
+    );
+    assert!(
+        !receipt
+            .allocations
+            .iter()
+            .any(|item| item.candidate_id == id("different-space"))
+    );
+    assert!(
+        receipt
+            .allocations
+            .iter()
+            .any(|item| item.candidate_id == id("baseline"))
+    );
 }
 
 #[test]
@@ -287,7 +320,10 @@ fn missing_composition_domain_is_rejected() {
         &[candidate("baseline", 0, 0, true), unbound],
     )
     .expect_err("output geometry must be committed");
-    assert_eq!(error, NduError::InvalidSolverReceipt("composition domain digest"));
+    assert_eq!(
+        error,
+        NduError::InvalidSolverReceipt("composition domain digest")
+    );
 }
 
 #[test]

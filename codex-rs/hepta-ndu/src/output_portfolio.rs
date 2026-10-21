@@ -212,9 +212,7 @@ fn canonical_candidates(
         // Costs are resource consumption, not signed credits. A negative
         // candidate cost could otherwise bypass the aggregate budget and
         // artificially increase its adjusted score.
-        if candidate.resource_cost < FixedQ32::ZERO
-            || candidate.latency_cost < FixedQ32::ZERO
-        {
+        if candidate.resource_cost < FixedQ32::ZERO || candidate.latency_cost < FixedQ32::ZERO {
             return Err(NduError::InvalidSolverReceipt("negative portfolio cost"));
         }
         // NoChange is a unique explicit baseline; an unmarked second
