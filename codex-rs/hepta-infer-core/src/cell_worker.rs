@@ -72,7 +72,17 @@ impl FeatureCacheV1 {
             encoder_digest: snapshot.encoder_digest(),
             input_digest: snapshot.input_digest(),
         };
-        if !self.entries.contains_key(&key) && self.entries.len() >= MAX_INDEX_ENTRIES {
+        // A scoped encoder/input identity must never resolve to different
+        // feature bytes, even across generation transitions. Require the
+        // generation owner to invalidate obsolete entries before replacement.
+        if let Some(existing) = self.entries.get(&key) {
+            return if existing == &snapshot {
+                Ok(())
+            } else {
+                Err(CellWorkerError::ConflictingFeatureSnapshot)
+            };
+        }
+        if self.entries.len() >= MAX_INDEX_ENTRIES {
             return Err(CellWorkerError::IndexCapacity);
         }
         self.entries.insert(key, snapshot);
@@ -229,6 +239,7 @@ fn digest_batch(requests: &[QueuedCellRequestV1]) -> Digest32 {
 
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub enum CellWorkerError {
+    ConflictingFeatureSnapshot,
     EmptyCellSet,
     IndexCapacity,
     InvalidModelKey,
