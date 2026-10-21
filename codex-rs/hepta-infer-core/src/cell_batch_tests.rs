@@ -118,3 +118,50 @@ fn queue_is_bounded_and_round_robin_fair() {
     assert_eq!(first[1].scope_id, id("scope:b"));
     assert_eq!(queue.len(), 1);
 }
+
+#[test]
+fn drained_scopes_do_not_accumulate_across_request_churn() {
+    // One outstanding request is sufficient to generate unbounded metadata
+    // without eager removal of empty per-scope lanes.
+    let mut queue = FairCellQueueV1::new(1).expect("bounded queue");
+    for index in 0..4096 {
+        let scope = id(&format!("scope:{index}"));
+        queue
+            .push(QueuedCellRequestV1 {
+                request_id: id(&format!("request:{index}")),
+                cell_id: id("cell:worker"),
+                scope_id: scope.clone(),
+                feature_generation: generation(1),
+            })
+            .expect("enqueue unique scope");
+        assert_eq!(queue.queues.len(), 1);
+        let batch = queue.drain_batch(1);
+        assert_eq!(batch.len(), 1);
+        assert_eq!(batch[0].scope_id, scope);
+        assert!(queue.is_empty());
+        assert!(queue.queues.is_empty(), "drained scope must be retired");
+        assert!(queue.ready_scopes.is_empty());
+        assert!(queue.request_ids.is_empty());
+    }
+}
+
+#[test]
+fn draining_one_scope_keeps_other_scope_round_robin_ready() {
+    let mut queue = FairCellQueueV1::new(3).expect("bounded queue");
+    for (index, scope) in [(1, "scope:a"), (2, "scope:b"), (3, "scope:b")] {
+        queue
+            .push(QueuedCellRequestV1 {
+                request_id: id(&format!("request:{index}")),
+                cell_id: id("cell:worker"),
+                scope_id: id(scope),
+                feature_generation: generation(1),
+            })
+            .expect("enqueue");
+    }
+    assert_eq!(queue.drain_batch(1)[0].scope_id, id("scope:a"));
+    assert!(!queue.queues.contains_key(&id("scope:a")));
+    assert_eq!(queue.queues.len(), 1);
+    assert_eq!(queue.drain_batch(2).len(), 2);
+    assert!(queue.queues.is_empty());
+    assert!(queue.ready_scopes.is_empty());
+}
