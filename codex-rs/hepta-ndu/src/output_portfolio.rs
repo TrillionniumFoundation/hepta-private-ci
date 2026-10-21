@@ -1,4 +1,4 @@
-use codex_hepta_types::{Digest32, FixedQ32};
+use codex_hepta_types::{Digest32, FixedQ32, ProbabilityQ32};
 use crate::fixed::mul_q32_ties_even;
 use crate::error::NduError;
 const MAX_PORTFOLIO_CANDIDATES: usize = 128;
