@@ -912,7 +912,6 @@ class SharedMultimodalBridgeTests(unittest.TestCase):
         torch.testing.assert_close(
             next(student.parameters()), before, rtol=0, atol=0)
 
-
     def test_global_step_hooks_cannot_mutate_foreign_cell(self):
         from torch.optim.optimizer import (register_optimizer_step_post_hook,
                                            register_optimizer_step_pre_hook)
