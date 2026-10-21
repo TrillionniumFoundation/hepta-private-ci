@@ -51,11 +51,18 @@ pub fn select_output_portfolio_v1(
     let mut weights = vec![FixedQ32::ZERO; count];
     let mut remaining = FixedQ32::ONE;
     let mut selected = 0_usize;
+    // One advisory allocation can only describe one output protocol. A
+    // shared FeatureSnapshot does not make logits, flow velocities, audio,
+    // video, and discrete unmask plans composable with one another.
+    let mut selected_protocol: Option<OutputProtocolV1> = None;
     for index in order {
         if selected >= budget.max_selected || remaining == FixedQ32::ZERO {
             break;
         }
         if scores[index] <= FixedQ32::ZERO {
+            continue;
+        }
+        if selected_protocol.is_some_and(|protocol| protocol != candidates[index].protocol) {
             continue;
         }
         if candidates[index].protocol.requires_whole_candidate()
@@ -88,6 +95,7 @@ pub fn select_output_portfolio_v1(
             .checked_sub(weight)
             .map_err(|_| NduError::Arithmetic)?;
         selected += 1;
+        selected_protocol = Some(candidates[index].protocol);
         if candidates[index].protocol.requires_whole_candidate() {
             break;
         }
