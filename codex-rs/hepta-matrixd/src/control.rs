@@ -435,7 +435,7 @@ async fn prepare_socket(socket_path: &Path) -> Result<(), MatrixdControlError> {
         // A refused Windows UDS probe can refer to an absent rendezvous.
         // Preserve rejection of live sockets and extant non-stale paths.
         Err(_) if !socket_path.exists() => return Ok(()),
-        Err(error) if error.kind() == ErrorKind::ConnectionRefused => {},
+        Err(error) if error.kind() == ErrorKind::ConnectionRefused => {}
         Err(error) => return Err(error.into()),
     }
     if codex_uds::is_stale_socket_path(socket_path).await? {
