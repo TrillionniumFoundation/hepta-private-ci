@@ -664,7 +664,7 @@ opt-level = 0
 [patch.crates-io]
 # Matrix SDK 0.18 still exposes anymap2 in its event handler API. Keep that
 # API stable while replacing the unmaintained implementation with anymap3.
-anymap2 = { path = "third_party/anymap2-compat", package = "anymap2-compat" }
+anymap2 = { path = "third_party/anymap2-compat" }
 # Matrix SDK/eyeball-im still require imbl 6.x. Backport the upstream 7.0.2
 # bitmap import and patched chunk dependency without changing their public API.
 imbl = { path = "third_party/imbl-6.1.0" }
@@ -676,7 +676,7 @@ imbl = { path = "third_party/imbl-6.1.0" }
 matrix-sdk-sqlite = { path = "third_party/matrix-sdk-sqlite-0.18.0" }
 # Backport Matrix SDK's upstream IdentityBasedStrategy panic fix while the
 # workspace remains on the Rust-1.95-compatible 0.18 release line.
-matrix-sdk-crypto = { path = "third_party/matrix-sdk-crypto-0.18.0", package = "matrix-sdk-crypto-hepta" }
+matrix-sdk-crypto = { path = "third_party/matrix-sdk-crypto-0.18.0" }
 # Uncomment to debug local changes.
 # ratatui = { path = "../../ratatui" }
 crossterm = { git = "https://github.com/openai-oss-forks/crossterm", rev = "45fecb9508105988f42fe6ff0441783ed3717f92" }
