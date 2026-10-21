@@ -415,7 +415,10 @@ fn namespace_aliases_preserve_exact_absolute_components() {
         (r"C:private", r"C:private"),
         (r"private\state", r"private\state"),
         (r"\\.\C:\private", r"C:\private"),
-        (r"\\?\GLOBALROOT\Device\private", r"\\?\GLOBALROOT\Device\private"),
+        (
+            r"\\?\GLOBALROOT\Device\private",
+            r"\\?\GLOBALROOT\Device\private",
+        ),
     ] {
         assert!(!windows::same_recovery_path(
             Path::new(left),
