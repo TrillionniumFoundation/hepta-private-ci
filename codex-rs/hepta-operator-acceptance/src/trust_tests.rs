@@ -123,10 +123,7 @@ struct TrustFixture {
 impl TrustFixture {
     fn new() -> Self {
         let temporary = private_tempdir("temporary trust directory");
-        let root = temporary
-            .path()
-            .canonicalize()
-            .must("canonical trust root");
+        let root = temporary.path().canonicalize().must("canonical trust root");
         let key = root.join("operator-key");
         let generated = Command::new("/usr/bin/ssh-keygen")
             .args(["-q", "-t", "ed25519", "-N", "", "-f"])
@@ -161,7 +158,9 @@ impl TrustFixture {
 
         let policy_value = TrustPolicy {
             acceptance_store_root: root.to_string_lossy().into_owned(),
-            allowed_signers_sha256: sha256(&std::fs::read(&allowed_signers).must("test fixture result")),
+            allowed_signers_sha256: sha256(
+                &std::fs::read(&allowed_signers).must("test fixture result"),
+            ),
             key_fingerprint: fingerprint,
             maximum_lifetime_seconds: 900,
             principal: "operator@example".to_string(),
