@@ -13,6 +13,7 @@ from __future__ import annotations
 
 import argparse
 import fnmatch
+import hashlib
 import json
 import posixpath
 import re
@@ -592,6 +593,50 @@ def plan(
     )
 
 
+def shard_selected_packages(
+    selected: dict, shard_index: int, shard_count: int
+) -> dict:
+    """Partition the entire native impact set across distinct clean runners.
+
+    Exact source and reverse dependency planning happens *before* slicing.
+    Every package, including full-workspace fallback packages, belongs to
+    exactly one deterministic shard. The common fingerprint lets operators
+    compare the complete plan across independent shard receipts.
+    """
+    if (
+        isinstance(shard_index, bool)
+        or isinstance(shard_count, bool)
+        or not isinstance(shard_index, int)
+        or not isinstance(shard_count, int)
+        or shard_count < 1
+        or shard_count > 16
+        or shard_index < 0
+        or shard_index >= shard_count
+    ):
+        raise ValueError("native shard index/count must satisfy 0 <= index < count <= 16")
+    packages = selected["packages"]
+    if packages != sorted(set(packages)):
+        raise ValueError("native package selection must be sorted and unique")
+    fingerprint = hashlib.sha256()
+    fingerprint.update(b"hepta.ci.native-impact-complete.v1\0")
+    for name in packages:
+        raw = name.encode("utf-8")
+        fingerprint.update(len(raw).to_bytes(4, "big"))
+        fingerprint.update(raw)
+    return {
+        **selected,
+        "packages": packages[shard_index::shard_count],
+        # Explicit -p packages are necessary even for a full-workspace fallback:
+        # --workspace would silently run all crates on every shard.
+        "full_workspace": selected["full_workspace"] if shard_count == 1 else False,
+        "complete_full_workspace": selected["full_workspace"],
+        "complete_package_count": len(packages),
+        "complete_package_digest": fingerprint.hexdigest(),
+        "shard_index": shard_index,
+        "shard_count": shard_count,
+    }
+
+
 def execution_command(selected: dict, action: str) -> list[str] | None:
     """Apply one exact-revision impact plan to each native check."""
     if action == "plan" or not selected["packages"]:
@@ -638,6 +683,8 @@ def main() -> None:
     parser.add_argument(
         "--run", action="store_true", help="execute the plan with just test --locked"
     )
+    parser.add_argument("--shard-index", type=int, default=0)
+    parser.add_argument("--shard-count", type=int, default=1)
     parser.add_argument(
         "--action", choices=["plan", "test", "fmt", "clippy"], default="plan"
     )
@@ -651,6 +698,8 @@ def main() -> None:
         help="record the selected native command with hepta_ci_exec",
     )
     args = parser.parse_args()
+    if not (1 <= args.shard_count <= 16 and 0 <= args.shard_index < args.shard_count):
+        parser.error("--shard-index and --shard-count must satisfy 0 <= index < count <= 16")
     if args.run and args.action != "plan":
         parser.error("--run is the compatibility alias for --action test")
     if args.record_output and not args.run and args.action == "plan":
@@ -661,6 +710,8 @@ def main() -> None:
         parser.error("checkout differs from --tested")
     git(args.root, "diff", "--no-ext-diff", "--quiet", "HEAD", "--")
     selected = plan(args.root, args.base, args.tested, force_full=args.full)
+    if args.shard_count != 1:
+        selected = shard_selected_packages(selected, args.shard_index, args.shard_count)
     payload = {"tested_sha": args.tested, "base_sha": args.base, **selected}
     text = json.dumps(payload, sort_keys=True) + "\n"
     print(text, end="")
