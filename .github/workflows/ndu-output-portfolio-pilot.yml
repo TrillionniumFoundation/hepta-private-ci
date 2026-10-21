@@ -22,7 +22,6 @@ jobs:
       labels: [self-hosted, linux, x64]
     timeout-minutes: 45
     env:
-      HEPTA_EXPERIMENT_OUTPUT: ${{ runner.temp }}/ndu-output-portfolio/${{ github.run_id }}-${{ github.run_attempt }}
       HEPTA_EXPERIMENT_EXPECTED_SHA: ${{ github.sha }}
       HEPTA_DEDICATED_RUNNER_GROUP: trillionnium-android-gpu
     defaults:
@@ -32,6 +31,8 @@ jobs:
       - name: Record dedicated runner assignment before checkout
         run: |
           set -euo pipefail
+          HEPTA_EXPERIMENT_OUTPUT="${RUNNER_TEMP}/ndu-output-portfolio/${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}"
+          printf 'HEPTA_EXPERIMENT_OUTPUT=%s\n' "$HEPTA_EXPERIMENT_OUTPUT" >> "$GITHUB_ENV"
           mkdir -p "$HEPTA_EXPERIMENT_OUTPUT"
           {
             printf 'expected_runner=desktop\n'
@@ -68,6 +69,7 @@ jobs:
           PILOT_CHECKOUT_OUTCOME: ${{ steps.checkout.outcome }}
           PILOT_EXPERIMENT_OUTCOME: ${{ steps.experiment.outcome }}
         run: |
+          HEPTA_EXPERIMENT_OUTPUT="${RUNNER_TEMP}/ndu-output-portfolio/${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}"
           mkdir -p "$HEPTA_EXPERIMENT_OUTPUT"
           {
             printf 'job_status=%s\n' "$PILOT_JOB_STATUS"
@@ -87,6 +89,6 @@ jobs:
         uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f # v7.0.0; existing repository pin
         with:
           name: ndu-output-portfolio-${{ github.run_id }}-${{ github.run_attempt }}
-          path: ${{ env.HEPTA_EXPERIMENT_OUTPUT }}
+          path: ${{ runner.temp }}/ndu-output-portfolio/${{ github.run_id }}-${{ github.run_attempt }}
           if-no-files-found: error
           retention-days: 30

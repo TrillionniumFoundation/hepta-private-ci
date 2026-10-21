@@ -5,5 +5,8 @@
   "runner_group": "trillionnium-android-gpu",
   "execution_tier": "dedicated-cloud",
   "registered_seeds": [17, 29, 43],
+  "execution_request_attempt": 2,
+  "supersedes_workflow_validation_failures": [39587736972, 39587989207],
+  "execution_only_fix": "Use runner context only in allowed workflow steps; experiment Python source, protocol and heldout data remain unchanged.",
   "request": "Run the complete frozen protocol once; preserve all outcomes and partial evidence. Do not substitute a GitHub-hosted runner or tune on test results."
 }
