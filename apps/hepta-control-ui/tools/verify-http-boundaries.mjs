@@ -10,6 +10,7 @@ import {pinnedChromiumUse} from './pinned-chromium.mjs';
 import {recordPinnedChromium} from './font-diagnostic-browser-identity.mjs';
 import {BODY_LIMIT,MATRIX_CASES,HARD_CASES,startHttpFixture} from './http-boundary-fixture.mjs';
 import {startBoundaryProxy} from './http-boundary-proxy.mjs';
+import {extractHttpBoundaryMethods} from './http-boundary-sdk.mjs';
 
 const hash=bytes=>createHash('sha256').update(bytes).digest('hex');
 const root=process.cwd(),output=resolve(root,'test-results/http-boundaries');
@@ -130,14 +131,7 @@ async function runCase(config,repeat,suite,origin,serverRecords){
 
 try{
  const asset=await readFile(join(root,'dist/makepad_platform/web.js')),manifestBytes=await readFile(join(root,'dist/build-manifest.json')),manifest=JSON.parse(manifestBytes);
- const pin=manifest.files['makepad_platform/web.js'];
- if(manifest.fixtures!==false)throw new Error('Boundary qualification requires the ordinary product build before fixture replacement');
- if(pin.bytes!==asset.length||pin.sha256!==hash(asset))throw new Error('Shipping SDK does not match the built manifest');
- if(manifest.packagerSource!=='337566c8b25d47f7e4fff6a202157b65bf183330')throw new Error('Unreviewed SDK revision');
- const source=asset.toString('utf8'),start=source.indexOf('    network_http_dispatch(entry) {'),cancel=source.indexOf('    js_network_http_cancel(request_id_lo, request_id_hi) {',start),end=source.indexOf('\n    }\n',cancel)+7;
- if(start<0||cancel<start||end<=cancel)throw new Error('SDK method boundary changed');
- const methods=source.slice(start,end);
- if(hash(methods)!=='a688eaa4ff6883817fa519b8f7efa3935e781dc47ac89e42808e3b2e5d4acec7')throw new Error('Shipping SDK reader changed; re-review its stream/cancel/limit contract');
+ const methods=extractHttpBoundaryMethods(asset,manifest);
  const script=Buffer.from('class PinnedNetwork {\n'+methods+'\n}\nwindow.PinnedNetwork=PinnedNetwork;\n');
  await writeFile(join(output,'build-manifest.json'),manifestBytes);
  await writeFile(join(output,'sdk-method-fixture.js'),script);
