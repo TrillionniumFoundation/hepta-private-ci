@@ -37,21 +37,47 @@ async fn assert_timed_out_git_wrapper_does_not_leave_child_process_running(
     };
     #[cfg(windows)]
     let mut command = {
-        let mut command = Command::new("powershell.exe");
-        let child_command = "Set-Content -LiteralPath $env:CHILD_READY_FILE -Value ready; while (-not (Test-Path $env:RELEASE_CHILD_FILE)) { Start-Sleep -Milliseconds 25 }; Start-Sleep -Seconds 1; Set-Content -LiteralPath $env:CHILD_SURVIVED_FILE -Value survived; Start-Sleep -Seconds 60";
-        let wrapper_command = match wrapper_lifetime {
-            GitWrapperLifetime::WaitForChild => format!(
-                "$child = Start-Process -FilePath powershell.exe -ArgumentList @('-NoProfile', '-NonInteractive', '-Command', '{child_command}') -PassThru -NoNewWindow; [System.IO.File]::WriteAllText($env:CHILD_PID_FILE, [string]$child.Id); Wait-Process -Id $child.Id"
-            ),
-            GitWrapperLifetime::ExitBeforeTimeout => format!(
-                "$child = Start-Process -FilePath powershell.exe -ArgumentList @('-NoProfile', '-NonInteractive', '-Command', '{child_command}') -PassThru -NoNewWindow; [System.IO.File]::WriteAllText($env:CHILD_PID_FILE, [string]$child.Id); while (-not (Test-Path $env:RELEASE_WRAPPER_FILE)) {{ Start-Sleep -Milliseconds 25 }}"
-            ),
+        // Start-Process flattens -ArgumentList strings before passing the
+        // inline command to PowerShell. Native Windows Bazel runs can then
+        // fail to start the child and never write the required PID witness.
+        let child_script = temp_dir.path().join("git-wrapper-child.ps1");
+        std::fs::write(
+            &child_script,
+            r#"[System.IO.File]::WriteAllText($env:CHILD_READY_FILE, 'ready')
+while (-not (Test-Path -LiteralPath $env:RELEASE_CHILD_FILE)) { Start-Sleep -Milliseconds 25 }
+Start-Sleep -Seconds 1
+[System.IO.File]::WriteAllText($env:CHILD_SURVIVED_FILE, 'survived')
+Start-Sleep -Seconds 60
+"#,
+        )
+        .expect("write PowerShell child fixture");
+
+        // ProcessStartInfo avoids Start-Process -NoNewWindow's console
+        // attachment behavior. The child remains in the Git wrapper's job
+        // tree, so the original process-tree-kill assertions still apply.
+        let spawn_child = r#"$ErrorActionPreference = 'Stop';
+$startInfo = New-Object System.Diagnostics.ProcessStartInfo;
+$startInfo.FileName = 'powershell.exe';
+$startInfo.Arguments = ('-NoProfile -NonInteractive -File "' + $env:CHILD_SCRIPT_FILE + '"');
+$startInfo.UseShellExecute = $false;
+$startInfo.CreateNoWindow = $true;
+$child = [System.Diagnostics.Process]::Start($startInfo);
+if ($null -eq $child) { throw 'Git wrapper fixture child could not start' };
+[System.IO.File]::WriteAllText($env:CHILD_PID_FILE, [string]$child.Id);"#;
+        let wait = match wrapper_lifetime {
+            GitWrapperLifetime::WaitForChild => "Wait-Process -Id $child.Id",
+            GitWrapperLifetime::ExitBeforeTimeout => {
+                "while (-not (Test-Path -LiteralPath $env:RELEASE_WRAPPER_FILE)) { Start-Sleep -Milliseconds 25 }"
+            }
         };
+        let mut command = Command::new("powershell.exe");
         command
             .args(["-NoProfile", "-NonInteractive", "-Command"])
-            .arg(wrapper_command);
+            .arg(format!("{spawn_child} {wait}"))
+            .env("CHILD_SCRIPT_FILE", &child_script);
         command
     };
+
     command
         .env("CHILD_PID_FILE", &child_pid_file)
         .env("CHILD_READY_FILE", &child_ready_file)
