@@ -3,6 +3,7 @@ name: Read exact foundation CodeQL findings
 on:
   push:
     branches: [agents/20261021/foundation-codeql-review]
+    paths: [.github/workflows/foundation-codeql-read.yml]
 
 permissions:
   contents: read
@@ -95,7 +96,8 @@ jobs:
               return json.loads(destination.read_text())
 
           analyses = {}
-          refs = ["refs/pull/2937/merge", "refs/heads/integration/v8-main-convergence-20261020"]
+          refs = ["refs/pull/2937/merge", "refs/heads/integration/v8-main-convergence-20261020",
+                  "refs/pull/2937/head"]
           for ref_number, ref in enumerate(refs):
               for page in range(1, 6):
                   query = urlencode({"ref": ref, "tool_name": "CodeQL", "per_page": 100, "page": page})
