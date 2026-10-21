@@ -14,6 +14,20 @@ use crate::receipt_store::validate_receipt;
 use crate::test_support::private_tempdir;
 use crate::trust::VerifiedSignature;
 
+#[cfg(windows)]
+#[test]
+fn windows_sidecar_lock_is_exclusive_until_owner_drop() {
+    let temporary = private_tempdir("Windows sidecar owner lock");
+    let root = temporary.path().canonicalize().expect("canonical sidecar root");
+    let first = crate::durable::lock_sidecar(&root).expect("initial exclusive lock");
+    assert!(
+        crate::durable::lock_sidecar(&root).is_err(),
+        "another handle must not enter the same sidecar writer"
+    );
+    drop(first);
+    crate::durable::lock_sidecar(&root).expect("previous owner release must unlock");
+}
+
 #[test]
 fn exact_challenge_boundary_accepts_only_operator_acceptance() {
     let evidence = evidence();

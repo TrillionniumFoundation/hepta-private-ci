@@ -311,6 +311,10 @@ fn open_sidecar_lock(root: &Path, create: bool) -> Result<SidecarLock, Acceptanc
             ));
         }
     }
+    #[cfg(windows)]
+    file.try_lock().map_err(|_| {
+        invalid("another operator-acceptance process holds the sidecar lock")
+    })?;
     Ok(SidecarLock { _file: file })
 }
 
