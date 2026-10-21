@@ -164,6 +164,10 @@ impl CognitiveStore {
         config
             .materialize_identity_bound_recovery_copy(&source_guard, &candidate)
             .map_err(recovery_error)?;
+        // The copy changed the source directory's metadata. Its pre-copy
+        // snapshot must not be reused for admission after this point; retained
+        // handles still pin the original sources and parent through publication
+        // and failure reconciliation below.
 
         let result = async {
             let pool = config
@@ -284,14 +288,16 @@ impl CognitiveStore {
         }
         .await;
 
-        match result {
+        let outcome = match result {
             Ok(store) => Ok(store),
             Err(error) => Err(reconcile_failed_recovery_candidate(
                 &canonical_root,
                 &candidate,
                 error,
             )),
-        }
+        };
+        drop(source_guard);
+        outcome
     }
 }
 

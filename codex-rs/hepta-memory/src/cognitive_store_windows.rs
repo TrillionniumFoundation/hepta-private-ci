@@ -71,3 +71,7 @@ pub(super) fn verify_database_file(path: &Path) -> Result<(), CognitiveStoreErro
         open_private_state_child(&directory, name, PrivateFileAccess::Read).map_err(unavailable)?;
     Ok(())
 }
+
+#[cfg(test)]
+#[path = "cognitive_store_windows_tests.rs"]
+mod tests;
