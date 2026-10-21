@@ -160,7 +160,10 @@ fn partially_drained_scopes_preserve_round_robin_and_reclaim_on_completion() {
     }
     let first = queue.drain_batch(2);
     assert_eq!(
-        first.iter().map(|request| request.scope_id.as_str()).collect::<Vec<_>>(),
+        first
+            .iter()
+            .map(|request| request.scope_id.as_str())
+            .collect::<Vec<_>>(),
         vec!["scope:a", "scope:b"]
     );
     assert_eq!(queue.queues.len(), 1);
