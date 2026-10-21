@@ -31,7 +31,8 @@ jobs:
   owner-candidate:
     if: >-
       github.event.pull_request.head.repo.full_name == github.repository &&
-      github.event.pull_request.head.ref == 'codex/production-hos2-delivery-20261020'
+      (github.event.pull_request.head.ref == 'codex/production-hos2-delivery-20261020' ||
+       github.event.pull_request.head.ref == 'agents/20261021/hos2-proof-insert-guard')
     runs-on: ubuntu-24.04
     timeout-minutes: 180
     env:
