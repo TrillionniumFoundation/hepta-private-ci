@@ -636,6 +636,28 @@ class SharedMultimodalBridgeTests(unittest.TestCase):
                                    rtol=0, atol=0)
 
 
+    def test_optimizer_snapshot_hooks_cannot_change_saved_rollback_state(self):
+        stem = self.stem()
+        student = build_encoder(StemSpec('tiny_training_only', 32, 1, 4),
+                                device='cpu', trainable=True)
+        optimizer = torch.optim.AdamW(
+            list(stem.parameters()) + list(student.parameters()), lr=0.01)
+        called = [0]
+
+        def intercept(_optimizer, state):
+            called[0] += 1
+            return state
+
+        handle = optimizer.register_state_dict_post_hook(intercept)
+        try:
+            with self.assertRaisesRegex(LatentBridgeError, "instrumented offline optimizer"):
+                shadow_distill_step(
+                    student, stem, {'text': torch.randn(2, 32)},
+                    {'text': 'a' * 64}, torch.randn(2, 32), optimizer,
+                    generation=1)
+        finally:
+            handle.remove()
+        self.assertEqual(called[0], 0)
 
 
 if __name__ == '__main__':
