@@ -10,6 +10,7 @@ pub mod hnmf_learning;
 pub mod lane_c;
 pub mod memory_cell;
 pub mod meta_network;
+pub mod meta_network_evidence;
 pub mod wire;
 
 use std::collections::BTreeSet;
