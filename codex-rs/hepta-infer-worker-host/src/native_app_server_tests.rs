@@ -425,7 +425,7 @@ fn cognitive_final_use_revalidation_follows_durable_dispatch_and_precedes_turn_s
         .split_once("async fn send_authorized_turn_start(")
         .expect("authorized send helper");
     let (send_helper, _) = send_helper
-        .split_once("\n}\n")
+        .split_once("\n}")
         .expect("complete authorized send helper");
     assert!(send_helper.contains("_entered: EnteredUseToken"));
     assert!(send_helper.contains(".request_typed_observed(ClientRequest::TurnStart {"));
