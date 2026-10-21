@@ -7,6 +7,7 @@ on:
 permissions:
   contents: read
   checks: read
+  security-events: read
 
 jobs:
   retained-findings:
@@ -15,6 +16,7 @@ jobs:
     env:
       GH_TOKEN: ${{ github.token }}
       REVIEW_SOURCE_SHA: b58d870a2c38ebee0aa0b974d9f03767c888fa7e
+      REVIEW_SOURCE_TREE: 5bdd6960c53a0bc9dd034865d9dfa07a3cbc73f5
       REVIEW_CHECK_ID: "118888053804"
     steps:
       - name: Read and bind the existing failing check
@@ -53,7 +55,6 @@ jobs:
           set -euo pipefail
           gh api --allow-escape-sequences --paginate --slurp "repos/$GITHUB_REPOSITORY/check-runs/$REVIEW_CHECK_ID/annotations?per_page=100" > evidence/annotation-pages.json
           python3 - <<'PY'
-          import hashlib
           import json
           from pathlib import Path
 
@@ -64,11 +65,112 @@ jobs:
           annotations = [entry for page in pages for entry in page]
           assert len(annotations) == source["annotations_count"]
           (root / "annotations.json").write_text(json.dumps(annotations, indent=2) + "\n")
+          print(f"Retained {len(annotations)} existing annotations for the exact source.")
+          PY
+
+      - name: Read the source-bound Rust SARIF and retained data-flow paths
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import json
+          import os
+          from pathlib import Path
+          import subprocess
+          from urllib.parse import urlencode
+
+          root = Path("evidence")
+          repository = os.environ["GITHUB_REPOSITORY"]
+          source = os.environ["REVIEW_SOURCE_SHA"]
+          expected_tree = os.environ["REVIEW_SOURCE_TREE"]
+          def get(endpoint, name, accept="application/vnd.github+json"):
+              destination = root / (name + ".json")
+              with destination.open("xb") as stdout, (root / (name + ".stderr.log")).open("xb") as stderr:
+                  result = subprocess.run(["gh", "api", "--method", "GET",
+                      "--allow-escape-sequences", "-H", "Accept: " + accept, endpoint],
+                      stdout=stdout, stderr=stderr, check=False, timeout=90)
+              (root / (name + ".exit-code.txt")).write_text(str(result.returncode) + "\n")
+              if result.returncode:
+                  raise RuntimeError(f"Read failed: {name}; original response retained")
+              return json.loads(destination.read_text())
+
+          analyses = {}
+          refs = ["refs/pull/2937/merge", "refs/heads/integration/v8-main-convergence-20261020"]
+          for ref_number, ref in enumerate(refs):
+              for page in range(1, 6):
+                  query = urlencode({"ref": ref, "tool_name": "CodeQL", "per_page": 100, "page": page})
+                  entries = get(f"repos/{repository}/code-scanning/analyses?{query}",
+                                f"analyses-ref-{ref_number}-page-{page}")
+                  if not isinstance(entries, list):
+                      raise RuntimeError("Unexpected analysis list response")
+                  for entry in entries:
+                      if entry.get("ref") != ref:
+                          raise RuntimeError("Analysis reference changed")
+                      analyses[entry["id"]] = entry
+                  if len(entries) < 100:
+                      break
+              else:
+                  raise RuntimeError("Analysis listing exceeded the reviewed five-page bound")
+
+          selected = []
+          commits = {}
+          for entry in analyses.values():
+              if entry.get("tool", {}).get("name") != "CodeQL":
+                  continue
+              environment = json.loads(entry.get("environment") or "{}")
+              if environment.get("language") != "rust" and not entry.get("category", "").endswith("language:rust"):
+                  continue
+              sha = entry["commit_sha"]
+              if sha not in commits:
+                  commits[sha] = get(f"repos/{repository}/git/commits/{sha}", f"analysis-commit-{sha}")
+              commit = commits[sha]
+              if commit["sha"] != sha:
+                  raise RuntimeError("Analysis commit identity changed")
+              exact = sha == source
+              same_tree_merge = (commit["tree"]["sha"] == expected_tree
+                                 and source in [parent["sha"] for parent in commit["parents"]])
+              if not exact and not same_tree_merge:
+                  continue
+              if commit["tree"]["sha"] != expected_tree or entry.get("error"):
+                  raise RuntimeError("Source-bound analysis is incomplete or has a different tree")
+              selected.append({"analysis": entry, "exact_source_commit": exact,
+                               "same_source_tree_merge": same_tree_merge,
+                               "analysis_tree_sha": commit["tree"]["sha"]})
+          (root / "selected-analyses.json").write_text(json.dumps(selected, indent=2) + "\n")
+          if not 1 <= len(selected) <= 10:
+              raise RuntimeError("Expected one to ten source-bound Rust analyses")
+          results = []
+          for selected_entry in selected:
+              entry = selected_entry["analysis"]
+              analysis_id = entry["id"]
+              sarif = get(f"repos/{repository}/code-scanning/analyses/{analysis_id}",
+                          f"rust-analysis-{analysis_id}.sarif", "application/sarif+json")
+              if sarif.get("version") != "2.1.0" or not isinstance(sarif.get("runs"), list):
+                  raise RuntimeError("Unexpected SARIF response")
+              findings = [finding for run in sarif["runs"] for finding in run.get("results", [])]
+              results.append({"analysis_id": analysis_id, "commit_sha": entry["commit_sha"],
+                              "ref": entry["ref"], "results": len(findings),
+                              "results_with_code_flows": sum(bool(f.get("codeFlows")) for f in findings),
+                              "read_only": True, "alert_state_changed": False})
+          (root / "sarif-summary.json").write_text(json.dumps(results, indent=2) + "\n")
+          print(json.dumps(results, indent=2))
+          PY
+
+      - name: Hash all retained original responses
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import hashlib
+          import json
+          from pathlib import Path
+          root = Path("evidence")
+          root.mkdir(exist_ok=True)
           inventory = [{"path": path.name, "bytes": path.stat().st_size,
                         "sha256": hashlib.sha256(path.read_bytes()).hexdigest()}
-                       for path in sorted(root.iterdir()) if path.is_file()]
+                       for path in sorted(root.iterdir()) if path.is_file() and path.name != "inventory.json"]
           (root / "inventory.json").write_text(json.dumps(inventory, indent=2) + "\n")
-          print(f"Retained {len(annotations)} existing annotations for the exact source.")
           PY
 
       - name: Preserve the read-only diagnostic result
