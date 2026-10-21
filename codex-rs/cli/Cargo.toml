@@ -4,6 +4,9 @@ version.workspace = true
 edition.workspace = true
 license.workspace = true
 build = "build.rs"
+# `src/main.rs` is shared by the explicit crate-root binary wrappers below.
+# Prevent Cargo from discovering it as a third implicit binary target.
+autobins = false
 default-run = "codex"
 
 [[bin]]
