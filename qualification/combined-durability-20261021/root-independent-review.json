@@ -1,0 +1,253 @@
+{
+  "observed_at_utc": "2026-10-21T14:03:33.054349+00:00",
+  "reviewer": "root assistant independent of implementing subagents",
+  "source_head": "bf9550a5b7c94d34a36f3832bdff4d27f5b05a97",
+  "base_tree": "cd16e463dd566d1b704f5dbc90668508bb142c15",
+  "source_paths": [
+    {
+      "path": "codex-rs/Cargo.lock",
+      "git_blob": "5dd5ab27603a91a188b259840efc97aff14819e9",
+      "sha256": "d8121cd206f40ef5a25009a041f0a75a1959155f62091ea494047c3d522c1476"
+    },
+    {
+      "path": "codex-rs/app-server/tests/common/test_app_server.rs",
+      "git_blob": "eaed23d70cad07e73de6b071a3b1a9e92d9c9b9c",
+      "sha256": "aa87141966b93385412fa0f1eee316ea750079a89829ea9baab4d13c47c08d42"
+    },
+    {
+      "path": "codex-rs/app-server/tests/common/turn_start_after_cleanup.rs",
+      "git_blob": "b39c6d169aa7c913e57b06a0173c38b26c360686",
+      "sha256": "9d51d25d526e2a0b9d0aaa446f3f6057c10fd30d274bbd0e75e16f31364bab36"
+    },
+    {
+      "path": "codex-rs/app-server/tests/suite/v2/compaction.rs",
+      "git_blob": "b040f3525c53850648117be8fbb4bb8f25376630",
+      "sha256": "c183efc0335819ca2868e7a274453f50c475d726b9a85e035ef8023f9217a250"
+    },
+    {
+      "path": "codex-rs/app-server/tests/suite/v2/host_skills.rs",
+      "git_blob": "57f744cc8b36a9a8d1a54c607fe99cc1cc35baf5",
+      "sha256": "0f9adcee837cd24e09ac9afaca6bf2baa7dfbda3816e2a7ed1053999882a92d8"
+    },
+    {
+      "path": "codex-rs/app-server/tests/suite/v2/mcp_resource_origin.rs",
+      "git_blob": "b5be2b493bfd56db350e3163044826677e93f2bf",
+      "sha256": "dee036ed79b445a6fc753a01535661eaedac664979b0997594167690cc8bd925"
+    },
+    {
+      "path": "codex-rs/app-server/tests/suite/v2/mcp_server_elicitation.rs",
+      "git_blob": "ad1593d64a7e0386078846dec788edf79506699d",
+      "sha256": "215d4f213ab3b3e4f6a2c156ec5ef3d14b9abf1746bd1317599366049e798223"
+    },
+    {
+      "path": "codex-rs/app-server/tests/suite/v2/thread_resume.rs",
+      "git_blob": "07789f9f3ce8ecf99258a1dea391fc93c86b4139",
+      "sha256": "c92a62cd907e3d7ee9b4117609a1d4246035defc87a23030b8ab44d7b17bfec8"
+    },
+    {
+      "path": "codex-rs/app-server/tests/suite/v2/thread_revert.rs",
+      "git_blob": "1d18e8afe77f813b3d94d80f1cf805a9cd067b48",
+      "sha256": "dd7ccc33ac97ffe6a5124ef28db766cd49ed44528a27a7cb0578f309db8edd9a"
+    },
+    {
+      "path": "codex-rs/app-server/tests/suite/v2/thread_rollback.rs",
+      "git_blob": "4d61283067463f99df49c8d2e7c8c951ea3187a9",
+      "sha256": "9a50c7eae45222080351090f93d1a0e417a818b587bb423192e3a3c24906fb0c"
+    },
+    {
+      "path": "codex-rs/app-server/tests/suite/v2/turn_start.rs",
+      "git_blob": "9108b89050b5a58644bbb8c7b624d16d811ddcc0",
+      "sha256": "42d9cfd6d0f5acd72e9c4a1f9991898aa73d4536e763c43ac54a6d96a2ee236e"
+    },
+    {
+      "path": "codex-rs/exec/Cargo.toml",
+      "git_blob": "2610eef2fa1f8783ced70754b31790d12b19a4a0",
+      "sha256": "d16650ee57c88674aee4f42cce36cd02d9f250ccfdb35abddb0936fe4c418935"
+    },
+    {
+      "path": "codex-rs/exec/tests/suite/resume.rs",
+      "git_blob": "9ee40c77adc0348a039d30624427645335c9653f",
+      "sha256": "d75b5dfbb81101cac86acb9569ce80a41485587d72af57c8ba81676cec4b2ec2"
+    },
+    {
+      "path": "codex-rs/ext/queue/tests/queue_service.rs",
+      "git_blob": "61c650db6250fcdc8bc6bc03c0c1acf7489c05aa",
+      "sha256": "440daed0eea15e34fe883d8a416798a533faedb8dab7ed5df2b4a73f4a4438f9"
+    },
+    {
+      "path": "codex-rs/git-utils/src/git_process_tests.rs",
+      "git_blob": "8d3000520f754c67a52507a85fe5f7b8fa266b53",
+      "sha256": "964e8fd8286fef6cd0a96f4901911f8c3d3fccc4756f8055a0943c4ed069dde2"
+    },
+    {
+      "path": "codex-rs/hepta-infer-worker-host/src/native_app_server_tests.rs",
+      "git_blob": "f90681fc9ff30749cbdc8c3cd8078efe723ef43b",
+      "sha256": "9b8d9db5954f4b0a8e55cd35d62d4227c7753988be953b3f4ecaf4946740a3e3"
+    },
+    {
+      "path": "codex-rs/hepta-intelligence/src/evaluated_shadow_tests.rs",
+      "git_blob": "86761bed052e733871391e704875c2d73406b1c7",
+      "sha256": "c3c1f2991030e11bd2835ac32b7b92960f25e798e86b168bac0027d8e4adad54"
+    },
+    {
+      "path": "codex-rs/hepta-matrixd/src/control.rs",
+      "git_blob": "7346551e9922029d3fd3e5ee250c716fe8ad377b",
+      "sha256": "013fab7dabd27e55934406af35435c5bbbb0d7c17ee4888eaf1aa82c9c69c6ee"
+    },
+    {
+      "path": "codex-rs/tui/src/resume_picker_transcript_preview_tests.rs",
+      "git_blob": "f10ed7a247707d3999526cf40fa7d21370abed25",
+      "sha256": "aa97215b43f161f9ec51ccb5a89dd3471dd94fd27ee0b79ada0ab243bf82ca12"
+    },
+    {
+      "path": "codex-rs/utils/cargo-bin/Cargo.toml",
+      "git_blob": "191a9d561bf0ed2b2b52a522558a454bb5a66477",
+      "sha256": "70d2c516f059d8c9ded41cae6cd0e1f4802b150fd7d9f8da964e72aeb9f7cd9e"
+    },
+    {
+      "path": "codex-rs/utils/cargo-bin/src/lib.rs",
+      "git_blob": "9e453c9e269686f7c8ad351ab433bee58ad3247d",
+      "sha256": "d64cec44524a479352d2bb4e3b26fa95cef307a9120349286c2ba827e3174327"
+    },
+    {
+      "path": "codex-rs/utils/cargo-bin/tests/cargo_fallback.rs",
+      "git_blob": "0ad6dea6fe2115b77872e2bf3a60e938f0fe7601",
+      "sha256": "a840934b26bf5e1b3b20e52c23dd91fd5b87731517e0d463fe9453f0f8121985"
+    }
+  ],
+  "source_review_result": "No remaining blocking source-review findings in the reviewed continuation. The server-request ID collision and CRLF source slicing issues were corrected before this review.",
+  "review_focus": [
+    "Exact Response/Error IDs; Requests/Notifications remain buffered; retry only both observed pre-admission codes/messages/data within existing deadline.",
+    "Actual completion fence observed outside callback; exact-once queue assertions retained.",
+    "Windows unsupported peer identity rejected before frame; Unix authenticated path retained.",
+    "Fallible Cargo sibling lookup; Bazel declared runfiles boundary unchanged; genuine old-negative/new-positive tests retained.",
+    "Exec index-loss fixture uses central SQLite shim without invoking permanent deletion fencing.",
+    "Native source-order oracle checks durable dispatch, cognitive revalidation, entered authority token and observed physical send.",
+    "Evaluated-shadow byte inspection after releasing writer ownership with exact acknowledged witness retained.",
+    "Real Rust Git wrapper/process lifetime checks and tree-cleanup negative controls retained."
+  ],
+  "original_native_qualification": "Still required for unrun modified suites and all platform-specific source combinations; no blanket native success is claimed.",
+  "new_log_roundtrips_independently_verified": [
+    {
+      "path": "qualification/ci-bazel-terminal-3041-20261021/job119206184539.log.xz",
+      "compressed_bytes": 76540,
+      "raw_bytes": 894368,
+      "raw_sha256": "5721b33c1f22ed08fe6d4dc0a4db7228afde4d535d1a4cb23dcfc2bd749ef62e"
+    },
+    {
+      "path": "qualification/ci-bazel-terminal-3041-20261021/job119206185086.log.xz",
+      "compressed_bytes": 97348,
+      "raw_bytes": 1090749,
+      "raw_sha256": "74c5980c6d99fdb360b0087832dcd60366cc7b49a6e185cc72a232ee80b72823"
+    },
+    {
+      "path": "qualification/ci-bazel-terminal-3041-20261021/job119206185231.log.xz",
+      "compressed_bytes": 97616,
+      "raw_bytes": 1068122,
+      "raw_sha256": "e9367eee717e1d3ae5cf0f338d779b51787442c850c64552d7b0b659b1136e03"
+    },
+    {
+      "path": "qualification/ci-bazel-terminal-3041-20261021/job119206185260.log.xz",
+      "compressed_bytes": 99996,
+      "raw_bytes": 1197839,
+      "raw_sha256": "82731b949f18309e2c0bdb600ebbb6e71a244c63ca6ad03ee9363f4d06424b7a"
+    },
+    {
+      "path": "qualification/ci-bazel-terminal-3041-20261021/job119206185356.log.xz",
+      "compressed_bytes": 81284,
+      "raw_bytes": 747475,
+      "raw_sha256": "e0ad615c33326c4f76b9ddf55f5680955b9a2e9de6d0f27d0cb99f816f80dabb"
+    },
+    {
+      "path": "qualification/ci-bazel-terminal-3041-20261021/job119206185376.log.xz",
+      "compressed_bytes": 96400,
+      "raw_bytes": 1156454,
+      "raw_sha256": "f9c3b9a2f4352679e51e477d2df06c9b8bfed6d4dfd50cf1a2b2fef2e1fb144c"
+    },
+    {
+      "path": "qualification/ci-bazel-terminal-481-20261021/job119194391990.log.xz",
+      "compressed_bytes": 100196,
+      "raw_bytes": 1174329,
+      "raw_sha256": "5bbf72f3f4210ed9b824fcdba2778f68f5d927cbf1e1d988004c9dbf4cc202a2"
+    },
+    {
+      "path": "qualification/ci-bazel-terminal-481-20261021/job119194391991.log.xz",
+      "compressed_bytes": 92244,
+      "raw_bytes": 1099623,
+      "raw_sha256": "f27f9ae7b12543c663e77ca7e23a20f130673fa82e2741dfe63f2bd280895ae7"
+    },
+    {
+      "path": "qualification/combined-durability-20261021/cargo-fallback-final-lock-resolve.log.xz",
+      "compressed_bytes": 176,
+      "raw_bytes": 124,
+      "raw_sha256": "f879ac8a72bd17a666e850c2db6093f241658e9d69e62111e99082637979bcfb"
+    },
+    {
+      "path": "qualification/combined-durability-20261021/cargo-fallback-fix.log.xz",
+      "compressed_bytes": 448,
+      "raw_bytes": 598,
+      "raw_sha256": "704022e8c072543fbd16b82e38e826de48d20db26e5119d7713de28c5dbb11bc"
+    },
+    {
+      "path": "qualification/combined-durability-20261021/cargo-fallback-native-pass.log.xz",
+      "compressed_bytes": 796,
+      "raw_bytes": 1850,
+      "raw_sha256": "b8f7af5076160b51d904f36a9445ebf96df29804c59de71fd939f898c326d9e1"
+    },
+    {
+      "path": "qualification/combined-durability-20261021/cargo-fallback-original-negative.log.xz",
+      "compressed_bytes": 1372,
+      "raw_bytes": 5764,
+      "raw_sha256": "26c50b5747763397fefe967f5f384634dba59956e34d5e84c8e1611b7950d6ae"
+    },
+    {
+      "path": "qualification/combined-durability-20261021/cargo-fallback-regression-lock-resolve.log.xz",
+      "compressed_bytes": 176,
+      "raw_bytes": 124,
+      "raw_sha256": "f879ac8a72bd17a666e850c2db6093f241658e9d69e62111e99082637979bcfb"
+    },
+    {
+      "path": "qualification/combined-durability-20261021/continuation-bazel-lock-check.log.xz",
+      "compressed_bytes": 600,
+      "raw_bytes": 1118,
+      "raw_sha256": "b9c116a8f225895fd0dad8abca8c0a89c7f99d25a45456e1e5d3753bc630bc44"
+    },
+    {
+      "path": "qualification/combined-durability-20261021/continuation-bazel-lock-materialized.log.xz",
+      "compressed_bytes": 512,
+      "raw_bytes": 1003,
+      "raw_sha256": "d887805bc0c4f677f4e3b85ec1c77faa14f620cb97f8b30181642f9f4421caf1"
+    },
+    {
+      "path": "qualification/combined-durability-20261021/continuation-bazel-lock-repeat.log.xz",
+      "compressed_bytes": 512,
+      "raw_bytes": 1003,
+      "raw_sha256": "5596d1b86734bf269cf01330d9c0134941fd8f28685d711880c8500648478dfb"
+    },
+    {
+      "path": "qualification/combined-durability-20261021/continuation-bazel-lock-update.log.xz",
+      "compressed_bytes": 1412,
+      "raw_bytes": 5274,
+      "raw_sha256": "cb2f546e3918ecadfb91b8fe593fa870bfd39050a507eac084b8fc670b0413e9"
+    },
+    {
+      "path": "qualification/combined-durability-20261021/continuation-source-format.log.xz",
+      "compressed_bytes": 32,
+      "raw_bytes": 0,
+      "raw_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "qualification/combined-durability-20261021/exec-cargo-fallback-lock-resolve.log.xz",
+      "compressed_bytes": 176,
+      "raw_bytes": 124,
+      "raw_sha256": "f879ac8a72bd17a666e850c2db6093f241658e9d69e62111e99082637979bcfb"
+    },
+    {
+      "path": "qualification/combined-durability-20261021/queue-terminal-fence-native.log.xz",
+      "compressed_bytes": 9488,
+      "raw_bytes": 95764,
+      "raw_sha256": "4733129afcca6e646bddc271002f9d6dac5c46a3b78c153b92bb258878a4e6eb"
+    }
+  ],
+  "existing_20_original_logs": "Previously independently verified against immutable3302951737c400ee11e5c604477e9d6d40c6290c; not rerun in this receipt."
+}

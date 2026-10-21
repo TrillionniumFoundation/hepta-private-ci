@@ -1,0 +1,58 @@
+{
+  "command": [
+    "just",
+    "fmt",
+    "--base",
+    "bf9550a5b7c94d34a36f3832bdff4d27f5b05a97"
+  ],
+  "cwd": "/workspace/scratch/337c309bc660/combined-durability-work/codex-rs",
+  "started_at_utc": "2026-10-21T14:04:28.964430+00:00",
+  "head_at_start": "616ab7241666312b7d7632ef9f9918ba30e4ae7d",
+  "source_hashes_before": {
+    "MODULE.bazel.lock": {
+      "bytes": 1745183,
+      "sha256": "f6c5dd1f2a09c66d6a4c387ff40d11afb7ed2309e541dcb6bff9ad5f410996c3"
+    },
+    "codex-rs/Cargo.lock": {
+      "bytes": 413726,
+      "sha256": "d8121cd206f40ef5a25009a041f0a75a1959155f62091ea494047c3d522c1476"
+    }
+  },
+  "limits": {
+    "cargo_jobs": 2,
+    "dev_debug": 0,
+    "test_debug": 0,
+    "incremental": 0,
+    "bazel_jobs": 2,
+    "bazel_xmx_mib": 1536
+  },
+  "memory_events_before": "low 0\nhigh 0\nmax 1320909\noom 0\noom_kill 0\noom_group_kill 0\n",
+  "pid": 26,
+  "exit_code": 0,
+  "elapsed_seconds": 2.0025871010002447,
+  "finished_at_utc": "2026-10-21T14:04:30.974130+00:00",
+  "source_hashes_after": {
+    "MODULE.bazel.lock": {
+      "bytes": 1745183,
+      "sha256": "f6c5dd1f2a09c66d6a4c387ff40d11afb7ed2309e541dcb6bff9ad5f410996c3"
+    },
+    "codex-rs/Cargo.lock": {
+      "bytes": 413726,
+      "sha256": "d8121cd206f40ef5a25009a041f0a75a1959155f62091ea494047c3d522c1476"
+    }
+  },
+  "peak_cgroup_bytes": {
+    "anon": 156012544,
+    "file": 6956699648,
+    "kernel": 1273331712
+  },
+  "minimum_free_bytes": 0,
+  "memory_events_after": "low 0\nhigh 0\nmax 1320909\noom 0\noom_kill 0\noom_group_kill 0\n",
+  "raw_log": {
+    "file": "continuation-ssh-format.log.xz",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "compressed_bytes": 32,
+    "compressed_sha256": "0040f94d11d0039505328a90b2ff48968db873e9e7967307631bf40ef5679275"
+  }
+}

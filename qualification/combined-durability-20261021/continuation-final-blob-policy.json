@@ -1,0 +1,270 @@
+{
+  "command": [
+    "python3",
+    "scripts/check_blob_size.py",
+    "--base",
+    "fa0e8457ca5a3995e00ecec6534c1c68aa82fb28",
+    "--head",
+    "HEAD",
+    "--allowlist",
+    ".github/blob-size-allowlist.txt"
+  ],
+  "cwd": "/workspace/scratch/337c309bc660/combined-durability-work",
+  "started_at_utc": "2026-10-21T14:04:45.290020+00:00",
+  "head_at_start": "616ab7241666312b7d7632ef9f9918ba30e4ae7d",
+  "source_hashes_before": {
+    "MODULE.bazel.lock": {
+      "bytes": 1745183,
+      "sha256": "f6c5dd1f2a09c66d6a4c387ff40d11afb7ed2309e541dcb6bff9ad5f410996c3"
+    },
+    "codex-rs/Cargo.lock": {
+      "bytes": 413726,
+      "sha256": "d8121cd206f40ef5a25009a041f0a75a1959155f62091ea494047c3d522c1476"
+    },
+    "qualification/combined-durability-20261021/continuation-ssh-format.json": {
+      "bytes": 1814,
+      "sha256": "7059b050aac1bfc04b77acfa091989001b029781790e27b0273d12798c0a8071"
+    },
+    "qualification/combined-durability-20261021/continuation-ssh-format.log.xz": {
+      "bytes": 32,
+      "sha256": "0040f94d11d0039505328a90b2ff48968db873e9e7967307631bf40ef5679275"
+    },
+    "qualification/combined-durability-20261021/continuation-ssh-integration.json": {
+      "bytes": 4811,
+      "sha256": "ea1a12f2a641d1cabaf61d045d55d5647ff8181d1261e0e293f523afc01db0e2"
+    },
+    "qualification/combined-durability-20261021/root-independent-review.json": {
+      "bytes": 11713,
+      "sha256": "97e4bb6d9271df6f96abb8d34856ff9768888df0667d3ccb2998a8e2596738d1"
+    },
+    "qualification/combined-durability-20261021/root-windows-ssh-review.json": {
+      "bytes": 946,
+      "sha256": "97f542d01334fca2678fa91b95186d7daee450f21b5c49ae03f4a2384ce8d736"
+    },
+    "qualification/windows-ssh-fixture-20261021/ANALYSIS.json": {
+      "bytes": 14324,
+      "sha256": "25e1ac7d93d1ba2b9d6203ea6e9302623a34aed03be872a17c494359645a312d"
+    },
+    "qualification/windows-ssh-fixture-20261021/LINUX_BOUNDARY_VALIDATION.json": {
+      "bytes": 3739,
+      "sha256": "bfcbd9cf7a1dd64795f4be87c257a3bd5ee7c9a7277c1de4b058d0ff1ce4d316"
+    },
+    "qualification/windows-ssh-fixture-20261021/MANIFEST.json": {
+      "bytes": 3646,
+      "sha256": "f2515dcf7c9461a874a5a44a0e41d6bf077c888f75666d301e9eb58f4f035f88"
+    },
+    "qualification/windows-ssh-fixture-20261021/README.md": {
+      "bytes": 4531,
+      "sha256": "432402391786b48ab7a6bd56c6e9de850733d15f73933eab412607895ccc2bc6"
+    },
+    "qualification/windows-ssh-fixture-20261021/SCOUT_TRIGGER_BOUNDARY.json": {
+      "bytes": 1140,
+      "sha256": "02410f08e82932716c2a9afb329b256d8ee8d3f8cd5a097796279f37ee6a0f69"
+    },
+    "qualification/windows-ssh-fixture-20261021/SOURCE_IDENTITY.json": {
+      "bytes": 1175,
+      "sha256": "75fccbb268fe49f9fcaad3ad2eb5a0443f6be2a318c7922a5e2aa5e46c4e0639"
+    },
+    "qualification/windows-ssh-fixture-20261021/bundle-verify.stderr.txt": {
+      "bytes": 109,
+      "sha256": "82c524d86756c38de0fbf5655eb487715d11afc1b80cc4d5acc22cc2f15796dd"
+    },
+    "qualification/windows-ssh-fixture-20261021/bundle-verify.stdout.txt": {
+      "bytes": 238,
+      "sha256": "4581c30351768358d0f8cc3253438ef0b192bcc659e406c0dc7eb1f322057178"
+    },
+    "qualification/windows-ssh-fixture-20261021/compile.stderr.txt": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "qualification/windows-ssh-fixture-20261021/compile.stdout.txt": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "qualification/windows-ssh-fixture-20261021/live-probe.stderr.txt": {
+      "bytes": 1260,
+      "sha256": "28ed6e2d252cf5c0933795ea767e78481c87939c42991243334e603b90cfe6de"
+    },
+    "qualification/windows-ssh-fixture-20261021/live-probe.stdout.txt": {
+      "bytes": 641,
+      "sha256": "a9830869316ea33f7336c8db82aa53507296e97ac1a8a094261e820d4797e903"
+    },
+    "qualification/windows-ssh-fixture-20261021/live_ssh_probe.rs": {
+      "bytes": 4825,
+      "sha256": "a97c73f1e5bc340bbc97364e2672fb8431107e17f2cff96f6c5436e7beef2926"
+    },
+    "qualification/windows-ssh-fixture-20261021/original/job119206185425-first-panics.json": {
+      "bytes": 9376,
+      "sha256": "5610cf02fba5604823fe85d347f133344ee83cd8f20899d90460ce7295f020c8"
+    },
+    "qualification/windows-ssh-fixture-20261021/original/job119206185425.json": {
+      "bytes": 5072,
+      "sha256": "4a909e1f2a996dcbee4104e827adcc4354d2678d7869eb26c079a4d75f9465f2"
+    },
+    "qualification/windows-ssh-fixture-20261021/original/job119206185425.log.xz": {
+      "bytes": 60576,
+      "sha256": "5792ac59cf9f56041f811fea660e430a37d4db5f71cb9206d9ca39ae6d23c3ad"
+    },
+    "qualification/windows-ssh-fixture-20261021/source.bundle": {
+      "bytes": 2221,
+      "sha256": "0880a8d90bc2acc0cd166fc62701c463a646b6aac96d03e57d98f88ce0f39097"
+    },
+    "qualification/windows-ssh-fixture-20261021/source.patch": {
+      "bytes": 9014,
+      "sha256": "25f2c6a8c34d49482464be6d0e1069d3c4894e96222d58d900117a8df4200944"
+    },
+    "qualification/windows-ssh-fixture-20261021/source/codex-rs/hepta-operator-acceptance/src/g5_trust_tests.rs": {
+      "bytes": 14645,
+      "sha256": "cb60b01ff59460c03d3d9a3af5647e4a96dc56bcc643e7509e8d546b6b7a4d46"
+    },
+    "qualification/windows-ssh-fixture-20261021/source/codex-rs/hepta-operator-acceptance/src/test_support.rs": {
+      "bytes": 2779,
+      "sha256": "9090e73e9cb315cf29db9fb8fa85f355cda19e44802bee984db1a7e5edb1f5e6"
+    },
+    "qualification/windows-ssh-fixture-20261021/source/codex-rs/hepta-operator-acceptance/src/trust_tests.rs": {
+      "bytes": 10371,
+      "sha256": "a70db1ba3b9ad62f8cf75a6696e9a4d57f0167500d2606d0b6fca51731088c6b"
+    }
+  },
+  "limits": {
+    "cargo_jobs": 2,
+    "dev_debug": 0,
+    "test_debug": 0,
+    "incremental": 0,
+    "bazel_jobs": 2,
+    "bazel_xmx_mib": 1536
+  },
+  "memory_events_before": "low 0\nhigh 0\nmax 1320909\noom 0\noom_kill 0\noom_group_kill 0\n",
+  "pid": 26,
+  "exit_code": 0,
+  "elapsed_seconds": 2.003351860003022,
+  "finished_at_utc": "2026-10-21T14:04:47.301095+00:00",
+  "source_hashes_after": {
+    "MODULE.bazel.lock": {
+      "bytes": 1745183,
+      "sha256": "f6c5dd1f2a09c66d6a4c387ff40d11afb7ed2309e541dcb6bff9ad5f410996c3"
+    },
+    "codex-rs/Cargo.lock": {
+      "bytes": 413726,
+      "sha256": "d8121cd206f40ef5a25009a041f0a75a1959155f62091ea494047c3d522c1476"
+    },
+    "qualification/combined-durability-20261021/continuation-ssh-format.json": {
+      "bytes": 1814,
+      "sha256": "7059b050aac1bfc04b77acfa091989001b029781790e27b0273d12798c0a8071"
+    },
+    "qualification/combined-durability-20261021/continuation-ssh-format.log.xz": {
+      "bytes": 32,
+      "sha256": "0040f94d11d0039505328a90b2ff48968db873e9e7967307631bf40ef5679275"
+    },
+    "qualification/combined-durability-20261021/continuation-ssh-integration.json": {
+      "bytes": 4811,
+      "sha256": "ea1a12f2a641d1cabaf61d045d55d5647ff8181d1261e0e293f523afc01db0e2"
+    },
+    "qualification/combined-durability-20261021/root-independent-review.json": {
+      "bytes": 11713,
+      "sha256": "97e4bb6d9271df6f96abb8d34856ff9768888df0667d3ccb2998a8e2596738d1"
+    },
+    "qualification/combined-durability-20261021/root-windows-ssh-review.json": {
+      "bytes": 946,
+      "sha256": "97f542d01334fca2678fa91b95186d7daee450f21b5c49ae03f4a2384ce8d736"
+    },
+    "qualification/windows-ssh-fixture-20261021/ANALYSIS.json": {
+      "bytes": 14324,
+      "sha256": "25e1ac7d93d1ba2b9d6203ea6e9302623a34aed03be872a17c494359645a312d"
+    },
+    "qualification/windows-ssh-fixture-20261021/LINUX_BOUNDARY_VALIDATION.json": {
+      "bytes": 3739,
+      "sha256": "bfcbd9cf7a1dd64795f4be87c257a3bd5ee7c9a7277c1de4b058d0ff1ce4d316"
+    },
+    "qualification/windows-ssh-fixture-20261021/MANIFEST.json": {
+      "bytes": 3646,
+      "sha256": "f2515dcf7c9461a874a5a44a0e41d6bf077c888f75666d301e9eb58f4f035f88"
+    },
+    "qualification/windows-ssh-fixture-20261021/README.md": {
+      "bytes": 4531,
+      "sha256": "432402391786b48ab7a6bd56c6e9de850733d15f73933eab412607895ccc2bc6"
+    },
+    "qualification/windows-ssh-fixture-20261021/SCOUT_TRIGGER_BOUNDARY.json": {
+      "bytes": 1140,
+      "sha256": "02410f08e82932716c2a9afb329b256d8ee8d3f8cd5a097796279f37ee6a0f69"
+    },
+    "qualification/windows-ssh-fixture-20261021/SOURCE_IDENTITY.json": {
+      "bytes": 1175,
+      "sha256": "75fccbb268fe49f9fcaad3ad2eb5a0443f6be2a318c7922a5e2aa5e46c4e0639"
+    },
+    "qualification/windows-ssh-fixture-20261021/bundle-verify.stderr.txt": {
+      "bytes": 109,
+      "sha256": "82c524d86756c38de0fbf5655eb487715d11afc1b80cc4d5acc22cc2f15796dd"
+    },
+    "qualification/windows-ssh-fixture-20261021/bundle-verify.stdout.txt": {
+      "bytes": 238,
+      "sha256": "4581c30351768358d0f8cc3253438ef0b192bcc659e406c0dc7eb1f322057178"
+    },
+    "qualification/windows-ssh-fixture-20261021/compile.stderr.txt": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "qualification/windows-ssh-fixture-20261021/compile.stdout.txt": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "qualification/windows-ssh-fixture-20261021/live-probe.stderr.txt": {
+      "bytes": 1260,
+      "sha256": "28ed6e2d252cf5c0933795ea767e78481c87939c42991243334e603b90cfe6de"
+    },
+    "qualification/windows-ssh-fixture-20261021/live-probe.stdout.txt": {
+      "bytes": 641,
+      "sha256": "a9830869316ea33f7336c8db82aa53507296e97ac1a8a094261e820d4797e903"
+    },
+    "qualification/windows-ssh-fixture-20261021/live_ssh_probe.rs": {
+      "bytes": 4825,
+      "sha256": "a97c73f1e5bc340bbc97364e2672fb8431107e17f2cff96f6c5436e7beef2926"
+    },
+    "qualification/windows-ssh-fixture-20261021/original/job119206185425-first-panics.json": {
+      "bytes": 9376,
+      "sha256": "5610cf02fba5604823fe85d347f133344ee83cd8f20899d90460ce7295f020c8"
+    },
+    "qualification/windows-ssh-fixture-20261021/original/job119206185425.json": {
+      "bytes": 5072,
+      "sha256": "4a909e1f2a996dcbee4104e827adcc4354d2678d7869eb26c079a4d75f9465f2"
+    },
+    "qualification/windows-ssh-fixture-20261021/original/job119206185425.log.xz": {
+      "bytes": 60576,
+      "sha256": "5792ac59cf9f56041f811fea660e430a37d4db5f71cb9206d9ca39ae6d23c3ad"
+    },
+    "qualification/windows-ssh-fixture-20261021/source.bundle": {
+      "bytes": 2221,
+      "sha256": "0880a8d90bc2acc0cd166fc62701c463a646b6aac96d03e57d98f88ce0f39097"
+    },
+    "qualification/windows-ssh-fixture-20261021/source.patch": {
+      "bytes": 9014,
+      "sha256": "25f2c6a8c34d49482464be6d0e1069d3c4894e96222d58d900117a8df4200944"
+    },
+    "qualification/windows-ssh-fixture-20261021/source/codex-rs/hepta-operator-acceptance/src/g5_trust_tests.rs": {
+      "bytes": 14645,
+      "sha256": "cb60b01ff59460c03d3d9a3af5647e4a96dc56bcc643e7509e8d546b6b7a4d46"
+    },
+    "qualification/windows-ssh-fixture-20261021/source/codex-rs/hepta-operator-acceptance/src/test_support.rs": {
+      "bytes": 2779,
+      "sha256": "9090e73e9cb315cf29db9fb8fa85f355cda19e44802bee984db1a7e5edb1f5e6"
+    },
+    "qualification/windows-ssh-fixture-20261021/source/codex-rs/hepta-operator-acceptance/src/trust_tests.rs": {
+      "bytes": 10371,
+      "sha256": "a70db1ba3b9ad62f8cf75a6696e9a4d57f0167500d2606d0b6fca51731088c6b"
+    }
+  },
+  "peak_cgroup_bytes": {
+    "anon": 227880960,
+    "file": 6963257344,
+    "kernel": 1273434112
+  },
+  "minimum_free_bytes": 0,
+  "memory_events_after": "low 0\nhigh 0\nmax 1320909\noom 0\noom_kill 0\noom_group_kill 0\n",
+  "raw_log": {
+    "file": "continuation-final-blob-policy.log.xz",
+    "bytes": 7991,
+    "sha256": "0e5f475559f33c4ba2f9cb3f4bc95c96f97e5815ccedbdf5847b3977acd7db6c",
+    "compressed_bytes": 1420,
+    "compressed_sha256": "6e63a8a931b5aecd2aa861f79e71777a8bc467cd0424eee8c29458125a977a44"
+  }
+}
