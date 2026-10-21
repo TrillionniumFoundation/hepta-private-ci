@@ -407,16 +407,15 @@ async fn bounded_capacity_prunes_only_terminal_history_and_keeps_replay_consumed
         .await
         .unwrap();
     let id = enqueue(&store, 1).await.delivery_id;
-    // Fill the real global capacity without breaching the independent
-    // per-issuer limit. The first issuer retains 511 synthetic rows plus the
-    // original; seven other synthetic issuers each retain 512. Admission
-    // signatures are tested elsewhere: these are capacity-only fixture rows.
+    // Fill the real global capacity with eight synthetic issuers: seven
+    // retain 512 rows and the last retains 511. The original issuer retains
+    // only its admitted row, so its next enqueue reaches the global limit.
+    // Admission signatures are tested elsewhere: these are capacity-only rows.
     sqlx::query(
         "WITH RECURSIVE n(x) AS
             (SELECT 1 UNION ALL SELECT x + 1 FROM n WHERE x < ?)
          INSERT INTO authbus_outbox SELECT randomblob(32),
-            CASE WHEN x < ? THEN issuer_id
-                 ELSE 'issuer:fixture:' || ((x - ?) / ?) END,
+            'issuer:fixture:' || ((x - 1) / ?),
             key_epoch, 'fixture:' || x,
             subject_id, scope_digest, payload_digest, sequence, expires_at_ms, signature, payload,
             state, fence, attempts, worker_id, lease_until_ms, available_at_ms, created_at_ms,
@@ -424,8 +423,6 @@ async fn bounded_capacity_prunes_only_terminal_history_and_keeps_replay_consumed
          FROM authbus_outbox, n WHERE delivery_id = ?",
     )
     .bind(AUTHBUS_OUTBOX_MAX_ROWS - 1)
-    .bind(AUTHBUS_OUTBOX_MAX_ACTIVE_PER_ISSUER)
-    .bind(AUTHBUS_OUTBOX_MAX_ACTIVE_PER_ISSUER)
     .bind(AUTHBUS_OUTBOX_MAX_ACTIVE_PER_ISSUER)
     .bind(id.as_array().as_slice())
     .execute(&store.pool)
@@ -438,7 +435,24 @@ async fn bounded_capacity_prunes_only_terminal_history_and_keeps_replay_consumed
     .await
     .unwrap();
     assert_eq!(saturated, AUTHBUS_OUTBOX_MAX_ROWS);
+    let maximum_fixture_issuer_active: i64 = sqlx::query_scalar(
+        "SELECT MAX(n) FROM (SELECT COUNT(*) AS n FROM authbus_outbox
+         WHERE state IN ('queued', 'leased') GROUP BY issuer_id)",
+    )
+    .fetch_one(&store.pool)
+    .await
+    .unwrap();
+    assert!(maximum_fixture_issuer_active <= AUTHBUS_OUTBOX_MAX_ACTIVE_PER_ISSUER);
     let (issuer, message) = fixture(2, u64::MAX);
+    let active_for_message_issuer: i64 = sqlx::query_scalar(
+        "SELECT COUNT(*) FROM authbus_outbox
+         WHERE issuer_id = ? AND state IN ('queued', 'leased')",
+    )
+    .bind(issuer.issuer_id.as_str())
+    .fetch_one(&store.pool)
+    .await
+    .unwrap();
+    assert_eq!(active_for_message_issuer, 1);
     assert!(matches!(
         store
             .enqueue_authbus_message(
@@ -490,6 +504,23 @@ async fn bounded_capacity_prunes_only_terminal_history_and_keeps_replay_consumed
         ..issuer
     };
     store.quarantine_authbus_issuer(&revoked).await.unwrap();
+    // Retire every synthetic issuer through the normal host-confirmed path;
+    // active rows must never be deleted to make capacity for this fixture.
+    for group in 0..8 {
+        let (issuer_template, _) = fixture(/*sequence*/ 1, u64::MAX);
+        let synthetic_revoked = IssuerRegistration {
+            issuer_id: StableId::new(format!("issuer:fixture:{group}")).unwrap(),
+            revoked: true,
+            ..issuer_template
+        };
+        assert!(
+            store
+                .quarantine_authbus_issuer(&synthetic_revoked)
+                .await
+                .unwrap()
+                > 0
+        );
+    }
     let mut tx = store.pool.begin_with("BEGIN IMMEDIATE").await.unwrap();
     maintain(&mut tx, now_millis().unwrap() + 86_400_001)
         .await
