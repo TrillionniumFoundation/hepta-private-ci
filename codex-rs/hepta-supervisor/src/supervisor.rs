@@ -38,9 +38,11 @@ use crate::signed_authority::ProductionMutationReceipt;
 use crate::signed_authority::ProductionMutationState;
 use crate::signed_authority::ProductionRecoveryDecision;
 use crate::signed_authority::ProductionRecoveryOutcome;
+use crate::signed_intent::SignedIntentRecoveryAction;
 use crate::signed_intent::SignedIntentStatus;
 use crate::signed_intent::SignedSupervisorIntent;
 use crate::signed_intent::read_intent;
+use crate::signed_intent::read_recovery_directive;
 use crate::signed_intent::write_intent;
 
 /// Lifecycle-only controller with one process handle and bounded buffers per agent.
@@ -85,10 +87,21 @@ impl<D: ProcessDriver> Supervisor<D> {
                 // hide a recovery-required signed intent or restart/release
                 // fence and incorrectly make the daemon appear ready.
                 supervisor.restore_release_state(&agent_id, slot, &record)?;
+                // Never infer a clean abort from a lease removed during recovery:
+                // an attempted kill alone does not prove the child has exited.
+                let clean_lease_cut = crate::lease::read_lease(record.layout.run_root())
+                    .is_ok_and(|lease| lease.is_none())
+                    && crate::lease::read_matrix_lease(record.layout.matrixd_process_lease())
+                        .is_ok_and(|lease| lease.is_none());
                 let process_fault = supervisor.recover_slot(&agent_id, slot, &record, now).err();
                 supervisor.recover_restart_budget(&agent_id, slot, now)?;
                 supervisor.recover_release_transaction(&agent_id, slot, now)?;
-                supervisor.recover_signed_intent(&agent_id, slot, &record)?;
+                supervisor.recover_signed_intent(
+                    &agent_id,
+                    slot,
+                    &record,
+                    clean_lease_cut && process_fault.is_none(),
+                )?;
                 Ok(process_fault)
             });
             match result {
@@ -577,10 +590,23 @@ impl<D: ProcessDriver> Supervisor<D> {
                 )
                 .map_err(|error| SupervisorError::ProductionAuthority(error.to_string()))?;
             supervisor.preflight_upgrade(agent_id, &target)?;
+            // The operator's abort is terminal for exactly this signed grant.
+            // Never let the same digest re-enter the effect boundary even if
+            // a pre-crash control revision was not durably advanced.
+            if slot.signed_intent.as_ref().is_some_and(|intent| {
+                intent.status == SignedIntentStatus::Aborted
+                    && intent.grant_sha256 == grant.digest().clone()
+            }) {
+                return Err(SupervisorError::ProductionAuthority(
+                    "aborted signed grant must not be replayed".to_string(),
+                ));
+            }
             if slot.signed_intent.as_ref().is_some_and(|intent| {
                 !matches!(
                     intent.status,
-                    SignedIntentStatus::Committed | SignedIntentStatus::RolledBack
+                    SignedIntentStatus::Committed
+                        | SignedIntentStatus::RolledBack
+                        | SignedIntentStatus::Aborted
                 )
             }) {
                 return Err(SupervisorError::SignedIntentRecoveryRequired(
@@ -686,6 +712,7 @@ impl<D: ProcessDriver> Supervisor<D> {
         agent_id: &AgentId,
         slot: &mut AgentSlot<D::Process>,
         record: &AgentRecord,
+        clean_recovery_cut: bool,
     ) -> Result<(), SupervisorError> {
         let intent = read_intent(record.layout.run_root())
             .map_err(|error| SupervisorError::Invalid(error.to_string()))?;
@@ -700,7 +727,9 @@ impl<D: ProcessDriver> Supervisor<D> {
         slot.signed_intent = Some(intent.clone());
         if matches!(
             intent.status,
-            SignedIntentStatus::Committed | SignedIntentStatus::RolledBack
+            SignedIntentStatus::Committed
+                | SignedIntentStatus::RolledBack
+                | SignedIntentStatus::Aborted
         ) {
             return Ok(());
         }
@@ -770,6 +799,67 @@ impl<D: ProcessDriver> Supervisor<D> {
                 slot.signed_intent = Some(terminal);
                 return Ok(());
             }
+        }
+
+        // The explicit operator directive rejects a particular ambiguous grant;
+        // it cannot authorize a transition or infer that a process was killed.
+        // Verify lease absence *before* adoption and require a clean, process-free
+        // recovery cut. A stale directive never terminalizes a different intent.
+        if let Some(directive) = read_recovery_directive(record.layout.run_root())
+            .map_err(|error| SupervisorError::Invalid(error.to_string()))?
+            && directive.intent_sha256 == intent.intent_sha256
+            && directive.action == SignedIntentRecoveryAction::Abort
+            && clean_recovery_cut
+            && slot.runtime.is_none()
+            && slot.matrix.runtime.is_none()
+            && slot.release_change.is_none()
+            && slot.release_transaction.as_ref().is_none_or(|transaction| {
+                transaction.agent_id == intent.agent_id
+                    && transaction.grant_sha256.as_ref() == Some(&intent.grant_sha256)
+                    && transaction.source_release == intent.source_release
+                    && transaction.target_release == intent.target_release
+                    && matches!(
+                        (intent.transition, transaction.kind),
+                        (
+                            H7H89ProductionTransition::Upgrade,
+                            ReleaseTransactionKind::Upgrade
+                        ) | (
+                            H7H89ProductionTransition::Rollback,
+                            ReleaseTransactionKind::ExplicitRollback
+                        )
+                    )
+                    && matches!(
+                        transaction.phase,
+                        ReleaseTransactionPhase::RecoveryRequired
+                            | ReleaseTransactionPhase::Aborted
+                    )
+            })
+        {
+            // Clear the durable pending automatic restart before publishing a
+            // terminal signed intent. A crash between these writes can be
+            // retried under the same digest-bound directive.
+            crate::restart_budget::complete_restart(record.layout.run_root())
+                .map_err(|error| SupervisorError::Invalid(error.to_string()))?;
+            if slot.release_transaction.as_ref().is_some_and(|transaction| {
+                transaction.phase == ReleaseTransactionPhase::RecoveryRequired
+            }) {
+                self.advance_release_transaction(
+                    agent_id,
+                    slot,
+                    ReleaseTransactionPhase::Aborted,
+                )?;
+            }
+            let aborted = intent
+                .with_status(SignedIntentStatus::Aborted)
+                .map_err(|error| SupervisorError::Invalid(error.to_string()))?;
+            write_intent(record.layout.run_root(), &aborted)
+                .map_err(|error| SupervisorError::Invalid(error.to_string()))?;
+            slot.signed_intent = Some(aborted);
+            slot.restart_pending = false;
+            slot.restart_not_before = None;
+            slot.restart_retry_at = None;
+            slot.restart_after_exit = false;
+            return Ok(());
         }
 
         // Keep the daemon reachable for the status/recovery ceremony while
