@@ -385,6 +385,72 @@ class SharedMultimodalBridgeTests(unittest.TestCase):
                 optimizer, generation=1)
         torch.testing.assert_close(student.proj.weight, original, rtol=0, atol=0)
 
+    def test_optimizer_missing_trainable_student_rejected_before_projection(self):
+        bridge = self.stem()
+        student = build_encoder(StemSpec('tiny_training_only', 32, 1, 4),
+                                device='cpu', trainable=True)
+        student_parameters = list(student.parameters())
+        self.assertGreater(len(student_parameters), 1)
+        optimizers = (
+            torch.optim.SGD(bridge.parameters(), lr=0.001),
+            torch.optim.SGD(list(bridge.parameters()) + student_parameters[1:],
+                            lr=0.001),
+        )
+        calls = [0]
+
+        def count_projection(_module, _inputs, _output):
+            calls[0] += 1
+
+        hook = bridge.projectors['text'].register_forward_hook(count_projection)
+        try:
+            for optimizer in optimizers:
+                with self.subTest(optimizer_size=len(optimizer.param_groups[0]['params'])):
+                    with self.assertRaisesRegex(
+                            LatentBridgeError, 'omits trainable Student/Slotizer'):
+                        shadow_distill_step(
+                            student, bridge, {'text': torch.ones(2, 32)},
+                            {'text': 'a' * 64}, torch.ones(2, 32), optimizer,
+                            generation=1)
+        finally:
+            hook.remove()
+        self.assertEqual(calls[0], 0)
+
+    def test_nonfinite_backward_gradient_rejected_without_optimizer_step(self):
+        class NanOnBackward(torch.autograd.Function):
+            @staticmethod
+            def forward(ctx, value):
+                return value.clone()
+
+            @staticmethod
+            def backward(ctx, grad_output):
+                return torch.full_like(grad_output, float('nan'))
+
+        class MalformedGradientStudent(torch.nn.Module):
+            def __init__(self):
+                super().__init__()
+                self.proj = torch.nn.Linear(32, 32)
+
+            def forward(self, slots):
+                # Finite forward, correct token dimensions; poisoned backward.
+                return NanOnBackward.apply(self.proj(slots))
+
+        bridge = self.stem()
+        student = MalformedGradientStudent()
+        optimizer = torch.optim.SGD(list(bridge.parameters())
+                                    + list(student.parameters()), lr=0.01)
+        before_student = [param.detach().clone() for param in student.parameters()]
+        before_slotizer = [param.detach().clone() for param in bridge.parameters()]
+        with self.assertRaisesRegex(LatentBridgeError,
+                                    'nonfinite offline optimizer gradient'):
+            shadow_distill_step(
+                student, bridge, {'text': torch.ones(2, 32)},
+                {'text': 'a' * 64}, torch.ones(2, 32), optimizer,
+                generation=1)
+        for param, initial in zip(student.parameters(), before_student):
+            torch.testing.assert_close(param, initial, rtol=0, atol=0)
+        for param, initial in zip(bridge.parameters(), before_slotizer):
+            torch.testing.assert_close(param, initial, rtol=0, atol=0)
+
     def test_teacher_is_detached_and_small_student_offline_step_changes_weights(self):
         stem = self.stem()
         student = build_encoder(StemSpec('tiny_training_only', 32, 1, 4),
