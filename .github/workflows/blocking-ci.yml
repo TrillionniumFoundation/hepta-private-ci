@@ -126,6 +126,14 @@ jobs:
     if: needs.scope.outputs.native == 'true' && needs.scope.outputs.full_repo != 'true'
     runs-on: ubuntu-24.04
     timeout-minutes: 75
+    env:
+      # A reverse-consumer impact plan can cover almost the whole workspace.
+      # Keep every selected test, but avoid filling the hosted runner's disk
+      # with incremental cache and test debuginfo during --no-run linking.
+      CARGO_INCREMENTAL: "0"
+      CARGO_PROFILE_DEV_DEBUG: "0"
+      CARGO_PROFILE_TEST_DEBUG: "0"
+      CARGO_BUILD_JOBS: "4"
     steps:
       - name: Checkout exact candidate
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
@@ -133,6 +141,21 @@ jobs:
           ref: ${{ github.event.pull_request.head.sha || github.sha }}
           fetch-depth: 0
           persist-credentials: false
+
+      - name: Reclaim unused hosted-image toolchains for scoped Rust tests
+        shell: bash
+        run: |
+          set -euo pipefail
+          df -h "$GITHUB_WORKSPACE"
+          # This job uses native Rust/C/C++ and does not execute Android,
+          # .NET or GHC. Remove only known preinstalled image toolchains.
+          for path in /usr/local/lib/android /usr/share/dotnet /opt/ghc; do
+            if [ -d "$path" ]; then
+              sudo rm -rf -- "$path"
+            fi
+          done
+          sudo apt-get clean
+          df -h "$GITHUB_WORKSPACE"
 
       - name: Prepare native test prerequisites before compilation
         run: |
