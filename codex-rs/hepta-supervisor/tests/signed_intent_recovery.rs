@@ -206,9 +206,10 @@ fn exact_digest_abort_terminalizes_unresolved_intent() -> Result<(), SupervisorE
 #[test]
 fn stale_abort_directive_cannot_terminalize_another_intent() -> Result<(), SupervisorError> {
     let fleet = fleet()?;
-    let starting = fleet
-        .registry
-        .compare_and_transition(&fleet.agent_id, 0, AgentLifecycle::Starting)?;
+    let starting =
+        fleet
+            .registry
+            .compare_and_transition(&fleet.agent_id, 0, AgentLifecycle::Starting)?;
     let failed = fleet.registry.compare_and_transition(
         &fleet.agent_id,
         starting.generation,
