@@ -1928,8 +1928,9 @@ mod tests {
             fs::write(&victim, b"unaltered").fixture("create unrelated file");
             let lock = writer.join("owner.lock");
             match attack {
-                "symlink" => std::os::unix::fs::symlink(&victim, &lock)
-                    .fixture("place symbolic link"),
+                "symlink" => {
+                    std::os::unix::fs::symlink(&victim, &lock).fixture("place symbolic link")
+                }
                 "hardlink" => fs::hard_link(&victim, &lock).fixture("place hard link"),
                 "overpermissive" => {
                     fs::write(&lock, b"lock-data").fixture("create insecure lock");
@@ -1949,7 +1950,9 @@ mod tests {
             .fixture_error("untrusted owner lock must not be opened");
             assert!(matches!(error, ArtifactOwnerHostError::PathBoundary));
             assert_eq!(
-                fs::read(&victim).fixture("read victim after denial").as_slice(),
+                fs::read(&victim)
+                    .fixture("read victim after denial")
+                    .as_slice(),
                 b"unaltered"
             );
         }
