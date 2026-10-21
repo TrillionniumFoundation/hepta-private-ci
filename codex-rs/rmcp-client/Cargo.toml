@@ -77,7 +77,8 @@ wiremock = { workspace = true }
 libc = { workspace = true }
 
 [target.'cfg(target_os = "linux")'.dependencies]
-keyring = { workspace = true, features = ["linux-native-async-persistent"] }
+# Match the native synchronous credential owner; avoid the old zbus backend.
+keyring = { workspace = true, features = ["linux-native-sync-persistent", "vendored"] }
 
 [target.'cfg(target_os = "macos")'.dependencies]
 keyring = { workspace = true, features = ["apple-native"] }
