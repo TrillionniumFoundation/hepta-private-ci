@@ -125,7 +125,13 @@ jobs:
     needs: scope
     if: needs.scope.outputs.native == 'true' && needs.scope.outputs.full_repo != 'true'
     runs-on: ubuntu-24.04
-    timeout-minutes: 40
+    timeout-minutes: 75
+    env:
+      # Reduce artifact footprint and peak concurrent link pressure without reducing the test set.
+      CARGO_INCREMENTAL: "0"
+      CARGO_BUILD_JOBS: "2"
+      CARGO_PROFILE_DEV_DEBUG: "0"
+      CARGO_PROFILE_TEST_DEBUG: "0"
     steps:
       - name: Checkout exact candidate
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
@@ -133,6 +139,22 @@ jobs:
           ref: ${{ github.event.pull_request.head.sha || github.sha }}
           fetch-depth: 0
           persist-credentials: false
+
+      - name: Reclaim unused preinstalled SDK disk for complete Rust reverse-consumer tests
+        shell: bash
+        run: |
+          set -euo pipefail
+          echo "Disk before native-only runner SDK reclamation:"
+          df -h "$GITHUB_WORKSPACE"
+          # This Ubuntu job has no Android or Haskell target. Never touch the
+          # checkout, Cargo source, Cargo.lock, or compiled test evidence.
+          for unused_sdk in /usr/local/lib/android /opt/ghc; do
+            if [ -d "$unused_sdk" ]; then
+              sudo rm -rf -- "$unused_sdk"
+            fi
+          done
+          echo "Disk after native-only runner SDK reclamation:"
+          df -h "$GITHUB_WORKSPACE"
 
       - name: Prepare native test prerequisites before compilation
         run: |
@@ -160,9 +182,19 @@ jobs:
           BASE_SHA: ${{ github.event.pull_request.base.sha || github.event.before }}
           HEPTA_CI_LANE: source-head
         run: >-
-          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/impact-test.json" --
+          python3 scripts/hepta_ci_exec.py --timeout-seconds 3600 --output "$RUNNER_TEMP/impact-test.json" --
           python3 scripts/hepta_ci_dependencies.py --base "$BASE_SHA" --tested "$TESTED_SHA"
           --output "$RUNNER_TEMP/cargo-impact.json" --run
+
+      - name: Record actual disk usage after native impact testing
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          df -h "$GITHUB_WORKSPACE"
+          if [ -d codex-rs/target ]; then
+            du -sh codex-rs/target
+          fi
 
       - name: Retain dependency plan and real command output
         if: always()
