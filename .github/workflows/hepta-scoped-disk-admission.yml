@@ -1,0 +1,89 @@
+name: Hepta scoped disk admission exact-host smoke
+
+on:
+  pull_request:
+    paths:
+      - ".github/workflows/blocking-ci.yml"
+      - ".github/workflows/hepta-scoped-disk-admission.yml"
+      - "scripts/hepta_ci_scoped_disk.py"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: hepta-disk-admission-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  disk-qualification:
+    name: Hosted Linux source-bound capacity preflight (no test waiver)
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    env:
+      PYTHONDONTWRITEBYTECODE: "1"
+      SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+    steps:
+      - name: Checkout exact candidate without credentials
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ env.SOURCE_SHA }}
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Test SDK-path classification without deletion
+        shell: bash
+        run: |
+          set -euo pipefail
+          PYTHONPATH=scripts python3 - <<'PY'
+          import tempfile
+          from pathlib import Path
+          from hepta_ci_scoped_disk import safe_sdk_directory
+          with tempfile.TemporaryDirectory() as directory:
+              root = Path(directory)
+              assert safe_sdk_directory(root / "missing") is False
+              (root / "ordinary").mkdir()
+              assert safe_sdk_directory(root / "ordinary") is True
+              (root / "link").symlink_to("ordinary", target_is_directory=True)
+              try:
+                  safe_sdk_directory(root / "link")
+              except RuntimeError:
+                  pass
+              else:
+                  raise AssertionError("symlink cleanup candidate was accepted")
+          PY
+      - name: Physically reclaim unused SDKs and verify exact-source receipt
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
+          python3 scripts/hepta_ci_scoped_disk.py --receipt "$RUNNER_TEMP/hepta-scoped-disk.json"
+          python3 - <<'PY'
+          import json
+          import os
+          from pathlib import Path
+          path = Path(os.environ["RUNNER_TEMP"]) / "hepta-scoped-disk.json"
+          receipt = json.loads(path.read_text(encoding="utf-8"))
+          assert receipt["source_sha"] == receipt["tested_sha"] == os.environ["SOURCE_SHA"]
+          assert receipt["status"] == "passed"
+          assert receipt["free_after_bytes"] >= receipt["minimum_free_bytes"]
+          assert all(
+              item["path"].startswith(("/usr/local/lib/android", "/usr/share/dotnet", "/opt/ghc", "/usr/local/.ghcup", "/usr/local/share/powershell"))
+              for item in receipt["removed_sdk_roots"]
+          )
+          print("Exact-host disk admission receipt verified")
+          PY
+      - name: Verify exact checkout retained without source mutation
+        if: always()
+        shell: bash
+        run: |
+          git diff --check
+          git diff --exit-code
+          test -z "$(git status --porcelain --untracked-files=no)"
+      - name: Retain physical disk evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: hepta-scoped-disk-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/hepta-scoped-disk.json
+          if-no-files-found: error
+          retention-days: 14

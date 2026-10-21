@@ -153,6 +153,12 @@ jobs:
           PYTHONPATH: scripts
         run: python3 scripts/hepta_ci_v8.py
 
+      - name: Reclaim unused hosted SDK capacity for exact-source impact tests
+        env:
+          SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+        shell: bash
+        run: python3 scripts/hepta_ci_scoped_disk.py --receipt "$RUNNER_TEMP/hepta-scoped-disk.json"
+
       - name: Test affected owners and reverse consumers, not a hand-written package list
         env:
           SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
@@ -172,6 +178,7 @@ jobs:
           path: |
             ${{ runner.temp }}/cargo-impact.json
             ${{ runner.temp }}/impact-test.json*
+            ${{ runner.temp }}/hepta-scoped-disk.json
           if-no-files-found: error
           retention-days: 14
 
