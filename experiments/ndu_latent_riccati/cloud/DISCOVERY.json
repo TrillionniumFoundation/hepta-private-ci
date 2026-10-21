@@ -1,0 +1,118 @@
+{
+  "schema": "ndu-latent-riccati-cloud-discovery-v1",
+  "observed_at_utc": "2026-10-21T12:47:57Z",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "requested_target": "Previously configured project-dedicated cloud",
+  "verified_dedicated_execution": false,
+  "declared_route": {
+    "group": "trillionnium-android-gpu",
+    "labels": [
+      "self-hosted",
+      "linux",
+      "x64"
+    ],
+    "expected_runner_name": "desktop",
+    "source": "Existing self-hosted-desktop-availability.yml and ndu-output-portfolio-pilot.yml"
+  },
+  "runs": [
+    {
+      "id": 39589317563,
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/39589317563",
+      "name": "NDU output portfolio dedicated pilot",
+      "source_sha": "7cbe3b29842065fb7cedc33f8d9e5d3fa354752b",
+      "head_branch": "research/ndu-output-portfolio-20261021",
+      "status": "queued",
+      "conclusion": null,
+      "created_at": "2026-10-21T11:05:08Z",
+      "updated_at": "2026-10-21T11:05:09Z",
+      "jobs": [
+        {
+          "id": 119186004831,
+          "status": "queued",
+          "conclusion": null,
+          "runner_id": 0,
+          "runner_name": "",
+          "runner_group_id": 0,
+          "runner_group_name": "",
+          "steps": [],
+          "labels": [
+            "self-hosted",
+            "linux",
+            "x64"
+          ]
+        }
+      ]
+    },
+    {
+      "id": 39526325715,
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/39526325715",
+      "name": "Self-hosted desktop runner availability",
+      "source_sha": "f8c9419df6ddeb36ff8b522a50219981fb8d9345",
+      "head_branch": "main",
+      "status": "queued",
+      "conclusion": null,
+      "created_at": "2026-10-21T01:16:13Z",
+      "updated_at": "2026-10-21T01:16:13Z",
+      "jobs": [
+        {
+          "id": 118981704826,
+          "status": "queued",
+          "conclusion": null,
+          "runner_id": 0,
+          "runner_name": "",
+          "runner_group_id": 0,
+          "runner_group_name": "",
+          "steps": [],
+          "labels": [
+            "self-hosted",
+            "linux",
+            "x64"
+          ]
+        }
+      ]
+    }
+  ],
+  "capability_limits": {
+    "direct_cloud_executor_found": false,
+    "runner_administration_tool_found": false,
+    "workflow_specific_runs_collection": "Connector rejected with HTTP 400: endpoint not allowed.",
+    "current_exec_project_binding_verified": false,
+    "local_context": {
+      "python": "3.12.14",
+      "cpu_count": 9,
+      "nvidia_smi": false,
+      "gh": false,
+      "aws": false,
+      "runner_environment_keys_present": false,
+      "project_config_defines_remote_environment": false
+    }
+  },
+  "blocker": {
+    "id": "CLOUD-ASSIGNMENT",
+    "closed": false,
+    "observed_fact": "Both the previous experiment and the trusted main-branch runner availability probe remain queued with runner_id=0 and no steps.",
+    "cause_known": false,
+    "unknown_causes": [
+      "runner offline",
+      "runner busy",
+      "runner group/repository eligibility",
+      "label compatibility",
+      "other scheduling restrictions"
+    ],
+    "required_closure_evidence": [
+      "Actual intended environment identity or verified project-bound executable entry",
+      "Assigned runner receipt and executed steps",
+      "Source-pinned runtime receipt",
+      "Complete experiment artifacts and independent result verification"
+    ],
+    "absence_claim_limit": "These observations do not show that the user's configured cloud does not exist."
+  },
+  "actions": {
+    "remote_mutations": 0,
+    "runs_created": 0,
+    "other_jobs_cancelled": 0,
+    "runner_configuration_changed": false,
+    "credentials_read_or_printed": false,
+    "unverified_hosts_probed": false
+  }
+}
