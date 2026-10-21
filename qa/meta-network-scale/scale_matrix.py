@@ -224,7 +224,6 @@ def validate_result(result: dict[str, Any]) -> list[str]:
             ):
                 errors.append(f"metrics.{key} must be a unit-interval rate")
 
-
         # Physical byte sizes and event counts cannot be fractional.
         for key in (
             "rss_bytes",
@@ -251,7 +250,6 @@ def validate_result(result: dict[str, Any]) -> list[str]:
     if lifecycle != list(LIFECYCLE):
         errors.append("topology_lifecycle must contain the complete ordered lifecycle")
     return errors
-
 
 
 def validate_matrix(matrix: dict[str, Any]) -> list[str]:
