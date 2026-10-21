@@ -1,0 +1,90 @@
+{
+  "schema": "hepta-codeql-logging-independent-concurrence.v1",
+  "source_head": "b58d870a2c38ebee0aa0b974d9f03767c888fa7e",
+  "source_tree": "5bdd6960c53a0bc9dd034865d9dfa07a3cbc73f5",
+  "analysis_id": 1992617134,
+  "source_review_sha256": "600dd804d7cbd5d72e0455d03cde310f61c0f89681ef1079a39ce2ea1ddb6e83",
+  "original_sarif_sha256": "d4982f07385cb87dee94c73ad7a4709a1346aa31c94421fd63211e0c36461409",
+  "actual_packs": [
+    {
+      "name": "codeql/rust-queries",
+      "semanticVersion": "0.1.44+a7057b836bf29767461026718b14d20790b9085f"
+    },
+    {
+      "name": "codeql/rust-all",
+      "semanticVersion": "0.2.23+a7057b836bf29767461026718b14d20790b9085f"
+    },
+    {
+      "name": "codeql/threat-models",
+      "semanticVersion": "1.0.59+a7057b836bf29767461026718b14d20790b9085f"
+    }
+  ],
+  "reviewed_model_files": [
+    {
+      "path": "query-model/CleartextLoggingExtensions.qll",
+      "bytes": 1740,
+      "sha256": "02df5e044a21e8b8d53bc7e3245624fbe881d31f3931d409bae850f8dbb15e2d"
+    },
+    {
+      "path": "query-model/FlowSink.qll",
+      "bytes": 1736,
+      "sha256": "add89787da4e1332c53a67398ead7bf7528cf9c5e46990a0b7f21c5efe601369"
+    },
+    {
+      "path": "query-model/rust.model.yml",
+      "bytes": 1483859,
+      "sha256": "2265b1655d1cb7c667f24f1f249998629f18627f446a0fc0bfef844960710283"
+    },
+    {
+      "path": "query-model/vec-rust-1.95.0.rs",
+      "bytes": 164676,
+      "sha256": "11ae2680d2cd4b58528ef608c1a3a3607fb0a20dc9f4bfd21d0a2d270b9cf572"
+    }
+  ],
+  "findings": [
+    {
+      "annotation_index": 16,
+      "sarif_result_index": 13,
+      "alert_number": 750,
+      "flows": 4,
+      "flow_locations": 27,
+      "raw_flow_matches": true,
+      "classification": "false_positive",
+      "agreement": true
+    },
+    {
+      "annotation_index": 17,
+      "sarif_result_index": 14,
+      "alert_number": 751,
+      "flows": 4,
+      "flow_locations": 29,
+      "raw_flow_matches": true,
+      "classification": "false_positive",
+      "agreement": true
+    },
+    {
+      "annotation_index": 18,
+      "sarif_result_index": 15,
+      "alert_number": 752,
+      "flows": 2,
+      "flow_locations": 15,
+      "raw_flow_matches": true,
+      "classification": "false_positive",
+      "agreement": true
+    }
+  ],
+  "reasons": [
+    "All 10 original thread flows (71 locations) match the root review exactly and terminate at the Result-unwrapped Vec receiver before remove(0), rather than an actual logging operation.",
+    "The exact rust-all model generation revision in the original SARIF contains the Vec::remove Argument[self] log-injection sink; CleartextLoggingExtensions ModelsAsDataSink consumes this kind.",
+    "The reviewed Rust 1.95.0 remove/try_remove implementation returns or moves T without any formatting or logging of T. Its only panic formats integer index and len, with no Debug constraint on T.",
+    "The three source functions select require_unique=true. The ordinary and legacy mappers reject zero/multiple matches and push one callback result on success; errors propagate before remove(0).",
+    "The three concrete return types are String, Vec<u8>, and SsCredential metadata. Cross-instantiation callback flows do not turn remove into a secret logging operation."
+  ],
+  "scope_limits": [
+    "Agreement applies only to alerts750/751/752 from sourceb58 and this analysis, not all keyring logging or all third-party source.",
+    "No runtime SecretService operation or Rust test was performed by this review.",
+    "No source rewrite, fixture randomization, query/path exclusion, or alert dismissal was performed."
+  ],
+  "supports_precise_false_positive_classification": true,
+  "alert_state_changed": false
+}

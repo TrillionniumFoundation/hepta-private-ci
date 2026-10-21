@@ -1,0 +1,893 @@
+{
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "source_sha": "b58d870a2c38ebee0aa0b974d9f03767c888fa7e",
+  "source_tree": "5bdd6960c53a0bc9dd034865d9dfa07a3cbc73f5",
+  "codeql_version": "2.27.2",
+  "analysis_id": 1992617134,
+  "analysis_ref": "refs/pull/2937/head",
+  "query_pack": "codeql/rust-queries@0.1.44+a7057b836bf29767461026718b14d20790b9085f",
+  "model_pack": "codeql/rust-all@0.2.23+a7057b836bf29767461026718b14d20790b9085f",
+  "reader_run_id": 39606595435,
+  "artifact_id": 12349956006,
+  "artifact_sha256": "4ae4accc13b7458909bc5d41743969d8621b769dfdb4cf62483554928a223656",
+  "model_files": [
+    {
+      "path": "query-model/CleartextLoggingExtensions.qll",
+      "bytes": 1740,
+      "sha256": "02df5e044a21e8b8d53bc7e3245624fbe881d31f3931d409bae850f8dbb15e2d"
+    },
+    {
+      "path": "query-model/FlowSink.qll",
+      "bytes": 1736,
+      "sha256": "add89787da4e1332c53a67398ead7bf7528cf9c5e46990a0b7f21c5efe601369"
+    },
+    {
+      "path": "query-model/rust.model.yml",
+      "bytes": 1483859,
+      "sha256": "2265b1655d1cb7c667f24f1f249998629f18627f446a0fc0bfef844960710283"
+    },
+    {
+      "path": "query-model/vec-rust-1.95.0.rs",
+      "bytes": 164676,
+      "sha256": "11ae2680d2cd4b58528ef608c1a3a3607fb0a20dc9f4bfd21d0a2d270b9cf572"
+    }
+  ],
+  "sources": [
+    {
+      "url": "https://github.com/github/codeql/blob/a7057b836bf29767461026718b14d20790b9085f/rust/ql/lib/ext/generated/modelgenerator/rust.model.yml",
+      "lines": [
+        8766,
+        8767
+      ]
+    },
+    {
+      "url": "https://github.com/rust-lang/rust/blob/1.95.0/library/alloc/src/vec/mod.rs",
+      "lines": [
+        2341,
+        2353,
+        2377,
+        2396
+      ]
+    }
+  ],
+  "entries": [
+    {
+      "annotation_index": 16,
+      "sarif_result_index": 13,
+      "alert_number": 750,
+      "rule": "rust/cleartext-logging",
+      "location": {
+        "artifactLocation": {
+          "index": 10,
+          "uri": "codex-rs/third_party/keyring-3.6.3/src/secret_service.rs"
+        },
+        "region": {
+          "endColumn": 61,
+          "endLine": 203,
+          "startColumn": 12,
+          "startLine": 203
+        }
+      },
+      "classification": "false positive: Vec::remove receiver modeled as log sink",
+      "review_status": "reviewed; not dismissed",
+      "original_message": "This operation writes [set_item_secret(...)](1) to a log file.\nThis operation writes [decode_password(...)](2) to a log file.",
+      "flow_count": 4,
+      "flows": [
+        [
+          {
+            "path": "codex-rs/third_party/keyring-3.6.3/src/secret_service.rs",
+            "region": {
+              "endColumn": 69,
+              "endLine": 172,
+              "startColumn": 43,
+              "startLine": 172
+            },
+            "expression": "set_item_secret(...)"
+          },
+          {
+            "path": "codex-rs/third_party/keyring-3.6.3/src/secret_service.rs",
+            "region": {
+              "endColumn": 33,
+              "endLine": 453,
+              "startColumn": 26,
+              "startLine": 453
+            },
+            "expression": "f(...)"
+          },
+          {
+            "path": "codex-rs/third_party/keyring-3.6.3/src/secret_service.rs",
+            "region": {
+              "endColumn": 34,
+              "endLine": 453,
+              "startColumn": 26,
+              "startLine": 453
+            },
+            "expression": "TryExpr"
+          },
+          {
+            "path": "codex-rs/third_party/keyring-3.6.3/src/secret_service.rs",
+            "region": {
+              "endColumn": 78,
+              "endLine": 377,
+              "startColumn": 24,
+              "startLine": 377
+            },
+            "expression": "self.map_matching_legacy_items(...)"
+          },
+          {
+            "path": "codex-rs/third_party/keyring-3.6.3/src/secret_service.rs",
+            "region": {
+              "endColumn": 78,
+              "endLine": 377,
+              "startColumn": 17,
+              "startLine": 377
+            },
+            "expression": "return ..."
+          },
+          {
+            "path": "codex-rs/third_party/keyring-3.6.3/src/secret_service.rs",
+            "region": {
+              "endColumn": 60,
+              "endLine": 203,
+              "startColumn": 12,
+              "startLine": 203
+            },
+            "expression": "self.map_matching_items(...)"
+          },
+          {
+            "path": "codex-rs/third_party/keyring-3.6.3/src/secret_service.rs",
+            "region": {
+              "endColumn": 61,
+              "endLine": 203,
+              "startColumn": 12,
+              "startLine": 203
+            },
+            "expression": "TryExpr"
+          }
+        ],
+        [
+          {
+            "path": "codex-rs/third_party/keyring-3.6.3/src/secret_service.rs",
+            "region": {
+              "endColumn": 27,
+              "endLine": 555,
+              "startColumn": 5,
+              "startLine": 555
+            },
+            "expression": "decode_password(...)"
+          },
+          {
+            "path": "codex-rs/third_party/keyring-3.6.3/src/secret_service.rs",
+            "region": {
+              "endColumn": 2,
+              "endLine": 556,
+              "startColumn": 57,
+              "startLine": 553
+            },
+            "expression": "{ ... }"
+          },
+          {
+            "path": "codex-rs/third_party/keyring-3.6.3/src/secret_service.rs",
+            "region": {
+              "endColumn": 33,
+              "endLine": 394,
+              "startColumn": 26,
+              "startLine": 394
+            },
+            "expression": "f(...)"
+          },
+          {
+            "path": "codex-rs/third_party/keyring-3.6.3/src/secret_service.rs",
+            "region": {
+              "endColumn": 34,
+              "endLine": 394,
+              "startColumn": 26,
+              "startLine": 394
+            },
+            "expression": "TryExpr"
+          },
+          {
+            "path": "codex-rs/third_party/keyring-3.6.3/src/secret_service.rs",
+            "region": {
+              "endColumn": 60,
+              "endLine": 203,
+              "startColumn": 12,
+              "startLine": 203
+            },
+            "expression": "self.map_matching_items(...)"
+          },
+          {
+            "path": "codex-rs/third_party/keyring-3.6.3/src/secret_service.rs",
+            "region": {
+              "endColumn": 61,
+              "endLine": 203,
+              "startColumn": 12,
+              "startLine": 203
+            },
+            "expression": "TryExpr"
+          }
+        ],
+        [
+          {
+            "path": "codex-rs/third_party/keyring-3.6.3/src/secret_service.rs",
+            "region": {
+              "endColumn": 27,
+              "endLine": 555,
+              "startColumn": 5,
+              "startLine": 555
+            },
+            "expression": "decode_password(...)"
+          },
+          {
+            "path": "codex-rs/third_party/keyring-3.6.3/src/secret_service.rs",
+            "region": {
+              "endColumn": 2,
+              "endLine": 556,
+              "startColumn": 57,
+              "startLine": 553
+            },
+            "expression": "{ ... }"
+          },
+          {
+            "path": "codex-rs/third_party/keyring-3.6.3/src/secret_service.rs",
+            "region": {
+              "endColumn": 33,
+              "endLine": 398,
+              "startColumn": 26,
+              "startLine": 398
+            },
+            "expression": "f(...)"
+          },
+          {
+            "path": "codex-rs/third_party/keyring-3.6.3/src/secret_service.rs",
+            "region": {
+              "endColumn": 34,
+              "endLine": 398,
+              "startColumn": 26,
+              "startLine": 398
+            },
+            "expression": "TryExpr"
+          },
+          {
+            "path": "codex-rs/third_party/keyring-3.6.3/src/secret_service.rs",
+            "region": {
+              "endColumn": 60,
+              "endLine": 203,
+              "startColumn": 12,
+              "startLine": 203
+            },
+            "expression": "self.map_matching_items(...)"
+          },
+          {
+            "path": "codex-rs/third_party/keyring-3.6.3/src/secret_service.rs",
+            "region": {
+              "endColumn": 61,
+              "endLine": 203,
+              "startColumn": 12,
+              "startLine": 203
+            },
+            "expression": "TryExpr"
+          }
+        ],
+        [
+          {
+            "path": "codex-rs/third_party/keyring-3.6.3/src/secret_service.rs",
+            "region": {
+              "endColumn": 27,
+              "endLine": 555,
+              "startColumn": 5,
+              "startLine": 555
+            },
+            "expression": "decode_password(...)"
+          },
+          {
+            "path": "codex-rs/third_party/keyring-3.6.3/src/secret_service.rs",
+            "region": {
+              "endColumn": 2,
+              "endLine": 556,
+              "startColumn": 57,
+              "startLine": 553
+            },
+            "expression": "{ ... }"
+          },
+          {
+            "path": "codex-rs/third_party/keyring-3.6.3/src/secret_service.rs",
+            "region": {
+              "endColumn": 33,
+              "endLine": 453,
+              "startColumn": 26,
+              "startLine": 453
+            },
+            "expression": "f(...)"
+          },
+          {
+            "path": "codex-rs/third_party/keyring-3.6.3/src/secret_service.rs",
+            "region": {
+              "endColumn": 34,
+              "endLine": 453,
+              "startColumn": 26,
+              "startLine": 453
+            },
+            "expression": "TryExpr"
+          },
+          {
+            "path": "codex-rs/third_party/keyring-3.6.3/src/secret_service.rs",
+            "region": {
+              "endColumn": 78,
+              "endLine": 377,
+              "startColumn": 24,
+              "startLine": 377
+            },
+            "expression": "self.map_matching_legacy_items(...)"
+          },
+          {
+            "path": "codex-rs/third_party/keyring-3.6.3/src/secret_service.rs",
+            "region": {
+              "endColumn": 78,
+              "endLine": 377,
+              "startColumn": 17,
+              "startLine": 377
+            },
+            "expression": "return ..."
+          },
+          {
+            "path": "codex-rs/third_party/keyring-3.6.3/src/secret_service.rs",
+            "region": {
+              "endColumn": 60,
+              "endLine": 203,
+              "startColumn": 12,
+              "startLine": 203
+            },
+            "expression": "self.map_matching_items(...)"
+          },
+          {
+            "path": "codex-rs/third_party/keyring-3.6.3/src/secret_service.rs",
+            "region": {
+              "endColumn": 61,
+              "endLine": 203,
+              "startColumn": 12,
+              "startLine": 203
+            },
+            "expression": "TryExpr"
+          }
+        ]
+      ],
+      "reason": [
+        "The sink region is the Result-unwrapped Vec returned by map_matching_items and used as the receiver of .remove(0), not a logging macro or a log-writing call.",
+        "The exact analysis pack source a7057b836bf29767461026718b14d20790b9085f models <alloc::vec::Vec>::remove Argument[self] as log-injection (rust.model.yml line 8767); CleartextLoggingExtensions.qll consumes this sink kind.",
+        "Rust 1.95.0 Vec::remove accepts unconstrained T, returns the removed element and only formats the integer index and integer length on bounds failure; neither remove nor try_remove formats or writes any Vec element.",
+        "map_matching_items requires uniqueness here: zero matches return NoEntry, multiple matches return Ambiguous, one successful callback produces one element; its legacy fallback has the same count checks. The successful flow cannot reach a bounds failure at index 0.",
+        "The generic mapper yields different T for set_secret/get_password/get_secret/new_from_item. SARIF combines callback flows (including Result<()> from set_item_secret and password decoding in a metadata-only new_from_matching_item instantiation); these cross-instantiation paths do not establish a secret-to-log operation."
+      ],
+      "limits": [
+        "This classifies only the exact three SARIF results from b58d870a2c38ebee0aa0b974d9f03767c888fa7e, not all logging in keyring or the rest of the repository.",
+        "Entry debug formatting of an arbitrary credential, including mock credentials, remains a separate review concern; this report does not approve it or use it to justify this finding.",
+        "No query/path exclusion, source alteration, test change or alert state change was made."
+      ]
+    },
+    {
+      "annotation_index": 17,
+      "sarif_result_index": 14,
+      "alert_number": 751,
+      "rule": "rust/cleartext-logging",
+      "location": {
+        "artifactLocation": {
+          "index": 10,
+          "uri": "codex-rs/third_party/keyring-3.6.3/src/secret_service.rs"
+        },
+        "region": {
+          "endColumn": 59,
+          "endLine": 214,
+          "startColumn": 12,
+          "startLine": 214
+        }
+      },
+      "classification": "false positive: Vec::remove receiver modeled as log sink",
+      "review_status": "reviewed; not dismissed",
+      "original_message": "This operation writes [secret](1) to a log file.\nThis operation writes [set_item_secret(...)](2) to a log file.\nThis operation writes [decode_password(...)](3) to a log file.",
+      "flow_count": 4,
+      "flows": [
+        [
+          {
+            "path": "codex-rs/third_party/keyring-3.6.3/src/secret_service.rs",
+            "region": {
+              "endColumn": 14,
+              "endLine": 561,
+              "startColumn": 8,
+              "startLine": 561
+            },
+            "expression": "secret"
+          },
+          {
+            "path": "codex-rs/third_party/keyring-3.6.3/src/secret_service.rs",
+            "region": {
+              "endColumn": 15,
+              "endLine": 561,
+              "startColumn": 5,
+              "startLine": 561
+            },
+            "expression": "Ok(...) [Ok]"
+          },
+          {
+            "path": "codex-rs/third_party/keyring-3.6.3/src/secret_service.rs",
+            "region": {
+              "endColumn": 2,
+              "endLine": 562,
+              "startColumn": 56,
+              "startLine": 559
+            },
+            "expression": "{ ... } [Ok]"
+          },
+          {
+            "path": "codex-rs/third_party/keyring-3.6.3/src/secret_service.rs",
+            "region": {
+              "endColumn": 33,
+              "endLine": 394,
+              "startColumn": 26,
+              "startLine": 394
+            },
+            "expression": "f(...) [Ok]"
+          },
+          {
+            "path": "codex-rs/third_party/keyring-3.6.3/src/secret_service.rs",
+            "region": {
+              "endColumn": 34,
+              "endLine": 394,
+              "startColumn": 26,
+              "startLine": 394
+            },
+            "expression": "TryExpr"
+          },
+          {
+            "path": "codex-rs/third_party/keyring-3.6.3/src/secret_service.rs",
+            "region": {
+              "endColumn": 58,
+              "endLine": 214,
+              "startColumn": 12,
+              "startLine": 214
+            },
+            "expression": "self.map_matching_items(...)"
+          },
+          {
+            "path": "codex-rs/third_party/keyring-3.6.3/src/secret_service.rs",
+            "region": {
+              "endColumn": 59,
+              "endLine": 214,
+              "startColumn": 12,
+              "startLine": 214
+            },
+            "expression": "TryExpr"
+          }
+        ],
+        [
+          {
+            "path": "codex-rs/third_party/keyring-3.6.3/src/secret_service.rs",
+            "region": {
+              "endColumn": 14,
+              "endLine": 561,
+              "startColumn": 8,
+              "startLine": 561
+            },
+            "expression": "secret"
+          },
+          {
+            "path": "codex-rs/third_party/keyring-3.6.3/src/secret_service.rs",
+            "region": {
+              "endColumn": 15,
+              "endLine": 561,
+              "startColumn": 5,
+              "startLine": 561
+            },
+            "expression": "Ok(...) [Ok]"
+          },
+          {
+            "path": "codex-rs/third_party/keyring-3.6.3/src/secret_service.rs",
+            "region": {
+              "endColumn": 2,
+              "endLine": 562,
+              "startColumn": 56,
+              "startLine": 559
+            },
+            "expression": "{ ... } [Ok]"
+          },
+          {
+            "path": "codex-rs/third_party/keyring-3.6.3/src/secret_service.rs",
+            "region": {
+              "endColumn": 33,
+              "endLine": 398,
+              "startColumn": 26,
+              "startLine": 398
+            },
+            "expression": "f(...) [Ok]"
+          },
+          {
+            "path": "codex-rs/third_party/keyring-3.6.3/src/secret_service.rs",
+            "region": {
+              "endColumn": 34,
+              "endLine": 398,
+              "startColumn": 26,
+              "startLine": 398
+            },
+            "expression": "TryExpr"
+          },
+          {
+            "path": "codex-rs/third_party/keyring-3.6.3/src/secret_service.rs",
+            "region": {
+              "endColumn": 58,
+              "endLine": 214,
+              "startColumn": 12,
+              "startLine": 214
+            },
+            "expression": "self.map_matching_items(...)"
+          },
+          {
+            "path": "codex-rs/third_party/keyring-3.6.3/src/secret_service.rs",
+            "region": {
+              "endColumn": 59,
+              "endLine": 214,
+              "startColumn": 12,
+              "startLine": 214
+            },
+            "expression": "TryExpr"
+          }
+        ],
+        [
+          {
+            "path": "codex-rs/third_party/keyring-3.6.3/src/secret_service.rs",
+            "region": {
+              "endColumn": 69,
+              "endLine": 172,
+              "startColumn": 43,
+              "startLine": 172
+            },
+            "expression": "set_item_secret(...)"
+          },
+          {
+            "path": "codex-rs/third_party/keyring-3.6.3/src/secret_service.rs",
+            "region": {
+              "endColumn": 33,
+              "endLine": 453,
+              "startColumn": 26,
+              "startLine": 453
+            },
+            "expression": "f(...)"
+          },
+          {
+            "path": "codex-rs/third_party/keyring-3.6.3/src/secret_service.rs",
+            "region": {
+              "endColumn": 34,
+              "endLine": 453,
+              "startColumn": 26,
+              "startLine": 453
+            },
+            "expression": "TryExpr"
+          },
+          {
+            "path": "codex-rs/third_party/keyring-3.6.3/src/secret_service.rs",
+            "region": {
+              "endColumn": 78,
+              "endLine": 377,
+              "startColumn": 24,
+              "startLine": 377
+            },
+            "expression": "self.map_matching_legacy_items(...)"
+          },
+          {
+            "path": "codex-rs/third_party/keyring-3.6.3/src/secret_service.rs",
+            "region": {
+              "endColumn": 78,
+              "endLine": 377,
+              "startColumn": 17,
+              "startLine": 377
+            },
+            "expression": "return ..."
+          },
+          {
+            "path": "codex-rs/third_party/keyring-3.6.3/src/secret_service.rs",
+            "region": {
+              "endColumn": 58,
+              "endLine": 214,
+              "startColumn": 12,
+              "startLine": 214
+            },
+            "expression": "self.map_matching_items(...)"
+          },
+          {
+            "path": "codex-rs/third_party/keyring-3.6.3/src/secret_service.rs",
+            "region": {
+              "endColumn": 59,
+              "endLine": 214,
+              "startColumn": 12,
+              "startLine": 214
+            },
+            "expression": "TryExpr"
+          }
+        ],
+        [
+          {
+            "path": "codex-rs/third_party/keyring-3.6.3/src/secret_service.rs",
+            "region": {
+              "endColumn": 27,
+              "endLine": 555,
+              "startColumn": 5,
+              "startLine": 555
+            },
+            "expression": "decode_password(...)"
+          },
+          {
+            "path": "codex-rs/third_party/keyring-3.6.3/src/secret_service.rs",
+            "region": {
+              "endColumn": 2,
+              "endLine": 556,
+              "startColumn": 57,
+              "startLine": 553
+            },
+            "expression": "{ ... }"
+          },
+          {
+            "path": "codex-rs/third_party/keyring-3.6.3/src/secret_service.rs",
+            "region": {
+              "endColumn": 33,
+              "endLine": 453,
+              "startColumn": 26,
+              "startLine": 453
+            },
+            "expression": "f(...)"
+          },
+          {
+            "path": "codex-rs/third_party/keyring-3.6.3/src/secret_service.rs",
+            "region": {
+              "endColumn": 34,
+              "endLine": 453,
+              "startColumn": 26,
+              "startLine": 453
+            },
+            "expression": "TryExpr"
+          },
+          {
+            "path": "codex-rs/third_party/keyring-3.6.3/src/secret_service.rs",
+            "region": {
+              "endColumn": 78,
+              "endLine": 377,
+              "startColumn": 24,
+              "startLine": 377
+            },
+            "expression": "self.map_matching_legacy_items(...)"
+          },
+          {
+            "path": "codex-rs/third_party/keyring-3.6.3/src/secret_service.rs",
+            "region": {
+              "endColumn": 78,
+              "endLine": 377,
+              "startColumn": 17,
+              "startLine": 377
+            },
+            "expression": "return ..."
+          },
+          {
+            "path": "codex-rs/third_party/keyring-3.6.3/src/secret_service.rs",
+            "region": {
+              "endColumn": 58,
+              "endLine": 214,
+              "startColumn": 12,
+              "startLine": 214
+            },
+            "expression": "self.map_matching_items(...)"
+          },
+          {
+            "path": "codex-rs/third_party/keyring-3.6.3/src/secret_service.rs",
+            "region": {
+              "endColumn": 59,
+              "endLine": 214,
+              "startColumn": 12,
+              "startLine": 214
+            },
+            "expression": "TryExpr"
+          }
+        ]
+      ],
+      "reason": [
+        "The sink region is the Result-unwrapped Vec returned by map_matching_items and used as the receiver of .remove(0), not a logging macro or a log-writing call.",
+        "The exact analysis pack source a7057b836bf29767461026718b14d20790b9085f models <alloc::vec::Vec>::remove Argument[self] as log-injection (rust.model.yml line 8767); CleartextLoggingExtensions.qll consumes this sink kind.",
+        "Rust 1.95.0 Vec::remove accepts unconstrained T, returns the removed element and only formats the integer index and integer length on bounds failure; neither remove nor try_remove formats or writes any Vec element.",
+        "map_matching_items requires uniqueness here: zero matches return NoEntry, multiple matches return Ambiguous, one successful callback produces one element; its legacy fallback has the same count checks. The successful flow cannot reach a bounds failure at index 0.",
+        "The generic mapper yields different T for set_secret/get_password/get_secret/new_from_item. SARIF combines callback flows (including Result<()> from set_item_secret and password decoding in a metadata-only new_from_matching_item instantiation); these cross-instantiation paths do not establish a secret-to-log operation."
+      ],
+      "limits": [
+        "This classifies only the exact three SARIF results from b58d870a2c38ebee0aa0b974d9f03767c888fa7e, not all logging in keyring or the rest of the repository.",
+        "Entry debug formatting of an arbitrary credential, including mock credentials, remains a separate review concern; this report does not approve it or use it to justify this finding.",
+        "No query/path exclusion, source alteration, test change or alert state change was made."
+      ]
+    },
+    {
+      "annotation_index": 18,
+      "sarif_result_index": 15,
+      "alert_number": 752,
+      "rule": "rust/cleartext-logging",
+      "location": {
+        "artifactLocation": {
+          "index": 10,
+          "uri": "codex-rs/third_party/keyring-3.6.3/src/secret_service.rs"
+        },
+        "region": {
+          "endColumn": 60,
+          "endLine": 323,
+          "startColumn": 12,
+          "startLine": 322
+        }
+      },
+      "classification": "false positive: Vec::remove receiver modeled as log sink",
+      "review_status": "reviewed; not dismissed",
+      "original_message": "This operation writes [set_item_secret(...)](1) to a log file.\nThis operation writes [decode_password(...)](2) to a log file.",
+      "flow_count": 2,
+      "flows": [
+        [
+          {
+            "path": "codex-rs/third_party/keyring-3.6.3/src/secret_service.rs",
+            "region": {
+              "endColumn": 69,
+              "endLine": 172,
+              "startColumn": 43,
+              "startLine": 172
+            },
+            "expression": "set_item_secret(...)"
+          },
+          {
+            "path": "codex-rs/third_party/keyring-3.6.3/src/secret_service.rs",
+            "region": {
+              "endColumn": 33,
+              "endLine": 453,
+              "startColumn": 26,
+              "startLine": 453
+            },
+            "expression": "f(...)"
+          },
+          {
+            "path": "codex-rs/third_party/keyring-3.6.3/src/secret_service.rs",
+            "region": {
+              "endColumn": 34,
+              "endLine": 453,
+              "startColumn": 26,
+              "startLine": 453
+            },
+            "expression": "TryExpr"
+          },
+          {
+            "path": "codex-rs/third_party/keyring-3.6.3/src/secret_service.rs",
+            "region": {
+              "endColumn": 78,
+              "endLine": 377,
+              "startColumn": 24,
+              "startLine": 377
+            },
+            "expression": "self.map_matching_legacy_items(...)"
+          },
+          {
+            "path": "codex-rs/third_party/keyring-3.6.3/src/secret_service.rs",
+            "region": {
+              "endColumn": 78,
+              "endLine": 377,
+              "startColumn": 17,
+              "startLine": 377
+            },
+            "expression": "return ..."
+          },
+          {
+            "path": "codex-rs/third_party/keyring-3.6.3/src/secret_service.rs",
+            "region": {
+              "endColumn": 59,
+              "endLine": 323,
+              "startColumn": 12,
+              "startLine": 322
+            },
+            "expression": "self.map_matching_items(...)"
+          },
+          {
+            "path": "codex-rs/third_party/keyring-3.6.3/src/secret_service.rs",
+            "region": {
+              "endColumn": 60,
+              "endLine": 323,
+              "startColumn": 12,
+              "startLine": 322
+            },
+            "expression": "TryExpr"
+          }
+        ],
+        [
+          {
+            "path": "codex-rs/third_party/keyring-3.6.3/src/secret_service.rs",
+            "region": {
+              "endColumn": 27,
+              "endLine": 555,
+              "startColumn": 5,
+              "startLine": 555
+            },
+            "expression": "decode_password(...)"
+          },
+          {
+            "path": "codex-rs/third_party/keyring-3.6.3/src/secret_service.rs",
+            "region": {
+              "endColumn": 2,
+              "endLine": 556,
+              "startColumn": 57,
+              "startLine": 553
+            },
+            "expression": "{ ... }"
+          },
+          {
+            "path": "codex-rs/third_party/keyring-3.6.3/src/secret_service.rs",
+            "region": {
+              "endColumn": 33,
+              "endLine": 453,
+              "startColumn": 26,
+              "startLine": 453
+            },
+            "expression": "f(...)"
+          },
+          {
+            "path": "codex-rs/third_party/keyring-3.6.3/src/secret_service.rs",
+            "region": {
+              "endColumn": 34,
+              "endLine": 453,
+              "startColumn": 26,
+              "startLine": 453
+            },
+            "expression": "TryExpr"
+          },
+          {
+            "path": "codex-rs/third_party/keyring-3.6.3/src/secret_service.rs",
+            "region": {
+              "endColumn": 78,
+              "endLine": 377,
+              "startColumn": 24,
+              "startLine": 377
+            },
+            "expression": "self.map_matching_legacy_items(...)"
+          },
+          {
+            "path": "codex-rs/third_party/keyring-3.6.3/src/secret_service.rs",
+            "region": {
+              "endColumn": 78,
+              "endLine": 377,
+              "startColumn": 17,
+              "startLine": 377
+            },
+            "expression": "return ..."
+          },
+          {
+            "path": "codex-rs/third_party/keyring-3.6.3/src/secret_service.rs",
+            "region": {
+              "endColumn": 59,
+              "endLine": 323,
+              "startColumn": 12,
+              "startLine": 322
+            },
+            "expression": "self.map_matching_items(...)"
+          },
+          {
+            "path": "codex-rs/third_party/keyring-3.6.3/src/secret_service.rs",
+            "region": {
+              "endColumn": 60,
+              "endLine": 323,
+              "startColumn": 12,
+              "startLine": 322
+            },
+            "expression": "TryExpr"
+          }
+        ]
+      ],
+      "reason": [
+        "The sink region is the Result-unwrapped Vec returned by map_matching_items and used as the receiver of .remove(0), not a logging macro or a log-writing call.",
+        "The exact analysis pack source a7057b836bf29767461026718b14d20790b9085f models <alloc::vec::Vec>::remove Argument[self] as log-injection (rust.model.yml line 8767); CleartextLoggingExtensions.qll consumes this sink kind.",
+        "Rust 1.95.0 Vec::remove accepts unconstrained T, returns the removed element and only formats the integer index and integer length on bounds failure; neither remove nor try_remove formats or writes any Vec element.",
+        "map_matching_items requires uniqueness here: zero matches return NoEntry, multiple matches return Ambiguous, one successful callback produces one element; its legacy fallback has the same count checks. The successful flow cannot reach a bounds failure at index 0.",
+        "The generic mapper yields different T for set_secret/get_password/get_secret/new_from_item. SARIF combines callback flows (including Result<()> from set_item_secret and password decoding in a metadata-only new_from_matching_item instantiation); these cross-instantiation paths do not establish a secret-to-log operation."
+      ],
+      "limits": [
+        "This classifies only the exact three SARIF results from b58d870a2c38ebee0aa0b974d9f03767c888fa7e, not all logging in keyring or the rest of the repository.",
+        "Entry debug formatting of an arbitrary credential, including mock credentials, remains a separate review concern; this report does not approve it or use it to justify this finding.",
+        "No query/path exclusion, source alteration, test change or alert state change was made."
+      ]
+    }
+  ]
+}
