@@ -1,0 +1,75 @@
+name: Hepta shared Stem bake-off shadow checks
+
+on:
+  pull_request:
+    paths:
+      - 'qa/stem-bakeoff/**'
+      - 'docs/learning/STEM_BAKEOFF*'
+      - '.github/workflows/hepta-shared-stem-bakeoff-shadow.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+# Different HEADs must not cancel each other's evidence.
+concurrency:
+  group: hepta-stem-shadow-${{ github.event.pull_request.head.sha || github.sha }}
+  cancel-in-progress: false
+
+jobs:
+  evidence-contract:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - name: Verify exact source identity
+        env:
+          EXPECTED_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$EXPECTED_SHA"
+          git diff --check
+      - name: Run fail-closed bake-off manifest and evidence tests
+        run: |
+          set -euo pipefail
+          python3 -m unittest discover -s qa/stem-bakeoff -p 'test_stem_bakeoff.py' -v
+          python3 -m unittest discover -s qa/stem-bakeoff -p 'test_evidence_gate.py' -v
+          python3 -m py_compile qa/stem-bakeoff/stem_bakeoff.py qa/stem-bakeoff/evidence_gate.py
+      - name: Confirm source tree unchanged
+        if: always()
+        run: |
+          git diff --check
+          git diff --exit-code
+
+  native-latent-cpu-smoke:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - name: Verify exact source identity
+        env:
+          EXPECTED_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$EXPECTED_SHA"
+          git diff --check
+      - name: Install pinned CPU-only PyTorch
+        run: |
+          set -euo pipefail
+          python3 -m venv "$RUNNER_TEMP/hepta-stem-venv"
+          "$RUNNER_TEMP/hepta-stem-venv/bin/python" -m pip install --only-binary=:all: --index-url https://download.pytorch.org/whl/cpu 'torch==2.10.0'
+      - name: Execute real tiny latent forward and meta parameter budgets
+        run: |
+          set -euo pipefail
+          "$RUNNER_TEMP/hepta-stem-venv/bin/python" -m unittest discover -s qa/stem-bakeoff -p 'test_native_latent.py' -v
+      - name: Confirm source tree unchanged
+        if: always()
+        run: |
+          git diff --check
+          git diff --exit-code
