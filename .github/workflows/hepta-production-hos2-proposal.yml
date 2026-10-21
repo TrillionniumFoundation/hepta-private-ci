@@ -31,7 +31,7 @@ jobs:
   owner-candidate:
     if: >-
       github.event.pull_request.head.repo.full_name == github.repository &&
-      github.event.pull_request.head.ref == 'codex/production-hos2-delivery-20261020'
+      github.event.pull_request.head.ref == 'dot/hos2-convergence-aligned-20261021'
     runs-on: ubuntu-24.04
     timeout-minutes: 180
     env:
