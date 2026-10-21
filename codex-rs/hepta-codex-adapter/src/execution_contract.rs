@@ -318,6 +318,23 @@ impl ExecutionReceiptV1 {
         if self.final_payload_digest.validate().is_err() {
             return Err(ExecutionContractError::ReceiptBindingMismatch);
         }
+        if self.outcome_digest.is_some_and(Digest32::is_zero) {
+            return Err(ExecutionContractError::ZeroDigest("execution outcome"));
+        }
+        if matches!(
+            self.status,
+            ExecutionStatusV1::Completed | ExecutionStatusV1::Failed
+        ) && self.outcome_digest.is_none()
+        {
+            return Err(ExecutionContractError::MissingTerminalOutcome);
+        }
+        if (self.status == ExecutionStatusV1::Completed
+            && self.recovery != RecoveryDispositionV1::None)
+            || (self.status == ExecutionStatusV1::Indeterminate
+                && self.recovery == RecoveryDispositionV1::RetryBeforeAdmission)
+        {
+            return Err(ExecutionContractError::StatusOutcomeMismatch);
+        }
         Ok(())
     }
 }
