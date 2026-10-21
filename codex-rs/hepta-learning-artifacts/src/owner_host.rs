@@ -616,6 +616,9 @@ impl LearningArtifactOwnerHost {
             let receipt = snapshot
                 .registry_receipt
                 .ok_or(ArtifactOwnerHostError::CheckpointMismatch)?;
+            if receipt.binding != signed.binding {
+                return Err(ArtifactOwnerHostError::CheckpointMismatch);
+            }
             let reopened = read_registry_snapshot(
                 File::open(self.registry_snapshot_path(receipt))?,
                 receipt,
@@ -629,6 +632,9 @@ impl LearningArtifactOwnerHost {
             let receipt = snapshot
                 .witness_receipt
                 .ok_or(ArtifactOwnerHostError::CheckpointMismatch)?;
+            if receipt.binding != signed.binding {
+                return Err(ArtifactOwnerHostError::CheckpointMismatch);
+            }
             let requirement = self.witness_requirement(
                 signed,
                 transaction.intent().expected_registry_predecessor_head,
@@ -2005,13 +2011,82 @@ mod tests {
             .ensure_payload_durable(&mut transaction, &staged, b"payload", 20)
             .fixture("payload durable");
 
+        let signed = signed_head(&key, scope_digest, staged.snapshot().head_digest);
         let payload = directory.0.join("payloads").join(format!(
             "{}-{}.bin",
             id("candidate"),
             digest("payload")
         ));
+        owner
+            .revalidate_recovered_artifacts(&transaction, &staged, &signed, 20)
+            .fixture("payload recovery revalidation");
         fs::remove_file(payload).fixture("remove payload after checkpoint");
-        let signed = signed_head(&key, scope_digest, staged.snapshot().head_digest);
+        assert!(owner
+            .revalidate_recovered_artifacts(&transaction, &staged, &signed, 20)
+            .is_err());
+        write_candidate_payload_beneath(
+            &directory.0,
+            PathBuf::from("payloads").join(format!(
+                "{}-{}.bin",
+                id("candidate"),
+                digest("payload")
+            )),
+            &staged,
+            &id("candidate"),
+            b"payload",
+        )
+        .fixture("restore payload");
+        owner
+            .ensure_registry_durable(
+                &mut transaction,
+                &staged,
+                &withdrawals,
+                signed.binding,
+                20,
+            )
+            .fixture("registry durable");
+        let registry_receipt = transaction
+            .snapshot()
+            .registry_receipt
+            .fixture("registry receipt");
+        let registry = directory.0.join("registries").join(format!(
+            "{}-{}.snapshot",
+            registry_receipt.head_digest, registry_receipt.file_digest
+        ));
+        fs::remove_file(registry).fixture("remove registry after checkpoint");
+        assert!(owner
+            .revalidate_recovered_artifacts(&transaction, &staged, &signed, 20)
+            .is_err());
+
+        write_registry_snapshot_beneath(
+            &directory.0,
+            PathBuf::from("registries").join(format!(
+                "{}-{}.snapshot",
+                registry_receipt.head_digest, registry_receipt.file_digest
+            )),
+            &staged,
+            signed.binding,
+        )
+        .fixture("restore registry");
+        owner
+            .ensure_witness_durable(&mut transaction, &signed, &withdrawals, 20)
+            .fixture("witness durable");
+        let requirement = RegistryHeadRequirementV1 {
+            registry_id: id("learning-artifacts"),
+            minimum_generation: Generation::new(1).fixture("generation"),
+            expected_predecessor_head_digest: Digest32::ZERO,
+            minimum_authority_epoch: 1,
+            now: 20,
+        };
+        let witness_digest = owner
+            .verifier
+            .verify_signed_head(&signed, &requirement, true)
+            .fixture("verify witness").witness_digest;
+        let witness = directory.0.join("witnesses").join(format!(
+            "{}-{}.witness",
+            signed.witness.generation.get(), witness_digest
+        ));
+        fs::remove_file(witness).fixture("remove witness after checkpoint");
         assert!(owner
             .revalidate_recovered_artifacts(&transaction, &staged, &signed, 20)
             .is_err());
