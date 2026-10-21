@@ -102,6 +102,57 @@ class SharedMultimodalBridgeTests(unittest.TestCase):
                          expected.source_manifest_digest)
         torch.testing.assert_close(observed.slots, expected.slots, rtol=0, atol=0)
 
+    def test_all_modalities_digest_and_missingness_frozen_before_hooks(self):
+        bridge = self.stem()
+        original_text = torch.randn(2, 32)
+        original_image = torch.randn(2, 3, 32)
+        baseline = bridge(
+            {'text': original_text.clone(), 'image': original_image.clone()},
+            source_digests={'text': 'a' * 64, 'image': 'b' * 64}, generation=3)
+        caller_features = {
+            'text': original_text.clone(), 'image': original_image.clone(),
+        }
+        caller_digests = {'text': 'a' * 64, 'image': 'b' * 64}
+        calls = [0]
+
+        def mutate_later_modality(_module, _inputs, _output):
+            calls[0] += 1
+            with torch.no_grad():
+                caller_features['image'].add_(13)
+            caller_features.pop('image')
+            caller_digests['image'] = 'c' * 64
+
+        hook = bridge.projectors['text'].register_forward_hook(mutate_later_modality)
+        try:
+            observed = bridge(caller_features, source_digests=caller_digests,
+                              generation=3)
+        finally:
+            hook.remove()
+        self.assertEqual(calls[0], 1)
+        self.assertNotIn('image', caller_features)
+        self.assertEqual(observed.missing_mask, baseline.missing_mask)
+        self.assertEqual(observed.source_manifest_digest,
+                         baseline.source_manifest_digest)
+        torch.testing.assert_close(observed.slots, baseline.slots, rtol=0, atol=0)
+
+    def test_late_invalid_modality_rejected_before_any_projector(self):
+        bridge = self.stem()
+        calls = [0]
+
+        def count_projection(_module, _inputs, _output):
+            calls[0] += 1
+
+        hook = bridge.projectors['text'].register_forward_hook(count_projection)
+        try:
+            with self.assertRaisesRegex(LatentBridgeError, 'invalid/nonfinite'):
+                bridge({'text': torch.ones(2, 32),
+                        'image': torch.ones(2, 31)},
+                       source_digests={'text': 'a' * 64, 'image': 'b' * 64},
+                       generation=1)
+        finally:
+            hook.remove()
+        self.assertEqual(calls[0], 0)
+
     def test_multimodal_batch_and_element_budgets_fail_closed(self):
         bridge = self.stem()
         with self.assertRaisesRegex(LatentBridgeError, "invalid/nonfinite"):
