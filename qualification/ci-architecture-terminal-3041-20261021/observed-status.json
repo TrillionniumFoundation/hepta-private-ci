@@ -1,0 +1,540 @@
+{
+  "observed_at": "2026-10-21 12:39:53 UTC",
+  "run_id": 39591475937,
+  "source_head": "52293403ea1e06465c41d24d39b54959bad40936",
+  "base": "48177153ad04605338c3a9a8dbd17defee9981bc",
+  "source_tree": "8944830c3b3ed494987d01ef631ab48b69e75d1c",
+  "required_aggregate_complete": false,
+  "jobs": [
+    {
+      "id": 119193229282,
+      "name": "Architecture convergence (base-merge)",
+      "status": "completed",
+      "conclusion": "success",
+      "run_id": 39591475937,
+      "head_sha": "52293403ea1e06465c41d24d39b54959bad40936",
+      "started_at": "2026-10-21T11:55:35Z",
+      "completed_at": "2026-10-21T11:56:05Z",
+      "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/39591475937/job/119193229282",
+      "runner_name": "GitHub Actions 1000191549",
+      "labels": [
+        "ubuntu-24.04-arm"
+      ],
+      "steps": [
+        {
+          "name": "Set up job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 1,
+          "started_at": "2026-10-21T11:55:35Z",
+          "completed_at": "2026-10-21T11:55:37Z"
+        },
+        {
+          "name": "Check out exact candidate",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 2,
+          "started_at": "2026-10-21T11:55:37Z",
+          "completed_at": "2026-10-21T11:55:43Z"
+        },
+        {
+          "name": "Fetch exact qualification history",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 3,
+          "started_at": "2026-10-21T11:55:43Z",
+          "completed_at": "2026-10-21T11:55:49Z"
+        },
+        {
+          "name": "Verify GitHub prospective merge ref matches this exact candidate",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 4,
+          "started_at": "2026-10-21T11:55:49Z",
+          "completed_at": "2026-10-21T11:55:50Z"
+        },
+        {
+          "name": "Construct the canonical prospective merge",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 5,
+          "started_at": "2026-10-21T11:55:50Z",
+          "completed_at": "2026-10-21T11:55:50Z"
+        },
+        {
+          "name": "Bind tested identity",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 6,
+          "started_at": "2026-10-21T11:55:50Z",
+          "completed_at": "2026-10-21T11:55:50Z"
+        },
+        {
+          "name": "Select exact-tree native execution",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 7,
+          "started_at": "2026-10-21T11:55:50Z",
+          "completed_at": "2026-10-21T11:55:51Z"
+        },
+        {
+          "name": "Select affected architecture boundaries",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 8,
+          "started_at": "2026-10-21T11:55:51Z",
+          "completed_at": "2026-10-21T11:55:51Z"
+        },
+        {
+          "name": "Test execution-record rejection and retained diagnostics",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 9,
+          "started_at": "2026-10-21T11:55:51Z",
+          "completed_at": "2026-10-21T11:56:00Z"
+        },
+        {
+          "name": "Repository-control rejection regressions",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 10,
+          "started_at": "2026-10-21T11:56:00Z",
+          "completed_at": "2026-10-21T11:56:01Z"
+        },
+        {
+          "name": "Prepare native prerequisites",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 11,
+          "started_at": "2026-10-21T11:56:01Z",
+          "completed_at": "2026-10-21T11:56:01Z"
+        },
+        {
+          "name": "Run facebook/install-dotslash@1e4e7b3e07eaca387acb98f1d4720e0bee8dbb6a",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 12,
+          "started_at": "2026-10-21T11:56:01Z",
+          "completed_at": "2026-10-21T11:56:01Z"
+        },
+        {
+          "name": "Expose DotSlash for existing integration tests",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 13,
+          "started_at": "2026-10-21T11:56:01Z",
+          "completed_at": "2026-10-21T11:56:01Z"
+        },
+        {
+          "name": "Run taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 14,
+          "started_at": "2026-10-21T11:56:01Z",
+          "completed_at": "2026-10-21T11:56:01Z"
+        },
+        {
+          "name": "Resolve verified V8 artifacts",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 15,
+          "started_at": "2026-10-21T11:56:01Z",
+          "completed_at": "2026-10-21T11:56:01Z"
+        },
+        {
+          "name": "Verify Cargo lock resolution and print exact resolver drift",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 16,
+          "started_at": "2026-10-21T11:56:01Z",
+          "completed_at": "2026-10-21T11:56:01Z"
+        },
+        {
+          "name": "Inference owner regressions and streaming digest",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 17,
+          "started_at": "2026-10-21T11:56:01Z",
+          "completed_at": "2026-10-21T11:56:01Z"
+        },
+        {
+          "name": "Durable operation and external-effect recovery",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 18,
+          "started_at": "2026-10-21T11:56:01Z",
+          "completed_at": "2026-10-21T11:56:01Z"
+        },
+        {
+          "name": "Module lifecycle generations and migration rollback",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 19,
+          "started_at": "2026-10-21T11:56:01Z",
+          "completed_at": "2026-10-21T11:56:01Z"
+        },
+        {
+          "name": "Objective and prompt policy convergence",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 20,
+          "started_at": "2026-10-21T11:56:01Z",
+          "completed_at": "2026-10-21T11:56:01Z"
+        },
+        {
+          "name": "Converged authority and browser semantics",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 21,
+          "started_at": "2026-10-21T11:56:01Z",
+          "completed_at": "2026-10-21T11:56:01Z"
+        },
+        {
+          "name": "Selected-artifact adoption and explicit rollback",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 22,
+          "started_at": "2026-10-21T11:56:01Z",
+          "completed_at": "2026-10-21T11:56:01Z"
+        },
+        {
+          "name": "Compiled service lifecycle and actual process restart",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 23,
+          "started_at": "2026-10-21T11:56:01Z",
+          "completed_at": "2026-10-21T11:56:01Z"
+        },
+        {
+          "name": "Derived-view drift",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 24,
+          "started_at": "2026-10-21T11:56:01Z",
+          "completed_at": "2026-10-21T11:56:01Z"
+        },
+        {
+          "name": "Retain advisory candidate Git transport observation",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 25,
+          "started_at": "2026-10-21T11:56:01Z",
+          "completed_at": "2026-10-21T11:56:02Z"
+        },
+        {
+          "name": "Verify unchanged reviewed source",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 26,
+          "started_at": "2026-10-21T11:56:02Z",
+          "completed_at": "2026-10-21T11:56:02Z"
+        },
+        {
+          "name": "Retain exact source input on failure for reproducible diagnosis",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 27,
+          "started_at": "2026-10-21T11:56:02Z",
+          "completed_at": "2026-10-21T11:56:02Z"
+        },
+        {
+          "name": "Retain command records and bounded stdout stderr",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 28,
+          "started_at": "2026-10-21T11:56:02Z",
+          "completed_at": "2026-10-21T11:56:03Z"
+        },
+        {
+          "name": "Post Check out exact candidate",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 56,
+          "started_at": "2026-10-21T11:56:03Z",
+          "completed_at": "2026-10-21T11:56:03Z"
+        },
+        {
+          "name": "Complete job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 57,
+          "started_at": "2026-10-21T11:56:03Z",
+          "completed_at": "2026-10-21T11:56:03Z"
+        }
+      ]
+    },
+    {
+      "id": 119193229802,
+      "name": "Architecture convergence (source-head)",
+      "status": "completed",
+      "conclusion": "success",
+      "run_id": 39591475937,
+      "head_sha": "52293403ea1e06465c41d24d39b54959bad40936",
+      "started_at": "2026-10-21T11:57:13Z",
+      "completed_at": "2026-10-21T12:27:40Z",
+      "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/39591475937/job/119193229802",
+      "runner_name": "GitHub Actions 1000191561",
+      "labels": [
+        "ubuntu-24.04-arm"
+      ],
+      "steps": [
+        {
+          "name": "Set up job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 1,
+          "started_at": "2026-10-21T11:57:14Z",
+          "completed_at": "2026-10-21T11:57:15Z"
+        },
+        {
+          "name": "Check out exact candidate",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 2,
+          "started_at": "2026-10-21T11:57:15Z",
+          "completed_at": "2026-10-21T11:57:20Z"
+        },
+        {
+          "name": "Fetch exact qualification history",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 3,
+          "started_at": "2026-10-21T11:57:20Z",
+          "completed_at": "2026-10-21T11:57:26Z"
+        },
+        {
+          "name": "Verify GitHub prospective merge ref matches this exact candidate",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 4,
+          "started_at": "2026-10-21T11:57:26Z",
+          "completed_at": "2026-10-21T11:57:26Z"
+        },
+        {
+          "name": "Construct the canonical prospective merge",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 5,
+          "started_at": "2026-10-21T11:57:26Z",
+          "completed_at": "2026-10-21T11:57:26Z"
+        },
+        {
+          "name": "Bind tested identity",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 6,
+          "started_at": "2026-10-21T11:57:26Z",
+          "completed_at": "2026-10-21T11:57:26Z"
+        },
+        {
+          "name": "Select exact-tree native execution",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 7,
+          "started_at": "2026-10-21T11:57:26Z",
+          "completed_at": "2026-10-21T11:57:26Z"
+        },
+        {
+          "name": "Select affected architecture boundaries",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 8,
+          "started_at": "2026-10-21T11:57:26Z",
+          "completed_at": "2026-10-21T11:57:27Z"
+        },
+        {
+          "name": "Test execution-record rejection and retained diagnostics",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 9,
+          "started_at": "2026-10-21T11:57:27Z",
+          "completed_at": "2026-10-21T11:57:38Z"
+        },
+        {
+          "name": "Repository-control rejection regressions",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 10,
+          "started_at": "2026-10-21T11:57:38Z",
+          "completed_at": "2026-10-21T11:57:39Z"
+        },
+        {
+          "name": "Prepare native prerequisites",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 11,
+          "started_at": "2026-10-21T11:57:39Z",
+          "completed_at": "2026-10-21T11:57:52Z"
+        },
+        {
+          "name": "Run facebook/install-dotslash@1e4e7b3e07eaca387acb98f1d4720e0bee8dbb6a",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 12,
+          "started_at": "2026-10-21T11:57:52Z",
+          "completed_at": "2026-10-21T11:57:52Z"
+        },
+        {
+          "name": "Expose DotSlash for existing integration tests",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 13,
+          "started_at": "2026-10-21T11:57:52Z",
+          "completed_at": "2026-10-21T11:57:52Z"
+        },
+        {
+          "name": "Run taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 14,
+          "started_at": "2026-10-21T11:57:52Z",
+          "completed_at": "2026-10-21T11:57:56Z"
+        },
+        {
+          "name": "Resolve verified V8 artifacts",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 15,
+          "started_at": "2026-10-21T11:57:56Z",
+          "completed_at": "2026-10-21T11:58:02Z"
+        },
+        {
+          "name": "Verify Cargo lock resolution and print exact resolver drift",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 16,
+          "started_at": "2026-10-21T11:58:02Z",
+          "completed_at": "2026-10-21T11:58:20Z"
+        },
+        {
+          "name": "Inference owner regressions and streaming digest",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 17,
+          "started_at": "2026-10-21T11:58:20Z",
+          "completed_at": "2026-10-21T11:58:42Z"
+        },
+        {
+          "name": "Durable operation and external-effect recovery",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 18,
+          "started_at": "2026-10-21T11:58:42Z",
+          "completed_at": "2026-10-21T12:02:35Z"
+        },
+        {
+          "name": "Module lifecycle generations and migration rollback",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 19,
+          "started_at": "2026-10-21T12:02:35Z",
+          "completed_at": "2026-10-21T12:05:05Z"
+        },
+        {
+          "name": "Objective and prompt policy convergence",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 20,
+          "started_at": "2026-10-21T12:05:05Z",
+          "completed_at": "2026-10-21T12:05:19Z"
+        },
+        {
+          "name": "Converged authority and browser semantics",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 21,
+          "started_at": "2026-10-21T12:05:19Z",
+          "completed_at": "2026-10-21T12:17:20Z"
+        },
+        {
+          "name": "Selected-artifact adoption and explicit rollback",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 22,
+          "started_at": "2026-10-21T12:17:20Z",
+          "completed_at": "2026-10-21T12:17:53Z"
+        },
+        {
+          "name": "Compiled service lifecycle and actual process restart",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 23,
+          "started_at": "2026-10-21T12:17:53Z",
+          "completed_at": "2026-10-21T12:27:32Z"
+        },
+        {
+          "name": "Derived-view drift",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 24,
+          "started_at": "2026-10-21T12:27:32Z",
+          "completed_at": "2026-10-21T12:27:33Z"
+        },
+        {
+          "name": "Retain advisory candidate Git transport observation",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 25,
+          "started_at": "2026-10-21T12:27:33Z",
+          "completed_at": "2026-10-21T12:27:36Z"
+        },
+        {
+          "name": "Verify unchanged reviewed source",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 26,
+          "started_at": "2026-10-21T12:27:36Z",
+          "completed_at": "2026-10-21T12:27:37Z"
+        },
+        {
+          "name": "Retain exact source input on failure for reproducible diagnosis",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 27,
+          "started_at": "2026-10-21T12:27:37Z",
+          "completed_at": "2026-10-21T12:27:37Z"
+        },
+        {
+          "name": "Retain command records and bounded stdout stderr",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 28,
+          "started_at": "2026-10-21T12:27:37Z",
+          "completed_at": "2026-10-21T12:27:39Z"
+        },
+        {
+          "name": "Post Check out exact candidate",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 56,
+          "started_at": "2026-10-21T12:27:39Z",
+          "completed_at": "2026-10-21T12:27:39Z"
+        },
+        {
+          "name": "Complete job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 57,
+          "started_at": "2026-10-21T12:27:39Z",
+          "completed_at": "2026-10-21T12:27:39Z"
+        }
+      ]
+    },
+    {
+      "id": 119220992411,
+      "name": "Architecture required",
+      "status": "queued",
+      "conclusion": null,
+      "run_id": 39591475937,
+      "head_sha": "52293403ea1e06465c41d24d39b54959bad40936",
+      "started_at": "2026-10-21T12:27:41Z",
+      "completed_at": null,
+      "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/39591475937/job/119220992411",
+      "runner_name": "",
+      "labels": [
+        "ubuntu-24.04"
+      ],
+      "steps": []
+    }
+  ]
+}
