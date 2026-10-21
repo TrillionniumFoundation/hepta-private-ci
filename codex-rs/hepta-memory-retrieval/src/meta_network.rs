@@ -175,6 +175,21 @@ fn preflight_memory_meta_batch_v1(
     Ok(())
 }
 
+// Validate global retrieval/dynamics policy even when a sparse plan admits
+// no Cell. Otherwise an all-deferred batch silently skips per-tick validation.
+fn validate_memory_meta_runtime_policies_v1(
+    retrieval_policy: &RetrievalPolicyV1,
+    dynamics_policy: &EngramDynamicsPolicyV1,
+) -> Result<(), MemoryMetaBatchErrorV1> {
+    retrieval_policy.validate().map_err(|_| {
+        MemoryMetaBatchErrorV1::Contract(HnmfContractError::Invalid("memory meta retrieval policy"))
+    })?;
+    dynamics_policy.validate().map_err(|_| {
+        MemoryMetaBatchErrorV1::Contract(HnmfContractError::Invalid("memory meta dynamics policy"))
+    })?;
+    Ok(())
+}
+
 pub fn run_memory_meta_batch_shadow_v1(
     policy: &MemoryMetaNetworkPolicyV1,
     cue: &MemoryCueV1,
@@ -183,6 +198,7 @@ pub fn run_memory_meta_batch_shadow_v1(
     dynamics_policy: &EngramDynamicsPolicyV1,
     cells: &[MemoryMetaCellTickSpecV1],
 ) -> Result<MemoryMetaShadowBatchV1, MemoryMetaBatchErrorV1> {
+    validate_memory_meta_runtime_policies_v1(retrieval_policy, dynamics_policy)?;
     preflight_memory_meta_batch_v1(policy, cue, engram_snapshot, cells)?;
 
     let mut cell_ticks = Vec::with_capacity(cells.len());
@@ -459,6 +475,7 @@ pub fn run_memory_meta_preselected_shadow_v1(
     dynamics_policy: &EngramDynamicsPolicyV1,
     cells: &[MemoryMetaCellTickSpecV1],
 ) -> Result<MemoryMetaPreselectedShadowV1, MemoryMetaBatchErrorV1> {
+    validate_memory_meta_runtime_policies_v1(retrieval_policy, dynamics_policy)?;
     let pre_tick_plan =
         plan_memory_meta_pre_ticks_shadow_v1(policy, cue, engram_snapshot, cells)?;
     let admitted: BTreeSet<ContractIdV1> =
@@ -523,6 +540,7 @@ pub fn run_memory_meta_preselected_evidence_checked_shadow_v1<F>(
 where
     F: FnMut(&MemoryMetaEvidenceLookupV1) -> bool,
 {
+    validate_memory_meta_runtime_policies_v1(retrieval_policy, dynamics_policy)?;
     let plan = plan_memory_meta_pre_ticks_shadow_v1(policy, cue, engram_snapshot, cells)?;
     let mut admitted_evidence = Vec::with_capacity(plan.admitted_cell_ids.len());
     for cell_id in &plan.admitted_cell_ids {

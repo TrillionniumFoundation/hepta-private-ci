@@ -224,3 +224,14 @@ FinalUse. The plan's Debug-derived metadata commitment is still a shadow
 exact-source digest, not a canonical external wire protocol. Recompute
 against one authenticated and immutable input set before accepting any
 restored plan, and retain `SHADOW_ONLY / DENY_ALL / HOLD_NO_GO`.
+
+## All-deferred batch integrity (shadow only)
+
+The shared cue and engram snapshot generation-vector binding, plus their
+structural validation, are checked before any sparse admission, even when
+all Cells are deferred. Actual shadow execution paths also reject invalid
+shared retrieval and engram dynamics policies before invoking any Cell
+or external evidence verifier. An empty/abstaining batch therefore cannot
+silently bypass the same shared-input safety fence as an active Cell.
+These checks do not authenticate the external evidence ledger or grant
+production authority.

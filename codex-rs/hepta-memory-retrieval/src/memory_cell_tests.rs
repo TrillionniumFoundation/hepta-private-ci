@@ -897,6 +897,78 @@ fn pre_tick_shadow_rejects_invalid_non_admitted_cue_and_stale_forget_frontier() 
 }
 
 #[test]
+fn all_deferred_shadow_rejects_invalid_runtime_policies_before_any_verification() {
+    let fixture = shadow_fixture(true);
+    let policy = meta_policy(&fixture);
+    let mut deferred = meta_spec(&fixture);
+    deferred.support_digest = None;
+    deferred.generated_input.batches.clear();
+
+    let mut invalid_retrieval = fixture.policy.clone();
+    invalid_retrieval.maximum_results = 0;
+    let rejected = crate::run_memory_meta_preselected_shadow_v1(
+        &policy,
+        &fixture.cue,
+        &invalid_retrieval,
+        &fixture.snapshot,
+        &fixture.dynamics,
+        &[deferred.clone()],
+    );
+    assert!(matches!(
+        rejected,
+        Err(crate::MemoryMetaBatchErrorV1::Contract(
+            codex_hepta_cognitive_types::hnmf::HnmfContractError::Invalid(
+                "memory meta retrieval policy"
+            )
+        ))
+    ));
+
+    let mut invalid_dynamics = fixture.dynamics.clone();
+    invalid_dynamics.maximum_settling_steps = 0;
+    let rejected = crate::run_memory_meta_preselected_shadow_v1(
+        &policy,
+        &fixture.cue,
+        &fixture.policy,
+        &fixture.snapshot,
+        &invalid_dynamics,
+        &[deferred],
+    );
+    assert!(matches!(
+        rejected,
+        Err(crate::MemoryMetaBatchErrorV1::Contract(
+            codex_hepta_cognitive_types::hnmf::HnmfContractError::Invalid(
+                "memory meta dynamics policy"
+            )
+        ))
+    ));
+
+    // Even the external evidence owner must not be called on a batch whose
+    // shared runtime policy is invalid, regardless of otherwise valid support.
+    let mut owner_calls = 0;
+    let rejected = crate::run_memory_meta_preselected_evidence_checked_shadow_v1(
+        &policy,
+        &fixture.cue,
+        &invalid_retrieval,
+        &fixture.snapshot,
+        &fixture.dynamics,
+        &[meta_spec(&fixture)],
+        |_| {
+            owner_calls += 1;
+            true
+        },
+    );
+    assert!(matches!(
+        rejected,
+        Err(crate::MemoryMetaBatchErrorV1::Contract(
+            codex_hepta_cognitive_types::hnmf::HnmfContractError::Invalid(
+                "memory meta retrieval policy"
+            )
+        ))
+    ));
+    assert_eq!(owner_calls, 0);
+}
+
+#[test]
 fn pre_tick_shadow_rejects_shared_generation_drift_even_if_every_cell_is_deferred() {
     let mut fixture = shadow_fixture(true);
     let policy = meta_policy(&fixture);
