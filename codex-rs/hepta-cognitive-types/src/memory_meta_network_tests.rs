@@ -489,7 +489,9 @@ fn three_generation_frozen_stem_chain_requires_distinct_replay_and_evaluation() 
     let valid_chain = [first.clone(), second.clone(), third.clone()];
     assert!(MemoryCellNextSnapshotCandidateV1::validate_chain(&valid_chain).is_ok());
     let owner = manifest("cell:a", MemoryCellRoleV1::Semantic);
-    assert!(MemoryCellNextSnapshotCandidateV1::validate_chain_against(&owner, &valid_chain).is_ok());
+    assert!(
+        MemoryCellNextSnapshotCandidateV1::validate_chain_against(&owner, &valid_chain).is_ok()
+    );
     let mut stale_owner = owner.clone();
     stale_owner.forget_frontier_digest = digest("revoked-frontier");
     assert!(matches!(
