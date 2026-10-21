@@ -289,9 +289,12 @@ async fn set_owner_only(_path: &Path) -> Result<(), AgentdError> {
     Ok(())
 }
 
+// Keep the Unix socket-retirement regressions separate from the inline
+// preflight tests. Both used "mod tests" and rustc rejected lib tests (E0428).
+// The inline control::tests::preflight_* paths are consumed by native CI.
 #[cfg(all(test, unix))]
 #[path = "control_tests.rs"]
-mod tests;
+mod retired_control_server_tests;
 
 #[cfg(all(test, windows))]
 mod tests {
