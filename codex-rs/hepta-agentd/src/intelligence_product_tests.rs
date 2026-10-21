@@ -38,13 +38,25 @@ use codex_hepta_intuition::canonical_candidate_set_digest_v1;
 #[cfg(feature = "qualification-legacy-learning-write")]
 use codex_hepta_learning_ledger::AppendDisposition;
 #[cfg(feature = "qualification-legacy-learning-write")]
+use codex_hepta_learning_ledger::AppendReceipt;
+#[cfg(feature = "qualification-legacy-learning-write")]
+use codex_hepta_learning_ledger::CandidateSetCompleteness;
+#[cfg(feature = "qualification-legacy-learning-write")]
 use codex_hepta_learning_ledger::DurableLedger;
+#[cfg(feature = "qualification-legacy-learning-write")]
+use codex_hepta_learning_ledger::DurableLedgerError;
 #[cfg(feature = "qualification-legacy-learning-write")]
 use codex_hepta_learning_ledger::LedgerAnchor;
 #[cfg(feature = "qualification-legacy-learning-write")]
 use codex_hepta_learning_ledger::LedgerEvent;
 #[cfg(feature = "qualification-legacy-learning-write")]
 use codex_hepta_learning_ledger::LedgerRecovery;
+#[cfg(feature = "qualification-legacy-learning-write")]
+use codex_hepta_learning_ledger::EpisodeDecision;
+#[cfg(feature = "qualification-legacy-learning-write")]
+use codex_hepta_learning_ledger::OutcomeFinality;
+#[cfg(feature = "qualification-legacy-learning-write")]
+use codex_hepta_learning_ledger::OutcomeObservation;
 use codex_hepta_ndu::AggregationOperator;
 use codex_hepta_ndu::AxisAggregationRule;
 use codex_hepta_ndu::AxisDirection;
@@ -81,11 +93,164 @@ use codex_hepta_objective::ObjectiveStructuredIntentV1;
 use codex_hepta_objective::admit_and_compile_objective_v1;
 use codex_hepta_objective::canonical_objective_intent_digest_v1;
 use codex_hepta_prompt_optimizer::PromptCandidate;
+#[cfg(feature = "qualification-legacy-learning-write")]
+use codex_hepta_intelligence::AdvisoryDecisionV1;
 use codex_hepta_types::FixedQ32;
 use codex_hepta_types::ProbabilityQ32;
 use codex_hepta_types::Revision;
 use ed25519_dalek::Signer;
 use ed25519_dalek::SigningKey;
+
+// Qualification-only compatibility coverage stays in this test module. The
+// product runner has no legacy V1 append methods; production callers must use
+// the typed LedgerWriter with authenticated evidence.
+#[cfg(feature = "qualification-legacy-learning-write")]
+trait LegacyLearningWriterQualificationExt {
+    fn append_decision(
+        &self,
+        journal: &mut DurableLedger,
+        expected_predecessor: Digest32,
+        prepared: &PreparedAgentdIntelligenceRunV1,
+        episode_id: StableId,
+        policy_id: StableId,
+    ) -> Result<AppendReceipt, AgentdIntelligenceLedgerError>;
+
+    #[allow(clippy::too_many_arguments)]
+    fn append_outcome(
+        &self,
+        journal: &mut DurableLedger,
+        expected_predecessor: Digest32,
+        prepared: &PreparedAgentdIntelligenceRunV1,
+        outcome_record_id: StableId,
+        outcome_id: StableId,
+        episode_id: StableId,
+        observer_id: StableId,
+        value: FixedQ32,
+        finality: OutcomeFinality,
+        support_digest: Digest32,
+    ) -> Result<AppendReceipt, AgentdIntelligenceLedgerError>;
+
+    fn reconcile_ledger_append(
+        &self,
+        journal: &mut DurableLedger,
+        pending: PendingIntelligenceLedgerAppendV1,
+    ) -> Result<AppendReceipt, AgentdIntelligenceLedgerError>;
+}
+
+#[cfg(feature = "qualification-legacy-learning-write")]
+impl LegacyLearningWriterQualificationExt for AgentdIntelligenceProductRunnerV1 {
+    fn append_decision(
+        &self,
+        journal: &mut DurableLedger,
+        expected_predecessor: Digest32,
+        prepared: &PreparedAgentdIntelligenceRunV1,
+        episode_id: StableId,
+        policy_id: StableId,
+    ) -> Result<AppendReceipt, AgentdIntelligenceLedgerError> {
+        let AdvisoryDecisionV1::Selected {
+            candidate_id,
+            propensity,
+        } = &prepared.envelope.decision.decision
+        else {
+            return Err(AgentdIntelligenceLedgerError::NotSelected);
+        };
+        let event = LedgerEvent::Decision(EpisodeDecision {
+            record_id: prepared.envelope.run_id.clone(),
+            episode_id,
+            objective_digest: prepared.envelope.objective_digest,
+            policy_id,
+            candidate_ids: prepared.candidate_ids.clone(),
+            selected_candidate_id: candidate_id.clone(),
+            selected_propensity: *propensity,
+            completeness: CandidateSetCompleteness::Complete,
+            support_digest: prepared.dispatch_proposal_digest,
+        });
+        self.append_event(
+            journal,
+            expected_predecessor,
+            prepared.snapshot.clone(),
+            event,
+        )
+    }
+
+    fn append_outcome(
+        &self,
+        journal: &mut DurableLedger,
+        expected_predecessor: Digest32,
+        prepared: &PreparedAgentdIntelligenceRunV1,
+        outcome_record_id: StableId,
+        outcome_id: StableId,
+        episode_id: StableId,
+        observer_id: StableId,
+        value: FixedQ32,
+        finality: OutcomeFinality,
+        support_digest: Digest32,
+    ) -> Result<AppendReceipt, AgentdIntelligenceLedgerError> {
+        if support_digest.is_zero() {
+            return Err(AgentdIntelligenceLedgerError::InvalidOutcome);
+        }
+        let event = LedgerEvent::Outcome(OutcomeObservation {
+            record_id: outcome_record_id,
+            outcome_id,
+            episode_id,
+            observer_id,
+            value,
+            finality,
+            support_digest,
+        });
+        self.append_event(
+            journal,
+            expected_predecessor,
+            prepared.snapshot.clone(),
+            event,
+        )
+    }
+
+    fn reconcile_ledger_append(
+        &self,
+        journal: &mut DurableLedger,
+        pending: PendingIntelligenceLedgerAppendV1,
+    ) -> Result<AppendReceipt, AgentdIntelligenceLedgerError> {
+        let mut oracle = FileBackedFreshnessOracleV1::new(
+            self.authority_file.clone(),
+            self.authority_verifier.clone(),
+        );
+        validate_current_snapshot(&pending.snapshot, &mut oracle)
+            .map_err(AgentdIntelligenceLedgerError::Currentness)?;
+        journal
+            .append_qualification(pending.expected_predecessor, pending.event)
+            .map_err(AgentdIntelligenceLedgerError::Ledger)
+    }
+}
+
+#[cfg(feature = "qualification-legacy-learning-write")]
+impl AgentdIntelligenceProductRunnerV1 {
+    fn append_event(
+        &self,
+        journal: &mut DurableLedger,
+        expected_predecessor: Digest32,
+        snapshot: CanonicalIntelligenceSnapshotV1,
+        event: LedgerEvent,
+    ) -> Result<AppendReceipt, AgentdIntelligenceLedgerError> {
+        let mut oracle = FileBackedFreshnessOracleV1::new(
+            self.authority_file.clone(),
+            self.authority_verifier.clone(),
+        );
+        validate_current_snapshot(&snapshot, &mut oracle)
+            .map_err(AgentdIntelligenceLedgerError::Currentness)?;
+        match journal.append_qualification(expected_predecessor, event.clone()) {
+            Ok(receipt) => Ok(receipt),
+            Err(DurableLedgerError::Indeterminate | DurableLedgerError::Io(_)) => Err(
+                AgentdIntelligenceLedgerError::Indeterminate(PendingIntelligenceLedgerAppendV1 {
+                    expected_predecessor,
+                    snapshot,
+                    event,
+                }),
+            ),
+            Err(error) => Err(AgentdIntelligenceLedgerError::Ledger(error)),
+        }
+    }
+}
 
 const Q24: i64 = 1 << 24;
 const OBSERVED_MICROS: u64 = 1_788_861_600_000_000;
