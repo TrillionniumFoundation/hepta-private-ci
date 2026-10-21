@@ -18,6 +18,11 @@ from torch import nn
 from torch.nn import functional as F
 
 from feature_shard import read_shard, FeatureShardError
+from multimodal_bridge import (
+    LatentBridgeError, _guarded_offline_optimizer_step,
+    _verify_optimizer_gradients, _verify_optimizer_lifecycle,
+    _verify_optimizer_step_safety, _verify_optimizer_storage_isolation,
+)
 
 SPLITS = ("train", "calibration", "future_1", "future_2", "ood")
 SHA256 = re.compile(r"[0-9a-f]{64}\Z")
@@ -157,6 +162,28 @@ def _loss(student: nn.Module, readout: nn.Module,
     return result
 
 
+def _check_optimizer_custody(optimizer: torch.optim.Optimizer,
+                             expected_ids: tuple[int, ...],
+                             expected_settings: tuple,
+                             trainable: list[nn.Parameter]) -> None:
+    """Revalidate ownership, physical backing and lifecycle after model hooks.
+
+    The same research-only stock optimizer policy is used by the direct
+    multimodal Slotizer path. Neither entry point may bypass that boundary.
+    """
+    try:
+        _verify_optimizer_lifecycle(optimizer)
+        observed_ids = tuple(id(p) for group in optimizer.param_groups
+                             for p in group["params"])
+        if observed_ids != expected_ids:
+            raise OfflineDistillError("offline optimizer parameter custody changed")
+        _verify_optimizer_storage_isolation(trainable)
+        if _verify_optimizer_step_safety(optimizer) != expected_settings:
+            raise OfflineDistillError("offline optimizer settings/state changed")
+    except LatentBridgeError as exc:
+        raise OfflineDistillError("unsafe offline optimizer custody") from exc
+
+
 def run_offline_distillation(*, student: nn.Module, readout: nn.Module,
                              optimizer: torch.optim.Optimizer,
                              cohorts: Mapping[str, PairedCohort],
@@ -183,6 +210,15 @@ def run_offline_distillation(*, student: nn.Module, readout: nn.Module,
             or {id(p) for p in optimizer_params} != {id(p) for p in trainable}
             or any(p.is_meta or not torch.isfinite(p).all() for p in params)):
         raise OfflineDistillError("optimizer must own exactly shared-student/readout trainable parameters")
+    # Original P6 checked only parameter object IDs; a custom Optimizer or
+    # process-global hook could execute foreign writes with those IDs intact.
+    expected_ids = tuple(id(p) for p in optimizer_params)
+    try:
+        _verify_optimizer_lifecycle(optimizer)
+        _verify_optimizer_storage_isolation(optimizer_params)
+        expected_settings = _verify_optimizer_step_safety(optimizer)
+    except LatentBridgeError as exc:
+        raise OfflineDistillError("unsafe offline optimizer custody") from exc
     pairs, paired_receipts = _prepare(cohorts, teacher_candidate=teacher_candidate,
                      teacher_revision=teacher_revision,
                      checkpoint_inventory_sha256=checkpoint_inventory_sha256,
@@ -196,6 +232,10 @@ def run_offline_distillation(*, student: nn.Module, readout: nn.Module,
     student.train()
     readout.train()
     for _ in range(steps):
+        # First boundary is BEFORE zero_grad; the next one precedes the
+        # physical step after arbitrary Student/Readout forward hooks.
+        _check_optimizer_custody(optimizer, expected_ids,
+                                 expected_settings, trainable)
         optimizer.zero_grad(set_to_none=True)
         value = _loss(student, readout, pairs["train"])
         value.backward()
@@ -206,9 +246,14 @@ def run_offline_distillation(*, student: nn.Module, readout: nn.Module,
             raise OfflineDistillError("nonfinite shared-student gradient") from exc
         if not torch.isfinite(norm):
             raise OfflineDistillError("nonfinite shared-student gradient norm")
-        optimizer.step()
-        if any(not torch.isfinite(p).all() for p in params):
-            raise OfflineDistillError("nonfinite student parameter after optimizer")
+        _check_optimizer_custody(optimizer, expected_ids,
+                                 expected_settings, trainable)
+        try:
+            _verify_optimizer_gradients(student, optimizer)
+            _guarded_offline_optimizer_step(optimizer, expected_ids,
+                                            expected_settings)
+        except LatentBridgeError as exc:
+            raise OfflineDistillError("unsafe offline optimizer step") from exc
     student.eval()
     readout.eval()
     with torch.no_grad():
