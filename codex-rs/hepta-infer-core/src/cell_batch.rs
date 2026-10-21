@@ -379,12 +379,16 @@ impl FairCellQueueV1 {
                 continue;
             };
             let Some(request) = queue.pop_front() else {
+                // Stale scope entries must not retain an unbounded set of empty queues.
+                self.queues.remove(&scope);
                 continue;
             };
             self.request_ids.remove(&request.request_id);
             self.length -= 1;
             batch.push(request);
-            if !queue.is_empty() {
+            if queue.is_empty() {
+                self.queues.remove(&scope);
+            } else {
                 self.ready_scopes.push_back(scope);
             }
         }
