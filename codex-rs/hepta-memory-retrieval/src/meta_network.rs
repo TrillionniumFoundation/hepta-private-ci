@@ -110,6 +110,20 @@ pub fn run_memory_meta_batch_shadow_v1(
         }
         // Preflight expensive shadow ticks without trusting any Cell-local
         // projection to redefine the shared Encoder or evidence frontiers.
+        // Reject invalid post-tick routing metadata before spending any
+        // retrieval work, rather than discovering it after earlier ticks.
+        if cell.relevance_ppm > 1_000_000 {
+            return Err(MemoryMetaBatchErrorV1::Contract(
+                HnmfContractError::Invalid("memory meta candidate relevance"),
+            ));
+        }
+        if cell.resource_cost_units == 0
+            || cell.resource_cost_units > 1_000_000
+        {
+            return Err(MemoryMetaBatchErrorV1::Contract(
+                HnmfContractError::Invalid("memory meta candidate cost"),
+            ));
+        }
         if cell.manifest.shared_base_digest != policy.shared_base_digest
             || cell.manifest.encoder_digest != policy.encoder_digest
             || cell.encoder_feature_digest != policy.encoder_feature_digest
