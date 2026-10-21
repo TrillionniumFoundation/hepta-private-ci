@@ -117,6 +117,9 @@ pub struct CompatibleModelKeyV1 {
 #[derive(Clone, Debug, Default, Eq, PartialEq)]
 pub struct CompatibleModelIndexV1 {
     entries: BTreeMap<CompatibleModelKeyV1, BTreeSet<StableId>>,
+    // Each live cell is bound to exactly one compatible model/encoder shape.
+    // Explicit retirement is required before re-registering a different key.
+    cell_bindings: BTreeMap<StableId, CompatibleModelKeyV1>,
 }
 
 impl CompatibleModelIndexV1 {
@@ -128,17 +131,42 @@ impl CompatibleModelIndexV1 {
         if key.model_digest.is_zero() || key.encoder_digest.is_zero() || key.output_width == 0 {
             return Err(CellWorkerError::InvalidModelKey);
         }
-        let already_registered = self
-            .entries
-            .get(&key)
-            .is_some_and(|cells| cells.contains(&cell_id));
-        if !already_registered
-            && self.entries.values().map(BTreeSet::len).sum::<usize>() >= MAX_INDEX_ENTRIES
-        {
+        if let Some(existing_key) = self.cell_bindings.get(&cell_id) {
+            if existing_key != &key {
+                return Err(CellWorkerError::CellModelConflict);
+            }
+            // Re-registering the identical identity is idempotent and does not
+            // consume additional capacity.
+            return Ok(());
+        }
+        if self.cell_bindings.len() >= MAX_INDEX_ENTRIES {
             return Err(CellWorkerError::IndexCapacity);
         }
-        self.entries.entry(key).or_default().insert(cell_id);
+        self.entries
+            .entry(key.clone())
+            .or_default()
+            .insert(cell_id.clone());
+        self.cell_bindings.insert(cell_id, key);
         Ok(())
+    }
+
+    /// Retire one cell from its exact model/encoder index. Empty keys are
+    /// reclaimed, preventing stale routing entries and lifetime growth during
+    /// topology migration. Callers must fence the old generation separately.
+    pub fn unregister(&mut self, cell_id: &StableId) -> bool {
+        let Some(key) = self.cell_bindings.remove(cell_id) else {
+            return false;
+        };
+        let empty = if let Some(cells) = self.entries.get_mut(&key) {
+            cells.remove(cell_id);
+            cells.is_empty()
+        } else {
+            false
+        };
+        if empty {
+            self.entries.remove(&key);
+        }
+        true
     }
 
     #[must_use]
@@ -232,6 +260,7 @@ pub enum CellWorkerError {
     EmptyCellSet,
     IndexCapacity,
     InvalidModelKey,
+    CellModelConflict,
     ZeroBatchSize,
     Queue(CellBatchError),
 }

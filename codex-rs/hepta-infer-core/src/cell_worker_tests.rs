@@ -75,3 +75,59 @@ fn shared_pool_reports_group_and_drop_metrics() {
     assert_eq!(pool.metrics().activations_committed, 1);
     assert_eq!(pool.metrics().dropped_requests, 1);
 }
+
+#[test]
+fn compatible_index_rejects_cross_model_cell_alias_until_retirement() {
+    let original = CompatibleModelKeyV1 {
+        model_digest: digest("model:a"),
+        encoder_digest: digest("encoder:a"),
+        output_width: 8,
+    };
+    let alternate = CompatibleModelKeyV1 {
+        model_digest: digest("model:b"),
+        encoder_digest: digest("encoder:b"),
+        output_width: 8,
+    };
+    let cell = id("cell:stable");
+    let mut index = CompatibleModelIndexV1::default();
+    index
+        .register(original.clone(), cell.clone())
+        .expect("first registration");
+    index
+        .register(original.clone(), cell.clone())
+        .expect("identical registration is idempotent");
+    assert_eq!(
+        index.register(alternate.clone(), cell.clone()),
+        Err(CellWorkerError::CellModelConflict)
+    );
+    assert_eq!(index.lookup(&original), vec![cell.clone()]);
+    assert!(index.lookup(&alternate).is_empty());
+
+    assert!(index.unregister(&cell));
+    assert!(!index.unregister(&cell));
+    assert!(index.lookup(&original).is_empty());
+    index
+        .register(alternate.clone(), cell.clone())
+        .expect("new key after explicit retirement");
+    assert_eq!(index.lookup(&alternate), vec![cell]);
+}
+
+#[test]
+fn compatible_index_retirement_keeps_other_cells_and_reclaims_empty_keys() {
+    let key = CompatibleModelKeyV1 {
+        model_digest: digest("model:shared"),
+        encoder_digest: digest("encoder:shared"),
+        output_width: 8,
+    };
+    let mut index = CompatibleModelIndexV1::default();
+    for number in 0..128 {
+        let cell = id(&format!("cell:transient:{number}"));
+        index.register(key.clone(), cell.clone()).expect("register");
+        assert!(index.unregister(&cell));
+        assert!(index.lookup(&key).is_empty());
+    }
+    index.register(key.clone(), id("cell:keep")).expect("register");
+    index.register(key.clone(), id("cell:retire")).expect("register");
+    assert!(index.unregister(&id("cell:retire")));
+    assert_eq!(index.lookup(&key), vec![id("cell:keep")]);
+}
