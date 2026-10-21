@@ -141,6 +141,12 @@ class OfflineShardDistillTests(unittest.TestCase):
         with self.assertRaisesRegex(OfflineDistillError, "optimizer must own"):
             self.run_trial(optimizer=bad_optimizer)
 
+    def test_frozen_student_cannot_masquerade_as_student_training(self):
+        self.student.requires_grad_(False)
+        readout_only = torch.optim.SGD(self.readout.parameters(), lr=0.01)
+        with self.assertRaisesRegex(OfflineDistillError, "optimizer must own"):
+            self.run_trial(optimizer=readout_only)
+
     def test_bad_projection_aborts_before_train(self):
         bad_readout = torch.nn.Linear(8, 5)
         optimizer = torch.optim.SGD(list(self.student.parameters()) +
