@@ -97,3 +97,105 @@ Local smoke: python3 -m unittest discover -s qa/stem-bakeoff -p test_*.py -v
 - Tests check real tiny CPU forward/backprop, Gate/Head separation, temporal
   ordering, missing-mask provenance, invalid inputs, and detached teacher
   targets. The shipped 150M/300M variants remain **untrained blueprints**.
+
+
+## P3: local-only teacher checkpoint and multimodal forward probes
+
+This slice adds teacher_snapshot.py and teacher_forward.py plus adversarial
+tests. It creates offline-capable real-model execution paths, NOT
+an achieved pretrained-model qualification, dataset result, or promotion.
+
+| Candidate | Model origin | Current path | Still missing |
+| --- | --- | --- | --- |
+| control_421m | Existing Hepta model | Leave unchanged as cognition control | Exact control artifact and common comparison |
+| embeddinggemma2_740m | google/embeddinggemma-2 | AutoProcessor plus AutoModel; local text/image/audio/video mixed batches | Accepted and independently attested weights, representative data, target-host profiling |
+| t5gemma2_encoder_270m | google/t5gemma-2-270m-270m | AutoModelForSeq2SeqLM.get_encoder, text-only first | Real model, vision and long context, encoder-only resident memory |
+| hepta_latent_150m/300m | Native prototype | Frozen PyTorch encoder and synthetic offline training seam | Teacher-aligned checkpoint, quality and hardware evidence |
+
+Important: the T5 probe loads an encoder-decoder checkpoint before
+taking its Encoder handle; this is NOT an encoder-only resident footprint.
+The EmbeddingGemma probe loads the full multimodal checkpoint even for
+text-only inputs; selective tower loading is a separate memory-optimization
+milestone, not an achieved benchmark.
+
+### Checkpoint custody
+
+teacher_snapshot.py hashes every regular checkpoint file and requires:
+a 40-hex immutable source revision, externally pinned 64-hex inventory
+SHA256, expected model_type, safetensors weights and a positive operator
+license-acceptance declaration. It rejects symlinks, absent checkpoints,
+changed files, wrong models and malformed revisions. HF cache symlinks
+must be materialized into an actual offline directory before validation.
+Hash agreement only checks **operator-pinned local bytes**. It does not
+independently verify publisher identity, model pretraining, legal access,
+or capability. A digest computed from the same untrusted mutable
+directory is not independent attestation.
+
+The checkpoint must already be available from an independently approved
+license/access workflow. No weights, credentials or network access are
+embedded into this PR. Pin the inventory digest and original model
+revision in an independent external source ledger before running.
+
+### Local use (after checkpoint pinning)
+
+~~~sh
+python3 qa/stem-bakeoff/teacher_snapshot.py \
+  --snapshot /mnt/hepta/checkpoints/embeddinggemma2 \
+  --candidate embeddinggemma2_740m \
+  --revision "$PINNED_UPSTREAM_SHA40" \
+  --expected-inventory-sha256 "$EXTERNALLY_PINNED_INVENTORY_SHA256" \
+  --operator-accepted-terms
+~~~
+
+Example local records.json, with media paths relative to media-root:
+
+~~~json
+[
+  {"text": "An operator requests a GUI action"},
+  {"text": "Describe the UI", "image": "ui/frame_001.png"},
+  {"audio": "audio/segment_001.wav"}
+]
+~~~
+
+~~~sh
+python3 qa/stem-bakeoff/teacher_forward.py \
+  --candidate embeddinggemma2_740m \
+  --snapshot /mnt/hepta/checkpoints/embeddinggemma2 \
+  --media-root /mnt/hepta/approved-media \
+  --records-json /mnt/hepta/approved-media/records.json \
+  --revision "$PINNED_UPSTREAM_SHA40" \
+  --expected-inventory-sha256 "$EXTERNALLY_PINNED_INVENTORY_SHA256" \
+  --operator-accepted-terms --device cpu --truncate-dim 256
+~~~
+
+T5 uses its own checkpoint, the t5gemma2_encoder_270m candidate,
+text-only records and no truncate-dim. These two models do NOT share a
+numerically interchangeable vector space without a learned bridge.
+
+The probes require separately version-pinned, locally installed
+Transformers, Torch and any required media decoders. They explicitly
+disable Hugging Face network fetch and remote code, use CPU FP32 or
+CUDA BF16, mask-aware float32 pooling and Matryoshka prefix
+re-normalization. A PyTorch model-level hook counts MODULE forwards;
+it is not an independently observed physical kernel count. One elapsed
+wall-clock sample cannot qualify p95/p99, memory or energy, and source
+SHA declarations cannot establish source authentication.
+
+### New negative tests and still-open blockers
+
+test_teacher_snapshot.py checks pin drift, symlink rejection, model
+identity, missing weights and operator terms. test_teacher_forward.py
+checks local media paths, changing source bytes, unsupported T5 modes,
+strict modality/shape bounds, masks, nonfinite features and 256D prefix
+normalization. Dedicated CI runs stdlib checks independently of pinned
+CPU Torch tests, without downloading any model checkpoint.
+
+Still blocked: authorized independently attested original weights;
+genuine multimodal and context forward evidence; independently held
+future/OOD Cell data and calibration; encoder-only T5 export; trained
+150M/300M students; physical hardware 1/8/64/256/1024/4096-Cell
+p95/p99, peak memory, energy and true model-forward instrument;
+complete exact-HEAD cargo-deny, Architecture, V8 and cross-platform Bazel
+security/test gates; independent owner and permission acceptance.
+All new paths remain SHADOW_ONLY / DENY_ALL / HOLD_NO_GO and never
+select a production Stem, mutate external Memory or issue Cell actions.
