@@ -1,6 +1,9 @@
 name: Hepta diagnostic source export
 
 on:
+  push:
+    branches:
+      - codex\/ci-2862-fix-crate-root-20261019
   # Automatic pull-request and main-branch fan-out is owned by the two
   # aggregate checks. Deep qualifications remain reusable and manually runnable.
   workflow_call:
