@@ -10,6 +10,104 @@ use std::sync::Mutex;
 
 type TestResult<T = ()> = Result<T, Box<dyn Error>>;
 
+/// Fixed A02 wire vectors shared with the OS consumer. This transport performs
+/// no native call and grants no capability; the real adapter parses every byte.
+struct A02Vectors {
+    exchanges: Mutex<VecDeque<(Vec<u8>, Vec<u8>)>>,
+}
+
+impl ControlTransport for Arc<A02Vectors> {
+    fn exchange(&self, input: &[u8], output: &mut [u8]) -> Result<(), String> {
+        let mut exchanges = self.exchanges.lock().map_err(|error| error.to_string())?;
+        let (expected, reply) = exchanges.pop_front().ok_or("unexpected HOS2 exchange")?;
+        if input != expected || output.len() < reply.len() {
+            return Err("adapter differs from the pinned A02 wire vector".to_string());
+        }
+        output[..reply.len()].copy_from_slice(&reply);
+        Ok(())
+    }
+}
+
+#[test]
+fn production_owner_request_and_a02_wire_vectors_match() -> TestResult {
+    use codex_hepta_operations::OperationIntentV1;
+    use codex_hepta_types::Digest32;
+    use codex_hepta_types::Generation;
+    use codex_hepta_types::StableId;
+
+    let vector: serde_json::Value =
+        serde_json::from_str(include_str!("../tests/fixtures/hos2_production_owner.json"))?;
+    let bytes = |name: &str| -> TestResult<Vec<u8>> {
+        let value = vector[name].as_str().ok_or("missing A02 bytes")?;
+        if !value.len().is_multiple_of(2) {
+            return Err("odd A02 hexadecimal length".into());
+        }
+        value
+            .as_bytes()
+            .chunks_exact(2)
+            .map(|pair| Ok(u8::from_str_radix(std::str::from_utf8(pair)?, 16)?))
+            .collect()
+    };
+    let transport = Arc::new(A02Vectors {
+        exchanges: Mutex::new(VecDeque::from([
+            (bytes("abi_request_hex")?, bytes("abi_response_hex")?),
+            (bytes("install_frame_hex")?, bytes("install_response_hex")?),
+            (
+                bytes("history_request_hex")?,
+                bytes("history_response_hex")?,
+            ),
+        ])),
+    });
+    let device = AgentdHos2Device::attach(Box::new(transport.clone()), &bytes("bootstrap_hex")?)?;
+    let request = device.install_request(
+        /*sequence*/ 1, /*expected_revision*/ 1, /*cap_ns*/ 25_000_000,
+    )?;
+    let payload = vector["payload_json"]
+        .as_str()
+        .ok_or("missing owner payload")?;
+    assert_eq!(request.to_json()?, payload);
+    assert_eq!(Hos2InstallBudgetV1::from_json(payload)?, request);
+    let operation = OperationIntentV1::new(
+        StableId::new(vector["operation_id"].as_str().ok_or("missing K")?)?,
+        StableId::new(vector["subject_id"].as_str().ok_or("missing subject")?)?,
+        StableId::new(codex_hepta_memory::HOS2_DESTINATION_V1)?,
+        Digest32::of_bytes(payload.as_bytes()),
+        request.scope_digest(),
+        Generation::new(
+            vector["policy_generation"]
+                .as_u64()
+                .ok_or("missing policy generation")?,
+        )?,
+        /*expected_predecessor*/ None,
+    )?;
+    for (field, digest) in [
+        ("payload_digest", operation.payload_digest()),
+        ("scope_digest", operation.scope_digest()),
+        ("semantic_digest", operation.semantic_digest()),
+    ] {
+        let expected: [u8; 32] = serde_json::from_value(vector[field].clone())?;
+        assert_eq!(digest.into_array(), expected);
+    }
+    assert_eq!(
+        device.install(&request)?,
+        Hos2InstallOutcome::Observed(Hos2DeliveryObservation::Applied {
+            stable_object_id: [9; 16],
+            previous_revision: 1,
+            revision: 2,
+            effective_ns: HOS2_CPU_PERIOD_NS + 1_001,
+            consumed_ns: 999,
+        })
+    );
+    assert!(
+        transport
+            .exchanges
+            .lock()
+            .map_err(|error| error.to_string())?
+            .is_empty()
+    );
+    Ok(())
+}
+
 struct Script {
     replies: VecDeque<(u16, Result<Response, String>)>,
     requests: Vec<Vec<u8>>,
