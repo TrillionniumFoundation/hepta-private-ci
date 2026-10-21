@@ -751,6 +751,78 @@ fn pre_tick_shadow_skips_non_admitted_cell_execution_and_is_order_independent() 
 }
 
 #[test]
+fn pre_tick_shadow_replays_complete_admission_and_rejects_forged_plans() {
+    let fixture = shadow_fixture(true);
+    let first = meta_spec(&fixture);
+    let mut second = meta_spec(&fixture);
+    second.manifest.cell_id = id("memory-cell:semantic:2");
+    second.manifest.role = MemoryCellRoleV1::Semantic;
+    second.tick_input.cell_id = second.manifest.cell_id.clone();
+    let cells = vec![first, second];
+    let policy = meta_policy(&fixture);
+    let plan = crate::plan_memory_meta_pre_ticks_shadow_v1(
+        &policy,
+        &fixture.cue,
+        &fixture.snapshot,
+        &cells,
+    )
+    .unwrap_or_else(|error| panic!("admission plan: {error:?}"));
+
+    // Rehydration is independent of caller-provided Cell order.
+    plan.validate_against(&policy, &fixture.cue, &fixture.snapshot, &cells)
+        .unwrap_or_else(|error| panic!("admission replay: {error:?}"));
+    let reversed = vec![cells[1].clone(), cells[0].clone()];
+    plan.validate_against(&policy, &fixture.cue, &fixture.snapshot, &reversed)
+        .unwrap_or_else(|error| panic!("reverse admission replay: {error:?}"));
+
+    // Even an unchanged digest cannot excuse a modified selected set or
+    // reservation accounting. Recompute against original complete inputs.
+    let mut forged = plan.clone();
+    forged.admitted_cell_ids.pop();
+    assert!(matches!(
+        forged.validate_against(&policy, &fixture.cue, &fixture.snapshot, &cells),
+        Err(crate::MemoryMetaBatchErrorV1::Contract(
+            codex_hepta_cognitive_types::hnmf::HnmfContractError::Conflict(
+                "memory meta pre-tick source binding"
+            )
+        ))
+    ));
+
+    let mut forged = plan.clone();
+    forged.reserved_compute_units += 1;
+    assert!(matches!(
+        forged.validate_against(&policy, &fixture.cue, &fixture.snapshot, &cells),
+        Err(crate::MemoryMetaBatchErrorV1::Contract(
+            codex_hepta_cognitive_types::hnmf::HnmfContractError::Conflict(
+                "memory meta pre-tick source binding"
+            )
+        ))
+    ));
+
+    let mut forged = plan.clone();
+    forged.production_activation_allowed = true;
+    assert!(matches!(
+        forged.validate_against(&policy, &fixture.cue, &fixture.snapshot, &cells),
+        Err(crate::MemoryMetaBatchErrorV1::Contract(
+            codex_hepta_cognitive_types::hnmf::HnmfContractError::Conflict(
+                "memory meta pre-tick authority"
+            )
+        ))
+    ));
+
+    let mut stale_cells = cells;
+    stale_cells[1].relevance_ppm -= 1;
+    assert!(matches!(
+        plan.validate_against(&policy, &fixture.cue, &fixture.snapshot, &stale_cells),
+        Err(crate::MemoryMetaBatchErrorV1::Contract(
+            codex_hepta_cognitive_types::hnmf::HnmfContractError::Conflict(
+                "memory meta pre-tick source binding"
+            )
+        ))
+    ));
+}
+
+#[test]
 fn pre_tick_shadow_suppresses_conflicted_cells_without_running_their_tics() {
     let fixture = shadow_fixture(true);
     let mut first = meta_spec(&fixture);
