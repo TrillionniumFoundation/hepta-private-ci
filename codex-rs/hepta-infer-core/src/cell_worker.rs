@@ -72,7 +72,17 @@ impl FeatureCacheV1 {
             encoder_digest: snapshot.encoder_digest(),
             input_digest: snapshot.input_digest(),
         };
-        if !self.entries.contains_key(&key) && self.entries.len() >= MAX_INDEX_ENTRIES {
+        // One generation, scope, encoder and input must have exactly one
+        // immutable feature value.  Replacing it silently would let different
+        // cells consume conflicting representations under the same binding.
+        if let Some(existing) = self.entries.get(&key) {
+            if existing.generation().get() > snapshot.generation().get() {
+                return Err(CellWorkerError::StaleFeatureGeneration);
+            }
+            if existing.generation() == snapshot.generation() && existing != &snapshot {
+                return Err(CellWorkerError::FeatureSnapshotConflict);
+            }
+        } else if self.entries.len() >= MAX_INDEX_ENTRIES {
             return Err(CellWorkerError::IndexCapacity);
         }
         self.entries.insert(key, snapshot);
@@ -245,6 +255,8 @@ fn push_batch_id(bytes: &mut Vec<u8>, value: &StableId) {
 pub enum CellWorkerError {
     EmptyCellSet,
     IndexCapacity,
+    FeatureSnapshotConflict,
+    StaleFeatureGeneration,
     InvalidModelKey,
     ZeroBatchSize,
     Queue(CellBatchError),
