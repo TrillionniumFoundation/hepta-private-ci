@@ -36,6 +36,9 @@ thiserror = { workspace = true }
 tokio = { workspace = true, features = ["time"] }
 unicode-segmentation = { workspace = true }
 
+[target.'cfg(windows)'.dependencies]
+codex-utils-path = { workspace = true }
+
 [dev-dependencies]
 pretty_assertions = { workspace = true }
 tempfile = { workspace = true }

@@ -1,0 +1,133 @@
+name: Windows retained SQLite recovery proposal
+
+# Generates reviewable source-bound postimages and runs full owning suites.
+# A successful proposal does not qualify its input HEAD or replace any gate.
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+    paths:
+      - codex-rs/state/**
+      - codex-rs/utils/path-utils/**
+      - codex-rs/hepta-memory/**
+      - codex-rs/Cargo.lock
+      - MODULE.bazel.lock
+      - .github/scripts/check_windows_private_state_acquisition.py
+      - .github/workflows/hepta-windows-retained-recovery-proposal.yml
+
+permissions:
+  contents: read
+
+concurrency:
+  group: windows-retained-recovery-proposal-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+jobs:
+  recovery-candidate:
+    if: >-
+      github.event.pull_request.head.repo.full_name == github.repository &&
+      github.event.pull_request.head.ref == 'codex/windows-retained-recovery-20261021'
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: ubuntu-24.04
+            target: x86_64-unknown-linux-gnu
+          - os: windows-latest
+            target: x86_64-pc-windows-msvc
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 240
+    env:
+      SOURCE_SHA: ${{ github.event.pull_request.head.sha }}
+      CARGO_TERM_COLOR: never
+      CARGO_INCREMENTAL: "0"
+      CARGO_BUILD_JOBS: "2"
+      CARGO_PROFILE_TEST_DEBUG: "0"
+      CARGO_PROFILE_DEV_DEBUG: "0"
+      PYTHONDONTWRITEBYTECODE: "1"
+    steps:
+      - name: Check out exact immutable proposal input without credentials
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ env.SOURCE_SHA }}
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Bind source, base, toolchain and complete command plan
+        id: source
+        shell: bash
+        run: python codex-rs/state/tests/windows-recovery-controls/proposal.py init
+
+      - name: Prepare original project tools and platform SDK
+        id: tools
+        uses: ./.github/actions/prepare-bazel-ci
+        with:
+          target: ${{ matrix.target }}
+          cache-scope: windows-retained-recovery-proposal
+
+      - name: Install repository-selected compiler and components
+        id: rust
+        uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582
+        with:
+          toolchain: ${{ steps.source.outputs.toolchain }}
+          components: ${{ steps.source.outputs.components }}
+
+      - name: Install original project test runners
+        id: runners
+        uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
+        with:
+          tool: just@1.51.0,nextest@0.9.103
+
+      - name: Install repository-pinned Python formatter runner
+        id: uv
+        uses: astral-sh/setup-uv@08807647e7069bb48b6ef5acd8ec9567f424441b
+        with:
+          version: "0.11.3"
+
+      - name: Install original Linux native prerequisites
+        id: native
+        if: runner.os == 'Linux'
+        shell: bash
+        run: |
+          set -euo pipefail
+          sudo apt-get update
+          sudo apt-get install -y build-essential bubblewrap libcap-dev pkg-config
+
+      - name: Record actual toolchain versions
+        id: versions
+        shell: bash
+        run: |
+          set -euo pipefail
+          {
+            (cd codex-rs && rustc --version --verbose && cargo --version && cargo nextest --version)
+            just --version
+            uv --version
+            bazel version --gnu_format
+          } > "$RECOVERY_EVIDENCE_DIR/tool-versions.log" 2>&1
+
+      - name: Generate candidate and run full owning suites and exact controls
+        id: proposal
+        if: >-
+          always() && steps.source.outcome == 'success' &&
+          steps.tools.outcome == 'success' && steps.rust.outcome == 'success' &&
+          steps.runners.outcome == 'success' && steps.uv.outcome == 'success' &&
+          steps.versions.outcome == 'success' &&
+          (steps.native.outcome == 'success' || steps.native.outcome == 'skipped')
+        shell: bash
+        run: python codex-rs/state/tests/windows-recovery-controls/proposal.py run
+
+      - name: Preserve exact postimages, deletions and original command evidence
+        if: always() && steps.source.outcome == 'success'
+        shell: bash
+        env:
+          SETUP_OUTCOMES: ${{ toJSON(steps) }}
+        run: python codex-rs/state/tests/windows-recovery-controls/proposal.py collect
+
+      - name: Upload source-bound proposal even after actual failure
+        if: always() && steps.source.outcome == 'success'
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f
+        with:
+          name: windows-recovery-${{ matrix.target }}-${{ env.SOURCE_SHA }}-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ env.RECOVERY_EVIDENCE_DIR }}
+          include-hidden-files: true
+          if-no-files-found: error
+          retention-days: 7

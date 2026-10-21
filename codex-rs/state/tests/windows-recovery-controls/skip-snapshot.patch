@@ -1,0 +1,10 @@
+diff --git a/codex-rs/state/src/sqlite_recovery_windows.rs b/codex-rs/state/src/sqlite_recovery_windows.rs
+--- a/codex-rs/state/src/sqlite_recovery_windows.rs
++++ b/codex-rs/state/src/sqlite_recovery_windows.rs
+@@ -74,5 +74 @@
+-        if private_state_snapshot(&self.descriptor).map_err(indeterminate)? != self.snapshot
+-            || private_state_snapshot(lookup).map_err(indeterminate)? != self.snapshot
+-        {
+-            return Err(SqliteRecoveryError::Indeterminate);
+-        }
++        let _ = (self, lookup);

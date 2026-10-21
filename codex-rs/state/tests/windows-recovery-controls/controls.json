@@ -1,0 +1,18 @@
+[
+  {
+    "lane": "shared-source",
+    "production_path": "codex-rs/utils/path-utils/src/private_state_windows_directory.rs",
+    "source_sha256": "745352f3e8f38a4b9ba4205124adb2d4b4efcddaabf1527c29115852a9415746",
+    "patch": "shared-source.patch",
+    "patch_sha256": "5fc4b76067ef2f9be3a10501f6af70a04d78e4096b189d32f83b668f92b9f2f1",
+    "mutated_sha256": "975560aea0096e48e53ddbdd140f7665e1977661ce649c66c7f2f1ee166293c6"
+  },
+  {
+    "lane": "skip-snapshot",
+    "production_path": "codex-rs/state/src/sqlite_recovery_windows.rs",
+    "source_sha256": "b584b2afb1d38bebe6b2e8bde4f2af9e8f5ccce06e20f3349bca20752cf56385",
+    "patch": "skip-snapshot.patch",
+    "patch_sha256": "e434f8941cf4d7da2981f660b6bddd6bb51db5e7e05fe468bf0c7bd600792a12",
+    "mutated_sha256": "9d53f48c58a1aa8271c5a5426b9e067d3f6243a2f4fd8685fd1bef64a629de8b"
+  }
+]

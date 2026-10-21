@@ -1,0 +1,6 @@
+diff --git a/codex-rs/utils/path-utils/src/private_state_windows_directory.rs b/codex-rs/utils/path-utils/src/private_state_windows_directory.rs
+--- a/codex-rs/utils/path-utils/src/private_state_windows_directory.rs
++++ b/codex-rs/utils/path-utils/src/private_state_windows_directory.rs
+@@ -217 +217 @@
+-        let share = FILE_SHARE_READ | if is_directory { FILE_SHARE_WRITE } else { 0 };
++        let share = FILE_SHARE_READ | FILE_SHARE_WRITE | windows_sys::Win32::Storage::FileSystem::FILE_SHARE_DELETE;

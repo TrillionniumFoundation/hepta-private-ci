@@ -84,6 +84,19 @@ use creation_security::with_private_security;
 #[path = "private_state_windows_directory.rs"]
 mod directory;
 
+#[path = "private_state_windows_recovery.rs"]
+mod recovery;
+pub use recovery::create_private_recovery_copy;
+pub use recovery::discard_private_recovery_copy;
+pub use recovery::open_existing_private_state_directory;
+pub use recovery::open_existing_private_state_directory_for_sync;
+pub use recovery::open_private_recovery_source;
+
+#[path = "private_state_windows_snapshot.rs"]
+mod snapshot;
+pub use snapshot::PrivateStateSnapshot;
+pub use snapshot::private_state_snapshot;
+
 const ACCESS_ALLOWED_ACE_TYPE: u8 = 0;
 const ACCESS_DENIED_ACE_TYPE: u8 = 1;
 const INHERIT_ONLY_ACE: u8 = 0x08;

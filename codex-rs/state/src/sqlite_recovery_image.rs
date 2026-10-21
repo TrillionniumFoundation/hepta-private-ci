@@ -155,7 +155,11 @@ impl SqliteConfig {
             }
             result
         }
-        #[cfg(not(unix))]
+        #[cfg(windows)]
+        {
+            super::windows::materialize(self, guard, target)
+        }
+        #[cfg(not(any(unix, windows)))]
         {
             let _ = (guard, target);
             Err(SqliteRecoveryError::Unavailable)
@@ -163,7 +167,7 @@ impl SqliteConfig {
     }
 
     #[cfg_attr(
-        unix,
+        any(unix, windows),
         expect(
             clippy::disallowed_methods,
             reason = "this is codex-state's retained-descriptor cold-image connection shim"
@@ -173,9 +177,10 @@ impl SqliteConfig {
         &self,
         guard: &ExistingSqliteRecoveryGuard,
     ) -> Result<SqlitePool, SqliteRecoveryError> {
-        #[cfg(unix)]
+        #[cfg(any(unix, windows))]
         {
             use super::RetainedOptionalObject;
+            #[cfg(unix)]
             use std::os::unix::fs::FileExt;
             use std::sync::Arc;
 
@@ -198,13 +203,23 @@ impl SqliteConfig {
             if !(100..=128 * 1024 * 1024).contains(&size) {
                 return Err(SqliteRecoveryError::Indeterminate);
             }
-            let mut bytes = vec![0; size as usize];
-            guard
-                .inner
-                .database
-                .descriptor
-                .read_exact_at(&mut bytes, 0)
-                .map_err(super::indeterminate)?;
+            #[cfg(unix)]
+            let mut bytes = {
+                let mut bytes = vec![0; size as usize];
+                guard
+                    .inner
+                    .database
+                    .descriptor
+                    .read_exact_at(&mut bytes, 0)
+                    .map_err(super::indeterminate)?;
+                bytes
+            };
+            #[cfg(windows)]
+            let mut bytes = super::windows::retained_bytes(
+                &guard.inner.database,
+                128 * 1024 * 1024,
+                /*allow_empty*/ false,
+            )?;
             guard.revalidate_for(self)?;
             if &bytes[..16] != b"SQLite format 3\0"
                 || !matches!((bytes[18], bytes[19]), (1, 1) | (2, 2))
@@ -273,7 +288,7 @@ impl SqliteConfig {
             }
             Ok(pool)
         }
-        #[cfg(not(unix))]
+        #[cfg(not(any(unix, windows)))]
         {
             let _ = guard;
             Err(SqliteRecoveryError::Unavailable)
