@@ -64,7 +64,8 @@ pub fn select_output_portfolio_v1(
             continue;
         }
         if selected_protocol.is_some_and(|protocol| protocol != candidates[index].protocol)
-            || selected_domain.is_some_and(|domain| domain != candidates[index].composition_domain_digest)
+            || selected_domain
+                .is_some_and(|domain| domain != candidates[index].composition_domain_digest)
         {
             continue;
         }
