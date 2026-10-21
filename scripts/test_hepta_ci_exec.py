@@ -130,6 +130,122 @@ class ExecutionRecordTests(GitExecutionFixture):
         self.assertEqual(result.returncode, 2)
         self.assertFalse(self.marker.exists())
 
+    def test_replaced_source_tree_never_dispatches_as_original_commit(self):
+        original_tree = self.git("rev-parse", "HEAD^{tree}")
+        (self.repo / "input").write_text("replacement bytes\n")
+        self.git("commit", "-qam", "replacement")
+        replacement = self.git("rev-parse", "HEAD")
+        self.git("checkout", "-q", "--detach", self.source)
+        self.git("config", "core.useReplaceRefs", "true")
+        self.git("replace", self.source, replacement)
+        self.git("read-tree", "--reset", "-u", "HEAD")
+        self.assertEqual(self.git("status", "--porcelain"), "")
+        self.assertNotEqual(self.git("rev-parse", "HEAD^{tree}"), original_tree)
+        self.assertEqual((self.repo / "input").read_text(), "replacement bytes\n")
+
+        result = self.execute()
+
+        self.assertEqual(result.returncode, 2, result.stdout + result.stderr)
+        receipt = self.receipt()
+        self.assertEqual(receipt["status"], "rejected")
+        self.assertEqual(receipt["before"]["tree"], original_tree)
+        self.assertTrue(receipt["before"]["dirty"])
+        self.assertIsNone(receipt["command_exit_code"])
+        self.assertFalse(self.marker.exists())
+
+    def test_clean_original_checkout_ignores_replacement_metadata(self):
+        original_tree = self.git("rev-parse", "HEAD^{tree}")
+        (self.repo / "input").write_text("replacement bytes\n")
+        self.git("commit", "-qam", "replacement")
+        replacement = self.git("rev-parse", "HEAD")
+        self.git("checkout", "-q", "--detach", self.source)
+        self.git("replace", self.source, replacement)
+        self.assertNotEqual(self.git("status", "--porcelain"), "")
+
+        result = self.execute()
+
+        self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+        receipt = self.receipt()
+        self.assertEqual(receipt["status"], "passed")
+        self.assertEqual(
+            receipt["before"],
+            {
+                "commit": self.source,
+                "tree": original_tree,
+                "parents": [],
+                "dirty": False,
+            },
+        )
+        self.assertEqual(receipt["before"], receipt["after"])
+        self.assertEqual(self.marker.read_text(), "executed")
+
+    def test_replaced_merge_parents_never_dispatch(self):
+        base = self.source
+        (self.repo / "input").write_text("source\n")
+        self.git("commit", "-qam", "source")
+        source = self.git("rev-parse", "HEAD")
+        tree = self.git("rev-parse", "HEAD^{tree}")
+        merge = self.git(
+            "commit-tree", tree, "-p", source, "-p", base, "-m", "wrong parents"
+        )
+        replacement = self.git(
+            "commit-tree", tree, "-p", base, "-p", source, "-m", "replacement"
+        )
+        self.git("checkout", "-q", "--detach", merge)
+        self.git("replace", merge, replacement)
+        self.assertEqual(
+            self.git("show", "-s", "--format=%P", merge), f"{base} {source}"
+        )
+        self.assertEqual(self.git("status", "--porcelain"), "")
+
+        result = self.execute(
+            SOURCE_SHA=source,
+            BASE_SHA=base,
+            TESTED_SHA=merge,
+            HEPTA_CI_LANE="base-merge",
+        )
+
+        self.assertEqual(result.returncode, 2, result.stdout + result.stderr)
+        receipt = self.receipt()
+        self.assertEqual(receipt["status"], "rejected")
+        self.assertEqual(receipt["before"]["parents"], [source, base])
+        self.assertIn("parents", receipt["error"])
+        self.assertIsNone(receipt["command_exit_code"])
+        self.assertFalse(self.marker.exists())
+
+    def test_replaced_source_cannot_change_recomputed_merge_tree(self):
+        base = self.source
+        wrong_tree = self.git("rev-parse", "HEAD^{tree}")
+        (self.repo / "input").write_text("source change\n")
+        self.git("commit", "-qam", "source change")
+        source = self.git("rev-parse", "HEAD")
+        merge = self.git(
+            "commit-tree", wrong_tree, "-p", base, "-p", source, "-m", "wrong tree"
+        )
+        replacement = self.git(
+            "commit-tree", wrong_tree, "-p", base, "-m", "replacement source"
+        )
+        self.git("checkout", "-q", "--detach", merge)
+        self.git("replace", source, replacement)
+        self.assertEqual(self.git("status", "--porcelain"), "")
+        self.assertEqual(
+            self.git("merge-tree", "--write-tree", base, source), wrong_tree
+        )
+
+        result = self.execute(
+            SOURCE_SHA=source,
+            BASE_SHA=base,
+            TESTED_SHA=merge,
+            HEPTA_CI_LANE="base-merge",
+        )
+
+        self.assertEqual(result.returncode, 2, result.stdout + result.stderr)
+        receipt = self.receipt()
+        self.assertEqual(receipt["status"], "rejected")
+        self.assertIn("recomputed", receipt["error"])
+        self.assertIsNone(receipt["command_exit_code"])
+        self.assertFalse(self.marker.exists())
+
     def test_synthetic_merge_accepts_only_exact_ordered_parents(self):
         base = self.source
         (self.repo / "input").write_text("source\n")

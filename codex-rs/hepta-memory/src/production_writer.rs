@@ -3476,7 +3476,9 @@ mod takeover_regression_tests {
     }
 }
 
-#[cfg(all(test, unix))]
+// Keep the test gate explicit so Clippy recognizes the test-only fixtures.
+#[cfg(test)]
+#[cfg(unix)]
 mod final_use_dispatch_tests {
     use super::*;
     use codex_hepta_contracts::FinalUseGrant;
