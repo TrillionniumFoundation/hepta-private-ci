@@ -7,8 +7,11 @@ from pathlib import Path
 
 
 class ClippyQueryCrLfTests(unittest.TestCase):
-    def test_native_crlf_labels_and_embedded_cr(self):
-        source = Path(__file__).resolve().parents[2] / "scripts/list-bazel-clippy-targets.sh"
+    def test_native_crlf_labels_and_embedded_cr(self) -> None:
+        source = (
+            Path(__file__).resolve().parents[2]
+            / "scripts/list-bazel-clippy-targets.sh"
+        )
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)
             wrapper = root / "scripts/list-bazel-clippy-targets.sh"
@@ -33,7 +36,12 @@ class ClippyQueryCrLfTests(unittest.TestCase):
                 self.assertEqual(result.returncode, 0, result.stderr)
                 self.assertEqual(
                     result.stdout,
-                    b"//codex-rs/...\n-//codex-rs/v8-poc:all\n//fake:one\n//fake:two\rbroken\n",
+                    (
+                        b"//codex-rs/...\n"
+                        b"-//codex-rs/v8-poc:all\n"
+                        b"//fake:one\n"
+                        b"//fake:two\rbroken\n"
+                    ),
                 )
 
 
