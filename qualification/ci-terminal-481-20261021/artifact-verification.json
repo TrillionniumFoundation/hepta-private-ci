@@ -1,0 +1,126 @@
+{
+  "artifacts": [
+    {
+      "archive": "architecture-source-481.zip",
+      "bytes": 98950,
+      "sha256": "8b21a38591b21e3e57f9c276108375d1288d5d663f7888510e994f42d66a8a48",
+      "upload_job": 119168737606,
+      "upload_digest_matches": true,
+      "candidate": {
+        "base_sha": "57636c7a17d4847eb5fd712409816fd040b4e90f",
+        "lane": "source-head",
+        "native_execution_required": true,
+        "requires_source_head_success": false,
+        "schema_version": 1,
+        "source_sha": "48177153ad04605338c3a9a8dbd17defee9981bc",
+        "source_tree": "22e14fcd85f7a3f2c5dc8f3a1bdb17efc81b4d62",
+        "tested_sha": "48177153ad04605338c3a9a8dbd17defee9981bc",
+        "tested_tree": "22e14fcd85f7a3f2c5dc8f3a1bdb17efc81b4d62"
+      },
+      "verified_command_records": 31
+    },
+    {
+      "archive": "architecture-base-576-481.zip",
+      "bytes": 10891,
+      "sha256": "3950a485e290dcca44264872a79ca8f085bfb93e85ca97599c51b9ade31001c1",
+      "upload_job": 119168737895,
+      "upload_digest_matches": true,
+      "candidate": {
+        "base_sha": "57636c7a17d4847eb5fd712409816fd040b4e90f",
+        "lane": "base-merge",
+        "native_execution_required": false,
+        "requires_source_head_success": true,
+        "schema_version": 1,
+        "source_sha": "48177153ad04605338c3a9a8dbd17defee9981bc",
+        "source_tree": "22e14fcd85f7a3f2c5dc8f3a1bdb17efc81b4d62",
+        "tested_sha": "4a6507e8ce71fd88bcfbd435647b7a0ac2b25f64",
+        "tested_tree": "22e14fcd85f7a3f2c5dc8f3a1bdb17efc81b4d62"
+      },
+      "verified_command_records": 4
+    },
+    {
+      "archive": "ui-source-summary-481.zip",
+      "bytes": 308911,
+      "sha256": "470d17ac11c9fdcc487e36a007461a72e5d80d424d0c4762e1e46840ecd7e690",
+      "upload_job": 119176036877,
+      "upload_digest_matches": true,
+      "tested_sha": "48177153ad04605338c3a9a8dbd17defee9981bc",
+      "inventory_qualification_field": false,
+      "inventory_total_files": 1740,
+      "verified_summary_members": 12,
+      "other_artifact_members_downloaded": false,
+      "browser_results": {
+        "default": {
+          "stats": {
+            "startTime": "2026-10-21T10:59:16.695Z",
+            "duration": 146816.034,
+            "expected": 6,
+            "skipped": 0,
+            "unexpected": 0,
+            "flaky": 0
+          },
+          "pixel_passed": true,
+          "pixel_result_records": 60
+        },
+        "fixtures": {
+          "stats": {
+            "startTime": "2026-10-21T11:08:31.628Z",
+            "duration": 281934.388,
+            "expected": 9,
+            "skipped": 0,
+            "unexpected": 0,
+            "flaky": 0
+          },
+          "pixel_passed": true,
+          "pixel_result_records": 78
+        }
+      },
+      "ui_source_identity_sha256": "5b3ffd2bdcd76285cccd7602ab8a101f6034b4bfb7809fd8d6c5002fe6953efb",
+      "ui_source_identity_file_count": 85,
+      "browser_runtime": "rust-makepad-wasm"
+    },
+    {
+      "archive": "ui-base-summary-576-481.zip",
+      "bytes": 308579,
+      "sha256": "634393d7cf3b30ddb6f9962e6e40d3f816b87789ccfd1c97889071decc56b24d",
+      "upload_job": 119176036978,
+      "upload_digest_matches": true,
+      "tested_sha": "97873c57ecff937b5f445dfa23b5b32a00595048",
+      "inventory_qualification_field": false,
+      "inventory_total_files": 1740,
+      "verified_summary_members": 12,
+      "other_artifact_members_downloaded": false,
+      "browser_results": {
+        "default": {
+          "stats": {
+            "startTime": "2026-10-21T11:15:30.131Z",
+            "duration": 124266.63100000001,
+            "expected": 6,
+            "skipped": 0,
+            "unexpected": 0,
+            "flaky": 0
+          },
+          "pixel_passed": true,
+          "pixel_result_records": 60
+        },
+        "fixtures": {
+          "stats": {
+            "startTime": "2026-10-21T11:22:58.278Z",
+            "duration": 230949.788,
+            "expected": 9,
+            "skipped": 0,
+            "unexpected": 0,
+            "flaky": 0
+          },
+          "pixel_passed": true,
+          "pixel_result_records": 78
+        }
+      },
+      "ui_source_identity_sha256": "5b3ffd2bdcd76285cccd7602ab8a101f6034b4bfb7809fd8d6c5002fe6953efb",
+      "ui_source_identity_file_count": 85,
+      "browser_runtime": "rust-makepad-wasm"
+    }
+  ],
+  "v8_windows_x64_scope": "Original job 119171686656 builds the ptrcomp sandbox pair and compiles/links the POC with --no-default-features --features sandbox --no-run; no test-execution claim is made for that link-smoke step.",
+  "denial_log_retrieval": "Cargo-deny full log could not be obtained: two dedicated log calls returned Transport closed; generic fetch explicitly rejects this endpoint. The original job success remains in the recorded job status."
+}
