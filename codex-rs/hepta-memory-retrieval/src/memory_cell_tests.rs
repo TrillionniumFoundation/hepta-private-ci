@@ -873,3 +873,51 @@ fn empty_pre_tick_commitment_binds_the_actual_cue() {
     assert_ne!(original.admission_input_digest, changed.admission_input_digest);
     assert_ne!(original.admission_plan_digest, changed.admission_plan_digest);
 }
+
+#[test]
+fn shadow_admission_rejects_per_cell_overbudget_before_first_tick() {
+    let fixture = shadow_fixture(true);
+    let mut first = meta_spec(&fixture);
+    // An actual first tick would reject this incomplete generated input.
+    first.generated_input.batches.clear();
+
+    let mut second = meta_spec(&fixture);
+    second.manifest.cell_id = id("memory-cell:semantic:2");
+    second.manifest.role = MemoryCellRoleV1::Semantic;
+    second.tick_input.cell_id = second.manifest.cell_id.clone();
+    second.tick_input.resource_budget_units = 10;
+    // The claimed reservation is 20, which exceeds the Cell-local ceiling.
+    assert!(second.resource_cost_units > second.tick_input.resource_budget_units);
+
+    let rejected = crate::run_memory_meta_batch_shadow_v1(
+        &meta_policy(&fixture),
+        &fixture.cue,
+        &fixture.policy,
+        &fixture.snapshot,
+        &fixture.dynamics,
+        &[first.clone(), second.clone()],
+    );
+    assert!(matches!(
+        rejected,
+        Err(crate::MemoryMetaBatchErrorV1::Contract(
+            codex_hepta_cognitive_types::hnmf::HnmfContractError::Conflict(
+                "memory meta per-cell budget"
+            )
+        ))
+    ));
+
+    let rejected = crate::plan_memory_meta_pre_ticks_shadow_v1(
+        &meta_policy(&fixture),
+        &fixture.cue,
+        &fixture.snapshot,
+        &[first, second],
+    );
+    assert!(matches!(
+        rejected,
+        Err(crate::MemoryMetaBatchErrorV1::Contract(
+            codex_hepta_cognitive_types::hnmf::HnmfContractError::Conflict(
+                "memory meta per-cell budget"
+            )
+        ))
+    ));
+}
