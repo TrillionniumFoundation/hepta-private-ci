@@ -49,6 +49,7 @@ struct DiffCacheKey {
 pub struct TurnDiffTracker {
     valid: bool,
     display_roots_by_environment: HashMap<String, PathUri>,
+    display_root_candidates_by_environment: HashMap<String, Vec<PathUri>>,
     baseline_by_path: HashMap<TrackedPath, TrackedContent>,
     current_by_path: HashMap<TrackedPath, TrackedContent>,
     origin_by_current_path: HashMap<TrackedPath, TrackedPath>,
@@ -64,6 +65,7 @@ impl Default for TurnDiffTracker {
         Self {
             valid: true,
             display_roots_by_environment: HashMap::new(),
+            display_root_candidates_by_environment: HashMap::new(),
             baseline_by_path: HashMap::new(),
             current_by_path: HashMap::new(),
             origin_by_current_path: HashMap::new(),
@@ -81,11 +83,23 @@ impl TurnDiffTracker {
         Self::default()
     }
 
+    /// Repeated environment IDs provide display roots in preference order. Each
+    /// environment uses one root for all of its changes so paths cannot alias.
     pub fn with_environment_display_roots(
         display_roots: impl IntoIterator<Item = (String, PathUri)>,
     ) -> Self {
         let mut tracker = Self::new();
-        tracker.display_roots_by_environment = display_roots.into_iter().collect();
+        for (environment_id, root) in display_roots {
+            tracker
+                .display_roots_by_environment
+                .entry(environment_id.clone())
+                .or_insert_with(|| root.clone());
+            tracker
+                .display_root_candidates_by_environment
+                .entry(environment_id)
+                .or_default()
+                .push(root);
+        }
         tracker
     }
 
@@ -120,6 +134,30 @@ impl TurnDiffTracker {
     }
 
     fn refresh_unified_diff(&mut self) {
+        for (environment_id, candidates) in &self.display_root_candidates_by_environment {
+            if candidates.len() < 2 {
+                continue;
+            }
+            let root = candidates
+                .iter()
+                .find(|root| {
+                    self.baseline_by_path
+                        .keys()
+                        .chain(self.current_by_path.keys())
+                        .filter(|path| &path.environment_id == environment_id)
+                        .all(|path| path.path.relative_path_from(root).is_some())
+                })
+                .or_else(|| candidates.last());
+            if let Some(root) = root
+                && self.display_roots_by_environment.get(environment_id) != Some(root)
+            {
+                self.display_roots_by_environment
+                    .insert(environment_id.clone(), root.clone());
+                // Cached renderings include their path headers. A root change
+                // must rerender earlier changes with the same new display root.
+                self.rendered_diffs.clear();
+            }
+        }
         let rename_pairs = self.rename_pairs();
         let paired_destinations = rename_pairs.values().cloned().collect::<HashSet<_>>();
         let mut handled = HashSet::new();

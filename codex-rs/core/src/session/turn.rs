@@ -852,10 +852,15 @@ pub(crate) async fn run_turn(
 #[instrument(level = "trace", skip_all)]
 async fn turn_diff_display_roots(step_context: &StepContext) -> Vec<(String, PathUri)> {
     let mut display_roots = Vec::new();
+    let cwd_relative = step_context
+        .turn
+        .config
+        .features
+        .enabled(Feature::CwdRelativeTurnDiffs);
     for turn_environment in step_context.environments.turn_environments() {
         let cwd = turn_environment.cwd();
-        // A turn cwd is expected to be a directory. If it is a file, the failed `<cwd>/.git` probe
-        // is ignored and ancestor search continues from its parent.
+        // A turn cwd is expected to be a directory. If it is a file, the failed
+        // `<cwd>/.git` probe is ignored and ancestor search continues from its parent.
         let root = find_nearest_ancestor_with_markers(
             turn_environment.environment.get_filesystem().as_ref(),
             cwd,
@@ -867,6 +872,12 @@ async fn turn_diff_display_roots(step_context: &StepContext) -> Vec<(String, Pat
         .ok()
         .flatten()
         .unwrap_or_else(|| cwd.clone());
+        if cwd_relative && root != *cwd {
+            display_roots.push((
+                turn_environment.selection.environment_id.clone(),
+                cwd.clone(),
+            ));
+        }
         display_roots.push((turn_environment.selection.environment_id.clone(), root));
     }
     display_roots
