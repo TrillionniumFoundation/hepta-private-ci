@@ -16,6 +16,8 @@ from typing import Mapping
 
 import torch
 from torch import nn
+from torch.optim.optimizer import (_global_optimizer_post_hooks,
+                                   _global_optimizer_pre_hooks)
 
 ALLOWED_MODALITIES = ("text", "image", "audio", "video", "ui_event")
 TEMPORAL_MODALITIES = frozenset(("audio", "video", "ui_event"))
@@ -231,6 +233,12 @@ def _verify_optimizer_lifecycle(optimizer: torch.optim.Optimizer) -> None:
     """
     if type(optimizer) not in (torch.optim.SGD, torch.optim.AdamW):
         raise LatentBridgeError("unsupported offline optimizer type")
+    # PyTorch dispatches process-wide pre/post step hooks even when the
+    # instance hook dicts are empty. A global hook can mutate a foreign Cell.
+    # Fail closed before any projector work and after hooks/before the step.
+    # This relies on the pinned PyTorch 2.10 global hook registries.
+    if _global_optimizer_pre_hooks or _global_optimizer_post_hooks:
+        raise LatentBridgeError("global offline optimizer step hooks are unsupported")
     # Stock SGD/AdamW inherit these methods from Optimizer in the pinned
     # PyTorch runtime. Instance shadowing is never authorized.
     if (any(name in vars(optimizer) for name in (

@@ -912,6 +912,86 @@ class SharedMultimodalBridgeTests(unittest.TestCase):
         torch.testing.assert_close(
             next(student.parameters()), before, rtol=0, atol=0)
 
+    def test_global_step_hooks_cannot_mutate_foreign_cell(self):
+        from torch.optim.optimizer import (register_optimizer_step_post_hook,
+                                           register_optimizer_step_pre_hook)
+        for register in (register_optimizer_step_pre_hook,
+                         register_optimizer_step_post_hook):
+            with self.subTest(hook=register.__name__):
+                bridge = self.stem()
+                student = build_encoder(StemSpec('tiny_training_only', 32, 1, 4),
+                                        device='cpu', trainable=True)
+                optimizer = torch.optim.SGD(
+                    list(bridge.parameters()) + list(student.parameters()),
+                    lr=0.01)
+                foreign = torch.nn.Parameter(torch.ones(1))
+                before = foreign.detach().clone()
+                calls = [0]
+
+                def hostile(*_args):
+                    calls[0] += 1
+                    with torch.no_grad():
+                        foreign.add_(7)
+
+                handle = register(hostile)
+                try:
+                    with self.assertRaisesRegex(
+                            LatentBridgeError, 'global offline optimizer step hooks'):
+                        shadow_distill_step(
+                            student, bridge, {'text': torch.ones(2, 32)},
+                            {'text': 'a' * 64}, torch.ones(2, 32),
+                            optimizer, generation=1)
+                finally:
+                    handle.remove()
+                self.assertEqual(calls[0], 0)
+                torch.testing.assert_close(foreign, before, rtol=0, atol=0)
+
+    def test_late_global_step_hook_registration_blocks_training(self):
+        from torch.optim.optimizer import register_optimizer_step_pre_hook
+        # Projector and Student forward hooks execute after the first
+        # preflight, at different checkpoints before a physical step.
+        for injection_point in ('projector', 'student'):
+            with self.subTest(injection_point=injection_point):
+                bridge = self.stem()
+                student = build_encoder(StemSpec('tiny_training_only', 32, 1, 4),
+                                        device='cpu', trainable=True)
+                optimizer = torch.optim.AdamW(
+                    list(bridge.parameters()) + list(student.parameters()),
+                    lr=0.01)
+                foreign = torch.nn.Parameter(torch.ones(1))
+                before = foreign.detach().clone()
+                weight = next(student.parameters())
+                weight_before = weight.detach().clone()
+                calls = [0]
+                global_handle = [None]
+
+                def hostile(*_args):
+                    calls[0] += 1
+                    with torch.no_grad():
+                        foreign.add_(9)
+
+                def register_late(_module, _inputs, _output):
+                    global_handle[0] = register_optimizer_step_pre_hook(hostile)
+
+                module = (bridge.projectors['text'] if injection_point == 'projector'
+                          else student)
+                hook = module.register_forward_hook(register_late)
+                try:
+                    with self.assertRaisesRegex(
+                            LatentBridgeError, 'global offline optimizer step hooks'):
+                        shadow_distill_step(
+                            student, bridge, {'text': torch.ones(2, 32)},
+                            {'text': 'a' * 64}, torch.ones(2, 32),
+                            optimizer, generation=1)
+                finally:
+                    hook.remove()
+                    if global_handle[0] is not None:
+                        global_handle[0].remove()
+                self.assertIsNotNone(global_handle[0])
+                self.assertEqual(calls[0], 0)
+                torch.testing.assert_close(foreign, before, rtol=0, atol=0)
+                torch.testing.assert_close(weight, weight_before, rtol=0, atol=0)
+
 
 if __name__ == '__main__':
     unittest.main()
