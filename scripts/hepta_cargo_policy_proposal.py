@@ -135,14 +135,23 @@ def execute(name, extra_env=None):
     record = next(item for item in records if item["name"] == name)
     record.update(status="passed" if result_code == 0 else "failed", exit_code=result_code, finished_unix_ns=time.time_ns(), output_state=state())
     if name in SERVICE_COMMANDS and name != "vendor-doctests":
-        junit = Path(os.environ["CARGO_TARGET_DIR"]) / "nextest/local/junit.xml"
-        if junit.is_file() and junit.stat().st_mtime_ns >= record["started_unix_ns"]:
+        metadata_path = EVIDENCE / ("harness-metadata.json" if name == "vendor-tests" else "metadata.json")
+        workspace = Path(json.loads(metadata_path.read_text())["workspace_root"])
+        # nextest 0.9.103 store.dir is relative to its workspace, not CARGO_TARGET_DIR.
+        junit = workspace / "target/nextest/local/junit.xml"
+        report = {"source_path": str(junit), "workspace_metadata": metadata_path.name, "workspace_metadata_sha256": hashlib.sha256(metadata_path.read_bytes()).hexdigest(), "exists": junit.is_file(), "fresh": False, "copied": False}
+        if junit.is_file() and not junit.is_symlink():
+            report.update(bytes=junit.stat().st_size, modified_unix_ns=junit.stat().st_mtime_ns, sha256=hashlib.sha256(junit.read_bytes()).hexdigest())
+            report["fresh"] = report["modified_unix_ns"] >= record["started_unix_ns"]
+        if report["fresh"]:
             shutil.copyfile(junit, EVIDENCE / (name + ".junit.xml"))
             record["junit"] = name + ".junit.xml"
+            report["copied"] = True
         elif name == "vendor-tests" and result_code == 0:
             # A green test command without attributable per-test evidence is not green.
             record["status"] = "failed"
             record["error"] = f"Expected fresh vendor Nextest JUnit was not produced: {junit}"
+        record["junit_collection"] = report
     if error_message:
         record["error"] = error_message
     if name == "lock-update" and result_code == 0:
