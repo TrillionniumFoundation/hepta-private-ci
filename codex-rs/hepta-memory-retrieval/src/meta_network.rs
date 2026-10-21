@@ -553,6 +553,24 @@ where
 {
     validate_memory_meta_runtime_policies_v1(retrieval_policy, dynamics_policy)?;
     let plan = plan_memory_meta_pre_ticks_shadow_v1(policy, cue, engram_snapshot, cells)?;
+    // Check every admitted generator before consulting the external owner.
+    // A malformed later Cell must neither invoke earlier ticks nor produce
+    // a partial sequence of evidence-verifier calls. Deferred Cells need no
+    // materialized candidate batches.
+    for cell_id in &plan.admitted_cell_ids {
+        let cell = cells
+            .iter()
+            .find(|cell| &cell.manifest.cell_id == cell_id)
+            .ok_or(MemoryMetaBatchErrorV1::Contract(HnmfContractError::Missing(
+                "memory meta admitted cell",
+            )))?;
+        cell.generated_input
+            .validate()
+            .map_err(|source| MemoryMetaBatchErrorV1::Tick {
+                cell_id: cell_id.clone(),
+                source: MemoryCellRuntimeErrorV1::Retrieval(source),
+            })?;
+    }
     let mut admitted_evidence = Vec::with_capacity(plan.admitted_cell_ids.len());
     for cell_id in &plan.admitted_cell_ids {
         let cell = cells
