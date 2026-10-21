@@ -1,0 +1,242 @@
+name: Generate UI security dependency proposal
+
+on:
+  push:
+    branches: [agents/20261021/ui-native-security-generation]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ui-native-security-generation
+  cancel-in-progress: true
+
+jobs:
+  dependency-proposal:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 120
+    env:
+      CARGO_TERM_COLOR: never
+      PYTHONDONTWRITEBYTECODE: "1"
+      CARGO_INCREMENTAL: "0"
+      SOURCE_SHA: ${{ github.sha }}
+    steps:
+      - name: Check out the exact integration proposal
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ env.SOURCE_SHA }}
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Freeze the original source and security policy
+        id: source
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$GITHUB_REPOSITORY" = TrillionniumFoundation/hepta-private-ci
+          test "$GITHUB_REF" = refs/heads/agents/20261021/ui-native-security-generation
+          test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
+          test -z "$(git status --porcelain)"
+          export UI_SECURITY_EVIDENCE="$RUNNER_TEMP/ui-security-proposal"
+          mkdir "$UI_SECURITY_EVIDENCE"
+          printf 'UI_SECURITY_EVIDENCE=%s\n' "$UI_SECURITY_EVIDENCE" >> "$GITHUB_ENV"
+          python3 - <<'PY'
+          import hashlib
+          import json
+          import os
+          from pathlib import Path
+          import subprocess
+          import tomllib
+
+          toolchain = tomllib.loads(Path("codex-rs/rust-toolchain.toml").read_text())["toolchain"]
+          if toolchain["channel"] != "1.95.0":
+              raise SystemExit("Review the dependency proposal against the changed repository compiler")
+          source = {
+              "commit": os.environ["SOURCE_SHA"],
+              "tree": subprocess.check_output(["git", "rev-parse", "HEAD^{tree}"], text=True).strip(),
+              "run_id": os.environ["GITHUB_RUN_ID"],
+              "run_attempt": os.environ["GITHUB_RUN_ATTEMPT"],
+              "toolchain": toolchain,
+              "deny_policy_sha256": hashlib.sha256(Path("codex-rs/deny.toml").read_bytes()).hexdigest(),
+              "lock_modes": {
+                  name: subprocess.check_output(["git", "ls-tree", "HEAD", "--", name], text=True).split()[0]
+                  for name in ("codex-rs/Cargo.lock", "MODULE.bazel.lock")
+              },
+              "input_head_qualified": False,
+          }
+          Path(os.environ["UI_SECURITY_EVIDENCE"], "source.json").write_text(json.dumps(source, indent=2) + "\n")
+          PY
+
+      - name: Prepare the existing project Bazel and Cargo tooling
+        uses: ./.github/actions/prepare-bazel-ci
+        with:
+          target: x86_64-unknown-linux-gnu
+          cache-scope: ui-security-proposal
+
+      - name: Install the repository compiler
+        uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582
+        with:
+          toolchain: 1.95.0
+          components: rustfmt, clippy
+
+      - name: Install the original pinned dependency checker
+        uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
+        with:
+          tool: cargo-deny@0.19.0
+
+      - name: Install the repository test runner
+        uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
+        with:
+          tool: nextest@0.9.103
+
+      - name: Generate Cargo and Bazel locks and run the original security policy
+        id: proposal
+        shell: bash
+        run: |
+          python3 - <<'PY'
+          import hashlib
+          import json
+          import os
+          from pathlib import Path
+          import shlex
+          import shutil
+          import subprocess
+          import time
+
+          evidence = Path(os.environ["UI_SECURITY_EVIDENCE"])
+          plan = [
+              ("cargo-version", ["cargo", "+1.95.0", "--version"], "codex-rs", []),
+              ("deny-version", ["cargo", "+1.95.0", "deny", "--version"], "codex-rs", []),
+              ("webpki", ["cargo", "+1.95.0", "update", "-p", "rustls-webpki@0.103.15", "--precise", "0.103.16"], "codex-rs", []),
+              ("roots", ["cargo", "+1.95.0", "update", "-p", "webpki-roots@1.0.9", "--precise", "1.0.10"], "codex-rs", ["webpki"]),
+              ("root-certs", ["cargo", "+1.95.0", "update", "-p", "webpki-root-certs@1.0.9", "--precise", "1.0.10"], "codex-rs", ["roots"]),
+              ("metadata", ["cargo", "+1.95.0", "metadata", "--locked", "--all-features", "--format-version=1"], "codex-rs", ["root-certs"]),
+              ("deny", ["cargo", "+1.95.0", "deny", "--locked", "--all-features", "check", "--config", "deny.toml"], "codex-rs", ["metadata"]),
+              ("bazel-lock-update", ["just", "bazel-lock-update"], ".", ["metadata"]),
+              ("bazel-lock-check", ["just", "bazel-lock-check"], ".", ["bazel-lock-update"]),
+              ("bazel-lock-repeat", ["just", "bazel-lock-update"], ".", ["bazel-lock-update"]),
+              ("bazel-lock-repeat-equal", ["cmp", str(evidence / "MODULE.bazel.lock.first"), "MODULE.bazel.lock"], ".", ["bazel-lock-repeat"]),
+              ("i18n-config-tests", ["just", "test", "-p", "i18n-config", "--lib", "--locked", "--no-tests=fail", "--retries", "0"], ".", ["metadata"]),
+              ("secrets-consumer-tests", ["just", "test", "-p", "codex-secrets", "--lib", "--locked", "--no-tests=fail", "--retries", "0"], ".", ["metadata"]),
+          ]
+          records = [{"name": name, "argv": argv, "cwd": cwd, "requires": requires,
+                      "status": "not_started", "exit_code": None, "log": name + ".log"}
+                     for name, argv, cwd, requires in plan]
+          by_name = {record["name"]: record for record in records}
+          manifest = evidence / "commands.json"
+          for record in records:
+              blocked = [name for name in record["requires"] if by_name[name]["status"] != "passed"]
+              if blocked:
+                  record.update(status="blocked", blocked_by=blocked)
+                  manifest.write_text(json.dumps(records, indent=2) + "\n")
+                  continue
+              record.update(status="running", started_unix_ns=time.time_ns())
+              if record["name"] == "deny":
+                  record["checked_cargo_lock_sha256"] = hashlib.sha256(Path("codex-rs/Cargo.lock").read_bytes()).hexdigest()
+              manifest.write_text(json.dumps(records, indent=2) + "\n")
+              print("Running " + shlex.join(record["argv"]), flush=True)
+              with (evidence / record["log"]).open("wb") as log:
+                  try:
+                      result = subprocess.run(record["argv"], cwd=record["cwd"], stdout=log,
+                                              stderr=subprocess.STDOUT, check=False)
+                      record.update(exit_code=result.returncode,
+                                    status="passed" if result.returncode == 0 else "failed")
+                  except OSError as error:
+                      record.update(status="failed_to_start", error=str(error))
+                      log.write((str(error) + "\n").encode())
+              record["finished_unix_ns"] = time.time_ns()
+              if record["name"] == "deny":
+                  record["cargo_lock_sha256_after_check"] = hashlib.sha256(Path("codex-rs/Cargo.lock").read_bytes()).hexdigest()
+              if record["name"] == "bazel-lock-update" and record["status"] == "passed":
+                  shutil.copyfile("MODULE.bazel.lock", evidence / "MODULE.bazel.lock.first")
+              manifest.write_text(json.dumps(records, indent=2) + "\n")
+              print(f'{record["name"]}: {record["status"]}, exit {record["exit_code"]}', flush=True)
+          if any(record["status"] != "passed" for record in records):
+              raise SystemExit(1)
+          PY
+
+      - name: Preserve actual postimages and verify the source boundary
+        if: always() && steps.source.outcome == 'success'
+        shell: bash
+        run: |
+          python3 - <<'PY'
+          import hashlib
+          import json
+          import os
+          from pathlib import Path
+          import shutil
+          import subprocess
+          import tomllib
+
+          evidence = Path(os.environ["UI_SECURITY_EVIDENCE"])
+          source = json.loads((evidence / "source.json").read_text())
+          allowed = {"codex-rs/Cargo.lock", "MODULE.bazel.lock"}
+          def paths(args):
+              return [p for p in subprocess.check_output(args, text=True).split("\0") if p]
+          changed = paths(["git", "diff", "HEAD", "--name-only", "--no-renames", "-z"])
+          untracked = paths(["git", "ls-files", "--others", "--exclude-standard", "-z"])
+          unexpected = sorted((set(changed) - allowed) | set(untracked))
+          index_changed = paths(["git", "diff", "--cached", "--name-only", "-z"])
+          lock = tomllib.loads(Path("codex-rs/Cargo.lock").read_text())
+          selected = {name: sorted(p["version"] for p in lock["package"] if p["name"] == name)
+                      for name in ("rustls-webpki", "webpki-roots", "webpki-root-certs", "basic-toml")}
+          expected = {"rustls-webpki": ["0.103.16"], "webpki-roots": ["1.0.10"],
+                      "webpki-root-certs": ["1.0.10"], "basic-toml": []}
+          postimages = []
+          for name in sorted(allowed):
+              path = Path(name)
+              if not path.is_file() or path.is_symlink():
+                  raise SystemExit("Invalid generated lock path: " + name)
+              data = path.read_bytes()
+              mode = "100755" if path.stat().st_mode & 0o111 else "100644"
+              target = evidence / "postimage" / name
+              target.parent.mkdir(parents=True, exist_ok=True)
+              shutil.copyfile(path, target)
+              postimages.append({"path": name, "bytes": len(data), "mode": mode,
+                                 "sha256": hashlib.sha256(data).hexdigest(),
+                                 "git_blob": hashlib.sha1(b"blob " + str(len(data)).encode() + b"\0" + data).hexdigest()})
+          policy_equal = hashlib.sha256(Path("codex-rs/deny.toml").read_bytes()).hexdigest() == source["deny_policy_sha256"]
+          commit_equal = subprocess.check_output(["git", "rev-parse", "HEAD"], text=True).strip() == source["commit"]
+          tree_equal = subprocess.check_output(["git", "rev-parse", "HEAD^{tree}"], text=True).strip() == source["tree"]
+          with (evidence / "generated.patch").open("wb") as output:
+              subprocess.run(["git", "diff", "HEAD", "--binary", "--no-renames"], stdout=output, check=True)
+          with (evidence / "diff-check.log").open("wb") as output:
+              diff_check = subprocess.run(["git", "diff", "--check"], stdout=output, stderr=subprocess.STDOUT, check=False)
+          commands_path = evidence / "commands.json"
+          commands = json.loads(commands_path.read_text()) if commands_path.is_file() else []
+          complete = len(commands) == 13 and all(c["status"] == "passed" and c["exit_code"] == 0 for c in commands)
+          deny = next((command for command in commands if command["name"] == "deny"), {})
+          delivered_cargo_sha256 = next(item["sha256"] for item in postimages if item["path"] == "codex-rs/Cargo.lock")
+          checked_lock_equal = (deny.get("checked_cargo_lock_sha256") == delivered_cargo_sha256
+                                and deny.get("cargo_lock_sha256_after_check") == delivered_cargo_sha256)
+          modes_equal = all(item["mode"] == source["lock_modes"][item["path"]] for item in postimages)
+          boundary = (not unexpected and not index_changed and policy_equal and commit_equal and tree_equal
+                      and checked_lock_equal and modes_equal and diff_check.returncode == 0)
+          result = {"source": source, "changed_paths": changed, "unexpected_paths": unexpected,
+                    "index_changed_paths": index_changed, "security_policy_unchanged": policy_equal,
+                    "checked_cargo_lock_matches_postimage": checked_lock_equal,
+                    "lock_file_modes_unchanged": modes_equal,
+                    "source_boundary_passed": boundary, "dependency_versions": selected,
+                    "expected_versions": expected, "all_commands_passed": complete,
+                    "postimages": postimages, "input_head_qualified": False,
+                    "review_and_commit_then_original_ci_required": True}
+          (evidence / "result.json").write_text(json.dumps(result, indent=2) + "\n")
+          inventory = []
+          for path in sorted(evidence.rglob("*")):
+              if path.is_file():
+                  data = path.read_bytes()
+                  inventory.append({"path": str(path.relative_to(evidence)), "bytes": len(data),
+                                    "sha256": hashlib.sha256(data).hexdigest()})
+          (evidence / "artifact-inventory.json").write_text(json.dumps(inventory, indent=2) + "\n")
+          if not boundary or not complete or selected != expected:
+              raise SystemExit(1)
+          PY
+
+      - name: Retain proposal evidence on success or failure
+        if: always() && steps.source.outcome == 'success'
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: ui-security-proposal-${{ env.SOURCE_SHA }}-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ env.UI_SECURITY_EVIDENCE }}/
+          if-no-files-found: error
+          retention-days: 7
