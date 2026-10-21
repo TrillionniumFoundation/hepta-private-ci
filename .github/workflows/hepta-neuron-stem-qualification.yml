@@ -1,0 +1,206 @@
+name: Hepta Neuron Stem Shadow Qualification
+
+on:
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - "qualification/neuron-stem/**"
+      - "codex-rs/hepta-infer-core/**"
+      - "codex-rs/git-utils/src/git_process.rs"
+      - "codex-rs/git-utils/src/git_process_tests.rs"
+      - "codex-rs/cli/Cargo.toml"
+      - "codex-rs/cli/src/codex.rs"
+      - "codex-rs/cli/src/hepta.rs"
+      - "codex-rs/cli/src/main.rs"
+      - "codex-rs/hepta-agentd/src/state.rs"
+      - "codex-rs/hepta-agentd/src/state_isolation_tests.rs"
+      - "codex-rs/hepta-prompt-registry/**"
+      - "codex-rs/hepta-contracts/src/authority_lease*.rs"
+      - "codex-rs/hepta-contracts/src/final_use_store*.rs"
+      - "codex-rs/utils/path-utils/**"
+      - "codex-rs/hepta-agentd/src/prompt_runtime.rs"
+      - "codex-rs/hepta-agentd/src/prompt_runtime_tests.rs"
+      - "codex-rs/Cargo.lock"
+      - ".github/workflows/hepta-neuron-stem-qualification.yml"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: hepta-neuron-stem-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  offline-contracts:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          persist-credentials: false
+      - name: Verify exact-source Python qualification
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 --version
+          python3 -m compileall -q qualification/neuron-stem
+          PYTHONPATH=qualification/neuron-stem python3 -m unittest discover -s qualification/neuron-stem -p 'test_*.py' -v
+          python3 qualification/neuron-stem/qualified_eval.py matrix \
+            --models qualification/neuron-stem/models.json \
+            --out stem-matrix.json
+          python3 - stem-matrix.json <<'PY'
+          import json,sys
+          plan=json.load(open(sys.argv[1], encoding="utf-8"))
+          assert len(plan["arms"]) == 4*4*6*4*3
+          assert len(plan["scale_arms"]) == 4*4*3*3*3
+          assert plan["production_promotion_permitted"] is False
+          assert all(arm["activation"]=="shadow" for arm in plan["arms"])
+          PY
+          python3 qualification/neuron-stem/jina_v5_matrix.py \
+            --models qualification/neuron-stem/models.json \
+            --out jina-v5-shadow-matrix.json
+          python3 - jina-v5-shadow-matrix.json <<'PY'
+          import json,sys
+          plan=json.load(open(sys.argv[1], encoding="utf-8"))
+          assert plan["schema"]=="hepta.jina-v5-precommitted-shadow-matrix.v1"
+          assert len(plan["head_arms"]) > 0
+          assert len(plan["resource_arms"]) == 2*4*3*3*3
+          assert len(plan["multimodal_arms"]) == 2*3*2
+          assert plan["production_promotion_permitted"] is False
+          assert plan["independent_ndu_signature_verified"] is False
+          assert all(a["activation"]=="shadow" and a["promotion"] is False
+                     for arm in ("head_arms","resource_arms","multimodal_arms")
+                     for a in plan[arm])
+          PY
+          python3 - <<'PY'
+          import json
+          with open("stem-review-input.json", "w", encoding="utf-8") as f:
+              json.dump({"schema":"hepta.neuron-stem-review-input.v1",
+                         "candidates":[]}, f, sort_keys=True)
+          PY
+          python3 qualification/neuron-stem/review_report.py \
+            --models qualification/neuron-stem/models.json \
+            --manifest stem-review-input.json --out stem-review.json
+          python3 - <<'PY'
+          import json
+          report=json.load(open("stem-review.json", encoding="utf-8"))
+          assert report["rows"][0]["model_id"]=="no-change"
+          assert report["no_change_retained"] is True
+          assert report["production_promotion_permitted"] is False
+          assert all(row["production_promotion_permitted"] is False
+                     for row in report["rows"])
+          assert all(row["decision"]=="未判定" for row in report["rows"][1:])
+          PY
+      - name: Retain immutable qualification matrix
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: neuron-stem-qualification-matrix
+          path: |
+            stem-matrix.json
+            jina-v5-shadow-matrix.json
+            stem-review-input.json
+            stem-review.json
+            stem-review.md
+          if-no-files-found: ignore
+          retention-days: 14
+
+  rust-stem-binding:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    defaults:
+      run:
+        working-directory: codex-rs
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          persist-credentials: false
+      - name: Install pinned Rust 1.95.0 and formatting/clippy tools
+        run: rustup toolchain install 1.95.0 --profile minimal --component rustfmt,clippy
+      - name: Require exact Rust source formatting
+        run: cargo +1.95.0 fmt --all -- --check
+      - name: Compile and execute shared Stem/Neuron contracts
+        run: cargo +1.95.0 test --locked -p codex-hepta-infer-core --lib
+      - name: Require scoped Rust Clippy
+        run: cargo +1.95.0 clippy --locked -p codex-hepta-infer-core --all-targets -- -D warnings
+
+  secure-prompt-owner-platform:
+    name: Secure Prompt Registry OS owner (no authorization)
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-24.04, windows-latest]
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 50
+    defaults:
+      run:
+        working-directory: codex-rs
+    steps:
+      - name: Checkout exact source candidate
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - name: Require exact PR head
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "${{ github.event.pull_request.head.sha || github.sha }}"
+          git diff --check
+      - name: Install pinned compiler
+        shell: bash
+        run: rustup toolchain install 1.95.0 --profile minimal
+      - name: Exercise genuine Unix secure Prompt Registry
+        if: runner.os == 'Linux'
+        shell: bash
+        run: |
+          set -euo pipefail
+          cargo +1.95.0 test --locked -p codex-hepta-prompt-registry --lib
+          cargo +1.95.0 test --locked -p codex-hepta-agentd --lib private_unix_prompt_owner_is_initialized_before_serving
+      - name: Prove genuine Windows private owner ACL, no-reparse, hardlink and recovery
+        if: runner.os == 'Windows'
+        shell: bash
+        run: |
+          set -euo pipefail
+          cargo +1.95.0 test --locked -p codex-utils-path --lib private_state_windows -- --test-threads=1
+          cargo +1.95.0 test --locked -p codex-hepta-prompt-registry --lib windows::tests:: -- --test-threads=1
+          cargo +1.95.0 test --locked -p codex-hepta-contracts --lib windows::tests:: -- --test-threads=1
+          cargo +1.95.0 test --locked -p codex-hepta-agentd --lib windows_prompt_runtime_ -- --test-threads=1
+          cargo +1.95.0 test --locked -p codex-hepta-agentd --lib serving_agent_survives_unrelated_registry_corruption -- --test-threads=1
+      - name: Assert no checkout mutations
+        if: always()
+        shell: bash
+        run: |
+          git diff --check
+          git diff --exit-code
+
+  windows-git-process-tree:
+    name: Windows Git process-tree timeout cleanup (no promotion)
+    runs-on: windows-latest
+    timeout-minutes: 40
+    steps:
+      - name: Checkout exact candidate without stored credentials
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - name: Require exact candidate and clean inputs
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "${{ github.event.pull_request.head.sha || github.sha }}"
+          git diff --check
+      - name: Install pinned Rust compiler
+        shell: bash
+        run: rustup toolchain install 1.95.0 --profile minimal
+      - name: Run real Windows wrapper and child cleanup tests
+        shell: pwsh
+        run: |
+          cargo +1.95.0 test --locked --manifest-path codex-rs/Cargo.toml -p codex-git-utils --lib git_process::tests:: -- --test-threads=1 --nocapture
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+      - name: Require unchanged repository checkout
+        if: always()
+        shell: bash
+        run: |
+          git diff --check
+          git diff --exit-code

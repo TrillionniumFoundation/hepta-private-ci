@@ -1,0 +1,60 @@
+name: Hepta P0 Safe YAML Lockfile Resolver (shadow)
+
+on:
+  push:
+    branches:
+      - qualification/stem-head-single-candidate-20261013
+    paths:
+      - codex-rs/Cargo.toml
+      - codex-rs/windows-sandbox-rs/Cargo.toml
+      - codex-rs/windows-sandbox-rs/tests/helper_manifest.rs
+      - .github/workflows/hepta-p0-safe-yaml-lock.yml
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  resolve-checked-yaml:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 40
+    defaults:
+      run:
+        working-directory: codex-rs
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          persist-credentials: false
+      - name: Install pinned owner toolchain
+        run: rustup toolchain install 1.95.0 --profile minimal
+      - name: Resolve exact changed workspace dependencies without writing upstream
+        run: cargo +1.95.0 update --workspace
+      - name: Verify retired YAML dependency really left the lock
+        run: |
+          python3 - <<'PY'
+          import pathlib
+          import tomllib
+          graph = tomllib.loads(pathlib.Path("Cargo.lock").read_text(encoding="utf-8"))
+          names = {item["name"] for item in graph["package"]}
+          assert "noyalib-serde-yaml" in names, "pinned replacement absent"
+          assert "noyalib" in names, "pure-Rust YAML parser absent"
+          assert "unsafe-libyaml" not in names, "unmaintained YAML still reachable"
+          assert "serde_yaml" not in names, "archived serde_yaml still reachable"
+          print("PINNED_PURE_RUST_YAML_DEPENDENCY_GRAPH_OK")
+          PY
+      - name: Preserve exact generated full lock content for independent audit
+        run: |
+          echo 'HEPTA_P0_LOCKFILE_BEGIN'
+          cat Cargo.lock
+          echo 'HEPTA_P0_LOCKFILE_END'
+      - name: Check real YAML-consuming owner crates with immutable resolved lock
+        run: |
+          cargo +1.95.0 check --locked -p codex-core-plugins -p codex-skills -p codex-skills-extension -p codex-external-agent-migration
+      - name: Preserve generated Cargo.lock without repository write permission
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: hepta-p0-checked-safe-yaml-lockfile
+          path: codex-rs/Cargo.lock
+          if-no-files-found: error
+          retention-days: 7

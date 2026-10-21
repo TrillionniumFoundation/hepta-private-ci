@@ -27,6 +27,13 @@ use crate::StableMemoryId;
 use crate::cognitive_store::unavailable;
 use crate::framing::frame_part;
 
+/// One exact revision target. Its identity and CAS expectation cannot be
+/// accidentally reordered or independently substituted at transaction entry.
+pub(crate) struct CognitiveCorrectionTarget<'a> {
+    pub(crate) memory_id: &'a StableMemoryId,
+    pub(crate) expected_revision: u64,
+}
+
 const EXTRACTOR_CONTRACT: &str = "structured_cognitive_kg_v1";
 pub(crate) const LEGACY_ZERO_FACT_CONTRACT: &str = "legacy_memory_api_zero_v1";
 const MAX_ENTITIES: usize = 64;
@@ -142,8 +149,10 @@ impl CognitiveStore {
             .correct_with_kg_tx(
                 &mut transaction,
                 access,
-                memory_id,
-                expected_revision,
+                CognitiveCorrectionTarget {
+                    memory_id,
+                    expected_revision,
+                },
                 source,
                 draft,
                 facts,
@@ -157,12 +166,15 @@ impl CognitiveStore {
         &self,
         transaction: &mut Transaction<'_, Sqlite>,
         access: &CognitiveAccess,
-        memory_id: &StableMemoryId,
-        expected_revision: u64,
+        target: CognitiveCorrectionTarget<'_>,
         source: &SourceDraft,
         draft: &MemoryRevisionDraft,
         facts: &KgFactSetDraft,
     ) -> Result<CognitiveWriteReceipt, CognitiveStoreError> {
+        let CognitiveCorrectionTarget {
+            memory_id,
+            expected_revision,
+        } = target;
         validate_source_binding(source, &draft.scope, &draft.content)?;
         if draft.verification != MemoryVerification::Verified
             || draft.lifecycle != MemoryLifecycleState::Active

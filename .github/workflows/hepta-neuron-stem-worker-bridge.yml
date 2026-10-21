@@ -1,0 +1,95 @@
+name: Hepta Stem-Head Worker Bridge Shadow Qualification
+
+on:
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - "codex-rs/hepta-infer-core/**"
+      - "codex-rs/hepta-infer-worker-host/**"
+      - "codex-rs/hepta-context-compiler/**"
+      - "codex-rs/hepta-memory/**"
+      - "codex-rs/hepta-automation/**"
+      - "codex-rs/hepta-agentd/src/automation_effect_host.rs"
+      - "codex-rs/ext/hepta-memory/**"
+      - "codex-rs/hepta-agentd/src/test_support.rs"
+      - "qualification/neuron-stem/stem_worker_binding.py"
+      - "qualification/neuron-stem/test_stem_worker_binding.py"
+      - ".github/workflows/hepta-neuron-stem-worker-bridge.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  python-byte-conformance:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          persist-credentials: false
+      - name: Compile and test exact-byte Python/Rust scoped Stem fixture
+        run: |
+          python3 -m compileall -q qualification/neuron-stem/stem_worker_binding.py qualification/neuron-stem/test_stem_worker_binding.py
+          PYTHONPATH=qualification/neuron-stem python3 -m unittest discover -s qualification/neuron-stem -p 'test_stem_worker_binding.py' -v
+
+  transitive-owner-replay-contracts:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 50
+    defaults:
+      run:
+        working-directory: codex-rs
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          persist-credentials: false
+      - name: Install pinned Rust compiler and formatter
+        run: rustup toolchain install 1.95.0 --profile minimal --component rustfmt
+      - name: Enforce exact full-source formatting
+        run: cargo +1.95.0 fmt --all -- --check
+      - name: Execute actual signed TaskFlow/provider-contact and crash-recovery integration fixtures
+        run: cargo +1.95.0 test --locked -p codex-hepta-automation --test authorized_effect
+      - name: Execute canonical circuit, context delivery, memory CAS and lease replay unit tests
+        run: cargo +1.95.0 test --locked -p codex-hepta-automation -p codex-hepta-context-compiler -p codex-hepta-memory --lib
+
+  signed-stem-native-contracts:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    defaults:
+      run:
+        working-directory: codex-rs
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          persist-credentials: false
+      - name: Install exact Rust toolchain
+        run: rustup toolchain install 1.95.0 --profile minimal --component rustfmt
+      - name: Enforce full-repo Rust source format before focused signed contract
+        run: cargo +1.95.0 fmt --all -- --check
+      - name: Exercise loaded Stem/Head and Ed25519 Final-use tests without suppressing E2E
+        run: |
+          cargo +1.95.0 test --locked -p codex-hepta-infer-worker-host --lib 'model_worker::tests::' -- --nocapture
+
+  scoped-stem-worker:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 55
+    defaults:
+      run:
+        working-directory: codex-rs
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          persist-credentials: false
+      - name: Install pinned Rust toolchain and components
+        run: rustup toolchain install 1.95.0 --profile minimal --component rustfmt,clippy
+      - name: Exact source formatting
+        run: cargo +1.95.0 fmt --all -- --check
+      - name: Strict owner and transitive dependency Clippy (before heavyweight E2E)
+        run: cargo +1.95.0 clippy --locked -p codex-hepta-infer-core -p codex-hepta-infer-worker-host --all-targets -- -D warnings
+      - name: Build the exact-source Codex App Server executable for real Agentd E2E
+        run: |
+          cargo +1.95.0 build --locked -p codex-app-server --bin codex-app-server
+          test -x target/debug/codex-app-server
+      - name: Typed inference core and loaded Worker driver unit tests
+        env:
+          HEPTA_TEST_CODEX_EXECUTABLE: ${{ github.workspace }}/codex-rs/target/debug/codex-app-server
+        run: cargo +1.95.0 test --locked -p codex-hepta-infer-core -p codex-hepta-infer-worker-host --lib

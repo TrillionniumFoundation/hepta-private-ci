@@ -1,0 +1,164 @@
+{
+  "schema": "hepta.neuron-stem-candidate-registry.v1",
+  "license_and_remote_code_review_required": true,
+  "models": [
+    {
+      "id": "mmbert-small",
+      "repository": "jhu-clsp/mmBERT-small",
+      "reported_parameters": 140000000,
+      "use": "multilingual_shared_stem"
+    },
+    {
+      "id": "modernbert-base",
+      "repository": "answerdotai/ModernBERT-base",
+      "reported_parameters": 149000000,
+      "use": "english_code_control"
+    },
+    {
+      "id": "jina-v2-base-zh",
+      "repository": "jinaai/jina-embeddings-v2-base-zh",
+      "reported_parameters": 161000000,
+      "requires_pinned_remote_code_review": true,
+      "use": "bilingual_retrieval_control"
+    },
+    {
+      "id": "bge-small-zh",
+      "repository": "BAAI/bge-small-zh-v1.5",
+      "reported_parameters": 24000000,
+      "use": "small_chinese_control"
+    }
+  ],
+  "external_teacher_baselines": [
+    {
+      "id": "laya-421m",
+      "family": "NandhaKishorM/laya",
+      "size_from_hepta_proposal": 421000000,
+      "loaded_only_by_canonical_inference_owner": true
+    },
+    {
+      "id": "laya-multilingual-322m",
+      "family": "Laya Multilingual",
+      "size_from_hepta_proposal": 322000000,
+      "loaded_only_by_canonical_inference_owner": true
+    }
+  ],
+  "locked_revisions": "Per-run full 40-hex model SHA required; never default to a floating main branch",
+  "train_steps": 100,
+  "few_shot_sizes": [
+    8,
+    32,
+    128
+  ],
+  "heads": [
+    "linear",
+    "film",
+    "rank8",
+    "rank16",
+    "mlp",
+    "swiglu"
+  ],
+  "head_parameter_ceilings": [
+    2048,
+    16384,
+    65536,
+    262144
+  ],
+  "representation_modes": [
+    "joint",
+    "sentence",
+    "landmark",
+    "cross_attention"
+  ],
+  "logical_cell_scales": [
+    64,
+    256,
+    1024,
+    4096
+  ],
+  "scaling_factors": {
+    "active_fraction": [
+      0.05,
+      0.25,
+      1
+    ],
+    "input_repeat_fraction": [
+      0,
+      0.5,
+      0.9
+    ],
+    "task_similarity": [
+      "low",
+      "medium",
+      "high"
+    ]
+  },
+  "output_authority": "shadow_only",
+  "jina_v5_models": [
+    {
+      "id": "jina-v5-text-nano",
+      "repository": "jinaai/jina-embeddings-v5-text-nano",
+      "parameters": 239000000,
+      "embedding_dimension": 768,
+      "max_tokens": 8192,
+      "license": "CC-BY-NC-4.0",
+      "runner": "jina_v5_trial.py",
+      "scope": "text",
+      "requires_pinned_remote_code_review": true
+    },
+    {
+      "id": "jina-v5-text-small",
+      "repository": "jinaai/jina-embeddings-v5-text-small",
+      "parameters": 677000000,
+      "embedding_dimension": 1024,
+      "max_tokens": 32768,
+      "license": "CC-BY-NC-4.0",
+      "runner": "jina_v5_trial.py",
+      "scope": "text",
+      "requires_pinned_remote_code_review": true
+    },
+    {
+      "id": "jina-v5-omni-nano",
+      "repository": "jinaai/jina-embeddings-v5-omni-nano",
+      "parameters": 1040000000,
+      "embedding_dimension": 768,
+      "max_tokens": 8192,
+      "license": "CC-BY-NC-4.0",
+      "runner": "jina_v5_multimodal.py",
+      "scope": "omni",
+      "requires_pinned_remote_code_review": true
+    },
+    {
+      "id": "jina-v5-omni-small",
+      "repository": "jinaai/jina-embeddings-v5-omni-small",
+      "parameters": 1740000000,
+      "embedding_dimension": 1024,
+      "max_tokens": 32768,
+      "license": "CC-BY-NC-4.0",
+      "runner": "jina_v5_multimodal.py",
+      "scope": "omni",
+      "requires_pinned_remote_code_review": true
+    }
+  ],
+  "jina_v5_protocol": {
+    "verified_api": "Official SentenceTransformer.encode_query/encode_document; task adapter loaded with default_task",
+    "tasks": [
+      "retrieval",
+      "text-matching",
+      "classification",
+      "clustering"
+    ],
+    "matryoshka_dimensions": [
+      256,
+      512
+    ],
+    "representations": [
+      "joint",
+      "state"
+    ],
+    "cross_attention_claim": false,
+    "training_and_scoring": "shadow_only",
+    "manual_download_approval_required": true,
+    "full_sha_and_remote_code_review_required": true,
+    "independent_signed_ndu_required_for_promotion": true
+  }
+}
