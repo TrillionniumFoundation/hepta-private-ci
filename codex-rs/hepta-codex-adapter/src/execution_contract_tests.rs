@@ -228,3 +228,98 @@ fn terminal_tool_outcome_has_a_nonzero_digest() {
     outcome.validate().expect("valid terminal outcome");
     assert!(!outcome.outcome_digest().is_zero());
 }
+
+#[test]
+fn runtime_receipt_rejects_false_success_and_unknown_failure() {
+    let request = intent();
+    let observed = ToolOutcomeV1 {
+        terminal_observed: true,
+        exit_code: Some(0),
+        stdout_digest: Some(digest("stdout")),
+        stderr_digest: None,
+        retryable: false,
+    };
+    let mut receipt = RuntimeReceiptV1 {
+        execution: ExecutionReceiptV1 {
+            operation_id: request.cell.operation_id.clone(),
+            intent_digest: request.cell.intent_digest(),
+            generation: request.cell.generation,
+            final_payload_digest: request.cell.final_payload.clone(),
+            outcome_digest: Some(observed.outcome_digest()),
+            status: ExecutionStatusV1::Completed,
+            recovery: RecoveryDispositionV1::None,
+            authority: AuthorityPosture::DENY_ALL,
+        },
+        runtime_intent_digest: request.intent_digest(),
+        tool_outcome: observed,
+    };
+    assert_eq!(receipt.validate_against(&request), Ok(()));
+
+    // A successful HTTP/JSONRPC observation is not successful tool execution.
+    receipt.tool_outcome.exit_code = Some(7);
+    receipt.execution.outcome_digest = Some(receipt.tool_outcome.outcome_digest());
+    assert_eq!(
+        receipt.validate_against(&request),
+        Err(ExecutionContractError::StatusOutcomeMismatch)
+    );
+
+    receipt.tool_outcome.exit_code = Some(0);
+    receipt.tool_outcome.retryable = true;
+    receipt.execution.outcome_digest = Some(receipt.tool_outcome.outcome_digest());
+    assert_eq!(
+        receipt.validate_against(&request),
+        Err(ExecutionContractError::StatusOutcomeMismatch)
+    );
+
+    receipt.tool_outcome.retryable = false;
+    receipt.execution.outcome_digest = Some(receipt.tool_outcome.outcome_digest());
+    receipt.execution.recovery = RecoveryDispositionV1::RetryBeforeAdmission;
+    assert_eq!(
+        receipt.validate_against(&request),
+        Err(ExecutionContractError::StatusOutcomeMismatch)
+    );
+
+    receipt.execution.recovery = RecoveryDispositionV1::None;
+    receipt.execution.status = ExecutionStatusV1::Failed;
+    receipt.tool_outcome.terminal_observed = false;
+    receipt.tool_outcome.exit_code = None;
+    receipt.tool_outcome.stdout_digest = None;
+    receipt.execution.outcome_digest = Some(receipt.tool_outcome.outcome_digest());
+    assert_eq!(
+        receipt.validate_against(&request),
+        Err(ExecutionContractError::StatusOutcomeMismatch)
+    );
+
+    // A physical tool result may be failed, but must not be mislabeled as a
+    // pre-admission rejection.
+    receipt.execution.status = ExecutionStatusV1::Rejected;
+    receipt.tool_outcome.terminal_observed = true;
+    receipt.tool_outcome.stdout_digest = Some(digest("rejected-after-effect"));
+    receipt.execution.outcome_digest = Some(receipt.tool_outcome.outcome_digest());
+    assert_eq!(
+        receipt.validate_against(&request),
+        Err(ExecutionContractError::StatusOutcomeMismatch)
+    );
+
+    // Explicit rejection before admission can request a safe retry.
+    receipt.tool_outcome.terminal_observed = false;
+    receipt.tool_outcome.stdout_digest = None;
+    receipt.tool_outcome.retryable = true;
+    receipt.execution.outcome_digest = Some(receipt.tool_outcome.outcome_digest());
+    receipt.execution.recovery = RecoveryDispositionV1::RetryBeforeAdmission;
+    assert_eq!(receipt.validate_against(&request), Ok(()));
+
+    receipt.execution.status = ExecutionStatusV1::Completed;
+    receipt.execution.recovery = RecoveryDispositionV1::None;
+    receipt.execution.outcome_digest = None;
+    assert_eq!(
+        receipt.execution.validate_against(&request.cell),
+        Err(ExecutionContractError::StatusOutcomeMismatch)
+    );
+
+    receipt.execution.outcome_digest = Some(Digest32::ZERO);
+    assert_eq!(
+        receipt.execution.validate_against(&request.cell),
+        Err(ExecutionContractError::ZeroDigest("execution outcome"))
+    );
+}
