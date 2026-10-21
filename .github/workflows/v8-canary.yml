@@ -74,7 +74,9 @@ jobs:
         uses: ./.github/actions/check-clean-worktree
 
   build:
-    timeout-minutes: 30
+    # The full source-build matrix exceeded the old 30-minute job budget
+    # while Bazel was still compiling. Keep a finite budget for cold runners.
+    timeout-minutes: 90
     name: Build ${{ matrix.variant }} ${{ matrix.target }}
     needs: metadata
     # Metadata always runs; only relevant changes pay for the large matrix.
