@@ -66,6 +66,8 @@ PROVENANCE_FIELDS = (
     "runtime_digest",
     "measurement_digest",
 )
+# Parsing must be bounded before the matrix row-count gate can run.
+MAX_QUALIFICATION_JSON_BYTES = 4 * 1024 * 1024
 
 
 def build_plan() -> dict[str, Any]:
@@ -113,9 +115,22 @@ def _reject_nonfinite_token(value: str) -> Any:
 
 
 def load_strict_json(stream: Any) -> Any:
-    """Parse raw qualification evidence without lossy duplicate-key coercion."""
-    return json.load(
-        stream,
+    """Bound and parse UTF-8 evidence without lossy duplicate-key coercion."""
+    raw = (
+        stream.buffer.read(MAX_QUALIFICATION_JSON_BYTES + 1)
+        if hasattr(stream, "buffer")
+        else stream.read(MAX_QUALIFICATION_JSON_BYTES + 1)
+    )
+    if isinstance(raw, str):
+        raw = raw.encode("utf-8")
+    if len(raw) > MAX_QUALIFICATION_JSON_BYTES:
+        raise ValueError("qualification JSON exceeds 4 MiB input limit")
+    try:
+        payload = raw.decode("utf-8")
+    except UnicodeDecodeError as error:
+        raise ValueError("qualification JSON must be valid UTF-8") from error
+    return json.loads(
+        payload,
         object_pairs_hook=_reject_duplicate_keys,
         parse_constant=_reject_nonfinite_token,
     )
