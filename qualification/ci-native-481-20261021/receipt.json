@@ -1,0 +1,320 @@
+{
+  "schema_version": 1,
+  "source_head": "48177153ad04605338c3a9a8dbd17defee9981bc",
+  "source_tree": "22e14fcd85f7a3f2c5dc8f3a1bdb17efc81b4d62",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "provenance": "481-success-provenance.json",
+  "bazel": {
+    "run_id": 39583123591,
+    "job_id": 119165810535,
+    "artifact_id": 12339219759,
+    "locked_before_exit": 0,
+    "before_after_bytes_identical": true,
+    "original_verification": {
+      "source_head": "48177153ad04605338c3a9a8dbd17defee9981bc",
+      "source_tree": "22e14fcd85f7a3f2c5dc8f3a1bdb17efc81b4d62",
+      "bazel_version": "9.3.0",
+      "lock_format_before": 28,
+      "lock_format_after": 28,
+      "changed_files": [],
+      "second_generation_identical": true,
+      "original_lock_check_passed": true,
+      "full_platform_qualification": false,
+      "files": {
+        "MODULE.bazel.lock": {
+          "bytes": 1745183,
+          "sha256": "f6c5dd1f2a09c66d6a4c387ff40d11afb7ed2309e541dcb6bff9ad5f410996c3"
+        },
+        "MODULE.bazel.lock.before": {
+          "bytes": 1745183,
+          "sha256": "f6c5dd1f2a09c66d6a4c387ff40d11afb7ed2309e541dcb6bff9ad5f410996c3"
+        },
+        "MODULE.bazel.lock.patch": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "bazel-version.log": {
+          "bytes": 283,
+          "sha256": "ab7c59c7b315020b7e95351944f1f9b673f6dd4b9902734a0353e1fe4b808afd"
+        },
+        "bazelversion": {
+          "bytes": 6,
+          "sha256": "14ebdd5f5d8dfccb0fc574ea9aabecc07d7cdd99d53e4fc01e58f9c3d23d18ef"
+        },
+        "lock-after.log": {
+          "bytes": 942,
+          "sha256": "762a1e65998bbe1ccb47047ca20add1821ac57ca55204950d93e11f2202ba6c0"
+        },
+        "lock-before.exit": {
+          "bytes": 2,
+          "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa"
+        },
+        "lock-before.log": {
+          "bytes": 2957,
+          "sha256": "e19abc680e69152856fe1fe3452ea4f400e942dee31b0647fa909c2e0e401712"
+        },
+        "lock-repeat.log": {
+          "bytes": 919,
+          "sha256": "61af902fcee04f8a204dd84f8702489e8e12b39ee9890d8de1fcfe31233ea568"
+        },
+        "lock-update.log": {
+          "bytes": 2861,
+          "sha256": "35e1fb8ae1970ed938b6ae2f35345fe18fb91c61e045754ad17db224d8d7b0b0"
+        },
+        "source-head.txt": {
+          "bytes": 41,
+          "sha256": "d8dd1a8c3c61f23caa9391385ec4b95dad2e01516c2c4299bb8c3fa0c827d87a"
+        },
+        "source-tree.txt": {
+          "bytes": 41,
+          "sha256": "739f7f207a7205a1abb8b61ab507d928cc600a4cf9cb2decf8e39e26d4b1fa95"
+        }
+      }
+    }
+  },
+  "windows": {
+    "run_id": 39583123421,
+    "job_id": 119165765766,
+    "artifact_id": 12339817075,
+    "native_selected_tests_passed": 30,
+    "native_groups": [
+      {
+        "filter": "codex-utils-path private_state_windows::",
+        "run": 12,
+        "passed": 12,
+        "filtered_or_skipped": 5
+      },
+      {
+        "filter": "codex-hepta-prompt-registry durable::windows::tests::",
+        "run": 2,
+        "passed": 2,
+        "filtered_or_skipped": 26
+      },
+      {
+        "filter": "codex-hepta-contracts final_use::store::windows::tests::",
+        "run": 3,
+        "passed": 3,
+        "filtered_or_skipped": 128
+      },
+      {
+        "filter": "codex-hepta-contracts authority_lease::windows::tests::",
+        "run": 2,
+        "passed": 2,
+        "filtered_or_skipped": 129
+      },
+      {
+        "filter": "codex-hepta-agentd prompt_runtime::tests::",
+        "run": 11,
+        "passed": 11,
+        "filtered_or_skipped": 159
+      }
+    ],
+    "acquisition_harness_unittests_passed": 6,
+    "original_acquisition_manifest": {
+      "source_head": "48177153ad04605338c3a9a8dbd17defee9981bc",
+      "source_tree": "22e14fcd85f7a3f2c5dc8f3a1bdb17efc81b4d62",
+      "production_path": "codex-rs/utils/path-utils/src/private_state_windows_directory.rs",
+      "production_sha256": "05f8abf49d5a0d5f099695d6138e01525ac9b5e0b369e5172e0dd8f342e2f2a6",
+      "command": [
+        "just",
+        "test",
+        "--locked",
+        "-p",
+        "codex-utils-path",
+        "--lib",
+        "-E",
+        "test(private_state_windows::directory::tests::)",
+        "--test-threads",
+        "1",
+        "--no-tests",
+        "fail",
+        "--retries",
+        "0",
+        "--success-output",
+        "immediate",
+        "--failure-output",
+        "immediate",
+        "--status-level",
+        "all",
+        "--final-status-level",
+        "all"
+      ],
+      "lanes": [
+        {
+          "lane": "positive",
+          "production_sha256": "05f8abf49d5a0d5f099695d6138e01525ac9b5e0b369e5172e0dd8f342e2f2a6",
+          "exit_code": 0,
+          "log_sha256": "eb59068466874d08caa43419aa8f4784c99cecb958fbd6e630c68132e64b26f7",
+          "statuses": {
+            "private_state_windows::directory::tests::rejects_ancestor_substitution_at_retained_open": "PASS",
+            "private_state_windows::directory::tests::rejects_junction_before_creating_private_leaf": "PASS"
+          },
+          "observations": {
+            "substitution": "swapped=true denied=true redirected=false",
+            "creation": "denied=true created=false"
+          }
+        },
+        {
+          "lane": "unchecked-create",
+          "patch_sha256": "93ed0742de0e4cfe226334fd2f71f1129ee42125f214ecf77297916d97696369",
+          "production_sha256": "1dbbf4b4291835ac4c2d331119fdc60495ff54c0c6a6551b8efc72c35eb98869",
+          "exit_code": 1,
+          "log_sha256": "c195fc49d5a04e8b5468bed3370b5ef6b70178c4bd8cc11c2258c4efe88ed73e",
+          "statuses": {
+            "private_state_windows::directory::tests::rejects_ancestor_substitution_at_retained_open": "PASS",
+            "private_state_windows::directory::tests::rejects_junction_before_creating_private_leaf": "FAIL"
+          },
+          "observations": {
+            "substitution": "swapped=true denied=true redirected=false",
+            "creation": "denied=true created=true"
+          }
+        },
+        {
+          "lane": "path-check-open",
+          "patch_sha256": "24efb0448aaac1cc0a1b70bf661ad590fe0d1ee407d7787ea5b33c9923f2b320",
+          "production_sha256": "e6591ca48cbe4495811ea1f3bf382ef7aa8cf9739f4aa276cb3bd0866481244e",
+          "exit_code": 1,
+          "log_sha256": "a04a9d46faf1f33c16f95453445ae47b88e4394c5f9877515035d5220488409a",
+          "statuses": {
+            "private_state_windows::directory::tests::rejects_ancestor_substitution_at_retained_open": "FAIL",
+            "private_state_windows::directory::tests::rejects_junction_before_creating_private_leaf": "PASS"
+          },
+          "observations": {
+            "substitution": "swapped=true denied=false redirected=true",
+            "creation": "denied=true created=false"
+          }
+        }
+      ],
+      "rustc": "rustc 1.95.0 (59807616e 2026-04-14)\nbinary: rustc\ncommit-hash: 59807616e1fa2540724bfbac14d7976d7e4a3860\ncommit-date: 2026-04-14\nhost: x86_64-pc-windows-msvc\nrelease: 1.95.0\nLLVM version: 22.1.2\n",
+      "qualified": true,
+      "restored": true
+    }
+  },
+  "files": {
+    "481-job-119165765766.log.xz": {
+      "bytes": 43212,
+      "sha256": "cb41564502adf53940a78014935a6883968ed8278efde4aa301a32e9e3785dd6",
+      "raw_bytes": 235489,
+      "raw_sha256": "aff6d045e92aecc2e42f45f76d24f4b9c763dcdb92c1e14573a36c7d12256d18",
+      "roundtrip_identical": true
+    },
+    "481-job-119165810535.log.xz": {
+      "bytes": 92196,
+      "sha256": "c4f02ee8bb57e0cd879ca07ffb48e455225d3cb78f9ac95b1b143b12cc5a08c1",
+      "raw_bytes": 1107582,
+      "raw_sha256": "034df23dd97f1f140545ac592545348b79193434e5dfa114c687e1f36348495a",
+      "roundtrip_identical": true
+    },
+    "bazel-stable-lock-48177153.zip": {
+      "bytes": 461626,
+      "sha256": "635ccd85da3ef9b515826120f94db8ad0d1ada3ca68992ffe6833db2aa0aed67"
+    },
+    "windows-private-state-48177153.zip": {
+      "bytes": 13143,
+      "sha256": "b1f73eb57709baf9cbcc6e707bcdba5044271f4669304cfd045b2bc21c229a18"
+    },
+    "481-success-provenance.json": {
+      "bytes": 5052,
+      "sha256": "292986ee04f22671270f4f1dd950f3693ce4f392b5c61ef3e82270b7a84e3853"
+    }
+  },
+  "zip_members": {
+    "bazel-stable-lock-48177153.zip": {
+      "MODULE.bazel.lock": {
+        "bytes": 1745183,
+        "sha256": "f6c5dd1f2a09c66d6a4c387ff40d11afb7ed2309e541dcb6bff9ad5f410996c3"
+      },
+      "MODULE.bazel.lock.before": {
+        "bytes": 1745183,
+        "sha256": "f6c5dd1f2a09c66d6a4c387ff40d11afb7ed2309e541dcb6bff9ad5f410996c3"
+      },
+      "MODULE.bazel.lock.patch": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "bazel-version.log": {
+        "bytes": 283,
+        "sha256": "ab7c59c7b315020b7e95351944f1f9b673f6dd4b9902734a0353e1fe4b808afd"
+      },
+      "bazelversion": {
+        "bytes": 6,
+        "sha256": "14ebdd5f5d8dfccb0fc574ea9aabecc07d7cdd99d53e4fc01e58f9c3d23d18ef"
+      },
+      "lock-after.log": {
+        "bytes": 942,
+        "sha256": "762a1e65998bbe1ccb47047ca20add1821ac57ca55204950d93e11f2202ba6c0"
+      },
+      "lock-before.exit": {
+        "bytes": 2,
+        "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa"
+      },
+      "lock-before.log": {
+        "bytes": 2957,
+        "sha256": "e19abc680e69152856fe1fe3452ea4f400e942dee31b0647fa909c2e0e401712"
+      },
+      "lock-repeat.log": {
+        "bytes": 919,
+        "sha256": "61af902fcee04f8a204dd84f8702489e8e12b39ee9890d8de1fcfe31233ea568"
+      },
+      "lock-update.log": {
+        "bytes": 2861,
+        "sha256": "35e1fb8ae1970ed938b6ae2f35345fe18fb91c61e045754ad17db224d8d7b0b0"
+      },
+      "source-head.txt": {
+        "bytes": 41,
+        "sha256": "d8dd1a8c3c61f23caa9391385ec4b95dad2e01516c2c4299bb8c3fa0c827d87a"
+      },
+      "source-tree.txt": {
+        "bytes": 41,
+        "sha256": "739f7f207a7205a1abb8b61ab507d928cc600a4cf9cb2decf8e39e26d4b1fa95"
+      },
+      "verification.json": {
+        "bytes": 2005,
+        "sha256": "e0040ff5742e144e1d4284af7a77637b91d94d97319964946761f0a14545e349"
+      }
+    },
+    "windows-private-state-48177153.zip": {
+      "manifest.json": {
+        "bytes": 3166,
+        "sha256": "3bfce162b44f4594a1b7f6a00db33d2c98ac19b0179e86b2dec59b18641c8162"
+      },
+      "path-check-open.log": {
+        "bytes": 7450,
+        "sha256": "a04a9d46faf1f33c16f95453445ae47b88e4394c5f9877515035d5220488409a"
+      },
+      "path-check-open.patch": {
+        "bytes": 961,
+        "sha256": "24efb0448aaac1cc0a1b70bf661ad590fe0d1ee407d7787ea5b33c9923f2b320"
+      },
+      "path-check-open.rs": {
+        "bytes": 5712,
+        "sha256": "e6591ca48cbe4495811ea1f3bf382ef7aa8cf9739f4aa276cb3bd0866481244e"
+      },
+      "positive.log": {
+        "bytes": 6719,
+        "sha256": "eb59068466874d08caa43419aa8f4784c99cecb958fbd6e630c68132e64b26f7"
+      },
+      "positive.rs": {
+        "bytes": 5376,
+        "sha256": "05f8abf49d5a0d5f099695d6138e01525ac9b5e0b369e5172e0dd8f342e2f2a6"
+      },
+      "unchecked-create.log": {
+        "bytes": 7370,
+        "sha256": "c195fc49d5a04e8b5468bed3370b5ef6b70178c4bd8cc11c2258c4efe88ed73e"
+      },
+      "unchecked-create.patch": {
+        "bytes": 694,
+        "sha256": "93ed0742de0e4cfe226334fd2f71f1129ee42125f214ecf77297916d97696369"
+      },
+      "unchecked-create.rs": {
+        "bytes": 5752,
+        "sha256": "1dbbf4b4291835ac4c2d331119fdc60495ff54c0c6a6551b8efc72c35eb98869"
+      }
+    }
+  },
+  "limitations": [
+    "This receipt applies only to source head481 and the two named original jobs. It is not full-platform qualification and cannot qualify a later continuation source head.",
+    "Native coverage is the original filtered private-state workflow, with no-tests=fail and retries=0; the full blocking CI, other original Rust/Bazel shards and V8 matrices remain independent gates.",
+    "No running job was canceled or workflow condition relaxed. HTTP headers are not available through the connector; raw logs, run metadata, original ZIP bytes and API/upload digest agreement are preserved."
+  ]
+}

@@ -1,0 +1,96 @@
+{
+  "observed_at": "2026-10-21T10:59:39.914Z",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "transport_headers_available": false,
+  "transport_note": "Connector returns decoded GitHub JSON/log content and reusable artifact bytes; it does not expose HTTP response headers. Artifact SHA-256 is checked against both the upload log and GitHub artifact metadata.",
+  "runs": [
+    {
+      "id": 39583123591,
+      "name": "Bazel stable lock proposal",
+      "head_branch": "agents/hepta-p0-provenance-clippy-20261021",
+      "head_sha": "48177153ad04605338c3a9a8dbd17defee9981bc",
+      "path": ".github/workflows/hepta-bazel-stable-lock-proposal.yml",
+      "event": "pull_request",
+      "status": "completed",
+      "conclusion": "success",
+      "run_attempt": 1,
+      "created_at": "2026-10-21T10:14:30Z",
+      "updated_at": "2026-10-21T10:41:31Z",
+      "run_started_at": "2026-10-21T10:14:30Z",
+      "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/39583123591",
+      "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/runs/39583123591",
+      "jobs_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/runs/39583123591/jobs",
+      "logs_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/runs/39583123591/logs",
+      "artifacts_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/runs/39583123591/artifacts"
+    },
+    {
+      "id": 39583123421,
+      "name": "Hepta Windows private-state native (security qualification only)",
+      "head_branch": "agents/hepta-p0-provenance-clippy-20261021",
+      "head_sha": "48177153ad04605338c3a9a8dbd17defee9981bc",
+      "path": ".github/workflows/hepta-windows-private-state-native.yml",
+      "event": "pull_request",
+      "status": "completed",
+      "conclusion": "success",
+      "run_attempt": 1,
+      "created_at": "2026-10-21T10:14:30Z",
+      "updated_at": "2026-10-21T10:50:23Z",
+      "run_started_at": "2026-10-21T10:14:30Z",
+      "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/39583123421",
+      "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/runs/39583123421",
+      "jobs_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/runs/39583123421/jobs",
+      "logs_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/runs/39583123421/logs",
+      "artifacts_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/runs/39583123421/artifacts"
+    }
+  ],
+  "artifact_responses": [
+    {
+      "endpoint": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/runs/39583123591/artifacts",
+      "artifacts": [
+        {
+          "id": 12339219759,
+          "name": "bazel-stable-lock-48177153ad04605338c3a9a8dbd17defee9981bc-39583123591-1",
+          "size_in_bytes": 461626,
+          "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/12339219759",
+          "archive_download_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/12339219759/zip",
+          "expired": false,
+          "created_at": "2026-10-21T10:41:29Z",
+          "expires_at": "2026-10-28T10:41:28Z",
+          "updated_at": "2026-10-21T10:41:29Z",
+          "digest": "sha256:635ccd85da3ef9b515826120f94db8ad0d1ada3ca68992ffe6833db2aa0aed67",
+          "workflow_run": {
+            "id": 39583123591,
+            "repository_id": 1320694176,
+            "head_repository_id": 1320694176,
+            "head_branch": "agents/hepta-p0-provenance-clippy-20261021",
+            "head_sha": "48177153ad04605338c3a9a8dbd17defee9981bc"
+          }
+        }
+      ]
+    },
+    {
+      "endpoint": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/runs/39583123421/artifacts",
+      "artifacts": [
+        {
+          "id": 12339817075,
+          "name": "windows-private-state-acquisition-48177153ad04605338c3a9a8dbd17defee9981bc-39583123421-1",
+          "size_in_bytes": 13143,
+          "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/12339817075",
+          "archive_download_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/12339817075/zip",
+          "expired": false,
+          "created_at": "2026-10-21T10:50:18Z",
+          "expires_at": "2026-11-04T10:50:17Z",
+          "updated_at": "2026-10-21T10:50:18Z",
+          "digest": "sha256:b1f73eb57709baf9cbcc6e707bcdba5044271f4669304cfd045b2bc21c229a18",
+          "workflow_run": {
+            "id": 39583123421,
+            "repository_id": 1320694176,
+            "head_repository_id": 1320694176,
+            "head_branch": "agents/hepta-p0-provenance-clippy-20261021",
+            "head_sha": "48177153ad04605338c3a9a8dbd17defee9981bc"
+          }
+        }
+      ]
+    }
+  ]
+}
