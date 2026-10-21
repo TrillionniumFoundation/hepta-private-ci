@@ -55,6 +55,7 @@ pub fn select_output_portfolio_v1(
     // shared FeatureSnapshot does not make logits, flow velocities, audio,
     // video, and discrete unmask plans composable with one another.
     let mut selected_protocol: Option<OutputProtocolV1> = None;
+    let mut selected_domain: Option<Digest32> = None;
     for index in order {
         if selected >= budget.max_selected || remaining == FixedQ32::ZERO {
             break;
@@ -62,7 +63,9 @@ pub fn select_output_portfolio_v1(
         if scores[index] <= FixedQ32::ZERO {
             continue;
         }
-        if selected_protocol.is_some_and(|protocol| protocol != candidates[index].protocol) {
+        if selected_protocol.is_some_and(|protocol| protocol != candidates[index].protocol)
+            || selected_domain.is_some_and(|domain| domain != candidates[index].composition_domain_digest)
+        {
             continue;
         }
         if candidates[index].protocol.requires_whole_candidate()
@@ -96,6 +99,7 @@ pub fn select_output_portfolio_v1(
             .map_err(|_| NduError::Arithmetic)?;
         selected += 1;
         selected_protocol = Some(candidates[index].protocol);
+        selected_domain = Some(candidates[index].composition_domain_digest);
         if candidates[index].protocol.requires_whole_candidate() {
             break;
         }
@@ -195,6 +199,9 @@ fn canonical_candidates(
         {
             return Err(NduError::StateDigestMismatch);
         }
+        if !candidate.is_no_change && candidate.composition_domain_digest.is_zero() {
+            return Err(NduError::InvalidSolverReceipt("composition domain digest"));
+        }
         if candidate.weight_cap < FixedQ32::ZERO || candidate.weight_cap > FixedQ32::ONE {
             return Err(NduError::InvalidSolverReceipt("portfolio weight cap"));
         }
@@ -227,6 +234,7 @@ fn canonical_candidates(
                 || candidate.utility_delta != FixedQ32::ZERO
                 || candidate.resource_cost != FixedQ32::ZERO
                 || candidate.latency_cost != FixedQ32::ZERO
+                || !candidate.composition_domain_digest.is_zero()
                 || candidate.risk != zero_risk(context.future_window_digest)
             {
                 return Err(NduError::InvalidSolverReceipt("invalid no-change asset"));
@@ -506,6 +514,7 @@ fn digest_selection(
         bytes.extend_from_slice(candidate.candidate_id.as_str().as_bytes());
         bytes.push(0);
         bytes.extend_from_slice(candidate.candidate_digest.as_array());
+        bytes.extend_from_slice(candidate.composition_domain_digest.as_array());
         bytes.push(candidate.protocol.tag());
         bytes.extend_from_slice(candidate.risk.future_window_digest.as_array());
         bytes.extend_from_slice(&candidate.utility_delta.raw().to_le_bytes());
