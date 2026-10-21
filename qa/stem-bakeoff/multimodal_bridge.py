@@ -100,8 +100,14 @@ class MultimodalSlotizer(nn.Module):
         dtype = None
         total_tokens = 0
         total_elements = 0
+        # Capture every modality before running any trainable projector hook.
+        # A previous projector must not rewrite a later modality's input,
+        # timestamp, declared digest or presence metadata.
+        snapshots = []
         parts = []
         manifest = []
+        present = frozenset(features)
+        input_registry = list(self.input_widths.items())
         for modality in ALLOWED_MODALITIES:
             if modality not in features:
                 continue
@@ -145,6 +151,13 @@ class MultimodalSlotizer(nn.Module):
                 raise LatentBridgeError("invalid temporal snapshot")
             feature_digest = _tensor_bytes_sha256(frozen_value)
             time_digest = _tensor_bytes_sha256(frozen_t) if frozen_t is not None else None
+            snapshots.append((modality, frozen_value, frozen_t,
+                              feature_digest, time_digest, source_digests[modality]))
+        if not snapshots:
+            raise LatentBridgeError("no present modalities")
+        # Only now permit trainable/user-hookable forward calls. The projected
+        # tensor is a second clone, so a projector cannot alter sealed bytes.
+        for modality, frozen_value, frozen_t, feature_digest, time_digest, declared_digest in snapshots:
             projected = self.projectors[modality](frozen_value.clone()) + self.tags[modality]
             if frozen_t is not None:
                 # Minimal bounded temporal phase. More expressive time adapters
@@ -154,7 +167,7 @@ class MultimodalSlotizer(nn.Module):
             parts.append(projected)
             manifest.append({
                 "modality": modality,
-                "declared_source_sha256": source_digests[modality],
+                "declared_source_sha256": declared_digest,
                 "shape": list(frozen_value.shape),
                 "dtype": str(frozen_value.dtype),
                 "feature_bytes_sha256": feature_digest,
@@ -164,8 +177,6 @@ class MultimodalSlotizer(nn.Module):
                     "bytes_sha256": time_digest,
                 },
             })
-        if not parts:
-            raise LatentBridgeError("no present modalities")
         tokens = torch.cat(parts, dim=1)
         queries = self.queries.unsqueeze(0).expand(batch, -1, -1)
         attended, _ = self.cross_attention(queries, tokens, tokens, need_weights=False)
@@ -174,13 +185,13 @@ class MultimodalSlotizer(nn.Module):
             raise LatentBridgeError("nonfinite shared slots")
         statement = {"schema": "hepta.multimodal-slot-lineage.v2",
                      "generation": generation, "sources": manifest,
-                     "registered": list(self.input_widths.items()),
-                     "missing": [m not in features for m in ALLOWED_MODALITIES]}
+                     "registered": input_registry,
+                     "missing": [m not in present for m in ALLOWED_MODALITIES]}
         manifest_digest = hashlib.sha256(json.dumps(statement, sort_keys=True,
                                                      separators=(",", ":")).encode()).hexdigest()
         return LatentSlots(slots=slot_features,
                            global_feature=slot_features.mean(dim=1),
-                           missing_mask=tuple(m not in features for m in ALLOWED_MODALITIES),
+                           missing_mask=tuple(m not in present for m in ALLOWED_MODALITIES),
                            source_manifest_digest=manifest_digest,
                            generation=generation)
 
