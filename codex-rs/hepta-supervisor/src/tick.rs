@@ -114,6 +114,17 @@ impl<D: ProcessDriver> Supervisor<D> {
             Err(RestartBudgetError::Exhausted) => {
                 slot.restart_pending = false;
                 slot.restart_not_before = None;
+                // The budget is already durably exhausted. Publish the typed
+                // terminal event as well as the fail-closed operator fault.
+                // Neither recovery nor a subsequent tick may schedule a new
+                // process from this exhausted restart claim.
+                slot.restart_attempt = self.config.restart_max_attempts;
+                slot.event(
+                    record.lifecycle.generation,
+                    SupervisorEventKind::AutomaticRestartBudgetExhausted {
+                        attempts: self.config.restart_max_attempts,
+                    },
+                );
                 Some(SupervisorError::RestartBudgetExhausted(agent_id.clone()))
             }
             Err(error) => {
