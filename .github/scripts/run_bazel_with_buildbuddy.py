@@ -140,7 +140,7 @@ def option_contains_value(args: Sequence[str], option: str, value: str) -> bool:
 def bazel_args_without_remote_execution(
     args: Sequence[str], env: Mapping[str, str]
 ) -> list[str]:
-    """Remove credentialed RBE configs and select a coherent local Windows ABI.
+    """Keep local CI policy and select a coherent credential-free platform.
 
     The pinned hermetic LLVM toolchain builds GNU Windows target C/C++ inputs,
     while native MSVC Rust targets and host-loaded proc macros must consume
@@ -156,14 +156,34 @@ def bazel_args_without_remote_execution(
         separator_idx = len(args)
 
     prefix = list(args[:separator_idx])
+    suffix = list(args[separator_idx:])
+    if env.get("RUNNER_OS") != "Windows":
+        command = next((arg for arg in prefix if not arg.startswith("-")), None)
+        local_ci_configs = {}
+        if command in {"build", "test", "run", "coverage", "info"}:
+            # Keep CI's cache, diagnostics and Rust compilation settings at
+            # their original position so later caller options still win.
+            # Only ci-linux itself selects an RBE target platform; the macOS
+            # and V8 configs contain local policy without remote endpoints.
+            local_ci_configs = {
+                "--config=ci-linux": "--config=ci-bazel",
+                "--config=ci-macos": "--config=ci-macos",
+                "--config=ci-v8": "--config=ci-v8",
+            }
+        return [
+            *(
+                local_ci_configs.get(arg, arg)
+                for arg in prefix
+                if arg not in REMOTE_EXECUTION_CONFIGS or arg in local_ci_configs
+            ),
+            *suffix,
+        ]
+
     requested_windows_cross = "--config=ci-windows-cross" in prefix
     requested_native_windows_msvc = option_contains_value(
         prefix, "--platforms", "//:windows_x86_64_msvc"
     )
     prefix = [arg for arg in prefix if arg not in REMOTE_EXECUTION_CONFIGS]
-    suffix = list(args[separator_idx:])
-    if env.get("RUNNER_OS") != "Windows":
-        return [*prefix, *suffix]
 
     command_idx = next(
         (idx for idx, arg in enumerate(prefix) if not arg.startswith("-")),

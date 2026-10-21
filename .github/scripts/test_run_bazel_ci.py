@@ -123,6 +123,153 @@ class RunBazelCiIntegrationTest(unittest.TestCase):
         ]
         return result, calls
 
+    def run_python_wrapper(
+        self, *args: str
+    ) -> tuple[subprocess.CompletedProcess[str], list[str]]:
+        self.log.unlink(missing_ok=True)
+        result = subprocess.run(
+            [sys.executable, str(SCRIPTS / "run_bazel_with_buildbuddy.py"), *args],
+            env=self.env,
+            check=False,
+            capture_output=True,
+            text=True,
+            timeout=60,
+        )
+        self.assertTrue(self.log.exists(), result.stdout + result.stderr)
+        calls = [
+            json.loads(line)
+            for line in self.log.read_text(encoding="utf-8").splitlines()
+        ]
+        self.assertEqual(len(calls), 1)
+        return result, calls[0]
+
+    def test_keyless_unix_shell_keeps_ci_policy_and_child_failure(self) -> None:
+        for runner_os, config in (("Linux", "ci-bazel"), ("macOS", "ci-macos")):
+            with self.subTest(runner_os=runner_os):
+                self.log.unlink(missing_ok=True)
+                self.env.update(
+                    RUNNER_OS=runner_os, GITHUB_ACTIONS="true", BAZEL_PROBE_FAIL="1"
+                )
+                result, calls = self.run_wrapper(
+                    "--remote-download-toplevel",
+                    "--",
+                    "build",
+                    "--config=clippy",
+                    "--",
+                    "//fake:target",
+                    "-//fake:excluded",
+                )
+                self.assertEqual(result.returncode, 37, result.stdout + result.stderr)
+                self.assertEqual(
+                    calls,
+                    [
+                        [
+                            "--noexperimental_remote_repo_contents_cache",
+                            "build",
+                            "--config=clippy",
+                            f"--config={config}",
+                            "--remote_download_toplevel",
+                            "--repo_contents_cache=job scoped cache",
+                            "--",
+                            "//fake:target",
+                            "-//fake:excluded",
+                        ]
+                    ],
+                )
+
+    def test_keyless_unix_policy_preserves_later_options_and_run_payload(self) -> None:
+        for runner_os, requested, resolved in (
+            ("Linux", "ci-linux", "ci-bazel"),
+            ("macOS", "ci-macos", "ci-macos"),
+            ("Linux", "ci-v8", "ci-v8"),
+        ):
+            with self.subTest(config=requested):
+                self.env.update(
+                    RUNNER_OS=runner_os, GITHUB_ACTIONS="true", BAZEL_PROBE_FAIL="1"
+                )
+                payload = ["--config=ci-linux", "spaced program argument"]
+                result, call = self.run_python_wrapper(
+                    "run",
+                    "--disk_cache=earlier cache",
+                    f"--config={requested}",
+                    "--disk_cache=later cache",
+                    "--@rules_rust//rust/settings:extra_rustc_flag=-Cdebuginfo=1",
+                    "//fake:tool",
+                    "--",
+                    *payload,
+                )
+                self.assertEqual(result.returncode, 37, result.stdout + result.stderr)
+                self.assertEqual(
+                    call,
+                    [
+                        "--noexperimental_remote_repo_contents_cache",
+                        "run",
+                        "--disk_cache=earlier cache",
+                        f"--config={resolved}",
+                        "--disk_cache=later cache",
+                        "--@rules_rust//rust/settings:extra_rustc_flag=-Cdebuginfo=1",
+                        "//fake:tool",
+                        "--repo_contents_cache=job scoped cache",
+                        "--",
+                        *payload,
+                    ],
+                )
+
+    def test_keyless_unix_info_keeps_ci_but_queries_do_not_gain_build_flags(
+        self,
+    ) -> None:
+        self.env.update(RUNNER_OS="Linux", GITHUB_ACTIONS="true")
+        expression = 'kind("rust_library rule", //codex-rs/...)'
+        for command, args, expected in (
+            ("info", ["bazel-testlogs"], ["--config=ci-bazel", "bazel-testlogs"]),
+            ("query", [expression], [expression]),
+            ("cquery", [expression], [expression]),
+            ("aquery", [expression], [expression]),
+            ("version", [], []),
+            ("clean", [], []),
+        ):
+            with self.subTest(command=command):
+                result, call = self.run_python_wrapper(
+                    command, "--config=ci-linux", *args
+                )
+                self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+                self.assertEqual(
+                    call,
+                    [
+                        "--noexperimental_remote_repo_contents_cache",
+                        command,
+                        *expected,
+                        "--repo_contents_cache=job scoped cache",
+                    ],
+                )
+
+    def test_authenticated_unix_ci_keeps_original_remote_configuration(self) -> None:
+        self.env.update(
+            RUNNER_OS="Linux",
+            GITHUB_ACTIONS="true",
+            BUILDBUDDY_API_KEY="test-only-token",
+            BAZEL_PROBE_FAIL="1",
+        )
+        for config in ("ci-linux", "ci-macos", "ci-v8"):
+            with self.subTest(config=config):
+                result, call = self.run_python_wrapper(
+                    "build", f"--config={config}", "--", "//fake:target"
+                )
+                self.assertEqual(result.returncode, 37, result.stdout + result.stderr)
+                self.assertEqual(
+                    call,
+                    [
+                        "--noexperimental_remote_repo_contents_cache",
+                        "build",
+                        "--config=buildbuddy-generic-rbe",
+                        "--remote_header=x-buildbuddy-api-key=test-only-token",
+                        f"--config={config}",
+                        "--repo_contents_cache=job scoped cache",
+                        "--",
+                        "//fake:target",
+                    ],
+                )
+
     def test_keyless_cross_uses_msvc_exec_and_gnullvm_target(self) -> None:
         result, calls = self.run_wrapper(
             "--windows-cross-compile",
