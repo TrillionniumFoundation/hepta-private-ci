@@ -3,6 +3,7 @@
 
 import json
 import os
+import platform
 import shlex
 import shutil
 import subprocess
@@ -43,6 +44,15 @@ elif command == 'query':
         sys.stdout.buffer.write(b'//codex-rs/fake:library\\r\\n')
     else:
         print('//codex-rs/fake:library')
+elif os.environ.get('BAZEL_PROBE_SERVER_CRASH_ALWAYS') == '1':
+    print("Server terminated abruptly (error code: 14, error message: 'Socket closed')")
+    sys.exit(37)
+elif os.environ.get('BAZEL_PROBE_SERVER_CRASH_ONCE'):
+    marker = Path(os.environ['BAZEL_PROBE_SERVER_CRASH_ONCE'])
+    if not marker.exists():
+        marker.write_text('synthetic Bazel JVM socket crash', encoding='utf-8')
+        print("Server terminated abruptly (error code: 14, error message: 'Socket closed')")
+        sys.exit(37)
 elif os.environ.get('BAZEL_PROBE_FAIL') == '1':
     print('ERROR: fake/BUILD.bazel:1:1: Linking //fake:target failed: (Exit 37)')
     print('error: linking with rust-lld failed: exit code: 37')
@@ -376,6 +386,55 @@ class RunBazelCiIntegrationTest(unittest.TestCase):
         self.assertIn(f"--test_env=PATH={self.env['CODEX_BAZEL_WINDOWS_PATH']}", args)
         self.assertNotIn("--host_platform=//:local_windows", args)
         self.assertNotIn("--jobs=8", args)
+
+    @unittest.skipUnless(
+        os.name != "nt" and platform.machine().lower() in ("x86_64", "amd64"),
+        "macOS Intel transport simulation requires an x86_64 POSIX shell",
+    )
+    def test_macos_intel_transient_server_socket_retries_same_full_targets(
+        self,
+    ) -> None:
+        self.env["RUNNER_OS"] = "macOS"
+        self.env["BAZEL_PROBE_SERVER_CRASH_ONCE"] = str(
+            self.root / "server-crashed.marker"
+        )
+        result, calls = self.run_wrapper("--", "test", "--", "//fake:target")
+        self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+        self.assertEqual(len(calls), 2, "one failed server and one complete rerun")
+        self.assertEqual(
+            calls[0], calls[1], "the retry must preserve all flags and targets"
+        )
+        self.assertIn("retrying the identical full target set once", result.stdout)
+        self.assertIn("Server terminated abruptly", result.stdout)
+
+    @unittest.skipUnless(
+        os.name != "nt" and platform.machine().lower() in ("x86_64", "amd64"),
+        "macOS Intel transport simulation requires an x86_64 POSIX shell",
+    )
+    def test_macos_intel_persistent_socket_crash_cannot_pass_after_one_retry(
+        self,
+    ) -> None:
+        self.env["RUNNER_OS"] = "macOS"
+        self.env["BAZEL_PROBE_SERVER_CRASH_ALWAYS"] = "1"
+        result, calls = self.run_wrapper("--", "test", "--", "//fake:target")
+        self.assertEqual(result.returncode, 37, result.stdout + result.stderr)
+        self.assertEqual(
+            len(calls), 2, "persistent infrastructure failure must remain blocking"
+        )
+        self.assertEqual(calls[0], calls[1])
+
+    @unittest.skipUnless(
+        os.name != "nt" and platform.machine().lower() in ("x86_64", "amd64"),
+        "macOS Intel transport simulation requires an x86_64 POSIX shell",
+    )
+    def test_macos_intel_real_test_failure_never_gets_server_retry(self) -> None:
+        self.env["RUNNER_OS"] = "macOS"
+        self.env["BAZEL_PROBE_FAIL"] = "1"
+        result, calls = self.run_wrapper("--", "test", "--", "//fake:target")
+        self.assertEqual(result.returncode, 37, result.stdout + result.stderr)
+        self.assertEqual(
+            len(calls), 1, "real test or linker errors are never server flakiness"
+        )
 
     def test_failure_preserves_status_linker_diagnostics_and_test_log_configuration(
         self,

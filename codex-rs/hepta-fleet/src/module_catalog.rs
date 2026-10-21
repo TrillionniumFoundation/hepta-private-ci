@@ -279,12 +279,26 @@ fn sha256_hex(bytes: &[u8]) -> String {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use std::fmt::Debug;
+
+    fn must<T, E: Debug>(result: Result<T, E>) -> T {
+        match result {
+            Ok(value) => value,
+            Err(error) => panic!("canonical module fixture failed: {error:?}"),
+        }
+    }
+
+    fn present<T>(value: Option<T>) -> T {
+        match value {
+            Some(value) => value,
+            None => panic!("expected canonical module fixture component"),
+        }
+    }
 
     #[test]
     fn canonical_catalog_is_bounded_and_acyclic() {
-        let catalog = RuntimeModuleCatalogV1::canonical().expect("canonical module catalog");
-        let source: SourceCatalogV1 =
-            serde_json::from_str(CANONICAL_MODULES_JSON).expect("canonical source");
+        let catalog = must(RuntimeModuleCatalogV1::canonical());
+        let source: SourceCatalogV1 = must(serde_json::from_str(CANONICAL_MODULES_JSON));
         assert_eq!(catalog.len(), source.modules.len());
         assert_eq!(
             catalog.module_ids().collect::<BTreeSet<_>>(),
@@ -317,13 +331,15 @@ mod tests {
     #[test]
     fn forty_first_optional_module_can_be_added_and_removed() {
         let mut value = fixture(41);
-        let added = RuntimeModuleCatalogV1::from_reviewed_json(&value.to_string())
-            .expect("extension inside the resource bound");
+        let added = must(RuntimeModuleCatalogV1::from_reviewed_json(
+            &value.to_string(),
+        ));
         assert_eq!(added.len(), 41);
         assert!(added.module("module-40").is_some());
-        value["modules"].as_array_mut().expect("modules").pop();
-        let removed = RuntimeModuleCatalogV1::from_reviewed_json(&value.to_string())
-            .expect("removal of an unreferenced optional module");
+        present(value["modules"].as_array_mut()).pop();
+        let removed = must(RuntimeModuleCatalogV1::from_reviewed_json(
+            &value.to_string(),
+        ));
         assert_eq!(removed.len(), 40);
         assert!(removed.module("module-40").is_none());
         assert_ne!(added.digest(), removed.digest());
@@ -333,8 +349,10 @@ mod tests {
     fn removing_a_dependency_is_not_mistaken_for_safe_optional_removal() {
         let mut value = fixture(2);
         value["modules"][0]["uses"] = serde_json::json!(["module-1"]);
-        RuntimeModuleCatalogV1::from_reviewed_json(&value.to_string()).expect("valid dependency");
-        value["modules"].as_array_mut().expect("modules").pop();
+        must(RuntimeModuleCatalogV1::from_reviewed_json(
+            &value.to_string(),
+        ));
+        present(value["modules"].as_array_mut()).pop();
         assert!(matches!(
             RuntimeModuleCatalogV1::from_reviewed_json(&value.to_string()),
             Err(RuntimeModuleCatalogErrorV1::UnknownDependency { .. })
@@ -392,16 +410,17 @@ mod tests {
         for state in ADMITTED_STATES {
             let mut value = fixture(1);
             value["modules"][0]["state"] = serde_json::json!(state);
-            let catalog = RuntimeModuleCatalogV1::from_reviewed_json(&value.to_string())
-                .expect("explicit supported state");
-            assert_eq!(catalog.module("module-0").expect("module").state, *state);
+            let catalog = must(RuntimeModuleCatalogV1::from_reviewed_json(
+                &value.to_string(),
+            ));
+            assert_eq!(present(catalog.module("module-0")).state, *state);
         }
     }
 
     #[test]
     fn two_modules_cannot_claim_one_domain_even_with_the_same_team_owner() {
         let mut value = fixture(2);
-        for row in value["modules"].as_array_mut().expect("modules") {
+        for row in present(value["modules"].as_array_mut()) {
             row["state"] = serde_json::json!("stateful");
             row["writes"] = serde_json::json!(["owned-ledger"]);
         }
@@ -410,7 +429,8 @@ mod tests {
             Err(RuntimeModuleCatalogErrorV1::DuplicateDomainOwner { .. })
         ));
         value["modules"][1]["writes"] = serde_json::json!(["another-ledger"]);
-        RuntimeModuleCatalogV1::from_reviewed_json(&value.to_string())
-            .expect("different domains retain independent owners");
+        must(RuntimeModuleCatalogV1::from_reviewed_json(
+            &value.to_string(),
+        ));
     }
 }
