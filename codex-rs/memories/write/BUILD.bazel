@@ -7,5 +7,8 @@ codex_rust_crate(
     ]),
     crate_name = "codex_memories_write",
     extra_binaries = ["//codex-rs/cli:codex"],
-    unit_test_extra_binaries = ["//codex-rs/cli:codex"],
+    unit_test_extra_binaries = [
+        "//codex-rs/cli:codex",
+        "//codex-rs/code-mode-host:codex-code-mode-host",
+    ],
 )

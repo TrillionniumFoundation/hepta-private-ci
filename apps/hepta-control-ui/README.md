@@ -172,6 +172,23 @@ honest missing-owner browser tests. It creates no SQL/HMAC fixture or owner.
   [Chromium's no-store stream completion regression](https://issues.chromium.org/issues/568852319),
   also reproduced in [Playwright #42742](https://github.com/microsoft/playwright/issues/42742),
   without changing bounded SDK reads or the strict original-request audit.
+- Product HTTP acceptance uses the reviewed Linux Chrome Headless Shell
+  `157.0.8099.0` pin. Chromium `153.0.8010.12` can report a completed bounded
+  `no-store` API stream as `ERR_ABORTED`; the original request audit continues to
+  reject that terminal state. API responses retain `no-store`, and SDK byte
+  limits, cancellation, and truncation checks remain required. The cloud job
+  verifies the downloaded archive and executable, then each of the six original
+  product cases hashes its actual browser process through `/proc/<pid>/exe` and
+  records its version/revision alongside the exact UI/gateway source identity.
+  The same acceptance run also executes the ten existing SDK transport controls,
+  including complete, truncated, explicit-abort and both response-size limits.
+  The optional diagnostic comparison keeps its original bundled baseline; a
+  baseline observation is not product acceptance. Qualification is scoped to that
+  Linux browser environment and does not establish compatibility with old Chromium
+  releases or native/mobile device readiness. To run the product suite, install
+  the pin with `python3 tools/install-font-diagnostic-browser.py <fresh-directory>`
+  and set `HEPTA_PRODUCT_BROWSER` to the returned executable path; an absent or
+  different running executable fails qualification.
 - Optional font diagnostics bind the SDK's transport request ID to the actual
   public request ID observed inside the Rust Web shim before response emission.
   Snapshot version 2 then requires adoption, parsing and natural glyph emission

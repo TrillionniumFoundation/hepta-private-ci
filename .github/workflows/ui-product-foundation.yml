@@ -142,6 +142,7 @@ jobs:
           node --test apps/hepta-control-ui/test/artifact-lifetime.test.mjs
           python3 -m unittest discover -s apps/hepta-control-ui/test -p test_font_diagnostic_browser.py -v
           node --test apps/hepta-control-ui/test/font-delivery-diagnostic.test.mjs
+          node --test apps/hepta-control-ui/test/font-diagnostic-browser-identity.test.mjs
           node --test apps/hepta-control-ui/test/product-status-pixels.test.mjs apps/hepta-control-ui/test/product-console-audit.test.mjs
           node --test apps/hepta-control-ui/test/static-makepad-bridge.test.mjs apps/hepta-control-ui/test/makepad-dsl.test.mjs apps/hepta-control-ui/test/visual-theme-contract.test.mjs apps/hepta-control-ui/test/robrix-font-readiness.test.mjs
       - id: default_build
@@ -185,6 +186,12 @@ jobs:
           TESTED_SHA="$(git rev-parse HEAD)" python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/gateway-boundary-owner-status-${{ matrix.lane }}.json" --minimum-tests 5 --timeout-seconds 600 -- just test --locked -p codex-hepta-native-gateway --lib -E 'test(owner_status::tests::)'
           TESTED_SHA="$(git rev-parse HEAD)" python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/gateway-boundary-ui-bundle-${{ matrix.lane }}.json" --minimum-tests 11 --timeout-seconds 600 -- just test --locked -p codex-hepta-native-gateway --lib -E 'test(ui_bundle::tests::)'
           TESTED_SHA="$(git rev-parse HEAD)" python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/gateway-boundary-http-origin-${{ matrix.lane }}.json" --minimum-tests 2 --timeout-seconds 600 -- just test --locked -p codex-hepta-native-gateway --lib -E 'test(http_origin::tests::)'
+      - id: product_browser_install
+        name: Install hash-pinned browser for strict no-store product transport
+        timeout-minutes: 3
+        run: |
+          python3 apps/hepta-control-ui/tools/install-font-diagnostic-browser.py "$RUNNER_TEMP/product-qualified-browser"
+          echo "HEPTA_PRODUCT_BROWSER=$RUNNER_TEMP/product-qualified-browser/chrome-headless-shell-linux64/chrome-headless-shell" >> "$GITHUB_ENV"
       - id: product_gateway_browser
         name: Exercise real gateway unavailable status and cancellation
         working-directory: apps/hepta-control-ui
