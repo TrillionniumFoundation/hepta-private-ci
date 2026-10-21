@@ -3,7 +3,8 @@
 This qualification applies to the dependency changes based on
 `b11459f46519e814ab9036c34a0cd7d3c3028e2b`. The source and lock hashes are in
 `source-review.json` and `locks-and-inputs.json`; raw command receipts and output
-are retained beside this file (raw logs are gzip-compressed without edits). It closes the four remaining dependency-policy
+are retained beside this file (raw logs use lossless gzip or XZ compression,
+without edits; each receipt binds the uncompressed bytes). It closes the four remaining dependency-policy
 findings for basic-toml, zbus_names, zvariant, and zvariant_derive without adding
 advisory exceptions or removing credential features.
 

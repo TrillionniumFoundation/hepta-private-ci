@@ -1,0 +1,31 @@
+{
+  "recorded_at_utc": "2026-10-21T10:03:20.227633+00:00",
+  "reason": "Preserve complete raw logs within the unchanged 512000-byte repository blob policy.",
+  "python": "3.12.14",
+  "logs": [
+    {
+      "original_gzip": "logs/cargo-deny-final.log.gz",
+      "original_gzip_sha256": "70333eb57d8fd79850e68d6f68965f399d4dac5532a6fbc2a557aed61ea05576",
+      "original_gzip_bytes": 702234,
+      "retained_xz": "logs/cargo-deny-final.log.xz",
+      "retained_xz_sha256": "0adcee02ab7f31453056ac56796834775d8a1c6978cc9682e1f927d99073457b",
+      "retained_xz_bytes": 368256,
+      "raw_log_sha256": "cfcefa5e024cd86411a307c2b0dee54bfd25bc152fc21765c8f2b571c19e3783",
+      "raw_log_bytes": 12790661,
+      "compression": "Python lzma FORMAT_XZ, preset=6; streaming; no log-byte edits",
+      "original_gzip_retained_in_git_parent": true
+    },
+    {
+      "original_gzip": "logs/cargo-deny-combined-inputs.log.gz",
+      "original_gzip_sha256": "9fc12986161b0b701035f9bb6746e16a6c211a2d2bec4650a362a23553ebe2fa",
+      "original_gzip_bytes": 702192,
+      "retained_xz": "logs/cargo-deny-combined-inputs.log.xz",
+      "retained_xz_sha256": "5824032635b395483b8ce4559a1f04837dedc44af61254886676482f40bef40d",
+      "retained_xz_bytes": 368236,
+      "raw_log_sha256": "e8b9723e041ff199112e5c5a1b5dd02748970c53ee1ed627f9bf60023d8b985e",
+      "raw_log_bytes": 12790661,
+      "compression": "Python lzma FORMAT_XZ, preset=6; streaming; no log-byte edits",
+      "original_gzip_retained_in_git_parent": true
+    }
+  ]
+}
