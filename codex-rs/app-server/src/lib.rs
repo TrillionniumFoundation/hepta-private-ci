@@ -755,7 +755,7 @@ pub async fn run_main_with_transport_options(
         }
     };
     let mut config_warnings = Vec::new();
-    let config = match config_manager
+    let mut config = match config_manager
         .load_latest_config(/*fallback_cwd*/ None)
         .await
     {
@@ -855,7 +855,8 @@ pub async fn run_main_with_transport_options(
         }
         _ => None,
     };
-    let state_db_init = match init_sqlite_state_db_with_fresh_start_on_corruption(&config).await {
+    let state_db_init = match init_sqlite_state_db_with_fresh_start_on_corruption(&mut config).await
+    {
         Ok(state_db_init) => state_db_init,
         Err(err) => {
             return Err(std::io::Error::other(format!(
@@ -1533,7 +1534,7 @@ struct StateDbInitResult {
 }
 
 async fn init_sqlite_state_db_with_fresh_start_on_corruption(
-    config: &Config,
+    config: &mut Config,
 ) -> anyhow::Result<StateDbInitResult> {
     let mut attempted_backups = HashSet::new();
     let mut recovered_databases = Vec::new();

@@ -86,8 +86,9 @@ async fn start_recording_app_server_with_history(
     mut blocked_thread_list: Option<(ThreadId, oneshot::Sender<()>, oneshot::Receiver<()>)>,
     failed_thread_name: Option<&'static str>,
 ) -> Result<RecordingAppServer> {
+    let mut config = config.clone();
     let state_db =
-        crate::init_state_db_for_app_server_target(config, &crate::AppServerTarget::Embedded)
+        crate::init_state_db_for_app_server_target(&mut config, &crate::AppServerTarget::Embedded)
             .await?;
     let embedded = crate::start_embedded_app_server(
         codex_arg0::Arg0DispatchPaths::default(),
@@ -303,7 +304,7 @@ async fn start_recording_app_server_with_history(
             app_server,
             crate::app_server_session::ThreadParamsMode::Embedded,
         )
-        .with_startup_config(config),
+        .with_startup_config(&config),
         requests,
         proxy,
     ))
@@ -384,7 +385,7 @@ fn spawn_approved_task_tool_call(
 
 #[tokio::test]
 async fn external_transport_registers_dynamic_tools_and_finds_task_mentions() -> Result<()> {
-    let (app, _codex_home) = make_history_test_app().await?;
+    let (mut app, _codex_home) = make_history_test_app().await?;
     let (mut app_server, requests, proxy) = start_recording_app_server(
         &app.config,
         /*blocked_thread_list*/ None,
@@ -428,7 +429,7 @@ async fn external_transport_registers_dynamic_tools_and_finds_task_mentions() ->
     app_server
         .thread_inject_items(target_id, vec![App::side_boundary_prompt_item()])
         .await?;
-    crate::init_state_db_for_app_server_target(&app.config, &crate::AppServerTarget::Embedded)
+    crate::init_state_db_for_app_server_target(&mut app.config, &crate::AppServerTarget::Embedded)
         .await?
         .expect("state database")
         .set_thread_preview_if_empty(target_id, "Review database migration")

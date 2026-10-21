@@ -1,6 +1,6 @@
 use crate::RolloutItem;
 use crate::config::RolloutConfig;
-use crate::config::RolloutConfigView;
+use crate::config::RolloutConfigMut;
 use crate::list::Cursor;
 use crate::list::SortDirection;
 use crate::list::ThreadSortKey;
@@ -42,9 +42,8 @@ const STARTUP_BACKFILL_WAIT_TIMEOUT: Duration = Duration::from_secs(2);
 /// This is the process entry point for local state: it opens the SQLite-backed
 /// runtime, applies rollout metadata backfills as needed, and returns the
 /// initialized handle.
-pub async fn init(config: &impl RolloutConfigView) -> Option<StateDbHandle> {
-    let config = RolloutConfig::from_view(config);
-    match try_init_with_roots(config.codex_home, config.sqlite, config.model_provider_id).await {
+pub async fn init(config: &mut impl RolloutConfigMut) -> Option<StateDbHandle> {
+    match try_init(config).await {
         Ok(runtime) => Some(runtime),
         Err(err) => {
             emit_startup_warning(&format!("failed to initialize state runtime: {err:#}"));
@@ -57,9 +56,18 @@ pub async fn init(config: &impl RolloutConfigView) -> Option<StateDbHandle> {
 ///
 /// Prefer [`init`] unless the caller needs to surface the exact failure after
 /// tracing or UI setup has completed.
-pub async fn try_init(config: &impl RolloutConfigView) -> anyhow::Result<StateDbHandle> {
-    let config = RolloutConfig::from_view(config);
-    try_init_with_roots(config.codex_home, config.sqlite, config.model_provider_id).await
+pub async fn try_init(config: &mut impl RolloutConfigMut) -> anyhow::Result<StateDbHandle> {
+    let requested = RolloutConfig::from_view(config);
+    let runtime = try_init_with_roots(
+        requested.codex_home,
+        requested.sqlite,
+        requested.model_provider_id,
+    )
+    .await?;
+    // This owner just initialized the runtime from this exact configuration.
+    // Propagate its frozen identity; never re-resolve an alias at a later read.
+    config.set_sqlite_config(runtime.sqlite().clone());
+    Ok(runtime)
 }
 
 async fn try_init_with_roots(
@@ -205,7 +213,7 @@ fn emit_startup_warning(message: &str) {
 ///
 /// Unlike [`init`], this helper does not run rollout backfill. It is for
 /// optional local reads from non-owning contexts such as remote app-server mode.
-pub async fn get_state_db(config: &impl RolloutConfigView) -> Option<StateDbHandle> {
+pub async fn get_state_db(config: &mut impl RolloutConfigMut) -> Option<StateDbHandle> {
     let state_path = config.sqlite_config().state_db_path();
     if !tokio::fs::try_exists(&state_path).await.unwrap_or(false) {
         codex_state::record_fallback(
@@ -231,7 +239,9 @@ pub async fn get_state_db(config: &impl RolloutConfigView) -> Option<StateDbHand
             return None;
         }
     };
-    require_backfill_complete(runtime, config.sqlite_config().home()).await
+    let runtime = require_backfill_complete(runtime, config.sqlite_config().home()).await?;
+    config.set_sqlite_config(runtime.sqlite().clone());
+    Some(runtime)
 }
 
 /// Build a SQLite telemetry recorder backed by an OTEL metrics client.
@@ -742,3 +752,7 @@ pub async fn touch_thread_updated_at(
 #[cfg(test)]
 #[path = "state_db_tests.rs"]
 mod tests;
+
+#[cfg(test)]
+#[path = "state_db_config_binding_tests.rs"]
+mod config_binding_tests;

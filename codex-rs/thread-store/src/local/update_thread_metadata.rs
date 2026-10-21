@@ -910,7 +910,7 @@ mod tests {
     #[tokio::test]
     async fn section_moves_persist_in_sqlite_without_changing_the_rollout() {
         let home = TempDir::new().expect("temp dir");
-        let config = test_config(home.path());
+        let mut config = test_config(home.path());
         let uuid = Uuid::from_u128(320);
         let thread_id = ThreadId::from_string(&uuid.to_string()).expect("valid thread id");
         let rollout_path =
@@ -922,6 +922,7 @@ mod tests {
         )
         .await
         .expect("state db should initialize");
+        config.sqlite = runtime.sqlite().clone();
         let store = LocalThreadStore::new(config, Some(runtime.clone()));
 
         codex_rollout::state_db::reconcile_rollout(
@@ -2103,13 +2104,14 @@ mod tests {
     #[tokio::test]
     async fn observed_metadata_normalizes_cwd_for_list_filters() {
         let home = TempDir::new().expect("temp dir");
-        let config = test_config(home.path());
+        let mut config = test_config(home.path());
         let runtime = codex_state::StateRuntime::init(
             codex_state::SqliteConfig::new_for_testing(home.path().abs()),
             config.default_model_provider_id.clone(),
         )
         .await
         .expect("state db should initialize");
+        config.sqlite = runtime.sqlite().clone();
         let store = LocalThreadStore::new(config, Some(runtime.clone()));
         let uuid = Uuid::from_u128(316);
         let thread_id = ThreadId::from_string(&uuid.to_string()).expect("valid thread id");
