@@ -125,6 +125,13 @@ fn preflight_memory_meta_batch_v1(
                 HnmfContractError::Invalid("memory meta candidate cost"),
             ));
         }
+        // A global sparse budget must not admit work exceeding the Cell's
+        // own declared tick budget, including a low-ranked deferred Cell.
+        if cell.resource_cost_units > cell.tick_input.resource_budget_units {
+            return Err(MemoryMetaBatchErrorV1::Contract(
+                HnmfContractError::Conflict("memory meta local tick budget"),
+            ));
+        }
         if cell.manifest.shared_base_digest != policy.shared_base_digest
             || cell.manifest.encoder_digest != policy.encoder_digest
             || cell.encoder_feature_digest != policy.encoder_feature_digest
