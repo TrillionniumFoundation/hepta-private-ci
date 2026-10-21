@@ -1388,7 +1388,8 @@ where
                 });
                 return;
             }
-            self.dispatch_idle_notification(thread_id, thread.as_ref()).await;
+            self.dispatch_idle_notification(thread_id, thread.as_ref())
+                .await;
         })
     }
 }
