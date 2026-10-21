@@ -49,6 +49,56 @@ fn stale_feature_generation_is_not_readable() {
 }
 
 #[test]
+fn cache_rejects_conflicting_feature_identity_without_eviction() {
+    let scope = id("scope:a");
+    let encoder = digest("encoder");
+    let input = digest("same-input");
+    let first =
+        ImmutableFeatureSnapshotV1::new_for_input(generation(1), encoder, input, vec![1, 2])
+            .expect("first snapshot");
+    let key = FeatureCacheKeyV1 {
+        scope_id: scope.clone(),
+        encoder_digest: encoder,
+        input_digest: input,
+    };
+    let mut cache = FeatureCacheV1::default();
+    cache
+        .insert(scope.clone(), first.clone())
+        .expect("initial admission");
+    cache
+        .insert(scope.clone(), first.clone())
+        .expect("identical replay is idempotent");
+
+    let substituted =
+        ImmutableFeatureSnapshotV1::new_for_input(generation(1), encoder, input, vec![1, 3])
+            .expect("substituted features");
+    assert_eq!(
+        cache.insert(scope.clone(), substituted),
+        Err(CellWorkerError::ConflictingFeatureSnapshot)
+    );
+    assert_eq!(cache.get(&key, generation(1)), Some(&first));
+    assert_eq!(cache.len(), 1);
+
+    let successor =
+        ImmutableFeatureSnapshotV1::new_for_input(generation(2), encoder, input, vec![3, 4])
+            .expect("successor features");
+    assert_eq!(
+        cache.insert(scope.clone(), successor.clone()),
+        Err(CellWorkerError::ConflictingFeatureSnapshot)
+    );
+    assert_eq!(cache.get(&key, generation(1)), Some(&first));
+    assert!(cache.get(&key, generation(2)).is_none());
+
+    // Reconfiguration is explicit: the owner first fences the old generation.
+    cache.invalidate_generation(generation(2));
+    cache
+        .insert(scope, successor.clone())
+        .expect("fresh generation after invalidation");
+    assert_eq!(cache.get(&key, generation(2)), Some(&successor));
+    assert!(cache.get(&key, generation(1)).is_none());
+}
+
+#[test]
 fn compatible_model_index_is_stable() {
     let key = CompatibleModelKeyV1 {
         model_digest: digest("model"),
