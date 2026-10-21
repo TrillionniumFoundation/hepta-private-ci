@@ -151,7 +151,11 @@ fn canonical_candidates(
     context: &OutputPortfolioContextV1,
     candidates: &[OutputPortfolioCandidateV1],
 ) -> Result<Vec<OutputPortfolioCandidateV1>, NduError> {
-    if context.objective_digest.is_zero() || context.encoder_digest.is_zero() || context.snapshot_digest.is_zero() {
+    if context.objective_digest.is_zero()
+        || context.encoder_digest.is_zero()
+        || context.snapshot_digest.is_zero()
+        || context.future_window_digest.is_zero()
+    {
         return Err(NduError::InvalidSolverReceipt("portfolio context digest"));
     }
     if candidates.is_empty() || candidates.len() > MAX_PORTFOLIO_CANDIDATES {
@@ -176,6 +180,9 @@ fn canonical_candidates(
             return Err(NduError::InvalidSolverReceipt("whole-candidate weight cap"));
         }
         validate_risk(&candidate.risk)?;
+        if candidate.risk.future_window_digest != context.future_window_digest {
+            return Err(NduError::InvalidSolverReceipt("future-window digest"));
+        }
         if candidate.is_no_change {
             baseline_count += 1;
             if candidate.weight_cap != FixedQ32::ONE {
@@ -185,7 +192,7 @@ fn canonical_candidates(
                 || candidate.utility_delta != FixedQ32::ZERO
                 || candidate.resource_cost != FixedQ32::ZERO
                 || candidate.latency_cost != FixedQ32::ZERO
-                || candidate.risk != zero_risk()
+                || candidate.risk != zero_risk(context.future_window_digest)
             {
                 return Err(NduError::InvalidSolverReceipt("invalid no-change asset"));
             }
@@ -246,6 +253,9 @@ fn validate_budget(budget: &OutputPortfolioBudgetV1) -> Result<(), NduError> {
     Ok(())
 }
 fn validate_risk(risk: &SemanticRiskEstimateV1) -> Result<(), NduError> {
+    if risk.future_window_digest.is_zero() {
+        return Err(NduError::InvalidSolverReceipt("future-window digest"));
+    }
     if risk.mean_loss < FixedQ32::ZERO
         || risk.cvar_loss < FixedQ32::ZERO
         || risk.cross_modal_inconsistency < FixedQ32::ZERO
@@ -283,8 +293,9 @@ fn validate_covariance(covariance: &[FixedQ32], count: usize) -> Result<(), NduE
     }
     Ok(())
 }
-fn zero_risk() -> SemanticRiskEstimateV1 {
+fn zero_risk(future_window_digest: Digest32) -> SemanticRiskEstimateV1 {
     SemanticRiskEstimateV1 {
+        future_window_digest,
         mean_loss: FixedQ32::ZERO,
         cvar_loss: FixedQ32::ZERO,
         failure_probability: ProbabilityQ32::ZERO,
@@ -416,6 +427,7 @@ fn digest_selection(
     bytes.extend_from_slice(&context.generation.get().to_le_bytes());
     bytes.extend_from_slice(context.encoder_digest.as_array());
     bytes.extend_from_slice(context.snapshot_digest.as_array());
+    bytes.extend_from_slice(context.future_window_digest.as_array());
     bytes.extend_from_slice(&budget.max_selected.to_le_bytes());
     for value in [
         budget.risk_budget,
@@ -440,6 +452,7 @@ fn digest_selection(
         bytes.push(0);
         bytes.extend_from_slice(candidate.candidate_digest.as_array());
         bytes.push(candidate.protocol.tag());
+        bytes.extend_from_slice(candidate.risk.future_window_digest.as_array());
         bytes.extend_from_slice(&candidate.utility_delta.raw().to_le_bytes());
         bytes.extend_from_slice(&candidate.risk.mean_loss.raw().to_le_bytes());
         bytes.extend_from_slice(&candidate.risk.cvar_loss.raw().to_le_bytes());
