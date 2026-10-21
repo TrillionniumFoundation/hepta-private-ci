@@ -523,11 +523,16 @@ impl ProductionAuthorityVerifier for RetirementVerifier {
                 .ok_or_else(|| "missing authority-check notification".to_string())?
                 .send(())
                 .map_err(|_| "authority-check observer closed".to_string())?;
-            self.resume
-                .lock()
-                .map_err(|error| error.to_string())?
-                .recv_timeout(Duration::from_secs(5))
-                .map_err(|error| error.to_string())?;
+            // A synchronous issuer verifier must not occupy a Tokio worker
+            // while the test exhausts the SQLite pool on the same runtime.
+            // block_in_place transfers other async work to a replacement worker.
+            tokio::task::block_in_place(|| {
+                self.resume
+                    .lock()
+                    .map_err(|error| error.to_string())?
+                    .recv_timeout(Duration::from_secs(15))
+                    .map_err(|error| error.to_string())
+            })?;
         }
         Ok(())
     }
