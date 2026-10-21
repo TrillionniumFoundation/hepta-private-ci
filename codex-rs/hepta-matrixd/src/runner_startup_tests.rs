@@ -36,6 +36,14 @@ struct StartupBridge {
 }
 
 impl MatrixRuntimeBridge for StartupBridge {
+    fn list_persisted_turns<'a>(
+        &'a self,
+        _thread_id: &'a str,
+        _cursor: Option<&'a str>,
+    ) -> MatrixRuntimeFuture<'a, crate::BridgePage<codex_app_server_protocol::Turn>> {
+        Box::pin(async { panic!("queued startup fixture must not observe admitted turns") })
+    }
+
     fn ensure_room_thread<'a>(
         &'a self,
         room_id: &'a MatrixRoomId,
@@ -313,5 +321,172 @@ async fn initial_sync_redaction_commits_before_resume_and_inbox_recovery() -> an
             .await?
             .is_some()
     );
+    Ok(())
+}
+
+#[tokio::test]
+async fn dispatched_source_redaction_quarantines_startup_and_late_projection() -> anyhow::Result<()>
+{
+    use crate::MatrixDispatchOutcome;
+    use crate::MatrixEventProjection;
+    use codex_app_server_client::AppServerEvent;
+    use codex_app_server_protocol::ItemCompletedNotification;
+    use codex_app_server_protocol::ServerNotification;
+    use codex_app_server_protocol::ThreadItem;
+    use codex_app_server_protocol::Turn;
+    use codex_app_server_protocol::TurnCompletedNotification;
+    use codex_app_server_protocol::TurnItemsView;
+    use codex_app_server_protocol::TurnStatus;
+    use codex_hepta_matrix_store::InboxAdmissionDraft;
+    use codex_hepta_matrix_store::InboxDispatchState;
+
+    for state in [
+        InboxDispatchState::Begun,
+        InboxDispatchState::Queued,
+        InboxDispatchState::Admitted,
+        InboxDispatchState::Completed,
+    ] {
+        let fixture = Fixture::new().await?;
+        let event_id = MatrixEventId::parse("$deleted")?;
+        if state == InboxDispatchState::Begun {
+            fixture
+                .runtime
+                .store()
+                .begin_inbox_dispatch(&event_id, 12)
+                .await?;
+        } else {
+            fixture.runtime.process_event(&event_id, 12).await?;
+            if matches!(
+                state,
+                InboxDispatchState::Admitted | InboxDispatchState::Completed
+            ) {
+                let dispatch = fixture
+                    .runtime
+                    .store()
+                    .inbox_dispatch(&event_id)
+                    .await?
+                    .expect("queued dispatch");
+                let admission = InboxAdmissionDraft {
+                    event_id: event_id.clone(),
+                    client_user_message_id: dispatch.client_user_message_id,
+                    project_id: dispatch.project_id,
+                    thread_id: "thread-startup".to_string(),
+                    queued_submission_id: dispatch.queued_submission_id,
+                    turn_id: "turn-startup".to_string(),
+                    admitted_at_ms: 13,
+                };
+                fixture
+                    .runtime
+                    .store()
+                    .record_inbox_admitted(&admission)
+                    .await?;
+                if state == InboxDispatchState::Completed {
+                    fixture
+                        .runtime
+                        .store()
+                        .complete_inbox_dispatch(&admission, 14)
+                        .await?;
+                }
+            }
+        }
+        let original = fixture
+            .runtime
+            .store()
+            .inbox_dispatch(&event_id)
+            .await?
+            .expect("raw dispatch");
+        fixture.trace.lock().expect("trace").clear();
+        let decision = MatrixSyncDecisionV2::Commit {
+            batch: MatrixSyncBatchV2 {
+                schema_version: MATRIX_SYNC_MUTATION_SCHEMA_VERSION_V2,
+                operation_id: "dispatched-startup-redaction".to_string(),
+                checkpoint_revision: 1,
+                checkpoint_generation: 1,
+                expected_next_batch: None,
+                next_batch: "quarantine-committed".to_string(),
+                observed_at_ms: 20,
+                mutations: vec![MatrixSyncMutationV2 {
+                    source_event_id: MatrixEventId::parse("$active-redaction")?,
+                    room_id: fixture.config.binding.allowed_rooms[0].clone(),
+                    sender: fixture.config.binding.allowed_senders[0].clone(),
+                    binding_revision: 1,
+                    generation: 1,
+                    origin_server_ts_ms: 19,
+                    received_at_ms: 20,
+                    body: MatrixSyncMutationBodyV2::Redaction {
+                        target_event_id: event_id.clone(),
+                    },
+                }],
+            },
+        };
+        recover_startup_after_sync(
+            &fixture.runtime,
+            &fixture.config,
+            async {
+                fixture
+                    .runtime
+                    .store()
+                    .apply_sync_decision_v2(&decision)
+                    .await?;
+                fixture
+                    .trace
+                    .lock()
+                    .expect("trace")
+                    .push("sync-commit".to_string());
+                Ok(())
+            },
+            |_thread_id| async { panic!("quarantined thread must not be resumed") },
+        )
+        .await?;
+        assert_eq!(*fixture.trace.lock().expect("trace"), vec!["sync-commit"]);
+        assert!(matches!(
+            fixture.runtime.process_event(&event_id, 21).await?,
+            MatrixDispatchOutcome::Quarantined { .. }
+        ));
+        for notification in [
+            ServerNotification::ItemCompleted(ItemCompletedNotification {
+                item: ThreadItem::AgentMessage {
+                    id: "late-agent-item".to_string(),
+                    text: "late final".to_string(),
+                    phase: None,
+                    memory_citation: None,
+                    delivery: None,
+                },
+                thread_id: "thread-startup".to_string(),
+                turn_id: "turn-startup".to_string(),
+                completed_at_ms: 22,
+            }),
+            ServerNotification::TurnCompleted(TurnCompletedNotification {
+                thread_id: "thread-startup".to_string(),
+                turn: Turn {
+                    id: "turn-startup".to_string(),
+                    items: Vec::new(),
+                    items_view: TurnItemsView::Full,
+                    status: TurnStatus::Completed,
+                    error: None,
+                    started_at: None,
+                    completed_at: None,
+                    duration_ms: None,
+                },
+            }),
+        ] {
+            assert_eq!(
+                fixture
+                    .runtime
+                    .project_app_server_event(
+                        &AppServerEvent::ServerNotification(Box::new(notification)),
+                        23
+                    )
+                    .await?,
+                MatrixEventProjection::Ignored
+            );
+        }
+        assert_eq!(
+            fixture.runtime.store().inbox_dispatch(&event_id).await?,
+            Some(original)
+        );
+        assert!(fixture.runtime.store().pending_outbox(10).await?.is_empty());
+        fixture.runtime.store().close().await;
+    }
     Ok(())
 }
