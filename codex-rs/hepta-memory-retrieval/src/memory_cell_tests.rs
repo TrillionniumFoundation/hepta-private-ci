@@ -1100,7 +1100,7 @@ fn checked_record_recall_binds_every_selected_record_to_source_cut() {
     )
     .unwrap_or_else(|error| panic!("record-checked shadow: {error:?}"));
 
-    assert_eq!(support_checks, 2);
+    assert_eq!(support_checks, 3);
     assert_eq!(outcome.batch.cell_ticks.len(), 1);
     assert!(!record_lookups.is_empty());
     assert_eq!(
@@ -1112,6 +1112,42 @@ fn checked_record_recall_binds_every_selected_record_to_source_cut() {
     }));
     assert!(!outcome.batch.routing.authority.grants_any());
     assert!(!outcome.pre_tick_plan.production_activation_allowed);
+}
+
+#[test]
+fn checked_record_recall_rechecks_support_after_record_callback_revokes_it() {
+    let fixture = shadow_fixture(true);
+    let support_live = std::cell::Cell::new(true);
+    let mut support_checks = 0_usize;
+    let mut record_checks = 0_usize;
+
+    let rejected = crate::run_memory_meta_preselected_record_checked_shadow_v1(
+        &meta_policy(&fixture),
+        &fixture.cue,
+        &fixture.policy,
+        &fixture.snapshot,
+        &fixture.dynamics,
+        &[meta_spec(&fixture)],
+        |_| {
+            support_checks += 1;
+            support_live.get()
+        },
+        |_| {
+            record_checks += 1;
+            support_live.set(false);
+            true
+        },
+    );
+    assert!(matches!(
+        rejected,
+        Err(crate::MemoryMetaBatchErrorV1::Contract(
+            codex_hepta_cognitive_types::hnmf::HnmfContractError::Conflict(
+                "memory meta external evidence changed after records"
+            )
+        ))
+    ));
+    assert!(record_checks > 0);
+    assert_eq!(support_checks, 3);
 }
 
 #[test]
