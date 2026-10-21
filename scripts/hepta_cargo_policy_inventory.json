@@ -1,0 +1,1064 @@
+{
+  "vendors": {
+    "i18n-config": {
+      "directory": "i18n-config-0.4.8",
+      "tests": [
+        {
+          "path": "src/parser_tests.rs",
+          "name": "maintained_parser_retains_fluent_and_gettext_configuration",
+          "ignored": false,
+          "no_github_actions": false,
+          "runtime_name": "parser_tests::maintained_parser_retains_fluent_and_gettext_configuration"
+        },
+        {
+          "path": "src/parser_tests.rs",
+          "name": "crate_manifest_and_parent_localization_still_resolve",
+          "ignored": false,
+          "no_github_actions": false,
+          "runtime_name": "parser_tests::crate_manifest_and_parent_localization_still_resolve"
+        },
+        {
+          "path": "src/parser_tests.rs",
+          "name": "invalid_toml_keeps_the_original_error_boundary_and_path",
+          "ignored": false,
+          "no_github_actions": false,
+          "runtime_name": "parser_tests::invalid_toml_keeps_the_original_error_boundary_and_path"
+        }
+      ]
+    },
+    "secret-service": {
+      "directory": "secret-service-6.0.0",
+      "tests": [
+        {
+          "path": "src/blocking/collection.rs",
+          "name": "should_create_collection_struct",
+          "ignored": false,
+          "no_github_actions": false,
+          "runtime_name": "blocking::collection::test::should_create_collection_struct"
+        },
+        {
+          "path": "src/blocking/collection.rs",
+          "name": "should_check_if_collection_locked",
+          "ignored": false,
+          "no_github_actions": false,
+          "runtime_name": "blocking::collection::test::should_check_if_collection_locked"
+        },
+        {
+          "path": "src/blocking/collection.rs",
+          "name": "missing_collection_has_no_lock_state",
+          "ignored": false,
+          "no_github_actions": false,
+          "runtime_name": "blocking::collection::test::missing_collection_has_no_lock_state"
+        },
+        {
+          "path": "src/blocking/collection.rs",
+          "name": "missing_collection_cannot_be_confirmed_unlocked",
+          "ignored": false,
+          "no_github_actions": false,
+          "runtime_name": "blocking::collection::test::missing_collection_cannot_be_confirmed_unlocked"
+        },
+        {
+          "path": "src/blocking/collection.rs",
+          "name": "missing_collection_cannot_be_deleted",
+          "ignored": false,
+          "no_github_actions": false,
+          "runtime_name": "blocking::collection::test::missing_collection_cannot_be_deleted"
+        },
+        {
+          "path": "src/blocking/collection.rs",
+          "name": "missing_collection_cannot_be_renamed",
+          "ignored": false,
+          "no_github_actions": false,
+          "runtime_name": "blocking::collection::test::missing_collection_cannot_be_renamed"
+        },
+        {
+          "path": "src/blocking/collection.rs",
+          "name": "should_lock_and_unlock",
+          "ignored": true,
+          "no_github_actions": false,
+          "runtime_name": "blocking::collection::test::should_lock_and_unlock"
+        },
+        {
+          "path": "src/blocking/collection.rs",
+          "name": "should_delete_collection",
+          "ignored": true,
+          "no_github_actions": false,
+          "runtime_name": "blocking::collection::test::should_delete_collection"
+        },
+        {
+          "path": "src/blocking/collection.rs",
+          "name": "should_get_all_items",
+          "ignored": false,
+          "no_github_actions": false,
+          "runtime_name": "blocking::collection::test::should_get_all_items"
+        },
+        {
+          "path": "src/blocking/collection.rs",
+          "name": "should_search_items",
+          "ignored": false,
+          "no_github_actions": false,
+          "runtime_name": "blocking::collection::test::should_search_items"
+        },
+        {
+          "path": "src/blocking/collection.rs",
+          "name": "should_get_and_set_collection_label",
+          "ignored": true,
+          "no_github_actions": false,
+          "runtime_name": "blocking::collection::test::should_get_and_set_collection_label"
+        },
+        {
+          "path": "src/blocking/collection.rs",
+          "name": "should_get_collection_by_path",
+          "ignored": false,
+          "no_github_actions": false,
+          "runtime_name": "blocking::collection::test::should_get_collection_by_path"
+        },
+        {
+          "path": "src/blocking/collection.rs",
+          "name": "should_get_collection_label_from_service",
+          "ignored": false,
+          "no_github_actions": false,
+          "runtime_name": "blocking::collection::test::should_get_collection_label_from_service"
+        },
+        {
+          "path": "src/blocking/item.rs",
+          "name": "should_create_and_delete_item",
+          "ignored": false,
+          "no_github_actions": false,
+          "runtime_name": "blocking::item::test::should_create_and_delete_item"
+        },
+        {
+          "path": "src/blocking/item.rs",
+          "name": "should_check_if_item_locked",
+          "ignored": false,
+          "no_github_actions": false,
+          "runtime_name": "blocking::item::test::should_check_if_item_locked"
+        },
+        {
+          "path": "src/blocking/item.rs",
+          "name": "deleted_item_does_not_report_a_lock_state",
+          "ignored": false,
+          "no_github_actions": false,
+          "runtime_name": "blocking::item::test::deleted_item_does_not_report_a_lock_state"
+        },
+        {
+          "path": "src/blocking/item.rs",
+          "name": "deleted_item_cannot_be_confirmed_unlocked",
+          "ignored": false,
+          "no_github_actions": false,
+          "runtime_name": "blocking::item::test::deleted_item_cannot_be_confirmed_unlocked"
+        },
+        {
+          "path": "src/blocking/item.rs",
+          "name": "should_lock_and_unlock",
+          "ignored": true,
+          "no_github_actions": false,
+          "runtime_name": "blocking::item::test::should_lock_and_unlock"
+        },
+        {
+          "path": "src/blocking/item.rs",
+          "name": "should_get_and_set_item_label",
+          "ignored": false,
+          "no_github_actions": false,
+          "runtime_name": "blocking::item::test::should_get_and_set_item_label"
+        },
+        {
+          "path": "src/blocking/item.rs",
+          "name": "should_get_item_by_path",
+          "ignored": false,
+          "no_github_actions": false,
+          "runtime_name": "blocking::item::test::should_get_item_by_path"
+        },
+        {
+          "path": "src/blocking/item.rs",
+          "name": "should_create_with_item_attributes",
+          "ignored": false,
+          "no_github_actions": false,
+          "runtime_name": "blocking::item::test::should_create_with_item_attributes"
+        },
+        {
+          "path": "src/blocking/item.rs",
+          "name": "should_get_and_set_item_attributes",
+          "ignored": false,
+          "no_github_actions": false,
+          "runtime_name": "blocking::item::test::should_get_and_set_item_attributes"
+        },
+        {
+          "path": "src/blocking/item.rs",
+          "name": "should_get_modified_created_props",
+          "ignored": false,
+          "no_github_actions": false,
+          "runtime_name": "blocking::item::test::should_get_modified_created_props"
+        },
+        {
+          "path": "src/blocking/item.rs",
+          "name": "should_create_and_get_secret",
+          "ignored": false,
+          "no_github_actions": false,
+          "runtime_name": "blocking::item::test::should_create_and_get_secret"
+        },
+        {
+          "path": "src/blocking/item.rs",
+          "name": "should_create_and_get_secret_encrypted",
+          "ignored": false,
+          "no_github_actions": false,
+          "runtime_name": "blocking::item::test::should_create_and_get_secret_encrypted"
+        },
+        {
+          "path": "src/blocking/item.rs",
+          "name": "should_get_secret_content_type",
+          "ignored": false,
+          "no_github_actions": false,
+          "runtime_name": "blocking::item::test::should_get_secret_content_type"
+        },
+        {
+          "path": "src/blocking/item.rs",
+          "name": "should_set_secret",
+          "ignored": false,
+          "no_github_actions": false,
+          "runtime_name": "blocking::item::test::should_set_secret"
+        },
+        {
+          "path": "src/blocking/item.rs",
+          "name": "should_create_encrypted_item",
+          "ignored": false,
+          "no_github_actions": false,
+          "runtime_name": "blocking::item::test::should_create_encrypted_item"
+        },
+        {
+          "path": "src/blocking/item.rs",
+          "name": "should_create_encrypted_item_from_empty_secret",
+          "ignored": false,
+          "no_github_actions": false,
+          "runtime_name": "blocking::item::test::should_create_encrypted_item_from_empty_secret"
+        },
+        {
+          "path": "src/blocking/item.rs",
+          "name": "should_get_encrypted_secret_across_dbus_connections",
+          "ignored": false,
+          "no_github_actions": false,
+          "runtime_name": "blocking::item::test::should_get_encrypted_secret_across_dbus_connections"
+        },
+        {
+          "path": "src/blocking/mod.rs",
+          "name": "should_create_secret_service",
+          "ignored": false,
+          "no_github_actions": false,
+          "runtime_name": "blocking::test::should_create_secret_service"
+        },
+        {
+          "path": "src/blocking/mod.rs",
+          "name": "should_connect_with_existing_connection",
+          "ignored": false,
+          "no_github_actions": false,
+          "runtime_name": "blocking::test::should_connect_with_existing_connection"
+        },
+        {
+          "path": "src/blocking/mod.rs",
+          "name": "unlock_all_reports_a_closed_connection",
+          "ignored": false,
+          "no_github_actions": false,
+          "runtime_name": "blocking::test::unlock_all_reports_a_closed_connection"
+        },
+        {
+          "path": "src/blocking/mod.rs",
+          "name": "should_get_all_collections",
+          "ignored": false,
+          "no_github_actions": false,
+          "runtime_name": "blocking::test::should_get_all_collections"
+        },
+        {
+          "path": "src/blocking/mod.rs",
+          "name": "should_get_collection_by_alias",
+          "ignored": false,
+          "no_github_actions": false,
+          "runtime_name": "blocking::test::should_get_collection_by_alias"
+        },
+        {
+          "path": "src/blocking/mod.rs",
+          "name": "should_return_error_if_collection_doesnt_exist",
+          "ignored": false,
+          "no_github_actions": false,
+          "runtime_name": "blocking::test::should_return_error_if_collection_doesnt_exist"
+        },
+        {
+          "path": "src/blocking/mod.rs",
+          "name": "should_get_default_collection",
+          "ignored": false,
+          "no_github_actions": false,
+          "runtime_name": "blocking::test::should_get_default_collection"
+        },
+        {
+          "path": "src/blocking/mod.rs",
+          "name": "should_get_any_collection",
+          "ignored": false,
+          "no_github_actions": false,
+          "runtime_name": "blocking::test::should_get_any_collection"
+        },
+        {
+          "path": "src/blocking/mod.rs",
+          "name": "should_create_and_delete_collection",
+          "ignored": false,
+          "no_github_actions": true,
+          "runtime_name": "blocking::test::should_create_and_delete_collection"
+        },
+        {
+          "path": "src/blocking/mod.rs",
+          "name": "should_search_items",
+          "ignored": false,
+          "no_github_actions": false,
+          "runtime_name": "blocking::test::should_search_items"
+        },
+        {
+          "path": "src/collection.rs",
+          "name": "should_create_collection_struct",
+          "ignored": false,
+          "no_github_actions": false,
+          "runtime_name": "collection::test::should_create_collection_struct"
+        },
+        {
+          "path": "src/collection.rs",
+          "name": "should_check_if_collection_locked",
+          "ignored": false,
+          "no_github_actions": false,
+          "runtime_name": "collection::test::should_check_if_collection_locked"
+        },
+        {
+          "path": "src/collection.rs",
+          "name": "should_lock_and_unlock",
+          "ignored": true,
+          "no_github_actions": false,
+          "runtime_name": "collection::test::should_lock_and_unlock"
+        },
+        {
+          "path": "src/collection.rs",
+          "name": "should_delete_collection",
+          "ignored": true,
+          "no_github_actions": false,
+          "runtime_name": "collection::test::should_delete_collection"
+        },
+        {
+          "path": "src/collection.rs",
+          "name": "should_get_all_items",
+          "ignored": false,
+          "no_github_actions": false,
+          "runtime_name": "collection::test::should_get_all_items"
+        },
+        {
+          "path": "src/collection.rs",
+          "name": "should_search_items",
+          "ignored": false,
+          "no_github_actions": false,
+          "runtime_name": "collection::test::should_search_items"
+        },
+        {
+          "path": "src/collection.rs",
+          "name": "should_get_and_set_collection_label",
+          "ignored": true,
+          "no_github_actions": false,
+          "runtime_name": "collection::test::should_get_and_set_collection_label"
+        },
+        {
+          "path": "src/collection.rs",
+          "name": "should_get_collection_by_path",
+          "ignored": false,
+          "no_github_actions": false,
+          "runtime_name": "collection::test::should_get_collection_by_path"
+        },
+        {
+          "path": "src/error.rs",
+          "name": "zbus_error_exposes_its_source",
+          "ignored": false,
+          "no_github_actions": false,
+          "runtime_name": "error::tests::zbus_error_exposes_its_source"
+        },
+        {
+          "path": "src/error.rs",
+          "name": "fdo_error_exposes_its_source",
+          "ignored": false,
+          "no_github_actions": false,
+          "runtime_name": "error::tests::fdo_error_exposes_its_source"
+        },
+        {
+          "path": "src/error.rs",
+          "name": "error_displays_its_message",
+          "ignored": false,
+          "no_github_actions": false,
+          "runtime_name": "error::tests::error_displays_its_message"
+        },
+        {
+          "path": "src/item.rs",
+          "name": "should_create_and_delete_item",
+          "ignored": false,
+          "no_github_actions": false,
+          "runtime_name": "item::test::should_create_and_delete_item"
+        },
+        {
+          "path": "src/item.rs",
+          "name": "should_check_if_item_locked",
+          "ignored": false,
+          "no_github_actions": false,
+          "runtime_name": "item::test::should_check_if_item_locked"
+        },
+        {
+          "path": "src/item.rs",
+          "name": "should_lock_and_unlock",
+          "ignored": true,
+          "no_github_actions": false,
+          "runtime_name": "item::test::should_lock_and_unlock"
+        },
+        {
+          "path": "src/item.rs",
+          "name": "should_get_and_set_item_label",
+          "ignored": false,
+          "no_github_actions": false,
+          "runtime_name": "item::test::should_get_and_set_item_label"
+        },
+        {
+          "path": "src/item.rs",
+          "name": "should_get_item_by_path",
+          "ignored": false,
+          "no_github_actions": false,
+          "runtime_name": "item::test::should_get_item_by_path"
+        },
+        {
+          "path": "src/item.rs",
+          "name": "should_create_with_item_attributes",
+          "ignored": false,
+          "no_github_actions": false,
+          "runtime_name": "item::test::should_create_with_item_attributes"
+        },
+        {
+          "path": "src/item.rs",
+          "name": "should_get_and_set_item_attributes",
+          "ignored": false,
+          "no_github_actions": false,
+          "runtime_name": "item::test::should_get_and_set_item_attributes"
+        },
+        {
+          "path": "src/item.rs",
+          "name": "should_get_modified_created_props",
+          "ignored": false,
+          "no_github_actions": false,
+          "runtime_name": "item::test::should_get_modified_created_props"
+        },
+        {
+          "path": "src/item.rs",
+          "name": "should_create_and_get_secret",
+          "ignored": false,
+          "no_github_actions": false,
+          "runtime_name": "item::test::should_create_and_get_secret"
+        },
+        {
+          "path": "src/item.rs",
+          "name": "should_create_and_get_secret_encrypted",
+          "ignored": false,
+          "no_github_actions": false,
+          "runtime_name": "item::test::should_create_and_get_secret_encrypted"
+        },
+        {
+          "path": "src/item.rs",
+          "name": "should_get_secret_content_type",
+          "ignored": false,
+          "no_github_actions": false,
+          "runtime_name": "item::test::should_get_secret_content_type"
+        },
+        {
+          "path": "src/item.rs",
+          "name": "should_set_secret",
+          "ignored": false,
+          "no_github_actions": false,
+          "runtime_name": "item::test::should_set_secret"
+        },
+        {
+          "path": "src/item.rs",
+          "name": "should_create_encrypted_item",
+          "ignored": false,
+          "no_github_actions": false,
+          "runtime_name": "item::test::should_create_encrypted_item"
+        },
+        {
+          "path": "src/item.rs",
+          "name": "should_create_encrypted_item_from_empty_secret",
+          "ignored": false,
+          "no_github_actions": false,
+          "runtime_name": "item::test::should_create_encrypted_item_from_empty_secret"
+        },
+        {
+          "path": "src/item.rs",
+          "name": "should_get_encrypted_secret_across_dbus_connections",
+          "ignored": false,
+          "no_github_actions": false,
+          "runtime_name": "item::test::should_get_encrypted_secret_across_dbus_connections"
+        },
+        {
+          "path": "src/lib.rs",
+          "name": "should_create_secret_service",
+          "ignored": false,
+          "no_github_actions": false,
+          "runtime_name": "test::should_create_secret_service"
+        },
+        {
+          "path": "src/lib.rs",
+          "name": "should_get_all_collections",
+          "ignored": false,
+          "no_github_actions": false,
+          "runtime_name": "test::should_get_all_collections"
+        },
+        {
+          "path": "src/lib.rs",
+          "name": "should_get_collection_by_alias",
+          "ignored": false,
+          "no_github_actions": false,
+          "runtime_name": "test::should_get_collection_by_alias"
+        },
+        {
+          "path": "src/lib.rs",
+          "name": "should_return_error_if_collection_doesnt_exist",
+          "ignored": false,
+          "no_github_actions": false,
+          "runtime_name": "test::should_return_error_if_collection_doesnt_exist"
+        },
+        {
+          "path": "src/lib.rs",
+          "name": "should_get_default_collection",
+          "ignored": false,
+          "no_github_actions": false,
+          "runtime_name": "test::should_get_default_collection"
+        },
+        {
+          "path": "src/lib.rs",
+          "name": "should_get_any_collection",
+          "ignored": false,
+          "no_github_actions": false,
+          "runtime_name": "test::should_get_any_collection"
+        },
+        {
+          "path": "src/lib.rs",
+          "name": "should_create_and_delete_collection",
+          "ignored": false,
+          "no_github_actions": true,
+          "runtime_name": "test::should_create_and_delete_collection"
+        },
+        {
+          "path": "src/lib.rs",
+          "name": "should_search_items",
+          "ignored": false,
+          "no_github_actions": false,
+          "runtime_name": "test::should_search_items"
+        },
+        {
+          "path": "src/session.rs",
+          "name": "should_create_plain_session",
+          "ignored": false,
+          "no_github_actions": false,
+          "runtime_name": "session::test::should_create_plain_session"
+        },
+        {
+          "path": "src/session.rs",
+          "name": "should_create_encrypted_session",
+          "ignored": false,
+          "no_github_actions": false,
+          "runtime_name": "session::test::should_create_encrypted_session"
+        }
+      ]
+    },
+    "zbus-secret-service-keyring-store": {
+      "directory": "zbus-secret-service-keyring-store-1.0.1",
+      "tests": [
+        {
+          "path": "src/tests.rs",
+          "name": "test_store_methods",
+          "ignored": false,
+          "no_github_actions": false,
+          "runtime_name": "tests::test_store_methods"
+        },
+        {
+          "path": "src/tests.rs",
+          "name": "test_invalid_parameter",
+          "ignored": false,
+          "no_github_actions": false,
+          "runtime_name": "tests::test_invalid_parameter"
+        },
+        {
+          "path": "src/tests.rs",
+          "name": "test_missing_entry",
+          "ignored": false,
+          "no_github_actions": false,
+          "runtime_name": "tests::test_missing_entry"
+        },
+        {
+          "path": "src/tests.rs",
+          "name": "test_empty_password",
+          "ignored": false,
+          "no_github_actions": false,
+          "runtime_name": "tests::test_empty_password"
+        },
+        {
+          "path": "src/tests.rs",
+          "name": "test_round_trip_ascii_password",
+          "ignored": false,
+          "no_github_actions": false,
+          "runtime_name": "tests::test_round_trip_ascii_password"
+        },
+        {
+          "path": "src/tests.rs",
+          "name": "test_round_trip_non_ascii_password",
+          "ignored": false,
+          "no_github_actions": false,
+          "runtime_name": "tests::test_round_trip_non_ascii_password"
+        },
+        {
+          "path": "src/tests.rs",
+          "name": "test_entries_with_same_and_different_specifiers",
+          "ignored": false,
+          "no_github_actions": false,
+          "runtime_name": "tests::test_entries_with_same_and_different_specifiers"
+        },
+        {
+          "path": "src/tests.rs",
+          "name": "test_round_trip_random_secret",
+          "ignored": false,
+          "no_github_actions": false,
+          "runtime_name": "tests::test_round_trip_random_secret"
+        },
+        {
+          "path": "src/tests.rs",
+          "name": "test_update",
+          "ignored": false,
+          "no_github_actions": false,
+          "runtime_name": "tests::test_update"
+        },
+        {
+          "path": "src/tests.rs",
+          "name": "test_update_secret",
+          "ignored": false,
+          "no_github_actions": false,
+          "runtime_name": "tests::test_update_secret"
+        },
+        {
+          "path": "src/tests.rs",
+          "name": "test_get_update_attributes",
+          "ignored": false,
+          "no_github_actions": false,
+          "runtime_name": "tests::test_get_update_attributes"
+        },
+        {
+          "path": "src/tests.rs",
+          "name": "test_get_credential_and_specifiers_and_label",
+          "ignored": false,
+          "no_github_actions": false,
+          "runtime_name": "tests::test_get_credential_and_specifiers_and_label"
+        },
+        {
+          "path": "src/tests.rs",
+          "name": "test_entries_with_and_without_targets",
+          "ignored": true,
+          "no_github_actions": false,
+          "runtime_name": "tests::test_entries_with_and_without_targets"
+        },
+        {
+          "path": "src/tests.rs",
+          "name": "test_create_then_move",
+          "ignored": false,
+          "no_github_actions": false,
+          "runtime_name": "tests::test_create_then_move"
+        },
+        {
+          "path": "src/tests.rs",
+          "name": "test_simultaneous_create_then_move",
+          "ignored": false,
+          "no_github_actions": false,
+          "runtime_name": "tests::test_simultaneous_create_then_move"
+        },
+        {
+          "path": "src/tests.rs",
+          "name": "test_create_set_then_move",
+          "ignored": false,
+          "no_github_actions": false,
+          "runtime_name": "tests::test_create_set_then_move"
+        },
+        {
+          "path": "src/tests.rs",
+          "name": "test_simultaneous_create_set_then_move",
+          "ignored": false,
+          "no_github_actions": false,
+          "runtime_name": "tests::test_simultaneous_create_set_then_move"
+        },
+        {
+          "path": "src/tests.rs",
+          "name": "test_simultaneous_independent_create_set",
+          "ignored": false,
+          "no_github_actions": false,
+          "runtime_name": "tests::test_simultaneous_independent_create_set"
+        },
+        {
+          "path": "src/tests.rs",
+          "name": "test_multiple_create_delete_single_thread",
+          "ignored": false,
+          "no_github_actions": false,
+          "runtime_name": "tests::test_multiple_create_delete_single_thread"
+        },
+        {
+          "path": "src/tests.rs",
+          "name": "test_simultaneous_multiple_create_delete_single_thread",
+          "ignored": false,
+          "no_github_actions": false,
+          "runtime_name": "tests::test_simultaneous_multiple_create_delete_single_thread"
+        },
+        {
+          "path": "src/tests.rs",
+          "name": "test_persistence",
+          "ignored": false,
+          "no_github_actions": false,
+          "runtime_name": "tests::test_persistence"
+        }
+      ]
+    }
+  },
+  "provenance": {
+    "base_commit": "98b40cb04a23a36a07212ef7d826024f37536057",
+    "archives": [
+      {
+        "name": "i18n-config",
+        "version": "0.4.8",
+        "sha256": "3e06b90c8a0d252e203c94344b21e35a30f3a3a85dc7db5af8f8df9f3e0c63ef",
+        "bytes": 9082
+      },
+      {
+        "name": "secret-service",
+        "version": "5.2.0",
+        "sha256": "5107b24b91445dd2aa449a258a1807b63240942157292354dc5bfdbeb8bc6db8",
+        "bytes": 36478
+      },
+      {
+        "name": "zbus-secret-service-keyring-store",
+        "version": "1.0.1",
+        "sha256": "74801d001b9e7729adb4f1825b67b398185fed424749aa3d8bacf70417137d9a",
+        "bytes": 26291
+      }
+    ],
+    "i18n_upstream_fix": "https://github.com/kellpossible/cargo-i18n/commit/2ce7b1dfe9a8cc224288bf50cbc2a67a6de863c4",
+    "secret_service_upstream": "https://github.com/open-source-cooperative/secret-service-rs/pull/122",
+    "secret_service_commit": "7a91b597904c1847f18a06b72a19ee8153e0a578",
+    "upstream_pr_merged": false,
+    "vendor_inputs": [
+      {
+        "name": "i18n-config-0.4.8",
+        "copied": [
+          {
+            "path": "CHANGELOG.md",
+            "bytes": 2402,
+            "sha256": "d43722d4e4526cdd6263bf195e13dc22b73eb22fd45b792d4d5f297e59e4ff54",
+            "git_blob": "20870229e02d070e9eaf5b8f474e140fcf4e13b2"
+          },
+          {
+            "path": "Cargo.toml",
+            "bytes": 1477,
+            "sha256": "529a33a471dd8d4c8f0b83e9678822f78d06eadf8a815734cdf6e2206065d463",
+            "git_blob": "43eb17cc66af6001b74c2a884bf33fdd1f58fd11"
+          },
+          {
+            "path": "LICENSE.txt",
+            "bytes": 1072,
+            "sha256": "a1d2bd09632724b23c62b05e2fd0dc26c5c9d21b409594cf7da1a1aba555f802",
+            "git_blob": "2c0f002f6e181479139353c3f2e5b9c61e05b6c3"
+          },
+          {
+            "path": "README.md",
+            "bytes": 796,
+            "sha256": "bdadc28dd4a62f5b8c7c4c759c7b3cf2b33181700563c3083f8515f1638c12f2",
+            "git_blob": "a77ab24b7edc6bf7f0667682ff94fda4002448b4"
+          },
+          {
+            "path": "src/fluent.rs",
+            "bytes": 691,
+            "sha256": "fdf091a54559e437dd0ee0f2a291b2e18c42a7857e9bbecfd338b038b320f9f7",
+            "git_blob": "61cfa2c58e1cd503cb363645c30482d65569cf3e"
+          },
+          {
+            "path": "src/gettext.rs",
+            "bytes": 4286,
+            "sha256": "3626b50f396f0a83e7d5aab702d4d18d078dff7620108db80ffa7ed9da0b5991",
+            "git_blob": "7e66dcfe8c81540221ef31b0b6547ad296257efe"
+          },
+          {
+            "path": "src/lib.rs",
+            "bytes": 14701,
+            "sha256": "420cdf6a53cad0724c48960216d50c864c10747587b52add6764d4fdec378ecc",
+            "git_blob": "621fee081aa9746d45844d7b834dbebf426337ff"
+          }
+        ],
+        "omitted_packaging_or_ci_files": [
+          ".cargo_vcs_info.json",
+          ".gitignore",
+          "Cargo.lock",
+          "Cargo.toml.orig"
+        ]
+      },
+      {
+        "name": "secret-service-6.0.0",
+        "copied": [
+          {
+            "path": "CHANGELOG.md",
+            "bytes": 115,
+            "sha256": "a4fafd7099b33116952968d2bb40db2802a9fcac47da78fa24f5a3adbaa05c98",
+            "git_blob": "1439b78174b6c72c2a240003f30e2a0b1abc6f24"
+          },
+          {
+            "path": "Cargo.toml",
+            "bytes": 1682,
+            "sha256": "82aa41f0b9a992660d2ae9b930c6de604ffd2acb553670069e919f5d31ea89a1",
+            "git_blob": "950e947420d486b331a587beab0879337f46a22e"
+          },
+          {
+            "path": "LICENSE-APACHE",
+            "bytes": 10847,
+            "sha256": "a60eea817514531668d7e00765731449fe14d059d3249e0bc93b36de45f759f2",
+            "git_blob": "16fe87b06e802f094b3fbb0894b137bca2b16ef1"
+          },
+          {
+            "path": "LICENSE-MIT",
+            "bytes": 1069,
+            "sha256": "074585dbaf488db540c26f7b20f36053a157d7580bb1c390dc9f6afdb017c83a",
+            "git_blob": "39eb723f075c547c6f0c59205477aaf01593fe57"
+          },
+          {
+            "path": "NOTES_ON_PORT.md",
+            "bytes": 2184,
+            "sha256": "02132c378add48a1820a4774c1f8b3f40a8a78bf3bacd90fb4d95f7768749265",
+            "git_blob": "fb9235cb1b41c36e7eb504746fe8f83e742bb606"
+          },
+          {
+            "path": "README.md",
+            "bytes": 4603,
+            "sha256": "18dd46bfce035bbb259dd984a7fef1de1b8c23e2350bf542a5720aef940c68e3",
+            "git_blob": "71e8c005022e9e3d00448636e5a67d5785c75dc1"
+          },
+          {
+            "path": "examples/example.rs",
+            "bytes": 1800,
+            "sha256": "23774ae4c05951386dfeeb3742ee9356c066ba599284b85c615318750374d95c",
+            "git_blob": "d2c6266e12e52fef2c97ce67bbc40ef6c16aa724"
+          },
+          {
+            "path": "src/blocking/collection.rs",
+            "bytes": 10557,
+            "sha256": "428ebc21ff34f29f9cfc54831769af51b718dcff49987dce308169a54e6f277d",
+            "git_blob": "0d87632597e35d39d2930ba7effb393c07e02b33"
+          },
+          {
+            "path": "src/blocking/item.rs",
+            "bytes": 12996,
+            "sha256": "0cc178e484f52a47b95959de3655001fdad8bf82521869a2a78700839d348fdb",
+            "git_blob": "fecd0f20c6c61f77baa30d533284ee81df0bcad7"
+          },
+          {
+            "path": "src/blocking/mod.rs",
+            "bytes": 8362,
+            "sha256": "ae805d5c495f6d0cbf2b3668cd0d779bcb4dd3c2c604e3c4f27814b5a126c763",
+            "git_blob": "d4399e322524957c6d609847a113831ead5af139"
+          },
+          {
+            "path": "src/collection.rs",
+            "bytes": 11603,
+            "sha256": "10b6ee4fee7465d22f03f0f1df20330e0e2ade89f4c2a0b938946e9f591c6a0c",
+            "git_blob": "b4cf2bd612d5ebb353817bf16f31f21be63c7fb8"
+          },
+          {
+            "path": "src/error.rs",
+            "bytes": 2843,
+            "sha256": "5f703264c9d61f29b9d444e68a896bb0f6c51bac35961274dac607217d84bb60",
+            "git_blob": "bc68278cf845aea8a9fb685f943147ab1960016a"
+          },
+          {
+            "path": "src/item.rs",
+            "bytes": 15268,
+            "sha256": "d0553187c7757cae0b74a49c85a68bbcd63c48b8a1d4ea58fe22477182d6bbc5",
+            "git_blob": "6c0c38c74539195f2b5f5db327e1105debd11e58"
+          },
+          {
+            "path": "src/lib.rs",
+            "bytes": 15288,
+            "sha256": "671f92210658d6d91f46fb80143d2eecb64d73a0168ac0b4b187d72b877ff417",
+            "git_blob": "a1bcaaee6637bb0b673e180b9f0b946ef52b30dd"
+          },
+          {
+            "path": "src/proxy/collection.rs",
+            "bytes": 1552,
+            "sha256": "967a71544ef2bacfdd68d7c1b23f7fec71a5f00d05657500b5f40b175eda3468",
+            "git_blob": "9c30606b070de4f0c6547fed03cf5ecc53c13bd5"
+          },
+          {
+            "path": "src/proxy/item.rs",
+            "bytes": 1229,
+            "sha256": "913e26328a6a389a99dd4f4b95f8267e999aa954c38193eaa6821b40efa122e8",
+            "git_blob": "2fc90dca1943a6be198005648d54f6867a322968"
+          },
+          {
+            "path": "src/proxy/mod.rs",
+            "bytes": 361,
+            "sha256": "bc77169c82ac4cd83265c0f9b6bb27c6e7085b6966ec773c841fb772c5901348",
+            "git_blob": "24774b5e3c8600e8f1d9e7a22a35d31a3561b259"
+          },
+          {
+            "path": "src/proxy/prompt.rs",
+            "bytes": 623,
+            "sha256": "9398fbce05000ab3d3ccd822b1b058976cd79def4971ceb5cbf5c314b16ab70d",
+            "git_blob": "1e918338a6163ad9a844421862529343a9b37cee"
+          },
+          {
+            "path": "src/proxy/service.rs",
+            "bytes": 2127,
+            "sha256": "4d73d6c569c97e159c507434c2ee5b446d9ddd64cbf7f4a65b23ab2a81dd14ab",
+            "git_blob": "c72823ae89de004a426a94cdcaa024f78b0275b3"
+          },
+          {
+            "path": "src/session.rs",
+            "bytes": 9418,
+            "sha256": "2c0ec6a6c21977b4191c9de41fe0763827af13e6164a446db5721b1eaf2209b7",
+            "git_blob": "997e3bf4b379d61c892bdcf1b463b4267680b8e9"
+          },
+          {
+            "path": "src/ss.rs",
+            "bytes": 528,
+            "sha256": "c2e6b0bbbe19657f745dc2f99d7da494519a436283166369edb23a2aa66b94c6",
+            "git_blob": "b9c1c5c31f426a40d30d00495f89af56db78d532"
+          },
+          {
+            "path": "src/util.rs",
+            "bytes": 3438,
+            "sha256": "1fa4c9f77d99b3462243b162b89b2689308cf1994ddef6f0dc512c73fa2ed45c",
+            "git_blob": "e822f3b299c3aec8475f605b005909df3e6c4df5"
+          }
+        ],
+        "omitted_packaging_or_ci_files": [
+          ".github/dependabot.yml",
+          ".github/workflows/audit.yml",
+          ".github/workflows/ci.yaml",
+          ".github/workflows/docs.yml",
+          ".github/workflows/mutants.yml",
+          ".github/workflows/release.yml",
+          ".github/workflows/semver.yml",
+          ".github/workflows/zizmor.yml",
+          ".gitignore"
+        ]
+      },
+      {
+        "name": "zbus-secret-service-keyring-store-1.0.1",
+        "copied": [
+          {
+            "path": "Cargo.toml",
+            "bytes": 2048,
+            "sha256": "e2bac1bd09cd43e4200d02b717f018957f962cb7f19dda7c771716ef9733b216",
+            "git_blob": "0cd4786ce7987712cb239b1d1789054fca2c4f09"
+          },
+          {
+            "path": "LICENSE-APACHE",
+            "bytes": 10842,
+            "sha256": "78ebc2ea2a1cec9cbec2e1a6fc15e73474fe22bdad7575518e7f4628651d49c4",
+            "git_blob": "47f6e38f542232e602b77a4c61d86621b3ba8684"
+          },
+          {
+            "path": "LICENSE-MIT",
+            "bytes": 1062,
+            "sha256": "157cc607717b1b372a69f6b4526f6ad18c1279af9f3267835cca2943f37bc07d",
+            "git_blob": "c32f440ba5ca5030d7893c150d4b8206b729995d"
+          },
+          {
+            "path": "README.md",
+            "bytes": 2607,
+            "sha256": "f29206b0de056f7f24df9034163727831d35157ddebd515beadb7f3a636f04af",
+            "git_blob": "53acc974bf860ec8bbc99d3fa8265485a5a6db76"
+          },
+          {
+            "path": "examples/cleanup.rs",
+            "bytes": 3292,
+            "sha256": "4ec7ff8060c02153f7e21a2e82f0a140c0fe181885c67774546278c6f3d261ab",
+            "git_blob": "0ad09998779d223001fd919e43c6ec844fae3dd5"
+          },
+          {
+            "path": "examples/example.rs",
+            "bytes": 1707,
+            "sha256": "9970c40b7bf485252861efdb1dd71de2bc2745c34fd070ba8a23b013dc5bcb1f",
+            "git_blob": "50ae45faffe2602c3cf5286b7c6a6eedf4e9a986"
+          },
+          {
+            "path": "src/cred.rs",
+            "bytes": 8989,
+            "sha256": "35fa7149ca0b4ab3e92e86237c265574a28d8fe9b44dedcb1cce2ecb21b49cee",
+            "git_blob": "073bec0ff7babbccc32676791ca1222fad39fe17"
+          },
+          {
+            "path": "src/errors.rs",
+            "bytes": 835,
+            "sha256": "7adc992b4a25b0dfb928459bec3780341e8cedd918475e70dbc9d06777fd9b4d",
+            "git_blob": "a9425f041ba9e3ff57666c0623835ebe3a6fbe69"
+          },
+          {
+            "path": "src/lib.rs",
+            "bytes": 4814,
+            "sha256": "4c226972254c1ce524d50c40b02f089eabc17c0d129a6724021c08d5a9894513",
+            "git_blob": "d18b07aa6951130bbff922f93989cd4816dc54ec"
+          },
+          {
+            "path": "src/service.rs",
+            "bytes": 8487,
+            "sha256": "a4479c23290c8c37f94ce9788abc81d0dff23816b2d3c4c148783f126846ae82",
+            "git_blob": "e55ee11dcea99ca7b06cc65f378c8eb6a1a02fc6"
+          },
+          {
+            "path": "src/store.rs",
+            "bytes": 4023,
+            "sha256": "cbe6d04c9d4a142d1e85c4e5a296418531d394be7374734da103885a7b1fdee5",
+            "git_blob": "8855b8589d87816beb41fa65ec48009f6057e3f1"
+          },
+          {
+            "path": "src/tests.rs",
+            "bytes": 15633,
+            "sha256": "75c12eda57160b4eeca9981ebf1b3159fc91d45661441371bc7ba075e4950ecd",
+            "git_blob": "779228305b28295e9c39579496898fafcf0a0cee"
+          }
+        ],
+        "omitted_packaging_or_ci_files": [
+          ".cargo_vcs_info.json",
+          ".gitignore",
+          "Cargo.lock",
+          "Cargo.toml.orig"
+        ]
+      }
+    ],
+    "cloud_lock_updates": [
+      [
+        "rustls-webpki@0.103.15",
+        "0.103.16"
+      ],
+      [
+        "webpki-roots@1.0.9",
+        "1.0.10"
+      ],
+      [
+        "webpki-root-certs@1.0.9",
+        "1.0.10"
+      ]
+    ],
+    "no_local_rust_or_native_execution": true,
+    "qualification": "source candidate; original cargo-deny, lock and platform gates remain required",
+    "secret_service_archive": {
+      "url": "https://codeload.github.com/open-source-cooperative/secret-service-rs/tar.gz/7a91b597904c1847f18a06b72a19ee8153e0a578",
+      "sha256": "2583ee444b9e034ce3a6915399be01a17624e0190a15cde7fa0d16095f962916",
+      "bytes": 28363,
+      "official_git_blobs_verified": 31
+    },
+    "test_preservation": {
+      "secret_service_original": 64,
+      "secret_service_preserved": 64,
+      "secret_service_upstream_added": 12,
+      "secret_service_total": 76,
+      "store_original_and_preserved": 21,
+      "parser_added": 3,
+      "original_explicit_ignores": 9,
+      "original_github_actions_guards": 2
+    }
+  }
+}
