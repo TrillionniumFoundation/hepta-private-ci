@@ -1,0 +1,27 @@
+{
+  "time_utc": "2026-10-21T13:36:47.669766+00:00",
+  "reason": "Coordinated cleanup in ordinary writable namespace; fresh complete host process-reference check, all agents locally paused; repeated host-side deletions had reappeared.",
+  "host_preflight_sha256": "19b3075b3552cd35152b30c8cb03f6183725a2cdfebb33240251bd3712ebba1b",
+  "deleted_only": [
+    "os-tools/unpack",
+    "os-tools/target",
+    "os-tools/target-cpu-history",
+    "research-work/venv"
+  ],
+  "before": {
+    "total": 33770192896,
+    "used": 32626069504,
+    "free": 0
+  },
+  "absent_after": {
+    "os-tools/unpack": true,
+    "os-tools/target": true,
+    "os-tools/target-cpu-history": true,
+    "research-work/venv": true
+  },
+  "after": {
+    "total": 33770192896,
+    "used": 29551771648,
+    "free": 2483658752
+  }
+}

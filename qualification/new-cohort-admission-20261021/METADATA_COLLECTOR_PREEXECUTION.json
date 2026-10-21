@@ -1,0 +1,50 @@
+{
+  "schema": "hepta.prospective-git.metadata-collector-preexecution.v1",
+  "sealed_at": "2026-10-21T11:11:29.068222+00:00",
+  "files_sha256": {
+    "collect_window_metadata.py": "d9b3abaf19e7f857a780873493d8e630ae0c4491aef11f98596bbcbf7187adfe",
+    "metadata-early-rejection.log": "7ecb3847d15732691a30177212028a2265d32a58c0f79601a5756b7b64e1f57f",
+    "metadata-early-rejection-fixed.log": "f276e420d39c3db8638ff4f6ed92b1c9d168d3e64cc009b4bfdd010986e5156a",
+    "PROSPECTIVE_PRECOMMIT.json": "3cecc183f44a89060c4575dd379c05c9b11675cb7a1d26e8e34bf014ce402d39",
+    "select_prospective_sources.py": "cd24e73c296cefe0a5bd1e1122f616f6fdd1faf606fde187d76b0772820c4ccb",
+    "IMPLEMENTATION_PREMODEL_V3.json": "6745b33a24f8a5c253fa5018139797efeb7c8f8fd45fcb0ef1de2e069f5fcf95"
+  },
+  "checks": [
+    {
+      "argv": [
+        "/tmp/hepta-research-ruff-01513/bin/ruff",
+        "check",
+        "--select",
+        "E,F,I",
+        "collect_window_metadata.py"
+      ],
+      "exit_code": 0,
+      "stdout": "All checks passed!\n"
+    },
+    {
+      "argv": [
+        "/tmp/hepta-research-ruff-01513/bin/ruff",
+        "format",
+        "--check",
+        "collect_window_metadata.py"
+      ],
+      "exit_code": 0,
+      "stdout": "1 file already formatted\n"
+    }
+  ],
+  "initial_dry_run": "retained import-dependency error; collector now uses same literal precommit hash without projection imports",
+  "early_window_guard_rejected_before_output_or_network": true,
+  "source_window": [
+    "2026-10-21T10:05:00Z",
+    "2026-10-21T11:35:00Z"
+  ],
+  "source_pool_unchanged": true,
+  "requests_per_source": 1,
+  "commits_per_source": 32,
+  "parallel_primary_GETs": 4,
+  "request_timeout_seconds": 30,
+  "model_outcomes_consulted": false,
+  "new_cohort_model_calls": 0,
+  "qualification": "NO_GO",
+  "implementation_v1_v2_v3_unchanged": true
+}

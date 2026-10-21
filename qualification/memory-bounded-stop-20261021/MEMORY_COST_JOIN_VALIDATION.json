@@ -1,0 +1,21 @@
+{
+  "schema": "hepta.memory112.observed-cost-join.validation.v1",
+  "created_at": "2026-10-21T11:20:27.633706+00:00",
+  "auditor_sha256": "8253d4319eec49608fa172d3a203c1351da3fcf23406dafb259367b4eae7bb6d",
+  "controls": [
+    {
+      "control": "actual_completed_calibration40",
+      "outcome": "accepted_and_joined",
+      "model_calls": 0
+    },
+    {
+      "control": "copied_observer_input_and_output_prefix_tampered_with_updated_journal_hash",
+      "outcome": "rejected_against_original_token_receipt",
+      "error": "original raw answer/token/identity/budget join failed",
+      "original_files_changed": false,
+      "model_calls": 0
+    }
+  ],
+  "new_model_calls": 0,
+  "qualification": "NO_GO"
+}

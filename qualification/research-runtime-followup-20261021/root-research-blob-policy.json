@@ -1,0 +1,17 @@
+{
+  "command": [
+    "python3",
+    "scripts/check_blob_size.py",
+    "--base",
+    "29f845b6a214472906416cc0626551c19a4ab54e",
+    "--head",
+    "agents/hepta-research-observations-20261021",
+    "--allowlist",
+    ".github/blob-size-allowlist.txt"
+  ],
+  "time_utc": "2026-10-21T13:48:29.890038+00:00",
+  "exit_code": 0,
+  "raw_bytes": 15444,
+  "raw_sha256": "36ac11e23bf10c38743cebfcb8fcf4379449c510fefb2033d17e05a16cecd4bb",
+  "allowlist_sha256": "bb867bc531c86f5341a031698e16b4e5a4a0d31f7d8f4cc5ff26e101d84f9d75"
+}

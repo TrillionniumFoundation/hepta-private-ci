@@ -1,0 +1,45 @@
+{
+  "schema": "hepta.resource-probe.remote-publication.v1",
+  "published_at": "2026-10-21T13:49:37.701Z",
+  "source_commit": "b01d33144b4f153adc46649bba6ac9683aa3b94d",
+  "remote_commit": "4dadd020ceebb79836a28928b5c48923fc64904f",
+  "tree": "e965df0dd997492da34f294bfcb9174643502545",
+  "branch": "agents/memory-resource-probe-v2-20261021",
+  "parent": "81d9fcb36bddfcc6dc914f87697c642824273cc1",
+  "source_files": [
+    {
+      "path": ".github/workflows/hepta-memory-bf16-host-scout.yml",
+      "git_blob": "ed1cef65adcf658b695c91bb78b6a85e35ca6ad6",
+      "sha256": "f248faa4ca2a8cd06b76f71828849e6c7a30829427d4a82cf7b4082e0fd5eac2",
+      "bytes": 2806
+    },
+    {
+      "path": ".github/workflows/hepta-memory-bf16-hosted-scout.yml",
+      "git_blob": "aa4c44283894bceca4432e04e42c5f32c6eaba3b",
+      "sha256": "dbca8e53f3f47006577db2f131556d2526927242412abcf5e7a6e0bff0929c55",
+      "bytes": 2820
+    },
+    {
+      "path": "scripts/memory_cell/strong_rag_cpu_scout.py",
+      "git_blob": "d55afc0c42e55a494f7c9ee5533af63b4698706c",
+      "sha256": "3738c48a79c6aeb7b182983017bd37583d8e85d3aeaa85a4240936f286fb1dc5",
+      "bytes": 2958
+    },
+    {
+      "path": "scripts/memory_cell/strong_rag_resource_snapshot.py",
+      "git_blob": "61ed5c43be6eecaee8351d599d965830c54c92cd",
+      "sha256": "dab5b1eec2935d0a2b432708189943498c69e01881a2b366c8b84a6542a6ef28",
+      "bytes": 11446
+    },
+    {
+      "path": "scripts/memory_cell/test_strong_rag_cpu_scout.py",
+      "git_blob": "77372e40513d773fba886c8bd0d6d8a7104e5b02",
+      "sha256": "afc13824fa9500226942f478f9906836636b31dc40f628561a5efb2fcbdec0ad",
+      "bytes": 14664
+    }
+  ],
+  "publication_scope": "isolated child branch only; no PR created, owner ref unchanged, no scout or model execution claimed",
+  "published_ref_verified": "4dadd020ceebb79836a28928b5c48923fc64904f",
+  "owner_ref_verified": "81d9fcb36bddfcc6dc914f87697c642824273cc1"
+}
+

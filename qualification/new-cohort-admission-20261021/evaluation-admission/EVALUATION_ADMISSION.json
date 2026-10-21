@@ -1,0 +1,205 @@
+{
+  "schema": "hepta.external-git-event.prospective-admission.v1",
+  "precommit_sha256": "3cecc183f44a89060c4575dd379c05c9b11675cb7a1d26e8e34bf014ce402d39",
+  "calibration_collection_sha256": "65991e3c4a5f6636cdac24cbb430759f5ddf79ac7fa0555743376ff3a861cc9f",
+  "selector_sha256": "cd24e73c296cefe0a5bd1e1122f616f6fdd1faf606fde187d76b0772820c4ccb",
+  "metadata_sha256": {
+    "Homebrew/homebrew-core": "287b9df51d8a92ef23120b76ea4f949704b86ca0e145a066b2d2b7844db222c6",
+    "NixOS/nixpkgs": "9534d396bd01eda7e69019cb5ebaf0897dcbb9cfad7d14b04feb9b6b9c53bdf0",
+    "pytorch/pytorch": "efceda8cce4e25051e37293907ce51c35f46ea1cc86813fedada6ecf85ed21f7",
+    "apache/airflow": "29f4e439e3f0417d58a9b8e44b1d3583349bea2d2bf596d7c06bf8b33fa4afc2",
+    "microsoft/vscode": "d3a23de097e1967b2d4515387be2d68f3d9688928f46ff1e649bac0447035555",
+    "tensorflow/tensorflow": "6cd421dd1c75510438ee6c0a3cd7364422310fd0c75340eb5e59a925c374f420",
+    "conda-forge/staged-recipes": "17e409601fc1f4986ec23869069b75e7085690390bd8507bce332e8538210913",
+    "huggingface/transformers": "4ff569b0ecd59146ea367b646aeec5813437458568339a2ae37abc208f3861e4",
+    "facebook/react-native": "5f3b14ee932d6c657358940df30ef52634df29199c3697a828109254b7e9e63f",
+    "opensearch-project/OpenSearch": "704b0ab12a1c8910d3af7679c62dc6ea29a4505bc5a8259ebe3403e2532aea17",
+    "apache/superset": "d427c1d70d1c7b958817b5acd7d8cdd6a71e64710b67cee5a9e328b1e397f849",
+    "vercel/next.js": "1d6ba9db9c8d0f34ae3b085008b2bdf39b791d39f2f67989393903addfb33b69",
+    "elastic/elasticsearch": "a3bfbbe77652ac4c1fea4d355280056de3ab08e47daf64e7c10f8147f46c1f8d",
+    "google/jax": "750220326785548e025af1c9f41e95df0b85a6332e4e174f2045aec71eaa4131"
+  },
+  "window": [
+    "2026-10-21T10:05:00Z",
+    "2026-10-21T11:35:00Z"
+  ],
+  "completed_at": "2026-10-21T11:35:23.610926+00:00",
+  "planned_sources": 8,
+  "admitted_sources": 8,
+  "complete": true,
+  "source_selection": [
+    {
+      "repository": "Homebrew/homebrew-core",
+      "slot": 0,
+      "attempts": [
+        {
+          "current_sha": "6340744fbdaa4ec9dca3628f05555f85701b3cf8",
+          "previous_sha": "9c0caba2ac86987d2cbda1805aa4c51d83fb4544",
+          "status": "admitted_original_bytes",
+          "receipt_sha256": "2598450bb478cb37bc0e381a8fe0bf4f1179b7c7d14df1336a9dc9941f694a16"
+        }
+      ],
+      "metadata_candidate_pairs": 22,
+      "status": "admitted"
+    },
+    {
+      "repository": "NixOS/nixpkgs",
+      "slot": 1,
+      "attempts": [
+        {
+          "current_sha": "60f404d07f445b99e92b26beeeffe4f95f9dcbc9",
+          "previous_sha": "ea03dba0d8caa8cf2454f935ee9bfddf5829be0d",
+          "status": "admitted_original_bytes",
+          "receipt_sha256": "c319171955cddbee9e2ef51c1b570b868f9e8abb791e21c653d41b89208f63fd"
+        }
+      ],
+      "metadata_candidate_pairs": 17,
+      "status": "admitted"
+    },
+    {
+      "repository": "pytorch/pytorch",
+      "slot": 2,
+      "attempts": [
+        {
+          "current_sha": "0bd89deb431509d893177a84cfa4768aa0399809",
+          "previous_sha": "f794531e8b2fb00896ebcda3bfa6a093a3e43387",
+          "status": "admitted_original_bytes",
+          "receipt_sha256": "cc5ce2726929831937d05154e435e3858c2d69bd78d63819230a4cffe87000ea"
+        }
+      ],
+      "metadata_candidate_pairs": 1,
+      "status": "admitted"
+    },
+    {
+      "repository": "apache/airflow",
+      "slot": 3,
+      "attempts": [
+        {
+          "current_sha": "25c93b71c4be5a8bbb8dd79294f8a0f91d153f75",
+          "previous_sha": "6ebc8d5e0381cb17fd242e9c5a404e39f2609f09",
+          "status": "admitted_original_bytes",
+          "receipt_sha256": "5668fcb5472926eede947a6db71ce04aa1c393a0ad7830fa50abe69b0fb1337c"
+        }
+      ],
+      "metadata_candidate_pairs": 5,
+      "status": "admitted"
+    },
+    {
+      "repository": "microsoft/vscode",
+      "slot": 4,
+      "attempts": [
+        {
+          "current_sha": "6db9336409ee131b73b3bb1798cafd0c35bd14c8",
+          "previous_sha": "302101302654820a71b8d654ec04ff25d226bb0c",
+          "status": "admitted_original_bytes",
+          "receipt_sha256": "26f48f2a717bf075282cf909246bf366bca18a19431c1e0e035108c6e6e416e8"
+        }
+      ],
+      "metadata_candidate_pairs": 7,
+      "status": "admitted"
+    },
+    {
+      "repository": "tensorflow/tensorflow",
+      "slot": 5,
+      "attempts": [
+        {
+          "current_sha": "6559485625cf258d635bab6174a7452d755e4406",
+          "previous_sha": "3d61158117471edee2477818dd6871330ae4e62c",
+          "status": "admitted_original_bytes",
+          "receipt_sha256": "4c8c491bedae3d2d88e257c32c996728682044b598641dc9b856b5a4209056d0"
+        }
+      ],
+      "metadata_candidate_pairs": 3,
+      "status": "admitted"
+    },
+    {
+      "repository": "conda-forge/staged-recipes",
+      "slot": 6,
+      "attempts": [],
+      "metadata_candidate_pairs": 0,
+      "status": "no_eligible_original_pair"
+    },
+    {
+      "repository": "huggingface/transformers",
+      "slot": 7,
+      "attempts": [],
+      "metadata_candidate_pairs": 0,
+      "status": "no_eligible_original_pair"
+    },
+    {
+      "repository": "facebook/react-native",
+      "slot": 8,
+      "attempts": [],
+      "metadata_candidate_pairs": 0,
+      "status": "no_eligible_original_pair"
+    },
+    {
+      "repository": "opensearch-project/OpenSearch",
+      "slot": 9,
+      "attempts": [],
+      "metadata_candidate_pairs": 0,
+      "status": "no_eligible_original_pair"
+    },
+    {
+      "repository": "apache/superset",
+      "slot": 10,
+      "attempts": [],
+      "metadata_candidate_pairs": 0,
+      "status": "no_eligible_original_pair"
+    },
+    {
+      "repository": "vercel/next.js",
+      "slot": 11,
+      "attempts": [],
+      "metadata_candidate_pairs": 0,
+      "status": "no_eligible_original_pair"
+    },
+    {
+      "repository": "elastic/elasticsearch",
+      "slot": 12,
+      "attempts": [
+        {
+          "current_sha": "40950c046536841dae4f5f3b8cbbfde475e55158",
+          "previous_sha": "fd381a10730679ffd59411cc64186de2690d933d",
+          "status": "admitted_original_bytes",
+          "receipt_sha256": "5961f126dbb19f004ded101a69613b331e305ea104e97835fd3939835b2ee158"
+        }
+      ],
+      "metadata_candidate_pairs": 2,
+      "status": "admitted"
+    },
+    {
+      "repository": "google/jax",
+      "slot": 13,
+      "attempts": [
+        {
+          "current_sha": "e7105a805946df1c633f6cf48083f5494d8f07ff",
+          "previous_sha": "0809c94008a940f0e3259cc7ea0a8db99dd3cbae",
+          "status": "admitted_original_bytes",
+          "receipt_sha256": "e1298655c923cd45925ad3abed43aec408c649fcd310fc980c9b2086f0ce75bf"
+        }
+      ],
+      "metadata_candidate_pairs": 1,
+      "status": "admitted"
+    },
+    {
+      "repository": "opencv/opencv",
+      "status": "not_needed_after_first_eight_admitted"
+    },
+    {
+      "repository": "scipy/scipy",
+      "status": "not_needed_after_first_eight_admitted"
+    }
+  ],
+  "selected_pairs_sha256": "29deb3d3c3e78cdb93af42bacfc2837431db47d4035c2bab4192d75ed714057f",
+  "model_outcomes_consulted": false,
+  "windows_extended": false,
+  "source_replacements": false,
+  "task_kind_uses_registered_pool_slot": true,
+  "timestamps_are_original_committer_fields": true,
+  "independent_creation_timestamp_attestation": false,
+  "mode": "SHADOW_ONLY",
+  "authority": "DENY_ALL",
+  "release": "NO_GO",
+  "production_accepted": false
+}

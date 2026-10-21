@@ -1,0 +1,37 @@
+test_actual_root_absence_and_smaller_ancestor_are_resolved (test_strong_rag_cpu_scout.ResourceSnapshotTests.test_actual_root_absence_and_smaller_ancestor_are_resolved) ... ok
+test_bind_mounted_subtree_cannot_attest_external_parents (test_strong_rag_cpu_scout.ResourceSnapshotTests.test_bind_mounted_subtree_cannot_attest_external_parents) ... ok
+test_disabled_controller_requires_visible_parent_proof (test_strong_rag_cpu_scout.ResourceSnapshotTests.test_disabled_controller_requires_visible_parent_proof) ... ok
+test_global_root_process_has_no_memory_max_interface (test_strong_rag_cpu_scout.ResourceSnapshotTests.test_global_root_process_has_no_memory_max_interface) ... ok
+test_malformed_limit_and_symlink_interface_are_not_trusted (test_strong_rag_cpu_scout.ResourceSnapshotTests.test_malformed_limit_and_symlink_interface_are_not_trusted) ... ok
+test_membership_drift_invalidates_complete_hierarchy (test_strong_rag_cpu_scout.ResourceSnapshotTests.test_membership_drift_invalidates_complete_hierarchy) ... ok
+test_missing_type_with_existing_limit_is_not_a_global_root (test_strong_rag_cpu_scout.ResourceSnapshotTests.test_missing_type_with_existing_limit_is_not_a_global_root) ... ok
+test_namespace_slash_and_unlimited_visible_limit_do_not_hide_ancestry (test_strong_rag_cpu_scout.ResourceSnapshotTests.test_namespace_slash_and_unlimited_visible_limit_do_not_hide_ancestry) ... ok
+test_overmounted_interface_and_legacy_cgroup_stay_unknown (test_strong_rag_cpu_scout.ResourceSnapshotTests.test_overmounted_interface_and_legacy_cgroup_stay_unknown) ... ok
+test_permission_error_is_not_the_global_root_missing_interface (test_strong_rag_cpu_scout.ResourceSnapshotTests.test_permission_error_is_not_the_global_root_missing_interface) ... ok
+test_zero_limit_and_missing_child_limit_are_not_unlimited (test_strong_rag_cpu_scout.ResourceSnapshotTests.test_zero_limit_and_missing_child_limit_are_not_unlimited) ... ok
+test_accelerated_cpu_is_candidate_not_model_success (test_strong_rag_cpu_scout.StandardRunnerScoutTests.test_accelerated_cpu_is_candidate_not_model_success) ... ok
+test_cli_writes_once_and_never_overwrites_observation (test_strong_rag_cpu_scout.StandardRunnerScoutTests.test_cli_writes_once_and_never_overwrites_observation) ... ok
+test_ineligible_epyc_is_recorded_not_hidden (test_strong_rag_cpu_scout.StandardRunnerScoutTests.test_ineligible_epyc_is_recorded_not_hidden) ... ok
+test_only_documented_standard_hosted_runner_images (test_strong_rag_cpu_scout.StandardRunnerScoutTests.test_only_documented_standard_hosted_runner_images) ... ok
+test_source_sha_and_mixed_cpu_must_fail_closed (test_strong_rag_cpu_scout.StandardRunnerScoutTests.test_source_sha_and_mixed_cpu_must_fail_closed) ... ok
+test_accelerated_bf16_cpu_is_eligible_not_benchmark_qualified (test_strong_rag_host_gate.Bf16RunnerGateTests.test_accelerated_bf16_cpu_is_eligible_not_benchmark_qualified) ... ok
+test_actual_amd_epyc_7763_without_bf16_fails_closed (test_strong_rag_host_gate.Bf16RunnerGateTests.test_actual_amd_epyc_7763_without_bf16_fails_closed) ... ok
+test_architecture_and_runner_label_are_bound (test_strong_rag_host_gate.Bf16RunnerGateTests.test_architecture_and_runner_label_are_bound) ... ok
+test_cli_preserves_receipt_for_a_truncated_second_cpu (test_strong_rag_host_gate.Bf16RunnerGateTests.test_cli_preserves_receipt_for_a_truncated_second_cpu) ... ok
+test_cli_records_rejection_before_exiting_without_model (test_strong_rag_host_gate.Bf16RunnerGateTests.test_cli_records_rejection_before_exiting_without_model) ... ok
+test_every_cpu_record_requires_its_own_complete_fields (test_strong_rag_host_gate.Bf16RunnerGateTests.test_every_cpu_record_requires_its_own_complete_fields) ... ok
+test_individually_accelerated_cpus_require_a_shared_bf16_isa (test_strong_rag_host_gate.Bf16RunnerGateTests.test_individually_accelerated_cpus_require_a_shared_bf16_isa) ... ok
+test_missing_flags_model_or_truncated_cpuinfo_fail_closed (test_strong_rag_host_gate.Bf16RunnerGateTests.test_missing_flags_model_or_truncated_cpuinfo_fail_closed) ... ok
+test_mixed_cpu_capabilities_never_qualify (test_strong_rag_host_gate.Bf16RunnerGateTests.test_mixed_cpu_capabilities_never_qualify) ... ok
+test_offline_cpu_identity_gaps_preserve_shared_capability (test_strong_rag_host_gate.Bf16RunnerGateTests.test_offline_cpu_identity_gaps_preserve_shared_capability) ... ok
+test_processor_identities_must_be_decimal_and_distinct (test_strong_rag_host_gate.Bf16RunnerGateTests.test_processor_identities_must_be_decimal_and_distinct) ... ok
+test_truncated_lines_and_whitespace_only_input_fail_closed (test_strong_rag_host_gate.Bf16RunnerGateTests.test_truncated_lines_and_whitespace_only_input_fail_closed) ... ok
+
+----------------------------------------------------------------------
+Ran 28 tests in 0.043s
+
+OK
+{"eligible_cpu_for_unchanged_bf16_reader": false, "eligible_host_reserved": false, "hardware": {"all_cpus_bf16_accelerated": false, "cpu_models": ["Test CPU"], "cpuinfo_sha256": "28dac80eea548ce693ecd52247ff52b597028bd6459763f621783b29f1665291", "full_inference_latency_qualified": false, "host_eligible": false, "independent_semantic_judge": false, "logical_cpu_records": 1, "machine": "x86_64", "new_model_calls": 0, "policy": "x86_64-original-qwen-torch2.5.1-cpu-bfloat16-eager", "production_accepted": false, "rejection_reason": "this actual runner does not prove accelerated x86_64 BF16 CPU kernels", "runner_arch": "X64", "same_original_model_weights_required": true, "schema": "hepta.memory-strong-rag.bf16-host-gate.v1", "shared_acceleration_features": []}, "independent_semantic_judge": false, "new_model_calls": 0, "production_accepted": false, "read_only_census": true, "requested_hosted_runner": "ubuntu-24.04", "same_hardware_on_next_run_guaranteed": false, "schema": "hepta.memory-strong-rag.host-scout.v1", "source_commit": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa", "training_executed": false, "weights_downloaded": false}
+{}
+{"all_cpus_bf16_accelerated": false, "cpu_models": ["Synthetic pinned CPU"], "cpuinfo_sha256": "6b3a60899cf5dd75ba20686dbf0a08f54d4dd0584cf0dd4dfaf2b16c9555a90c", "full_inference_latency_qualified": false, "host_eligible": false, "independent_semantic_judge": false, "logical_cpu_records": 2, "machine": "x86_64", "new_model_calls": 0, "policy": "x86_64-original-qwen-torch2.5.1-cpu-bfloat16-eager", "production_accepted": false, "rejection_reason": "this actual runner does not prove accelerated x86_64 BF16 CPU kernels", "runner_arch": "X64", "same_original_model_weights_required": true, "schema": "hepta.memory-strong-rag.bf16-host-gate.v1", "shared_acceleration_features": []}
+{"all_cpus_bf16_accelerated": false, "cpu_models": ["Synthetic pinned CPU"], "cpuinfo_sha256": "dd9797b40b9c79d156515539590d78a2809c430e4bc77d7bc90113d38e230201", "full_inference_latency_qualified": false, "host_eligible": false, "independent_semantic_judge": false, "logical_cpu_records": 1, "machine": "x86_64", "new_model_calls": 0, "policy": "x86_64-original-qwen-torch2.5.1-cpu-bfloat16-eager", "production_accepted": false, "rejection_reason": "this actual runner does not prove accelerated x86_64 BF16 CPU kernels", "runner_arch": "X64", "same_original_model_weights_required": true, "schema": "hepta.memory-strong-rag.bf16-host-gate.v1", "shared_acceleration_features": []}

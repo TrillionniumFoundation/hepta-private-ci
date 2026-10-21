@@ -1,0 +1,57 @@
+{
+  "branch": "agents/memory-resource-probe-v2-20261021",
+  "bundle_sha256": "d194c99bbc334189dc449364b96635ab2470cbf61d2889fddbbf68918c203306",
+  "bundle_verified_before_packaging": true,
+  "changed_paths": [
+    ".github/workflows/hepta-memory-bf16-host-scout.yml",
+    ".github/workflows/hepta-memory-bf16-hosted-scout.yml",
+    "scripts/memory_cell/strong_rag_cpu_scout.py",
+    "scripts/memory_cell/strong_rag_resource_snapshot.py",
+    "scripts/memory_cell/test_strong_rag_cpu_scout.py"
+  ],
+  "commit": "b01d33144b4f153adc46649bba6ac9683aa3b94d",
+  "model_calls_by_this_work": 0,
+  "owner_branch": "codex/memory-cell-evidence-20261008",
+  "parent": "81d9fcb36bddfcc6dc914f87697c642824273cc1",
+  "recorded_at": "2026-10-21T13:39:45.076069+00:00",
+  "remote_writes_by_this_work": 0,
+  "schema": "hepta.resource-probe.child-source.v2",
+  "source_files": [
+    {
+      "bytes": 2806,
+      "path": ".github/workflows/hepta-memory-bf16-host-scout.yml",
+      "sha256": "f248faa4ca2a8cd06b76f71828849e6c7a30829427d4a82cf7b4082e0fd5eac2"
+    },
+    {
+      "bytes": 2820,
+      "path": ".github/workflows/hepta-memory-bf16-hosted-scout.yml",
+      "sha256": "dbca8e53f3f47006577db2f131556d2526927242412abcf5e7a6e0bff0929c55"
+    },
+    {
+      "bytes": 2958,
+      "path": "scripts/memory_cell/strong_rag_cpu_scout.py",
+      "sha256": "3738c48a79c6aeb7b182983017bd37583d8e85d3aeaa85a4240936f286fb1dc5"
+    },
+    {
+      "bytes": 11446,
+      "path": "scripts/memory_cell/strong_rag_resource_snapshot.py",
+      "sha256": "dab5b1eec2935d0a2b432708189943498c69e01881a2b366c8b84a6542a6ef28"
+    },
+    {
+      "bytes": 14664,
+      "path": "scripts/memory_cell/test_strong_rag_cpu_scout.py",
+      "sha256": "afc13824fa9500226942f478f9906836636b31dc40f628561a5efb2fcbdec0ad"
+    },
+    {
+      "bytes": 4253,
+      "path": "scripts/memory_cell/strong_rag_host_gate.py",
+      "sha256": "83bc3539cc51dee4e2034879a2ca3a2e375de49db1afddb707a410402645d263"
+    },
+    {
+      "bytes": 7587,
+      "path": "scripts/memory_cell/test_strong_rag_host_gate.py",
+      "sha256": "6c4b705aa16cbb7ca798c176f7382136e404ca2380ade5bd053be3739f6bfd9e"
+    }
+  ],
+  "tree": "e965df0dd997492da34f294bfcb9174643502545"
+}

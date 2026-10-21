@@ -1,0 +1,19 @@
+{
+  "schema": "hepta.memory.actual-model-staging-supplement.v1",
+  "created_at": "2026-10-21T11:51:16.949581+00:00",
+  "original_run_stage_sha256": "ceae3536947e7c84e5d55a8c93491654aa388c91961d504ccede6d5650785ba9",
+  "actual_model_stage_seconds": 89.64464322500135,
+  "actual_stage_original_path": "/tmp/hepta-qwen-3b-20261021-337c309bc660/stage.json",
+  "original_run_metadata_binding_verified": true,
+  "historical_canonical_stage_sha256": "1b96ffaa0644f02511d0f8f1cd47f8eb4cf6bce68191220708f3ccbf592b6e2b",
+  "historical_canonical_stage_seconds": 25.948829317000005,
+  "historical_seconds_not_used_as_current_stage_cost": true,
+  "earlier_publication_package": "memory-bounded-stop-20261021",
+  "earlier_manifest_sha256": "a2c4e9d90b665422456442e166cb860703a6e0a36c8dd16afec932dadec5f0e1",
+  "reason": "Earlier identity archive retained the historical canonical metadata but omitted the separate actual stage.json from the runtime model directory. This supplement supplies the exact ceae3536... bytes used by all 88 calls without changing any original artifact.",
+  "full_lifecycle_cost_still_incomplete": true,
+  "energy_joules": null,
+  "physical_flops": null,
+  "new_model_calls": 0,
+  "qualification": "NO_GO"
+}

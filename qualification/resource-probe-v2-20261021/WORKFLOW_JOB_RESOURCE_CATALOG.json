@@ -1,0 +1,3938 @@
+{
+  "all_local_workflows_examined": [
+    ".github/workflows/bazel.yml",
+    ".github/workflows/blob-size-policy.yml",
+    ".github/workflows/blocking-ci.yml",
+    ".github/workflows/cargo-deny.yml",
+    ".github/workflows/cla.yml",
+    ".github/workflows/codespell.yml",
+    ".github/workflows/hepta-architecture-convergence.yml",
+    ".github/workflows/hepta-contract-gate.yml",
+    ".github/workflows/hepta-memory-bf16-host-scout.yml",
+    ".github/workflows/hepta-memory-bf16-hosted-scout.yml",
+    ".github/workflows/hepta-memory-cell-continuation.yml",
+    ".github/workflows/hepta-memory-cell-ingress-review.yml",
+    ".github/workflows/hepta-memory-strong-rag.yml",
+    ".github/workflows/repo-checks.yml",
+    ".github/workflows/rust-ci.yml",
+    ".github/workflows/sdk.yml",
+    ".github/workflows/v8-canary.yml"
+  ],
+  "external_reusable_workflows": [],
+  "jobs": [
+    {
+      "container": null,
+      "job": "scope",
+      "job_if": null,
+      "job_resource_env": {},
+      "measured_memory_bytes": null,
+      "model_execution_review": "No exhaustive inference from script/test names; exact commands are bound by hashes to archived workflow source. Job conditions are not evaluated here.",
+      "needs": null,
+      "permissions": {
+        "contents": "read"
+      },
+      "runs_on": "ubuntu-24.04",
+      "services": null,
+      "steps": [
+        {
+          "if": null,
+          "index": 0,
+          "name": "Checkout exact candidate",
+          "resource_env": {},
+          "uses": "actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd"
+        },
+        {
+          "if": null,
+          "index": 1,
+          "model_related_source_lines": [],
+          "name": "Select dependency impact",
+          "resource_env": {},
+          "run_bytes": 382,
+          "run_sha256": "bef06e1358fc3384f071641cb15261dca6fdbbc0d0b132c8983766ef51a84a78",
+          "uses": null
+        },
+        {
+          "if": null,
+          "index": 2,
+          "model_related_source_lines": [],
+          "name": "Regression-test scoped fan-in policy",
+          "resource_env": {},
+          "run_bytes": 369,
+          "run_sha256": "14d2dacb85732d2a0eb1d61ae94f03692be0a621d07fd8601db64e9b7deb2854",
+          "uses": null
+        }
+      ],
+      "strategy": null,
+      "timeout_minutes": "5",
+      "top_level_audited_source": true,
+      "uses": null,
+      "workflow": ".github/workflows/blocking-ci.yml",
+      "workflow_resource_env": {},
+      "workflow_sha256": "948571f133ca44df83f97aa81045458ca5dbb74bd10bb675d557283fefda302f"
+    },
+    {
+      "container": null,
+      "job": "hepta-contract-gate",
+      "job_if": "needs.scope.outputs.native == 'true' || needs.scope.outputs.full_repo == 'true'",
+      "job_resource_env": {},
+      "measured_memory_bytes": null,
+      "model_execution_review": "No exhaustive inference from script/test names; exact commands are bound by hashes to archived workflow source. Job conditions are not evaluated here.",
+      "needs": "scope",
+      "permissions": {
+        "contents": "read"
+      },
+      "runs_on": null,
+      "services": null,
+      "steps": [],
+      "strategy": null,
+      "timeout_minutes": null,
+      "top_level_audited_source": true,
+      "uses": "./.github/workflows/hepta-contract-gate.yml",
+      "workflow": ".github/workflows/blocking-ci.yml",
+      "workflow_resource_env": {},
+      "workflow_sha256": "948571f133ca44df83f97aa81045458ca5dbb74bd10bb675d557283fefda302f"
+    },
+    {
+      "container": null,
+      "job": "bazel",
+      "job_if": "needs.scope.outputs.full_repo == 'true'",
+      "job_resource_env": {},
+      "measured_memory_bytes": null,
+      "model_execution_review": "No exhaustive inference from script/test names; exact commands are bound by hashes to archived workflow source. Job conditions are not evaluated here.",
+      "needs": "scope",
+      "permissions": {
+        "contents": "read"
+      },
+      "runs_on": null,
+      "services": null,
+      "steps": [],
+      "strategy": null,
+      "timeout_minutes": null,
+      "top_level_audited_source": true,
+      "uses": "./.github/workflows/bazel.yml",
+      "workflow": ".github/workflows/blocking-ci.yml",
+      "workflow_resource_env": {},
+      "workflow_sha256": "948571f133ca44df83f97aa81045458ca5dbb74bd10bb675d557283fefda302f"
+    },
+    {
+      "container": null,
+      "job": "blob-size-policy",
+      "job_if": null,
+      "job_resource_env": {},
+      "measured_memory_bytes": null,
+      "model_execution_review": "No exhaustive inference from script/test names; exact commands are bound by hashes to archived workflow source. Job conditions are not evaluated here.",
+      "needs": null,
+      "permissions": {
+        "contents": "read"
+      },
+      "runs_on": null,
+      "services": null,
+      "steps": [],
+      "strategy": null,
+      "timeout_minutes": null,
+      "top_level_audited_source": true,
+      "uses": "./.github/workflows/blob-size-policy.yml",
+      "workflow": ".github/workflows/blocking-ci.yml",
+      "workflow_resource_env": {},
+      "workflow_sha256": "948571f133ca44df83f97aa81045458ca5dbb74bd10bb675d557283fefda302f"
+    },
+    {
+      "container": null,
+      "job": "cargo-deny",
+      "job_if": "needs.scope.outputs.full_repo == 'true'",
+      "job_resource_env": {},
+      "measured_memory_bytes": null,
+      "model_execution_review": "No exhaustive inference from script/test names; exact commands are bound by hashes to archived workflow source. Job conditions are not evaluated here.",
+      "needs": "scope",
+      "permissions": {
+        "contents": "read"
+      },
+      "runs_on": null,
+      "services": null,
+      "steps": [],
+      "strategy": null,
+      "timeout_minutes": null,
+      "top_level_audited_source": true,
+      "uses": "./.github/workflows/cargo-deny.yml",
+      "workflow": ".github/workflows/blocking-ci.yml",
+      "workflow_resource_env": {},
+      "workflow_sha256": "948571f133ca44df83f97aa81045458ca5dbb74bd10bb675d557283fefda302f"
+    },
+    {
+      "container": null,
+      "job": "codespell",
+      "job_if": null,
+      "job_resource_env": {},
+      "measured_memory_bytes": null,
+      "model_execution_review": "No exhaustive inference from script/test names; exact commands are bound by hashes to archived workflow source. Job conditions are not evaluated here.",
+      "needs": null,
+      "permissions": {
+        "contents": "read"
+      },
+      "runs_on": null,
+      "services": null,
+      "steps": [],
+      "strategy": null,
+      "timeout_minutes": null,
+      "top_level_audited_source": true,
+      "uses": "./.github/workflows/codespell.yml",
+      "workflow": ".github/workflows/blocking-ci.yml",
+      "workflow_resource_env": {},
+      "workflow_sha256": "948571f133ca44df83f97aa81045458ca5dbb74bd10bb675d557283fefda302f"
+    },
+    {
+      "container": null,
+      "job": "repo-checks",
+      "job_if": "needs.scope.outputs.full_repo == 'true'",
+      "job_resource_env": {},
+      "measured_memory_bytes": null,
+      "model_execution_review": "No exhaustive inference from script/test names; exact commands are bound by hashes to archived workflow source. Job conditions are not evaluated here.",
+      "needs": "scope",
+      "permissions": {
+        "contents": "read"
+      },
+      "runs_on": null,
+      "services": null,
+      "steps": [],
+      "strategy": null,
+      "timeout_minutes": null,
+      "top_level_audited_source": true,
+      "uses": "./.github/workflows/repo-checks.yml",
+      "workflow": ".github/workflows/blocking-ci.yml",
+      "workflow_resource_env": {},
+      "workflow_sha256": "948571f133ca44df83f97aa81045458ca5dbb74bd10bb675d557283fefda302f"
+    },
+    {
+      "container": null,
+      "job": "rust-ci",
+      "job_if": "needs.scope.outputs.full_repo == 'true'",
+      "job_resource_env": {},
+      "measured_memory_bytes": null,
+      "model_execution_review": "No exhaustive inference from script/test names; exact commands are bound by hashes to archived workflow source. Job conditions are not evaluated here.",
+      "needs": "scope",
+      "permissions": {
+        "contents": "read"
+      },
+      "runs_on": null,
+      "services": null,
+      "steps": [],
+      "strategy": null,
+      "timeout_minutes": null,
+      "top_level_audited_source": true,
+      "uses": "./.github/workflows/rust-ci.yml",
+      "workflow": ".github/workflows/blocking-ci.yml",
+      "workflow_resource_env": {},
+      "workflow_sha256": "948571f133ca44df83f97aa81045458ca5dbb74bd10bb675d557283fefda302f"
+    },
+    {
+      "container": null,
+      "job": "sdk",
+      "job_if": "needs.scope.outputs.full_repo == 'true'",
+      "job_resource_env": {},
+      "measured_memory_bytes": null,
+      "model_execution_review": "No exhaustive inference from script/test names; exact commands are bound by hashes to archived workflow source. Job conditions are not evaluated here.",
+      "needs": "scope",
+      "permissions": {
+        "contents": "read"
+      },
+      "runs_on": null,
+      "services": null,
+      "steps": [],
+      "strategy": null,
+      "timeout_minutes": null,
+      "top_level_audited_source": true,
+      "uses": "./.github/workflows/sdk.yml",
+      "workflow": ".github/workflows/blocking-ci.yml",
+      "workflow_resource_env": {},
+      "workflow_sha256": "948571f133ca44df83f97aa81045458ca5dbb74bd10bb675d557283fefda302f"
+    },
+    {
+      "container": null,
+      "job": "hepta-scoped",
+      "job_if": "needs.scope.outputs.native == 'true' && needs.scope.outputs.full_repo != 'true'",
+      "job_resource_env": {},
+      "measured_memory_bytes": null,
+      "model_execution_review": "No exhaustive inference from script/test names; exact commands are bound by hashes to archived workflow source. Job conditions are not evaluated here.",
+      "needs": "scope",
+      "permissions": {
+        "contents": "read"
+      },
+      "runs_on": "ubuntu-24.04",
+      "services": null,
+      "steps": [
+        {
+          "if": null,
+          "index": 0,
+          "name": "Checkout exact candidate",
+          "resource_env": {},
+          "uses": "actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd"
+        },
+        {
+          "if": null,
+          "index": 1,
+          "model_related_source_lines": [],
+          "name": "Prepare native test prerequisites before compilation",
+          "resource_env": {},
+          "run_bytes": 287,
+          "run_sha256": "8ec27ad21074af366e8b16ccc654439caa2d33ac2175bb99fd60068aabc6c0a3",
+          "uses": null
+        },
+        {
+          "if": null,
+          "index": 2,
+          "name": null,
+          "resource_env": {},
+          "uses": "taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532"
+        },
+        {
+          "if": null,
+          "index": 3,
+          "name": null,
+          "resource_env": {},
+          "uses": "facebook/install-dotslash@1e4e7b3e07eaca387acb98f1d4720e0bee8dbb6a"
+        },
+        {
+          "if": null,
+          "index": 4,
+          "model_related_source_lines": [],
+          "name": null,
+          "resource_env": {},
+          "run_bytes": 69,
+          "run_sha256": "10e6bea539a67c99edabbf9557cef2a8129f1809a17649e816b87864f09fdabe",
+          "uses": null
+        },
+        {
+          "if": null,
+          "index": 5,
+          "model_related_source_lines": [],
+          "name": "Resolve verified V8 artifacts for affected host crates",
+          "resource_env": {},
+          "run_bytes": 30,
+          "run_sha256": "01ed3c63ae9079a434fd9e5ae295afc542f7b5c6739341865db732422b06941d",
+          "uses": null
+        },
+        {
+          "if": null,
+          "index": 6,
+          "model_related_source_lines": [],
+          "name": "Test affected owners and reverse consumers, not a hand-written package list",
+          "resource_env": {},
+          "run_bytes": 207,
+          "run_sha256": "db0a66a272291f04aa835f59cdc1a01a2059cecad2c075034d41eb192890d747",
+          "uses": null
+        },
+        {
+          "if": "always()",
+          "index": 7,
+          "name": "Retain dependency plan and real command output",
+          "resource_env": {},
+          "uses": "actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02"
+        },
+        {
+          "if": "needs.scope.outputs.derived == 'true'",
+          "index": 8,
+          "model_related_source_lines": [],
+          "name": "Verify generated projections when applicable",
+          "resource_env": {},
+          "run_bytes": 60,
+          "run_sha256": "eb8c4b91d9e8f85061b1087039fe2ab967baea214c69ceda63d293b442148bed",
+          "uses": null
+        }
+      ],
+      "strategy": null,
+      "timeout_minutes": "40",
+      "top_level_audited_source": true,
+      "uses": null,
+      "workflow": ".github/workflows/blocking-ci.yml",
+      "workflow_resource_env": {},
+      "workflow_sha256": "948571f133ca44df83f97aa81045458ca5dbb74bd10bb675d557283fefda302f"
+    },
+    {
+      "container": null,
+      "job": "lightweight",
+      "job_if": "needs.scope.outputs.native != 'true' && needs.scope.outputs.full_repo != 'true'",
+      "job_resource_env": {},
+      "measured_memory_bytes": null,
+      "model_execution_review": "No exhaustive inference from script/test names; exact commands are bound by hashes to archived workflow source. Job conditions are not evaluated here.",
+      "needs": "scope",
+      "permissions": {
+        "contents": "read"
+      },
+      "runs_on": "ubuntu-24.04",
+      "services": null,
+      "steps": [
+        {
+          "if": null,
+          "index": 0,
+          "name": "Checkout exact candidate",
+          "resource_env": {},
+          "uses": "actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd"
+        },
+        {
+          "if": null,
+          "index": 1,
+          "model_related_source_lines": [],
+          "name": "Verify lightweight repository consistency",
+          "resource_env": {},
+          "run_bytes": 292,
+          "run_sha256": "7da8977de6283ae976bab3aa2e15e3c66104150dc5ae0fca03032edc29951585",
+          "uses": null
+        }
+      ],
+      "strategy": null,
+      "timeout_minutes": "15",
+      "top_level_audited_source": true,
+      "uses": null,
+      "workflow": ".github/workflows/blocking-ci.yml",
+      "workflow_resource_env": {},
+      "workflow_sha256": "948571f133ca44df83f97aa81045458ca5dbb74bd10bb675d557283fefda302f"
+    },
+    {
+      "container": null,
+      "job": "required",
+      "job_if": "${{ always() }}",
+      "job_resource_env": {},
+      "measured_memory_bytes": null,
+      "model_execution_review": "No exhaustive inference from script/test names; exact commands are bound by hashes to archived workflow source. Job conditions are not evaluated here.",
+      "needs": [
+        "scope",
+        "hepta-contract-gate",
+        "bazel",
+        "blob-size-policy",
+        "cargo-deny",
+        "codespell",
+        "repo-checks",
+        "rust-ci",
+        "sdk",
+        "hepta-scoped",
+        "lightweight"
+      ],
+      "permissions": {
+        "contents": "read"
+      },
+      "runs_on": "ubuntu-24.04",
+      "services": null,
+      "steps": [
+        {
+          "if": null,
+          "index": 0,
+          "name": null,
+          "resource_env": {},
+          "uses": "actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd"
+        },
+        {
+          "if": null,
+          "index": 1,
+          "model_related_source_lines": [],
+          "name": "Require successful applicable dependencies",
+          "resource_env": {},
+          "run_bytes": 542,
+          "run_sha256": "b684fb3a37e035eb82fe19cb5ba590b277ea42930966f4c886cc3c4a0d3c77a8",
+          "uses": null
+        }
+      ],
+      "strategy": null,
+      "timeout_minutes": "30",
+      "top_level_audited_source": true,
+      "uses": null,
+      "workflow": ".github/workflows/blocking-ci.yml",
+      "workflow_resource_env": {},
+      "workflow_sha256": "948571f133ca44df83f97aa81045458ca5dbb74bd10bb675d557283fefda302f"
+    },
+    {
+      "container": null,
+      "job": "cla",
+      "job_if": "${{ vars.ENABLE_UPSTREAM_AUTOMATION == 'true' && github.repository == 'TrillionniumFoundation/hepta-private-ci' }}",
+      "job_resource_env": {},
+      "measured_memory_bytes": null,
+      "model_execution_review": "No exhaustive inference from script/test names; exact commands are bound by hashes to archived workflow source. Job conditions are not evaluated here.",
+      "needs": null,
+      "permissions": {
+        "actions": "write",
+        "contents": "write",
+        "pull-requests": "write",
+        "statuses": "write"
+      },
+      "runs_on": "ubuntu-latest",
+      "services": null,
+      "steps": [
+        {
+          "if": "(\n  github.event_name == 'pull_request_target' &&\n  (\n    github.event.action == 'opened' ||\n    github.event.action == 'synchronize' ||\n    (github.event.action == 'closed' && github.event.pull_request.merged == true)\n  )\n) ||\n(\n  github.event_name == 'issue_comment' &&\n  (\n    github.event.comment.body == 'recheck' ||\n    github.event.comment.body == 'I have read the CLA Document and I hereby sign the CLA'\n  )\n)\n",
+          "index": 0,
+          "name": null,
+          "resource_env": {},
+          "uses": "contributor-assistant/github-action@ca4a40a7d1004f18d9960b404b97e5f30a505a08"
+        }
+      ],
+      "strategy": null,
+      "timeout_minutes": "30",
+      "top_level_audited_source": true,
+      "uses": null,
+      "workflow": ".github/workflows/cla.yml",
+      "workflow_resource_env": {},
+      "workflow_sha256": "ed68d940a662a74dd2566442089e29e958d21192d1728ff81d1ed0e0aea36d3f"
+    },
+    {
+      "container": null,
+      "job": "qualification",
+      "job_if": null,
+      "job_resource_env": {},
+      "measured_memory_bytes": null,
+      "model_execution_review": "No exhaustive inference from script/test names; exact commands are bound by hashes to archived workflow source. Job conditions are not evaluated here.",
+      "needs": null,
+      "permissions": {
+        "contents": "read"
+      },
+      "runs_on": "ubuntu-24.04-arm",
+      "services": null,
+      "steps": [
+        {
+          "if": null,
+          "index": 0,
+          "name": "Check out exact candidate",
+          "resource_env": {},
+          "uses": "actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd"
+        },
+        {
+          "if": null,
+          "index": 1,
+          "model_related_source_lines": [],
+          "name": "Fetch exact qualification history",
+          "resource_env": {},
+          "run_bytes": 201,
+          "run_sha256": "b4a7a4f3c6eabfe3a2e7a27430d5c625c2f9b8f85e0756bf42dd391d051881f6",
+          "uses": null
+        },
+        {
+          "if": "matrix.lane == 'base-merge'",
+          "index": 2,
+          "model_related_source_lines": [],
+          "name": "Verify GitHub prospective merge ref matches this exact candidate",
+          "resource_env": {},
+          "run_bytes": 699,
+          "run_sha256": "173e04be0c6e24218887d5426072ceb06fbe2deb31557da18cc3d01f78477f73",
+          "uses": null
+        },
+        {
+          "if": "matrix.lane == 'base-merge'",
+          "index": 3,
+          "name": "Construct the canonical prospective merge",
+          "resource_env": {},
+          "uses": "./.github/actions/hepta-synthetic-merge"
+        },
+        {
+          "if": null,
+          "index": 4,
+          "model_related_source_lines": [],
+          "name": "Bind tested identity",
+          "resource_env": {},
+          "run_bytes": 187,
+          "run_sha256": "60d1aa73764305b3bf5de9bd7f6f46a175d1856d9314dbfaebb5774c0216c296",
+          "uses": null
+        },
+        {
+          "if": null,
+          "index": 5,
+          "model_related_source_lines": [],
+          "name": "Select exact-tree native execution",
+          "resource_env": {},
+          "run_bytes": 339,
+          "run_sha256": "d0e6ef2d184b130dae40038bfd4f97a3341027f641dc97fac51e3f3eba3735b0",
+          "uses": null
+        },
+        {
+          "if": null,
+          "index": 6,
+          "model_related_source_lines": [],
+          "name": "Select affected architecture boundaries",
+          "resource_env": {},
+          "run_bytes": 490,
+          "run_sha256": "71641dd6e8442407717757b6bc327b56bd14b545b1fcc73d96547050e5e6984e",
+          "uses": null
+        },
+        {
+          "if": null,
+          "index": 7,
+          "model_related_source_lines": [],
+          "name": "Test execution-record rejection and retained diagnostics",
+          "resource_env": {},
+          "run_bytes": 189,
+          "run_sha256": "586f6011056efe538bd55ab009267db813b27a433a572ce6d551a14cda76a9d7",
+          "uses": null
+        },
+        {
+          "if": null,
+          "index": 8,
+          "model_related_source_lines": [],
+          "name": "Repository-control rejection regressions",
+          "resource_env": {},
+          "run_bytes": 296,
+          "run_sha256": "673ce6ad204b5ce376607f4d7bccbe1c36c9c9449342ae9564e7b7a25ba817be",
+          "uses": null
+        },
+        {
+          "if": "steps.execution.outputs.run_native == 'true' && steps.scope.outputs.native == 'true'",
+          "index": 9,
+          "model_related_source_lines": [],
+          "name": "Prepare native prerequisites",
+          "resource_env": {},
+          "run_bytes": 305,
+          "run_sha256": "113912146bb128a39bc8fec7eb21067bd771d0483ec27a4d0de1381f7ba0a6a5",
+          "uses": null
+        },
+        {
+          "if": "steps.execution.outputs.run_native == 'true' && (steps.scope.outputs.effects == 'true' || steps.scope.outputs.learning == 'true')",
+          "index": 10,
+          "name": null,
+          "resource_env": {},
+          "uses": "facebook/install-dotslash@1e4e7b3e07eaca387acb98f1d4720e0bee8dbb6a"
+        },
+        {
+          "if": "steps.execution.outputs.run_native == 'true' && (steps.scope.outputs.effects == 'true' || steps.scope.outputs.learning == 'true')",
+          "index": 11,
+          "model_related_source_lines": [],
+          "name": "Expose DotSlash for existing integration tests",
+          "resource_env": {},
+          "run_bytes": 69,
+          "run_sha256": "10e6bea539a67c99edabbf9557cef2a8129f1809a17649e816b87864f09fdabe",
+          "uses": null
+        },
+        {
+          "if": "steps.execution.outputs.run_native == 'true' && steps.scope.outputs.native == 'true'",
+          "index": 12,
+          "name": null,
+          "resource_env": {},
+          "uses": "taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532"
+        },
+        {
+          "if": "steps.execution.outputs.run_native == 'true' && (steps.scope.outputs.effects == 'true' || steps.scope.outputs.learning == 'true')",
+          "index": 13,
+          "model_related_source_lines": [],
+          "name": "Resolve verified V8 artifacts",
+          "resource_env": {},
+          "run_bytes": 30,
+          "run_sha256": "01ed3c63ae9079a434fd9e5ae295afc542f7b5c6739341865db732422b06941d",
+          "uses": null
+        },
+        {
+          "if": "steps.execution.outputs.run_native == 'true' && steps.scope.outputs.native == 'true'",
+          "index": 14,
+          "model_related_source_lines": [],
+          "name": "Verify Cargo lock resolution and print exact resolver drift",
+          "resource_env": {},
+          "run_bytes": 531,
+          "run_sha256": "9c97c17f38f4109619795745e87d5632130403fcaab36ea8b2aec690ee6783de",
+          "uses": null
+        },
+        {
+          "if": "steps.execution.outputs.run_native == 'true' && steps.scope.outputs.inference == 'true'",
+          "index": 15,
+          "model_related_source_lines": [],
+          "name": "Inference owner regressions and streaming digest",
+          "resource_env": {},
+          "run_bytes": 562,
+          "run_sha256": "1f610295f8cd34d2ed7feee3a0e6e0ad670a83690f4f8a10402fcae4c582b12e",
+          "uses": null
+        },
+        {
+          "if": "steps.execution.outputs.run_native == 'true' && steps.scope.outputs.effects == 'true'",
+          "index": 16,
+          "model_related_source_lines": [],
+          "name": "Durable operation and external-effect recovery",
+          "resource_env": {},
+          "run_bytes": 441,
+          "run_sha256": "0fde8b80bb2e977fcfdfc264f2b6b59dc65639baabb3cd0724f32b750d805883",
+          "uses": null
+        },
+        {
+          "if": "steps.execution.outputs.run_native == 'true' && steps.scope.outputs.lifecycle == 'true'",
+          "index": 17,
+          "model_related_source_lines": [],
+          "name": "Module lifecycle generations and migration rollback",
+          "resource_env": {},
+          "run_bytes": 2390,
+          "run_sha256": "e3bc2c18c5cb5e550e7c75c189f1eaf968a2a5369f2e4247658c93a31292381b",
+          "uses": null
+        },
+        {
+          "if": "steps.execution.outputs.run_native == 'true' && steps.scope.outputs.objective == 'true'",
+          "index": 18,
+          "model_related_source_lines": [],
+          "name": "Objective and prompt policy convergence",
+          "resource_env": {},
+          "run_bytes": 600,
+          "run_sha256": "3fbde54f11d99443a15dd24b2400d2d1d340f45049b04370635c7a2850250a06",
+          "uses": null
+        },
+        {
+          "if": "steps.execution.outputs.run_native == 'true' && steps.scope.outputs.effects == 'true'",
+          "index": 19,
+          "model_related_source_lines": [],
+          "name": "Converged authority and browser semantics",
+          "resource_env": {},
+          "run_bytes": 450,
+          "run_sha256": "f7bd5eccf737932c1f9c888631ccf4a57adf02b8679e715f532492f82741372b",
+          "uses": null
+        },
+        {
+          "if": "steps.execution.outputs.run_native == 'true' && steps.scope.outputs.learning == 'true'",
+          "index": 20,
+          "model_related_source_lines": [],
+          "name": "Selected-artifact adoption and explicit rollback",
+          "resource_env": {},
+          "run_bytes": 1191,
+          "run_sha256": "88c80d0fede3dba461c0cafb25e063c78b0216e3be1ed8be2dc64b5fe0c98e08",
+          "uses": null
+        },
+        {
+          "if": "steps.execution.outputs.run_native == 'true' && steps.scope.outputs.lifecycle == 'true'",
+          "index": 21,
+          "model_related_source_lines": [],
+          "name": "Compiled service lifecycle and actual process restart",
+          "resource_env": {},
+          "run_bytes": 728,
+          "run_sha256": "2b08f48f50c4bfc1f6d65027f1932563782a3ea62a11e41fec863da745007fbc",
+          "uses": null
+        },
+        {
+          "if": "steps.scope.outputs.derived == 'true'",
+          "index": 22,
+          "model_related_source_lines": [],
+          "name": "Derived-view drift",
+          "resource_env": {},
+          "run_bytes": 244,
+          "run_sha256": "74e753d5f770ed3e64b13935f319071723b6bc7978fc09311f60730cbf33aeaf",
+          "uses": null
+        },
+        {
+          "if": "${{ !cancelled() && github.event_name == 'pull_request' && steps.scope.outcome == 'success' }}",
+          "index": 23,
+          "model_related_source_lines": [],
+          "name": "Retain advisory candidate Git transport observation",
+          "resource_env": {},
+          "run_bytes": 827,
+          "run_sha256": "4988956057496cd6725161f09050252e1ab9679e6e6e7e123888704b9ed747de",
+          "uses": null
+        },
+        {
+          "if": null,
+          "index": 24,
+          "model_related_source_lines": [],
+          "name": "Verify unchanged reviewed source",
+          "resource_env": {},
+          "run_bytes": 92,
+          "run_sha256": "bcc7012f639bab4abd1cea658f66169f3795b95483d234e8c8f5a938e4df414d",
+          "uses": null
+        },
+        {
+          "if": "failure() && matrix.lane == 'source-head'",
+          "index": 25,
+          "model_related_source_lines": [],
+          "name": "Retain exact source input on failure for reproducible diagnosis",
+          "resource_env": {},
+          "run_bytes": 172,
+          "run_sha256": "9d3472a64364a269bc717171887d55e1e0757ece7a409b402efea6fc654db01d",
+          "uses": null
+        },
+        {
+          "if": "always()",
+          "index": 26,
+          "name": "Retain command records and bounded stdout stderr",
+          "resource_env": {},
+          "uses": "actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02"
+        }
+      ],
+      "strategy": {
+        "fail-fast": "false",
+        "matrix": {
+          "lane": "${{ fromJSON(github.event_name == 'pull_request' && '[\"source-head\",\"base-merge\"]' || '[\"source-head\"]') }}"
+        }
+      },
+      "timeout_minutes": "60",
+      "top_level_audited_source": true,
+      "uses": null,
+      "workflow": ".github/workflows/hepta-architecture-convergence.yml",
+      "workflow_resource_env": {
+        "CARGO_BUILD_JOBS": "2",
+        "CARGO_INCREMENTAL": "0",
+        "CARGO_PROFILE_DEV_DEBUG": "0",
+        "CARGO_PROFILE_TEST_DEBUG": "0"
+      },
+      "workflow_sha256": "5ae51b188989bbe6435cc0f5b62caffbc5da4b6fa2d855c2ed69afaaa8b53852"
+    },
+    {
+      "container": null,
+      "job": "required",
+      "job_if": "${{ always() }}",
+      "job_resource_env": {},
+      "measured_memory_bytes": null,
+      "model_execution_review": "No exhaustive inference from script/test names; exact commands are bound by hashes to archived workflow source. Job conditions are not evaluated here.",
+      "needs": "qualification",
+      "permissions": {
+        "contents": "read"
+      },
+      "runs_on": "ubuntu-24.04",
+      "services": null,
+      "steps": [
+        {
+          "if": null,
+          "index": 0,
+          "model_related_source_lines": [],
+          "name": "Require both exact-candidate lanes",
+          "resource_env": {},
+          "run_bytes": 131,
+          "run_sha256": "ad4632f4b512092634bf85faa927f03a61ba2b53c95960387da2fc381b65c556",
+          "uses": null
+        }
+      ],
+      "strategy": null,
+      "timeout_minutes": "5",
+      "top_level_audited_source": true,
+      "uses": null,
+      "workflow": ".github/workflows/hepta-architecture-convergence.yml",
+      "workflow_resource_env": {
+        "CARGO_BUILD_JOBS": "2",
+        "CARGO_INCREMENTAL": "0",
+        "CARGO_PROFILE_DEV_DEBUG": "0",
+        "CARGO_PROFILE_TEST_DEBUG": "0"
+      },
+      "workflow_sha256": "5ae51b188989bbe6435cc0f5b62caffbc5da4b6fa2d855c2ed69afaaa8b53852"
+    },
+    {
+      "container": null,
+      "job": "hosted-cpu-readonly",
+      "job_if": null,
+      "job_resource_env": {},
+      "measured_memory_bytes": null,
+      "model_execution_review": "Read-only CPU/resource scout and scoped tests; no model invocation.",
+      "needs": null,
+      "permissions": {
+        "contents": "read"
+      },
+      "runs_on": "${{ matrix.image }}",
+      "services": null,
+      "steps": [
+        {
+          "if": null,
+          "index": 0,
+          "name": null,
+          "resource_env": {},
+          "uses": "actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd"
+        },
+        {
+          "if": null,
+          "index": 1,
+          "model_related_source_lines": [],
+          "name": "Validate the read-only CPU scout and existing fail-closed gate",
+          "resource_env": {},
+          "run_bytes": 196,
+          "run_sha256": "6bd75a06e117cf265f42fb2d0e68d2d35c14f7485c9a81b674c11d15043d44e8",
+          "uses": null
+        },
+        {
+          "if": null,
+          "index": 2,
+          "model_related_source_lines": [],
+          "name": "Observe the actual allocated CPU, without model execution",
+          "resource_env": {},
+          "run_bytes": 205,
+          "run_sha256": "ca6be4b5052176f60f974bd336ad8e32fa7dccf05f551b1e9a85ddabc49014b5",
+          "uses": null
+        },
+        {
+          "if": "always()",
+          "index": 3,
+          "model_related_source_lines": [],
+          "name": "Retain the exact read-only resource collector source",
+          "resource_env": {},
+          "run_bytes": 471,
+          "run_sha256": "244e51a8415108fa0a7ab8b4173adbdb5fa216062cd6714b9d1b2402af60d963",
+          "uses": null
+        },
+        {
+          "if": "always()",
+          "index": 4,
+          "name": null,
+          "resource_env": {},
+          "uses": "actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02"
+        }
+      ],
+      "strategy": {
+        "fail-fast": "false",
+        "matrix": {
+          "image": [
+            "ubuntu-22.04",
+            "ubuntu-24.04",
+            "ubuntu-26.04"
+          ]
+        }
+      },
+      "timeout_minutes": "10",
+      "top_level_audited_source": true,
+      "uses": null,
+      "workflow": ".github/workflows/hepta-memory-bf16-host-scout.yml",
+      "workflow_resource_env": {},
+      "workflow_sha256": "f248faa4ca2a8cd06b76f71828849e6c7a30829427d4a82cf7b4082e0fd5eac2"
+    },
+    {
+      "container": null,
+      "job": "read-only-host-census",
+      "job_if": null,
+      "job_resource_env": {},
+      "measured_memory_bytes": null,
+      "model_execution_review": "Read-only CPU/resource scout and scoped tests; no model invocation.",
+      "needs": null,
+      "permissions": {
+        "contents": "read"
+      },
+      "runs_on": "${{ matrix.image }}",
+      "services": null,
+      "steps": [
+        {
+          "if": null,
+          "index": 0,
+          "name": null,
+          "resource_env": {},
+          "uses": "actions/checkout@11d5960a326750d5838078e36cf38b85af677262"
+        },
+        {
+          "if": null,
+          "index": 1,
+          "model_related_source_lines": [],
+          "name": "Record actual runner CPU, no model files or task labels",
+          "resource_env": {},
+          "run_bytes": 538,
+          "run_sha256": "83f7260e2dd73fa09408dfd2f11b94e04607fa0b0384a1f664d912cafe3955dd",
+          "uses": null
+        },
+        {
+          "if": "always()",
+          "index": 2,
+          "model_related_source_lines": [],
+          "name": "Retain original unmodified code and host census",
+          "resource_env": {},
+          "run_bytes": 628,
+          "run_sha256": "9e2ecd1309d7d49015d6859e3ee4ba353cf96681603bb6e5a0c8398d5b0608ff",
+          "uses": null
+        },
+        {
+          "if": "always()",
+          "index": 3,
+          "name": null,
+          "resource_env": {},
+          "uses": "actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02"
+        }
+      ],
+      "strategy": {
+        "fail-fast": "false",
+        "matrix": {
+          "image": [
+            "ubuntu-22.04",
+            "ubuntu-24.04",
+            "ubuntu-26.04"
+          ],
+          "repeat": [
+            "0",
+            "1"
+          ]
+        }
+      },
+      "timeout_minutes": "10",
+      "top_level_audited_source": true,
+      "uses": null,
+      "workflow": ".github/workflows/hepta-memory-bf16-hosted-scout.yml",
+      "workflow_resource_env": {},
+      "workflow_sha256": "dbca8e53f3f47006577db2f131556d2526927242412abcf5e7a6e0bff0929c55"
+    },
+    {
+      "container": null,
+      "job": "source-inputs",
+      "job_if": null,
+      "job_resource_env": {},
+      "measured_memory_bytes": null,
+      "model_execution_review": "No exhaustive inference from script/test names; exact commands are bound by hashes to archived workflow source. Job conditions are not evaluated here.",
+      "needs": null,
+      "permissions": {
+        "contents": "read"
+      },
+      "runs_on": "ubuntu-latest",
+      "services": null,
+      "steps": [
+        {
+          "if": null,
+          "index": 0,
+          "name": null,
+          "resource_env": {},
+          "uses": "actions/checkout@11d5960a326750d5838078e36cf38b85af677262"
+        },
+        {
+          "if": null,
+          "index": 1,
+          "model_related_source_lines": [],
+          "name": "Retain exact source",
+          "resource_env": {},
+          "run_bytes": 324,
+          "run_sha256": "62048fd9e4e10fea5cfea9bb0916c84c62c471cf64ddabd2977fefcc8fb00060",
+          "uses": null
+        },
+        {
+          "if": null,
+          "index": 2,
+          "name": null,
+          "resource_env": {},
+          "uses": "actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02"
+        }
+      ],
+      "strategy": null,
+      "timeout_minutes": "10",
+      "top_level_audited_source": true,
+      "uses": null,
+      "workflow": ".github/workflows/hepta-memory-cell-continuation.yml",
+      "workflow_resource_env": {},
+      "workflow_sha256": "2a15c8f921aaf3859325f87e7c544a29a531179373fa80cc0c15cedfcc25440d"
+    },
+    {
+      "container": null,
+      "job": "native-models",
+      "job_if": null,
+      "job_resource_env": {},
+      "measured_memory_bytes": null,
+      "model_execution_review": "Actual locomo/longmemeval native benchmark model execution; two declared matrix jobs.",
+      "needs": null,
+      "permissions": {
+        "contents": "read"
+      },
+      "runs_on": "ubuntu-latest",
+      "services": null,
+      "steps": [
+        {
+          "if": null,
+          "index": 0,
+          "name": null,
+          "resource_env": {},
+          "uses": "actions/checkout@11d5960a326750d5838078e36cf38b85af677262"
+        },
+        {
+          "if": null,
+          "index": 1,
+          "model_related_source_lines": [],
+          "name": "Install pinned CPU model environment",
+          "resource_env": {},
+          "run_bytes": 204,
+          "run_sha256": "a7c2cbe83ff73ff0c9a6a2a23a257347833143d58c88ebede5ed260346a94537",
+          "uses": null
+        },
+        {
+          "if": null,
+          "index": 2,
+          "model_related_source_lines": [],
+          "name": "Native adapters and leakage/ablation tests",
+          "resource_env": {},
+          "run_bytes": 90,
+          "run_sha256": "04783d4be3372c4125f4d7b576321c05216fd55620e031264f60d6431cfb7fbe",
+          "uses": null
+        },
+        {
+          "if": null,
+          "index": 3,
+          "model_related_source_lines": [
+            "/tmp/mcell-python/bin/python scripts/memory_cell/prepare.py native /tmp/mcell-inputs"
+          ],
+          "name": "Stage public pinned model and data inputs",
+          "resource_env": {},
+          "run_bytes": 84,
+          "run_sha256": "eb179ee1772722caa53ac06071416f040fd7b3a173b2b68ceebbe20b600bf03b",
+          "uses": null
+        },
+        {
+          "if": null,
+          "index": 4,
+          "model_related_source_lines": [
+            "/tmp/mcell-python/bin/python scripts/memory_cell/run_native.py /tmp/mcell-inputs \"/tmp/mcell-native/$BENCHMARK\" \"$BENCHMARK\" --qa-limit 16"
+          ],
+          "name": "Execute original-format public benchmark pilot",
+          "resource_env": {
+            "HEPTA_MEMORY_TESTED_COMMIT": "${{ github.event.pull_request.head.sha }}"
+          },
+          "run_bytes": 495,
+          "run_sha256": "731108907b6d4f67b874f7ebffd1eee1f095c71f63df9cc20bb191cbb07621b5",
+          "uses": null
+        },
+        {
+          "if": "always()",
+          "index": 5,
+          "name": null,
+          "resource_env": {},
+          "uses": "actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02"
+        },
+        {
+          "if": "always() && matrix.kind == 'locomo'",
+          "index": 6,
+          "name": null,
+          "resource_env": {},
+          "uses": "actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02"
+        },
+        {
+          "if": "always() && matrix.kind == 'locomo'",
+          "index": 7,
+          "name": null,
+          "resource_env": {},
+          "uses": "actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02"
+        }
+      ],
+      "strategy": {
+        "fail-fast": "false",
+        "matrix": {
+          "kind": [
+            "locomo",
+            "longmemeval"
+          ]
+        }
+      },
+      "timeout_minutes": "60",
+      "top_level_audited_source": true,
+      "uses": null,
+      "workflow": ".github/workflows/hepta-memory-cell-continuation.yml",
+      "workflow_resource_env": {},
+      "workflow_sha256": "2a15c8f921aaf3859325f87e7c544a29a531179373fa80cc0c15cedfcc25440d"
+    },
+    {
+      "container": null,
+      "job": "native-owner",
+      "job_if": "always() && !cancelled()",
+      "job_resource_env": {
+        "CARGO_BUILD_JOBS": "2",
+        "CARGO_PROFILE_DEV_DEBUG": "0",
+        "CARGO_PROFILE_TEST_DEBUG": "0"
+      },
+      "measured_memory_bytes": null,
+      "model_execution_review": "Execution of actual trained native parameters via memory_cell_owner.",
+      "needs": "native-models",
+      "permissions": {
+        "contents": "read"
+      },
+      "runs_on": "ubuntu-latest",
+      "services": null,
+      "steps": [
+        {
+          "if": null,
+          "index": 0,
+          "name": null,
+          "resource_env": {},
+          "uses": "actions/checkout@11d5960a326750d5838078e36cf38b85af677262"
+        },
+        {
+          "if": null,
+          "index": 1,
+          "name": null,
+          "resource_env": {},
+          "uses": "./.github/actions/setup-ci"
+        },
+        {
+          "if": null,
+          "index": 2,
+          "name": null,
+          "resource_env": {},
+          "uses": "taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532"
+        },
+        {
+          "if": null,
+          "index": 3,
+          "name": null,
+          "resource_env": {},
+          "uses": "actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093"
+        },
+        {
+          "if": null,
+          "index": 4,
+          "model_related_source_lines": [
+            "cargo run -p codex-hepta-neuron --example memory_cell_owner -- /tmp/circuit /tmp/neuron-owner-evidence"
+          ],
+          "name": "Test actual Neuron and execute trained parameters through the owner",
+          "resource_env": {},
+          "run_bytes": 165,
+          "run_sha256": "3dd75de0730679c5d7a668a14f1db0a13e1e16899ca9709b96c89699c660fde3",
+          "uses": null
+        },
+        {
+          "if": "always()",
+          "index": 5,
+          "name": null,
+          "resource_env": {},
+          "uses": "actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02"
+        }
+      ],
+      "strategy": null,
+      "timeout_minutes": "25",
+      "top_level_audited_source": true,
+      "uses": null,
+      "workflow": ".github/workflows/hepta-memory-cell-continuation.yml",
+      "workflow_resource_env": {},
+      "workflow_sha256": "2a15c8f921aaf3859325f87e7c544a29a531179373fa80cc0c15cedfcc25440d"
+    },
+    {
+      "container": null,
+      "job": "training-owner",
+      "job_if": null,
+      "job_resource_env": {
+        "CARGO_BUILD_JOBS": "2",
+        "CARGO_PROFILE_DEV_DEBUG": "0",
+        "CARGO_PROFILE_TEST_DEBUG": "0"
+      },
+      "measured_memory_bytes": null,
+      "model_execution_review": "Actual pretrained worker fine-tuning and native serving tests.",
+      "needs": null,
+      "permissions": {
+        "contents": "read"
+      },
+      "runs_on": "ubuntu-latest",
+      "services": null,
+      "steps": [
+        {
+          "if": null,
+          "index": 0,
+          "name": null,
+          "resource_env": {},
+          "uses": "actions/checkout@11d5960a326750d5838078e36cf38b85af677262"
+        },
+        {
+          "if": null,
+          "index": 1,
+          "name": null,
+          "resource_env": {},
+          "uses": "./.github/actions/setup-ci"
+        },
+        {
+          "if": null,
+          "index": 2,
+          "name": null,
+          "resource_env": {},
+          "uses": "taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532"
+        },
+        {
+          "if": null,
+          "index": 3,
+          "model_related_source_lines": [],
+          "name": "Compile and test the actual owning crates",
+          "resource_env": {},
+          "run_bytes": 141,
+          "run_sha256": "16d466757ddef2155f246791877ed17fb2a9ddf3eff527a0036146a3ec0ecad4",
+          "uses": null
+        },
+        {
+          "if": "${{ !cancelled() }}",
+          "index": 4,
+          "model_related_source_lines": [],
+          "name": "Test source-admitted candidate owner boundaries",
+          "resource_env": {},
+          "run_bytes": 58,
+          "run_sha256": "c2bbbe530c7e96503d71d20ff9ab91e156850568faa79eafc6195d1d4f9574c7",
+          "uses": null
+        },
+        {
+          "if": "${{ !cancelled() }}",
+          "index": 5,
+          "model_related_source_lines": [],
+          "name": "Exercise concrete serving authority and process cancellation",
+          "resource_env": {},
+          "run_bytes": 67,
+          "run_sha256": "78063288063562c5be0ca9b2d10a9b45ddc6cec501e979f20c8bbfb5b3a472cf",
+          "uses": null
+        },
+        {
+          "if": "${{ !cancelled() }}",
+          "index": 6,
+          "model_related_source_lines": [],
+          "name": "Test selected serving against the actual fleet revocation owner",
+          "resource_env": {},
+          "run_bytes": 93,
+          "run_sha256": "18734322d59ae7e0af7335d16baf2cc48cf0edde8ed86d29d9f6b22a57022ecd",
+          "uses": null
+        },
+        {
+          "if": "${{ !cancelled() }}",
+          "index": 7,
+          "model_related_source_lines": [
+            "/tmp/mcell-python/bin/python scripts/memory_cell/prepare.py native /tmp/mcell-inputs",
+            "echo \"HEPTA_MEMORY_PROGRAM=$GITHUB_WORKSPACE/scripts/memory_cell/owner_worker.py\" >> \"$GITHUB_ENV\""
+          ],
+          "name": "Stage real pretrained worker model",
+          "resource_env": {},
+          "run_bytes": 660,
+          "run_sha256": "062d2bfe70a132b269254530290d1279967c7a5d5777456123c550a20ebfff74",
+          "uses": null
+        },
+        {
+          "if": "${{ !cancelled() }}",
+          "index": 8,
+          "model_related_source_lines": [
+            "just test -p codex-hepta-agentd --test terminal_cell_owner --run-ignored all actual_pretrained_worker_consumes_cognitive_and_learning_owner_job"
+          ],
+          "name": "Real cognitive-store to ledger to offline LoRA to candidate and revocation",
+          "resource_env": {
+            "HEPTA_MEMORY_EVIDENCE_DIR": "/tmp/training-owner-evidence",
+            "HEPTA_MEMORY_MODEL_DIR": "/tmp/mcell-inputs/reader",
+            "HEPTA_MEMORY_PYTHON": "/tmp/mcell-python/bin/python"
+          },
+          "run_bytes": 143,
+          "run_sha256": "555a72eb19f1bc89c8d3bb778751e636d0ff638948f269d4fc68a4df621b8811",
+          "uses": null
+        },
+        {
+          "if": "${{ !cancelled() }}",
+          "index": 9,
+          "model_related_source_lines": [
+            "just test -p codex-hepta-agentd --lib --run-ignored all real_pretrained_adapter_runs_through_native_effect_consumer"
+          ],
+          "name": "Run trained adapter through the actual native serving consumer",
+          "resource_env": {
+            "HEPTA_MEMORY_EVIDENCE_DIR": "/tmp/training-owner-evidence",
+            "HEPTA_MEMORY_MODEL_DIR": "/tmp/mcell-inputs/reader",
+            "HEPTA_MEMORY_PYTHON": "/tmp/mcell-python/bin/python",
+            "HEPTA_MEMORY_SERVING_PROGRAM": "${{ github.workspace }}/scripts/memory_cell/serving_worker.py"
+          },
+          "run_bytes": 115,
+          "run_sha256": "a47395b50147d9eab5c83489d6359d9944c135bc16e8272aadb21e961197b4fd",
+          "uses": null
+        },
+        {
+          "if": "always()",
+          "index": 10,
+          "name": null,
+          "resource_env": {},
+          "uses": "actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02"
+        }
+      ],
+      "strategy": null,
+      "timeout_minutes": "45",
+      "top_level_audited_source": true,
+      "uses": null,
+      "workflow": ".github/workflows/hepta-memory-cell-continuation.yml",
+      "workflow_resource_env": {},
+      "workflow_sha256": "2a15c8f921aaf3859325f87e7c544a29a531179373fa80cc0c15cedfcc25440d"
+    },
+    {
+      "container": null,
+      "job": "laya-pretrained",
+      "job_if": "always() && !cancelled()",
+      "job_resource_env": {},
+      "measured_memory_bytes": null,
+      "model_execution_review": "Actual pinned Laya checkpoint staging and train_and_measure tensor training.",
+      "needs": "native-models",
+      "permissions": {
+        "contents": "read"
+      },
+      "runs_on": "ubuntu-latest",
+      "services": null,
+      "steps": [
+        {
+          "if": null,
+          "index": 0,
+          "name": null,
+          "resource_env": {},
+          "uses": "actions/checkout@11d5960a326750d5838078e36cf38b85af677262"
+        },
+        {
+          "if": null,
+          "index": 1,
+          "name": null,
+          "resource_env": {},
+          "uses": "actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093"
+        },
+        {
+          "if": null,
+          "index": 2,
+          "model_related_source_lines": [
+            "/tmp/mcell-python/bin/python scripts/memory_cell/prepare.py laya /tmp/laya-inputs"
+          ],
+          "name": "Install and stage the pinned Laya checkpoint",
+          "resource_env": {},
+          "run_bytes": 286,
+          "run_sha256": "a6eb91a9e64e960c67fba4c9b62847c8092c5e80ad6939a16ab3bd6bdb220b67",
+          "uses": null
+        },
+        {
+          "if": null,
+          "index": 3,
+          "model_related_source_lines": [
+            "from laya_backend import train_and_measure",
+            "train_and_measure(Path('/tmp/laya-inputs/laya'), Path('/tmp/laya-inputs/laya_common.py'), json.loads(Path('/tmp/laya-pairs/laya-pairs.json').read_text()), Path('/tmp/laya-evidence'))"
+          ],
+          "name": "Train actual Laya scorer tensors and retain held-out outputs",
+          "resource_env": {},
+          "run_bytes": 342,
+          "run_sha256": "41fab594e18d38f3c384d6642bd44fc568030a65261b971860da1ba79db94eb2",
+          "uses": null
+        },
+        {
+          "if": "always()",
+          "index": 4,
+          "name": null,
+          "resource_env": {},
+          "uses": "actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02"
+        }
+      ],
+      "strategy": null,
+      "timeout_minutes": "25",
+      "top_level_audited_source": true,
+      "uses": null,
+      "workflow": ".github/workflows/hepta-memory-cell-continuation.yml",
+      "workflow_resource_env": {},
+      "workflow_sha256": "2a15c8f921aaf3859325f87e7c544a29a531179373fa80cc0c15cedfcc25440d"
+    },
+    {
+      "container": null,
+      "job": "source-format",
+      "job_if": null,
+      "job_resource_env": {},
+      "measured_memory_bytes": null,
+      "model_execution_review": "No exhaustive inference from script/test names; exact commands are bound by hashes to archived workflow source. Job conditions are not evaluated here.",
+      "needs": null,
+      "permissions": {
+        "contents": "read"
+      },
+      "runs_on": "ubuntu-latest",
+      "services": null,
+      "steps": [
+        {
+          "if": null,
+          "index": 0,
+          "name": null,
+          "resource_env": {},
+          "uses": "actions/checkout@11d5960a326750d5838078e36cf38b85af677262"
+        },
+        {
+          "if": null,
+          "index": 1,
+          "name": null,
+          "resource_env": {},
+          "uses": "./.github/actions/setup-ci"
+        },
+        {
+          "if": null,
+          "index": 2,
+          "model_related_source_lines": [],
+          "name": "Check formatting and retain the exact formatter diff",
+          "resource_env": {},
+          "run_bytes": 192,
+          "run_sha256": "cbd6be5810d1ceb5bfb5f4230d6a8ebae094fed4528e950d840067d9736cb40a",
+          "uses": null
+        },
+        {
+          "if": "always()",
+          "index": 3,
+          "name": null,
+          "resource_env": {},
+          "uses": "actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02"
+        }
+      ],
+      "strategy": null,
+      "timeout_minutes": "12",
+      "top_level_audited_source": true,
+      "uses": null,
+      "workflow": ".github/workflows/hepta-memory-cell-continuation.yml",
+      "workflow_resource_env": {},
+      "workflow_sha256": "2a15c8f921aaf3859325f87e7c544a29a531179373fa80cc0c15cedfcc25440d"
+    },
+    {
+      "container": null,
+      "job": "pinned-history-census",
+      "job_if": "github.event.pull_request.number == 1452 && github.event.pull_request.head.repo.full_name == github.repository",
+      "job_resource_env": {},
+      "measured_memory_bytes": null,
+      "model_execution_review": "No exhaustive inference from script/test names; exact commands are bound by hashes to archived workflow source. Job conditions are not evaluated here.",
+      "needs": null,
+      "permissions": {
+        "actions": "read",
+        "contents": "read"
+      },
+      "runs_on": "ubuntu-latest",
+      "services": null,
+      "steps": [
+        {
+          "if": null,
+          "index": 0,
+          "name": null,
+          "resource_env": {},
+          "uses": "actions/checkout@11d5960a326750d5838078e36cf38b85af677262"
+        },
+        {
+          "if": null,
+          "index": 1,
+          "name": null,
+          "resource_env": {},
+          "uses": "actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093"
+        },
+        {
+          "if": null,
+          "index": 2,
+          "model_related_source_lines": [],
+          "name": "Compare legacy and preserved histories against unchanged source bytes",
+          "resource_env": {},
+          "run_bytes": 2300,
+          "run_sha256": "61eaaf1710d53c2bd40c21af47b0ee0428457dd8ea8aa0112708f487e3224c50",
+          "uses": null
+        },
+        {
+          "if": null,
+          "index": 3,
+          "model_related_source_lines": [],
+          "name": "Run native ingress regressions without importing model dependencies",
+          "resource_env": {},
+          "run_bytes": 156,
+          "run_sha256": "d442d25f0997d6af9197e7f5c3d84441d382302fd0cc71dc0ea6a9cdc3c9310c",
+          "uses": null
+        },
+        {
+          "if": "always()",
+          "index": 4,
+          "name": null,
+          "resource_env": {},
+          "uses": "actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02"
+        }
+      ],
+      "strategy": null,
+      "timeout_minutes": "15",
+      "top_level_audited_source": true,
+      "uses": null,
+      "workflow": ".github/workflows/hepta-memory-cell-ingress-review.yml",
+      "workflow_resource_env": {},
+      "workflow_sha256": "234675f322f36482d958c69c00aa75d2f96929d68fd239044a6bdbda8b52b25c"
+    },
+    {
+      "container": null,
+      "job": "experiment-format",
+      "job_if": "github.event_name == 'push' && github.ref == 'refs/heads/codex/memory-cell-evidence-20261008'",
+      "job_resource_env": {},
+      "measured_memory_bytes": null,
+      "model_execution_review": "Original Qwen experiment or its validation job; included as excluded owner-push counterexample, not a trigger admitted here.",
+      "needs": null,
+      "permissions": {
+        "actions": "read",
+        "contents": "read"
+      },
+      "runs_on": "ubuntu-latest",
+      "services": null,
+      "steps": [
+        {
+          "if": null,
+          "index": 0,
+          "name": null,
+          "resource_env": {},
+          "uses": "actions/checkout@11d5960a326750d5838078e36cf38b85af677262"
+        },
+        {
+          "if": null,
+          "index": 1,
+          "model_related_source_lines": [],
+          "name": "Check frozen-RAG source formatting and syntax independently",
+          "resource_env": {},
+          "run_bytes": 592,
+          "run_sha256": "b302073e7262d444d2cfc578459c07e1afc5dde5832a22a1f5d5a9bf4bec18a5",
+          "uses": null
+        },
+        {
+          "if": "failure()",
+          "index": 2,
+          "model_related_source_lines": [],
+          "name": "Retain the exact Ruff repair patch without weakening the failure",
+          "resource_env": {},
+          "run_bytes": 902,
+          "run_sha256": "d2e8a76583633dc2aafc91f0befe4b0ceb733e450482df64dcb8200e75355a0c",
+          "uses": null
+        },
+        {
+          "if": "failure()",
+          "index": 3,
+          "name": null,
+          "resource_env": {},
+          "uses": "actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02"
+        }
+      ],
+      "strategy": null,
+      "timeout_minutes": "15",
+      "top_level_audited_source": true,
+      "uses": null,
+      "workflow": ".github/workflows/hepta-memory-strong-rag.yml",
+      "workflow_resource_env": {},
+      "workflow_sha256": "6506160ee422e2faaaafbb15a138dee4c0be4f81e17f9be5e0abdba8e0adfe09"
+    },
+    {
+      "container": null,
+      "job": "reader",
+      "job_if": null,
+      "job_resource_env": {
+        "HEPTA_MEMORY_TESTED_COMMIT": "${{ github.sha }}",
+        "MKL_NUM_THREADS": "2",
+        "OMP_NUM_THREADS": "2"
+      },
+      "measured_memory_bytes": null,
+      "model_execution_review": "Original Qwen experiment or its validation job; included as excluded owner-push counterexample, not a trigger admitted here.",
+      "needs": "experiment-format",
+      "permissions": {
+        "actions": "read",
+        "contents": "read"
+      },
+      "runs_on": "ubuntu-22.04",
+      "services": null,
+      "steps": [
+        {
+          "if": null,
+          "index": 0,
+          "name": null,
+          "resource_env": {},
+          "uses": "actions/checkout@11d5960a326750d5838078e36cf38b85af677262"
+        },
+        {
+          "if": null,
+          "index": 1,
+          "name": "Retain original pinned Python 3.12 environment on Ubuntu 22.04",
+          "resource_env": {},
+          "uses": "actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405"
+        },
+        {
+          "if": null,
+          "index": 2,
+          "model_related_source_lines": [],
+          "name": "Verify BF16 CPU hardware before model downloads",
+          "resource_env": {},
+          "run_bytes": 162,
+          "run_sha256": "95c3e6fdecd7ddf8f5efc67ca1838eac7fc689e216e68b9587b58e63d7ff4d2f",
+          "uses": null
+        },
+        {
+          "if": null,
+          "index": 3,
+          "model_related_source_lines": [],
+          "name": "Restore exact historical source, calibration/test census and index bytes",
+          "resource_env": {},
+          "run_bytes": 2033,
+          "run_sha256": "3803b18257991eac0e09e6bb011874e1aa788e57546973170224c58e36a9da37",
+          "uses": null
+        },
+        {
+          "if": null,
+          "index": 4,
+          "model_related_source_lines": [],
+          "name": "Restore pinned CPU environment and test exact reader dependencies",
+          "resource_env": {},
+          "run_bytes": 1075,
+          "run_sha256": "ce6a65360fb44718675397482e038a694b848b0439e07550068da98cdd307237",
+          "uses": null
+        },
+        {
+          "if": null,
+          "index": 5,
+          "model_related_source_lines": [],
+          "name": "Reuse original indexed source and verify pinned retrieval replay",
+          "resource_env": {},
+          "run_bytes": 400,
+          "run_sha256": "872758fa1790bcae7d6d6a9860a2a2f0f2ea0a8c70b88374985a131bd3ef18b4",
+          "uses": null
+        },
+        {
+          "if": null,
+          "index": 6,
+          "model_related_source_lines": [],
+          "name": "Stage pinned research-only Qwen reader",
+          "resource_env": {},
+          "run_bytes": 224,
+          "run_sha256": "91603cdca0cbc3402077244dc5d3a7164e239411ce56573a886ea74b82b21eff",
+          "uses": null
+        },
+        {
+          "if": null,
+          "index": 7,
+          "model_related_source_lines": [],
+          "name": "Real reader calibration only, with final tasks absent from inputs",
+          "resource_env": {},
+          "run_bytes": 488,
+          "run_sha256": "84c244888039df26c85d2b2db589baff28e81f06237c1013c04fabc0cd65bfca",
+          "uses": null
+        },
+        {
+          "if": "${{ always() && steps.calibration_generation.outcome != 'skipped' }}",
+          "index": 8,
+          "model_related_source_lines": [],
+          "name": "Seal calibration-only checkpoint with original generating SHA",
+          "resource_env": {},
+          "run_bytes": 806,
+          "run_sha256": "3614a9fc9a785627dd8da132b5b0760a120749e06001866cb64c1fdabe52999d",
+          "uses": null
+        },
+        {
+          "if": "${{ always() && steps.calibration_generation.outcome != 'skipped' }}",
+          "index": 9,
+          "name": null,
+          "resource_env": {},
+          "uses": "actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02"
+        },
+        {
+          "if": null,
+          "index": 10,
+          "model_related_source_lines": [],
+          "name": "Different process, frozen top-k versus matched original controls",
+          "resource_env": {},
+          "run_bytes": 590,
+          "run_sha256": "29fd9ed62c20e7018d58a6316b92628ca0c6409720528f169bd859c3c1a72462",
+          "uses": null
+        },
+        {
+          "if": "always()",
+          "index": 11,
+          "model_related_source_lines": [],
+          "name": "Preserve exact source and all original diagnostics, even on failure",
+          "resource_env": {},
+          "run_bytes": 1006,
+          "run_sha256": "abc2974021a0a77a05be67ab7203a9249c73842e351c4960c90ac19e0a3ceeb3",
+          "uses": null
+        },
+        {
+          "if": "always()",
+          "index": 12,
+          "name": null,
+          "resource_env": {},
+          "uses": "actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02"
+        }
+      ],
+      "strategy": null,
+      "timeout_minutes": "360",
+      "top_level_audited_source": true,
+      "uses": null,
+      "workflow": ".github/workflows/hepta-memory-strong-rag.yml",
+      "workflow_resource_env": {},
+      "workflow_sha256": "6506160ee422e2faaaafbb15a138dee4c0be4f81e17f9be5e0abdba8e0adfe09"
+    },
+    {
+      "container": null,
+      "job": "independent-replay",
+      "job_if": "needs.reader.result == 'success'",
+      "job_resource_env": {},
+      "measured_memory_bytes": null,
+      "model_execution_review": "Original Qwen experiment or its validation job; included as excluded owner-push counterexample, not a trigger admitted here.",
+      "needs": "reader",
+      "permissions": {
+        "actions": "read",
+        "contents": "read"
+      },
+      "runs_on": "ubuntu-latest",
+      "services": null,
+      "steps": [
+        {
+          "if": null,
+          "index": 0,
+          "name": null,
+          "resource_env": {},
+          "uses": "actions/checkout@11d5960a326750d5838078e36cf38b85af677262"
+        },
+        {
+          "if": null,
+          "index": 1,
+          "name": null,
+          "resource_env": {},
+          "uses": "actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093"
+        },
+        {
+          "if": null,
+          "index": 2,
+          "model_related_source_lines": [],
+          "name": "Verify the original input artifact ZIP and every inner file",
+          "resource_env": {},
+          "run_bytes": 1676,
+          "run_sha256": "b86f8f37a81e1d1ad52e608083e0791e867f5da02b612367c55c3e569090efc7",
+          "uses": null
+        },
+        {
+          "if": null,
+          "index": 3,
+          "model_related_source_lines": [],
+          "name": "Regression tests and separate-process replay of original model answers",
+          "resource_env": {},
+          "run_bytes": 1179,
+          "run_sha256": "52abfdfd40965c6f40daffa16f53c1da7e2246e3952084340bf23f24cb301fac",
+          "uses": null
+        },
+        {
+          "if": "always()",
+          "index": 4,
+          "name": null,
+          "resource_env": {},
+          "uses": "actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02"
+        }
+      ],
+      "strategy": null,
+      "timeout_minutes": "20",
+      "top_level_audited_source": true,
+      "uses": null,
+      "workflow": ".github/workflows/hepta-memory-strong-rag.yml",
+      "workflow_resource_env": {},
+      "workflow_sha256": "6506160ee422e2faaaafbb15a138dee4c0be4f81e17f9be5e0abdba8e0adfe09"
+    },
+    {
+      "container": null,
+      "job": "metadata",
+      "job_if": null,
+      "job_resource_env": {},
+      "measured_memory_bytes": null,
+      "model_execution_review": "No exhaustive inference from script/test names; exact commands are bound by hashes to archived workflow source. Job conditions are not evaluated here.",
+      "needs": null,
+      "permissions": {
+        "contents": "read"
+      },
+      "runs_on": "ubuntu-latest",
+      "services": null,
+      "steps": [
+        {
+          "if": null,
+          "index": 0,
+          "name": null,
+          "resource_env": {},
+          "uses": "actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd"
+        },
+        {
+          "if": null,
+          "index": 1,
+          "name": "Set up Python",
+          "resource_env": {},
+          "uses": "actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405"
+        },
+        {
+          "if": null,
+          "index": 2,
+          "model_related_source_lines": [],
+          "name": "Resolve exact v8 crate version",
+          "resource_env": {},
+          "run_bytes": 145,
+          "run_sha256": "d1c01866f3e7e9a9121e9e55d35c3262584f65da0b51a2d58a89f8a276b71cf5",
+          "uses": null
+        },
+        {
+          "if": null,
+          "index": 3,
+          "model_related_source_lines": [],
+          "name": "Detect V8 canary changes",
+          "resource_env": {},
+          "run_bytes": 447,
+          "run_sha256": "8c014bb6809a2eb77b52d769b157fa19cc9ef85107a5f0a176e84dea037b44c5",
+          "uses": null
+        },
+        {
+          "if": "always() && !cancelled()",
+          "index": 4,
+          "name": "Check for a clean worktree",
+          "resource_env": {},
+          "uses": "./.github/actions/check-clean-worktree"
+        }
+      ],
+      "strategy": null,
+      "timeout_minutes": "30",
+      "top_level_audited_source": true,
+      "uses": null,
+      "workflow": ".github/workflows/v8-canary.yml",
+      "workflow_resource_env": {},
+      "workflow_sha256": "2516afbaa5538004406c0d92179665aba1b541e68944df53ad71d674ecd89cd4"
+    },
+    {
+      "container": null,
+      "job": "build",
+      "job_if": "${{ needs.metadata.outputs.canary_required == 'true' }}",
+      "job_resource_env": {},
+      "measured_memory_bytes": null,
+      "model_execution_review": "No exhaustive inference from script/test names; exact commands are bound by hashes to archived workflow source. Job conditions are not evaluated here.",
+      "needs": "metadata",
+      "permissions": {
+        "actions": "read",
+        "contents": "read"
+      },
+      "runs_on": "${{ matrix.runner }}",
+      "services": null,
+      "steps": [
+        {
+          "if": null,
+          "index": 0,
+          "name": null,
+          "resource_env": {},
+          "uses": "actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd"
+        },
+        {
+          "if": null,
+          "index": 1,
+          "name": "Set up Bazel",
+          "resource_env": {},
+          "uses": "./.github/actions/setup-bazel-ci"
+        },
+        {
+          "if": null,
+          "index": 2,
+          "name": "Set up Python",
+          "resource_env": {},
+          "uses": "actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405"
+        },
+        {
+          "if": null,
+          "index": 3,
+          "name": "Set up Rust toolchain for Cargo smoke",
+          "resource_env": {},
+          "uses": "dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582"
+        },
+        {
+          "if": null,
+          "index": 4,
+          "model_related_source_lines": [],
+          "name": "Pin installed Cargo binary",
+          "resource_env": {},
+          "run_bytes": 357,
+          "run_sha256": "bd8f77528a5cf74ed4c18d70ec1a2f608010ee8b972c955bc67a65420510ec47",
+          "uses": null
+        },
+        {
+          "if": null,
+          "index": 5,
+          "model_related_source_lines": [],
+          "name": "Build Bazel V8 release pair",
+          "resource_env": {},
+          "run_bytes": 1158,
+          "run_sha256": "e0b16fdea2c1df12398a7d9f29fa3c3dfd6ecdb54e6d3acf68255c936fbd456b",
+          "uses": null
+        },
+        {
+          "if": null,
+          "index": 6,
+          "model_related_source_lines": [],
+          "name": "Stage release pair",
+          "resource_env": {},
+          "run_bytes": 392,
+          "run_sha256": "37ec69a2c1b6919a940be3f8b9e7be7e2c371f8a0c1cb5e0275ece8465f3649b",
+          "uses": null
+        },
+        {
+          "if": null,
+          "index": 7,
+          "model_related_source_lines": [],
+          "name": "Smoke test staged artifact with Cargo",
+          "resource_env": {},
+          "run_bytes": 985,
+          "run_sha256": "da796c5909abbe7c0c6e7c870f5af1caace702bf0748d6fe2353330549471e6f",
+          "uses": null
+        },
+        {
+          "if": null,
+          "index": 8,
+          "name": "Upload staged artifacts",
+          "resource_env": {},
+          "uses": "actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f"
+        },
+        {
+          "if": "always() && !cancelled()",
+          "index": 9,
+          "name": "Check for a clean worktree",
+          "resource_env": {},
+          "uses": "./.github/actions/check-clean-worktree"
+        }
+      ],
+      "strategy": {
+        "fail-fast": "false",
+        "matrix": {
+          "include": [
+            {
+              "bazel_config": "ci-v8",
+              "platform": "linux_amd64",
+              "runner": "ubuntu-24.04",
+              "sandbox": "false",
+              "target": "x86_64-unknown-linux-gnu",
+              "v8_cpu": "x64",
+              "variant": "release"
+            },
+            {
+              "bazel_config": "ci-v8",
+              "platform": "linux_amd64",
+              "runner": "ubuntu-24.04",
+              "sandbox": "true",
+              "target": "x86_64-unknown-linux-gnu",
+              "v8_cpu": "x64",
+              "variant": "ptrcomp-sandbox"
+            },
+            {
+              "bazel_config": "ci-v8",
+              "platform": "linux_arm64",
+              "runner": "ubuntu-24.04-arm",
+              "sandbox": "false",
+              "target": "aarch64-unknown-linux-gnu",
+              "v8_cpu": "arm64",
+              "variant": "release"
+            },
+            {
+              "bazel_config": "ci-v8",
+              "platform": "linux_arm64",
+              "runner": "ubuntu-24.04-arm",
+              "sandbox": "true",
+              "target": "aarch64-unknown-linux-gnu",
+              "v8_cpu": "arm64",
+              "variant": "ptrcomp-sandbox"
+            },
+            {
+              "bazel_config": "ci-macos",
+              "platform": "macos_amd64",
+              "runner": "macos-15-intel",
+              "sandbox": "false",
+              "target": "x86_64-apple-darwin",
+              "v8_cpu": "x64",
+              "variant": "release"
+            },
+            {
+              "bazel_config": "ci-macos",
+              "platform": "macos_amd64",
+              "runner": "macos-15-intel",
+              "sandbox": "true",
+              "target": "x86_64-apple-darwin",
+              "v8_cpu": "x64",
+              "variant": "ptrcomp-sandbox"
+            },
+            {
+              "bazel_config": "ci-macos",
+              "platform": "macos_arm64",
+              "runner": "macos-15",
+              "sandbox": "false",
+              "target": "aarch64-apple-darwin",
+              "v8_cpu": "arm64",
+              "variant": "release"
+            },
+            {
+              "bazel_config": "ci-macos",
+              "platform": "macos_arm64",
+              "runner": "macos-15",
+              "sandbox": "true",
+              "target": "aarch64-apple-darwin",
+              "v8_cpu": "arm64",
+              "variant": "ptrcomp-sandbox"
+            },
+            {
+              "bazel_config": "ci-v8",
+              "platform": "linux_amd64_musl",
+              "runner": "ubuntu-24.04",
+              "sandbox": "false",
+              "target": "x86_64-unknown-linux-musl",
+              "v8_cpu": "x64",
+              "variant": "release"
+            },
+            {
+              "bazel_config": "ci-v8",
+              "platform": "linux_amd64_musl",
+              "runner": "ubuntu-24.04",
+              "sandbox": "true",
+              "target": "x86_64-unknown-linux-musl",
+              "v8_cpu": "x64",
+              "variant": "ptrcomp-sandbox"
+            },
+            {
+              "bazel_config": "ci-v8",
+              "platform": "linux_arm64_musl",
+              "runner": "ubuntu-24.04-arm",
+              "sandbox": "false",
+              "target": "aarch64-unknown-linux-musl",
+              "v8_cpu": "arm64",
+              "variant": "release"
+            },
+            {
+              "bazel_config": "ci-v8",
+              "platform": "linux_arm64_musl",
+              "runner": "ubuntu-24.04-arm",
+              "sandbox": "true",
+              "target": "aarch64-unknown-linux-musl",
+              "v8_cpu": "arm64",
+              "variant": "ptrcomp-sandbox"
+            }
+          ]
+        }
+      },
+      "timeout_minutes": "30",
+      "top_level_audited_source": true,
+      "uses": null,
+      "workflow": ".github/workflows/v8-canary.yml",
+      "workflow_resource_env": {},
+      "workflow_sha256": "2516afbaa5538004406c0d92179665aba1b541e68944df53ad71d674ecd89cd4"
+    },
+    {
+      "container": null,
+      "job": "build-windows-source",
+      "job_if": "${{ needs.metadata.outputs.windows_source_required == 'true' }}",
+      "job_resource_env": {},
+      "measured_memory_bytes": null,
+      "model_execution_review": "No exhaustive inference from script/test names; exact commands are bound by hashes to archived workflow source. Job conditions are not evaluated here.",
+      "needs": "metadata",
+      "permissions": {
+        "contents": "read"
+      },
+      "runs_on": "${{ matrix.runner }}",
+      "services": null,
+      "steps": [
+        {
+          "if": null,
+          "index": 0,
+          "name": null,
+          "resource_env": {},
+          "uses": "actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd"
+        },
+        {
+          "if": null,
+          "index": 1,
+          "name": null,
+          "resource_env": {},
+          "uses": "./.github/actions/setup-ci"
+        },
+        {
+          "if": null,
+          "index": 2,
+          "model_related_source_lines": [],
+          "name": "Configure git for upstream checkout",
+          "resource_env": {},
+          "run_bytes": 38,
+          "run_sha256": "05f1ea046d012e40e10c8c36ab1574d762e9a4452f63e50c4a0930aa6688c33a",
+          "uses": null
+        },
+        {
+          "if": null,
+          "index": 3,
+          "name": "Check out upstream rusty_v8",
+          "resource_env": {},
+          "uses": "actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd"
+        },
+        {
+          "if": null,
+          "index": 4,
+          "name": "Set up Python",
+          "resource_env": {},
+          "uses": "actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405"
+        },
+        {
+          "if": null,
+          "index": 5,
+          "name": "Set up Codex Rust toolchain for Cargo smoke",
+          "resource_env": {},
+          "uses": "dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582"
+        },
+        {
+          "if": null,
+          "index": 6,
+          "model_related_source_lines": [],
+          "name": "Install rusty_v8 Rust toolchain",
+          "resource_env": {},
+          "run_bytes": 134,
+          "run_sha256": "a55b017cc60cd61d83c0cb0a09ff1bdc9a5984e0ce43d097466f240b5b5bdac7",
+          "uses": null
+        },
+        {
+          "if": null,
+          "index": 7,
+          "model_related_source_lines": [],
+          "name": "Write upstream submodule status",
+          "resource_env": {},
+          "run_bytes": 59,
+          "run_sha256": "e85446911da7eecae88a131cce5c3fcf96ef96430f82a48c8c23ed0d82596abe",
+          "uses": null
+        },
+        {
+          "if": null,
+          "index": 8,
+          "name": "Restore upstream source-build cache",
+          "resource_env": {},
+          "uses": "actions/cache@668228422ae6a00e4ad889ee87cd7109ec5666a7"
+        },
+        {
+          "if": null,
+          "index": 9,
+          "model_related_source_lines": [],
+          "name": "Install and start sccache",
+          "resource_env": {},
+          "run_bytes": 354,
+          "run_sha256": "ad17ad2c3dafb5408550bc50c3f25004e1594168294fbf98ab16aa3af1123d08",
+          "uses": null
+        },
+        {
+          "if": "matrix.target == 'aarch64-pc-windows-msvc'",
+          "index": 10,
+          "model_related_source_lines": [],
+          "name": "Install Chromium clang for ARM64 MSVC cross build",
+          "resource_env": {},
+          "run_bytes": 37,
+          "run_sha256": "4450947736c24a46e07bade032e3b75c29515fba07a2e7b730ea30255ee2e976",
+          "uses": null
+        },
+        {
+          "if": null,
+          "index": 11,
+          "model_related_source_lines": [],
+          "name": "Build upstream rusty_v8 sandbox release pair",
+          "resource_env": {},
+          "run_bytes": 88,
+          "run_sha256": "a7047381f17db07b3acdbf8b23edc66f472e01afb7ad7b09919566cf8c0e1229",
+          "uses": null
+        },
+        {
+          "if": null,
+          "index": 12,
+          "model_related_source_lines": [],
+          "name": "Stage upstream sandbox release pair",
+          "resource_env": {},
+          "run_bytes": 200,
+          "run_sha256": "e641495267486242b061c6850aba4ef8cc6a9d0f8611891068985bcb66e83c4e",
+          "uses": null
+        },
+        {
+          "if": null,
+          "index": 13,
+          "model_related_source_lines": [],
+          "name": "Smoke link staged artifact with Cargo",
+          "resource_env": {},
+          "run_bytes": 552,
+          "run_sha256": "7d659ce3cb305798e088d57d7094c37c63323b0780a83a2066167ca4acc1818c",
+          "uses": null
+        },
+        {
+          "if": null,
+          "index": 14,
+          "name": "Upload staged artifacts",
+          "resource_env": {},
+          "uses": "actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f"
+        },
+        {
+          "if": "always() && !cancelled()",
+          "index": 15,
+          "name": "Check for a clean worktree",
+          "resource_env": {},
+          "uses": "./.github/actions/check-clean-worktree"
+        }
+      ],
+      "strategy": {
+        "fail-fast": "false",
+        "matrix": {
+          "include": [
+            {
+              "runner": "windows-2025",
+              "target": "x86_64-pc-windows-msvc"
+            },
+            {
+              "runner": "windows-2025",
+              "target": "aarch64-pc-windows-msvc"
+            }
+          ]
+        }
+      },
+      "timeout_minutes": "30",
+      "top_level_audited_source": true,
+      "uses": null,
+      "workflow": ".github/workflows/v8-canary.yml",
+      "workflow_resource_env": {},
+      "workflow_sha256": "2516afbaa5538004406c0d92179665aba1b541e68944df53ad71d674ecd89cd4"
+    },
+    {
+      "container": null,
+      "job": "contract",
+      "job_if": null,
+      "job_resource_env": {},
+      "measured_memory_bytes": null,
+      "model_execution_review": "No exhaustive inference from script/test names; exact commands are bound by hashes to archived workflow source. Job conditions are not evaluated here.",
+      "needs": null,
+      "permissions": {
+        "contents": "read"
+      },
+      "runs_on": "ubuntu-24.04",
+      "services": null,
+      "steps": [
+        {
+          "if": null,
+          "index": 0,
+          "name": "Check out repository",
+          "resource_env": {},
+          "uses": "actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd"
+        },
+        {
+          "if": null,
+          "index": 1,
+          "model_related_source_lines": [],
+          "name": "Validate branch policy",
+          "resource_env": {},
+          "run_bytes": 687,
+          "run_sha256": "1e2ffdaadfeb84f558800fb998b7547d37b416796e0d15faa8c6cf7c9bdb8bc2",
+          "uses": null
+        },
+        {
+          "if": null,
+          "index": 2,
+          "model_related_source_lines": [],
+          "name": "Validate canonical contract and readiness documents",
+          "resource_env": {},
+          "run_bytes": 592,
+          "run_sha256": "66fcaf500d96a37708e2f7fceb79dcaef25ba018c774fb226735539ceab27e02",
+          "uses": null
+        }
+      ],
+      "strategy": null,
+      "timeout_minutes": "15",
+      "top_level_audited_source": false,
+      "uses": null,
+      "workflow": ".github/workflows/hepta-contract-gate.yml",
+      "workflow_resource_env": {},
+      "workflow_sha256": "61faff97c373308ded3cde266cad512c3f8795db2646f1a77779a7c8b46aa7f9"
+    },
+    {
+      "container": null,
+      "job": "test",
+      "job_if": null,
+      "job_resource_env": {},
+      "measured_memory_bytes": null,
+      "model_execution_review": "No exhaustive inference from script/test names; exact commands are bound by hashes to archived workflow source. Job conditions are not evaluated here.",
+      "needs": null,
+      "permissions": {
+        "contents": "read"
+      },
+      "runs_on": "${{ matrix.os }}",
+      "services": null,
+      "steps": [
+        {
+          "if": null,
+          "index": 0,
+          "name": null,
+          "resource_env": {},
+          "uses": "actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd"
+        },
+        {
+          "if": null,
+          "index": 1,
+          "name": "Prepare Bazel CI",
+          "resource_env": {},
+          "uses": "./.github/actions/prepare-bazel-ci"
+        },
+        {
+          "if": "matrix.os == 'ubuntu-24.04' && matrix.target == 'x86_64-unknown-linux-gnu'",
+          "index": 2,
+          "model_related_source_lines": [],
+          "name": "Check rusty_v8 MODULE.bazel checksums",
+          "resource_env": {},
+          "run_bytes": 86,
+          "run_sha256": "12599994332ba7b7e06c55fa079861d1b4f5185f2e8755b154163b18fefceea6",
+          "uses": null
+        },
+        {
+          "if": "matrix.os == 'ubuntu-24.04' && matrix.target == 'x86_64-unknown-linux-gnu'",
+          "index": 3,
+          "model_related_source_lines": [],
+          "name": "Check MODULE.bazel.lock is up to date",
+          "resource_env": {},
+          "run_bytes": 36,
+          "run_sha256": "ef1fa6914bf5354671ea88d75367383d7eca4e6b688f84d2b6cc803c91d221ee",
+          "uses": null
+        },
+        {
+          "if": null,
+          "index": 4,
+          "model_related_source_lines": [],
+          "name": "bazel test //...",
+          "resource_env": {},
+          "run_bytes": 620,
+          "run_sha256": "b097652066dc78b8d4bb2ecf7a3b267ee98c5412047a50af8b295f7912551ee3",
+          "uses": null
+        },
+        {
+          "if": "always() && !cancelled()",
+          "index": 5,
+          "name": "Upload Bazel execution logs",
+          "resource_env": {},
+          "uses": "actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f"
+        },
+        {
+          "if": "always() && !cancelled() && steps.prepare_bazel.outputs.repository-cache-hit != 'true'",
+          "index": 6,
+          "name": "Save bazel repository cache",
+          "resource_env": {},
+          "uses": "actions/cache/save@668228422ae6a00e4ad889ee87cd7109ec5666a7"
+        },
+        {
+          "if": "always() && !cancelled()",
+          "index": 7,
+          "name": "Check for a clean worktree",
+          "resource_env": {},
+          "uses": "./.github/actions/check-clean-worktree"
+        }
+      ],
+      "strategy": {
+        "fail-fast": "false",
+        "matrix": {
+          "include": [
+            {
+              "os": "macos-15",
+              "target": "aarch64-apple-darwin"
+            },
+            {
+              "os": "macos-15-intel",
+              "target": "x86_64-apple-darwin"
+            },
+            {
+              "os": "ubuntu-24.04",
+              "target": "x86_64-unknown-linux-gnu"
+            },
+            {
+              "os": "ubuntu-24.04",
+              "target": "x86_64-unknown-linux-musl"
+            }
+          ]
+        }
+      },
+      "timeout_minutes": "60",
+      "top_level_audited_source": false,
+      "uses": null,
+      "workflow": ".github/workflows/bazel.yml",
+      "workflow_resource_env": {},
+      "workflow_sha256": "74885aee0928242267bad1d3c9dbc57dd418b7abe5794b329ac87669091585ae"
+    },
+    {
+      "container": null,
+      "job": "test-windows-shard",
+      "job_if": null,
+      "job_resource_env": {},
+      "measured_memory_bytes": null,
+      "model_execution_review": "No exhaustive inference from script/test names; exact commands are bound by hashes to archived workflow source. Job conditions are not evaluated here.",
+      "needs": null,
+      "permissions": {
+        "contents": "read"
+      },
+      "runs_on": "windows-latest",
+      "services": null,
+      "steps": [
+        {
+          "if": null,
+          "index": 0,
+          "name": null,
+          "resource_env": {},
+          "uses": "actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd"
+        },
+        {
+          "if": "matrix.shard == 1",
+          "index": 1,
+          "model_related_source_lines": [],
+          "name": "Test BuildBuddy Bazel wrapper",
+          "resource_env": {},
+          "run_bytes": 70,
+          "run_sha256": "4a96269a1eb6631500d09bc3dccee1af3f0e9f734ea8de341e613e0c5c695144",
+          "uses": null
+        },
+        {
+          "if": null,
+          "index": 2,
+          "name": "Prepare Bazel CI",
+          "resource_env": {},
+          "uses": "./.github/actions/prepare-bazel-ci"
+        },
+        {
+          "if": "matrix.shard == 1",
+          "index": 3,
+          "model_related_source_lines": [],
+          "name": "Smoke test the native MSVC header parser",
+          "resource_env": {},
+          "run_bytes": 63,
+          "run_sha256": "6d840d70b22213efb6c6a24d40f274016d4b6acd1b0f08fab698ab340fb97822",
+          "uses": null
+        },
+        {
+          "if": null,
+          "index": 4,
+          "model_related_source_lines": [],
+          "name": "bazel test shard",
+          "resource_env": {},
+          "run_bytes": 1450,
+          "run_sha256": "eb3471ee023d8fdc7c245911cccc00aca5d65521ccd534115abc5b1482395a91",
+          "uses": null
+        },
+        {
+          "if": "always() && !cancelled()",
+          "index": 5,
+          "name": "Upload Bazel execution logs",
+          "resource_env": {},
+          "uses": "actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f"
+        },
+        {
+          "if": "always() && !cancelled()",
+          "index": 6,
+          "name": "Check for a clean worktree",
+          "resource_env": {},
+          "uses": "./.github/actions/check-clean-worktree"
+        }
+      ],
+      "strategy": {
+        "fail-fast": "false",
+        "matrix": {
+          "shard": [
+            "1",
+            "2",
+            "3",
+            "4"
+          ]
+        }
+      },
+      "timeout_minutes": "60",
+      "top_level_audited_source": false,
+      "uses": null,
+      "workflow": ".github/workflows/bazel.yml",
+      "workflow_resource_env": {},
+      "workflow_sha256": "74885aee0928242267bad1d3c9dbc57dd418b7abe5794b329ac87669091585ae"
+    },
+    {
+      "container": null,
+      "job": "test-windows",
+      "job_if": "always()",
+      "job_resource_env": {},
+      "measured_memory_bytes": null,
+      "model_execution_review": "No exhaustive inference from script/test names; exact commands are bound by hashes to archived workflow source. Job conditions are not evaluated here.",
+      "needs": "test-windows-shard",
+      "permissions": {
+        "contents": "read"
+      },
+      "runs_on": "ubuntu-24.04",
+      "services": null,
+      "steps": [
+        {
+          "if": null,
+          "index": 0,
+          "model_related_source_lines": [],
+          "name": "Confirm Windows Bazel test shards passed",
+          "resource_env": {},
+          "run_bytes": 181,
+          "run_sha256": "86e350994fbcae58256dd96a9a3ddaa4ad2855b150c65a11e597fd90bc769c0b",
+          "uses": null
+        }
+      ],
+      "strategy": null,
+      "timeout_minutes": "30",
+      "top_level_audited_source": false,
+      "uses": null,
+      "workflow": ".github/workflows/bazel.yml",
+      "workflow_resource_env": {},
+      "workflow_sha256": "74885aee0928242267bad1d3c9dbc57dd418b7abe5794b329ac87669091585ae"
+    },
+    {
+      "container": null,
+      "job": "test-windows-native-main",
+      "job_if": "github.event_name == 'push' && github.ref == 'refs/heads/main'",
+      "job_resource_env": {},
+      "measured_memory_bytes": null,
+      "model_execution_review": "No exhaustive inference from script/test names; exact commands are bound by hashes to archived workflow source. Job conditions are not evaluated here.",
+      "needs": null,
+      "permissions": {
+        "contents": "read"
+      },
+      "runs_on": "windows-latest",
+      "services": null,
+      "steps": [
+        {
+          "if": null,
+          "index": 0,
+          "name": null,
+          "resource_env": {},
+          "uses": "actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd"
+        },
+        {
+          "if": null,
+          "index": 1,
+          "name": "Prepare Bazel CI",
+          "resource_env": {},
+          "uses": "./.github/actions/prepare-bazel-ci"
+        },
+        {
+          "if": null,
+          "index": 2,
+          "model_related_source_lines": [],
+          "name": "bazel test //...",
+          "resource_env": {},
+          "run_bytes": 689,
+          "run_sha256": "b2494b1cb69afc59db03bf4f6a6839b9e4f640d2dbc91c2f1b86cbb78a850826",
+          "uses": null
+        },
+        {
+          "if": "always() && !cancelled()",
+          "index": 3,
+          "name": "Upload Bazel execution logs",
+          "resource_env": {},
+          "uses": "actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f"
+        },
+        {
+          "if": "always() && !cancelled() && steps.prepare_bazel.outputs.repository-cache-hit != 'true'",
+          "index": 4,
+          "name": "Save bazel repository cache",
+          "resource_env": {},
+          "uses": "actions/cache/save@668228422ae6a00e4ad889ee87cd7109ec5666a7"
+        },
+        {
+          "if": "always() && !cancelled()",
+          "index": 5,
+          "name": "Check for a clean worktree",
+          "resource_env": {},
+          "uses": "./.github/actions/check-clean-worktree"
+        }
+      ],
+      "strategy": null,
+      "timeout_minutes": "40",
+      "top_level_audited_source": false,
+      "uses": null,
+      "workflow": ".github/workflows/bazel.yml",
+      "workflow_resource_env": {},
+      "workflow_sha256": "74885aee0928242267bad1d3c9dbc57dd418b7abe5794b329ac87669091585ae"
+    },
+    {
+      "container": null,
+      "job": "clippy",
+      "job_if": null,
+      "job_resource_env": {},
+      "measured_memory_bytes": null,
+      "model_execution_review": "No exhaustive inference from script/test names; exact commands are bound by hashes to archived workflow source. Job conditions are not evaluated here.",
+      "needs": null,
+      "permissions": {
+        "contents": "read"
+      },
+      "runs_on": "${{ matrix.runs_on || matrix.os }}",
+      "services": null,
+      "steps": [
+        {
+          "if": null,
+          "index": 0,
+          "name": null,
+          "resource_env": {},
+          "uses": "actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd"
+        },
+        {
+          "if": null,
+          "index": 1,
+          "name": "Prepare Bazel CI",
+          "resource_env": {},
+          "uses": "./.github/actions/prepare-bazel-ci"
+        },
+        {
+          "if": null,
+          "index": 2,
+          "model_related_source_lines": [],
+          "name": "bazel build --config=clippy lint targets",
+          "resource_env": {},
+          "run_bytes": 890,
+          "run_sha256": "f7d9dad664e0e0e6c16b0af31a48957cc41fba57b8346ba2ece6f784bd207219",
+          "uses": null
+        },
+        {
+          "if": "always() && !cancelled()",
+          "index": 3,
+          "name": "Upload Bazel execution logs",
+          "resource_env": {},
+          "uses": "actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f"
+        },
+        {
+          "if": "always() && !cancelled() && steps.prepare_bazel.outputs.repository-cache-hit != 'true'",
+          "index": 4,
+          "name": "Save bazel repository cache",
+          "resource_env": {},
+          "uses": "actions/cache/save@668228422ae6a00e4ad889ee87cd7109ec5666a7"
+        },
+        {
+          "if": "always() && !cancelled()",
+          "index": 5,
+          "name": "Check for a clean worktree",
+          "resource_env": {},
+          "uses": "./.github/actions/check-clean-worktree"
+        }
+      ],
+      "strategy": {
+        "fail-fast": "false",
+        "matrix": {
+          "include": [
+            {
+              "os": "ubuntu-24.04",
+              "target": "x86_64-unknown-linux-gnu"
+            },
+            {
+              "os": "macos-15",
+              "target": "aarch64-apple-darwin"
+            },
+            {
+              "os": "windows-latest",
+              "target": "x86_64-pc-windows-msvc"
+            }
+          ]
+        }
+      },
+      "timeout_minutes": "60",
+      "top_level_audited_source": false,
+      "uses": null,
+      "workflow": ".github/workflows/bazel.yml",
+      "workflow_resource_env": {},
+      "workflow_sha256": "74885aee0928242267bad1d3c9dbc57dd418b7abe5794b329ac87669091585ae"
+    },
+    {
+      "container": null,
+      "job": "verify-release-build",
+      "job_if": null,
+      "job_resource_env": {},
+      "measured_memory_bytes": null,
+      "model_execution_review": "No exhaustive inference from script/test names; exact commands are bound by hashes to archived workflow source. Job conditions are not evaluated here.",
+      "needs": null,
+      "permissions": {
+        "contents": "read"
+      },
+      "runs_on": "${{ matrix.runs_on || matrix.os }}",
+      "services": null,
+      "steps": [
+        {
+          "if": null,
+          "index": 0,
+          "name": null,
+          "resource_env": {},
+          "uses": "actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd"
+        },
+        {
+          "if": null,
+          "index": 1,
+          "name": "Prepare Bazel CI",
+          "resource_env": {},
+          "uses": "./.github/actions/prepare-bazel-ci"
+        },
+        {
+          "if": null,
+          "index": 2,
+          "model_related_source_lines": [],
+          "name": "bazel build verify-release-build targets",
+          "resource_env": {},
+          "run_bytes": 1332,
+          "run_sha256": "e4f5c2437bac4d1d9d7e2ebf518fecc369f55e46005567678e86b1320d577219",
+          "uses": null
+        },
+        {
+          "if": "runner.os == 'Linux'",
+          "index": 3,
+          "model_related_source_lines": [],
+          "name": "Verify Bazel builds bwrap",
+          "resource_env": {},
+          "run_bytes": 238,
+          "run_sha256": "275fdeaddb2dfff209e5657753b4c4a2d0a13ba7564ffe0ce2a01932473706fd",
+          "uses": null
+        },
+        {
+          "if": "always() && !cancelled()",
+          "index": 4,
+          "name": "Upload Bazel execution logs",
+          "resource_env": {},
+          "uses": "actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f"
+        },
+        {
+          "if": "always() && !cancelled() && steps.prepare_bazel.outputs.repository-cache-hit != 'true'",
+          "index": 5,
+          "name": "Save bazel repository cache",
+          "resource_env": {},
+          "uses": "actions/cache/save@668228422ae6a00e4ad889ee87cd7109ec5666a7"
+        },
+        {
+          "if": "always() && !cancelled()",
+          "index": 6,
+          "name": "Check for a clean worktree",
+          "resource_env": {},
+          "uses": "./.github/actions/check-clean-worktree"
+        }
+      ],
+      "strategy": {
+        "fail-fast": "false",
+        "matrix": {
+          "include": [
+            {
+              "os": "ubuntu-24.04",
+              "target": "x86_64-unknown-linux-gnu"
+            },
+            {
+              "os": "macos-15",
+              "target": "aarch64-apple-darwin"
+            },
+            {
+              "os": "windows-latest",
+              "target": "x86_64-pc-windows-msvc"
+            }
+          ]
+        }
+      },
+      "timeout_minutes": "60",
+      "top_level_audited_source": false,
+      "uses": null,
+      "workflow": ".github/workflows/bazel.yml",
+      "workflow_resource_env": {},
+      "workflow_sha256": "74885aee0928242267bad1d3c9dbc57dd418b7abe5794b329ac87669091585ae"
+    },
+    {
+      "container": null,
+      "job": "check",
+      "job_if": null,
+      "job_resource_env": {},
+      "measured_memory_bytes": null,
+      "model_execution_review": "No exhaustive inference from script/test names; exact commands are bound by hashes to archived workflow source. Job conditions are not evaluated here.",
+      "needs": null,
+      "permissions": {
+        "contents": "read"
+      },
+      "runs_on": "ubuntu-24.04",
+      "services": null,
+      "steps": [
+        {
+          "if": null,
+          "index": 0,
+          "name": null,
+          "resource_env": {},
+          "uses": "openai/fence@e6b39c80c51cb2b2a39448ddeff74b3b886c0a63"
+        },
+        {
+          "if": null,
+          "index": 1,
+          "name": null,
+          "resource_env": {},
+          "uses": "actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd"
+        },
+        {
+          "if": null,
+          "index": 2,
+          "model_related_source_lines": [],
+          "name": "Determine comparison range",
+          "resource_env": {},
+          "run_bytes": 468,
+          "run_sha256": "b863a841e437d0d1f601d0197e15bb76e9df1f0c98c3db500c5d733497ede05c",
+          "uses": null
+        },
+        {
+          "if": null,
+          "index": 3,
+          "model_related_source_lines": [],
+          "name": "Check changed blob sizes",
+          "resource_env": {},
+          "run_bytes": 152,
+          "run_sha256": "023a1dd2dc5be6ba229792743b9f9578212ecebfcf0c7f9eae99d2daff50cb01",
+          "uses": null
+        },
+        {
+          "if": "always() && !cancelled()",
+          "index": 4,
+          "name": "Check for a clean worktree",
+          "resource_env": {},
+          "uses": "./.github/actions/check-clean-worktree"
+        }
+      ],
+      "strategy": null,
+      "timeout_minutes": "30",
+      "top_level_audited_source": false,
+      "uses": null,
+      "workflow": ".github/workflows/blob-size-policy.yml",
+      "workflow_resource_env": {},
+      "workflow_sha256": "f0860d9723edf6d6a0a701bac787582c7998fd920eb91b23de4288b30ac5a53a"
+    },
+    {
+      "container": null,
+      "job": "cargo-deny",
+      "job_if": null,
+      "job_resource_env": {},
+      "measured_memory_bytes": null,
+      "model_execution_review": "No exhaustive inference from script/test names; exact commands are bound by hashes to archived workflow source. Job conditions are not evaluated here.",
+      "needs": null,
+      "permissions": {
+        "contents": "read"
+      },
+      "runs_on": "ubuntu-latest",
+      "services": null,
+      "steps": [
+        {
+          "if": null,
+          "index": 0,
+          "name": "Checkout",
+          "resource_env": {},
+          "uses": "actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd"
+        },
+        {
+          "if": null,
+          "index": 1,
+          "name": null,
+          "resource_env": {},
+          "uses": "./.github/actions/setup-ci-build"
+        },
+        {
+          "if": null,
+          "index": 2,
+          "name": "Install Rust toolchain",
+          "resource_env": {},
+          "uses": "dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582"
+        },
+        {
+          "if": null,
+          "index": 3,
+          "name": "Run cargo-deny",
+          "resource_env": {},
+          "uses": "EmbarkStudios/cargo-deny-action@82eb9f621fbc699dd0918f3ea06864c14cc84246"
+        },
+        {
+          "if": "always() && !cancelled()",
+          "index": 4,
+          "name": "Check for a clean worktree",
+          "resource_env": {},
+          "uses": "./.github/actions/check-clean-worktree"
+        }
+      ],
+      "strategy": null,
+      "timeout_minutes": "30",
+      "top_level_audited_source": false,
+      "uses": null,
+      "workflow": ".github/workflows/cargo-deny.yml",
+      "workflow_resource_env": {},
+      "workflow_sha256": "e01faafdaa914009b834ad07ad3a46137eac70b2874d88182a46cd24f100e843"
+    },
+    {
+      "container": null,
+      "job": "codespell",
+      "job_if": null,
+      "job_resource_env": {},
+      "measured_memory_bytes": null,
+      "model_execution_review": "No exhaustive inference from script/test names; exact commands are bound by hashes to archived workflow source. Job conditions are not evaluated here.",
+      "needs": null,
+      "permissions": {
+        "contents": "read"
+      },
+      "runs_on": "ubuntu-latest",
+      "services": null,
+      "steps": [
+        {
+          "if": null,
+          "index": 0,
+          "name": "Checkout",
+          "resource_env": {},
+          "uses": "actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd"
+        },
+        {
+          "if": null,
+          "index": 1,
+          "name": "Annotate locations with typos",
+          "resource_env": {},
+          "uses": "codespell-project/codespell-problem-matcher@b80729f885d32f78a716c2f107b4db1025001c42"
+        },
+        {
+          "if": null,
+          "index": 2,
+          "name": "Codespell",
+          "resource_env": {},
+          "uses": "codespell-project/actions-codespell@8f01853be192eb0f849a5c7d721450e7a467c579"
+        },
+        {
+          "if": "always() && !cancelled()",
+          "index": 3,
+          "name": "Check for a clean worktree",
+          "resource_env": {},
+          "uses": "./.github/actions/check-clean-worktree"
+        }
+      ],
+      "strategy": null,
+      "timeout_minutes": "30",
+      "top_level_audited_source": false,
+      "uses": null,
+      "workflow": ".github/workflows/codespell.yml",
+      "workflow_resource_env": {},
+      "workflow_sha256": "4bc889fafcd9d8437d16be7e79a3f15b928039a775df26338c759a41a00809c2"
+    },
+    {
+      "container": null,
+      "job": "build-test",
+      "job_if": null,
+      "job_resource_env": {},
+      "measured_memory_bytes": null,
+      "model_execution_review": "No exhaustive inference from script/test names; exact commands are bound by hashes to archived workflow source. Job conditions are not evaluated here.",
+      "needs": null,
+      "permissions": {
+        "contents": "read"
+      },
+      "runs_on": "ubuntu-latest",
+      "services": null,
+      "steps": [
+        {
+          "if": null,
+          "index": 0,
+          "name": "Checkout repository",
+          "resource_env": {},
+          "uses": "actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd"
+        },
+        {
+          "if": null,
+          "index": 1,
+          "name": null,
+          "resource_env": {},
+          "uses": "./.github/actions/setup-ci"
+        },
+        {
+          "if": null,
+          "index": 2,
+          "model_related_source_lines": [],
+          "name": "Verify codex-rs Cargo manifests inherit workspace settings",
+          "resource_env": {},
+          "run_bytes": 59,
+          "run_sha256": "a38e986c9a952d945d0497e18b2109d9ac244a6ad5cb4fbbb735d4f510385b59",
+          "uses": null
+        },
+        {
+          "if": null,
+          "index": 3,
+          "model_related_source_lines": [],
+          "name": "Test Cargo manifest migration boundaries",
+          "resource_env": {},
+          "run_bytes": 93,
+          "run_sha256": "1679d33c01df469d22aa3ff48ba00f191bd0b96cc4928c9f18c09192e28df3ae",
+          "uses": null
+        },
+        {
+          "if": null,
+          "index": 4,
+          "model_related_source_lines": [],
+          "name": "Verify Hepta privileged caller closed set",
+          "resource_env": {},
+          "run_bytes": 350,
+          "run_sha256": "a982e97b9eb6bbcd610748985aa2380b747529683c8633b949de0931cd52813c",
+          "uses": null
+        },
+        {
+          "if": null,
+          "index": 5,
+          "model_related_source_lines": [],
+          "name": "Verify codex-tui does not import codex-core directly",
+          "resource_env": {},
+          "run_bytes": 51,
+          "run_sha256": "f7a1016151442d1ee9240301f1174bc7a8081d5433e9eab9d7ce56f473c26a51",
+          "uses": null
+        },
+        {
+          "if": null,
+          "index": 6,
+          "model_related_source_lines": [],
+          "name": "Verify Bazel clippy flags match Cargo workspace lints",
+          "resource_env": {},
+          "run_bytes": 140,
+          "run_sha256": "cb106a3fe2a43707879d4e4f027c7ca2629a608a2ab56d542d8cf5f1e0db72b4",
+          "uses": null
+        },
+        {
+          "if": null,
+          "index": 7,
+          "model_related_source_lines": [],
+          "name": "Test Bazel wrapper regression suite",
+          "resource_env": {},
+          "run_bytes": 71,
+          "run_sha256": "503710b1885954c8025fed03d8b589dbbcdee5d28d8b7848b936f69799be5cd8",
+          "uses": null
+        },
+        {
+          "if": null,
+          "index": 8,
+          "model_related_source_lines": [],
+          "name": "Test Codex package builder",
+          "resource_env": {},
+          "run_bytes": 68,
+          "run_sha256": "7ea717bf3948446aa0c4e36bc24d9d88f4a6706aebc4f87efaa121b85e200ffa",
+          "uses": null
+        },
+        {
+          "if": null,
+          "index": 9,
+          "model_related_source_lines": [],
+          "name": "Test standalone installer",
+          "resource_env": {},
+          "run_bytes": 62,
+          "run_sha256": "22d56b83fb45e6fa22f3a10611aa5c676e82d728e5b4a00abe17c8e99574bebd",
+          "uses": null
+        },
+        {
+          "if": null,
+          "index": 10,
+          "model_related_source_lines": [],
+          "name": "Test macOS notarization",
+          "resource_env": {},
+          "run_bytes": 92,
+          "run_sha256": "542ca28240a54b11a088c780962bc6372a19dd9e58952e080fd6e8b1c9e02fc9",
+          "uses": null
+        },
+        {
+          "if": null,
+          "index": 11,
+          "name": "Setup pnpm",
+          "resource_env": {},
+          "uses": "pnpm/action-setup@a8198c4bff370c8506180b035930dea56dbd5288"
+        },
+        {
+          "if": null,
+          "index": 12,
+          "name": "Setup Node.js",
+          "resource_env": {},
+          "uses": "actions/setup-node@53b83947a5a98c8d113130e565377fae1a50d02f"
+        },
+        {
+          "if": null,
+          "index": 13,
+          "model_related_source_lines": [],
+          "name": "Install dependencies",
+          "resource_env": {},
+          "run_bytes": 30,
+          "run_sha256": "f733afb2da73a36bd48778fd7502436e384741ad191367d97182afc4909130a5",
+          "uses": null
+        },
+        {
+          "if": null,
+          "index": 14,
+          "model_related_source_lines": [],
+          "name": "Ensure root README.md contains only ASCII and certain Unicode code points",
+          "resource_env": {},
+          "run_bytes": 33,
+          "run_sha256": "e4da9a51a21bcc116d9b23aa6a95c7a9a68a0f06bab766ed3c34d4ea8c9e406d",
+          "uses": null
+        },
+        {
+          "if": null,
+          "index": 15,
+          "model_related_source_lines": [],
+          "name": "Check root README ToC",
+          "resource_env": {},
+          "run_bytes": 39,
+          "run_sha256": "34773bafbb611ddd54ed921de924a0cddc243900e0176e461fe9ec4c96bbcc5e",
+          "uses": null
+        },
+        {
+          "if": null,
+          "index": 16,
+          "name": "Install uv",
+          "resource_env": {},
+          "uses": "astral-sh/setup-uv@08807647e7069bb48b6ef5acd8ec9567f424441b"
+        },
+        {
+          "if": null,
+          "index": 17,
+          "model_related_source_lines": [],
+          "name": "Check formatting (run `just fmt` to fix)",
+          "resource_env": {},
+          "run_bytes": 14,
+          "run_sha256": "0c1a9894d75dd2c1dee99bce006ea94a02f520feb559c77b61168e406569e6a6",
+          "uses": null
+        },
+        {
+          "if": null,
+          "index": 18,
+          "model_related_source_lines": [],
+          "name": "Prettier (run `pnpm run format:fix` to fix)",
+          "resource_env": {},
+          "run_bytes": 15,
+          "run_sha256": "ebd8647b777ec81bbd2c5724d7c42c51f77e147d1b4fa8f9d31f5ea3f4a774b0",
+          "uses": null
+        },
+        {
+          "if": "always() && !cancelled()",
+          "index": 19,
+          "name": "Check for a clean worktree",
+          "resource_env": {},
+          "uses": "./.github/actions/check-clean-worktree"
+        }
+      ],
+      "strategy": null,
+      "timeout_minutes": "10",
+      "top_level_audited_source": false,
+      "uses": null,
+      "workflow": ".github/workflows/repo-checks.yml",
+      "workflow_resource_env": {},
+      "workflow_sha256": "ee6a2c1204698740ca8420fbf9859f4b4248e44f08d5e05050b8d846036dd081"
+    },
+    {
+      "container": null,
+      "job": "native-paths",
+      "job_if": null,
+      "job_resource_env": {},
+      "measured_memory_bytes": null,
+      "model_execution_review": "No exhaustive inference from script/test names; exact commands are bound by hashes to archived workflow source. Job conditions are not evaluated here.",
+      "needs": null,
+      "permissions": {
+        "contents": "read"
+      },
+      "runs_on": "${{ matrix.os }}",
+      "services": null,
+      "steps": [
+        {
+          "if": null,
+          "index": 0,
+          "name": "Checkout repository",
+          "resource_env": {},
+          "uses": "actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd"
+        },
+        {
+          "if": null,
+          "index": 1,
+          "model_related_source_lines": [],
+          "name": "Test wrappers on the native host",
+          "resource_env": {},
+          "run_bytes": 70,
+          "run_sha256": "4a96269a1eb6631500d09bc3dccee1af3f0e9f734ea8de341e613e0c5c695144",
+          "uses": null
+        },
+        {
+          "if": null,
+          "index": 2,
+          "name": null,
+          "resource_env": {},
+          "uses": "./.github/actions/setup-ci"
+        },
+        {
+          "if": null,
+          "index": 3,
+          "name": null,
+          "resource_env": {},
+          "uses": "dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582"
+        },
+        {
+          "if": null,
+          "index": 4,
+          "name": null,
+          "resource_env": {},
+          "uses": "taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532"
+        },
+        {
+          "if": null,
+          "index": 5,
+          "model_related_source_lines": [],
+          "name": "Test host-native state and fleet roots",
+          "resource_env": {},
+          "run_bytes": 39,
+          "run_sha256": "17142f1601d4dd0715da30d2acb44b510748646e98ac7bdd43dbb235c286b7bb",
+          "uses": null
+        },
+        {
+          "if": "always() && !cancelled()",
+          "index": 6,
+          "name": "Check for a clean worktree",
+          "resource_env": {},
+          "uses": "./.github/actions/check-clean-worktree"
+        }
+      ],
+      "strategy": {
+        "fail-fast": "false",
+        "matrix": {
+          "os": [
+            "ubuntu-24.04",
+            "windows-latest",
+            "macos-15"
+          ]
+        }
+      },
+      "timeout_minutes": "20",
+      "top_level_audited_source": false,
+      "uses": null,
+      "workflow": ".github/workflows/repo-checks.yml",
+      "workflow_resource_env": {},
+      "workflow_sha256": "ee6a2c1204698740ca8420fbf9859f4b4248e44f08d5e05050b8d846036dd081"
+    },
+    {
+      "container": null,
+      "job": "changed",
+      "job_if": null,
+      "job_resource_env": {},
+      "measured_memory_bytes": null,
+      "model_execution_review": "No exhaustive inference from script/test names; exact commands are bound by hashes to archived workflow source. Job conditions are not evaluated here.",
+      "needs": null,
+      "permissions": {
+        "contents": "read"
+      },
+      "runs_on": "ubuntu-24.04",
+      "services": null,
+      "steps": [
+        {
+          "if": null,
+          "index": 0,
+          "name": null,
+          "resource_env": {},
+          "uses": "actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd"
+        },
+        {
+          "if": "github.event_name == 'pull_request'",
+          "index": 1,
+          "model_related_source_lines": [],
+          "name": "Fetch exact pull request comparison",
+          "resource_env": {},
+          "run_bytes": 96,
+          "run_sha256": "4b4bd026faab17250d7fb41225ad9d591849c15e86eb9df161bddda7b4e3ce93",
+          "uses": null
+        },
+        {
+          "if": null,
+          "index": 2,
+          "model_related_source_lines": [],
+          "name": "Test fast-feedback failure semantics",
+          "resource_env": {},
+          "run_bytes": 78,
+          "run_sha256": "13417a7f3283ee7dfe7fdf66e07578183d8a572eea2626f65afaacd194adfc90",
+          "uses": null
+        },
+        {
+          "if": null,
+          "index": 3,
+          "model_related_source_lines": [],
+          "name": "Detect changed paths (no external action)",
+          "resource_env": {},
+          "run_bytes": 1395,
+          "run_sha256": "8b0ccfcf2510ab3efb5ee495d9c08083d64b2f6e92e15288089789b3ca0618e8",
+          "uses": null
+        },
+        {
+          "if": "always() && !cancelled()",
+          "index": 4,
+          "name": "Check for a clean worktree",
+          "resource_env": {},
+          "uses": "./.github/actions/check-clean-worktree"
+        }
+      ],
+      "strategy": null,
+      "timeout_minutes": "30",
+      "top_level_audited_source": false,
+      "uses": null,
+      "workflow": ".github/workflows/rust-ci.yml",
+      "workflow_resource_env": {},
+      "workflow_sha256": "76ce84512f019867e9513c74e01877d47ba5e2b1ec554fa35175e9f0e9c6e373"
+    },
+    {
+      "container": null,
+      "job": "workspace_manifest",
+      "job_if": "${{ needs.changed.outputs.codex == 'true' || needs.changed.outputs.workflows == 'true' }}",
+      "job_resource_env": {},
+      "measured_memory_bytes": null,
+      "model_execution_review": "No exhaustive inference from script/test names; exact commands are bound by hashes to archived workflow source. Job conditions are not evaluated here.",
+      "needs": "changed",
+      "permissions": {
+        "contents": "read"
+      },
+      "runs_on": "ubuntu-24.04",
+      "services": null,
+      "steps": [
+        {
+          "if": null,
+          "index": 0,
+          "name": null,
+          "resource_env": {},
+          "uses": "actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd"
+        },
+        {
+          "if": null,
+          "index": 1,
+          "model_related_source_lines": [],
+          "name": "Check local manifest graph before installing native prerequisites",
+          "resource_env": {},
+          "run_bytes": 34,
+          "run_sha256": "63fa9c775e62c9a286ecbc811fd9f267bd636591d02e0c7d0f3c09d1510d359b",
+          "uses": null
+        },
+        {
+          "if": null,
+          "index": 2,
+          "name": null,
+          "resource_env": {},
+          "uses": "dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582"
+        },
+        {
+          "if": null,
+          "index": 3,
+          "model_related_source_lines": [],
+          "name": "Validate Cargo metadata for the actual checkout",
+          "resource_env": {},
+          "run_bytes": 194,
+          "run_sha256": "5add7f3c484076700436fbdb1a4f3bf73e895f7c797f7f523683811fe2ae1abc",
+          "uses": null
+        },
+        {
+          "if": "always() && !cancelled()",
+          "index": 4,
+          "name": "Check for a clean worktree",
+          "resource_env": {},
+          "uses": "./.github/actions/check-clean-worktree"
+        }
+      ],
+      "strategy": null,
+      "timeout_minutes": "15",
+      "top_level_audited_source": false,
+      "uses": null,
+      "workflow": ".github/workflows/rust-ci.yml",
+      "workflow_resource_env": {},
+      "workflow_sha256": "76ce84512f019867e9513c74e01877d47ba5e2b1ec554fa35175e9f0e9c6e373"
+    },
+    {
+      "container": null,
+      "job": "general",
+      "job_if": "${{ needs.changed.outputs.codex == 'true' || needs.changed.outputs.workflows == 'true' }}",
+      "job_resource_env": {},
+      "measured_memory_bytes": null,
+      "model_execution_review": "No exhaustive inference from script/test names; exact commands are bound by hashes to archived workflow source. Job conditions are not evaluated here.",
+      "needs": "changed",
+      "permissions": {
+        "contents": "read"
+      },
+      "runs_on": "ubuntu-24.04",
+      "services": null,
+      "steps": [
+        {
+          "if": null,
+          "index": 0,
+          "name": null,
+          "resource_env": {},
+          "uses": "actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd"
+        },
+        {
+          "if": null,
+          "index": 1,
+          "name": null,
+          "resource_env": {},
+          "uses": "./.github/actions/setup-ci"
+        },
+        {
+          "if": null,
+          "index": 2,
+          "name": null,
+          "resource_env": {},
+          "uses": "dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582"
+        },
+        {
+          "if": null,
+          "index": 3,
+          "model_related_source_lines": [],
+          "name": "cargo fmt",
+          "resource_env": {},
+          "run_bytes": 54,
+          "run_sha256": "3b88644753391554198ef70dc232128c5894aade49bde9cda458d19324562008",
+          "uses": null
+        },
+        {
+          "if": "always() && !cancelled()",
+          "index": 4,
+          "name": "Check for a clean worktree",
+          "resource_env": {},
+          "uses": "./.github/actions/check-clean-worktree"
+        }
+      ],
+      "strategy": null,
+      "timeout_minutes": "30",
+      "top_level_audited_source": false,
+      "uses": null,
+      "workflow": ".github/workflows/rust-ci.yml",
+      "workflow_resource_env": {},
+      "workflow_sha256": "76ce84512f019867e9513c74e01877d47ba5e2b1ec554fa35175e9f0e9c6e373"
+    },
+    {
+      "container": null,
+      "job": "benchmark_smoke",
+      "job_if": "${{ needs.changed.outputs.codex == 'true' || needs.changed.outputs.workflows == 'true' }}",
+      "job_resource_env": {},
+      "measured_memory_bytes": null,
+      "model_execution_review": "No exhaustive inference from script/test names; exact commands are bound by hashes to archived workflow source. Job conditions are not evaluated here.",
+      "needs": [
+        "changed",
+        "workspace_manifest"
+      ],
+      "permissions": {
+        "contents": "read"
+      },
+      "runs_on": "ubuntu-24.04",
+      "services": null,
+      "steps": [
+        {
+          "if": null,
+          "index": 0,
+          "name": null,
+          "resource_env": {},
+          "uses": "actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd"
+        },
+        {
+          "if": null,
+          "index": 1,
+          "name": null,
+          "resource_env": {},
+          "uses": "./.github/actions/setup-ci"
+        },
+        {
+          "if": null,
+          "index": 2,
+          "name": null,
+          "resource_env": {},
+          "uses": "dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582"
+        },
+        {
+          "if": null,
+          "index": 3,
+          "model_related_source_lines": [],
+          "name": "Rust benchmark smoke test",
+          "resource_env": {},
+          "run_bytes": 16,
+          "run_sha256": "aaabf2228dd36ee2d39f4f106c322f844d9e85590b528d8cbeae60f89c7c6ba0",
+          "uses": null
+        },
+        {
+          "if": "always() && !cancelled()",
+          "index": 4,
+          "name": "Check for a clean worktree",
+          "resource_env": {},
+          "uses": "./.github/actions/check-clean-worktree"
+        }
+      ],
+      "strategy": null,
+      "timeout_minutes": "30",
+      "top_level_audited_source": false,
+      "uses": null,
+      "workflow": ".github/workflows/rust-ci.yml",
+      "workflow_resource_env": {},
+      "workflow_sha256": "76ce84512f019867e9513c74e01877d47ba5e2b1ec554fa35175e9f0e9c6e373"
+    },
+    {
+      "container": null,
+      "job": "cargo_shear",
+      "job_if": "${{ needs.changed.outputs.codex == 'true' || needs.changed.outputs.workflows == 'true' }}",
+      "job_resource_env": {},
+      "measured_memory_bytes": null,
+      "model_execution_review": "No exhaustive inference from script/test names; exact commands are bound by hashes to archived workflow source. Job conditions are not evaluated here.",
+      "needs": "changed",
+      "permissions": {
+        "contents": "read"
+      },
+      "runs_on": "ubuntu-24.04",
+      "services": null,
+      "steps": [
+        {
+          "if": null,
+          "index": 0,
+          "name": null,
+          "resource_env": {},
+          "uses": "actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd"
+        },
+        {
+          "if": null,
+          "index": 1,
+          "name": null,
+          "resource_env": {},
+          "uses": "./.github/actions/setup-ci"
+        },
+        {
+          "if": null,
+          "index": 2,
+          "name": null,
+          "resource_env": {},
+          "uses": "dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582"
+        },
+        {
+          "if": null,
+          "index": 3,
+          "name": null,
+          "resource_env": {},
+          "uses": "taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532"
+        },
+        {
+          "if": null,
+          "index": 4,
+          "model_related_source_lines": [],
+          "name": "cargo shear",
+          "resource_env": {},
+          "run_bytes": 20,
+          "run_sha256": "22c77a512d6c113b96a0a9c56bbd4bd7213c0be7d512cde0af200f6c618ba34e",
+          "uses": null
+        },
+        {
+          "if": "always() && !cancelled()",
+          "index": 5,
+          "name": "Check for a clean worktree",
+          "resource_env": {},
+          "uses": "./.github/actions/check-clean-worktree"
+        }
+      ],
+      "strategy": null,
+      "timeout_minutes": "30",
+      "top_level_audited_source": false,
+      "uses": null,
+      "workflow": ".github/workflows/rust-ci.yml",
+      "workflow_resource_env": {},
+      "workflow_sha256": "76ce84512f019867e9513c74e01877d47ba5e2b1ec554fa35175e9f0e9c6e373"
+    },
+    {
+      "container": null,
+      "job": "argument_comment_lint_package",
+      "job_if": "${{ needs.changed.outputs.argument_comment_lint_package == 'true' }}",
+      "job_resource_env": {},
+      "measured_memory_bytes": null,
+      "model_execution_review": "No exhaustive inference from script/test names; exact commands are bound by hashes to archived workflow source. Job conditions are not evaluated here.",
+      "needs": "changed",
+      "permissions": {
+        "contents": "read"
+      },
+      "runs_on": "ubuntu-24.04",
+      "services": null,
+      "steps": [
+        {
+          "if": null,
+          "index": 0,
+          "name": null,
+          "resource_env": {},
+          "uses": "actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd"
+        },
+        {
+          "if": null,
+          "index": 1,
+          "name": null,
+          "resource_env": {},
+          "uses": "./.github/actions/setup-ci"
+        },
+        {
+          "if": null,
+          "index": 2,
+          "name": null,
+          "resource_env": {},
+          "uses": "dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582"
+        },
+        {
+          "if": null,
+          "index": 3,
+          "model_related_source_lines": [],
+          "name": "Install nightly argument-comment-lint toolchain",
+          "resource_env": {},
+          "run_bytes": 207,
+          "run_sha256": "896495a38a695b3c824f67b96b4867616ad48d66e124eb58dad98d6c65298876",
+          "uses": null
+        },
+        {
+          "if": null,
+          "index": 4,
+          "name": "Cache cargo-dylint tooling",
+          "resource_env": {},
+          "uses": "actions/cache@668228422ae6a00e4ad889ee87cd7109ec5666a7"
+        },
+        {
+          "if": "${{ steps.cargo_dylint_cache.outputs.cache-hit != 'true' }}",
+          "index": 5,
+          "model_related_source_lines": [],
+          "name": "Install cargo-dylint tooling",
+          "resource_env": {},
+          "run_bytes": 138,
+          "run_sha256": "dc7e0fe6242be2381a01858d22592318922c3e82d386a1009b66c7ca08c4dcb1",
+          "uses": null
+        },
+        {
+          "if": null,
+          "index": 6,
+          "model_related_source_lines": [],
+          "name": "Check Python wrapper syntax",
+          "resource_env": {},
+          "run_bytes": 204,
+          "run_sha256": "a244efa048e17aec4c3ba827b78e1c638962a88699eb90b2f046586a344a13b0",
+          "uses": null
+        },
+        {
+          "if": null,
+          "index": 7,
+          "model_related_source_lines": [],
+          "name": "Test Python wrapper helpers",
+          "resource_env": {},
+          "run_bytes": 74,
+          "run_sha256": "da15a4a7ee2050a075cc4616110d93b4908befb6d27099873368956a9d72df72",
+          "uses": null
+        },
+        {
+          "if": null,
+          "index": 8,
+          "model_related_source_lines": [],
+          "name": "Test argument comment lint package",
+          "resource_env": {},
+          "run_bytes": 10,
+          "run_sha256": "0031fd18feb55b6b493544de1976b438eeac0b2d1278821b9e4e8eb07e8cf503",
+          "uses": null
+        },
+        {
+          "if": "always() && !cancelled()",
+          "index": 9,
+          "name": "Check for a clean worktree",
+          "resource_env": {},
+          "uses": "./.github/actions/check-clean-worktree"
+        }
+      ],
+      "strategy": null,
+      "timeout_minutes": "30",
+      "top_level_audited_source": false,
+      "uses": null,
+      "workflow": ".github/workflows/rust-ci.yml",
+      "workflow_resource_env": {},
+      "workflow_sha256": "76ce84512f019867e9513c74e01877d47ba5e2b1ec554fa35175e9f0e9c6e373"
+    },
+    {
+      "container": null,
+      "job": "results",
+      "job_if": "always()",
+      "job_resource_env": {},
+      "measured_memory_bytes": null,
+      "model_execution_review": "No exhaustive inference from script/test names; exact commands are bound by hashes to archived workflow source. Job conditions are not evaluated here.",
+      "needs": [
+        "changed",
+        "workspace_manifest",
+        "general",
+        "benchmark_smoke",
+        "cargo_shear",
+        "argument_comment_lint_package"
+      ],
+      "permissions": {
+        "contents": "read"
+      },
+      "runs_on": "ubuntu-24.04",
+      "services": null,
+      "steps": [
+        {
+          "if": null,
+          "index": 0,
+          "model_related_source_lines": [],
+          "name": "Summarize",
+          "resource_env": {},
+          "run_bytes": 1287,
+          "run_sha256": "9a80390679fc2cf9ec728e0fb9ec0e17821cf1a35b19930dc02b9160aaae889b",
+          "uses": null
+        }
+      ],
+      "strategy": null,
+      "timeout_minutes": "30",
+      "top_level_audited_source": false,
+      "uses": null,
+      "workflow": ".github/workflows/rust-ci.yml",
+      "workflow_resource_env": {},
+      "workflow_sha256": "76ce84512f019867e9513c74e01877d47ba5e2b1ec554fa35175e9f0e9c6e373"
+    },
+    {
+      "container": null,
+      "job": "python-sdk",
+      "job_if": null,
+      "job_resource_env": {},
+      "measured_memory_bytes": null,
+      "model_execution_review": "No exhaustive inference from script/test names; exact commands are bound by hashes to archived workflow source. Job conditions are not evaluated here.",
+      "needs": null,
+      "permissions": {
+        "contents": "read"
+      },
+      "runs_on": "ubuntu-24.04",
+      "services": null,
+      "steps": [
+        {
+          "if": null,
+          "index": 0,
+          "name": "Checkout repository",
+          "resource_env": {},
+          "uses": "actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd"
+        },
+        {
+          "if": null,
+          "index": 1,
+          "model_related_source_lines": [],
+          "name": "Test Python SDK",
+          "resource_env": {},
+          "run_bytes": 696,
+          "run_sha256": "8d2b068e18eb4f366de7c62d12cd86a0700f786169f70f6cd2c689278babc379",
+          "uses": null
+        },
+        {
+          "if": "always() && !cancelled()",
+          "index": 2,
+          "name": "Check for a clean worktree",
+          "resource_env": {},
+          "uses": "./.github/actions/check-clean-worktree"
+        }
+      ],
+      "strategy": null,
+      "timeout_minutes": "20",
+      "top_level_audited_source": false,
+      "uses": null,
+      "workflow": ".github/workflows/sdk.yml",
+      "workflow_resource_env": {},
+      "workflow_sha256": "2ac4937a15b5589d6c075df0f521a4ea46d0727f2cce06a9a3bd25a0358369a3"
+    },
+    {
+      "container": null,
+      "job": "sdks",
+      "job_if": null,
+      "job_resource_env": {},
+      "measured_memory_bytes": null,
+      "model_execution_review": "No exhaustive inference from script/test names; exact commands are bound by hashes to archived workflow source. Job conditions are not evaluated here.",
+      "needs": null,
+      "permissions": {
+        "contents": "read"
+      },
+      "runs_on": "ubuntu-24.04",
+      "services": null,
+      "steps": [
+        {
+          "if": null,
+          "index": 0,
+          "name": "Checkout repository",
+          "resource_env": {},
+          "uses": "actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd"
+        },
+        {
+          "if": null,
+          "index": 1,
+          "model_related_source_lines": [],
+          "name": "Install Linux bwrap build dependencies",
+          "resource_env": {},
+          "run_bytes": 142,
+          "run_sha256": "c84d4432e895cc3110694a7839fb389651f104b04df46cbd379c9b6017740b4b",
+          "uses": null
+        },
+        {
+          "if": null,
+          "index": 2,
+          "name": "Setup pnpm",
+          "resource_env": {},
+          "uses": "pnpm/action-setup@a8198c4bff370c8506180b035930dea56dbd5288"
+        },
+        {
+          "if": null,
+          "index": 3,
+          "name": "Setup Node.js",
+          "resource_env": {},
+          "uses": "actions/setup-node@53b83947a5a98c8d113130e565377fae1a50d02f"
+        },
+        {
+          "if": null,
+          "index": 4,
+          "name": "Set up Bazel CI",
+          "resource_env": {},
+          "uses": "./.github/actions/setup-bazel-ci"
+        },
+        {
+          "if": null,
+          "index": 5,
+          "model_related_source_lines": [],
+          "name": "Build codex and code-mode host with Bazel",
+          "resource_env": {},
+          "run_bytes": 2390,
+          "run_sha256": "b05219d68884d013709750388134ad8a7f607fce94df73cadf8287fe4380f107",
+          "uses": null
+        },
+        {
+          "if": null,
+          "index": 6,
+          "model_related_source_lines": [],
+          "name": "Warm up Bazel-built SDK executables",
+          "resource_env": {},
+          "run_bytes": 112,
+          "run_sha256": "65ed4caa886c2b2d3789dfcd67482253757692f67a593701b0534f3b61254296",
+          "uses": null
+        },
+        {
+          "if": null,
+          "index": 7,
+          "model_related_source_lines": [],
+          "name": "Install dependencies",
+          "resource_env": {},
+          "run_bytes": 30,
+          "run_sha256": "f733afb2da73a36bd48778fd7502436e384741ad191367d97182afc4909130a5",
+          "uses": null
+        },
+        {
+          "if": null,
+          "index": 8,
+          "model_related_source_lines": [],
+          "name": "Build SDK packages",
+          "resource_env": {},
+          "run_bytes": 43,
+          "run_sha256": "a3cd7b84c63257c9a51309cfb9bb6979cdf8b91dc23ff0c5866a3fc49f260309",
+          "uses": null
+        },
+        {
+          "if": null,
+          "index": 9,
+          "model_related_source_lines": [],
+          "name": "Lint SDK packages",
+          "resource_env": {},
+          "run_bytes": 42,
+          "run_sha256": "7631f916c5a1359959ad552865d5cbaed68d7c89157891481967bd3c2f8a3e2b",
+          "uses": null
+        },
+        {
+          "if": null,
+          "index": 10,
+          "model_related_source_lines": [],
+          "name": "Test SDK packages",
+          "resource_env": {},
+          "run_bytes": 42,
+          "run_sha256": "c8b95560b4b84f604ffdb0618023b4c5677f0fc3509567d980cf1e6600f35ae9",
+          "uses": null
+        },
+        {
+          "if": "always() && !cancelled() && steps.setup_bazel.outputs.cache-hit != 'true'",
+          "index": 11,
+          "name": "Save bazel repository cache",
+          "resource_env": {},
+          "uses": "actions/cache/save@668228422ae6a00e4ad889ee87cd7109ec5666a7"
+        },
+        {
+          "if": "always() && !cancelled()",
+          "index": 12,
+          "name": "Check for a clean worktree",
+          "resource_env": {},
+          "uses": "./.github/actions/check-clean-worktree"
+        }
+      ],
+      "strategy": null,
+      "timeout_minutes": "60",
+      "top_level_audited_source": false,
+      "uses": null,
+      "workflow": ".github/workflows/sdk.yml",
+      "workflow_resource_env": {},
+      "workflow_sha256": "2ac4937a15b5589d6c075df0f521a4ea46d0727f2cce06a9a3bd25a0358369a3"
+    }
+  ],
+  "local_reusable_workflow_calls": [
+    {
+      "called_workflow": ".github/workflows/hepta-contract-gate.yml",
+      "caller_job": "hepta-contract-gate",
+      "caller_workflow": ".github/workflows/blocking-ci.yml"
+    },
+    {
+      "called_workflow": ".github/workflows/bazel.yml",
+      "caller_job": "bazel",
+      "caller_workflow": ".github/workflows/blocking-ci.yml"
+    },
+    {
+      "called_workflow": ".github/workflows/blob-size-policy.yml",
+      "caller_job": "blob-size-policy",
+      "caller_workflow": ".github/workflows/blocking-ci.yml"
+    },
+    {
+      "called_workflow": ".github/workflows/cargo-deny.yml",
+      "caller_job": "cargo-deny",
+      "caller_workflow": ".github/workflows/blocking-ci.yml"
+    },
+    {
+      "called_workflow": ".github/workflows/codespell.yml",
+      "caller_job": "codespell",
+      "caller_workflow": ".github/workflows/blocking-ci.yml"
+    },
+    {
+      "called_workflow": ".github/workflows/repo-checks.yml",
+      "caller_job": "repo-checks",
+      "caller_workflow": ".github/workflows/blocking-ci.yml"
+    },
+    {
+      "called_workflow": ".github/workflows/rust-ci.yml",
+      "caller_job": "rust-ci",
+      "caller_workflow": ".github/workflows/blocking-ci.yml"
+    },
+    {
+      "called_workflow": ".github/workflows/sdk.yml",
+      "caller_job": "sdk",
+      "caller_workflow": ".github/workflows/blocking-ci.yml"
+    }
+  ],
+  "schema": "hepta.resource-probe.workflow-job-resource-catalog.v1",
+  "scope": "Static job resources, matrices, conditions and command hashes only; no actual memory, job count after dynamic guards, billing or model completion is inferred.",
+  "source_commit": "b01d33144b4f153adc46649bba6ac9683aa3b94d",
+  "top_level_sources": [
+    ".github/workflows/blocking-ci.yml",
+    ".github/workflows/cla.yml",
+    ".github/workflows/hepta-architecture-convergence.yml",
+    ".github/workflows/hepta-memory-bf16-host-scout.yml",
+    ".github/workflows/hepta-memory-bf16-hosted-scout.yml",
+    ".github/workflows/hepta-memory-cell-continuation.yml",
+    ".github/workflows/hepta-memory-cell-ingress-review.yml",
+    ".github/workflows/hepta-memory-strong-rag.yml",
+    ".github/workflows/v8-canary.yml"
+  ]
+}
