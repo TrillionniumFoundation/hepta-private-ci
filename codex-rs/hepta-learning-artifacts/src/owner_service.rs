@@ -236,6 +236,12 @@ impl LearningArtifactOwnerService {
                 request,
                 &recovery.checkpoint,
             )?;
+            self.host.revalidate_recovered_artifacts(
+                &transaction,
+                &staged,
+                &request.signed_current_head,
+                request.now,
+            )?;
             transaction = self
                 .host
                 .resume_publication(transaction.snapshot(), request.now)?;
