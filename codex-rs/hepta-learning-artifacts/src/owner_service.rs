@@ -290,6 +290,15 @@ fn validate_request_against_checkpoint(
     request: &LearningArtifactPublishRequestV1,
     checkpoint: &ArtifactOwnerPublicationCheckpointV1,
 ) -> Result<(), LearningArtifactOwnerServiceError> {
+    let manifest = &request.admission.validated_manifest.manifest;
+    // An idempotent retry is exact only when its supplied immutable bytes
+    // match the original admitted artifact. A terminal checkpoint must not
+    // acknowledge a changed request body with the previous receipt.
+    if request.payload.len() as u64 != manifest.encoded_size_bytes
+        || Digest32::of_bytes(&request.payload) != manifest.bytes_digest
+    {
+        return Err(LearningArtifactOwnerServiceError::RequestMismatch);
+    }
     if checkpoint.operation_id != request.operation_id
         || checkpoint.admission_digest != request.admission.admission_digest
         || checkpoint.withdrawal_scope_digest != request.admission.withdrawal_scope_digest
@@ -689,6 +698,13 @@ mod tests {
                 .head_digest,
             receipt.registry_head_digest
         );
+
+        let mut changed_retry = request.clone();
+        changed_retry.payload = b"different-payload".to_vec();
+        assert!(matches!(
+            reopened.publish(changed_retry),
+            Err(LearningArtifactOwnerServiceError::RequestMismatch)
+        ));
 
         // A durable ACK alone is not sufficient evidence for a successful
         // idempotent retry. Reject it when the committed payload has been
