@@ -1,0 +1,336 @@
+name: Hepta Stem Cell research qualification (L1 only)
+
+on:
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - "qualification/stem-cell-v1/**"
+      - "qualification/matrix-security/**"
+      - ".github/workflows/hepta-matrix-security-qualification.yml"
+      - "codex-rs/hepta-infer-worker-host/src/model_worker*.rs"
+      - "codex-rs/hepta-infer-worker-host/Cargo.toml"
+      - "codex-rs/Cargo.lock"
+      - "MODULE.bazel.lock"
+      - "codex-rs/hepta-infer-worker-host/src/native_app_server_tests.rs"
+      - "codex-rs/hepta-fleet/src/**"
+      - ".github/scripts/run-bazel-ci.sh"
+      - ".github/scripts/test_run_bazel_ci.py"
+      - ".github/workflows/hepta-stem-cell-qualification.yml"
+
+permissions:
+  contents: read
+
+# Cancel only obsolete runs of this read-only research lane for the same PR.
+# Without this, each incremental source change queues a costly stale Rust build
+# while the only authoritative receipt must be from the latest SHA.
+concurrency:
+  group: hepta-stem-cell-l1-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  offline-contract-tests:
+    name: Offline contract and trace tests (not model results)
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - name: Checkout exact tested commit
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - name: Report tested commit identity
+        run: |
+          git rev-parse HEAD
+          git rev-parse HEAD^{tree}
+          python3 --version
+      - name: Run strict L1 tests without model fetching
+        env:
+          PYTHONDONTWRITEBYTECODE: "1"
+        run: |
+          python3 -m compileall -q qualification/stem-cell-v1
+          python3 -m unittest discover -v -s qualification/stem-cell-v1 -p 'test_*.py'
+          # Read-only Matrix SDK blocker and staged dependency-resolution
+          # contracts. Passing these tests cannot clear cargo-deny.
+          python3 -m compileall -q qualification/matrix-security
+          python3 -m unittest discover -v -s qualification/matrix-security -p 'test_*.py'
+          # Exercise all BuildBuddy/Bazel wrapper transports with a fake
+          # executable; no network or real model data is needed here.
+          python3 -m unittest discover -v -s .github/scripts -p 'test_run_bazel_ci.py'
+          python3 -m json.tool qualification/stem-cell-v1/protocol.json > /dev/null
+      - name: Check tested source remains unmodified
+        run: |
+          git diff --check
+          git diff --exit-code
+
+  minimal-sdk-backport-source:
+    name: P0 minimal upstream anymap3 source compatibility (not production)
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          repository: matrix-org/matrix-rust-sdk
+          ref: b18166c68bb958a21f0bca8b2d8320cb53583362
+          path: upstream-release
+          fetch-depth: 1
+          persist-credentials: false
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          repository: matrix-org/matrix-rust-sdk
+          ref: 9c5fdd2cf5be1b7b8b20541e56d7a109db968534
+          path: upstream-anymap-commit
+          fetch-depth: 2
+          persist-credentials: false
+      - name: Validate narrow backport parser before upstream qualification
+        run: python3 -m unittest discover -v -s qualification/matrix-security -p 'test_minimal_backport_probe.py'
+      - name: Require exact release/source patch compatibility
+        run: |
+          python3 qualification/matrix-security/minimal_backport_probe.py \
+            --release upstream-release --migration upstream-anymap-commit \
+            --output "$RUNNER_TEMP/hepta-matrix-minimal-backport.json"
+      - name: Preserve exact immutable upstream evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: stem-matrix-minimal-backport-${{ github.run_id }}
+          path: ${{ runner.temp }}/hepta-matrix-minimal-backport.json
+          if-no-files-found: warn
+          retention-days: 14
+      - name: No changes to tracked repository source
+        if: always()
+        run: |
+          git diff --check
+          git diff --exit-code
+
+  yaml-prettier-diagnostic:
+    name: Capture exact workflow Prettier patch (diagnostic only)
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - uses: pnpm/action-setup@a8198c4bff370c8506180b035930dea56dbd5288
+        with:
+          run_install: false
+      - uses: actions/setup-node@53b83947a5a98c8d113130e565377fae1a50d02f
+        with:
+          node-version: 22
+      - name: Install pinned formatter
+        run: pnpm install --frozen-lockfile
+      - name: Export canonical source patch without retaining modifications
+        shell: bash
+        run: |
+          set -euo pipefail
+          # Capture exact formatting drift for BOTH workflow files. Never
+          # use formatter output as an acceptance waiver or leave a dirty tree.
+          pnpm exec prettier --write .github/workflows/hepta-stem-cell-qualification.yml .github/workflows/hepta-matrix-security-qualification.yml
+          git diff --binary -- .github/workflows/hepta-stem-cell-qualification.yml .github/workflows/hepta-matrix-security-qualification.yml > "$RUNNER_TEMP/stem-prettier.patch"
+          git restore --worktree -- .github/workflows/hepta-stem-cell-qualification.yml .github/workflows/hepta-matrix-security-qualification.yml
+          git diff --check
+          git diff --exit-code
+      - name: Upload formatter patch
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: stem-prettier-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/stem-prettier.patch
+          if-no-files-found: warn
+          retention-days: 7
+
+  formatter-diagnostic:
+    name: Capture exact Rust formatter patch (diagnostic only)
+    runs-on: ubuntu-24.04
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - name: Record exact checked-out input
+        run: git rev-parse HEAD HEAD^{tree}
+      - name: Produce candidate patch without retaining changes
+        shell: bash
+        run: |
+          set -euo pipefail
+          cargo fmt --manifest-path codex-rs/Cargo.toml --package codex-hepta-infer-worker-host --package codex-hepta-fleet -- --config imports_granularity=Item
+          git diff --binary -- codex-rs/hepta-infer-worker-host/src codex-rs/hepta-fleet/src > "$RUNNER_TEMP/stem-rustfmt.patch"
+          git restore --worktree -- codex-rs/hepta-infer-worker-host/src codex-rs/hepta-fleet/src
+          git diff --check
+          git diff --exit-code
+      - name: Upload proposed formatting only
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: stem-fast-rustfmt-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/stem-rustfmt.patch
+          if-no-files-found: warn
+          retention-days: 7
+
+  bazel-dependency-lock:
+    name: Bazel module lock consistency (read-only)
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+          fetch-depth: 0
+      - name: Bind immutable candidate and Cargo lock
+        run: |
+          set -euo pipefail
+          git rev-parse HEAD HEAD^{tree}
+          python3 scripts/verify_cargo_lock.py
+      - name: Prepare canonical Bazel host
+        uses: ./.github/actions/prepare-bazel-ci
+        with:
+          target: x86_64-unknown-linux-gnu
+          cache-scope: stem-cas-lock
+      - name: Check generated Bazel lock without modification
+        run: ./scripts/check-module-bazel-lock.sh
+      - name: Verify clean checkout
+        if: always()
+        run: |
+          git diff --check
+          git diff --exit-code
+
+  fleet-authority-lint:
+    name: Fleet strict Clippy and complete library tests (read-only)
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+          fetch-depth: 0
+      - name: Bind exact candidate SHA
+        run: |
+          git rev-parse HEAD HEAD^{tree}
+          rustc --version
+      - name: Check fleet Cargo formatting
+        working-directory: codex-rs
+        run: |
+          cargo fmt --package codex-hepta-fleet -- --check
+          cargo fmt --package codex-hepta-fleet -- --config imports_granularity=Item --check
+      - name: Compile fleet authority tests
+        working-directory: codex-rs
+        run: cargo check --locked -p codex-hepta-fleet --all-targets
+      - name: Fleet full library test suite
+        working-directory: codex-rs
+        run: |
+          cargo test --locked -p codex-hepta-fleet --lib
+      - name: Strict fleet Clippy including tests
+        working-directory: codex-rs
+        run: >
+          cargo clippy --locked -p codex-hepta-fleet --all-targets --
+          -D clippy::unwrap_used -D clippy::expect_used -D clippy::correctness
+      - name: No changes to source
+        if: always()
+        run: |
+          git diff --check
+          git diff --exit-code
+
+  global-python-ruff-diagnostic:
+    name: Capture global Ruff formatting patch (diagnostic only)
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - uses: astral-sh/setup-uv@b75a909f75acd358c2196fb9a5f1299a9a8868a4
+      - name: Capture formatter's exact one-file diff
+        shell: bash
+        run: |
+          set -euo pipefail
+          git rev-parse HEAD
+          uv run --frozen --project scripts ruff format .github/scripts/test_run_bazel_ci.py
+          git diff --binary -- .github/scripts/test_run_bazel_ci.py > "$RUNNER_TEMP/stem-global-python-ruff.patch"
+          git restore --worktree -- .github/scripts/test_run_bazel_ci.py
+          git diff --check
+          git diff --exit-code
+      - name: Export patch; no source mutation
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: stem-global-python-ruff-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/stem-global-python-ruff.patch
+          if-no-files-found: warn
+          retention-days: 7
+
+  native-worker-batch:
+    name: Native Neuron Head/batch and final-use ordering contracts (L1 only)
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+          fetch-depth: 0
+      - name: Record exact source identity
+        run: |
+          git rev-parse HEAD HEAD^{tree}
+          rustc --version
+          cargo --version
+      - name: Install project test harness
+        uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
+        with:
+          tool: just@1.51.0,nextest@0.9.103
+      - name: Compile native worker contract
+        working-directory: codex-rs
+        run: cargo check --locked -p codex-hepta-infer-worker-host --lib
+      # This L1 lane qualifies the changed Worker/Head implementation and a
+      # source-order final-use guard. Other App Server end-to-end tests require
+      # an actual Codex executable: they remain separate, non-waived gates
+      # for overall production acceptance and must not be reported as passing.
+      - name: Execute targeted native Worker and final-use-ordering tests
+        working-directory: codex-rs
+        run: >
+          just test --locked -p codex-hepta-infer-worker-host --lib
+          -E 'test(model_worker::) | test(cognitive_final_use_revalidation_follows_durable_dispatch)'
+      - name: Strict native Worker Clippy
+        working-directory: codex-rs
+        run: >
+          cargo clippy --locked -p codex-hepta-infer-worker-host --all-targets --
+          -D clippy::correctness -D clippy::await_holding_lock
+          -D clippy::await_holding_invalid_type
+      - name: Enforce both crate and global Rust formatting
+        if: always()
+        working-directory: codex-rs
+        run: |
+          cargo fmt --package codex-hepta-infer-worker-host -- --check
+          cargo fmt --package codex-hepta-infer-worker-host -- --config imports_granularity=Item --check
+      # Retain the deterministic formatter's exact proposed diff on the tested
+      # SHA.  CI has only contents:read and never commits a formatting result.
+      # This step runs even when compile/test fails; source is then restored so
+      # the final clean-tree guard still exercises the checked-out candidate.
+      - name: Capture candidate rustfmt patch (diagnostic only)
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          cargo fmt --manifest-path codex-rs/Cargo.toml --package codex-hepta-infer-worker-host --package codex-hepta-fleet -- --config imports_granularity=Item
+          git diff --binary -- codex-rs/hepta-infer-worker-host/src codex-rs/hepta-fleet/src > "$RUNNER_TEMP/stem-worker-rustfmt.patch"
+          git restore --worktree -- codex-rs/hepta-infer-worker-host/src codex-rs/hepta-fleet/src
+      - name: Upload rustfmt diagnostics
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: stem-worker-rustfmt-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/stem-worker-rustfmt.patch
+          if-no-files-found: warn
+          retention-days: 7
+      - name: Verify read-only source
+        if: always()
+        run: |
+          git diff --check
+          git diff --exit-code

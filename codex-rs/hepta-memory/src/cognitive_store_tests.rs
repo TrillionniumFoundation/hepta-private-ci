@@ -1091,6 +1091,9 @@ async fn v2_fixture_migrates_forward_preserving_memory_and_revoking_legacy_proje
                 .expect("legacy projection revoked");
         assert_eq!(count, 0, "legacy {table} rows must be revoked");
     }
+    // V2 must reopen through the complete currently registered migration
+    // chain, including the additive shared-experience-use owner in V15.
+    // The new schema must not revive the revoked legacy KG projection.
     assert_eq!(
         sqlx::query_scalar::<_, String>(
             "SELECT group_concat(version, ',') FROM _sqlx_migrations ORDER BY version",
@@ -1098,6 +1101,16 @@ async fn v2_fixture_migrates_forward_preserving_memory_and_revoking_legacy_proje
         .fetch_one(&migrated.pool)
         .await
         .expect("migration ledger"),
-        "1,2,3,4,5,6,7,8,9,10,11,12,13,14"
+        "1,2,3,4,5,6,7,8,9,10,11,12,13,14,15"
+    );
+    let new_owner_tables: i64 = sqlx::query_scalar(
+        "SELECT COUNT(*) FROM sqlite_schema          WHERE type='table' AND name='shared_experience_use_events'",
+    )
+    .fetch_one(&migrated.pool)
+    .await
+    .expect("V15 shared-experience-use table");
+    assert_eq!(
+        new_owner_tables, 1,
+        "V15 table must exist after V2 migration"
     );
 }
