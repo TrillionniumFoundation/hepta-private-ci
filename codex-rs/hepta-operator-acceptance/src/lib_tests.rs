@@ -18,7 +18,10 @@ use crate::trust::VerifiedSignature;
 #[test]
 fn windows_sidecar_lock_is_exclusive_until_owner_drop() {
     let temporary = private_tempdir("Windows sidecar owner lock");
-    let root = temporary.path().canonicalize().expect("canonical sidecar root");
+    let root = temporary
+        .path()
+        .canonicalize()
+        .expect("canonical sidecar root");
     let first = crate::durable::lock_sidecar(&root).expect("initial exclusive lock");
     assert!(
         crate::durable::lock_sidecar(&root).is_err(),
