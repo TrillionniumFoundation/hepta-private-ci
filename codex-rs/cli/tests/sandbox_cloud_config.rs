@@ -99,6 +99,29 @@ async fn sandbox_fetches_and_enforces_cloud_managed_permission_profile() -> Resu
         .await;
 
     let codex = codex_utils_cargo_bin::cargo_bin("codex")?;
+    #[cfg(windows)]
+    let windows_sandbox_bundle = TempDir::new_in(codex_home.path())?;
+    #[cfg(windows)]
+    let codex = {
+        // Resolve real Cargo/Bazel binaries, then use a private bundle so helper
+        // discovery does not depend on or write to shared build output paths.
+        let bundled_codex = windows_sandbox_bundle.path().join("codex.exe");
+        std::fs::copy(&codex, &bundled_codex).context("stage the Windows Codex executable")?;
+        let resources_dir = windows_sandbox_bundle.path().join("codex-resources");
+        std::fs::create_dir(&resources_dir).context("create Windows sandbox helper resources")?;
+        for helper_name in ["codex-windows-sandbox-setup", "codex-command-runner"] {
+            let helper = codex_utils_cargo_bin::cargo_bin(helper_name)?;
+            let destination = resources_dir.join(format!("{helper_name}.exe"));
+            std::fs::copy(&helper, &destination).with_context(|| {
+                format!(
+                    "stage Windows sandbox helper {} at {}",
+                    helper.display(),
+                    destination.display(),
+                )
+            })?;
+        }
+        bundled_codex
+    };
     let chatgpt_base_url_override = format!("chatgpt_base_url=\"{chatgpt_base_url}\"");
     let output = Command::new(&codex)
         .current_dir(codex_home.path())
