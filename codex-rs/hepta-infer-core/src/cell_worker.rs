@@ -342,8 +342,12 @@ fn compatible_model_index_counts_unique_cells_without_recounting() {
     let mut index = CompatibleModelIndexV1::default();
     for number in 0..4096 {
         let cell_id = StableId::new(format!("cell:index:{number}")).expect("cell");
-        index.register(key.clone(), cell_id.clone()).expect("register");
-        index.register(key.clone(), cell_id).expect("idempotent registration");
+        index
+            .register(key.clone(), cell_id.clone())
+            .expect("register");
+        index
+            .register(key.clone(), cell_id)
+            .expect("idempotent registration");
     }
     assert_eq!(index.entry_count, 4096);
     assert_eq!(index.lookup(&key).len(), 4096);
