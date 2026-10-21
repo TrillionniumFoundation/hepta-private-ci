@@ -90,14 +90,31 @@ class TeacherForwardPreflightTests(unittest.TestCase):
                     with self.assertRaises(TeacherForwardError):
                         validate_records(records, base, "embeddinggemma2_740m")
 
-    def test_t5_encoder_vision_or_audio_not_falsely_claimed(self):
+    def test_t5_text_and_single_image_contract_is_strictly_bounded(self):
         with tempfile.TemporaryDirectory() as tmp:
             base = pathlib.Path(tmp)
-            with self.assertRaisesRegex(TeacherForwardError, "does not attest"):
-                validate_records([{"text": "hi", "image": "photo.png"}], base,
-                                 "t5gemma2_encoder_270m")
+            (base / "photo.png").write_bytes(b"fixture bytes; decoder not executed")
+            allowed = [{"text": "<start_of_image> describe this",
+                        "image": "photo.png"}]
+            conversations, digest = validate_records(
+                allowed, base, "t5gemma2_encoder_270m")
+            self.assertEqual([part["type"] for part in conversations[0][0]["content"]],
+                             ["text", "image"])
+            self.assertEqual(len(digest), 64)
             self.assertEqual(len(validate_records([{"text": "hi"}], base,
                                                    "t5gemma2_encoder_270m")[0]), 1)
+            for disallowed in (
+                [{"text": "hi", "image": "photo.png"}],
+                [{"text": "<start_of_image><start_of_image>", "image": "photo.png"}],
+                [{"text": "<start_of_image> no image"}],
+                [{"text": "hi", "audio": "clip.wav"}],
+                [{"image": "photo.png"}],
+                [{"text": "hi", "video": "clip.mp4"}],
+                allowed + [{"text": "hi"}],
+            ):
+                with self.subTest(records=disallowed):
+                    with self.assertRaises(TeacherForwardError):
+                        validate_records(disallowed, base, "t5gemma2_encoder_270m")
 
 
 @unittest.skipUnless(torch is not None, "optional PyTorch local feature tests")

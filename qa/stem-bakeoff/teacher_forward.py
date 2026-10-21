@@ -28,6 +28,7 @@ MAX_RECORDS = 8
 MAX_MEDIA_BYTES = 128 * 1024 * 1024
 MAX_TEXT_CHARS = 16_384
 MAX_SEQUENCE = 8192
+MAX_T5_IMAGE_PIXELS = 16_777_216  # decoded image limit, not only file bytes
 
 
 class TeacherForwardError(ValueError):
@@ -42,14 +43,30 @@ def validate_records(records: object, media_root: str | Path, candidate: str) ->
     if (not isinstance(records, list) or not 1 <= len(records) <= MAX_RECORDS
             or candidate not in MODEL_TYPES):
         raise TeacherForwardError("unregistered model or invalid batch size")
+    # The T5 multimodal processor accepts a homogeneous batch of one text +
+    # one image per sample. Mixing text-only and image rows would misalign the
+    # batched image tensors; keep separate candidate/split experiments.
+    t5_with_image = (candidate == "t5gemma2_encoder_270m" and
+                     any(isinstance(row, dict) and "image" in row for row in records))
+    if t5_with_image and any(not isinstance(row, dict) or set(row) != {"text", "image"}
+                             for row in records):
+        raise TeacherForwardError("mixed T5 image/text-only batches are unsupported")
     conversations = []
     receipts = []
     total_media_bytes = 0
     for record in records:
         if not isinstance(record, dict) or not record or not set(record).issubset(MODALITIES):
             raise TeacherForwardError("unknown or missing modality")
-        if candidate == "t5gemma2_encoder_270m" and set(record) != {"text"}:
-            raise TeacherForwardError("T5Gemma 2 text Encoder probe does not attest vision")
+        if candidate == "t5gemma2_encoder_270m":
+            if set(record) not in ({"text"}, {"text", "image"}):
+                raise TeacherForwardError("T5Gemma 2 accepts only text or text+one image")
+            prompt = record["text"]
+            if isinstance(prompt, str):
+                count = prompt.count("<start_of_image>")
+                if "image" in record and count != 1:
+                    raise TeacherForwardError("T5 image requires exactly one image marker")
+                if "image" not in record and count:
+                    raise TeacherForwardError("T5 image marker without sealed image")
         content = []
         sources = []
         for modality in MODALITIES:
@@ -135,10 +152,14 @@ def run_forward(*, candidate: str, snapshot: str | Path, media_root: str | Path,
         operator_accepted_terms=operator_accepted_terms,
     )
     conversations, source_digest = validate_records(records, media_root, candidate)
+    t5_with_image = (candidate == "t5gemma2_encoder_270m" and
+                     any(any(part["type"] == "image"
+                             for part in conversation[0]["content"])
+                         for conversation in conversations))
     # Derive media seal inputs from the validated conversation, not mutable
     # caller rows. Otherwise deleting media keys during model loading could
     # bypass the seal and expose unverified original file paths to processors.
-    if candidate == "embeddinggemma2_740m":
+    if candidate == "embeddinggemma2_740m" or t5_with_image:
         preflight_root = Path(media_root).absolute()
         preflight_rows = []
         for conversation in conversations:
@@ -184,22 +205,64 @@ def run_forward(*, candidate: str, snapshot: str | Path, media_root: str | Path,
                 return_dict=True, return_tensors="pt")
         observed_module = model
     else:
-        tokenizer = AutoTokenizer.from_pretrained(root, local_files_only=True,
-                                                  trust_remote_code=False)
         model = AutoModelForSeq2SeqLM.from_pretrained(
             root, local_files_only=True, trust_remote_code=False, dtype=dtype
         ).to(device).eval()
-        # T5 input bytes must match the ordered preflight digest even if the
-        # caller mutates its rows while the tokenizer/checkpoint is loading.
-        frozen_texts = [conversation[0]["content"][0]["text"]
-                        for conversation in conversations]
-        inputs = tokenizer(frozen_texts, padding=True,
-                           truncation=True, max_length=MAX_SEQUENCE, return_tensors="pt")
+        # Text-only still uses the original lightweight tokenizer path.
+        # Image input requires a separate owner-private, byte-sealed processor
+        # path: never let Pillow/processor reread original mutable media files.
+        if t5_with_image:
+            processor = AutoProcessor.from_pretrained(
+                root, local_files_only=True, trust_remote_code=False)
+            with sealed_media_inputs(
+                records=preflight_rows, media_root=media_root, candidate=candidate,
+                expected_source_digest=source_digest,
+                original_conversations=conversations,
+                validate_records=validate_records,
+            ) as frozen_conversations:
+                try:
+                    from PIL import Image
+                except ImportError as error:
+                    raise TeacherForwardError("T5 image probe requires Pillow") from error
+                frozen_texts = []
+                images = []
+                for conversation in frozen_conversations:
+                    parts = conversation[0]["content"]
+                    frozen_texts.append(parts[0]["text"])
+                    image_path = Path(parts[1]["url"])
+                    try:
+                        with Image.open(image_path) as opened:
+                            width, height = opened.size
+                            if (type(width) is not int or type(height) is not int
+                                    or width < 1 or height < 1
+                                    or width * height > MAX_T5_IMAGE_PIXELS):
+                                raise TeacherForwardError("T5 decoded image budget exceeded")
+                            images.append(opened.convert("RGB").copy())
+                    except OSError as error:
+                        raise TeacherForwardError("T5 sealed image decode failed") from error
+                inputs = processor(text=frozen_texts, images=images,
+                                   padding=True, truncation=True,
+                                   max_length=MAX_SEQUENCE, return_tensors="pt")
+        else:
+            tokenizer = AutoTokenizer.from_pretrained(
+                root, local_files_only=True, trust_remote_code=False)
+            frozen_texts = [conversation[0]["content"][0]["text"]
+                            for conversation in conversations]
+            inputs = tokenizer(frozen_texts, padding=True,
+                               truncation=True, max_length=MAX_SEQUENCE,
+                               return_tensors="pt")
         observed_module = model.get_encoder()
     if (not isinstance(inputs, Mapping) or "attention_mask" not in inputs
             or inputs["attention_mask"].ndim != 2
             or inputs["attention_mask"].shape[1] > MAX_SEQUENCE):
         raise TeacherForwardError("missing or unbounded teacher attention mask")
+    if t5_with_image:
+        pixels = inputs.get("pixel_values")
+        if (not isinstance(pixels, torch.Tensor) or pixels.ndim != 4
+                or pixels.shape[0] != validated_batch_size
+                or not pixels.is_floating_point()
+                or not bool(torch.isfinite(pixels).all())):
+            raise TeacherForwardError("T5 processor must bind finite image pixels")
     inputs = {key: val.to(device) if isinstance(val, torch.Tensor) else val
               for key, val in inputs.items()}
     module_calls = [0]
@@ -212,8 +275,11 @@ def run_forward(*, candidate: str, snapshot: str | Path, media_root: str | Path,
             if candidate == "embeddinggemma2_740m":
                 tokens = model(**inputs).last_hidden_state
             else:
-                tokens = observed_module(input_ids=inputs["input_ids"],
-                                         attention_mask=inputs["attention_mask"]).last_hidden_state
+                encoder_kwargs = {"input_ids": inputs["input_ids"],
+                                  "attention_mask": inputs["attention_mask"]}
+                if t5_with_image:
+                    encoder_kwargs["pixel_values"] = inputs["pixel_values"]
+                tokens = observed_module(**encoder_kwargs).last_hidden_state
             pooled = mean_pool(tokens, inputs["attention_mask"], truncate_dim=truncate_dim)
         if device == "cuda":
             torch.cuda.synchronize()
