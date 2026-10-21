@@ -23,6 +23,9 @@ impl<D: ModelDriver + NeuronFeatureDriver + NeuronPhysicalBatchDriver>
         if self.metrics_poisoned || self.metric_sink.as_ref().is_none_or(|sink| !sink.healthy()) {
             return Err(BatchWorkerErrorV1::TelemetryUnavailable);
         }
+        if self.scope_currentness.is_none() {
+            return Err(BatchWorkerErrorV1::ScopeFenceUnavailable);
+        }
         let poll = self
             .scheduler
             .poll_physical_compatible(now_ms)
@@ -39,6 +42,13 @@ impl<D: ModelDriver + NeuronFeatureDriver + NeuronPhysicalBatchDriver>
                 pending: self.pending.len(),
             });
         };
+        // Preserve all exact per-Cell bindings even when inference computation
+        // is coalesced across scopes. These must be fenced at effect entry.
+        let scope_bindings: Vec<MicrobatchKeyV1> = batch
+            .requests
+            .iter()
+            .map(|intent| intent.key.clone())
+            .collect();
         let mut ids = Vec::with_capacity(batch.requests.len());
         let mut items = Vec::with_capacity(batch.requests.len());
         let mut scope_bytes = b"hepta.worker.physical-batch-scopes.v1".to_vec();
@@ -126,10 +136,24 @@ impl<D: ModelDriver + NeuronFeatureDriver + NeuronPhysicalBatchDriver>
             })
             .collect();
         let start = Instant::now();
+        let currentness = self
+            .scope_currentness
+            .as_ref()
+            .ok_or(BatchWorkerErrorV1::ScopeFenceUnavailable)?;
         let execution =
             FinalUseAuthority::with_verified_batch_effect(&self.authority, claims, || {
-                self.worker
+                // All route heads must still be current after durable nonce
+                // claims. The CNS read guard lives across the actual forward,
+                // preventing route cutover while any input is in flight.
+                let guard = currentness
+                    .enter_current(&scope_bindings)
+                    .map_err(|_| BatchWorkerErrorV1::ScopeFenceDenied)?;
+                let result = self
+                    .worker
                     .run_physical_batch_receipts(now_ms, &model_id, requests)
+                    .map_err(|_| BatchWorkerErrorV1::Worker);
+                drop(guard);
+                result
             });
         let completed = match execution {
             Ok(Ok(receipts)) if receipts.len() == ids.len() => ids
@@ -137,7 +161,7 @@ impl<D: ModelDriver + NeuronFeatureDriver + NeuronPhysicalBatchDriver>
                 .zip(receipts.into_iter().map(Ok))
                 .map(|(request_id, result)| BatchWorkerItemOutcomeV1 { request_id, result })
                 .collect::<Vec<_>>(),
-            Ok(_) => failed_outcomes(ids, BatchWorkerErrorV1::Worker),
+            Ok(Err(error)) => failed_outcomes(ids, error),
             Err(_) => failed_outcomes(ids, BatchWorkerErrorV1::Authority),
         };
         if let Some(sink) = &self.metric_sink {
