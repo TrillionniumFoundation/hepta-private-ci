@@ -131,6 +131,55 @@ class SharedMultimodalBridgeTests(unittest.TestCase):
         with self.assertRaises(LatentBridgeError):
             s({'image': torch.randn(2, 300, 32)}, source_digests={'image':'a'*64}, generation=1)
 
+    def test_foreign_cell_or_teacher_optimizer_parameters_rejected_before_forward(self):
+        bridge = self.stem()
+        student = build_encoder(StemSpec('tiny_training_only', 32, 1, 4),
+                                device='cpu', trainable=True)
+        foreign_cell = torch.nn.Linear(32, 1)
+        optimizer = torch.optim.AdamW(
+            list(bridge.parameters()) + list(student.parameters())
+            + list(foreign_cell.parameters()), lr=0.01)
+        calls = [0]
+
+        def count_projection(_module, _inputs, _outputs):
+            calls[0] += 1
+
+        hook = bridge.projectors['text'].register_forward_hook(count_projection)
+        try:
+            with self.assertRaisesRegex(LatentBridgeError, "foreign, frozen or duplicate"):
+                shadow_distill_step(
+                    student, bridge, {'text': torch.ones(2, 32)},
+                    {'text': 'a' * 64}, torch.ones(2, 32), optimizer,
+                    generation=1)
+        finally:
+            hook.remove()
+        self.assertEqual(calls[0], 0)
+        self.assertIsNone(foreign_cell.weight.grad)
+
+    def test_optimizer_param_injection_by_projection_hook_prevents_weight_step(self):
+        bridge = self.stem()
+        student = build_encoder(StemSpec('tiny_training_only', 32, 1, 4),
+                                device='cpu', trainable=True)
+        optimizer = torch.optim.SGD(
+            list(bridge.parameters()) + list(student.parameters()), lr=0.1)
+        foreign_cell_weight = torch.nn.Parameter(torch.ones(1))
+        before = bridge.projectors['text'].weight.detach().clone()
+
+        def inject_foreign_parameter(_module, _inputs, _outputs):
+            optimizer.param_groups[0]['params'].append(foreign_cell_weight)
+
+        hook = bridge.projectors['text'].register_forward_hook(inject_foreign_parameter)
+        try:
+            with self.assertRaisesRegex(LatentBridgeError, "foreign, frozen or duplicate"):
+                shadow_distill_step(
+                    student, bridge, {'text': torch.ones(2, 32)},
+                    {'text': 'a' * 64}, torch.ones(2, 32), optimizer,
+                    generation=1)
+        finally:
+            hook.remove()
+        torch.testing.assert_close(bridge.projectors['text'].weight, before, rtol=0, atol=0)
+        self.assertIsNone(foreign_cell_weight.grad)
+
     def test_teacher_is_detached_and_small_student_offline_step_changes_weights(self):
         stem = self.stem()
         student = build_encoder(StemSpec('tiny_training_only', 32, 1, 4),
