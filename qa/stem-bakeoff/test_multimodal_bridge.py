@@ -807,5 +807,111 @@ class SharedMultimodalBridgeTests(unittest.TestCase):
         self.assertEqual(called[0], 0)
 
 
+    def test_instance_zero_grad_override_cannot_mutate_foreign_cell(self):
+        bridge = self.stem()
+        student = build_encoder(StemSpec('tiny_training_only', 32, 1, 4),
+                                device='cpu', trainable=True)
+        optimizer = torch.optim.SGD(
+            list(bridge.parameters()) + list(student.parameters()), lr=0.01)
+        foreign = torch.nn.Parameter(torch.ones(1))
+        before = foreign.detach().clone()
+        calls = [0]
+
+        def hostile_zero_grad(**kwargs):
+            calls[0] += 1
+            with torch.no_grad():
+                foreign.add_(1)
+
+        optimizer.zero_grad = hostile_zero_grad
+        with self.assertRaisesRegex(
+                LatentBridgeError, 'instrumented offline optimizer lifecycle'):
+            shadow_distill_step(
+                student, bridge, {'text': torch.ones(2, 32)},
+                {'text': 'a' * 64}, torch.ones(2, 32),
+                optimizer, generation=1)
+        self.assertEqual(calls[0], 0)
+        torch.testing.assert_close(foreign, before, rtol=0, atol=0)
+
+    def test_late_zero_grad_override_rejected_before_invocation(self):
+        bridge = self.stem()
+        student = build_encoder(StemSpec('tiny_training_only', 32, 1, 4),
+                                device='cpu', trainable=True)
+        optimizer = torch.optim.SGD(
+            list(bridge.parameters()) + list(student.parameters()), lr=0.01)
+        foreign = torch.nn.Parameter(torch.ones(1))
+        before = foreign.detach().clone()
+        calls = [0]
+
+        def hostile_zero_grad(**kwargs):
+            calls[0] += 1
+            with torch.no_grad():
+                foreign.add_(1)
+
+        def tamper(_module, _inputs, _output):
+            optimizer.zero_grad = hostile_zero_grad
+
+        hook = bridge.projectors['text'].register_forward_hook(tamper)
+        try:
+            with self.assertRaisesRegex(
+                    LatentBridgeError, 'instrumented offline optimizer lifecycle'):
+                shadow_distill_step(
+                    student, bridge, {'text': torch.ones(2, 32)},
+                    {'text': 'a' * 64}, torch.ones(2, 32),
+                    optimizer, generation=1)
+        finally:
+            hook.remove()
+        self.assertEqual(calls[0], 0)
+        torch.testing.assert_close(foreign, before, rtol=0, atol=0)
+
+    def test_shadowed_snapshot_or_restore_cannot_fake_step_receipt(self):
+        for name in ('state_dict', 'load_state_dict'):
+            with self.subTest(method=name):
+                bridge = self.stem()
+                student = build_encoder(StemSpec('tiny_training_only', 32, 1, 4),
+                                        device='cpu', trainable=True)
+                optimizer = torch.optim.AdamW(
+                    list(bridge.parameters()) + list(student.parameters()),
+                    lr=0.01)
+                calls = [0]
+                original = getattr(optimizer, name)
+
+                def instrumented(*args, **kwargs):
+                    calls[0] += 1
+                    return original(*args, **kwargs)
+
+                setattr(optimizer, name, instrumented)
+                with self.assertRaisesRegex(
+                        LatentBridgeError, 'instrumented offline optimizer lifecycle'):
+                    shadow_distill_step(
+                        student, bridge, {'text': torch.ones(2, 32)},
+                        {'text': 'a' * 64}, torch.ones(2, 32),
+                        optimizer, generation=1)
+                self.assertEqual(calls[0], 0)
+
+    def test_student_hook_cannot_override_state_restore_before_step(self):
+        bridge = self.stem()
+        student = build_encoder(StemSpec('tiny_training_only', 32, 1, 4),
+                                device='cpu', trainable=True)
+        optimizer = torch.optim.AdamW(
+            list(bridge.parameters()) + list(student.parameters()), lr=0.01)
+        before = next(student.parameters()).detach().clone()
+
+        def tamper(_module, _inputs, _output):
+            optimizer.load_state_dict = lambda *_args: None
+
+        hook = student.register_forward_hook(tamper)
+        try:
+            with self.assertRaisesRegex(
+                    LatentBridgeError, 'instrumented offline optimizer lifecycle'):
+                shadow_distill_step(
+                    student, bridge, {'text': torch.ones(2, 32)},
+                    {'text': 'a' * 64}, torch.ones(2, 32),
+                    optimizer, generation=1)
+        finally:
+            hook.remove()
+        torch.testing.assert_close(
+            next(student.parameters()), before, rtol=0, atol=0)
+
+
 if __name__ == '__main__':
     unittest.main()

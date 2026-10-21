@@ -222,6 +222,31 @@ def _verify_optimizer_storage_isolation(tensors: list[torch.Tensor]) -> None:
             raise LatentBridgeError("overlapping offline optimizer parameter/storage")
 
 
+
+def _verify_optimizer_lifecycle(optimizer: torch.optim.Optimizer) -> None:
+    """Only stock optimizer lifecycle methods may mutate offline training state.
+
+    A caller-controlled zero_grad() can mutate a foreign Cell before backward;
+    spoofed state_dict()/load_state_dict() can silently invalidate the rollback
+    receipt. Verify before projection, before zero_grad(), and before step().
+    """
+    if type(optimizer) not in (torch.optim.SGD, torch.optim.AdamW):
+        raise LatentBridgeError("unsupported offline optimizer type")
+    # Stock SGD/AdamW inherit these methods from Optimizer in the pinned
+    # PyTorch runtime. Instance shadowing is never authorized.
+    if (any(name in vars(optimizer) for name in (
+            "step", "zero_grad", "state_dict", "load_state_dict"))
+            or type(optimizer).zero_grad is not torch.optim.Optimizer.zero_grad
+            or type(optimizer).state_dict is not torch.optim.Optimizer.state_dict
+            or type(optimizer).load_state_dict is not torch.optim.Optimizer.load_state_dict
+            or optimizer._optimizer_step_pre_hooks
+            or optimizer._optimizer_step_post_hooks
+            or optimizer._optimizer_state_dict_pre_hooks
+            or optimizer._optimizer_state_dict_post_hooks
+            or optimizer._optimizer_load_state_dict_pre_hooks
+            or optimizer._optimizer_load_state_dict_post_hooks):
+        raise LatentBridgeError("instrumented offline optimizer lifecycle is unsupported")
+
 def _verify_optimizer_ownership(student: nn.Module, slotizer: MultimodalSlotizer,
                                 optimizer: torch.optim.Optimizer) -> tuple[int, ...]:
     """Prevent an offline Student step from updating another Cell or teacher."""
@@ -376,14 +401,7 @@ def _guarded_offline_optimizer_step(optimizer: torch.optim.Optimizer,
     This isolates a research micro-step; it does not roll back forward-hook
     side effects, external I/O, or supply a production training transaction.
     """
-    if ("step" in vars(optimizer)
-            or optimizer._optimizer_step_pre_hooks
-            or optimizer._optimizer_step_post_hooks
-            or optimizer._optimizer_state_dict_pre_hooks
-            or optimizer._optimizer_state_dict_post_hooks
-            or optimizer._optimizer_load_state_dict_pre_hooks
-            or optimizer._optimizer_load_state_dict_post_hooks):
-        raise LatentBridgeError("instrumented offline optimizer step is unsupported")
+    _verify_optimizer_lifecycle(optimizer)
     parameters = [p for group in optimizer.param_groups for p in group["params"]]
     if tuple(id(p) for p in parameters) != expected_ids:
         raise LatentBridgeError("offline optimizer ownership changed before step")
@@ -435,6 +453,7 @@ def shadow_distill_step(student: nn.Module, slotizer: MultimodalSlotizer,
     # call, and recheck it after forward/backward hooks before any weight step.
     optimizer_binding = _verify_optimizer_ownership(student, slotizer, optimizer)
     optimizer_safety_binding = _verify_optimizer_step_safety(optimizer)
+    _verify_optimizer_lifecycle(optimizer)
     # detach() alone aliases caller-owned teacher storage. Freeze the actual
     # training target before any projector/Student hooks or backward execution.
     if (not isinstance(teacher_global, torch.Tensor)
@@ -479,6 +498,8 @@ def shadow_distill_step(student: nn.Module, slotizer: MultimodalSlotizer,
         "teacher_target_shape": list(target.shape),
         "teacher_target_dtype": str(target.dtype),
     }, sort_keys=True, separators=(",", ":")).encode()).hexdigest()
+    # Projector hooks may replace lifecycle methods after initial preflight.
+    _verify_optimizer_lifecycle(optimizer)
     optimizer.zero_grad(set_to_none=True)
     student_tokens = student(student_input)
     if _tensor_bytes_sha256(student_input) != student_input_sha256:
