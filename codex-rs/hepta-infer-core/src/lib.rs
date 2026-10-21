@@ -5,6 +5,8 @@
 #![forbid(unsafe_code)]
 
 /// Reusable state machine; does not install a second runtime owner.
+pub mod cell_batch;
+pub mod cell_worker;
 pub mod durable_control;
 mod neuron_feature;
 

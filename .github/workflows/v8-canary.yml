@@ -74,7 +74,9 @@ jobs:
         uses: ./.github/actions/check-clean-worktree
 
   build:
-    timeout-minutes: 30
+    # Bazel/V8 cold cross-platform builds exceeded 30 minutes and were cancelled
+    # during compilation, before smoke tests could produce a native receipt.
+    timeout-minutes: 120
     name: Build ${{ matrix.variant }} ${{ matrix.target }}
     needs: metadata
     # Metadata always runs; only relevant changes pay for the large matrix.
@@ -336,7 +338,8 @@ jobs:
         uses: ./.github/actions/check-clean-worktree
 
   build-windows-source:
-    timeout-minutes: 30
+    # Source-built Windows V8 needs the same bounded cold-build allowance.
+    timeout-minutes: 120
     name: Build ptrcomp-sandbox ${{ matrix.target }} from source
     needs: metadata
     if: ${{ needs.metadata.outputs.windows_source_required == 'true' }}

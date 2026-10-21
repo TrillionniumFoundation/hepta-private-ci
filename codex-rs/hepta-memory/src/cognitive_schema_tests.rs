@@ -1,13 +1,20 @@
 //! Independently derive the schema from compiled migrations, never owner bytes.
-use sqlx::sqlite::SqlitePoolOptions;
+use codex_state::SqliteConfig;
+use codex_utils_absolute_path::AbsolutePathBuf;
 
 use super::*;
 
 #[tokio::test]
 async fn compiled_migrations_match_schema_oracle_and_weakened_trigger_is_rejected() {
-    let pool = SqlitePoolOptions::new()
-        .max_connections(1)
-        .connect("sqlite::memory:")
+    // Isolate the independent schema oracle without initializing the Codex
+    // runtime's own tables, using the shared SQLite connection policy.
+    let fixture = tempfile::tempdir().expect("private schema oracle");
+    let config = SqliteConfig::new_for_testing(
+        AbsolutePathBuf::try_from(fixture.path().to_path_buf())
+            .expect("absolute schema oracle root"),
+    );
+    let pool = config
+        .open_read_write_pool(&fixture.path().join("schema-oracle.sqlite"))
         .await
         .expect("reference SQLite");
     MIGRATOR.run(&pool).await.expect("compiled migration chain");

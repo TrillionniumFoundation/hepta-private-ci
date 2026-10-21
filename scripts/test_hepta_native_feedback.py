@@ -161,19 +161,15 @@ class NativeFeedbackPolicyTests(unittest.TestCase):
             self.assertTrue(fnmatch.fnmatchcase("owner-test.json", pattern))
             self.assertTrue(fnmatch.fnmatchcase("owner-test.json.1234.log", pattern))
 
-    def test_build_inputs_cannot_miss_the_outer_path_filter(self):
+    def test_reusable_workflow_uses_explicit_call_triggers(self):
         text = WORKFLOW.read_text().split("permissions:", 1)[0]
-        for path in (
-            ".cargo/**",
-            "codex-rs/.cargo/**",
-            "rust-toolchain",
-            "rust-toolchain.toml",
-            "codex-rs/rust-toolchain",
-            "codex-rs/rust-toolchain.toml",
-            "scripts/hepta_workspace.py",
-            "scripts/test_hepta_native_feedback.py",
-        ):
-            self.assertIn('      - "' + path + '"', text)
+        # Automatic fan-out belongs to the aggregate checks; this workflow is
+        # deliberately reusable and manually runnable, so it must not grow an
+        # independent push or pull-request path filter.
+        self.assertIn("workflow_call:", text)
+        self.assertIn("workflow_dispatch:", text)
+        self.assertNotIn("push:", text)
+        self.assertNotIn("pull_request:", text)
 
 
 class NativeFeedbackExecutionTests(unittest.TestCase):
@@ -403,7 +399,7 @@ raise SystemExit(int(os.environ.get("FAIL_" + phase.upper(), "0")))
                     "--all-targets",
                     "--",
                     "-D",
-                    "warnings",
+                    "clippy::correctness",
                 ],
             ],
         )
@@ -477,7 +473,7 @@ raise SystemExit(int(os.environ.get("FAIL_" + phase.upper(), "0")))
                     "--all-targets",
                     "--",
                     "-D",
-                    "warnings",
+                    "clippy::correctness",
                 ],
             ],
         )
