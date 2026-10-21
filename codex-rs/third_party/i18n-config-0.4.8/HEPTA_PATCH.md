@@ -43,3 +43,33 @@ after changing the manifests or Cargo.lock.
 No advisory suppression or audit policy change is part of this patch. Remove
 it when a compatible published i18n-config release includes the maintained
 parser and both Cargo and Bazel resolve the replacement successfully.
+
+## Executable consumer regressions
+
+The path patch is not a workspace member, and Cargo rejects testing this
+non-member package with dev-dependencies through `just test -p i18n-config`.
+The original six public-entry test bodies from PR #2961 commit
+`c210d26350ac57e527b4ff59663e5c8d518ff95a` are therefore also compiled by the
+existing `codex-secrets` workspace consumer in
+`codex-rs/secrets/src/i18n_config_tests.rs`. The imports use the public `i18n_config` API; workspace formatting and
+equivalent inline panic diagnostics are applied without changing the six
+behaviors or assertions. The original vendor test source remains intact.
+The consumer adds a test-only dependency on this exact 0.4.8 path patch and
+uses the product Cargo.lock, so no separate test workspace or dependency
+resolution substitutes for the consuming graph.
+
+From the repository root, execute the retained parser regressions with:
+
+```sh
+just test -p codex-secrets --lib --locked -E 'test(i18n_config_tests::)' --no-tests=fail --retries 0
+```
+
+Then run the complete existing consumer target, including these six cases:
+
+```sh
+just test -p codex-secrets --lib --locked --no-tests=fail --retries 0
+```
+
+These commands must actually execute on the candidate's generated lock.
+Historical vendor-only results and a successful dependency audit do not
+establish the new lock's parser or consumer compatibility.

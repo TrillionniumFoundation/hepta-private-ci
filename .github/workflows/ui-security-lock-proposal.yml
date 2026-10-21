@@ -116,7 +116,7 @@ jobs:
               ("bazel-lock-check", ["just", "bazel-lock-check"], ".", ["bazel-lock-update"]),
               ("bazel-lock-repeat", ["just", "bazel-lock-update"], ".", ["bazel-lock-update"]),
               ("bazel-lock-repeat-equal", ["cmp", str(evidence / "MODULE.bazel.lock.first"), "MODULE.bazel.lock"], ".", ["bazel-lock-repeat"]),
-              ("i18n-config-tests", ["just", "test", "-p", "i18n-config", "--lib", "--locked", "--no-tests=fail", "--retries", "0"], ".", ["metadata"]),
+              ("i18n-config-tests", ["just", "test", "-p", "codex-secrets", "--lib", "--locked", "-E", "test(i18n_config_tests::)", "--no-tests=fail", "--retries", "0"], ".", ["metadata"]),
               ("secrets-consumer-tests", ["just", "test", "-p", "codex-secrets", "--lib", "--locked", "--no-tests=fail", "--retries", "0"], ".", ["metadata"]),
           ]
           records = [{"name": name, "argv": argv, "cwd": cwd, "requires": requires,
