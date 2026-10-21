@@ -200,6 +200,17 @@ pub fn run_memory_meta_batch_shadow_v1(
 ) -> Result<MemoryMetaShadowBatchV1, MemoryMetaBatchErrorV1> {
     validate_memory_meta_runtime_policies_v1(retrieval_policy, dynamics_policy)?;
     preflight_memory_meta_batch_v1(policy, cue, engram_snapshot, cells)?;
+    // Validate the entire generated batch before running the first Cell.
+    // In sparse mode this receives only admitted Cells, so deferred Cells
+    // deliberately need no generator work or materialized candidate batches.
+    for cell in cells {
+        cell.generated_input
+            .validate()
+            .map_err(|source| MemoryMetaBatchErrorV1::Tick {
+                cell_id: cell.manifest.cell_id.clone(),
+                source: MemoryCellRuntimeErrorV1::Retrieval(source),
+            })?;
+    }
 
     let mut cell_ticks = Vec::with_capacity(cells.len());
     let mut candidates = Vec::with_capacity(cells.len());
