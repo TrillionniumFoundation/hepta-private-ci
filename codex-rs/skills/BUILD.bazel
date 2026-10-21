@@ -12,4 +12,7 @@ codex_rust_crate(
         ],
     ),
     crate_name = "codex_skills",
+    deps_extra = [
+        "@crates//:noyalib-serde-yaml",
+    ],
 )
