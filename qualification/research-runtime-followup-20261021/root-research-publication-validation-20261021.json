@@ -1,0 +1,101 @@
+{
+  "schema": "hepta.research.independent-publication-validation.v1",
+  "created_utc": "2026-10-21T13:40:11.380574+00:00",
+  "validation": "Exact immutable manifests, all file bytes, all listed tar members, zip CRC and path checks; no model executed, no partial evaluation answer inspected or scored.",
+  "packages": [
+    {
+      "package": "memory-bounded-stop-20261021",
+      "manifest_sha256": "a2c4e9d90b665422456442e166cb860703a6e0a36c8dd16afec932dadec5f0e1",
+      "file_count_including_manifest": 19,
+      "total_bytes": 916859,
+      "archives": [
+        {
+          "path": "calibration40-original-observations.tar.gz",
+          "members": 13
+        },
+        {
+          "path": "evaluation48-bounded-stop-original-observations.tar.gz",
+          "members": 8
+        },
+        {
+          "path": "original-execution-source-closure.tar.gz",
+          "members": 50
+        },
+        {
+          "path": "identity-and-runtime-receipts.tar.gz",
+          "members": 18
+        },
+        {
+          "path": "historical-audit-code.tar.gz",
+          "members": 2
+        },
+        {
+          "path": "memory-original-inputs.zip",
+          "zip_crc_verified_members": 36
+        },
+        {
+          "path": "qwen-canonical-identity.zip",
+          "zip_crc_verified_members": 26
+        }
+      ]
+    },
+    {
+      "package": "memory-staging-supplement-20261021",
+      "manifest_sha256": "8d16efb4f755881db316068ee2db4707a049b901cc2375f18e13b1945f63f275",
+      "file_count_including_manifest": 9,
+      "total_bytes": 12674,
+      "archives": []
+    },
+    {
+      "package": "new-cohort-admission-20261021",
+      "manifest_sha256": "560fb953204488350d5b4492743336414f2914b7017fd4450c433906df95b293",
+      "file_count_including_manifest": 34,
+      "total_bytes": 517375,
+      "archives": [
+        {
+          "path": "all-sixteen-metadata-responses.tar.gz",
+          "members": 49
+        },
+        {
+          "path": "source-captures/Homebrew__homebrew-core.tar.gz",
+          "members": 7
+        },
+        {
+          "path": "source-captures/NixOS__nixpkgs.tar.gz",
+          "members": 7
+        },
+        {
+          "path": "source-captures/pytorch__pytorch.tar.gz",
+          "members": 7
+        },
+        {
+          "path": "source-captures/apache__airflow.tar.gz",
+          "members": 7
+        },
+        {
+          "path": "source-captures/microsoft__vscode.tar.gz",
+          "members": 7
+        },
+        {
+          "path": "source-captures/tensorflow__tensorflow.tar.gz",
+          "members": 7
+        },
+        {
+          "path": "source-captures/elastic__elasticsearch.tar.gz",
+          "members": 7
+        },
+        {
+          "path": "source-captures/google__jax.tar.gz",
+          "members": 7
+        }
+      ]
+    },
+    {
+      "package": "research-owner3039-review-20261021",
+      "manifest_sha256": "2d4313b825efd457c417adcd69927123d2874baeee184aa4eefc22b2c380b25e",
+      "file_count_including_manifest": 14,
+      "total_bytes": 96755,
+      "archives": []
+    }
+  ]
+}

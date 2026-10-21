@@ -1,0 +1,380 @@
+{
+  "child_pr_model_execution_possible": true,
+  "declared_model_related_job_instances": 5,
+  "declared_total_job_instances": 7,
+  "event": {
+    "pull_request": {
+      "paths": [
+        ".github/workflows/hepta-memory-cell-continuation.yml",
+        "scripts/memory_cell/**",
+        "codex-rs/hepta-neuron/**",
+        "codex-rs/hepta-bellman-operator/**",
+        "codex-rs/hepta-infer-worker-host/**",
+        "codex-rs/hepta-agentd/**",
+        "codex-rs/hepta-intelligence-eval/**"
+      ]
+    }
+  },
+  "jobs": [
+    {
+      "declared_instances": 1,
+      "env": {},
+      "job": "source-inputs",
+      "job_if": null,
+      "model_execution_review": "No model invocation in these archive/format commands.",
+      "needs": null,
+      "runs_on": "ubuntu-latest",
+      "steps": [
+        {
+          "uses": "actions/checkout@11d5960a326750d5838078e36cf38b85af677262",
+          "with": {
+            "persist-credentials": "false",
+            "ref": "${{ github.event.pull_request.head.sha }}"
+          }
+        },
+        {
+          "name": "Retain exact source",
+          "run": "mkdir -p /tmp/memory-cell-source\ngit archive --format=tar.gz HEAD AGENTS.md justfile defs.bzl codex-rs docs scripts .github > /tmp/memory-cell-source/owner-inputs.tar.gz\ngit rev-parse HEAD > /tmp/memory-cell-source/tested-commit.txt\nsha256sum /tmp/memory-cell-source/owner-inputs.tar.gz > /tmp/memory-cell-source/SHA256SUMS\n"
+        },
+        {
+          "uses": "actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02",
+          "with": {
+            "if-no-files-found": "error",
+            "name": "memory-cell-owner-source-inputs",
+            "path": "/tmp/memory-cell-source"
+          }
+        }
+      ],
+      "strategy": null,
+      "timeout_minutes": "10"
+    },
+    {
+      "declared_instances": 2,
+      "env": {},
+      "job": "native-models",
+      "job_if": null,
+      "model_execution_review": "Actual locomo/longmemeval native benchmark model execution; two declared matrix jobs.",
+      "needs": null,
+      "runs_on": "ubuntu-latest",
+      "steps": [
+        {
+          "uses": "actions/checkout@11d5960a326750d5838078e36cf38b85af677262",
+          "with": {
+            "persist-credentials": "false",
+            "ref": "${{ github.event.pull_request.head.sha }}"
+          }
+        },
+        {
+          "name": "Install pinned CPU model environment",
+          "run": "python3 -m venv /tmp/mcell-python\n/tmp/mcell-python/bin/pip install torch==2.5.1 --index-url https://download.pytorch.org/whl/cpu\n/tmp/mcell-python/bin/pip install -r scripts/memory_cell/requirements.txt\n"
+        },
+        {
+          "name": "Native adapters and leakage/ablation tests",
+          "run": "/tmp/mcell-python/bin/python -m unittest discover -s scripts/memory_cell -p 'test_*.py' -v"
+        },
+        {
+          "env": {
+            "HF_HUB_DISABLE_IMPLICIT_TOKEN": "1",
+            "HF_HUB_DISABLE_XET": "1"
+          },
+          "name": "Stage public pinned model and data inputs",
+          "run": "/tmp/mcell-python/bin/python scripts/memory_cell/prepare.py native /tmp/mcell-inputs"
+        },
+        {
+          "env": {
+            "BENCHMARK": "${{ matrix.kind }}",
+            "HEPTA_MEMORY_TESTED_COMMIT": "${{ github.event.pull_request.head.sha }}",
+            "HF_HUB_OFFLINE": "1",
+            "TOKENIZERS_PARALLELISM": "false",
+            "TRANSFORMERS_OFFLINE": "1"
+          },
+          "name": "Execute original-format public benchmark pilot",
+          "run": "set -euo pipefail\nmkdir -p /tmp/mcell-native\ncp /tmp/mcell-inputs/staging.json /tmp/mcell-native/staging.json\ngit rev-parse HEAD > /tmp/mcell-native/tested-commit.txt\n/tmp/mcell-python/bin/pip freeze > /tmp/mcell-native/python-lock.txt\n/tmp/mcell-python/bin/python scripts/memory_cell/run_native.py /tmp/mcell-inputs \"/tmp/mcell-native/$BENCHMARK\" \"$BENCHMARK\" --qa-limit 16\nfind /tmp/mcell-native -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > /tmp/mcell-native/SHA256SUMS\n"
+        },
+        {
+          "if": "always()",
+          "uses": "actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02",
+          "with": {
+            "if-no-files-found": "warn",
+            "name": "memory-cell-native-model-evidence-${{ matrix.kind }}",
+            "path": "/tmp/mcell-native"
+          }
+        },
+        {
+          "if": "always() && matrix.kind == 'locomo'",
+          "uses": "actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02",
+          "with": {
+            "if-no-files-found": "error",
+            "name": "memory-cell-laya-training-pairs",
+            "path": "/tmp/mcell-native/locomo/laya-pairs.json"
+          }
+        },
+        {
+          "if": "always() && matrix.kind == 'locomo'",
+          "uses": "actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02",
+          "with": {
+            "if-no-files-found": "error",
+            "name": "memory-cell-trained-native-circuit",
+            "path": "/tmp/mcell-native/locomo/native-export"
+          }
+        }
+      ],
+      "strategy": {
+        "fail-fast": "false",
+        "matrix": {
+          "kind": [
+            "locomo",
+            "longmemeval"
+          ]
+        }
+      },
+      "timeout_minutes": "60"
+    },
+    {
+      "declared_instances": 1,
+      "env": {
+        "CARGO_BUILD_JOBS": "2",
+        "CARGO_PROFILE_DEV_DEBUG": "0",
+        "CARGO_PROFILE_TEST_DEBUG": "0"
+      },
+      "job": "native-owner",
+      "job_if": "always() && !cancelled()",
+      "model_execution_review": "Execution of actual trained native parameters via memory_cell_owner.",
+      "needs": "native-models",
+      "runs_on": "ubuntu-latest",
+      "steps": [
+        {
+          "uses": "actions/checkout@11d5960a326750d5838078e36cf38b85af677262",
+          "with": {
+            "persist-credentials": "false",
+            "ref": "${{ github.event.pull_request.head.sha }}"
+          }
+        },
+        {
+          "uses": "./.github/actions/setup-ci"
+        },
+        {
+          "uses": "taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532",
+          "with": {
+            "tool": "cargo-nextest"
+          }
+        },
+        {
+          "uses": "actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093",
+          "with": {
+            "name": "memory-cell-trained-native-circuit",
+            "path": "/tmp/circuit"
+          }
+        },
+        {
+          "name": "Test actual Neuron and execute trained parameters through the owner",
+          "run": "set -euo pipefail\njust test -p codex-hepta-neuron\ncd codex-rs\ncargo run -p codex-hepta-neuron --example memory_cell_owner -- /tmp/circuit /tmp/neuron-owner-evidence\n"
+        },
+        {
+          "if": "always()",
+          "uses": "actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02",
+          "with": {
+            "if-no-files-found": "warn",
+            "name": "memory-cell-native-owner-evidence",
+            "path": "/tmp/neuron-owner-evidence"
+          }
+        }
+      ],
+      "strategy": null,
+      "timeout_minutes": "25"
+    },
+    {
+      "declared_instances": 1,
+      "env": {
+        "CARGO_BUILD_JOBS": "2",
+        "CARGO_PROFILE_DEV_DEBUG": "0",
+        "CARGO_PROFILE_TEST_DEBUG": "0"
+      },
+      "job": "training-owner",
+      "job_if": null,
+      "model_execution_review": "Actual pretrained worker fine-tuning and native serving tests.",
+      "needs": null,
+      "runs_on": "ubuntu-latest",
+      "steps": [
+        {
+          "uses": "actions/checkout@11d5960a326750d5838078e36cf38b85af677262",
+          "with": {
+            "persist-credentials": "false",
+            "ref": "${{ github.event.pull_request.head.sha }}"
+          }
+        },
+        {
+          "uses": "./.github/actions/setup-ci"
+        },
+        {
+          "uses": "taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532",
+          "with": {
+            "tool": "cargo-nextest"
+          }
+        },
+        {
+          "name": "Compile and test the actual owning crates",
+          "run": "just test -p codex-hepta-learning-artifacts -p codex-hepta-intelligence-eval -p codex-hepta-bellman-operator -p codex-hepta-infer-worker-host"
+        },
+        {
+          "if": "${{ !cancelled() }}",
+          "name": "Test source-admitted candidate owner boundaries",
+          "run": "just test -p codex-hepta-agentd --test terminal_cell_owner"
+        },
+        {
+          "if": "${{ !cancelled() }}",
+          "name": "Exercise concrete serving authority and process cancellation",
+          "run": "just test -p codex-hepta-agentd --lib memory_serving_process::tests"
+        },
+        {
+          "if": "${{ !cancelled() }}",
+          "name": "Test selected serving against the actual fleet revocation owner",
+          "run": "just test -p codex-hepta-agentd --lib shared_memory_training::selected::service::fleet::tests"
+        },
+        {
+          "env": {
+            "HF_HUB_DISABLE_IMPLICIT_TOKEN": "1",
+            "HF_HUB_DISABLE_XET": "1"
+          },
+          "if": "${{ !cancelled() }}",
+          "name": "Stage real pretrained worker model",
+          "run": "python3 -m venv /tmp/mcell-python\n/tmp/mcell-python/bin/pip install torch==2.5.1 --index-url https://download.pytorch.org/whl/cpu\n/tmp/mcell-python/bin/pip install -r scripts/memory_cell/requirements.txt\n/tmp/mcell-python/bin/python scripts/memory_cell/prepare.py native /tmp/mcell-inputs\nPYTHONPATH=scripts/memory_cell /tmp/mcell-python/bin/python - <<'PY' >> \"$GITHUB_ENV\"\nfrom pathlib import Path\nfrom pretrained import file_inventory\nfrom native import digest\nprint('HEPTA_MEMORY_BASE_DIGEST=' + digest(file_inventory(Path('/tmp/mcell-inputs/reader'))))\nPY\necho \"HEPTA_MEMORY_PROGRAM=$GITHUB_WORKSPACE/scripts/memory_cell/owner_worker.py\" >> \"$GITHUB_ENV\"\n"
+        },
+        {
+          "env": {
+            "HEPTA_MEMORY_EVIDENCE_DIR": "/tmp/training-owner-evidence",
+            "HEPTA_MEMORY_MODEL_DIR": "/tmp/mcell-inputs/reader",
+            "HEPTA_MEMORY_PYTHON": "/tmp/mcell-python/bin/python"
+          },
+          "if": "${{ !cancelled() }}",
+          "name": "Real cognitive-store to ledger to offline LoRA to candidate and revocation",
+          "run": "just test -p codex-hepta-agentd --test terminal_cell_owner --run-ignored all actual_pretrained_worker_consumes_cognitive_and_learning_owner_job"
+        },
+        {
+          "env": {
+            "HEPTA_MEMORY_EVIDENCE_DIR": "/tmp/training-owner-evidence",
+            "HEPTA_MEMORY_MODEL_DIR": "/tmp/mcell-inputs/reader",
+            "HEPTA_MEMORY_PYTHON": "/tmp/mcell-python/bin/python",
+            "HEPTA_MEMORY_SERVING_PROGRAM": "${{ github.workspace }}/scripts/memory_cell/serving_worker.py"
+          },
+          "if": "${{ !cancelled() }}",
+          "name": "Run trained adapter through the actual native serving consumer",
+          "run": "just test -p codex-hepta-agentd --lib --run-ignored all real_pretrained_adapter_runs_through_native_effect_consumer"
+        },
+        {
+          "if": "always()",
+          "uses": "actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02",
+          "with": {
+            "if-no-files-found": "warn",
+            "name": "memory-cell-training-owner-evidence",
+            "path": "/tmp/training-owner-evidence"
+          }
+        }
+      ],
+      "strategy": null,
+      "timeout_minutes": "45"
+    },
+    {
+      "declared_instances": 1,
+      "env": {},
+      "job": "laya-pretrained",
+      "job_if": "always() && !cancelled()",
+      "model_execution_review": "Actual pinned Laya checkpoint staging and train_and_measure tensor training.",
+      "needs": "native-models",
+      "runs_on": "ubuntu-latest",
+      "steps": [
+        {
+          "uses": "actions/checkout@11d5960a326750d5838078e36cf38b85af677262",
+          "with": {
+            "persist-credentials": "false",
+            "ref": "${{ github.event.pull_request.head.sha }}"
+          }
+        },
+        {
+          "uses": "actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093",
+          "with": {
+            "name": "memory-cell-laya-training-pairs",
+            "path": "/tmp/laya-pairs"
+          }
+        },
+        {
+          "env": {
+            "HF_HUB_DISABLE_IMPLICIT_TOKEN": "1",
+            "HF_HUB_DISABLE_XET": "1"
+          },
+          "name": "Install and stage the pinned Laya checkpoint",
+          "run": "python3 -m venv /tmp/mcell-python\n/tmp/mcell-python/bin/pip install torch==2.5.1 --index-url https://download.pytorch.org/whl/cpu\n/tmp/mcell-python/bin/pip install -r scripts/memory_cell/requirements.txt\n/tmp/mcell-python/bin/python scripts/memory_cell/prepare.py laya /tmp/laya-inputs\n"
+        },
+        {
+          "env": {
+            "HF_HUB_OFFLINE": "1",
+            "PYTHONPATH": "scripts/memory_cell",
+            "TOKENIZERS_PARALLELISM": "false",
+            "TRANSFORMERS_OFFLINE": "1"
+          },
+          "name": "Train actual Laya scorer tensors and retain held-out outputs",
+          "run": "/tmp/mcell-python/bin/python - <<'PY'\nimport json\nfrom pathlib import Path\nimport torch\nfrom laya_backend import train_and_measure\ntorch.set_num_threads(2)\ntrain_and_measure(Path('/tmp/laya-inputs/laya'), Path('/tmp/laya-inputs/laya_common.py'), json.loads(Path('/tmp/laya-pairs/laya-pairs.json').read_text()), Path('/tmp/laya-evidence'))\nPY\n"
+        },
+        {
+          "if": "always()",
+          "uses": "actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02",
+          "with": {
+            "if-no-files-found": "warn",
+            "name": "memory-cell-laya-pretrained-evidence",
+            "path": "/tmp/laya-evidence"
+          }
+        }
+      ],
+      "strategy": null,
+      "timeout_minutes": "25"
+    },
+    {
+      "declared_instances": 1,
+      "env": {},
+      "job": "source-format",
+      "job_if": null,
+      "model_execution_review": "No model invocation in these archive/format commands.",
+      "needs": null,
+      "runs_on": "ubuntu-latest",
+      "steps": [
+        {
+          "uses": "actions/checkout@11d5960a326750d5838078e36cf38b85af677262",
+          "with": {
+            "persist-credentials": "false",
+            "ref": "${{ github.event.pull_request.head.sha }}"
+          }
+        },
+        {
+          "uses": "./.github/actions/setup-ci"
+        },
+        {
+          "env": {
+            "BASE": "${{ github.event.pull_request.base.sha }}"
+          },
+          "name": "Check formatting and retain the exact formatter diff",
+          "run": "set -euo pipefail\npython3 -m pip install uv==0.8.22\ngit fetch --no-tags --depth=1 origin \"$BASE\"\njust fmt --base \"$BASE\"\ngit diff --binary > /tmp/memory-cell-format.patch\ngit diff --exit-code\n"
+        },
+        {
+          "if": "always()",
+          "uses": "actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02",
+          "with": {
+            "if-no-files-found": "warn",
+            "name": "memory-cell-format-diagnostics",
+            "path": "/tmp/memory-cell-format.patch"
+          }
+        }
+      ],
+      "strategy": null,
+      "timeout_minutes": "12"
+    }
+  ],
+  "observed_model_related_jobs_executed": 0,
+  "owner_push_existing_pr_sync_model_execution_possible": true,
+  "publish_boundary": "CHILD_BRANCH_AND_SOURCE_ONLY; do not open PR or update owner branch in this handoff.",
+  "schema": "hepta.resource-probe.pr-model-ci-side-effects.v2",
+  "scope": "Static source review of possible accompanying PR CI, not actual job execution or measured capacity.",
+  "scout_job_count_is_not_overall_ci_job_count": true,
+  "source_commit": "b01d33144b4f153adc46649bba6ac9683aa3b94d",
+  "workflow": ".github/workflows/hepta-memory-cell-continuation.yml",
+  "workflow_sha256": "2a15c8f921aaf3859325f87e7c544a29a531179373fa80cc0c15cedfcc25440d"
+}

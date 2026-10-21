@@ -1,0 +1,244 @@
+﻿2026-10-12T08:32:32.8245805Z Current runner version: '2.337.0'
+2026-10-12T08:32:32.8264284Z ##[group]Runner Image Provisioner
+2026-10-12T08:32:32.8265067Z Hosted Compute Agent
+2026-10-12T08:32:32.8265596Z Version: 20261002.596
+2026-10-12T08:32:32.8266402Z Commit: c3d12f3313a95f25162a1503be624f3b0617f8c0
+2026-10-12T08:32:32.8267021Z Build Date: 2026-10-02T22:28:27Z
+2026-10-12T08:32:32.8267625Z Worker ID: {ccd4f185-8f4f-4831-a345-6630f7164ad1}
+2026-10-12T08:32:32.8268212Z Region: centralus
+2026-10-12T08:32:32.8268730Z Cloud: Azure
+2026-10-12T08:32:32.8269198Z ##[endgroup]
+2026-10-12T08:32:32.8270422Z ##[group]Operating System
+2026-10-12T08:32:32.8271228Z Ubuntu
+2026-10-12T08:32:32.8271674Z 22.04.5
+2026-10-12T08:32:32.8272086Z LTS
+2026-10-12T08:32:32.8272541Z ##[endgroup]
+2026-10-12T08:32:32.8272997Z ##[group]Runner Image
+2026-10-12T08:32:32.8273489Z Image: ubuntu-22.04
+2026-10-12T08:32:32.8274010Z Version: 20261004.315.1
+2026-10-12T08:32:32.8275020Z Included Software: https://github.com/actions/runner-images/blob/ubuntu22/20261004.315/images/ubuntu/Ubuntu2204-Readme.md
+2026-10-12T08:32:32.8276499Z Image Release: https://github.com/actions/runner-images/releases/tag/ubuntu22%2F20261004.315
+2026-10-12T08:32:32.8277332Z ##[endgroup]
+2026-10-12T08:32:32.8278276Z ##[group]GITHUB_TOKEN Permissions
+2026-10-12T08:32:32.8280251Z Contents: read
+2026-10-12T08:32:32.8280740Z Metadata: read
+2026-10-12T08:32:32.8281389Z ##[endgroup]
+2026-10-12T08:32:32.8283240Z Secret source: Actions
+2026-10-12T08:32:32.8283999Z Cache mode: write
+2026-10-12T08:32:32.8284612Z Prepare workflow directory
+2026-10-12T08:32:32.8691787Z Prepare all required actions
+2026-10-12T08:32:32.8733068Z Getting action download info
+2026-10-12T08:32:33.1298084Z Download action repository 'actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd' (SHA:de0fac2e4500dabe0009e67214ff5f5447ce83dd)
+2026-10-12T08:32:33.5931083Z Download action repository 'actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02' (SHA:ea165f8d65b6e75b540449e92b4886f43607fa02)
+2026-10-12T08:32:33.8374415Z Complete job name: hosted-cpu-readonly (ubuntu-22.04)
+2026-10-12T08:32:33.8944077Z ##[group]Run actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+2026-10-12T08:32:33.8944999Z with:
+2026-10-12T08:32:33.8945519Z   ref: d49b62aa9d811ea3c53a79a245d6f859e55e1d6c
+2026-10-12T08:32:33.8946400Z   persist-credentials: false
+2026-10-12T08:32:33.8947006Z   repository: TrillionniumFoundation/hepta-private-ci
+2026-10-12T08:32:33.8950538Z   token: ***
+2026-10-12T08:32:33.8951007Z   ssh-strict: true
+2026-10-12T08:32:33.8951436Z   ssh-user: git
+2026-10-12T08:32:33.8951872Z   clean: true
+2026-10-12T08:32:33.8952332Z   sparse-checkout-cone-mode: true
+2026-10-12T08:32:33.8952852Z   fetch-depth: 1
+2026-10-12T08:32:33.8953288Z   fetch-tags: false
+2026-10-12T08:32:33.8953703Z   show-progress: true
+2026-10-12T08:32:33.8954164Z   lfs: false
+2026-10-12T08:32:33.8954581Z   submodules: false
+2026-10-12T08:32:33.8955024Z   set-safe-directory: true
+2026-10-12T08:32:33.8955704Z ##[endgroup]
+2026-10-12T08:32:33.9814218Z Syncing repository: TrillionniumFoundation/hepta-private-ci
+2026-10-12T08:32:33.9817356Z ##[group]Getting Git version info
+2026-10-12T08:32:33.9818498Z Working directory is '/home/runner/work/hepta-private-ci/hepta-private-ci'
+2026-10-12T08:32:33.9820070Z [command]/usr/bin/git version
+2026-10-12T08:32:33.9820757Z git version 2.55.0
+2026-10-12T08:32:33.9825788Z ##[endgroup]
+2026-10-12T08:32:33.9836253Z Temporarily overriding HOME='/home/runner/work/_temp/f21111a1-0fe1-4f78-a4be-793219f5a077' before making global git config changes
+2026-10-12T08:32:33.9838364Z Adding repository directory to the temporary git global config as a safe directory
+2026-10-12T08:32:33.9840248Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/hepta-private-ci/hepta-private-ci
+2026-10-12T08:32:33.9866711Z Deleting the contents of '/home/runner/work/hepta-private-ci/hepta-private-ci'
+2026-10-12T08:32:33.9871379Z ##[group]Initializing the repository
+2026-10-12T08:32:33.9876334Z [command]/usr/bin/git init /home/runner/work/hepta-private-ci/hepta-private-ci
+2026-10-12T08:32:33.9943802Z hint: Using 'master' as the name for the initial branch. This default branch name
+2026-10-12T08:32:33.9952972Z hint: will change to "main" in Git 3.0. To configure the initial branch name
+2026-10-12T08:32:33.9954393Z hint: to use in all of your new repositories, which will suppress this warning,
+2026-10-12T08:32:33.9956533Z hint: call:
+2026-10-12T08:32:33.9957533Z hint:
+2026-10-12T08:32:33.9958260Z hint: 	git config --global init.defaultBranch <name>
+2026-10-12T08:32:33.9959019Z hint:
+2026-10-12T08:32:33.9959840Z hint: Names commonly chosen instead of 'master' are 'main', 'trunk' and
+2026-10-12T08:32:33.9960925Z hint: 'development'. The just-created branch can be renamed via this command:
+2026-10-12T08:32:33.9961823Z hint:
+2026-10-12T08:32:33.9962309Z hint: 	git branch -m <name>
+2026-10-12T08:32:33.9962786Z hint:
+2026-10-12T08:32:33.9963396Z hint: Disable this message with "git config set advice.defaultBranchName false"
+2026-10-12T08:32:33.9964390Z Initialized empty Git repository in /home/runner/work/hepta-private-ci/hepta-private-ci/.git/
+2026-10-12T08:32:33.9966347Z [command]/usr/bin/git remote add origin https://github.com/TrillionniumFoundation/hepta-private-ci
+2026-10-12T08:32:33.9988604Z ##[endgroup]
+2026-10-12T08:32:33.9989649Z ##[group]Disabling automatic garbage collection
+2026-10-12T08:32:33.9993652Z [command]/usr/bin/git config --local gc.auto 0
+2026-10-12T08:32:34.0017644Z ##[endgroup]
+2026-10-12T08:32:34.0018970Z ##[group]Setting up auth
+2026-10-12T08:32:34.0020180Z Removing SSH command configuration
+2026-10-12T08:32:34.0023199Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2026-10-12T08:32:34.0047674Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2026-10-12T08:32:34.0278182Z Removing HTTP extra header
+2026-10-12T08:32:34.0287719Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-10-12T08:32:34.0309478Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2026-10-12T08:32:34.0478399Z Removing includeIf entries pointing to credentials config files
+2026-10-12T08:32:34.0479250Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+2026-10-12T08:32:34.0506419Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+2026-10-12T08:32:34.0682805Z [command]/usr/bin/git config --file /home/runner/work/_temp/git-credentials-1711d1e4-5fa7-4c04-a773-33f68a1521e7.config http.https://github.com/.extraheader AUTHORIZATION: basic ***
+2026-10-12T08:32:34.0712859Z [command]/usr/bin/git config --local includeIf.gitdir:/home/runner/work/hepta-private-ci/hepta-private-ci/.git.path /home/runner/work/_temp/git-credentials-1711d1e4-5fa7-4c04-a773-33f68a1521e7.config
+2026-10-12T08:32:34.0736664Z [command]/usr/bin/git config --local includeIf.gitdir:/home/runner/work/hepta-private-ci/hepta-private-ci/.git/worktrees/*.path /home/runner/work/_temp/git-credentials-1711d1e4-5fa7-4c04-a773-33f68a1521e7.config
+2026-10-12T08:32:34.0759977Z [command]/usr/bin/git config --local includeIf.gitdir:/github/workspace/.git.path /github/runner_temp/git-credentials-1711d1e4-5fa7-4c04-a773-33f68a1521e7.config
+2026-10-12T08:32:34.0784422Z [command]/usr/bin/git config --local includeIf.gitdir:/github/workspace/.git/worktrees/*.path /github/runner_temp/git-credentials-1711d1e4-5fa7-4c04-a773-33f68a1521e7.config
+2026-10-12T08:32:34.0807969Z ##[endgroup]
+2026-10-12T08:32:34.0808781Z ##[group]Fetching the repository
+2026-10-12T08:32:34.0814015Z [command]/usr/bin/git -c protocol.version=2 fetch --no-tags --prune --no-recurse-submodules --depth=1 origin d49b62aa9d811ea3c53a79a245d6f859e55e1d6c
+2026-10-12T08:32:39.0185444Z From https://github.com/TrillionniumFoundation/hepta-private-ci
+2026-10-12T08:32:39.0188145Z  * branch            d49b62aa9d811ea3c53a79a245d6f859e55e1d6c -> FETCH_HEAD
+2026-10-12T08:32:39.0195630Z [command]/usr/bin/git rev-parse --verify --quiet d49b62aa9d811ea3c53a79a245d6f859e55e1d6c^{object}
+2026-10-12T08:32:39.0218144Z d49b62aa9d811ea3c53a79a245d6f859e55e1d6c
+2026-10-12T08:32:39.0222178Z ##[endgroup]
+2026-10-12T08:32:39.0224032Z ##[group]Determining the checkout info
+2026-10-12T08:32:39.0225809Z ##[endgroup]
+2026-10-12T08:32:39.0228476Z [command]/usr/bin/git sparse-checkout disable
+2026-10-12T08:32:39.0351380Z [command]/usr/bin/git config --local --unset-all extensions.worktreeConfig
+2026-10-12T08:32:39.0390166Z ##[group]Checking out the ref
+2026-10-12T08:32:39.0392591Z [command]/usr/bin/git checkout --progress --force d49b62aa9d811ea3c53a79a245d6f859e55e1d6c
+2026-10-12T08:32:39.5734582Z Note: switching to 'd49b62aa9d811ea3c53a79a245d6f859e55e1d6c'.
+2026-10-12T08:32:39.5735535Z 
+2026-10-12T08:32:39.5736360Z You are in 'detached HEAD' state. You can look around, make experimental
+2026-10-12T08:32:39.5737577Z changes and commit them, and you can discard any commits you make in this
+2026-10-12T08:32:39.5738677Z state without impacting any branches by switching back to a branch.
+2026-10-12T08:32:39.5739256Z 
+2026-10-12T08:32:39.5739796Z If you want to create a new branch to retain commits you create, you may
+2026-10-12T08:32:39.5740461Z do so (now or later) by using -c with the switch command. Example:
+2026-10-12T08:32:39.5740865Z 
+2026-10-12T08:32:39.5741205Z   git switch -c <new-branch-name>
+2026-10-12T08:32:39.5741581Z 
+2026-10-12T08:32:39.5741846Z Or undo this operation with:
+2026-10-12T08:32:39.5742134Z 
+2026-10-12T08:32:39.5742393Z   git switch -
+2026-10-12T08:32:39.5742705Z 
+2026-10-12T08:32:39.5743091Z Turn off this advice by setting config variable advice.detachedHead to false
+2026-10-12T08:32:39.5743482Z 
+2026-10-12T08:32:39.5743922Z HEAD is now at d49b62a eval(memory-cell): scout hosted BF16 CPU capacity before unchanged Qwen reader
+2026-10-12T08:32:39.5746442Z ##[endgroup]
+2026-10-12T08:32:39.5777922Z [command]/usr/bin/git log -1 --format=%H
+2026-10-12T08:32:39.5799397Z d49b62aa9d811ea3c53a79a245d6f859e55e1d6c
+2026-10-12T08:32:39.5807158Z ##[group]Removing auth
+2026-10-12T08:32:39.5807649Z Removing SSH command configuration
+2026-10-12T08:32:39.5811331Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2026-10-12T08:32:39.5838818Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2026-10-12T08:32:39.6014932Z Removing HTTP extra header
+2026-10-12T08:32:39.6017566Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-10-12T08:32:39.6044486Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2026-10-12T08:32:39.6211070Z Removing includeIf entries pointing to credentials config files
+2026-10-12T08:32:39.6213594Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+2026-10-12T08:32:39.6232801Z includeif.gitdir:/home/runner/work/hepta-private-ci/hepta-private-ci/.git.path
+2026-10-12T08:32:39.6233844Z includeif.gitdir:/home/runner/work/hepta-private-ci/hepta-private-ci/.git/worktrees/*.path
+2026-10-12T08:32:39.6234628Z includeif.gitdir:/github/workspace/.git.path
+2026-10-12T08:32:39.6235180Z includeif.gitdir:/github/workspace/.git/worktrees/*.path
+2026-10-12T08:32:39.6240308Z [command]/usr/bin/git config --local --get-all includeif.gitdir:/home/runner/work/hepta-private-ci/hepta-private-ci/.git.path
+2026-10-12T08:32:39.6257553Z /home/runner/work/_temp/git-credentials-1711d1e4-5fa7-4c04-a773-33f68a1521e7.config
+2026-10-12T08:32:39.6265648Z [command]/usr/bin/git config --local --unset includeif.gitdir:/home/runner/work/hepta-private-ci/hepta-private-ci/.git.path /home/runner/work/_temp/git-credentials-1711d1e4-5fa7-4c04-a773-33f68a1521e7.config
+2026-10-12T08:32:39.6300022Z [command]/usr/bin/git config --local --get-all includeif.gitdir:/home/runner/work/hepta-private-ci/hepta-private-ci/.git/worktrees/*.path
+2026-10-12T08:32:39.6317448Z /home/runner/work/_temp/git-credentials-1711d1e4-5fa7-4c04-a773-33f68a1521e7.config
+2026-10-12T08:32:39.6324381Z [command]/usr/bin/git config --local --unset includeif.gitdir:/home/runner/work/hepta-private-ci/hepta-private-ci/.git/worktrees/*.path /home/runner/work/_temp/git-credentials-1711d1e4-5fa7-4c04-a773-33f68a1521e7.config
+2026-10-12T08:32:39.6361987Z [command]/usr/bin/git config --local --get-all includeif.gitdir:/github/workspace/.git.path
+2026-10-12T08:32:39.6385784Z /github/runner_temp/git-credentials-1711d1e4-5fa7-4c04-a773-33f68a1521e7.config
+2026-10-12T08:32:39.6390732Z [command]/usr/bin/git config --local --unset includeif.gitdir:/github/workspace/.git.path /github/runner_temp/git-credentials-1711d1e4-5fa7-4c04-a773-33f68a1521e7.config
+2026-10-12T08:32:39.6444191Z [command]/usr/bin/git config --local --get-all includeif.gitdir:/github/workspace/.git/worktrees/*.path
+2026-10-12T08:32:39.6468586Z /github/runner_temp/git-credentials-1711d1e4-5fa7-4c04-a773-33f68a1521e7.config
+2026-10-12T08:32:39.6474299Z [command]/usr/bin/git config --local --unset includeif.gitdir:/github/workspace/.git/worktrees/*.path /github/runner_temp/git-credentials-1711d1e4-5fa7-4c04-a773-33f68a1521e7.config
+2026-10-12T08:32:39.6529541Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+2026-10-12T08:32:39.6699612Z Removing credentials config '/home/runner/work/_temp/git-credentials-1711d1e4-5fa7-4c04-a773-33f68a1521e7.config'
+2026-10-12T08:32:39.6707849Z ##[endgroup]
+2026-10-12T08:32:39.6881256Z ##[group]Run set -euo pipefail
+2026-10-12T08:32:39.6881882Z [36;1mset -euo pipefail[0m
+2026-10-12T08:32:39.6882652Z [36;1mpython3 -m unittest discover -s scripts/memory_cell -p 'test_strong_rag_cpu_scout.py' -v[0m
+2026-10-12T08:32:39.6883517Z [36;1mpython3 -m unittest discover -s scripts/memory_cell -p 'test_strong_rag_host_gate.py' -v[0m
+2026-10-12T08:32:39.7419113Z shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
+2026-10-12T08:32:39.7419657Z env:
+2026-10-12T08:32:39.7420112Z   PYTHONPATH: scripts/memory_cell
+2026-10-12T08:32:39.7420603Z ##[endgroup]
+2026-10-12T08:32:39.9186591Z test_accelerated_cpu_is_candidate_not_model_success (test_strong_rag_cpu_scout.StandardRunnerScoutTests) ... ok
+2026-10-12T08:32:39.9346990Z test_cli_writes_once_and_never_overwrites_observation (test_strong_rag_cpu_scout.StandardRunnerScoutTests) ... ok
+2026-10-12T08:32:39.9348562Z test_ineligible_epyc_is_recorded_not_hidden (test_strong_rag_cpu_scout.StandardRunnerScoutTests) ... ok
+2026-10-12T08:32:39.9349918Z test_only_documented_standard_hosted_runner_images (test_strong_rag_cpu_scout.StandardRunnerScoutTests) ... ok
+2026-10-12T08:32:39.9351057Z test_source_sha_and_mixed_cpu_must_fail_closed (test_strong_rag_cpu_scout.StandardRunnerScoutTests) ... ok
+2026-10-12T08:32:39.9351532Z 
+2026-10-12T08:32:39.9351773Z ----------------------------------------------------------------------
+2026-10-12T08:32:39.9352281Z Ran 5 tests in 0.017s
+2026-10-12T08:32:39.9352481Z 
+2026-10-12T08:32:39.9352608Z OK
+2026-10-12T08:32:39.9355891Z {"eligible_cpu_for_unchanged_bf16_reader": false, "eligible_host_reserved": false, "hardware": {"all_cpus_bf16_accelerated": false, "cpu_models": ["Test CPU"], "cpuinfo_sha256": "28dac80eea548ce693ecd52247ff52b597028bd6459763f621783b29f1665291", "full_inference_latency_qualified": false, "host_eligible": false, "independent_semantic_judge": false, "logical_cpu_records": 1, "machine": "x86_64", "new_model_calls": 0, "policy": "x86_64-original-qwen-torch2.5.1-cpu-bfloat16-eager", "production_accepted": false, "rejection_reason": "this actual runner does not prove accelerated x86_64 BF16 CPU kernels", "runner_arch": "X64", "same_original_model_weights_required": true, "schema": "hepta.memory-strong-rag.bf16-host-gate.v1", "shared_acceleration_features": []}, "independent_semantic_judge": false, "new_model_calls": 0, "production_accepted": false, "read_only_census": true, "requested_hosted_runner": "ubuntu-24.04", "same_hardware_on_next_run_guaranteed": false, "schema": "hepta.memory-strong-rag.host-scout.v1", "source_commit": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa", "training_executed": false, "weights_downloaded": false}
+2026-10-12T08:32:40.0050838Z test_accelerated_bf16_cpu_is_eligible_not_benchmark_qualified (test_strong_rag_host_gate.Bf16RunnerGateTests) ... ok
+2026-10-12T08:32:40.0052032Z test_actual_amd_epyc_7763_without_bf16_fails_closed (test_strong_rag_host_gate.Bf16RunnerGateTests) ... ok
+2026-10-12T08:32:40.0052778Z test_architecture_and_runner_label_are_bound (test_strong_rag_host_gate.Bf16RunnerGateTests) ... ok
+2026-10-12T08:32:40.1311346Z test_cli_records_rejection_before_exiting_without_model (test_strong_rag_host_gate.Bf16RunnerGateTests) ... ok
+2026-10-12T08:32:40.1314576Z test_missing_flags_model_or_truncated_cpuinfo_fail_closed (test_strong_rag_host_gate.Bf16RunnerGateTests) ... ok
+2026-10-12T08:32:40.1315665Z test_mixed_cpu_capabilities_never_qualify (test_strong_rag_host_gate.Bf16RunnerGateTests) ... ok
+2026-10-12T08:32:40.1326811Z 
+2026-10-12T08:32:40.1327106Z ----------------------------------------------------------------------
+2026-10-12T08:32:40.1327777Z Ran 6 tests in 0.127s
+2026-10-12T08:32:40.1327969Z 
+2026-10-12T08:32:40.1328124Z OK
+2026-10-12T08:32:40.1342121Z {"all_cpus_bf16_accelerated": false, "cpu_models": ["Synthetic pinned CPU"], "cpuinfo_sha256": "dd9797b40b9c79d156515539590d78a2809c430e4bc77d7bc90113d38e230201", "full_inference_latency_qualified": false, "host_eligible": false, "independent_semantic_judge": false, "logical_cpu_records": 1, "machine": "x86_64", "new_model_calls": 0, "policy": "x86_64-original-qwen-torch2.5.1-cpu-bfloat16-eager", "production_accepted": false, "rejection_reason": "this actual runner does not prove accelerated x86_64 BF16 CPU kernels", "runner_arch": "X64", "same_original_model_weights_required": true, "schema": "hepta.memory-strong-rag.bf16-host-gate.v1", "shared_acceleration_features": []}
+2026-10-12T08:32:40.2491892Z ##[group]Run set -euo pipefail
+2026-10-12T08:32:40.2492305Z [36;1mset -euo pipefail[0m
+2026-10-12T08:32:40.2492748Z [36;1mpython3 scripts/memory_cell/strong_rag_cpu_scout.py \[0m
+2026-10-12T08:32:40.2493224Z [36;1m  --source-commit "$SCOUT_SHA" \[0m
+2026-10-12T08:32:40.2493609Z [36;1m  --runner-image "$SCOUT_IMAGE" \[0m
+2026-10-12T08:32:40.2494061Z [36;1m  --output "$RUNNER_TEMP/memorycell-bf16-scout/$SCOUT_IMAGE.json"[0m
+2026-10-12T08:32:40.2531944Z shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
+2026-10-12T08:32:40.2532397Z env:
+2026-10-12T08:32:40.2532714Z   PYTHONPATH: scripts/memory_cell
+2026-10-12T08:32:40.2533117Z   SCOUT_SHA: d49b62aa9d811ea3c53a79a245d6f859e55e1d6c
+2026-10-12T08:32:40.2533505Z   SCOUT_IMAGE: ubuntu-22.04
+2026-10-12T08:32:40.2533882Z ##[endgroup]
+2026-10-12T08:32:40.3337706Z {"eligible_cpu_for_unchanged_bf16_reader": true, "eligible_host_reserved": false, "hardware": {"all_cpus_bf16_accelerated": true, "cpu_models": ["INTEL(R) XEON(R) PLATINUM 8573C"], "cpuinfo_sha256": "ac5a5d66b94960784a12a96c460f6d770d60d8237ff7643bf5e89db0d80d3a97", "full_inference_latency_qualified": false, "host_eligible": true, "independent_semantic_judge": false, "logical_cpu_records": 4, "machine": "x86_64", "new_model_calls": 0, "policy": "x86_64-original-qwen-torch2.5.1-cpu-bfloat16-eager", "production_accepted": false, "rejection_reason": null, "runner_arch": "X64", "same_original_model_weights_required": true, "schema": "hepta.memory-strong-rag.bf16-host-gate.v1", "shared_acceleration_features": ["amx_bf16", "avx512_bf16"]}, "independent_semantic_judge": false, "new_model_calls": 0, "production_accepted": false, "read_only_census": true, "requested_hosted_runner": "ubuntu-22.04", "same_hardware_on_next_run_guaranteed": false, "schema": "hepta.memory-strong-rag.host-scout.v1", "source_commit": "d49b62aa9d811ea3c53a79a245d6f859e55e1d6c", "training_executed": false, "weights_downloaded": false}
+2026-10-12T08:32:40.3463528Z ##[group]Run actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+2026-10-12T08:32:40.3464048Z with:
+2026-10-12T08:32:40.3464374Z   name: memorycell-bf16-cpu-ubuntu-22.04
+2026-10-12T08:32:40.3464786Z   path: /home/runner/work/_temp/memorycell-bf16-scout
+2026-10-12T08:32:40.3465178Z   if-no-files-found: warn
+2026-10-12T08:32:40.3465544Z   compression-level: 6
+2026-10-12T08:32:40.3465879Z   overwrite: false
+2026-10-12T08:32:40.3466548Z   include-hidden-files: false
+2026-10-12T08:32:40.3466896Z ##[endgroup]
+2026-10-12T08:32:40.4899636Z (node:1941) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.
+2026-10-12T08:32:40.4900934Z (Use `node --trace-deprecation ...` to show where the warning was created)
+2026-10-12T08:32:40.4971684Z With the provided path, there will be 1 file uploaded
+2026-10-12T08:32:40.4989567Z Artifact name is valid!
+2026-10-12T08:32:40.4990227Z Root directory input is valid!
+2026-10-12T08:32:40.7614381Z Beginning upload of artifact content to blob storage
+2026-10-12T08:32:40.7770417Z (node:1941) [DEP0169] DeprecationWarning: `url.parse()` behavior is not standardized and prone to errors that have security implications. Use the WHATWG URL API instead. CVEs are not issued for `url.parse()` vulnerabilities.
+2026-10-12T08:32:40.9249359Z Uploaded bytes 775
+2026-10-12T08:32:40.9675548Z Finished uploading artifact content to blob storage!
+2026-10-12T08:32:40.9676937Z SHA256 digest of uploaded artifact zip is 2070d6c6deceb64a91bd23f4e5bf1feff7337f6d5ea9f5a5dc51325c80eb85c6
+2026-10-12T08:32:40.9678164Z Finalizing artifact upload
+2026-10-12T08:32:41.2277329Z Artifact memorycell-bf16-cpu-ubuntu-22.04.zip successfully finalized. Artifact ID 11734949120
+2026-10-12T08:32:41.2278510Z Artifact memorycell-bf16-cpu-ubuntu-22.04 has been successfully uploaded! Final size is 775 bytes. Artifact ID is 11734949120
+2026-10-12T08:32:41.2279548Z Artifact download URL: https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/38224160872/artifacts/11734949120
+2026-10-12T08:32:41.2586355Z Post job cleanup.
+2026-10-12T08:32:41.3330071Z [command]/usr/bin/git version
+2026-10-12T08:32:41.3368606Z git version 2.55.0
+2026-10-12T08:32:41.3405538Z Temporarily overriding HOME='/home/runner/work/_temp/639d7c37-8af7-49f8-857d-86b4c0ee4775' before making global git config changes
+2026-10-12T08:32:41.3406868Z Adding repository directory to the temporary git global config as a safe directory
+2026-10-12T08:32:41.3411296Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/hepta-private-ci/hepta-private-ci
+2026-10-12T08:32:41.3438803Z Removing SSH command configuration
+2026-10-12T08:32:41.3445911Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2026-10-12T08:32:41.3477665Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2026-10-12T08:32:41.3710708Z Removing HTTP extra header
+2026-10-12T08:32:41.3711859Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-10-12T08:32:41.3739003Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2026-10-12T08:32:41.3965863Z Removing includeIf entries pointing to credentials config files
+2026-10-12T08:32:41.3966610Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+2026-10-12T08:32:41.3993382Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+2026-10-12T08:32:41.4348137Z Cleaning up orphan processes
+2026-10-12T08:32:41.4568643Z ##[warning]Node.js 20 is deprecated. The following actions target Node.js 20 but are being forced to run on Node.js 24: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02. For more information see: https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/
+

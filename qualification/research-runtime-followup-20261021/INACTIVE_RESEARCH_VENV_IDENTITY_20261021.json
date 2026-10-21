@@ -1,0 +1,830 @@
+{
+  "implementation": "CPython",
+  "installed_distributions": [
+    {
+      "dist_info": "lib/python3.12/site-packages/jinja2-3.1.6.dist-info",
+      "identity_files": [
+        {
+          "bytes": 2871,
+          "name": "METADATA",
+          "sha256": "68c5548fb67c4132a13898d9b31ec50c6bea2abdd915d921f214355c3a6499c8"
+        },
+        {
+          "bytes": 82,
+          "name": "WHEEL",
+          "sha256": "ff6a3334508b59cf776cae1628708ef9e0d410d0e5a3e76073d714deaa2460ee"
+        },
+        {
+          "bytes": 3619,
+          "name": "RECORD",
+          "sha256": "1bb3b46d00f55f63d24c3a34a7f955ef6692d4691217a53b15261769607f9f7c"
+        },
+        {
+          "bytes": 4,
+          "name": "INSTALLER",
+          "sha256": "ceebae7b8927a3227e5303cf5e0f1f7b34bb542ad7250ac03fbcde36ec2f1508"
+        }
+      ],
+      "name": "Jinja2",
+      "version": "3.1.6"
+    },
+    {
+      "dist_info": "lib/python3.12/site-packages/markupsafe-3.0.3.dist-info",
+      "identity_files": [
+        {
+          "bytes": 2690,
+          "name": "METADATA",
+          "sha256": "12b4cc61a7fa288cf7667ee3f213786d9619db57fb33ff6f934afbcb5c12ec81"
+        },
+        {
+          "bytes": 190,
+          "name": "WHEEL",
+          "sha256": "0f1467590cfe2a9f7ee1ae217431ec4afd0a502dc7eec37d35b79fdfef118d75"
+        },
+        {
+          "bytes": 1116,
+          "name": "RECORD",
+          "sha256": "cf94542b5c0d5a7bb16c08bcd035ef0c71d9bf579a9cd21e4c52626155144b3c"
+        },
+        {
+          "bytes": 4,
+          "name": "INSTALLER",
+          "sha256": "ceebae7b8927a3227e5303cf5e0f1f7b34bb542ad7250ac03fbcde36ec2f1508"
+        }
+      ],
+      "name": "MarkupSafe",
+      "version": "3.0.3"
+    },
+    {
+      "dist_info": "lib/python3.12/site-packages/pyyaml-6.0.3.dist-info",
+      "identity_files": [
+        {
+          "bytes": 2351,
+          "name": "METADATA",
+          "sha256": "03c3b415ed38d09faedc49360e930769b40c58f68585e6de00e2e4916a858d34"
+        },
+        {
+          "bytes": 190,
+          "name": "WHEEL",
+          "sha256": "0f1467590cfe2a9f7ee1ae217431ec4afd0a502dc7eec37d35b79fdfef118d75"
+        },
+        {
+          "bytes": 2793,
+          "name": "RECORD",
+          "sha256": "a9c0ccbc49ef1a683ce5d972601d050cc0ebcc4ce6b4163fa574b7acdf8479a3"
+        },
+        {
+          "bytes": 4,
+          "name": "INSTALLER",
+          "sha256": "ceebae7b8927a3227e5303cf5e0f1f7b34bb542ad7250ac03fbcde36ec2f1508"
+        }
+      ],
+      "name": "PyYAML",
+      "version": "6.0.3"
+    },
+    {
+      "dist_info": "lib/python3.12/site-packages/accelerate-1.10.1.dist-info",
+      "identity_files": [
+        {
+          "bytes": 19867,
+          "name": "METADATA",
+          "sha256": "229d2a029a6aa80a61cbde4b0377a30d86e65d6d1b603a7a64d1b25c20529121"
+        },
+        {
+          "bytes": 91,
+          "name": "WHEEL",
+          "sha256": "95353a07a7887d8a224094d935cf9fc9a47a0692fa7a14f3537c466319f69fc9"
+        },
+        {
+          "bytes": 14118,
+          "name": "RECORD",
+          "sha256": "fc7d016112aae715e8c84498ff0406a5435ea3ec99dde9039074c5d2f51a3f4a"
+        },
+        {
+          "bytes": 4,
+          "name": "INSTALLER",
+          "sha256": "ceebae7b8927a3227e5303cf5e0f1f7b34bb542ad7250ac03fbcde36ec2f1508"
+        }
+      ],
+      "name": "accelerate",
+      "version": "1.10.1"
+    },
+    {
+      "dist_info": "lib/python3.12/site-packages/certifi-2026.7.22.dist-info",
+      "identity_files": [
+        {
+          "bytes": 2474,
+          "name": "METADATA",
+          "sha256": "ef5af1638fbb23676ac3c5777dfcfc2cd9c348fe4172ed5ba3d277655b248090"
+        },
+        {
+          "bytes": 91,
+          "name": "WHEEL",
+          "sha256": "2b6eb4118ce7cd7b09601406aa623c553c4476265836f0d9c16f5c061f7efcc0"
+        },
+        {
+          "bytes": 1393,
+          "name": "RECORD",
+          "sha256": "659fc7bbd500a39195c04ca8e6127fb2ea50a347fbb1f80afe4cab525e48e457"
+        },
+        {
+          "bytes": 4,
+          "name": "INSTALLER",
+          "sha256": "ceebae7b8927a3227e5303cf5e0f1f7b34bb542ad7250ac03fbcde36ec2f1508"
+        }
+      ],
+      "name": "certifi",
+      "version": "2026.7.22"
+    },
+    {
+      "dist_info": "lib/python3.12/site-packages/charset_normalizer-3.5.2.dist-info",
+      "identity_files": [
+        {
+          "bytes": 46395,
+          "name": "METADATA",
+          "sha256": "89ce6362bb7be88558f4be99a98f5d1b4da93d19cd0323e5ee0bac05cf883dfb"
+        },
+        {
+          "bytes": 190,
+          "name": "WHEEL",
+          "sha256": "797631520e4ac7d96fb6e40cd3e5f2d32e39caeb9cf024f466babe3777b7c296"
+        },
+        {
+          "bytes": 2884,
+          "name": "RECORD",
+          "sha256": "22d7eae2e31ee4c9a59daee1b8adc18b2c3ff7a405a463e48618dd4e707303c0"
+        },
+        {
+          "bytes": 4,
+          "name": "INSTALLER",
+          "sha256": "ceebae7b8927a3227e5303cf5e0f1f7b34bb542ad7250ac03fbcde36ec2f1508"
+        }
+      ],
+      "name": "charset-normalizer",
+      "version": "3.5.2"
+    },
+    {
+      "dist_info": "lib/python3.12/site-packages/filelock-3.32.3.dist-info",
+      "identity_files": [
+        {
+          "bytes": 2028,
+          "name": "METADATA",
+          "sha256": "2d80f43bd905689145c00b3133bc95895d654ced70a96a1802e9237e0d66599f"
+        },
+        {
+          "bytes": 87,
+          "name": "WHEEL",
+          "sha256": "ccec20e2307acd7da453dd7437e70c6b08e2bc3ead3bc3445af135da37b56d59"
+        },
+        {
+          "bytes": 3193,
+          "name": "RECORD",
+          "sha256": "679499108d56433f5c6ce79675b87661069bb9c8ee4b3479384e7bc91c2da420"
+        },
+        {
+          "bytes": 4,
+          "name": "INSTALLER",
+          "sha256": "ceebae7b8927a3227e5303cf5e0f1f7b34bb542ad7250ac03fbcde36ec2f1508"
+        }
+      ],
+      "name": "filelock",
+      "version": "3.32.3"
+    },
+    {
+      "dist_info": "lib/python3.12/site-packages/fsspec-2026.7.0.dist-info",
+      "identity_files": [
+        {
+          "bytes": 10561,
+          "name": "METADATA",
+          "sha256": "88b1657585de14e3bb82aa5278aa9595b30aa4ca74ead073d8950615c808099d"
+        },
+        {
+          "bytes": 87,
+          "name": "WHEEL",
+          "sha256": "942926c567d0b1273d09f20295879abd37507845f6b683eab9f87d808df91100"
+        },
+        {
+          "bytes": 8329,
+          "name": "RECORD",
+          "sha256": "4801db90e1425026baa5d1164ce1ea97a882a7d71f27081a77e7e3154ab8d958"
+        },
+        {
+          "bytes": 4,
+          "name": "INSTALLER",
+          "sha256": "ceebae7b8927a3227e5303cf5e0f1f7b34bb542ad7250ac03fbcde36ec2f1508"
+        }
+      ],
+      "name": "fsspec",
+      "version": "2026.7.0"
+    },
+    {
+      "dist_info": "lib/python3.12/site-packages/hf_xet-1.7.0.dist-info",
+      "identity_files": [
+        {
+          "bytes": 4882,
+          "name": "METADATA",
+          "sha256": "05975b1239f188bb418539f178ef68a693ea6824f20c30583a02eea94faf650a"
+        },
+        {
+          "bytes": 143,
+          "name": "WHEEL",
+          "sha256": "3b91e51afb00e5b710092708799363799659ba72160d63d5b4d5a88dd6bc7524"
+        },
+        {
+          "bytes": 794,
+          "name": "RECORD",
+          "sha256": "d3bb8e72d7aa4e2be43a8e631657ca71299e72666fced385f1653f9698d0857f"
+        },
+        {
+          "bytes": 4,
+          "name": "INSTALLER",
+          "sha256": "ceebae7b8927a3227e5303cf5e0f1f7b34bb542ad7250ac03fbcde36ec2f1508"
+        }
+      ],
+      "name": "hf-xet",
+      "version": "1.7.0"
+    },
+    {
+      "dist_info": "lib/python3.12/site-packages/huggingface_hub-0.35.3.dist-info",
+      "identity_files": [
+        {
+          "bytes": 14820,
+          "name": "METADATA",
+          "sha256": "a123ddd70795cc50d0108215d5dedca13b4df6eca6b63c9594679fb5556ab36e"
+        },
+        {
+          "bytes": 92,
+          "name": "WHEEL",
+          "sha256": "b59a1e1a3b56c5645f769944ec4ddde3954f94b3509ef6ca8989f1ee0c00cbc0"
+        },
+        {
+          "bytes": 28749,
+          "name": "RECORD",
+          "sha256": "4db8229e10900d06aa5ecbe0262137e72f179c5ae8ff30b364a0c0756dd548df"
+        },
+        {
+          "bytes": 4,
+          "name": "INSTALLER",
+          "sha256": "ceebae7b8927a3227e5303cf5e0f1f7b34bb542ad7250ac03fbcde36ec2f1508"
+        }
+      ],
+      "name": "huggingface-hub",
+      "version": "0.35.3"
+    },
+    {
+      "dist_info": "lib/python3.12/site-packages/idna-3.20.dist-info",
+      "identity_files": [
+        {
+          "bytes": 7207,
+          "name": "METADATA",
+          "sha256": "dbd8c14c1e4ca1e0c9824a6dbc7cbbf78884f38eb52d91148cd3025f671e4b85"
+        },
+        {
+          "bytes": 81,
+          "name": "WHEEL",
+          "sha256": "96a37c8d7b7f425a05386731f644adbd66ebca17c45e8236176cfe614466df9d"
+        },
+        {
+          "bytes": 1869,
+          "name": "RECORD",
+          "sha256": "1b8cc72995ff07dc75f42a789c5677cebc2f73f3df85ad33edc8b2553cee3180"
+        },
+        {
+          "bytes": 4,
+          "name": "INSTALLER",
+          "sha256": "ceebae7b8927a3227e5303cf5e0f1f7b34bb542ad7250ac03fbcde36ec2f1508"
+        }
+      ],
+      "name": "idna",
+      "version": "3.20"
+    },
+    {
+      "dist_info": "lib/python3.12/site-packages/mpmath-1.3.0.dist-info",
+      "identity_files": [
+        {
+          "bytes": 8630,
+          "name": "METADATA",
+          "sha256": "44b66ea444b9c0d19ae94815d356bf047ae6b680c19268b5c265687cd6a81406"
+        },
+        {
+          "bytes": 92,
+          "name": "WHEEL",
+          "sha256": "db07a93359e4e034b8785a58ad6d534ea3dca0635f1e184efe2e66e1c3a299ba"
+        },
+        {
+          "bytes": 12686,
+          "name": "RECORD",
+          "sha256": "89869bb99d259b6078aa20ebadb44d921aa20595ffa58ab929e3082d7f3f5529"
+        },
+        {
+          "bytes": 4,
+          "name": "INSTALLER",
+          "sha256": "ceebae7b8927a3227e5303cf5e0f1f7b34bb542ad7250ac03fbcde36ec2f1508"
+        }
+      ],
+      "name": "mpmath",
+      "version": "1.3.0"
+    },
+    {
+      "dist_info": "lib/python3.12/site-packages/networkx-3.6.1.dist-info",
+      "identity_files": [
+        {
+          "bytes": 6783,
+          "name": "METADATA",
+          "sha256": "aca5d94a97d1f70f301d033addb635f6e66be8973a00aba4127637eed2ef316a"
+        },
+        {
+          "bytes": 91,
+          "name": "WHEEL",
+          "sha256": "ff309ddcdd65ebd02bc724dbf2bcc4a0ff53a5b61792a44548d383e4ebb19d3b"
+        },
+        {
+          "bytes": 102458,
+          "name": "RECORD",
+          "sha256": "b9eec012d3da7de578ab44e1effc11626e933a07ecbd50e7d474b4b92648574c"
+        },
+        {
+          "bytes": 4,
+          "name": "INSTALLER",
+          "sha256": "ceebae7b8927a3227e5303cf5e0f1f7b34bb542ad7250ac03fbcde36ec2f1508"
+        }
+      ],
+      "name": "networkx",
+      "version": "3.6.1"
+    },
+    {
+      "dist_info": "lib/python3.12/site-packages/numpy-1.26.4.dist-info",
+      "identity_files": [
+        {
+          "bytes": 61041,
+          "name": "METADATA",
+          "sha256": "b09734a7fed44e84b4c8161934ce532dff1e779ec6822d415644d117f6381070"
+        },
+        {
+          "bytes": 137,
+          "name": "WHEEL",
+          "sha256": "dea2037170a4e7bec05e22b7a4389f3be804f54fcc61660682d0fbf202dadbf5"
+        },
+        {
+          "bytes": 98634,
+          "name": "RECORD",
+          "sha256": "d9b8ca7ea3c1933764e71ca5e0e8b40cf2cbe54c290dd4dd042d15222605e451"
+        },
+        {
+          "bytes": 4,
+          "name": "INSTALLER",
+          "sha256": "ceebae7b8927a3227e5303cf5e0f1f7b34bb542ad7250ac03fbcde36ec2f1508"
+        }
+      ],
+      "name": "numpy",
+      "version": "1.26.4"
+    },
+    {
+      "dist_info": "lib/python3.12/site-packages/packaging-26.3.dist-info",
+      "identity_files": [
+        {
+          "bytes": 3544,
+          "name": "METADATA",
+          "sha256": "70fdb89fc4d4a9a043bf7372b8972bcc883fddff34ab55e9cf80d73875384763"
+        },
+        {
+          "bytes": 82,
+          "name": "WHEEL",
+          "sha256": "1b68144734c4b66791f27add5d425f3620775585718a03d0f9b110ba3a4d88db"
+        },
+        {
+          "bytes": 3670,
+          "name": "RECORD",
+          "sha256": "fd59b791119d91d0602060c81541e41118992995c6a0070e411a5ea3c6b1ebb2"
+        },
+        {
+          "bytes": 4,
+          "name": "INSTALLER",
+          "sha256": "ceebae7b8927a3227e5303cf5e0f1f7b34bb542ad7250ac03fbcde36ec2f1508"
+        }
+      ],
+      "name": "packaging",
+      "version": "26.3"
+    },
+    {
+      "dist_info": "lib/python3.12/site-packages/peft-0.17.1.dist-info",
+      "identity_files": [
+        {
+          "bytes": 14695,
+          "name": "METADATA",
+          "sha256": "4481a2b864803aca67d1af15a42a575b4b61f06488f007add0add4f93ae1d629"
+        },
+        {
+          "bytes": 91,
+          "name": "WHEEL",
+          "sha256": "95353a07a7887d8a224094d935cf9fc9a47a0692fa7a14f3537c466319f69fc9"
+        },
+        {
+          "bytes": 23146,
+          "name": "RECORD",
+          "sha256": "f56ca79c9146bbb5aa9b410865017ea195ab4e41edc1bfdcb6486c72b5653c27"
+        },
+        {
+          "bytes": 4,
+          "name": "INSTALLER",
+          "sha256": "ceebae7b8927a3227e5303cf5e0f1f7b34bb542ad7250ac03fbcde36ec2f1508"
+        }
+      ],
+      "name": "peft",
+      "version": "0.17.1"
+    },
+    {
+      "dist_info": "lib/python3.12/site-packages/pip-25.0.1.dist-info",
+      "identity_files": [
+        {
+          "bytes": 3677,
+          "name": "METADATA",
+          "sha256": "4fa7318cf30f979db7cec45c12cbbc2b4f88a15f12eefbf59a6291d0a03af926"
+        },
+        {
+          "bytes": 91,
+          "name": "WHEEL",
+          "sha256": "227f454cdc5e3fad0a9d3906c3bc24ea624f61dfdd4128c46665dd05d30223ef"
+        },
+        {
+          "bytes": 65716,
+          "name": "RECORD",
+          "sha256": "d06645cb55c1a341aecdd9ca94061759b6bdfa6abb98640b74f21e74d9525767"
+        },
+        {
+          "bytes": 4,
+          "name": "INSTALLER",
+          "sha256": "ceebae7b8927a3227e5303cf5e0f1f7b34bb542ad7250ac03fbcde36ec2f1508"
+        }
+      ],
+      "name": "pip",
+      "version": "25.0.1"
+    },
+    {
+      "dist_info": "lib/python3.12/site-packages/psutil-7.2.2.dist-info",
+      "identity_files": [
+        {
+          "bytes": 22187,
+          "name": "METADATA",
+          "sha256": "525f8ba78523cf7bc3759d62a105e7c57fd679ea702402b9449fb0746aa0217f"
+        },
+        {
+          "bytes": 184,
+          "name": "WHEEL",
+          "sha256": "aca9cca3026cd7b9774535accd80fde13f5a55cf32141be943e4575a4e8835cd"
+        },
+        {
+          "bytes": 1879,
+          "name": "RECORD",
+          "sha256": "b28445afbcb938e8a146ed1e7357406fdb031c24c828c819a04b1ef502d683fb"
+        },
+        {
+          "bytes": 4,
+          "name": "INSTALLER",
+          "sha256": "ceebae7b8927a3227e5303cf5e0f1f7b34bb542ad7250ac03fbcde36ec2f1508"
+        }
+      ],
+      "name": "psutil",
+      "version": "7.2.2"
+    },
+    {
+      "dist_info": "lib/python3.12/site-packages/regex-2026.9.29.dist-info",
+      "identity_files": [
+        {
+          "bytes": 40564,
+          "name": "METADATA",
+          "sha256": "33859377dbf8dd38ee3de73fd97faebf4a63d50576e3cc1a9dfe44df08b0936a"
+        },
+        {
+          "bytes": 190,
+          "name": "WHEEL",
+          "sha256": "797631520e4ac7d96fb6e40cd3e5f2d32e39caeb9cf024f466babe3777b7c296"
+        },
+        {
+          "bytes": 1204,
+          "name": "RECORD",
+          "sha256": "91bb9c7c70f8bfa64500f2b7068ed81e7d1d1f26b21a62682a45c22c1215b19e"
+        },
+        {
+          "bytes": 4,
+          "name": "INSTALLER",
+          "sha256": "ceebae7b8927a3227e5303cf5e0f1f7b34bb542ad7250ac03fbcde36ec2f1508"
+        }
+      ],
+      "name": "regex",
+      "version": "2026.9.29"
+    },
+    {
+      "dist_info": "lib/python3.12/site-packages/requests-2.34.2.dist-info",
+      "identity_files": [
+        {
+          "bytes": 4806,
+          "name": "METADATA",
+          "sha256": "8c384ba3e979480faae2859d3c5e6c1276dd2c3616e322e124d52c8cfc556f27"
+        },
+        {
+          "bytes": 91,
+          "name": "WHEEL",
+          "sha256": "69e6228a0d35958183cc1812f07c565ce837b95eb51bd8a33acba9fa4f68d6c9"
+        },
+        {
+          "bytes": 3153,
+          "name": "RECORD",
+          "sha256": "da741c2b9ead7ebcdbe3837ca1f094090666b76db41385596e6c57ee5d90938e"
+        },
+        {
+          "bytes": 4,
+          "name": "INSTALLER",
+          "sha256": "ceebae7b8927a3227e5303cf5e0f1f7b34bb542ad7250ac03fbcde36ec2f1508"
+        }
+      ],
+      "name": "requests",
+      "version": "2.34.2"
+    },
+    {
+      "dist_info": "lib/python3.12/site-packages/safetensors-0.6.2.dist-info",
+      "identity_files": [
+        {
+          "bytes": 4081,
+          "name": "METADATA",
+          "sha256": "8768f97439fd846ac9bec48a5e4cba450b268142529db527ce4681d29833a736"
+        },
+        {
+          "bytes": 127,
+          "name": "WHEEL",
+          "sha256": "5590537001e3df8eb07bcbf9b07a8461626aa4036d979208f4ff9e5ea035b63b"
+        },
+        {
+          "bytes": 1665,
+          "name": "RECORD",
+          "sha256": "ccb15bef3a6f7a623db6692008bf231eba351ce3709c1e0e79599931ceacd907"
+        },
+        {
+          "bytes": 4,
+          "name": "INSTALLER",
+          "sha256": "ceebae7b8927a3227e5303cf5e0f1f7b34bb542ad7250ac03fbcde36ec2f1508"
+        }
+      ],
+      "name": "safetensors",
+      "version": "0.6.2"
+    },
+    {
+      "dist_info": "lib/python3.12/site-packages/setuptools-78.1.0.dist-info",
+      "identity_files": [
+        {
+          "bytes": 6599,
+          "name": "METADATA",
+          "sha256": "4444a6b549a8ebb02e1739f4375af7756c841f96f0c31077a183273c7462bd10"
+        },
+        {
+          "bytes": 91,
+          "name": "WHEEL",
+          "sha256": "0a6c85234931e5c7443132e238d4116c64308c8a11d5a21807b782010e0a3c9d"
+        },
+        {
+          "bytes": 75646,
+          "name": "RECORD",
+          "sha256": "3620fe28d9f6218a0d0864d8afc83ce14cdb9f17748948965d18e675feeb7c41"
+        },
+        {
+          "bytes": 4,
+          "name": "INSTALLER",
+          "sha256": "ceebae7b8927a3227e5303cf5e0f1f7b34bb542ad7250ac03fbcde36ec2f1508"
+        }
+      ],
+      "name": "setuptools",
+      "version": "78.1.0"
+    },
+    {
+      "dist_info": "lib/python3.12/site-packages/sympy-1.13.1.dist-info",
+      "identity_files": [
+        {
+          "bytes": 12470,
+          "name": "METADATA",
+          "sha256": "d1dbbf156ee3ac2102086ee84196d252330153dc5ba5b290d49918c6ae5b8b1c"
+        },
+        {
+          "bytes": 91,
+          "name": "WHEEL",
+          "sha256": "fa86100abef8245ddadfbcf69d19506b2b3f497d8ca8e00da2a56304100fdb21"
+        },
+        {
+          "bytes": 243148,
+          "name": "RECORD",
+          "sha256": "caaf47ecf2a84b2b2769a3554946fc8a475799a2a8cdfe9cc4759722f821103a"
+        },
+        {
+          "bytes": 4,
+          "name": "INSTALLER",
+          "sha256": "ceebae7b8927a3227e5303cf5e0f1f7b34bb542ad7250ac03fbcde36ec2f1508"
+        }
+      ],
+      "name": "sympy",
+      "version": "1.13.1"
+    },
+    {
+      "dist_info": "lib/python3.12/site-packages/tokenizers-0.22.2.dist-info",
+      "identity_files": [
+        {
+          "bytes": 7254,
+          "name": "METADATA",
+          "sha256": "15a5ddaf489f592b77e0a934c0eeb46b51130a94064ca129232afdb0a3868efc"
+        },
+        {
+          "bytes": 143,
+          "name": "WHEEL",
+          "sha256": "e66c20e670afa7762b2f18a452b1391341c10ca7ab30ea0105bef43630a770c1"
+        },
+        {
+          "bytes": 3871,
+          "name": "RECORD",
+          "sha256": "243efa5acd610bd6f2e0eb821fa3300b75fc166b7f1df198b33e848df3cf25a8"
+        },
+        {
+          "bytes": 4,
+          "name": "INSTALLER",
+          "sha256": "ceebae7b8927a3227e5303cf5e0f1f7b34bb542ad7250ac03fbcde36ec2f1508"
+        }
+      ],
+      "name": "tokenizers",
+      "version": "0.22.2"
+    },
+    {
+      "dist_info": "lib/python3.12/site-packages/torch-2.5.1+cpu.dist-info",
+      "identity_files": [
+        {
+          "bytes": 26869,
+          "name": "METADATA",
+          "sha256": "b6e39794ae4238ac48c3c21022b5762e677038b392cd2dafa1d0bc0e45dda466"
+        },
+        {
+          "bytes": 105,
+          "name": "WHEEL",
+          "sha256": "89711eca48d8fe1f5727e02db1ece0d7997c20f04c5032dc99a528e2ae0318e9"
+        },
+        {
+          "bytes": 1291741,
+          "name": "RECORD",
+          "sha256": "94683acc4e94c87e5dc729df35c42d1bd66ee8819e6d8df832f9ee5912077a68"
+        },
+        {
+          "bytes": 4,
+          "name": "INSTALLER",
+          "sha256": "ceebae7b8927a3227e5303cf5e0f1f7b34bb542ad7250ac03fbcde36ec2f1508"
+        }
+      ],
+      "name": "torch",
+      "version": "2.5.1+cpu"
+    },
+    {
+      "dist_info": "lib/python3.12/site-packages/tqdm-4.70.1.dist-info",
+      "identity_files": [
+        {
+          "bytes": 57366,
+          "name": "METADATA",
+          "sha256": "a5da70b966afea3a759716041bad7187f2ece02c22348cf9e7c0a512bbf15f57"
+        },
+        {
+          "bytes": 91,
+          "name": "WHEEL",
+          "sha256": "61532836a2b3111b7ec23519c09df7c41180c27165fb872a6d8913b566b88ad1"
+        },
+        {
+          "bytes": 4629,
+          "name": "RECORD",
+          "sha256": "b3fa88e2b6d5d24def17a7e6695caca937a597ca9c606033271afa02fda65be6"
+        },
+        {
+          "bytes": 4,
+          "name": "INSTALLER",
+          "sha256": "ceebae7b8927a3227e5303cf5e0f1f7b34bb542ad7250ac03fbcde36ec2f1508"
+        }
+      ],
+      "name": "tqdm",
+      "version": "4.70.1"
+    },
+    {
+      "dist_info": "lib/python3.12/site-packages/transformers-4.57.1.dist-info",
+      "identity_files": [
+        {
+          "bytes": 43991,
+          "name": "METADATA",
+          "sha256": "5a7907140118994d1b284d23ea8cda916e6fa8a4d8698aa1d20ab5f59e610590"
+        },
+        {
+          "bytes": 91,
+          "name": "WHEEL",
+          "sha256": "ff309ddcdd65ebd02bc724dbf2bcc4a0ff53a5b61792a44548d383e4ebb19d3b"
+        },
+        {
+          "bytes": 416374,
+          "name": "RECORD",
+          "sha256": "58a6c0a0abde5e0068b43d49fe6b3b75b79fa3691e22fb6b26c34a645c6b9a97"
+        },
+        {
+          "bytes": 4,
+          "name": "INSTALLER",
+          "sha256": "ceebae7b8927a3227e5303cf5e0f1f7b34bb542ad7250ac03fbcde36ec2f1508"
+        }
+      ],
+      "name": "transformers",
+      "version": "4.57.1"
+    },
+    {
+      "dist_info": "lib/python3.12/site-packages/typing_extensions-4.16.0.dist-info",
+      "identity_files": [
+        {
+          "bytes": 3310,
+          "name": "METADATA",
+          "sha256": "b05084ca1d50879865178d9fff9fabeab61bdfb1f361bfbde95421ffc8f9be46"
+        },
+        {
+          "bytes": 82,
+          "name": "WHEEL",
+          "sha256": "1b68144734c4b66791f27add5d425f3620775585718a03d0f9b110ba3a4d88db"
+        },
+        {
+          "bytes": 580,
+          "name": "RECORD",
+          "sha256": "78f74ed46a377d6e1debed78b3e994ff9cfe02a529d393d7c8ab80989bd25079"
+        },
+        {
+          "bytes": 4,
+          "name": "INSTALLER",
+          "sha256": "ceebae7b8927a3227e5303cf5e0f1f7b34bb542ad7250ac03fbcde36ec2f1508"
+        }
+      ],
+      "name": "typing_extensions",
+      "version": "4.16.0"
+    },
+    {
+      "dist_info": "lib/python3.12/site-packages/urllib3-2.8.0.dist-info",
+      "identity_files": [
+        {
+          "bytes": 7389,
+          "name": "METADATA",
+          "sha256": "10898c620e8007c030e07fa5622b68358a43010025dfbd78a1cb797699de2bb4"
+        },
+        {
+          "bytes": 87,
+          "name": "WHEEL",
+          "sha256": "ccec20e2307acd7da453dd7437e70c6b08e2bc3ead3bc3445af135da37b56d59"
+        },
+        {
+          "bytes": 5616,
+          "name": "RECORD",
+          "sha256": "63c86af2d9c9c5fcf21cc273730f5e8328ab17870790494379d1d9a50c092308"
+        },
+        {
+          "bytes": 4,
+          "name": "INSTALLER",
+          "sha256": "ceebae7b8927a3227e5303cf5e0f1f7b34bb542ad7250ac03fbcde36ec2f1508"
+        }
+      ],
+      "name": "urllib3",
+      "version": "2.8.0"
+    },
+    {
+      "dist_info": "lib/python3.12/site-packages/uv-0.8.22.dist-info",
+      "identity_files": [
+        {
+          "bytes": 11877,
+          "name": "METADATA",
+          "sha256": "cb6bbba712972bb3b5fc5ce640a7ed0dfac929a8cc4236e3ddb407fed0d2e019"
+        },
+        {
+          "bytes": 126,
+          "name": "WHEEL",
+          "sha256": "3fc54ca83ed54959f916bbbad89068daa598c7e52ac34232a24c20092bf53a32"
+        },
+        {
+          "bytes": 1130,
+          "name": "RECORD",
+          "sha256": "efa5790c967c44ea6b102aa59ab15cfc4f5c03e0d874df7d2845abb922c9b1a2"
+        },
+        {
+          "bytes": 4,
+          "name": "INSTALLER",
+          "sha256": "ceebae7b8927a3227e5303cf5e0f1f7b34bb542ad7250ac03fbcde36ec2f1508"
+        }
+      ],
+      "name": "uv",
+      "version": "0.8.22"
+    }
+  ],
+  "path": "/workspace/scratch/337c309bc660/research-work/venv",
+  "platform": "Linux-6.18.55-x86_64-with-glibc2.39",
+  "prior_actual_runtime_archive": {
+    "path": "publication/memory-bounded-stop-20261021/identity-and-runtime-receipts.tar.gz",
+    "sha256": "3fab5442dd49c5faa429e8da9792cfef7c5a5fea35b277aa44c278280e1e5b51"
+  },
+  "python": "3.12.14 (main, Aug 25 2026, 14:00:49) [Clang 22.1.3 ]",
+  "pyvenv_config": "home = /opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin\ninclude-system-site-packages = false\nversion = 3.12.14\nexecutable = /opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3.12\ncommand = /opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python -m venv /workspace/scratch/337c309bc660/research-work/venv\n",
+  "recorded_at": "2026-10-21T13:21:22.558947+00:00",
+  "retry_runtime_lock": {
+    "path": "runner-prep/full112-retry-capsule-v1/runtime-lock.txt",
+    "sha256": "8c6b6d4050832af6cbb21f87927147fa446ed4fafd495ee46dc62563f89cc6f2"
+  },
+  "schema": "hepta.inactive-research-venv.identity.v1",
+  "scope": "Exact installed distribution versions and metadata file identities; not a retained executable environment. Subsequent model use requires a new isolated stage."
+}

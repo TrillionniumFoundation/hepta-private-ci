@@ -1,0 +1,110 @@
+{
+  "schema": "hepta.external-git-event-cohort.prospective-precommit.v1",
+  "sealed_at_utc": "2026-10-21T09:56:57.474558+00:00",
+  "purpose": "New external Git metadata events with source/time separated calibration and a window that starts after this registration. This is a structured metadata Memory diagnostic, not natural-language project understanding or a trained memory claim.",
+  "calibration_sources": [
+    "llvm/llvm-project",
+    "godotengine/godot",
+    "electron/electron",
+    "nushell/nushell",
+    "neovim/neovim",
+    "zed-industries/zed",
+    "fish-shell/fish-shell",
+    "obsproject/obs-studio"
+  ],
+  "calibration_window": [
+    "2026-10-12T16:05:00Z",
+    "2026-10-20T00:00:00Z"
+  ],
+  "evaluation_source_pool_order": [
+    "Homebrew/homebrew-core",
+    "NixOS/nixpkgs",
+    "pytorch/pytorch",
+    "apache/airflow",
+    "microsoft/vscode",
+    "tensorflow/tensorflow",
+    "conda-forge/staged-recipes",
+    "huggingface/transformers",
+    "facebook/react-native",
+    "opensearch-project/OpenSearch",
+    "apache/superset",
+    "vercel/next.js",
+    "elastic/elasticsearch",
+    "google/jax",
+    "opencv/opencv",
+    "scipy/scipy"
+  ],
+  "evaluation_window": [
+    "2026-10-21T10:05:00Z",
+    "2026-10-21T11:35:00Z"
+  ],
+  "source_selection": "Capture up to32default-branch commits per registered source within the fixed window. Repository eligible only with an in-window first-parent pair, exact original Git commit/tree byte hashes and license bytes. For each repo choose lexically earliest(committer_timestamp,SHA) eligible first-parent pair. Choose the first8eligible evaluation repositories in the fixed pool order, without viewing model results. If fewer than8are eligible, retain failure; do not extend window, replace sources or shrink planned calls.",
+  "source_family_boundary": "No calibration repository or exact source object may appear in evaluation. Repository identity is a proxy, not an independently certified statistical family.",
+  "task_assignment": "For each fixed source slot, kind cycles new_fact, correction, composition, procedure. Git commit/tree identities become reversible declared site_/mode_ identifiers. Event schema, revision, supersedes, first-hop and relation traversal meanings are frozen to original controlled event semantics. Procedure uses only fixed read-only git cat-file object-type checks with original stdout/stderr/exitcode. No repository-supplied code or model-generated command is executed.",
+  "task_construction_limit": "External facts must bind original Git object byte spans and explicit field mapping. No invented commit, tree, ancestry, timestamp, license or success. Source-derived event records are labeled projections, never originals.",
+  "model": {
+    "repo": "Qwen/Qwen2.5-3B-Instruct",
+    "revision": "82f42baa094a9600e39ccd80d34058aeeb3abbc1",
+    "torch": "2.5.1+cpu",
+    "dtype": "bfloat16",
+    "attention": "eager",
+    "intraop_threads": 2,
+    "generation": {
+      "max_new_tokens": 64,
+      "do_sample": false,
+      "num_beams": 1,
+      "use_cache": true
+    }
+  },
+  "calibration": {
+    "tasks": 8,
+    "k": [
+      1,
+      2,
+      3,
+      4,
+      6
+    ],
+    "calls": 40,
+    "objective": "exact recorded mapped identifier, then fewer actual input tokens, then smaller k"
+  },
+  "evaluation": {
+    "tasks": 8,
+    "arms": [
+      "selected_k",
+      "hybrid_k4",
+      "hybrid_k6",
+      "hybrid_k4_reversed",
+      "single_hop",
+      "entity_time",
+      "organized",
+      "program_support",
+      "empty"
+    ],
+    "calls": 72
+  },
+  "label_isolation": "Separate calibration and evaluation source/target artifacts. Freeze k only after all40raw calibration outputs fsync. Final evaluation targets opened for scoring only after all72raw outputs fsync. Program-support source set is explicitly privileged diagnostic; no reference answer text is put into prompt.",
+  "cost_and_stop": {
+    "input_tokens": 2048,
+    "per_call_seconds": 180,
+    "no_model_call_retry": true,
+    "record_all_failures": true,
+    "record_full_tokens_and_raw_answers": true,
+    "rss": "sampled whole-process with uncertainty stated",
+    "physical_flops": null,
+    "energy": null,
+    "billed_cost": null
+  },
+  "statistics": "8paired evaluation tasks, not72independent samples. Report exact per-task arm contrasts and uncertainty; no population superiority or production selection.",
+  "preexisting_source_admission_trials": "V1/V2 are retained source-availability pilots with0new-cohort model calls. This new prospective window is fixed before it opens.",
+  "independent_semantic_citation_adjudication_required": true,
+  "independent_capture_witness_available": false,
+  "current_new_cohort_model_calls": 0,
+  "posture": {
+    "mode": "SHADOW_ONLY",
+    "authority": "DENY_ALL",
+    "release": "NO_GO"
+  },
+  "original_memory112_pins_unchanged": true,
+  "production_accepted": false
+}

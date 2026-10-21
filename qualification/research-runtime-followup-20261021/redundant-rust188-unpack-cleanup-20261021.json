@@ -1,0 +1,45 @@
+{
+  "time_utc": "2026-10-21T13:35:18.046839+00:00",
+  "deleted_only": "os-tools/unpack",
+  "reason": "Redundant extracted Rust 1.88 distribution installers; installed tools and all checksum-verified compressed installers retained.",
+  "archives_retained": [
+    {
+      "path": "os-tools/downloads/cargo-1.88.0-x86_64-unknown-linux-gnu.tar.xz",
+      "bytes": 9955712,
+      "sha256": "856962610ee821648cee32e3d6abac667af7bb7ea6ec6f3d184cc31e66044f6b"
+    },
+    {
+      "path": "os-tools/downloads/clippy-1.88.0-x86_64-unknown-linux-gnu.tar.xz",
+      "bytes": 3143700,
+      "sha256": "db09c9e4a8a0b486781d87403f74a203a58d9ef0a58ba10c39264916d93ac603"
+    },
+    {
+      "path": "os-tools/downloads/rust-std-1.88.0-x86_64-unknown-linux-gnu.tar.xz",
+      "bytes": 30914344,
+      "sha256": "36d7eacf46bd5199cb433e49a9ed9c9b380d82f8a0ebc05e89b43b51c070c955"
+    },
+    {
+      "path": "os-tools/downloads/rustc-1.88.0-x86_64-unknown-linux-gnu.tar.xz",
+      "bytes": 80014172,
+      "sha256": "b049fd57fce274d10013e2cf0e05f215f68f6580865abc52178f66ae9bf43fd8"
+    },
+    {
+      "path": "os-tools/downloads/rustfmt-1.88.0-x86_64-unknown-linux-gnu.tar.xz",
+      "bytes": 2257052,
+      "sha256": "55f4c150a865cae19cfa5f5f2b5eec84ed98dc3a1c1c406d4323c63d896c3f1d"
+    }
+  ],
+  "active_refs": [],
+  "process_scan_errors": [],
+  "before": {
+    "total": 33770192896,
+    "used": 32611950592,
+    "free": 0
+  },
+  "absent_after": true,
+  "after": {
+    "total": 33770192896,
+    "used": 31763972096,
+    "free": 271458304
+  }
+}

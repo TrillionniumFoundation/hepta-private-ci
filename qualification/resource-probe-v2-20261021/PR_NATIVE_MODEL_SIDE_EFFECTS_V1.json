@@ -1,0 +1,190 @@
+{
+  "schema": "hepta.resource-probe.pr-model-ci-side-effects.v1",
+  "source_commit": "b01d33144b4f153adc46649bba6ac9683aa3b94d",
+  "workflow": ".github/workflows/hepta-memory-cell-continuation.yml",
+  "workflow_sha256": "2a15c8f921aaf3859325f87e7c544a29a531179373fa80cc0c15cedfcc25440d",
+  "event": {
+    "pull_request": {
+      "paths": [
+        ".github/workflows/hepta-memory-cell-continuation.yml",
+        "scripts/memory_cell/**",
+        "codex-rs/hepta-neuron/**",
+        "codex-rs/hepta-bellman-operator/**",
+        "codex-rs/hepta-infer-worker-host/**",
+        "codex-rs/hepta-agentd/**",
+        "codex-rs/hepta-intelligence-eval/**"
+      ]
+    }
+  },
+  "relevant_jobs": [
+    {
+      "job": "native-models",
+      "job_if": null,
+      "runs_on": "ubuntu-latest",
+      "timeout_minutes": "60",
+      "needs": null,
+      "strategy": {
+        "fail-fast": "false",
+        "matrix": {
+          "kind": [
+            "locomo",
+            "longmemeval"
+          ]
+        }
+      },
+      "steps": [
+        {
+          "uses": "actions/checkout@11d5960a326750d5838078e36cf38b85af677262",
+          "with": {
+            "ref": "${{ github.event.pull_request.head.sha }}",
+            "persist-credentials": "false"
+          }
+        },
+        {
+          "name": "Install pinned CPU model environment",
+          "run": "python3 -m venv /tmp/mcell-python\n/tmp/mcell-python/bin/pip install torch==2.5.1 --index-url https://download.pytorch.org/whl/cpu\n/tmp/mcell-python/bin/pip install -r scripts/memory_cell/requirements.txt\n"
+        },
+        {
+          "name": "Native adapters and leakage/ablation tests",
+          "run": "/tmp/mcell-python/bin/python -m unittest discover -s scripts/memory_cell -p 'test_*.py' -v"
+        },
+        {
+          "name": "Stage public pinned model and data inputs",
+          "env": {
+            "HF_HUB_DISABLE_IMPLICIT_TOKEN": "1",
+            "HF_HUB_DISABLE_XET": "1"
+          },
+          "run": "/tmp/mcell-python/bin/python scripts/memory_cell/prepare.py native /tmp/mcell-inputs"
+        },
+        {
+          "name": "Execute original-format public benchmark pilot",
+          "env": {
+            "HF_HUB_OFFLINE": "1",
+            "TRANSFORMERS_OFFLINE": "1",
+            "TOKENIZERS_PARALLELISM": "false",
+            "HEPTA_MEMORY_TESTED_COMMIT": "${{ github.event.pull_request.head.sha }}",
+            "BENCHMARK": "${{ matrix.kind }}"
+          },
+          "run": "set -euo pipefail\nmkdir -p /tmp/mcell-native\ncp /tmp/mcell-inputs/staging.json /tmp/mcell-native/staging.json\ngit rev-parse HEAD > /tmp/mcell-native/tested-commit.txt\n/tmp/mcell-python/bin/pip freeze > /tmp/mcell-native/python-lock.txt\n/tmp/mcell-python/bin/python scripts/memory_cell/run_native.py /tmp/mcell-inputs \"/tmp/mcell-native/$BENCHMARK\" \"$BENCHMARK\" --qa-limit 16\nfind /tmp/mcell-native -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > /tmp/mcell-native/SHA256SUMS\n"
+        },
+        {
+          "uses": "actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02",
+          "if": "always()",
+          "with": {
+            "name": "memory-cell-native-model-evidence-${{ matrix.kind }}",
+            "path": "/tmp/mcell-native",
+            "if-no-files-found": "warn"
+          }
+        },
+        {
+          "uses": "actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02",
+          "if": "always() && matrix.kind == 'locomo'",
+          "with": {
+            "name": "memory-cell-laya-training-pairs",
+            "path": "/tmp/mcell-native/locomo/laya-pairs.json",
+            "if-no-files-found": "error"
+          }
+        },
+        {
+          "uses": "actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02",
+          "if": "always() && matrix.kind == 'locomo'",
+          "with": {
+            "name": "memory-cell-trained-native-circuit",
+            "path": "/tmp/mcell-native/locomo/native-export",
+            "if-no-files-found": "error"
+          }
+        }
+      ]
+    },
+    {
+      "job": "training-owner",
+      "job_if": null,
+      "runs_on": "ubuntu-latest",
+      "timeout_minutes": "45",
+      "needs": null,
+      "strategy": null,
+      "steps": [
+        {
+          "uses": "actions/checkout@11d5960a326750d5838078e36cf38b85af677262",
+          "with": {
+            "ref": "${{ github.event.pull_request.head.sha }}",
+            "persist-credentials": "false"
+          }
+        },
+        {
+          "uses": "./.github/actions/setup-ci"
+        },
+        {
+          "uses": "taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532",
+          "with": {
+            "tool": "cargo-nextest"
+          }
+        },
+        {
+          "name": "Compile and test the actual owning crates",
+          "run": "just test -p codex-hepta-learning-artifacts -p codex-hepta-intelligence-eval -p codex-hepta-bellman-operator -p codex-hepta-infer-worker-host"
+        },
+        {
+          "name": "Test source-admitted candidate owner boundaries",
+          "if": "${{ !cancelled() }}",
+          "run": "just test -p codex-hepta-agentd --test terminal_cell_owner"
+        },
+        {
+          "name": "Exercise concrete serving authority and process cancellation",
+          "if": "${{ !cancelled() }}",
+          "run": "just test -p codex-hepta-agentd --lib memory_serving_process::tests"
+        },
+        {
+          "name": "Test selected serving against the actual fleet revocation owner",
+          "if": "${{ !cancelled() }}",
+          "run": "just test -p codex-hepta-agentd --lib shared_memory_training::selected::service::fleet::tests"
+        },
+        {
+          "name": "Stage real pretrained worker model",
+          "if": "${{ !cancelled() }}",
+          "env": {
+            "HF_HUB_DISABLE_IMPLICIT_TOKEN": "1",
+            "HF_HUB_DISABLE_XET": "1"
+          },
+          "run": "python3 -m venv /tmp/mcell-python\n/tmp/mcell-python/bin/pip install torch==2.5.1 --index-url https://download.pytorch.org/whl/cpu\n/tmp/mcell-python/bin/pip install -r scripts/memory_cell/requirements.txt\n/tmp/mcell-python/bin/python scripts/memory_cell/prepare.py native /tmp/mcell-inputs\nPYTHONPATH=scripts/memory_cell /tmp/mcell-python/bin/python - <<'PY' >> \"$GITHUB_ENV\"\nfrom pathlib import Path\nfrom pretrained import file_inventory\nfrom native import digest\nprint('HEPTA_MEMORY_BASE_DIGEST=' + digest(file_inventory(Path('/tmp/mcell-inputs/reader'))))\nPY\necho \"HEPTA_MEMORY_PROGRAM=$GITHUB_WORKSPACE/scripts/memory_cell/owner_worker.py\" >> \"$GITHUB_ENV\"\n"
+        },
+        {
+          "name": "Real cognitive-store to ledger to offline LoRA to candidate and revocation",
+          "if": "${{ !cancelled() }}",
+          "env": {
+            "HEPTA_MEMORY_PYTHON": "/tmp/mcell-python/bin/python",
+            "HEPTA_MEMORY_MODEL_DIR": "/tmp/mcell-inputs/reader",
+            "HEPTA_MEMORY_EVIDENCE_DIR": "/tmp/training-owner-evidence"
+          },
+          "run": "just test -p codex-hepta-agentd --test terminal_cell_owner --run-ignored all actual_pretrained_worker_consumes_cognitive_and_learning_owner_job"
+        },
+        {
+          "name": "Run trained adapter through the actual native serving consumer",
+          "if": "${{ !cancelled() }}",
+          "env": {
+            "HEPTA_MEMORY_PYTHON": "/tmp/mcell-python/bin/python",
+            "HEPTA_MEMORY_MODEL_DIR": "/tmp/mcell-inputs/reader",
+            "HEPTA_MEMORY_EVIDENCE_DIR": "/tmp/training-owner-evidence",
+            "HEPTA_MEMORY_SERVING_PROGRAM": "${{ github.workspace }}/scripts/memory_cell/serving_worker.py"
+          },
+          "run": "just test -p codex-hepta-agentd --lib --run-ignored all real_pretrained_adapter_runs_through_native_effect_consumer"
+        },
+        {
+          "uses": "actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02",
+          "if": "always()",
+          "with": {
+            "name": "memory-cell-training-owner-evidence",
+            "path": "/tmp/training-owner-evidence",
+            "if-no-files-found": "warn"
+          }
+        }
+      ]
+    }
+  ],
+  "child_pr_model_execution_possible": true,
+  "owner_push_existing_pr_sync_model_execution_possible": true,
+  "owner_push_scout_job_count_is_not_overall_ci_job_count": true,
+  "branch_only_publication_matches_no_push_workflow_at_this_snapshot": true,
+  "no_remote_write_or_model_call_by_this_work": true,
+  "required_next_decision": "Owner reviews and schedules existing accompanying model CI before PR creation or owner ref update; no gate or event bypass proposed."
+}

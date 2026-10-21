@@ -1,0 +1,25 @@
+{
+  "command": [
+    "/workspace/scratch/337c309bc660/shared-tools/bin/just",
+    "fmt"
+  ],
+  "exit_code": 0,
+  "environment_overrides": {
+    "UV_NO_SYNC": "1",
+    "UV_OFFLINE": "1",
+    "UV_PROJECT_ENVIRONMENT": "/workspace/scratch/337c309bc660/hepta-work/scripts/.venv",
+    "UV_CACHE_DIR": "/tmp/hepta-reader-uv-cache"
+  },
+  "before": {
+    "scripts/memory_cell/strong_rag_cpu_scout.py": "3738c48a79c6aeb7b182983017bd37583d8e85d3aeaa85a4240936f286fb1dc5",
+    "scripts/memory_cell/strong_rag_resource_snapshot.py": "dab5b1eec2935d0a2b432708189943498c69e01881a2b366c8b84a6542a6ef28",
+    "scripts/memory_cell/test_strong_rag_cpu_scout.py": "afc13824fa9500226942f478f9906836636b31dc40f628561a5efb2fcbdec0ad"
+  },
+  "after": {
+    "scripts/memory_cell/strong_rag_cpu_scout.py": "3738c48a79c6aeb7b182983017bd37583d8e85d3aeaa85a4240936f286fb1dc5",
+    "scripts/memory_cell/strong_rag_resource_snapshot.py": "dab5b1eec2935d0a2b432708189943498c69e01881a2b366c8b84a6542a6ef28",
+    "scripts/memory_cell/test_strong_rag_cpu_scout.py": "afc13824fa9500226942f478f9906836636b31dc40f628561a5efb2fcbdec0ad"
+  },
+  "bytes_unchanged": true,
+  "scope": "Existing pinned Ruff 0.15.13 environment reused read-only without dependency syncing or network; no native build."
+}

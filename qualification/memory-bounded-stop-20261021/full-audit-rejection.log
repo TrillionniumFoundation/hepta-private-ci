@@ -1,0 +1,9 @@
+Traceback (most recent call last):
+  File "/workspace/scratch/337c309bc660/research-work/audit_memory112_observations.py", line 281, in <module>
+    main()
+  File "/workspace/scratch/337c309bc660/research-work/audit_memory112_observations.py", line 260, in main
+    "phase_audits": [audit_phase(args.root, phase) for phase in phases],
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/scratch/337c309bc660/research-work/audit_memory112_observations.py", line 62, in audit_phase
+    raise ValueError(
+ValueError: full planned completion seal required before answer inspection

@@ -1,0 +1,32 @@
+[
+  {
+    "workflow": "hepta-memory-bf16-host-scout.yml",
+    "job": "hosted-cpu-readonly",
+    "step": "Validate the read-only CPU scout and existing fail-closed gate",
+    "bash_syntax_exit_code": 0
+  },
+  {
+    "workflow": "hepta-memory-bf16-host-scout.yml",
+    "job": "hosted-cpu-readonly",
+    "step": "Observe the actual allocated CPU, without model execution",
+    "bash_syntax_exit_code": 0
+  },
+  {
+    "workflow": "hepta-memory-bf16-host-scout.yml",
+    "job": "hosted-cpu-readonly",
+    "step": "Retain the exact read-only resource collector source",
+    "bash_syntax_exit_code": 0
+  },
+  {
+    "workflow": "hepta-memory-bf16-hosted-scout.yml",
+    "job": "read-only-host-census",
+    "step": "Record actual runner CPU, no model files or task labels",
+    "bash_syntax_exit_code": 0
+  },
+  {
+    "workflow": "hepta-memory-bf16-hosted-scout.yml",
+    "job": "read-only-host-census",
+    "step": "Retain original unmodified code and host census",
+    "bash_syntax_exit_code": 0
+  }
+]

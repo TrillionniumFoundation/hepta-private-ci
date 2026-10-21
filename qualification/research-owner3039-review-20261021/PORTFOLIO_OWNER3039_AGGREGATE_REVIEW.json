@@ -1,0 +1,224 @@
+{
+  "schema": "hepta.owner3039.external-aggregate-audit.v1",
+  "started_at": "2026-10-21T12:05:11.319372+00:00",
+  "completed_at": "2026-10-21T12:05:18.679948+00:00",
+  "owner_pr": 3039,
+  "owner_head": "9da3c2b98bf427c5812cdc332d4adda1fc23bac6",
+  "archive_path_read_only": "/workspace/scratch/591eaffd7820/portfolio-evidence/local_preflight_v1_evidence.tar.gz",
+  "archive_bytes": 22415728,
+  "archive_sha256": "d85dbf45d5d64437651c4ba53b32a000c82ebe78d45ee6e1dd463785bfbafab4",
+  "auditor_sha256": "649ef55702dcb598635b69a68feb47c85f5a381968f259e5ce60d9c60eb1eed8",
+  "verified_evidence_members": {
+    "completion.json": "7a47f742e869b861bacd8e0d42b4dcfb4b9876283d1a60bcb86a3e3fdcf7c731",
+    "per_world.csv.gz": "427df8f3b932afe69c876ffcb7878667430a731835b35be5831da7ef3489ba55",
+    "progress.jsonl": "962802d626b118bf32cba9f75bb62dbcb28ef45dc0f0c3748040a6fabe9df377",
+    "protocol.json": "5301887a833aab69ce26e5447fb17874f470f2097ddcb68b612736f5c4c1a13b",
+    "runtime-start.json": "87374689208c2318a21bee146c66d20fbda04fd4676e6c5dc287780fbe1f37c9",
+    "seed-17/audit.json": "cb98e97358afc6f8f658fdc8e44ea0904bd23f1d9a7b2a6ecd98573c7db06660",
+    "seed-17/calibration.npz": "65e30cdaddd72287f388cd597f27edbf9466a6df1c171d68d18757a885f53123",
+    "seed-17/model.pt": "deebb88bfc1ce67f3d23ea10086f4591d9fbebae3468085a75972a88e942889e",
+    "seed-17/offline-costs.json": "76662cb7accbdf54c6cb856981d5a8c17e0a64d976ec5e952a5b26e2151455e8",
+    "seed-17/portfolio_losses.npz": "f0ad5c9851e0630e37688d5c24079b2b06e782aadd3a28f0cdc3d4c088e0536d",
+    "seed-17/training.json": "2b838107c04a4e9a518bfbc31aa5cb66b33dd749e9b4a82e0e53aa4adbfc675b",
+    "seed-17/validation-selection.json": "c632b5014e597120223bf638a2f0f6891da149d7b21de6d4d6b977402dc5a1a8",
+    "seed-29/audit.json": "2b64c78f1ddf828f825f5c3d0ad2a7c42fab827769300b01e52b10ed5cc93200",
+    "seed-29/calibration.npz": "c61893be79dee1364afe2a6cd50d345dd7e78844322d62dc897721b4a094fb9d",
+    "seed-29/model.pt": "ef29a0477ec24abec76305a58b7aeee524ab040f1eebc810bc41ef417e945cc2",
+    "seed-29/offline-costs.json": "ca87daf33d1c6d23930d9d25a098bdc98c6833299f0d4332f32c626a38f28a2e",
+    "seed-29/portfolio_losses.npz": "daab4a5d808372056dc7323e7de099174072a4f787bef91acc39c9b04bb195e9",
+    "seed-29/training.json": "67af0bb1432fd764f60932d0db0626de8eb93a5c5ced61417c1483380f670651",
+    "seed-29/validation-selection.json": "8bf321713cefefaa3dcae1d63b714752f4f52ba211113e24b07d69a84fdebb5a",
+    "seed-43/audit.json": "ba6b50aabe76ea6ab3e25a839e38997e941ac097c7822eee7d9cfb4754eb6504",
+    "seed-43/calibration.npz": "42e638f79d10f8b40a38397cddacf2d1db347811266e87ef0b45df1bfd60ccbe",
+    "seed-43/model.pt": "7bb1d926c7088991803c0fb69d980acca01b0f9d79a75243e3e366027ce40a57",
+    "seed-43/offline-costs.json": "46d519205e38d5db7bc28e6f7fabe0a54cf16c0f01896b8de0544a55db9e2d3f",
+    "seed-43/portfolio_losses.npz": "df5af1a2e2461f01556931c641c13e2b959a3c3905a8ca8940c9d83d14e8743e",
+    "seed-43/training.json": "a6bc8b4c1372c897653e900a4d4acbed5c376deb9756d38a22efae0890fcd0c8",
+    "seed-43/validation-selection.json": "39fbf0a3e1fd5bd4a552bdf268d24bf4043c8b5a93593da6bc34a920c6eb054c",
+    "summary.json": "00525e7176e5f661723b6e6769f0132a12a414c4de024ff95cb1fa283e3cc4d4"
+  },
+  "policy_world_rows": 169344,
+  "summary_groups": 189,
+  "independently_recomputed_fields": [
+    "n",
+    "cvar90",
+    "mean_loss",
+    "mean_quality",
+    "mean_linear_macs",
+    "mean_resolved_correct_fraction",
+    "mean_omission"
+  ],
+  "maximum_summary_absolute_error": 4.440892098500626e-16,
+  "primary_cvar90": {
+    "estimate": -0.015165960928988512,
+    "ci_low": -0.042590096007859374,
+    "ci_high": 0.009442706859393208
+  },
+  "primary_seed_differences": [
+    -0.012904693895193664,
+    -0.04170184714265901,
+    0.009108658250887136
+  ],
+  "primary_bootstrap_replicates": 1000,
+  "absolute_0_020_reduction_passed": false,
+  "interval_below_zero_passed": false,
+  "stored_primary_claim_passed": false,
+  "world_count_v1": 8064,
+  "world_count_v1_1": 8064,
+  "world_id_overlap": 0,
+  "same_three_training_model_identities": [
+    {
+      "seed": 17,
+      "initial_weight_sha256": {
+        "all": "c8418e602a41a20a3ec08c15d133cf22100d116dcbffbf7f953deef7ff4b2846",
+        "decoders": "cb8ec0b328854839d68a1269ae56ad85748e712fa109ac9bebfe2f86bc95cc3c",
+        "encoders": "a1ab0441e41a748859a4d504fe33071c21c315a9a91cc154882f0432ed08bb16",
+        "shared_refinement": "726da66312ef210a1f74ce63b3a9c3e7c0b59e951e149decbbcb9f831addfd9c"
+      },
+      "final_weight_sha256": {
+        "all": "9c93c64ceaaca4fdf8492152c761be56353fb0dfb9561f8b28899124631da1b7",
+        "decoders": "66fb63035731d95c01d2fac1199ddfb0c9393c06b59c1883752fac70abf20989",
+        "encoders": "43ecf92a1170e781c6d15bfd17b791dd697697df43b4c96d3a5c92d7943bcf56",
+        "shared_refinement": "b359b7a95bcaf08caff32ff6614018c0c9c922abb7a8c787eba0835ab900fabc"
+      },
+      "data_generation": {
+        "kind": "independent_clean_render_worlds",
+        "label_rng_seed": 117,
+        "note": "Clean training classes are shared concepts; independent nuisance draws and RNG namespaces separate datasets, not unseen-class generalization.",
+        "nuisance_rng_seed": 1017,
+        "raw_sha256": {
+          "audio": "eb69f8a667ee4daab11bcc327b5cb3526064783a27f91e39ea77a3fd9a0e5057",
+          "image": "9d019d49ec6652f0d28f253faccdb5e448d59328adb1610ce98481a4ad1ad950",
+          "text": "9bcb06b388cf00b9576fb67dcfdf98c8e5868865457ea5aa9e5c9cc7598f8dda",
+          "video": "60db8ca9315cf6867ba051ee2cf34a8b281ed06ad89bcdef958c5b30323cebef"
+        },
+        "sample_id_namespace": "clean-train:17:"
+      },
+      "parameter_counts": {
+        "all": 660488,
+        "decoders": 335400,
+        "encoders": 316192,
+        "shared_refinement": 8896
+      }
+    },
+    {
+      "seed": 29,
+      "initial_weight_sha256": {
+        "all": "be1402119f88b7457f4d418b6bcb1def5f26b8e212e7ff8f5b6a51840a80db2c",
+        "decoders": "78547b4583cbb95a5604ebfc468a1e60b8519dcc318f8e53d4a735db54f4b1b8",
+        "encoders": "81cb2ae9d94d8768a7bae1d3696b9af6ab1f4eeadcb6e5480f8bf7ea9b780419",
+        "shared_refinement": "025a64c882c74da2102b1b9a92040fff02d3faeb749806b4316bfd3863a78442"
+      },
+      "final_weight_sha256": {
+        "all": "36e5c4d27329bfdb9f9663cba25dae2eb6d37c408cc52aa1395c51a0b8fed0fb",
+        "decoders": "56aa18d1100469c40eb2e00cf42059acf6b6d8acd373ced77959d6470d36ab6b",
+        "encoders": "af7ee64aee8541fce5c7884b86a7208ec08f2ccd9afb389f861288cb62fd6a69",
+        "shared_refinement": "e41f00ce8ae2858c1c6ad244780b175149aab64142497ed7e1b3dcd9e49c8d92"
+      },
+      "data_generation": {
+        "kind": "independent_clean_render_worlds",
+        "label_rng_seed": 129,
+        "note": "Clean training classes are shared concepts; independent nuisance draws and RNG namespaces separate datasets, not unseen-class generalization.",
+        "nuisance_rng_seed": 1029,
+        "raw_sha256": {
+          "audio": "3cc3e30d33a2effe6a69fd974eedc370961e2e1c9c0a18cca325ae5d5f9c45d9",
+          "image": "042194156ea85eef587362cf05d392b36064678502a7c561f05c3aaccc6d3629",
+          "text": "e75cf521a7542fb762e8ed8c368c1c50aebc8160fe8bb43da05d502e9473ce06",
+          "video": "fd14af811e60b36f246323e4efb2d396ef03c12f50cd612fb0d908be6ec43c4d"
+        },
+        "sample_id_namespace": "clean-train:29:"
+      },
+      "parameter_counts": {
+        "all": 660488,
+        "decoders": 335400,
+        "encoders": 316192,
+        "shared_refinement": 8896
+      }
+    },
+    {
+      "seed": 43,
+      "initial_weight_sha256": {
+        "all": "3ab08bc6b2a533360f0e8f5c738331f45682e88d1681bdf7f1bd89877f4c8648",
+        "decoders": "7def09774ab5e670b936bf20490633da9c89ab0b12bbd74ff0d41ce01ed4993b",
+        "encoders": "a6830870ddb68c0cf9bea6e9c1cab41db3b9e306cc696c301aaa4c54cb423af2",
+        "shared_refinement": "a469c75c3085aa8be2f9304ad1f9b9a4c32a7b4dd5f81cc9a58b5e6ce08f1aae"
+      },
+      "final_weight_sha256": {
+        "all": "acd231675a6177fa6e8b3162f2d3234af4f54317a44b94051b2bde1b13275ffb",
+        "decoders": "14ec42b891b64a2303e90a7b022770f5551c08ad4244413ac62d81fb4b7211cd",
+        "encoders": "3d4e6ac8c3454c39fba239c55769e32bb39f2b5b2dd89f3033ecb7eab1459a40",
+        "shared_refinement": "a8fbf60f4754cbb9cfb692d2597522c01630245c2fb565560a6b49827cfa0c9f"
+      },
+      "data_generation": {
+        "kind": "independent_clean_render_worlds",
+        "label_rng_seed": 143,
+        "note": "Clean training classes are shared concepts; independent nuisance draws and RNG namespaces separate datasets, not unseen-class generalization.",
+        "nuisance_rng_seed": 1043,
+        "raw_sha256": {
+          "audio": "a8d0166c4591dd593272b75eafe3e1aacd9c3655d133e67b89aeb60b6d509eeb",
+          "image": "c83af7224683a0bb1f22a5f273fa77a9c86b464bbbbf52c4b7a97f1666ad0378",
+          "text": "5bf25010fb64b4f9606b494c4bff4219e73c0f8809ccd28ce8b0632bf7274be3",
+          "video": "7d9d997baee770021aa98ca2c98bdcf69d2f0e052e03d8284e2e25629abb220c"
+        },
+        "sample_id_namespace": "clean-train:43:"
+      },
+      "parameter_counts": {
+        "all": 660488,
+        "decoders": 335400,
+        "encoders": 316192,
+        "shared_refinement": 8896
+      }
+    }
+  ],
+  "original_runtime": {
+    "command": [
+      "experiments/multimodal_output_portfolio/run_experiment.py",
+      "--output",
+      "/workspace/scratch/591eaffd7820/portfolio-evidence/local-preflight-v1_1"
+    ],
+    "cpu_count": 9,
+    "dedicated_runner_verified": false,
+    "execution_tier": "local-preflight",
+    "git_checkout_head": "f8c9419df6ddeb36ff8b522a50219981fb8d9345",
+    "github_run_id": null,
+    "host": "00f65abd2fab",
+    "model_device": "cpu",
+    "numpy": "1.26.4",
+    "platform": "Linux-6.18.55-x86_64-with-glibc2.39",
+    "python": "3.12.14 (main, Aug 25 2026, 14:00:49) [Clang 22.1.3 ]",
+    "python_executable": "/workspace/scratch/337c309bc660/research-work/venv/bin/python",
+    "runner_name": null,
+    "smoke_only": false,
+    "source_commit_asserted_by_launcher": null,
+    "source_manifest": {
+      "combined_sha256": "4c642884217c5809d99db8af2e3b977279c76ddb4f4f13c79312534e4eef8f4f",
+      "files": {
+        "audit.py": "c068b1dcd73d115e9dddf5df53d932ad1b0101c17913dbdf26ced504078d05a3",
+        "control.py": "dab085eb23a504a9ff30d8a40805ddb505b30f6af7dc19d80511199d20a2db46",
+        "evaluate.py": "112eac9d29c088018a246867521e4b35786bc59135c550ac02cc6e2a5449e922",
+        "metrics.py": "bf7661391fe133b1b97bfcac515cafe893dbc8fb4ff2ce00b37457c6611f87bd",
+        "model.py": "345c17f472758db755dad0c262bd40bc6fdcf5652f7e94ac34f1d84c06c6b748",
+        "protocol.json": "1e952ed793c2da0ca65ad702156ba0d2d9c4af69a7de94f9cf436cb59de97f58",
+        "run_cloud.sh": "cd738a3836b862cbd76d9073a690ab14ac8438142cedc5785696f4794730838a",
+        "run_experiment.py": "2ee9b0046d0525931d0a9599bfbd08e4644dcfe9050b4c06ae16a8ee27de9ba9",
+        "world.py": "8231e81ff2eda916f46503ad1f97824ffef5237c2114e76c257c5dde8dda9c9c"
+      }
+    },
+    "started_utc": "2026-10-21T11:04:44Z",
+    "torch": "2.5.1+cpu",
+    "torch_cuda_available": false
+  },
+  "original_completion": {
+    "ended_utc": "2026-10-21T11:06:37Z",
+    "execution_tier": "local-preflight",
+    "exit_code": 0,
+    "implementation_run_completed": true,
+    "primary_claim_passed": false
+  },
+  "original_protocol_wall_seconds": 113.11505440600013,
+  "model_checkpoint_or_forward_replay_performed_by_this_audit": false,
+  "new_model_calls": 0,
+  "torch_imported": false,
+  "scope": "Aggregation and pairing review of the existing synthetic 660488-parameter pilot. Does not close licensed teacher, native 150M/300M Student, Memory112, independent natural-semantic holdout, physical GPU/energy, or dedicated host qualification.",
+  "qualification": "NO_GO"
+}

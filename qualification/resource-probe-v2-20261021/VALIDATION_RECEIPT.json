@@ -1,0 +1,21 @@
+{
+  "actual_negative_control_passed": true,
+  "actual_negative_control_snapshot_sha256": "49bbd2f6b2b22935ce51ef494d3f3a2d8bb27ae52c21bcb3c972e3201b27b591",
+  "all_workflow_archive_members_round_trip_verified": true,
+  "git_diff_check_exit_code": 0,
+  "just_fmt_receipt_sha256": "cb997071123ba11792f09772434ca4f1d36d506efa5c1c29cf0c416dd2e2741a",
+  "resource_tests_added": 11,
+  "ruff_E_F_I_exit_code": 0,
+  "ruff_format_check_exit_code": 0,
+  "ruff_version": "0.15.13",
+  "schema": "hepta.resource-probe.validation.v2",
+  "scope": "Unit tests plus a real temporary-container negative control and static source validation; no hosted capacity or model execution qualification.",
+  "scout_shell_blocks_syntax_checked": 5,
+  "source_bytes_unchanged_after_just_fmt": true,
+  "source_commit": "b01d33144b4f153adc46649bba6ac9683aa3b94d",
+  "unit_log_sha256": "6d8b05fb603ccabb9c68b203f688a06712257842b4dda6406752b08fdd5a14dd",
+  "unit_test_command": "PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=scripts/memory_cell python -m unittest -v test_strong_rag_cpu_scout test_strong_rag_host_gate",
+  "unit_test_exit_code": 0,
+  "unit_tests_passed": 28,
+  "yaml_workflows_parsed": 224
+}

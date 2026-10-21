@@ -1,0 +1,54 @@
+{
+  "schema": "hepta.memory.retry-host-evidence.v1",
+  "created_at": "2026-10-21T11:34:32.653695+00:00",
+  "historical_run": 38224160872,
+  "historical_job": 114727445770,
+  "log_sha256": "a1edf3e5ea391c685f2aed3f1ddd7e7a45ff115e93138800d97ddd45b8d8a113",
+  "actual_cpu_census": {
+    "eligible_cpu_for_unchanged_bf16_reader": true,
+    "eligible_host_reserved": false,
+    "hardware": {
+      "all_cpus_bf16_accelerated": true,
+      "cpu_models": [
+        "INTEL(R) XEON(R) PLATINUM 8573C"
+      ],
+      "cpuinfo_sha256": "ac5a5d66b94960784a12a96c460f6d770d60d8237ff7643bf5e89db0d80d3a97",
+      "full_inference_latency_qualified": false,
+      "host_eligible": true,
+      "independent_semantic_judge": false,
+      "logical_cpu_records": 4,
+      "machine": "x86_64",
+      "new_model_calls": 0,
+      "policy": "x86_64-original-qwen-torch2.5.1-cpu-bfloat16-eager",
+      "production_accepted": false,
+      "rejection_reason": null,
+      "runner_arch": "X64",
+      "same_original_model_weights_required": true,
+      "schema": "hepta.memory-strong-rag.bf16-host-gate.v1",
+      "shared_acceleration_features": [
+        "amx_bf16",
+        "avx512_bf16"
+      ]
+    },
+    "independent_semantic_judge": false,
+    "new_model_calls": 0,
+    "production_accepted": false,
+    "read_only_census": true,
+    "requested_hosted_runner": "ubuntu-22.04",
+    "same_hardware_on_next_run_guaranteed": false,
+    "schema": "hepta.memory-strong-rag.host-scout.v1",
+    "source_commit": "d49b62aa9d811ea3c53a79a245d6f859e55e1d6c",
+    "training_executed": false,
+    "weights_downloaded": false
+  },
+  "historical_ram_measurement": null,
+  "historical_cgroup_memory_limit": null,
+  "larger_than_8gib_memory_demonstrated": false,
+  "current_allocation_or_reservation": false,
+  "same_next_hardware_guaranteed": false,
+  "next_model_execution_authorized_by_this_receipt": false,
+  "new_model_calls": 0,
+  "remaining_requirement": "Obtain actual allocated-host MemTotal and effective cgroup memory bound above 8 GiB, available headroom, original BF16 gate, then seal a fresh complete 40+72 attempt before execution. Preserve original 2 threads, CPU BF16, greedy decoding, token limits, source/model pins and 180-second bound.",
+  "previous_failed_attempt": "../MEMORY_BOUNDED_STOP_20261021_V2.json",
+  "scope": "resource evidence only; no model quality or production qualification"
+}

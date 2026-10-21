@@ -1,0 +1,337 @@
+name: MemoryCell calibrated strong RAG with frozen reader
+on:
+  push:
+    branches:
+      - codex/memory-cell-evidence-20261008
+    paths:
+      - "scripts/memory_cell/strong_rag_trial.py"
+      - "scripts/memory_cell/strong_rag_host_gate.py"
+      - "scripts/memory_cell/test_strong_rag_host_gate.py"
+      - "scripts/memory_cell/strong_rag_shards.py"
+      - "scripts/memory_cell/test_strong_rag_shards.py"
+      - "scripts/memory_cell/historical_event_citation_chain.py"
+      - "scripts/memory_cell/test_historical_event_citation_chain.py"
+      - "scripts/memory_cell/test_strong_rag_citation_bridge.py"
+      - "scripts/memory_cell/test_strong_rag_trial.py"
+      - "scripts/memory_cell/strong_rag_hop_control.py"
+      - "scripts/memory_cell/test_strong_rag_hop_control.py"
+      - "scripts/memory_cell/strong_rag_receipt.py"
+      - "scripts/memory_cell/test_strong_rag_receipt.py"
+      - "scripts/memory_cell/strong_rag_repeatability.py"
+      - "scripts/memory_cell/test_strong_rag_repeatability.py"
+      - "scripts/memory_cell/strong_rag_stability.py"
+      - "scripts/memory_cell/test_strong_rag_stability.py"
+      - "scripts/memory_cell/test_strong_rag_workflow_scheduling.py"
+      - ".github/workflows/hepta-memory-strong-rag.yml"
+      - "codex-rs/hepta-intelligence-eval/MEMORY_CELL_STRONG_RAG.md"
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: memorycell-strong-rag-${{ github.sha }}
+  cancel-in-progress: false
+jobs:
+  # PR-wide formatting remains a standalone pull-request check.
+  # Only scoped source checks, the pinned reader and independent replay belong here.
+  # Research execution prerequisite only; the PR-wide format gate remains intact.
+  # A Stem formatting failure must not suppress an otherwise valid reader trial.
+  experiment-format:
+    if: github.event_name == 'push' && github.ref == 'refs/heads/codex/memory-cell-evidence-20261008'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - name: Check frozen-RAG source formatting and syntax independently
+        run: |
+          set -euo pipefail
+          python3 -m pip install uv==0.8.22
+          uv run --frozen --project scripts ruff format --check \
+            scripts/memory_cell/strong_rag*.py \
+            scripts/memory_cell/test_strong_rag*.py
+          python3 -m unittest discover -s scripts/memory_cell -p 'test_strong_rag_workflow_scheduling.py' -v
+          python3 -m unittest discover -s scripts/memory_cell -p 'test_strong_rag*.py' -v
+          python3 -m unittest discover -s scripts/memory_cell -p 'test_historical_event_citation_chain.py' -v
+          python3 -m py_compile \
+            scripts/memory_cell/strong_rag*.py \
+            scripts/memory_cell/test_strong_rag*.py
+          git rev-parse HEAD
+      - name: Retain the exact Ruff repair patch without weakening the failure
+        if: failure()
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/strong-rag-scoped-repair
+          git rev-parse HEAD > /tmp/strong-rag-scoped-repair/tested-commit.txt
+          uv run --frozen --project scripts ruff format \
+            scripts/memory_cell/strong_rag*.py \
+            scripts/memory_cell/test_strong_rag*.py
+          git diff --binary -- scripts/memory_cell/strong_rag*.py \
+            scripts/memory_cell/test_strong_rag*.py \
+            > /tmp/strong-rag-scoped-repair/ruff-fix.patch
+          # Preserve the failing gate and expose the exact pinned Ruff fix.
+          # An auditor may apply it as an ordinary subsequent source commit.
+          # This diagnostics-only step cannot auto-push, waive or pass CI.
+          test -s /tmp/strong-rag-scoped-repair/ruff-fix.patch
+          cat /tmp/strong-rag-scoped-repair/ruff-fix.patch
+          cp scripts/memory_cell/test_strong_rag_trial.py \
+            /tmp/strong-rag-scoped-repair/test_strong_rag_trial.py
+          sha256sum /tmp/strong-rag-scoped-repair/* \
+            > /tmp/strong-rag-scoped-repair/SHA256SUMS
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: failure()
+        with:
+          name: memory-strong-rag-ruff-repair
+          path: /tmp/strong-rag-scoped-repair
+          if-no-files-found: warn
+  reader:
+    needs: experiment-format
+    # 2026-10-12: actual host scouting observed BF16 on Ubuntu 22.04 only.
+    # The runtime CPU ISA and 180s feasibility gates still run on THIS VM.
+    runs-on: ubuntu-22.04
+    # 40 calibration + 72 frozen evaluation generations on CPU, with a SHA-sealed checkpoint.
+    timeout-minutes: 360
+    env:
+      PYTHONPATH: scripts/memory_cell
+      HF_HUB_DISABLE_IMPLICIT_TOKEN: "1"
+      HF_HUB_DISABLE_XET: "1"
+      TOKENIZERS_PARALLELISM: "false"
+      OMP_NUM_THREADS: "2"
+      MKL_NUM_THREADS: "2"
+      HEPTA_MEMORY_TESTED_COMMIT: ${{ github.sha }}
+      FIXED_PLAN_SHA: "9840a25487af444914dca24c818d98ff798ebc1610ea8dfdd827187c31ad1897"
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - name: Retain original pinned Python 3.12 environment on Ubuntu 22.04
+        uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405 # v6.2.0
+        with:
+          python-version: "3.12"
+      - name: Verify BF16 CPU hardware before model downloads
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/strong-rag-evidence
+          python3 scripts/memory_cell/strong_rag_host_gate.py --output /tmp/strong-rag-evidence/host-qualification.json
+      - name: Restore exact historical source, calibration/test census and index bytes
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/strong-rag-evidence
+          gh api repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/11669174727/zip > /tmp/strong-rag-input.zip
+          python3 - <<'PY'
+          from pathlib import Path, PurePosixPath
+          import hashlib, re, stat, zipfile
+          archive = Path('/tmp/strong-rag-input.zip')
+          raw = archive.read_bytes()
+          assert len(raw) <= 16 * 1024 * 1024
+          assert hashlib.sha256(raw).hexdigest() == '23e9d44b8d2dbe756c7c33031e18853c83326458a37925d4d368881145bf142b'
+          root = Path('/tmp/strong-rag-inputs')
+          root.mkdir()
+          with zipfile.ZipFile(archive) as z:
+              items = z.infolist()
+              assert len(items) <= 256
+              assert sum(item.file_size for item in items) <= 32 * 1024 * 1024
+              seen = set()
+              for item in items:
+                  path = PurePosixPath(item.filename)
+                  assert not path.is_absolute() and '..' not in path.parts
+                  assert '\\' not in item.filename
+                  assert not stat.S_ISLNK(item.external_attr >> 16)
+                  assert not item.is_dir()
+                  name = str(path)
+                  assert name not in seen
+                  seen.add(name)
+                  dest = root / name
+                  dest.parent.mkdir(parents=True, exist_ok=True)
+                  dest.write_bytes(z.read(item))
+          declared = set()
+          for line in (root / 'SHA256SUMS').read_text().splitlines():
+              hashed, filename = line.split('  ', 1)
+              path = PurePosixPath(filename)
+              assert re.fullmatch('[0-9a-f]{64}', hashed)
+              assert not path.is_absolute() and '..' not in path.parts
+              assert str(path) not in declared
+              declared.add(str(path))
+              assert hashlib.sha256((root / str(path)).read_bytes()).hexdigest() == hashed
+          assert declared == seen - {'SHA256SUMS'}
+          assert (root / 'tested-commit.txt').read_text().strip() == 'c9dd3aeff958fbdc4356a98718e96dec47f9b820'
+          assert hashlib.sha256((root / 'plan/plan.json').read_bytes()).hexdigest() == '9840a25487af444914dca24c818d98ff798ebc1610ea8dfdd827187c31ad1897'
+          (Path('/tmp/strong-rag-evidence') / 'input-pin.txt').write_text('artifact=11669174727\nzip_sha256=23e9d44b8d2dbe756c7c33031e18853c83326458a37925d4d368881145bf142b\n')
+          PY
+      - name: Restore pinned CPU environment and test exact reader dependencies
+        run: |
+          set -euo pipefail
+          python3 -m venv /tmp/strong-rag-python
+          /tmp/strong-rag-python/bin/pip install torch==2.5.1 --index-url https://download.pytorch.org/whl/cpu
+          /tmp/strong-rag-python/bin/pip install -r /tmp/strong-rag-inputs/environment.txt
+          /tmp/strong-rag-python/bin/pip freeze > /tmp/strong-rag-evidence/environment.txt
+          diff -u /tmp/strong-rag-inputs/environment.txt /tmp/strong-rag-evidence/environment.txt
+          : > /tmp/strong-rag-evidence/tests.log
+          for pattern in \
+            'test_strong_rag*.py' \
+            'test_event_*.py' \
+            'test_bundle_trial.py' \
+            'test_evidence_bundle.py' \
+            'test_index_integrity.py' \
+            'test_native*.py' \
+            'test_citation_audit.py' \
+            'test_pretrained.py' \
+            'test_reader_reference*.py' \
+            'test_tensor_contract.py' \
+            'test_reviewed_bundle.py' \
+            'test_reviewed_diagnostic.py' \
+            'test_sessions.py'; do
+            echo "=== frozen reader dependencies: $pattern ===" | tee -a /tmp/strong-rag-evidence/tests.log
+            /tmp/strong-rag-python/bin/python -m unittest discover -s scripts/memory_cell -p "$pattern" -v 2>&1 | tee -a /tmp/strong-rag-evidence/tests.log
+          done
+      - name: Reuse original indexed source and verify pinned retrieval replay
+        run: |
+          set -euo pipefail
+          /tmp/strong-rag-python/bin/python scripts/memory_cell/event_memory_trial.py encoder /tmp/strong-rag-encoder
+          /tmp/strong-rag-python/bin/python scripts/memory_cell/strong_rag_trial.py prepare /tmp/strong-rag-inputs/observations /tmp/strong-rag-inputs/plan /tmp/strong-rag-encoder /tmp/strong-rag-evidence/prep --plan-sha "$FIXED_PLAN_SHA" 2>&1 | tee /tmp/strong-rag-evidence/prep.log
+      - name: Stage pinned research-only Qwen reader
+        run: |
+          set -euo pipefail
+          /tmp/strong-rag-python/bin/python scripts/memory_cell/reader_reference.py stage qwen-3b /tmp/strong-rag-reader
+          cp /tmp/strong-rag-reader/{inventory.json,stage.json,publisher.json} /tmp/strong-rag-evidence/
+      - name: Real reader calibration only, with final tasks absent from inputs
+        id: calibration_generation
+        env:
+          HF_HUB_OFFLINE: "1"
+          TRANSFORMERS_OFFLINE: "1"
+        run: |
+          set -euo pipefail
+          /usr/bin/time -v -o /tmp/strong-rag-evidence/calibration-resources.txt /tmp/strong-rag-python/bin/python scripts/memory_cell/strong_rag_trial.py calibrate /tmp/strong-rag-evidence/prep /tmp/strong-rag-reader /tmp/strong-rag-evidence/calibration --prep-sha "$(sha256sum /tmp/strong-rag-evidence/prep/calibration-plan.json | cut -d ' ' -f1)" --stage-sha "$(sha256sum /tmp/strong-rag-reader/stage.json | cut -d ' ' -f1)" 2>&1 | tee /tmp/strong-rag-evidence/calibration.log
+      # Preserve completed calibration even if later nine-arm evaluation fails.
+      # This diagnostic is not an independent replay or deployment receipt.
+      - name: Seal calibration-only checkpoint with original generating SHA
+        if: ${{ always() && steps.calibration_generation.outcome != 'skipped' }}
+        run: |
+          set -euo pipefail
+          checkpoint=/tmp/strong-rag-calibration-checkpoint
+          mkdir -p "$checkpoint"
+          printf '%s\n' "$HEPTA_MEMORY_TESTED_COMMIT" > "$checkpoint/tested-commit.txt"
+          for directory in prep calibration; do
+            if [ -d "/tmp/strong-rag-evidence/$directory" ]; then
+              cp -a "/tmp/strong-rag-evidence/$directory" "$checkpoint/"
+            fi
+          done
+          for filename in input-pin.txt inventory.json stage.json publisher.json environment.txt prep.log calibration.log calibration-resources.txt tests.log host-qualification.json; do
+            if [ -f "/tmp/strong-rag-evidence/$filename" ]; then
+              cp "/tmp/strong-rag-evidence/$filename" "$checkpoint/$filename"
+            fi
+          done
+          test -z "$(find "$checkpoint" -type l -print -quit)"
+          (cd "$checkpoint" && find . -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS)
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: ${{ always() && steps.calibration_generation.outcome != 'skipped' }}
+        with:
+          name: memory-strong-rag-calibration-checkpoint
+          path: /tmp/strong-rag-calibration-checkpoint
+          if-no-files-found: error
+      - name: Different process, frozen top-k versus matched original controls
+        env:
+          HF_HUB_OFFLINE: "1"
+          TRANSFORMERS_OFFLINE: "1"
+        run: |
+          set -euo pipefail
+          /usr/bin/time -v -o /tmp/strong-rag-evidence/evaluation-resources.txt /tmp/strong-rag-python/bin/python scripts/memory_cell/strong_rag_trial.py evaluate /tmp/strong-rag-inputs/plan /tmp/strong-rag-inputs/observations /tmp/strong-rag-reader /tmp/strong-rag-evidence/calibration /tmp/strong-rag-evidence/evaluation --plan-sha "$FIXED_PLAN_SHA" --stage-sha "$(sha256sum /tmp/strong-rag-reader/stage.json | cut -d ' ' -f1)" --policy-sha "$(sha256sum /tmp/strong-rag-evidence/calibration/frozen-policy.json | cut -d ' ' -f1)" 2>&1 | tee /tmp/strong-rag-evidence/evaluation.log
+      - name: Preserve exact source and all original diagnostics, even on failure
+        if: always()
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/strong-rag-evidence/source
+          cp scripts/memory_cell/strong_rag_trial.py scripts/memory_cell/test_strong_rag_trial.py scripts/memory_cell/strong_rag_hop_control.py scripts/memory_cell/test_strong_rag_hop_control.py scripts/memory_cell/strong_rag_receipt.py scripts/memory_cell/test_strong_rag_receipt.py scripts/memory_cell/strong_rag_repeatability.py scripts/memory_cell/test_strong_rag_repeatability.py scripts/memory_cell/strong_rag_stability.py scripts/memory_cell/test_strong_rag_stability.py scripts/memory_cell/historical_event_citation_chain.py scripts/memory_cell/test_historical_event_citation_chain.py scripts/memory_cell/test_strong_rag_citation_bridge.py scripts/memory_cell/strong_rag_host_gate.py scripts/memory_cell/test_strong_rag_host_gate.py /tmp/strong-rag-evidence/source/
+          git rev-parse HEAD > /tmp/strong-rag-evidence/tested-commit.txt
+          (cd /tmp/strong-rag-evidence && find . -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS)
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: memory-strong-rag-calibrated-reader
+          path: /tmp/strong-rag-evidence
+          if-no-files-found: error
+
+  independent-replay:
+    needs: reader
+    if: needs.reader.result == 'success'
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      PYTHONPATH: scripts/memory_cell
+      GENERATING_COMMIT: ${{ github.sha }}
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          name: memory-strong-rag-calibrated-reader
+          path: /tmp/strong-rag-evidence
+      - name: Verify the original input artifact ZIP and every inner file
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/strong-rag-replay
+          gh api repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/11669174727/zip > /tmp/strong-rag-original.zip
+          python3 - <<'PYIN'
+          from pathlib import Path, PurePosixPath
+          import hashlib, re, stat, zipfile
+          raw = Path('/tmp/strong-rag-original.zip').read_bytes()
+          assert len(raw) <= 16 * 1024 * 1024
+          assert hashlib.sha256(raw).hexdigest() == '23e9d44b8d2dbe756c7c33031e18853c83326458a37925d4d368881145bf142b'
+          root = Path('/tmp/strong-rag-original')
+          root.mkdir()
+          seen = set()
+          with zipfile.ZipFile('/tmp/strong-rag-original.zip') as z:
+              infos = z.infolist()
+              assert 1 <= len(infos) <= 256
+              assert sum(i.file_size for i in infos) <= 32 * 1024 * 1024
+              for item in infos:
+                  p = PurePosixPath(item.filename)
+                  assert not p.is_absolute() and '..' not in p.parts and '\\' not in item.filename
+                  assert not item.is_dir() and not stat.S_ISLNK(item.external_attr >> 16)
+                  name = str(p)
+                  assert name not in seen
+                  seen.add(name)
+                  out = root / name
+                  out.parent.mkdir(parents=True, exist_ok=True)
+                  out.write_bytes(z.read(item))
+          listed = set()
+          for line in (root / 'SHA256SUMS').read_text().splitlines():
+              hit = re.fullmatch(r'([0-9a-f]{64})  (?:\./)?(.+)', line)
+              assert hit is not None
+              sha, name = hit.groups()
+              p = PurePosixPath(name)
+              assert not p.is_absolute() and '..' not in p.parts and name not in listed
+              listed.add(name)
+              assert hashlib.sha256((root / name).read_bytes()).hexdigest() == sha
+          assert listed == seen - {'SHA256SUMS'}
+          assert (root / 'tested-commit.txt').read_text().strip() == 'c9dd3aeff958fbdc4356a98718e96dec47f9b820'
+          PYIN
+      - name: Regression tests and separate-process replay of original model answers
+        run: |
+          set -euo pipefail
+          python3 -m unittest discover -s scripts/memory_cell -p 'test_strong_rag_r*.py' -v 2>&1 | tee /tmp/strong-rag-replay/tests.log
+          python3 -m unittest discover -s scripts/memory_cell -p 'test_strong_rag_stability.py' -v 2>&1 | tee /tmp/strong-rag-replay/stability-tests.log
+          python3 -m unittest discover -s scripts/memory_cell -p 'test_historical_event_citation_chain.py' -v 2>&1 | tee /tmp/strong-rag-replay/historical-citation-tests.log
+          python3 -m unittest discover -s scripts/memory_cell -p 'test_strong_rag_citation_bridge.py' -v 2>&1 | tee /tmp/strong-rag-replay/citation-bridge-tests.log
+          python3 -m unittest discover -s scripts/memory_cell -p 'test_strong_rag_hop_control.py' -v 2>&1 | tee /tmp/strong-rag-replay/hop-tests.log
+          python3 scripts/memory_cell/strong_rag_receipt.py \
+            /tmp/strong-rag-evidence /tmp/strong-rag-original \
+            --generating-commit "$GENERATING_COMMIT" \
+            --output /tmp/strong-rag-replay/receipt.json \
+            2>&1 | tee /tmp/strong-rag-replay/replay.log
+          git rev-parse HEAD > /tmp/strong-rag-replay/auditor-source-commit.txt
+          (cd /tmp/strong-rag-replay && find . -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS)
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: memory-strong-rag-readonly-replay
+          path: /tmp/strong-rag-replay
+          if-no-files-found: warn
