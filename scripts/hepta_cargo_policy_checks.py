@@ -57,7 +57,7 @@ def prepare_harness(evidence):
     (config / "nextest.toml").write_text(
         '[profile.default]\nslow-timeout = { period = "30s", terminate-after = 2 }\n'
         'retries = 1\n[profile.default.junit]\npath = "junit.xml"\n'
-        '[profile.local]\ninherits = "default"\n'
+        '[profile.local]\nretries = 1\n[profile.local.junit]\npath = "junit.xml"\n'
     )
     (harness / "justfile").write_text(
         'test-doc:\n    cargo test --workspace --doc --locked --features "' + FEATURES + '" -- --test-threads=1\n\n'

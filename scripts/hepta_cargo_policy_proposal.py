@@ -81,7 +81,7 @@ def initialize():
     add("vendor-test-list", ["cargo", "nextest", "list", "--manifest-path", manifest, "--workspace", "--features", FEATURES, "--locked", "--message-format", "json"], ROOT / "codex-rs", ["normal-graph"], "vendor-test-list.json")
     add("vendor-test-inventory", ["python3", CHECKS, "test-list"], requires=["vendor-test-list"])
     add("private-service", ["dbus-run-session", "--", "python3", SCRIPT, "service"], requires=["metadata"])
-    add("vendor-tests", ["just", "test", "--manifest-path", manifest, "--workspace", "--features", FEATURES, "--locked", "--test-threads", "1"], ROOT / "codex-rs", ["vendor-test-inventory", "normal-graph"])
+    add("vendor-tests", ["just", "test", "--manifest-path", manifest, "--workspace", "--features", FEATURES, "--locked", "--test-threads", "1", "--config-file", harness / ".config/nextest.toml"], ROOT / "codex-rs", ["vendor-test-inventory", "normal-graph"])
     add("vendor-doctests", ["just", "--justfile", harness / "justfile", "test-doc"], harness, ["normal-graph"])
     for name in ("keyring", "secrets", "login"):
         package = "codex-keyring-store" if name == "keyring" else "codex-" + name
@@ -99,7 +99,7 @@ def initialize():
     query = "labels(actual, set(" + " ".join("@crates//:" + vendor["directory"] for vendor in VENDORS.values()) + "))"
     add("bazel-vendor-query", ["bazel", "query", "--output=xml", query], requires=["lock-check", "lock-repeat-equal"], stdout_artifact="bazel-vendor-libraries.xml")
     add("bazel-generated-check", ["python3", CHECKS, "bazel-generated"], requires=["bazel-vendor-query", "metadata"])
-    add("bazel-vendor-build", ["bazel", "build", "--keep_going", *["//codex-rs/third_party/" + vendor["directory"] + ":" + name for name, vendor in VENDORS.items()]], requires=["bazel-generated-check"])
+    add("bazel-vendor-build", ["bazel", "build", "--keep_going", *["@crates//:" + vendor["directory"] for vendor in VENDORS.values()]], requires=["bazel-generated-check"])
     save(plan)
     with open(os.environ["GITHUB_OUTPUT"], "a") as output:
         print(f'toolchain={toolchain["channel"]}', file=output)
@@ -139,15 +139,21 @@ def execute(name, extra_env=None):
         if junit.is_file() and junit.stat().st_mtime_ns >= record["started_unix_ns"]:
             shutil.copyfile(junit, EVIDENCE / (name + ".junit.xml"))
             record["junit"] = name + ".junit.xml"
+        elif name == "vendor-tests" and result_code == 0:
+            # A green test command without attributable per-test evidence is not green.
+            record["status"] = "failed"
+            record["error"] = f"Expected fresh vendor Nextest JUnit was not produced: {junit}"
     if error_message:
         record["error"] = error_message
     if name == "lock-update" and result_code == 0:
         shutil.copyfile(ROOT / "MODULE.bazel.lock", EVIDENCE / "MODULE.bazel.lock.first-generation")
     save(records)
     print(f'{name}: {record["status"]}, exit {result_code}', flush=True)
-    if result_code != 0:
+    if record["status"] != "passed":
+        if record.get("error"):
+            print(record["error"], flush=True)
         print("\n".join((EVIDENCE / record["log"]).read_text(errors="replace").splitlines()[-50:]), flush=True)
-    return result_code == 0
+    return record["status"] == "passed"
 
 
 def private_service():
