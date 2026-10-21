@@ -314,9 +314,15 @@ impl TrustFixture {
             trust_root_revision: 1,
         };
         let revocation_path = root.join("revocations.json");
-        write_private_new(&revocation_path, &canonical_json(&revocation).must("test fixture result")).must("test fixture result");
+        write_private_new(
+            &revocation_path,
+            &canonical_json(&revocation).must("test fixture result"),
+        )
+        .must("test fixture result");
         let policy_value = G5TrustPolicy {
-            allowed_signers_sha256: sha256(&std::fs::read(&allowed_signers).must("test fixture result")),
+            allowed_signers_sha256: sha256(
+                &std::fs::read(&allowed_signers).must("test fixture result"),
+            ),
             key_fingerprint: fingerprint,
             maximum_lifetime_seconds: 900,
             principal: "operator@example".to_string(),
@@ -330,7 +336,11 @@ impl TrustFixture {
             trust_root_revision: 1,
         };
         let policy = root.join("trust-policy.json");
-        write_private_new(&policy, &canonical_json(&policy_value).must("test fixture result")).must("test fixture result");
+        write_private_new(
+            &policy,
+            &canonical_json(&policy_value).must("test fixture result"),
+        )
+        .must("test fixture result");
         let policy_sha256 = sha256(&std::fs::read(&policy).must("test fixture result"));
         Self {
             _temporary: temporary,
