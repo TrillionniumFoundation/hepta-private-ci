@@ -871,3 +871,34 @@ fn checked_pre_tick_does_not_claim_unverified_deferred_support() {
     assert_eq!(result.batch.cell_ticks.len(), 0);
     assert!(result.batch.routing.receipt.abstained);
 }
+
+#[test]
+fn pre_tick_shadow_rejects_local_budget_overcommit_on_deferred_cell() {
+    let fixture = shadow_fixture(true);
+    let mut first = meta_spec(&fixture);
+    // A first tick would fail, so the later local-budget mismatch must
+    // surface during the whole-batch preflight before retrieval starts.
+    first.tick_input.cue_digest = digest("wrong-first-cue");
+    let mut second = meta_spec(&fixture);
+    second.manifest.cell_id = id("memory-cell:semantic:2");
+    second.tick_input.cell_id = second.manifest.cell_id.clone();
+    second.relevance_ppm = 1;
+    second.resource_cost_units = second.tick_input.resource_budget_units + 1;
+
+    let rejected = crate::run_memory_meta_batch_shadow_v1(
+        &meta_policy(&fixture),
+        &fixture.cue,
+        &fixture.policy,
+        &fixture.snapshot,
+        &fixture.dynamics,
+        &[first, second],
+    );
+    assert!(matches!(
+        rejected,
+        Err(crate::MemoryMetaBatchErrorV1::Contract(
+            codex_hepta_cognitive_types::hnmf::HnmfContractError::Conflict(
+                "memory meta local tick budget"
+            )
+        ))
+    ));
+}
