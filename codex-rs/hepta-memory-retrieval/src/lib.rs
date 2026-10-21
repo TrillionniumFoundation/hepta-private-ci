@@ -7,6 +7,7 @@ mod engram;
 mod generation_bound;
 mod generator;
 mod memory_cell;
+mod meta_network;
 mod v2;
 
 use std::collections::BTreeSet;
@@ -82,6 +83,10 @@ pub use generator::recall_generated_with_engram;
 pub use memory_cell::MemoryCellRuntimeErrorV1;
 pub use memory_cell::MemoryCellShadowTickV1;
 pub use memory_cell::run_memory_cell_tick;
+pub use meta_network::MemoryMetaBatchErrorV1;
+pub use meta_network::MemoryMetaCellTickSpecV1;
+pub use meta_network::MemoryMetaShadowBatchV1;
+pub use meta_network::run_memory_meta_batch_shadow_v1;
 pub use v2::RetrievalReceiptV2;
 pub use v2::retrieve_v2;
 

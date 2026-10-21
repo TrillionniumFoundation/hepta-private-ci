@@ -48,3 +48,9 @@ Also require the unmodified repository-required blocking CI, architecture source
 4. Verify separately authenticated Replay/Evaluation/Artifact/Topology proposals, 3 independent snapshots, rollover/recovery, governance, rollback, and external FinalUse authorization.
 
 Until then: \`SHADOW_ONLY / DENY_ALL / HOLD_NO_GO\`.
+
+## Executable shadow batch adapter
+
+`codex-hepta-memory-retrieval::run_memory_meta_batch_shadow_v1` runs the existing typed MemoryCell tick for several Cells against a **single immutable** cue and engram snapshot, then routes the actual tick receipts through the new Meta-Network. It preflights Cell identities, shared Encoder and evidence frontiers before tick work; duplicate IDs or stale inputs reject. The adapter does **not** instantiate an Encoder, perform pre-inference sparse scheduling, inspect external ledger membership, or persist a winner. Its budget is an auditable post-tick route bound, not evidence that a physical GPU invocation was avoided.
+
+The unit tests exercise two typed Cells over real deterministic retrieval/engram fixtures, empty-support abstention and stale-frontier/duplicate preflight.

@@ -404,3 +404,139 @@ fn shadow_runtime_preserves_ood_evidence_on_abstention() {
     assert_eq!(result.receipt.ood_ppm, 1_000_000);
     assert!(result.receipt.successor_checkpoint_digest.is_none());
 }
+
+fn meta_policy(fixture: &ShadowFixture) ->
+    codex_hepta_cognitive_types::memory_meta_network::MemoryMetaNetworkPolicyV1
+{
+    use codex_hepta_cognitive_types::memory_meta_network::MemoryMetaNetworkPolicyV1;
+
+    MemoryMetaNetworkPolicyV1 {
+        schema_version: 1,
+        shared_base_digest: fixture.manifest.shared_base_digest,
+        encoder_digest: fixture.manifest.encoder_digest,
+        encoder_feature_digest: digest("shared-feature"),
+        evidence_ledger_digest: digest("evidence-ledger"),
+        snapshot_digest: ContractDigestV1::from_digest(fixture.snapshot.snapshot_digest)
+            .unwrap_or_else(|error| panic!("snapshot: {error:?}")),
+        source_frontier_digest: fixture.manifest.source_frontier_digest,
+        forget_frontier_digest: fixture.manifest.forget_frontier_digest,
+        graph_generation: fixture.manifest.graph_generation,
+        model_generation: fixture.manifest.model_generation,
+        maximum_selected_cells: 2,
+        maximum_compute_units: 100,
+        minimum_relevance_ppm: 100_000,
+        minimum_confidence_ppm: 500_000,
+        maximum_ood_ppm: 200_000,
+    }
+}
+
+fn meta_spec(fixture: &ShadowFixture) -> crate::MemoryMetaCellTickSpecV1 {
+    crate::MemoryMetaCellTickSpecV1 {
+        manifest: fixture.manifest.clone(),
+        tick_input: fixture.input.clone(),
+        generated_input: fixture.generated.clone(),
+        evidence_ledger_digest: digest("evidence-ledger"),
+        encoder_feature_digest: digest("shared-feature"),
+        support_digest: Some(digest("source-citation")),
+        independent_assessment_digest: digest("independent-assessor"),
+        relevance_ppm: 850_000,
+        resource_cost_units: 20,
+        association_group_digest: None,
+        contradiction_group_digest: None,
+    }
+}
+
+#[test]
+fn multi_cell_shadow_recall_uses_one_snapshot_and_returns_grounded_route() {
+    use codex_hepta_cognitive_types::memory_meta_network::MemoryMetaRouteDispositionV1;
+
+    let fixture = shadow_fixture(true);
+    let first = meta_spec(&fixture);
+    let mut second = meta_spec(&fixture);
+    second.manifest.cell_id = id("memory-cell:semantic:2");
+    second.manifest.role = MemoryCellRoleV1::Semantic;
+    second.tick_input.cell_id = second.manifest.cell_id.clone();
+
+    let result = crate::run_memory_meta_batch_shadow_v1(
+        &meta_policy(&fixture),
+        &fixture.cue,
+        &fixture.policy,
+        &fixture.snapshot,
+        &fixture.dynamics,
+        &[second, first],
+    )
+    .unwrap_or_else(|error| panic!("meta shadow batch: {error:?}"));
+
+    assert_eq!(result.cell_ticks.len(), 2);
+    assert!(result.cell_ticks.iter().all(|tick| {
+        tick.receipt.status == MemoryCellStatusV1::Selected
+    }));
+    assert_eq!(result.routing.receipt.resource_used_units, 40);
+    assert!(result.routing.receipt.decisions.iter().all(|decision| {
+        decision.disposition == MemoryMetaRouteDispositionV1::Selected
+    }));
+    assert!(!result.routing.receipt.production_activation_allowed);
+    assert!(!result.routing.authority.grants_any());
+    assert!(result.routing.receipt.validate().is_ok());
+}
+
+#[test]
+fn multi_cell_shadow_recall_abstains_on_empty_retrieval() {
+    let fixture = shadow_fixture(false);
+    let result = crate::run_memory_meta_batch_shadow_v1(
+        &meta_policy(&fixture),
+        &fixture.cue,
+        &fixture.policy,
+        &fixture.snapshot,
+        &fixture.dynamics,
+        &[meta_spec(&fixture)],
+    )
+    .unwrap_or_else(|error| panic!("empty meta batch: {error:?}"));
+
+    assert_eq!(result.cell_ticks[0].receipt.status, MemoryCellStatusV1::Abstained);
+    assert!(result.routing.receipt.abstained);
+    assert_eq!(result.routing.receipt.resource_used_units, 0);
+}
+
+#[test]
+fn multi_cell_shadow_preflight_rejects_stale_frontier_and_duplicates() {
+    let fixture = shadow_fixture(true);
+    let mut spec = meta_spec(&fixture);
+    spec.manifest.forget_frontier_digest = digest("old-forget");
+    spec.tick_input.forget_frontier_digest = digest("old-forget");
+
+    let rejected = crate::run_memory_meta_batch_shadow_v1(
+        &meta_policy(&fixture),
+        &fixture.cue,
+        &fixture.policy,
+        &fixture.snapshot,
+        &fixture.dynamics,
+        &[spec],
+    );
+    assert!(matches!(
+        rejected,
+        Err(crate::MemoryMetaBatchErrorV1::Contract(
+            codex_hepta_cognitive_types::hnmf::HnmfContractError::Conflict(
+                "memory meta evidence or generation drift"
+            )
+        ))
+    ));
+
+    let spec = meta_spec(&fixture);
+    let rejected = crate::run_memory_meta_batch_shadow_v1(
+        &meta_policy(&fixture),
+        &fixture.cue,
+        &fixture.policy,
+        &fixture.snapshot,
+        &fixture.dynamics,
+        &[spec, meta_spec(&fixture)],
+    );
+    assert!(matches!(
+        rejected,
+        Err(crate::MemoryMetaBatchErrorV1::Contract(
+            codex_hepta_cognitive_types::hnmf::HnmfContractError::DuplicateIdentity(
+                "memory meta cell"
+            )
+        ))
+    ));
+}
