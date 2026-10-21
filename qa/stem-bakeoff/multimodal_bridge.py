@@ -130,24 +130,38 @@ class MultimodalSlotizer(nn.Module):
                         or torch.any(t < 0) or torch.any(t > 1e9)
                         or torch.any(t[:, 1:] < t[:, :-1])):
                     raise LatentBridgeError("invalid unordered temporal spans")
-            # Teacher features intentionally DETACHED: no gradient or learning into
-            # upstream frozen modality model. Modality projectors still train.
-            projected = self.projectors[modality](value.detach()) + self.tags[modality]
-            if t is not None:
+            # One source snapshot feeds BOTH the projector and provenance hash.
+            # Detach keeps the teacher frozen; clone breaks caller-owned aliasing.
+            # Hash before invoking any projectors/hooks that can mutate upstream
+            # caller state. The extra projector clone protects the sealed copy.
+            frozen_value = value.detach().clone()
+            frozen_t = t.detach().clone() if t is not None else None
+            if not torch.isfinite(frozen_value).all():
+                raise LatentBridgeError("nonfinite modality snapshot")
+            if frozen_t is not None and (
+                    not torch.isfinite(frozen_t).all()
+                    or torch.any(frozen_t < 0) or torch.any(frozen_t > 1e9)
+                    or torch.any(frozen_t[:, 1:] < frozen_t[:, :-1])):
+                raise LatentBridgeError("invalid temporal snapshot")
+            feature_digest = _tensor_bytes_sha256(frozen_value)
+            time_digest = _tensor_bytes_sha256(frozen_t) if frozen_t is not None else None
+            projected = self.projectors[modality](frozen_value.clone()) + self.tags[modality]
+            if frozen_t is not None:
                 # Minimal bounded temporal phase. More expressive time adapters
                 # are an independent future bake-off arm.
-                projected = projected + 0.01 * torch.sin(t.to(dtype=projected.dtype).unsqueeze(-1) / 1000.0)
+                projected = projected + 0.01 * torch.sin(
+                    frozen_t.to(dtype=projected.dtype).unsqueeze(-1) / 1000.0)
             parts.append(projected)
             manifest.append({
                 "modality": modality,
                 "declared_source_sha256": source_digests[modality],
-                "shape": list(value.shape),
-                "dtype": str(value.dtype),
-                "feature_bytes_sha256": _tensor_bytes_sha256(value),
-                "timestamps": None if t is None else {
-                    "shape": list(t.shape),
-                    "dtype": str(t.dtype),
-                    "bytes_sha256": _tensor_bytes_sha256(t),
+                "shape": list(frozen_value.shape),
+                "dtype": str(frozen_value.dtype),
+                "feature_bytes_sha256": feature_digest,
+                "timestamps": None if frozen_t is None else {
+                    "shape": list(frozen_t.shape),
+                    "dtype": str(frozen_t.dtype),
+                    "bytes_sha256": time_digest,
                 },
             })
         if not parts:

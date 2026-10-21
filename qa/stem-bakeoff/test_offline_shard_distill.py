@@ -234,6 +234,31 @@ class OfflineShardDistillTests(unittest.TestCase):
         self.assertFalse(report["performance_qualified"])
         self.assertEqual(report["release"], "HOLD_NO_GO")
 
+    def test_caller_replaces_cohort_object_after_preflight_without_rewriting_report(self):
+        old = self.cohorts["future_2"]
+        pinned_source = old.expected_source_sha256
+        original_step = self.optimizer.step
+
+        def step_then_replace_caller_cohort(*args, **kwargs):
+            result = original_step(*args, **kwargs)
+            self.cohorts["future_2"] = PairedCohort(
+                slots=old.slots + 9.0, teacher_shard=old.teacher_shard,
+                expected_source_sha256="e" * 64,
+                expected_npy_sha256="0" * 64,
+                expected_slot_sha256="1" * 64,
+                sample_digests=old.sample_digests)
+            return result
+
+        self.optimizer.step = step_then_replace_caller_cohort
+        report = self.run_trial(steps=1)
+        self.assertNotEqual(self.cohorts["future_2"].expected_source_sha256,
+                            pinned_source)
+        self.assertEqual(report["source_split_digests"]["future_2"], pinned_source)
+        self.assertEqual(
+            report["paired_split_receipts"]["future_2"]["source_manifest_sha256"],
+            pinned_source)
+        self.assertFalse(report["production_activation_allowed"])
+
     def test_caller_mutation_after_optimizer_step_cannot_rewrite_report_pins(self):
         untouched = self.cohorts["ood"].expected_slot_sha256
         original_step = self.optimizer.step
