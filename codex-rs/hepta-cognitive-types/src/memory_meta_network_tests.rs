@@ -488,6 +488,20 @@ fn three_generation_frozen_stem_chain_requires_distinct_replay_and_evaluation() 
     assert!(third.validate_after(&second).is_ok());
     let valid_chain = [first.clone(), second.clone(), third.clone()];
     assert!(MemoryCellNextSnapshotCandidateV1::validate_chain(&valid_chain).is_ok());
+    let owner = manifest("cell:a", MemoryCellRoleV1::Semantic);
+    assert!(MemoryCellNextSnapshotCandidateV1::validate_chain_against(&owner, &valid_chain).is_ok());
+    let mut stale_owner = owner.clone();
+    stale_owner.forget_frontier_digest = digest("revoked-frontier");
+    assert!(matches!(
+        MemoryCellNextSnapshotCandidateV1::validate_chain_against(&stale_owner, &valid_chain),
+        Err(HnmfContractError::Conflict("memory next-snapshot predecessor"))
+    ));
+    let mut wrong_generation = owner;
+    wrong_generation.model_generation = generation(3);
+    assert!(matches!(
+        MemoryCellNextSnapshotCandidateV1::validate_chain_against(&wrong_generation, &valid_chain),
+        Err(HnmfContractError::Conflict("memory next-snapshot predecessor"))
+    ));
     let too_short = [first.clone(), second.clone()];
     assert!(MemoryCellNextSnapshotCandidateV1::validate_chain(&too_short).is_err());
 
@@ -541,6 +555,41 @@ fn three_generation_frozen_stem_chain_requires_distinct_replay_and_evaluation() 
     noop.candidate_adapter_artifact_digest = first.candidate_adapter_artifact_digest;
     noop.candidate_head_artifact_digest = first.candidate_head_artifact_digest;
     assert!(noop.validate_after(&first).is_err());
+}
+
+#[test]
+fn nonadjacent_topology_reuse_does_not_pass_a_frozen_stem_chain() {
+    let mut first = evolution();
+    first.topology_proposal_digest = Some(digest("one-time-topology"));
+    first.next_graph_generation = generation(2);
+    let mut second = first.clone();
+    second.predecessor_graph_generation = generation(2);
+    second.next_graph_generation = generation(2);
+    second.predecessor_model_generation = generation(2);
+    second.next_model_generation = generation(3);
+    second.topology_proposal_digest = None;
+    second.replay_snapshot_digest = digest("replay-snapshot-g3");
+    second.replay_receipt_digest = digest("replay-receipt-g3");
+    second.independent_evaluation_digest = digest("independent-eval-g3");
+    second.candidate_head_artifact_digest = digest("head-g3");
+    assert!(second.validate_after(&first).is_ok());
+
+    let mut third = second.clone();
+    third.predecessor_model_generation = generation(3);
+    third.next_model_generation = generation(4);
+    third.next_graph_generation = generation(3);
+    third.topology_proposal_digest = first.topology_proposal_digest;
+    third.replay_snapshot_digest = digest("replay-snapshot-g4");
+    third.replay_receipt_digest = digest("replay-receipt-g4");
+    third.independent_evaluation_digest = digest("independent-eval-g4");
+    third.candidate_head_artifact_digest = digest("head-g4");
+    assert!(third.validate_after(&second).is_ok());
+    assert!(matches!(
+        MemoryCellNextSnapshotCandidateV1::validate_chain(&[first, second, third]),
+        Err(HnmfContractError::Conflict(
+            "memory next-snapshot recycled topology"
+        ))
+    ));
 }
 
 #[test]
