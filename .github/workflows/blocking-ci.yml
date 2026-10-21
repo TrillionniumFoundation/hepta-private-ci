@@ -121,11 +121,24 @@ jobs:
     secrets: inherit
 
   hepta-scoped:
-    name: Hepta scoped native checks
+    name: Hepta scoped native checks (shard ${{ matrix.shard }}/4)
     needs: scope
     if: needs.scope.outputs.native == 'true' && needs.scope.outputs.full_repo != 'true'
     runs-on: ubuntu-24.04
-    timeout-minutes: 40
+    timeout-minutes: 45
+    strategy:
+      fail-fast: false
+      matrix:
+        shard: [0, 1, 2, 3]
+    env:
+      # Do not allocate debug/incremental artifacts across unrelated reverse consumers.
+      # A separate runner executes every deterministic package shard.
+      CARGO_INCREMENTAL: "0"
+      CARGO_BUILD_JOBS: "2"
+      CARGO_PROFILE_TEST_DEBUG: "0"
+      CARGO_PROFILE_DEV_DEBUG: "0"
+      SHARD_INDEX: ${{ matrix.shard }}
+      SHARD_COUNT: "4"
     steps:
       - name: Checkout exact candidate
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
@@ -133,6 +146,26 @@ jobs:
           ref: ${{ github.event.pull_request.head.sha || github.sha }}
           fetch-depth: 0
           persist-credentials: false
+
+      - name: Reclaim unused hosted SDK space before broad reverse-consumer Cargo tests
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "${RUNNER_OS:-}" = Linux
+          test "${RUNNER_ENVIRONMENT:-}" = github-hosted
+          printf '%s\n' 'Disk space before cleanup:'
+          df -h "$GITHUB_WORKSPACE"
+          # Only preinstalled Android/.NET/Haskell SDKs are removed on an
+          # ephemeral GitHub-hosted Rust runner. Rust, Cargo, Bazel, V8,
+          # repository inputs, trust material and test output are untouched.
+          for sdk in /usr/local/lib/android /usr/share/dotnet /opt/ghc; do
+            if test -d "$sdk"; then
+              sudo du -sh "$sdk" || true
+              sudo rm -rf -- "$sdk"
+            fi
+          done
+          printf '%s\n' 'Disk space after cleanup:'
+          df -h "$GITHUB_WORKSPACE"
 
       - name: Prepare native test prerequisites before compilation
         run: |
@@ -162,13 +195,14 @@ jobs:
         run: >-
           python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/impact-test.json" --
           python3 scripts/hepta_ci_dependencies.py --base "$BASE_SHA" --tested "$TESTED_SHA"
+          --test-shard-index "$SHARD_INDEX" --test-shard-count "$SHARD_COUNT"
           --output "$RUNNER_TEMP/cargo-impact.json" --run
 
       - name: Retain dependency plan and real command output
         if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
-          name: hepta-cargo-impact-${{ github.run_id }}-${{ github.run_attempt }}
+          name: hepta-cargo-impact-${{ github.run_id }}-${{ github.run_attempt }}-shard-${{ matrix.shard }}
           path: |
             ${{ runner.temp }}/cargo-impact.json
             ${{ runner.temp }}/impact-test.json*
