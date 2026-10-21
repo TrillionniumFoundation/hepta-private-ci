@@ -409,9 +409,11 @@ async fn run_production_operation_reconciler(
     cancellation: CancellationToken,
 ) -> Result<(), AgentdError> {
     loop {
-        // Reconcile immediately after startup/restart, then at a bounded
-        // cadence. Agentd never dispatches from this recovery loop.
-        host.reconcile(256).await?;
+        // Native pre-boundary proofs require a fresh external grant even on
+        // restart. The separate observer below never resends unknown effects.
+        if cancellation.is_cancelled() { return Ok(()); }
+        host.reauthorize_pending(/*limit*/ 256).await?;
+        host.reconcile(/*limit*/ 256).await?;
         tokio::select! {
             _ = cancellation.cancelled() => return Ok(()),
             _ = tokio::time::sleep(interval) => {}
@@ -553,3 +555,7 @@ async fn shutdown_signal() -> Result<(), AgentdError> {
 #[cfg(test)]
 #[path = "runtime_tests.rs"]
 mod tests;
+
+#[cfg(all(test, unix))]
+#[path = "production_hos2_host_tests.rs"]
+mod hos2_recovery_tests;

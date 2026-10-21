@@ -527,6 +527,43 @@ impl AgentdProductionWriterHost {
         Ok(total)
     }
 
+    /// Retry only an internally proved pre-boundary rejection, with a fresh
+    /// grant from the already attached external issuer. Source-unknown rows
+    /// are absent from this discovery path and can only use `reconcile`.
+    pub async fn reauthorize_pending(&self, limit: usize) -> Result<usize, AgentdError> {
+        if !(1..=256).contains(&limit) {
+            return Err(AgentdError::Protocol("reauthorization limit must be 1..=256".to_string()));
+        }
+        let grants = self.grants.as_ref().ok_or_else(|| {
+            AgentdError::Protocol("production grant provider is not attached".to_string())
+        })?;
+        let mut attempted = 0;
+        for dispatcher in self.dispatchers.values() {
+            if attempted >= limit {
+                break;
+            }
+            let receipts = self.writer.awaiting_authorization(
+                dispatcher.destination_id(), limit - attempted,
+            ).await?;
+            for receipt in receipts {
+                attempted += 1;
+                let binding = self.writer.final_use_binding(&receipt, dispatcher.destination_id()).await?;
+                // An issuer refusal does not mutate the original operation or
+                // manufacture a grant. The same proof remains pending.
+                let Ok(signed) = grants.signed_grant(&binding) else { continue; };
+                match dispatcher.dispatch(self.writer.as_ref(), &signed, &binding, receipt).await {
+                    Ok(_) | Err(codex_hepta_memory::ProductionWriterError::FinalUse(_)) => {}
+                    Err(codex_hepta_memory::ProductionWriterError::Local(
+                        codex_hepta_memory::LocalLeaseOutboxError::StaleFence(_)
+                        | codex_hepta_memory::LocalLeaseOutboxError::IllegalTransition(_),
+                    )) | Err(codex_hepta_memory::ProductionWriterError::StaleReceipt) => {}
+                    Err(error) => return Err(error.into()),
+                }
+            }
+        }
+        Ok(attempted)
+    }
+
     pub async fn dispatch(
         &self,
         signed: &SignedFinalUseGrant,
