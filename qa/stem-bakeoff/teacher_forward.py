@@ -10,6 +10,7 @@ physical GPU kernels or independent execution evidence.
 from __future__ import annotations
 
 import argparse
+from collections.abc import Mapping
 import hashlib
 import json
 import os
@@ -150,7 +151,7 @@ def run_forward(*, candidate: str, snapshot: str | Path, media_root: str | Path,
         inputs = tokenizer([row["text"] for row in records], padding=True,
                            truncation=True, max_length=MAX_SEQUENCE, return_tensors="pt")
         observed_module = model.get_encoder()
-    if (not isinstance(inputs, dict) or "attention_mask" not in inputs
+    if (not isinstance(inputs, Mapping) or "attention_mask" not in inputs
             or inputs["attention_mask"].ndim != 2
             or inputs["attention_mask"].shape[1] > MAX_SEQUENCE):
         raise TeacherForwardError("missing or unbounded teacher attention mask")
