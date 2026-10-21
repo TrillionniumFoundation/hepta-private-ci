@@ -22,8 +22,20 @@
 # this list would mean the nix crate, as well as any of its exclusive
 # dependencies not shared by any other crates, would be ignored, as the target
 # list here is effectively saying which targets you are building for.
+# Audit the targets shipped by this repository's CI/release matrix. The crate's
+# optional FreeBSD/OpenBSD keyring backend is not a supported production target;
+# excluding it keeps cargo-deny from auditing an unbuilt optional dependency tree.
 targets = [
-    # The triple can be any string, but only the target triples built in to
+    "x86_64-unknown-linux-gnu",
+    "aarch64-unknown-linux-gnu",
+    "x86_64-unknown-linux-musl",
+    "aarch64-unknown-linux-musl",
+    "x86_64-apple-darwin",
+    "aarch64-apple-darwin",
+    "x86_64-pc-windows-msvc",
+    "aarch64-pc-windows-msvc",
+]
+# The triple can be any string, but only the target triples built in to
     # rustc (as of 1.40) can be checked against actual config expressions
     #"x86_64-unknown-linux-musl",
     # You can also specify which target_features you promise are enabled for a
