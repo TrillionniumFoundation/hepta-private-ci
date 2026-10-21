@@ -1,0 +1,113 @@
+{
+  "schemaVersion": 1,
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "pr": 2968,
+  "source": {
+    "commit": "48177153ad04605338c3a9a8dbd17defee9981bc",
+    "tree": "22e14fcd85f7a3f2c5dc8f3a1bdb17efc81b4d62",
+    "branch": "agents/hepta-p0-provenance-clippy-20261021"
+  },
+  "base": {
+    "commit": "57636c7a17d4847eb5fd712409816fd040b4e90f",
+    "branch": "codex/hepta-blocker-convergence-20261020"
+  },
+  "prospectiveMerge": {
+    "commit": "3c32bedb07239b0cbdb38d100836258165cae633",
+    "tree": "22e14fcd85f7a3f2c5dc8f3a1bdb17efc81b4d62",
+    "parents": [
+      "57636c7a17d4847eb5fd712409816fd040b4e90f",
+      "48177153ad04605338c3a9a8dbd17defee9981bc"
+    ]
+  },
+  "checks": {
+    "sourceTreeMatchesMergeTree": true,
+    "orderedParentsMatch": true,
+    "mergeable": true
+  },
+  "initialRunObservation": {
+    "time": "2026-10-21 10:15:13 UTC",
+    "runs": [
+      {
+        "id": 39583123050,
+        "name": "Keyring synchronous backend lock proposal",
+        "head": "48177153ad04605338c3a9a8dbd17defee9981bc",
+        "status": "queued",
+        "conclusion": null,
+        "event": "pull_request",
+        "created": "2026-10-21T10:14:30Z",
+        "attempt": 1
+      },
+      {
+        "id": 39583122999,
+        "name": "v8-canary",
+        "head": "48177153ad04605338c3a9a8dbd17defee9981bc",
+        "status": "pending",
+        "conclusion": null,
+        "event": "pull_request",
+        "created": "2026-10-21T10:14:30Z",
+        "attempt": 1
+      },
+      {
+        "id": 39583123039,
+        "name": "Rust UI product foundation",
+        "head": "48177153ad04605338c3a9a8dbd17defee9981bc",
+        "status": "pending",
+        "conclusion": null,
+        "event": "pull_request",
+        "created": "2026-10-21T10:14:30Z",
+        "attempt": 1
+      },
+      {
+        "id": 39583123421,
+        "name": "Hepta Windows private-state native (security qualification only)",
+        "head": "48177153ad04605338c3a9a8dbd17defee9981bc",
+        "status": "pending",
+        "conclusion": null,
+        "event": "pull_request",
+        "created": "2026-10-21T10:14:30Z",
+        "attempt": 1
+      },
+      {
+        "id": 39583122873,
+        "name": "App-server schema refresh",
+        "head": "48177153ad04605338c3a9a8dbd17defee9981bc",
+        "status": "completed",
+        "conclusion": "skipped",
+        "event": "pull_request",
+        "created": "2026-10-21T10:14:30Z",
+        "attempt": 1
+      },
+      {
+        "id": 39583123029,
+        "name": "Hepta architecture convergence",
+        "head": "48177153ad04605338c3a9a8dbd17defee9981bc",
+        "status": "pending",
+        "conclusion": null,
+        "event": "pull_request",
+        "created": "2026-10-21T10:14:30Z",
+        "attempt": 1
+      },
+      {
+        "id": 39583123591,
+        "name": "Bazel stable lock proposal",
+        "head": "48177153ad04605338c3a9a8dbd17defee9981bc",
+        "status": "pending",
+        "conclusion": null,
+        "event": "pull_request",
+        "created": "2026-10-21T10:14:30Z",
+        "attempt": 1
+      },
+      {
+        "id": 39583123088,
+        "name": "blocking-ci",
+        "head": "48177153ad04605338c3a9a8dbd17defee9981bc",
+        "status": "pending",
+        "conclusion": null,
+        "event": "pull_request",
+        "created": "2026-10-21T10:14:30Z",
+        "attempt": 1
+      }
+    ]
+  },
+  "qualification": "Pending original workflow execution; metadata-only skipped checks and historical successes are not qualification."
+}
