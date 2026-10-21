@@ -396,6 +396,54 @@ fn topology_must_bump_only_the_next_graph_generation() {
 }
 
 #[test]
+fn three_generation_frozen_stem_chain_requires_distinct_replay_and_evaluation() {
+    let first = evolution(); // G1 -> G2.
+    let mut second = first.clone();
+    second.predecessor_model_generation = generation(2);
+    second.next_model_generation = generation(3);
+    second.replay_snapshot_digest = digest("replay-snapshot-g3");
+    second.replay_receipt_digest = digest("replay-receipt-g3");
+    second.independent_evaluation_digest = digest("independent-eval-g3");
+    second.candidate_head_artifact_digest = digest("head-g3");
+    assert!(second.validate_after(&first).is_ok());
+
+    let mut third = second.clone();
+    third.predecessor_model_generation = generation(3);
+    third.next_model_generation = generation(4);
+    third.replay_snapshot_digest = digest("replay-snapshot-g4");
+    third.replay_receipt_digest = digest("replay-receipt-g4");
+    third.independent_evaluation_digest = digest("independent-eval-g4");
+    third.candidate_head_artifact_digest = digest("head-g4");
+    assert!(third.validate_after(&second).is_ok());
+
+    let mut stale = second.clone();
+    stale.predecessor_model_generation = generation(1);
+    stale.next_model_generation = generation(2);
+    assert!(stale.validate_after(&first).is_err());
+
+    let mut reused = second.clone();
+    reused.replay_snapshot_digest = first.replay_snapshot_digest;
+    assert!(reused.validate_after(&first).is_err());
+
+    let mut reused = second.clone();
+    reused.replay_receipt_digest = first.replay_receipt_digest;
+    assert!(reused.validate_after(&first).is_err());
+
+    let mut reused = second.clone();
+    reused.independent_evaluation_digest = first.independent_evaluation_digest;
+    assert!(reused.validate_after(&first).is_err());
+
+    let mut stale = second.clone();
+    stale.forget_frontier_digest = digest("unapproved-tombstone-frontier");
+    assert!(stale.validate_after(&first).is_err());
+
+    let mut noop = second;
+    noop.candidate_adapter_artifact_digest = first.candidate_adapter_artifact_digest;
+    noop.candidate_head_artifact_digest = first.candidate_head_artifact_digest;
+    assert!(noop.validate_after(&first).is_err());
+}
+
+#[test]
 fn canonical_wire_roundtrips_policy_candidate_route_and_next_snapshot() {
     let p = policy();
     let c = candidate("cell:a", MemoryCellRoleV1::Episodic);
