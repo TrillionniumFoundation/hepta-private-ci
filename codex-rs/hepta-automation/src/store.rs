@@ -1273,7 +1273,37 @@ fn unavailable(_error: impl std::fmt::Display) -> AutomationError {
 
 fn create_private_directory(path: &Path) -> Result<(), AutomationError> {
     fs::create_dir_all(path).map_err(unavailable)?;
-    if path.canonicalize().map_err(unavailable)? != path {
+    let canonical = path.canonicalize().map_err(unavailable)?;
+    let same_path = canonical == path;
+    #[cfg(windows)]
+    let same_path = same_path || {
+        use std::path::Component;
+        use std::path::Prefix;
+
+        // Windows canonicalization adds the verbatim namespace even for an
+        // ordinary absolute fleet root. Accept only that prefix spelling;
+        // every root and path component must still match the supplied path.
+        let mut expected = path.components();
+        let mut actual = canonical.components();
+        let same_prefix = match (expected.next(), actual.next()) {
+            (Some(Component::Prefix(expected)), Some(Component::Prefix(actual))) => {
+                match (expected.kind(), actual.kind()) {
+                    (Prefix::Disk(expected), Prefix::VerbatimDisk(actual)) => expected == actual,
+                    (
+                        Prefix::UNC(expected_server, expected_share),
+                        Prefix::VerbatimUNC(actual_server, actual_share),
+                    ) => expected_server == actual_server && expected_share == actual_share,
+                    _ => false,
+                }
+            }
+            _ => false,
+        };
+        same_prefix
+            && expected.next() == Some(Component::RootDir)
+            && actual.next() == Some(Component::RootDir)
+            && expected.eq(actual)
+    };
+    if !same_path {
         return Err(AutomationError::Invalid);
     }
     #[cfg(unix)]

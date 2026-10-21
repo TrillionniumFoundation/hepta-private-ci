@@ -1,0 +1,103 @@
+{
+  "schema_version": 1,
+  "source_base": "99b8d98dca064f07920e1f81b38c62f0a81d40e7",
+  "reviewed_product_base": "002972385e9c017f65811853bbc35184034bff33",
+  "original_store_blob": "176b5c7200bea7d07d6642440d1f03c37209cef3",
+  "cause": "HeptaFleetRoot::parse preserves an ordinary absolute Windows path. AutomationStore::open passes its derived AgentLayout root to a canonical-equality check, but Windows std::fs::canonicalize returns the verbatim namespace. Existing migration fixtures canonicalize before this product entry point and do not cover the ordinary spelling.",
+  "change": "On Windows only, accept an ordinary Disk or UNC prefix paired with its corresponding VerbatimDisk or VerbatimUNC prefix, followed by matching explicit RootDir and remaining components. Other prefixes, roots and component differences still reject; existing identical-path and non-Windows behavior is preserved. No dependency or lock input changes.",
+  "native_regressions": [
+    {
+      "test": "ordinary_fleet_root_persists_tasks_across_verbatim_reopen",
+      "coverage": "Real HeptaFleetRoot and AgentLayout product entry opens ordinary path, commits an actual AutomationTask, closes, reopens verbatim alias and compares the complete durable task."
+    },
+    {
+      "test": "junction_fleet_root_is_rejected_before_opening_a_database",
+      "coverage": "Creates an actual Windows junction using mklink /J, invokes the same product entry point, requires Invalid and verifies no database was created in the redirected owner path. Junction fixture failure is an assertion, not a skip."
+    }
+  ],
+  "native_execution": "Pending original Windows CI; no local Rust/Bazel compilation was launched during the research memory window.",
+  "original_ci_discovery": {
+    "cargo_target": "windows_store_paths",
+    "bazel_target": "//codex-rs/hepta-automation:hepta-automation-windows_store_paths-test",
+    "bazel_source": "defs.bzl:542 enumerates tests/*.rs through codex_rust_crate; the original Windows target roster includes the generated native integration target."
+  },
+  "checks": {
+    "cargo_metadata": {
+      "command": [
+        "cargo",
+        "metadata",
+        "--manifest-path",
+        "codex-rs/Cargo.toml",
+        "--offline",
+        "--locked",
+        "--no-deps",
+        "--format-version=1"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 0.23168325424194336,
+      "metadata_sha256": "444a8228531fbf02a90574be3d38ce44c0ce0fdcba50f2d4184bc565ea343908",
+      "workspace_members": 193,
+      "new_target": {
+        "kind": [
+          "test"
+        ],
+        "crate_types": [
+          "bin"
+        ],
+        "name": "windows_store_paths",
+        "src_path": "/workspace/scratch/337c309bc660/idle-priority-work/codex-rs/hepta-automation/tests/windows_store_paths.rs",
+        "edition": "2024",
+        "doc": false,
+        "doctest": false,
+        "test": true
+      },
+      "locks_unchanged": {
+        "codex-rs/Cargo.lock": "f2a3df2cec6adad45a7c6ce45de7c6c907930f4f16daf66c5067ee3936606cb5",
+        "MODULE.bazel.lock": "f6c5dd1f2a09c66d6a4c387ff40d11afb7ed2309e541dcb6bff9ad5f410996c3"
+      },
+      "native_tests_executed": false,
+      "limitation": "Windows product tests require the original hosted native jobs. This metadata command only verifies target discovery and unchanged dependency locks."
+    },
+    "fmt": {
+      "command": [
+        "just",
+        "fmt"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 0.34853458404541016,
+      "raw_bytes": 0,
+      "raw_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "policy": "Formatter ran after metadata verification. No tests were run after formatting."
+    }
+  },
+  "source_files": {
+    "codex-rs/hepta-automation/src/store.rs": {
+      "bytes": 57818,
+      "sha256": "aac978b65837304f617d510481300a483f3f76a6de775cf85596ab05024fefd3"
+    },
+    "codex-rs/hepta-automation/tests/windows_store_paths.rs": {
+      "bytes": 4154,
+      "sha256": "eaf3f6928280b9995884f251a35657bcad84b10ff3ab33d9344e796e67d05505"
+    }
+  },
+  "evidence_files": {
+    "automation-windows-metadata.stdout.json.xz": {
+      "raw_bytes": 926168,
+      "raw_sha256": "444a8228531fbf02a90574be3d38ce44c0ce0fdcba50f2d4184bc565ea343908",
+      "compressed_bytes": 31260,
+      "compressed_sha256": "58d25260387aeeda6d16ecc5fb2d305e7eb38bc06fcaf00ce0e70d95c279accb"
+    },
+    "automation-windows-metadata.stderr.log.xz": {
+      "raw_bytes": 0,
+      "raw_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "compressed_bytes": 32,
+      "compressed_sha256": "0040f94d11d0039505328a90b2ff48968db873e9e7967307631bf40ef5679275"
+    },
+    "automation-windows-fmt.log.xz": {
+      "raw_bytes": 0,
+      "raw_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "compressed_bytes": 32,
+      "compressed_sha256": "0040f94d11d0039505328a90b2ff48968db873e9e7967307631bf40ef5679275"
+    }
+  }
+}
