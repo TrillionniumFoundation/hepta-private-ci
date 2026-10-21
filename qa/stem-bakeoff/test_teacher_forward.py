@@ -1,7 +1,9 @@
+import io
 import pathlib
 import sys
 import tempfile
 import unittest
+from unittest import mock
 
 try:
     import torch
@@ -30,6 +32,32 @@ class TeacherForwardPreflightTests(unittest.TestCase):
             (base / "cat.png").write_bytes(b"changed fake image bytes")
             self.assertNotEqual(validate_records(rows, base, "embeddinggemma2_740m")[1],
                                 digest)
+
+    def test_batch_media_bytes_rejected_at_preflight(self):
+        import teacher_forward
+        with tempfile.TemporaryDirectory() as tmp:
+            (pathlib.Path(tmp) / "clip.wav").write_bytes(b"four")
+            # Two references are two processor inputs even if paths coincide.
+            with mock.patch.object(teacher_forward, "MAX_MEDIA_BATCH_BYTES", 7):
+                with self.assertRaisesRegex(TeacherForwardError, "batch exceeds"):
+                    validate_records([{"audio": "clip.wav"}, {"audio": "clip.wav"}],
+                                     tmp, "embeddinggemma2_740m")
+
+    def test_media_growth_between_size_check_and_hash_rejected(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            path = pathlib.Path(tmp) / "frame.png"
+            path.write_bytes(b"abcd")
+            real_open = pathlib.Path.open
+
+            def swapped_open(self, *args, **kwargs):
+                if self == path and args and args[0] == "rb":
+                    return io.BytesIO(b"abcdef")
+                return real_open(self, *args, **kwargs)
+
+            with mock.patch.object(pathlib.Path, "open", swapped_open):
+                with self.assertRaisesRegex(TeacherForwardError, "changed size"):
+                    validate_records([{"image": "frame.png"}],
+                                     tmp, "embeddinggemma2_740m")
 
     def test_media_urls_absolute_and_traversal_refused(self):
         with tempfile.TemporaryDirectory() as tmp:

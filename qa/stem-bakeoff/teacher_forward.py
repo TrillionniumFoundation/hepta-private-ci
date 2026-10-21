@@ -20,7 +20,7 @@ import time
 from typing import Any
 
 from teacher_snapshot import MODEL_TYPES, TeacherSnapshotError, verify_snapshot
-from teacher_media_seal import TeacherMediaSealError, sealed_media_inputs
+from teacher_media_seal import MAX_MEDIA_BATCH_BYTES, TeacherMediaSealError, sealed_media_inputs
 
 MODALITIES = ("text", "image", "audio", "video")
 MEDIA = frozenset(("image", "audio", "video"))
@@ -44,6 +44,7 @@ def validate_records(records: object, media_root: str | Path, candidate: str) ->
         raise TeacherForwardError("unregistered model or invalid batch size")
     conversations = []
     receipts = []
+    total_media_bytes = 0
     for record in records:
         if not isinstance(record, dict) or not record or not set(record).issubset(MODALITIES):
             raise TeacherForwardError("unknown or missing modality")
@@ -72,12 +73,24 @@ def validate_records(records: object, media_root: str | Path, candidate: str) ->
             if any(parent.is_symlink() for parent in list(path.parents) if parent != root and
                    root in parent.parents):
                 raise TeacherForwardError("media path may not traverse symlinks")
-            if not 0 < path.stat().st_size <= MAX_MEDIA_BYTES:
+            declared_size = path.stat().st_size
+            if not 0 < declared_size <= MAX_MEDIA_BYTES:
                 raise TeacherForwardError("media file size outside bounds")
+            # Reject a large batch before hashing or loading any teacher model.
+            # Count repeated path references as separate processor inputs.
+            if total_media_bytes + declared_size > MAX_MEDIA_BATCH_BYTES:
+                raise TeacherForwardError("teacher media batch exceeds preflight byte budget")
+            total_media_bytes += declared_size
             digest = hashlib.sha256()
+            read_size = 0
             with path.open("rb") as stream:
                 while chunk := stream.read(1024 * 1024):
+                    read_size += len(chunk)
+                    if read_size > declared_size:
+                        raise TeacherForwardError("media changed size during preflight hashing")
                     digest.update(chunk)
+            if read_size != declared_size:
+                raise TeacherForwardError("media changed size during preflight hashing")
             content.append({"type": modality, "url": str(path)})
             sources.append((modality, digest.hexdigest()))
         if not content:
