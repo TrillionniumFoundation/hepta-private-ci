@@ -240,16 +240,16 @@ fn whole_candidate_protocol_requires_full_weight_cap() {
 #[test]
 fn candidate_costs_must_not_be_negative() {
     for negative_resource in [true, false] {
-        let mut candidate = candidate("negative-cost", 90, 0, false);
+        let mut target = candidate("negative-cost", 90, 0, false);
         if negative_resource {
-            candidate.resource_cost = q(-10);
+            target.resource_cost = q(-10);
         } else {
-            candidate.latency_cost = q(-10);
+            target.latency_cost = q(-10);
         }
         let error = select_output_portfolio_v1(
             &context(2),
             &budget(2),
-            &[candidate("baseline", 0, 0, true), candidate],
+            &[candidate("baseline", 0, 0, true), target],
         )
         .expect_err("negative costs cannot subsidize the portfolio");
         assert_eq!(
@@ -261,12 +261,12 @@ fn candidate_costs_must_not_be_negative() {
 
 #[test]
 fn no_change_protocol_cannot_masquerade_as_a_second_positive_asset() {
-    let mut candidate = candidate("masquerading-baseline", 90, 0, false);
-    candidate.protocol = OutputProtocolV1::NoChange;
+    let mut disguised = candidate("masquerading-baseline", 90, 0, false);
+    disguised.protocol = OutputProtocolV1::NoChange;
     let error = select_output_portfolio_v1(
         &context(2),
         &budget(2),
-        &[candidate("baseline", 0, 0, true), candidate],
+        &[candidate("baseline", 0, 0, true), disguised],
     )
     .expect_err("unmarked NoChange asset must be rejected");
     assert_eq!(
