@@ -446,10 +446,13 @@ async fn run_suspension_handoff(
     handlers::emit_thread_stop_lifecycle(session.as_ref()).await;
     handoff.phase = SuspensionHandoffPhase::EventPublishing;
     session
-        .deliver_event_raw(Event {
-            id: handoff.submission_id.clone(),
-            msg: EventMsg::ShutdownComplete,
-        })
+        .deliver_event_raw(
+            Event {
+                id: handoff.submission_id.clone(),
+                msg: EventMsg::ShutdownComplete,
+            }
+            .into(),
+        )
         .await;
     // This exact CAS is the final await in the handoff.  Keeping the marker
     // installed through lifecycle/event delivery ensures a cancellation or

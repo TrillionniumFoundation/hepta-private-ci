@@ -141,7 +141,7 @@ struct CommandExecutionCompletionItem {
 
 #[allow(clippy::too_many_arguments)]
 pub(crate) async fn apply_bespoke_event_handling(
-    event: Event,
+    delivery: impl Into<codex_core::EventDelivery>,
     conversation_id: ThreadId,
     conversation: Arc<CodexThread>,
     thread_manager: Arc<ThreadManager>,
@@ -151,6 +151,10 @@ pub(crate) async fn apply_bespoke_event_handling(
     thread_list_state_permit: Arc<tokio::sync::Semaphore>,
     fallback_model_provider: String,
 ) {
+    let codex_core::EventDelivery {
+        event,
+        terminalization,
+    } = delivery.into();
     let Event {
         id: event_turn_id,
         msg,
@@ -190,6 +194,8 @@ pub(crate) async fn apply_bespoke_event_handling(
             // All per-thread requests are bound to a turn, so abort them.
             outgoing.abort_pending_server_requests().await;
             respond_to_pending_interrupts(&thread_state, &outgoing).await;
+            // Release old approval waiters before waiting; hold no thread-state lock here.
+            terminalization.wait().await;
             let turn_failed = thread_state.lock().await.turn_summary.last_error.is_some();
             thread_watch_manager
                 .note_turn_completed(&conversation_id.to_string(), turn_failed)
@@ -1116,6 +1122,8 @@ pub(crate) async fn apply_bespoke_event_handling(
             // All per-thread requests are bound to a turn, so abort them.
             outgoing.abort_pending_server_requests().await;
             respond_to_pending_interrupts(&thread_state, &outgoing).await;
+            // Release old approval waiters before waiting; hold no thread-state lock here.
+            terminalization.wait().await;
 
             thread_watch_manager
                 .note_turn_interrupted(&conversation_id.to_string())

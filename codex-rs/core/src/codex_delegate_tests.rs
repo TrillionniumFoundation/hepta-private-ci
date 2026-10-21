@@ -7,6 +7,7 @@ use codex_extension_api::ThreadStartInput;
 use codex_protocol::error::CodexErrorDetails;
 use codex_protocol::models::ResponseItem;
 use codex_protocol::protocol::AgentStatus;
+use codex_protocol::protocol::Event;
 use codex_protocol::protocol::EventMsg;
 use codex_protocol::protocol::McpStartupCompleteEvent;
 use codex_protocol::protocol::McpStartupStatus;
@@ -35,7 +36,7 @@ impl ThreadLifecycleContributor<Config> for ThreadStartRecorder {
 
 #[tokio::test]
 async fn forward_events_filters_private_events_before_blocked_send_is_cancelled() {
-    let (tx_events, rx_events) = bounded(SUBMISSION_CHANNEL_CAPACITY);
+    let (tx_events, rx_events) = crate::event_delivery::bounded(SUBMISSION_CHANNEL_CAPACITY);
     let (tx_sub, rx_sub) = bounded(SUBMISSION_CHANNEL_CAPACITY);
     let (_agent_status_tx, agent_status) = watch::channel(AgentStatus::PendingInit);
     let io = Arc::new(SessionIo {
@@ -45,7 +46,7 @@ async fn forward_events_filters_private_events_before_blocked_send_is_cancelled(
         session_loop_termination: completed_session_loop_termination(),
     });
 
-    let (tx_out, rx_out) = bounded(1);
+    let (tx_out, rx_out) = crate::event_delivery::bounded(1);
     tx_out
         .send(Event {
             id: "full".to_string(),
@@ -131,7 +132,7 @@ async fn forward_events_filters_private_events_before_blocked_send_is_cancelled(
 #[tokio::test]
 async fn forward_ops_preserves_submission_trace_context() {
     let (tx_sub, rx_sub) = bounded(SUBMISSION_CHANNEL_CAPACITY);
-    let (_tx_events, rx_events) = bounded(SUBMISSION_CHANNEL_CAPACITY);
+    let (_tx_events, rx_events) = crate::event_delivery::bounded(SUBMISSION_CHANNEL_CAPACITY);
     let (_agent_status_tx, agent_status) = watch::channel(AgentStatus::PendingInit);
     let io = Arc::new(SessionIo {
         tx_sub,
@@ -306,4 +307,50 @@ async fn run_codex_thread_interactive_rejects_approval_policy_that_can_prompt() 
                     if message == "Codex delegates require approval policy `never`"
             )
     ));
+}
+
+#[tokio::test]
+async fn forward_events_preserves_terminal_owner_completion() {
+    let (tx_events, rx_events) = crate::event_delivery::bounded(SUBMISSION_CHANNEL_CAPACITY);
+    let (tx_sub, _rx_sub) = bounded(SUBMISSION_CHANNEL_CAPACITY);
+    let (_status_tx, agent_status) = watch::channel(AgentStatus::PendingInit);
+    let io = Arc::new(SessionIo {
+        tx_sub,
+        rx_event: rx_events,
+        agent_status,
+        session_loop_termination: completed_session_loop_termination(),
+    });
+    let (tx_out, rx_out) = crate::event_delivery::bounded(1);
+    let forward = tokio::spawn(forward_events(io, tx_out, CancellationToken::new()));
+    let completion = crate::state::StartTransitionCompletion::new();
+    tx_events
+        .send_delivery(crate::EventDelivery {
+            event: Event {
+                id: "turn-1".into(),
+                msg: EventMsg::TurnAborted(TurnAbortedEvent {
+                    turn_id: Some("turn-1".into()),
+                    reason: TurnAbortReason::Interrupted,
+                    started_at: None,
+                    completed_at: None,
+                    duration_ms: None,
+                }),
+            },
+            terminalization: crate::event_delivery::TerminalEventCompletion::owned(Arc::clone(
+                &completion,
+            )),
+        })
+        .await
+        .unwrap();
+    let delivered = timeout(std::time::Duration::from_secs(2), rx_out.recv_delivery())
+        .await
+        .expect("forwarding must not wait for terminalization")
+        .unwrap();
+    assert!(futures::poll!(Box::pin(delivered.terminalization.wait())).is_pending());
+    completion.complete();
+    assert!(futures::poll!(Box::pin(delivered.terminalization.wait())).is_ready());
+    drop(tx_events);
+    timeout(std::time::Duration::from_secs(2), forward)
+        .await
+        .expect("forwarder should stop when its source closes")
+        .unwrap();
 }

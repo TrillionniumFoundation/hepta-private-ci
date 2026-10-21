@@ -1,7 +1,6 @@
 use std::collections::HashMap;
 
 use anyhow::Result;
-use async_channel::Sender;
 use codex_api::SharedAuthProvider;
 use codex_config::McpServerAuth;
 use codex_config::McpServerConfig;
@@ -40,7 +39,7 @@ pub(super) fn should_share_codex_apps_tools_cache(
 
 pub(super) async fn emit_update(
     submit_id: &str,
-    tx_event: &Sender<Event>,
+    tx_event: &crate::McpEventSender,
     update: McpStartupUpdateEvent,
 ) -> Result<(), async_channel::SendError<Event>> {
     tx_event

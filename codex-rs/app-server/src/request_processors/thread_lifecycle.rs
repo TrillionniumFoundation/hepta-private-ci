@@ -304,20 +304,21 @@ pub(super) async fn ensure_listener_task_running(
                     )
                     .await;
                 }
-                event = conversation.next_event() => {
-                    let event = match event {
-                        Ok(event) => event,
+                delivery = conversation.next_event_with_completion() => {
+                    let delivery = match delivery {
+                        Ok(delivery) => delivery,
                         Err(err) => {
                             tracing::warn!("thread.next_event() failed with: {err}");
                             break;
                         }
                     };
 
+                    let event = &delivery.event;
                     if let Some(worker) = &turn_cost_worker {
                         worker.observe_event(
                             conversation_id,
                             config.as_ref(),
-                            &event,
+                            event,
                             || conversation.session_telemetry(),
                         );
                     }
@@ -347,7 +348,7 @@ pub(super) async fn ensure_listener_task_running(
                     );
 
                     apply_bespoke_event_handling(
-                        event.clone(),
+                        delivery.clone(),
                         conversation_id,
                         conversation.clone(),
                         thread_manager.clone(),
