@@ -122,6 +122,9 @@ def run_forward(*, candidate: str, snapshot: str | Path, media_root: str | Path,
         operator_accepted_terms=operator_accepted_terms,
     )
     conversations, source_digest = validate_records(records, media_root, candidate)
+    # The validated conversation is a materialized snapshot. Never reread the
+    # caller-owned batch after checkpoint/model loading or asynchronous hooks.
+    validated_batch_size = len(conversations)
     if device not in ("cpu", "cuda"):
         raise TeacherForwardError("device must be cpu or cuda")
     if truncate_dim is not None and candidate != "embeddinggemma2_740m":
@@ -159,7 +162,11 @@ def run_forward(*, candidate: str, snapshot: str | Path, media_root: str | Path,
         model = AutoModelForSeq2SeqLM.from_pretrained(
             root, local_files_only=True, trust_remote_code=False, dtype=dtype
         ).to(device).eval()
-        inputs = tokenizer([row["text"] for row in records], padding=True,
+        # T5 input bytes must match the ordered preflight digest even if the
+        # caller mutates its rows while the tokenizer/checkpoint is loading.
+        frozen_texts = [conversation[0]["content"][0]["text"]
+                        for conversation in conversations]
+        inputs = tokenizer(frozen_texts, padding=True,
                            truncation=True, max_length=MAX_SEQUENCE, return_tensors="pt")
         observed_module = model.get_encoder()
     if (not isinstance(inputs, Mapping) or "attention_mask" not in inputs
@@ -186,7 +193,7 @@ def run_forward(*, candidate: str, snapshot: str | Path, media_root: str | Path,
     finally:
         handle.remove()
     elapsed_ms = (time.perf_counter() - start) * 1000
-    if module_calls[0] != 1 or pooled.ndim != 2 or pooled.shape[0] != len(records):
+    if module_calls[0] != 1 or pooled.ndim != 2 or pooled.shape[0] != validated_batch_size:
         raise TeacherForwardError("one model/encoder forward was not observed")
     if candidate == "embeddinggemma2_740m" and pooled.shape[-1] != (truncate_dim or 768):
         raise TeacherForwardError("EmbeddingGemma 2 expected 768-wide projection")
@@ -212,7 +219,7 @@ def run_forward(*, candidate: str, snapshot: str | Path, media_root: str | Path,
         "revision": verified["revision"],
         "inventory_sha256": verified["inventory_sha256"],
         "ordered_source_manifest_sha256": source_digest,
-        "batch_size": len(records),
+        "batch_size": validated_batch_size,
         "feature_width": int(pooled.shape[-1]),
         "feature_sha256": feature_sha256,
         "feature_export": export_receipt,

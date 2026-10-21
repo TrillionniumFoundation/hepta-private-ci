@@ -193,5 +193,64 @@ class TeacherMediaSealIntegrationTests(unittest.TestCase):
             self.assertFalse(observed[0].exists())
 
 
+    def test_t5_tokenizes_preflight_snapshot_when_caller_changes_during_load(self):
+        from types import SimpleNamespace
+        import types
+        import teacher_forward
+
+        class FakeEncoder(torch.nn.Module):
+            def forward(self, *, input_ids, attention_mask):
+                return SimpleNamespace(last_hidden_state=torch.ones(
+                    input_ids.shape[0], input_ids.shape[1], 16))
+
+        class FakeT5(torch.nn.Module):
+            def __init__(self):
+                super().__init__()
+                self.encoder = FakeEncoder()
+
+            def get_encoder(self):
+                return self.encoder
+
+        with tempfile.TemporaryDirectory() as tmp:
+            rows = [{"text": "approved at preflight"}]
+            _, expected = teacher_forward.validate_records(
+                rows, tmp, "t5gemma2_encoder_270m")
+            seen_texts = []
+
+            class FakeTokenizer:
+                def __call__(self, texts, **_kwargs):
+                    seen_texts.extend(texts)
+                    return {"input_ids": torch.tensor([[4, 5] for _ in texts]),
+                            "attention_mask": torch.tensor([[1, 1] for _ in texts])}
+
+            def load_model(*_args, **_kwargs):
+                # A side effect between source hashing and tokenization must
+                # never change model inputs, batch cardinality or its receipt.
+                rows[0]["text"] = "unverified replacement"
+                rows.append({"text": "unverified extra row"})
+                return FakeT5()
+
+            modules = types.ModuleType("transformers")
+            modules.AutoModel = object()
+            modules.AutoProcessor = object()
+            modules.AutoTokenizer = SimpleNamespace(
+                from_pretrained=lambda *_a, **_kw: FakeTokenizer())
+            modules.AutoModelForSeq2SeqLM = SimpleNamespace(
+                from_pretrained=load_model)
+            with (mock.patch.dict(sys.modules, {"transformers": modules}),
+                  mock.patch.object(teacher_forward, "verify_snapshot",
+                                    return_value={"revision": "a" * 40,
+                                                  "inventory_sha256": "b" * 64})):
+                report = teacher_forward.run_forward(
+                    candidate="t5gemma2_encoder_270m", snapshot=tmp,
+                    media_root=tmp, records=rows, revision="a" * 40,
+                    expected_inventory_sha256="b" * 64,
+                    operator_accepted_terms=True, device="cpu")
+            self.assertEqual(seen_texts, ["approved at preflight"])
+            self.assertEqual(report["ordered_source_manifest_sha256"], expected)
+            self.assertEqual(report["batch_size"], 1)
+            self.assertEqual(report["owner_model_forward_hook_calls"], 1)
+            self.assertFalse(report["production_activation_allowed"])
+
 if __name__ == "__main__":
     unittest.main()
