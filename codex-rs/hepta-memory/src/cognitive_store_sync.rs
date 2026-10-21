@@ -20,15 +20,11 @@ pub(super) fn sync_cognitive_directory(root: &Path) -> Result<(), CognitiveStore
             .write(true)
             .custom_flags(FILE_FLAG_BACKUP_SEMANTICS | FILE_FLAG_OPEN_REPARSE_POINT)
             .open(root)
-            .map_err(|error| {
-                unavailable(format!("open cognitive directory for sync: {error}"))
-            })?;
+            .map_err(|error| unavailable(format!("open cognitive directory for sync: {error}")))?;
         let metadata = directory.metadata().map_err(|error| {
             unavailable(format!("inspect cognitive directory for sync: {error}"))
         })?;
-        if !metadata.is_dir()
-            || metadata.file_attributes() & FILE_ATTRIBUTE_REPARSE_POINT != 0
-        {
+        if !metadata.is_dir() || metadata.file_attributes() & FILE_ATTRIBUTE_REPARSE_POINT != 0 {
             return Err(unavailable(
                 "cognitive synchronization handle is not an unredirected directory",
             ));
@@ -36,9 +32,8 @@ pub(super) fn sync_cognitive_directory(root: &Path) -> Result<(), CognitiveStore
         directory
     };
     #[cfg(not(windows))]
-    let directory = std::fs::File::open(root).map_err(|error| {
-        unavailable(format!("open cognitive directory for sync: {error}"))
-    })?;
+    let directory = std::fs::File::open(root)
+        .map_err(|error| unavailable(format!("open cognitive directory for sync: {error}")))?;
 
     // Opening the handle is not a durability acknowledgement. The real flush
     // remains mandatory, and publication uncertainty keeps its original owner.
