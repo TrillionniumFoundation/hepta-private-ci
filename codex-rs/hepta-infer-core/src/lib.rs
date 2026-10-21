@@ -7,6 +7,7 @@
 /// Reusable state machine; does not install a second runtime owner.
 pub mod durable_control;
 mod neuron_feature;
+pub mod pinned_projection_v1;
 pub mod shared_feature_v2;
 
 pub use neuron_feature::NeuronFeatureContractError;
