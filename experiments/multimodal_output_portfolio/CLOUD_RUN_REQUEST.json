@@ -1,12 +1,14 @@
 {
-  "protocol_id": "hepta-output-portfolio-pilot-v1-20261021",
-  "implementation_commit": "3a3e7ef2e3c0b73840d62ac5f816f9c4ec4d66db",
+  "protocol_id": "hepta-output-portfolio-pilot-v1.1-20261021",
+  "implementation_commit": "f44540ab59a0a8f013437ccbe8579db607fac03e",
   "requested_runner": "desktop",
   "runner_group": "trillionnium-android-gpu",
   "execution_tier": "dedicated-cloud",
   "registered_seeds": [17, 29, 43],
-  "execution_request_attempt": 2,
+  "execution_request_attempt": 3,
+  "supersedes_queued_protocol_v1_run": 39588362257,
   "supersedes_workflow_validation_failures": [39587736972, 39587989207],
-  "execution_only_fix": "Use runner context only in allowed workflow steps; experiment Python source, protocol and heldout data remain unchanged.",
+  "workflow_validation_fix": "Use runner context only in allowed workflow steps.",
+  "protocol_amendment": "Correct static missing-weight support fallback; preserve v1 evidence; use independent v1.1 heldout worlds. All primary endpoints, parameter grids and acceptance criteria unchanged.",
   "request": "Run the complete frozen protocol once; preserve all outcomes and partial evidence. Do not substitute a GitHub-hosted runner or tune on test results."
 }
