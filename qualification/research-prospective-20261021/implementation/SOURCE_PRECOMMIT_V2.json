@@ -1,0 +1,71 @@
+{
+  "schema": "hepta.external-git-event-cohort.precommit.v2",
+  "parent_precommit_sha256": "c1462c07e0da6573ad997492f245db327266c611a3bc7db9dee725ce3ac65560",
+  "reason_for_source_acquisition_revision": "V1 captured 512 commits but only five calibration and two evaluation repositories had two in-window commits in their unfiltered newest32. No new-cohort tasks, labels or model outputs existed. V2 explicitly queries each precommitted time window and replaces inactive repositories before constructing tasks; V1 remains retained, not silently replaced.",
+  "candidate_source_families": {
+    "calibration": [
+      "llvm/llvm-project",
+      "godotengine/godot",
+      "electron/electron",
+      "nushell/nushell",
+      "neovim/neovim",
+      "zed-industries/zed",
+      "fish-shell/fish-shell",
+      "obsproject/obs-studio"
+    ],
+    "evaluation": [
+      "home-assistant/core",
+      "pytest-dev/pytest",
+      "microsoft/terminal",
+      "openjdk/jdk",
+      "apache/arrow",
+      "git/git",
+      "duckdb/duckdb",
+      "grafana/grafana"
+    ]
+  },
+  "windows": {
+    "calibration": [
+      "2026-10-12T16:05:00Z",
+      "2026-10-20T00:00:00Z"
+    ],
+    "evaluation": [
+      "2026-10-20T00:00:00Z",
+      "2026-10-21T09:50:00Z"
+    ]
+  },
+  "selection": "Read at most32commits in each fixed time window per fixed repository. Pick lexically earliest(date,SHA) eligible first-parent pair whose two commits are in the captured window. Require both original commit and tree Git object bytes and original root license bytes; no replacement after this source query. Retain ineligible repositories.",
+  "task_assignment": "Fixed repository index modulo4 chooses new_fact, correction, composition, procedure. External Git fields map explicitly into original event schema; preserve original Git bytes and mappings. Procedure is bounded read-only git cat-file type verification, not arbitrary repository execution.",
+  "model": "Qwen/Qwen2.5-3B-Instruct",
+  "revision": "82f42baa094a9600e39ccd80d34058aeeb3abbc1",
+  "calibration_calls": 40,
+  "evaluation_calls": 72,
+  "ks": [
+    1,
+    2,
+    3,
+    4,
+    6
+  ],
+  "arms": [
+    "selected_k",
+    "hybrid_k4",
+    "hybrid_k6",
+    "hybrid_k4_reversed",
+    "single_hop",
+    "entity_time",
+    "organized",
+    "program_support",
+    "empty"
+  ],
+  "input_tokens": 2048,
+  "output_tokens": 64,
+  "per_call_seconds": 180,
+  "source_data_admission_only": true,
+  "new_cohort_model_calls": 0,
+  "independent_external_semantic_adjudication": false,
+  "prospective_capture_attestation": false,
+  "authority": "DENY_ALL",
+  "mode": "SHADOW_ONLY",
+  "production_accepted": false
+}

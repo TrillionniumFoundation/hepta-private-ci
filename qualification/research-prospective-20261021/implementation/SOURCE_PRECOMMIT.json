@@ -1,0 +1,90 @@
+{
+  "schema": "hepta.external-git-event-cohort.precommit.v1",
+  "created_at": "2026-10-21T09:49:20.662213+00:00",
+  "status": "SOURCE_COLLECTION_ONLY_NOT_MODEL_EXECUTED",
+  "authority": "DENY_ALL",
+  "mode": "SHADOW_ONLY",
+  "production_accepted": false,
+  "candidate_source_families": {
+    "calibration": [
+      "llvm/llvm-project",
+      "godotengine/godot",
+      "electron/electron",
+      "nushell/nushell",
+      "neovim/neovim",
+      "zed-industries/zed",
+      "fish-shell/fish-shell",
+      "helix-editor/helix"
+    ],
+    "evaluation": [
+      "home-assistant/core",
+      "ansible/ansible",
+      "pytest-dev/pytest",
+      "psf/requests",
+      "pallets/flask",
+      "pallets/werkzeug",
+      "encode/httpx",
+      "httpie/cli"
+    ]
+  },
+  "selection_rule": "For each precommitted repository read at most newest32default-branch commits. No replacement for ineligible source. Use earliest two eligible observed source commits ordered by publisher commit time thenSHA. Source capture preserves exact APIJSON,Git commit/tree/parents and license metadata.",
+  "calibration_window": [
+    "2026-10-12T16:05:00Z",
+    "2026-10-20T00:00:00Z"
+  ],
+  "evaluation_window": [
+    "2026-10-20T00:00:00Z",
+    "2026-10-21T09:55:00Z"
+  ],
+  "newness_scope": "Publisher commit timestamp newer than prior corpus cut, not independent historical capture; verify Git object bytes separately.",
+  "task_types": [
+    "new_fact",
+    "correction",
+    "composition",
+    "procedure"
+  ],
+  "task_assignment": "Fixed repository position modulo4 before any source lookup. Adapt external immutable Git metadata to original controlled event schema; preserve original source exact bytes and explicit mapping. No invented external facts.",
+  "arms": [
+    "selected_k",
+    "hybrid_k4",
+    "hybrid_k6",
+    "hybrid_k4_reversed",
+    "single_hop",
+    "entity_time",
+    "organized",
+    "program_support",
+    "empty"
+  ],
+  "arm_semantics": "Same original controlled event projection, first-hop, temporal revision, explicit correction and known program support. Target identifiers must be a registered reversible mapping of original Git tree/commit IDs. Procedure cases require actual read-only git cat-file process receipts.",
+  "budget": {
+    "calibration_calls": 40,
+    "evaluation_calls": 72,
+    "k": [
+      1,
+      2,
+      3,
+      4,
+      6
+    ],
+    "input_tokens": 2048,
+    "output_tokens": 64,
+    "per_call_seconds": 180,
+    "model": "Qwen/Qwen2.5-3B-Instruct",
+    "revision": "82f42baa094a9600e39ccd80d34058aeeb3abbc1"
+  },
+  "freeze_and_scoring": "Freeze complete source, questions, mapping, prompt/model/software hashes and calibration/test isolated projections before model execution. Freeze k from calibration only. Exact mapped identifier+source citation audit. No parameter training.",
+  "disqualifiers": [
+    "absent pinned original bytes",
+    "missing license evidence",
+    "source outside precommitted window",
+    "overlapping source roots across splits",
+    "failed program procedure",
+    "publisher commit chronology not independently attested",
+    "missing independent semantic citation adjudication"
+  ],
+  "independent_source_families_certified": false,
+  "prospective_future_windows_certified": false,
+  "data_model_training_overlap_known": false,
+  "labels_and_model_outputs_not_yet_created": true,
+  "original_memory112_protocol_pins_unchanged": true
+}

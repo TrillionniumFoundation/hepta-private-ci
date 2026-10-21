@@ -1,0 +1,266 @@
+{
+  "schema": "hepta.external-git-event-cohort.admission-audit.v1",
+  "source_capture": "primary GitHub commit API; new source data, no model calls",
+  "rows": [
+    {
+      "repo": "llvm/llvm-project",
+      "split": "calibration",
+      "seen": 32,
+      "eligible": 0,
+      "selected": [],
+      "qualified": false
+    },
+    {
+      "repo": "godotengine/godot",
+      "split": "calibration",
+      "seen": 32,
+      "eligible": 0,
+      "selected": [],
+      "qualified": false
+    },
+    {
+      "repo": "electron/electron",
+      "split": "calibration",
+      "seen": 32,
+      "eligible": 26,
+      "selected": [
+        {
+          "sha": "324b659c35344eb18e36afbe360f15ddee71b5a5",
+          "time": "2026-10-15T17:23:21Z",
+          "tree": "c024324baf944ea2f17b19fc462646bf1a350755",
+          "parents": [
+            "eeb9b70798492e6c680aa4fe9d2f9d7032bbaf6f"
+          ]
+        },
+        {
+          "sha": "f8e99c897b79cc121636bf3043fed1c3f7c57234",
+          "time": "2026-10-15T17:26:16Z",
+          "tree": "ef914617c1beaee30668544f1bee44f142065e64",
+          "parents": [
+            "324b659c35344eb18e36afbe360f15ddee71b5a5"
+          ]
+        }
+      ],
+      "qualified": true
+    },
+    {
+      "repo": "nushell/nushell",
+      "split": "calibration",
+      "seen": 32,
+      "eligible": 28,
+      "selected": [
+        {
+          "sha": "f97cd76f21e5d26df12fa3dcca7eae92305fd7a7",
+          "time": "2026-10-16T14:26:55Z",
+          "tree": "84e5043862476afaf106f8a6629a50ef07692453",
+          "parents": [
+            "430207e98eb564eb89ab4661268658ce3cf3c8f9"
+          ]
+        },
+        {
+          "sha": "cfeea823ea175900fcdb2109c05eacfa354625bd",
+          "time": "2026-10-16T16:12:58Z",
+          "tree": "ae6ec6867acdbb924d57c6dff7b0d7baf2db830a",
+          "parents": [
+            "f97cd76f21e5d26df12fa3dcca7eae92305fd7a7"
+          ]
+        }
+      ],
+      "qualified": true
+    },
+    {
+      "repo": "neovim/neovim",
+      "split": "calibration",
+      "seen": 32,
+      "eligible": 22,
+      "selected": [
+        {
+          "sha": "a926855412315d8b8ba91346bcf2061a03eb4805",
+          "time": "2026-10-19T00:48:05Z",
+          "tree": "48b2ed829ee50a666c5d7cfc7c8dd63c8fec527c",
+          "parents": [
+            "4db95f417fd085f8db2f5d901ce4503f849c60d7"
+          ]
+        },
+        {
+          "sha": "2aa32e4acda63e5e9e653e57b073f36b80dbd905",
+          "time": "2026-10-19T01:09:46Z",
+          "tree": "48b2ed829ee50a666c5d7cfc7c8dd63c8fec527c",
+          "parents": [
+            "c049b8f002fe7535c9f85dad912cf2a631d02460",
+            "a926855412315d8b8ba91346bcf2061a03eb4805"
+          ]
+        }
+      ],
+      "qualified": true
+    },
+    {
+      "repo": "zed-industries/zed",
+      "split": "calibration",
+      "seen": 32,
+      "eligible": 12,
+      "selected": [
+        {
+          "sha": "da5921d6ba266d415b1e42560d78c4b306cfbe67",
+          "time": "2026-10-19T10:13:04Z",
+          "tree": "549d02f060f60b2534d3562aa05df191f88a6a45",
+          "parents": [
+            "b4ecc454225fc1819e37e890b62df5473b2ba95b"
+          ]
+        },
+        {
+          "sha": "1f32ec0ceafddd6a368db8aef9d169a6569a1c23",
+          "time": "2026-10-19T10:54:45Z",
+          "tree": "f143de2e8db2fb0afd69329adb52b9b207deff34",
+          "parents": [
+            "da5921d6ba266d415b1e42560d78c4b306cfbe67"
+          ]
+        }
+      ],
+      "qualified": true
+    },
+    {
+      "repo": "fish-shell/fish-shell",
+      "split": "calibration",
+      "seen": 32,
+      "eligible": 18,
+      "selected": [
+        {
+          "sha": "d1b49243f39808cf762cb31e3e57c55653fce62f",
+          "time": "2026-10-12T16:59:42Z",
+          "tree": "2a3c3b51fced04e68ddc84969142f5b08fcebe7a",
+          "parents": [
+            "5cb1d20c99f662f4fb25a247f8d172c3fc79956a"
+          ]
+        },
+        {
+          "sha": "786464bf57569fed987ef6c695f0a3df3bd0d02b",
+          "time": "2026-10-12T16:59:49Z",
+          "tree": "63b4f7e11275c815611ed5fe8eb60d6715d6e8a9",
+          "parents": [
+            "d1b49243f39808cf762cb31e3e57c55653fce62f"
+          ]
+        }
+      ],
+      "qualified": true
+    },
+    {
+      "repo": "helix-editor/helix",
+      "split": "calibration",
+      "seen": 32,
+      "eligible": 0,
+      "selected": [],
+      "qualified": false
+    },
+    {
+      "repo": "home-assistant/core",
+      "split": "evaluation",
+      "seen": 32,
+      "eligible": 32,
+      "selected": [
+        {
+          "sha": "92b37325b657d931dfef728fbb68b30ff8837abd",
+          "time": "2026-10-21T07:22:35Z",
+          "tree": "4dc8ed59443ea15e9bff8c65d4d41750ab36ced4",
+          "parents": [
+            "4e3faa999bed0b51b639731637660b9f631a9384"
+          ]
+        },
+        {
+          "sha": "98d22fb156dfeca7d175153685c1a4a2b1498128",
+          "time": "2026-10-21T07:22:58Z",
+          "tree": "ca4156079c55682d749260dafb03cd8474c71a21",
+          "parents": [
+            "92b37325b657d931dfef728fbb68b30ff8837abd"
+          ]
+        }
+      ],
+      "qualified": true
+    },
+    {
+      "repo": "ansible/ansible",
+      "split": "evaluation",
+      "seen": 32,
+      "eligible": 1,
+      "selected": [
+        {
+          "sha": "8cb65a623a9e03d38fb7cf7a0bbc418e1fed990d",
+          "time": "2026-10-20T13:56:55Z",
+          "tree": "67a97d33fa15510e90df2712cd24bd0d70317006",
+          "parents": [
+            "f7319e09448e13fa2bc407a1afcd8990f47040fb"
+          ]
+        }
+      ],
+      "qualified": false
+    },
+    {
+      "repo": "pytest-dev/pytest",
+      "split": "evaluation",
+      "seen": 32,
+      "eligible": 3,
+      "selected": [
+        {
+          "sha": "49ea4d08714f9ae519b86ee17b6b50c1dd080f32",
+          "time": "2026-10-20T06:05:09Z",
+          "tree": "0c89302e9a7c5cda9d21083918a781e82830953c",
+          "parents": [
+            "2516c39788290123567e1cabd32a7fa4532cf09b"
+          ]
+        },
+        {
+          "sha": "9225e4fe0e184ebe63d8f7a1a48405d195a553f2",
+          "time": "2026-10-21T06:46:58Z",
+          "tree": "005806c3d68b432ba2f7243c9bd57ffb63df361d",
+          "parents": [
+            "49ea4d08714f9ae519b86ee17b6b50c1dd080f32"
+          ]
+        }
+      ],
+      "qualified": true
+    },
+    {
+      "repo": "psf/requests",
+      "split": "evaluation",
+      "seen": 32,
+      "eligible": 0,
+      "selected": [],
+      "qualified": false
+    },
+    {
+      "repo": "pallets/flask",
+      "split": "evaluation",
+      "seen": 32,
+      "eligible": 0,
+      "selected": [],
+      "qualified": false
+    },
+    {
+      "repo": "pallets/werkzeug",
+      "split": "evaluation",
+      "seen": 32,
+      "eligible": 0,
+      "selected": [],
+      "qualified": false
+    },
+    {
+      "repo": "encode/httpx",
+      "split": "evaluation",
+      "seen": 32,
+      "eligible": 0,
+      "selected": [],
+      "qualified": false
+    },
+    {
+      "repo": "httpie/cli",
+      "split": "evaluation",
+      "seen": 32,
+      "eligible": 0,
+      "selected": [],
+      "qualified": false
+    }
+  ],
+  "license_and_git_object_bytes_not_yet_verified": true,
+  "independent_qualification": false,
+  "production_accepted": false
+}

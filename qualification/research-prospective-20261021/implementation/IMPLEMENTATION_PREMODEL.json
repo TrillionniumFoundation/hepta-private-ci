@@ -1,0 +1,80 @@
+{
+  "schema": "hepta.external-git-event.before-model-implementation.v1",
+  "sealed_at": "2026-10-21T10:30:57.133920+00:00",
+  "prospective_precommit_sha256": "3cecc183f44a89060c4575dd379c05c9b11675cb7a1d26e8e34bf014ce402d39",
+  "external_precommit": {
+    "commit": "9decee38ff74bf52f3bbe03fba0386789ec5d92c",
+    "path": "qualification/research-prospective-20261021/PROSPECTIVE_PRECOMMIT.json",
+    "blob": "0894d80267bac38aab1f955eeaa879110553247a",
+    "root_reported_push_utc": "2026-10-21T10:00:05Z",
+    "server_timestamp_receipt_is_separate": true
+  },
+  "implementation_frozen_after_window_open": true,
+  "implementation_frozen_before_new_cohort_model_outputs": true,
+  "new_cohort_model_calls": 0,
+  "fully_preregistered_implementation_claim": false,
+  "code_identity_sha256": "d6f34f3b7e732dfa36d7e8764a055ea3ae0219f52dfc610ea9bef7344542dc0a",
+  "validation_sha256": "cce787f9d2b7a5b0deb71c53bd6c7c6938527e72c4cdd9d6e3f19e12f5083cb1",
+  "active_calibration_collection": "calibration-projection-v4/collection.json",
+  "active_calibration_collection_sha256": "65991e3c4a5f6636cdac24cbb430759f5ddf79ac7fa0555743376ff3a861cc9f",
+  "historical_builder_source_retained_by_sha256": true,
+  "tokenizer_budget_sha256": "c980aea5d48c0fd70a182b4ae5d639f59371b0f8a6ed94ac8ff9b8a91743c259",
+  "budget_validation_inputs_unchanged_from_v3": true,
+  "additional_calibration_retrieval_tuning": {
+    "inherited_algorithm": "event_memory_trial.plan",
+    "lexical_weights": [
+      0.0,
+      0.25,
+      0.5,
+      0.75,
+      1.0
+    ],
+    "retrieval_top_k": 4,
+    "channel_k": 32,
+    "objective": "mean recall of explicitly privileged calibration program-support IDs; tie closest to 0.5",
+    "retrievals": 40,
+    "model_calls": 0,
+    "precommit_did_not_explicitly_list_this_search": true,
+    "declared_before_any_new_cohort_model_output": true
+  },
+  "actual_reader_calibration": {
+    "tasks": 8,
+    "ks": [
+      1,
+      2,
+      3,
+      4,
+      6
+    ],
+    "model_calls": 40,
+    "objective": "exact recorded mapped identifier, fewer actual input tokens, smaller k"
+  },
+  "evaluation": {
+    "tasks": 8,
+    "model_calls": 72,
+    "kind_assignment": "original registered source-pool slot modulo four, not post-admission rank",
+    "admission_and_pair_order_required": true,
+    "any_exact_calibration_object_including_license_is_ineligible": true
+  },
+  "fixed_procedure": {
+    "command": "git cat-file object-type predicate only",
+    "model_generated_commands_executed": false,
+    "replace_objects_disabled": true,
+    "scoring_object_bytes_and_type_reverified": true
+  },
+  "source_boundary": {
+    "original_git_objects_retained": true,
+    "event_json_is_derived_projection": true,
+    "repository_is_family_proxy_only": true,
+    "committer_timestamp_is_not_independent_creation_attestation": true,
+    "independent_capture_witness": false
+  },
+  "posture": {
+    "mode": "SHADOW_ONLY",
+    "authority": "DENY_ALL",
+    "release": "NO_GO",
+    "independent_semantic_adjudication": false,
+    "production_accepted": false
+  },
+  "original_memory112_pins_unchanged": true
+}

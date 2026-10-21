@@ -1,0 +1,20 @@
+test_actual_git_success_predicate_differs_from_zero_exit (test_external_git_profile.ExternalGitProfileTests.test_actual_git_success_predicate_differs_from_zero_exit) ... ok
+test_admission_hash_order_and_real_calibration_overlap_fail_closed (test_external_git_profile.ExternalGitProfileTests.test_admission_hash_order_and_real_calibration_overlap_fail_closed) ... ok
+test_bounded_primary_metadata_first_parent_order_and_window_binding (test_external_git_profile.ExternalGitProfileTests.test_bounded_primary_metadata_first_parent_order_and_window_binding) ... ok
+test_original_timestamp_and_byte_tampering_rejected (test_external_git_profile.ExternalGitProfileTests.test_original_timestamp_and_byte_tampering_rejected) ... ok
+test_real_calibration_projections_obey_snapshot_and_path_semantics (test_external_git_profile.ExternalGitProfileTests.test_real_calibration_projections_obey_snapshot_and_path_semantics) ... ok
+test_replace_ref_ignored_and_actual_scoring_object_corruption_rejected (test_external_git_profile.ExternalGitProfileTests.test_replace_ref_ignored_and_actual_scoring_object_corruption_rejected) ... FAIL
+
+======================================================================
+FAIL: test_replace_ref_ignored_and_actual_scoring_object_corruption_rejected (test_external_git_profile.ExternalGitProfileTests.test_replace_ref_ignored_and_actual_scoring_object_corruption_rejected)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/scratch/337c309bc660/research-work/new-cohort/test_external_git_profile.py", line 92, in test_replace_ref_ignored_and_actual_scoring_object_corruption_rejected
+    with self.assertRaisesRegex(ValueError, "bytes/type drifted"):
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: ValueError not raised
+
+----------------------------------------------------------------------
+Ran 6 tests in 0.053s
+
+FAILED (failures=1)
