@@ -14,6 +14,10 @@ The single-result validator checks the evidence, metrics and digest shape for
 one size/arm. The matrix validator additionally requires exactly 36 records
 (one per size and comparison arm), rejects duplicates, and enforces one
 source commit, source tree and target-host cohort across comparisons.
+The matrix also rejects one measurement or metering receipt reused for distinct
+size/arm pairs. The single-result validator requires all 15 benchmark metrics,
+monotonic p50/p95/p99 percentiles and integral byte/event counts. These are
+record-consistency checks, not target-host authentication.
 Both paths check future-window and negative-transfer evidence, lesion/ablation,
 crash/reopen, stale-generation rejection, rollback and resource metrics. It does not calculate
 utility, prove a scaling law, or admit a production topology.

@@ -172,6 +172,11 @@ class ScaleMatrixTests(unittest.TestCase):
 
 
     def make_record(self, size, arm):
+        # Deterministic fixture digests remain distinct across experiment arms.
+        index = (
+            scale_matrix.SIZES.index(size) * len(scale_matrix.ARMS)
+            + scale_matrix.ARMS.index(arm)
+        )
         return {
             "schema": "hepta.cell-execution-scale-result.v1",
             "size": size,
@@ -182,14 +187,14 @@ class ScaleMatrixTests(unittest.TestCase):
                 "source_tree": "b" * 40,
                 "target_host_digest": "c" * 64,
                 "runtime_digest": "d" * 64,
-                "measurement_digest": "e" * 64,
+                "measurement_digest": f"{100 + index:064x}",
             },
             "evidence": {key: True for key in scale_matrix.REQUIRED_EVIDENCE},
             "evidence_receipts": {
                 key: "f" * 64 for key in scale_matrix.REQUIRED_EVIDENCE
             },
             "metrics": {key: 0 for key in scale_matrix.REQUIRED_METRICS},
-            "metrics_receipt": "1" * 64,
+            "metrics_receipt": f"{1000 + index:064x}",
             "topology_lifecycle": list(scale_matrix.LIFECYCLE),
         }
 
@@ -212,6 +217,41 @@ class ScaleMatrixTests(unittest.TestCase):
         self.assertIn(
             "matrix authority must remain qualification_only",
             scale_matrix.validate_matrix(matrix),
+        )
+
+    def test_latency_percentiles_and_physical_counts_are_consistent(self):
+        record = self.make_record(1024, "shared_encoder")
+        record["metrics"]["p50_ms"] = 5
+        record["metrics"]["p95_ms"] = 4
+        record["metrics"]["p99_ms"] = 3
+        self.assertIn(
+            "metrics latency percentiles must satisfy p50 <= p95 <= p99",
+            scale_matrix.validate_result(record),
+        )
+        for count in ("rss_bytes", "gpu_peak_bytes", "starvation_count", "cache_invalidation_count"):
+            with self.subTest(count=count):
+                record = self.make_record(1024, "shared_encoder")
+                record["metrics"][count] = 1.5
+                self.assertIn(
+                    f"metrics.{count} must be an integer count",
+                    scale_matrix.validate_result(record),
+                )
+
+    def test_matrix_rejects_recycled_metrics_and_measurement_receipts(self):
+        matrix = self.matrix()
+        self.assertEqual(scale_matrix.validate_matrix(matrix), [])
+        matrix["results"][1]["metrics_receipt"] = matrix["results"][0]["metrics_receipt"]
+        errors = scale_matrix.validate_matrix(matrix)
+        self.assertIn(
+            "results[1].metrics_receipt reused across matrix pairs", errors
+        )
+        matrix = self.matrix()
+        matrix["results"][1]["provenance"]["measurement_digest"] = (
+            matrix["results"][0]["provenance"]["measurement_digest"]
+        )
+        errors = scale_matrix.validate_matrix(matrix)
+        self.assertIn(
+            "results[1].provenance.measurement_digest reused across matrix pairs", errors
         )
 
     def test_matrix_rejects_omissions_and_duplicate_pairs(self):

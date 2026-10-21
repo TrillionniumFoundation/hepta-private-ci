@@ -163,6 +163,16 @@ def validate_result(result: dict[str, Any]) -> list[str]:
             elif key in {"negative_transfer_rate", "immutable_buffer_reuse_rate"} and value > 1:
                 errors.append(f"metrics.{key} must be a unit-interval rate")
 
+
+        # Physical byte sizes and event counts cannot be fractional.
+        for key in ("rss_bytes", "gpu_peak_bytes", "starvation_count", "cache_invalidation_count"):
+            if key in metrics and type(metrics[key]) is not int:
+                errors.append(f"metrics.{key} must be an integer count")
+        percentiles = ("p50_ms", "p95_ms", "p99_ms")
+        if all(_finite_number(metrics.get(key)) for key in percentiles):
+            if not (metrics["p50_ms"] <= metrics["p95_ms"] <= metrics["p99_ms"]):
+                errors.append("metrics latency percentiles must satisfy p50 <= p95 <= p99")
+
     metrics_receipt = result.get("metrics_receipt")
     if not isinstance(metrics_receipt, str) or _HEX64.fullmatch(metrics_receipt) is None:
         errors.append("metrics_receipt must be a lowercase SHA-256 digest")
@@ -201,12 +211,29 @@ def validate_matrix(matrix: dict[str, Any]) -> list[str]:
     expected = {(size, arm) for size in SIZES for arm in ARMS}
     seen: set[tuple[int, str]] = set()
     source_host: tuple[str, str, str] | None = None
+    # Distinct arms/sizes cannot reuse the same retained measurement.
+    metrics_receipts_seen: set[str] = set()
+    measurement_digests_seen: set[str] = set()
     cohort_fields = ("source_commit", "source_tree", "target_host_digest")
     for index, row in enumerate(results):
         if not isinstance(row, dict):
             errors.append(f"results[{index}] must be an object")
             continue
         errors.extend(f"results[{index}].{error}" for error in validate_result(row))
+        metrics_receipt = row.get("metrics_receipt")
+        if isinstance(metrics_receipt, str) and _HEX64.fullmatch(metrics_receipt):
+            if metrics_receipt in metrics_receipts_seen:
+                errors.append(f"results[{index}].metrics_receipt reused across matrix pairs")
+            metrics_receipts_seen.add(metrics_receipt)
+        provenance = row.get("provenance")
+        if isinstance(provenance, dict):
+            measurement_digest = provenance.get("measurement_digest")
+            if isinstance(measurement_digest, str) and _HEX64.fullmatch(measurement_digest):
+                if measurement_digest in measurement_digests_seen:
+                    errors.append(
+                        f"results[{index}].provenance.measurement_digest reused across matrix pairs"
+                    )
+                measurement_digests_seen.add(measurement_digest)
         size, arm = row.get("size"), row.get("arm")
         if (
             type(size) is not int
