@@ -1555,6 +1555,8 @@ fn digest_signer_set(bytes: &mut Vec<u8>, signers: &[TrustedArtifactSignerV1]) {
 /// files must be private and have exactly one link: an attacker-controlled
 /// hardlink, symbolic link or path replacement must not become the owner lock.
 fn verify_owner_writer_fence(path: &Path, opened: &File) -> Result<(), ArtifactOwnerHostError> {
+    #[cfg(not(unix))]
+    let _ = opened;
     let on_path = fs::symlink_metadata(path)?;
     if on_path.file_type().is_symlink() || !on_path.is_file() {
         return Err(ArtifactOwnerHostError::PathBoundary);
@@ -1947,7 +1949,7 @@ mod tests {
             .fixture_error("untrusted owner lock must not be opened");
             assert!(matches!(error, ArtifactOwnerHostError::PathBoundary));
             assert_eq!(
-                fs::read(&victim).fixture("read victim after denial"),
+                fs::read(&victim).fixture("read victim after denial").as_slice(),
                 b"unaltered"
             );
         }
