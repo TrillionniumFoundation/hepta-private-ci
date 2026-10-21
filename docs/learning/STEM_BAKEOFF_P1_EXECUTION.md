@@ -291,7 +291,10 @@ credentials. `read_shard(directory)` loads NPY with `allow_pickle=False`,
 validates the exact schema/size/finite shape/digests, rejects symlink and
 hardlink aliases, and returns the tensor plus non-authorizing manifest.
 Tests verify roundtrip and tamper, bad revisions, symlink and repository-path
-rejections. Pretrained weights, real model quality and independent source
+rejections. An additional hermetic fake-model `run_forward` regression
+checks the **actual export control flow and byte equality** without ever
+loading licensed weights; it is a structural test, not a real Teacher result.
+Pretrained weights, real model quality and independent source
 provenance are **not** attested by this data container. A digest supplied by
 the same operator is not an independent witness.
 
