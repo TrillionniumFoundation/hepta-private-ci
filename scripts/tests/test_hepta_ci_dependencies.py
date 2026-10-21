@@ -4,6 +4,8 @@ from __future__ import annotations
 
 import importlib.util
 import json
+import errno
+import time
 import subprocess
 import sys
 import tempfile
@@ -116,11 +118,27 @@ class SelectionTests(unittest.TestCase):
 
 
 class GitGraphTests(unittest.TestCase):
+    def _cleanup_git_fixture(self):
+        # Git's asynchronous background maintenance/GC can briefly retain
+        # entries in .git while Python's TemporaryDirectory cleanup walks it.
+        # Retry only an actual ENOTEMPTY race; every other error remains fatal.
+        # Never hide a permanently unclean fixture.
+        for attempt in range(5):
+            try:
+                self.temp.cleanup()
+                return
+            except OSError as error:
+                if error.errno != errno.ENOTEMPTY or attempt == 4:
+                    raise
+                time.sleep(0.05 * (attempt + 1))
+
     def setUp(self):
         self.temp = tempfile.TemporaryDirectory()
-        self.addCleanup(self.temp.cleanup)
+        self.addCleanup(self._cleanup_git_fixture)
         self.root = Path(self.temp.name)
         self.git("init", "-q")
+        self.git("config", "gc.auto", "0")
+        self.git("config", "maintenance.auto", "false")
         self.git("config", "user.name", "CI regression")
         self.git("config", "user.email", "ci@example.invalid")
         self.write(
