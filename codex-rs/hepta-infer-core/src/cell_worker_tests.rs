@@ -75,3 +75,32 @@ fn shared_pool_reports_group_and_drop_metrics() {
     assert_eq!(pool.metrics().activations_committed, 1);
     assert_eq!(pool.metrics().dropped_requests, 1);
 }
+
+#[test]
+fn batch_digest_binds_cell_identity_even_when_request_and_scope_match() {
+    let first = request(1, "scope:a");
+    let mut substituted = first.clone();
+    substituted.cell_id = id("cell:substituted");
+    assert_ne!(digest_batch(&[first]), digest_batch(&[substituted]));
+}
+
+#[test]
+fn batch_digest_frames_variable_length_request_and_scope_ids() {
+    let mut first = request(1, "scope:a");
+    first.request_id = id("request:a");
+    first.scope_id = id("scope:b");
+    let mut substituted = first.clone();
+    substituted.request_id = id("request:as");
+    substituted.scope_id = id("cope:b");
+
+    // These were identical under the old unframed concatenation scheme.
+    assert_eq!(
+        format!("{}{}", first.request_id.as_str(), first.scope_id.as_str()),
+        format!(
+            "{}{}",
+            substituted.request_id.as_str(),
+            substituted.scope_id.as_str()
+        )
+    );
+    assert_ne!(digest_batch(&[first]), digest_batch(&[substituted]));
+}
