@@ -2233,3 +2233,140 @@ fn native_batch_reordered_backend_results_are_denied_without_partial_receipts() 
             .all(|x| matches!(x.result, Err(BatchWorkerErrorV1::Worker)))
     );
 }
+
+#[cfg(unix)]
+#[test]
+fn original_evidence_wal_scalar_success_has_fsynced_three_phase_rows_after_reopen() {
+    use codex_hepta_agentd::DurablePhaseMetricSinkV1;
+    use std::os::unix::fs::PermissionsExt;
+
+    let dir = tempfile::tempdir().unwrap();
+    std::fs::set_permissions(dir.path(), std::fs::Permissions::from_mode(0o700)).unwrap();
+    let path = dir.path().join("signed-scalar-original-evidence.wal");
+    let signer = SigningKey::from_bytes(&[113; 32]);
+    let (model, request, key) = fixture_request();
+    let binding = neuron_batch_final_use_binding_v1("worker-one", &key, &request).unwrap();
+    let evidence = Arc::new(
+        DurablePhaseMetricSinkV1::open(&path, 128, 64, 60_000)
+            .expect("open original Evidence group-commit writer"),
+    );
+    let mut worker = runner(&signer, dir.path(), model).with_metric_sink(evidence.clone());
+
+    // The source Writer is healthy but staged rows are NOT certified as
+    // durable until its actual WAL + owner-marker fsync has completed.
+    assert!(!worker.production_metrics_ready());
+    assert!(worker.flush_production_metrics());
+    let empty = evidence.read_local_frontier().expect("empty original WAL");
+    assert_eq!(empty.sequence, 0);
+    assert_eq!(empty.committed_rows, 0);
+
+    worker
+        .enqueue(100, "model".into(), request, key, signed(&signer, binding))
+        .unwrap();
+    let staged = evidence
+        .read_local_frontier()
+        .expect("read original WAL without implicitly flushing staged admission");
+    assert_eq!(staged.committed_rows, 0);
+    assert!(!worker.production_metrics_ready());
+
+    let outcome = worker.poll_and_execute(106).unwrap();
+    assert_eq!(outcome.outcomes.len(), 1);
+    assert!(matches!(
+        &outcome.outcomes[0].result,
+        Ok(receipt) if receipt.status == NeuronFeatureTerminalStatusV1::Succeeded
+    ));
+    assert_eq!(worker.pending(), 0);
+    assert!(worker.production_metrics_ready());
+
+    let durable = evidence.read_local_frontier().expect("original fsynced frontier");
+    assert_eq!(durable.committed_rows, 3);
+    assert_eq!(durable.sequence, 1);
+    assert_ne!(durable.head_digest, Digest32::ZERO);
+    assert_ne!(durable.wal_inode, 0);
+    assert_ne!(durable.marker_inode, 0);
+    assert!(durable.journal_bytes > 0);
+
+    // The real Evidence actor releases both original file locks before
+    // cold reopen. This checks its entire fsynced WAL/marker replay, not
+    // merely an in-process metric counter or a fixture digest.
+    drop(worker);
+    drop(evidence);
+    let recovered = DurablePhaseMetricSinkV1::open(&path, 128, 64, 60_000)
+        .expect("verified reopen of original Evidence WAL + marker");
+    let cold_frontier = recovered.read_local_frontier().expect("cold frontier");
+    assert_eq!(cold_frontier, durable);
+}
+
+#[cfg(unix)]
+#[test]
+fn original_evidence_wal_native_batch_commits_all_six_rows_before_success() {
+    use codex_hepta_agentd::DurablePhaseMetricSinkV1;
+    use std::os::unix::fs::PermissionsExt;
+
+    let dir = tempfile::tempdir().unwrap();
+    std::fs::set_permissions(dir.path(), std::fs::Permissions::from_mode(0o700)).unwrap();
+    let path = dir.path().join("signed-native-batch-original-evidence.wal");
+    let signer = SigningKey::from_bytes(&[114; 32]);
+    let (model, first, key) = fixture_request();
+    let second = second_request(&first);
+    let invocations = Arc::new(std::sync::atomic::AtomicUsize::new(0));
+    let driver = NativeTestDriver {
+        invocations: invocations.clone(),
+        truncate_outputs: false,
+        reorder_outputs: false,
+    };
+    let evidence = Arc::new(
+        DurablePhaseMetricSinkV1::open(&path, 128, 64, 60_000)
+            .expect("open original Evidence actor"),
+    );
+    let mut worker = runner_with_driver(&signer, dir.path(), model, driver, 2)
+        .with_metric_sink(evidence.clone());
+    assert!(worker.flush_production_metrics());
+
+    for (index, request) in [first, second].into_iter().enumerate() {
+        let binding = neuron_batch_final_use_binding_v1("worker-one", &key, &request).unwrap();
+        worker
+            .enqueue(
+                100,
+                "model".into(),
+                request,
+                key.clone(),
+                signed_member(
+                    &signer,
+                    binding,
+                    &format!("wal-batch-grant-{index}"),
+                    u8::try_from(index).unwrap() + 115,
+                ),
+            )
+            .unwrap();
+    }
+    let pending_original = evidence
+        .read_local_frontier()
+        .expect("staged admitted requests must not be committed");
+    assert_eq!(pending_original.committed_rows, 0);
+
+    let completed = worker.poll_and_execute(101).unwrap();
+    assert_eq!(completed.outcomes.len(), 2);
+    assert!(completed.outcomes.iter().all(|item| matches!(
+        &item.result,
+        Ok(receipt) if receipt.status == NeuronFeatureTerminalStatusV1::Succeeded
+    )));
+    assert_eq!(invocations.load(std::sync::atomic::Ordering::SeqCst), 1);
+    assert_eq!(worker.pending(), 0);
+
+    let fsynced = evidence.read_local_frontier().expect("fsynced original rows");
+    assert_eq!(fsynced.committed_rows, 6);
+    assert_eq!(fsynced.sequence, 1);
+    assert_ne!(fsynced.head_digest, Digest32::ZERO);
+    assert!(worker.production_metrics_ready());
+
+    drop(worker);
+    drop(evidence);
+    let reopened = DurablePhaseMetricSinkV1::open(&path, 128, 64, 60_000)
+        .expect("reopen original WAL after signed native batch");
+    let cold_frontier = reopened
+        .read_local_frontier()
+        .expect("cold native frontier");
+    assert_eq!(cold_frontier, fsynced);
+    assert_eq!(invocations.load(std::sync::atomic::Ordering::SeqCst), 1);
+}
