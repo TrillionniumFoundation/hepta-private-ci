@@ -161,6 +161,43 @@ impl CompatibleModelIndexV1 {
             .map(|cells| cells.iter().cloned().collect())
             .unwrap_or_default()
     }
+
+    /// Explicitly retire one cell from this compatible-model index. A retired
+    /// cell must not remain discoverable after a generation-fenced cutover.
+    /// Idempotent retries cannot decrement the capacity accounting twice.
+    pub fn unregister(&mut self, key: &CompatibleModelKeyV1, cell_id: &StableId) -> bool {
+        let Some(cells) = self.entries.get_mut(key) else {
+            return false;
+        };
+        if !cells.remove(cell_id) {
+            return false;
+        }
+        let empty = cells.is_empty();
+        self.entry_count -= 1;
+        if empty {
+            self.entries.remove(key);
+        }
+        true
+    }
+
+    /// Evict every indexed cell for a retired model digest. Actual writer
+    /// fencing and CNS route retirement remain the Control plane's job.
+    pub fn invalidate_model(&mut self, model_digest: Digest32) -> usize {
+        let keys: Vec<_> = self
+            .entries
+            .keys()
+            .filter(|key| key.model_digest == model_digest)
+            .cloned()
+            .collect();
+        let mut removed = 0;
+        for key in keys {
+            if let Some(cells) = self.entries.remove(&key) {
+                removed += cells.len();
+            }
+        }
+        self.entry_count -= removed;
+        removed
+    }
 }
 
 #[derive(Clone, Debug, Eq, PartialEq)]
