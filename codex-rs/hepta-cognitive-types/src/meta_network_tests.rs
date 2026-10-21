@@ -471,7 +471,9 @@ fn evidence_catalog_frontier_and_live_revoked_overlap_fail_closed() {
     catalog.revoked_receipt_digests.insert(overlapping);
     assert!(matches!(
         catalog.validate(),
-        Err(HnmfContractError::Conflict("meta evidence live revoked overlap"))
+        Err(HnmfContractError::Conflict(
+            "meta evidence live revoked overlap"
+        ))
     ));
 }
 
@@ -484,27 +486,31 @@ fn covered_next_snapshot_rejects_fabricated_route_and_stale_source() {
     route.estimated_spend_units += 1;
     assert!(matches!(
         candidate.validate_against_live_evidence(&route, &plan, &witness(&plan), &catalog),
-        Err(HnmfContractError::Conflict("meta evidence route recomputation"))
+        Err(HnmfContractError::Conflict(
+            "meta evidence route recomputation"
+        ))
     ));
     let route = receipt(&plan);
     let mut newer_witness = witness(&plan);
     newer_witness.source_frontier_digest = digest("newer-source");
-    assert!(candidate
-        .validate_against_live_evidence(&route, &plan, &newer_witness, &catalog)
-        .is_err());
+    assert!(
+        candidate
+            .validate_against_live_evidence(&route, &plan, &newer_witness, &catalog)
+            .is_err()
+    );
 }
 
 #[test]
 fn evidence_catalog_strict_wire_roundtrips_and_rejects_extra_authority() {
     let plan = base_plan();
     let catalog = live_catalog(&plan);
-    let bytes = encode_wire_v1(&catalog)
-        .unwrap_or_else(|error| panic!("encode catalog: {error:?}"));
-    let decoded: MetaNetworkEvidenceCatalogV1 = decode_wire_v1(&bytes)
-        .unwrap_or_else(|error| panic!("decode catalog: {error:?}"));
+    let bytes =
+        encode_wire_v1(&catalog).unwrap_or_else(|error| panic!("encode catalog: {error:?}"));
+    let decoded: MetaNetworkEvidenceCatalogV1 =
+        decode_wire_v1(&bytes).unwrap_or_else(|error| panic!("decode catalog: {error:?}"));
     assert_eq!(decoded, catalog);
-    let mut encoded = serde_json::to_value(&catalog)
-        .unwrap_or_else(|error| panic!("json catalog: {error:?}"));
+    let mut encoded =
+        serde_json::to_value(&catalog).unwrap_or_else(|error| panic!("json catalog: {error:?}"));
     encoded["mayWriteFacts"] = serde_json::json!(true);
     assert!(serde_json::from_value::<MetaNetworkEvidenceCatalogV1>(encoded).is_err());
 }

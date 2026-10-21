@@ -34,8 +34,8 @@ use crate::memory_cell::MemoryCellTickInputV1;
 use crate::memory_cell::MemoryCellTickReceiptV1;
 use crate::meta_network::MetaNetworkNextSnapshotCandidateV1;
 use crate::meta_network::MetaNetworkPlanV1;
-use crate::meta_network_evidence::MetaNetworkEvidenceCatalogV1;
 use crate::meta_network::MetaNetworkRouteReceiptV1;
+use crate::meta_network_evidence::MetaNetworkEvidenceCatalogV1;
 
 pub const COGNITIVE_WIRE_VERSION_V1: u32 = 1;
 const MAX_ENVELOPE_OVERHEAD_BYTES: usize = 1_024;

@@ -48,8 +48,13 @@ impl MetaNetworkEvidenceCatalogV1 {
         {
             return Err(HnmfContractError::Invalid("meta evidence bounds"));
         }
-        if !self.live_receipt_digests.is_disjoint(&self.revoked_receipt_digests) {
-            return Err(HnmfContractError::Conflict("meta evidence live revoked overlap"));
+        if !self
+            .live_receipt_digests
+            .is_disjoint(&self.revoked_receipt_digests)
+        {
+            return Err(HnmfContractError::Conflict(
+                "meta evidence live revoked overlap",
+            ));
         }
         Ok(())
     }
@@ -75,18 +80,30 @@ impl MetaNetworkEvidenceCatalogV1 {
             return Err(HnmfContractError::Conflict("meta evidence ledger frontier"));
         }
         for bid in &plan.bids {
-            if self.revoked_receipt_digests.contains(&bid.evidence_receipt_digest) {
+            if self
+                .revoked_receipt_digests
+                .contains(&bid.evidence_receipt_digest)
+            {
                 return Err(HnmfContractError::Conflict("meta revoked bid evidence"));
             }
-            if !self.live_receipt_digests.contains(&bid.evidence_receipt_digest) {
+            if !self
+                .live_receipt_digests
+                .contains(&bid.evidence_receipt_digest)
+            {
                 return Err(HnmfContractError::Missing("meta bid evidence"));
             }
         }
         for link in &plan.links {
-            if self.revoked_receipt_digests.contains(&link.evidence_receipt_digest) {
+            if self
+                .revoked_receipt_digests
+                .contains(&link.evidence_receipt_digest)
+            {
                 return Err(HnmfContractError::Conflict("meta revoked link evidence"));
             }
-            if !self.live_receipt_digests.contains(&link.evidence_receipt_digest) {
+            if !self
+                .live_receipt_digests
+                .contains(&link.evidence_receipt_digest)
+            {
                 return Err(HnmfContractError::Missing("meta link evidence"));
             }
         }
@@ -118,7 +135,9 @@ impl MetaNetworkNextSnapshotCandidateV1 {
     ) -> Result<(), HnmfContractError> {
         let expected = propose_meta_network_route_with_evidence_v1(plan, witness, catalog)?;
         if &expected != route {
-            return Err(HnmfContractError::Conflict("meta evidence route recomputation"));
+            return Err(HnmfContractError::Conflict(
+                "meta evidence route recomputation",
+            ));
         }
         self.validate_against_route(route)
     }
