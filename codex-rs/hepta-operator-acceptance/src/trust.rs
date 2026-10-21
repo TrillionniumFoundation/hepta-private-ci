@@ -383,6 +383,15 @@ fn invalid(message: impl Into<String>) -> AcceptanceError {
     AcceptanceError::Invalid(message.into())
 }
 
-#[cfg(test)]
+#[cfg(all(test, unix))]
 #[path = "trust_tests.rs"]
 mod tests;
+
+#[cfg(all(test, windows))]
+#[test]
+fn windows_trust_verification_fails_closed_without_unix_descriptors() {
+    let error = InheritedPipe::new(b"test-only signer data")
+        .err()
+        .expect("Windows must reject unsupported SSHSIG inherited pipes");
+    assert!(error.to_string().contains("requires Unix inherited descriptors"));
+}

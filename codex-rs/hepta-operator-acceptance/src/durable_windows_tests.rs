@@ -1,4 +1,5 @@
 use super::FileSnapshot;
+use super::sync_directory;
 use super::open_without_following;
 use super::verify_unchanged;
 use crate::durable::secure_hash;
@@ -38,4 +39,14 @@ fn path_replacement_after_open_is_rejected() {
     std::fs::write(&artifact, b"sealed").expect("replace artifact with the same bytes");
 
     assert!(verify_unchanged(&file, &artifact, &before, "artifact").is_err());
+}
+
+#[test]
+fn durable_sidecar_directory_flush_requires_real_directory() {
+    let temporary = tempfile::tempdir().expect("temporary state directory");
+    let artifact = temporary.path().join("sidecar");
+    std::fs::write(&artifact, b"durable").expect("write state fixture");
+    sync_directory(temporary.path()).expect("flush directory handle");
+    assert_eq!(std::fs::read(&artifact).expect("read state"), b"durable");
+    assert!(sync_directory(&artifact).is_err());
 }
