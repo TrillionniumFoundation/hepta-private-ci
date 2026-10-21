@@ -465,6 +465,56 @@ fn real_q24_children_commit_atomically_and_reopen_from_original_bytes() {
     assert!(reopened.verify_current(&intent, &signed).is_err());
 }
 
+#[test]
+fn streaming_child_hash_checks_real_bytes_and_rejects_oversize_before_read() {
+    let root = private_root();
+    let path = root.path().join("streamed-child-hash-probe");
+    let bytes = b"bounded child bytes";
+    fs::write(&path, bytes).expect("probe");
+    #[cfg(unix)]
+    {
+        use std::os::unix::fs::PermissionsExt as _;
+        fs::set_permissions(&path, fs::Permissions::from_mode(0o600)).expect("private probe");
+    }
+    let (observed_digest, observed_size) =
+        crate::durable::secure_hash_bounded(&path, bytes.len() as u64)
+            .expect("streamed actual bytes");
+    assert_eq!(observed_digest, sha256(bytes));
+    assert_eq!(observed_size, bytes.len() as u64);
+    assert!(crate::durable::secure_hash_bounded(&path, bytes.len() as u64 - 1).is_err());
+    #[cfg(unix)]
+    {
+        let alias = root.path().join("untrusted-child-symlink");
+        std::os::unix::fs::symlink(&path, &alias).expect("symlink fixture");
+        assert!(crate::durable::secure_hash_bounded(&alias, bytes.len() as u64).is_err());
+    }
+}
+
+#[test]
+fn same_length_tampered_child_cas_is_not_a_recoverable_batch() {
+    let root = private_root();
+    let (migration, anchor) = prepared();
+    let auth = ObservedAuthority::new(anchor);
+    let intent = operation(&execution_plan());
+    let mut batch = owner(root.path(), migration.clone(), auth);
+    batch.commit_once(&intent).expect("original durable children");
+    let committed = batch.read_committed(&intent).expect("original readback");
+    assert!(committed.is_some());
+    let child = &migration.children()[0];
+    let path = batch.child_path(
+        0,
+        &intent,
+        CellStateMigrationV1::child_payload_digest(child),
+    );
+    let mut payload = fs::read(&path).expect("original child bytes");
+    assert!(!payload.is_empty());
+    payload[0] ^= 1;
+    fs::write(&path, &payload).expect("same-size corruption");
+    assert_eq!(fs::metadata(&path).expect("metadata").len(), payload.len() as u64);
+    assert!(batch.read_committed(&intent).is_err());
+    assert!(batch.current_sequence_for_intent(&intent).is_err());
+}
+
 fn owner_try_reopen(
     root: &std::path::Path,
     migration: CellStateMigrationV1,

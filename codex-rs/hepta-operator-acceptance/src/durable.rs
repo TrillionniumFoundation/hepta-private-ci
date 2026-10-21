@@ -115,6 +115,16 @@ pub(crate) fn secure_read(path: &Path, max_bytes: usize) -> Result<Vec<u8>, Acce
 }
 
 pub(crate) fn secure_hash(path: &Path) -> Result<(String, u64), AcceptanceError> {
+    secure_hash_bounded(path, MAX_ARTIFACT_BYTES)
+}
+
+/// Hash actual on-disk bytes with the same inode/permission/path continuity
+/// checks as secure_hash, but reject oversized child-state files BEFORE any
+/// bulk read. Memory use stays bounded by one 128 KiB streaming buffer.
+pub(crate) fn secure_hash_bounded(
+    path: &Path,
+    max_bytes: u64,
+) -> Result<(String, u64), AcceptanceError> {
     let mut options = OpenOptions::new();
     options.read(true);
     #[cfg(unix)]
@@ -131,6 +141,9 @@ pub(crate) fn secure_hash(path: &Path) -> Result<(String, u64), AcceptanceError>
     let windows_before = windows::FileSnapshot::capture(&file, "manifest artifact")?;
     if before.len() > MAX_ARTIFACT_BYTES {
         return Err(invalid("manifest artifact exceeds the 2 GiB bound"));
+    }
+    if before.len() > max_bytes {
+        return Err(invalid("manifest artifact exceeds its byte bound"));
     }
     let mut hasher = Sha256::new();
     let mut buffer = [0_u8; 128 * 1024];

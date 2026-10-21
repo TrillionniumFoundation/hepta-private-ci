@@ -34,6 +34,7 @@ use crate::durable::SidecarLock;
 use crate::durable::canonical_json;
 use crate::durable::lock_sidecar;
 use crate::durable::reject_recreated_sidecar_for_owner_history;
+use crate::durable::secure_hash_bounded;
 use crate::durable::secure_read;
 use crate::durable::secure_root;
 use crate::durable::sha256;
@@ -310,11 +311,16 @@ impl<A: CellSplitMigrationAuthorityPortV1> CellSplitChildStateCasOwnerV1<A> {
                 return Err(CellSplitChildStateCasErrorV1::Invalid);
             }
             let payload_digest = Digest32::of_bytes(&payload);
-            if secure_read(
+            // Read and hash the real child CAS file, not a declared digest.
+            // Reopening up to 64 children must not materialize a second
+            // 16 MiB Vec per child merely to compare identical Q24 bytes.
+            // The secure reader checks inode, mode, ownership and path drift,
+            // and rejects an oversized file before streaming it.
+            let (disk_digest, disk_size) = secure_hash_bounded(
                 &self.child_path(index, intent, payload_digest),
-                MAX_CHILD_BYTES,
-            )? != payload
-            {
+                MAX_CHILD_BYTES as u64,
+            )?;
+            if disk_digest != payload_digest.to_string() || disk_size != payload.len() as u64 {
                 return Err(CellSplitChildStateCasErrorV1::Invalid);
             }
             let mut receipt = CellStateCasReceiptV1 {
