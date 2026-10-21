@@ -93,3 +93,27 @@ Encoder feature digest is provided, not a running signed Encoder model.
 No measured GPU FLOP reduction, corpus-backed citation, exact deletion proof,
 future-time transfer superiority, replay/evaluation approval, or durable
 generation promotion is claimed. Full exact-head CI remains mandatory.
+
+## Full-batch and empty-batch preflight hardening
+
+The stacked qualification patch makes **both** the original full-batch and
+the sparse pre-tick path fail closed before running a Cell when the shared cue,
+engram snapshot, owner generation vector, or any submitted Cell's cue/objective
+binding is inconsistent. It checks **all** Cell structural contracts first, so
+a malformed late Cell cannot be hidden by an earlier malformed cue. The
+full-batch path also validates the retrieval/dynamics policies when there are
+zero Cells. An empty or all-deferred batch is an abstention, not an exemption
+from those contracts.
+
+The input/plan shadow digest domains advance to
+`hepta.memory-meta.pretick.inputs.v2` and
+`hepta.memory-meta.pretick.plan.v2` to bind the actual cue digest and
+generation-vector cut even for an empty Cell list. These domain-separated,
+exact-source commitments do **not** constitute a stabilized wire version,
+source-ledger membership proof, signed evidence, production admission, or
+measured compute reduction.
+
+Focused regressions exercise a forged cue in a late Cell while the first Cell
+contains an invalid generator, zero-Cell invalid cue/policy rejection, and
+zero-Cell admission digest sensitivity to a valid changed cue. Native CI on
+this exact stacked head is still required.
