@@ -16,6 +16,7 @@ workspace = true
 [dependencies]
 codex-hepta-types = { path = "../hepta-types" }
 ed25519-dalek = { workspace = true }
+libc = { workspace = true }
 
 [dev-dependencies]
 pretty_assertions = { workspace = true }
