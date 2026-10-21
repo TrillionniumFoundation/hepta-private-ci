@@ -133,14 +133,13 @@ fn incomplete_unselected_payload_tail_is_discarded_only_after_semantic_validatio
     let file_path = path.join(payloads::FILE_NAME);
     let committed_length = std::fs::metadata(&file_path).must("metadata").len();
     // Simulate bytes written before any selecting metadata rename.
-    let mut file =
-        open_private(
-            &owner.store.root,
-            &owner.store.root_path,
-            payloads::FILE_NAME,
-            Access::Create,
-        )
-        .must("payload");
+    let mut file = open_private(
+        &owner.store.root,
+        &owner.store.root_path,
+        payloads::FILE_NAME,
+        Access::Create,
+    )
+    .must("payload");
     file.seek(SeekFrom::End(0)).must("tail");
     file.write_all(b"unselected incomplete next payload")
         .must("orphan tail");
