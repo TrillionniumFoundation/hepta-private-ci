@@ -152,6 +152,10 @@ def run_forward(*, candidate: str, snapshot: str | Path, media_root: str | Path,
         operator_accepted_terms=operator_accepted_terms,
     )
     conversations, source_digest = validate_records(records, media_root, candidate)
+    t5_with_image = (candidate == "t5gemma2_encoder_270m" and
+                     any(any(part["type"] == "image"
+                             for part in conversation[0]["content"])
+                         for conversation in conversations))
     # Derive media seal inputs from the validated conversation, not mutable
     # caller rows. Otherwise deleting media keys during model loading could
     # bypass the seal and expose unverified original file paths to processors.
@@ -210,16 +214,16 @@ def run_forward(*, candidate: str, snapshot: str | Path, media_root: str | Path,
         if t5_with_image:
             processor = AutoProcessor.from_pretrained(
                 root, local_files_only=True, trust_remote_code=False)
-            try:
-                from PIL import Image
-            except ImportError as error:
-                raise TeacherForwardError("T5 image probe requires Pillow") from error
             with sealed_media_inputs(
                 records=preflight_rows, media_root=media_root, candidate=candidate,
                 expected_source_digest=source_digest,
                 original_conversations=conversations,
                 validate_records=validate_records,
             ) as frozen_conversations:
+                try:
+                    from PIL import Image
+                except ImportError as error:
+                    raise TeacherForwardError("T5 image probe requires Pillow") from error
                 frozen_texts = []
                 images = []
                 for conversation in frozen_conversations:
