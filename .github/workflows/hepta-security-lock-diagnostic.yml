@@ -1,0 +1,36 @@
+name: Hepta security lock resolver diagnostic
+
+on:
+  push:
+    branches:
+      - dot/rustsec-trust-anchors-20261020
+
+permissions:
+  contents: read
+
+jobs:
+  verify-resolved-lock:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    steps:
+      - name: Checkout exact source
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          persist-credentials: false
+      - name: Install Rust 1.95
+        run: rustup toolchain install 1.95.0 --profile minimal
+      - name: Resolve workspace without changing required locked gates
+        shell: bash
+        run: |
+          set -uo pipefail
+          echo "Exact HEAD: $(git rev-parse HEAD)"
+          cd codex-rs
+          cargo +1.95.0 metadata --no-deps --format-version 1 >/dev/null
+          result=$?
+          cd ..
+          echo "Cargo resolver exit: $result"
+          git diff --stat -- codex-rs/Cargo.lock codex-rs/Cargo.toml
+          echo '===== BEGIN CARGO LOCK DIFF ====='
+          git diff -- codex-rs/Cargo.lock | sed -n '1,1000p'
+          echo '===== END CARGO LOCK DIFF ====='
+          exit "$result"
