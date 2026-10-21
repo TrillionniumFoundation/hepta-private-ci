@@ -34,8 +34,12 @@ pub(super) fn create_private_directory(path: &Path) -> Result<(), CognitiveStore
 }
 
 pub(super) fn prepare_database_file(path: &Path) -> Result<(), CognitiveStoreError> {
-    let root = path.parent().ok_or_else(|| unavailable("cognitive database has no parent"))?;
-    let name = path.file_name().and_then(|name| name.to_str())
+    let root = path
+        .parent()
+        .ok_or_else(|| unavailable("cognitive database has no parent"))?;
+    let name = path
+        .file_name()
+        .and_then(|name| name.to_str())
         .ok_or_else(|| unavailable("cognitive database has no normal UTF-8 filename"))?;
     let directory = open_existing_private_state_directory(root).map_err(unavailable)?;
     // Create supplies the explicit current-user owner only for a new empty
@@ -46,11 +50,15 @@ pub(super) fn prepare_database_file(path: &Path) -> Result<(), CognitiveStoreErr
 }
 
 pub(super) fn verify_database_file(path: &Path) -> Result<(), CognitiveStoreError> {
-    let root = path.parent().ok_or_else(|| unavailable("cognitive database has no parent"))?;
-    let name = path.file_name().and_then(|name| name.to_str())
+    let root = path
+        .parent()
+        .ok_or_else(|| unavailable("cognitive database has no parent"))?;
+    let name = path
+        .file_name()
+        .and_then(|name| name.to_str())
         .ok_or_else(|| unavailable("cognitive database has no normal UTF-8 filename"))?;
     let directory = open_existing_private_state_directory(root).map_err(unavailable)?;
-    let _file = open_private_state_child(&directory, name, PrivateFileAccess::Read)
-        .map_err(unavailable)?;
+    let _file =
+        open_private_state_child(&directory, name, PrivateFileAccess::Read).map_err(unavailable)?;
     Ok(())
 }

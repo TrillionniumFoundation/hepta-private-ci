@@ -152,7 +152,9 @@ pub(super) fn open_existing_directory(root: &Path, write: bool) -> io::Result<Fi
             *unit = u16::from(b'\\');
         }
     }
-    recovery_open(/*parent*/ 0, &mut name, /*is_directory*/ true, /*create*/ false, write)
+    recovery_open(
+        /*parent*/ 0, &mut name, /*is_directory*/ true, /*create*/ false, write,
+    )
 }
 
 pub(super) fn open_recovery_child(
@@ -165,17 +167,23 @@ pub(super) fn open_recovery_child(
     use std::path::Component;
 
     let mut components = Path::new(name).components();
-    if !matches!(components.next(), Some(Component::Normal(_)))
-        || components.next().is_some()
-    {
+    if !matches!(components.next(), Some(Component::Normal(_))) || components.next().is_some() {
         return Err(unsafe_state("recovery child must be one normal component"));
     }
     let mut name: Vec<u16> = name.encode_wide().collect();
     if name.iter().any(|unit| matches!(*unit, 0 | 47 | 58 | 92)) {
-        return Err(unsafe_state("recovery child contains a separator or stream name"));
+        return Err(unsafe_state(
+            "recovery child contains a separator or stream name",
+        ));
     }
     name.push(0);
-    recovery_open(parent.as_raw_handle() as HANDLE, &mut name, /*is_directory*/ false, create, create)
+    recovery_open(
+        parent.as_raw_handle() as HANDLE,
+        &mut name,
+        /*is_directory*/ false,
+        create,
+        create,
+    )
 }
 
 fn recovery_open(
@@ -230,7 +238,11 @@ fn recovery_open(
                 if create { FILE_CREATE } else { FILE_OPEN },
                 FILE_SYNCHRONOUS_IO_NONALERT
                     | FILE_OPEN_REPARSE_POINT
-                    | if is_directory { FILE_DIRECTORY_FILE } else { FILE_NON_DIRECTORY_FILE },
+                    | if is_directory {
+                        FILE_DIRECTORY_FILE
+                    } else {
+                        FILE_NON_DIRECTORY_FILE
+                    },
                 ptr::null(),
                 /*ea_length*/ 0,
             )
@@ -239,9 +251,9 @@ fn recovery_open(
             if status == STATUS_REPARSE_POINT_ENCOUNTERED {
                 return Err(unsafe_state("recovery name contains a reparse point"));
             }
-            return Err(io::Error::from_raw_os_error(unsafe {
-                RtlNtStatusToDosError(status)
-            } as i32));
+            return Err(io::Error::from_raw_os_error(
+                unsafe { RtlNtStatusToDosError(status) } as i32,
+            ));
         }
         if handle == 0 || handle == INVALID_HANDLE_VALUE {
             return Err(io::Error::other("recovery open returned an invalid handle"));

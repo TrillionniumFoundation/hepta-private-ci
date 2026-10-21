@@ -22,7 +22,11 @@ impl Fixture {
         let home = home.canonicalize()?;
         let database = home.join("source.sqlite3");
         let config = SqliteConfig::new_for_testing(home.as_path().abs());
-        Ok(Self { home, database, config })
+        Ok(Self {
+            home,
+            database,
+            config,
+        })
     }
 
     fn source(&self, bytes: &[u8]) -> anyhow::Result<()> {
@@ -63,17 +67,28 @@ async fn valid_bundle_still_refuses_path_based_sqlite_recovery() -> anyhow::Resu
     let fixture = Fixture::new()?;
     fixture.complete()?;
     let before = fs::read(&fixture.database)?;
-    let guard = fixture.config.bind_existing_recovery_database(&fixture.database)?;
+    let guard = fixture
+        .config
+        .bind_existing_recovery_database(&fixture.database)?;
     guard.verify_inspection_unchanged()?;
     assert!(matches!(
         fixture.config.open_immutable_recovery_pool(&guard).await,
         Err(SqliteRecoveryError::Unavailable)
     ));
     assert!(matches!(
-        fixture.config.open_identity_bound_durable_evidence_pool(guard.clone()).await,
+        fixture
+            .config
+            .open_identity_bound_durable_evidence_pool(guard.clone())
+            .await,
         Err(SqliteRecoveryError::Unavailable)
     ));
-    assert!(fixture.config.open_existing_durable_evidence_pool(&fixture.database).await.is_err());
+    assert!(
+        fixture
+            .config
+            .open_existing_durable_evidence_pool(&fixture.database)
+            .await
+            .is_err()
+    );
     assert_eq!(fs::read(&fixture.database)?, before);
     guard.verify_inspection_unchanged()?;
     Ok(())
@@ -85,16 +100,23 @@ fn retained_sources_deny_same_size_write_and_byte_identical_replacement() -> any
     fixture.source(b"original")?;
     let replacement = fixture.home.join("replacement.sqlite3");
     write_private(&replacement, b"original")?;
-    let guard = fixture.config.bind_existing_recovery_database(&fixture.database)?;
+    let guard = fixture
+        .config
+        .bind_existing_recovery_database(&fixture.database)?;
     let clone = guard.clone();
     let write_denied = fs::write(&fixture.database, b"mutation").is_err();
     let replace_denied = fs::rename(&replacement, &fixture.database).is_err();
-    eprintln!("WINDOWS_RECOVERY source_pin write_denied={write_denied} replace_denied={replace_denied}");
+    eprintln!(
+        "WINDOWS_RECOVERY source_pin write_denied={write_denied} replace_denied={replace_denied}"
+    );
     assert_eq!((write_denied, replace_denied), (true, true));
     assert_eq!(fs::read(&fixture.database)?, b"original");
     guard.verify_inspection_unchanged()?;
     drop(guard);
-    assert!(fs::write(&fixture.database, b"mutation").is_err(), "a clone retains the same protection");
+    assert!(
+        fs::write(&fixture.database, b"mutation").is_err(),
+        "a clone retains the same protection"
+    );
     drop(clone);
     fs::write(&fixture.database, b"mutation")?;
     assert_eq!(fs::read(&fixture.database)?, b"mutation");
@@ -102,10 +124,13 @@ fn retained_sources_deny_same_size_write_and_byte_identical_replacement() -> any
 }
 
 #[test]
-fn every_present_sidecar_is_pinned_and_absent_sidecar_appearance_is_indeterminate() -> anyhow::Result<()> {
+fn every_present_sidecar_is_pinned_and_absent_sidecar_appearance_is_indeterminate()
+-> anyhow::Result<()> {
     let fixture = Fixture::new()?;
     fixture.complete()?;
-    let guard = fixture.config.bind_existing_recovery_database(&fixture.database)?;
+    let guard = fixture
+        .config
+        .bind_existing_recovery_database(&fixture.database)?;
     for suffix in ["-wal", "-shm", "-journal"] {
         let path = sqlite_sidecar_path(&fixture.database, suffix);
         let before = fs::read(&path)?;
@@ -119,10 +144,15 @@ fn every_present_sidecar_is_pinned_and_absent_sidecar_appearance_is_indeterminat
         fs::remove_file(sqlite_sidecar_path(&fixture.database, suffix))?;
     }
     for suffix in ["-wal", "-shm", "-journal"] {
-        let guard = fixture.config.bind_existing_recovery_database(&fixture.database)?;
+        let guard = fixture
+            .config
+            .bind_existing_recovery_database(&fixture.database)?;
         let path = sqlite_sidecar_path(&fixture.database, suffix);
         write_private(&path, b"appeared")?;
-        assert_eq!(guard.verify_inspection_unchanged(), Err(SqliteRecoveryError::Indeterminate));
+        assert_eq!(
+            guard.verify_inspection_unchanged(),
+            Err(SqliteRecoveryError::Indeterminate)
+        );
         drop(guard);
         fs::remove_file(path)?;
     }
@@ -133,7 +163,9 @@ fn every_present_sidecar_is_pinned_and_absent_sidecar_appearance_is_indeterminat
 fn attributes_are_part_of_the_complete_retained_identity() -> anyhow::Result<()> {
     let fixture = Fixture::new()?;
     fixture.source(b"immutable bytes")?;
-    let guard = fixture.config.bind_existing_recovery_database(&fixture.database)?;
+    let guard = fixture
+        .config
+        .bind_existing_recovery_database(&fixture.database)?;
     let original = fs::metadata(&fixture.database)?.permissions();
     let mut changed = original.clone();
     changed.set_readonly(true);
@@ -151,17 +183,32 @@ fn attributes_are_part_of_the_complete_retained_identity() -> anyhow::Result<()>
 #[test]
 fn missing_inputs_are_not_created_and_live_writers_cannot_be_admitted() -> anyhow::Result<()> {
     let fixture = Fixture::new()?;
-    assert!(matches!(fixture.config.bind_existing_recovery_database(&fixture.database), Err(SqliteRecoveryError::Indeterminate)));
+    assert!(matches!(
+        fixture
+            .config
+            .bind_existing_recovery_database(&fixture.database),
+        Err(SqliteRecoveryError::Indeterminate)
+    ));
     assert!(!fixture.database.try_exists()?);
     fixture.source(b"original")?;
     let writer = fs::OpenOptions::new().write(true).open(&fixture.database)?;
-    assert!(matches!(fixture.config.bind_existing_recovery_database(&fixture.database), Err(SqliteRecoveryError::Indeterminate)));
+    assert!(matches!(
+        fixture
+            .config
+            .bind_existing_recovery_database(&fixture.database),
+        Err(SqliteRecoveryError::Indeterminate)
+    ));
     drop(writer);
-    let guard = fixture.config.bind_existing_recovery_database(&fixture.database)?;
+    let guard = fixture
+        .config
+        .bind_existing_recovery_database(&fixture.database)?;
     guard.verify_inspection_unchanged()?;
     let absent = fixture.home.join("missing");
     let wrong = SqliteConfig::new_for_testing(absent.as_path().abs());
-    assert!(matches!(wrong.bind_existing_recovery_database(&absent.join("source.sqlite3")), Err(SqliteRecoveryError::Indeterminate)));
+    assert!(matches!(
+        wrong.bind_existing_recovery_database(&absent.join("source.sqlite3")),
+        Err(SqliteRecoveryError::Indeterminate)
+    ));
     assert!(!absent.try_exists()?);
     Ok(())
 }
@@ -174,7 +221,12 @@ fn hardlinked_database_and_each_sidecar_are_rejected_without_mutation() -> anyho
         let path = sqlite_sidecar_path(&fixture.database, suffix);
         let before = fs::read(&path)?;
         fs::hard_link(&path, fixture.home.join("alias"))?;
-        assert!(matches!(fixture.config.bind_existing_recovery_database(&fixture.database), Err(SqliteRecoveryError::Indeterminate)));
+        assert!(matches!(
+            fixture
+                .config
+                .bind_existing_recovery_database(&fixture.database),
+            Err(SqliteRecoveryError::Indeterminate)
+        ));
         assert_eq!(fs::read(&path)?, before);
         assert_eq!(fs::read(fixture.home.join("alias"))?, before);
     }
@@ -187,10 +239,21 @@ fn junction_parent_is_rejected_without_creating_or_mutating_a_source() -> anyhow
     fixture.source(b"original")?;
     let alias = unique_temp_dir();
     let output = std::process::Command::new("cmd")
-        .args(["/C", "mklink", "/J"]).arg(&alias).arg(&fixture.home).output()?;
-    anyhow::ensure!(output.status.success(), "junction fixture failed: stdout={} stderr={}", String::from_utf8_lossy(&output.stdout), String::from_utf8_lossy(&output.stderr));
+        .args(["/C", "mklink", "/J"])
+        .arg(&alias)
+        .arg(&fixture.home)
+        .output()?;
+    anyhow::ensure!(
+        output.status.success(),
+        "junction fixture failed: stdout={} stderr={}",
+        String::from_utf8_lossy(&output.stdout),
+        String::from_utf8_lossy(&output.stderr)
+    );
     let config = SqliteConfig::new_for_testing(alias.as_path().abs());
-    let rejected = matches!(config.bind_existing_recovery_database(&alias.join("source.sqlite3")), Err(SqliteRecoveryError::Indeterminate));
+    let rejected = matches!(
+        config.bind_existing_recovery_database(&alias.join("source.sqlite3")),
+        Err(SqliteRecoveryError::Indeterminate)
+    );
     fs::remove_dir(&alias)?;
     assert!(rejected);
     assert_eq!(fs::read(&fixture.database)?, b"original");
@@ -201,17 +264,34 @@ fn junction_parent_is_rejected_without_creating_or_mutating_a_source() -> anyhow
 fn materialized_copy_is_private_complete_bounded_and_create_new() -> anyhow::Result<()> {
     let fixture = Fixture::new()?;
     fixture.complete()?;
-    let guard = fixture.config.bind_existing_recovery_database(&fixture.database)?;
+    let guard = fixture
+        .config
+        .bind_existing_recovery_database(&fixture.database)?;
     let target = fixture.home.join("candidate.sqlite3");
-    fixture.config.materialize_identity_bound_recovery_copy(&guard, &target)?;
+    fixture
+        .config
+        .materialize_identity_bound_recovery_copy(&guard, &target)?;
     assert_eq!(fs::read(&target)?, b"database bytes");
-    assert_eq!(fs::read(sqlite_sidecar_path(&target, "-wal"))?, b"wal bytes");
-    assert_eq!(fs::read(sqlite_sidecar_path(&target, "-journal"))?, b"journal bytes");
+    assert_eq!(
+        fs::read(sqlite_sidecar_path(&target, "-wal"))?,
+        b"wal bytes"
+    );
+    assert_eq!(
+        fs::read(sqlite_sidecar_path(&target, "-journal"))?,
+        b"journal bytes"
+    );
     assert!(!sqlite_sidecar_path(&target, "-shm").try_exists()?);
     assert_eq!(fs::read(&fixture.database)?, b"database bytes");
     drop(guard);
-    let fresh = fixture.config.bind_existing_recovery_database(&fixture.database)?;
-    assert!(fixture.config.materialize_identity_bound_recovery_copy(&fresh, &target).is_err());
+    let fresh = fixture
+        .config
+        .bind_existing_recovery_database(&fixture.database)?;
+    assert!(
+        fixture
+            .config
+            .materialize_identity_bound_recovery_copy(&fresh, &target)
+            .is_err()
+    );
     assert_eq!(fs::read(&target)?, b"database bytes");
     drop(fresh);
     let copied = fixture.config.bind_existing_recovery_database(&target)?;
@@ -220,16 +300,36 @@ fn materialized_copy_is_private_complete_bounded_and_create_new() -> anyhow::Res
     let partial = fixture.home.join("partial.sqlite3");
     let occupied_wal = sqlite_sidecar_path(&partial, "-wal");
     write_private(&occupied_wal, b"pre-existing destination")?;
-    let fresh = fixture.config.bind_existing_recovery_database(&fixture.database)?;
-    assert!(fixture.config.materialize_identity_bound_recovery_copy(&fresh, &partial).is_err());
-    assert!(!partial.try_exists()?, "clean up only our just-created database handle");
+    let fresh = fixture
+        .config
+        .bind_existing_recovery_database(&fixture.database)?;
+    assert!(
+        fixture
+            .config
+            .materialize_identity_bound_recovery_copy(&fresh, &partial)
+            .is_err()
+    );
+    assert!(
+        !partial.try_exists()?,
+        "clean up only our just-created database handle"
+    );
     assert_eq!(fs::read(&occupied_wal)?, b"pre-existing destination");
     assert_eq!(fs::read(&fixture.database)?, b"database bytes");
     drop(fresh);
-    fs::OpenOptions::new().write(true).open(&fixture.database)?.set_len(128 * 1024 * 1024 + 1)?;
-    let oversized = fixture.config.bind_existing_recovery_database(&fixture.database)?;
+    fs::OpenOptions::new()
+        .write(true)
+        .open(&fixture.database)?
+        .set_len(128 * 1024 * 1024 + 1)?;
+    let oversized = fixture
+        .config
+        .bind_existing_recovery_database(&fixture.database)?;
     let never_created = fixture.home.join("oversized.sqlite3");
-    assert_eq!(fixture.config.materialize_identity_bound_recovery_copy(&oversized, &never_created), Err(SqliteRecoveryError::Unavailable));
+    assert_eq!(
+        fixture
+            .config
+            .materialize_identity_bound_recovery_copy(&oversized, &never_created),
+        Err(SqliteRecoveryError::Unavailable)
+    );
     assert!(!never_created.try_exists()?);
     Ok(())
 }
@@ -238,20 +338,39 @@ fn materialized_copy_is_private_complete_bounded_and_create_new() -> anyhow::Res
 async fn cold_image_is_immutable_and_reconnects_to_the_captured_bytes() -> anyhow::Result<()> {
     let fixture = Fixture::new()?;
     fixture.source(b"")?;
-    let source = fixture.config.open_durable_evidence_pool(&fixture.database).await?;
-    sqlx::query("CREATE TABLE fact(value TEXT); INSERT INTO fact VALUES ('original')").execute(&source).await?;
+    let source = fixture
+        .config
+        .open_durable_evidence_pool(&fixture.database)
+        .await?;
+    sqlx::query("CREATE TABLE fact(value TEXT); INSERT INTO fact VALUES ('original')")
+        .execute(&source)
+        .await?;
     source.close().await;
-    let guard = fixture.config.bind_existing_recovery_database(&fixture.database)?;
+    let guard = fixture
+        .config
+        .bind_existing_recovery_database(&fixture.database)?;
     let original = fs::read(&fixture.database)?;
-    let pool = fixture.config.open_cold_image_read_only_pool(&guard).await?;
+    let pool = fixture
+        .config
+        .open_cold_image_read_only_pool(&guard)
+        .await?;
     assert_eq!(fs::read(&fixture.database)?, original);
-    sqlx::query("PRAGMA query_only = OFF").execute(&pool).await?;
-    assert!(sqlx::query("UPDATE fact SET value = 'mutated'").execute(&pool).await.is_err());
+    sqlx::query("PRAGMA query_only = OFF")
+        .execute(&pool)
+        .await?;
+    assert!(
+        sqlx::query("UPDATE fact SET value = 'mutated'")
+            .execute(&pool)
+            .await
+            .is_err()
+    );
     assert!(fs::write(&fixture.database, b"replacement").is_err());
     drop(guard);
     fs::write(&fixture.database, b"replacement")?;
     pool.acquire().await?.close().await?;
-    let value: String = sqlx::query_scalar("SELECT value FROM fact").fetch_one(&pool).await?;
+    let value: String = sqlx::query_scalar("SELECT value FROM fact")
+        .fetch_one(&pool)
+        .await?;
     assert_eq!(value, "original");
     pool.close().await;
     Ok(())

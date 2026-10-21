@@ -1,8 +1,8 @@
-use super::*;
 use super::super::PrivateFileAccess;
 use super::super::open_private_recovery_source;
 use super::super::open_private_state_child;
 use super::super::open_private_state_directory;
+use super::*;
 use std::os::windows::fs::OpenOptionsExt;
 use windows_sys::Win32::Security::ACCESS_ALLOWED_ACE;
 use windows_sys::Win32::Security::ACL_REVISION;
@@ -21,7 +21,11 @@ fn a_changed_but_still_private_dacl_changes_the_snapshot() -> io::Result<()> {
     let temporary = tempfile::tempdir()?;
     let root = temporary.path().join("source");
     let directory = open_private_state_directory(&root)?;
-    drop(open_private_state_child(&directory, "data", PrivateFileAccess::Create)?);
+    drop(open_private_state_child(
+        &directory,
+        "data",
+        PrivateFileAccess::Create,
+    )?);
     let file = open_private_recovery_source(&directory, std::ffi::OsStr::new("data"))?;
     let before = private_state_snapshot(&file)?;
     let user = CurrentUser::read()?;
@@ -49,7 +53,10 @@ fn a_changed_but_still_private_dacl_changes_the_snapshot() -> io::Result<()> {
             control.as_raw_handle() as HANDLE,
             1,
             DACL_SECURITY_INFORMATION | PROTECTED_DACL_SECURITY_INFORMATION,
-            ptr::null_mut(), ptr::null_mut(), dacl, ptr::null_mut(),
+            ptr::null_mut(),
+            ptr::null_mut(),
+            dacl,
+            ptr::null_mut(),
         )
     };
     if status != ERROR_SUCCESS {

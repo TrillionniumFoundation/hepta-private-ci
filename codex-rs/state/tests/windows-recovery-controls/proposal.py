@@ -11,7 +11,7 @@ import time
 import tomllib
 
 ROOT = Path(__file__).resolve().parents[4]
-BASE = "a2fb6e621787cdb9230dfd1350f82fb281d4ec91"
+BASE = "f27c14641753e0b03ceaa0e76031c6d19b1efbfb"
 CONTROL = "codex-rs/state/tests/windows-recovery-controls"
 WORKFLOW = ".github/workflows/hepta-windows-retained-recovery-proposal.yml"
 ALLOWED_ROOTS = ("codex-rs/state/", "codex-rs/utils/path-utils/", "codex-rs/hepta-memory/")

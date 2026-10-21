@@ -54,7 +54,11 @@ impl RetainedObject {
         if snapshot.is_directory() != directory {
             return Err(SqliteRecoveryError::Indeterminate);
         }
-        Ok(Self { path, snapshot, descriptor })
+        Ok(Self {
+            path,
+            snapshot,
+            descriptor,
+        })
     }
 
     pub(super) fn revalidate_parent(&self) -> Result<(), SqliteRecoveryError> {
@@ -65,7 +69,10 @@ impl RetainedObject {
     }
 
     pub(super) fn revalidate_file(&self, parent: &File) -> Result<(), SqliteRecoveryError> {
-        let name = self.path.file_name().ok_or(SqliteRecoveryError::Indeterminate)?;
+        let name = self
+            .path
+            .file_name()
+            .ok_or(SqliteRecoveryError::Indeterminate)?;
         let lookup = open_private_recovery_source(parent, name).map_err(indeterminate)?;
         self.compare(&lookup)
     }
@@ -90,7 +97,9 @@ impl RetainedOptionalObject {
     pub(super) fn bind(parent: &File, path: PathBuf) -> Result<Self, SqliteRecoveryError> {
         let name = path.file_name().ok_or(SqliteRecoveryError::Indeterminate)?;
         match open_private_recovery_source(parent, name) {
-            Ok(descriptor) => RetainedObject::from_descriptor(path, descriptor, false).map(Self::Present),
+            Ok(descriptor) => {
+                RetainedObject::from_descriptor(path, descriptor, false).map(Self::Present)
+            }
             Err(error) if error.kind() == std::io::ErrorKind::NotFound => Ok(Self::Absent(path)),
             Err(_) => Err(SqliteRecoveryError::Indeterminate),
         }
@@ -125,7 +134,9 @@ pub(super) fn retained_bytes(
     while offset < bytes.len() {
         // Explicit offsets keep concurrent immutable readers independent of a
         // File cursor. No source name or descriptor pseudo-path is reopened.
-        let count = object.descriptor.seek_read(&mut bytes[offset..], offset as u64)
+        let count = object
+            .descriptor
+            .seek_read(&mut bytes[offset..], offset as u64)
             .map_err(indeterminate)?;
         if count == 0 {
             return Err(SqliteRecoveryError::Indeterminate);
@@ -150,7 +161,11 @@ pub(super) fn materialize(
         return Err(SqliteRecoveryError::Indeterminate);
     }
     guard.revalidate_for(config)?;
-    let database = retained_bytes(&guard.inner.database, MAX_DATABASE_BYTES, /*allow_empty*/ false)?;
+    let database = retained_bytes(
+        &guard.inner.database,
+        MAX_DATABASE_BYTES,
+        /*allow_empty*/ false,
+    )?;
     let mut bundle = vec![(target.to_path_buf(), database)];
     let mut total = bundle[0].1.len();
     for (index, suffix) in [(0, "-wal"), (2, "-journal")] {
@@ -158,7 +173,9 @@ pub(super) fn materialize(
         // it using only the private database/WAL copy, as on Unix.
         if let RetainedOptionalObject::Present(object) = &guard.inner.sidecars[index] {
             let bytes = retained_bytes(object, MAX_SIDECAR_BYTES, /*allow_empty*/ true)?;
-            total = total.checked_add(bytes.len()).ok_or(SqliteRecoveryError::Unavailable)?;
+            total = total
+                .checked_add(bytes.len())
+                .ok_or(SqliteRecoveryError::Unavailable)?;
             if total > MAX_BUNDLE_BYTES {
                 return Err(SqliteRecoveryError::Unavailable);
             }
@@ -166,8 +183,8 @@ pub(super) fn materialize(
         }
     }
     guard.revalidate_for(config)?;
-    let directory = open_existing_private_state_directory_for_sync(config.home())
-        .map_err(indeterminate)?;
+    let directory =
+        open_existing_private_state_directory_for_sync(config.home()).map_err(indeterminate)?;
     guard.inner.parent.compare(&directory)?;
     let mut created = Vec::new();
     let result = (|| {
@@ -176,7 +193,9 @@ pub(super) fn materialize(
             let file = create_private_recovery_copy(&directory, name).map_err(indeterminate)?;
             // Record ownership immediately after CREATE_NEW, before any write.
             created.push(file);
-            let file = created.last_mut().ok_or(SqliteRecoveryError::Indeterminate)?;
+            let file = created
+                .last_mut()
+                .ok_or(SqliteRecoveryError::Indeterminate)?;
             file.write_all(&bytes).map_err(indeterminate)?;
             file.sync_all().map_err(indeterminate)?;
         }

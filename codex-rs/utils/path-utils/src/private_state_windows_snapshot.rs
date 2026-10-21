@@ -153,7 +153,9 @@ fn security_snapshot(file: &File) -> io::Result<SecuritySnapshot> {
     };
     let result = (|| {
         if status != ERROR_SUCCESS || descriptor.is_null() || owner.is_null() || dacl.is_null() {
-            return Err(unsafe_state("retained private state security is incomplete"));
+            return Err(unsafe_state(
+                "retained private state security is incomplete",
+            ));
         }
         // The original private-state owner is authoritative for which ACEs are
         // trusted; recovery neither repairs permissions nor relaxes that policy.
@@ -162,7 +164,9 @@ fn security_snapshot(file: &File) -> io::Result<SecuritySnapshot> {
                 || EqualSid(owner, current_user.sid()) == 0
                 || dacl_grants_untrusted_access(dacl, current_user.sid())
         } {
-            return Err(unsafe_state("retained private state owner or DACL is unsafe"));
+            return Err(unsafe_state(
+                "retained private state owner or DACL is unsafe",
+            ));
         }
         let mut information: ACL_SIZE_INFORMATION = unsafe { std::mem::zeroed() };
         let mut control = 0_u16;
@@ -185,7 +189,8 @@ fn security_snapshot(file: &File) -> io::Result<SecuritySnapshot> {
         }
         // SAFETY: Win32 validated this descriptor, SID, and exact in-use ACL
         // span above. Copy both before the single LocalFree below.
-        let owner = unsafe { std::slice::from_raw_parts(owner.cast::<u8>(), owner_length) }.to_vec();
+        let owner =
+            unsafe { std::slice::from_raw_parts(owner.cast::<u8>(), owner_length) }.to_vec();
         let dacl = unsafe { std::slice::from_raw_parts(dacl.cast::<u8>(), dacl_length) }.to_vec();
         Ok(SecuritySnapshot {
             control,

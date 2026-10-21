@@ -71,6 +71,13 @@ jobs:
           toolchain: ${{ steps.source.outputs.toolchain }}
           components: ${{ steps.source.outputs.components }}
 
+      - name: Bind the repository MSVC linker for Cargo on Windows
+        id: msvc
+        if: runner.os == 'Windows'
+        uses: ./.github/actions/setup-msvc-env
+        with:
+          target: ${{ matrix.target }}
+
       - name: Install original project test runners
         id: runners
         uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
@@ -109,6 +116,7 @@ jobs:
         if: >-
           always() && steps.source.outcome == 'success' &&
           steps.tools.outcome == 'success' && steps.rust.outcome == 'success' &&
+          (steps.msvc.outcome == 'success' || steps.msvc.outcome == 'skipped') &&
           steps.runners.outcome == 'success' && steps.uv.outcome == 'success' &&
           steps.versions.outcome == 'success' &&
           (steps.native.outcome == 'success' || steps.native.outcome == 'skipped')

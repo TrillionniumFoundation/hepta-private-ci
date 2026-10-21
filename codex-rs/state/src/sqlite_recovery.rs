@@ -214,7 +214,9 @@ impl ExistingSqliteRecoveryGuard {
     #[cfg(windows)]
     fn revalidate(&self) -> Result<(), SqliteRecoveryError> {
         self.inner.parent.revalidate_parent()?;
-        self.inner.database.revalidate_file(&self.inner.parent.descriptor)?;
+        self.inner
+            .database
+            .revalidate_file(&self.inner.parent.descriptor)?;
         for sidecar in &self.inner.sidecars {
             sidecar.revalidate(&self.inner.parent.descriptor)?;
         }
