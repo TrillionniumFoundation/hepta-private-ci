@@ -117,5 +117,17 @@ class EvidenceGateTests(unittest.TestCase):
         self.assertEqual(assess(None, HEAD)['evidence_status'], 'REJECTED')
 
 
+    def test_corrupt_cell_components_fail_closed_with_structured_decision(self):
+        for components in (None, False, 42, "gate", {"gate": True}, [1]):
+            with self.subTest(components=repr(components)):
+                data = receipt()
+                data["cell_components"] = components
+                verdict = assess(data, HEAD)
+                self.assertEqual(verdict["evidence_status"], "REJECTED")
+                self.assertFalse(verdict["production_activation_allowed"])
+                self.assertEqual(verdict["authority"], "DENY_ALL")
+
+
+
 if __name__ == '__main__':
     unittest.main()
