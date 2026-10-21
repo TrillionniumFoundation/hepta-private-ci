@@ -162,6 +162,25 @@ class CallerProofTests(unittest.TestCase):
         with self.assertRaises(MODULE.VerificationFailure):
             MODULE.verify(root, manifest)
 
+    def test_signed_neuron_callers_keep_effect_fence(self) -> None:
+        data = MODULE._load_manifest(ROOT / "CALLERS.toml")
+        row = next(row for row in MODULE._boundary_rows(data) if row.identifier == "final_use_claim")
+        expected = {
+            "codex-rs/hepta-bao-adapter/src/https_consumer.rs",
+            "codex-rs/hepta-agentd/src/browser_servo.rs",
+            "codex-rs/hepta-infer-worker-host/src/neuron_microbatch.rs",
+            "codex-rs/hepta-neuron/src/runtime.rs",
+        }
+        self.assertEqual(set(row.product_callers), expected)
+        for path in (
+            "codex-rs/hepta-infer-worker-host/src/neuron_microbatch.rs",
+            "codex-rs/hepta-neuron/src/runtime.rs",
+        ):
+            with self.subTest(path=path):
+                code = (ROOT / path).read_text(encoding="utf-8")
+                self.assertIn("claim_final_use(authority, signed, &expected)?", code)
+                self.assertIn(".with_verified_effect(token, &expected,", code)
+
     def test_unexpected_product_caller_fails(self) -> None:
         root = self.make_fixture()
         extra = root / "codex-rs/extra/src"
