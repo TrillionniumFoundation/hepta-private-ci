@@ -545,8 +545,8 @@ fn multi_cell_shadow_preflight_rejects_stale_frontier_and_duplicates() {
 fn multi_cell_shadow_preflight_rejects_late_invalid_tick_before_first_retrieval() {
     let fixture = shadow_fixture(true);
     let mut first = meta_spec(&fixture);
-    // If the first tick ran it would fail the cue binding as a Tick error.
-    first.tick_input.cue_digest = digest("wrong-first-cue");
+    // If the first tick ran, its empty generated source would fail as a Tick error.
+    first.generated_input.batches.clear();
 
     let mut second = meta_spec(&fixture);
     second.manifest.cell_id = id("memory-cell:semantic:2");
@@ -574,7 +574,7 @@ fn multi_cell_shadow_preflight_rejects_late_invalid_tick_before_first_retrieval(
 fn multi_cell_shadow_preflight_rejects_late_generation_and_cost_before_first_tick() {
     let fixture = shadow_fixture(true);
     let mut first = meta_spec(&fixture);
-    first.tick_input.cue_digest = digest("wrong-first-cue");
+    first.generated_input.batches.clear();
 
     let mut second = meta_spec(&fixture);
     second.manifest.cell_id = id("memory-cell:semantic:2");
@@ -632,6 +632,55 @@ fn multi_cell_shadow_preflight_rejects_late_generation_and_cost_before_first_tic
         Err(crate::MemoryMetaBatchErrorV1::Contract(
             codex_hepta_cognitive_types::hnmf::HnmfContractError::Invalid(
                 "memory meta candidate relevance"
+            )
+        ))
+    ));
+}
+
+#[test]
+fn multi_cell_shadow_preflight_rejects_late_forged_cue_and_objective_before_any_tick() {
+    let fixture = shadow_fixture(true);
+    let mut first = meta_spec(&fixture);
+    // No early tick may run: the first Cell has an invalid generated source.
+    first.generated_input.batches.clear();
+    let mut second = meta_spec(&fixture);
+    second.manifest.cell_id = id("memory-cell:semantic:2");
+    second.manifest.role = MemoryCellRoleV1::Semantic;
+    second.tick_input.cell_id = second.manifest.cell_id.clone();
+
+    second.tick_input.cue_digest = digest("forged-late-cue");
+    let forged_cue = crate::run_memory_meta_batch_shadow_v1(
+        &meta_policy(&fixture),
+        &fixture.cue,
+        &fixture.policy,
+        &fixture.snapshot,
+        &fixture.dynamics,
+        &[first.clone(), second.clone()],
+    );
+    assert!(matches!(
+        forged_cue,
+        Err(crate::MemoryMetaBatchErrorV1::Contract(
+            codex_hepta_cognitive_types::hnmf::HnmfContractError::Conflict(
+                "memory meta pre-tick cue or objective"
+            )
+        ))
+    ));
+
+    second.tick_input.cue_digest = meta_spec(&fixture).tick_input.cue_digest;
+    second.tick_input.objective_digest = digest("forged-late-objective");
+    let forged_objective = crate::run_memory_meta_batch_shadow_v1(
+        &meta_policy(&fixture),
+        &fixture.cue,
+        &fixture.policy,
+        &fixture.snapshot,
+        &fixture.dynamics,
+        &[first, second],
+    );
+    assert!(matches!(
+        forged_objective,
+        Err(crate::MemoryMetaBatchErrorV1::Contract(
+            codex_hepta_cognitive_types::hnmf::HnmfContractError::Conflict(
+                "memory meta pre-tick cue or objective"
             )
         ))
     ));
@@ -876,9 +925,9 @@ fn checked_pre_tick_does_not_claim_unverified_deferred_support() {
 fn pre_tick_shadow_rejects_local_budget_overcommit_on_deferred_cell() {
     let fixture = shadow_fixture(true);
     let mut first = meta_spec(&fixture);
-    // A first tick would fail, so the later local-budget mismatch must
-    // surface during the whole-batch preflight before retrieval starts.
-    first.tick_input.cue_digest = digest("wrong-first-cue");
+    // A first tick would fail due to empty generated input; the later
+    // local-budget mismatch must surface before retrieval starts.
+    first.generated_input.batches.clear();
     let mut second = meta_spec(&fixture);
     second.manifest.cell_id = id("memory-cell:semantic:2");
     second.tick_input.cell_id = second.manifest.cell_id.clone();

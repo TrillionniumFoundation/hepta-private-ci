@@ -135,3 +135,16 @@ This checks the continuity and *non-reuse of references*, not proof that
 three independent future observation windows were executed. It does not
 train a model, authenticate evaluators, bind real artifact bytes or
 authorize generation promotion; those remain mandatory external blockers.
+
+## Whole-batch cue/objective preflight hardening
+
+Both the full-recall shadow control and the preselected path now validate
+**every** Cell's tick cue and objective against the immutable invocation
+*before* executing any Cell retrieval. A later Cell with a forged or stale cue
+or objective rejects the entire batch without even running a prior Cell's
+invalid generated retrieval. The previously separate preselected check is
+centralized in the common fail-closed preflight. This does not authenticate
+external evidence or change the production DENY_ALL boundary.
+
+Exact-head native regression multi_cell_shadow_preflight_rejects_late_forged_cue_and_objective_before_any_tick
+and the unchanged real CI gates are required before marking this code qualified.

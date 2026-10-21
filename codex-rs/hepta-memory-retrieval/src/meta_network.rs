@@ -71,6 +71,7 @@ impl std::error::Error for MemoryMetaBatchErrorV1 {}
 
 fn preflight_memory_meta_batch_v1(
     policy: &MemoryMetaNetworkPolicyV1,
+    cue: &MemoryCueV1,
     engram_snapshot: &EngramSnapshotV1,
     cells: &[MemoryMetaCellTickSpecV1],
 ) -> Result<(), MemoryMetaBatchErrorV1> {
@@ -101,6 +102,15 @@ fn preflight_memory_meta_batch_v1(
         cell.tick_input
             .validate()
             .map_err(MemoryMetaBatchErrorV1::Contract)?;
+        // Check the real invocation cue and objective across the complete
+        // batch, including deferred Cells, before the first retrieval tick.
+        if cell.tick_input.cue_digest.digest() != cue.digest()
+            || cell.tick_input.objective_digest.digest() != cue.objective_digest
+        {
+            return Err(MemoryMetaBatchErrorV1::Contract(
+                HnmfContractError::Conflict("memory meta pre-tick cue or objective"),
+            ));
+        }
         if cell.manifest.cell_id != cell.tick_input.cell_id
             || cell.manifest.graph_generation != cell.tick_input.graph_generation
             || cell.manifest.model_generation != cell.tick_input.model_generation
@@ -159,7 +169,7 @@ pub fn run_memory_meta_batch_shadow_v1(
     dynamics_policy: &EngramDynamicsPolicyV1,
     cells: &[MemoryMetaCellTickSpecV1],
 ) -> Result<MemoryMetaShadowBatchV1, MemoryMetaBatchErrorV1> {
-    preflight_memory_meta_batch_v1(policy, engram_snapshot, cells)?;
+    preflight_memory_meta_batch_v1(policy, cue, engram_snapshot, cells)?;
 
     let mut cell_ticks = Vec::with_capacity(cells.len());
     let mut candidates = Vec::with_capacity(cells.len());
@@ -266,7 +276,7 @@ pub fn plan_memory_meta_pre_ticks_shadow_v1(
     engram_snapshot: &EngramSnapshotV1,
     cells: &[MemoryMetaCellTickSpecV1],
 ) -> Result<MemoryMetaPreTickPlanV1, MemoryMetaBatchErrorV1> {
-    preflight_memory_meta_batch_v1(policy, engram_snapshot, cells)?;
+    preflight_memory_meta_batch_v1(policy, cue, engram_snapshot, cells)?;
     let mut by_identity: Vec<&MemoryMetaCellTickSpecV1> = cells.iter().collect();
     by_identity.sort_by(|a, b| a.manifest.cell_id.cmp(&b.manifest.cell_id));
 
@@ -296,13 +306,6 @@ pub fn plan_memory_meta_pre_ticks_shadow_v1(
         framed.extend_from_slice(&number.to_be_bytes());
     }
     for cell in &by_identity {
-        if cell.tick_input.cue_digest.digest() != cue.digest()
-            || cell.tick_input.objective_digest.digest() != cue.objective_digest
-        {
-            return Err(MemoryMetaBatchErrorV1::Contract(
-                HnmfContractError::Conflict("memory meta pre-tick cue or objective"),
-            ));
-        }
         frame_pretick_id(&mut framed, &cell.manifest.cell_id);
         frame_pretick_optional_id(&mut framed, cell.manifest.parent_cell_id.as_ref());
         // These Debug tags are exact-source shadow framing, not a stable
