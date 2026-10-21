@@ -118,6 +118,30 @@ fn receipt_requires_exact_payload_and_generation() {
     };
     assert_eq!(receipt.validate_against(&value.cell), Ok(()));
 
+    let mut no_terminal = receipt.clone();
+    no_terminal.outcome_digest = None;
+    assert_eq!(
+        no_terminal.validate_against(&value.cell),
+        Err(ExecutionContractError::MissingTerminalOutcome)
+    );
+
+    let mut wrong_recovery = receipt.clone();
+    wrong_recovery.recovery = RecoveryDispositionV1::RetryBeforeAdmission;
+    assert_eq!(
+        wrong_recovery.validate_against(&value.cell),
+        Err(ExecutionContractError::StatusOutcomeMismatch)
+    );
+
+    let mut unknown = receipt.clone();
+    unknown.status = ExecutionStatusV1::Indeterminate;
+    unknown.outcome_digest = None;
+    assert_eq!(
+        unknown.validate_against(&value.cell),
+        Err(ExecutionContractError::StatusOutcomeMismatch)
+    );
+    unknown.recovery = RecoveryDispositionV1::ReconcileSameOperation;
+    assert_eq!(unknown.validate_against(&value.cell), Ok(()));
+
     let mut stale = value.cell.clone();
     stale.final_payload.digest = digest("different-payload");
     assert_eq!(
@@ -151,6 +175,27 @@ fn runtime_receipt_rechecks_tool_outcome_digest() {
         tool_outcome: outcome,
     };
     assert_eq!(receipt.validate_against(&value), Ok(()));
+
+    let mut unsuccessful_exit = receipt.clone();
+    unsuccessful_exit.tool_outcome.exit_code = Some(42);
+    unsuccessful_exit.execution.outcome_digest =
+        Some(unsuccessful_exit.tool_outcome.outcome_digest());
+    assert_eq!(
+        unsuccessful_exit.validate_against(&value),
+        Err(ExecutionContractError::StatusOutcomeMismatch)
+    );
+    // A nonzero exit is a valid observed failure, not a success.
+    unsuccessful_exit.execution.status = ExecutionStatusV1::Failed;
+    assert_eq!(unsuccessful_exit.validate_against(&value), Ok(()));
+
+    let mut retryable_success = receipt.clone();
+    retryable_success.tool_outcome.retryable = true;
+    retryable_success.execution.outcome_digest =
+        Some(retryable_success.tool_outcome.outcome_digest());
+    assert_eq!(
+        retryable_success.validate_against(&value),
+        Err(ExecutionContractError::StatusOutcomeMismatch)
+    );
 
     for mutated in [
         RuntimeToolIntentV1 {
