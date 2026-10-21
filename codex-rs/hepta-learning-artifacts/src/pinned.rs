@@ -72,6 +72,9 @@ pub enum PinnedCandidateLoadError {
     Ineligible,
     /// An earlier failed refresh requires a newly admitted consumer.
     Unavailable,
+    /// The signed CURRENT or its trusted signer expired, was revoked, or the
+    /// consuming clock moved behind the time at which it was verified.
+    CurrentValidity,
     /// Snapshot, lineage, eligibility, file, or payload validation failed.
     Storage(ArtifactStorageError),
 }
@@ -83,6 +86,7 @@ impl fmt::Display for PinnedCandidateLoadError {
             Self::FrontierMismatch => formatter.write_str("candidate registry frontier mismatch"),
             Self::Ineligible => formatter.write_str("candidate lineage is not eligible"),
             Self::Unavailable => formatter.write_str("candidate refresh failed; reload required"),
+            Self::CurrentValidity => formatter.write_str("authenticated CURRENT validity ended"),
             Self::Storage(error) => write!(formatter, "pinned candidate storage error: {error}"),
         }
     }
@@ -91,9 +95,11 @@ impl fmt::Display for PinnedCandidateLoadError {
 impl Error for PinnedCandidateLoadError {
     fn source(&self) -> Option<&(dyn Error + 'static)> {
         match self {
-            Self::PinMismatch | Self::FrontierMismatch | Self::Ineligible | Self::Unavailable => {
-                None
-            }
+            Self::PinMismatch
+            | Self::FrontierMismatch
+            | Self::Ineligible
+            | Self::Unavailable
+            | Self::CurrentValidity => None,
             Self::Storage(error) => Some(error),
         }
     }
@@ -139,6 +145,46 @@ pub struct VerifiedCurrentRegistryViewV1 {
     registry: ArtifactRegistry,
     witness_digest: Digest32,
     trust_digest: Digest32,
+    validity: CurrentRegistryValidityV1,
+}
+
+/// Original signed CURRENT and signer time bounds, retained after verification.
+/// Times use the same unit and epoch as the owner's signed head and trust. A
+/// product consumer must supply its own trusted clock in that domain; receiving
+/// an opaque view does not freeze the time at which it remains valid.
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+pub struct CurrentRegistryValidityV1 {
+    verified_at: u64,
+    expires_at: u64,
+    signer_revoked_at: Option<u64>,
+}
+
+impl CurrentRegistryValidityV1 {
+    pub(crate) const fn new(
+        verified_at: u64,
+        expires_at: u64,
+        signer_revoked_at: Option<u64>,
+    ) -> Self {
+        Self {
+            verified_at,
+            expires_at,
+            signer_revoked_at,
+        }
+    }
+
+    /// Recheck the original window, including already-known signer revocation.
+    /// New upstream revocations still require a freshly verified owner view.
+    pub fn validate_at(self, now: u64) -> Result<(), PinnedCandidateLoadError> {
+        if now < self.verified_at
+            || now > self.expires_at
+            || self
+                .signer_revoked_at
+                .is_some_and(|revoked_at| now >= revoked_at)
+        {
+            return Err(PinnedCandidateLoadError::CurrentValidity);
+        }
+        Ok(())
+    }
 }
 
 impl VerifiedCurrentRegistryViewV1 {
@@ -147,12 +193,14 @@ impl VerifiedCurrentRegistryViewV1 {
         registry: ArtifactRegistry,
         witness_digest: Digest32,
         trust_digest: Digest32,
+        validity: CurrentRegistryValidityV1,
     ) -> Self {
         Self {
             receipt,
             registry,
             witness_digest,
             trust_digest,
+            validity,
         }
     }
 
@@ -171,6 +219,11 @@ impl VerifiedCurrentRegistryViewV1 {
         self.trust_digest
     }
 
+    #[must_use]
+    pub const fn validity(&self) -> CurrentRegistryValidityV1 {
+        self.validity
+    }
+
     pub(crate) fn registry(&self) -> &ArtifactRegistry {
         &self.registry
     }
@@ -183,6 +236,7 @@ impl fmt::Debug for VerifiedCurrentRegistryViewV1 {
             .field("receipt", &self.receipt)
             .field("witness_digest", &self.witness_digest)
             .field("trust_digest", &self.trust_digest)
+            .field("validity", &self.validity)
             .finish_non_exhaustive()
     }
 }
@@ -221,8 +275,13 @@ impl RevalidatingCandidate {
     pub fn with_current<T>(
         &mut self,
         current: VerifiedCurrentRegistryViewV1,
+        now: u64,
         consume: impl FnOnce(&[u8]) -> T,
     ) -> Result<T, PinnedCandidateLoadError> {
+        if let Err(error) = current.validity.validate_at(now) {
+            self.unavailable = true;
+            return Err(error);
+        }
         self.with_verified_registry(current.receipt, current.registry, consume)
     }
 

@@ -1,8 +1,10 @@
 //! Independent self-evolution selection and rollback admission.
 //!
 //! Evaluation, selection and behavior consumption remain separate identities.
-//! This module verifies real longitudinal evaluation and authoritative ledger
-//! membership before it prepares a selection, then requires an independently
+//! Canonical preparation requires the original product runner's sealed,
+//! durably published longitudinal qualification and authoritative ledger
+//! membership. Compatibility preparation verifies a caller's signed bundle
+//! without granting product qualification. Both require an independently
 //! trusted selector signature before returning an opaque runtime token. Rollback
 //! requires a fresh independent evaluator signature over the exact selected
 //! candidate and regression evidence. None of these values grants merge,
@@ -30,6 +32,7 @@ use crate::IndependentEvaluationBundleV1;
 use crate::IndependentEvaluationDispositionV1;
 use crate::LongitudinalTimeEvidenceV1;
 use crate::MetricRoleContractV2;
+use crate::ProductQualificationReceiptV1;
 use crate::SignedEvaluationError;
 use crate::SignedEvaluationEvidenceV1;
 use crate::decide_with_signed_longitudinal_evidence_v3;
@@ -37,6 +40,19 @@ use crate::future_window_signing_payload_v1;
 use crate::longitudinal_evaluation_signing_payload_v3;
 
 const MAX_DATASET_RECORDS: u32 = 1_000_000;
+
+#[path = "self_evolution_product_selection.rs"]
+mod product_selection;
+pub use product_selection::prepare_self_evolution_product_selection_v1;
+pub use product_selection::product_candidate_binding_payload_v1;
+
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct ProductSelfEvolutionSelectionBindingV1 {
+    pub qualification_evidence_digest: Digest32,
+    pub qualification_publication_digest: Digest32,
+    pub temporal_execution_digest: Digest32,
+    pub candidate_binding_evidence_digest: Digest32,
+}
 
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct SelfEvolutionSelectionPolicyV1 {
@@ -59,6 +75,7 @@ pub struct SelfEvolutionSelectionRequestV1 {
 
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct SelfEvolutionSelectionReceiptV1 {
+    pub product_qualification_binding: Option<ProductSelfEvolutionSelectionBindingV1>,
     pub selection_id: StableId,
     pub objective_digest: Digest32,
     pub predecessor_id: StableId,
@@ -86,6 +103,8 @@ pub struct SelfEvolutionSelectionReceiptV1 {
 /// role-verification state.
 #[derive(Clone, Debug)]
 pub struct PreparedSelfEvolutionSelectionV1 {
+    product_qualification: Option<Box<ProductQualificationReceiptV1>>,
+    candidate_binding: Option<VerifiedLearningEvidenceV1>,
     receipt: SelfEvolutionSelectionReceiptV1,
     generator: VerifiedLearningEvidenceV1,
     evaluator: VerifiedLearningEvidenceV1,
@@ -104,16 +123,51 @@ impl PreparedSelfEvolutionSelectionV1 {
 /// a token from receipt bytes alone.
 #[derive(Clone, Debug)]
 pub struct VerifiedSelfEvolutionSelectionV1 {
+    product_qualification: Option<Box<ProductQualificationReceiptV1>>,
+    candidate_binding: Option<VerifiedLearningEvidenceV1>,
     receipt: SelfEvolutionSelectionReceiptV1,
+    generator: VerifiedLearningEvidenceV1,
+    evaluator: VerifiedLearningEvidenceV1,
+    observer: VerifiedLearningEvidenceV1,
     selector: VerifiedLearningEvidenceV1,
     selector_evidence_digest: Digest32,
     selection_digest: Digest32,
 }
 
 impl VerifiedSelfEvolutionSelectionV1 {
+    /// Recheck the admitted role lifetimes at each bounded consumption. This
+    /// uses the original immutable trust snapshot; the host still owns fresh
+    /// trust/revocation distribution and must reload after a trust change.
+    pub fn validate_at(&self, now: u64) -> Result<(), SelfEvolutionSelectionError> {
+        validate_retained_product_at(
+            &self.receipt,
+            self.product_qualification.as_deref(),
+            self.candidate_binding.as_ref(),
+            &self.generator,
+            now,
+        )?;
+        for role in [&self.generator, &self.evaluator, &self.observer] {
+            verify_verified_role_separation(&self.selector, role, now)?;
+        }
+        Ok(())
+    }
+
     #[must_use]
     pub fn receipt(&self) -> &SelfEvolutionSelectionReceiptV1 {
         &self.receipt
+    }
+
+    /// Require the original canonical product runner's sealed, durably
+    /// published qualification. A compatibility signed bundle is insufficient.
+    pub fn require_product_qualification(&self) -> Result<(), SelfEvolutionSelectionError> {
+        let qualification = self
+            .product_qualification
+            .as_ref()
+            .ok_or(SelfEvolutionSelectionError::CanonicalQualificationRequired)?;
+        if self.candidate_binding.is_none() {
+            return Err(SelfEvolutionSelectionError::CanonicalQualificationRequired);
+        }
+        product_selection::validate_product_binding(&self.receipt, qualification)
     }
 
     #[must_use]
@@ -143,6 +197,13 @@ pub struct VerifiedSelfEvolutionRollbackV1 {
 }
 
 impl VerifiedSelfEvolutionRollbackV1 {
+    /// Recheck the rollback evaluator and selector in the admitted trust
+    /// snapshot. Current owner trust distribution remains a host obligation.
+    pub fn validate_at(&self, now: u64) -> Result<(), SelfEvolutionSelectionError> {
+        verify_verified_role_separation(&self.selection.selector, &self.evaluator, now)?;
+        Ok(())
+    }
+
     #[must_use]
     pub fn selection(&self) -> &VerifiedSelfEvolutionSelectionV1 {
         &self.selection
@@ -165,6 +226,8 @@ impl VerifiedSelfEvolutionRollbackV1 {
 }
 
 #[allow(clippy::too_many_arguments)]
+/// Compatibility admission for independently signed caller-supplied bundles.
+/// This does not establish ProductEvaluationRunner production qualification.
 pub fn prepare_self_evolution_selection_v1(
     policy: &SelfEvolutionSelectionPolicyV1,
     request: SelfEvolutionSelectionRequestV1,
@@ -247,6 +310,7 @@ pub fn prepare_self_evolution_selection_v1(
     verify_verified_role_separation(&evaluator, &observer, now)?;
 
     let receipt = SelfEvolutionSelectionReceiptV1 {
+        product_qualification_binding: None,
         selection_id: request.selection_id,
         objective_digest: evaluation_bundle.objective_digest,
         predecessor_id: request.predecessor_id,
@@ -268,6 +332,8 @@ pub fn prepare_self_evolution_selection_v1(
         authority: AuthorityPosture::DENY_ALL,
     };
     Ok(PreparedSelfEvolutionSelectionV1 {
+        product_qualification: None,
+        candidate_binding: None,
         receipt,
         generator,
         evaluator,
@@ -279,7 +345,11 @@ pub fn selection_signing_payload_v1(
     receipt: &SelfEvolutionSelectionReceiptV1,
 ) -> Result<Vec<u8>, SelfEvolutionSelectionError> {
     validate_receipt(receipt)?;
-    let mut bytes = b"hepta.intelligence-eval.self-evolution-selection.v1\0".to_vec();
+    let mut bytes = if receipt.product_qualification_binding.is_some() {
+        b"hepta.intelligence-eval.self-evolution-selection.v2\0".to_vec()
+    } else {
+        b"hepta.intelligence-eval.self-evolution-selection.v1\0".to_vec()
+    };
     for id in [
         &receipt.selection_id,
         &receipt.predecessor_id,
@@ -307,6 +377,17 @@ pub fn selection_signing_payload_v1(
     }
     bytes.extend_from_slice(&receipt.minimum_dataset_records.to_be_bytes());
     bytes.extend_from_slice(&receipt.minimum_future_window_micros.to_be_bytes());
+    if let Some(binding) = &receipt.product_qualification_binding {
+        for digest in [
+            binding.qualification_evidence_digest,
+            binding.qualification_publication_digest,
+            binding.temporal_execution_digest,
+            binding.candidate_binding_evidence_digest,
+        ] {
+            require_digest(digest)?;
+            bytes.extend_from_slice(digest.as_array());
+        }
+    }
     Ok(bytes)
 }
 
@@ -319,6 +400,13 @@ pub fn admit_self_evolution_selection_v1(
     if verifier.trust_digest() != prepared.receipt.evaluation_trust_digest {
         return Err(SelfEvolutionSelectionError::BindingMismatch);
     }
+    validate_retained_product_at(
+        &prepared.receipt,
+        prepared.product_qualification.as_deref(),
+        prepared.candidate_binding.as_ref(),
+        &prepared.generator,
+        now,
+    )?;
     let payload = selection_signing_payload_v1(&prepared.receipt)?;
     let selector = verifier.verify(
         LearningEvidenceRoleV1::Selector,
@@ -336,11 +424,41 @@ pub fn admit_self_evolution_selection_v1(
     digest_bytes.extend_from_slice(selector_evidence_digest.as_array());
     digest_bytes.extend_from_slice(&selector_evidence.signature);
     Ok(VerifiedSelfEvolutionSelectionV1 {
+        product_qualification: prepared.product_qualification,
+        candidate_binding: prepared.candidate_binding,
         receipt: prepared.receipt,
+        generator: prepared.generator,
+        evaluator: prepared.evaluator,
+        observer: prepared.observer,
         selector,
         selector_evidence_digest,
         selection_digest: Digest32::of_bytes(&digest_bytes),
     })
+}
+
+fn validate_retained_product_at(
+    receipt: &SelfEvolutionSelectionReceiptV1,
+    qualification: Option<&ProductQualificationReceiptV1>,
+    candidate_binding: Option<&VerifiedLearningEvidenceV1>,
+    generator: &VerifiedLearningEvidenceV1,
+    now: u64,
+) -> Result<(), SelfEvolutionSelectionError> {
+    match (
+        qualification,
+        candidate_binding,
+        &receipt.product_qualification_binding,
+    ) {
+        (None, None, None) => Ok(()),
+        (Some(qualification), Some(binding), Some(_)) => {
+            product_selection::validate_product_binding(receipt, qualification)?;
+            if binding.principal() != &qualification.evaluator {
+                return Err(SelfEvolutionSelectionError::BindingMismatch);
+            }
+            verify_verified_role_separation(generator, binding, now)?;
+            Ok(())
+        }
+        _ => Err(SelfEvolutionSelectionError::CanonicalQualificationRequired),
+    }
 }
 
 pub fn rollback_signing_payload_v1(
@@ -457,6 +575,7 @@ fn push_id(bytes: &mut Vec<u8>, id: &StableId) -> Result<(), SelfEvolutionSelect
 
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub enum SelfEvolutionSelectionError {
+    CanonicalQualificationRequired,
     Dataset(DatasetReceiptError),
     Evaluation(SignedEvaluationError),
     Evidence(SignedEvidenceError),
@@ -513,6 +632,7 @@ mod tests {
 
     fn receipt() -> SelfEvolutionSelectionReceiptV1 {
         SelfEvolutionSelectionReceiptV1 {
+            product_qualification_binding: None,
             selection_id: id("selection"),
             objective_digest: digest("objective"),
             predecessor_id: id("baseline"),
@@ -586,8 +706,18 @@ mod tests {
         evidence
     }
 
-    #[test]
-    fn selector_and_rollback_are_opaque_independent_admissions() {
+    enum SelectorRevocation {
+        NotRevoked,
+        At(u64),
+    }
+
+    fn selected_fixture(
+        revocation: SelectorRevocation,
+    ) -> (
+        VerifiedSelfEvolutionSelectionV1,
+        LearningEvidenceVerifierV1,
+        [ed25519_dalek::SigningKey; 4],
+    ) {
         use codex_hepta_learning_ledger::LearningEvidenceTrustV1;
         use codex_hepta_learning_ledger::TrustedLearningSignerV1;
         use ed25519_dalek::SigningKey;
@@ -629,7 +759,14 @@ mod tests {
                     controller_id: id(controller),
                     verifying_key: key.verifying_key().to_bytes(),
                     roles: vec![*role],
-                    revoked_at: None,
+                    revoked_at: if *role == LearningEvidenceRoleV1::Selector {
+                        match revocation {
+                            SelectorRevocation::NotRevoked => None,
+                            SelectorRevocation::At(at) => Some(at),
+                        }
+                    } else {
+                        None
+                    },
                 },
             )
             .collect();
@@ -687,6 +824,8 @@ mod tests {
         let mut admitted_receipt = receipt();
         admitted_receipt.evaluation_trust_digest = verifier.trust_digest();
         let prepared = PreparedSelfEvolutionSelectionV1 {
+            product_qualification: None,
+            candidate_binding: None,
             receipt: admitted_receipt,
             generator,
             evaluator,
@@ -704,6 +843,31 @@ mod tests {
         let selected =
             admit_self_evolution_selection_v1(prepared, &selector_evidence, &verifier, 50)
                 .expect("independent selection");
+        (selected, verifier, keys)
+    }
+
+    #[test]
+    fn retained_selection_rechecks_signed_role_lifetimes_before_late_consumption() {
+        let (selected, _, _) = selected_fixture(SelectorRevocation::NotRevoked);
+        assert!(selected.validate_at(50).is_ok());
+        assert!(selected.validate_at(90).is_ok());
+        assert!(selected.validate_at(19).is_err());
+        assert!(selected.validate_at(91).is_err());
+        // Cloning the opaque admission retains its original validity bound.
+        assert!(selected.validate_at(91).is_err());
+    }
+
+    #[test]
+    fn retained_selection_checks_revocation_already_present_in_admitted_trust() {
+        let (selected, _, _) = selected_fixture(SelectorRevocation::At(80));
+        assert!(selected.validate_at(79).is_ok());
+        assert!(selected.validate_at(80).is_err());
+        assert!(selected.validate_at(81).is_err());
+    }
+
+    #[test]
+    fn selector_and_rollback_are_opaque_independent_admissions() {
+        let (selected, verifier, keys) = selected_fixture(SelectorRevocation::NotRevoked);
         assert_eq!(selected.selector_id(), &id("selector"));
 
         let regression = digest("observed-regression");
@@ -726,6 +890,8 @@ mod tests {
         .expect("independent rollback");
         assert_eq!(rollback.rollback_generation(), generation(9));
         assert_eq!(rollback.evaluator_id(), &id("evaluator"));
+        assert!(rollback.validate_at(90).is_ok());
+        assert!(rollback.validate_at(91).is_err());
     }
 
     #[test]

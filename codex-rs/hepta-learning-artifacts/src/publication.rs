@@ -206,17 +206,13 @@ impl ArtifactPublicationTransactionV1 {
         if record.predecessor_chain_digest != self.intent.expected_registry_predecessor_head {
             return Err(ArtifactPublicationError::RegistryPredecessorMismatch);
         }
-        let v2 = &self.intent.admission.validated_manifest.manifest;
         let ArtifactEvent::Register { manifest: v1, .. } = &record.event else {
             return Err(ArtifactPublicationError::RegistryProjectionMismatch);
         };
-        if v1.artifact_id != v2.artifact_id
-            || v1.kind != v2.kind
-            || v1.generation != v2.generation
-            || v1.content_digest != v2.bytes_digest
-            || v1.producer_id != v2.producer_id
-            || v1.compatibility_digest != v2.compatibility_digest
-            || v1.encoded_size_bytes != v2.encoded_size_bytes
+        if v1
+            != &crate::published_manifest::project_published_manifest_v2(
+                &self.intent.admission.validated_manifest,
+            )
         {
             return Err(ArtifactPublicationError::RegistryProjectionMismatch);
         }
@@ -579,18 +575,10 @@ mod tests {
         }
         let event = ArtifactEvent::Register {
             event_id: id("register-v2"),
-            manifest: ArtifactManifest {
-                artifact_id: id("artifact-v2"),
-                kind: ArtifactKind::Model,
-                generation: generation(2),
-                predecessor_id: None,
-                content_digest: digest("payload"),
-                objective_digest: digest("objective-index"),
-                support_digest: digest("support-index"),
-                producer_id: id("producer"),
-                compatibility_digest: digest("compatibility"),
-                encoded_size_bytes: 7,
-            },
+            manifest: crate::published_manifest::project_published_manifest_v2(
+                &crate::validate_artifact_manifest_v2(v2_manifest(), /*now*/ 20)
+                    .unwrap_or_else(|error| panic!("original V2 fixture: {error}")),
+            ),
         };
         if let Err(error) = registry.append(event) {
             panic!("registry fixture append failed: {error}");
@@ -727,6 +715,48 @@ mod tests {
         );
         assert_eq!(status.witness_digest, Some(receipt.witness_digest));
         assert!(!status.authority.grants_any());
+    }
+
+    #[test]
+    fn published_v2_source_cannot_be_substituted_behind_equal_v1_bytes() {
+        let registry = registry_with_candidate(Digest32::ZERO);
+        let indexed = registry.manifest(&id("artifact-v2")).unwrap();
+        let full =
+            crate::validate_published_artifact_manifest_v2(indexed, v2_manifest(), /*now*/ 20)
+                .unwrap();
+        assert_eq!(indexed.support_digest, full.manifest_digest);
+        for field in ["dataset", "training", "runtime", "lineage"] {
+            let mut altered = full.manifest.clone();
+            match field {
+                "dataset" => altered.source_dataset_digests = vec![digest("wrong-dataset")],
+                "training" => altered.training_code_digest = digest("wrong-training"),
+                "runtime" => altered.runtime_tuple_digest = digest("wrong-runtime"),
+                "lineage" => altered.lineage_digests = vec![digest("wrong-lineage")],
+                other => panic!("unexpected fixture: {other}"),
+            }
+            assert_eq!(
+                crate::validate_published_artifact_manifest_v2(indexed, altered, /*now*/ 20),
+                Err(ArtifactPublicationError::RegistryProjectionMismatch),
+                "same V1 bytes and identity must not bind altered {field}",
+            );
+        }
+        for field in ["support", "objective", "predecessor"] {
+            let mut altered = indexed.clone();
+            match field {
+                "support" => altered.support_digest = digest("wrong-support"),
+                "objective" => altered.objective_digest = digest("wrong-objective"),
+                "predecessor" => altered.predecessor_id = Some(id("wrong-predecessor")),
+                other => panic!("unexpected fixture: {other}"),
+            }
+            assert_eq!(
+                crate::validate_published_artifact_manifest_v2(
+                    &altered,
+                    full.manifest.clone(),
+                    /*now*/ 20
+                ),
+                Err(ArtifactPublicationError::RegistryProjectionMismatch),
+            );
+        }
     }
 
     #[test]

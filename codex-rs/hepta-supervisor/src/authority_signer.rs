@@ -39,6 +39,18 @@ pub const MAX_SIGNING_REQUEST_BYTES: usize = 8 * 1024 * 1024;
 #[derive(Clone, Debug, Deserialize, Serialize)]
 #[serde(tag = "operation", rename_all = "snake_case", deny_unknown_fields)]
 pub enum SignRequest {
+    /// Separate explicit ceremony; does not certify an earlier effect outcome.
+    AbandonUnknown {
+        signer_id: String,
+        signer_epoch: u64,
+        intent: crate::SignedSupervisorIntent,
+        source: crate::release_transaction::ReleaseBindingWire,
+        release_state_generation: u64,
+        lifecycle_generation: u64,
+        authority_epoch: u64,
+        issued_at_unix_seconds: u64,
+        expires_at_unix_seconds: u64,
+    },
     H7Envelope {
         signer_id: String,
         signer_epoch: u64,
@@ -73,8 +85,15 @@ pub enum SignRequest {
 #[derive(Clone, Debug, Deserialize, Serialize)]
 #[serde(tag = "operation", rename_all = "snake_case", deny_unknown_fields)]
 pub enum SignResponse {
-    H7Envelope { envelope: H7SignedArtifactEnvelope },
-    ProductionGrant { grant: H7H89ProductionGrant },
+    ProductionRecovery {
+        decision: crate::ProductionRecoveryDecision,
+    },
+    H7Envelope {
+        envelope: H7SignedArtifactEnvelope,
+    },
+    ProductionGrant {
+        grant: H7H89ProductionGrant,
+    },
 }
 
 #[derive(Debug, Error)]
@@ -200,6 +219,44 @@ pub fn sign_request(
     signing_key: &SigningKey,
 ) -> Result<SignResponse, ExternalSignerError> {
     match request {
+        SignRequest::AbandonUnknown {
+            signer_id,
+            signer_epoch,
+            intent,
+            source,
+            release_state_generation,
+            lifecycle_generation,
+            authority_epoch,
+            issued_at_unix_seconds,
+            expires_at_unix_seconds,
+        } => {
+            let signer = H7H89ProductionGrantSigner::new(
+                signer_id.clone(),
+                *signer_epoch,
+                signing_key.clone(),
+            )
+            .map_err(|error| ExternalSignerError::Grant(error.to_string()))?;
+            let source = codex_hepta_fleet::ReleaseBinding {
+                release_id: codex_hepta_fleet::ReleaseId::parse(source.release_id.clone())
+                    .map_err(|error| ExternalSignerError::Grant(error.to_string()))?,
+                manifest_sha256: source.manifest_sha256.clone(),
+                agentd_program_sha256: source.agentd_program_sha256.clone(),
+                matrixd_program_sha256: source.matrixd_program_sha256.clone(),
+                admission_frontier_sha256: source.admission_frontier_sha256.clone(),
+            };
+            let decision = signer
+                .sign_abandon_unknown(
+                    intent,
+                    &source,
+                    *release_state_generation,
+                    *lifecycle_generation,
+                    *authority_epoch,
+                    *issued_at_unix_seconds,
+                    *expires_at_unix_seconds,
+                )
+                .map_err(|error| ExternalSignerError::Grant(error.to_string()))?;
+            Ok(SignResponse::ProductionRecovery { decision })
+        }
         SignRequest::H7Envelope {
             signer_id,
             signer_epoch,
