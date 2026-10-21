@@ -550,6 +550,50 @@ impl MemoryCellNextSnapshotCandidateV1 {
         }
         Ok(())
     }
+
+    /// Strict frozen-Encoder shadow handoff between successive offline
+    /// proposals. Source/forget frontier changes require a separately
+    /// authenticated ledger migration; this method never infers one.
+    ///
+    /// The evaluator and replay receipts are opaque references here:
+    /// non-reuse is necessary but does not prove evaluator independence.
+    pub fn validate_after(
+        &self,
+        predecessor: &Self,
+    ) -> Result<(), HnmfContractError> {
+        predecessor.validate()?;
+        self.validate()?;
+        if self.cell_id != predecessor.cell_id
+            || self.shared_base_digest != predecessor.shared_base_digest
+            || self.encoder_digest != predecessor.encoder_digest
+            || self.source_frontier_digest != predecessor.source_frontier_digest
+            || self.forget_frontier_digest != predecessor.forget_frontier_digest
+            || self.predecessor_graph_generation != predecessor.next_graph_generation
+            || self.predecessor_model_generation != predecessor.next_model_generation
+        {
+            return Err(HnmfContractError::Conflict(
+                "memory next-snapshot chain predecessor",
+            ));
+        }
+        if self.replay_receipt_digest == predecessor.replay_receipt_digest
+            || self.independent_evaluation_digest == predecessor.independent_evaluation_digest
+        {
+            return Err(HnmfContractError::Conflict(
+                "memory next-snapshot recycled evidence",
+            ));
+        }
+        if self.candidate_adapter_artifact_digest
+            == predecessor.candidate_adapter_artifact_digest
+            && self.candidate_head_artifact_digest
+                == predecessor.candidate_head_artifact_digest
+            && self.topology_proposal_digest.is_none()
+        {
+            return Err(HnmfContractError::Conflict(
+                "memory next-snapshot chain no-op",
+            ));
+        }
+        Ok(())
+    }
 }
 
 #[cfg(test)]
