@@ -60,7 +60,7 @@ async fn assert_timed_out_git_wrapper_does_not_leave_child_process_running(
         .env("RELEASE_WRAPPER_FILE", &release_wrapper_file);
 
     let (mut wrapper, process_tree) = spawn_git_command(&mut command).expect("spawn Git wrapper");
-    let child_pid = tokio::time::timeout(Duration::from_secs(30), async {
+    let child_readiness = tokio::time::timeout(Duration::from_secs(30), async {
         loop {
             if let Ok(child_pid) = std::fs::read_to_string(&child_pid_file)
                 && !child_pid.trim().is_empty()
@@ -71,8 +71,35 @@ async fn assert_timed_out_git_wrapper_does_not_leave_child_process_running(
             tokio::time::sleep(Duration::from_millis(25)).await;
         }
     })
-    .await
-    .expect("wait for Git wrapper child readiness");
+    .await;
+    let child_pid = match child_readiness {
+        Ok(child_pid) => child_pid,
+        Err(error) => {
+            let wrapper_status = wrapper.try_wait();
+            let child_pid_contents = std::fs::read_to_string(&child_pid_file);
+            let child_ready = child_ready_file.try_exists();
+            // Close the process tree before collecting pipes that descendants may hold open.
+            drop(process_tree);
+            let output_future = wrapper.wait_with_output();
+            let output = match tokio::time::timeout(Duration::from_secs(5), output_future).await {
+                Ok(Ok(output)) => format!(
+                    "status: {}; stdout:\n{}\nstderr:\n{}",
+                    output.status,
+                    String::from_utf8_lossy(&output.stdout),
+                    String::from_utf8_lossy(&output.stderr),
+                ),
+                Ok(Err(error)) => format!("could not collect wrapper output: {error}"),
+                Err(error) => format!("timed out collecting wrapper output: {error}"),
+            };
+            panic!(
+                "wait for Git wrapper child readiness: {error}; \
+                 wrapper status before cleanup: {wrapper_status:?}; \
+                 child PID file {child_pid_file:?}: {child_pid_contents:?}; \
+                 child ready file {child_ready_file:?}: {child_ready:?}; \
+                 wrapper output after cleanup: {output}"
+            );
+        }
+    };
 
     if matches!(wrapper_lifetime, GitWrapperLifetime::ExitBeforeTimeout) {
         std::fs::write(&release_wrapper_file, "release").expect("release Git wrapper");
