@@ -3,6 +3,7 @@
 No licensed checkpoint, source authority, trained full-size Stem, or GPU is
 involved. Real P5 shard I/O is used on the connected repo's CI runner.
 """
+import hashlib
 import json
 import pathlib
 import sys
@@ -45,6 +46,7 @@ class OfflineShardDistillTests(unittest.TestCase):
                 slots=slots, teacher_shard=path,
                 expected_source_sha256=source,
                 expected_npy_sha256=receipt["npy_sha256"],
+                expected_slot_sha256=hashlib.sha256(slots.numpy().tobytes()).hexdigest(),
                 sample_digests=("c" * 63 + str(idx), "d" * 63 + str(idx)),
             )
         self.student = torch.nn.Sequential(torch.nn.Linear(8, 8), torch.nn.Tanh())
@@ -79,6 +81,7 @@ class OfflineShardDistillTests(unittest.TestCase):
             slots=p.slots, teacher_shard=p.teacher_shard,
             expected_source_sha256=p.expected_source_sha256,
             expected_npy_sha256=p.expected_npy_sha256,
+            expected_slot_sha256=p.expected_slot_sha256,
             sample_digests=self.cohorts["train"].sample_digests)
         original = [v.detach().clone() for v in self.student.parameters()]
         with self.assertRaisesRegex(OfflineDistillError, "overlapping"):
@@ -105,6 +108,7 @@ class OfflineShardDistillTests(unittest.TestCase):
             slots=torch.full_like(p.slots, float("nan")), teacher_shard=p.teacher_shard,
             expected_source_sha256=p.expected_source_sha256,
             expected_npy_sha256=p.expected_npy_sha256,
+            expected_slot_sha256=p.expected_slot_sha256,
             sample_digests=p.sample_digests)
         with self.assertRaises(OfflineDistillError):
             self.run_trial()
@@ -112,8 +116,21 @@ class OfflineShardDistillTests(unittest.TestCase):
             slots=self.cohorts["train"].slots.clone(), teacher_shard=p.teacher_shard,
             expected_source_sha256=p.expected_source_sha256,
             expected_npy_sha256=p.expected_npy_sha256,
+            expected_slot_sha256=self.cohorts["train"].expected_slot_sha256,
             sample_digests=p.sample_digests)
         with self.assertRaisesRegex(OfflineDistillError, "duplicates"):
+            self.run_trial()
+
+    def test_student_slot_digest_pin_rejects_mutated_source_features(self):
+        old = self.cohorts["calibration"]
+        mutated = old.slots + 0.25
+        self.cohorts["calibration"] = PairedCohort(
+            slots=mutated, teacher_shard=old.teacher_shard,
+            expected_source_sha256=old.expected_source_sha256,
+            expected_npy_sha256=old.expected_npy_sha256,
+            expected_slot_sha256=old.expected_slot_sha256,
+            sample_digests=old.sample_digests)
+        with self.assertRaisesRegex(OfflineDistillError, "source-slot digest mismatch"):
             self.run_trial()
 
     def test_optimizer_cannot_reach_external_cell_head(self):
