@@ -1,0 +1,10 @@
+INFO: Invocation ID: 5aaa514a-d3cd-45ef-9877-c34bbee14546
+WARNING: Repository '@@v8+' will be fetched again since the file '' has been modified externally. External modifications can lead to incorrect builds.
+WARNING: Repository '@@rules_python+' will be fetched again since the file '' has been modified externally. External modifications can lead to incorrect builds.
+WARNING: Repository '@@rules_rs++rules_rust+rules_rust' will be fetched again since the file '' has been modified externally. External modifications can lead to incorrect builds.
+Computing main repo mapping: 
+WARNING: For repository 'platforms', the root module requires module version platforms@1.0.0, but got platforms@1.1.0 in the resolved dependency graph. Please update the version in your MODULE.bazel or set --check_direct_dependencies=off
+WARNING: For repository 'apple_support', the root module requires module version apple_support@2.1.0, but got apple_support@2.5.2 in the resolved dependency graph. Please update the version in your MODULE.bazel or set --check_direct_dependencies=off
+WARNING: For repository 'rules_cc', the root module requires module version rules_cc@0.2.18, but got rules_cc@0.2.20 in the resolved dependency graph. Please update the version in your MODULE.bazel or set --check_direct_dependencies=off
+Computing main repo mapping: 
+INFO: All requested repos fetched successfully.

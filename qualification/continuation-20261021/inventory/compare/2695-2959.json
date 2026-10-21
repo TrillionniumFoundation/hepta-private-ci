@@ -1,0 +1,406 @@
+{
+  "ahead_by": 75,
+  "base": "74bbcc9b0bb330649cd54d9881ae3676d3968bae",
+  "behind_by": 0,
+  "collected_at_utc": "2026-10-21T00:46:00.463Z",
+  "file_list_scope": "Tool-returned file statistics; completeness beyond API/tool limits is not asserted. This is not semantic equivalence or current-head CI evidence.",
+  "files_returned": [
+    {
+      "additions": 1,
+      "changes": 1,
+      "deletions": 0,
+      "filename": ".github/workflows/blocking-ci.yml",
+      "previous_filename": null,
+      "status": "modified"
+    },
+    {
+      "additions": 6,
+      "changes": 10,
+      "deletions": 4,
+      "filename": ".github/workflows/cargo-deny.yml",
+      "previous_filename": null,
+      "status": "modified"
+    },
+    {
+      "additions": 18,
+      "changes": 23,
+      "deletions": 5,
+      "filename": ".github/workflows/v8-canary.yml",
+      "previous_filename": null,
+      "status": "modified"
+    },
+    {
+      "additions": 1,
+      "changes": 1,
+      "deletions": 0,
+      "filename": "codex-rs/.cargo/audit.toml",
+      "previous_filename": null,
+      "status": "modified"
+    },
+    {
+      "additions": 3,
+      "changes": 3,
+      "deletions": 0,
+      "filename": "codex-rs/Cargo.lock",
+      "previous_filename": null,
+      "status": "modified"
+    },
+    {
+      "additions": 2,
+      "changes": 3,
+      "deletions": 1,
+      "filename": "codex-rs/app-server-protocol/schema/json/v2/TurnRecoverResponse.json",
+      "previous_filename": null,
+      "status": "modified"
+    },
+    {
+      "additions": 0,
+      "changes": 0,
+      "deletions": 0,
+      "filename": "codex-rs/app-server-protocol/schema/precomputed/app-server-exports-experimental.json.zst",
+      "previous_filename": null,
+      "status": "modified"
+    },
+    {
+      "additions": 0,
+      "changes": 0,
+      "deletions": 0,
+      "filename": "codex-rs/app-server-protocol/schema/precomputed/app-server-exports-stable.json.zst",
+      "previous_filename": null,
+      "status": "modified"
+    },
+    {
+      "additions": 8,
+      "changes": 8,
+      "deletions": 0,
+      "filename": "codex-rs/code-mode-runtime/src/runtime/mod.rs",
+      "previous_filename": null,
+      "status": "modified"
+    },
+    {
+      "additions": 2,
+      "changes": 2,
+      "deletions": 0,
+      "filename": "codex-rs/code-mode-runtime/src/v8_init.rs",
+      "previous_filename": null,
+      "status": "modified"
+    },
+    {
+      "additions": 54,
+      "changes": 54,
+      "deletions": 0,
+      "filename": "codex-rs/code-mode-runtime/tests/parallel_initialization.rs",
+      "previous_filename": null,
+      "status": "added"
+    },
+    {
+      "additions": 2,
+      "changes": 3,
+      "deletions": 1,
+      "filename": "codex-rs/core/src/environment_selection.rs",
+      "previous_filename": null,
+      "status": "modified"
+    },
+    {
+      "additions": 1,
+      "changes": 1,
+      "deletions": 0,
+      "filename": "codex-rs/deny.toml",
+      "previous_filename": null,
+      "status": "modified"
+    },
+    {
+      "additions": 12,
+      "changes": 13,
+      "deletions": 1,
+      "filename": "codex-rs/ext/hepta-memory/src/cognitive/federation.rs",
+      "previous_filename": null,
+      "status": "modified"
+    },
+    {
+      "additions": 30,
+      "changes": 39,
+      "deletions": 9,
+      "filename": "codex-rs/git-utils/src/git_process_tests.rs",
+      "previous_filename": null,
+      "status": "modified"
+    },
+    {
+      "additions": 18,
+      "changes": 20,
+      "deletions": 2,
+      "filename": "codex-rs/hepta-agentd/src/cognitive_retrieval_learning_tests.rs",
+      "previous_filename": null,
+      "status": "modified"
+    },
+    {
+      "additions": 1,
+      "changes": 2,
+      "deletions": 1,
+      "filename": "codex-rs/hepta-agentd/src/control.rs",
+      "previous_filename": null,
+      "status": "modified"
+    },
+    {
+      "additions": 12,
+      "changes": 13,
+      "deletions": 1,
+      "filename": "codex-rs/hepta-authbus/src/authority_schema_tests.rs",
+      "previous_filename": null,
+      "status": "modified"
+    },
+    {
+      "additions": 6,
+      "changes": 10,
+      "deletions": 4,
+      "filename": "codex-rs/hepta-automation/src/migration_convergence_tests.rs",
+      "previous_filename": null,
+      "status": "modified"
+    },
+    {
+      "additions": 31,
+      "changes": 39,
+      "deletions": 8,
+      "filename": "codex-rs/hepta-evidence/src/authbus_outbox_tests.rs",
+      "previous_filename": null,
+      "status": "modified"
+    },
+    {
+      "additions": 43,
+      "changes": 94,
+      "deletions": 51,
+      "filename": "codex-rs/hepta-fleet/src/authority_port.rs",
+      "previous_filename": null,
+      "status": "modified"
+    },
+    {
+      "additions": 17,
+      "changes": 18,
+      "deletions": 1,
+      "filename": "codex-rs/hepta-intelligence/src/evaluated_shadow_segment_tests.rs",
+      "previous_filename": null,
+      "status": "modified"
+    },
+    {
+      "additions": 24,
+      "changes": 28,
+      "deletions": 4,
+      "filename": "codex-rs/hepta-intelligence/src/evaluated_shadow_tests.rs",
+      "previous_filename": null,
+      "status": "modified"
+    },
+    {
+      "additions": 15,
+      "changes": 16,
+      "deletions": 1,
+      "filename": "codex-rs/hepta-intelligence/src/outcome_credit_v2.rs",
+      "previous_filename": null,
+      "status": "modified"
+    },
+    {
+      "additions": 14,
+      "changes": 15,
+      "deletions": 1,
+      "filename": "codex-rs/hepta-matrixd/src/control.rs",
+      "previous_filename": null,
+      "status": "modified"
+    },
+    {
+      "additions": 3,
+      "changes": 7,
+      "deletions": 4,
+      "filename": "codex-rs/hepta-memory/src/cognitive_schema_tests.rs",
+      "previous_filename": null,
+      "status": "modified"
+    },
+    {
+      "additions": 2,
+      "changes": 4,
+      "deletions": 2,
+      "filename": "codex-rs/hepta-memory/src/cognitive_store_tests.rs",
+      "previous_filename": null,
+      "status": "modified"
+    },
+    {
+      "additions": 4,
+      "changes": 6,
+      "deletions": 2,
+      "filename": "codex-rs/hepta-memory/src/local_compact_executor_tests.rs",
+      "previous_filename": null,
+      "status": "modified"
+    },
+    {
+      "additions": 5,
+      "changes": 5,
+      "deletions": 0,
+      "filename": "codex-rs/hepta-prompt-registry/Cargo.toml",
+      "previous_filename": null,
+      "status": "modified"
+    },
+    {
+      "additions": 31,
+      "changes": 35,
+      "deletions": 4,
+      "filename": "codex-rs/hepta-prompt-registry/src/durable.rs",
+      "previous_filename": null,
+      "status": "modified"
+    },
+    {
+      "additions": 48,
+      "changes": 48,
+      "deletions": 0,
+      "filename": "codex-rs/hepta-prompt-registry/src/durable_windows.rs",
+      "previous_filename": null,
+      "status": "added"
+    },
+    {
+      "additions": 46,
+      "changes": 46,
+      "deletions": 0,
+      "filename": "codex-rs/hepta-prompt-registry/src/durable_windows_tests.rs",
+      "previous_filename": null,
+      "status": "added"
+    },
+    {
+      "additions": 21,
+      "changes": 25,
+      "deletions": 4,
+      "filename": "codex-rs/hepta-supervisor/src/supervisor.rs",
+      "previous_filename": null,
+      "status": "modified"
+    },
+    {
+      "additions": 17,
+      "changes": 17,
+      "deletions": 0,
+      "filename": "codex-rs/hepta-supervisor/src/tick.rs",
+      "previous_filename": null,
+      "status": "modified"
+    },
+    {
+      "additions": 8,
+      "changes": 9,
+      "deletions": 1,
+      "filename": "codex-rs/hepta-supervisor/tests/restart_budget.rs",
+      "previous_filename": null,
+      "status": "modified"
+    },
+    {
+      "additions": 9,
+      "changes": 10,
+      "deletions": 1,
+      "filename": "codex-rs/hepta-supervisor/tests/restart_budget_recovery.rs",
+      "previous_filename": null,
+      "status": "modified"
+    },
+    {
+      "additions": 162,
+      "changes": 162,
+      "deletions": 0,
+      "filename": "codex-rs/hepta-supervisor/tests/signed_intent_recovery.rs",
+      "previous_filename": null,
+      "status": "modified"
+    },
+    {
+      "additions": 1,
+      "changes": 1,
+      "deletions": 0,
+      "filename": "codex-rs/memories/write/BUILD.bazel",
+      "previous_filename": null,
+      "status": "modified"
+    },
+    {
+      "additions": 1,
+      "changes": 1,
+      "deletions": 0,
+      "filename": "codex-rs/state/src/lib.rs",
+      "previous_filename": null,
+      "status": "modified"
+    },
+    {
+      "additions": 21,
+      "changes": 21,
+      "deletions": 0,
+      "filename": "codex-rs/state/src/test_support.rs",
+      "previous_filename": null,
+      "status": "added"
+    },
+    {
+      "additions": 10,
+      "changes": 10,
+      "deletions": 0,
+      "filename": "codex-rs/utils/path-utils/Cargo.toml",
+      "previous_filename": null,
+      "status": "modified"
+    },
+    {
+      "additions": 13,
+      "changes": 13,
+      "deletions": 0,
+      "filename": "codex-rs/utils/path-utils/src/lib.rs",
+      "previous_filename": null,
+      "status": "modified"
+    },
+    {
+      "additions": 472,
+      "changes": 472,
+      "deletions": 0,
+      "filename": "codex-rs/utils/path-utils/src/private_state_windows.rs",
+      "previous_filename": null,
+      "status": "added"
+    },
+    {
+      "additions": 86,
+      "changes": 86,
+      "deletions": 0,
+      "filename": "codex-rs/utils/path-utils/src/private_state_windows_security.rs",
+      "previous_filename": null,
+      "status": "added"
+    },
+    {
+      "additions": 216,
+      "changes": 216,
+      "deletions": 0,
+      "filename": "codex-rs/utils/path-utils/src/private_state_windows_security_tests.rs",
+      "previous_filename": null,
+      "status": "added"
+    },
+    {
+      "additions": 126,
+      "changes": 126,
+      "deletions": 0,
+      "filename": "codex-rs/utils/path-utils/src/private_state_windows_tests.rs",
+      "previous_filename": null,
+      "status": "added"
+    },
+    {
+      "additions": 9,
+      "changes": 9,
+      "deletions": 0,
+      "filename": "defs.bzl",
+      "previous_filename": null,
+      "status": "modified"
+    },
+    {
+      "additions": 5,
+      "changes": 6,
+      "deletions": 1,
+      "filename": "scripts/test_hepta_ci_exec_deadline.py",
+      "previous_filename": null,
+      "status": "modified"
+    }
+  ],
+  "head": "8aa52b4a1d6dd004400500191d70b7b573b5a23f",
+  "merge_base_commit": {
+    "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/commit/74bbcc9b0bb330649cd54d9881ae3676d3968bae",
+    "sha": "74bbcc9b0bb330649cd54d9881ae3676d3968bae",
+    "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/commits/74bbcc9b0bb330649cd54d9881ae3676d3968bae"
+  },
+  "schema_version": 1,
+  "source_pr": 2695,
+  "source_tool_response_sha256": "a5cd01a9046db33725c9e68805554cd4560e4c9ffdf0e1fc1ae634a7182634cb",
+  "status": "ahead",
+  "target_pr": 2959,
+  "too_large": null,
+  "total_commits": 75
+}

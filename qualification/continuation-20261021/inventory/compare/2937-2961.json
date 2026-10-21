@@ -1,0 +1,502 @@
+{
+  "ahead_by": 24,
+  "base": "b58d870a2c38ebee0aa0b974d9f03767c888fa7e",
+  "behind_by": 3,
+  "collected_at_utc": "2026-10-21T00:46:00.182Z",
+  "file_list_scope": "Tool-returned file statistics; completeness beyond API/tool limits is not asserted. This is not semantic equivalence or current-head CI evidence.",
+  "files_returned": [
+    {
+      "additions": 11,
+      "changes": 19,
+      "deletions": 8,
+      "filename": ".bazelrc",
+      "previous_filename": null,
+      "status": "modified"
+    },
+    {
+      "additions": 265,
+      "changes": 265,
+      "deletions": 0,
+      "filename": ".github/scripts/qualify_runtime_blockers.py",
+      "previous_filename": null,
+      "status": "added"
+    },
+    {
+      "additions": 23,
+      "changes": 26,
+      "deletions": 3,
+      "filename": ".github/scripts/run-bazel-ci.sh",
+      "previous_filename": null,
+      "status": "modified"
+    },
+    {
+      "additions": 20,
+      "changes": 31,
+      "deletions": 11,
+      "filename": ".github/scripts/run_bazel_with_buildbuddy.py",
+      "previous_filename": null,
+      "status": "modified"
+    },
+    {
+      "additions": 85,
+      "changes": 85,
+      "deletions": 0,
+      "filename": ".github/scripts/test_run_bazel_ci.py",
+      "previous_filename": null,
+      "status": "modified"
+    },
+    {
+      "additions": 73,
+      "changes": 73,
+      "deletions": 0,
+      "filename": ".github/scripts/test_run_bazel_failure_status.py",
+      "previous_filename": null,
+      "status": "added"
+    },
+    {
+      "additions": 2,
+      "changes": 4,
+      "deletions": 2,
+      "filename": ".github/scripts/test_run_bazel_windows_fallback.py",
+      "previous_filename": null,
+      "status": "modified"
+    },
+    {
+      "additions": 107,
+      "changes": 109,
+      "deletions": 2,
+      "filename": ".github/scripts/test_run_bazel_with_buildbuddy.py",
+      "previous_filename": null,
+      "status": "modified"
+    },
+    {
+      "additions": 1,
+      "changes": 1,
+      "deletions": 0,
+      "filename": ".github/scripts/test_rusty_v8_bazel.py",
+      "previous_filename": null,
+      "status": "modified"
+    },
+    {
+      "additions": 2,
+      "changes": 2,
+      "deletions": 0,
+      "filename": ".github/workflows/bazel.yml",
+      "previous_filename": null,
+      "status": "modified"
+    },
+    {
+      "additions": 140,
+      "changes": 140,
+      "deletions": 0,
+      "filename": ".github/workflows/hepta-runtime-blocker-evidence.yml",
+      "previous_filename": null,
+      "status": "added"
+    },
+    {
+      "additions": 3,
+      "changes": 15,
+      "deletions": 12,
+      "filename": "codex-rs/Cargo.lock",
+      "previous_filename": null,
+      "status": "modified"
+    },
+    {
+      "additions": 2,
+      "changes": 2,
+      "deletions": 0,
+      "filename": "codex-rs/Cargo.toml",
+      "previous_filename": null,
+      "status": "modified"
+    },
+    {
+      "additions": 2,
+      "changes": 3,
+      "deletions": 1,
+      "filename": "codex-rs/app-server-protocol/schema/json/v2/TurnRecoverResponse.json",
+      "previous_filename": null,
+      "status": "modified"
+    },
+    {
+      "additions": 0,
+      "changes": 0,
+      "deletions": 0,
+      "filename": "codex-rs/app-server-protocol/schema/precomputed/app-server-exports-experimental.json.zst",
+      "previous_filename": null,
+      "status": "modified"
+    },
+    {
+      "additions": 0,
+      "changes": 0,
+      "deletions": 0,
+      "filename": "codex-rs/app-server-protocol/schema/precomputed/app-server-exports-stable.json.zst",
+      "previous_filename": null,
+      "status": "modified"
+    },
+    {
+      "additions": 6,
+      "changes": 9,
+      "deletions": 3,
+      "filename": "codex-rs/app-server/src/message_processor.rs",
+      "previous_filename": null,
+      "status": "modified"
+    },
+    {
+      "additions": 18,
+      "changes": 29,
+      "deletions": 11,
+      "filename": "codex-rs/app-server/src/request_processors/account_processor/bedrock_setup.rs",
+      "previous_filename": null,
+      "status": "modified"
+    },
+    {
+      "additions": 28,
+      "changes": 32,
+      "deletions": 4,
+      "filename": "codex-rs/app-server/src/request_processors/bedrock_auth.rs",
+      "previous_filename": null,
+      "status": "modified"
+    },
+    {
+      "additions": 452,
+      "changes": 457,
+      "deletions": 5,
+      "filename": "codex-rs/app-server/tests/suite/v2/bedrock_setup.rs",
+      "previous_filename": null,
+      "status": "modified"
+    },
+    {
+      "additions": 8,
+      "changes": 8,
+      "deletions": 0,
+      "filename": "codex-rs/aws-auth/src/lib.rs",
+      "previous_filename": null,
+      "status": "modified"
+    },
+    {
+      "additions": 15,
+      "changes": 15,
+      "deletions": 0,
+      "filename": "codex-rs/codex-api/src/auth.rs",
+      "previous_filename": null,
+      "status": "modified"
+    },
+    {
+      "additions": 29,
+      "changes": 34,
+      "deletions": 5,
+      "filename": "codex-rs/core/src/client.rs",
+      "previous_filename": null,
+      "status": "modified"
+    },
+    {
+      "additions": 201,
+      "changes": 206,
+      "deletions": 5,
+      "filename": "codex-rs/core/src/client_tests.rs",
+      "previous_filename": null,
+      "status": "modified"
+    },
+    {
+      "additions": 44,
+      "changes": 44,
+      "deletions": 0,
+      "filename": "codex-rs/core/src/client_websocket_auth.rs",
+      "previous_filename": null,
+      "status": "added"
+    },
+    {
+      "additions": 117,
+      "changes": 117,
+      "deletions": 0,
+      "filename": "codex-rs/core/src/client_websocket_auth_tests.rs",
+      "previous_filename": null,
+      "status": "added"
+    },
+    {
+      "additions": 16,
+      "changes": 16,
+      "deletions": 0,
+      "filename": "codex-rs/core/src/responses_metadata.rs",
+      "previous_filename": null,
+      "status": "modified"
+    },
+    {
+      "additions": 16,
+      "changes": 23,
+      "deletions": 7,
+      "filename": "codex-rs/core/src/session/turn.rs",
+      "previous_filename": null,
+      "status": "modified"
+    },
+    {
+      "additions": 39,
+      "changes": 40,
+      "deletions": 1,
+      "filename": "codex-rs/core/src/turn_diff_tracker.rs",
+      "previous_filename": null,
+      "status": "modified"
+    },
+    {
+      "additions": 63,
+      "changes": 63,
+      "deletions": 0,
+      "filename": "codex-rs/core/src/turn_diff_tracker_tests.rs",
+      "previous_filename": null,
+      "status": "modified"
+    },
+    {
+      "additions": 12,
+      "changes": 14,
+      "deletions": 2,
+      "filename": "codex-rs/core/tests/suite/apply_patch_cli.rs",
+      "previous_filename": null,
+      "status": "modified"
+    },
+    {
+      "additions": 142,
+      "changes": 143,
+      "deletions": 1,
+      "filename": "codex-rs/core/tests/suite/client_websockets.rs",
+      "previous_filename": null,
+      "status": "modified"
+    },
+    {
+      "additions": 7,
+      "changes": 8,
+      "deletions": 1,
+      "filename": "codex-rs/core/tests/suite/model_provider_policy.rs",
+      "previous_filename": null,
+      "status": "modified"
+    },
+    {
+      "additions": 17,
+      "changes": 17,
+      "deletions": 0,
+      "filename": "codex-rs/hepta-agentd/tests/support/terminal_cell_owner.rs",
+      "previous_filename": null,
+      "status": "modified"
+    },
+    {
+      "additions": 11,
+      "changes": 11,
+      "deletions": 0,
+      "filename": "codex-rs/hepta-automation/tests/automation.rs",
+      "previous_filename": null,
+      "status": "modified"
+    },
+    {
+      "additions": 119,
+      "changes": 121,
+      "deletions": 2,
+      "filename": "codex-rs/hepta-matrixd/src/control.rs",
+      "previous_filename": null,
+      "status": "modified"
+    },
+    {
+      "additions": 66,
+      "changes": 66,
+      "deletions": 0,
+      "filename": "codex-rs/hepta-operator-acceptance/README.md",
+      "previous_filename": null,
+      "status": "added"
+    },
+    {
+      "additions": 12,
+      "changes": 12,
+      "deletions": 0,
+      "filename": "codex-rs/hepta-operator-acceptance/src/durable.rs",
+      "previous_filename": null,
+      "status": "modified"
+    },
+    {
+      "additions": 82,
+      "changes": 82,
+      "deletions": 0,
+      "filename": "codex-rs/hepta-operator-acceptance/src/durable_windows.rs",
+      "previous_filename": null,
+      "status": "modified"
+    },
+    {
+      "additions": 133,
+      "changes": 133,
+      "deletions": 0,
+      "filename": "codex-rs/hepta-operator-acceptance/src/durable_windows_tests.rs",
+      "previous_filename": null,
+      "status": "modified"
+    },
+    {
+      "additions": 12,
+      "changes": 125,
+      "deletions": 113,
+      "filename": "codex-rs/hepta-operator-acceptance/src/g5_trust.rs",
+      "previous_filename": null,
+      "status": "modified"
+    },
+    {
+      "additions": 4,
+      "changes": 8,
+      "deletions": 4,
+      "filename": "codex-rs/hepta-operator-acceptance/src/g5_trust_tests.rs",
+      "previous_filename": null,
+      "status": "modified"
+    },
+    {
+      "additions": 1,
+      "changes": 1,
+      "deletions": 0,
+      "filename": "codex-rs/hepta-operator-acceptance/src/lib.rs",
+      "previous_filename": null,
+      "status": "modified"
+    },
+    {
+      "additions": 143,
+      "changes": 143,
+      "deletions": 0,
+      "filename": "codex-rs/hepta-operator-acceptance/src/sshsig.rs",
+      "previous_filename": null,
+      "status": "added"
+    },
+    {
+      "additions": 251,
+      "changes": 251,
+      "deletions": 0,
+      "filename": "codex-rs/hepta-operator-acceptance/src/sshsig_tests.rs",
+      "previous_filename": null,
+      "status": "added"
+    },
+    {
+      "additions": 27,
+      "changes": 27,
+      "deletions": 0,
+      "filename": "codex-rs/hepta-operator-acceptance/src/test_support.rs",
+      "previous_filename": null,
+      "status": "modified"
+    },
+    {
+      "additions": 11,
+      "changes": 116,
+      "deletions": 105,
+      "filename": "codex-rs/hepta-operator-acceptance/src/trust.rs",
+      "previous_filename": null,
+      "status": "modified"
+    },
+    {
+      "additions": 38,
+      "changes": 42,
+      "deletions": 4,
+      "filename": "codex-rs/hepta-operator-acceptance/src/trust_tests.rs",
+      "previous_filename": null,
+      "status": "modified"
+    },
+    {
+      "additions": 20,
+      "changes": 20,
+      "deletions": 0,
+      "filename": "codex-rs/model-provider/src/auth.rs",
+      "previous_filename": null,
+      "status": "modified"
+    },
+    {
+      "additions": 81,
+      "changes": 81,
+      "deletions": 0,
+      "filename": "codex-rs/model-provider/src/auth_websocket_tests.rs",
+      "previous_filename": null,
+      "status": "added"
+    },
+    {
+      "additions": 103,
+      "changes": 103,
+      "deletions": 0,
+      "filename": "codex-rs/third_party/i18n-config-0.4.8/CHANGELOG.md",
+      "previous_filename": null,
+      "status": "added"
+    },
+    {
+      "additions": 72,
+      "changes": 72,
+      "deletions": 0,
+      "filename": "codex-rs/third_party/i18n-config-0.4.8/Cargo.toml",
+      "previous_filename": null,
+      "status": "added"
+    },
+    {
+      "additions": 28,
+      "changes": 28,
+      "deletions": 0,
+      "filename": "codex-rs/third_party/i18n-config-0.4.8/Cargo.toml.orig",
+      "previous_filename": null,
+      "status": "added"
+    },
+    {
+      "additions": 45,
+      "changes": 45,
+      "deletions": 0,
+      "filename": "codex-rs/third_party/i18n-config-0.4.8/HEPTA_PATCH.md",
+      "previous_filename": null,
+      "status": "added"
+    },
+    {
+      "additions": 8,
+      "changes": 8,
+      "deletions": 0,
+      "filename": "codex-rs/third_party/i18n-config-0.4.8/LICENSE.txt",
+      "previous_filename": null,
+      "status": "added"
+    },
+    {
+      "additions": 5,
+      "changes": 5,
+      "deletions": 0,
+      "filename": "codex-rs/third_party/i18n-config-0.4.8/README.md",
+      "previous_filename": null,
+      "status": "added"
+    },
+    {
+      "additions": 211,
+      "changes": 211,
+      "deletions": 0,
+      "filename": "codex-rs/third_party/i18n-config-0.4.8/src/config_tests.rs",
+      "previous_filename": null,
+      "status": "added"
+    },
+    {
+      "additions": 18,
+      "changes": 18,
+      "deletions": 0,
+      "filename": "codex-rs/third_party/i18n-config-0.4.8/src/fluent.rs",
+      "previous_filename": null,
+      "status": "added"
+    },
+    {
+      "additions": 119,
+      "changes": 119,
+      "deletions": 0,
+      "filename": "codex-rs/third_party/i18n-config-0.4.8/src/gettext.rs",
+      "previous_filename": null,
+      "status": "added"
+    },
+    {
+      "additions": 400,
+      "changes": 400,
+      "deletions": 0,
+      "filename": "codex-rs/third_party/i18n-config-0.4.8/src/lib.rs",
+      "previous_filename": null,
+      "status": "added"
+    }
+  ],
+  "head": "c210d26350ac57e527b4ff59663e5c8d518ff95a",
+  "merge_base_commit": {
+    "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/commit/ddf193c6bb46c2d1e4c6255639686b345ead10aa",
+    "sha": "ddf193c6bb46c2d1e4c6255639686b345ead10aa",
+    "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/commits/ddf193c6bb46c2d1e4c6255639686b345ead10aa"
+  },
+  "schema_version": 1,
+  "source_pr": 2937,
+  "source_tool_response_sha256": "e5ebd5b31b0cb2cddd1f62de6dad1a451625491e8750bddd7cf7304ed4429cd6",
+  "status": "diverged",
+  "target_pr": 2961,
+  "too_large": null,
+  "total_commits": 24
+}

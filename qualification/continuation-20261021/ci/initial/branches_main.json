@@ -1,0 +1,115 @@
+{
+  "retrieved_at": "2026-10-21T00:40:49.942Z",
+  "endpoint": "branches/main",
+  "data": {
+    "name": "main",
+    "commit": {
+      "sha": "f8c9419df6ddeb36ff8b522a50219981fb8d9345",
+      "node_id": "C_kwDOTrgxoNoAKGY4Yzk0MTlkZjZkZGViMzZmZjhiNTIyYTUwMjE5OTgxZmI4ZDkzNDU",
+      "commit": {
+        "author": {
+          "name": "Qian QI",
+          "email": "102159240+ProfHepta@users.noreply.github.com",
+          "date": "2026-10-16T00:03:16Z"
+        },
+        "committer": {
+          "name": "Qian QI",
+          "email": "102159240+ProfHepta@users.noreply.github.com",
+          "date": "2026-10-16T00:03:16Z"
+        },
+        "message": "ci: coalesce opt-in full Rust runs by source branch",
+        "tree": {
+          "sha": "15c9d6ea07bf3832de82825a6cc1e8c958dd3d45",
+          "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/trees/15c9d6ea07bf3832de82825a6cc1e8c958dd3d45"
+        },
+        "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/commits/f8c9419df6ddeb36ff8b522a50219981fb8d9345",
+        "comment_count": 0,
+        "verification": {
+          "verified": false,
+          "reason": "unsigned",
+          "signature": null,
+          "payload": null,
+          "verified_at": null
+        }
+      },
+      "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/commits/f8c9419df6ddeb36ff8b522a50219981fb8d9345",
+      "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/commit/f8c9419df6ddeb36ff8b522a50219981fb8d9345",
+      "comments_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/commits/f8c9419df6ddeb36ff8b522a50219981fb8d9345/comments",
+      "author": {
+        "login": "ProfHepta",
+        "id": 102159240,
+        "node_id": "U_kgDOBhbTiA",
+        "avatar_url": "https://avatars.githubusercontent.com/u/102159240?v=4",
+        "gravatar_id": "",
+        "url": "https://api.github.com/users/ProfHepta",
+        "html_url": "https://github.com/ProfHepta",
+        "followers_url": "https://api.github.com/users/ProfHepta/followers",
+        "following_url": "https://api.github.com/users/ProfHepta/following{/other_user}",
+        "gists_url": "https://api.github.com/users/ProfHepta/gists{/gist_id}",
+        "starred_url": "https://api.github.com/users/ProfHepta/starred{/owner}{/repo}",
+        "subscriptions_url": "https://api.github.com/users/ProfHepta/subscriptions",
+        "organizations_url": "https://api.github.com/users/ProfHepta/orgs",
+        "repos_url": "https://api.github.com/users/ProfHepta/repos",
+        "events_url": "https://api.github.com/users/ProfHepta/events{/privacy}",
+        "received_events_url": "https://api.github.com/users/ProfHepta/received_events",
+        "type": "User",
+        "user_view_type": "public",
+        "site_admin": false
+      },
+      "committer": {
+        "login": "ProfHepta",
+        "id": 102159240,
+        "node_id": "U_kgDOBhbTiA",
+        "avatar_url": "https://avatars.githubusercontent.com/u/102159240?v=4",
+        "gravatar_id": "",
+        "url": "https://api.github.com/users/ProfHepta",
+        "html_url": "https://github.com/ProfHepta",
+        "followers_url": "https://api.github.com/users/ProfHepta/followers",
+        "following_url": "https://api.github.com/users/ProfHepta/following{/other_user}",
+        "gists_url": "https://api.github.com/users/ProfHepta/gists{/gist_id}",
+        "starred_url": "https://api.github.com/users/ProfHepta/starred{/owner}{/repo}",
+        "subscriptions_url": "https://api.github.com/users/ProfHepta/subscriptions",
+        "organizations_url": "https://api.github.com/users/ProfHepta/orgs",
+        "repos_url": "https://api.github.com/users/ProfHepta/repos",
+        "events_url": "https://api.github.com/users/ProfHepta/events{/privacy}",
+        "received_events_url": "https://api.github.com/users/ProfHepta/received_events",
+        "type": "User",
+        "user_view_type": "public",
+        "site_admin": false
+      },
+      "parents": [
+        {
+          "sha": "287b93caaafeb97bdc3ce11199c798ad567f5159",
+          "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/commits/287b93caaafeb97bdc3ce11199c798ad567f5159",
+          "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/commit/287b93caaafeb97bdc3ce11199c798ad567f5159"
+        }
+      ]
+    },
+    "_links": {
+      "self": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/branches/main",
+      "html": "https://github.com/TrillionniumFoundation/hepta-private-ci/tree/main"
+    },
+    "protected": true,
+    "protection": {
+      "enabled": true,
+      "required_status_checks": {
+        "enforcement_level": "non_admins",
+        "contexts": [
+          "CI required",
+          "Architecture required"
+        ],
+        "checks": [
+          {
+            "context": "CI required",
+            "app_id": 15368
+          },
+          {
+            "context": "Architecture required",
+            "app_id": 15368
+          }
+        ]
+      }
+    },
+    "protection_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/branches/main/protection"
+  }
+}

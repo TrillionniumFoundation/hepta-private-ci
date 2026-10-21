@@ -1,0 +1,212 @@
+{
+  "scope": "All nine non-TLS lock changes are dependency-edge selections between versions already present in baseline lock. No affected parent version/checksum/source changed. Declared requirements are read from exact baseline all-features cargo metadata.",
+  "rows": [
+    {
+      "package": "arboard",
+      "version_unchanged": "3.7.0",
+      "checksum_unchanged": "aeb9553e62312c8756a5979254fc6d7da8bbeb5986a1e17037fab932f7037917",
+      "old_edge": "windows-sys 0.52.0",
+      "new_edge": "windows-sys 0.59.0",
+      "declared_dependencies": [
+        {
+          "requirement": ">=0.52.0, <0.62.0",
+          "target": "cfg(windows)",
+          "features": [
+            "Win32_Foundation",
+            "Win32_Storage_FileSystem",
+            "Win32_System_DataExchange",
+            "Win32_System_Memory",
+            "Win32_System_Ole",
+            "Win32_UI_Shell"
+          ],
+          "uses_default_features": true,
+          "optional": false,
+          "kind": null
+        }
+      ],
+      "origin": "real cargo update resolver output; not manually edited",
+      "native_windows_qualified": false
+    },
+    {
+      "package": "errno",
+      "version_unchanged": "0.3.14",
+      "checksum_unchanged": "39cab71617ae0d63f51a36d69f866391735b51691dbda63cf6f96d042b63efeb",
+      "old_edge": "windows-sys 0.52.0",
+      "new_edge": "windows-sys 0.59.0",
+      "declared_dependencies": [
+        {
+          "requirement": ">=0.52, <0.62",
+          "target": "cfg(windows)",
+          "features": [
+            "Win32_Foundation",
+            "Win32_System_Diagnostics_Debug"
+          ],
+          "uses_default_features": true,
+          "optional": false,
+          "kind": null
+        }
+      ],
+      "origin": "real cargo update resolver output; not manually edited",
+      "native_windows_qualified": false
+    },
+    {
+      "package": "is-terminal",
+      "version_unchanged": "0.4.17",
+      "checksum_unchanged": "3640c1c38b8e4e43584d8df18be5fc6b0aa314ce6ebf51b53313d4306cca8e46",
+      "old_edge": "windows-sys 0.52.0",
+      "new_edge": "windows-sys 0.59.0",
+      "declared_dependencies": [
+        {
+          "requirement": ">=0.52, <0.62",
+          "target": "cfg(windows)",
+          "features": [
+            "Win32_Foundation",
+            "Win32_Storage_FileSystem",
+            "Win32_System_Console"
+          ],
+          "uses_default_features": true,
+          "optional": false,
+          "kind": null
+        }
+      ],
+      "origin": "real cargo update resolver output; not manually edited",
+      "native_windows_qualified": false
+    },
+    {
+      "package": "os_pipe",
+      "version_unchanged": "1.2.3",
+      "checksum_unchanged": "7d8fae84b431384b68627d0f9b3b1245fcf9f46f6c0e3dc902e9dce64edd1967",
+      "old_edge": "windows-sys 0.52.0",
+      "new_edge": "windows-sys 0.59.0",
+      "declared_dependencies": [
+        {
+          "requirement": ">=0.28, <=0.61",
+          "target": "cfg(windows)",
+          "features": [
+            "Win32_Foundation",
+            "Win32_System_Pipes",
+            "Win32_Security"
+          ],
+          "uses_default_features": true,
+          "optional": false,
+          "kind": null
+        }
+      ],
+      "origin": "real cargo update resolver output; not manually edited",
+      "native_windows_qualified": false
+    },
+    {
+      "package": "quinn-udp",
+      "version_unchanged": "0.5.16",
+      "checksum_unchanged": "af66907df18639dcf4db56ca65490cabc4b27a97dbadd96f2926cca73298f016",
+      "old_edge": "windows-sys 0.52.0",
+      "new_edge": "windows-sys 0.59.0",
+      "declared_dependencies": [
+        {
+          "requirement": ">=0.52, <=0.61",
+          "target": "cfg(windows)",
+          "features": [
+            "Win32_Foundation",
+            "Win32_System_IO",
+            "Win32_Networking_WinSock"
+          ],
+          "uses_default_features": true,
+          "optional": false,
+          "kind": null
+        }
+      ],
+      "origin": "real cargo update resolver output; not manually edited",
+      "native_windows_qualified": false
+    },
+    {
+      "package": "rustix",
+      "version_unchanged": "1.1.5",
+      "checksum_unchanged": "891efababe418670775f199f0d233d84843c227a0949a883ce15b37c78d6629d",
+      "old_edge": "windows-sys 0.52.0",
+      "new_edge": "windows-sys 0.59.0",
+      "declared_dependencies": [
+        {
+          "requirement": ">=0.52, <0.62",
+          "target": "cfg(windows)",
+          "features": [
+            "Win32_Foundation",
+            "Win32_Networking_WinSock"
+          ],
+          "uses_default_features": true,
+          "optional": false,
+          "kind": null
+        }
+      ],
+      "origin": "real cargo update resolver output; not manually edited",
+      "native_windows_qualified": false
+    },
+    {
+      "package": "rustls-platform-verifier",
+      "version_unchanged": "0.7.1",
+      "checksum_unchanged": "1167586491e2b18b8bfbb293e8180ec17c201c4f076d7cb3070ca964e7598f98",
+      "old_edge": "windows-sys 0.52.0",
+      "new_edge": "windows-sys 0.59.0",
+      "declared_dependencies": [
+        {
+          "requirement": ">=0.52.0, <0.62.0",
+          "target": "cfg(windows)",
+          "features": [
+            "Win32_Foundation",
+            "Win32_Security_Cryptography"
+          ],
+          "uses_default_features": false,
+          "optional": false,
+          "kind": null
+        }
+      ],
+      "origin": "real cargo update resolver output; not manually edited",
+      "native_windows_qualified": false
+    },
+    {
+      "package": "tempfile",
+      "version_unchanged": "3.27.0",
+      "checksum_unchanged": "32497e9a4c7b38532efcdebeef879707aa9f794296a4f0244f6f69e9bc8574bd",
+      "old_edge": "windows-sys 0.52.0",
+      "new_edge": "windows-sys 0.59.0",
+      "declared_dependencies": [
+        {
+          "requirement": ">=0.52, <0.62",
+          "target": "cfg(windows)",
+          "features": [
+            "Win32_Storage_FileSystem",
+            "Win32_Foundation"
+          ],
+          "uses_default_features": true,
+          "optional": false,
+          "kind": null
+        }
+      ],
+      "origin": "real cargo update resolver output; not manually edited",
+      "native_windows_qualified": false
+    },
+    {
+      "package": "winapi-util",
+      "version_unchanged": "0.1.11",
+      "checksum_unchanged": "c2a7b1c03c876122aa43f3020e6c3c3ee5c05081c9a00739faf7503aeba10d22",
+      "old_edge": "windows-sys 0.52.0",
+      "new_edge": "windows-sys 0.59.0",
+      "declared_dependencies": [
+        {
+          "requirement": ">=0.48.0, <=0.61",
+          "target": "cfg(windows)",
+          "features": [
+            "Win32_Foundation",
+            "Win32_Storage_FileSystem",
+            "Win32_System_Console",
+            "Win32_System_SystemInformation"
+          ],
+          "uses_default_features": true,
+          "optional": false,
+          "kind": null
+        }
+      ],
+      "origin": "real cargo update resolver output; not manually edited",
+      "native_windows_qualified": false
+    }
+  ]
+}

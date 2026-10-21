@@ -1,0 +1,14 @@
+[
+  {
+    "sha": "dc6ae36263e1aab8c5c83e13649892ae9d3112c2",
+    "filename": "codex-rs/hepta-memory/src/cognitive_store_tests.rs",
+    "status": "modified",
+    "additions": 2,
+    "deletions": 2,
+    "changes": 4,
+    "blob_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/4290ec6480944af84646e8846dfe5e3dc5e73f81/codex-rs%2Fhepta-memory%2Fsrc%2Fcognitive_store_tests.rs",
+    "raw_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/raw/4290ec6480944af84646e8846dfe5e3dc5e73f81/codex-rs%2Fhepta-memory%2Fsrc%2Fcognitive_store_tests.rs",
+    "contents_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/contents/codex-rs%2Fhepta-memory%2Fsrc%2Fcognitive_store_tests.rs?ref=4290ec6480944af84646e8846dfe5e3dc5e73f81",
+    "patch": "@@ -1093,11 +1093,11 @@ async fn v2_fixture_migrates_forward_preserving_memory_and_revoking_legacy_proje\n     }\n     assert_eq!(\n         sqlx::query_scalar::<_, String>(\n-            \"SELECT group_concat(version, ',') FROM _sqlx_migrations ORDER BY version\",\n+            \"SELECT group_concat(version, ',') FROM (SELECT version FROM _sqlx_migrations ORDER BY version)\",\n         )\n         .fetch_one(&migrated.pool)\n         .await\n         .expect(\"migration ledger\"),\n-        \"1,2,3,4,5,6,7,8,9,10,11,12,13,14\"\n+        \"1,2,3,4,5,6,7,8,9,10,11,12,13,14,15\"\n     );\n }"
+  }
+]

@@ -1,0 +1,283 @@
+{
+  "observed_utc": "2026-10-21T01:37:29.442825+00:00",
+  "host": "aca3bc6a1853",
+  "kernel": "Linux-6.18.55-x86_64-with-glibc2.39",
+  "cpu_count": 9,
+  "memory": {
+    "MemTotal": "10206484 kB",
+    "MemAvailable": "5840600 kB",
+    "SwapTotal": "0 kB",
+    "SwapFree": "0 kB"
+  },
+  "disk": {
+    "total": 33770192896,
+    "used": 30234238976,
+    "free": 1801191424
+  },
+  "observer": "read-only approved host process view; command-line arguments omitted to avoid credentials",
+  "visible_hepta_or_task_processes": [
+    {
+      "pid": 720674,
+      "ppid": 720671,
+      "comm": "python",
+      "cwd": "/workspace/scratch/337c309bc660",
+      "state": "R (running)",
+      "rss": "11028 kB"
+    }
+  ],
+  "other_matching_process_count": 2,
+  "process_visibility_limit": "Process namespaces and asynchronous snapshots differ; this is not an inventory of inaccessible cloud/SSH hosts. Active commands are attributed by per-command receipts.",
+  "repositories": [
+    {
+      "path": "/workspace/scratch/337c309bc660/hepta-work",
+      "head": {
+        "command": [
+          "git",
+          "--no-replace-objects",
+          "rev-parse",
+          "HEAD"
+        ],
+        "exit_code": 0,
+        "stdout": "b11459f46519e814ab9036c34a0cd7d3c3028e2b\n",
+        "stderr": ""
+      },
+      "branch": {
+        "command": [
+          "git",
+          "branch",
+          "--show-current"
+        ],
+        "exit_code": 0,
+        "stdout": "agents/hepta-p0-provenance-clippy-20261021\n",
+        "stderr": ""
+      },
+      "status": {
+        "command": [
+          "git",
+          "--no-optional-locks",
+          "-c",
+          "core.fsmonitor=false",
+          "status",
+          "--porcelain=v1"
+        ],
+        "exit_code": 0,
+        "stdout": "",
+        "stderr": ""
+      },
+      "worktrees": {
+        "command": [
+          "git",
+          "worktree",
+          "list",
+          "--porcelain"
+        ],
+        "exit_code": 0,
+        "stdout": "worktree /workspace/scratch/337c309bc660/hepta-work\nHEAD b11459f46519e814ab9036c34a0cd7d3c3028e2b\nbranch refs/heads/agents/hepta-p0-provenance-clippy-20261021\n\n",
+        "stderr": ""
+      }
+    },
+    {
+      "path": "/workspace/scratch/337c309bc660/hepta-reader-work",
+      "head": {
+        "command": [
+          "git",
+          "--no-replace-objects",
+          "rev-parse",
+          "HEAD"
+        ],
+        "exit_code": 0,
+        "stdout": "ca2768978429a2c9a98641fa2d58a8f587b88874\n",
+        "stderr": ""
+      },
+      "branch": {
+        "command": [
+          "git",
+          "branch",
+          "--show-current"
+        ],
+        "exit_code": 0,
+        "stdout": "agents/hepta-reader-evidence-bindings-20261021\n",
+        "stderr": ""
+      },
+      "status": {
+        "command": [
+          "git",
+          "--no-optional-locks",
+          "-c",
+          "core.fsmonitor=false",
+          "status",
+          "--porcelain=v1"
+        ],
+        "exit_code": 0,
+        "stdout": "",
+        "stderr": ""
+      },
+      "worktrees": {
+        "command": [
+          "git",
+          "worktree",
+          "list",
+          "--porcelain"
+        ],
+        "exit_code": 0,
+        "stdout": "worktree /workspace/scratch/337c309bc660/hepta-reader-work\nHEAD ca2768978429a2c9a98641fa2d58a8f587b88874\nbranch refs/heads/agents/hepta-reader-evidence-bindings-20261021\n\n",
+        "stderr": ""
+      }
+    },
+    {
+      "path": "/workspace/scratch/337c309bc660/hepta-native-qualification",
+      "head": {
+        "command": [
+          "git",
+          "--no-replace-objects",
+          "rev-parse",
+          "HEAD"
+        ],
+        "exit_code": 0,
+        "stdout": "6b074e52621d77338112f02119beb0cb1a6f869f\n",
+        "stderr": ""
+      },
+      "branch": {
+        "command": [
+          "git",
+          "branch",
+          "--show-current"
+        ],
+        "exit_code": 0,
+        "stdout": "",
+        "stderr": ""
+      },
+      "status": {
+        "command": [
+          "git",
+          "--no-optional-locks",
+          "-c",
+          "core.fsmonitor=false",
+          "status",
+          "--porcelain=v1"
+        ],
+        "exit_code": 0,
+        "stdout": " M MODULE.bazel.lock\n M codex-rs/Cargo.lock\n M codex-rs/hepta-memory/src/cognitive_store_tests.rs\n",
+        "stderr": ""
+      },
+      "worktrees": {
+        "command": [
+          "git",
+          "worktree",
+          "list",
+          "--porcelain"
+        ],
+        "exit_code": 0,
+        "stdout": "worktree /workspace/scratch/337c309bc660/hepta-native-qualification\nHEAD 6b074e52621d77338112f02119beb0cb1a6f869f\ndetached\n\n",
+        "stderr": ""
+      }
+    },
+    {
+      "path": "/workspace/scratch/e406fbe9a892/hepta-work",
+      "head": {
+        "command": [
+          "git",
+          "--no-replace-objects",
+          "rev-parse",
+          "HEAD"
+        ],
+        "exit_code": 0,
+        "stdout": "74bbcc9b0bb330649cd54d9881ae3676d3968bae\n",
+        "stderr": ""
+      },
+      "branch": {
+        "command": [
+          "git",
+          "branch",
+          "--show-current"
+        ],
+        "exit_code": 0,
+        "stdout": "agents/20261020/stem-workflow-format\n",
+        "stderr": ""
+      },
+      "status": {
+        "command": [
+          "git",
+          "--no-optional-locks",
+          "-c",
+          "core.fsmonitor=false",
+          "status",
+          "--porcelain=v1"
+        ],
+        "exit_code": 0,
+        "stdout": "?? .github/workflows/hepta-neuron-signed-admission.yml\n?? codex-rs/hepta-infer-worker-host/src/bin/hepta-neuron-microbatch-qualification.rs\n?? codex-rs/hepta-infer-worker-host/src/neuron_microbatch.rs\n?? codex-rs/hepta-infer-worker-host/src/neuron_microbatch_tests.rs\n?? codex-rs/hepta-neuron/src/metrics.rs\n?? codex-rs/hepta-neuron/src/metrics_tests.rs\n",
+        "stderr": ""
+      },
+      "worktrees": {
+        "command": [
+          "git",
+          "worktree",
+          "list",
+          "--porcelain"
+        ],
+        "exit_code": 0,
+        "stdout": "worktree /workspace/scratch/e406fbe9a892/hepta-work\nHEAD 74bbcc9b0bb330649cd54d9881ae3676d3968bae\nbranch refs/heads/agents/20261020/stem-workflow-format\n\nworktree /workspace/scratch/e406fbe9a892/hepta-memory-work\nHEAD 6b4189a6d48b53e9fc6b74d903c45ed497c4302e\nbranch refs/heads/agents/20261020/memory-assessment-census\n\n",
+        "stderr": ""
+      }
+    },
+    {
+      "path": "/workspace/scratch/e406fbe9a892/hepta-memory-work",
+      "head": {
+        "command": [
+          "git",
+          "--no-replace-objects",
+          "rev-parse",
+          "HEAD"
+        ],
+        "exit_code": 0,
+        "stdout": "6b4189a6d48b53e9fc6b74d903c45ed497c4302e\n",
+        "stderr": ""
+      },
+      "branch": {
+        "command": [
+          "git",
+          "branch",
+          "--show-current"
+        ],
+        "exit_code": 0,
+        "stdout": "agents/20261020/memory-assessment-census\n",
+        "stderr": ""
+      },
+      "status": {
+        "command": [
+          "git",
+          "--no-optional-locks",
+          "-c",
+          "core.fsmonitor=false",
+          "status",
+          "--porcelain=v1"
+        ],
+        "exit_code": 0,
+        "stdout": "?? codex-rs/keyring-store/tests/secret_service.rs\n?? patches/zstd-sys_windows_msvc_include_dirs.patch\n",
+        "stderr": ""
+      },
+      "worktrees": {
+        "command": [
+          "git",
+          "worktree",
+          "list",
+          "--porcelain"
+        ],
+        "exit_code": 0,
+        "stdout": "worktree /workspace/scratch/e406fbe9a892/hepta-work\nHEAD 74bbcc9b0bb330649cd54d9881ae3676d3968bae\nbranch refs/heads/agents/20261020/stem-workflow-format\n\nworktree /workspace/scratch/e406fbe9a892/hepta-memory-work\nHEAD 6b4189a6d48b53e9fc6b74d903c45ed497c4302e\nbranch refs/heads/agents/20261020/memory-assessment-census\n\n",
+        "stderr": ""
+      }
+    }
+  ],
+  "remote_workstation": "NOT_ACCESSIBLE: no verified dedicated SSH or Dot cloud endpoint available in this session",
+  "gpu_device_paths": [],
+  "tools_available": {
+    "ssh": "/usr/bin/ssh",
+    "nvidia-smi": null,
+    "docker": null,
+    "kubectl": null,
+    "tmux": null,
+    "screen": null,
+    "gh": null
+  }
+}

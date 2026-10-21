@@ -1,0 +1,93 @@
+{
+  "schema": "hepta.lock-independent-review.v1",
+  "observed_utc": "2026-10-21T01:29:03.284370+00:00",
+  "reviewer": "root",
+  "base": "0cb777545966333a96be265a69d03c9982231bc7",
+  "combined_parent_tree": "cc6170562020d8271196cbdf9d0e71fde7955ded",
+  "files": {
+    "codex-rs/Cargo.lock": "aa3efcad4d26d4ba8d5b8adbea793955acef36551f00da43ef7b03bbab3bfb5a",
+    "MODULE.bazel.lock": "394f5d9cdcc1d9c96cebc357ad4635a01f0fa80f2e76a4d6665989343352f3ea"
+  },
+  "cargo_packages_before": 1516,
+  "cargo_packages_after": 1516,
+  "cargo_changes": [
+    {
+      "name": "arboard",
+      "version": "3.7.0",
+      "kind": "windows_sys_edge_0.52_to_0.59"
+    },
+    {
+      "name": "errno",
+      "version": "0.3.14",
+      "kind": "windows_sys_edge_0.52_to_0.59"
+    },
+    {
+      "name": "is-terminal",
+      "version": "0.4.17",
+      "kind": "windows_sys_edge_0.52_to_0.59"
+    },
+    {
+      "name": "os_pipe",
+      "version": "1.2.3",
+      "kind": "windows_sys_edge_0.52_to_0.59"
+    },
+    {
+      "name": "quinn-udp",
+      "version": "0.5.16",
+      "kind": "windows_sys_edge_0.52_to_0.59"
+    },
+    {
+      "name": "rustix",
+      "version": "1.1.5",
+      "kind": "windows_sys_edge_0.52_to_0.59"
+    },
+    {
+      "name": "rustls-platform-verifier",
+      "version": "0.7.1",
+      "kind": "windows_sys_edge_0.52_to_0.59"
+    },
+    {
+      "name": "rustls-webpki",
+      "kind": "version_checksum"
+    },
+    {
+      "name": "tempfile",
+      "version": "3.27.0",
+      "kind": "windows_sys_edge_0.52_to_0.59"
+    },
+    {
+      "name": "webpki-root-certs",
+      "kind": "version_checksum"
+    },
+    {
+      "name": "webpki-roots",
+      "kind": "version_checksum"
+    },
+    {
+      "name": "winapi-util",
+      "version": "0.1.11",
+      "kind": "windows_sys_edge_0.52_to_0.59"
+    }
+  ],
+  "complete_cargo_structural_comparison_pass": true,
+  "module_lock_format": 28,
+  "module_facts_replaced": [
+    {
+      "name": "rustls-webpki",
+      "old": "0.103.15",
+      "new": "0.103.16"
+    },
+    {
+      "name": "webpki-root-certs",
+      "old": "1.0.9",
+      "new": "1.0.10"
+    },
+    {
+      "name": "webpki-roots",
+      "old": "1.0.9",
+      "new": "1.0.10"
+    }
+  ],
+  "other_module_facts_unchanged": true,
+  "native_windows_qualified": false
+}

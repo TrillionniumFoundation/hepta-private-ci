@@ -1,0 +1,32 @@
+{
+  "source_sha": "f740aaef183e0c1724871189fe1d72fc5204a49d",
+  "tree_sha": "be4f3dcda0bfb63e0d84356b5ccd56d496cfcd89",
+  "command": [
+    "just",
+    "test",
+    "-p",
+    "codex-hepta-memory",
+    "--lib",
+    "--locked"
+  ],
+  "cwd": "/workspace/scratch/337c309bc660/hepta-native-qualification/codex-rs",
+  "started_at": "2026-10-21T00:59:12.279866+00:00",
+  "cargo_lock_sha256_before": "8b458776ce179b326a6f5aef718b302f80fa0af40143bef1d512f0980dd3e0b1",
+  "environment_overrides": {
+    "CARGO_HOME": "/workspace/scratch/337c309bc660/hepta-native-cache",
+    "CARGO_TARGET_DIR": "/workspace/scratch/337c309bc660/hepta-native-target",
+    "CARGO_INCREMENTAL": "0",
+    "CARGO_BUILD_JOBS": "2",
+    "CARGO_PROFILE_DEV_DEBUG": "0",
+    "CARGO_PROFILE_TEST_DEBUG": "0",
+    "CARGO_NET_GIT_FETCH_WITH_CLI": "true"
+  },
+  "free_disk_bytes_before": 7046664192,
+  "status": "FAIL",
+  "finished_at": "2026-10-21T00:59:16.941023+00:00",
+  "duration_seconds": 4.6612374120013556,
+  "exit_code": 101,
+  "cargo_lock_sha256_after": "8b458776ce179b326a6f5aef718b302f80fa0af40143bef1d512f0980dd3e0b1",
+  "cargo_lock_unchanged": true,
+  "free_disk_bytes_after": 6532239360
+}

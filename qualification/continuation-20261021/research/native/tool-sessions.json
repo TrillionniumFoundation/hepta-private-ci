@@ -1,0 +1,31 @@
+{
+  "recorded_at": "2026-10-21T01:29:10.663448+00:00",
+  "tool": "exec_command/write_stdin",
+  "sessions": {
+    "0cb77754-baseline-focus": 19780,
+    "6b074e52-fixed-focus": 45880,
+    "6b074e52-fixed-memory-lib": 58842,
+    "6b074e52-fixed-memory-clippy": 70146,
+    "6b074e52-fixed-cargo-bin-test": 5599,
+    "final-combined-memory-lib": 28939,
+    "final-combined-cargo-bin-test": 72676,
+    "final-combined-memory-clippy": 68880,
+    "final-combined-cargo-bin-clippy": 93496
+  },
+  "process_observation_from_parent": {
+    "observer": "/root privileged proc inspection",
+    "final_memory_test_runner": 708412,
+    "just": 708461,
+    "cargo_nextest": 708637,
+    "cargo": 708674,
+    "rustc": [
+      711226,
+      711832
+    ],
+    "scope": "parent collaboration message independently confirms the running process chain; not a local proc observation"
+  },
+  "earlier_interrupted_session": 65844,
+  "interrupted_session_terminal_status": "UNKNOWN; no exit code or test pass inferred",
+  "f740_completed_test_session": 98445,
+  "f740_completed_clippy_session": 76152
+}

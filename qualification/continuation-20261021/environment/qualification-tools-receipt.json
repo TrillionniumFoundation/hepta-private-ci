@@ -1,0 +1,32 @@
+[
+  {
+    "file": "nextest-0.9.103.tar.gz",
+    "url": "https://github.com/nextest-rs/nextest/releases/download/cargo-nextest-0.9.103/cargo-nextest-0.9.103-x86_64-unknown-linux-gnu.tar.gz",
+    "sha256": "b6b5daad02ddef2d0e1f1114c4cd708f2960fd421a415693f995cef3bef90036",
+    "bytes": 8505974
+  },
+  {
+    "file": "clippy-1.95.0.tar.xz",
+    "url": "https://static.rust-lang.org/dist/2026-04-16/clippy-1.95.0-x86_64-unknown-linux-gnu.tar.xz",
+    "sha256": "ac779bc9839dd47180806b133e4e2563c4a34716284cd5b8fede8ef289f452ca",
+    "bytes": 4697128
+  },
+  {
+    "tool": "cargo-nextest",
+    "exit_code": 0,
+    "stdout": "cargo-nextest 0.9.103 (d2e7b879f 2025-08-25)\nrelease: 0.9.103\ncommit-hash: d2e7b879fb79975e8b47a8e3ce569b651e6381c0\ncommit-date: 2025-08-25\nhost: x86_64-unknown-linux-gnu\n",
+    "stderr": ""
+  },
+  {
+    "tool": "cargo-clippy",
+    "exit_code": 0,
+    "stdout": "clippy 0.1.95 (59807616e1 2026-04-14)\n",
+    "stderr": ""
+  },
+  {
+    "tool": "clippy-driver",
+    "exit_code": 0,
+    "stdout": "clippy 0.1.95 (59807616e1 2026-04-14)\n",
+    "stderr": ""
+  }
+]

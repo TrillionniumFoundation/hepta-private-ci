@@ -1,0 +1,215 @@
+{
+  "schema": "hepta.checkpoint-final-qa.v1",
+  "checked_at_utc": "2026-10-21T01:58:20.455689+00:00",
+  "scope": "Evidence packaging and scoped report consistency only; no new compilation, model inference, remote gate qualification or production promotion",
+  "capsules": [
+    {
+      "path": "inventory",
+      "payload_files": 48,
+      "manifest_sha256": "69f23ebc5cbf32b2ec7c6581930d0eaa990e4f676b3718b792bae66e04c2022c",
+      "physical_set_equals_manifest": true,
+      "all_recorded_sizes_and_sha256_match": true
+    },
+    {
+      "path": "research",
+      "payload_files": 92,
+      "manifest_sha256": "cbf920ad00bfca18e93dbd702e070ea1597d6da73bb4b74eafc869efafb4c015",
+      "physical_set_equals_manifest": true,
+      "all_recorded_sizes_and_sha256_match": true
+    },
+    {
+      "path": "ci",
+      "payload_files": 68,
+      "manifest_sha256": "719d344f04b5626c508fe028458a19805261f2b11f7ff1277811cc2da8fa32e2",
+      "physical_set_equals_manifest": true,
+      "all_recorded_sizes_and_sha256_match": true
+    },
+    {
+      "path": "os/broker-review",
+      "payload_files": 16,
+      "manifest_sha256": "3b109120abf1f0d8596a4ae4cb48dfbe4d51038341f81139aaa87a6f09f6fbab",
+      "physical_set_equals_manifest": true,
+      "all_recorded_sizes_and_sha256_match": true
+    }
+  ],
+  "all_payloads_utf8": true,
+  "each_payload_bytes_less_than": 400000,
+  "json_documents_parsed": 164,
+  "relative_report_links_checked": 37,
+  "relative_report_links": [
+    {
+      "document": "README.md",
+      "target": "RUNNING_TASKS.md"
+    },
+    {
+      "document": "README.md",
+      "target": "BRANCH_PR_DAG.md"
+    },
+    {
+      "document": "README.md",
+      "target": "BLOCKERS.md"
+    },
+    {
+      "document": "README.md",
+      "target": "CI_MATRIX.md"
+    },
+    {
+      "document": "README.md",
+      "target": "checkpoint.json"
+    },
+    {
+      "document": "README.md",
+      "target": "RESEARCH_NEXT_PROTOCOL.md"
+    },
+    {
+      "document": "README.md",
+      "target": "research/RESEARCH_STATE.md"
+    },
+    {
+      "document": "README.md",
+      "target": "os/README.md"
+    },
+    {
+      "document": "README.md",
+      "target": "inventory/README.md"
+    },
+    {
+      "document": "README.md",
+      "target": "ci/README.md"
+    },
+    {
+      "document": "README.md",
+      "target": "PUBLICATION_DELTA.md"
+    },
+    {
+      "document": "README.md",
+      "target": "ci-live-publication.json"
+    },
+    {
+      "document": "README.md",
+      "target": "ci-live-final.json"
+    },
+    {
+      "document": "README.md",
+      "target": "BLOCKERS.md"
+    },
+    {
+      "document": "RUNNING_TASKS.md",
+      "target": "PUBLICATION_DELTA.md"
+    },
+    {
+      "document": "RUNNING_TASKS.md",
+      "target": "environment/runtime-final.json"
+    },
+    {
+      "document": "RUNNING_TASKS.md",
+      "target": "research/native/final-validation-summary.json"
+    },
+    {
+      "document": "RUNNING_TASKS.md",
+      "target": "ci-live-final.json"
+    },
+    {
+      "document": "RUNNING_TASKS.md",
+      "target": "CI_MATRIX.md"
+    },
+    {
+      "document": "RUNNING_TASKS.md",
+      "target": "BLOCKERS.md"
+    },
+    {
+      "document": "BRANCH_PR_DAG.md",
+      "target": "inventory/README.md"
+    },
+    {
+      "document": "BRANCH_PR_DAG.md",
+      "target": "inventory/POST_SNAPSHOT_DELTA.json"
+    },
+    {
+      "document": "BRANCH_PR_DAG.md",
+      "target": "inventory/BRANCH_PR_DAG.md"
+    },
+    {
+      "document": "BRANCH_PR_DAG.md",
+      "target": "inventory/NONDRAFT_GATES.json"
+    },
+    {
+      "document": "BRANCH_PR_DAG.md",
+      "target": "os/README.md"
+    },
+    {
+      "document": "BLOCKERS.md",
+      "target": "PUBLICATION_DELTA.md"
+    },
+    {
+      "document": "BLOCKERS.md",
+      "target": "research/native/final-validation-summary.json"
+    },
+    {
+      "document": "CI_MATRIX.md",
+      "target": "PUBLICATION_DELTA.md"
+    },
+    {
+      "document": "CI_MATRIX.md",
+      "target": "ci-live-final.json"
+    },
+    {
+      "document": "CI_MATRIX.md",
+      "target": "ci/README.md"
+    },
+    {
+      "document": "PUBLICATION_DELTA.md",
+      "target": "ci-live-publication.json"
+    },
+    {
+      "document": "PUBLICATION_DELTA.md",
+      "target": "PUBLICATION_WINDOWS_FAILURES.json"
+    },
+    {
+      "document": "RESEARCH_NEXT_PROTOCOL.md",
+      "target": "research/RESEARCH_STATE.md"
+    },
+    {
+      "document": "os/README.md",
+      "target": "pagination.json"
+    },
+    {
+      "document": "os/README.md",
+      "target": "../ci-live-final.json"
+    },
+    {
+      "document": "os/README.md",
+      "target": "broker-review/README.md"
+    },
+    {
+      "document": "os/README.md",
+      "target": "../ci-live-publication.json"
+    }
+  ],
+  "limited_secret_pattern_findings": [],
+  "secret_scan_scope": [
+    "GitHub personal token prefixes",
+    "AWS AKIA access-key-id pattern",
+    "private-key PEM header"
+  ],
+  "independent_reviews": [
+    {
+      "reviewer": "inventory",
+      "result": "No material report inconsistency or broken links; full Git tree comparison confirms three tested source changes plus report and conservation of 18 owner paths; no qualification expansion"
+    },
+    {
+      "reviewer": "ci_triage",
+      "result": "No stale-head promotion or blanket -D warnings claim; native receipt/hash/count verification passed; cargo-deny argv and original source identity clarified in checkpoint"
+    }
+  ],
+  "publication_recheck": "ci-live-publication.json",
+  "evidence_boundary": "The original timestamped reports, failure receipts, omissions, ignored tests and inaccessible environments remain explicit; this QA does not certify all repository semantics or secrets absence",
+  "final_packaging_checked_at_utc": "2026-10-21T02:04:56.930225+00:00",
+  "late_windows_evidence": {
+    "path": "PUBLICATION_WINDOWS_FAILURES.json",
+    "sha256": "4f0a2954da496ead81bc24ea18293bd1246c8b9125651a4063963adcea3ea96a",
+    "source_and_actual_merge_identity_checked": true,
+    "bazel_target_aggregate_arithmetic_checked": true,
+    "full_raw_logs_in_checkpoint": false
+  }
+}

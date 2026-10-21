@@ -1,0 +1,2422 @@
+{
+  "ahead_by": 306,
+  "base": "995b6fb9ef73ada7c3348b01deb28940a2c4a2d1",
+  "behind_by": 0,
+  "collected_at_utc": "2026-10-21T00:46:01.104Z",
+  "file_list_scope": "Tool-returned file statistics; completeness beyond API/tool limits is not asserted. This is not semantic equivalence or current-head CI evidence.",
+  "files_returned": [
+    {
+      "additions": 6,
+      "changes": 6,
+      "deletions": 0,
+      "filename": ".bazelrc",
+      "previous_filename": null,
+      "status": "modified"
+    },
+    {
+      "additions": 1,
+      "changes": 2,
+      "deletions": 1,
+      "filename": ".github/actions/run-argument-comment-lint/action.yml",
+      "previous_filename": null,
+      "status": "modified"
+    },
+    {
+      "additions": 9,
+      "changes": 9,
+      "deletions": 0,
+      "filename": ".github/scripts/test_v8_canary_changes.py",
+      "previous_filename": null,
+      "status": "modified"
+    },
+    {
+      "additions": 1,
+      "changes": 1,
+      "deletions": 0,
+      "filename": ".github/scripts/v8_canary_changes.py",
+      "previous_filename": null,
+      "status": "modified"
+    },
+    {
+      "additions": 7,
+      "changes": 12,
+      "deletions": 5,
+      "filename": ".github/workflows/bazel.yml",
+      "previous_filename": null,
+      "status": "modified"
+    },
+    {
+      "additions": 6,
+      "changes": 7,
+      "deletions": 1,
+      "filename": ".github/workflows/blocking-ci.yml",
+      "previous_filename": null,
+      "status": "modified"
+    },
+    {
+      "additions": 6,
+      "changes": 10,
+      "deletions": 4,
+      "filename": ".github/workflows/cargo-deny.yml",
+      "previous_filename": null,
+      "status": "modified"
+    },
+    {
+      "additions": 1,
+      "changes": 2,
+      "deletions": 1,
+      "filename": ".github/workflows/hepta-architecture-convergence.yml",
+      "previous_filename": null,
+      "status": "modified"
+    },
+    {
+      "additions": 2,
+      "changes": 4,
+      "deletions": 2,
+      "filename": ".github/workflows/hepta-consolidated-source.yml",
+      "previous_filename": null,
+      "status": "modified"
+    },
+    {
+      "additions": 133,
+      "changes": 133,
+      "deletions": 0,
+      "filename": ".github/workflows/hepta-exec-authorized-read-compat.yml",
+      "previous_filename": null,
+      "status": "added"
+    },
+    {
+      "additions": 83,
+      "changes": 83,
+      "deletions": 0,
+      "filename": ".github/workflows/hepta-keyring-sync-advisory.yml",
+      "previous_filename": null,
+      "status": "added"
+    },
+    {
+      "additions": 1,
+      "changes": 2,
+      "deletions": 1,
+      "filename": ".github/workflows/hepta-knowledge-graph-qualification.yml",
+      "previous_filename": null,
+      "status": "modified"
+    },
+    {
+      "additions": 1,
+      "changes": 2,
+      "deletions": 1,
+      "filename": ".github/workflows/hepta-objective-product-composition.yml",
+      "previous_filename": null,
+      "status": "modified"
+    },
+    {
+      "additions": 173,
+      "changes": 173,
+      "deletions": 0,
+      "filename": ".github/workflows/hepta-supervisor-p0-crossplatform.yml",
+      "previous_filename": null,
+      "status": "added"
+    },
+    {
+      "additions": 1,
+      "changes": 2,
+      "deletions": 1,
+      "filename": ".github/workflows/hepta-vnext-qualification.yml",
+      "previous_filename": null,
+      "status": "modified"
+    },
+    {
+      "additions": 169,
+      "changes": 169,
+      "deletions": 0,
+      "filename": ".github/workflows/hepta-windows-federation-revoke.yml",
+      "previous_filename": null,
+      "status": "added"
+    },
+    {
+      "additions": 104,
+      "changes": 104,
+      "deletions": 0,
+      "filename": ".github/workflows/hepta-windows-private-state-native.yml",
+      "previous_filename": null,
+      "status": "added"
+    },
+    {
+      "additions": 2,
+      "changes": 4,
+      "deletions": 2,
+      "filename": ".github/workflows/rust-ci-full-nextest-platform.yml",
+      "previous_filename": null,
+      "status": "modified"
+    },
+    {
+      "additions": 2,
+      "changes": 4,
+      "deletions": 2,
+      "filename": ".github/workflows/rust-ci-full.yml",
+      "previous_filename": null,
+      "status": "modified"
+    },
+    {
+      "additions": 1,
+      "changes": 2,
+      "deletions": 1,
+      "filename": ".github/workflows/rust-release.yml",
+      "previous_filename": null,
+      "status": "modified"
+    },
+    {
+      "additions": 1,
+      "changes": 2,
+      "deletions": 1,
+      "filename": ".github/workflows/sdk.yml",
+      "previous_filename": null,
+      "status": "modified"
+    },
+    {
+      "additions": 4,
+      "changes": 7,
+      "deletions": 3,
+      "filename": ".github/workflows/v8-canary.yml",
+      "previous_filename": null,
+      "status": "modified"
+    },
+    {
+      "additions": 15,
+      "changes": 16,
+      "deletions": 1,
+      "filename": "AGENTS.md",
+      "previous_filename": null,
+      "status": "modified"
+    },
+    {
+      "additions": 20,
+      "changes": 28,
+      "deletions": 8,
+      "filename": "MODULE.bazel",
+      "previous_filename": null,
+      "status": "modified"
+    },
+    {
+      "additions": 498,
+      "changes": 926,
+      "deletions": 428,
+      "filename": "MODULE.bazel.lock",
+      "previous_filename": null,
+      "status": "modified"
+    },
+    {
+      "additions": 7,
+      "changes": 7,
+      "deletions": 0,
+      "filename": "README.md",
+      "previous_filename": null,
+      "status": "modified"
+    },
+    {
+      "additions": 60,
+      "changes": 80,
+      "deletions": 20,
+      "filename": "apps/hepta-browser/scripts/journal-scale-probe.js",
+      "previous_filename": null,
+      "status": "modified"
+    },
+    {
+      "additions": 59,
+      "changes": 102,
+      "deletions": 43,
+      "filename": "apps/hepta-browser/scripts/linux-sandbox-probe.js",
+      "previous_filename": null,
+      "status": "modified"
+    },
+    {
+      "additions": 17,
+      "changes": 27,
+      "deletions": 10,
+      "filename": "apps/hepta-browser/scripts/real-worker-smoke.js",
+      "previous_filename": null,
+      "status": "modified"
+    },
+    {
+      "additions": 90,
+      "changes": 109,
+      "deletions": 19,
+      "filename": "apps/hepta-browser/src/action.js",
+      "previous_filename": null,
+      "status": "modified"
+    },
+    {
+      "additions": 28,
+      "changes": 37,
+      "deletions": 9,
+      "filename": "apps/hepta-browser/src/agentd-protocol.js",
+      "previous_filename": null,
+      "status": "modified"
+    },
+    {
+      "additions": 14,
+      "changes": 18,
+      "deletions": 4,
+      "filename": "apps/hepta-browser/src/agentd-service-main.js",
+      "previous_filename": null,
+      "status": "modified"
+    },
+    {
+      "additions": 53,
+      "changes": 69,
+      "deletions": 16,
+      "filename": "apps/hepta-browser/src/agentd-service.js",
+      "previous_filename": null,
+      "status": "modified"
+    },
+    {
+      "additions": 21,
+      "changes": 26,
+      "deletions": 5,
+      "filename": "apps/hepta-browser/src/bridge.js",
+      "previous_filename": null,
+      "status": "modified"
+    },
+    {
+      "additions": 12,
+      "changes": 22,
+      "deletions": 10,
+      "filename": "apps/hepta-browser/src/browser.js",
+      "previous_filename": null,
+      "status": "modified"
+    },
+    {
+      "additions": 71,
+      "changes": 92,
+      "deletions": 21,
+      "filename": "apps/hepta-browser/src/journal.js",
+      "previous_filename": null,
+      "status": "modified"
+    },
+    {
+      "additions": 19,
+      "changes": 23,
+      "deletions": 4,
+      "filename": "apps/hepta-browser/src/runtime-boundary.js",
+      "previous_filename": null,
+      "status": "modified"
+    },
+    {
+      "additions": 64,
+      "changes": 80,
+      "deletions": 16,
+      "filename": "apps/hepta-browser/src/runtime-contract.js",
+      "previous_filename": null,
+      "status": "modified"
+    },
+    {
+      "additions": 138,
+      "changes": 182,
+      "deletions": 44,
+      "filename": "apps/hepta-browser/src/runtime-host.js",
+      "previous_filename": null,
+      "status": "modified"
+    },
+    {
+      "additions": 182,
+      "changes": 249,
+      "deletions": 67,
+      "filename": "apps/hepta-browser/src/worker-driver.js",
+      "previous_filename": null,
+      "status": "modified"
+    },
+    {
+      "additions": 30,
+      "changes": 39,
+      "deletions": 9,
+      "filename": "apps/hepta-browser/src/worker-protocol.js",
+      "previous_filename": null,
+      "status": "modified"
+    },
+    {
+      "additions": 18,
+      "changes": 22,
+      "deletions": 4,
+      "filename": "apps/hepta-browser/test/agentd-service.test.js",
+      "previous_filename": null,
+      "status": "modified"
+    },
+    {
+      "additions": 10,
+      "changes": 25,
+      "deletions": 15,
+      "filename": "apps/hepta-browser/test/browser.test.js",
+      "previous_filename": null,
+      "status": "modified"
+    },
+    {
+      "additions": 101,
+      "changes": 127,
+      "deletions": 26,
+      "filename": "apps/hepta-browser/test/journal-durability.test.js",
+      "previous_filename": null,
+      "status": "modified"
+    },
+    {
+      "additions": 130,
+      "changes": 167,
+      "deletions": 37,
+      "filename": "apps/hepta-browser/test/journal-monotonicity.test.js",
+      "previous_filename": null,
+      "status": "modified"
+    },
+    {
+      "additions": 11,
+      "changes": 18,
+      "deletions": 7,
+      "filename": "apps/hepta-browser/test/journal.test.js",
+      "previous_filename": null,
+      "status": "modified"
+    },
+    {
+      "additions": 61,
+      "changes": 79,
+      "deletions": 18,
+      "filename": "apps/hepta-browser/test/runtime.test.js",
+      "previous_filename": null,
+      "status": "modified"
+    },
+    {
+      "additions": 34,
+      "changes": 42,
+      "deletions": 8,
+      "filename": "apps/hepta-browser/test/worker-driver.test.js",
+      "previous_filename": null,
+      "status": "modified"
+    },
+    {
+      "additions": 4,
+      "changes": 5,
+      "deletions": 1,
+      "filename": "apps/hepta-browser/test/worker-protocol.test.js",
+      "previous_filename": null,
+      "status": "modified"
+    },
+    {
+      "additions": 6,
+      "changes": 8,
+      "deletions": 2,
+      "filename": "apps/hepta-control-ui/src/control.js",
+      "previous_filename": null,
+      "status": "modified"
+    },
+    {
+      "additions": 20,
+      "changes": 25,
+      "deletions": 5,
+      "filename": "apps/hepta-control-ui/src/runtime-client.js",
+      "previous_filename": null,
+      "status": "modified"
+    },
+    {
+      "additions": 1,
+      "changes": 3,
+      "deletions": 2,
+      "filename": "apps/hepta-control-ui/test/control.test.js",
+      "previous_filename": null,
+      "status": "modified"
+    },
+    {
+      "additions": 4,
+      "changes": 5,
+      "deletions": 1,
+      "filename": "apps/hepta-control-ui/test/runtime-client.test.js",
+      "previous_filename": null,
+      "status": "modified"
+    },
+    {
+      "additions": 8,
+      "changes": 15,
+      "deletions": 7,
+      "filename": "apps/hepta-native/src/native.js",
+      "previous_filename": null,
+      "status": "modified"
+    },
+    {
+      "additions": 36,
+      "changes": 45,
+      "deletions": 9,
+      "filename": "apps/hepta-native/src/shell-runtime.js",
+      "previous_filename": null,
+      "status": "modified"
+    },
+    {
+      "additions": 14,
+      "changes": 19,
+      "deletions": 5,
+      "filename": "apps/hepta-native/test/native.test.js",
+      "previous_filename": null,
+      "status": "modified"
+    },
+    {
+      "additions": 17,
+      "changes": 21,
+      "deletions": 4,
+      "filename": "apps/hepta-native/test/shell-runtime.test.js",
+      "previous_filename": null,
+      "status": "modified"
+    },
+    {
+      "additions": 5,
+      "changes": 5,
+      "deletions": 0,
+      "filename": "bazel/rules/BUILD.bazel",
+      "previous_filename": null,
+      "status": "modified"
+    },
+    {
+      "additions": 89,
+      "changes": 89,
+      "deletions": 0,
+      "filename": "bazel/rules/crate_aliases.bzl",
+      "previous_filename": null,
+      "status": "added"
+    },
+    {
+      "additions": 219,
+      "changes": 219,
+      "deletions": 0,
+      "filename": "bazel/rules/crate_aliases_test.bzl",
+      "previous_filename": null,
+      "status": "added"
+    },
+    {
+      "additions": 1,
+      "changes": 2,
+      "deletions": 1,
+      "filename": "bazel/toolchains/prost/BUILD.bazel",
+      "previous_filename": null,
+      "status": "modified"
+    },
+    {
+      "additions": 2,
+      "changes": 3,
+      "deletions": 1,
+      "filename": "codex-rs/.cargo/audit.toml",
+      "previous_filename": null,
+      "status": "modified"
+    },
+    {
+      "additions": 3,
+      "changes": 5,
+      "deletions": 2,
+      "filename": "codex-rs/.config/nextest.toml",
+      "previous_filename": null,
+      "status": "modified"
+    },
+    {
+      "additions": 2181,
+      "changes": 4640,
+      "deletions": 2459,
+      "filename": "codex-rs/Cargo.lock",
+      "previous_filename": null,
+      "status": "modified"
+    },
+    {
+      "additions": 12,
+      "changes": 15,
+      "deletions": 3,
+      "filename": "codex-rs/Cargo.toml",
+      "previous_filename": null,
+      "status": "modified"
+    },
+    {
+      "additions": 8,
+      "changes": 8,
+      "deletions": 0,
+      "filename": "codex-rs/app-server-transport/src/transport/remote_control/enroll.rs",
+      "previous_filename": null,
+      "status": "modified"
+    },
+    {
+      "additions": 8,
+      "changes": 8,
+      "deletions": 0,
+      "filename": "codex-rs/app-server-transport/src/transport/remote_control/tests.rs",
+      "previous_filename": null,
+      "status": "modified"
+    },
+    {
+      "additions": 8,
+      "changes": 8,
+      "deletions": 0,
+      "filename": "codex-rs/app-server-transport/src/transport/remote_control/websocket.rs",
+      "previous_filename": null,
+      "status": "modified"
+    },
+    {
+      "additions": 17,
+      "changes": 17,
+      "deletions": 0,
+      "filename": "codex-rs/app-server-transport/src/transport/unix_socket.rs",
+      "previous_filename": null,
+      "status": "modified"
+    },
+    {
+      "additions": 29,
+      "changes": 29,
+      "deletions": 0,
+      "filename": "codex-rs/app-server-transport/src/transport/unix_socket_peer_tests.rs",
+      "previous_filename": null,
+      "status": "added"
+    },
+    {
+      "additions": 38,
+      "changes": 38,
+      "deletions": 0,
+      "filename": "codex-rs/app-server-transport/src/transport/unix_socket_tests.rs",
+      "previous_filename": null,
+      "status": "modified"
+    },
+    {
+      "additions": 1,
+      "changes": 2,
+      "deletions": 1,
+      "filename": "codex-rs/cli/src/hepta.rs",
+      "previous_filename": null,
+      "status": "modified"
+    },
+    {
+      "additions": 2,
+      "changes": 2,
+      "deletions": 0,
+      "filename": "codex-rs/cli/src/lib.rs",
+      "previous_filename": null,
+      "status": "modified"
+    },
+    {
+      "additions": 2,
+      "changes": 4984,
+      "deletions": 4982,
+      "filename": "codex-rs/cli/src/main.rs",
+      "previous_filename": null,
+      "status": "modified"
+    },
+    {
+      "additions": 4983,
+      "changes": 4983,
+      "deletions": 0,
+      "filename": "codex-rs/cli/src/main_impl.rs",
+      "previous_filename": null,
+      "status": "added"
+    },
+    {
+      "additions": 8,
+      "changes": 8,
+      "deletions": 0,
+      "filename": "codex-rs/code-mode-runtime/src/runtime/mod.rs",
+      "previous_filename": null,
+      "status": "modified"
+    },
+    {
+      "additions": 2,
+      "changes": 2,
+      "deletions": 0,
+      "filename": "codex-rs/code-mode-runtime/src/v8_init.rs",
+      "previous_filename": null,
+      "status": "modified"
+    },
+    {
+      "additions": 54,
+      "changes": 54,
+      "deletions": 0,
+      "filename": "codex-rs/code-mode-runtime/tests/parallel_initialization.rs",
+      "previous_filename": null,
+      "status": "added"
+    },
+    {
+      "additions": 1,
+      "changes": 2,
+      "deletions": 1,
+      "filename": "codex-rs/core-plugins/src/command_migration.rs",
+      "previous_filename": null,
+      "status": "modified"
+    },
+    {
+      "additions": 4,
+      "changes": 5,
+      "deletions": 1,
+      "filename": "codex-rs/core-plugins/src/plugin_metrics.rs",
+      "previous_filename": null,
+      "status": "modified"
+    },
+    {
+      "additions": 2,
+      "changes": 3,
+      "deletions": 1,
+      "filename": "codex-rs/core-plugins/src/script_attribution_tests.rs",
+      "previous_filename": null,
+      "status": "modified"
+    },
+    {
+      "additions": 46,
+      "changes": 60,
+      "deletions": 14,
+      "filename": "codex-rs/core-plugins/src/startup_sync.rs",
+      "previous_filename": null,
+      "status": "modified"
+    },
+    {
+      "additions": 119,
+      "changes": 119,
+      "deletions": 0,
+      "filename": "codex-rs/core-plugins/src/startup_sync_tests.rs",
+      "previous_filename": null,
+      "status": "modified"
+    },
+    {
+      "additions": 18,
+      "changes": 18,
+      "deletions": 0,
+      "filename": "codex-rs/core/src/codex_thread.rs",
+      "previous_filename": null,
+      "status": "modified"
+    },
+    {
+      "additions": 8,
+      "changes": 11,
+      "deletions": 3,
+      "filename": "codex-rs/core/src/environment_selection.rs",
+      "previous_filename": null,
+      "status": "modified"
+    },
+    {
+      "additions": 6,
+      "changes": 6,
+      "deletions": 0,
+      "filename": "codex-rs/core/src/guardian/review_session.rs",
+      "previous_filename": null,
+      "status": "modified"
+    },
+    {
+      "additions": 15,
+      "changes": 15,
+      "deletions": 0,
+      "filename": "codex-rs/core/src/session/tests.rs",
+      "previous_filename": null,
+      "status": "modified"
+    },
+    {
+      "additions": 82,
+      "changes": 82,
+      "deletions": 0,
+      "filename": "codex-rs/core/src/tasks/idle_work.rs",
+      "previous_filename": null,
+      "status": "added"
+    },
+    {
+      "additions": 54,
+      "changes": 54,
+      "deletions": 0,
+      "filename": "codex-rs/core/src/tasks/idle_work_tests.rs",
+      "previous_filename": null,
+      "status": "added"
+    },
+    {
+      "additions": 2,
+      "changes": 2,
+      "deletions": 0,
+      "filename": "codex-rs/core/src/tasks/mod.rs",
+      "previous_filename": null,
+      "status": "modified"
+    },
+    {
+      "additions": 25,
+      "changes": 25,
+      "deletions": 0,
+      "filename": "codex-rs/core/src/tasks/terminalization_completion.rs",
+      "previous_filename": null,
+      "status": "added"
+    },
+    {
+      "additions": 7,
+      "changes": 7,
+      "deletions": 0,
+      "filename": "codex-rs/deny.toml",
+      "previous_filename": null,
+      "status": "modified"
+    },
+    {
+      "additions": 9,
+      "changes": 9,
+      "deletions": 0,
+      "filename": "codex-rs/exec-server/src/server/file_system_handler.rs",
+      "previous_filename": null,
+      "status": "modified"
+    },
+    {
+      "additions": 9,
+      "changes": 9,
+      "deletions": 0,
+      "filename": "codex-rs/exec-server/tests/authorized_read_rpc.rs",
+      "previous_filename": null,
+      "status": "modified"
+    },
+    {
+      "additions": 14,
+      "changes": 14,
+      "deletions": 0,
+      "filename": "codex-rs/ext/goal/src/extension.rs",
+      "previous_filename": null,
+      "status": "modified"
+    },
+    {
+      "additions": 12,
+      "changes": 21,
+      "deletions": 9,
+      "filename": "codex-rs/ext/hepta-memory/src/cognitive/federation.rs",
+      "previous_filename": null,
+      "status": "modified"
+    },
+    {
+      "additions": 1,
+      "changes": 1,
+      "deletions": 0,
+      "filename": "codex-rs/ext/hepta-memory/src/cognitive/mod.rs",
+      "previous_filename": null,
+      "status": "modified"
+    },
+    {
+      "additions": 18,
+      "changes": 18,
+      "deletions": 0,
+      "filename": "codex-rs/ext/queue/src/service.rs",
+      "previous_filename": null,
+      "status": "modified"
+    },
+    {
+      "additions": 10,
+      "changes": 12,
+      "deletions": 2,
+      "filename": "codex-rs/ext/queue/tests/queue_service.rs",
+      "previous_filename": null,
+      "status": "modified"
+    },
+    {
+      "additions": 3,
+      "changes": 5,
+      "deletions": 2,
+      "filename": "codex-rs/external-agent-migration/src/subagents.rs",
+      "previous_filename": null,
+      "status": "modified"
+    },
+    {
+      "additions": 3,
+      "changes": 3,
+      "deletions": 0,
+      "filename": "codex-rs/git-utils/Cargo.toml",
+      "previous_filename": null,
+      "status": "modified"
+    },
+    {
+      "additions": 37,
+      "changes": 47,
+      "deletions": 10,
+      "filename": "codex-rs/git-utils/src/git_process_tests.rs",
+      "previous_filename": null,
+      "status": "modified"
+    },
+    {
+      "additions": 50,
+      "changes": 60,
+      "deletions": 10,
+      "filename": "codex-rs/hepta-agent-protocol/src/lib.rs",
+      "previous_filename": null,
+      "status": "modified"
+    },
+    {
+      "additions": 3,
+      "changes": 3,
+      "deletions": 0,
+      "filename": "codex-rs/hepta-agentd/Cargo.toml",
+      "previous_filename": null,
+      "status": "modified"
+    },
+    {
+      "additions": 68,
+      "changes": 115,
+      "deletions": 47,
+      "filename": "codex-rs/hepta-agentd/src/automation_effect_host.rs",
+      "previous_filename": null,
+      "status": "modified"
+    },
+    {
+      "additions": 3,
+      "changes": 3,
+      "deletions": 0,
+      "filename": "codex-rs/hepta-agentd/src/cognitive_ranker_tests.rs",
+      "previous_filename": null,
+      "status": "modified"
+    },
+    {
+      "additions": 24,
+      "changes": 26,
+      "deletions": 2,
+      "filename": "codex-rs/hepta-agentd/src/cognitive_retrieval_learning_tests.rs",
+      "previous_filename": null,
+      "status": "modified"
+    },
+    {
+      "additions": 16,
+      "changes": 16,
+      "deletions": 0,
+      "filename": "codex-rs/hepta-agentd/src/control.rs",
+      "previous_filename": null,
+      "status": "modified"
+    },
+    {
+      "additions": 45,
+      "changes": 45,
+      "deletions": 0,
+      "filename": "codex-rs/hepta-agentd/src/control_peer_tests.rs",
+      "previous_filename": null,
+      "status": "added"
+    },
+    {
+      "additions": 93,
+      "changes": 117,
+      "deletions": 24,
+      "filename": "codex-rs/hepta-agentd/src/prompt_runtime.rs",
+      "previous_filename": null,
+      "status": "modified"
+    },
+    {
+      "additions": 41,
+      "changes": 41,
+      "deletions": 0,
+      "filename": "codex-rs/hepta-agentd/src/prompt_runtime_tests.rs",
+      "previous_filename": null,
+      "status": "modified"
+    },
+    {
+      "additions": 2,
+      "changes": 4,
+      "deletions": 2,
+      "filename": "codex-rs/hepta-agentd/tests/kernel_evidence_product.rs",
+      "previous_filename": null,
+      "status": "modified"
+    },
+    {
+      "additions": 6,
+      "changes": 10,
+      "deletions": 4,
+      "filename": "codex-rs/hepta-agentd/tests/plasticity_process_e2e.rs",
+      "previous_filename": null,
+      "status": "modified"
+    },
+    {
+      "additions": 8,
+      "changes": 9,
+      "deletions": 1,
+      "filename": "codex-rs/hepta-authbus/src/authority_schema_tests.rs",
+      "previous_filename": null,
+      "status": "modified"
+    },
+    {
+      "additions": 41,
+      "changes": 63,
+      "deletions": 22,
+      "filename": "codex-rs/hepta-automation/src/authorized_effect.rs",
+      "previous_filename": null,
+      "status": "modified"
+    },
+    {
+      "additions": 2,
+      "changes": 2,
+      "deletions": 0,
+      "filename": "codex-rs/hepta-automation/src/lib.rs",
+      "previous_filename": null,
+      "status": "modified"
+    },
+    {
+      "additions": 20,
+      "changes": 34,
+      "deletions": 14,
+      "filename": "codex-rs/hepta-automation/src/migration_convergence_tests.rs",
+      "previous_filename": null,
+      "status": "modified"
+    },
+    {
+      "additions": 103,
+      "changes": 180,
+      "deletions": 77,
+      "filename": "codex-rs/hepta-automation/src/neural_circuit.rs",
+      "previous_filename": null,
+      "status": "modified"
+    },
+    {
+      "additions": 172,
+      "changes": 305,
+      "deletions": 133,
+      "filename": "codex-rs/hepta-automation/tests/authorized_effect.rs",
+      "previous_filename": null,
+      "status": "modified"
+    },
+    {
+      "additions": 1,
+      "changes": 1,
+      "deletions": 0,
+      "filename": "codex-rs/hepta-cognitive-types/src/lib.rs",
+      "previous_filename": null,
+      "status": "modified"
+    },
+    {
+      "additions": 352,
+      "changes": 352,
+      "deletions": 0,
+      "filename": "codex-rs/hepta-cognitive-types/src/memory_cell.rs",
+      "previous_filename": null,
+      "status": "added"
+    },
+    {
+      "additions": 317,
+      "changes": 317,
+      "deletions": 0,
+      "filename": "codex-rs/hepta-cognitive-types/src/memory_cell_tests.rs",
+      "previous_filename": null,
+      "status": "added"
+    },
+    {
+      "additions": 32,
+      "changes": 32,
+      "deletions": 0,
+      "filename": "codex-rs/hepta-cognitive-types/src/wire.rs",
+      "previous_filename": null,
+      "status": "modified"
+    },
+    {
+      "additions": 3,
+      "changes": 3,
+      "deletions": 0,
+      "filename": "codex-rs/hepta-contracts/Cargo.toml",
+      "previous_filename": null,
+      "status": "modified"
+    },
+    {
+      "additions": 26,
+      "changes": 26,
+      "deletions": 0,
+      "filename": "codex-rs/hepta-contracts/FINAL_USE_CONTROL.md",
+      "previous_filename": null,
+      "status": "modified"
+    },
+    {
+      "additions": 28,
+      "changes": 32,
+      "deletions": 4,
+      "filename": "codex-rs/hepta-contracts/src/authority_lease.rs",
+      "previous_filename": null,
+      "status": "modified"
+    },
+    {
+      "additions": 216,
+      "changes": 216,
+      "deletions": 0,
+      "filename": "codex-rs/hepta-contracts/src/authority_lease_windows.rs",
+      "previous_filename": null,
+      "status": "added"
+    },
+    {
+      "additions": 29,
+      "changes": 34,
+      "deletions": 5,
+      "filename": "codex-rs/hepta-contracts/src/final_use_store.rs",
+      "previous_filename": null,
+      "status": "modified"
+    },
+    {
+      "additions": 146,
+      "changes": 146,
+      "deletions": 0,
+      "filename": "codex-rs/hepta-contracts/src/final_use_store_windows.rs",
+      "previous_filename": null,
+      "status": "added"
+    },
+    {
+      "additions": 5,
+      "changes": 8,
+      "deletions": 3,
+      "filename": "codex-rs/hepta-evidence/src/authbus_outbox_tests.rs",
+      "previous_filename": null,
+      "status": "modified"
+    },
+    {
+      "additions": 66,
+      "changes": 70,
+      "deletions": 4,
+      "filename": "codex-rs/hepta-evidence/src/qualification_tests.rs",
+      "previous_filename": null,
+      "status": "modified"
+    },
+    {
+      "additions": 45,
+      "changes": 93,
+      "deletions": 48,
+      "filename": "codex-rs/hepta-fleet/src/authority_port.rs",
+      "previous_filename": null,
+      "status": "modified"
+    },
+    {
+      "additions": 4,
+      "changes": 5,
+      "deletions": 1,
+      "filename": "codex-rs/hepta-fleet/src/registry_tests.rs",
+      "previous_filename": null,
+      "status": "modified"
+    },
+    {
+      "additions": 15,
+      "changes": 16,
+      "deletions": 1,
+      "filename": "codex-rs/hepta-intelligence/src/evaluated_shadow_segment_tests.rs",
+      "previous_filename": null,
+      "status": "modified"
+    },
+    {
+      "additions": 24,
+      "changes": 28,
+      "deletions": 4,
+      "filename": "codex-rs/hepta-intelligence/src/evaluated_shadow_tests.rs",
+      "previous_filename": null,
+      "status": "modified"
+    },
+    {
+      "additions": 15,
+      "changes": 16,
+      "deletions": 1,
+      "filename": "codex-rs/hepta-intelligence/src/outcome_credit_v2.rs",
+      "previous_filename": null,
+      "status": "modified"
+    },
+    {
+      "additions": 4,
+      "changes": 4,
+      "deletions": 0,
+      "filename": "codex-rs/hepta-memory-retrieval/src/lib.rs",
+      "previous_filename": null,
+      "status": "modified"
+    },
+    {
+      "additions": 277,
+      "changes": 277,
+      "deletions": 0,
+      "filename": "codex-rs/hepta-memory-retrieval/src/memory_cell.rs",
+      "previous_filename": null,
+      "status": "added"
+    },
+    {
+      "additions": 410,
+      "changes": 410,
+      "deletions": 0,
+      "filename": "codex-rs/hepta-memory-retrieval/src/memory_cell_tests.rs",
+      "previous_filename": null,
+      "status": "added"
+    },
+    {
+      "additions": 16,
+      "changes": 20,
+      "deletions": 4,
+      "filename": "codex-rs/hepta-memory/src/cognitive_intelligence_writer.rs",
+      "previous_filename": null,
+      "status": "modified"
+    },
+    {
+      "additions": 5,
+      "changes": 10,
+      "deletions": 5,
+      "filename": "codex-rs/hepta-memory/src/cognitive_schema_tests.rs",
+      "previous_filename": null,
+      "status": "modified"
+    },
+    {
+      "additions": 10,
+      "changes": 10,
+      "deletions": 0,
+      "filename": "codex-rs/hepta-memory/src/cognitive_store_recovery_tests.rs",
+      "previous_filename": null,
+      "status": "modified"
+    },
+    {
+      "additions": 2,
+      "changes": 4,
+      "deletions": 2,
+      "filename": "codex-rs/hepta-memory/src/cognitive_store_tests.rs",
+      "previous_filename": null,
+      "status": "modified"
+    },
+    {
+      "additions": 29,
+      "changes": 41,
+      "deletions": 12,
+      "filename": "codex-rs/hepta-memory/src/local_lease_outbox.rs",
+      "previous_filename": null,
+      "status": "modified"
+    },
+    {
+      "additions": 53,
+      "changes": 89,
+      "deletions": 36,
+      "filename": "codex-rs/hepta-memory/src/production_writer.rs",
+      "previous_filename": null,
+      "status": "modified"
+    },
+    {
+      "additions": 1,
+      "changes": 1,
+      "deletions": 0,
+      "filename": "codex-rs/hepta-ndu/Cargo.toml",
+      "previous_filename": null,
+      "status": "modified"
+    },
+    {
+      "additions": 55,
+      "changes": 55,
+      "deletions": 0,
+      "filename": "codex-rs/hepta-ndu/GROUP_SYSTEM2.md",
+      "previous_filename": null,
+      "status": "added"
+    },
+    {
+      "additions": 25,
+      "changes": 25,
+      "deletions": 0,
+      "filename": "codex-rs/hepta-ndu/NDU_SHADOW_SYSTEM2.md",
+      "previous_filename": null,
+      "status": "added"
+    },
+    {
+      "additions": 396,
+      "changes": 396,
+      "deletions": 0,
+      "filename": "codex-rs/hepta-ndu/src/group.rs",
+      "previous_filename": null,
+      "status": "added"
+    },
+    {
+      "additions": 178,
+      "changes": 178,
+      "deletions": 0,
+      "filename": "codex-rs/hepta-ndu/src/group_tests.rs",
+      "previous_filename": null,
+      "status": "added"
+    },
+    {
+      "additions": 28,
+      "changes": 28,
+      "deletions": 0,
+      "filename": "codex-rs/hepta-ndu/src/lib.rs",
+      "previous_filename": null,
+      "status": "modified"
+    },
+    {
+      "additions": 53,
+      "changes": 53,
+      "deletions": 0,
+      "filename": "codex-rs/hepta-ndu/src/observation_adapter.rs",
+      "previous_filename": null,
+      "status": "added"
+    },
+    {
+      "additions": 74,
+      "changes": 74,
+      "deletions": 0,
+      "filename": "codex-rs/hepta-ndu/src/observation_adapter_tests.rs",
+      "previous_filename": null,
+      "status": "added"
+    },
+    {
+      "additions": 398,
+      "changes": 398,
+      "deletions": 0,
+      "filename": "codex-rs/hepta-ndu/src/shadow_system2.rs",
+      "previous_filename": null,
+      "status": "added"
+    },
+    {
+      "additions": 168,
+      "changes": 168,
+      "deletions": 0,
+      "filename": "codex-rs/hepta-ndu/src/shadow_system2_tests.rs",
+      "previous_filename": null,
+      "status": "added"
+    },
+    {
+      "additions": 24,
+      "changes": 24,
+      "deletions": 0,
+      "filename": "codex-rs/hepta-neuron/CELL_EVIDENCE.md",
+      "previous_filename": null,
+      "status": "added"
+    },
+    {
+      "additions": 21,
+      "changes": 21,
+      "deletions": 0,
+      "filename": "codex-rs/hepta-neuron/CELL_HEAD.md",
+      "previous_filename": null,
+      "status": "added"
+    },
+    {
+      "additions": 30,
+      "changes": 30,
+      "deletions": 0,
+      "filename": "codex-rs/hepta-neuron/MULTIMODAL_STEM.md",
+      "previous_filename": null,
+      "status": "added"
+    },
+    {
+      "additions": 40,
+      "changes": 40,
+      "deletions": 0,
+      "filename": "codex-rs/hepta-neuron/SHARED_ENCODER.md",
+      "previous_filename": null,
+      "status": "added"
+    },
+    {
+      "additions": 166,
+      "changes": 166,
+      "deletions": 0,
+      "filename": "codex-rs/hepta-neuron/src/cell_evidence.rs",
+      "previous_filename": null,
+      "status": "added"
+    },
+    {
+      "additions": 183,
+      "changes": 183,
+      "deletions": 0,
+      "filename": "codex-rs/hepta-neuron/src/cell_evidence_tests.rs",
+      "previous_filename": null,
+      "status": "added"
+    },
+    {
+      "additions": 362,
+      "changes": 362,
+      "deletions": 0,
+      "filename": "codex-rs/hepta-neuron/src/cell_head.rs",
+      "previous_filename": null,
+      "status": "added"
+    },
+    {
+      "additions": 277,
+      "changes": 277,
+      "deletions": 0,
+      "filename": "codex-rs/hepta-neuron/src/cell_head_tests.rs",
+      "previous_filename": null,
+      "status": "added"
+    },
+    {
+      "additions": 7,
+      "changes": 11,
+      "deletions": 4,
+      "filename": "codex-rs/hepta-neuron/src/inference_control_tests.rs",
+      "previous_filename": null,
+      "status": "modified"
+    },
+    {
+      "additions": 43,
+      "changes": 43,
+      "deletions": 0,
+      "filename": "codex-rs/hepta-neuron/src/lib.rs",
+      "previous_filename": null,
+      "status": "modified"
+    },
+    {
+      "additions": 638,
+      "changes": 638,
+      "deletions": 0,
+      "filename": "codex-rs/hepta-neuron/src/multimodal_stem.rs",
+      "previous_filename": null,
+      "status": "added"
+    },
+    {
+      "additions": 216,
+      "changes": 216,
+      "deletions": 0,
+      "filename": "codex-rs/hepta-neuron/src/multimodal_stem_tests.rs",
+      "previous_filename": null,
+      "status": "added"
+    },
+    {
+      "additions": 327,
+      "changes": 327,
+      "deletions": 0,
+      "filename": "codex-rs/hepta-neuron/src/shared_encoder.rs",
+      "previous_filename": null,
+      "status": "added"
+    },
+    {
+      "additions": 129,
+      "changes": 129,
+      "deletions": 0,
+      "filename": "codex-rs/hepta-neuron/src/shared_encoder_tests.rs",
+      "previous_filename": null,
+      "status": "added"
+    },
+    {
+      "additions": 3,
+      "changes": 3,
+      "deletions": 0,
+      "filename": "codex-rs/hepta-prompt-registry/Cargo.toml",
+      "previous_filename": null,
+      "status": "modified"
+    },
+    {
+      "additions": 40,
+      "changes": 53,
+      "deletions": 13,
+      "filename": "codex-rs/hepta-prompt-registry/src/durable.rs",
+      "previous_filename": null,
+      "status": "modified"
+    },
+    {
+      "additions": 95,
+      "changes": 95,
+      "deletions": 0,
+      "filename": "codex-rs/hepta-prompt-registry/src/durable_windows.rs",
+      "previous_filename": null,
+      "status": "added"
+    },
+    {
+      "additions": 29,
+      "changes": 30,
+      "deletions": 1,
+      "filename": "codex-rs/hepta-shadow-qualification/src/durable.rs",
+      "previous_filename": null,
+      "status": "modified"
+    },
+    {
+      "additions": 20,
+      "changes": 20,
+      "deletions": 0,
+      "filename": "codex-rs/hepta-shadow-qualification/src/durable_windows_tests.rs",
+      "previous_filename": null,
+      "status": "added"
+    },
+    {
+      "additions": 1,
+      "changes": 2,
+      "deletions": 1,
+      "filename": "codex-rs/hepta-shadow-qualification/tests/support/tabular_reload.rs",
+      "previous_filename": null,
+      "status": "modified"
+    },
+    {
+      "additions": 1,
+      "changes": 1,
+      "deletions": 0,
+      "filename": "codex-rs/hepta-supervisor/src/restart_budget.rs",
+      "previous_filename": null,
+      "status": "modified"
+    },
+    {
+      "additions": 186,
+      "changes": 247,
+      "deletions": 61,
+      "filename": "codex-rs/hepta-supervisor/src/restart_journal.rs",
+      "previous_filename": null,
+      "status": "modified"
+    },
+    {
+      "additions": 0,
+      "changes": 116,
+      "deletions": 116,
+      "filename": "codex-rs/hepta-supervisor/src/restart_state.rs",
+      "previous_filename": null,
+      "status": "modified"
+    },
+    {
+      "additions": 0,
+      "changes": 12,
+      "deletions": 12,
+      "filename": "codex-rs/hepta-supervisor/src/runtime.rs",
+      "previous_filename": null,
+      "status": "modified"
+    },
+    {
+      "additions": 2,
+      "changes": 2,
+      "deletions": 0,
+      "filename": "codex-rs/hepta-supervisor/src/supervisor.rs",
+      "previous_filename": null,
+      "status": "modified"
+    },
+    {
+      "additions": 0,
+      "changes": 7,
+      "deletions": 7,
+      "filename": "codex-rs/hepta-supervisor/src/supervisor_tests.rs",
+      "previous_filename": null,
+      "status": "modified"
+    },
+    {
+      "additions": 17,
+      "changes": 17,
+      "deletions": 0,
+      "filename": "codex-rs/hepta-supervisor/src/tick.rs",
+      "previous_filename": null,
+      "status": "modified"
+    },
+    {
+      "additions": 31,
+      "changes": 41,
+      "deletions": 10,
+      "filename": "codex-rs/hepta-supervisor/tests/paired_process_product.rs",
+      "previous_filename": null,
+      "status": "modified"
+    },
+    {
+      "additions": 30,
+      "changes": 35,
+      "deletions": 5,
+      "filename": "codex-rs/hepta-supervisor/tests/restart_budget.rs",
+      "previous_filename": null,
+      "status": "modified"
+    },
+    {
+      "additions": 37,
+      "changes": 38,
+      "deletions": 1,
+      "filename": "codex-rs/hepta-supervisor/tests/restart_budget_recovery.rs",
+      "previous_filename": null,
+      "status": "modified"
+    },
+    {
+      "additions": 31,
+      "changes": 43,
+      "deletions": 12,
+      "filename": "codex-rs/hepta-supervisor/tests/signed_intent_recovery.rs",
+      "previous_filename": null,
+      "status": "modified"
+    },
+    {
+      "additions": 4,
+      "changes": 6,
+      "deletions": 2,
+      "filename": "codex-rs/keyring-store/Cargo.toml",
+      "previous_filename": null,
+      "status": "modified"
+    },
+    {
+      "additions": 1,
+      "changes": 2,
+      "deletions": 1,
+      "filename": "codex-rs/linux-sandbox/src/landlock.rs",
+      "previous_filename": null,
+      "status": "modified"
+    },
+    {
+      "additions": 3,
+      "changes": 5,
+      "deletions": 2,
+      "filename": "codex-rs/rmcp-client/Cargo.toml",
+      "previous_filename": null,
+      "status": "modified"
+    },
+    {
+      "additions": 27,
+      "changes": 29,
+      "deletions": 2,
+      "filename": "codex-rs/rmcp-client/src/rmcp_client.rs",
+      "previous_filename": null,
+      "status": "modified"
+    },
+    {
+      "additions": 6,
+      "changes": 8,
+      "deletions": 2,
+      "filename": "codex-rs/shell-escalation/src/unix/socket.rs",
+      "previous_filename": null,
+      "status": "modified"
+    },
+    {
+      "additions": 8,
+      "changes": 8,
+      "deletions": 0,
+      "filename": "codex-rs/third_party/anymap2-compat/Cargo.toml",
+      "previous_filename": null,
+      "status": "added"
+    },
+    {
+      "additions": 13,
+      "changes": 13,
+      "deletions": 0,
+      "filename": "codex-rs/third_party/anymap2-compat/src/lib.rs",
+      "previous_filename": null,
+      "status": "added"
+    },
+    {
+      "additions": 13,
+      "changes": 13,
+      "deletions": 0,
+      "filename": "codex-rs/third_party/keyring-3.6.3/.gitignore",
+      "previous_filename": null,
+      "status": "added"
+    },
+    {
+      "additions": 169,
+      "changes": 169,
+      "deletions": 0,
+      "filename": "codex-rs/third_party/keyring-3.6.3/CHANGELOG.md",
+      "previous_filename": null,
+      "status": "added"
+    },
+    {
+      "additions": 211,
+      "changes": 211,
+      "deletions": 0,
+      "filename": "codex-rs/third_party/keyring-3.6.3/Cargo.toml",
+      "previous_filename": null,
+      "status": "added"
+    },
+    {
+      "additions": 84,
+      "changes": 84,
+      "deletions": 0,
+      "filename": "codex-rs/third_party/keyring-3.6.3/Cargo.toml.orig",
+      "previous_filename": null,
+      "status": "added"
+    },
+    {
+      "additions": 54,
+      "changes": 54,
+      "deletions": 0,
+      "filename": "codex-rs/third_party/keyring-3.6.3/HEPTA_PATCH.md",
+      "previous_filename": null,
+      "status": "added"
+    },
+    {
+      "additions": 201,
+      "changes": 201,
+      "deletions": 0,
+      "filename": "codex-rs/third_party/keyring-3.6.3/LICENSE-APACHE",
+      "previous_filename": null,
+      "status": "added"
+    },
+    {
+      "additions": 25,
+      "changes": 25,
+      "deletions": 0,
+      "filename": "codex-rs/third_party/keyring-3.6.3/LICENSE-MIT",
+      "previous_filename": null,
+      "status": "added"
+    },
+    {
+      "additions": 154,
+      "changes": 154,
+      "deletions": 0,
+      "filename": "codex-rs/third_party/keyring-3.6.3/README.md",
+      "previous_filename": null,
+      "status": "added"
+    },
+    {
+      "additions": 338,
+      "changes": 338,
+      "deletions": 0,
+      "filename": "codex-rs/third_party/keyring-3.6.3/examples/cli.rs",
+      "previous_filename": null,
+      "status": "added"
+    },
+    {
+      "additions": 117,
+      "changes": 117,
+      "deletions": 0,
+      "filename": "codex-rs/third_party/keyring-3.6.3/examples/ios.rs",
+      "previous_filename": null,
+      "status": "added"
+    },
+    {
+      "additions": 1,
+      "changes": 1,
+      "deletions": 0,
+      "filename": "codex-rs/third_party/keyring-3.6.3/release.toml",
+      "previous_filename": null,
+      "status": "added"
+    },
+    {
+      "additions": 183,
+      "changes": 183,
+      "deletions": 0,
+      "filename": "codex-rs/third_party/keyring-3.6.3/src/credential.rs",
+      "previous_filename": null,
+      "status": "added"
+    },
+    {
+      "additions": 119,
+      "changes": 119,
+      "deletions": 0,
+      "filename": "codex-rs/third_party/keyring-3.6.3/src/error.rs",
+      "previous_filename": null,
+      "status": "added"
+    },
+    {
+      "additions": 195,
+      "changes": 195,
+      "deletions": 0,
+      "filename": "codex-rs/third_party/keyring-3.6.3/src/ios.rs",
+      "previous_filename": null,
+      "status": "added"
+    },
+    {
+      "additions": 447,
+      "changes": 447,
+      "deletions": 0,
+      "filename": "codex-rs/third_party/keyring-3.6.3/src/keyutils.rs",
+      "previous_filename": null,
+      "status": "added"
+    },
+    {
+      "additions": 270,
+      "changes": 270,
+      "deletions": 0,
+      "filename": "codex-rs/third_party/keyring-3.6.3/src/keyutils_persistent.rs",
+      "previous_filename": null,
+      "status": "added"
+    },
+    {
+      "additions": 758,
+      "changes": 758,
+      "deletions": 0,
+      "filename": "codex-rs/third_party/keyring-3.6.3/src/lib.rs",
+      "previous_filename": null,
+      "status": "added"
+    },
+    {
+      "additions": 371,
+      "changes": 371,
+      "deletions": 0,
+      "filename": "codex-rs/third_party/keyring-3.6.3/src/macos.rs",
+      "previous_filename": null,
+      "status": "added"
+    },
+    {
+      "additions": 343,
+      "changes": 343,
+      "deletions": 0,
+      "filename": "codex-rs/third_party/keyring-3.6.3/src/mock.rs",
+      "previous_filename": null,
+      "status": "added"
+    },
+    {
+      "additions": 0,
+      "changes": 0,
+      "deletions": 0,
+      "filename": "codex-rs/third_party/keyring-3.6.3/src/secret_service.rs",
+      "previous_filename": null,
+      "status": "added"
+    },
+    {
+      "additions": 0,
+      "changes": 0,
+      "deletions": 0,
+      "filename": "codex-rs/third_party/keyring-3.6.3/src/windows.rs",
+      "previous_filename": null,
+      "status": "added"
+    },
+    {
+      "additions": 0,
+      "changes": 0,
+      "deletions": 0,
+      "filename": "codex-rs/third_party/keyring-3.6.3/tests/basic.rs",
+      "previous_filename": null,
+      "status": "added"
+    },
+    {
+      "additions": 0,
+      "changes": 0,
+      "deletions": 0,
+      "filename": "codex-rs/third_party/keyring-3.6.3/tests/common/mod.rs",
+      "previous_filename": null,
+      "status": "added"
+    },
+    {
+      "additions": 0,
+      "changes": 0,
+      "deletions": 0,
+      "filename": "codex-rs/third_party/keyring-3.6.3/tests/threading.rs",
+      "previous_filename": null,
+      "status": "added"
+    },
+    {
+      "additions": 0,
+      "changes": 0,
+      "deletions": 0,
+      "filename": "codex-rs/third_party/matrix-sdk-crypto-0.18.0/.cargo-ok",
+      "previous_filename": null,
+      "status": "added"
+    },
+    {
+      "additions": 0,
+      "changes": 0,
+      "deletions": 0,
+      "filename": "codex-rs/third_party/matrix-sdk-crypto-0.18.0/.cargo_vcs_info.json",
+      "previous_filename": null,
+      "status": "added"
+    },
+    {
+      "additions": 0,
+      "changes": 0,
+      "deletions": 0,
+      "filename": "codex-rs/third_party/matrix-sdk-crypto-0.18.0/CHANGELOG.md",
+      "previous_filename": null,
+      "status": "added"
+    },
+    {
+      "additions": 0,
+      "changes": 0,
+      "deletions": 0,
+      "filename": "codex-rs/third_party/matrix-sdk-crypto-0.18.0/Cargo.lock",
+      "previous_filename": null,
+      "status": "added"
+    },
+    {
+      "additions": 0,
+      "changes": 0,
+      "deletions": 0,
+      "filename": "codex-rs/third_party/matrix-sdk-crypto-0.18.0/Cargo.toml",
+      "previous_filename": null,
+      "status": "added"
+    },
+    {
+      "additions": 0,
+      "changes": 0,
+      "deletions": 0,
+      "filename": "codex-rs/third_party/matrix-sdk-crypto-0.18.0/Cargo.toml.orig",
+      "previous_filename": null,
+      "status": "added"
+    },
+    {
+      "additions": 0,
+      "changes": 0,
+      "deletions": 0,
+      "filename": "codex-rs/third_party/matrix-sdk-crypto-0.18.0/README.md",
+      "previous_filename": null,
+      "status": "added"
+    },
+    {
+      "additions": 0,
+      "changes": 0,
+      "deletions": 0,
+      "filename": "codex-rs/third_party/matrix-sdk-crypto-0.18.0/changelog.d/.gitkeep",
+      "previous_filename": null,
+      "status": "added"
+    },
+    {
+      "additions": 0,
+      "changes": 0,
+      "deletions": 0,
+      "filename": "codex-rs/third_party/matrix-sdk-crypto-0.18.0/src/backups/keys/backup.rs",
+      "previous_filename": null,
+      "status": "added"
+    },
+    {
+      "additions": 0,
+      "changes": 0,
+      "deletions": 0,
+      "filename": "codex-rs/third_party/matrix-sdk-crypto-0.18.0/src/backups/keys/decryption.rs",
+      "previous_filename": null,
+      "status": "added"
+    },
+    {
+      "additions": 0,
+      "changes": 0,
+      "deletions": 0,
+      "filename": "codex-rs/third_party/matrix-sdk-crypto-0.18.0/src/backups/keys/mod.rs",
+      "previous_filename": null,
+      "status": "added"
+    },
+    {
+      "additions": 0,
+      "changes": 0,
+      "deletions": 0,
+      "filename": "codex-rs/third_party/matrix-sdk-crypto-0.18.0/src/backups/mod.rs",
+      "previous_filename": null,
+      "status": "added"
+    },
+    {
+      "additions": 0,
+      "changes": 0,
+      "deletions": 0,
+      "filename": "codex-rs/third_party/matrix-sdk-crypto-0.18.0/src/ciphers.rs",
+      "previous_filename": null,
+      "status": "added"
+    },
+    {
+      "additions": 0,
+      "changes": 0,
+      "deletions": 0,
+      "filename": "codex-rs/third_party/matrix-sdk-crypto-0.18.0/src/dehydrated_devices.rs",
+      "previous_filename": null,
+      "status": "added"
+    },
+    {
+      "additions": 0,
+      "changes": 0,
+      "deletions": 0,
+      "filename": "codex-rs/third_party/matrix-sdk-crypto-0.18.0/src/error.rs",
+      "previous_filename": null,
+      "status": "added"
+    },
+    {
+      "additions": 0,
+      "changes": 0,
+      "deletions": 0,
+      "filename": "codex-rs/third_party/matrix-sdk-crypto-0.18.0/src/file_encryption/attachments.rs",
+      "previous_filename": null,
+      "status": "added"
+    },
+    {
+      "additions": 0,
+      "changes": 0,
+      "deletions": 0,
+      "filename": "codex-rs/third_party/matrix-sdk-crypto-0.18.0/src/file_encryption/key_export.rs",
+      "previous_filename": null,
+      "status": "added"
+    },
+    {
+      "additions": 0,
+      "changes": 0,
+      "deletions": 0,
+      "filename": "codex-rs/third_party/matrix-sdk-crypto-0.18.0/src/file_encryption/mod.rs",
+      "previous_filename": null,
+      "status": "added"
+    },
+    {
+      "additions": 0,
+      "changes": 0,
+      "deletions": 0,
+      "filename": "codex-rs/third_party/matrix-sdk-crypto-0.18.0/src/gossiping/machine.rs",
+      "previous_filename": null,
+      "status": "added"
+    },
+    {
+      "additions": 0,
+      "changes": 0,
+      "deletions": 0,
+      "filename": "codex-rs/third_party/matrix-sdk-crypto-0.18.0/src/gossiping/mod.rs",
+      "previous_filename": null,
+      "status": "added"
+    },
+    {
+      "additions": 0,
+      "changes": 0,
+      "deletions": 0,
+      "filename": "codex-rs/third_party/matrix-sdk-crypto-0.18.0/src/identities/device.rs",
+      "previous_filename": null,
+      "status": "added"
+    },
+    {
+      "additions": 0,
+      "changes": 0,
+      "deletions": 0,
+      "filename": "codex-rs/third_party/matrix-sdk-crypto-0.18.0/src/identities/manager.rs",
+      "previous_filename": null,
+      "status": "added"
+    },
+    {
+      "additions": 0,
+      "changes": 0,
+      "deletions": 0,
+      "filename": "codex-rs/third_party/matrix-sdk-crypto-0.18.0/src/identities/mod.rs",
+      "previous_filename": null,
+      "status": "added"
+    },
+    {
+      "additions": 0,
+      "changes": 0,
+      "deletions": 0,
+      "filename": "codex-rs/third_party/matrix-sdk-crypto-0.18.0/src/identities/room_identity_state.rs",
+      "previous_filename": null,
+      "status": "added"
+    },
+    {
+      "additions": 0,
+      "changes": 0,
+      "deletions": 0,
+      "filename": "codex-rs/third_party/matrix-sdk-crypto-0.18.0/src/identities/user.rs",
+      "previous_filename": null,
+      "status": "added"
+    },
+    {
+      "additions": 0,
+      "changes": 0,
+      "deletions": 0,
+      "filename": "codex-rs/third_party/matrix-sdk-crypto-0.18.0/src/lib.rs",
+      "previous_filename": null,
+      "status": "added"
+    },
+    {
+      "additions": 0,
+      "changes": 0,
+      "deletions": 0,
+      "filename": "codex-rs/third_party/matrix-sdk-crypto-0.18.0/src/machine/mod.rs",
+      "previous_filename": null,
+      "status": "added"
+    },
+    {
+      "additions": 0,
+      "changes": 0,
+      "deletions": 0,
+      "filename": "codex-rs/third_party/matrix-sdk-crypto-0.18.0/src/machine/test_helpers.rs",
+      "previous_filename": null,
+      "status": "added"
+    },
+    {
+      "additions": 0,
+      "changes": 0,
+      "deletions": 0,
+      "filename": "codex-rs/third_party/matrix-sdk-crypto-0.18.0/src/machine/tests/decryption_verification_state.rs",
+      "previous_filename": null,
+      "status": "added"
+    },
+    {
+      "additions": 0,
+      "changes": 0,
+      "deletions": 0,
+      "filename": "codex-rs/third_party/matrix-sdk-crypto-0.18.0/src/machine/tests/interactive_verification.rs",
+      "previous_filename": null,
+      "status": "added"
+    },
+    {
+      "additions": 0,
+      "changes": 0,
+      "deletions": 0,
+      "filename": "codex-rs/third_party/matrix-sdk-crypto-0.18.0/src/machine/tests/megolm_sender_data.rs",
+      "previous_filename": null,
+      "status": "added"
+    },
+    {
+      "additions": 0,
+      "changes": 0,
+      "deletions": 0,
+      "filename": "codex-rs/third_party/matrix-sdk-crypto-0.18.0/src/machine/tests/mod.rs",
+      "previous_filename": null,
+      "status": "added"
+    },
+    {
+      "additions": 0,
+      "changes": 0,
+      "deletions": 0,
+      "filename": "codex-rs/third_party/matrix-sdk-crypto-0.18.0/src/machine/tests/olm_encryption.rs",
+      "previous_filename": null,
+      "status": "added"
+    },
+    {
+      "additions": 0,
+      "changes": 0,
+      "deletions": 0,
+      "filename": "codex-rs/third_party/matrix-sdk-crypto-0.18.0/src/machine/tests/room_settings.rs",
+      "previous_filename": null,
+      "status": "added"
+    },
+    {
+      "additions": 0,
+      "changes": 0,
+      "deletions": 0,
+      "filename": "codex-rs/third_party/matrix-sdk-crypto-0.18.0/src/machine/tests/send_encrypted_to_device.rs",
+      "previous_filename": null,
+      "status": "added"
+    },
+    {
+      "additions": 0,
+      "changes": 0,
+      "deletions": 0,
+      "filename": "codex-rs/third_party/matrix-sdk-crypto-0.18.0/src/machine/tests/snapshots/processed_to_device_variants-2.snap",
+      "previous_filename": null,
+      "status": "added"
+    },
+    {
+      "additions": 0,
+      "changes": 0,
+      "deletions": 0,
+      "filename": "codex-rs/third_party/matrix-sdk-crypto-0.18.0/src/machine/tests/snapshots/processed_to_device_variants-3.snap",
+      "previous_filename": null,
+      "status": "added"
+    },
+    {
+      "additions": 0,
+      "changes": 0,
+      "deletions": 0,
+      "filename": "codex-rs/third_party/matrix-sdk-crypto-0.18.0/src/machine/tests/snapshots/processed_to_device_variants-4.snap",
+      "previous_filename": null,
+      "status": "added"
+    },
+    {
+      "additions": 0,
+      "changes": 0,
+      "deletions": 0,
+      "filename": "codex-rs/third_party/matrix-sdk-crypto-0.18.0/src/machine/tests/snapshots/processed_to_device_variants.snap",
+      "previous_filename": null,
+      "status": "added"
+    },
+    {
+      "additions": 0,
+      "changes": 0,
+      "deletions": 0,
+      "filename": "codex-rs/third_party/matrix-sdk-crypto-0.18.0/src/olm/account.rs",
+      "previous_filename": null,
+      "status": "added"
+    },
+    {
+      "additions": 0,
+      "changes": 0,
+      "deletions": 0,
+      "filename": "codex-rs/third_party/matrix-sdk-crypto-0.18.0/src/olm/group_sessions/forwarder_data.rs",
+      "previous_filename": null,
+      "status": "added"
+    },
+    {
+      "additions": 0,
+      "changes": 0,
+      "deletions": 0,
+      "filename": "codex-rs/third_party/matrix-sdk-crypto-0.18.0/src/olm/group_sessions/inbound.rs",
+      "previous_filename": null,
+      "status": "added"
+    },
+    {
+      "additions": 0,
+      "changes": 0,
+      "deletions": 0,
+      "filename": "codex-rs/third_party/matrix-sdk-crypto-0.18.0/src/olm/group_sessions/mod.rs",
+      "previous_filename": null,
+      "status": "added"
+    },
+    {
+      "additions": 0,
+      "changes": 0,
+      "deletions": 0,
+      "filename": "codex-rs/third_party/matrix-sdk-crypto-0.18.0/src/olm/group_sessions/outbound.rs",
+      "previous_filename": null,
+      "status": "added"
+    },
+    {
+      "additions": 0,
+      "changes": 0,
+      "deletions": 0,
+      "filename": "codex-rs/third_party/matrix-sdk-crypto-0.18.0/src/olm/group_sessions/sender_data.rs",
+      "previous_filename": null,
+      "status": "added"
+    },
+    {
+      "additions": 0,
+      "changes": 0,
+      "deletions": 0,
+      "filename": "codex-rs/third_party/matrix-sdk-crypto-0.18.0/src/olm/group_sessions/sender_data_finder.rs",
+      "previous_filename": null,
+      "status": "added"
+    },
+    {
+      "additions": 0,
+      "changes": 0,
+      "deletions": 0,
+      "filename": "codex-rs/third_party/matrix-sdk-crypto-0.18.0/src/olm/group_sessions/snapshots/InboundGroupSession__test_pickle_snapshot__regression.snap",
+      "previous_filename": null,
+      "status": "added"
+    },
+    {
+      "additions": 0,
+      "changes": 0,
+      "deletions": 0,
+      "filename": "codex-rs/third_party/matrix-sdk-crypto-0.18.0/src/olm/group_sessions/snapshots/matrix_sdk_crypto__olm__group_sessions__sender_data__tests__snapshot_sender_data-2.snap",
+      "previous_filename": null,
+      "status": "added"
+    },
+    {
+      "additions": 0,
+      "changes": 0,
+      "deletions": 0,
+      "filename": "codex-rs/third_party/matrix-sdk-crypto-0.18.0/src/olm/group_sessions/snapshots/matrix_sdk_crypto__olm__group_sessions__sender_data__tests__snapshot_sender_data-3.snap",
+      "previous_filename": null,
+      "status": "added"
+    },
+    {
+      "additions": 0,
+      "changes": 0,
+      "deletions": 0,
+      "filename": "codex-rs/third_party/matrix-sdk-crypto-0.18.0/src/olm/group_sessions/snapshots/matrix_sdk_crypto__olm__group_sessions__sender_data__tests__snapshot_sender_data-4.snap",
+      "previous_filename": null,
+      "status": "added"
+    },
+    {
+      "additions": 0,
+      "changes": 0,
+      "deletions": 0,
+      "filename": "codex-rs/third_party/matrix-sdk-crypto-0.18.0/src/olm/group_sessions/snapshots/matrix_sdk_crypto__olm__group_sessions__sender_data__tests__snapshot_sender_data-5.snap",
+      "previous_filename": null,
+      "status": "added"
+    },
+    {
+      "additions": 0,
+      "changes": 0,
+      "deletions": 0,
+      "filename": "codex-rs/third_party/matrix-sdk-crypto-0.18.0/src/olm/group_sessions/snapshots/matrix_sdk_crypto__olm__group_sessions__sender_data__tests__snapshot_sender_data-6.snap",
+      "previous_filename": null,
+      "status": "added"
+    },
+    {
+      "additions": 0,
+      "changes": 0,
+      "deletions": 0,
+      "filename": "codex-rs/third_party/matrix-sdk-crypto-0.18.0/src/olm/group_sessions/snapshots/matrix_sdk_crypto__olm__group_sessions__sender_data__tests__snapshot_sender_data.snap",
+      "previous_filename": null,
+      "status": "added"
+    },
+    {
+      "additions": 0,
+      "changes": 0,
+      "deletions": 0,
+      "filename": "codex-rs/third_party/matrix-sdk-crypto-0.18.0/src/olm/group_sessions/snapshots/snapshot_forwarder_data-2.snap",
+      "previous_filename": null,
+      "status": "added"
+    },
+    {
+      "additions": 0,
+      "changes": 0,
+      "deletions": 0,
+      "filename": "codex-rs/third_party/matrix-sdk-crypto-0.18.0/src/olm/group_sessions/snapshots/snapshot_forwarder_data.snap",
+      "previous_filename": null,
+      "status": "added"
+    },
+    {
+      "additions": 0,
+      "changes": 0,
+      "deletions": 0,
+      "filename": "codex-rs/third_party/matrix-sdk-crypto-0.18.0/src/olm/mod.rs",
+      "previous_filename": null,
+      "status": "added"
+    },
+    {
+      "additions": 0,
+      "changes": 0,
+      "deletions": 0,
+      "filename": "codex-rs/third_party/matrix-sdk-crypto-0.18.0/src/olm/session.rs",
+      "previous_filename": null,
+      "status": "added"
+    },
+    {
+      "additions": 0,
+      "changes": 0,
+      "deletions": 0,
+      "filename": "codex-rs/third_party/matrix-sdk-crypto-0.18.0/src/olm/signing/mod.rs",
+      "previous_filename": null,
+      "status": "added"
+    },
+    {
+      "additions": 0,
+      "changes": 0,
+      "deletions": 0,
+      "filename": "codex-rs/third_party/matrix-sdk-crypto-0.18.0/src/olm/signing/pk_signing.rs",
+      "previous_filename": null,
+      "status": "added"
+    },
+    {
+      "additions": 0,
+      "changes": 0,
+      "deletions": 0,
+      "filename": "codex-rs/third_party/matrix-sdk-crypto-0.18.0/src/olm/utility.rs",
+      "previous_filename": null,
+      "status": "added"
+    },
+    {
+      "additions": 0,
+      "changes": 0,
+      "deletions": 0,
+      "filename": "codex-rs/third_party/matrix-sdk-crypto-0.18.0/src/secret_storage.rs",
+      "previous_filename": null,
+      "status": "added"
+    },
+    {
+      "additions": 0,
+      "changes": 0,
+      "deletions": 0,
+      "filename": "codex-rs/third_party/matrix-sdk-crypto-0.18.0/src/session_manager/group_sessions/mod.rs",
+      "previous_filename": null,
+      "status": "added"
+    },
+    {
+      "additions": 0,
+      "changes": 0,
+      "deletions": 0,
+      "filename": "codex-rs/third_party/matrix-sdk-crypto-0.18.0/src/session_manager/group_sessions/share_strategy.rs",
+      "previous_filename": null,
+      "status": "added"
+    },
+    {
+      "additions": 0,
+      "changes": 0,
+      "deletions": 0,
+      "filename": "codex-rs/third_party/matrix-sdk-crypto-0.18.0/src/session_manager/group_sessions/snapshots/prepare_machine_with_dehydrated_device_of_verification_violation_user.snap",
+      "previous_filename": null,
+      "status": "added"
+    },
+    {
+      "additions": 0,
+      "changes": 0,
+      "deletions": 0,
+      "filename": "codex-rs/third_party/matrix-sdk-crypto-0.18.0/src/session_manager/group_sessions/snapshots/serialize_device_based_strategy.snap",
+      "previous_filename": null,
+      "status": "added"
+    },
+    {
+      "additions": 0,
+      "changes": 0,
+      "deletions": 0,
+      "filename": "codex-rs/third_party/matrix-sdk-crypto-0.18.0/src/session_manager/group_sessions/snapshots/serialize_strategy_with_encrypted_state.snap",
+      "previous_filename": null,
+      "status": "added"
+    },
+    {
+      "additions": 0,
+      "changes": 0,
+      "deletions": 0,
+      "filename": "codex-rs/third_party/matrix-sdk-crypto-0.18.0/src/session_manager/group_sessions/snapshots/should_not_share_with_unverified_dehydrated_device.snap",
+      "previous_filename": null,
+      "status": "added"
+    },
+    {
+      "additions": 0,
+      "changes": 0,
+      "deletions": 0,
+      "filename": "codex-rs/third_party/matrix-sdk-crypto-0.18.0/src/session_manager/group_sessions/snapshots/should_share_with_verified_dehydrated_device.snap",
+      "previous_filename": null,
+      "status": "added"
+    },
+    {
+      "additions": 0,
+      "changes": 0,
+      "deletions": 0,
+      "filename": "codex-rs/third_party/matrix-sdk-crypto-0.18.0/src/session_manager/group_sessions/snapshots/should_share_with_verified_device_of_pin_violation_user.snap",
+      "previous_filename": null,
+      "status": "added"
+    },
+    {
+      "additions": 0,
+      "changes": 0,
+      "deletions": 0,
+      "filename": "codex-rs/third_party/matrix-sdk-crypto-0.18.0/src/session_manager/mod.rs",
+      "previous_filename": null,
+      "status": "added"
+    },
+    {
+      "additions": 0,
+      "changes": 0,
+      "deletions": 0,
+      "filename": "codex-rs/third_party/matrix-sdk-crypto-0.18.0/src/session_manager/sessions.rs",
+      "previous_filename": null,
+      "status": "added"
+    },
+    {
+      "additions": 0,
+      "changes": 0,
+      "deletions": 0,
+      "filename": "codex-rs/third_party/matrix-sdk-crypto-0.18.0/src/snapshots/matrix_sdk_crypto__test__snapshot_decryption_settings.snap",
+      "previous_filename": null,
+      "status": "added"
+    },
+    {
+      "additions": 0,
+      "changes": 0,
+      "deletions": 0,
+      "filename": "codex-rs/third_party/matrix-sdk-crypto-0.18.0/src/snapshots/matrix_sdk_crypto__test__snapshot_trust_requirement-2.snap",
+      "previous_filename": null,
+      "status": "added"
+    },
+    {
+      "additions": 0,
+      "changes": 0,
+      "deletions": 0,
+      "filename": "codex-rs/third_party/matrix-sdk-crypto-0.18.0/src/snapshots/matrix_sdk_crypto__test__snapshot_trust_requirement-3.snap",
+      "previous_filename": null,
+      "status": "added"
+    },
+    {
+      "additions": 0,
+      "changes": 0,
+      "deletions": 0,
+      "filename": "codex-rs/third_party/matrix-sdk-crypto-0.18.0/src/snapshots/matrix_sdk_crypto__test__snapshot_trust_requirement.snap",
+      "previous_filename": null,
+      "status": "added"
+    },
+    {
+      "additions": 0,
+      "changes": 0,
+      "deletions": 0,
+      "filename": "codex-rs/third_party/matrix-sdk-crypto-0.18.0/src/store/caches.rs",
+      "previous_filename": null,
+      "status": "added"
+    },
+    {
+      "additions": 0,
+      "changes": 0,
+      "deletions": 0,
+      "filename": "codex-rs/third_party/matrix-sdk-crypto-0.18.0/src/store/crypto_store_wrapper.rs",
+      "previous_filename": null,
+      "status": "added"
+    },
+    {
+      "additions": 0,
+      "changes": 0,
+      "deletions": 0,
+      "filename": "codex-rs/third_party/matrix-sdk-crypto-0.18.0/src/store/error.rs",
+      "previous_filename": null,
+      "status": "added"
+    },
+    {
+      "additions": 0,
+      "changes": 0,
+      "deletions": 0,
+      "filename": "codex-rs/third_party/matrix-sdk-crypto-0.18.0/src/store/integration_tests.rs",
+      "previous_filename": null,
+      "status": "added"
+    },
+    {
+      "additions": 0,
+      "changes": 0,
+      "deletions": 0,
+      "filename": "codex-rs/third_party/matrix-sdk-crypto-0.18.0/src/store/memorystore.rs",
+      "previous_filename": null,
+      "status": "added"
+    },
+    {
+      "additions": 0,
+      "changes": 0,
+      "deletions": 0,
+      "filename": "codex-rs/third_party/matrix-sdk-crypto-0.18.0/src/store/mod.rs",
+      "previous_filename": null,
+      "status": "added"
+    },
+    {
+      "additions": 0,
+      "changes": 0,
+      "deletions": 0,
+      "filename": "codex-rs/third_party/matrix-sdk-crypto-0.18.0/src/store/snapshots/matrix_sdk_crypto__store__tests__build_room_key_bundle.snap",
+      "previous_filename": null,
+      "status": "added"
+    },
+    {
+      "additions": 0,
+      "changes": 0,
+      "deletions": 0,
+      "filename": "codex-rs/third_party/matrix-sdk-crypto-0.18.0/src/store/traits.rs",
+      "previous_filename": null,
+      "status": "added"
+    }
+  ],
+  "head": "b58d870a2c38ebee0aa0b974d9f03767c888fa7e",
+  "merge_base_commit": {
+    "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/commit/995b6fb9ef73ada7c3348b01deb28940a2c4a2d1",
+    "sha": "995b6fb9ef73ada7c3348b01deb28940a2c4a2d1",
+    "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/commits/995b6fb9ef73ada7c3348b01deb28940a2c4a2d1"
+  },
+  "schema_version": 1,
+  "source_pr": 2815,
+  "source_tool_response_sha256": "abfbd16329bb2a8cadd3692f1c6a693d847bdf747fb177ddca570a5f0557f948",
+  "status": "ahead",
+  "target_pr": 2937,
+  "too_large": null,
+  "total_commits": 306
+}

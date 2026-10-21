@@ -1,0 +1,122 @@
+bazel mod deps --lockfile_mode=update
+WARNING: Running Bazel server needs to be killed, because the following startup options are different:
+  - Only in old server: 
+  - Only in new server: --host_jvm_args=-Djavax.net.ssl.trustStore=/etc/ssl/certs/java/cacerts -Djavax.net.ssl.trustStore=/etc/ssl/certs/java/cacerts
+Starting local Bazel server (9.3.0) and connecting to it...
+INFO: Invocation ID: 72deaf82-4987-4b32-9680-ec9521a5b575
+ no actions running
+ no actions running
+ no actions running
+ no actions running
+ no actions running
+ no actions running
+ no actions running
+ no actions running
+ no actions running
+ no actions running
+ no actions running
+ no actions running
+ no actions running
+ no actions running
+WARNING: For repository 'platforms', the root module requires module version platforms@1.0.0, but got platforms@1.1.0 in the resolved dependency graph. Please update the version in your MODULE.bazel or set --check_direct_dependencies=off
+WARNING: For repository 'apple_support', the root module requires module version apple_support@2.1.0, but got apple_support@2.5.2 in the resolved dependency graph. Please update the version in your MODULE.bazel or set --check_direct_dependencies=off
+WARNING: For repository 'rules_cc', the root module requires module version rules_cc@0.2.18, but got rules_cc@0.2.20 in the resolved dependency graph. Please update the version in your MODULE.bazel or set --check_direct_dependencies=off
+ no actions running
+ no actions running
+ no actions running
+ no actions running
+ no actions running
+ no actions running
+ no actions running
+ERROR: /workspace/scratch/337c309bc660/hepta-ci-fix/tls-patch/bazel-output/1267fca677de4c7df8ffc8a563b1bcbd/external/rules_python+/python/private/pypi/parse_requirements.bzl:93:28: Traceback (most recent call last):
+	File "/workspace/scratch/337c309bc660/hepta-ci-fix/tls-patch/bazel-output/1267fca677de4c7df8ffc8a563b1bcbd/external/rules_python+/python/private/pypi/extension.bzl", line 366, column 25, in _pip_impl
+		mods = parse_modules(module_ctx, enable_pipstar = rp_config.enable_pipstar)
+	File "/workspace/scratch/337c309bc660/hepta-ci-fix/tls-patch/bazel-output/1267fca677de4c7df8ffc8a563b1bcbd/external/rules_python+/python/private/pypi/extension.bzl", line 256, column 30, in parse_modules
+		builder.pip_parse(
+	File "/workspace/scratch/337c309bc660/hepta-ci-fix/tls-patch/bazel-output/1267fca677de4c7df8ffc8a563b1bcbd/external/rules_python+/python/private/pypi/hub_builder.bzl", line 58, column 47, in lambda
+		pip_parse = lambda *a, **k: _pip_parse(self, *a, **k),
+	File "/workspace/scratch/337c309bc660/hepta-ci-fix/tls-patch/bazel-output/1267fca677de4c7df8ffc8a563b1bcbd/external/rules_python+/python/private/pypi/hub_builder.bzl", line 125, column 22, in _pip_parse
+		_create_whl_repos(
+	File "/workspace/scratch/337c309bc660/hepta-ci-fix/tls-patch/bazel-output/1267fca677de4c7df8ffc8a563b1bcbd/external/rules_python+/python/private/pypi/hub_builder.bzl", line 383, column 50, in _create_whl_repos
+		requirements_by_platform = parse_requirements(
+	File "/workspace/scratch/337c309bc660/hepta-ci-fix/tls-patch/bazel-output/1267fca677de4c7df8ffc8a563b1bcbd/external/rules_python+/python/private/pypi/parse_requirements.bzl", line 93, column 28, in parse_requirements
+		contents = ctx.read(file)
+Error in read: java.io.FileNotFoundException: /workspace/scratch/337c309bc660/hepta-ci-fix/tls-patch/bazel-output/1267fca677de4c7df8ffc8a563b1bcbd/external/v8+/bazel/requirements.txt (No such file or directory)
+ no actions running
+ no actions running
+ no actions running
+DEBUG: /workspace/scratch/337c309bc660/hepta-ci-fix/tls-patch/bazel-output/1267fca677de4c7df8ffc8a563b1bcbd/external/rules_rs+/rs/extensions.bzl:302:18: 
+WARNING: A well-known crate annotation exists for zstd-sys! Apply the following to your MODULE.bazel:
+
+```
+bazel_dep(name = "zstd", version = "1.5.7.bcr.1")
+
+crate = use_extension("@rules_rs//rs:extensions.bzl", "crate")
+crate.annotation(
+    crate = "zstd-sys",
+    gen_build_script = "off",
+    deps = ["@zstd"],
+)
+```
+
+You can disable this warning by configuring your MODULE.bazel like so:
+
+```
+crate.annotation(
+    crate = "zstd-sys",
+    gen_build_script = "on",
+)
+```
+ no actions running
+DEBUG: /workspace/scratch/337c309bc660/hepta-ci-fix/tls-patch/bazel-output/1267fca677de4c7df8ffc8a563b1bcbd/external/rules_rs+/rs/extensions.bzl:302:18: 
+WARNING: A well-known crate annotation exists for libgit2-sys! Apply the following to your MODULE.bazel:
+
+```
+bazel_dep(name = "libgit2", version = "1.9.1")
+
+crate = use_extension("@rules_rs//rs:extensions.bzl", "crate")
+crate.annotation(
+    crate = "libgit2-sys",
+    gen_build_script = "off",
+    deps = ["@libgit2"],
+)
+```
+
+You can disable this warning by configuring your MODULE.bazel like so:
+
+```
+crate.annotation(
+    crate = "libgit2-sys",
+    gen_build_script = "on",
+)
+```
+DEBUG: /workspace/scratch/337c309bc660/hepta-ci-fix/tls-patch/bazel-output/1267fca677de4c7df8ffc8a563b1bcbd/external/rules_rs+/rs/extensions.bzl:302:18: 
+WARNING: A well-known crate annotation exists for libssh2-sys! Apply the following to your MODULE.bazel:
+
+```
+bazel_dep(name = "libssh2", version = "1.11.1.bcr.1")
+
+crate = use_extension("@rules_rs//rs:extensions.bzl", "crate")
+crate.annotation(
+    crate = "libssh2-sys",
+    gen_build_script = "off",
+    deps = ["@libssh2"],
+)
+```
+
+You can disable this warning by configuring your MODULE.bazel like so:
+
+```
+crate.annotation(
+    crate = "libssh2-sys",
+    gen_build_script = "on",
+)
+```
+ no actions running
+ no actions running
+ERROR: error evaluating module extension @@rules_python+//python/extensions:pip.bzl%pip
+<root> (codex@_)
+
+ERROR: Results may be incomplete as 1 extension failed.
+
+error: recipe `bazel-lock-update` failed on line 150 with exit code 2

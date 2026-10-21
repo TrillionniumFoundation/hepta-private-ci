@@ -1,0 +1,24 @@
+{
+  "timestamp": "2026-10-21T01:24:28.796933+00:00",
+  "removed": [
+    {
+      "path": "/workspace/scratch/337c309bc660/hepta-ci-fix/deny-2968-f740.tar.gz",
+      "size": 20705636,
+      "reason": "downloaded source archive has been extracted; source and receipt retained"
+    },
+    {
+      "path": "/workspace/scratch/337c309bc660/hepta-ci-fix/tls-0cb77754.tar.gz",
+      "size": 20712186,
+      "reason": "downloaded source archive has been extracted; source and receipt retained"
+    },
+    {
+      "path": "/workspace/scratch/337c309bc660/hepta-ci-fix/tls-patch/bazel-output",
+      "reason": "isolated task-owned regenerable Bazel output/cache; original recipes passed; no active Bazel command"
+    },
+    {
+      "path": "/workspace/scratch/337c309bc660/hepta-ci-fix/tls-patch/bazel-cache",
+      "reason": "isolated task-owned regenerable Bazel output/cache; original recipes passed; no active Bazel command"
+    }
+  ],
+  "preserved": "source snapshots; baseline and generated locks; complete command logs and source/checksum receipts; borrowed caches untouched"
+}

@@ -1,0 +1,377 @@
+{
+  "schema": "hepta.sngr.reader-evidence-fixture.v1",
+  "evidence_class": "real_repository_source_manual_gold_not_model_experiment",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "base_commit": "f8c9419df6ddeb36ff8b522a50219981fb8d9345",
+  "note": "Gold answers were manually independently fixed from the cited exact source; full provenance can be rechecked against a local Git checkout. No real Laya evaluation is included.",
+  "tasks": [
+    {
+      "id": "ndu_ownership",
+      "question": "Which Hepta module owns bounded preference and recursive-utility projections?",
+      "choices": {
+        "A": "neuron.runtime",
+        "B": "utility.ndu",
+        "C": "objective.compiler",
+        "D": "inference.control"
+      },
+      "gold": "B",
+      "source": {
+        "path": "docs/learning/NDU_FBSDE_SPEC.md",
+        "blob_sha": "d7ecc62df03eb1cf9456787b5cc7d916c414b258",
+        "line": 11,
+        "quote": "`utility.ndu` owns bounded preference and recursive-utility projections for system, domain, agent and episode subjects."
+      },
+      "withheld_control": {
+        "path": "docs/learning/NDU_FBSDE_SPEC.md",
+        "blob_sha": "d7ecc62df03eb1cf9456787b5cc7d916c414b258",
+        "line": 47,
+        "quote": "Normalization, units, feature order, clipping locations, scales and conditional-moment conventions belong to immutable artifacts bound into `RunStartSnapshotV1`."
+      }
+    },
+    {
+      "id": "objective_owner",
+      "question": "Which module supplies immutable goals, legal action classes and hard constraints?",
+      "choices": {
+        "A": "learning.operator",
+        "B": "intelligence.control",
+        "C": "objective.compiler",
+        "D": "utility.ndu"
+      },
+      "gold": "C",
+      "source": {
+        "path": "docs/learning/NDU_FBSDE_SPEC.md",
+        "blob_sha": "d7ecc62df03eb1cf9456787b5cc7d916c414b258",
+        "line": 11,
+        "quote": "`objective.compiler` supplies immutable goals, legal action classes and hard constraints."
+      },
+      "withheld_control": {
+        "path": "docs/learning/NDU_FBSDE_SPEC.md",
+        "blob_sha": "d7ecc62df03eb1cf9456787b5cc7d916c414b258",
+        "line": 47,
+        "quote": "Normalization, units, feature order, clipping locations, scales and conditional-moment conventions belong to immutable artifacts bound into `RunStartSnapshotV1`."
+      }
+    },
+    {
+      "id": "z_covariance",
+      "question": "What conditional regression equation determines the NDU stochastic sensitivity Z?",
+      "choices": {
+        "A": "Z_k Sigma_k = B_k",
+        "B": "Z_k = B_k for all drivers",
+        "C": "Z_k = B_k / dt_k always",
+        "D": "Z_k Sigma_k = -B_k"
+      },
+      "gold": "A",
+      "source": {
+        "path": "docs/learning/NDU_FBSDE_SPEC.md",
+        "blob_sha": "d7ecc62df03eb1cf9456787b5cc7d916c414b258",
+        "line": 75,
+        "quote": "Z_k Sigma_k = B_k."
+      },
+      "withheld_control": {
+        "path": "docs/learning/NDU_FBSDE_SPEC.md",
+        "blob_sha": "d7ecc62df03eb1cf9456787b5cc7d916c414b258",
+        "line": 47,
+        "quote": "Normalization, units, feature order, clipping locations, scales and conditional-moment conventions belong to immutable artifacts bound into `RunStartSnapshotV1`."
+      }
+    },
+    {
+      "id": "z_dt_condition",
+      "question": "Under what covariance condition does the backward solve reduce to B_k divided by dt_k?",
+      "choices": {
+        "A": "For any singular covariance",
+        "B": "Whenever the model uses whitened vectors",
+        "C": "Whenever f_phi = 0",
+        "D": "Only when Sigma_k = dt_k I"
+      },
+      "gold": "D",
+      "source": {
+        "path": "docs/learning/NDU_FBSDE_SPEC.md",
+        "blob_sha": "d7ecc62df03eb1cf9456787b5cc7d916c414b258",
+        "line": 77,
+        "quote": "Only when `Sigma_k = dt_k I` does the result reduce to `B_k / dt_k`."
+      },
+      "withheld_control": {
+        "path": "docs/learning/NDU_FBSDE_SPEC.md",
+        "blob_sha": "d7ecc62df03eb1cf9456787b5cc7d916c414b258",
+        "line": 47,
+        "quote": "Normalization, units, feature order, clipping locations, scales and conditional-moment conventions belong to immutable artifacts bound into `RunStartSnapshotV1`."
+      }
+    },
+    {
+      "id": "outcome_owner",
+      "question": "How is the NDU terminal outcome Y_T characterized?",
+      "choices": {
+        "A": "A self-generated reward score",
+        "B": "An independently observed terminal outcome",
+        "C": "A frozen encoder embedding",
+        "D": "A user grant token"
+      },
+      "gold": "B",
+      "source": {
+        "path": "docs/learning/NDU_FBSDE_SPEC.md",
+        "blob_sha": "d7ecc62df03eb1cf9456787b5cc7d916c414b258",
+        "line": 60,
+        "quote": "`J` is an immutable objective; `Y_T` is an independently observed terminal outcome."
+      },
+      "withheld_control": {
+        "path": "docs/learning/NDU_FBSDE_SPEC.md",
+        "blob_sha": "d7ecc62df03eb1cf9456787b5cc7d916c414b258",
+        "line": 47,
+        "quote": "Normalization, units, feature order, clipping locations, scales and conditional-moment conventions belong to immutable artifacts bound into `RunStartSnapshotV1`."
+      }
+    },
+    {
+      "id": "future_leakage",
+      "question": "Are future outcomes permitted as features during runtime inference?",
+      "choices": {
+        "A": "Yes, if the state dimension is bounded",
+        "B": "Yes, if labels are anonymized",
+        "C": "No, they may label training rows but cannot enter runtime features",
+        "D": "Yes, only for the final Cell"
+      },
+      "gold": "C",
+      "source": {
+        "path": "docs/learning/NDU_FBSDE_SPEC.md",
+        "blob_sha": "d7ecc62df03eb1cf9456787b5cc7d916c414b258",
+        "line": 86,
+        "quote": "Future outcomes may label training rows but cannot enter runtime features."
+      },
+      "withheld_control": {
+        "path": "docs/learning/NDU_FBSDE_SPEC.md",
+        "blob_sha": "d7ecc62df03eb1cf9456787b5cc7d916c414b258",
+        "line": 47,
+        "quote": "Normalization, units, feature order, clipping locations, scales and conditional-moment conventions belong to immutable artifacts bound into `RunStartSnapshotV1`."
+      }
+    },
+    {
+      "id": "stochastic_qualification",
+      "question": "Does the current NDU specification establish production activation of learned stochastic FBSDE?",
+      "choices": {
+        "A": "No: it defines a deterministic baseline and separately qualified stochastic candidate",
+        "B": "Yes, based on the source symbol inventory",
+        "C": "Yes, after 64 fixed-point iterations",
+        "D": "Yes, when the residual is numerically small"
+      },
+      "gold": "A",
+      "source": {
+        "path": "docs/learning/NDU_FBSDE_SPEC.md",
+        "blob_sha": "d7ecc62df03eb1cf9456787b5cc7d916c414b258",
+        "line": 13,
+        "quote": "This specification defines a deterministic implementation baseline and a separately qualified stochastic candidate. It does not establish dynamic-preference efficacy, production activation, biological equivalence, or autonomous software evolution."
+      },
+      "withheld_control": {
+        "path": "docs/learning/NDU_FBSDE_SPEC.md",
+        "blob_sha": "d7ecc62df03eb1cf9456787b5cc7d916c414b258",
+        "line": 47,
+        "quote": "Normalization, units, feature order, clipping locations, scales and conditional-moment conventions belong to immutable artifacts bound into `RunStartSnapshotV1`."
+      }
+    },
+    {
+      "id": "neuron_backend",
+      "question": "Which trainable backend is initially proposed for DecisionCell?",
+      "choices": {
+        "A": "A mandatory custom CUDA kernel",
+        "B": "A permanently fixed 421M decoder",
+        "C": "An on-chain consensus model",
+        "D": "Laya as the initial candidate, with backend-neutral ports"
+      },
+      "gold": "D",
+      "source": {
+        "path": "docs/learning/NEURAL_BIOMIMICRY_SPEC.md",
+        "blob_sha": "edd13a6bfe240b93fb2a7836c7f98de68a34660d",
+        "line": 18,
+        "quote": "Laya is its initial trainable backend candidate;"
+      },
+      "withheld_control": {
+        "path": "docs/learning/NEURAL_BIOMIMICRY_SPEC.md",
+        "blob_sha": "edd13a6bfe240b93fb2a7836c7f98de68a34660d",
+        "line": 50,
+        "quote": "All dimensions, normalization, top-k policy, inhibitory graph, thresholds, decay constants and fixed-point scales are artifact fields."
+      }
+    },
+    {
+      "id": "neuron_weights",
+      "question": "Can Hepta runtime directly mutate the selected local Cell weights W during a run?",
+      "choices": {
+        "A": "Yes, after each forward step",
+        "B": "No, it only accumulates a future immutable proposal or sufficient statistics",
+        "C": "Yes, if the objective score increases",
+        "D": "Yes, upon a sibling Cell split"
+      },
+      "gold": "B",
+      "source": {
+        "path": "docs/learning/NEURAL_BIOMIMICRY_SPEC.md",
+        "blob_sha": "edd13a6bfe240b93fb2a7836c7f98de68a34660d",
+        "line": 91,
+        "quote": "Runtime never mutates selected `W`. It accumulates an immutable proposal or sufficient statistics for a future artifact."
+      },
+      "withheld_control": {
+        "path": "docs/learning/NEURAL_BIOMIMICRY_SPEC.md",
+        "blob_sha": "edd13a6bfe240b93fb2a7836c7f98de68a34660d",
+        "line": 50,
+        "quote": "All dimensions, normalization, top-k policy, inhibitory graph, thresholds, decay constants and fixed-point scales are artifact fields."
+      }
+    },
+    {
+      "id": "neuron_sharing",
+      "question": "How are shared Cell tensor parameters treated?",
+      "choices": {
+        "A": "They are copied to each cell and mutated live",
+        "B": "They are shared as one mutable optimizer across principals",
+        "C": "They are immutable and physically deduplicated when scope/runtime permit",
+        "D": "They are always deleted after each token"
+      },
+      "gold": "C",
+      "source": {
+        "path": "docs/learning/NEURAL_BIOMIMICRY_SPEC.md",
+        "blob_sha": "edd13a6bfe240b93fb2a7836c7f98de68a34660d",
+        "line": 114,
+        "quote": "are immutable and physically deduplicated where scope and runtime permit."
+      },
+      "withheld_control": {
+        "path": "docs/learning/NEURAL_BIOMIMICRY_SPEC.md",
+        "blob_sha": "edd13a6bfe240b93fb2a7836c7f98de68a34660d",
+        "line": 50,
+        "quote": "All dimensions, normalization, top-k policy, inhibitory graph, thresholds, decay constants and fixed-point scales are artifact fields."
+      }
+    },
+    {
+      "id": "circuit_decision",
+      "question": "What does the Neural Circuit Decide node do?",
+      "choices": {
+        "A": "Invoke a declared DecisionCell through inference/Intuition owners and expose candidate/policy/branch",
+        "B": "Issue new FinalUse authority",
+        "C": "Rewrite the event ledger",
+        "D": "Ignore the admitted action set"
+      },
+      "gold": "A",
+      "source": {
+        "path": "docs/modules/automation.taskflow/TECHNICAL.md",
+        "blob_sha": "a18df0b8b1f375191e0918da82a3a979f7ae89dc",
+        "line": 116,
+        "quote": "Invoke a declared DecisionCell through existing inference/Intuition owners; expose complete candidates, actual policy and selected branch"
+      },
+      "withheld_control": {
+        "path": "docs/modules/automation.taskflow/TECHNICAL.md",
+        "blob_sha": "a18df0b8b1f375191e0918da82a3a979f7ae89dc",
+        "line": 13,
+        "quote": "Documentation/source closure never implies deployment, independent acceptance, activation, promotion or release."
+      }
+    },
+    {
+      "id": "circuit_join",
+      "question": "What are the allowed Wait/Join semantics?",
+      "choices": {
+        "A": "Unlimited spin polling",
+        "B": "Implicit ownership of all organ state",
+        "C": "Automatic merge of all encoder weights",
+        "D": "Suspend for an event/deadline or explicitly join with all/any/quorum/timeout"
+      },
+      "gold": "D",
+      "source": {
+        "path": "docs/modules/automation.taskflow/TECHNICAL.md",
+        "blob_sha": "a18df0b8b1f375191e0918da82a3a979f7ae89dc",
+        "line": 119,
+        "quote": "Suspend on a registered event/deadline or combine named branches under explicit all/any/quorum/timeout semantics"
+      },
+      "withheld_control": {
+        "path": "docs/modules/automation.taskflow/TECHNICAL.md",
+        "blob_sha": "a18df0b8b1f375191e0918da82a3a979f7ae89dc",
+        "line": 13,
+        "quote": "Documentation/source closure never implies deployment, independent acceptance, activation, promotion or release."
+      }
+    },
+    {
+      "id": "circuit_effect",
+      "question": "Does an external effect acknowledgment automatically count as terminal success?",
+      "choices": {
+        "A": "Yes, in every case",
+        "B": "No: an effect is prepared through outbox and terminal success is not implied by acknowledgment",
+        "C": "Yes, if the Cell value is positive",
+        "D": "Only if the branch has two successors"
+      },
+      "gold": "B",
+      "source": {
+        "path": "docs/modules/automation.taskflow/TECHNICAL.md",
+        "blob_sha": "a18df0b8b1f375191e0918da82a3a979f7ae89dc",
+        "line": 120,
+        "quote": "Prepare intent in the existing outbox, then invoke the registered authorized owner; acknowledgment is not terminal success"
+      },
+      "withheld_control": {
+        "path": "docs/modules/automation.taskflow/TECHNICAL.md",
+        "blob_sha": "a18df0b8b1f375191e0918da82a3a979f7ae89dc",
+        "line": 13,
+        "quote": "Documentation/source closure never implies deployment, independent acceptance, activation, promotion or release."
+      }
+    },
+    {
+      "id": "inference_reuse",
+      "question": "Is matching state text alone sufficient to reuse question-conditioned embeddings?",
+      "choices": {
+        "A": "Yes, if text bytes match",
+        "B": "Yes, if results were cached for one hour",
+        "C": "No; matching state text alone does not justify such reuse",
+        "D": "Yes, for all language routers"
+      },
+      "gold": "C",
+      "source": {
+        "path": "docs/modules/inference.control/TECHNICAL.md",
+        "blob_sha": "fbaed3bc0efa82d3f7a8038c4abeb1a10426a412",
+        "line": 97,
+        "quote": "Do not assume question-conditioned embeddings are reusable merely because state text matches."
+      },
+      "withheld_control": {
+        "path": "docs/modules/inference.control/TECHNICAL.md",
+        "blob_sha": "fbaed3bc0efa82d3f7a8038c4abeb1a10426a412",
+        "line": 93,
+        "quote": "Configuration is immutable for one process generation."
+      }
+    },
+    {
+      "id": "ndu_zero_noise",
+      "question": "What is implemented in the native recursive.rs reference, rather than a learned FBSDE?",
+      "choices": {
+        "A": "Finite-horizon scalar zero-noise recursive utility",
+        "B": "A validated fully coupled neural FBSDE solver",
+        "C": "A multimodal diffusion decoder",
+        "D": "A production learned preference model"
+      },
+      "gold": "A",
+      "source": {
+        "path": "codex-rs/hepta-ndu/src/recursive.rs",
+        "blob_sha": "e471d92e69c160f9f5c82727e1ce6b7a1be0ed2d",
+        "line": 1,
+        "quote": "Finite-horizon, scalar, zero-noise recursive utility. Not a learned FBSDE."
+      },
+      "withheld_control": {
+        "path": "codex-rs/hepta-ndu/src/recursive.rs",
+        "blob_sha": "e471d92e69c160f9f5c82727e1ce6b7a1be0ed2d",
+        "line": 66,
+        "quote": "No current preference, outcome, selected artifact or objective is mutated."
+      }
+    },
+    {
+      "id": "ndu_hard_constraints",
+      "question": "Can hard privacy, deletion, authority and resource floors be compensated by positive NDU utility?",
+      "choices": {
+        "A": "Yes, when risk is below average",
+        "B": "Yes, once a critic is frozen",
+        "C": "Yes, if a user-supplied prompt says so",
+        "D": "No, these are hard constraints, not compensable utility dimensions"
+      },
+      "gold": "D",
+      "source": {
+        "path": "docs/readiness/NDU_SYSTEM_EXECUTION.md",
+        "blob_sha": "9e21bd587e229de3a0b51d11c3d6e8de81505c6b",
+        "line": 11,
+        "quote": "Authority, truth, privacy, deletion, writer ownership, emergency-stop state and hard risk/resource floors are constraints; they never become compensable utility dimensions."
+      },
+      "withheld_control": {
+        "path": "docs/readiness/NDU_SYSTEM_EXECUTION.md",
+        "blob_sha": "9e21bd587e229de3a0b51d11c3d6e8de81505c6b",
+        "line": 13,
+        "quote": "Presence of the durable writer source is not production activation."
+      }
+    }
+  ]
+}

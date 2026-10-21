@@ -1,0 +1,71 @@
+{
+  "schema_version": 1,
+  "collected_at_utc": "2026-10-21T01:00:04.398526+00:00",
+  "baseline_commit": "f740aaef183e0c1724871189fe1d72fc5204a49d",
+  "baseline_runtime_sha256": "d5e50b8640d38f5e55c82cbe5b9b2c4b77f6bb3c207a9adb55da4e576d81d7e3",
+  "prior_review_runtime_sha256": "4a0279f0615e52911048c67ea343b9d77fbf98db9ce32ca66c236a0a4e7c1146",
+  "prior_review_difference": "Only one trailing blank line removed in published source; no semantic change.",
+  "candidate_files": [
+    {
+      "path": "scripts/hepta_ci_exec.py",
+      "sha256": "e0ea12e9c346adf023e6e88f0fa33fe86174d0f2fd6eb1d3c377a208a3d1ea32",
+      "git_blob_sha": "ba7c4eee0a8c4fdaa385993fd300caf327d329f2",
+      "bytes": 13739
+    },
+    {
+      "path": "scripts/test_hepta_ci_exec.py",
+      "sha256": "4065d853071ed13b47c4b30a07f027c2eba18d735d93420bde02e3c60e8655e9",
+      "git_blob_sha": "54adc0f2f3da7bf7de686f0cbca716e835618592",
+      "bytes": 27179
+    }
+  ],
+  "patch_sha256": "e492b567d28e11621a1201003daff8a716d4448969d9bc20590605f89e69608c",
+  "baseline_tests": {
+    "command": "python3 -m unittest discover -s scripts -p 'test_hepta_ci_exec*.py' -v",
+    "cwd_suffix": "index-trust-wave/base",
+    "passed": 49,
+    "failed": 0,
+    "skipped": 0
+  },
+  "regression_before": {
+    "baseline": "f740aaef183e0c1724871189fe1d72fc5204a49d",
+    "tests_run": 5,
+    "failure_assertions": 10,
+    "errors": 0,
+    "unexpected_green": false
+  },
+  "candidate_tests": {
+    "command": "python3 -m unittest discover -s scripts -p 'test_hepta_ci_exec*.py' -v",
+    "cwd_suffix": "index-trust-wave/candidate",
+    "passed": 54,
+    "failed": 0,
+    "skipped": 0,
+    "wall_seconds": 12.153,
+    "stdout_tool_chunks": [
+      "d9ddce",
+      "1a8a86"
+    ],
+    "full_stdout_saved": false
+  },
+  "format": {
+    "just_fmt_exit_code": 0,
+    "ruff_version": "0.15.13",
+    "ruff_format_check_exit_code": 0,
+    "ruff_output": "2 files already formatted",
+    "git_diff_check_exit_code": 0
+  },
+  "behavior": [
+    "Git receipt probes use --no-replace-objects and --no-optional-locks with core.fsmonitor=false.",
+    "NUL-delimited ls-files -v records with repository-root pathspec detect assume-unchanged and skip-worktree independently of caller directory.",
+    "Any such index flag marks identity dirty, even when bytes are unchanged; no new receipt schema fields.",
+    "Real negative controls prove stale fsmonitor can mask mutations in baseline; fixed probes bypass it without invoking hook or modifying index bytes.",
+    "Post-command identity detects commands that set hidden flags and mutate source after dispatch."
+  ],
+  "limits": [
+    "Local Git/Python behavioral qualification only; hosted exact-head required CI remains separate.",
+    "Not an authentication or sandbox boundary against arbitrary malicious local Git configuration, filters, wrappers, concurrent source edits or command behavior.",
+    "Isolated candidate fixture repository is a tracked subset of the exact baseline, not the production repository head."
+  ],
+  "independent_review": "PENDING research_state frozen-candidate review",
+  "production_activation_allowed": false
+}
