@@ -3494,8 +3494,7 @@ mod final_use_dispatch_tests {
     use tempfile::TempDir;
 
     fn agent() -> Result<AgentId, String> {
-        AgentId::parse("018f4f72-5f8f-7cc1-8f55-df9fb3aa2cff")
-            .map_err(|error| error.to_string())
+        AgentId::parse("018f4f72-5f8f-7cc1-8f55-df9fb3aa2cff").map_err(|error| error.to_string())
     }
 
     async fn store(temp: &TempDir) -> Result<CognitiveStore, String> {
@@ -3670,7 +3669,8 @@ mod final_use_dispatch_tests {
                     "occurrence:final-use:1",
                     target.destination_id(),
                     payload_one,
-                ).expect("fixture operation"),
+                )
+                .expect("fixture operation"),
                 "memory.write",
                 payload_one,
             )
@@ -3685,7 +3685,8 @@ mod final_use_dispatch_tests {
             binding.clone(),
             "final-use-good",
             test_nonce("final-use-good").expect("fixture nonce"),
-        ).expect("signed final-use fixture");
+        )
+        .expect("signed final-use fixture");
         let dispatched = dispatcher
             .dispatch(&writer, &signed, &binding, queued)
             .await
@@ -3701,7 +3702,8 @@ mod final_use_dispatch_tests {
                     "occurrence:final-use:2",
                     target.destination_id(),
                     payload_two,
-                ).expect("fixture operation"),
+                )
+                .expect("fixture operation"),
                 "memory.write",
                 payload_two,
             )
@@ -3717,7 +3719,8 @@ mod final_use_dispatch_tests {
             bad_binding.clone(),
             "final-use-bad-destination",
             test_nonce("final-use-bad-destination").expect("fixture nonce"),
-        ).expect("signed final-use fixture");
+        )
+        .expect("signed final-use fixture");
         assert!(matches!(
             dispatcher
                 .dispatch(&writer, &bad_signed, &bad_binding, queued_bad.clone())
@@ -3769,7 +3772,8 @@ mod final_use_dispatch_tests {
                     "occurrence:claim-lease",
                     "destination:cognitive-store",
                     payload,
-                ).expect("fixture operation"),
+                )
+                .expect("fixture operation"),
                 "memory.write",
                 payload,
             )
@@ -3817,7 +3821,8 @@ mod final_use_dispatch_tests {
                     "occurrence:queued-handoff",
                     "destination:cognitive-store",
                     handoff_payload,
-                ).expect("fixture operation"),
+                )
+                .expect("fixture operation"),
                 "memory.write",
                 handoff_payload,
             )
@@ -3892,7 +3897,8 @@ mod final_use_dispatch_tests {
             binding.clone(),
             "final-use-handoff",
             test_nonce("final-use-handoff").expect("fixture nonce"),
-        ).expect("signed final-use fixture");
+        )
+        .expect("signed final-use fixture");
         let result = dispatcher
             .dispatch(&successor, &signed, &binding, inherited)
             .await
