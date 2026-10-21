@@ -1,0 +1,92 @@
+name: NDU output portfolio dedicated pilot
+
+on:
+  push:
+    branches: [research/ndu-output-portfolio-20261021]
+    # Publish this request file only after the complete experiment is ready.
+    paths: [experiments/multimodal_output_portfolio/CLOUD_RUN_REQUEST.json]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ndu-output-portfolio-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  dedicated-pilot:
+    if: github.repository == 'TrillionniumFoundation/hepta-private-ci' && github.ref == 'refs/heads/research/ndu-output-portfolio-20261021'
+    runs-on:
+      group: trillionnium-android-gpu
+      labels: [self-hosted, linux, x64]
+    timeout-minutes: 45
+    env:
+      HEPTA_EXPERIMENT_OUTPUT: ${{ runner.temp }}/ndu-output-portfolio/${{ github.run_id }}-${{ github.run_attempt }}
+      HEPTA_EXPERIMENT_EXPECTED_SHA: ${{ github.sha }}
+      HEPTA_DEDICATED_RUNNER_GROUP: trillionnium-android-gpu
+    defaults:
+      run:
+        shell: bash
+    steps:
+      - name: Record dedicated runner assignment before checkout
+        run: |
+          set -euo pipefail
+          mkdir -p "$HEPTA_EXPERIMENT_OUTPUT"
+          {
+            printf 'expected_runner=desktop\n'
+            printf 'group_selector=trillionnium-android-gpu\n'
+            printf 'label_selector=self-hosted,linux,x64\n'
+            printf 'runner_name=%s\n' "$RUNNER_NAME"
+            printf 'runner_environment=%s\n' "${RUNNER_ENVIRONMENT:-}"
+            printf 'runner_os=%s\nrunner_arch=%s\n' "$RUNNER_OS" "$RUNNER_ARCH"
+            printf 'source_sha=%s\n' "$GITHUB_SHA"
+            printf 'run_id=%s\nrun_attempt=%s\n' "$GITHUB_RUN_ID" "$GITHUB_RUN_ATTEMPT"
+          } | tee "$HEPTA_EXPERIMENT_OUTPUT/workflow-assignment.txt"
+          if [[ "$RUNNER_NAME" != desktop || "${RUNNER_ENVIRONMENT:-}" != self-hosted || "$RUNNER_OS" != Linux || "$RUNNER_ARCH" != X64 ]]; then
+            printf 'identity_verified=false\nexit_code=78\n' >> "$HEPTA_EXPERIMENT_OUTPUT/workflow-assignment.txt"
+            exit 78
+          fi
+          printf 'identity_verified=true\nexit_code=0\n' >> "$HEPTA_EXPERIMENT_OUTPUT/workflow-assignment.txt"
+
+      - name: Checkout the exact requested source
+        id: checkout
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2; existing repository pin
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 1
+          persist-credentials: false
+
+      - name: Run the registered three-seed CPU protocol
+        id: experiment
+        run: bash experiments/multimodal_output_portfolio/run_cloud.sh "$HEPTA_EXPERIMENT_OUTPUT"
+
+      - name: Preserve workflow outcome and summary
+        if: always()
+        env:
+          PILOT_JOB_STATUS: ${{ job.status }}
+          PILOT_CHECKOUT_OUTCOME: ${{ steps.checkout.outcome }}
+          PILOT_EXPERIMENT_OUTCOME: ${{ steps.experiment.outcome }}
+        run: |
+          mkdir -p "$HEPTA_EXPERIMENT_OUTPUT"
+          {
+            printf 'job_status=%s\n' "$PILOT_JOB_STATUS"
+            printf 'checkout_outcome=%s\n' "$PILOT_CHECKOUT_OUTCOME"
+            printf 'experiment_outcome=%s\n' "$PILOT_EXPERIMENT_OUTCOME"
+            printf 'source_sha=%s\n' "$GITHUB_SHA"
+          } > "$HEPTA_EXPERIMENT_OUTPUT/workflow-outcome.txt"
+          {
+            printf '## NDU output portfolio dedicated pilot\n\n'
+            printf 'Runner: `%s`; source: `%s`.\n\n' "$RUNNER_NAME" "$GITHUB_SHA"
+            printf 'Checkout: `%s`; experiment step: `%s`.\n\n' "$PILOT_CHECKOUT_OUTCOME" "$PILOT_EXPERIMENT_OUTCOME"
+            printf 'The evidence artifact includes launcher/runtime receipts, installation logs, and every available experiment output. An allocated runner or successful launcher alone is not a successful scientific result.\n'
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Upload complete and partial evidence
+        if: always()
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f # v7.0.0; existing repository pin
+        with:
+          name: ndu-output-portfolio-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ env.HEPTA_EXPERIMENT_OUTPUT }}
+          if-no-files-found: error
+          retention-days: 30
