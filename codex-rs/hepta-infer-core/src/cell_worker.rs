@@ -218,13 +218,24 @@ impl SharedWorkerPoolV1 {
 }
 
 fn digest_batch(requests: &[QueuedCellRequestV1]) -> Digest32 {
-    let mut bytes = b"hepta.cell.worker.batch.v1".to_vec();
+    // V2 frames every identity and binds the selected cell as well as scope.
+    // Concatenating arbitrary IDs would alias (request="a", scope="bc")
+    // with (request="ab", scope="c") and omit cell identity entirely.
+    let mut bytes = b"hepta.cell.worker.batch.v2".to_vec();
+    bytes.extend_from_slice(&(requests.len() as u32).to_be_bytes());
     for request in requests {
-        bytes.extend_from_slice(request.request_id.as_str().as_bytes());
-        bytes.extend_from_slice(request.scope_id.as_str().as_bytes());
+        push_batch_id(&mut bytes, &request.request_id);
+        push_batch_id(&mut bytes, &request.cell_id);
+        push_batch_id(&mut bytes, &request.scope_id);
         bytes.extend_from_slice(&request.feature_generation.get().to_be_bytes());
     }
     Digest32::of_bytes(&bytes)
+}
+
+fn push_batch_id(bytes: &mut Vec<u8>, value: &StableId) {
+    let raw = value.as_str().as_bytes();
+    bytes.extend_from_slice(&(raw.len() as u32).to_be_bytes());
+    bytes.extend_from_slice(raw);
 }
 
 #[derive(Clone, Debug, Eq, PartialEq)]
@@ -247,3 +258,23 @@ impl std::error::Error for CellWorkerError {}
 #[cfg(test)]
 #[path = "cell_worker_tests.rs"]
 mod tests;
+
+#[cfg(test)]
+#[test]
+fn group_digest_frames_id_boundaries_and_cell_identity() {
+    fn request(request_id: &str, cell_id: &str, scope_id: &str) -> QueuedCellRequestV1 {
+        QueuedCellRequestV1 {
+            request_id: StableId::new(request_id).expect("request"),
+            cell_id: StableId::new(cell_id).expect("cell"),
+            scope_id: StableId::new(scope_id).expect("scope"),
+            feature_generation: Generation::new(1).expect("generation"),
+        }
+    }
+
+    let baseline = digest_batch(&[request("a", "cell:one", "bc")]);
+    let boundary_collision = digest_batch(&[request("ab", "cell:one", "c")]);
+    let different_cell = digest_batch(&[request("a", "cell:two", "bc")]);
+    assert_ne!(baseline, boundary_collision, "IDs must be length framed");
+    assert_ne!(baseline, different_cell, "cell identity must be included");
+    assert_ne!(baseline, digest_batch(&[]), "batch size must be included");
+}
