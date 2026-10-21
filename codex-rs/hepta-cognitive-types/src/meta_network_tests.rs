@@ -183,7 +183,10 @@ fn successor(route: &MetaNetworkRouteReceiptV1) -> MetaNetworkNextSnapshotCandid
 fn sparse_route_suppresses_conflict_and_composes_evidence_link() {
     let plan = base_plan();
     let result = receipt(&plan);
-    assert_eq!(result.disposition, MetaNetworkDispositionV1::AdvisorySelection);
+    assert_eq!(
+        result.disposition,
+        MetaNetworkDispositionV1::AdvisorySelection
+    );
     assert_eq!(
         result.selected_cell_ids,
         vec![id("memory-cell:episodic:1"), id("memory-cell:procedural:1")]
@@ -353,20 +356,17 @@ fn learning_is_a_bound_next_snapshot_candidate_only() {
 #[test]
 fn strict_canonical_wire_roundtrips_and_rejects_unknown_fields() {
     let value = base_plan();
-    let encoded = encode_wire_v1(&value)
-        .unwrap_or_else(|error| panic!("encode plan: {error:?}"));
-    let decoded: MetaNetworkPlanV1 = decode_wire_v1(&encoded)
-        .unwrap_or_else(|error| panic!("decode plan: {error:?}"));
+    let encoded = encode_wire_v1(&value).unwrap_or_else(|error| panic!("encode plan: {error:?}"));
+    let decoded: MetaNetworkPlanV1 =
+        decode_wire_v1(&encoded).unwrap_or_else(|error| panic!("decode plan: {error:?}"));
     assert_eq!(value, decoded);
     let route = receipt(&value);
-    let wire = encode_wire_v1(&route)
-        .unwrap_or_else(|error| panic!("encode receipt: {error:?}"));
-    let decoded: MetaNetworkRouteReceiptV1 = decode_wire_v1(&wire)
-        .unwrap_or_else(|error| panic!("decode receipt: {error:?}"));
+    let wire = encode_wire_v1(&route).unwrap_or_else(|error| panic!("encode receipt: {error:?}"));
+    let decoded: MetaNetworkRouteReceiptV1 =
+        decode_wire_v1(&wire).unwrap_or_else(|error| panic!("decode receipt: {error:?}"));
     assert_eq!(route, decoded);
 
-    let mut json = serde_json::to_value(&value)
-        .unwrap_or_else(|error| panic!("value: {error:?}"));
+    let mut json = serde_json::to_value(&value).unwrap_or_else(|error| panic!("value: {error:?}"));
     json["unexpectedAuthority"] = serde_json::json!("allow");
     assert!(serde_json::from_value::<MetaNetworkPlanV1>(json).is_err());
 }
