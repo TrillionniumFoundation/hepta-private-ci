@@ -996,6 +996,42 @@ fn pre_tick_shadow_rejects_shared_generation_drift_even_if_every_cell_is_deferre
 }
 
 #[test]
+fn empty_sparse_admission_plan_rejects_replay_for_a_different_cue() {
+    let fixture = shadow_fixture(true);
+    let policy = meta_policy(&fixture);
+    let initial = crate::plan_memory_meta_pre_ticks_shadow_v1(
+        &policy,
+        &fixture.cue,
+        &fixture.snapshot,
+        &[],
+    )
+    .unwrap_or_else(|error| panic!("empty original plan: {error:?}"));
+
+    let mut changed_cue = fixture.cue.clone();
+    changed_cue.request_digest = Digest32::of_bytes(b"memory-meta-another-request");
+    let changed = crate::plan_memory_meta_pre_ticks_shadow_v1(
+        &policy,
+        &changed_cue,
+        &fixture.snapshot,
+        &[],
+    )
+    .unwrap_or_else(|error| panic!("empty changed plan: {error:?}"));
+
+    assert!(initial.admitted_cell_ids.is_empty());
+    assert!(changed.admitted_cell_ids.is_empty());
+    assert_ne!(initial.admission_input_digest, changed.admission_input_digest);
+    assert_ne!(initial.admission_plan_digest, changed.admission_plan_digest);
+    assert!(matches!(
+        initial.validate_against(&policy, &changed_cue, &fixture.snapshot, &[]),
+        Err(crate::MemoryMetaBatchErrorV1::Contract(
+            codex_hepta_cognitive_types::hnmf::HnmfContractError::Conflict(
+                "memory meta pre-tick source binding"
+            )
+        ))
+    ));
+}
+
+#[test]
 fn checked_pre_tick_rejects_late_ledger_denial_before_any_tick() {
     let fixture = shadow_fixture(true);
     let first = meta_spec(&fixture);
