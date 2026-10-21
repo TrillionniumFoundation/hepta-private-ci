@@ -222,7 +222,6 @@ def _verify_optimizer_storage_isolation(tensors: list[torch.Tensor]) -> None:
             raise LatentBridgeError("overlapping offline optimizer parameter/storage")
 
 
-
 def _verify_optimizer_lifecycle(optimizer: torch.optim.Optimizer) -> None:
     """Only stock optimizer lifecycle methods may mutate offline training state.
 
