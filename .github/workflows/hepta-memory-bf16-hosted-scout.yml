@@ -49,6 +49,7 @@ jobs:
           set -euo pipefail
           mkdir -p /tmp/memory-bf16-host-census/source
           cp scripts/memory_cell/strong_rag_cpu_scout.py /tmp/memory-bf16-host-census/source/
+          cp scripts/memory_cell/strong_rag_resource_snapshot.py /tmp/memory-bf16-host-census/source/
           cp scripts/memory_cell/strong_rag_host_gate.py /tmp/memory-bf16-host-census/source/
           cp scripts/memory_cell/test_strong_rag_cpu_scout.py /tmp/memory-bf16-host-census/source/
           cp .github/workflows/hepta-memory-bf16-hosted-scout.yml /tmp/memory-bf16-host-census/source/

@@ -7,12 +7,13 @@ future-host guarantee. This never stages weights, accesses test labels or trains
 import argparse
 import json
 import os
-from pathlib import Path
 import platform
 import re
 import sys
+from pathlib import Path
 
 from strong_rag_host_gate import assess
+from strong_rag_resource_snapshot import write_snapshot
 
 SCHEMA = "hepta.memory-strong-rag.host-scout.v1"
 STANDARD_IMAGES = frozenset(("ubuntu-22.04", "ubuntu-24.04", "ubuntu-26.04"))
@@ -66,6 +67,12 @@ def main():
         stream.flush()
         os.fsync(stream.fileno())
     print(json.dumps(result, sort_keys=True))
+    resources = write_snapshot(
+        args.output.with_name(args.output.stem + "-resources.json"),
+        source_commit=args.source_commit,
+        runner_image=args.runner_image,
+    )
+    print(json.dumps(resources, sort_keys=True))
     # A completed scout is not a successful BF16-accelerated model experiment.
     return 0
 

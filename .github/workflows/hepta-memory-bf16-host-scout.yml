@@ -51,6 +51,17 @@ jobs:
             --source-commit "$SCOUT_SHA" \
             --runner-image "$SCOUT_IMAGE" \
             --output "$RUNNER_TEMP/memorycell-bf16-scout/$SCOUT_IMAGE.json"
+      - name: Retain the exact read-only resource collector source
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          evidence="$RUNNER_TEMP/memorycell-bf16-scout/source"
+          mkdir -p "$evidence"
+          cp scripts/memory_cell/strong_rag_cpu_scout.py scripts/memory_cell/strong_rag_host_gate.py scripts/memory_cell/strong_rag_resource_snapshot.py scripts/memory_cell/test_strong_rag_cpu_scout.py "$evidence/"
+          cp .github/workflows/hepta-memory-bf16-host-scout.yml "$evidence/"
+          git rev-parse HEAD > "$evidence/source-commit.txt"
+          git rev-parse HEAD^{tree} > "$evidence/source-tree.txt"
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         if: always()
         with:
