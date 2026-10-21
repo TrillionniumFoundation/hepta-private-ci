@@ -328,6 +328,20 @@ impl ExecutionReceiptV1 {
         {
             return Err(ExecutionContractError::MissingTerminalOutcome);
         }
+        // Terminal success can never be replayed, rolled back as if unknown,
+        // or released for a fresh attempt by changing only recovery metadata.
+        if self.status == ExecutionStatusV1::Completed
+            && self.recovery != RecoveryDispositionV1::None
+        {
+            return Err(ExecutionContractError::UnsafeRetryPosture);
+        }
+        // Only an explicit pre-admission rejection may authorize retrying a
+        // new attempt. A failed or unknown effect is reconcile-only.
+        if self.recovery == RecoveryDispositionV1::RetryBeforeAdmission
+            && self.status != ExecutionStatusV1::Rejected
+        {
+            return Err(ExecutionContractError::UnsafeRetryPosture);
+        }
         Ok(())
     }
 }
@@ -363,6 +377,9 @@ impl RuntimeReceiptV1 {
         ) && !self.tool_outcome.terminal_observed
         {
             return Err(ExecutionContractError::StatusOutcomeMismatch);
+        }
+        if self.execution.status == ExecutionStatusV1::Completed && self.tool_outcome.retryable {
+            return Err(ExecutionContractError::UnsafeRetryPosture);
         }
         Ok(())
     }
@@ -412,6 +429,7 @@ pub enum ExecutionContractError {
     ReceiptBindingMismatch,
     OutcomeDigestMismatch,
     StatusOutcomeMismatch,
+    UnsafeRetryPosture,
     WriterIdentityCollision,
     GenerationSelfPredecessor,
     NonSuccessorGeneration,

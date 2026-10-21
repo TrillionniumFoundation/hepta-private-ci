@@ -279,3 +279,89 @@ fn terminal_tool_outcome_has_a_nonzero_digest() {
     outcome.validate().expect("valid terminal outcome");
     assert!(!outcome.outcome_digest().is_zero());
 }
+
+#[test]
+fn completed_receipt_cannot_replay_reconcile_or_rollback() {
+    let intent = intent();
+    let mut receipt = ExecutionReceiptV1 {
+        operation_id: intent.cell.operation_id.clone(),
+        intent_digest: intent.cell.intent_digest(),
+        generation: intent.cell.generation,
+        final_payload_digest: intent.cell.final_payload.clone(),
+        outcome_digest: Some(digest("observed-completion")),
+        status: ExecutionStatusV1::Completed,
+        recovery: RecoveryDispositionV1::None,
+        authority: AuthorityPosture::DENY_ALL,
+    };
+    assert_eq!(receipt.validate_against(&intent.cell), Ok(()));
+    for recovery in [
+        RecoveryDispositionV1::RetryBeforeAdmission,
+        RecoveryDispositionV1::ReconcileSameOperation,
+        RecoveryDispositionV1::Quarantine,
+        RecoveryDispositionV1::RollbackToPredecessor,
+    ] {
+        receipt.recovery = recovery;
+        assert_eq!(
+            receipt.validate_against(&intent.cell),
+            Err(ExecutionContractError::UnsafeRetryPosture)
+        );
+    }
+}
+
+#[test]
+fn unknown_effect_does_not_become_preadmission_retry() {
+    let intent = intent();
+    let mut receipt = ExecutionReceiptV1 {
+        operation_id: intent.cell.operation_id.clone(),
+        intent_digest: intent.cell.intent_digest(),
+        generation: intent.cell.generation,
+        final_payload_digest: intent.cell.final_payload.clone(),
+        outcome_digest: None,
+        status: ExecutionStatusV1::Indeterminate,
+        recovery: RecoveryDispositionV1::RetryBeforeAdmission,
+        authority: AuthorityPosture::DENY_ALL,
+    };
+    assert_eq!(
+        receipt.validate_against(&intent.cell),
+        Err(ExecutionContractError::UnsafeRetryPosture)
+    );
+    receipt.recovery = RecoveryDispositionV1::ReconcileSameOperation;
+    assert_eq!(receipt.validate_against(&intent.cell), Ok(()));
+    receipt.status = ExecutionStatusV1::Rejected;
+    receipt.recovery = RecoveryDispositionV1::RetryBeforeAdmission;
+    assert_eq!(receipt.validate_against(&intent.cell), Ok(()));
+}
+
+#[test]
+fn completed_native_tool_cannot_claim_retryable_outcome() {
+    let intent = intent();
+    let mut outcome = ToolOutcomeV1 {
+        terminal_observed: true,
+        exit_code: Some(0),
+        stdout_digest: Some(digest("observed-stdout")),
+        stderr_digest: None,
+        retryable: true,
+    };
+    let mut receipt = RuntimeReceiptV1 {
+        execution: ExecutionReceiptV1 {
+            operation_id: intent.cell.operation_id.clone(),
+            intent_digest: intent.cell.intent_digest(),
+            generation: intent.cell.generation,
+            final_payload_digest: intent.cell.final_payload.clone(),
+            outcome_digest: Some(outcome.outcome_digest()),
+            status: ExecutionStatusV1::Completed,
+            recovery: RecoveryDispositionV1::None,
+            authority: AuthorityPosture::DENY_ALL,
+        },
+        runtime_intent_digest: intent.intent_digest(),
+        tool_outcome: outcome.clone(),
+    };
+    assert_eq!(
+        receipt.validate_against(&intent),
+        Err(ExecutionContractError::UnsafeRetryPosture)
+    );
+    outcome.retryable = false;
+    receipt.execution.outcome_digest = Some(outcome.outcome_digest());
+    receipt.tool_outcome = outcome;
+    assert_eq!(receipt.validate_against(&intent), Ok(()));
+}
