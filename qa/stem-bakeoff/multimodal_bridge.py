@@ -251,19 +251,41 @@ def shadow_distill_step(student: nn.Module, slotizer: MultimodalSlotizer,
             or target.device != slots.global_feature.device
             or target.dtype != slots.global_feature.dtype):
         raise LatentBridgeError("teacher target incompatible with student")
-    # This binds the actual paired bytes, NOT independently attested provenance.
+    # P18 binds source bytes, but a changed Slotizer can yield different training
+    # slots with the same source/target receipt. Bind the ACTUAL differentiable
+    # Student input bytes and prevent observable input mutation by Student hooks.
+    student_input = slots.slots.clone()
+    if (student_input.ndim != 3
+            or student_input.shape != (target.shape[0], slotizer.slots, target.shape[1])
+            or student_input.device != target.device
+            or student_input.dtype != target.dtype
+            or not bool(torch.isfinite(student_input).all())):
+        raise LatentBridgeError("student input slots invalid")
+    student_input_sha256 = _tensor_bytes_sha256(student_input)
+    # Paired receipt v2 binds both actual input slots and teacher targets. This
+    # is LOCAL integrity, not an independently signed model/data attestation.
     paired_distillation_sha256 = hashlib.sha256(json.dumps({
-        "schema": "hepta.shadow-distillation-pair.v1",
+        "schema": "hepta.shadow-distillation-pair.v2",
         "generation": generation,
         "slot_source_manifest_sha256": slots.source_manifest_digest,
+        "student_input_sha256": student_input_sha256,
+        "student_input_shape": list(student_input.shape),
+        "student_input_dtype": str(student_input.dtype),
         "teacher_target_sha256": teacher_target_sha256,
         "teacher_target_shape": list(target.shape),
         "teacher_target_dtype": str(target.dtype),
     }, sort_keys=True, separators=(",", ":")).encode()).hexdigest()
     optimizer.zero_grad(set_to_none=True)
-    predictions = student(slots.slots).mean(dim=1)
-    if not torch.isfinite(predictions).all():
-        raise LatentBridgeError("student output invalid")
+    student_tokens = student(student_input)
+    if _tensor_bytes_sha256(student_input) != student_input_sha256:
+        raise LatentBridgeError("student input mutated after receipt")
+    if (not isinstance(student_tokens, torch.Tensor)
+            or student_tokens.shape != student_input.shape
+            or student_tokens.dtype != target.dtype
+            or student_tokens.device != target.device
+            or not bool(torch.isfinite(student_tokens).all())):
+        raise LatentBridgeError("student output shape/dtype/nonfinite")
+    predictions = student_tokens.mean(dim=1)
     mse = torch.nn.functional.mse_loss(predictions, target)
     cosine = 1.0 - torch.nn.functional.cosine_similarity(
         predictions, target, dim=-1, eps=1e-8).mean()
@@ -278,6 +300,7 @@ def shadow_distill_step(student: nn.Module, slotizer: MultimodalSlotizer,
             "cosine_loss": float(cosine.detach()), "generation": generation,
             "source_manifest_digest": slots.source_manifest_digest,
             "teacher_target_sha256": teacher_target_sha256,
+            "student_input_sha256": student_input_sha256,
             "paired_distillation_sha256": paired_distillation_sha256,
             "training_posture": "OFFLINE_RESEARCH_ONLY", "authority": "DENY_ALL",
             "evidence_class": "UNVERIFIED_TEACHER_FEATURES",

@@ -306,6 +306,85 @@ class SharedMultimodalBridgeTests(unittest.TestCase):
             hook.remove()
         self.assertEqual(calls[0], 0)
 
+    def test_pair_receipt_binds_real_slots_even_with_identical_teacher_sources(self):
+        from copy import deepcopy
+
+        slotizer = self.stem()
+        altered_slotizer = deepcopy(slotizer)
+        with torch.no_grad():
+            altered_slotizer.projectors['text'].bias[0].add_(7.0)
+        student = build_encoder(StemSpec('tiny_training_only', 32, 1, 4),
+                                device='cpu', trainable=True)
+        altered_student = deepcopy(student)
+        optimizer = torch.optim.SGD(list(slotizer.parameters())
+                                    + list(student.parameters()), lr=0.001)
+        altered_optimizer = torch.optim.SGD(list(altered_slotizer.parameters())
+                                            + list(altered_student.parameters()), lr=0.001)
+        features = {'text': torch.randn(2, 32)}
+        teacher_target = torch.randn(2, 32)
+        baseline = shadow_distill_step(
+            student, slotizer, features, {'text': 'a' * 64},
+            teacher_target, optimizer, generation=5)
+        altered = shadow_distill_step(
+            altered_student, altered_slotizer, features, {'text': 'a' * 64},
+            teacher_target, altered_optimizer, generation=5)
+        self.assertEqual(baseline['source_manifest_digest'],
+                         altered['source_manifest_digest'])
+        self.assertEqual(baseline['teacher_target_sha256'],
+                         altered['teacher_target_sha256'])
+        self.assertNotEqual(baseline['student_input_sha256'],
+                            altered['student_input_sha256'])
+        self.assertNotEqual(baseline['paired_distillation_sha256'],
+                            altered['paired_distillation_sha256'])
+
+    def test_student_hook_cannot_mutate_receipted_slots_and_update_weights(self):
+        slotizer = self.stem()
+        student = build_encoder(StemSpec('tiny_training_only', 32, 1, 4),
+                                device='cpu', trainable=True)
+        optimizer = torch.optim.SGD(list(slotizer.parameters())
+                                    + list(student.parameters()), lr=0.001)
+        original_slotizer = slotizer.projectors['text'].weight.detach().clone()
+        original_student = next(student.parameters()).detach().clone()
+
+        def mutate_student_input(_module, args):
+            with torch.no_grad():
+                args[0].add_(3.0)
+
+        hook = student.register_forward_pre_hook(mutate_student_input)
+        try:
+            with self.assertRaisesRegex(LatentBridgeError, 'student input mutated'):
+                shadow_distill_step(
+                    student, slotizer, {'text': torch.randn(2, 32)},
+                    {'text': 'a' * 64}, torch.randn(2, 32),
+                    optimizer, generation=1)
+        finally:
+            hook.remove()
+        torch.testing.assert_close(
+            slotizer.projectors['text'].weight, original_slotizer, rtol=0, atol=0)
+        torch.testing.assert_close(
+            next(student.parameters()), original_student, rtol=0, atol=0)
+
+    def test_student_wrong_output_shape_rejected_before_optimizer_step(self):
+        class PooledStudent(torch.nn.Module):
+            def __init__(self):
+                super().__init__()
+                self.proj = torch.nn.Linear(32, 32)
+
+            def forward(self, latent):
+                return self.proj(latent).mean(dim=1)
+
+        slotizer = self.stem()
+        student = PooledStudent()
+        optimizer = torch.optim.SGD(list(slotizer.parameters())
+                                    + list(student.parameters()), lr=0.001)
+        original = student.proj.weight.detach().clone()
+        with self.assertRaisesRegex(LatentBridgeError, 'student output shape'):
+            shadow_distill_step(
+                student, slotizer, {'text': torch.randn(2, 32)},
+                {'text': 'a' * 64}, torch.randn(2, 32),
+                optimizer, generation=1)
+        torch.testing.assert_close(student.proj.weight, original, rtol=0, atol=0)
+
     def test_teacher_is_detached_and_small_student_offline_step_changes_weights(self):
         stem = self.stem()
         student = build_encoder(StemSpec('tiny_training_only', 32, 1, 4),
