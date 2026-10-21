@@ -10,3 +10,16 @@ pub(crate) fn private_tempdir(label: &str) -> TempDir {
         .unwrap_or_else(|error| panic!("secure {label}: {error}"));
     temporary
 }
+
+pub(crate) fn openssh_keygen_for_tests() -> &'static str {
+    // Windows CI does not have the Unix /usr/bin absolute path. The test
+    // still invokes real OpenSSH and must fail if it is not installed.
+    #[cfg(windows)]
+    {
+        "ssh-keygen.exe"
+    }
+    #[cfg(not(windows))]
+    {
+        "/usr/bin/ssh-keygen"
+    }
+}

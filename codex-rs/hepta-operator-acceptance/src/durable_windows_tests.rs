@@ -39,3 +39,19 @@ fn path_replacement_after_open_is_rejected() {
 
     assert!(verify_unchanged(&file, &artifact, &before, "artifact").is_err());
 }
+
+#[test]
+fn windows_private_parent_requires_real_directory_handle_sync() {
+    // Actual directory flush capability is part of the proof. If the OS
+    // refuses it, the acceptance gate must remain closed rather than treat
+    // a file-only sync as equivalent to durable directory topology.
+    let temporary = tempfile::tempdir().expect("temporary parent directory");
+    crate::durable::sync_verified_sidecar_parent(temporary.path())
+        .expect("Windows directory synchronization must be supported");
+    let regular = temporary.path().join("not-a-parent");
+    std::fs::write(&regular, b"file").expect("write regular test file");
+    assert!(
+        crate::durable::sync_verified_sidecar_parent(&regular).is_err(),
+        "a regular file must never substitute for the containing directory"
+    );
+}
