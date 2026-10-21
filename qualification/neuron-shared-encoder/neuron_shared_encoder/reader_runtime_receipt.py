@@ -74,6 +74,20 @@ def _missing(values: Mapping[str, Any], fields: tuple[str, ...]) -> tuple[str, .
     return tuple(sorted(name for name in fields if values.get(name) is None))
 
 
+def _require_context_bindings(
+    payload: Mapping[str, Any], *, candidate_id: str, source_split: str
+) -> None:
+    for name, expected in (
+        ("candidate_id", candidate_id),
+        ("source_split", source_split),
+    ):
+        if name in payload:
+            _require(
+                type(payload[name]) is str and payload[name] == expected,
+                f"caller {name} must match payload evidence",
+            )
+
+
 @dataclass(frozen=True)
 class ReaderRuntimeReceiptV1:
     """Device and end-to-end cost receipt for one Reader evaluation."""
@@ -361,9 +375,34 @@ def adapt_runtime_receipt(
     source_split: str,
     checkpoint_receipt_digest: str | None = None,
 ) -> ReaderRuntimeReceiptV1:
-    """Adapt runtime evidence without filling absent measurements or assertions."""
+    """Preserve reported identity; a caller may supply a missing checkpoint join.
+
+    Candidate and split fields, when present, must corroborate the caller's
+    context. An external checkpoint binding cannot replace a reported digest.
+    Runtime digest aliases must agree when both are present, including nulls.
+    Neither a supplied join nor matching context authenticates the evidence.
+    """
     if not isinstance(payload, Mapping):
         raise ReaderRuntimeReceiptError("runtime payload must be a mapping")
+    _require_context_bindings(
+        payload, candidate_id=candidate_id, source_split=source_split
+    )
+    if checkpoint_receipt_digest is not None:
+        _sha("caller checkpoint_receipt_digest", checkpoint_receipt_digest)
+        reported_checkpoint = payload.get("checkpoint_receipt_digest")
+        _require(
+            reported_checkpoint is None
+            or reported_checkpoint == checkpoint_receipt_digest,
+            "caller checkpoint_receipt_digest must match payload evidence",
+        )
+    for name in ("runtime_digest", "runtime_receipt_digest"):
+        if name in payload and payload[name] is not None:
+            _sha(name, payload[name])
+    if "runtime_digest" in payload and "runtime_receipt_digest" in payload:
+        _require(
+            payload["runtime_digest"] == payload["runtime_receipt_digest"],
+            "runtime digest aliases must match payload evidence",
+        )
     raw = payload.get("evidence_class")
     raw_class = (
         raw
@@ -371,11 +410,15 @@ def adapt_runtime_receipt(
         else INCOMPLETE
     )
     values = {name: payload.get(name) for name in ReaderRuntimeReceiptV1._REQUIRED}
-    values["checkpoint_receipt_digest"] = checkpoint_receipt_digest or payload.get(
-        "checkpoint_receipt_digest"
+    values["checkpoint_receipt_digest"] = (
+        checkpoint_receipt_digest
+        if checkpoint_receipt_digest is not None
+        else payload.get("checkpoint_receipt_digest")
     )
-    values["runtime_digest"] = payload.get("runtime_digest") or payload.get(
-        "runtime_receipt_digest"
+    values["runtime_digest"] = (
+        payload["runtime_digest"]
+        if "runtime_digest" in payload
+        else payload.get("runtime_receipt_digest")
     )
     values["device_id"] = payload.get("device_id")
     values["device_digest"] = payload.get("device_digest")
@@ -416,8 +459,11 @@ def adapt_calibration_receipt(
     source_split: str,
     raw_evidence_class: str | None = None,
 ) -> CalibrationReceiptV1:
-    """Adapt calibration evidence; caller class may only corroborate the payload."""
+    """Require caller context and class to corroborate reported evidence."""
     data = payload if isinstance(payload, Mapping) else {}
+    _require_context_bindings(
+        data, candidate_id=candidate_id, source_split=source_split
+    )
     raw = data.get("evidence_class")
     classes = {REAL_SHADOW, REAL_MODEL_LOCAL_QUALIFICATION, INCOMPLETE}
     _require(
