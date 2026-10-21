@@ -118,3 +118,20 @@ consistency guarantee. The ordinary unverified shadow control remains
 available for paired comparison and must never be promoted because of
 this seam. No persistent writer, FinalUse permission or production route
 has been added.
+
+## Frozen-stem cross-generation shadow continuity
+
+`MemoryCellNextSnapshotCandidateV1::validate_after` rejects a next
+proposal if its predecessor graph/model generation does not match the
+previous candidate's proposed successor, its Cell/Base/Encoder identity
+changes, or its source/forget frontier changes without a separately
+reviewed ledger migration. It also rejects reuse of the same Replay
+snapshot, Replay receipt or Evaluation digest across consecutive model
+generations, and rejects an unchanged pair of Adapter/Head artifact
+digests without a valid topology proposal. Tests exercise G1→G2→G3→G4
+handoffs and fail-closed stale/replay/no-op inputs.
+
+This checks the continuity and *non-reuse of references*, not proof that
+three independent future observation windows were executed. It does not
+train a model, authenticate evaluators, bind real artifact bytes or
+authorize generation promotion; those remain mandatory external blockers.
