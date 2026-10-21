@@ -99,6 +99,9 @@ impl MemoryMetaRoutingCandidateV1 {
         {
             return Err(HnmfContractError::Invalid("memory meta candidate cost"));
         }
+        if self.resource_cost_units > self.tick_input.resource_budget_units {
+            return Err(HnmfContractError::Conflict("memory meta local tick budget"));
+        }
         if self.manifest.cell_id != self.tick_input.cell_id
             || self.manifest.graph_generation != self.tick_input.graph_generation
             || self.manifest.model_generation != self.tick_input.model_generation
@@ -203,6 +206,14 @@ impl MemoryMetaRouteReceiptV1 {
                 return Err(HnmfContractError::DuplicateIdentity("memory meta decision"));
             }
             ppm(decision.utility_ppm, "memory meta route utility")?;
+            // A deserialized receipt must enforce the same per-candidate
+            // resource floor and ceiling as direct routing. A recomputed
+            // digest alone cannot make a zero-cost Cell reservation valid.
+            if decision.resource_cost_units == 0
+                || decision.resource_cost_units > MAX_MEMORY_META_BUDGET_UNITS_V1
+            {
+                return Err(HnmfContractError::Invalid("memory meta receipt candidate cost"));
+            }
             if decision.disposition == MemoryMetaRouteDispositionV1::Selected {
                 if decision.support_digest.is_none() {
                     return Err(HnmfContractError::Missing("memory meta selected support"));
