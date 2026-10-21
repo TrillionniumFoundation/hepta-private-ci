@@ -349,8 +349,8 @@
     "implementedOperationMappingComplete": true
   },
   "sourceBase": {
-    "commit": "e8e81b7d541a81e75635cc1c0a713edaedb999d5",
-    "tree": "aaa6e4ecb7d45d01ea88f93b6a716e7dca3cf395"
+    "commit": "9238e642f9ebf84dffa902e41ea36bc988bf7c6c",
+    "tree": "6d6f1dbc5dc321f60afaccf97f64db8d291e1835"
   },
   "repositoryControlledGaps": [
     "Obtain successful exact-head and deterministic synthetic-merge workflow receipts for one final canonical candidate checkout.",
@@ -390,8 +390,8 @@
     }
   ],
   "exactSourceCandidate": {
-    "commit": "e946a7ed08814881f9986d813c5b8cd821241f99",
-    "tree": "5c62cf98768ee7f99c55e80c3b4430bcfddd41e7",
+    "commit": "87bb35d51e514cdc2fe96792259b089193f015ac",
+    "tree": "2f95a67a2ee1759ce2a90810cce3933f4f9ec45e",
     "roots": [
       "codex-rs/hepta-objective"
     ],
@@ -402,8 +402,8 @@
     "RunStartSnapshotV1"
   ],
   "productCompositionSourceCandidate": {
-    "commit": "e603e7ac675843e69f6cfd741e42180b2d5437ed",
-    "tree": "6de843d2ddf162869e4aff0ebb84642d4b2c26c3",
+    "commit": "87bb35d51e514cdc2fe96792259b089193f015ac",
+    "tree": "2f95a67a2ee1759ce2a90810cce3933f4f9ec45e",
     "paths": [
       "codex-rs/hepta-agentd/src/objective_runtime.rs",
       "codex-rs/hepta-agentd/src/objective_runtime_tests.rs",
@@ -431,20 +431,48 @@
   ],
   "sourceObjects": [
     {
+      "path": ".github/workflows/hepta-lane-d-semantic-conformance.yml",
+      "object": "4756be76b745582520ff66d07fa103048fc6ec5c"
+    },
+    {
+      "path": ".github/workflows/hepta-objective-admission.yml",
+      "object": "ef98ab5c6918c38949583ecdb4b089a31cb4ceac"
+    },
+    {
+      "path": "codex-rs/Cargo.lock",
+      "object": "c1f8521d4ba70d480b38d518c30934f0b1b0e5a9"
+    },
+    {
+      "path": "codex-rs/Cargo.toml",
+      "object": "a510068874c85b9edbb5cc7afcfc2b8c8382dc1b"
+    },
+    {
       "path": "codex-rs/hepta-agentd/src/objective_runtime.rs",
       "object": "84a4b156fa04f27665319300e241732697a0ea01"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/objective_runtime_tests.rs",
+      "object": "5664ccb24703982a41b2d6a4aade34a09f1be379"
+    },
+    {
+      "path": "codex-rs/hepta-intelligence/src/objective_run.rs",
+      "object": "a2f361edbf1e0f8fd1024d085edcd71b4f2396f0"
     },
     {
       "path": "codex-rs/hepta-intelligence/src/objective_run_tests.rs",
       "object": "125f654d9d3cf27577e2ae9b387a885accdf115f"
     },
     {
+      "path": "codex-rs/hepta-learning-ledger/src/run_start.rs",
+      "object": "adf96585c3efb947e35ae73cc096ca1d18d40a78"
+    },
+    {
       "path": "codex-rs/hepta-learning-ledger/src/run_start_tests.rs",
-      "object": "cfbb34705a6dee9a2b0c5afda76592109c83f86b"
+      "object": "2d45cdb87dbee3d10858f7ea6d61ac91b1efbd4c"
     },
     {
       "path": "codex-rs/hepta-objective",
-      "object": "e89450f622d12e85f516df691291e349f42cd8fc"
+      "object": "4fe20d6ca8de0e7ea61a5b633f49268c4af9f80a"
     },
     {
       "path": "codex-rs/hepta-objective/src/compiler.rs",
@@ -495,8 +523,53 @@
       "object": "5dc5676e23de3b4a661e1520a0c5ae4a1dc2020d"
     },
     {
+      "path": "docs/contracts/OBJECTIVE_ERRORS.json",
+      "object": "cbaf5bfea789f7d61be8ba33e6de21e667e021ee"
+    },
+    {
       "path": "docs/modules/objective.compiler/TECHNICAL.md",
       "object": "6c627878c86207f41091eb56fedf701b1e49ddd4"
+    },
+    {
+      "path": "docs/readiness/OBJECTIVE_COMPILER_EXECUTION.md",
+      "object": "ea827917e37e1dff7ad33fa5c2b17b75864240a9"
+    },
+    {
+      "path": "scripts/hepta-implementation-maps.py",
+      "object": "e8ae0fd675b7e3ca2911b80af92cc21021789fbe"
     }
+  ],
+  "observedAtHead": {
+    "commit": "9238e642f9ebf84dffa902e41ea36bc988bf7c6c",
+    "tree": "6d6f1dbc5dc321f60afaccf97f64db8d291e1835"
+  },
+  "observedSourcePaths": [
+    ".github/workflows/hepta-lane-d-semantic-conformance.yml",
+    ".github/workflows/hepta-objective-admission.yml",
+    "codex-rs/Cargo.lock",
+    "codex-rs/Cargo.toml",
+    "codex-rs/hepta-agentd/src/objective_runtime.rs",
+    "codex-rs/hepta-agentd/src/objective_runtime_tests.rs",
+    "codex-rs/hepta-intelligence/src/objective_run.rs",
+    "codex-rs/hepta-intelligence/src/objective_run_tests.rs",
+    "codex-rs/hepta-learning-ledger/src/run_start.rs",
+    "codex-rs/hepta-learning-ledger/src/run_start_tests.rs",
+    "codex-rs/hepta-objective",
+    "codex-rs/hepta-objective/src/compiler.rs",
+    "codex-rs/hepta-objective/src/compiler_tests.rs",
+    "codex-rs/hepta-objective/src/feasibility.rs",
+    "codex-rs/hepta-objective/src/feasibility_exhaustive_tests.rs",
+    "codex-rs/hepta-objective/src/feasibility_tests.rs",
+    "codex-rs/hepta-objective/src/objective_admission.rs",
+    "codex-rs/hepta-objective/src/objective_admission_tests.rs",
+    "codex-rs/hepta-objective/src/objective_function_v1.rs",
+    "codex-rs/hepta-objective/src/source_envelope_json.rs",
+    "codex-rs/hepta-objective/src/source_envelope_json_tests.rs",
+    "codex-rs/hepta-objective/src/source_envelope_v1_tests.rs",
+    "codex-rs/hepta-objective/src/source_envelope_validation.rs",
+    "docs/contracts/OBJECTIVE_ERRORS.json",
+    "docs/modules/objective.compiler/TECHNICAL.md",
+    "docs/readiness/OBJECTIVE_COMPILER_EXECUTION.md",
+    "scripts/hepta-implementation-maps.py"
   ]
 }
