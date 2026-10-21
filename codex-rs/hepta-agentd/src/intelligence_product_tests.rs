@@ -20,6 +20,8 @@ use std::fs::OpenOptions;
 use super::*;
 use codex_hepta_context_compiler::ContextItem;
 use codex_hepta_context_compiler::ContextRole;
+#[cfg(feature = "qualification-legacy-learning-write")]
+use codex_hepta_intelligence::AdvisoryDecisionV1;
 use codex_hepta_intelligence::CanonicalBudgetV1;
 use codex_hepta_intelligence::CanonicalIntelligenceRunRequestV1;
 use codex_hepta_intelligence::CanonicalIntelligenceSnapshotV1;
@@ -46,13 +48,13 @@ use codex_hepta_learning_ledger::DurableLedger;
 #[cfg(feature = "qualification-legacy-learning-write")]
 use codex_hepta_learning_ledger::DurableLedgerError;
 #[cfg(feature = "qualification-legacy-learning-write")]
+use codex_hepta_learning_ledger::EpisodeDecision;
+#[cfg(feature = "qualification-legacy-learning-write")]
 use codex_hepta_learning_ledger::LedgerAnchor;
 #[cfg(feature = "qualification-legacy-learning-write")]
 use codex_hepta_learning_ledger::LedgerEvent;
 #[cfg(feature = "qualification-legacy-learning-write")]
 use codex_hepta_learning_ledger::LedgerRecovery;
-#[cfg(feature = "qualification-legacy-learning-write")]
-use codex_hepta_learning_ledger::EpisodeDecision;
 #[cfg(feature = "qualification-legacy-learning-write")]
 use codex_hepta_learning_ledger::OutcomeFinality;
 #[cfg(feature = "qualification-legacy-learning-write")]
@@ -93,8 +95,6 @@ use codex_hepta_objective::ObjectiveStructuredIntentV1;
 use codex_hepta_objective::admit_and_compile_objective_v1;
 use codex_hepta_objective::canonical_objective_intent_digest_v1;
 use codex_hepta_prompt_optimizer::PromptCandidate;
-#[cfg(feature = "qualification-legacy-learning-write")]
-use codex_hepta_intelligence::AdvisoryDecisionV1;
 use codex_hepta_types::FixedQ32;
 use codex_hepta_types::ProbabilityQ32;
 use codex_hepta_types::Revision;
