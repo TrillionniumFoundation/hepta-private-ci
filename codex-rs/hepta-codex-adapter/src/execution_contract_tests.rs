@@ -228,3 +228,65 @@ fn terminal_tool_outcome_has_a_nonzero_digest() {
     outcome.validate().expect("valid terminal outcome");
     assert!(!outcome.outcome_digest().is_zero());
 }
+
+#[test]
+fn terminal_receipts_require_outcome_evidence_and_coherent_recovery() {
+    let cell = intent().cell;
+    let completed = ExecutionReceiptV1 {
+        operation_id: cell.operation_id.clone(),
+        intent_digest: cell.intent_digest(),
+        generation: cell.generation,
+        final_payload_digest: cell.final_payload.clone(),
+        outcome_digest: Some(digest("terminal-observation")),
+        status: ExecutionStatusV1::Completed,
+        recovery: RecoveryDispositionV1::None,
+        authority: AuthorityPosture::DENY_ALL,
+    };
+    completed
+        .validate_against(&cell)
+        .expect("exact terminal receipt");
+
+    let missing = ExecutionReceiptV1 {
+        outcome_digest: None,
+        ..completed.clone()
+    };
+    assert_eq!(
+        missing.validate_against(&cell),
+        Err(ExecutionContractError::MissingTerminalOutcome)
+    );
+    let zero = ExecutionReceiptV1 {
+        outcome_digest: Some(Digest32::ZERO),
+        ..completed.clone()
+    };
+    assert_eq!(
+        zero.validate_against(&cell),
+        Err(ExecutionContractError::ZeroDigest("execution outcome"))
+    );
+    let failed_without_observation = ExecutionReceiptV1 {
+        status: ExecutionStatusV1::Failed,
+        outcome_digest: None,
+        ..completed.clone()
+    };
+    assert_eq!(
+        failed_without_observation.validate_against(&cell),
+        Err(ExecutionContractError::MissingTerminalOutcome)
+    );
+    let completed_with_retry = ExecutionReceiptV1 {
+        recovery: RecoveryDispositionV1::ReconcileSameOperation,
+        ..completed.clone()
+    };
+    assert_eq!(
+        completed_with_retry.validate_against(&cell),
+        Err(ExecutionContractError::StatusOutcomeMismatch)
+    );
+    let unknown_with_pre_admission_retry = ExecutionReceiptV1 {
+        status: ExecutionStatusV1::Indeterminate,
+        outcome_digest: None,
+        recovery: RecoveryDispositionV1::RetryBeforeAdmission,
+        ..completed
+    };
+    assert_eq!(
+        unknown_with_pre_admission_retry.validate_against(&cell),
+        Err(ExecutionContractError::StatusOutcomeMismatch)
+    );
+}
