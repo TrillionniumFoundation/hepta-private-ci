@@ -208,9 +208,6 @@ impl LearningArtifactOwnerService {
         let checkpoint = self.host.recover_publication(&request.operation_id)?;
         if let Some(recovery) = checkpoint.as_ref() {
             validate_request_against_checkpoint(request, &recovery.checkpoint)?;
-            if recovery.checkpoint.phase == ArtifactPublicationPhaseV1::Acknowledged {
-                return receipt_from_checkpoint(&recovery.checkpoint);
-            }
         }
 
         let predecessor = self
@@ -242,6 +239,12 @@ impl LearningArtifactOwnerService {
                 &request.signed_current_head,
                 request.now,
             )?;
+            // An acknowledged retry must still prove the previously
+            // committed immutable payload, registry and signed witness exist.
+            // Never return a terminal receipt based only on a checkpoint.
+            if recovery.checkpoint.phase == ArtifactPublicationPhaseV1::Acknowledged {
+                return receipt_from_checkpoint(&recovery.checkpoint);
+            }
             transaction = self
                 .host
                 .resume_publication(transaction.snapshot(), request.now)?;
@@ -660,10 +663,10 @@ mod tests {
         );
         assert!(!current_view.witness_digest().is_zero());
         assert!(!current_view.trust_digest().is_zero());
-        let current = request.signed_current_head;
+        let current = request.signed_current_head.clone();
         drop(service);
 
-        let reopened = LearningArtifactOwnerService::open(LearningArtifactOwnerServiceConfigV1 {
+        let mut reopened = LearningArtifactOwnerService::open(LearningArtifactOwnerServiceConfigV1 {
             root: directory.0.clone(),
             trust: trust(&key, scope_digest),
             writer_lease: lease(&key, scope_digest),
@@ -686,5 +689,20 @@ mod tests {
                 .head_digest,
             receipt.registry_head_digest
         );
+
+        // A durable ACK alone is not sufficient evidence for a successful
+        // idempotent retry. Reject it when the committed payload has been
+        // removed after the first successful publication.
+        let payload = directory.0.join("payloads").join(format!(
+            "{}-{}.bin",
+            id("candidate"),
+            digest("payload")
+        ));
+        fs::remove_file(payload).fixture("remove committed payload");
+        assert!(
+            reopened.publish(request).is_err(),
+            "terminal retry must revalidate the committed bytes"
+        );
+        assert!(reopened.recovery_required().is_none());
     }
 }
