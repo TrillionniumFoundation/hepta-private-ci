@@ -32,6 +32,9 @@ use crate::memory_cell::MemoryCellManifestV1;
 use crate::memory_cell::MemoryCellSplitProposalV1;
 use crate::memory_cell::MemoryCellTickInputV1;
 use crate::memory_cell::MemoryCellTickReceiptV1;
+use crate::meta_network::MetaNetworkNextSnapshotCandidateV1;
+use crate::meta_network::MetaNetworkPlanV1;
+use crate::meta_network::MetaNetworkRouteReceiptV1;
 
 pub const COGNITIVE_WIRE_VERSION_V1: u32 = 1;
 const MAX_ENVELOPE_OVERHEAD_BYTES: usize = 1_024;
@@ -170,6 +173,28 @@ impl_contract!(
     "hepta.memory-cell.split-proposal.v1",
     262_144,
     MemoryCellSplitProposalV1::validate
+);
+
+impl_contract!(
+    MetaNetworkPlanV1,
+    "MetaNetworkPlanV1",
+    "hepta.meta-network.route-plan.v1",
+    262_144,
+    MetaNetworkPlanV1::validate
+);
+impl_contract!(
+    MetaNetworkRouteReceiptV1,
+    "MetaNetworkRouteReceiptV1",
+    "hepta.meta-network.route-receipt.v1",
+    65_536,
+    MetaNetworkRouteReceiptV1::validate
+);
+impl_contract!(
+    MetaNetworkNextSnapshotCandidateV1,
+    "MetaNetworkNextSnapshotCandidateV1",
+    "hepta.meta-network.next-snapshot-candidate.v1",
+    32_768,
+    MetaNetworkNextSnapshotCandidateV1::validate
 );
 
 #[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
