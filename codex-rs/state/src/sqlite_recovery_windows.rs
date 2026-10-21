@@ -133,7 +133,8 @@ impl RetainedOptionalObject {
         let name = path.file_name().ok_or(SqliteRecoveryError::Indeterminate)?;
         match open_private_recovery_source(parent, name) {
             Ok(descriptor) => {
-                RetainedObject::from_descriptor(path, descriptor, false).map(Self::Present)
+                RetainedObject::from_descriptor(path, descriptor, /*directory*/ false)
+                    .map(Self::Present)
             }
             Err(error) if error.kind() == std::io::ErrorKind::NotFound => Ok(Self::Absent(path)),
             Err(_) => Err(SqliteRecoveryError::Indeterminate),
