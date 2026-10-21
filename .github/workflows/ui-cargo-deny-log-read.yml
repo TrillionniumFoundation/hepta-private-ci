@@ -36,7 +36,8 @@ jobs:
           assert job["conclusion"] == "failure", job["conclusion"]
           print(json.dumps({key: job[key] for key in ("id", "run_id", "head_sha", "name", "conclusion")}))
           PY
-          gh api "repos/$GITHUB_REPOSITORY/actions/jobs/118965946746/logs" > evidence/cargo-deny.log
+          # Preserve the original ANSI bytes in a file; never print them to a terminal.
+          gh api --allow-escape-sequences "repos/$GITHUB_REPOSITORY/actions/jobs/118965946746/logs" > evidence/cargo-deny.log
           test -s evidence/cargo-deny.log
           sha256sum evidence/job.json evidence/cargo-deny.log > evidence/SHA256SUMS
           cat evidence/SHA256SUMS
