@@ -416,7 +416,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "330a5ed07fa54e4702c9d6c4174f74427fc0ef6e214bbd677ae50a5099946470"
 
 [[package]]
-name = "anymap2"
+name = "anymap2-compat"
 version = "0.13.0"
 dependencies = [
  "anymap3",
@@ -10697,7 +10697,7 @@ version = "0.18.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "7083d580527511ac5d9369e03b9f2b20902e76949f1b3964051f978e4d3756ae"
 dependencies = [
- "anymap2",
+ "anymap2-compat",
  "aquamarine",
  "as_variant",
  "async-channel",
@@ -10767,7 +10767,7 @@ dependencies = [
  "futures-util",
  "growable-bloom-filter",
  "matrix-sdk-common",
- "matrix-sdk-crypto",
+ "matrix-sdk-crypto-hepta",
  "matrix-sdk-store-encryption",
  "regex",
  "ruma",
@@ -10804,7 +10804,7 @@ dependencies = [
 ]
 
 [[package]]
-name = "matrix-sdk-crypto"
+name = "matrix-sdk-crypto-hepta"
 version = "0.18.0"
 dependencies = [
  "aes 0.8.4",
@@ -10856,7 +10856,7 @@ dependencies = [
  "hkdf 0.12.4",
  "js-sys",
  "matrix-sdk-base",
- "matrix-sdk-crypto",
+ "matrix-sdk-crypto-hepta",
  "matrix-sdk-store-encryption",
  "matrix_indexed_db_futures",
  "rmp-serde",
@@ -10884,7 +10884,7 @@ dependencies = [
  "deadpool-sync",
  "itertools 0.14.0",
  "matrix-sdk-base",
- "matrix-sdk-crypto",
+ "matrix-sdk-crypto-hepta",
  "matrix-sdk-store-encryption",
  "num_cpus",
  "rmp-serde",
