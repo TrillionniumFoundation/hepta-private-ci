@@ -1,6 +1,6 @@
 use super::FileSnapshot;
-use super::sync_directory;
 use super::open_without_following;
+use super::sync_directory;
 use super::verify_unchanged;
 use crate::durable::secure_hash;
 use crate::durable::secure_read;
