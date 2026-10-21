@@ -17,6 +17,7 @@ use codex_hepta_cognitive_types::memory_meta_network::MemoryMetaNetworkPolicyV1;
 use codex_hepta_cognitive_types::memory_meta_network::MemoryMetaRoutingCandidateV1;
 use codex_hepta_cognitive_types::memory_meta_network::MemoryMetaShadowRouteV1;
 use codex_hepta_cognitive_types::memory_meta_network::route_memory_cells_v1;
+use codex_hepta_cognitive_types::memory_meta_network::validate_memory_meta_parent_forest_v1;
 
 use codex_hepta_types::Digest32;
 use codex_hepta_types::Revision;
@@ -174,6 +175,8 @@ fn preflight_memory_meta_batch_v1(
         }
     }
 
+    validate_memory_meta_parent_forest_v1(cells.iter().map(|cell| &cell.manifest))
+        .map_err(MemoryMetaBatchErrorV1::Contract)?;
     Ok(())
 }
 

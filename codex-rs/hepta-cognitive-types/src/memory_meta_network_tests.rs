@@ -174,6 +174,25 @@ fn duplicate_cell_id_rejects_even_with_different_roles() {
 }
 
 #[test]
+fn visible_parent_cycle_rejects_while_external_ancestors_remain_advisory() {
+    let mut a = candidate("cell:parent-a", MemoryCellRoleV1::Episodic);
+    let mut b = candidate("cell:parent-b", MemoryCellRoleV1::Semantic);
+    let mut c = candidate("cell:parent-c", MemoryCellRoleV1::Utility);
+    a.manifest.parent_cell_id = Some(b.manifest.cell_id.clone());
+    b.manifest.parent_cell_id = Some(c.manifest.cell_id.clone());
+    c.manifest.parent_cell_id = Some(a.manifest.cell_id.clone());
+    assert!(matches!(
+        route_memory_cells_v1(&policy(), &[a.clone(), b.clone(), c.clone()]),
+        Err(HnmfContractError::Conflict("memory meta parent cycle"))
+    ));
+
+    c.manifest.parent_cell_id = Some(id("cell:external-ancestor"));
+    let accepted = route(&policy(), &[c, b, a]);
+    assert!(!accepted.authority.grants_any());
+    assert!(!accepted.receipt.abstained);
+}
+
+#[test]
 fn stale_forget_frontier_is_not_reusable_after_deletion() {
     let mut c = candidate("cell:a", MemoryCellRoleV1::Episodic);
     c.manifest.forget_frontier_digest = digest("old-forget");

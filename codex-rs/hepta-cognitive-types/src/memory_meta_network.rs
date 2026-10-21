@@ -286,6 +286,39 @@ pub struct MemoryMetaShadowRouteV1 {
     pub authority: AuthorityPosture,
 }
 
+/// Reject cycles among Cell parent links visible in this batch. Parents outside
+/// the candidate set are allowed, but must be authenticated by the topology
+/// owner separately. This check grants no topology mutation or writer authority.
+pub fn validate_memory_meta_parent_forest_v1<'a>(
+    manifests: impl IntoIterator<Item = &'a MemoryCellManifestV1>,
+) -> Result<(), HnmfContractError> {
+    let mut parents: BTreeMap<ContractIdV1, Option<ContractIdV1>> = BTreeMap::new();
+    for manifest in manifests {
+        if parents
+            .insert(manifest.cell_id.clone(), manifest.parent_cell_id.clone())
+            .is_some()
+        {
+            return Err(HnmfContractError::DuplicateIdentity("memory meta cell"));
+        }
+    }
+    let mut acyclic = BTreeSet::new();
+    for first in parents.keys() {
+        let mut path = BTreeSet::new();
+        let mut current = Some(first.clone());
+        while let Some(cell_id) = current {
+            if acyclic.contains(&cell_id) {
+                break;
+            }
+            if !path.insert(cell_id.clone()) {
+                return Err(HnmfContractError::Conflict("memory meta parent cycle"));
+            }
+            current = parents.get(&cell_id).cloned().flatten();
+        }
+        acyclic.extend(path);
+    }
+    Ok(())
+}
+
 pub fn route_memory_cells_v1(
     policy: &MemoryMetaNetworkPolicyV1,
     candidates: &[MemoryMetaRoutingCandidateV1],
@@ -314,6 +347,7 @@ pub fn route_memory_cells_v1(
             return Err(HnmfContractError::Conflict("memory meta evidence or generation drift"));
         }
     }
+    validate_memory_meta_parent_forest_v1(by_identity.iter().map(|cell| &cell.manifest))?;
     let policy_digest = domain_digest(b"hepta.memory-meta.policy.v1", policy)?;
     let complete_candidate_set_digest =
         domain_digest(b"hepta.memory-meta.candidate-set.v1", &by_identity)?;

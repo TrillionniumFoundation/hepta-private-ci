@@ -499,6 +499,35 @@ fn multi_cell_shadow_recall_abstains_on_empty_retrieval() {
 }
 
 #[test]
+fn multi_cell_parent_cycle_rejects_before_any_shadow_tick() {
+    let fixture = shadow_fixture(true);
+    let mut first = meta_spec(&fixture);
+    first.generated_input.batches.clear();
+    let mut second = meta_spec(&fixture);
+    second.manifest.cell_id = id("memory-cell:semantic:2");
+    second.manifest.role = MemoryCellRoleV1::Semantic;
+    second.tick_input.cell_id = second.manifest.cell_id.clone();
+    first.manifest.parent_cell_id = Some(second.manifest.cell_id.clone());
+    second.manifest.parent_cell_id = Some(first.manifest.cell_id.clone());
+    let result = crate::run_memory_meta_batch_shadow_v1(
+        &meta_policy(&fixture),
+        &fixture.cue,
+        &fixture.policy,
+        &fixture.snapshot,
+        &fixture.dynamics,
+        &[first, second],
+    );
+    assert!(matches!(
+        result,
+        Err(crate::MemoryMetaBatchErrorV1::Contract(
+            codex_hepta_cognitive_types::hnmf::HnmfContractError::Conflict(
+                "memory meta parent cycle"
+            )
+        ))
+    ));
+}
+
+#[test]
 fn multi_cell_shadow_preflight_rejects_stale_frontier_and_duplicates() {
     let fixture = shadow_fixture(true);
     let mut spec = meta_spec(&fixture);
