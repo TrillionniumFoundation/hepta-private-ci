@@ -540,3 +540,99 @@ fn multi_cell_shadow_preflight_rejects_stale_frontier_and_duplicates() {
         ))
     ));
 }
+
+#[test]
+fn multi_cell_shadow_preflight_rejects_late_invalid_tick_before_first_retrieval() {
+    let fixture = shadow_fixture(true);
+    let mut first = meta_spec(&fixture);
+    // If the first tick ran it would fail the cue binding as a Tick error.
+    first.tick_input.cue_digest = digest("wrong-first-cue");
+
+    let mut second = meta_spec(&fixture);
+    second.manifest.cell_id = id("memory-cell:semantic:2");
+    second.manifest.role = MemoryCellRoleV1::Semantic;
+    second.tick_input.cell_id = second.manifest.cell_id.clone();
+    second.tick_input.logical_sequence = 0;
+
+    let rejected = crate::run_memory_meta_batch_shadow_v1(
+        &meta_policy(&fixture),
+        &fixture.cue,
+        &fixture.policy,
+        &fixture.snapshot,
+        &fixture.dynamics,
+        &[first, second],
+    );
+    assert!(matches!(
+        rejected,
+        Err(crate::MemoryMetaBatchErrorV1::Contract(
+            codex_hepta_cognitive_types::hnmf::HnmfContractError::ZeroValue("logicalSequence")
+        ))
+    ));
+}
+
+#[test]
+fn multi_cell_shadow_preflight_rejects_late_generation_and_cost_before_first_tick() {
+    let fixture = shadow_fixture(true);
+    let mut first = meta_spec(&fixture);
+    first.tick_input.cue_digest = digest("wrong-first-cue");
+
+    let mut second = meta_spec(&fixture);
+    second.manifest.cell_id = id("memory-cell:semantic:2");
+    second.manifest.role = MemoryCellRoleV1::Semantic;
+    second.tick_input.cell_id = second.manifest.cell_id.clone();
+    second.tick_input.model_generation = generation(2);
+    let rejected = crate::run_memory_meta_batch_shadow_v1(
+        &meta_policy(&fixture),
+        &fixture.cue,
+        &fixture.policy,
+        &fixture.snapshot,
+        &fixture.dynamics,
+        &[first, second.clone()],
+    );
+    assert!(matches!(
+        rejected,
+        Err(crate::MemoryMetaBatchErrorV1::Contract(
+            codex_hepta_cognitive_types::hnmf::HnmfContractError::Conflict(
+                "memory meta tick binding"
+            )
+        ))
+    ));
+
+    second.tick_input.model_generation = second.manifest.model_generation;
+    second.resource_cost_units = 0;
+    let rejected = crate::run_memory_meta_batch_shadow_v1(
+        &meta_policy(&fixture),
+        &fixture.cue,
+        &fixture.policy,
+        &fixture.snapshot,
+        &fixture.dynamics,
+        &[meta_spec(&fixture), second.clone()],
+    );
+    assert!(matches!(
+        rejected,
+        Err(crate::MemoryMetaBatchErrorV1::Contract(
+            codex_hepta_cognitive_types::hnmf::HnmfContractError::Invalid(
+                "memory meta candidate cost"
+            )
+        ))
+    ));
+
+    second.resource_cost_units = 20;
+    second.relevance_ppm = 1_000_001;
+    let rejected = crate::run_memory_meta_batch_shadow_v1(
+        &meta_policy(&fixture),
+        &fixture.cue,
+        &fixture.policy,
+        &fixture.snapshot,
+        &fixture.dynamics,
+        &[meta_spec(&fixture), second],
+    );
+    assert!(matches!(
+        rejected,
+        Err(crate::MemoryMetaBatchErrorV1::Contract(
+            codex_hepta_cognitive_types::hnmf::HnmfContractError::Invalid(
+                "memory meta candidate relevance"
+            )
+        ))
+    ));
+}
