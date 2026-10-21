@@ -43,8 +43,22 @@ def sealed_media_inputs(*, records: list, media_root: str | Path,
     construction. It must compute the same digest for each sealed copy.
     Text-only requests reuse already materialized immutable strings.
     """
-    if not any(isinstance(row, dict) and any(m in row for m in MEDIA)
-               for row in records):
+    # The preflight conversation, not current mutable caller rows, decides
+    # whether a media copy is mandatory. A removed last media key must never
+    # switch the guard into an unsealed text-only fast path.
+    if (not isinstance(records, list) or not isinstance(original_conversations, list)
+            or len(records) != len(original_conversations)):
+        raise TeacherMediaSealError("source batch changed after validation")
+    has_preflight_media = False
+    for row, conversation in zip(records, original_conversations):
+        try:
+            expected_modalities = {part["type"] for part in conversation[0]["content"]}
+        except (TypeError, KeyError, IndexError) as error:
+            raise TeacherMediaSealError("invalid preflight conversation") from error
+        if not isinstance(row, dict) or set(row) != expected_modalities:
+            raise TeacherMediaSealError("source modality layout changed after validation")
+        has_preflight_media |= bool(expected_modalities.intersection(MEDIA))
+    if not has_preflight_media:
         yield original_conversations
         return
     root = Path(media_root).absolute()

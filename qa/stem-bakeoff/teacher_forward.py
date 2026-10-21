@@ -135,8 +135,22 @@ def run_forward(*, candidate: str, snapshot: str | Path, media_root: str | Path,
         operator_accepted_terms=operator_accepted_terms,
     )
     conversations, source_digest = validate_records(records, media_root, candidate)
-    # The validated conversation is a materialized snapshot. Never reread the
-    # caller-owned batch after checkpoint/model loading or asynchronous hooks.
+    # Derive media seal inputs from the validated conversation, not mutable
+    # caller rows. Otherwise deleting media keys during model loading could
+    # bypass the seal and expose unverified original file paths to processors.
+    if candidate == "embeddinggemma2_740m":
+        preflight_root = Path(media_root).absolute()
+        preflight_rows = []
+        for conversation in conversations:
+            frozen_row = {}
+            for part in conversation[0]["content"]:
+                modality = part["type"]
+                frozen_row[modality] = (
+                    part["text"] if modality == "text"
+                    else str(Path(part["url"]).relative_to(preflight_root))
+                )
+            preflight_rows.append(frozen_row)
+    # Model loading and asynchronous hooks must not reread caller-owned rows.
     validated_batch_size = len(conversations)
     if device not in ("cpu", "cuda"):
         raise TeacherForwardError("device must be cpu or cuda")
@@ -160,7 +174,7 @@ def run_forward(*, candidate: str, snapshot: str | Path, media_root: str | Path,
         # Consume only the private, digest-matched snapshot. The original local
         # files may change after hashing and must never define model inputs.
         with sealed_media_inputs(
-            records=records, media_root=media_root, candidate=candidate,
+            records=preflight_rows, media_root=media_root, candidate=candidate,
             expected_source_digest=source_digest,
             original_conversations=conversations,
             validate_records=validate_records,
