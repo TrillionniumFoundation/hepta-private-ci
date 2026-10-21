@@ -1615,11 +1615,38 @@ fn write_create_only_or_exact(path: &Path, bytes: &[u8]) -> Result<(), ArtifactO
 }
 
 fn read_small_record(path: &Path, limit: usize) -> Result<Vec<u8>, ArtifactOwnerHostError> {
-    let metadata = fs::symlink_metadata(path)?;
-    if metadata.file_type().is_symlink() || !metadata.is_file() || metadata.len() > limit as u64 {
+    let path_metadata = fs::symlink_metadata(path)?;
+    if path_metadata.file_type().is_symlink()
+        || !path_metadata.is_file()
+        || path_metadata.len() > limit as u64
+    {
         return Err(ArtifactOwnerHostError::Capacity);
     }
+    // A pre-open lstat alone does not prevent a symlink replacement between
+    // inspection and open. Refuse to follow the final component on Unix, then
+    // compare the opened inode with the one inspected before opening. The
+    // containing directories remain the exclusive writer host's trust boundary.
+    #[cfg(unix)]
+    let mut file = {
+        let mut options = OpenOptions::new();
+        options.read(true);
+        options.custom_flags(libc::O_NOFOLLOW | libc::O_CLOEXEC);
+        options.open(path)?
+    };
+    #[cfg(not(unix))]
     let mut file = File::open(path)?;
+    let opened_metadata = file.metadata()?;
+    if !opened_metadata.is_file() || opened_metadata.len() > limit as u64 {
+        return Err(ArtifactOwnerHostError::Capacity);
+    }
+    #[cfg(unix)]
+    if opened_metadata.nlink() != 1
+        || opened_metadata.dev() != path_metadata.dev()
+        || opened_metadata.ino() != path_metadata.ino()
+        || opened_metadata.mode() & 0o022 != 0
+    {
+        return Err(ArtifactOwnerHostError::PathBoundary);
+    }
     match file.try_lock_shared() {
         Ok(()) => {}
         Err(TryLockError::WouldBlock) => return Err(ArtifactOwnerHostError::WriterFenceBusy),
@@ -1956,6 +1983,26 @@ mod tests {
                 b"unaltered"
             );
         }
+    }
+
+    #[cfg(unix)]
+    #[test]
+    fn immutable_record_reader_rejects_hard_links_and_symbolic_links() {
+        use std::os::unix::fs::symlink;
+
+        let directory = TestDir::new();
+        let original = directory.0.join("record");
+        let alias = directory.0.join("alias");
+        fs::write(&original, b"immutable-record").fixture("write immutable record");
+        read_small_record(&original, MAX_SMALL_RECORD_BYTES).fixture("regular record");
+        fs::hard_link(&original, &alias).fixture("create hard link");
+        assert!(matches!(
+            read_small_record(&alias, MAX_SMALL_RECORD_BYTES),
+            Err(ArtifactOwnerHostError::PathBoundary)
+        ));
+        fs::remove_file(&alias).fixture("remove hard link");
+        symlink(&original, &alias).fixture("create symbolic link");
+        assert!(read_small_record(&alias, MAX_SMALL_RECORD_BYTES).is_err());
     }
 
     #[test]
