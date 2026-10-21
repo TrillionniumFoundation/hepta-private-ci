@@ -56,6 +56,45 @@ class ScaleMatrixTests(unittest.TestCase):
         }
         self.assertEqual(scale_matrix.validate_result(result), [])
 
+    def test_metric_requirements_match_benchmark_spec(self):
+        spec_path = (
+            pathlib.Path(__file__).resolve().parents[2]
+            / "docs"
+            / "learning"
+            / "CELL_EXECUTION_BENCHMARK_MATRIX.json"
+        )
+        with spec_path.open(encoding="utf-8") as handle:
+            benchmark = json.load(handle)
+        self.assertEqual(
+            list(scale_matrix.REQUIRED_METRICS),
+            benchmark["metrics"],
+            "P4 qualification must reject missing metrics from the benchmark contract",
+        )
+
+    def test_p4_metrics_are_required_and_rate_units_are_bounded(self):
+        for key in scale_matrix.REQUIRED_METRICS:
+            with self.subTest(missing=key):
+                record = self.make_record(64, "shared_encoder")
+                del record["metrics"][key]
+                self.assertIn(
+                    f"metrics.{key} is required",
+                    scale_matrix.validate_result(record),
+                )
+        for key in ("negative_transfer_rate", "immutable_buffer_reuse_rate"):
+            for invalid in (1.01, -0.01):
+                with self.subTest(rate=key, invalid=invalid):
+                    record = self.make_record(64, "shared_encoder")
+                    record["metrics"][key] = invalid
+                    self.assertTrue(
+                        any(
+                            message.startswith(f"metrics.{key} must be ")
+                            for message in scale_matrix.validate_result(record)
+                        )
+                    )
+        record = self.make_record(64, "shared_encoder")
+        record["metrics"]["future_window_utility"] = -1.25
+        self.assertEqual(scale_matrix.validate_result(record), [])
+
     def test_invalid_generation_evidence_cannot_be_hidden_in_metadata(self):
         result = {
             "schema": "hepta.cell-execution-scale-result.v1",
