@@ -443,30 +443,19 @@ fn three_generation_frozen_stem_chain_requires_distinct_replay_and_evaluation() 
     third.independent_evaluation_digest = digest("independent-eval-g4");
     third.candidate_head_artifact_digest = digest("head-g4");
     assert!(third.validate_after(&second).is_ok());
-    assert!(MemoryCellNextSnapshotCandidateV1::validate_chain(&[
-        first.clone(),
-        second.clone(),
-        third.clone(),
-    ])
-    .is_ok());
-    assert!(MemoryCellNextSnapshotCandidateV1::validate_chain(&[
-        first.clone(),
-        second.clone(),
-    ])
-    .is_err());
+    let valid_chain = [first.clone(), second.clone(), third.clone()];
+    assert!(MemoryCellNextSnapshotCandidateV1::validate_chain(&valid_chain).is_ok());
+    let too_short = [first.clone(), second.clone()];
+    assert!(MemoryCellNextSnapshotCandidateV1::validate_chain(&too_short).is_err());
 
-    // An adjacent predecessor check cannot discover references recycled
-    // from two generations earlier; the whole-chain check must reject all
-    // three independent evidence categories.
+    // The adjacent predecessor check cannot detect evidence recycled two
+    // generations later; the bounded whole-chain check must reject it.
     let mut stale_replay = third.clone();
     stale_replay.replay_snapshot_digest = first.replay_snapshot_digest;
     assert!(stale_replay.validate_after(&second).is_ok());
+    let recycled_chain = [first.clone(), second.clone(), stale_replay];
     assert!(matches!(
-        MemoryCellNextSnapshotCandidateV1::validate_chain(&[
-            first.clone(),
-            second.clone(),
-            stale_replay,
-        ]),
+        MemoryCellNextSnapshotCandidateV1::validate_chain(&recycled_chain),
         Err(HnmfContractError::Conflict(
             "memory next-snapshot recycled chain evidence"
         ))
@@ -475,22 +464,14 @@ fn three_generation_frozen_stem_chain_requires_distinct_replay_and_evaluation() 
     let mut stale_receipt = third.clone();
     stale_receipt.replay_receipt_digest = first.replay_receipt_digest;
     assert!(stale_receipt.validate_after(&second).is_ok());
-    assert!(MemoryCellNextSnapshotCandidateV1::validate_chain(&[
-        first.clone(),
-        second.clone(),
-        stale_receipt,
-    ])
-    .is_err());
+    let recycled_chain = [first.clone(), second.clone(), stale_receipt];
+    assert!(MemoryCellNextSnapshotCandidateV1::validate_chain(&recycled_chain).is_err());
 
     let mut stale_evaluation = third.clone();
     stale_evaluation.independent_evaluation_digest = first.independent_evaluation_digest;
     assert!(stale_evaluation.validate_after(&second).is_ok());
-    assert!(MemoryCellNextSnapshotCandidateV1::validate_chain(&[
-        first.clone(),
-        second.clone(),
-        stale_evaluation,
-    ])
-    .is_err());
+    let recycled_chain = [first.clone(), second.clone(), stale_evaluation];
+    assert!(MemoryCellNextSnapshotCandidateV1::validate_chain(&recycled_chain).is_err());
 
     let mut stale = second.clone();
     stale.predecessor_model_generation = generation(1);
