@@ -411,7 +411,8 @@ pub fn run_memory_meta_preselected_shadow_v1(
 ) -> Result<MemoryMetaPreselectedShadowV1, MemoryMetaBatchErrorV1> {
     let pre_tick_plan =
         plan_memory_meta_pre_ticks_shadow_v1(policy, cue, engram_snapshot, cells)?;
-    let admitted: BTreeSet<&ContractIdV1> = pre_tick_plan.admitted_cell_ids.iter().collect();
+    let admitted: BTreeSet<ContractIdV1> =
+        pre_tick_plan.admitted_cell_ids.iter().cloned().collect();
     let mut selected: Vec<MemoryMetaCellTickSpecV1> = cells
         .iter()
         .filter(|cell| admitted.contains(&cell.manifest.cell_id))
