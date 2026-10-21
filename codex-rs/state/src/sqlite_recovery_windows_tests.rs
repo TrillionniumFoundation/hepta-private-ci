@@ -241,7 +241,9 @@ fn junction_parent_is_rejected_without_creating_or_mutating_a_source() -> anyhow
     let output = std::process::Command::new("cmd")
         .args(["/C", "mklink", "/J"])
         .arg(&alias)
-        .arg(&fixture.home)
+        // cmd receives the ordinary drive/UNC spelling. The source fixture
+        // keeps its verbatim path for the retained-identity checks themselves.
+        .arg(fixture.config.home())
         .output()?;
     anyhow::ensure!(
         output.status.success(),
