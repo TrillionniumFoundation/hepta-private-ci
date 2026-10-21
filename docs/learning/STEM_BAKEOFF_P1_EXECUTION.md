@@ -257,3 +257,52 @@ These checks improve the local byte-custody boundary only. They do **not**
 make a mutable filesystem inherently immutable, prove upstream publisher
 identity, or replace a read-only mount/content-addressed verified
 materialization followed by independent source attestation.
+
+
+## P5: pinned teacher-to-student feature-shard boundary (offline only)
+
+The existing teacher forward emitted a digest of its pooled features but no
+readable tensor for `shadow_distill_step`. The optional
+`--feature-output-dir /mnt/hepta/private-feature-shards/unique-run-name`
+argument now records **the actual output of a successful local teacher
+forward** as a bounded float32 NumPy `features.npy` and canonical
+`manifest.json`, using `qa/stem-bakeoff/feature_shard.py`. The output
+directory must be previously absent, under an existing owner-controlled
+parent **outside the repository checkout**, with 0700 directory and 0600
+file permissions. It will not download weights or export to Git.
+
+~~~sh
+python3 qa/stem-bakeoff/teacher_forward.py \
+  --candidate embeddinggemma2_740m \
+  --snapshot /mnt/hepta/checkpoints/embeddinggemma2 \
+  --media-root /mnt/hepta/approved-media \
+  --records-json /mnt/hepta/approved-media/records.json \
+  --revision "$PINNED_UPSTREAM_SHA40" \
+  --expected-inventory-sha256 "$EXTERNALLY_PINNED_INVENTORY_SHA256" \
+  --operator-accepted-terms --device cpu --truncate-dim 256 \
+  --feature-output-dir /mnt/hepta/private-feature-shards/unique-run-name
+~~~
+
+The shard manifest binds:
+model candidate/revision; operator-pinned checkpoint inventory SHA256;
+ordered source-manifest SHA256; feature shape and dtype; digest of raw
+float32 tensor and of serialized NPY. It stores no raw text, media or
+credentials. `read_shard(directory)` loads NPY with `allow_pickle=False`,
+validates the exact schema/size/finite shape/digests, rejects symlink and
+hardlink aliases, and returns the tensor plus non-authorizing manifest.
+Tests verify roundtrip and tamper, bad revisions, symlink and repository-path
+rejections. An additional hermetic fake-model `run_forward` regression
+checks the **actual export control flow and byte equality** without ever
+loading licensed weights; it is a structural test, not a real Teacher result.
+Pretrained weights, real model quality and independent source
+provenance are **not** attested by this data container. A digest supplied by
+the same operator is not an independent witness.
+
+The teacher forward is still **read-only**, never updates a Cell or source
+Memory. A later offline trainer may explicitly read these shards and pass
+tensor targets to `shadow_distill_step`, but the shard does **not**
+prove teacher/model performance or run any native 150M/300M training.
+Holdouts, license review, independently attested original checkpoint bytes,
+target-hardware profiling and terminal exact-head CI remain blockers.
+All receipts retain `SHADOW_ONLY / DENY_ALL / HOLD_NO_GO`; no model is selected
+or promoted through this interface.
