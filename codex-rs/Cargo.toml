@@ -676,7 +676,7 @@ imbl = { path = "third_party/imbl-6.1.0" }
 matrix-sdk-sqlite = { path = "third_party/matrix-sdk-sqlite-0.18.0" }
 # Backport Matrix SDK's upstream IdentityBasedStrategy panic fix while the
 # workspace remains on the Rust-1.95-compatible 0.18 release line.
-matrix-sdk-crypto = { path = "third_party/matrix-sdk-crypto-0.18.0" }
+matrix-sdk-crypto = { path = "third_party/matrix-sdk-crypto-0.18.0", package = "matrix-sdk-crypto-hepta" }
 # Uncomment to debug local changes.
 # ratatui = { path = "../../ratatui" }
 crossterm = { git = "https://github.com/openai-oss-forks/crossterm", rev = "45fecb9508105988f42fe6ff0441783ed3717f92" }
