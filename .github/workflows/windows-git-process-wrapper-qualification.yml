@@ -1,0 +1,46 @@
+name: Windows Git Process Tree Qualification
+
+on:
+  pull_request:
+    paths:
+      - "codex-rs/git-utils/src/git_process_tests.rs"
+      - ".github/workflows/windows-git-process-wrapper-qualification.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  process-tree-tests:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: ["windows-latest", "ubuntu-24.04"]
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 50
+    defaults:
+      run:
+        working-directory: codex-rs
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          persist-credentials: false
+      - name: Install exactly pinned Rust 1.95 compiler and components
+        shell: bash
+        run: rustup toolchain install 1.95.0 --profile minimal --component rustfmt,clippy
+      - name: Verify complete Rust source formatting
+        if: runner.os != 'Windows'
+        shell: bash
+        run: cargo +1.95.0 fmt --all -- --check
+      # Full-workspace rustfmt exceeds Windows' command-line length limit.
+      # Ubuntu checks the workspace; Windows also checks the exercised crate.
+      - name: Verify native Git-utils source formatting
+        if: runner.os == 'Windows'
+        shell: bash
+        run: cargo +1.95.0 fmt -p codex-git-utils -- --check
+      - name: Actual Windows and Unix Git wrapper child lifetime tests
+        shell: bash
+        run: cargo +1.95.0 test --locked -p codex-git-utils --lib 'git_process::tests::' -- --nocapture
+      - name: Strict native crate Clippy
+        shell: bash
+        run: cargo +1.95.0 clippy --locked -p codex-git-utils --all-targets -- -D warnings
