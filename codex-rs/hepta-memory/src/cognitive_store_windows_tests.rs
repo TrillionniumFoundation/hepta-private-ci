@@ -15,7 +15,7 @@ use super::super::sync::open_cognitive_directory_for_sync;
 use super::create_private_directory;
 
 struct Fixture {
-    _temporary: tempfile::TempDir,
+    temporary: tempfile::TempDir,
     parent: PathBuf,
     root: PathBuf,
 }
@@ -28,7 +28,7 @@ impl Fixture {
         let root = root.canonicalize()?;
         let parent = root.parent().expect("cognitive parent").to_path_buf();
         Ok(Self {
-            _temporary: temporary,
+            temporary,
             parent,
             root,
         })
@@ -89,13 +89,13 @@ fn publication_rejects_junction_ancestor_before_creating_pointer()
     fs::write(&database, b"candidate identity fixture")?;
     let pointer = fixture.root.join(COGNITIVE_ACTIVE_DB_POINTER);
     let before = fs::read(&database)?;
-    let alias = fixture.parent.with_file_name("alias-private");
+    let alias = fixture.temporary.path().join("alias-private");
     // Junction creation does not need symlink privilege. A failed fixture is an
     // error, not a skipped security check or a successful rejection.
     let output = Command::new("cmd")
         .args(["/C", "mklink", "/J"])
         .arg(&alias)
-        .arg(&fixture.parent)
+        .arg(fixture.temporary.path().join("private"))
         .output()?;
     assert!(
         output.status.success(),
