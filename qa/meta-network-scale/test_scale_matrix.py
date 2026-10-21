@@ -132,5 +132,90 @@ class ScaleMatrixTests(unittest.TestCase):
         self.assertIn("metrics.p99_ms must be a finite number", errors)
 
 
+    def make_record(self, size, arm):
+        return {
+            "schema": "hepta.cell-execution-scale-result.v1",
+            "size": size,
+            "arm": arm,
+            "authority": "qualification_only",
+            "provenance": {
+                "source_commit": "a" * 40,
+                "source_tree": "b" * 40,
+                "target_host_digest": "c" * 64,
+                "runtime_digest": "d" * 64,
+                "measurement_digest": "e" * 64,
+            },
+            "evidence": {key: True for key in scale_matrix.REQUIRED_EVIDENCE},
+            "evidence_receipts": {
+                key: "f" * 64 for key in scale_matrix.REQUIRED_EVIDENCE
+            },
+            "metrics": {key: 0 for key in scale_matrix.REQUIRED_METRICS},
+            "metrics_receipt": "1" * 64,
+            "topology_lifecycle": list(scale_matrix.LIFECYCLE),
+        }
+
+    def matrix(self):
+        return {
+            "schema": "hepta.cell-execution-scale-matrix-result.v1",
+            "authority": "qualification_only",
+            "results": [
+                self.make_record(size, arm)
+                for size in scale_matrix.SIZES
+                for arm in scale_matrix.ARMS
+            ],
+        }
+
+    def test_full_matrix_shape_is_qualification_only(self):
+        matrix = self.matrix()
+        self.assertEqual(len(matrix["results"]), 36)
+        self.assertEqual(scale_matrix.validate_matrix(matrix), [])
+        matrix["authority"] = "production"
+        self.assertIn(
+            "matrix authority must remain qualification_only",
+            scale_matrix.validate_matrix(matrix),
+        )
+
+    def test_matrix_rejects_omissions_and_duplicate_pairs(self):
+        matrix = self.matrix()
+        matrix["results"].pop()
+        errors = scale_matrix.validate_matrix(matrix)
+        self.assertIn("matrix must contain exactly 36 results", errors)
+        self.assertIn("missing matrix pair: 4096/duplicated_encoder", errors)
+        matrix["results"].append(self.make_record(1, "no_change"))
+        errors = scale_matrix.validate_matrix(matrix)
+        self.assertIn("duplicate matrix pair: 1/no_change", errors)
+        self.assertIn("missing matrix pair: 4096/duplicated_encoder", errors)
+
+    def test_matrix_rejects_cross_host_or_cross_commit_comparisons(self):
+        for key, changed in [
+            ("source_commit", "9" * 40),
+            ("source_tree", "8" * 40),
+            ("target_host_digest", "7" * 64),
+        ]:
+            with self.subTest(key=key):
+                matrix = self.matrix()
+                matrix["results"][1]["provenance"][key] = changed
+                errors = scale_matrix.validate_matrix(matrix)
+                self.assertIn(
+                    "results[1].provenance differs from matrix source/host cohort",
+                    errors,
+                )
+
+    def test_boolean_scale_and_invalid_rows_are_rejected(self):
+        result = self.make_record(True, "no_change")
+        self.assertIn(
+            "size must be one of 1, 8, 64, 256, 1024, 4096",
+            scale_matrix.validate_result(result),
+        )
+        matrix = self.matrix()
+        matrix["results"][-1] = result
+        self.assertTrue(scale_matrix.validate_matrix(matrix))
+        matrix["results"][-1] = None
+        self.assertIn(
+            "results[35] must be an object",
+            scale_matrix.validate_matrix(matrix),
+        )
+
+
 if __name__ == "__main__":
     unittest.main()

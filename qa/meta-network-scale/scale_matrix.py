@@ -102,7 +102,7 @@ def validate_result(result: dict[str, Any]) -> list[str]:
     errors: list[str] = []
     if result.get("schema") != "hepta.cell-execution-scale-result.v1":
         errors.append("schema must be hepta.cell-execution-scale-result.v1")
-    if result.get("size") not in SIZES:
+    if type(result.get("size")) is not int or result.get("size") not in SIZES:
         errors.append("size must be one of 1, 8, 64, 256, 1024, 4096")
     if result.get("arm") not in ARMS:
         errors.append("arm is not in the registered comparison arms")
@@ -161,24 +161,92 @@ def validate_result(result: dict[str, Any]) -> list[str]:
     return errors
 
 
+
+def validate_matrix(matrix: dict[str, Any]) -> list[str]:
+    """Validate a COMPLETE comparable qualification cohort, not host authenticity.
+
+    Each of the six cell scales must contain one result per registered arm.
+    Model/runtime digests can differ across arms, but all arms must bind the
+    same code revision, source tree and target host. The external observer
+    must still authenticate the digests and independently verify metrics.
+    """
+    if not isinstance(matrix, dict):
+        return ["matrix must be an object"]
+    errors: list[str] = []
+    if matrix.get("schema") != "hepta.cell-execution-scale-matrix-result.v1":
+        errors.append("matrix schema mismatch")
+    if matrix.get("authority") != "qualification_only":
+        errors.append("matrix authority must remain qualification_only")
+    results = matrix.get("results")
+    required_count = len(SIZES) * len(ARMS)
+    if not isinstance(results, list):
+        return errors + ["matrix results must be a list"]
+    if len(results) != required_count:
+        errors.append(f"matrix must contain exactly {required_count} results")
+    # Fail closed without processing an arbitrarily large caller-supplied list.
+    if len(results) > required_count:
+        return errors
+
+    expected = {(size, arm) for size in SIZES for arm in ARMS}
+    seen: set[tuple[int, str]] = set()
+    source_host: tuple[str, str, str] | None = None
+    cohort_fields = ("source_commit", "source_tree", "target_host_digest")
+    for index, row in enumerate(results):
+        if not isinstance(row, dict):
+            errors.append(f"results[{index}] must be an object")
+            continue
+        errors.extend(f"results[{index}].{error}" for error in validate_result(row))
+        size, arm = row.get("size"), row.get("arm")
+        if (
+            type(size) is not int
+            or size not in SIZES
+            or not isinstance(arm, str)
+            or arm not in ARMS
+        ):
+            continue
+        pair = (size, arm)
+        if pair in seen:
+            errors.append(f"duplicate matrix pair: {size}/{arm}")
+        seen.add(pair)
+        provenance = row.get("provenance")
+        if isinstance(provenance, dict) and all(
+            isinstance(provenance.get(key), str) for key in cohort_fields
+        ):
+            identity = tuple(provenance[key] for key in cohort_fields)
+            if source_host is None:
+                source_host = identity
+            elif identity != source_host:
+                errors.append(
+                    f"results[{index}].provenance differs from matrix source/host cohort"
+                )
+    for size, arm in sorted(expected - seen):
+        errors.append(f"missing matrix pair: {size}/{arm}")
+    return errors
+
+
 def main(argv: list[str]) -> int:
     parser = argparse.ArgumentParser()
     subparsers = parser.add_subparsers(dest="command", required=True)
     subparsers.add_parser("plan")
     validate = subparsers.add_parser("validate")
     validate.add_argument("result", type=argparse.FileType("r"))
+    validate_matrix_command = subparsers.add_parser("validate-matrix")
+    validate_matrix_command.add_argument("result", type=argparse.FileType("r"))
     args = parser.parse_args(argv)
     if args.command == "plan":
         json.dump(build_plan(), sys.stdout, indent=2)
         sys.stdout.write("\n")
         return 0
     result = json.load(args.result)
-    errors = validate_result(result)
+    errors = validate_matrix(result) if args.command == "validate-matrix" else validate_result(result)
     if errors:
         for error in errors:
             print(error, file=sys.stderr)
         return 1
-    print("valid qualification result shape")
+    if args.command == "validate-matrix":
+        print("valid qualification matrix shape (host authenticity unverified)")
+    else:
+        print("valid qualification result shape")
     return 0
 
 

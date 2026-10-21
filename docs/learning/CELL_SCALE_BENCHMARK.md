@@ -6,12 +6,16 @@ This is the executable qualification contract for the six cell scales in
 ```bash
 python3 qa/meta-network-scale/scale_matrix.py plan
 python3 qa/meta-network-scale/scale_matrix.py validate result.json
+python3 qa/meta-network-scale/scale_matrix.py validate-matrix matrix.json
 python3 -m unittest qa/meta-network-scale/test_scale_matrix.py
 ```
 
-The validator checks that a result manifest includes all comparison arms, future
-window and negative-transfer evidence, lesion/ablation, crash/reopen, stale
-generation rejection, rollback and resource metrics. It does not calculate
+The single-result validator checks the evidence, metrics and digest shape for
+one size/arm. The matrix validator additionally requires exactly 36 records
+(one per size and comparison arm), rejects duplicates, and enforces one
+source commit, source tree and target-host cohort across comparisons.
+Both paths check future-window and negative-transfer evidence, lesion/ablation,
+crash/reopen, stale-generation rejection, rollback and resource metrics. It does not calculate
 utility, prove a scaling law, or admit a production topology.
 
 Each result also carries immutable provenance (`source_commit`, `source_tree`,
