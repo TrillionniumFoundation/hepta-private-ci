@@ -10,12 +10,17 @@ fn q(percent: i64) -> FixedQ32 {
     FixedQ32::from_raw(percent * (1_i64 << 32) / 100)
 }
 
+fn future_window() -> Digest32 {
+    Digest32::of_bytes(b"future-window")
+}
+
 fn probability(percent: u64) -> ProbabilityQ32 {
     ProbabilityQ32::from_raw(percent * (1_u64 << 32) / 100).expect("valid probability")
 }
 
 fn risk(mean: i64) -> SemanticRiskEstimateV1 {
     SemanticRiskEstimateV1 {
+        future_window_digest: future_window(),
         mean_loss: q(mean),
         cvar_loss: FixedQ32::ZERO,
         failure_probability: ProbabilityQ32::ZERO,
@@ -49,6 +54,7 @@ fn context(count: usize) -> OutputPortfolioContextV1 {
         generation: Generation::new(1).expect("generation"),
         encoder_digest: Digest32::of_bytes(b"encoder"),
         snapshot_digest: Digest32::of_bytes(b"snapshot"),
+        future_window_digest: future_window(),
         semantic_covariance: vec![FixedQ32::ZERO; count * count],
     }
 }
@@ -120,6 +126,16 @@ fn covariance_dimension_and_snapshot_are_fail_closed() {
     )
     .expect_err("snapshot mismatch");
     assert_eq!(error, NduError::StateDigestMismatch);
+
+    let mut wrong_window = candidate("window-drift", 20, 1, false);
+    wrong_window.risk.future_window_digest = Digest32::of_bytes(b"other-window");
+    let error = select_output_portfolio_v1(
+        &context(2),
+        &budget(1),
+        &[candidate("baseline", 0, 0, true), wrong_window],
+    )
+    .expect_err("future-window mismatch");
+    assert_eq!(error, NduError::InvalidSolverReceipt("future-window digest"));
 }
 
 #[test]
