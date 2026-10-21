@@ -242,6 +242,13 @@ class ScaleMatrixTests(unittest.TestCase):
             ["result must be an object"],
         )
 
+    def test_bounded_json_parser_rejects_oversized_and_non_utf8_input(self):
+        oversized = io.StringIO(" " * (scale_matrix.MAX_QUALIFICATION_JSON_BYTES + 1))
+        with self.assertRaisesRegex(ValueError, "exceeds 4 MiB input limit"):
+            scale_matrix.load_strict_json(oversized)
+        with self.assertRaisesRegex(ValueError, "must be valid UTF-8"):
+            scale_matrix.load_strict_json(io.BytesIO(b"\\xff"))
+
     def test_cli_rejects_duplicate_keys_without_traceback(self):
         with tempfile.TemporaryDirectory() as directory:
             path = pathlib.Path(directory) / "ambiguous.json"
