@@ -1302,8 +1302,14 @@ fn read_extracted_backup_archive_git_sha_rejects_path_traversal_ref() {
 
 #[test]
 fn curated_zip_modes_strip_privilege_bits_and_refuse_non_regular_files() {
-    assert_eq!(sanitized_zip_file_mode(Some(0o104755)).unwrap(), Some(0o755));
-    assert_eq!(sanitized_zip_file_mode(Some(0o100644)).unwrap(), Some(0o644));
+    assert_eq!(
+        sanitized_zip_file_mode(Some(0o104755)).unwrap(),
+        Some(0o755)
+    );
+    assert_eq!(
+        sanitized_zip_file_mode(Some(0o100644)).unwrap(),
+        Some(0o644)
+    );
     assert_eq!(sanitized_zip_file_mode(None).unwrap(), None);
     assert!(sanitized_zip_file_mode(Some(0o120777)).is_err());
     assert!(sanitized_zip_file_mode(Some(0o060666)).is_err());
