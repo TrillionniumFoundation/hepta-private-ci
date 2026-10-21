@@ -1,0 +1,29 @@
+{
+  "description": "Execute all 19 real repository migrations and all 30 SQL statements extracted from the current Rust v1 rewind fixture in SQLite; metadata initialized with the real opener shape, SQLx migration ledger represented only by its version column. No Rust/native execution claimed.",
+  "fixture_sha256": "59a80a42014242d6d9d9cb5786552356b182550359987dde6f8e0ea29cb06e66",
+  "results": [
+    {
+      "variant": "baseline",
+      "sqlite": "3.53.1",
+      "initial_migrations": 19,
+      "rewind_statement_count": 30,
+      "success": false,
+      "phase": "rewind",
+      "statement_index": 25,
+      "statement": "ALTER TABLE automation_runs DROP COLUMN schedule_revision",
+      "error": "error in trigger automation_timer_lifecycle_drain: no such table: main.automation_dispatch_outcomes"
+    },
+    {
+      "variant": "owner_fix",
+      "sqlite": "3.53.1",
+      "initial_migrations": 19,
+      "rewind_statement_count": 30,
+      "success": true,
+      "phase": "replay",
+      "statement_index": 29,
+      "migration": "0019_converged_owner_schema.sql",
+      "schema_version": 19,
+      "timer_owner_rows": 1
+    }
+  ]
+}
