@@ -23,6 +23,41 @@ use super::SqliteRecoveryError;
 use super::indeterminate;
 use super::sqlite_sidecar_path;
 
+// SqliteConfig uses AbsolutePathBuf's ordinary drive/UNC spelling, while OS
+// canonical source paths retain their verbatim prefix. Compare only those
+// namespace aliases and the exact absolute component sequence. This performs
+// no filesystem lookup, case folding, or parent-component resolution; retained
+// native handles and their complete snapshots remain the identity authority.
+pub(super) fn same_recovery_path(left: &Path, right: &Path) -> bool {
+    use std::path::Component;
+    use std::path::Prefix;
+
+    let mut left = left.components();
+    let mut right = right.components();
+    let (Some(Component::Prefix(left_prefix)), Some(Component::Prefix(right_prefix))) =
+        (left.next(), right.next())
+    else {
+        return false;
+    };
+    let same_prefix = match (left_prefix.kind(), right_prefix.kind()) {
+        (
+            Prefix::Disk(left) | Prefix::VerbatimDisk(left),
+            Prefix::Disk(right) | Prefix::VerbatimDisk(right),
+        ) => left == right,
+        (
+            Prefix::UNC(left_server, left_share) | Prefix::VerbatimUNC(left_server, left_share),
+            Prefix::UNC(right_server, right_share) | Prefix::VerbatimUNC(right_server, right_share),
+        ) => left_server == right_server && left_share == right_share,
+        _ => false,
+    };
+    same_prefix
+        && matches!(
+            (left.next(), right.next()),
+            (Some(Component::RootDir), Some(Component::RootDir))
+        )
+        && left.eq(right)
+}
+
 #[derive(Debug)]
 pub(super) struct RetainedObject {
     path: PathBuf,
@@ -154,8 +189,8 @@ pub(super) fn materialize(
     const MAX_DATABASE_BYTES: u64 = 128 * 1024 * 1024;
     const MAX_SIDECAR_BYTES: u64 = 128 * 1024 * 1024;
     const MAX_BUNDLE_BYTES: usize = 256 * 1024 * 1024;
-    if target.parent() != Some(config.home())
-        || target == guard.inner.database_path
+    if !super::recovery_parent_matches(target, config.home())
+        || same_recovery_path(target, &guard.inner.database_path)
         || target.file_name().is_none()
     {
         return Err(SqliteRecoveryError::Indeterminate);

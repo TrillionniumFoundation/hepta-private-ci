@@ -267,6 +267,19 @@ fn materialized_copy_is_private_complete_bounded_and_create_new() -> anyhow::Res
     let guard = fixture
         .config
         .bind_existing_recovery_database(&fixture.database)?;
+    let ordinary_source = fixture.config.home().join("source.sqlite3");
+    assert_ne!(ordinary_source, fixture.database);
+    assert!(windows::same_recovery_path(
+        &ordinary_source,
+        &fixture.database
+    ));
+    assert_eq!(
+        fixture
+            .config
+            .materialize_identity_bound_recovery_copy(&guard, &ordinary_source),
+        Err(SqliteRecoveryError::Indeterminate)
+    );
+    assert_eq!(fs::read(&fixture.database)?, b"database bytes");
     let target = fixture.home.join("candidate.sqlite3");
     fixture
         .config
@@ -374,4 +387,39 @@ async fn cold_image_is_immutable_and_reconnects_to_the_captured_bytes() -> anyho
     assert_eq!(value, "original");
     pool.close().await;
     Ok(())
+}
+
+#[test]
+fn namespace_aliases_preserve_exact_absolute_components() {
+    for (ordinary, verbatim) in [
+        (r"C:\private\state", r"\\?\C:\private\state"),
+        (r"C:\", r"\\?\C:\"),
+        (r"\\server\share\private", r"\\?\UNC\server\share\private"),
+        (r"\\server\share\", r"\\?\UNC\server\share\"),
+    ] {
+        assert!(windows::same_recovery_path(
+            Path::new(ordinary),
+            Path::new(verbatim)
+        ));
+        assert!(windows::same_recovery_path(
+            Path::new(verbatim),
+            Path::new(ordinary)
+        ));
+    }
+    for (left, right) in [
+        (r"C:\private", r"\\?\D:\private"),
+        (r"C:\private", r"\\?\C:\Private"),
+        (r"C:\private\..\state", r"\\?\C:\state"),
+        (r"\\server\share\private", r"\\?\UNC\other\share\private"),
+        (r"\\server\share\private", r"\\?\UNC\server\other\private"),
+        (r"C:private", r"C:private"),
+        (r"private\state", r"private\state"),
+        (r"\\.\C:\private", r"C:\private"),
+        (r"\\?\GLOBALROOT\Device\private", r"\\?\GLOBALROOT\Device\private"),
+    ] {
+        assert!(!windows::same_recovery_path(
+            Path::new(left),
+            Path::new(right)
+        ));
+    }
 }

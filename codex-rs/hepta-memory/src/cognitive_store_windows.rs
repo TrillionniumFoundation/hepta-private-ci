@@ -1,6 +1,7 @@
 //! Windows creation and validation use the existing private filesystem owner.
 //! Existing roots and files are never repaired or re-owned during admission.
 
+use std::os::windows::fs::MetadataExt;
 use std::path::Path;
 
 use codex_utils_path::PrivateFileAccess;
@@ -15,16 +16,24 @@ pub(super) fn create_private_directory(path: &Path) -> Result<(), CognitiveStore
     let mut missing = Vec::new();
     for ancestor in path.ancestors() {
         match std::fs::symlink_metadata(ancestor) {
-            Ok(_) => break,
+            Ok(metadata) => {
+                const FILE_ATTRIBUTE_REPARSE_POINT: u32 = 0x0400;
+                if metadata.file_attributes() & FILE_ATTRIBUTE_REPARSE_POINT != 0 {
+                    return Err(CognitiveStoreError::Invalid(
+                        "per-agent cognitive root must not traverse a reparse point".to_string(),
+                    ));
+                }
+            }
             Err(error) if error.kind() == std::io::ErrorKind::NotFound => {
                 missing.push(ancestor);
             }
             Err(error) => return Err(unavailable(error)),
         }
     }
-    // Each actual creation atomically rejects reparse ancestry and supplies
-    // the existing owner's explicit user SID/private creation descriptor.
-    // The lookup above authorizes no write; native acquisition is decisive.
+    // Preserve the existing Invalid result for an observed redirected input.
+    // This metadata scan authorizes no write. Every actual creation still
+    // atomically rejects reparse ancestry and supplies the existing owner's
+    // explicit user SID/private descriptor; a later substitution remains denied.
     let mut retained = Vec::new();
     for directory in missing.into_iter().rev() {
         retained.push(open_private_state_directory(directory).map_err(unavailable)?);

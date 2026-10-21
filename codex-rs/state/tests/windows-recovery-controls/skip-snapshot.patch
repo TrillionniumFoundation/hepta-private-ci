@@ -1,7 +1,7 @@
 diff --git a/codex-rs/state/src/sqlite_recovery_windows.rs b/codex-rs/state/src/sqlite_recovery_windows.rs
 --- a/codex-rs/state/src/sqlite_recovery_windows.rs
 +++ b/codex-rs/state/src/sqlite_recovery_windows.rs
-@@ -81,5 +81 @@
+@@ -116,5 +116 @@
 -        if private_state_snapshot(&self.descriptor).map_err(indeterminate)? != self.snapshot
 -            || private_state_snapshot(lookup).map_err(indeterminate)? != self.snapshot
 -        {

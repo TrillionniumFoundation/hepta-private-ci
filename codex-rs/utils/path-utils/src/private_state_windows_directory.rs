@@ -198,7 +198,7 @@ fn recovery_open(
     const FILE_OPEN: u32 = 1;
     const FILE_CREATE: u32 = 2;
     const FILE_NON_DIRECTORY_FILE: u32 = 0x40;
-    let maximum_length = u16::try_from(name.len() * size_of::<u16>())
+    let maximum_length = u16::try_from(std::mem::size_of_val(name))
         .map_err(|_| unsafe_state("recovery name is too long"))?;
     let object_name = UNICODE_STRING {
         Length: maximum_length - size_of::<u16>() as u16,

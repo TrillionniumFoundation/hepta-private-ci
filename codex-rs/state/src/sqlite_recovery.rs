@@ -108,7 +108,7 @@ impl SqliteConfig {
         &self,
         path: &Path,
     ) -> Result<ExistingSqliteRecoveryGuard, SqliteRecoveryError> {
-        if path.parent() != Some(self.home()) {
+        if !recovery_parent_matches(path, self.home()) {
             return Err(SqliteRecoveryError::Indeterminate);
         }
         ExistingSqliteRecoveryGuard::bind(path)
@@ -134,6 +134,20 @@ impl SqliteConfig {
     ) -> Result<SqlitePool, SqliteRecoveryError> {
         guard.revalidate_for(self)?;
         Err(SqliteRecoveryError::Unavailable)
+    }
+}
+
+fn recovery_parent_matches(path: &Path, home: &Path) -> bool {
+    let Some(parent) = path.parent() else {
+        return false;
+    };
+    #[cfg(windows)]
+    {
+        windows::same_recovery_path(parent, home)
+    }
+    #[cfg(not(windows))]
+    {
+        parent == home
     }
 }
 
@@ -195,7 +209,7 @@ impl ExistingSqliteRecoveryGuard {
     }
 
     fn revalidate_for(&self, config: &SqliteConfig) -> Result<(), SqliteRecoveryError> {
-        if self.inner.database_path.parent() != Some(config.home()) {
+        if !recovery_parent_matches(&self.inner.database_path, config.home()) {
             return Err(SqliteRecoveryError::Indeterminate);
         }
         self.revalidate()

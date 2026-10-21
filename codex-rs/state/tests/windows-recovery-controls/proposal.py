@@ -18,6 +18,7 @@ ALLOWED_ROOTS = ("codex-rs/state/", "codex-rs/utils/path-utils/", "codex-rs/hept
 ALLOWED_FILES = {
     "codex-rs/Cargo.lock", "MODULE.bazel.lock", WORKFLOW,
     ".github/scripts/check_windows_private_state_acquisition.py",
+    ".github/fixtures/windows-private-state-acquisition/path-check-open.patch",
 }
 
 
