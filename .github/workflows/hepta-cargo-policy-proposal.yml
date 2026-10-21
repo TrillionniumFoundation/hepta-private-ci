@@ -41,7 +41,6 @@ jobs:
     timeout-minutes: 180
     env:
       SOURCE_SHA: ${{ github.event.pull_request.head.sha }}
-      CARGO_POLICY_EVIDENCE_DIR: ${{ runner.temp }}/cargo-policy-proposal
       CARGO_TARGET_DIR: ${{ github.workspace }}/codex-rs/target
       CARGO_TERM_COLOR: never
 
@@ -52,6 +51,12 @@ jobs:
           ref: ${{ env.SOURCE_SHA }}
           fetch-depth: 0
           persist-credentials: false
+
+      - name: Set the runner-owned evidence directory
+        shell: bash
+        run: |
+          set -euo pipefail
+          printf 'CARGO_POLICY_EVIDENCE_DIR=%s/cargo-policy-proposal\n' "$RUNNER_TEMP" >> "$GITHUB_ENV"
 
       - name: Freeze source identity, repository toolchain and full command plan
         id: source
