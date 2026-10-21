@@ -643,6 +643,7 @@ impl MemoryCellNextSnapshotCandidateV1 {
         let mut replay_snapshots = BTreeSet::new();
         let mut replay_receipts = BTreeSet::new();
         let mut evaluations = BTreeSet::new();
+        let mut topology_proposals = BTreeSet::new();
         for (index, candidate) in chain.iter().enumerate() {
             candidate.validate()?;
             if index > 0 {
@@ -656,8 +657,30 @@ impl MemoryCellNextSnapshotCandidateV1 {
                     "memory next-snapshot recycled chain evidence",
                 ));
             }
+            if let Some(topology) = candidate.topology_proposal_digest {
+                if !topology_proposals.insert(topology) {
+                    return Err(HnmfContractError::Conflict(
+                        "memory next-snapshot recycled topology",
+                    ));
+                }
+            }
         }
         Ok(())
+    }
+
+    /// Anchor the oldest proposal to a real current Cell manifest before
+    /// assessing the internal multi-generation continuity of a candidate
+    /// chain. Otherwise an internally consistent history could start at an
+    /// invented owner, model generation or obsolete forget frontier.
+    pub fn validate_chain_against(
+        manifest: &MemoryCellManifestV1,
+        chain: &[Self],
+    ) -> Result<(), HnmfContractError> {
+        let first = chain.first().ok_or(HnmfContractError::Invalid(
+            "memory next-snapshot chain length",
+        ))?;
+        first.validate_against(manifest)?;
+        Self::validate_chain(chain)
     }
 }
 
