@@ -238,6 +238,41 @@ fn whole_candidate_protocol_requires_full_weight_cap() {
 }
 
 #[test]
+fn incompatible_generation_protocols_cannot_share_one_allocation() {
+    let mut text = candidate("text", 80, 0, false);
+    text.weight_cap = q(40);
+    let mut flow = candidate("flow", 70, 0, false);
+    flow.protocol = OutputProtocolV1::LatentFlow;
+    let receipt = select_output_portfolio_v1(
+        &context(3),
+        &budget(3),
+        &[candidate("baseline", 0, 0, true), flow, text],
+    )
+    .expect("protocol-specific advisory selection");
+    assert_eq!(receipt.disposition, OutputPortfolioDispositionV1::AdvisorySelection);
+    assert!(receipt.allocations.iter().any(|item| item.candidate_id == id("text")));
+    assert!(receipt.allocations.iter().any(|item| item.candidate_id == id("baseline")));
+    assert!(!receipt.allocations.iter().any(|item| item.candidate_id == id("flow")));
+}
+
+#[test]
+fn masked_diffusion_unmask_plan_must_be_atomic() {
+    let mut masked = candidate("unmask", 90, 0, false);
+    masked.protocol = OutputProtocolV1::MaskedDiffusion;
+    masked.weight_cap = q(50);
+    let error = select_output_portfolio_v1(
+        &context(2),
+        &budget(2),
+        &[candidate("baseline", 0, 0, true), masked],
+    )
+    .expect_err("discrete unmasking cannot be fractionally mixed");
+    assert_eq!(
+        error,
+        NduError::InvalidSolverReceipt("whole-candidate weight cap")
+    );
+}
+
+#[test]
 fn candidate_costs_must_not_be_negative() {
     for negative_resource in [true, false] {
         let mut target = candidate("negative-cost", 90, 0, false);
