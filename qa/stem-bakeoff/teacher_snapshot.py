@@ -70,8 +70,10 @@ def inventory(snapshot: str | Path) -> dict[str, Any]:
                     digest.update(chunk)
             # Do not silently accept modified files during hashing.
             after = target.lstat()
-            if (metadata.st_ino, metadata.st_size, metadata.st_mtime_ns) != (
-                after.st_ino, after.st_size, after.st_mtime_ns
+            if (metadata.st_dev, metadata.st_ino, metadata.st_size,
+                    metadata.st_mtime_ns, metadata.st_ctime_ns, metadata.st_nlink) != (
+                    after.st_dev, after.st_ino, after.st_size,
+                    after.st_mtime_ns, after.st_ctime_ns, after.st_nlink
             ):
                 raise TeacherSnapshotError("snapshot changed while hashing")
             relative = target.relative_to(root).as_posix()
