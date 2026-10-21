@@ -538,6 +538,94 @@ class SharedMultimodalBridgeTests(unittest.TestCase):
                     hook.remove()
                 self.assertEqual(calls[0], 0)
 
+    def test_finite_sgd_momentum_aliasing_weight_is_rejected_before_projector(self):
+        bridge = self.stem()
+        student = torch.nn.Linear(32, 32)
+        optimizer = torch.optim.SGD(
+            list(bridge.parameters()) + list(student.parameters()),
+            lr=0.1, momentum=0.9)
+        optimizer.state[student.weight]['momentum_buffer'] = student.weight.detach()
+        before = student.weight.detach().clone()
+        calls = [0]
+
+        def count_projection(_module, _inputs, _outputs):
+            calls[0] += 1
+
+        hook = bridge.projectors['text'].register_forward_hook(count_projection)
+        try:
+            with self.assertRaisesRegex(
+                    LatentBridgeError, 'overlapping offline optimizer parameter/storage'):
+                shadow_distill_step(
+                    student, bridge, {'text': torch.ones(2, 32)},
+                    {'text': 'a' * 64}, torch.ones(2, 32),
+                    optimizer, generation=1)
+        finally:
+            hook.remove()
+        self.assertEqual(calls[0], 0)
+        torch.testing.assert_close(student.weight, before, rtol=0, atol=0)
+
+    def test_finite_adamw_moments_cannot_alias_each_other(self):
+        bridge = self.stem()
+        student = torch.nn.Linear(32, 32)
+        optimizer = torch.optim.AdamW(
+            list(bridge.parameters()) + list(student.parameters()), lr=0.01)
+        moment = torch.ones_like(student.weight)
+        optimizer.state[student.weight].update({
+            'step': torch.tensor(1.),
+            'exp_avg': moment,
+            'exp_avg_sq': moment.detach(),
+        })
+        old = student.weight.detach().clone()
+        with self.assertRaisesRegex(
+                LatentBridgeError, 'overlapping offline optimizer parameter/storage'):
+            shadow_distill_step(
+                student, bridge, {'text': torch.ones(2, 32)},
+                {'text': 'a' * 64}, torch.ones(2, 32),
+                optimizer, generation=1)
+        torch.testing.assert_close(student.weight, old, rtol=0, atol=0)
+
+    def test_projector_hook_cannot_introduce_optimizer_state_weight_alias(self):
+        bridge = self.stem()
+        student = torch.nn.Linear(32, 32)
+        optimizer = torch.optim.SGD(
+            list(bridge.parameters()) + list(student.parameters()),
+            lr=0.01, momentum=0.9)
+        before = student.weight.detach().clone()
+        called = [0]
+
+        def attach_aliased_momentum(_module, _inputs, _outputs):
+            called[0] += 1
+            optimizer.state[student.weight]['momentum_buffer'] = (
+                student.weight.detach())
+
+        hook = bridge.projectors['text'].register_forward_hook(
+            attach_aliased_momentum)
+        try:
+            with self.assertRaisesRegex(
+                    LatentBridgeError, 'overlapping offline optimizer parameter/storage'):
+                shadow_distill_step(
+                    student, bridge, {'text': torch.ones(2, 32)},
+                    {'text': 'a' * 64}, torch.ones(2, 32),
+                    optimizer, generation=1)
+        finally:
+            hook.remove()
+        self.assertEqual(called[0], 1)
+        torch.testing.assert_close(student.weight, before, rtol=0, atol=0)
+
+    def test_malformed_finite_momentum_shape_fails_before_projector(self):
+        bridge = self.stem()
+        student = torch.nn.Linear(32, 32)
+        optimizer = torch.optim.SGD(
+            list(bridge.parameters()) + list(student.parameters()),
+            lr=0.01, momentum=0.9)
+        optimizer.state[student.weight]['momentum_buffer'] = torch.ones(1)
+        with self.assertRaisesRegex(
+                LatentBridgeError, 'offline optimizer state shape/dtype/device mismatch'):
+            shadow_distill_step(
+                student, bridge, {'text': torch.ones(2, 32)},
+                {'text': 'a' * 64}, torch.ones(2, 32),
+                optimizer, generation=1)
+
     def test_nonfinite_momentum_state_rejected_before_projection(self):
         bridge = self.stem()
         student = build_encoder(StemSpec('tiny_training_only', 32, 1, 4),
