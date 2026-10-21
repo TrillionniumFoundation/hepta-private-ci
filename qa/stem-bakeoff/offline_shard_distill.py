@@ -88,7 +88,14 @@ def _prepare(cohorts: Mapping[str, PairedCohort], *, teacher_candidate: str,
                 len(set(cohort.sample_digests)) != len(cohort.sample_digests) or
                 seen_sources.intersection(cohort.sample_digests)):
             raise OfflineDistillError(f"{name}: missing/overlapping held-out source IDs")
-        slot_sha = hashlib.sha256(slots.detach().contiguous().cpu().numpy().tobytes()).hexdigest()
+        # Validate the bytes actually used by the model. detach() alone aliases
+        # the caller's mutable tensor, so snapshot before computing its digest.
+        if slots.requires_grad or slots.grad_fn is not None:
+            raise OfflineDistillError(f"{name}: frozen upstream producer required")
+        frozen_slots = slots.detach().clone()
+        slot_sha = hashlib.sha256(
+            frozen_slots.contiguous().cpu().numpy().tobytes()
+        ).hexdigest()
         if slot_sha != cohort.expected_slot_sha256:
             raise OfflineDistillError(f"{name}: student source-slot digest mismatch")
         if slot_sha in seen_slot_bytes:
@@ -110,18 +117,22 @@ def _prepare(cohorts: Mapping[str, PairedCohort], *, teacher_candidate: str,
                 targets.shape != (slots.shape[0], target_width) or
                 targets.requires_grad):
             raise OfflineDistillError(f"{name}: teacher/checkpoint/source/row binding mismatch")
-        # The teacher shard is detached data. A trainable producer is prohibited.
-        if slots.requires_grad or slots.grad_fn is not None:
-            raise OfflineDistillError(f"{name}: frozen upstream producer required")
+        # Keep the verified cohort independent of caller-owned tensors and
+        # temporary shard buffers throughout training and held-out evaluation.
         seen_teacher_features.add(manifest["raw_feature_sha256"])
-        pairs[name] = (slots.detach(), targets.detach().to(device=slots.device))
+        pairs[name] = (
+            frozen_slots,
+            targets.detach().to(device=frozen_slots.device).clone(),
+        )
     return pairs
 
 
 def _loss(student: nn.Module, readout: nn.Module,
           pair: tuple[torch.Tensor, torch.Tensor]) -> torch.Tensor:
     slots, target = pair
-    encoded = student(slots)
+    # Some legitimate student modules mutate their input in-place. Never
+    # expose the frozen verified batch to the model's forward method.
+    encoded = student(slots.clone())
     if (not _finite_tensor(encoded, 3) or encoded.shape != slots.shape):
         raise OfflineDistillError("student produced incompatible/nonfinite latent slots")
     prediction = readout(encoded.mean(dim=1))
