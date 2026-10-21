@@ -1,0 +1,78 @@
+name: Hepta security full Cargo resolver evidence
+
+on:
+  push:
+    branches:
+      - fix/rustsec-generated-lock-evidence-20261021
+
+permissions:
+  contents: read
+
+jobs:
+  verify-full-graph-lock-candidate:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 40
+    steps:
+      - name: Checkout immutable candidate
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          persist-credentials: false
+
+      - name: Install pinned Rust
+        uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582 # 1.95.0
+
+      - name: Resolve complete Cargo dependency graph and retain postimage
+        shell: bash
+        run: |
+          set -uo pipefail
+          evidence="$RUNNER_TEMP/hepta-security-full-resolver"
+          mkdir -p "$evidence"
+          git rev-parse HEAD > "$evidence/source-head.txt"
+          git rev-parse 'HEAD^{tree}' > "$evidence/source-tree.txt"
+          cp codex-rs/Cargo.lock "$evidence/Cargo.lock.before"
+          echo "Source HEAD: $(git rev-parse HEAD)"
+          cd codex-rs
+          # --no-deps did not prove that the current Cargo.lock matched the
+          # patched i18n-config dependency graph. Resolve the full graph.
+          cargo +1.95.0 metadata --format-version 1 > "$evidence/full-metadata.json" 2> "$evidence/resolve.stderr"
+          resolve_exit=$?
+          printf '%s\n' "$resolve_exit" > "$evidence/resolve.exit"
+          cd ..
+          cp codex-rs/Cargo.lock "$evidence/Cargo.lock"
+          git diff --check -- codex-rs/Cargo.lock
+          diff_exit=$?
+          git diff --binary -- codex-rs/Cargo.lock > "$evidence/Cargo.lock.patch"
+          git diff --name-only > "$evidence/changed-paths.txt"
+          echo "Resolver exit: $resolve_exit"
+          echo "Diff syntax exit: $diff_exit"
+          echo "Changed tracked paths:"
+          cat "$evidence/changed-paths.txt"
+          echo '===== BEGIN GENERATED CARGO LOCK PATCH ====='
+          cat "$evidence/Cargo.lock.patch"
+          echo '===== END GENERATED CARGO LOCK PATCH ====='
+          sha256sum "$evidence/Cargo.lock.before" "$evidence/Cargo.lock" "$evidence/Cargo.lock.patch"
+          echo 'Resolver diagnostic stderr tail:'
+          tail -n 80 "$evidence/resolve.stderr"
+          # A changed Cargo.lock is a reviewable candidate, NOT an accepted
+          # source commit. Original --locked jobs must run after publication.
+          if [[ "$resolve_exit" -ne 0 || "$diff_exit" -ne 0 ]]; then
+            echo '::error::Full Cargo metadata resolution failed'
+            exit 1
+          fi
+          python3 - "$evidence/changed-paths.txt" <<'PY'
+          import pathlib
+          import sys
+          paths = pathlib.Path(sys.argv[1]).read_text().splitlines()
+          if paths not in ([], ["codex-rs/Cargo.lock"]):
+              raise SystemExit(f"Resolver modified unexpected tracked files: {paths!r}")
+          print("Resolver changed no tracked paths other than Cargo.lock")
+          PY
+
+      - name: Upload exact resolver postimages, logs and checksums
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: hepta-security-full-resolver-${{ github.sha }}-${{ github.run_id }}
+          path: ${{ runner.temp }}/hepta-security-full-resolver/
+          retention-days: 7
+          if-no-files-found: warn
