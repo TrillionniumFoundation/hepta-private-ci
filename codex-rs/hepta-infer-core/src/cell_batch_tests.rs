@@ -118,3 +118,18 @@ fn queue_is_bounded_and_round_robin_fair() {
     assert_eq!(first[1].scope_id, id("scope:b"));
     assert_eq!(queue.len(), 1);
 }
+
+#[test]
+fn feature_batch_rejects_mixed_encoder_artifacts_even_in_one_generation() {
+    let first = snapshot();
+    let second = ImmutableFeatureSnapshotV1::new(
+        generation(1),
+        digest("different-encoder"),
+        vec![1, 2, 3],
+    )
+    .expect("second snapshot");
+    assert_eq!(
+        FeatureBatchV1::new(vec![first, second]),
+        Err(CellBatchError::EncoderMismatch)
+    );
+}
