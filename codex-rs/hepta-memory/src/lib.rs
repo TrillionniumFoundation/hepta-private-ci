@@ -35,11 +35,26 @@ mod model_receipt;
 mod neuron_proposal;
 mod operation_claims;
 mod production_cognitive_source_target;
+mod production_hos2;
 mod production_writer;
 mod recall;
 mod shadow_advisory;
 mod shadow_model_runtime;
 mod shared_experience;
+
+pub use production_hos2::HOS2_CPU_PERIOD_NS;
+pub use production_hos2::HOS2_DESTINATION_V1;
+pub use production_hos2::HOS2_INSTALL_TOPIC_V1;
+pub use production_hos2::Hos2DeliveryId;
+pub use production_hos2::Hos2DeliveryObservation;
+pub use production_hos2::Hos2Device;
+pub use production_hos2::Hos2InstallBudgetV1;
+pub use production_hos2::Hos2InstallContradiction;
+pub use production_hos2::Hos2InstallOutcome;
+pub use production_hos2::Hos2ProtocolConflict;
+pub use production_hos2::ProductionHos2Target;
+pub use production_writer::Hos2RetirementObservation;
+pub use production_writer::Hos2RetirementPermit;
 
 pub use shared_experience::SharedExperienceGrantV1;
 pub use shared_experience::SharedExperiencePurposeV1;
