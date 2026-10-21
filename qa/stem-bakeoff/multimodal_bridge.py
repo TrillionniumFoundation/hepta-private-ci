@@ -185,6 +185,27 @@ class MultimodalSlotizer(nn.Module):
                            generation=generation)
 
 
+def _verify_optimizer_ownership(student: nn.Module, slotizer: MultimodalSlotizer,
+                                optimizer: torch.optim.Optimizer) -> tuple[int, ...]:
+    """Prevent an offline Student step from updating another Cell or teacher."""
+    if not isinstance(optimizer, torch.optim.Optimizer):
+        raise LatentBridgeError("offline distillation requires a torch optimizer")
+    student_params = tuple(student.parameters())
+    slotizer_params = tuple(slotizer.parameters())
+    student_ids = {id(p) for p in student_params}
+    slotizer_ids = {id(p) for p in slotizer_params}
+    if student_ids.intersection(slotizer_ids):
+        raise LatentBridgeError("student and slotizer parameter ownership overlaps")
+    owned = {id(p) for p in (*student_params, *slotizer_params) if p.requires_grad}
+    parameters = [p for group in optimizer.param_groups for p in group["params"]]
+    ids = tuple(id(p) for p in parameters)
+    if (not ids or len(set(ids)) != len(ids)
+            or any(not isinstance(p, nn.Parameter) or not p.requires_grad
+                   or id(p) not in owned for p in parameters)):
+        raise LatentBridgeError("optimizer contains foreign, frozen or duplicate parameters")
+    return ids
+
+
 def shadow_distill_step(student: nn.Module, slotizer: MultimodalSlotizer,
                         features: dict[str, torch.Tensor], source_digests: dict[str, str],
                         teacher_global: torch.Tensor, optimizer: torch.optim.Optimizer,
@@ -196,8 +217,13 @@ def shadow_distill_step(student: nn.Module, slotizer: MultimodalSlotizer,
     """
     if not any(p.requires_grad for p in student.parameters()):
         raise LatentBridgeError("student must be explicitly trainable offline")
+    # Validate optimizer owner identity before a trainable projection or Student
+    # call, and recheck it after forward/backward hooks before any weight step.
+    optimizer_binding = _verify_optimizer_ownership(student, slotizer, optimizer)
     slots = slotizer(features, source_digests=source_digests,
                      generation=generation, timestamps=timestamps)
+    if _verify_optimizer_ownership(student, slotizer, optimizer) != optimizer_binding:
+        raise LatentBridgeError("optimizer ownership changed during projection")
     target = teacher_global.detach()
     if (target.shape != slots.global_feature.shape or
             not torch.isfinite(target).all() or
@@ -214,6 +240,8 @@ def shadow_distill_step(student: nn.Module, slotizer: MultimodalSlotizer,
     if not torch.isfinite(loss):
         raise LatentBridgeError("nonfinite distillation loss")
     loss.backward()
+    if _verify_optimizer_ownership(student, slotizer, optimizer) != optimizer_binding:
+        raise LatentBridgeError("optimizer ownership changed before training step")
     optimizer.step()
     return {"loss": float(loss.detach()), "mse": float(mse.detach()),
             "cosine_loss": float(cosine.detach()), "generation": generation,
