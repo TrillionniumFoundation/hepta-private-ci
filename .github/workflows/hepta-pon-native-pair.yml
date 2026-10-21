@@ -35,9 +35,9 @@ jobs:
       CARGO_PROFILE_TEST_DEBUG: "0"
       CARGO_PROFILE_DEV_DEBUG: "0"
       PYTHONDONTWRITEBYTECODE: "1"
-      CHAIN_SOURCE_SHA: 4a79d1f5b538041ae9824ba3dfb2fe7aa051d88c
-      CHAIN_BASE_SHA: a72438a9d7aed54da4b23e6353cc2d913e65e592
-      HEPTA_PON_CHAIN_SOURCE: ${{ matrix.lane == 'source-head' && '4a79d1f5b538041ae9824ba3dfb2fe7aa051d88c' || '402b422ca40dcc791f13af30d4e8e833b502df86' }}
+      CHAIN_SOURCE_SHA: 00733fb34b0cd8007862de373176c3dca4534805
+      CHAIN_BASE_SHA: 9fedf7ecbbe07177069c030592b4e03dcffebb81
+      HEPTA_PON_CHAIN_SOURCE: ${{ matrix.lane == 'source-head' && '00733fb34b0cd8007862de373176c3dca4534805' || 'bb12346c5b53cb13526335b04078b1b8bc954a90' }}
     steps:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
         with:
@@ -303,6 +303,13 @@ jobs:
           # Avoid shared HTTP/2 streams after the actual radix_trie curl(16) failure.
           python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/pon-pair/hepta-dependency-fetch.json" --timeout-seconds 600 -- \
             bash -c 'cd codex-rs || exit; for attempt in 1 2 3; do cargo fetch --locked && exit 0; code=$?; if test "$attempt" -eq 3; then exit "$code"; fi; printf "locked Cargo prefetch attempt %s failed with exit %s; retrying\n" "$attempt" "$code" >&2; sleep 3; done'
+      - name: Require witness recovery barriers and evaluated ledger ownership
+        env:
+          CARGO_NET_OFFLINE: "true"
+        run: |
+          set -euo pipefail
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/pon-pair/witness-recovery.json" --minimum-tests 6 -- just test --locked -p codex-hepta-learning-ledger --lib -E 'test(witness::tests::)' --no-capture
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/pon-pair/evaluated-ledger-ownership.json" --minimum-tests 7 -- just test --locked -p codex-hepta-intelligence --lib -E 'test(evaluated_shadow::tests::)' --no-capture
       - name: Require all original Fleet controls on the exact paired source
         env:
           CARGO_NET_OFFLINE: "true"
@@ -403,5 +410,154 @@ jobs:
         with:
           name: hepta-pon-pair-${{ matrix.runner }}-${{ matrix.lane }}-${{ github.run_attempt }}
           path: ${{ runner.temp }}/pon-pair/
+          if-no-files-found: error
+          retention-days: 14
+
+  windows-ledger:
+    name: Native Windows ledger (${{ matrix.lane }})
+    runs-on: windows-2025
+    permissions:
+      contents: read
+    timeout-minutes: 30
+    strategy:
+      fail-fast: false
+      matrix:
+        lane: [source-head, base-merge]
+    defaults:
+      run:
+        shell: bash
+        working-directory: hepta
+    env:
+      SOURCE_SHA: ${{ github.event.pull_request.head.sha }}
+      TESTED_SHA: ${{ matrix.lane == 'source-head' && github.event.pull_request.head.sha || github.sha }}
+      BASE_SHA: ${{ github.event.pull_request.base.sha }}
+      HEPTA_CI_LANE: ${{ matrix.lane }}
+      RUSTUP_TOOLCHAIN: "1.96.0"
+      CARGO_INCREMENTAL: "0"
+      CARGO_BUILD_JOBS: "2"
+      CARGO_PROFILE_TEST_DEBUG: "0"
+      CARGO_PROFILE_DEV_DEBUG: "0"
+      PYTHONDONTWRITEBYTECODE: "1"
+      PYTHONUTF8: "1"
+      NO_COLOR: "1"
+    steps:
+      - name: Preserve checkout bytes and long Windows paths
+        working-directory: ${{ github.workspace }}
+        run: |
+          set -euo pipefail
+          git config --global core.autocrlf false
+          git config --global core.longpaths true
+          printf 'CARGO_TARGET_DIR=%s/windows-ledger-target\n' "$RUNNER_TEMP" >> "$GITHUB_ENV"
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          ref: ${{ env.TESTED_SHA }}
+          path: hepta
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: dtolnay/rust-toolchain@3db9de313aa3e84732d075f6fd8938cc0d6d4b58
+        with:
+          toolchain: "1.96.0"
+          targets: x86_64-pc-windows-msvc
+      - uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
+        with:
+          tool: just@1.51.0,nextest@0.9.103
+      - name: Bind exact Windows source and retain native test evidence
+        id: source
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/windows-ledger"
+          rustc -vV > "$RUNNER_TEMP/windows-ledger/rustc.txt"
+          cat > "$RUNNER_TEMP/windows-ledger/check.py" <<'PY'
+          import hashlib, json, os, re, sys
+          from pathlib import Path
+          sys.path.insert(0, str(Path.cwd()))
+          from scripts.hepta_ci_exec import git, observed_test_counts
+          out = Path(os.environ["RUNNER_TEMP"]) / "windows-ledger"
+          def save(name, value):
+              (out / name).write_text(json.dumps(value, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+          if sys.argv[1] == "tests":
+              name, minimum = sys.argv[2], int(sys.argv[3])
+              code, log_code = map(int, sys.argv[4].split())
+              raw = (out / (name + ".log")).read_bytes()
+              text = raw.decode("utf-8", errors="replace")
+              text = re.sub(r"\x1b\[[0-9;]*m", "", text)
+              passed, failed = observed_test_counts(text)
+              ok = code == log_code == 0 and passed >= minimum and failed == 0 and re.search(r"Summary[^\n]*?\d+ tests? run:", text) is not None
+              save(name + ".json", {"returncode": code, "logging_returncode": log_code, "minimum_tests": minimum, "observed_passed_tests": passed, "observed_failed_tests": failed, "log_sha256": hashlib.sha256(raw).hexdigest(), "status": "passed" if ok else "failed"})
+              sys.exit(0 if ok else 1)
+          phase = sys.argv[2]
+          result = {"scope": "native Windows ledger regressions only", "run_id": os.environ["GITHUB_RUN_ID"], "run_attempt": os.environ["GITHUB_RUN_ATTEMPT"], "status": "running"}
+          save("result.json", result)
+          assert sys.argv[1] == "source" and phase in {"before", "after"}
+          if phase == "before":
+              for name in ("witness", "evaluated-shadow"):
+                  (out / (name + ".json")).unlink(missing_ok=True)
+          assert os.name == "nt", "this evidence requires native Windows execution"
+          assert "host: x86_64-pc-windows-msvc" in (out / "rustc.txt").read_text()
+          source, tested, base, lane = (os.environ[key] for key in ("SOURCE_SHA", "TESTED_SHA", "BASE_SHA", "HEPTA_CI_LANE"))
+          assert all(re.fullmatch(r"[0-9a-f]{40}", value) for value in (source, tested, base))
+          head, tree, parents = git("rev-parse", "HEAD"), git("rev-parse", "HEAD^{tree}"), git("show", "-s", "--format=%P", "HEAD").split()
+          assert head == tested
+          if lane == "source-head":
+              assert tested == source
+          else:
+              assert lane == "base-merge" and parents == [base, source]
+              assert tree == git("merge-tree", "--write-tree", base, source)
+          assert not git("diff", "--cached", "--raw", "--no-ext-diff", "--no-textconv", "HEAD", "--")
+          assert not git("ls-files", "--others", "--exclude-standard", "-z")
+          assert not any(row and (row[0] == "S" or row[0].islower()) for row in git("ls-files", "-v", "-z").split("\0"))
+          manifest, placeholders = [], 0
+          for row in git("ls-tree", "--full-tree", "-r", "-z", "HEAD").split("\0"):
+              if not row:
+                  continue
+              metadata, relative = row.split("\t", 1)
+              mode, kind, expected = metadata.split()
+              assert kind == "blob" and mode in {"100644", "100755", "120000"}
+              path = Path(relative)
+              if path.is_symlink():
+                  assert mode == "120000"
+                  data = os.fsencode(os.readlink(path))
+              else:
+                  assert path.is_file()
+                  data = path.read_bytes()
+                  placeholders += int(mode == "120000")
+              # NTFS does not represent Git executable bits; bind tree modes and
+              # exact blob bytes, including Git's Windows symlink placeholders.
+              assert hashlib.sha1(b"blob " + str(len(data)).encode() + b"\0" + data, usedforsecurity=False).hexdigest() == expected, relative
+              manifest.append([relative, mode, hashlib.sha256(data).hexdigest()])
+          snapshot = {"source_sha": source, "base_sha": base, "tested_sha": head, "tree": tree, "parents": parents, "lane": lane, "tracked_files": len(manifest), "tracked_bytes_sha256": hashlib.sha256(json.dumps(manifest, separators=(",", ":")).encode()).hexdigest(), "symlink_placeholders": placeholders}
+          save("source-" + phase + ".json", snapshot)
+          result["source"] = snapshot
+          if phase == "after":
+              assert snapshot == json.loads((out / "source-before.json").read_text())
+              result["tests"] = {name: json.loads((out / (name + ".json")).read_text()) for name in ("witness", "evaluated-shadow")}
+              result["status"] = "passed" if all(value["status"] == "passed" for value in result["tests"].values()) else "failed"
+          save("result.json", result)
+          assert result["status"] != "failed"
+          PY
+          python "$RUNNER_TEMP/windows-ledger/check.py" source before
+      - name: Execute all six witness recovery regressions on native Windows
+        run: |
+          set +e
+          just test --locked -p codex-hepta-learning-ledger --lib -E 'test(witness::tests::)' --no-capture 2>&1 | tee "$RUNNER_TEMP/windows-ledger/witness.log"
+          codes="${PIPESTATUS[*]}"
+          set -e
+          python "$RUNNER_TEMP/windows-ledger/check.py" tests witness 6 "$codes"
+      - name: Execute all seven evaluated ledger ownership regressions on native Windows
+        if: ${{ !cancelled() && steps.source.outcome == 'success' }}
+        run: |
+          set +e
+          just test --locked -p codex-hepta-intelligence --lib -E 'test(evaluated_shadow::tests::)' --no-capture 2>&1 | tee "$RUNNER_TEMP/windows-ledger/evaluated-shadow.log"
+          codes="${PIPESTATUS[*]}"
+          set -e
+          python "$RUNNER_TEMP/windows-ledger/check.py" tests evaluated-shadow 7 "$codes"
+      - name: Require unchanged source and both completed Windows results
+        if: ${{ always() && steps.source.outcome == 'success' }}
+        run: python "$RUNNER_TEMP/windows-ledger/check.py" source after
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: hepta-windows-ledger-${{ matrix.lane }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/windows-ledger/
           if-no-files-found: error
           retention-days: 14
