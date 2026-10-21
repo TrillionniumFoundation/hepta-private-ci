@@ -831,7 +831,7 @@ fn checked_pre_tick_binds_exact_ledger_snapshot_and_forget_frontier() {
         |lookup| {
             verified += 1;
             lookup.cell_id == spec.manifest.cell_id
-                && lookup.support_digest == spec.support_digest.unwrap()
+                && Some(lookup.support_digest) == spec.support_digest
                 && lookup.evidence_ledger_digest == policy.evidence_ledger_digest
                 && lookup.snapshot_digest == policy.snapshot_digest
                 && lookup.source_frontier_digest == policy.source_frontier_digest
