@@ -157,11 +157,7 @@ fn install_registered_queue(
 fn queue_python_interpreter() -> &'static str {
     // The Windows hosted Bazel runner invokes `python`; `python3` is not
     // guaranteed to resolve to an executable in the Windows test environment.
-    if cfg!(windows) {
-        "python"
-    } else {
-        "python3"
-    }
+    if cfg!(windows) { "python" } else { "python3" }
 }
 
 fn queue_python_hook_command(script_path: &Path) -> String {
@@ -331,7 +327,10 @@ fn rejecting_queue_hook_runs_with_real_platform_python() -> anyhow::Result<()> {
         .spawn()
         .context("host Python executable must be available for queue hook tests")?;
     {
-        let mut stdin = child.stdin.take().context("queue hook stdin must be piped")?;
+        let mut stdin = child
+            .stdin
+            .take()
+            .context("queue hook stdin must be piped")?;
         stdin.write_all(br#"{"prompt":"blocked"}"#)?;
     }
     let output = child.wait_with_output()?;
@@ -343,7 +342,10 @@ fn rejecting_queue_hook_runs_with_real_platform_python() -> anyhow::Result<()> {
     let reply: serde_json::Value = serde_json::from_slice(&output.stdout)?;
     assert_eq!(reply["decision"].as_str(), Some("block"));
     let hook_log = std::fs::read_to_string(home.path().join("queue_prompt_hook.log"))?;
-    anyhow::ensure!(hook_log.ends_with('\n'), "queue hook log must end with a newline");
+    anyhow::ensure!(
+        hook_log.ends_with('\n'),
+        "queue hook log must end with a newline"
+    );
     assert_eq!(hook_log.lines().collect::<Vec<_>>(), ["blocked"]);
     Ok(())
 }
@@ -2912,7 +2914,11 @@ async fn registered_queue_waits_for_terminal_cleanup_without_admitting_other_cal
         // deferred lifecycle wake or the earlier rejected manual attempt.
         for _ in 0..2 {
             let submission = queue
-                .start(test.codex.as_ref(), Some(queued.id.clone()), /*trace*/ None)
+                .start(
+                    test.codex.as_ref(),
+                    Some(queued.id.clone()),
+                    /*trace*/ None,
+                )
                 .await?;
             assert_eq!(
                 StartIfIdleSubmission::NotSubmitted {
