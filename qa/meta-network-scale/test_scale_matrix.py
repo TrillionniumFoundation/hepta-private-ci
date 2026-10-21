@@ -1,6 +1,9 @@
+import contextlib
 import importlib.util
+import io
 import json
 import pathlib
+import tempfile
 import unittest
 
 MODULE_PATH = pathlib.Path(__file__).with_name("scale_matrix.py")
@@ -34,6 +37,53 @@ class ScaleMatrixTests(unittest.TestCase):
         self.assertIn("evidence_receipts must be an object", errors)
         self.assertIn("metrics must be an object", errors)
         self.assertIn("metrics_receipt must be a lowercase SHA-256 digest", errors)
+
+    def test_result_rejects_unregistered_authority_claims_at_every_depth(self):
+        for scope in (
+            "result",
+            "provenance",
+            "evidence",
+            "evidence_receipts",
+            "metrics",
+        ):
+            with self.subTest(scope=scope):
+                result = self.make_record(64, "shared_encoder")
+                target = result if scope == "result" else result[scope]
+                target["final_use_authorized"] = True
+                self.assertIn(
+                    f"{scope}.final_use_authorized is not a registered field",
+                    scale_matrix.validate_result(result),
+                )
+
+    def test_matrix_rejects_undeclared_release_and_row_claims(self):
+        matrix = self.matrix()
+        matrix["production_admission"] = True
+        self.assertIn(
+            "matrix.production_admission is not a registered field",
+            scale_matrix.validate_matrix(matrix),
+        )
+
+        matrix = self.matrix()
+        matrix["results"][3]["release_approved"] = True
+        self.assertIn(
+            "results[3].result.release_approved is not a registered field",
+            scale_matrix.validate_matrix(matrix),
+        )
+
+    def test_cli_rejects_duplicate_nonfinite_and_oversized_json(self):
+        # No parser should silently pick the last of two authority values.
+        inputs = (
+            b'{"authority":"production","authority":"qualification_only"}',
+            b'{"authority":NaN}',
+            b" " * (scale_matrix.MAX_INPUT_BYTES + 1),
+        )
+        with tempfile.TemporaryDirectory() as directory:
+            path = pathlib.Path(directory) / "untrusted.json"
+            for payload in inputs:
+                with self.subTest(payload_size=len(payload)):
+                    path.write_bytes(payload)
+                    with contextlib.redirect_stderr(io.StringIO()):
+                        self.assertEqual(scale_matrix.main(["validate", str(path)]), 1)
 
     def test_complete_result_is_accepted(self):
         result = {
