@@ -54,6 +54,20 @@ class ShardedWorkflowContractTests(unittest.TestCase):
         self.assertIn("timeout-minutes: 360", self.value)
         self.assertNotIn("workflow_dispatch:", self.value)
 
+    def test_evaluation_collector_argument_positions(self):
+        call = (
+            "strong_rag_shards.py evaluation-collect "
+            "/tmp/rag-release/prep /tmp/rag-original/plan "
+            "/tmp/rag-original/observations /tmp/rag-release/calibration "
+            "/tmp/rag-release/shards/evaluation /tmp/rag-release/evaluation"
+        )
+        self.assertIn(call, self.value)
+        self.assertNotIn(
+            "evaluation-collect /tmp/rag-original/plan "
+            "/tmp/rag-original/observations /tmp/rag-release/prep",
+            self.value,
+        )
+
     def test_final_read_only_replay_never_bypasses_failed_shards(self):
         self.assertIn("strong_rag_shards.py verify-release", self.value)
         self.assertIn("strong_rag_receipt.py /tmp/rag-release", self.value)

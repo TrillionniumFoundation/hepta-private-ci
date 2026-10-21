@@ -1,0 +1,104 @@
+name: MemoryCell immutable two-parent merge alternative review
+on:
+  pull_request:
+    paths:
+      - "scripts/memory_cell/project_merge_two_parent_diff_handoff.py"
+      - "scripts/memory_cell/test_project_merge_two_parent_diff_handoff.py"
+      - ".github/workflows/hepta-memory-merge-parent-alternatives.yml"
+  push:
+    branches:
+      - codex/memory-cell-four-stage-gate-20261014
+    paths:
+      - "scripts/memory_cell/project_merge_two_parent_diff_handoff.py"
+      - "scripts/memory_cell/test_project_merge_two_parent_diff_handoff.py"
+      - ".github/workflows/hepta-memory-merge-parent-alternatives.yml"
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: memory-merge-parent-alternatives-${{ github.event.pull_request.number || github.sha }}
+  cancel-in-progress: false
+jobs:
+  pinned-merge-alternatives:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    env:
+      PYTHONPATH: scripts/memory_cell
+      HEPTA_ORIGINAL_FOUR_PROJECT_ZIP: /tmp/immutable-four-project-original.zip
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405
+        with:
+          python-version: "3.12"
+      - name: Acquire unchanged, externally pinned original 80-file source archive
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          gh api repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/11779111741/zip > "$HEPTA_ORIGINAL_FOUR_PROJECT_ZIP"
+          echo "0dd31ed0101c0125ee2c5f9ffe82ae71d083dcf4a00206eb65fdcc7cf75959e3  $HEPTA_ORIGINAL_FOUR_PROJECT_ZIP" | sha256sum --check --strict
+      - name: Execute bounded negative controls, never model inference
+        run: |
+          set -euo pipefail
+          python3 -m py_compile scripts/memory_cell/project_merge_two_parent_diff_handoff.py scripts/memory_cell/test_project_merge_two_parent_diff_handoff.py
+          python3 -m unittest discover -s scripts/memory_cell -p test_project_merge_two_parent_diff_handoff.py -v
+      - name: Enforce pinned repository Ruff formatter
+        run: |
+          set -euo pipefail
+          python3 -m pip install uv==0.8.22
+          uv run --frozen --project scripts ruff format --check scripts/memory_cell/project_merge_two_parent_diff_handoff.py scripts/memory_cell/test_project_merge_two_parent_diff_handoff.py
+      - name: Retain exact source-only formatter diagnostics if check fails
+        if: failure()
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/merge-review-format
+          if command -v uv >/dev/null 2>&1; then
+            uv run --frozen --project scripts ruff format --diff scripts/memory_cell/project_merge_two_parent_diff_handoff.py scripts/memory_cell/test_project_merge_two_parent_diff_handoff.py > /tmp/merge-review-format/ruff.patch || true
+            uv run --frozen --project scripts ruff format scripts/memory_cell/project_merge_two_parent_diff_handoff.py scripts/memory_cell/test_project_merge_two_parent_diff_handoff.py
+            printf 'MERGE_FMT_SOURCE='
+            base64 -w0 scripts/memory_cell/project_merge_two_parent_diff_handoff.py
+            printf '\nMERGE_FMT_TEST='
+            base64 -w0 scripts/memory_cell/test_project_merge_two_parent_diff_handoff.py
+            printf '\n'
+          fi
+          git rev-parse HEAD > /tmp/merge-review-format/tested-source-commit.txt
+          (cd /tmp/merge-review-format && find . -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS)
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: failure()
+        with:
+          name: memory-merge-parent-ruff-failure
+          path: /tmp/merge-review-format
+          if-no-files-found: warn
+      - name: Fetch both immutable parent variants and preserve source ambiguity
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/merge-parent-alternatives
+          python3 scripts/memory_cell/project_merge_two_parent_diff_handoff.py \
+            "$HEPTA_ORIGINAL_FOUR_PROJECT_ZIP" \
+            /tmp/merge-parent-alternatives/unsigned-two-parent-review.json
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+          report = json.loads(Path("/tmp/merge-parent-alternatives/unsigned-two-parent-review.json").read_text())
+          assert report["merge_file_count"] == 31 and report["review_task_count"] == 4
+          assert report["merge_classifications"] == {"parents-diverge": 30, "absent-one": 1}
+          assert report["independently_git_sha1_verified_new_parent_blobs"] == 33
+          assert report["independently_certified_unique_previous_versions"] == 0
+          assert report["independent_semantic_review"] is False
+          assert report["production_accepted"] is False
+          assert report["actual_reader_model_calls"] == 0
+          PY
+          git rev-parse HEAD > /tmp/merge-parent-alternatives/auditor-commit.txt
+          printf '%s\n' "92ef1d2c2522ec79964c47f5d493b5b6250cd4bd" > /tmp/merge-parent-alternatives/immutable-source-generating-commit.txt
+          printf '%s\n' "0dd31ed0101c0125ee2c5f9ffe82ae71d083dcf4a00206eb65fdcc7cf75959e3" > /tmp/merge-parent-alternatives/immutable-source-zip-sha256.txt
+          (cd /tmp/merge-parent-alternatives && find . -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS)
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: memory-original-project-two-parent-source-alternatives
+          path: /tmp/merge-parent-alternatives
+          if-no-files-found: error

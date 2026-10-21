@@ -1,0 +1,170 @@
+{
+  "schema": "hepta.memorycell.disjoint-40x72-original-disposition.v1",
+  "evidence_class": "completed-authored-development-frozen-reader; independently mechanically replayed; not human semantic adjudication",
+  "generating_commit": "bc76ac57ba972bf105c71ddd997cd215cec5df2e",
+  "generating_run_id": 38423223376,
+  "collector_run_id": 38517508318,
+  "disposition_run_id": 38518889785,
+  "original_plan_sha256": "9840a25487af444914dca24c818d98ff798ebc1610ea8dfd827187c31ad1897",
+  "reader_identity": "f9aa334d3a02cabececea367c283caf66ef9875132907ebc34dac1c8d3a7f225",
+  "model_release_artifact": {
+    "id": 11871334405,
+    "zip_sha256": "b6ccc6606bf9935d052fb78884560487d2030772572199d8a8fa38e516fcc8be",
+    "verified_data_files": 272,
+    "original_evaluation_raw_sha256": "3c96834694ba6a97e62c341f3208f0cf2061a66b4c35e6ae197d3b923585f814"
+  },
+  "independent_replay_artifact": {
+    "id": 11872308065,
+    "zip_sha256": "373f51d12c29b7fbba39a050db6909eb6b9855e616228e4b4f4539e0749fee5c",
+    "verified_data_files": 4
+  },
+  "disposition_artifact": {
+    "id": 11872912914,
+    "zip_sha256": "88ed387e8a4f8da22f596cf8adac5fcd6231a00603139308f249cbfb2081d3e5"
+  },
+  "calibration": {
+    "planned": 40,
+    "actual_model_generations": 40,
+    "selected_k": 1,
+    "leave_one_calibration_question_out_stable": false
+  },
+  "evaluation": {
+    "unique_authored_tasks": 8,
+    "planned_generations": 72,
+    "actual_generations": 72,
+    "independent_source_families": 0,
+    "arms": {
+      "empty": {
+        "planned": 8,
+        "strict_task_success": 0,
+        "complete_formal_program_declared_citation_chain": 0,
+        "program_declared_source_coverage": 0,
+        "prompt_tokens": 1630,
+        "reader_seconds": 52.315919947
+      },
+      "hybrid_k4": {
+        "planned": 8,
+        "strict_task_success": 3,
+        "complete_formal_program_declared_citation_chain": 1,
+        "program_declared_source_coverage": 8,
+        "prompt_tokens": 10806,
+        "reader_seconds": 228.51735022
+      },
+      "hybrid_k6": {
+        "planned": 8,
+        "strict_task_success": 2,
+        "complete_formal_program_declared_citation_chain": 0,
+        "program_declared_source_coverage": 8,
+        "prompt_tokens": 15463,
+        "reader_seconds": 272.908098717
+      },
+      "hybrid_k4_reversed": {
+        "planned": 8,
+        "strict_task_success": 3,
+        "complete_formal_program_declared_citation_chain": 1,
+        "program_declared_source_coverage": 8,
+        "prompt_tokens": 10806,
+        "reader_seconds": 183.730949394
+      },
+      "selected_k": {
+        "planned": 8,
+        "strict_task_success": 5,
+        "complete_formal_program_declared_citation_chain": 3,
+        "program_declared_source_coverage": 3,
+        "prompt_tokens": 3961,
+        "reader_seconds": 96.370113189
+      },
+      "single_hop": {
+        "planned": 8,
+        "strict_task_success": 4,
+        "complete_formal_program_declared_citation_chain": 4,
+        "program_declared_source_coverage": 4,
+        "prompt_tokens": 4575,
+        "reader_seconds": 100.576491012
+      },
+      "entity_time": {
+        "planned": 8,
+        "strict_task_success": 8,
+        "complete_formal_program_declared_citation_chain": 4,
+        "program_declared_source_coverage": 8,
+        "prompt_tokens": 5752,
+        "reader_seconds": 104.163003375
+      },
+      "organized": {
+        "planned": 8,
+        "strict_task_success": 8,
+        "complete_formal_program_declared_citation_chain": 4,
+        "program_declared_source_coverage": 8,
+        "prompt_tokens": 5179,
+        "reader_seconds": 116.686243679
+      },
+      "program_support": {
+        "planned": 8,
+        "strict_task_success": 8,
+        "complete_formal_program_declared_citation_chain": 4,
+        "program_declared_source_coverage": 8,
+        "prompt_tokens": 5179,
+        "reader_seconds": 96.582407109
+      }
+    }
+  },
+  "paired": {
+    "organized_minus_hybrid_k4": {
+      "wins": 5,
+      "losses": 0,
+      "ties": 3
+    },
+    "organized_minus_entity_time": {
+      "wins": 0,
+      "losses": 0,
+      "ties": 8
+    },
+    "organized_minus_selected_k": {
+      "wins": 3,
+      "losses": 0,
+      "ties": 5
+    }
+  },
+  "organized_correct_but_incomplete_citations": [
+    {
+      "question_id": "controlled_52a0bb15",
+      "kind": "procedure",
+      "delivered_missing_cited_source": "event_52a0bb15_1",
+      "emitted_source": "event_52a0bb15_2"
+    },
+    {
+      "question_id": "controlled_7fc7f8c2",
+      "kind": "procedure",
+      "delivered_missing_cited_source": "event_7fc7f8c2_1",
+      "emitted_source": "event_7fc7f8c2_2"
+    },
+    {
+      "question_id": "controlled_bcb9165b",
+      "kind": "composition",
+      "delivered_missing_cited_source": "event_bcb9165b_1",
+      "emitted_source": "event_bcb9165b_2"
+    },
+    {
+      "question_id": "controlled_c71dcd6f",
+      "kind": "composition",
+      "delivered_missing_cited_source": "event_c71dcd6f_1",
+      "emitted_source": "event_c71dcd6f_2"
+    }
+  ],
+  "stored_raw_source_bytes": 19584,
+  "stored_scope_index_bytes": 770048,
+  "unknown_costs": [
+    "maintenance",
+    "revocation",
+    "deployed recovery",
+    "actual cloud bills",
+    "representative query reuse"
+  ],
+  "full_lifecycle_cost_usd": null,
+  "learned_or_parametric_arm_executed": false,
+  "independent_human_semantic_review": false,
+  "independent_human_sufficient_evidence_review": false,
+  "statistically_independent_population_superiority": false,
+  "production_accepted": false,
+  "allow_parametric_promotion": false
+}

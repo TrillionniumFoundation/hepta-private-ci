@@ -1,0 +1,271 @@
+{
+  "schema": "hepta.memory-cell.original-shard-partial-review.v1",
+  "origin_run": 38423223376,
+  "origin_attempts_included": [
+    11,
+    12,
+    13
+  ],
+  "source_commit": "bc76ac57ba972bf105c71ddd997cd215cec5df2e",
+  "plan_sha256": "9840a25487af444914dca24c818d98ff798ebc1610ea8dfdd827187c31ad1897",
+  "calibration": {
+    "id": 11864021170,
+    "members_verified": 131,
+    "outer_zip_sha256": "4643f9d387696963fea4b836c8f5129da8f3c37ed0a6269fe2f43f3d01b702e1",
+    "planned": 40,
+    "policy_sha256": "87d98b8df5cfafda2666dd2d4b2a55999ca7da2a8862a3ea89313734321d6423",
+    "selected_k": 1,
+    "successful": 40
+  },
+  "reader_identity": "f9aa334d3a02cabececea367c283caf66ef9875132907ebc34dac1c8d3a7f225",
+  "evaluation_shards_verified": 13,
+  "evaluation_calls_verified": 57,
+  "evaluation_total_planned_calls": 72,
+  "evaluation_complete": false,
+  "verified_evaluation": [
+    {
+      "id": 11871830464,
+      "index": 0,
+      "part": 0,
+      "calls": 5,
+      "outer_zip_sha256": "371b8f63b202ac5a8063fce0f4760178fbf8c72e97b244deffb53a1f4ba79e28",
+      "raw_sha256": "4f55810f888804f1d86c0e1e45675bd1d7030751a97d6083ac19fc7f71405977",
+      "original_source_commit": "bc76ac57ba972bf105c71ddd997cd215cec5df2e"
+    },
+    {
+      "id": 11870813317,
+      "index": 0,
+      "part": 1,
+      "calls": 4,
+      "outer_zip_sha256": "7f3c498692e46be7c87ef6dc1414dfdede73d968deec9ddd1bc8987a5e0835b6",
+      "raw_sha256": "13ac181d6c2cfbc2a62810a362ba77eec1a6af71be5eb06a150b6b697c533396",
+      "original_source_commit": "bc76ac57ba972bf105c71ddd997cd215cec5df2e"
+    },
+    {
+      "calls": 5,
+      "id": 11863858155,
+      "index": 1,
+      "original_source_commit": "bc76ac57ba972bf105c71ddd997cd215cec5df2e",
+      "outer_zip_sha256": "909a701c9720bc9e784857f9a92d06ed8d0bdc6c809cf0a835c795a13016131a",
+      "part": 0,
+      "raw_sha256": "2be00bc76a5f99290891188367e5f9145d7877b3d2a6532d1a535c636f2044de"
+    },
+    {
+      "id": 11870479670,
+      "index": 1,
+      "part": 1,
+      "calls": 4,
+      "outer_zip_sha256": "15e530401af5425521e1c9a392789b023910f3e4b42a2cbe94dff5381d5773c6",
+      "raw_sha256": "f1566b2282c011bfbb14b8412eba03a0c10d7fdb9f7ed7134caa29830a46aa48",
+      "original_source_commit": "bc76ac57ba972bf105c71ddd997cd215cec5df2e"
+    },
+    {
+      "id": 11870164942,
+      "index": 2,
+      "part": 1,
+      "calls": 4,
+      "outer_zip_sha256": "addf56fa754ecca4fc6683dfcd45e95018f2e910ad83b7073f74cec2b6ca4662",
+      "raw_sha256": "a964d452840d983636e3ad3b0150f16d5e31fa347ae4f1107d0d900dc952be35",
+      "original_source_commit": "bc76ac57ba972bf105c71ddd997cd215cec5df2e"
+    },
+    {
+      "id": 11871430873,
+      "index": 3,
+      "part": 1,
+      "calls": 4,
+      "outer_zip_sha256": "2331b0832f2b8a4f44e5f4c610904ce8969a1b0838a5df73758465bad16e6b0e",
+      "raw_sha256": "9a0172bb2ec0db4d17b47ebac20d1d73cbdec169fd016d1148cab7d702614a54",
+      "original_source_commit": "bc76ac57ba972bf105c71ddd997cd215cec5df2e"
+    },
+    {
+      "calls": 5,
+      "id": 11864760965,
+      "index": 4,
+      "original_source_commit": "bc76ac57ba972bf105c71ddd997cd215cec5df2e",
+      "outer_zip_sha256": "4558205896781b459b285c7fb53025548656383860bbc3d242020f451176dcd2",
+      "part": 0,
+      "raw_sha256": "acec7b780530058291ccc28a16e8a429eb7ca49b4e05058c5bc1e37920ed1843"
+    },
+    {
+      "calls": 4,
+      "id": 11864338004,
+      "index": 4,
+      "original_source_commit": "bc76ac57ba972bf105c71ddd997cd215cec5df2e",
+      "outer_zip_sha256": "59e12b3114a568c317d1c724f4e9bd554f666309b9f23be6011ae2abc4b4fcbf",
+      "part": 1,
+      "raw_sha256": "a1b9d78d06c5b5989ec26ad74addac6e2af0fdaafb7535e5957a002ead8e971a"
+    },
+    {
+      "calls": 5,
+      "id": 11864118629,
+      "index": 5,
+      "original_source_commit": "bc76ac57ba972bf105c71ddd997cd215cec5df2e",
+      "outer_zip_sha256": "0160b36de7c35f346819c1eb4d8e0c1b63b5d586caf2ab02b9495ac8d8a83b9a",
+      "part": 0,
+      "raw_sha256": "354e1beeb0ff57ab474cc304a825567788a993a61d7654e6062b8f7a7d77852f"
+    },
+    {
+      "id": 11871028627,
+      "index": 5,
+      "part": 1,
+      "calls": 4,
+      "outer_zip_sha256": "ef4d0b54368f0cad3eebcd896a5f93c62f91d83b4296605768008171ed8982d3",
+      "raw_sha256": "7f42a99d32ff450a9f17278ddfbcd06ffb751cc55835258d7aaba32405adcbd9",
+      "original_source_commit": "bc76ac57ba972bf105c71ddd997cd215cec5df2e"
+    },
+    {
+      "calls": 5,
+      "id": 11864890502,
+      "index": 6,
+      "original_source_commit": "bc76ac57ba972bf105c71ddd997cd215cec5df2e",
+      "outer_zip_sha256": "de9f1a1d75d44fa86c12f962377cb6a303c0ae18beed79db33cfa2bbc7f3d535",
+      "part": 0,
+      "raw_sha256": "7e08566149d5a9db7dbd20ab63e89cefdd8a296a86f48e043721ec188548082c"
+    },
+    {
+      "id": 11871835905,
+      "index": 6,
+      "part": 1,
+      "calls": 4,
+      "outer_zip_sha256": "5a4a22ea5cdc40c1fa678ed63855c3a5aed7b8b8cf9ce59852e529279f0572af",
+      "raw_sha256": "fd7d457e928cfcf72cbdba4531fd611ff32eaf5512ca8a8ccebe842b1f0f81de",
+      "original_source_commit": "bc76ac57ba972bf105c71ddd997cd215cec5df2e"
+    },
+    {
+      "calls": 4,
+      "id": 11864682658,
+      "index": 7,
+      "original_source_commit": "bc76ac57ba972bf105c71ddd997cd215cec5df2e",
+      "outer_zip_sha256": "a45d617d4be5a501c1f1f0fb216f12d33ee39826f9655fc93dc4cf7f71261b37",
+      "part": 1,
+      "raw_sha256": "cb59d24f992d88cdd533ee213d033f6721ad8487e1d0c93e63eb91f8d7cbe13a"
+    }
+  ],
+  "arm_diagnostics": {
+    "selected_k": {
+      "planned": 8,
+      "observed": 5,
+      "missing": 3,
+      "strict_success": 3,
+      "source_support_covered": 3,
+      "input_tokens": 2463,
+      "emitted_labels": 5,
+      "strict_success_rate_all_planned_bounds": [
+        0.375,
+        0.75
+      ]
+    },
+    "hybrid_k4": {
+      "planned": 8,
+      "observed": 5,
+      "missing": 3,
+      "strict_success": 1,
+      "source_support_covered": 5,
+      "input_tokens": 6715,
+      "emitted_labels": 4,
+      "strict_success_rate_all_planned_bounds": [
+        0.125,
+        0.5
+      ]
+    },
+    "hybrid_k6": {
+      "planned": 8,
+      "observed": 8,
+      "missing": 0,
+      "strict_success": 2,
+      "source_support_covered": 8,
+      "input_tokens": 15463,
+      "emitted_labels": 6,
+      "strict_success_rate_all_planned_bounds": [
+        0.25,
+        0.25
+      ]
+    },
+    "hybrid_k4_reversed": {
+      "planned": 8,
+      "observed": 8,
+      "missing": 0,
+      "strict_success": 3,
+      "source_support_covered": 8,
+      "input_tokens": 10806,
+      "emitted_labels": 7,
+      "strict_success_rate_all_planned_bounds": [
+        0.375,
+        0.375
+      ]
+    },
+    "single_hop": {
+      "planned": 8,
+      "observed": 5,
+      "missing": 3,
+      "strict_success": 4,
+      "source_support_covered": 4,
+      "input_tokens": 3067,
+      "emitted_labels": 5,
+      "strict_success_rate_all_planned_bounds": [
+        0.5,
+        0.875
+      ]
+    },
+    "entity_time": {
+      "planned": 8,
+      "observed": 8,
+      "missing": 0,
+      "strict_success": 8,
+      "source_support_covered": 8,
+      "input_tokens": 5752,
+      "emitted_labels": 8,
+      "strict_success_rate_all_planned_bounds": [
+        1,
+        1
+      ]
+    },
+    "organized": {
+      "planned": 8,
+      "observed": 5,
+      "missing": 3,
+      "strict_success": 5,
+      "source_support_covered": 5,
+      "input_tokens": 2782,
+      "emitted_labels": 5,
+      "strict_success_rate_all_planned_bounds": [
+        0.625,
+        1
+      ]
+    },
+    "program_support": {
+      "planned": 8,
+      "observed": 8,
+      "missing": 0,
+      "strict_success": 8,
+      "source_support_covered": 8,
+      "input_tokens": 5179,
+      "emitted_labels": 8,
+      "strict_success_rate_all_planned_bounds": [
+        1,
+        1
+      ]
+    },
+    "empty": {
+      "planned": 8,
+      "observed": 5,
+      "missing": 3,
+      "strict_success": 0,
+      "source_support_covered": 0,
+      "input_tokens": 1007,
+      "emitted_labels": 0,
+      "strict_success_rate_all_planned_bounds": [
+        0,
+        0.375
+      ]
+    }
+  },
+  "strict_scoring": "original strict identifier grammar; program kind re-executed original fixed worker",
+  "program_worker_original_sha256": "5adfa11f201ef35480718828f30c9e5581c98e979210e3ee5a64363e3576b3d1",
+  "source_replay": "outer ZIP SHA pinned; inner sha-pins verified; original source event bytes, spans, candidate/source/reader identities verified",
+  "semantic_entailment_judged": false,
+  "independent_reviewer": false,
+  "independent_source_families": 0,
+  "statistical_superiority_established": false,
+  "production_accepted": false
+}

@@ -1,0 +1,97 @@
+name: MemoryCell original-project first-parent answer-blind review
+on:
+  pull_request:
+    paths:
+      - "scripts/memory_cell/project_first_parent_diff_handoff.py"
+      - "scripts/memory_cell/test_project_first_parent_diff_handoff.py"
+      - ".github/workflows/hepta-memory-real-project-diff-review.yml"
+  push:
+    branches:
+      - codex/memory-cell-four-stage-gate-20261014
+    paths:
+      - "scripts/memory_cell/project_first_parent_diff_handoff.py"
+      - "scripts/memory_cell/test_project_first_parent_diff_handoff.py"
+      - ".github/workflows/hepta-memory-real-project-diff-review.yml"
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: memory-real-project-diff-${{ github.event.pull_request.number || github.sha }}
+  cancel-in-progress: false
+jobs:
+  original-first-parent:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    env:
+      PYTHONPATH: scripts/memory_cell
+      HEPTA_ORIGINAL_FOUR_PROJECT_ZIP: /tmp/memory-first-parent-original.zip
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405
+        with:
+          python-version: "3.12"
+      - name: Retrieve exactly the frozen four-project Git object archive
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          gh api repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/11779111741/zip > "$HEPTA_ORIGINAL_FOUR_PROJECT_ZIP"
+          echo '0dd31ed0101c0125ee2c5f9ffe82ae71d083dcf4a00206eb65fdcc7cf75959e3  /tmp/memory-first-parent-original.zip' | sha256sum --check --strict
+      - name: Exact original bytes and refusal to impute review verdicts
+        run: |
+          set -euo pipefail
+          python3 -m py_compile scripts/memory_cell/project_first_parent_diff_handoff.py scripts/memory_cell/test_project_first_parent_diff_handoff.py
+          python3 -m unittest discover -s scripts/memory_cell -p test_project_first_parent_diff_handoff.py -v
+      - name: Mandatory scoped Ruff format, without suppressions
+        run: |
+          set -euo pipefail
+          python3 -m pip install uv==0.8.22
+          uv run --frozen --project scripts ruff format --check \
+            scripts/memory_cell/project_first_parent_diff_handoff.py \
+            scripts/memory_cell/test_project_first_parent_diff_handoff.py
+      - name: Preserve exact format diagnosis on failure
+        if: failure()
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/review-format-failure
+          if command -v uv >/dev/null 2>&1; then
+            uv run --frozen --project scripts ruff format --diff \
+              scripts/memory_cell/project_first_parent_diff_handoff.py \
+              scripts/memory_cell/test_project_first_parent_diff_handoff.py \
+              > /tmp/review-format-failure/ruff.patch || true
+            uv run --frozen --project scripts ruff format \
+              scripts/memory_cell/project_first_parent_diff_handoff.py \
+              scripts/memory_cell/test_project_first_parent_diff_handoff.py
+            printf 'REVIEW_FMT_SOURCE='
+            base64 -w0 scripts/memory_cell/project_first_parent_diff_handoff.py
+            printf '\nREVIEW_FMT_TEST='
+            base64 -w0 scripts/memory_cell/test_project_first_parent_diff_handoff.py
+            printf '\n'
+          fi
+          git rev-parse HEAD > /tmp/review-format-failure/tested-commit.txt
+          (cd /tmp/review-format-failure && find . -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS)
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: failure()
+        with:
+          name: memory-first-parent-review-format-failure
+          path: /tmp/review-format-failure
+          if-no-files-found: warn
+      - name: Export bounded, byte-verified, answer-blind diff review packet
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/memory-review-package
+          python3 scripts/memory_cell/project_first_parent_diff_handoff.py \
+            "$HEPTA_ORIGINAL_FOUR_PROJECT_ZIP" \
+            /tmp/memory-review-package/unsigned-first-parent-diffs.json
+          printf '%s\n' '0dd31ed0101c0125ee2c5f9ffe82ae71d083dcf4a00206eb65fdcc7cf75959e3' \
+            > /tmp/memory-review-package/original-source-zip-sha256.txt
+          git rev-parse HEAD > /tmp/memory-review-package/auditor-commit.txt
+          (cd /tmp/memory-review-package && find . -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS)
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: memory-original-project-answer-blind-first-parent-diffs
+          path: /tmp/memory-review-package
+          if-no-files-found: error

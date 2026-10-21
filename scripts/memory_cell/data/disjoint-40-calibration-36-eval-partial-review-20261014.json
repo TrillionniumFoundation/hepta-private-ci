@@ -1,0 +1,225 @@
+{
+  "schema": "hepta.memory-cell.original-shard-partial-review.v1",
+  "origin_run": 38423223376,
+  "origin_attempts_included": [
+    11,
+    12
+  ],
+  "source_commit": "bc76ac57ba972bf105c71ddd997cd215cec5df2e",
+  "plan_sha256": "9840a25487af444914dca24c818d98ff798ebc1610ea8dfdd827187c31ad1897",
+  "calibration": {
+    "id": 11864021170,
+    "members_verified": 131,
+    "outer_zip_sha256": "4643f9d387696963fea4b836c8f5129da8f3c37ed0a6269fe2f43f3d01b702e1",
+    "planned": 40,
+    "policy_sha256": "87d98b8df5cfafda2666dd2d4b2a55999ca7da2a8862a3ea89313734321d6423",
+    "selected_k": 1,
+    "successful": 40
+  },
+  "reader_identity": "f9aa334d3a02cabececea367c283caf66ef9875132907ebc34dac1c8d3a7f225",
+  "evaluation_shards_verified": 8,
+  "evaluation_calls_verified": 36,
+  "evaluation_total_planned_calls": 72,
+  "evaluation_complete": false,
+  "verified_evaluation": [
+    {
+      "id": 11870813317,
+      "index": 0,
+      "part": 1,
+      "calls": 4,
+      "outer_zip_sha256": "7f3c498692e46be7c87ef6dc1414dfdede73d968deec9ddd1bc8987a5e0835b6",
+      "raw_sha256": "13ac181d6c2cfbc2a62810a362ba77eec1a6af71be5eb06a150b6b697c533396",
+      "original_source_commit": "bc76ac57ba972bf105c71ddd997cd215cec5df2e"
+    },
+    {
+      "calls": 5,
+      "id": 11863858155,
+      "index": 1,
+      "original_source_commit": "bc76ac57ba972bf105c71ddd997cd215cec5df2e",
+      "outer_zip_sha256": "909a701c9720bc9e784857f9a92d06ed8d0bdc6c809cf0a835c795a13016131a",
+      "part": 0,
+      "raw_sha256": "2be00bc76a5f99290891188367e5f9145d7877b3d2a6532d1a535c636f2044de"
+    },
+    {
+      "calls": 5,
+      "id": 11864760965,
+      "index": 4,
+      "original_source_commit": "bc76ac57ba972bf105c71ddd997cd215cec5df2e",
+      "outer_zip_sha256": "4558205896781b459b285c7fb53025548656383860bbc3d242020f451176dcd2",
+      "part": 0,
+      "raw_sha256": "acec7b780530058291ccc28a16e8a429eb7ca49b4e05058c5bc1e37920ed1843"
+    },
+    {
+      "calls": 4,
+      "id": 11864338004,
+      "index": 4,
+      "original_source_commit": "bc76ac57ba972bf105c71ddd997cd215cec5df2e",
+      "outer_zip_sha256": "59e12b3114a568c317d1c724f4e9bd554f666309b9f23be6011ae2abc4b4fcbf",
+      "part": 1,
+      "raw_sha256": "a1b9d78d06c5b5989ec26ad74addac6e2af0fdaafb7535e5957a002ead8e971a"
+    },
+    {
+      "calls": 5,
+      "id": 11864118629,
+      "index": 5,
+      "original_source_commit": "bc76ac57ba972bf105c71ddd997cd215cec5df2e",
+      "outer_zip_sha256": "0160b36de7c35f346819c1eb4d8e0c1b63b5d586caf2ab02b9495ac8d8a83b9a",
+      "part": 0,
+      "raw_sha256": "354e1beeb0ff57ab474cc304a825567788a993a61d7654e6062b8f7a7d77852f"
+    },
+    {
+      "id": 11871028627,
+      "index": 5,
+      "part": 1,
+      "calls": 4,
+      "outer_zip_sha256": "ef4d0b54368f0cad3eebcd896a5f93c62f91d83b4296605768008171ed8982d3",
+      "raw_sha256": "7f42a99d32ff450a9f17278ddfbcd06ffb751cc55835258d7aaba32405adcbd9",
+      "original_source_commit": "bc76ac57ba972bf105c71ddd997cd215cec5df2e"
+    },
+    {
+      "calls": 5,
+      "id": 11864890502,
+      "index": 6,
+      "original_source_commit": "bc76ac57ba972bf105c71ddd997cd215cec5df2e",
+      "outer_zip_sha256": "de9f1a1d75d44fa86c12f962377cb6a303c0ae18beed79db33cfa2bbc7f3d535",
+      "part": 0,
+      "raw_sha256": "7e08566149d5a9db7dbd20ab63e89cefdd8a296a86f48e043721ec188548082c"
+    },
+    {
+      "calls": 4,
+      "id": 11864682658,
+      "index": 7,
+      "original_source_commit": "bc76ac57ba972bf105c71ddd997cd215cec5df2e",
+      "outer_zip_sha256": "a45d617d4be5a501c1f1f0fb216f12d33ee39826f9655fc93dc4cf7f71261b37",
+      "part": 1,
+      "raw_sha256": "cb59d24f992d88cdd533ee213d033f6721ad8487e1d0c93e63eb91f8d7cbe13a"
+    }
+  ],
+  "arm_diagnostics": {
+    "selected_k": {
+      "planned": 8,
+      "observed": 4,
+      "missing": 4,
+      "strict_success": 2,
+      "source_support_covered": 2,
+      "input_tokens": 1981,
+      "emitted_labels": 4,
+      "strict_success_rate_all_planned_bounds": [
+        0.25,
+        0.75
+      ]
+    },
+    "hybrid_k4": {
+      "planned": 8,
+      "observed": 4,
+      "missing": 4,
+      "strict_success": 1,
+      "source_support_covered": 4,
+      "input_tokens": 5384,
+      "emitted_labels": 3,
+      "strict_success_rate_all_planned_bounds": [
+        0.125,
+        0.625
+      ]
+    },
+    "hybrid_k6": {
+      "planned": 8,
+      "observed": 4,
+      "missing": 4,
+      "strict_success": 1,
+      "source_support_covered": 4,
+      "input_tokens": 7766,
+      "emitted_labels": 3,
+      "strict_success_rate_all_planned_bounds": [
+        0.125,
+        0.625
+      ]
+    },
+    "hybrid_k4_reversed": {
+      "planned": 8,
+      "observed": 4,
+      "missing": 4,
+      "strict_success": 2,
+      "source_support_covered": 4,
+      "input_tokens": 5433,
+      "emitted_labels": 4,
+      "strict_success_rate_all_planned_bounds": [
+        0.25,
+        0.75
+      ]
+    },
+    "single_hop": {
+      "planned": 8,
+      "observed": 4,
+      "missing": 4,
+      "strict_success": 3,
+      "source_support_covered": 3,
+      "input_tokens": 2585,
+      "emitted_labels": 4,
+      "strict_success_rate_all_planned_bounds": [
+        0.375,
+        0.875
+      ]
+    },
+    "entity_time": {
+      "planned": 8,
+      "observed": 4,
+      "missing": 4,
+      "strict_success": 4,
+      "source_support_covered": 4,
+      "input_tokens": 2604,
+      "emitted_labels": 4,
+      "strict_success_rate_all_planned_bounds": [
+        0.5,
+        1
+      ]
+    },
+    "organized": {
+      "planned": 8,
+      "observed": 4,
+      "missing": 4,
+      "strict_success": 4,
+      "source_support_covered": 4,
+      "input_tokens": 2300,
+      "emitted_labels": 4,
+      "strict_success_rate_all_planned_bounds": [
+        0.5,
+        1
+      ]
+    },
+    "program_support": {
+      "planned": 8,
+      "observed": 4,
+      "missing": 4,
+      "strict_success": 4,
+      "source_support_covered": 4,
+      "input_tokens": 2303,
+      "emitted_labels": 4,
+      "strict_success_rate_all_planned_bounds": [
+        0.5,
+        1
+      ]
+    },
+    "empty": {
+      "planned": 8,
+      "observed": 4,
+      "missing": 4,
+      "strict_success": 0,
+      "source_support_covered": 0,
+      "input_tokens": 807,
+      "emitted_labels": 0,
+      "strict_success_rate_all_planned_bounds": [
+        0,
+        0.5
+      ]
+    }
+  },
+  "strict_scoring": "original strict identifier grammar; program kind re-executed original fixed worker",
+  "program_worker_original_sha256": "5adfa11f201ef35480718828f30c9e5581c98e979210e3ee5a64363e3576b3d1",
+  "source_replay": "outer ZIP SHA pinned; inner sha-pins verified; original source event bytes, spans, candidate/source/reader identities verified",
+  "semantic_entailment_judged": false,
+  "independent_reviewer": false,
+  "independent_source_families": 0,
+  "statistical_superiority_established": false,
+  "production_accepted": false
+}

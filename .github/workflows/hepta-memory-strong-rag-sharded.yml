@@ -337,7 +337,7 @@ jobs:
           mkdir -p /tmp/rag-release/shards
           cp -a /tmp/rag-eval-shards /tmp/rag-release/shards/evaluation
           cp /tmp/rag-release/calibration/{stage.json,inventory.json,publisher.json} /tmp/rag-release/
-          python3 scripts/memory_cell/strong_rag_shards.py evaluation-collect /tmp/rag-original/plan /tmp/rag-original/observations /tmp/rag-release/prep /tmp/rag-release/calibration /tmp/rag-release/shards/evaluation /tmp/rag-release/evaluation --plan-sha "$FIXED_PLAN_SHA" --policy-sha "$(sha256sum /tmp/rag-release/calibration/frozen-policy.json | cut -d ' ' -f1)"
+          python3 scripts/memory_cell/strong_rag_shards.py evaluation-collect /tmp/rag-release/prep /tmp/rag-original/plan /tmp/rag-original/observations /tmp/rag-release/calibration /tmp/rag-release/shards/evaluation /tmp/rag-release/evaluation --plan-sha "$FIXED_PLAN_SHA" --policy-sha "$(sha256sum /tmp/rag-release/calibration/frozen-policy.json | cut -d ' ' -f1)"
           (cd /tmp/rag-release && find . -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS)
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:

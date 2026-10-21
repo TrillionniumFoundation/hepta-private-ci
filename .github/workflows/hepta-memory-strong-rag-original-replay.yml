@@ -1,0 +1,110 @@
+name: MemoryCell original 40+72 collector-only replay
+on:
+  pull_request:
+    paths:
+      - ".github/workflows/hepta-memory-strong-rag-original-replay.yml"
+  push:
+    branches:
+      - codex/memory-cell-four-stage-gate-20261014
+    paths:
+      - ".github/workflows/hepta-memory-strong-rag-original-replay.yml"
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: memory-original-40x72-collector-${{ github.event.pull_request.number || github.sha }}
+  cancel-in-progress: false
+env:
+  PYTHONPATH: scripts/memory_cell
+  HEPTA_MEMORY_TESTED_COMMIT: bc76ac57ba972bf105c71ddd997cd215cec5df2e
+  FIXED_PLAN_SHA: 9840a25487af444914dca24c818d98ff798ebc1610ea8dfdd827187c31ad1897
+jobs:
+  replay-only:
+    runs-on: ubuntu-22.04
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405
+        with:
+          python-version: "3.12"
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          name: rag-sharded-calibration-joined
+          run-id: 38423223376
+          github-token: ${{ github.token }}
+          path: /tmp/rag-cal-joined
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          name: rag-sharded-original
+          run-id: 38423223376
+          github-token: ${{ github.token }}
+          path: /tmp/rag-original
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          pattern: memory-evaluation-*
+          run-id: 38423223376
+          github-token: ${{ github.token }}
+          path: /tmp/rag-eval-shards
+      - name: Verify all original SHA256 archive identities before allowing collection
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import json, hashlib, subprocess
+          from pathlib import Path
+          pins = json.loads(Path("scripts/memory_cell/data/disjoint-40-calibration-72-original-shard-pins-20261014.json").read_text())
+          assert pins["source_commit"] == "bc76ac57ba972bf105c71ddd997cd215cec5df2e"
+          assert pins["original_run_id"] == 38423223376 and pins["real_evaluation_calls"] == 72
+          parts = pins["shards"]
+          assert len(parts) == 16 and {(x["case_index"], x["part"]) for x in parts} == {(i,j) for i in range(8) for j in range(2)}
+          sources = [pins["original_source_artifact"], pins["joined_calibration_artifact"]] + parts
+          for record in sources:
+              artifact_id = record.get("id", record.get("artifact_id"))
+              blob = subprocess.run(["gh","api",f"repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/{artifact_id}/zip"], stdout=subprocess.PIPE, check=True).stdout
+              if hashlib.sha256(blob).hexdigest() != record["zip_sha256"]:
+                  raise ValueError(f"original artifact ZIP changed: {artifact_id}")
+          for item in parts:
+              shard = Path("/tmp/rag-eval-shards") / f"memory-evaluation-{item['case_index']}-{item['part']}"
+              if not shard.is_dir():
+                  raise ValueError(f"missing original shard {shard}")
+          print("Verified all 18 external original ZIP identities and 16 extracted shard paths")
+          PY
+          python3 scripts/memory_cell/strong_rag_sharded_ci.py verify /tmp/rag-cal-joined
+          python3 scripts/memory_cell/strong_rag_sharded_ci.py verify /tmp/rag-original
+      - name: Collect exactly 72 real answers with original source and frozen policy
+        run: |
+          set -euo pipefail
+          cp -a /tmp/rag-cal-joined /tmp/rag-release
+          rm /tmp/rag-release/SHA256SUMS
+          mkdir -p /tmp/rag-release/shards
+          cp -a /tmp/rag-eval-shards /tmp/rag-release/shards/evaluation
+          cp /tmp/rag-release/calibration/{stage.json,inventory.json,publisher.json} /tmp/rag-release/
+          python3 scripts/memory_cell/strong_rag_shards.py evaluation-collect /tmp/rag-release/prep /tmp/rag-original/plan /tmp/rag-original/observations /tmp/rag-release/calibration /tmp/rag-release/shards/evaluation /tmp/rag-release/evaluation --plan-sha "$FIXED_PLAN_SHA" --policy-sha "$(sha256sum /tmp/rag-release/calibration/frozen-policy.json | cut -d ' ' -f1)"
+          (cd /tmp/rag-release && find . -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS)
+      - name: Independent original-answer, citation and task score replay
+        run: |
+          set -euo pipefail
+          python3 scripts/memory_cell/strong_rag_sharded_ci.py verify /tmp/rag-release
+          python3 scripts/memory_cell/strong_rag_shards.py verify-release /tmp/rag-release /tmp/rag-original > /tmp/rag-original-shard-replay.json
+          python3 scripts/memory_cell/strong_rag_receipt.py /tmp/rag-release /tmp/rag-original --generating-commit "$HEPTA_MEMORY_TESTED_COMMIT" --output /tmp/rag-original-reader-audit.json
+          mkdir -p /tmp/rag-audit
+          cp /tmp/rag-original-shard-replay.json /tmp/rag-original-reader-audit.json /tmp/rag-audit/
+          git rev-parse HEAD > /tmp/rag-audit/auditor-commit.txt
+          printf '%s\n' "$HEPTA_MEMORY_TESTED_COMMIT" > /tmp/rag-audit/original-model-commit.txt
+          (cd /tmp/rag-audit && find . -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS)
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: memory-original-40x72-collector-audit
+          path: /tmp/rag-audit
+          if-no-files-found: warn
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: success()
+        with:
+          name: memory-original-40x72-verified-release
+          path: /tmp/rag-release
+          if-no-files-found: error
