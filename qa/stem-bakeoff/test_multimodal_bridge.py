@@ -72,6 +72,36 @@ class SharedMultimodalBridgeTests(unittest.TestCase):
         # A BF16 teacher tensor can be hashed losslessly without casting to FP32.
         self.assertEqual(len(_tensor_bytes_sha256(torch.ones(2, 3, dtype=torch.bfloat16))), 64)
 
+    def test_modality_and_time_receipts_use_frozen_projected_snapshots(self):
+        bridge = self.stem()
+        original = torch.randn(2, 3, 32)
+        original_times = torch.tensor([[0., 1., 2.], [0., 1., 2.]])
+        source_digests = {'audio': 'e' * 64}
+        expected = bridge({'audio': original.clone()}, source_digests=source_digests,
+                          generation=9, timestamps={'audio': original_times.clone()})
+        caller_features = original.clone()
+        caller_times = original_times.clone()
+
+        def mutate_original_caller(_module, _arguments, _output):
+            # Runs after projector computation, before temporal phase and digest.
+            # Both must remain tied to the bytes used by the projection.
+            with torch.no_grad():
+                caller_features.add_(11.0)
+                caller_times.add_(10.0)
+
+        hook = bridge.projectors['audio'].register_forward_hook(mutate_original_caller)
+        try:
+            observed = bridge({'audio': caller_features},
+                              source_digests=source_digests, generation=9,
+                              timestamps={'audio': caller_times})
+        finally:
+            hook.remove()
+        self.assertFalse(torch.equal(caller_features, original))
+        self.assertFalse(torch.equal(caller_times, original_times))
+        self.assertEqual(observed.source_manifest_digest,
+                         expected.source_manifest_digest)
+        torch.testing.assert_close(observed.slots, expected.slots, rtol=0, atol=0)
+
     def test_multimodal_batch_and_element_budgets_fail_closed(self):
         bridge = self.stem()
         with self.assertRaisesRegex(LatentBridgeError, "invalid/nonfinite"):

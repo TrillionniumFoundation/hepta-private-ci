@@ -218,7 +218,11 @@ def run_offline_distillation(*, student: nn.Module, readout: nn.Module,
         "student": student_candidate, "teacher": teacher_candidate,
         "teacher_revision": teacher_revision,
         "checkpoint_inventory_sha256": checkpoint_inventory_sha256,
-        "source_split_digests": {key: cohorts[key].expected_source_sha256 for key in SPLITS},
+        # Read the verified preflight snapshot, not the caller-owned cohort map:
+        # optimizer hooks may replace a cohort object after all five checks.
+        "source_split_digests": {
+            key: paired_receipts[key]["source_manifest_sha256"] for key in SPLITS
+        },
         # Report the actual byte-bound snapshots rather than only the caller's
         # declarations, so each before/after loss has a matching feature pair.
         "paired_split_receipts": paired_receipts,
