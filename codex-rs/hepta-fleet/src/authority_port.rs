@@ -308,7 +308,10 @@ mod tests {
         let error = port
             .issue(&mut ledger, "fleet-expired-allocation", 1, 2_000, grant)
             .expect_err("untrusted caller time cannot revive an expired allocation");
-        assert_eq!(error, FleetAuthorityError::Fleet(LeaseLedgerError::InvalidTime));
+        assert_eq!(
+            error,
+            FleetAuthorityError::Fleet(LeaseLedgerError::InvalidTime)
+        );
     }
 
     #[test]
