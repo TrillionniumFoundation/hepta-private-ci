@@ -1,0 +1,87 @@
+RUST_MIN_STACK=8388608 NEXTEST_PROFILE=local python3 ../scripts/run-nextest.py "$@"
+warning: in config file .config/nextest.toml, ignoring unknown configuration keys:  profile.local.inherits
+   Compiling idle-priority-harness v0.1.0 (/workspace/scratch/337c309bc660/idle-priority-evidence/baseline)
+warning: unused import: `futures::FutureExt`
+ --> /workspace/scratch/337c309bc660/idle-priority-evidence/baseline/src/idle_work.rs:6:5
+  |
+6 | use futures::FutureExt;
+  |     ^^^^^^^^^^^^^^^^^^
+  |
+  = note: `#[warn(unused_imports)]` (part of `#[warn(unused)]`) on by default
+
+warning: unused variable: `priority`
+  --> /workspace/scratch/337c309bc660/idle-priority-evidence/baseline/src/idle_work.rs:34:9
+   |
+34 |         priority: IdleWorkPriority,
+   |         ^^^^^^^^ help: if this is intentional, prefix it with an underscore: `_priority`
+   |
+   = note: `#[warn(unused_variables)]` (part of `#[warn(unused)]`) on by default
+
+warning: `idle-priority-harness` (lib) generated 2 warnings (run `cargo fix --lib -p idle-priority-harness` to apply 2 suggestions)
+warning: `idle-priority-harness` (lib test) generated 1 warning (1 duplicate)
+    Finished `test` profile [unoptimized] target(s) in 0.71s
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#proc-macro2@1.0.107` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#quote@1.0.47` which wasn't produced by cargo metadata
+────────────
+ Nextest run ID a2bb18cb-2d3d-48d4-994a-b01d91715260 with nextest profile: local
+    Starting 1 test across 1 binary (3 tests skipped)
+  TRY 1 FAIL [   0.006s] idle-priority-harness idle_work::tests::later_queued_input_precedes_automatic_work_observing_the_same_fence
+  stdout ───
+
+    running 1 test
+    test idle_work::tests::later_queued_input_precedes_automatic_work_observing_the_same_fence ... FAILED
+
+    failures:
+
+    failures:
+        idle_work::tests::later_queued_input_precedes_automatic_work_observing_the_same_fence
+
+    test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 3 filtered out; finished in 0.00s
+
+  stderr ───
+
+    thread 'idle_work::tests::later_queued_input_precedes_automatic_work_observing_the_same_fence' (90) panicked at /workspace/scratch/337c309bc660/idle-priority-evidence/baseline/src/idle_work_tests.rs:132:5:
+    assertion failed: `(left == right)`
+
+    Diff < left / right > :
+     [
+    <    "automatic-1",
+         "queued-1",
+     ]
+
+
+    note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+   RETRY 2/2 [         ] idle-priority-harness idle_work::tests::later_queued_input_precedes_automatic_work_observing_the_same_fence
+  TRY 2 FAIL [   0.006s] idle-priority-harness idle_work::tests::later_queued_input_precedes_automatic_work_observing_the_same_fence
+  stdout ───
+
+    running 1 test
+    test idle_work::tests::later_queued_input_precedes_automatic_work_observing_the_same_fence ... FAILED
+
+    failures:
+
+    failures:
+        idle_work::tests::later_queued_input_precedes_automatic_work_observing_the_same_fence
+
+    test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 3 filtered out; finished in 0.00s
+
+  stderr ───
+
+    thread 'idle_work::tests::later_queued_input_precedes_automatic_work_observing_the_same_fence' (92) panicked at /workspace/scratch/337c309bc660/idle-priority-evidence/baseline/src/idle_work_tests.rs:132:5:
+    assertion failed: `(left == right)`
+
+    Diff < left / right > :
+     [
+    <    "automatic-1",
+         "queued-1",
+     ]
+
+
+    note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+────────────
+     Summary [   0.013s] 1 test run: 0 passed, 1 failed, 3 skipped
+  TRY 2 FAIL [   0.006s] idle-priority-harness idle_work::tests::later_queued_input_precedes_automatic_work_observing_the_same_fence
+error: test run failed
+error: recipe `test` failed on line 89 with exit code 100

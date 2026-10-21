@@ -1,0 +1,9 @@
+[package]
+name = "idle-priority-harness"
+version = "0.1.0"
+edition = "2024"
+[workspace]
+[dependencies]
+futures = "=0.3.34"
+tokio = { version = "=1.53.3", features = ["macros", "rt-multi-thread", "sync", "time"] }
+pretty_assertions = "=1.4.1"
