@@ -225,6 +225,21 @@ impl RuntimeToolIntentV1 {
         }
         Ok(())
     }
+
+    /// Binds the entire native tool operation, not only its Cell envelope.
+    /// A receipt for the same Cell with a different tool, arguments, host or
+    /// idempotency key cannot be reused as the proof of this operation.
+    #[must_use]
+    pub fn intent_digest(&self) -> Digest32 {
+        let mut bytes = Vec::new();
+        bytes.extend_from_slice(b"hepta.runtime.tool.intent.v1");
+        bytes.extend_from_slice(self.cell.intent_digest().as_array());
+        push_id(&mut bytes, &self.tool_id);
+        bytes.extend_from_slice(self.arguments_digest.as_array());
+        push_id(&mut bytes, &self.idempotency_key);
+        push_id(&mut bytes, &self.host_scope);
+        Digest32::of_bytes(&bytes)
+    }
 }
 
 /// Observed terminal or indeterminate tool result.
@@ -306,6 +321,8 @@ impl ExecutionReceiptV1 {
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct RuntimeReceiptV1 {
     pub execution: ExecutionReceiptV1,
+    /// Exact binding to tool identity, arguments, idempotency key and host.
+    pub runtime_intent_digest: Digest32,
     pub tool_outcome: ToolOutcomeV1,
 }
 
@@ -317,6 +334,9 @@ impl RuntimeReceiptV1 {
         intent.validate()?;
         self.tool_outcome.validate()?;
         self.execution.validate_against(&intent.cell)?;
+        if self.runtime_intent_digest != intent.intent_digest() {
+            return Err(ExecutionContractError::ReceiptBindingMismatch);
+        }
         if self.execution.outcome_digest != Some(self.tool_outcome.outcome_digest()) {
             return Err(ExecutionContractError::OutcomeDigestMismatch);
         }

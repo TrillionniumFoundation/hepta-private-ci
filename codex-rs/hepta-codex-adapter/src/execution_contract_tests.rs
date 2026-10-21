@@ -147,9 +147,35 @@ fn runtime_receipt_rechecks_tool_outcome_digest() {
             recovery: RecoveryDispositionV1::None,
             authority: AuthorityPosture::DENY_ALL,
         },
+        runtime_intent_digest: value.intent_digest(),
         tool_outcome: outcome,
     };
     assert_eq!(receipt.validate_against(&value), Ok(()));
+
+    for mutated in [
+        RuntimeToolIntentV1 {
+            tool_id: id("runtime.other"),
+            ..value.clone()
+        },
+        RuntimeToolIntentV1 {
+            arguments_digest: digest("different-arguments"),
+            ..value.clone()
+        },
+        RuntimeToolIntentV1 {
+            idempotency_key: id("operation:reused"),
+            ..value.clone()
+        },
+        RuntimeToolIntentV1 {
+            host_scope: id("host:other"),
+            ..value.clone()
+        },
+    ] {
+        assert_ne!(value.intent_digest(), mutated.intent_digest());
+        assert_eq!(
+            receipt.validate_against(&mutated),
+            Err(ExecutionContractError::ReceiptBindingMismatch)
+        );
+    }
 }
 
 #[test]
