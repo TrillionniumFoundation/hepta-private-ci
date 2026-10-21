@@ -1,0 +1,473 @@
+[
+  {
+    "command": [
+      "cargo",
+      "update",
+      "-p",
+      "i18n-config",
+      "-p",
+      "zbus-secret-service-keyring-store"
+    ],
+    "cwd": "/workspace/scratch/337c309bc660/dependency-work/codex-rs",
+    "started_utc_host_clock": "2026-10-21T09:12:26.447635+00:00",
+    "elapsed_seconds": 3.634,
+    "exit_code": 0,
+    "log": "/workspace/scratch/337c309bc660/dependency-evidence/logs/cargo-resolve-zbus6.log",
+    "cargo_jobs": 2,
+    "retained_log": "logs/cargo-resolve-zbus6.log.gz",
+    "raw_log_sha256": "2b492a284a5f830291786bb1796cacc31811874b325d4c0681385ba3edec5479",
+    "raw_log_bytes": 1318
+  },
+  {
+    "command": [
+      "cargo-deny",
+      "--locked",
+      "check"
+    ],
+    "cwd": "/workspace/scratch/337c309bc660/dependency-work/codex-rs",
+    "started_utc_host_clock": "2026-10-21T09:31:37.458345+00:00",
+    "elapsed_seconds": 4.877,
+    "exit_code": 0,
+    "log": "/workspace/scratch/337c309bc660/dependency-evidence/logs/cargo-deny-final.log",
+    "cargo_jobs": 2,
+    "retained_log": "logs/cargo-deny-final.log.xz",
+    "raw_log_sha256": "cfcefa5e024cd86411a307c2b0dee54bfd25bc152fc21765c8f2b571c19e3783",
+    "raw_log_bytes": 12790661
+  },
+  {
+    "command": [
+      "just",
+      "test",
+      "-p",
+      "codex-keyring-store",
+      "--locked"
+    ],
+    "cwd": "/workspace/scratch/337c309bc660/dependency-work/codex-rs",
+    "started_utc_host_clock": "2026-10-21T09:18:39.550508+00:00",
+    "elapsed_seconds": 25.889,
+    "exit_code": 0,
+    "log": "/workspace/scratch/337c309bc660/dependency-evidence/logs/keyring-tests.log",
+    "cargo_jobs": 2,
+    "retained_log": "logs/keyring-tests.log.gz",
+    "raw_log_sha256": "b34e8ab08681cd999d73ca36da91c2995644b512c937c744d6d07df910d24aa1",
+    "raw_log_bytes": 4280
+  },
+  {
+    "command": [
+      "just",
+      "test",
+      "--manifest-path",
+      "/workspace/scratch/337c309bc660/dependency-evidence/vendor-tests/Cargo.toml",
+      "-p",
+      "i18n-config"
+    ],
+    "cwd": "/workspace/scratch/337c309bc660/dependency-work/codex-rs",
+    "started_utc_host_clock": "2026-10-21T09:23:31.952200+00:00",
+    "elapsed_seconds": 8.043,
+    "exit_code": 0,
+    "log": "/workspace/scratch/337c309bc660/dependency-evidence/logs/i18n-standalone-tests.log",
+    "cargo_jobs": 2,
+    "retained_log": "logs/i18n-standalone-tests.log.gz",
+    "raw_log_sha256": "7e318b5c96419b64244920269a958b33d20e3bad1add0cc0ddad8a6b98c94131",
+    "raw_log_bytes": 5041
+  },
+  {
+    "command": [
+      "just",
+      "test",
+      "--manifest-path",
+      "/workspace/scratch/337c309bc660/dependency-evidence/vendor-tests/Cargo.toml",
+      "-p",
+      "secret-service",
+      "--features",
+      "secret-service/rt-async-io-crypto-rust",
+      "-E",
+      "test(util::tests)"
+    ],
+    "cwd": "/workspace/scratch/337c309bc660/dependency-work/codex-rs",
+    "started_utc_host_clock": "2026-10-21T09:25:16.645146+00:00",
+    "elapsed_seconds": 12.402,
+    "exit_code": 0,
+    "log": "/workspace/scratch/337c309bc660/dependency-evidence/logs/prompt-tests.log",
+    "cargo_jobs": 2,
+    "retained_log": "logs/prompt-tests.log.gz",
+    "raw_log_sha256": "baa9c8a02810b187f5810a010d53e20bd7c6ff14d6b2c83c1ffdb26062adfc2b",
+    "raw_log_bytes": 2602
+  },
+  {
+    "command": [
+      "python3",
+      "qualification/dependency-closure-20261021/run_native.py",
+      "--gnome-prefix",
+      "/workspace/scratch/337c309bc660/dependency-evidence/gnome-root",
+      "--baseline",
+      "/workspace/scratch/337c309bc660/dependency-evidence/bin/credential-probe-baseline",
+      "--candidate",
+      "/workspace/scratch/337c309bc660/dependency-evidence/bin/credential-probe-candidate",
+      "--candidate-tokio",
+      "/workspace/scratch/337c309bc660/dependency-evidence/bin/credential-probe-candidate-tokio",
+      "--output",
+      "/workspace/scratch/337c309bc660/dependency-evidence/native-verified"
+    ],
+    "cwd": "/workspace/scratch/337c309bc660/dependency-work",
+    "started_utc_host_clock": "2026-10-21T09:29:18.222242+00:00",
+    "elapsed_seconds": 3.504,
+    "exit_code": 0,
+    "log": "/workspace/scratch/337c309bc660/dependency-evidence/logs/native-interoperability-verified.log",
+    "cargo_jobs": 2,
+    "retained_log": "logs/native-interoperability-verified.log.gz",
+    "raw_log_sha256": "6dffee95f1f45fce144d4823db2e8b868d5f35c35943d6a168a1ff5a81ad92d8",
+    "raw_log_bytes": 5384
+  },
+  {
+    "command": [
+      "just",
+      "bazel-lock-update"
+    ],
+    "cwd": "/workspace/scratch/337c309bc660/dependency-work",
+    "started_utc_host_clock": "2026-10-21T09:26:48.567405+00:00",
+    "elapsed_seconds": 17.558,
+    "exit_code": 0,
+    "log": "/workspace/scratch/337c309bc660/dependency-evidence/logs/bazel-lock-update-system-trust.log",
+    "cargo_jobs": 2,
+    "retained_log": "logs/bazel-lock-update-system-trust.log.gz",
+    "raw_log_sha256": "692f580aff7ef8ab8043f70a2b905f26224067fb08e0127ac1f55ff54c9d6d5d",
+    "raw_log_bytes": 3151
+  },
+  {
+    "command": [
+      "just",
+      "bazel-lock-update"
+    ],
+    "cwd": "/workspace/scratch/337c309bc660/dependency-work",
+    "started_utc_host_clock": "2026-10-21T09:28:18.567755+00:00",
+    "elapsed_seconds": 3.399,
+    "exit_code": 0,
+    "log": "/workspace/scratch/337c309bc660/dependency-evidence/logs/bazel-lock-update-repeat.log",
+    "cargo_jobs": 2,
+    "retained_log": "logs/bazel-lock-update-repeat.log.gz",
+    "raw_log_sha256": "8523a82d01e0fd40e1f57466cbf040900a1caa5ad2e705aa0ce20c7e919d601c",
+    "raw_log_bytes": 1003
+  },
+  {
+    "command": [
+      "just",
+      "bazel-lock-check"
+    ],
+    "cwd": "/workspace/scratch/337c309bc660/dependency-work",
+    "started_utc_host_clock": "2026-10-21T09:29:18.201973+00:00",
+    "elapsed_seconds": 3.477,
+    "exit_code": 0,
+    "log": "/workspace/scratch/337c309bc660/dependency-evidence/logs/bazel-lock-check.log",
+    "cargo_jobs": 2,
+    "retained_log": "logs/bazel-lock-check.log.gz",
+    "raw_log_sha256": "e3ffdf0a2ea8dde13ee7b55a53d0c366aa1c8cf26f74cffff20d1b9494c9b05f",
+    "raw_log_bytes": 1109
+  },
+  {
+    "command": [
+      "just",
+      "fix",
+      "-p",
+      "codex-keyring-store",
+      "--locked"
+    ],
+    "cwd": "/workspace/scratch/337c309bc660/dependency-work/codex-rs",
+    "started_utc_host_clock": "2026-10-21T09:30:24.565770+00:00",
+    "elapsed_seconds": 60.942,
+    "exit_code": 0,
+    "log": "/workspace/scratch/337c309bc660/dependency-evidence/logs/keyring-clippy-fix.log",
+    "cargo_jobs": 2,
+    "retained_log": "logs/keyring-clippy-fix.log.gz",
+    "raw_log_sha256": "8302e1362669a4827e9754490c3317fb1aa9de65ec945090e76f40896dfda9f9",
+    "raw_log_bytes": 2404
+  },
+  {
+    "command": [
+      "just",
+      "fmt"
+    ],
+    "cwd": "/workspace/scratch/337c309bc660/dependency-work/codex-rs",
+    "started_utc_host_clock": "2026-10-21T09:31:58.250743+00:00",
+    "elapsed_seconds": 0.439,
+    "exit_code": 0,
+    "log": "/workspace/scratch/337c309bc660/dependency-evidence/logs/fmt-final.log",
+    "cargo_jobs": 2,
+    "retained_log": "logs/fmt-final.log.gz",
+    "raw_log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "raw_log_bytes": 0
+  },
+  {
+    "command": [
+      "python3",
+      "scripts/check_hepta_rustsec_advisories.py",
+      "--repo-root",
+      "."
+    ],
+    "cwd": "/workspace/scratch/337c309bc660/dependency-work",
+    "started_utc_host_clock": "2026-10-21T09:31:34.576003+00:00",
+    "elapsed_seconds": 0.037,
+    "exit_code": 0,
+    "log": "/workspace/scratch/337c309bc660/dependency-evidence/logs/rustsec-policy-guard.log",
+    "cargo_jobs": 2,
+    "retained_log": "logs/rustsec-policy-guard.log.gz",
+    "raw_log_sha256": "39f5697dfcd129e3c20c87c5fc203a77198b37126d50eab99f30ba83cf764df2",
+    "raw_log_bytes": 55
+  },
+  {
+    "command": [
+      "python3",
+      "-m",
+      "unittest",
+      "-v",
+      "scripts.tests.test_hepta_rustsec_guard"
+    ],
+    "cwd": "/workspace/scratch/337c309bc660/dependency-work",
+    "started_utc_host_clock": "2026-10-21T09:31:34.646023+00:00",
+    "elapsed_seconds": 0.054,
+    "exit_code": 0,
+    "log": "/workspace/scratch/337c309bc660/dependency-evidence/logs/rustsec-policy-guard-tests.log",
+    "cargo_jobs": 2,
+    "retained_log": "logs/rustsec-policy-guard-tests.log.gz",
+    "raw_log_sha256": "b81f6fd50e0c864b54fdef375beb76f995af255f1b01aea396508d8f185daead",
+    "raw_log_bytes": 1120
+  },
+  {
+    "command": [
+      "cargo",
+      "build",
+      "--locked"
+    ],
+    "cwd": "/workspace/scratch/337c309bc660/dependency-work/qualification/dependency-closure-20261021/baseline",
+    "started_utc_host_clock": "2026-10-21T09:28:44.889497+00:00",
+    "elapsed_seconds": 0.585,
+    "exit_code": 0,
+    "log": "/workspace/scratch/337c309bc660/dependency-evidence/logs/native-baseline-application-attributes-build.log",
+    "cargo_jobs": 2,
+    "retained_log": "logs/native-baseline-application-attributes-build.log.gz",
+    "raw_log_sha256": "ff61e44612a62fd69f3326ed67c51622866e6f242aab432996b17da0d5b37c0d",
+    "raw_log_bytes": 207
+  },
+  {
+    "command": [
+      "cargo",
+      "build",
+      "--locked"
+    ],
+    "cwd": "/workspace/scratch/337c309bc660/dependency-work/qualification/dependency-closure-20261021/candidate",
+    "started_utc_host_clock": "2026-10-21T09:28:45.520794+00:00",
+    "elapsed_seconds": 0.541,
+    "exit_code": 0,
+    "log": "/workspace/scratch/337c309bc660/dependency-evidence/logs/native-candidate-application-attributes-build.log",
+    "cargo_jobs": 2,
+    "retained_log": "logs/native-candidate-application-attributes-build.log.gz",
+    "raw_log_sha256": "015e2731429ddb8a0de3c40b62399e6d4f10a2f54ea48f25b627634c4204feed",
+    "raw_log_bytes": 209
+  },
+  {
+    "command": [
+      "cargo",
+      "build",
+      "--locked",
+      "--features",
+      "zbus-tokio"
+    ],
+    "cwd": "/workspace/scratch/337c309bc660/dependency-work/qualification/dependency-closure-20261021/candidate",
+    "started_utc_host_clock": "2026-10-21T09:28:46.099181+00:00",
+    "elapsed_seconds": 0.544,
+    "exit_code": 0,
+    "log": "/workspace/scratch/337c309bc660/dependency-evidence/logs/native-candidate-tokio-application-attributes-build.log",
+    "cargo_jobs": 2,
+    "retained_log": "logs/native-candidate-tokio-application-attributes-build.log.gz",
+    "raw_log_sha256": "bb80ec93716d484ca5f6c69794a17fb7ad79e42b1e13d343249e5bc0fb7fcf3d",
+    "raw_log_bytes": 209
+  },
+  {
+    "command": [
+      "just",
+      "bazel-lock-update"
+    ],
+    "cwd": "/workspace/scratch/337c309bc660/dependency-work",
+    "started_utc_host_clock": "2026-10-21T09:25:56.714703+00:00",
+    "elapsed_seconds": 3.53,
+    "exit_code": 37,
+    "log": "/workspace/scratch/337c309bc660/dependency-evidence/logs/bazel-lock-update.log",
+    "cargo_jobs": 2,
+    "retained_log": "attempts/bazel-lock-update.log.gz",
+    "raw_log_sha256": "d7d9c230ea520617317e7772b1852cbaad586f79c5d74b52ac80a9d5d03b1628",
+    "raw_log_bytes": 2114
+  },
+  {
+    "command": [
+      "just",
+      "test",
+      "-p",
+      "i18n-config",
+      "--locked"
+    ],
+    "cwd": "/workspace/scratch/337c309bc660/dependency-work/codex-rs",
+    "started_utc_host_clock": "2026-10-21T09:22:15.390300+00:00",
+    "elapsed_seconds": 2.462,
+    "exit_code": 101,
+    "log": "/workspace/scratch/337c309bc660/dependency-evidence/logs/i18n-tests.log",
+    "cargo_jobs": 2,
+    "retained_log": "attempts/i18n-tests.log.gz",
+    "raw_log_sha256": "e861803751f8ba72e547fdac2dd1576cdb3d5177b1dbaed437b83e7d406f1804",
+    "raw_log_bytes": 556
+  },
+  {
+    "command": [
+      "just",
+      "test",
+      "--manifest-path",
+      "/workspace/scratch/337c309bc660/dependency-evidence/vendor-tests/Cargo.toml",
+      "-p",
+      "i18n-config"
+    ],
+    "cwd": "/workspace/scratch/337c309bc660/dependency-work/codex-rs",
+    "started_utc_host_clock": "2026-10-21T09:23:12.628660+00:00",
+    "elapsed_seconds": 0.112,
+    "exit_code": 96,
+    "log": "/workspace/scratch/337c309bc660/dependency-evidence/logs/i18n-standalone-tests.log",
+    "cargo_jobs": 2,
+    "retained_log": "attempts/i18n-standalone-config-failure.log.gz",
+    "raw_log_sha256": "3ab802d17312ff905e6f8b68b813caa36c9dbe4caa7028bc3c7206b90bcb8339",
+    "raw_log_bytes": 4213
+  },
+  {
+    "command": [
+      "python3",
+      "qualification/dependency-closure-20261021/run_native.py",
+      "--gnome-prefix",
+      "/workspace/scratch/337c309bc660/dependency-evidence/gnome-root",
+      "--baseline",
+      "/workspace/scratch/337c309bc660/dependency-evidence/bin/credential-probe-baseline",
+      "--candidate",
+      "/workspace/scratch/337c309bc660/dependency-evidence/bin/credential-probe-candidate",
+      "--candidate-tokio",
+      "/workspace/scratch/337c309bc660/dependency-evidence/bin/credential-probe-candidate-tokio",
+      "--output",
+      "/workspace/scratch/337c309bc660/dependency-evidence/native"
+    ],
+    "cwd": "/workspace/scratch/337c309bc660/dependency-work",
+    "started_utc_host_clock": "2026-10-21T09:25:55.783189+00:00",
+    "elapsed_seconds": 0.282,
+    "exit_code": 1,
+    "log": "/workspace/scratch/337c309bc660/dependency-evidence/logs/native-interoperability.log",
+    "cargo_jobs": 2,
+    "retained_log": "attempts/native-interoperability.log.gz",
+    "raw_log_sha256": "f8b9fe92147f4e83b26301454d74d21aaedaebfabfea373677d885ad6dcd6ae2",
+    "raw_log_bytes": 1472
+  },
+  {
+    "command": [
+      "python3",
+      "qualification/dependency-closure-20261021/run_native.py",
+      "--gnome-prefix",
+      "/workspace/scratch/337c309bc660/dependency-evidence/gnome-root",
+      "--baseline",
+      "/workspace/scratch/337c309bc660/dependency-evidence/bin/credential-probe-baseline",
+      "--candidate",
+      "/workspace/scratch/337c309bc660/dependency-evidence/bin/credential-probe-candidate",
+      "--candidate-tokio",
+      "/workspace/scratch/337c309bc660/dependency-evidence/bin/credential-probe-candidate-tokio",
+      "--output",
+      "/workspace/scratch/337c309bc660/dependency-evidence/native-complete"
+    ],
+    "cwd": "/workspace/scratch/337c309bc660/dependency-work",
+    "started_utc_host_clock": "2026-10-21T09:27:16.784108+00:00",
+    "elapsed_seconds": 0.268,
+    "exit_code": 1,
+    "log": "/workspace/scratch/337c309bc660/dependency-evidence/logs/native-interoperability-complete.log",
+    "cargo_jobs": 2,
+    "retained_log": "attempts/native-interoperability-complete.log.gz",
+    "raw_log_sha256": "c06dbe0be64b6510281697e679184c8963e2bd89fbf96ee7cbbec811b8c8278c",
+    "raw_log_bytes": 1544
+  },
+  {
+    "command": [
+      "python3",
+      "qualification/dependency-closure-20261021/run_native.py",
+      "--gnome-prefix",
+      "/workspace/scratch/337c309bc660/dependency-evidence/gnome-root",
+      "--baseline",
+      "/workspace/scratch/337c309bc660/dependency-evidence/bin/credential-probe-baseline",
+      "--candidate",
+      "/workspace/scratch/337c309bc660/dependency-evidence/bin/credential-probe-candidate",
+      "--candidate-tokio",
+      "/workspace/scratch/337c309bc660/dependency-evidence/bin/credential-probe-candidate-tokio",
+      "--output",
+      "/workspace/scratch/337c309bc660/dependency-evidence/native-final"
+    ],
+    "cwd": "/workspace/scratch/337c309bc660/dependency-work",
+    "started_utc_host_clock": "2026-10-21T09:28:17.916555+00:00",
+    "elapsed_seconds": 0.257,
+    "exit_code": 1,
+    "log": "/workspace/scratch/337c309bc660/dependency-evidence/logs/native-interoperability-final.log",
+    "cargo_jobs": 2,
+    "retained_log": "attempts/native-interoperability-final.log.gz",
+    "raw_log_sha256": "78fcf3a8056c795a9304f3fcd44e85ba2b37340d4e48438976aaa0fbdb209cc1",
+    "raw_log_bytes": 1565
+  },
+  {
+    "command": [
+      "just",
+      "bazel-lock-update"
+    ],
+    "cwd": "/workspace/scratch/337c309bc660/dependency-work",
+    "started_utc_host_clock": "2026-10-21T09:36:06.988779+00:00",
+    "elapsed_seconds": 5.73,
+    "exit_code": 0,
+    "log": "/workspace/scratch/337c309bc660/dependency-evidence/logs/bazel-final-update.log",
+    "cargo_jobs": 2,
+    "retained_log": "logs/bazel-final-update.log.gz",
+    "raw_log_sha256": "8b3aff614b23cf66c3154cda20c3a3fd8efaef16110c83103f0c8ff78c2827f6",
+    "raw_log_bytes": 2931
+  },
+  {
+    "command": [
+      "just",
+      "bazel-lock-update"
+    ],
+    "cwd": "/workspace/scratch/337c309bc660/dependency-work",
+    "started_utc_host_clock": "2026-10-21T09:36:12.754498+00:00",
+    "elapsed_seconds": 2.985,
+    "exit_code": 0,
+    "log": "/workspace/scratch/337c309bc660/dependency-evidence/logs/bazel-final-repeat.log",
+    "cargo_jobs": 2,
+    "retained_log": "logs/bazel-final-repeat.log.gz",
+    "raw_log_sha256": "1eedc9f10a10aae49e5d362fec101be0e62281448ad84aee15985a578e8f1fa4",
+    "raw_log_bytes": 1003
+  },
+  {
+    "command": [
+      "just",
+      "bazel-lock-check"
+    ],
+    "cwd": "/workspace/scratch/337c309bc660/dependency-work",
+    "started_utc_host_clock": "2026-10-21T09:36:15.780094+00:00",
+    "elapsed_seconds": 3.284,
+    "exit_code": 0,
+    "log": "/workspace/scratch/337c309bc660/dependency-evidence/logs/bazel-final-check.log",
+    "cargo_jobs": 2,
+    "retained_log": "logs/bazel-final-check.log.gz",
+    "raw_log_sha256": "574e38afa0acbbc19ac41fed6dcad165629fa862931d60cf8583027b8e82f53c",
+    "raw_log_bytes": 1109
+  },
+  {
+    "command": [
+      "cargo-deny",
+      "--locked",
+      "check"
+    ],
+    "cwd": "/workspace/scratch/337c309bc660/dependency-work/codex-rs",
+    "started_utc_host_clock": "2026-10-21T09:36:53.762925+00:00",
+    "elapsed_seconds": 4.06,
+    "exit_code": 0,
+    "log": "/workspace/scratch/337c309bc660/dependency-evidence/logs/cargo-deny-combined-inputs.log",
+    "cargo_jobs": 2,
+    "retained_log": "logs/cargo-deny-combined-inputs.log.xz",
+    "raw_log_sha256": "e8b9723e041ff199112e5c5a1b5dd02748970c53ee1ed627f9bf60023d8b985e",
+    "raw_log_bytes": 12790661
+  }
+]

@@ -663,6 +663,12 @@ inherits = "test"
 opt-level = 0
 
 [patch.crates-io]
+# Backport maintained TOML parsing for age's i18n-config dependency.
+i18n-config = { path = "third_party/i18n-config-0.4.8" }
+# Keep keyring's persistent Secret Service backend on the maintained zbus 6
+# wire/name implementation while its upstream compatibility release is pending.
+secret-service = { path = "third_party/secret-service-6.0.0" }
+zbus-secret-service-keyring-store = { path = "third_party/zbus-secret-service-keyring-store-1.0.1" }
 # Matrix SDK 0.18 still exposes anymap2 in its event handler API. Keep that
 # API stable while replacing the unmaintained implementation with anymap3.
 anymap2 = { path = "third_party/anymap2-compat" }

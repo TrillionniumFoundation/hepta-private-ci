@@ -130,6 +130,122 @@ class ExecutionRecordTests(GitExecutionFixture):
         self.assertEqual(result.returncode, 2)
         self.assertFalse(self.marker.exists())
 
+    def test_replaced_source_tree_never_dispatches_as_original_commit(self):
+        original_tree = self.git("rev-parse", "HEAD^{tree}")
+        (self.repo / "input").write_text("replacement bytes\n")
+        self.git("commit", "-qam", "replacement")
+        replacement = self.git("rev-parse", "HEAD")
+        self.git("checkout", "-q", "--detach", self.source)
+        self.git("config", "core.useReplaceRefs", "true")
+        self.git("replace", self.source, replacement)
+        self.git("read-tree", "--reset", "-u", "HEAD")
+        self.assertEqual(self.git("status", "--porcelain"), "")
+        self.assertNotEqual(self.git("rev-parse", "HEAD^{tree}"), original_tree)
+        self.assertEqual((self.repo / "input").read_text(), "replacement bytes\n")
+
+        result = self.execute()
+
+        self.assertEqual(result.returncode, 2, result.stdout + result.stderr)
+        receipt = self.receipt()
+        self.assertEqual(receipt["status"], "rejected")
+        self.assertEqual(receipt["before"]["tree"], original_tree)
+        self.assertTrue(receipt["before"]["dirty"])
+        self.assertIsNone(receipt["command_exit_code"])
+        self.assertFalse(self.marker.exists())
+
+    def test_clean_original_checkout_ignores_replacement_metadata(self):
+        original_tree = self.git("rev-parse", "HEAD^{tree}")
+        (self.repo / "input").write_text("replacement bytes\n")
+        self.git("commit", "-qam", "replacement")
+        replacement = self.git("rev-parse", "HEAD")
+        self.git("checkout", "-q", "--detach", self.source)
+        self.git("replace", self.source, replacement)
+        self.assertNotEqual(self.git("status", "--porcelain"), "")
+
+        result = self.execute()
+
+        self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+        receipt = self.receipt()
+        self.assertEqual(receipt["status"], "passed")
+        self.assertEqual(
+            receipt["before"],
+            {
+                "commit": self.source,
+                "tree": original_tree,
+                "parents": [],
+                "dirty": False,
+            },
+        )
+        self.assertEqual(receipt["before"], receipt["after"])
+        self.assertEqual(self.marker.read_text(), "executed")
+
+    def test_replaced_merge_parents_never_dispatch(self):
+        base = self.source
+        (self.repo / "input").write_text("source\n")
+        self.git("commit", "-qam", "source")
+        source = self.git("rev-parse", "HEAD")
+        tree = self.git("rev-parse", "HEAD^{tree}")
+        merge = self.git(
+            "commit-tree", tree, "-p", source, "-p", base, "-m", "wrong parents"
+        )
+        replacement = self.git(
+            "commit-tree", tree, "-p", base, "-p", source, "-m", "replacement"
+        )
+        self.git("checkout", "-q", "--detach", merge)
+        self.git("replace", merge, replacement)
+        self.assertEqual(
+            self.git("show", "-s", "--format=%P", merge), f"{base} {source}"
+        )
+        self.assertEqual(self.git("status", "--porcelain"), "")
+
+        result = self.execute(
+            SOURCE_SHA=source,
+            BASE_SHA=base,
+            TESTED_SHA=merge,
+            HEPTA_CI_LANE="base-merge",
+        )
+
+        self.assertEqual(result.returncode, 2, result.stdout + result.stderr)
+        receipt = self.receipt()
+        self.assertEqual(receipt["status"], "rejected")
+        self.assertEqual(receipt["before"]["parents"], [source, base])
+        self.assertIn("parents", receipt["error"])
+        self.assertIsNone(receipt["command_exit_code"])
+        self.assertFalse(self.marker.exists())
+
+    def test_replaced_source_cannot_change_recomputed_merge_tree(self):
+        base = self.source
+        wrong_tree = self.git("rev-parse", "HEAD^{tree}")
+        (self.repo / "input").write_text("source change\n")
+        self.git("commit", "-qam", "source change")
+        source = self.git("rev-parse", "HEAD")
+        merge = self.git(
+            "commit-tree", wrong_tree, "-p", base, "-p", source, "-m", "wrong tree"
+        )
+        replacement = self.git(
+            "commit-tree", wrong_tree, "-p", base, "-m", "replacement source"
+        )
+        self.git("checkout", "-q", "--detach", merge)
+        self.git("replace", source, replacement)
+        self.assertEqual(self.git("status", "--porcelain"), "")
+        self.assertEqual(
+            self.git("merge-tree", "--write-tree", base, source), wrong_tree
+        )
+
+        result = self.execute(
+            SOURCE_SHA=source,
+            BASE_SHA=base,
+            TESTED_SHA=merge,
+            HEPTA_CI_LANE="base-merge",
+        )
+
+        self.assertEqual(result.returncode, 2, result.stdout + result.stderr)
+        receipt = self.receipt()
+        self.assertEqual(receipt["status"], "rejected")
+        self.assertIn("recomputed", receipt["error"])
+        self.assertIsNone(receipt["command_exit_code"])
+        self.assertFalse(self.marker.exists())
+
     def test_synthetic_merge_accepts_only_exact_ordered_parents(self):
         base = self.source
         (self.repo / "input").write_text("source\n")
@@ -262,6 +378,127 @@ class ExecutionRecordTests(GitExecutionFixture):
         result = self.execute()
         self.assertEqual(result.returncode, 0, result.stderr)
         self.assertEqual(self.receipt()["before"]["parents"], [base])
+
+
+class IndexTrustExecutionTests(GitExecutionFixture):
+    def test_hidden_index_bits_reject_clean_and_changed_inputs_without_rewriting(self):
+        for flag in ("assume-unchanged", "skip-worktree"):
+            for changed in (False, True):
+                with self.subTest(flag=flag, changed=changed):
+                    self.result.unlink(missing_ok=True)
+                    self.git("update-index", "--" + flag, "input")
+                    if changed:
+                        (self.repo / "input").write_text("hidden mutation\n")
+                    self.assertEqual(self.git("status", "--porcelain"), "")
+                    index = self.repo / ".git/index"
+                    original_index = index.read_bytes()
+
+                    result = self.execute()
+
+                    self.assertEqual(
+                        result.returncode, 2, result.stdout + result.stderr
+                    )
+                    receipt = self.receipt()
+                    self.assertEqual(receipt["status"], "rejected")
+                    self.assertTrue(receipt["before"]["dirty"])
+                    self.assertIsNone(receipt["command_exit_code"])
+                    self.assertFalse(self.marker.exists())
+                    self.assertEqual(index.read_bytes(), original_index)
+                    self.git("update-index", "--no-" + flag, "input")
+                    self.git("restore", "--worktree", "input")
+
+    def test_nested_caller_cannot_hide_a_flagged_root_input(self):
+        self.git("update-index", "--assume-unchanged", "input")
+        (self.repo / "input").write_text("hidden outside the working directory\n")
+        self.repo = self.repo / "nested"
+        self.repo.mkdir()
+
+        result = self.execute()
+
+        self.assertEqual(result.returncode, 2, result.stdout + result.stderr)
+        self.assertEqual(self.receipt()["status"], "rejected")
+        self.assertFalse(self.marker.exists())
+
+    def test_nul_index_records_preserve_unusual_filename_boundaries(self):
+        name = "ordinary\ns misleading-tag"
+        self.git("mv", "input", name)
+        self.git("commit", "-qm", "unusual filename")
+        self.source = self.git("rev-parse", "HEAD")
+        index = self.repo / ".git/index"
+        original_index = index.read_bytes()
+
+        clean = self.execute()
+
+        self.assertEqual(clean.returncode, 0, clean.stdout + clean.stderr)
+        self.assertFalse(self.receipt()["before"]["dirty"])
+        self.assertEqual(index.read_bytes(), original_index)
+        self.result.unlink()
+        self.marker.unlink()
+        self.git("update-index", "--skip-worktree", "--", name)
+
+        flagged = self.execute()
+
+        self.assertEqual(flagged.returncode, 2, flagged.stdout + flagged.stderr)
+        self.assertFalse(self.marker.exists())
+
+    def test_command_cannot_hide_a_mutation_by_setting_index_bits(self):
+        for flag in ("assume-unchanged", "skip-worktree"):
+            with self.subTest(flag=flag):
+                self.result.unlink(missing_ok=True)
+                code = (
+                    "import subprocess\n"
+                    "from pathlib import Path\n"
+                    f"subprocess.run(['git', 'update-index', '--{flag}', 'input'], check=True)\n"
+                    "Path('input').write_text('hidden mutation after dispatch\\n')\n"
+                )
+
+                result = self.execute(code)
+
+                self.assertEqual(result.returncode, 1, result.stdout + result.stderr)
+                receipt = self.receipt()
+                self.assertEqual(receipt["status"], "failed")
+                self.assertEqual(receipt["command_exit_code"], 0)
+                self.assertFalse(receipt["before"]["dirty"])
+                self.assertTrue(receipt["after"]["dirty"])
+                self.assertEqual(self.git("status", "--porcelain"), "")
+                self.git("update-index", "--no-" + flag, "input")
+                self.git("restore", "--worktree", "input")
+
+    def test_fsmonitor_cannot_hide_changed_bytes_or_rewrite_the_index(self):
+        hook = self.root / "fsmonitor-hook"
+        hook.write_text(
+            '#!/bin/sh\nprintf "stable-token\\0"\necho called >> "$0.calls"\n'
+        )
+        hook.chmod(0o755)
+        calls = self.root / "fsmonitor-hook.calls"
+        self.git("config", "core.fsmonitor", str(hook))
+        self.git("config", "core.fsmonitorHookVersion", "2")
+        for changed in (False, True):
+            with self.subTest(changed=changed):
+                self.result.unlink(missing_ok=True)
+                self.marker.unlink(missing_ok=True)
+                self.git("status", "--porcelain")
+                self.git("update-index", "--fsmonitor-valid", "input")
+                if changed:
+                    (self.repo / "input").write_text("hidden by stale monitor\n")
+                self.assertEqual(self.git("status", "--porcelain"), "")
+                calls.unlink(missing_ok=True)
+                index = self.repo / ".git/index"
+                original_index = index.read_bytes()
+
+                result = self.execute()
+
+                self.assertEqual(
+                    result.returncode,
+                    2 if changed else 0,
+                    result.stdout + result.stderr,
+                )
+                receipt = self.receipt()
+                self.assertEqual(receipt["status"], "rejected" if changed else "passed")
+                self.assertEqual(receipt["before"]["dirty"], changed)
+                self.assertEqual(self.marker.exists(), not changed)
+                self.assertFalse(calls.exists())
+                self.assertEqual(index.read_bytes(), original_index)
 
 
 class WorkflowCommandBindingTests(GitExecutionFixture):

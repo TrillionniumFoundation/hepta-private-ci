@@ -1,0 +1,36 @@
+RUST_MIN_STACK=8388608 NEXTEST_PROFILE=local python3 ../scripts/run-nextest.py "$@"
+warning: in config file .config/nextest.toml, ignoring unknown configuration keys:  profile.local.inherits
+   Compiling proc-macro2 v1.0.107
+   Compiling quote v1.0.47
+   Compiling unicode-ident v1.0.27
+   Compiling futures-sink v0.3.34
+   Compiling futures-core v0.3.34
+   Compiling pin-project-lite v0.2.17
+   Compiling futures-channel v0.3.34
+   Compiling memchr v2.8.3
+   Compiling syn v3.0.9
+   Compiling futures-io v0.3.34
+   Compiling slab v0.4.12
+   Compiling futures-task v0.3.34
+   Compiling diff v0.1.13
+   Compiling yansi v1.0.1
+   Compiling pretty_assertions v1.4.1
+   Compiling futures-macro v0.3.34
+   Compiling tokio-macros v2.7.2
+   Compiling futures-util v0.3.34
+   Compiling tokio v1.53.3
+   Compiling futures-executor v0.3.34
+   Compiling futures v0.3.34
+   Compiling idle-priority-harness v0.1.0 (/workspace/scratch/337c309bc660/idle-priority-evidence/harness)
+    Finished `test` profile [unoptimized] target(s) in 6.80s
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#quote@1.0.47` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#proc-macro2@1.0.107` which wasn't produced by cargo metadata
+────────────
+ Nextest run ID aea53396-ca0e-44ec-b751-39634f0059c3 with nextest profile: local
+    Starting 4 tests across 1 binary
+        PASS [   0.005s] idle-priority-harness idle_work::tests::deferred_idle_work_rejects_capacity_overflow
+        PASS [   0.005s] idle-priority-harness idle_work::tests::deferred_idle_contributors_wait_for_fence_and_preserve_registration_order
+        PASS [   0.005s] idle-priority-harness idle_work::tests::thread_termination_cancels_waiting_idle_work_without_running_it
+        PASS [   0.006s] idle-priority-harness idle_work::tests::later_queued_input_precedes_automatic_work_observing_the_same_fence
+────────────
+     Summary [   0.014s] 4 tests run: 4 passed, 0 skipped

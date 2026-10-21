@@ -1,0 +1,245 @@
+{
+  "status": "passed",
+  "binary_sha256": {
+    "baseline": "aa08dcbe4602ac34d46e1a0d623fabc4347c5004c5ec34168e21a09c12ce03d0",
+    "candidate": "c37905e62e6bad8bcc736dfa5395ef56423ed9770d886c18858e708456345e12",
+    "candidate_tokio": "8293cda176262ba74617f85e7d3bcb18e9f93ce59c2f5c976cc9849f8eadfa62"
+  },
+  "isolated_dbus": true,
+  "cases": [
+    {
+      "binary": "baseline",
+      "runtime": "sync",
+      "phase": "seed",
+      "service": "hepta-dependency-cross-version",
+      "exit_code": 0,
+      "elapsed_seconds": 0.122,
+      "stdout": "passed runtime=sync phase=seed\n",
+      "stderr": ""
+    },
+    {
+      "binary": "candidate",
+      "runtime": "sync",
+      "phase": "update",
+      "service": "hepta-dependency-cross-version",
+      "exit_code": 0,
+      "elapsed_seconds": 0.085,
+      "stdout": "passed runtime=sync phase=update\n",
+      "stderr": ""
+    },
+    {
+      "binary": "baseline",
+      "runtime": "sync",
+      "phase": "verify",
+      "service": "hepta-dependency-cross-version",
+      "exit_code": 0,
+      "elapsed_seconds": 0.084,
+      "stdout": "passed runtime=sync phase=verify\n",
+      "stderr": ""
+    },
+    {
+      "binary": "candidate",
+      "runtime": "sync",
+      "phase": "verify",
+      "service": "hepta-dependency-cross-version",
+      "exit_code": 0,
+      "elapsed_seconds": 0.085,
+      "stdout": "passed runtime=sync phase=verify\n",
+      "stderr": ""
+    },
+    {
+      "binary": "candidate_tokio",
+      "runtime": "current-thread",
+      "phase": "verify",
+      "service": "hepta-dependency-cross-version",
+      "exit_code": 0,
+      "elapsed_seconds": 0.073,
+      "stdout": "passed runtime=current-thread phase=verify\n",
+      "stderr": ""
+    },
+    {
+      "binary": "candidate",
+      "runtime": "sync",
+      "phase": "delete",
+      "service": "hepta-dependency-cross-version",
+      "exit_code": 0,
+      "elapsed_seconds": 0.088,
+      "stdout": "passed runtime=sync phase=delete\n",
+      "stderr": ""
+    },
+    {
+      "binary": "baseline",
+      "runtime": "sync",
+      "phase": "absent",
+      "service": "hepta-dependency-cross-version",
+      "exit_code": 0,
+      "elapsed_seconds": 0.061,
+      "stdout": "passed runtime=sync phase=absent\n",
+      "stderr": ""
+    },
+    {
+      "persistent_files": 1,
+      "synthetic_plaintext_found": false
+    },
+    {
+      "binary": "candidate",
+      "runtime": "sync",
+      "phase": "persistent",
+      "service": "hepta-dependency-cross-version",
+      "exit_code": 0,
+      "elapsed_seconds": 0.056,
+      "stdout": "passed runtime=sync phase=persistent\n",
+      "stderr": ""
+    },
+    {
+      "binary": "baseline",
+      "runtime": "sync",
+      "phase": "persistent",
+      "service": "hepta-dependency-cross-version",
+      "exit_code": 0,
+      "elapsed_seconds": 0.062,
+      "stdout": "passed runtime=sync phase=persistent\n",
+      "stderr": ""
+    },
+    {
+      "binary": "candidate",
+      "runtime": "sync",
+      "phase": "finish",
+      "service": "hepta-dependency-cross-version",
+      "exit_code": 0,
+      "elapsed_seconds": 0.074,
+      "stdout": "passed runtime=sync phase=finish\n",
+      "stderr": ""
+    },
+    {
+      "binary": "candidate",
+      "runtime": "sync",
+      "phase": "round-trip",
+      "service": "hepta-runtime-candidate-sync",
+      "exit_code": 0,
+      "elapsed_seconds": 0.087,
+      "stdout": "passed runtime=sync phase=round-trip\n",
+      "stderr": ""
+    },
+    {
+      "binary": "candidate",
+      "runtime": "current-thread",
+      "phase": "round-trip",
+      "service": "hepta-runtime-candidate-current-thread",
+      "exit_code": 0,
+      "elapsed_seconds": 0.133,
+      "stdout": "passed runtime=current-thread phase=round-trip\n",
+      "stderr": ""
+    },
+    {
+      "binary": "candidate",
+      "runtime": "multi-thread",
+      "phase": "round-trip",
+      "service": "hepta-runtime-candidate-multi-thread",
+      "exit_code": 0,
+      "elapsed_seconds": 0.14,
+      "stdout": "passed runtime=multi-thread phase=round-trip\n",
+      "stderr": ""
+    },
+    {
+      "binary": "candidate",
+      "runtime": "spawn-blocking",
+      "phase": "round-trip",
+      "service": "hepta-runtime-candidate-spawn-blocking",
+      "exit_code": 0,
+      "elapsed_seconds": 0.14,
+      "stdout": "passed runtime=spawn-blocking phase=round-trip\n",
+      "stderr": ""
+    },
+    {
+      "binary": "candidate",
+      "runtime": "sync",
+      "phase": "concurrent",
+      "service": "hepta-concurrent-candidate",
+      "exit_code": 0,
+      "elapsed_seconds": 0.926,
+      "stdout": "passed runtime=sync phase=concurrent\n",
+      "stderr": ""
+    },
+    {
+      "binary": "candidate",
+      "runtime": "current-thread",
+      "phase": "unavailable",
+      "service": "hepta-unavailable-candidate",
+      "exit_code": 0,
+      "elapsed_seconds": 0.004,
+      "stdout": "passed runtime=current-thread phase=unavailable\n",
+      "stderr": ""
+    },
+    {
+      "binary": "candidate_tokio",
+      "runtime": "sync",
+      "phase": "round-trip",
+      "service": "hepta-runtime-candidate_tokio-sync",
+      "exit_code": 0,
+      "elapsed_seconds": 0.089,
+      "stdout": "passed runtime=sync phase=round-trip\n",
+      "stderr": ""
+    },
+    {
+      "binary": "candidate_tokio",
+      "runtime": "current-thread",
+      "phase": "round-trip",
+      "service": "hepta-runtime-candidate_tokio-current-thread",
+      "exit_code": 0,
+      "elapsed_seconds": 0.111,
+      "stdout": "passed runtime=current-thread phase=round-trip\n",
+      "stderr": ""
+    },
+    {
+      "binary": "candidate_tokio",
+      "runtime": "multi-thread",
+      "phase": "round-trip",
+      "service": "hepta-runtime-candidate_tokio-multi-thread",
+      "exit_code": 0,
+      "elapsed_seconds": 0.113,
+      "stdout": "passed runtime=multi-thread phase=round-trip\n",
+      "stderr": ""
+    },
+    {
+      "binary": "candidate_tokio",
+      "runtime": "spawn-blocking",
+      "phase": "round-trip",
+      "service": "hepta-runtime-candidate_tokio-spawn-blocking",
+      "exit_code": 0,
+      "elapsed_seconds": 0.171,
+      "stdout": "passed runtime=spawn-blocking phase=round-trip\n",
+      "stderr": ""
+    },
+    {
+      "binary": "candidate_tokio",
+      "runtime": "sync",
+      "phase": "concurrent",
+      "service": "hepta-concurrent-candidate_tokio",
+      "exit_code": 0,
+      "elapsed_seconds": 0.515,
+      "stdout": "passed runtime=sync phase=concurrent\n",
+      "stderr": ""
+    },
+    {
+      "binary": "candidate_tokio",
+      "runtime": "current-thread",
+      "phase": "unavailable",
+      "service": "hepta-unavailable-candidate_tokio",
+      "exit_code": 0,
+      "elapsed_seconds": 0.003,
+      "stdout": "passed runtime=current-thread phase=unavailable\n",
+      "stderr": ""
+    },
+    {
+      "binary": "baseline",
+      "runtime": "sync",
+      "phase": "unavailable",
+      "service": "hepta-unavailable-baseline",
+      "exit_code": 0,
+      "elapsed_seconds": 0.003,
+      "stdout": "passed runtime=sync phase=unavailable\n",
+      "stderr": ""
+    }
+  ]
+}

@@ -24,16 +24,37 @@ import time
 
 
 def git(*args: str) -> str:
-    return subprocess.check_output(["git", *args], text=True).strip()
+    # Local replacement refs must not relabel different trees or parents as the
+    # source/tested objects, including during merge-tree recomputation.
+    # Read source identity without trusting fsmonitor or refreshing the index.
+    return subprocess.check_output(
+        [
+            "git",
+            "--no-replace-objects",
+            "--no-optional-locks",
+            "-c",
+            "core.fsmonitor=false",
+            *args,
+        ],
+        text=True,
+    ).strip()
 
 
 def identity() -> dict:
     metadata = git("cat-file", "-p", "HEAD").split("\n\n", 1)[0].splitlines()
+    # Git status can hide changed bytes behind assume-unchanged or skip-worktree.
+    # Treat either flag as unqualified even if the file currently looks clean.
+    # NUL records and a root pathspec cover unusual names and nested callers.
+    index_entries = git("ls-files", "-v", "-z", "--", ":/").split("\0")
+    hidden_index_flags = any(
+        entry and (entry[0] == "S" or entry[0].islower()) for entry in index_entries
+    )
     return {
         "commit": git("rev-parse", "HEAD"),
         "tree": git("rev-parse", "HEAD^{tree}"),
         "parents": [line[7:] for line in metadata if line.startswith("parent ")],
-        "dirty": bool(git("status", "--porcelain", "--untracked-files=normal")),
+        "dirty": hidden_index_flags
+        or bool(git("status", "--porcelain", "--untracked-files=normal")),
     }
 
 

@@ -1,0 +1,147 @@
+[
+  {
+    "command": [
+      "just",
+      "test",
+      "--manifest-path",
+      "/workspace/scratch/337c309bc660/idle-priority-evidence/baseline/Cargo.toml",
+      "-p",
+      "idle-priority-harness",
+      "--locked",
+      "--offline",
+      "-E",
+      "test(later_queued_input_precedes_automatic_work_observing_the_same_fence)"
+    ],
+    "cwd": "/workspace/scratch/337c309bc660/idle-priority-work",
+    "started": "2026-10-21T09:53:24.257983+00:00",
+    "elapsed_seconds": 0.8817322020004212,
+    "exit_code": 100,
+    "expected_failure": true,
+    "baseline_source": "9d4564d2c",
+    "adaptation": "Only add unused priority argument/enum and FutureExt for the new test; scheduler remains the original single-tail implementation.",
+    "log": "logs/baseline-failure.log",
+    "log_sha256": "58c177eba5901252aca493616dde129d34523587d3aecf386f23ed848f96568e"
+  },
+  {
+    "command": [
+      "just",
+      "fix",
+      "--manifest-path",
+      "/workspace/scratch/337c309bc660/idle-priority-evidence/harness/Cargo.toml",
+      "-p",
+      "idle-priority-harness",
+      "--locked",
+      "--offline",
+      "--allow-no-vcs"
+    ],
+    "cwd": "/workspace/scratch/337c309bc660/idle-priority-work",
+    "started": "2026-10-21T09:54:07.330014+00:00",
+    "elapsed_seconds": 2.4800863770033175,
+    "exit_code": 0,
+    "target": "/workspace/scratch/337c309bc660/idle-priority-evidence/target",
+    "log": "logs/clippy-fix-localhost.log",
+    "log_sha256": "2b9967ccaef7d6c63395099da71879c24f8ca9a1a5c825920a8e7be39c76abed"
+  },
+  {
+    "command": [
+      "just",
+      "fix",
+      "--manifest-path",
+      "/workspace/scratch/337c309bc660/idle-priority-evidence/harness/Cargo.toml",
+      "-p",
+      "idle-priority-harness",
+      "--locked",
+      "--offline",
+      "--allow-no-vcs"
+    ],
+    "cwd": "/workspace/scratch/337c309bc660/idle-priority-work",
+    "started": "2026-10-21T09:53:52.214596+00:00",
+    "elapsed_seconds": 0.10399161799796275,
+    "exit_code": 101,
+    "target": "/workspace/scratch/337c309bc660/idle-priority-evidence/target",
+    "log": "logs/clippy-fix.log",
+    "log_sha256": "6bb10e993781fcfafa03cdc3bb9385d58a4125ed406243f1ca86f8aa893f5afd"
+  },
+  {
+    "command": [
+      "just",
+      "fmt"
+    ],
+    "cwd": "/workspace/scratch/337c309bc660/idle-priority-work",
+    "started": "2026-10-21T09:54:09.810461+00:00",
+    "elapsed_seconds": 0.39706016100171837,
+    "exit_code": 0,
+    "target": "/workspace/scratch/337c309bc660/idle-priority-evidence/target",
+    "log": "logs/fmt.log",
+    "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "command": [
+      "cargo",
+      "generate-lockfile",
+      "--manifest-path",
+      "/workspace/scratch/337c309bc660/idle-priority-evidence/harness/Cargo.toml",
+      "--offline"
+    ],
+    "cwd": "/workspace/scratch/337c309bc660/idle-priority-work",
+    "started": "2026-10-21T09:52:12.992124+00:00",
+    "elapsed_seconds": 0.14103387499926612,
+    "exit_code": 0,
+    "target": "/workspace/scratch/337c309bc660/idle-priority-evidence/target",
+    "log": "logs/lock.log",
+    "log_sha256": "b7272752291f11d82e31d3540bcb39b3a06f86662cdf2f47d396c00164cf3022"
+  },
+  {
+    "command": [
+      "just",
+      "test",
+      "--manifest-path",
+      "/workspace/scratch/337c309bc660/idle-priority-evidence/harness/Cargo.toml",
+      "-p",
+      "idle-priority-harness",
+      "--locked",
+      "--offline",
+      "--test-threads",
+      "2"
+    ],
+    "cwd": "/workspace/scratch/337c309bc660/idle-priority-work",
+    "started": "2026-10-21T09:52:28.214147+00:00",
+    "elapsed_seconds": 6.9601514210007736,
+    "exit_code": 0,
+    "target": "/workspace/scratch/337c309bc660/idle-priority-evidence/target",
+    "log": "logs/tests-scoped.log",
+    "log_sha256": "8ac485ed1971a5d23458a8facdf783d08f7852815905dd53fdb1a50975689b59"
+  },
+  {
+    "command": [
+      "just",
+      "test",
+      "--manifest-path",
+      "/workspace/scratch/337c309bc660/idle-priority-evidence/harness/Cargo.toml",
+      "-p",
+      "idle-priority-harness",
+      "--locked",
+      "--offline",
+      "--test-threads",
+      "2"
+    ],
+    "cwd": "/workspace/scratch/337c309bc660/idle-priority-work",
+    "started": "2026-10-21T09:52:13.133485+00:00",
+    "elapsed_seconds": 0.1323048000012932,
+    "exit_code": 96,
+    "target": "/workspace/scratch/337c309bc660/idle-priority-evidence/target",
+    "log": "logs/tests.log",
+    "log_sha256": "4c1336c1acfead115c553e2a414cf25206515c805717248c22b461deb14e0308"
+  },
+  {
+    "command": [
+      "just",
+      "fmt"
+    ],
+    "cwd": "/workspace/scratch/337c309bc660/idle-priority-work",
+    "exit_code": 0,
+    "elapsed_seconds": 0.3227573910007777,
+    "log": "logs/fmt-evidence.log",
+    "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  }
+]

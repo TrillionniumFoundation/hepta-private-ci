@@ -1,0 +1,279 @@
+{
+  "base": "b11459f46519e814ab9036c34a0cd7d3c3028e2b",
+  "product_store_source_unchanged": true,
+  "product_store_source_sha256": "3c9c8f804e4ff6a054f85f6b14ce999cb7c33a7d0da9c7b7f665910099500e5e",
+  "unchanged_policy_files": [
+    {
+      "path": "codex-rs/deny.toml",
+      "sha256": "17639b2e8539fd6192e2d5c86538c149b9c2e9237fc09ce4acc0c7828a588ac7"
+    },
+    {
+      "path": "codex-rs/.cargo/audit.toml",
+      "sha256": "9bb5f2f6614592c70dcb2d65a8c16811b105d17c8e3954a8d1f21743d0c49b87"
+    }
+  ],
+  "licenses": [
+    {
+      "crate": "i18n-config-0.4.8",
+      "file": "LICENSE.txt",
+      "upstream_sha256": "a1d2bd09632724b23c62b05e2fd0dc26c5c9d21b409594cf7da1a1aba555f802",
+      "vendor_sha256": "a1d2bd09632724b23c62b05e2fd0dc26c5c9d21b409594cf7da1a1aba555f802",
+      "identical": true
+    },
+    {
+      "crate": "secret-service-6.0.0",
+      "file": "LICENSE-APACHE",
+      "upstream_sha256": "a60eea817514531668d7e00765731449fe14d059d3249e0bc93b36de45f759f2",
+      "vendor_sha256": "a60eea817514531668d7e00765731449fe14d059d3249e0bc93b36de45f759f2",
+      "identical": true
+    },
+    {
+      "crate": "secret-service-6.0.0",
+      "file": "LICENSE-MIT",
+      "upstream_sha256": "074585dbaf488db540c26f7b20f36053a157d7580bb1c390dc9f6afdb017c83a",
+      "vendor_sha256": "074585dbaf488db540c26f7b20f36053a157d7580bb1c390dc9f6afdb017c83a",
+      "identical": true
+    },
+    {
+      "crate": "zbus-secret-service-keyring-store-1.0.1",
+      "file": "LICENSE-APACHE",
+      "upstream_sha256": "78ebc2ea2a1cec9cbec2e1a6fc15e73474fe22bdad7575518e7f4628651d49c4",
+      "vendor_sha256": "78ebc2ea2a1cec9cbec2e1a6fc15e73474fe22bdad7575518e7f4628651d49c4",
+      "identical": true
+    },
+    {
+      "crate": "zbus-secret-service-keyring-store-1.0.1",
+      "file": "LICENSE-MIT",
+      "upstream_sha256": "157cc607717b1b372a69f6b4526f6ad18c1279af9f3267835cca2943f37bc07d",
+      "vendor_sha256": "157cc607717b1b372a69f6b4526f6ad18c1279af9f3267835cca2943f37bc07d",
+      "identical": true
+    }
+  ],
+  "removed_packages": [
+    [
+      "async-broadcast",
+      "0.7.2",
+      "registry+https://github.com/rust-lang/crates.io-index"
+    ],
+    [
+      "async-executor",
+      "1.14.0",
+      "registry+https://github.com/rust-lang/crates.io-index"
+    ],
+    [
+      "async-lock",
+      "3.4.2",
+      "registry+https://github.com/rust-lang/crates.io-index"
+    ],
+    [
+      "async-process",
+      "2.5.0",
+      "registry+https://github.com/rust-lang/crates.io-index"
+    ],
+    [
+      "async-recursion",
+      "1.2.0",
+      "registry+https://github.com/rust-lang/crates.io-index"
+    ],
+    [
+      "async-signal",
+      "0.2.14",
+      "registry+https://github.com/rust-lang/crates.io-index"
+    ],
+    [
+      "async-task",
+      "4.7.1",
+      "registry+https://github.com/rust-lang/crates.io-index"
+    ],
+    [
+      "basic-toml",
+      "0.1.10",
+      "registry+https://github.com/rust-lang/crates.io-index"
+    ],
+    [
+      "blocking",
+      "1.7.0",
+      "registry+https://github.com/rust-lang/crates.io-index"
+    ],
+    [
+      "i18n-config",
+      "0.4.8",
+      "registry+https://github.com/rust-lang/crates.io-index"
+    ],
+    [
+      "piper",
+      "0.2.5",
+      "registry+https://github.com/rust-lang/crates.io-index"
+    ],
+    [
+      "secret-service",
+      "5.2.0",
+      "registry+https://github.com/rust-lang/crates.io-index"
+    ],
+    [
+      "windows-sys",
+      "0.59.0",
+      "registry+https://github.com/rust-lang/crates.io-index"
+    ],
+    [
+      "zbus",
+      "5.19.0",
+      "registry+https://github.com/rust-lang/crates.io-index"
+    ],
+    [
+      "zbus-secret-service-keyring-store",
+      "1.0.1",
+      "registry+https://github.com/rust-lang/crates.io-index"
+    ],
+    [
+      "zbus_macros",
+      "5.19.0",
+      "registry+https://github.com/rust-lang/crates.io-index"
+    ],
+    [
+      "zbus_names",
+      "4.3.4",
+      "registry+https://github.com/rust-lang/crates.io-index"
+    ],
+    [
+      "zvariant",
+      "5.15.0",
+      "registry+https://github.com/rust-lang/crates.io-index"
+    ],
+    [
+      "zvariant_derive",
+      "5.15.0",
+      "registry+https://github.com/rust-lang/crates.io-index"
+    ],
+    [
+      "zvariant_utils",
+      "4.2.0",
+      "registry+https://github.com/rust-lang/crates.io-index"
+    ]
+  ],
+  "added_packages": [
+    [
+      "i18n-config",
+      "0.4.8",
+      "path"
+    ],
+    [
+      "secret-service",
+      "6.0.0",
+      "path"
+    ],
+    [
+      "zbus",
+      "6.0.0",
+      "registry+https://github.com/rust-lang/crates.io-index"
+    ],
+    [
+      "zbus-secret-service-keyring-store",
+      "1.0.1",
+      "path"
+    ],
+    [
+      "zbus_macros",
+      "6.0.0",
+      "registry+https://github.com/rust-lang/crates.io-index"
+    ],
+    [
+      "zbus_utils",
+      "6.0.0",
+      "registry+https://github.com/rust-lang/crates.io-index"
+    ],
+    [
+      "zruntime",
+      "0.2.0",
+      "registry+https://github.com/rust-lang/crates.io-index"
+    ]
+  ],
+  "absent_packages": [
+    "basic-toml",
+    "dbus",
+    "dbus-secret-service-keyring-store",
+    "libdbus-sys",
+    "zbus_names",
+    "zvariant",
+    "zvariant_derive"
+  ],
+  "upstream_secret_service": {
+    "repository": "https://github.com/open-source-cooperative/secret-service-rs",
+    "pull_request": 122,
+    "head": "7a91b597904c1847f18a06b72a19ee8153e0a578",
+    "base": "d0500ec5efe1369f89015d315c9aecefc7d6d9b8",
+    "state_at_review": "open",
+    "submitted_reviews_at_review": 0
+  },
+  "rejected_alternative": {
+    "dependency": "dbus-secret-service-keyring-store 1.0.1 with vendored libdbus-sys 0.2.7",
+    "reason": "libdbus-sys vendored sources include libdbus 1.14.4 under AFL-2.1 OR GPL-2.0-or-later; the bindings Cargo license and cargo-deny green result do not audit that embedded C source license. Alternative was reverted, not shipped."
+  },
+  "format_normalized_rust_changes": {
+    "secret-service-6.0.0": [
+      "src/blocking/mod.rs",
+      "src/prompt_tests.rs",
+      "src/util.rs"
+    ],
+    "zbus-secret-service-keyring-store-1.0.1": [
+      "src/cred.rs",
+      "src/service.rs"
+    ]
+  },
+  "final_vendor_rust_sha256": {
+    "codex-rs/third_party/i18n-config-0.4.8/src/config_tests.rs": "c9b514281cf1508db5e46ebd3b06bfaae8dd28f760ae010f107ebcf1aa377679",
+    "codex-rs/third_party/i18n-config-0.4.8/src/fluent.rs": "fdf091a54559e437dd0ee0f2a291b2e18c42a7857e9bbecfd338b038b320f9f7",
+    "codex-rs/third_party/i18n-config-0.4.8/src/gettext.rs": "3626b50f396f0a83e7d5aab702d4d18d078dff7620108db80ffa7ed9da0b5991",
+    "codex-rs/third_party/i18n-config-0.4.8/src/lib.rs": "6ed1b1ac1b2d99f06e71c39a778f947b4e1aac89657df7ba63bf32beb25ecf7e",
+    "codex-rs/third_party/secret-service-6.0.0/examples/example.rs": "4dc1cb798db3bbfc5e26bd937ab447a033ae6076a3a286099bcb11d870c71e13",
+    "codex-rs/third_party/secret-service-6.0.0/src/blocking/collection.rs": "dc0ee8758392cc54fe8d87e7e7b9feccb3b71a85ff37de3b10557299aa557e3f",
+    "codex-rs/third_party/secret-service-6.0.0/src/blocking/item.rs": "0cc178e484f52a47b95959de3655001fdad8bf82521869a2a78700839d348fdb",
+    "codex-rs/third_party/secret-service-6.0.0/src/blocking/mod.rs": "67e7e7d046fbe04864c99acd933be203d280289b9a6cf386e89ebbb170c65f58",
+    "codex-rs/third_party/secret-service-6.0.0/src/collection.rs": "1e3bcb0c17ca7bc7dba4b0ad5edf2d6f7707449c73596a461109e39016a448b1",
+    "codex-rs/third_party/secret-service-6.0.0/src/error.rs": "5f703264c9d61f29b9d444e68a896bb0f6c51bac35961274dac607217d84bb60",
+    "codex-rs/third_party/secret-service-6.0.0/src/item.rs": "f8a35e565319fd1cd5bbfc6933d5a0067f0e8310251817d8576f084c8daab2ba",
+    "codex-rs/third_party/secret-service-6.0.0/src/lib.rs": "cd607946d4a1b0a5c5efaf1b9b591f91a0e2da3e2006bacc923af012bc2c3a4f",
+    "codex-rs/third_party/secret-service-6.0.0/src/prompt_tests.rs": "fc3bbe6845c2af5cdd3479a36627409134989badf44dced7ed50604d46b882ff",
+    "codex-rs/third_party/secret-service-6.0.0/src/proxy/collection.rs": "55a8330531afaefd05ad707940c5c8229b4de7547b8581ad82c5217580a8a46e",
+    "codex-rs/third_party/secret-service-6.0.0/src/proxy/item.rs": "be925008c7209be7c288888168d617161d674f54faf321377abf33a5b70e178e",
+    "codex-rs/third_party/secret-service-6.0.0/src/proxy/mod.rs": "3fd6cb37734c5949caf76a83ea1f751c27c6b274e2f89dfc8ac3a71c4e3f33cb",
+    "codex-rs/third_party/secret-service-6.0.0/src/proxy/prompt.rs": "9398fbce05000ab3d3ccd822b1b058976cd79def4971ceb5cbf5c314b16ab70d",
+    "codex-rs/third_party/secret-service-6.0.0/src/proxy/service.rs": "1bef8c790ffb03b48c9caab41cbebe3126ad21ef8636208fa685d65f838afa28",
+    "codex-rs/third_party/secret-service-6.0.0/src/session.rs": "592e732bc1ed0aecd9aa29468de4060488642efe19134ec41d696bc475c4adae",
+    "codex-rs/third_party/secret-service-6.0.0/src/ss.rs": "c2e6b0bbbe19657f745dc2f99d7da494519a436283166369edb23a2aa66b94c6",
+    "codex-rs/third_party/secret-service-6.0.0/src/util.rs": "b24a3050f2aedd542872e00a7558d4933ed4e350ec32812587729317bd07a94a",
+    "codex-rs/third_party/zbus-secret-service-keyring-store-1.0.1/examples/cleanup.rs": "6bed35f3c702eb86a22c368a3e44aac40f600a57a2366bbdb8392d1e5d5e12bd",
+    "codex-rs/third_party/zbus-secret-service-keyring-store-1.0.1/examples/example.rs": "d3c8a1c4aeb33638ec48fdbb01cbee10664fcf707ab269d6db8637228531edb0",
+    "codex-rs/third_party/zbus-secret-service-keyring-store-1.0.1/src/cred.rs": "cb5e9b81dd13c9d1226b90727b755ee1f7594f3561ba57cd753db8772f05fd59",
+    "codex-rs/third_party/zbus-secret-service-keyring-store-1.0.1/src/errors.rs": "7adc992b4a25b0dfb928459bec3780341e8cedd918475e70dbc9d06777fd9b4d",
+    "codex-rs/third_party/zbus-secret-service-keyring-store-1.0.1/src/lib.rs": "4c226972254c1ce524d50c40b02f089eabc17c0d129a6724021c08d5a9894513",
+    "codex-rs/third_party/zbus-secret-service-keyring-store-1.0.1/src/service.rs": "cf86ff21566b32d0e316db61d77fdf507bc46a994cdb73b29edc0df4182e6640",
+    "codex-rs/third_party/zbus-secret-service-keyring-store-1.0.1/src/store.rs": "7232a41380087c548759a89ba28d91d4ccc29646ac37471166b3b1b7d2a6e690",
+    "codex-rs/third_party/zbus-secret-service-keyring-store-1.0.1/src/tests.rs": "917084c54edd2c699a4eac066d969aa875beda87b80996bfc456889840478ea3"
+  },
+  "original_keyring_proposal": {
+    "run_id": 39528171902,
+    "artifact_id": 12314231680,
+    "artifact_sha256": "e8e8c9e42c5d13746002b99a2d513746966199cf69bb0f7c8de92019ffcbd6ed",
+    "source_head": "b11459f46519e814ab9036c34a0cd7d3c3028e2b",
+    "result": "still four advisories; workflow success alone was not a passing advisory gate"
+  },
+  "pre_format_keyring_backend_changed_files": {
+    "Cargo.toml.orig": {
+      "old_sha256": "a8be7afb3693af2a13d6ea122c92484fb7e8800bffa2d7ce27755509421e09fc",
+      "new_sha256": "60fb0f2e37424078e15dbc05d734250c8606d5edd7f963d9d3f0cbe1972c706e"
+    },
+    "Cargo.toml": {
+      "old_sha256": "e2bac1bd09cd43e4200d02b717f018957f962cb7f19dda7c771716ef9733b216",
+      "new_sha256": "33c47ee1178727bb111fe339e3a73932293a9cd82ec817834f5f5a6d6e15cbd4"
+    },
+    "src/service.rs": {
+      "old_sha256": "a4479c23290c8c37f94ce9788abc81d0dff23816b2d3c4c148783f126846ae82",
+      "new_sha256": "4e5b1ba1eab9589d8fb688b8443c7758173784a552b26057e1be5801afe2495b"
+    },
+    "src/cred.rs": {
+      "old_sha256": "35fa7149ca0b4ab3e92e86237c265574a28d8fe9b44dedcb1cce2ecb21b49cee",
+      "new_sha256": "984684ded82e0de2ccd0385e09a9324d5804ab8a7065f6ac66a35c852b88348f"
+    }
+  }
+}

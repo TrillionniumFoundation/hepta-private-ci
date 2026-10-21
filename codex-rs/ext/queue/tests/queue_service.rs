@@ -1,5 +1,6 @@
 use std::collections::HashSet;
 use std::fs;
+use std::io::Write;
 use std::num::NonZeroUsize;
 use std::path::Path;
 use std::sync::Arc;
@@ -12,12 +13,16 @@ use std::sync::atomic::Ordering;
 use std::time::Duration;
 
 use anyhow::Context;
+use codex_core::IdleWorkPriority;
 use codex_core::NotSubmittedReason;
 use codex_core::StartIfIdleSubmission;
 use codex_core::StartThreadOptions;
 use codex_core::TurnInput;
 use codex_core::TurnInputRequest;
 use codex_core::TurnInputSubmission;
+use codex_core::context::ContextualUserFragment;
+use codex_core::context::InternalContextSource;
+use codex_core::context::InternalModelContextFragment;
 use codex_extension_api::ExtensionData;
 use codex_extension_api::ExtensionEventSink;
 use codex_extension_api::ExtensionFuture;
@@ -153,6 +158,86 @@ fn install_registered_queue(
     Ok(service)
 }
 
+fn queue_python_interpreter() -> &'static str {
+    // The Windows hosted Bazel runner invokes `python`; `python3` is not
+    // guaranteed to resolve to an executable in the Windows test environment.
+    if cfg!(windows) { "python" } else { "python3" }
+}
+
+fn queue_python_hook_command(script_path: &Path) -> String {
+    #[cfg(windows)]
+    {
+        let python = std::env::var_os("CODEX_BAZEL_WINDOWS_PATH")
+            .into_iter()
+            .chain(std::env::var_os("PATH"))
+            .flat_map(|paths| std::env::split_paths(&paths).collect::<Vec<_>>())
+            .map(|directory| directory.join("python.exe"))
+            .find(|candidate| candidate.is_absolute() && candidate.is_file())
+            .unwrap_or_else(|| panic!("queue hook tests require a real python.exe on PATH"));
+        // Keep the resolved interpreter even when the session PATH differs.
+        // Core runs hooks through the environment shell, normally PowerShell
+        // on Windows; a quoted executable needs its call operator there.
+        if codex_core::shell::default_user_shell().name() == "powershell" {
+            format!(
+                "& '{}' '{}'",
+                python.to_string_lossy().replace('\'', "''"),
+                script_path.to_string_lossy().replace('\'', "''"),
+            )
+        } else {
+            // The command runner supplies cmd.exe's outer /C quoting.
+            format!("\"{}\" \"{}\"", python.display(), script_path.display())
+        }
+    }
+
+    #[cfg(not(windows))]
+    format!("python3 \"{}\"", script_path.display())
+}
+
+#[cfg(windows)]
+#[test]
+fn python_hook_uses_resolved_interpreter_without_child_path() {
+    use std::os::windows::process::CommandExt;
+
+    let fixture = tempfile::tempdir().expect("create hook fixture");
+    let script_path = fixture.path().join("queue hook's spaces.py");
+    std::fs::write(&script_path, "print('queue-python-exact-path')\n")
+        .expect("write Python hook fixture");
+    let command = queue_python_hook_command(&script_path);
+    let shell = codex_core::shell::default_user_shell();
+    let mut argv = shell.derive_exec_args("", /*use_login_shell*/ false);
+    let program = argv.remove(0);
+    let _ = argv.pop();
+    // Match Core's environment-shell selection and CommandHookRuntime's
+    // argument handling, rather than testing only cmd.exe's fallback path.
+    let mut child = std::process::Command::new(&program);
+    child.args(&argv);
+    if argv.iter().any(|arg| arg.eq_ignore_ascii_case("/c")) {
+        child.raw_arg(format!(r#""{command}""#));
+    } else {
+        child.arg(&command);
+    }
+    let output = child
+        .env("PATH", "")
+        .current_dir(fixture.path())
+        .output()
+        .expect("run Python hook without a child search path");
+    let diagnostics = format!(
+        "program={program:?}, argv={argv:?}, command={command:?}, PATHEXT={:?}, status={}, stdout={:?}, stderr={:?}",
+        std::env::var_os("PATHEXT"),
+        output.status,
+        String::from_utf8_lossy(&output.stdout),
+        String::from_utf8_lossy(&output.stderr),
+    );
+    assert!(
+        output.status.success(),
+        "Python fixture hook exited unsuccessfully: {diagnostics}",
+    );
+    assert!(
+        String::from_utf8_lossy(&output.stdout).trim() == "queue-python-exact-path",
+        "Python fixture hook did not produce the exact marker: {diagnostics}",
+    );
+}
+
 fn write_rejecting_prompt_hook(home: &Path) {
     let script_path = home.join("queue_prompt_hook.py");
     let log_path = home.join("queue_prompt_hook.log");
@@ -176,7 +261,7 @@ if payload["prompt"] == "blocked":
             "UserPromptSubmit": [{
                 "hooks": [{
                     "type": "command",
-                    "command": format!("python3 {}", script_path.display()),
+                    "command": queue_python_hook_command(&script_path),
                 }]
             }]
         }
@@ -216,13 +301,57 @@ if payload["prompt"] in ["delay exact persistence", "delay exact rejection"]:
             "UserPromptSubmit": [{
                 "hooks": [{
                     "type": "command",
-                    "command": format!("python3 {}", script_path.display()),
+                    "command": queue_python_hook_command(&script_path),
                 }]
             }]
         }
     });
     std::fs::write(home.join("hooks.json"), hooks.to_string())
         .unwrap_or_else(|error| panic!("write blocking queue hooks: {error}"));
+}
+
+#[test]
+fn rejecting_queue_hook_runs_with_real_platform_python() -> anyhow::Result<()> {
+    let home = tempfile::tempdir()?;
+    write_rejecting_prompt_hook(home.path());
+    let script_path = home.path().join("queue_prompt_hook.py");
+    let hooks: serde_json::Value =
+        serde_json::from_slice(&std::fs::read(home.path().join("hooks.json"))?)?;
+    let command = hooks
+        .pointer("/hooks/UserPromptSubmit/0/hooks/0/command")
+        .and_then(serde_json::Value::as_str)
+        .context("generated UserPromptSubmit command should exist")?;
+    assert_eq!(command, queue_python_hook_command(&script_path));
+
+    let mut child = std::process::Command::new(queue_python_interpreter())
+        .arg(&script_path)
+        .stdin(std::process::Stdio::piped())
+        .stdout(std::process::Stdio::piped())
+        .stderr(std::process::Stdio::piped())
+        .spawn()
+        .context("host Python executable must be available for queue hook tests")?;
+    {
+        let mut stdin = child
+            .stdin
+            .take()
+            .context("queue hook stdin must be piped")?;
+        stdin.write_all(br#"{"prompt":"blocked"}"#)?;
+    }
+    let output = child.wait_with_output()?;
+    anyhow::ensure!(
+        output.status.success(),
+        "queue hook Python exited unsuccessfully: {}",
+        String::from_utf8_lossy(&output.stderr)
+    );
+    let reply: serde_json::Value = serde_json::from_slice(&output.stdout)?;
+    assert_eq!(reply["decision"].as_str(), Some("block"));
+    let hook_log = std::fs::read_to_string(home.path().join("queue_prompt_hook.log"))?;
+    anyhow::ensure!(
+        hook_log.ends_with('\n'),
+        "queue hook log must end with a newline"
+    );
+    assert_eq!(hook_log.lines().collect::<Vec<_>>(), ["blocked"]);
+    Ok(())
 }
 
 async fn wait_for_path(path: &Path) -> anyhow::Result<()> {
@@ -2715,5 +2844,240 @@ async fn resumed_idle_dispatches_input_without_a_loaded_manager() -> anyhow::Res
     );
     emit_idle(&service, thread_id).await;
     assert!(service.list(thread_id).await?.is_empty());
+    Ok(())
+}
+
+#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+async fn registered_queue_waits_for_terminal_cleanup_without_admitting_other_callers()
+-> anyhow::Result<()> {
+    struct FirstIdleGate {
+        first: AtomicBool,
+        entered: Arc<tokio::sync::Notify>,
+        release: Arc<tokio::sync::Notify>,
+    }
+
+    impl ThreadLifecycleContributor<codex_core::config::Config> for FirstIdleGate {
+        fn on_thread_idle<'a>(&'a self, _input: ThreadIdleInput<'a>) -> ExtensionFuture<'a, ()> {
+            Box::pin(async move {
+                if self.first.swap(false, Ordering::SeqCst) {
+                    self.entered.notify_one();
+                    self.release.notified().await;
+                }
+            })
+        }
+    }
+
+    let server = start_mock_server().await;
+    let responses = responses::mount_sse_sequence(
+        &server,
+        ["fenced-turn-a", "queued-turn-b"]
+            .into_iter()
+            .map(responses::sse_completed)
+            .collect(),
+    )
+    .await;
+    let installed = Arc::new(InstalledQueue::default());
+    let entered = Arc::new(tokio::sync::Notify::new());
+    let release = Arc::new(tokio::sync::Notify::new());
+    let mut extensions = ExtensionRegistryBuilder::<codex_core::config::Config>::new();
+    extensions.thread_lifecycle_contributor(installed.clone());
+    extensions.thread_lifecycle_contributor(Arc::new(FirstIdleGate {
+        first: AtomicBool::new(true),
+        entered: Arc::clone(&entered),
+        release: Arc::clone(&release),
+    }));
+    let test = test_codex()
+        .with_extensions(Arc::new(extensions.build()))
+        .with_config(|config| config.include_environment_context = false)
+        .build_with_auto_env(&server)
+        .await?;
+    let thread_id = test.session_configured.thread_id;
+    let staging = QueuedItemService::new(
+        loaded_thread_queue(&test)?,
+        Weak::new(),
+        Arc::new(NoopExtensionEventSink),
+    );
+    let queued = staging.enqueue(thread_id, user_input("B")).await?;
+    let queue = install_registered_queue(&test, installed.as_ref())?;
+
+    tokio::time::timeout(Duration::from_secs(10), async {
+        test.submit_text_turn("A").await?;
+        entered.notified().await;
+
+        // Queue's callback must already have returned for the next contributor
+        // to reach this gate, but the exact terminalizer must remain fenced.
+        let observer = test
+            .codex
+            .pending_admission_fence_completion()
+            .expect("idle callback must retain its terminalization fence");
+        drop(observer);
+        assert!(test.codex.pending_admission_fence_completion().is_some());
+
+        // A positively pre-routing refusal releases only that attempt's lease.
+        // Repeating it must not encounter ambiguous authority from either the
+        // deferred lifecycle wake or the earlier rejected manual attempt.
+        for _ in 0..2 {
+            let submission = queue
+                .start(
+                    test.codex.as_ref(),
+                    Some(queued.id.clone()),
+                    /*trace*/ None,
+                )
+                .await?;
+            assert_eq!(
+                StartIfIdleSubmission::NotSubmitted {
+                    reason: NotSubmittedReason::NotIdle,
+                },
+                submission
+            );
+        }
+        let error = test
+            .codex
+            .start_or_steer_turn(TurnInputRequest::user_input(vec![UserInput::Text {
+                text: "must remain fenced".to_string(),
+                text_elements: Vec::new(),
+            }]))
+            .await
+            .expect_err("ordinary callers must not cross the terminalization fence");
+        assert!(
+            matches!(error.details(), CodexErrorDetails::InvalidRequest(_)),
+            "ordinary admission should retain the terminalizing error: {error}"
+        );
+        assert_eq!(vec![queued.clone()], queue.list(thread_id).await?);
+        assert_eq!(1, responses.requests().len());
+
+        release.notify_one();
+        wait_for_event_match(test.codex.as_ref(), |event| {
+            matches!(event, EventMsg::TurnComplete(_)).then_some(())
+        })
+        .await;
+        anyhow::Ok(())
+    })
+    .await??;
+
+    let prompts = responses
+        .requests()
+        .into_iter()
+        .map(|request| {
+            request
+                .message_input_texts("user")
+                .pop()
+                .context("model request has no user input")
+        })
+        .collect::<anyhow::Result<Vec<_>>>()?;
+    assert_eq!(vec!["A", "B"], prompts);
+    assert!(queue.list(thread_id).await?.is_empty());
+    Ok(())
+}
+
+#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+async fn queued_input_precedes_an_older_automatic_notification_at_the_same_fence()
+-> anyhow::Result<()> {
+    struct BeforeQueueGate {
+        first: AtomicBool,
+        entered: Arc<tokio::sync::Notify>,
+        release: Arc<tokio::sync::Notify>,
+    }
+
+    impl ThreadLifecycleContributor<codex_core::config::Config> for BeforeQueueGate {
+        fn on_thread_idle<'a>(&'a self, _input: ThreadIdleInput<'a>) -> ExtensionFuture<'a, ()> {
+            Box::pin(async move {
+                if self.first.swap(/*val*/ false, Ordering::SeqCst) {
+                    self.entered.notify_one();
+                    self.release.notified().await;
+                }
+            })
+        }
+    }
+
+    let (release_response, blocked_response) = oneshot::channel();
+    let (server, _completions) = start_streaming_sse_server(vec![
+        vec![StreamingSseChunk {
+            gate: None,
+            body: responses::sse_completed("initial-turn"),
+        }],
+        vec![
+            StreamingSseChunk {
+                gate: None,
+                body: responses::sse(vec![responses::ev_response_created("queued-turn")]),
+            },
+            StreamingSseChunk {
+                gate: Some(blocked_response),
+                body: responses::sse(vec![responses::ev_completed("queued-turn")]),
+            },
+        ],
+    ])
+    .await;
+    let installed = Arc::new(InstalledQueue::default());
+    let entered = Arc::new(tokio::sync::Notify::new());
+    let release = Arc::new(tokio::sync::Notify::new());
+    let mut extensions = ExtensionRegistryBuilder::<codex_core::config::Config>::new();
+    extensions.thread_lifecycle_contributor(Arc::new(BeforeQueueGate {
+        first: AtomicBool::new(/*v*/ true),
+        entered: Arc::clone(&entered),
+        release: Arc::clone(&release),
+    }));
+    extensions.thread_lifecycle_contributor(installed.clone());
+    let test = test_codex()
+        .with_extensions(Arc::new(extensions.build()))
+        .with_config(|config| config.include_environment_context = false)
+        .build_with_streaming_server(&server)
+        .await?;
+    let thread_id = test.session_configured.thread_id;
+    let staging = QueuedItemService::new(
+        loaded_thread_queue(&test)?,
+        Weak::new(),
+        Arc::new(NoopExtensionEventSink),
+    );
+    staging
+        .enqueue(thread_id, user_input("queued user B"))
+        .await?;
+    let queue = install_registered_queue(&test, installed.as_ref())?;
+
+    tokio::time::timeout(Duration::from_secs(/*secs*/ 10), async {
+        test.submit_text_turn("initial user A").await?;
+        entered.notified().await;
+        let completion = test
+            .codex
+            .pending_admission_fence_completion()
+            .expect("the terminalizer must still own its fence");
+        let automatic_thread = Arc::clone(&test.codex);
+        let (automatic_tx, automatic_rx) = oneshot::channel();
+        // Model the previous idle notification reaching Goal before this
+        // terminalizer reaches Queue. The actual queue contributor below must
+        // still win admission, despite registering its deferred callback later.
+        test.codex.defer_idle_work(
+            IdleWorkPriority::AutomaticContinuation,
+            completion,
+            async move {
+                let item = ContextualUserFragment::into(InternalModelContextFragment::new(
+                    InternalContextSource::from_static("goal"),
+                    "automatic goal continuation".to_string(),
+                ));
+                let submission = automatic_thread
+                    .start_turn_if_idle(TurnInputRequest::new(TurnInput::ResponseItem(item)))
+                    .await;
+                let _ = automatic_tx.send(submission);
+            },
+        )?;
+        release.notify_one();
+
+        assert_eq!(
+            automatic_rx.await??,
+            StartIfIdleSubmission::NotSubmitted {
+                reason: NotSubmittedReason::NotIdle,
+            }
+        );
+        assert!(queue.list(thread_id).await?.is_empty());
+        server.wait_for_request_count(/*count*/ 2).await;
+        anyhow::Ok(())
+    })
+    .await??;
+    assert_eq!(server.requests().await.len(), 2);
+    release_response
+        .send(())
+        .expect("queued response remains live");
+    test.codex.shutdown_and_wait().await?;
+    server.shutdown().await;
     Ok(())
 }

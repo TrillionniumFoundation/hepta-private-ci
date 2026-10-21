@@ -271,7 +271,8 @@ jobs:
             exit 1
           fi
 
-          cargo_args=(test -p codex-v8-poc)
+          # Match the staged archive even when the POC defaults enable sandbox.
+          cargo_args=(test -p codex-v8-poc --no-default-features)
           if [[ "${SANDBOX}" == "true" ]]; then
             cargo_args+=(--features sandbox)
           fi
@@ -422,7 +423,7 @@ jobs:
             cd codex-rs
             RUSTY_V8_ARCHIVE="${GITHUB_WORKSPACE}/${archive}" \
             RUSTY_V8_SRC_BINDING_PATH="${GITHUB_WORKSPACE}/${binding}" \
-            cargo +1.95.0 test -p codex-v8-poc --target "${TARGET}" --features sandbox --no-run
+            cargo +1.95.0 test -p codex-v8-poc --no-default-features --target "${TARGET}" --features sandbox --no-run
           )
 
       - name: Upload staged artifacts
