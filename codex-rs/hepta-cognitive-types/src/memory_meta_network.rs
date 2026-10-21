@@ -218,6 +218,11 @@ impl MemoryMetaRouteReceiptV1 {
                 if decision.support_digest.is_none() {
                     return Err(HnmfContractError::Missing("memory meta selected support"));
                 }
+                // The live router never selects a zero-utility Cell. A
+                // forged, self-rehashed receipt must not relax that invariant.
+                if decision.utility_ppm == 0 {
+                    return Err(HnmfContractError::Conflict("memory meta selected utility"));
+                }
                 spent = spent
                     .checked_add(decision.resource_cost_units)
                     .ok_or(HnmfContractError::Invalid("memory meta receipt budget"))?;
@@ -237,11 +242,10 @@ impl MemoryMetaRouteReceiptV1 {
             if pair.left_cell_id >= pair.right_cell_id
                 || !selected.contains(&pair.left_cell_id)
                 || !selected.contains(&pair.right_cell_id)
-                || !pairs.insert((
-                    pair.association_group_digest,
-                    pair.left_cell_id.clone(),
-                    pair.right_cell_id.clone(),
-                ))
+                // A pair of Cells can belong to only one association group
+                // in the original candidates. Distinct group digests must
+                // not launder duplicate links into a rehashed receipt.
+                || !pairs.insert((pair.left_cell_id.clone(), pair.right_cell_id.clone()))
             {
                 return Err(HnmfContractError::Conflict("memory meta association"));
             }
