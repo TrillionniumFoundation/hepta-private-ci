@@ -365,6 +365,49 @@ fn canonical_digest_does_not_authorize_zero_cost_route_receipts() {
     ));
 }
 
+#[test]
+fn routed_receipt_replay_requires_the_original_policy_and_candidate_set() {
+    let original = [
+        candidate("cell:episodic", MemoryCellRoleV1::Episodic),
+        candidate("cell:semantic", MemoryCellRoleV1::Semantic),
+    ];
+    let p = policy();
+    let receipt = route(&p, &original).receipt;
+    assert!(receipt.validate_against(&p, &original).is_ok());
+    assert!(receipt.validate_against(&p, &[original[1].clone(), original[0].clone()]).is_ok());
+
+    // A rehashed receipt can satisfy internal accounting and yet forge its
+    // claimed utility; source replay must reject the altered route.
+    let mut forged = receipt.clone();
+    forged.decisions[0].utility_ppm -= 1;
+    forged.route_digest = canonical_meta_route_digest(&forged)
+        .unwrap_or_else(|error| panic!("fixture route digest: {error:?}"));
+    assert!(forged.validate().is_ok());
+    assert!(matches!(
+        forged.validate_against(&p, &original),
+        Err(HnmfContractError::Conflict("memory meta route source binding"))
+    ));
+
+    // A receipt valid for an earlier evidence reference is not reusable with
+    // a different source, even when its own digest still validates.
+    let mut changed = original.clone();
+    changed[0].support_digest = Some(digest("new-evidence-after-forget"));
+    assert!(receipt.validate().is_ok());
+    assert!(matches!(
+        receipt.validate_against(&p, &changed),
+        Err(HnmfContractError::Conflict("memory meta route source binding"))
+    ));
+
+    // Changing the budget can defer an originally selected Cell; the old
+    // receipt must not be accepted as the outcome of the new policy.
+    let mut changed_policy = p.clone();
+    changed_policy.maximum_compute_units = 30;
+    assert!(matches!(
+        receipt.validate_against(&changed_policy, &original),
+        Err(HnmfContractError::Conflict("memory meta route source binding"))
+    ));
+}
+
 fn evolution() -> MemoryCellNextSnapshotCandidateV1 {
     MemoryCellNextSnapshotCandidateV1 {
         schema_version: 1,
