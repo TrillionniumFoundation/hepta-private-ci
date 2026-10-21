@@ -15,7 +15,9 @@ class ScaleMatrixTests(unittest.TestCase):
         plan = scale_matrix.build_plan()
         self.assertEqual(plan["sizes"], [1, 8, 64, 256, 1024, 4096])
         self.assertEqual(plan["arms"], list(scale_matrix.ARMS))
-        self.assertEqual(plan["required_provenance"], list(scale_matrix.PROVENANCE_FIELDS))
+        self.assertEqual(
+            plan["required_provenance"], list(scale_matrix.PROVENANCE_FIELDS)
+        )
         self.assertEqual(plan["topology_lifecycle"], list(scale_matrix.LIFECYCLE))
 
     def test_incomplete_result_is_rejected(self):
@@ -228,7 +230,12 @@ class ScaleMatrixTests(unittest.TestCase):
             "metrics latency percentiles must satisfy p50 <= p95 <= p99",
             scale_matrix.validate_result(record),
         )
-        for count in ("rss_bytes", "gpu_peak_bytes", "starvation_count", "cache_invalidation_count"):
+        for count in (
+            "rss_bytes",
+            "gpu_peak_bytes",
+            "starvation_count",
+            "cache_invalidation_count",
+        ):
             with self.subTest(count=count):
                 record = self.make_record(1024, "shared_encoder")
                 record["metrics"][count] = 1.5
@@ -240,7 +247,9 @@ class ScaleMatrixTests(unittest.TestCase):
     def test_matrix_rejects_recycled_metrics_and_measurement_receipts(self):
         matrix = self.matrix()
         self.assertEqual(scale_matrix.validate_matrix(matrix), [])
-        matrix["results"][1]["metrics_receipt"] = matrix["results"][0]["metrics_receipt"]
+        matrix["results"][1]["metrics_receipt"] = matrix["results"][0][
+            "metrics_receipt"
+        ]
         errors = scale_matrix.validate_matrix(matrix)
         self.assertIn(
             "results[1].metrics_receipt reused across matrix pairs", errors
@@ -251,7 +260,8 @@ class ScaleMatrixTests(unittest.TestCase):
         )
         errors = scale_matrix.validate_matrix(matrix)
         self.assertIn(
-            "results[1].provenance.measurement_digest reused across matrix pairs", errors
+            "results[1].provenance.measurement_digest reused across matrix pairs",
+            errors,
         )
 
     def test_matrix_rejects_omissions_and_duplicate_pairs(self):

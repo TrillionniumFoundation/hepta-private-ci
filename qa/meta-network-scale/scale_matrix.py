@@ -126,7 +126,9 @@ def validate_result(result: dict[str, Any]) -> list[str]:
             value = provenance.get(key)
             pattern = _HEX40 if key in {"source_commit", "source_tree"} else _HEX64
             if not isinstance(value, str) or pattern.fullmatch(value) is None:
-                errors.append(f"provenance.{key} must be a lowercase hexadecimal digest")
+                errors.append(
+                    f"provenance.{key} must be a lowercase hexadecimal digest"
+                )
 
     evidence = result.get("evidence")
     if not isinstance(evidence, dict):
@@ -160,21 +162,34 @@ def validate_result(result: dict[str, Any]) -> list[str]:
                 errors.append(f"metrics.{key} must be a finite number")
             elif key not in {"task_utility", "future_window_utility"} and value < 0:
                 errors.append(f"metrics.{key} must be non-negative")
-            elif key in {"negative_transfer_rate", "immutable_buffer_reuse_rate"} and value > 1:
+            elif (
+                key in {"negative_transfer_rate", "immutable_buffer_reuse_rate"}
+                and value > 1
+            ):
                 errors.append(f"metrics.{key} must be a unit-interval rate")
 
 
         # Physical byte sizes and event counts cannot be fractional.
-        for key in ("rss_bytes", "gpu_peak_bytes", "starvation_count", "cache_invalidation_count"):
+        for key in (
+            "rss_bytes",
+            "gpu_peak_bytes",
+            "starvation_count",
+            "cache_invalidation_count",
+        ):
             if key in metrics and type(metrics[key]) is not int:
                 errors.append(f"metrics.{key} must be an integer count")
         percentiles = ("p50_ms", "p95_ms", "p99_ms")
         if all(_finite_number(metrics.get(key)) for key in percentiles):
             if not (metrics["p50_ms"] <= metrics["p95_ms"] <= metrics["p99_ms"]):
-                errors.append("metrics latency percentiles must satisfy p50 <= p95 <= p99")
+                errors.append(
+                    "metrics latency percentiles must satisfy p50 <= p95 <= p99"
+                )
 
     metrics_receipt = result.get("metrics_receipt")
-    if not isinstance(metrics_receipt, str) or _HEX64.fullmatch(metrics_receipt) is None:
+    if (
+        not isinstance(metrics_receipt, str)
+        or _HEX64.fullmatch(metrics_receipt) is None
+    ):
         errors.append("metrics_receipt must be a lowercase SHA-256 digest")
     lifecycle = result.get("topology_lifecycle")
     if lifecycle != list(LIFECYCLE):
@@ -223,15 +238,21 @@ def validate_matrix(matrix: dict[str, Any]) -> list[str]:
         metrics_receipt = row.get("metrics_receipt")
         if isinstance(metrics_receipt, str) and _HEX64.fullmatch(metrics_receipt):
             if metrics_receipt in metrics_receipts_seen:
-                errors.append(f"results[{index}].metrics_receipt reused across matrix pairs")
+                errors.append(
+                    f"results[{index}].metrics_receipt reused across matrix pairs"
+                )
             metrics_receipts_seen.add(metrics_receipt)
         provenance = row.get("provenance")
         if isinstance(provenance, dict):
             measurement_digest = provenance.get("measurement_digest")
-            if isinstance(measurement_digest, str) and _HEX64.fullmatch(measurement_digest):
+            if (
+                isinstance(measurement_digest, str)
+                and _HEX64.fullmatch(measurement_digest)
+            ):
                 if measurement_digest in measurement_digests_seen:
                     errors.append(
-                        f"results[{index}].provenance.measurement_digest reused across matrix pairs"
+                        f"results[{index}].provenance.measurement_digest "
+                        "reused across matrix pairs"
                     )
                 measurement_digests_seen.add(measurement_digest)
         size, arm = row.get("size"), row.get("arm")
@@ -255,7 +276,8 @@ def validate_matrix(matrix: dict[str, Any]) -> list[str]:
                 source_host = identity
             elif identity != source_host:
                 errors.append(
-                    f"results[{index}].provenance differs from matrix source/host cohort"
+                    f"results[{index}].provenance differs from "
+                    "matrix source/host cohort"
                 )
     for size, arm in sorted(expected - seen):
         errors.append(f"missing matrix pair: {size}/{arm}")
@@ -276,7 +298,11 @@ def main(argv: list[str]) -> int:
         sys.stdout.write("\n")
         return 0
     result = json.load(args.result)
-    errors = validate_matrix(result) if args.command == "validate-matrix" else validate_result(result)
+    errors = (
+        validate_matrix(result)
+        if args.command == "validate-matrix"
+        else validate_result(result)
+    )
     if errors:
         for error in errors:
             print(error, file=sys.stderr)
