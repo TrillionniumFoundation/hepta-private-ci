@@ -7,6 +7,17 @@ low-parameter Head architectures, and (3) 64/256/1024/4096-cell scaling.
 No script here can select production artifacts. The tests run without network
 access or downloaded pretrained weights, and do not establish model accuracy.
 
+**P0 artifact integrity (shadow-only):** Real Jina trials now require an exact
+local Hugging Face cache snapshot under
+`models--jinaai--REPO/snapshots/<FULL40SHA>` and a **separately
+precommitted SHA256 census** of its model weights, actual task Adapter,
+Tokenizer, custom Python code and all other snapshot files. Revision SHA
+alone is insufficient to attest what the local runtime loaded. Real trial
+execution never downloads weights. The snapshot is checked before and
+after loading remote model code, and its observed file-census digest is
+included in the Stem feature manifest and every real experiment report.
+Model-free offline fixtures remain explicitly unattested.
+
 ## Data
 
 Input JSONL rows must contain case_id, group_id, scope_id, task_id, split,
@@ -81,6 +92,9 @@ installed dependencies (`torch`, `transformers`, `peft`,
 ```sh
 python3 qualification/neuron-stem/jina_v5_trial.py \
   --model jina-v5-text-nano --revision FULL40CHARMODELCOMMITSHA \
+  --store-root /approved/hf/models--jinaai--jina-embeddings-v5-text-nano \
+  --snapshot /approved/hf/models--jinaai--jina-embeddings-v5-text-nano/snapshots/FULL40CHARMODELCOMMITSHA \
+  --expected-snapshot-digest INDEPENDENTLY_APPROVED_CENSUS_SHA256 \
   --task-id decision-v1 --dataset /approved/decision.jsonl \
   --principal-id local-researcher --head linear --budget 16384 \
   --dimension 256 --representation joint --shots 32 --steps 100 \
@@ -136,7 +150,13 @@ report. At least two unique positive texts must exist in each retrieval cohort.
 ```sh
 python3 qualification/neuron-stem/jina_v5_multimodal.py \
   --text-model jina-v5-text-nano --text-revision TEXT40CHARCOMMITSHA \
+  --text-store-root /approved/hf/models--jinaai--jina-embeddings-v5-text-nano \
+  --text-snapshot /approved/hf/models--jinaai--jina-embeddings-v5-text-nano/snapshots/TEXT40CHARCOMMITSHA \
+  --text-snapshot-digest APPROVED_TEXT_CENSUS_SHA256 \
   --omni-model jina-v5-omni-nano --omni-revision OMNI40CHARCOMMITSHA \
+  --omni-store-root /approved/hf/models--jinaai--jina-embeddings-v5-omni-nano \
+  --omni-snapshot /approved/hf/models--jinaai--jina-embeddings-v5-omni-nano/snapshots/OMNI40CHARCOMMITSHA \
+  --omni-snapshot-digest APPROVED_OMNI_CENSUS_SHA256 \
   --modality vision --dimension 256 --direction media-to-text \
   --dataset /approved/paired-media.jsonl --media-root /approved/media \
   --principal-id local-researcher --allow-pinned-remote-code \
@@ -159,6 +179,9 @@ merely text/Omni vector cosine.
 ```sh
 python3 qualification/neuron-stem/jina_v5_scale_probe.py \
   --model jina-v5-text-nano --revision FULL40CHARMODELCOMMITSHA \
+  --store-root /approved/hf/models--jinaai--jina-embeddings-v5-text-nano \
+  --snapshot /approved/hf/models--jinaai--jina-embeddings-v5-text-nano/snapshots/FULL40CHARMODELCOMMITSHA \
+  --expected-snapshot-digest INDEPENDENTLY_APPROVED_CENSUS_SHA256 \
   --dataset /approved/decision.jsonl --principal-id local-researcher \
   --cells 1024 --active-fraction .25 --repeat-fraction .5 \
   --round-robin --requests 4096 --batch-size 8 --dimension 256 \
@@ -207,6 +230,9 @@ gradient; resulting retention diagnostics do not authorize model selection.
 ```sh
 python3 qualification/neuron-stem/prequential_trial.py \
   --model jina-v5-text-nano --revision FULL40CHARMODELCOMMITSHA \
+  --store-root /approved/hf/models--jinaai--jina-embeddings-v5-text-nano \
+  --snapshot /approved/hf/models--jinaai--jina-embeddings-v5-text-nano/snapshots/FULL40CHARMODELCOMMITSHA \
+  --expected-snapshot-digest INDEPENDENTLY_APPROVED_CENSUS_SHA256 \
   --dataset /approved/prequential-cell-events.jsonl \
   --task-id decision-v1 --principal-id local-researcher \
   --dimension 256 --head film --budget 16384 \
@@ -591,3 +617,53 @@ target-host 64/256/1024/4096 Cell p99/RSS/throughput/recovery qualification
 remains pending. Resource-limited research trials must compare candidates
 under the SAME precommitted feature cache ceiling. No production gate,
 Final-use permission or learned Cell promotion is issued.
+
+
+### Model-byte preflight before running any real Jina experiment
+
+Use `hf download jinaai/jina-embeddings-v5-text-nano --revision FULL40SHA --cache-dir /approved/hf`
+only in a separately approved staging step. Model execution does **not**
+perform downloads. Review the exact remote Python files and each task Adapter.
+Do not substitute `main`, a branch, a Git LFS pointer, a directory symlink or
+a same-name replacement checkpoint.
+
+For the staged, immutable local Hugging Face model cache:
+
+```sh
+python3 qualification/neuron-stem/snapshot_attestation.py \
+  --model jina-v5-text-nano --revision FULL40CHARMODELCOMMITSHA \
+  --task classification \
+  --store-root /approved/hf/models--jinaai--jina-embeddings-v5-text-nano \
+  --snapshot /approved/hf/models--jinaai--jina-embeddings-v5-text-nano/snapshots/FULL40CHARMODELCOMMITSHA \
+  --out /evidence/proposed-local-snapshot-census.json
+```
+
+The first report is `observed_unapproved_shadow_only`, NOT an independently
+trusted artifact. Have an independent reviewer inspect and freeze its full
+file-by-file SHA256 manifest; do not automatically approve the hash calculated
+by the same untrusted execution. Pass that separately frozen
+`manifest_sha256` to any of the four real runner commands as
+`--expected-snapshot-digest` (or per-model Text/Omni equivalents). This
+recomputes every file hash both before and after model load and fails closed
+on any mismatch.
+
+For the real Jina trial process, explicitly set both
+`HF_HUB_OFFLINE=1` and `TRANSFORMERS_OFFLINE=1` before executing its CLI,
+and enforce **OS-level outbound network denial** for reviewed custom model
+code. The HF offline switches alone do not sandbox Python network access.
+Offline fake-model tests intentionally remain independent of those switches.
+
+The census requires actual `model.safetensors`, `tokenizer.json`,
+`modules.json`, `config.json`, and the task-specific
+`adapters/TASK/adapter_model.safetensors` and `adapter_config.json`. It
+checks for external symlinks, Git LFS text pointers, duplicate/missing content
+and size/count limits. It includes custom remote-code Python files in the
+same digest, without pretending to sandbox their execution.
+
+**Important boundary:** A checksum match is not a signature, independent
+Final-use authorization, production Artifact CAS, attested physical model
+load receipt, immutable mount guarantee, or evidence of learned utility.
+Load-time hashing is separately accounted (`snapshot_attestation_ms`);
+resource results retain the true research backend CPU/RSS and do not credit
+those hashes as production Worker model load receipts. Offline conformance
+tests only hash synthetic local fixtures; they never download Jina weights.

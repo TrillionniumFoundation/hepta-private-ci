@@ -33,6 +33,16 @@ def verify_summary(summary):
         raise ValueError("resource evidence must come from Jina real-backend scale probe")
     if summary.get("status") != "real_backend_research_only":
         raise ValueError("synthetic, inactive, or promoted result prohibited")
+    census = summary.get("local_snapshot_census_sha256")
+    if (type(census) is not str or len(census) != 64
+            or census == "0" * 64
+            or any(ch not in "0123456789abcdef" for ch in census)):
+        raise ValueError("resource evidence lacks approved real Jina snapshot file census")
+    if (summary.get("local_snapshot_attested_twice") is not True
+            or summary.get("model_code_and_adapter_bytes_hashed") is not True):
+        raise ValueError("resource evidence lacks pre/post local model artifact verification")
+    if not finite_positive(summary.get("local_snapshot_attestation_ms")):
+        raise ValueError("resource report omitted actual model byte verification cost")
     if summary.get("production_promotion_permitted") is not False:
         raise ValueError("production authority is not allowed")
     if summary.get("production_worker_microbatch_verified") is not False:
@@ -131,6 +141,9 @@ def paired_resource_gate(reference, candidate, budget):
         "reference_revision": reference["revision"],
         "candidate_model": candidate["model"],
         "candidate_revision": candidate["revision"],
+        "reference_local_snapshot_census_sha256": reference["local_snapshot_census_sha256"],
+        "candidate_local_snapshot_census_sha256": candidate["local_snapshot_census_sha256"],
+        "research_artifact_census_signed": False,
         "scale": {
             "logical_cells": candidate["total_logical_cells"],
             "active_heads": candidate["actual_active_heads"],

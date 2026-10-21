@@ -110,10 +110,31 @@ class FrozenJinaV5:
     def __init__(self, model_id, revision, *, task="classification", dimension=256,
                  modality="text", max_tokens=512, device="cpu",
                  allow_pinned_remote_code=False, allow_download=False,
-                 cache_entries=256, model_factory=None):
+                 cache_entries=256, model_factory=None, snapshot_dir=None,
+                 store_root=None, expected_snapshot_digest=None):
         spec = validate_identity(model_id, revision, task, dimension, modality, max_tokens)
         if not allow_pinned_remote_code and model_factory is None:
             raise ValueError("remote model code requires reviewed, explicit opt-in")
+        if model_factory is not None and any(
+                v is not None for v in (snapshot_dir, store_root, expected_snapshot_digest)):
+            raise ValueError("a research fake model cannot claim real artifact attestation")
+        if model_factory is None:
+            if allow_download:
+                raise ValueError("real Jina qualification must not download during execution")
+            # The HF libraries must be offline, and the protected host must
+            # additionally network-isolate model-provided Python code.
+            import os
+            if (os.environ.get("HF_HUB_OFFLINE") != "1"
+                    or os.environ.get("TRANSFORMERS_OFFLINE") != "1"):
+                raise ValueError(
+                    "real Jina qualification requires HF_HUB_OFFLINE=1 "
+                    "and TRANSFORMERS_OFFLINE=1 (host network isolation also required)"
+                )
+            if not all((snapshot_dir, store_root, expected_snapshot_digest)):
+                raise ValueError(
+                    "real Jina execution requires an independently precommitted "
+                    "local snapshot, exact store root and artifact census digest"
+                )
         if type(cache_entries) is not int or not 1 <= cache_entries <= 8192:
             raise ValueError("cache entries outside bounded profile")
         self.spec, self.model_id, self.revision = spec, model_id, revision
@@ -121,12 +142,29 @@ class FrozenJinaV5:
         self.max_tokens, self.cache_entries = max_tokens, cache_entries
         self.cache = OrderedDict()
         self.encoder_calls = self.encoder_examples = self.cache_hits = 0
+        self.snapshot_attestation = None
+        self.snapshot_attestation_ms = 0.0
+        if model_factory is None:
+            # Check the complete actual pinned bytes BEFORE importing remote
+            # model code. Hash again after the load to reject local mutations.
+            from snapshot_attestation import attest_snapshot
+            before = attest_snapshot(
+                model_id, revision, task, store_root=store_root,
+                snapshot_dir=snapshot_dir,
+                expected_digest=expected_snapshot_digest,
+            )
+            self.snapshot_attestation_ms += before["verification_wall_ms"]
+            self.snapshot_attestation = before
         self.manifest_digest = sha256_record({
             "schema": "hepta.jina-v5-feature-manifest.v1",
             "repository": spec.repository, "revision": revision, "task": task,
             "dimension": dimension, "modality": modality,
             "max_tokens": max_tokens, "pool": "official-last-token-mrl-l2",
             "intent": "explicit-query-or-document",
+            "local_snapshot_census": (
+                self.snapshot_attestation["manifest_sha256"]
+                if self.snapshot_attestation is not None else None
+            ),
         })
         start = time.perf_counter_ns()
         if model_factory is not None:
@@ -137,9 +175,8 @@ class FrozenJinaV5:
             if spec.omni:
                 options["modality"] = modality
             self.model = SentenceTransformer(
-                spec.repository, revision=revision,
-                trust_remote_code=True, device=device,
-                local_files_only=not allow_download, model_kwargs=options,
+                str(snapshot_dir), trust_remote_code=True,
+                device=device, local_files_only=True, model_kwargs=options,
             )
         # Models can expose distinct sequence-length knobs. Fail if there is
         # no usable task encoder; never substitute raw mean pooling.
@@ -151,6 +188,17 @@ class FrozenJinaV5:
         if hasattr(self.model, "eval"):
             self.model.eval()
         self.load_ms = (time.perf_counter_ns() - start) / 1e6
+        if model_factory is None:
+            after = attest_snapshot(
+                model_id, revision, task, store_root=store_root,
+                snapshot_dir=snapshot_dir,
+                expected_digest=expected_snapshot_digest,
+            )
+            self.snapshot_attestation_ms += after["verification_wall_ms"]
+            if after["manifest_sha256"] != self.snapshot_attestation["manifest_sha256"]:
+                raise ValueError("local Jina artifact bytes changed while loading")
+            # Two matching censuses do not authenticate the snapshot source.
+            self.snapshot_attestation["attested_twice_around_model_load"] = True
 
     def _key(self, value, scope_id, principal_id, authority_epoch, generation, intent):
         # Omni paths can change while a filename stays the same. Disable

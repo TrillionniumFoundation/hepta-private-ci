@@ -254,6 +254,8 @@ def trial(args):
         modality="text", max_tokens=args.max_tokens, device=args.device,
         cache_entries=args.cache_entries, allow_download=args.allow_model_download,
         allow_pinned_remote_code=args.allow_pinned_remote_code,
+        snapshot_dir=args.snapshot, store_root=args.store_root,
+        expected_snapshot_digest=args.expected_snapshot_digest,
     )
     feature_cache = BoundedFeatureCache(feature_cache_bytes)
 
@@ -475,6 +477,10 @@ def trial(args):
         "model": args.model, "revision": args.revision,
         "generation": args.generation,
         "feature_manifest_digest": stem.manifest_digest,
+        "local_snapshot_census_sha256": stem.snapshot_attestation["manifest_sha256"],
+        "local_snapshot_attested_twice": stem.snapshot_attestation["attested_twice_around_model_load"],
+        "local_snapshot_attestation_ms": stem.snapshot_attestation_ms,
+        "model_code_and_adapter_bytes_hashed": True,
         "dataset_audit": audit, "task_id": args.task_id,
         "principal_id": args.principal_id,
         "cells": len(keys), "head": args.head,
@@ -579,6 +585,12 @@ def main():
     p.add_argument("--seed", type=int, default=20261011)
     p.add_argument("--generation", type=int, default=1)
     p.add_argument("--authority-epoch", type=int, default=1)
+    p.add_argument("--store-root", type=Path, required=True,
+                   help="approved models--jinaai--REPO local cache root")
+    p.add_argument("--snapshot", type=Path, required=True,
+                   help="exact cache snapshots/FULL40SHA directory")
+    p.add_argument("--expected-snapshot-digest", required=True,
+                   help="separately reviewed 64-hex full local file-census digest")
     p.add_argument("--allow-pinned-remote-code", action="store_true")
     p.add_argument("--allow-model-download", action="store_true")
     trial(p.parse_args())

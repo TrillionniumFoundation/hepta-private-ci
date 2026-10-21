@@ -61,7 +61,9 @@ def run(args):
         args.model, args.revision, task="classification",
         dimension=args.dimension, max_tokens=args.max_tokens,
         device=args.device, allow_pinned_remote_code=args.allow_pinned_remote_code,
-        allow_download=args.allow_model_download, cache_entries=args.cache_entries)
+        allow_download=args.allow_model_download, cache_entries=args.cache_entries,
+        snapshot_dir=args.snapshot, store_root=args.store_root,
+        expected_snapshot_digest=args.expected_snapshot_digest)
     heads = {}
     for cid in active_ids:
         h, _ = make_head(torch, nn, args.head, args.dimension, next(iter(classes)), args.budget)
@@ -167,6 +169,10 @@ def run(args):
         "production_promotion_permitted": False,
         "model": args.model, "revision": args.revision,
         "feature_manifest_digest": stem.manifest_digest,
+        "local_snapshot_census_sha256": stem.snapshot_attestation["manifest_sha256"],
+        "local_snapshot_attested_twice": stem.snapshot_attestation["attested_twice_around_model_load"],
+        "local_snapshot_attestation_ms": stem.snapshot_attestation_ms,
+        "model_code_and_adapter_bytes_hashed": True,
         "dataset": audit, "seed": args.seed,
         "head_type": args.head, "head_parameter_ceiling": args.budget,
         "feature_dimension": args.dimension,
@@ -236,6 +242,12 @@ def main():
     p.add_argument("--generation", type=int, default=1)
     p.add_argument("--authority-epoch", type=int, default=1)
     p.add_argument("--round-robin", action="store_true")
+    p.add_argument("--store-root", type=Path, required=True,
+                   help="approved models--jinaai--REPO local cache root")
+    p.add_argument("--snapshot", type=Path, required=True,
+                   help="exact cache snapshots/FULL40SHA directory")
+    p.add_argument("--expected-snapshot-digest", required=True,
+                   help="separately reviewed 64-hex full local file-census digest")
     p.add_argument("--allow-pinned-remote-code", action="store_true")
     p.add_argument("--allow-model-download", action="store_true")
     run(p.parse_args())

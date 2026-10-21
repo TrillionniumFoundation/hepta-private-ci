@@ -14,6 +14,11 @@ def fixture(model="jina-v5-text-nano"):
         "schema": "hepta.jina-v5-shadow-scale-probe.v1",
         "status": "real_backend_research_only",
         "model": model, "revision": "a" * 40,
+        "local_snapshot_census_sha256": (
+            "b" if model == "jina-v5-text-small" else "a") * 64,
+        "local_snapshot_attested_twice": True,
+        "model_code_and_adapter_bytes_hashed": True,
+        "local_snapshot_attestation_ms": 15.,
         "production_promotion_permitted": False,
         "production_worker_microbatch_verified": False,
         "sqlite_clean_reopen_ok": True,
@@ -98,6 +103,25 @@ class ResourceGateTests(unittest.TestCase):
         self.assertFalse(report["production_microbatch_qualified"])
         self.assertFalse(report["same_physical_host_attested"])
         self.assertEqual(report["candidate_model"], "jina-v5-text-small")
+
+    def test_resource_gate_requires_real_local_model_byte_provenance(self):
+        fresh = fixture("jina-v5-text-small")
+        for field in (
+            "local_snapshot_census_sha256", "local_snapshot_attested_twice",
+            "model_code_and_adapter_bytes_hashed", "local_snapshot_attestation_ms",
+        ):
+            missing = dict(fresh)
+            missing.pop(field)
+            with self.subTest(field=field), self.assertRaises(ValueError):
+                verify_summary(missing)
+        forgery = dict(fresh)
+        forgery["local_snapshot_census_sha256"] = "0" * 64
+        with self.assertRaisesRegex(ValueError, "snapshot file census"):
+            verify_summary(forgery)
+        tampered = dict(fresh)
+        tampered["local_snapshot_attested_twice"] = False
+        with self.assertRaisesRegex(ValueError, "pre/post"):
+            verify_summary(tampered)
 
     def test_failing_quality_budget_is_not_hidden(self):
         before = fixture()
