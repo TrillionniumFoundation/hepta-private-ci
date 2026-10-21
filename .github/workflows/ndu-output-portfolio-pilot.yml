@@ -12,7 +12,9 @@ permissions:
 
 concurrency:
   group: ndu-output-portfolio-${{ github.ref }}
-  cancel-in-progress: false
+  # A new explicit request supersedes an older, obsolete protocol request.
+  # Ordinary result/documentation commits do not match the trigger paths.
+  cancel-in-progress: true
 
 jobs:
   dedicated-pilot:

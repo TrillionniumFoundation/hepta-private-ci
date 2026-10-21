@@ -192,7 +192,15 @@ def fixed_portfolio(observations, specification, grid):
         if 0 <= report < 8:
             q[report] += weight
     if q.sum() == 0:
-        q[:] = 1 / 8
+        present = [observations[j] for j in specification["modalities"]
+                   if 0 <= observations[j] < 8]
+        if present:
+            # If every positive-weight modality is missing, preserve the
+            # registered support constraint using the other acquired reports.
+            q = np.bincount(present, minlength=8).astype(np.float64)
+            q /= q.sum()
+        else:
+            q[:] = 1 / 8
     else:
         q /= q.sum()
     # Missingness can produce thirds; projection is explicit and identical at val/test.

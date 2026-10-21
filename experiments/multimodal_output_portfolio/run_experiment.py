@@ -202,7 +202,7 @@ def execute(output, tier, smoke=False):
             progress("selection_frozen_and_audited", seed=seed,
                      selected_gamma_budget4=selection["4"]["ndu_recursive_dp"]["gamma"])
             for split_index, scenario in enumerate(("test_iid", "correlation_shift", "all_shared_wrong")):
-                world = sample_worlds(sizes[scenario], seed=100000 + 100 * seed + split_index,
+                world = sample_worlds(sizes[scenario], seed=protocol.get("heldout_seed_base", 100000) + 100 * seed + split_index,
                                       split=scenario, scenario="iid" if scenario == "test_iid" else scenario)
                 for budget in budgets:
                     for arm in protocol["arms"]:

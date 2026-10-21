@@ -1,5 +1,9 @@
 {
-  "protocol_id": "hepta-output-portfolio-pilot-v1-20261021",
+  "protocol_id": "hepta-output-portfolio-pilot-v1.1-20261021",
+  "amends_protocol": "hepta-output-portfolio-pilot-v1-20261021",
+  "amendment_reason": "Independent review of v1 found 11/4608 budget-7 static-baseline worlds fell back to an all-class uniform portfolio despite acquired zero-weight reports being present. Fix this support-constraint bug, preserve v1 evidence, and use new heldout worlds. No change to endpoint, risk grid, budgets, training, calibration, validation or success criteria.",
+  "heldout_seed_base": 200000,
+  "previous_heldout_seed_base": 100000,
   "scope": "Closed-world learned multimodal generation with a finite NDU-inspired controller; not a foundation model, neural FBSDE solver, native Hepta integration, or joint NDU generator training.",
   "baseline_commit": "f8c9419df6ddeb36ff8b522a50219981fb8d9345",
   "seeds": [17, 29, 43],
