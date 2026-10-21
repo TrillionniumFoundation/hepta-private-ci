@@ -24,7 +24,9 @@ use crate::durable::canonical_json;
 use crate::durable::sha256;
 use crate::durable::write_private_new;
 use crate::test_support::private_tempdir;
+use crate::test_support::run_ssh_keygen;
 use crate::test_support::ssh_keygen;
+use crate::test_support::ssh_keygen_path;
 use crate::trust::SSHSIG_NAMESPACE;
 
 #[test]
@@ -270,12 +272,11 @@ impl TrustFixture {
         let temporary = private_tempdir("G5 trust fixture");
         let root = temporary.path().canonicalize().expect("canonical root");
         let key = root.join("operator-key");
-        let status = ssh_keygen()
-            .args(["-q", "-t", "ed25519", "-N", "", "-f"])
-            .arg(&key)
-            .status()
-            .expect("start test key generation");
-        assert!(status.success());
+        run_ssh_keygen(
+            ssh_keygen(&root)
+                .args(["-q", "-t", "ed25519", "-N", "", "-f"])
+                .arg(ssh_keygen_path(&root, &key)),
+        );
         let public = std::fs::read_to_string(key.with_extension("pub")).expect("public key");
         let fields = public.split_ascii_whitespace().collect::<Vec<_>>();
         assert_eq!(fields.first().copied(), Some("ssh-ed25519"));
@@ -285,12 +286,11 @@ impl TrustFixture {
             format!("operator@example {} {}\n", fields[0], fields[1]).as_bytes(),
         )
         .expect("write allowed signers");
-        let fingerprint_output = ssh_keygen()
-            .args(["-E", "sha256", "-lf"])
-            .arg(key.with_extension("pub"))
-            .output()
-            .expect("compute fingerprint");
-        assert!(fingerprint_output.status.success());
+        let fingerprint_output = run_ssh_keygen(
+            ssh_keygen(&root)
+                .args(["-E", "sha256", "-lf"])
+                .arg(ssh_keygen_path(&root, &key.with_extension("pub"))),
+        );
         let fingerprint = String::from_utf8_lossy(&fingerprint_output.stdout)
             .split_ascii_whitespace()
             .nth(1)
@@ -369,14 +369,13 @@ impl TrustFixture {
     }
 
     fn sign(&self, challenge: &Path) -> PathBuf {
-        let status = ssh_keygen()
-            .args(["-Y", "sign", "-f"])
-            .arg(&self.key)
-            .args(["-n", SSHSIG_NAMESPACE])
-            .arg(challenge)
-            .status()
-            .expect("start SSHSIG signer");
-        assert!(status.success());
+        run_ssh_keygen(
+            ssh_keygen(&self.root)
+                .args(["-Y", "sign", "-f"])
+                .arg(ssh_keygen_path(&self.root, &self.key))
+                .args(["-n", SSHSIG_NAMESPACE])
+                .arg(ssh_keygen_path(&self.root, challenge)),
+        );
         let signature = PathBuf::from(format!("{}.sig", challenge.display()));
         set_private_permissions(&signature);
         signature
