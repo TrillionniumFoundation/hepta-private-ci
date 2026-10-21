@@ -34,6 +34,10 @@ impl OutputProtocolV1 {
 /// Semantic loss estimates collected over a frozen future window.
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct SemanticRiskEstimateV1 {
+    /// Digest of the independently observed future-window evidence used to
+    /// estimate this risk.  The selector only checks binding; it does not
+    /// authenticate or manufacture the external observation.
+    pub future_window_digest: Digest32,
     pub mean_loss: FixedQ32,
     pub cvar_loss: FixedQ32,
     pub failure_probability: ProbabilityQ32,
@@ -61,6 +65,9 @@ pub struct OutputPortfolioContextV1 {
     pub generation: Generation,
     pub encoder_digest: Digest32,
     pub snapshot_digest: Digest32,
+    /// All candidate risks must come from this exact externally observed
+    /// future window.  A window name or local timestamp is not sufficient.
+    pub future_window_digest: Digest32,
     /// Row-major covariance of candidate semantic losses.
     pub semantic_covariance: Vec<FixedQ32>,
 }
