@@ -1,8 +1,9 @@
-use keyring::Entry;
-use keyring::Error as KeyringError;
+use keyring_core::Entry;
+use keyring_core::Error as KeyringError;
 use std::error::Error;
 use std::fmt;
 use std::fmt::Debug;
+use std::sync::OnceLock;
 use tracing::trace;
 
 #[derive(Debug)]
@@ -48,16 +49,65 @@ pub trait KeyringStore: Debug + Send + Sync {
 #[derive(Debug, Clone, Copy)]
 pub struct DefaultKeyringStore;
 
+fn initialize_default_store() -> Result<(), String> {
+    #[cfg(any(target_os = "linux", target_os = "freebsd", target_os = "openbsd"))]
+    {
+        let store = dbus_secret_service_keyring_store::Store::new()
+            .map_err(|error| error.to_string())?;
+        keyring_core::set_default_store(store);
+        return Ok(());
+    }
+
+    #[cfg(target_os = "macos")]
+    {
+        let store = apple_native_keyring_store::keychain::Store::new()
+            .map_err(|error| error.to_string())?;
+        keyring_core::set_default_store(store);
+        return Ok(());
+    }
+
+    #[cfg(target_os = "windows")]
+    {
+        let store = windows_native_keyring_store::Store::new()
+            .map_err(|error| error.to_string())?;
+        keyring_core::set_default_store(store);
+        return Ok(());
+    }
+
+    #[cfg(not(any(
+        target_os = "linux",
+        target_os = "freebsd",
+        target_os = "openbsd",
+        target_os = "macos",
+        target_os = "windows",
+    )))]
+    {
+        Err("no native keyring provider is configured for this target".to_string())
+    }
+}
+
+fn ensure_default_store() -> Result<(), CredentialStoreError> {
+    static INIT: OnceLock<Result<(), String>> = OnceLock::new();
+    match INIT.get_or_init(initialize_default_store) {
+        Ok(()) => Ok(()),
+        Err(message) => Err(CredentialStoreError::new(KeyringError::NoStorageAccess(
+            Box::new(std::io::Error::other(message.clone())),
+        ))),
+    }
+}
+
+
 impl KeyringStore for DefaultKeyringStore {
     fn load(&self, service: &str, account: &str) -> Result<Option<String>, CredentialStoreError> {
         trace!("keyring.load start, service={service}, account={account}");
+        ensure_default_store()?;
         let entry = Entry::new(service, account).map_err(CredentialStoreError::new)?;
         match entry.get_password() {
             Ok(password) => {
                 trace!("keyring.load success, service={service}, account={account}");
                 Ok(Some(password))
             }
-            Err(keyring::Error::NoEntry) => {
+            Err(KeyringError::NoEntry) => {
                 trace!("keyring.load no entry, service={service}, account={account}");
                 Ok(None)
             }
@@ -73,6 +123,7 @@ impl KeyringStore for DefaultKeyringStore {
             "keyring.save start, service={service}, account={account}, value_len={}",
             value.len()
         );
+        ensure_default_store()?;
         let entry = Entry::new(service, account).map_err(CredentialStoreError::new)?;
         match entry.set_password(value) {
             Ok(()) => {
@@ -88,13 +139,14 @@ impl KeyringStore for DefaultKeyringStore {
 
     fn delete(&self, service: &str, account: &str) -> Result<bool, CredentialStoreError> {
         trace!("keyring.delete start, service={service}, account={account}");
+        ensure_default_store()?;
         let entry = Entry::new(service, account).map_err(CredentialStoreError::new)?;
         match entry.delete_credential() {
             Ok(()) => {
                 trace!("keyring.delete success, service={service}, account={account}");
                 Ok(true)
             }
-            Err(keyring::Error::NoEntry) => {
+            Err(KeyringError::NoEntry) => {
                 trace!("keyring.delete no entry, service={service}, account={account}");
                 Ok(false)
             }
@@ -109,13 +161,57 @@ impl KeyringStore for DefaultKeyringStore {
 pub mod tests {
     use super::CredentialStoreError;
     use super::KeyringStore;
-    use keyring::Error as KeyringError;
-    use keyring::credential::CredentialApi as _;
-    use keyring::mock::MockCredential;
+    use keyring_core::Error as KeyringError;
     use std::collections::HashMap;
     use std::sync::Arc;
     use std::sync::Mutex;
     use std::sync::PoisonError;
+
+    #[derive(Debug, Default)]
+    struct MockCredentialState {
+        value: Option<String>,
+        error: Option<KeyringError>,
+    }
+
+    #[derive(Default, Debug)]
+    pub struct MockCredential {
+        state: Mutex<MockCredentialState>,
+    }
+
+    impl MockCredential {
+        fn get_password(&self) -> Result<String, KeyringError> {
+            let mut state = self.state.lock().unwrap_or_else(PoisonError::into_inner);
+            if let Some(error) = state.error.take() {
+                return Err(error);
+            }
+            state.value.clone().ok_or(KeyringError::NoEntry)
+        }
+
+        fn set_password(&self, value: &str) -> Result<(), KeyringError> {
+            let mut state = self.state.lock().unwrap_or_else(PoisonError::into_inner);
+            if let Some(error) = state.error.take() {
+                return Err(error);
+            }
+            state.value = Some(value.to_string());
+            Ok(())
+        }
+
+        fn delete_credential(&self) -> Result<(), KeyringError> {
+            let mut state = self.state.lock().unwrap_or_else(PoisonError::into_inner);
+            if let Some(error) = state.error.take() {
+                return Err(error);
+            }
+            match state.value.take() {
+                Some(_) => Ok(()),
+                None => Err(KeyringError::NoEntry),
+            }
+        }
+
+        fn set_error(&self, error: KeyringError) {
+            let mut state = self.state.lock().unwrap_or_else(PoisonError::into_inner);
+            state.error = Some(error);
+        }
+    }
 
     #[derive(Default, Clone, Debug)]
     pub struct MockKeyringStore {
