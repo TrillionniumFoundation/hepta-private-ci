@@ -21,11 +21,17 @@ impl Hos2TerminalReceipt {
         request.to_json()?;
         let valid = match &observation {
             Hos2DeliveryObservation::Applied {
-                stable_object_id, previous_revision, revision, effective_ns, consumed_ns,
-            } => *stable_object_id != [0; 16]
-                && *previous_revision == request.expected_revision
-                && previous_revision.checked_add(1) == Some(*revision)
-                && *consumed_ns <= *effective_ns % HOS2_CPU_PERIOD_NS,
+                stable_object_id,
+                previous_revision,
+                revision,
+                effective_ns,
+                consumed_ns,
+            } => {
+                *stable_object_id != [0; 16]
+                    && *previous_revision == request.expected_revision
+                    && previous_revision.checked_add(1) == Some(*revision)
+                    && *consumed_ns <= *effective_ns % HOS2_CPU_PERIOD_NS
+            }
             Hos2DeliveryObservation::NotApplied { status: 1..=7 } => true,
             Hos2DeliveryObservation::NotApplied { .. }
             | Hos2DeliveryObservation::Reserved
@@ -34,9 +40,15 @@ impl Hos2TerminalReceipt {
             | Hos2DeliveryObservation::HistoryLost => false,
         };
         if !valid {
-            return Err(format!("HOS2 D has no matching terminal outcome: {observation:?}"));
+            return Err(format!(
+                "HOS2 D has no matching terminal outcome: {observation:?}"
+            ));
         }
-        Ok(Self { schema_version: 1, request: request.clone(), observation })
+        Ok(Self {
+            schema_version: 1,
+            request: request.clone(),
+            observation,
+        })
     }
 
     pub(crate) fn from_json(payload: &str, request: &Hos2InstallBudgetV1) -> Result<Self, String> {

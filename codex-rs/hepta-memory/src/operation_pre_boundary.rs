@@ -50,23 +50,37 @@ pub(crate) async fn record_rejection(
     now_unix_ms: u64,
 ) -> Result<(), LocalLeaseOutboxError> {
     let (binding, entered, dispatch_event_id, stage, rejected_nonce) = proof.into_parts();
-    let mut transaction = store.pool.begin_with("BEGIN IMMEDIATE").await
+    let mut transaction = store
+        .pool
+        .begin_with("BEGIN IMMEDIATE")
+        .await
         .map_err(crate::cognitive_store::unavailable)?;
     verify_binding(&mut transaction, store, &binding, &dispatch_event_id).await?;
-    let previous = latest_claim(&mut transaction, &binding.operation_id).await?
+    let previous = latest_claim(&mut transaction, &binding.operation_id)
+        .await?
         .ok_or_else(|| stale("pre-boundary proof has no entered claim"))?;
     if previous.state != ClaimState::Entered
         || to_receipt(&binding.operation_id, &previous) != entered
         || entered.owner_generation != binding.owner_generation
         || entered.fencing_token != binding.fencing_token
     {
-        return Err(stale("pre-boundary proof does not match the exact entered head"));
+        return Err(stale(
+            "pre-boundary proof does not match the exact entered head",
+        ));
     }
     let settled = append_claim(
-        &mut transaction, &binding.operation_id, Some(&previous), previous.attempt,
-        previous.owner_generation, &previous.fencing_token, ClaimState::Settled,
-        previous.lease_expires_at_unix_ms, previous.next_eligible_at_unix_ms, now_unix_ms,
-    ).await?;
+        &mut transaction,
+        &binding.operation_id,
+        Some(&previous),
+        previous.attempt,
+        previous.owner_generation,
+        &previous.fencing_token,
+        ClaimState::Settled,
+        previous.lease_expires_at_unix_ms,
+        previous.next_eligible_at_unix_ms,
+        now_unix_ms,
+    )
+    .await?;
     let proof = ProofRecord {
         binding,
         dispatch_event_id,
@@ -92,8 +106,13 @@ pub(crate) async fn record_rejection(
     .bind(&payload)
     .bind(digest.as_str())
     .bind(to_i64(now_unix_ms, "pre-boundary proof timestamp")?)
-    .execute(&mut *transaction).await.map_err(crate::cognitive_store::unavailable)?;
-    transaction.commit().await.map_err(crate::cognitive_store::unavailable)?;
+    .execute(&mut *transaction)
+    .await
+    .map_err(crate::cognitive_store::unavailable)?;
+    transaction
+        .commit()
+        .await
+        .map_err(crate::cognitive_store::unavailable)?;
     Ok(())
 }
 
@@ -102,17 +121,23 @@ pub(crate) async fn awaiting_reauthorization(
     binding: &ReauthorizationBinding,
     now_unix_ms: u64,
 ) -> Result<bool, LocalLeaseOutboxError> {
-    let mut transaction = store.pool.begin().await.map_err(crate::cognitive_store::unavailable)?;
+    let mut transaction = store
+        .pool
+        .begin()
+        .await
+        .map_err(crate::cognitive_store::unavailable)?;
     let found = match current_proof(&mut transaction, store, binding).await {
         Ok(found) => found,
         Err(LocalLeaseOutboxError::StaleFence(_)) => None,
         Err(error) => return Err(error),
     };
     let eligible = found.as_ref().is_some_and(|(_, head)| {
-        head.attempt < MAX_DURABLE_DISPATCH_ATTEMPTS
-            && now_unix_ms >= head.next_eligible_at_unix_ms
+        head.attempt < MAX_DURABLE_DISPATCH_ATTEMPTS && now_unix_ms >= head.next_eligible_at_unix_ms
     });
-    transaction.commit().await.map_err(crate::cognitive_store::unavailable)?;
+    transaction
+        .commit()
+        .await
+        .map_err(crate::cognitive_store::unavailable)?;
     Ok(eligible)
 }
 
@@ -120,7 +145,11 @@ pub(crate) async fn has_rejection_proof(
     store: &CognitiveStore,
     binding: &ReauthorizationBinding,
 ) -> Result<bool, LocalLeaseOutboxError> {
-    let mut transaction = store.pool.begin().await.map_err(crate::cognitive_store::unavailable)?;
+    let mut transaction = store
+        .pool
+        .begin()
+        .await
+        .map_err(crate::cognitive_store::unavailable)?;
     // A predecessor's proof grants no retry under a new fence. It must also
     // not suppress the successor's ordinary observer-only reconciliation.
     let found = match current_proof(&mut transaction, store, binding).await {
@@ -128,7 +157,10 @@ pub(crate) async fn has_rejection_proof(
         Err(LocalLeaseOutboxError::StaleFence(_)) => false,
         Err(error) => return Err(error),
     };
-    transaction.commit().await.map_err(crate::cognitive_store::unavailable)?;
+    transaction
+        .commit()
+        .await
+        .map_err(crate::cognitive_store::unavailable)?;
     Ok(found)
 }
 
@@ -140,12 +172,23 @@ pub(crate) async fn claim_reauthorization(
     now_unix_ms: u64,
     lease_duration_ms: u64,
 ) -> Result<Option<ReauthorizedClaim>, LocalLeaseOutboxError> {
-    validate_claim_input(&binding.operation_id, binding.owner_generation,
-        &binding.fencing_token, now_unix_ms, lease_duration_ms)?;
-    let mut transaction = store.pool.begin_with("BEGIN IMMEDIATE").await
+    validate_claim_input(
+        &binding.operation_id,
+        binding.owner_generation,
+        &binding.fencing_token,
+        now_unix_ms,
+        lease_duration_ms,
+    )?;
+    let mut transaction = store
+        .pool
+        .begin_with("BEGIN IMMEDIATE")
+        .await
         .map_err(crate::cognitive_store::unavailable)?;
     let Some((proof, previous)) = current_proof(&mut transaction, store, binding).await? else {
-        transaction.commit().await.map_err(crate::cognitive_store::unavailable)?;
+        transaction
+            .commit()
+            .await
+            .map_err(crate::cognitive_store::unavailable)?;
         return Ok(None);
     };
     // The original queued verifier cannot accept this proven Indeterminate
@@ -163,10 +206,17 @@ pub(crate) async fn claim_reauthorization(
            AND b.payload_json = ? AND e.payload_json = b.payload_json
            AND b.payload_sha256 = ? AND e.payload_sha256 = b.payload_sha256
            AND o.payload_sha256 = b.payload_sha256",
-    ).bind(&binding.operation_id).bind(&binding.lease_id)
-        .bind(&receipt.event_id).bind(&receipt.outbox_id).bind(&receipt.topic)
-        .bind(&receipt.payload_json).bind(receipt.payload_sha256.as_str())
-        .fetch_one(&mut *transaction).await.map_err(crate::cognitive_store::unavailable)?;
+    )
+    .bind(&binding.operation_id)
+    .bind(&binding.lease_id)
+    .bind(&receipt.event_id)
+    .bind(&receipt.outbox_id)
+    .bind(&receipt.topic)
+    .bind(&receipt.payload_json)
+    .bind(receipt.payload_sha256.as_str())
+    .fetch_one(&mut *transaction)
+    .await
+    .map_err(crate::cognitive_store::unavailable)?;
     if receipt.occurrence_key != binding.operation_id
         || receipt.lease_id != binding.lease_id
         || receipt.owner_agent_id != *store.owner_agent_id()
@@ -174,40 +224,64 @@ pub(crate) async fn claim_reauthorization(
         || receipt.inherited_from_generation.is_some()
         || receipt_matches != 1
     {
-        return Err(stale("reauthorization receipt does not match the original immutable admission"));
+        return Err(stale(
+            "reauthorization receipt does not match the original immutable admission",
+        ));
     }
     let rejected_nonce = serde_json::to_string(&new_nonce)
         .map_err(|error| LocalLeaseOutboxError::Invalid(error.to_string()))?;
     let used_nonce: i64 = sqlx::query_scalar(
         "SELECT COUNT(*) FROM cognitive_operation_pre_boundary_rejections
          WHERE operation_id = ? AND json_extract(proof_json, '$.rejected_nonce') = ?",
-    ).bind(&binding.operation_id).bind(rejected_nonce).fetch_one(&mut *transaction).await
-        .map_err(crate::cognitive_store::unavailable)?;
+    )
+    .bind(&binding.operation_id)
+    .bind(rejected_nonce)
+    .fetch_one(&mut *transaction)
+    .await
+    .map_err(crate::cognitive_store::unavailable)?;
     if proof.rejected_nonce == new_nonce || used_nonce != 0 {
-        return Err(stale("reauthorization requires a fresh externally issued nonce"));
+        return Err(stale(
+            "reauthorization requires a fresh externally issued nonce",
+        ));
     }
     if now_unix_ms < previous.next_eligible_at_unix_ms {
         return Err(LocalLeaseOutboxError::IllegalTransition(
             "pre-boundary reauthorization is still in the original retry backoff".to_string(),
         ));
     }
-    let attempt = previous.attempt.checked_add(1)
+    let attempt = previous
+        .attempt
+        .checked_add(1)
         .filter(|attempt| *attempt <= MAX_DURABLE_DISPATCH_ATTEMPTS)
         .ok_or(LocalLeaseOutboxError::CapacityExceeded {
-            resource: "durable dispatch attempts", maximum: MAX_DURABLE_DISPATCH_ATTEMPTS as usize,
+            resource: "durable dispatch attempts",
+            maximum: MAX_DURABLE_DISPATCH_ATTEMPTS as usize,
         })?;
-    let expiry = now_unix_ms.checked_add(lease_duration_ms)
+    let expiry = now_unix_ms
+        .checked_add(lease_duration_ms)
         .ok_or_else(|| stale("reauthorization claim expiry overflow"))?;
-    let eligible = expiry.checked_add(retry_backoff_ms(attempt))
+    let eligible = expiry
+        .checked_add(retry_backoff_ms(attempt))
         .ok_or_else(|| stale("reauthorization backoff overflow"))?;
     // The new head consumes the proof atomically. A crash after this commit
     // has no current proof and therefore stays unknown, even before Entered.
     let claim = append_claim(
-        &mut transaction, &binding.operation_id, Some(&previous), attempt,
-        binding.owner_generation, &binding.fencing_token, ClaimState::Claimed,
-        expiry, eligible, now_unix_ms,
-    ).await?;
-    transaction.commit().await.map_err(crate::cognitive_store::unavailable)?;
+        &mut transaction,
+        &binding.operation_id,
+        Some(&previous),
+        attempt,
+        binding.owner_generation,
+        &binding.fencing_token,
+        ClaimState::Claimed,
+        expiry,
+        eligible,
+        now_unix_ms,
+    )
+    .await?;
+    transaction
+        .commit()
+        .await
+        .map_err(crate::cognitive_store::unavailable)?;
     Ok(Some(ReauthorizedClaim {
         claim: to_receipt(&binding.operation_id, &claim),
         dispatch_event_id: proof.dispatch_event_id,
@@ -221,10 +295,14 @@ pub(crate) async fn enter_reauthorization(
     dispatch_event_id: &str,
     now_unix_ms: u64,
 ) -> Result<DurableDispatchClaim, LocalLeaseOutboxError> {
-    let mut transaction = store.pool.begin_with("BEGIN IMMEDIATE").await
+    let mut transaction = store
+        .pool
+        .begin_with("BEGIN IMMEDIATE")
+        .await
         .map_err(crate::cognitive_store::unavailable)?;
     verify_binding(&mut transaction, store, binding, dispatch_event_id).await?;
-    let previous = latest_claim(&mut transaction, &binding.operation_id).await?
+    let previous = latest_claim(&mut transaction, &binding.operation_id)
+        .await?
         .ok_or_else(|| stale("reauthorization claim disappeared before entry"))?;
     if previous.state != ClaimState::Claimed
         || to_receipt(&binding.operation_id, &previous) != *claim
@@ -233,11 +311,22 @@ pub(crate) async fn enter_reauthorization(
         return Err(stale("reauthorization lost its exact claim before entry"));
     }
     let entered = append_claim(
-        &mut transaction, &binding.operation_id, Some(&previous), previous.attempt,
-        previous.owner_generation, &previous.fencing_token, ClaimState::Entered,
-        previous.lease_expires_at_unix_ms, previous.next_eligible_at_unix_ms, now_unix_ms,
-    ).await?;
-    transaction.commit().await.map_err(crate::cognitive_store::unavailable)?;
+        &mut transaction,
+        &binding.operation_id,
+        Some(&previous),
+        previous.attempt,
+        previous.owner_generation,
+        &previous.fencing_token,
+        ClaimState::Entered,
+        previous.lease_expires_at_unix_ms,
+        previous.next_eligible_at_unix_ms,
+        now_unix_ms,
+    )
+    .await?;
+    transaction
+        .commit()
+        .await
+        .map_err(crate::cognitive_store::unavailable)?;
     Ok(to_receipt(&binding.operation_id, &entered))
 }
 
@@ -256,35 +345,57 @@ async fn current_proof(
         "SELECT proof_json, proof_sha256, entered_claim_sha256, dispatch_event_id, lease_id
          FROM cognitive_operation_pre_boundary_rejections
          WHERE operation_id = ? AND settled_claim_sha256 = ?",
-    ).bind(&binding.operation_id).bind(head.claim_sha256.as_str())
-        .fetch_optional(&mut **transaction).await.map_err(crate::cognitive_store::unavailable)?;
-    let Some((payload, digest, entered_sha256, dispatch_event_id, lease_id)) = row else { return Ok(None); };
+    )
+    .bind(&binding.operation_id)
+    .bind(head.claim_sha256.as_str())
+    .fetch_optional(&mut **transaction)
+    .await
+    .map_err(crate::cognitive_store::unavailable)?;
+    let Some((payload, digest, entered_sha256, dispatch_event_id, lease_id)) = row else {
+        return Ok(None);
+    };
     let proof: ProofRecord = serde_json::from_str(&payload)
         .map_err(|error| LocalLeaseOutboxError::Corrupt(error.to_string()))?;
     if proof_digest(&payload).as_str() != digest
-        || serde_json::to_string(&proof).map_err(|error| LocalLeaseOutboxError::Corrupt(error.to_string()))? != payload
+        || serde_json::to_string(&proof)
+            .map_err(|error| LocalLeaseOutboxError::Corrupt(error.to_string()))?
+            != payload
         || proof.settled_claim_sha256 != head.claim_sha256
         || proof.entered_claim_sha256.as_str() != entered_sha256
         || proof.dispatch_event_id != dispatch_event_id
         || proof.binding.lease_id != lease_id
         || proof.binding.operation_id != binding.operation_id
     {
-        return Err(LocalLeaseOutboxError::Corrupt("pre-boundary proof binding is corrupt".to_string()));
+        return Err(LocalLeaseOutboxError::Corrupt(
+            "pre-boundary proof binding is corrupt".to_string(),
+        ));
     }
     if &proof.binding != binding
         || head.owner_generation != binding.owner_generation
         || head.fencing_token != binding.fencing_token
     {
-        return Err(stale("pre-boundary proof belongs to a different operation or owner fence"));
+        return Err(stale(
+            "pre-boundary proof belongs to a different operation or owner fence",
+        ));
     }
     let entered: Option<(i64, String, String)> = sqlx::query_as(
         "SELECT claim_sequence, claim_state, claim_sha256 FROM cognitive_operation_dispatch_claims
          WHERE operation_id = ? AND claim_sequence = ?",
-    ).bind(&binding.operation_id)
-        .bind(to_i64(head.claim_sequence.saturating_sub(1), "pre-boundary entered sequence")?)
-        .fetch_optional(&mut **transaction).await.map_err(crate::cognitive_store::unavailable)?;
-    if !entered.is_some_and(|(_, state, digest)| state == "entered" && digest == proof.entered_claim_sha256.as_str()) {
-        return Err(LocalLeaseOutboxError::Corrupt("pre-boundary proof has no adjacent entered claim".to_string()));
+    )
+    .bind(&binding.operation_id)
+    .bind(to_i64(
+        head.claim_sequence.saturating_sub(1),
+        "pre-boundary entered sequence",
+    )?)
+    .fetch_optional(&mut **transaction)
+    .await
+    .map_err(crate::cognitive_store::unavailable)?;
+    if !entered.is_some_and(|(_, state, digest)| {
+        state == "entered" && digest == proof.entered_claim_sha256.as_str()
+    }) {
+        return Err(LocalLeaseOutboxError::Corrupt(
+            "pre-boundary proof has no adjacent entered claim".to_string(),
+        ));
     }
     // A concurrently committed terminal/reconcile event wins. It cannot be
     // resurrected by a still-present immutable proof from an older head.
@@ -301,20 +412,35 @@ async fn verify_binding(
     binding: &ReauthorizationBinding,
     dispatch_event_id: &str,
 ) -> Result<(), LocalLeaseOutboxError> {
-    verify_operation_fence(transaction, store, &binding.operation_id,
-        binding.owner_generation, &binding.fencing_token).await?;
+    verify_operation_fence(
+        transaction,
+        store,
+        &binding.operation_id,
+        binding.owner_generation,
+        &binding.fencing_token,
+    )
+    .await?;
     if !binding_is_current(transaction, binding, dispatch_event_id).await? {
-        return Err(stale("pre-boundary outcome or immutable operation binding changed"));
+        return Err(stale(
+            "pre-boundary outcome or immutable operation binding changed",
+        ));
     }
     let payload: String = sqlx::query_scalar(
         "SELECT payload_json FROM cognitive_local_outbox WHERE lease_id = ? AND occurrence_key = ?",
-    ).bind(&binding.lease_id).bind(&binding.operation_id).fetch_one(&mut **transaction).await
-        .map_err(crate::cognitive_store::unavailable)?;
-    let request = crate::Hos2InstallBudgetV1::from_json(&payload)
-        .map_err(LocalLeaseOutboxError::Corrupt)?;
+    )
+    .bind(&binding.lease_id)
+    .bind(&binding.operation_id)
+    .fetch_one(&mut **transaction)
+    .await
+    .map_err(crate::cognitive_store::unavailable)?;
+    let request =
+        crate::Hos2InstallBudgetV1::from_json(&payload).map_err(LocalLeaseOutboxError::Corrupt)?;
     crate::local_lease_outbox::validate_hos2_predecessor(
-        transaction, store.owner_agent_id(), &request,
-    ).await?;
+        transaction,
+        store.owner_agent_id(),
+        &request,
+    )
+    .await?;
     Ok(())
 }
 

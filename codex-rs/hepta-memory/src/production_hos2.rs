@@ -138,7 +138,9 @@ pub enum Hos2DeliveryObservation {
         effective_ns: u64,
         consumed_ns: u64,
     },
-    NotApplied { status: u16 },
+    NotApplied {
+        status: u16,
+    },
     Reserved,
     NotSeen,
     Retired,
@@ -175,7 +177,10 @@ impl ProductionHos2Target {
         Self { device }
     }
 
-    pub(crate) fn retire(&self, permit: &Hos2RetirementPermit) -> Result<Hos2RetirementObservation, String> {
+    pub(crate) fn retire(
+        &self,
+        permit: &Hos2RetirementPermit,
+    ) -> Result<Hos2RetirementObservation, String> {
         self.device.retire(permit)
     }
 
@@ -195,7 +200,8 @@ impl ProductionHos2Target {
             StableId::new(HOS2_DESTINATION_V1).map_err(|error| error.to_string())?,
             Digest32::of_bytes(request.payload_json.as_bytes()),
             payload.scope_digest(),
-            Generation::new(request.operation_policy_generation).map_err(|error| error.to_string())?,
+            Generation::new(request.operation_policy_generation)
+                .map_err(|error| error.to_string())?,
             /*expected_predecessor*/ None,
         )
         .map_err(|error| error.to_string())?;
@@ -217,27 +223,35 @@ impl ProductionOutboxTarget for ProductionHos2Target {
             Err(reason) => ProductionTargetOutcome::Rejected { reason },
             Ok(payload) => match self.device.install(&payload) {
                 Ok(Hos2InstallOutcome::Contradiction(contradiction)) => {
-                    match Hos2ProtocolConflict::new(&request.occurrence_key, &payload, contradiction) {
-                        Ok(evidence) => ProductionTargetOutcome::Hos2ProtocolConflict { evidence: Box::new(evidence) },
+                    match Hos2ProtocolConflict::new(
+                        &request.occurrence_key,
+                        &payload,
+                        contradiction,
+                    ) {
+                        Ok(evidence) => ProductionTargetOutcome::Hos2ProtocolConflict {
+                            evidence: Box::new(evidence),
+                        },
                         Err(reason) => ProductionTargetOutcome::Indeterminate { reason },
                     }
                 }
-                Ok(Hos2InstallOutcome::Observed(observation)) => match terminal(&payload, observation) {
-                    ProductionTerminalObservation::Hos2ProtocolConflict { evidence } => {
-                        ProductionTargetOutcome::Hos2ProtocolConflict { evidence }
+                Ok(Hos2InstallOutcome::Observed(observation)) => {
+                    match terminal(&payload, observation) {
+                        ProductionTerminalObservation::Hos2ProtocolConflict { evidence } => {
+                            ProductionTargetOutcome::Hos2ProtocolConflict { evidence }
+                        }
+                        ProductionTerminalObservation::Applied { receipt } => {
+                            ProductionTargetOutcome::Committed { receipt }
+                        }
+                        ProductionTerminalObservation::NotApplied { reason } => {
+                            ProductionTargetOutcome::NotApplied { reason }
+                        }
+                        ProductionTerminalObservation::Indeterminate { reason }
+                        | ProductionTerminalObservation::Unavailable { reason }
+                        | ProductionTerminalObservation::Quarantined { reason } => {
+                            ProductionTargetOutcome::Indeterminate { reason }
+                        }
                     }
-                    ProductionTerminalObservation::Applied { receipt } => {
-                        ProductionTargetOutcome::Committed { receipt }
-                    }
-                    ProductionTerminalObservation::NotApplied { reason } => {
-                        ProductionTargetOutcome::NotApplied { reason }
-                    }
-                    ProductionTerminalObservation::Indeterminate { reason }
-                    | ProductionTerminalObservation::Unavailable { reason }
-                    | ProductionTerminalObservation::Quarantined { reason } => {
-                        ProductionTargetOutcome::Indeterminate { reason }
-                    }
-                },
+                }
                 Err(reason) => ProductionTargetOutcome::Indeterminate { reason },
             },
         };
@@ -258,8 +272,14 @@ impl FinalUseProductionOutboxTarget for ProductionHos2Target {
             Ok(payload) => match self.device.observe(&payload) {
                 Ok(Hos2InstallOutcome::Observed(observation)) => terminal(&payload, observation),
                 Ok(Hos2InstallOutcome::Contradiction(contradiction)) => {
-                    match Hos2ProtocolConflict::new(&request.occurrence_key, &payload, contradiction) {
-                        Ok(evidence) => ProductionTerminalObservation::Hos2ProtocolConflict { evidence: Box::new(evidence) },
+                    match Hos2ProtocolConflict::new(
+                        &request.occurrence_key,
+                        &payload,
+                        contradiction,
+                    ) {
+                        Ok(evidence) => ProductionTerminalObservation::Hos2ProtocolConflict {
+                            evidence: Box::new(evidence),
+                        },
                         Err(reason) => ProductionTerminalObservation::Unavailable { reason },
                     }
                 }
@@ -284,10 +304,16 @@ fn terminal(
         Err(reason) => return ProductionTerminalObservation::Unavailable { reason },
     };
     match receipt.outcome() {
-        crate::LocalReconcileOutcome::Committed => ProductionTerminalObservation::Applied { receipt: encoded },
-        crate::LocalReconcileOutcome::Rejected => ProductionTerminalObservation::NotApplied { reason: encoded },
-        crate::LocalReconcileOutcome::StillIndeterminate => ProductionTerminalObservation::Indeterminate {
-            reason: "native terminal receipt did not carry a terminal outcome".to_string(),
-        },
+        crate::LocalReconcileOutcome::Committed => {
+            ProductionTerminalObservation::Applied { receipt: encoded }
+        }
+        crate::LocalReconcileOutcome::Rejected => {
+            ProductionTerminalObservation::NotApplied { reason: encoded }
+        }
+        crate::LocalReconcileOutcome::StillIndeterminate => {
+            ProductionTerminalObservation::Indeterminate {
+                reason: "native terminal receipt did not carry a terminal outcome".to_string(),
+            }
+        }
     }
 }

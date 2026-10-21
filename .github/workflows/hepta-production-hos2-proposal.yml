@@ -36,7 +36,7 @@ jobs:
     timeout-minutes: 180
     env:
       SOURCE_SHA: ${{ github.event.pull_request.head.sha }}
-      PROPOSAL_BASE_SHA: 603238ba4721b2e9656c4647ce41c5f1664c1154
+      PROPOSAL_BASE_SHA: 98b40cb04a23a36a07212ef7d826024f37536057
       CARGO_TERM_COLOR: never
     steps:
       - name: Check out immutable proposal input without credentials
@@ -310,4 +310,5 @@ jobs:
           name: production-hos2-${{ env.SOURCE_SHA }}-${{ github.run_id }}-${{ github.run_attempt }}
           path: ${{ env.HOS2_EVIDENCE_DIR }}
           if-no-files-found: error
+          include-hidden-files: true
           retention-days: 7

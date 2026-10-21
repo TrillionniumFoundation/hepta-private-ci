@@ -18,10 +18,18 @@ pub struct Hos2RetirementPermit {
 }
 
 impl Hos2RetirementPermit {
-    pub fn through(&self) -> &Hos2DeliveryId { &self.through }
-    pub fn source_owner(&self) -> &AgentId { &self.source_owner }
-    pub fn source_generation(&self) -> u64 { self.source_generation }
-    pub fn terminal_chain_sha256(&self) -> &Sha256Digest { &self.terminal_chain_sha256 }
+    pub fn through(&self) -> &Hos2DeliveryId {
+        &self.through
+    }
+    pub fn source_owner(&self) -> &AgentId {
+        &self.source_owner
+    }
+    pub fn source_generation(&self) -> u64 {
+        self.source_generation
+    }
+    pub fn terminal_chain_sha256(&self) -> &Sha256Digest {
+        &self.terminal_chain_sha256
+    }
 }
 
 /// Native observation only; constructing this value grants no retirement
@@ -42,12 +50,18 @@ impl ProductionDurableWriter {
         if request.topic != crate::HOS2_INSTALL_TOPIC_V1
             || request.operation_destination_id != crate::HOS2_DESTINATION_V1
         {
-            return Err(ProductionWriterError::Invalid("HOS2 contradiction targets another destination".to_string()));
+            return Err(ProductionWriterError::Invalid(
+                "HOS2 contradiction targets another destination".to_string(),
+            ));
         }
-        evidence.matches(&request.occurrence_key, &request.payload_json)
+        evidence
+            .matches(&request.occurrence_key, &request.payload_json)
             .map_err(ProductionWriterError::Invalid)?;
         let reason = evidence.to_json().map_err(ProductionWriterError::Invalid)?;
-        let local = self.lease.record_hos2_protocol_conflict(&request.occurrence_key, evidence).await?;
+        let local = self
+            .lease
+            .record_hos2_protocol_conflict(&request.occurrence_key, evidence)
+            .await?;
         Ok(ProductionDispatchReceipt {
             request,
             state: LocalOutcomeState::RolledBack,
@@ -71,9 +85,15 @@ impl ProductionDurableWriter {
         let receipt = Hos2TerminalReceipt::from_json(evidence, &payload)
             .map_err(ProductionWriterError::Invalid)?;
         if receipt.outcome() != expected_outcome {
-            return Err(ProductionWriterError::Invalid("HOS2 target disposition differs from terminal evidence".to_string()));
+            return Err(ProductionWriterError::Invalid(
+                "HOS2 target disposition differs from terminal evidence".to_string(),
+            ));
         }
-        Ok(self.lease.reconcile_hos2_terminal(&request.occurrence_key, &receipt).await?.into())
+        Ok(self
+            .lease
+            .reconcile_hos2_terminal(&request.occurrence_key, &receipt)
+            .await?
+            .into())
     }
 
     /// Acknowledge the exact requested prefix using the target's retained
@@ -97,16 +117,23 @@ impl ProductionDurableWriter {
         // Recheck the original live verifier after all SQLite awaits. This
         // check is the source authorization observation immediately before
         // entry, not a claim to retain an issuer lock across the device call.
-        self.authority.validate_for_agent(self.store.owner_agent_id())?;
-        self.live_verifier.as_ref().ok_or(ProductionWriterError::LiveVerifierRequired)?
+        self.authority
+            .validate_for_agent(self.store.owner_agent_id())?;
+        self.live_verifier
+            .as_ref()
+            .ok_or(ProductionWriterError::LiveVerifierRequired)?
             .verify(&self.authority, self.store.owner_agent_id())
             .map_err(ProductionWriterError::AuthorityRejected)?;
-        let observation = target.retire(&permit).map_err(ProductionWriterError::Durability)?;
+        let observation = target
+            .retire(&permit)
+            .map_err(ProductionWriterError::Durability)?;
         let requested = through.sequence().map_err(ProductionWriterError::Invalid)?;
         if observation.retired_through < requested
             || observation.next_sequence <= observation.retired_through
         {
-            return Err(ProductionWriterError::Durability("native retirement acknowledgement is invalid".to_string()));
+            return Err(ProductionWriterError::Durability(
+                "native retirement acknowledgement is invalid".to_string(),
+            ));
         }
         Ok(observation)
     }

@@ -923,13 +923,19 @@ impl ProductionDurableWriter {
             ));
         }
         if target.destination_id() != crate::HOS2_DESTINATION_V1 {
-            return self.reconcile_target_batch_with_owner(target, limit, /*hos2_owner*/ None).await;
+            return self
+                .reconcile_target_batch_with_owner(target, limit, /*hos2_owner*/ None)
+                .await;
         }
         // The retained writer already excludes another process. Its clones
         // must also exclude live dispatch from observation and settlement.
         // A busy batch yields to the next bounded product recovery pass.
-        let Some(mut owner) = self._writer_lock.hos2_uses.observe()? else { return Ok(0); };
-        let result = self.reconcile_target_batch_with_owner(target, limit, Some(&mut owner)).await;
+        let Some(mut owner) = self._writer_lock.hos2_uses.observe()? else {
+            return Ok(0);
+        };
+        let result = self
+            .reconcile_target_batch_with_owner(target, limit, Some(&mut owner))
+            .await;
         owner.complete();
         result
     }
@@ -976,30 +982,48 @@ impl ProductionDurableWriter {
                 && operation_claims::has_rejection_proof(
                     &self.store,
                     &self.reauthorization_binding(&request),
-                ).await?
+                )
+                .await?
             {
                 continue;
             }
             match target.observe_terminal(&request).await {
                 ProductionTerminalObservation::Hos2ProtocolConflict { evidence } => {
-                    if let Some(owner) = hos2_owner.as_deref_mut() { owner.contradiction_observed(); }
-                    self.settle_hos2_protocol_conflict(request, &evidence).await?;
-                    if let Some(owner) = hos2_owner.as_deref_mut() { owner.contradiction_recorded(); }
+                    if let Some(owner) = hos2_owner.as_deref_mut() {
+                        owner.contradiction_observed();
+                    }
+                    self.settle_hos2_protocol_conflict(request, &evidence)
+                        .await?;
+                    if let Some(owner) = hos2_owner.as_deref_mut() {
+                        owner.contradiction_recorded();
+                    }
                     reconciled += 1;
                 }
                 ProductionTerminalObservation::Applied { receipt } => {
                     if request.topic == crate::HOS2_INSTALL_TOPIC_V1 {
-                        self.settle_hos2_terminal(&request, &receipt, LocalReconcileOutcome::Committed).await?;
+                        self.settle_hos2_terminal(
+                            &request,
+                            &receipt,
+                            LocalReconcileOutcome::Committed,
+                        )
+                        .await?;
                     } else {
-                        self.reconcile(&operation_id, LocalReconcileOutcome::Committed).await?;
+                        self.reconcile(&operation_id, LocalReconcileOutcome::Committed)
+                            .await?;
                     }
                     reconciled += 1;
                 }
                 ProductionTerminalObservation::NotApplied { reason } => {
                     if request.topic == crate::HOS2_INSTALL_TOPIC_V1 {
-                        self.settle_hos2_terminal(&request, &reason, LocalReconcileOutcome::Rejected).await?;
+                        self.settle_hos2_terminal(
+                            &request,
+                            &reason,
+                            LocalReconcileOutcome::Rejected,
+                        )
+                        .await?;
                     } else {
-                        self.reconcile(&operation_id, LocalReconcileOutcome::Rejected).await?;
+                        self.reconcile(&operation_id, LocalReconcileOutcome::Rejected)
+                            .await?;
                     }
                     reconciled += 1;
                 }
@@ -1267,14 +1291,23 @@ impl ProductionDurableWriter {
         receipt: ProductionQueuedReceipt,
     ) -> Result<ProductionDispatchReceipt, ProductionWriterError> {
         if receipt.topic != crate::HOS2_INSTALL_TOPIC_V1 {
-            return self.dispatch_final_use_target_with_owner(
-                final_use, target, signed, expected, receipt, /*hos2_owner*/ None,
-            ).await;
+            return self
+                .dispatch_final_use_target_with_owner(
+                    final_use, target, signed, expected, receipt, /*hos2_owner*/ None,
+                )
+                .await;
         }
         let mut owner = self._writer_lock.hos2_uses.dispatch().await?;
-        let result = self.dispatch_final_use_target_with_owner(
-            final_use, target, signed, expected, receipt, Some(&mut owner),
-        ).await;
+        let result = self
+            .dispatch_final_use_target_with_owner(
+                final_use,
+                target,
+                signed,
+                expected,
+                receipt,
+                Some(&mut owner),
+            )
+            .await;
         owner.complete();
         result
     }
@@ -1364,7 +1397,9 @@ impl ProductionDurableWriter {
                         .map_err(|error| match error {
                             LocalLeaseOutboxError::StaleFence(_)
                             | LocalLeaseOutboxError::IllegalTransition(_)
-                            | LocalLeaseOutboxError::CasConflict(_) => ProductionWriterError::StaleReceipt,
+                            | LocalLeaseOutboxError::CasConflict(_) => {
+                                ProductionWriterError::StaleReceipt
+                            }
                             other => ProductionWriterError::Local(other),
                         })?;
                 }
@@ -1386,39 +1421,39 @@ impl ProductionDurableWriter {
         let dispatch_claim_event_id = if let Some(reauthorized) = reauthorized {
             reauthorized.dispatch_event_id
         } else {
-        match inherited_from_generation {
-            Some(source_generation) => {
-                self.lease
-                    .claim_inherited_dispatch(
-                        &receipt.occurrence_key,
-                        &receipt.event_id,
-                        &receipt.outbox_id,
-                        source_generation,
-                        &receipt.topic,
-                        &receipt.payload_json,
-                        &receipt.payload_sha256,
-                        &self.authority.grant_digest,
-                        &request.operation_digest,
-                    )
-                    .await
+            match inherited_from_generation {
+                Some(source_generation) => {
+                    self.lease
+                        .claim_inherited_dispatch(
+                            &receipt.occurrence_key,
+                            &receipt.event_id,
+                            &receipt.outbox_id,
+                            source_generation,
+                            &receipt.topic,
+                            &receipt.payload_json,
+                            &receipt.payload_sha256,
+                            &self.authority.grant_digest,
+                            &request.operation_digest,
+                        )
+                        .await
+                }
+                None => {
+                    self.lease
+                        .claim_dispatch(
+                            &receipt.occurrence_key,
+                            &self.authority.grant_digest,
+                            &request.operation_digest,
+                        )
+                        .await
+                }
             }
-            None => {
-                self.lease
-                    .claim_dispatch(
-                        &receipt.occurrence_key,
-                        &self.authority.grant_digest,
-                        &request.operation_digest,
-                    )
-                    .await
-            }
-        }
-        .map_err(|error| match error {
-            LocalLeaseOutboxError::StaleFence(_)
-            | LocalLeaseOutboxError::IllegalTransition(_)
-            | LocalLeaseOutboxError::CasConflict(_) => ProductionWriterError::StaleReceipt,
-            other => ProductionWriterError::Local(other),
-        })?
-        .event_id
+            .map_err(|error| match error {
+                LocalLeaseOutboxError::StaleFence(_)
+                | LocalLeaseOutboxError::IllegalTransition(_)
+                | LocalLeaseOutboxError::CasConflict(_) => ProductionWriterError::StaleReceipt,
+                other => ProductionWriterError::Local(other),
+            })?
+            .event_id
         };
         let entered_claim = if is_reauthorization {
             operation_claims::enter_reauthorization(
@@ -1533,10 +1568,11 @@ impl ProductionDurableWriter {
             }
         };
         let outcome = future.await;
-        let observed_contradiction = matches!(&outcome, ProductionTargetOutcome::Hos2ProtocolConflict { .. });
-        if observed_contradiction
-            && let Some(owner) = hos2_owner.as_deref_mut()
-        {
+        let observed_contradiction = matches!(
+            &outcome,
+            ProductionTargetOutcome::Hos2ProtocolConflict { .. }
+        );
+        if observed_contradiction && let Some(owner) = hos2_owner.as_deref_mut() {
             owner.contradiction_observed();
         }
         let settled = if inherited_from_generation.is_some() {
@@ -1556,7 +1592,8 @@ impl ProductionDurableWriter {
             )
             .await
         };
-        if observed_contradiction && settled.is_ok()
+        if observed_contradiction
+            && settled.is_ok()
             && let Some(owner) = hos2_owner.as_deref_mut()
         {
             owner.contradiction_recorded();
@@ -1604,9 +1641,11 @@ impl ProductionDurableWriter {
             }
             ProductionTargetOutcome::Committed { receipt } => {
                 let local = if request.topic == crate::HOS2_INSTALL_TOPIC_V1 {
-                    self.settle_hos2_terminal(&request, &receipt, LocalReconcileOutcome::Committed).await?
+                    self.settle_hos2_terminal(&request, &receipt, LocalReconcileOutcome::Committed)
+                        .await?
                 } else {
-                    self.reconcile(occurrence_key, LocalReconcileOutcome::Committed).await?
+                    self.reconcile(occurrence_key, LocalReconcileOutcome::Committed)
+                        .await?
                 };
                 Ok(ProductionDispatchReceipt {
                     request,
@@ -1620,9 +1659,11 @@ impl ProductionDurableWriter {
             }
             ProductionTargetOutcome::NotApplied { reason } => {
                 let local = if request.topic == crate::HOS2_INSTALL_TOPIC_V1 {
-                    self.settle_hos2_terminal(&request, &reason, LocalReconcileOutcome::Rejected).await?
+                    self.settle_hos2_terminal(&request, &reason, LocalReconcileOutcome::Rejected)
+                        .await?
                 } else {
-                    self.reconcile(occurrence_key, LocalReconcileOutcome::Rejected).await?
+                    self.reconcile(occurrence_key, LocalReconcileOutcome::Rejected)
+                        .await?
                 };
                 Ok(ProductionDispatchReceipt {
                     request,
@@ -1675,7 +1716,12 @@ impl ProductionDurableWriter {
                 receipt: target_receipt,
             } => {
                 let applied = if request.topic == crate::HOS2_INSTALL_TOPIC_V1 {
-                    self.settle_hos2_terminal(&request, &target_receipt, LocalReconcileOutcome::Committed).await
+                    self.settle_hos2_terminal(
+                        &request,
+                        &target_receipt,
+                        LocalReconcileOutcome::Committed,
+                    )
+                    .await
                 } else {
                     self.apply(occurrence_key, target_receipt.clone()).await
                 };
@@ -1696,7 +1742,8 @@ impl ProductionDurableWriter {
             }
             ProductionTargetOutcome::NotApplied { reason } => {
                 let local = if request.topic == crate::HOS2_INSTALL_TOPIC_V1 {
-                    self.settle_hos2_terminal(&request, &reason, LocalReconcileOutcome::Rejected).await?
+                    self.settle_hos2_terminal(&request, &reason, LocalReconcileOutcome::Rejected)
+                        .await?
                 } else {
                     self.reject(occurrence_key, &reason).await?
                 };
@@ -2296,12 +2343,24 @@ pub type ProductionDispatchFuture<'a> =
 
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub enum ProductionTerminalObservation {
-    Hos2ProtocolConflict { evidence: Box<crate::Hos2ProtocolConflict> },
-    Applied { receipt: String },
-    NotApplied { reason: String },
-    Quarantined { reason: String },
-    Indeterminate { reason: String },
-    Unavailable { reason: String },
+    Hos2ProtocolConflict {
+        evidence: Box<crate::Hos2ProtocolConflict>,
+    },
+    Applied {
+        receipt: String,
+    },
+    NotApplied {
+        reason: String,
+    },
+    Quarantined {
+        reason: String,
+    },
+    Indeterminate {
+        reason: String,
+    },
+    Unavailable {
+        reason: String,
+    },
 }
 
 pub type ProductionTerminalObservationFuture<'a> =

@@ -35,8 +35,9 @@ pub(super) struct Hos2OwnerUse<'a> {
 
 impl Hos2OwnerGate {
     pub(super) async fn dispatch(&self) -> Result<Hos2OwnerUse<'_>, ProductionWriterError> {
-        let permit = self.use_permit.acquire().await
-            .map_err(|error| ProductionWriterError::Durability(format!("original HOS2 use gate is closed: {error}")))?;
+        let permit = self.use_permit.acquire().await.map_err(|error| {
+            ProductionWriterError::Durability(format!("original HOS2 use gate is closed: {error}"))
+        })?;
         Hos2OwnerUse::new(permit, &self.interrupted)
     }
 
@@ -44,22 +45,32 @@ impl Hos2OwnerGate {
         let permit = match self.use_permit.try_acquire() {
             Ok(permit) => permit,
             Err(TryAcquireError::NoPermits) => return Ok(None),
-            Err(TryAcquireError::Closed) => return Err(ProductionWriterError::Durability(
-                "original HOS2 use gate is closed".to_string(),
-            )),
+            Err(TryAcquireError::Closed) => {
+                return Err(ProductionWriterError::Durability(
+                    "original HOS2 use gate is closed".to_string(),
+                ));
+            }
         };
         Hos2OwnerUse::new(permit, &self.interrupted).map(Some)
     }
 }
 
 impl<'a> Hos2OwnerUse<'a> {
-    fn new(permit: SemaphorePermit<'a>, interrupted: &'a AtomicBool) -> Result<Self, ProductionWriterError> {
+    fn new(
+        permit: SemaphorePermit<'a>,
+        interrupted: &'a AtomicBool,
+    ) -> Result<Self, ProductionWriterError> {
         if interrupted.load(Ordering::Acquire) {
             return Err(ProductionWriterError::Durability(
                 "HOS2 original owner has an interrupted use; independently authenticated recovery is required".to_string(),
             ));
         }
-        Ok(Self { _permit: permit, interrupted, completed: false, unrecorded_contradiction: false })
+        Ok(Self {
+            _permit: permit,
+            interrupted,
+            completed: false,
+            unrecorded_contradiction: false,
+        })
     }
 
     pub(super) fn contradiction_observed(&mut self) {

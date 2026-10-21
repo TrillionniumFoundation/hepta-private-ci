@@ -411,7 +411,9 @@ async fn run_production_operation_reconciler(
     loop {
         // Native pre-boundary proofs require a fresh external grant even on
         // restart. The separate observer below never resends unknown effects.
-        if cancellation.is_cancelled() { return Ok(()); }
+        if cancellation.is_cancelled() {
+            return Ok(());
+        }
         host.reauthorize_pending(/*limit*/ 256).await?;
         host.reconcile(/*limit*/ 256).await?;
         tokio::select! {

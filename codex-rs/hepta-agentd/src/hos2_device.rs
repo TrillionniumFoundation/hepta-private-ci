@@ -63,11 +63,15 @@ impl ControlTransport for FileTransport {
         // remain live for this synchronous ioctl. The lengths describe their
         // actual bounds. HOS2 snapshots input and copies output before return;
         // it retains no Rust reference. The File retains the process binding.
-        let result = unsafe { libc::ioctl(self.file.as_raw_fd(), HOS2_IOCTL, descriptor.as_mut_ptr()) };
+        let result =
+            unsafe { libc::ioctl(self.file.as_raw_fd(), HOS2_IOCTL, descriptor.as_mut_ptr()) };
         if result != 0 {
             // EINTR is not retried: the original outbox must query D after an
             // ambiguous call, never dispatch the operation a second time.
-            return Err(format!("HOS2 ioctl did not return a complete result: {}", std::io::Error::last_os_error()));
+            return Err(format!(
+                "HOS2 ioctl did not return a complete result: {}",
+                std::io::Error::last_os_error()
+            ));
         }
         Ok(())
     }
@@ -106,8 +110,14 @@ impl AgentdHos2Device {
             recovery_space,
             manage_slot: read64(bootstrap, /*offset*/ 48)?,
             manage_generation: read64(bootstrap, /*offset*/ 56)?,
-            manager_history: (read64(bootstrap, /*offset*/ 64)?, read64(bootstrap, /*offset*/ 72)?),
-            recovery_history: (read64(bootstrap, /*offset*/ 80)?, read64(bootstrap, /*offset*/ 88)?),
+            manager_history: (
+                read64(bootstrap, /*offset*/ 64)?,
+                read64(bootstrap, /*offset*/ 72)?,
+            ),
+            recovery_history: (
+                read64(bootstrap, /*offset*/ 80)?,
+                read64(bootstrap, /*offset*/ 88)?,
+            ),
             maximum_cap_ns: read64(bootstrap, /*offset*/ 168)?,
         };
         if device.boot_id == [0; 16]
@@ -121,7 +131,13 @@ impl AgentdHos2Device {
         {
             return Err("invalid HOS2 bootstrap management binding".to_string());
         }
-        let response = device.exchange(/*opcode*/ 1, /*sequence*/ 1, /*slot*/ 0, /*generation*/ 0, &[])?;
+        let response = device.exchange(
+            /*opcode*/ 1,
+            /*sequence*/ 1,
+            /*slot*/ 0,
+            /*generation*/ 0,
+            &[],
+        )?;
         if response.status != 0
             || response.revision != 0
             || response.payload.len() != 48
@@ -202,7 +218,8 @@ impl AgentdHos2Device {
         input[48..56].copy_from_slice(&generation.to_le_bytes());
         input[HEADER_BYTES..HEADER_BYTES + payload.len()].copy_from_slice(payload);
         let mut output = [0_u8; HEADER_BYTES + 64];
-        self.transport.exchange(&input[..HEADER_BYTES + payload.len()], &mut output)?;
+        self.transport
+            .exchange(&input[..HEADER_BYTES + payload.len()], &mut output)?;
         let length = read32(&output, /*offset*/ 16)? as usize;
         let status = read_u16(&output, /*offset*/ 10)?;
         if &output[..4] != b"HOSR"
@@ -235,35 +252,49 @@ impl Hos2Device for AgentdHos2Device {
             || request.manage_slot != self.manage_slot
             || request.manage_generation != self.manage_generation
         {
-            return Ok(Hos2InstallOutcome::Contradiction(Hos2InstallContradiction::RequestBindingMismatch));
+            return Ok(Hos2InstallOutcome::Contradiction(
+                Hos2InstallContradiction::RequestBindingMismatch,
+            ));
         }
         if request.cap_ns > self.maximum_cap_ns {
-            return Ok(Hos2InstallOutcome::Contradiction(Hos2InstallContradiction::BudgetExceedsGrant {
-                maximum_cap_ns: self.maximum_cap_ns,
-            }));
+            return Ok(Hos2InstallOutcome::Contradiction(
+                Hos2InstallContradiction::BudgetExceedsGrant {
+                    maximum_cap_ns: self.maximum_cap_ns,
+                },
+            ));
         }
         let mut payload = [0_u8; 32];
         payload[..8].copy_from_slice(&request.expected_revision.to_le_bytes());
         payload[8..16].copy_from_slice(&request.period_ns.to_le_bytes());
         payload[16..24].copy_from_slice(&request.cap_ns.to_le_bytes());
-        let response = self.exchange(/*opcode*/ 3, request.delivery.sequence()?,
-            request.manage_slot, request.manage_generation, &payload)?;
+        let response = self.exchange(
+            /*opcode*/ 3,
+            request.delivery.sequence()?,
+            request.manage_slot,
+            request.manage_generation,
+            &payload,
+        )?;
         if response.status == 5 {
             // Conflict can mean this D already belongs to different request
             // bytes. QueryDelivery would return that older receipt without a
             // cap/digest binding, so it cannot repair this contradiction.
-            return Ok(Hos2InstallOutcome::Contradiction(Hos2InstallContradiction::ConflictStatus));
+            return Ok(Hos2InstallOutcome::Contradiction(
+                Hos2InstallContradiction::ConflictStatus,
+            ));
         }
         if response.status == 0
             && (response.payload.len() != 24
                 || read64(&response.payload, /*offset*/ 0)? != request.expected_revision
                 || request.expected_revision.checked_add(1) != Some(response.revision)
-                || read64(&response.payload, /*offset*/ 16)? > read64(&response.payload, /*offset*/ 8)? % HOS2_CPU_PERIOD_NS)
+                || read64(&response.payload, /*offset*/ 16)?
+                    > read64(&response.payload, /*offset*/ 8)? % HOS2_CPU_PERIOD_NS)
         {
-            return Ok(Hos2InstallOutcome::Contradiction(Hos2InstallContradiction::InvalidAcknowledgement {
-                revision: response.revision,
-                payload: response.payload,
-            }));
+            return Ok(Hos2InstallOutcome::Contradiction(
+                Hos2InstallContradiction::InvalidAcknowledgement {
+                    revision: response.revision,
+                    payload: response.payload,
+                },
+            ));
         }
         // Even a transport-level rejection is not evidence that a D was
         // consumed. Only the original history owner can report terminality.
@@ -279,9 +310,15 @@ impl Hos2Device for AgentdHos2Device {
             } if *observed_previous == previous_revision && *observed_revision == revision
                 && *observed_effective == effective_ns && *observed_consumed == consumed_ns);
             if !matches {
-                return Ok(Hos2InstallOutcome::Contradiction(Hos2InstallContradiction::AcknowledgementMismatch {
-                    previous_revision, revision, effective_ns, consumed_ns, observation,
-                }));
+                return Ok(Hos2InstallOutcome::Contradiction(
+                    Hos2InstallContradiction::AcknowledgementMismatch {
+                        previous_revision,
+                        revision,
+                        effective_ns,
+                        consumed_ns,
+                        observation,
+                    },
+                ));
             }
         }
         Ok(Hos2InstallOutcome::Observed(observation))
@@ -293,15 +330,22 @@ impl Hos2Device for AgentdHos2Device {
         // namespace still leaves the original effect unknown. This also
         // permits a recovery image's retained manager-history capability.
         self.history_slot(&request.delivery)?;
-        if request.manage_slot != self.manage_slot || request.manage_generation != self.manage_generation {
-            return Ok(Hos2InstallOutcome::Contradiction(Hos2InstallContradiction::RequestBindingMismatch));
+        if request.manage_slot != self.manage_slot
+            || request.manage_generation != self.manage_generation
+        {
+            return Ok(Hos2InstallOutcome::Contradiction(
+                Hos2InstallContradiction::RequestBindingMismatch,
+            ));
         }
         if request.cap_ns > self.maximum_cap_ns {
-            return Ok(Hos2InstallOutcome::Contradiction(Hos2InstallContradiction::BudgetExceedsGrant {
-                maximum_cap_ns: self.maximum_cap_ns,
-            }));
+            return Ok(Hos2InstallOutcome::Contradiction(
+                Hos2InstallContradiction::BudgetExceedsGrant {
+                    maximum_cap_ns: self.maximum_cap_ns,
+                },
+            ));
         }
-        self.query(&request.delivery).map(Hos2InstallOutcome::Observed)
+        self.query(&request.delivery)
+            .map(Hos2InstallOutcome::Observed)
     }
 
     fn query(&self, delivery: &Hos2DeliveryId) -> Result<Hos2DeliveryObservation, String> {
@@ -318,27 +362,44 @@ impl Hos2Device for AgentdHos2Device {
         let bytes = &response.payload;
         let state = read_u16(bytes, /*offset*/ 0)?;
         let status = read_u16(bytes, /*offset*/ 2)?;
-        if read32(bytes, /*offset*/ 4)? != 0 || read64(bytes, /*offset*/ 8)? != sequence || status > 11 {
+        if read32(bytes, /*offset*/ 4)? != 0
+            || read64(bytes, /*offset*/ 8)? != sequence
+            || status > 11
+        {
             return Err("native history response does not match D".to_string());
         }
         match (state, status) {
-            (1, 0) if read16(bytes, /*offset*/ 16)? != [0; 16]
-                && read64(bytes, /*offset*/ 40)? != 0
-                && read64(bytes, /*offset*/ 40)?.checked_add(1) == Some(read64(bytes, /*offset*/ 32)?)
-                && read64(bytes, /*offset*/ 56)? <= read64(bytes, /*offset*/ 48)? % HOS2_CPU_PERIOD_NS => Ok(Hos2DeliveryObservation::Applied {
-                stable_object_id: read16(bytes, /*offset*/ 16)?,
-                revision: read64(bytes, /*offset*/ 32)?,
-                previous_revision: read64(bytes, /*offset*/ 40)?,
-                effective_ns: read64(bytes, /*offset*/ 48)?,
-                consumed_ns: read64(bytes, /*offset*/ 56)?,
-            }),
+            (1, 0)
+                if read16(bytes, /*offset*/ 16)? != [0; 16]
+                    && read64(bytes, /*offset*/ 40)? != 0
+                    && read64(bytes, /*offset*/ 40)?.checked_add(1)
+                        == Some(read64(bytes, /*offset*/ 32)?)
+                    && read64(bytes, /*offset*/ 56)?
+                        <= read64(bytes, /*offset*/ 48)? % HOS2_CPU_PERIOD_NS =>
+            {
+                Ok(Hos2DeliveryObservation::Applied {
+                    stable_object_id: read16(bytes, /*offset*/ 16)?,
+                    revision: read64(bytes, /*offset*/ 32)?,
+                    previous_revision: read64(bytes, /*offset*/ 40)?,
+                    effective_ns: read64(bytes, /*offset*/ 48)?,
+                    consumed_ns: read64(bytes, /*offset*/ 56)?,
+                })
+            }
             (1, 1..=7) if bytes[16..].iter().all(|byte| *byte == 0) => {
                 Ok(Hos2DeliveryObservation::NotApplied { status })
             }
-            (0, 0) if bytes[16..].iter().all(|byte| *byte == 0) => Ok(Hos2DeliveryObservation::Reserved),
-            (2, 0) if bytes[16..].iter().all(|byte| *byte == 0) => Ok(Hos2DeliveryObservation::Retired),
-            (3, 0) if bytes[16..].iter().all(|byte| *byte == 0) => Ok(Hos2DeliveryObservation::NotSeen),
-            (4, 0) if bytes[16..].iter().all(|byte| *byte == 0) => Ok(Hos2DeliveryObservation::HistoryLost),
+            (0, 0) if bytes[16..].iter().all(|byte| *byte == 0) => {
+                Ok(Hos2DeliveryObservation::Reserved)
+            }
+            (2, 0) if bytes[16..].iter().all(|byte| *byte == 0) => {
+                Ok(Hos2DeliveryObservation::Retired)
+            }
+            (3, 0) if bytes[16..].iter().all(|byte| *byte == 0) => {
+                Ok(Hos2DeliveryObservation::NotSeen)
+            }
+            (4, 0) if bytes[16..].iter().all(|byte| *byte == 0) => {
+                Ok(Hos2DeliveryObservation::HistoryLost)
+            }
             _ => Err("native history result has an invalid state/status combination".to_string()),
         }
     }
@@ -360,34 +421,46 @@ impl Hos2Device for AgentdHos2Device {
         if retired_through < sequence || next_sequence <= retired_through {
             return Err("native retirement acknowledgement has an invalid frontier".to_string());
         }
-        Ok(Hos2RetirementObservation { retired_through, next_sequence })
+        Ok(Hos2RetirementObservation {
+            retired_through,
+            next_sequence,
+        })
     }
 }
 
 fn read_u16(bytes: &[u8], offset: usize) -> Result<u16, String> {
-    let value: [u8; 2] = bytes.get(offset..offset + 2)
-        .ok_or_else(|| "truncated HOS2 field".to_string())?.try_into()
+    let value: [u8; 2] = bytes
+        .get(offset..offset + 2)
+        .ok_or_else(|| "truncated HOS2 field".to_string())?
+        .try_into()
         .map_err(|_| "invalid HOS2 field length".to_string())?;
     Ok(u16::from_le_bytes(value))
 }
 
 fn read32(bytes: &[u8], offset: usize) -> Result<u32, String> {
-    let value: [u8; 4] = bytes.get(offset..offset + 4)
-        .ok_or_else(|| "truncated HOS2 field".to_string())?.try_into()
+    let value: [u8; 4] = bytes
+        .get(offset..offset + 4)
+        .ok_or_else(|| "truncated HOS2 field".to_string())?
+        .try_into()
         .map_err(|_| "invalid HOS2 field length".to_string())?;
     Ok(u32::from_le_bytes(value))
 }
 
 fn read64(bytes: &[u8], offset: usize) -> Result<u64, String> {
-    let value: [u8; 8] = bytes.get(offset..offset + 8)
-        .ok_or_else(|| "truncated HOS2 field".to_string())?.try_into()
+    let value: [u8; 8] = bytes
+        .get(offset..offset + 8)
+        .ok_or_else(|| "truncated HOS2 field".to_string())?
+        .try_into()
         .map_err(|_| "invalid HOS2 field length".to_string())?;
     Ok(u64::from_le_bytes(value))
 }
 
 fn read16(bytes: &[u8], offset: usize) -> Result<[u8; 16], String> {
-    bytes.get(offset..offset + 16).ok_or_else(|| "truncated HOS2 identity".to_string())?
-        .try_into().map_err(|_| "invalid HOS2 identity length".to_string())
+    bytes
+        .get(offset..offset + 16)
+        .ok_or_else(|| "truncated HOS2 identity".to_string())?
+        .try_into()
+        .map_err(|_| "invalid HOS2 identity length".to_string())
 }
 
 #[cfg(test)]

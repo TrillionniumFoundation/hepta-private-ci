@@ -1,4 +1,4 @@
-"""Linux-only diagnostic browser; observed vendor-download digests, not signatures."""
+"""Pinned Linux browser for product/diagnostic tests; download digests, not signatures."""
 
 import argparse
 import hashlib

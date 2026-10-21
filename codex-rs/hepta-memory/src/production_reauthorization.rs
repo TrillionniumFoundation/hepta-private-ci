@@ -22,13 +22,31 @@ impl PreBoundaryRejected {
         stage: RejectionStage,
         rejected_nonce: [u8; 32],
     ) -> Self {
-        Self { binding, entered, dispatch_event_id, stage, rejected_nonce }
+        Self {
+            binding,
+            entered,
+            dispatch_event_id,
+            stage,
+            rejected_nonce,
+        }
     }
 
-    pub(crate) fn into_parts(self) -> (
-        ReauthorizationBinding, DurableDispatchClaim, String, RejectionStage, [u8; 32],
+    pub(crate) fn into_parts(
+        self,
+    ) -> (
+        ReauthorizationBinding,
+        DurableDispatchClaim,
+        String,
+        RejectionStage,
+        [u8; 32],
     ) {
-        (self.binding, self.entered, self.dispatch_event_id, self.stage, self.rejected_nonce)
+        (
+            self.binding,
+            self.entered,
+            self.dispatch_event_id,
+            self.stage,
+            self.rejected_nonce,
+        )
     }
 }
 
@@ -62,7 +80,9 @@ impl ProductionDurableWriter {
     ) -> Result<Vec<ProductionQueuedReceipt>, ProductionWriterError> {
         self.verify_authority().await?;
         if !(1..=256).contains(&limit) {
-            return Err(ProductionWriterError::Invalid("reauthorization limit must be 1..=256".to_string()));
+            return Err(ProductionWriterError::Invalid(
+                "reauthorization limit must be 1..=256".to_string(),
+            ));
         }
         if destination_id != crate::HOS2_DESTINATION_V1 {
             return Ok(Vec::new());
@@ -80,23 +100,39 @@ impl ProductionDurableWriter {
                    WHERE lease_id = o.lease_id AND occurrence_key = o.operation_id
                    ORDER BY event_sequence DESC LIMIT 1)
              ORDER BY o.prepared_at_unix_seconds, o.operation_id LIMIT ?",
-        ).bind(self.lease_id()).bind(destination_id)
-            .bind(i64::try_from(now_unix_ms()?).map_err(|_| ProductionWriterError::Invalid("clock overflow".to_string()))?)
-            .bind(i64::try_from(limit).map_err(|_| ProductionWriterError::Invalid("limit overflow".to_string()))?)
-            .fetch_all(&self.store.pool).await
-            .map_err(|error| ProductionWriterError::Durability(error.to_string()))?;
+        )
+        .bind(self.lease_id())
+        .bind(destination_id)
+        .bind(
+            i64::try_from(now_unix_ms()?)
+                .map_err(|_| ProductionWriterError::Invalid("clock overflow".to_string()))?,
+        )
+        .bind(
+            i64::try_from(limit)
+                .map_err(|_| ProductionWriterError::Invalid("limit overflow".to_string()))?,
+        )
+        .fetch_all(&self.store.pool)
+        .await
+        .map_err(|error| ProductionWriterError::Durability(error.to_string()))?;
         let mut receipts = Vec::with_capacity(ids.len());
         for id in ids {
             let request = self.reconciliation_request(&id, destination_id).await?;
             if !operation_claims::awaiting_reauthorization(
-                &self.store, &self.reauthorization_binding(&request), now_unix_ms()?,
-            ).await? {
+                &self.store,
+                &self.reauthorization_binding(&request),
+                now_unix_ms()?,
+            )
+            .await?
+            {
                 continue;
             }
             let (event_id, outbox_id): (String, String) = sqlx::query_as(
                 "SELECT event_id, outbox_id FROM cognitive_operation_ledger WHERE operation_id = ?",
-            ).bind(&id).fetch_one(&self.store.pool).await
-                .map_err(|error| ProductionWriterError::Durability(error.to_string()))?;
+            )
+            .bind(&id)
+            .fetch_one(&self.store.pool)
+            .await
+            .map_err(|error| ProductionWriterError::Durability(error.to_string()))?;
             receipts.push(ProductionQueuedReceipt {
                 schema_version: PRODUCTION_DURABLE_WRITER_SCHEMA_VERSION,
                 namespace: PRODUCTION_DURABLE_WRITER_NAMESPACE.to_string(),
