@@ -24,6 +24,13 @@ validated cell intent into the existing `CodexOperationIntent` and therefore kee
 all current App Server observation and reconciliation rules in one execution spine.
 Cells do not import App Server client or Core types.
 
+For native tools, `RuntimeToolIntentV1::intent_digest()` additionally binds the
+`tool_id`, argument digest, idempotency key and host scope. Every native result
+must be checked through `RuntimeReceiptV1::validate_against` (including its
+`runtime_intent_digest`); validating only the embedded Cell-level
+`ExecutionReceiptV1` is insufficient to prove the exact tool operation.
+This remains a contract check, not independent proof of a physical tool effect.
+
 ## P1–P2 — shared encoder and worker host
 
 The intended implementation uses one immutable feature snapshot per batch, a shared
@@ -66,7 +73,9 @@ candidate → independent evaluation → selector → signed successor snapshot
 
 Add, split, merge, rewire and retire each need a fault-injection case at every
 boundary. An interrupted or unknown effect remains reconcile-only; it cannot be
-converted into success by a restarted process.
+converted into success by a restarted process. A generation fence witness
+requires an exact successor generation when a predecessor is declared;
+skipped or regressed generations are rejected before route activation.
 
 ## P5 — scale and meta-network evaluation
 

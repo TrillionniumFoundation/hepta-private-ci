@@ -90,6 +90,11 @@ impl GenerationFenceWitnessV1 {
         if self.predecessor_generation == Some(self.generation) {
             return Err(ExecutionContractError::GenerationSelfPredecessor);
         }
+        if let Some(predecessor) = self.predecessor_generation
+            && predecessor.get().checked_add(1) != Some(self.generation.get())
+        {
+            return Err(ExecutionContractError::NonSuccessorGeneration);
+        }
         if !self.old_writer_fenced || !self.route_cutover_observed {
             return Err(ExecutionContractError::FenceNotComplete);
         }
@@ -395,6 +400,7 @@ pub enum ExecutionContractError {
     StatusOutcomeMismatch,
     WriterIdentityCollision,
     GenerationSelfPredecessor,
+    NonSuccessorGeneration,
     FenceNotComplete,
 }
 

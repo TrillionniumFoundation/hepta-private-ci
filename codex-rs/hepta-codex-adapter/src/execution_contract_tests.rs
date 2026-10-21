@@ -193,6 +193,20 @@ fn fence_requires_old_writer_and_route_cutover() {
     };
     assert_eq!(base.validate(), Ok(()));
 
+    let mut skipped = base.clone();
+    skipped.generation = generation(5);
+    assert_eq!(
+        skipped.validate(),
+        Err(ExecutionContractError::NonSuccessorGeneration)
+    );
+
+    let mut backwards = base.clone();
+    backwards.generation = generation(1);
+    assert_eq!(
+        backwards.validate(),
+        Err(ExecutionContractError::NonSuccessorGeneration)
+    );
+
     let mut incomplete = base;
     incomplete.route_cutover_observed = false;
     assert_eq!(
