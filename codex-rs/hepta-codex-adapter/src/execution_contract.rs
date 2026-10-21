@@ -318,6 +318,16 @@ impl ExecutionReceiptV1 {
         if self.final_payload_digest.validate().is_err() {
             return Err(ExecutionContractError::ReceiptBindingMismatch);
         }
+        // A known terminal status without an observed result digest cannot be
+        // independently distinguished from an unknown transport outcome.
+        // Pre-admission rejection and indeterminate recovery remain separate.
+        if matches!(
+            self.status,
+            ExecutionStatusV1::Completed | ExecutionStatusV1::Failed
+        ) && self.outcome_digest.is_none_or(Digest32::is_zero)
+        {
+            return Err(ExecutionContractError::MissingTerminalOutcome);
+        }
         Ok(())
     }
 }
@@ -345,8 +355,12 @@ impl RuntimeReceiptV1 {
         if self.execution.outcome_digest != Some(self.tool_outcome.outcome_digest()) {
             return Err(ExecutionContractError::OutcomeDigestMismatch);
         }
-        if matches!(self.execution.status, ExecutionStatusV1::Completed)
-            && !self.tool_outcome.terminal_observed
+        // Neither success nor a known backend failure may be synthesized from
+        // an unobserved tool result. Unknown outcomes are reconcile-only.
+        if matches!(
+            self.execution.status,
+            ExecutionStatusV1::Completed | ExecutionStatusV1::Failed
+        ) && !self.tool_outcome.terminal_observed
         {
             return Err(ExecutionContractError::StatusOutcomeMismatch);
         }
