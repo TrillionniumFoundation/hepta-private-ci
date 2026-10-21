@@ -123,3 +123,43 @@ fn cache_rejects_same_generation_equivocation_and_older_rewrites() {
         &[4, 5, 6],
     );
 }
+
+#[test]
+fn retired_model_and_cell_eviction_are_idempotent() {
+    let old_model = digest("old-model");
+    let new_model = digest("new-model");
+    let old_key = CompatibleModelKeyV1 {
+        model_digest: old_model,
+        encoder_digest: digest("encoder"),
+        output_width: 8,
+    };
+    let other_shape = CompatibleModelKeyV1 {
+        model_digest: old_model,
+        encoder_digest: digest("encoder"),
+        output_width: 16,
+    };
+    let new_key = CompatibleModelKeyV1 {
+        model_digest: new_model,
+        encoder_digest: digest("encoder"),
+        output_width: 8,
+    };
+    let mut index = CompatibleModelIndexV1::default();
+    index.register(old_key.clone(), id("cell:a")).expect("old cell");
+    index.register(old_key.clone(), id("cell:b")).expect("other cell");
+    index.register(other_shape.clone(), id("cell:c")).expect("other shape");
+    index.register(new_key.clone(), id("cell:d")).expect("new model");
+    assert_eq!(index.entry_count, 4);
+
+    assert!(index.unregister(&old_key, &id("cell:a")));
+    assert!(!index.unregister(&old_key, &id("cell:a")));
+    assert_eq!(index.lookup(&old_key), vec![id("cell:b")]);
+    assert_eq!(index.entry_count, 3);
+
+    assert_eq!(index.invalidate_model(old_model), 2);
+    assert_eq!(index.invalidate_model(old_model), 0);
+    assert!(index.lookup(&old_key).is_empty());
+    assert!(index.lookup(&other_shape).is_empty());
+    assert_eq!(index.lookup(&new_key), vec![id("cell:d")]);
+    assert_eq!(index.entry_count, 1);
+    assert_eq!(index.entries.len(), 1);
+}
