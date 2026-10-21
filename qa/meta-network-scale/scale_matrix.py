@@ -34,11 +34,20 @@ REQUIRED_EVIDENCE = (
 )
 REQUIRED_METRICS = (
     "task_utility",
+    "future_window_utility",
+    "negative_transfer_rate",
+    "p50_ms",
+    "p95_ms",
     "p99_ms",
     "throughput_per_host",
-    "rss_bytes",
     "queue_age_ms",
     "starvation_count",
+    "gpu_peak_bytes",
+    "rss_bytes",
+    "immutable_buffer_reuse_rate",
+    "cache_invalidation_count",
+    "migration_recovery_ms",
+    "rollback_recovery_ms",
 )
 LIFECYCLE = (
     "candidate",
@@ -149,8 +158,10 @@ def validate_result(result: dict[str, Any]) -> list[str]:
             value = metrics[key]
             if not _finite_number(value):
                 errors.append(f"metrics.{key} must be a finite number")
-            elif key != "task_utility" and value < 0:
+            elif key not in {"task_utility", "future_window_utility"} and value < 0:
                 errors.append(f"metrics.{key} must be non-negative")
+            elif key in {"negative_transfer_rate", "immutable_buffer_reuse_rate"} and value > 1:
+                errors.append(f"metrics.{key} must be a unit-interval rate")
 
     metrics_receipt = result.get("metrics_receipt")
     if not isinstance(metrics_receipt, str) or _HEX64.fullmatch(metrics_receipt) is None:
