@@ -220,15 +220,35 @@ def shadow_distill_step(student: nn.Module, slotizer: MultimodalSlotizer,
     # Validate optimizer owner identity before a trainable projection or Student
     # call, and recheck it after forward/backward hooks before any weight step.
     optimizer_binding = _verify_optimizer_ownership(student, slotizer, optimizer)
+    # detach() alone aliases caller-owned teacher storage. Freeze the actual
+    # training target before any projector/Student hooks or backward execution.
+    if (not isinstance(teacher_global, torch.Tensor)
+            or teacher_global.ndim != 2
+            or not 1 <= teacher_global.shape[0] <= MAX_BRIDGE_BATCH
+            or teacher_global.shape[1] != slotizer.latent_width
+            or not teacher_global.is_floating_point()):
+        raise LatentBridgeError("invalid teacher target shape or dtype")
+    target = teacher_global.detach().clone()
+    if not bool(torch.isfinite(target).all()):
+        raise LatentBridgeError("nonfinite teacher target snapshot")
+    teacher_target_sha256 = _tensor_bytes_sha256(target)
     slots = slotizer(features, source_digests=source_digests,
                      generation=generation, timestamps=timestamps)
     if _verify_optimizer_ownership(student, slotizer, optimizer) != optimizer_binding:
         raise LatentBridgeError("optimizer ownership changed during projection")
-    target = teacher_global.detach()
-    if (target.shape != slots.global_feature.shape or
-            not torch.isfinite(target).all() or
-            target.device != slots.global_feature.device):
+    if (target.shape != slots.global_feature.shape
+            or target.device != slots.global_feature.device
+            or target.dtype != slots.global_feature.dtype):
         raise LatentBridgeError("teacher target incompatible with student")
+    # This binds the actual paired bytes, NOT independently attested provenance.
+    paired_distillation_sha256 = hashlib.sha256(json.dumps({
+        "schema": "hepta.shadow-distillation-pair.v1",
+        "generation": generation,
+        "slot_source_manifest_sha256": slots.source_manifest_digest,
+        "teacher_target_sha256": teacher_target_sha256,
+        "teacher_target_shape": list(target.shape),
+        "teacher_target_dtype": str(target.dtype),
+    }, sort_keys=True, separators=(",", ":")).encode()).hexdigest()
     optimizer.zero_grad(set_to_none=True)
     predictions = student(slots.slots).mean(dim=1)
     if not torch.isfinite(predictions).all():
@@ -246,6 +266,8 @@ def shadow_distill_step(student: nn.Module, slotizer: MultimodalSlotizer,
     return {"loss": float(loss.detach()), "mse": float(mse.detach()),
             "cosine_loss": float(cosine.detach()), "generation": generation,
             "source_manifest_digest": slots.source_manifest_digest,
+            "teacher_target_sha256": teacher_target_sha256,
+            "paired_distillation_sha256": paired_distillation_sha256,
             "training_posture": "OFFLINE_RESEARCH_ONLY", "authority": "DENY_ALL",
             "evidence_class": "UNVERIFIED_TEACHER_FEATURES",
             "checkpoint_qualified": False, "production_activation_allowed": False}

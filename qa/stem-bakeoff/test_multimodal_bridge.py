@@ -180,6 +180,81 @@ class SharedMultimodalBridgeTests(unittest.TestCase):
         torch.testing.assert_close(bridge.projectors['text'].weight, before, rtol=0, atol=0)
         self.assertIsNone(foreign_cell_weight.grad)
 
+    def test_teacher_target_frozen_before_hook_mutation_and_receipted(self):
+        from copy import deepcopy
+        from multimodal_bridge import _tensor_bytes_sha256
+
+        slotizer = self.stem()
+        control_slotizer = deepcopy(slotizer)
+        student = build_encoder(StemSpec('tiny_training_only', 32, 1, 4),
+                                device='cpu', trainable=True)
+        control_student = deepcopy(student)
+        optimizer = torch.optim.SGD(list(slotizer.parameters())
+                                    + list(student.parameters()), lr=0.001)
+        control_optimizer = torch.optim.SGD(list(control_slotizer.parameters())
+                                            + list(control_student.parameters()),
+                                            lr=0.001)
+        inputs = {'text': torch.randn(2, 32)}
+        caller_target = torch.randn(2, 32, requires_grad=True)
+        frozen_target = caller_target.detach().clone()
+        original_sha = _tensor_bytes_sha256(frozen_target)
+        calls = [0]
+
+        def mutate_caller(_module, _inputs, _output):
+            calls[0] += 1
+            with torch.no_grad():
+                caller_target.add_(10)
+
+        hook_a = slotizer.projectors['text'].register_forward_hook(mutate_caller)
+        hook_b = student.register_forward_hook(mutate_caller)
+        try:
+            got = shadow_distill_step(
+                student, slotizer, inputs, {'text': 'a' * 64},
+                caller_target, optimizer, generation=1)
+        finally:
+            hook_b.remove()
+            hook_a.remove()
+        control = shadow_distill_step(
+            control_student, control_slotizer, inputs, {'text': 'a' * 64},
+            frozen_target, control_optimizer, generation=1)
+        self.assertEqual(calls[0], 2)
+        self.assertNotEqual(_tensor_bytes_sha256(caller_target), original_sha)
+        self.assertEqual(got['teacher_target_sha256'], original_sha)
+        self.assertEqual(got['paired_distillation_sha256'],
+                         control['paired_distillation_sha256'])
+        self.assertAlmostEqual(got['loss'], control['loss'], places=6)
+        for actual, expected in zip(slotizer.parameters(), control_slotizer.parameters()):
+            torch.testing.assert_close(actual, expected, rtol=0, atol=0)
+        for actual, expected in zip(student.parameters(), control_student.parameters()):
+            torch.testing.assert_close(actual, expected, rtol=0, atol=0)
+        self.assertIsNone(caller_target.grad)
+
+    def test_malformed_teacher_target_rejected_before_projector(self):
+        slotizer = self.stem()
+        student = build_encoder(StemSpec('tiny_training_only', 32, 1, 4),
+                                device='cpu', trainable=True)
+        optimizer = torch.optim.SGD(list(slotizer.parameters())
+                                    + list(student.parameters()), lr=0.001)
+        calls = [0]
+
+        def count_forward(_module, _inputs, _output):
+            calls[0] += 1
+
+        hook = slotizer.projectors['text'].register_forward_hook(count_forward)
+        try:
+            for target in (torch.ones(9, 32), torch.ones(2, 31),
+                           torch.ones(2, 32, dtype=torch.int32),
+                           torch.full((2, 32), float('nan'))):
+                with self.subTest(target_shape=tuple(target.shape),
+                                  target_dtype=str(target.dtype)):
+                    with self.assertRaises(LatentBridgeError):
+                        shadow_distill_step(student, slotizer, {'text': torch.ones(2, 32)},
+                                            {'text': 'a' * 64}, target, optimizer,
+                                            generation=1)
+        finally:
+            hook.remove()
+        self.assertEqual(calls[0], 0)
+
     def test_teacher_is_detached_and_small_student_offline_step_changes_weights(self):
         stem = self.stem()
         student = build_encoder(StemSpec('tiny_training_only', 32, 1, 4),
