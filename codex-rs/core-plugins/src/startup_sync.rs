@@ -1,4 +1,5 @@
 use std::fs::File;
+use std::io::Read;
 use std::path::Path;
 use std::path::PathBuf;
 use std::process::Command;
@@ -1035,6 +1036,10 @@ fn read_sha_file(sha_path: &Path) -> Option<String> {
         .filter(|sha| !sha.is_empty())
 }
 
+const MAX_CURATED_ZIP_ENTRIES: usize = 10_000;
+const MAX_CURATED_ZIP_ENTRY_BYTES: u64 = 64 * 1024 * 1024;
+const MAX_CURATED_ZIP_EXPANDED_BYTES: u64 = 512 * 1024 * 1024;
+
 fn extract_zipball_to_dir(bytes: &[u8], destination: &Path) -> Result<(), String> {
     std::fs::create_dir_all(destination).map_err(|err| {
         format!(
@@ -1046,6 +1051,10 @@ fn extract_zipball_to_dir(bytes: &[u8], destination: &Path) -> Result<(), String
     let cursor = std::io::Cursor::new(bytes);
     let mut archive = ZipArchive::new(cursor)
         .map_err(|err| format!("failed to open curated plugins zip archive: {err}"))?;
+    if archive.len() > MAX_CURATED_ZIP_ENTRIES {
+        return Err("curated plugins zip archive exceeds entry limit".to_string());
+    }
+    let mut total_uncompressed_bytes = 0_u64;
 
     for index in 0..archive.len() {
         let mut entry = archive
@@ -1084,6 +1093,18 @@ fn extract_zipball_to_dir(bytes: &[u8], destination: &Path) -> Result<(), String
             continue;
         }
 
+        // Ignore archive metadata for executable privilege escalation: never
+        // extract symlinks, device nodes or setuid/setgid/sticky bits.
+        let safe_mode = sanitized_zip_file_mode(entry.unix_mode())?;
+        let declared_size = entry.size();
+        total_uncompressed_bytes = total_uncompressed_bytes
+            .checked_add(declared_size)
+            .ok_or_else(|| "curated plugins zip archive size overflow".to_string())?;
+        if declared_size > MAX_CURATED_ZIP_ENTRY_BYTES
+            || total_uncompressed_bytes > MAX_CURATED_ZIP_EXPANDED_BYTES
+        {
+            return Err("curated plugins zip archive exceeds expanded size limit".to_string());
+        }
         if let Some(parent) = output_path.parent() {
             std::fs::create_dir_all(parent).map_err(|err| {
                 format!(
@@ -1092,29 +1113,54 @@ fn extract_zipball_to_dir(bytes: &[u8], destination: &Path) -> Result<(), String
                 )
             })?;
         }
-        let mut output = std::fs::File::create(&output_path).map_err(|err| {
-            format!(
-                "failed to create curated plugins file {}: {err}",
-                output_path.display()
-            )
-        })?;
-        std::io::copy(&mut entry, &mut output).map_err(|err| {
+        // create_new rejects duplicate entries and pre-existing symlink leaves.
+        let mut output = std::fs::OpenOptions::new()
+            .write(true)
+            .create_new(true)
+            .open(&output_path)
+            .map_err(|err| {
+                format!(
+                    "failed to create curated plugins file {}: {err}",
+                    output_path.display()
+                )
+            })?;
+        let copied = std::io::copy(
+            &mut (&mut entry).take(declared_size + 1),
+            &mut output,
+        )
+        .map_err(|err| {
             format!(
                 "failed to write curated plugins file {}: {err}",
                 output_path.display()
             )
         })?;
-        apply_zip_permissions(&entry, &output_path)?;
+        if copied != declared_size {
+            return Err("curated plugins zip entry expanded length mismatch".to_string());
+        }
+        apply_zip_permissions(safe_mode, &output_path)?;
     }
 
     Ok(())
 }
 
+/// Only regular-file modes are admissible. Mask all privilege bits even when
+/// the archive advertises a valid file type.
+fn sanitized_zip_file_mode(mode: Option<u32>) -> Result<Option<u32>, String> {
+    let Some(mode) = mode else {
+        return Ok(None);
+    };
+    let file_type = mode & 0o170000;
+    if file_type != 0 && file_type != 0o100000 {
+        return Err("curated plugins zip entry is not a regular file".to_string());
+    }
+    Ok(Some(mode & 0o777))
+}
+
 #[cfg(unix)]
-fn apply_zip_permissions(entry: &zip::read::ZipFile<'_>, output_path: &Path) -> Result<(), String> {
+fn apply_zip_permissions(mode: Option<u32>, output_path: &Path) -> Result<(), String> {
     use std::os::unix::fs::PermissionsExt;
 
-    let Some(mode) = entry.unix_mode() else {
+    let Some(mode) = mode else {
         return Ok(());
     };
     std::fs::set_permissions(output_path, std::fs::Permissions::from_mode(mode)).map_err(|err| {
@@ -1126,10 +1172,7 @@ fn apply_zip_permissions(entry: &zip::read::ZipFile<'_>, output_path: &Path) -> 
 }
 
 #[cfg(not(unix))]
-fn apply_zip_permissions(
-    _entry: &zip::read::ZipFile<'_>,
-    _output_path: &Path,
-) -> Result<(), String> {
+fn apply_zip_permissions(_mode: Option<u32>, _output_path: &Path) -> Result<(), String> {
     Ok(())
 }
 

@@ -1300,6 +1300,33 @@ fn read_extracted_backup_archive_git_sha_rejects_path_traversal_ref() {
     assert!(err.contains("invalid path components"));
 }
 
+#[test]
+fn curated_zip_modes_strip_privilege_bits_and_refuse_non_regular_files() {
+    assert_eq!(sanitized_zip_file_mode(Some(0o104755)).unwrap(), Some(0o755));
+    assert_eq!(sanitized_zip_file_mode(Some(0o100644)).unwrap(), Some(0o644));
+    assert_eq!(sanitized_zip_file_mode(None).unwrap(), None);
+    assert!(sanitized_zip_file_mode(Some(0o120777)).is_err());
+    assert!(sanitized_zip_file_mode(Some(0o060666)).is_err());
+}
+
+#[test]
+fn curated_zip_rejects_duplicate_entry_without_overwriting_first_file() {
+    let cursor = std::io::Cursor::new(Vec::new());
+    let mut writer = ZipWriter::new(cursor);
+    let options = SimpleFileOptions::default();
+    writer.start_file("root/manifest.json", options).unwrap();
+    writer.write_all(b"original").unwrap();
+    writer.start_file("root/manifest.json", options).unwrap();
+    writer.write_all(b"replacement").unwrap();
+    let zip = writer.finish().unwrap().into_inner();
+    let dir = tempdir().unwrap();
+    assert!(extract_zipball_to_dir(&zip, dir.path()).is_err());
+    assert_eq!(
+        std::fs::read(dir.path().join("manifest.json")).unwrap(),
+        b"original",
+    );
+}
+
 fn curated_repo_zipball_bytes(sha: &str) -> Vec<u8> {
     let cursor = std::io::Cursor::new(Vec::new());
     let mut writer = ZipWriter::new(cursor);
