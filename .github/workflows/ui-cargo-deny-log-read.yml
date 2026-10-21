@@ -1,0 +1,50 @@
+name: Read existing UI cargo-deny job evidence
+
+on:
+  push:
+    branches: [agents/20261021/ui-deny-log-read]
+
+permissions:
+  contents: read
+  actions: read
+
+jobs:
+  retained-log:
+    name: Read retained job 118965946746 without rerunning checks
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - name: Download the original failed job metadata and log
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_PROMPT_DISABLED: "1"
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$GITHUB_REPOSITORY" = "TrillionniumFoundation/hepta-private-ci"
+          mkdir -p evidence
+          gh --version > evidence/gh-version.txt
+          gh api "repos/$GITHUB_REPOSITORY/actions/jobs/118965946746" > evidence/job.json
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+          job = json.loads(Path("evidence/job.json").read_text())
+          assert job["id"] == 118965946746, job["id"]
+          assert job["run_id"] == 39521376249, job["run_id"]
+          assert job["head_sha"] == "d18e1642a1ed4b7c6ba42571974b6a866436e0c8", job["head_sha"]
+          assert job["status"] == "completed", job["status"]
+          assert job["conclusion"] == "failure", job["conclusion"]
+          print(json.dumps({key: job[key] for key in ("id", "run_id", "head_sha", "name", "conclusion")}))
+          PY
+          gh api "repos/$GITHUB_REPOSITORY/actions/jobs/118965946746/logs" > evidence/cargo-deny.log
+          test -s evidence/cargo-deny.log
+          sha256sum evidence/job.json evidence/cargo-deny.log > evidence/SHA256SUMS
+          cat evidence/SHA256SUMS
+      - name: Preserve original bytes for independent diagnosis
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: retained-cargo-deny-118965946746-d18e1642
+          path: evidence/
+          if-no-files-found: error
+          retention-days: 7
