@@ -32,6 +32,10 @@ use crate::memory_cell::MemoryCellManifestV1;
 use crate::memory_cell::MemoryCellSplitProposalV1;
 use crate::memory_cell::MemoryCellTickInputV1;
 use crate::memory_cell::MemoryCellTickReceiptV1;
+use crate::memory_meta_network::MemoryCellNextSnapshotCandidateV1;
+use crate::memory_meta_network::MemoryMetaNetworkPolicyV1;
+use crate::memory_meta_network::MemoryMetaRouteReceiptV1;
+use crate::memory_meta_network::MemoryMetaRoutingCandidateV1;
 
 pub const COGNITIVE_WIRE_VERSION_V1: u32 = 1;
 const MAX_ENVELOPE_OVERHEAD_BYTES: usize = 1_024;
@@ -170,6 +174,35 @@ impl_contract!(
     "hepta.memory-cell.split-proposal.v1",
     262_144,
     MemoryCellSplitProposalV1::validate
+);
+
+impl_contract!(
+    MemoryMetaNetworkPolicyV1,
+    "MemoryMetaNetworkPolicyV1",
+    "hepta.memory-meta.policy.v1",
+    32_768,
+    MemoryMetaNetworkPolicyV1::validate
+);
+impl_contract!(
+    MemoryMetaRoutingCandidateV1,
+    "MemoryMetaRoutingCandidateV1",
+    "hepta.memory-meta.routing-candidate.v1",
+    65_536,
+    MemoryMetaRoutingCandidateV1::validate
+);
+impl_contract!(
+    MemoryMetaRouteReceiptV1,
+    "MemoryMetaRouteReceiptV1",
+    "hepta.memory-meta.route-receipt.v1",
+    262_144,
+    MemoryMetaRouteReceiptV1::validate
+);
+impl_contract!(
+    MemoryCellNextSnapshotCandidateV1,
+    "MemoryCellNextSnapshotCandidateV1",
+    "hepta.memory-cell.next-snapshot-candidate.v1",
+    65_536,
+    MemoryCellNextSnapshotCandidateV1::validate
 );
 
 #[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
