@@ -347,7 +347,7 @@ pub(super) async fn ensure_listener_task_running(
                         conversation_id,
                     );
 
-                    apply_bespoke_event_handling(
+                    if apply_bespoke_event_handling(
                         delivery.clone(),
                         conversation_id,
                         conversation.clone(),
@@ -357,8 +357,15 @@ pub(super) async fn ensure_listener_task_running(
                         thread_watch_manager.clone(),
                         thread_list_state_permit.clone(),
                         fallback_model_provider.clone(),
+                        &mut cancel_rx,
                     )
-                    .await;
+                    .await
+                    .is_break()
+                    {
+                        // Cancellation retires this listener, not the Core terminal owner.
+                        // Do not poll its consumed oneshot again or publish a completion.
+                        break;
+                    }
                     if matches!(event.msg, EventMsg::ShutdownComplete)
                         && let Some(completion_tx) = thread_state
                             .lock()
