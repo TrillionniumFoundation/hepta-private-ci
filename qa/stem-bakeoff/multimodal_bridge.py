@@ -323,7 +323,6 @@ def _verify_optimizer_gradients(student: nn.Module,
         raise LatentBridgeError("offline distillation produced no Student gradients")
 
 
-
 def _guarded_offline_optimizer_step(optimizer: torch.optim.Optimizer,
                                     expected_ids: tuple[int, ...],
                                     expected_settings: tuple) -> None:
