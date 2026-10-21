@@ -18,7 +18,7 @@ Both outcomes previously returned a successful local training receipt.
 
 - Before the stock optimizer step, require supported finite dense
   Student/Slotizer weights and reject instance monkey-patched optimizer
-  `step` methods or registered step hooks.
+  `step` methods or registered step, state-dict and load-state-dict hooks.
 - Snapshot *all* optimizer-owned parameter bytes and a deep copy of the
   optimizer state/groups immediately before the physical step.
 - After the actual `SGD` or `AdamW` step, check parameter identity, finite
