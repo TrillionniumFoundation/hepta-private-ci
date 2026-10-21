@@ -138,7 +138,8 @@ def rollout(flow, context, target, noise, steps=8, arm='flow', actor=None,
             strength=2.0, lookahead=4, return_trace=False):
     """No label/target-output argument exists: target is the public encoder estimate."""
     dt = 1 / steps
-    x = torch.cat((noise, noise.new_zeros((len(noise), 6))), -1)
+    initial = torch.cat((target + 0.5 * noise[:, :6], noise[:, 6:]), -1)
+    x = torch.cat((initial, noise.new_zeros((len(noise), 6))), -1)
     effort = noise.new_zeros(len(noise))
     trace = []
     for index in range(steps):
