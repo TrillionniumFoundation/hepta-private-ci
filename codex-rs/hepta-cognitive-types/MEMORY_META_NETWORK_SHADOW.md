@@ -251,3 +251,32 @@ This is contract validation, **not** authentication of the generated source,
 real ledger inclusion, physical GPU work, immutable model execution or
 production eligibility. Existing shadow-only authority and all exact-head
 CI/security/cross-platform/independent evidence requirements remain in force.
+
+
+## Record-level evidence-owner verification boundary
+
+The additive `run_memory_meta_preselected_record_checked_shadow_v1` first runs the existing
+two-phase Cell-support verifier, then presents every actually recalled record from
+every admitted Cell to a **separate external record verifier** before returning any
+batch output. Each `MemoryMetaRecordLookupV1` binds Cell ID and Cell support,
+record ID, revision, record digest, sorted record support digests, actual recall
+packet digest, ledger root, snapshot and exact source/forget frontiers.
+
+- One rejected, forgotten or unsupported record **fails the whole batch**;
+  there is no partial return of already retrieved results.
+- Post-route-filtered Cell ticks are also checked because the shadow batch
+  exposes all admitted Cell tick receipts, not only final route winners.
+- The all-deferred case has no record callbacks and returns abstention, not
+  fabricated evidence. The legacy unverified path remains shadow-only.
+- The callback is a pluggable **verification seam**, not an authenticated proof.
+  Production still requires an independent ledger owner to validate source
+  revision inclusion, complete citation and tombstone propagation, signed/pinned
+  snapshot consistency, atomic read barriers and provenance after replay.
+  This source integration supplies none of those underlying witnesses.
+
+Rehashed route receipts are additionally rejected if they attempt to mark
+zero-utility Cells as selected or attach two different association groups to
+the same ordered Cell pair. These internal checks complement, but cannot replace,
+`MemoryMetaRouteReceiptV1::validate_against` replay against trusted original
+candidates and policy. Full native/platform/security CI on the exact candidate
+head is still required for code qualification.
