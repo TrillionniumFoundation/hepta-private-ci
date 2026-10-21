@@ -15,6 +15,8 @@ use std::fs::TryLockError;
 use std::io::Read;
 use std::io::Write;
 #[cfg(unix)]
+use std::os::unix::fs::MetadataExt;
+#[cfg(unix)]
 use std::os::unix::fs::OpenOptionsExt;
 use std::path::Path;
 use std::path::PathBuf;
@@ -421,11 +423,22 @@ impl LearningArtifactOwnerHost {
         let verifier = ArtifactOwnerVerifierV1::new(trust)?;
         let verified_lease = verifier.verify_writer_lease(&lease, now)?;
         let fence_path = root.join("writer").join("owner.lock");
+        // Do not follow a pre-existing symbolic link into an unrelated file.
+        // The post-open identity check also rejects a replacement during open.
+        match fs::symlink_metadata(&fence_path) {
+            Ok(metadata) if metadata.file_type().is_symlink() || !metadata.is_file() => {
+                return Err(ArtifactOwnerHostError::PathBoundary);
+            }
+            Ok(_) => {}
+            Err(error) if error.kind() == std::io::ErrorKind::NotFound => {}
+            Err(error) => return Err(error.into()),
+        }
         let mut options = OpenOptions::new();
         options.read(true).write(true).create(true);
         #[cfg(unix)]
         options.mode(0o600);
-        let writer_fence = options.open(fence_path)?;
+        let writer_fence = options.open(&fence_path)?;
+        verify_owner_writer_fence(&fence_path, &writer_fence)?;
         match writer_fence.try_lock() {
             Ok(()) => {}
             Err(TryLockError::WouldBlock) => return Err(ArtifactOwnerHostError::WriterFenceBusy),
@@ -1538,6 +1551,28 @@ fn digest_signer_set(bytes: &mut Vec<u8>, signers: &[TrustedArtifactSignerV1]) {
     }
 }
 
+/// Verify the lock inode before acquiring writer authority. Existing lock
+/// files must be private and have exactly one link: an attacker-controlled
+/// hardlink, symbolic link or path replacement must not become the owner lock.
+fn verify_owner_writer_fence(path: &Path, opened: &File) -> Result<(), ArtifactOwnerHostError> {
+    let on_path = fs::symlink_metadata(path)?;
+    if on_path.file_type().is_symlink() || !on_path.is_file() {
+        return Err(ArtifactOwnerHostError::PathBoundary);
+    }
+    #[cfg(unix)]
+    {
+        let opened_meta = opened.metadata()?;
+        if on_path.dev() != opened_meta.dev()
+            || on_path.ino() != opened_meta.ino()
+            || on_path.nlink() != 1
+            || on_path.mode() & 0o077 != 0
+        {
+            return Err(ArtifactOwnerHostError::PathBoundary);
+        }
+    }
+    Ok(())
+}
+
 fn ensure_real_directory(root: &Path, name: &str) -> Result<(), ArtifactOwnerHostError> {
     let path = root.join(name);
     match fs::symlink_metadata(&path) {
@@ -1876,6 +1911,46 @@ mod tests {
         };
         value.signature = key.sign(&value.signing_bytes()).to_bytes();
         value
+    }
+
+    #[cfg(unix)]
+    #[test]
+    fn owner_writer_fence_rejects_symbolic_hard_and_overpermissive_files() {
+        use std::os::unix::fs::PermissionsExt;
+
+        for attack in ["symlink", "hardlink", "overpermissive"] {
+            let directory = TestDir::new();
+            let writer = directory.0.join("writer");
+            fs::create_dir(&writer).fixture("create writer dir");
+            let victim = directory.0.join("unrelated-data");
+            fs::write(&victim, b"unaltered").fixture("create unrelated file");
+            let lock = writer.join("owner.lock");
+            match attack {
+                "symlink" => std::os::unix::fs::symlink(&victim, &lock)
+                    .fixture("place symbolic link"),
+                "hardlink" => fs::hard_link(&victim, &lock).fixture("place hard link"),
+                "overpermissive" => {
+                    fs::write(&lock, b"lock-data").fixture("create insecure lock");
+                    fs::set_permissions(&lock, fs::Permissions::from_mode(0o644))
+                        .fixture("make lock group/world readable");
+                }
+                _ => unreachable!("listed attack"),
+            }
+            let key = signer();
+            let scope_digest = withdrawal_scope().digest();
+            let error = LearningArtifactOwnerHost::open(
+                &directory.0,
+                trust(&key, scope_digest),
+                lease(&key, scope_digest),
+                20,
+            )
+            .fixture_error("untrusted owner lock must not be opened");
+            assert!(matches!(error, ArtifactOwnerHostError::PathBoundary));
+            assert_eq!(
+                fs::read(&victim).fixture("read victim after denial"),
+                b"unaltered"
+            );
+        }
     }
 
     #[test]
