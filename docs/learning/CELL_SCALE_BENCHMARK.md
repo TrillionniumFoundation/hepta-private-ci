@@ -14,6 +14,14 @@ window and negative-transfer evidence, lesion/ablation, crash/reopen, stale
 generation rejection, rollback and resource metrics. It does not calculate
 utility, prove a scaling law, or admit a production topology.
 
+Each result also carries immutable provenance (`source_commit`, `source_tree`,
+target-host and runtime digests), one receipt digest for every required evidence
+item, and a digest for the metric record. The validator checks only the digest
+shape; the exact-head workflow and approved target host must independently
+authenticate and retain those receipts. This prevents a boolean fixture from
+being accepted as a performance observation while keeping the manifest
+authority at `qualification_only`.
+
 ## P4 lifecycle mapping
 
 | Required step | Existing owner to exercise | Failure disposition |
