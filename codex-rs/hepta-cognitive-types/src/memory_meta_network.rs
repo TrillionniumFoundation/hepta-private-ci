@@ -389,7 +389,10 @@ pub fn route_memory_cells_v1(
     })
 }
 
-fn eligible(policy: &MemoryMetaNetworkPolicyV1, candidate: &MemoryMetaRoutingCandidateV1) -> bool {
+fn eligible(
+    policy: &MemoryMetaNetworkPolicyV1,
+    candidate: &MemoryMetaRoutingCandidateV1,
+) -> bool {
     candidate.tick_receipt.status == MemoryCellStatusV1::Selected
         && candidate.support_digest.is_some()
         && candidate.relevance_ppm >= policy.minimum_relevance_ppm

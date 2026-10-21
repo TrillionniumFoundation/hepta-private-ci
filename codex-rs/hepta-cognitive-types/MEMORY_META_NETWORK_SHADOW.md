@@ -6,11 +6,11 @@ This experimental seam combines the reviewed typed MemoryCell source of PR #2688
 
 A MemoryCell is a rebuildable, bounded projection. The existing source/revision ledger, knowledge graph, evidence and forget/tombstone frontiers remain the only owners of factual truth. Adapter/head/encoder weights, local state, associations and compressed indexes are **never** the system of record. Parameterized memory alone cannot satisfy exact forgetting or evidentiary citation requirements.
 
-The imported \`SharedEncoderOwnerV1\` attests a single immutable Encoder driver call per input shared across accepted Cell heads. A production driver, selected model/weights, signed artifact loader, actual GPU execution and perf scaling are **not** supplied by this source integration.
+The imported `SharedEncoderOwnerV1` attests a single immutable Encoder driver call per input shared across accepted Cell heads. A production driver, selected model/weights, signed artifact loader, actual GPU execution and perf scaling are **not** supplied by this source integration.
 
 ## Meta-Network shadow routing
 
-The pure \`route_memory_cells_v1\` accepts a bounded policy and a complete set of typed Cell candidates. Every candidate carries:
+The pure `route_memory_cells_v1` accepts a bounded policy and a complete set of typed Cell candidates. Every candidate carries:
 
 - an immutable typed manifest with shared base/Encoder digests and model/graph generation;
 - the original tick input and receipt, including exact snapshot, source/forget frontier, logical sequence and checkpoint predecessor;
@@ -19,24 +19,24 @@ The pure \`route_memory_cells_v1\` accepts a bounded policy and a complete set o
 
 All source/generation mismatches and duplicate Cell identities **fail closed**. No unsupported or abstained Cell can be selected. A conflict group with multiple eligible candidates suppresses all contenders, rather than electing a high-scoring unproven fact. Remaining candidates are ranked deterministically, capacity-limited and charged against a global resource budget; matching selected association groups emit only cross-Cell reference pairs, never synthetic claims. A versioned receipt binds the complete candidate set, route decisions, accounting, associations, evidence/frontiers and policy into a deterministic digest.
 
-Output authority is sealed \`DENY_ALL\`. The receipt asserts \`current_snapshot_immutable=true\` and \`production_activation_allowed=false\`. These digests are **references**, not independent cryptographic signatures or proof of inclusion in the ledger. The caller must verify source citations, retention/deletion completeness, evaluator identity and safety before using any routed information.
+Output authority is sealed `DENY_ALL`. The receipt asserts `current_snapshot_immutable=true` and `production_activation_allowed=false`. These digests are **references**, not independent cryptographic signatures or proof of inclusion in the ledger. The caller must verify source citations, retention/deletion completeness, evaluator identity and safety before using any routed information.
 
 ## Learning and topology
 
-\`MemoryCellNextSnapshotCandidateV1\` is an **offline proposal** binding predecessor generations, frozen Encoder identity, source/forget frontiers, Replay snapshot/receipt, candidate Adapter and Head Artifacts, independent Evaluation, optional Topology Proposal and rollback plan.
+`MemoryCellNextSnapshotCandidateV1` is an **offline proposal** binding predecessor generations, frozen Encoder identity, source/forget frontiers, Replay snapshot/receipt, candidate Adapter and Head Artifacts, independent Evaluation, optional Topology Proposal and rollback plan.
 
-A proposed model update must advance exactly one generation. A topology change requires a proposal reference and the next graph generation; otherwise the graph stays unchanged. No-op, stale-frontier, stale-Encoder, wrong-generation and production-authorizing candidates reject. The type **never** writes the new weights, publishes a snapshot, activates a split or grants authority. Existing \`MemoryCellSplitProposalV1\`, plasticity, immutable source ledger, CAS artifact owner and architecture approval gates remain authoritative.
+A proposed model update must advance exactly one generation. A topology change requires a proposal reference and the next graph generation; otherwise the graph stays unchanged. No-op, stale-frontier, stale-Encoder, wrong-generation and production-authorizing candidates reject. The type **never** writes the new weights, publishes a snapshot, activates a split or grants authority. Existing `MemoryCellSplitProposalV1`, plasticity, immutable source ledger, CAS artifact owner and architecture approval gates remain authoritative.
 
 ## Verification
 
-From \`codex-rs\`, on the exact candidate head:
+From `codex-rs`, on the exact candidate head:
 
-\`\`\`bash
+```bash
 cargo test -p codex-hepta-cognitive-types --locked
 cargo test -p codex-hepta-memory-retrieval --locked
 cargo test -p codex-hepta-neuron --locked
 cargo test -p codex-hepta-ndu --locked
-\`\`\`
+```
 
 Also require the unmodified repository-required blocking CI, architecture source-head/base-merge/required, cargo-deny, Rustfmt/Clippy, full Bazel on Linux/macOS/Windows, V8 actual build as applicable. Queued, skipped, cancelled, old-head or fixture-only results are not qualification.
 
@@ -47,7 +47,7 @@ Also require the unmodified repository-required blocking CI, architecture source
 3. Produce independent source-citation and tombstone/deletion-rebuild witnesses, conflict/negative-transfer/OOD/calibration evaluation and two genuinely future observation windows, compared against a strong RAG baseline.
 4. Verify separately authenticated Replay/Evaluation/Artifact/Topology proposals, 3 independent snapshots, rollover/recovery, governance, rollback, and external FinalUse authorization.
 
-Until then: \`SHADOW_ONLY / DENY_ALL / HOLD_NO_GO\`.
+Until then: `SHADOW_ONLY / DENY_ALL / HOLD_NO_GO`.
 
 ## Executable shadow batch adapter
 
