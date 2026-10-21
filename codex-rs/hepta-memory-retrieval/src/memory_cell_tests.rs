@@ -1156,3 +1156,53 @@ fn pre_tick_shadow_rejects_local_budget_overcommit_on_deferred_cell() {
         ))
     ));
 }
+
+#[test]
+fn shadow_generated_preflight_rejects_late_invalid_batch_before_first_recall() {
+    let fixture = shadow_fixture(true);
+    let mut first = meta_spec(&fixture);
+    // This first Cell's generated input is independently valid, but its
+    // generation vector is not the cue's: running its recall would fail.
+    // The later Cell's malformed generator must be caught first instead.
+    let original = &first.generated_input.batches[0].receipt;
+    let receipt = crate::RetrievalGeneratorReceiptV1::new(
+        original.generator,
+        codex_hepta_types::Digest32::of_bytes(b"memory-meta-wrong-generator-vector"),
+        original.owner_generation_digest,
+        0,
+        crate::RetrievalSourceCompletenessV1::Exhausted,
+    )
+    .unwrap_or_else(|error| panic!("valid mismatched-vector receipt: {error:?}"));
+    first.generated_input = crate::GeneratedCandidateInputV1::new(vec![
+        crate::RetrievalGeneratorBatchV1 {
+            receipt,
+            candidates: Vec::new(),
+        },
+    ])
+    .unwrap_or_else(|error| panic!("valid mismatched-vector generator: {error:?}"));
+
+    let mut second = meta_spec(&fixture);
+    second.manifest.cell_id = id("memory-cell:semantic:2");
+    second.manifest.role = MemoryCellRoleV1::Semantic;
+    second.tick_input.cell_id = second.manifest.cell_id.clone();
+    let second_id = second.manifest.cell_id.clone();
+    second.generated_input.batches.clear();
+
+    let rejected = crate::run_memory_meta_batch_shadow_v1(
+        &meta_policy(&fixture),
+        &fixture.cue,
+        &fixture.policy,
+        &fixture.snapshot,
+        &fixture.dynamics,
+        &[first, second],
+    );
+    assert!(matches!(
+        rejected,
+        Err(crate::MemoryMetaBatchErrorV1::Tick {
+            cell_id,
+            source: crate::MemoryCellRuntimeErrorV1::Retrieval(
+                crate::GeneratorErrorV1::InvalidGeneratorCount
+            ),
+        }) if cell_id == second_id
+    ));
+}
