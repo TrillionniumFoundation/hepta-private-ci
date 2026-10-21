@@ -47,6 +47,10 @@ use crate::cognitive_model::SourceRevisionId;
 use crate::cognitive_path::canonical_path_without_redirection;
 use crate::framing::frame_part;
 
+#[path = "cognitive_store_sync.rs"]
+mod sync;
+use sync::sync_cognitive_directory;
+
 #[path = "cognitive_store_recovery.rs"]
 mod recovery;
 pub use recovery::CognitiveRecoveryAnchor;
@@ -198,9 +202,19 @@ const REQUIRED_SCHEMA_OBJECTS: &[(&str, &str)] = &[
     ("cognitive_operation_dispatch_claims_no_delete", "trigger"),
     ("cognitive_operation_dispatch_claims_active_lookup", "index"),
     ("cognitive_operation_dispatch_claims_expiry_lookup", "index"),
+    ("cognitive_operation_pre_boundary_rejections", "table"),
+    (
+        "cognitive_operation_pre_boundary_rejections_no_update",
+        "trigger",
+    ),
+    (
+        "cognitive_operation_pre_boundary_rejections_no_delete",
+        "trigger",
+    ),
+    ("cognitive_local_outbox_hos2_delivery", "index"),
 ];
 const REQUIRED_SCHEMA_ORACLE_SHA256: &str =
-    "046f23bab5d4c779735c762159c79e61cfe3a6a8a35e18ff8ec4f40e5c4e2be2";
+    "c448a01d9749d7c409bb9c384ceaa7245ef6aca0eda722ac3ec8b2501602bed0";
 
 #[derive(Debug, thiserror::Error)]
 pub enum CognitiveStoreError {
@@ -341,6 +355,19 @@ impl CognitiveStore {
             path,
             _open_guard: Some(open_guard),
         })
+    }
+
+    /// On completion, close the shared SQLite pool before releasing this
+    /// handle's store fence.
+    ///
+    /// Await this to completion before starting recovery. Cancelling this
+    /// future or dropping a store does not provide a shutdown barrier for
+    /// SQLx's connection-return tasks or SQLite's final WAL/SHM cleanup. The
+    /// pool is shared by all clones; other store handles must also be dropped
+    /// before recovery can obtain the exclusive fence.
+    pub async fn close(self) {
+        self.pool.close().await;
+        drop(self);
     }
 
     pub fn path(&self) -> &Path {
@@ -1604,23 +1631,40 @@ pub(crate) fn publish_active_database(
             .mode(0o600)
             .custom_flags(libc::O_CLOEXEC | libc::O_NOFOLLOW)
             .open(&temporary)
-            .map_err(unavailable)?
+            .map_err(|error| {
+                unavailable(format!(
+                    "open cognitive active pointer temporary file: {error}"
+                ))
+            })?
     };
     #[cfg(not(unix))]
     let mut file = OpenOptions::new()
         .write(true)
         .create_new(true)
         .open(&temporary)
-        .map_err(unavailable)?;
+        .map_err(|error| {
+            unavailable(format!(
+                "open cognitive active pointer temporary file: {error}"
+            ))
+        })?;
 
     let result = (|| {
-        file.write_all(file_name.as_bytes()).map_err(unavailable)?;
-        file.write_all(b"\n").map_err(unavailable)?;
-        file.sync_all().map_err(unavailable)?;
-        fs::rename(&temporary, &pointer).map_err(unavailable)?;
-        File::open(root)
-            .and_then(|directory| directory.sync_all())
-            .map_err(unavailable)?;
+        file.write_all(file_name.as_bytes()).map_err(|error| {
+            unavailable(format!("write cognitive active pointer payload: {error}"))
+        })?;
+        file.write_all(b"\n").map_err(|error| {
+            unavailable(format!(
+                "write cognitive active pointer terminator: {error}"
+            ))
+        })?;
+        file.sync_all().map_err(|error| {
+            unavailable(format!(
+                "sync cognitive active pointer temporary file: {error}"
+            ))
+        })?;
+        fs::rename(&temporary, &pointer)
+            .map_err(|error| unavailable(format!("rename cognitive active pointer: {error}")))?;
+        sync_cognitive_directory(root)?;
         Ok(())
     })();
     if result.is_err() {

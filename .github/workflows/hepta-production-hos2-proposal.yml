@@ -1,0 +1,314 @@
+name: Production HOS2 owner proposal
+
+# Generates reviewable postimages. Success never qualifies the input HEAD or
+# replaces the original architecture, platform, formatting or security gates.
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+    paths:
+      - .github/workflows/hepta-production-hos2-proposal.yml
+      - codex-rs/hepta-memory/**
+      - codex-rs/hepta-cognitive-store/**
+      - codex-rs/hepta-agentd/**
+      - codex-rs/Cargo.toml
+      - codex-rs/Cargo.lock
+      - codex-rs/rust-toolchain.toml
+      - MODULE.bazel
+      - MODULE.bazel.lock
+      - .bazelversion
+      - justfile
+      - scripts/format.py
+      - scripts/run-nextest.py
+
+permissions:
+  contents: read
+
+concurrency:
+  group: production-hos2-proposal-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+jobs:
+  owner-candidate:
+    if: >-
+      github.event.pull_request.head.repo.full_name == github.repository &&
+      github.event.pull_request.head.ref == 'dot/hos2-convergence-aligned-20261021'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 180
+    env:
+      SOURCE_SHA: ${{ github.event.pull_request.head.sha }}
+      PROPOSAL_BASE_SHA: f0fb978a70a8bff2756248abf9e676774bafe3a2
+      CARGO_TERM_COLOR: never
+    steps:
+      - name: Check out immutable proposal input without credentials
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ env.SOURCE_SHA }}
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Freeze input identity, repository toolchain and exact command plan
+        id: source
+        shell: bash
+        run: |
+          set -euo pipefail
+          export HOS2_EVIDENCE_DIR="$RUNNER_TEMP/production-hos2-proposal"
+          printf 'HOS2_EVIDENCE_DIR=%s\n' "$HOS2_EVIDENCE_DIR" >> "$GITHUB_ENV"
+          test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
+          git merge-base --is-ancestor "$PROPOSAL_BASE_SHA" HEAD
+          test -z "$(git status --porcelain)"
+          python3 - <<'PY'
+          import json
+          import os
+          from pathlib import Path
+          import subprocess
+          import tomllib
+
+          evidence = Path(os.environ["HOS2_EVIDENCE_DIR"])
+          evidence.mkdir(parents=True)
+          toolchain = tomllib.loads(Path("codex-rs/rust-toolchain.toml").read_text())["toolchain"]
+          packages = {}
+          for directory in ("hepta-memory", "hepta-cognitive-store", "hepta-agentd"):
+              manifest = tomllib.loads(Path("codex-rs", directory, "Cargo.toml").read_text())
+              packages[directory] = manifest["package"]["name"]
+          expected = {directory: "codex-" + directory for directory in packages}
+          if packages != expected:
+              raise SystemExit("Owning package names changed; review the fixed test plan")
+          source = {
+              "source_sha": os.environ["SOURCE_SHA"],
+              "source_tree": subprocess.check_output(["git", "rev-parse", "HEAD^{tree}"], text=True).strip(),
+              "proposal_base_sha": os.environ["PROPOSAL_BASE_SHA"],
+              "run_id": os.environ["GITHUB_RUN_ID"],
+              "run_attempt": os.environ["GITHUB_RUN_ATTEMPT"],
+              "toolchain": toolchain,
+              "packages": packages,
+              "input_head_qualified": False,
+          }
+          (evidence / "source.json").write_text(json.dumps(source, indent=2) + "\n")
+          base = os.environ["PROPOSAL_BASE_SHA"]
+          commands = [
+              ("v8", ["python3", "scripts/hepta_ci_v8.py"], ".", []),
+              ("format", ["just", "fmt", "--base", base], "codex-rs", []),
+              ("metadata", ["cargo", "metadata", "--format-version", "1"], "codex-rs", []),
+              ("memory-tests", ["just", "test", "--locked", "-p", "codex-hepta-memory"], "codex-rs", ["metadata"]),
+              ("cognitive-tests", ["just", "test", "--locked", "-p", "codex-hepta-cognitive-store"], "codex-rs", ["metadata"]),
+              ("agentd-tests", ["just", "test", "--locked", "-p", "codex-hepta-agentd"], "codex-rs", ["metadata", "v8"]),
+              ("fix-memory", ["just", "fix", "-p", "codex-hepta-memory"], "codex-rs", ["metadata"]),
+              ("fix-agentd", ["just", "fix", "-p", "codex-hepta-agentd"], "codex-rs", ["metadata", "v8"]),
+              ("format-final", ["just", "fmt", "--base", base], "codex-rs", []),
+              ("lock-update", ["just", "bazel-lock-update"], ".", ["metadata"]),
+              ("lock-check", ["just", "bazel-lock-check"], ".", ["lock-update"]),
+              ("lock-repeat", ["just", "bazel-lock-update"], ".", ["lock-update"]),
+              ("lock-repeat-equal", ["cmp", str(evidence / "MODULE.bazel.lock.first-generation"), "MODULE.bazel.lock"], ".", ["lock-update", "lock-repeat"]),
+          ]
+          records = [
+              {"name": name, "argv": argv, "cwd": cwd, "requires": requires,
+               "status": "not_started", "exit_code": None, "log": name + ".log"}
+              for name, argv, cwd, requires in commands
+          ]
+          (evidence / "commands.json").write_text(json.dumps(records, indent=2) + "\n")
+          with open(os.environ["GITHUB_OUTPUT"], "a") as output:
+              print(f'toolchain={toolchain["channel"]}', file=output)
+              print(f'components={",".join(toolchain["components"])}', file=output)
+          PY
+
+      - name: Prepare the existing project Bazel and Cargo environment
+        id: tools
+        uses: ./.github/actions/prepare-bazel-ci
+        with:
+          target: x86_64-unknown-linux-gnu
+          cache-scope: production-hos2-proposal
+
+      - name: Install the repository-selected compiler and components
+        id: rust
+        uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582
+        with:
+          toolchain: ${{ steps.source.outputs.toolchain }}
+          components: ${{ steps.source.outputs.components }}
+
+      - name: Install the existing nextest version
+        id: nextest
+        uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
+        with:
+          tool: nextest@0.9.103
+
+      - name: Install the same native prerequisites as architecture CI
+        id: native
+        shell: bash
+        run: |
+          set -euo pipefail
+          sudo apt-get update
+          sudo apt-get install -y build-essential bubblewrap libcap-dev pkg-config
+          {
+            (cd codex-rs && rustc --version && cargo --version && cargo nextest --version)
+            just --version
+            bazel version --gnu_format
+          } > "$HOS2_EVIDENCE_DIR/tool-versions.log" 2>&1
+
+      - name: Resolve the original verified V8 artifacts
+        id: v8
+        shell: bash
+        env:
+          PYTHONPATH: scripts
+        run: |
+          python3 - <<'PY'
+          import json
+          import os
+          from pathlib import Path
+          import subprocess
+
+          evidence = Path(os.environ["HOS2_EVIDENCE_DIR"])
+          record = evidence / "commands.json"
+          commands = json.loads(record.read_text())
+          command = next(item for item in commands if item["name"] == "v8")
+          command["status"] = "running"
+          record.write_text(json.dumps(commands, indent=2) + "\n")
+          with (evidence / command["log"]).open("wb") as log:
+              result = subprocess.run(command["argv"], cwd=command["cwd"], stdout=log, stderr=subprocess.STDOUT, check=False)
+          command["exit_code"] = result.returncode
+          command["status"] = "passed" if result.returncode == 0 else "failed"
+          record.write_text(json.dumps(commands, indent=2) + "\n")
+          print(f'Verified V8 command exited {result.returncode}; complete log retained')
+          raise SystemExit(result.returncode)
+          PY
+
+      - name: Generate candidate and run complete owning suites through original recipes
+        id: proposal
+        if: >-
+          always() && steps.source.outcome == 'success' &&
+          steps.tools.outcome == 'success' && steps.rust.outcome == 'success' &&
+          steps.nextest.outcome == 'success' && steps.native.outcome == 'success'
+        shell: bash
+        run: |
+          python3 - <<'PY'
+          import json
+          import os
+          from pathlib import Path
+          import shlex
+          import shutil
+          import subprocess
+          import time
+
+          evidence = Path(os.environ["HOS2_EVIDENCE_DIR"])
+          record = evidence / "commands.json"
+          commands = json.loads(record.read_text())
+          by_name = {command["name"]: command for command in commands}
+          for command in commands:
+              if command["name"] == "v8":
+                  continue
+              blocked = [name for name in command["requires"] if by_name[name]["status"] != "passed"]
+              if blocked:
+                  command["status"] = "blocked"
+                  command["blocked_by"] = blocked
+                  record.write_text(json.dumps(commands, indent=2) + "\n")
+                  continue
+              command["status"] = "running"
+              command["started_unix_ns"] = time.time_ns()
+              record.write_text(json.dumps(commands, indent=2) + "\n")
+              print("Running " + shlex.join(command["argv"]), flush=True)
+              with (evidence / command["log"]).open("wb") as log:
+                  try:
+                      result = subprocess.run(command["argv"], cwd=command["cwd"], stdout=log, stderr=subprocess.STDOUT, check=False)
+                      command["exit_code"] = result.returncode
+                      command["status"] = "passed" if result.returncode == 0 else "failed"
+                  except OSError as error:
+                      command["status"] = "failed_to_start"
+                      command["error"] = str(error)
+                      log.write((str(error) + "\n").encode())
+              command["finished_unix_ns"] = time.time_ns()
+              if command["name"] == "lock-update" and command["status"] == "passed":
+                  shutil.copyfile("MODULE.bazel.lock", evidence / "MODULE.bazel.lock.first-generation")
+              record.write_text(json.dumps(commands, indent=2) + "\n")
+              print(f'{command["name"]}: {command["status"]}, exit {command["exit_code"]}', flush=True)
+              if command["status"] != "passed":
+                  tail = (evidence / command["log"]).read_text(errors="replace").splitlines()[-50:]
+                  print("\n".join(tail), flush=True)
+          if any(command["status"] != "passed" for command in commands):
+              raise SystemExit(1)
+          PY
+
+      - name: Preserve complete candidate postimages and original command evidence
+        if: always() && steps.source.outcome == 'success'
+        shell: bash
+        env:
+          SETUP_OUTCOMES: ${{ toJSON(steps) }}
+        run: |
+          python3 - <<'PY'
+          import hashlib
+          import json
+          import os
+          from pathlib import Path
+          import shutil
+          import subprocess
+
+          evidence = Path(os.environ["HOS2_EVIDENCE_DIR"])
+          source = json.loads((evidence / "source.json").read_text())
+          actual = subprocess.check_output(["git", "rev-parse", "HEAD"], text=True).strip()
+          tree = subprocess.check_output(["git", "rev-parse", "HEAD^{tree}"], text=True).strip()
+          base = os.environ["PROPOSAL_BASE_SHA"]
+
+          def paths(argv):
+              return [value for value in subprocess.check_output(argv, text=True).split("\0") if value]
+
+          changed = paths(["git", "diff", "--name-only", "--no-renames", "-z", "HEAD"])
+          untracked = paths(["git", "ls-files", "--others", "--exclude-standard", "-z"])
+          inputs = paths(["git", "diff", "--name-only", "--no-renames", "-z", base, "HEAD"])
+          selected = sorted(set(inputs + changed + untracked))
+          allowed_roots = ("codex-rs/hepta-memory/", "codex-rs/hepta-agentd/")
+          allowed_files = {"codex-rs/Cargo.lock", "MODULE.bazel.lock", ".github/workflows/hepta-production-hos2-proposal.yml"}
+          unexpected = [name for name in selected if name not in allowed_files and not name.startswith(allowed_roots)]
+          files = []
+          for name in selected:
+              path = Path(name)
+              if path.is_absolute() or ".." in path.parts or path.is_symlink():
+                  raise SystemExit(f"Unsafe candidate postimage path: {name}")
+              before = subprocess.run(["git", "rev-parse", "--verify", f"HEAD:{name}"], text=True, capture_output=True, check=False)
+              item = {"path": name, "source_blob": before.stdout.strip() if before.returncode == 0 else None}
+              if not path.exists():
+                  item["state"] = "deleted"
+              elif path.is_file():
+                  data = path.read_bytes()
+                  destination = evidence / "postimage" / path
+                  destination.parent.mkdir(parents=True, exist_ok=True)
+                  shutil.copyfile(path, destination)
+                  item.update({"state": "present", "bytes": len(data),
+                      "sha256": hashlib.sha256(data).hexdigest(),
+                      "git_blob": hashlib.sha1(b"blob " + str(len(data)).encode() + b"\0" + data).hexdigest()})
+              else:
+                  raise SystemExit(f"Unexpected candidate file type: {name}")
+              files.append(item)
+          with (evidence / "generated.patch").open("wb") as patch:
+              subprocess.run(["git", "diff", "--binary", "--no-renames", "HEAD"], stdout=patch, check=True)
+          with (evidence / "diff-check.log").open("wb") as log:
+              diff_check = subprocess.run(["git", "diff", "--check"], stdout=log, stderr=subprocess.STDOUT, check=False)
+          commands = json.loads((evidence / "commands.json").read_text())
+          complete = len(commands) == 13 and all(command["status"] == "passed" and command["exit_code"] == 0 for command in commands)
+          manifest = {
+              "source_sha": actual, "source_tree": tree, "proposal_base_sha": base,
+              "input_head_qualified": False, "full_platform_qualification": False,
+              "all_proposal_commands_passed": complete,
+              "generated_changes_require_review_and_original_ci": True,
+              "setup_steps": json.loads(os.environ["SETUP_OUTCOMES"]),
+              "changed_tracked_paths": changed, "untracked_paths": untracked,
+              "unexpected_paths": unexpected, "diff_check_exit_code": diff_check.returncode,
+              "postimages": files,
+          }
+          (evidence / "generated-manifest.json").write_text(json.dumps(manifest, indent=2) + "\n")
+          inventory = []
+          for path in sorted(evidence.rglob("*")):
+              if path.is_file():
+                  data = path.read_bytes()
+                  inventory.append({"path": str(path.relative_to(evidence)), "bytes": len(data), "sha256": hashlib.sha256(data).hexdigest()})
+          (evidence / "artifact-inventory.json").write_text(json.dumps(inventory, indent=2) + "\n")
+          if actual != source["source_sha"] or tree != source["source_tree"] or unexpected or diff_check.returncode != 0 or not complete:
+              raise SystemExit(1)
+          PY
+
+      - name: Upload source-bound proposal even when generation or tests failed
+        if: always() && steps.source.outcome == 'success'
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f
+        with:
+          name: production-hos2-${{ env.SOURCE_SHA }}-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ env.HOS2_EVIDENCE_DIR }}
+          if-no-files-found: error
+          include-hidden-files: true
+          retention-days: 7
