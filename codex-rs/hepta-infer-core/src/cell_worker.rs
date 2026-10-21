@@ -218,13 +218,23 @@ impl SharedWorkerPoolV1 {
 }
 
 fn digest_batch(requests: &[QueuedCellRequestV1]) -> Digest32 {
-    let mut bytes = b"hepta.cell.worker.batch.v1".to_vec();
+    // Version the domain when changing a digest contract: no V1 grouping
+    // witness may alias a V2 witness across rollback or reconciliation.
+    let mut bytes = b"hepta.cell.worker.batch.v2".to_vec();
+    bytes.extend_from_slice(&(requests.len() as u32).to_be_bytes());
     for request in requests {
-        bytes.extend_from_slice(request.request_id.as_str().as_bytes());
-        bytes.extend_from_slice(request.scope_id.as_str().as_bytes());
+        push_group_id(&mut bytes, &request.request_id);
+        push_group_id(&mut bytes, &request.cell_id);
+        push_group_id(&mut bytes, &request.scope_id);
         bytes.extend_from_slice(&request.feature_generation.get().to_be_bytes());
     }
     Digest32::of_bytes(&bytes)
+}
+
+fn push_group_id(bytes: &mut Vec<u8>, value: &StableId) {
+    let raw = value.as_str().as_bytes();
+    bytes.extend_from_slice(&(raw.len() as u32).to_be_bytes());
+    bytes.extend_from_slice(raw);
 }
 
 #[derive(Clone, Debug, Eq, PartialEq)]
