@@ -153,30 +153,102 @@ fn exact_digest_abort_terminalizes_unresolved_intent() -> Result<(), SupervisorE
     .map_err(|error| SupervisorError::Invalid(error.to_string()))?;
     write_intent_raw(record.layout.run_root(), &intent)?;
 
-    let first = Supervisor::recover(
+    let (quarantined, first_report) = Supervisor::recover(
         fleet.registry.clone(),
         NoProcessDriver,
         config(),
         Instant::now(),
-    );
-    assert!(matches!(
-        first,
-        Err(SupervisorError::SignedIntentRecoveryRequired(agent_id))
-            if agent_id == fleet.agent_id
-    ));
+    )?;
+    assert!(first_report.faults.is_empty());
+    assert!(quarantined.production_recovery_required(&fleet.agent_id)?);
+    assert!(quarantined.any_production_recovery_required());
+    let unresolved = read_signed_intent(record.layout.run_root())
+        .map_err(|error| SupervisorError::Invalid(error.to_string()))?
+        .expect("recovery-required intent");
+    assert_eq!(unresolved.status, SignedIntentStatus::RecoveryRequired);
 
-    let directive = SignedIntentRecoveryDirective::abort(intent.intent_sha256)
+    // Bind the operator's abort to the exact *current* unresolved intent.
+    let directive = SignedIntentRecoveryDirective::abort(unresolved.intent_sha256)
         .map_err(|error| SupervisorError::Invalid(error.to_string()))?;
     write_signed_intent_recovery_directive(record.layout.run_root(), &directive)
         .map_err(|error| SupervisorError::Invalid(error.to_string()))?;
 
-    let (_recovered, report) =
-        Supervisor::recover(fleet.registry, NoProcessDriver, config(), Instant::now())?;
+    let (recovered, report) = Supervisor::recover(
+        fleet.registry.clone(),
+        NoProcessDriver,
+        config(),
+        Instant::now(),
+    )?;
     assert!(report.faults.is_empty());
+    assert!(!recovered.production_recovery_required(&fleet.agent_id)?);
+    assert!(!recovered.any_production_recovery_required());
     let terminal = read_signed_intent(record.layout.run_root())
         .map_err(|error| SupervisorError::Invalid(error.to_string()))?
         .expect("terminal intent");
     assert_eq!(terminal.status, SignedIntentStatus::Aborted);
     assert_eq!(terminal.target_release, "target-release");
+
+    // The abort is a durable terminal rejection; restart must not resurrect it.
+    let (restarted, report) =
+        Supervisor::recover(fleet.registry, NoProcessDriver, config(), Instant::now())?;
+    assert!(report.faults.is_empty());
+    assert!(!restarted.any_production_recovery_required());
+    assert_eq!(
+        read_signed_intent(record.layout.run_root())
+            .map_err(|error| SupervisorError::Invalid(error.to_string()))?
+            .expect("terminal intent after second recovery")
+            .status,
+        SignedIntentStatus::Aborted
+    );
+    Ok(())
+}
+
+#[test]
+fn stale_abort_directive_cannot_terminalize_another_intent() -> Result<(), SupervisorError> {
+    let fleet = fleet()?;
+    let starting = fleet
+        .registry
+        .compare_and_transition(&fleet.agent_id, 0, AgentLifecycle::Starting)?;
+    let failed = fleet.registry.compare_and_transition(
+        &fleet.agent_id,
+        starting.generation,
+        AgentLifecycle::Failed,
+    )?;
+    let record = fleet
+        .registry
+        .load()?
+        .agent(&fleet.agent_id)
+        .cloned()
+        .expect("registered agent");
+    let intent = SignedSupervisorIntent::new(
+        Sha256Digest::for_bytes(b"grant"),
+        fleet.agent_id.to_string(),
+        H7H89ProductionTransition::Upgrade,
+        "source-release",
+        "target-release",
+        4,
+        failed.generation,
+        9,
+        SignedIntentStatus::RecoveryRequired,
+    )
+    .map_err(|error| SupervisorError::Invalid(error.to_string()))?;
+    write_intent_raw(record.layout.run_root(), &intent)?;
+    let stale_directive =
+        SignedIntentRecoveryDirective::abort(Sha256Digest::for_bytes(b"other signed intent"))
+            .map_err(|error| SupervisorError::Invalid(error.to_string()))?;
+    write_signed_intent_recovery_directive(record.layout.run_root(), &stale_directive)
+        .map_err(|error| SupervisorError::Invalid(error.to_string()))?;
+
+    let (quarantined, report) =
+        Supervisor::recover(fleet.registry, NoProcessDriver, config(), Instant::now())?;
+    assert!(report.faults.is_empty());
+    assert!(quarantined.any_production_recovery_required());
+    assert_eq!(
+        read_signed_intent(record.layout.run_root())
+            .map_err(|error| SupervisorError::Invalid(error.to_string()))?
+            .expect("still unresolved")
+            .status,
+        SignedIntentStatus::RecoveryRequired
+    );
     Ok(())
 }
