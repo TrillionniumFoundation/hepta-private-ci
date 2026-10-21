@@ -1644,8 +1644,8 @@ pub(crate) fn publish_active_database(
         .open(&temporary)
         .map_err(|error| {
             unavailable(format!(
-                    "open cognitive active pointer temporary file: {error}"
-                ))
+                "open cognitive active pointer temporary file: {error}"
+            ))
         })?;
 
     let result = (|| {
