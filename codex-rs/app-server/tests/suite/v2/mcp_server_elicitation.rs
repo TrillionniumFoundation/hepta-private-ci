@@ -729,8 +729,9 @@ impl ElicitationRoundTripFixture {
         assert_eq!(warmup_completed.thread_id, thread.id);
         assert_eq!(warmup_completed.turn.status, TurnStatus::Completed);
 
-        let turn_start_id = mcp
-            .send_turn_start_request(TurnStartParams {
+        let TurnStartResponse { turn } = timeout(
+            DEFAULT_READ_TIMEOUT,
+            mcp.start_turn_after_terminal_cleanup(TurnStartParams {
                 thread_id: thread.id.clone(),
                 client_user_message_id: None,
                 input: vec![V2UserInput::Text {
@@ -739,15 +740,9 @@ impl ElicitationRoundTripFixture {
                 }],
                 model: Some("mock-model".to_string()),
                 ..Default::default()
-            })
-            .await?;
-        let turn_start_resp: JSONRPCResponse = timeout(
-            DEFAULT_READ_TIMEOUT,
-            mcp.read_stream_until_response_message(RequestId::Integer(turn_start_id)),
+            }),
         )
         .await??;
-        let TurnStartResponse { turn } = to_response(turn_start_resp)?;
-
         Ok(Self {
             mcp,
             response_mock,

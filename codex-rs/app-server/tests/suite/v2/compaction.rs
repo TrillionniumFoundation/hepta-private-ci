@@ -391,19 +391,20 @@ async fn send_turn_and_wait(
     thread_id: &str,
     text: &str,
 ) -> Result<String> {
-    let turn_id = mcp
-        .send_turn_start_request(TurnStartParams {
-            thread_id: thread_id.to_string(),
-            client_user_message_id: None,
-            input: vec![V2UserInput::Text {
-                text: text.to_string(),
-                text_elements: Vec::new(),
-            }],
-            ..Default::default()
-        })
+    let TurnStartResponse { turn } = mcp
+        .start_turn_after_terminal_cleanup_with_timeout(
+            TurnStartParams {
+                thread_id: thread_id.to_string(),
+                client_user_message_id: None,
+                input: vec![V2UserInput::Text {
+                    text: text.to_string(),
+                    text_elements: Vec::new(),
+                }],
+                ..Default::default()
+            },
+            DEFAULT_READ_TIMEOUT,
+        )
         .await?;
-    let TurnStartResponse { turn } =
-        timeout(DEFAULT_READ_TIMEOUT, mcp.read_response(turn_id)).await??;
     wait_for_turn_completed(mcp, &turn.id).await?;
     Ok(turn.id)
 }

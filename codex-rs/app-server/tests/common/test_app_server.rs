@@ -145,6 +145,9 @@ use crate::json_logging::JsonLogCapture;
 use crate::local_websocket_exec_server::LocalWebsocketExecServer;
 use crate::rpc_delay::WebsocketDelayInterposer;
 
+#[path = "turn_start_after_cleanup.rs"]
+mod turn_start_after_cleanup;
+
 pub struct TestAppServer {
     next_request_id: AtomicI64,
     /// Retain this child process until the client is dropped. The Tokio runtime
@@ -1053,11 +1056,7 @@ impl TestAppServer {
         params: TurnStartParams,
     ) -> anyhow::Result<TurnCompletedNotification> {
         let thread_id = params.thread_id.clone();
-        let request_id = self.send_turn_start_request(params).await?;
-        let response = self
-            .read_stream_until_response_message(RequestId::Integer(request_id))
-            .await?;
-        let TurnStartResponse { turn } = crate::to_response(response)?;
+        let TurnStartResponse { turn } = self.start_turn_after_terminal_cleanup(params).await?;
         let notification = self
             .read_stream_until_matching_notification(
                 "turn/completed for started turn",

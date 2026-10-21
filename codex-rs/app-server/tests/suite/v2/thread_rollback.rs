@@ -176,8 +176,8 @@ async fn thread_rollback_drops_last_turns_and_persists_to_rollout() -> Result<()
     )
     .await??;
 
-    let turn2_id = mcp
-        .send_turn_start_request(TurnStartParams {
+    mcp.start_turn_after_terminal_cleanup_with_timeout(
+        TurnStartParams {
             thread_id: thread.id.clone(),
             client_user_message_id: None,
             input: vec![V2UserInput::Text {
@@ -185,13 +185,10 @@ async fn thread_rollback_drops_last_turns_and_persists_to_rollout() -> Result<()
                 text_elements: Vec::new(),
             }],
             ..Default::default()
-        })
-        .await?;
-    let _turn2_resp: JSONRPCResponse = timeout(
+        },
         DEFAULT_READ_TIMEOUT,
-        mcp.read_stream_until_response_message(RequestId::Integer(turn2_id)),
     )
-    .await??;
+    .await?;
     let _completed2 = timeout(
         DEFAULT_READ_TIMEOUT,
         mcp.read_stream_until_notification_message("turn/completed"),
