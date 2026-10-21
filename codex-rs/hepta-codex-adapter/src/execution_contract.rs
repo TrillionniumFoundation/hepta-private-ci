@@ -321,9 +321,18 @@ impl ExecutionReceiptV1 {
         if self.outcome_digest.is_some_and(Digest32::is_zero) {
             return Err(ExecutionContractError::ZeroDigest("execution outcome"));
         }
-        // A successful effect needs observed evidence and cannot request replay.
+        // Both completed and failed effects require a witnessed outcome.
+        // A transport failure without terminal evidence stays indeterminate.
+        if matches!(
+            self.status,
+            ExecutionStatusV1::Completed | ExecutionStatusV1::Failed
+        ) && self.outcome_digest.is_none()
+        {
+            return Err(ExecutionContractError::StatusOutcomeMismatch);
+        }
+        // A completed effect is final and must never request a fresh dispatch.
         if self.status == ExecutionStatusV1::Completed
-            && (self.outcome_digest.is_none() || self.recovery != RecoveryDispositionV1::None)
+            && self.recovery != RecoveryDispositionV1::None
         {
             return Err(ExecutionContractError::StatusOutcomeMismatch);
         }
@@ -360,8 +369,23 @@ impl RuntimeReceiptV1 {
         if self.execution.outcome_digest != Some(self.tool_outcome.outcome_digest()) {
             return Err(ExecutionContractError::OutcomeDigestMismatch);
         }
-        // A tool's terminal observation is not permission to replay it.
-        if self.tool_outcome.terminal_observed && self.tool_outcome.retryable {
+        // A retryable flag is only valid for an explicit pre-admission
+        // rejection. The generic and native recovery postures must agree.
+        if self.tool_outcome.retryable
+            != (self.execution.recovery == RecoveryDispositionV1::RetryBeforeAdmission)
+        {
+            return Err(ExecutionContractError::StatusOutcomeMismatch);
+        }
+        // A rejected operation has not entered the physical tool boundary.
+        // An exit code or output digest is evidence that admission was crossed
+        // (even if a terminal notification was lost), so never label it as a
+        // safe pre-admission rejection.
+        if self.execution.status == ExecutionStatusV1::Rejected
+            && (self.tool_outcome.terminal_observed
+                || self.tool_outcome.exit_code.is_some()
+                || self.tool_outcome.stdout_digest.is_some()
+                || self.tool_outcome.stderr_digest.is_some())
+        {
             return Err(ExecutionContractError::StatusOutcomeMismatch);
         }
         match self.execution.status {
@@ -372,9 +396,6 @@ impl RuntimeReceiptV1 {
                 return Err(ExecutionContractError::StatusOutcomeMismatch);
             }
             ExecutionStatusV1::Failed if !self.tool_outcome.terminal_observed => {
-                return Err(ExecutionContractError::StatusOutcomeMismatch);
-            }
-            ExecutionStatusV1::Rejected if self.tool_outcome.terminal_observed => {
                 return Err(ExecutionContractError::StatusOutcomeMismatch);
             }
             _ => {}
