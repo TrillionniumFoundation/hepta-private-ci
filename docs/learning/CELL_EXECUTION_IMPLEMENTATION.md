@@ -42,6 +42,8 @@ Required fixtures are:
 
 1. shared-encoder output equals the duplicated-encoder output for the same frozen snapshot;
 2. zero-delta adapter output is byte-identical to the no-update baseline;
+   nonzero per-cell parameter deltas must create an exact successor generation;
+   no updated head can run against a predecessor feature snapshot;
 3. state migration preserves a cell's bounded hidden-state digest and generation;
 4. routing is deterministic for a fixed topology snapshot and request digest;
 5. queue admission is bounded and fair across cell scopes;
