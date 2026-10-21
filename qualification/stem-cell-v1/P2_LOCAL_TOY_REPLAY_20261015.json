@@ -1,0 +1,258 @@
+{
+  "all_real_source_future_windows_qualified": false,
+  "authority": "DENY_ALL",
+  "experiment": "seeded 147840p mock Stem, 128/32/64 fake source cases",
+  "model_winner_selected": false,
+  "n_trials": 3,
+  "original_human_labels": false,
+  "production_promotion_permitted": false,
+  "schema": "hepta.p2.synthetic-equal-parameter-local-evidence.v1",
+  "source_git_blob_sha1": {
+    "p2_real_cell_split.py": "700c2a7e91cebfee4662e317897c072b09fb22b7",
+    "p2_real_cell_split_review.py": "a1d21a043972ce51d3ebf5b513dd7f9a1e0ac45a",
+    "test_p2_real_cell_split.py": "22aa4ca3d840c7b6ce8c090b06c7a3e7f6886d5d"
+  },
+  "status": "SYNTHETIC_NOT_PRETRAINED",
+  "trials": [
+    {
+      "actual_fake_encoder_calls": 224,
+      "admissible_real_pretrained_efficacy": false,
+      "independent_reviewer_recomputed_all_five_weights": true,
+      "report_sha256": "40a330de542329985b8bb0aafc6b999f42a36d0e96d446a9d5534973a642a25d",
+      "results": {
+        "adaptive_train_only": {
+          "calibration": {
+            "accuracy": 0.75,
+            "brier": 0.21969632,
+            "mean_positive_probability": 0.39175851,
+            "n": 32
+          },
+          "test": {
+            "accuracy": 0.65625,
+            "brier": 0.21648284,
+            "mean_positive_probability": 0.42699268,
+            "n": 64
+          }
+        },
+        "fixed_two_cell": {
+          "calibration": {
+            "accuracy": 0.65625,
+            "brier": 0.25592475,
+            "mean_positive_probability": 0.39253662,
+            "n": 32
+          },
+          "test": {
+            "accuracy": 0.5625,
+            "brier": 0.25581912,
+            "mean_positive_probability": 0.43595955,
+            "n": 64
+          }
+        },
+        "frozen_no_change": {
+          "calibration": {
+            "accuracy": 0.59375,
+            "brier": 0.23981049,
+            "mean_positive_probability": 0.49291515,
+            "n": 32
+          },
+          "test": {
+            "accuracy": 0.59375,
+            "brier": 0.24808874,
+            "mean_positive_probability": 0.51361174,
+            "n": 64
+          }
+        },
+        "unrouted_equal_parameter": {
+          "calibration": {
+            "accuracy": 0.71875,
+            "brier": 0.1954802,
+            "mean_positive_probability": 0.37517386,
+            "n": 32
+          },
+          "test": {
+            "accuracy": 0.71875,
+            "brier": 0.20050302,
+            "mean_positive_probability": 0.40970788,
+            "n": 64
+          }
+        },
+        "wide_single_equal_parameter": {
+          "calibration": {
+            "accuracy": 0.75,
+            "brier": 0.20338861,
+            "mean_positive_probability": 0.3363404,
+            "n": 32
+          },
+          "test": {
+            "accuracy": 0.65625,
+            "brier": 0.22101804,
+            "mean_positive_probability": 0.37219115,
+            "n": 64
+          }
+        }
+      },
+      "seed": 41,
+      "split": true
+    },
+    {
+      "actual_fake_encoder_calls": 224,
+      "admissible_real_pretrained_efficacy": false,
+      "independent_reviewer_recomputed_all_five_weights": true,
+      "report_sha256": "983e26c752a4ba525c106337243e87e57ff531bade8bc25449b4e8acc2db0bf3",
+      "results": {
+        "adaptive_train_only": {
+          "calibration": {
+            "accuracy": 0.625,
+            "brier": 0.25900345,
+            "mean_positive_probability": 0.34351574,
+            "n": 32
+          },
+          "test": {
+            "accuracy": 0.59375,
+            "brier": 0.2954954,
+            "mean_positive_probability": 0.41868396,
+            "n": 64
+          }
+        },
+        "fixed_two_cell": {
+          "calibration": {
+            "accuracy": 0.59375,
+            "brier": 0.29359155,
+            "mean_positive_probability": 0.34751437,
+            "n": 32
+          },
+          "test": {
+            "accuracy": 0.546875,
+            "brier": 0.27665782,
+            "mean_positive_probability": 0.41292343,
+            "n": 64
+          }
+        },
+        "frozen_no_change": {
+          "calibration": {
+            "accuracy": 0.53125,
+            "brier": 0.25453731,
+            "mean_positive_probability": 0.5033524,
+            "n": 32
+          },
+          "test": {
+            "accuracy": 0.453125,
+            "brier": 0.26589178,
+            "mean_positive_probability": 0.50399046,
+            "n": 64
+          }
+        },
+        "unrouted_equal_parameter": {
+          "calibration": {
+            "accuracy": 0.59375,
+            "brier": 0.23140821,
+            "mean_positive_probability": 0.35140032,
+            "n": 32
+          },
+          "test": {
+            "accuracy": 0.609375,
+            "brier": 0.28583977,
+            "mean_positive_probability": 0.42356587,
+            "n": 64
+          }
+        },
+        "wide_single_equal_parameter": {
+          "calibration": {
+            "accuracy": 0.59375,
+            "brier": 0.24798826,
+            "mean_positive_probability": 0.29739941,
+            "n": 32
+          },
+          "test": {
+            "accuracy": 0.578125,
+            "brier": 0.29885378,
+            "mean_positive_probability": 0.39456748,
+            "n": 64
+          }
+        }
+      },
+      "seed": 47,
+      "split": true
+    },
+    {
+      "actual_fake_encoder_calls": 224,
+      "admissible_real_pretrained_efficacy": false,
+      "independent_reviewer_recomputed_all_five_weights": true,
+      "report_sha256": "9ddba9186ba06115f6e3dc0934574e9f3203ea9ecb86fa1a196df983aa3856db",
+      "results": {
+        "adaptive_train_only": {
+          "calibration": {
+            "accuracy": 0.59375,
+            "brier": 0.23612088,
+            "mean_positive_probability": 0.41878977,
+            "n": 32
+          },
+          "test": {
+            "accuracy": 0.625,
+            "brier": 0.23543615,
+            "mean_positive_probability": 0.3568854,
+            "n": 64
+          }
+        },
+        "fixed_two_cell": {
+          "calibration": {
+            "accuracy": 0.59375,
+            "brier": 0.25836217,
+            "mean_positive_probability": 0.43218186,
+            "n": 32
+          },
+          "test": {
+            "accuracy": 0.578125,
+            "brier": 0.26942148,
+            "mean_positive_probability": 0.37842811,
+            "n": 64
+          }
+        },
+        "frozen_no_change": {
+          "calibration": {
+            "accuracy": 0.46875,
+            "brier": 0.23826268,
+            "mean_positive_probability": 0.5086076,
+            "n": 32
+          },
+          "test": {
+            "accuracy": 0.46875,
+            "brier": 0.27383358,
+            "mean_positive_probability": 0.49440825,
+            "n": 64
+          }
+        },
+        "unrouted_equal_parameter": {
+          "calibration": {
+            "accuracy": 0.6875,
+            "brier": 0.21590075,
+            "mean_positive_probability": 0.40972693,
+            "n": 32
+          },
+          "test": {
+            "accuracy": 0.640625,
+            "brier": 0.22186414,
+            "mean_positive_probability": 0.38940875,
+            "n": 64
+          }
+        },
+        "wide_single_equal_parameter": {
+          "calibration": {
+            "accuracy": 0.65625,
+            "brier": 0.23213627,
+            "mean_positive_probability": 0.37962294,
+            "n": 32
+          },
+          "test": {
+            "accuracy": 0.640625,
+            "brier": 0.25049075,
+            "mean_positive_probability": 0.36316658,
+            "n": 64
+          }
+        }
+      },
+      "seed": 53,
+      "split": true
+    }
+  ]
+}
