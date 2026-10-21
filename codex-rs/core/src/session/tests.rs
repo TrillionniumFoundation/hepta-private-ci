@@ -256,6 +256,8 @@ impl StepContext {
 #[path = "configuration_tests.rs"]
 mod configuration_tests;
 mod guardian_tests;
+#[path = "terminal_admission_tests.rs"]
+mod terminal_admission_tests;
 
 struct InstructionsTestCase {
     slug: &'static str,

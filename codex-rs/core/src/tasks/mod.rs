@@ -3513,6 +3513,7 @@ impl Session {
             self.finish_task_terminalization(&handoff.terminalization_identity, completion);
             handoff.phase = TaskFinishHandoffPhase::Complete;
             handoff.task.take();
+            self.schedule_thread_admission_recheck(idle_cause);
         }
     }
 
@@ -3732,6 +3733,9 @@ impl Session {
         }
         self.finish_task_terminalization(&handoff.terminalization_identity, &completion);
         handoff.phase = TaskAbortHandoffPhase::Complete;
+        if let Some(cause) = handoff.deferred_idle_cause {
+            self.schedule_thread_admission_recheck(cause);
+        }
         AbortTurnOutcome::Running
     }
 
@@ -3898,7 +3902,7 @@ impl Session {
         mut recovery_history_restore: Option<ContextManager>,
         reason: TurnAbortReason,
         completion: Arc<StartTransitionCompletion>,
-    ) -> bool {
+    ) -> StartTransitionClearOutcome {
         if !self
             .restore_recovery_history_if_current(
                 Some(&turn_state),
@@ -3907,7 +3911,7 @@ impl Session {
             )
             .await
         {
-            return false;
+            return StartTransitionClearOutcome::Stale;
         }
         let done = Arc::new(Notify::new());
         // `handle_task_abort` waits for the task's completion notification;
@@ -3952,7 +3956,7 @@ impl Session {
         else {
             // A stale start future must not publish recovery or wake another
             // turn after its reservation has been replaced or fenced.
-            return false;
+            return StartTransitionClearOutcome::Stale;
         };
         if let Some(cause) = deferred_idle_cause {
             self.emit_thread_idle_lifecycle_if_idle_after_start_transition(
@@ -3967,7 +3971,9 @@ impl Session {
             abort_outcome.terminal_persistence_generation,
         )
         .await;
-        true
+        StartTransitionClearOutcome::Cleared {
+            deferred_idle_cause,
+        }
     }
 
     /// Claims an exact host-owned transition for detached cleanup after its
@@ -4043,11 +4049,17 @@ impl Session {
                 Arc::clone(&completion),
             )
             .await;
-        if terminalized {
+        if let StartTransitionClearOutcome::Cleared {
+            deferred_idle_cause,
+        } = terminalized
+        {
             // Release the exact phase fence before allowing a pending mailbox
             // wakeup to reserve a replacement turn.  Shutdown admission is
             // already closed, so teardown will not self-wake here.
             self.finish_start_transition(&transition_identity, &completion);
+            if let Some(cause) = deferred_idle_cause {
+                self.schedule_thread_admission_recheck(cause);
+            }
             if reason == TurnAbortReason::Interrupted && !self.shutdown_started() {
                 self.maybe_start_turn_for_pending_work().await;
             }
