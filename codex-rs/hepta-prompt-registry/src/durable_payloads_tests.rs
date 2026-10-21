@@ -134,7 +134,13 @@ fn incomplete_unselected_payload_tail_is_discarded_only_after_semantic_validatio
     let committed_length = std::fs::metadata(&file_path).must("metadata").len();
     // Simulate bytes written before any selecting metadata rename.
     let mut file =
-        open_private(&owner.store.root, payloads::FILE_NAME, Access::Create).must("payload");
+        open_private(
+            &owner.store.root,
+            &owner.store.root_path,
+            payloads::FILE_NAME,
+            Access::Create,
+        )
+        .must("payload");
     file.seek(SeekFrom::End(0)).must("tail");
     file.write_all(b"unselected incomplete next payload")
         .must("orphan tail");
@@ -227,7 +233,8 @@ fn v2_migration_preserves_payloads_frontiers_and_semantic_identity() {
     let mut core = PromptRegistry::new(64).must("core");
     add_payload(&mut core, 0).must("legacy payload");
     let bytes = serde_json::to_vec(&stored_v2(&core)).must("legacy snapshot");
-    let mut file = open_private(&directory, "registry.json", Access::Create).must("legacy file");
+    let mut file =
+        open_private(&directory, &path, "registry.json", Access::Create).must("legacy file");
     file.write_all(&bytes).must("legacy bytes");
     file.sync_all().must("legacy sync");
     directory.sync_all().must("legacy directory sync");
