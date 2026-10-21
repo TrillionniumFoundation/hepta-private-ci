@@ -1,0 +1,67 @@
+name: V8 sandbox Windows compatibility (qualification only)
+
+on:
+  pull_request:
+    paths:
+      - "codex-rs/v8-poc/**"
+      - ".github/workflows/hepta-v8-windows-sandbox.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: hepta-v8-windows-sandbox-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  windows-msvc:
+    name: Linked V8 sandbox and Rust feature parity
+    runs-on: windows-latest
+    timeout-minutes: 50
+    steps:
+      - name: Checkout exact candidate
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+
+      - name: Prepare pinned Bazel MSVC environment
+        uses: ./.github/actions/prepare-bazel-ci
+        with:
+          target: x86_64-pc-windows-msvc
+          cache-scope: bazel-v8-windows-sandbox
+
+      - name: Test actual linked V8 sandbox and crate feature
+        env:
+          BUILDBUDDY_API_KEY: ${{ secrets.BUILDBUDDY_API_KEY }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "${{ github.event.pull_request.head.sha || github.sha }}"
+          ./.github/scripts/run-bazel-ci.sh \
+            --print-failed-action-summary \
+            --print-failed-test-logs \
+            --windows-msvc-host-platform \
+            --remote-download-toplevel \
+            -- \
+            test \
+            --platforms=//:windows_x86_64_msvc \
+            --skip_incompatible_explicit_targets \
+            --test_output=errors \
+            --build_metadata=COMMIT_SHA=${GITHUB_SHA} \
+            -- \
+            //codex-rs/v8-poc:v8-poc-unit-tests
+
+      - name: Retain exact failure logs
+        if: always()
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f
+        with:
+          name: hepta-v8-sandbox-msvc-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/bazel-execution-logs
+          if-no-files-found: warn
+          retention-days: 14
+
+      - name: Verify worktree unchanged
+        if: always()
+        uses: ./.github/actions/check-clean-worktree
