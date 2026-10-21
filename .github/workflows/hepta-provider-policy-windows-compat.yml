@@ -1,0 +1,30 @@
+name: Hepta provider policy Windows API conformance
+
+on:
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - "codex-rs/core/src/client_provider_policy_tests.rs"
+      - "codex-rs/core/src/client.rs"
+      - ".github/workflows/hepta-provider-policy-windows-compat.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  native-msvc-typed-stream:
+    runs-on: windows-latest
+    timeout-minutes: 55
+    defaults:
+      run:
+        working-directory: codex-rs
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          persist-credentials: false
+      - name: Pin matching MSVC Rust toolchain and fmt
+        run: rustup toolchain install 1.95.0 --profile minimal --component rustfmt
+      - name: Reject changed-core Rustfmt drift without Windows command-length overflow
+        run: rustfmt +1.95.0 --edition 2024 --check core/src/client_provider_policy_tests.rs
+      - name: Compile and run real provider terminal-acknowledgement unit tests
+        run: cargo +1.95.0 test --locked -p codex-core --lib client_provider_policy_tests -- --nocapture
