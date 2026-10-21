@@ -306,3 +306,87 @@ Holdouts, license review, independently attested original checkpoint bytes,
 target-hardware profiling and terminal exact-head CI remain blockers.
 All receipts retain `SHADOW_ONLY / DENY_ALL / HOLD_NO_GO`; no model is selected
 or promoted through this interface.
+
+
+## P6: paired teacher-shard to shared latent student (five-way split)
+
+`qa/stem-bakeoff/offline_shard_distill.py` closes the **research
+API gap** between P5's genuine frozen-teacher feature export and a native
+shared latent student's offline optimization. This is an **in-memory API**:
+the operator must separately load five approved model-ready slot tensors
+`[batch, slots, native_width]`, keep them outside Git, and bind
+each to the corresponding P5 teacher-shard batch and independently retained
+source/item ordering receipt. This module does not create or authenticate the
+source slots and does not fetch pretrained teacher weights.
+
+- Accepts exactly `train/calibration/future_1/future_2/ood` cohorts.
+  All five must match one immutable teacher candidate, source revision,
+  checkpoint inventory and target feature width. The caller must provide
+  expected teacher NPY SHA256, ordered source manifest SHA256 and per-row
+  source digests; duplicate rows/batches, repeated slot bytes, repeated teacher
+  feature bytes, malformed or nonfinite tensors, invalid custody, source or
+  checkpoint drift fail closed **before optimizer update**.
+- Teacher features are read through P5's strictly bounded,
+  `allow_pickle=False` shard reader and detached. Student input slots
+  must be frozen model-ready features, not raw images, audio, private Memory
+  writes or per-Cell trainable activations.
+- Validates the optimizer parameter identity against **only** the shared
+  student and shared readout. An optimizer referencing any per-Cell Head or
+  private module is denied.
+- Computes pre-training losses across all five cohorts without gradient;
+  updates **train only**, with finite-gradient checking and clipping; then
+  evaluates all cohorts without gradient. A separate projection/readout maps
+  the student width (768 or 1024) into the **specific teacher** feature width.
+  EmbeddingGemma 2 and T5Gemma 2 features are NOT interchangeable, so execute
+  separate pinned runs unless an independently trained alignment is provided.
+- Emits a non-authorizing receipt containing loss-before/loss-after and the
+  exact five source cohort hashes. Even improving loss on a tiny fixture is
+  never a claim of held-out quality, a licensed pretrained teacher, a
+  qualified 150M/300M student or a selected Stem.
+
+Example *API wiring only* (approved slot tensors and source references are
+obtained from the separately controlled offline data producer):
+
+~~~python
+from native_latent import build_encoder, NATIVE_SPECS
+from offline_shard_distill import PairedCohort, run_offline_distillation
+import torch
+
+spec = NATIVE_SPECS["hepta_latent_150m"]
+student = build_encoder(spec, device="cuda", trainable=True)
+teacher_width = 256  # for a separately pinned EmbeddingGemma 2 256d shard
+readout = torch.nn.Linear(spec.width, teacher_width, device="cuda")
+optimizer = torch.optim.AdamW(
+    list(student.parameters()) + list(readout.parameters()), lr=1e-5)
+
+# cohorts: exact five PairedCohort objects, prepared from approved
+# external model-ready slots, expected source/NPY hashes and row IDs.
+# All slots must be float32 on the same device as the shared student.
+receipt = run_offline_distillation(
+    student=student, readout=readout, optimizer=optimizer,
+    cohorts=cohorts, student_candidate="hepta_latent_150m",
+    teacher_candidate="embeddinggemma2_740m",
+    teacher_revision=PINNED_TEACHER_SHA40,
+    checkpoint_inventory_sha256=PINNED_CHECKPOINT_SHA256,
+    student_width=spec.width, target_width=teacher_width, steps=1)
+assert receipt["production_activation_allowed"] is False
+~~~
+
+Run CPU-only hermetic tests (a very small randomly initialized student, NOT
+the full-size 150M/300M trained model):
+
+~~~sh
+python3 -m unittest discover -s qa/stem-bakeoff -p 'test_offline_shard_distill.py' -v
+~~~
+
+**Unclosed prerequisites**: independently attested publisher/checkpoint
+rights, authenticated and row-aligned approved modality slots, real train +
+untouched future/OOD labels and evaluation, sufficient GPU memory to train
+a full 150M/300M model, secured student checkpoint custody/replay,
+separate modality tower/adapter teaching, actual target hardware
+p95/p99/energy/one-backend-forward measurement, exact-head terminal
+blocking CI / Architecture / V8 / cross-platform security checks, and
+independent production admission. The test source digests are synthetic,
+and caller-provided hashes do not establish independence or label hiding.
+No teacher weights or user data are committed. `SHADOW_ONLY` /
+`DENY_ALL` / `HOLD_NO_GO` remain unconditional.
