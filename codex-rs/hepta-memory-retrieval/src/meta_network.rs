@@ -71,10 +71,24 @@ impl std::error::Error for MemoryMetaBatchErrorV1 {}
 
 fn preflight_memory_meta_batch_v1(
     policy: &MemoryMetaNetworkPolicyV1,
+    cue: &MemoryCueV1,
     engram_snapshot: &EngramSnapshotV1,
     cells: &[MemoryMetaCellTickSpecV1],
 ) -> Result<(), MemoryMetaBatchErrorV1> {
     policy.validate().map_err(MemoryMetaBatchErrorV1::Contract)?;
+    // Even an empty or fully deferred batch must not accept an invalid cue or
+    // projection; otherwise a seemingly valid abstention hides stale state.
+    cue.validate().map_err(|_| {
+        MemoryMetaBatchErrorV1::Contract(HnmfContractError::Invalid("memory meta cue"))
+    })?;
+    engram_snapshot.validate().map_err(|_| {
+        MemoryMetaBatchErrorV1::Contract(HnmfContractError::Invalid("memory meta engram snapshot"))
+    })?;
+    if engram_snapshot.generation_vector_digest != cue.snapshot_key.vector_digest {
+        return Err(MemoryMetaBatchErrorV1::Contract(
+            HnmfContractError::Conflict("memory meta generation vector drift"),
+        ));
+    }
     if cells.len() > MAX_MEMORY_META_CANDIDATES_V1 {
         return Err(MemoryMetaBatchErrorV1::Contract(
             HnmfContractError::Invalid("memory meta candidate count"),
@@ -125,6 +139,14 @@ fn preflight_memory_meta_batch_v1(
                 HnmfContractError::Invalid("memory meta candidate cost"),
             ));
         }
+        // Claimed admission cost cannot exceed this Cell's own declared tick
+        // ceiling, even if the global policy would admit it. This checks only
+        // reservations; independently measured usage is a separate gate.
+        if cell.resource_cost_units > cell.tick_input.resource_budget_units {
+            return Err(MemoryMetaBatchErrorV1::Contract(
+                HnmfContractError::Conflict("memory meta per-cell budget"),
+            ));
+        }
         if cell.manifest.shared_base_digest != policy.shared_base_digest
             || cell.manifest.encoder_digest != policy.encoder_digest
             || cell.encoder_feature_digest != policy.encoder_feature_digest
@@ -140,6 +162,17 @@ fn preflight_memory_meta_batch_v1(
             ));
         }
     }
+    // Every structural contract is checked before examining Cell cue bindings.
+    // A malformed late Cell must be rejected ahead of all retrieval work.
+    for cell in cells {
+        if cell.tick_input.cue_digest.digest() != cue.digest()
+            || cell.tick_input.objective_digest.digest() != cue.objective_digest
+        {
+            return Err(MemoryMetaBatchErrorV1::Contract(
+                HnmfContractError::Conflict("memory meta pre-tick cue or objective"),
+            ));
+        }
+    }
 
     Ok(())
 }
@@ -152,7 +185,13 @@ pub fn run_memory_meta_batch_shadow_v1(
     dynamics_policy: &EngramDynamicsPolicyV1,
     cells: &[MemoryMetaCellTickSpecV1],
 ) -> Result<MemoryMetaShadowBatchV1, MemoryMetaBatchErrorV1> {
-    preflight_memory_meta_batch_v1(policy, engram_snapshot, cells)?;
+    preflight_memory_meta_batch_v1(policy, cue, engram_snapshot, cells)?;
+    retrieval_policy.validate().map_err(|_| {
+        MemoryMetaBatchErrorV1::Contract(HnmfContractError::Invalid("memory meta retrieval policy"))
+    })?;
+    dynamics_policy.validate().map_err(|_| {
+        MemoryMetaBatchErrorV1::Contract(HnmfContractError::Invalid("memory meta dynamics policy"))
+    })?;
 
     let mut cell_ticks = Vec::with_capacity(cells.len());
     let mut candidates = Vec::with_capacity(cells.len());
@@ -259,13 +298,13 @@ pub fn plan_memory_meta_pre_ticks_shadow_v1(
     engram_snapshot: &EngramSnapshotV1,
     cells: &[MemoryMetaCellTickSpecV1],
 ) -> Result<MemoryMetaPreTickPlanV1, MemoryMetaBatchErrorV1> {
-    preflight_memory_meta_batch_v1(policy, engram_snapshot, cells)?;
+    preflight_memory_meta_batch_v1(policy, cue, engram_snapshot, cells)?;
     let mut by_identity: Vec<&MemoryMetaCellTickSpecV1> = cells.iter().collect();
     by_identity.sort_by(|a, b| a.manifest.cell_id.cmp(&b.manifest.cell_id));
 
     // Bind the complete admitted-input *metadata* set, not just winners.
     // Generated evidence is independently bound by the actual tick receipt.
-    let mut framed = b"hepta.memory-meta.pretick.inputs.v1".to_vec();
+    let mut framed = b"hepta.memory-meta.pretick.inputs.v2".to_vec();
     for digest in [
         policy.shared_base_digest,
         policy.encoder_digest,
@@ -277,6 +316,10 @@ pub fn plan_memory_meta_pre_ticks_shadow_v1(
     ] {
         frame_pretick_digest(&mut framed, digest);
     }
+    // The original metadata commitment omitted the cue when cells was empty.
+    // Bind the immutable cue and owner generation cut even for abstention.
+    framed.extend_from_slice(cue.digest().as_array());
+    framed.extend_from_slice(cue.snapshot_key.vector_digest.as_array());
     for number in [
         policy.graph_generation.get(),
         policy.model_generation.get(),
@@ -374,7 +417,7 @@ pub fn plan_memory_meta_pre_ticks_shadow_v1(
             admitted.push(cell.manifest.cell_id.clone());
         }
     }
-    let mut frame = b"hepta.memory-meta.pretick.plan.v1".to_vec();
+    let mut frame = b"hepta.memory-meta.pretick.plan.v2".to_vec();
     frame_pretick_digest(&mut frame, input_digest);
     frame.extend_from_slice(&spent.to_be_bytes());
     frame.extend_from_slice(&(admitted.len() as u32).to_be_bytes());

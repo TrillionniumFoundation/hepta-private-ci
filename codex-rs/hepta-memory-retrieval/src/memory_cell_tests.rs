@@ -774,3 +774,150 @@ fn pre_tick_shadow_rejects_invalid_non_admitted_cue_and_stale_forget_frontier() 
         ))
     ));
 }
+
+#[test]
+fn full_meta_batch_rejects_late_forged_cue_before_first_generator() {
+    let fixture = shadow_fixture(true);
+    let mut first = meta_spec(&fixture);
+    // This would fail as a Tick if the first Cell started retrieval.
+    first.generated_input.batches.clear();
+
+    let mut second = meta_spec(&fixture);
+    second.manifest.cell_id = id("memory-cell:semantic:2");
+    second.manifest.role = MemoryCellRoleV1::Semantic;
+    second.tick_input.cell_id = second.manifest.cell_id.clone();
+    second.tick_input.cue_digest = digest("forged-late-cue");
+
+    let rejected = crate::run_memory_meta_batch_shadow_v1(
+        &meta_policy(&fixture),
+        &fixture.cue,
+        &fixture.policy,
+        &fixture.snapshot,
+        &fixture.dynamics,
+        &[first, second],
+    );
+    assert!(matches!(
+        rejected,
+        Err(crate::MemoryMetaBatchErrorV1::Contract(
+            codex_hepta_cognitive_types::hnmf::HnmfContractError::Conflict(
+                "memory meta pre-tick cue or objective"
+            )
+        ))
+    ));
+}
+
+#[test]
+fn empty_meta_batch_fails_closed_for_invalid_cue_and_retrieval_policy() {
+    let fixture = shadow_fixture(true);
+    let mut bad_cue = fixture.cue.clone();
+    bad_cue.objective_digest = Digest32::ZERO;
+
+    let rejected = crate::run_memory_meta_batch_shadow_v1(
+        &meta_policy(&fixture),
+        &bad_cue,
+        &fixture.policy,
+        &fixture.snapshot,
+        &fixture.dynamics,
+        &[],
+    );
+    assert!(matches!(
+        rejected,
+        Err(crate::MemoryMetaBatchErrorV1::Contract(
+            codex_hepta_cognitive_types::hnmf::HnmfContractError::Invalid("memory meta cue")
+        ))
+    ));
+
+    let mut bad_policy = fixture.policy.clone();
+    bad_policy.maximum_results = 0;
+    let rejected = crate::run_memory_meta_batch_shadow_v1(
+        &meta_policy(&fixture),
+        &fixture.cue,
+        &bad_policy,
+        &fixture.snapshot,
+        &fixture.dynamics,
+        &[],
+    );
+    assert!(matches!(
+        rejected,
+        Err(crate::MemoryMetaBatchErrorV1::Contract(
+            codex_hepta_cognitive_types::hnmf::HnmfContractError::Invalid(
+                "memory meta retrieval policy"
+            )
+        ))
+    ));
+}
+
+#[test]
+fn empty_pre_tick_commitment_binds_the_actual_cue() {
+    let fixture = shadow_fixture(true);
+    let original = crate::plan_memory_meta_pre_ticks_shadow_v1(
+        &meta_policy(&fixture),
+        &fixture.cue,
+        &fixture.snapshot,
+        &[],
+    )
+    .unwrap_or_else(|error| panic!("original empty plan: {error:?}"));
+
+    let mut changed_cue = fixture.cue.clone();
+    changed_cue.cue_profile_digest = Digest32::of_bytes(b"changed-cue-profile");
+    let changed = crate::plan_memory_meta_pre_ticks_shadow_v1(
+        &meta_policy(&fixture),
+        &changed_cue,
+        &fixture.snapshot,
+        &[],
+    )
+    .unwrap_or_else(|error| panic!("changed empty plan: {error:?}"));
+
+    assert!(original.admitted_cell_ids.is_empty());
+    assert!(changed.admitted_cell_ids.is_empty());
+    assert_ne!(original.admission_input_digest, changed.admission_input_digest);
+    assert_ne!(original.admission_plan_digest, changed.admission_plan_digest);
+}
+
+#[test]
+fn shadow_admission_rejects_per_cell_overbudget_before_first_tick() {
+    let fixture = shadow_fixture(true);
+    let mut first = meta_spec(&fixture);
+    // An actual first tick would reject this incomplete generated input.
+    first.generated_input.batches.clear();
+
+    let mut second = meta_spec(&fixture);
+    second.manifest.cell_id = id("memory-cell:semantic:2");
+    second.manifest.role = MemoryCellRoleV1::Semantic;
+    second.tick_input.cell_id = second.manifest.cell_id.clone();
+    second.tick_input.resource_budget_units = 10;
+    // The claimed reservation is 20, which exceeds the Cell-local ceiling.
+    assert!(second.resource_cost_units > second.tick_input.resource_budget_units);
+
+    let rejected = crate::run_memory_meta_batch_shadow_v1(
+        &meta_policy(&fixture),
+        &fixture.cue,
+        &fixture.policy,
+        &fixture.snapshot,
+        &fixture.dynamics,
+        &[first.clone(), second.clone()],
+    );
+    assert!(matches!(
+        rejected,
+        Err(crate::MemoryMetaBatchErrorV1::Contract(
+            codex_hepta_cognitive_types::hnmf::HnmfContractError::Conflict(
+                "memory meta per-cell budget"
+            )
+        ))
+    ));
+
+    let rejected = crate::plan_memory_meta_pre_ticks_shadow_v1(
+        &meta_policy(&fixture),
+        &fixture.cue,
+        &fixture.snapshot,
+        &[first, second],
+    );
+    assert!(matches!(
+        rejected,
+        Err(crate::MemoryMetaBatchErrorV1::Contract(
+            codex_hepta_cognitive_types::hnmf::HnmfContractError::Conflict(
+                "memory meta per-cell budget"
+            )
+        ))
+    ));
+}
