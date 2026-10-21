@@ -1067,6 +1067,108 @@ fn checked_pre_tick_binds_exact_ledger_snapshot_and_forget_frontier() {
 }
 
 #[test]
+fn checked_record_recall_binds_every_selected_record_to_source_cut() {
+    let fixture = shadow_fixture(true);
+    let policy = meta_policy(&fixture);
+    let spec = meta_spec(&fixture);
+    let mut support_checks = 0_usize;
+    let mut record_lookups = Vec::new();
+
+    let outcome = crate::run_memory_meta_preselected_record_checked_shadow_v1(
+        &policy,
+        &fixture.cue,
+        &fixture.policy,
+        &fixture.snapshot,
+        &fixture.dynamics,
+        &[spec.clone()],
+        |_| {
+            support_checks += 1;
+            true
+        },
+        |lookup| {
+            record_lookups.push(lookup.clone());
+            lookup.cell_id == spec.manifest.cell_id
+                && Some(lookup.cell_support_digest) == spec.support_digest
+                && lookup.evidence_ledger_digest == policy.evidence_ledger_digest
+                && lookup.snapshot_digest == policy.snapshot_digest
+                && lookup.source_frontier_digest == policy.source_frontier_digest
+                && lookup.forget_frontier_digest == policy.forget_frontier_digest
+                && !lookup.record_digest.is_zero()
+                && !lookup.support_digests.is_empty()
+                && lookup.support_digests.iter().all(|support| !support.is_zero())
+        },
+    )
+    .unwrap_or_else(|error| panic!("record-checked shadow: {error:?}"));
+
+    assert_eq!(support_checks, 2);
+    assert_eq!(outcome.batch.cell_ticks.len(), 1);
+    assert!(!record_lookups.is_empty());
+    assert_eq!(
+        record_lookups.len(),
+        outcome.batch.cell_ticks[0].recall.packet.selections.len()
+    );
+    assert!(record_lookups.iter().all(|lookup| {
+        lookup.recall_packet_digest == outcome.batch.cell_ticks[0].recall.packet.packet_digest
+    }));
+    assert!(!outcome.batch.routing.authority.grants_any());
+    assert!(!outcome.pre_tick_plan.production_activation_allowed);
+}
+
+#[test]
+fn checked_record_recall_rejects_one_revoked_record_and_discards_batch() {
+    let fixture = shadow_fixture(true);
+    let mut record_calls = 0_usize;
+    let rejected = crate::run_memory_meta_preselected_record_checked_shadow_v1(
+        &meta_policy(&fixture),
+        &fixture.cue,
+        &fixture.policy,
+        &fixture.snapshot,
+        &fixture.dynamics,
+        &[meta_spec(&fixture)],
+        |_| true,
+        |_| {
+            record_calls += 1;
+            false
+        },
+    );
+    assert!(matches!(
+        rejected,
+        Err(crate::MemoryMetaBatchErrorV1::Contract(
+            codex_hepta_cognitive_types::hnmf::HnmfContractError::Conflict(
+                "memory meta external record rejected"
+            )
+        ))
+    ));
+    assert_eq!(record_calls, 1);
+}
+
+#[test]
+fn checked_record_recall_does_not_fabricate_deferred_provenance() {
+    let fixture = shadow_fixture(true);
+    let mut deferred = meta_spec(&fixture);
+    deferred.support_digest = None;
+    deferred.generated_input.batches.clear();
+    let mut record_calls = 0_usize;
+    let outcome = crate::run_memory_meta_preselected_record_checked_shadow_v1(
+        &meta_policy(&fixture),
+        &fixture.cue,
+        &fixture.policy,
+        &fixture.snapshot,
+        &fixture.dynamics,
+        &[deferred],
+        |_| true,
+        |_| {
+            record_calls += 1;
+            true
+        },
+    )
+    .unwrap_or_else(|error| panic!("record-checked deferred: {error:?}"));
+    assert_eq!(record_calls, 0);
+    assert!(outcome.batch.cell_ticks.is_empty());
+    assert!(outcome.batch.routing.receipt.abstained);
+}
+
+#[test]
 fn checked_pre_tick_rejects_revocation_after_retrieval_before_result_delivery() {
     let fixture = shadow_fixture(true);
     let mut second = meta_spec(&fixture);
