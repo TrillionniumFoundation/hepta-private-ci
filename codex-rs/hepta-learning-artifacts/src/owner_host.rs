@@ -1044,7 +1044,7 @@ impl LearningArtifactOwnerHost {
     ) -> Result<Option<ArtifactOwnerRecoveryV1>, ArtifactOwnerHostError> {
         let mut latest = None;
         let mut missing_seen = false;
-        let mut invariant: Option<(Digest32, Digest32, Digest32, Digest32)> = None;
+        let mut invariant: Option<(Digest32, Digest32, Digest32, Digest32, Digest32)> = None;
         for phase in ordered_phases() {
             let path = self.checkpoint_path(operation_id, phase);
             if !path.exists() {
@@ -1063,6 +1063,7 @@ impl LearningArtifactOwnerHost {
                 checkpoint.intent_digest,
                 checkpoint.admission_digest,
                 checkpoint.withdrawal_scope_digest,
+                checkpoint.withdrawal_head_digest,
                 checkpoint.expected_registry_predecessor_head,
             );
             if invariant.is_some_and(|value| value != key) {
@@ -2076,6 +2077,71 @@ mod tests {
             20,
         )
         .fixture("fence is released");
+    }
+
+    #[test]
+    fn recovery_rejects_cross_phase_withdrawal_head_drift() {
+        let directory = TestDir::new();
+        let key = signer();
+        let scope = withdrawal_scope();
+        let scope_digest = scope.digest();
+        let owner = LearningArtifactOwnerHost::open(
+            &directory.0,
+            trust(&key, scope_digest),
+            lease(&key, scope_digest),
+            20,
+        )
+        .fixture("owner");
+        let withdrawals = DatasetWithdrawalRegistry::new_scoped(scope);
+        let admission = admit_manifest_at_withdrawal_head_v3(
+            &withdrawals,
+            withdrawals.head_digest(),
+            manifest(),
+            20,
+        )
+        .fixture("admission");
+        let mut transaction = owner
+            .begin_publication(
+                id("head-drift-operation"),
+                admission,
+                &withdrawals,
+                &ArtifactRegistry::new(),
+                Digest32::ZERO,
+                20,
+            )
+            .fixture("begin");
+        transaction
+            .record_payload_durable(digest("payload"), 7)
+            .fixture("payload phase");
+        owner
+            .persist_checkpoint(&transaction)
+            .fixture("checkpoint payload phase");
+
+        // Model a disk-corrupted later checkpoint which still claims the
+        // same operation, intent, admission, scope and registry predecessor.
+        // Withdrawal-head identity is a frozen admission property, not
+        // mutable progress metadata.
+        let mut corrupt = checkpoint_from_snapshot(
+            &transaction.snapshot(),
+            owner.writer_lease_digest(),
+        );
+        corrupt.withdrawal_head_digest = digest("different-withdrawal-head");
+        fs::write(
+            owner.checkpoint_path(
+                &id("head-drift-operation"),
+                ArtifactPublicationPhaseV1::PayloadDurable,
+            ),
+            encode_checkpoint(&corrupt),
+        )
+        .fixture("inject withdrawal head drift");
+        assert!(matches!(
+            owner.recover_publication(&id("head-drift-operation")),
+            Err(ArtifactOwnerHostError::CheckpointMismatch)
+        ));
+        assert!(matches!(
+            owner.recovery_required_operations(),
+            Err(ArtifactOwnerHostError::CheckpointMismatch)
+        ));
     }
 
     #[test]
