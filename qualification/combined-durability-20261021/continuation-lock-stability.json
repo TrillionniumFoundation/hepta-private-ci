@@ -1,0 +1,46 @@
+{
+  "verified_at_utc": "2026-10-21T13:54:39.639852+00:00",
+  "commands": [
+    {
+      "receipt": "continuation-bazel-lock-materialized.json",
+      "command": [
+        "just",
+        "bazel-lock-update"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 4.002792936000333
+    },
+    {
+      "receipt": "continuation-bazel-lock-repeat.json",
+      "command": [
+        "just",
+        "bazel-lock-update"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 4.004154700000072
+    },
+    {
+      "receipt": "continuation-bazel-lock-check.json",
+      "command": [
+        "just",
+        "bazel-lock-check"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 4.006644952998613
+    }
+  ],
+  "stable_locks": {
+    "codex-rs/Cargo.lock": {
+      "bytes": 413726,
+      "sha256": "d8121cd206f40ef5a25009a041f0a75a1959155f62091ea494047c3d522c1476"
+    },
+    "MODULE.bazel.lock": {
+      "bytes": 1745183,
+      "sha256": "f6c5dd1f2a09c66d6a4c387ff40d11afb7ed2309e541dcb6bff9ad5f410996c3"
+    }
+  },
+  "module_lock_changed": false,
+  "scope": "Real Cargo resolution and original Bazel update twice plus original drift check. Internal workspace dependency edges changed Cargo.lock; the real Bazel generator produced no MODULE.bazel.lock delta. This does not qualify unrun native suites.",
+  "initial_cold_failure": "continuation-bazel-lock-update.json",
+  "cold_failure_context": "The V8 contents cache became complete and patched while external/v8+ retained only an empty temporary directory. The patch relocates pip.parse to the end of the module; it does not remove Python dependencies. No cache contents, lock bytes or gate were manually edited to repair the observed materialization boundary."
+}

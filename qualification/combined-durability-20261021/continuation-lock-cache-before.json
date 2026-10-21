@@ -1,0 +1,34 @@
+{
+  "observed_at_utc": "2026-10-21T13:46:40.441205+00:00",
+  "head": "fa0e8457ca5a3995e00ecec6534c1c68aa82fb28",
+  "disk_free_bytes": 2041208832,
+  "cache_before": {
+    "/workspace/scratch/337c309bc660/dependency-cache/bazel-user": {
+      "exists": false,
+      "du_bytes": 0
+    },
+    "/workspace/scratch/337c309bc660/dependency-cache/bazel-contents": {
+      "exists": true,
+      "du_bytes": 0
+    },
+    "/workspace/scratch/337c309bc660/dependency-cache/bazel-disk": {
+      "exists": true,
+      "du_bytes": 0
+    },
+    "/workspace/scratch/337c309bc660/dependency-cache/bazel-repository": {
+      "exists": true,
+      "du_bytes": 0
+    }
+  },
+  "scope": "Measured cold caches before the original just bazel-lock-update; no inferred success or waived gate.",
+  "locks_before": {
+    "codex-rs/Cargo.lock": {
+      "bytes": 413726,
+      "sha256": "d8121cd206f40ef5a25009a041f0a75a1959155f62091ea494047c3d522c1476"
+    },
+    "MODULE.bazel.lock": {
+      "bytes": 1745183,
+      "sha256": "f6c5dd1f2a09c66d6a4c387ff40d11afb7ed2309e541dcb6bff9ad5f410996c3"
+    }
+  }
+}

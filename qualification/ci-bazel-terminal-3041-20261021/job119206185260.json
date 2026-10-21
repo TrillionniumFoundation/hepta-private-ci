@@ -1,0 +1,136 @@
+{
+  "job": {
+    "id": 119206185260,
+    "run_id": 39591475871,
+    "name": "Bazel / Bazel test on ubuntu-24.04 for x86_64-unknown-linux-musl",
+    "head_sha": "52293403ea1e06465c41d24d39b54959bad40936",
+    "status": "completed",
+    "conclusion": "cancelled",
+    "started_at": "2026-10-21T12:40:04Z",
+    "completed_at": "2026-10-21T13:40:30Z",
+    "runner_name": "GitHub Actions 1000191903",
+    "labels": [
+      "ubuntu-24.04"
+    ],
+    "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/39591475871/job/119206185260",
+    "steps": [
+      {
+        "name": "Set up job",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 1,
+        "started_at": "2026-10-21T12:40:05Z",
+        "completed_at": "2026-10-21T12:40:06Z"
+      },
+      {
+        "name": "Run actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 2,
+        "started_at": "2026-10-21T12:40:06Z",
+        "completed_at": "2026-10-21T12:40:12Z"
+      },
+      {
+        "name": "Prepare Bazel CI",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 3,
+        "started_at": "2026-10-21T12:40:12Z",
+        "completed_at": "2026-10-21T12:40:22Z"
+      },
+      {
+        "name": "Check rusty_v8 MODULE.bazel checksums",
+        "status": "completed",
+        "conclusion": "skipped",
+        "number": 4,
+        "started_at": "2026-10-21T12:40:22Z",
+        "completed_at": "2026-10-21T12:40:22Z"
+      },
+      {
+        "name": "Check MODULE.bazel.lock is up to date",
+        "status": "completed",
+        "conclusion": "skipped",
+        "number": 5,
+        "started_at": "2026-10-21T12:40:22Z",
+        "completed_at": "2026-10-21T12:40:22Z"
+      },
+      {
+        "name": "bazel test //...",
+        "status": "completed",
+        "conclusion": "cancelled",
+        "number": 6,
+        "started_at": "2026-10-21T12:40:22Z",
+        "completed_at": "2026-10-21T13:40:26Z"
+      },
+      {
+        "name": "Upload Bazel execution logs",
+        "status": "completed",
+        "conclusion": "skipped",
+        "number": 7,
+        "started_at": "2026-10-21T13:40:26Z",
+        "completed_at": "2026-10-21T13:40:26Z"
+      },
+      {
+        "name": "Save bazel repository cache",
+        "status": "completed",
+        "conclusion": "skipped",
+        "number": 8,
+        "started_at": "2026-10-21T13:40:26Z",
+        "completed_at": "2026-10-21T13:40:26Z"
+      },
+      {
+        "name": "Check for a clean worktree",
+        "status": "completed",
+        "conclusion": "skipped",
+        "number": 9,
+        "started_at": "2026-10-21T13:40:26Z",
+        "completed_at": "2026-10-21T13:40:26Z"
+      },
+      {
+        "name": "Post Prepare Bazel CI",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 17,
+        "started_at": "2026-10-21T13:40:26Z",
+        "completed_at": "2026-10-21T13:40:26Z"
+      },
+      {
+        "name": "Post Run actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 18,
+        "started_at": "2026-10-21T13:40:26Z",
+        "completed_at": "2026-10-21T13:40:27Z"
+      },
+      {
+        "name": "Complete job",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 19,
+        "started_at": "2026-10-21T13:40:27Z",
+        "completed_at": "2026-10-21T13:40:27Z"
+      }
+    ]
+  },
+  "observed_at": "2026-10-21T13:43:20.887Z",
+  "source_head": "52293403ea1e06465c41d24d39b54959bad40936",
+  "raw_log": {
+    "file": "job119206185260.log.xz",
+    "bytes": 1197839,
+    "sha256": "82731b949f18309e2c0bdb600ebbb6e71a244c63ca6ad03ee9363f4d06424b7a",
+    "compressed_bytes": 99996,
+    "compressed_sha256": "8442f81b5a437a6ca4fe7812875e43320127db56d050088d9a491961d748dab1",
+    "bom": true,
+    "lf": 9426,
+    "crlf": 0
+  },
+  "analysis": {
+    "fail_target_lines": [],
+    "error_annotations": [
+      "2026-10-21T13:40:26.4476913Z ##[error]The operation was canceled."
+    ],
+    "rust_error_lines": [],
+    "last_progress": "2026-10-21T13:40:20.8637579Z [19,668 / 24,666] 13 / 571 tests; Compiling src/compiler/turboshaft/pipelines.cc; 33s disk-cache, linux-sandbox ... (30 actions, 4 running)",
+    "scope": "Original job conclusion and preceding diagnostics; cancellation is not a pass or proof of its initiator."
+  }
+}

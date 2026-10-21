@@ -1,0 +1,139 @@
+{
+  "job": {
+    "id": 119206185231,
+    "run_id": 39591475871,
+    "name": "Bazel / Bazel test on macos-15 for aarch64-apple-darwin",
+    "head_sha": "52293403ea1e06465c41d24d39b54959bad40936",
+    "status": "completed",
+    "conclusion": "cancelled",
+    "started_at": "2026-10-21T12:28:32Z",
+    "completed_at": "2026-10-21T13:29:04Z",
+    "runner_name": "GitHub Actions 1000191828",
+    "labels": [
+      "macos-15"
+    ],
+    "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/39591475871/job/119206185231",
+    "steps": [
+      {
+        "name": "Set up job",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 1,
+        "started_at": "2026-10-21T12:28:32Z",
+        "completed_at": "2026-10-21T12:28:33Z"
+      },
+      {
+        "name": "Run actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 2,
+        "started_at": "2026-10-21T12:28:33Z",
+        "completed_at": "2026-10-21T12:28:41Z"
+      },
+      {
+        "name": "Prepare Bazel CI",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 3,
+        "started_at": "2026-10-21T12:28:41Z",
+        "completed_at": "2026-10-21T12:28:51Z"
+      },
+      {
+        "name": "Check rusty_v8 MODULE.bazel checksums",
+        "status": "completed",
+        "conclusion": "skipped",
+        "number": 4,
+        "started_at": "2026-10-21T12:28:51Z",
+        "completed_at": "2026-10-21T12:28:51Z"
+      },
+      {
+        "name": "Check MODULE.bazel.lock is up to date",
+        "status": "completed",
+        "conclusion": "skipped",
+        "number": 5,
+        "started_at": "2026-10-21T12:28:51Z",
+        "completed_at": "2026-10-21T12:28:51Z"
+      },
+      {
+        "name": "bazel test //...",
+        "status": "completed",
+        "conclusion": "cancelled",
+        "number": 6,
+        "started_at": "2026-10-21T12:28:51Z",
+        "completed_at": "2026-10-21T13:28:51Z"
+      },
+      {
+        "name": "Upload Bazel execution logs",
+        "status": "completed",
+        "conclusion": "skipped",
+        "number": 7,
+        "started_at": "2026-10-21T13:28:51Z",
+        "completed_at": "2026-10-21T13:28:51Z"
+      },
+      {
+        "name": "Save bazel repository cache",
+        "status": "completed",
+        "conclusion": "skipped",
+        "number": 8,
+        "started_at": "2026-10-21T13:28:51Z",
+        "completed_at": "2026-10-21T13:28:51Z"
+      },
+      {
+        "name": "Check for a clean worktree",
+        "status": "completed",
+        "conclusion": "skipped",
+        "number": 9,
+        "started_at": "2026-10-21T13:28:51Z",
+        "completed_at": "2026-10-21T13:28:51Z"
+      },
+      {
+        "name": "Post Prepare Bazel CI",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 17,
+        "started_at": "2026-10-21T13:28:51Z",
+        "completed_at": "2026-10-21T13:28:51Z"
+      },
+      {
+        "name": "Post Run actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 18,
+        "started_at": "2026-10-21T13:28:51Z",
+        "completed_at": "2026-10-21T13:28:53Z"
+      },
+      {
+        "name": "Complete job",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 19,
+        "started_at": "2026-10-21T13:28:53Z",
+        "completed_at": "2026-10-21T13:29:02Z"
+      }
+    ]
+  },
+  "observed_at": "2026-10-21T13:35:05.384Z",
+  "source_head": "52293403ea1e06465c41d24d39b54959bad40936",
+  "raw_log": {
+    "file": "job119206185231.log.xz",
+    "bytes": 1068122,
+    "sha256": "e9367eee717e1d3ae5cf0f338d779b51787442c850c64552d7b0b659b1136e03",
+    "compressed_bytes": 97616,
+    "compressed_sha256": "40a6d9146ab29a276fd751ee308e4eba6791cbc87f9f606b34c64bd36ac50201",
+    "bom": true,
+    "lf": 9126,
+    "crlf": 0
+  },
+  "analysis": {
+    "fail_target_lines": [
+      "2026-10-21T12:49:46.0082540Z FAIL: //codex-rs/hepta-intelligence-eval:hepta-intelligence-eval-unit-tests (Exit 101) (see /Users/runner/.cache/codex-ci/o/execroot/_main/bazel-out/darwin_arm64-fastbuild/testlogs/codex-rs/hepta-intelligence-eval/hepta-intelligence-eval-unit-tests/test.log)",
+      "2026-10-21T12:54:30.9543120Z FAIL: //codex-rs/http-client:http-client-unit-tests (Exit 101) (see /Users/runner/.cache/codex-ci/o/execroot/_main/bazel-out/darwin_arm64-fastbuild/testlogs/codex-rs/http-client/http-client-unit-tests/test.log)"
+    ],
+    "error_annotations": [
+      "2026-10-21T13:28:51.4290380Z ##[error]The operation was canceled."
+    ],
+    "rust_error_lines": [],
+    "last_progress": "2026-10-21T13:28:49.8363540Z [15,579 / 18,199] 104 / 571 tests, 2 failed; Compiling src/compiler/turboshaft/turbolev-graph-builder.cc; 15s disk-cache, darwin-sandbox ... (30 actions, 3 running)",
+    "scope": "Original job conclusion and preceding diagnostics; cancellation is not a pass or proof of its initiator."
+  }
+}

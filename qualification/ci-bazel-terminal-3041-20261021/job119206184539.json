@@ -1,0 +1,192 @@
+{
+  "job": {
+    "id": 119206184539,
+    "run_id": 39591475871,
+    "name": "sdk / sdks",
+    "head_sha": "52293403ea1e06465c41d24d39b54959bad40936",
+    "status": "completed",
+    "conclusion": "cancelled",
+    "started_at": "2026-10-21T12:27:45Z",
+    "completed_at": "2026-10-21T13:28:08Z",
+    "runner_name": "GitHub Actions 1000191815",
+    "labels": [
+      "ubuntu-24.04"
+    ],
+    "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/39591475871/job/119206184539",
+    "steps": [
+      {
+        "name": "Set up job",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 1,
+        "started_at": "2026-10-21T12:27:46Z",
+        "completed_at": "2026-10-21T12:27:47Z"
+      },
+      {
+        "name": "Checkout repository",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 2,
+        "started_at": "2026-10-21T12:27:47Z",
+        "completed_at": "2026-10-21T12:27:53Z"
+      },
+      {
+        "name": "Install Linux bwrap build dependencies",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 3,
+        "started_at": "2026-10-21T12:27:53Z",
+        "completed_at": "2026-10-21T12:28:02Z"
+      },
+      {
+        "name": "Setup pnpm",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 4,
+        "started_at": "2026-10-21T12:28:02Z",
+        "completed_at": "2026-10-21T12:28:03Z"
+      },
+      {
+        "name": "Setup Node.js",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 5,
+        "started_at": "2026-10-21T12:28:03Z",
+        "completed_at": "2026-10-21T12:28:05Z"
+      },
+      {
+        "name": "Set up Bazel CI",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 6,
+        "started_at": "2026-10-21T12:28:05Z",
+        "completed_at": "2026-10-21T12:28:13Z"
+      },
+      {
+        "name": "Build codex and code-mode host with Bazel",
+        "status": "completed",
+        "conclusion": "cancelled",
+        "number": 7,
+        "started_at": "2026-10-21T12:28:13Z",
+        "completed_at": "2026-10-21T13:28:04Z"
+      },
+      {
+        "name": "Warm up Bazel-built SDK executables",
+        "status": "completed",
+        "conclusion": "skipped",
+        "number": 8,
+        "started_at": "2026-10-21T13:28:04Z",
+        "completed_at": "2026-10-21T13:28:04Z"
+      },
+      {
+        "name": "Install dependencies",
+        "status": "completed",
+        "conclusion": "skipped",
+        "number": 9,
+        "started_at": "2026-10-21T13:28:04Z",
+        "completed_at": "2026-10-21T13:28:04Z"
+      },
+      {
+        "name": "Build SDK packages",
+        "status": "completed",
+        "conclusion": "skipped",
+        "number": 10,
+        "started_at": "2026-10-21T13:28:04Z",
+        "completed_at": "2026-10-21T13:28:04Z"
+      },
+      {
+        "name": "Lint SDK packages",
+        "status": "completed",
+        "conclusion": "skipped",
+        "number": 11,
+        "started_at": "2026-10-21T13:28:04Z",
+        "completed_at": "2026-10-21T13:28:04Z"
+      },
+      {
+        "name": "Test SDK packages",
+        "status": "completed",
+        "conclusion": "skipped",
+        "number": 12,
+        "started_at": "2026-10-21T13:28:04Z",
+        "completed_at": "2026-10-21T13:28:04Z"
+      },
+      {
+        "name": "Save bazel repository cache",
+        "status": "completed",
+        "conclusion": "skipped",
+        "number": 13,
+        "started_at": "2026-10-21T13:28:04Z",
+        "completed_at": "2026-10-21T13:28:04Z"
+      },
+      {
+        "name": "Check for a clean worktree",
+        "status": "completed",
+        "conclusion": "skipped",
+        "number": 14,
+        "started_at": "2026-10-21T13:28:04Z",
+        "completed_at": "2026-10-21T13:28:04Z"
+      },
+      {
+        "name": "Post Set up Bazel CI",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 25,
+        "started_at": "2026-10-21T13:28:04Z",
+        "completed_at": "2026-10-21T13:28:04Z"
+      },
+      {
+        "name": "Post Setup Node.js",
+        "status": "completed",
+        "conclusion": "skipped",
+        "number": 26,
+        "started_at": "2026-10-21T13:28:04Z",
+        "completed_at": "2026-10-21T13:28:04Z"
+      },
+      {
+        "name": "Post Setup pnpm",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 27,
+        "started_at": "2026-10-21T13:28:04Z",
+        "completed_at": "2026-10-21T13:28:04Z"
+      },
+      {
+        "name": "Post Checkout repository",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 28,
+        "started_at": "2026-10-21T13:28:04Z",
+        "completed_at": "2026-10-21T13:28:05Z"
+      },
+      {
+        "name": "Complete job",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 29,
+        "started_at": "2026-10-21T13:28:05Z",
+        "completed_at": "2026-10-21T13:28:06Z"
+      }
+    ]
+  },
+  "observed_at": "2026-10-21T13:35:05.384Z",
+  "source_head": "52293403ea1e06465c41d24d39b54959bad40936",
+  "raw_log": {
+    "file": "job119206184539.log.xz",
+    "bytes": 894368,
+    "sha256": "5721b33c1f22ed08fe6d4dc0a4db7228afde4d535d1a4cb23dcfc2bd749ef62e",
+    "compressed_bytes": 76540,
+    "compressed_sha256": "fdff55080d705eb5089bd2f305de607ac09f7e689da867e01b6f9ba5325048b5",
+    "bom": true,
+    "lf": 7036,
+    "crlf": 0
+  },
+  "analysis": {
+    "fail_target_lines": [],
+    "error_annotations": [
+      "2026-10-21T13:28:04.2422534Z ##[error]The operation was canceled."
+    ],
+    "rust_error_lines": [],
+    "last_progress": "2026-10-21T13:28:02.8718352Z [12,244 / 16,834] Compiling src/builtins/builtins-internal.cc; 6s disk-cache, linux-sandbox ... (30 actions, 4 running)",
+    "scope": "Original job conclusion and preceding diagnostics; cancellation is not a pass or proof of its initiator."
+  }
+}

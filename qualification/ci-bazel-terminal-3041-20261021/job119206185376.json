@@ -1,0 +1,120 @@
+{
+  "job": {
+    "id": 119206185376,
+    "run_id": 39591475871,
+    "name": "Bazel / Bazel clippy on ubuntu-24.04 for x86_64-unknown-linux-gnu",
+    "head_sha": "52293403ea1e06465c41d24d39b54959bad40936",
+    "status": "completed",
+    "conclusion": "cancelled",
+    "started_at": "2026-10-21T12:36:52Z",
+    "completed_at": "2026-10-21T13:37:13Z",
+    "runner_name": "GitHub Actions 1000191882",
+    "labels": [
+      "ubuntu-24.04"
+    ],
+    "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/39591475871/job/119206185376",
+    "steps": [
+      {
+        "name": "Set up job",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 1,
+        "started_at": "2026-10-21T12:36:52Z",
+        "completed_at": "2026-10-21T12:36:53Z"
+      },
+      {
+        "name": "Run actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 2,
+        "started_at": "2026-10-21T12:36:53Z",
+        "completed_at": "2026-10-21T12:36:59Z"
+      },
+      {
+        "name": "Prepare Bazel CI",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 3,
+        "started_at": "2026-10-21T12:36:59Z",
+        "completed_at": "2026-10-21T12:37:16Z"
+      },
+      {
+        "name": "bazel build --config=clippy lint targets",
+        "status": "completed",
+        "conclusion": "cancelled",
+        "number": 4,
+        "started_at": "2026-10-21T12:37:16Z",
+        "completed_at": "2026-10-21T13:37:10Z"
+      },
+      {
+        "name": "Upload Bazel execution logs",
+        "status": "completed",
+        "conclusion": "skipped",
+        "number": 5,
+        "started_at": "2026-10-21T13:37:10Z",
+        "completed_at": "2026-10-21T13:37:10Z"
+      },
+      {
+        "name": "Save bazel repository cache",
+        "status": "completed",
+        "conclusion": "skipped",
+        "number": 6,
+        "started_at": "2026-10-21T13:37:10Z",
+        "completed_at": "2026-10-21T13:37:10Z"
+      },
+      {
+        "name": "Check for a clean worktree",
+        "status": "completed",
+        "conclusion": "skipped",
+        "number": 7,
+        "started_at": "2026-10-21T13:37:10Z",
+        "completed_at": "2026-10-21T13:37:10Z"
+      },
+      {
+        "name": "Post Prepare Bazel CI",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 13,
+        "started_at": "2026-10-21T13:37:10Z",
+        "completed_at": "2026-10-21T13:37:10Z"
+      },
+      {
+        "name": "Post Run actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 14,
+        "started_at": "2026-10-21T13:37:10Z",
+        "completed_at": "2026-10-21T13:37:12Z"
+      },
+      {
+        "name": "Complete job",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 15,
+        "started_at": "2026-10-21T13:37:12Z",
+        "completed_at": "2026-10-21T13:37:12Z"
+      }
+    ]
+  },
+  "observed_at": "2026-10-21T13:43:20.887Z",
+  "source_head": "52293403ea1e06465c41d24d39b54959bad40936",
+  "raw_log": {
+    "file": "job119206185376.log.xz",
+    "bytes": 1156454,
+    "sha256": "f9c3b9a2f4352679e51e477d2df06c9b8bfed6d4dfd50cf1a2b2fef2e1fb144c",
+    "compressed_bytes": 96400,
+    "compressed_sha256": "34171083f608f9c5f25c4e7ce0755480c474b2fd5ae089bc17a7d514b7316c7b",
+    "bom": true,
+    "lf": 9030,
+    "crlf": 0
+  },
+  "analysis": {
+    "fail_target_lines": [],
+    "error_annotations": [
+      "2026-10-21T13:37:10.8845028Z ##[error]The operation was canceled."
+    ],
+    "rust_error_lines": [],
+    "last_progress": "2026-10-21T13:37:07.3184585Z [19,327 / 26,049] Compiling src/compiler/pipeline.cc; 28s disk-cache, linux-sandbox ... (30 actions, 4 running)",
+    "scope": "Original job conclusion and preceding diagnostics; cancellation is not a pass or proof of its initiator."
+  }
+}

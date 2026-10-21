@@ -1,0 +1,164 @@
+{
+  "source_head": "52293403ea1e06465c41d24d39b54959bad40936",
+  "job_id": 119206185259,
+  "scope": "Exact first diagnostic for each unique case; attempts and retries remain in the full original log. These identify coverage targets, not passes on the new source.",
+  "unique_cases": 39,
+  "cases": {
+    "suite::v2::thread_resume::thread_resume_rejects_history_when_thread_is_running": {
+      "panic_line": "2026-10-21T12:50:26.9663112Z thread 'suite::v2::thread_resume::thread_resume_rejects_history_when_thread_is_running' (3748) panicked at codex-rs/app-server/tests/common\\test_app_server.rs:1660:13:",
+      "response_line": "2026-10-21T12:50:26.9665000Z internal error: entered unreachable code: expected JSONRPCMessage::Response, got Error(JSONRPCError { error: JSONRPCErrorError { code: -32603, data: None, message: \"failed to submit turn input: NotIdle\" }, id: Integer(3) })"
+    },
+    "suite::v2::turn_start::turn_start_emits_notifications_and_accepts_model_override": {
+      "panic_line": "2026-10-21T12:50:26.9771436Z thread 'suite::v2::turn_start::turn_start_emits_notifications_and_accepts_model_override' (9244) panicked at codex-rs/app-server/tests/common\\test_app_server.rs:1660:13:",
+      "response_line": "2026-10-21T12:50:26.9773257Z internal error: entered unreachable code: expected JSONRPCMessage::Response, got Error(JSONRPCError { error: JSONRPCErrorError { code: -32603, data: None, message: \"failed to submit turn input: NotIdle\" }, id: Integer(3) })"
+    },
+    "suite::v2::mcp_server_elicitation::mcp_server_form_elicitation_round_trip": {
+      "panic_line": "2026-10-21T12:52:44.1173417Z thread 'suite::v2::mcp_server_elicitation::mcp_server_form_elicitation_round_trip' (9840) panicked at codex-rs/app-server/tests/common\\test_app_server.rs:1660:13:",
+      "response_line": "2026-10-21T12:52:44.1175238Z internal error: entered unreachable code: expected JSONRPCMessage::Response, got Error(JSONRPCError { error: JSONRPCErrorError { code: -32603, data: None, message: \"failed to submit turn input: NotIdle\" }, id: Integer(3) })"
+    },
+    "suite::v2::mcp_server_elicitation::mcp_server_strict_auto_review::test_case_2_approve_for_me": {
+      "panic_line": "2026-10-21T12:52:44.1300634Z thread 'suite::v2::mcp_server_elicitation::mcp_server_strict_auto_review::test_case_2_approve_for_me' (7164) panicked at codex-rs/app-server/tests/common\\test_app_server.rs:1660:13:",
+      "response_line": "2026-10-21T12:52:44.1302361Z internal error: entered unreachable code: expected JSONRPCMessage::Response, got Error(JSONRPCError { error: JSONRPCErrorError { code: -32603, data: None, message: \"failed to submit turn input: NotIdle\" }, id: Integer(3) })"
+    },
+    "suite::v2::thread_resume::thread_resume_rejects_mismatched_path_for_running_thread_id": {
+      "panic_line": "2026-10-21T12:52:44.2608615Z thread 'suite::v2::thread_resume::thread_resume_rejects_mismatched_path_for_running_thread_id' (2760) panicked at codex-rs/app-server/tests/common\\test_app_server.rs:1660:13:",
+      "response_line": "2026-10-21T12:52:44.2610426Z internal error: entered unreachable code: expected JSONRPCMessage::Response, got Error(JSONRPCError { error: JSONRPCErrorError { code: -32603, data: None, message: \"failed to submit turn input: NotIdle\" }, id: Integer(3) })"
+    },
+    "suite::v2::mcp_server_elicitation::mcp_server_strict_auto_review::test_case_7_managed_guardian_disabled": {
+      "panic_line": "2026-10-21T12:52:44.3524853Z thread 'suite::v2::mcp_server_elicitation::mcp_server_strict_auto_review::test_case_7_managed_guardian_disabled' (6384) panicked at codex-rs/app-server/tests/common\\test_app_server.rs:1660:13:",
+      "response_line": "2026-10-21T12:52:44.3527508Z internal error: entered unreachable code: expected JSONRPCMessage::Response, got Error(JSONRPCError { error: JSONRPCErrorError { code: -32603, data: None, message: \"failed to submit turn input: NotIdle\" }, id: Integer(3) })"
+    },
+    "suite::v2::mcp_server_elicitation::mcp_server_openai_form_elicitation_round_trip": {
+      "panic_line": "2026-10-21T12:52:44.5341048Z thread 'suite::v2::mcp_server_elicitation::mcp_server_openai_form_elicitation_round_trip' (2084) panicked at codex-rs/app-server/tests/common\\test_app_server.rs:1660:13:",
+      "response_line": "2026-10-21T12:52:44.5342720Z internal error: entered unreachable code: expected JSONRPCMessage::Response, got Error(JSONRPCError { error: JSONRPCErrorError { code: -32603, data: None, message: \"failed to submit turn input: NotIdle\" }, id: Integer(3) })"
+    },
+    "suite::v2::thread_revert::thread_revert_replaces_paginated_history_before_turn": {
+      "panic_line": "2026-10-21T12:52:44.5441798Z thread 'suite::v2::thread_revert::thread_revert_replaces_paginated_history_before_turn' (8488) panicked at codex-rs/app-server/tests/common\\test_app_server.rs:1660:13:",
+      "response_line": "2026-10-21T12:52:44.5443297Z internal error: entered unreachable code: expected JSONRPCMessage::Response, got Error(JSONRPCError { error: JSONRPCErrorError { code: -32603, data: None, message: \"failed to submit turn input: NotIdle\" }, id: Integer(3) })"
+    },
+    "suite::v2::turn_start::turn_start_change_personality_mid_thread_v2": {
+      "panic_line": "2026-10-21T12:52:44.5757758Z thread 'suite::v2::turn_start::turn_start_change_personality_mid_thread_v2' (6176) panicked at codex-rs/app-server/tests/common\\test_app_server.rs:1660:13:",
+      "response_line": "2026-10-21T12:52:44.5759268Z internal error: entered unreachable code: expected JSONRPCMessage::Response, got Error(JSONRPCError { error: JSONRPCErrorError { code: -32603, data: None, message: \"failed to submit turn input: NotIdle\" }, id: Integer(3) })"
+    },
+    "suite::v2::mcp_server_elicitation::mcp_server_strict_auto_review::test_case_15_persistent": {
+      "panic_line": "2026-10-21T12:52:44.6283646Z thread 'suite::v2::mcp_server_elicitation::mcp_server_strict_auto_review::test_case_15_persistent' (984) panicked at codex-rs/app-server/tests/common\\test_app_server.rs:1660:13:",
+      "response_line": "2026-10-21T12:52:44.6285976Z internal error: entered unreachable code: expected JSONRPCMessage::Response, got Error(JSONRPCError { error: JSONRPCErrorError { code: -32603, data: None, message: \"failed to submit turn input: NotIdle\" }, id: Integer(3) })"
+    },
+    "suite::v2::thread_fork::thread_fork_defers_inherited_active_goal_until_next_turn": {
+      "panic_line": "2026-10-21T12:52:44.6501747Z thread 'suite::v2::thread_fork::thread_fork_defers_inherited_active_goal_until_next_turn' (4776) panicked at codex-rs/app-server/tests/common\\test_app_server.rs:1660:13:",
+      "response_line": "2026-10-21T12:52:44.6504034Z internal error: entered unreachable code: expected JSONRPCMessage::Response, got Error(JSONRPCError { error: JSONRPCErrorError { code: -32603, data: None, message: \"failed to submit turn input: NotIdle\" }, id: Integer(3) })"
+    },
+    "suite::v2::thread_resume::thread_resume_replays_pending_file_change_request_approval": {
+      "panic_line": "2026-10-21T12:52:44.6566907Z thread 'suite::v2::thread_resume::thread_resume_replays_pending_file_change_request_approval' (9016) panicked at codex-rs/app-server/tests/common\\test_app_server.rs:1660:13:",
+      "response_line": "2026-10-21T12:52:44.6567791Z internal error: entered unreachable code: expected JSONRPCMessage::Response, got Error(JSONRPCError { error: JSONRPCErrorError { code: -32603, data: None, message: \"failed to submit turn input: NotIdle\" }, id: Integer(3) })"
+    },
+    "suite::v2::git_attribution::git_attribution_follows_authenticated_workspace_policy": {
+      "panic_line": "2026-10-21T12:52:44.7164474Z thread 'suite::v2::git_attribution::git_attribution_follows_authenticated_workspace_policy' (4260) panicked at codex-rs/app-server/tests/common\\test_app_server.rs:1660:13:",
+      "response_line": "2026-10-21T12:52:44.7165394Z internal error: entered unreachable code: expected JSONRPCMessage::Response, got Error(JSONRPCError { error: JSONRPCErrorError { code: -32603, data: None, message: \"failed to submit turn input: NotIdle\" }, id: Integer(3) })"
+    },
+    "suite::v2::mcp_server_elicitation::mcp_server_strict_auto_review::test_case_3_never": {
+      "panic_line": "2026-10-21T12:52:44.7527369Z thread 'suite::v2::mcp_server_elicitation::mcp_server_strict_auto_review::test_case_3_never' (2432) panicked at codex-rs/app-server/tests/common\\test_app_server.rs:1660:13:",
+      "response_line": "2026-10-21T12:52:44.7528283Z internal error: entered unreachable code: expected JSONRPCMessage::Response, got Error(JSONRPCError { error: JSONRPCErrorError { code: -32603, data: None, message: \"failed to submit turn input: NotIdle\" }, id: Integer(3) })"
+    },
+    "suite::v2::thread_rollback::thread_rollback_drops_last_turns_and_persists_to_rollout": {
+      "panic_line": "2026-10-21T12:52:44.7591238Z thread 'suite::v2::thread_rollback::thread_rollback_drops_last_turns_and_persists_to_rollout' (8624) panicked at codex-rs/app-server/tests/common\\test_app_server.rs:1660:13:",
+      "response_line": "2026-10-21T12:52:44.7592293Z internal error: entered unreachable code: expected JSONRPCMessage::Response, got Error(JSONRPCError { error: JSONRPCErrorError { code: -32603, data: None, message: \"failed to submit turn input: NotIdle\" }, id: Integer(3) })"
+    },
+    "suite::v2::thread_fork::paginated_thread_fork_at_named_boundaries_keeps_only_terminal_prefix": {
+      "panic_line": "2026-10-21T12:52:44.7785909Z thread 'suite::v2::thread_fork::paginated_thread_fork_at_named_boundaries_keeps_only_terminal_prefix' (704) panicked at codex-rs/app-server/tests/common\\test_app_server.rs:1660:13:",
+      "response_line": "2026-10-21T12:52:44.7787710Z internal error: entered unreachable code: expected JSONRPCMessage::Response, got Error(JSONRPCError { error: JSONRPCErrorError { code: -32603, data: None, message: \"failed to submit turn input: NotIdle\" }, id: Integer(3) })"
+    },
+    "suite::v2::git_attribution::cold_resume_replaces_legacy_attribution_without_duplication::test_case_1_commit_only": {
+      "panic_line": "2026-10-21T12:52:44.9086348Z thread 'suite::v2::git_attribution::cold_resume_replaces_legacy_attribution_without_duplication::test_case_1_commit_only' (8612) panicked at codex-rs/app-server/tests/common\\test_app_server.rs:1660:13:",
+      "response_line": "2026-10-21T12:52:44.9094136Z internal error: entered unreachable code: expected JSONRPCMessage::Response, got Error(JSONRPCError { error: JSONRPCErrorError { code: -32603, data: None, message: \"failed to submit turn input: NotIdle\" }, id: Integer(3) })"
+    },
+    "suite::v2::mcp_server_elicitation::mcp_server_strict_auto_review::test_case_12_app_reviewer_spoofed_action": {
+      "panic_line": "2026-10-21T12:52:44.9271429Z thread 'suite::v2::mcp_server_elicitation::mcp_server_strict_auto_review::test_case_12_app_reviewer_spoofed_action' (8072) panicked at codex-rs/app-server/tests/common\\test_app_server.rs:1660:13:",
+      "response_line": "2026-10-21T12:52:44.9274343Z internal error: entered unreachable code: expected JSONRPCMessage::Response, got Error(JSONRPCError { error: JSONRPCErrorError { code: -32603, data: None, message: \"failed to submit turn input: NotIdle\" }, id: Integer(3) })"
+    },
+    "suite::v2::mcp_server_elicitation::mcp_server_strict_auto_review::test_case_14_app_default_reviewer_user": {
+      "panic_line": "2026-10-21T12:52:44.9535317Z thread 'suite::v2::mcp_server_elicitation::mcp_server_strict_auto_review::test_case_14_app_default_reviewer_user' (2480) panicked at codex-rs/app-server/tests/common\\test_app_server.rs:1660:13:",
+      "response_line": "2026-10-21T12:52:44.9536136Z internal error: entered unreachable code: expected JSONRPCMessage::Response, got Error(JSONRPCError { error: JSONRPCErrorError { code: -32603, data: None, message: \"failed to submit turn input: NotIdle\" }, id: Integer(3) })"
+    },
+    "suite::v2::mcp_server_elicitation::mcp_server_strict_auto_review::test_case_5_three_denials_interrupt": {
+      "panic_line": "2026-10-21T12:52:44.9616232Z thread 'suite::v2::mcp_server_elicitation::mcp_server_strict_auto_review::test_case_5_three_denials_interrupt' (7852) panicked at codex-rs/app-server/tests/common\\test_app_server.rs:1660:13:",
+      "response_line": "2026-10-21T12:52:44.9617437Z internal error: entered unreachable code: expected JSONRPCMessage::Response, got Error(JSONRPCError { error: JSONRPCErrorError { code: -32603, data: None, message: \"failed to submit turn input: NotIdle\" }, id: Integer(3) })"
+    },
+    "suite::v2::mcp_server_elicitation::mcp_server_strict_auto_review::test_case_9_app_reviewer_user": {
+      "panic_line": "2026-10-21T12:52:44.9715395Z thread 'suite::v2::mcp_server_elicitation::mcp_server_strict_auto_review::test_case_9_app_reviewer_user' (1924) panicked at codex-rs/app-server/tests/common\\test_app_server.rs:1660:13:",
+      "response_line": "2026-10-21T12:52:44.9716750Z internal error: entered unreachable code: expected JSONRPCMessage::Response, got Error(JSONRPCError { error: JSONRPCErrorError { code: -32603, data: None, message: \"failed to submit turn input: turn start is fenced while the session is terminalizing\" }, id: Integer(3) })"
+    },
+    "suite::v2::compaction::auto_compaction_local_emits_started_and_completed_items": {
+      "panic_line": "2026-10-21T12:52:45.1880893Z thread 'suite::v2::compaction::auto_compaction_local_emits_started_and_completed_items' (8812) panicked at codex-rs/app-server/tests/common\\test_app_server.rs:1660:13:",
+      "response_line": "2026-10-21T12:52:45.1883731Z internal error: entered unreachable code: expected JSONRPCMessage::Response, got Error(JSONRPCError { error: JSONRPCErrorError { code: -32603, data: None, message: \"failed to submit turn input: NotIdle\" }, id: Integer(3) })"
+    },
+    "suite::v2::mcp_server_elicitation::mcp_server_strict_auto_review::test_case_10_app_reviewer_noncanonical_id": {
+      "panic_line": "2026-10-21T12:52:45.2044012Z thread 'suite::v2::mcp_server_elicitation::mcp_server_strict_auto_review::test_case_10_app_reviewer_noncanonical_id' (4768) panicked at codex-rs/app-server/tests/common\\test_app_server.rs:1660:13:",
+      "response_line": "2026-10-21T12:52:45.2044925Z internal error: entered unreachable code: expected JSONRPCMessage::Response, got Error(JSONRPCError { error: JSONRPCErrorError { code: -32603, data: None, message: \"failed to submit turn input: NotIdle\" }, id: Integer(3) })"
+    },
+    "suite::v2::mcp_server_elicitation::mcp_server_strict_auto_review::test_case_4_full_access": {
+      "panic_line": "2026-10-21T12:52:45.2113760Z thread 'suite::v2::mcp_server_elicitation::mcp_server_strict_auto_review::test_case_4_full_access' (1368) panicked at codex-rs/app-server/tests/common\\test_app_server.rs:1660:13:",
+      "response_line": "2026-10-21T12:52:45.2115794Z internal error: entered unreachable code: expected JSONRPCMessage::Response, got Error(JSONRPCError { error: JSONRPCErrorError { code: -32603, data: None, message: \"failed to submit turn input: NotIdle\" }, id: Integer(3) })"
+    },
+    "suite::v2::thread_revert::thread_revert_interrupts_active_turn_and_keeps_thread_loaded": {
+      "panic_line": "2026-10-21T12:52:45.2173538Z thread 'suite::v2::thread_revert::thread_revert_interrupts_active_turn_and_keeps_thread_loaded' (2436) panicked at codex-rs/app-server/tests/common\\test_app_server.rs:1660:13:",
+      "response_line": "2026-10-21T12:52:45.2175140Z internal error: entered unreachable code: expected JSONRPCMessage::Response, got Error(JSONRPCError { error: JSONRPCErrorError { code: -32603, data: None, message: \"failed to submit turn input: NotIdle\" }, id: Integer(3) })"
+    },
+    "suite::v2::compaction::auto_compaction_remote_emits_started_and_completed_items": {
+      "panic_line": "2026-10-21T12:52:45.2930545Z thread 'suite::v2::compaction::auto_compaction_remote_emits_started_and_completed_items' (7024) panicked at codex-rs/app-server/tests/common\\test_app_server.rs:1660:13:",
+      "response_line": "2026-10-21T12:52:45.2931078Z internal error: entered unreachable code: expected JSONRPCMessage::Response, got Error(JSONRPCError { error: JSONRPCErrorError { code: -32603, data: None, message: \"failed to submit turn input: NotIdle\" }, id: Integer(3) })"
+    },
+    "suite::v2::mcp_server_elicitation::mcp_server_strict_auto_review::test_case_8_managed_reviewer_forbidden": {
+      "panic_line": "2026-10-21T12:52:45.3049140Z thread 'suite::v2::mcp_server_elicitation::mcp_server_strict_auto_review::test_case_8_managed_reviewer_forbidden' (3396) panicked at codex-rs/app-server/tests/common\\test_app_server.rs:1660:13:",
+      "response_line": "2026-10-21T12:52:45.3050503Z internal error: entered unreachable code: expected JSONRPCMessage::Response, got Error(JSONRPCError { error: JSONRPCErrorError { code: -32603, data: None, message: \"failed to submit turn input: NotIdle\" }, id: Integer(3) })"
+    },
+    "suite::v2::thread_fork::thread_fork_at_last_turn_id_keeps_only_terminal_prefix": {
+      "panic_line": "2026-10-21T12:52:45.3147731Z thread 'suite::v2::thread_fork::thread_fork_at_last_turn_id_keeps_only_terminal_prefix' (6572) panicked at codex-rs/app-server/tests/common\\test_app_server.rs:1660:13:",
+      "response_line": "2026-10-21T12:52:45.3148663Z internal error: entered unreachable code: expected JSONRPCMessage::Response, got Error(JSONRPCError { error: JSONRPCErrorError { code: -32603, data: None, message: \"failed to submit turn input: NotIdle\" }, id: Integer(4) })"
+    },
+    "suite::v2::git_attribution::cold_resume_replaces_legacy_attribution_without_duplication::test_case_2_unlinked_pull_request": {
+      "panic_line": "2026-10-21T12:52:45.3923046Z thread 'suite::v2::git_attribution::cold_resume_replaces_legacy_attribution_without_duplication::test_case_2_unlinked_pull_request' (852) panicked at codex-rs/app-server/tests/common\\test_app_server.rs:1660:13:",
+      "response_line": "2026-10-21T12:52:45.3923560Z internal error: entered unreachable code: expected JSONRPCMessage::Response, got Error(JSONRPCError { error: JSONRPCErrorError { code: -32603, data: None, message: \"failed to submit turn input: NotIdle\" }, id: Integer(3) })"
+    },
+    "suite::v2::mcp_server_elicitation::mcp_server_form_elicitation_round_trip_in_full_access": {
+      "panic_line": "2026-10-21T12:52:45.3958129Z thread 'suite::v2::mcp_server_elicitation::mcp_server_form_elicitation_round_trip_in_full_access' (1928) panicked at codex-rs/app-server/tests/common\\test_app_server.rs:1660:13:",
+      "response_line": "2026-10-21T12:52:45.3958648Z internal error: entered unreachable code: expected JSONRPCMessage::Response, got Error(JSONRPCError { error: JSONRPCErrorError { code: -32603, data: None, message: \"failed to submit turn input: NotIdle\" }, id: Integer(3) })"
+    },
+    "suite::v2::turn_start::turn_start_file_change_approval_accept_for_session_persists_v2": {
+      "panic_line": "2026-10-21T12:52:45.4151558Z thread 'suite::v2::turn_start::turn_start_file_change_approval_accept_for_session_persists_v2' (10676) panicked at codex-rs/app-server/tests/common\\test_app_server.rs:1660:13:",
+      "response_line": "2026-10-21T12:52:45.4152260Z internal error: entered unreachable code: expected JSONRPCMessage::Response, got Error(JSONRPCError { error: JSONRPCErrorError { code: -32603, data: None, message: \"failed to submit turn input: NotIdle\" }, id: Integer(3) })"
+    },
+    "suite::v2::mcp_server_elicitation::mcp_server_strict_auto_review::test_case_1_approved": {
+      "panic_line": "2026-10-21T12:52:45.5781753Z thread 'suite::v2::mcp_server_elicitation::mcp_server_strict_auto_review::test_case_1_approved' (8236) panicked at codex-rs/app-server/tests/common\\test_app_server.rs:1660:13:",
+      "response_line": "2026-10-21T12:52:45.5782270Z internal error: entered unreachable code: expected JSONRPCMessage::Response, got Error(JSONRPCError { error: JSONRPCErrorError { code: -32603, data: None, message: \"failed to submit turn input: NotIdle\" }, id: Integer(3) })"
+    },
+    "suite::v2::mcp_resource_origin::widget_reads_survive_history_modes_compaction_restarts_and_app_only_visibility": {
+      "panic_line": "2026-10-21T12:52:45.5947419Z thread 'suite::v2::mcp_resource_origin::widget_reads_survive_history_modes_compaction_restarts_and_app_only_visibility' (2684) panicked at codex-rs/app-server/tests/common\\test_app_server.rs:1660:13:",
+      "response_line": "2026-10-21T12:52:45.5947947Z internal error: entered unreachable code: expected JSONRPCMessage::Response, got Error(JSONRPCError { error: JSONRPCErrorError { code: -32603, data: None, message: \"failed to submit turn input: NotIdle\" }, id: Integer(18) })"
+    },
+    "suite::v2::host_skills::host_skill_catalog_refreshes_once_when_skills_change": {
+      "panic_line": "2026-10-21T12:52:45.6102830Z thread 'suite::v2::host_skills::host_skill_catalog_refreshes_once_when_skills_change' (1752) panicked at codex-rs/app-server/tests/common\\test_app_server.rs:1660:13:",
+      "response_line": "2026-10-21T12:52:45.6103762Z internal error: entered unreachable code: expected JSONRPCMessage::Response, got Error(JSONRPCError { error: JSONRPCErrorError { code: -32603, data: None, message: \"failed to submit turn input: NotIdle\" }, id: Integer(6) })"
+    },
+    "suite::v2::mcp_server_elicitation::mcp_server_strict_auto_review::test_case_6_guardian_disabled": {
+      "panic_line": "2026-10-21T12:52:52.0537141Z thread 'suite::v2::mcp_server_elicitation::mcp_server_strict_auto_review::test_case_6_guardian_disabled' (10152) panicked at codex-rs/app-server/tests/common\\test_app_server.rs:1660:13:",
+      "response_line": "2026-10-21T12:52:52.0538140Z internal error: entered unreachable code: expected JSONRPCMessage::Response, got Error(JSONRPCError { error: JSONRPCErrorError { code: -32603, data: None, message: \"failed to submit turn input: NotIdle\" }, id: Integer(3) })"
+    },
+    "suite::v2::mcp_server_elicitation::mcp_server_strict_auto_review::test_case_11_app_reviewer_spoofed_id": {
+      "panic_line": "2026-10-21T12:52:52.0732537Z thread 'suite::v2::mcp_server_elicitation::mcp_server_strict_auto_review::test_case_11_app_reviewer_spoofed_id' (10016) panicked at codex-rs/app-server/tests/common\\test_app_server.rs:1660:13:",
+      "response_line": "2026-10-21T12:52:52.0733553Z internal error: entered unreachable code: expected JSONRPCMessage::Response, got Error(JSONRPCError { error: JSONRPCErrorError { code: -32603, data: None, message: \"failed to submit turn input: NotIdle\" }, id: Integer(3) })"
+    },
+    "suite::v2::mcp_server_elicitation::mcp_server_legacy_sep1034_elicitation_defaults_round_trip": {
+      "panic_line": "2026-10-21T13:01:55.9005065Z thread 'suite::v2::mcp_server_elicitation::mcp_server_legacy_sep1034_elicitation_defaults_round_trip' (4524) panicked at codex-rs/app-server/tests/common\\test_app_server.rs:1660:13:",
+      "response_line": "2026-10-21T13:01:55.9006216Z internal error: entered unreachable code: expected JSONRPCMessage::Response, got Error(JSONRPCError { error: JSONRPCErrorError { code: -32603, data: None, message: \"failed to submit turn input: NotIdle\" }, id: Integer(3) })"
+    },
+    "suite::v2::mcp_server_elicitation::mcp_server_strict_auto_review::test_case_13_app_reviewer_missing_call_id": {
+      "panic_line": "2026-10-21T13:01:55.9082550Z thread 'suite::v2::mcp_server_elicitation::mcp_server_strict_auto_review::test_case_13_app_reviewer_missing_call_id' (3228) panicked at codex-rs/app-server/tests/common\\test_app_server.rs:1660:13:",
+      "response_line": "2026-10-21T13:01:55.9083613Z internal error: entered unreachable code: expected JSONRPCMessage::Response, got Error(JSONRPCError { error: JSONRPCErrorError { code: -32603, data: None, message: \"failed to submit turn input: NotIdle\" }, id: Integer(3) })"
+    },
+    "suite::v2::thread_resume::thread_resume_keeps_in_flight_turn_streaming": {
+      "panic_line": "2026-10-21T13:01:55.9144868Z thread 'suite::v2::thread_resume::thread_resume_keeps_in_flight_turn_streaming' (6660) panicked at codex-rs/app-server/tests/common\\test_app_server.rs:1660:13:",
+      "response_line": "2026-10-21T13:01:55.9145882Z internal error: entered unreachable code: expected JSONRPCMessage::Response, got Error(JSONRPCError { error: JSONRPCErrorError { code: -32603, data: None, message: \"failed to submit turn input: NotIdle\" }, id: Integer(3) })"
+    }
+  }
+}

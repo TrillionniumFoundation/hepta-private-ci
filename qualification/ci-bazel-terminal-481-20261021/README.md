@@ -17,6 +17,8 @@ UTF-8 byte hashes in each companion JSON. It does not qualify a later source.
 | 119194392031, Windows Clippy | cancelled | No preceding Rust error in the decoded log; compilation remained active. |
 | 119194392047, macOS ARM release | cancelled | V8 C++ compilation remained active. |
 | 119194391125, SDK | cancelled | Its Bazel dependency build remained active in V8 C++ compilation. |
+| 119194391990, GNU/Linux Clippy | cancelled | Full original log retained; unfinished compilation is not a passed Clippy gate. |
+| 119194391991, Linux musl test | cancelled | Full original log retained; unfinished compilation is not a passed test suite. |
 
 The Windows shard-2 and later first-panic indexes are navigation aids, not
 substitutes for their complete raw logs. A cancelled job can contain genuine

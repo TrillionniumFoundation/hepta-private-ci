@@ -1,0 +1,91 @@
+{
+  "command": [
+    "cargo",
+    "update",
+    "-p",
+    "codex-utils-cargo-bin",
+    "--offline"
+  ],
+  "cwd": "/workspace/scratch/337c309bc660/combined-durability-work/codex-rs",
+  "started_at_utc": "2026-10-21T13:16:27.821669+00:00",
+  "head_at_start": "8acb20cd06bb50a16a9ef0b3a8a76153e3e33588",
+  "source_hashes_before": {
+    "MODULE.bazel.lock": {
+      "bytes": 1745183,
+      "sha256": "f6c5dd1f2a09c66d6a4c387ff40d11afb7ed2309e541dcb6bff9ad5f410996c3"
+    },
+    "codex-rs/Cargo.lock": {
+      "bytes": 413681,
+      "sha256": "4a89de595739e85d8d0e01944914c62217287d2c7daccee8e6d85b1cb4afc941"
+    },
+    "codex-rs/ext/queue/tests/queue_service.rs": {
+      "bytes": 111696,
+      "sha256": "440daed0eea15e34fe883d8a416798a533faedb8dab7ed5df2b4a73f4a4438f9"
+    },
+    "codex-rs/hepta-matrixd/src/control.rs": {
+      "bytes": 40213,
+      "sha256": "b3e0120bd5e4741e7dd5ebd134db79ec0d98c8abd6c93a768c388124b403fe60"
+    },
+    "codex-rs/tui/src/resume_picker_transcript_preview_tests.rs": {
+      "bytes": 18700,
+      "sha256": "7e8c5ef451554fe683f3077d2f5ff72a074acac8c6c879a8f3e1cf51afe8dbae"
+    },
+    "codex-rs/utils/cargo-bin/Cargo.toml": {
+      "bytes": 386,
+      "sha256": "eb745e8d5224eef4b84c61de4211964225efcde57b69a7446303bdaf51b94372"
+    }
+  },
+  "limits": {
+    "cargo_jobs": 2,
+    "dev_debug": 0,
+    "test_debug": 0,
+    "incremental": 0,
+    "bazel_jobs": 2,
+    "bazel_xmx_mib": 1536
+  },
+  "memory_events_before": "low 0\nhigh 0\nmax 1213040\noom 0\noom_kill 0\noom_group_kill 0\n",
+  "pid": 25,
+  "exit_code": 0,
+  "elapsed_seconds": 4.0028667070000665,
+  "finished_at_utc": "2026-10-21T13:16:31.831749+00:00",
+  "source_hashes_after": {
+    "MODULE.bazel.lock": {
+      "bytes": 1745183,
+      "sha256": "f6c5dd1f2a09c66d6a4c387ff40d11afb7ed2309e541dcb6bff9ad5f410996c3"
+    },
+    "codex-rs/Cargo.lock": {
+      "bytes": 413716,
+      "sha256": "e462478ef900f7f991b5de00fbef69e907f10da4dfc7464f8cfb0a60fe1c20c7"
+    },
+    "codex-rs/ext/queue/tests/queue_service.rs": {
+      "bytes": 111696,
+      "sha256": "440daed0eea15e34fe883d8a416798a533faedb8dab7ed5df2b4a73f4a4438f9"
+    },
+    "codex-rs/hepta-matrixd/src/control.rs": {
+      "bytes": 40213,
+      "sha256": "b3e0120bd5e4741e7dd5ebd134db79ec0d98c8abd6c93a768c388124b403fe60"
+    },
+    "codex-rs/tui/src/resume_picker_transcript_preview_tests.rs": {
+      "bytes": 18700,
+      "sha256": "7e8c5ef451554fe683f3077d2f5ff72a074acac8c6c879a8f3e1cf51afe8dbae"
+    },
+    "codex-rs/utils/cargo-bin/Cargo.toml": {
+      "bytes": 386,
+      "sha256": "eb745e8d5224eef4b84c61de4211964225efcde57b69a7446303bdaf51b94372"
+    }
+  },
+  "peak_cgroup_bytes": {
+    "anon": 1044475904,
+    "file": 6527033344,
+    "kernel": 1007955968
+  },
+  "minimum_free_bytes": 1096171520,
+  "memory_events_after": "low 0\nhigh 0\nmax 1213040\noom 0\noom_kill 0\noom_group_kill 0\n",
+  "raw_log": {
+    "file": "cargo-fallback-regression-lock-resolve.log.xz",
+    "bytes": 124,
+    "sha256": "f879ac8a72bd17a666e850c2db6093f241658e9d69e62111e99082637979bcfb",
+    "compressed_bytes": 176,
+    "compressed_sha256": "697b6091365936e43979c2433d0dc8d7768abcba916a4ddf11716aa302d6b547"
+  }
+}
