@@ -636,3 +636,141 @@ fn multi_cell_shadow_preflight_rejects_late_generation_and_cost_before_first_tic
         ))
     ));
 }
+
+#[test]
+fn pre_tick_shadow_skips_non_admitted_cell_execution_and_is_order_independent() {
+    let fixture = shadow_fixture(true);
+    let first = meta_spec(&fixture);
+    let mut second = meta_spec(&fixture);
+    second.manifest.cell_id = id("memory-cell:semantic:2");
+    second.manifest.role = MemoryCellRoleV1::Semantic;
+    second.tick_input.cell_id = second.manifest.cell_id.clone();
+    second.relevance_ppm = 700_000;
+    // This generated candidate set cannot pass a tick, so success proves
+    // that the deferred Cell was not executed.
+    second.generated_input.batches.clear();
+
+    let mut policy = meta_policy(&fixture);
+    policy.maximum_selected_cells = 1;
+    let plan_a = crate::plan_memory_meta_pre_ticks_shadow_v1(
+        &policy,
+        &fixture.cue,
+        &fixture.snapshot,
+        &[first.clone(), second.clone()],
+    )
+    .unwrap_or_else(|error| panic!("pre-tick plan: {error:?}"));
+    let plan_b = crate::plan_memory_meta_pre_ticks_shadow_v1(
+        &policy,
+        &fixture.cue,
+        &fixture.snapshot,
+        &[second.clone(), first.clone()],
+    )
+    .unwrap_or_else(|error| panic!("reverse plan: {error:?}"));
+    assert_eq!(plan_a, plan_b);
+    assert_eq!(plan_a.admitted_cell_ids, vec![first.manifest.cell_id.clone()]);
+    assert_eq!(plan_a.deferred_cell_ids, vec![second.manifest.cell_id.clone()]);
+    assert_eq!(plan_a.reserved_compute_units, 20);
+    assert!(plan_a.current_snapshot_immutable);
+    assert!(!plan_a.production_activation_allowed);
+
+    let outcome = crate::run_memory_meta_preselected_shadow_v1(
+        &policy,
+        &fixture.cue,
+        &fixture.policy,
+        &fixture.snapshot,
+        &fixture.dynamics,
+        &[second.clone(), first],
+    )
+    .unwrap_or_else(|error| panic!("preselected tick: {error:?}"));
+    assert_eq!(outcome.pre_tick_plan, plan_a);
+    assert_eq!(outcome.batch.cell_ticks.len(), 1);
+    assert_eq!(outcome.batch.routing.receipt.decisions.len(), 1);
+    assert_eq!(outcome.batch.routing.receipt.resource_used_units, 20);
+    assert!(!outcome.batch.routing.authority.grants_any());
+
+    let mut changed = second;
+    changed.relevance_ppm += 1;
+    let changed_plan = crate::plan_memory_meta_pre_ticks_shadow_v1(
+        &policy,
+        &fixture.cue,
+        &fixture.snapshot,
+        &[meta_spec(&fixture), changed],
+    )
+    .unwrap_or_else(|error| panic!("changed metadata: {error:?}"));
+    assert_ne!(plan_b.admission_input_digest, changed_plan.admission_input_digest);
+    assert_ne!(plan_b.admission_plan_digest, changed_plan.admission_plan_digest);
+}
+
+#[test]
+fn pre_tick_shadow_suppresses_conflicted_cells_without_running_their_tics() {
+    let fixture = shadow_fixture(true);
+    let mut first = meta_spec(&fixture);
+    let mut second = meta_spec(&fixture);
+    second.manifest.cell_id = id("memory-cell:semantic:2");
+    second.manifest.role = MemoryCellRoleV1::Semantic;
+    second.tick_input.cell_id = second.manifest.cell_id.clone();
+    first.contradiction_group_digest = Some(digest("unresolved-dispute"));
+    second.contradiction_group_digest = first.contradiction_group_digest;
+    first.generated_input.batches.clear();
+    second.generated_input.batches.clear();
+
+    let outcome = crate::run_memory_meta_preselected_shadow_v1(
+        &meta_policy(&fixture),
+        &fixture.cue,
+        &fixture.policy,
+        &fixture.snapshot,
+        &fixture.dynamics,
+        &[second, first],
+    )
+    .unwrap_or_else(|error| panic!("conflict suppression: {error:?}"));
+    assert!(outcome.pre_tick_plan.admitted_cell_ids.is_empty());
+    assert_eq!(outcome.pre_tick_plan.deferred_cell_ids.len(), 2);
+    assert_eq!(outcome.pre_tick_plan.reserved_compute_units, 0);
+    assert!(outcome.batch.cell_ticks.is_empty());
+    assert!(outcome.batch.routing.receipt.abstained);
+    assert!(!outcome.batch.routing.authority.grants_any());
+}
+
+#[test]
+fn pre_tick_shadow_rejects_invalid_non_admitted_cue_and_stale_forget_frontier() {
+    let fixture = shadow_fixture(true);
+    let first = meta_spec(&fixture);
+    let mut second = meta_spec(&fixture);
+    second.manifest.cell_id = id("memory-cell:semantic:2");
+    second.tick_input.cell_id = second.manifest.cell_id.clone();
+    second.relevance_ppm = 1;
+    second.tick_input.cue_digest = digest("forged-cue");
+
+    let rejected = crate::plan_memory_meta_pre_ticks_shadow_v1(
+        &meta_policy(&fixture),
+        &fixture.cue,
+        &fixture.snapshot,
+        &[first.clone(), second.clone()],
+    );
+    assert!(matches!(
+        rejected,
+        Err(crate::MemoryMetaBatchErrorV1::Contract(
+            codex_hepta_cognitive_types::hnmf::HnmfContractError::Conflict(
+                "memory meta pre-tick cue or objective"
+            )
+        ))
+    ));
+
+    second.tick_input.cue_digest = first.tick_input.cue_digest;
+    second.manifest.forget_frontier_digest = digest("stale-forget");
+    second.tick_input.forget_frontier_digest = digest("stale-forget");
+    let rejected = crate::plan_memory_meta_pre_ticks_shadow_v1(
+        &meta_policy(&fixture),
+        &fixture.cue,
+        &fixture.snapshot,
+        &[first, second],
+    );
+    assert!(matches!(
+        rejected,
+        Err(crate::MemoryMetaBatchErrorV1::Contract(
+            codex_hepta_cognitive_types::hnmf::HnmfContractError::Conflict(
+                "memory meta evidence or generation drift"
+            )
+        ))
+    ));
+}
