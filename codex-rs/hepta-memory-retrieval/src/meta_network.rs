@@ -465,7 +465,10 @@ pub struct MemoryMetaEvidenceLookupV1 {
 /// snapshot-consistent verifier that also enforces tombstone/forget membership;
 /// this adapter cannot turn a caller-controlled boolean into such proof.
 ///
-/// Every admissible Cell is verified; one rejection fails the entire batch.
+/// Every admissible Cell is checked both before and after retrieval; one
+/// rejection, including a post-tick revocation, discards the whole batch.
+/// Verification callbacks must be idempotent and bound to one trusted ledger
+/// owner. This does not implement atomic pinning or independent signatures.
 /// Deferred Cells are never retrieved. The ordinary unverified shadow control
 /// remains available separately and has no production-use authority.
 pub fn run_memory_meta_preselected_evidence_checked_shadow_v1<F>(
@@ -481,6 +484,7 @@ where
     F: FnMut(&MemoryMetaEvidenceLookupV1) -> bool,
 {
     let plan = plan_memory_meta_pre_ticks_shadow_v1(policy, cue, engram_snapshot, cells)?;
+    let mut admitted_evidence = Vec::with_capacity(plan.admitted_cell_ids.len());
     for cell_id in &plan.admitted_cell_ids {
         let cell = cells
             .iter()
@@ -506,13 +510,31 @@ where
                 "memory meta external evidence rejected",
             )));
         }
+        admitted_evidence.push(lookup);
     }
-    run_memory_meta_preselected_shadow_v1(
+    let outcome = run_memory_meta_preselected_shadow_v1(
         policy,
         cue,
         retrieval_policy,
         engram_snapshot,
         dynamics_policy,
         cells,
-    )
+    )?;
+    if outcome.pre_tick_plan != plan {
+        return Err(MemoryMetaBatchErrorV1::Contract(HnmfContractError::Conflict(
+            "memory meta evidence plan changed",
+        )));
+    }
+    // An external source may have forgotten a support while ticks were being
+    // evaluated. Recheck every admitted identity/frontier tuple immediately
+    // before returning; never publish a partly revalidated shadow route.
+    // This is a fail-closed detection seam, not an atomic ledger snapshot.
+    for lookup in &admitted_evidence {
+        if !verify_support(lookup) {
+            return Err(MemoryMetaBatchErrorV1::Contract(HnmfContractError::Conflict(
+                "memory meta external evidence changed",
+            )));
+        }
+    }
+    Ok(outcome)
 }

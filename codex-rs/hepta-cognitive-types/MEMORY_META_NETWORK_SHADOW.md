@@ -148,3 +148,19 @@ external evidence or change the production DENY_ALL boundary.
 
 Exact-head native regression multi_cell_shadow_preflight_rejects_late_forged_cue_and_objective_before_any_tick
 and the unchanged real CI gates are required before marking this code qualified.
+
+## Post-tick external evidence revalidation (shadow only)
+
+The evidence-checked admission path now performs two distinct external
+verifier passes over exactly the same immutable admitted-Cell tuples. All
+Cell supports must be accepted before retrieval, and all must be accepted
+again before returning any route. A late rejection (including a simulated
+forget/revocation observed during Cell ticks) discards the whole outcome.
+The callback is required to be idempotent; the existing unverified baseline
+is unchanged. The plan digest must also match the recomputed execution plan.
+
+This is **not** a transactional pinned ledger read, a signed inclusion or
+tombstone proof, nor protection from a revocation occurring *after* the
+second pass. Production still needs an authenticated snapshot-consistent
+owner with complete exact-delete propagation. Full exact-head Rust and
+cross-platform checks remain mandatory.

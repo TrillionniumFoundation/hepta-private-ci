@@ -888,11 +888,45 @@ fn checked_pre_tick_binds_exact_ledger_snapshot_and_forget_frontier() {
         },
     )
     .unwrap_or_else(|error| panic!("evidence-checked batch: {error:?}"));
-    assert_eq!(verified, 1);
+    assert_eq!(verified, 2);
     assert_eq!(result.batch.cell_ticks.len(), 1);
     assert_eq!(result.batch.routing.receipt.resource_used_units, 20);
     assert!(!result.batch.routing.authority.grants_any());
     assert!(!result.pre_tick_plan.production_activation_allowed);
+}
+
+#[test]
+fn checked_pre_tick_rejects_revocation_after_retrieval_before_result_delivery() {
+    let fixture = shadow_fixture(true);
+    let mut second = meta_spec(&fixture);
+    second.manifest.cell_id = id("memory-cell:semantic:2");
+    second.manifest.role = MemoryCellRoleV1::Semantic;
+    second.tick_input.cell_id = second.manifest.cell_id.clone();
+    let mut verifications = 0_usize;
+
+    let revoked = crate::run_memory_meta_preselected_evidence_checked_shadow_v1(
+        &meta_policy(&fixture),
+        &fixture.cue,
+        &fixture.policy,
+        &fixture.snapshot,
+        &fixture.dynamics,
+        &[meta_spec(&fixture), second],
+        |_| {
+            verifications += 1;
+            // Both Cells passed initial ledger admission. During their ticks,
+            // a support is revoked; the second-phase check must reject.
+            verifications < 4
+        },
+    );
+    assert!(matches!(
+        revoked,
+        Err(crate::MemoryMetaBatchErrorV1::Contract(
+            codex_hepta_cognitive_types::hnmf::HnmfContractError::Conflict(
+                "memory meta external evidence changed"
+            )
+        ))
+    ));
+    assert_eq!(verifications, 4);
 }
 
 #[test]
