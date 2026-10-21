@@ -158,5 +158,101 @@ class OfflineShardDistillTests(unittest.TestCase):
                             zip(original, self.student.parameters())))
 
 
+    def test_late_caller_mutation_cannot_replace_heldout_snapshot(self):
+        observed = []
+
+        def capture_eval_input(module, arguments):
+            if not module.training:
+                observed.append(arguments[0].detach().clone())
+
+        hook = self.student.register_forward_pre_hook(capture_eval_input)
+        self.addCleanup(hook.remove)
+        original_heldout = self.cohorts["future_1"].slots.clone()
+        original_step = self.optimizer.step
+
+        def step_then_mutate_caller(*args, **kwargs):
+            outcome = original_step(*args, **kwargs)
+            with torch.no_grad():
+                self.cohorts["future_1"].slots.add_(7.0)
+            return outcome
+
+        self.optimizer.step = step_then_mutate_caller
+        self.run_trial(steps=1)
+        # Five frozen preflight observations, one train step, five heldouts.
+        self.assertEqual(len(observed), 10)
+        self.assertTrue(torch.equal(observed[2], original_heldout))
+        self.assertTrue(torch.equal(observed[7], original_heldout))
+
+    def test_inplace_student_cannot_rewrite_verified_training_inputs(self):
+        class InPlaceStudent(torch.nn.Module):
+            def __init__(self):
+                super().__init__()
+                self.gain = torch.nn.Parameter(torch.ones(1))
+                self.observed = []
+
+            def forward(self, slots):
+                self.observed.append(slots.detach().clone())
+                slots.add_(1.0)
+                return slots * self.gain
+
+        student = InPlaceStudent()
+        optimizer = torch.optim.SGD(
+            list(student.parameters()) + list(self.readout.parameters()), lr=0.05
+        )
+        source = self.cohorts["train"].slots.clone()
+        self.run_trial(student=student, optimizer=optimizer, steps=2)
+        # Initial eval, both train steps, and final eval must see the same
+        # validated train slots even with in-place operations in forward().
+        for index in (0, 5, 6, 7):
+            self.assertTrue(torch.equal(student.observed[index], source))
+        self.assertTrue(torch.equal(self.cohorts["train"].slots, source))
+
+
+    def test_paired_split_receipts_bind_verified_student_and_teacher_bytes(self):
+        report = self.run_trial(steps=1)
+        receipts = report["paired_split_receipts"]
+        self.assertEqual(set(receipts), set(SPLITS))
+        self.assertEqual(len({r["teacher_feature_sha256"] for r in receipts.values()}),
+                         len(SPLITS))
+        for split, item in self.cohorts.items():
+            with self.subTest(split=split):
+                receipt = receipts[split]
+                manifest = json.loads((item.teacher_shard / "manifest.json").read_text())
+                self.assertEqual(receipt["source_manifest_sha256"],
+                                 item.expected_source_sha256)
+                self.assertEqual(receipt["student_slot_sha256"],
+                                 item.expected_slot_sha256)
+                self.assertEqual(receipt["teacher_npy_sha256"],
+                                 item.expected_npy_sha256)
+                self.assertEqual(receipt["teacher_feature_sha256"],
+                                 manifest["raw_feature_sha256"])
+                self.assertEqual(receipt["source_row_count"], item.slots.shape[0])
+                self.assertEqual(receipt["student_slot_shape"], list(item.slots.shape))
+                self.assertEqual(receipt["teacher_feature_shape"],
+                                 list(manifest["shape"]))
+        self.assertFalse(report["heldout_sources_independently_attested"])
+        self.assertFalse(report["performance_qualified"])
+        self.assertEqual(report["release"], "HOLD_NO_GO")
+
+    def test_caller_mutation_after_optimizer_step_cannot_rewrite_report_pins(self):
+        untouched = self.cohorts["ood"].expected_slot_sha256
+        original_step = self.optimizer.step
+
+        def step_then_replace_heldout(*args, **kwargs):
+            result = original_step(*args, **kwargs)
+            with torch.no_grad():
+                self.cohorts["ood"].slots.add_(17.0)
+            return result
+
+        self.optimizer.step = step_then_replace_heldout
+        report = self.run_trial(steps=1)
+        self.assertEqual(report["paired_split_receipts"]["ood"]["student_slot_sha256"],
+                         untouched)
+        after_caller_mutation = hashlib.sha256(
+            self.cohorts["ood"].slots.numpy().tobytes()).hexdigest()
+        self.assertNotEqual(after_caller_mutation, untouched)
+        self.assertFalse(report["production_activation_allowed"])
+
+
 if __name__ == "__main__":
     unittest.main()
