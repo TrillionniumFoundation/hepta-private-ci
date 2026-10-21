@@ -473,6 +473,13 @@ impl LearningArtifactOwnerHost {
         &self,
         now: u64,
     ) -> Result<VerifiedArtifactWriterLeaseV1, ArtifactOwnerHostError> {
+        // The OS lock fences the opened inode, not its pathname. If owner.lock
+        // was unlinked or replaced after open, a second process could lock a
+        // different inode. Refuse further owner writes in that state.
+        verify_owner_writer_fence(
+            &self.root.join("writer").join("owner.lock"),
+            &self.writer_fence,
+        )?;
         self.verifier.verify_writer_lease(&self.lease, now)
     }
 
@@ -2238,6 +2245,35 @@ mod tests {
         assert!(matches!(
             owner.recovery_required_operations(),
             Err(ArtifactOwnerHostError::CheckpointMismatch)
+        ));
+    }
+
+    #[cfg(unix)]
+    #[test]
+    fn replaced_owner_lock_inode_revokes_current_writer() {
+        use std::os::unix::fs::PermissionsExt as _;
+
+        let directory = TestDir::new();
+        let key = signer();
+        let scope_digest = withdrawal_scope().digest();
+        let owner = LearningArtifactOwnerHost::open(
+            &directory.0,
+            trust(&key, scope_digest),
+            lease(&key, scope_digest),
+            20,
+        )
+        .fixture("original fenced writer");
+
+        let path = directory.0.join("writer").join("owner.lock");
+        fs::remove_file(&path).fixture("unlink original locked inode");
+        File::create(&path).fixture("create replacement lock file");
+        fs::set_permissions(&path, fs::Permissions::from_mode(0o600))
+            .fixture("set replacement lock mode");
+        assert!(matches!(
+            owner
+                .require_current_writer(20)
+                .fixture_error("a replacement inode must revoke the original writer"),
+            ArtifactOwnerHostError::PathBoundary
         ));
     }
 
