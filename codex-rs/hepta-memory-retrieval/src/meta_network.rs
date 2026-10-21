@@ -351,7 +351,11 @@ pub fn plan_memory_meta_pre_ticks_shadow_v1(
 
     // Bind the complete admitted-input *metadata* set, not just winners.
     // Generated evidence is independently bound by the actual tick receipt.
+    // The shared cue must be committed even when the batch contains no Cells;
+    // otherwise an empty plan can be replayed against a different valid query.
     let mut framed = b"hepta.memory-meta.pretick.inputs.v1".to_vec();
+    framed.extend_from_slice(cue.digest().as_array());
+    framed.extend_from_slice(engram_snapshot.generation_vector_digest.as_array());
     for digest in [
         policy.shared_base_digest,
         policy.encoder_digest,
