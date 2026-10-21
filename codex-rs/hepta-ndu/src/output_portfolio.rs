@@ -193,6 +193,19 @@ fn canonical_candidates(
         if candidate.protocol.requires_whole_candidate() && candidate.weight_cap != FixedQ32::ONE {
             return Err(NduError::InvalidSolverReceipt("whole-candidate weight cap"));
         }
+        // Costs are resource consumption, not signed credits. A negative
+        // candidate cost could otherwise bypass the aggregate budget and
+        // artificially increase its adjusted score.
+        if candidate.resource_cost < FixedQ32::ZERO
+            || candidate.latency_cost < FixedQ32::ZERO
+        {
+            return Err(NduError::InvalidSolverReceipt("negative portfolio cost"));
+        }
+        // NoChange is a unique explicit baseline; an unmarked second
+        // NoChange candidate must not claim positive utility or be selected.
+        if candidate.protocol == OutputProtocolV1::NoChange && !candidate.is_no_change {
+            return Err(NduError::InvalidSolverReceipt("unmarked no-change asset"));
+        }
         validate_risk(&candidate.risk)?;
         if candidate.risk.future_window_digest != context.future_window_digest {
             return Err(NduError::InvalidSolverReceipt("future-window digest"));
