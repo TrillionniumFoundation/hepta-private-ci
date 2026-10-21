@@ -560,5 +560,83 @@ class SharedMultimodalBridgeTests(unittest.TestCase):
         self.assertFalse(torch.allclose(prior, stem.projectors['text'].weight))
 
 
+    def test_extreme_finite_gradient_step_rolls_back_weights_and_optimizer_state(self):
+        # A finite backward gradient is not proof that a physical optimizer
+        # update stays finite: SGD overflows weights and AdamW overflows moments.
+        class ExtremeGradient(torch.autograd.Function):
+            @staticmethod
+            def forward(ctx, output, spare_weight):
+                return output.clone()
+
+            @staticmethod
+            def backward(ctx, gradient):
+                return gradient, torch.full((1,), -3e38,
+                                            device=gradient.device,
+                                            dtype=gradient.dtype)
+
+        class ExtremeStudent(torch.nn.Module):
+            def __init__(self):
+                super().__init__()
+                self.proj = torch.nn.Linear(32, 32)
+                self.spare_weight = torch.nn.Parameter(
+                    torch.tensor([3e38], dtype=torch.float32))
+
+            def forward(self, slots):
+                return ExtremeGradient.apply(self.proj(slots),
+                                             self.spare_weight)
+
+        for kind in ("SGD", "AdamW"):
+            with self.subTest(optimizer=kind):
+                stem = self.stem()
+                student = ExtremeStudent()
+                parameters = list(stem.parameters()) + list(student.parameters())
+                if kind == "SGD":
+                    optimizer = torch.optim.SGD(parameters, lr=1.0, momentum=0.9)
+                    optimizer.state[student.spare_weight]["momentum_buffer"] = (
+                        torch.ones_like(student.spare_weight))
+                    state_key = "momentum_buffer"
+                else:
+                    optimizer = torch.optim.AdamW(parameters, lr=1.0,
+                                                  weight_decay=0)
+                    optimizer.state[student.spare_weight].update({
+                        "step": torch.tensor(1.),
+                        "exp_avg": torch.ones_like(student.spare_weight),
+                        "exp_avg_sq": torch.ones_like(student.spare_weight),
+                    })
+                    state_key = "exp_avg_sq"
+                before_weights = [p.detach().clone() for p in parameters]
+                before_moment = optimizer.state[student.spare_weight][state_key].clone()
+                before_state_count = len(optimizer.state)
+                with self.assertRaisesRegex(LatentBridgeError, "nonfinite"):
+                    shadow_distill_step(
+                        student, stem, {"text": torch.randn(2, 32)},
+                        {"text": "a" * 64}, torch.randn(2, 32), optimizer,
+                        generation=1)
+                for parameter, old in zip(parameters, before_weights):
+                    torch.testing.assert_close(parameter, old, rtol=0, atol=0)
+                self.assertEqual(len(optimizer.state), before_state_count)
+                torch.testing.assert_close(
+                    optimizer.state[student.spare_weight][state_key],
+                    before_moment, rtol=0, atol=0)
+
+    def test_instance_monkey_patched_optimizer_step_rejected(self):
+        stem = self.stem()
+        student = build_encoder(StemSpec('tiny_training_only', 32, 1, 4),
+                                device='cpu', trainable=True)
+        optimizer = torch.optim.SGD(
+            list(stem.parameters()) + list(student.parameters()), lr=0.01)
+        before = next(student.parameters()).detach().clone()
+        optimizer.step = lambda: None
+        with self.assertRaisesRegex(LatentBridgeError, "instrumented offline optimizer"):
+            shadow_distill_step(
+                student, stem, {'text': torch.randn(2, 32)},
+                {'text': 'a' * 64}, torch.randn(2, 32), optimizer,
+                generation=1)
+        torch.testing.assert_close(next(student.parameters()), before,
+                                   rtol=0, atol=0)
+
+
+
+
 if __name__ == '__main__':
     unittest.main()
