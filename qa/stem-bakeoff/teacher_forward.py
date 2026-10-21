@@ -20,6 +20,7 @@ import time
 from typing import Any
 
 from teacher_snapshot import MODEL_TYPES, TeacherSnapshotError, verify_snapshot
+from teacher_media_seal import TeacherMediaSealError, sealed_media_inputs
 
 MODALITIES = ("text", "image", "audio", "video")
 MEDIA = frozenset(("image", "audio", "video"))
@@ -140,8 +141,17 @@ def run_forward(*, candidate: str, snapshot: str | Path, media_root: str | Path,
                                                   trust_remote_code=False)
         model = AutoModel.from_pretrained(root, local_files_only=True,
                                           trust_remote_code=False, dtype=dtype).to(device).eval()
-        inputs = processor.apply_chat_template(conversations, tokenize=True,
-                                               return_dict=True, return_tensors="pt")
+        # Consume only the private, digest-matched snapshot. The original local
+        # files may change after hashing and must never define model inputs.
+        with sealed_media_inputs(
+            records=records, media_root=media_root, candidate=candidate,
+            expected_source_digest=source_digest,
+            original_conversations=conversations,
+            validate_records=validate_records,
+        ) as frozen_conversations:
+            inputs = processor.apply_chat_template(
+                frozen_conversations, tokenize=True,
+                return_dict=True, return_tensors="pt")
         observed_module = model
     else:
         tokenizer = AutoTokenizer.from_pretrained(root, local_files_only=True,
@@ -242,8 +252,8 @@ def main() -> int:
             device=args.device, truncate_dim=args.truncate_dim,
             feature_output_dir=args.feature_output_dir,
         )
-    except (TeacherSnapshotError, TeacherForwardError, OSError, ValueError,
-            ImportError, RuntimeError) as error:
+    except (TeacherSnapshotError, TeacherForwardError, TeacherMediaSealError,
+            OSError, ValueError, ImportError, RuntimeError) as error:
         print(json.dumps({"status": "REJECTED", "reason": str(error),
                           "authority": "DENY_ALL"}))
         return 2
