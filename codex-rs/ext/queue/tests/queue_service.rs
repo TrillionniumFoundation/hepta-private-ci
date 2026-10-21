@@ -2840,3 +2840,122 @@ async fn resumed_idle_dispatches_input_without_a_loaded_manager() -> anyhow::Res
     assert!(service.list(thread_id).await?.is_empty());
     Ok(())
 }
+
+#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+async fn registered_queue_waits_for_terminal_cleanup_without_admitting_other_callers()
+-> anyhow::Result<()> {
+    struct FirstIdleGate {
+        first: AtomicBool,
+        entered: Arc<tokio::sync::Notify>,
+        release: Arc<tokio::sync::Notify>,
+    }
+
+    impl ThreadLifecycleContributor<codex_core::config::Config> for FirstIdleGate {
+        fn on_thread_idle<'a>(&'a self, _input: ThreadIdleInput<'a>) -> ExtensionFuture<'a, ()> {
+            Box::pin(async move {
+                if self.first.swap(false, Ordering::SeqCst) {
+                    self.entered.notify_one();
+                    self.release.notified().await;
+                }
+            })
+        }
+    }
+
+    let server = start_mock_server().await;
+    let responses = responses::mount_sse_sequence(
+        &server,
+        ["fenced-turn-a", "queued-turn-b"]
+            .into_iter()
+            .map(responses::sse_completed)
+            .collect(),
+    )
+    .await;
+    let installed = Arc::new(InstalledQueue::default());
+    let entered = Arc::new(tokio::sync::Notify::new());
+    let release = Arc::new(tokio::sync::Notify::new());
+    let mut extensions = ExtensionRegistryBuilder::<codex_core::config::Config>::new();
+    extensions.thread_lifecycle_contributor(installed.clone());
+    extensions.thread_lifecycle_contributor(Arc::new(FirstIdleGate {
+        first: AtomicBool::new(true),
+        entered: Arc::clone(&entered),
+        release: Arc::clone(&release),
+    }));
+    let test = test_codex()
+        .with_extensions(Arc::new(extensions.build()))
+        .with_config(|config| config.include_environment_context = false)
+        .build_with_auto_env(&server)
+        .await?;
+    let thread_id = test.session_configured.thread_id;
+    let staging = QueuedItemService::new(
+        loaded_thread_queue(&test)?,
+        Weak::new(),
+        Arc::new(NoopExtensionEventSink),
+    );
+    let queued = staging.enqueue(thread_id, user_input("B")).await?;
+    let queue = install_registered_queue(&test, installed.as_ref())?;
+
+    tokio::time::timeout(Duration::from_secs(10), async {
+        test.submit_text_turn("A").await?;
+        entered.notified().await;
+
+        // Queue's callback must already have returned for the next contributor
+        // to reach this gate, but the exact terminalizer must remain fenced.
+        let observer = test
+            .codex
+            .pending_admission_fence_completion()
+            .expect("idle callback must retain its terminalization fence");
+        drop(observer);
+        assert!(test.codex.pending_admission_fence_completion().is_some());
+
+        // A positively pre-routing refusal releases only that attempt's lease.
+        // Repeating it must not encounter ambiguous authority from either the
+        // deferred lifecycle wake or the earlier rejected manual attempt.
+        for _ in 0..2 {
+            let submission = queue
+                .start(test.codex.as_ref(), Some(queued.id.clone()), /*trace*/ None)
+                .await?;
+            assert_eq!(
+                StartIfIdleSubmission::NotSubmitted {
+                    reason: NotSubmittedReason::NotIdle,
+                },
+                submission
+            );
+        }
+        let error = test
+            .codex
+            .start_or_steer_turn(TurnInputRequest::user_input(vec![UserInput::Text {
+                text: "must remain fenced".to_string(),
+                text_elements: Vec::new(),
+            }]))
+            .await
+            .expect_err("ordinary callers must not cross the terminalization fence");
+        assert!(
+            matches!(error.details(), CodexErrorDetails::InvalidRequest(_)),
+            "ordinary admission should retain the terminalizing error: {error}"
+        );
+        assert_eq!(vec![queued.clone()], queue.list(thread_id).await?);
+        assert_eq!(1, responses.requests().len());
+
+        release.notify_one();
+        wait_for_event_match(test.codex.as_ref(), |event| {
+            matches!(event, EventMsg::TurnComplete(_)).then_some(())
+        })
+        .await;
+        anyhow::Ok(())
+    })
+    .await??;
+
+    let prompts = responses
+        .requests()
+        .into_iter()
+        .map(|request| {
+            request
+                .message_input_texts("user")
+                .pop()
+                .context("model request has no user input")
+        })
+        .collect::<anyhow::Result<Vec<_>>>()?;
+    assert_eq!(vec!["A", "B"], prompts);
+    assert!(queue.list(thread_id).await?.is_empty());
+    Ok(())
+}
