@@ -1,4 +1,5 @@
 mod compact;
+mod idle_work;
 mod lifecycle;
 mod regular;
 mod review;

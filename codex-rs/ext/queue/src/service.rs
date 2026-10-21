@@ -1376,19 +1376,18 @@ where
                 // this callback returns. Keep the wake alive independently,
                 // then use ordinary admission after that exact cleanup ends.
                 let service = self.clone();
-                tokio::spawn(async move {
-                    tokio::select! {
-                        biased;
-                        () = thread.wait_until_terminated() => return,
-                        () = completion => {}
-                    }
+                let dispatch_thread = Arc::clone(&thread);
+                if let Err(error) = thread.defer_idle_work(completion, async move {
                     service
-                        .dispatch_idle_notification(thread_id, thread.as_ref())
+                        .dispatch_idle_notification(thread_id, dispatch_thread.as_ref())
                         .await;
-                });
+                }) {
+                    tracing::warn!(%thread_id, %error, "could not defer queued idle work");
+                }
                 return;
             }
-            self.dispatch_idle_notification(thread_id, thread.as_ref()).await;
+            self.dispatch_idle_notification(thread_id, thread.as_ref())
+                .await;
         })
     }
 }
