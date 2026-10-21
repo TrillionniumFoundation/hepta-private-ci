@@ -19,8 +19,15 @@ fn snapshot() -> ImmutableFeatureSnapshotV1 {
 
 #[test]
 fn zero_delta_preserves_the_no_update_baseline() {
-    let head = CellAdapterHeadV1::new(id("cell:a"), id("organ:a"), generation(1), digest("encoder"), vec![2, 3, 5], 7)
-        .expect("head");
+    let head = CellAdapterHeadV1::new(
+        id("cell:a"),
+        id("organ:a"),
+        generation(1),
+        digest("encoder"),
+        vec![2, 3, 5],
+        7,
+    )
+    .expect("head");
     let successor = head.with_delta(&[0, 0, 0]).expect("zero delta");
     assert_eq!(head.activate(&snapshot()), successor.activate(&snapshot()));
 }
@@ -28,12 +35,24 @@ fn zero_delta_preserves_the_no_update_baseline() {
 #[test]
 fn shared_snapshot_is_reused_by_multiple_heads() {
     let snapshot = snapshot();
-    let first =
-        CellAdapterHeadV1::new(id("cell:a"), id("organ:a"), generation(1), digest("encoder"), vec![1, 1, 1], 0)
-            .expect("head");
-    let second =
-        CellAdapterHeadV1::new(id("cell:b"), id("organ:a"), generation(1), digest("encoder"), vec![1, 1, 1], 0)
-            .expect("head");
+    let first = CellAdapterHeadV1::new(
+        id("cell:a"),
+        id("organ:a"),
+        generation(1),
+        digest("encoder"),
+        vec![1, 1, 1],
+        0,
+    )
+    .expect("head");
+    let second = CellAdapterHeadV1::new(
+        id("cell:b"),
+        id("organ:a"),
+        generation(1),
+        digest("encoder"),
+        vec![1, 1, 1],
+        0,
+    )
+    .expect("head");
     assert_eq!(
         first
             .activate(&snapshot)
@@ -113,8 +132,15 @@ fn feature_and_activation_batches_preserve_generation() {
     let second = ImmutableFeatureSnapshotV1::new(generation(1), digest("encoder"), vec![3, 2, 1])
         .expect("snapshot");
     let batch = FeatureBatchV1::new(vec![first, second]).expect("feature batch");
-    let head = CellAdapterHeadV1::new(id("cell:a"), id("organ:a"), generation(1), digest("encoder"), vec![1, 1, 1], 0)
-        .expect("head");
+    let head = CellAdapterHeadV1::new(
+        id("cell:a"),
+        id("organ:a"),
+        generation(1),
+        digest("encoder"),
+        vec![1, 1, 1],
+        0,
+    )
+    .expect("head");
     let activations = head.activate_batch(&batch).expect("activation batch");
     assert_eq!(activations.feature_generation, generation(1));
     assert_eq!(activations.activations.len(), 2);
