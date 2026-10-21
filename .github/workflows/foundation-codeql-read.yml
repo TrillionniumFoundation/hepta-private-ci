@@ -158,6 +158,120 @@ jobs:
           print(json.dumps(results, indent=2))
           PY
 
+      - name: Read current identities and instances of the forty reviewed alerts
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import base64
+          import hashlib
+          import json
+          import os
+          from pathlib import Path
+          import subprocess
+          from urllib.parse import quote, urlencode
+
+          root = Path("evidence")
+          repository = os.environ["GITHUB_REPOSITORY"]
+          def get(endpoint, name):
+              with (root / (name + ".json")).open("xb") as stdout, (root / (name + ".stderr.log")).open("xb") as stderr:
+                  result = subprocess.run(["gh", "api", "--method", "GET", "--allow-escape-sequences",
+                      "-H", "Accept: application/vnd.github+json", endpoint], stdout=stdout,
+                      stderr=stderr, check=False, timeout=90)
+              (root / (name + ".exit-code.txt")).write_text(str(result.returncode) + "\n")
+              if result.returncode:
+                  raise RuntimeError(f"Read failed: {name}; original response retained")
+              return json.loads((root / (name + ".json")).read_text())
+
+          index_path = ".github/security-reviews/2026-10-21-foundation-codeql/review-index.json"
+          response = get(f"repos/{repository}/contents/{index_path}?" + urlencode({"ref": os.environ["GITHUB_SHA"]}),
+                         "review-index-content-response")
+          if response.get("encoding") != "base64":
+              raise RuntimeError("Unexpected review-index encoding")
+          data = base64.b64decode(response["content"])
+          if hashlib.sha256(data).hexdigest() != "429eb37e44d2c927f7bfc533c337a078a7c9c57928a908e5c24288bb9a6a3198":
+              raise RuntimeError("The independently reviewed finding index changed")
+          (root / "review-index-approved.json").write_bytes(data)
+          index = json.loads(data)
+          if index["repository"] != repository or index["source_sha"] != os.environ["REVIEW_SOURCE_SHA"]:
+              raise RuntimeError("Reviewed source identity mismatch")
+          findings = index["findings"]
+          if len(findings) != 40 or len({item["alert_number"] for item in findings}) != 40:
+              raise RuntimeError("Expected forty uniquely reviewed findings")
+          sarif = json.loads((root / "rust-analysis-1992617134.sarif.json").read_text())
+          original = [item for run in sarif["runs"] for item in run.get("results", [])]
+          for item in findings:
+              finding = original[item["sarif_result_index"]]
+              if (finding["properties"]["github/alertNumber"] != item["alert_number"]
+                      or finding["ruleId"] != item["rule_id"]
+                      or finding.get("partialFingerprints", {}) != item["partial_fingerprints"]):
+                  raise RuntimeError("Review is not one-to-one with the original SARIF")
+
+          current_files = {}
+          records = []
+          for item in findings:
+              number = item["alert_number"]
+              alert = get(f"repos/{repository}/code-scanning/alerts/{number}", f"alert-{number}")
+              if (alert.get("number") != number or alert.get("tool", {}).get("name") != "CodeQL"
+                      or alert.get("rule", {}).get("id") != item["rule_id"]):
+                  raise RuntimeError(f"Alert identity changed: {number}")
+              instances = []
+              for page in range(1, 6):
+                  batch = get(f"repos/{repository}/code-scanning/alerts/{number}/instances?per_page=100&page={page}",
+                              f"alert-{number}-instances-{page}")
+                  if not isinstance(batch, list):
+                      raise RuntimeError("Unexpected instance list")
+                  instances.extend(batch)
+                  if len(batch) < 100:
+                      break
+              else:
+                  raise RuntimeError("Alert instances exceeded the reviewed page bound")
+              original_matches = [value for value in instances
+                  if value.get("commit_sha") == index["source_sha"]
+                  and value.get("ref") == index["analysis_ref"]
+                  and value.get("location") == item["location"]]
+              issues = []
+              if len(original_matches) != 1:
+                  issues.append("Original source-bound instance is absent or ambiguous")
+              checked = []
+              for instance in instances:
+                  if instance.get("state") != "open":
+                      continue
+                  if instance.get("location") != item["location"]:
+                      issues.append("An open instance has a different location")
+                      continue
+                  sha = instance.get("commit_sha", "")
+                  if len(sha) != 40 or any(c not in "0123456789abcdef" for c in sha):
+                      raise RuntimeError("Unexpected open-instance commit")
+                  key = (sha, item["path"])
+                  if key not in current_files:
+                      if len(current_files) >= 200:
+                          raise RuntimeError("Current source reads exceeded the reviewed bound")
+                      name = "current-source-" + hashlib.sha256((sha + ":" + item["path"]).encode()).hexdigest()
+                      content = get(f"repos/{repository}/contents/{quote(item['path'], safe='/')}?" + urlencode({"ref": sha}), name)
+                      current_files[key] = content["sha"]
+                  blob = current_files[key]
+                  if blob != item["source_blob"]:
+                      issues.append("An open instance has changed source bytes")
+                  checked.append({"ref": instance.get("ref"), "commit_sha": sha, "blob_sha": blob,
+                                  "matches_reviewed_source": blob == item["source_blob"]})
+              record = {"alert_number": number, "state": alert.get("state"),
+                  "existing_dismissed_reason": alert.get("dismissed_reason"),
+                  "proposed_reason": item["dismissed_reason"], "original_instance_matches": len(original_matches),
+                  "instances": len(instances), "checked_open_instances": checked, "issues": issues,
+                  "eligible_for_reviewed_disposition": alert.get("state") == "open" and bool(checked) and not issues,
+                  "alert_state_changed": False}
+              records.append(record)
+              (root / "current-alert-review.json").write_text(json.dumps(records, indent=2) + "\n")
+          summary = {"reviewed": len(records), "eligible": sum(value["eligible_for_reviewed_disposition"] for value in records),
+              "already_fixed": sum(value["state"] == "fixed" for value in records),
+              "already_dismissed": sum(value["state"] == "dismissed" for value in records),
+              "with_identity_or_source_issues": sum(bool(value["issues"]) for value in records),
+              "source_blobs_read": len(current_files), "alert_state_changed": False}
+          (root / "current-alert-summary.json").write_text(json.dumps(summary, indent=2) + "\n")
+          print(json.dumps(summary, indent=2))
+          PY
+
       - name: Hash all retained original responses
         if: always()
         shell: bash

@@ -1,0 +1,2622 @@
+{
+  "schema": "hepta-codeql-independent-sarif-review.v1",
+  "source_head": "b58d870a2c38ebee0aa0b974d9f03767c888fa7e",
+  "source_tree": "5bdd6960c53a0bc9dd034865d9dfa07a3cbc73f5",
+  "analysis_id": 1992617134,
+  "analysis_ref": "refs/pull/2937/head",
+  "reader_run_id": 39606595435,
+  "reader_artifact_id": 12349956006,
+  "raw_sarif": {
+    "path": "audit_work/foundation-codeql-39606595435/rust-analysis-1992617134.sarif.json",
+    "bytes": 1300373,
+    "sha256": "d4982f07385cb87dee94c73ad7a4709a1346aa31c94421fd63211e0c36461409"
+  },
+  "reader_inventory_members_reverified": 54,
+  "mapping_file": {
+    "path": "audit_work/foundation-codeql-39606595435/annotation-sarif-map.json",
+    "bytes": 13169,
+    "sha256": "f8e2f6cbd4f1fa24264543e707f2c1af34b9891f8b7ab62ea6a294383f737958"
+  },
+  "previous_static_review": {
+    "path": "hepta-codeql-review/independent-static-review.json",
+    "bytes": 46035,
+    "sha256": "96756f057c9bcb0d26fd7296d790a1c60ccf7f13aef66c11fe10f9a12d77c444"
+  },
+  "counts": {
+    "sarif_total_results": 174,
+    "reviewed": 37,
+    "keyring_fixtures": 33,
+    "cfg_test": 19,
+    "integration_test": 8,
+    "explicit_example": 6,
+    "salt": 1,
+    "pointer": 3,
+    "with_code_flows": 30,
+    "direct_sink_without_code_flows": 7
+  },
+  "findings": [
+    {
+      "annotation_index_zero_based": 0,
+      "sarif_result_index": 81,
+      "alert_id": 753,
+      "rule_id": "rust/hard-coded-cryptographic-value",
+      "message": "This hard-coded value is used as [a password](1).",
+      "primary_location": {
+        "path": "codex-rs/third_party/keyring-3.6.3/examples/ios.rs",
+        "line": 43,
+        "column": 19,
+        "message": null,
+        "source_line": "    let in_pass = \"\";"
+      },
+      "thread_flows": [
+        [
+          {
+            "path": "codex-rs/third_party/keyring-3.6.3/examples/ios.rs",
+            "line": 43,
+            "column": 19,
+            "message": "\"\"",
+            "source_line": "    let in_pass = \"\";"
+          },
+          {
+            "path": "codex-rs/third_party/keyring-3.6.3/examples/ios.rs",
+            "line": 43,
+            "column": 9,
+            "message": "in_pass",
+            "source_line": "    let in_pass = \"\";"
+          },
+          {
+            "path": "codex-rs/third_party/keyring-3.6.3/examples/ios.rs",
+            "line": 45,
+            "column": 23,
+            "message": "in_pass",
+            "source_line": "        .set_password(in_pass)"
+          }
+        ]
+      ],
+      "related_locations": [
+        {
+          "path": "codex-rs/third_party/keyring-3.6.3/examples/ios.rs",
+          "line": 45,
+          "column": 23,
+          "message": "a password",
+          "source_line": "        .set_password(in_pass)"
+        },
+        {
+          "path": "codex-rs/third_party/keyring-3.6.3/examples/ios.rs",
+          "line": 45,
+          "column": 23,
+          "message": null,
+          "source_line": "        .set_password(in_pass)"
+        }
+      ],
+      "category": "keyring_test_or_explicit_example_fixture",
+      "static_classification": "test_or_example_fixture_not_a_product_authentication_secret",
+      "assessment": {
+        "scope": {
+          "kind": "explicit_example_staticlib",
+          "manifest": "codex-rs/third_party/keyring-3.6.3/Cargo.toml",
+          "target": "iostest",
+          "manifest_lines": [
+            97,
+            100
+          ],
+          "entry": "extern C fn test at examples/ios.rs:5",
+          "compiled_in_normal_library": false,
+          "note": "This example lacks cfg(test). If explicitly linked/run it writes real test entries to the selected iOS keychain; it is not merely inert text."
+        },
+        "fixture_function": "test_empty_password_input",
+        "reasoning": "Stores an empty input in a named iOS test entry, asserts exact retrieval, deletes it, and asserts NoEntry.",
+        "flow_conclusion": "The SARIF sink is an actual password-storage API argument in the reviewed fixture. The fixed input is intentional data for the shown storage/round-trip/error behavior, not an authentication secret used by the product. The source-to-sink flow does not contradict the individually established compile target and function scope.",
+        "qualification": "Explicit examples can write real test keychain entries when deliberately run; six example findings are not cfg(test). No blanket third-party-directory suppression is justified."
+      },
+      "classification_revised": false
+    },
+    {
+      "annotation_index_zero_based": 1,
+      "sarif_result_index": 82,
+      "alert_id": 754,
+      "rule_id": "rust/hard-coded-cryptographic-value",
+      "message": "This hard-coded value is used as [a password](1).",
+      "primary_location": {
+        "path": "codex-rs/third_party/keyring-3.6.3/examples/ios.rs",
+        "line": 61,
+        "column": 20,
+        "message": null,
+        "source_line": "    let password = \"test ascii password\";"
+      },
+      "thread_flows": [
+        [
+          {
+            "path": "codex-rs/third_party/keyring-3.6.3/examples/ios.rs",
+            "line": 61,
+            "column": 20,
+            "message": "\"test ascii password\"",
+            "source_line": "    let password = \"test ascii password\";"
+          },
+          {
+            "path": "codex-rs/third_party/keyring-3.6.3/examples/ios.rs",
+            "line": 61,
+            "column": 9,
+            "message": "password",
+            "source_line": "    let password = \"test ascii password\";"
+          },
+          {
+            "path": "codex-rs/third_party/keyring-3.6.3/examples/ios.rs",
+            "line": 62,
+            "column": 24,
+            "message": "password",
+            "source_line": "    entry.set_password(password).unwrap();"
+          }
+        ]
+      ],
+      "related_locations": [
+        {
+          "path": "codex-rs/third_party/keyring-3.6.3/examples/ios.rs",
+          "line": 62,
+          "column": 24,
+          "message": "a password",
+          "source_line": "    entry.set_password(password).unwrap();"
+        },
+        {
+          "path": "codex-rs/third_party/keyring-3.6.3/examples/ios.rs",
+          "line": 62,
+          "column": 24,
+          "message": null,
+          "source_line": "    entry.set_password(password).unwrap();"
+        }
+      ],
+      "category": "keyring_test_or_explicit_example_fixture",
+      "static_classification": "test_or_example_fixture_not_a_product_authentication_secret",
+      "assessment": {
+        "scope": {
+          "kind": "explicit_example_staticlib",
+          "manifest": "codex-rs/third_party/keyring-3.6.3/Cargo.toml",
+          "target": "iostest",
+          "manifest_lines": [
+            97,
+            100
+          ],
+          "entry": "extern C fn test at examples/ios.rs:5",
+          "compiled_in_normal_library": false,
+          "note": "This example lacks cfg(test). If explicitly linked/run it writes real test entries to the selected iOS keychain; it is not merely inert text."
+        },
+        "fixture_function": "test_round_trip_ascii_password",
+        "reasoning": "Stores a fixed ASCII sample in a fixture entry, asserts its returned value, and deletes the entry; exercises byte-for-byte credential storage.",
+        "flow_conclusion": "The SARIF sink is an actual password-storage API argument in the reviewed fixture. The fixed input is intentional data for the shown storage/round-trip/error behavior, not an authentication secret used by the product. The source-to-sink flow does not contradict the individually established compile target and function scope.",
+        "qualification": "Explicit examples can write real test keychain entries when deliberately run; six example findings are not cfg(test). No blanket third-party-directory suppression is justified."
+      },
+      "classification_revised": false
+    },
+    {
+      "annotation_index_zero_based": 2,
+      "sarif_result_index": 83,
+      "alert_id": 755,
+      "rule_id": "rust/hard-coded-cryptographic-value",
+      "message": "This hard-coded value is used as [a password](1).",
+      "primary_location": {
+        "path": "codex-rs/third_party/keyring-3.6.3/examples/ios.rs",
+        "line": 72,
+        "column": 20,
+        "message": null,
+        "source_line": "    let password = \"このきれいな花は桜です\";"
+      },
+      "thread_flows": [
+        [
+          {
+            "path": "codex-rs/third_party/keyring-3.6.3/examples/ios.rs",
+            "line": 72,
+            "column": 20,
+            "message": "\"このきれいな花は桜です\"",
+            "source_line": "    let password = \"このきれいな花は桜です\";"
+          },
+          {
+            "path": "codex-rs/third_party/keyring-3.6.3/examples/ios.rs",
+            "line": 72,
+            "column": 9,
+            "message": "password",
+            "source_line": "    let password = \"このきれいな花は桜です\";"
+          },
+          {
+            "path": "codex-rs/third_party/keyring-3.6.3/examples/ios.rs",
+            "line": 73,
+            "column": 24,
+            "message": "password",
+            "source_line": "    entry.set_password(password).unwrap();"
+          }
+        ]
+      ],
+      "related_locations": [
+        {
+          "path": "codex-rs/third_party/keyring-3.6.3/examples/ios.rs",
+          "line": 73,
+          "column": 24,
+          "message": "a password",
+          "source_line": "    entry.set_password(password).unwrap();"
+        },
+        {
+          "path": "codex-rs/third_party/keyring-3.6.3/examples/ios.rs",
+          "line": 73,
+          "column": 24,
+          "message": null,
+          "source_line": "    entry.set_password(password).unwrap();"
+        }
+      ],
+      "category": "keyring_test_or_explicit_example_fixture",
+      "static_classification": "test_or_example_fixture_not_a_product_authentication_secret",
+      "assessment": {
+        "scope": {
+          "kind": "explicit_example_staticlib",
+          "manifest": "codex-rs/third_party/keyring-3.6.3/Cargo.toml",
+          "target": "iostest",
+          "manifest_lines": [
+            97,
+            100
+          ],
+          "entry": "extern C fn test at examples/ios.rs:5",
+          "compiled_in_normal_library": false,
+          "note": "This example lacks cfg(test). If explicitly linked/run it writes real test entries to the selected iOS keychain; it is not merely inert text."
+        },
+        "fixture_function": "test_round_trip_non_ascii_password",
+        "reasoning": "Stores a fixed Unicode sample in a fixture entry, asserts its returned value, and deletes the entry; exercises encoding rather than authentication.",
+        "flow_conclusion": "The SARIF sink is an actual password-storage API argument in the reviewed fixture. The fixed input is intentional data for the shown storage/round-trip/error behavior, not an authentication secret used by the product. The source-to-sink flow does not contradict the individually established compile target and function scope.",
+        "qualification": "Explicit examples can write real test keychain entries when deliberately run; six example findings are not cfg(test). No blanket third-party-directory suppression is justified."
+      },
+      "classification_revised": false
+    },
+    {
+      "annotation_index_zero_based": 3,
+      "sarif_result_index": 84,
+      "alert_id": 756,
+      "rule_id": "rust/hard-coded-cryptographic-value",
+      "message": "This hard-coded value is used as [a password](1).",
+      "primary_location": {
+        "path": "codex-rs/third_party/keyring-3.6.3/examples/ios.rs",
+        "line": 83,
+        "column": 20,
+        "message": null,
+        "source_line": "    let password = \"test ascii password\";"
+      },
+      "thread_flows": [
+        [
+          {
+            "path": "codex-rs/third_party/keyring-3.6.3/examples/ios.rs",
+            "line": 83,
+            "column": 20,
+            "message": "\"test ascii password\"",
+            "source_line": "    let password = \"test ascii password\";"
+          },
+          {
+            "path": "codex-rs/third_party/keyring-3.6.3/examples/ios.rs",
+            "line": 83,
+            "column": 9,
+            "message": "password",
+            "source_line": "    let password = \"test ascii password\";"
+          },
+          {
+            "path": "codex-rs/third_party/keyring-3.6.3/examples/ios.rs",
+            "line": 84,
+            "column": 24,
+            "message": "password",
+            "source_line": "    entry.set_password(password).unwrap();"
+          }
+        ]
+      ],
+      "related_locations": [
+        {
+          "path": "codex-rs/third_party/keyring-3.6.3/examples/ios.rs",
+          "line": 84,
+          "column": 24,
+          "message": "a password",
+          "source_line": "    entry.set_password(password).unwrap();"
+        },
+        {
+          "path": "codex-rs/third_party/keyring-3.6.3/examples/ios.rs",
+          "line": 84,
+          "column": 24,
+          "message": null,
+          "source_line": "    entry.set_password(password).unwrap();"
+        }
+      ],
+      "category": "keyring_test_or_explicit_example_fixture",
+      "static_classification": "test_or_example_fixture_not_a_product_authentication_secret",
+      "assessment": {
+        "scope": {
+          "kind": "explicit_example_staticlib",
+          "manifest": "codex-rs/third_party/keyring-3.6.3/Cargo.toml",
+          "target": "iostest",
+          "manifest_lines": [
+            97,
+            100
+          ],
+          "entry": "extern C fn test at examples/ios.rs:5",
+          "compiled_in_normal_library": false,
+          "note": "This example lacks cfg(test). If explicitly linked/run it writes real test entries to the selected iOS keychain; it is not merely inert text."
+        },
+        "fixture_function": "test_update_password",
+        "reasoning": "Stores the ASCII then Unicode fixture in the same named iOS test entry, asserts each result, deletes it, and asserts NoEntry.",
+        "flow_conclusion": "The SARIF sink is an actual password-storage API argument in the reviewed fixture. The fixed input is intentional data for the shown storage/round-trip/error behavior, not an authentication secret used by the product. The source-to-sink flow does not contradict the individually established compile target and function scope.",
+        "qualification": "Explicit examples can write real test keychain entries when deliberately run; six example findings are not cfg(test). No blanket third-party-directory suppression is justified."
+      },
+      "classification_revised": false
+    },
+    {
+      "annotation_index_zero_based": 4,
+      "sarif_result_index": 85,
+      "alert_id": 757,
+      "rule_id": "rust/hard-coded-cryptographic-value",
+      "message": "This hard-coded value is used as [a password](1).",
+      "primary_location": {
+        "path": "codex-rs/third_party/keyring-3.6.3/examples/ios.rs",
+        "line": 87,
+        "column": 20,
+        "message": null,
+        "source_line": "    let password = \"このきれいな花は桜です\";"
+      },
+      "thread_flows": [
+        [
+          {
+            "path": "codex-rs/third_party/keyring-3.6.3/examples/ios.rs",
+            "line": 87,
+            "column": 20,
+            "message": "\"このきれいな花は桜です\"",
+            "source_line": "    let password = \"このきれいな花は桜です\";"
+          },
+          {
+            "path": "codex-rs/third_party/keyring-3.6.3/examples/ios.rs",
+            "line": 87,
+            "column": 9,
+            "message": "password",
+            "source_line": "    let password = \"このきれいな花は桜です\";"
+          },
+          {
+            "path": "codex-rs/third_party/keyring-3.6.3/examples/ios.rs",
+            "line": 88,
+            "column": 24,
+            "message": "password",
+            "source_line": "    entry.set_password(password).unwrap();"
+          }
+        ]
+      ],
+      "related_locations": [
+        {
+          "path": "codex-rs/third_party/keyring-3.6.3/examples/ios.rs",
+          "line": 88,
+          "column": 24,
+          "message": "a password",
+          "source_line": "    entry.set_password(password).unwrap();"
+        },
+        {
+          "path": "codex-rs/third_party/keyring-3.6.3/examples/ios.rs",
+          "line": 88,
+          "column": 24,
+          "message": null,
+          "source_line": "    entry.set_password(password).unwrap();"
+        }
+      ],
+      "category": "keyring_test_or_explicit_example_fixture",
+      "static_classification": "test_or_example_fixture_not_a_product_authentication_secret",
+      "assessment": {
+        "scope": {
+          "kind": "explicit_example_staticlib",
+          "manifest": "codex-rs/third_party/keyring-3.6.3/Cargo.toml",
+          "target": "iostest",
+          "manifest_lines": [
+            97,
+            100
+          ],
+          "entry": "extern C fn test at examples/ios.rs:5",
+          "compiled_in_normal_library": false,
+          "note": "This example lacks cfg(test). If explicitly linked/run it writes real test entries to the selected iOS keychain; it is not merely inert text."
+        },
+        "fixture_function": "test_update_password",
+        "reasoning": "Stores the ASCII then Unicode fixture in the same named iOS test entry, asserts each result, deletes it, and asserts NoEntry.",
+        "flow_conclusion": "The SARIF sink is an actual password-storage API argument in the reviewed fixture. The fixed input is intentional data for the shown storage/round-trip/error behavior, not an authentication secret used by the product. The source-to-sink flow does not contradict the individually established compile target and function scope.",
+        "qualification": "Explicit examples can write real test keychain entries when deliberately run; six example findings are not cfg(test). No blanket third-party-directory suppression is justified."
+      },
+      "classification_revised": false
+    },
+    {
+      "annotation_index_zero_based": 5,
+      "sarif_result_index": 86,
+      "alert_id": 758,
+      "rule_id": "rust/hard-coded-cryptographic-value",
+      "message": "This hard-coded value is used as [a password](1).",
+      "primary_location": {
+        "path": "codex-rs/third_party/keyring-3.6.3/examples/ios.rs",
+        "line": 109,
+        "column": 23,
+        "message": null,
+        "source_line": "        .set_password(\"test get password for get_credential\")"
+      },
+      "thread_flows": [],
+      "related_locations": [
+        {
+          "path": "codex-rs/third_party/keyring-3.6.3/examples/ios.rs",
+          "line": 109,
+          "column": 23,
+          "message": "a password",
+          "source_line": "        .set_password(\"test get password for get_credential\")"
+        }
+      ],
+      "category": "keyring_test_or_explicit_example_fixture",
+      "static_classification": "test_or_example_fixture_not_a_product_authentication_secret",
+      "assessment": {
+        "scope": {
+          "kind": "explicit_example_staticlib",
+          "manifest": "codex-rs/third_party/keyring-3.6.3/Cargo.toml",
+          "target": "iostest",
+          "manifest_lines": [
+            97,
+            100
+          ],
+          "entry": "extern C fn test at examples/ios.rs:5",
+          "compiled_in_normal_library": false,
+          "note": "This example lacks cfg(test). If explicitly linked/run it writes real test entries to the selected iOS keychain; it is not merely inert text."
+        },
+        "fixture_function": "test_get_credential",
+        "reasoning": "Creates a fixture credential, writes the sample to make it exist, checks the platform-specific credential accessor/downcast/attributes, and deletes it.",
+        "flow_conclusion": "The SARIF sink is an actual password-storage API argument in the reviewed fixture. The fixed input is intentional data for the shown storage/round-trip/error behavior, not an authentication secret used by the product. The source-to-sink flow does not contradict the individually established compile target and function scope.",
+        "qualification": "Explicit examples can write real test keychain entries when deliberately run; six example findings are not cfg(test). No blanket third-party-directory suppression is justified."
+      },
+      "classification_revised": false
+    },
+    {
+      "annotation_index_zero_based": 6,
+      "sarif_result_index": 87,
+      "alert_id": 759,
+      "rule_id": "rust/hard-coded-cryptographic-value",
+      "message": "This hard-coded value is used as [a password](1).",
+      "primary_location": {
+        "path": "codex-rs/third_party/keyring-3.6.3/src/keyutils.rs",
+        "line": 439,
+        "column": 27,
+        "message": null,
+        "source_line": "            .set_password(\"test get_credential\")"
+      },
+      "thread_flows": [],
+      "related_locations": [
+        {
+          "path": "codex-rs/third_party/keyring-3.6.3/src/keyutils.rs",
+          "line": 439,
+          "column": 27,
+          "message": "a password",
+          "source_line": "            .set_password(\"test get_credential\")"
+        }
+      ],
+      "category": "keyring_test_or_explicit_example_fixture",
+      "static_classification": "test_or_example_fixture_not_a_product_authentication_secret",
+      "assessment": {
+        "scope": {
+          "kind": "cfg_test",
+          "module_guard_line": 351,
+          "compiled_in_normal_library": false
+        },
+        "fixture_function": "test_get_credential",
+        "reasoning": "Creates a fixture credential, writes the sample to make it exist, checks the platform-specific credential accessor/downcast/attributes, and deletes it.",
+        "flow_conclusion": "The SARIF sink is an actual password-storage API argument in the reviewed fixture. The fixed input is intentional data for the shown storage/round-trip/error behavior, not an authentication secret used by the product. The source-to-sink flow does not contradict the individually established compile target and function scope.",
+        "qualification": "Explicit examples can write real test keychain entries when deliberately run; six example findings are not cfg(test). No blanket third-party-directory suppression is justified."
+      },
+      "classification_revised": false
+    },
+    {
+      "annotation_index_zero_based": 7,
+      "sarif_result_index": 88,
+      "alert_id": 760,
+      "rule_id": "rust/hard-coded-cryptographic-value",
+      "message": "This hard-coded value is used as [a password](1).",
+      "primary_location": {
+        "path": "codex-rs/third_party/keyring-3.6.3/src/lib.rs",
+        "line": 647,
+        "column": 23,
+        "message": null,
+        "source_line": "        let in_pass = \"doesn't matter\";"
+      },
+      "thread_flows": [
+        [
+          {
+            "path": "codex-rs/third_party/keyring-3.6.3/src/lib.rs",
+            "line": 647,
+            "column": 23,
+            "message": "\"doesn't matter\"",
+            "source_line": "        let in_pass = \"doesn't matter\";"
+          },
+          {
+            "path": "codex-rs/third_party/keyring-3.6.3/src/lib.rs",
+            "line": 647,
+            "column": 13,
+            "message": "in_pass",
+            "source_line": "        let in_pass = \"doesn't matter\";"
+          },
+          {
+            "path": "codex-rs/third_party/keyring-3.6.3/src/lib.rs",
+            "line": 648,
+            "column": 54,
+            "message": "in_pass",
+            "source_line": "        test_round_trip(\"empty user\", &f(&name, \"\"), in_pass);"
+          },
+          {
+            "path": "codex-rs/third_party/keyring-3.6.3/src/lib.rs",
+            "line": 577,
+            "column": 55,
+            "message": "...: ...",
+            "source_line": "    pub fn test_round_trip(case: &str, entry: &Entry, in_pass: &str) {"
+          },
+          {
+            "path": "codex-rs/third_party/keyring-3.6.3/src/lib.rs",
+            "line": 579,
+            "column": 27,
+            "message": "in_pass",
+            "source_line": "            .set_password(in_pass)"
+          }
+        ],
+        [
+          {
+            "path": "codex-rs/third_party/keyring-3.6.3/src/lib.rs",
+            "line": 647,
+            "column": 23,
+            "message": "\"doesn't matter\"",
+            "source_line": "        let in_pass = \"doesn't matter\";"
+          },
+          {
+            "path": "codex-rs/third_party/keyring-3.6.3/src/lib.rs",
+            "line": 647,
+            "column": 13,
+            "message": "in_pass",
+            "source_line": "        let in_pass = \"doesn't matter\";"
+          },
+          {
+            "path": "codex-rs/third_party/keyring-3.6.3/src/lib.rs",
+            "line": 649,
+            "column": 57,
+            "message": "in_pass",
+            "source_line": "        test_round_trip(\"empty service\", &f(\"\", &name), in_pass);"
+          },
+          {
+            "path": "codex-rs/third_party/keyring-3.6.3/src/lib.rs",
+            "line": 577,
+            "column": 55,
+            "message": "...: ...",
+            "source_line": "    pub fn test_round_trip(case: &str, entry: &Entry, in_pass: &str) {"
+          },
+          {
+            "path": "codex-rs/third_party/keyring-3.6.3/src/lib.rs",
+            "line": 579,
+            "column": 27,
+            "message": "in_pass",
+            "source_line": "            .set_password(in_pass)"
+          }
+        ],
+        [
+          {
+            "path": "codex-rs/third_party/keyring-3.6.3/src/lib.rs",
+            "line": 647,
+            "column": 23,
+            "message": "\"doesn't matter\"",
+            "source_line": "        let in_pass = \"doesn't matter\";"
+          },
+          {
+            "path": "codex-rs/third_party/keyring-3.6.3/src/lib.rs",
+            "line": 647,
+            "column": 13,
+            "message": "in_pass",
+            "source_line": "        let in_pass = \"doesn't matter\";"
+          },
+          {
+            "path": "codex-rs/third_party/keyring-3.6.3/src/lib.rs",
+            "line": 650,
+            "column": 61,
+            "message": "in_pass",
+            "source_line": "        test_round_trip(\"empty service & user\", &f(\"\", \"\"), in_pass);"
+          },
+          {
+            "path": "codex-rs/third_party/keyring-3.6.3/src/lib.rs",
+            "line": 577,
+            "column": 55,
+            "message": "...: ...",
+            "source_line": "    pub fn test_round_trip(case: &str, entry: &Entry, in_pass: &str) {"
+          },
+          {
+            "path": "codex-rs/third_party/keyring-3.6.3/src/lib.rs",
+            "line": 579,
+            "column": 27,
+            "message": "in_pass",
+            "source_line": "            .set_password(in_pass)"
+          }
+        ]
+      ],
+      "related_locations": [
+        {
+          "path": "codex-rs/third_party/keyring-3.6.3/src/lib.rs",
+          "line": 579,
+          "column": 27,
+          "message": "a password",
+          "source_line": "            .set_password(in_pass)"
+        },
+        {
+          "path": "codex-rs/third_party/keyring-3.6.3/src/lib.rs",
+          "line": 579,
+          "column": 27,
+          "message": null,
+          "source_line": "            .set_password(in_pass)"
+        }
+      ],
+      "category": "keyring_test_or_explicit_example_fixture",
+      "static_classification": "test_or_example_fixture_not_a_product_authentication_secret",
+      "assessment": {
+        "scope": {
+          "kind": "cfg_test",
+          "module_guard_line": 529,
+          "compiled_in_normal_library": false
+        },
+        "fixture_function": "test_empty_service_and_user",
+        "reasoning": "A cfg(test) generic invokes the round-trip helper with deliberately empty service/user fields and a known sample; random fixture names isolate the non-empty fields.",
+        "flow_conclusion": "The SARIF sink is an actual password-storage API argument in the reviewed fixture. The fixed input is intentional data for the shown storage/round-trip/error behavior, not an authentication secret used by the product. The source-to-sink flow does not contradict the individually established compile target and function scope.",
+        "qualification": "Explicit examples can write real test keychain entries when deliberately run; six example findings are not cfg(test). No blanket third-party-directory suppression is justified."
+      },
+      "classification_revised": false
+    },
+    {
+      "annotation_index_zero_based": 8,
+      "sarif_result_index": 89,
+      "alert_id": 761,
+      "rule_id": "rust/hard-coded-cryptographic-value",
+      "message": "This hard-coded value is used as [a password](1).",
+      "primary_location": {
+        "path": "codex-rs/third_party/keyring-3.6.3/src/lib.rs",
+        "line": 671,
+        "column": 51,
+        "message": null,
+        "source_line": "        test_round_trip(\"empty password\", &entry, \"\");"
+      },
+      "thread_flows": [
+        [
+          {
+            "path": "codex-rs/third_party/keyring-3.6.3/src/lib.rs",
+            "line": 671,
+            "column": 51,
+            "message": "\"\"",
+            "source_line": "        test_round_trip(\"empty password\", &entry, \"\");"
+          },
+          {
+            "path": "codex-rs/third_party/keyring-3.6.3/src/lib.rs",
+            "line": 577,
+            "column": 55,
+            "message": "...: ...",
+            "source_line": "    pub fn test_round_trip(case: &str, entry: &Entry, in_pass: &str) {"
+          },
+          {
+            "path": "codex-rs/third_party/keyring-3.6.3/src/lib.rs",
+            "line": 579,
+            "column": 27,
+            "message": "in_pass",
+            "source_line": "            .set_password(in_pass)"
+          }
+        ]
+      ],
+      "related_locations": [
+        {
+          "path": "codex-rs/third_party/keyring-3.6.3/src/lib.rs",
+          "line": 579,
+          "column": 27,
+          "message": "a password",
+          "source_line": "            .set_password(in_pass)"
+        },
+        {
+          "path": "codex-rs/third_party/keyring-3.6.3/src/lib.rs",
+          "line": 579,
+          "column": 27,
+          "message": null,
+          "source_line": "            .set_password(in_pass)"
+        }
+      ],
+      "category": "keyring_test_or_explicit_example_fixture",
+      "static_classification": "test_or_example_fixture_not_a_product_authentication_secret",
+      "assessment": {
+        "scope": {
+          "kind": "cfg_test",
+          "module_guard_line": 529,
+          "compiled_in_normal_library": false
+        },
+        "fixture_function": "test_empty_password",
+        "reasoning": "Tests the empty-password storage boundary with exact retrieval/deletion, or backend-specific rejection. It is not a deployment credential.",
+        "flow_conclusion": "The SARIF sink is an actual password-storage API argument in the reviewed fixture. The fixed input is intentional data for the shown storage/round-trip/error behavior, not an authentication secret used by the product. The source-to-sink flow does not contradict the individually established compile target and function scope.",
+        "qualification": "Explicit examples can write real test keychain entries when deliberately run; six example findings are not cfg(test). No blanket third-party-directory suppression is justified."
+      },
+      "classification_revised": false
+    },
+    {
+      "annotation_index_zero_based": 9,
+      "sarif_result_index": 90,
+      "alert_id": 762,
+      "rule_id": "rust/hard-coded-cryptographic-value",
+      "message": "This hard-coded value is used as [a password](1).",
+      "primary_location": {
+        "path": "codex-rs/third_party/keyring-3.6.3/src/lib.rs",
+        "line": 680,
+        "column": 51,
+        "message": null,
+        "source_line": "        test_round_trip(\"ascii password\", &entry, \"test ascii password\");"
+      },
+      "thread_flows": [
+        [
+          {
+            "path": "codex-rs/third_party/keyring-3.6.3/src/lib.rs",
+            "line": 680,
+            "column": 51,
+            "message": "\"test ascii password\"",
+            "source_line": "        test_round_trip(\"ascii password\", &entry, \"test ascii password\");"
+          },
+          {
+            "path": "codex-rs/third_party/keyring-3.6.3/src/lib.rs",
+            "line": 577,
+            "column": 55,
+            "message": "...: ...",
+            "source_line": "    pub fn test_round_trip(case: &str, entry: &Entry, in_pass: &str) {"
+          },
+          {
+            "path": "codex-rs/third_party/keyring-3.6.3/src/lib.rs",
+            "line": 579,
+            "column": 27,
+            "message": "in_pass",
+            "source_line": "            .set_password(in_pass)"
+          }
+        ]
+      ],
+      "related_locations": [
+        {
+          "path": "codex-rs/third_party/keyring-3.6.3/src/lib.rs",
+          "line": 579,
+          "column": 27,
+          "message": "a password",
+          "source_line": "            .set_password(in_pass)"
+        },
+        {
+          "path": "codex-rs/third_party/keyring-3.6.3/src/lib.rs",
+          "line": 579,
+          "column": 27,
+          "message": null,
+          "source_line": "            .set_password(in_pass)"
+        }
+      ],
+      "category": "keyring_test_or_explicit_example_fixture",
+      "static_classification": "test_or_example_fixture_not_a_product_authentication_secret",
+      "assessment": {
+        "scope": {
+          "kind": "cfg_test",
+          "module_guard_line": 529,
+          "compiled_in_normal_library": false
+        },
+        "fixture_function": "test_round_trip_ascii_password",
+        "reasoning": "Stores a fixed ASCII sample in a fixture entry, asserts its returned value, and deletes the entry; exercises byte-for-byte credential storage.",
+        "flow_conclusion": "The SARIF sink is an actual password-storage API argument in the reviewed fixture. The fixed input is intentional data for the shown storage/round-trip/error behavior, not an authentication secret used by the product. The source-to-sink flow does not contradict the individually established compile target and function scope.",
+        "qualification": "Explicit examples can write real test keychain entries when deliberately run; six example findings are not cfg(test). No blanket third-party-directory suppression is justified."
+      },
+      "classification_revised": false
+    },
+    {
+      "annotation_index_zero_based": 10,
+      "sarif_result_index": 91,
+      "alert_id": 764,
+      "rule_id": "rust/hard-coded-cryptographic-value",
+      "message": "This hard-coded value is used as [a password](1).",
+      "primary_location": {
+        "path": "codex-rs/third_party/keyring-3.6.3/src/lib.rs",
+        "line": 689,
+        "column": 55,
+        "message": null,
+        "source_line": "        test_round_trip(\"non-ascii password\", &entry, \"このきれいな花は桜です\");"
+      },
+      "thread_flows": [
+        [
+          {
+            "path": "codex-rs/third_party/keyring-3.6.3/src/lib.rs",
+            "line": 689,
+            "column": 55,
+            "message": "\"このきれいな花は桜です\"",
+            "source_line": "        test_round_trip(\"non-ascii password\", &entry, \"このきれいな花は桜です\");"
+          },
+          {
+            "path": "codex-rs/third_party/keyring-3.6.3/src/lib.rs",
+            "line": 577,
+            "column": 55,
+            "message": "...: ...",
+            "source_line": "    pub fn test_round_trip(case: &str, entry: &Entry, in_pass: &str) {"
+          },
+          {
+            "path": "codex-rs/third_party/keyring-3.6.3/src/lib.rs",
+            "line": 579,
+            "column": 27,
+            "message": "in_pass",
+            "source_line": "            .set_password(in_pass)"
+          }
+        ]
+      ],
+      "related_locations": [
+        {
+          "path": "codex-rs/third_party/keyring-3.6.3/src/lib.rs",
+          "line": 579,
+          "column": 27,
+          "message": "a password",
+          "source_line": "            .set_password(in_pass)"
+        },
+        {
+          "path": "codex-rs/third_party/keyring-3.6.3/src/lib.rs",
+          "line": 579,
+          "column": 27,
+          "message": null,
+          "source_line": "            .set_password(in_pass)"
+        }
+      ],
+      "category": "keyring_test_or_explicit_example_fixture",
+      "static_classification": "test_or_example_fixture_not_a_product_authentication_secret",
+      "assessment": {
+        "scope": {
+          "kind": "cfg_test",
+          "module_guard_line": 529,
+          "compiled_in_normal_library": false
+        },
+        "fixture_function": "test_round_trip_non_ascii_password",
+        "reasoning": "Stores a fixed Unicode sample in a fixture entry, asserts its returned value, and deletes the entry; exercises encoding rather than authentication.",
+        "flow_conclusion": "The SARIF sink is an actual password-storage API argument in the reviewed fixture. The fixed input is intentional data for the shown storage/round-trip/error behavior, not an authentication secret used by the product. The source-to-sink flow does not contradict the individually established compile target and function scope.",
+        "qualification": "Explicit examples can write real test keychain entries when deliberately run; six example findings are not cfg(test). No blanket third-party-directory suppression is justified."
+      },
+      "classification_revised": false
+    },
+    {
+      "annotation_index_zero_based": 11,
+      "sarif_result_index": 92,
+      "alert_id": 765,
+      "rule_id": "rust/hard-coded-cryptographic-value",
+      "message": "This hard-coded value is used as [a password](1).",
+      "primary_location": {
+        "path": "codex-rs/third_party/keyring-3.6.3/src/lib.rs",
+        "line": 708,
+        "column": 59,
+        "message": null,
+        "source_line": "        test_round_trip(\"initial ascii password\", &entry, \"test ascii password\");"
+      },
+      "thread_flows": [
+        [
+          {
+            "path": "codex-rs/third_party/keyring-3.6.3/src/lib.rs",
+            "line": 708,
+            "column": 59,
+            "message": "\"test ascii password\"",
+            "source_line": "        test_round_trip(\"initial ascii password\", &entry, \"test ascii password\");"
+          },
+          {
+            "path": "codex-rs/third_party/keyring-3.6.3/src/lib.rs",
+            "line": 577,
+            "column": 55,
+            "message": "...: ...",
+            "source_line": "    pub fn test_round_trip(case: &str, entry: &Entry, in_pass: &str) {"
+          },
+          {
+            "path": "codex-rs/third_party/keyring-3.6.3/src/lib.rs",
+            "line": 579,
+            "column": 27,
+            "message": "in_pass",
+            "source_line": "            .set_password(in_pass)"
+          }
+        ]
+      ],
+      "related_locations": [
+        {
+          "path": "codex-rs/third_party/keyring-3.6.3/src/lib.rs",
+          "line": 579,
+          "column": 27,
+          "message": "a password",
+          "source_line": "            .set_password(in_pass)"
+        },
+        {
+          "path": "codex-rs/third_party/keyring-3.6.3/src/lib.rs",
+          "line": 579,
+          "column": 27,
+          "message": null,
+          "source_line": "            .set_password(in_pass)"
+        }
+      ],
+      "category": "keyring_test_or_explicit_example_fixture",
+      "static_classification": "test_or_example_fixture_not_a_product_authentication_secret",
+      "assessment": {
+        "scope": {
+          "kind": "cfg_test",
+          "module_guard_line": 529,
+          "compiled_in_normal_library": false
+        },
+        "fixture_function": "test_update",
+        "reasoning": "Checks replacement of an ASCII fixture with a Unicode fixture and exact retrieval; the cfg(test) generic delegates to a round-trip helper that deletes entries.",
+        "flow_conclusion": "The SARIF sink is an actual password-storage API argument in the reviewed fixture. The fixed input is intentional data for the shown storage/round-trip/error behavior, not an authentication secret used by the product. The source-to-sink flow does not contradict the individually established compile target and function scope.",
+        "qualification": "Explicit examples can write real test keychain entries when deliberately run; six example findings are not cfg(test). No blanket third-party-directory suppression is justified."
+      },
+      "classification_revised": false
+    },
+    {
+      "annotation_index_zero_based": 12,
+      "sarif_result_index": 93,
+      "alert_id": 766,
+      "rule_id": "rust/hard-coded-cryptographic-value",
+      "message": "This hard-coded value is used as [a password](1).",
+      "primary_location": {
+        "path": "codex-rs/third_party/keyring-3.6.3/src/lib.rs",
+        "line": 712,
+        "column": 13,
+        "message": null,
+        "source_line": "            \"このきれいな花は桜です\","
+      },
+      "thread_flows": [
+        [
+          {
+            "path": "codex-rs/third_party/keyring-3.6.3/src/lib.rs",
+            "line": 712,
+            "column": 13,
+            "message": "\"このきれいな花は桜です\"",
+            "source_line": "            \"このきれいな花は桜です\","
+          },
+          {
+            "path": "codex-rs/third_party/keyring-3.6.3/src/lib.rs",
+            "line": 577,
+            "column": 55,
+            "message": "...: ...",
+            "source_line": "    pub fn test_round_trip(case: &str, entry: &Entry, in_pass: &str) {"
+          },
+          {
+            "path": "codex-rs/third_party/keyring-3.6.3/src/lib.rs",
+            "line": 579,
+            "column": 27,
+            "message": "in_pass",
+            "source_line": "            .set_password(in_pass)"
+          }
+        ]
+      ],
+      "related_locations": [
+        {
+          "path": "codex-rs/third_party/keyring-3.6.3/src/lib.rs",
+          "line": 579,
+          "column": 27,
+          "message": "a password",
+          "source_line": "            .set_password(in_pass)"
+        },
+        {
+          "path": "codex-rs/third_party/keyring-3.6.3/src/lib.rs",
+          "line": 579,
+          "column": 27,
+          "message": null,
+          "source_line": "            .set_password(in_pass)"
+        }
+      ],
+      "category": "keyring_test_or_explicit_example_fixture",
+      "static_classification": "test_or_example_fixture_not_a_product_authentication_secret",
+      "assessment": {
+        "scope": {
+          "kind": "cfg_test",
+          "module_guard_line": 529,
+          "compiled_in_normal_library": false
+        },
+        "fixture_function": "test_update",
+        "reasoning": "Checks replacement of an ASCII fixture with a Unicode fixture and exact retrieval; the cfg(test) generic delegates to a round-trip helper that deletes entries.",
+        "flow_conclusion": "The SARIF sink is an actual password-storage API argument in the reviewed fixture. The fixed input is intentional data for the shown storage/round-trip/error behavior, not an authentication secret used by the product. The source-to-sink flow does not contradict the individually established compile target and function scope.",
+        "qualification": "Explicit examples can write real test keychain entries when deliberately run; six example findings are not cfg(test). No blanket third-party-directory suppression is justified."
+      },
+      "classification_revised": false
+    },
+    {
+      "annotation_index_zero_based": 13,
+      "sarif_result_index": 94,
+      "alert_id": 767,
+      "rule_id": "rust/hard-coded-cryptographic-value",
+      "message": "This hard-coded value is used as [a password](1).",
+      "primary_location": {
+        "path": "codex-rs/third_party/keyring-3.6.3/src/lib.rs",
+        "line": 734,
+        "column": 27,
+        "message": null,
+        "source_line": "            .set_password(\"test password for attributes\")"
+      },
+      "thread_flows": [],
+      "related_locations": [
+        {
+          "path": "codex-rs/third_party/keyring-3.6.3/src/lib.rs",
+          "line": 734,
+          "column": 27,
+          "message": "a password",
+          "source_line": "            .set_password(\"test password for attributes\")"
+        }
+      ],
+      "category": "keyring_test_or_explicit_example_fixture",
+      "static_classification": "test_or_example_fixture_not_a_product_authentication_secret",
+      "assessment": {
+        "scope": {
+          "kind": "cfg_test",
+          "module_guard_line": 529,
+          "compiled_in_normal_library": false
+        },
+        "fixture_function": "test_noop_get_update_attributes",
+        "reasoning": "Writes a known fixture only to test attribute APIs before/after creation and after deletion.",
+        "flow_conclusion": "The SARIF sink is an actual password-storage API argument in the reviewed fixture. The fixed input is intentional data for the shown storage/round-trip/error behavior, not an authentication secret used by the product. The source-to-sink flow does not contradict the individually established compile target and function scope.",
+        "qualification": "Explicit examples can write real test keychain entries when deliberately run; six example findings are not cfg(test). No blanket third-party-directory suppression is justified."
+      },
+      "classification_revised": false
+    },
+    {
+      "annotation_index_zero_based": 14,
+      "sarif_result_index": 95,
+      "alert_id": 763,
+      "rule_id": "rust/hard-coded-cryptographic-value",
+      "message": "This hard-coded value is used as [a password](1).",
+      "primary_location": {
+        "path": "codex-rs/third_party/keyring-3.6.3/src/macos.rs",
+        "line": 358,
+        "column": 27,
+        "message": null,
+        "source_line": "            .set_password(\"test get_credential\")"
+      },
+      "thread_flows": [],
+      "related_locations": [
+        {
+          "path": "codex-rs/third_party/keyring-3.6.3/src/macos.rs",
+          "line": 358,
+          "column": 27,
+          "message": "a password",
+          "source_line": "            .set_password(\"test get_credential\")"
+        }
+      ],
+      "category": "keyring_test_or_explicit_example_fixture",
+      "static_classification": "test_or_example_fixture_not_a_product_authentication_secret",
+      "assessment": {
+        "scope": {
+          "kind": "cfg_test",
+          "module_guard_line": 274,
+          "compiled_in_normal_library": false
+        },
+        "fixture_function": "test_get_credential",
+        "reasoning": "Creates a fixture credential, writes the sample to make it exist, checks the platform-specific credential accessor/downcast/attributes, and deletes it.",
+        "flow_conclusion": "The SARIF sink is an actual password-storage API argument in the reviewed fixture. The fixed input is intentional data for the shown storage/round-trip/error behavior, not an authentication secret used by the product. The source-to-sink flow does not contradict the individually established compile target and function scope.",
+        "qualification": "Explicit examples can write real test keychain entries when deliberately run; six example findings are not cfg(test). No blanket third-party-directory suppression is justified."
+      },
+      "classification_revised": false
+    },
+    {
+      "annotation_index_zero_based": 15,
+      "sarif_result_index": 96,
+      "alert_id": 768,
+      "rule_id": "rust/hard-coded-cryptographic-value",
+      "message": "This hard-coded value is used as [a password](1).",
+      "primary_location": {
+        "path": "codex-rs/third_party/keyring-3.6.3/src/mock.rs",
+        "line": 303,
+        "column": 24,
+        "message": null,
+        "source_line": "        let password = \"test ascii password\";"
+      },
+      "thread_flows": [
+        [
+          {
+            "path": "codex-rs/third_party/keyring-3.6.3/src/mock.rs",
+            "line": 303,
+            "column": 24,
+            "message": "\"test ascii password\"",
+            "source_line": "        let password = \"test ascii password\";"
+          },
+          {
+            "path": "codex-rs/third_party/keyring-3.6.3/src/mock.rs",
+            "line": 303,
+            "column": 13,
+            "message": "password",
+            "source_line": "        let password = \"test ascii password\";"
+          },
+          {
+            "path": "codex-rs/third_party/keyring-3.6.3/src/mock.rs",
+            "line": 318,
+            "column": 27,
+            "message": "password",
+            "source_line": "            .set_password(password)"
+          }
+        ]
+      ],
+      "related_locations": [
+        {
+          "path": "codex-rs/third_party/keyring-3.6.3/src/mock.rs",
+          "line": 318,
+          "column": 27,
+          "message": "a password",
+          "source_line": "            .set_password(password)"
+        },
+        {
+          "path": "codex-rs/third_party/keyring-3.6.3/src/mock.rs",
+          "line": 318,
+          "column": 27,
+          "message": null,
+          "source_line": "            .set_password(password)"
+        }
+      ],
+      "category": "keyring_test_or_explicit_example_fixture",
+      "static_classification": "test_or_example_fixture_not_a_product_authentication_secret",
+      "assessment": {
+        "scope": {
+          "kind": "cfg_test",
+          "module_guard_line": 242,
+          "compiled_in_normal_library": false
+        },
+        "fixture_function": "test_set_error",
+        "reasoning": "Uses MockCredential to inject an error, checks the first set_password failure, then verifies the one-shot error cleared on another fixed fixture write.",
+        "flow_conclusion": "The SARIF sink is an actual password-storage API argument in the reviewed fixture. The fixed input is intentional data for the shown storage/round-trip/error behavior, not an authentication secret used by the product. The source-to-sink flow does not contradict the individually established compile target and function scope.",
+        "qualification": "Explicit examples can write real test keychain entries when deliberately run; six example findings are not cfg(test). No blanket third-party-directory suppression is justified."
+      },
+      "classification_revised": false
+    },
+    {
+      "annotation_index_zero_based": 19,
+      "sarif_result_index": 105,
+      "alert_id": 774,
+      "rule_id": "rust/hard-coded-cryptographic-value",
+      "message": "This hard-coded value is used as [a password](1).",
+      "primary_location": {
+        "path": "codex-rs/third_party/keyring-3.6.3/src/secret_service.rs",
+        "line": 712,
+        "column": 27,
+        "message": null,
+        "source_line": "            .set_password(\"test get credential\")"
+      },
+      "thread_flows": [],
+      "related_locations": [
+        {
+          "path": "codex-rs/third_party/keyring-3.6.3/src/secret_service.rs",
+          "line": 712,
+          "column": 27,
+          "message": "a password",
+          "source_line": "            .set_password(\"test get credential\")"
+        }
+      ],
+      "category": "keyring_test_or_explicit_example_fixture",
+      "static_classification": "test_or_example_fixture_not_a_product_authentication_secret",
+      "assessment": {
+        "scope": {
+          "kind": "cfg_test",
+          "module_guard_line": 640,
+          "compiled_in_normal_library": false
+        },
+        "fixture_function": "test_get_credential",
+        "reasoning": "Creates a fixture credential, writes the sample to make it exist, checks the platform-specific credential accessor/downcast/attributes, and deletes it.",
+        "flow_conclusion": "The SARIF sink is an actual password-storage API argument in the reviewed fixture. The fixed input is intentional data for the shown storage/round-trip/error behavior, not an authentication secret used by the product. The source-to-sink flow does not contradict the individually established compile target and function scope.",
+        "qualification": "Explicit examples can write real test keychain entries when deliberately run; six example findings are not cfg(test). No blanket third-party-directory suppression is justified."
+      },
+      "classification_revised": false
+    },
+    {
+      "annotation_index_zero_based": 20,
+      "sarif_result_index": 106,
+      "alert_id": 777,
+      "rule_id": "rust/hard-coded-cryptographic-value",
+      "message": "This hard-coded value is used as [a password](1).",
+      "primary_location": {
+        "path": "codex-rs/third_party/keyring-3.6.3/src/secret_service.rs",
+        "line": 758,
+        "column": 27,
+        "message": null,
+        "source_line": "            .set_password(\"test password for attributes\")"
+      },
+      "thread_flows": [],
+      "related_locations": [
+        {
+          "path": "codex-rs/third_party/keyring-3.6.3/src/secret_service.rs",
+          "line": 758,
+          "column": 27,
+          "message": "a password",
+          "source_line": "            .set_password(\"test password for attributes\")"
+        }
+      ],
+      "category": "keyring_test_or_explicit_example_fixture",
+      "static_classification": "test_or_example_fixture_not_a_product_authentication_secret",
+      "assessment": {
+        "scope": {
+          "kind": "cfg_test",
+          "module_guard_line": 640,
+          "compiled_in_normal_library": false
+        },
+        "fixture_function": "test_get_update_attributes",
+        "reasoning": "Writes a known fixture to test credential metadata reads and updates; isolated entry construction and deletion are explicit.",
+        "flow_conclusion": "The SARIF sink is an actual password-storage API argument in the reviewed fixture. The fixed input is intentional data for the shown storage/round-trip/error behavior, not an authentication secret used by the product. The source-to-sink flow does not contradict the individually established compile target and function scope.",
+        "qualification": "Explicit examples can write real test keychain entries when deliberately run; six example findings are not cfg(test). No blanket third-party-directory suppression is justified."
+      },
+      "classification_revised": false
+    },
+    {
+      "annotation_index_zero_based": 21,
+      "sarif_result_index": 107,
+      "alert_id": 779,
+      "rule_id": "rust/hard-coded-cryptographic-value",
+      "message": "This hard-coded value is used as [a password](1).",
+      "primary_location": {
+        "path": "codex-rs/third_party/keyring-3.6.3/src/secret_service.rs",
+        "line": 802,
+        "column": 24,
+        "message": null,
+        "source_line": "        let password = \"password in new collection\";"
+      },
+      "thread_flows": [
+        [
+          {
+            "path": "codex-rs/third_party/keyring-3.6.3/src/secret_service.rs",
+            "line": 802,
+            "column": 24,
+            "message": "\"password in new collection\"",
+            "source_line": "        let password = \"password in new collection\";"
+          },
+          {
+            "path": "codex-rs/third_party/keyring-3.6.3/src/secret_service.rs",
+            "line": 802,
+            "column": 13,
+            "message": "password",
+            "source_line": "        let password = \"password in new collection\";"
+          },
+          {
+            "path": "codex-rs/third_party/keyring-3.6.3/src/secret_service.rs",
+            "line": 804,
+            "column": 27,
+            "message": "password",
+            "source_line": "            .set_password(password)"
+          }
+        ]
+      ],
+      "related_locations": [
+        {
+          "path": "codex-rs/third_party/keyring-3.6.3/src/secret_service.rs",
+          "line": 804,
+          "column": 27,
+          "message": "a password",
+          "source_line": "            .set_password(password)"
+        },
+        {
+          "path": "codex-rs/third_party/keyring-3.6.3/src/secret_service.rs",
+          "line": 804,
+          "column": 27,
+          "message": null,
+          "source_line": "            .set_password(password)"
+        }
+      ],
+      "category": "keyring_test_or_explicit_example_fixture",
+      "static_classification": "test_or_example_fixture_not_a_product_authentication_secret",
+      "assessment": {
+        "scope": {
+          "kind": "cfg_test",
+          "module_guard_line": 640,
+          "compiled_in_normal_library": false
+        },
+        "fixture_function": "test_create_new_target_collection",
+        "reasoning": "An ignored headless-incompatible #[test] creates a random collection, round-trips its sample, then deletes the credential and collection.",
+        "flow_conclusion": "The SARIF sink is an actual password-storage API argument in the reviewed fixture. The fixed input is intentional data for the shown storage/round-trip/error behavior, not an authentication secret used by the product. The source-to-sink flow does not contradict the individually established compile target and function scope.",
+        "qualification": "Explicit examples can write real test keychain entries when deliberately run; six example findings are not cfg(test). No blanket third-party-directory suppression is justified."
+      },
+      "classification_revised": false
+    },
+    {
+      "annotation_index_zero_based": 22,
+      "sarif_result_index": 108,
+      "alert_id": 780,
+      "rule_id": "rust/hard-coded-cryptographic-value",
+      "message": "This hard-coded value is used as [a password](1).",
+      "primary_location": {
+        "path": "codex-rs/third_party/keyring-3.6.3/src/secret_service.rs",
+        "line": 829,
+        "column": 25,
+        "message": null,
+        "source_line": "        let password1 = \"password for collection 1\";"
+      },
+      "thread_flows": [
+        [
+          {
+            "path": "codex-rs/third_party/keyring-3.6.3/src/secret_service.rs",
+            "line": 829,
+            "column": 25,
+            "message": "\"password for collection 1\"",
+            "source_line": "        let password1 = \"password for collection 1\";"
+          },
+          {
+            "path": "codex-rs/third_party/keyring-3.6.3/src/secret_service.rs",
+            "line": 829,
+            "column": 13,
+            "message": "password1",
+            "source_line": "        let password1 = \"password for collection 1\";"
+          },
+          {
+            "path": "codex-rs/third_party/keyring-3.6.3/src/secret_service.rs",
+            "line": 833,
+            "column": 27,
+            "message": "password1",
+            "source_line": "            .set_password(password1)"
+          }
+        ]
+      ],
+      "related_locations": [
+        {
+          "path": "codex-rs/third_party/keyring-3.6.3/src/secret_service.rs",
+          "line": 833,
+          "column": 27,
+          "message": "a password",
+          "source_line": "            .set_password(password1)"
+        },
+        {
+          "path": "codex-rs/third_party/keyring-3.6.3/src/secret_service.rs",
+          "line": 833,
+          "column": 27,
+          "message": null,
+          "source_line": "            .set_password(password1)"
+        }
+      ],
+      "category": "keyring_test_or_explicit_example_fixture",
+      "static_classification": "test_or_example_fixture_not_a_product_authentication_secret",
+      "assessment": {
+        "scope": {
+          "kind": "cfg_test",
+          "module_guard_line": 640,
+          "compiled_in_normal_library": false
+        },
+        "fixture_function": "test_separate_targets_dont_interfere",
+        "reasoning": "An ignored headless-incompatible #[test] writes three distinct samples to two random collections plus the default collection, verifies isolation, and deletes all fixtures.",
+        "flow_conclusion": "The SARIF sink is an actual password-storage API argument in the reviewed fixture. The fixed input is intentional data for the shown storage/round-trip/error behavior, not an authentication secret used by the product. The source-to-sink flow does not contradict the individually established compile target and function scope.",
+        "qualification": "Explicit examples can write real test keychain entries when deliberately run; six example findings are not cfg(test). No blanket third-party-directory suppression is justified."
+      },
+      "classification_revised": false
+    },
+    {
+      "annotation_index_zero_based": 23,
+      "sarif_result_index": 109,
+      "alert_id": 781,
+      "rule_id": "rust/hard-coded-cryptographic-value",
+      "message": "This hard-coded value is used as [a password](1).",
+      "primary_location": {
+        "path": "codex-rs/third_party/keyring-3.6.3/src/secret_service.rs",
+        "line": 830,
+        "column": 25,
+        "message": null,
+        "source_line": "        let password2 = \"password for collection 2\";"
+      },
+      "thread_flows": [
+        [
+          {
+            "path": "codex-rs/third_party/keyring-3.6.3/src/secret_service.rs",
+            "line": 830,
+            "column": 25,
+            "message": "\"password for collection 2\"",
+            "source_line": "        let password2 = \"password for collection 2\";"
+          },
+          {
+            "path": "codex-rs/third_party/keyring-3.6.3/src/secret_service.rs",
+            "line": 830,
+            "column": 13,
+            "message": "password2",
+            "source_line": "        let password2 = \"password for collection 2\";"
+          },
+          {
+            "path": "codex-rs/third_party/keyring-3.6.3/src/secret_service.rs",
+            "line": 836,
+            "column": 27,
+            "message": "password2",
+            "source_line": "            .set_password(password2)"
+          }
+        ]
+      ],
+      "related_locations": [
+        {
+          "path": "codex-rs/third_party/keyring-3.6.3/src/secret_service.rs",
+          "line": 836,
+          "column": 27,
+          "message": "a password",
+          "source_line": "            .set_password(password2)"
+        },
+        {
+          "path": "codex-rs/third_party/keyring-3.6.3/src/secret_service.rs",
+          "line": 836,
+          "column": 27,
+          "message": null,
+          "source_line": "            .set_password(password2)"
+        }
+      ],
+      "category": "keyring_test_or_explicit_example_fixture",
+      "static_classification": "test_or_example_fixture_not_a_product_authentication_secret",
+      "assessment": {
+        "scope": {
+          "kind": "cfg_test",
+          "module_guard_line": 640,
+          "compiled_in_normal_library": false
+        },
+        "fixture_function": "test_separate_targets_dont_interfere",
+        "reasoning": "An ignored headless-incompatible #[test] writes three distinct samples to two random collections plus the default collection, verifies isolation, and deletes all fixtures.",
+        "flow_conclusion": "The SARIF sink is an actual password-storage API argument in the reviewed fixture. The fixed input is intentional data for the shown storage/round-trip/error behavior, not an authentication secret used by the product. The source-to-sink flow does not contradict the individually established compile target and function scope.",
+        "qualification": "Explicit examples can write real test keychain entries when deliberately run; six example findings are not cfg(test). No blanket third-party-directory suppression is justified."
+      },
+      "classification_revised": false
+    },
+    {
+      "annotation_index_zero_based": 24,
+      "sarif_result_index": 110,
+      "alert_id": 782,
+      "rule_id": "rust/hard-coded-cryptographic-value",
+      "message": "This hard-coded value is used as [a password](1).",
+      "primary_location": {
+        "path": "codex-rs/third_party/keyring-3.6.3/src/secret_service.rs",
+        "line": 831,
+        "column": 25,
+        "message": null,
+        "source_line": "        let password3 = \"password for default collection\";"
+      },
+      "thread_flows": [
+        [
+          {
+            "path": "codex-rs/third_party/keyring-3.6.3/src/secret_service.rs",
+            "line": 831,
+            "column": 25,
+            "message": "\"password for default collecti...",
+            "source_line": "        let password3 = \"password for default collection\";"
+          },
+          {
+            "path": "codex-rs/third_party/keyring-3.6.3/src/secret_service.rs",
+            "line": 831,
+            "column": 13,
+            "message": "password3",
+            "source_line": "        let password3 = \"password for default collection\";"
+          },
+          {
+            "path": "codex-rs/third_party/keyring-3.6.3/src/secret_service.rs",
+            "line": 839,
+            "column": 27,
+            "message": "password3",
+            "source_line": "            .set_password(password3)"
+          }
+        ]
+      ],
+      "related_locations": [
+        {
+          "path": "codex-rs/third_party/keyring-3.6.3/src/secret_service.rs",
+          "line": 839,
+          "column": 27,
+          "message": "a password",
+          "source_line": "            .set_password(password3)"
+        },
+        {
+          "path": "codex-rs/third_party/keyring-3.6.3/src/secret_service.rs",
+          "line": 839,
+          "column": 27,
+          "message": null,
+          "source_line": "            .set_password(password3)"
+        }
+      ],
+      "category": "keyring_test_or_explicit_example_fixture",
+      "static_classification": "test_or_example_fixture_not_a_product_authentication_secret",
+      "assessment": {
+        "scope": {
+          "kind": "cfg_test",
+          "module_guard_line": 640,
+          "compiled_in_normal_library": false
+        },
+        "fixture_function": "test_separate_targets_dont_interfere",
+        "reasoning": "An ignored headless-incompatible #[test] writes three distinct samples to two random collections plus the default collection, verifies isolation, and deletes all fixtures.",
+        "flow_conclusion": "The SARIF sink is an actual password-storage API argument in the reviewed fixture. The fixed input is intentional data for the shown storage/round-trip/error behavior, not an authentication secret used by the product. The source-to-sink flow does not contradict the individually established compile target and function scope.",
+        "qualification": "Explicit examples can write real test keychain entries when deliberately run; six example findings are not cfg(test). No blanket third-party-directory suppression is justified."
+      },
+      "classification_revised": false
+    },
+    {
+      "annotation_index_zero_based": 25,
+      "sarif_result_index": 111,
+      "alert_id": 783,
+      "rule_id": "rust/hard-coded-cryptographic-value",
+      "message": "This hard-coded value is used as [a password](1).",
+      "primary_location": {
+        "path": "codex-rs/third_party/keyring-3.6.3/src/secret_service.rs",
+        "line": 872,
+        "column": 18,
+        "message": null,
+        "source_line": "        let pw = \"test password\";"
+      },
+      "thread_flows": [
+        [
+          {
+            "path": "codex-rs/third_party/keyring-3.6.3/src/secret_service.rs",
+            "line": 872,
+            "column": 18,
+            "message": "\"test password\"",
+            "source_line": "        let pw = \"test password\";"
+          },
+          {
+            "path": "codex-rs/third_party/keyring-3.6.3/src/secret_service.rs",
+            "line": 872,
+            "column": 13,
+            "message": "pw",
+            "source_line": "        let pw = \"test password\";"
+          },
+          {
+            "path": "codex-rs/third_party/keyring-3.6.3/src/secret_service.rs",
+            "line": 875,
+            "column": 32,
+            "message": "pw",
+            "source_line": "        create_v1_entry(&name, pw);"
+          }
+        ]
+      ],
+      "related_locations": [
+        {
+          "path": "codex-rs/third_party/keyring-3.6.3/src/secret_service.rs",
+          "line": 875,
+          "column": 32,
+          "message": "a password",
+          "source_line": "        create_v1_entry(&name, pw);"
+        },
+        {
+          "path": "codex-rs/third_party/keyring-3.6.3/src/secret_service.rs",
+          "line": 875,
+          "column": 32,
+          "message": null,
+          "source_line": "        create_v1_entry(&name, pw);"
+        }
+      ],
+      "category": "keyring_test_or_explicit_example_fixture",
+      "static_classification": "test_or_example_fixture_not_a_product_authentication_secret",
+      "assessment": {
+        "scope": {
+          "kind": "cfg_test",
+          "module_guard_line": 640,
+          "compiled_in_normal_library": false
+        },
+        "fixture_function": "test_legacy_entry",
+        "reasoning": "Creates a legacy-format fixture with a known value, reads it through the newer API, asserts equality, and deletes the entry.",
+        "flow_conclusion": "The SARIF sink is an actual password-storage API argument in the reviewed fixture. The fixed input is intentional data for the shown storage/round-trip/error behavior, not an authentication secret used by the product. The source-to-sink flow does not contradict the individually established compile target and function scope.",
+        "qualification": "Explicit examples can write real test keychain entries when deliberately run; six example findings are not cfg(test). No blanket third-party-directory suppression is justified."
+      },
+      "classification_revised": false
+    },
+    {
+      "annotation_index_zero_based": 26,
+      "sarif_result_index": 112,
+      "alert_id": 784,
+      "rule_id": "rust/hard-coded-cryptographic-value",
+      "message": "This hard-coded value is used as [a password](1).",
+      "primary_location": {
+        "path": "codex-rs/third_party/keyring-3.6.3/src/windows.rs",
+        "line": 736,
+        "column": 27,
+        "message": null,
+        "source_line": "            .set_password(\"test password for attributes\")"
+      },
+      "thread_flows": [],
+      "related_locations": [
+        {
+          "path": "codex-rs/third_party/keyring-3.6.3/src/windows.rs",
+          "line": 736,
+          "column": 27,
+          "message": "a password",
+          "source_line": "            .set_password(\"test password for attributes\")"
+        }
+      ],
+      "category": "keyring_test_or_explicit_example_fixture",
+      "static_classification": "test_or_example_fixture_not_a_product_authentication_secret",
+      "assessment": {
+        "scope": {
+          "kind": "cfg_test",
+          "module_guard_line": 534,
+          "compiled_in_normal_library": false
+        },
+        "fixture_function": "test_get_update_attributes",
+        "reasoning": "Writes a known fixture to test credential metadata reads and updates; isolated entry construction and deletion are explicit.",
+        "flow_conclusion": "The SARIF sink is an actual password-storage API argument in the reviewed fixture. The fixed input is intentional data for the shown storage/round-trip/error behavior, not an authentication secret used by the product. The source-to-sink flow does not contradict the individually established compile target and function scope.",
+        "qualification": "Explicit examples can write real test keychain entries when deliberately run; six example findings are not cfg(test). No blanket third-party-directory suppression is justified."
+      },
+      "classification_revised": false
+    },
+    {
+      "annotation_index_zero_based": 27,
+      "sarif_result_index": 113,
+      "alert_id": 785,
+      "rule_id": "rust/hard-coded-cryptographic-value",
+      "message": "This hard-coded value is used as [a password](1).",
+      "primary_location": {
+        "path": "codex-rs/third_party/keyring-3.6.3/src/windows.rs",
+        "line": 769,
+        "column": 24,
+        "message": null,
+        "source_line": "        let password = \"test get password\";"
+      },
+      "thread_flows": [
+        [
+          {
+            "path": "codex-rs/third_party/keyring-3.6.3/src/windows.rs",
+            "line": 769,
+            "column": 24,
+            "message": "\"test get password\"",
+            "source_line": "        let password = \"test get password\";"
+          },
+          {
+            "path": "codex-rs/third_party/keyring-3.6.3/src/windows.rs",
+            "line": 769,
+            "column": 13,
+            "message": "password",
+            "source_line": "        let password = \"test get password\";"
+          },
+          {
+            "path": "codex-rs/third_party/keyring-3.6.3/src/windows.rs",
+            "line": 771,
+            "column": 27,
+            "message": "password",
+            "source_line": "            .set_password(password)"
+          }
+        ]
+      ],
+      "related_locations": [
+        {
+          "path": "codex-rs/third_party/keyring-3.6.3/src/windows.rs",
+          "line": 771,
+          "column": 27,
+          "message": "a password",
+          "source_line": "            .set_password(password)"
+        },
+        {
+          "path": "codex-rs/third_party/keyring-3.6.3/src/windows.rs",
+          "line": 771,
+          "column": 27,
+          "message": null,
+          "source_line": "            .set_password(password)"
+        }
+      ],
+      "category": "keyring_test_or_explicit_example_fixture",
+      "static_classification": "test_or_example_fixture_not_a_product_authentication_secret",
+      "assessment": {
+        "scope": {
+          "kind": "cfg_test",
+          "module_guard_line": 534,
+          "compiled_in_normal_library": false
+        },
+        "fixture_function": "test_get_credential",
+        "reasoning": "Creates a fixture credential, writes the sample to make it exist, checks the platform-specific credential accessor/downcast/attributes, and deletes it.",
+        "flow_conclusion": "The SARIF sink is an actual password-storage API argument in the reviewed fixture. The fixed input is intentional data for the shown storage/round-trip/error behavior, not an authentication secret used by the product. The source-to-sink flow does not contradict the individually established compile target and function scope.",
+        "qualification": "Explicit examples can write real test keychain entries when deliberately run; six example findings are not cfg(test). No blanket third-party-directory suppression is justified."
+      },
+      "classification_revised": false
+    },
+    {
+      "annotation_index_zero_based": 28,
+      "sarif_result_index": 97,
+      "alert_id": 769,
+      "rule_id": "rust/hard-coded-cryptographic-value",
+      "message": "This hard-coded value is used as [a password](1).",
+      "primary_location": {
+        "path": "codex-rs/third_party/keyring-3.6.3/tests/basic.rs",
+        "line": 28,
+        "column": 19,
+        "message": null,
+        "source_line": "    let in_pass = \"\";"
+      },
+      "thread_flows": [
+        [
+          {
+            "path": "codex-rs/third_party/keyring-3.6.3/tests/basic.rs",
+            "line": 28,
+            "column": 19,
+            "message": "\"\"",
+            "source_line": "    let in_pass = \"\";"
+          },
+          {
+            "path": "codex-rs/third_party/keyring-3.6.3/tests/basic.rs",
+            "line": 28,
+            "column": 9,
+            "message": "in_pass",
+            "source_line": "    let in_pass = \"\";"
+          },
+          {
+            "path": "codex-rs/third_party/keyring-3.6.3/tests/basic.rs",
+            "line": 30,
+            "column": 23,
+            "message": "in_pass",
+            "source_line": "        .set_password(in_pass)"
+          }
+        ]
+      ],
+      "related_locations": [
+        {
+          "path": "codex-rs/third_party/keyring-3.6.3/tests/basic.rs",
+          "line": 30,
+          "column": 23,
+          "message": "a password",
+          "source_line": "        .set_password(in_pass)"
+        },
+        {
+          "path": "codex-rs/third_party/keyring-3.6.3/tests/basic.rs",
+          "line": 30,
+          "column": 23,
+          "message": null,
+          "source_line": "        .set_password(in_pass)"
+        }
+      ],
+      "category": "keyring_test_or_explicit_example_fixture",
+      "static_classification": "test_or_example_fixture_not_a_product_authentication_secret",
+      "assessment": {
+        "scope": {
+          "kind": "manifest_test_target",
+          "manifest": "codex-rs/third_party/keyring-3.6.3/Cargo.toml",
+          "target": "basic",
+          "manifest_lines": [
+            106,
+            112
+          ],
+          "compiled_in_normal_library": false
+        },
+        "fixture_function": "test_empty_password",
+        "reasoning": "Tests the empty-password storage boundary with exact retrieval/deletion, or backend-specific rejection. It is not a deployment credential.",
+        "flow_conclusion": "The SARIF sink is an actual password-storage API argument in the reviewed fixture. The fixed input is intentional data for the shown storage/round-trip/error behavior, not an authentication secret used by the product. The source-to-sink flow does not contradict the individually established compile target and function scope.",
+        "qualification": "Explicit examples can write real test keychain entries when deliberately run; six example findings are not cfg(test). No blanket third-party-directory suppression is justified."
+      },
+      "classification_revised": false
+    },
+    {
+      "annotation_index_zero_based": 29,
+      "sarif_result_index": 98,
+      "alert_id": 770,
+      "rule_id": "rust/hard-coded-cryptographic-value",
+      "message": "This hard-coded value is used as [a password](1).",
+      "primary_location": {
+        "path": "codex-rs/third_party/keyring-3.6.3/tests/basic.rs",
+        "line": 50,
+        "column": 20,
+        "message": null,
+        "source_line": "    let password = \"test ascii password\";"
+      },
+      "thread_flows": [
+        [
+          {
+            "path": "codex-rs/third_party/keyring-3.6.3/tests/basic.rs",
+            "line": 50,
+            "column": 20,
+            "message": "\"test ascii password\"",
+            "source_line": "    let password = \"test ascii password\";"
+          },
+          {
+            "path": "codex-rs/third_party/keyring-3.6.3/tests/basic.rs",
+            "line": 50,
+            "column": 9,
+            "message": "password",
+            "source_line": "    let password = \"test ascii password\";"
+          },
+          {
+            "path": "codex-rs/third_party/keyring-3.6.3/tests/basic.rs",
+            "line": 52,
+            "column": 23,
+            "message": "password",
+            "source_line": "        .set_password(password)"
+          }
+        ]
+      ],
+      "related_locations": [
+        {
+          "path": "codex-rs/third_party/keyring-3.6.3/tests/basic.rs",
+          "line": 52,
+          "column": 23,
+          "message": "a password",
+          "source_line": "        .set_password(password)"
+        },
+        {
+          "path": "codex-rs/third_party/keyring-3.6.3/tests/basic.rs",
+          "line": 52,
+          "column": 23,
+          "message": null,
+          "source_line": "        .set_password(password)"
+        }
+      ],
+      "category": "keyring_test_or_explicit_example_fixture",
+      "static_classification": "test_or_example_fixture_not_a_product_authentication_secret",
+      "assessment": {
+        "scope": {
+          "kind": "manifest_test_target",
+          "manifest": "codex-rs/third_party/keyring-3.6.3/Cargo.toml",
+          "target": "basic",
+          "manifest_lines": [
+            106,
+            112
+          ],
+          "compiled_in_normal_library": false
+        },
+        "fixture_function": "test_round_trip_ascii_password",
+        "reasoning": "Stores a fixed ASCII sample in a fixture entry, asserts its returned value, and deletes the entry; exercises byte-for-byte credential storage.",
+        "flow_conclusion": "The SARIF sink is an actual password-storage API argument in the reviewed fixture. The fixed input is intentional data for the shown storage/round-trip/error behavior, not an authentication secret used by the product. The source-to-sink flow does not contradict the individually established compile target and function scope.",
+        "qualification": "Explicit examples can write real test keychain entries when deliberately run; six example findings are not cfg(test). No blanket third-party-directory suppression is justified."
+      },
+      "classification_revised": false
+    },
+    {
+      "annotation_index_zero_based": 30,
+      "sarif_result_index": 99,
+      "alert_id": 771,
+      "rule_id": "rust/hard-coded-cryptographic-value",
+      "message": "This hard-coded value is used as [a password](1).",
+      "primary_location": {
+        "path": "codex-rs/third_party/keyring-3.6.3/tests/basic.rs",
+        "line": 74,
+        "column": 20,
+        "message": null,
+        "source_line": "    let password = \"このきれいな花は桜です\";"
+      },
+      "thread_flows": [
+        [
+          {
+            "path": "codex-rs/third_party/keyring-3.6.3/tests/basic.rs",
+            "line": 74,
+            "column": 20,
+            "message": "\"このきれいな花は桜です\"",
+            "source_line": "    let password = \"このきれいな花は桜です\";"
+          },
+          {
+            "path": "codex-rs/third_party/keyring-3.6.3/tests/basic.rs",
+            "line": 74,
+            "column": 9,
+            "message": "password",
+            "source_line": "    let password = \"このきれいな花は桜です\";"
+          },
+          {
+            "path": "codex-rs/third_party/keyring-3.6.3/tests/basic.rs",
+            "line": 76,
+            "column": 23,
+            "message": "password",
+            "source_line": "        .set_password(password)"
+          }
+        ]
+      ],
+      "related_locations": [
+        {
+          "path": "codex-rs/third_party/keyring-3.6.3/tests/basic.rs",
+          "line": 76,
+          "column": 23,
+          "message": "a password",
+          "source_line": "        .set_password(password)"
+        },
+        {
+          "path": "codex-rs/third_party/keyring-3.6.3/tests/basic.rs",
+          "line": 76,
+          "column": 23,
+          "message": null,
+          "source_line": "        .set_password(password)"
+        }
+      ],
+      "category": "keyring_test_or_explicit_example_fixture",
+      "static_classification": "test_or_example_fixture_not_a_product_authentication_secret",
+      "assessment": {
+        "scope": {
+          "kind": "manifest_test_target",
+          "manifest": "codex-rs/third_party/keyring-3.6.3/Cargo.toml",
+          "target": "basic",
+          "manifest_lines": [
+            106,
+            112
+          ],
+          "compiled_in_normal_library": false
+        },
+        "fixture_function": "test_round_trip_non_ascii_password",
+        "reasoning": "Stores a fixed Unicode sample in a fixture entry, asserts its returned value, and deletes the entry; exercises encoding rather than authentication.",
+        "flow_conclusion": "The SARIF sink is an actual password-storage API argument in the reviewed fixture. The fixed input is intentional data for the shown storage/round-trip/error behavior, not an authentication secret used by the product. The source-to-sink flow does not contradict the individually established compile target and function scope.",
+        "qualification": "Explicit examples can write real test keychain entries when deliberately run; six example findings are not cfg(test). No blanket third-party-directory suppression is justified."
+      },
+      "classification_revised": false
+    },
+    {
+      "annotation_index_zero_based": 31,
+      "sarif_result_index": 100,
+      "alert_id": 772,
+      "rule_id": "rust/hard-coded-cryptographic-value",
+      "message": "This hard-coded value is used as [a password](1).",
+      "primary_location": {
+        "path": "codex-rs/third_party/keyring-3.6.3/tests/basic.rs",
+        "line": 123,
+        "column": 20,
+        "message": null,
+        "source_line": "    let password = \"test ascii password\";"
+      },
+      "thread_flows": [
+        [
+          {
+            "path": "codex-rs/third_party/keyring-3.6.3/tests/basic.rs",
+            "line": 123,
+            "column": 20,
+            "message": "\"test ascii password\"",
+            "source_line": "    let password = \"test ascii password\";"
+          },
+          {
+            "path": "codex-rs/third_party/keyring-3.6.3/tests/basic.rs",
+            "line": 123,
+            "column": 9,
+            "message": "password",
+            "source_line": "    let password = \"test ascii password\";"
+          },
+          {
+            "path": "codex-rs/third_party/keyring-3.6.3/tests/basic.rs",
+            "line": 125,
+            "column": 23,
+            "message": "password",
+            "source_line": "        .set_password(password)"
+          }
+        ]
+      ],
+      "related_locations": [
+        {
+          "path": "codex-rs/third_party/keyring-3.6.3/tests/basic.rs",
+          "line": 125,
+          "column": 23,
+          "message": "a password",
+          "source_line": "        .set_password(password)"
+        },
+        {
+          "path": "codex-rs/third_party/keyring-3.6.3/tests/basic.rs",
+          "line": 125,
+          "column": 23,
+          "message": null,
+          "source_line": "        .set_password(password)"
+        }
+      ],
+      "category": "keyring_test_or_explicit_example_fixture",
+      "static_classification": "test_or_example_fixture_not_a_product_authentication_secret",
+      "assessment": {
+        "scope": {
+          "kind": "manifest_test_target",
+          "manifest": "codex-rs/third_party/keyring-3.6.3/Cargo.toml",
+          "target": "basic",
+          "manifest_lines": [
+            106,
+            112
+          ],
+          "compiled_in_normal_library": false
+        },
+        "fixture_function": "test_update",
+        "reasoning": "Checks replacement of an ASCII fixture with a Unicode fixture and exact retrieval; the cfg(test) generic delegates to a round-trip helper that deletes entries.",
+        "flow_conclusion": "The SARIF sink is an actual password-storage API argument in the reviewed fixture. The fixed input is intentional data for the shown storage/round-trip/error behavior, not an authentication secret used by the product. The source-to-sink flow does not contradict the individually established compile target and function scope.",
+        "qualification": "Explicit examples can write real test keychain entries when deliberately run; six example findings are not cfg(test). No blanket third-party-directory suppression is justified."
+      },
+      "classification_revised": false
+    },
+    {
+      "annotation_index_zero_based": 32,
+      "sarif_result_index": 101,
+      "alert_id": 773,
+      "rule_id": "rust/hard-coded-cryptographic-value",
+      "message": "This hard-coded value is used as [a password](1).",
+      "primary_location": {
+        "path": "codex-rs/third_party/keyring-3.6.3/tests/basic.rs",
+        "line": 132,
+        "column": 20,
+        "message": null,
+        "source_line": "    let password = \"このきれいな花は桜です\";"
+      },
+      "thread_flows": [
+        [
+          {
+            "path": "codex-rs/third_party/keyring-3.6.3/tests/basic.rs",
+            "line": 132,
+            "column": 20,
+            "message": "\"このきれいな花は桜です\"",
+            "source_line": "    let password = \"このきれいな花は桜です\";"
+          },
+          {
+            "path": "codex-rs/third_party/keyring-3.6.3/tests/basic.rs",
+            "line": 132,
+            "column": 9,
+            "message": "password",
+            "source_line": "    let password = \"このきれいな花は桜です\";"
+          },
+          {
+            "path": "codex-rs/third_party/keyring-3.6.3/tests/basic.rs",
+            "line": 134,
+            "column": 23,
+            "message": "password",
+            "source_line": "        .set_password(password)"
+          }
+        ]
+      ],
+      "related_locations": [
+        {
+          "path": "codex-rs/third_party/keyring-3.6.3/tests/basic.rs",
+          "line": 134,
+          "column": 23,
+          "message": "a password",
+          "source_line": "        .set_password(password)"
+        },
+        {
+          "path": "codex-rs/third_party/keyring-3.6.3/tests/basic.rs",
+          "line": 134,
+          "column": 23,
+          "message": null,
+          "source_line": "        .set_password(password)"
+        }
+      ],
+      "category": "keyring_test_or_explicit_example_fixture",
+      "static_classification": "test_or_example_fixture_not_a_product_authentication_secret",
+      "assessment": {
+        "scope": {
+          "kind": "manifest_test_target",
+          "manifest": "codex-rs/third_party/keyring-3.6.3/Cargo.toml",
+          "target": "basic",
+          "manifest_lines": [
+            106,
+            112
+          ],
+          "compiled_in_normal_library": false
+        },
+        "fixture_function": "test_update",
+        "reasoning": "Checks replacement of an ASCII fixture with a Unicode fixture and exact retrieval; the cfg(test) generic delegates to a round-trip helper that deletes entries.",
+        "flow_conclusion": "The SARIF sink is an actual password-storage API argument in the reviewed fixture. The fixed input is intentional data for the shown storage/round-trip/error behavior, not an authentication secret used by the product. The source-to-sink flow does not contradict the individually established compile target and function scope.",
+        "qualification": "Explicit examples can write real test keychain entries when deliberately run; six example findings are not cfg(test). No blanket third-party-directory suppression is justified."
+      },
+      "classification_revised": false
+    },
+    {
+      "annotation_index_zero_based": 33,
+      "sarif_result_index": 102,
+      "alert_id": 775,
+      "rule_id": "rust/hard-coded-cryptographic-value",
+      "message": "This hard-coded value is used as [a password](1).",
+      "primary_location": {
+        "path": "codex-rs/third_party/keyring-3.6.3/tests/threading.rs",
+        "line": 15,
+        "column": 24,
+        "message": null,
+        "source_line": "        let password = \"test ascii password\";"
+      },
+      "thread_flows": [
+        [
+          {
+            "path": "codex-rs/third_party/keyring-3.6.3/tests/threading.rs",
+            "line": 15,
+            "column": 24,
+            "message": "\"test ascii password\"",
+            "source_line": "        let password = \"test ascii password\";"
+          },
+          {
+            "path": "codex-rs/third_party/keyring-3.6.3/tests/threading.rs",
+            "line": 15,
+            "column": 13,
+            "message": "password",
+            "source_line": "        let password = \"test ascii password\";"
+          },
+          {
+            "path": "codex-rs/third_party/keyring-3.6.3/tests/threading.rs",
+            "line": 17,
+            "column": 27,
+            "message": "password",
+            "source_line": "            .set_password(password)"
+          }
+        ]
+      ],
+      "related_locations": [
+        {
+          "path": "codex-rs/third_party/keyring-3.6.3/tests/threading.rs",
+          "line": 17,
+          "column": 27,
+          "message": "a password",
+          "source_line": "            .set_password(password)"
+        },
+        {
+          "path": "codex-rs/third_party/keyring-3.6.3/tests/threading.rs",
+          "line": 17,
+          "column": 27,
+          "message": null,
+          "source_line": "            .set_password(password)"
+        }
+      ],
+      "category": "keyring_test_or_explicit_example_fixture",
+      "static_classification": "test_or_example_fixture_not_a_product_authentication_secret",
+      "assessment": {
+        "scope": {
+          "kind": "manifest_test_target",
+          "manifest": "codex-rs/third_party/keyring-3.6.3/Cargo.toml",
+          "target": "threading",
+          "manifest_lines": [
+            106,
+            112
+          ],
+          "compiled_in_normal_library": false
+        },
+        "fixture_function": "test_create_then_move",
+        "reasoning": "A manifest-declared integration #[test] moves a random-name fixture to a worker thread, round-trips/replaces two known values, deletes it, and joins the thread.",
+        "flow_conclusion": "The SARIF sink is an actual password-storage API argument in the reviewed fixture. The fixed input is intentional data for the shown storage/round-trip/error behavior, not an authentication secret used by the product. The source-to-sink flow does not contradict the individually established compile target and function scope.",
+        "qualification": "Explicit examples can write real test keychain entries when deliberately run; six example findings are not cfg(test). No blanket third-party-directory suppression is justified."
+      },
+      "classification_revised": false
+    },
+    {
+      "annotation_index_zero_based": 34,
+      "sarif_result_index": 103,
+      "alert_id": 776,
+      "rule_id": "rust/hard-coded-cryptographic-value",
+      "message": "This hard-coded value is used as [a password](1).",
+      "primary_location": {
+        "path": "codex-rs/third_party/keyring-3.6.3/tests/threading.rs",
+        "line": 24,
+        "column": 24,
+        "message": null,
+        "source_line": "        let password = \"このきれいな花は桜です\";"
+      },
+      "thread_flows": [
+        [
+          {
+            "path": "codex-rs/third_party/keyring-3.6.3/tests/threading.rs",
+            "line": 24,
+            "column": 24,
+            "message": "\"このきれいな花は桜です\"",
+            "source_line": "        let password = \"このきれいな花は桜です\";"
+          },
+          {
+            "path": "codex-rs/third_party/keyring-3.6.3/tests/threading.rs",
+            "line": 24,
+            "column": 13,
+            "message": "password",
+            "source_line": "        let password = \"このきれいな花は桜です\";"
+          },
+          {
+            "path": "codex-rs/third_party/keyring-3.6.3/tests/threading.rs",
+            "line": 26,
+            "column": 27,
+            "message": "password",
+            "source_line": "            .set_password(password)"
+          }
+        ]
+      ],
+      "related_locations": [
+        {
+          "path": "codex-rs/third_party/keyring-3.6.3/tests/threading.rs",
+          "line": 26,
+          "column": 27,
+          "message": "a password",
+          "source_line": "            .set_password(password)"
+        },
+        {
+          "path": "codex-rs/third_party/keyring-3.6.3/tests/threading.rs",
+          "line": 26,
+          "column": 27,
+          "message": null,
+          "source_line": "            .set_password(password)"
+        }
+      ],
+      "category": "keyring_test_or_explicit_example_fixture",
+      "static_classification": "test_or_example_fixture_not_a_product_authentication_secret",
+      "assessment": {
+        "scope": {
+          "kind": "manifest_test_target",
+          "manifest": "codex-rs/third_party/keyring-3.6.3/Cargo.toml",
+          "target": "threading",
+          "manifest_lines": [
+            106,
+            112
+          ],
+          "compiled_in_normal_library": false
+        },
+        "fixture_function": "test_create_then_move",
+        "reasoning": "A manifest-declared integration #[test] moves a random-name fixture to a worker thread, round-trips/replaces two known values, deletes it, and joins the thread.",
+        "flow_conclusion": "The SARIF sink is an actual password-storage API argument in the reviewed fixture. The fixed input is intentional data for the shown storage/round-trip/error behavior, not an authentication secret used by the product. The source-to-sink flow does not contradict the individually established compile target and function scope.",
+        "qualification": "Explicit examples can write real test keychain entries when deliberately run; six example findings are not cfg(test). No blanket third-party-directory suppression is justified."
+      },
+      "classification_revised": false
+    },
+    {
+      "annotation_index_zero_based": 35,
+      "sarif_result_index": 104,
+      "alert_id": 778,
+      "rule_id": "rust/hard-coded-cryptographic-value",
+      "message": "This hard-coded value is used as [a password](1).",
+      "primary_location": {
+        "path": "codex-rs/third_party/keyring-3.6.3/tests/threading.rs",
+        "line": 82,
+        "column": 20,
+        "message": null,
+        "source_line": "    let password = \"test ascii password\";"
+      },
+      "thread_flows": [
+        [
+          {
+            "path": "codex-rs/third_party/keyring-3.6.3/tests/threading.rs",
+            "line": 82,
+            "column": 20,
+            "message": "\"test ascii password\"",
+            "source_line": "    let password = \"test ascii password\";"
+          },
+          {
+            "path": "codex-rs/third_party/keyring-3.6.3/tests/threading.rs",
+            "line": 82,
+            "column": 9,
+            "message": "password",
+            "source_line": "    let password = \"test ascii password\";"
+          },
+          {
+            "path": "codex-rs/third_party/keyring-3.6.3/tests/threading.rs",
+            "line": 84,
+            "column": 23,
+            "message": "password",
+            "source_line": "        .set_password(password)"
+          }
+        ]
+      ],
+      "related_locations": [
+        {
+          "path": "codex-rs/third_party/keyring-3.6.3/tests/threading.rs",
+          "line": 84,
+          "column": 23,
+          "message": "a password",
+          "source_line": "        .set_password(password)"
+        },
+        {
+          "path": "codex-rs/third_party/keyring-3.6.3/tests/threading.rs",
+          "line": 84,
+          "column": 23,
+          "message": null,
+          "source_line": "        .set_password(password)"
+        }
+      ],
+      "category": "keyring_test_or_explicit_example_fixture",
+      "static_classification": "test_or_example_fixture_not_a_product_authentication_secret",
+      "assessment": {
+        "scope": {
+          "kind": "manifest_test_target",
+          "manifest": "codex-rs/third_party/keyring-3.6.3/Cargo.toml",
+          "target": "threading",
+          "manifest_lines": [
+            106,
+            112
+          ],
+          "compiled_in_normal_library": false
+        },
+        "fixture_function": "test_create_set_then_move",
+        "reasoning": "A manifest-declared non-Windows integration #[test] writes a known value before moving its fixture to a worker; the worker checks retrieval/deletion and is joined.",
+        "flow_conclusion": "The SARIF sink is an actual password-storage API argument in the reviewed fixture. The fixed input is intentional data for the shown storage/round-trip/error behavior, not an authentication secret used by the product. The source-to-sink flow does not contradict the individually established compile target and function scope.",
+        "qualification": "Explicit examples can write real test keychain entries when deliberately run; six example findings are not cfg(test). No blanket third-party-directory suppression is justified."
+      },
+      "classification_revised": false
+    },
+    {
+      "annotation_index_zero_based": 36,
+      "sarif_result_index": 152,
+      "alert_id": 786,
+      "rule_id": "rust/hard-coded-cryptographic-value",
+      "message": "This hard-coded value is used as [a salt](1).",
+      "primary_location": {
+        "path": "codex-rs/third_party/matrix-sdk-crypto-0.18.0/src/file_encryption/key_export.rs",
+        "line": 188,
+        "column": 20,
+        "message": null,
+        "source_line": "    let mut salt = [0u8; SALT_SIZE];"
+      },
+      "thread_flows": [
+        [
+          {
+            "path": "codex-rs/third_party/matrix-sdk-crypto-0.18.0/src/file_encryption/key_export.rs",
+            "line": 188,
+            "column": 20,
+            "message": "[0u8; SALT_SIZE]",
+            "source_line": "    let mut salt = [0u8; SALT_SIZE];"
+          },
+          {
+            "path": "codex-rs/third_party/matrix-sdk-crypto-0.18.0/src/file_encryption/key_export.rs",
+            "line": 188,
+            "column": 9,
+            "message": "mut salt",
+            "source_line": "    let mut salt = [0u8; SALT_SIZE];"
+          },
+          {
+            "path": "codex-rs/third_party/matrix-sdk-crypto-0.18.0/src/file_encryption/key_export.rs",
+            "line": 210,
+            "column": 68,
+            "message": "salt",
+            "source_line": "    let key = AesHmacSha2Key::from_passphrase(passphrase, rounds, &salt);"
+          },
+          {
+            "path": "codex-rs/third_party/matrix-sdk-crypto-0.18.0/src/file_encryption/key_export.rs",
+            "line": 210,
+            "column": 67,
+            "message": "&salt",
+            "source_line": "    let key = AesHmacSha2Key::from_passphrase(passphrase, rounds, &salt);"
+          }
+        ]
+      ],
+      "related_locations": [
+        {
+          "path": "codex-rs/third_party/matrix-sdk-crypto-0.18.0/src/file_encryption/key_export.rs",
+          "line": 210,
+          "column": 67,
+          "message": "a salt",
+          "source_line": "    let key = AesHmacSha2Key::from_passphrase(passphrase, rounds, &salt);"
+        },
+        {
+          "path": "codex-rs/third_party/matrix-sdk-crypto-0.18.0/src/file_encryption/key_export.rs",
+          "line": 210,
+          "column": 67,
+          "message": null,
+          "source_line": "    let key = AesHmacSha2Key::from_passphrase(passphrase, rounds, &salt);"
+        }
+      ],
+      "category": "salt_initializer_overwritten_before_successful_use",
+      "static_classification": "initialized_output_buffer_overwritten_before_cryptographic_use",
+      "assessment": {
+        "flow_conclusion": "The reported flow runs from the zero-initialized salt buffer at line 188 to the KDF argument at line 210. It omits the intervening full-buffer write by decoded.read_exact(&mut salt)? at line 193. A short read returns an error before the KDF. Successful decryption uses the serialized salt; an all-zero input salt would be input data, not this initializer surviving unchanged.",
+        "guards": [
+          {
+            "path": "codex-rs/third_party/matrix-sdk-crypto-0.18.0/src/file_encryption/key_export.rs",
+            "lines": [
+              183,
+              210
+            ],
+            "relevant_line": 193
+          }
+        ],
+        "encryption_countercheck": "encrypt_helper calls rng.fill_bytes(&mut salt) at line 163 before its KDF at line 165.",
+        "qualification": "This resolves the flagged initializer-to-KDF path only; it is not a general cryptographic review or native test run."
+      },
+      "classification_revised": false
+    },
+    {
+      "annotation_index_zero_based": 37,
+      "sarif_result_index": 8,
+      "alert_id": 790,
+      "rule_id": "rust/access-invalid-pointer",
+      "message": "This operation dereferences a pointer that may be [invalid](1).",
+      "primary_location": {
+        "path": "codex-rs/utils/path-utils/src/private_state_windows.rs",
+        "line": 341,
+        "column": 51,
+        "message": null,
+        "source_line": "        let header = unsafe { ptr::read_unaligned(ace.cast::<ACE_HEADER>()) };"
+      },
+      "thread_flows": [
+        [
+          {
+            "path": "codex-rs/utils/path-utils/src/private_state_windows.rs",
+            "line": 328,
+            "column": 23,
+            "message": "...::null_mut(...)",
+            "source_line": "        let mut ace = ptr::null_mut();"
+          },
+          {
+            "path": "codex-rs/utils/path-utils/src/private_state_windows.rs",
+            "line": 328,
+            "column": 13,
+            "message": "mut ace",
+            "source_line": "        let mut ace = ptr::null_mut();"
+          },
+          {
+            "path": "codex-rs/utils/path-utils/src/private_state_windows.rs",
+            "line": 341,
+            "column": 51,
+            "message": "ace",
+            "source_line": "        let header = unsafe { ptr::read_unaligned(ace.cast::<ACE_HEADER>()) };"
+          },
+          {
+            "path": "codex-rs/utils/path-utils/src/private_state_windows.rs",
+            "line": 341,
+            "column": 51,
+            "message": "ace.cast()",
+            "source_line": "        let header = unsafe { ptr::read_unaligned(ace.cast::<ACE_HEADER>()) };"
+          },
+          {
+            "path": "codex-rs/utils/path-utils/src/private_state_windows.rs",
+            "line": 341,
+            "column": 51,
+            "message": "ace.cast()",
+            "source_line": "        let header = unsafe { ptr::read_unaligned(ace.cast::<ACE_HEADER>()) };"
+          }
+        ]
+      ],
+      "related_locations": [
+        {
+          "path": "codex-rs/utils/path-utils/src/private_state_windows.rs",
+          "line": 328,
+          "column": 23,
+          "message": "invalid",
+          "source_line": "        let mut ace = ptr::null_mut();"
+        },
+        {
+          "path": "codex-rs/utils/path-utils/src/private_state_windows.rs",
+          "line": 328,
+          "column": 23,
+          "message": null,
+          "source_line": "        let mut ace = ptr::null_mut();"
+        }
+      ],
+      "category": "guarded_win32_out_parameter_read",
+      "static_classification": "guarded_win32_out_pointer_read",
+      "assessment": {
+        "flow_conclusion": "The reported path starts at null_mut and jumps to read_unaligned. Actual source calls GetAce with &mut ace, rejects failed GetAce or a null result, and checks the requested span against a validated live ACL before the read. The unchanged-null path shown by the SARIF cannot reach the read through these guards. Source inspection also checked allocation lifetime and full bounds, rather than assuming non-null implies validity.",
+        "guard_and_lifetime_reasoning": [
+          "GetSecurityInfo requests OWNER and DACL, requires ERROR_SUCCESS and non-null descriptor/owner/dacl at253-276.",
+          "The returned descriptor allocation remains live through the entire synchronous DACL inspection; LocalFree occurs at282 after inspection, not before.",
+          "IsValidAcl succeeds and GetAclInformation(AclSizeInformation) supplies AclBytesInUse before enumeration at289-309.",
+          "Each GetAce must return success and a non-null pointer at327-332.",
+          "ace_span_fits_acl validates the requested header span at333-340; its checked_add arithmetic rejects overflow, pointers before the first ACE, and spans beyond bytes in use at384-402.",
+          "ptr::read_unaligned copies a value without creating a misaligned Rust reference."
+        ],
+        "qualification": "Conclusion relies on the documented Win32 success/out-parameter/allocation contracts. No native Windows execution was performed and no alert state is changed."
+      },
+      "classification_revised": false
+    },
+    {
+      "annotation_index_zero_based": 38,
+      "sarif_result_index": 9,
+      "alert_id": 791,
+      "rule_id": "rust/access-invalid-pointer",
+      "message": "This operation dereferences a pointer that may be [invalid](1).",
+      "primary_location": {
+        "path": "codex-rs/utils/path-utils/src/private_state_windows.rs",
+        "line": 368,
+        "column": 52,
+        "message": null,
+        "source_line": "        let allowed = unsafe { ptr::read_unaligned(ace.cast::<ACCESS_ALLOWED_ACE>()) };"
+      },
+      "thread_flows": [
+        [
+          {
+            "path": "codex-rs/utils/path-utils/src/private_state_windows.rs",
+            "line": 328,
+            "column": 23,
+            "message": "...::null_mut(...)",
+            "source_line": "        let mut ace = ptr::null_mut();"
+          },
+          {
+            "path": "codex-rs/utils/path-utils/src/private_state_windows.rs",
+            "line": 328,
+            "column": 13,
+            "message": "mut ace",
+            "source_line": "        let mut ace = ptr::null_mut();"
+          },
+          {
+            "path": "codex-rs/utils/path-utils/src/private_state_windows.rs",
+            "line": 368,
+            "column": 52,
+            "message": "ace",
+            "source_line": "        let allowed = unsafe { ptr::read_unaligned(ace.cast::<ACCESS_ALLOWED_ACE>()) };"
+          },
+          {
+            "path": "codex-rs/utils/path-utils/src/private_state_windows.rs",
+            "line": 368,
+            "column": 52,
+            "message": "ace.cast()",
+            "source_line": "        let allowed = unsafe { ptr::read_unaligned(ace.cast::<ACCESS_ALLOWED_ACE>()) };"
+          },
+          {
+            "path": "codex-rs/utils/path-utils/src/private_state_windows.rs",
+            "line": 368,
+            "column": 52,
+            "message": "ace.cast()",
+            "source_line": "        let allowed = unsafe { ptr::read_unaligned(ace.cast::<ACCESS_ALLOWED_ACE>()) };"
+          }
+        ]
+      ],
+      "related_locations": [
+        {
+          "path": "codex-rs/utils/path-utils/src/private_state_windows.rs",
+          "line": 328,
+          "column": 23,
+          "message": "invalid",
+          "source_line": "        let mut ace = ptr::null_mut();"
+        },
+        {
+          "path": "codex-rs/utils/path-utils/src/private_state_windows.rs",
+          "line": 328,
+          "column": 23,
+          "message": null,
+          "source_line": "        let mut ace = ptr::null_mut();"
+        }
+      ],
+      "category": "guarded_win32_out_parameter_read",
+      "static_classification": "guarded_win32_out_pointer_read",
+      "assessment": {
+        "flow_conclusion": "The reported path starts at null_mut and jumps to read_unaligned. Actual source calls GetAce with &mut ace, rejects failed GetAce or a null result, and checks the requested span against a validated live ACL before the read. The unchanged-null path shown by the SARIF cannot reach the read through these guards. Source inspection also checked allocation lifetime and full bounds, rather than assuming non-null implies validity.",
+        "guard_and_lifetime_reasoning": [
+          "GetSecurityInfo requests OWNER and DACL, requires ERROR_SUCCESS and non-null descriptor/owner/dacl at253-276.",
+          "The returned descriptor allocation remains live through the entire synchronous DACL inspection; LocalFree occurs at282 after inspection, not before.",
+          "IsValidAcl succeeds and GetAclInformation(AclSizeInformation) supplies AclBytesInUse before enumeration at289-309.",
+          "Each GetAce must return success and a non-null pointer at327-332.",
+          "ace_span_fits_acl validates the requested header span at333-340; its checked_add arithmetic rejects overflow, pointers before the first ACE, and spans beyond bytes in use at384-402.",
+          "ptr::read_unaligned copies a value without creating a misaligned Rust reference.",
+          "Before reading ACCESS_ALLOWED_ACE, AceSize must cover the full struct and full ACE span must fit the ACL at342-348.",
+          "Allowed-type filtering and complete SID header/subauthority bounds precede SID API reads at349-365; the fixed Mask fields are within that already validated span.",
+          "The CurrentUser SID buffer stays owned by the surrounding CurrentUser value for the full inspection."
+        ],
+        "qualification": "Conclusion relies on the documented Win32 success/out-parameter/allocation contracts. No native Windows execution was performed and no alert state is changed."
+      },
+      "classification_revised": false
+    },
+    {
+      "annotation_index_zero_based": 39,
+      "sarif_result_index": 7,
+      "alert_id": 792,
+      "rule_id": "rust/access-invalid-pointer",
+      "message": "This operation dereferences a pointer that may be [invalid](1).",
+      "primary_location": {
+        "path": "codex-rs/utils/path-utils/src/private_state_windows_security_tests.rs",
+        "line": 108,
+        "column": 47,
+        "message": null,
+        "source_line": "    let header = unsafe { ptr::read_unaligned(ace.cast::<ACE_HEADER>()) };"
+      },
+      "thread_flows": [
+        [
+          {
+            "path": "codex-rs/utils/path-utils/src/private_state_windows_security_tests.rs",
+            "line": 60,
+            "column": 19,
+            "message": "...::null_mut(...)",
+            "source_line": "    let mut ace = ptr::null_mut();"
+          },
+          {
+            "path": "codex-rs/utils/path-utils/src/private_state_windows_security_tests.rs",
+            "line": 60,
+            "column": 9,
+            "message": "mut ace",
+            "source_line": "    let mut ace = ptr::null_mut();"
+          },
+          {
+            "path": "codex-rs/utils/path-utils/src/private_state_windows_security_tests.rs",
+            "line": 108,
+            "column": 47,
+            "message": "ace",
+            "source_line": "    let header = unsafe { ptr::read_unaligned(ace.cast::<ACE_HEADER>()) };"
+          },
+          {
+            "path": "codex-rs/utils/path-utils/src/private_state_windows_security_tests.rs",
+            "line": 108,
+            "column": 47,
+            "message": "ace.cast()",
+            "source_line": "    let header = unsafe { ptr::read_unaligned(ace.cast::<ACE_HEADER>()) };"
+          },
+          {
+            "path": "codex-rs/utils/path-utils/src/private_state_windows_security_tests.rs",
+            "line": 108,
+            "column": 47,
+            "message": "ace.cast()",
+            "source_line": "    let header = unsafe { ptr::read_unaligned(ace.cast::<ACE_HEADER>()) };"
+          }
+        ]
+      ],
+      "related_locations": [
+        {
+          "path": "codex-rs/utils/path-utils/src/private_state_windows_security_tests.rs",
+          "line": 60,
+          "column": 19,
+          "message": "invalid",
+          "source_line": "    let mut ace = ptr::null_mut();"
+        },
+        {
+          "path": "codex-rs/utils/path-utils/src/private_state_windows_security_tests.rs",
+          "line": 60,
+          "column": 19,
+          "message": null,
+          "source_line": "    let mut ace = ptr::null_mut();"
+        }
+      ],
+      "category": "guarded_win32_out_parameter_read",
+      "static_classification": "guarded_win32_fixture_out_pointer_read",
+      "assessment": {
+        "flow_conclusion": "The reported path starts at null_mut and jumps to read_unaligned. Actual source calls GetAce with &mut ace, rejects failed GetAce or a null result, and checks the requested span against a validated live ACL before the read. The unchanged-null path shown by the SARIF cannot reach the read through these guards. Source inspection also checked allocation lifetime and full bounds, rather than assuming non-null implies validity.",
+        "guard_and_lifetime_reasoning": [
+          "This file is included only under #[cfg(test)] at private_state_windows.rs:725-727.",
+          "Both callers at191-192 and217-218 invoke read_only_descriptor inside with_private_security.",
+          "The constructor's CurrentUser, Vec<u32> ACL backing storage and stack descriptor stay alive until create(&attributes) returns; InitializeAcl/AddAccessAllowedAceEx and descriptor construction all check success.",
+          "GetSecurityDescriptorDacl requires success/present/non-null; GetAce requires success/non-null at43-72.",
+          "IsValidAcl, GetAclInformation and the checked header span guard all succeed before the flagged read at76-108.",
+          "The subsequent allow-ACE/SID-minimum/full-span checks at109-126 also bound the Mask write at130-132; it uses write_unaligned and only modifies this new fixture descriptor."
+        ],
+        "qualification": "Conclusion relies on the documented Win32 success/out-parameter/allocation contracts. No native Windows execution was performed and no alert state is changed."
+      },
+      "classification_revised": false
+    }
+  ],
+  "alert_state_changed": false,
+  "source_changed": false,
+  "excluded_annotation_indices": [
+    16,
+    17,
+    18
+  ],
+  "excluded_sarif_result_indices": [
+    13,
+    14,
+    15
+  ],
+  "review_limits": [
+    "The 174 SARIF results are not all reviewed here: this joins precisely the assigned 37 of 40 check annotations.",
+    "Every reported source/sink location was joined to locally verified exact-b58 source, and original control-flow guards were read separately because SARIF does not show all guards.",
+    "Direct sink findings without codeFlows remain reviewed using their exact primary and related sink locations.",
+    "No native Windows/iOS/crypto execution, dismissal, code suppression, or publication occurred."
+  ]
+}

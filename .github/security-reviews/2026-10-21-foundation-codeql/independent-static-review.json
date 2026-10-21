@@ -1,0 +1,791 @@
+{
+  "schema": "hepta.codeql-independent-static-review.v1",
+  "source_head": "b58d870a2c38ebee0aa0b974d9f03767c888fa7e",
+  "source_tree": "5bdd6960c53a0bc9dd034865d9dfa07a3cbc73f5",
+  "annotation_file": "audit_work/foundation-codeql-39603830082/annotations.json",
+  "annotation_file_sha256": "fcf352fce78711a10222af2b2e44f3d9aedff0c7d69a1f7e2f62fa3137b8b9cb",
+  "source_verification": "All12 original inventory files matched bytes, SHA256 and Git blob IDs before review. Two additional exact-commit source files (Cargo target manifest and Windows descriptor owner) were read from GitHub and recorded separately.",
+  "counts": {
+    "annotations_total": 40,
+    "reviewed": 37,
+    "keyring_literals": 33,
+    "cfg_test_literals": 19,
+    "manifest_integration_test_literals": 8,
+    "explicit_example_literals": 6,
+    "matrix_salt": 1,
+    "win32_pointer_reads": 3,
+    "root_owned_logging_not_reviewed": 3
+  },
+  "classifications": {
+    "test_or_example_fixture_not_a_product_authentication_secret": 33,
+    "initialized_output_buffer_overwritten_before_cryptographic_use": 1,
+    "guarded_win32_out_pointer_read": 2,
+    "guarded_win32_fixture_out_pointer_read": 1
+  },
+  "findings": [
+    {
+      "annotation_index_zero_based": 0,
+      "path": "codex-rs/third_party/keyring-3.6.3/examples/ios.rs",
+      "line": 43,
+      "column": 19,
+      "title": "Hard-coded cryptographic value",
+      "source_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/b58d870a2c38ebee0aa0b974d9f03767c888fa7e/codex-rs/third_party/keyring-3.6.3/examples/ios.rs#L43",
+      "classification": "test_or_example_fixture_not_a_product_authentication_secret",
+      "function": "test_empty_password_input",
+      "function_start_line": 40,
+      "scope": {
+        "kind": "explicit_example_staticlib",
+        "manifest": "codex-rs/third_party/keyring-3.6.3/Cargo.toml",
+        "target": "iostest",
+        "manifest_lines": [
+          97,
+          100
+        ],
+        "entry": "extern C fn test at examples/ios.rs:5",
+        "compiled_in_normal_library": false,
+        "note": "This example lacks cfg(test). If explicitly linked/run it writes real test entries to the selected iOS keychain; it is not merely inert text."
+      },
+      "reasoning": "Stores an empty input in a named iOS test entry, asserts exact retrieval, deletes it, and asserts NoEntry.",
+      "conclusion": "The literal is intentionally fixed test data in this path. Do not generalize this conclusion to the crate's production logging or to arbitrary vendor files."
+    },
+    {
+      "annotation_index_zero_based": 1,
+      "path": "codex-rs/third_party/keyring-3.6.3/examples/ios.rs",
+      "line": 61,
+      "column": 20,
+      "title": "Hard-coded cryptographic value",
+      "source_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/b58d870a2c38ebee0aa0b974d9f03767c888fa7e/codex-rs/third_party/keyring-3.6.3/examples/ios.rs#L61",
+      "classification": "test_or_example_fixture_not_a_product_authentication_secret",
+      "function": "test_round_trip_ascii_password",
+      "function_start_line": 58,
+      "scope": {
+        "kind": "explicit_example_staticlib",
+        "manifest": "codex-rs/third_party/keyring-3.6.3/Cargo.toml",
+        "target": "iostest",
+        "manifest_lines": [
+          97,
+          100
+        ],
+        "entry": "extern C fn test at examples/ios.rs:5",
+        "compiled_in_normal_library": false,
+        "note": "This example lacks cfg(test). If explicitly linked/run it writes real test entries to the selected iOS keychain; it is not merely inert text."
+      },
+      "reasoning": "Stores a fixed ASCII sample in a fixture entry, asserts its returned value, and deletes the entry; exercises byte-for-byte credential storage.",
+      "conclusion": "The literal is intentionally fixed test data in this path. Do not generalize this conclusion to the crate's production logging or to arbitrary vendor files."
+    },
+    {
+      "annotation_index_zero_based": 2,
+      "path": "codex-rs/third_party/keyring-3.6.3/examples/ios.rs",
+      "line": 72,
+      "column": 20,
+      "title": "Hard-coded cryptographic value",
+      "source_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/b58d870a2c38ebee0aa0b974d9f03767c888fa7e/codex-rs/third_party/keyring-3.6.3/examples/ios.rs#L72",
+      "classification": "test_or_example_fixture_not_a_product_authentication_secret",
+      "function": "test_round_trip_non_ascii_password",
+      "function_start_line": 69,
+      "scope": {
+        "kind": "explicit_example_staticlib",
+        "manifest": "codex-rs/third_party/keyring-3.6.3/Cargo.toml",
+        "target": "iostest",
+        "manifest_lines": [
+          97,
+          100
+        ],
+        "entry": "extern C fn test at examples/ios.rs:5",
+        "compiled_in_normal_library": false,
+        "note": "This example lacks cfg(test). If explicitly linked/run it writes real test entries to the selected iOS keychain; it is not merely inert text."
+      },
+      "reasoning": "Stores a fixed Unicode sample in a fixture entry, asserts its returned value, and deletes the entry; exercises encoding rather than authentication.",
+      "conclusion": "The literal is intentionally fixed test data in this path. Do not generalize this conclusion to the crate's production logging or to arbitrary vendor files."
+    },
+    {
+      "annotation_index_zero_based": 3,
+      "path": "codex-rs/third_party/keyring-3.6.3/examples/ios.rs",
+      "line": 83,
+      "column": 20,
+      "title": "Hard-coded cryptographic value",
+      "source_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/b58d870a2c38ebee0aa0b974d9f03767c888fa7e/codex-rs/third_party/keyring-3.6.3/examples/ios.rs#L83",
+      "classification": "test_or_example_fixture_not_a_product_authentication_secret",
+      "function": "test_update_password",
+      "function_start_line": 80,
+      "scope": {
+        "kind": "explicit_example_staticlib",
+        "manifest": "codex-rs/third_party/keyring-3.6.3/Cargo.toml",
+        "target": "iostest",
+        "manifest_lines": [
+          97,
+          100
+        ],
+        "entry": "extern C fn test at examples/ios.rs:5",
+        "compiled_in_normal_library": false,
+        "note": "This example lacks cfg(test). If explicitly linked/run it writes real test entries to the selected iOS keychain; it is not merely inert text."
+      },
+      "reasoning": "Stores the ASCII then Unicode fixture in the same named iOS test entry, asserts each result, deletes it, and asserts NoEntry.",
+      "conclusion": "The literal is intentionally fixed test data in this path. Do not generalize this conclusion to the crate's production logging or to arbitrary vendor files."
+    },
+    {
+      "annotation_index_zero_based": 4,
+      "path": "codex-rs/third_party/keyring-3.6.3/examples/ios.rs",
+      "line": 87,
+      "column": 20,
+      "title": "Hard-coded cryptographic value",
+      "source_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/b58d870a2c38ebee0aa0b974d9f03767c888fa7e/codex-rs/third_party/keyring-3.6.3/examples/ios.rs#L87",
+      "classification": "test_or_example_fixture_not_a_product_authentication_secret",
+      "function": "test_update_password",
+      "function_start_line": 80,
+      "scope": {
+        "kind": "explicit_example_staticlib",
+        "manifest": "codex-rs/third_party/keyring-3.6.3/Cargo.toml",
+        "target": "iostest",
+        "manifest_lines": [
+          97,
+          100
+        ],
+        "entry": "extern C fn test at examples/ios.rs:5",
+        "compiled_in_normal_library": false,
+        "note": "This example lacks cfg(test). If explicitly linked/run it writes real test entries to the selected iOS keychain; it is not merely inert text."
+      },
+      "reasoning": "Stores the ASCII then Unicode fixture in the same named iOS test entry, asserts each result, deletes it, and asserts NoEntry.",
+      "conclusion": "The literal is intentionally fixed test data in this path. Do not generalize this conclusion to the crate's production logging or to arbitrary vendor files."
+    },
+    {
+      "annotation_index_zero_based": 5,
+      "path": "codex-rs/third_party/keyring-3.6.3/examples/ios.rs",
+      "line": 109,
+      "column": 23,
+      "title": "Hard-coded cryptographic value",
+      "source_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/b58d870a2c38ebee0aa0b974d9f03767c888fa7e/codex-rs/third_party/keyring-3.6.3/examples/ios.rs#L109",
+      "classification": "test_or_example_fixture_not_a_product_authentication_secret",
+      "function": "test_get_credential",
+      "function_start_line": 96,
+      "scope": {
+        "kind": "explicit_example_staticlib",
+        "manifest": "codex-rs/third_party/keyring-3.6.3/Cargo.toml",
+        "target": "iostest",
+        "manifest_lines": [
+          97,
+          100
+        ],
+        "entry": "extern C fn test at examples/ios.rs:5",
+        "compiled_in_normal_library": false,
+        "note": "This example lacks cfg(test). If explicitly linked/run it writes real test entries to the selected iOS keychain; it is not merely inert text."
+      },
+      "reasoning": "Creates a fixture credential, writes the sample to make it exist, checks the platform-specific credential accessor/downcast/attributes, and deletes it.",
+      "conclusion": "The literal is intentionally fixed test data in this path. Do not generalize this conclusion to the crate's production logging or to arbitrary vendor files."
+    },
+    {
+      "annotation_index_zero_based": 6,
+      "path": "codex-rs/third_party/keyring-3.6.3/src/keyutils.rs",
+      "line": 439,
+      "column": 27,
+      "title": "Hard-coded cryptographic value",
+      "source_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/b58d870a2c38ebee0aa0b974d9f03767c888fa7e/codex-rs/third_party/keyring-3.6.3/src/keyutils.rs#L439",
+      "classification": "test_or_example_fixture_not_a_product_authentication_secret",
+      "function": "test_get_credential",
+      "function_start_line": 427,
+      "scope": {
+        "kind": "cfg_test",
+        "module_guard_line": 351,
+        "compiled_in_normal_library": false
+      },
+      "reasoning": "Creates a fixture credential, writes the sample to make it exist, checks the platform-specific credential accessor/downcast/attributes, and deletes it.",
+      "conclusion": "The literal is intentionally fixed test data in this path. Do not generalize this conclusion to the crate's production logging or to arbitrary vendor files."
+    },
+    {
+      "annotation_index_zero_based": 7,
+      "path": "codex-rs/third_party/keyring-3.6.3/src/lib.rs",
+      "line": 647,
+      "column": 23,
+      "title": "Hard-coded cryptographic value",
+      "source_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/b58d870a2c38ebee0aa0b974d9f03767c888fa7e/codex-rs/third_party/keyring-3.6.3/src/lib.rs#L647",
+      "classification": "test_or_example_fixture_not_a_product_authentication_secret",
+      "function": "test_empty_service_and_user",
+      "function_start_line": 642,
+      "scope": {
+        "kind": "cfg_test",
+        "module_guard_line": 529,
+        "compiled_in_normal_library": false
+      },
+      "reasoning": "A cfg(test) generic invokes the round-trip helper with deliberately empty service/user fields and a known sample; random fixture names isolate the non-empty fields.",
+      "conclusion": "The literal is intentionally fixed test data in this path. Do not generalize this conclusion to the crate's production logging or to arbitrary vendor files."
+    },
+    {
+      "annotation_index_zero_based": 8,
+      "path": "codex-rs/third_party/keyring-3.6.3/src/lib.rs",
+      "line": 671,
+      "column": 51,
+      "title": "Hard-coded cryptographic value",
+      "source_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/b58d870a2c38ebee0aa0b974d9f03767c888fa7e/codex-rs/third_party/keyring-3.6.3/src/lib.rs#L671",
+      "classification": "test_or_example_fixture_not_a_product_authentication_secret",
+      "function": "test_empty_password",
+      "function_start_line": 665,
+      "scope": {
+        "kind": "cfg_test",
+        "module_guard_line": 529,
+        "compiled_in_normal_library": false
+      },
+      "reasoning": "Tests the empty-password storage boundary with exact retrieval/deletion, or backend-specific rejection. It is not a deployment credential.",
+      "conclusion": "The literal is intentionally fixed test data in this path. Do not generalize this conclusion to the crate's production logging or to arbitrary vendor files."
+    },
+    {
+      "annotation_index_zero_based": 9,
+      "path": "codex-rs/third_party/keyring-3.6.3/src/lib.rs",
+      "line": 680,
+      "column": 51,
+      "title": "Hard-coded cryptographic value",
+      "source_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/b58d870a2c38ebee0aa0b974d9f03767c888fa7e/codex-rs/third_party/keyring-3.6.3/src/lib.rs#L680",
+      "classification": "test_or_example_fixture_not_a_product_authentication_secret",
+      "function": "test_round_trip_ascii_password",
+      "function_start_line": 674,
+      "scope": {
+        "kind": "cfg_test",
+        "module_guard_line": 529,
+        "compiled_in_normal_library": false
+      },
+      "reasoning": "Stores a fixed ASCII sample in a fixture entry, asserts its returned value, and deletes the entry; exercises byte-for-byte credential storage.",
+      "conclusion": "The literal is intentionally fixed test data in this path. Do not generalize this conclusion to the crate's production logging or to arbitrary vendor files."
+    },
+    {
+      "annotation_index_zero_based": 10,
+      "path": "codex-rs/third_party/keyring-3.6.3/src/lib.rs",
+      "line": 689,
+      "column": 55,
+      "title": "Hard-coded cryptographic value",
+      "source_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/b58d870a2c38ebee0aa0b974d9f03767c888fa7e/codex-rs/third_party/keyring-3.6.3/src/lib.rs#L689",
+      "classification": "test_or_example_fixture_not_a_product_authentication_secret",
+      "function": "test_round_trip_non_ascii_password",
+      "function_start_line": 683,
+      "scope": {
+        "kind": "cfg_test",
+        "module_guard_line": 529,
+        "compiled_in_normal_library": false
+      },
+      "reasoning": "Stores a fixed Unicode sample in a fixture entry, asserts its returned value, and deletes the entry; exercises encoding rather than authentication.",
+      "conclusion": "The literal is intentionally fixed test data in this path. Do not generalize this conclusion to the crate's production logging or to arbitrary vendor files."
+    },
+    {
+      "annotation_index_zero_based": 11,
+      "path": "codex-rs/third_party/keyring-3.6.3/src/lib.rs",
+      "line": 708,
+      "column": 59,
+      "title": "Hard-coded cryptographic value",
+      "source_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/b58d870a2c38ebee0aa0b974d9f03767c888fa7e/codex-rs/third_party/keyring-3.6.3/src/lib.rs#L708",
+      "classification": "test_or_example_fixture_not_a_product_authentication_secret",
+      "function": "test_update",
+      "function_start_line": 702,
+      "scope": {
+        "kind": "cfg_test",
+        "module_guard_line": 529,
+        "compiled_in_normal_library": false
+      },
+      "reasoning": "Checks replacement of an ASCII fixture with a Unicode fixture and exact retrieval; the cfg(test) generic delegates to a round-trip helper that deletes entries.",
+      "conclusion": "The literal is intentionally fixed test data in this path. Do not generalize this conclusion to the crate's production logging or to arbitrary vendor files."
+    },
+    {
+      "annotation_index_zero_based": 12,
+      "path": "codex-rs/third_party/keyring-3.6.3/src/lib.rs",
+      "line": 712,
+      "column": 13,
+      "title": "Hard-coded cryptographic value",
+      "source_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/b58d870a2c38ebee0aa0b974d9f03767c888fa7e/codex-rs/third_party/keyring-3.6.3/src/lib.rs#L712",
+      "classification": "test_or_example_fixture_not_a_product_authentication_secret",
+      "function": "test_update",
+      "function_start_line": 702,
+      "scope": {
+        "kind": "cfg_test",
+        "module_guard_line": 529,
+        "compiled_in_normal_library": false
+      },
+      "reasoning": "Checks replacement of an ASCII fixture with a Unicode fixture and exact retrieval; the cfg(test) generic delegates to a round-trip helper that deletes entries.",
+      "conclusion": "The literal is intentionally fixed test data in this path. Do not generalize this conclusion to the crate's production logging or to arbitrary vendor files."
+    },
+    {
+      "annotation_index_zero_based": 13,
+      "path": "codex-rs/third_party/keyring-3.6.3/src/lib.rs",
+      "line": 734,
+      "column": 27,
+      "title": "Hard-coded cryptographic value",
+      "source_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/b58d870a2c38ebee0aa0b974d9f03767c888fa7e/codex-rs/third_party/keyring-3.6.3/src/lib.rs#L734",
+      "classification": "test_or_example_fixture_not_a_product_authentication_secret",
+      "function": "test_noop_get_update_attributes",
+      "function_start_line": 716,
+      "scope": {
+        "kind": "cfg_test",
+        "module_guard_line": 529,
+        "compiled_in_normal_library": false
+      },
+      "reasoning": "Writes a known fixture only to test attribute APIs before/after creation and after deletion.",
+      "conclusion": "The literal is intentionally fixed test data in this path. Do not generalize this conclusion to the crate's production logging or to arbitrary vendor files."
+    },
+    {
+      "annotation_index_zero_based": 14,
+      "path": "codex-rs/third_party/keyring-3.6.3/src/macos.rs",
+      "line": 358,
+      "column": 27,
+      "title": "Hard-coded cryptographic value",
+      "source_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/b58d870a2c38ebee0aa0b974d9f03767c888fa7e/codex-rs/third_party/keyring-3.6.3/src/macos.rs#L358",
+      "classification": "test_or_example_fixture_not_a_product_authentication_secret",
+      "function": "test_get_credential",
+      "function_start_line": 346,
+      "scope": {
+        "kind": "cfg_test",
+        "module_guard_line": 274,
+        "compiled_in_normal_library": false
+      },
+      "reasoning": "Creates a fixture credential, writes the sample to make it exist, checks the platform-specific credential accessor/downcast/attributes, and deletes it.",
+      "conclusion": "The literal is intentionally fixed test data in this path. Do not generalize this conclusion to the crate's production logging or to arbitrary vendor files."
+    },
+    {
+      "annotation_index_zero_based": 15,
+      "path": "codex-rs/third_party/keyring-3.6.3/src/mock.rs",
+      "line": 303,
+      "column": 24,
+      "title": "Hard-coded cryptographic value",
+      "source_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/b58d870a2c38ebee0aa0b974d9f03767c888fa7e/codex-rs/third_party/keyring-3.6.3/src/mock.rs#L303",
+      "classification": "test_or_example_fixture_not_a_product_authentication_secret",
+      "function": "test_set_error",
+      "function_start_line": 300,
+      "scope": {
+        "kind": "cfg_test",
+        "module_guard_line": 242,
+        "compiled_in_normal_library": false
+      },
+      "reasoning": "Uses MockCredential to inject an error, checks the first set_password failure, then verifies the one-shot error cleared on another fixed fixture write.",
+      "conclusion": "The literal is intentionally fixed test data in this path. Do not generalize this conclusion to the crate's production logging or to arbitrary vendor files."
+    },
+    {
+      "annotation_index_zero_based": 19,
+      "path": "codex-rs/third_party/keyring-3.6.3/src/secret_service.rs",
+      "line": 712,
+      "column": 27,
+      "title": "Hard-coded cryptographic value",
+      "source_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/b58d870a2c38ebee0aa0b974d9f03767c888fa7e/codex-rs/third_party/keyring-3.6.3/src/secret_service.rs#L712",
+      "classification": "test_or_example_fixture_not_a_product_authentication_secret",
+      "function": "test_get_credential",
+      "function_start_line": 708,
+      "scope": {
+        "kind": "cfg_test",
+        "module_guard_line": 640,
+        "compiled_in_normal_library": false
+      },
+      "reasoning": "Creates a fixture credential, writes the sample to make it exist, checks the platform-specific credential accessor/downcast/attributes, and deletes it.",
+      "conclusion": "The literal is intentionally fixed test data in this path. Do not generalize this conclusion to the crate's production logging or to arbitrary vendor files."
+    },
+    {
+      "annotation_index_zero_based": 20,
+      "path": "codex-rs/third_party/keyring-3.6.3/src/secret_service.rs",
+      "line": 758,
+      "column": 27,
+      "title": "Hard-coded cryptographic value",
+      "source_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/b58d870a2c38ebee0aa0b974d9f03767c888fa7e/codex-rs/third_party/keyring-3.6.3/src/secret_service.rs#L758",
+      "classification": "test_or_example_fixture_not_a_product_authentication_secret",
+      "function": "test_get_update_attributes",
+      "function_start_line": 736,
+      "scope": {
+        "kind": "cfg_test",
+        "module_guard_line": 640,
+        "compiled_in_normal_library": false
+      },
+      "reasoning": "Writes a known fixture to test credential metadata reads and updates; isolated entry construction and deletion are explicit.",
+      "conclusion": "The literal is intentionally fixed test data in this path. Do not generalize this conclusion to the crate's production logging or to arbitrary vendor files."
+    },
+    {
+      "annotation_index_zero_based": 21,
+      "path": "codex-rs/third_party/keyring-3.6.3/src/secret_service.rs",
+      "line": 802,
+      "column": 24,
+      "title": "Hard-coded cryptographic value",
+      "source_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/b58d870a2c38ebee0aa0b974d9f03767c888fa7e/codex-rs/third_party/keyring-3.6.3/src/secret_service.rs#L802",
+      "classification": "test_or_example_fixture_not_a_product_authentication_secret",
+      "function": "test_create_new_target_collection",
+      "function_start_line": 797,
+      "scope": {
+        "kind": "cfg_test",
+        "module_guard_line": 640,
+        "compiled_in_normal_library": false
+      },
+      "reasoning": "An ignored headless-incompatible #[test] creates a random collection, round-trips its sample, then deletes the credential and collection.",
+      "conclusion": "The literal is intentionally fixed test data in this path. Do not generalize this conclusion to the crate's production logging or to arbitrary vendor files."
+    },
+    {
+      "annotation_index_zero_based": 22,
+      "path": "codex-rs/third_party/keyring-3.6.3/src/secret_service.rs",
+      "line": 829,
+      "column": 25,
+      "title": "Hard-coded cryptographic value",
+      "source_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/b58d870a2c38ebee0aa0b974d9f03767c888fa7e/codex-rs/third_party/keyring-3.6.3/src/secret_service.rs#L829",
+      "classification": "test_or_example_fixture_not_a_product_authentication_secret",
+      "function": "test_separate_targets_dont_interfere",
+      "function_start_line": 819,
+      "scope": {
+        "kind": "cfg_test",
+        "module_guard_line": 640,
+        "compiled_in_normal_library": false
+      },
+      "reasoning": "An ignored headless-incompatible #[test] writes three distinct samples to two random collections plus the default collection, verifies isolation, and deletes all fixtures.",
+      "conclusion": "The literal is intentionally fixed test data in this path. Do not generalize this conclusion to the crate's production logging or to arbitrary vendor files."
+    },
+    {
+      "annotation_index_zero_based": 23,
+      "path": "codex-rs/third_party/keyring-3.6.3/src/secret_service.rs",
+      "line": 830,
+      "column": 25,
+      "title": "Hard-coded cryptographic value",
+      "source_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/b58d870a2c38ebee0aa0b974d9f03767c888fa7e/codex-rs/third_party/keyring-3.6.3/src/secret_service.rs#L830",
+      "classification": "test_or_example_fixture_not_a_product_authentication_secret",
+      "function": "test_separate_targets_dont_interfere",
+      "function_start_line": 819,
+      "scope": {
+        "kind": "cfg_test",
+        "module_guard_line": 640,
+        "compiled_in_normal_library": false
+      },
+      "reasoning": "An ignored headless-incompatible #[test] writes three distinct samples to two random collections plus the default collection, verifies isolation, and deletes all fixtures.",
+      "conclusion": "The literal is intentionally fixed test data in this path. Do not generalize this conclusion to the crate's production logging or to arbitrary vendor files."
+    },
+    {
+      "annotation_index_zero_based": 24,
+      "path": "codex-rs/third_party/keyring-3.6.3/src/secret_service.rs",
+      "line": 831,
+      "column": 25,
+      "title": "Hard-coded cryptographic value",
+      "source_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/b58d870a2c38ebee0aa0b974d9f03767c888fa7e/codex-rs/third_party/keyring-3.6.3/src/secret_service.rs#L831",
+      "classification": "test_or_example_fixture_not_a_product_authentication_secret",
+      "function": "test_separate_targets_dont_interfere",
+      "function_start_line": 819,
+      "scope": {
+        "kind": "cfg_test",
+        "module_guard_line": 640,
+        "compiled_in_normal_library": false
+      },
+      "reasoning": "An ignored headless-incompatible #[test] writes three distinct samples to two random collections plus the default collection, verifies isolation, and deletes all fixtures.",
+      "conclusion": "The literal is intentionally fixed test data in this path. Do not generalize this conclusion to the crate's production logging or to arbitrary vendor files."
+    },
+    {
+      "annotation_index_zero_based": 25,
+      "path": "codex-rs/third_party/keyring-3.6.3/src/secret_service.rs",
+      "line": 872,
+      "column": 18,
+      "title": "Hard-coded cryptographic value",
+      "source_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/b58d870a2c38ebee0aa0b974d9f03767c888fa7e/codex-rs/third_party/keyring-3.6.3/src/secret_service.rs#L872",
+      "classification": "test_or_example_fixture_not_a_product_authentication_secret",
+      "function": "test_legacy_entry",
+      "function_start_line": 870,
+      "scope": {
+        "kind": "cfg_test",
+        "module_guard_line": 640,
+        "compiled_in_normal_library": false
+      },
+      "reasoning": "Creates a legacy-format fixture with a known value, reads it through the newer API, asserts equality, and deletes the entry.",
+      "conclusion": "The literal is intentionally fixed test data in this path. Do not generalize this conclusion to the crate's production logging or to arbitrary vendor files."
+    },
+    {
+      "annotation_index_zero_based": 26,
+      "path": "codex-rs/third_party/keyring-3.6.3/src/windows.rs",
+      "line": 736,
+      "column": 27,
+      "title": "Hard-coded cryptographic value",
+      "source_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/b58d870a2c38ebee0aa0b974d9f03767c888fa7e/codex-rs/third_party/keyring-3.6.3/src/windows.rs#L736",
+      "classification": "test_or_example_fixture_not_a_product_authentication_secret",
+      "function": "test_get_update_attributes",
+      "function_start_line": 715,
+      "scope": {
+        "kind": "cfg_test",
+        "module_guard_line": 534,
+        "compiled_in_normal_library": false
+      },
+      "reasoning": "Writes a known fixture to test credential metadata reads and updates; isolated entry construction and deletion are explicit.",
+      "conclusion": "The literal is intentionally fixed test data in this path. Do not generalize this conclusion to the crate's production logging or to arbitrary vendor files."
+    },
+    {
+      "annotation_index_zero_based": 27,
+      "path": "codex-rs/third_party/keyring-3.6.3/src/windows.rs",
+      "line": 769,
+      "column": 24,
+      "title": "Hard-coded cryptographic value",
+      "source_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/b58d870a2c38ebee0aa0b974d9f03767c888fa7e/codex-rs/third_party/keyring-3.6.3/src/windows.rs#L769",
+      "classification": "test_or_example_fixture_not_a_product_authentication_secret",
+      "function": "test_get_credential",
+      "function_start_line": 766,
+      "scope": {
+        "kind": "cfg_test",
+        "module_guard_line": 534,
+        "compiled_in_normal_library": false
+      },
+      "reasoning": "Creates a fixture credential, writes the sample to make it exist, checks the platform-specific credential accessor/downcast/attributes, and deletes it.",
+      "conclusion": "The literal is intentionally fixed test data in this path. Do not generalize this conclusion to the crate's production logging or to arbitrary vendor files."
+    },
+    {
+      "annotation_index_zero_based": 28,
+      "path": "codex-rs/third_party/keyring-3.6.3/tests/basic.rs",
+      "line": 28,
+      "column": 19,
+      "title": "Hard-coded cryptographic value",
+      "source_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/b58d870a2c38ebee0aa0b974d9f03767c888fa7e/codex-rs/third_party/keyring-3.6.3/tests/basic.rs#L28",
+      "classification": "test_or_example_fixture_not_a_product_authentication_secret",
+      "function": "test_empty_password",
+      "function_start_line": 23,
+      "scope": {
+        "kind": "manifest_test_target",
+        "manifest": "codex-rs/third_party/keyring-3.6.3/Cargo.toml",
+        "target": "basic",
+        "manifest_lines": [
+          106,
+          112
+        ],
+        "compiled_in_normal_library": false
+      },
+      "reasoning": "Tests the empty-password storage boundary with exact retrieval/deletion, or backend-specific rejection. It is not a deployment credential.",
+      "conclusion": "The literal is intentionally fixed test data in this path. Do not generalize this conclusion to the crate's production logging or to arbitrary vendor files."
+    },
+    {
+      "annotation_index_zero_based": 29,
+      "path": "codex-rs/third_party/keyring-3.6.3/tests/basic.rs",
+      "line": 50,
+      "column": 20,
+      "title": "Hard-coded cryptographic value",
+      "source_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/b58d870a2c38ebee0aa0b974d9f03767c888fa7e/codex-rs/third_party/keyring-3.6.3/tests/basic.rs#L50",
+      "classification": "test_or_example_fixture_not_a_product_authentication_secret",
+      "function": "test_round_trip_ascii_password",
+      "function_start_line": 45,
+      "scope": {
+        "kind": "manifest_test_target",
+        "manifest": "codex-rs/third_party/keyring-3.6.3/Cargo.toml",
+        "target": "basic",
+        "manifest_lines": [
+          106,
+          112
+        ],
+        "compiled_in_normal_library": false
+      },
+      "reasoning": "Stores a fixed ASCII sample in a fixture entry, asserts its returned value, and deletes the entry; exercises byte-for-byte credential storage.",
+      "conclusion": "The literal is intentionally fixed test data in this path. Do not generalize this conclusion to the crate's production logging or to arbitrary vendor files."
+    },
+    {
+      "annotation_index_zero_based": 30,
+      "path": "codex-rs/third_party/keyring-3.6.3/tests/basic.rs",
+      "line": 74,
+      "column": 20,
+      "title": "Hard-coded cryptographic value",
+      "source_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/b58d870a2c38ebee0aa0b974d9f03767c888fa7e/codex-rs/third_party/keyring-3.6.3/tests/basic.rs#L74",
+      "classification": "test_or_example_fixture_not_a_product_authentication_secret",
+      "function": "test_round_trip_non_ascii_password",
+      "function_start_line": 69,
+      "scope": {
+        "kind": "manifest_test_target",
+        "manifest": "codex-rs/third_party/keyring-3.6.3/Cargo.toml",
+        "target": "basic",
+        "manifest_lines": [
+          106,
+          112
+        ],
+        "compiled_in_normal_library": false
+      },
+      "reasoning": "Stores a fixed Unicode sample in a fixture entry, asserts its returned value, and deletes the entry; exercises encoding rather than authentication.",
+      "conclusion": "The literal is intentionally fixed test data in this path. Do not generalize this conclusion to the crate's production logging or to arbitrary vendor files."
+    },
+    {
+      "annotation_index_zero_based": 31,
+      "path": "codex-rs/third_party/keyring-3.6.3/tests/basic.rs",
+      "line": 123,
+      "column": 20,
+      "title": "Hard-coded cryptographic value",
+      "source_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/b58d870a2c38ebee0aa0b974d9f03767c888fa7e/codex-rs/third_party/keyring-3.6.3/tests/basic.rs#L123",
+      "classification": "test_or_example_fixture_not_a_product_authentication_secret",
+      "function": "test_update",
+      "function_start_line": 118,
+      "scope": {
+        "kind": "manifest_test_target",
+        "manifest": "codex-rs/third_party/keyring-3.6.3/Cargo.toml",
+        "target": "basic",
+        "manifest_lines": [
+          106,
+          112
+        ],
+        "compiled_in_normal_library": false
+      },
+      "reasoning": "Checks replacement of an ASCII fixture with a Unicode fixture and exact retrieval; the cfg(test) generic delegates to a round-trip helper that deletes entries.",
+      "conclusion": "The literal is intentionally fixed test data in this path. Do not generalize this conclusion to the crate's production logging or to arbitrary vendor files."
+    },
+    {
+      "annotation_index_zero_based": 32,
+      "path": "codex-rs/third_party/keyring-3.6.3/tests/basic.rs",
+      "line": 132,
+      "column": 20,
+      "title": "Hard-coded cryptographic value",
+      "source_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/b58d870a2c38ebee0aa0b974d9f03767c888fa7e/codex-rs/third_party/keyring-3.6.3/tests/basic.rs#L132",
+      "classification": "test_or_example_fixture_not_a_product_authentication_secret",
+      "function": "test_update",
+      "function_start_line": 118,
+      "scope": {
+        "kind": "manifest_test_target",
+        "manifest": "codex-rs/third_party/keyring-3.6.3/Cargo.toml",
+        "target": "basic",
+        "manifest_lines": [
+          106,
+          112
+        ],
+        "compiled_in_normal_library": false
+      },
+      "reasoning": "Checks replacement of an ASCII fixture with a Unicode fixture and exact retrieval; the cfg(test) generic delegates to a round-trip helper that deletes entries.",
+      "conclusion": "The literal is intentionally fixed test data in this path. Do not generalize this conclusion to the crate's production logging or to arbitrary vendor files."
+    },
+    {
+      "annotation_index_zero_based": 33,
+      "path": "codex-rs/third_party/keyring-3.6.3/tests/threading.rs",
+      "line": 15,
+      "column": 24,
+      "title": "Hard-coded cryptographic value",
+      "source_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/b58d870a2c38ebee0aa0b974d9f03767c888fa7e/codex-rs/third_party/keyring-3.6.3/tests/threading.rs#L15",
+      "classification": "test_or_example_fixture_not_a_product_authentication_secret",
+      "function": "test_create_then_move",
+      "function_start_line": 9,
+      "scope": {
+        "kind": "manifest_test_target",
+        "manifest": "codex-rs/third_party/keyring-3.6.3/Cargo.toml",
+        "target": "threading",
+        "manifest_lines": [
+          106,
+          112
+        ],
+        "compiled_in_normal_library": false
+      },
+      "reasoning": "A manifest-declared integration #[test] moves a random-name fixture to a worker thread, round-trips/replaces two known values, deletes it, and joins the thread.",
+      "conclusion": "The literal is intentionally fixed test data in this path. Do not generalize this conclusion to the crate's production logging or to arbitrary vendor files."
+    },
+    {
+      "annotation_index_zero_based": 34,
+      "path": "codex-rs/third_party/keyring-3.6.3/tests/threading.rs",
+      "line": 24,
+      "column": 24,
+      "title": "Hard-coded cryptographic value",
+      "source_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/b58d870a2c38ebee0aa0b974d9f03767c888fa7e/codex-rs/third_party/keyring-3.6.3/tests/threading.rs#L24",
+      "classification": "test_or_example_fixture_not_a_product_authentication_secret",
+      "function": "test_create_then_move",
+      "function_start_line": 9,
+      "scope": {
+        "kind": "manifest_test_target",
+        "manifest": "codex-rs/third_party/keyring-3.6.3/Cargo.toml",
+        "target": "threading",
+        "manifest_lines": [
+          106,
+          112
+        ],
+        "compiled_in_normal_library": false
+      },
+      "reasoning": "A manifest-declared integration #[test] moves a random-name fixture to a worker thread, round-trips/replaces two known values, deletes it, and joins the thread.",
+      "conclusion": "The literal is intentionally fixed test data in this path. Do not generalize this conclusion to the crate's production logging or to arbitrary vendor files."
+    },
+    {
+      "annotation_index_zero_based": 35,
+      "path": "codex-rs/third_party/keyring-3.6.3/tests/threading.rs",
+      "line": 82,
+      "column": 20,
+      "title": "Hard-coded cryptographic value",
+      "source_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/b58d870a2c38ebee0aa0b974d9f03767c888fa7e/codex-rs/third_party/keyring-3.6.3/tests/threading.rs#L82",
+      "classification": "test_or_example_fixture_not_a_product_authentication_secret",
+      "function": "test_create_set_then_move",
+      "function_start_line": 77,
+      "scope": {
+        "kind": "manifest_test_target",
+        "manifest": "codex-rs/third_party/keyring-3.6.3/Cargo.toml",
+        "target": "threading",
+        "manifest_lines": [
+          106,
+          112
+        ],
+        "compiled_in_normal_library": false
+      },
+      "reasoning": "A manifest-declared non-Windows integration #[test] writes a known value before moving its fixture to a worker; the worker checks retrieval/deletion and is joined.",
+      "conclusion": "The literal is intentionally fixed test data in this path. Do not generalize this conclusion to the crate's production logging or to arbitrary vendor files."
+    },
+    {
+      "annotation_index_zero_based": 36,
+      "path": "codex-rs/third_party/matrix-sdk-crypto-0.18.0/src/file_encryption/key_export.rs",
+      "line": 188,
+      "column": 20,
+      "title": "Hard-coded cryptographic value",
+      "source_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/b58d870a2c38ebee0aa0b974d9f03767c888fa7e/codex-rs/third_party/matrix-sdk-crypto-0.18.0/src/file_encryption/key_export.rs#L188",
+      "classification": "initialized_output_buffer_overwritten_before_cryptographic_use",
+      "reasoning": "Line188 initializes salt storage. Line193 read_exact(&mut salt)? must fill the entire salt from the decoded export or return before line210 derives a key. The zero initializer has no successful path to the KDF without replacement. Encryption independently fills a fresh salt with rng.fill_bytes at163 before its KDF at165.",
+      "relevant_lines": [
+        188,
+        193,
+        210,
+        163,
+        165
+      ],
+      "conclusion": "No hard-coded salt use is demonstrated by this initializer. This is a control-flow review of the flagged salt, not a general cryptographic qualification."
+    },
+    {
+      "annotation_index_zero_based": 37,
+      "path": "codex-rs/utils/path-utils/src/private_state_windows.rs",
+      "line": 341,
+      "column": 51,
+      "title": "Access of invalid pointer",
+      "source_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/b58d870a2c38ebee0aa0b974d9f03767c888fa7e/codex-rs/utils/path-utils/src/private_state_windows.rs#L341",
+      "classification": "guarded_win32_out_pointer_read",
+      "reasoning": [
+        "GetSecurityInfo requests OWNER and DACL, requires ERROR_SUCCESS and non-null descriptor/owner/dacl at253-276.",
+        "The returned descriptor allocation remains live through the entire synchronous DACL inspection; LocalFree occurs at282 after inspection, not before.",
+        "IsValidAcl succeeds and GetAclInformation(AclSizeInformation) supplies AclBytesInUse before enumeration at289-309.",
+        "Each GetAce must return success and a non-null pointer at327-332.",
+        "ace_span_fits_acl validates the requested header span at333-340; its checked_add arithmetic rejects overflow, pointers before the first ACE, and spans beyond bytes in use at384-402.",
+        "ptr::read_unaligned copies a value without creating a misaligned Rust reference."
+      ],
+      "conclusion": "Under the documented successful Win32 allocation/out-parameter contracts and inspected call sites, this flagged read has validity, range, alignment and lifetime guards. No concrete invalid-pointer path was found; SARIF's actual modeled flow still must be matched."
+    },
+    {
+      "annotation_index_zero_based": 38,
+      "path": "codex-rs/utils/path-utils/src/private_state_windows.rs",
+      "line": 368,
+      "column": 52,
+      "title": "Access of invalid pointer",
+      "source_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/b58d870a2c38ebee0aa0b974d9f03767c888fa7e/codex-rs/utils/path-utils/src/private_state_windows.rs#L368",
+      "classification": "guarded_win32_out_pointer_read",
+      "reasoning": [
+        "GetSecurityInfo requests OWNER and DACL, requires ERROR_SUCCESS and non-null descriptor/owner/dacl at253-276.",
+        "The returned descriptor allocation remains live through the entire synchronous DACL inspection; LocalFree occurs at282 after inspection, not before.",
+        "IsValidAcl succeeds and GetAclInformation(AclSizeInformation) supplies AclBytesInUse before enumeration at289-309.",
+        "Each GetAce must return success and a non-null pointer at327-332.",
+        "ace_span_fits_acl validates the requested header span at333-340; its checked_add arithmetic rejects overflow, pointers before the first ACE, and spans beyond bytes in use at384-402.",
+        "ptr::read_unaligned copies a value without creating a misaligned Rust reference.",
+        "Before reading ACCESS_ALLOWED_ACE, AceSize must cover the full struct and full ACE span must fit the ACL at342-348.",
+        "Allowed-type filtering and complete SID header/subauthority bounds precede SID API reads at349-365; the fixed Mask fields are within that already validated span.",
+        "The CurrentUser SID buffer stays owned by the surrounding CurrentUser value for the full inspection."
+      ],
+      "conclusion": "Under the documented successful Win32 allocation/out-parameter contracts and inspected call sites, this flagged read has validity, range, alignment and lifetime guards. No concrete invalid-pointer path was found; SARIF's actual modeled flow still must be matched."
+    },
+    {
+      "annotation_index_zero_based": 39,
+      "path": "codex-rs/utils/path-utils/src/private_state_windows_security_tests.rs",
+      "line": 108,
+      "column": 47,
+      "title": "Access of invalid pointer",
+      "source_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/b58d870a2c38ebee0aa0b974d9f03767c888fa7e/codex-rs/utils/path-utils/src/private_state_windows_security_tests.rs#L108",
+      "classification": "guarded_win32_fixture_out_pointer_read",
+      "reasoning": [
+        "This file is included only under #[cfg(test)] at private_state_windows.rs:725-727.",
+        "Both callers at191-192 and217-218 invoke read_only_descriptor inside with_private_security.",
+        "The constructor's CurrentUser, Vec<u32> ACL backing storage and stack descriptor stay alive until create(&attributes) returns; InitializeAcl/AddAccessAllowedAceEx and descriptor construction all check success.",
+        "GetSecurityDescriptorDacl requires success/present/non-null; GetAce requires success/non-null at43-72.",
+        "IsValidAcl, GetAclInformation and the checked header span guard all succeed before the flagged read at76-108.",
+        "The subsequent allow-ACE/SID-minimum/full-span checks at109-126 also bound the Mask write at130-132; it uses write_unaligned and only modifies this new fixture descriptor."
+      ],
+      "conclusion": "The fixture has a concrete allocation owner and bounded checked pointer read, not just a null check. No unsafe path at the flagged read was found under the documented Win32 contracts; this does not constitute a native Windows test run."
+    }
+  ],
+  "official_contracts": [
+    "https://learn.microsoft.com/en-us/windows/win32/api/securitybaseapi/nf-securitybaseapi-getace",
+    "https://learn.microsoft.com/en-us/windows/win32/api/aclapi/nf-aclapi-getsecurityinfo",
+    "https://learn.microsoft.com/en-us/windows/win32/api/securitybaseapi/nf-securitybaseapi-getaclinformation",
+    "https://learn.microsoft.com/en-us/windows/win32/api/winnt/ns-winnt-acl_size_information",
+    "https://doc.rust-lang.org/std/io/trait.Read.html#method.read_exact"
+  ],
+  "review_limits": [
+    "Annotations did not contain the original SARIF thread/data-flow paths; match those before making a final per-alert disposition.",
+    "No CodeQL rule, source, alert state, suppression or dismissal was changed.",
+    "No credential store test, Windows binary, or cryptographic runtime test was executed for this review.",
+    "The three production logging alerts remain separately owned by root."
+  ]
+}

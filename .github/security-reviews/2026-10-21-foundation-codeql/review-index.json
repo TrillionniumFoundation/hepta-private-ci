@@ -1,0 +1,1000 @@
+{
+  "schema": "hepta-exact-codeql-finding-review-v1",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "source_sha": "b58d870a2c38ebee0aa0b974d9f03767c888fa7e",
+  "source_tree": "5bdd6960c53a0bc9dd034865d9dfa07a3cbc73f5",
+  "original_check_id": 118888053804,
+  "analysis_id": 1992617134,
+  "analysis_ref": "refs/pull/2937/head",
+  "reader_run_id": 39606595435,
+  "reader_commit": "ead170def4bc3519b5823cdbc5ee2be79a93f5fa",
+  "artifact_id": 12349956006,
+  "artifact_bytes": 84124,
+  "artifact_sha256": "4ae4accc13b7458909bc5d41743969d8621b769dfdb4cf62483554928a223656",
+  "sarif_total_results": 174,
+  "reviewed_check_annotations": 40,
+  "counts": {
+    "test_or_explicit_example_fixtures": 33,
+    "cfg_test_fixtures": 19,
+    "explicit_integration_tests": 8,
+    "explicit_ios_example_tests": 6,
+    "salt_output_buffer_overwrite": 1,
+    "guarded_win32_out_pointers": 3,
+    "vec_remove_model_false_positives": 3
+  },
+  "review_method": "Source inspection plus original SARIF, with independent automated review; no native-test claim.",
+  "alert_state_changed": false,
+  "query_or_path_exclusions_added": false,
+  "production_or_fixture_source_changed": false,
+  "limits": [
+    "Only the 40 failing check annotations are classified; the other 134 results remain outside this review.",
+    "The six iOS example entries are an explicit iostest static library without cfg(test), and deliberately running them writes test keychain entries.",
+    "This source-bound evidence does not qualify native platform execution, hardware control, release or deployment.",
+    "Before any alert update, re-read its identity, source-bound instance and current instances; do not alter a finding with changed source or a pre-existing different disposition."
+  ],
+  "findings": [
+    {
+      "annotation_index": 0,
+      "sarif_result_index": 81,
+      "alert_number": 753,
+      "rule_id": "rust/hard-coded-cryptographic-value",
+      "dismissed_reason": "used in tests",
+      "category": "keyring_test_or_explicit_example_fixture",
+      "explanation": "explicit_example_staticlib: test_empty_password_input. Stores an empty input in a named iOS test entry, asserts exact retrieval, deletes it, and asserts NoEntry.",
+      "review_file": "independent-sarif-review.json",
+      "state_change_applied": false,
+      "path": "codex-rs/third_party/keyring-3.6.3/examples/ios.rs",
+      "location": {
+        "path": "codex-rs/third_party/keyring-3.6.3/examples/ios.rs",
+        "start_line": 43,
+        "end_line": 43,
+        "start_column": 19,
+        "end_column": 21
+      },
+      "source_blob": "43e0b3dc5f7e8df8f096ff7d6746fa63871ff8d8",
+      "partial_fingerprints": {
+        "primaryLocationLineHash": "d7b9994af7bf680e:1"
+      },
+      "original_message": "This hard-coded value is used as [a password](1)."
+    },
+    {
+      "annotation_index": 1,
+      "sarif_result_index": 82,
+      "alert_number": 754,
+      "rule_id": "rust/hard-coded-cryptographic-value",
+      "dismissed_reason": "used in tests",
+      "category": "keyring_test_or_explicit_example_fixture",
+      "explanation": "explicit_example_staticlib: test_round_trip_ascii_password. Stores a fixed ASCII sample in a fixture entry, asserts its returned value, and deletes the entry; exercises byte-for-byte credential storage.",
+      "review_file": "independent-sarif-review.json",
+      "state_change_applied": false,
+      "path": "codex-rs/third_party/keyring-3.6.3/examples/ios.rs",
+      "location": {
+        "path": "codex-rs/third_party/keyring-3.6.3/examples/ios.rs",
+        "start_line": 61,
+        "end_line": 61,
+        "start_column": 20,
+        "end_column": 41
+      },
+      "source_blob": "43e0b3dc5f7e8df8f096ff7d6746fa63871ff8d8",
+      "partial_fingerprints": {
+        "primaryLocationLineHash": "178b64a08bf083a2:1"
+      },
+      "original_message": "This hard-coded value is used as [a password](1)."
+    },
+    {
+      "annotation_index": 2,
+      "sarif_result_index": 83,
+      "alert_number": 755,
+      "rule_id": "rust/hard-coded-cryptographic-value",
+      "dismissed_reason": "used in tests",
+      "category": "keyring_test_or_explicit_example_fixture",
+      "explanation": "explicit_example_staticlib: test_round_trip_non_ascii_password. Stores a fixed Unicode sample in a fixture entry, asserts its returned value, and deletes the entry; exercises encoding rather than authentication.",
+      "review_file": "independent-sarif-review.json",
+      "state_change_applied": false,
+      "path": "codex-rs/third_party/keyring-3.6.3/examples/ios.rs",
+      "location": {
+        "path": "codex-rs/third_party/keyring-3.6.3/examples/ios.rs",
+        "start_line": 72,
+        "end_line": 72,
+        "start_column": 20,
+        "end_column": 55
+      },
+      "source_blob": "43e0b3dc5f7e8df8f096ff7d6746fa63871ff8d8",
+      "partial_fingerprints": {
+        "primaryLocationLineHash": "1c507447955e5577:1"
+      },
+      "original_message": "This hard-coded value is used as [a password](1)."
+    },
+    {
+      "annotation_index": 3,
+      "sarif_result_index": 84,
+      "alert_number": 756,
+      "rule_id": "rust/hard-coded-cryptographic-value",
+      "dismissed_reason": "used in tests",
+      "category": "keyring_test_or_explicit_example_fixture",
+      "explanation": "explicit_example_staticlib: test_update_password. Stores the ASCII then Unicode fixture in the same named iOS test entry, asserts each result, deletes it, and asserts NoEntry.",
+      "review_file": "independent-sarif-review.json",
+      "state_change_applied": false,
+      "path": "codex-rs/third_party/keyring-3.6.3/examples/ios.rs",
+      "location": {
+        "path": "codex-rs/third_party/keyring-3.6.3/examples/ios.rs",
+        "start_line": 83,
+        "end_line": 83,
+        "start_column": 20,
+        "end_column": 41
+      },
+      "source_blob": "43e0b3dc5f7e8df8f096ff7d6746fa63871ff8d8",
+      "partial_fingerprints": {
+        "primaryLocationLineHash": "178b64a08bf083a2:2"
+      },
+      "original_message": "This hard-coded value is used as [a password](1)."
+    },
+    {
+      "annotation_index": 4,
+      "sarif_result_index": 85,
+      "alert_number": 757,
+      "rule_id": "rust/hard-coded-cryptographic-value",
+      "dismissed_reason": "used in tests",
+      "category": "keyring_test_or_explicit_example_fixture",
+      "explanation": "explicit_example_staticlib: test_update_password. Stores the ASCII then Unicode fixture in the same named iOS test entry, asserts each result, deletes it, and asserts NoEntry.",
+      "review_file": "independent-sarif-review.json",
+      "state_change_applied": false,
+      "path": "codex-rs/third_party/keyring-3.6.3/examples/ios.rs",
+      "location": {
+        "path": "codex-rs/third_party/keyring-3.6.3/examples/ios.rs",
+        "start_line": 87,
+        "end_line": 87,
+        "start_column": 20,
+        "end_column": 55
+      },
+      "source_blob": "43e0b3dc5f7e8df8f096ff7d6746fa63871ff8d8",
+      "partial_fingerprints": {
+        "primaryLocationLineHash": "1c507447955e5577:2"
+      },
+      "original_message": "This hard-coded value is used as [a password](1)."
+    },
+    {
+      "annotation_index": 5,
+      "sarif_result_index": 86,
+      "alert_number": 758,
+      "rule_id": "rust/hard-coded-cryptographic-value",
+      "dismissed_reason": "used in tests",
+      "category": "keyring_test_or_explicit_example_fixture",
+      "explanation": "explicit_example_staticlib: test_get_credential. Creates a fixture credential, writes the sample to make it exist, checks the platform-specific credential accessor/downcast/attributes, and deletes it.",
+      "review_file": "independent-sarif-review.json",
+      "state_change_applied": false,
+      "path": "codex-rs/third_party/keyring-3.6.3/examples/ios.rs",
+      "location": {
+        "path": "codex-rs/third_party/keyring-3.6.3/examples/ios.rs",
+        "start_line": 109,
+        "end_line": 109,
+        "start_column": 23,
+        "end_column": 61
+      },
+      "source_blob": "43e0b3dc5f7e8df8f096ff7d6746fa63871ff8d8",
+      "partial_fingerprints": {
+        "primaryLocationLineHash": "2d0ad49cdf5cc81:1"
+      },
+      "original_message": "This hard-coded value is used as [a password](1)."
+    },
+    {
+      "annotation_index": 6,
+      "sarif_result_index": 87,
+      "alert_number": 759,
+      "rule_id": "rust/hard-coded-cryptographic-value",
+      "dismissed_reason": "used in tests",
+      "category": "keyring_test_or_explicit_example_fixture",
+      "explanation": "cfg_test: test_get_credential. Creates a fixture credential, writes the sample to make it exist, checks the platform-specific credential accessor/downcast/attributes, and deletes it.",
+      "review_file": "independent-sarif-review.json",
+      "state_change_applied": false,
+      "path": "codex-rs/third_party/keyring-3.6.3/src/keyutils.rs",
+      "location": {
+        "path": "codex-rs/third_party/keyring-3.6.3/src/keyutils.rs",
+        "start_line": 439,
+        "end_line": 439,
+        "start_column": 27,
+        "end_column": 48
+      },
+      "source_blob": "8e7b06620ab433523fe9fd9b8ff0054802400d98",
+      "partial_fingerprints": {
+        "primaryLocationLineHash": "6b2c02ed0d3b2375:1"
+      },
+      "original_message": "This hard-coded value is used as [a password](1)."
+    },
+    {
+      "annotation_index": 7,
+      "sarif_result_index": 88,
+      "alert_number": 760,
+      "rule_id": "rust/hard-coded-cryptographic-value",
+      "dismissed_reason": "used in tests",
+      "category": "keyring_test_or_explicit_example_fixture",
+      "explanation": "cfg_test: test_empty_service_and_user. A cfg(test) generic invokes the round-trip helper with deliberately empty service/user fields and a known sample; random fixture names isolate the non-empty fields.",
+      "review_file": "independent-sarif-review.json",
+      "state_change_applied": false,
+      "path": "codex-rs/third_party/keyring-3.6.3/src/lib.rs",
+      "location": {
+        "path": "codex-rs/third_party/keyring-3.6.3/src/lib.rs",
+        "start_line": 647,
+        "end_line": 647,
+        "start_column": 23,
+        "end_column": 39
+      },
+      "source_blob": "9243311fd23903e57f8b8a2e90bd694feeb0a488",
+      "partial_fingerprints": {
+        "primaryLocationLineHash": "c8249976a368d9f8:1"
+      },
+      "original_message": "This hard-coded value is used as [a password](1)."
+    },
+    {
+      "annotation_index": 8,
+      "sarif_result_index": 89,
+      "alert_number": 761,
+      "rule_id": "rust/hard-coded-cryptographic-value",
+      "dismissed_reason": "used in tests",
+      "category": "keyring_test_or_explicit_example_fixture",
+      "explanation": "cfg_test: test_empty_password. Tests the empty-password storage boundary with exact retrieval/deletion, or backend-specific rejection. It is not a deployment credential.",
+      "review_file": "independent-sarif-review.json",
+      "state_change_applied": false,
+      "path": "codex-rs/third_party/keyring-3.6.3/src/lib.rs",
+      "location": {
+        "path": "codex-rs/third_party/keyring-3.6.3/src/lib.rs",
+        "start_line": 671,
+        "end_line": 671,
+        "start_column": 51,
+        "end_column": 53
+      },
+      "source_blob": "9243311fd23903e57f8b8a2e90bd694feeb0a488",
+      "partial_fingerprints": {
+        "primaryLocationLineHash": "3ad63abf912a5408:1"
+      },
+      "original_message": "This hard-coded value is used as [a password](1)."
+    },
+    {
+      "annotation_index": 9,
+      "sarif_result_index": 90,
+      "alert_number": 762,
+      "rule_id": "rust/hard-coded-cryptographic-value",
+      "dismissed_reason": "used in tests",
+      "category": "keyring_test_or_explicit_example_fixture",
+      "explanation": "cfg_test: test_round_trip_ascii_password. Stores a fixed ASCII sample in a fixture entry, asserts its returned value, and deletes the entry; exercises byte-for-byte credential storage.",
+      "review_file": "independent-sarif-review.json",
+      "state_change_applied": false,
+      "path": "codex-rs/third_party/keyring-3.6.3/src/lib.rs",
+      "location": {
+        "path": "codex-rs/third_party/keyring-3.6.3/src/lib.rs",
+        "start_line": 680,
+        "end_line": 680,
+        "start_column": 51,
+        "end_column": 72
+      },
+      "source_blob": "9243311fd23903e57f8b8a2e90bd694feeb0a488",
+      "partial_fingerprints": {
+        "primaryLocationLineHash": "b1160f5c9e09e85f:1"
+      },
+      "original_message": "This hard-coded value is used as [a password](1)."
+    },
+    {
+      "annotation_index": 10,
+      "sarif_result_index": 91,
+      "alert_number": 764,
+      "rule_id": "rust/hard-coded-cryptographic-value",
+      "dismissed_reason": "used in tests",
+      "category": "keyring_test_or_explicit_example_fixture",
+      "explanation": "cfg_test: test_round_trip_non_ascii_password. Stores a fixed Unicode sample in a fixture entry, asserts its returned value, and deletes the entry; exercises encoding rather than authentication.",
+      "review_file": "independent-sarif-review.json",
+      "state_change_applied": false,
+      "path": "codex-rs/third_party/keyring-3.6.3/src/lib.rs",
+      "location": {
+        "path": "codex-rs/third_party/keyring-3.6.3/src/lib.rs",
+        "start_line": 689,
+        "end_line": 689,
+        "start_column": 55,
+        "end_column": 90
+      },
+      "source_blob": "9243311fd23903e57f8b8a2e90bd694feeb0a488",
+      "partial_fingerprints": {
+        "primaryLocationLineHash": "d16304634e57cf29:1"
+      },
+      "original_message": "This hard-coded value is used as [a password](1)."
+    },
+    {
+      "annotation_index": 11,
+      "sarif_result_index": 92,
+      "alert_number": 765,
+      "rule_id": "rust/hard-coded-cryptographic-value",
+      "dismissed_reason": "used in tests",
+      "category": "keyring_test_or_explicit_example_fixture",
+      "explanation": "cfg_test: test_update. Checks replacement of an ASCII fixture with a Unicode fixture and exact retrieval; the cfg(test) generic delegates to a round-trip helper that deletes entries.",
+      "review_file": "independent-sarif-review.json",
+      "state_change_applied": false,
+      "path": "codex-rs/third_party/keyring-3.6.3/src/lib.rs",
+      "location": {
+        "path": "codex-rs/third_party/keyring-3.6.3/src/lib.rs",
+        "start_line": 708,
+        "end_line": 708,
+        "start_column": 59,
+        "end_column": 80
+      },
+      "source_blob": "9243311fd23903e57f8b8a2e90bd694feeb0a488",
+      "partial_fingerprints": {
+        "primaryLocationLineHash": "309f7191f502e078:1"
+      },
+      "original_message": "This hard-coded value is used as [a password](1)."
+    },
+    {
+      "annotation_index": 12,
+      "sarif_result_index": 93,
+      "alert_number": 766,
+      "rule_id": "rust/hard-coded-cryptographic-value",
+      "dismissed_reason": "used in tests",
+      "category": "keyring_test_or_explicit_example_fixture",
+      "explanation": "cfg_test: test_update. Checks replacement of an ASCII fixture with a Unicode fixture and exact retrieval; the cfg(test) generic delegates to a round-trip helper that deletes entries.",
+      "review_file": "independent-sarif-review.json",
+      "state_change_applied": false,
+      "path": "codex-rs/third_party/keyring-3.6.3/src/lib.rs",
+      "location": {
+        "path": "codex-rs/third_party/keyring-3.6.3/src/lib.rs",
+        "start_line": 712,
+        "end_line": 712,
+        "start_column": 13,
+        "end_column": 48
+      },
+      "source_blob": "9243311fd23903e57f8b8a2e90bd694feeb0a488",
+      "partial_fingerprints": {
+        "primaryLocationLineHash": "78e0d9a8336a4017:1"
+      },
+      "original_message": "This hard-coded value is used as [a password](1)."
+    },
+    {
+      "annotation_index": 13,
+      "sarif_result_index": 94,
+      "alert_number": 767,
+      "rule_id": "rust/hard-coded-cryptographic-value",
+      "dismissed_reason": "used in tests",
+      "category": "keyring_test_or_explicit_example_fixture",
+      "explanation": "cfg_test: test_noop_get_update_attributes. Writes a known fixture only to test attribute APIs before/after creation and after deletion.",
+      "review_file": "independent-sarif-review.json",
+      "state_change_applied": false,
+      "path": "codex-rs/third_party/keyring-3.6.3/src/lib.rs",
+      "location": {
+        "path": "codex-rs/third_party/keyring-3.6.3/src/lib.rs",
+        "start_line": 734,
+        "end_line": 734,
+        "start_column": 27,
+        "end_column": 57
+      },
+      "source_blob": "9243311fd23903e57f8b8a2e90bd694feeb0a488",
+      "partial_fingerprints": {
+        "primaryLocationLineHash": "2a1a37670649a815:1"
+      },
+      "original_message": "This hard-coded value is used as [a password](1)."
+    },
+    {
+      "annotation_index": 14,
+      "sarif_result_index": 95,
+      "alert_number": 763,
+      "rule_id": "rust/hard-coded-cryptographic-value",
+      "dismissed_reason": "used in tests",
+      "category": "keyring_test_or_explicit_example_fixture",
+      "explanation": "cfg_test: test_get_credential. Creates a fixture credential, writes the sample to make it exist, checks the platform-specific credential accessor/downcast/attributes, and deletes it.",
+      "review_file": "independent-sarif-review.json",
+      "state_change_applied": false,
+      "path": "codex-rs/third_party/keyring-3.6.3/src/macos.rs",
+      "location": {
+        "path": "codex-rs/third_party/keyring-3.6.3/src/macos.rs",
+        "start_line": 358,
+        "end_line": 358,
+        "start_column": 27,
+        "end_column": 48
+      },
+      "source_blob": "93bf1c49ab526bbe2e6c066342fc18a771b31881",
+      "partial_fingerprints": {
+        "primaryLocationLineHash": "6b2c02ed0d3b2375:1"
+      },
+      "original_message": "This hard-coded value is used as [a password](1)."
+    },
+    {
+      "annotation_index": 15,
+      "sarif_result_index": 96,
+      "alert_number": 768,
+      "rule_id": "rust/hard-coded-cryptographic-value",
+      "dismissed_reason": "used in tests",
+      "category": "keyring_test_or_explicit_example_fixture",
+      "explanation": "cfg_test: test_set_error. Uses MockCredential to inject an error, checks the first set_password failure, then verifies the one-shot error cleared on another fixed fixture write.",
+      "review_file": "independent-sarif-review.json",
+      "state_change_applied": false,
+      "path": "codex-rs/third_party/keyring-3.6.3/src/mock.rs",
+      "location": {
+        "path": "codex-rs/third_party/keyring-3.6.3/src/mock.rs",
+        "start_line": 303,
+        "end_line": 303,
+        "start_column": 24,
+        "end_column": 45
+      },
+      "source_blob": "f9a32e0ecde5596d87d350ad0a0723e2b3553630",
+      "partial_fingerprints": {
+        "primaryLocationLineHash": "cd37cdbe872f3a2:1"
+      },
+      "original_message": "This hard-coded value is used as [a password](1)."
+    },
+    {
+      "annotation_index": 16,
+      "sarif_result_index": 13,
+      "alert_number": 750,
+      "rule_id": "rust/cleartext-logging",
+      "dismissed_reason": "false positive",
+      "category": "vec_remove_receiver_is_not_a_secret_log",
+      "explanation": "The exact analysis models Vec::remove's receiver as a log sink. These calls only retrieve the single successful mapper result. Rust 1.95.0 remove/try_remove never log elements; a bounds panic prints only integer index/length. The mapper's uniqueness checks also exclude an empty successful vector.",
+      "review_file": "logging-flow-review.json",
+      "independent_review_file": "logging-independent-concurrence.json",
+      "state_change_applied": false,
+      "path": "codex-rs/third_party/keyring-3.6.3/src/secret_service.rs",
+      "location": {
+        "path": "codex-rs/third_party/keyring-3.6.3/src/secret_service.rs",
+        "start_line": 203,
+        "end_line": 203,
+        "start_column": 12,
+        "end_column": 61
+      },
+      "source_blob": "f8cffdf9b3c97a934a84c298649af18d8be2f4ae",
+      "partial_fingerprints": {
+        "primaryLocationLineHash": "778ac4097f345b08:1"
+      },
+      "original_message": "This operation writes [set_item_secret(...)](1) to a log file.\nThis operation writes [decode_password(...)](2) to a log file."
+    },
+    {
+      "annotation_index": 17,
+      "sarif_result_index": 14,
+      "alert_number": 751,
+      "rule_id": "rust/cleartext-logging",
+      "dismissed_reason": "false positive",
+      "category": "vec_remove_receiver_is_not_a_secret_log",
+      "explanation": "The exact analysis models Vec::remove's receiver as a log sink. These calls only retrieve the single successful mapper result. Rust 1.95.0 remove/try_remove never log elements; a bounds panic prints only integer index/length. The mapper's uniqueness checks also exclude an empty successful vector.",
+      "review_file": "logging-flow-review.json",
+      "independent_review_file": "logging-independent-concurrence.json",
+      "state_change_applied": false,
+      "path": "codex-rs/third_party/keyring-3.6.3/src/secret_service.rs",
+      "location": {
+        "path": "codex-rs/third_party/keyring-3.6.3/src/secret_service.rs",
+        "start_line": 214,
+        "end_line": 214,
+        "start_column": 12,
+        "end_column": 59
+      },
+      "source_blob": "f8cffdf9b3c97a934a84c298649af18d8be2f4ae",
+      "partial_fingerprints": {
+        "primaryLocationLineHash": "80905df23b25ac85:1"
+      },
+      "original_message": "This operation writes [secret](1) to a log file.\nThis operation writes [set_item_secret(...)](2) to a log file.\nThis operation writes [decode_password(...)](3) to a log file."
+    },
+    {
+      "annotation_index": 18,
+      "sarif_result_index": 15,
+      "alert_number": 752,
+      "rule_id": "rust/cleartext-logging",
+      "dismissed_reason": "false positive",
+      "category": "vec_remove_receiver_is_not_a_secret_log",
+      "explanation": "The exact analysis models Vec::remove's receiver as a log sink. These calls only retrieve the single successful mapper result. Rust 1.95.0 remove/try_remove never log elements; a bounds panic prints only integer index/length. The mapper's uniqueness checks also exclude an empty successful vector.",
+      "review_file": "logging-flow-review.json",
+      "independent_review_file": "logging-independent-concurrence.json",
+      "state_change_applied": false,
+      "path": "codex-rs/third_party/keyring-3.6.3/src/secret_service.rs",
+      "location": {
+        "path": "codex-rs/third_party/keyring-3.6.3/src/secret_service.rs",
+        "start_line": 322,
+        "end_line": 323,
+        "start_column": 12,
+        "end_column": 60
+      },
+      "source_blob": "f8cffdf9b3c97a934a84c298649af18d8be2f4ae",
+      "partial_fingerprints": {
+        "primaryLocationLineHash": "4e5750f6b71af681:1"
+      },
+      "original_message": "This operation writes [set_item_secret(...)](1) to a log file.\nThis operation writes [decode_password(...)](2) to a log file."
+    },
+    {
+      "annotation_index": 19,
+      "sarif_result_index": 105,
+      "alert_number": 774,
+      "rule_id": "rust/hard-coded-cryptographic-value",
+      "dismissed_reason": "used in tests",
+      "category": "keyring_test_or_explicit_example_fixture",
+      "explanation": "cfg_test: test_get_credential. Creates a fixture credential, writes the sample to make it exist, checks the platform-specific credential accessor/downcast/attributes, and deletes it.",
+      "review_file": "independent-sarif-review.json",
+      "state_change_applied": false,
+      "path": "codex-rs/third_party/keyring-3.6.3/src/secret_service.rs",
+      "location": {
+        "path": "codex-rs/third_party/keyring-3.6.3/src/secret_service.rs",
+        "start_line": 712,
+        "end_line": 712,
+        "start_column": 27,
+        "end_column": 48
+      },
+      "source_blob": "f8cffdf9b3c97a934a84c298649af18d8be2f4ae",
+      "partial_fingerprints": {
+        "primaryLocationLineHash": "e6af41914b6224ef:1"
+      },
+      "original_message": "This hard-coded value is used as [a password](1)."
+    },
+    {
+      "annotation_index": 20,
+      "sarif_result_index": 106,
+      "alert_number": 777,
+      "rule_id": "rust/hard-coded-cryptographic-value",
+      "dismissed_reason": "used in tests",
+      "category": "keyring_test_or_explicit_example_fixture",
+      "explanation": "cfg_test: test_get_update_attributes. Writes a known fixture to test credential metadata reads and updates; isolated entry construction and deletion are explicit.",
+      "review_file": "independent-sarif-review.json",
+      "state_change_applied": false,
+      "path": "codex-rs/third_party/keyring-3.6.3/src/secret_service.rs",
+      "location": {
+        "path": "codex-rs/third_party/keyring-3.6.3/src/secret_service.rs",
+        "start_line": 758,
+        "end_line": 758,
+        "start_column": 27,
+        "end_column": 57
+      },
+      "source_blob": "f8cffdf9b3c97a934a84c298649af18d8be2f4ae",
+      "partial_fingerprints": {
+        "primaryLocationLineHash": "2a1a37670649a815:1"
+      },
+      "original_message": "This hard-coded value is used as [a password](1)."
+    },
+    {
+      "annotation_index": 21,
+      "sarif_result_index": 107,
+      "alert_number": 779,
+      "rule_id": "rust/hard-coded-cryptographic-value",
+      "dismissed_reason": "used in tests",
+      "category": "keyring_test_or_explicit_example_fixture",
+      "explanation": "cfg_test: test_create_new_target_collection. An ignored headless-incompatible #[test] creates a random collection, round-trips its sample, then deletes the credential and collection.",
+      "review_file": "independent-sarif-review.json",
+      "state_change_applied": false,
+      "path": "codex-rs/third_party/keyring-3.6.3/src/secret_service.rs",
+      "location": {
+        "path": "codex-rs/third_party/keyring-3.6.3/src/secret_service.rs",
+        "start_line": 802,
+        "end_line": 802,
+        "start_column": 24,
+        "end_column": 52
+      },
+      "source_blob": "f8cffdf9b3c97a934a84c298649af18d8be2f4ae",
+      "partial_fingerprints": {
+        "primaryLocationLineHash": "6cc2c4d6991f891e:1"
+      },
+      "original_message": "This hard-coded value is used as [a password](1)."
+    },
+    {
+      "annotation_index": 22,
+      "sarif_result_index": 108,
+      "alert_number": 780,
+      "rule_id": "rust/hard-coded-cryptographic-value",
+      "dismissed_reason": "used in tests",
+      "category": "keyring_test_or_explicit_example_fixture",
+      "explanation": "cfg_test: test_separate_targets_dont_interfere. An ignored headless-incompatible #[test] writes three distinct samples to two random collections plus the default collection, verifies isolation, and deletes all fixtures.",
+      "review_file": "independent-sarif-review.json",
+      "state_change_applied": false,
+      "path": "codex-rs/third_party/keyring-3.6.3/src/secret_service.rs",
+      "location": {
+        "path": "codex-rs/third_party/keyring-3.6.3/src/secret_service.rs",
+        "start_line": 829,
+        "end_line": 829,
+        "start_column": 25,
+        "end_column": 52
+      },
+      "source_blob": "f8cffdf9b3c97a934a84c298649af18d8be2f4ae",
+      "partial_fingerprints": {
+        "primaryLocationLineHash": "80b4adad9b698973:1"
+      },
+      "original_message": "This hard-coded value is used as [a password](1)."
+    },
+    {
+      "annotation_index": 23,
+      "sarif_result_index": 109,
+      "alert_number": 781,
+      "rule_id": "rust/hard-coded-cryptographic-value",
+      "dismissed_reason": "used in tests",
+      "category": "keyring_test_or_explicit_example_fixture",
+      "explanation": "cfg_test: test_separate_targets_dont_interfere. An ignored headless-incompatible #[test] writes three distinct samples to two random collections plus the default collection, verifies isolation, and deletes all fixtures.",
+      "review_file": "independent-sarif-review.json",
+      "state_change_applied": false,
+      "path": "codex-rs/third_party/keyring-3.6.3/src/secret_service.rs",
+      "location": {
+        "path": "codex-rs/third_party/keyring-3.6.3/src/secret_service.rs",
+        "start_line": 830,
+        "end_line": 830,
+        "start_column": 25,
+        "end_column": 52
+      },
+      "source_blob": "f8cffdf9b3c97a934a84c298649af18d8be2f4ae",
+      "partial_fingerprints": {
+        "primaryLocationLineHash": "713e3653503dc1b1:1"
+      },
+      "original_message": "This hard-coded value is used as [a password](1)."
+    },
+    {
+      "annotation_index": 24,
+      "sarif_result_index": 110,
+      "alert_number": 782,
+      "rule_id": "rust/hard-coded-cryptographic-value",
+      "dismissed_reason": "used in tests",
+      "category": "keyring_test_or_explicit_example_fixture",
+      "explanation": "cfg_test: test_separate_targets_dont_interfere. An ignored headless-incompatible #[test] writes three distinct samples to two random collections plus the default collection, verifies isolation, and deletes all fixtures.",
+      "review_file": "independent-sarif-review.json",
+      "state_change_applied": false,
+      "path": "codex-rs/third_party/keyring-3.6.3/src/secret_service.rs",
+      "location": {
+        "path": "codex-rs/third_party/keyring-3.6.3/src/secret_service.rs",
+        "start_line": 831,
+        "end_line": 831,
+        "start_column": 25,
+        "end_column": 58
+      },
+      "source_blob": "f8cffdf9b3c97a934a84c298649af18d8be2f4ae",
+      "partial_fingerprints": {
+        "primaryLocationLineHash": "789e58bc18f7eb4b:1"
+      },
+      "original_message": "This hard-coded value is used as [a password](1)."
+    },
+    {
+      "annotation_index": 25,
+      "sarif_result_index": 111,
+      "alert_number": 783,
+      "rule_id": "rust/hard-coded-cryptographic-value",
+      "dismissed_reason": "used in tests",
+      "category": "keyring_test_or_explicit_example_fixture",
+      "explanation": "cfg_test: test_legacy_entry. Creates a legacy-format fixture with a known value, reads it through the newer API, asserts equality, and deletes the entry.",
+      "review_file": "independent-sarif-review.json",
+      "state_change_applied": false,
+      "path": "codex-rs/third_party/keyring-3.6.3/src/secret_service.rs",
+      "location": {
+        "path": "codex-rs/third_party/keyring-3.6.3/src/secret_service.rs",
+        "start_line": 872,
+        "end_line": 872,
+        "start_column": 18,
+        "end_column": 33
+      },
+      "source_blob": "f8cffdf9b3c97a934a84c298649af18d8be2f4ae",
+      "partial_fingerprints": {
+        "primaryLocationLineHash": "ccacdc6e190fa1f7:1"
+      },
+      "original_message": "This hard-coded value is used as [a password](1)."
+    },
+    {
+      "annotation_index": 26,
+      "sarif_result_index": 112,
+      "alert_number": 784,
+      "rule_id": "rust/hard-coded-cryptographic-value",
+      "dismissed_reason": "used in tests",
+      "category": "keyring_test_or_explicit_example_fixture",
+      "explanation": "cfg_test: test_get_update_attributes. Writes a known fixture to test credential metadata reads and updates; isolated entry construction and deletion are explicit.",
+      "review_file": "independent-sarif-review.json",
+      "state_change_applied": false,
+      "path": "codex-rs/third_party/keyring-3.6.3/src/windows.rs",
+      "location": {
+        "path": "codex-rs/third_party/keyring-3.6.3/src/windows.rs",
+        "start_line": 736,
+        "end_line": 736,
+        "start_column": 27,
+        "end_column": 57
+      },
+      "source_blob": "a4dcf0038ee8e46c020cf72d294e56b03cf6b45f",
+      "partial_fingerprints": {
+        "primaryLocationLineHash": "2a1a37670649a815:1"
+      },
+      "original_message": "This hard-coded value is used as [a password](1)."
+    },
+    {
+      "annotation_index": 27,
+      "sarif_result_index": 113,
+      "alert_number": 785,
+      "rule_id": "rust/hard-coded-cryptographic-value",
+      "dismissed_reason": "used in tests",
+      "category": "keyring_test_or_explicit_example_fixture",
+      "explanation": "cfg_test: test_get_credential. Creates a fixture credential, writes the sample to make it exist, checks the platform-specific credential accessor/downcast/attributes, and deletes it.",
+      "review_file": "independent-sarif-review.json",
+      "state_change_applied": false,
+      "path": "codex-rs/third_party/keyring-3.6.3/src/windows.rs",
+      "location": {
+        "path": "codex-rs/third_party/keyring-3.6.3/src/windows.rs",
+        "start_line": 769,
+        "end_line": 769,
+        "start_column": 24,
+        "end_column": 43
+      },
+      "source_blob": "a4dcf0038ee8e46c020cf72d294e56b03cf6b45f",
+      "partial_fingerprints": {
+        "primaryLocationLineHash": "2aed0987f304e751:1"
+      },
+      "original_message": "This hard-coded value is used as [a password](1)."
+    },
+    {
+      "annotation_index": 28,
+      "sarif_result_index": 97,
+      "alert_number": 769,
+      "rule_id": "rust/hard-coded-cryptographic-value",
+      "dismissed_reason": "used in tests",
+      "category": "keyring_test_or_explicit_example_fixture",
+      "explanation": "manifest_test_target: test_empty_password. Tests the empty-password storage boundary with exact retrieval/deletion, or backend-specific rejection. It is not a deployment credential.",
+      "review_file": "independent-sarif-review.json",
+      "state_change_applied": false,
+      "path": "codex-rs/third_party/keyring-3.6.3/tests/basic.rs",
+      "location": {
+        "path": "codex-rs/third_party/keyring-3.6.3/tests/basic.rs",
+        "start_line": 28,
+        "end_line": 28,
+        "start_column": 19,
+        "end_column": 21
+      },
+      "source_blob": "ca3ab197cc53f989d6b53cce27fd801f83a993c8",
+      "partial_fingerprints": {
+        "primaryLocationLineHash": "be7004dfdf777b1b:1"
+      },
+      "original_message": "This hard-coded value is used as [a password](1)."
+    },
+    {
+      "annotation_index": 29,
+      "sarif_result_index": 98,
+      "alert_number": 770,
+      "rule_id": "rust/hard-coded-cryptographic-value",
+      "dismissed_reason": "used in tests",
+      "category": "keyring_test_or_explicit_example_fixture",
+      "explanation": "manifest_test_target: test_round_trip_ascii_password. Stores a fixed ASCII sample in a fixture entry, asserts its returned value, and deletes the entry; exercises byte-for-byte credential storage.",
+      "review_file": "independent-sarif-review.json",
+      "state_change_applied": false,
+      "path": "codex-rs/third_party/keyring-3.6.3/tests/basic.rs",
+      "location": {
+        "path": "codex-rs/third_party/keyring-3.6.3/tests/basic.rs",
+        "start_line": 50,
+        "end_line": 50,
+        "start_column": 20,
+        "end_column": 41
+      },
+      "source_blob": "ca3ab197cc53f989d6b53cce27fd801f83a993c8",
+      "partial_fingerprints": {
+        "primaryLocationLineHash": "63cc4153bed99a8b:1"
+      },
+      "original_message": "This hard-coded value is used as [a password](1)."
+    },
+    {
+      "annotation_index": 30,
+      "sarif_result_index": 99,
+      "alert_number": 771,
+      "rule_id": "rust/hard-coded-cryptographic-value",
+      "dismissed_reason": "used in tests",
+      "category": "keyring_test_or_explicit_example_fixture",
+      "explanation": "manifest_test_target: test_round_trip_non_ascii_password. Stores a fixed Unicode sample in a fixture entry, asserts its returned value, and deletes the entry; exercises encoding rather than authentication.",
+      "review_file": "independent-sarif-review.json",
+      "state_change_applied": false,
+      "path": "codex-rs/third_party/keyring-3.6.3/tests/basic.rs",
+      "location": {
+        "path": "codex-rs/third_party/keyring-3.6.3/tests/basic.rs",
+        "start_line": 74,
+        "end_line": 74,
+        "start_column": 20,
+        "end_column": 55
+      },
+      "source_blob": "ca3ab197cc53f989d6b53cce27fd801f83a993c8",
+      "partial_fingerprints": {
+        "primaryLocationLineHash": "527f574d7630b7e2:1"
+      },
+      "original_message": "This hard-coded value is used as [a password](1)."
+    },
+    {
+      "annotation_index": 31,
+      "sarif_result_index": 100,
+      "alert_number": 772,
+      "rule_id": "rust/hard-coded-cryptographic-value",
+      "dismissed_reason": "used in tests",
+      "category": "keyring_test_or_explicit_example_fixture",
+      "explanation": "manifest_test_target: test_update. Checks replacement of an ASCII fixture with a Unicode fixture and exact retrieval; the cfg(test) generic delegates to a round-trip helper that deletes entries.",
+      "review_file": "independent-sarif-review.json",
+      "state_change_applied": false,
+      "path": "codex-rs/third_party/keyring-3.6.3/tests/basic.rs",
+      "location": {
+        "path": "codex-rs/third_party/keyring-3.6.3/tests/basic.rs",
+        "start_line": 123,
+        "end_line": 123,
+        "start_column": 20,
+        "end_column": 41
+      },
+      "source_blob": "ca3ab197cc53f989d6b53cce27fd801f83a993c8",
+      "partial_fingerprints": {
+        "primaryLocationLineHash": "21fdaf98549e4d24:1"
+      },
+      "original_message": "This hard-coded value is used as [a password](1)."
+    },
+    {
+      "annotation_index": 32,
+      "sarif_result_index": 101,
+      "alert_number": 773,
+      "rule_id": "rust/hard-coded-cryptographic-value",
+      "dismissed_reason": "used in tests",
+      "category": "keyring_test_or_explicit_example_fixture",
+      "explanation": "manifest_test_target: test_update. Checks replacement of an ASCII fixture with a Unicode fixture and exact retrieval; the cfg(test) generic delegates to a round-trip helper that deletes entries.",
+      "review_file": "independent-sarif-review.json",
+      "state_change_applied": false,
+      "path": "codex-rs/third_party/keyring-3.6.3/tests/basic.rs",
+      "location": {
+        "path": "codex-rs/third_party/keyring-3.6.3/tests/basic.rs",
+        "start_line": 132,
+        "end_line": 132,
+        "start_column": 20,
+        "end_column": 55
+      },
+      "source_blob": "ca3ab197cc53f989d6b53cce27fd801f83a993c8",
+      "partial_fingerprints": {
+        "primaryLocationLineHash": "e369d3534e7a64d:1"
+      },
+      "original_message": "This hard-coded value is used as [a password](1)."
+    },
+    {
+      "annotation_index": 33,
+      "sarif_result_index": 102,
+      "alert_number": 775,
+      "rule_id": "rust/hard-coded-cryptographic-value",
+      "dismissed_reason": "used in tests",
+      "category": "keyring_test_or_explicit_example_fixture",
+      "explanation": "manifest_test_target: test_create_then_move. A manifest-declared integration #[test] moves a random-name fixture to a worker thread, round-trips/replaces two known values, deletes it, and joins the thread.",
+      "review_file": "independent-sarif-review.json",
+      "state_change_applied": false,
+      "path": "codex-rs/third_party/keyring-3.6.3/tests/threading.rs",
+      "location": {
+        "path": "codex-rs/third_party/keyring-3.6.3/tests/threading.rs",
+        "start_line": 15,
+        "end_line": 15,
+        "start_column": 24,
+        "end_column": 45
+      },
+      "source_blob": "ada7ff026dbce3c61f1a39fb1c944f9194b319fd",
+      "partial_fingerprints": {
+        "primaryLocationLineHash": "21fdaf98549e4d24:1"
+      },
+      "original_message": "This hard-coded value is used as [a password](1)."
+    },
+    {
+      "annotation_index": 34,
+      "sarif_result_index": 103,
+      "alert_number": 776,
+      "rule_id": "rust/hard-coded-cryptographic-value",
+      "dismissed_reason": "used in tests",
+      "category": "keyring_test_or_explicit_example_fixture",
+      "explanation": "manifest_test_target: test_create_then_move. A manifest-declared integration #[test] moves a random-name fixture to a worker thread, round-trips/replaces two known values, deletes it, and joins the thread.",
+      "review_file": "independent-sarif-review.json",
+      "state_change_applied": false,
+      "path": "codex-rs/third_party/keyring-3.6.3/tests/threading.rs",
+      "location": {
+        "path": "codex-rs/third_party/keyring-3.6.3/tests/threading.rs",
+        "start_line": 24,
+        "end_line": 24,
+        "start_column": 24,
+        "end_column": 59
+      },
+      "source_blob": "ada7ff026dbce3c61f1a39fb1c944f9194b319fd",
+      "partial_fingerprints": {
+        "primaryLocationLineHash": "527f574d7630b7e2:1"
+      },
+      "original_message": "This hard-coded value is used as [a password](1)."
+    },
+    {
+      "annotation_index": 35,
+      "sarif_result_index": 104,
+      "alert_number": 778,
+      "rule_id": "rust/hard-coded-cryptographic-value",
+      "dismissed_reason": "used in tests",
+      "category": "keyring_test_or_explicit_example_fixture",
+      "explanation": "manifest_test_target: test_create_set_then_move. A manifest-declared non-Windows integration #[test] writes a known value before moving its fixture to a worker; the worker checks retrieval/deletion and is joined.",
+      "review_file": "independent-sarif-review.json",
+      "state_change_applied": false,
+      "path": "codex-rs/third_party/keyring-3.6.3/tests/threading.rs",
+      "location": {
+        "path": "codex-rs/third_party/keyring-3.6.3/tests/threading.rs",
+        "start_line": 82,
+        "end_line": 82,
+        "start_column": 20,
+        "end_column": 41
+      },
+      "source_blob": "ada7ff026dbce3c61f1a39fb1c944f9194b319fd",
+      "partial_fingerprints": {
+        "primaryLocationLineHash": "63cc4153bed99a8b:1"
+      },
+      "original_message": "This hard-coded value is used as [a password](1)."
+    },
+    {
+      "annotation_index": 36,
+      "sarif_result_index": 152,
+      "alert_number": 786,
+      "rule_id": "rust/hard-coded-cryptographic-value",
+      "dismissed_reason": "false positive",
+      "category": "salt_initializer_overwritten_before_successful_use",
+      "explanation": "The reported flow runs from the zero-initialized salt buffer at line 188 to the KDF argument at line 210. It omits the intervening full-buffer write by decoded.read_exact(&mut salt)? at line 193. A short read returns an error before the KDF. Successful decryption uses the serialized salt; an all-zero input salt would be input data, not this initializer surviving unchanged.",
+      "review_file": "independent-sarif-review.json",
+      "state_change_applied": false,
+      "path": "codex-rs/third_party/matrix-sdk-crypto-0.18.0/src/file_encryption/key_export.rs",
+      "location": {
+        "path": "codex-rs/third_party/matrix-sdk-crypto-0.18.0/src/file_encryption/key_export.rs",
+        "start_line": 188,
+        "end_line": 188,
+        "start_column": 20,
+        "end_column": 36
+      },
+      "source_blob": "74d670ec65b0989f37eca948706cc3f50da567d8",
+      "partial_fingerprints": {
+        "primaryLocationLineHash": "3bdcf9bc26eea840:1"
+      },
+      "original_message": "This hard-coded value is used as [a salt](1)."
+    },
+    {
+      "annotation_index": 37,
+      "sarif_result_index": 8,
+      "alert_number": 790,
+      "rule_id": "rust/access-invalid-pointer",
+      "dismissed_reason": "false positive",
+      "category": "guarded_win32_out_parameter_read",
+      "explanation": "The reported path starts at null_mut and jumps to read_unaligned. Actual source calls GetAce with &mut ace, rejects failed GetAce or a null result, and checks the requested span against a validated live ACL before the read. The unchanged-null path shown by the SARIF cannot reach the read through these guards. Source inspection also checked allocation lifetime and full bounds, rather than assuming non-null implies validity.",
+      "review_file": "independent-sarif-review.json",
+      "state_change_applied": false,
+      "path": "codex-rs/utils/path-utils/src/private_state_windows.rs",
+      "location": {
+        "path": "codex-rs/utils/path-utils/src/private_state_windows.rs",
+        "start_line": 341,
+        "end_line": 341,
+        "start_column": 51,
+        "end_column": 75
+      },
+      "source_blob": "5f7ba5c3b8f16a1e3016b92902f1ca9dd90747a1",
+      "partial_fingerprints": {
+        "primaryLocationLineHash": "4a00735ec08d789:1"
+      },
+      "original_message": "This operation dereferences a pointer that may be [invalid](1)."
+    },
+    {
+      "annotation_index": 38,
+      "sarif_result_index": 9,
+      "alert_number": 791,
+      "rule_id": "rust/access-invalid-pointer",
+      "dismissed_reason": "false positive",
+      "category": "guarded_win32_out_parameter_read",
+      "explanation": "The reported path starts at null_mut and jumps to read_unaligned. Actual source calls GetAce with &mut ace, rejects failed GetAce or a null result, and checks the requested span against a validated live ACL before the read. The unchanged-null path shown by the SARIF cannot reach the read through these guards. Source inspection also checked allocation lifetime and full bounds, rather than assuming non-null implies validity.",
+      "review_file": "independent-sarif-review.json",
+      "state_change_applied": false,
+      "path": "codex-rs/utils/path-utils/src/private_state_windows.rs",
+      "location": {
+        "path": "codex-rs/utils/path-utils/src/private_state_windows.rs",
+        "start_line": 368,
+        "end_line": 368,
+        "start_column": 52,
+        "end_column": 84
+      },
+      "source_blob": "5f7ba5c3b8f16a1e3016b92902f1ca9dd90747a1",
+      "partial_fingerprints": {
+        "primaryLocationLineHash": "6f33605c2b488c38:1"
+      },
+      "original_message": "This operation dereferences a pointer that may be [invalid](1)."
+    },
+    {
+      "annotation_index": 39,
+      "sarif_result_index": 7,
+      "alert_number": 792,
+      "rule_id": "rust/access-invalid-pointer",
+      "dismissed_reason": "false positive",
+      "category": "guarded_win32_out_parameter_read",
+      "explanation": "The reported path starts at null_mut and jumps to read_unaligned. Actual source calls GetAce with &mut ace, rejects failed GetAce or a null result, and checks the requested span against a validated live ACL before the read. The unchanged-null path shown by the SARIF cannot reach the read through these guards. Source inspection also checked allocation lifetime and full bounds, rather than assuming non-null implies validity.",
+      "review_file": "independent-sarif-review.json",
+      "state_change_applied": false,
+      "path": "codex-rs/utils/path-utils/src/private_state_windows_security_tests.rs",
+      "location": {
+        "path": "codex-rs/utils/path-utils/src/private_state_windows_security_tests.rs",
+        "start_line": 108,
+        "end_line": 108,
+        "start_column": 47,
+        "end_column": 71
+      },
+      "source_blob": "5ee4110ac4bd633cc07bbca3ebc4f4e0b6ff67ff",
+      "partial_fingerprints": {
+        "primaryLocationLineHash": "58ef2abcc723dfec:1"
+      },
+      "original_message": "This operation dereferences a pointer that may be [invalid](1)."
+    }
+  ]
+}
