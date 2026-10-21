@@ -1469,6 +1469,16 @@ fn observe_event(
         ServerNotification::AgentMessageDelta(delta)
             if delta.thread_id == output.thread_id && delta.turn_id == output.turn_id =>
         {
+            // Delta text is output evidence, not an unbound stream of bytes.
+            // Check the real App Server connection/version/home before mutation.
+            if adapt_observed_event(&binding.intent, &binding.turn_id, observed)
+                .map_err(|error| format!("invalid App Server delta witness: {error}"))?
+                .is_some()
+            {
+                return Err(
+                    "agent message delta unexpectedly produced a terminal receipt".to_string(),
+                );
+            }
             if delta.delta.len() > MAX_OUTPUT_BYTES.saturating_sub(output.output.len()) {
                 return Err("output byte limit exceeded".to_string());
             }
@@ -1503,6 +1513,14 @@ fn observe_event(
         ServerNotification::ThreadTokenUsageUpdated(usage)
             if usage.thread_id == output.thread_id && usage.turn_id == output.turn_id =>
         {
+            // Usage is an observed provider fact. A matching thread/turn without
+            // the exact App Server transport identity cannot update it.
+            if adapt_observed_event(&binding.intent, &binding.turn_id, observed)
+                .map_err(|error| format!("invalid App Server usage witness: {error}"))?
+                .is_some()
+            {
+                return Err("token usage unexpectedly produced a terminal receipt".to_string());
+            }
             let observed_tokens = u64::try_from(usage.token_usage.total.output_tokens)
                 .map_err(|_| "invalid negative provider usage".to_string())?;
             if output
