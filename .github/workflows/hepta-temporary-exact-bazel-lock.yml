@@ -1,0 +1,54 @@
+name: Hepta temporary exact Bazel lock
+
+on:
+  push:
+    branches:
+      - codex/ci-2862-fix-crate-root-20261019
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  lock:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - name: Checkout exact candidate
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Prepare Bazel CI
+        uses: ./.github/actions/prepare-bazel-ci
+        with:
+          target: x86_64-unknown-linux-gnu
+          cache-scope: temporary-exact-lock
+      - name: Generate and retain exact lock candidate
+        shell: bash
+        run: |
+          set -uo pipefail
+          mkdir -p .hepta-lock
+          printf '%s\n' "$(git rev-parse HEAD)" > .hepta-lock/source.sha
+          set +e
+          ./scripts/check-module-bazel-lock.sh > .hepta-lock/before.log 2>&1
+          printf '%s\n' "$?" > .hepta-lock/before.exit
+          just bazel-lock-update > .hepta-lock/update.log 2>&1
+          printf '%s\n' "$?" > .hepta-lock/update.exit
+          ./scripts/check-module-bazel-lock.sh > .hepta-lock/after.log 2>&1
+          printf '%s\n' "$?" > .hepta-lock/after.exit
+          git diff --stat -- MODULE.bazel.lock > .hepta-lock/diff.stat
+          git diff --numstat -- MODULE.bazel.lock > .hepta-lock/diff.numstat
+          cp MODULE.bazel.lock .hepta-lock/MODULE.bazel.lock
+          sha256sum MODULE.bazel.lock > .hepta-lock/MODULE.bazel.lock.sha256
+          set -e
+      - name: Upload exact lock candidate
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: hepta-temporary-exact-lock-${{ github.sha }}
+          path: .hepta-lock
+          include-hidden-files: true
+          if-no-files-found: error
+          retention-days: 3
