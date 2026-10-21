@@ -1,0 +1,92 @@
+name: Request the existing trusted desktop availability probe
+
+on:
+  push:
+    branches: [agents/20261021/trusted-desktop-probe-request]
+
+permissions:
+  contents: read
+  actions: write
+
+jobs:
+  request-existing-probe:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    env:
+      GH_TOKEN: ${{ github.token }}
+    steps:
+      - name: Verify the existing main-only read-only probe and dispatch it once
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$GITHUB_REPOSITORY" = TrillionniumFoundation/hepta-private-ci
+          test "$GITHUB_REF" = refs/heads/agents/20261021/trusted-desktop-probe-request
+          test "$GITHUB_RUN_ATTEMPT" = 1
+          python3 - <<'PY'
+          import datetime
+          import json
+          import os
+          from pathlib import Path
+          import subprocess
+          import time
+
+          repository = os.environ["GITHUB_REPOSITORY"]
+          root = Path("evidence")
+          root.mkdir()
+          workflow = "self-hosted-desktop-availability.yml"
+          workflow_blob = "54fef7f63726fd870974223b2205b73664995f24"
+          expected_main = "f8c9419df6ddeb36ff8b522a50219981fb8d9345"
+          def get(endpoint):
+              return json.loads(subprocess.check_output(["gh", "api", "--allow-escape-sequences", endpoint], text=True))
+          ref = get(f"repos/{repository}/git/ref/heads/main")
+          assert ref["object"]["sha"] == expected_main, "Main changed; review the trusted probe again"
+          source = get(f"repos/{repository}/contents/.github/workflows/{workflow}?ref={expected_main}")
+          assert source["sha"] == workflow_blob, "Trusted probe content changed"
+          runs_path = f"repos/{repository}/actions/workflows/{workflow}/runs?event=workflow_dispatch&branch=main&per_page=100"
+          before = get(runs_path)
+          previous_ids = {run["id"] for run in before["workflow_runs"]}
+          request = {"ref": "main", "inputs": {"reason": "organ-blocker-availability-20261021"}}
+          (root / "request.json").write_text(json.dumps(request, indent=2) + "\n")
+          record = {"repository": repository, "expected_main_sha": expected_main,
+                    "trusted_workflow_blob": workflow_blob, "requester_commit": os.environ["GITHUB_SHA"],
+                    "requester_run_id": os.environ["GITHUB_RUN_ID"],
+                    "requested_at_utc": datetime.datetime.now(datetime.UTC).isoformat(),
+                    "dispatch_attempts": 1, "existing_probe_unchanged": True}
+          (root / "dispatch.json").write_text(json.dumps(record, indent=2) + "\n")
+          with (root / "dispatch-response.log").open("wb") as output:
+              result = subprocess.run(["gh", "api", "--method", "POST",
+                  f"repos/{repository}/actions/workflows/{workflow}/dispatches",
+                  "--input", str(root / "request.json")], stdout=output, stderr=subprocess.STDOUT, check=False)
+          record["dispatch_exit_code"] = result.returncode
+          (root / "dispatch.json").write_text(json.dumps(record, indent=2) + "\n")
+          if result.returncode:
+              raise SystemExit(result.returncode)
+          candidates = []
+          for attempt in range(6):
+              observed = get(runs_path)
+              candidates = [run for run in observed["workflow_runs"]
+                            if run["id"] not in previous_ids and run["head_sha"] == expected_main
+                            and run["event"] == "workflow_dispatch"
+                            and run["actor"]["login"] == "github-actions[bot]"]
+              if candidates:
+                  break
+              time.sleep(5)
+          record["matching_runs"] = [{"id": run["id"], "html_url": run["html_url"],
+                                      "status": run["status"], "conclusion": run["conclusion"],
+                                      "head_sha": run["head_sha"], "event": run["event"]}
+                                     for run in candidates]
+          (root / "dispatch.json").write_text(json.dumps(record, indent=2) + "\n")
+          if len(candidates) != 1:
+              raise SystemExit("Dispatch accepted but a unique new run is not yet observable; do not dispatch again")
+          print("Existing trusted desktop probe requested: " + candidates[0]["html_url"])
+          print("Runner availability is not established until that probe actually executes.")
+          PY
+
+      - name: Retain the bounded dispatch receipt
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: trusted-desktop-probe-request-${{ github.run_id }}
+          path: evidence/
+          if-no-files-found: error
+          retention-days: 7
