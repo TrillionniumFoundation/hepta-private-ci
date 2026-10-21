@@ -105,6 +105,69 @@ async fn invalidated_tracker_suppresses_existing_diff() {
 }
 
 #[tokio::test]
+async fn repository_fallback_rerenders_nested_paths_without_aliasing_parent_files() {
+    let dir = tempdir().expect("tempdir");
+    let cwd = dir.path().join("subdir");
+    fs::create_dir(&cwd).expect("create nested cwd");
+    let mut tracker = TurnDiffTracker::with_environment_display_roots([
+        (
+            "".to_string(),
+            PathUri::from_host_native_path(&cwd).expect("absolute turn cwd"),
+        ),
+        (
+            "".to_string(),
+            PathUri::from_host_native_path(dir.path()).expect("absolute repository root"),
+        ),
+    ]);
+    let nested = apply_verified_patch(
+        &cwd,
+        "*** Begin Patch\n*** Add File: work.txt\n+nested\n*** End Patch",
+    )
+    .await;
+    tracker.track_delta("", &nested);
+    let nested_oid = git_blob_sha1_hex("nested\n");
+    let expected_nested = format!(
+        r#"diff --git a/work.txt b/work.txt
+new file mode {REGULAR_FILE_MODE}
+index {ZERO_OID}..{nested_oid}
+--- {DEV_NULL}
++++ b/work.txt
+@@ -0,0 +1 @@
++nested
+"#,
+    );
+    assert_eq!(tracker.get_unified_diff(), Some(expected_nested));
+    assert_eq!(tracker.rendered_diff_count(), 1);
+
+    let parent = apply_verified_patch(
+        dir.path(),
+        "*** Begin Patch\n*** Add File: work.txt\n+parent\n*** End Patch",
+    )
+    .await;
+    tracker.track_delta("", &parent);
+    let parent_oid = git_blob_sha1_hex("parent\n");
+    let expected = format!(
+        r#"diff --git a/subdir/work.txt b/subdir/work.txt
+new file mode {REGULAR_FILE_MODE}
+index {ZERO_OID}..{nested_oid}
+--- {DEV_NULL}
++++ b/subdir/work.txt
+@@ -0,0 +1 @@
++nested
+diff --git a/work.txt b/work.txt
+new file mode {REGULAR_FILE_MODE}
+index {ZERO_OID}..{parent_oid}
+--- {DEV_NULL}
++++ b/work.txt
+@@ -0,0 +1 @@
++parent
+"#,
+    );
+    assert_eq!(tracker.get_unified_diff(), Some(expected));
+    assert_eq!(tracker.rendered_diff_count(), 3);
+}
+
+#[tokio::test]
 async fn tracks_same_absolute_path_across_multiple_environments() {
     let dir = tempdir().expect("tempdir");
     let add = apply_verified_patch(

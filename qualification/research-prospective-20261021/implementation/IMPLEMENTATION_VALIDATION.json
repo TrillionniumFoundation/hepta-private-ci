@@ -1,0 +1,22 @@
+{
+  "schema": "hepta.external-git-event.implementation-validation.v1",
+  "checked_at": "2026-10-21T10:30:57.132873+00:00",
+  "code_identity_sha256": "d6f34f3b7e732dfa36d7e8764a055ea3ae0219f52dfc610ea9bef7344542dc0a",
+  "unittest_command": "python -m unittest -v test_external_git_profile.py",
+  "unittest_exit_code": 0,
+  "unittest_log_sha256": "fbdafb57929d40a916b90164891b08e0f1ccbd34171cf22642c01501d1423006",
+  "tests": 6,
+  "ruff_version": "0.15.13",
+  "ruff_publisher_receipt_sha256": "a8fe70f43da69cb17f921ae0843980244723a26d363ede5b329ddd9656978996",
+  "ruff_check_arguments": [
+    "check",
+    "--select",
+    "E,F,I"
+  ],
+  "ruff_check_stdout": "All checks passed!\n",
+  "ruff_check_exit_code": 0,
+  "ruff_format_check_stdout": "5 files already formatted\n",
+  "ruff_format_check_exit_code": 0,
+  "model_calls": 0,
+  "production_accepted": false
+}

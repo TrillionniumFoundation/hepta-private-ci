@@ -2,7 +2,6 @@ use std::fs::OpenOptions;
 use std::io::Write;
 use std::path::Path;
 use std::path::PathBuf;
-use std::process::Command;
 
 use base64::Engine as _;
 use base64::engine::general_purpose::STANDARD;
@@ -18,6 +17,7 @@ use super::validate_ed25519_blob;
 use crate::durable::canonical_json;
 use crate::durable::sha256;
 use crate::test_support::private_tempdir;
+use crate::test_support::ssh_keygen;
 
 #[test]
 fn sshsig_verifies_only_exact_namespace_against_pinned_policy() {
@@ -50,6 +50,40 @@ fn sshsig_verifies_only_exact_namespace_against_pinned_policy() {
 
     let wrong = fixture.sign(statement, "hepta-operator-acceptance-v1", "wrong-namespace");
     assert!(anchor.verify(statement, &wrong).is_err());
+}
+
+#[test]
+fn mutable_binding_cannot_replace_the_privately_pinned_signer() {
+    let fixture = TrustFixture::new();
+    let other = TrustFixture::new();
+    let mut anchor = fixture.load_anchor();
+    anchor.binding.key_fingerprint = other.policy_value.key_fingerprint.clone();
+    let statement = b"pinned signer must survive mutable display metadata";
+    let signature = other.sign(statement, SSHSIG_NAMESPACE, "other-signer");
+    assert!(anchor.verify(statement, &signature).is_err());
+}
+
+#[test]
+fn mutable_binding_cannot_relabel_the_pinned_principal() {
+    let fixture = TrustFixture::new();
+    let mut anchor = fixture.load_anchor();
+    anchor.binding.principal = "other@example".to_string();
+    let statement = b"pinned principal must survive mutable display metadata";
+    let signature = fixture.sign(statement, SSHSIG_NAMESPACE, "other-principal");
+    assert!(anchor.verify(statement, &signature).is_err());
+}
+
+#[test]
+fn stored_signature_base64_is_bounded_before_decoding() {
+    let fixture = TrustFixture::new();
+    let anchor = fixture.load_anchor();
+    let encoded = STANDARD.encode(vec![0; super::MAX_SIGNATURE_BYTES + 4]);
+    let error = anchor
+        .verify_base64(b"statement", &encoded)
+        .err()
+        .expect("reject oversized persisted signature before base64 allocation");
+    assert!(matches!(error, crate::AcceptanceError::Invalid(message)
+        if message == "stored SSHSIG base64 exceeds its read bound"));
 }
 
 #[test]
@@ -127,7 +161,7 @@ impl TrustFixture {
             .canonicalize()
             .expect("canonical trust root");
         let key = root.join("operator-key");
-        let generated = Command::new("/usr/bin/ssh-keygen")
+        let generated = ssh_keygen()
             .args(["-q", "-t", "ed25519", "-N", "", "-f"])
             .arg(&key)
             .status()
@@ -144,7 +178,7 @@ impl TrustFixture {
             format!("operator@example {0} {1}\n", fields[0], fields[1]).as_bytes(),
         );
 
-        let fingerprint_output = Command::new("/usr/bin/ssh-keygen")
+        let fingerprint_output = ssh_keygen()
             .args(["-E", "sha256", "-lf"])
             .arg(key.with_extension("pub"))
             .output()
@@ -209,7 +243,7 @@ impl TrustFixture {
     fn sign(&self, statement: &[u8], namespace: &str, name: &str) -> PathBuf {
         let statement_path = self.root.join(name);
         write_private(&statement_path, statement);
-        let signed = Command::new("/usr/bin/ssh-keygen")
+        let signed = ssh_keygen()
             .args(["-Y", "sign", "-f"])
             .arg(&self.key)
             .args(["-n", namespace])

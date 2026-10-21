@@ -1,0 +1,188 @@
+{
+  "schema_version": 1,
+  "observed_at": "2026-10-21T10:56:50.198Z",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "review_kind": "exact-source static security and test-contract review; no native execution",
+  "reviewed_source_commit": "002972385e9c017f65811853bbc35184034bff33",
+  "owner": {
+    "pr": 3024,
+    "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/3024",
+    "head": "5805e37161390382d94de5012ebb58112a19cfae",
+    "base": "f27c14641753e0b03ceaa0e76031c6d19b1efbfb",
+    "ref": "fix/supervisor-signed-abort-reconcile-20261021"
+  },
+  "decision": "DO_NOT_CONSUME_UNSIGNED_ABORT_BYPASS",
+  "current_source": [
+    {
+      "path": "codex-rs/hepta-supervisor/src/supervisor.rs",
+      "git_blob": "f854f1a0c40024a5fe01ea42b5139d8c77bfc778",
+      "sha256": "98ce7286ce2b9680bfb2838ec14e969c2333d7818c7ed14711263a08003e0b48",
+      "bytes": 50277,
+      "anchors": [
+        {
+          "line": 566,
+          "text": "verifier"
+        },
+        {
+          "line": 684,
+          "text": "fn recover_signed_intent("
+        },
+        {
+          "line": 897,
+          "text": "pub fn resolve_production_recovery("
+        },
+        {
+          "line": 1011,
+          "text": "verifier"
+        },
+        {
+          "line": 1012,
+          "text": ".verify_recovery("
+        }
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-supervisor/src/signed_authority.rs",
+      "git_blob": "f5767f7bd1b55df0a04317b444a7b40e114c5e35",
+      "sha256": "60ef5ef631161a245f04a44a3153344b6d159ab29e6ee835219a3f98fe7a30bc",
+      "bytes": 37334,
+      "anchors": [
+        {
+          "line": 83,
+          "text": "pub struct ProductionRecoveryDecision {"
+        },
+        {
+          "line": 532,
+          "text": "pub fn verify_recovery("
+        }
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-supervisor/src/signed_intent.rs",
+      "git_blob": "a48cd70d219c54f0cf753a8966d61169341f3696",
+      "sha256": "32266fdff012ac2ab6659d5aa95c6de46097fdd80c75926cab6bec78d976135c",
+      "bytes": 12925,
+      "anchors": [
+        {
+          "line": 71,
+          "text": "pub struct SignedIntentRecoveryDirective {"
+        },
+        {
+          "line": 182,
+          "text": "impl SignedIntentRecoveryDirective {"
+        }
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-supervisor/tests/signed_intent_recovery.rs",
+      "git_blob": "7f6ca06c0823b50e2ef6c8dc7290145cef265cf9",
+      "sha256": "c4eef0d5bcf328e4a5e500946aaf9c8854715501797ba8a743d5d6722bb910db",
+      "bytes": 7257,
+      "anchors": [
+        {
+          "line": 125,
+          "text": "fn unsigned_digest_abort_directive_cannot_clear_signed_production_recovery_fence()"
+        }
+      ]
+    }
+  ],
+  "owner_source": [
+    {
+      "path": "codex-rs/hepta-supervisor/src/supervisor.rs",
+      "git_blob": "f663c7c4f10d2d0ea3d3e142d2beaa02bbe93307",
+      "sha256": "d2afa979b29c1adda2092a149002a3704ffd9f2d23546545d13318aaaaa95570",
+      "bytes": 54948,
+      "anchors": [
+        {
+          "line": 92,
+          "text": "let clean_lease_cut = crate::lease::read_lease(record.layout.run_root())"
+        },
+        {
+          "line": 597,
+          "text": "intent.status == SignedIntentStatus::Aborted"
+        },
+        {
+          "line": 609,
+          "text": "| SignedIntentStatus::Aborted"
+        },
+        {
+          "line": 732,
+          "text": "| SignedIntentStatus::Aborted"
+        },
+        {
+          "line": 808,
+          "text": "if let Some(directive) = read_recovery_directive(record.layout.run_root())"
+        },
+        {
+          "line": 810,
+          "text": "&& directive.intent_sha256 == intent.intent_sha256"
+        },
+        {
+          "line": 841,
+          "text": "crate::restart_budget::complete_restart(record.layout.run_root())"
+        },
+        {
+          "line": 852,
+          "text": "let aborted = intent"
+        },
+        {
+          "line": 853,
+          "text": ".with_status(SignedIntentStatus::Aborted)"
+        },
+        {
+          "line": 958,
+          "text": "SignedIntentStatus::Aborted => crate::ProductionMutationStatus::Aborted,"
+        }
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-supervisor/tests/signed_intent_recovery.rs",
+      "git_blob": "2a186f468fcac46df5f75a5565136982a3ee6de9",
+      "sha256": "d53f1367b807ab884ac7d3fa18b088b6931b7403cde782fa05c499da107606f5",
+      "bytes": 9087,
+      "anchors": [
+        {
+          "line": 125,
+          "text": "fn exact_digest_abort_terminalizes_unresolved_intent() -> Result<(), SupervisorError> {"
+        },
+        {
+          "line": 188,
+          "text": "assert_eq!(terminal.status, SignedIntentStatus::Aborted);"
+        },
+        {
+          "line": 201,
+          "text": "SignedIntentStatus::Aborted"
+        },
+        {
+          "line": 207,
+          "text": "fn stale_abort_directive_cannot_terminalize_another_intent() -> Result<(), SupervisorError> {"
+        }
+      ]
+    }
+  ],
+  "contract": [
+    "recover_signed_intent keeps the Supervisor reachable while retaining the per-Agent RecoveryRequired fence.",
+    "Current negative control writes a valid, exact-digest legacy Abort directive, recovers again, and requires the Agent to remain inactive and RecoveryRequired.",
+    "SignedIntentRecoveryDirective validates schema and self-computed digest only. Its serialized fields contain no signer identity, signature, authority epoch, expiry, or authenticated lifecycle/release-state CAS.",
+    "resolve_production_recovery requires ProductionRecoveryDecision and invokes verify_recovery after durable transaction, current release and executable binding checks. verify_recovery checks exact grant/intent/transaction/release/artifact bindings, lifecycle generation, authority epoch, signer identity/epoch, validity window and cryptographic signature."
+  ],
+  "owner_conflict": [
+    "Owner supervisor.rs reads read_recovery_directive and allows an exact-digest Abort at a clean, process-free recovery cut to clear durable restart pending, mark a matching release transaction Aborted and publish an Aborted signed intent.",
+    "Lease absence and matching digests establish local state compatibility; they do not replace authenticated authorization to remove the production recovery fence.",
+    "Owner tests assert that the same digest-only directive clears production_recovery_required, directly contradicting the current negative control. Its stale-digest test protects binding but does not establish signer authority."
+  ],
+  "historical_failure_mapping": {
+    "reader_head": "ca2768978429a2c9a98641fa2d58a8f587b88874",
+    "reader_run_id": 39524743211,
+    "reader_job_id": 118977201768,
+    "reader_log_line": 4299,
+    "reader_log_raw_sha256": "abe6dbf96842a61b7db98d5d6e8eb083b6f79a2948e60e1e07e02ac383cd8d3c",
+    "historical_test": "exact_digest_abort_terminalizes_unresolved_intent",
+    "limitation": "A historical expectation that recover returns an error does not authorize reintroducing unsigned recovery. Current source deliberately retains a reachable quarantined Supervisor. No claim is made that the current native test has passed."
+  },
+  "required_validation": [
+    "Preserve unsigned_digest_abort_directive_cannot_clear_signed_production_recovery_fence in the original native Supervisor test target.",
+    "Qualify authenticated recovery through original exact-head Rust/Bazel gates; this source review is not CI qualification."
+  ],
+  "mutations": "No product source, gate, owner ref or running job was changed by this review."
+}

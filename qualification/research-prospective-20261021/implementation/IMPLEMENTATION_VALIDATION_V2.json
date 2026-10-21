@@ -1,0 +1,31 @@
+{
+  "schema": "hepta.external-git-event.implementation-validation.v2",
+  "checked_at": "2026-10-21T10:40:14.503078+00:00",
+  "code_identity_sha256": "9e45ca47482548afcff8ebc4b2960db319541f3851d1f61d11e0fdca074cb5aa",
+  "unittest_command": "python -m unittest -v test_external_git_profile.py",
+  "unittest_exit_code": 0,
+  "unittest_log_sha256": "803a2728987d82d068a5a22e59ec6d163105d4eafd2c0e3658b2f414ee716316",
+  "tests": 7,
+  "ruff_version": "0.15.13",
+  "ruff_publisher_receipt_sha256": "a8fe70f43da69cb17f921ae0843980244723a26d363ede5b329ddd9656978996",
+  "ruff_check_arguments": [
+    "check",
+    "--select",
+    "E,F,I"
+  ],
+  "ruff_check_stdout": "All checks passed!\n",
+  "ruff_check_exit_code": 0,
+  "ruff_format_check_stdout": "5 files already formatted\n",
+  "ruff_format_check_exit_code": 0,
+  "model_calls": 0,
+  "production_accepted": false,
+  "unittest_log": "external-profile-tests-v2-final.log",
+  "supersedes_validation_sha256": "cce787f9d2b7a5b0deb71c53bd6c7c6938527e72c4cdd9d6e3f19e12f5083cb1",
+  "added_actual_object_alias_check": {
+    "identical_kind_sha256_length_and_git_id_accepted": true,
+    "contradictory_alias_bytes_rejected": true,
+    "fixture_is_temporary_copy_of_actual_captured_git_store": true,
+    "original_source_receipts_modified": false,
+    "qualifying_source_or_model_result": false
+  }
+}

@@ -1,0 +1,41 @@
+{
+  "owner_pr": 2961,
+  "head": "c210d26350ac57e527b4ff59663e5c8d518ff95a",
+  "groups": {
+    "bedrock": [
+      "codex-rs/app-server/src/message_processor.rs",
+      "codex-rs/app-server/src/request_processors/account_processor/bedrock_setup.rs",
+      "codex-rs/app-server/src/request_processors/bedrock_auth.rs",
+      "codex-rs/app-server/tests/suite/v2/bedrock_setup.rs",
+      "codex-rs/aws-auth/src/lib.rs"
+    ],
+    "websocket": [
+      "codex-rs/codex-api/src/auth.rs",
+      "codex-rs/core/src/client.rs",
+      "codex-rs/core/src/client_tests.rs",
+      "codex-rs/core/src/client_websocket_auth.rs",
+      "codex-rs/core/src/client_websocket_auth_tests.rs",
+      "codex-rs/core/src/responses_metadata.rs",
+      "codex-rs/core/tests/suite/client_websockets.rs",
+      "codex-rs/core/tests/suite/model_provider_policy.rs",
+      "codex-rs/model-provider/src/auth.rs",
+      "codex-rs/model-provider/src/auth_websocket_tests.rs"
+    ],
+    "sshsig": [
+      "codex-rs/hepta-operator-acceptance/src/g5_trust.rs",
+      "codex-rs/hepta-operator-acceptance/src/g5_trust_tests.rs",
+      "codex-rs/hepta-operator-acceptance/src/lib.rs",
+      "codex-rs/hepta-operator-acceptance/src/sshsig.rs",
+      "codex-rs/hepta-operator-acceptance/src/sshsig_tests.rs",
+      "codex-rs/hepta-operator-acceptance/src/test_support.rs",
+      "codex-rs/hepta-operator-acceptance/src/trust.rs",
+      "codex-rs/hepta-operator-acceptance/src/trust_tests.rs"
+    ],
+    "windows_durable": [
+      "codex-rs/hepta-operator-acceptance/src/durable.rs",
+      "codex-rs/hepta-operator-acceptance/src/durable_windows.rs",
+      "codex-rs/hepta-operator-acceptance/src/durable_windows_tests.rs"
+    ]
+  },
+  "additional_websocket_hunk": "codex-rs/core/src/session/turn.rs first hunk only (run_turn responses_metadata; remaining hunks are turn-diff display roots)"
+}

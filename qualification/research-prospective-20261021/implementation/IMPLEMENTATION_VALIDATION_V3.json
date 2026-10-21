@@ -1,0 +1,34 @@
+{
+  "schema": "hepta.external-git-event.implementation-validation.v3",
+  "checked_at": "2026-10-21T10:53:00.745027+00:00",
+  "code_identity_sha256": "1c86ac25ddc039b870a719736065c684a27da262ce0d1cb25ffd2154efe98fd2",
+  "unittest_command": "python -m unittest -v test_external_git_profile.py",
+  "unittest_exit_code": 0,
+  "unittest_log_sha256": "affe4b9d311315840190fba1bcb8b65f741cf2e1d95bca6784a91af9852518e6",
+  "tests": 7,
+  "ruff_version": "0.15.13",
+  "ruff_publisher_receipt_sha256": "a8fe70f43da69cb17f921ae0843980244723a26d363ede5b329ddd9656978996",
+  "ruff_check_arguments": [
+    "check",
+    "--select",
+    "E,F,I"
+  ],
+  "ruff_check_stdout": "All checks passed!\n",
+  "ruff_check_exit_code": 0,
+  "ruff_format_check_stdout": "5 files already formatted\n",
+  "ruff_format_check_exit_code": 0,
+  "model_calls": 0,
+  "production_accepted": false,
+  "unittest_log": "external-profile-tests-v3-final.log",
+  "supersedes_validation_sha256": "32a68659dc46788f819b9495ad9b6688eebc0fee279a6deff08ecd01dde1af2c",
+  "added_actual_object_alias_check": {
+    "identical_kind_sha256_length_and_git_id_accepted": true,
+    "contradictory_alias_bytes_rejected": true,
+    "fixture_is_temporary_copy_of_actual_captured_git_store": true,
+    "original_source_receipts_modified": false,
+    "qualifying_source_or_model_result": false
+  },
+  "ruff_working_directory": "/workspace/scratch/337c309bc660/research-work/new-cohort",
+  "direct_python3_imports_and_ast_compile_passed": true,
+  "changed_files_have_no_function_or_variable_annotations": true
+}
