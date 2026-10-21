@@ -1,11 +1,25 @@
 # Multimodal output portfolio: first finite mechanism pilot
 
+**Latest result: the independent new-heldout v1.1 evaluation did not confirm
+the registered primary effect.** CVaR90 changed by -0.015166 versus the strong
+static baseline (95% CI [-0.042590, +0.009443]); the required reduction was
+0.020 and the interval was required to exclude zero. Dedicated-cloud execution
+is also still unverified. See [the current results report](evidence/RESULTS_V1_1.md)
+and [independent review](evidence/independent_review_v1_1.json).
+
 This experiment tests a narrow, falsifiable part of the proposed Hepta/NDU
 architecture: can calibrated, risk-sensitive evidence acquisition and actual
 continuous output allocation improve a learned generator's quality/risk/cost
 tradeoff? A negative result is preserved as a valid outcome. The preregistration
 commit is `0b3958f8b70a7de742ef2f2f1e61a2f1c20dc98f`; the original implementation
 commit is `3a3e7ef2e3c0b73840d62ac5f816f9c4ec4d66db`.
+The v1.1 amendment and corrected implementation were published together at
+`f44540ab59a0a8f013437ccbe8579db607fac03e` before producing new heldout evidence.
+The original v1 evidence is retained, including its secondary static-baseline
+support violation. The amendment fixes that violation and changes only the
+heldout RNG namespace; training, calibration, primary selection, metrics,
+budgets and success criteria remain fixed. The two rounds share three training
+seeds and are not six independent model replications.
 
 ## What is implemented
 
