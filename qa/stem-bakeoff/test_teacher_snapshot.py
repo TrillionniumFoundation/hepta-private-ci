@@ -3,8 +3,10 @@ import pathlib
 import sys
 import tempfile
 import unittest
+from unittest import mock
 
 sys.path.insert(0, str(pathlib.Path(__file__).parent))
+import teacher_snapshot
 from teacher_snapshot import (TeacherSnapshotError, inventory, verify_snapshot)
 
 REVISION = "d" * 40
@@ -100,6 +102,41 @@ class TeacherSnapshotTests(unittest.TestCase):
                 checked(folder, candidate="unregistered")
             with self.assertRaisesRegex(TeacherSnapshotError, "config"):
                 checked(folder)
+
+    def test_hardlink_alias_is_not_a_checkpoint_snapshot(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            folder = pathlib.Path(tmp)
+            fixture(folder)
+            alias = folder / "alias.safetensors"
+            try:
+                alias.hardlink_to(folder / "model.safetensors")
+            except (OSError, NotImplementedError):
+                self.skipTest("hardlinks unsupported on this test host")
+            with self.assertRaisesRegex(TeacherSnapshotError, "hardlink aliases"):
+                inventory(folder)
+
+    def test_config_mutation_between_hash_and_parse_is_rejected(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            folder = pathlib.Path(tmp)
+            fixture(folder)
+            pinned = inventory(folder)["inventory_sha256"]
+            real_inventory = teacher_snapshot.inventory
+
+            def modified_inventory(root):
+                measured = real_inventory(root)
+                (folder / "config.json").write_text(
+                    json.dumps({"model_type": "t5gemma2"}), encoding="utf-8"
+                )
+                return measured
+
+            with mock.patch.object(teacher_snapshot, "inventory", side_effect=modified_inventory):
+                with self.assertRaisesRegex(TeacherSnapshotError, "changed after hashing"):
+                    verify_snapshot(
+                        folder, candidate="embeddinggemma2_740m", revision=REVISION,
+                        expected_inventory_sha256=pinned,
+                        operator_accepted_terms=True,
+                    )
+
 
 
 if __name__ == "__main__":
