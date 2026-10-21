@@ -178,6 +178,7 @@ pub struct CellAdapterHeadV1 {
     pub cell_id: StableId,
     pub scope_id: StableId,
     pub generation: Generation,
+    encoder_digest: Digest32,
     weights: Arc<[i64]>,
     bias: i64,
 }
@@ -187,9 +188,13 @@ impl CellAdapterHeadV1 {
         cell_id: StableId,
         scope_id: StableId,
         generation: Generation,
+        encoder_digest: Digest32,
         weights: Vec<i64>,
         bias: i64,
     ) -> Result<Self, CellBatchError> {
+        if encoder_digest.is_zero() {
+            return Err(CellBatchError::ZeroDigest("encoder"));
+        }
         if weights.is_empty() || weights.len() > MAX_FEATURE_WIDTH {
             return Err(CellBatchError::FeatureWidth);
         }
@@ -197,9 +202,16 @@ impl CellAdapterHeadV1 {
             cell_id,
             scope_id,
             generation,
+            encoder_digest,
             weights: Arc::from(weights),
             bias,
         })
+    }
+
+    /// The exact immutable Encoder artifact this head may consume.
+    #[must_use]
+    pub const fn encoder_digest(&self) -> Digest32 {
+        self.encoder_digest
     }
 
     /// Construct a successor head without mutating the active head.
@@ -221,6 +233,7 @@ impl CellAdapterHeadV1 {
             self.cell_id.clone(),
             self.scope_id.clone(),
             self.generation,
+            self.encoder_digest,
             weights,
             self.bias,
         )
@@ -232,6 +245,9 @@ impl CellAdapterHeadV1 {
     ) -> Result<CellActivationV1, CellBatchError> {
         if self.generation != snapshot.generation() {
             return Err(CellBatchError::GenerationMismatch);
+        }
+        if self.encoder_digest != snapshot.encoder_digest() {
+            return Err(CellBatchError::EncoderMismatch);
         }
         if self.weights.len() != snapshot.features().len() {
             return Err(CellBatchError::FeatureWidth);
@@ -413,6 +429,7 @@ pub enum CellBatchError {
     ZeroDigest(&'static str),
     GenerationNotSuccessor,
     GenerationMismatch,
+    EncoderMismatch,
     ZeroCapacity,
     QueueFull,
     DuplicateRequest,
