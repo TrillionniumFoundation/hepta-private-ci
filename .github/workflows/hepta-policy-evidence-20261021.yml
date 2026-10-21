@@ -1,0 +1,149 @@
+name: Fixed source Cargo policy evidence
+
+on:
+  push:
+    branches: [codex/policy-evidence-20261021]
+    paths: [.github/workflows/hepta-policy-evidence-20261021.yml]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: hepta-policy-evidence-20261021
+  cancel-in-progress: false
+
+jobs:
+  original-docker-gate:
+    if: github.ref == 'refs/heads/codex/policy-evidence-20261021'
+    uses: ./.github/workflows/cargo-deny.yml
+
+  source-policy-evidence:
+    if: github.ref == 'refs/heads/codex/policy-evidence-20261021'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    env:
+      SOURCE_SHA: 98b40cb04a23a36a07212ef7d826024f37536057
+      EXPECTED_TREE: 5a659269306fe2eaaf83937856b0dae959c1e513
+      CARGO_TERM_COLOR: never
+    steps:
+      - name: Check out the fixed failing source without credentials
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ env.SOURCE_SHA }}
+          persist-credentials: false
+          fetch-depth: 0
+
+      - name: Bind diagnostics to source and policy bytes
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
+          test "$(git rev-parse HEAD^{tree})" = "$EXPECTED_TREE"
+          test -z "$(git status --porcelain)"
+          export POLICY_EVIDENCE_DIR="$RUNNER_TEMP/hepta-policy-evidence"
+          mkdir "$POLICY_EVIDENCE_DIR"
+          printf 'POLICY_EVIDENCE_DIR=%s\n' "$POLICY_EVIDENCE_DIR" >> "$GITHUB_ENV"
+          python3 -B - <<'PY'
+          import hashlib
+          import json
+          import os
+          from pathlib import Path
+          import subprocess
+          evidence = Path(os.environ["POLICY_EVIDENCE_DIR"])
+          paths = ["codex-rs/Cargo.toml", "codex-rs/Cargo.lock", "codex-rs/deny.toml",
+                   "codex-rs/rust-toolchain.toml", ".github/workflows/cargo-deny.yml",
+                   ".github/workflows/hepta-diagnostic-source-export.yml"]
+          inputs = {}
+          for name in paths:
+              data = Path(name).read_bytes()
+              inputs[name] = {"bytes": len(data), "sha256": hashlib.sha256(data).hexdigest(),
+                              "git_blob": subprocess.check_output(["git", "rev-parse", "HEAD:" + name], text=True).strip()}
+          source = {"source_sha": os.environ["SOURCE_SHA"], "source_tree": os.environ["EXPECTED_TREE"],
+                    "workflow_sha": os.environ["GITHUB_SHA"], "run_id": os.environ["GITHUB_RUN_ID"],
+                    "run_attempt": os.environ["GITHUB_RUN_ATTEMPT"], "inputs": inputs,
+                    "input_head_qualified": False, "original_docker_gate_equivalence": False,
+                    "scope": "Full host policy diagnostics only; the unmodified Docker gate remains independently required."}
+          (evidence / "source.json").write_text(json.dumps(source, indent=2) + "\n")
+          PY
+
+      - name: Enforce the original tracked RustSec policy
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -B -m unittest -v scripts.tests.test_hepta_rustsec_guard
+          python3 -B scripts/check_hepta_rustsec_advisories.py --repo-root .
+
+      - uses: ./.github/actions/setup-ci-build
+
+      - name: Install the repository-selected Rust toolchain
+        uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582
+
+      - name: Install the existing diagnostic cargo-deny version
+        uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
+        with:
+          tool: cargo-deny@0.19.0
+
+      - name: Capture complete original policy command and exit
+        shell: bash
+        run: |
+          set -uo pipefail
+          {
+            (cd codex-rs && rustc --version && cargo --version)
+            cargo deny --version
+          } > "$POLICY_EVIDENCE_DIR/tool-versions.log" 2>&1
+          printf '%s\n' 'cargo deny --log-level warn --manifest-path ./codex-rs/Cargo.toml --all-features check' > "$POLICY_EVIDENCE_DIR/command.txt"
+          set +e
+          cargo deny --log-level warn --manifest-path ./codex-rs/Cargo.toml --all-features check > "$POLICY_EVIDENCE_DIR/cargo-deny.log" 2>&1
+          printf '%s\n' "$?" > "$POLICY_EVIDENCE_DIR/cargo-deny.exit"
+          cargo metadata --manifest-path ./codex-rs/Cargo.toml --locked --format-version 1 --no-deps > "$POLICY_EVIDENCE_DIR/cargo-metadata.json" 2> "$POLICY_EVIDENCE_DIR/cargo-metadata.stderr"
+          printf '%s\n' "$?" > "$POLICY_EVIDENCE_DIR/cargo-metadata.exit"
+          git diff --exit-code > "$POLICY_EVIDENCE_DIR/source-diff.log" 2>&1
+          printf '%s\n' "$?" > "$POLICY_EVIDENCE_DIR/source-diff.exit"
+          set -e
+          test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
+          test "$(git rev-parse HEAD^{tree})" = "$EXPECTED_TREE"
+
+      - name: Inventory all retained evidence even after failure
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -n "${POLICY_EVIDENCE_DIR:-}"
+          python3 -B - <<'PY'
+          import hashlib
+          import json
+          import os
+          from pathlib import Path
+          root = Path(os.environ["POLICY_EVIDENCE_DIR"])
+          rows = []
+          for path in sorted(root.rglob("*")):
+              if path.is_symlink():
+                  raise SystemExit("Evidence must not contain symlinks")
+              if path.is_file():
+                  data = path.read_bytes()
+                  rows.append({"path": str(path.relative_to(root)), "bytes": len(data),
+                               "sha256": hashlib.sha256(data).hexdigest()})
+          (root / "inventory.json").write_text(json.dumps(rows, indent=2) + "\n")
+          PY
+
+      - name: Retain complete raw diagnostics
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: hepta-policy-evidence-${{ env.SOURCE_SHA }}-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ env.POLICY_EVIDENCE_DIR }}
+          include-hidden-files: true
+          if-no-files-found: error
+          retention-days: 7
+
+      - name: Preserve the original nonzero policy outcome
+        if: always() && !cancelled()
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -n "${POLICY_EVIDENCE_DIR:-}"
+          test -s "$POLICY_EVIDENCE_DIR/cargo-deny.exit"
+          test "$(cat "$POLICY_EVIDENCE_DIR/cargo-deny.exit")" = 0
+          test "$(cat "$POLICY_EVIDENCE_DIR/cargo-metadata.exit")" = 0
+          test "$(cat "$POLICY_EVIDENCE_DIR/source-diff.exit")" = 0
+
