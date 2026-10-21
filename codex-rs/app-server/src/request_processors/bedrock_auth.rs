@@ -28,6 +28,12 @@ pub(super) async fn configure_bedrock_provider(
             "model_provider",
             serde_json::json!(AMAZON_BEDROCK_PROVIDER_ID),
         ),
+        // Selecting AWS credentials replaces editable command authentication
+        // in the same validated config transaction.
+        (
+            "model_providers.amazon-bedrock.auth",
+            serde_json::Value::Null,
+        ),
         (
             "model_providers.amazon-bedrock.aws.profile",
             serde_json::json!(config.profile),
@@ -72,16 +78,16 @@ pub(super) async fn ensure_user_model_provider_can_be_bedrock(
         .load_config_layers(/*cwd*/ None)
         .await
         .map_err(|err| internal_error(format!("failed to load configuration layers: {err}")))?;
-    let user_precedence = match layers.get_active_user_layer() {
-        Some(layer) => layer.name.precedence(),
+    let user_source = match layers.get_active_user_layer() {
+        Some(layer) => layer.name.clone(),
         None => ConfigLayerSource::User {
             file: config_manager.user_config_path().map_err(|err| {
                 internal_error(format!("failed to resolve user config path: {err}"))
             })?,
             profile: None,
-        }
-        .precedence(),
+        },
     };
+    let user_precedence = user_source.precedence();
     if let Some((overriding_layer, effective_provider)) = layers
         .layers_high_to_low()
         .filter(|layer| layer.name.precedence() > user_precedence)
@@ -96,6 +102,24 @@ pub(super) async fn ensure_user_model_provider_can_be_bedrock(
         let source = format_config_layer_source(&overriding_layer.name, CONFIG_TOML_FILE);
         return Err(invalid_request(format!(
             "Amazon Bedrock login cannot select `{AMAZON_BEDROCK_PROVIDER_ID}` because {source} sets `model_provider` to {effective_provider}"
+        )));
+    }
+
+    // Removing a key from the writable user layer cannot remove authentication
+    // supplied by another layer, including an inherited base profile. Reject it
+    // before any config or credential writes rather than creating mixed modes.
+    if let Some(auth_layer) = layers.layers_high_to_low().find(|layer| {
+        layer.name != user_source
+            && layer
+                .config
+                .get("model_providers")
+                .and_then(|providers| providers.get(AMAZON_BEDROCK_PROVIDER_ID))
+                .and_then(|provider| provider.get("auth"))
+                .is_some()
+    }) {
+        let source = format_config_layer_source(&auth_layer.name, CONFIG_TOML_FILE);
+        return Err(invalid_request(format!(
+            "Amazon Bedrock login cannot replace command authentication because {source} sets `model_providers.amazon-bedrock.auth`"
         )));
     }
 

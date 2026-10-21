@@ -148,6 +148,14 @@ impl AwsAuthContext {
         Ok(context)
     }
 
+    /// Resolves credentials through the configured provider without signing a request.
+    ///
+    /// This checks credential availability, not AWS service authorization.
+    pub async fn validate_credentials(&self) -> Result<(), AwsAuthError> {
+        self.credentials_provider.provide_credentials().await?;
+        Ok(())
+    }
+
     pub fn region(&self) -> &str {
         &self.region
     }

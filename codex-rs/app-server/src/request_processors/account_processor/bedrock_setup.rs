@@ -13,6 +13,8 @@ use codex_app_server_protocol::BedrockSetupParams;
 use codex_app_server_protocol::BedrockSetupResponse;
 use codex_app_server_protocol::ClientResponsePayload;
 use codex_app_server_protocol::JSONRPCErrorError;
+use codex_aws_auth::AwsAuthConfig;
+use codex_aws_auth::AwsAuthContext;
 use codex_login::CodexAuth;
 use codex_model_provider::is_supported_amazon_bedrock_region;
 
@@ -21,10 +23,6 @@ const AWS_SECRET_ACCESS_KEY: &str = "AWS_SECRET_ACCESS_KEY";
 const AWS_BEARER_TOKEN_BEDROCK: &str = "AWS_BEARER_TOKEN_BEDROCK";
 
 impl AccountRequestProcessor {
-    #[expect(
-        dead_code,
-        reason = "Bedrock account endpoints are not yet routed by the stable protocol"
-    )]
     pub(crate) async fn bedrock_discover(
         &self,
         _params: BedrockDiscoverParams,
@@ -69,10 +67,6 @@ impl AccountRequestProcessor {
         ))
     }
 
-    #[expect(
-        dead_code,
-        reason = "Bedrock account endpoints are not yet routed by the stable protocol"
-    )]
     pub(crate) async fn bedrock_setup(
         &self,
         params: BedrockSetupParams,
@@ -120,9 +114,22 @@ impl AccountRequestProcessor {
                 let has_access_keys = non_empty_env_var(AWS_ACCESS_KEY_ID).is_some()
                     && non_empty_env_var(AWS_SECRET_ACCESS_KEY).is_some();
                 if !has_bedrock_api_key && !has_access_keys {
-                    return Err(invalid_request(
-                        "No AWS credentials found. Please Configure AWS credentials or complete AWS sign-in, then try again.",
-                    ));
+                    let missing_credentials = || {
+                        invalid_request(
+                            "No AWS credentials found. Please Configure AWS credentials or complete AWS sign-in, then try again.",
+                        )
+                    };
+                    let context = AwsAuthContext::load(AwsAuthConfig {
+                        profile: None,
+                        region: Some(region.to_string()),
+                        service: "bedrock".to_string(),
+                    })
+                    .await
+                    .map_err(|_| missing_credentials())?;
+                    context
+                        .validate_credentials()
+                        .await
+                        .map_err(|_| missing_credentials())?;
                 }
                 None
             }
