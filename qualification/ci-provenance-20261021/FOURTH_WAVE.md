@@ -84,6 +84,27 @@ No blob allowlist entry or policy limit was changed.
 the old single-tail failure, source hashes and the independent harness. The
 added real Queue/Core integration test still requires the original native CI.
 
+## Additional platform fixtures and CI integrity
+
+Three narrow owner repairs were reviewed and consumed: the supervisor Bazel
+target now declares the corpus read by its existing integration tests; the
+adapter recovery fixture uses the host's actual temporary directory on Windows;
+and the redirect server switches its accepted socket to blocking mode with a
+two-second read deadline. Assertions and test selection are unchanged. These
+changes still need their original platform CI execution.
+
+The Bazel wrapper now preserves both pipeline statuses. A failed log capture
+cannot report complete success, and diagnostic failures cannot replace the
+original Bazel failure code. Two of the four real shell fault regressions failed
+against the previous wrapper; all four passed after repair. V8 POC build and
+Cargo feature inputs now require both canary matrices even when the V8 version
+stays unchanged. Its detector suite is also discovered by the existing required
+repo-checks entrypoint. The original scoped repo-checks command passed 55 tests,
+and `just test-github-scripts` passed 101 test executions. The latter count
+includes the detector suite through both discovery entrypoints; it is not a
+claim of 101 distinct behaviors or any native V8 build. Raw negative controls
+and successful outputs are archived.
+
 ## Remaining qualification
 
 Only the original checks for the current source head and actual base can close
