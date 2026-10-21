@@ -1,0 +1,62 @@
+{
+  "source_head": "48177153ad04605338c3a9a8dbd17defee9981bc",
+  "base": "57636c7a17d4847eb5fd712409816fd040b4e90f",
+  "tested_merge": "3c32bedb07239b0cbdb38d100836258165cae633",
+  "tested_tree": "22e14fcd85f7a3f2c5dc8f3a1bdb17efc81b4d62",
+  "job_id": 119194391962,
+  "conclusion": "cancelled",
+  "qualified": false,
+  "emitted_errors": [
+    {
+      "line": 8372,
+      "text": "2026-10-21T12:40:41.6922780Z ##[error]The operation was canceled."
+    }
+  ],
+  "last_progress": {
+    "line": 8371,
+    "text": "2026-10-21T12:40:40.0230170Z [11,802 / 16,357] 15 / 569 tests; Compiling Rust proc-macro @@rules_rs++crate+crates__starlark_derive-0.14.2//:starlark_derive v0.14.2 (30 files) [for tool]; 13s disk-cache, darwin-sandbox ... (30 actions, 5 running)"
+  },
+  "build_steps": [
+    {
+      "name": "bazel test //...",
+      "status": "completed",
+      "conclusion": "cancelled",
+      "number": 6,
+      "started_at": "2026-10-21T11:40:56Z",
+      "completed_at": "2026-10-21T12:40:41Z"
+    }
+  ],
+  "workflow": {
+    "file": "bazel-481.yml.raw",
+    "bytes": 20489,
+    "sha256": "7056008137ed9abbe8f29eae95ac4f1a3d771e7a6dba8fd012c11964ddb4221e",
+    "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/48177153ad04605338c3a9a8dbd17defee9981bc/.github/workflows/bazel.yml",
+    "timeout_declarations": [
+      {
+        "line": 26,
+        "text": "    timeout-minutes: 60"
+      },
+      {
+        "line": 139,
+        "text": "    timeout-minutes: 60"
+      },
+      {
+        "line": 247,
+        "text": "    timeout-minutes: 30"
+      },
+      {
+        "line": 269,
+        "text": "    timeout-minutes: 40"
+      },
+      {
+        "line": 344,
+        "text": "    timeout-minutes: 60"
+      },
+      {
+        "line": 435,
+        "text": "    timeout-minutes: 60"
+      }
+    ]
+  },
+  "interpretation": "Original API cancelled conclusion retained. Elapsed time is consistent with the original 60-minute test job limit but the decoded log does not explicitly identify the cancellation initiator. Last progress is incomplete and not a test-success aggregate. No agent requested cancellation or rerun."
+}

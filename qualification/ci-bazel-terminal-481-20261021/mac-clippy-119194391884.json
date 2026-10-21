@@ -1,0 +1,387 @@
+{
+  "schema_version": 1,
+  "created_utc": "2026-10-21T12:58:20Z",
+  "scope": "Single-job terminal audit. No checkout modification, compilation, cancellation, rerun or continuous polling. Windows shard 3 was explicitly left to the parent agent.",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "run_id": 39583123088,
+  "job": {
+    "id": 119194391884,
+    "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/39583123088/job/119194391884",
+    "name": "Bazel / Bazel clippy on macos-15 for aarch64-apple-darwin",
+    "run_id": 39583123088,
+    "run_attempt": 1,
+    "head_sha": "48177153ad04605338c3a9a8dbd17defee9981bc",
+    "status": "completed",
+    "conclusion": "cancelled",
+    "started_at": "2026-10-21T11:51:02Z",
+    "completed_at": "2026-10-21T12:51:34Z",
+    "duration_seconds": 3632,
+    "runner_name": "GitHub Actions 1000191506",
+    "labels": [
+      "macos-15"
+    ],
+    "steps": [
+      {
+        "name": "Set up job",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 1,
+        "started_at": "2026-10-21T11:51:03Z",
+        "completed_at": "2026-10-21T11:51:04Z"
+      },
+      {
+        "name": "Run actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 2,
+        "started_at": "2026-10-21T11:51:04Z",
+        "completed_at": "2026-10-21T11:51:11Z"
+      },
+      {
+        "name": "Prepare Bazel CI",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 3,
+        "started_at": "2026-10-21T11:51:11Z",
+        "completed_at": "2026-10-21T11:51:21Z"
+      },
+      {
+        "name": "bazel build --config=clippy lint targets",
+        "status": "completed",
+        "conclusion": "cancelled",
+        "number": 4,
+        "started_at": "2026-10-21T11:51:21Z",
+        "completed_at": "2026-10-21T12:51:24Z"
+      },
+      {
+        "name": "Upload Bazel execution logs",
+        "status": "completed",
+        "conclusion": "skipped",
+        "number": 5,
+        "started_at": "2026-10-21T12:51:24Z",
+        "completed_at": "2026-10-21T12:51:24Z"
+      },
+      {
+        "name": "Save bazel repository cache",
+        "status": "completed",
+        "conclusion": "skipped",
+        "number": 6,
+        "started_at": "2026-10-21T12:51:24Z",
+        "completed_at": "2026-10-21T12:51:24Z"
+      },
+      {
+        "name": "Check for a clean worktree",
+        "status": "completed",
+        "conclusion": "skipped",
+        "number": 7,
+        "started_at": "2026-10-21T12:51:24Z",
+        "completed_at": "2026-10-21T12:51:24Z"
+      },
+      {
+        "name": "Post Prepare Bazel CI",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 13,
+        "started_at": "2026-10-21T12:51:24Z",
+        "completed_at": "2026-10-21T12:51:24Z"
+      },
+      {
+        "name": "Post Run actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 14,
+        "started_at": "2026-10-21T12:51:24Z",
+        "completed_at": "2026-10-21T12:51:26Z"
+      },
+      {
+        "name": "Complete job",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 15,
+        "started_at": "2026-10-21T12:51:26Z",
+        "completed_at": "2026-10-21T12:51:32Z"
+      }
+    ]
+  },
+  "sources": {
+    "job": {
+      "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/runs/39583123088/jobs?filter=latest&per_page=100&page=1",
+      "retrieved_completed_utc": "2026-10-21T12:55:21Z",
+      "total_count": 35,
+      "returned_count": 35,
+      "exact_job_found": true
+    },
+    "steps": {
+      "tool": "github_fetch_workflow_job_steps",
+      "job_id": 119194391884,
+      "retrieved_started_utc": "2026-10-21T12:56:16Z",
+      "retrieved_completed_utc": "2026-10-21T12:56:17Z",
+      "summaries_match_run_jobs": true
+    },
+    "logs": {
+      "tool": "github_fetch_workflow_job_logs",
+      "job_id": 119194391884,
+      "canonical_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/jobs/119194391884/logs",
+      "retrieved_started_utc": "2026-10-21T12:55:09Z",
+      "retrieved_completed_utc": "2026-10-21T12:55:10Z",
+      "representation": "Complete decoded log string returned by the dedicated connector, encoded back to UTF-8 without newline/BOM transformation. The connector's pre-decoding HTTP byte stream was not separately available."
+    },
+    "workflow": {
+      "url": "https://raw.githubusercontent.com/TrillionniumFoundation/hepta-private-ci/3c32bedb07239b0cbdb38d100836258165cae633/.github/workflows/bazel.yml",
+      "ref": "3c32bedb07239b0cbdb38d100836258165cae633",
+      "retrieved_started_utc": "2026-10-21T12:56:16Z",
+      "retrieved_completed_utc": "2026-10-21T12:56:17Z",
+      "relevant_lines": [
+        {
+          "line": 343,
+          "text": "  clippy:"
+        },
+        {
+          "line": 344,
+          "text": "    timeout-minutes: 60"
+        },
+        {
+          "line": 346,
+          "text": "      fail-fast: false"
+        },
+        {
+          "line": 355,
+          "text": "          - os: macos-15"
+        },
+        {
+          "line": 356,
+          "text": "            target: aarch64-apple-darwin"
+        },
+        {
+          "line": 377,
+          "text": "      - name: bazel build --config=clippy lint targets"
+        },
+        {
+          "line": 383,
+          "text": "            --config=clippy"
+        }
+      ]
+    }
+  },
+  "archive": {
+    "path": "/workspace/scratch/337c309bc660/ci-windows-live-audit/mac-clippy-119194391884.log.xz",
+    "format": "xz/lzma preset 1",
+    "compressed_bytes": 98608,
+    "compressed_sha256": "fe811faf8f96df51eb948fc6945ecd4673454e28ddf5906720033669788c7524",
+    "decoded_utf8_bytes": 1060352,
+    "decoded_utf8_sha256": "9b683f86349d92c97bd128966fea2502ab1de9515999efb263354263e4ae0b4c",
+    "utf8_bom_present": true,
+    "crlf_count": 0,
+    "lf_count": 9351,
+    "cr_count": 0,
+    "transport_fnv1a32": "88d0cefb",
+    "transport_byte_count_verified": true,
+    "decompression_bytes_equal": true,
+    "uncompressed_intermediate_removed": true,
+    "preservation_note": "The returned log contains its original U+FEFF BOM and 9,351 LF newlines; there are zero CR or CRLF bytes. No CRLF was synthesized. XZ decompression was verified byte-for-byte against the complete UTF-8 log before removing the intermediate."
+  },
+  "checkout": {
+    "source_head": "48177153ad04605338c3a9a8dbd17defee9981bc",
+    "actual_checked_out_commit": "3c32bedb07239b0cbdb38d100836258165cae633",
+    "merge_base": "57636c7a17d4847eb5fd712409816fd040b4e90f",
+    "raw_log_evidence": [
+      {
+        "line": 33,
+        "text": "2026-10-21T11:51:04.4394030Z Uses: TrillionniumFoundation/hepta-private-ci/.github/workflows/bazel.yml@refs/pull/2968/merge (3c32bedb07239b0cbdb38d100836258165cae633)"
+      },
+      {
+        "line": 100,
+        "text": "2026-10-21T11:51:05.5618370Z [command]/opt/homebrew/bin/git -c protocol.version=2 fetch --no-tags --prune --no-recurse-submodules --depth=1 origin +3c32bedb07239b0cbdb38d100836258165cae633:refs/remotes/pull/2968/merge"
+      },
+      {
+        "line": 138,
+        "text": "2026-10-21T11:51:11.0523960Z HEAD is now at 3c32bed Merge 48177153ad04605338c3a9a8dbd17defee9981bc into 57636c7a17d4847eb5fd712409816fd040b4e90f"
+      },
+      {
+        "line": 140,
+        "text": "2026-10-21T11:51:11.0683660Z [command]/opt/homebrew/bin/git log -1 --format=%H"
+      },
+      {
+        "line": 141,
+        "text": "2026-10-21T11:51:11.0791730Z 3c32bedb07239b0cbdb38d100836258165cae633"
+      }
+    ]
+  },
+  "diagnostic_analysis": {
+    "log_line_count": 9351,
+    "normalization_for_search_only": "Strip ANSI SGR and leading ISO timestamp/BOM for anchored pattern matching. Archived bytes are untouched.",
+    "emitted_error_annotations": [
+      {
+        "line": 9329,
+        "text": "2026-10-21T12:51:24.8698750Z ##[error]The operation was canceled."
+      }
+    ],
+    "rust_or_clippy_error_diagnostics": [],
+    "bazel_error_diagnostics": [],
+    "c_cpp_fatal_diagnostics": [],
+    "panic_or_failed_test_diagnostics": [],
+    "all_error_word_occurrences_reviewed": 10,
+    "non_diagnostic_matches_excluded": [
+      {
+        "lines": [
+          276,
+          313
+        ],
+        "reason": "Echoed curl --show-error flags; no curl failure output."
+      },
+      {
+        "lines": [
+          667
+        ],
+        "reason": "Echoed --print-failed-action-summary flag; no failed-action summary."
+      },
+      {
+        "lines": [
+          6576,
+          6644,
+          6697,
+          6766
+        ],
+        "reason": "Quoted source uses std::panic::catch_unwind inside warning diagnostics; no runtime panic."
+      },
+      {
+        "lines": [
+          8605,
+          8606
+        ],
+        "reason": "V8 source filename builtins-error.cc in normal compilation progress."
+      }
+    ],
+    "clippy_execution_observed": {
+      "first_matching_progress": {
+        "line": 3289,
+        "text": "2026-10-21T11:59:30.5313890Z [10,578 / 19,481] Clippy //codex-rs/codex-experimental-api-macros:codex-experimental-api-macros-unit-tests-bin; 0s disk-cache, darwin-sandbox ... (30 actions, 4 running)"
+      },
+      "sample_warning": {
+        "target": "//codex-rs/hepta-intuition:hepta-intuition-unit-tests-bin",
+        "source_path": "codex-rs/hepta-intuition/src/qualified_tests.rs",
+        "source_line": 158,
+        "kind": "clippy::redundant_clone",
+        "severity": "warning",
+        "raw_log_evidence": [
+          {
+            "line": 7719,
+            "text": "2026-10-21T12:25:06.0730290Z INFO: From Clippy //codex-rs/hepta-intuition:hepta-intuition-unit-tests-bin:"
+          },
+          {
+            "line": 7720,
+            "text": "2026-10-21T12:25:06.0832110Z warning: redundant clone"
+          },
+          {
+            "line": 7721,
+            "text": "2026-10-21T12:25:06.0933710Z    --> hepta-intuition/src/qualified_tests.rs:158:38"
+          },
+          {
+            "line": 7731,
+            "text": "2026-10-21T12:25:06.1953530Z     = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.95.0/index.html#redundant_clone"
+          },
+          {
+            "line": 7732,
+            "text": "2026-10-21T12:25:06.2056150Z     = note: requested on the command line with `-W clippy::redundant-clone`"
+          },
+          {
+            "line": 7734,
+            "text": "2026-10-21T12:25:06.2257580Z warning: 1 warning emitted"
+          }
+        ]
+      },
+      "limitation": "The job reached Rust compilation and Clippy; warnings are not classified as job failures, and incomplete lint coverage is not classified as passing."
+    },
+    "local_execution_evidence": [
+      {
+        "line": 690,
+        "text": "2026-10-21T11:51:21.6208950Z BuildBuddy key unavailable; using local Bazel configuration."
+      },
+      {
+        "line": 693,
+        "text": "2026-10-21T11:51:23.0933770Z Starting local Bazel server (9.3.0) and connecting to it..."
+      },
+      {
+        "line": 787,
+        "text": "2026-10-21T11:51:46.2723180Z BuildBuddy key unavailable; using local Bazel configuration."
+      },
+      {
+        "line": 1148,
+        "text": "2026-10-21T11:54:53.3508830Z INFO: Analyzed 1274 targets (1298 packages loaded, 126005 targets configured, 1247 aspect applications)."
+      }
+    ],
+    "last_compilation_before_cancel": [
+      {
+        "line": 9313,
+        "text": "2026-10-21T12:50:57.5614600Z [16,214 / 19,481] Compiling Rust bin //codex-rs/code-mode:code-mode-unit-tests-bin (31 files); 4s disk-cache, darwin-sandbox ... (30 actions, 3 running)"
+      },
+      {
+        "line": 9314,
+        "text": "2026-10-21T12:50:58.5669280Z [16,215 / 19,481] Compiling Rust bin //codex-rs/code-mode:code-mode-unit-tests-bin (31 files); 5s disk-cache, darwin-sandbox ... (30 actions, 3 running)"
+      },
+      {
+        "line": 9315,
+        "text": "2026-10-21T12:51:03.0530220Z [16,215 / 19,481] Compiling Rust bin //codex-rs/code-mode:code-mode-unit-tests-bin (31 files); 9s disk-cache, darwin-sandbox ... (30 actions, 4 running)"
+      },
+      {
+        "line": 9326,
+        "text": "2026-10-21T12:51:21.7501080Z [16,224 / 19,481] Compiling src/objects/scope-info.cc; 11s disk-cache, darwin-sandbox ... (30 actions, 4 running)"
+      },
+      {
+        "line": 9327,
+        "text": "2026-10-21T12:51:23.5102920Z [16,225 / 19,481] Compiling src/objects/script.cc; 10s disk-cache, darwin-sandbox ... (30 actions, 3 running)"
+      },
+      {
+        "line": 9328,
+        "text": "2026-10-21T12:51:24.5152570Z [16,226 / 19,481] Compiling src/objects/shared-function-info.cc; 7s disk-cache, darwin-sandbox ... (30 actions, 3 running)"
+      }
+    ],
+    "cancellation": {
+      "line": 9329,
+      "text": "2026-10-21T12:51:24.8698750Z ##[error]The operation was canceled."
+    },
+    "cleanup": [
+      {
+        "line": 9331,
+        "text": "2026-10-21T12:51:24.9137920Z ##[start-action display=Set up Bazel;id=__6f7dcc25-2f4b-45ff-b854-995ba3b92469.__bazel-contrib_setup-bazel]"
+      },
+      {
+        "line": 9332,
+        "text": "2026-10-21T12:51:24.9166990Z ##[end-action id=__6f7dcc25-2f4b-45ff-b854-995ba3b92469.__bazel-contrib_setup-bazel;outcome=skipped;conclusion=skipped;duration_ms=0]"
+      },
+      {
+        "line": 9349,
+        "text": "2026-10-21T12:51:26.8132500Z Cleaning up orphan processes"
+      },
+      {
+        "line": 9350,
+        "text": "2026-10-21T12:51:31.1783430Z Terminate orphan process: pid (5124) (bazel)"
+      },
+      {
+        "line": 9351,
+        "text": "2026-10-21T12:51:32.0203570Z Terminate orphan process: pid (4471) (java)"
+      }
+    ]
+  },
+  "conclusion": {
+    "observed_failure_class": "Cancellation while compiling; no emitted Rust/Clippy/C++ compiler error or test failure found in the complete log.",
+    "earliest_source_failure": null,
+    "source_fix_candidate": null,
+    "timing": {
+      "configured_clippy_timeout_minutes": 60,
+      "workflow_path": ".github/workflows/bazel.yml",
+      "workflow_line": 344,
+      "clippy_step_started_at": "2026-10-21T11:51:21Z",
+      "clippy_step_completed_at": "2026-10-21T12:51:24Z",
+      "clippy_step_duration_seconds": 3603
+    },
+    "inference": "The 60-minute Clippy budget and 3,603-second active build step are consistent with budget cancellation. The raw log itself reports only operation canceled, so this is not a separately proven explicit timeout event or a demonstrated compiler defect.",
+    "qualification": "Cancelled and incomplete; no pass or current-source qualification is claimed.",
+    "next_action": "Retain this original failure evidence. Any cold-build resource or graph investigation must preserve the original gates and receive its own actual run result."
+  },
+  "retrieval_notes": [
+    "The generic GitHub fetch connector rejected the direct actions/jobs/{id} endpoint as unsupported. The supported repository run/jobs GET returned the complete job metadata, and the dedicated job-steps tool independently confirmed step outcomes.",
+    "No raw log content was truncated, filtered, reflowed or newline-normalized before archiving.",
+    "Only curated job/step/source identity and diagnostic facts are placed in JSON; the full log is preserved in the accompanying XZ archive."
+  ]
+}

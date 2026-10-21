@@ -1,0 +1,62 @@
+{
+  "job": {
+    "id": 119220992411,
+    "name": "Architecture required",
+    "status": "completed",
+    "conclusion": "success",
+    "run_id": 39591475937,
+    "head_sha": "52293403ea1e06465c41d24d39b54959bad40936",
+    "started_at": "2026-10-21T13:02:35Z",
+    "completed_at": "2026-10-21T13:02:38Z",
+    "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/39591475937/job/119220992411",
+    "runner_name": "GitHub Actions 1000192070",
+    "labels": [
+      "ubuntu-24.04"
+    ],
+    "steps": [
+      {
+        "name": "Set up job",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 1,
+        "started_at": "2026-10-21T13:02:36Z",
+        "completed_at": "2026-10-21T13:02:36Z"
+      },
+      {
+        "name": "Require both exact-candidate lanes",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 2,
+        "started_at": "2026-10-21T13:02:36Z",
+        "completed_at": "2026-10-21T13:02:36Z"
+      },
+      {
+        "name": "Complete job",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 3,
+        "started_at": "2026-10-21T13:02:36Z",
+        "completed_at": "2026-10-21T13:02:36Z"
+      }
+    ]
+  },
+  "observed_at": "2026-10-21T13:28:48.812Z",
+  "source_head": "52293403ea1e06465c41d24d39b54959bad40936",
+  "raw_log": {
+    "file": "job119220992411.log.xz",
+    "bytes": 2813,
+    "sha256": "b55fb88e68c355e0cfe07ebf45095718a28d0617cf2cb9cec003effb41f109be",
+    "compressed_bytes": 1164,
+    "compressed_sha256": "3915776bb7f6a17591c449ea62b36ad89b2e549190dddb0278d855d4de8631d5",
+    "bom": true,
+    "lf": 46,
+    "crlf": 0
+  },
+  "analysis": {
+    "fail_target_lines": [],
+    "error_annotations": [],
+    "rust_error_lines": [],
+    "last_progress": null,
+    "scope": "Original job conclusion and preceding diagnostics; cancellation is not a pass or proof of its initiator."
+  }
+}

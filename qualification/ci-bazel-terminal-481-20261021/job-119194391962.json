@@ -1,0 +1,123 @@
+{
+  "job": {
+    "id": 119194391962,
+    "name": "Bazel / Bazel test on macos-15-intel for x86_64-apple-darwin",
+    "status": "completed",
+    "conclusion": "cancelled",
+    "run_id": 39583123088,
+    "head_sha": "48177153ad04605338c3a9a8dbd17defee9981bc",
+    "started_at": "2026-10-21T11:40:21Z",
+    "completed_at": "2026-10-21T12:41:02Z",
+    "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/39583123088/job/119194391962",
+    "runner_name": "GitHub Actions 1000191420",
+    "labels": [
+      "macos-15-intel"
+    ],
+    "steps": [
+      {
+        "name": "Set up job",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 1,
+        "started_at": "2026-10-21T11:40:22Z",
+        "completed_at": "2026-10-21T11:40:24Z"
+      },
+      {
+        "name": "Run actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 2,
+        "started_at": "2026-10-21T11:40:24Z",
+        "completed_at": "2026-10-21T11:40:41Z"
+      },
+      {
+        "name": "Prepare Bazel CI",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 3,
+        "started_at": "2026-10-21T11:40:41Z",
+        "completed_at": "2026-10-21T11:40:56Z"
+      },
+      {
+        "name": "Check rusty_v8 MODULE.bazel checksums",
+        "status": "completed",
+        "conclusion": "skipped",
+        "number": 4,
+        "started_at": "2026-10-21T11:40:56Z",
+        "completed_at": "2026-10-21T11:40:56Z"
+      },
+      {
+        "name": "Check MODULE.bazel.lock is up to date",
+        "status": "completed",
+        "conclusion": "skipped",
+        "number": 5,
+        "started_at": "2026-10-21T11:40:56Z",
+        "completed_at": "2026-10-21T11:40:56Z"
+      },
+      {
+        "name": "bazel test //...",
+        "status": "completed",
+        "conclusion": "cancelled",
+        "number": 6,
+        "started_at": "2026-10-21T11:40:56Z",
+        "completed_at": "2026-10-21T12:40:41Z"
+      },
+      {
+        "name": "Upload Bazel execution logs",
+        "status": "completed",
+        "conclusion": "skipped",
+        "number": 7,
+        "started_at": "2026-10-21T12:40:41Z",
+        "completed_at": "2026-10-21T12:40:41Z"
+      },
+      {
+        "name": "Save bazel repository cache",
+        "status": "completed",
+        "conclusion": "skipped",
+        "number": 8,
+        "started_at": "2026-10-21T12:40:41Z",
+        "completed_at": "2026-10-21T12:40:41Z"
+      },
+      {
+        "name": "Check for a clean worktree",
+        "status": "completed",
+        "conclusion": "skipped",
+        "number": 9,
+        "started_at": "2026-10-21T12:40:41Z",
+        "completed_at": "2026-10-21T12:40:42Z"
+      },
+      {
+        "name": "Post Prepare Bazel CI",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 17,
+        "started_at": "2026-10-21T12:40:42Z",
+        "completed_at": "2026-10-21T12:40:43Z"
+      },
+      {
+        "name": "Post Run actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 18,
+        "started_at": "2026-10-21T12:40:43Z",
+        "completed_at": "2026-10-21T12:40:50Z"
+      },
+      {
+        "name": "Complete job",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 19,
+        "started_at": "2026-10-21T12:40:50Z",
+        "completed_at": "2026-10-21T12:40:58Z"
+      }
+    ]
+  },
+  "observed_at": "2026-10-21 12:44:33 UTC",
+  "source_head": "48177153ad04605338c3a9a8dbd17defee9981bc",
+  "encoding": "Connector decoded job log encoded UTF-8 without line rewriting",
+  "raw_bytes": 950567,
+  "raw_sha256": "ec5c92cb2322c6e571adbadb94ef85ef4ff2bdf3d337666771e882b96ef6c5bf",
+  "xz_file": "job-119194391962.log.xz",
+  "xz_bytes": 85948,
+  "xz_sha256": "88b4dde2f0925a5dba3a2f7b9b7e48cfa18a6e432a2796b94e9846d9bae6ca12"
+}

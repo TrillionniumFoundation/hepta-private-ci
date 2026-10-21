@@ -1,0 +1,842 @@
+{
+  "evaluated_shadow::tests::durable_stage_records_a_decision_and_retries_after_reopen_without_new_bytes": {
+    "line": 3420,
+    "location": "hepta-intelligence/src\\evaluated_shadow_tests.rs:189:42",
+    "context": [
+      "called `Result::unwrap()` on an `Err` value: Os { code: 33, kind: Uncategorized, message: \"The process cannot access the file because another process has locked a portion of the file.\" }",
+      "note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace",
+      "",
+      "---- evaluated_shadow::tests::invalid_authentication_artifact_or_dataset_never_calls_any_port stdout ----",
+      "",
+      "thread 'evaluated_shadow::tests::invalid_authentication_artifact_or_dataset_never_calls_any_port' (4468) panicked at hepta-intelligence/src\\evaluated_shadow_tests.rs:277:38:"
+    ]
+  },
+  "evaluated_shadow::tests::invalid_authentication_artifact_or_dataset_never_calls_any_port": {
+    "line": 3426,
+    "location": "hepta-intelligence/src\\evaluated_shadow_tests.rs:277:38",
+    "context": [
+      "called `Result::unwrap()` on an `Err` value: Os { code: 33, kind: Uncategorized, message: \"The process cannot access the file because another process has locked a portion of the file.\" }",
+      "",
+      "---- evaluated_shadow::tests::old_signed_evidence_cannot_enter_a_recomputed_new_authority_epoch stdout ----",
+      "",
+      "thread 'evaluated_shadow::tests::old_signed_evidence_cannot_enter_a_recomputed_new_authority_epoch' (8676) panicked at hepta-intelligence/src\\evaluated_shadow_tests.rs:299:34:",
+      "called `Result::unwrap()` on an `Err` value: Os { code: 33, kind: Uncategorized, message: \"The process cannot access the file because another process has locked a portion of the file.\" }"
+    ]
+  },
+  "evaluated_shadow::tests::old_signed_evidence_cannot_enter_a_recomputed_new_authority_epoch": {
+    "line": 3431,
+    "location": "hepta-intelligence/src\\evaluated_shadow_tests.rs:299:34",
+    "context": [
+      "called `Result::unwrap()` on an `Err` value: Os { code: 33, kind: Uncategorized, message: \"The process cannot access the file because another process has locked a portion of the file.\" }",
+      "",
+      "---- evaluated_shadow::tests::ledger_conflict_capacity_and_io_uncertainty_cannot_report_learning_recorded stdout ----",
+      "",
+      "thread 'evaluated_shadow::tests::ledger_conflict_capacity_and_io_uncertainty_cannot_report_learning_recorded' (5152) panicked at hepta-intelligence/src\\evaluated_shadow_tests.rs:382:34:",
+      "called `Result::unwrap()` on an `Err` value: Os { code: 33, kind: Uncategorized, message: \"The process cannot access the file because another process has locked a portion of the file.\" }"
+    ]
+  },
+  "evaluated_shadow::tests::ledger_conflict_capacity_and_io_uncertainty_cannot_report_learning_recorded": {
+    "line": 3436,
+    "location": "hepta-intelligence/src\\evaluated_shadow_tests.rs:382:34",
+    "context": [
+      "called `Result::unwrap()` on an `Err` value: Os { code: 33, kind: Uncategorized, message: \"The process cannot access the file because another process has locked a portion of the file.\" }",
+      "",
+      "",
+      "failures:",
+      "    evaluated_shadow::tests::durable_stage_records_a_decision_and_retries_after_reopen_without_new_bytes",
+      "    evaluated_shadow::tests::invalid_authentication_artifact_or_dataset_never_calls_any_port"
+    ]
+  },
+  "token::tests::partial_delete_deny_is_repaired_before_native_workspace_writes": {
+    "line": 3833,
+    "location": "windows-sandbox-rs/src\\token_tests.rs:213:5",
+    "context": [
+      "assertion failed: `(left == right)`",
+      "",
+      "Diff < left / right > :",
+      " (",
+      ">    false,",
+      "     true,"
+    ]
+  },
+  "token::tests::workspace_capabilities_deny_writes_and_deletes_under_broad_identity_aces": {
+    "line": 3850,
+    "location": "windows-sandbox-rs/src\\token_tests.rs:280:5",
+    "context": [
+      "assertion failed: `(left == right)`",
+      "",
+      "Diff < left / right > :",
+      " [",
+      "     Some(",
+      "         PermissionDenied,"
+    ]
+  },
+  "unified_exec::tests::legacy_workspace_write_delete_is_limited_to_writable_roots": {
+    "line": 3875,
+    "location": "windows-sandbox-rs/src\\unified_exec\\tests.rs:775:9",
+    "context": [
+      "assertion failed: `(left == right)`: stdout=\"\"",
+      "[2026-10-21 12:29:05.797 windows-sandbox-rs-unit-tests-bin.exe] START: C:\\Windows\\System32\\cmd.exe /d /c D:\\a\\hepta-private-ci\\hepta-private-ci\\codex-rs\\.tmpGX1xLa\\workspace\\delete-fixtures.cmd",
+      "",
+      "",
+      "Diff < left / right > :",
+      " ("
+    ]
+  },
+  "lease_lifecycle::tests::issue_unknown_reconciles_without_duplicate_issue": {
+    "line": 4019,
+    "location": "hepta-bao-adapter/src\\lease_lifecycle_tests.rs:31:10",
+    "context": [
+      "called `Result::unwrap()` on an `Err` value: Unavailable",
+      "",
+      "---- lease_lifecycle::tests::issue_rejects_non_active_provider_observations_without_durable_mutation stdout ----",
+      "",
+      "thread 'lease_lifecycle::tests::issue_rejects_non_active_provider_observations_without_durable_mutation' (4896) panicked at hepta-bao-adapter/src\\lease_lifecycle_tests.rs:84:14:",
+      "called `Result::unwrap()` on an `Err` value: Unavailable"
+    ]
+  },
+  "lease_lifecycle::tests::issue_rejects_non_active_provider_observations_without_durable_mutation": {
+    "line": 4024,
+    "location": "hepta-bao-adapter/src\\lease_lifecycle_tests.rs:84:14",
+    "context": [
+      "called `Result::unwrap()` on an `Err` value: Unavailable",
+      "note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace",
+      "",
+      "---- lease_lifecycle::tests::provider_not_applied_restores_active_lease_after_unknown stdout ----",
+      "",
+      "thread 'lease_lifecycle::tests::provider_not_applied_restores_active_lease_after_unknown' (4628) panicked at hepta-bao-adapter/src\\lease_lifecycle_tests.rs:190:10:"
+    ]
+  },
+  "lease_lifecycle::tests::provider_not_applied_restores_active_lease_after_unknown": {
+    "line": 4030,
+    "location": "hepta-bao-adapter/src\\lease_lifecycle_tests.rs:190:10",
+    "context": [
+      "called `Result::unwrap()` on an `Err` value: Unavailable",
+      "",
+      "---- lease_lifecycle::tests::expiry_is_durable_and_terminal_for_renewal stdout ----",
+      "",
+      "thread 'lease_lifecycle::tests::expiry_is_durable_and_terminal_for_renewal' (8936) panicked at hepta-bao-adapter/src\\lease_lifecycle_tests.rs:217:10:",
+      "called `Result::unwrap()` on an `Err` value: Unavailable"
+    ]
+  },
+  "lease_lifecycle::tests::expiry_is_durable_and_terminal_for_renewal": {
+    "line": 4035,
+    "location": "hepta-bao-adapter/src\\lease_lifecycle_tests.rs:217:10",
+    "context": [
+      "called `Result::unwrap()` on an `Err` value: Unavailable",
+      "",
+      "---- lease_lifecycle::tests::reused_operation_id_with_changed_semantics_conflicts stdout ----",
+      "",
+      "thread 'lease_lifecycle::tests::reused_operation_id_with_changed_semantics_conflicts' (1292) panicked at hepta-bao-adapter/src\\lease_lifecycle_tests.rs:66:10:",
+      "called `Result::unwrap()` on an `Err` value: Unavailable"
+    ]
+  },
+  "lease_lifecycle::tests::reused_operation_id_with_changed_semantics_conflicts": {
+    "line": 4040,
+    "location": "hepta-bao-adapter/src\\lease_lifecycle_tests.rs:66:10",
+    "context": [
+      "called `Result::unwrap()` on an `Err` value: Unavailable",
+      "",
+      "---- lease_lifecycle::tests::revoke_unknown_stays_nonterminal_until_provider_observation stdout ----",
+      "",
+      "thread 'lease_lifecycle::tests::revoke_unknown_stays_nonterminal_until_provider_observation' (2856) panicked at hepta-bao-adapter/src\\lease_lifecycle_tests.rs:150:10:",
+      "called `Result::unwrap()` on an `Err` value: Unavailable"
+    ]
+  },
+  "lease_lifecycle::tests::revoke_unknown_stays_nonterminal_until_provider_observation": {
+    "line": 4045,
+    "location": "hepta-bao-adapter/src\\lease_lifecycle_tests.rs:150:10",
+    "context": [
+      "called `Result::unwrap()` on an `Err` value: Unavailable",
+      "",
+      "---- lease_lifecycle::tests::renew_unknown_blocks_fabricated_success_until_reconciled stdout ----",
+      "",
+      "thread 'lease_lifecycle::tests::renew_unknown_blocks_fabricated_success_until_reconciled' (7280) panicked at hepta-bao-adapter/src\\lease_lifecycle_tests.rs:108:10:",
+      "called `Result::unwrap()` on an `Err` value: Unavailable"
+    ]
+  },
+  "lease_lifecycle::tests::renew_unknown_blocks_fabricated_success_until_reconciled": {
+    "line": 4050,
+    "location": "hepta-bao-adapter/src\\lease_lifecycle_tests.rs:108:10",
+    "context": [
+      "called `Result::unwrap()` on an `Err` value: Unavailable",
+      "",
+      "",
+      "failures:",
+      "    lease_lifecycle::tests::expiry_is_durable_and_terminal_for_renewal",
+      "    lease_lifecycle::tests::issue_rejects_non_active_provider_observations_without_durable_mutation"
+    ]
+  },
+  "v1_store_migrates_atomically_to_dispatch_outcome_schema": {
+    "line": 4134,
+    "location": "hepta-automation/tests/automation.rs:1039:10",
+    "context": [
+      "remove v14 run revision from v1 fixture: Database(SqliteError { code: 1, message: \"error in trigger automation_timer_lifecycle_drain: no such table: main.automation_dispatch_outcomes\" })",
+      "note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace",
+      "",
+      "",
+      "failures:",
+      "    v1_store_migrates_atomically_to_dispatch_outcome_schema"
+    ]
+  },
+  "cognitive_store::recovery::tests::exact_current_cut_recovers_writable_generation_and_persists_activation": {
+    "line": 4270,
+    "location": "hepta-memory/src\\cognitive_store_recovery_tests.rs:163:6",
+    "context": [
+      "descriptor-bound writable recovery: Indeterminate(\"cognitive recovery root is redirected\")",
+      "note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace",
+      "",
+      "---- cognitive_store::recovery::tests::predecessor_witness_is_rejected_and_current_witness_recovers stdout ----",
+      "",
+      "thread 'cognitive_store::recovery::tests::predecessor_witness_is_rejected_and_current_witness_recovers' (6132) panicked at hepta-memory/src\\cognitive_store_recovery_tests.rs:291:5:"
+    ]
+  },
+  "cognitive_store::recovery::tests::predecessor_witness_is_rejected_and_current_witness_recovers": {
+    "line": 4276,
+    "location": "hepta-memory/src\\cognitive_store_recovery_tests.rs:291:5",
+    "context": [
+      "assertion failed: matches!(CognitiveStore::open_with_recovery(&layout(&temp, &owner),",
+      "    CognitiveRecoveryRequirement::ExactCurrentCut(&predecessor), &authority,",
+      "    &RecoveryVerifier,).await, Err(CognitiveRecoveryError::AccessDenied(_)))",
+      "",
+      "---- cognitive_store::recovery::tests::post_rename_publication_failure_is_indeterminate_and_retains_candidate stdout ----",
+      ""
+    ]
+  },
+  "cognitive_store::recovery::tests::post_rename_publication_failure_is_indeterminate_and_retains_candidate": {
+    "line": 4283,
+    "location": "hepta-memory/src\\cognitive_store_recovery_tests.rs:214:48",
+    "context": [
+      "pointer rename: Unavailable(\"Access is denied. (os error 5)\")",
+      "",
+      "---- cognitive_store::recovery::tests::revoked_owner_profile_and_witness_checks_precede_recovery_admission stdout ----",
+      "",
+      "thread 'cognitive_store::recovery::tests::revoked_owner_profile_and_witness_checks_precede_recovery_admission' (7804) panicked at hepta-memory/src\\cognitive_store_recovery_tests.rs:365:5:",
+      "assertion failed: matches!(CognitiveStore::open_with_recovery(&layout(&temp, &owner),"
+    ]
+  },
+  "cognitive_store::recovery::tests::revoked_owner_profile_and_witness_checks_precede_recovery_admission": {
+    "line": 4288,
+    "location": "hepta-memory/src\\cognitive_store_recovery_tests.rs:365:5",
+    "context": [
+      "assertion failed: matches!(CognitiveStore::open_with_recovery(&layout(&temp, &owner),",
+      "    CognitiveRecoveryRequirement::ExactCurrentCut(&tampered), &authority,",
+      "    &RecoveryVerifier,).await, Err(CognitiveRecoveryError::AccessDenied(_)))",
+      "",
+      "---- cognitive_store::recovery::tests::writable_recovery_requires_exclusive_store_fence stdout ----",
+      ""
+    ]
+  },
+  "cognitive_store::recovery::tests::writable_recovery_requires_exclusive_store_fence": {
+    "line": 4295,
+    "location": "hepta-memory/src\\cognitive_store_recovery_tests.rs:248:5",
+    "context": [
+      "assertion failed: matches!(CognitiveStore::open_with_recovery(&layout(&temp, &owner),",
+      "    CognitiveRecoveryRequirement::ExactCurrentCut(&anchor), &authority,",
+      "    &RecoveryVerifier,).await, Err(CognitiveRecoveryError::Unavailable(_)))",
+      "",
+      "",
+      "failures:"
+    ]
+  },
+  "native_app_server::tests::cognitive_final_use_revalidation_follows_durable_dispatch_and_precedes_turn_start": {
+    "line": 5041,
+    "location": "hepta-infer-worker-host/src\\native_app_server_tests.rs:411:10",
+    "context": [
+      "physical turn start",
+      "note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace",
+      "",
+      "",
+      "failures:",
+      "    native_app_server::tests::cognitive_final_use_revalidation_follows_durable_dispatch_and_precedes_turn_start"
+    ]
+  },
+  "tests::embedding_runtime_sqlite_home_constraint_is_exact": {
+    "line": 5126,
+    "location": "app-server/src/lib.rs:1841:9",
+    "context": [
+      "assertion failed: `(left == right)`",
+      "",
+      "Diff < left / right > :",
+      "<embedding runtime requires SQLite home /tmp/hepta-private-sqlite, but configuration resolved /tmp/hepta-shared-sqlite",
+      ">embedding runtime requires SQLite home D:\\tmp\\hepta-private-sqlite, but configuration resolved /tmp/hepta-shared-sqlite",
+      ""
+    ]
+  },
+  "runtime::tests::qualification_prepare_quarantines_expired_registry_attempt_with_h7_evidence": {
+    "line": 5311,
+    "location": "hepta-agentd/src\\runtime_tests.rs:723:10",
+    "context": [
+      "append H7 start: Lease(\"local lease/outbox stale fence: local lease has expired\")",
+      "note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace",
+      "",
+      "",
+      "failures:",
+      "    runtime::tests::qualification_prepare_quarantines_expired_registry_attempt_with_h7_evidence"
+    ]
+  },
+  "responses_stream_includes_turn_metadata_header_for_git_workspace_e2e": {
+    "line": 5384,
+    "location": "codex-rs/core/tests/common/lib.rs:353:14",
+    "context": [
+      "timeout waiting for event: Elapsed(())",
+      "note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace",
+      "",
+      "",
+      "failures:",
+      "    responses_stream_includes_turn_metadata_header_for_git_workspace_e2e"
+    ]
+  },
+  "suite::v2::mcp_server_elicitation::mcp_server_form_elicitation_round_trip": {
+    "line": 5515,
+    "location": "codex-rs/app-server/tests/common\\test_app_server.rs:1660:13",
+    "context": [
+      "internal error: entered unreachable code: expected JSONRPCMessage::Response, got Error(JSONRPCError { error: JSONRPCErrorError { code: -32603, data: None, message: \"failed to submit turn input: NotIdle\" }, id: Integer(3) })",
+      "note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace",
+      "",
+      "---- suite::v2::mcp_server_elicitation::mcp_server_strict_auto_review::test_case_2_approve_for_me stdout ----",
+      "writing message to stdin: Request(JSONRPCRequest { id: Integer(0), method: \"initialize\", params: Some(Object {\"clientInfo\": Object {\"name\": String(\"codex-app-server-tests\"), \"title\": Null, \"version\": String(\"0.1.0\")}, \"capabilities\": Object {\"experimentalApi\": Bool(true), \"requestAttestation\": Bool(false), \"mcpServerOpenaiFormElicitation\": Bool(true), \"optOutNotificationMethods\": Null, \"extensions\": Object {\"openai/standard-form-input\": Object {}}}}), trace: None })",
+      "read message from stdout: Response(JSONRPCResponse { id: Integer(0), result: Object {\"userAgent\": String(\"codex-app-server-tests/0.0.0 (Windows 10.0.26100; x86_64) unknown (codex-app-server-tests; 0.1.0)\"), \"codexHome\": String(\"D:\\\\tmp\\\\.tmp7YsXOC\"), \"platformFamily\": String(\"windows\"), \"platformOs\": String(\"windows\")} })"
+    ]
+  },
+  "suite::v2::mcp_server_elicitation::mcp_server_strict_auto_review::test_case_2_approve_for_me": {
+    "line": 5556,
+    "location": "codex-rs/app-server/tests/common\\test_app_server.rs:1660:13",
+    "context": [
+      "internal error: entered unreachable code: expected JSONRPCMessage::Response, got Error(JSONRPCError { error: JSONRPCErrorError { code: -32603, data: None, message: \"failed to submit turn input: NotIdle\" }, id: Integer(3) })",
+      "[mcp stderr] 2026-10-21T12:42:05.983144Z  WARN codex_analytics::client: events failed with status 404 Not Found: ",
+      "",
+      "---- suite::v2::thread_resume::thread_resume_rejects_mismatched_path_for_running_thread_id stdout ----",
+      "writing message to stdin: Request(JSONRPCRequest { id: Integer(0), method: \"initialize\", params: Some(Object {\"clientInfo\": Object {\"name\": String(\"codex-app-server-tests\"), \"title\": Null, \"version\": String(\"0.1.0\")}, \"capabilities\": Object {\"experimentalApi\": Bool(true), \"requestAttestation\": Bool(false), \"optOutNotificationMethods\": Null}}), trace: None })",
+      "read message from stdout: Response(JSONRPCResponse { id: Integer(0), result: Object {\"userAgent\": String(\"codex-app-server-tests/0.0.0 (Windows 10.0.26100; x86_64) unknown (codex-app-server-tests; 0.1.0)\"), \"codexHome\": String(\"D:\\\\tmp\\\\.tmpZidPcu\"), \"platformFamily\": String(\"windows\"), \"platformOs\": String(\"windows\")} })"
+    ]
+  },
+  "suite::v2::thread_resume::thread_resume_rejects_mismatched_path_for_running_thread_id": {
+    "line": 5589,
+    "location": "codex-rs/app-server/tests/common\\test_app_server.rs:1660:13",
+    "context": [
+      "internal error: entered unreachable code: expected JSONRPCMessage::Response, got Error(JSONRPCError { error: JSONRPCErrorError { code: -32603, data: None, message: \"failed to submit turn input: NotIdle\" }, id: Integer(3) })",
+      "",
+      "",
+      "failures:",
+      "    suite::v2::mcp_server_elicitation::mcp_server_form_elicitation_round_trip",
+      "    suite::v2::mcp_server_elicitation::mcp_server_strict_auto_review::test_case_2_approve_for_me"
+    ]
+  },
+  "suite::v2::mcp_server_elicitation::mcp_server_openai_form_elicitation_round_trip": {
+    "line": 6072,
+    "location": "codex-rs/app-server/tests/common\\test_app_server.rs:1660:13",
+    "context": [
+      "internal error: entered unreachable code: expected JSONRPCMessage::Response, got Error(JSONRPCError { error: JSONRPCErrorError { code: -32603, data: None, message: \"failed to submit turn input: NotIdle\" }, id: Integer(3) })",
+      "note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace",
+      "",
+      "---- suite::v2::thread_revert::thread_revert_replaces_paginated_history_before_turn stdout ----",
+      "writing message to stdin: Request(JSONRPCRequest { id: Integer(0), method: \"initialize\", params: Some(Object {\"clientInfo\": Object {\"name\": String(\"test-client\"), \"title\": Null, \"version\": String(\"0.1.0\")}, \"capabilities\": Object {\"experimentalApi\": Bool(true), \"requestAttestation\": Bool(false), \"optOutNotificationMethods\": Null}}), trace: None })",
+      "read message from stdout: Response(JSONRPCResponse { id: Integer(0), result: Object {\"userAgent\": String(\"test-client/0.0.0 (Windows 10.0.26100; x86_64) unknown (test-client; 0.1.0)\"), \"codexHome\": String(\"D:\\\\tmp\\\\.tmpv35UPa\"), \"platformFamily\": String(\"windows\"), \"platformOs\": String(\"windows\")} })"
+    ]
+  },
+  "suite::v2::thread_revert::thread_revert_replaces_paginated_history_before_turn": {
+    "line": 6108,
+    "location": "codex-rs/app-server/tests/common\\test_app_server.rs:1660:13",
+    "context": [
+      "internal error: entered unreachable code: expected JSONRPCMessage::Response, got Error(JSONRPCError { error: JSONRPCErrorError { code: -32603, data: None, message: \"failed to submit turn input: NotIdle\" }, id: Integer(3) })",
+      "",
+      "---- suite::v2::turn_start::turn_start_change_personality_mid_thread_v2 stdout ----",
+      "writing message to stdin: Request(JSONRPCRequest { id: Integer(0), method: \"initialize\", params: Some(Object {\"clientInfo\": Object {\"name\": String(\"codex-app-server-tests\"), \"title\": Null, \"version\": String(\"0.1.0\")}, \"capabilities\": Object {\"experimentalApi\": Bool(true), \"requestAttestation\": Bool(false), \"optOutNotificationMethods\": Null}}), trace: None })",
+      "read message from stdout: Response(JSONRPCResponse { id: Integer(0), result: Object {\"userAgent\": String(\"codex-app-server-tests/0.0.0 (Windows 10.0.26100; x86_64) unknown (codex-app-server-tests; 0.1.0)\"), \"codexHome\": String(\"D:\\\\tmp\\\\.tmpb4gjWt\"), \"platformFamily\": String(\"windows\"), \"platformOs\": String(\"windows\")} })",
+      "writing message to stdin: Notification(JSONRPCNotification { method: \"initialized\", params: None })"
+    ]
+  },
+  "suite::v2::turn_start::turn_start_change_personality_mid_thread_v2": {
+    "line": 6143,
+    "location": "codex-rs/app-server/tests/common\\test_app_server.rs:1660:13",
+    "context": [
+      "internal error: entered unreachable code: expected JSONRPCMessage::Response, got Error(JSONRPCError { error: JSONRPCErrorError { code: -32603, data: None, message: \"failed to submit turn input: NotIdle\" }, id: Integer(3) })",
+      "",
+      "",
+      "failures:",
+      "    suite::v2::mcp_server_elicitation::mcp_server_openai_form_elicitation_round_trip",
+      "    suite::v2::thread_revert::thread_revert_replaces_paginated_history_before_turn"
+    ]
+  },
+  "suite::v2::compaction::auto_compaction_local_emits_started_and_completed_items": {
+    "line": 6618,
+    "location": "codex-rs/app-server/tests/common\\test_app_server.rs:1660:13",
+    "context": [
+      "internal error: entered unreachable code: expected JSONRPCMessage::Response, got Error(JSONRPCError { error: JSONRPCErrorError { code: -32603, data: None, message: \"failed to submit turn input: NotIdle\" }, id: Integer(4) })",
+      "note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace",
+      "",
+      "---- suite::v2::mcp_server_elicitation::mcp_server_strict_auto_review::test_case_10_app_reviewer_noncanonical_id stdout ----",
+      "writing message to stdin: Request(JSONRPCRequest { id: Integer(0), method: \"initialize\", params: Some(Object {\"clientInfo\": Object {\"name\": String(\"codex-app-server-tests\"), \"title\": Null, \"version\": String(\"0.1.0\")}, \"capabilities\": Object {\"experimentalApi\": Bool(true), \"requestAttestation\": Bool(false), \"mcpServerOpenaiFormElicitation\": Bool(true), \"optOutNotificationMethods\": Null, \"extensions\": Object {\"openai/standard-form-input\": Object {}}}}), trace: None })",
+      "read message from stdout: Response(JSONRPCResponse { id: Integer(0), result: Object {\"userAgent\": String(\"codex-app-server-tests/0.0.0 (Windows 10.0.26100; x86_64) unknown (codex-app-server-tests; 0.1.0)\"), \"codexHome\": String(\"D:\\\\tmp\\\\.tmpN5VS3v\"), \"platformFamily\": String(\"windows\"), \"platformOs\": String(\"windows\")} })"
+    ]
+  },
+  "suite::v2::mcp_server_elicitation::mcp_server_strict_auto_review::test_case_10_app_reviewer_noncanonical_id": {
+    "line": 6661,
+    "location": "codex-rs/app-server/tests/common\\test_app_server.rs:1660:13",
+    "context": [
+      "internal error: entered unreachable code: expected JSONRPCMessage::Response, got Error(JSONRPCError { error: JSONRPCErrorError { code: -32603, data: None, message: \"failed to submit turn input: NotIdle\" }, id: Integer(3) })",
+      "",
+      "---- suite::v2::mcp_server_elicitation::mcp_server_strict_auto_review::test_case_4_full_access stdout ----",
+      "writing message to stdin: Request(JSONRPCRequest { id: Integer(0), method: \"initialize\", params: Some(Object {\"clientInfo\": Object {\"name\": String(\"codex-app-server-tests\"), \"title\": Null, \"version\": String(\"0.1.0\")}, \"capabilities\": Object {\"experimentalApi\": Bool(true), \"requestAttestation\": Bool(false), \"mcpServerOpenaiFormElicitation\": Bool(true), \"optOutNotificationMethods\": Null, \"extensions\": Object {\"openai/standard-form-input\": Object {}}}}), trace: None })",
+      "read message from stdout: Response(JSONRPCResponse { id: Integer(0), result: Object {\"userAgent\": String(\"codex-app-server-tests/0.0.0 (Windows 10.0.26100; x86_64) unknown (codex-app-server-tests; 0.1.0)\"), \"codexHome\": String(\"D:\\\\tmp\\\\.tmpJEhsze\"), \"platformFamily\": String(\"windows\"), \"platformOs\": String(\"windows\")} })",
+      "writing message to stdin: Notification(JSONRPCNotification { method: \"initialized\", params: None })"
+    ]
+  },
+  "suite::v2::mcp_server_elicitation::mcp_server_strict_auto_review::test_case_4_full_access": {
+    "line": 6702,
+    "location": "codex-rs/app-server/tests/common\\test_app_server.rs:1660:13",
+    "context": [
+      "internal error: entered unreachable code: expected JSONRPCMessage::Response, got Error(JSONRPCError { error: JSONRPCErrorError { code: -32603, data: None, message: \"failed to submit turn input: NotIdle\" }, id: Integer(3) })",
+      "",
+      "---- suite::v2::thread_resume::thread_resume_replays_pending_command_execution_request_approval stdout ----",
+      "writing message to stdin: Request(JSONRPCRequest { id: Integer(0), method: \"initialize\", params: Some(Object {\"clientInfo\": Object {\"name\": String(\"codex-app-server-tests\"), \"title\": Null, \"version\": String(\"0.1.0\")}, \"capabilities\": Object {\"experimentalApi\": Bool(true), \"requestAttestation\": Bool(false), \"optOutNotificationMethods\": Null}}), trace: None })",
+      "read message from stdout: Response(JSONRPCResponse { id: Integer(0), result: Object {\"userAgent\": String(\"codex-app-server-tests/0.0.0 (Windows 10.0.26100; x86_64) unknown (codex-app-server-tests; 0.1.0)\"), \"codexHome\": String(\"D:\\\\tmp\\\\.tmpiGCOww\"), \"platformFamily\": String(\"windows\"), \"platformOs\": String(\"windows\")} })",
+      "writing message to stdin: Notification(JSONRPCNotification { method: \"initialized\", params: None })"
+    ]
+  },
+  "suite::v2::thread_resume::thread_resume_replays_pending_command_execution_request_approval": {
+    "line": 6734,
+    "location": "codex-rs/app-server/tests/common\\test_app_server.rs:1660:13",
+    "context": [
+      "internal error: entered unreachable code: expected JSONRPCMessage::Response, got Error(JSONRPCError { error: JSONRPCErrorError { code: -32603, data: None, message: \"failed to submit turn input: NotIdle\" }, id: Integer(3) })",
+      "",
+      "---- suite::v2::thread_revert::thread_revert_interrupts_active_turn_and_keeps_thread_loaded stdout ----",
+      "writing message to stdin: Request(JSONRPCRequest { id: Integer(0), method: \"initialize\", params: Some(Object {\"clientInfo\": Object {\"name\": String(\"test-client\"), \"title\": Null, \"version\": String(\"0.1.0\")}, \"capabilities\": Object {\"experimentalApi\": Bool(true), \"requestAttestation\": Bool(false), \"optOutNotificationMethods\": Null}}), trace: None })",
+      "read message from stdout: Response(JSONRPCResponse { id: Integer(0), result: Object {\"userAgent\": String(\"test-client/0.0.0 (Windows 10.0.26100; x86_64) unknown (test-client; 0.1.0)\"), \"codexHome\": String(\"D:\\\\tmp\\\\.tmp58svDC\"), \"platformFamily\": String(\"windows\"), \"platformOs\": String(\"windows\")} })",
+      "writing message to stdin: Notification(JSONRPCNotification { method: \"initialized\", params: None })"
+    ]
+  },
+  "suite::v2::thread_revert::thread_revert_interrupts_active_turn_and_keeps_thread_loaded": {
+    "line": 6769,
+    "location": "codex-rs/app-server/tests/common\\test_app_server.rs:1660:13",
+    "context": [
+      "internal error: entered unreachable code: expected JSONRPCMessage::Response, got Error(JSONRPCError { error: JSONRPCErrorError { code: -32603, data: None, message: \"failed to submit turn input: NotIdle\" }, id: Integer(3) })",
+      "",
+      "",
+      "failures:",
+      "    suite::v2::compaction::auto_compaction_local_emits_started_and_completed_items",
+      "    suite::v2::mcp_server_elicitation::mcp_server_strict_auto_review::test_case_10_app_reviewer_noncanonical_id"
+    ]
+  },
+  "suite::v2::client_metadata::turn_start_forwards_client_metadata_to_responses_request_v2": {
+    "line": 7341,
+    "location": "app-server/tests\\suite\\v2\\client_metadata.rs:116:5",
+    "context": [
+      "assertion failed: metadata[\"context_window_id\"].as_str().is_some_and(|window_id|",
+      "        uuid::Uuid::parse_str(window_id).is_ok())",
+      "note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace",
+      "",
+      "---- suite::v2::git_attribution::git_attribution_follows_authenticated_workspace_policy stdout ----",
+      "writing message to stdin: Request(JSONRPCRequest { id: Integer(0), method: \"initialize\", params: Some(Object {\"clientInfo\": Object {\"name\": String(\"codex-app-server-tests\"), \"title\": Null, \"version\": String(\"0.1.0\")}, \"capabilities\": Object {\"experimentalApi\": Bool(true), \"requestAttestation\": Bool(false), \"optOutNotificationMethods\": Null}}), trace: None })"
+    ]
+  },
+  "suite::v2::git_attribution::git_attribution_follows_authenticated_workspace_policy": {
+    "line": 7408,
+    "location": "codex-rs/app-server/tests/common\\test_app_server.rs:1660:13",
+    "context": [
+      "internal error: entered unreachable code: expected JSONRPCMessage::Response, got Error(JSONRPCError { error: JSONRPCErrorError { code: -32603, data: None, message: \"failed to submit turn input: NotIdle\" }, id: Integer(4) })",
+      "",
+      "",
+      "failures:",
+      "    suite::v2::client_metadata::turn_start_forwards_client_metadata_to_responses_request_v2",
+      "    suite::v2::git_attribution::git_attribution_follows_authenticated_workspace_policy"
+    ]
+  },
+  "suite::resume::exec_resume_last_repairs_rollout_missing_from_state_db": {
+    "line": 7745,
+    "location": "exec/tests\\suite\\resume.rs:290:10",
+    "context": [
+      "Unexpected failure.",
+      "code=1",
+      "stderr=```\"Error: thread/resume: thread/resume failed: thread 01a15e7a-55cf-731a-b3d0-a3b2c0a3fedd is sealed for hard deletion and cannot be resumed (code -32600)\\n\"```",
+      "command=`\"D:/o/execroot/_main/bazel-out/windows_x86_64_msvc-fastbuild/bin/codex-rs/exec/codex-exec.exe\" \"-c\" \"openai_base_url=\\\"http://127.0.0.1:56119/v1\\\"\" \"--skip-git-repo-check\" \"-C\" \"D:/a/hepta-private-ci/hepta-private-ci\" \"resume\" \"--last\" \"echo resume-last-repaired-77c0b09e-2345-4a2d-bef6-ff8c246dd27a\"`",
+      "code=1",
+      "stdout=\"\""
+    ]
+  },
+  "suite::v2::turn_start::turn_start_exec_approval_toggle_v2": {
+    "line": 7938,
+    "location": "codex-rs/app-server/tests/common\\test_app_server.rs:1660:13",
+    "context": [
+      "internal error: entered unreachable code: expected JSONRPCMessage::Response, got Error(JSONRPCError { error: JSONRPCErrorError { code: -32603, data: None, message: \"failed to submit turn input: NotIdle\" }, id: Integer(3) })",
+      "note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace",
+      "",
+      "",
+      "failures:",
+      "    suite::v2::turn_start::turn_start_exec_approval_toggle_v2"
+    ]
+  },
+  "suite::v2::mcp_server_elicitation::mcp_server_strict_auto_review::test_case_3_never": {
+    "line": 8275,
+    "location": "codex-rs/app-server/tests/common\\test_app_server.rs:1660:13",
+    "context": [
+      "internal error: entered unreachable code: expected JSONRPCMessage::Response, got Error(JSONRPCError { error: JSONRPCErrorError { code: -32603, data: None, message: \"failed to submit turn input: NotIdle\" }, id: Integer(3) })",
+      "note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace",
+      "",
+      "---- suite::v2::attestation::attestation_generate_round_trip_adds_header_to_responses_websocket_handshake stdout ----",
+      "writing message to stdin: Request(JSONRPCRequest { id: Integer(0), method: \"initialize\", params: Some(Object {\"clientInfo\": Object {\"name\": String(\"codex_desktop\"), \"title\": String(\"Codex Desktop\"), \"version\": String(\"0.1.0\")}, \"capabilities\": Object {\"experimentalApi\": Bool(true), \"requestAttestation\": Bool(true), \"optOutNotificationMethods\": Null}}), trace: None })",
+      "read message from stdout: Response(JSONRPCResponse { id: Integer(0), result: Object {\"userAgent\": String(\"codex_desktop/0.0.0 (Windows 10.0.26100; x86_64) unknown (codex_desktop; 0.1.0)\"), \"codexHome\": String(\"D:\\\\tmp\\\\.tmpdX2Z9x\"), \"platformFamily\": String(\"windows\"), \"platformOs\": String(\"windows\")} })"
+    ]
+  },
+  "suite::v2::thread_rollback::thread_rollback_drops_last_turns_and_persists_to_rollout": {
+    "line": 8371,
+    "location": "codex-rs/app-server/tests/common\\test_app_server.rs:1660:13",
+    "context": [
+      "internal error: entered unreachable code: expected JSONRPCMessage::Response, got Error(JSONRPCError { error: JSONRPCErrorError { code: -32603, data: None, message: \"failed to submit turn input: NotIdle\" }, id: Integer(3) })",
+      "",
+      "",
+      "failures:",
+      "    suite::v2::attestation::attestation_generate_round_trip_adds_header_to_responses_websocket_handshake",
+      "    suite::v2::mcp_server_elicitation::mcp_server_strict_auto_review::test_case_3_never"
+    ]
+  },
+  "suite::v2::thread_fork::paginated_thread_fork_at_named_boundaries_keeps_only_terminal_prefix": {
+    "line": 8548,
+    "location": "codex-rs/app-server/tests/common\\test_app_server.rs:1660:13",
+    "context": [
+      "internal error: entered unreachable code: expected JSONRPCMessage::Response, got Error(JSONRPCError { error: JSONRPCErrorError { code: -32603, data: None, message: \"failed to submit turn input: NotIdle\" }, id: Integer(4) })",
+      "",
+      "---- suite::v2::thread_rollback::thread_rollback_drops_last_turns_and_persists_to_rollout stdout ----",
+      "writing message to stdin: Request(JSONRPCRequest { id: Integer(0), method: \"initialize\", params: Some(Object {\"clientInfo\": Object {\"name\": String(\"codex-app-server-tests\"), \"title\": Null, \"version\": String(\"0.1.0\")}, \"capabilities\": Object {\"experimentalApi\": Bool(true), \"requestAttestation\": Bool(false), \"optOutNotificationMethods\": Null}}), trace: None })",
+      "read message from stdout: Response(JSONRPCResponse { id: Integer(0), result: Object {\"userAgent\": String(\"codex-app-server-tests/0.0.0 (Windows 10.0.26100; x86_64) unknown (codex-app-server-tests; 0.1.0)\"), \"codexHome\": String(\"D:\\\\tmp\\\\.tmpXhoecZ\"), \"platformFamily\": String(\"windows\"), \"platformOs\": String(\"windows\")} })",
+      "writing message to stdin: Notification(JSONRPCNotification { method: \"initialized\", params: None })"
+    ]
+  },
+  "suite::v2::turn_start::turn_start_explicit_local_environment_updates_legacy_cwd_between_turns": {
+    "line": 8627,
+    "location": "codex-rs/app-server/tests/common\\test_app_server.rs:1660:13",
+    "context": [
+      "internal error: entered unreachable code: expected JSONRPCMessage::Response, got Error(JSONRPCError { error: JSONRPCErrorError { code: -32603, data: None, message: \"failed to submit turn input: NotIdle\" }, id: Integer(3) })",
+      "",
+      "---- suite::v2::attestation::attestation_generate_round_trip_adds_header_to_responses_websocket_handshake stdout ----",
+      "writing message to stdin: Request(JSONRPCRequest { id: Integer(0), method: \"initialize\", params: Some(Object {\"clientInfo\": Object {\"name\": String(\"codex_desktop\"), \"title\": String(\"Codex Desktop\"), \"version\": String(\"0.1.0\")}, \"capabilities\": Object {\"experimentalApi\": Bool(true), \"requestAttestation\": Bool(true), \"optOutNotificationMethods\": Null}}), trace: None })",
+      "[mcp stderr] 2026-10-21T12:48:07.724788Z ERROR codex_models_manager::manager: failed to refresh available models: stream disconnected before completion: error sending request for url (http://127.0.0.1:60907/v1/models?client_version=0.0.0)",
+      "read message from stdout: Response(JSONRPCResponse { id: Integer(0), result: Object {\"userAgent\": String(\"codex_desktop/0.0.0 (Windows 10.0.26100; x86_64) unknown (codex_desktop; 0.1.0)\"), \"codexHome\": String(\"D:\\\\tmp\\\\.tmpwHyn7h\"), \"platformFamily\": String(\"windows\"), \"platformOs\": String(\"windows\")} })"
+    ]
+  },
+  "suite::v2::mcp_server_elicitation::mcp_server_strict_auto_review::test_case_15_persistent": {
+    "line": 9074,
+    "location": "codex-rs/app-server/tests/common\\test_app_server.rs:1660:13",
+    "context": [
+      "internal error: entered unreachable code: expected JSONRPCMessage::Response, got Error(JSONRPCError { error: JSONRPCErrorError { code: -32603, data: None, message: \"failed to submit turn input: NotIdle\" }, id: Integer(3) })",
+      "note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace",
+      "",
+      "---- suite::v2::thread_resume::thread_resume_preserves_acknowledged_model_effort_and_approvals_reviewer_update stdout ----",
+      "writing message to stdin: Request(JSONRPCRequest { id: Integer(0), method: \"initialize\", params: Some(Object {\"clientInfo\": Object {\"name\": String(\"codex-app-server-tests\"), \"title\": Null, \"version\": String(\"0.1.0\")}, \"capabilities\": Object {\"experimentalApi\": Bool(true), \"requestAttestation\": Bool(false), \"optOutNotificationMethods\": Null}}), trace: None })",
+      "read message from stdout: Response(JSONRPCResponse { id: Integer(0), result: Object {\"userAgent\": String(\"codex-app-server-tests/0.0.0 (Windows 10.0.26100; x86_64) unknown (codex-app-server-tests; 0.1.0)\"), \"codexHome\": String(\"D:\\\\tmp\\\\.tmptRQ27u\"), \"platformFamily\": String(\"windows\"), \"platformOs\": String(\"windows\")} })"
+    ]
+  },
+  "suite::v2::thread_fork::thread_fork_defers_inherited_active_goal_until_next_turn": {
+    "line": 9381,
+    "location": "codex-rs/app-server/tests/common\\test_app_server.rs:1660:13",
+    "context": [
+      "internal error: entered unreachable code: expected JSONRPCMessage::Response, got Error(JSONRPCError { error: JSONRPCErrorError { code: -32603, data: None, message: \"failed to submit turn input: NotIdle\" }, id: Integer(3) })",
+      "",
+      "---- suite::v2::thread_resume::thread_resume_preserves_acknowledged_model_effort_and_approvals_reviewer_update stdout ----",
+      "writing message to stdin: Request(JSONRPCRequest { id: Integer(0), method: \"initialize\", params: Some(Object {\"clientInfo\": Object {\"name\": String(\"codex-app-server-tests\"), \"title\": Null, \"version\": String(\"0.1.0\")}, \"capabilities\": Object {\"experimentalApi\": Bool(true), \"requestAttestation\": Bool(false), \"optOutNotificationMethods\": Null}}), trace: None })",
+      "read message from stdout: Response(JSONRPCResponse { id: Integer(0), result: Object {\"userAgent\": String(\"codex-app-server-tests/0.0.0 (Windows 10.0.26100; x86_64) unknown (codex-app-server-tests; 0.1.0)\"), \"codexHome\": String(\"D:\\\\tmp\\\\.tmp5xGSa5\"), \"platformFamily\": String(\"windows\"), \"platformOs\": String(\"windows\")} })",
+      "writing message to stdin: Notification(JSONRPCNotification { method: \"initialized\", params: None })"
+    ]
+  },
+  "sandbox_fetches_and_enforces_cloud_managed_permission_profile": {
+    "line": 9437,
+    "location": "cli/tests/sandbox_cloud_config.rs:134:5",
+    "context": [
+      "cloud-managed sandbox profile was not enforced: status=Some(1); stdout=; stderr=windows sandbox failed: orchestrator_helper_launch_failed: failed to launch setup helper (non-elevated): program not found",
+      "; cloud bundle requests=[\"/backend-api/wham/config/bundle\"]",
+      "note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace",
+      "",
+      "",
+      "failures:"
+    ]
+  },
+  "suite::v2::git_attribution::cold_resume_replaces_legacy_attribution_without_duplication::test_case_2_unlinked_pull_request": {
+    "line": 9604,
+    "location": "codex-rs/app-server/tests/common\\test_app_server.rs:1660:13",
+    "context": [
+      "internal error: entered unreachable code: expected JSONRPCMessage::Response, got Error(JSONRPCError { error: JSONRPCErrorError { code: -32603, data: None, message: \"failed to submit turn input: NotIdle\" }, id: Integer(3) })",
+      "note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace",
+      "[mcp stderr] 2026-10-21T12:44:22.808124Z  WARN codex_mcp::rmcp_client: failed to initialize MCP client during shutdown: MCP startup failed: handshaking with MCP server failed: Send message error Transport [codex_rmcp_client::event_notification_transport::EventNotificationTransport<rmcp::transport::worker::WorkerTransport<rmcp::transport::streamable_http_client::StreamableHttpClientWorker<codex_rmcp_client::http_client_adapter::StreamableHttpClientAdapter>>>] error: unexpected server response: HTTP 404: , when send initialize request",
+      "",
+      "---- suite::v2::mcp_server_elicitation::mcp_server_form_elicitation_round_trip_in_full_access stdout ----",
+      "writing message to stdin: Request(JSONRPCRequest { id: Integer(0), method: \"initialize\", params: Some(Object {\"clientInfo\": Object {\"name\": String(\"codex-app-server-tests\"), \"title\": Null, \"version\": String(\"0.1.0\")}, \"capabilities\": Object {\"experimentalApi\": Bool(true), \"requestAttestation\": Bool(false), \"mcpServerOpenaiFormElicitation\": Bool(true), \"optOutNotificationMethods\": Null, \"extensions\": Object {\"openai/standard-form-input\": Object {}}}}), trace: None })"
+    ]
+  },
+  "suite::v2::mcp_server_elicitation::mcp_server_form_elicitation_round_trip_in_full_access": {
+    "line": 9647,
+    "location": "codex-rs/app-server/tests/common\\test_app_server.rs:1660:13",
+    "context": [
+      "internal error: entered unreachable code: expected JSONRPCMessage::Response, got Error(JSONRPCError { error: JSONRPCErrorError { code: -32603, data: None, message: \"failed to submit turn input: NotIdle\" }, id: Integer(3) })",
+      "",
+      "---- suite::v2::turn_start::turn_start_file_change_approval_accept_for_session_persists_v2 stdout ----",
+      "writing message to stdin: Request(JSONRPCRequest { id: Integer(0), method: \"initialize\", params: Some(Object {\"clientInfo\": Object {\"name\": String(\"codex-app-server-tests\"), \"title\": Null, \"version\": String(\"0.1.0\")}, \"capabilities\": Object {\"experimentalApi\": Bool(true), \"requestAttestation\": Bool(false), \"optOutNotificationMethods\": Null}}), trace: None })",
+      "read message from stdout: Response(JSONRPCResponse { id: Integer(0), result: Object {\"userAgent\": String(\"codex-app-server-tests/0.0.0 (Windows 10.0.26100; x86_64) unknown (codex-app-server-tests; 0.1.0)\"), \"codexHome\": String(\"D:\\\\tmp\\\\.tmpPGDb5C\\\\codex_home\"), \"platformFamily\": String(\"windows\"), \"platformOs\": String(\"windows\")} })",
+      "writing message to stdin: Notification(JSONRPCNotification { method: \"initialized\", params: None })"
+    ]
+  },
+  "suite::v2::turn_start::turn_start_file_change_approval_accept_for_session_persists_v2": {
+    "line": 9694,
+    "location": "codex-rs/app-server/tests/common\\test_app_server.rs:1660:13",
+    "context": [
+      "internal error: entered unreachable code: expected JSONRPCMessage::Response, got Error(JSONRPCError { error: JSONRPCErrorError { code: -32603, data: None, message: \"failed to submit turn input: NotIdle\" }, id: Integer(3) })",
+      "",
+      "",
+      "failures:",
+      "    suite::v2::git_attribution::cold_resume_replaces_legacy_attribution_without_duplication::test_case_2_unlinked_pull_request",
+      "    suite::v2::mcp_server_elicitation::mcp_server_form_elicitation_round_trip_in_full_access"
+    ]
+  },
+  "suite::v2::bedrock_setup::setup_bedrock_profile_and_environment": {
+    "line": 10192,
+    "location": "codex-rs/app-server/tests/common\\test_app_server.rs:1660:13",
+    "context": [
+      "internal error: entered unreachable code: expected JSONRPCMessage::Response, got Error(JSONRPCError { error: JSONRPCErrorError { code: -32601, data: None, message: \"Amazon Bedrock setup is not implemented\" }, id: Integer(1) })",
+      "note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace",
+      "",
+      "---- suite::v2::mcp_server_elicitation::mcp_server_strict_auto_review::test_case_12_app_reviewer_spoofed_action stdout ----",
+      "writing message to stdin: Request(JSONRPCRequest { id: Integer(0), method: \"initialize\", params: Some(Object {\"clientInfo\": Object {\"name\": String(\"codex-app-server-tests\"), \"title\": Null, \"version\": String(\"0.1.0\")}, \"capabilities\": Object {\"experimentalApi\": Bool(true), \"requestAttestation\": Bool(false), \"mcpServerOpenaiFormElicitation\": Bool(true), \"optOutNotificationMethods\": Null, \"extensions\": Object {\"openai/standard-form-input\": Object {}}}}), trace: None })",
+      "read message from stdout: Response(JSONRPCResponse { id: Integer(0), result: Object {\"userAgent\": String(\"codex-app-server-tests/0.0.0 (Windows 10.0.26100; x86_64) unknown (codex-app-server-tests; 0.1.0)\"), \"codexHome\": String(\"D:\\\\tmp\\\\.tmphCXqYX\"), \"platformFamily\": String(\"windows\"), \"platformOs\": String(\"windows\")} })"
+    ]
+  },
+  "suite::v2::mcp_server_elicitation::mcp_server_strict_auto_review::test_case_12_app_reviewer_spoofed_action": {
+    "line": 10234,
+    "location": "codex-rs/app-server/tests/common\\test_app_server.rs:1660:13",
+    "context": [
+      "internal error: entered unreachable code: expected JSONRPCMessage::Response, got Error(JSONRPCError { error: JSONRPCErrorError { code: -32603, data: None, message: \"failed to submit turn input: NotIdle\" }, id: Integer(3) })",
+      "",
+      "---- suite::v2::git_attribution::cold_resume_replaces_legacy_attribution_without_duplication::test_case_1_commit_only stdout ----",
+      "writing message to stdin: Request(JSONRPCRequest { id: Integer(0), method: \"initialize\", params: Some(Object {\"clientInfo\": Object {\"name\": String(\"codex-app-server-tests\"), \"title\": Null, \"version\": String(\"0.1.0\")}, \"capabilities\": Object {\"experimentalApi\": Bool(true), \"requestAttestation\": Bool(false), \"optOutNotificationMethods\": Null}}), trace: None })",
+      "read message from stdout: Response(JSONRPCResponse { id: Integer(0), result: Object {\"userAgent\": String(\"codex-app-server-tests/0.0.0 (Windows 10.0.26100; x86_64) unknown (codex-app-server-tests; 0.1.0)\"), \"codexHome\": String(\"D:\\\\tmp\\\\.tmp0XY5Z0\"), \"platformFamily\": String(\"windows\"), \"platformOs\": String(\"windows\")} })",
+      "writing message to stdin: Notification(JSONRPCNotification { method: \"initialized\", params: None })"
+    ]
+  },
+  "suite::v2::git_attribution::cold_resume_replaces_legacy_attribution_without_duplication::test_case_1_commit_only": {
+    "line": 10318,
+    "location": "codex-rs/app-server/tests/common\\test_app_server.rs:1660:13",
+    "context": [
+      "internal error: entered unreachable code: expected JSONRPCMessage::Response, got Error(JSONRPCError { error: JSONRPCErrorError { code: -32603, data: None, message: \"failed to submit turn input: NotIdle\" }, id: Integer(3) })",
+      "[mcp stderr] 2026-10-21T12:44:06.995962Z  WARN codex_mcp::rmcp_client: failed to initialize MCP client during shutdown: MCP startup failed: handshaking with MCP server failed: Send message error Transport [codex_rmcp_client::event_notification_transport::EventNotificationTransport<rmcp::transport::worker::WorkerTransport<rmcp::transport::streamable_http_client::StreamableHttpClientWorker<codex_rmcp_client::http_client_adapter::StreamableHttpClientAdapter>>>] error: unexpected server response: HTTP 404: , when send initialize request",
+      "",
+      "---- suite::v2::mcp_server_elicitation::mcp_server_strict_auto_review::test_case_14_app_default_reviewer_user stdout ----",
+      "writing message to stdin: Request(JSONRPCRequest { id: Integer(0), method: \"initialize\", params: Some(Object {\"clientInfo\": Object {\"name\": String(\"codex-app-server-tests\"), \"title\": Null, \"version\": String(\"0.1.0\")}, \"capabilities\": Object {\"experimentalApi\": Bool(true), \"requestAttestation\": Bool(false), \"mcpServerOpenaiFormElicitation\": Bool(true), \"optOutNotificationMethods\": Null, \"extensions\": Object {\"openai/standard-form-input\": Object {}}}}), trace: None })",
+      "read message from stdout: Response(JSONRPCResponse { id: Integer(0), result: Object {\"userAgent\": String(\"codex-app-server-tests/0.0.0 (Windows 10.0.26100; x86_64) unknown (codex-app-server-tests; 0.1.0)\"), \"codexHome\": String(\"D:\\\\tmp\\\\.tmpJrr5IX\"), \"platformFamily\": String(\"windows\"), \"platformOs\": String(\"windows\")} })"
+    ]
+  },
+  "suite::v2::mcp_server_elicitation::mcp_server_strict_auto_review::test_case_14_app_default_reviewer_user": {
+    "line": 10360,
+    "location": "codex-rs/app-server/tests/common\\test_app_server.rs:1660:13",
+    "context": [
+      "internal error: entered unreachable code: expected JSONRPCMessage::Response, got Error(JSONRPCError { error: JSONRPCErrorError { code: -32603, data: None, message: \"failed to submit turn input: NotIdle\" }, id: Integer(3) })",
+      "",
+      "---- suite::v2::mcp_server_elicitation::mcp_server_strict_auto_review::test_case_9_app_reviewer_user stdout ----",
+      "writing message to stdin: Request(JSONRPCRequest { id: Integer(0), method: \"initialize\", params: Some(Object {\"clientInfo\": Object {\"name\": String(\"codex-app-server-tests\"), \"title\": Null, \"version\": String(\"0.1.0\")}, \"capabilities\": Object {\"experimentalApi\": Bool(true), \"requestAttestation\": Bool(false), \"mcpServerOpenaiFormElicitation\": Bool(true), \"optOutNotificationMethods\": Null, \"extensions\": Object {\"openai/standard-form-input\": Object {}}}}), trace: None })",
+      "read message from stdout: Response(JSONRPCResponse { id: Integer(0), result: Object {\"userAgent\": String(\"codex-app-server-tests/0.0.0 (Windows 10.0.26100; x86_64) unknown (codex-app-server-tests; 0.1.0)\"), \"codexHome\": String(\"D:\\\\tmp\\\\.tmpwGEcfJ\"), \"platformFamily\": String(\"windows\"), \"platformOs\": String(\"windows\")} })",
+      "writing message to stdin: Notification(JSONRPCNotification { method: \"initialized\", params: None })"
+    ]
+  },
+  "suite::v2::mcp_server_elicitation::mcp_server_strict_auto_review::test_case_9_app_reviewer_user": {
+    "line": 10402,
+    "location": "codex-rs/app-server/tests/common\\test_app_server.rs:1660:13",
+    "context": [
+      "internal error: entered unreachable code: expected JSONRPCMessage::Response, got Error(JSONRPCError { error: JSONRPCErrorError { code: -32603, data: None, message: \"failed to submit turn input: NotIdle\" }, id: Integer(3) })",
+      "",
+      "---- suite::v2::thread_resume::cold_resume_reresolves_persisted_active_permission_profile stdout ----",
+      "writing message to stdin: Request(JSONRPCRequest { id: Integer(0), method: \"initialize\", params: Some(Object {\"clientInfo\": Object {\"name\": String(\"codex-app-server-tests\"), \"title\": Null, \"version\": String(\"0.1.0\")}, \"capabilities\": Object {\"experimentalApi\": Bool(true), \"requestAttestation\": Bool(false), \"optOutNotificationMethods\": Null}}), trace: None })",
+      "read message from stdout: Response(JSONRPCResponse { id: Integer(0), result: Object {\"userAgent\": String(\"codex-app-server-tests/0.0.0 (Windows 10.0.26100; x86_64) unknown (codex-app-server-tests; 0.1.0)\"), \"codexHome\": String(\"D:\\\\tmp\\\\.tmpm6DPFd\"), \"platformFamily\": String(\"windows\"), \"platformOs\": String(\"windows\")} })",
+      "writing message to stdin: Notification(JSONRPCNotification { method: \"initialized\", params: None })"
+    ]
+  },
+  "suite::v2::thread_resume::cold_resume_reresolves_persisted_active_permission_profile": {
+    "line": 10437,
+    "location": "codex-rs/app-server/tests/common\\test_app_server.rs:1660:13",
+    "context": [
+      "internal error: entered unreachable code: expected JSONRPCMessage::Response, got Error(JSONRPCError { error: JSONRPCErrorError { code: -32603, data: None, message: \"failed to submit turn input: NotIdle\" }, id: Integer(3) })",
+      "",
+      "",
+      "failures:",
+      "    suite::v2::bedrock_setup::setup_bedrock_profile_and_environment",
+      "    suite::v2::git_attribution::cold_resume_replaces_legacy_attribution_without_duplication::test_case_1_commit_only"
+    ]
+  },
+  "suite::v2::mcp_server_elicitation::mcp_server_strict_auto_review::test_case_5_three_denials_interrupt": {
+    "line": 10738,
+    "location": "codex-rs/app-server/tests/common\\test_app_server.rs:1660:13",
+    "context": [
+      "internal error: entered unreachable code: expected JSONRPCMessage::Response, got Error(JSONRPCError { error: JSONRPCErrorError { code: -32603, data: None, message: \"failed to submit turn input: NotIdle\" }, id: Integer(3) })",
+      "",
+      "---- suite::v2::mcp_server_elicitation::mcp_server_strict_auto_review::test_case_9_app_reviewer_user stdout ----",
+      "writing message to stdin: Request(JSONRPCRequest { id: Integer(0), method: \"initialize\", params: Some(Object {\"clientInfo\": Object {\"name\": String(\"codex-app-server-tests\"), \"title\": Null, \"version\": String(\"0.1.0\")}, \"capabilities\": Object {\"experimentalApi\": Bool(true), \"requestAttestation\": Bool(false), \"mcpServerOpenaiFormElicitation\": Bool(true), \"optOutNotificationMethods\": Null, \"extensions\": Object {\"openai/standard-form-input\": Object {}}}}), trace: None })",
+      "read message from stdout: Response(JSONRPCResponse { id: Integer(0), result: Object {\"userAgent\": String(\"codex-app-server-tests/0.0.0 (Windows 10.0.26100; x86_64) unknown (codex-app-server-tests; 0.1.0)\"), \"codexHome\": String(\"D:\\\\tmp\\\\.tmpBSSIbt\"), \"platformFamily\": String(\"windows\"), \"platformOs\": String(\"windows\")} })",
+      "writing message to stdin: Notification(JSONRPCNotification { method: \"initialized\", params: None })"
+    ]
+  },
+  "suite::v2::bedrock_setup::setup_bedrock_rejects_invalid_or_conflicting_credentials": {
+    "line": 11251,
+    "location": "app-server/tests\\suite\\v2\\bedrock_setup.rs:293:9",
+    "context": [
+      "expected \"Amazon Bedrock does not support region `us-west-1`\", got \"Amazon Bedrock setup is not implemented\"",
+      "note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace",
+      "",
+      "---- suite::v2::mcp_server_elicitation::mcp_server_legacy_sep1034_elicitation_defaults_round_trip stdout ----",
+      "writing message to stdin: Request(JSONRPCRequest { id: Integer(0), method: \"initialize\", params: Some(Object {\"clientInfo\": Object {\"name\": String(\"codex-app-server-tests\"), \"title\": Null, \"version\": String(\"0.1.0\")}, \"capabilities\": Object {\"experimentalApi\": Bool(true), \"requestAttestation\": Bool(false), \"mcpServerOpenaiFormElicitation\": Bool(true), \"optOutNotificationMethods\": Null, \"extensions\": Object {\"openai/standard-form-input\": Object {}}}}), trace: None })",
+      "read message from stdout: Response(JSONRPCResponse { id: Integer(0), result: Object {\"userAgent\": String(\"codex-app-server-tests/0.0.0 (Windows 10.0.26100; x86_64) unknown (codex-app-server-tests; 0.1.0)\"), \"codexHome\": String(\"D:\\\\tmp\\\\.tmp36L7pE\"), \"platformFamily\": String(\"windows\"), \"platformOs\": String(\"windows\")} })"
+    ]
+  },
+  "suite::v2::mcp_server_elicitation::mcp_server_legacy_sep1034_elicitation_defaults_round_trip": {
+    "line": 11293,
+    "location": "codex-rs/app-server/tests/common\\test_app_server.rs:1660:13",
+    "context": [
+      "internal error: entered unreachable code: expected JSONRPCMessage::Response, got Error(JSONRPCError { error: JSONRPCErrorError { code: -32603, data: None, message: \"failed to submit turn input: NotIdle\" }, id: Integer(3) })",
+      "",
+      "---- suite::v2::mcp_server_elicitation::mcp_server_strict_auto_review::test_case_13_app_reviewer_missing_call_id stdout ----",
+      "writing message to stdin: Request(JSONRPCRequest { id: Integer(0), method: \"initialize\", params: Some(Object {\"clientInfo\": Object {\"name\": String(\"codex-app-server-tests\"), \"title\": Null, \"version\": String(\"0.1.0\")}, \"capabilities\": Object {\"experimentalApi\": Bool(true), \"requestAttestation\": Bool(false), \"mcpServerOpenaiFormElicitation\": Bool(true), \"optOutNotificationMethods\": Null, \"extensions\": Object {\"openai/standard-form-input\": Object {}}}}), trace: None })",
+      "read message from stdout: Response(JSONRPCResponse { id: Integer(0), result: Object {\"userAgent\": String(\"codex-app-server-tests/0.0.0 (Windows 10.0.26100; x86_64) unknown (codex-app-server-tests; 0.1.0)\"), \"codexHome\": String(\"D:\\\\tmp\\\\.tmpxLsyl6\"), \"platformFamily\": String(\"windows\"), \"platformOs\": String(\"windows\")} })",
+      "writing message to stdin: Notification(JSONRPCNotification { method: \"initialized\", params: None })"
+    ]
+  },
+  "suite::v2::mcp_server_elicitation::mcp_server_strict_auto_review::test_case_13_app_reviewer_missing_call_id": {
+    "line": 11334,
+    "location": "codex-rs/app-server/tests/common\\test_app_server.rs:1660:13",
+    "context": [
+      "internal error: entered unreachable code: expected JSONRPCMessage::Response, got Error(JSONRPCError { error: JSONRPCErrorError { code: -32603, data: None, message: \"failed to submit turn input: NotIdle\" }, id: Integer(3) })",
+      "",
+      "---- suite::v2::client_metadata::turn_start_forwards_client_metadata_to_responses_websocket_request_body_v2 stdout ----",
+      "writing message to stdin: Request(JSONRPCRequest { id: Integer(0), method: \"initialize\", params: Some(Object {\"clientInfo\": Object {\"name\": String(\"codex-app-server-tests\"), \"title\": Null, \"version\": String(\"0.1.0\")}, \"capabilities\": Object {\"experimentalApi\": Bool(true), \"requestAttestation\": Bool(false), \"optOutNotificationMethods\": Null}}), trace: None })",
+      "read message from stdout: Response(JSONRPCResponse { id: Integer(0), result: Object {\"userAgent\": String(\"codex-app-server-tests/0.0.0 (Windows 10.0.26100; x86_64) unknown (codex-app-server-tests; 0.1.0)\"), \"codexHome\": String(\"D:\\\\tmp\\\\.tmpN8r7CP\"), \"platformFamily\": String(\"windows\"), \"platformOs\": String(\"windows\")} })",
+      "writing message to stdin: Notification(JSONRPCNotification { method: \"initialized\", params: None })"
+    ]
+  },
+  "suite::v2::thread_resume::thread_resume_keeps_in_flight_turn_streaming": {
+    "line": 11732,
+    "location": "codex-rs/app-server/tests/common\\test_app_server.rs:1660:13",
+    "context": [
+      "internal error: entered unreachable code: expected JSONRPCMessage::Response, got Error(JSONRPCError { error: JSONRPCErrorError { code: -32603, data: None, message: \"failed to submit turn input: NotIdle\" }, id: Integer(3) })",
+      "",
+      "---- suite::v2::client_metadata::turn_start_forwards_client_metadata_to_responses_websocket_request_body_v2 stdout ----",
+      "writing message to stdin: Request(JSONRPCRequest { id: Integer(0), method: \"initialize\", params: Some(Object {\"clientInfo\": Object {\"name\": String(\"codex-app-server-tests\"), \"title\": Null, \"version\": String(\"0.1.0\")}, \"capabilities\": Object {\"experimentalApi\": Bool(true), \"requestAttestation\": Bool(false), \"optOutNotificationMethods\": Null}}), trace: None })",
+      "read message from stdout: Response(JSONRPCResponse { id: Integer(0), result: Object {\"userAgent\": String(\"codex-app-server-tests/0.0.0 (Windows 10.0.26100; x86_64) unknown (codex-app-server-tests; 0.1.0)\"), \"codexHome\": String(\"D:\\\\tmp\\\\.tmpsVQ6DU\"), \"platformFamily\": String(\"windows\"), \"platformOs\": String(\"windows\")} })",
+      "writing message to stdin: Notification(JSONRPCNotification { method: \"initialized\", params: None })"
+    ]
+  },
+  "suite::v2::mcp_resource_origin::widget_reads_survive_history_modes_compaction_restarts_and_app_only_visibility": {
+    "line": 11972,
+    "location": "external/rules_rs++crate+crates__wiremock-0.6.5/src\\mock_server\\exposed_server.rs:367:17",
+    "context": [
+      "Verifications failed:",
+      "- Mock #1.",
+      "\tExpected range of matching incoming requests: == 11",
+      "\tNumber of matched incoming requests: 4",
+      "",
+      "Received requests:"
+    ]
+  },
+  "suite::v2::mcp_server_elicitation::mcp_server_strict_auto_review::test_case_1_approved": {
+    "line": 12126,
+    "location": "external/rules_rs++crate+crates__wiremock-0.6.5/src\\mock_server\\exposed_server.rs:367:17",
+    "context": [
+      "Verifications failed:",
+      "- Mock #1.",
+      "\tExpected range of matching incoming requests: == 6",
+      "\tNumber of matched incoming requests: 4",
+      "",
+      "Received requests:"
+    ]
+  },
+  "suite::v2::host_skills::host_skill_catalog_refreshes_once_when_skills_change": {
+    "line": 12334,
+    "location": "codex-rs/app-server/tests/common\\test_app_server.rs:1660:13",
+    "context": [
+      "internal error: entered unreachable code: expected JSONRPCMessage::Response, got Error(JSONRPCError { error: JSONRPCErrorError { code: -32603, data: None, message: \"failed to submit turn input: NotIdle\" }, id: Integer(6) })",
+      "note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace",
+      "",
+      "---- suite::v2::mcp_server_elicitation::mcp_server_strict_auto_review::test_case_1_approved stdout ----",
+      "writing message to stdin: Request(JSONRPCRequest { id: Integer(0), method: \"initialize\", params: Some(Object {\"clientInfo\": Object {\"name\": String(\"codex-app-server-tests\"), \"title\": Null, \"version\": String(\"0.1.0\")}, \"capabilities\": Object {\"experimentalApi\": Bool(true), \"requestAttestation\": Bool(false), \"mcpServerOpenaiFormElicitation\": Bool(true), \"optOutNotificationMethods\": Null, \"extensions\": Object {\"openai/standard-form-input\": Object {}}}}), trace: None })",
+      "read message from stdout: Response(JSONRPCResponse { id: Integer(0), result: Object {\"userAgent\": String(\"codex-app-server-tests/0.0.0 (Windows 10.0.26100; x86_64) unknown (codex-app-server-tests; 0.1.0)\"), \"codexHome\": String(\"D:\\\\tmp\\\\.tmpES3AyW\"), \"platformFamily\": String(\"windows\"), \"platformOs\": String(\"windows\")} })"
+    ]
+  },
+  "suite::v2::compaction::auto_compaction_remote_emits_started_and_completed_items": {
+    "line": 12763,
+    "location": "codex-rs/app-server/tests/common\\test_app_server.rs:1660:13",
+    "context": [
+      "internal error: entered unreachable code: expected JSONRPCMessage::Response, got Error(JSONRPCError { error: JSONRPCErrorError { code: -32603, data: None, message: \"failed to submit turn input: NotIdle\" }, id: Integer(4) })",
+      "note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace",
+      "[mcp stderr] 2026-10-21T12:44:53.660761Z  WARN codex_mcp::rmcp_client: failed to initialize MCP client during shutdown: MCP startup failed: handshaking with MCP server failed: Send message error Transport [codex_rmcp_client::event_notification_transport::EventNotificationTransport<rmcp::transport::worker::WorkerTransport<rmcp::transport::streamable_http_client::StreamableHttpClientWorker<codex_rmcp_client::http_client_adapter::StreamableHttpClientAdapter>>>] error: unexpected server response: HTTP 404: , when send initialize request",
+      "",
+      "---- suite::v2::mcp_server_elicitation::mcp_server_strict_auto_review::test_case_8_managed_reviewer_forbidden stdout ----",
+      "writing message to stdin: Request(JSONRPCRequest { id: Integer(0), method: \"initialize\", params: Some(Object {\"clientInfo\": Object {\"name\": String(\"codex-app-server-tests\"), \"title\": Null, \"version\": String(\"0.1.0\")}, \"capabilities\": Object {\"experimentalApi\": Bool(true), \"requestAttestation\": Bool(false), \"mcpServerOpenaiFormElicitation\": Bool(true), \"optOutNotificationMethods\": Null, \"extensions\": Object {\"openai/standard-form-input\": Object {}}}}), trace: None })"
+    ]
+  },
+  "suite::v2::mcp_server_elicitation::mcp_server_strict_auto_review::test_case_8_managed_reviewer_forbidden": {
+    "line": 12806,
+    "location": "codex-rs/app-server/tests/common\\test_app_server.rs:1660:13",
+    "context": [
+      "internal error: entered unreachable code: expected JSONRPCMessage::Response, got Error(JSONRPCError { error: JSONRPCErrorError { code: -32603, data: None, message: \"failed to submit turn input: NotIdle\" }, id: Integer(3) })",
+      "",
+      "---- suite::v2::residency::managed_residency_overrides_provider_headers::test_case_2_websocket stdout ----",
+      "writing message to stdin: Request(JSONRPCRequest { id: Integer(0), method: \"initialize\", params: Some(Object {\"clientInfo\": Object {\"name\": String(\"codex-app-server-tests\"), \"title\": Null, \"version\": String(\"0.1.0\")}, \"capabilities\": Object {\"experimentalApi\": Bool(true), \"requestAttestation\": Bool(false), \"optOutNotificationMethods\": Null}}), trace: None })",
+      "[mcp stderr] 2026-10-21T12:45:08.191458Z ERROR codex_app_server: Ignoring `x-openai-internal-codex-residency` in `model_providers.custom-openai` because managed residency is required.",
+      "read message from stdout: Response(JSONRPCResponse { id: Integer(0), result: Object {\"userAgent\": String(\"codex-app-server-tests/0.0.0 (Windows 10.0.26100; x86_64) unknown (codex-app-server-tests; 0.1.0)\"), \"codexHome\": String(\"D:\\\\tmp\\\\.tmpV92eFG\"), \"platformFamily\": String(\"windows\"), \"platformOs\": String(\"windows\")} })"
+    ]
+  },
+  "suite::v2::residency::managed_residency_overrides_provider_headers::test_case_2_websocket": {
+    "line": 12840,
+    "location": "app-server/tests\\suite\\v2\\residency.rs:166:5",
+    "context": [
+      "assertion failed: `(left == right)`",
+      "",
+      "Diff < left / right > :",
+      "<Failed",
+      ">Completed",
+      ""
+    ]
+  },
+  "suite::v2::thread_fork::thread_fork_at_last_turn_id_keeps_only_terminal_prefix": {
+    "line": 13039,
+    "location": "codex-rs/app-server/tests/common\\test_app_server.rs:1660:13",
+    "context": [
+      "internal error: entered unreachable code: expected JSONRPCMessage::Response, got Error(JSONRPCError { error: JSONRPCErrorError { code: -32603, data: None, message: \"failed to submit turn input: NotIdle\" }, id: Integer(3) })",
+      "",
+      "---- suite::v2::residency::managed_residency_overrides_provider_headers::test_case_2_websocket stdout ----",
+      "writing message to stdin: Request(JSONRPCRequest { id: Integer(0), method: \"initialize\", params: Some(Object {\"clientInfo\": Object {\"name\": String(\"codex-app-server-tests\"), \"title\": Null, \"version\": String(\"0.1.0\")}, \"capabilities\": Object {\"experimentalApi\": Bool(true), \"requestAttestation\": Bool(false), \"optOutNotificationMethods\": Null}}), trace: None })",
+      "[mcp stderr] 2026-10-21T12:50:36.375598Z ERROR codex_app_server: Ignoring `x-openai-internal-codex-residency` in `model_providers.custom-openai` because managed residency is required.",
+      "read message from stdout: Response(JSONRPCResponse { id: Integer(0), result: Object {\"userAgent\": String(\"codex-app-server-tests/0.0.0 (Windows 10.0.26100; x86_64) unknown (codex-app-server-tests; 0.1.0)\"), \"codexHome\": String(\"D:\\\\tmp\\\\.tmpNrd3v0\"), \"platformFamily\": String(\"windows\"), \"platformOs\": String(\"windows\")} })"
+    ]
+  },
+  "suite::v2::bedrock_setup::discover_bedrock_profiles_and_environment_credentials": {
+    "line": 13453,
+    "location": "codex-rs/app-server/tests/common\\test_app_server.rs:1660:13",
+    "context": [
+      "internal error: entered unreachable code: expected JSONRPCMessage::Response, got Error(JSONRPCError { error: JSONRPCErrorError { code: -32601, data: None, message: \"Amazon Bedrock setup is not implemented\" }, id: Integer(1) })",
+      "note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace",
+      "",
+      "---- suite::v2::mcp_server_elicitation::mcp_server_strict_auto_review::test_case_6_guardian_disabled stdout ----",
+      "writing message to stdin: Request(JSONRPCRequest { id: Integer(0), method: \"initialize\", params: Some(Object {\"clientInfo\": Object {\"name\": String(\"codex-app-server-tests\"), \"title\": Null, \"version\": String(\"0.1.0\")}, \"capabilities\": Object {\"experimentalApi\": Bool(true), \"requestAttestation\": Bool(false), \"mcpServerOpenaiFormElicitation\": Bool(true), \"optOutNotificationMethods\": Null, \"extensions\": Object {\"openai/standard-form-input\": Object {}}}}), trace: None })",
+      "read message from stdout: Response(JSONRPCResponse { id: Integer(0), result: Object {\"userAgent\": String(\"codex-app-server-tests/0.0.0 (Windows 10.0.26100; x86_64) unknown (codex-app-server-tests; 0.1.0)\"), \"codexHome\": String(\"D:\\\\tmp\\\\.tmphtnBk6\"), \"platformFamily\": String(\"windows\"), \"platformOs\": String(\"windows\")} })"
+    ]
+  },
+  "suite::v2::mcp_server_elicitation::mcp_server_strict_auto_review::test_case_6_guardian_disabled": {
+    "line": 13495,
+    "location": "codex-rs/app-server/tests/common\\test_app_server.rs:1660:13",
+    "context": [
+      "internal error: entered unreachable code: expected JSONRPCMessage::Response, got Error(JSONRPCError { error: JSONRPCErrorError { code: -32603, data: None, message: \"failed to submit turn input: NotIdle\" }, id: Integer(3) })",
+      "",
+      "---- suite::v2::mcp_server_elicitation::mcp_server_strict_auto_review::test_case_11_app_reviewer_spoofed_id stdout ----",
+      "writing message to stdin: Request(JSONRPCRequest { id: Integer(0), method: \"initialize\", params: Some(Object {\"clientInfo\": Object {\"name\": String(\"codex-app-server-tests\"), \"title\": Null, \"version\": String(\"0.1.0\")}, \"capabilities\": Object {\"experimentalApi\": Bool(true), \"requestAttestation\": Bool(false), \"mcpServerOpenaiFormElicitation\": Bool(true), \"optOutNotificationMethods\": Null, \"extensions\": Object {\"openai/standard-form-input\": Object {}}}}), trace: None })",
+      "read message from stdout: Response(JSONRPCResponse { id: Integer(0), result: Object {\"userAgent\": String(\"codex-app-server-tests/0.0.0 (Windows 10.0.26100; x86_64) unknown (codex-app-server-tests; 0.1.0)\"), \"codexHome\": String(\"D:\\\\tmp\\\\.tmpDf9xXA\"), \"platformFamily\": String(\"windows\"), \"platformOs\": String(\"windows\")} })",
+      "writing message to stdin: Notification(JSONRPCNotification { method: \"initialized\", params: None })"
+    ]
+  },
+  "suite::v2::mcp_server_elicitation::mcp_server_strict_auto_review::test_case_11_app_reviewer_spoofed_id": {
+    "line": 13536,
+    "location": "codex-rs/app-server/tests/common\\test_app_server.rs:1660:13",
+    "context": [
+      "internal error: entered unreachable code: expected JSONRPCMessage::Response, got Error(JSONRPCError { error: JSONRPCErrorError { code: -32603, data: None, message: \"failed to submit turn input: NotIdle\" }, id: Integer(3) })",
+      "",
+      "",
+      "failures:",
+      "    suite::v2::bedrock_setup::discover_bedrock_profiles_and_environment_credentials",
+      "    suite::v2::mcp_server_elicitation::mcp_server_strict_auto_review::test_case_11_app_reviewer_spoofed_id"
+    ]
+  }
+}

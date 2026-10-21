@@ -1,0 +1,660 @@
+{
+  "evaluated_shadow::tests::invalid_authentication_artifact_or_dataset_never_calls_any_port": {
+    "line": 3285,
+    "location": "hepta-intelligence/src\\evaluated_shadow_tests.rs:277:38",
+    "context": [
+      "called `Result::unwrap()` on an `Err` value: Os { code: 33, kind: Uncategorized, message: \"The process cannot access the file because another process has locked a portion of the file.\" }",
+      "note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace",
+      ""
+    ]
+  },
+  "evaluated_shadow::tests::durable_stage_records_a_decision_and_retries_after_reopen_without_new_bytes": {
+    "line": 3291,
+    "location": "hepta-intelligence/src\\evaluated_shadow_tests.rs:189:42",
+    "context": [
+      "called `Result::unwrap()` on an `Err` value: Os { code: 33, kind: Uncategorized, message: \"The process cannot access the file because another process has locked a portion of the file.\" }",
+      ""
+    ]
+  },
+  "evaluated_shadow::tests::old_signed_evidence_cannot_enter_a_recomputed_new_authority_epoch": {
+    "line": 3296,
+    "location": "hepta-intelligence/src\\evaluated_shadow_tests.rs:299:34",
+    "context": [
+      "called `Result::unwrap()` on an `Err` value: Os { code: 33, kind: Uncategorized, message: \"The process cannot access the file because another process has locked a portion of the file.\" }",
+      ""
+    ]
+  },
+  "evaluated_shadow::tests::ledger_conflict_capacity_and_io_uncertainty_cannot_report_learning_recorded": {
+    "line": 3301,
+    "location": "hepta-intelligence/src\\evaluated_shadow_tests.rs:382:34",
+    "context": [
+      "called `Result::unwrap()` on an `Err` value: Os { code: 33, kind: Uncategorized, message: \"The process cannot access the file because another process has locked a portion of the file.\" }",
+      "",
+      ""
+    ]
+  },
+  "token::tests::partial_delete_deny_is_repaired_before_native_workspace_writes": {
+    "line": 3637,
+    "location": "windows-sandbox-rs/src\\token_tests.rs:213:5",
+    "context": [
+      "assertion failed: `(left == right)`",
+      "",
+      "Diff < left / right > :",
+      " (",
+      ">    false,",
+      "     true,",
+      "<    true,",
+      "<    true,",
+      ">    false,",
+      " )",
+      "",
+      "",
+      "note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace",
+      ""
+    ]
+  },
+  "token::tests::workspace_capabilities_deny_writes_and_deletes_under_broad_identity_aces": {
+    "line": 3654,
+    "location": "windows-sandbox-rs/src\\token_tests.rs:280:5",
+    "context": [
+      "assertion failed: `(left == right)`",
+      "",
+      "Diff < left / right > :",
+      " [",
+      "     Some(",
+      "         PermissionDenied,",
+      "     ),",
+      "     Some(",
+      "         PermissionDenied,",
+      "     ),",
+      "<    None,",
+      "<    None,",
+      ">    Some(",
+      ">        PermissionDenied,",
+      ">    ),",
+      ">    Some(",
+      ">        PermissionDenied,",
+      ">    ),",
+      " ]",
+      "",
+      "",
+      ""
+    ]
+  },
+  "unified_exec::tests::legacy_workspace_write_delete_is_limited_to_writable_roots": {
+    "line": 3679,
+    "location": "windows-sandbox-rs/src\\unified_exec\\tests.rs:775:9",
+    "context": [
+      "assertion failed: `(left == right)`: stdout=\"\"",
+      "[2026-10-21 12:34:15.909 windows-sandbox-rs-unit-tests-bin.exe] START: C:\\Windows\\System32\\cmd.exe /d /c D:\\a\\hepta-private-ci\\hepta-private-ci\\codex-rs\\.tmpuY2iL6\\workspace\\delete-fixtures.cmd",
+      "",
+      "",
+      "Diff < left / right > :",
+      " (",
+      "     0,",
+      "     false,",
+      "     false,",
+      "     false,",
+      "<    None,",
+      "<    false,",
+      ">    Some(",
+      ">        \"outside\",",
+      ">    ),",
+      ">    true,",
+      " )",
+      "",
+      "",
+      "",
+      ""
+    ]
+  },
+  "lease_lifecycle::tests::expiry_is_durable_and_terminal_for_renewal": {
+    "line": 3738,
+    "location": "hepta-bao-adapter/src\\lease_lifecycle_tests.rs:217:10",
+    "context": [
+      "called `Result::unwrap()` on an `Err` value: Unavailable",
+      ""
+    ]
+  },
+  "lease_lifecycle::tests::issue_unknown_reconciles_without_duplicate_issue": {
+    "line": 3743,
+    "location": "hepta-bao-adapter/src\\lease_lifecycle_tests.rs:31:10",
+    "context": [
+      "called `Result::unwrap()` on an `Err` value: Unavailable",
+      ""
+    ]
+  },
+  "lease_lifecycle::tests::issue_rejects_non_active_provider_observations_without_durable_mutation": {
+    "line": 3748,
+    "location": "hepta-bao-adapter/src\\lease_lifecycle_tests.rs:84:14",
+    "context": [
+      "called `Result::unwrap()` on an `Err` value: Unavailable",
+      ""
+    ]
+  },
+  "lease_lifecycle::tests::provider_not_applied_restores_active_lease_after_unknown": {
+    "line": 3753,
+    "location": "hepta-bao-adapter/src\\lease_lifecycle_tests.rs:190:10",
+    "context": [
+      "called `Result::unwrap()` on an `Err` value: Unavailable",
+      "note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace",
+      ""
+    ]
+  },
+  "lease_lifecycle::tests::revoke_unknown_stays_nonterminal_until_provider_observation": {
+    "line": 3759,
+    "location": "hepta-bao-adapter/src\\lease_lifecycle_tests.rs:150:10",
+    "context": [
+      "called `Result::unwrap()` on an `Err` value: Unavailable",
+      ""
+    ]
+  },
+  "lease_lifecycle::tests::reused_operation_id_with_changed_semantics_conflicts": {
+    "line": 3764,
+    "location": "hepta-bao-adapter/src\\lease_lifecycle_tests.rs:66:10",
+    "context": [
+      "called `Result::unwrap()` on an `Err` value: Unavailable",
+      ""
+    ]
+  },
+  "lease_lifecycle::tests::renew_unknown_blocks_fabricated_success_until_reconciled": {
+    "line": 3769,
+    "location": "hepta-bao-adapter/src\\lease_lifecycle_tests.rs:108:10",
+    "context": [
+      "called `Result::unwrap()` on an `Err` value: Unavailable",
+      "",
+      ""
+    ]
+  },
+  "cognitive_store::recovery::tests::exact_current_cut_recovers_writable_generation_and_persists_activation": {
+    "line": 4015,
+    "location": "hepta-memory/src\\cognitive_store_recovery_tests.rs:163:6",
+    "context": [
+      "descriptor-bound writable recovery: Indeterminate(\"cognitive recovery root is redirected\")",
+      "note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace",
+      ""
+    ]
+  },
+  "cognitive_store::recovery::tests::predecessor_witness_is_rejected_and_current_witness_recovers": {
+    "line": 4021,
+    "location": "hepta-memory/src\\cognitive_store_recovery_tests.rs:291:5",
+    "context": [
+      "assertion failed: matches!(CognitiveStore::open_with_recovery(&layout(&temp, &owner),",
+      "    CognitiveRecoveryRequirement::ExactCurrentCut(&predecessor), &authority,",
+      "    &RecoveryVerifier,).await, Err(CognitiveRecoveryError::AccessDenied(_)))",
+      ""
+    ]
+  },
+  "cognitive_store::recovery::tests::post_rename_publication_failure_is_indeterminate_and_retains_candidate": {
+    "line": 4028,
+    "location": "hepta-memory/src\\cognitive_store_recovery_tests.rs:214:48",
+    "context": [
+      "pointer rename: Unavailable(\"Access is denied. (os error 5)\")",
+      ""
+    ]
+  },
+  "cognitive_store::recovery::tests::revoked_owner_profile_and_witness_checks_precede_recovery_admission": {
+    "line": 4033,
+    "location": "hepta-memory/src\\cognitive_store_recovery_tests.rs:365:5",
+    "context": [
+      "assertion failed: matches!(CognitiveStore::open_with_recovery(&layout(&temp, &owner),",
+      "    CognitiveRecoveryRequirement::ExactCurrentCut(&tampered), &authority,",
+      "    &RecoveryVerifier,).await, Err(CognitiveRecoveryError::AccessDenied(_)))",
+      ""
+    ]
+  },
+  "cognitive_store::recovery::tests::writable_recovery_requires_exclusive_store_fence": {
+    "line": 4040,
+    "location": "hepta-memory/src\\cognitive_store_recovery_tests.rs:248:5",
+    "context": [
+      "assertion failed: matches!(CognitiveStore::open_with_recovery(&layout(&temp, &owner),",
+      "    CognitiveRecoveryRequirement::ExactCurrentCut(&anchor), &authority,",
+      "    &RecoveryVerifier,).await, Err(CognitiveRecoveryError::Unavailable(_)))",
+      "",
+      ""
+    ]
+  },
+  "native_app_server::tests::cognitive_final_use_revalidation_follows_durable_dispatch_and_precedes_turn_start": {
+    "line": 4798,
+    "location": "hepta-infer-worker-host/src\\native_app_server_tests.rs:411:10",
+    "context": [
+      "physical turn start",
+      "note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace",
+      "",
+      ""
+    ]
+  },
+  "tests::embedding_runtime_sqlite_home_constraint_is_exact": {
+    "line": 4873,
+    "location": "app-server/src/lib.rs:1841:9",
+    "context": [
+      "assertion failed: `(left == right)`",
+      "",
+      "Diff < left / right > :",
+      "<embedding runtime requires SQLite home /tmp/hepta-private-sqlite, but configuration resolved /tmp/hepta-shared-sqlite",
+      ">embedding runtime requires SQLite home D:\\tmp\\hepta-private-sqlite, but configuration resolved /tmp/hepta-shared-sqlite",
+      "",
+      "",
+      "note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace",
+      "",
+      ""
+    ]
+  },
+  "runtime::tests::qualification_prepare_quarantines_expired_registry_attempt_with_h7_evidence": {
+    "line": 5044,
+    "location": "hepta-agentd/src\\runtime_tests.rs:682:10",
+    "context": [
+      "open compact executor: Lease(StaleFence(\"local lease has expired\"))",
+      "note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace",
+      "",
+      ""
+    ]
+  },
+  "suite::v2::thread_resume::thread_resume_rejects_history_when_thread_is_running": {
+    "line": 5160,
+    "location": "codex-rs/app-server/tests/common\\test_app_server.rs:1660:13",
+    "context": [
+      "internal error: entered unreachable code: expected JSONRPCMessage::Response, got Error(JSONRPCError { error: JSONRPCErrorError { code: -32603, data: None, message: \"failed to submit turn input: NotIdle\" }, id: Integer(3) })",
+      ""
+    ]
+  },
+  "suite::v2::turn_start::turn_start_emits_notifications_and_accepts_model_override": {
+    "line": 5196,
+    "location": "codex-rs/app-server/tests/common\\test_app_server.rs:1660:13",
+    "context": [
+      "internal error: entered unreachable code: expected JSONRPCMessage::Response, got Error(JSONRPCError { error: JSONRPCErrorError { code: -32603, data: None, message: \"failed to submit turn input: NotIdle\" }, id: Integer(3) })",
+      "",
+      ""
+    ]
+  },
+  "suite::v2::mcp_server_elicitation::mcp_server_form_elicitation_round_trip": {
+    "line": 5351,
+    "location": "codex-rs/app-server/tests/common\\test_app_server.rs:1660:13",
+    "context": [
+      "internal error: entered unreachable code: expected JSONRPCMessage::Response, got Error(JSONRPCError { error: JSONRPCErrorError { code: -32603, data: None, message: \"failed to submit turn input: NotIdle\" }, id: Integer(3) })",
+      "note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace",
+      ""
+    ]
+  },
+  "suite::v2::mcp_server_elicitation::mcp_server_strict_auto_review::test_case_2_approve_for_me": {
+    "line": 5393,
+    "location": "codex-rs/app-server/tests/common\\test_app_server.rs:1660:13",
+    "context": [
+      "internal error: entered unreachable code: expected JSONRPCMessage::Response, got Error(JSONRPCError { error: JSONRPCErrorError { code: -32603, data: None, message: \"failed to submit turn input: NotIdle\" }, id: Integer(3) })",
+      ""
+    ]
+  },
+  "suite::v2::thread_resume::thread_resume_rejects_mismatched_path_for_running_thread_id": {
+    "line": 5425,
+    "location": "codex-rs/app-server/tests/common\\test_app_server.rs:1660:13",
+    "context": [
+      "internal error: entered unreachable code: expected JSONRPCMessage::Response, got Error(JSONRPCError { error: JSONRPCErrorError { code: -32603, data: None, message: \"failed to submit turn input: NotIdle\" }, id: Integer(3) })",
+      "",
+      ""
+    ]
+  },
+  "suite::resume::exec_resume_last_repairs_rollout_missing_from_state_db": {
+    "line": 5623,
+    "location": "exec/tests\\suite\\resume.rs:290:10",
+    "context": [
+      "Unexpected failure.",
+      "code=1",
+      "stderr=```\"Error: thread/resume: thread/resume failed: thread 01a15e7b-d7dd-7371-a310-565eb1126897 is sealed for hard deletion and cannot be resumed (code -32600)\\n\"```",
+      "command=`\"D:/o/execroot/_main/bazel-out/windows_x86_64_msvc-fastbuild/bin/codex-rs/exec/codex-exec.exe\" \"-c\" \"openai_base_url=\\\"http://127.0.0.1:49394/v1\\\"\" \"--skip-git-repo-check\" \"-C\" \"D:/a/hepta-private-ci/hepta-private-ci\" \"resume\" \"--last\" \"echo resume-last-repaired-36d867b9-ef9f-4a72-bbbc-29eb154c343a\"`",
+      "code=1",
+      "stdout=\"\"",
+      "stderr=\"Error: thread/resume: thread/resume failed: thread 01a15e7b-d7dd-7371-a310-565eb1126897 is sealed for hard deletion and cannot be resumed (code -32600)\\n\"",
+      "",
+      "note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace",
+      "",
+      ""
+    ]
+  },
+  "suite::v2::mcp_server_elicitation::mcp_server_strict_auto_review::test_case_7_managed_guardian_disabled": {
+    "line": 5812,
+    "location": "codex-rs/app-server/tests/common\\test_app_server.rs:1660:13",
+    "context": [
+      "internal error: entered unreachable code: expected JSONRPCMessage::Response, got Error(JSONRPCError { error: JSONRPCErrorError { code: -32603, data: None, message: \"failed to submit turn input: NotIdle\" }, id: Integer(3) })",
+      "note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace",
+      "",
+      ""
+    ]
+  },
+  "suite::v2::mcp_server_elicitation::mcp_server_openai_form_elicitation_round_trip": {
+    "line": 6165,
+    "location": "codex-rs/app-server/tests/common\\test_app_server.rs:1660:13",
+    "context": [
+      "internal error: entered unreachable code: expected JSONRPCMessage::Response, got Error(JSONRPCError { error: JSONRPCErrorError { code: -32603, data: None, message: \"failed to submit turn input: NotIdle\" }, id: Integer(3) })",
+      "note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace",
+      ""
+    ]
+  },
+  "suite::v2::thread_revert::thread_revert_replaces_paginated_history_before_turn": {
+    "line": 6201,
+    "location": "codex-rs/app-server/tests/common\\test_app_server.rs:1660:13",
+    "context": [
+      "internal error: entered unreachable code: expected JSONRPCMessage::Response, got Error(JSONRPCError { error: JSONRPCErrorError { code: -32603, data: None, message: \"failed to submit turn input: NotIdle\" }, id: Integer(3) })",
+      ""
+    ]
+  },
+  "suite::v2::turn_start::turn_start_change_personality_mid_thread_v2": {
+    "line": 6236,
+    "location": "codex-rs/app-server/tests/common\\test_app_server.rs:1660:13",
+    "context": [
+      "internal error: entered unreachable code: expected JSONRPCMessage::Response, got Error(JSONRPCError { error: JSONRPCErrorError { code: -32603, data: None, message: \"failed to submit turn input: NotIdle\" }, id: Integer(3) })",
+      "",
+      ""
+    ]
+  },
+  "suite::v2::mcp_server_elicitation::mcp_server_strict_auto_review::test_case_15_persistent": {
+    "line": 6614,
+    "location": "codex-rs/app-server/tests/common\\test_app_server.rs:1660:13",
+    "context": [
+      "internal error: entered unreachable code: expected JSONRPCMessage::Response, got Error(JSONRPCError { error: JSONRPCErrorError { code: -32603, data: None, message: \"failed to submit turn input: NotIdle\" }, id: Integer(3) })",
+      "note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace",
+      ""
+    ]
+  },
+  "suite::v2::thread_fork::thread_fork_defers_inherited_active_goal_until_next_turn": {
+    "line": 6648,
+    "location": "codex-rs/app-server/tests/common\\test_app_server.rs:1660:13",
+    "context": [
+      "internal error: entered unreachable code: expected JSONRPCMessage::Response, got Error(JSONRPCError { error: JSONRPCErrorError { code: -32603, data: None, message: \"failed to submit turn input: NotIdle\" }, id: Integer(3) })",
+      ""
+    ]
+  },
+  "suite::v2::thread_resume::thread_resume_replays_pending_file_change_request_approval": {
+    "line": 6678,
+    "location": "codex-rs/app-server/tests/common\\test_app_server.rs:1660:13",
+    "context": [
+      "internal error: entered unreachable code: expected JSONRPCMessage::Response, got Error(JSONRPCError { error: JSONRPCErrorError { code: -32603, data: None, message: \"failed to submit turn input: NotIdle\" }, id: Integer(3) })",
+      "",
+      ""
+    ]
+  },
+  "suite::v2::git_attribution::git_attribution_follows_authenticated_workspace_policy": {
+    "line": 7133,
+    "location": "codex-rs/app-server/tests/common\\test_app_server.rs:1660:13",
+    "context": [
+      "internal error: entered unreachable code: expected JSONRPCMessage::Response, got Error(JSONRPCError { error: JSONRPCErrorError { code: -32603, data: None, message: \"failed to submit turn input: NotIdle\" }, id: Integer(3) })",
+      "note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace",
+      "",
+      ""
+    ]
+  },
+  "suite::v2::mcp_server_elicitation::mcp_server_strict_auto_review::test_case_3_never": {
+    "line": 7508,
+    "location": "codex-rs/app-server/tests/common\\test_app_server.rs:1660:13",
+    "context": [
+      "internal error: entered unreachable code: expected JSONRPCMessage::Response, got Error(JSONRPCError { error: JSONRPCErrorError { code: -32603, data: None, message: \"failed to submit turn input: NotIdle\" }, id: Integer(3) })",
+      "note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace",
+      ""
+    ]
+  },
+  "suite::v2::thread_rollback::thread_rollback_drops_last_turns_and_persists_to_rollout": {
+    "line": 7544,
+    "location": "codex-rs/app-server/tests/common\\test_app_server.rs:1660:13",
+    "context": [
+      "internal error: entered unreachable code: expected JSONRPCMessage::Response, got Error(JSONRPCError { error: JSONRPCErrorError { code: -32603, data: None, message: \"failed to submit turn input: NotIdle\" }, id: Integer(3) })",
+      "",
+      ""
+    ]
+  },
+  "suite::v2::thread_fork::paginated_thread_fork_at_named_boundaries_keeps_only_terminal_prefix": {
+    "line": 7702,
+    "location": "codex-rs/app-server/tests/common\\test_app_server.rs:1660:13",
+    "context": [
+      "internal error: entered unreachable code: expected JSONRPCMessage::Response, got Error(JSONRPCError { error: JSONRPCErrorError { code: -32603, data: None, message: \"failed to submit turn input: NotIdle\" }, id: Integer(3) })",
+      ""
+    ]
+  },
+  "suite::v2::attestation::attestation_generate_round_trip_adds_header_to_responses_websocket_handshake": {
+    "line": 7887,
+    "location": "app-server/tests\\suite\\v2\\attestation.rs:161:5",
+    "context": [
+      "assertion failed: `(left == right)`",
+      "",
+      "Diff < left / right > :",
+      " Some(",
+      "<    \"{\\\"v\\\":1,\\\"s\\\":1}\",",
+      ">    \"{\\\"v\\\":1,\\\"s\\\":0,\\\"t\\\":\\\"v1.integration-test\\\"}\",",
+      " )",
+      "",
+      "",
+      "note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace",
+      ""
+    ]
+  },
+  "suite::v2::git_attribution::cold_resume_replaces_legacy_attribution_without_duplication::test_case_1_commit_only": {
+    "line": 8191,
+    "location": "codex-rs/app-server/tests/common\\test_app_server.rs:1660:13",
+    "context": [
+      "internal error: entered unreachable code: expected JSONRPCMessage::Response, got Error(JSONRPCError { error: JSONRPCErrorError { code: -32603, data: None, message: \"failed to submit turn input: NotIdle\" }, id: Integer(3) })",
+      "note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace",
+      "[mcp stderr] 2026-10-21T12:45:32.467783Z  WARN codex_mcp::rmcp_client: failed to initialize MCP client during shutdown: MCP startup failed: handshaking with MCP server failed: Send message error Transport [codex_rmcp_client::event_notification_transport::EventNotificationTransport<rmcp::transport::worker::WorkerTransport<rmcp::transport::streamable_http_client::StreamableHttpClientWorker<codex_rmcp_client::http_client_adapter::StreamableHttpClientAdapter>>>] error: unexpected server response: HTTP 404: , when send initialize request",
+      ""
+    ]
+  },
+  "suite::v2::mcp_server_elicitation::mcp_server_strict_auto_review::test_case_12_app_reviewer_spoofed_action": {
+    "line": 8234,
+    "location": "codex-rs/app-server/tests/common\\test_app_server.rs:1660:13",
+    "context": [
+      "internal error: entered unreachable code: expected JSONRPCMessage::Response, got Error(JSONRPCError { error: JSONRPCErrorError { code: -32603, data: None, message: \"failed to submit turn input: NotIdle\" }, id: Integer(3) })",
+      ""
+    ]
+  },
+  "suite::v2::mcp_server_elicitation::mcp_server_strict_auto_review::test_case_14_app_default_reviewer_user": {
+    "line": 8275,
+    "location": "codex-rs/app-server/tests/common\\test_app_server.rs:1660:13",
+    "context": [
+      "internal error: entered unreachable code: expected JSONRPCMessage::Response, got Error(JSONRPCError { error: JSONRPCErrorError { code: -32603, data: None, message: \"failed to submit turn input: NotIdle\" }, id: Integer(3) })",
+      ""
+    ]
+  },
+  "suite::v2::mcp_server_elicitation::mcp_server_strict_auto_review::test_case_5_three_denials_interrupt": {
+    "line": 8316,
+    "location": "codex-rs/app-server/tests/common\\test_app_server.rs:1660:13",
+    "context": [
+      "internal error: entered unreachable code: expected JSONRPCMessage::Response, got Error(JSONRPCError { error: JSONRPCErrorError { code: -32603, data: None, message: \"failed to submit turn input: NotIdle\" }, id: Integer(3) })",
+      ""
+    ]
+  },
+  "suite::v2::mcp_server_elicitation::mcp_server_strict_auto_review::test_case_9_app_reviewer_user": {
+    "line": 8357,
+    "location": "codex-rs/app-server/tests/common\\test_app_server.rs:1660:13",
+    "context": [
+      "internal error: entered unreachable code: expected JSONRPCMessage::Response, got Error(JSONRPCError { error: JSONRPCErrorError { code: -32603, data: None, message: \"failed to submit turn input: turn start is fenced while the session is terminalizing\" }, id: Integer(3) })",
+      ""
+    ]
+  },
+  "suite::v2::thread_resume::cold_resume_reresolves_persisted_active_permission_profile": {
+    "line": 8419,
+    "location": "app-server/tests\\suite\\v2\\thread_resume.rs:1203:9",
+    "context": [
+      "assertion failed: !runtime_workspace_roots.contains(&AbsolutePathBuf::from_absolute_path(previous_workspace_root.path())?)",
+      "",
+      ""
+    ]
+  },
+  "suite::v2::compaction::auto_compaction_local_emits_started_and_completed_items": {
+    "line": 9289,
+    "location": "codex-rs/app-server/tests/common\\test_app_server.rs:1660:13",
+    "context": [
+      "internal error: entered unreachable code: expected JSONRPCMessage::Response, got Error(JSONRPCError { error: JSONRPCErrorError { code: -32603, data: None, message: \"failed to submit turn input: NotIdle\" }, id: Integer(3) })",
+      "note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace",
+      ""
+    ]
+  },
+  "suite::v2::mcp_server_elicitation::mcp_server_strict_auto_review::test_case_10_app_reviewer_noncanonical_id": {
+    "line": 9331,
+    "location": "codex-rs/app-server/tests/common\\test_app_server.rs:1660:13",
+    "context": [
+      "internal error: entered unreachable code: expected JSONRPCMessage::Response, got Error(JSONRPCError { error: JSONRPCErrorError { code: -32603, data: None, message: \"failed to submit turn input: NotIdle\" }, id: Integer(3) })",
+      ""
+    ]
+  },
+  "suite::v2::mcp_server_elicitation::mcp_server_strict_auto_review::test_case_4_full_access": {
+    "line": 9372,
+    "location": "codex-rs/app-server/tests/common\\test_app_server.rs:1660:13",
+    "context": [
+      "internal error: entered unreachable code: expected JSONRPCMessage::Response, got Error(JSONRPCError { error: JSONRPCErrorError { code: -32603, data: None, message: \"failed to submit turn input: NotIdle\" }, id: Integer(3) })",
+      ""
+    ]
+  },
+  "suite::v2::thread_revert::thread_revert_interrupts_active_turn_and_keeps_thread_loaded": {
+    "line": 9407,
+    "location": "codex-rs/app-server/tests/common\\test_app_server.rs:1660:13",
+    "context": [
+      "internal error: entered unreachable code: expected JSONRPCMessage::Response, got Error(JSONRPCError { error: JSONRPCErrorError { code: -32603, data: None, message: \"failed to submit turn input: NotIdle\" }, id: Integer(3) })",
+      "",
+      ""
+    ]
+  },
+  "suite::v2::compaction::auto_compaction_remote_emits_started_and_completed_items": {
+    "line": 9888,
+    "location": "codex-rs/app-server/tests/common\\test_app_server.rs:1660:13",
+    "context": [
+      "internal error: entered unreachable code: expected JSONRPCMessage::Response, got Error(JSONRPCError { error: JSONRPCErrorError { code: -32603, data: None, message: \"failed to submit turn input: NotIdle\" }, id: Integer(3) })",
+      "note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace",
+      "[mcp stderr] 2026-10-21T12:46:00.092764Z  WARN codex_mcp::rmcp_client: failed to initialize MCP client during shutdown: MCP startup failed: handshaking with MCP server failed: Send message error Transport [codex_rmcp_client::event_notification_transport::EventNotificationTransport<rmcp::transport::worker::WorkerTransport<rmcp::transport::streamable_http_client::StreamableHttpClientWorker<codex_rmcp_client::http_client_adapter::StreamableHttpClientAdapter>>>] error: unexpected server response: HTTP 404: , when send initialize request",
+      ""
+    ]
+  },
+  "suite::v2::mcp_server_elicitation::mcp_server_strict_auto_review::test_case_8_managed_reviewer_forbidden": {
+    "line": 9931,
+    "location": "codex-rs/app-server/tests/common\\test_app_server.rs:1660:13",
+    "context": [
+      "internal error: entered unreachable code: expected JSONRPCMessage::Response, got Error(JSONRPCError { error: JSONRPCErrorError { code: -32603, data: None, message: \"failed to submit turn input: NotIdle\" }, id: Integer(3) })",
+      ""
+    ]
+  },
+  "suite::v2::thread_fork::thread_fork_at_last_turn_id_keeps_only_terminal_prefix": {
+    "line": 9983,
+    "location": "codex-rs/app-server/tests/common\\test_app_server.rs:1660:13",
+    "context": [
+      "internal error: entered unreachable code: expected JSONRPCMessage::Response, got Error(JSONRPCError { error: JSONRPCErrorError { code: -32603, data: None, message: \"failed to submit turn input: NotIdle\" }, id: Integer(4) })",
+      "",
+      ""
+    ]
+  },
+  "suite::v2::git_attribution::cold_resume_replaces_legacy_attribution_without_duplication::test_case_2_unlinked_pull_request": {
+    "line": 10457,
+    "location": "codex-rs/app-server/tests/common\\test_app_server.rs:1660:13",
+    "context": [
+      "internal error: entered unreachable code: expected JSONRPCMessage::Response, got Error(JSONRPCError { error: JSONRPCErrorError { code: -32603, data: None, message: \"failed to submit turn input: NotIdle\" }, id: Integer(3) })",
+      "note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace",
+      "[mcp stderr] 2026-10-21T12:45:40.738394Z  WARN codex_mcp::rmcp_client: failed to initialize MCP client during shutdown: MCP startup failed: handshaking with MCP server failed: Send message error Transport [codex_rmcp_client::event_notification_transport::EventNotificationTransport<rmcp::transport::worker::WorkerTransport<rmcp::transport::streamable_http_client::StreamableHttpClientWorker<codex_rmcp_client::http_client_adapter::StreamableHttpClientAdapter>>>] error: unexpected server response: HTTP 404: , when send initialize request",
+      ""
+    ]
+  },
+  "suite::v2::mcp_server_elicitation::mcp_server_form_elicitation_round_trip_in_full_access": {
+    "line": 10500,
+    "location": "codex-rs/app-server/tests/common\\test_app_server.rs:1660:13",
+    "context": [
+      "internal error: entered unreachable code: expected JSONRPCMessage::Response, got Error(JSONRPCError { error: JSONRPCErrorError { code: -32603, data: None, message: \"failed to submit turn input: NotIdle\" }, id: Integer(3) })",
+      "",
+      ""
+    ]
+  },
+  "suite::v2::turn_start::turn_start_file_change_approval_accept_for_session_persists_v2": {
+    "line": 10749,
+    "location": "codex-rs/app-server/tests/common\\test_app_server.rs:1660:13",
+    "context": [
+      "internal error: entered unreachable code: expected JSONRPCMessage::Response, got Error(JSONRPCError { error: JSONRPCErrorError { code: -32603, data: None, message: \"failed to submit turn input: NotIdle\" }, id: Integer(3) })",
+      "",
+      ""
+    ]
+  },
+  "suite::v2::mcp_server_elicitation::mcp_server_strict_auto_review::test_case_1_approved": {
+    "line": 11066,
+    "location": "codex-rs/app-server/tests/common\\test_app_server.rs:1660:13",
+    "context": [
+      "internal error: entered unreachable code: expected JSONRPCMessage::Response, got Error(JSONRPCError { error: JSONRPCErrorError { code: -32603, data: None, message: \"failed to submit turn input: NotIdle\" }, id: Integer(3) })",
+      "note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace",
+      ""
+    ]
+  },
+  "suite::v2::mcp_resource_origin::widget_reads_survive_history_modes_compaction_restarts_and_app_only_visibility": {
+    "line": 11208,
+    "location": "codex-rs/app-server/tests/common\\test_app_server.rs:1660:13",
+    "context": [
+      "internal error: entered unreachable code: expected JSONRPCMessage::Response, got Error(JSONRPCError { error: JSONRPCErrorError { code: -32603, data: None, message: \"failed to submit turn input: NotIdle\" }, id: Integer(18) })",
+      "",
+      ""
+    ]
+  },
+  "suite::v2::host_skills::host_skill_catalog_refreshes_once_when_skills_change": {
+    "line": 11341,
+    "location": "codex-rs/app-server/tests/common\\test_app_server.rs:1660:13",
+    "context": [
+      "internal error: entered unreachable code: expected JSONRPCMessage::Response, got Error(JSONRPCError { error: JSONRPCErrorError { code: -32603, data: None, message: \"failed to submit turn input: NotIdle\" }, id: Integer(6) })",
+      "note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace",
+      ""
+    ]
+  },
+  "sandbox_fetches_and_enforces_cloud_managed_permission_profile": {
+    "line": 12047,
+    "location": "cli/tests/sandbox_cloud_config.rs:134:5",
+    "context": [
+      "cloud-managed sandbox profile was not enforced: status=Some(1); stdout=; stderr=windows sandbox failed: orchestrator_helper_launch_failed: failed to launch setup helper (non-elevated): program not found",
+      "; cloud bundle requests=[\"/backend-api/wham/config/bundle\"]",
+      "note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace",
+      "",
+      ""
+    ]
+  },
+  "responses_stream_includes_turn_metadata_header_for_git_workspace_e2e": {
+    "line": 12074,
+    "location": "codex-rs/core/tests/common/lib.rs:353:14",
+    "context": [
+      "timeout waiting for event: Elapsed(())",
+      "note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace",
+      "",
+      ""
+    ]
+  },
+  "suite::v2::mcp_server_elicitation::mcp_server_strict_auto_review::test_case_6_guardian_disabled": {
+    "line": 12184,
+    "location": "codex-rs/app-server/tests/common\\test_app_server.rs:1660:13",
+    "context": [
+      "internal error: entered unreachable code: expected JSONRPCMessage::Response, got Error(JSONRPCError { error: JSONRPCErrorError { code: -32603, data: None, message: \"failed to submit turn input: NotIdle\" }, id: Integer(3) })",
+      "note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace",
+      "",
+      ""
+    ]
+  },
+  "suite::v2::mcp_server_elicitation::mcp_server_strict_auto_review::test_case_11_app_reviewer_spoofed_id": {
+    "line": 12396,
+    "location": "codex-rs/app-server/tests/common\\test_app_server.rs:1660:13",
+    "context": [
+      "internal error: entered unreachable code: expected JSONRPCMessage::Response, got Error(JSONRPCError { error: JSONRPCErrorError { code: -32603, data: None, message: \"failed to submit turn input: NotIdle\" }, id: Integer(3) })",
+      "note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace",
+      ""
+    ]
+  },
+  "suite::v2::mcp_server_elicitation::mcp_server_legacy_sep1034_elicitation_defaults_round_trip": {
+    "line": 12670,
+    "location": "codex-rs/app-server/tests/common\\test_app_server.rs:1660:13",
+    "context": [
+      "internal error: entered unreachable code: expected JSONRPCMessage::Response, got Error(JSONRPCError { error: JSONRPCErrorError { code: -32603, data: None, message: \"failed to submit turn input: NotIdle\" }, id: Integer(3) })",
+      "note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace",
+      ""
+    ]
+  },
+  "suite::v2::mcp_server_elicitation::mcp_server_strict_auto_review::test_case_13_app_reviewer_missing_call_id": {
+    "line": 12712,
+    "location": "codex-rs/app-server/tests/common\\test_app_server.rs:1660:13",
+    "context": [
+      "internal error: entered unreachable code: expected JSONRPCMessage::Response, got Error(JSONRPCError { error: JSONRPCErrorError { code: -32603, data: None, message: \"failed to submit turn input: NotIdle\" }, id: Integer(3) })",
+      ""
+    ]
+  },
+  "suite::v2::thread_resume::thread_resume_keeps_in_flight_turn_streaming": {
+    "line": 12744,
+    "location": "codex-rs/app-server/tests/common\\test_app_server.rs:1660:13",
+    "context": [
+      "internal error: entered unreachable code: expected JSONRPCMessage::Response, got Error(JSONRPCError { error: JSONRPCErrorError { code: -32603, data: None, message: \"failed to submit turn input: NotIdle\" }, id: Integer(3) })",
+      ""
+    ]
+  }
+}

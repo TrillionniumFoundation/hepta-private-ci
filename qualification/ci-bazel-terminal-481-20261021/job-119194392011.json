@@ -1,0 +1,115 @@
+{
+  "job": {
+    "id": 119194392011,
+    "name": "Bazel / Verify release build on windows-latest for x86_64-pc-windows-msvc",
+    "status": "completed",
+    "conclusion": "success",
+    "run_id": 39583123088,
+    "head_sha": "48177153ad04605338c3a9a8dbd17defee9981bc",
+    "started_at": "2026-10-21T11:52:06Z",
+    "completed_at": "2026-10-21T12:48:39Z",
+    "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/39583123088/job/119194392011",
+    "runner_name": "GitHub Actions 1000191517",
+    "labels": [
+      "windows-latest"
+    ],
+    "steps": [
+      {
+        "name": "Set up job",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 1,
+        "started_at": "2026-10-21T11:52:08Z",
+        "completed_at": "2026-10-21T11:52:09Z"
+      },
+      {
+        "name": "Run actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 2,
+        "started_at": "2026-10-21T11:52:09Z",
+        "completed_at": "2026-10-21T11:52:23Z"
+      },
+      {
+        "name": "Prepare Bazel CI",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 3,
+        "started_at": "2026-10-21T11:52:23Z",
+        "completed_at": "2026-10-21T11:52:43Z"
+      },
+      {
+        "name": "bazel build verify-release-build targets",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 4,
+        "started_at": "2026-10-21T11:52:43Z",
+        "completed_at": "2026-10-21T12:48:12Z"
+      },
+      {
+        "name": "Verify Bazel builds bwrap",
+        "status": "completed",
+        "conclusion": "skipped",
+        "number": 5,
+        "started_at": "2026-10-21T12:48:12Z",
+        "completed_at": "2026-10-21T12:48:12Z"
+      },
+      {
+        "name": "Upload Bazel execution logs",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 6,
+        "started_at": "2026-10-21T12:48:12Z",
+        "completed_at": "2026-10-21T12:48:15Z"
+      },
+      {
+        "name": "Save bazel repository cache",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 7,
+        "started_at": "2026-10-21T12:48:15Z",
+        "completed_at": "2026-10-21T12:48:35Z"
+      },
+      {
+        "name": "Check for a clean worktree",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 8,
+        "started_at": "2026-10-21T12:48:35Z",
+        "completed_at": "2026-10-21T12:48:35Z"
+      },
+      {
+        "name": "Post Prepare Bazel CI",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 15,
+        "started_at": "2026-10-21T12:48:35Z",
+        "completed_at": "2026-10-21T12:48:35Z"
+      },
+      {
+        "name": "Post Run actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 16,
+        "started_at": "2026-10-21T12:48:35Z",
+        "completed_at": "2026-10-21T12:48:38Z"
+      },
+      {
+        "name": "Complete job",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 17,
+        "started_at": "2026-10-21T12:48:38Z",
+        "completed_at": "2026-10-21T12:48:38Z"
+      }
+    ]
+  },
+  "observed_at": "2026-10-21T12:50:13.738Z",
+  "source_head": "48177153ad04605338c3a9a8dbd17defee9981bc",
+  "encoding": "Connector decoded job log encoded UTF-8 without line rewriting",
+  "raw_bytes": 663417,
+  "raw_sha256": "3862ae9bc07e07995164c71fb0c214119801840181fa6afabde8293127c04ab1",
+  "xz_file": "job-119194392011.log.xz",
+  "xz_bytes": 68428,
+  "xz_sha256": "87d0055ec442a2bb54401ba9c41f99adcd8446843c97ff2328bf8f914fab71bd"
+}

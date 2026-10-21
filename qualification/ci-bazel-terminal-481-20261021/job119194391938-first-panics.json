@@ -1,0 +1,183 @@
+{
+  "job_id": 119194391938,
+  "targets": [
+    "//codex-rs/hepta-operator-acceptance:hepta-operator-acceptance-tests",
+    "//codex-rs/hepta-shadow-qualification:hepta-shadow-qualification-tests",
+    "//codex-rs/exec-server:exec-server-file_system_windows-test",
+    "//codex-rs/hepta-agentd:hepta-agentd-terminal_cell_owner-test"
+  ],
+  "first_panics": {
+    "g5_trust::tests::fresh_head_scoped_challenge_reaches_ready_without_authority": {
+      "line": 3382,
+      "location": "codex-rs/hepta-operator-acceptance/src\\g5_trust_tests.rs:277:14:",
+      "context": [
+        "2026-10-21T12:37:28.1145636Z thread 'g5_trust::tests::fresh_head_scoped_challenge_reaches_ready_without_authority' (1700) panicked at codex-rs/hepta-operator-acceptance/src\\g5_trust_tests.rs:277:14:",
+        "2026-10-21T12:37:28.1147522Z start test key generation: Os { code: 3, kind: NotFound, message: \"The system cannot find the path specified.\" }",
+        "2026-10-21T12:37:28.1148684Z note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace",
+        "2026-10-21T12:37:28.1149270Z "
+      ]
+    },
+    "g5_trust::tests::independently_signed_challenge_is_verified_but_not_accepted": {
+      "line": 3388,
+      "location": "codex-rs/hepta-operator-acceptance/src\\g5_trust_tests.rs:277:14:",
+      "context": [
+        "2026-10-21T12:37:28.1151567Z thread 'g5_trust::tests::independently_signed_challenge_is_verified_but_not_accepted' (6324) panicked at codex-rs/hepta-operator-acceptance/src\\g5_trust_tests.rs:277:14:",
+        "2026-10-21T12:37:28.1153747Z start test key generation: Os { code: 3, kind: NotFound, message: \"The system cannot find the path specified.\" }",
+        "2026-10-21T12:37:28.1154555Z "
+      ]
+    },
+    "g5_trust::tests::expiry_is_half_open_and_never_creates_acceptance": {
+      "line": 3393,
+      "location": "codex-rs/hepta-operator-acceptance/src\\g5_trust_tests.rs:277:14:",
+      "context": [
+        "2026-10-21T12:37:28.1156926Z thread 'g5_trust::tests::expiry_is_half_open_and_never_creates_acceptance' (5144) panicked at codex-rs/hepta-operator-acceptance/src\\g5_trust_tests.rs:277:14:",
+        "2026-10-21T12:37:28.1158681Z start test key generation: Os { code: 3, kind: NotFound, message: \"The system cannot find the path specified.\" }",
+        "2026-10-21T12:37:28.1159485Z "
+      ]
+    },
+    "g5_trust::tests::exact_head_and_predecessor_binding_is_required": {
+      "line": 3398,
+      "location": "codex-rs/hepta-operator-acceptance/src\\g5_trust_tests.rs:277:14:",
+      "context": [
+        "2026-10-21T12:37:28.1161487Z thread 'g5_trust::tests::exact_head_and_predecessor_binding_is_required' (10084) panicked at codex-rs/hepta-operator-acceptance/src\\g5_trust_tests.rs:277:14:",
+        "2026-10-21T12:37:28.1163549Z start test key generation: Os { code: 3, kind: NotFound, message: \"The system cannot find the path specified.\" }",
+        "2026-10-21T12:37:28.1164355Z "
+      ]
+    },
+    "g5_trust::tests::policy_and_revocation_files_must_be_canonical": {
+      "line": 3403,
+      "location": "codex-rs/hepta-operator-acceptance/src\\g5_trust_tests.rs:277:14:",
+      "context": [
+        "2026-10-21T12:37:28.1166631Z thread 'g5_trust::tests::policy_and_revocation_files_must_be_canonical' (916) panicked at codex-rs/hepta-operator-acceptance/src\\g5_trust_tests.rs:277:14:",
+        "2026-10-21T12:37:28.1168274Z start test key generation: Os { code: 3, kind: NotFound, message: \"The system cannot find the path specified.\" }",
+        "2026-10-21T12:37:28.1169093Z "
+      ]
+    },
+    "g5_trust::tests::revocation_digest_change_invalidates_existing_challenge": {
+      "line": 3408,
+      "location": "codex-rs/hepta-operator-acceptance/src\\g5_trust_tests.rs:277:14:",
+      "context": [
+        "2026-10-21T12:37:28.1171269Z thread 'g5_trust::tests::revocation_digest_change_invalidates_existing_challenge' (4140) panicked at codex-rs/hepta-operator-acceptance/src\\g5_trust_tests.rs:277:14:",
+        "2026-10-21T12:37:28.1173231Z start test key generation: Os { code: 3, kind: NotFound, message: \"The system cannot find the path specified.\" }",
+        "2026-10-21T12:37:28.1174053Z "
+      ]
+    },
+    "g5_trust::tests::revocation_is_external_and_fail_closed_before_challenge_issuance": {
+      "line": 3413,
+      "location": "codex-rs/hepta-operator-acceptance/src\\g5_trust_tests.rs:277:14:",
+      "context": [
+        "2026-10-21T12:37:28.1184539Z thread 'g5_trust::tests::revocation_is_external_and_fail_closed_before_challenge_issuance' (10232) panicked at codex-rs/hepta-operator-acceptance/src\\g5_trust_tests.rs:277:14:",
+        "2026-10-21T12:37:28.1186650Z start test key generation: Os { code: 3, kind: NotFound, message: \"The system cannot find the path specified.\" }",
+        "2026-10-21T12:37:28.1200993Z "
+      ]
+    },
+    "tests::durable_time_watermark_rejects_clock_rollback": {
+      "line": 3418,
+      "location": "codex-rs/hepta-operator-acceptance/src\\lib_tests.rs:199:59:",
+      "context": [
+        "2026-10-21T12:37:28.1213758Z thread 'tests::durable_time_watermark_rejects_clock_rollback' (9416) panicked at codex-rs/hepta-operator-acceptance/src\\lib_tests.rs:199:59:",
+        "2026-10-21T12:37:28.1241413Z initial watermark: Io(Os { code: 5, kind: PermissionDenied, message: \"Access is denied.\" })",
+        "2026-10-21T12:37:28.1247740Z "
+      ]
+    },
+    "tests::exact_replay_returns_same_receipt_and_conflicting_claim_fails": {
+      "line": 3423,
+      "location": "codex-rs/hepta-operator-acceptance/src\\lib_tests.rs:258:74:",
+      "context": [
+        "2026-10-21T12:37:28.1271513Z thread 'tests::exact_replay_returns_same_receipt_and_conflicting_claim_fails' (7504) panicked at codex-rs/hepta-operator-acceptance/src\\lib_tests.rs:258:74:",
+        "2026-10-21T12:37:28.1290198Z called `Result::unwrap()` on an `Err` value: Io(Os { code: 5, kind: PermissionDenied, message: \"Access is denied.\" })",
+        "2026-10-21T12:37:28.1297896Z "
+      ]
+    },
+    "tests::unknown_or_noncanonical_stored_json_is_rejected": {
+      "line": 3428,
+      "location": "codex-rs/hepta-operator-acceptance/src\\lib_tests.rs:182:6:",
+      "context": [
+        "2026-10-21T12:37:28.1300604Z thread 'tests::unknown_or_noncanonical_stored_json_is_rejected' (7888) panicked at codex-rs/hepta-operator-acceptance/src\\lib_tests.rs:182:6:",
+        "2026-10-21T12:37:28.1316554Z called `Result::unwrap()` on an `Err` value: Io(Os { code: 5, kind: PermissionDenied, message: \"Access is denied.\" })",
+        "2026-10-21T12:37:28.1317597Z "
+      ]
+    },
+    "trust::tests::sshsig_verifies_only_exact_namespace_against_pinned_policy": {
+      "line": 3433,
+      "location": "codex-rs/hepta-operator-acceptance/src\\trust_tests.rs:134:14:",
+      "context": [
+        "2026-10-21T12:37:28.1339862Z thread 'trust::tests::sshsig_verifies_only_exact_namespace_against_pinned_policy' (1232) panicked at codex-rs/hepta-operator-acceptance/src\\trust_tests.rs:134:14:",
+        "2026-10-21T12:37:28.1363953Z start ssh-keygen: Os { code: 3, kind: NotFound, message: \"The system cannot find the path specified.\" }",
+        "2026-10-21T12:37:28.1364955Z "
+      ]
+    },
+    "trust::tests::trust_policy_digest_is_external_and_fail_closed": {
+      "line": 3438,
+      "location": "codex-rs/hepta-operator-acceptance/src\\trust_tests.rs:134:14:",
+      "context": [
+        "2026-10-21T12:37:28.1382439Z thread 'trust::tests::trust_policy_digest_is_external_and_fail_closed' (7684) panicked at codex-rs/hepta-operator-acceptance/src\\trust_tests.rs:134:14:",
+        "2026-10-21T12:37:28.1384690Z start ssh-keygen: Os { code: 3, kind: NotFound, message: \"The system cannot find the path specified.\" }",
+        "2026-10-21T12:37:28.1385607Z "
+      ]
+    },
+    "trust::tests::trust_policy_pins_store_principal_fingerprint_and_allowed_signers": {
+      "line": 3443,
+      "location": "codex-rs/hepta-operator-acceptance/src\\trust_tests.rs:134:14:",
+      "context": [
+        "2026-10-21T12:37:28.1388762Z thread 'trust::tests::trust_policy_pins_store_principal_fingerprint_and_allowed_signers' (8452) panicked at codex-rs/hepta-operator-acceptance/src\\trust_tests.rs:134:14:",
+        "2026-10-21T12:37:28.1391243Z start ssh-keygen: Os { code: 3, kind: NotFound, message: \"The system cannot find the path specified.\" }",
+        "2026-10-21T12:37:28.1392183Z ",
+        "2026-10-21T12:37:28.1392305Z ",
+        "2026-10-21T12:37:28.1392627Z failures:",
+        "2026-10-21T12:37:28.1393787Z     g5_trust::tests::exact_head_and_predecessor_binding_is_required",
+        "2026-10-21T12:37:28.1394828Z     g5_trust::tests::expiry_is_half_open_and_never_creates_acceptance",
+        "2026-10-21T12:37:28.1395895Z     g5_trust::tests::fresh_head_scoped_challenge_reaches_ready_without_authority",
+        "2026-10-21T12:37:28.1397056Z     g5_trust::tests::independently_signed_challenge_is_verified_but_not_accepted",
+        "2026-10-21T12:37:28.1398150Z     g5_trust::tests::policy_and_revocation_files_must_be_canonical",
+        "2026-10-21T12:37:28.1399717Z     g5_trust::tests::revocation_digest_change_invalidates_existing_challenge",
+        "2026-10-21T12:37:28.1400991Z     g5_trust::tests::revocation_is_external_and_fail_closed_before_challenge_issuance",
+        "2026-10-21T12:37:28.1402088Z     tests::durable_time_watermark_rejects_clock_rollback",
+        "2026-10-21T12:37:28.1403082Z     tests::exact_replay_returns_same_receipt_and_conflicting_claim_fails",
+        "2026-10-21T12:37:28.1404063Z     tests::unknown_or_noncanonical_stored_json_is_rejected"
+      ]
+    },
+    "child_tests::persists_inbound_wire_before_rejecting_invalid_json": {
+      "line": 3610,
+      "location": "codex-rs/hepta-shadow-qualification/src\\child_tests.rs:17:5:",
+      "context": [
+        "2026-10-21T12:42:45.1875123Z thread 'child_tests::persists_inbound_wire_before_rejecting_invalid_json' (7876) panicked at codex-rs/hepta-shadow-qualification/src\\child_tests.rs:17:5:",
+        "2026-10-21T12:42:45.1891878Z assertion failed: root.join(\"app_server-inbound-000001.receipt.json\").is_file()",
+        "2026-10-21T12:42:45.2014868Z note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace",
+        "2026-10-21T12:42:45.2114039Z "
+      ]
+    },
+    "real_owner_decision_outcome_freeze_fit_registry_reload_and_withdrawal": {
+      "line": 4479,
+      "location": "hepta-agentd/tests\\support\\terminal_cell_owner.rs:198:32:",
+      "context": [
+        "2026-10-21T12:57:09.6518125Z thread 'real_owner_decision_outcome_freeze_fit_registry_reload_and_withdrawal' (10168) panicked at hepta-agentd/tests\\support\\terminal_cell_owner.rs:198:32:",
+        "2026-10-21T12:57:09.6521343Z called `Result::unwrap()` on an `Err` value: Os { code: 5, kind: PermissionDenied, message: \"Access is denied.\" }",
+        "2026-10-21T12:57:09.6523307Z note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace",
+        "2026-10-21T12:57:09.6524631Z "
+      ]
+    },
+    "clean_agent_recall_replay_training_load_and_source_withdrawal": {
+      "line": 4485,
+      "location": "hepta-agentd/tests\\support\\terminal_cell_owner.rs:198:32:",
+      "context": [
+        "2026-10-21T12:57:09.6527864Z thread 'clean_agent_recall_replay_training_load_and_source_withdrawal' (5864) panicked at hepta-agentd/tests\\support\\terminal_cell_owner.rs:198:32:",
+        "2026-10-21T12:57:09.6533737Z called `Result::unwrap()` on an `Err` value: Os { code: 5, kind: PermissionDenied, message: \"Access is denied.\" }",
+        "2026-10-21T12:57:09.6537091Z ",
+        "2026-10-21T12:57:09.6537099Z ",
+        "2026-10-21T12:57:09.6537289Z failures:",
+        "2026-10-21T12:57:09.6538150Z     clean_agent_recall_replay_training_load_and_source_withdrawal",
+        "2026-10-21T12:57:09.6540657Z     real_owner_decision_outcome_freeze_fit_registry_reload_and_withdrawal",
+        "2026-10-21T12:57:09.6541353Z ",
+        "2026-10-21T12:57:09.6542594Z test result: FAILED. 0 passed; 2 failed; 1 ignored; 0 measured; 0 filtered out; finished in 7.25s",
+        "2026-10-21T12:57:09.6543621Z ",
+        "2026-10-21T12:57:09.6543896Z ================================================================================",
+        "2026-10-21T12:57:10.1500397Z [3,916 / 3,945] 94 / 140 tests, 4 failed; Compiling Rust rlib //codex-rs/tui:tui (490 files); 82s local ... (3 actions running)",
+        "2026-10-21T12:57:11.8536803Z [3,916 / 3,945] 94 / 140 tests, 4 failed; Compiling Rust rlib //codex-rs/tui:tui (490 files); 84s local ... (3 actions running)",
+        "2026-10-21T12:57:13.1780919Z [3,917 / 3,945] 95 / 140 tests, 4 failed; Compiling Rust rlib //codex-rs/tui:tui (490 files); 85s local ... (2 actions running)",
+        "2026-10-21T12:57:15.8096166Z [3,918 / 3,945] 95 / 140 tests, 4 failed; Compiling Rust bin //codex-rs/hepta-matrixd:codex-hepta-matrixd (13 files); 22s local ... (2 actions, 1 running)"
+      ]
+    }
+  },
+  "scope": "Diagnostics before original cancellation; no claim of full suite completion."
+}
