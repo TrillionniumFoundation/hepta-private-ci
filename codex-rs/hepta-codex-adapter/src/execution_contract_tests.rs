@@ -323,3 +323,94 @@ fn runtime_receipt_rejects_false_success_and_unknown_failure() {
         Err(ExecutionContractError::ZeroDigest("execution outcome"))
     );
 }
+
+#[test]
+fn failed_execution_requires_observed_error_digest() {
+    let request = intent();
+    let mut receipt = ExecutionReceiptV1 {
+        operation_id: request.cell.operation_id.clone(),
+        intent_digest: request.cell.intent_digest(),
+        generation: request.cell.generation,
+        final_payload_digest: request.cell.final_payload.clone(),
+        outcome_digest: None,
+        status: ExecutionStatusV1::Failed,
+        recovery: RecoveryDispositionV1::None,
+        authority: AuthorityPosture::DENY_ALL,
+    };
+    assert_eq!(
+        receipt.validate_against(&request.cell),
+        Err(ExecutionContractError::StatusOutcomeMismatch)
+    );
+    receipt.outcome_digest = Some(digest("observed-terminal-error"));
+    assert_eq!(receipt.validate_against(&request.cell), Ok(()));
+}
+
+#[test]
+fn rejected_native_tool_cannot_hide_partial_effect_as_safe_pre_admission_retry() {
+    let request = intent();
+    let outcome = ToolOutcomeV1 {
+        terminal_observed: false,
+        exit_code: None,
+        stdout_digest: None,
+        stderr_digest: None,
+        retryable: true,
+    };
+    let clean_rejection = RuntimeReceiptV1 {
+        execution: ExecutionReceiptV1 {
+            operation_id: request.cell.operation_id.clone(),
+            intent_digest: request.cell.intent_digest(),
+            generation: request.cell.generation,
+            final_payload_digest: request.cell.final_payload.clone(),
+            outcome_digest: Some(outcome.outcome_digest()),
+            status: ExecutionStatusV1::Rejected,
+            recovery: RecoveryDispositionV1::RetryBeforeAdmission,
+            authority: AuthorityPosture::DENY_ALL,
+        },
+        runtime_intent_digest: request.intent_digest(),
+        tool_outcome: outcome,
+    };
+    assert_eq!(clean_rejection.validate_against(&request), Ok(()));
+
+    // An effect may have emitted output before its completion notification
+    // disappeared. Neither output nor a process exit can be a pre-start retry.
+    for evidence in 0..3 {
+        let mut altered = clean_rejection.clone();
+        match evidence {
+            0 => altered.tool_outcome.exit_code = Some(0),
+            1 => altered.tool_outcome.stdout_digest = Some(digest("partial stdout")),
+            2 => altered.tool_outcome.stderr_digest = Some(digest("partial stderr")),
+            _ => unreachable!(),
+        }
+        altered.execution.outcome_digest = Some(altered.tool_outcome.outcome_digest());
+        assert_eq!(
+            altered.validate_against(&request),
+            Err(ExecutionContractError::StatusOutcomeMismatch)
+        );
+    }
+
+    // An unknown outcome cannot gain a retry capability by changing a flag.
+    let mut unknown = clean_rejection.clone();
+    unknown.execution.status = ExecutionStatusV1::Indeterminate;
+    unknown.execution.recovery = RecoveryDispositionV1::ReconcileSameOperation;
+    assert_eq!(
+        unknown.validate_against(&request),
+        Err(ExecutionContractError::StatusOutcomeMismatch)
+    );
+
+    // A native retry flag and the adapter recovery disposition must agree.
+    let mut conflicting = clean_rejection;
+    conflicting.tool_outcome.retryable = false;
+    conflicting.execution.outcome_digest = Some(conflicting.tool_outcome.outcome_digest());
+    assert_eq!(
+        conflicting.validate_against(&request),
+        Err(ExecutionContractError::StatusOutcomeMismatch)
+    );
+
+    // Partial output is still expressible as an indeterminate observation,
+    // without granting fresh dispatch authority.
+    let mut observed_unknown = unknown;
+    observed_unknown.tool_outcome.retryable = false;
+    observed_unknown.tool_outcome.stdout_digest = Some(digest("partial stdout"));
+    observed_unknown.execution.outcome_digest = Some(observed_unknown.tool_outcome.outcome_digest());
+    assert_eq!(observed_unknown.validate_against(&request), Ok(()));
+}
