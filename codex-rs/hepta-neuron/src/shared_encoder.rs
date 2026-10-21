@@ -1,3 +1,4 @@
+use std::collections::BTreeSet;
 use std::error::Error as StdError;
 use std::fmt;
 use std::sync::Arc;
@@ -262,8 +263,12 @@ fn validate_cells(cell_ids: &[StableId]) -> Result<(), SharedEncoderError> {
     if cell_ids.len() > MAX_SHARED_ENCODER_CELLS_V1 {
         return Err(SharedEncoderError::CellLimitExceeded(cell_ids.len()));
     }
-    for (index, cell_id) in cell_ids.iter().enumerate() {
-        if cell_ids[..index].iter().any(|previous| previous == cell_id) {
+    // Thousands of lightweight Cells must not pay quadratic admission work.
+    // Borrow identities for membership checks; preserve caller order and
+    // avoid cloning any Cell ID or performing an extra Encoder forward.
+    let mut seen = BTreeSet::new();
+    for cell_id in cell_ids {
+        if !seen.insert(cell_id) {
             return Err(SharedEncoderError::DuplicateCellId(cell_id.to_string()));
         }
     }
