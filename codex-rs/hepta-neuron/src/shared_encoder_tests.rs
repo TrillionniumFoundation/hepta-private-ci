@@ -75,6 +75,27 @@ fn one_forward_is_shared_by_all_cells() {
 }
 
 #[test]
+fn maximum_cell_capacity_keeps_input_order_and_rejects_late_duplicate() {
+    let request = shared_encoder_request();
+    let mut owner = owner();
+    let mut cells: Vec<StableId> = (0..MAX_SHARED_ENCODER_CELLS_V1)
+        .map(|index| id(&format!("cell:{index:04}")))
+        .collect();
+    let batch = must(owner.encode_for_cells(&request, &cells));
+    assert_eq!(batch.cell_ids(), cells.as_slice());
+    assert_eq!(owner.driver.calls, 1);
+
+    // A duplicate in the final slot must be rejected before the driver is
+    // called a second time, even with the full 4,096-Cell admission budget.
+    cells[MAX_SHARED_ENCODER_CELLS_V1 - 1] = cells[0].clone();
+    assert_eq!(
+        owner.encode_for_cells(&request, &cells),
+        Err(SharedEncoderError::DuplicateCellId("cell:0000".to_owned()))
+    );
+    assert_eq!(owner.driver.calls, 1);
+}
+
+#[test]
 fn generation_and_digest_fences_fail_closed() {
     let mut owner = owner();
     let mut request = shared_encoder_request();
