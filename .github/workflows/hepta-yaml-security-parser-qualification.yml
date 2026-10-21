@@ -3,16 +3,18 @@ name: Hepta YAML security parser compatibility (qualification only)
 on:
   pull_request:
     paths:
-      - "codex-rs/core-plugins/src/command_migration.rs"
-      - "codex-rs/core-plugins/src/command_migration_tests.rs"
-      - "codex-rs/external-agent-migration/src/subagents.rs"
-      - "codex-rs/external-agent-migration/src/subagents_tests.rs"
-      - "codex-rs/external-agent-migration/src/lib_tests.rs"
-      - "codex-rs/skills/src/parser.rs"
-      - "codex-rs/skills/src/parser_tests.rs"
-      - "codex-rs/ext/skills/src/loader/**"
+      # These jobs execute both entire --lib suites, not only two parser files.
+      # Any owner source or Cargo manifest change must invalidate prior green.
+      - "codex-rs/core-plugins/**"
+      - "codex-rs/external-agent-migration/**"
+      - "codex-rs/skills/**"
+      - "codex-rs/ext/skills/**"
+      # Workspace resolver, toolchain and formatting policy are qualification inputs.
       - "codex-rs/Cargo.toml"
       - "codex-rs/Cargo.lock"
+      - "codex-rs/rust-toolchain.toml"
+      - "codex-rs/rustfmt.toml"
+      - "codex-rs/.cargo/config.toml"
       - ".github/workflows/hepta-yaml-security-parser-qualification.yml"
   workflow_dispatch:
 
