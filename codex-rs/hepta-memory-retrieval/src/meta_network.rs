@@ -89,6 +89,25 @@ pub fn run_memory_meta_batch_shadow_v1(
                 HnmfContractError::DuplicateIdentity("memory meta cell"),
             ));
         }
+        // Validate every Cell and its complete predecessor/generation binding
+        // before executing any tick. A late invalid Cell must never cause
+        // earlier Cells to expend shadow retrieval work.
+        cell.manifest
+            .validate()
+            .map_err(MemoryMetaBatchErrorV1::Contract)?;
+        cell.tick_input
+            .validate()
+            .map_err(MemoryMetaBatchErrorV1::Contract)?;
+        if cell.manifest.cell_id != cell.tick_input.cell_id
+            || cell.manifest.graph_generation != cell.tick_input.graph_generation
+            || cell.manifest.model_generation != cell.tick_input.model_generation
+            || cell.manifest.source_frontier_digest != cell.tick_input.source_frontier_digest
+            || cell.manifest.forget_frontier_digest != cell.tick_input.forget_frontier_digest
+        {
+            return Err(MemoryMetaBatchErrorV1::Contract(
+                HnmfContractError::Conflict("memory meta tick binding"),
+            ));
+        }
         // Preflight expensive shadow ticks without trusting any Cell-local
         // projection to redefine the shared Encoder or evidence frontiers.
         if cell.manifest.shared_base_digest != policy.shared_base_digest
