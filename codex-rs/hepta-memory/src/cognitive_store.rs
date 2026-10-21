@@ -1632,7 +1632,9 @@ pub(crate) fn publish_active_database(
             .custom_flags(libc::O_CLOEXEC | libc::O_NOFOLLOW)
             .open(&temporary)
             .map_err(|error| {
-                unavailable(format!("open cognitive active pointer temporary file: {error}"))
+                unavailable(format!(
+                    "open cognitive active pointer temporary file: {error}"
+                ))
             })?
     };
     #[cfg(not(unix))]
@@ -1641,7 +1643,9 @@ pub(crate) fn publish_active_database(
         .create_new(true)
         .open(&temporary)
         .map_err(|error| {
-            unavailable(format!("open cognitive active pointer temporary file: {error}"))
+            unavailable(format!(
+                    "open cognitive active pointer temporary file: {error}"
+                ))
         })?;
 
     let result = (|| {
@@ -1649,14 +1653,17 @@ pub(crate) fn publish_active_database(
             unavailable(format!("write cognitive active pointer payload: {error}"))
         })?;
         file.write_all(b"\n").map_err(|error| {
-            unavailable(format!("write cognitive active pointer terminator: {error}"))
+            unavailable(format!(
+                "write cognitive active pointer terminator: {error}"
+            ))
         })?;
         file.sync_all().map_err(|error| {
-            unavailable(format!("sync cognitive active pointer temporary file: {error}"))
+            unavailable(format!(
+                "sync cognitive active pointer temporary file: {error}"
+            ))
         })?;
-        fs::rename(&temporary, &pointer).map_err(|error| {
-            unavailable(format!("rename cognitive active pointer: {error}"))
-        })?;
+        fs::rename(&temporary, &pointer)
+            .map_err(|error| unavailable(format!("rename cognitive active pointer: {error}")))?;
         sync_cognitive_directory(root)?;
         Ok(())
     })();

@@ -557,7 +557,7 @@ async fn retirement_rechecks_original_live_authority_after_sqlite_awaits() -> Te
     let through = fixture.request(/*sequence*/ 1)?.delivery;
     let writer = fixture.writer.clone();
     let target = fixture.target.clone();
-    let mut retirement =
+    let retirement =
         tokio::spawn(async move { writer.retire_hos2_through(&target, &through).await });
     tokio::time::timeout(Duration::from_secs(5), checked_rx).await??;
     // The second issuer check has reached a deterministic rendezvous AFTER

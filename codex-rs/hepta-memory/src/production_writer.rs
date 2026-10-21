@@ -1594,7 +1594,7 @@ impl ProductionDurableWriter {
         };
         if observed_contradiction
             && settled.is_ok()
-            && let Some(owner) = hos2_owner.as_deref_mut()
+            && let Some(owner) = hos2_owner
         {
             owner.contradiction_recorded();
         }
