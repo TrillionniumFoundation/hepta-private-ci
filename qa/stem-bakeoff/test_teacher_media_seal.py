@@ -110,6 +110,34 @@ class TeacherMediaSealTests(unittest.TestCase):
                 ):
                     pass
 
+    def test_preflight_media_cannot_be_erased_to_skip_sealing(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            (root / "frame.png").write_bytes(b"attested frame")
+            rows = [{"text": "original", "image": "frame.png"}]
+            conversations, digest = _fake_validator(rows, root, "embeddinggemma2_740m")
+            rows[0].pop("image")
+            with self.assertRaisesRegex(TeacherMediaSealError, "modality layout changed"):
+                with sealed_media_inputs(
+                    records=rows, media_root=root, candidate="embeddinggemma2_740m",
+                    expected_source_digest=digest, original_conversations=conversations,
+                    validate_records=_fake_validator,
+                ):
+                    pass
+
+    def test_preflight_batch_cardinality_cannot_change(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            rows = [{"text": "original"}]
+            conversations, digest = _fake_validator(rows, tmp, "embeddinggemma2_740m")
+            rows.append({"text": "unverified"})
+            with self.assertRaisesRegex(TeacherMediaSealError, "source batch changed"):
+                with sealed_media_inputs(
+                    records=rows, media_root=tmp, candidate="embeddinggemma2_740m",
+                    expected_source_digest=digest, original_conversations=conversations,
+                    validate_records=_fake_validator,
+                ):
+                    pass
+
     def test_text_only_reuses_materialized_strings(self):
         with tempfile.TemporaryDirectory() as tmp:
             rows = [{"text": "context"}]
@@ -192,6 +220,65 @@ class TeacherMediaSealIntegrationTests(unittest.TestCase):
             self.assertEqual(len(observed), 1)
             self.assertFalse(observed[0].exists())
 
+
+    def test_embedding_processor_uses_preflight_media_when_caller_erases_it(self):
+        from types import SimpleNamespace
+        import types
+        import teacher_forward
+
+        class FakeModel(torch.nn.Module):
+            def forward(self, **_kwargs):
+                return SimpleNamespace(last_hidden_state=torch.ones(1, 2, 768))
+
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            source = root / "frame.png"
+            source.write_bytes(b"original verified frame")
+            rows = [{"text": "approved", "image": "frame.png"}]
+            _, digest = teacher_forward.validate_records(
+                rows, root, "embeddinggemma2_740m")
+            seen = {}
+
+            class FakeProcessor:
+                def apply_chat_template(self, conversations, **_kwargs):
+                    self_row = conversations[0][0]["content"]
+                    seen["text"] = self_row[0]["text"]
+                    path = Path(self_row[1]["url"])
+                    seen["url"] = path
+                    seen["bytes"] = path.read_bytes()
+                    return {"input_ids": torch.tensor([[4, 5]]),
+                            "attention_mask": torch.tensor([[1, 1]])}
+
+            def load_model(*_args, **_kwargs):
+                # A caller mutation after validation must not bypass sealing.
+                rows[0].pop("image")
+                rows[0]["text"] = "tampered"
+                rows.append({"text": "unverified extra row"})
+                return FakeModel()
+
+            modules = types.ModuleType("transformers")
+            modules.AutoProcessor = SimpleNamespace(
+                from_pretrained=lambda *_a, **_kw: FakeProcessor())
+            modules.AutoModel = SimpleNamespace(from_pretrained=load_model)
+            modules.AutoModelForSeq2SeqLM = object()
+            modules.AutoTokenizer = object()
+            with (mock.patch.dict(sys.modules, {"transformers": modules}),
+                  mock.patch.object(teacher_forward, "verify_snapshot",
+                                    return_value={"revision": "a" * 40,
+                                                  "inventory_sha256": "b" * 64})):
+                report = teacher_forward.run_forward(
+                    candidate="embeddinggemma2_740m", snapshot=root,
+                    media_root=root, records=rows, revision="a" * 40,
+                    expected_inventory_sha256="b" * 64,
+                    operator_accepted_terms=True, device="cpu")
+            self.assertEqual(seen["text"], "approved")
+            self.assertNotEqual(seen["url"], source)
+            self.assertEqual(seen["bytes"], b"original verified frame")
+            self.assertFalse(seen["url"].exists())
+            self.assertEqual(report["batch_size"], 1)
+            self.assertEqual(report["ordered_source_manifest_sha256"], digest)
+            self.assertEqual(report["owner_model_forward_hook_calls"], 1)
+            self.assertFalse(report["production_activation_allowed"])
 
     def test_t5_tokenizes_preflight_snapshot_when_caller_changes_during_load(self):
         from types import SimpleNamespace
