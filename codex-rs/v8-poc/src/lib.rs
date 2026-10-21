@@ -40,6 +40,13 @@ mod tests {
     }
 
     fn evaluate_expression(expression: &str) -> String {
+        // The Windows sandbox-enabled prebuilt V8 artifact initializes a
+        // process-wide configurable address-space pool on the first isolate.
+        // Keep these independent smoke tests from racing that initialization
+        // in Rust's default multi-threaded test harness. This protects only
+        // the test helper; no production V8 concurrency is disabled or waived.
+        static V8_SMOKE_LOCK: std::sync::Mutex<()> = std::sync::Mutex::new(());
+        let _guard = V8_SMOKE_LOCK.lock().expect("V8 smoke lock");
         initialize_v8();
 
         let isolate = &mut v8::Isolate::new(Default::default());
