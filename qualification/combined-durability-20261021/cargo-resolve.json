@@ -1,0 +1,75 @@
+{
+  "command": [
+    "cargo",
+    "update",
+    "--offline",
+    "-p",
+    "codex-hepta-learning-artifacts"
+  ],
+  "cwd": "/workspace/scratch/337c309bc660/combined-durability-work/codex-rs",
+  "started_at_utc": "2026-10-21T11:32:20.549033+00:00",
+  "head_at_start": "39a5441b2ef10b9033475e3790ee5ba4f7d082c0",
+  "source_hashes_before": {
+    "MODULE.bazel.lock": {
+      "bytes": 1745183,
+      "sha256": "f6c5dd1f2a09c66d6a4c387ff40d11afb7ed2309e541dcb6bff9ad5f410996c3"
+    },
+    "codex-rs/Cargo.lock": {
+      "bytes": 413672,
+      "sha256": "08716e33af84b3b0a7fa4885d3f423f66d48ac6d193a6eb0b4779b9fd1d4d992"
+    },
+    "codex-rs/hepta-learning-artifacts/Cargo.toml": {
+      "bytes": 475,
+      "sha256": "e135d389cd8d2c0b39e84bb86aba3cbea8f37170a4b38cef434afd2ce249fc1e"
+    },
+    "codex-rs/hepta-learning-artifacts/src/owner_host.rs": {
+      "bytes": 90057,
+      "sha256": "e0f205d991571c93826ea79a97ff3b4ae3d5d83172ccf23d17356ff7768a03bf"
+    }
+  },
+  "limits": {
+    "cargo_jobs": 2,
+    "dev_debug": 0,
+    "test_debug": 0,
+    "incremental": 0,
+    "bazel_jobs": 2,
+    "bazel_xmx_mib": 1536
+  },
+  "memory_events_before": "low 0\nhigh 0\nmax 905583\noom 0\noom_kill 0\noom_group_kill 0\n",
+  "pid": 25,
+  "exit_code": 0,
+  "elapsed_seconds": 2.0026001800033555,
+  "finished_at_utc": "2026-10-21T11:32:22.557428+00:00",
+  "source_hashes_after": {
+    "MODULE.bazel.lock": {
+      "bytes": 1745183,
+      "sha256": "f6c5dd1f2a09c66d6a4c387ff40d11afb7ed2309e541dcb6bff9ad5f410996c3"
+    },
+    "codex-rs/Cargo.lock": {
+      "bytes": 413681,
+      "sha256": "4a89de595739e85d8d0e01944914c62217287d2c7daccee8e6d85b1cb4afc941"
+    },
+    "codex-rs/hepta-learning-artifacts/Cargo.toml": {
+      "bytes": 475,
+      "sha256": "e135d389cd8d2c0b39e84bb86aba3cbea8f37170a4b38cef434afd2ce249fc1e"
+    },
+    "codex-rs/hepta-learning-artifacts/src/owner_host.rs": {
+      "bytes": 90057,
+      "sha256": "e0f205d991571c93826ea79a97ff3b4ae3d5d83172ccf23d17356ff7768a03bf"
+    }
+  },
+  "peak_cgroup_bytes": {
+    "anon": 135032832,
+    "file": 7293095936,
+    "kernel": 851771392
+  },
+  "minimum_free_bytes": 4279357440,
+  "memory_events_after": "low 0\nhigh 0\nmax 905855\noom 0\noom_kill 0\noom_group_kill 0\n",
+  "raw_log": {
+    "file": "cargo-resolve.log.xz",
+    "bytes": 124,
+    "sha256": "f879ac8a72bd17a666e850c2db6093f241658e9d69e62111e99082637979bcfb",
+    "compressed_bytes": 176,
+    "compressed_sha256": "697b6091365936e43979c2433d0dc8d7768abcba916a4ddf11716aa302d6b547"
+  }
+}

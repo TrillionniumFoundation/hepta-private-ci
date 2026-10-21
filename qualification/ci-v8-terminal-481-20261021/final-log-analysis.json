@@ -1,0 +1,472 @@
+{
+  "qualification_complete": false,
+  "all_jobs_completed": true,
+  "cancelled_logs_analysed": 13,
+  "jobs": [
+    {
+      "job_id": 119171686607,
+      "name": "Build ptrcomp-sandbox aarch64-pc-windows-msvc from source",
+      "conclusion": "cancelled",
+      "source_head": "48177153ad04605338c3a9a8dbd17defee9981bc",
+      "tested_merge": "3c32bedb07239b0cbdb38d100836258165cae633",
+      "build_step": {
+        "name": "Build upstream rusty_v8 sandbox release pair",
+        "status": "completed",
+        "conclusion": "cancelled",
+        "number": 13,
+        "started_at": "2026-10-21T10:35:39Z",
+        "completed_at": "2026-10-21T12:03:09Z"
+      },
+      "smoke_steps": [
+        {
+          "name": "Smoke link staged artifact with Cargo",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 15,
+          "started_at": "2026-10-21T12:03:09Z",
+          "completed_at": "2026-10-21T12:03:09Z"
+        }
+      ],
+      "emitted_errors": [
+        {
+          "line": 1614,
+          "text": "2026-10-21T12:03:09.3150702Z ##[error]The operation was canceled."
+        }
+      ],
+      "last_progress": null,
+      "raw_sha256": "cb0885f4c21b40b1010a7af5619decfdaa28d84c1d745cf369c430fb567bcdd4"
+    },
+    {
+      "job_id": 119171686801,
+      "name": "Build ptrcomp-sandbox x86_64-unknown-linux-musl",
+      "conclusion": "cancelled",
+      "source_head": "48177153ad04605338c3a9a8dbd17defee9981bc",
+      "tested_merge": "3c32bedb07239b0cbdb38d100836258165cae633",
+      "build_step": {
+        "name": "Build Bazel V8 release pair",
+        "status": "completed",
+        "conclusion": "cancelled",
+        "number": 7,
+        "started_at": "2026-10-21T10:57:20Z",
+        "completed_at": "2026-10-21T12:27:18Z"
+      },
+      "smoke_steps": [
+        {
+          "name": "Smoke test staged artifact with Cargo",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 9,
+          "started_at": "2026-10-21T12:27:18Z",
+          "completed_at": "2026-10-21T12:27:18Z"
+        }
+      ],
+      "emitted_errors": [
+        {
+          "line": 7206,
+          "text": "2026-10-21T12:27:18.2681073Z ##[error]The operation was canceled."
+        }
+      ],
+      "last_progress": {
+        "line": 7205,
+        "text": "2026-10-21T12:27:11.3126411Z [14,142 / 15,709] Compiling src/heap/large-spaces.cc [for tool]; 11s disk-cache, linux-sandbox ... (30 actions, 4 running)"
+      },
+      "raw_sha256": "108ec185b56774facd8f2a5b7569f1d9c37279f22abd666d5e33ce641115f809"
+    },
+    {
+      "job_id": 119171686802,
+      "name": "Build release aarch64-unknown-linux-musl",
+      "conclusion": "cancelled",
+      "source_head": "48177153ad04605338c3a9a8dbd17defee9981bc",
+      "tested_merge": "3c32bedb07239b0cbdb38d100836258165cae633",
+      "build_step": {
+        "name": "Build Bazel V8 release pair",
+        "status": "completed",
+        "conclusion": "cancelled",
+        "number": 7,
+        "started_at": "2026-10-21T10:35:08Z",
+        "completed_at": "2026-10-21T12:05:08Z"
+      },
+      "smoke_steps": [
+        {
+          "name": "Smoke test staged artifact with Cargo",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 9,
+          "started_at": "2026-10-21T12:05:08Z",
+          "completed_at": "2026-10-21T12:05:08Z"
+        }
+      ],
+      "emitted_errors": [
+        {
+          "line": 7916,
+          "text": "2026-10-21T12:05:08.9702431Z ##[error]The operation was canceled."
+        }
+      ],
+      "last_progress": {
+        "line": 7915,
+        "text": "2026-10-21T12:05:06.1938126Z [15,968 / 16,450] Compiling src/diagnostics/arm64/eh-frame-arm64.cc; 7s disk-cache, linux-sandbox ... (30 actions, 4 running)"
+      },
+      "raw_sha256": "c501c1630d888a5b751fb90cc7dc2d8dacd9a175a56334300ef096f4b824000a"
+    },
+    {
+      "job_id": 119171686809,
+      "name": "Build ptrcomp-sandbox aarch64-apple-darwin",
+      "conclusion": "cancelled",
+      "source_head": "48177153ad04605338c3a9a8dbd17defee9981bc",
+      "tested_merge": "3c32bedb07239b0cbdb38d100836258165cae633",
+      "build_step": {
+        "name": "Build Bazel V8 release pair",
+        "status": "completed",
+        "conclusion": "cancelled",
+        "number": 7,
+        "started_at": "2026-10-21T10:33:37Z",
+        "completed_at": "2026-10-21T12:03:32Z"
+      },
+      "smoke_steps": [
+        {
+          "name": "Smoke test staged artifact with Cargo",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 9,
+          "started_at": "2026-10-21T12:03:32Z",
+          "completed_at": "2026-10-21T12:03:32Z"
+        }
+      ],
+      "emitted_errors": [
+        {
+          "line": 7886,
+          "text": "2026-10-21T12:03:32.5442800Z ##[error]The operation was canceled."
+        }
+      ],
+      "last_progress": {
+        "line": 7885,
+        "text": "2026-10-21T12:03:31.3524600Z [14,179 / 14,794] Compiling src/runtime/runtime-symbol.cc; 4s disk-cache, darwin-sandbox ... (30 actions, 3 running)"
+      },
+      "raw_sha256": "726d8cc0c9e9bb376c747420ec858d6e84f0eab2a5a6c2d22d98e232d2e70f35"
+    },
+    {
+      "job_id": 119171686852,
+      "name": "Build release x86_64-apple-darwin",
+      "conclusion": "cancelled",
+      "source_head": "48177153ad04605338c3a9a8dbd17defee9981bc",
+      "tested_merge": "3c32bedb07239b0cbdb38d100836258165cae633",
+      "build_step": {
+        "name": "Build Bazel V8 release pair",
+        "status": "completed",
+        "conclusion": "cancelled",
+        "number": 7,
+        "started_at": "2026-10-21T10:40:14Z",
+        "completed_at": "2026-10-21T12:09:52Z"
+      },
+      "smoke_steps": [
+        {
+          "name": "Smoke test staged artifact with Cargo",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 9,
+          "started_at": "2026-10-21T12:09:52Z",
+          "completed_at": "2026-10-21T12:09:52Z"
+        }
+      ],
+      "emitted_errors": [
+        {
+          "line": 7362,
+          "text": "2026-10-21T12:09:52.2581780Z ##[error]The operation was canceled."
+        }
+      ],
+      "last_progress": {
+        "line": 7361,
+        "text": "2026-10-21T12:09:50.1588550Z [12,571 / 14,054] Compiling src/runtime/runtime-shadow-realm.cc; 27s disk-cache, darwin-sandbox ... (30 actions, 4 running)"
+      },
+      "raw_sha256": "feea22ab2095432d21ca9169ec55b22ef3a88bb2375a9a1ccc30b4cd12cef3bd"
+    },
+    {
+      "job_id": 119171686907,
+      "name": "Build release x86_64-unknown-linux-gnu",
+      "conclusion": "cancelled",
+      "source_head": "48177153ad04605338c3a9a8dbd17defee9981bc",
+      "tested_merge": "3c32bedb07239b0cbdb38d100836258165cae633",
+      "build_step": {
+        "name": "Build Bazel V8 release pair",
+        "status": "completed",
+        "conclusion": "cancelled",
+        "number": 7,
+        "started_at": "2026-10-21T11:00:50Z",
+        "completed_at": "2026-10-21T12:30:42Z"
+      },
+      "smoke_steps": [
+        {
+          "name": "Smoke test staged artifact with Cargo",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 9,
+          "started_at": "2026-10-21T12:30:42Z",
+          "completed_at": "2026-10-21T12:30:42Z"
+        }
+      ],
+      "emitted_errors": [
+        {
+          "line": 7642,
+          "text": "2026-10-21T12:30:42.7975871Z ##[error]The operation was canceled."
+        }
+      ],
+      "last_progress": {
+        "line": 7641,
+        "text": "2026-10-21T12:30:40.9679204Z [13,717 / 14,383] Compiling src/regexp/experimental/experimental.cc; 12s disk-cache, linux-sandbox ... (30 actions, 4 running)"
+      },
+      "raw_sha256": "7322e516cd29fca49046f7614eabe40f9871b08c5d4319c58ab8c0d8c1242537"
+    },
+    {
+      "job_id": 119171686915,
+      "name": "Build ptrcomp-sandbox x86_64-apple-darwin",
+      "conclusion": "cancelled",
+      "source_head": "48177153ad04605338c3a9a8dbd17defee9981bc",
+      "tested_merge": "3c32bedb07239b0cbdb38d100836258165cae633",
+      "build_step": {
+        "name": "Build Bazel V8 release pair",
+        "status": "completed",
+        "conclusion": "cancelled",
+        "number": 7,
+        "started_at": "2026-10-21T10:34:46Z",
+        "completed_at": "2026-10-21T12:04:03Z"
+      },
+      "smoke_steps": [
+        {
+          "name": "Smoke test staged artifact with Cargo",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 9,
+          "started_at": "2026-10-21T12:04:03Z",
+          "completed_at": "2026-10-21T12:04:03Z"
+        }
+      ],
+      "emitted_errors": [
+        {
+          "line": 7265,
+          "text": "2026-10-21T12:04:03.4424540Z ##[error]The operation was canceled."
+        }
+      ],
+      "last_progress": {
+        "line": 7264,
+        "text": "2026-10-21T12:04:02.7081480Z [12,324 / 14,054] Compiling src/compiler-dispatcher/lazy-compile-dispatcher.cc; 26s disk-cache, darwin-sandbox ... (30 actions, 4 running)"
+      },
+      "raw_sha256": "4d9247fe746815a478db9625ecff4f8e436dd5e488a22ab55f8d29886a089cee"
+    },
+    {
+      "job_id": 119171686938,
+      "name": "Build release aarch64-unknown-linux-gnu",
+      "conclusion": "cancelled",
+      "source_head": "48177153ad04605338c3a9a8dbd17defee9981bc",
+      "tested_merge": "3c32bedb07239b0cbdb38d100836258165cae633",
+      "build_step": {
+        "name": "Build Bazel V8 release pair",
+        "status": "completed",
+        "conclusion": "cancelled",
+        "number": 7,
+        "started_at": "2026-10-21T10:39:23Z",
+        "completed_at": "2026-10-21T12:09:02Z"
+      },
+      "smoke_steps": [
+        {
+          "name": "Smoke test staged artifact with Cargo",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 9,
+          "started_at": "2026-10-21T12:09:02Z",
+          "completed_at": "2026-10-21T12:09:02Z"
+        }
+      ],
+      "emitted_errors": [
+        {
+          "line": 7875,
+          "text": "2026-10-21T12:09:02.0830105Z ##[error]The operation was canceled."
+        }
+      ],
+      "last_progress": {
+        "line": 7874,
+        "text": "2026-10-21T12:09:00.3350228Z [14,957 / 15,123] Compiling src/compiler/wasm-inlining-into-js.cc; 7s disk-cache, linux-sandbox ... (30 actions, 4 running)"
+      },
+      "raw_sha256": "249440aa76fd1d106315624ea61c133d1e37ced2c623177c67b9ffa0cd6aaccc"
+    },
+    {
+      "job_id": 119171686975,
+      "name": "Build ptrcomp-sandbox x86_64-unknown-linux-gnu",
+      "conclusion": "cancelled",
+      "source_head": "48177153ad04605338c3a9a8dbd17defee9981bc",
+      "tested_merge": "3c32bedb07239b0cbdb38d100836258165cae633",
+      "build_step": {
+        "name": "Build Bazel V8 release pair",
+        "status": "completed",
+        "conclusion": "cancelled",
+        "number": 7,
+        "started_at": "2026-10-21T11:00:50Z",
+        "completed_at": "2026-10-21T12:30:45Z"
+      },
+      "smoke_steps": [
+        {
+          "name": "Smoke test staged artifact with Cargo",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 9,
+          "started_at": "2026-10-21T12:30:45Z",
+          "completed_at": "2026-10-21T12:30:45Z"
+        }
+      ],
+      "emitted_errors": [
+        {
+          "line": 7357,
+          "text": "2026-10-21T12:30:45.1083923Z ##[error]The operation was canceled."
+        }
+      ],
+      "last_progress": {
+        "line": 7356,
+        "text": "2026-10-21T12:30:44.4007849Z [13,191 / 14,383] Compiling src/heap/heap.cc [for tool]; 26s disk-cache, linux-sandbox ... (30 actions, 5 running)"
+      },
+      "raw_sha256": "8104c9e87674528e8a6336f117f0286322e2e25700cf6461fcddb8d62afd2844"
+    },
+    {
+      "job_id": 119171686990,
+      "name": "Build ptrcomp-sandbox aarch64-unknown-linux-musl",
+      "conclusion": "cancelled",
+      "source_head": "48177153ad04605338c3a9a8dbd17defee9981bc",
+      "tested_merge": "3c32bedb07239b0cbdb38d100836258165cae633",
+      "build_step": {
+        "name": "Build Bazel V8 release pair",
+        "status": "completed",
+        "conclusion": "cancelled",
+        "number": 7,
+        "started_at": "2026-10-21T10:41:30Z",
+        "completed_at": "2026-10-21T12:11:31Z"
+      },
+      "smoke_steps": [
+        {
+          "name": "Smoke test staged artifact with Cargo",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 9,
+          "started_at": "2026-10-21T12:11:31Z",
+          "completed_at": "2026-10-21T12:11:31Z"
+        }
+      ],
+      "emitted_errors": [
+        {
+          "line": 7939,
+          "text": "2026-10-21T12:11:31.0919313Z ##[error]The operation was canceled."
+        }
+      ],
+      "last_progress": {
+        "line": 7938,
+        "text": "2026-10-21T12:11:30.9174542Z [15,892 / 16,450] Compiling src/compiler/turboshaft/turbolev-frontend-pipeline.cc; 22s disk-cache, linux-sandbox ... (30 actions, 4 running)"
+      },
+      "raw_sha256": "0877c9c92ba898aab4c02ea901c7d2db89396fbf790fa8ca7098c7ac1f7e08a8"
+    },
+    {
+      "job_id": 119171687001,
+      "name": "Build release aarch64-apple-darwin",
+      "conclusion": "cancelled",
+      "source_head": "48177153ad04605338c3a9a8dbd17defee9981bc",
+      "tested_merge": "3c32bedb07239b0cbdb38d100836258165cae633",
+      "build_step": {
+        "name": "Build Bazel V8 release pair",
+        "status": "completed",
+        "conclusion": "cancelled",
+        "number": 7,
+        "started_at": "2026-10-21T10:34:38Z",
+        "completed_at": "2026-10-21T12:04:28Z"
+      },
+      "smoke_steps": [
+        {
+          "name": "Smoke test staged artifact with Cargo",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 9,
+          "started_at": "2026-10-21T12:04:28Z",
+          "completed_at": "2026-10-21T12:04:28Z"
+        }
+      ],
+      "emitted_errors": [
+        {
+          "line": 7754,
+          "text": "2026-10-21T12:04:28.4023590Z ##[error]The operation was canceled."
+        }
+      ],
+      "last_progress": {
+        "line": 7753,
+        "text": "2026-10-21T12:04:26.3620730Z [13,978 / 14,794] Compiling src/compiler/backend/instruction.cc [for tool]; 10s disk-cache, darwin-sandbox ... (30 actions, 3 running)"
+      },
+      "raw_sha256": "c10b615e6aa8a460bf288e33572083cc4359aac251d7bf9e33b085482a28806a"
+    },
+    {
+      "job_id": 119171687003,
+      "name": "Build ptrcomp-sandbox aarch64-unknown-linux-gnu",
+      "conclusion": "cancelled",
+      "source_head": "48177153ad04605338c3a9a8dbd17defee9981bc",
+      "tested_merge": "3c32bedb07239b0cbdb38d100836258165cae633",
+      "build_step": {
+        "name": "Build Bazel V8 release pair",
+        "status": "completed",
+        "conclusion": "cancelled",
+        "number": 7,
+        "started_at": "2026-10-21T10:39:01Z",
+        "completed_at": "2026-10-21T12:09:01Z"
+      },
+      "smoke_steps": [
+        {
+          "name": "Smoke test staged artifact with Cargo",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 9,
+          "started_at": "2026-10-21T12:09:01Z",
+          "completed_at": "2026-10-21T12:09:01Z"
+        }
+      ],
+      "emitted_errors": [
+        {
+          "line": 7827,
+          "text": "2026-10-21T12:09:01.8783461Z ##[error]The operation was canceled."
+        }
+      ],
+      "last_progress": {
+        "line": 7826,
+        "text": "2026-10-21T12:08:59.1005676Z [14,811 / 15,123] Compiling src/compiler/linkage.cc; 7s disk-cache, linux-sandbox ... (30 actions, 4 running)"
+      },
+      "raw_sha256": "367cdae93548e2da3317e786dc7681ceb91683654d1009eb54243b0e33a379fc"
+    },
+    {
+      "job_id": 119171687082,
+      "name": "Build release x86_64-unknown-linux-musl",
+      "conclusion": "cancelled",
+      "source_head": "48177153ad04605338c3a9a8dbd17defee9981bc",
+      "tested_merge": "3c32bedb07239b0cbdb38d100836258165cae633",
+      "build_step": {
+        "name": "Build Bazel V8 release pair",
+        "status": "completed",
+        "conclusion": "cancelled",
+        "number": 7,
+        "started_at": "2026-10-21T11:06:33Z",
+        "completed_at": "2026-10-21T12:36:31Z"
+      },
+      "smoke_steps": [
+        {
+          "name": "Smoke test staged artifact with Cargo",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 9,
+          "started_at": "2026-10-21T12:36:31Z",
+          "completed_at": "2026-10-21T12:36:31Z"
+        }
+      ],
+      "emitted_errors": [
+        {
+          "line": 7767,
+          "text": "2026-10-21T12:36:31.7585278Z ##[error]The operation was canceled."
+        }
+      ],
+      "last_progress": {
+        "line": 7766,
+        "text": "2026-10-21T12:36:27.7271965Z [14,910 / 15,709] Compiling src/compiler/linkage.cc; 10s disk-cache, linux-sandbox ... (30 actions, 4 running)"
+      },
+      "raw_sha256": "5d300a3148483f90487bb7128d80abea4d2cd6db20245006312eda3f157d2415"
+    }
+  ]
+}

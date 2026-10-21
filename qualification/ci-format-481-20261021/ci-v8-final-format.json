@@ -1,0 +1,66 @@
+{
+  "command": [
+    "just",
+    "fmt",
+    "--base",
+    "8dab8384b4a31fd8604b477078b774aef2298d83"
+  ],
+  "cwd": "/workspace/scratch/337c309bc660/combined-durability-work/codex-rs",
+  "started_at_utc": "2026-10-21T11:59:06.630906+00:00",
+  "head_at_start": "8dab8384b4a31fd8604b477078b774aef2298d83",
+  "source_hashes_before": {
+    ".github/scripts/test_v8_cargo_smoke.py": {
+      "bytes": 4925,
+      "sha256": "c249e11588619f42b623eab07aefbaaf38cf05f5c580e787437b32e7a095b2ee"
+    },
+    "MODULE.bazel.lock": {
+      "bytes": 1745183,
+      "sha256": "f6c5dd1f2a09c66d6a4c387ff40d11afb7ed2309e541dcb6bff9ad5f410996c3"
+    },
+    "codex-rs/Cargo.lock": {
+      "bytes": 413681,
+      "sha256": "4a89de595739e85d8d0e01944914c62217287d2c7daccee8e6d85b1cb4afc941"
+    }
+  },
+  "limits": {
+    "cargo_jobs": 2,
+    "dev_debug": 0,
+    "test_debug": 0,
+    "incremental": 0,
+    "bazel_jobs": 2,
+    "bazel_xmx_mib": 1536
+  },
+  "memory_events_before": "low 0\nhigh 0\nmax 982816\noom 0\noom_kill 0\noom_group_kill 0\n",
+  "pid": 171949,
+  "exit_code": 0,
+  "elapsed_seconds": 2.0031150880022324,
+  "finished_at_utc": "2026-10-21T11:59:08.640743+00:00",
+  "source_hashes_after": {
+    ".github/scripts/test_v8_cargo_smoke.py": {
+      "bytes": 4925,
+      "sha256": "c249e11588619f42b623eab07aefbaaf38cf05f5c580e787437b32e7a095b2ee"
+    },
+    "MODULE.bazel.lock": {
+      "bytes": 1745183,
+      "sha256": "f6c5dd1f2a09c66d6a4c387ff40d11afb7ed2309e541dcb6bff9ad5f410996c3"
+    },
+    "codex-rs/Cargo.lock": {
+      "bytes": 413681,
+      "sha256": "4a89de595739e85d8d0e01944914c62217287d2c7daccee8e6d85b1cb4afc941"
+    }
+  },
+  "peak_cgroup_bytes": {
+    "anon": 127811584,
+    "file": 7261904896,
+    "kernel": 943292416
+  },
+  "minimum_free_bytes": 1457922048,
+  "memory_events_after": "low 0\nhigh 0\nmax 982816\noom 0\noom_kill 0\noom_group_kill 0\n",
+  "raw_log": {
+    "file": "ci-v8-final-format.log.xz",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "compressed_bytes": 32,
+    "compressed_sha256": "0040f94d11d0039505328a90b2ff48968db873e9e7967307631bf40ef5679275"
+  }
+}

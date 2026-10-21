@@ -1,0 +1,84 @@
+import datetime
+import hashlib
+import json
+import lzma
+import os
+from pathlib import Path
+import subprocess
+import sys
+import time
+
+root = Path('/workspace/scratch/337c309bc660')
+repo = root / 'combined-durability-work'
+label, working, *command = sys.argv[1:]
+assert label and '/' not in label
+assert working in ('root', 'rust')
+evidence = repo / 'qualification/combined-durability-20261021'
+evidence.mkdir(parents=True, exist_ok=True)
+native = root / 'shared-tools/native-root'
+v8 = root / 'shared-tools/v8-native/rusty_v8'
+env = dict(os.environ)
+env.update({
+    'PATH': f'{root}/dependency-cache/bin:{native}/usr/bin:{root}/shared-tools/rust195/bin:{root}/shared-tools/bin:/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin:/usr/local/bin:/usr/bin:/bin',
+    'LD_LIBRARY_PATH': f'{native}/usr/lib/x86_64-linux-gnu',
+    'PKG_CONFIG_PATH': f'{native}/usr/lib/x86_64-linux-gnu/pkgconfig',
+    'PKG_CONFIG_SYSROOT_DIR': str(native),
+    'OPENSSL_DIR': f'{native}/usr',
+    'OPENSSL_LIB_DIR': f'{native}/usr/lib/x86_64-linux-gnu',
+    'OPENSSL_STATIC': '1',
+    'CARGO_HOME': str(root / 'dependency-cache/cargo-home'),
+    'CARGO_TARGET_DIR': str(root / 'dependency-cache/target'),
+    'CARGO_BUILD_JOBS': '2',
+    'CARGO_NET_GIT_FETCH_WITH_CLI': 'true',
+    'CARGO_PROFILE_DEV_DEBUG': '0',
+    'CARGO_PROFILE_TEST_DEBUG': '0',
+    'CARGO_INCREMENTAL': '0',
+    'UV_CACHE_DIR': str(root / 'dependency-cache/uv'),
+    'RUSTY_V8_ARCHIVE': str(v8 / 'librusty_v8_ptrcomp_sandbox_release_x86_64-unknown-linux-gnu.a.gz'),
+    'RUSTY_V8_SRC_BINDING_PATH': str(v8 / 'src_binding_ptrcomp_sandbox_release_x86_64-unknown-linux-gnu.rs'),
+})
+cwd = repo if working == 'root' else repo / 'codex-rs'
+paths = subprocess.check_output(['git', 'diff', '--name-only', 'HEAD'], cwd=repo, text=True).splitlines()
+paths += ['codex-rs/Cargo.lock', 'MODULE.bazel.lock']
+paths = sorted(set(paths))
+def hashes():
+    return {p: {'bytes': len((repo/p).read_bytes()), 'sha256': hashlib.sha256((repo/p).read_bytes()).hexdigest()} for p in paths if (repo/p).is_file()}
+def memory():
+    values = dict(line.split() for line in Path('/sys/fs/cgroup/memory.stat').read_text().splitlines())
+    return {key: int(values[key]) for key in ('anon', 'file', 'kernel')}
+receipt = {
+    'command': command,
+    'cwd': str(cwd),
+    'started_at_utc': datetime.datetime.now(datetime.timezone.utc).isoformat(),
+    'head_at_start': subprocess.check_output(['git', 'rev-parse', 'HEAD'], cwd=repo, text=True).strip(),
+    'source_hashes_before': hashes(),
+    'limits': {'cargo_jobs': 2, 'dev_debug': 0, 'test_debug': 0, 'incremental': 0, 'bazel_jobs': 2, 'bazel_xmx_mib': 1536},
+    'memory_events_before': Path('/sys/fs/cgroup/memory.events').read_text(),
+}
+receipt_path = evidence / f'{label}.json'
+log_path = evidence / f'{label}.log'
+receipt_path.write_text(json.dumps(receipt, indent=2) + '\n')
+started = time.monotonic()
+peak = memory()
+minimum_free = 2**63
+with log_path.open('wb') as log:
+    process = subprocess.Popen(command, cwd=cwd, env=env, stdout=log, stderr=subprocess.STDOUT)
+    receipt['pid'] = process.pid
+    receipt_path.write_text(json.dumps(receipt, indent=2) + '\n')
+    print(json.dumps({'label': label, 'pid': process.pid, 'command': command}), flush=True)
+    while process.poll() is None:
+        current = memory()
+        peak = {key: max(peak[key], current[key]) for key in peak}
+        disk = os.statvfs(repo)
+        minimum_free = min(minimum_free, disk.f_bavail * disk.f_frsize)
+        time.sleep(2)
+    result = process.wait()
+raw = log_path.read_bytes()
+packed = lzma.compress(raw, preset=1)
+assert lzma.decompress(packed) == raw
+packed_path = log_path.with_suffix('.log.xz')
+packed_path.write_bytes(packed)
+receipt.update(exit_code=result, elapsed_seconds=time.monotonic()-started, finished_at_utc=datetime.datetime.now(datetime.timezone.utc).isoformat(), source_hashes_after=hashes(), peak_cgroup_bytes=peak, minimum_free_bytes=minimum_free, memory_events_after=Path('/sys/fs/cgroup/memory.events').read_text(), raw_log={'file': packed_path.name, 'bytes': len(raw), 'sha256': hashlib.sha256(raw).hexdigest(), 'compressed_bytes': len(packed), 'compressed_sha256': hashlib.sha256(packed).hexdigest()})
+receipt_path.write_text(json.dumps(receipt, indent=2) + '\n')
+print(json.dumps({key: receipt[key] for key in ('exit_code', 'elapsed_seconds', 'peak_cgroup_bytes', 'minimum_free_bytes', 'raw_log')}), flush=True)
+raise SystemExit(result)

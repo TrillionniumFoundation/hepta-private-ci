@@ -3532,6 +3532,7 @@ dependencies = [
  "codex-hepta-contracts",
  "codex-hepta-types",
  "codex-http-client",
+ "codex-utils-path",
  "ed25519-dalek",
  "http 1.5.0",
  "pretty_assertions",
@@ -3790,6 +3791,7 @@ version = "0.0.0"
 dependencies = [
  "codex-hepta-types",
  "ed25519-dalek",
+ "libc",
  "pretty_assertions",
 ]
 
@@ -3903,6 +3905,7 @@ dependencies = [
  "codex-hepta-types",
  "codex-state",
  "codex-utils-absolute-path",
+ "codex-utils-path",
  "ed25519-dalek",
  "futures",
  "libc",
@@ -5138,6 +5141,7 @@ dependencies = [
  "codex-history",
  "codex-protocol",
  "codex-utils-absolute-path",
+ "codex-utils-path",
  "libc",
  "libsqlite3-sys",
  "log",

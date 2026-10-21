@@ -1,0 +1,1393 @@
+{
+  "architecture-source-481.zip": {
+    "candidate": {
+      "base_sha": "57636c7a17d4847eb5fd712409816fd040b4e90f",
+      "lane": "source-head",
+      "native_execution_required": true,
+      "requires_source_head_success": false,
+      "schema_version": 1,
+      "source_sha": "48177153ad04605338c3a9a8dbd17defee9981bc",
+      "source_tree": "22e14fcd85f7a3f2c5dc8f3a1bdb17efc81b4d62",
+      "tested_sha": "48177153ad04605338c3a9a8dbd17defee9981bc",
+      "tested_tree": "22e14fcd85f7a3f2c5dc8f3a1bdb17efc81b4d62"
+    },
+    "commands": [
+      {
+        "command": [
+          "cargo",
+          "test",
+          "--locked",
+          "--manifest-path",
+          "codex-rs/Cargo.toml",
+          "-p",
+          "codex-hepta-agentd",
+          "browser_servo"
+        ],
+        "status": "passed",
+        "exit_code": 0,
+        "observed_passed_tests": 3,
+        "observed_failed_tests": 0,
+        "tested_sha": "48177153ad04605338c3a9a8dbd17defee9981bc",
+        "base_sha": "57636c7a17d4847eb5fd712409816fd040b4e90f",
+        "lane": "source-head",
+        "minimum_tests": 1,
+        "log_file": "browser.json.cbd5d77b756b4a8bb808399867a2906d.log",
+        "log_sha256": "31836556ba000ecf8047314eebb4a1a3e25bce54656802d0f0e28d2b60b2fdfb",
+        "log_bytes": 50150,
+        "before": {
+          "commit": "48177153ad04605338c3a9a8dbd17defee9981bc",
+          "dirty": false,
+          "parents": [
+            "21c53428e40caaa8e60b815d7099e89fffa83259"
+          ],
+          "tree": "22e14fcd85f7a3f2c5dc8f3a1bdb17efc81b4d62"
+        },
+        "after": {
+          "commit": "48177153ad04605338c3a9a8dbd17defee9981bc",
+          "dirty": false,
+          "parents": [
+            "21c53428e40caaa8e60b815d7099e89fffa83259"
+          ],
+          "tree": "22e14fcd85f7a3f2c5dc8f3a1bdb17efc81b4d62"
+        }
+      },
+      {
+        "command": [
+          "python3",
+          "scripts/hepta-module-docs.py",
+          "refresh-derived",
+          "--check"
+        ],
+        "status": "passed",
+        "exit_code": 0,
+        "observed_passed_tests": 0,
+        "observed_failed_tests": 0,
+        "tested_sha": "48177153ad04605338c3a9a8dbd17defee9981bc",
+        "base_sha": "57636c7a17d4847eb5fd712409816fd040b4e90f",
+        "lane": "source-head",
+        "minimum_tests": 0,
+        "log_file": "derived.json.3d13d841a81448d2ba760b09777047a9.log",
+        "log_sha256": "dd338ae2d65000941c4a2c3afe356096d35c98d69ca23ec86c7b98ba0490ab1f",
+        "log_bytes": 42,
+        "before": {
+          "commit": "48177153ad04605338c3a9a8dbd17defee9981bc",
+          "dirty": false,
+          "parents": [
+            "21c53428e40caaa8e60b815d7099e89fffa83259"
+          ],
+          "tree": "22e14fcd85f7a3f2c5dc8f3a1bdb17efc81b4d62"
+        },
+        "after": {
+          "commit": "48177153ad04605338c3a9a8dbd17defee9981bc",
+          "dirty": false,
+          "parents": [
+            "21c53428e40caaa8e60b815d7099e89fffa83259"
+          ],
+          "tree": "22e14fcd85f7a3f2c5dc8f3a1bdb17efc81b4d62"
+        }
+      },
+      {
+        "command": [
+          "cargo",
+          "test",
+          "--locked",
+          "--manifest-path",
+          "codex-rs/Cargo.toml",
+          "-p",
+          "codex-hepta-intelligence-eval",
+          "closure"
+        ],
+        "status": "passed",
+        "exit_code": 0,
+        "observed_passed_tests": 17,
+        "observed_failed_tests": 0,
+        "tested_sha": "48177153ad04605338c3a9a8dbd17defee9981bc",
+        "base_sha": "57636c7a17d4847eb5fd712409816fd040b4e90f",
+        "lane": "source-head",
+        "minimum_tests": 1,
+        "log_file": "eval.json.bb47f2cfc5834c8eba30d25fc066cd44.log",
+        "log_sha256": "766065368777eff529f7bebde9aea0663b1f50bf53f6a134f9e5391c9eb74ee2",
+        "log_bytes": 2432,
+        "before": {
+          "commit": "48177153ad04605338c3a9a8dbd17defee9981bc",
+          "dirty": false,
+          "parents": [
+            "21c53428e40caaa8e60b815d7099e89fffa83259"
+          ],
+          "tree": "22e14fcd85f7a3f2c5dc8f3a1bdb17efc81b4d62"
+        },
+        "after": {
+          "commit": "48177153ad04605338c3a9a8dbd17defee9981bc",
+          "dirty": false,
+          "parents": [
+            "21c53428e40caaa8e60b815d7099e89fffa83259"
+          ],
+          "tree": "22e14fcd85f7a3f2c5dc8f3a1bdb17efc81b4d62"
+        }
+      },
+      {
+        "command": [
+          "cargo",
+          "test",
+          "--locked",
+          "--manifest-path",
+          "codex-rs/Cargo.toml",
+          "-p",
+          "codex-hepta-contracts",
+          "--test",
+          "final_use_linearization"
+        ],
+        "status": "passed",
+        "exit_code": 0,
+        "observed_passed_tests": 1,
+        "observed_failed_tests": 0,
+        "tested_sha": "48177153ad04605338c3a9a8dbd17defee9981bc",
+        "base_sha": "57636c7a17d4847eb5fd712409816fd040b4e90f",
+        "lane": "source-head",
+        "minimum_tests": 1,
+        "log_file": "final-use.json.f5184f059eed4ebbaeff6652302515b5.log",
+        "log_sha256": "f5bd86b5e9cc0a0f830f46de13a94f4cfc6e7b2d6d400180933fe87f355df14f",
+        "log_bytes": 1346,
+        "before": {
+          "commit": "48177153ad04605338c3a9a8dbd17defee9981bc",
+          "dirty": false,
+          "parents": [
+            "21c53428e40caaa8e60b815d7099e89fffa83259"
+          ],
+          "tree": "22e14fcd85f7a3f2c5dc8f3a1bdb17efc81b4d62"
+        },
+        "after": {
+          "commit": "48177153ad04605338c3a9a8dbd17defee9981bc",
+          "dirty": false,
+          "parents": [
+            "21c53428e40caaa8e60b815d7099e89fffa83259"
+          ],
+          "tree": "22e14fcd85f7a3f2c5dc8f3a1bdb17efc81b4d62"
+        }
+      },
+      {
+        "command": [
+          "cargo",
+          "test",
+          "--locked",
+          "--manifest-path",
+          "codex-rs/Cargo.toml",
+          "-p",
+          "codex-hepta-control-plane",
+          "stateful_feature_history_replace_failure_retire_preserves_effect_idempotency"
+        ],
+        "status": "passed",
+        "exit_code": 0,
+        "observed_passed_tests": 1,
+        "observed_failed_tests": 0,
+        "tested_sha": "48177153ad04605338c3a9a8dbd17defee9981bc",
+        "base_sha": "57636c7a17d4847eb5fd712409816fd040b4e90f",
+        "lane": "source-head",
+        "minimum_tests": 1,
+        "log_file": "full-lifecycle.json.4361cd2b0796464786d780ce21e88843.log",
+        "log_sha256": "ec3a8c593bf5face09ebe3f60affefac9bb0f0610b7109e51101d0b48c604cb5",
+        "log_bytes": 1140,
+        "before": {
+          "commit": "48177153ad04605338c3a9a8dbd17defee9981bc",
+          "dirty": false,
+          "parents": [
+            "21c53428e40caaa8e60b815d7099e89fffa83259"
+          ],
+          "tree": "22e14fcd85f7a3f2c5dc8f3a1bdb17efc81b4d62"
+        },
+        "after": {
+          "commit": "48177153ad04605338c3a9a8dbd17defee9981bc",
+          "dirty": false,
+          "parents": [
+            "21c53428e40caaa8e60b815d7099e89fffa83259"
+          ],
+          "tree": "22e14fcd85f7a3f2c5dc8f3a1bdb17efc81b4d62"
+        }
+      },
+      {
+        "command": [
+          "cargo",
+          "test",
+          "--locked",
+          "--manifest-path",
+          "codex-rs/Cargo.toml",
+          "-p",
+          "codex-hepta-infer-core",
+          "bounded_single_writer_history_emits_append_update_recovery_memory_and_disk_curve",
+          "--",
+          "--ignored",
+          "--nocapture",
+          "--test-threads=1"
+        ],
+        "status": "passed",
+        "exit_code": 0,
+        "observed_passed_tests": 1,
+        "observed_failed_tests": 0,
+        "tested_sha": "48177153ad04605338c3a9a8dbd17defee9981bc",
+        "base_sha": "57636c7a17d4847eb5fd712409816fd040b4e90f",
+        "lane": "source-head",
+        "minimum_tests": 1,
+        "log_file": "inference-scale.json.729e6eca57534253b1367c5228b110b6.log",
+        "log_sha256": "587f108874a9b70dfd4f611afa1cb0535dcaf4d6c72cf6b3d8432b301e97a762",
+        "log_bytes": 1660,
+        "before": {
+          "commit": "48177153ad04605338c3a9a8dbd17defee9981bc",
+          "dirty": false,
+          "parents": [
+            "21c53428e40caaa8e60b815d7099e89fffa83259"
+          ],
+          "tree": "22e14fcd85f7a3f2c5dc8f3a1bdb17efc81b4d62"
+        },
+        "after": {
+          "commit": "48177153ad04605338c3a9a8dbd17defee9981bc",
+          "dirty": false,
+          "parents": [
+            "21c53428e40caaa8e60b815d7099e89fffa83259"
+          ],
+          "tree": "22e14fcd85f7a3f2c5dc8f3a1bdb17efc81b4d62"
+        }
+      },
+      {
+        "command": [
+          "cargo",
+          "test",
+          "--locked",
+          "--manifest-path",
+          "codex-rs/Cargo.toml",
+          "-p",
+          "codex-hepta-infer-core",
+          "-p",
+          "codex-hepta-types"
+        ],
+        "status": "passed",
+        "exit_code": 0,
+        "observed_passed_tests": 82,
+        "observed_failed_tests": 0,
+        "tested_sha": "48177153ad04605338c3a9a8dbd17defee9981bc",
+        "base_sha": "57636c7a17d4847eb5fd712409816fd040b4e90f",
+        "lane": "source-head",
+        "minimum_tests": 1,
+        "log_file": "inference.json.e094a32e32454d6d84a583aa4e347d88.log",
+        "log_sha256": "e2ecfaabb55c1ca05e051781eadfe0aec5257bd3e258b08b8c425ac4346d29fc",
+        "log_bytes": 9163,
+        "before": {
+          "commit": "48177153ad04605338c3a9a8dbd17defee9981bc",
+          "dirty": false,
+          "parents": [
+            "21c53428e40caaa8e60b815d7099e89fffa83259"
+          ],
+          "tree": "22e14fcd85f7a3f2c5dc8f3a1bdb17efc81b4d62"
+        },
+        "after": {
+          "commit": "48177153ad04605338c3a9a8dbd17defee9981bc",
+          "dirty": false,
+          "parents": [
+            "21c53428e40caaa8e60b815d7099e89fffa83259"
+          ],
+          "tree": "22e14fcd85f7a3f2c5dc8f3a1bdb17efc81b4d62"
+        }
+      },
+      {
+        "command": [
+          "cargo",
+          "test",
+          "--locked",
+          "--manifest-path",
+          "codex-rs/Cargo.toml",
+          "-p",
+          "codex-hepta-learning-ledger"
+        ],
+        "status": "passed",
+        "exit_code": 0,
+        "observed_passed_tests": 120,
+        "observed_failed_tests": 0,
+        "tested_sha": "48177153ad04605338c3a9a8dbd17defee9981bc",
+        "base_sha": "57636c7a17d4847eb5fd712409816fd040b4e90f",
+        "lane": "source-head",
+        "minimum_tests": 1,
+        "log_file": "ledger.json.46f39619dffb44a8acbc382f762928ff.log",
+        "log_sha256": "f92c2294f6f58099a27485ffed3b91f0a4b5e6752a73514cdafcf7dbe92a8a77",
+        "log_bytes": 11541,
+        "before": {
+          "commit": "48177153ad04605338c3a9a8dbd17defee9981bc",
+          "dirty": false,
+          "parents": [
+            "21c53428e40caaa8e60b815d7099e89fffa83259"
+          ],
+          "tree": "22e14fcd85f7a3f2c5dc8f3a1bdb17efc81b4d62"
+        },
+        "after": {
+          "commit": "48177153ad04605338c3a9a8dbd17defee9981bc",
+          "dirty": false,
+          "parents": [
+            "21c53428e40caaa8e60b815d7099e89fffa83259"
+          ],
+          "tree": "22e14fcd85f7a3f2c5dc8f3a1bdb17efc81b4d62"
+        }
+      },
+      {
+        "command": [
+          "cargo",
+          "test",
+          "--locked",
+          "--manifest-path",
+          "codex-rs/Cargo.toml",
+          "-p",
+          "codex-hepta-control-plane",
+          "migration_failure_rolls_back_and_preserves_predecessor"
+        ],
+        "status": "passed",
+        "exit_code": 0,
+        "observed_passed_tests": 1,
+        "observed_failed_tests": 0,
+        "tested_sha": "48177153ad04605338c3a9a8dbd17defee9981bc",
+        "base_sha": "57636c7a17d4847eb5fd712409816fd040b4e90f",
+        "lane": "source-head",
+        "minimum_tests": 1,
+        "log_file": "migration-rollback.json.5460f089606744ec8befaf47af167aaf.log",
+        "log_sha256": "fe0a0c58a4fab0dd9a285ccb294e607ffd24d85529f122fea98647f0f3f23a6b",
+        "log_bytes": 1118,
+        "before": {
+          "commit": "48177153ad04605338c3a9a8dbd17defee9981bc",
+          "dirty": false,
+          "parents": [
+            "21c53428e40caaa8e60b815d7099e89fffa83259"
+          ],
+          "tree": "22e14fcd85f7a3f2c5dc8f3a1bdb17efc81b4d62"
+        },
+        "after": {
+          "commit": "48177153ad04605338c3a9a8dbd17defee9981bc",
+          "dirty": false,
+          "parents": [
+            "21c53428e40caaa8e60b815d7099e89fffa83259"
+          ],
+          "tree": "22e14fcd85f7a3f2c5dc8f3a1bdb17efc81b4d62"
+        }
+      },
+      {
+        "command": [
+          "cargo",
+          "test",
+          "--locked",
+          "--manifest-path",
+          "codex-rs/Cargo.toml",
+          "-p",
+          "codex-hepta-control-plane",
+          "migration_callback_runs_before_successor_publication"
+        ],
+        "status": "passed",
+        "exit_code": 0,
+        "observed_passed_tests": 1,
+        "observed_failed_tests": 0,
+        "tested_sha": "48177153ad04605338c3a9a8dbd17defee9981bc",
+        "base_sha": "57636c7a17d4847eb5fd712409816fd040b4e90f",
+        "lane": "source-head",
+        "minimum_tests": 1,
+        "log_file": "migration.json.408aa77704b540098f4fb359353f7b8c.log",
+        "log_sha256": "7d0b7b76387d36f761dffb5122f585756dae877263f60ce9d4cbbf0d24729d26",
+        "log_bytes": 1116,
+        "before": {
+          "commit": "48177153ad04605338c3a9a8dbd17defee9981bc",
+          "dirty": false,
+          "parents": [
+            "21c53428e40caaa8e60b815d7099e89fffa83259"
+          ],
+          "tree": "22e14fcd85f7a3f2c5dc8f3a1bdb17efc81b4d62"
+        },
+        "after": {
+          "commit": "48177153ad04605338c3a9a8dbd17defee9981bc",
+          "dirty": false,
+          "parents": [
+            "21c53428e40caaa8e60b815d7099e89fffa83259"
+          ],
+          "tree": "22e14fcd85f7a3f2c5dc8f3a1bdb17efc81b4d62"
+        }
+      },
+      {
+        "command": [
+          "python3",
+          "-m",
+          "unittest",
+          "-v",
+          "scripts.test_hepta_objective_contracts"
+        ],
+        "status": "passed",
+        "exit_code": 0,
+        "observed_passed_tests": 2,
+        "observed_failed_tests": 0,
+        "tested_sha": "48177153ad04605338c3a9a8dbd17defee9981bc",
+        "base_sha": "57636c7a17d4847eb5fd712409816fd040b4e90f",
+        "lane": "source-head",
+        "minimum_tests": 1,
+        "log_file": "objective-contract.json.e5debd2129a348179ebc55244d2010ea.log",
+        "log_sha256": "07b8a240c6e7078c270ef26db5b3fe11b6cab789704e7da772b8e932e7a0a8ab",
+        "log_bytes": 472,
+        "before": {
+          "commit": "48177153ad04605338c3a9a8dbd17defee9981bc",
+          "dirty": false,
+          "parents": [
+            "21c53428e40caaa8e60b815d7099e89fffa83259"
+          ],
+          "tree": "22e14fcd85f7a3f2c5dc8f3a1bdb17efc81b4d62"
+        },
+        "after": {
+          "commit": "48177153ad04605338c3a9a8dbd17defee9981bc",
+          "dirty": false,
+          "parents": [
+            "21c53428e40caaa8e60b815d7099e89fffa83259"
+          ],
+          "tree": "22e14fcd85f7a3f2c5dc8f3a1bdb17efc81b4d62"
+        }
+      },
+      {
+        "command": [
+          "cargo",
+          "test",
+          "--locked",
+          "--manifest-path",
+          "codex-rs/Cargo.toml",
+          "-p",
+          "codex-hepta-objective"
+        ],
+        "status": "passed",
+        "exit_code": 0,
+        "observed_passed_tests": 61,
+        "observed_failed_tests": 0,
+        "tested_sha": "48177153ad04605338c3a9a8dbd17defee9981bc",
+        "base_sha": "57636c7a17d4847eb5fd712409816fd040b4e90f",
+        "lane": "source-head",
+        "minimum_tests": 1,
+        "log_file": "objective.json.c6d1ea90dbe545ef8197b5cb633d64b9.log",
+        "log_sha256": "ea46752a4496e58a61ec9fd0075cccfa3218dbd6549dcc690027903c71409ef2",
+        "log_bytes": 6339,
+        "before": {
+          "commit": "48177153ad04605338c3a9a8dbd17defee9981bc",
+          "dirty": false,
+          "parents": [
+            "21c53428e40caaa8e60b815d7099e89fffa83259"
+          ],
+          "tree": "22e14fcd85f7a3f2c5dc8f3a1bdb17efc81b4d62"
+        },
+        "after": {
+          "commit": "48177153ad04605338c3a9a8dbd17defee9981bc",
+          "dirty": false,
+          "parents": [
+            "21c53428e40caaa8e60b815d7099e89fffa83259"
+          ],
+          "tree": "22e14fcd85f7a3f2c5dc8f3a1bdb17efc81b4d62"
+        }
+      },
+      {
+        "command": [
+          "cargo",
+          "test",
+          "--locked",
+          "--manifest-path",
+          "codex-rs/Cargo.toml",
+          "-p",
+          "codex-hepta-automation",
+          "--test",
+          "operation_timer_fence"
+        ],
+        "status": "passed",
+        "exit_code": 0,
+        "observed_passed_tests": 3,
+        "observed_failed_tests": 0,
+        "tested_sha": "48177153ad04605338c3a9a8dbd17defee9981bc",
+        "base_sha": "57636c7a17d4847eb5fd712409816fd040b4e90f",
+        "lane": "source-head",
+        "minimum_tests": 1,
+        "log_file": "operation-timer-fence.json.dc503acabea34983beb77a7e744631fd.log",
+        "log_sha256": "ddcc0a7f7e9041369c38451da9895c01f9cf2671018bca576b5e4732cb0d2191",
+        "log_bytes": 1147,
+        "before": {
+          "commit": "48177153ad04605338c3a9a8dbd17defee9981bc",
+          "dirty": false,
+          "parents": [
+            "21c53428e40caaa8e60b815d7099e89fffa83259"
+          ],
+          "tree": "22e14fcd85f7a3f2c5dc8f3a1bdb17efc81b4d62"
+        },
+        "after": {
+          "commit": "48177153ad04605338c3a9a8dbd17defee9981bc",
+          "dirty": false,
+          "parents": [
+            "21c53428e40caaa8e60b815d7099e89fffa83259"
+          ],
+          "tree": "22e14fcd85f7a3f2c5dc8f3a1bdb17efc81b4d62"
+        }
+      },
+      {
+        "command": [
+          "cargo",
+          "test",
+          "--locked",
+          "--manifest-path",
+          "codex-rs/Cargo.toml",
+          "-p",
+          "codex-hepta-operations"
+        ],
+        "status": "passed",
+        "exit_code": 0,
+        "observed_passed_tests": 48,
+        "observed_failed_tests": 0,
+        "tested_sha": "48177153ad04605338c3a9a8dbd17defee9981bc",
+        "base_sha": "57636c7a17d4847eb5fd712409816fd040b4e90f",
+        "lane": "source-head",
+        "minimum_tests": 1,
+        "log_file": "operations.json.e3fd309752bc4d46ba0bb7107a0da7e8.log",
+        "log_sha256": "90cab3adad134d85fdc7fd8c89c3aba83a7854fa0b49b46f0a5de49581690971",
+        "log_bytes": 24038,
+        "before": {
+          "commit": "48177153ad04605338c3a9a8dbd17defee9981bc",
+          "dirty": false,
+          "parents": [
+            "21c53428e40caaa8e60b815d7099e89fffa83259"
+          ],
+          "tree": "22e14fcd85f7a3f2c5dc8f3a1bdb17efc81b4d62"
+        },
+        "after": {
+          "commit": "48177153ad04605338c3a9a8dbd17defee9981bc",
+          "dirty": false,
+          "parents": [
+            "21c53428e40caaa8e60b815d7099e89fffa83259"
+          ],
+          "tree": "22e14fcd85f7a3f2c5dc8f3a1bdb17efc81b4d62"
+        }
+      },
+      {
+        "command": [
+          "cargo",
+          "test",
+          "--locked",
+          "--manifest-path",
+          "codex-rs/Cargo.toml",
+          "-p",
+          "codex-hepta-agentd",
+          "--test",
+          "optional_module_restart",
+          "forty_first_service",
+          "--",
+          "--nocapture"
+        ],
+        "status": "passed",
+        "exit_code": 0,
+        "observed_passed_tests": 1,
+        "observed_failed_tests": 0,
+        "tested_sha": "48177153ad04605338c3a9a8dbd17defee9981bc",
+        "base_sha": "57636c7a17d4847eb5fd712409816fd040b4e90f",
+        "lane": "source-head",
+        "minimum_tests": 1,
+        "log_file": "optional-process-restart.json.50b2fa755d1442a09514eb09b4cfbb1a.log",
+        "log_sha256": "9d9fff9003d9f7035c5aa27ddf15758a1ea2ef3f6322c5f4d97fd4b4d3ef6441",
+        "log_bytes": 11388,
+        "before": {
+          "commit": "48177153ad04605338c3a9a8dbd17defee9981bc",
+          "dirty": false,
+          "parents": [
+            "21c53428e40caaa8e60b815d7099e89fffa83259"
+          ],
+          "tree": "22e14fcd85f7a3f2c5dc8f3a1bdb17efc81b4d62"
+        },
+        "after": {
+          "commit": "48177153ad04605338c3a9a8dbd17defee9981bc",
+          "dirty": false,
+          "parents": [
+            "21c53428e40caaa8e60b815d7099e89fffa83259"
+          ],
+          "tree": "22e14fcd85f7a3f2c5dc8f3a1bdb17efc81b4d62"
+        }
+      },
+      {
+        "command": [
+          "cargo",
+          "test",
+          "--locked",
+          "--manifest-path",
+          "codex-rs/Cargo.toml",
+          "-p",
+          "codex-hepta-prompt-optimizer"
+        ],
+        "status": "passed",
+        "exit_code": 0,
+        "observed_passed_tests": 32,
+        "observed_failed_tests": 0,
+        "tested_sha": "48177153ad04605338c3a9a8dbd17defee9981bc",
+        "base_sha": "57636c7a17d4847eb5fd712409816fd040b4e90f",
+        "lane": "source-head",
+        "minimum_tests": 1,
+        "log_file": "prompt.json.cc1bc9c0e1d14b1badf2ad73a89935c5.log",
+        "log_sha256": "74d38b66a47768fc02f53b8aaf6b391b7f09284afe163f320336a96a42a58810",
+        "log_bytes": 4034,
+        "before": {
+          "commit": "48177153ad04605338c3a9a8dbd17defee9981bc",
+          "dirty": false,
+          "parents": [
+            "21c53428e40caaa8e60b815d7099e89fffa83259"
+          ],
+          "tree": "22e14fcd85f7a3f2c5dc8f3a1bdb17efc81b4d62"
+        },
+        "after": {
+          "commit": "48177153ad04605338c3a9a8dbd17defee9981bc",
+          "dirty": false,
+          "parents": [
+            "21c53428e40caaa8e60b815d7099e89fffa83259"
+          ],
+          "tree": "22e14fcd85f7a3f2c5dc8f3a1bdb17efc81b4d62"
+        }
+      },
+      {
+        "command": [
+          "python3",
+          "-m",
+          "unittest",
+          "-v",
+          "scripts.tests.test_hepta_repository_controls",
+          "scripts.test_hepta_control_hardening",
+          "scripts.test_hepta_candidate_transport_workflow"
+        ],
+        "status": "passed",
+        "exit_code": 0,
+        "observed_passed_tests": 65,
+        "observed_failed_tests": 0,
+        "tested_sha": "48177153ad04605338c3a9a8dbd17defee9981bc",
+        "base_sha": "57636c7a17d4847eb5fd712409816fd040b4e90f",
+        "lane": "source-head",
+        "minimum_tests": 1,
+        "log_file": "repository-controls.json.b52627e35d0a4414a0f988b65eacd361.log",
+        "log_sha256": "4917c2ac2228f12cacfc3d201efb964a5b0c751a9c2558e9c75ea0b486de7edb",
+        "log_bytes": 10713,
+        "before": {
+          "commit": "48177153ad04605338c3a9a8dbd17defee9981bc",
+          "dirty": false,
+          "parents": [
+            "21c53428e40caaa8e60b815d7099e89fffa83259"
+          ],
+          "tree": "22e14fcd85f7a3f2c5dc8f3a1bdb17efc81b4d62"
+        },
+        "after": {
+          "commit": "48177153ad04605338c3a9a8dbd17defee9981bc",
+          "dirty": false,
+          "parents": [
+            "21c53428e40caaa8e60b815d7099e89fffa83259"
+          ],
+          "tree": "22e14fcd85f7a3f2c5dc8f3a1bdb17efc81b4d62"
+        }
+      },
+      {
+        "command": [
+          "cargo",
+          "test",
+          "--locked",
+          "--manifest-path",
+          "codex-rs/Cargo.toml",
+          "-p",
+          "codex-hepta-automation",
+          "--test",
+          "retirement_recovery"
+        ],
+        "status": "passed",
+        "exit_code": 0,
+        "observed_passed_tests": 4,
+        "observed_failed_tests": 0,
+        "tested_sha": "48177153ad04605338c3a9a8dbd17defee9981bc",
+        "base_sha": "57636c7a17d4847eb5fd712409816fd040b4e90f",
+        "lane": "source-head",
+        "minimum_tests": 1,
+        "log_file": "retirement.json.c6d9adbb09cc4c8196488f1c7b25c715.log",
+        "log_sha256": "d84ba3dfd90b179b106aca87716efad748b4833086b01048c5ee22acfdbf8c23",
+        "log_bytes": 2310,
+        "before": {
+          "commit": "48177153ad04605338c3a9a8dbd17defee9981bc",
+          "dirty": false,
+          "parents": [
+            "21c53428e40caaa8e60b815d7099e89fffa83259"
+          ],
+          "tree": "22e14fcd85f7a3f2c5dc8f3a1bdb17efc81b4d62"
+        },
+        "after": {
+          "commit": "48177153ad04605338c3a9a8dbd17defee9981bc",
+          "dirty": false,
+          "parents": [
+            "21c53428e40caaa8e60b815d7099e89fffa83259"
+          ],
+          "tree": "22e14fcd85f7a3f2c5dc8f3a1bdb17efc81b4d62"
+        }
+      },
+      {
+        "command": [
+          "python3",
+          "-m",
+          "unittest",
+          "discover",
+          "-v",
+          "-s",
+          "scripts",
+          "-p",
+          "test_hepta_ci_exec*.py"
+        ],
+        "status": "passed",
+        "exit_code": 0,
+        "observed_passed_tests": 54,
+        "observed_failed_tests": 0,
+        "tested_sha": "48177153ad04605338c3a9a8dbd17defee9981bc",
+        "base_sha": "57636c7a17d4847eb5fd712409816fd040b4e90f",
+        "lane": "source-head",
+        "minimum_tests": 0,
+        "log_file": "runner-tests.json.8988a9d8f1284371a9b38f77547d2714.log",
+        "log_sha256": "51ec786fc651623a650ccef50d661003ed0455667da7a7f1256daa86851ee78c",
+        "log_bytes": 8637,
+        "before": {
+          "commit": "48177153ad04605338c3a9a8dbd17defee9981bc",
+          "dirty": false,
+          "parents": [
+            "21c53428e40caaa8e60b815d7099e89fffa83259"
+          ],
+          "tree": "22e14fcd85f7a3f2c5dc8f3a1bdb17efc81b4d62"
+        },
+        "after": {
+          "commit": "48177153ad04605338c3a9a8dbd17defee9981bc",
+          "dirty": false,
+          "parents": [
+            "21c53428e40caaa8e60b815d7099e89fffa83259"
+          ],
+          "tree": "22e14fcd85f7a3f2c5dc8f3a1bdb17efc81b4d62"
+        }
+      },
+      {
+        "command": [
+          "cargo",
+          "test",
+          "--locked",
+          "--manifest-path",
+          "codex-rs/Cargo.toml",
+          "-p",
+          "codex-hepta-control-plane",
+          "module_runtime"
+        ],
+        "status": "passed",
+        "exit_code": 0,
+        "observed_passed_tests": 15,
+        "observed_failed_tests": 0,
+        "tested_sha": "48177153ad04605338c3a9a8dbd17defee9981bc",
+        "base_sha": "57636c7a17d4847eb5fd712409816fd040b4e90f",
+        "lane": "source-head",
+        "minimum_tests": 1,
+        "log_file": "runtime-module-abi.json.ef3b4acbea214e04bfb331ef05f1dbc1.log",
+        "log_sha256": "52175adf3cae71758b9bd960fe4ebccd021a6320b4e0bde0dbb31188c28d6655",
+        "log_bytes": 2581,
+        "before": {
+          "commit": "48177153ad04605338c3a9a8dbd17defee9981bc",
+          "dirty": false,
+          "parents": [
+            "21c53428e40caaa8e60b815d7099e89fffa83259"
+          ],
+          "tree": "22e14fcd85f7a3f2c5dc8f3a1bdb17efc81b4d62"
+        },
+        "after": {
+          "commit": "48177153ad04605338c3a9a8dbd17defee9981bc",
+          "dirty": false,
+          "parents": [
+            "21c53428e40caaa8e60b815d7099e89fffa83259"
+          ],
+          "tree": "22e14fcd85f7a3f2c5dc8f3a1bdb17efc81b4d62"
+        }
+      },
+      {
+        "command": [
+          "cargo",
+          "test",
+          "--locked",
+          "--manifest-path",
+          "codex-rs/Cargo.toml",
+          "-p",
+          "codex-hepta-fleet",
+          "module_catalog"
+        ],
+        "status": "passed",
+        "exit_code": 0,
+        "observed_passed_tests": 7,
+        "observed_failed_tests": 0,
+        "tested_sha": "48177153ad04605338c3a9a8dbd17defee9981bc",
+        "base_sha": "57636c7a17d4847eb5fd712409816fd040b4e90f",
+        "lane": "source-head",
+        "minimum_tests": 1,
+        "log_file": "runtime-module-catalog.json.1b6866275aae4be5b2851188de4db702.log",
+        "log_sha256": "7d4f6350f41fd831b6e0ab39e7320b499d000a737e1bb51b9c58261bf677d1c0",
+        "log_bytes": 2003,
+        "before": {
+          "commit": "48177153ad04605338c3a9a8dbd17defee9981bc",
+          "dirty": false,
+          "parents": [
+            "21c53428e40caaa8e60b815d7099e89fffa83259"
+          ],
+          "tree": "22e14fcd85f7a3f2c5dc8f3a1bdb17efc81b4d62"
+        },
+        "after": {
+          "commit": "48177153ad04605338c3a9a8dbd17defee9981bc",
+          "dirty": false,
+          "parents": [
+            "21c53428e40caaa8e60b815d7099e89fffa83259"
+          ],
+          "tree": "22e14fcd85f7a3f2c5dc8f3a1bdb17efc81b4d62"
+        }
+      },
+      {
+        "command": [
+          "cargo",
+          "test",
+          "--locked",
+          "--manifest-path",
+          "codex-rs/Cargo.toml",
+          "-p",
+          "codex-hepta-supervisor",
+          "module_runtime"
+        ],
+        "status": "passed",
+        "exit_code": 0,
+        "observed_passed_tests": 17,
+        "observed_failed_tests": 0,
+        "tested_sha": "48177153ad04605338c3a9a8dbd17defee9981bc",
+        "base_sha": "57636c7a17d4847eb5fd712409816fd040b4e90f",
+        "lane": "source-head",
+        "minimum_tests": 1,
+        "log_file": "runtime-module-supervisor.json.c217b5b06fa74a45b226ab91dd35f23c.log",
+        "log_sha256": "42a2f38304bee15bdfc1a14c68b821d461d4cb7de668604bd5b32aeaa61ac50d",
+        "log_bytes": 12098,
+        "before": {
+          "commit": "48177153ad04605338c3a9a8dbd17defee9981bc",
+          "dirty": false,
+          "parents": [
+            "21c53428e40caaa8e60b815d7099e89fffa83259"
+          ],
+          "tree": "22e14fcd85f7a3f2c5dc8f3a1bdb17efc81b4d62"
+        },
+        "after": {
+          "commit": "48177153ad04605338c3a9a8dbd17defee9981bc",
+          "dirty": false,
+          "parents": [
+            "21c53428e40caaa8e60b815d7099e89fffa83259"
+          ],
+          "tree": "22e14fcd85f7a3f2c5dc8f3a1bdb17efc81b4d62"
+        }
+      },
+      {
+        "command": [
+          "just",
+          "test",
+          "--locked",
+          "-p",
+          "codex-hepta-agentd",
+          "--lib",
+          "-E",
+          "test(runtime_tasks::tests)"
+        ],
+        "status": "passed",
+        "exit_code": 0,
+        "observed_passed_tests": 11,
+        "observed_failed_tests": 0,
+        "tested_sha": "48177153ad04605338c3a9a8dbd17defee9981bc",
+        "base_sha": "57636c7a17d4847eb5fd712409816fd040b4e90f",
+        "lane": "source-head",
+        "minimum_tests": 1,
+        "log_file": "runtime-tasks.json.0270fe8f14224bb78ab0bcebc6d10b20.log",
+        "log_sha256": "6d7817742fe73edd0299c47fa78bb5b3ba78d597045a951ab2a312f126461364",
+        "log_bytes": 70405,
+        "before": {
+          "commit": "48177153ad04605338c3a9a8dbd17defee9981bc",
+          "dirty": false,
+          "parents": [
+            "21c53428e40caaa8e60b815d7099e89fffa83259"
+          ],
+          "tree": "22e14fcd85f7a3f2c5dc8f3a1bdb17efc81b4d62"
+        },
+        "after": {
+          "commit": "48177153ad04605338c3a9a8dbd17defee9981bc",
+          "dirty": false,
+          "parents": [
+            "21c53428e40caaa8e60b815d7099e89fffa83259"
+          ],
+          "tree": "22e14fcd85f7a3f2c5dc8f3a1bdb17efc81b4d62"
+        }
+      },
+      {
+        "command": [
+          "python3",
+          "-m",
+          "unittest",
+          "-v",
+          "scripts.tests.test_hepta_ci_scope"
+        ],
+        "status": "passed",
+        "exit_code": 0,
+        "observed_passed_tests": 18,
+        "observed_failed_tests": 0,
+        "tested_sha": "48177153ad04605338c3a9a8dbd17defee9981bc",
+        "base_sha": "57636c7a17d4847eb5fd712409816fd040b4e90f",
+        "lane": "source-head",
+        "minimum_tests": 1,
+        "log_file": "scope-tests.json.14cd71e2626646aea754e2b1476fcb72.log",
+        "log_sha256": "a3f58961030054de96aaa9a0a67181cdc877707d48ba551d508b0caf58ac5720",
+        "log_bytes": 3009,
+        "before": {
+          "commit": "48177153ad04605338c3a9a8dbd17defee9981bc",
+          "dirty": false,
+          "parents": [
+            "21c53428e40caaa8e60b815d7099e89fffa83259"
+          ],
+          "tree": "22e14fcd85f7a3f2c5dc8f3a1bdb17efc81b4d62"
+        },
+        "after": {
+          "commit": "48177153ad04605338c3a9a8dbd17defee9981bc",
+          "dirty": false,
+          "parents": [
+            "21c53428e40caaa8e60b815d7099e89fffa83259"
+          ],
+          "tree": "22e14fcd85f7a3f2c5dc8f3a1bdb17efc81b4d62"
+        }
+      },
+      {
+        "command": [
+          "cargo",
+          "test",
+          "--locked",
+          "--manifest-path",
+          "codex-rs/Cargo.toml",
+          "-p",
+          "codex-hepta-agentd",
+          "new_generation_candidate_changes_behavior_and_explicit_predecessor_reload_restores_it"
+        ],
+        "status": "passed",
+        "exit_code": 0,
+        "observed_passed_tests": 1,
+        "observed_failed_tests": 0,
+        "tested_sha": "48177153ad04605338c3a9a8dbd17defee9981bc",
+        "base_sha": "57636c7a17d4847eb5fd712409816fd040b4e90f",
+        "lane": "source-head",
+        "minimum_tests": 1,
+        "log_file": "selected-ranker.json.84799189ca12409b955028fc34e1b21c.log",
+        "log_sha256": "537cff19990752f9e22fc82f49cf7649a4e8d86d59d9c87413d958299f4e4976",
+        "log_bytes": 15476,
+        "before": {
+          "commit": "48177153ad04605338c3a9a8dbd17defee9981bc",
+          "dirty": false,
+          "parents": [
+            "21c53428e40caaa8e60b815d7099e89fffa83259"
+          ],
+          "tree": "22e14fcd85f7a3f2c5dc8f3a1bdb17efc81b4d62"
+        },
+        "after": {
+          "commit": "48177153ad04605338c3a9a8dbd17defee9981bc",
+          "dirty": false,
+          "parents": [
+            "21c53428e40caaa8e60b815d7099e89fffa83259"
+          ],
+          "tree": "22e14fcd85f7a3f2c5dc8f3a1bdb17efc81b4d62"
+        }
+      },
+      {
+        "command": [
+          "just",
+          "test",
+          "--locked",
+          "-p",
+          "codex-hepta-intelligence-eval",
+          "-E",
+          "test(selector_and_rollback_are_opaque_independent_admissions)"
+        ],
+        "status": "passed",
+        "exit_code": 0,
+        "observed_passed_tests": 1,
+        "observed_failed_tests": 0,
+        "tested_sha": "48177153ad04605338c3a9a8dbd17defee9981bc",
+        "base_sha": "57636c7a17d4847eb5fd712409816fd040b4e90f",
+        "lane": "source-head",
+        "minimum_tests": 1,
+        "log_file": "selector-role.json.0877e12c5456406489207e34fa481ee8.log",
+        "log_sha256": "6a96ecc7d5ba4d8883dcb7812f14f0016f59047ff87be6d27ea2e076cec4091b",
+        "log_bytes": 3412,
+        "before": {
+          "commit": "48177153ad04605338c3a9a8dbd17defee9981bc",
+          "dirty": false,
+          "parents": [
+            "21c53428e40caaa8e60b815d7099e89fffa83259"
+          ],
+          "tree": "22e14fcd85f7a3f2c5dc8f3a1bdb17efc81b4d62"
+        },
+        "after": {
+          "commit": "48177153ad04605338c3a9a8dbd17defee9981bc",
+          "dirty": false,
+          "parents": [
+            "21c53428e40caaa8e60b815d7099e89fffa83259"
+          ],
+          "tree": "22e14fcd85f7a3f2c5dc8f3a1bdb17efc81b4d62"
+        }
+      },
+      {
+        "command": [
+          "cargo",
+          "test",
+          "--locked",
+          "--manifest-path",
+          "codex-rs/Cargo.toml",
+          "-p",
+          "codex-hepta-intelligence-eval",
+          "self_evolution_selection"
+        ],
+        "status": "passed",
+        "exit_code": 0,
+        "observed_passed_tests": 3,
+        "observed_failed_tests": 0,
+        "tested_sha": "48177153ad04605338c3a9a8dbd17defee9981bc",
+        "base_sha": "57636c7a17d4847eb5fd712409816fd040b4e90f",
+        "lane": "source-head",
+        "minimum_tests": 1,
+        "log_file": "self-evolution-selection.json.34166cae44e448d09bc8a4ca81660e09.log",
+        "log_sha256": "7543ff3370f71d8a6b2e2ef90cc7d841ef4acc252cec737eb1a80b8a36629246",
+        "log_bytes": 598,
+        "before": {
+          "commit": "48177153ad04605338c3a9a8dbd17defee9981bc",
+          "dirty": false,
+          "parents": [
+            "21c53428e40caaa8e60b815d7099e89fffa83259"
+          ],
+          "tree": "22e14fcd85f7a3f2c5dc8f3a1bdb17efc81b4d62"
+        },
+        "after": {
+          "commit": "48177153ad04605338c3a9a8dbd17defee9981bc",
+          "dirty": false,
+          "parents": [
+            "21c53428e40caaa8e60b815d7099e89fffa83259"
+          ],
+          "tree": "22e14fcd85f7a3f2c5dc8f3a1bdb17efc81b4d62"
+        }
+      },
+      {
+        "command": [
+          "cargo",
+          "test",
+          "--locked",
+          "--manifest-path",
+          "codex-rs/Cargo.toml",
+          "-p",
+          "codex-hepta-control-plane",
+          "repeated_read_only_add_replace_retire_preserves_dispatch_and_generation_fences"
+        ],
+        "status": "passed",
+        "exit_code": 0,
+        "observed_passed_tests": 1,
+        "observed_failed_tests": 0,
+        "tested_sha": "48177153ad04605338c3a9a8dbd17defee9981bc",
+        "base_sha": "57636c7a17d4847eb5fd712409816fd040b4e90f",
+        "lane": "source-head",
+        "minimum_tests": 1,
+        "log_file": "stateless-lifecycle.json.5b77792d7e8b4f699b38a99b9bf1b539.log",
+        "log_sha256": "824fad56b16a0fb834446763417dfcc4728ffc2c5b5fc2348ba21d1444cea881",
+        "log_bytes": 1381,
+        "before": {
+          "commit": "48177153ad04605338c3a9a8dbd17defee9981bc",
+          "dirty": false,
+          "parents": [
+            "21c53428e40caaa8e60b815d7099e89fffa83259"
+          ],
+          "tree": "22e14fcd85f7a3f2c5dc8f3a1bdb17efc81b4d62"
+        },
+        "after": {
+          "commit": "48177153ad04605338c3a9a8dbd17defee9981bc",
+          "dirty": false,
+          "parents": [
+            "21c53428e40caaa8e60b815d7099e89fffa83259"
+          ],
+          "tree": "22e14fcd85f7a3f2c5dc8f3a1bdb17efc81b4d62"
+        }
+      },
+      {
+        "command": [
+          "cargo",
+          "test",
+          "--locked",
+          "--manifest-path",
+          "codex-rs/Cargo.toml",
+          "-p",
+          "codex-hepta-types",
+          "topology"
+        ],
+        "status": "passed",
+        "exit_code": 0,
+        "observed_passed_tests": 3,
+        "observed_failed_tests": 0,
+        "tested_sha": "48177153ad04605338c3a9a8dbd17defee9981bc",
+        "base_sha": "57636c7a17d4847eb5fd712409816fd040b4e90f",
+        "lane": "source-head",
+        "minimum_tests": 1,
+        "log_file": "topology-contract.json.f0b237b6704243788d0a40822a4a4a67.log",
+        "log_sha256": "44d451819f8ae44dfbdf4e3c377163021c0be5b9d1f7d50cc8b29f806a6419f2",
+        "log_bytes": 524,
+        "before": {
+          "commit": "48177153ad04605338c3a9a8dbd17defee9981bc",
+          "dirty": false,
+          "parents": [
+            "21c53428e40caaa8e60b815d7099e89fffa83259"
+          ],
+          "tree": "22e14fcd85f7a3f2c5dc8f3a1bdb17efc81b4d62"
+        },
+        "after": {
+          "commit": "48177153ad04605338c3a9a8dbd17defee9981bc",
+          "dirty": false,
+          "parents": [
+            "21c53428e40caaa8e60b815d7099e89fffa83259"
+          ],
+          "tree": "22e14fcd85f7a3f2c5dc8f3a1bdb17efc81b4d62"
+        }
+      },
+      {
+        "command": [
+          "just",
+          "test",
+          "--locked",
+          "-p",
+          "codex-hepta-plasticity",
+          "--lib"
+        ],
+        "status": "passed",
+        "exit_code": 0,
+        "observed_passed_tests": 49,
+        "observed_failed_tests": 0,
+        "tested_sha": "48177153ad04605338c3a9a8dbd17defee9981bc",
+        "base_sha": "57636c7a17d4847eb5fd712409816fd040b4e90f",
+        "lane": "source-head",
+        "minimum_tests": 1,
+        "log_file": "topology-proposal.json.f10f427fa92a479aa6ef54402061b40c.log",
+        "log_sha256": "bf9b40b2a7bef2daddfc93fd12a5d72966afab0f312b3d466cabeeac83ee2c10",
+        "log_bytes": 7255,
+        "before": {
+          "commit": "48177153ad04605338c3a9a8dbd17defee9981bc",
+          "dirty": false,
+          "parents": [
+            "21c53428e40caaa8e60b815d7099e89fffa83259"
+          ],
+          "tree": "22e14fcd85f7a3f2c5dc8f3a1bdb17efc81b4d62"
+        },
+        "after": {
+          "commit": "48177153ad04605338c3a9a8dbd17defee9981bc",
+          "dirty": false,
+          "parents": [
+            "21c53428e40caaa8e60b815d7099e89fffa83259"
+          ],
+          "tree": "22e14fcd85f7a3f2c5dc8f3a1bdb17efc81b4d62"
+        }
+      },
+      {
+        "command": [
+          "cargo",
+          "test",
+          "--locked",
+          "--manifest-path",
+          "codex-rs/Cargo.toml",
+          "-p",
+          "codex-hepta-supervisor",
+          "writer_handoff"
+        ],
+        "status": "passed",
+        "exit_code": 0,
+        "observed_passed_tests": 11,
+        "observed_failed_tests": 0,
+        "tested_sha": "48177153ad04605338c3a9a8dbd17defee9981bc",
+        "base_sha": "57636c7a17d4847eb5fd712409816fd040b4e90f",
+        "lane": "source-head",
+        "minimum_tests": 1,
+        "log_file": "writer-handoff-generations.json.90d3a0962c9a416499ae58e9f3952d63.log",
+        "log_sha256": "4ee360871ebbcc668ad217ed82cb3137764ae9c10ae8f245205cdb793c91d1e5",
+        "log_bytes": 7721,
+        "before": {
+          "commit": "48177153ad04605338c3a9a8dbd17defee9981bc",
+          "dirty": false,
+          "parents": [
+            "21c53428e40caaa8e60b815d7099e89fffa83259"
+          ],
+          "tree": "22e14fcd85f7a3f2c5dc8f3a1bdb17efc81b4d62"
+        },
+        "after": {
+          "commit": "48177153ad04605338c3a9a8dbd17defee9981bc",
+          "dirty": false,
+          "parents": [
+            "21c53428e40caaa8e60b815d7099e89fffa83259"
+          ],
+          "tree": "22e14fcd85f7a3f2c5dc8f3a1bdb17efc81b4d62"
+        }
+      }
+    ]
+  },
+  "architecture-base-576-481.zip": {
+    "candidate": {
+      "base_sha": "57636c7a17d4847eb5fd712409816fd040b4e90f",
+      "lane": "base-merge",
+      "native_execution_required": false,
+      "requires_source_head_success": true,
+      "schema_version": 1,
+      "source_sha": "48177153ad04605338c3a9a8dbd17defee9981bc",
+      "source_tree": "22e14fcd85f7a3f2c5dc8f3a1bdb17efc81b4d62",
+      "tested_sha": "4a6507e8ce71fd88bcfbd435647b7a0ac2b25f64",
+      "tested_tree": "22e14fcd85f7a3f2c5dc8f3a1bdb17efc81b4d62"
+    },
+    "commands": [
+      {
+        "command": [
+          "python3",
+          "scripts/hepta-module-docs.py",
+          "refresh-derived",
+          "--check"
+        ],
+        "status": "passed",
+        "exit_code": 0,
+        "observed_passed_tests": 0,
+        "observed_failed_tests": 0,
+        "tested_sha": "4a6507e8ce71fd88bcfbd435647b7a0ac2b25f64",
+        "base_sha": "57636c7a17d4847eb5fd712409816fd040b4e90f",
+        "lane": "base-merge",
+        "minimum_tests": 0,
+        "log_file": "derived.json.9756d7c7f834433591540404f5bf6ee8.log",
+        "log_sha256": "dd338ae2d65000941c4a2c3afe356096d35c98d69ca23ec86c7b98ba0490ab1f",
+        "log_bytes": 42,
+        "before": {
+          "commit": "4a6507e8ce71fd88bcfbd435647b7a0ac2b25f64",
+          "dirty": false,
+          "parents": [
+            "57636c7a17d4847eb5fd712409816fd040b4e90f",
+            "48177153ad04605338c3a9a8dbd17defee9981bc"
+          ],
+          "tree": "22e14fcd85f7a3f2c5dc8f3a1bdb17efc81b4d62"
+        },
+        "after": {
+          "commit": "4a6507e8ce71fd88bcfbd435647b7a0ac2b25f64",
+          "dirty": false,
+          "parents": [
+            "57636c7a17d4847eb5fd712409816fd040b4e90f",
+            "48177153ad04605338c3a9a8dbd17defee9981bc"
+          ],
+          "tree": "22e14fcd85f7a3f2c5dc8f3a1bdb17efc81b4d62"
+        }
+      },
+      {
+        "command": [
+          "python3",
+          "-m",
+          "unittest",
+          "-v",
+          "scripts.tests.test_hepta_repository_controls",
+          "scripts.test_hepta_control_hardening",
+          "scripts.test_hepta_candidate_transport_workflow"
+        ],
+        "status": "passed",
+        "exit_code": 0,
+        "observed_passed_tests": 65,
+        "observed_failed_tests": 0,
+        "tested_sha": "4a6507e8ce71fd88bcfbd435647b7a0ac2b25f64",
+        "base_sha": "57636c7a17d4847eb5fd712409816fd040b4e90f",
+        "lane": "base-merge",
+        "minimum_tests": 1,
+        "log_file": "repository-controls.json.1bfd04bef8914d1b8b01b8cb17151640.log",
+        "log_sha256": "2d079a476230c387b32e3918cf0f5652481c16322428c0dae3e78dd4a3657a54",
+        "log_bytes": 10713,
+        "before": {
+          "commit": "4a6507e8ce71fd88bcfbd435647b7a0ac2b25f64",
+          "dirty": false,
+          "parents": [
+            "57636c7a17d4847eb5fd712409816fd040b4e90f",
+            "48177153ad04605338c3a9a8dbd17defee9981bc"
+          ],
+          "tree": "22e14fcd85f7a3f2c5dc8f3a1bdb17efc81b4d62"
+        },
+        "after": {
+          "commit": "4a6507e8ce71fd88bcfbd435647b7a0ac2b25f64",
+          "dirty": false,
+          "parents": [
+            "57636c7a17d4847eb5fd712409816fd040b4e90f",
+            "48177153ad04605338c3a9a8dbd17defee9981bc"
+          ],
+          "tree": "22e14fcd85f7a3f2c5dc8f3a1bdb17efc81b4d62"
+        }
+      },
+      {
+        "command": [
+          "python3",
+          "-m",
+          "unittest",
+          "discover",
+          "-v",
+          "-s",
+          "scripts",
+          "-p",
+          "test_hepta_ci_exec*.py"
+        ],
+        "status": "passed",
+        "exit_code": 0,
+        "observed_passed_tests": 54,
+        "observed_failed_tests": 0,
+        "tested_sha": "4a6507e8ce71fd88bcfbd435647b7a0ac2b25f64",
+        "base_sha": "57636c7a17d4847eb5fd712409816fd040b4e90f",
+        "lane": "base-merge",
+        "minimum_tests": 0,
+        "log_file": "runner-tests.json.301b23474f7b46fab99e46995af07d39.log",
+        "log_sha256": "d82935fcbb443e39e6e66732608f8343c9061b4c2e155de4fe0bdadf9161fc88",
+        "log_bytes": 8637,
+        "before": {
+          "commit": "4a6507e8ce71fd88bcfbd435647b7a0ac2b25f64",
+          "dirty": false,
+          "parents": [
+            "57636c7a17d4847eb5fd712409816fd040b4e90f",
+            "48177153ad04605338c3a9a8dbd17defee9981bc"
+          ],
+          "tree": "22e14fcd85f7a3f2c5dc8f3a1bdb17efc81b4d62"
+        },
+        "after": {
+          "commit": "4a6507e8ce71fd88bcfbd435647b7a0ac2b25f64",
+          "dirty": false,
+          "parents": [
+            "57636c7a17d4847eb5fd712409816fd040b4e90f",
+            "48177153ad04605338c3a9a8dbd17defee9981bc"
+          ],
+          "tree": "22e14fcd85f7a3f2c5dc8f3a1bdb17efc81b4d62"
+        }
+      },
+      {
+        "command": [
+          "python3",
+          "-m",
+          "unittest",
+          "-v",
+          "scripts.tests.test_hepta_ci_scope"
+        ],
+        "status": "passed",
+        "exit_code": 0,
+        "observed_passed_tests": 18,
+        "observed_failed_tests": 0,
+        "tested_sha": "4a6507e8ce71fd88bcfbd435647b7a0ac2b25f64",
+        "base_sha": "57636c7a17d4847eb5fd712409816fd040b4e90f",
+        "lane": "base-merge",
+        "minimum_tests": 1,
+        "log_file": "scope-tests.json.4054d0fb8b6d4eaabc8b13636a8389e8.log",
+        "log_sha256": "08a98814effc993c02fb0f332219be1fab671937db21fea47fe3550f9f92a4e3",
+        "log_bytes": 3009,
+        "before": {
+          "commit": "4a6507e8ce71fd88bcfbd435647b7a0ac2b25f64",
+          "dirty": false,
+          "parents": [
+            "57636c7a17d4847eb5fd712409816fd040b4e90f",
+            "48177153ad04605338c3a9a8dbd17defee9981bc"
+          ],
+          "tree": "22e14fcd85f7a3f2c5dc8f3a1bdb17efc81b4d62"
+        },
+        "after": {
+          "commit": "4a6507e8ce71fd88bcfbd435647b7a0ac2b25f64",
+          "dirty": false,
+          "parents": [
+            "57636c7a17d4847eb5fd712409816fd040b4e90f",
+            "48177153ad04605338c3a9a8dbd17defee9981bc"
+          ],
+          "tree": "22e14fcd85f7a3f2c5dc8f3a1bdb17efc81b4d62"
+        }
+      }
+    ]
+  }
+}

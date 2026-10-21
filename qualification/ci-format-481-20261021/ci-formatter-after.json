@@ -1,0 +1,72 @@
+{
+  "command": [
+    "uv",
+    "run",
+    "--frozen",
+    "--project",
+    "scripts",
+    "ruff",
+    "format",
+    "--check",
+    "scripts",
+    ".github"
+  ],
+  "cwd": "/workspace/scratch/337c309bc660/combined-durability-work",
+  "started_at_utc": "2026-10-21T11:58:29.927124+00:00",
+  "head_at_start": "8dab8384b4a31fd8604b477078b774aef2298d83",
+  "source_hashes_before": {
+    ".github/scripts/test_v8_cargo_smoke.py": {
+      "bytes": 4925,
+      "sha256": "c249e11588619f42b623eab07aefbaaf38cf05f5c580e787437b32e7a095b2ee"
+    },
+    "MODULE.bazel.lock": {
+      "bytes": 1745183,
+      "sha256": "f6c5dd1f2a09c66d6a4c387ff40d11afb7ed2309e541dcb6bff9ad5f410996c3"
+    },
+    "codex-rs/Cargo.lock": {
+      "bytes": 413681,
+      "sha256": "4a89de595739e85d8d0e01944914c62217287d2c7daccee8e6d85b1cb4afc941"
+    }
+  },
+  "limits": {
+    "cargo_jobs": 2,
+    "dev_debug": 0,
+    "test_debug": 0,
+    "incremental": 0,
+    "bazel_jobs": 2,
+    "bazel_xmx_mib": 1536
+  },
+  "memory_events_before": "low 0\nhigh 0\nmax 982816\noom 0\noom_kill 0\noom_group_kill 0\n",
+  "pid": 25,
+  "exit_code": 0,
+  "elapsed_seconds": 2.0029089899981045,
+  "finished_at_utc": "2026-10-21T11:58:31.936974+00:00",
+  "source_hashes_after": {
+    ".github/scripts/test_v8_cargo_smoke.py": {
+      "bytes": 4925,
+      "sha256": "c249e11588619f42b623eab07aefbaaf38cf05f5c580e787437b32e7a095b2ee"
+    },
+    "MODULE.bazel.lock": {
+      "bytes": 1745183,
+      "sha256": "f6c5dd1f2a09c66d6a4c387ff40d11afb7ed2309e541dcb6bff9ad5f410996c3"
+    },
+    "codex-rs/Cargo.lock": {
+      "bytes": 413681,
+      "sha256": "4a89de595739e85d8d0e01944914c62217287d2c7daccee8e6d85b1cb4afc941"
+    }
+  },
+  "peak_cgroup_bytes": {
+    "anon": 155287552,
+    "file": 7261499392,
+    "kernel": 944304128
+  },
+  "minimum_free_bytes": 1458286592,
+  "memory_events_after": "low 0\nhigh 0\nmax 982816\noom 0\noom_kill 0\noom_group_kill 0\n",
+  "raw_log": {
+    "file": "ci-formatter-after.log.xz",
+    "bytes": 28,
+    "sha256": "02bed28762c49640d7f02e6846a37745113a47eec5cdfeda4cdac36b08151b75",
+    "compressed_bytes": 84,
+    "compressed_sha256": "0373556199b8f495b29f9b59a4a51df9cbfaf6a1456b0c0aa65034013952aec9"
+  }
+}

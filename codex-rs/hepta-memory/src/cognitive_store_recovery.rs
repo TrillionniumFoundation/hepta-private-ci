@@ -34,6 +34,7 @@ use super::protect_database_file;
 use super::publish_active_database;
 use super::recovered_database_filename;
 use super::resolve_active_database_path;
+use super::sync_cognitive_directory;
 use super::unavailable;
 use super::verify_store;
 use crate::ProductionAuthorityLease;
@@ -146,11 +147,8 @@ impl CognitiveStore {
                     "cognitive recovery root does not exist".to_string(),
                 )
             })?;
-        if canonical_root != root {
-            return Err(CognitiveRecoveryError::Indeterminate(
-                "cognitive recovery root is redirected".to_string(),
-            ));
-        }
+        // The shared identity check already rejects redirected components.
+        // Keep its OS spelling, including Windows drive/UNC verbatim prefixes.
         let exclusive_guard = CognitiveStoreOpenGuard::acquire_exclusive(&canonical_root)
             .map_err(|error| CognitiveRecoveryError::Unavailable(error.to_string()))?;
         let source_path = resolve_active_database_path(&canonical_root)
@@ -166,6 +164,10 @@ impl CognitiveStore {
         config
             .materialize_identity_bound_recovery_copy(&source_guard, &candidate)
             .map_err(recovery_error)?;
+        // The copy changed the source directory's metadata. Its pre-copy
+        // snapshot must not be reused for admission after this point; retained
+        // handles still pin the original sources and parent through publication
+        // and failure reconciliation below.
 
         let result = async {
             let pool = config
@@ -220,11 +222,23 @@ impl CognitiveStore {
             cleanup_candidate_sidecars(&candidate)?;
             protect_database_file(&candidate)
                 .map_err(|error| CognitiveRecoveryError::Unavailable(error.to_string()))?;
-            std::fs::File::open(&candidate)
-                .and_then(|file| file.sync_all())
-                .map_err(|error| CognitiveRecoveryError::Unavailable(error.to_string()))?;
-            std::fs::File::open(&canonical_root)
-                .and_then(|directory| directory.sync_all())
+            {
+                let mut options = std::fs::OpenOptions::new();
+                options.read(true);
+                #[cfg(windows)]
+                options.write(true);
+                let file = options.open(&candidate).map_err(|error| {
+                    CognitiveRecoveryError::Unavailable(format!(
+                        "open recovered cognitive database for sync: {error}"
+                    ))
+                })?;
+                file.sync_all().map_err(|error| {
+                    CognitiveRecoveryError::Unavailable(format!(
+                        "sync recovered cognitive database: {error}"
+                    ))
+                })?;
+            }
+            sync_cognitive_directory(&canonical_root)
                 .map_err(|error| CognitiveRecoveryError::Unavailable(error.to_string()))?;
 
             let pool = config
@@ -274,14 +288,16 @@ impl CognitiveStore {
         }
         .await;
 
-        match result {
+        let outcome = match result {
             Ok(store) => Ok(store),
             Err(error) => Err(reconcile_failed_recovery_candidate(
                 &canonical_root,
                 &candidate,
                 error,
             )),
-        }
+        };
+        drop(source_guard);
+        outcome
     }
 }
 

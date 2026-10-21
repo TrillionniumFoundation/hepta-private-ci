@@ -1,0 +1,4311 @@
+{
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "snapshot_assembled_at_utc": "2026-10-21T11:48:41.493Z",
+  "original_head": "48177153ad04605338c3a9a8dbd17defee9981bc",
+  "continuation_head": "52293403ea1e06465c41d24d39b54959bad40936",
+  "actual_current_base": "f768d30dbd79d5d56923770ba3becb8018230e27",
+  "qualified_workflow_base": "57636c7a17d4847eb5fd712409816fd040b4e90f",
+  "runs": [
+    {
+      "id": 39583123088,
+      "observed_at_utc": "2026-10-21T11:46:51.734Z",
+      "total_count": 29,
+      "jobs": [
+        {
+          "id": 119179462083,
+          "head_sha": "48177153ad04605338c3a9a8dbd17defee9981bc",
+          "name": "Select blocking CI scope",
+          "status": "completed",
+          "conclusion": "success",
+          "started_at": "2026-10-21T11:24:37Z",
+          "completed_at": "2026-10-21T11:25:15Z",
+          "runner_name": "GitHub Actions 1000191326",
+          "labels": [
+            "ubuntu-24.04"
+          ],
+          "steps": [
+            {
+              "name": "Set up job",
+              "number": 1,
+              "status": "completed",
+              "conclusion": "success",
+              "started_at": "2026-10-21T11:24:38Z",
+              "completed_at": "2026-10-21T11:24:39Z"
+            },
+            {
+              "name": "Checkout exact candidate",
+              "number": 2,
+              "status": "completed",
+              "conclusion": "success",
+              "started_at": "2026-10-21T11:24:39Z",
+              "completed_at": "2026-10-21T11:25:10Z"
+            },
+            {
+              "name": "Select dependency impact",
+              "number": 3,
+              "status": "completed",
+              "conclusion": "success",
+              "started_at": "2026-10-21T11:25:10Z",
+              "completed_at": "2026-10-21T11:25:12Z"
+            },
+            {
+              "name": "Regression-test scoped fan-in policy",
+              "number": 4,
+              "status": "completed",
+              "conclusion": "success",
+              "started_at": "2026-10-21T11:25:12Z",
+              "completed_at": "2026-10-21T11:25:12Z"
+            },
+            {
+              "name": "Post Checkout exact candidate",
+              "number": 8,
+              "status": "completed",
+              "conclusion": "success",
+              "started_at": "2026-10-21T11:25:12Z",
+              "completed_at": "2026-10-21T11:25:12Z"
+            },
+            {
+              "name": "Complete job",
+              "number": 9,
+              "status": "completed",
+              "conclusion": "success",
+              "started_at": "2026-10-21T11:25:12Z",
+              "completed_at": "2026-10-21T11:25:12Z"
+            }
+          ]
+        },
+        {
+          "id": 119179462206,
+          "head_sha": "48177153ad04605338c3a9a8dbd17defee9981bc",
+          "name": "Blob size policy / Blob size policy",
+          "status": "completed",
+          "conclusion": "success",
+          "started_at": "2026-10-21T11:06:15Z",
+          "completed_at": "2026-10-21T11:07:05Z",
+          "runner_name": "GitHub Actions 1000191183",
+          "labels": [
+            "ubuntu-24.04"
+          ],
+          "steps": [
+            {
+              "name": "Set up job",
+              "number": 1,
+              "status": "completed",
+              "conclusion": "success",
+              "started_at": "2026-10-21T11:06:16Z",
+              "completed_at": "2026-10-21T11:06:28Z"
+            },
+            {
+              "name": "Run openai/fence@e6b39c80c51cb2b2a39448ddeff74b3b886c0a63",
+              "number": 2,
+              "status": "completed",
+              "conclusion": "success",
+              "started_at": "2026-10-21T11:06:28Z",
+              "completed_at": "2026-10-21T11:06:32Z"
+            },
+            {
+              "name": "Run actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd",
+              "number": 3,
+              "status": "completed",
+              "conclusion": "success",
+              "started_at": "2026-10-21T11:06:32Z",
+              "completed_at": "2026-10-21T11:07:00Z"
+            },
+            {
+              "name": "Determine comparison range",
+              "number": 4,
+              "status": "completed",
+              "conclusion": "success",
+              "started_at": "2026-10-21T11:07:00Z",
+              "completed_at": "2026-10-21T11:07:00Z"
+            },
+            {
+              "name": "Check changed blob sizes",
+              "number": 5,
+              "status": "completed",
+              "conclusion": "success",
+              "started_at": "2026-10-21T11:07:00Z",
+              "completed_at": "2026-10-21T11:07:01Z"
+            },
+            {
+              "name": "Check for a clean worktree",
+              "number": 6,
+              "status": "completed",
+              "conclusion": "success",
+              "started_at": "2026-10-21T11:07:01Z",
+              "completed_at": "2026-10-21T11:07:01Z"
+            },
+            {
+              "name": "Post Run actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd",
+              "number": 11,
+              "status": "completed",
+              "conclusion": "success",
+              "started_at": "2026-10-21T11:07:01Z",
+              "completed_at": "2026-10-21T11:07:01Z"
+            },
+            {
+              "name": "Post Run openai/fence@e6b39c80c51cb2b2a39448ddeff74b3b886c0a63",
+              "number": 12,
+              "status": "completed",
+              "conclusion": "success",
+              "started_at": "2026-10-21T11:07:01Z",
+              "completed_at": "2026-10-21T11:07:02Z"
+            },
+            {
+              "name": "Complete job",
+              "number": 13,
+              "status": "completed",
+              "conclusion": "success",
+              "started_at": "2026-10-21T11:07:02Z",
+              "completed_at": "2026-10-21T11:07:02Z"
+            }
+          ]
+        },
+        {
+          "id": 119179462267,
+          "head_sha": "48177153ad04605338c3a9a8dbd17defee9981bc",
+          "name": "Codespell / Check for spelling errors",
+          "status": "completed",
+          "conclusion": "success",
+          "started_at": "2026-10-21T11:04:04Z",
+          "completed_at": "2026-10-21T11:04:33Z",
+          "runner_name": "GitHub Actions 1000191123",
+          "labels": [
+            "ubuntu-latest"
+          ],
+          "steps": [
+            {
+              "name": "Set up job",
+              "number": 1,
+              "status": "completed",
+              "conclusion": "success",
+              "started_at": "2026-10-21T11:04:05Z",
+              "completed_at": "2026-10-21T11:04:06Z"
+            },
+            {
+              "name": "Build codespell-project/actions-codespell@8f01853be192eb0f849a5c7d721450e7a467c579",
+              "number": 2,
+              "status": "completed",
+              "conclusion": "success",
+              "started_at": "2026-10-21T11:04:06Z",
+              "completed_at": "2026-10-21T11:04:11Z"
+            },
+            {
+              "name": "Checkout",
+              "number": 3,
+              "status": "completed",
+              "conclusion": "success",
+              "started_at": "2026-10-21T11:04:11Z",
+              "completed_at": "2026-10-21T11:04:16Z"
+            },
+            {
+              "name": "Annotate locations with typos",
+              "number": 4,
+              "status": "completed",
+              "conclusion": "success",
+              "started_at": "2026-10-21T11:04:16Z",
+              "completed_at": "2026-10-21T11:04:16Z"
+            },
+            {
+              "name": "Codespell",
+              "number": 5,
+              "status": "completed",
+              "conclusion": "success",
+              "started_at": "2026-10-21T11:04:16Z",
+              "completed_at": "2026-10-21T11:04:31Z"
+            },
+            {
+              "name": "Check for a clean worktree",
+              "number": 6,
+              "status": "completed",
+              "conclusion": "success",
+              "started_at": "2026-10-21T11:04:31Z",
+              "completed_at": "2026-10-21T11:04:31Z"
+            },
+            {
+              "name": "Post Checkout",
+              "number": 12,
+              "status": "completed",
+              "conclusion": "success",
+              "started_at": "2026-10-21T11:04:31Z",
+              "completed_at": "2026-10-21T11:04:31Z"
+            },
+            {
+              "name": "Complete job",
+              "number": 13,
+              "status": "completed",
+              "conclusion": "success",
+              "started_at": "2026-10-21T11:04:31Z",
+              "completed_at": "2026-10-21T11:04:31Z"
+            }
+          ]
+        },
+        {
+          "id": 119194391125,
+          "head_sha": "48177153ad04605338c3a9a8dbd17defee9981bc",
+          "name": "sdk / sdks",
+          "status": "queued",
+          "conclusion": null,
+          "started_at": "2026-10-21T11:25:15Z",
+          "completed_at": null,
+          "runner_name": "",
+          "labels": [
+            "ubuntu-24.04"
+          ],
+          "steps": []
+        },
+        {
+          "id": 119194391136,
+          "head_sha": "48177153ad04605338c3a9a8dbd17defee9981bc",
+          "name": "Hepta contract gate / Validate canonical branch and contract metadata",
+          "status": "queued",
+          "conclusion": null,
+          "started_at": "2026-10-21T11:25:15Z",
+          "completed_at": null,
+          "runner_name": "",
+          "labels": [
+            "ubuntu-24.04"
+          ],
+          "steps": []
+        },
+        {
+          "id": 119194391140,
+          "head_sha": "48177153ad04605338c3a9a8dbd17defee9981bc",
+          "name": "cargo-deny / cargo-deny",
+          "status": "completed",
+          "conclusion": "success",
+          "started_at": "2026-10-21T11:37:36Z",
+          "completed_at": "2026-10-21T11:38:58Z",
+          "runner_name": "GitHub Actions 1000191404",
+          "labels": [
+            "ubuntu-latest"
+          ],
+          "steps": [
+            {
+              "name": "Set up job",
+              "number": 1,
+              "status": "completed",
+              "conclusion": "success",
+              "started_at": "2026-10-21T11:37:37Z",
+              "completed_at": "2026-10-21T11:37:38Z"
+            },
+            {
+              "name": "Build EmbarkStudios/cargo-deny-action@82eb9f621fbc699dd0918f3ea06864c14cc84246",
+              "number": 2,
+              "status": "completed",
+              "conclusion": "success",
+              "started_at": "2026-10-21T11:37:38Z",
+              "completed_at": "2026-10-21T11:37:48Z"
+            },
+            {
+              "name": "Checkout",
+              "number": 3,
+              "status": "completed",
+              "conclusion": "success",
+              "started_at": "2026-10-21T11:37:48Z",
+              "completed_at": "2026-10-21T11:37:54Z"
+            },
+            {
+              "name": "Enforce tracked RustSec no-suppression policy",
+              "number": 4,
+              "status": "completed",
+              "conclusion": "success",
+              "started_at": "2026-10-21T11:37:54Z",
+              "completed_at": "2026-10-21T11:37:54Z"
+            },
+            {
+              "name": "Run ./.github/actions/setup-ci-build",
+              "number": 5,
+              "status": "completed",
+              "conclusion": "success",
+              "started_at": "2026-10-21T11:37:54Z",
+              "completed_at": "2026-10-21T11:37:54Z"
+            },
+            {
+              "name": "Install Rust toolchain",
+              "number": 6,
+              "status": "completed",
+              "conclusion": "success",
+              "started_at": "2026-10-21T11:37:54Z",
+              "completed_at": "2026-10-21T11:38:02Z"
+            },
+            {
+              "name": "Run cargo-deny",
+              "number": 7,
+              "status": "completed",
+              "conclusion": "success",
+              "started_at": "2026-10-21T11:38:02Z",
+              "completed_at": "2026-10-21T11:38:56Z"
+            },
+            {
+              "name": "Check for a clean worktree",
+              "number": 8,
+              "status": "completed",
+              "conclusion": "success",
+              "started_at": "2026-10-21T11:38:56Z",
+              "completed_at": "2026-10-21T11:38:56Z"
+            },
+            {
+              "name": "Post Checkout",
+              "number": 16,
+              "status": "completed",
+              "conclusion": "success",
+              "started_at": "2026-10-21T11:38:56Z",
+              "completed_at": "2026-10-21T11:38:57Z"
+            },
+            {
+              "name": "Complete job",
+              "number": 17,
+              "status": "completed",
+              "conclusion": "success",
+              "started_at": "2026-10-21T11:38:57Z",
+              "completed_at": "2026-10-21T11:38:57Z"
+            }
+          ]
+        },
+        {
+          "id": 119194391214,
+          "head_sha": "48177153ad04605338c3a9a8dbd17defee9981bc",
+          "name": "repo-checks / build-test",
+          "status": "queued",
+          "conclusion": null,
+          "started_at": "2026-10-21T11:25:15Z",
+          "completed_at": null,
+          "runner_name": "",
+          "labels": [
+            "ubuntu-latest"
+          ],
+          "steps": []
+        },
+        {
+          "id": 119194391397,
+          "head_sha": "48177153ad04605338c3a9a8dbd17defee9981bc",
+          "name": "repo-checks / Native Hepta paths on macos-15",
+          "status": "queued",
+          "conclusion": null,
+          "started_at": "2026-10-21T11:25:15Z",
+          "completed_at": null,
+          "runner_name": "",
+          "labels": [
+            "macos-15"
+          ],
+          "steps": []
+        },
+        {
+          "id": 119194391417,
+          "head_sha": "48177153ad04605338c3a9a8dbd17defee9981bc",
+          "name": "sdk / python-sdk",
+          "status": "queued",
+          "conclusion": null,
+          "started_at": "2026-10-21T11:25:15Z",
+          "completed_at": null,
+          "runner_name": "",
+          "labels": [
+            "ubuntu-24.04"
+          ],
+          "steps": []
+        },
+        {
+          "id": 119194391463,
+          "head_sha": "48177153ad04605338c3a9a8dbd17defee9981bc",
+          "name": "rust-ci / Detect changed areas",
+          "status": "queued",
+          "conclusion": null,
+          "started_at": "2026-10-21T11:25:15Z",
+          "completed_at": null,
+          "runner_name": "",
+          "labels": [
+            "ubuntu-24.04"
+          ],
+          "steps": []
+        },
+        {
+          "id": 119194391473,
+          "head_sha": "48177153ad04605338c3a9a8dbd17defee9981bc",
+          "name": "repo-checks / Native Hepta paths on ubuntu-24.04",
+          "status": "queued",
+          "conclusion": null,
+          "started_at": "2026-10-21T11:25:15Z",
+          "completed_at": null,
+          "runner_name": "",
+          "labels": [
+            "ubuntu-24.04"
+          ],
+          "steps": []
+        },
+        {
+          "id": 119194391487,
+          "head_sha": "48177153ad04605338c3a9a8dbd17defee9981bc",
+          "name": "repo-checks / Native Hepta paths on windows-latest",
+          "status": "queued",
+          "conclusion": null,
+          "started_at": "2026-10-21T11:25:15Z",
+          "completed_at": null,
+          "runner_name": "",
+          "labels": [
+            "windows-latest"
+          ],
+          "steps": []
+        },
+        {
+          "id": 119194391884,
+          "head_sha": "48177153ad04605338c3a9a8dbd17defee9981bc",
+          "name": "Bazel / Bazel clippy on macos-15 for aarch64-apple-darwin",
+          "status": "queued",
+          "conclusion": null,
+          "started_at": "2026-10-21T11:25:15Z",
+          "completed_at": null,
+          "runner_name": "",
+          "labels": [
+            "macos-15"
+          ],
+          "steps": []
+        },
+        {
+          "id": 119194391901,
+          "head_sha": "48177153ad04605338c3a9a8dbd17defee9981bc",
+          "name": "Bazel / Bazel test on windows-latest for x86_64-pc-windows-msvc shard 3/4",
+          "status": "queued",
+          "conclusion": null,
+          "started_at": "2026-10-21T11:25:15Z",
+          "completed_at": null,
+          "runner_name": "",
+          "labels": [
+            "windows-latest"
+          ],
+          "steps": []
+        },
+        {
+          "id": 119194391938,
+          "head_sha": "48177153ad04605338c3a9a8dbd17defee9981bc",
+          "name": "Bazel / Bazel test on windows-latest for x86_64-pc-windows-msvc shard 4/4",
+          "status": "queued",
+          "conclusion": null,
+          "started_at": "2026-10-21T11:25:15Z",
+          "completed_at": null,
+          "runner_name": "",
+          "labels": [
+            "windows-latest"
+          ],
+          "steps": []
+        },
+        {
+          "id": 119194391962,
+          "head_sha": "48177153ad04605338c3a9a8dbd17defee9981bc",
+          "name": "Bazel / Bazel test on macos-15-intel for x86_64-apple-darwin",
+          "status": "in_progress",
+          "conclusion": null,
+          "started_at": "2026-10-21T11:40:21Z",
+          "completed_at": null,
+          "runner_name": "GitHub Actions 1000191420",
+          "labels": [
+            "macos-15-intel"
+          ],
+          "steps": [
+            {
+              "name": "Set up job",
+              "number": 1,
+              "status": "completed",
+              "conclusion": "success",
+              "started_at": "2026-10-21T11:40:22Z",
+              "completed_at": "2026-10-21T11:40:24Z"
+            },
+            {
+              "name": "Run actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd",
+              "number": 2,
+              "status": "completed",
+              "conclusion": "success",
+              "started_at": "2026-10-21T11:40:24Z",
+              "completed_at": "2026-10-21T11:40:41Z"
+            },
+            {
+              "name": "Prepare Bazel CI",
+              "number": 3,
+              "status": "completed",
+              "conclusion": "success",
+              "started_at": "2026-10-21T11:40:41Z",
+              "completed_at": "2026-10-21T11:40:56Z"
+            },
+            {
+              "name": "Check rusty_v8 MODULE.bazel checksums",
+              "number": 4,
+              "status": "completed",
+              "conclusion": "skipped",
+              "started_at": "2026-10-21T11:40:56Z",
+              "completed_at": "2026-10-21T11:40:56Z"
+            },
+            {
+              "name": "Check MODULE.bazel.lock is up to date",
+              "number": 5,
+              "status": "completed",
+              "conclusion": "skipped",
+              "started_at": "2026-10-21T11:40:56Z",
+              "completed_at": "2026-10-21T11:40:56Z"
+            },
+            {
+              "name": "bazel test //...",
+              "number": 6,
+              "status": "in_progress",
+              "conclusion": null,
+              "started_at": "2026-10-21T11:40:56Z",
+              "completed_at": null
+            },
+            {
+              "name": "Upload Bazel execution logs",
+              "number": 7,
+              "status": "pending",
+              "conclusion": null,
+              "started_at": null,
+              "completed_at": null
+            },
+            {
+              "name": "Save bazel repository cache",
+              "number": 8,
+              "status": "pending",
+              "conclusion": null,
+              "started_at": null,
+              "completed_at": null
+            },
+            {
+              "name": "Check for a clean worktree",
+              "number": 9,
+              "status": "pending",
+              "conclusion": null,
+              "started_at": null,
+              "completed_at": null
+            },
+            {
+              "name": "Post Prepare Bazel CI",
+              "number": 17,
+              "status": "pending",
+              "conclusion": null,
+              "started_at": null,
+              "completed_at": null
+            },
+            {
+              "name": "Post Run actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd",
+              "number": 18,
+              "status": "pending",
+              "conclusion": null,
+              "started_at": null,
+              "completed_at": null
+            }
+          ]
+        },
+        {
+          "id": 119194391990,
+          "head_sha": "48177153ad04605338c3a9a8dbd17defee9981bc",
+          "name": "Bazel / Bazel clippy on ubuntu-24.04 for x86_64-unknown-linux-gnu",
+          "status": "queued",
+          "conclusion": null,
+          "started_at": "2026-10-21T11:25:15Z",
+          "completed_at": null,
+          "runner_name": "",
+          "labels": [
+            "ubuntu-24.04"
+          ],
+          "steps": []
+        },
+        {
+          "id": 119194391991,
+          "head_sha": "48177153ad04605338c3a9a8dbd17defee9981bc",
+          "name": "Bazel / Bazel test on ubuntu-24.04 for x86_64-unknown-linux-musl",
+          "status": "queued",
+          "conclusion": null,
+          "started_at": "2026-10-21T11:25:15Z",
+          "completed_at": null,
+          "runner_name": "",
+          "labels": [
+            "ubuntu-24.04"
+          ],
+          "steps": []
+        },
+        {
+          "id": 119194391999,
+          "head_sha": "48177153ad04605338c3a9a8dbd17defee9981bc",
+          "name": "Bazel / Bazel test on macos-15 for aarch64-apple-darwin",
+          "status": "queued",
+          "conclusion": null,
+          "started_at": "2026-10-21T11:25:15Z",
+          "completed_at": null,
+          "runner_name": "",
+          "labels": [
+            "macos-15"
+          ],
+          "steps": []
+        },
+        {
+          "id": 119194392010,
+          "head_sha": "48177153ad04605338c3a9a8dbd17defee9981bc",
+          "name": "Bazel / Bazel test on windows-latest for x86_64-pc-windows-msvc shard 1/4",
+          "status": "queued",
+          "conclusion": null,
+          "started_at": "2026-10-21T11:25:15Z",
+          "completed_at": null,
+          "runner_name": "",
+          "labels": [
+            "windows-latest"
+          ],
+          "steps": []
+        },
+        {
+          "id": 119194392011,
+          "head_sha": "48177153ad04605338c3a9a8dbd17defee9981bc",
+          "name": "Bazel / Verify release build on windows-latest for x86_64-pc-windows-msvc",
+          "status": "queued",
+          "conclusion": null,
+          "started_at": "2026-10-21T11:25:15Z",
+          "completed_at": null,
+          "runner_name": "",
+          "labels": [
+            "windows-latest"
+          ],
+          "steps": []
+        },
+        {
+          "id": 119194392016,
+          "head_sha": "48177153ad04605338c3a9a8dbd17defee9981bc",
+          "name": "Bazel / Bazel test on windows-latest for x86_64-pc-windows-msvc shard 2/4",
+          "status": "queued",
+          "conclusion": null,
+          "started_at": "2026-10-21T11:25:15Z",
+          "completed_at": null,
+          "runner_name": "",
+          "labels": [
+            "windows-latest"
+          ],
+          "steps": []
+        },
+        {
+          "id": 119194392031,
+          "head_sha": "48177153ad04605338c3a9a8dbd17defee9981bc",
+          "name": "Bazel / Bazel clippy on windows-latest for x86_64-pc-windows-msvc",
+          "status": "queued",
+          "conclusion": null,
+          "started_at": "2026-10-21T11:25:15Z",
+          "completed_at": null,
+          "runner_name": "",
+          "labels": [
+            "windows-latest"
+          ],
+          "steps": []
+        },
+        {
+          "id": 119194392042,
+          "head_sha": "48177153ad04605338c3a9a8dbd17defee9981bc",
+          "name": "Bazel / Bazel test on ubuntu-24.04 for x86_64-unknown-linux-gnu",
+          "status": "queued",
+          "conclusion": null,
+          "started_at": "2026-10-21T11:25:15Z",
+          "completed_at": null,
+          "runner_name": "",
+          "labels": [
+            "ubuntu-24.04"
+          ],
+          "steps": []
+        },
+        {
+          "id": 119194392047,
+          "head_sha": "48177153ad04605338c3a9a8dbd17defee9981bc",
+          "name": "Bazel / Verify release build on macos-15 for aarch64-apple-darwin",
+          "status": "queued",
+          "conclusion": null,
+          "started_at": "2026-10-21T11:25:15Z",
+          "completed_at": null,
+          "runner_name": "",
+          "labels": [
+            "macos-15"
+          ],
+          "steps": []
+        },
+        {
+          "id": 119194392060,
+          "head_sha": "48177153ad04605338c3a9a8dbd17defee9981bc",
+          "name": "Bazel / Verify release build on ubuntu-24.04 for x86_64-unknown-linux-gnu",
+          "status": "queued",
+          "conclusion": null,
+          "started_at": "2026-10-21T11:25:15Z",
+          "completed_at": null,
+          "runner_name": "",
+          "labels": [
+            "ubuntu-24.04"
+          ],
+          "steps": []
+        },
+        {
+          "id": 119194392746,
+          "head_sha": "48177153ad04605338c3a9a8dbd17defee9981bc",
+          "name": "Lightweight prose and derived checks",
+          "status": "completed",
+          "conclusion": "skipped",
+          "started_at": "2026-10-21T11:25:15Z",
+          "completed_at": "2026-10-21T11:25:15Z",
+          "runner_name": null,
+          "labels": [
+            "ubuntu-24.04"
+          ],
+          "steps": []
+        },
+        {
+          "id": 119194392800,
+          "head_sha": "48177153ad04605338c3a9a8dbd17defee9981bc",
+          "name": "Hepta scoped native checks",
+          "status": "completed",
+          "conclusion": "skipped",
+          "started_at": "2026-10-21T11:25:15Z",
+          "completed_at": "2026-10-21T11:25:15Z",
+          "runner_name": null,
+          "labels": [
+            "ubuntu-24.04"
+          ],
+          "steps": []
+        },
+        {
+          "id": 119194393954,
+          "head_sha": "48177153ad04605338c3a9a8dbd17defee9981bc",
+          "name": "Bazel / Bazel test on windows-latest for x86_64-pc-windows-msvc (native main)",
+          "status": "completed",
+          "conclusion": "skipped",
+          "started_at": "2026-10-21T11:25:15Z",
+          "completed_at": "2026-10-21T11:25:15Z",
+          "runner_name": null,
+          "labels": [
+            "windows-latest"
+          ],
+          "steps": []
+        }
+      ]
+    },
+    {
+      "id": 39583123029,
+      "observed_at_utc": "2026-10-21T11:46:51.655Z",
+      "total_count": 3,
+      "jobs": [
+        {
+          "id": 119168737606,
+          "head_sha": "48177153ad04605338c3a9a8dbd17defee9981bc",
+          "name": "Architecture convergence (source-head)",
+          "status": "completed",
+          "conclusion": "success",
+          "started_at": "2026-10-21T10:34:07Z",
+          "completed_at": "2026-10-21T11:04:28Z",
+          "runner_name": "GitHub Actions 1000190869",
+          "labels": [
+            "ubuntu-24.04-arm"
+          ],
+          "steps": [
+            {
+              "name": "Set up job",
+              "number": 1,
+              "status": "completed",
+              "conclusion": "success",
+              "started_at": "2026-10-21T10:34:08Z",
+              "completed_at": "2026-10-21T10:34:09Z"
+            },
+            {
+              "name": "Check out exact candidate",
+              "number": 2,
+              "status": "completed",
+              "conclusion": "success",
+              "started_at": "2026-10-21T10:34:09Z",
+              "completed_at": "2026-10-21T10:34:15Z"
+            },
+            {
+              "name": "Fetch exact qualification history",
+              "number": 3,
+              "status": "completed",
+              "conclusion": "success",
+              "started_at": "2026-10-21T10:34:15Z",
+              "completed_at": "2026-10-21T10:34:21Z"
+            },
+            {
+              "name": "Verify GitHub prospective merge ref matches this exact candidate",
+              "number": 4,
+              "status": "completed",
+              "conclusion": "skipped",
+              "started_at": "2026-10-21T10:34:21Z",
+              "completed_at": "2026-10-21T10:34:21Z"
+            },
+            {
+              "name": "Construct the canonical prospective merge",
+              "number": 5,
+              "status": "completed",
+              "conclusion": "skipped",
+              "started_at": "2026-10-21T10:34:21Z",
+              "completed_at": "2026-10-21T10:34:21Z"
+            },
+            {
+              "name": "Bind tested identity",
+              "number": 6,
+              "status": "completed",
+              "conclusion": "success",
+              "started_at": "2026-10-21T10:34:21Z",
+              "completed_at": "2026-10-21T10:34:21Z"
+            },
+            {
+              "name": "Select exact-tree native execution",
+              "number": 7,
+              "status": "completed",
+              "conclusion": "success",
+              "started_at": "2026-10-21T10:34:21Z",
+              "completed_at": "2026-10-21T10:34:22Z"
+            },
+            {
+              "name": "Select affected architecture boundaries",
+              "number": 8,
+              "status": "completed",
+              "conclusion": "success",
+              "started_at": "2026-10-21T10:34:22Z",
+              "completed_at": "2026-10-21T10:34:23Z"
+            },
+            {
+              "name": "Test execution-record rejection and retained diagnostics",
+              "number": 9,
+              "status": "completed",
+              "conclusion": "success",
+              "started_at": "2026-10-21T10:34:23Z",
+              "completed_at": "2026-10-21T10:34:33Z"
+            },
+            {
+              "name": "Repository-control rejection regressions",
+              "number": 10,
+              "status": "completed",
+              "conclusion": "success",
+              "started_at": "2026-10-21T10:34:33Z",
+              "completed_at": "2026-10-21T10:34:34Z"
+            },
+            {
+              "name": "Prepare native prerequisites",
+              "number": 11,
+              "status": "completed",
+              "conclusion": "success",
+              "started_at": "2026-10-21T10:34:34Z",
+              "completed_at": "2026-10-21T10:34:49Z"
+            },
+            {
+              "name": "Run facebook/install-dotslash@1e4e7b3e07eaca387acb98f1d4720e0bee8dbb6a",
+              "number": 12,
+              "status": "completed",
+              "conclusion": "success",
+              "started_at": "2026-10-21T10:34:49Z",
+              "completed_at": "2026-10-21T10:34:50Z"
+            },
+            {
+              "name": "Expose DotSlash for existing integration tests",
+              "number": 13,
+              "status": "completed",
+              "conclusion": "success",
+              "started_at": "2026-10-21T10:34:50Z",
+              "completed_at": "2026-10-21T10:34:50Z"
+            },
+            {
+              "name": "Run taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532",
+              "number": 14,
+              "status": "completed",
+              "conclusion": "success",
+              "started_at": "2026-10-21T10:34:50Z",
+              "completed_at": "2026-10-21T10:34:52Z"
+            },
+            {
+              "name": "Resolve verified V8 artifacts",
+              "number": 15,
+              "status": "completed",
+              "conclusion": "success",
+              "started_at": "2026-10-21T10:34:52Z",
+              "completed_at": "2026-10-21T10:34:59Z"
+            },
+            {
+              "name": "Verify Cargo lock resolution and print exact resolver drift",
+              "number": 16,
+              "status": "completed",
+              "conclusion": "success",
+              "started_at": "2026-10-21T10:34:59Z",
+              "completed_at": "2026-10-21T10:35:17Z"
+            },
+            {
+              "name": "Inference owner regressions and streaming digest",
+              "number": 17,
+              "status": "completed",
+              "conclusion": "success",
+              "started_at": "2026-10-21T10:35:17Z",
+              "completed_at": "2026-10-21T10:35:38Z"
+            },
+            {
+              "name": "Durable operation and external-effect recovery",
+              "number": 18,
+              "status": "completed",
+              "conclusion": "success",
+              "started_at": "2026-10-21T10:35:38Z",
+              "completed_at": "2026-10-21T10:39:27Z"
+            },
+            {
+              "name": "Module lifecycle generations and migration rollback",
+              "number": 19,
+              "status": "completed",
+              "conclusion": "success",
+              "started_at": "2026-10-21T10:39:27Z",
+              "completed_at": "2026-10-21T10:41:59Z"
+            },
+            {
+              "name": "Objective and prompt policy convergence",
+              "number": 20,
+              "status": "completed",
+              "conclusion": "success",
+              "started_at": "2026-10-21T10:41:59Z",
+              "completed_at": "2026-10-21T10:42:13Z"
+            },
+            {
+              "name": "Converged authority and browser semantics",
+              "number": 21,
+              "status": "completed",
+              "conclusion": "success",
+              "started_at": "2026-10-21T10:42:13Z",
+              "completed_at": "2026-10-21T10:53:57Z"
+            },
+            {
+              "name": "Selected-artifact adoption and explicit rollback",
+              "number": 22,
+              "status": "completed",
+              "conclusion": "success",
+              "started_at": "2026-10-21T10:53:57Z",
+              "completed_at": "2026-10-21T10:54:30Z"
+            },
+            {
+              "name": "Compiled service lifecycle and actual process restart",
+              "number": 23,
+              "status": "completed",
+              "conclusion": "success",
+              "started_at": "2026-10-21T10:54:30Z",
+              "completed_at": "2026-10-21T11:04:21Z"
+            },
+            {
+              "name": "Derived-view drift",
+              "number": 24,
+              "status": "completed",
+              "conclusion": "success",
+              "started_at": "2026-10-21T11:04:21Z",
+              "completed_at": "2026-10-21T11:04:22Z"
+            },
+            {
+              "name": "Retain advisory candidate Git transport observation",
+              "number": 25,
+              "status": "completed",
+              "conclusion": "success",
+              "started_at": "2026-10-21T11:04:22Z",
+              "completed_at": "2026-10-21T11:04:25Z"
+            },
+            {
+              "name": "Verify unchanged reviewed source",
+              "number": 26,
+              "status": "completed",
+              "conclusion": "success",
+              "started_at": "2026-10-21T11:04:25Z",
+              "completed_at": "2026-10-21T11:04:25Z"
+            },
+            {
+              "name": "Retain exact source input on failure for reproducible diagnosis",
+              "number": 27,
+              "status": "completed",
+              "conclusion": "skipped",
+              "started_at": "2026-10-21T11:04:25Z",
+              "completed_at": "2026-10-21T11:04:25Z"
+            },
+            {
+              "name": "Retain command records and bounded stdout stderr",
+              "number": 28,
+              "status": "completed",
+              "conclusion": "success",
+              "started_at": "2026-10-21T11:04:25Z",
+              "completed_at": "2026-10-21T11:04:26Z"
+            },
+            {
+              "name": "Post Check out exact candidate",
+              "number": 56,
+              "status": "completed",
+              "conclusion": "success",
+              "started_at": "2026-10-21T11:04:26Z",
+              "completed_at": "2026-10-21T11:04:27Z"
+            },
+            {
+              "name": "Complete job",
+              "number": 57,
+              "status": "completed",
+              "conclusion": "success",
+              "started_at": "2026-10-21T11:04:27Z",
+              "completed_at": "2026-10-21T11:04:27Z"
+            }
+          ]
+        },
+        {
+          "id": 119168737895,
+          "head_sha": "48177153ad04605338c3a9a8dbd17defee9981bc",
+          "name": "Architecture convergence (base-merge)",
+          "status": "completed",
+          "conclusion": "success",
+          "started_at": "2026-10-21T10:34:12Z",
+          "completed_at": "2026-10-21T10:34:41Z",
+          "runner_name": "GitHub Actions 1000190872",
+          "labels": [
+            "ubuntu-24.04-arm"
+          ],
+          "steps": [
+            {
+              "name": "Set up job",
+              "number": 1,
+              "status": "completed",
+              "conclusion": "success",
+              "started_at": "2026-10-21T10:34:13Z",
+              "completed_at": "2026-10-21T10:34:14Z"
+            },
+            {
+              "name": "Check out exact candidate",
+              "number": 2,
+              "status": "completed",
+              "conclusion": "success",
+              "started_at": "2026-10-21T10:34:14Z",
+              "completed_at": "2026-10-21T10:34:19Z"
+            },
+            {
+              "name": "Fetch exact qualification history",
+              "number": 3,
+              "status": "completed",
+              "conclusion": "success",
+              "started_at": "2026-10-21T10:34:19Z",
+              "completed_at": "2026-10-21T10:34:25Z"
+            },
+            {
+              "name": "Verify GitHub prospective merge ref matches this exact candidate",
+              "number": 4,
+              "status": "completed",
+              "conclusion": "success",
+              "started_at": "2026-10-21T10:34:25Z",
+              "completed_at": "2026-10-21T10:34:26Z"
+            },
+            {
+              "name": "Construct the canonical prospective merge",
+              "number": 5,
+              "status": "completed",
+              "conclusion": "success",
+              "started_at": "2026-10-21T10:34:26Z",
+              "completed_at": "2026-10-21T10:34:26Z"
+            },
+            {
+              "name": "Bind tested identity",
+              "number": 6,
+              "status": "completed",
+              "conclusion": "success",
+              "started_at": "2026-10-21T10:34:26Z",
+              "completed_at": "2026-10-21T10:34:26Z"
+            },
+            {
+              "name": "Select exact-tree native execution",
+              "number": 7,
+              "status": "completed",
+              "conclusion": "success",
+              "started_at": "2026-10-21T10:34:26Z",
+              "completed_at": "2026-10-21T10:34:27Z"
+            },
+            {
+              "name": "Select affected architecture boundaries",
+              "number": 8,
+              "status": "completed",
+              "conclusion": "success",
+              "started_at": "2026-10-21T10:34:27Z",
+              "completed_at": "2026-10-21T10:34:27Z"
+            },
+            {
+              "name": "Test execution-record rejection and retained diagnostics",
+              "number": 9,
+              "status": "completed",
+              "conclusion": "success",
+              "started_at": "2026-10-21T10:34:27Z",
+              "completed_at": "2026-10-21T10:34:36Z"
+            },
+            {
+              "name": "Repository-control rejection regressions",
+              "number": 10,
+              "status": "completed",
+              "conclusion": "success",
+              "started_at": "2026-10-21T10:34:36Z",
+              "completed_at": "2026-10-21T10:34:37Z"
+            },
+            {
+              "name": "Prepare native prerequisites",
+              "number": 11,
+              "status": "completed",
+              "conclusion": "skipped",
+              "started_at": "2026-10-21T10:34:37Z",
+              "completed_at": "2026-10-21T10:34:37Z"
+            },
+            {
+              "name": "Run facebook/install-dotslash@1e4e7b3e07eaca387acb98f1d4720e0bee8dbb6a",
+              "number": 12,
+              "status": "completed",
+              "conclusion": "skipped",
+              "started_at": "2026-10-21T10:34:37Z",
+              "completed_at": "2026-10-21T10:34:37Z"
+            },
+            {
+              "name": "Expose DotSlash for existing integration tests",
+              "number": 13,
+              "status": "completed",
+              "conclusion": "skipped",
+              "started_at": "2026-10-21T10:34:37Z",
+              "completed_at": "2026-10-21T10:34:37Z"
+            },
+            {
+              "name": "Run taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532",
+              "number": 14,
+              "status": "completed",
+              "conclusion": "skipped",
+              "started_at": "2026-10-21T10:34:37Z",
+              "completed_at": "2026-10-21T10:34:37Z"
+            },
+            {
+              "name": "Resolve verified V8 artifacts",
+              "number": 15,
+              "status": "completed",
+              "conclusion": "skipped",
+              "started_at": "2026-10-21T10:34:37Z",
+              "completed_at": "2026-10-21T10:34:37Z"
+            },
+            {
+              "name": "Verify Cargo lock resolution and print exact resolver drift",
+              "number": 16,
+              "status": "completed",
+              "conclusion": "skipped",
+              "started_at": "2026-10-21T10:34:37Z",
+              "completed_at": "2026-10-21T10:34:37Z"
+            },
+            {
+              "name": "Inference owner regressions and streaming digest",
+              "number": 17,
+              "status": "completed",
+              "conclusion": "skipped",
+              "started_at": "2026-10-21T10:34:37Z",
+              "completed_at": "2026-10-21T10:34:37Z"
+            },
+            {
+              "name": "Durable operation and external-effect recovery",
+              "number": 18,
+              "status": "completed",
+              "conclusion": "skipped",
+              "started_at": "2026-10-21T10:34:37Z",
+              "completed_at": "2026-10-21T10:34:37Z"
+            },
+            {
+              "name": "Module lifecycle generations and migration rollback",
+              "number": 19,
+              "status": "completed",
+              "conclusion": "skipped",
+              "started_at": "2026-10-21T10:34:37Z",
+              "completed_at": "2026-10-21T10:34:37Z"
+            },
+            {
+              "name": "Objective and prompt policy convergence",
+              "number": 20,
+              "status": "completed",
+              "conclusion": "skipped",
+              "started_at": "2026-10-21T10:34:37Z",
+              "completed_at": "2026-10-21T10:34:37Z"
+            },
+            {
+              "name": "Converged authority and browser semantics",
+              "number": 21,
+              "status": "completed",
+              "conclusion": "skipped",
+              "started_at": "2026-10-21T10:34:37Z",
+              "completed_at": "2026-10-21T10:34:37Z"
+            },
+            {
+              "name": "Selected-artifact adoption and explicit rollback",
+              "number": 22,
+              "status": "completed",
+              "conclusion": "skipped",
+              "started_at": "2026-10-21T10:34:37Z",
+              "completed_at": "2026-10-21T10:34:37Z"
+            },
+            {
+              "name": "Compiled service lifecycle and actual process restart",
+              "number": 23,
+              "status": "completed",
+              "conclusion": "skipped",
+              "started_at": "2026-10-21T10:34:37Z",
+              "completed_at": "2026-10-21T10:34:37Z"
+            },
+            {
+              "name": "Derived-view drift",
+              "number": 24,
+              "status": "completed",
+              "conclusion": "success",
+              "started_at": "2026-10-21T10:34:37Z",
+              "completed_at": "2026-10-21T10:34:37Z"
+            },
+            {
+              "name": "Retain advisory candidate Git transport observation",
+              "number": 25,
+              "status": "completed",
+              "conclusion": "success",
+              "started_at": "2026-10-21T10:34:37Z",
+              "completed_at": "2026-10-21T10:34:38Z"
+            },
+            {
+              "name": "Verify unchanged reviewed source",
+              "number": 26,
+              "status": "completed",
+              "conclusion": "success",
+              "started_at": "2026-10-21T10:34:38Z",
+              "completed_at": "2026-10-21T10:34:38Z"
+            },
+            {
+              "name": "Retain exact source input on failure for reproducible diagnosis",
+              "number": 27,
+              "status": "completed",
+              "conclusion": "skipped",
+              "started_at": "2026-10-21T10:34:38Z",
+              "completed_at": "2026-10-21T10:34:38Z"
+            },
+            {
+              "name": "Retain command records and bounded stdout stderr",
+              "number": 28,
+              "status": "completed",
+              "conclusion": "success",
+              "started_at": "2026-10-21T10:34:38Z",
+              "completed_at": "2026-10-21T10:34:39Z"
+            },
+            {
+              "name": "Post Check out exact candidate",
+              "number": 56,
+              "status": "completed",
+              "conclusion": "success",
+              "started_at": "2026-10-21T10:34:39Z",
+              "completed_at": "2026-10-21T10:34:39Z"
+            },
+            {
+              "name": "Complete job",
+              "number": 57,
+              "status": "completed",
+              "conclusion": "success",
+              "started_at": "2026-10-21T10:34:39Z",
+              "completed_at": "2026-10-21T10:34:39Z"
+            }
+          ]
+        },
+        {
+          "id": 119185724444,
+          "head_sha": "48177153ad04605338c3a9a8dbd17defee9981bc",
+          "name": "Architecture required",
+          "status": "completed",
+          "conclusion": "success",
+          "started_at": "2026-10-21T11:45:03Z",
+          "completed_at": "2026-10-21T11:45:06Z",
+          "runner_name": "GitHub Actions 1000191446",
+          "labels": [
+            "ubuntu-24.04"
+          ],
+          "steps": [
+            {
+              "name": "Set up job",
+              "number": 1,
+              "status": "completed",
+              "conclusion": "success",
+              "started_at": "2026-10-21T11:45:04Z",
+              "completed_at": "2026-10-21T11:45:04Z"
+            },
+            {
+              "name": "Require both exact-candidate lanes",
+              "number": 2,
+              "status": "completed",
+              "conclusion": "success",
+              "started_at": "2026-10-21T11:45:04Z",
+              "completed_at": "2026-10-21T11:45:04Z"
+            },
+            {
+              "name": "Complete job",
+              "number": 3,
+              "status": "completed",
+              "conclusion": "success",
+              "started_at": "2026-10-21T11:45:04Z",
+              "completed_at": "2026-10-21T11:45:04Z"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": 39583122999,
+      "observed_at_utc": "2026-10-21T11:46:52.123Z",
+      "total_count": 15,
+      "jobs": [
+        {
+          "id": 119165856197,
+          "head_sha": "48177153ad04605338c3a9a8dbd17defee9981bc",
+          "name": "metadata",
+          "status": "completed",
+          "conclusion": "success",
+          "started_at": "2026-10-21T10:29:31Z",
+          "completed_at": "2026-10-21T10:30:00Z",
+          "runner_name": "GitHub Actions 1000190823",
+          "labels": [
+            "ubuntu-latest"
+          ],
+          "steps": [
+            {
+              "name": "Set up job",
+              "number": 1,
+              "status": "completed",
+              "conclusion": "success",
+              "started_at": "2026-10-21T10:29:31Z",
+              "completed_at": "2026-10-21T10:29:32Z"
+            },
+            {
+              "name": "Run actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd",
+              "number": 2,
+              "status": "completed",
+              "conclusion": "success",
+              "started_at": "2026-10-21T10:29:32Z",
+              "completed_at": "2026-10-21T10:29:56Z"
+            },
+            {
+              "name": "Set up Python",
+              "number": 3,
+              "status": "completed",
+              "conclusion": "success",
+              "started_at": "2026-10-21T10:29:56Z",
+              "completed_at": "2026-10-21T10:29:56Z"
+            },
+            {
+              "name": "Resolve exact v8 crate version",
+              "number": 4,
+              "status": "completed",
+              "conclusion": "success",
+              "started_at": "2026-10-21T10:29:56Z",
+              "completed_at": "2026-10-21T10:29:57Z"
+            },
+            {
+              "name": "Detect V8 canary changes",
+              "number": 5,
+              "status": "completed",
+              "conclusion": "success",
+              "started_at": "2026-10-21T10:29:57Z",
+              "completed_at": "2026-10-21T10:29:58Z"
+            },
+            {
+              "name": "Check for a clean worktree",
+              "number": 6,
+              "status": "completed",
+              "conclusion": "success",
+              "started_at": "2026-10-21T10:29:58Z",
+              "completed_at": "2026-10-21T10:29:58Z"
+            },
+            {
+              "name": "Post Set up Python",
+              "number": 11,
+              "status": "completed",
+              "conclusion": "success",
+              "started_at": "2026-10-21T10:29:58Z",
+              "completed_at": "2026-10-21T10:29:58Z"
+            },
+            {
+              "name": "Post Run actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd",
+              "number": 12,
+              "status": "completed",
+              "conclusion": "success",
+              "started_at": "2026-10-21T10:29:58Z",
+              "completed_at": "2026-10-21T10:29:58Z"
+            },
+            {
+              "name": "Complete job",
+              "number": 13,
+              "status": "completed",
+              "conclusion": "success",
+              "started_at": "2026-10-21T10:29:58Z",
+              "completed_at": "2026-10-21T10:29:58Z"
+            }
+          ]
+        },
+        {
+          "id": 119171686607,
+          "head_sha": "48177153ad04605338c3a9a8dbd17defee9981bc",
+          "name": "Build ptrcomp-sandbox aarch64-pc-windows-msvc from source",
+          "status": "in_progress",
+          "conclusion": null,
+          "started_at": "2026-10-21T10:32:50Z",
+          "completed_at": null,
+          "runner_name": "GitHub Actions 1000190847",
+          "labels": [
+            "windows-2025"
+          ],
+          "steps": [
+            {
+              "name": "Set up job",
+              "number": 1,
+              "status": "completed",
+              "conclusion": "success",
+              "started_at": "2026-10-21T10:32:51Z",
+              "completed_at": "2026-10-21T10:32:53Z"
+            },
+            {
+              "name": "Run actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd",
+              "number": 2,
+              "status": "completed",
+              "conclusion": "success",
+              "started_at": "2026-10-21T10:32:53Z",
+              "completed_at": "2026-10-21T10:33:07Z"
+            },
+            {
+              "name": "Run ./.github/actions/setup-ci",
+              "number": 3,
+              "status": "completed",
+              "conclusion": "success",
+              "started_at": "2026-10-21T10:33:07Z",
+              "completed_at": "2026-10-21T10:33:19Z"
+            },
+            {
+              "name": "Configure git for upstream checkout",
+              "number": 4,
+              "status": "completed",
+              "conclusion": "success",
+              "started_at": "2026-10-21T10:33:19Z",
+              "completed_at": "2026-10-21T10:33:19Z"
+            },
+            {
+              "name": "Check out upstream rusty_v8",
+              "number": 5,
+              "status": "completed",
+              "conclusion": "success",
+              "started_at": "2026-10-21T10:33:19Z",
+              "completed_at": "2026-10-21T10:34:43Z"
+            },
+            {
+              "name": "Set up Python",
+              "number": 6,
+              "status": "completed",
+              "conclusion": "success",
+              "started_at": "2026-10-21T10:34:43Z",
+              "completed_at": "2026-10-21T10:34:44Z"
+            },
+            {
+              "name": "Set up Codex Rust toolchain for Cargo smoke",
+              "number": 7,
+              "status": "completed",
+              "conclusion": "success",
+              "started_at": "2026-10-21T10:34:44Z",
+              "completed_at": "2026-10-21T10:35:02Z"
+            },
+            {
+              "name": "Install rusty_v8 Rust toolchain",
+              "number": 8,
+              "status": "completed",
+              "conclusion": "success",
+              "started_at": "2026-10-21T10:35:02Z",
+              "completed_at": "2026-10-21T10:35:24Z"
+            },
+            {
+              "name": "Write upstream submodule status",
+              "number": 9,
+              "status": "completed",
+              "conclusion": "success",
+              "started_at": "2026-10-21T10:35:24Z",
+              "completed_at": "2026-10-21T10:35:26Z"
+            },
+            {
+              "name": "Restore upstream source-build cache",
+              "number": 10,
+              "status": "completed",
+              "conclusion": "success",
+              "started_at": "2026-10-21T10:35:26Z",
+              "completed_at": "2026-10-21T10:35:27Z"
+            },
+            {
+              "name": "Install and start sccache",
+              "number": 11,
+              "status": "completed",
+              "conclusion": "success",
+              "started_at": "2026-10-21T10:35:27Z",
+              "completed_at": "2026-10-21T10:35:29Z"
+            },
+            {
+              "name": "Install Chromium clang for ARM64 MSVC cross build",
+              "number": 12,
+              "status": "completed",
+              "conclusion": "success",
+              "started_at": "2026-10-21T10:35:29Z",
+              "completed_at": "2026-10-21T10:35:39Z"
+            },
+            {
+              "name": "Build upstream rusty_v8 sandbox release pair",
+              "number": 13,
+              "status": "in_progress",
+              "conclusion": null,
+              "started_at": "2026-10-21T10:35:39Z",
+              "completed_at": null
+            },
+            {
+              "name": "Stage upstream sandbox release pair",
+              "number": 14,
+              "status": "pending",
+              "conclusion": null,
+              "started_at": null,
+              "completed_at": null
+            },
+            {
+              "name": "Smoke link staged artifact with Cargo",
+              "number": 15,
+              "status": "pending",
+              "conclusion": null,
+              "started_at": null,
+              "completed_at": null
+            },
+            {
+              "name": "Upload staged artifacts",
+              "number": 16,
+              "status": "pending",
+              "conclusion": null,
+              "started_at": null,
+              "completed_at": null
+            },
+            {
+              "name": "Check for a clean worktree",
+              "number": 17,
+              "status": "pending",
+              "conclusion": null,
+              "started_at": null,
+              "completed_at": null
+            },
+            {
+              "name": "Post Restore upstream source-build cache",
+              "number": 31,
+              "status": "pending",
+              "conclusion": null,
+              "started_at": null,
+              "completed_at": null
+            },
+            {
+              "name": "Post Set up Python",
+              "number": 32,
+              "status": "pending",
+              "conclusion": null,
+              "started_at": null,
+              "completed_at": null
+            },
+            {
+              "name": "Post Check out upstream rusty_v8",
+              "number": 33,
+              "status": "pending",
+              "conclusion": null,
+              "started_at": null,
+              "completed_at": null
+            },
+            {
+              "name": "Post Run actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd",
+              "number": 34,
+              "status": "pending",
+              "conclusion": null,
+              "started_at": null,
+              "completed_at": null
+            }
+          ]
+        },
+        {
+          "id": 119171686656,
+          "head_sha": "48177153ad04605338c3a9a8dbd17defee9981bc",
+          "name": "Build ptrcomp-sandbox x86_64-pc-windows-msvc from source",
+          "status": "completed",
+          "conclusion": "success",
+          "started_at": "2026-10-21T10:33:04Z",
+          "completed_at": "2026-10-21T11:35:16Z",
+          "runner_name": "GitHub Actions 1000190851",
+          "labels": [
+            "windows-2025"
+          ],
+          "steps": [
+            {
+              "name": "Set up job",
+              "number": 1,
+              "status": "completed",
+              "conclusion": "success",
+              "started_at": "2026-10-21T10:33:05Z",
+              "completed_at": "2026-10-21T10:33:06Z"
+            },
+            {
+              "name": "Run actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd",
+              "number": 2,
+              "status": "completed",
+              "conclusion": "success",
+              "started_at": "2026-10-21T10:33:06Z",
+              "completed_at": "2026-10-21T10:33:17Z"
+            },
+            {
+              "name": "Run ./.github/actions/setup-ci",
+              "number": 3,
+              "status": "completed",
+              "conclusion": "success",
+              "started_at": "2026-10-21T10:33:17Z",
+              "completed_at": "2026-10-21T10:33:28Z"
+            },
+            {
+              "name": "Configure git for upstream checkout",
+              "number": 4,
+              "status": "completed",
+              "conclusion": "success",
+              "started_at": "2026-10-21T10:33:28Z",
+              "completed_at": "2026-10-21T10:33:28Z"
+            },
+            {
+              "name": "Check out upstream rusty_v8",
+              "number": 5,
+              "status": "completed",
+              "conclusion": "success",
+              "started_at": "2026-10-21T10:33:28Z",
+              "completed_at": "2026-10-21T10:34:45Z"
+            },
+            {
+              "name": "Set up Python",
+              "number": 6,
+              "status": "completed",
+              "conclusion": "success",
+              "started_at": "2026-10-21T10:34:45Z",
+              "completed_at": "2026-10-21T10:34:45Z"
+            },
+            {
+              "name": "Set up Codex Rust toolchain for Cargo smoke",
+              "number": 7,
+              "status": "completed",
+              "conclusion": "success",
+              "started_at": "2026-10-21T10:34:45Z",
+              "completed_at": "2026-10-21T10:34:56Z"
+            },
+            {
+              "name": "Install rusty_v8 Rust toolchain",
+              "number": 8,
+              "status": "completed",
+              "conclusion": "success",
+              "started_at": "2026-10-21T10:34:56Z",
+              "completed_at": "2026-10-21T10:35:04Z"
+            },
+            {
+              "name": "Write upstream submodule status",
+              "number": 9,
+              "status": "completed",
+              "conclusion": "success",
+              "started_at": "2026-10-21T10:35:04Z",
+              "completed_at": "2026-10-21T10:35:07Z"
+            },
+            {
+              "name": "Restore upstream source-build cache",
+              "number": 10,
+              "status": "completed",
+              "conclusion": "success",
+              "started_at": "2026-10-21T10:35:07Z",
+              "completed_at": "2026-10-21T10:35:07Z"
+            },
+            {
+              "name": "Install and start sccache",
+              "number": 11,
+              "status": "completed",
+              "conclusion": "success",
+              "started_at": "2026-10-21T10:35:07Z",
+              "completed_at": "2026-10-21T10:35:09Z"
+            },
+            {
+              "name": "Install Chromium clang for ARM64 MSVC cross build",
+              "number": 12,
+              "status": "completed",
+              "conclusion": "skipped",
+              "started_at": "2026-10-21T10:35:09Z",
+              "completed_at": "2026-10-21T10:35:09Z"
+            },
+            {
+              "name": "Build upstream rusty_v8 sandbox release pair",
+              "number": 13,
+              "status": "completed",
+              "conclusion": "success",
+              "started_at": "2026-10-21T10:35:09Z",
+              "completed_at": "2026-10-21T11:33:49Z"
+            },
+            {
+              "name": "Stage upstream sandbox release pair",
+              "number": 14,
+              "status": "completed",
+              "conclusion": "success",
+              "started_at": "2026-10-21T11:33:49Z",
+              "completed_at": "2026-10-21T11:33:54Z"
+            },
+            {
+              "name": "Smoke link staged artifact with Cargo",
+              "number": 15,
+              "status": "completed",
+              "conclusion": "success",
+              "started_at": "2026-10-21T11:33:54Z",
+              "completed_at": "2026-10-21T11:35:00Z"
+            },
+            {
+              "name": "Upload staged artifacts",
+              "number": 16,
+              "status": "completed",
+              "conclusion": "success",
+              "started_at": "2026-10-21T11:35:00Z",
+              "completed_at": "2026-10-21T11:35:02Z"
+            },
+            {
+              "name": "Check for a clean worktree",
+              "number": 17,
+              "status": "completed",
+              "conclusion": "success",
+              "started_at": "2026-10-21T11:35:02Z",
+              "completed_at": "2026-10-21T11:35:02Z"
+            },
+            {
+              "name": "Post Restore upstream source-build cache",
+              "number": 31,
+              "status": "completed",
+              "conclusion": "success",
+              "started_at": "2026-10-21T11:35:02Z",
+              "completed_at": "2026-10-21T11:35:08Z"
+            },
+            {
+              "name": "Post Set up Python",
+              "number": 32,
+              "status": "completed",
+              "conclusion": "success",
+              "started_at": "2026-10-21T11:35:08Z",
+              "completed_at": "2026-10-21T11:35:08Z"
+            },
+            {
+              "name": "Post Check out upstream rusty_v8",
+              "number": 33,
+              "status": "completed",
+              "conclusion": "success",
+              "started_at": "2026-10-21T11:35:08Z",
+              "completed_at": "2026-10-21T11:35:13Z"
+            },
+            {
+              "name": "Post Run actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd",
+              "number": 34,
+              "status": "completed",
+              "conclusion": "success",
+              "started_at": "2026-10-21T11:35:13Z",
+              "completed_at": "2026-10-21T11:35:14Z"
+            },
+            {
+              "name": "Complete job",
+              "number": 35,
+              "status": "completed",
+              "conclusion": "success",
+              "started_at": "2026-10-21T11:35:14Z",
+              "completed_at": "2026-10-21T11:35:14Z"
+            }
+          ]
+        },
+        {
+          "id": 119171686801,
+          "head_sha": "48177153ad04605338c3a9a8dbd17defee9981bc",
+          "name": "Build ptrcomp-sandbox x86_64-unknown-linux-musl",
+          "status": "in_progress",
+          "conclusion": null,
+          "started_at": "2026-10-21T10:56:52Z",
+          "completed_at": null,
+          "runner_name": "GitHub Actions 1000191094",
+          "labels": [
+            "ubuntu-24.04"
+          ],
+          "steps": [
+            {
+              "name": "Set up job",
+              "number": 1,
+              "status": "completed",
+              "conclusion": "success",
+              "started_at": "2026-10-21T10:56:53Z",
+              "completed_at": "2026-10-21T10:56:54Z"
+            },
+            {
+              "name": "Run actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd",
+              "number": 2,
+              "status": "completed",
+              "conclusion": "success",
+              "started_at": "2026-10-21T10:56:54Z",
+              "completed_at": "2026-10-21T10:57:00Z"
+            },
+            {
+              "name": "Set up Bazel",
+              "number": 3,
+              "status": "completed",
+              "conclusion": "success",
+              "started_at": "2026-10-21T10:57:00Z",
+              "completed_at": "2026-10-21T10:57:11Z"
+            },
+            {
+              "name": "Set up Python",
+              "number": 4,
+              "status": "completed",
+              "conclusion": "success",
+              "started_at": "2026-10-21T10:57:11Z",
+              "completed_at": "2026-10-21T10:57:11Z"
+            },
+            {
+              "name": "Set up Rust toolchain for Cargo smoke",
+              "number": 5,
+              "status": "completed",
+              "conclusion": "success",
+              "started_at": "2026-10-21T10:57:11Z",
+              "completed_at": "2026-10-21T10:57:20Z"
+            },
+            {
+              "name": "Pin installed Cargo binary",
+              "number": 6,
+              "status": "completed",
+              "conclusion": "success",
+              "started_at": "2026-10-21T10:57:20Z",
+              "completed_at": "2026-10-21T10:57:20Z"
+            },
+            {
+              "name": "Build Bazel V8 release pair",
+              "number": 7,
+              "status": "in_progress",
+              "conclusion": null,
+              "started_at": "2026-10-21T10:57:20Z",
+              "completed_at": null
+            },
+            {
+              "name": "Stage release pair",
+              "number": 8,
+              "status": "pending",
+              "conclusion": null,
+              "started_at": null,
+              "completed_at": null
+            },
+            {
+              "name": "Smoke test staged artifact with Cargo",
+              "number": 9,
+              "status": "pending",
+              "conclusion": null,
+              "started_at": null,
+              "completed_at": null
+            },
+            {
+              "name": "Upload staged artifacts",
+              "number": 10,
+              "status": "pending",
+              "conclusion": null,
+              "started_at": null,
+              "completed_at": null
+            },
+            {
+              "name": "Check for a clean worktree",
+              "number": 11,
+              "status": "pending",
+              "conclusion": null,
+              "started_at": null,
+              "completed_at": null
+            },
+            {
+              "name": "Post Set up Python",
+              "number": 20,
+              "status": "pending",
+              "conclusion": null,
+              "started_at": null,
+              "completed_at": null
+            },
+            {
+              "name": "Post Set up Bazel",
+              "number": 21,
+              "status": "pending",
+              "conclusion": null,
+              "started_at": null,
+              "completed_at": null
+            },
+            {
+              "name": "Post Run actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd",
+              "number": 22,
+              "status": "pending",
+              "conclusion": null,
+              "started_at": null,
+              "completed_at": null
+            }
+          ]
+        },
+        {
+          "id": 119171686802,
+          "head_sha": "48177153ad04605338c3a9a8dbd17defee9981bc",
+          "name": "Build release aarch64-unknown-linux-musl",
+          "status": "in_progress",
+          "conclusion": null,
+          "started_at": "2026-10-21T10:34:46Z",
+          "completed_at": null,
+          "runner_name": "GitHub Actions 1000190881",
+          "labels": [
+            "ubuntu-24.04-arm"
+          ],
+          "steps": [
+            {
+              "name": "Set up job",
+              "number": 1,
+              "status": "completed",
+              "conclusion": "success",
+              "started_at": "2026-10-21T10:34:47Z",
+              "completed_at": "2026-10-21T10:34:48Z"
+            },
+            {
+              "name": "Run actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd",
+              "number": 2,
+              "status": "completed",
+              "conclusion": "success",
+              "started_at": "2026-10-21T10:34:48Z",
+              "completed_at": "2026-10-21T10:34:53Z"
+            },
+            {
+              "name": "Set up Bazel",
+              "number": 3,
+              "status": "completed",
+              "conclusion": "success",
+              "started_at": "2026-10-21T10:34:54Z",
+              "completed_at": "2026-10-21T10:35:02Z"
+            },
+            {
+              "name": "Set up Python",
+              "number": 4,
+              "status": "completed",
+              "conclusion": "success",
+              "started_at": "2026-10-21T10:35:02Z",
+              "completed_at": "2026-10-21T10:35:03Z"
+            },
+            {
+              "name": "Set up Rust toolchain for Cargo smoke",
+              "number": 5,
+              "status": "completed",
+              "conclusion": "success",
+              "started_at": "2026-10-21T10:35:03Z",
+              "completed_at": "2026-10-21T10:35:08Z"
+            },
+            {
+              "name": "Pin installed Cargo binary",
+              "number": 6,
+              "status": "completed",
+              "conclusion": "success",
+              "started_at": "2026-10-21T10:35:08Z",
+              "completed_at": "2026-10-21T10:35:08Z"
+            },
+            {
+              "name": "Build Bazel V8 release pair",
+              "number": 7,
+              "status": "in_progress",
+              "conclusion": null,
+              "started_at": "2026-10-21T10:35:08Z",
+              "completed_at": null
+            },
+            {
+              "name": "Stage release pair",
+              "number": 8,
+              "status": "pending",
+              "conclusion": null,
+              "started_at": null,
+              "completed_at": null
+            },
+            {
+              "name": "Smoke test staged artifact with Cargo",
+              "number": 9,
+              "status": "pending",
+              "conclusion": null,
+              "started_at": null,
+              "completed_at": null
+            },
+            {
+              "name": "Upload staged artifacts",
+              "number": 10,
+              "status": "pending",
+              "conclusion": null,
+              "started_at": null,
+              "completed_at": null
+            },
+            {
+              "name": "Check for a clean worktree",
+              "number": 11,
+              "status": "pending",
+              "conclusion": null,
+              "started_at": null,
+              "completed_at": null
+            },
+            {
+              "name": "Post Set up Python",
+              "number": 20,
+              "status": "pending",
+              "conclusion": null,
+              "started_at": null,
+              "completed_at": null
+            },
+            {
+              "name": "Post Set up Bazel",
+              "number": 21,
+              "status": "pending",
+              "conclusion": null,
+              "started_at": null,
+              "completed_at": null
+            },
+            {
+              "name": "Post Run actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd",
+              "number": 22,
+              "status": "pending",
+              "conclusion": null,
+              "started_at": null,
+              "completed_at": null
+            }
+          ]
+        },
+        {
+          "id": 119171686809,
+          "head_sha": "48177153ad04605338c3a9a8dbd17defee9981bc",
+          "name": "Build ptrcomp-sandbox aarch64-apple-darwin",
+          "status": "in_progress",
+          "conclusion": null,
+          "started_at": "2026-10-21T10:33:10Z",
+          "completed_at": null,
+          "runner_name": "GitHub Actions 1000190854",
+          "labels": [
+            "macos-15"
+          ],
+          "steps": [
+            {
+              "name": "Set up job",
+              "number": 1,
+              "status": "completed",
+              "conclusion": "success",
+              "started_at": "2026-10-21T10:33:11Z",
+              "completed_at": "2026-10-21T10:33:12Z"
+            },
+            {
+              "name": "Run actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd",
+              "number": 2,
+              "status": "completed",
+              "conclusion": "success",
+              "started_at": "2026-10-21T10:33:12Z",
+              "completed_at": "2026-10-21T10:33:19Z"
+            },
+            {
+              "name": "Set up Bazel",
+              "number": 3,
+              "status": "completed",
+              "conclusion": "success",
+              "started_at": "2026-10-21T10:33:19Z",
+              "completed_at": "2026-10-21T10:33:28Z"
+            },
+            {
+              "name": "Set up Python",
+              "number": 4,
+              "status": "completed",
+              "conclusion": "success",
+              "started_at": "2026-10-21T10:33:28Z",
+              "completed_at": "2026-10-21T10:33:29Z"
+            },
+            {
+              "name": "Set up Rust toolchain for Cargo smoke",
+              "number": 5,
+              "status": "completed",
+              "conclusion": "success",
+              "started_at": "2026-10-21T10:33:29Z",
+              "completed_at": "2026-10-21T10:33:37Z"
+            },
+            {
+              "name": "Pin installed Cargo binary",
+              "number": 6,
+              "status": "completed",
+              "conclusion": "success",
+              "started_at": "2026-10-21T10:33:37Z",
+              "completed_at": "2026-10-21T10:33:37Z"
+            },
+            {
+              "name": "Build Bazel V8 release pair",
+              "number": 7,
+              "status": "in_progress",
+              "conclusion": null,
+              "started_at": "2026-10-21T10:33:37Z",
+              "completed_at": null
+            },
+            {
+              "name": "Stage release pair",
+              "number": 8,
+              "status": "pending",
+              "conclusion": null,
+              "started_at": null,
+              "completed_at": null
+            },
+            {
+              "name": "Smoke test staged artifact with Cargo",
+              "number": 9,
+              "status": "pending",
+              "conclusion": null,
+              "started_at": null,
+              "completed_at": null
+            },
+            {
+              "name": "Upload staged artifacts",
+              "number": 10,
+              "status": "pending",
+              "conclusion": null,
+              "started_at": null,
+              "completed_at": null
+            },
+            {
+              "name": "Check for a clean worktree",
+              "number": 11,
+              "status": "pending",
+              "conclusion": null,
+              "started_at": null,
+              "completed_at": null
+            },
+            {
+              "name": "Post Set up Python",
+              "number": 20,
+              "status": "pending",
+              "conclusion": null,
+              "started_at": null,
+              "completed_at": null
+            },
+            {
+              "name": "Post Set up Bazel",
+              "number": 21,
+              "status": "pending",
+              "conclusion": null,
+              "started_at": null,
+              "completed_at": null
+            },
+            {
+              "name": "Post Run actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd",
+              "number": 22,
+              "status": "pending",
+              "conclusion": null,
+              "started_at": null,
+              "completed_at": null
+            }
+          ]
+        },
+        {
+          "id": 119171686852,
+          "head_sha": "48177153ad04605338c3a9a8dbd17defee9981bc",
+          "name": "Build release x86_64-apple-darwin",
+          "status": "in_progress",
+          "conclusion": null,
+          "started_at": "2026-10-21T10:39:24Z",
+          "completed_at": null,
+          "runner_name": "GitHub Actions 1000190920",
+          "labels": [
+            "macos-15-intel"
+          ],
+          "steps": [
+            {
+              "name": "Set up job",
+              "number": 1,
+              "status": "completed",
+              "conclusion": "success",
+              "started_at": "2026-10-21T10:39:25Z",
+              "completed_at": "2026-10-21T10:39:27Z"
+            },
+            {
+              "name": "Run actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd",
+              "number": 2,
+              "status": "completed",
+              "conclusion": "success",
+              "started_at": "2026-10-21T10:39:27Z",
+              "completed_at": "2026-10-21T10:39:37Z"
+            },
+            {
+              "name": "Set up Bazel",
+              "number": 3,
+              "status": "completed",
+              "conclusion": "success",
+              "started_at": "2026-10-21T10:39:37Z",
+              "completed_at": "2026-10-21T10:39:47Z"
+            },
+            {
+              "name": "Set up Python",
+              "number": 4,
+              "status": "completed",
+              "conclusion": "success",
+              "started_at": "2026-10-21T10:39:47Z",
+              "completed_at": "2026-10-21T10:39:47Z"
+            },
+            {
+              "name": "Set up Rust toolchain for Cargo smoke",
+              "number": 5,
+              "status": "completed",
+              "conclusion": "success",
+              "started_at": "2026-10-21T10:39:47Z",
+              "completed_at": "2026-10-21T10:40:14Z"
+            },
+            {
+              "name": "Pin installed Cargo binary",
+              "number": 6,
+              "status": "completed",
+              "conclusion": "success",
+              "started_at": "2026-10-21T10:40:14Z",
+              "completed_at": "2026-10-21T10:40:14Z"
+            },
+            {
+              "name": "Build Bazel V8 release pair",
+              "number": 7,
+              "status": "in_progress",
+              "conclusion": null,
+              "started_at": "2026-10-21T10:40:14Z",
+              "completed_at": null
+            },
+            {
+              "name": "Stage release pair",
+              "number": 8,
+              "status": "pending",
+              "conclusion": null,
+              "started_at": null,
+              "completed_at": null
+            },
+            {
+              "name": "Smoke test staged artifact with Cargo",
+              "number": 9,
+              "status": "pending",
+              "conclusion": null,
+              "started_at": null,
+              "completed_at": null
+            },
+            {
+              "name": "Upload staged artifacts",
+              "number": 10,
+              "status": "pending",
+              "conclusion": null,
+              "started_at": null,
+              "completed_at": null
+            },
+            {
+              "name": "Check for a clean worktree",
+              "number": 11,
+              "status": "pending",
+              "conclusion": null,
+              "started_at": null,
+              "completed_at": null
+            },
+            {
+              "name": "Post Set up Python",
+              "number": 20,
+              "status": "pending",
+              "conclusion": null,
+              "started_at": null,
+              "completed_at": null
+            },
+            {
+              "name": "Post Set up Bazel",
+              "number": 21,
+              "status": "pending",
+              "conclusion": null,
+              "started_at": null,
+              "completed_at": null
+            },
+            {
+              "name": "Post Run actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd",
+              "number": 22,
+              "status": "pending",
+              "conclusion": null,
+              "started_at": null,
+              "completed_at": null
+            }
+          ]
+        },
+        {
+          "id": 119171686907,
+          "head_sha": "48177153ad04605338c3a9a8dbd17defee9981bc",
+          "name": "Build release x86_64-unknown-linux-gnu",
+          "status": "in_progress",
+          "conclusion": null,
+          "started_at": "2026-10-21T11:00:18Z",
+          "completed_at": null,
+          "runner_name": "GitHub Actions 1000191104",
+          "labels": [
+            "ubuntu-24.04"
+          ],
+          "steps": [
+            {
+              "name": "Set up job",
+              "number": 1,
+              "status": "completed",
+              "conclusion": "success",
+              "started_at": "2026-10-21T11:00:19Z",
+              "completed_at": "2026-10-21T11:00:20Z"
+            },
+            {
+              "name": "Run actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd",
+              "number": 2,
+              "status": "completed",
+              "conclusion": "success",
+              "started_at": "2026-10-21T11:00:20Z",
+              "completed_at": "2026-10-21T11:00:30Z"
+            },
+            {
+              "name": "Set up Bazel",
+              "number": 3,
+              "status": "completed",
+              "conclusion": "success",
+              "started_at": "2026-10-21T11:00:30Z",
+              "completed_at": "2026-10-21T11:00:43Z"
+            },
+            {
+              "name": "Set up Python",
+              "number": 4,
+              "status": "completed",
+              "conclusion": "success",
+              "started_at": "2026-10-21T11:00:43Z",
+              "completed_at": "2026-10-21T11:00:43Z"
+            },
+            {
+              "name": "Set up Rust toolchain for Cargo smoke",
+              "number": 5,
+              "status": "completed",
+              "conclusion": "success",
+              "started_at": "2026-10-21T11:00:43Z",
+              "completed_at": "2026-10-21T11:00:50Z"
+            },
+            {
+              "name": "Pin installed Cargo binary",
+              "number": 6,
+              "status": "completed",
+              "conclusion": "success",
+              "started_at": "2026-10-21T11:00:50Z",
+              "completed_at": "2026-10-21T11:00:50Z"
+            },
+            {
+              "name": "Build Bazel V8 release pair",
+              "number": 7,
+              "status": "in_progress",
+              "conclusion": null,
+              "started_at": "2026-10-21T11:00:50Z",
+              "completed_at": null
+            },
+            {
+              "name": "Stage release pair",
+              "number": 8,
+              "status": "pending",
+              "conclusion": null,
+              "started_at": null,
+              "completed_at": null
+            },
+            {
+              "name": "Smoke test staged artifact with Cargo",
+              "number": 9,
+              "status": "pending",
+              "conclusion": null,
+              "started_at": null,
+              "completed_at": null
+            },
+            {
+              "name": "Upload staged artifacts",
+              "number": 10,
+              "status": "pending",
+              "conclusion": null,
+              "started_at": null,
+              "completed_at": null
+            },
+            {
+              "name": "Check for a clean worktree",
+              "number": 11,
+              "status": "pending",
+              "conclusion": null,
+              "started_at": null,
+              "completed_at": null
+            },
+            {
+              "name": "Post Set up Python",
+              "number": 20,
+              "status": "pending",
+              "conclusion": null,
+              "started_at": null,
+              "completed_at": null
+            },
+            {
+              "name": "Post Set up Bazel",
+              "number": 21,
+              "status": "pending",
+              "conclusion": null,
+              "started_at": null,
+              "completed_at": null
+            },
+            {
+              "name": "Post Run actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd",
+              "number": 22,
+              "status": "pending",
+              "conclusion": null,
+              "started_at": null,
+              "completed_at": null
+            }
+          ]
+        },
+        {
+          "id": 119171686915,
+          "head_sha": "48177153ad04605338c3a9a8dbd17defee9981bc",
+          "name": "Build ptrcomp-sandbox x86_64-apple-darwin",
+          "status": "in_progress",
+          "conclusion": null,
+          "started_at": "2026-10-21T10:33:36Z",
+          "completed_at": null,
+          "runner_name": "GitHub Actions 1000190861",
+          "labels": [
+            "macos-15-intel"
+          ],
+          "steps": [
+            {
+              "name": "Set up job",
+              "number": 1,
+              "status": "completed",
+              "conclusion": "success",
+              "started_at": "2026-10-21T10:33:38Z",
+              "completed_at": "2026-10-21T10:33:41Z"
+            },
+            {
+              "name": "Run actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd",
+              "number": 2,
+              "status": "completed",
+              "conclusion": "success",
+              "started_at": "2026-10-21T10:33:41Z",
+              "completed_at": "2026-10-21T10:33:56Z"
+            },
+            {
+              "name": "Set up Bazel",
+              "number": 3,
+              "status": "completed",
+              "conclusion": "success",
+              "started_at": "2026-10-21T10:33:56Z",
+              "completed_at": "2026-10-21T10:34:06Z"
+            },
+            {
+              "name": "Set up Python",
+              "number": 4,
+              "status": "completed",
+              "conclusion": "success",
+              "started_at": "2026-10-21T10:34:06Z",
+              "completed_at": "2026-10-21T10:34:07Z"
+            },
+            {
+              "name": "Set up Rust toolchain for Cargo smoke",
+              "number": 5,
+              "status": "completed",
+              "conclusion": "success",
+              "started_at": "2026-10-21T10:34:07Z",
+              "completed_at": "2026-10-21T10:34:46Z"
+            },
+            {
+              "name": "Pin installed Cargo binary",
+              "number": 6,
+              "status": "completed",
+              "conclusion": "success",
+              "started_at": "2026-10-21T10:34:46Z",
+              "completed_at": "2026-10-21T10:34:46Z"
+            },
+            {
+              "name": "Build Bazel V8 release pair",
+              "number": 7,
+              "status": "in_progress",
+              "conclusion": null,
+              "started_at": "2026-10-21T10:34:46Z",
+              "completed_at": null
+            },
+            {
+              "name": "Stage release pair",
+              "number": 8,
+              "status": "pending",
+              "conclusion": null,
+              "started_at": null,
+              "completed_at": null
+            },
+            {
+              "name": "Smoke test staged artifact with Cargo",
+              "number": 9,
+              "status": "pending",
+              "conclusion": null,
+              "started_at": null,
+              "completed_at": null
+            },
+            {
+              "name": "Upload staged artifacts",
+              "number": 10,
+              "status": "pending",
+              "conclusion": null,
+              "started_at": null,
+              "completed_at": null
+            },
+            {
+              "name": "Check for a clean worktree",
+              "number": 11,
+              "status": "pending",
+              "conclusion": null,
+              "started_at": null,
+              "completed_at": null
+            },
+            {
+              "name": "Post Set up Python",
+              "number": 20,
+              "status": "pending",
+              "conclusion": null,
+              "started_at": null,
+              "completed_at": null
+            },
+            {
+              "name": "Post Set up Bazel",
+              "number": 21,
+              "status": "pending",
+              "conclusion": null,
+              "started_at": null,
+              "completed_at": null
+            },
+            {
+              "name": "Post Run actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd",
+              "number": 22,
+              "status": "pending",
+              "conclusion": null,
+              "started_at": null,
+              "completed_at": null
+            }
+          ]
+        },
+        {
+          "id": 119171686938,
+          "head_sha": "48177153ad04605338c3a9a8dbd17defee9981bc",
+          "name": "Build release aarch64-unknown-linux-gnu",
+          "status": "in_progress",
+          "conclusion": null,
+          "started_at": "2026-10-21T10:38:40Z",
+          "completed_at": null,
+          "runner_name": "GitHub Actions 1000190917",
+          "labels": [
+            "ubuntu-24.04-arm"
+          ],
+          "steps": [
+            {
+              "name": "Set up job",
+              "number": 1,
+              "status": "completed",
+              "conclusion": "success",
+              "started_at": "2026-10-21T10:38:40Z",
+              "completed_at": "2026-10-21T10:38:41Z"
+            },
+            {
+              "name": "Run actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd",
+              "number": 2,
+              "status": "completed",
+              "conclusion": "success",
+              "started_at": "2026-10-21T10:38:41Z",
+              "completed_at": "2026-10-21T10:38:47Z"
+            },
+            {
+              "name": "Set up Bazel",
+              "number": 3,
+              "status": "completed",
+              "conclusion": "success",
+              "started_at": "2026-10-21T10:38:47Z",
+              "completed_at": "2026-10-21T10:39:17Z"
+            },
+            {
+              "name": "Set up Python",
+              "number": 4,
+              "status": "completed",
+              "conclusion": "success",
+              "started_at": "2026-10-21T10:39:17Z",
+              "completed_at": "2026-10-21T10:39:18Z"
+            },
+            {
+              "name": "Set up Rust toolchain for Cargo smoke",
+              "number": 5,
+              "status": "completed",
+              "conclusion": "success",
+              "started_at": "2026-10-21T10:39:18Z",
+              "completed_at": "2026-10-21T10:39:23Z"
+            },
+            {
+              "name": "Pin installed Cargo binary",
+              "number": 6,
+              "status": "completed",
+              "conclusion": "success",
+              "started_at": "2026-10-21T10:39:23Z",
+              "completed_at": "2026-10-21T10:39:23Z"
+            },
+            {
+              "name": "Build Bazel V8 release pair",
+              "number": 7,
+              "status": "in_progress",
+              "conclusion": null,
+              "started_at": "2026-10-21T10:39:23Z",
+              "completed_at": null
+            },
+            {
+              "name": "Stage release pair",
+              "number": 8,
+              "status": "pending",
+              "conclusion": null,
+              "started_at": null,
+              "completed_at": null
+            },
+            {
+              "name": "Smoke test staged artifact with Cargo",
+              "number": 9,
+              "status": "pending",
+              "conclusion": null,
+              "started_at": null,
+              "completed_at": null
+            },
+            {
+              "name": "Upload staged artifacts",
+              "number": 10,
+              "status": "pending",
+              "conclusion": null,
+              "started_at": null,
+              "completed_at": null
+            },
+            {
+              "name": "Check for a clean worktree",
+              "number": 11,
+              "status": "pending",
+              "conclusion": null,
+              "started_at": null,
+              "completed_at": null
+            },
+            {
+              "name": "Post Set up Python",
+              "number": 20,
+              "status": "pending",
+              "conclusion": null,
+              "started_at": null,
+              "completed_at": null
+            },
+            {
+              "name": "Post Set up Bazel",
+              "number": 21,
+              "status": "pending",
+              "conclusion": null,
+              "started_at": null,
+              "completed_at": null
+            },
+            {
+              "name": "Post Run actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd",
+              "number": 22,
+              "status": "pending",
+              "conclusion": null,
+              "started_at": null,
+              "completed_at": null
+            }
+          ]
+        },
+        {
+          "id": 119171686975,
+          "head_sha": "48177153ad04605338c3a9a8dbd17defee9981bc",
+          "name": "Build ptrcomp-sandbox x86_64-unknown-linux-gnu",
+          "status": "in_progress",
+          "conclusion": null,
+          "started_at": "2026-10-21T11:00:22Z",
+          "completed_at": null,
+          "runner_name": "GitHub Actions 1000191106",
+          "labels": [
+            "ubuntu-24.04"
+          ],
+          "steps": [
+            {
+              "name": "Set up job",
+              "number": 1,
+              "status": "completed",
+              "conclusion": "success",
+              "started_at": "2026-10-21T11:00:23Z",
+              "completed_at": "2026-10-21T11:00:24Z"
+            },
+            {
+              "name": "Run actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd",
+              "number": 2,
+              "status": "completed",
+              "conclusion": "success",
+              "started_at": "2026-10-21T11:00:24Z",
+              "completed_at": "2026-10-21T11:00:34Z"
+            },
+            {
+              "name": "Set up Bazel",
+              "number": 3,
+              "status": "completed",
+              "conclusion": "success",
+              "started_at": "2026-10-21T11:00:34Z",
+              "completed_at": "2026-10-21T11:00:41Z"
+            },
+            {
+              "name": "Set up Python",
+              "number": 4,
+              "status": "completed",
+              "conclusion": "success",
+              "started_at": "2026-10-21T11:00:41Z",
+              "completed_at": "2026-10-21T11:00:41Z"
+            },
+            {
+              "name": "Set up Rust toolchain for Cargo smoke",
+              "number": 5,
+              "status": "completed",
+              "conclusion": "success",
+              "started_at": "2026-10-21T11:00:41Z",
+              "completed_at": "2026-10-21T11:00:50Z"
+            },
+            {
+              "name": "Pin installed Cargo binary",
+              "number": 6,
+              "status": "completed",
+              "conclusion": "success",
+              "started_at": "2026-10-21T11:00:50Z",
+              "completed_at": "2026-10-21T11:00:50Z"
+            },
+            {
+              "name": "Build Bazel V8 release pair",
+              "number": 7,
+              "status": "in_progress",
+              "conclusion": null,
+              "started_at": "2026-10-21T11:00:50Z",
+              "completed_at": null
+            },
+            {
+              "name": "Stage release pair",
+              "number": 8,
+              "status": "pending",
+              "conclusion": null,
+              "started_at": null,
+              "completed_at": null
+            },
+            {
+              "name": "Smoke test staged artifact with Cargo",
+              "number": 9,
+              "status": "pending",
+              "conclusion": null,
+              "started_at": null,
+              "completed_at": null
+            },
+            {
+              "name": "Upload staged artifacts",
+              "number": 10,
+              "status": "pending",
+              "conclusion": null,
+              "started_at": null,
+              "completed_at": null
+            },
+            {
+              "name": "Check for a clean worktree",
+              "number": 11,
+              "status": "pending",
+              "conclusion": null,
+              "started_at": null,
+              "completed_at": null
+            },
+            {
+              "name": "Post Set up Python",
+              "number": 20,
+              "status": "pending",
+              "conclusion": null,
+              "started_at": null,
+              "completed_at": null
+            },
+            {
+              "name": "Post Set up Bazel",
+              "number": 21,
+              "status": "pending",
+              "conclusion": null,
+              "started_at": null,
+              "completed_at": null
+            },
+            {
+              "name": "Post Run actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd",
+              "number": 22,
+              "status": "pending",
+              "conclusion": null,
+              "started_at": null,
+              "completed_at": null
+            }
+          ]
+        },
+        {
+          "id": 119171686990,
+          "head_sha": "48177153ad04605338c3a9a8dbd17defee9981bc",
+          "name": "Build ptrcomp-sandbox aarch64-unknown-linux-musl",
+          "status": "in_progress",
+          "conclusion": null,
+          "started_at": "2026-10-21T10:41:08Z",
+          "completed_at": null,
+          "runner_name": "GitHub Actions 1000190937",
+          "labels": [
+            "ubuntu-24.04-arm"
+          ],
+          "steps": [
+            {
+              "name": "Set up job",
+              "number": 1,
+              "status": "completed",
+              "conclusion": "success",
+              "started_at": "2026-10-21T10:41:09Z",
+              "completed_at": "2026-10-21T10:41:10Z"
+            },
+            {
+              "name": "Run actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd",
+              "number": 2,
+              "status": "completed",
+              "conclusion": "success",
+              "started_at": "2026-10-21T10:41:10Z",
+              "completed_at": "2026-10-21T10:41:15Z"
+            },
+            {
+              "name": "Set up Bazel",
+              "number": 3,
+              "status": "completed",
+              "conclusion": "success",
+              "started_at": "2026-10-21T10:41:15Z",
+              "completed_at": "2026-10-21T10:41:25Z"
+            },
+            {
+              "name": "Set up Python",
+              "number": 4,
+              "status": "completed",
+              "conclusion": "success",
+              "started_at": "2026-10-21T10:41:25Z",
+              "completed_at": "2026-10-21T10:41:25Z"
+            },
+            {
+              "name": "Set up Rust toolchain for Cargo smoke",
+              "number": 5,
+              "status": "completed",
+              "conclusion": "success",
+              "started_at": "2026-10-21T10:41:25Z",
+              "completed_at": "2026-10-21T10:41:30Z"
+            },
+            {
+              "name": "Pin installed Cargo binary",
+              "number": 6,
+              "status": "completed",
+              "conclusion": "success",
+              "started_at": "2026-10-21T10:41:30Z",
+              "completed_at": "2026-10-21T10:41:30Z"
+            },
+            {
+              "name": "Build Bazel V8 release pair",
+              "number": 7,
+              "status": "in_progress",
+              "conclusion": null,
+              "started_at": "2026-10-21T10:41:30Z",
+              "completed_at": null
+            },
+            {
+              "name": "Stage release pair",
+              "number": 8,
+              "status": "pending",
+              "conclusion": null,
+              "started_at": null,
+              "completed_at": null
+            },
+            {
+              "name": "Smoke test staged artifact with Cargo",
+              "number": 9,
+              "status": "pending",
+              "conclusion": null,
+              "started_at": null,
+              "completed_at": null
+            },
+            {
+              "name": "Upload staged artifacts",
+              "number": 10,
+              "status": "pending",
+              "conclusion": null,
+              "started_at": null,
+              "completed_at": null
+            },
+            {
+              "name": "Check for a clean worktree",
+              "number": 11,
+              "status": "pending",
+              "conclusion": null,
+              "started_at": null,
+              "completed_at": null
+            },
+            {
+              "name": "Post Set up Python",
+              "number": 20,
+              "status": "pending",
+              "conclusion": null,
+              "started_at": null,
+              "completed_at": null
+            },
+            {
+              "name": "Post Set up Bazel",
+              "number": 21,
+              "status": "pending",
+              "conclusion": null,
+              "started_at": null,
+              "completed_at": null
+            },
+            {
+              "name": "Post Run actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd",
+              "number": 22,
+              "status": "pending",
+              "conclusion": null,
+              "started_at": null,
+              "completed_at": null
+            }
+          ]
+        },
+        {
+          "id": 119171687001,
+          "head_sha": "48177153ad04605338c3a9a8dbd17defee9981bc",
+          "name": "Build release aarch64-apple-darwin",
+          "status": "in_progress",
+          "conclusion": null,
+          "started_at": "2026-10-21T10:34:06Z",
+          "completed_at": null,
+          "runner_name": "GitHub Actions 1000190870",
+          "labels": [
+            "macos-15"
+          ],
+          "steps": [
+            {
+              "name": "Set up job",
+              "number": 1,
+              "status": "completed",
+              "conclusion": "success",
+              "started_at": "2026-10-21T10:34:06Z",
+              "completed_at": "2026-10-21T10:34:08Z"
+            },
+            {
+              "name": "Run actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd",
+              "number": 2,
+              "status": "completed",
+              "conclusion": "success",
+              "started_at": "2026-10-21T10:34:08Z",
+              "completed_at": "2026-10-21T10:34:18Z"
+            },
+            {
+              "name": "Set up Bazel",
+              "number": 3,
+              "status": "completed",
+              "conclusion": "success",
+              "started_at": "2026-10-21T10:34:18Z",
+              "completed_at": "2026-10-21T10:34:27Z"
+            },
+            {
+              "name": "Set up Python",
+              "number": 4,
+              "status": "completed",
+              "conclusion": "success",
+              "started_at": "2026-10-21T10:34:27Z",
+              "completed_at": "2026-10-21T10:34:27Z"
+            },
+            {
+              "name": "Set up Rust toolchain for Cargo smoke",
+              "number": 5,
+              "status": "completed",
+              "conclusion": "success",
+              "started_at": "2026-10-21T10:34:27Z",
+              "completed_at": "2026-10-21T10:34:37Z"
+            },
+            {
+              "name": "Pin installed Cargo binary",
+              "number": 6,
+              "status": "completed",
+              "conclusion": "success",
+              "started_at": "2026-10-21T10:34:37Z",
+              "completed_at": "2026-10-21T10:34:38Z"
+            },
+            {
+              "name": "Build Bazel V8 release pair",
+              "number": 7,
+              "status": "in_progress",
+              "conclusion": null,
+              "started_at": "2026-10-21T10:34:38Z",
+              "completed_at": null
+            },
+            {
+              "name": "Stage release pair",
+              "number": 8,
+              "status": "pending",
+              "conclusion": null,
+              "started_at": null,
+              "completed_at": null
+            },
+            {
+              "name": "Smoke test staged artifact with Cargo",
+              "number": 9,
+              "status": "pending",
+              "conclusion": null,
+              "started_at": null,
+              "completed_at": null
+            },
+            {
+              "name": "Upload staged artifacts",
+              "number": 10,
+              "status": "pending",
+              "conclusion": null,
+              "started_at": null,
+              "completed_at": null
+            },
+            {
+              "name": "Check for a clean worktree",
+              "number": 11,
+              "status": "pending",
+              "conclusion": null,
+              "started_at": null,
+              "completed_at": null
+            },
+            {
+              "name": "Post Set up Python",
+              "number": 20,
+              "status": "pending",
+              "conclusion": null,
+              "started_at": null,
+              "completed_at": null
+            },
+            {
+              "name": "Post Set up Bazel",
+              "number": 21,
+              "status": "pending",
+              "conclusion": null,
+              "started_at": null,
+              "completed_at": null
+            },
+            {
+              "name": "Post Run actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd",
+              "number": 22,
+              "status": "pending",
+              "conclusion": null,
+              "started_at": null,
+              "completed_at": null
+            }
+          ]
+        },
+        {
+          "id": 119171687003,
+          "head_sha": "48177153ad04605338c3a9a8dbd17defee9981bc",
+          "name": "Build ptrcomp-sandbox aarch64-unknown-linux-gnu",
+          "status": "in_progress",
+          "conclusion": null,
+          "started_at": "2026-10-21T10:38:39Z",
+          "completed_at": null,
+          "runner_name": "GitHub Actions 1000190918",
+          "labels": [
+            "ubuntu-24.04-arm"
+          ],
+          "steps": [
+            {
+              "name": "Set up job",
+              "number": 1,
+              "status": "completed",
+              "conclusion": "success",
+              "started_at": "2026-10-21T10:38:40Z",
+              "completed_at": "2026-10-21T10:38:41Z"
+            },
+            {
+              "name": "Run actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd",
+              "number": 2,
+              "status": "completed",
+              "conclusion": "success",
+              "started_at": "2026-10-21T10:38:41Z",
+              "completed_at": "2026-10-21T10:38:46Z"
+            },
+            {
+              "name": "Set up Bazel",
+              "number": 3,
+              "status": "completed",
+              "conclusion": "success",
+              "started_at": "2026-10-21T10:38:46Z",
+              "completed_at": "2026-10-21T10:38:56Z"
+            },
+            {
+              "name": "Set up Python",
+              "number": 4,
+              "status": "completed",
+              "conclusion": "success",
+              "started_at": "2026-10-21T10:38:56Z",
+              "completed_at": "2026-10-21T10:38:56Z"
+            },
+            {
+              "name": "Set up Rust toolchain for Cargo smoke",
+              "number": 5,
+              "status": "completed",
+              "conclusion": "success",
+              "started_at": "2026-10-21T10:38:56Z",
+              "completed_at": "2026-10-21T10:39:01Z"
+            },
+            {
+              "name": "Pin installed Cargo binary",
+              "number": 6,
+              "status": "completed",
+              "conclusion": "success",
+              "started_at": "2026-10-21T10:39:01Z",
+              "completed_at": "2026-10-21T10:39:01Z"
+            },
+            {
+              "name": "Build Bazel V8 release pair",
+              "number": 7,
+              "status": "in_progress",
+              "conclusion": null,
+              "started_at": "2026-10-21T10:39:01Z",
+              "completed_at": null
+            },
+            {
+              "name": "Stage release pair",
+              "number": 8,
+              "status": "pending",
+              "conclusion": null,
+              "started_at": null,
+              "completed_at": null
+            },
+            {
+              "name": "Smoke test staged artifact with Cargo",
+              "number": 9,
+              "status": "pending",
+              "conclusion": null,
+              "started_at": null,
+              "completed_at": null
+            },
+            {
+              "name": "Upload staged artifacts",
+              "number": 10,
+              "status": "pending",
+              "conclusion": null,
+              "started_at": null,
+              "completed_at": null
+            },
+            {
+              "name": "Check for a clean worktree",
+              "number": 11,
+              "status": "pending",
+              "conclusion": null,
+              "started_at": null,
+              "completed_at": null
+            },
+            {
+              "name": "Post Set up Python",
+              "number": 20,
+              "status": "pending",
+              "conclusion": null,
+              "started_at": null,
+              "completed_at": null
+            },
+            {
+              "name": "Post Set up Bazel",
+              "number": 21,
+              "status": "pending",
+              "conclusion": null,
+              "started_at": null,
+              "completed_at": null
+            },
+            {
+              "name": "Post Run actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd",
+              "number": 22,
+              "status": "pending",
+              "conclusion": null,
+              "started_at": null,
+              "completed_at": null
+            }
+          ]
+        },
+        {
+          "id": 119171687082,
+          "head_sha": "48177153ad04605338c3a9a8dbd17defee9981bc",
+          "name": "Build release x86_64-unknown-linux-musl",
+          "status": "in_progress",
+          "conclusion": null,
+          "started_at": "2026-10-21T11:06:07Z",
+          "completed_at": null,
+          "runner_name": "GitHub Actions 1000191179",
+          "labels": [
+            "ubuntu-24.04"
+          ],
+          "steps": [
+            {
+              "name": "Set up job",
+              "number": 1,
+              "status": "completed",
+              "conclusion": "success",
+              "started_at": "2026-10-21T11:06:08Z",
+              "completed_at": "2026-10-21T11:06:09Z"
+            },
+            {
+              "name": "Run actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd",
+              "number": 2,
+              "status": "completed",
+              "conclusion": "success",
+              "started_at": "2026-10-21T11:06:09Z",
+              "completed_at": "2026-10-21T11:06:17Z"
+            },
+            {
+              "name": "Set up Bazel",
+              "number": 3,
+              "status": "completed",
+              "conclusion": "success",
+              "started_at": "2026-10-21T11:06:17Z",
+              "completed_at": "2026-10-21T11:06:24Z"
+            },
+            {
+              "name": "Set up Python",
+              "number": 4,
+              "status": "completed",
+              "conclusion": "success",
+              "started_at": "2026-10-21T11:06:24Z",
+              "completed_at": "2026-10-21T11:06:25Z"
+            },
+            {
+              "name": "Set up Rust toolchain for Cargo smoke",
+              "number": 5,
+              "status": "completed",
+              "conclusion": "success",
+              "started_at": "2026-10-21T11:06:25Z",
+              "completed_at": "2026-10-21T11:06:33Z"
+            },
+            {
+              "name": "Pin installed Cargo binary",
+              "number": 6,
+              "status": "completed",
+              "conclusion": "success",
+              "started_at": "2026-10-21T11:06:33Z",
+              "completed_at": "2026-10-21T11:06:33Z"
+            },
+            {
+              "name": "Build Bazel V8 release pair",
+              "number": 7,
+              "status": "in_progress",
+              "conclusion": null,
+              "started_at": "2026-10-21T11:06:33Z",
+              "completed_at": null
+            },
+            {
+              "name": "Stage release pair",
+              "number": 8,
+              "status": "pending",
+              "conclusion": null,
+              "started_at": null,
+              "completed_at": null
+            },
+            {
+              "name": "Smoke test staged artifact with Cargo",
+              "number": 9,
+              "status": "pending",
+              "conclusion": null,
+              "started_at": null,
+              "completed_at": null
+            },
+            {
+              "name": "Upload staged artifacts",
+              "number": 10,
+              "status": "pending",
+              "conclusion": null,
+              "started_at": null,
+              "completed_at": null
+            },
+            {
+              "name": "Check for a clean worktree",
+              "number": 11,
+              "status": "pending",
+              "conclusion": null,
+              "started_at": null,
+              "completed_at": null
+            },
+            {
+              "name": "Post Set up Python",
+              "number": 20,
+              "status": "pending",
+              "conclusion": null,
+              "started_at": null,
+              "completed_at": null
+            },
+            {
+              "name": "Post Set up Bazel",
+              "number": 21,
+              "status": "pending",
+              "conclusion": null,
+              "started_at": null,
+              "completed_at": null
+            },
+            {
+              "name": "Post Run actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd",
+              "number": 22,
+              "status": "pending",
+              "conclusion": null,
+              "started_at": null,
+              "completed_at": null
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": 39583123039,
+      "observed_at_utc": "2026-10-21T11:37:20.028Z",
+      "total_count": 3,
+      "jobs": [
+        {
+          "id": 119176036261,
+          "head_sha": "48177153ad04605338c3a9a8dbd17defee9981bc",
+          "name": "Generate UI dependency lock for review",
+          "status": "completed",
+          "conclusion": "success",
+          "started_at": "2026-10-21T10:49:36Z",
+          "completed_at": "2026-10-21T10:50:30Z",
+          "runner_name": "GitHub Actions 1000191040",
+          "labels": [
+            "ubuntu-24.04"
+          ],
+          "steps": [
+            {
+              "name": "Set up job",
+              "number": 1,
+              "status": "completed",
+              "conclusion": "success",
+              "started_at": "2026-10-21T10:49:37Z",
+              "completed_at": "2026-10-21T10:49:37Z"
+            },
+            {
+              "name": "Run actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd",
+              "number": 2,
+              "status": "completed",
+              "conclusion": "success",
+              "started_at": "2026-10-21T10:49:37Z",
+              "completed_at": "2026-10-21T10:49:43Z"
+            },
+            {
+              "name": "Bind the source before dependency generation",
+              "number": 3,
+              "status": "completed",
+              "conclusion": "success",
+              "started_at": "2026-10-21T10:49:43Z",
+              "completed_at": "2026-10-21T10:49:44Z"
+            },
+            {
+              "name": "Prepare the original Bazel CI environment",
+              "number": 4,
+              "status": "completed",
+              "conclusion": "success",
+              "started_at": "2026-10-21T10:49:44Z",
+              "completed_at": "2026-10-21T10:49:52Z"
+            },
+            {
+              "name": "Generate the lock using the repository entry point",
+              "number": 5,
+              "status": "completed",
+              "conclusion": "success",
+              "started_at": "2026-10-21T10:49:52Z",
+              "completed_at": "2026-10-21T10:50:13Z"
+            },
+            {
+              "name": "Validate the generated lock with the original drift check",
+              "number": 6,
+              "status": "completed",
+              "conclusion": "success",
+              "started_at": "2026-10-21T10:50:13Z",
+              "completed_at": "2026-10-21T10:50:27Z"
+            },
+            {
+              "name": "Upload the unchanged generation evidence for review",
+              "number": 7,
+              "status": "completed",
+              "conclusion": "success",
+              "started_at": "2026-10-21T10:50:27Z",
+              "completed_at": "2026-10-21T10:50:28Z"
+            },
+            {
+              "name": "Post Prepare the original Bazel CI environment",
+              "number": 13,
+              "status": "completed",
+              "conclusion": "success",
+              "started_at": "2026-10-21T10:50:28Z",
+              "completed_at": "2026-10-21T10:50:28Z"
+            },
+            {
+              "name": "Post Run actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd",
+              "number": 14,
+              "status": "completed",
+              "conclusion": "success",
+              "started_at": "2026-10-21T10:50:28Z",
+              "completed_at": "2026-10-21T10:50:28Z"
+            },
+            {
+              "name": "Complete job",
+              "number": 15,
+              "status": "completed",
+              "conclusion": "success",
+              "started_at": "2026-10-21T10:50:28Z",
+              "completed_at": "2026-10-21T10:50:28Z"
+            }
+          ]
+        },
+        {
+          "id": 119176036877,
+          "head_sha": "48177153ad04605338c3a9a8dbd17defee9981bc",
+          "name": "Rust UI foundation / source-head",
+          "status": "completed",
+          "conclusion": "success",
+          "started_at": "2026-10-21T10:51:40Z",
+          "completed_at": "2026-10-21T11:18:09Z",
+          "runner_name": "GitHub Actions 1000191074",
+          "labels": [
+            "ubuntu-24.04"
+          ],
+          "steps": [
+            {
+              "name": "Set up job",
+              "number": 1,
+              "status": "completed",
+              "conclusion": "success",
+              "started_at": "2026-10-21T10:51:41Z",
+              "completed_at": "2026-10-21T10:51:42Z"
+            },
+            {
+              "name": "Run actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd",
+              "number": 2,
+              "status": "completed",
+              "conclusion": "success",
+              "started_at": "2026-10-21T10:51:42Z",
+              "completed_at": "2026-10-21T10:52:11Z"
+            },
+            {
+              "name": "Construct separately identified product merge",
+              "number": 3,
+              "status": "completed",
+              "conclusion": "skipped",
+              "started_at": "2026-10-21T10:52:11Z",
+              "completed_at": "2026-10-21T10:52:11Z"
+            },
+            {
+              "name": "Bind exact source and preserve backend toolchain",
+              "number": 4,
+              "status": "completed",
+              "conclusion": "success",
+              "started_at": "2026-10-21T10:52:11Z",
+              "completed_at": "2026-10-21T10:52:11Z"
+            },
+            {
+              "name": "Verify immutable merge checkout regression",
+              "number": 5,
+              "status": "completed",
+              "conclusion": "success",
+              "started_at": "2026-10-21T10:52:11Z",
+              "completed_at": "2026-10-21T10:52:36Z"
+            },
+            {
+              "name": "Run actions/setup-node@53b83947a5a98c8d113130e565377fae1a50d02f",
+              "number": 6,
+              "status": "completed",
+              "conclusion": "success",
+              "started_at": "2026-10-21T10:52:36Z",
+              "completed_at": "2026-10-21T10:52:36Z"
+            },
+            {
+              "name": "Install and verify official build inputs",
+              "number": 7,
+              "status": "completed",
+              "conclusion": "success",
+              "started_at": "2026-10-21T10:52:36Z",
+              "completed_at": "2026-10-21T10:52:56Z"
+            },
+            {
+              "name": "Run actions/cache/restore@668228422ae6a00e4ad889ee87cd7109ec5666a7",
+              "number": 8,
+              "status": "completed",
+              "conclusion": "success",
+              "started_at": "2026-10-21T10:52:56Z",
+              "completed_at": "2026-10-21T10:52:58Z"
+            },
+            {
+              "name": "Install missing pinned official tools",
+              "number": 9,
+              "status": "completed",
+              "conclusion": "skipped",
+              "started_at": "2026-10-21T10:52:58Z",
+              "completed_at": "2026-10-21T10:52:58Z"
+            },
+            {
+              "name": "Verify installed tool versions on every cache hit or miss",
+              "number": 10,
+              "status": "completed",
+              "conclusion": "success",
+              "started_at": "2026-10-21T10:52:58Z",
+              "completed_at": "2026-10-21T10:52:58Z"
+            },
+            {
+              "name": "Run actions/cache/save@668228422ae6a00e4ad889ee87cd7109ec5666a7",
+              "number": 11,
+              "status": "completed",
+              "conclusion": "skipped",
+              "started_at": "2026-10-21T10:52:58Z",
+              "completed_at": "2026-10-21T10:52:58Z"
+            },
+            {
+              "name": "Verify shared Rust presentation and renderer",
+              "number": 12,
+              "status": "completed",
+              "conclusion": "success",
+              "started_at": "2026-10-21T10:52:58Z",
+              "completed_at": "2026-10-21T10:54:11Z"
+            },
+            {
+              "name": "Build canonical strict-CSP no-threads artifact",
+              "number": 13,
+              "status": "completed",
+              "conclusion": "success",
+              "started_at": "2026-10-21T10:54:11Z",
+              "completed_at": "2026-10-21T10:59:15Z"
+            },
+            {
+              "name": "Run actual browser renderer and capture layouts",
+              "number": 14,
+              "status": "completed",
+              "conclusion": "success",
+              "started_at": "2026-10-21T10:59:15Z",
+              "completed_at": "2026-10-21T11:01:43Z"
+            },
+            {
+              "name": "Require every default screenshot pixel check",
+              "number": 15,
+              "status": "completed",
+              "conclusion": "success",
+              "started_at": "2026-10-21T11:01:43Z",
+              "completed_at": "2026-10-21T11:02:18Z"
+            },
+            {
+              "name": "Build source-bound actual gateway preview",
+              "number": 16,
+              "status": "completed",
+              "conclusion": "success",
+              "started_at": "2026-10-21T11:02:18Z",
+              "completed_at": "2026-10-21T11:04:21Z"
+            },
+            {
+              "name": "Execute bounded gateway transport and boundary regressions",
+              "number": 17,
+              "status": "completed",
+              "conclusion": "success",
+              "started_at": "2026-10-21T11:04:21Z",
+              "completed_at": "2026-10-21T11:04:28Z"
+            },
+            {
+              "name": "Install hash-pinned browser for strict no-store product transport",
+              "number": 18,
+              "status": "completed",
+              "conclusion": "success",
+              "started_at": "2026-10-21T11:04:28Z",
+              "completed_at": "2026-10-21T11:04:32Z"
+            },
+            {
+              "name": "Exercise real gateway unavailable status and cancellation",
+              "number": 19,
+              "status": "completed",
+              "conclusion": "success",
+              "started_at": "2026-10-21T11:04:32Z",
+              "completed_at": "2026-10-21T11:06:53Z"
+            },
+            {
+              "name": "Preserve actual gateway evidence separately",
+              "number": 20,
+              "status": "completed",
+              "conclusion": "success",
+              "started_at": "2026-10-21T11:06:53Z",
+              "completed_at": "2026-10-21T11:06:55Z"
+            },
+            {
+              "name": "Build explicitly labeled owner-fixture through the same renderer",
+              "number": 21,
+              "status": "completed",
+              "conclusion": "success",
+              "started_at": "2026-10-21T11:06:55Z",
+              "completed_at": "2026-10-21T11:08:30Z"
+            },
+            {
+              "name": "Capture populated fixture and responsive transitions",
+              "number": 22,
+              "status": "completed",
+              "conclusion": "success",
+              "started_at": "2026-10-21T11:08:30Z",
+              "completed_at": "2026-10-21T11:13:13Z"
+            },
+            {
+              "name": "Require every populated screenshot pixel check",
+              "number": 23,
+              "status": "completed",
+              "conclusion": "success",
+              "started_at": "2026-10-21T11:13:13Z",
+              "completed_at": "2026-10-21T11:17:01Z"
+            },
+            {
+              "name": "Diagnose WebKit drawing buffer without changing product defaults",
+              "number": 24,
+              "status": "completed",
+              "conclusion": "success",
+              "started_at": "2026-10-21T11:17:01Z",
+              "completed_at": "2026-10-21T11:17:40Z"
+            },
+            {
+              "name": "Confirm exact source after build and browser checks",
+              "number": 25,
+              "status": "completed",
+              "conclusion": "success",
+              "started_at": "2026-10-21T11:17:40Z",
+              "completed_at": "2026-10-21T11:17:40Z"
+            },
+            {
+              "name": "Inventory every source-bound browser evidence file",
+              "number": 26,
+              "status": "completed",
+              "conclusion": "success",
+              "started_at": "2026-10-21T11:17:40Z",
+              "completed_at": "2026-10-21T11:17:41Z"
+            },
+            {
+              "name": "Run actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02",
+              "number": 27,
+              "status": "completed",
+              "conclusion": "success",
+              "started_at": "2026-10-21T11:17:41Z",
+              "completed_at": "2026-10-21T11:17:43Z"
+            },
+            {
+              "name": "Run actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02",
+              "number": 28,
+              "status": "completed",
+              "conclusion": "success",
+              "started_at": "2026-10-21T11:17:43Z",
+              "completed_at": "2026-10-21T11:17:45Z"
+            },
+            {
+              "name": "Run actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02",
+              "number": 29,
+              "status": "completed",
+              "conclusion": "success",
+              "started_at": "2026-10-21T11:17:45Z",
+              "completed_at": "2026-10-21T11:17:47Z"
+            },
+            {
+              "name": "Run actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02",
+              "number": 30,
+              "status": "completed",
+              "conclusion": "success",
+              "started_at": "2026-10-21T11:17:47Z",
+              "completed_at": "2026-10-21T11:17:50Z"
+            },
+            {
+              "name": "Run actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02",
+              "number": 31,
+              "status": "completed",
+              "conclusion": "success",
+              "started_at": "2026-10-21T11:17:50Z",
+              "completed_at": "2026-10-21T11:17:52Z"
+            },
+            {
+              "name": "Run actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02",
+              "number": 32,
+              "status": "completed",
+              "conclusion": "success",
+              "started_at": "2026-10-21T11:17:52Z",
+              "completed_at": "2026-10-21T11:17:55Z"
+            },
+            {
+              "name": "Run actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02",
+              "number": 33,
+              "status": "completed",
+              "conclusion": "success",
+              "started_at": "2026-10-21T11:17:55Z",
+              "completed_at": "2026-10-21T11:17:57Z"
+            },
+            {
+              "name": "Run actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02",
+              "number": 34,
+              "status": "completed",
+              "conclusion": "success",
+              "started_at": "2026-10-21T11:17:57Z",
+              "completed_at": "2026-10-21T11:17:59Z"
+            },
+            {
+              "name": "Run actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02",
+              "number": 35,
+              "status": "completed",
+              "conclusion": "success",
+              "started_at": "2026-10-21T11:17:59Z",
+              "completed_at": "2026-10-21T11:18:02Z"
+            },
+            {
+              "name": "Run actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02",
+              "number": 36,
+              "status": "completed",
+              "conclusion": "success",
+              "started_at": "2026-10-21T11:18:02Z",
+              "completed_at": "2026-10-21T11:18:04Z"
+            },
+            {
+              "name": "Run actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02",
+              "number": 37,
+              "status": "completed",
+              "conclusion": "success",
+              "started_at": "2026-10-21T11:18:04Z",
+              "completed_at": "2026-10-21T11:18:05Z"
+            },
+            {
+              "name": "Install hash-pinned diagnostic browser (not acceptance)",
+              "number": 38,
+              "status": "completed",
+              "conclusion": "skipped",
+              "started_at": "2026-10-21T11:18:05Z",
+              "completed_at": "2026-10-21T11:18:05Z"
+            },
+            {
+              "name": "Compare unchanged product assertions and SDK transport (not acceptance)",
+              "number": 39,
+              "status": "completed",
+              "conclusion": "skipped",
+              "started_at": "2026-10-21T11:18:05Z",
+              "completed_at": "2026-10-21T11:18:05Z"
+            },
+            {
+              "name": "Compare Rust fixture font use and pixels (not acceptance)",
+              "number": 40,
+              "status": "completed",
+              "conclusion": "skipped",
+              "started_at": "2026-10-21T11:18:05Z",
+              "completed_at": "2026-10-21T11:18:05Z"
+            },
+            {
+              "name": "Require every diagnostic fixture semantic pixel check (not acceptance)",
+              "number": 41,
+              "status": "completed",
+              "conclusion": "skipped",
+              "started_at": "2026-10-21T11:18:05Z",
+              "completed_at": "2026-10-21T11:18:05Z"
+            },
+            {
+              "name": "Preserve failed and successful font diagnostic arms without changing acceptance",
+              "number": 42,
+              "status": "completed",
+              "conclusion": "skipped",
+              "started_at": "2026-10-21T11:18:05Z",
+              "completed_at": "2026-10-21T11:18:05Z"
+            },
+            {
+              "name": "Post Run actions/setup-node@53b83947a5a98c8d113130e565377fae1a50d02f",
+              "number": 83,
+              "status": "completed",
+              "conclusion": "success",
+              "started_at": "2026-10-21T11:18:05Z",
+              "completed_at": "2026-10-21T11:18:05Z"
+            },
+            {
+              "name": "Post Run actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd",
+              "number": 84,
+              "status": "completed",
+              "conclusion": "success",
+              "started_at": "2026-10-21T11:18:05Z",
+              "completed_at": "2026-10-21T11:18:06Z"
+            },
+            {
+              "name": "Complete job",
+              "number": 85,
+              "status": "completed",
+              "conclusion": "success",
+              "started_at": "2026-10-21T11:18:06Z",
+              "completed_at": "2026-10-21T11:18:06Z"
+            }
+          ]
+        },
+        {
+          "id": 119176036978,
+          "head_sha": "48177153ad04605338c3a9a8dbd17defee9981bc",
+          "name": "Rust UI foundation / base-merge",
+          "status": "completed",
+          "conclusion": "success",
+          "started_at": "2026-10-21T11:09:00Z",
+          "completed_at": "2026-10-21T11:31:18Z",
+          "runner_name": "GitHub Actions 1000191226",
+          "labels": [
+            "ubuntu-24.04"
+          ],
+          "steps": [
+            {
+              "name": "Set up job",
+              "number": 1,
+              "status": "completed",
+              "conclusion": "success",
+              "started_at": "2026-10-21T11:09:01Z",
+              "completed_at": "2026-10-21T11:09:03Z"
+            },
+            {
+              "name": "Run actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd",
+              "number": 2,
+              "status": "completed",
+              "conclusion": "success",
+              "started_at": "2026-10-21T11:09:03Z",
+              "completed_at": "2026-10-21T11:09:30Z"
+            },
+            {
+              "name": "Construct separately identified product merge",
+              "number": 3,
+              "status": "completed",
+              "conclusion": "success",
+              "started_at": "2026-10-21T11:09:30Z",
+              "completed_at": "2026-10-21T11:09:30Z"
+            },
+            {
+              "name": "Bind exact source and preserve backend toolchain",
+              "number": 4,
+              "status": "completed",
+              "conclusion": "success",
+              "started_at": "2026-10-21T11:09:30Z",
+              "completed_at": "2026-10-21T11:09:30Z"
+            },
+            {
+              "name": "Verify immutable merge checkout regression",
+              "number": 5,
+              "status": "completed",
+              "conclusion": "success",
+              "started_at": "2026-10-21T11:09:30Z",
+              "completed_at": "2026-10-21T11:09:54Z"
+            },
+            {
+              "name": "Run actions/setup-node@53b83947a5a98c8d113130e565377fae1a50d02f",
+              "number": 6,
+              "status": "completed",
+              "conclusion": "success",
+              "started_at": "2026-10-21T11:09:54Z",
+              "completed_at": "2026-10-21T11:09:55Z"
+            },
+            {
+              "name": "Install and verify official build inputs",
+              "number": 7,
+              "status": "completed",
+              "conclusion": "success",
+              "started_at": "2026-10-21T11:09:55Z",
+              "completed_at": "2026-10-21T11:10:13Z"
+            },
+            {
+              "name": "Run actions/cache/restore@668228422ae6a00e4ad889ee87cd7109ec5666a7",
+              "number": 8,
+              "status": "completed",
+              "conclusion": "success",
+              "started_at": "2026-10-21T11:10:13Z",
+              "completed_at": "2026-10-21T11:10:14Z"
+            },
+            {
+              "name": "Install missing pinned official tools",
+              "number": 9,
+              "status": "completed",
+              "conclusion": "skipped",
+              "started_at": "2026-10-21T11:10:14Z",
+              "completed_at": "2026-10-21T11:10:14Z"
+            },
+            {
+              "name": "Verify installed tool versions on every cache hit or miss",
+              "number": 10,
+              "status": "completed",
+              "conclusion": "success",
+              "started_at": "2026-10-21T11:10:14Z",
+              "completed_at": "2026-10-21T11:10:14Z"
+            },
+            {
+              "name": "Run actions/cache/save@668228422ae6a00e4ad889ee87cd7109ec5666a7",
+              "number": 11,
+              "status": "completed",
+              "conclusion": "skipped",
+              "started_at": "2026-10-21T11:10:14Z",
+              "completed_at": "2026-10-21T11:10:14Z"
+            },
+            {
+              "name": "Verify shared Rust presentation and renderer",
+              "number": 12,
+              "status": "completed",
+              "conclusion": "success",
+              "started_at": "2026-10-21T11:10:14Z",
+              "completed_at": "2026-10-21T11:11:17Z"
+            },
+            {
+              "name": "Build canonical strict-CSP no-threads artifact",
+              "number": 13,
+              "status": "completed",
+              "conclusion": "success",
+              "started_at": "2026-10-21T11:11:17Z",
+              "completed_at": "2026-10-21T11:15:26Z"
+            },
+            {
+              "name": "Run actual browser renderer and capture layouts",
+              "number": 14,
+              "status": "completed",
+              "conclusion": "success",
+              "started_at": "2026-10-21T11:15:26Z",
+              "completed_at": "2026-10-21T11:17:34Z"
+            },
+            {
+              "name": "Require every default screenshot pixel check",
+              "number": 15,
+              "status": "completed",
+              "conclusion": "success",
+              "started_at": "2026-10-21T11:17:34Z",
+              "completed_at": "2026-10-21T11:18:06Z"
+            },
+            {
+              "name": "Build source-bound actual gateway preview",
+              "number": 16,
+              "status": "completed",
+              "conclusion": "success",
+              "started_at": "2026-10-21T11:18:06Z",
+              "completed_at": "2026-10-21T11:19:50Z"
+            },
+            {
+              "name": "Execute bounded gateway transport and boundary regressions",
+              "number": 17,
+              "status": "completed",
+              "conclusion": "success",
+              "started_at": "2026-10-21T11:19:50Z",
+              "completed_at": "2026-10-21T11:19:57Z"
+            },
+            {
+              "name": "Install hash-pinned browser for strict no-store product transport",
+              "number": 18,
+              "status": "completed",
+              "conclusion": "success",
+              "started_at": "2026-10-21T11:19:57Z",
+              "completed_at": "2026-10-21T11:20:00Z"
+            },
+            {
+              "name": "Exercise real gateway unavailable status and cancellation",
+              "number": 19,
+              "status": "completed",
+              "conclusion": "success",
+              "started_at": "2026-10-21T11:20:00Z",
+              "completed_at": "2026-10-21T11:21:44Z"
+            },
+            {
+              "name": "Preserve actual gateway evidence separately",
+              "number": 20,
+              "status": "completed",
+              "conclusion": "success",
+              "started_at": "2026-10-21T11:21:44Z",
+              "completed_at": "2026-10-21T11:21:46Z"
+            },
+            {
+              "name": "Build explicitly labeled owner-fixture through the same renderer",
+              "number": 21,
+              "status": "completed",
+              "conclusion": "success",
+              "started_at": "2026-10-21T11:21:46Z",
+              "completed_at": "2026-10-21T11:22:57Z"
+            },
+            {
+              "name": "Capture populated fixture and responsive transitions",
+              "number": 22,
+              "status": "completed",
+              "conclusion": "success",
+              "started_at": "2026-10-21T11:22:57Z",
+              "completed_at": "2026-10-21T11:26:49Z"
+            },
+            {
+              "name": "Require every populated screenshot pixel check",
+              "number": 23,
+              "status": "completed",
+              "conclusion": "success",
+              "started_at": "2026-10-21T11:26:49Z",
+              "completed_at": "2026-10-21T11:30:22Z"
+            },
+            {
+              "name": "Diagnose WebKit drawing buffer without changing product defaults",
+              "number": 24,
+              "status": "completed",
+              "conclusion": "success",
+              "started_at": "2026-10-21T11:30:22Z",
+              "completed_at": "2026-10-21T11:30:57Z"
+            },
+            {
+              "name": "Confirm exact source after build and browser checks",
+              "number": 25,
+              "status": "completed",
+              "conclusion": "success",
+              "started_at": "2026-10-21T11:30:57Z",
+              "completed_at": "2026-10-21T11:30:57Z"
+            },
+            {
+              "name": "Inventory every source-bound browser evidence file",
+              "number": 26,
+              "status": "completed",
+              "conclusion": "success",
+              "started_at": "2026-10-21T11:30:57Z",
+              "completed_at": "2026-10-21T11:30:58Z"
+            },
+            {
+              "name": "Run actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02",
+              "number": 27,
+              "status": "completed",
+              "conclusion": "success",
+              "started_at": "2026-10-21T11:30:58Z",
+              "completed_at": "2026-10-21T11:31:00Z"
+            },
+            {
+              "name": "Run actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02",
+              "number": 28,
+              "status": "completed",
+              "conclusion": "success",
+              "started_at": "2026-10-21T11:31:00Z",
+              "completed_at": "2026-10-21T11:31:01Z"
+            },
+            {
+              "name": "Run actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02",
+              "number": 29,
+              "status": "completed",
+              "conclusion": "success",
+              "started_at": "2026-10-21T11:31:01Z",
+              "completed_at": "2026-10-21T11:31:03Z"
+            },
+            {
+              "name": "Run actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02",
+              "number": 30,
+              "status": "completed",
+              "conclusion": "success",
+              "started_at": "2026-10-21T11:31:03Z",
+              "completed_at": "2026-10-21T11:31:05Z"
+            },
+            {
+              "name": "Run actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02",
+              "number": 31,
+              "status": "completed",
+              "conclusion": "success",
+              "started_at": "2026-10-21T11:31:05Z",
+              "completed_at": "2026-10-21T11:31:07Z"
+            },
+            {
+              "name": "Run actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02",
+              "number": 32,
+              "status": "completed",
+              "conclusion": "success",
+              "started_at": "2026-10-21T11:31:07Z",
+              "completed_at": "2026-10-21T11:31:09Z"
+            },
+            {
+              "name": "Run actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02",
+              "number": 33,
+              "status": "completed",
+              "conclusion": "success",
+              "started_at": "2026-10-21T11:31:09Z",
+              "completed_at": "2026-10-21T11:31:10Z"
+            },
+            {
+              "name": "Run actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02",
+              "number": 34,
+              "status": "completed",
+              "conclusion": "success",
+              "started_at": "2026-10-21T11:31:10Z",
+              "completed_at": "2026-10-21T11:31:11Z"
+            },
+            {
+              "name": "Run actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02",
+              "number": 35,
+              "status": "completed",
+              "conclusion": "success",
+              "started_at": "2026-10-21T11:31:11Z",
+              "completed_at": "2026-10-21T11:31:13Z"
+            },
+            {
+              "name": "Run actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02",
+              "number": 36,
+              "status": "completed",
+              "conclusion": "success",
+              "started_at": "2026-10-21T11:31:13Z",
+              "completed_at": "2026-10-21T11:31:15Z"
+            },
+            {
+              "name": "Run actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02",
+              "number": 37,
+              "status": "completed",
+              "conclusion": "success",
+              "started_at": "2026-10-21T11:31:15Z",
+              "completed_at": "2026-10-21T11:31:16Z"
+            },
+            {
+              "name": "Install hash-pinned diagnostic browser (not acceptance)",
+              "number": 38,
+              "status": "completed",
+              "conclusion": "skipped",
+              "started_at": "2026-10-21T11:31:16Z",
+              "completed_at": "2026-10-21T11:31:16Z"
+            },
+            {
+              "name": "Compare unchanged product assertions and SDK transport (not acceptance)",
+              "number": 39,
+              "status": "completed",
+              "conclusion": "skipped",
+              "started_at": "2026-10-21T11:31:16Z",
+              "completed_at": "2026-10-21T11:31:16Z"
+            },
+            {
+              "name": "Compare Rust fixture font use and pixels (not acceptance)",
+              "number": 40,
+              "status": "completed",
+              "conclusion": "skipped",
+              "started_at": "2026-10-21T11:31:16Z",
+              "completed_at": "2026-10-21T11:31:16Z"
+            },
+            {
+              "name": "Require every diagnostic fixture semantic pixel check (not acceptance)",
+              "number": 41,
+              "status": "completed",
+              "conclusion": "skipped",
+              "started_at": "2026-10-21T11:31:16Z",
+              "completed_at": "2026-10-21T11:31:16Z"
+            },
+            {
+              "name": "Preserve failed and successful font diagnostic arms without changing acceptance",
+              "number": 42,
+              "status": "completed",
+              "conclusion": "skipped",
+              "started_at": "2026-10-21T11:31:16Z",
+              "completed_at": "2026-10-21T11:31:16Z"
+            },
+            {
+              "name": "Post Run actions/setup-node@53b83947a5a98c8d113130e565377fae1a50d02f",
+              "number": 83,
+              "status": "completed",
+              "conclusion": "success",
+              "started_at": "2026-10-21T11:31:16Z",
+              "completed_at": "2026-10-21T11:31:16Z"
+            },
+            {
+              "name": "Post Run actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd",
+              "number": 84,
+              "status": "completed",
+              "conclusion": "success",
+              "started_at": "2026-10-21T11:31:16Z",
+              "completed_at": "2026-10-21T11:31:16Z"
+            },
+            {
+              "name": "Complete job",
+              "number": 85,
+              "status": "completed",
+              "conclusion": "success",
+              "started_at": "2026-10-21T11:31:16Z",
+              "completed_at": "2026-10-21T11:31:16Z"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": 39591475871,
+      "observed_at_utc": "2026-10-21T11:46:51.580Z",
+      "total_count": 3,
+      "jobs": [
+        {
+          "id": 119193229091,
+          "head_sha": "52293403ea1e06465c41d24d39b54959bad40936",
+          "name": "Select blocking CI scope",
+          "status": "queued",
+          "conclusion": null,
+          "started_at": "2026-10-21T11:22:31Z",
+          "completed_at": null,
+          "runner_name": "",
+          "labels": [
+            "ubuntu-24.04"
+          ],
+          "steps": []
+        },
+        {
+          "id": 119193229474,
+          "head_sha": "52293403ea1e06465c41d24d39b54959bad40936",
+          "name": "Codespell / Check for spelling errors",
+          "status": "queued",
+          "conclusion": null,
+          "started_at": "2026-10-21T11:22:31Z",
+          "completed_at": null,
+          "runner_name": "",
+          "labels": [
+            "ubuntu-latest"
+          ],
+          "steps": []
+        },
+        {
+          "id": 119193229665,
+          "head_sha": "52293403ea1e06465c41d24d39b54959bad40936",
+          "name": "Blob size policy / Blob size policy",
+          "status": "queued",
+          "conclusion": null,
+          "started_at": "2026-10-21T11:22:31Z",
+          "completed_at": null,
+          "runner_name": "",
+          "labels": [
+            "ubuntu-24.04"
+          ],
+          "steps": []
+        }
+      ]
+    },
+    {
+      "id": 39591475937,
+      "observed_at_utc": "2026-10-21T11:46:51.524Z",
+      "total_count": 2,
+      "jobs": [
+        {
+          "id": 119193229282,
+          "head_sha": "52293403ea1e06465c41d24d39b54959bad40936",
+          "name": "Architecture convergence (base-merge)",
+          "status": "queued",
+          "conclusion": null,
+          "started_at": "2026-10-21T11:22:31Z",
+          "completed_at": null,
+          "runner_name": "",
+          "labels": [
+            "ubuntu-24.04-arm"
+          ],
+          "steps": []
+        },
+        {
+          "id": 119193229802,
+          "head_sha": "52293403ea1e06465c41d24d39b54959bad40936",
+          "name": "Architecture convergence (source-head)",
+          "status": "queued",
+          "conclusion": null,
+          "started_at": "2026-10-21T11:22:31Z",
+          "completed_at": null,
+          "runner_name": "",
+          "labels": [
+            "ubuntu-24.04-arm"
+          ],
+          "steps": []
+        }
+      ]
+    },
+    {
+      "id": 39591475705,
+      "observed_at_utc": "2026-10-21T11:46:51.549Z",
+      "total_count": 1,
+      "jobs": [
+        {
+          "id": 119193227638,
+          "head_sha": "52293403ea1e06465c41d24d39b54959bad40936",
+          "name": "metadata",
+          "status": "queued",
+          "conclusion": null,
+          "started_at": "2026-10-21T11:22:31Z",
+          "completed_at": null,
+          "runner_name": "",
+          "labels": [
+            "ubuntu-latest"
+          ],
+          "steps": []
+        }
+      ]
+    },
+    {
+      "id": 39591475745,
+      "observed_at_utc": "2026-10-21T11:46:51.569Z",
+      "total_count": 1,
+      "jobs": [
+        {
+          "id": 119193228150,
+          "head_sha": "52293403ea1e06465c41d24d39b54959bad40936",
+          "name": "ACL, anti-reparse, signed-owner durability and recovery on Windows",
+          "status": "queued",
+          "conclusion": null,
+          "started_at": "2026-10-21T11:22:31Z",
+          "completed_at": null,
+          "runner_name": "",
+          "labels": [
+            "windows-latest"
+          ],
+          "steps": []
+        }
+      ]
+    }
+  ],
+  "log_fetch_limit": {
+    "job_id": 119194391140,
+    "attempts": 2,
+    "result": "GitHub connector fetch_workflow_job_logs returned Transport closed both times; success is observed in original job status, full deny log not archived here."
+  }
+}

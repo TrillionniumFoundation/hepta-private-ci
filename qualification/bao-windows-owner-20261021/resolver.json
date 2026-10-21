@@ -1,0 +1,172 @@
+{
+  "commands": [
+    {
+      "name": "locked-before",
+      "argv": [
+        "cargo",
+        "metadata",
+        "--offline",
+        "--locked",
+        "--format-version",
+        "1",
+        "--filter-platform",
+        "x86_64-pc-windows-msvc"
+      ],
+      "cwd": "codex-rs",
+      "started_at": "2026-10-21T11:21:28.133635+00:00",
+      "finished_at": "2026-10-21T11:21:29.126131+00:00",
+      "exit_code": 101,
+      "outputs": {
+        "stdout": {
+          "file": "locked-before.stdout.xz",
+          "raw_bytes": 0,
+          "raw_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "compressed_bytes": 32,
+          "compressed_sha256": "0040f94d11d0039505328a90b2ff48968db873e9e7967307631bf40ef5679275"
+        },
+        "stderr": {
+          "file": "locked-before.stderr.xz",
+          "raw_bytes": 265,
+          "raw_sha256": "655aba489dfe7873a007ea6aa99790dd37ec55d8896ea17f6fd6197ee1bc7d75",
+          "compressed_bytes": 272,
+          "compressed_sha256": "c8b7497821aec8678b9531eb2bde19c4870d46236eae75cc7b29cb92d8f2b752"
+        }
+      }
+    },
+    {
+      "name": "cargo-resolve",
+      "argv": [
+        "cargo",
+        "update",
+        "--offline",
+        "-p",
+        "codex-hepta-bao-adapter"
+      ],
+      "cwd": "codex-rs",
+      "started_at": "2026-10-21T11:21:29.129216+00:00",
+      "finished_at": "2026-10-21T11:21:30.726521+00:00",
+      "exit_code": 0,
+      "outputs": {
+        "stdout": {
+          "file": "cargo-resolve.stdout.xz",
+          "raw_bytes": 0,
+          "raw_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "compressed_bytes": 32,
+          "compressed_sha256": "0040f94d11d0039505328a90b2ff48968db873e9e7967307631bf40ef5679275"
+        },
+        "stderr": {
+          "file": "cargo-resolve.stderr.xz",
+          "raw_bytes": 124,
+          "raw_sha256": "f879ac8a72bd17a666e850c2db6093f241658e9d69e62111e99082637979bcfb",
+          "compressed_bytes": 176,
+          "compressed_sha256": "697b6091365936e43979c2433d0dc8d7768abcba916a4ddf11716aa302d6b547"
+        }
+      }
+    },
+    {
+      "name": "manifest-metadata",
+      "argv": [
+        "cargo",
+        "metadata",
+        "--offline",
+        "--locked",
+        "--no-deps",
+        "--format-version",
+        "1"
+      ],
+      "cwd": "codex-rs",
+      "started_at": "2026-10-21T11:21:30.729301+00:00",
+      "finished_at": "2026-10-21T11:21:30.857279+00:00",
+      "exit_code": 0,
+      "outputs": {
+        "stdout": {
+          "file": "manifest-metadata.stdout.xz",
+          "raw_bytes": 926432,
+          "raw_sha256": "1a707cde32c5b302b890076f0df98c87cece4ed70e35d01d05ea754a1b6dd8f6",
+          "compressed_bytes": 31264,
+          "compressed_sha256": "a9c67b30d100433f229b2d1e1b5b7f796a3aad425044b83b718d52644aba9986"
+        },
+        "stderr": {
+          "file": "manifest-metadata.stderr.xz",
+          "raw_bytes": 0,
+          "raw_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "compressed_bytes": 32,
+          "compressed_sha256": "0040f94d11d0039505328a90b2ff48968db873e9e7967307631bf40ef5679275"
+        }
+      },
+      "package": {
+        "name": "codex-hepta-bao-adapter",
+        "targets": [
+          {
+            "kind": [
+              "lib"
+            ],
+            "crate_types": [
+              "lib"
+            ],
+            "name": "codex_hepta_bao_adapter",
+            "src_path": "/workspace/scratch/337c309bc660/idle-priority-work/codex-rs/hepta-bao-adapter/src/lib.rs",
+            "edition": "2024",
+            "doc": true,
+            "doctest": false,
+            "test": true
+          },
+          {
+            "kind": [
+              "example"
+            ],
+            "crate_types": [
+              "bin"
+            ],
+            "name": "consume_secret",
+            "src_path": "/workspace/scratch/337c309bc660/idle-priority-work/codex-rs/hepta-bao-adapter/examples/consume_secret.rs",
+            "edition": "2024",
+            "doc": false,
+            "doctest": false,
+            "test": false
+          },
+          {
+            "kind": [
+              "test"
+            ],
+            "crate_types": [
+              "bin"
+            ],
+            "name": "final_use_host",
+            "src_path": "/workspace/scratch/337c309bc660/idle-priority-work/codex-rs/hepta-bao-adapter/tests/final_use_host.rs",
+            "edition": "2024",
+            "doc": false,
+            "doctest": false,
+            "test": true
+          }
+        ],
+        "path_dependency": [
+          {
+            "name": "codex-utils-path",
+            "source": null,
+            "req": "*",
+            "kind": null,
+            "rename": null,
+            "optional": false,
+            "uses_default_features": true,
+            "features": [],
+            "target": "cfg(windows)",
+            "registry": null,
+            "path": "/workspace/scratch/337c309bc660/idle-priority-work/codex-rs/utils/path-utils"
+          }
+        ],
+        "workspace_members": 193,
+        "resolve": null
+      }
+    }
+  ],
+  "cargo_lock_before": {
+    "bytes": 413609,
+    "sha256": "f2a3df2cec6adad45a7c6ce45de7c6c907930f4f16daf66c5067ee3936606cb5"
+  },
+  "cargo_lock_after": {
+    "bytes": 413630,
+    "sha256": "f8491f9614b05d5b29255e887419965673047eaaacfeb7f90324ff44b7ab2dd2"
+  },
+  "scope": "Cargo resolver and workspace manifest metadata only; no Rust or native Windows execution; no Bazel lock claim."
+}

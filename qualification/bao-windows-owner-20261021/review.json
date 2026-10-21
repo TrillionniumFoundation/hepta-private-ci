@@ -1,0 +1,94 @@
+{
+  "status": "SOURCE_CANDIDATE_PENDING_NATIVE_AND_COMBINED_BAZEL_LOCK",
+  "base_local_commit": "1b4fcdcb17a5c239571b53b3a45c7146519edb76",
+  "historical_failure": {
+    "repository": "TrillionniumFoundation/hepta-private-ci",
+    "head_sha": "ca2768978429a2c9a98641fa2d58a8f587b88874",
+    "workflow_run": 39524743211,
+    "job_id": 118977201936,
+    "job_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/39524743211/job/118977201936",
+    "raw_log": {
+      "file": "reader-118977201936.log.xz",
+      "bytes": 4038346,
+      "sha256": "baf5333ad2ae68bf7e48e30db2f1f1f3af740cf50e74efea0473af397c9ec1dd",
+      "compressed_bytes": 280816,
+      "compressed_sha256": "a65f4c584f0a736f272bd3a9fe98617e6272ebc0f50973bad5f0b496622751ed"
+    },
+    "finding": "Seven lease_lifecycle tests fail with Unavailable on Windows. The unchanged persist helper reopens the parent with ordinary File::open after rename and then sync_all; it does not retain a writable private directory across mutation."
+  },
+  "source_change": {
+    "windows_dependency": "Existing workspace codex-utils-path, cfg(windows) only; no new external package.",
+    "retention": "Acquire the exact private non-reparse directory before opening state. Only NotFound walks toward a missing parent; recreate absent components from outer to inner and retain all newly opened ancestor handles until owner drop. Existing permission, sharing, reparse and ownership failures remain errors.",
+    "read": "Open the state file through the retained directory and validate its type, one-link identity and private security before parsing the existing bounded schema.",
+    "write": "Validate destination, then open and validate .next before truncation; write and sync the exact staging file, use original write-through replacement, and sync the retained writable directory. Publish in-memory state only after all persistence steps return success.",
+    "contract": "No provider call, provider observation, operation identity, secret data, lifecycle authorization, error enum or single-writer contract changed.",
+    "non_windows": "Preserve existing filesystem implementation and schema validation."
+  },
+  "common_lifecycle_tests_preserved": [
+    "issue_unknown_reconciles_without_duplicate_issue",
+    "reused_operation_id_with_changed_semantics_conflicts",
+    "issue_rejects_non_active_provider_observations_without_durable_mutation",
+    "renew_unknown_blocks_fabricated_success_until_reconciled",
+    "revoke_unknown_stays_nonterminal_until_provider_observation",
+    "provider_not_applied_restores_active_lease_after_unknown",
+    "expiry_is_durable_and_terminal_for_renewal"
+  ],
+  "fixture_only_common_test_change": "Add an owner child directory beneath TempDir, so Windows can atomically create the private directory; test names and all assertions are unchanged. Whitespace-normalized comparison against base confirms only this path change.",
+  "new_windows_tests": [
+    "private_owner_pins_new_ancestry_until_persist_and_drop",
+    "junction_ancestry_is_rejected_before_creating_registry_state",
+    "hardlinked_state_rejects_reopen_and_update_without_advancing_history",
+    "hardlinked_staging_file_is_rejected_before_truncation"
+  ],
+  "independent_source_review": {
+    "reviewer": "/root/os_closure",
+    "scope": "Five source/manifest files; read-only static review, no compilation.",
+    "result": "No new blocking boundary issue found: only-NotFound ascent, outer-to-inner retained ancestors, exact-file validation before truncate, same retained directory for replacement/flush, and state publication after successful persistence.",
+    "limitations": "Does not introduce global multi-writer exclusion; same-user concurrent state mutation follows the existing owner contract. Source review does not substitute for native qualification."
+  },
+  "cargo": "resolver.json records the original locked failure, actual offline Cargo resolution and fresh locked workspace manifest metadata. Resolution adds one existing codex-utils-path dependency edge, with zero external package versions changed.",
+  "pending": [
+    "Original Windows native unit tests, including all seven lifecycle cases and four filesystem regressions.",
+    "Original package Clippy/argument-comment checks.",
+    "Actual just bazel-lock-update, repeat stability and original lock check on the combined memory/state/path, Bao and owner-record manifests.",
+    "Current-head/current-base required CI of the final combined source."
+  ],
+  "native_executed": false,
+  "bazel_lock_generated": false,
+  "formatted_source_files": [
+    {
+      "path": "codex-rs/hepta-bao-adapter/Cargo.toml",
+      "bytes": 1076,
+      "sha256": "5ca154dbb3e5b0f1f21df36b2e1984e9a57b8549d5f3c5a41b8605e51ee0d191",
+      "git_blob": "dd509b3676bc50d1172128051de59f489acb73d4"
+    },
+    {
+      "path": "codex-rs/hepta-bao-adapter/src/lease_lifecycle.rs",
+      "bytes": 18223,
+      "sha256": "38e24a94df60a6c75e3ca4887d01800390ad4f470c7c98604362072586be214e",
+      "git_blob": "858b486ee74ba22073727a1d5c94d5e4e466e99c"
+    },
+    {
+      "path": "codex-rs/hepta-bao-adapter/src/lease_lifecycle_tests.rs",
+      "bytes": 7408,
+      "sha256": "09e2602c54eaabde92a25c88bf4bc068e15ecd17683080ab7ad7de18d9fc0b0b",
+      "git_blob": "f914eddcf423e4e8dd5b4291ddf81d640520aeff"
+    },
+    {
+      "path": "codex-rs/hepta-bao-adapter/src/lease_lifecycle_windows.rs",
+      "bytes": 3945,
+      "sha256": "84f9bd7e1c0b5e5481e71ac2bb82c40a9e231aa4c73c5e3e2d1bfae5f46f2a06",
+      "git_blob": "b5037a78fddff0956caecf00f92c9f916879c0b8"
+    },
+    {
+      "path": "codex-rs/hepta-bao-adapter/src/lease_lifecycle_windows_tests.rs",
+      "bytes": 5055,
+      "sha256": "1b313b036dfee9d3bd1f69cdc5bf0a38077d2d88e2b5c8c3b1721ec35cd125a9",
+      "git_blob": "cc611ee98404b2aca4498bb16b0a5151ea3aa647"
+    }
+  ],
+  "original_bazel_unit_target": "//codex-rs/hepta-bao-adapter:hepta-bao-adapter-unit-tests",
+  "bazel_source_discovery": "Existing codex_rust_crate src/**/*.rs glob and original unit test target include both new sibling modules; no include_str/build data added.",
+  "lock_stage": "Include only the actual Cargo-generated one-edge candidate with this source freeze. MODULE.bazel.lock is deliberately not guessed or edited; this candidate must not be published as dependency-qualified until the combined batch runs the original Bazel generator/repeat/check.",
+  "format": "format.json records the successful original just fmt invocation; no tests or compilation ran afterward."
+}

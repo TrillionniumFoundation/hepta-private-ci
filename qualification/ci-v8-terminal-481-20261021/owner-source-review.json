@@ -1,0 +1,417 @@
+{
+  "schema_version": 1,
+  "created_utc": "2026-10-21T12:38:47Z",
+  "scope": "Read-only V8 cold-build source/owner audit supplement. Only this standalone scratch receipt was created; repository checkout and execution policy were not modified.",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "audited_current": {
+    "pr": 2968,
+    "source_head": "48177153ad04605338c3a9a8dbd17defee9981bc",
+    "workflow_run": 39583122999,
+    "actual_job_checkout": "3c32bedb07239b0cbdb38d100836258165cae633",
+    "original_base": "57636c7a17d4847eb5fd712409816fd040b4e90f",
+    "tree": "22e14fcd85f7a3f2c5dc8f3a1bdb17efc81b4d62",
+    "existing_evidence_directory": "qualification/ci-v8-terminal-481-20261021",
+    "ci_status_note": "Historical nine-cancelled-job analysis; this supplement does not refresh CI terminal status or claim qualification."
+  },
+  "sources": {
+    "owner_3013_workflow": {
+      "url": "https://raw.githubusercontent.com/TrillionniumFoundation/hepta-private-ci/a216f3f3c39514f6e1e77bad2bab49a383899568/.github/workflows/v8-canary.yml",
+      "retrieved_started_utc": "2026-10-21T12:37:30Z",
+      "retrieved_completed_utc": "2026-10-21T12:37:31Z",
+      "character_count": 17499
+    },
+    "owner_2933_2954_workflow": {
+      "url": "https://raw.githubusercontent.com/TrillionniumFoundation/hepta-private-ci/8f1c73927a4e64228295898f4d665bc22cb7190f/.github/workflows/v8-canary.yml",
+      "retrieved_started_utc": "2026-10-21T12:37:30Z",
+      "retrieved_completed_utc": "2026-10-21T12:37:31Z",
+      "character_count": 18161
+    },
+    "owner_1396_workflow": {
+      "url": "https://raw.githubusercontent.com/TrillionniumFoundation/hepta-private-ci/a3792e75089830ccca3e4a84c7650d0a7ffde467/.github/workflows/v8-canary.yml",
+      "retrieved_started_utc": "2026-10-21T12:37:30Z",
+      "retrieved_completed_utc": "2026-10-21T12:37:31Z",
+      "character_count": 18226
+    },
+    "upstream_defs": {
+      "url": "https://raw.githubusercontent.com/v8/v8/15.0.245.2/bazel/defs.bzl",
+      "retrieved_started_utc": "2026-10-21T12:37:30Z",
+      "retrieved_completed_utc": "2026-10-21T12:37:31Z",
+      "character_count": 20946
+    },
+    "upstream_build": {
+      "url": "https://raw.githubusercontent.com/v8/v8/15.0.245.2/BUILD.bazel",
+      "retrieved_started_utc": "2026-10-21T12:37:30Z",
+      "retrieved_completed_utc": "2026-10-21T12:37:31Z",
+      "character_count": 193473
+    },
+    "upstream_config": {
+      "url": "https://raw.githubusercontent.com/v8/v8/15.0.245.2/bazel/config/BUILD.bazel",
+      "retrieved_started_utc": "2026-10-21T12:37:30Z",
+      "retrieved_completed_utc": "2026-10-21T12:37:31Z",
+      "character_count": 7030
+    },
+    "current_patch": {
+      "url": "https://raw.githubusercontent.com/TrillionniumFoundation/hepta-private-ci/48177153ad04605338c3a9a8dbd17defee9981bc/patches/v8_bazel_rules.patch",
+      "retrieved_started_utc": "2026-10-21T12:37:43Z",
+      "retrieved_completed_utc": "2026-10-21T12:37:44Z",
+      "character_count": 17529
+    },
+    "current_workflow": {
+      "url": "https://raw.githubusercontent.com/TrillionniumFoundation/hepta-private-ci/48177153ad04605338c3a9a8dbd17defee9981bc/.github/workflows/v8-canary.yml",
+      "retrieved_started_utc": "2026-10-21T12:37:43Z",
+      "retrieved_completed_utc": "2026-10-21T12:37:44Z",
+      "character_count": 17512
+    },
+    "current_module": {
+      "url": "https://raw.githubusercontent.com/TrillionniumFoundation/hepta-private-ci/48177153ad04605338c3a9a8dbd17defee9981bc/MODULE.bazel",
+      "retrieved_started_utc": "2026-10-21T12:37:43Z",
+      "retrieved_completed_utc": "2026-10-21T12:37:44Z",
+      "character_count": 21711
+    }
+  },
+  "owners": [
+    {
+      "pr": 3013,
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/3013",
+      "metadata_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/pulls/3013",
+      "retrieved_started_utc": "2026-10-21T12:37:07Z",
+      "retrieved_completed_utc": "2026-10-21T12:37:08Z",
+      "state": "open",
+      "merged": false,
+      "head_ref": "dot/v8-canary-time-budget-20261021",
+      "head_sha": "a216f3f3c39514f6e1e77bad2bab49a383899568",
+      "base_ref": "codex/hepta-cell-execution-p0-p5",
+      "base_sha": "5c13ec192924468d2a58220d61967602a88fbb08",
+      "changed_files": [
+        {
+          "path": ".github/workflows/v8-canary.yml",
+          "status": "modified",
+          "changes": 4
+        }
+      ],
+      "patch_evidence": {
+        "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/pulls/3013/files?per_page=100",
+        "retrieved_at_utc": null,
+        "read_before_utc": "2026-10-21T12:35:36Z",
+        "note": "Cached actual GitHub files/patch response from the completed audit; exact metadata and pinned head workflow re-fetched at timestamps above."
+      },
+      "source_key": "owner_3013_workflow",
+      "facts": [
+        {
+          "path": ".github/workflows/v8-canary.yml",
+          "head_lines": [
+            77,
+            79
+          ],
+          "fact": "The build job changes 30 to 90 minutes; the head's Windows source job remains 30 minutes at line 341."
+        },
+        {
+          "path": ".github/workflows/v8-canary.yml",
+          "head_lines": [
+            199,
+            209
+          ],
+          "fact": "No compiler-pin addition in this PR patch; this head still uses the Pin installed Cargo binary step."
+        }
+      ],
+      "interpretation": "The 90-minute budget is already present on current481; this PR does not establish a performance correction."
+    },
+    {
+      "pr": 2933,
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/2933",
+      "metadata_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/pulls/2933",
+      "retrieved_started_utc": "2026-10-21T12:37:07Z",
+      "retrieved_completed_utc": "2026-10-21T12:37:08Z",
+      "state": "closed",
+      "merged": false,
+      "head_ref": "maintenance/2695-v8-cold-build-budget-rustc-20261020",
+      "head_sha": "8f1c73927a4e64228295898f4d665bc22cb7190f",
+      "base_ref": "codex/group-ndu-deterministic-20261017",
+      "base_sha": "74bbcc9b0bb330649cd54d9881ae3676d3968bae",
+      "changed_files": [
+        {
+          "path": ".github/workflows/v8-canary.yml",
+          "status": "modified",
+          "changes": 19
+        }
+      ],
+      "patch_evidence": {
+        "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/pulls/2933/files?per_page=100",
+        "retrieved_at_utc": null,
+        "read_before_utc": "2026-10-21T12:35:36Z",
+        "note": "Cached actual GitHub files/patch response from the completed audit; exact metadata and pinned head workflow re-fetched at timestamps above."
+      },
+      "source_key": "owner_2933_2954_workflow",
+      "facts": [
+        {
+          "path": ".github/workflows/v8-canary.yml",
+          "head_lines": [
+            77,
+            79,
+            350,
+            352
+          ],
+          "fact": "Both build and build-windows-source change 30 to 150 minutes."
+        },
+        {
+          "path": ".github/workflows/v8-canary.yml",
+          "head_lines": [
+            199,
+            215
+          ],
+          "fact": "The workflow resolves a matching rustc beside Cargo 1.95.0, checks that it is executable, and exports RUSTC_1_95."
+        },
+        {
+          "path": ".github/workflows/v8-canary.yml",
+          "head_lines": [
+            332,
+            333
+          ],
+          "fact": "The smoke invocation explicitly sets RUSTUP_TOOLCHAIN=1.95.0 and RUSTC=${RUSTC_1_95}."
+        }
+      ],
+      "interpretation": "This is a budget increase and explicit compiler binding, not evidence of less cold C++ work. No timeout change was consumed or recommended as qualification during this audit."
+    },
+    {
+      "pr": 2954,
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/2954",
+      "metadata_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/pulls/2954",
+      "retrieved_started_utc": "2026-10-21T12:37:07Z",
+      "retrieved_completed_utc": "2026-10-21T12:37:07Z",
+      "state": "closed",
+      "merged": true,
+      "head_ref": "integration/2933-v8-budget",
+      "head_sha": "8f1c73927a4e64228295898f4d665bc22cb7190f",
+      "base_ref": "codex/ndu-blocker-closure-20261020",
+      "base_sha": "b2480d511ce441662b1a51113a33c914a12e1316",
+      "changed_files": [
+        {
+          "path": ".github/workflows/v8-canary.yml",
+          "status": "modified",
+          "changes": 19
+        }
+      ],
+      "patch_evidence": {
+        "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/pulls/2954/files?per_page=100",
+        "retrieved_at_utc": null,
+        "read_before_utc": "2026-10-21T12:35:36Z",
+        "note": "Cached actual GitHub files/patch response from the completed audit; exact metadata and pinned head workflow re-fetched at timestamps above."
+      },
+      "source_key": "owner_2933_2954_workflow",
+      "facts": [
+        {
+          "path": ".github/workflows/v8-canary.yml",
+          "head_lines": [
+            77,
+            79,
+            350,
+            352
+          ],
+          "fact": "Both build and build-windows-source change 30 to 150 minutes."
+        },
+        {
+          "path": ".github/workflows/v8-canary.yml",
+          "head_lines": [
+            199,
+            215
+          ],
+          "fact": "The workflow resolves a matching rustc beside Cargo 1.95.0, checks that it is executable, and exports RUSTC_1_95."
+        },
+        {
+          "path": ".github/workflows/v8-canary.yml",
+          "head_lines": [
+            332,
+            333
+          ],
+          "fact": "The smoke invocation explicitly sets RUSTUP_TOOLCHAIN=1.95.0 and RUSTC=${RUSTC_1_95}."
+        }
+      ],
+      "interpretation": "This is a budget increase and explicit compiler binding, not evidence of less cold C++ work. No timeout change was consumed or recommended as qualification during this audit."
+    }
+  ],
+  "older_owner_1396": {
+    "pr": 1396,
+    "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/1396",
+    "metadata_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/pulls/1396",
+    "retrieved_started_utc": "2026-10-21T12:37:07Z",
+    "retrieved_completed_utc": "2026-10-21T12:37:08Z",
+    "state": "open",
+    "merged": false,
+    "head_ref": "fix/v8-cold-build-budget-20261005",
+    "head_sha": "a3792e75089830ccca3e4a84c7650d0a7ffde467",
+    "source_key": "owner_1396_workflow",
+    "actual_patch_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/pulls/1396/files?per_page=100",
+    "actual_patch_retrieved_completed_utc": "2026-10-21T12:37:08Z",
+    "changed_files": [
+      {
+        "path": ".github/scripts/test_rust_ci_source_integrity.py",
+        "status": "modified",
+        "changes": 93
+      },
+      {
+        "path": ".github/workflows/v8-canary.yml",
+        "status": "modified",
+        "changes": 20
+      }
+    ],
+    "facts": [
+      {
+        "path": ".github/workflows/v8-canary.yml",
+        "head_lines": [
+          79,
+          353
+        ],
+        "fact": "The exact owner head uses 90-minute build and Windows source jobs; its patch raises both from 30."
+      },
+      {
+        "path": ".github/workflows/v8-canary.yml",
+        "head_lines": [
+          195,
+          215,
+          332,
+          333
+        ],
+        "fact": "The actual source is tied to Rust 1.96.0, exports RUSTC_1_96, and passes both RUSTUP_TOOLCHAIN=1.96.0 and the matching RUSTC to smoke."
+      },
+      {
+        "path": ".github/scripts/test_rust_ci_source_integrity.py",
+        "patch_hunk": "@@ -220,5 +222,96 @@",
+        "fact": "The added V8SmokeToolchainTests use recording fixture executables, an intentionally conflicting nested rust-toolchain.toml, and release/sandbox argument assertions. This is shell-parameter coverage, not a native V8 build."
+      }
+    ],
+    "limitation": "Only actual code/patch evidence is used here. PR body claims about prior failed or successful runs are not independently verified or treated as executable evidence. These tests were not executed in this read-only supplement.",
+    "current_pin_judgment": "Do not transplant the 1.96.0 pin into current481. Current481 uses Cargo 1.95.0 and already sets RUSTUP_TOOLCHAIN=1.95.0 explicitly; the archived cancelled builds did not reach smoke, so this old compiler-binding patch does not explain those failures."
+  },
+  "current_source_facts": [
+    {
+      "source_key": "current_workflow",
+      "path": ".github/workflows/v8-canary.yml",
+      "lines": [
+        21,
+        77,
+        341
+      ],
+      "fact": "Metadata, Bazel build, and Windows source job timeouts are already 90 minutes."
+    },
+    {
+      "source_key": "current_workflow",
+      "path": ".github/workflows/v8-canary.yml",
+      "lines": [
+        197,
+        207,
+        324,
+        327
+      ],
+      "fact": "The smoke resolves absolute Cargo 1.95.0, sets RUSTUP_TOOLCHAIN=1.95.0 and invokes that Cargo. No missing nested-toolchain override is established by the observed cancelled jobs."
+    },
+    {
+      "source_key": "current_module",
+      "path": "MODULE.bazel",
+      "lines": [
+        576,
+        583,
+        586,
+        587
+      ],
+      "fact": "The repository pins V8 15.0.245.2, applies patches/v8_bazel_rules.patch, and names the matching 15.0.245.2 tag archive."
+    }
+  ],
+  "upstream_v8_facts": [
+    {
+      "source_key": "upstream_defs",
+      "ref": "15.0.245.2",
+      "path": "bazel/defs.bzl",
+      "lines": [
+        459,
+        479,
+        488,
+        492,
+        498
+      ],
+      "fact": "Upstream _mksnapshot runs ctx.executable.tool; its executable label uses cfg=exec, while the rule applies v8_target_cpu_transition."
+    },
+    {
+      "source_key": "upstream_defs",
+      "ref": "15.0.245.2",
+      "path": "bazel/defs.bzl",
+      "lines": [
+        501,
+        506,
+        508,
+        510,
+        518,
+        520,
+        522
+      ],
+      "fact": "The macro supplies separate noicu and icu mksnapshot labels and chooses target_os=win when the Windows configuration is selected."
+    },
+    {
+      "source_key": "upstream_build",
+      "ref": "15.0.245.2",
+      "path": "BUILD.bazel",
+      "lines": [
+        4799,
+        4800,
+        4811
+      ],
+      "fact": "Upstream mksnapshot is a v8_binary with icu_deps=[\":icu/v8_libshared\"]."
+    },
+    {
+      "source_key": "upstream_config",
+      "ref": "15.0.245.2",
+      "path": "bazel/config/BUILD.bazel",
+      "fact": "This exact configuration source was read during the audit; no independently proven compile-budget fix was inferred from it."
+    }
+  ],
+  "windows_target_tool_patch_facts": [
+    {
+      "source_key": "current_patch",
+      "path": "patches/v8_bazel_rules.patch",
+      "lines": [
+        112,
+        116,
+        124
+      ],
+      "fact": "The repository patch documents the Windows target-ABI requirement and selects target_tool only when target_os==win; other platforms retain tool."
+    },
+    {
+      "source_key": "current_patch",
+      "path": "patches/v8_bazel_rules.patch",
+      "lines": [
+        130,
+        132,
+        133,
+        135,
+        136
+      ],
+      "fact": "The original tool remains cfg=exec; new target_tool is mandatory, executable, and cfg=target."
+    },
+    {
+      "source_key": "current_patch",
+      "path": "patches/v8_bazel_rules.patch",
+      "lines": [
+        145,
+        153
+      ],
+      "fact": "Both noicu and icu macro invocations supply their respective target_tool labels."
+    }
+  ],
+  "facts_vs_inferences": {
+    "observed": "Exact owner identities, immutable owner/current-head source files, original V8 tag source, and existing cancelled-job logs were read. No compilation or action-query experiment was performed.",
+    "unsupported_claims_rejected": [
+      "A mandatory unused target_tool attr by itself proves that both executable variants are built on every platform.",
+      "The Windows target_tool patch is the cause of the nine 90-minute cancellations.",
+      "Compiler pins or a larger timeout demonstrate that the current cold-build qualification is closed.",
+      "A previous owner PR's body or successful run qualifies this source/base.",
+      "Action-count progress near the end predicts that staging, snapshot linking and Cargo smoke can finish within the remaining time."
+    ],
+    "limited_inference": "Observed exec/target compilation configurations are consistent with upstream mksnapshot host-tool requirements. Reusing target-config mksnapshot on a strictly native ABI may merit an action-graph experiment, but is unproven and cannot be generalized to musl, cross-architecture, or remote execution.",
+    "next_verifiable_experiment": "Only in an authorized resource window: inspect the actual configured action graph and input/tool ABI for one representative failing native target. If redundant reachable work is proven, test one narrow change against the unchanged full build/stage/smoke gate. No experiment or timeout adjustment was run here.",
+    "outcome": "No proven narrow source fix for the observed 90-minute cold-build failures; qualification remains open."
+  },
+  "retrieval_limitations": [
+    "V8 upstream source URLs were read at tag 15.0.245.2; the receipt does not invent an upstream commit SHA that was not resolved.",
+    "An attempted local git show of current481 encountered missing partial-clone objects and failed network auto-fetch; exact current481 files were then read successfully through the GitHub connector at the recorded immutable URLs.",
+    "The receipt intentionally omits unrelated PR fields, bodies, account data, credentials, and raw large source contents."
+  ]
+}

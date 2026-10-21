@@ -1,0 +1,60 @@
+{
+  "source_head": "52293403ea1e06465c41d24d39b54959bad40936",
+  "source_tree": "8944830c3b3ed494987d01ef631ab48b69e75d1c",
+  "production_path": "codex-rs/utils/path-utils/src/private_state_windows_directory.rs",
+  "production_sha256": "05f8abf49d5a0d5f099695d6138e01525ac9b5e0b369e5172e0dd8f342e2f2a6",
+  "original_qualified": true,
+  "original_restored": true,
+  "all_lane_member_hashes_verified": true,
+  "lanes": [
+    {
+      "lane": "positive",
+      "exit_code": 0,
+      "statuses": {
+        "private_state_windows::directory::tests::rejects_ancestor_substitution_at_retained_open": "PASS",
+        "private_state_windows::directory::tests::rejects_junction_before_creating_private_leaf": "PASS"
+      },
+      "observations": {
+        "substitution": "swapped=true denied=true redirected=false",
+        "creation": "denied=true created=false"
+      },
+      "member_hashes_verified": true,
+      "native_summary_lines": [
+        "Summary [   0.031s] 2 tests run: 2 passed, 15 skipped"
+      ]
+    },
+    {
+      "lane": "unchecked-create",
+      "exit_code": 1,
+      "statuses": {
+        "private_state_windows::directory::tests::rejects_ancestor_substitution_at_retained_open": "PASS",
+        "private_state_windows::directory::tests::rejects_junction_before_creating_private_leaf": "FAIL"
+      },
+      "observations": {
+        "substitution": "swapped=true denied=true redirected=false",
+        "creation": "denied=true created=true"
+      },
+      "member_hashes_verified": true,
+      "native_summary_lines": [
+        "Summary [   0.029s] 2 tests run: 1 passed, 1 failed, 15 skipped"
+      ]
+    },
+    {
+      "lane": "path-check-open",
+      "exit_code": 1,
+      "statuses": {
+        "private_state_windows::directory::tests::rejects_ancestor_substitution_at_retained_open": "FAIL",
+        "private_state_windows::directory::tests::rejects_junction_before_creating_private_leaf": "PASS"
+      },
+      "observations": {
+        "substitution": "swapped=true denied=false redirected=true",
+        "creation": "denied=true created=false"
+      },
+      "member_hashes_verified": true,
+      "native_summary_lines": [
+        "Summary [   0.030s] 2 tests run: 1 passed, 1 failed, 15 skipped"
+      ]
+    }
+  ],
+  "scope": "Only this 52293403 source and targeted original Windows workflow. Later Bao/Memory/state/reader sources are not covered by this receipt."
+}

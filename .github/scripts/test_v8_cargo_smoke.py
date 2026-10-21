@@ -41,9 +41,9 @@ class V8CargoSmokeTest(unittest.TestCase):
             cargo.write_text(
                 "#!/usr/bin/env bash\n"
                 "set -euo pipefail\n"
-                "printf '%s\\0' \"$@\" > \"$CAPTURE_ARGS\"\n"
+                'printf \'%s\\0\' "$@" > "$CAPTURE_ARGS"\n'
                 "printf '%s\\0' \"$RUSTY_V8_ARCHIVE\" "
-                "\"$RUSTY_V8_SRC_BINDING_PATH\" \"$PWD\" > \"$CAPTURE_ENV\"\n"
+                '"$RUSTY_V8_SRC_BINDING_PATH" "$PWD" > "$CAPTURE_ENV"\n'
             )
             cargo.chmod(0o755)
             # Exercise the native x86_64 branch on any host running this test.
