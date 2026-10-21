@@ -168,15 +168,13 @@ class OfflineShardDistillTests(unittest.TestCase):
         hook = self.student.register_forward_pre_hook(capture_eval_input)
         self.addCleanup(hook.remove)
         original_heldout = self.cohorts["future_1"].slots.clone()
-        original_step = self.optimizer.step
+        def forward_then_mutate_caller(module, _inputs, _output):
+            if module.training:
+                with torch.no_grad():
+                    self.cohorts["future_1"].slots.add_(7.0)
 
-        def step_then_mutate_caller(*args, **kwargs):
-            outcome = original_step(*args, **kwargs)
-            with torch.no_grad():
-                self.cohorts["future_1"].slots.add_(7.0)
-            return outcome
-
-        self.optimizer.step = step_then_mutate_caller
+        mutation = self.student.register_forward_hook(forward_then_mutate_caller)
+        self.addCleanup(mutation.remove)
         self.run_trial(steps=1)
         # Five frozen preflight observations, one train step, five heldouts.
         self.assertEqual(len(observed), 10)
@@ -237,19 +235,17 @@ class OfflineShardDistillTests(unittest.TestCase):
     def test_caller_replaces_cohort_object_after_preflight_without_rewriting_report(self):
         old = self.cohorts["future_2"]
         pinned_source = old.expected_source_sha256
-        original_step = self.optimizer.step
+        def forward_then_replace_caller_cohort(module, _inputs, _output):
+            if module.training:
+                self.cohorts["future_2"] = PairedCohort(
+                    slots=old.slots + 9.0, teacher_shard=old.teacher_shard,
+                    expected_source_sha256="e" * 64,
+                    expected_npy_sha256="0" * 64,
+                    expected_slot_sha256="1" * 64,
+                    sample_digests=old.sample_digests)
 
-        def step_then_replace_caller_cohort(*args, **kwargs):
-            result = original_step(*args, **kwargs)
-            self.cohorts["future_2"] = PairedCohort(
-                slots=old.slots + 9.0, teacher_shard=old.teacher_shard,
-                expected_source_sha256="e" * 64,
-                expected_npy_sha256="0" * 64,
-                expected_slot_sha256="1" * 64,
-                sample_digests=old.sample_digests)
-            return result
-
-        self.optimizer.step = step_then_replace_caller_cohort
+        mutation = self.student.register_forward_hook(forward_then_replace_caller_cohort)
+        self.addCleanup(mutation.remove)
         report = self.run_trial(steps=1)
         self.assertNotEqual(self.cohorts["future_2"].expected_source_sha256,
                             pinned_source)
@@ -261,15 +257,18 @@ class OfflineShardDistillTests(unittest.TestCase):
 
     def test_caller_mutation_after_optimizer_step_cannot_rewrite_report_pins(self):
         untouched = self.cohorts["ood"].expected_slot_sha256
-        original_step = self.optimizer.step
+        eval_calls = [0]
 
-        def step_then_replace_heldout(*args, **kwargs):
-            result = original_step(*args, **kwargs)
-            with torch.no_grad():
-                self.cohorts["ood"].slots.add_(17.0)
-            return result
+        def after_step_eval_mutates_caller(module, _inputs, _output):
+            if not module.training:
+                eval_calls[0] += 1
+                # Exactly five pre-train validation forwards precede this.
+                if eval_calls[0] == 6:
+                    with torch.no_grad():
+                        self.cohorts["ood"].slots.add_(17.0)
 
-        self.optimizer.step = step_then_replace_heldout
+        mutation = self.student.register_forward_hook(after_step_eval_mutates_caller)
+        self.addCleanup(mutation.remove)
         report = self.run_trial(steps=1)
         self.assertEqual(report["paired_split_receipts"]["ood"]["student_slot_sha256"],
                          untouched)
@@ -277,6 +276,96 @@ class OfflineShardDistillTests(unittest.TestCase):
             self.cohorts["ood"].slots.numpy().tobytes()).hexdigest()
         self.assertNotEqual(after_caller_mutation, untouched)
         self.assertFalse(report["production_activation_allowed"])
+
+    def test_custom_optimizer_cannot_execute_foreign_step(self):
+        foreign = torch.nn.Parameter(torch.ones(1))
+        before = foreign.detach().clone()
+        calls = [0]
+
+        class ForeignSGD(torch.optim.SGD):
+            def step(self, closure=None):
+                calls[0] += 1
+                with torch.no_grad():
+                    foreign.add_(7)
+                return super().step(closure)
+
+        optimizer = ForeignSGD(list(self.student.parameters()) +
+                               list(self.readout.parameters()), lr=0.05)
+        with self.assertRaisesRegex(OfflineDistillError, "unsafe offline optimizer"):
+            self.run_trial(optimizer=optimizer, steps=1)
+        self.assertEqual(calls[0], 0)
+        torch.testing.assert_close(foreign, before, rtol=0, atol=0)
+
+    def test_step_override_and_global_optimizer_hooks_fail_closed(self):
+        from torch.optim.optimizer import register_optimizer_step_pre_hook
+        foreign = torch.nn.Parameter(torch.ones(1))
+        before = foreign.detach().clone()
+        calls = [0]
+
+        def hostile(*_args, **_kwargs):
+            calls[0] += 1
+            with torch.no_grad():
+                foreign.add_(3)
+
+        self.optimizer.step = hostile
+        with self.assertRaisesRegex(OfflineDistillError, "unsafe offline optimizer"):
+            self.run_trial(steps=1)
+        del self.optimizer.step
+
+        handle = register_optimizer_step_pre_hook(hostile)
+        try:
+            with self.assertRaisesRegex(OfflineDistillError, "unsafe offline optimizer"):
+                self.run_trial(steps=1)
+        finally:
+            handle.remove()
+        self.assertEqual(calls[0], 0)
+        torch.testing.assert_close(foreign, before, rtol=0, atol=0)
+
+    def test_distinct_parameter_objects_sharing_storage_are_rejected(self):
+        # Fresh IDs are insufficient: the foreign Readout may alias a Student
+        # allocation via a distinct Parameter view.
+        self.readout.weight = torch.nn.Parameter(self.student[0].weight.detach()[:4])
+        aliased = torch.optim.SGD(list(self.student.parameters()) +
+                                  list(self.readout.parameters()), lr=0.05)
+        with self.assertRaisesRegex(OfflineDistillError, "unsafe offline optimizer"):
+            self.run_trial(optimizer=aliased, steps=1)
+
+    def test_optimizer_momentum_storage_alias_rejected_before_training(self):
+        parameter = next(self.student.parameters())
+        optimizer = torch.optim.SGD(list(self.student.parameters()) +
+                                    list(self.readout.parameters()),
+                                    lr=0.05, momentum=0.5)
+        optimizer.state[parameter]["momentum_buffer"] = parameter.detach()
+        with self.assertRaisesRegex(OfflineDistillError, "unsafe offline optimizer"):
+            self.run_trial(optimizer=optimizer, steps=1)
+
+    def test_late_global_registration_before_step_rejected(self):
+        from torch.optim.optimizer import register_optimizer_step_pre_hook
+        foreign = torch.nn.Parameter(torch.ones(1))
+        before = foreign.detach().clone()
+        handle = [None]
+        calls = [0]
+
+        def hostile(*_args):
+            calls[0] += 1
+            with torch.no_grad():
+                foreign.add_(5)
+
+        def register_late(module, _inputs, _output):
+            if module.training and handle[0] is None:
+                handle[0] = register_optimizer_step_pre_hook(hostile)
+
+        registration = self.student.register_forward_hook(register_late)
+        try:
+            with self.assertRaisesRegex(OfflineDistillError, "unsafe offline optimizer"):
+                self.run_trial(steps=1)
+        finally:
+            registration.remove()
+            if handle[0] is not None:
+                handle[0].remove()
+        self.assertIsNotNone(handle[0])
+        self.assertEqual(calls[0], 0)
+        torch.testing.assert_close(foreign, before, rtol=0, atol=0)
 
 
 if __name__ == "__main__":
