@@ -1,0 +1,1245 @@
+{
+  "head": "3ba1ea16cafb13be7ebe8a0e1733ced864860628",
+  "workflows": [
+    {
+      "path": ".github/workflows/automation-taskflow-focused.yml",
+      "name": "automation-taskflow-focused",
+      "events": [
+        "push",
+        "workflow_dispatch"
+      ],
+      "concurrency": [
+        {
+          "level": "workflow",
+          "value": {
+            "group": "${{ github.workflow }}::${{ github.event.pull_request.head.ref || github.ref_name }}",
+            "cancel-in-progress": true
+          }
+        }
+      ],
+      "calls": []
+    },
+    {
+      "path": ".github/workflows/bazel.yml",
+      "name": "Bazel",
+      "events": [
+        "workflow_call",
+        "workflow_dispatch"
+      ],
+      "concurrency": [
+        {
+          "level": "workflow",
+          "value": {
+            "group": "concurrency-group::${{ github.workflow }}::${{ github.event.pull_request.number > 0 && format('pr-{0}', github.event.pull_request.number) || github.ref_name }}${{ github.ref_name == 'main' && format('::{0}', github.run_id) || ''}}",
+            "cancel-in-progress": "${{ github.ref_name != 'main' }}"
+          }
+        }
+      ],
+      "calls": []
+    },
+    {
+      "path": ".github/workflows/blob-size-policy.yml",
+      "name": "blob-size-policy",
+      "events": [
+        "workflow_call"
+      ],
+      "concurrency": [],
+      "calls": []
+    },
+    {
+      "path": ".github/workflows/blocking-ci.yml",
+      "name": "blocking-ci",
+      "events": [
+        "pull_request",
+        "push"
+      ],
+      "concurrency": [
+        {
+          "level": "workflow",
+          "value": {
+            "group": "blocking-ci-${{ github.event.pull_request.head.ref || github.ref_name }}",
+            "cancel-in-progress": true
+          }
+        }
+      ],
+      "calls": [
+        "./.github/workflows/hepta-contract-gate.yml",
+        "./.github/workflows/bazel.yml",
+        "./.github/workflows/blob-size-policy.yml",
+        "./.github/workflows/cargo-deny.yml",
+        "./.github/workflows/codespell.yml",
+        "./.github/workflows/repo-checks.yml",
+        "./.github/workflows/rust-ci.yml",
+        "./.github/workflows/sdk.yml"
+      ]
+    },
+    {
+      "path": ".github/workflows/cargo-deny.yml",
+      "name": "cargo-deny",
+      "events": [
+        "workflow_call"
+      ],
+      "concurrency": [],
+      "calls": []
+    },
+    {
+      "path": ".github/workflows/cla.yml",
+      "name": "CLA Assistant",
+      "events": [
+        "issue_comment",
+        "pull_request_target"
+      ],
+      "concurrency": [],
+      "calls": []
+    },
+    {
+      "path": ".github/workflows/close-stale-contributor-prs.yml",
+      "name": "Close stale contributor PRs",
+      "events": [
+        "workflow_dispatch",
+        "schedule"
+      ],
+      "concurrency": [],
+      "calls": []
+    },
+    {
+      "path": ".github/workflows/codespell.yml",
+      "name": "Codespell",
+      "events": [
+        "workflow_call"
+      ],
+      "concurrency": [],
+      "calls": []
+    },
+    {
+      "path": ".github/workflows/hepta-algorithm-docs.yml",
+      "name": "Hepta adaptive algorithm documents",
+      "events": [
+        "workflow_call",
+        "workflow_dispatch"
+      ],
+      "concurrency": [
+        {
+          "level": "workflow",
+          "value": {
+            "group": "hepta-algorithm-docs-${{ github.event.pull_request.number || github.ref }}",
+            "cancel-in-progress": true
+          }
+        }
+      ],
+      "calls": []
+    },
+    {
+      "path": ".github/workflows/hepta-app-server-schema-refresh.yml",
+      "name": "App-server schema refresh",
+      "events": [
+        "pull_request"
+      ],
+      "concurrency": [
+        {
+          "level": "workflow",
+          "value": {
+            "group": "app-server-schema-refresh-${{ github.event.pull_request.number }}",
+            "cancel-in-progress": true
+          }
+        }
+      ],
+      "calls": []
+    },
+    {
+      "path": ".github/workflows/hepta-architecture-convergence.yml",
+      "name": "Hepta architecture convergence",
+      "events": [
+        "pull_request",
+        "workflow_dispatch"
+      ],
+      "concurrency": [
+        {
+          "level": "workflow",
+          "value": {
+            "group": "hepta-architecture-convergence-${{ github.event.pull_request.head.ref || github.ref_name }}",
+            "cancel-in-progress": true
+          }
+        }
+      ],
+      "calls": []
+    },
+    {
+      "path": ".github/workflows/hepta-artifact-storage.yml",
+      "name": "Hepta immutable artifact storage (read-only)",
+      "events": [
+        "workflow_call",
+        "workflow_dispatch"
+      ],
+      "concurrency": [],
+      "calls": []
+    },
+    {
+      "path": ".github/workflows/hepta-assimilation-discovery.yml",
+      "name": "Hepta scoped discovery (read-only)",
+      "events": [
+        "workflow_call",
+        "workflow_dispatch"
+      ],
+      "concurrency": [
+        {
+          "level": "workflow",
+          "value": {
+            "group": "hepta-scoped-discovery-${{ github.event.pull_request.number }}",
+            "cancel-in-progress": true
+          }
+        }
+      ],
+      "calls": []
+    },
+    {
+      "path": ".github/workflows/hepta-audit-remediation.yml",
+      "name": "Hepta audit remediation (read-only)",
+      "events": [
+        "workflow_call",
+        "workflow_dispatch"
+      ],
+      "concurrency": [
+        {
+          "level": "workflow",
+          "value": {
+            "group": "hepta-audit-remediation-${{ github.event.pull_request.number || github.ref }}",
+            "cancel-in-progress": true
+          }
+        }
+      ],
+      "calls": []
+    },
+    {
+      "path": ".github/workflows/hepta-bazel-stable-lock-proposal.yml",
+      "name": "Bazel stable lock proposal",
+      "events": [
+        "pull_request"
+      ],
+      "concurrency": [
+        {
+          "level": "workflow",
+          "value": {
+            "group": "bazel-stable-lock-proposal-${{ github.event.pull_request.head.ref }}",
+            "cancel-in-progress": true
+          }
+        }
+      ],
+      "calls": []
+    },
+    {
+      "path": ".github/workflows/hepta-browser-agentd-composition.yml",
+      "name": "Hepta Browser Agentd composition",
+      "events": [
+        "workflow_call",
+        "workflow_dispatch"
+      ],
+      "concurrency": [
+        {
+          "level": "workflow",
+          "value": {
+            "group": "hepta-browser-agentd-composition-${{ github.ref }}",
+            "cancel-in-progress": true
+          }
+        }
+      ],
+      "calls": []
+    },
+    {
+      "path": ".github/workflows/hepta-browser-servo-deployment-qualification.yml",
+      "name": "Hepta Browser Servo deployment qualification",
+      "events": [
+        "workflow_call",
+        "workflow_dispatch"
+      ],
+      "concurrency": [
+        {
+          "level": "workflow",
+          "value": {
+            "group": "hepta-browser-servo-deployment-qualification",
+            "cancel-in-progress": false
+          }
+        }
+      ],
+      "calls": []
+    },
+    {
+      "path": ".github/workflows/hepta-browser-servo-worker-dev.yml",
+      "name": "Hepta Browser Servo worker dev",
+      "events": [
+        "workflow_call",
+        "workflow_dispatch"
+      ],
+      "concurrency": [
+        {
+          "level": "workflow",
+          "value": {
+            "group": "hepta-browser-servo-worker-dev-${{ github.ref }}",
+            "cancel-in-progress": true
+          }
+        }
+      ],
+      "calls": []
+    },
+    {
+      "path": ".github/workflows/hepta-cns-embodiment.yml",
+      "name": "Hepta CNS organ embodiment",
+      "events": [
+        "workflow_call",
+        "workflow_dispatch"
+      ],
+      "concurrency": [
+        {
+          "level": "workflow",
+          "value": {
+            "group": "hepta-cns-${{ github.event.pull_request.number || github.ref }}",
+            "cancel-in-progress": true
+          }
+        }
+      ],
+      "calls": []
+    },
+    {
+      "path": ".github/workflows/hepta-consolidated-source.yml",
+      "name": "Hepta consolidated source qualification (read-only)",
+      "events": [
+        "workflow_call",
+        "workflow_dispatch"
+      ],
+      "concurrency": [
+        {
+          "level": "workflow",
+          "value": {
+            "group": "hepta-consolidated-source-${{ github.event.pull_request.number || github.ref }}",
+            "cancel-in-progress": true
+          }
+        }
+      ],
+      "calls": []
+    },
+    {
+      "path": ".github/workflows/hepta-contract-gate.yml",
+      "name": "Hepta contract gate",
+      "events": [
+        "workflow_call",
+        "workflow_dispatch"
+      ],
+      "concurrency": [],
+      "calls": []
+    },
+    {
+      "path": ".github/workflows/hepta-converged-learning.yml",
+      "name": "Hepta converged learning qualification (read-only)",
+      "events": [
+        "workflow_call",
+        "workflow_dispatch"
+      ],
+      "concurrency": [
+        {
+          "level": "workflow",
+          "value": {
+            "group": "hepta-converged-learning-${{ github.event.pull_request.number || github.ref }}",
+            "cancel-in-progress": true
+          }
+        }
+      ],
+      "calls": []
+    },
+    {
+      "path": ".github/workflows/hepta-deployment-handoff.yml",
+      "name": "Hepta deployment handoff (read-only)",
+      "events": [
+        "workflow_call",
+        "workflow_dispatch"
+      ],
+      "concurrency": [
+        {
+          "level": "workflow",
+          "value": {
+            "group": "hepta-deployment-handoff-${{ github.event.pull_request.number || github.ref }}",
+            "cancel-in-progress": true
+          }
+        }
+      ],
+      "calls": []
+    },
+    {
+      "path": ".github/workflows/hepta-development-docs.yml",
+      "name": "Hepta development documents",
+      "events": [
+        "workflow_call",
+        "workflow_dispatch"
+      ],
+      "concurrency": [
+        {
+          "level": "workflow",
+          "value": {
+            "group": "hepta-development-docs-${{ github.event.pull_request.number || github.ref }}",
+            "cancel-in-progress": true
+          }
+        }
+      ],
+      "calls": []
+    },
+    {
+      "path": ".github/workflows/hepta-diagnostic-source-export.yml",
+      "name": "Hepta diagnostic source export",
+      "events": [
+        "workflow_call",
+        "workflow_dispatch"
+      ],
+      "concurrency": [
+        {
+          "level": "workflow",
+          "value": {
+            "group": "hepta-diagnostic-source-export-${{ github.ref }}",
+            "cancel-in-progress": true
+          }
+        }
+      ],
+      "calls": []
+    },
+    {
+      "path": ".github/workflows/hepta-durable-learning-roundtrip.yml",
+      "name": "Hepta durable learning roundtrip (read-only)",
+      "events": [
+        "workflow_call",
+        "workflow_dispatch"
+      ],
+      "concurrency": [],
+      "calls": []
+    },
+    {
+      "path": ".github/workflows/hepta-gap-agentd-process.yml",
+      "name": "Hepta Agentd process qualification",
+      "events": [
+        "workflow_call",
+        "workflow_dispatch"
+      ],
+      "concurrency": [
+        {
+          "level": "workflow",
+          "value": {
+            "group": "hepta-agentd-process-${{ github.event.pull_request.number || github.ref }}",
+            "cancel-in-progress": true
+          }
+        }
+      ],
+      "calls": []
+    },
+    {
+      "path": ".github/workflows/hepta-implementation-readiness.yml",
+      "name": "Hepta pre-coding implementation readiness",
+      "events": [
+        "workflow_call",
+        "workflow_dispatch"
+      ],
+      "concurrency": [
+        {
+          "level": "workflow",
+          "value": {
+            "group": "hepta-implementation-readiness-${{ github.event.pull_request.number || github.ref }}",
+            "cancel-in-progress": true
+          }
+        }
+      ],
+      "calls": []
+    },
+    {
+      "path": ".github/workflows/hepta-inference-maintenance.yml",
+      "name": "Hepta inference maintenance",
+      "events": [
+        "workflow_call",
+        "workflow_dispatch"
+      ],
+      "concurrency": [
+        {
+          "level": "workflow",
+          "value": {
+            "group": "hepta-inference-maintenance-${{ github.event.pull_request.number || github.ref }}",
+            "cancel-in-progress": true
+          }
+        }
+      ],
+      "calls": []
+    },
+    {
+      "path": ".github/workflows/hepta-integration-diagnostics.yml",
+      "name": "Hepta integration diagnostics",
+      "events": [
+        "workflow_call",
+        "workflow_dispatch"
+      ],
+      "concurrency": [
+        {
+          "level": "workflow",
+          "value": {
+            "group": "hepta-integration-diagnostics-${{ github.ref }}",
+            "cancel-in-progress": true
+          }
+        }
+      ],
+      "calls": []
+    },
+    {
+      "path": ".github/workflows/hepta-intuition-qualification.yml",
+      "name": "Hepta intuition qualification",
+      "events": [
+        "workflow_call",
+        "workflow_dispatch"
+      ],
+      "concurrency": [
+        {
+          "level": "workflow",
+          "value": {
+            "group": "hepta-intuition-qualification-${{ github.event.pull_request.number || github.ref }}",
+            "cancel-in-progress": true
+          }
+        }
+      ],
+      "calls": []
+    },
+    {
+      "path": ".github/workflows/hepta-kernel-evidence-qualification.yml",
+      "name": "Kernel evidence qualification",
+      "events": [
+        "workflow_call",
+        "workflow_dispatch"
+      ],
+      "concurrency": [
+        {
+          "level": "workflow",
+          "value": {
+            "group": "kernel-evidence-qualification-${{ github.event.pull_request.number || github.ref }}",
+            "cancel-in-progress": true
+          }
+        }
+      ],
+      "calls": []
+    },
+    {
+      "path": ".github/workflows/hepta-knowledge-graph-qualification.yml",
+      "name": "Hepta knowledge.graph qualification",
+      "events": [
+        "workflow_call",
+        "workflow_dispatch"
+      ],
+      "concurrency": [
+        {
+          "level": "workflow",
+          "value": {
+            "group": "hepta-knowledge-graph-${{ github.event.pull_request.number || github.ref }}",
+            "cancel-in-progress": true
+          }
+        }
+      ],
+      "calls": []
+    },
+    {
+      "path": ".github/workflows/hepta-lane-b-truth.yml",
+      "name": "Hepta Lane B source closure",
+      "events": [
+        "workflow_call",
+        "workflow_dispatch"
+      ],
+      "concurrency": [
+        {
+          "level": "workflow",
+          "value": {
+            "group": "hepta-lane-b-source-closure-${{ github.event.pull_request.number || github.ref }}",
+            "cancel-in-progress": true
+          }
+        }
+      ],
+      "calls": []
+    },
+    {
+      "path": ".github/workflows/hepta-lane-d-semantic-conformance.yml",
+      "name": "Hepta Lane D semantic conformance",
+      "events": [
+        "workflow_call",
+        "workflow_dispatch"
+      ],
+      "concurrency": [
+        {
+          "level": "workflow",
+          "value": {
+            "group": "hepta-lane-d-semantic-${{ github.event.pull_request.number || github.ref }}",
+            "cancel-in-progress": true
+          }
+        }
+      ],
+      "calls": []
+    },
+    {
+      "path": ".github/workflows/hepta-lane-e-gap-closure.yml",
+      "name": "Hepta Lane E gap closure",
+      "events": [
+        "workflow_call",
+        "workflow_dispatch"
+      ],
+      "concurrency": [
+        {
+          "level": "workflow",
+          "value": {
+            "group": "hepta-lane-e-gap-closure-${{ github.event.pull_request.number || github.ref }}",
+            "cancel-in-progress": true
+          }
+        }
+      ],
+      "calls": []
+    },
+    {
+      "path": ".github/workflows/hepta-lane-f-shadow-qualification.yml",
+      "name": "Hepta Lane F shadow qualification",
+      "events": [
+        "workflow_call",
+        "workflow_dispatch"
+      ],
+      "concurrency": [
+        {
+          "level": "workflow",
+          "value": {
+            "group": "lane-f-shadow-${{ github.event.pull_request.number || github.ref }}",
+            "cancel-in-progress": true
+          }
+        }
+      ],
+      "calls": []
+    },
+    {
+      "path": ".github/workflows/hepta-learning-ledger-durable.yml",
+      "name": "Hepta durable causal ledger (read-only)",
+      "events": [
+        "workflow_call",
+        "workflow_dispatch"
+      ],
+      "concurrency": [
+        {
+          "level": "workflow",
+          "value": {
+            "group": "hepta-learning-ledger-durable-${{ github.event.pull_request.number }}",
+            "cancel-in-progress": true
+          }
+        }
+      ],
+      "calls": []
+    },
+    {
+      "path": ".github/workflows/hepta-memory-retrieval-qualification-host.yml",
+      "name": "Hepta memory retrieval qualification host",
+      "events": [
+        "workflow_call",
+        "workflow_dispatch"
+      ],
+      "concurrency": [
+        {
+          "level": "workflow",
+          "value": {
+            "group": "hepta-memory-retrieval-qualification-host-${{ github.event.pull_request.number || github.ref }}",
+            "cancel-in-progress": true
+          }
+        }
+      ],
+      "calls": []
+    },
+    {
+      "path": ".github/workflows/hepta-ndu-recursion.yml",
+      "name": "Hepta NDU recursion (read-only)",
+      "events": [
+        "workflow_call",
+        "workflow_dispatch"
+      ],
+      "concurrency": [
+        {
+          "level": "workflow",
+          "value": {
+            "group": "hepta-ndu-recursion-${{ github.event.pull_request.number || github.ref }}",
+            "cancel-in-progress": true
+          }
+        }
+      ],
+      "calls": []
+    },
+    {
+      "path": ".github/workflows/hepta-objective-admission.yml",
+      "name": "Hepta objective admission qualification",
+      "events": [
+        "workflow_call",
+        "workflow_dispatch"
+      ],
+      "concurrency": [
+        {
+          "level": "workflow",
+          "value": {
+            "group": "hepta-objective-admission-${{ github.event.pull_request.number || github.ref }}",
+            "cancel-in-progress": true
+          }
+        }
+      ],
+      "calls": []
+    },
+    {
+      "path": ".github/workflows/hepta-objective-product-composition.yml",
+      "name": "Hepta objective product composition",
+      "events": [
+        "workflow_call",
+        "workflow_dispatch"
+      ],
+      "concurrency": [
+        {
+          "level": "workflow",
+          "value": {
+            "group": "hepta-objective-product-composition-${{ github.event.pull_request.number || github.ref }}",
+            "cancel-in-progress": true
+          }
+        }
+      ],
+      "calls": []
+    },
+    {
+      "path": ".github/workflows/hepta-offline-build-inputs.yml",
+      "name": "Hepta offline native build inputs",
+      "events": [
+        "workflow_call",
+        "workflow_dispatch"
+      ],
+      "concurrency": [
+        {
+          "level": "workflow",
+          "value": {
+            "group": "hepta-offline-build-inputs-${{ github.ref }}",
+            "cancel-in-progress": true
+          }
+        }
+      ],
+      "calls": []
+    },
+    {
+      "path": ".github/workflows/hepta-organ-implementation.yml",
+      "name": "Hepta organ implementation (read-only)",
+      "events": [
+        "workflow_call",
+        "workflow_dispatch"
+      ],
+      "concurrency": [
+        {
+          "level": "workflow",
+          "value": {
+            "group": "hepta-organ-implementation-${{ github.event.pull_request.number }}",
+            "cancel-in-progress": true
+          }
+        }
+      ],
+      "calls": []
+    },
+    {
+      "path": ".github/workflows/hepta-repository-integrity.yml",
+      "name": "Hepta repository integrity",
+      "events": [
+        "workflow_call",
+        "workflow_dispatch"
+      ],
+      "concurrency": [
+        {
+          "level": "workflow",
+          "value": {
+            "group": "hepta-repository-integrity-${{ github.event.pull_request.number || github.ref }}",
+            "cancel-in-progress": true
+          }
+        }
+      ],
+      "calls": []
+    },
+    {
+      "path": ".github/workflows/hepta-self-iteration-activation.yml",
+      "name": "Hepta self-iteration activation gate",
+      "events": [
+        "workflow_call",
+        "workflow_dispatch"
+      ],
+      "concurrency": [],
+      "calls": []
+    },
+    {
+      "path": ".github/workflows/hepta-vnext-qualification.yml",
+      "name": "hepta-vnext qualification",
+      "events": [
+        "workflow_call",
+        "workflow_dispatch"
+      ],
+      "concurrency": [],
+      "calls": []
+    },
+    {
+      "path": ".github/workflows/hepta-windows-private-state-native.yml",
+      "name": "Hepta Windows private-state native (security qualification only)",
+      "events": [
+        "pull_request",
+        "workflow_dispatch"
+      ],
+      "concurrency": [
+        {
+          "level": "workflow",
+          "value": {
+            "group": "hepta-windows-private-state-${{ github.event.pull_request.number || github.ref }}",
+            "cancel-in-progress": true
+          }
+        }
+      ],
+      "calls": []
+    },
+    {
+      "path": ".github/workflows/hnmf-qualification.yml",
+      "name": "hnmf-qualification",
+      "events": [
+        "workflow_call",
+        "workflow_dispatch"
+      ],
+      "concurrency": [],
+      "calls": []
+    },
+    {
+      "path": ".github/workflows/issue-deduplicator.yml",
+      "name": "Issue Deduplicator",
+      "events": [
+        "issues"
+      ],
+      "concurrency": [],
+      "calls": []
+    },
+    {
+      "path": ".github/workflows/issue-labeler.yml",
+      "name": "Issue Labeler",
+      "events": [
+        "issues"
+      ],
+      "concurrency": [],
+      "calls": []
+    },
+    {
+      "path": ".github/workflows/issue-translator.yml",
+      "name": "Issue Translator",
+      "events": [
+        "issues"
+      ],
+      "concurrency": [],
+      "calls": []
+    },
+    {
+      "path": ".github/workflows/keyring-sync-lock-proposal.yml",
+      "name": "Keyring synchronous backend lock proposal",
+      "events": [
+        "pull_request"
+      ],
+      "concurrency": [],
+      "calls": []
+    },
+    {
+      "path": ".github/workflows/lane-a-foundation.yml",
+      "name": "Lane A foundation truth and native qualification",
+      "events": [
+        "workflow_call",
+        "workflow_dispatch"
+      ],
+      "concurrency": [
+        {
+          "level": "workflow",
+          "value": {
+            "group": "lane-a-foundation-${{ github.event.pull_request.number || github.ref }}",
+            "cancel-in-progress": true
+          }
+        }
+      ],
+      "calls": []
+    },
+    {
+      "path": ".github/workflows/memory-federation-v2-final-verify.yml",
+      "name": "memory federation v2 final verify",
+      "events": [
+        "workflow_call",
+        "workflow_dispatch"
+      ],
+      "concurrency": [
+        {
+          "level": "workflow",
+          "value": {
+            "group": "memory-federation-v2-final-${{ github.event.pull_request.number || github.ref }}",
+            "cancel-in-progress": true
+          }
+        }
+      ],
+      "calls": []
+    },
+    {
+      "path": ".github/workflows/openbao-compatibility.yml",
+      "name": "OpenBao compatibility qualification",
+      "events": [
+        "workflow_call",
+        "workflow_dispatch"
+      ],
+      "concurrency": [
+        {
+          "level": "workflow",
+          "value": {
+            "group": "openbao-compatibility-${{ github.event.pull_request.number || github.ref }}",
+            "cancel-in-progress": true
+          }
+        }
+      ],
+      "calls": []
+    },
+    {
+      "path": ".github/workflows/postmerge-ci.yml",
+      "name": "postmerge-ci",
+      "events": [
+        "push"
+      ],
+      "concurrency": [
+        {
+          "level": "workflow",
+          "value": {
+            "group": "postmerge-ci-main",
+            "cancel-in-progress": true
+          }
+        }
+      ],
+      "calls": [
+        "./.github/workflows/rust-ci-full.yml",
+        "./.github/workflows/v8-canary.yml"
+      ]
+    },
+    {
+      "path": ".github/workflows/python-runtime-build.yml",
+      "name": "python-runtime-build",
+      "events": [
+        "workflow_call"
+      ],
+      "concurrency": [],
+      "calls": []
+    },
+    {
+      "path": ".github/workflows/python-runtime-release.yml",
+      "name": "python-runtime-release",
+      "events": [
+        "workflow_dispatch"
+      ],
+      "concurrency": [
+        {
+          "level": "workflow",
+          "value": {
+            "group": "python-runtime-release-${{ inputs.runtime_version }}",
+            "cancel-in-progress": false
+          }
+        }
+      ],
+      "calls": [
+        "./.github/workflows/python-runtime-build.yml"
+      ]
+    },
+    {
+      "path": ".github/workflows/python-sdk-release.yml",
+      "name": "python-sdk-release",
+      "events": [
+        "push"
+      ],
+      "concurrency": [
+        {
+          "level": "workflow",
+          "value": {
+            "group": "${{ github.workflow }}",
+            "cancel-in-progress": false
+          }
+        }
+      ],
+      "calls": [
+        "./.github/workflows/python-runtime-build.yml"
+      ]
+    },
+    {
+      "path": ".github/workflows/r2-release.yml",
+      "name": "publish-r2-release",
+      "events": [
+        "workflow_call"
+      ],
+      "concurrency": [],
+      "calls": []
+    },
+    {
+      "path": ".github/workflows/repo-checks.yml",
+      "name": "repo-checks",
+      "events": [
+        "workflow_call"
+      ],
+      "concurrency": [],
+      "calls": []
+    },
+    {
+      "path": ".github/workflows/rust-ci-full-nextest-platform.yml",
+      "name": "rust-ci-full nextest platform",
+      "events": [
+        "workflow_call"
+      ],
+      "concurrency": [],
+      "calls": []
+    },
+    {
+      "path": ".github/workflows/rust-ci-full.yml",
+      "name": "rust-ci-full",
+      "events": [
+        "workflow_call",
+        "push",
+        "workflow_dispatch"
+      ],
+      "concurrency": [
+        {
+          "level": "workflow",
+          "value": {
+            "group": "rust-ci-full-${{ github.ref_name }}",
+            "cancel-in-progress": true
+          }
+        }
+      ],
+      "calls": [
+        "./.github/workflows/rust-ci-full-nextest-platform.yml",
+        "./.github/workflows/rust-ci-full-nextest-platform.yml",
+        "./.github/workflows/rust-ci-full-nextest-platform.yml",
+        "./.github/workflows/rust-ci-full-nextest-platform.yml",
+        "./.github/workflows/rust-ci-full-nextest-platform.yml"
+      ]
+    },
+    {
+      "path": ".github/workflows/rust-ci.yml",
+      "name": "rust-ci",
+      "events": [
+        "workflow_call",
+        "workflow_dispatch"
+      ],
+      "concurrency": [],
+      "calls": []
+    },
+    {
+      "path": ".github/workflows/rust-release-argument-comment-lint.yml",
+      "name": "rust-release-argument-comment-lint",
+      "events": [
+        "workflow_call"
+      ],
+      "concurrency": [],
+      "calls": []
+    },
+    {
+      "path": ".github/workflows/rust-release-prepare.yml",
+      "name": "rust-release-prepare",
+      "events": [
+        "workflow_dispatch",
+        "schedule"
+      ],
+      "concurrency": [
+        {
+          "level": "workflow",
+          "value": {
+            "group": "${{ github.workflow }}",
+            "cancel-in-progress": false
+          }
+        }
+      ],
+      "calls": []
+    },
+    {
+      "path": ".github/workflows/rust-release-windows.yml",
+      "name": "rust-release-windows",
+      "events": [
+        "workflow_call"
+      ],
+      "concurrency": [],
+      "calls": []
+    },
+    {
+      "path": ".github/workflows/rust-release-zsh.yml",
+      "name": "rust-release-zsh",
+      "events": [
+        "push"
+      ],
+      "concurrency": [
+        {
+          "level": "workflow",
+          "value": {
+            "group": "${{ github.workflow }}::${{ github.ref_name }}",
+            "cancel-in-progress": false
+          }
+        }
+      ],
+      "calls": []
+    },
+    {
+      "path": ".github/workflows/rust-release.yml",
+      "name": "rust-release",
+      "events": [
+        "push"
+      ],
+      "concurrency": [
+        {
+          "level": "workflow",
+          "value": {
+            "group": "${{ github.workflow }}",
+            "cancel-in-progress": false
+          }
+        }
+      ],
+      "calls": [
+        "./.github/workflows/rust-release-windows.yml",
+        "./.github/workflows/rust-release-argument-comment-lint.yml",
+        "./.github/workflows/r2-release.yml",
+        "./.github/workflows/r2-release.yml"
+      ]
+    },
+    {
+      "path": ".github/workflows/rusty-v8-release.yml",
+      "name": "rusty-v8-release",
+      "events": [
+        "push"
+      ],
+      "concurrency": [
+        {
+          "level": "workflow",
+          "value": {
+            "group": "${{ github.workflow }}::${{ github.ref_name }}",
+            "cancel-in-progress": false
+          }
+        }
+      ],
+      "calls": []
+    },
+    {
+      "path": ".github/workflows/sdk.yml",
+      "name": "sdk",
+      "events": [
+        "workflow_call"
+      ],
+      "concurrency": [],
+      "calls": []
+    },
+    {
+      "path": ".github/workflows/self-hosted-desktop-availability.yml",
+      "name": "Self-hosted desktop runner availability",
+      "events": [
+        "workflow_dispatch"
+      ],
+      "concurrency": [],
+      "calls": []
+    },
+    {
+      "path": ".github/workflows/self-hosted-fleet-availability.yml",
+      "name": "Self-hosted ROG Pocket4 and Mac availability",
+      "events": [
+        "workflow_dispatch"
+      ],
+      "concurrency": [],
+      "calls": []
+    },
+    {
+      "path": ".github/workflows/single-main-consolidation.yml",
+      "name": "single-main-consolidation",
+      "events": [
+        "push"
+      ],
+      "concurrency": [
+        {
+          "level": "workflow",
+          "value": {
+            "group": "single-main-consolidation",
+            "cancel-in-progress": false
+          }
+        }
+      ],
+      "calls": []
+    },
+    {
+      "path": ".github/workflows/single-main-foundation.yml",
+      "name": "single-main-foundation",
+      "events": [
+        "push"
+      ],
+      "concurrency": [
+        {
+          "level": "workflow",
+          "value": {
+            "group": "single-main-foundation",
+            "cancel-in-progress": false
+          }
+        }
+      ],
+      "calls": []
+    },
+    {
+      "path": ".github/workflows/single-main-maintenance.yml",
+      "name": "single-main-maintenance",
+      "events": [
+        "push"
+      ],
+      "concurrency": [
+        {
+          "level": "workflow",
+          "value": {
+            "group": "single-main-maintenance",
+            "cancel-in-progress": false
+          }
+        }
+      ],
+      "calls": []
+    },
+    {
+      "path": ".github/workflows/trillionnium-os-attestation-handoff-check.yml",
+      "name": "Trillionnium OS attestation handoff safety",
+      "events": [
+        "pull_request"
+      ],
+      "concurrency": [
+        {
+          "level": "workflow",
+          "value": {
+            "group": "trillionnium-os-attestation-handoff-${{ github.event.pull_request.number }}",
+            "cancel-in-progress": true
+          }
+        }
+      ],
+      "calls": []
+    },
+    {
+      "path": ".github/workflows/ui-product-foundation.yml",
+      "name": "Rust UI product foundation",
+      "events": [
+        "pull_request"
+      ],
+      "concurrency": [
+        {
+          "level": "workflow",
+          "value": {
+            "group": "rust-ui-product-${{ github.event.pull_request.number }}",
+            "cancel-in-progress": false
+          }
+        }
+      ],
+      "calls": []
+    },
+    {
+      "path": ".github/workflows/v8-canary.yml",
+      "name": "v8-canary",
+      "events": [
+        "workflow_call",
+        "pull_request",
+        "workflow_dispatch"
+      ],
+      "concurrency": [
+        {
+          "level": "workflow",
+          "value": {
+            "group": "${{ github.workflow }}::${{ github.event.pull_request.head.ref || github.ref_name }}",
+            "cancel-in-progress": "${{ github.ref_name != 'main' }}"
+          }
+        }
+      ],
+      "calls": []
+    }
+  ]
+}
