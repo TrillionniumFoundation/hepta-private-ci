@@ -291,7 +291,7 @@ async fn set_owner_only(_path: &Path) -> Result<(), AgentdError> {
 
 #[cfg(all(test, unix))]
 #[path = "control_tests.rs"]
-mod tests;
+mod unix_lifecycle_tests;
 
 #[cfg(all(test, windows))]
 mod tests {
