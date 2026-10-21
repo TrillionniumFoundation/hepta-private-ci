@@ -386,6 +386,10 @@ impl FairCellQueueV1 {
             batch.push(request);
             if !queue.is_empty() {
                 self.ready_scopes.push_back(scope);
+            } else {
+                // The pending-item bound must also bound live scope metadata:
+                // discard drained lanes instead of retaining every old scope.
+                self.queues.remove(&scope);
             }
         }
         batch
