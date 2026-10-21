@@ -43,6 +43,16 @@ pub fn cargo_bin(name: &str) -> Result<PathBuf, CargoBinError> {
             return resolve_bin_from_env(key, value);
         }
     }
+    // Bazel only exposes declared binary dependencies through these env vars.
+    // Cargo's sibling-binary fallback is not valid for Bazel and can panic
+    // instead of returning an error for an optional, undeclared binary.
+    if runfiles_available() {
+        return Err(CargoBinError::NotFound {
+            name: name.to_owned(),
+            env_keys,
+            fallback: "binary is not declared in this Bazel test's runfiles".to_owned(),
+        });
+    }
     match assert_cmd::Command::cargo_bin(name) {
         Ok(cmd) => {
             let mut path = PathBuf::from(cmd.get_program());
