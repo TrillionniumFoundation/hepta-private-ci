@@ -639,8 +639,10 @@ impl LearningArtifactOwnerHost {
             if receipt.binding != signed.binding {
                 return Err(ArtifactOwnerHostError::CheckpointMismatch);
             }
-            let reopened =
-                read_registry_snapshot(open_owner_artifact_file(self.registry_snapshot_path(receipt))?, receipt)?;
+            let reopened = read_registry_snapshot(
+                open_owner_artifact_file(self.registry_snapshot_path(receipt))?,
+                receipt,
+            )?;
             if reopened.snapshot() != staged_registry.snapshot() {
                 return Err(ArtifactOwnerHostError::CheckpointMismatch);
             }
@@ -709,8 +711,10 @@ impl LearningArtifactOwnerHost {
             match write_registry_snapshot_beneath(&self.root, &relative, registry, binding) {
                 Ok(receipt) => receipt,
                 Err(crate::ArtifactStorageError::AlreadyExists) => {
-                    let reopened =
-                        read_registry_snapshot(open_owner_artifact_file(self.root.join(&relative))?, expected)?;
+                    let reopened = read_registry_snapshot(
+                        open_owner_artifact_file(self.root.join(&relative))?,
+                        expected,
+                    )?;
                     if reopened.snapshot().head_digest != expected.head_digest {
                         return Err(ArtifactOwnerHostError::CheckpointMismatch);
                     }
@@ -903,7 +907,10 @@ impl LearningArtifactOwnerHost {
             "{}-{}.snapshot",
             receipt.head_digest, receipt.file_digest
         ));
-        Ok(read_registry_snapshot(open_owner_artifact_file(path)?, receipt)?)
+        Ok(read_registry_snapshot(
+            open_owner_artifact_file(path)?,
+            receipt,
+        )?)
     }
 
     /// Recover the artifact registry that exactly backs the authenticated
@@ -974,8 +981,10 @@ impl LearningArtifactOwnerHost {
             .discover_current_head(now)?
             .ok_or(ArtifactOwnerHostError::CurrentHeadContext)?;
         let receipt = self.current_registry_receipt(&current)?;
-        let registry =
-            read_registry_snapshot(open_owner_artifact_file(self.registry_snapshot_path(receipt))?, receipt)?;
+        let registry = read_registry_snapshot(
+            open_owner_artifact_file(self.registry_snapshot_path(receipt))?,
+            receipt,
+        )?;
         if registry.snapshot().head_digest != current.signed.witness.head_digest {
             return Err(ArtifactOwnerHostError::CurrentHeadConflict);
         }
@@ -995,8 +1004,10 @@ impl LearningArtifactOwnerHost {
             return Ok(ArtifactRegistry::new());
         };
         let receipt = self.current_registry_receipt(&current)?;
-        let registry =
-            read_registry_snapshot(open_owner_artifact_file(self.registry_snapshot_path(receipt))?, receipt)?;
+        let registry = read_registry_snapshot(
+            open_owner_artifact_file(self.registry_snapshot_path(receipt))?,
+            receipt,
+        )?;
         if registry.snapshot().head_digest != current.signed.witness.head_digest {
             return Err(ArtifactOwnerHostError::CurrentHeadConflict);
         }
@@ -2022,7 +2033,8 @@ mod tests {
         let mut options = OpenOptions::new();
         options.write(true).create_new(true).mode(0o600);
         let mut file = options.open(&trusted).fixture("create private evidence");
-        file.write_all(b"immutable-recovery-evidence").fixture("write private evidence");
+        file.write_all(b"immutable-recovery-evidence")
+            .fixture("write private evidence");
         file.sync_all().fixture("sync private evidence");
         drop(file);
         open_owner_artifact_file(&trusted).fixture("private regular evidence");
@@ -2128,10 +2140,8 @@ mod tests {
         // same operation, intent, admission, scope and registry predecessor.
         // Withdrawal-head identity is a frozen admission property, not
         // mutable progress metadata.
-        let mut corrupt = checkpoint_from_snapshot(
-            &transaction.snapshot(),
-            owner.writer_lease_digest(),
-        );
+        let mut corrupt =
+            checkpoint_from_snapshot(&transaction.snapshot(), owner.writer_lease_digest());
         corrupt.withdrawal_head_digest = digest("different-withdrawal-head");
         fs::write(
             owner.checkpoint_path(
@@ -2182,10 +2192,8 @@ mod tests {
                 20,
             )
             .fixture("begin");
-        let mut forged = checkpoint_from_snapshot(
-            &transaction.snapshot(),
-            owner.writer_lease_digest(),
-        );
+        let mut forged =
+            checkpoint_from_snapshot(&transaction.snapshot(), owner.writer_lease_digest());
         forged.phase = ArtifactPublicationPhaseV1::Acknowledged;
         forged.acknowledged_at = Some(20);
         write_create_only_or_exact(
@@ -2233,10 +2241,8 @@ mod tests {
                 20,
             )
             .fixture("begin");
-        let checkpoint = checkpoint_from_snapshot(
-            &transaction.snapshot(),
-            owner.writer_lease_digest(),
-        );
+        let checkpoint =
+            checkpoint_from_snapshot(&transaction.snapshot(), owner.writer_lease_digest());
         write_create_only_or_exact(
             &directory.0.join("transactions").join("orphan.checkpoint"),
             &encode_checkpoint(&checkpoint),
