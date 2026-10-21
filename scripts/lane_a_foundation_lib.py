@@ -71,7 +71,9 @@ def validate_matrix(matrix: dict[str, Any], root: Path = ROOT) -> dict[str, Any]
             if not isinstance(row.get(field), str) or not (root / row[field]).is_file():
                 raise VerificationError(f"{module}: missing {field}")
         current = read_text(root / row["currentSpecification"])
-        section_order = PLATFORM_TYPES_SECTIONS if module == "platform.types" else SECTIONS
+        section_order = (
+            PLATFORM_TYPES_SECTIONS if module == "platform.types" else SECTIONS
+        )
         positions = [current.find(heading) for heading in section_order]
         if -1 in positions or positions != sorted(positions):
             raise VerificationError(
@@ -116,7 +118,7 @@ def validate_matrix(matrix: dict[str, Any], root: Path = ROOT) -> dict[str, Any]
             raise VerificationError(f"{module}: {axis} drift")
     capability = read_json(root / "docs/lane-a-foundation/CAPABILITY_EVIDENCE_MAP.json")
     validate_capability_map(matrix, capability, root)
-    operations = read_json(ROOT / "docs/lane-a-foundation/kernel.operations/CAPABILITY_EVIDENCE_V2.json")
+    read_json(OPS_CAPABILITY_MAP_PATH)
     native = validate_native_bindings(root)
     validate_wire_vector(root)
     validate_source_specific(root)
@@ -193,6 +195,7 @@ def write_receipt(output: Path, expected: str | None, native: bool) -> None:
     else:
         capabilities = read_json(CAPABILITY_MAP_PATH)
         bindings = read_json(NATIVE_BINDINGS_PATH)
+        operations = read_json(OPS_CAPABILITY_MAP_PATH)
         receipt = {
             "schemaVersion": 2,
             "lane": "LANE-A-FOUNDATION",
@@ -212,8 +215,7 @@ def write_receipt(output: Path, expected: str | None, native: bool) -> None:
                 for row in matrix["modules"]
             },
             "moduleCoverage": 7,
-            "capabilityCoverage": capabilities["entryCount"]
-            + read_json(ROOT / "docs/lane-a-foundation/kernel.operations/CAPABILITY_EVIDENCE_V2.json")["entryCount"],
+            "capabilityCoverage": capabilities["entryCount"] + operations["entryCount"],
             "repositoryControlledDocumentationGaps": "closed",
             "currentImplementationTruth": "source_and_test_anchored",
             "nativeQualification": "separate_exact_candidate_receipt_required",
