@@ -575,7 +575,8 @@ impl MemoryCellNextSnapshotCandidateV1 {
                 "memory next-snapshot chain predecessor",
             ));
         }
-        if self.replay_receipt_digest == predecessor.replay_receipt_digest
+        if self.replay_snapshot_digest == predecessor.replay_snapshot_digest
+            || self.replay_receipt_digest == predecessor.replay_receipt_digest
             || self.independent_evaluation_digest == predecessor.independent_evaluation_digest
         {
             return Err(HnmfContractError::Conflict(
