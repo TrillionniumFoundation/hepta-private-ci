@@ -523,11 +523,15 @@ impl ProductionAuthorityVerifier for RetirementVerifier {
                 .ok_or_else(|| "missing authority-check notification".to_string())?
                 .send(())
                 .map_err(|_| "authority-check observer closed".to_string())?;
-            self.resume
-                .lock()
-                .map_err(|error| error.to_string())?
-                .recv_timeout(Duration::from_secs(5))
-                .map_err(|error| error.to_string())?;
+            // A committed SQLx connection returns in a spawned task. Yield this
+            // worker's queued tasks before this fixture waits for its observer.
+            tokio::task::block_in_place(|| {
+                self.resume
+                    .lock()
+                    .map_err(|error| error.to_string())?
+                    .recv_timeout(Duration::from_secs(5))
+                    .map_err(|error| error.to_string())
+            })?;
         }
         Ok(())
     }
@@ -560,20 +564,28 @@ async fn retirement_rechecks_original_live_authority_after_sqlite_awaits() -> Te
     let mut retirement =
         tokio::spawn(async move { writer.retire_hos2_through(&target, &through).await });
     tokio::time::timeout(Duration::from_secs(5), checked_rx).await??;
-    // The second issuer check has reached a deterministic rendezvous AFTER
-    // hos2_durable_prefix's SQLite awaits but BEFORE verify_authority's
-    // subsequent SQLite awaits and the native retirement effect. Revocation
-    // must be observed by the final synchronous issuer check, even if the
-    // paused verifier returns Ok after the issuer has revoked the grant.
-    // Exhausting a separate pool and sleeping for 20 ms cannot establish
-    // this ordering: verification may use a different connection or finish
-    // before the timeout, turning an authority regression into a flaky test.
+    // The prefix transaction committed before this paused issuer check.
     assert!(
         !retirement.is_finished(),
         "retirement crossed the paused issuer check before revocation"
     );
-    verifier.revoked.store(true, Ordering::SeqCst);
+    // Exhaust this writer's actual owning pool so the following SQLite await
+    // cannot complete before revocation. The held connections are the fence.
+    let mut held = Vec::new();
+    for _ in 0..fixture.writer.store.pool.options().get_max_connections() {
+        held.push(
+            tokio::time::timeout(Duration::from_secs(5), fixture.writer.store.pool.acquire())
+                .await??,
+        );
+    }
     resume_tx.send(())?;
+    let blocked = tokio::time::timeout(Duration::from_millis(20), &mut retirement).await;
+    assert!(
+        blocked.is_err(),
+        "retirement must await held SQLite connections; observed {blocked:?}"
+    );
+    verifier.revoked.store(true, Ordering::SeqCst);
+    drop(held);
     let result = tokio::time::timeout(Duration::from_secs(5), retirement).await??;
     assert!(matches!(
         result,

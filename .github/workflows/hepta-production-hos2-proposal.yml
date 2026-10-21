@@ -36,7 +36,7 @@ jobs:
     timeout-minutes: 180
     env:
       SOURCE_SHA: ${{ github.event.pull_request.head.sha }}
-      PROPOSAL_BASE_SHA: 98b40cb04a23a36a07212ef7d826024f37536057
+      PROPOSAL_BASE_SHA: f0fb978a70a8bff2756248abf9e676774bafe3a2
       CARGO_TERM_COLOR: never
     steps:
       - name: Check out immutable proposal input without credentials

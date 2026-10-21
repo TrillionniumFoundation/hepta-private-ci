@@ -25,6 +25,7 @@ use codex_hepta_cognitive_store::MemoryVerification;
 use codex_hepta_cognitive_store::ProductionAuthorityLease;
 use codex_hepta_cognitive_store::ProductionAuthorityToken;
 use codex_hepta_cognitive_store::ProductionAuthorityVerifier;
+use codex_hepta_cognitive_store::ProductionDurableWriter;
 use codex_hepta_cognitive_store::SourceDraft;
 use codex_hepta_cognitive_store::bind_canonical_event_to_durable_receipt;
 use codex_hepta_cognitive_types::hnmf::ContractDigestV1;
@@ -142,8 +143,7 @@ async fn agentd_product_host_recovers_exact_cut_into_fenced_writer_generation()
     )?;
 
     let store = DurableCognitiveStore::open(&config.identity().layout).await?;
-    let expected = store.recovery_anchor().await?;
-    store.close().await;
+    let before_acquisition = store.recovery_anchor().await?;
 
     let authority = ProductionAuthorityLease::from_verified_parts(
         owner.clone(),
@@ -173,6 +173,25 @@ async fn agentd_product_host_recovers_exact_cut_into_fenced_writer_generation()
         },
     );
 
+    // Acquire through the real production writer before fixing the recovery cut.
+    // Reopening this same active lease must not append another acquisition row.
+    let predecessor = ProductionDurableWriter::open_with_live_verifier(
+        store.clone(),
+        authority.clone(),
+        Arc::clone(&verifier),
+        "agentd-product-recovery-test",
+        /*generation*/ 1,
+    )
+    .await?;
+    let expected = predecessor.recovery_anchor().await?;
+    assert_eq!(expected.profile, before_acquisition.profile);
+    assert_eq!(expected.owner_agent_id, before_acquisition.owner_agent_id);
+    assert_eq!(expected.schema_digest, before_acquisition.schema_digest);
+    assert_ne!(expected.state_digest, before_acquisition.state_digest);
+    // Drop retains the active lease; release would append a terminal row.
+    drop(predecessor);
+    store.close().await;
+
     let host = AgentdProductionWriterHost::open_with_recovery(
         &config,
         CognitiveRecoveryRequirement::ExactCurrentCut(&expected),
@@ -183,15 +202,7 @@ async fn agentd_product_host_recovers_exact_cut_into_fenced_writer_generation()
     )
     .await?;
     let recovered_anchor = host.writer().recovery_anchor().await?;
-    // open_with_recovery has already validated the exact predecessor cut.
-    // Opening the production writer subsequently commits the authorized
-    // generation-1 lease to the same database, so the current logical state
-    // digest MUST advance. Requiring the post-lease cut to equal the pre-lease
-    // witness would reject a correct durable writer acquisition.
-    assert_eq!(recovered_anchor.profile, expected.profile);
-    assert_eq!(recovered_anchor.owner_agent_id, expected.owner_agent_id);
-    assert_eq!(recovered_anchor.schema_digest, expected.schema_digest);
-    assert_ne!(recovered_anchor.state_digest, expected.state_digest);
+    assert_eq!(recovered_anchor, expected);
     assert_eq!(host.writer().generation(), 1);
     assert_eq!(host.writer().lease_id(), "agentd-product-recovery-test");
 
