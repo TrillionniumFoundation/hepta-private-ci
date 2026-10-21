@@ -318,6 +318,31 @@ impl ExecutionReceiptV1 {
         if self.final_payload_digest.validate().is_err() {
             return Err(ExecutionContractError::ReceiptBindingMismatch);
         }
+        // A reported terminal execution must have a nonzero observed outcome
+        // digest. A pre-admission rejection may legitimately have no outcome.
+        if matches!(
+            self.status,
+            ExecutionStatusV1::Completed | ExecutionStatusV1::Failed
+        ) && self.outcome_digest.is_none_or(Digest32::is_zero)
+        {
+            return Err(ExecutionContractError::MissingTerminalOutcome);
+        }
+        // Successful work cannot simultaneously require retry or rollback.
+        if self.status == ExecutionStatusV1::Completed
+            && self.recovery != RecoveryDispositionV1::None
+        {
+            return Err(ExecutionContractError::StatusOutcomeMismatch);
+        }
+        // Unknown physical effects must be reconciled or quarantined, never
+        // silently promoted to "no recovery" or pre-admission retry.
+        if self.status == ExecutionStatusV1::Indeterminate
+            && matches!(
+                self.recovery,
+                RecoveryDispositionV1::None | RecoveryDispositionV1::RetryBeforeAdmission
+            )
+        {
+            return Err(ExecutionContractError::StatusOutcomeMismatch);
+        }
         Ok(())
     }
 }
@@ -346,7 +371,9 @@ impl RuntimeReceiptV1 {
             return Err(ExecutionContractError::OutcomeDigestMismatch);
         }
         if matches!(self.execution.status, ExecutionStatusV1::Completed)
-            && !self.tool_outcome.terminal_observed
+            && (!self.tool_outcome.terminal_observed
+                || self.tool_outcome.retryable
+                || self.tool_outcome.exit_code.is_some_and(|code| code != 0))
         {
             return Err(ExecutionContractError::StatusOutcomeMismatch);
         }
