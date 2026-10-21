@@ -330,8 +330,8 @@ source slots and does not fetch pretrained teacher weights.
   `allow_pickle=False` shard reader and detached. Student input slots
   must be frozen model-ready features, not raw images, audio, private Memory
   writes or per-Cell trainable activations.
-- Validates the optimizer parameter identity against **only** the shared
-  student and shared readout. An optimizer referencing any per-Cell Head or
+- Requires genuinely trainable Student weights, and validates optimizer
+  parameter identity against **only** the shared student and shared readout. An optimizer referencing any per-Cell Head or
   private module is denied.
 - Computes pre-training losses across all five cohorts without gradient;
   updates **train only**, with finite-gradient checking and clipping; then
