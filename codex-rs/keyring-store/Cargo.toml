@@ -12,6 +12,9 @@ keyring = { workspace = true }
 keyring-core = { workspace = true }
 tracing = { workspace = true }
 
+[dev-dependencies]
+pretty_assertions = { workspace = true }
+
 [lib]
 test = false
 doctest = false

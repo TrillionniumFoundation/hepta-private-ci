@@ -1,0 +1,28 @@
+[package]
+name = "credential-probe-candidate"
+version = "0.0.0"
+edition = "2024"
+publish = false
+
+[workspace]
+
+[[bin]]
+name = "credential-probe-candidate"
+path = "../probe.rs"
+
+[features]
+zbus-tokio = ["zbus/tokio"]
+
+[dependencies]
+keyring = { version = "=4.2.0", default-features = false, features = ["v1"] }
+keyring-core = "=1.0.0"
+pretty_assertions = "1.4"
+secret-service = { version = "=6.0.0", features = ["crypto-rust"] }
+tokio = { version = "=1.53.3", features = ["rt", "rt-multi-thread"] }
+tracing = "0.1"
+zbus = "=6.0.0"
+zbus-secret-service-keyring-store = "=1.0.1"
+
+[patch.crates-io]
+secret-service = { path = "../../../codex-rs/third_party/secret-service-6.0.0" }
+zbus-secret-service-keyring-store = { path = "../../../codex-rs/third_party/zbus-secret-service-keyring-store-1.0.1" }
