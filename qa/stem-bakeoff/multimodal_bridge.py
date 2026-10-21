@@ -18,6 +18,19 @@ from torch import nn
 ALLOWED_MODALITIES = ("text", "image", "audio", "video", "ui_event")
 TEMPORAL_MODALITIES = frozenset(("audio", "video", "ui_event"))
 SHA256 = re.compile(r"[0-9a-f]{64}\Z")
+MAX_BRIDGE_BATCH = 8
+MAX_BRIDGE_ELEMENTS = 2_097_152  # bounded in-memory custody before projection
+
+
+def _tensor_bytes_sha256(value: torch.Tensor) -> str:
+    """Digest actual detached bytes, including BF16 without NumPy BF16 casting.
+
+    Caller-supplied source hashes alone cannot bind a changed feature/timestamp
+    tensor. This is local byte integrity, NOT independent upstream attestation.
+    Shape and dtype are independently included in the canonical manifest.
+    """
+    payload = value.detach().contiguous().to(device="cpu").view(torch.uint8)
+    return hashlib.sha256(payload.numpy().tobytes()).hexdigest()
 
 
 class LatentBridgeError(ValueError):
@@ -86,6 +99,7 @@ class MultimodalSlotizer(nn.Module):
         device = None
         dtype = None
         total_tokens = 0
+        total_elements = 0
         parts = []
         manifest = []
         for modality in ALLOWED_MODALITIES:
@@ -97,17 +111,18 @@ class MultimodalSlotizer(nn.Module):
             if value.ndim == 2:  # EmbeddingGemma 2 pooled output = single slot
                 value = value.unsqueeze(1)
             if (value.ndim != 3 or value.shape[-1] != self.input_widths[modality]
-                    or value.shape[0] < 1 or value.shape[1] < 1
-                    or value.shape[1] > self.max_tokens or not value.is_floating_point()
-                    or not torch.isfinite(value).all()):
+                    or not 1 <= value.shape[0] <= MAX_BRIDGE_BATCH
+                    or value.shape[1] < 1 or value.shape[1] > self.max_tokens
+                    or not value.is_floating_point() or not torch.isfinite(value).all()):
                 raise LatentBridgeError("invalid/nonfinite latent token dimensions")
             if batch is None:
                 batch, device, dtype = value.shape[0], value.device, value.dtype
             elif batch != value.shape[0] or device != value.device or dtype != value.dtype:
                 raise LatentBridgeError("cross-modal batch/device/dtype mismatch")
             total_tokens += value.shape[1]
-            if total_tokens > self.max_tokens:
-                raise LatentBridgeError("combined modality token budget exceeded")
+            total_elements += value.numel()
+            if total_tokens > self.max_tokens or total_elements > MAX_BRIDGE_ELEMENTS:
+                raise LatentBridgeError("combined modality token/element budget exceeded")
             t = timestamps.get(modality)
             if t is not None:
                 if (not isinstance(t, torch.Tensor) or t.shape != value.shape[:2]
@@ -123,7 +138,18 @@ class MultimodalSlotizer(nn.Module):
                 # are an independent future bake-off arm.
                 projected = projected + 0.01 * torch.sin(t.to(dtype=projected.dtype).unsqueeze(-1) / 1000.0)
             parts.append(projected)
-            manifest.append((modality, source_digests[modality], list(value.shape)))
+            manifest.append({
+                "modality": modality,
+                "declared_source_sha256": source_digests[modality],
+                "shape": list(value.shape),
+                "dtype": str(value.dtype),
+                "feature_bytes_sha256": _tensor_bytes_sha256(value),
+                "timestamps": None if t is None else {
+                    "shape": list(t.shape),
+                    "dtype": str(t.dtype),
+                    "bytes_sha256": _tensor_bytes_sha256(t),
+                },
+            })
         if not parts:
             raise LatentBridgeError("no present modalities")
         tokens = torch.cat(parts, dim=1)
@@ -132,7 +158,8 @@ class MultimodalSlotizer(nn.Module):
         slot_features = self.norm(queries + attended)
         if not torch.isfinite(slot_features).all():
             raise LatentBridgeError("nonfinite shared slots")
-        statement = {"generation": generation, "sources": manifest,
+        statement = {"schema": "hepta.multimodal-slot-lineage.v2",
+                     "generation": generation, "sources": manifest,
                      "registered": list(self.input_widths.items()),
                      "missing": [m not in features for m in ALLOWED_MODALITIES]}
         manifest_digest = hashlib.sha256(json.dumps(statement, sort_keys=True,

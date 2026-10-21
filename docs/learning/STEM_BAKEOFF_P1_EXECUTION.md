@@ -390,3 +390,52 @@ independent production admission. The test source digests are synthetic,
 and caller-provided hashes do not establish independence or label hiding.
 No teacher weights or user data are committed. `SHADOW_ONLY` /
 `DENY_ALL` / `HOLD_NO_GO` remain unconditional.
+
+
+## P7: bound feature/timestamp bytes and fan-out resource envelope
+
+The original shared multimodal bridge receipt included a caller-declared
+source digest and modality/shape metadata, but **did not include the actual
+input tensor bytes or temporal tensor bytes**. With an unchanged source
+declaration, feature drift or reordered temporal evidence could produce the
+same \`source_manifest_digest\` even when the bridge emitted different slots.
+This was an integrity gap for Memory/Cell lineage and replay.
+
+\`multimodal_bridge.py\` now binds the **detached exact feature bytes**,
+dtype, shape, ordered modality list, optional exact timestamp bytes and
+modality missingness into an explicitly versioned
+\`hepta.multimodal-slot-lineage.v2\` statement before hashing it. A bytewise
+hash uses a raw uint8 view, so BF16 is not silently cast to FP32. Matching
+source declarations with changed input/timestamps no longer produce equal
+local lineage digests. The bridge caps batches at eight and total input
+tensor elements at 2,097,152 to bound this additional custody work.
+These hashes remain **local integrity only**; independent publisher,
+checkpoint, input and time-origin attestation is still missing.
+
+\`native_latent.py\` also bounds the accepted Cell request stream to 4096,
+including for generators, without materializing an unbounded iterator.
+It validates slot batch/dtype and Cell state, checks finite Head parameters
+before spending the single shared Encoder call, validates Encoder output
+type/device/dtype, and rejects nonfinite Cell advisory values after
+forward. No Cell is granted execution, Memory writes, autonomous split or
+production rights; \`SHADOW_ONLY/DENY_ALL/HOLD_NO_GO\` remains unchanged.
+The tests deliberately inject a reused source declaration with changed
+feature/time bytes, over-budget batches/tensors/Cell generators, poisoned
+Head parameters and finite-weight overflow.
+
+Run the existing exact-head CPU-only shadow workflow or, with pinned local
+Torch/NumPy and an actual checkout:
+
+~~~sh
+python3 -m unittest discover -s qa/stem-bakeoff -p 'test_multimodal_bridge.py' -v
+python3 -m unittest discover -s qa/stem-bakeoff -p 'test_native_latent.py' -v
+python3 -m unittest discover -s qa/stem-bakeoff -p 'test_scale_probe.py' -v
+~~~
+
+**Remaining blockers**: these are contract/integrity hardenings, not proof
+that real EmbeddingGemma 2/T5Gemma 2 weights were run, that a full native
+student was distilled, that future/OOD source rows are independently
+attested, that GPU/energy/true physical forward counts meet limits, or
+that exact-head blocking-ci/Architecture/V8/cross-platform security gates
+have reached terminal success. Do not promote until independent evidence
+and owner approval explicitly exist.

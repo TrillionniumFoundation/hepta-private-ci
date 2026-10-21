@@ -7,11 +7,15 @@ it does not attest kernel-level physical forward count or end-to-end production 
 from __future__ import annotations
 
 from dataclasses import dataclass
+from itertools import islice
 import re
 from typing import Iterable
 
 import torch
 from torch import nn
+
+MAX_CELL_FANOUT = 4096
+MAX_STEM_BATCH = 8
 
 
 @dataclass(frozen=True)
@@ -91,20 +95,27 @@ class LightCellHead(nn.Module):
         self.uncertainty_head = nn.Linear(width, 1)
 
     def forward(self, shared: torch.Tensor, state: torch.Tensor) -> dict:
-        if (shared.ndim != 2 or shared.shape[1] != self.width or
-                state.shape != (shared.shape[0], self.state_width)):
+        if (not isinstance(shared, torch.Tensor) or
+                not isinstance(state, torch.Tensor) or shared.ndim != 2 or
+                shared.shape[1] != self.width or
+                state.shape != (shared.shape[0], self.state_width) or
+                shared.dtype != state.dtype or shared.device != state.device or
+                not shared.is_floating_point()):
             raise StemContractError("Cell feature/local-state ABI mismatch")
         if not torch.isfinite(shared).all() or not torch.isfinite(state).all():
             raise StemContractError("nonfinite Cell inputs")
         gate = torch.sigmoid(self.gate(torch.cat((shared, state), dim=-1)))
         adapted = shared + gate * self.up(torch.nn.functional.gelu(self.down(shared)))
-        return {
+        result = {
             "task_logits": self.task_head(adapted),
             "action_logits": self.action_head(adapted),
             "value": torch.tanh(self.value_head(adapted)),
             "uncertainty": torch.sigmoid(self.uncertainty_head(adapted)),
             "gate": gate,
         }
+        if not all(bool(torch.isfinite(value).all()) for value in result.values()):
+            raise StemContractError("nonfinite Cell advisory output")
+        return result
 
 
 @dataclass(frozen=True)
@@ -133,11 +144,18 @@ class SharedStemServer:
 
     def evaluate(self, slots: torch.Tensor,
                  requests: Iterable[CellRequest]) -> dict:
-        requests = list(requests)
-        if not (requests and slots.ndim == 3 and slots.shape[-1] == self.width):
-            raise StemContractError("empty Cell set or incompatible slots")
-        if not 1 <= slots.shape[1] <= 128 or not torch.isfinite(slots).all():
-            raise StemContractError("bad slot budget/nonfinite input")
+        try:
+            requests = list(islice(iter(requests), MAX_CELL_FANOUT + 1))
+        except TypeError as exc:
+            raise StemContractError("Cell requests must be iterable") from exc
+        if not 1 <= len(requests) <= MAX_CELL_FANOUT:
+            raise StemContractError("empty or over-budget Cell fan-out")
+        if (not isinstance(slots, torch.Tensor) or slots.ndim != 3 or
+                slots.shape[-1] != self.width or
+                not 1 <= slots.shape[0] <= MAX_STEM_BATCH or
+                not 1 <= slots.shape[1] <= 128 or
+                not slots.is_floating_point() or not torch.isfinite(slots).all()):
+            raise StemContractError("incompatible, nonfinite or over-budget slots")
         ids: set[str] = set()
         for req in requests:
             if (not isinstance(req, CellRequest) or not isinstance(req.cell_id, str)
@@ -151,14 +169,20 @@ class SharedStemServer:
             if (not isinstance(req.local_state, torch.Tensor)
                     or req.local_state.shape != (slots.shape[0], req.head.state_width)
                     or req.local_state.device != slots.device
+                    or req.local_state.dtype != slots.dtype
                     or not torch.isfinite(req.local_state).all()):
                 raise StemContractError("Cell local state invalid before Stem execution")
+            if any(p.device != slots.device or p.dtype != slots.dtype or
+                   not bool(torch.isfinite(p).all()) for p in req.head.parameters()):
+                raise StemContractError("Cell Head parameters invalid before Stem execution")
             ids.add(req.cell_id)
         with torch.inference_mode():
             # Exactly one Python Encoder owner call, regardless of Cell count.
             tokens = self.encoder(slots)
             self.owner_forward_calls += 1
-            if tokens.shape != slots.shape or not torch.isfinite(tokens).all():
+            if (not isinstance(tokens, torch.Tensor) or tokens.shape != slots.shape
+                    or tokens.device != slots.device or tokens.dtype != slots.dtype
+                    or not bool(torch.isfinite(tokens).all())):
                 raise StemContractError("invalid shared Encoder output")
             feature = tokens.mean(dim=1)
             results = []

@@ -48,6 +48,44 @@ class SharedMultimodalBridgeTests(unittest.TestCase):
                 timestamps={'audio': torch.tensor([[0.,1.,2.],[0.,1.,2.]])})
         self.assertEqual(out.slots.shape, (2, 4, 32))
 
+    def test_material_bytes_and_temporal_tags_are_digest_bound(self):
+        from multimodal_bridge import _tensor_bytes_sha256
+        bridge = self.stem()
+        features = {'audio': torch.randn(2, 3, 32)}
+        digests = {'audio': 'd' * 64}
+        times = {'audio': torch.tensor([[0., 1., 2.], [0., 1., 2.]])}
+        original = bridge(features, source_digests=digests, generation=7,
+                          timestamps=times)
+        repeated = bridge(features, source_digests=digests, generation=7,
+                          timestamps=times)
+        changed_time = bridge(features, source_digests=digests, generation=7,
+                              timestamps={'audio': times['audio'] + 0.25})
+        changed_feature = bridge({'audio': features['audio'] + 0.125},
+                                  source_digests=digests, generation=7,
+                                  timestamps=times)
+        self.assertEqual(original.source_manifest_digest,
+                         repeated.source_manifest_digest)
+        self.assertNotEqual(original.source_manifest_digest,
+                            changed_time.source_manifest_digest)
+        self.assertNotEqual(original.source_manifest_digest,
+                            changed_feature.source_manifest_digest)
+        # A BF16 teacher tensor can be hashed losslessly without casting to FP32.
+        self.assertEqual(len(_tensor_bytes_sha256(torch.ones(2, 3, dtype=torch.bfloat16))), 64)
+
+    def test_multimodal_batch_and_element_budgets_fail_closed(self):
+        bridge = self.stem()
+        with self.assertRaisesRegex(LatentBridgeError, "invalid/nonfinite"):
+            bridge({'text': torch.ones(9, 32)}, source_digests={'text': 'a' * 64},
+                   generation=1)
+        big_bridge = MultimodalSlotizer({'text': 512, 'image': 512},
+                                         latent_width=32, slots=4, heads=4,
+                                         max_tokens=1024)
+        large = torch.zeros(8, 300, 512)
+        with self.assertRaisesRegex(LatentBridgeError, "token/element budget"):
+            big_bridge({'text': large, 'image': large},
+                       source_digests={'text': 'a' * 64, 'image': 'b' * 64},
+                       generation=1)
+
     def test_unknown_model_modality_wrong_digest_bad_token_and_generation_rejected(self):
         s = self.stem()
         for features,digests,gen in [

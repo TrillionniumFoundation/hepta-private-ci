@@ -98,6 +98,48 @@ class NativeLatentTests(unittest.TestCase):
             server.evaluate(torch.ones(1, 4, 32), [good, wrong_state])
         self.assertEqual(encoder.calls, 0)
 
+    def test_cell_fanout_slot_input_and_head_fail_closed(self):
+        class CountingEncoder(nn.Module):
+            def __init__(self):
+                super().__init__()
+                self.calls = 0
+            def forward(self, features):
+                self.calls += 1
+                return features
+
+        encoder = CountingEncoder()
+        server = SharedStemServer(encoder, generation=7, width=32,
+                                  encoder_sha256='a' * 64)
+        head = LightCellHead(32)
+        state = torch.zeros(1, 8)
+        memory_digest = 'b' * 64
+        valid = CellRequest('cell.valid', 7, head, state, memory_digest)
+        oversized = (CellRequest(f'cell.{i}', 7, head, state, memory_digest)
+                     for i in range(4097))
+        with self.assertRaisesRegex(StemContractError, "over-budget"):
+            server.evaluate(torch.ones(1, 4, 32), oversized)
+        for invalid in (torch.ones(9, 4, 32),
+                        torch.ones(1, 4, 32, dtype=torch.int64),
+                        None):
+            with self.subTest(invalid=type(invalid)), self.assertRaises(StemContractError):
+                server.evaluate(invalid, [valid])
+        self.assertEqual(encoder.calls, 0)
+        with torch.no_grad():
+            head.gate.weight[0, 0] = float('nan')
+        with self.assertRaisesRegex(StemContractError, "parameters invalid"):
+            server.evaluate(torch.ones(1, 4, 32), [valid])
+        self.assertEqual(encoder.calls, 0)
+
+        finite_head = LightCellHead(32)
+        with torch.no_grad():
+            finite_head.task_head.weight.fill_(1e38)
+            finite_head.task_head.bias.zero_()
+        finite_request = CellRequest('cell.finite-weights', 7, finite_head,
+                                     state, memory_digest)
+        with self.assertRaisesRegex(StemContractError, "nonfinite Cell advisory"):
+            server.evaluate(torch.ones(1, 4, 32), [finite_request])
+        self.assertEqual(encoder.calls, 1)
+
     def test_unfrozen_shared_stem_refused(self):
         with self.assertRaises(StemContractError):
             SharedStemServer(nn.Linear(32, 32), generation=1, width=32,
