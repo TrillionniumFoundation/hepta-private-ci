@@ -1,0 +1,139 @@
+{
+  "job": {
+    "id": 119193228150,
+    "name": "ACL, anti-reparse, signed-owner durability and recovery on Windows",
+    "status": "completed",
+    "conclusion": "success",
+    "run_id": 39591475745,
+    "head_sha": "52293403ea1e06465c41d24d39b54959bad40936",
+    "started_at": "2026-10-21T11:54:55Z",
+    "completed_at": "2026-10-21T12:06:37Z",
+    "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/39591475745/job/119193228150",
+    "runner_name": "GitHub Actions 1000191542",
+    "labels": [
+      "windows-latest"
+    ],
+    "steps": [
+      {
+        "name": "Set up job",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 1,
+        "started_at": "2026-10-21T11:54:56Z",
+        "completed_at": "2026-10-21T11:54:57Z"
+      },
+      {
+        "name": "Checkout immutable PR head without saved credentials",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 2,
+        "started_at": "2026-10-21T11:54:57Z",
+        "completed_at": "2026-10-21T11:55:08Z"
+      },
+      {
+        "name": "Install repository test runners",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 3,
+        "started_at": "2026-10-21T11:55:08Z",
+        "completed_at": "2026-10-21T11:55:16Z"
+      },
+      {
+        "name": "Verify exact source identity and pinned native compiler",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 4,
+        "started_at": "2026-10-21T11:55:16Z",
+        "completed_at": "2026-10-21T11:55:39Z"
+      },
+      {
+        "name": "Exercise private file handles, ACL, reparse and hardlink invariants",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 5,
+        "started_at": "2026-10-21T11:55:39Z",
+        "completed_at": "2026-10-21T11:56:14Z"
+      },
+      {
+        "name": "Exercise actual Prompt Registry Windows durable owner",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 6,
+        "started_at": "2026-10-21T11:56:14Z",
+        "completed_at": "2026-10-21T11:56:26Z"
+      },
+      {
+        "name": "Exercise signed final-use and authority-lease durable stores",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 7,
+        "started_at": "2026-10-21T11:56:26Z",
+        "completed_at": "2026-10-21T11:56:45Z"
+      },
+      {
+        "name": "Validate Agentd Prompt Runtime integration and reopened state",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 8,
+        "started_at": "2026-10-21T11:56:45Z",
+        "completed_at": "2026-10-21T12:06:24Z"
+      },
+      {
+        "name": "Enforce source-level Rust formatting for durable owners",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 9,
+        "started_at": "2026-10-21T12:06:24Z",
+        "completed_at": "2026-10-21T12:06:25Z"
+      },
+      {
+        "name": "Prove directory acquisition rejects both original native attacks",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 10,
+        "started_at": "2026-10-21T12:06:25Z",
+        "completed_at": "2026-10-21T12:06:32Z"
+      },
+      {
+        "name": "Confirm no generated or modified tracked source",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 11,
+        "started_at": "2026-10-21T12:06:32Z",
+        "completed_at": "2026-10-21T12:06:32Z"
+      },
+      {
+        "name": "Preserve exact source and all acquisition qualification logs",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 12,
+        "started_at": "2026-10-21T12:06:32Z",
+        "completed_at": "2026-10-21T12:06:34Z"
+      },
+      {
+        "name": "Post Checkout immutable PR head without saved credentials",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 24,
+        "started_at": "2026-10-21T12:06:34Z",
+        "completed_at": "2026-10-21T12:06:36Z"
+      },
+      {
+        "name": "Complete job",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 25,
+        "started_at": "2026-10-21T12:06:36Z",
+        "completed_at": "2026-10-21T12:06:36Z"
+      }
+    ]
+  },
+  "observed_at": "2026-10-21T12:10:50.539Z",
+  "source_head": "52293403ea1e06465c41d24d39b54959bad40936",
+  "encoding": "Connector decoded job log encoded UTF-8 without line rewriting",
+  "raw_bytes": 233523,
+  "raw_sha256": "158957210d003b2d9eabfb5cc857c0662a498f488ee5ff49c435d3095f6d1052",
+  "xz_file": "job-119193228150.log.xz",
+  "xz_bytes": 42512,
+  "xz_sha256": "c3b6677798e8f6fec028e61d71cab7fa923593ec9b96cdf3b4cbe7ba46d8fe13"
+}

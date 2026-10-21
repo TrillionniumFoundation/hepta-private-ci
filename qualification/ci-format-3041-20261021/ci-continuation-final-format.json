@@ -1,0 +1,146 @@
+{
+  "command": [
+    "just",
+    "fmt",
+    "--base",
+    "d1c402e5b15addfbfe60a8473763750db0bd5f1e"
+  ],
+  "cwd": "/workspace/scratch/337c309bc660/combined-durability-work",
+  "started_at_utc": "2026-10-21T12:13:16.839429+00:00",
+  "head_at_start": "d1c402e5b15addfbfe60a8473763750db0bd5f1e",
+  "source_hashes_before": {
+    "MODULE.bazel.lock": {
+      "bytes": 1745183,
+      "sha256": "f6c5dd1f2a09c66d6a4c387ff40d11afb7ed2309e541dcb6bff9ad5f410996c3"
+    },
+    "codex-rs/Cargo.lock": {
+      "bytes": 413681,
+      "sha256": "4a89de595739e85d8d0e01944914c62217287d2c7daccee8e6d85b1cb4afc941"
+    },
+    "qualification/ci-format-3041-20261021/README.md": {
+      "bytes": 1670,
+      "sha256": "23bf765f9eded9e429645d7ffb375f5c8fc57bb21b7db0f9e23a053b53119f7b"
+    },
+    "qualification/ci-format-3041-20261021/job-119206184343.json": {
+      "bytes": 7710,
+      "sha256": "9525fb273e9b136ab0636a6228a529c6fee9ac882a9888544a4b7cc9725135bc"
+    },
+    "qualification/ci-format-3041-20261021/job-119206184343.log.xz": {
+      "bytes": 18708,
+      "sha256": "aba479de46f9bcae95c2ca9061410bac5825aa5951f0568faf8aee9f3a2a34f3"
+    },
+    "qualification/ci-windows-terminal-3041-20261021/README.md": {
+      "bytes": 2411,
+      "sha256": "9f6abcc47ca004fccb424084543869df0b096303d3b9b97f4f223b833c050bd4"
+    },
+    "qualification/ci-windows-terminal-3041-20261021/artifact-verification.json": {
+      "bytes": 1837,
+      "sha256": "05e9517a58efe0357cedd8e2942c646be230ffb8f69ede0b95fdfd735eed9653"
+    },
+    "qualification/ci-windows-terminal-3041-20261021/ci-windows-3041-format.json": {
+      "bytes": 4138,
+      "sha256": "27cff7aae718a299d8e9f48ad6f78fdd8f4b8b7634b68dcb4b1cfb281f923a59"
+    },
+    "qualification/ci-windows-terminal-3041-20261021/ci-windows-3041-format.log.xz": {
+      "bytes": 132,
+      "sha256": "4dd322c5f9b0bc61c54b20a4a5d117852ad9139258a2ce8f0ede92f328569425"
+    },
+    "qualification/ci-windows-terminal-3041-20261021/job-119193228150.json": {
+      "bytes": 4724,
+      "sha256": "730ce851f02a78c485c36ee796741c9646c0f4106c4eaf4ccc47cbc2b501e3b0"
+    },
+    "qualification/ci-windows-terminal-3041-20261021/job-119193228150.log.xz": {
+      "bytes": 42512,
+      "sha256": "c3b6677798e8f6fec028e61d71cab7fa923593ec9b96cdf3b4cbe7ba46d8fe13"
+    },
+    "qualification/ci-windows-terminal-3041-20261021/native-controls-verification.json": {
+      "bytes": 2391,
+      "sha256": "9401894e238bef7304b245b6c9d784dbc1f009fcae4ca5a224fe567ded17a59c"
+    },
+    "qualification/ci-windows-terminal-3041-20261021/windows-private-state-52293403.zip": {
+      "bytes": 13136,
+      "sha256": "5dd4f22d8f6520b8dfcbcee304c8c51cb64cef6aa2e3dca69ea6a29bb5a1cbcf"
+    }
+  },
+  "limits": {
+    "cargo_jobs": 2,
+    "dev_debug": 0,
+    "test_debug": 0,
+    "incremental": 0,
+    "bazel_jobs": 2,
+    "bazel_xmx_mib": 1536
+  },
+  "memory_events_before": "low 0\nhigh 0\nmax 1093084\noom 0\noom_kill 0\noom_group_kill 0\n",
+  "pid": 25,
+  "exit_code": 0,
+  "elapsed_seconds": 2.002862298002583,
+  "finished_at_utc": "2026-10-21T12:13:18.848578+00:00",
+  "source_hashes_after": {
+    "MODULE.bazel.lock": {
+      "bytes": 1745183,
+      "sha256": "f6c5dd1f2a09c66d6a4c387ff40d11afb7ed2309e541dcb6bff9ad5f410996c3"
+    },
+    "codex-rs/Cargo.lock": {
+      "bytes": 413681,
+      "sha256": "4a89de595739e85d8d0e01944914c62217287d2c7daccee8e6d85b1cb4afc941"
+    },
+    "qualification/ci-format-3041-20261021/README.md": {
+      "bytes": 1670,
+      "sha256": "23bf765f9eded9e429645d7ffb375f5c8fc57bb21b7db0f9e23a053b53119f7b"
+    },
+    "qualification/ci-format-3041-20261021/job-119206184343.json": {
+      "bytes": 7710,
+      "sha256": "9525fb273e9b136ab0636a6228a529c6fee9ac882a9888544a4b7cc9725135bc"
+    },
+    "qualification/ci-format-3041-20261021/job-119206184343.log.xz": {
+      "bytes": 18708,
+      "sha256": "aba479de46f9bcae95c2ca9061410bac5825aa5951f0568faf8aee9f3a2a34f3"
+    },
+    "qualification/ci-windows-terminal-3041-20261021/README.md": {
+      "bytes": 2411,
+      "sha256": "9f6abcc47ca004fccb424084543869df0b096303d3b9b97f4f223b833c050bd4"
+    },
+    "qualification/ci-windows-terminal-3041-20261021/artifact-verification.json": {
+      "bytes": 1837,
+      "sha256": "05e9517a58efe0357cedd8e2942c646be230ffb8f69ede0b95fdfd735eed9653"
+    },
+    "qualification/ci-windows-terminal-3041-20261021/ci-windows-3041-format.json": {
+      "bytes": 4138,
+      "sha256": "27cff7aae718a299d8e9f48ad6f78fdd8f4b8b7634b68dcb4b1cfb281f923a59"
+    },
+    "qualification/ci-windows-terminal-3041-20261021/ci-windows-3041-format.log.xz": {
+      "bytes": 132,
+      "sha256": "4dd322c5f9b0bc61c54b20a4a5d117852ad9139258a2ce8f0ede92f328569425"
+    },
+    "qualification/ci-windows-terminal-3041-20261021/job-119193228150.json": {
+      "bytes": 4724,
+      "sha256": "730ce851f02a78c485c36ee796741c9646c0f4106c4eaf4ccc47cbc2b501e3b0"
+    },
+    "qualification/ci-windows-terminal-3041-20261021/job-119193228150.log.xz": {
+      "bytes": 42512,
+      "sha256": "c3b6677798e8f6fec028e61d71cab7fa923593ec9b96cdf3b4cbe7ba46d8fe13"
+    },
+    "qualification/ci-windows-terminal-3041-20261021/native-controls-verification.json": {
+      "bytes": 2391,
+      "sha256": "9401894e238bef7304b245b6c9d784dbc1f009fcae4ca5a224fe567ded17a59c"
+    },
+    "qualification/ci-windows-terminal-3041-20261021/windows-private-state-52293403.zip": {
+      "bytes": 13136,
+      "sha256": "5dd4f22d8f6520b8dfcbcee304c8c51cb64cef6aa2e3dca69ea6a29bb5a1cbcf"
+    }
+  },
+  "peak_cgroup_bytes": {
+    "anon": 111124480,
+    "file": 7505453056,
+    "kernel": 913358848
+  },
+  "minimum_free_bytes": 1263988736,
+  "memory_events_after": "low 0\nhigh 0\nmax 1093084\noom 0\noom_kill 0\noom_group_kill 0\n",
+  "raw_log": {
+    "file": "ci-continuation-final-format.log.xz",
+    "bytes": 73,
+    "sha256": "b6a6d5ad920f48c9b49a3ca8c2308227b7849b9e0a498dc452f3a7bd2f7fb752",
+    "compressed_bytes": 132,
+    "compressed_sha256": "4dd322c5f9b0bc61c54b20a4a5d117852ad9139258a2ce8f0ede92f328569425"
+  }
+}

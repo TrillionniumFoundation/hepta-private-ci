@@ -1,0 +1,242 @@
+{
+  "job": {
+    "id": 119206184343,
+    "name": "repo-checks / build-test",
+    "status": "completed",
+    "conclusion": "failure",
+    "run_id": 39591475871,
+    "head_sha": "52293403ea1e06465c41d24d39b54959bad40936",
+    "started_at": "2026-10-21T12:08:28Z",
+    "completed_at": "2026-10-21T12:10:23Z",
+    "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/39591475871/job/119206184343",
+    "runner_name": "GitHub Actions 1000191653",
+    "labels": [
+      "ubuntu-latest"
+    ],
+    "steps": [
+      {
+        "name": "Set up job",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 1,
+        "started_at": "2026-10-21T12:08:29Z",
+        "completed_at": "2026-10-21T12:08:30Z"
+      },
+      {
+        "name": "Checkout repository",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 2,
+        "started_at": "2026-10-21T12:08:30Z",
+        "completed_at": "2026-10-21T12:08:35Z"
+      },
+      {
+        "name": "Run ./.github/actions/setup-ci",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 3,
+        "started_at": "2026-10-21T12:08:35Z",
+        "completed_at": "2026-10-21T12:08:39Z"
+      },
+      {
+        "name": "Verify codex-rs Cargo manifests inherit workspace settings",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 4,
+        "started_at": "2026-10-21T12:08:39Z",
+        "completed_at": "2026-10-21T12:08:47Z"
+      },
+      {
+        "name": "Test Cargo manifest migration boundaries",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 5,
+        "started_at": "2026-10-21T12:08:47Z",
+        "completed_at": "2026-10-21T12:08:48Z"
+      },
+      {
+        "name": "Verify Hepta privileged caller closed set",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 6,
+        "started_at": "2026-10-21T12:08:48Z",
+        "completed_at": "2026-10-21T12:09:47Z"
+      },
+      {
+        "name": "Verify codex-tui does not import codex-core directly",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 7,
+        "started_at": "2026-10-21T12:09:47Z",
+        "completed_at": "2026-10-21T12:09:48Z"
+      },
+      {
+        "name": "Verify Bazel clippy flags match Cargo workspace lints",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 8,
+        "started_at": "2026-10-21T12:09:48Z",
+        "completed_at": "2026-10-21T12:09:48Z"
+      },
+      {
+        "name": "Test Bazel wrapper regression suite",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 9,
+        "started_at": "2026-10-21T12:09:48Z",
+        "completed_at": "2026-10-21T12:09:50Z"
+      },
+      {
+        "name": "Test Codex package builder",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 10,
+        "started_at": "2026-10-21T12:09:50Z",
+        "completed_at": "2026-10-21T12:09:50Z"
+      },
+      {
+        "name": "Test standalone installer",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 11,
+        "started_at": "2026-10-21T12:09:50Z",
+        "completed_at": "2026-10-21T12:09:52Z"
+      },
+      {
+        "name": "Test macOS notarization",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 12,
+        "started_at": "2026-10-21T12:09:52Z",
+        "completed_at": "2026-10-21T12:09:52Z"
+      },
+      {
+        "name": "Setup pnpm",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 13,
+        "started_at": "2026-10-21T12:09:52Z",
+        "completed_at": "2026-10-21T12:09:53Z"
+      },
+      {
+        "name": "Setup Node.js",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 14,
+        "started_at": "2026-10-21T12:09:53Z",
+        "completed_at": "2026-10-21T12:09:53Z"
+      },
+      {
+        "name": "Install dependencies",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 15,
+        "started_at": "2026-10-21T12:09:53Z",
+        "completed_at": "2026-10-21T12:10:03Z"
+      },
+      {
+        "name": "Ensure root README.md contains only ASCII and certain Unicode code points",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 16,
+        "started_at": "2026-10-21T12:10:03Z",
+        "completed_at": "2026-10-21T12:10:03Z"
+      },
+      {
+        "name": "Check root README ToC",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 17,
+        "started_at": "2026-10-21T12:10:03Z",
+        "completed_at": "2026-10-21T12:10:03Z"
+      },
+      {
+        "name": "Install uv",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 18,
+        "started_at": "2026-10-21T12:10:03Z",
+        "completed_at": "2026-10-21T12:10:06Z"
+      },
+      {
+        "name": "Check formatting (run `just fmt` to fix)",
+        "status": "completed",
+        "conclusion": "failure",
+        "number": 19,
+        "started_at": "2026-10-21T12:10:06Z",
+        "completed_at": "2026-10-21T12:10:21Z"
+      },
+      {
+        "name": "Prettier (run `pnpm run format:fix` to fix)",
+        "status": "completed",
+        "conclusion": "skipped",
+        "number": 20,
+        "started_at": "2026-10-21T12:10:21Z",
+        "completed_at": "2026-10-21T12:10:21Z"
+      },
+      {
+        "name": "Check for a clean worktree",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 21,
+        "started_at": "2026-10-21T12:10:21Z",
+        "completed_at": "2026-10-21T12:10:21Z"
+      },
+      {
+        "name": "Post Install uv",
+        "status": "completed",
+        "conclusion": "skipped",
+        "number": 39,
+        "started_at": "2026-10-21T12:10:21Z",
+        "completed_at": "2026-10-21T12:10:21Z"
+      },
+      {
+        "name": "Post Setup Node.js",
+        "status": "completed",
+        "conclusion": "skipped",
+        "number": 40,
+        "started_at": "2026-10-21T12:10:21Z",
+        "completed_at": "2026-10-21T12:10:21Z"
+      },
+      {
+        "name": "Post Setup pnpm",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 41,
+        "started_at": "2026-10-21T12:10:21Z",
+        "completed_at": "2026-10-21T12:10:21Z"
+      },
+      {
+        "name": "Post Checkout repository",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 42,
+        "started_at": "2026-10-21T12:10:21Z",
+        "completed_at": "2026-10-21T12:10:21Z"
+      },
+      {
+        "name": "Complete job",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 43,
+        "started_at": "2026-10-21T12:10:21Z",
+        "completed_at": "2026-10-21T12:10:21Z"
+      }
+    ]
+  },
+  "observed_at": "2026-10-21T12:12:54.094Z",
+  "source_head": "52293403ea1e06465c41d24d39b54959bad40936",
+  "encoding": "Connector decoded job log encoded UTF-8 without line rewriting",
+  "raw_bytes": 119090,
+  "raw_sha256": "92ee8c7da5f1099ef781c2e34c1bdaf2e8cd6aff9555c4bfd6f8864ae3ee8fbb",
+  "xz_file": "job-119206184343.log.xz",
+  "xz_bytes": 18708,
+  "xz_sha256": "aba479de46f9bcae95c2ca9061410bac5825aa5951f0568faf8aee9f3a2a34f3",
+  "failed_step": 19,
+  "failed_file": ".github/scripts/test_v8_cargo_smoke.py",
+  "source_bytes": 4933,
+  "source_sha256": "33b7df0a9861c283dbd95b2d35e3588e90d5e27b40940b89498ec636a933b654",
+  "byte_identical_to_original_481_source": true,
+  "fix_commit": "d1c402e5b15addfbfe60a8473763750db0bd5f1e",
+  "local_validation_receipt": "../ci-format-481-20261021/README.md"
+}
