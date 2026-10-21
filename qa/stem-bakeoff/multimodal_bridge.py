@@ -214,7 +214,41 @@ def _verify_optimizer_ownership(student: nn.Module, slotizer: MultimodalSlotizer
             or any(not isinstance(p, nn.Parameter) or not p.requires_grad
                    or id(p) not in owned for p in parameters)):
         raise LatentBridgeError("optimizer contains foreign, frozen or duplicate parameters")
+    # An optimizer that silently omits trainable Student weights can return a
+    # successful "training" receipt after updating only Slotizer parameters.
+    # Frozen weights must opt out explicitly via requires_grad=False.
+    if set(ids) != owned:
+        raise LatentBridgeError("optimizer omits trainable Student/Slotizer parameters")
     return ids
+
+
+def _verify_optimizer_gradients(student: nn.Module,
+                                optimizer: torch.optim.Optimizer) -> None:
+    """Reject nonfinite backward gradients before *any* optimizer weight update.
+
+    Unused frozen or modality-specific parameters may have no gradients. At
+    least one trainable Student parameter must have a finite gradient, so a
+    nominal distillation step cannot silently train only the Slotizer.
+    """
+    student_ids = {id(p) for p in student.parameters() if p.requires_grad}
+    saw_student_gradient = False
+    for group in optimizer.param_groups:
+        for parameter in group["params"]:
+            gradient = parameter.grad
+            if gradient is None:
+                continue
+            if gradient.layout == torch.strided:
+                values = gradient
+            elif gradient.layout == torch.sparse_coo:
+                values = gradient._values()
+            else:
+                raise LatentBridgeError("unsupported offline optimizer gradient layout")
+            if not bool(torch.isfinite(values).all()):
+                raise LatentBridgeError("nonfinite offline optimizer gradient")
+            if id(parameter) in student_ids:
+                saw_student_gradient = True
+    if not saw_student_gradient:
+        raise LatentBridgeError("offline distillation produced no Student gradients")
 
 
 def shadow_distill_step(student: nn.Module, slotizer: MultimodalSlotizer,
@@ -295,6 +329,9 @@ def shadow_distill_step(student: nn.Module, slotizer: MultimodalSlotizer,
     loss.backward()
     if _verify_optimizer_ownership(student, slotizer, optimizer) != optimizer_binding:
         raise LatentBridgeError("optimizer ownership changed before training step")
+    # A finite forward/loss does not imply finite custom-autograd gradients.
+    # The guard must run after all backward hooks, before optimizer.step().
+    _verify_optimizer_gradients(student, optimizer)
     optimizer.step()
     return {"loss": float(loss.detach()), "mse": float(mse.detach()),
             "cosine_loss": float(cosine.detach()), "generation": generation,
