@@ -1,0 +1,19 @@
+{
+  "observed_at": "2026-10-21T12:16:19.637Z",
+  "source_head": "48177153ad04605338c3a9a8dbd17defee9981bc",
+  "upstream_url": "https://raw.githubusercontent.com/bazel-contrib/setup-bazel/c5acdfb288317d0b5c0bbd7a396a3dc868bb0f86/action.yml",
+  "repo_action_path": ".github/actions/setup-bazel-ci/action.yml",
+  "repo_action_bytes": 5365,
+  "repo_action_sha256": "cae76442a9a6d40f2c56c1fbed991fe667f3ca3eef07e5e9806370ecf91afb7d",
+  "repo_action_with_keys": [
+    "bazelisk-version",
+    "output-base"
+  ],
+  "upstream_bytes": 1701,
+  "upstream_sha256": "8c87c4d4ebf11dd76322d7d681514bebc6d57e22cf6617b8089cae4206f48dec",
+  "upstream_disk_cache_default": "false",
+  "upstream_repository_cache_default": "false",
+  "upstream_bazelisk_cache_default": "false",
+  "upstream_post_if": "!cancelled()",
+  "inference": "The pinned setup-bazel action does not restore or save Actions build caches with these default inputs. Existing on-runner Bazel disk-cache messages do not establish durable cache reuse across jobs."
+}

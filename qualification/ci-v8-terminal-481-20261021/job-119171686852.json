@@ -1,0 +1,149 @@
+{
+  "job": {
+    "id": 119171686852,
+    "name": "Build release x86_64-apple-darwin",
+    "status": "completed",
+    "conclusion": "cancelled",
+    "run_id": 39583122999,
+    "head_sha": "48177153ad04605338c3a9a8dbd17defee9981bc",
+    "started_at": "2026-10-21T10:39:24Z",
+    "completed_at": "2026-10-21T12:10:06Z",
+    "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/39583122999/job/119171686852",
+    "runner_name": "GitHub Actions 1000190920",
+    "labels": [
+      "macos-15-intel"
+    ],
+    "steps": [
+      {
+        "name": "Set up job",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 1,
+        "started_at": "2026-10-21T10:39:25Z",
+        "completed_at": "2026-10-21T10:39:27Z"
+      },
+      {
+        "name": "Run actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 2,
+        "started_at": "2026-10-21T10:39:27Z",
+        "completed_at": "2026-10-21T10:39:37Z"
+      },
+      {
+        "name": "Set up Bazel",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 3,
+        "started_at": "2026-10-21T10:39:37Z",
+        "completed_at": "2026-10-21T10:39:47Z"
+      },
+      {
+        "name": "Set up Python",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 4,
+        "started_at": "2026-10-21T10:39:47Z",
+        "completed_at": "2026-10-21T10:39:47Z"
+      },
+      {
+        "name": "Set up Rust toolchain for Cargo smoke",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 5,
+        "started_at": "2026-10-21T10:39:47Z",
+        "completed_at": "2026-10-21T10:40:14Z"
+      },
+      {
+        "name": "Pin installed Cargo binary",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 6,
+        "started_at": "2026-10-21T10:40:14Z",
+        "completed_at": "2026-10-21T10:40:14Z"
+      },
+      {
+        "name": "Build Bazel V8 release pair",
+        "status": "completed",
+        "conclusion": "cancelled",
+        "number": 7,
+        "started_at": "2026-10-21T10:40:14Z",
+        "completed_at": "2026-10-21T12:09:52Z"
+      },
+      {
+        "name": "Stage release pair",
+        "status": "completed",
+        "conclusion": "skipped",
+        "number": 8,
+        "started_at": "2026-10-21T12:09:52Z",
+        "completed_at": "2026-10-21T12:09:52Z"
+      },
+      {
+        "name": "Smoke test staged artifact with Cargo",
+        "status": "completed",
+        "conclusion": "skipped",
+        "number": 9,
+        "started_at": "2026-10-21T12:09:52Z",
+        "completed_at": "2026-10-21T12:09:52Z"
+      },
+      {
+        "name": "Upload staged artifacts",
+        "status": "completed",
+        "conclusion": "skipped",
+        "number": 10,
+        "started_at": "2026-10-21T12:09:52Z",
+        "completed_at": "2026-10-21T12:09:52Z"
+      },
+      {
+        "name": "Check for a clean worktree",
+        "status": "completed",
+        "conclusion": "skipped",
+        "number": 11,
+        "started_at": "2026-10-21T12:09:52Z",
+        "completed_at": "2026-10-21T12:09:52Z"
+      },
+      {
+        "name": "Post Set up Python",
+        "status": "completed",
+        "conclusion": "skipped",
+        "number": 20,
+        "started_at": "2026-10-21T12:09:52Z",
+        "completed_at": "2026-10-21T12:09:52Z"
+      },
+      {
+        "name": "Post Set up Bazel",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 21,
+        "started_at": "2026-10-21T12:09:52Z",
+        "completed_at": "2026-10-21T12:09:52Z"
+      },
+      {
+        "name": "Post Run actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 22,
+        "started_at": "2026-10-21T12:09:52Z",
+        "completed_at": "2026-10-21T12:09:58Z"
+      },
+      {
+        "name": "Complete job",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 23,
+        "started_at": "2026-10-21T12:09:58Z",
+        "completed_at": "2026-10-21T12:10:03Z"
+      }
+    ]
+  },
+  "observed_at": "2026-10-21T12:12:49.957Z",
+  "source_head": "48177153ad04605338c3a9a8dbd17defee9981bc",
+  "encoding": "Connector decoded job log encoded UTF-8 without line rewriting",
+  "raw_bytes": 852122,
+  "raw_sha256": "feea22ab2095432d21ca9169ec55b22ef3a88bb2375a9a1ccc30b4cd12cef3bd",
+  "xz_file": "job-119171686852.log.xz",
+  "xz_bytes": 78076,
+  "xz_sha256": "e48d63914835a3872c871b6fae0e3c338d677e0baf008b13070e4a645fe924f3",
+  "workflow_timeout_minutes": 90,
+  "timeout_interpretation": "Elapsed time is consistent with the original 90-minute job limit; decoded logs say The operation was canceled and do not explicitly identify the cancellation initiator. No agent requested cancellation."
+}
