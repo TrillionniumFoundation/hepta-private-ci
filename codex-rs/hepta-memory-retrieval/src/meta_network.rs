@@ -11,8 +11,8 @@ use codex_hepta_cognitive_types::hnmf::HnmfContractError;
 use codex_hepta_cognitive_types::hnmf::PPM;
 use codex_hepta_cognitive_types::memory_cell::MemoryCellManifestV1;
 use codex_hepta_cognitive_types::memory_cell::MemoryCellTickInputV1;
-use codex_hepta_cognitive_types::memory_meta_network::MAX_MEMORY_META_CANDIDATES_V1;
 use codex_hepta_cognitive_types::memory_meta_network::MAX_MEMORY_META_BUDGET_UNITS_V1;
+use codex_hepta_cognitive_types::memory_meta_network::MAX_MEMORY_META_CANDIDATES_V1;
 use codex_hepta_cognitive_types::memory_meta_network::MemoryMetaNetworkPolicyV1;
 use codex_hepta_cognitive_types::memory_meta_network::MemoryMetaRoutingCandidateV1;
 use codex_hepta_cognitive_types::memory_meta_network::MemoryMetaShadowRouteV1;
@@ -78,7 +78,9 @@ fn preflight_memory_meta_batch_v1(
     engram_snapshot: &EngramSnapshotV1,
     cells: &[MemoryMetaCellTickSpecV1],
 ) -> Result<(), MemoryMetaBatchErrorV1> {
-    policy.validate().map_err(MemoryMetaBatchErrorV1::Contract)?;
+    policy
+        .validate()
+        .map_err(MemoryMetaBatchErrorV1::Contract)?;
     if cells.len() > MAX_MEMORY_META_CANDIDATES_V1 {
         return Err(MemoryMetaBatchErrorV1::Contract(
             HnmfContractError::Invalid("memory meta candidate count"),
@@ -256,7 +258,6 @@ pub fn run_memory_meta_batch_shadow_v1(
     })
 }
 
-
 /// A provisional, metadata-only admission plan. Digest values bind claimed
 /// inputs; they are not signatures or source-ledger membership proofs.
 #[derive(Clone, Debug, Eq, PartialEq)]
@@ -425,9 +426,7 @@ pub fn plan_memory_meta_pre_ticks_shadow_v1(
 
     let mut conflict_counts: BTreeMap<ContractDigestV1, usize> = BTreeMap::new();
     for cell in &by_identity {
-        if cell.support_digest.is_some()
-            && cell.relevance_ppm >= policy.minimum_relevance_ppm
-        {
+        if cell.support_digest.is_some() && cell.relevance_ppm >= policy.minimum_relevance_ppm {
             if let Some(group) = cell.contradiction_group_digest {
                 *conflict_counts.entry(group).or_default() += 1;
             }
@@ -445,9 +444,9 @@ pub fn plan_memory_meta_pre_ticks_shadow_v1(
     let mut deferred = Vec::new();
     let mut spent = 0_u32;
     for cell in ranked {
-        let conflict = cell.contradiction_group_digest.is_some_and(|group| {
-            conflict_counts.get(&group).copied().unwrap_or(0) > 1
-        });
+        let conflict = cell
+            .contradiction_group_digest
+            .is_some_and(|group| conflict_counts.get(&group).copied().unwrap_or(0) > 1);
         if cell.support_digest.is_none()
             || cell.relevance_ppm < policy.minimum_relevance_ppm
             || conflict
@@ -496,8 +495,7 @@ pub fn run_memory_meta_preselected_shadow_v1(
     cells: &[MemoryMetaCellTickSpecV1],
 ) -> Result<MemoryMetaPreselectedShadowV1, MemoryMetaBatchErrorV1> {
     validate_memory_meta_runtime_policies_v1(retrieval_policy, dynamics_policy)?;
-    let pre_tick_plan =
-        plan_memory_meta_pre_ticks_shadow_v1(policy, cue, engram_snapshot, cells)?;
+    let pre_tick_plan = plan_memory_meta_pre_ticks_shadow_v1(policy, cue, engram_snapshot, cells)?;
     let admitted: BTreeSet<ContractIdV1> =
         pre_tick_plan.admitted_cell_ids.iter().cloned().collect();
     let mut selected: Vec<MemoryMetaCellTickSpecV1> = cells
@@ -570,9 +568,9 @@ where
         let cell = cells
             .iter()
             .find(|cell| &cell.manifest.cell_id == cell_id)
-            .ok_or(MemoryMetaBatchErrorV1::Contract(HnmfContractError::Missing(
-                "memory meta admitted cell",
-            )))?;
+            .ok_or(MemoryMetaBatchErrorV1::Contract(
+                HnmfContractError::Missing("memory meta admitted cell"),
+            ))?;
         cell.generated_input
             .validate()
             .map_err(|source| MemoryMetaBatchErrorV1::Tick {
@@ -585,14 +583,12 @@ where
         let cell = cells
             .iter()
             .find(|cell| &cell.manifest.cell_id == cell_id)
-            .ok_or(MemoryMetaBatchErrorV1::Contract(HnmfContractError::Missing(
-                "memory meta admitted cell",
-            )))?;
-        let support_digest = cell.support_digest.ok_or(
-            MemoryMetaBatchErrorV1::Contract(HnmfContractError::Missing(
-                "memory meta admitted support",
-            )),
-        )?;
+            .ok_or(MemoryMetaBatchErrorV1::Contract(
+                HnmfContractError::Missing("memory meta admitted cell"),
+            ))?;
+        let support_digest = cell.support_digest.ok_or(MemoryMetaBatchErrorV1::Contract(
+            HnmfContractError::Missing("memory meta admitted support"),
+        ))?;
         let lookup = MemoryMetaEvidenceLookupV1 {
             cell_id: cell.manifest.cell_id.clone(),
             support_digest,
@@ -602,9 +598,9 @@ where
             forget_frontier_digest: policy.forget_frontier_digest,
         };
         if !verify_support(&lookup) {
-            return Err(MemoryMetaBatchErrorV1::Contract(HnmfContractError::Conflict(
-                "memory meta external evidence rejected",
-            )));
+            return Err(MemoryMetaBatchErrorV1::Contract(
+                HnmfContractError::Conflict("memory meta external evidence rejected"),
+            ));
         }
         admitted_evidence.push(lookup);
     }
@@ -617,9 +613,9 @@ where
         cells,
     )?;
     if outcome.pre_tick_plan != plan {
-        return Err(MemoryMetaBatchErrorV1::Contract(HnmfContractError::Conflict(
-            "memory meta evidence plan changed",
-        )));
+        return Err(MemoryMetaBatchErrorV1::Contract(
+            HnmfContractError::Conflict("memory meta evidence plan changed"),
+        ));
     }
     // An external source may have forgotten a support while ticks were being
     // evaluated. Recheck every admitted identity/frontier tuple immediately
@@ -627,9 +623,9 @@ where
     // This is a fail-closed detection seam, not an atomic ledger snapshot.
     for lookup in &admitted_evidence {
         if !verify_support(lookup) {
-            return Err(MemoryMetaBatchErrorV1::Contract(HnmfContractError::Conflict(
-                "memory meta external evidence changed",
-            )));
+            return Err(MemoryMetaBatchErrorV1::Contract(
+                HnmfContractError::Conflict("memory meta external evidence changed"),
+            ));
         }
     }
     Ok(outcome)
@@ -695,14 +691,12 @@ where
         let cell = cells
             .iter()
             .find(|cell| cell.manifest.cell_id == tick.receipt.cell_id)
-            .ok_or(MemoryMetaBatchErrorV1::Contract(HnmfContractError::Missing(
-                "memory meta record cell",
-            )))?;
-        let cell_support_digest = cell.support_digest.ok_or(
-            MemoryMetaBatchErrorV1::Contract(HnmfContractError::Missing(
-                "memory meta record support",
-            )),
-        )?;
+            .ok_or(MemoryMetaBatchErrorV1::Contract(
+                HnmfContractError::Missing("memory meta record cell"),
+            ))?;
+        let cell_support_digest = cell.support_digest.ok_or(MemoryMetaBatchErrorV1::Contract(
+            HnmfContractError::Missing("memory meta record support"),
+        ))?;
         checked_supports.push(MemoryMetaEvidenceLookupV1 {
             cell_id: tick.receipt.cell_id.clone(),
             support_digest: cell_support_digest,
@@ -726,9 +720,9 @@ where
                 forget_frontier_digest: policy.forget_frontier_digest,
             };
             if !verify_record(&lookup) {
-                return Err(MemoryMetaBatchErrorV1::Contract(HnmfContractError::Conflict(
-                    "memory meta external record rejected",
-                )));
+                return Err(MemoryMetaBatchErrorV1::Contract(
+                    HnmfContractError::Conflict("memory meta external record rejected"),
+                ));
             }
         }
     }
@@ -737,15 +731,15 @@ where
     // returning a partially validated result. Only an external atomic ledger
     // snapshot can eliminate the remaining check/return race.
     if checked_supports.len() != outcome.pre_tick_plan.admitted_cell_ids.len() {
-        return Err(MemoryMetaBatchErrorV1::Contract(HnmfContractError::Conflict(
-            "memory meta record checked admission count",
-        )));
+        return Err(MemoryMetaBatchErrorV1::Contract(
+            HnmfContractError::Conflict("memory meta record checked admission count"),
+        ));
     }
     for lookup in &checked_supports {
         if !verify_support(lookup) {
-            return Err(MemoryMetaBatchErrorV1::Contract(HnmfContractError::Conflict(
-                "memory meta external evidence changed after records",
-            )));
+            return Err(MemoryMetaBatchErrorV1::Contract(
+                HnmfContractError::Conflict("memory meta external evidence changed after records"),
+            ));
         }
     }
     Ok(outcome)

@@ -19,8 +19,7 @@ fn digest(value: &str) -> ContractDigestV1 {
 }
 
 fn generation(value: u64) -> ContractGenerationV1 {
-    ContractGenerationV1::new(value)
-        .unwrap_or_else(|error| panic!("fixture generation: {error:?}"))
+    ContractGenerationV1::new(value).unwrap_or_else(|error| panic!("fixture generation: {error:?}"))
 }
 
 fn policy() -> MemoryMetaNetworkPolicyV1 {
@@ -139,11 +138,13 @@ fn shared_frozen_encoder_routes_typed_cells_and_abstains_from_authority() {
     assert!(!result.receipt.production_activation_allowed);
     assert!(result.receipt.current_snapshot_immutable);
     assert!(result.receipt.validate().is_ok());
-    assert!(result
-        .receipt
-        .decisions
-        .iter()
-        .all(|decision| decision.disposition == MemoryMetaRouteDispositionV1::Selected));
+    assert!(
+        result
+            .receipt
+            .decisions
+            .iter()
+            .all(|decision| decision.disposition == MemoryMetaRouteDispositionV1::Selected)
+    );
 }
 
 #[test]
@@ -259,9 +260,13 @@ fn ungrounded_or_abstained_candidate_cannot_be_selected() {
     assert!(result.receipt.abstained);
     assert_eq!(result.receipt.resource_used_units, 0);
     assert!(result.receipt.associations.is_empty());
-    assert!(result.receipt.decisions.iter().all(|d| {
-        d.disposition == MemoryMetaRouteDispositionV1::Filtered
-    }));
+    assert!(
+        result
+            .receipt
+            .decisions
+            .iter()
+            .all(|d| { d.disposition == MemoryMetaRouteDispositionV1::Filtered })
+    );
 }
 
 #[test]
@@ -272,9 +277,13 @@ fn eligible_contradiction_group_suppresses_all_contenders() {
     b.contradiction_group_digest = Some(digest("contradiction:42"));
     let result = route(&policy(), &[a, b]);
     assert!(result.receipt.abstained);
-    assert!(result.receipt.decisions.iter().all(|d| {
-        d.disposition == MemoryMetaRouteDispositionV1::ConflictSuppressed
-    }));
+    assert!(
+        result
+            .receipt
+            .decisions
+            .iter()
+            .all(|d| { d.disposition == MemoryMetaRouteDispositionV1::ConflictSuppressed })
+    );
 }
 
 #[test]
@@ -301,7 +310,10 @@ fn resource_and_capacity_are_sparse_and_fail_closed() {
     b.relevance_ppm = 700_000;
     let result = route(&policy(), &[b, a]);
     assert_eq!(result.receipt.resource_used_units, 70);
-    assert_eq!(result.receipt.decisions[0].disposition, MemoryMetaRouteDispositionV1::Selected);
+    assert_eq!(
+        result.receipt.decisions[0].disposition,
+        MemoryMetaRouteDispositionV1::Selected
+    );
     assert_eq!(
         result.receipt.decisions[1].disposition,
         MemoryMetaRouteDispositionV1::BudgetDeferred
@@ -368,8 +380,11 @@ fn direct_route_rejects_overcommit_of_a_cells_own_tick_budget() {
 
 #[test]
 fn canonical_digest_does_not_authorize_zero_cost_route_receipts() {
-    let mut receipt =
-        route(&policy(), &[candidate("cell:zero-cost", MemoryCellRoleV1::Semantic)]).receipt;
+    let mut receipt = route(
+        &policy(),
+        &[candidate("cell:zero-cost", MemoryCellRoleV1::Semantic)],
+    )
+    .receipt;
     // This simulates a modified serialized receipt with an independently
     // recomputed, internally consistent hash and resource accounting.
     receipt.decisions[0].resource_cost_units = 0;
@@ -386,8 +401,11 @@ fn canonical_digest_does_not_authorize_zero_cost_route_receipts() {
 
 #[test]
 fn a_rehashed_zero_utility_selection_is_not_a_valid_receipt() {
-    let mut receipt =
-        route(&policy(), &[candidate("cell:zero-utility", MemoryCellRoleV1::Semantic)]).receipt;
+    let mut receipt = route(
+        &policy(),
+        &[candidate("cell:zero-utility", MemoryCellRoleV1::Semantic)],
+    )
+    .receipt;
     receipt.decisions[0].utility_ppm = 0;
     // Recomputing the hash must not bypass the router's positive utility rule.
     receipt.route_digest = canonical_meta_route_digest(&receipt)
@@ -429,7 +447,11 @@ fn routed_receipt_replay_requires_the_original_policy_and_candidate_set() {
     let p = policy();
     let receipt = route(&p, &original).receipt;
     assert!(receipt.validate_against(&p, &original).is_ok());
-    assert!(receipt.validate_against(&p, &[original[1].clone(), original[0].clone()]).is_ok());
+    assert!(
+        receipt
+            .validate_against(&p, &[original[1].clone(), original[0].clone()])
+            .is_ok()
+    );
 
     // A rehashed receipt can satisfy internal accounting and yet forge its
     // claimed utility; source replay must reject the altered route.
@@ -440,7 +462,9 @@ fn routed_receipt_replay_requires_the_original_policy_and_candidate_set() {
     assert!(forged.validate().is_ok());
     assert!(matches!(
         forged.validate_against(&p, &original),
-        Err(HnmfContractError::Conflict("memory meta route source binding"))
+        Err(HnmfContractError::Conflict(
+            "memory meta route source binding"
+        ))
     ));
 
     // A receipt valid for an earlier evidence reference is not reusable with
@@ -450,7 +474,9 @@ fn routed_receipt_replay_requires_the_original_policy_and_candidate_set() {
     assert!(receipt.validate().is_ok());
     assert!(matches!(
         receipt.validate_against(&p, &changed),
-        Err(HnmfContractError::Conflict("memory meta route source binding"))
+        Err(HnmfContractError::Conflict(
+            "memory meta route source binding"
+        ))
     ));
 
     // Changing the budget can defer an originally selected Cell; the old
@@ -459,7 +485,9 @@ fn routed_receipt_replay_requires_the_original_policy_and_candidate_set() {
     changed_policy.maximum_compute_units = 30;
     assert!(matches!(
         receipt.validate_against(&changed_policy, &original),
-        Err(HnmfContractError::Conflict("memory meta route source binding"))
+        Err(HnmfContractError::Conflict(
+            "memory meta route source binding"
+        ))
     ));
 }
 
@@ -551,13 +579,17 @@ fn three_generation_frozen_stem_chain_requires_distinct_replay_and_evaluation() 
     stale_owner.forget_frontier_digest = digest("revoked-frontier");
     assert!(matches!(
         MemoryCellNextSnapshotCandidateV1::validate_chain_against(&stale_owner, &valid_chain),
-        Err(HnmfContractError::Conflict("memory next-snapshot predecessor"))
+        Err(HnmfContractError::Conflict(
+            "memory next-snapshot predecessor"
+        ))
     ));
     let mut wrong_generation = owner;
     wrong_generation.model_generation = generation(3);
     assert!(matches!(
         MemoryCellNextSnapshotCandidateV1::validate_chain_against(&wrong_generation, &valid_chain),
-        Err(HnmfContractError::Conflict("memory next-snapshot predecessor"))
+        Err(HnmfContractError::Conflict(
+            "memory next-snapshot predecessor"
+        ))
     ));
     let too_short = [first.clone(), second.clone()];
     assert!(MemoryCellNextSnapshotCandidateV1::validate_chain(&too_short).is_err());

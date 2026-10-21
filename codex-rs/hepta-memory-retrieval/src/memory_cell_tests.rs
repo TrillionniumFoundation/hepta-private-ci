@@ -468,13 +468,21 @@ fn multi_cell_shadow_recall_uses_one_snapshot_and_returns_grounded_route() {
     .unwrap_or_else(|error| panic!("meta shadow batch: {error:?}"));
 
     assert_eq!(result.cell_ticks.len(), 2);
-    assert!(result.cell_ticks.iter().all(|tick| {
-        tick.receipt.status == MemoryCellStatusV1::Selected
-    }));
+    assert!(
+        result
+            .cell_ticks
+            .iter()
+            .all(|tick| { tick.receipt.status == MemoryCellStatusV1::Selected })
+    );
     assert_eq!(result.routing.receipt.resource_used_units, 40);
-    assert!(result.routing.receipt.decisions.iter().all(|decision| {
-        decision.disposition == MemoryMetaRouteDispositionV1::Selected
-    }));
+    assert!(
+        result
+            .routing
+            .receipt
+            .decisions
+            .iter()
+            .all(|decision| { decision.disposition == MemoryMetaRouteDispositionV1::Selected })
+    );
     assert!(!result.routing.receipt.production_activation_allowed);
     assert!(!result.routing.authority.grants_any());
     assert!(result.routing.receipt.validate().is_ok());
@@ -493,7 +501,10 @@ fn multi_cell_shadow_recall_abstains_on_empty_retrieval() {
     )
     .unwrap_or_else(|error| panic!("empty meta batch: {error:?}"));
 
-    assert_eq!(result.cell_ticks[0].receipt.status, MemoryCellStatusV1::Abstained);
+    assert_eq!(
+        result.cell_ticks[0].receipt.status,
+        MemoryCellStatusV1::Abstained
+    );
     assert!(result.routing.receipt.abstained);
     assert_eq!(result.routing.receipt.resource_used_units, 0);
 }
@@ -745,8 +756,14 @@ fn pre_tick_shadow_skips_non_admitted_cell_execution_and_is_order_independent() 
     )
     .unwrap_or_else(|error| panic!("reverse plan: {error:?}"));
     assert_eq!(plan_a, plan_b);
-    assert_eq!(plan_a.admitted_cell_ids, vec![first.manifest.cell_id.clone()]);
-    assert_eq!(plan_a.deferred_cell_ids, vec![second.manifest.cell_id.clone()]);
+    assert_eq!(
+        plan_a.admitted_cell_ids,
+        vec![first.manifest.cell_id.clone()]
+    );
+    assert_eq!(
+        plan_a.deferred_cell_ids,
+        vec![second.manifest.cell_id.clone()]
+    );
     assert_eq!(plan_a.reserved_compute_units, 20);
     assert!(plan_a.current_snapshot_immutable);
     assert!(!plan_a.production_activation_allowed);
@@ -775,8 +792,14 @@ fn pre_tick_shadow_skips_non_admitted_cell_execution_and_is_order_independent() 
         &[meta_spec(&fixture), changed],
     )
     .unwrap_or_else(|error| panic!("changed metadata: {error:?}"));
-    assert_ne!(plan_b.admission_input_digest, changed_plan.admission_input_digest);
-    assert_ne!(plan_b.admission_plan_digest, changed_plan.admission_plan_digest);
+    assert_ne!(
+        plan_b.admission_input_digest,
+        changed_plan.admission_input_digest
+    );
+    assert_ne!(
+        plan_b.admission_plan_digest,
+        changed_plan.admission_plan_digest
+    );
 }
 
 #[test]
@@ -1028,27 +1051,22 @@ fn pre_tick_shadow_rejects_shared_generation_drift_even_if_every_cell_is_deferre
 fn empty_sparse_admission_plan_rejects_replay_for_a_different_cue() {
     let fixture = shadow_fixture(true);
     let policy = meta_policy(&fixture);
-    let initial = crate::plan_memory_meta_pre_ticks_shadow_v1(
-        &policy,
-        &fixture.cue,
-        &fixture.snapshot,
-        &[],
-    )
-    .unwrap_or_else(|error| panic!("empty original plan: {error:?}"));
+    let initial =
+        crate::plan_memory_meta_pre_ticks_shadow_v1(&policy, &fixture.cue, &fixture.snapshot, &[])
+            .unwrap_or_else(|error| panic!("empty original plan: {error:?}"));
 
     let mut changed_cue = fixture.cue.clone();
     changed_cue.request_digest = Digest32::of_bytes(b"memory-meta-another-request");
-    let changed = crate::plan_memory_meta_pre_ticks_shadow_v1(
-        &policy,
-        &changed_cue,
-        &fixture.snapshot,
-        &[],
-    )
-    .unwrap_or_else(|error| panic!("empty changed plan: {error:?}"));
+    let changed =
+        crate::plan_memory_meta_pre_ticks_shadow_v1(&policy, &changed_cue, &fixture.snapshot, &[])
+            .unwrap_or_else(|error| panic!("empty changed plan: {error:?}"));
 
     assert!(initial.admitted_cell_ids.is_empty());
     assert!(changed.admitted_cell_ids.is_empty());
-    assert_ne!(initial.admission_input_digest, changed.admission_input_digest);
+    assert_ne!(
+        initial.admission_input_digest,
+        changed.admission_input_digest
+    );
     assert_ne!(initial.admission_plan_digest, changed.admission_plan_digest);
     assert!(matches!(
         initial.validate_against(&policy, &changed_cue, &fixture.snapshot, &[]),
@@ -1160,7 +1178,10 @@ fn checked_record_recall_binds_every_selected_record_to_source_cut() {
                 && lookup.forget_frontier_digest == policy.forget_frontier_digest
                 && !lookup.record_digest.is_zero()
                 && !lookup.support_digests.is_empty()
-                && lookup.support_digests.iter().all(|support| !support.is_zero())
+                && lookup
+                    .support_digests
+                    .iter()
+                    .all(|support| !support.is_zero())
         },
     )
     .unwrap_or_else(|error| panic!("record-checked shadow: {error:?}"));
@@ -1376,13 +1397,12 @@ fn shadow_generated_preflight_rejects_late_invalid_batch_before_first_recall() {
         crate::RetrievalSourceCompletenessV1::Exhausted,
     )
     .unwrap_or_else(|error| panic!("valid mismatched-vector receipt: {error:?}"));
-    first.generated_input = crate::GeneratedCandidateInputV1::new(vec![
-        crate::RetrievalGeneratorBatchV1 {
+    first.generated_input =
+        crate::GeneratedCandidateInputV1::new(vec![crate::RetrievalGeneratorBatchV1 {
             receipt,
             candidates: Vec::new(),
-        },
-    ])
-    .unwrap_or_else(|error| panic!("valid mismatched-vector generator: {error:?}"));
+        }])
+        .unwrap_or_else(|error| panic!("valid mismatched-vector generator: {error:?}"));
 
     let mut second = meta_spec(&fixture);
     second.manifest.cell_id = id("memory-cell:semantic:2");

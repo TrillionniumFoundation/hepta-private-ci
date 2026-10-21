@@ -212,7 +212,9 @@ impl MemoryMetaRouteReceiptV1 {
             if decision.resource_cost_units == 0
                 || decision.resource_cost_units > MAX_MEMORY_META_BUDGET_UNITS_V1
             {
-                return Err(HnmfContractError::Invalid("memory meta receipt candidate cost"));
+                return Err(HnmfContractError::Invalid(
+                    "memory meta receipt candidate cost",
+                ));
             }
             if decision.disposition == MemoryMetaRouteDispositionV1::Selected {
                 if decision.support_digest.is_none() {
@@ -230,11 +232,11 @@ impl MemoryMetaRouteReceiptV1 {
             }
         }
         if spent != self.resource_used_units || self.abstained != selected.is_empty() {
-            return Err(HnmfContractError::Conflict("memory meta receipt accounting"));
+            return Err(HnmfContractError::Conflict(
+                "memory meta receipt accounting",
+            ));
         }
-        if selected.len() > MAX_MEMORY_META_SELECTED_V1
-            || spent > MAX_MEMORY_META_BUDGET_UNITS_V1
-        {
+        if selected.len() > MAX_MEMORY_META_SELECTED_V1 || spent > MAX_MEMORY_META_BUDGET_UNITS_V1 {
             return Err(HnmfContractError::Conflict("memory meta receipt capacity"));
         }
         let mut pairs = BTreeSet::new();
@@ -344,7 +346,9 @@ pub fn route_memory_cells_v1(
             || candidate.manifest.graph_generation != policy.graph_generation
             || candidate.manifest.model_generation != policy.model_generation
         {
-            return Err(HnmfContractError::Conflict("memory meta evidence or generation drift"));
+            return Err(HnmfContractError::Conflict(
+                "memory meta evidence or generation drift",
+            ));
         }
     }
     validate_memory_meta_parent_forest_v1(by_identity.iter().map(|cell| &cell.manifest))?;
@@ -373,9 +377,9 @@ pub fn route_memory_cells_v1(
     let mut selected: Vec<&MemoryMetaRoutingCandidateV1> = Vec::new();
     let mut decisions = Vec::with_capacity(ranked.len());
     for candidate in ranked {
-        let conflicted = candidate.contradiction_group_digest.is_some_and(|group| {
-            contradiction_counts.get(&group).copied().unwrap_or(0) > 1
-        });
+        let conflicted = candidate
+            .contradiction_group_digest
+            .is_some_and(|group| contradiction_counts.get(&group).copied().unwrap_or(0) > 1);
         let disposition = if !eligible(policy, candidate) {
             MemoryMetaRouteDispositionV1::Filtered
         } else if conflicted {
@@ -460,10 +464,7 @@ pub fn route_memory_cells_v1(
     })
 }
 
-fn eligible(
-    policy: &MemoryMetaNetworkPolicyV1,
-    candidate: &MemoryMetaRoutingCandidateV1,
-) -> bool {
+fn eligible(policy: &MemoryMetaNetworkPolicyV1, candidate: &MemoryMetaRoutingCandidateV1) -> bool {
     candidate.tick_receipt.status == MemoryCellStatusV1::Selected
         && candidate.support_digest.is_some()
         && candidate.relevance_ppm >= policy.minimum_relevance_ppm
@@ -581,7 +582,9 @@ impl MemoryCellNextSnapshotCandidateV1 {
             return Err(HnmfContractError::Invalid("memory next-snapshot schema"));
         }
         if !self.current_snapshot_immutable || self.production_activation_allowed {
-            return Err(HnmfContractError::Conflict("memory next-snapshot authority"));
+            return Err(HnmfContractError::Conflict(
+                "memory next-snapshot authority",
+            ));
         }
         if self.next_model_generation != self.predecessor_model_generation.next()? {
             return Err(HnmfContractError::Conflict("memory next model generation"));
@@ -611,7 +614,9 @@ impl MemoryCellNextSnapshotCandidateV1 {
             || self.predecessor_graph_generation != manifest.graph_generation
             || self.predecessor_model_generation != manifest.model_generation
         {
-            return Err(HnmfContractError::Conflict("memory next-snapshot predecessor"));
+            return Err(HnmfContractError::Conflict(
+                "memory next-snapshot predecessor",
+            ));
         }
         if self.candidate_adapter_artifact_digest == manifest.adapter_artifact_digest
             && self.candidate_head_artifact_digest == manifest.head_artifact_digest
@@ -628,10 +633,7 @@ impl MemoryCellNextSnapshotCandidateV1 {
     ///
     /// The evaluator and replay receipts are opaque references here:
     /// non-reuse is necessary but does not prove evaluator independence.
-    pub fn validate_after(
-        &self,
-        predecessor: &Self,
-    ) -> Result<(), HnmfContractError> {
+    pub fn validate_after(&self, predecessor: &Self) -> Result<(), HnmfContractError> {
         predecessor.validate()?;
         self.validate()?;
         if self.cell_id != predecessor.cell_id
@@ -654,10 +656,8 @@ impl MemoryCellNextSnapshotCandidateV1 {
                 "memory next-snapshot recycled evidence",
             ));
         }
-        if self.candidate_adapter_artifact_digest
-            == predecessor.candidate_adapter_artifact_digest
-            && self.candidate_head_artifact_digest
-                == predecessor.candidate_head_artifact_digest
+        if self.candidate_adapter_artifact_digest == predecessor.candidate_adapter_artifact_digest
+            && self.candidate_head_artifact_digest == predecessor.candidate_head_artifact_digest
             && self.topology_proposal_digest.is_none()
         {
             return Err(HnmfContractError::Conflict(
