@@ -1,0 +1,72 @@
+{
+  "command": [
+    "just",
+    "bazel-lock-update"
+  ],
+  "cwd": "/workspace/scratch/337c309bc660/combined-durability-work",
+  "started_at_utc": "2026-10-21T11:37:02.384215+00:00",
+  "head_at_start": "39a5441b2ef10b9033475e3790ee5ba4f7d082c0",
+  "source_hashes_before": {
+    "MODULE.bazel.lock": {
+      "bytes": 1745183,
+      "sha256": "f6c5dd1f2a09c66d6a4c387ff40d11afb7ed2309e541dcb6bff9ad5f410996c3"
+    },
+    "codex-rs/Cargo.lock": {
+      "bytes": 413681,
+      "sha256": "4a89de595739e85d8d0e01944914c62217287d2c7daccee8e6d85b1cb4afc941"
+    },
+    "codex-rs/hepta-learning-artifacts/Cargo.toml": {
+      "bytes": 475,
+      "sha256": "e135d389cd8d2c0b39e84bb86aba3cbea8f37170a4b38cef434afd2ce249fc1e"
+    },
+    "codex-rs/hepta-learning-artifacts/src/owner_host.rs": {
+      "bytes": 91193,
+      "sha256": "108a9074400381fd54cf79fbf16343726376fc0a20fea8afc5344ed90c952749"
+    }
+  },
+  "limits": {
+    "cargo_jobs": 2,
+    "dev_debug": 0,
+    "test_debug": 0,
+    "incremental": 0,
+    "bazel_jobs": 2,
+    "bazel_xmx_mib": 1536
+  },
+  "memory_events_before": "low 0\nhigh 0\nmax 933310\noom 0\noom_kill 0\noom_group_kill 0\n",
+  "pid": 153695,
+  "exit_code": 0,
+  "elapsed_seconds": 6.00667283799703,
+  "finished_at_utc": "2026-10-21T11:37:08.405765+00:00",
+  "source_hashes_after": {
+    "MODULE.bazel.lock": {
+      "bytes": 1745183,
+      "sha256": "f6c5dd1f2a09c66d6a4c387ff40d11afb7ed2309e541dcb6bff9ad5f410996c3"
+    },
+    "codex-rs/Cargo.lock": {
+      "bytes": 413681,
+      "sha256": "4a89de595739e85d8d0e01944914c62217287d2c7daccee8e6d85b1cb4afc941"
+    },
+    "codex-rs/hepta-learning-artifacts/Cargo.toml": {
+      "bytes": 475,
+      "sha256": "e135d389cd8d2c0b39e84bb86aba3cbea8f37170a4b38cef434afd2ce249fc1e"
+    },
+    "codex-rs/hepta-learning-artifacts/src/owner_host.rs": {
+      "bytes": 91193,
+      "sha256": "108a9074400381fd54cf79fbf16343726376fc0a20fea8afc5344ed90c952749"
+    }
+  },
+  "peak_cgroup_bytes": {
+    "anon": 545148928,
+    "file": 7186944000,
+    "kernel": 1072758784
+  },
+  "minimum_free_bytes": 2817056768,
+  "memory_events_after": "low 0\nhigh 0\nmax 935251\noom 0\noom_kill 0\noom_group_kill 0\n",
+  "raw_log": {
+    "file": "bazel-lock-update-first.log.xz",
+    "bytes": 2931,
+    "sha256": "4e9c9278c2b3e7f79c5287660f824502496e9740e25cbfe2e6a4c1f1ba27b3a5",
+    "compressed_bytes": 896,
+    "compressed_sha256": "f6d733f1b9c4770bda1bd1c54fef8e5986a9f7b293afa48c27bf6b35bab0cfe8"
+  }
+}

@@ -1,0 +1,350 @@
+{
+  "status": "LINUX_SCOPED_NATIVE_AND_REAL_LOCK_GATES_PASSED_WINDOWS_NATIVE_PENDING",
+  "integrated_base": "39a5441b2ef10b9033475e3790ee5ba4f7d082c0",
+  "followup_source_parent": "53b76244e2556ad6cddcb7497a333fcee832d3ea",
+  "parent_equivalent_followup": "a9197efd2a6bf2ea9a8b362afdb6778b528617c9",
+  "commands": {
+    "cargo-resolve": {
+      "command": [
+        "cargo",
+        "update",
+        "--offline",
+        "-p",
+        "codex-hepta-learning-artifacts"
+      ],
+      "cwd": "/workspace/scratch/337c309bc660/combined-durability-work/codex-rs",
+      "head_at_start": "39a5441b2ef10b9033475e3790ee5ba4f7d082c0",
+      "exit_code": 0,
+      "elapsed_seconds": 2.0026001800033555,
+      "raw_log": {
+        "file": "cargo-resolve.log.xz",
+        "bytes": 124,
+        "sha256": "f879ac8a72bd17a666e850c2db6093f241658e9d69e62111e99082637979bcfb",
+        "compressed_bytes": 176,
+        "compressed_sha256": "697b6091365936e43979c2433d0dc8d7768abcba916a4ddf11716aa302d6b547"
+      },
+      "peak_cgroup_bytes": {
+        "anon": 135032832,
+        "file": 7293095936,
+        "kernel": 851771392
+      },
+      "minimum_free_bytes": 4279357440
+    },
+    "owner-reader-baseline": {
+      "command": [
+        "just",
+        "test",
+        "--locked",
+        "-p",
+        "codex-hepta-learning-artifacts",
+        "--lib",
+        "-E",
+        "test(immutable_record_reader_)",
+        "--no-tests",
+        "fail",
+        "--retries",
+        "0",
+        "--failure-output",
+        "immediate"
+      ],
+      "cwd": "/workspace/scratch/337c309bc660/combined-durability-work/codex-rs",
+      "head_at_start": "39a5441b2ef10b9033475e3790ee5ba4f7d082c0",
+      "exit_code": 100,
+      "elapsed_seconds": 6.003387296001165,
+      "raw_log": {
+        "file": "owner-reader-baseline.log.xz",
+        "bytes": 4065,
+        "sha256": "4673d2fda1800b51eb34d9410a429cfba82c0a0d9fa0e6b3279195e03c5ef43f",
+        "compressed_bytes": 1260,
+        "compressed_sha256": "e9773de8f5d78bc64af650a7ed2c53f8beafbae5b9ca326bc3d386f8e34a16b9"
+      },
+      "peak_cgroup_bytes": {
+        "anon": 434565120,
+        "file": 7329751040,
+        "kernel": 863711232
+      },
+      "minimum_free_bytes": 4257910784
+    },
+    "owner-reader-positive": {
+      "command": [
+        "just",
+        "test",
+        "--locked",
+        "-p",
+        "codex-hepta-learning-artifacts",
+        "--lib",
+        "--no-tests",
+        "fail",
+        "--retries",
+        "0"
+      ],
+      "cwd": "/workspace/scratch/337c309bc660/combined-durability-work/codex-rs",
+      "head_at_start": "39a5441b2ef10b9033475e3790ee5ba4f7d082c0",
+      "exit_code": 0,
+      "elapsed_seconds": 4.007084569999279,
+      "raw_log": {
+        "file": "owner-reader-positive.log.xz",
+        "bytes": 13655,
+        "sha256": "0e20e635e341961089e06fd2fc166aec5d02fb3cd9cdd2bf9e46bc43384141c4",
+        "compressed_bytes": 3192,
+        "compressed_sha256": "ecef70cb3cc4b43aefa0317dacbc0eff3f4148a229ae04b50c5bb3b4f0b136fb"
+      },
+      "peak_cgroup_bytes": {
+        "anon": 419237888,
+        "file": 7272865792,
+        "kernel": 863518720
+      },
+      "minimum_free_bytes": 4252651520
+    },
+    "bazel-lock-before": {
+      "command": [
+        "just",
+        "bazel-lock-check"
+      ],
+      "cwd": "/workspace/scratch/337c309bc660/combined-durability-work",
+      "head_at_start": "39a5441b2ef10b9033475e3790ee5ba4f7d082c0",
+      "exit_code": 0,
+      "elapsed_seconds": 22.008009942997887,
+      "raw_log": {
+        "file": "bazel-lock-before.log.xz",
+        "bytes": 3339,
+        "sha256": "ba83725e2b680928b750436da7b43bc12f06caea4081723a9a83b221092b3002",
+        "compressed_bytes": 980,
+        "compressed_sha256": "ff73f0c1d4b6db03f1df92f84bfaba8289efbfbdb8081a83e9c61aff11f74d79"
+      },
+      "peak_cgroup_bytes": {
+        "anon": 610869248,
+        "file": 7505575936,
+        "kernel": 1070465024
+      },
+      "minimum_free_bytes": 2776379392
+    },
+    "bazel-lock-update-first": {
+      "command": [
+        "just",
+        "bazel-lock-update"
+      ],
+      "cwd": "/workspace/scratch/337c309bc660/combined-durability-work",
+      "head_at_start": "39a5441b2ef10b9033475e3790ee5ba4f7d082c0",
+      "exit_code": 0,
+      "elapsed_seconds": 6.00667283799703,
+      "raw_log": {
+        "file": "bazel-lock-update-first.log.xz",
+        "bytes": 2931,
+        "sha256": "4e9c9278c2b3e7f79c5287660f824502496e9740e25cbfe2e6a4c1f1ba27b3a5",
+        "compressed_bytes": 896,
+        "compressed_sha256": "f6d733f1b9c4770bda1bd1c54fef8e5986a9f7b293afa48c27bf6b35bab0cfe8"
+      },
+      "peak_cgroup_bytes": {
+        "anon": 545148928,
+        "file": 7186944000,
+        "kernel": 1072758784
+      },
+      "minimum_free_bytes": 2817056768
+    },
+    "bazel-lock-update-second": {
+      "command": [
+        "just",
+        "bazel-lock-update"
+      ],
+      "cwd": "/workspace/scratch/337c309bc660/combined-durability-work",
+      "head_at_start": "39a5441b2ef10b9033475e3790ee5ba4f7d082c0",
+      "exit_code": 0,
+      "elapsed_seconds": 4.004403704999277,
+      "raw_log": {
+        "file": "bazel-lock-update-second.log.xz",
+        "bytes": 1003,
+        "sha256": "b967906974ce1422c4e8f0702d0006be4b143b6f60136c684f51b070d8899ae3",
+        "compressed_bytes": 512,
+        "compressed_sha256": "4820b307a6098be624622fab5151d5e9ce3c7a4ba5037775cf5e609dffcd8996"
+      },
+      "peak_cgroup_bytes": {
+        "anon": 300396544,
+        "file": 7042113536,
+        "kernel": 1073487872
+      },
+      "minimum_free_bytes": 2802032640
+    },
+    "bazel-lock-final-check": {
+      "command": [
+        "just",
+        "bazel-lock-check"
+      ],
+      "cwd": "/workspace/scratch/337c309bc660/combined-durability-work",
+      "head_at_start": "53b76244e2556ad6cddcb7497a333fcee832d3ea",
+      "exit_code": 0,
+      "elapsed_seconds": 4.003099491001194,
+      "raw_log": {
+        "file": "bazel-lock-final-check.log.xz",
+        "bytes": 1118,
+        "sha256": "08fbd9163e087a97c160b1a15911dc4b509cc89926405b3e4dcbcb4c95acee7d",
+        "compressed_bytes": 600,
+        "compressed_sha256": "448df3b4e0f57d551d74a4be6aaa447cb7597b13e9683e87221fa61249ebdc61"
+      },
+      "peak_cgroup_bytes": {
+        "anon": 289292288,
+        "file": 7042605056,
+        "kernel": 1070706688
+      },
+      "minimum_free_bytes": 2801987584
+    },
+    "combined-native": {
+      "command": [
+        "just",
+        "test",
+        "--locked",
+        "-p",
+        "codex-hepta-bao-adapter",
+        "-p",
+        "codex-hepta-memory",
+        "-p",
+        "codex-state",
+        "-p",
+        "codex-utils-path",
+        "--no-tests",
+        "fail",
+        "--retries",
+        "0"
+      ],
+      "cwd": "/workspace/scratch/337c309bc660/combined-durability-work/codex-rs",
+      "head_at_start": "53b76244e2556ad6cddcb7497a333fcee832d3ea",
+      "exit_code": 0,
+      "elapsed_seconds": 184.0801379000004,
+      "raw_log": {
+        "file": "combined-native.log.xz",
+        "bytes": 88484,
+        "sha256": "503c148cddcc081c709e44531dbe6717454b5dc9dcb7839da69393d3cc7ac8bb",
+        "compressed_bytes": 16652,
+        "compressed_sha256": "0c2c65ab4a2ee65477b05446f56d6cb47ba3a391085d62c31385a446742104ad"
+      },
+      "peak_cgroup_bytes": {
+        "anon": 1817198592,
+        "file": 7277445120,
+        "kernel": 1073967104
+      },
+      "minimum_free_bytes": 2122276864
+    },
+    "combined-fix": {
+      "command": [
+        "just",
+        "fix",
+        "--locked",
+        "-p",
+        "codex-hepta-learning-artifacts",
+        "-p",
+        "codex-hepta-bao-adapter",
+        "-p",
+        "codex-hepta-memory",
+        "-p",
+        "codex-state",
+        "-p",
+        "codex-utils-path"
+      ],
+      "cwd": "/workspace/scratch/337c309bc660/combined-durability-work/codex-rs",
+      "head_at_start": "53b76244e2556ad6cddcb7497a333fcee832d3ea",
+      "exit_code": 0,
+      "elapsed_seconds": 122.04746430299929,
+      "raw_log": {
+        "file": "combined-fix.log.xz",
+        "bytes": 20470,
+        "sha256": "33a13fa6eee7200d041ec9e4c8714214360cd6082dc548c0ef56bb50359be053",
+        "compressed_bytes": 5416,
+        "compressed_sha256": "f196b38f6aecbe2298f5ce89a41aaadeba21051cec35f5497ac0473c1296f1e2"
+      },
+      "peak_cgroup_bytes": {
+        "anon": 1276821504,
+        "file": 6893608960,
+        "kernel": 943271936
+      },
+      "minimum_free_bytes": 1779679232
+    }
+  },
+  "locks_byte_stable_across_first_repeat_and_final_check": {
+    "codex-rs/Cargo.lock": {
+      "bytes": 413681,
+      "sha256": "4a89de595739e85d8d0e01944914c62217287d2c7daccee8e6d85b1cb4afc941"
+    },
+    "MODULE.bazel.lock": {
+      "bytes": 1745183,
+      "sha256": "f6c5dd1f2a09c66d6a4c387ff40d11afb7ed2309e541dcb6bff9ad5f410996c3"
+    }
+  },
+  "module_lock_changed": false,
+  "external_dependency_versions_changed": false,
+  "learning_artifact_baseline": {
+    "tests_run": 2,
+    "passed": 0,
+    "failed": 2,
+    "expected_assertion_failures": true
+  },
+  "learning_artifact_positive": {
+    "tests_run": 94,
+    "passed": 94,
+    "ignored_helper": 1
+  },
+  "combined_native": {
+    "passed": 528,
+    "passed_by_binary": {
+      "codex-hepta-bao-adapter": 32,
+      "codex-hepta-memory": 272,
+      "codex-hepta-bao-adapter::final_use_host": 3,
+      "codex-state": 214,
+      "codex-utils-path": 7
+    },
+    "ignored": [
+      {
+        "path": "codex-rs/hepta-memory/src/cognitive_kg_benchmark_tests.rs",
+        "name": "qualification_knowledge_graph_capacity_receipt",
+        "reason": "#[ignore = \"qualification: knowledge.graph PERF-LIBRARY capacity receipt\"]"
+      },
+      {
+        "path": "codex-rs/hepta-memory/src/cognitive_retrieval_observation_tests.rs",
+        "name": "target_host_owner_retrieval_reports_latency_percentiles",
+        "reason": "#[ignore = \"target-host qualification probe; run explicitly with --ignored --nocapture\"]"
+      },
+      {
+        "path": "codex-rs/hepta-memory/src/cognitive_store_tests.rs",
+        "name": "kg_projection_crash_child",
+        "reason": "#[ignore = \"qualification: child-process KG transaction crash probe\"]"
+      },
+      {
+        "path": "codex-rs/hepta-memory/src/cognitive_store_tests.rs",
+        "name": "qualification_kg_projection_crash_windows_restore_exact_predecessor",
+        "reason": "#[ignore = \"qualification: child-process KG transaction crash/reopen matrix\"]"
+      },
+      {
+        "path": "codex-rs/hepta-memory/src/local_compact_executor_tests.rs",
+        "name": "sqlite_1000_operation_seeded_reopen_replay_stress",
+        "reason": "#[ignore = \"qualification stress: 1000 SQLite operations with deterministic reopen/replay\"]"
+      },
+      {
+        "path": "codex-rs/hepta-memory/src/local_compact_executor_tests.rs",
+        "name": "host_restart_reopen_replay_process_soak",
+        "reason": "#[ignore = \"qualification stress: 1000 real child-process kill/reopen/replay operations\"]"
+      },
+      {
+        "path": "codex-rs/hepta-memory/src/local_lease_outbox_tests.rs",
+        "name": "qualification_durable_writer_crash_reopen_probe",
+        "reason": "#[ignore = \"qualification: child-process crash/reopen probe\"]"
+      }
+    ],
+    "bao_original_lifecycle_tests_passed": [
+      "issue_unknown_reconciles_without_duplicate_issue",
+      "reused_operation_id_with_changed_semantics_conflicts",
+      "issue_rejects_non_active_provider_observations_without_durable_mutation",
+      "renew_unknown_blocks_fabricated_success_until_reconciled",
+      "revoke_unknown_stays_nonterminal_until_provider_observation",
+      "provider_not_applied_restores_active_lease_after_unknown",
+      "expiry_is_durable_and_terminal_for_renewal"
+    ]
+  },
+  "limits": [
+    "Linux tests do not execute cfg(windows) code or Windows-only regressions.",
+    "Original required hosted checks remain required on each actual head and base.",
+    "Existing nonfatal Clippy warnings are preserved in the raw combined-fix log; no warning suppression was introduced."
+  ],
+  "runner": {
+    "path": "runner.py.raw",
+    "sha256": "2bda93984673667ef6b5d686418222a4f3b163784c06732d1a6fc7b0e525beb0"
+  }
+}

@@ -1,0 +1,84 @@
+{
+  "command": [
+    "just",
+    "test",
+    "--locked",
+    "-p",
+    "codex-hepta-learning-artifacts",
+    "--lib",
+    "-E",
+    "test(immutable_record_reader_)",
+    "--no-tests",
+    "fail",
+    "--retries",
+    "0",
+    "--failure-output",
+    "immediate"
+  ],
+  "cwd": "/workspace/scratch/337c309bc660/combined-durability-work/codex-rs",
+  "started_at_utc": "2026-10-21T11:32:46.476231+00:00",
+  "head_at_start": "39a5441b2ef10b9033475e3790ee5ba4f7d082c0",
+  "source_hashes_before": {
+    "MODULE.bazel.lock": {
+      "bytes": 1745183,
+      "sha256": "f6c5dd1f2a09c66d6a4c387ff40d11afb7ed2309e541dcb6bff9ad5f410996c3"
+    },
+    "codex-rs/Cargo.lock": {
+      "bytes": 413681,
+      "sha256": "4a89de595739e85d8d0e01944914c62217287d2c7daccee8e6d85b1cb4afc941"
+    },
+    "codex-rs/hepta-learning-artifacts/Cargo.toml": {
+      "bytes": 475,
+      "sha256": "e135d389cd8d2c0b39e84bb86aba3cbea8f37170a4b38cef434afd2ce249fc1e"
+    },
+    "codex-rs/hepta-learning-artifacts/src/owner_host.rs": {
+      "bytes": 90095,
+      "sha256": "39c3ac4015edfe526c77676abc84de96f3095b108ae21200067c69e90cfdb046"
+    }
+  },
+  "limits": {
+    "cargo_jobs": 2,
+    "dev_debug": 0,
+    "test_debug": 0,
+    "incremental": 0,
+    "bazel_jobs": 2,
+    "bazel_xmx_mib": 1536
+  },
+  "memory_events_before": "low 0\nhigh 0\nmax 905855\noom 0\noom_kill 0\noom_group_kill 0\n",
+  "pid": 25,
+  "exit_code": 100,
+  "elapsed_seconds": 6.003387296001165,
+  "finished_at_utc": "2026-10-21T11:32:52.485945+00:00",
+  "source_hashes_after": {
+    "MODULE.bazel.lock": {
+      "bytes": 1745183,
+      "sha256": "f6c5dd1f2a09c66d6a4c387ff40d11afb7ed2309e541dcb6bff9ad5f410996c3"
+    },
+    "codex-rs/Cargo.lock": {
+      "bytes": 413681,
+      "sha256": "4a89de595739e85d8d0e01944914c62217287d2c7daccee8e6d85b1cb4afc941"
+    },
+    "codex-rs/hepta-learning-artifacts/Cargo.toml": {
+      "bytes": 475,
+      "sha256": "e135d389cd8d2c0b39e84bb86aba3cbea8f37170a4b38cef434afd2ce249fc1e"
+    },
+    "codex-rs/hepta-learning-artifacts/src/owner_host.rs": {
+      "bytes": 90095,
+      "sha256": "39c3ac4015edfe526c77676abc84de96f3095b108ae21200067c69e90cfdb046"
+    }
+  },
+  "peak_cgroup_bytes": {
+    "anon": 434565120,
+    "file": 7329751040,
+    "kernel": 863711232
+  },
+  "minimum_free_bytes": 4257910784,
+  "memory_events_after": "low 0\nhigh 0\nmax 908624\noom 0\noom_kill 0\noom_group_kill 0\n",
+  "raw_log": {
+    "file": "owner-reader-baseline.log.xz",
+    "bytes": 4065,
+    "sha256": "4673d2fda1800b51eb34d9410a429cfba82c0a0d9fa0e6b3279195e03c5ef43f",
+    "compressed_bytes": 1260,
+    "compressed_sha256": "e9773de8f5d78bc64af650a7ed2c53f8beafbae5b9ca326bc3d386f8e34a16b9"
+  }
+}

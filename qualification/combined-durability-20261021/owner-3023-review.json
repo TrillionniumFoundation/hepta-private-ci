@@ -1,0 +1,43 @@
+{
+  "observed_at_utc": "2026-10-21T11:29:25.525Z",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "owner_pr": 3023,
+  "owner_head": "a956ba2191e4817cbdeaa4f6a959544b72305c06",
+  "owner_base": "9e1a06e8c7988545a08939c5f05c085900865c59",
+  "owner_ref": "dot/owner-record-nofollow-20261021",
+  "owner_changed_files": [
+    {
+      "path": "codex-rs/hepta-learning-artifacts/Cargo.toml",
+      "blob": "604f120959625955be97e8a10c952f5c75eedbdb",
+      "additions": 1,
+      "deletions": 0
+    },
+    {
+      "path": "codex-rs/hepta-learning-artifacts/src/owner_host.rs",
+      "blob": "06a1d820ae8cbf44c8143c8fd8794e774e06fa65",
+      "additions": 49,
+      "deletions": 2
+    }
+  ],
+  "owner_cargo_lock_package": "[[package]]\nname = \"codex-hepta-learning-artifacts\"\nversion = \"0.0.0\"\ndependencies = [\n \"codex-hepta-types\",\n \"ed25519-dalek\",\n \"pretty_assertions\",\n]\n",
+  "reviewed_delta": "read_small_record and one owner Unix regression; not the broad owner branch or full owner_host.rs",
+  "adaptations": [
+    "Import Unix MetadataExt explicitly on this base.",
+    "Limit libc workspace dependency to cfg(unix).",
+    "Generate the missing Cargo.lock dependency edge through Cargo.",
+    "Use the existing private record writer in the positive fixture instead of ambient umask.",
+    "Add shared-write mode 0620 rejection and exact no-repair assertions."
+  ],
+  "preserved_boundaries": [
+    "Final-component nofollow and opened descriptor checks only; containing directories remain the exclusive writer host trust boundary.",
+    "Existing shared-lock WouldBlock mapping, regular-file and byte limits, and original bounded read/error behavior.",
+    "No permission repair, truncation, policy exception, advisory ignore, feature removal, or external dependency version change."
+  ],
+  "independent_review": {
+    "reviewer": "/root/os_closure",
+    "scope": "Read-only source and manifest review; no compilation.",
+    "result": "No blocking defect found within the stated final-component and exclusive-writer trust boundary.",
+    "notes": "Confirmed opened descriptor identity/single-link/private-write checks, shared-lock error behavior and descriptor drop, bounded read, two real negative fixtures, and absence of repair/truncation."
+  },
+  "source_qualification": "Actual Linux native negative control and positive package tests are separate command receipts; Windows behavior is not certified by these Linux results."
+}
