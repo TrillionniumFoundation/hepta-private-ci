@@ -1567,11 +1567,6 @@ fn replace_state(
     directory_path: &Path,
 ) -> Result<(), DurableRegistryError> {
     use std::os::windows::fs::MetadataExt;
-    use std::os::windows::ffi::OsStrExt;
-
-    use windows_sys::Win32::Storage::FileSystem::MoveFileExW;
-    use windows_sys::Win32::Storage::FileSystem::MOVEFILE_REPLACE_EXISTING;
-    use windows_sys::Win32::Storage::FileSystem::MOVEFILE_WRITE_THROUGH;
 
     const FILE_ATTRIBUTE_REPARSE_POINT: u32 = 0x0400;
 
@@ -1590,38 +1585,11 @@ fn replace_state(
         Err(error) if error.kind() == std::io::ErrorKind::NotFound => {}
         Err(_) => return Err(DurableRegistryError::Unavailable),
     }
-    let parent = directory_path
-        .canonicalize()
-        .map_err(|_| DurableRegistryError::Unavailable)?;
-    let mut staging = parent
-        .join("registry.next")
-        .as_os_str()
-        .encode_wide()
-        .collect::<Vec<_>>();
-    let mut destination = parent
-        .join("registry.json")
-        .as_os_str()
-        .encode_wide()
-        .collect::<Vec<_>>();
-    if staging.len() >= 32_766 || destination.len() >= 32_766 {
-        return Err(DurableRegistryError::Unavailable);
-    }
-    staging.push(0);
-    destination.push(0);
-    // MOVEFILE_REPLACE_EXISTING is required because std::fs::rename's
-    // replacement behavior is platform dependent. WRITE_THROUGH keeps the
-    // publication acknowledgement fail-closed with respect to the move.
-    let result = unsafe {
-        MoveFileExW(
-            staging.as_ptr(),
-            destination.as_ptr(),
-            MOVEFILE_REPLACE_EXISTING | MOVEFILE_WRITE_THROUGH,
-        )
-    };
-    if result == 0 {
-        return Err(DurableRegistryError::Unavailable);
-    }
-    Ok(())
+    // `std::fs::rename` maps to the Windows replacement rename primitive and
+    // replaces an existing regular destination. The staging file was synced
+    // before this call; the directory handle is flushed by the caller after
+    // publication so an error remains fail-closed.
+    std::fs::rename(next, state).map_err(|_| DurableRegistryError::Unavailable)
 }
 
 #[cfg(all(not(unix), not(windows)))]
