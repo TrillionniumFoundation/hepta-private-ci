@@ -222,7 +222,6 @@ class ScaleMatrixTests(unittest.TestCase):
         errors = scale_matrix.validate_result(result)
         self.assertIn("metrics.p99_ms must be a finite number", errors)
 
-
     def make_record(self, size, arm):
         # Deterministic fixture digests remain distinct across experiment arms.
         index = (
