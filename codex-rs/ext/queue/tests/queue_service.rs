@@ -13,12 +13,16 @@ use std::sync::atomic::Ordering;
 use std::time::Duration;
 
 use anyhow::Context;
+use codex_core::IdleWorkPriority;
 use codex_core::NotSubmittedReason;
 use codex_core::StartIfIdleSubmission;
 use codex_core::StartThreadOptions;
 use codex_core::TurnInput;
 use codex_core::TurnInputRequest;
 use codex_core::TurnInputSubmission;
+use codex_core::context::ContextualUserFragment;
+use codex_core::context::InternalContextSource;
+use codex_core::context::InternalModelContextFragment;
 use codex_extension_api::ExtensionData;
 use codex_extension_api::ExtensionEventSink;
 use codex_extension_api::ExtensionFuture;
@@ -2963,5 +2967,117 @@ async fn registered_queue_waits_for_terminal_cleanup_without_admitting_other_cal
         .collect::<anyhow::Result<Vec<_>>>()?;
     assert_eq!(vec!["A", "B"], prompts);
     assert!(queue.list(thread_id).await?.is_empty());
+    Ok(())
+}
+
+#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+async fn queued_input_precedes_an_older_automatic_notification_at_the_same_fence()
+-> anyhow::Result<()> {
+    struct BeforeQueueGate {
+        first: AtomicBool,
+        entered: Arc<tokio::sync::Notify>,
+        release: Arc<tokio::sync::Notify>,
+    }
+
+    impl ThreadLifecycleContributor<codex_core::config::Config> for BeforeQueueGate {
+        fn on_thread_idle<'a>(&'a self, _input: ThreadIdleInput<'a>) -> ExtensionFuture<'a, ()> {
+            Box::pin(async move {
+                if self.first.swap(false, Ordering::SeqCst) {
+                    self.entered.notify_one();
+                    self.release.notified().await;
+                }
+            })
+        }
+    }
+
+    let (release_response, blocked_response) = oneshot::channel();
+    let (server, _completions) = start_streaming_sse_server(vec![
+        vec![StreamingSseChunk {
+            gate: None,
+            body: responses::sse_completed("initial-turn"),
+        }],
+        vec![
+            StreamingSseChunk {
+                gate: None,
+                body: responses::sse(vec![responses::ev_response_created("queued-turn")]),
+            },
+            StreamingSseChunk {
+                gate: Some(blocked_response),
+                body: responses::sse(vec![responses::ev_completed("queued-turn")]),
+            },
+        ],
+    ])
+    .await;
+    let installed = Arc::new(InstalledQueue::default());
+    let entered = Arc::new(tokio::sync::Notify::new());
+    let release = Arc::new(tokio::sync::Notify::new());
+    let mut extensions = ExtensionRegistryBuilder::<codex_core::config::Config>::new();
+    extensions.thread_lifecycle_contributor(Arc::new(BeforeQueueGate {
+        first: AtomicBool::new(true),
+        entered: Arc::clone(&entered),
+        release: Arc::clone(&release),
+    }));
+    extensions.thread_lifecycle_contributor(installed.clone());
+    let test = test_codex()
+        .with_extensions(Arc::new(extensions.build()))
+        .with_config(|config| config.include_environment_context = false)
+        .build_with_streaming_server(&server)
+        .await?;
+    let thread_id = test.session_configured.thread_id;
+    let staging = QueuedItemService::new(
+        loaded_thread_queue(&test)?,
+        Weak::new(),
+        Arc::new(NoopExtensionEventSink),
+    );
+    staging
+        .enqueue(thread_id, user_input("queued user B"))
+        .await?;
+    let queue = install_registered_queue(&test, installed.as_ref())?;
+
+    tokio::time::timeout(Duration::from_secs(10), async {
+        test.submit_text_turn("initial user A").await?;
+        entered.notified().await;
+        let completion = test
+            .codex
+            .pending_admission_fence_completion()
+            .expect("the terminalizer must still own its fence");
+        let automatic_thread = Arc::clone(&test.codex);
+        let (automatic_tx, automatic_rx) = oneshot::channel();
+        // Model the previous idle notification reaching Goal before this
+        // terminalizer reaches Queue. The actual queue contributor below must
+        // still win admission, despite registering its deferred callback later.
+        test.codex.defer_idle_work(
+            IdleWorkPriority::AutomaticContinuation,
+            completion,
+            async move {
+                let item = ContextualUserFragment::into(InternalModelContextFragment::new(
+                    InternalContextSource::from_static("goal"),
+                    "automatic goal continuation".to_string(),
+                ));
+                let submission = automatic_thread
+                    .start_turn_if_idle(TurnInputRequest::new(TurnInput::ResponseItem(item)))
+                    .await;
+                let _ = automatic_tx.send(submission);
+            },
+        )?;
+        release.notify_one();
+
+        assert_eq!(
+            automatic_rx.await??,
+            StartIfIdleSubmission::NotSubmitted {
+                reason: NotSubmittedReason::NotIdle,
+            }
+        );
+        assert!(queue.list(thread_id).await?.is_empty());
+        server.wait_for_request_count(/*count*/ 2).await;
+        anyhow::Ok(())
+    })
+    .await??;
+    assert_eq!(server.requests().await.len(), 2);
+    release_response
+        .send(())
+        .expect("queued response remains live");
+    test.codex.shutdown_and_wait().await?;
+    server.shutdown().await;
     Ok(())
 }

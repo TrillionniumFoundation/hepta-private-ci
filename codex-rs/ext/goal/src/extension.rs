@@ -2,6 +2,7 @@ use std::sync::Arc;
 use std::sync::Weak;
 
 use codex_analytics::AnalyticsEventsClient;
+use codex_core::IdleWorkPriority;
 use codex_core::ThreadManager;
 use codex_extension_api::ConfigContributor;
 use codex_extension_api::ExtensionData;
@@ -158,7 +159,7 @@ where
             {
                 let thread_id = runtime.thread_id();
                 let dispatch_thread = Arc::clone(&thread);
-                if let Err(error) = thread.defer_idle_work(completion, async move {
+                if let Err(error) = thread.defer_idle_work(IdleWorkPriority::AutomaticContinuation, completion, async move {
                     if matches!(
                         dispatch_thread.agent_status().await,
                         AgentStatus::Running

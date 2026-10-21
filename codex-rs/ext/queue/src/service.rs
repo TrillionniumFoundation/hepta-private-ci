@@ -10,6 +10,7 @@ use std::time::SystemTime;
 use std::time::UNIX_EPOCH;
 
 use codex_core::CodexThread;
+use codex_core::IdleWorkPriority;
 use codex_core::StartIfIdleSubmission;
 use codex_core::ThreadManager;
 use codex_core::TurnInput;
@@ -1377,11 +1378,13 @@ where
                 // then use ordinary admission after that exact cleanup ends.
                 let service = self.clone();
                 let dispatch_thread = Arc::clone(&thread);
-                if let Err(error) = thread.defer_idle_work(completion, async move {
-                    service
-                        .dispatch_idle_notification(thread_id, dispatch_thread.as_ref())
-                        .await;
-                }) {
+                if let Err(error) =
+                    thread.defer_idle_work(IdleWorkPriority::QueuedInput, completion, async move {
+                        service
+                            .dispatch_idle_notification(thread_id, dispatch_thread.as_ref())
+                            .await;
+                    })
+                {
                     tracing::warn!(%thread_id, %error, "could not defer queued idle work");
                 }
                 return;
