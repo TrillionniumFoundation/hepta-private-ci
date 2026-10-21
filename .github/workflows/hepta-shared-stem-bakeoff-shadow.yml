@@ -68,6 +68,7 @@ jobs:
         run: |
           set -euo pipefail
           "$RUNNER_TEMP/hepta-stem-venv/bin/python" -m unittest discover -s qa/stem-bakeoff -p 'test_native_latent.py' -v
+          "$RUNNER_TEMP/hepta-stem-venv/bin/python" -m unittest discover -s qa/stem-bakeoff -p 'test_multimodal_bridge.py' -v
       - name: Confirm source tree unchanged
         if: always()
         run: |

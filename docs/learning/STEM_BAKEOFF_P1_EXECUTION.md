@@ -79,3 +79,21 @@ Its pooled embeddings cannot substitute for token/slot reasoning states.
    SHADOW_ONLY / DENY_ALL until independent authority/owner review.
 
 Local smoke: python3 -m unittest discover -s qa/stem-bakeoff -p test_*.py -v
+
+## P2 multimodal slot differentiation + offline distillation
+
+- `qa/stem-bakeoff/multimodal_bridge.py` adds a **shared**, trainable per-modality
+  projector and cross-attention latent slotizer with an explicit missing mask,
+  bounded token budgets, time tags for audio/video/UI events, generation and
+  SHA256-shaped source references. It accepts precomputed features only and
+  never fetches teacher weights or allocates per-Cell modality towers.
+- An EmbeddingGemma 2 pooled output is **one** source token, not proof of image
+  regions or temporal reasoning. T5Gemma 2 hidden states and specialist tower
+  tokens need real, pinned and independently audited producer receipts.
+- `shadow_distill_step` supports a small, *offline* trainable student using
+  MSE/cosine alignment against detached teacher features. Neither synthetic
+  toy-step improvements nor caller-provided SHA strings prove pretrained
+  knowledge, modality utility, provenance, future/OOD gains or production use.
+- Tests check real tiny CPU forward/backprop, Gate/Head separation, temporal
+  ordering, missing-mask provenance, invalid inputs, and detached teacher
+  targets. The shipped 150M/300M variants remain **untrained blueprints**.

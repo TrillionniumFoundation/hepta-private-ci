@@ -33,7 +33,8 @@ class StemContractError(ValueError):
     pass
 
 
-def build_encoder(spec: StemSpec, *, device: str = "meta") -> nn.Module:
+def build_encoder(spec: StemSpec, *, device: str = "meta",
+                  trainable: bool = False) -> nn.Module:
     """Build a frozen bidirectional slot Encoder, with no checkpoint claim.
 
     The default meta device allows exact parameter counting without allocating
@@ -54,8 +55,10 @@ def build_encoder(spec: StemSpec, *, device: str = "meta") -> nn.Module:
     )
     encoder = nn.TransformerEncoder(block, num_layers=spec.layers,
                                     enable_nested_tensor=False)
-    encoder.requires_grad_(False)
-    encoder.eval()
+    if type(trainable) is not bool:
+        raise StemContractError("offline trainable must be an explicit boolean")
+    encoder.requires_grad_(trainable)
+    encoder.train(trainable)
     return encoder
 
 
