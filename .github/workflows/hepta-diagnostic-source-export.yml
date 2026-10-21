@@ -3,7 +3,9 @@ name: Hepta diagnostic source export
 on:
   push:
     branches:
-      - codex\/ci-2862-fix-crate-root-20261019
+      - codex/ci-2862-fix-crate-root-20261019
+  pull_request:
+    types: [synchronize]
   # Automatic pull-request and main-branch fan-out is owned by the two
   # aggregate checks. Deep qualifications remain reusable and manually runnable.
   workflow_call:
@@ -24,13 +26,13 @@ jobs:
       - name: Check out exact pull-request source
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
-          ref: ${{ github.sha }}
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
           persist-credentials: false
           fetch-depth: 0
 
       - name: Export immutable source snapshot
         env:
-          EXPECTED_SHA: ${{ github.sha }}
+          EXPECTED_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
         shell: bash
         run: |
           set -euo pipefail
@@ -43,7 +45,7 @@ jobs:
       - name: Retain diagnostic snapshot
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
-          name: hepta-diagnostic-source-${{ github.sha }}
+          name: hepta-diagnostic-source-${{ github.event.pull_request.head.sha || github.sha }}
           path: |
             ${{ env.archive }}
             ${{ env.archive }}.sha256
@@ -57,7 +59,7 @@ jobs:
       - name: Check out exact pull-request source
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
-          ref: ${{ github.sha }}
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
           persist-credentials: false
           fetch-depth: 0
 
@@ -91,12 +93,12 @@ jobs:
           cargo metadata --manifest-path ./codex-rs/Cargo.toml --locked --format-version 1 --no-deps > .hepta-diagnostics/cargo-metadata.json 2> .hepta-diagnostics/cargo-metadata.stderr
           printf '%s\n' "$?" > .hepta-diagnostics/cargo-metadata.exit
           set -e
-          test "$(git rev-parse HEAD)" = "${{ github.sha }}"
+          test "$(git rev-parse HEAD)" = "${{ github.event.pull_request.head.sha || github.sha }}"
 
       - name: Retain Rust policy diagnostics
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
-          name: hepta-rust-policy-diagnostics-${{ github.sha }}
+          name: hepta-rust-policy-diagnostics-${{ github.event.pull_request.head.sha || github.sha }}
           path: .hepta-diagnostics
           include-hidden-files: true
           if-no-files-found: error
@@ -109,7 +111,7 @@ jobs:
       - name: Check out exact pull-request source
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
-          ref: ${{ github.sha }}
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
           persist-credentials: false
           fetch-depth: 0
 
@@ -139,7 +141,7 @@ jobs:
       - name: Retain Bazel lock diagnostics
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
-          name: hepta-bazel-lock-diagnostics-${{ github.sha }}
+          name: hepta-bazel-lock-diagnostics-${{ github.event.pull_request.head.sha || github.sha }}
           path: .hepta-diagnostics
           include-hidden-files: true
           if-no-files-found: error
@@ -152,7 +154,7 @@ jobs:
       - name: Check out exact pull-request source
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
-          ref: ${{ github.sha }}
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
           persist-credentials: false
           fetch-depth: 0
 
@@ -183,7 +185,7 @@ jobs:
       - name: Retain Python SDK diagnostics
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
-          name: hepta-python-sdk-diagnostics-${{ github.sha }}
+          name: hepta-python-sdk-diagnostics-${{ github.event.pull_request.head.sha || github.sha }}
           path: .hepta-diagnostics
           include-hidden-files: true
           if-no-files-found: error
@@ -196,7 +198,7 @@ jobs:
       - name: Check out exact pull-request source
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
-          ref: ${{ github.sha }}
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
           persist-credentials: false
           fetch-depth: 0
 
@@ -209,7 +211,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          test "$(git rev-parse HEAD)" = "${{ github.sha }}"
+          test "$(git rev-parse HEAD)" = "${{ github.event.pull_request.head.sha || github.sha }}"
           uv run --frozen --project scripts ruff format scripts
           mkdir -p .hepta-diagnostics/formatted-scripts
           for path in \
@@ -227,7 +229,7 @@ jobs:
       - name: Retain formatter candidate
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
-          name: hepta-python-format-candidate-${{ github.sha }}
+          name: hepta-python-format-candidate-${{ github.event.pull_request.head.sha || github.sha }}
           path: |
             .hepta-diagnostics/formatted-scripts.tar.gz
             .hepta-diagnostics/formatted-scripts.stat
