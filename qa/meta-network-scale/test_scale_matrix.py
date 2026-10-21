@@ -127,6 +127,9 @@ class ScaleMatrixTests(unittest.TestCase):
         self.assertIn("metrics.p99_ms must be a finite number", errors)
         self.assertIn("metrics.rss_bytes must be non-negative", errors)
         self.assertIn("metrics.queue_age_ms must be a finite number", errors)
+        result["metrics"]["p99_ms"] = 10**1000
+        errors = scale_matrix.validate_result(result)
+        self.assertIn("metrics.p99_ms must be a finite number", errors)
 
 
 if __name__ == "__main__":
