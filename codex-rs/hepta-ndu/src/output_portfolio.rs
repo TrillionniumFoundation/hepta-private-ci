@@ -1,6 +1,8 @@
-use codex_hepta_types::{Digest32, FixedQ32, ProbabilityQ32};
-use crate::fixed::mul_q32_ties_even;
 use crate::error::NduError;
+use crate::fixed::mul_q32_ties_even;
+use codex_hepta_types::Digest32;
+use codex_hepta_types::FixedQ32;
+use codex_hepta_types::ProbabilityQ32;
 const MAX_PORTFOLIO_CANDIDATES: usize = 128;
 const MAX_FRONTIER_POINTS: usize = 128;
 use crate::output_portfolio_types::*;
@@ -40,9 +42,11 @@ pub fn select_output_portfolio_v1(
     }
     let mut order: Vec<usize> = (0..count).filter(|index| *index != baseline).collect();
     order.sort_by(|left, right| {
-        scores[*right]
-            .cmp(&scores[*left])
-            .then_with(|| candidates[*left].candidate_id.cmp(&candidates[*right].candidate_id))
+        scores[*right].cmp(&scores[*left]).then_with(|| {
+            candidates[*left]
+                .candidate_id
+                .cmp(&candidates[*right].candidate_id)
+        })
     });
     let mut weights = vec![FixedQ32::ZERO; count];
     let mut remaining = FixedQ32::ONE;
@@ -68,8 +72,10 @@ pub fn select_output_portfolio_v1(
             continue;
         }
         weights[index] = weight;
-        let candidate_resource = weighted_sum(&weights, &candidates, |candidate| candidate.resource_cost)?;
-        let candidate_latency = weighted_sum(&weights, &candidates, |candidate| candidate.latency_cost)?;
+        let candidate_resource =
+            weighted_sum(&weights, &candidates, |candidate| candidate.resource_cost)?;
+        let candidate_latency =
+            weighted_sum(&weights, &candidates, |candidate| candidate.latency_cost)?;
         let candidate_risk = quadratic_risk(&weights, &risks, &covariance)?;
         if candidate_resource > budget.resource_budget
             || candidate_latency > budget.latency_budget
@@ -78,7 +84,9 @@ pub fn select_output_portfolio_v1(
             weights[index] = FixedQ32::ZERO;
             continue;
         }
-        remaining = remaining.checked_sub(weight).map_err(|_| NduError::Arithmetic)?;
+        remaining = remaining
+            .checked_sub(weight)
+            .map_err(|_| NduError::Arithmetic)?;
         selected += 1;
         if candidates[index].protocol.requires_whole_candidate() {
             break;
@@ -100,7 +108,9 @@ pub fn select_output_portfolio_v1(
             adjusted_score: scores[index],
         })
         .collect::<Vec<_>>();
-    let disposition = if allocations.len() == 1 && allocations[0].candidate_id == candidates[baseline].candidate_id {
+    let disposition = if allocations.len() == 1
+        && allocations[0].candidate_id == candidates[baseline].candidate_id
+    {
         OutputPortfolioDispositionV1::NoChange
     } else {
         OutputPortfolioDispositionV1::AdvisorySelection
@@ -165,12 +175,16 @@ fn canonical_candidates(
     canonical.sort_by(|left, right| left.candidate_id.cmp(&right.candidate_id));
     for window in canonical.windows(2) {
         if window[0].candidate_id == window[1].candidate_id {
-            return Err(NduError::InvalidSolverReceipt("duplicate portfolio candidate"));
+            return Err(NduError::InvalidSolverReceipt(
+                "duplicate portfolio candidate",
+            ));
         }
     }
     let mut baseline_count = 0;
     for candidate in &canonical {
-        if candidate.candidate_digest.is_zero() || candidate.snapshot_digest != context.snapshot_digest {
+        if candidate.candidate_digest.is_zero()
+            || candidate.snapshot_digest != context.snapshot_digest
+        {
             return Err(NduError::StateDigestMismatch);
         }
         if candidate.weight_cap < FixedQ32::ZERO || candidate.weight_cap > FixedQ32::ONE {
@@ -272,7 +286,9 @@ fn validate_covariance(covariance: &[FixedQ32], count: usize) -> Result<(), NduE
     for row in 0..count {
         let diagonal = covariance[row * count + row];
         if diagonal < FixedQ32::ZERO {
-            return Err(NduError::InvalidSolverReceipt("negative covariance diagonal"));
+            return Err(NduError::InvalidSolverReceipt(
+                "negative covariance diagonal",
+            ));
         }
         let mut off_diagonal_abs = FixedQ32::ZERO;
         for column in 0..count {
@@ -284,11 +300,15 @@ fn validate_covariance(covariance: &[FixedQ32], count: usize) -> Result<(), NduE
                     .map_err(|_| NduError::Arithmetic)?;
             }
             if covariance[row * count + column] != covariance[column * count + row] {
-                return Err(NduError::InvalidSolverReceipt("asymmetric semantic covariance"));
+                return Err(NduError::InvalidSolverReceipt(
+                    "asymmetric semantic covariance",
+                ));
             }
         }
         if diagonal < off_diagonal_abs {
-            return Err(NduError::InvalidSolverReceipt("indefinite semantic covariance"));
+            return Err(NduError::InvalidSolverReceipt(
+                "indefinite semantic covariance",
+            ));
         }
     }
     Ok(())
@@ -302,11 +322,19 @@ fn zero_risk(future_window_digest: Digest32) -> SemanticRiskEstimateV1 {
         cross_modal_inconsistency: FixedQ32::ZERO,
     }
 }
-fn scalar_risk(risk: &SemanticRiskEstimateV1, budget: &OutputPortfolioBudgetV1) -> Result<FixedQ32, NduError> {
-    let failure = FixedQ32::from_raw(i64::try_from(risk.failure_probability.raw()).map_err(|_| NduError::Arithmetic)?);
+fn scalar_risk(
+    risk: &SemanticRiskEstimateV1,
+    budget: &OutputPortfolioBudgetV1,
+) -> Result<FixedQ32, NduError> {
+    let failure = FixedQ32::from_raw(
+        i64::try_from(risk.failure_probability.raw()).map_err(|_| NduError::Arithmetic)?,
+    );
     let cvar = mul_q32_ties_even(risk.cvar_loss, budget.cvar_aversion)?;
     let failure = mul_q32_ties_even(failure, budget.failure_aversion)?;
-    let inconsistency = mul_q32_ties_even(risk.cross_modal_inconsistency, budget.inconsistency_aversion)?;
+    let inconsistency = mul_q32_ties_even(
+        risk.cross_modal_inconsistency,
+        budget.inconsistency_aversion,
+    )?;
     let weighted = risk
         .mean_loss
         .checked_add(cvar)
@@ -318,7 +346,9 @@ fn scalar_risk(risk: &SemanticRiskEstimateV1, budget: &OutputPortfolioBudgetV1) 
     mul_q32_ties_even(weighted, budget.risk_aversion)
 }
 fn scalar_risk_unweighted(risk: &SemanticRiskEstimateV1) -> Result<FixedQ32, NduError> {
-    let failure = FixedQ32::from_raw(i64::try_from(risk.failure_probability.raw()).map_err(|_| NduError::Arithmetic)?);
+    let failure = FixedQ32::from_raw(
+        i64::try_from(risk.failure_probability.raw()).map_err(|_| NduError::Arithmetic)?,
+    );
     risk.mean_loss
         .checked_add(risk.cvar_loss)
         .map_err(|_| NduError::Arithmetic)?
@@ -342,7 +372,11 @@ fn adjusted_score(
         .map_err(|_| NduError::Arithmetic)?
         .checked_sub(latency)
         .map_err(|_| NduError::Arithmetic)?
-        .checked_sub(if candidate.is_no_change { FixedQ32::ZERO } else { budget.switch_penalty })
+        .checked_sub(if candidate.is_no_change {
+            FixedQ32::ZERO
+        } else {
+            budget.switch_penalty
+        })
         .map_err(|_| NduError::Arithmetic)
 }
 fn weighted_sum(
