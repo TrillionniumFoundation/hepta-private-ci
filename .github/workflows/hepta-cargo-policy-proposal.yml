@@ -1,0 +1,147 @@
+name: Cargo policy maintained dependency proposal
+
+# Export reviewable source and cloud-generated locks. This job never qualifies
+# its input head or replaces the original security and platform consumer gates.
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+    paths:
+      - .github/workflows/hepta-cargo-policy-proposal.yml
+      - scripts/hepta_cargo_policy_*.py
+      - scripts/hepta_cargo_policy_inventory.json
+      - codex-rs/third_party/i18n-config-0.4.8/**
+      - codex-rs/third_party/secret-service-6.0.0/**
+      - codex-rs/third_party/zbus-secret-service-keyring-store-1.0.1/**
+      - codex-rs/keyring-store/**
+      - codex-rs/secrets/**
+      - codex-rs/login/**
+      - codex-rs/Cargo.toml
+      - codex-rs/Cargo.lock
+      - codex-rs/rust-toolchain.toml
+      - MODULE.bazel
+      - MODULE.bazel.lock
+      - justfile
+      - scripts/format.py
+      - scripts/run-nextest.py
+      - scripts/hepta_ci_v8.py
+
+permissions:
+  contents: read
+
+concurrency:
+  group: cargo-policy-proposal-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+jobs:
+  maintained-dependency-candidate:
+    if: >-
+      github.event.pull_request.head.repo.full_name == github.repository &&
+      github.event.pull_request.head.ref == 'codex/cargo-policy-remediation-20261021'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 180
+    env:
+      SOURCE_SHA: ${{ github.event.pull_request.head.sha }}
+      CARGO_TARGET_DIR: ${{ github.workspace }}/codex-rs/target
+      CARGO_TERM_COLOR: never
+
+    steps:
+      - name: Check out the immutable proposal input without credentials
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ env.SOURCE_SHA }}
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Set the runner-owned evidence directory
+        shell: bash
+        run: |
+          set -euo pipefail
+          printf 'CARGO_POLICY_EVIDENCE_DIR=%s/cargo-policy-proposal\n' "$RUNNER_TEMP" >> "$GITHUB_ENV"
+
+      - name: Freeze source identity, repository toolchain and full command plan
+        id: source
+        run: python3 scripts/hepta_cargo_policy_proposal.py initialize
+
+      - name: Prepare the existing project Bazel and Cargo environment
+        id: tools
+        uses: ./.github/actions/prepare-bazel-ci
+        with:
+          target: x86_64-unknown-linux-gnu
+          cache-scope: cargo-policy-proposal
+
+      - name: Install the repository-selected compiler and components
+        id: rust
+        uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582
+        with:
+          toolchain: ${{ steps.source.outputs.toolchain }}
+          components: ${{ steps.source.outputs.components }}
+
+      - name: Install pinned existing test and policy tools
+        id: test-tools
+        uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
+        with:
+          tool: nextest@0.9.103,cargo-deny@0.19.0
+
+      - name: Install the repository's pinned Python formatter runner
+        id: uv
+        uses: astral-sh/setup-uv@08807647e7069bb48b6ef5acd8ec9567f424441b
+        with:
+          version: "0.11.3"
+
+      - name: Install native build prerequisites and real private Secret Service
+        id: native
+        shell: bash
+        run: |
+          set -euo pipefail
+          sudo apt-get update
+          sudo apt-get install -y build-essential bubblewrap libcap-dev pkg-config dbus gnome-keyring libglib2.0-bin
+          {
+            cd codex-rs
+            rustc --version
+            cargo --version
+            cargo nextest --version
+            cargo deny --version
+            uv --version
+            just --version
+            bazel version --gnu_format
+            dbus-daemon --version
+            gnome-keyring-daemon --version
+          } > "$CARGO_POLICY_EVIDENCE_DIR/tool-versions.log" 2>&1
+
+      - name: Resolve the original verified V8 artifacts
+        id: v8
+        env:
+          PYTHONPATH: scripts
+        run: python3 scripts/hepta_cargo_policy_proposal.py v8
+
+      - name: Generate locks and run complete vendor and owning suites
+        id: proposal
+        if: >-
+          always() && steps.source.outcome == 'success' &&
+          steps.tools.outcome == 'success' && steps.rust.outcome == 'success' &&
+          steps.test-tools.outcome == 'success' && steps.uv.outcome == 'success' &&
+          steps.native.outcome == 'success'
+        run: python3 scripts/hepta_cargo_policy_proposal.py run
+
+      - name: Preserve full postimages, source hashes, command exits and logs
+        if: always() && steps.source.outcome == 'success'
+        env:
+          SETUP_OUTCOMES: ${{ toJSON(steps) }}
+        run: python3 scripts/hepta_cargo_policy_proposal.py collect
+
+      - name: Upload candidate evidence even when a command fails
+        if: always() && steps.source.outcome == 'success'
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: cargo-policy-proposal-${{ github.run_id }}-${{ github.run_attempt }}
+          path: |
+            ${{ env.CARGO_POLICY_EVIDENCE_DIR }}/
+            !${{ env.CARGO_POLICY_EVIDENCE_DIR }}/private-keyring/**
+            !${{ env.CARGO_POLICY_EVIDENCE_DIR }}/vendor-harness/target/**
+          include-hidden-files: true
+          if-no-files-found: error
+          retention-days: 14
+
+      - name: Require complete candidate evidence without claiming head qualification
+        if: always() && steps.source.outcome == 'success'
+        run: python3 scripts/hepta_cargo_policy_proposal.py verdict

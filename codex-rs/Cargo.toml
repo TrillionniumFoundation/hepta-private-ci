@@ -188,6 +188,11 @@ members = [
     "plugin",
     "model-provider",
 ]
+exclude = [
+    "third_party/i18n-config-0.4.8",
+    "third_party/secret-service-6.0.0",
+    "third_party/zbus-secret-service-keyring-store-1.0.1",
+]
 resolver = "2"
 
 [workspace.package]
@@ -663,6 +668,11 @@ inherits = "test"
 opt-level = 0
 
 [patch.crates-io]
+# Retain the existing encrypted Secret Service backend with maintained zbus 6
+# and replace the archived i18n parser without changing its 0.4 public variants.
+i18n-config = { path = "third_party/i18n-config-0.4.8" }
+secret-service = { path = "third_party/secret-service-6.0.0" }
+zbus-secret-service-keyring-store = { path = "third_party/zbus-secret-service-keyring-store-1.0.1" }
 # Matrix SDK 0.18 still exposes anymap2 in its event handler API. Keep that
 # API stable while replacing the unmaintained implementation with anymap3.
 anymap2 = { path = "third_party/anymap2-compat" }
