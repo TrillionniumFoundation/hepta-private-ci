@@ -2,8 +2,8 @@
   "schema": "hepta.module-implementation-map.v3",
   "schemaVersion": 3,
   "sourceBase": {
-    "commit": "8914a46dfc5984532f03dd2d559bf547ca4f1e69",
-    "tree": "1bd6444d2d980a9fdf06358dbee973b34722f0e1"
+    "commit": "6e8370a2196701e217ccdc7b7637ae6de2139aa9",
+    "tree": "7a781a7854a28b37dea383788687e0ac9c857ba5"
   },
   "sourceIdentityPolicy": "candidate_or_exact_observation_v1",
   "laneId": "LANE-A-FOUNDATION",
@@ -167,7 +167,7 @@
     },
     {
       "operation": "automation_operation_consumer",
-      "nativeSymbol": "AutomationStore::dispatch_authorized_effect",
+      "nativeSymbol": "AutomationStore::execute_authorized_taskflow_effect",
       "sourcePath": "codex-rs/hepta-automation/src/authorized_effect.rs",
       "state": "second_operation_intent_consumer_source_implemented",
       "authority": "kernel.authority_final_use_consumed",
@@ -263,7 +263,7 @@
       },
       {
         "path": "codex-rs/hepta-memory/src/local_lease_outbox.rs",
-        "blobSha": "1c07918ae14e7d7a8c635d1574178424ba3407b4"
+        "blobSha": "29afb9bfa77100813d66c76c9a3f156c688bff94"
       },
       {
         "path": "codex-rs/hepta-memory/src/local_lease_outbox_tests.rs",
@@ -275,7 +275,7 @@
       },
       {
         "path": "codex-rs/hepta-memory/src/production_writer.rs",
-        "blobSha": "90fe5b7dd422e02587a5a812ea7a8ac5736dda02"
+        "blobSha": "fcd1f5751a89ab87e95553bf9b319d7e3d732549"
       },
       {
         "path": "codex-rs/hepta-memory/src/production_cognitive_source_target.rs",
@@ -291,15 +291,15 @@
       },
       {
         "path": "codex-rs/hepta-automation/src/authorized_effect.rs",
-        "blobSha": "21db22ee30ffd50463b1721ef3fd8046ef5b3950"
+        "blobSha": "d100a4f67ceec6d5c1fc10e6c6bdefaff4dbc794"
       },
       {
         "path": "codex-rs/hepta-automation/src/effect_dispatch_ledger.rs",
-        "blobSha": "2f0a8cea98cecc940a785dae606861ab2053a109"
+        "blobSha": "d3e64f1ee9e52dfe67fac41d72b68990822334d6"
       },
       {
         "path": "codex-rs/hepta-agentd/src/config.rs",
-        "blobSha": "afb9cac35db1c57d58edb3b31c6beee31bab2560"
+        "blobSha": "92f0fa719c3fafcbf01e8d5f558700ce656d43c6"
       },
       {
         "path": "codex-rs/hepta-agentd/src/runtime.rs",
@@ -307,7 +307,7 @@
       },
       {
         "path": "codex-rs/hepta-agentd/src/state.rs",
-        "blobSha": "0a17007f64bbbded6b8acfe9c1a79e7023b0054f"
+        "blobSha": "7f787dccb9318399b1a940aaac5e940dd5dbf029"
       },
       {
         "path": "codex-rs/hepta-agentd/src/runtime_tests.rs",
@@ -320,13 +320,42 @@
     ]
   },
   "observedAtHead": {
-    "commit": "8914a46dfc5984532f03dd2d559bf547ca4f1e69",
-    "tree": "1bd6444d2d980a9fdf06358dbee973b34722f0e1"
+    "commit": "6e8370a2196701e217ccdc7b7637ae6de2139aa9",
+    "tree": "7a781a7854a28b37dea383788687e0ac9c857ba5"
   },
   "observedSourcePaths": [
     "codex-rs/Cargo.lock",
     "codex-rs/Cargo.toml",
-    "codex-rs/hepta-operations"
+    "codex-rs/hepta-agentd",
+    "codex-rs/hepta-agentd/examples/h4_persistent_writer.rs",
+    "codex-rs/hepta-agentd/src/config.rs",
+    "codex-rs/hepta-agentd/src/config_tests.rs",
+    "codex-rs/hepta-agentd/src/production_writer_host.rs",
+    "codex-rs/hepta-agentd/src/runtime.rs",
+    "codex-rs/hepta-agentd/src/runtime_tests.rs",
+    "codex-rs/hepta-agentd/src/state.rs",
+    "codex-rs/hepta-automation",
+    "codex-rs/hepta-automation/migrations/0020_effect_dispatch_recovery_material.sql",
+    "codex-rs/hepta-automation/src/authorized_effect.rs",
+    "codex-rs/hepta-automation/src/effect_dispatch_ledger.rs",
+    "codex-rs/hepta-automation/tests/authorized_effect.rs",
+    "codex-rs/hepta-cognitive-store",
+    "codex-rs/hepta-contracts",
+    "codex-rs/hepta-memory/migrations/0011_kernel_operations.sql",
+    "codex-rs/hepta-memory/migrations/0012_kernel_operation_dispatch_claims.sql",
+    "codex-rs/hepta-memory/src/local_lease_outbox.rs",
+    "codex-rs/hepta-memory/src/local_lease_outbox_tests.rs",
+    "codex-rs/hepta-memory/src/operation_claims.rs",
+    "codex-rs/hepta-memory/src/production_cognitive_source_target.rs",
+    "codex-rs/hepta-memory/src/production_cognitive_source_target_tests.rs",
+    "codex-rs/hepta-memory/src/production_writer.rs",
+    "codex-rs/hepta-operations",
+    "codex-rs/hepta-operations/src/ledger.rs",
+    "codex-rs/hepta-operations/src/ledger_tests.rs",
+    "codex-rs/hepta-operations/src/model.rs",
+    "codex-rs/hepta-operations/src/outbox.rs",
+    "codex-rs/hepta-operations/src/outbox_tests.rs",
+    "docs/modules/kernel.operations/TECHNICAL.md"
   ],
   "productCallers": [
     {
@@ -337,12 +366,28 @@
   ],
   "sourceObjects": [
     {
+      "path": "codex-rs/Cargo.lock",
+      "object": "c1f8521d4ba70d480b38d518c30934f0b1b0e5a9"
+    },
+    {
+      "path": "codex-rs/Cargo.toml",
+      "object": "a510068874c85b9edbb5cc7afcfc2b8c8382dc1b"
+    },
+    {
       "path": "codex-rs/hepta-agentd",
-      "object": "2b8596e4410642981a52fc857c5eafa9ae692108"
+      "object": "07736a086c90eb14e382ce8dbde7cd623908feff"
     },
     {
       "path": "codex-rs/hepta-agentd/examples/h4_persistent_writer.rs",
       "object": "72d7262b40fe7970ae0cead431aae5d32f68295f"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/config.rs",
+      "object": "92f0fa719c3fafcbf01e8d5f558700ce656d43c6"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/config_tests.rs",
+      "object": "e1f3fa191bd46090380a338134ffd84c0a44a5e3"
     },
     {
       "path": "codex-rs/hepta-agentd/src/production_writer_host.rs",
@@ -357,16 +402,28 @@
       "object": "463a1b756b43acc92dbbbe0ce05252ae19d3383b"
     },
     {
+      "path": "codex-rs/hepta-agentd/src/state.rs",
+      "object": "7f787dccb9318399b1a940aaac5e940dd5dbf029"
+    },
+    {
       "path": "codex-rs/hepta-automation",
-      "object": "90409d9839266b2992986bb98343f41f40bed4ae"
+      "object": "3238113eedef5d6b2287dc0dad2349e780aba205"
+    },
+    {
+      "path": "codex-rs/hepta-automation/migrations/0020_effect_dispatch_recovery_material.sql",
+      "object": "c5240481c83f294470dc9b6045fbc8b7bdc1165d"
     },
     {
       "path": "codex-rs/hepta-automation/src/authorized_effect.rs",
-      "object": "21db22ee30ffd50463b1721ef3fd8046ef5b3950"
+      "object": "d100a4f67ceec6d5c1fc10e6c6bdefaff4dbc794"
+    },
+    {
+      "path": "codex-rs/hepta-automation/src/effect_dispatch_ledger.rs",
+      "object": "d3e64f1ee9e52dfe67fac41d72b68990822334d6"
     },
     {
       "path": "codex-rs/hepta-automation/tests/authorized_effect.rs",
-      "object": "15b84f5f00d149efbab5ab6ac68c29e116ce1a9d"
+      "object": "0cd3498bfe7c6764941c502bcd51cf372ba22a4e"
     },
     {
       "path": "codex-rs/hepta-cognitive-store",
@@ -374,7 +431,19 @@
     },
     {
       "path": "codex-rs/hepta-contracts",
-      "object": "ed5cc643157e33a323693954aab0cdc784be19ec"
+      "object": "afe9f17ce5963269e98324f79ab536a0bbe0d6a2"
+    },
+    {
+      "path": "codex-rs/hepta-memory/migrations/0011_kernel_operations.sql",
+      "object": "918195da1b30ce7ebb432df54a7bc247f5154a63"
+    },
+    {
+      "path": "codex-rs/hepta-memory/migrations/0012_kernel_operation_dispatch_claims.sql",
+      "object": "b8d06d5ca867f6d5b32d78f5276f9a1b4f11f5cc"
+    },
+    {
+      "path": "codex-rs/hepta-memory/src/local_lease_outbox.rs",
+      "object": "29afb9bfa77100813d66c76c9a3f156c688bff94"
     },
     {
       "path": "codex-rs/hepta-memory/src/local_lease_outbox_tests.rs",
@@ -394,11 +463,11 @@
     },
     {
       "path": "codex-rs/hepta-memory/src/production_writer.rs",
-      "object": "90fe5b7dd422e02587a5a812ea7a8ac5736dda02"
+      "object": "fcd1f5751a89ab87e95553bf9b319d7e3d732549"
     },
     {
       "path": "codex-rs/hepta-operations",
-      "object": "a8916f1e221c02a167a5ef00d8003fd8306a71b1"
+      "object": "4df9aa75b32017d0c27b68d62509cad66c28167b"
     },
     {
       "path": "codex-rs/hepta-operations/src/ledger.rs",
@@ -422,7 +491,7 @@
     },
     {
       "path": "docs/modules/kernel.operations/TECHNICAL.md",
-      "object": "744afc7479736a81e075a6bce83cb0323f1e8f45"
+      "object": "29d0c85fb5cac90b325c3c9ef62ee7de455b110c"
     }
   ]
 }
