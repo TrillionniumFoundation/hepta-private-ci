@@ -154,8 +154,10 @@ def run_offline_distillation(*, student: nn.Module, readout: nn.Module,
         raise OfflineDistillError("student and shared readout must be modules")
     params = list(student.parameters()) + list(readout.parameters())
     trainable = [p for p in params if p.requires_grad]
+    student_trainable = [p for p in student.parameters() if p.requires_grad]
     optimizer_params = [p for group in optimizer.param_groups for p in group["params"]]
-    if (not trainable or len({id(p) for p in optimizer_params}) != len(optimizer_params)
+    if (not student_trainable or not trainable or
+            len({id(p) for p in optimizer_params}) != len(optimizer_params)
             or {id(p) for p in optimizer_params} != {id(p) for p in trainable}
             or any(p.is_meta or not torch.isfinite(p).all() for p in params)):
         raise OfflineDistillError("optimizer must own exactly shared-student/readout trainable parameters")
