@@ -19,6 +19,8 @@ use codex_hepta_cognitive_types::memory_meta_network::MemoryMetaShadowRouteV1;
 use codex_hepta_cognitive_types::memory_meta_network::route_memory_cells_v1;
 
 use codex_hepta_types::Digest32;
+use codex_hepta_types::Revision;
+use codex_hepta_types::StableId;
 
 use crate::EngramDynamicsPolicyV1;
 use crate::EngramSnapshotV1;
@@ -621,6 +623,97 @@ where
             return Err(MemoryMetaBatchErrorV1::Contract(HnmfContractError::Conflict(
                 "memory meta external evidence changed",
             )));
+        }
+    }
+    Ok(outcome)
+}
+
+/// One actually recalled record and its source-support references presented
+/// to the independent evidence owner under the exact immutable source cut.
+/// This in-process lookup is not a signature or a proof of inclusion.
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct MemoryMetaRecordLookupV1 {
+    pub cell_id: ContractIdV1,
+    pub cell_support_digest: ContractDigestV1,
+    pub record_id: StableId,
+    pub record_revision: Revision,
+    pub record_digest: Digest32,
+    pub support_digests: Vec<Digest32>,
+    pub recall_packet_digest: Digest32,
+    pub evidence_ledger_digest: ContractDigestV1,
+    pub snapshot_digest: ContractDigestV1,
+    pub source_frontier_digest: ContractDigestV1,
+    pub forget_frontier_digest: ContractDigestV1,
+}
+
+/// Strengthen Cell-support admission with a distinct record-level ledger
+/// verification of *every* record returned by any admitted Cell, including
+/// records in shadow results that the final Meta-Network route filtered.
+/// An unsupported or revoked record rejects the entire result, never a
+/// partial batch. The external source owner must authenticate the record,
+/// revision, digest and all source citations against this exact frontier.
+///
+/// Both callbacks are provided by the caller: this function does not create
+/// a ledger inclusion witness, pin an atomic ledger snapshot, or grant any
+/// production-use authority. An authenticated, snapshot-pinned ledger API
+/// remains a separate prerequisite for non-shadow use.
+pub fn run_memory_meta_preselected_record_checked_shadow_v1<FS, FR>(
+    policy: &MemoryMetaNetworkPolicyV1,
+    cue: &MemoryCueV1,
+    retrieval_policy: &RetrievalPolicyV1,
+    engram_snapshot: &EngramSnapshotV1,
+    dynamics_policy: &EngramDynamicsPolicyV1,
+    cells: &[MemoryMetaCellTickSpecV1],
+    verify_support: FS,
+    mut verify_record: FR,
+) -> Result<MemoryMetaPreselectedShadowV1, MemoryMetaBatchErrorV1>
+where
+    FS: FnMut(&MemoryMetaEvidenceLookupV1) -> bool,
+    FR: FnMut(&MemoryMetaRecordLookupV1) -> bool,
+{
+    // The existing seam validates all inputs, checks each admitted Cell's
+    // external support before ticks, and rechecks revocation after ticks.
+    let outcome = run_memory_meta_preselected_evidence_checked_shadow_v1(
+        policy,
+        cue,
+        retrieval_policy,
+        engram_snapshot,
+        dynamics_policy,
+        cells,
+        verify_support,
+    )?;
+
+    for tick in &outcome.batch.cell_ticks {
+        let cell = cells
+            .iter()
+            .find(|cell| cell.manifest.cell_id == tick.receipt.cell_id)
+            .ok_or(MemoryMetaBatchErrorV1::Contract(HnmfContractError::Missing(
+                "memory meta record cell",
+            )))?;
+        let cell_support_digest = cell.support_digest.ok_or(
+            MemoryMetaBatchErrorV1::Contract(HnmfContractError::Missing(
+                "memory meta record support",
+            )),
+        )?;
+        for selection in &tick.recall.packet.selections {
+            let lookup = MemoryMetaRecordLookupV1 {
+                cell_id: tick.receipt.cell_id.clone(),
+                cell_support_digest,
+                record_id: selection.record_id.clone(),
+                record_revision: selection.record_revision,
+                record_digest: selection.record_digest,
+                support_digests: selection.support_digests.clone(),
+                recall_packet_digest: tick.recall.packet.packet_digest,
+                evidence_ledger_digest: policy.evidence_ledger_digest,
+                snapshot_digest: policy.snapshot_digest,
+                source_frontier_digest: policy.source_frontier_digest,
+                forget_frontier_digest: policy.forget_frontier_digest,
+            };
+            if !verify_record(&lookup) {
+                return Err(MemoryMetaBatchErrorV1::Contract(HnmfContractError::Conflict(
+                    "memory meta external record rejected",
+                )));
+            }
         }
     }
     Ok(outcome)
