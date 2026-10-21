@@ -224,6 +224,37 @@ pub struct MemoryMetaPreTickPlanV1 {
     pub production_activation_allowed: bool,
 }
 
+/// Revalidate a rehydrated pre-tick plan against the complete immutable input.
+/// The two digests alone are not evidence of a correct admission decision:
+/// replay must reproduce all identities, resource accounting and authority.
+impl MemoryMetaPreTickPlanV1 {
+    pub fn validate_against(
+        &self,
+        policy: &MemoryMetaNetworkPolicyV1,
+        cue: &MemoryCueV1,
+        engram_snapshot: &EngramSnapshotV1,
+        cells: &[MemoryMetaCellTickSpecV1],
+    ) -> Result<(), MemoryMetaBatchErrorV1> {
+        if !self.current_snapshot_immutable || self.production_activation_allowed {
+            return Err(MemoryMetaBatchErrorV1::Contract(
+                HnmfContractError::Conflict("memory meta pre-tick authority"),
+            ));
+        }
+        let expected = plan_memory_meta_pre_ticks_shadow_v1(
+            policy,
+            cue,
+            engram_snapshot,
+            cells,
+        )?;
+        if *self != expected {
+            return Err(MemoryMetaBatchErrorV1::Contract(
+                HnmfContractError::Conflict("memory meta pre-tick source binding"),
+            ));
+        }
+        Ok(())
+    }
+}
+
 /// Pre-tick admission plus post-tick evaluation. A deferred Cell is not run;
 /// the final route still independently checks the actual tick receipts.
 #[derive(Clone, Debug, Eq, PartialEq)]
