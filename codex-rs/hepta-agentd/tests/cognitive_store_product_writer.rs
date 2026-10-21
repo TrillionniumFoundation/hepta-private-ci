@@ -183,7 +183,15 @@ async fn agentd_product_host_recovers_exact_cut_into_fenced_writer_generation()
     )
     .await?;
     let recovered_anchor = host.writer().recovery_anchor().await?;
-    assert_eq!(recovered_anchor, expected);
+    // open_with_recovery authenticated the exact pre-open cut. Constructing
+    // the product writer then durably appends its fresh fenced lease, so the
+    // live post-open state digest must advance rather than equal that input.
+    assert_eq!(recovered_anchor.profile, expected.profile);
+    assert_eq!(recovered_anchor.owner_agent_id, expected.owner_agent_id);
+    assert_eq!(recovered_anchor.schema_digest, expected.schema_digest);
+    assert_ne!(recovered_anchor.state_digest, expected.state_digest);
+    assert_eq!(host.writer().generation(), 1);
+    assert_eq!(host.writer().lease_id(), "agentd-product-recovery-test");
 
     let now = i64::try_from(now_unix_seconds()?)?;
     let access = CognitiveAccess::agent_private(owner.clone());
