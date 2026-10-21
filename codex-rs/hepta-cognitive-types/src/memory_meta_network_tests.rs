@@ -337,6 +337,34 @@ fn evidence_digests_bind_replay_and_receipt_tampering_rejects() {
     assert!(tampered.validate().is_err());
 }
 
+#[test]
+fn direct_route_rejects_overcommit_of_a_cells_own_tick_budget() {
+    let mut overcommitted = candidate("cell:local-budget", MemoryCellRoleV1::Utility);
+    overcommitted.tick_input.resource_budget_units = 10;
+    assert!(matches!(
+        route_memory_cells_v1(&policy(), &[overcommitted]),
+        Err(HnmfContractError::Conflict("memory meta local tick budget"))
+    ));
+}
+
+#[test]
+fn canonical_digest_does_not_authorize_zero_cost_route_receipts() {
+    let mut receipt =
+        route(&policy(), &[candidate("cell:zero-cost", MemoryCellRoleV1::Semantic)]).receipt;
+    // This simulates a modified serialized receipt with an independently
+    // recomputed, internally consistent hash and resource accounting.
+    receipt.decisions[0].resource_cost_units = 0;
+    receipt.resource_used_units = 0;
+    receipt.route_digest = canonical_meta_route_digest(&receipt)
+        .unwrap_or_else(|error| panic!("fixture digest: {error:?}"));
+    assert!(matches!(
+        receipt.validate(),
+        Err(HnmfContractError::Invalid(
+            "memory meta receipt candidate cost"
+        ))
+    ));
+}
+
 fn evolution() -> MemoryCellNextSnapshotCandidateV1 {
     MemoryCellNextSnapshotCandidateV1 {
         schema_version: 1,
