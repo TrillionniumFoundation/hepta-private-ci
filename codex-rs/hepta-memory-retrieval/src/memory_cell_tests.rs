@@ -408,6 +408,7 @@ fn shadow_runtime_preserves_ood_evidence_on_abstention() {
 fn meta_policy(
     fixture: &ShadowFixture,
 ) -> codex_hepta_cognitive_types::memory_meta_network::MemoryMetaNetworkPolicyV1 {
+    use codex_hepta_cognitive_types::memory_meta_network::MemoryMetaNetworkPolicyV1;
 
     MemoryMetaNetworkPolicyV1 {
         schema_version: 1,
