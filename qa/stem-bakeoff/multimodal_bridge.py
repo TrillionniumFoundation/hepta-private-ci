@@ -198,29 +198,28 @@ class MultimodalSlotizer(nn.Module):
                            generation=generation)
 
 
-def _verify_optimizer_storage_isolation(parameters: list[nn.Parameter]) -> None:
-    """Fail closed when distinct parameters overlap physical backing storage.
+def _verify_optimizer_storage_isolation(tensors: list[torch.Tensor]) -> None:
+    """Reject overlapping physical parameter OR optimizer-state tensor storage.
 
     Python Parameter identity is not tensor ownership: nn.Parameter(other.detach())
-    creates a new object that updates the same bytes. Conservatively reject
-    overlapping storages (including disjoint views of a common allocation).
-    Training intentionally tied weights requires an explicit single owner.
+    creates a new ID while sharing bytes. Optimizer momentum/Adam moments may
+    likewise alias weights or one another and cause silent finite corruption.
+    Conservatively reject any shared allocation, including disjoint views.
     """
     spans = []
-    for parameter in parameters:
-        if (parameter.layout != torch.strided or not parameter.is_floating_point()
-                or parameter.numel() == 0):
-            raise LatentBridgeError("unsupported offline optimizer parameter storage")
-        storage = parameter.untyped_storage()
+    for tensor in tensors:
+        if tensor.layout != torch.strided or tensor.numel() == 0:
+            raise LatentBridgeError("unsupported offline optimizer tensor storage")
+        storage = tensor.untyped_storage()
         address, size = storage.data_ptr(), storage.nbytes()
         if address <= 0 or size <= 0:
-            raise LatentBridgeError("unsupported offline optimizer parameter storage")
-        spans.append((str(parameter.device), address, address + size))
+            raise LatentBridgeError("unsupported offline optimizer tensor storage")
+        spans.append((str(tensor.device), address, address + size))
     spans.sort()
     for (left_device, _, left_end), (right_device, right_start, _) in zip(
             spans, spans[1:]):
         if left_device == right_device and right_start < left_end:
-            raise LatentBridgeError("overlapping offline optimizer parameter storage")
+            raise LatentBridgeError("overlapping offline optimizer parameter/storage")
 
 
 def _verify_optimizer_ownership(student: nn.Module, slotizer: MultimodalSlotizer,
@@ -239,7 +238,8 @@ def _verify_optimizer_ownership(student: nn.Module, slotizer: MultimodalSlotizer
     ids = tuple(id(p) for p in parameters)
     if (not ids or len(set(ids)) != len(ids)
             or any(not isinstance(p, nn.Parameter) or not p.requires_grad
-                   or id(p) not in owned for p in parameters)):
+                   or not p.is_floating_point() or id(p) not in owned
+                   for p in parameters)):
         raise LatentBridgeError("optimizer contains foreign, frozen or duplicate parameters")
     # An optimizer that silently omits trainable Student weights can return a
     # successful "training" receipt after updating only Slotizer parameters.
@@ -315,6 +315,23 @@ def _verify_optimizer_step_safety(optimizer: torch.optim.Optimizer) -> tuple:
                     raise LatentBridgeError("nonfinite offline optimizer state")
             else:
                 raise LatentBridgeError("unsupported offline optimizer state value")
+
+    # Finiteness alone cannot prove optimizer-state custody. A finite SGD
+    # momentum tensor can alias its weight, silently reversing the update.
+    # Also reject malformed moment dimensions and mutually aliased Adam slots.
+    owned_tensors = [p for group in optimizer.param_groups for p in group["params"]]
+    for parameter, state in optimizer.state.items():
+        for key, value in state.items():
+            if not isinstance(value, torch.Tensor):
+                continue
+            if key == "step":
+                if value.numel() != 1:
+                    raise LatentBridgeError("invalid offline optimizer step state shape")
+            elif (value.shape != parameter.shape or value.dtype != parameter.dtype
+                  or value.device != parameter.device):
+                raise LatentBridgeError("offline optimizer state shape/dtype/device mismatch")
+            owned_tensors.append(value)
+    _verify_optimizer_storage_isolation(owned_tensors)
 
     # Snapshot the complete non-parameter group settings: a projector/Student
     # hook must not silently change a finite learning rate or optimizer mode.
