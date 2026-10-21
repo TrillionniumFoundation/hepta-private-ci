@@ -235,3 +235,19 @@ or external evidence verifier. An empty/abstaining batch therefore cannot
 silently bypass the same shared-input safety fence as an active Cell.
 These checks do not authenticate the external evidence ledger or grant
 production authority.
+
+## Whole-batch generator preflight (shadow only)
+
+The full shadow batch validates the complete generated-candidate input for
+**every** Cell before executing the first retrieval tick. This catches a
+late malformed generator batch even when an earlier Cell would otherwise fail
+during recall. The sparse path validates only admitted Cells, not intentionally
+deferred Cells whose candidate batches need never be materialized. The
+external-evidence-checked path completes the same admitted-generator preflight
+**before its first caller-supplied ledger-verifier invocation**. Tests cover
+late invalid batches and zero verifier calls.
+
+This is contract validation, **not** authentication of the generated source,
+real ledger inclusion, physical GPU work, immutable model execution or
+production eligibility. Existing shadow-only authority and all exact-head
+CI/security/cross-platform/independent evidence requirements remain in force.
