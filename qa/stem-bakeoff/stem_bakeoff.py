@@ -63,6 +63,8 @@ REQUIRED_GATES = (
 
 
 def validate_manifest(manifest: dict[str, Any]) -> list[str]:
+    if not isinstance(manifest, dict):
+        return ["manifest must be an object"]
     errors: list[str] = []
     if manifest.get("schema") != SCHEMA:
         errors.append(f"schema must be {SCHEMA}")
@@ -116,6 +118,8 @@ def validate_manifest(manifest: dict[str, Any]) -> list[str]:
 
 
 def validate_result(result: dict[str, Any]) -> list[str]:
+    if not isinstance(result, dict):
+        return ["result must be an object"]
     errors: list[str] = []
     if result.get("schema") != RESULT_SCHEMA:
         errors.append(f"schema must be {RESULT_SCHEMA}")
@@ -145,10 +149,13 @@ def validate_result(result: dict[str, Any]) -> list[str]:
             if gates.get(key) is not True:
                 errors.append(f"gates.{key} must be true")
     components = result.get("cell_components")
-    if components != list(CELL_COMPONENTS):
-        errors.append("cell_components must match the lightweight Cell contract")
-    if any(component in result.get("cell_components", []) for component in FORBIDDEN_CELL_COMPONENTS):
-        errors.append("forbidden per-Cell model component present")
+    if not isinstance(components, list) or any(type(item) is not str for item in components):
+        errors.append("cell_components must be a string array")
+    else:
+        if components != list(CELL_COMPONENTS):
+            errors.append("cell_components must match the lightweight Cell contract")
+        if any(component in components for component in FORBIDDEN_CELL_COMPONENTS):
+            errors.append("forbidden per-Cell model component present")
     return errors
 
 
