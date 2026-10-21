@@ -560,24 +560,20 @@ async fn retirement_rechecks_original_live_authority_after_sqlite_awaits() -> Te
     let mut retirement =
         tokio::spawn(async move { writer.retire_hos2_through(&target, &through).await });
     tokio::time::timeout(Duration::from_secs(5), checked_rx).await??;
-    // Prefix verification has committed. Exhaust the actual owning pool while
-    // the second live check is paused, so its following SQLite await cannot
-    // finish before this test revokes the original authority.
-    let mut held = Vec::new();
-    for _ in 0..fixture.writer.store.pool.options().get_max_connections() {
-        held.push(
-            tokio::time::timeout(Duration::from_secs(5), fixture.writer.store.pool.acquire())
-                .await??,
-        );
-    }
-    resume_tx.send(())?;
+    // The second issuer check has reached a deterministic rendezvous AFTER
+    // hos2_durable_prefix's SQLite awaits but BEFORE verify_authority's
+    // subsequent SQLite awaits and the native retirement effect. Revocation
+    // must be observed by the final synchronous issuer check, even if the
+    // paused verifier returns Ok after the issuer has revoked the grant.
+    // Exhausting a separate pool and sleeping for 20 ms cannot establish
+    // this ordering: verification may use a different connection or finish
+    // before the timeout, turning an authority regression into a flaky test.
     assert!(
-        tokio::time::timeout(Duration::from_millis(20), &mut retirement)
-            .await
-            .is_err()
+        !retirement.is_finished(),
+        "retirement crossed the paused issuer check before revocation"
     );
     verifier.revoked.store(true, Ordering::SeqCst);
-    drop(held);
+    resume_tx.send(())?;
     let result = tokio::time::timeout(Duration::from_secs(5), retirement).await??;
     assert!(matches!(
         result,
