@@ -202,7 +202,7 @@ class SharedMultimodalBridgeTests(unittest.TestCase):
         hook = bridge.projectors['text'].register_forward_hook(count_projector)
         try:
             with self.assertRaisesRegex(
-                    LatentBridgeError, 'overlapping offline optimizer parameter storage'):
+                    LatentBridgeError, 'overlapping offline optimizer parameter/storage'):
                 shadow_distill_step(
                     student, bridge, {'text': torch.ones(2, 32)},
                     {'text': 'a' * 64}, torch.ones(2, 32),
@@ -229,7 +229,7 @@ class SharedMultimodalBridgeTests(unittest.TestCase):
         hook = bridge.projectors['text'].register_forward_hook(introduce_alias)
         try:
             with self.assertRaisesRegex(
-                    LatentBridgeError, 'overlapping offline optimizer parameter storage'):
+                    LatentBridgeError, 'overlapping offline optimizer parameter/storage'):
                 shadow_distill_step(
                     student, bridge, {'text': torch.ones(2, 32)},
                     {'text': 'a' * 64}, torch.ones(2, 32),
