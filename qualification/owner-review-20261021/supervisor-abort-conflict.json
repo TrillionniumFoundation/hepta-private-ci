@@ -174,7 +174,9 @@
   "historical_failure_mapping": {
     "reader_head": "ca2768978429a2c9a98641fa2d58a8f587b88874",
     "reader_run_id": 39524743211,
-    "reader_job_id": 118977201936,
+    "reader_job_id": 118977201768,
+    "reader_log_line": 4299,
+    "reader_log_raw_sha256": "abe6dbf96842a61b7db98d5d6e8eb083b6f79a2948e60e1e07e02ac383cd8d3c",
     "historical_test": "exact_digest_abort_terminalizes_unresolved_intent",
     "limitation": "A historical expectation that recover returns an error does not authorize reintroducing unsigned recovery. Current source deliberately retains a reachable quarantined Supervisor. No claim is made that the current native test has passed."
   },
