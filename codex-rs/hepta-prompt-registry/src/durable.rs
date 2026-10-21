@@ -1283,12 +1283,7 @@ impl Store {
             return Ok((store, None));
         }
         let mut bytes = Vec::new();
-        open_private(
-            &store.root,
-            &store.root_path,
-            "registry.json",
-            Access::Read,
-        )?
+        open_private(&store.root, &store.root_path, "registry.json", Access::Read)?
             .take(MAX_STATE_BYTES + 1)
             .read_to_end(&mut bytes)
             .map_err(|_| DurableRegistryError::Unavailable)?;
@@ -1338,12 +1333,7 @@ impl Store {
         }
         self.payloads
             .stage(&successor, registry, &self.root, &self.root_path)?;
-        let mut file = open_private(
-            &self.root,
-            &self.root_path,
-            "registry.next",
-            Access::Create,
-        )?;
+        let mut file = open_private(&self.root, &self.root_path, "registry.next", Access::Create)?;
         file.set_len(0).map_err(map_precommit_io)?;
         file.write_all(&bytes)
             .and_then(|()| file.sync_all())
@@ -1457,9 +1447,7 @@ fn prepare_directory(root: &Path) -> Result<File, DurableRegistryError> {
     for ancestor in root.ancestors() {
         let metadata = std::fs::symlink_metadata(ancestor)
             .map_err(|_| DurableRegistryError::UnsafeStateDirectory)?;
-        if !metadata.is_dir()
-            || metadata.file_attributes() & FILE_ATTRIBUTE_REPARSE_POINT != 0
-        {
+        if !metadata.is_dir() || metadata.file_attributes() & FILE_ATTRIBUTE_REPARSE_POINT != 0 {
             return Err(DurableRegistryError::UnsafeStateDirectory);
         }
     }
@@ -1553,27 +1541,21 @@ fn entry_exists(
 }
 
 #[cfg(unix)]
-fn replace_state(
-    directory: &File,
-    _directory_path: &Path,
-) -> Result<(), DurableRegistryError> {
+fn replace_state(directory: &File, _directory_path: &Path) -> Result<(), DurableRegistryError> {
     rustix::fs::renameat(directory, "registry.next", directory, "registry.json")
         .map_err(|_| DurableRegistryError::Unavailable)
 }
 
 #[cfg(windows)]
-fn replace_state(
-    _directory: &File,
-    directory_path: &Path,
-) -> Result<(), DurableRegistryError> {
+fn replace_state(_directory: &File, directory_path: &Path) -> Result<(), DurableRegistryError> {
     use std::os::windows::fs::MetadataExt;
 
     const FILE_ATTRIBUTE_REPARSE_POINT: u32 = 0x0400;
 
     let next = directory_path.join("registry.next");
     let state = directory_path.join("registry.json");
-    let next_metadata = std::fs::symlink_metadata(&next)
-        .map_err(|_| DurableRegistryError::Unavailable)?;
+    let next_metadata =
+        std::fs::symlink_metadata(&next).map_err(|_| DurableRegistryError::Unavailable)?;
     if next_metadata.file_attributes() & FILE_ATTRIBUTE_REPARSE_POINT != 0 {
         return Err(DurableRegistryError::UnsafeStateDirectory);
     }
@@ -1617,10 +1599,7 @@ fn entry_exists(
 }
 
 #[cfg(all(not(unix), not(windows)))]
-fn replace_state(
-    _directory: &File,
-    _directory_path: &Path,
-) -> Result<(), DurableRegistryError> {
+fn replace_state(_directory: &File, _directory_path: &Path) -> Result<(), DurableRegistryError> {
     Err(DurableRegistryError::UnsafeStateDirectory)
 }
 
