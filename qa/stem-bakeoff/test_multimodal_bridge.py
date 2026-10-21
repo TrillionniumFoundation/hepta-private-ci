@@ -451,6 +451,96 @@ class SharedMultimodalBridgeTests(unittest.TestCase):
         for param, initial in zip(bridge.parameters(), before_slotizer):
             torch.testing.assert_close(param, initial, rtol=0, atol=0)
 
+    def test_nonfinite_optimizer_rates_rejected_before_any_projection(self):
+        for optimizer_type, rate in (
+                (torch.optim.SGD, float('nan')),
+                (torch.optim.SGD, float('inf')),
+                (torch.optim.AdamW, float('inf'))):
+            with self.subTest(optimizer=optimizer_type.__name__, rate=str(rate)):
+                bridge = self.stem()
+                student = build_encoder(StemSpec('tiny_training_only', 32, 1, 4),
+                                        device='cpu', trainable=True)
+                optimizer = optimizer_type(list(bridge.parameters())
+                                           + list(student.parameters()), lr=rate)
+                calls = [0]
+
+                def count_forward(_module, _inputs, _outputs):
+                    calls[0] += 1
+
+                hook = bridge.projectors['text'].register_forward_hook(count_forward)
+                try:
+                    with self.assertRaisesRegex(
+                            LatentBridgeError, 'unsafe offline optimizer hyperparameter'):
+                        shadow_distill_step(
+                            student, bridge, {'text': torch.ones(2, 32)},
+                            {'text': 'a' * 64}, torch.ones(2, 32),
+                            optimizer, generation=1)
+                finally:
+                    hook.remove()
+                self.assertEqual(calls[0], 0)
+
+    def test_nonfinite_momentum_state_rejected_before_projection(self):
+        bridge = self.stem()
+        student = build_encoder(StemSpec('tiny_training_only', 32, 1, 4),
+                                device='cpu', trainable=True)
+        optimizer = torch.optim.SGD(
+            list(bridge.parameters()) + list(student.parameters()),
+            lr=0.01, momentum=0.9)
+        victim = next(student.parameters())
+        optimizer.state[victim]['momentum_buffer'] = torch.full_like(
+            victim, float('nan'))
+        before = victim.detach().clone()
+        with self.assertRaisesRegex(
+                LatentBridgeError, 'nonfinite or unsupported offline optimizer state'):
+            shadow_distill_step(
+                student, bridge, {'text': torch.ones(2, 32)},
+                {'text': 'a' * 64}, torch.ones(2, 32),
+                optimizer, generation=1)
+        torch.testing.assert_close(victim, before, rtol=0, atol=0)
+
+    def test_projector_hook_cannot_change_finite_optimizer_learning_rate(self):
+        bridge = self.stem()
+        student = build_encoder(StemSpec('tiny_training_only', 32, 1, 4),
+                                device='cpu', trainable=True)
+        optimizer = torch.optim.SGD(
+            list(bridge.parameters()) + list(student.parameters()), lr=0.001)
+        old_student = next(student.parameters()).detach().clone()
+        old_projector = bridge.projectors['text'].weight.detach().clone()
+
+        def change_rate(_module, _inputs, _outputs):
+            optimizer.param_groups[0]['lr'] = 0.5
+
+        hook = bridge.projectors['text'].register_forward_hook(change_rate)
+        try:
+            with self.assertRaisesRegex(
+                    LatentBridgeError, 'offline optimizer configuration changed'):
+                shadow_distill_step(
+                    student, bridge, {'text': torch.ones(2, 32)},
+                    {'text': 'a' * 64}, torch.ones(2, 32),
+                    optimizer, generation=1)
+        finally:
+            hook.remove()
+        torch.testing.assert_close(
+            next(student.parameters()), old_student, rtol=0, atol=0)
+        torch.testing.assert_close(
+            bridge.projectors['text'].weight, old_projector, rtol=0, atol=0)
+
+    def test_custom_optimizer_step_is_not_authorized(self):
+        class UntrustedSGD(torch.optim.SGD):
+            def step(self, closure=None):
+                raise RuntimeError("unexpected custom step")
+
+        bridge = self.stem()
+        student = build_encoder(StemSpec('tiny_training_only', 32, 1, 4),
+                                device='cpu', trainable=True)
+        optimizer = UntrustedSGD(
+            list(bridge.parameters()) + list(student.parameters()), lr=0.001)
+        with self.assertRaisesRegex(LatentBridgeError, 'unsupported offline optimizer type'):
+            shadow_distill_step(
+                student, bridge, {'text': torch.ones(2, 32)},
+                {'text': 'a' * 64}, torch.ones(2, 32),
+                optimizer, generation=1)
+
     def test_teacher_is_detached_and_small_student_offline_step_changes_weights(self):
         stem = self.stem()
         student = build_encoder(StemSpec('tiny_training_only', 32, 1, 4),
