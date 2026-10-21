@@ -322,8 +322,8 @@ source slots and does not fetch pretrained teacher weights.
 - Accepts exactly `train/calibration/future_1/future_2/ood` cohorts.
   All five must match one immutable teacher candidate, source revision,
   checkpoint inventory and target feature width. The caller must provide
-  expected teacher NPY SHA256, ordered source manifest SHA256 and per-row
-  source digests; duplicate rows/batches, repeated slot bytes, repeated teacher
+  expected teacher NPY SHA256, ordered source manifest SHA256, the
+  exact source-slot tensor SHA256 and per-row source digests; duplicate rows/batches, repeated slot bytes, repeated teacher
   feature bytes, malformed or nonfinite tensors, invalid custody, source or
   checkpoint drift fail closed **before optimizer update**.
 - Teacher features are read through P5's strictly bounded,
