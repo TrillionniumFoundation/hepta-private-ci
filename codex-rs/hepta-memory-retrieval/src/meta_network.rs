@@ -139,13 +139,6 @@ fn preflight_memory_meta_batch_v1(
                 HnmfContractError::Invalid("memory meta candidate cost"),
             ));
         }
-        if cell.tick_input.cue_digest.digest() != cue.digest()
-            || cell.tick_input.objective_digest.digest() != cue.objective_digest
-        {
-            return Err(MemoryMetaBatchErrorV1::Contract(
-                HnmfContractError::Conflict("memory meta pre-tick cue or objective"),
-            ));
-        }
         if cell.manifest.shared_base_digest != policy.shared_base_digest
             || cell.manifest.encoder_digest != policy.encoder_digest
             || cell.encoder_feature_digest != policy.encoder_feature_digest
@@ -158,6 +151,17 @@ fn preflight_memory_meta_batch_v1(
         {
             return Err(MemoryMetaBatchErrorV1::Contract(
                 HnmfContractError::Conflict("memory meta evidence or generation drift"),
+            ));
+        }
+    }
+    // Every structural contract is checked before examining Cell cue bindings.
+    // A malformed late Cell must be rejected ahead of all retrieval work.
+    for cell in cells {
+        if cell.tick_input.cue_digest.digest() != cue.digest()
+            || cell.tick_input.objective_digest.digest() != cue.objective_digest
+        {
+            return Err(MemoryMetaBatchErrorV1::Contract(
+                HnmfContractError::Conflict("memory meta pre-tick cue or objective"),
             ));
         }
     }
