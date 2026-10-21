@@ -25,7 +25,12 @@ done
 manual_rust_test_targets="$(
   ./.github/scripts/run-bazel-query-ci.sh \
     --output=label \
-    -- 'kind("rust_test rule", attr(tags, "manual", //codex-rs/... except //codex-rs/v8-poc/...))'
+    -- 'kind("rust_test rule", attr(tags, "manual", //codex-rs/... except //codex-rs/v8-poc/...))' |
+    # Windows query output may be CRLF. Strip only the terminator: embedded
+    # carriage returns must still fail Bazel target-pattern validation.
+    while IFS= read -r target || [[ -n "$target" ]]; do
+      printf '%s\n' "${target%$'\r'}"
+    done
 )"
 if [[ "${RUNNER_OS:-}" != "Windows" ]]; then
   # Non-Windows clippy jobs lint the native test binaries; the
