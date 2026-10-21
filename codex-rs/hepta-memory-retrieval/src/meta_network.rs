@@ -437,3 +437,72 @@ pub fn run_memory_meta_preselected_shadow_v1(
         batch,
     })
 }
+
+/// Exact snapshot/frontier tuple presented to the *external* evidence owner.
+/// A digest reference is not itself proof of membership or deletion.
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct MemoryMetaEvidenceLookupV1 {
+    pub cell_id: ContractIdV1,
+    pub support_digest: ContractDigestV1,
+    pub evidence_ledger_digest: ContractDigestV1,
+    pub snapshot_digest: ContractDigestV1,
+    pub source_frontier_digest: ContractDigestV1,
+    pub forget_frontier_digest: ContractDigestV1,
+}
+
+/// Shadow-only admission requiring a caller-owned evidence-ledger check *before*
+/// any admitted Cell tick. The caller must supply an independently authenticated,
+/// snapshot-consistent verifier that also enforces tombstone/forget membership;
+/// this adapter cannot turn a caller-controlled boolean into such proof.
+///
+/// Every admissible Cell is verified; one rejection fails the entire batch.
+/// Deferred Cells are never retrieved. The ordinary unverified shadow control
+/// remains available separately and has no production-use authority.
+pub fn run_memory_meta_preselected_evidence_checked_shadow_v1<F>(
+    policy: &MemoryMetaNetworkPolicyV1,
+    cue: &MemoryCueV1,
+    retrieval_policy: &RetrievalPolicyV1,
+    engram_snapshot: &EngramSnapshotV1,
+    dynamics_policy: &EngramDynamicsPolicyV1,
+    cells: &[MemoryMetaCellTickSpecV1],
+    mut verify_support: F,
+) -> Result<MemoryMetaPreselectedShadowV1, MemoryMetaBatchErrorV1>
+where
+    F: FnMut(&MemoryMetaEvidenceLookupV1) -> bool,
+{
+    let plan = plan_memory_meta_pre_ticks_shadow_v1(policy, cue, engram_snapshot, cells)?;
+    for cell_id in &plan.admitted_cell_ids {
+        let cell = cells
+            .iter()
+            .find(|cell| &cell.manifest.cell_id == cell_id)
+            .ok_or(MemoryMetaBatchErrorV1::Contract(HnmfContractError::Missing(
+                "memory meta admitted cell",
+            )))?;
+        let support_digest = cell.support_digest.ok_or(
+            MemoryMetaBatchErrorV1::Contract(HnmfContractError::Missing(
+                "memory meta admitted support",
+            )),
+        )?;
+        let lookup = MemoryMetaEvidenceLookupV1 {
+            cell_id: cell.manifest.cell_id.clone(),
+            support_digest,
+            evidence_ledger_digest: policy.evidence_ledger_digest,
+            snapshot_digest: policy.snapshot_digest,
+            source_frontier_digest: policy.source_frontier_digest,
+            forget_frontier_digest: policy.forget_frontier_digest,
+        };
+        if !verify_support(&lookup) {
+            return Err(MemoryMetaBatchErrorV1::Contract(HnmfContractError::Conflict(
+                "memory meta external evidence rejected",
+            )));
+        }
+    }
+    run_memory_meta_preselected_shadow_v1(
+        policy,
+        cue,
+        retrieval_policy,
+        engram_snapshot,
+        dynamics_policy,
+        cells,
+    )
+}
