@@ -201,7 +201,7 @@ fn validate_item(
 /// Scope ID. Until the producer/owner binds that Scope explicitly, a physical
 /// batch must never mix different principal/purpose partitions. Each member
 /// also undergoes its own signed-admission-independent V2 request validation.
-fn validate_batch_partition_v2(requests: &[SharedNeuronFeatureRequestV2]) -> Result<(), Error> {
+pub(super) fn validate_batch_partition_v2(requests: &[SharedNeuronFeatureRequestV2]) -> Result<(), Error> {
     let first = requests.first().ok_or(Error::FeatureLimit)?;
     if requests
         .iter()

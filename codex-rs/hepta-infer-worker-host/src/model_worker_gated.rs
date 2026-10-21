@@ -337,6 +337,9 @@ impl NeuronSharedFeatureBatchDriverV2 for GatedHeadCpuDriverV2 {
         if requests.is_empty() || requests.len() > 32 {
             return Err(Error::RequestCapacity);
         }
+        // Match the worker's conservative privacy partition even for a direct
+        // crate-private backend invocation; neither layer issues authority.
+        super::shared_v2::validate_batch_partition_v2(requests)?;
         let next_batch_calls = self
             .batch_calls
             .checked_add(1)
@@ -725,6 +728,31 @@ mod tests {
             weights_digest: selected.weights_digest.clone(),
             expected_output_width: 1,
         };
+        // Recompute each changed request's identity and payload to prove the
+        // low-level batch rejects mixed domains, rather than stale digests.
+        for (principal, purpose) in [
+            ("principal.other", "purpose.decision"),
+            ("principal.a", "purpose.other"),
+        ] {
+            let mut mixed = valid.clone();
+            mixed.principal_id = id(principal);
+            mixed.purpose_id = id(purpose);
+            mixed.authorization.request_id = "request.mixed".into();
+            mixed.authorization.reservation_id = "reservation.mixed".into();
+            let mut scoped_snapshot = (*mixed.snapshot).clone();
+            scoped_snapshot.identity.principal_id = mixed.principal_id.clone();
+            scoped_snapshot.identity.purpose_id = mixed.purpose_id.clone();
+            mixed.snapshot = Arc::new(scoped_snapshot);
+            let payload = super::super::canonical_shared_neuron_payload_digest_v2(&mixed)
+                .expect("fully rebound mixed-domain payload");
+            mixed.authorization.payload_digest = payload.clone();
+            mixed.authorization.lease_payload_digest = payload;
+            assert_eq!(
+                driver.run_shared_neuron_features_batch_v2(&handle, &[valid.clone(), mixed]),
+                Err(Error::FeatureContract)
+            );
+            assert_eq!(driver.batch_calls(), 0);
+        }
         let mut late_invalid = valid.clone();
         late_invalid.cell_id = id("cell.b");
         assert!(matches!(
