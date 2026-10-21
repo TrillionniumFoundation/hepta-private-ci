@@ -318,6 +318,21 @@ impl ExecutionReceiptV1 {
         if self.final_payload_digest.validate().is_err() {
             return Err(ExecutionContractError::ReceiptBindingMismatch);
         }
+        if self.outcome_digest.is_some_and(Digest32::is_zero) {
+            return Err(ExecutionContractError::ZeroDigest("execution outcome"));
+        }
+        // A successful effect needs observed evidence and cannot request replay.
+        if self.status == ExecutionStatusV1::Completed
+            && (self.outcome_digest.is_none() || self.recovery != RecoveryDispositionV1::None)
+        {
+            return Err(ExecutionContractError::StatusOutcomeMismatch);
+        }
+        // Retry-before-admission is never a disposition for an executed effect.
+        if self.recovery == RecoveryDispositionV1::RetryBeforeAdmission
+            && self.status != ExecutionStatusV1::Rejected
+        {
+            return Err(ExecutionContractError::StatusOutcomeMismatch);
+        }
         Ok(())
     }
 }
@@ -345,10 +360,24 @@ impl RuntimeReceiptV1 {
         if self.execution.outcome_digest != Some(self.tool_outcome.outcome_digest()) {
             return Err(ExecutionContractError::OutcomeDigestMismatch);
         }
-        if matches!(self.execution.status, ExecutionStatusV1::Completed)
-            && !self.tool_outcome.terminal_observed
-        {
+        // A tool's terminal observation is not permission to replay it.
+        if self.tool_outcome.terminal_observed && self.tool_outcome.retryable {
             return Err(ExecutionContractError::StatusOutcomeMismatch);
+        }
+        match self.execution.status {
+            ExecutionStatusV1::Completed
+                if !self.tool_outcome.terminal_observed
+                    || self.tool_outcome.exit_code.is_some_and(|code| code != 0) =>
+            {
+                return Err(ExecutionContractError::StatusOutcomeMismatch);
+            }
+            ExecutionStatusV1::Failed if !self.tool_outcome.terminal_observed => {
+                return Err(ExecutionContractError::StatusOutcomeMismatch);
+            }
+            ExecutionStatusV1::Rejected if self.tool_outcome.terminal_observed => {
+                return Err(ExecutionContractError::StatusOutcomeMismatch);
+            }
+            _ => {}
         }
         Ok(())
     }
