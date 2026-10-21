@@ -1,0 +1,423 @@
+{
+  "schema": "ndu-continuous-lq-oracle-v1",
+  "started_utc": "2026-10-21T12:52:10.524539+00:00",
+  "finished_utc": "2026-10-21T12:52:11.470655+00:00",
+  "runtime_seconds": 0.9461196539996308,
+  "scope": "engineered exact LQ mechanism validation; not neural generation efficacy",
+  "execution_tier": "local-preflight",
+  "runtime": {
+    "python": "3.12.14 (main, Aug 25 2026, 14:00:49) [Clang 22.1.3 ]",
+    "executable": "/workspace/scratch/337c309bc660/research-work/venv/bin/python",
+    "numpy": "1.26.4",
+    "scipy": "1.17.0",
+    "torch": "2.5.1+cpu",
+    "module_locations": {
+      "numpy": "/workspace/scratch/337c309bc660/research-work/venv/lib/python3.12/site-packages/numpy/__init__.py",
+      "scipy": "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/site-packages/scipy/__init__.py",
+      "torch": "/workspace/scratch/337c309bc660/research-work/venv/lib/python3.12/site-packages/torch/__init__.py"
+    },
+    "torch_num_threads": 1,
+    "openblas_num_threads": "1",
+    "omp_num_threads": "1",
+    "argv": [
+      "experiments/ndu_latent_riccati/oracle/benchmark.py",
+      "--output",
+      "experiments/ndu_latent_riccati/oracle/development_results.json"
+    ],
+    "platform": "Linux-6.18.55-x86_64-with-glibc2.39"
+  },
+  "source_sha256": {
+    "solver.py": "76dd612f85011d3a0cbcb9c6d776a421e3a7fb111bead0983267f1221ea85c66",
+    "benchmark.py": "41cfbfe532a7d765d5cbfb15d9cf24eb487021e269f86eec30227c987a6d8dd7"
+  },
+  "system": {
+    "A": [
+      [
+        -0.25,
+        0.1,
+        1.1,
+        0.15
+      ],
+      [
+        -0.08,
+        -0.15,
+        0.2,
+        0.9
+      ],
+      [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ]
+    ],
+    "B": [
+      [
+        0.65,
+        0.0,
+        0.0,
+        0.0
+      ],
+      [
+        0.0,
+        0.55,
+        0.0,
+        0.0
+      ],
+      [
+        0.0,
+        0.0,
+        0.9,
+        0.0
+      ],
+      [
+        0.0,
+        0.0,
+        0.0,
+        0.85
+      ]
+    ],
+    "Q": [
+      [
+        1.16,
+        0.1,
+        -0.55,
+        0.05
+      ],
+      [
+        0.1,
+        1.19,
+        -0.11000000000000001,
+        -0.5
+      ],
+      [
+        -0.55,
+        -0.11000000000000001,
+        0.5175000000000001,
+        -0.0024999999999999988
+      ],
+      [
+        0.05,
+        -0.5,
+        -0.0024999999999999988,
+        0.49250000000000005
+      ]
+    ],
+    "R": [
+      [
+        1.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      [
+        0.0,
+        1.3,
+        0.0,
+        0.0
+      ],
+      [
+        0.0,
+        0.0,
+        0.4,
+        0.0
+      ],
+      [
+        0.0,
+        0.0,
+        0.0,
+        0.45
+      ]
+    ],
+    "H": [
+      [
+        3.0,
+        0.2,
+        -0.7,
+        0.1
+      ],
+      [
+        0.2,
+        2.5,
+        0.0,
+        -0.6
+      ],
+      [
+        -0.7,
+        0.0,
+        0.8,
+        0.1
+      ],
+      [
+        0.1,
+        -0.6,
+        0.1,
+        0.9
+      ]
+    ],
+    "Sigma": [
+      [
+        0.2,
+        0.04
+      ],
+      [
+        0.0,
+        0.15
+      ],
+      [
+        0.0,
+        0.0
+      ],
+      [
+        0.0,
+        0.0
+      ]
+    ],
+    "x0": [
+      1.2,
+      -0.7,
+      0.8,
+      -1.1
+    ],
+    "T": 2.0
+  },
+  "assumptions": {
+    "rho": 0,
+    "full_state_observed": true,
+    "unconstrained_controls": true,
+    "preference_diffusion_norm": 0.0,
+    "Q_min_eigenvalue": 0.19963974730571465,
+    "H_min_eigenvalue": 0.5011672588161491,
+    "R_min_eigenvalue": 0.4,
+    "S0_zp_norm": 0.5591211437592799
+  },
+  "continuous_value_without_noise": 2.3951034447285897,
+  "S0": [
+    [
+      1.0810687838520323,
+      -0.013335808278117811,
+      0.2986830943346957,
+      0.052725249462510095
+    ],
+    [
+      -0.013335808278117818,
+      1.4837894847672188,
+      0.07347974175652859,
+      0.4639241728751009
+    ],
+    [
+      0.2986830943346956,
+      0.07347974175652854,
+      0.7683144441356075,
+      0.09075228588659778
+    ],
+    [
+      0.052725249462510025,
+      0.463924172875101,
+      0.0907522858865978,
+      0.8971791869246017
+    ]
+  ],
+  "initial_full_costate": [
+    1.4875663074761165,
+    -1.5061884060281827,
+    0.8218079348052931,
+    -1.1757718985653425
+  ],
+  "initial_Z": [
+    0.29751326149522334,
+    -0.16642560860518274
+  ],
+  "initial_Z_pseudoinverse_costate": [
+    1.4875663074761165,
+    -1.5061884060281827,
+    0.0,
+    0.0
+  ],
+  "ablations": {
+    "full_gradient_dense": {
+      "expected_cost": 2.5007707845830267,
+      "regret": 0.0,
+      "relative_regret": 0.0
+    },
+    "z_only_pseudoinverse": {
+      "expected_cost": 5.14340596062291,
+      "regret": 2.642635176039883,
+      "relative_regret": 1.0567282664734547
+    },
+    "fixed_preference_nu_zero": {
+      "expected_cost": 5.096507673548747,
+      "regret": 2.5957368889657206,
+      "relative_regret": 1.0379747336173908
+    },
+    "removed_cross_blocks": {
+      "expected_cost": 2.7347485252396906,
+      "regret": 0.23397774065666388,
+      "relative_regret": 0.09356224972680846
+    },
+    "rank_1_projection": {
+      "expected_cost": 9.511373354638929,
+      "regret": 7.010602570055902,
+      "relative_regret": 2.803376708203521
+    },
+    "rank_2_projection": {
+      "expected_cost": 2.5874312074082306,
+      "regret": 0.08666042282520392,
+      "relative_regret": 0.03465348498129288
+    },
+    "rank_3_projection": {
+      "expected_cost": 2.5568210926888755,
+      "regret": 0.05605030810584877,
+      "relative_regret": 0.022413212938743796
+    }
+  },
+  "independent_bvp": {
+    "method": "scipy.solve_bvp on Pontryagin boundary problem; no Riccati in solve",
+    "success": true,
+    "nodes": 1334,
+    "max_rms_residual": 9.995458132324286e-11,
+    "adjoint_max_abs_error": 1.034949903555571e-12,
+    "control_max_abs_error": 1.9548807017599756e-12,
+    "boundary_max_abs_error": 1.1102230246251565e-16,
+    "cost": 2.395103444728576,
+    "value_error": 1.3766765505351941e-14
+  },
+  "condensed_qp_mesh": [
+    {
+      "steps": 16,
+      "dt": 0.125,
+      "condensed_cost": 2.5536429674063448,
+      "condensed_stationarity_max_abs": 4.440892098500626e-16,
+      "discrete_riccati_value_error": 4.440892098500626e-16,
+      "discrete_riccati_control_max_abs": 3.9968028886505635e-15,
+      "continuous_value_abs_error": 0.15853952267775506
+    },
+    {
+      "steps": 32,
+      "dt": 0.0625,
+      "condensed_cost": 2.4732041060422265,
+      "condensed_stationarity_max_abs": 3.0531133177191805e-16,
+      "discrete_riccati_value_error": 8.881784197001252e-16,
+      "discrete_riccati_control_max_abs": 4.218847493575595e-15,
+      "continuous_value_abs_error": 0.0781006613136368
+    },
+    {
+      "steps": 64,
+      "dt": 0.03125,
+      "condensed_cost": 2.433863549625628,
+      "condensed_stationarity_max_abs": 2.7755575615628914e-16,
+      "discrete_riccati_value_error": 3.1086244689504383e-15,
+      "discrete_riccati_control_max_abs": 8.43769498715119e-15,
+      "continuous_value_abs_error": 0.03876010489703807
+    },
+    {
+      "steps": 128,
+      "dt": 0.015625,
+      "condensed_cost": 2.4144112373394573,
+      "condensed_stationarity_max_abs": 2.498001805406602e-16,
+      "discrete_riccati_value_error": 4.884981308350689e-15,
+      "discrete_riccati_control_max_abs": 6.8833827526759706e-15,
+      "continuous_value_abs_error": 0.01930779261086757
+    },
+    {
+      "steps": 256,
+      "dt": 0.0078125,
+      "condensed_cost": 2.40473931538547,
+      "condensed_stationarity_max_abs": 1.249000902703301e-16,
+      "discrete_riccati_value_error": 1.2878587085651816e-14,
+      "discrete_riccati_control_max_abs": 1.2878587085651816e-14,
+      "continuous_value_abs_error": 0.009635870656880208
+    }
+  ],
+  "differentiable_rk4_mesh": [
+    {
+      "steps": 16,
+      "S0_max_abs_error": 1.6566304904430673e-05
+    },
+    {
+      "steps": 32,
+      "S0_max_abs_error": 7.738830870573921e-07
+    },
+    {
+      "steps": 64,
+      "S0_max_abs_error": 4.2290199342431833e-08
+    },
+    {
+      "steps": 128,
+      "S0_max_abs_error": 2.4795925313014777e-09
+    }
+  ],
+  "autograd_audit": {
+    "parameter_values": [
+      0.07,
+      -0.11,
+      0.09
+    ],
+    "step": 1e-05,
+    "autograd": [
+      -0.10277804225341511,
+      -0.9991076411882052,
+      0.0038221062317854793
+    ],
+    "centered_finite_difference": [
+      -0.10277804225466979,
+      -0.999107641197483,
+      0.003822106242612477
+    ],
+    "max_abs_error": 1.0826997718510478e-11,
+    "relative_l2_error": 1.4250954598301058e-11,
+    "objective": "external terminal loss plus control energy after feedback rollout"
+  },
+  "risk_neutral_noise_negative_control": [
+    {
+      "sigma_scale": 0.0,
+      "analytic_value": 2.3951034447285897,
+      "forward_moment_cost": 2.395103444726913,
+      "value_abs_error": 1.6768808563938364e-12,
+      "feedback": "same K(t) for all additive-noise scales"
+    },
+    {
+      "sigma_scale": 0.5,
+      "analytic_value": 2.42152027969162,
+      "forward_moment_cost": 2.4215202796912396,
+      "value_abs_error": 3.8058445284150366e-13,
+      "feedback": "same K(t) for all additive-noise scales"
+    },
+    {
+      "sigma_scale": 1.0,
+      "analytic_value": 2.500770784580711,
+      "forward_moment_cost": 2.5007707845830267,
+      "value_abs_error": 2.3159252293680765e-12,
+      "feedback": "same K(t) for all additive-noise scales"
+    },
+    {
+      "sigma_scale": 2.0,
+      "analytic_value": 2.8177728041370744,
+      "forward_moment_cost": 2.8177728041389583,
+      "value_abs_error": 1.8838264281839656e-12,
+      "feedback": "same K(t) for all additive-noise scales"
+    }
+  ],
+  "gates": {
+    "independent_bvp_control_and_value": true,
+    "independent_condensed_qp": true,
+    "continuous_mesh_converges": true,
+    "rk4_refinement_converges": true,
+    "solver_autograd_matches_finite_difference": true,
+    "additive_noise_value_matches_independent_moments": true,
+    "full_policy_no_worse_than_ablation_on_known_lq": true
+  },
+  "all_numerical_gates_passed": true,
+  "limitations": [
+    "A deliberately coupled known linear system establishes numerical validity, not empirical novelty.",
+    "Low-rank selectors are projections of the dense solution, not an invariant low-rank Riccati family.",
+    "Z-only receives the exact Z but loses the zero-diffusion costate; this is an information-loss diagnostic.",
+    "No nonlinear, constrained, learned-dynamics, natural-modality or large-model guarantee is claimed."
+  ]
+}
