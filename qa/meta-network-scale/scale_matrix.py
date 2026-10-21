@@ -9,6 +9,8 @@ from __future__ import annotations
 
 import argparse
 import json
+import math
+import re
 import sys
 from typing import Any
 
@@ -51,6 +53,20 @@ LIFECYCLE = (
     "production_admission",
 )
 
+# A scale result is only a qualification-shaped record.  It still has to bind
+# the observations to immutable source/host evidence so that a fixture cannot
+# be mistaken for an exact-head or target-host run.  The validator cannot
+# authenticate these values; that remains the workflow/host owner's job.
+_HEX64 = re.compile(r"^[0-9a-f]{64}$")
+_HEX40 = re.compile(r"^[0-9a-f]{40}$")
+PROVENANCE_FIELDS = (
+    "source_commit",
+    "source_tree",
+    "target_host_digest",
+    "runtime_digest",
+    "measurement_digest",
+)
+
 
 def build_plan() -> dict[str, Any]:
     return {
@@ -60,6 +76,8 @@ def build_plan() -> dict[str, Any]:
         "arms": list(ARMS),
         "required_evidence": list(REQUIRED_EVIDENCE),
         "required_metrics": list(REQUIRED_METRICS),
+        "required_provenance": list(PROVENANCE_FIELDS),
+        "required_evidence_receipts": list(REQUIRED_EVIDENCE),
         "topology_lifecycle": list(LIFECYCLE),
         "claims": [
             "expressivity",
@@ -80,6 +98,17 @@ def validate_result(result: dict[str, Any]) -> list[str]:
         errors.append("arm is not in the registered comparison arms")
     if result.get("authority") != "qualification_only":
         errors.append("authority must remain qualification_only")
+
+    provenance = result.get("provenance")
+    if not isinstance(provenance, dict):
+        errors.append("provenance must be an object")
+    else:
+        for key in PROVENANCE_FIELDS:
+            value = provenance.get(key)
+            pattern = _HEX40 if key in {"source_commit", "source_tree"} else _HEX64
+            if not isinstance(value, str) or pattern.fullmatch(value) is None:
+                errors.append(f"provenance.{key} must be a lowercase hexadecimal digest")
+
     evidence = result.get("evidence")
     if not isinstance(evidence, dict):
         errors.append("evidence must be an object")
@@ -87,6 +116,18 @@ def validate_result(result: dict[str, Any]) -> list[str]:
         for key in REQUIRED_EVIDENCE:
             if evidence.get(key) is not True:
                 errors.append(f"evidence.{key} must be true")
+
+    evidence_receipts = result.get("evidence_receipts")
+    if not isinstance(evidence_receipts, dict):
+        errors.append("evidence_receipts must be an object")
+    else:
+        for key in REQUIRED_EVIDENCE:
+            value = evidence_receipts.get(key)
+            if not isinstance(value, str) or _HEX64.fullmatch(value) is None:
+                errors.append(
+                    f"evidence_receipts.{key} must be a lowercase SHA-256 digest"
+                )
+
     metrics = result.get("metrics")
     if not isinstance(metrics, dict):
         errors.append("metrics must be an object")
@@ -94,6 +135,18 @@ def validate_result(result: dict[str, Any]) -> list[str]:
         for key in REQUIRED_METRICS:
             if key not in metrics:
                 errors.append(f"metrics.{key} is required")
+                continue
+            value = metrics[key]
+            if isinstance(value, bool) or not isinstance(value, (int, float)):
+                errors.append(f"metrics.{key} must be a finite number")
+            elif not math.isfinite(value):
+                errors.append(f"metrics.{key} must be a finite number")
+            elif key != "task_utility" and value < 0:
+                errors.append(f"metrics.{key} must be non-negative")
+
+    metrics_receipt = result.get("metrics_receipt")
+    if not isinstance(metrics_receipt, str) or _HEX64.fullmatch(metrics_receipt) is None:
+        errors.append("metrics_receipt must be a lowercase SHA-256 digest")
     lifecycle = result.get("topology_lifecycle")
     if lifecycle != list(LIFECYCLE):
         errors.append("topology_lifecycle must contain the complete ordered lifecycle")
