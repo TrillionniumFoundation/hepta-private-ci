@@ -579,7 +579,7 @@ impl LearningArtifactOwnerHost {
             }
             Err(crate::ArtifactStorageError::AlreadyExists) => {
                 let loaded = read_candidate_payload(
-                    File::open(self.root.join(&relative))?,
+                    open_owner_artifact_file(self.root.join(&relative))?,
                     staged_registry,
                     &manifest.artifact_id,
                 )?;
@@ -614,7 +614,7 @@ impl LearningArtifactOwnerHost {
                 manifest.artifact_id, manifest.bytes_digest
             ));
             let payload = read_candidate_payload(
-                File::open(self.root.join(relative))?,
+                open_owner_artifact_file(self.root.join(relative))?,
                 staged_registry,
                 &manifest.artifact_id,
             )?;
@@ -633,7 +633,7 @@ impl LearningArtifactOwnerHost {
                 return Err(ArtifactOwnerHostError::CheckpointMismatch);
             }
             let reopened =
-                read_registry_snapshot(File::open(self.registry_snapshot_path(receipt))?, receipt)?;
+                read_registry_snapshot(open_owner_artifact_file(self.registry_snapshot_path(receipt))?, receipt)?;
             if reopened.snapshot() != staged_registry.snapshot() {
                 return Err(ArtifactOwnerHostError::CheckpointMismatch);
             }
@@ -660,7 +660,7 @@ impl LearningArtifactOwnerHost {
                 verified.witness_digest
             ));
             let reopened = read_registry_head_witness(
-                File::open(self.root.join(relative))?,
+                open_owner_artifact_file(self.root.join(relative))?,
                 receipt,
                 &requirement,
             )?;
@@ -703,7 +703,7 @@ impl LearningArtifactOwnerHost {
                 Ok(receipt) => receipt,
                 Err(crate::ArtifactStorageError::AlreadyExists) => {
                     let reopened =
-                        read_registry_snapshot(File::open(self.root.join(&relative))?, expected)?;
+                        read_registry_snapshot(open_owner_artifact_file(self.root.join(&relative))?, expected)?;
                     if reopened.snapshot().head_digest != expected.head_digest {
                         return Err(ArtifactOwnerHostError::CheckpointMismatch);
                     }
@@ -754,7 +754,7 @@ impl LearningArtifactOwnerHost {
             Ok(receipt) => receipt,
             Err(crate::ArtifactStorageError::AlreadyExists) => {
                 let reopened = read_registry_head_witness(
-                    File::open(self.root.join(&relative))?,
+                    open_owner_artifact_file(self.root.join(&relative))?,
                     expected_receipt,
                     &requirement,
                 )?;
@@ -896,7 +896,7 @@ impl LearningArtifactOwnerHost {
             "{}-{}.snapshot",
             receipt.head_digest, receipt.file_digest
         ));
-        Ok(read_registry_snapshot(File::open(path)?, receipt)?)
+        Ok(read_registry_snapshot(open_owner_artifact_file(path)?, receipt)?)
     }
 
     /// Recover the artifact registry that exactly backs the authenticated
@@ -968,7 +968,7 @@ impl LearningArtifactOwnerHost {
             .ok_or(ArtifactOwnerHostError::CurrentHeadContext)?;
         let receipt = self.current_registry_receipt(&current)?;
         let registry =
-            read_registry_snapshot(File::open(self.registry_snapshot_path(receipt))?, receipt)?;
+            read_registry_snapshot(open_owner_artifact_file(self.registry_snapshot_path(receipt))?, receipt)?;
         if registry.snapshot().head_digest != current.signed.witness.head_digest {
             return Err(ArtifactOwnerHostError::CurrentHeadConflict);
         }
@@ -989,7 +989,7 @@ impl LearningArtifactOwnerHost {
         };
         let receipt = self.current_registry_receipt(&current)?;
         let registry =
-            read_registry_snapshot(File::open(self.registry_snapshot_path(receipt))?, receipt)?;
+            read_registry_snapshot(open_owner_artifact_file(self.registry_snapshot_path(receipt))?, receipt)?;
         if registry.snapshot().head_digest != current.signed.witness.head_digest {
             return Err(ArtifactOwnerHostError::CurrentHeadConflict);
         }
@@ -1554,6 +1554,40 @@ fn digest_signer_set(bytes: &mut Vec<u8>, signers: &[TrustedArtifactSignerV1]) {
 /// Verify the lock inode before acquiring writer authority. Existing lock
 /// files must be private and have exactly one link: an attacker-controlled
 /// hardlink, symbolic link or path replacement must not become the owner lock.
+/// Reopen immutable owner evidence without accepting a symlink, hardlink, or
+/// replacement between path inspection and file open. The storage root's
+/// containing directories remain under the trusted host's ownership.
+fn open_owner_artifact_file(path: impl AsRef<Path>) -> Result<File, ArtifactOwnerHostError> {
+    let path = path.as_ref();
+    let before = fs::symlink_metadata(path)?;
+    if before.file_type().is_symlink() || !before.is_file() {
+        return Err(ArtifactOwnerHostError::PathBoundary);
+    }
+    #[cfg(unix)]
+    if before.nlink() != 1 || before.mode() & 0o077 != 0 {
+        return Err(ArtifactOwnerHostError::PathBoundary);
+    }
+    let file = File::open(path)?;
+    let after = fs::symlink_metadata(path)?;
+    let opened = file.metadata()?;
+    if after.file_type().is_symlink() || !after.is_file() || !opened.is_file() {
+        return Err(ArtifactOwnerHostError::PathBoundary);
+    }
+    #[cfg(unix)]
+    if before.dev() != opened.dev()
+        || before.ino() != opened.ino()
+        || after.dev() != opened.dev()
+        || after.ino() != opened.ino()
+        || opened.nlink() != 1
+        || after.nlink() != 1
+        || opened.mode() & 0o077 != 0
+        || after.mode() & 0o077 != 0
+    {
+        return Err(ArtifactOwnerHostError::PathBoundary);
+    }
+    Ok(file)
+}
+
 fn verify_owner_writer_fence(path: &Path, opened: &File) -> Result<(), ArtifactOwnerHostError> {
     #[cfg(not(unix))]
     let _ = opened;
@@ -1619,7 +1653,7 @@ fn read_small_record(path: &Path, limit: usize) -> Result<Vec<u8>, ArtifactOwner
     if metadata.file_type().is_symlink() || !metadata.is_file() || metadata.len() > limit as u64 {
         return Err(ArtifactOwnerHostError::Capacity);
     }
-    let mut file = File::open(path)?;
+    let mut file = open_owner_artifact_file(path)?;
     match file.try_lock_shared() {
         Ok(()) => {}
         Err(TryLockError::WouldBlock) => return Err(ArtifactOwnerHostError::WriterFenceBusy),
@@ -1956,6 +1990,49 @@ mod tests {
                 b"unaltered"
             );
         }
+    }
+
+    #[cfg(unix)]
+    #[test]
+    fn owner_artifact_recovery_reader_rejects_link_and_permission_substitution() {
+        use std::os::unix::fs::OpenOptionsExt;
+        use std::os::unix::fs::PermissionsExt;
+
+        let directory = TestDir::new();
+        let trusted = directory.0.join("trusted-checkpoint");
+        let mut options = OpenOptions::new();
+        options.write(true).create_new(true).mode(0o600);
+        let mut file = options.open(&trusted).fixture("create private evidence");
+        file.write_all(b"immutable-recovery-evidence").fixture("write private evidence");
+        file.sync_all().fixture("sync private evidence");
+        drop(file);
+        open_owner_artifact_file(&trusted).fixture("private regular evidence");
+
+        let symbolic = directory.0.join("symbolic-checkpoint");
+        std::os::unix::fs::symlink(&trusted, &symbolic).fixture("symbolic alias");
+        assert!(matches!(
+            open_owner_artifact_file(&symbolic),
+            Err(ArtifactOwnerHostError::PathBoundary)
+        ));
+
+        let linked = directory.0.join("linked-checkpoint");
+        fs::hard_link(&trusted, &linked).fixture("hardlink alias");
+        assert!(matches!(
+            open_owner_artifact_file(&trusted),
+            Err(ArtifactOwnerHostError::PathBoundary)
+        ));
+        assert!(matches!(
+            open_owner_artifact_file(&linked),
+            Err(ArtifactOwnerHostError::PathBoundary)
+        ));
+
+        fs::remove_file(&linked).fixture("remove alias");
+        fs::set_permissions(&trusted, fs::Permissions::from_mode(0o644))
+            .fixture("widen evidence permissions");
+        assert!(matches!(
+            open_owner_artifact_file(&trusted),
+            Err(ArtifactOwnerHostError::PathBoundary)
+        ));
     }
 
     #[test]
