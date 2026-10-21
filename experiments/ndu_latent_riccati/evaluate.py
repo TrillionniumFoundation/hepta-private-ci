@@ -93,7 +93,7 @@ def evaluate(decoder, models, worlds, choice, config, noise_seed, timing_repeats
     warm_started = time.perf_counter()
     inference(decoder, model, warm_public, noise[:len(warm['facts']) * draws], choice, config)
     warm_seconds = time.perf_counter() - warm_started
-    parts, timings = {}, []
+    parts, timings, raw_samples = {}, [], {}
     for start in range(0, n, 128):
         current = subset(worlds, torch.arange(start, min(start + 128, n)))
         public = {'inputs': current['inputs'], 'masks': current['masks']}
@@ -104,6 +104,10 @@ def evaluate(decoder, models, worlds, choice, config, noise_seed, timing_repeats
             repeats.append(timing)
         timing = {key: float(np.median([r[key] for r in repeats])) for key in repeats[0]}
         timings.append(timing)
+        if start == 0:
+            sample_count = min(2, n) * draws
+            raw_samples = {f'sample_raw_{key}': value[:sample_count].numpy().copy()
+                           for key, value in raw.items()}
         metrics = semantic_metrics(raw, current['facts'].repeat_interleave(draws, 0))
         metrics.update({'latent': result['state'], 'p': result['p'], 'effort': result['effort'],
                         'p_norm': result['p'].square().sum(-1).sqrt()})
@@ -112,6 +116,7 @@ def evaluate(decoder, models, worlds, choice, config, noise_seed, timing_repeats
     arrays = {key: np.concatenate(chunks) for key, chunks in parts.items()}
     arrays['world_index'] = np.repeat(np.arange(n), draws)
     arrays['draw_index'] = np.tile(np.arange(draws), n)
+    arrays.update(raw_samples)
     report = summarize(arrays, draws)
     totals = {key: sum(t[key] for t in timings) for key in timings[0]}
     local = 'ndu' in choice['arm'] or 'mpc' in choice['arm']
