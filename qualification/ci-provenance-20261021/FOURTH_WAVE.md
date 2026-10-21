@@ -53,6 +53,24 @@ variants remain in the matrix. Windows smoke retains both targets and its
 existing link-only `--no-run` boundary. Real native builds and tests are still
 required; argument tests cannot substitute for them.
 
+## AuthBus global capacity fixture
+
+Independent review found that the prior allocation filled the target issuer to
+its own 512-row limit, so the expected capacity error could occur before the
+global guard. The updated fixture retains one real target row and distributes
+4095 synthetic rows over eight other issuers (seven groups of 512 and one of
+511). It asserts both the global count and that the target issuer remains below
+its limit, and retires all synthetic groups through normal quarantine. The exact
+fixture SQL was executed against SQLite before and after the change; its count
+receipt is archived. This validates allocation, not execution of the Rust owner
+integration test. The original native CI must still execute that test.
+
+The authenticated main-branch response also exposed the protected branch's
+actual required contexts: `CI required` and `Architecture required`, both bound
+to app 15368. The reduced receipt is retained. The separate protection endpoint
+returned 403; this observation does not imply permission to alter protection or
+complete visibility into organization runner configuration.
+
 ## Related qualified evidence
 
 `../dependency-closure-20261021/` contains the actual dependency resolver,
