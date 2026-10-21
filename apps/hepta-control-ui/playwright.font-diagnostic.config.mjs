@@ -8,6 +8,9 @@ const suite=process.env.HEPTA_FONT_DIAGNOSTIC_SUITE??'product';
 if(!executablePath||!['product','fixture'].includes(suite))throw new Error('Select pinned diagnostic browser and suite');
 if(await hashDiagnosticFile(executablePath)!==FIXED_BINARY_SHA)throw new Error('Diagnostic browser digest mismatch');
 const source=suite==='product'?product:fixture;
+// Preserve the original bundled comparison arm even when product acceptance
+// supplies a reviewed executable through its own launch options.
+const comparisonUse={...source.projects[0].use};delete comparisonUse.launchOptions;
 const directory='test-results/font-diagnostic-'+suite;
 export default {
  ...source,testDir:'./e2e',workers:1,fullyParallel:false,retries:0,
@@ -17,6 +20,6 @@ export default {
  projects:['baseline','fixed'].flatMap(browser=>[false,true].map(instrumented=>({
   name:browser+(instrumented?'-sdk-observed':'-untouched'),
   metadata:{diagnosticOnly:true,fontDeliveryObserver:instrumented,expectedBrowser:browser==='fixed'?'157.0.8099.0':'153.0.8010.12'},
-  use:{...source.projects[0].use,...(browser==='fixed'?{launchOptions:{executablePath:resolve(executablePath)}}:{})},
+  use:{...comparisonUse,...(browser==='fixed'?{launchOptions:{executablePath:resolve(executablePath)}}:{})},
  }))),
 };

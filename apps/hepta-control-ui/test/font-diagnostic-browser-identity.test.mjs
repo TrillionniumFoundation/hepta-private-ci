@@ -1,7 +1,7 @@
 import {test} from 'node:test';
 import assert from 'node:assert/strict';
 import {createHash} from 'node:crypto';
-import {recordDiagnosticBrowser} from '../tools/font-diagnostic-browser-identity.mjs';
+import {recordDiagnosticBrowser,recordProductBrowser,FIXED_BROWSER_VERSION} from '../tools/font-diagnostic-browser-identity.mjs';
 
 const DATA=Buffer.from('mock running executable');
 function fixture(options={}){
@@ -28,7 +28,7 @@ function fixture(options={}){
   async detach(){detached++;},
  };
  const browser={async newBrowserCDPSession(){calls.push('browser-session');return session;},version:()=>options.version??'153.0.8010.12'};
- const testInfo={project:{name:options.project??'baseline-untouched',metadata:{diagnosticOnly:options.diagnosticOnly??true,expectedBrowser:'153.0.8010.12'}},outputPath:name=>name};
+ const testInfo={project:{name:options.project??'baseline-untouched',metadata:{diagnosticOnly:options.diagnosticOnly??true,expectedBrowser:options.expectedBrowser??'153.0.8010.12',productBrowserQualification:options.productBrowserQualification}},outputPath:name=>name};
  const io={
   platform:options.platform??'linux',
   async open(path,mode){calls.push(['open',path,mode]);if(options.openError)throw new Error('mock open failed');return executable;},
@@ -36,7 +36,7 @@ function fixture(options={}){
   async writeFile(path,value){assert.equal(path,'browser-identity.json');records.push(JSON.parse(value));},
   getPlaywrightVersion:()=> '1.63.0',
  };
- return {run:()=>recordDiagnosticBrowser(browser,testInfo,io),calls,records,closed:()=>closed,detached:()=>detached};
+ return {run:()=>(options.product?recordProductBrowser:recordDiagnosticBrowser)(browser,testInfo,io),calls,records,closed:()=>closed,detached:()=>detached};
 }
 
 test('records actual browser process executable through one bounded open handle',async()=>{
@@ -91,4 +91,27 @@ test('PID replacement runtime version and fixed digest mismatches remain failure
   assert.equal(f.records[0].verified,false);assert.match(f.records[0].error,message);
   assert.equal(f.closed(),1);assert.equal(f.detached(),1);
  }
+});
+
+test('product qualification cannot fall back to an unconfigured or old browser profile',async()=>{
+ for(const options of [{},{productBrowserQualification:true},{expectedBrowser:FIXED_BROWSER_VERSION}]){
+  const f=fixture({product:true,diagnosticOnly:false,...options});
+  await assert.rejects(f.run(),/requires the reviewed fixed browser profile/);
+  assert.deepEqual(f.calls,[]);assert.deepEqual(f.records,[]);
+ }
+});
+
+test('product profile hashes the running executable and rejects an unpinned binary',async()=>{
+ const f=fixture({product:true,diagnosticOnly:false,productBrowserQualification:true,expectedBrowser:FIXED_BROWSER_VERSION,version:FIXED_BROWSER_VERSION});
+ await assert.rejects(f.run(),/digest mismatch/);
+ assert.equal(f.records.length,1);assert.equal(f.records[0].verified,false);
+ assert.equal(f.records[0].diagnosticOnly,false);assert.equal(f.records[0].productBrowserQualification,true);
+ assert.equal(f.records[0].executableSha256,createHash('sha256').update(DATA).digest('hex'));
+ assert.equal(f.closed(),1);assert.equal(f.detached(),1);
+});
+
+test('product spec retains separately labeled diagnostic baseline observations',async()=>{
+ const f=fixture({product:true});await f.run();
+ assert.equal(f.records[0].diagnosticOnly,true);assert.equal(f.records[0].verified,true);
+ assert.equal(f.records[0].productBrowserQualification,undefined);
 });
