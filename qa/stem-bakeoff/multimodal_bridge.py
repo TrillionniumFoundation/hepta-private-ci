@@ -9,6 +9,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 import hashlib
 import json
+import math
 import re
 from typing import Mapping
 
@@ -222,6 +223,76 @@ def _verify_optimizer_ownership(student: nn.Module, slotizer: MultimodalSlotizer
     return ids
 
 
+def _verify_optimizer_step_safety(optimizer: torch.optim.Optimizer) -> tuple:
+    """Fail closed on unsafe optimizer settings and nonfinite existing state.
+
+    This deliberately supports only stock SGD/AdamW in offline research: an
+    arbitrary Optimizer subclass can run uncontrolled step() code. A finite
+    backward gradient alone does not make the learning rate or momentum safe.
+    """
+    if type(optimizer) not in (torch.optim.SGD, torch.optim.AdamW):
+        raise LatentBridgeError("unsupported offline optimizer type")
+
+    def checked(name: str, value: object, *, positive: bool = False) -> None:
+        if type(value) not in (int, float):
+            raise LatentBridgeError("unsafe offline optimizer hyperparameter: " + name)
+        try:
+            finite = math.isfinite(value)
+        except (OverflowError, ValueError):
+            finite = False
+        if not finite or value < 0 or value > 1 or (positive and value == 0):
+            raise LatentBridgeError("unsafe offline optimizer hyperparameter: " + name)
+
+    for group in optimizer.param_groups:
+        checked("lr", group.get("lr"), positive=True)
+        checked("weight_decay", group.get("weight_decay", 0))
+        if (group.get("maximize", False) is not False
+                or group.get("differentiable", False) is not False):
+            raise LatentBridgeError("unsupported offline optimizer execution flags")
+        if type(optimizer) is torch.optim.SGD:
+            checked("momentum", group.get("momentum", 0))
+            checked("dampening", group.get("dampening", 0))
+            if group.get("momentum", 0) >= 1:
+                raise LatentBridgeError("unsafe offline optimizer hyperparameter: momentum")
+        else:
+            betas = group.get("betas")
+            if not isinstance(betas, tuple) or len(betas) != 2:
+                raise LatentBridgeError("unsafe offline optimizer hyperparameter: betas")
+            checked("beta1", betas[0])
+            checked("beta2", betas[1])
+            if betas[0] >= 1 or betas[1] >= 1:
+                raise LatentBridgeError("unsafe offline optimizer hyperparameter: betas")
+            checked("eps", group.get("eps"), positive=True)
+
+    owned_ids = {id(p) for group in optimizer.param_groups for p in group["params"]}
+    allowed_state = ({"momentum_buffer"} if type(optimizer) is torch.optim.SGD
+                     else {"step", "exp_avg", "exp_avg_sq", "max_exp_avg_sq"})
+    for parameter, state in optimizer.state.items():
+        if id(parameter) not in owned_ids or not isinstance(state, dict):
+            raise LatentBridgeError("unowned or malformed offline optimizer state")
+        for key, value in state.items():
+            if key not in allowed_state:
+                raise LatentBridgeError("unsupported offline optimizer state")
+            if isinstance(value, torch.Tensor):
+                if (value.layout != torch.strided
+                        or not bool(torch.isfinite(value).all())):
+                    raise LatentBridgeError("nonfinite or unsupported offline optimizer state")
+            elif type(value) in (int, float):
+                try:
+                    finite = math.isfinite(value)
+                except (OverflowError, ValueError):
+                    finite = False
+                if not finite:
+                    raise LatentBridgeError("nonfinite offline optimizer state")
+            else:
+                raise LatentBridgeError("unsupported offline optimizer state value")
+
+    # Snapshot the complete non-parameter group settings: a projector/Student
+    # hook must not silently change a finite learning rate or optimizer mode.
+    return tuple(tuple((key, repr(value)) for key, value in sorted(group.items())
+                       if key != "params") for group in optimizer.param_groups)
+
+
 def _verify_optimizer_gradients(student: nn.Module,
                                 optimizer: torch.optim.Optimizer) -> None:
     """Reject nonfinite backward gradients before *any* optimizer weight update.
@@ -265,6 +336,7 @@ def shadow_distill_step(student: nn.Module, slotizer: MultimodalSlotizer,
     # Validate optimizer owner identity before a trainable projection or Student
     # call, and recheck it after forward/backward hooks before any weight step.
     optimizer_binding = _verify_optimizer_ownership(student, slotizer, optimizer)
+    optimizer_safety_binding = _verify_optimizer_step_safety(optimizer)
     # detach() alone aliases caller-owned teacher storage. Freeze the actual
     # training target before any projector/Student hooks or backward execution.
     if (not isinstance(teacher_global, torch.Tensor)
@@ -332,6 +404,8 @@ def shadow_distill_step(student: nn.Module, slotizer: MultimodalSlotizer,
     # A finite forward/loss does not imply finite custom-autograd gradients.
     # The guard must run after all backward hooks, before optimizer.step().
     _verify_optimizer_gradients(student, optimizer)
+    if _verify_optimizer_step_safety(optimizer) != optimizer_safety_binding:
+        raise LatentBridgeError("offline optimizer configuration changed before step")
     optimizer.step()
     return {"loss": float(loss.detach()), "mse": float(mse.detach()),
             "cosine_loss": float(cosine.detach()), "generation": generation,
