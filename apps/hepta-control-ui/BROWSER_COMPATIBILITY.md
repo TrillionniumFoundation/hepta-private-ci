@@ -100,6 +100,16 @@ its entire method fragment is hash checked. No alternate reader, cloned body,
 unbounded tee, or cache bypass is installed. The HTTP/2 proxy trusts only its
 ephemeral fixture certificate's SPKI; it does not alter product TLS behavior.
 
+The fixed Makepad packager minifies every JavaScript asset in `cp_brotli`.
+Extraction therefore uses the shipped compact method signatures and the next
+WebSocket method as its closing boundary. It never stops at a nested closing
+brace, rewrites whitespace, or runs an unminified source substitute. The reviewed
+4,789-byte compact fragment has SHA-256
+`4694a1d1de93b18c2eb14efdbccc8e13fe6fc2eeea106676c7dee236689bb9d1`.
+The post-build regression reads the actual package and rejects absent, duplicate,
+reordered, or changed method bodies, including removed aborts and altered limits
+or deadlines. Both UI lanes still run all 96 transport controls after extraction.
+
 The transport sink emulates WASM exports and **does not qualify Rust rendering
 or actual gateway integration**. Those remain separate, mandatory original UI
 jobs. The optional font diagnostic still explicitly runs bundled Chromium 153
