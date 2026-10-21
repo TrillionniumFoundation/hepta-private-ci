@@ -75,3 +75,51 @@ fn shared_pool_reports_group_and_drop_metrics() {
     assert_eq!(pool.metrics().activations_committed, 1);
     assert_eq!(pool.metrics().dropped_requests, 1);
 }
+
+#[test]
+fn cache_rejects_same_generation_equivocation_and_older_rewrites() {
+    let encoder = digest("frozen-encoder");
+    let input = digest("same-input");
+    let snapshot = |number, values| {
+        ImmutableFeatureSnapshotV1::new_for_input(
+            generation(number),
+            encoder,
+            input,
+            values,
+        )
+        .expect("valid immutable feature snapshot")
+    };
+    let scope = id("scope:a");
+    let key = FeatureCacheKeyV1 {
+        scope_id: scope.clone(),
+        encoder_digest: encoder,
+        input_digest: input,
+    };
+    let mut cache = FeatureCacheV1::default();
+    let original = snapshot(2, vec![1, 2, 3]);
+    cache.insert(scope.clone(), original.clone()).expect("first insert");
+    cache.insert(scope.clone(), original).expect("idempotent retry");
+
+    assert_eq!(
+        cache.insert(scope.clone(), snapshot(2, vec![3, 2, 1])),
+        Err(CellWorkerError::FeatureSnapshotConflict),
+        "same identity cannot produce two different feature vectors",
+    );
+    assert_eq!(
+        cache.get(&key, generation(2)).expect("original remains").features(),
+        &[1, 2, 3],
+    );
+
+    cache.insert(scope.clone(), snapshot(3, vec![4, 5, 6]))
+        .expect("forward generation replacement");
+    assert_eq!(
+        cache.insert(scope, snapshot(2, vec![1, 2, 3])),
+        Err(CellWorkerError::StaleFeatureGeneration),
+        "a retired generation must not replace the current snapshot",
+    );
+    assert!(cache.get(&key, generation(2)).is_none());
+    assert_eq!(
+        cache.get(&key, generation(3)).expect("new generation remains").features(),
+        &[4, 5, 6],
+    );
+}
