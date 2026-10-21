@@ -64,7 +64,10 @@ The unit tests exercise two typed Cells over real deterministic retrieval/engram
 
 - The entire submitted Cell set is checked against one frozen Encoder,
   immutable snapshot, source/forget frontiers, and manifest/tick generation
-  before **any** Cell tick. Even a low-priority or non-admitted Cell with invalid
+  before **any** Cell tick.
+  Candidate resource costs must also fit each Cell's own declared tick
+  budget; a low-ranked/deferred Cell with impossible local accounting
+  rejects before any other Cell tick (synthetic regression coverage). Even a low-priority or non-admitted Cell with invalid
   input/cue/objective is a hard rejection rather than a hidden omission.
 - Claimed external support, typed contradiction groups, relevance, the maximum
   active-Cell count and a cumulative **reserved** compute budget are used
