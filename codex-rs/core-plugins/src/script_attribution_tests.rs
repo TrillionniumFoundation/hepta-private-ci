@@ -688,3 +688,41 @@ fn rejects_ambiguous_commands_overlaps_and_symlink_escapes() {
         }
     }
 }
+
+#[test]
+fn duplicate_dimension_keys_disable_metrics_without_disabling_attribution() {
+    let (temp, root, _) = script_fixture();
+    assert_invalid_metrics_manifest(
+        temp.path(),
+        &root,
+        r#"version: 1
+operations:
+  scan:
+    path: scripts/run.py
+    measurements:
+      count:
+        dimensions:
+          status: [ok]
+          "status": [failed]
+"#,
+    );
+}
+
+#[test]
+fn duplicate_flow_mapping_keys_disable_metrics_without_disabling_attribution() {
+    let (temp, root, _) = script_fixture();
+    let invalid_manifests = [
+        r#"version: 1
+operations: {scan: {path: scripts/run.py, measurements: {count: {}}}, scan: {path: scripts/run.py, measurements: {count: {}}}}
+"#,
+        r#"version: 1
+operations: {scan: {path: scripts/run.py, measurements: {count: {}, count: {}}}}
+"#,
+        r#"version: 1
+operations: {scan: {path: scripts/run.py, measurements: {count: {dimensions: {status: [ok], status: [failed]}}}}}
+"#,
+    ];
+    for manifest in invalid_manifests {
+        assert_invalid_metrics_manifest(temp.path(), &root, manifest);
+    }
+}

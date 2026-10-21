@@ -74,7 +74,10 @@ pub(crate) fn load_plugin_metrics_operations(
     if contents.len() as u64 > MAX_ANALYTICS_MANIFEST_BYTES {
         return None;
     }
-    let manifest: AnalyticsManifest = serde_yaml::from_slice(&contents).ok()?;
+    // Parse a Value first so duplicate mapping keys are rejected before typed
+    // deserialization can collapse them and bypass the map-level checks.
+    let value: serde_yaml::Value = serde_yaml::from_slice(&contents).ok()?;
+    let manifest: AnalyticsManifest = serde_yaml::from_value(value).ok()?;
     validate_manifest(manifest, plugin_root)
 }
 
