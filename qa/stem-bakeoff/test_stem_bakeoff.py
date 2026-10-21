@@ -78,6 +78,30 @@ class StemBakeoffTests(unittest.TestCase):
             stem_bakeoff.validate_result(result),
         )
 
+    def test_untrusted_json_shapes_are_rejected_without_throwing(self):
+        for payload in (None, 0, True, "json", [], [1]):
+            with self.subTest(payload=repr(payload)):
+                self.assertTrue(stem_bakeoff.validate_result(payload))
+                self.assertTrue(stem_bakeoff.validate_manifest(payload))
+        with MANIFEST_PATH.open(encoding="utf-8") as manifest_file:
+            manifest = json.load(manifest_file)
+        self.assertEqual(stem_bakeoff.validate_manifest(manifest), [])
+        for components in (None, False, 12, "gate", {"gate": True}, [True]):
+            with self.subTest(components=repr(components)):
+                candidate = {
+                    "schema": stem_bakeoff.RESULT_SCHEMA,
+                    "authority": "qualification_only",
+                    "runtime_posture": stem_bakeoff.POSTURE,
+                    "candidate": "hepta_latent_150m",
+                    "artifact": {"digest": "sha256:test"},
+                    "metrics": {key: 0 for key in stem_bakeoff.REQUIRED_METRICS},
+                    "gates": {key: True for key in stem_bakeoff.REQUIRED_GATES},
+                    "cell_components": components,
+                }
+                self.assertIn("cell_components must be a string array",
+                              stem_bakeoff.validate_result(candidate))
+
+
 
 if __name__ == "__main__":
     unittest.main()
