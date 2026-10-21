@@ -3,18 +3,66 @@
 import assert from 'node:assert/strict';
 import {createHash} from 'node:crypto';
 
-export async function holdOwnerResponse(page, ownerUrl, observeRequest, name) {
-  const session = await page.context().newCDPSession(page);
+// This bounds test-control calls, not the Rust owner's five-second deadline.
+const CONTROL_TIMEOUT_MS = 5000;
+const DEADLINE_CODE = 'HEPTA_OWNER_RESPONSE_CONTROL_TIMEOUT';
+
+export async function holdOwnerResponse(page, ownerUrl, observeRequest, name, {onRecord = () => {}} = {}) {
+  const record = {name, mode: 'pause the original owner response only', continued: false, stages: []};
+  // Retain the same bounded record even if setup fails before a handle exists.
+  onRecord(record);
+  async function step(phase, operation) {
+    const stage = {phase, state: 'pending'};
+    record.stages.push(stage);
+    let timer;
+    try {
+      const value = await Promise.race([
+        Promise.resolve().then(operation),
+        new Promise((_, reject) => {
+          timer = setTimeout(() => {
+            const error = new Error(`Owner response control deadline: ${phase}`);
+            error.code = DEADLINE_CODE;
+            reject(error);
+          }, CONTROL_TIMEOUT_MS);
+        }),
+      ]);
+      stage.state = 'completed';
+      return value;
+    } catch (error) {
+      stage.state = error.code === DEADLINE_CODE ? 'deadline' : 'failed';
+      stage.error = String(error).slice(0, 500);
+      throw error;
+    } finally {
+      clearTimeout(timer);
+    }
+  }
+  let session, failure;
+  function fail(error) {
+    failure ??= error;
+    record.error = String(failure).slice(0, 500);
+  }
+  const acquiring = Promise.resolve().then(() => page.context().newCDPSession(page));
+  try {
+    session = await step('CDP.attach', () => acquiring);
+  } catch (error) {
+    fail(error);
+    // A late session was never enabled for interception, but still detach it.
+    acquiring.then(late => step('CDP.detach-late', () => late.detach())).catch(() => {});
+    throw error;
+  }
   let release, entered, rejectReady, completed;
   const gate = new Promise(resolve => { release = resolve; });
-  const ready = new Promise((resolve, reject) => { entered = resolve; rejectReady = reject; });
+  const readySignal = new Promise((resolve, reject) => { entered = resolve; rejectReady = reject; });
   const done = new Promise(resolve => { completed = resolve; });
-  const record = {name, mode: 'pause the original owner response only', continued: false};
-  let paused = false, finishPromise;
+  let paused = false, closed = false, finishPromise;
+  const ready = step('owner-response.ready', () => readySignal);
+  // Install handlers before setup/click can fail; the original promise still
+  // rejects for the caller, and finish must not turn a deadline into success.
+  ready.catch(error => { fail(error); if (!paused) completed(); });
   const request = page.waitForRequest(value => value.url() === ownerUrl, {timeout: 5000});
-  // Attach a rejection handler immediately; ready remains the caller's failure.
   request.catch(error => { rejectReady(error); if (!paused) completed(); });
-  session.on('Fetch.requestPaused', async event => {
+  const onPaused = async event => {
+    if (closed) return;
     try {
       assert.equal(paused, false, 'More than one held owner response');
       paused = true;
@@ -24,7 +72,7 @@ export async function holdOwnerResponse(page, ownerUrl, observeRequest, name) {
       const length = event.responseHeaders.find(header => header.name.toLowerCase() === 'content-length');
       assert.match(length?.value ?? '', /^[0-9]+$/);
       assert.ok(Number(length.value) > 0 && Number(length.value) <= 4096);
-      const response = await session.send('Fetch.getResponseBody', {requestId: event.requestId});
+      const response = await step('Fetch.getResponseBody', () => session.send('Fetch.getResponseBody', {requestId: event.requestId}));
       const body = Buffer.from(response.body, response.base64Encoded ? 'base64' : 'utf8');
       assert.equal(body.length, Number(length.value));
       assert.deepEqual(JSON.parse(body.toString('utf8')), {
@@ -39,34 +87,46 @@ export async function holdOwnerResponse(page, ownerUrl, observeRequest, name) {
       await gate;
       try {
         // No status, header or body replacement: release the original response.
-        await session.send('Fetch.continueResponse', {requestId: event.requestId});
+        await step('Fetch.continueResponse', () => session.send('Fetch.continueResponse', {requestId: event.requestId}));
         record.continued = true;
       } catch (error) {
         // The real Rust timeout/navigation may already have cancelled this id.
         // The caller must still prove the exact cancellation and rendered state.
         record.lateContinueError = String(error).slice(0, 500);
+        if (error.code === DEADLINE_CODE) throw error;
       }
     } catch (error) {
-      record.error = String(error).slice(0, 500);
+      fail(error);
       rejectReady(error);
     } finally {
       completed();
     }
-  });
-  await session.send('Fetch.enable', {
-    patterns: [{urlPattern: ownerUrl, requestStage: 'Response'}],
-  });
-  return {
-    ready,
-    get requestId() { return record.requestId; },
-    finish() {
-      if (!finishPromise) finishPromise = (async () => {
-        release();
-        await done;
-        try { await session.send('Fetch.disable'); } finally { await session.detach(); }
-        return record;
-      })();
-      return finishPromise;
-    },
   };
+  session.on('Fetch.requestPaused', onPaused);
+  function finish() {
+    if (!finishPromise) finishPromise = (async () => {
+      release();
+      try { await step('owner-response.settle', () => done); } catch (error) { fail(error); }
+      closed = true;
+      session.off('Fetch.requestPaused', onPaused);
+      // Always try detach even when a CDP send or the handler fails to settle.
+      try { await step('Fetch.disable', () => session.send('Fetch.disable')); } catch (error) { fail(error); }
+      try { await step('CDP.detach', () => session.detach()); } catch (error) { fail(error); }
+      if (failure) throw failure;
+      return record;
+    })();
+    return finishPromise;
+  }
+  try {
+    await step('Fetch.enable', () => session.send('Fetch.enable', {
+      patterns: [{urlPattern: ownerUrl, requestStage: 'Response'}],
+    }));
+  } catch (error) {
+    fail(error);
+    rejectReady(error);
+    if (!paused) completed();
+    await finish().catch(() => {});
+    throw error;
+  }
+  return {ready, get requestId() { return record.requestId; }, finish};
 }

@@ -143,7 +143,7 @@ jobs:
           python3 -m unittest discover -s apps/hepta-control-ui/test -p test_font_diagnostic_browser.py -v
           node --test apps/hepta-control-ui/test/font-delivery-diagnostic.test.mjs
           node --test apps/hepta-control-ui/test/font-diagnostic-browser-identity.test.mjs
-          node --test apps/hepta-control-ui/test/product-status-pixels.test.mjs apps/hepta-control-ui/test/product-console-audit.test.mjs
+          node --test apps/hepta-control-ui/test/product-status-pixels.test.mjs apps/hepta-control-ui/test/product-console-audit.test.mjs apps/hepta-control-ui/test/hold-owner-response.test.mjs
           node --test apps/hepta-control-ui/test/static-makepad-bridge.test.mjs apps/hepta-control-ui/test/makepad-dsl.test.mjs apps/hepta-control-ui/test/visual-theme-contract.test.mjs apps/hepta-control-ui/test/robrix-font-readiness.test.mjs
       - id: default_build
         name: Build canonical strict-CSP no-threads artifact
