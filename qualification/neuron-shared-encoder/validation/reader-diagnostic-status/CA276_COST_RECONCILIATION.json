@@ -1,0 +1,420 @@
+{
+  "schema": "hepta.reader.ca276-artifact-cost-reconciliation.v1",
+  "created_at": "2026-10-21T10:47:52.159260+00:00",
+  "new_model_calls": 0,
+  "source_kind": "reanalysis of exact existing exposed 16-case diagnostic artifact",
+  "git_head": "ca2768978429a2c9a98641fa2d58a8f587b88874",
+  "run_id": 39524743076,
+  "job_id": 118976636455,
+  "artifact_id": 12312374935,
+  "artifact_sha256": "beb82b997808c7e2d158fa51d711fb04259069480c891f16a67f8627bce5210d",
+  "original_evaluator_sha256": "6a7a2d13295a0148c26a323e4b744c8f6892c779a1eca530bf2a6f10cc5b116e",
+  "audit_code_sha256": "3a184817ed9bee87b43ee0c121db741a517a6e93436fd13ad2a3d7c6e2484c0d",
+  "source_receipt_sha256": "f7f7941f42939092b2e07be9214e70ea65fc9f514bb3e1877b245a9216681657",
+  "input_file_sha256": {
+    "github-artifacts.json": "51991c3263de3b9d2af86d42758843ae946aa744adcf45fd0fae6e3920fcbf6e",
+    "github-jobs.json": "acd1ff8f47af5aac253c3b3f81b979843c9e65ad6a7b8c38e9786977742632a3",
+    "github-run.json": "5371cd1364f3cd8f791be16607863c9e4cc603e0a12d69a59c9bceddcd1ef89c",
+    "hepta-reader-report.json": "ddbea147e8b99727b9454aa9629eeec5d27ed92d405a8179317f06b9b1329ca8",
+    "hepta-reader-summary.json": "04c6d6ef1d7c65bbeb620ebe1386cfef55a59e19d275c17bc421e80bd2ae3a55",
+    "hepta-runtime-receipt.json": "74f61ce81c7a1595b1ac5d33c63ee3de2bea4a314e0f6f83601a2a1efdb3c90e"
+  },
+  "source_blob_count": 6,
+  "reported_checkpoint_fingerprint": "94fe55dd163eedcb9b0c3e167e4afe87ab13cc8daf39b299f880ada2860e5d5a",
+  "historical_publisher_inventory_join_verified": false,
+  "fingerprint_caveat": "Original snapshot_download retains local metadata; original fingerprint includes all regular files. No historical file inventory was retained, so a new exact publisher bundle cannot be claimed to reconstruct this historical fingerprint.",
+  "by_arm": {
+    "none": {
+      "calls": 16,
+      "gold_correct": 7,
+      "evidence_condition_correct": 2,
+      "unsupported_assertions": 14,
+      "sdk_reported_input_tokens": 2683,
+      "measured_predict_wall_seconds": 14.440867399999998,
+      "p50_predict_wall_ms": 911.97155,
+      "p95_predict_wall_ms": 978.66858
+    },
+    "distractor": {
+      "calls": 16,
+      "gold_correct": 5,
+      "evidence_condition_correct": 6,
+      "unsupported_assertions": 10,
+      "sdk_reported_input_tokens": 3063,
+      "measured_predict_wall_seconds": 16.304698979999998,
+      "p50_predict_wall_ms": 1008.99103,
+      "p95_predict_wall_ms": 1179.35682
+    },
+    "withheld": {
+      "calls": 16,
+      "gold_correct": 9,
+      "evidence_condition_correct": 2,
+      "unsupported_assertions": 14,
+      "sdk_reported_input_tokens": 3163,
+      "measured_predict_wall_seconds": 16.7146417,
+      "p50_predict_wall_ms": 1028.72923,
+      "p95_predict_wall_ms": 1184.51605
+    },
+    "full": {
+      "calls": 16,
+      "gold_correct": 16,
+      "evidence_condition_correct": 16,
+      "unsupported_assertions": 0,
+      "sdk_reported_input_tokens": 3513,
+      "measured_predict_wall_seconds": 18.591825489999998,
+      "p50_predict_wall_ms": 1138.199795,
+      "p95_predict_wall_ms": 1385.13967
+    }
+  },
+  "full_minus_control_paired": {
+    "none": {
+      "same_case_pairs": 16,
+      "mean_gold_correct_delta": 0.5625,
+      "mean_predict_wall_ms_delta": 259.434880625,
+      "mean_sdk_reported_input_tokens_delta": 51.875,
+      "pairs": [
+        {
+          "case_id": "ndu_ownership",
+          "gold_correct_delta": 1,
+          "predict_wall_ms_delta": 346.20824000000016,
+          "sdk_reported_input_tokens_delta": 64
+        },
+        {
+          "case_id": "objective_owner",
+          "gold_correct_delta": 0,
+          "predict_wall_ms_delta": 250.42273999999986,
+          "sdk_reported_input_tokens_delta": 56
+        },
+        {
+          "case_id": "z_covariance",
+          "gold_correct_delta": 0,
+          "predict_wall_ms_delta": 263.6824700000001,
+          "sdk_reported_input_tokens_delta": 49
+        },
+        {
+          "case_id": "z_dt_condition",
+          "gold_correct_delta": 0,
+          "predict_wall_ms_delta": 267.68320000000006,
+          "sdk_reported_input_tokens_delta": 65
+        },
+        {
+          "case_id": "outcome_owner",
+          "gold_correct_delta": 1,
+          "predict_wall_ms_delta": 239.2468899999999,
+          "sdk_reported_input_tokens_delta": 59
+        },
+        {
+          "case_id": "future_leakage",
+          "gold_correct_delta": 1,
+          "predict_wall_ms_delta": 227.21701000000007,
+          "sdk_reported_input_tokens_delta": 50
+        },
+        {
+          "case_id": "stochastic_qualification",
+          "gold_correct_delta": 1,
+          "predict_wall_ms_delta": 437.76705000000004,
+          "sdk_reported_input_tokens_delta": 73
+        },
+        {
+          "case_id": "neuron_backend",
+          "gold_correct_delta": 0,
+          "predict_wall_ms_delta": 249.91149000000007,
+          "sdk_reported_input_tokens_delta": 44
+        },
+        {
+          "case_id": "neuron_weights",
+          "gold_correct_delta": 1,
+          "predict_wall_ms_delta": 361.5008499999999,
+          "sdk_reported_input_tokens_delta": 57
+        },
+        {
+          "case_id": "neuron_sharing",
+          "gold_correct_delta": 1,
+          "predict_wall_ms_delta": 235.49196999999992,
+          "sdk_reported_input_tokens_delta": 47
+        },
+        {
+          "case_id": "circuit_decision",
+          "gold_correct_delta": 0,
+          "predict_wall_ms_delta": 218.17462000000012,
+          "sdk_reported_input_tokens_delta": 48
+        },
+        {
+          "case_id": "circuit_join",
+          "gold_correct_delta": 0,
+          "predict_wall_ms_delta": 318.6517100000001,
+          "sdk_reported_input_tokens_delta": 50
+        },
+        {
+          "case_id": "circuit_effect",
+          "gold_correct_delta": 1,
+          "predict_wall_ms_delta": 182.99799999999993,
+          "sdk_reported_input_tokens_delta": 46
+        },
+        {
+          "case_id": "inference_reuse",
+          "gold_correct_delta": 1,
+          "predict_wall_ms_delta": 206.07326,
+          "sdk_reported_input_tokens_delta": 31
+        },
+        {
+          "case_id": "ndu_zero_noise",
+          "gold_correct_delta": 0,
+          "predict_wall_ms_delta": 145.2697199999999,
+          "sdk_reported_input_tokens_delta": 41
+        },
+        {
+          "case_id": "ndu_hard_constraints",
+          "gold_correct_delta": 1,
+          "predict_wall_ms_delta": 200.65886999999998,
+          "sdk_reported_input_tokens_delta": 50
+        }
+      ]
+    },
+    "distractor": {
+      "same_case_pairs": 16,
+      "mean_gold_correct_delta": 0.6875,
+      "mean_predict_wall_ms_delta": 142.945406875,
+      "mean_sdk_reported_input_tokens_delta": 28.125,
+      "pairs": [
+        {
+          "case_id": "ndu_ownership",
+          "gold_correct_delta": 1,
+          "predict_wall_ms_delta": 288.18892000000017,
+          "sdk_reported_input_tokens_delta": 47
+        },
+        {
+          "case_id": "objective_owner",
+          "gold_correct_delta": 1,
+          "predict_wall_ms_delta": 207.16404999999986,
+          "sdk_reported_input_tokens_delta": 39
+        },
+        {
+          "case_id": "z_covariance",
+          "gold_correct_delta": 1,
+          "predict_wall_ms_delta": 244.50949000000003,
+          "sdk_reported_input_tokens_delta": 32
+        },
+        {
+          "case_id": "z_dt_condition",
+          "gold_correct_delta": 1,
+          "predict_wall_ms_delta": 219.54398000000003,
+          "sdk_reported_input_tokens_delta": 48
+        },
+        {
+          "case_id": "outcome_owner",
+          "gold_correct_delta": 1,
+          "predict_wall_ms_delta": 161.33064999999988,
+          "sdk_reported_input_tokens_delta": 42
+        },
+        {
+          "case_id": "future_leakage",
+          "gold_correct_delta": 1,
+          "predict_wall_ms_delta": 126.2612200000001,
+          "sdk_reported_input_tokens_delta": 33
+        },
+        {
+          "case_id": "stochastic_qualification",
+          "gold_correct_delta": 1,
+          "predict_wall_ms_delta": 378.91444,
+          "sdk_reported_input_tokens_delta": 56
+        },
+        {
+          "case_id": "neuron_backend",
+          "gold_correct_delta": 0,
+          "predict_wall_ms_delta": 112.02757000000008,
+          "sdk_reported_input_tokens_delta": 15
+        },
+        {
+          "case_id": "neuron_weights",
+          "gold_correct_delta": 1,
+          "predict_wall_ms_delta": 129.57716000000005,
+          "sdk_reported_input_tokens_delta": 28
+        },
+        {
+          "case_id": "neuron_sharing",
+          "gold_correct_delta": 1,
+          "predict_wall_ms_delta": 146.15465999999992,
+          "sdk_reported_input_tokens_delta": 18
+        },
+        {
+          "case_id": "circuit_decision",
+          "gold_correct_delta": 0,
+          "predict_wall_ms_delta": 106.16645000000005,
+          "sdk_reported_input_tokens_delta": 19
+        },
+        {
+          "case_id": "circuit_join",
+          "gold_correct_delta": 1,
+          "predict_wall_ms_delta": 95.39503000000013,
+          "sdk_reported_input_tokens_delta": 21
+        },
+        {
+          "case_id": "circuit_effect",
+          "gold_correct_delta": 0,
+          "predict_wall_ms_delta": -79.27971000000002,
+          "sdk_reported_input_tokens_delta": 17
+        },
+        {
+          "case_id": "inference_reuse",
+          "gold_correct_delta": 0,
+          "predict_wall_ms_delta": 90.14492999999993,
+          "sdk_reported_input_tokens_delta": 2
+        },
+        {
+          "case_id": "ndu_zero_noise",
+          "gold_correct_delta": 0,
+          "predict_wall_ms_delta": -24.966159999999945,
+          "sdk_reported_input_tokens_delta": 12
+        },
+        {
+          "case_id": "ndu_hard_constraints",
+          "gold_correct_delta": 1,
+          "predict_wall_ms_delta": 85.99382999999989,
+          "sdk_reported_input_tokens_delta": 21
+        }
+      ]
+    },
+    "withheld": {
+      "same_case_pairs": 16,
+      "mean_gold_correct_delta": 0.4375,
+      "mean_predict_wall_ms_delta": 117.323986875,
+      "mean_sdk_reported_input_tokens_delta": 21.875,
+      "pairs": [
+        {
+          "case_id": "ndu_ownership",
+          "gold_correct_delta": 1,
+          "predict_wall_ms_delta": 192.1330200000001,
+          "sdk_reported_input_tokens_delta": 27
+        },
+        {
+          "case_id": "objective_owner",
+          "gold_correct_delta": 1,
+          "predict_wall_ms_delta": 116.96796999999992,
+          "sdk_reported_input_tokens_delta": 19
+        },
+        {
+          "case_id": "z_covariance",
+          "gold_correct_delta": 0,
+          "predict_wall_ms_delta": 149.50648999999999,
+          "sdk_reported_input_tokens_delta": 12
+        },
+        {
+          "case_id": "z_dt_condition",
+          "gold_correct_delta": 1,
+          "predict_wall_ms_delta": 12.451410000000124,
+          "sdk_reported_input_tokens_delta": 28
+        },
+        {
+          "case_id": "outcome_owner",
+          "gold_correct_delta": 1,
+          "predict_wall_ms_delta": 41.8841799999999,
+          "sdk_reported_input_tokens_delta": 22
+        },
+        {
+          "case_id": "future_leakage",
+          "gold_correct_delta": 0,
+          "predict_wall_ms_delta": 47.16946000000007,
+          "sdk_reported_input_tokens_delta": 13
+        },
+        {
+          "case_id": "stochastic_qualification",
+          "gold_correct_delta": 1,
+          "predict_wall_ms_delta": 295.98487,
+          "sdk_reported_input_tokens_delta": 36
+        },
+        {
+          "case_id": "neuron_backend",
+          "gold_correct_delta": 0,
+          "predict_wall_ms_delta": 17.245319999999992,
+          "sdk_reported_input_tokens_delta": 11
+        },
+        {
+          "case_id": "neuron_weights",
+          "gold_correct_delta": 0,
+          "predict_wall_ms_delta": 216.8369,
+          "sdk_reported_input_tokens_delta": 24
+        },
+        {
+          "case_id": "neuron_sharing",
+          "gold_correct_delta": 1,
+          "predict_wall_ms_delta": 120.91291999999999,
+          "sdk_reported_input_tokens_delta": 14
+        },
+        {
+          "case_id": "circuit_decision",
+          "gold_correct_delta": 0,
+          "predict_wall_ms_delta": 114.11993000000007,
+          "sdk_reported_input_tokens_delta": 24
+        },
+        {
+          "case_id": "circuit_join",
+          "gold_correct_delta": 0,
+          "predict_wall_ms_delta": 213.71546000000012,
+          "sdk_reported_input_tokens_delta": 26
+        },
+        {
+          "case_id": "circuit_effect",
+          "gold_correct_delta": 1,
+          "predict_wall_ms_delta": 84.9624,
+          "sdk_reported_input_tokens_delta": 22
+        },
+        {
+          "case_id": "inference_reuse",
+          "gold_correct_delta": 0,
+          "predict_wall_ms_delta": 144.17338999999993,
+          "sdk_reported_input_tokens_delta": 17
+        },
+        {
+          "case_id": "ndu_zero_noise",
+          "gold_correct_delta": 0,
+          "predict_wall_ms_delta": 79.23183999999992,
+          "sdk_reported_input_tokens_delta": 21
+        },
+        {
+          "case_id": "ndu_hard_constraints",
+          "gold_correct_delta": 0,
+          "predict_wall_ms_delta": 29.88823000000002,
+          "sdk_reported_input_tokens_delta": 34
+        }
+      ]
+    }
+  },
+  "recorded_total_wall_seconds": 66.0581,
+  "sum_predict_wall_seconds": 66.05203356999999,
+  "outside_predict_wall_seconds_from_report": 0.006066430000004175,
+  "sdk_reported_input_tokens": 12422,
+  "runtime_receipt": {
+    "laya_version": "0.3.20",
+    "match_count": 1,
+    "patch_id": "torch-cutedsl-cse-two-args-v1",
+    "patch_path": "_inductor/codegen/cutedsl/cutedsl_kernel.py",
+    "patched_sha256": "7c8094f25f41c42df4438a394c56de8e380974690454d4518624234933de304f",
+    "production_selection_authority": false,
+    "python_version": "3.12.3",
+    "runtime_kind": "real_reader_cpu",
+    "schema": "hepta.sngr.runtime-compatibility-receipt.v1",
+    "source_sha256": "bf60bb964eb96f78131f5344a48eff99adf6be03369226234530bb8b8a0b297b",
+    "torch_version": "2.11.0+cpu",
+    "transformers_version": "4.57.6"
+  },
+  "missing_observations": [
+    "historical publisher-to-local per-file inventory",
+    "raw full SDK responses and probability vectors",
+    "actual tokenizer and model-forward input token IDs",
+    "independently observed actual model-forward count",
+    "per-call process CPU seconds and sampled RSS",
+    "head/option/state token-preservation evidence",
+    "physical FLOPs and energy",
+    "checkpoint pretraining and full lifecycle cost",
+    "independent heldout source and semantic adjudication"
+  ],
+  "physical_flops": null,
+  "joules": null,
+  "independent_holdout": false,
+  "complete_component_resource_receipt": false,
+  "all_ci_gates_passed_claim": false,
+  "mode": "SHADOW_ONLY",
+  "authority": "DENY_ALL",
+  "release": "NO_GO",
+  "production_selection_authority": false
+}

@@ -1,0 +1,94 @@
+{
+  "schema": "hepta.reader.diagnostic-output-status.review.v1",
+  "created_at": "2026-10-21T11:10:40.606095+00:00",
+  "original_owner_commit": "ca2768978429a2c9a98641fa2d58a8f587b88874",
+  "original_evaluator_sha256": "6a7a2d13295a0148c26a323e4b744c8f6892c779a1eca530bf2a6f10cc5b116e",
+  "real_report_sha256": "ddbea147e8b99727b9454aa9629eeec5d27ed92d405a8179317f06b9b1329ca8",
+  "candidate_evaluator_sha256": "75390da3374b27f1f4e4354dadb0e45c5e1180082c0b0c677ed5360f85890921",
+  "candidate_patch_sha256": "a75bb389eaf3e733fe83fa6a081b45019b51434e46a769ec899d854f93101a53",
+  "test_sha256": "23f71af03e7eab4078794e0bc8fb7c8a77f7d9bd58e1751c1276c8dca936fe00",
+  "tests": {
+    "passed": 2,
+    "failed": 0,
+    "log_sha256": "da18738ce279983062fd33a3e838c74c2ab95fc65988f5d3734dbf1b8dc1696f",
+    "real_report_negative_control_calls": 64,
+    "real_report_contract_violations": 38,
+    "synthetic_compliant_control_rows": 4,
+    "positive_control_is_model_evidence": false
+  },
+  "lint": {
+    "existing_unchanged_issues": [
+      {
+        "code": "I001",
+        "message": "Import block is un-sorted or un-formatted",
+        "source_line": "from __future__ import annotations"
+      },
+      {
+        "code": "E501",
+        "message": "Line too long (91 > 88)",
+        "source_line": "                \"Answer the factual question only from the provided cited source excerpt. \""
+      },
+      {
+        "code": "E501",
+        "message": "Line too long (90 > 88)",
+        "source_line": "                \"unreported or saturated input-token budget: possible evidence truncation\""
+      },
+      {
+        "code": "E501",
+        "message": "Line too long (94 > 88)",
+        "source_line": "            \"dependence_warning\": \"repeated_presentations_same_task_not_independent_episodes\","
+      },
+      {
+        "code": "E501",
+        "message": "Line too long (97 > 88)",
+        "source_line": "        \"claim_boundary\": \"repository_evidence_choice_diagnostics_only_not_fbsde_reasoning_gain\","
+      },
+      {
+        "code": "E501",
+        "message": "Line too long (93 > 88)",
+        "source_line": "        \"comparison_type\": \"paired_cases_equal_forward_call_count_not_equal_tokens_or_flops\","
+      },
+      {
+        "code": "E501",
+        "message": "Line too long (97 > 88)",
+        "source_line": "                    \"reason\": \"No local Laya checkpoint provided; real-model evaluation not run\","
+      }
+    ],
+    "new_issues": [],
+    "new_test_checks": [
+      {
+        "argv": [
+          "/tmp/hepta-research-ruff-01513/bin/ruff",
+          "check",
+          "--select",
+          "E,F,I",
+          "scripts/test_reader_diagnostic_status.py"
+        ],
+        "exit_code": 0,
+        "stdout": "All checks passed!\n",
+        "stderr": ""
+      },
+      {
+        "argv": [
+          "/tmp/hepta-research-ruff-01513/bin/ruff",
+          "format",
+          "--check",
+          "scripts/test_reader_diagnostic_status.py"
+        ],
+        "exit_code": 0,
+        "stdout": "1 file already formatted\n",
+        "stderr": ""
+      }
+    ]
+  },
+  "new_model_calls": 0,
+  "original_evaluator_modified": false,
+  "original_report_modified": false,
+  "original_model_pins_modified": false,
+  "provenance_adapter_changed": false,
+  "execution_exit_semantics_changed": false,
+  "diagnostic_rule": "existing evidence rule: full/injection predicted gold; none/distractor/withheld predicted UNKNOWN",
+  "all_predictions_unchanged": true,
+  "qualification_status": "not_qualified",
+  "production_selection_authority": false
+}

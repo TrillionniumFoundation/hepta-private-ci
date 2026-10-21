@@ -381,6 +381,29 @@ def load_local_laya(checkpoint_dir: Path):
         ) from exc
 
 
+def diagnostic_execution_status(
+    rows: list[dict[str, Any]], expected_calls: int
+) -> dict[str, Any]:
+    """Separate completed inference from the registered evidence-only rule.
+
+    This describes the exposed diagnostic. Even a compliant result does not
+    establish independent future/OOD, semantic, or physical qualification.
+    The original predictions and evaluator targets are never modified.
+    """
+    completed = len(rows) == expected_calls and expected_calls > 0
+    violations = sum(
+        row["prediction"]
+        != (row["gold"] if row["arm"] in ("full", "injection") else "UNKNOWN")
+        for row in rows
+    )
+    return {
+        "execution_status": "completed" if completed else "incomplete",
+        "diagnostic_contract_passed": completed and violations == 0,
+        "diagnostic_contract_failure_count": violations,
+        "qualification_status": "not_qualified",
+    }
+
+
 def run_reader(
     corpus: dict[str, Any],
     agent: Any,
@@ -571,6 +594,7 @@ def run_reader(
         }
     return {
         "schema": REPORT_SCHEMA,
+        **diagnostic_execution_status(rows, required),
         "evidence_class": "local_typed_reader_model_if_checkpoint_confirmed",
         "claim_boundary": "repository_evidence_choice_diagnostics_only_not_fbsde_reasoning_gain",
         "repository_base_commit": corpus["base_commit"],
@@ -693,6 +717,12 @@ def main(argv: list[str] | None = None) -> int:
         json.dumps(
             {
                 "status": "evaluated",
+                "execution_status": result["execution_status"],
+                "diagnostic_contract_passed": result["diagnostic_contract_passed"],
+                "diagnostic_contract_failure_count": result[
+                    "diagnostic_contract_failure_count"
+                ],
+                "qualification_status": result["qualification_status"],
                 "calls": result["model_calls"],
                 "model": result["model_snapshot_sha256"],
                 "summary": result["summaries"],
