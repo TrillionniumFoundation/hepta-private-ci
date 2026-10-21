@@ -86,6 +86,20 @@ fn preflight_memory_meta_batch_v1(
             HnmfContractError::Conflict("memory meta shared snapshot"),
         ));
     }
+    // With an all-deferred sparse plan there is no per-Cell tick to validate
+    // these shared inputs. A mismatched generation vector must fail closed
+    // even when no Cell performs retrieval or returns a candidate.
+    if engram_snapshot.generation_vector_digest != cue.snapshot_key.vector_digest {
+        return Err(MemoryMetaBatchErrorV1::Contract(
+            HnmfContractError::Conflict("memory meta shared generation vector"),
+        ));
+    }
+    cue.validate().map_err(|_| {
+        MemoryMetaBatchErrorV1::Contract(HnmfContractError::Invalid("memory meta shared cue"))
+    })?;
+    engram_snapshot.validate().map_err(|_| {
+        MemoryMetaBatchErrorV1::Contract(HnmfContractError::Invalid("memory meta shared engram"))
+    })?;
     let mut identities = BTreeSet::new();
     for cell in cells {
         if !identities.insert(cell.manifest.cell_id.clone()) {

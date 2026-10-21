@@ -897,6 +897,33 @@ fn pre_tick_shadow_rejects_invalid_non_admitted_cue_and_stale_forget_frontier() 
 }
 
 #[test]
+fn pre_tick_shadow_rejects_shared_generation_drift_even_if_every_cell_is_deferred() {
+    let mut fixture = shadow_fixture(true);
+    let policy = meta_policy(&fixture);
+    let mut deferred = meta_spec(&fixture);
+    deferred.support_digest = None;
+    deferred.generated_input.batches.clear();
+
+    // This structurally stale snapshot used to pass the metadata-only plan:
+    // no admitted Cell meant no runtime tick checked its generation vector.
+    fixture.snapshot.generation_vector_digest = Digest32::of_bytes(b"stale-snapshot-vector");
+    let rejected = crate::plan_memory_meta_pre_ticks_shadow_v1(
+        &policy,
+        &fixture.cue,
+        &fixture.snapshot,
+        &[deferred],
+    );
+    assert!(matches!(
+        rejected,
+        Err(crate::MemoryMetaBatchErrorV1::Contract(
+            codex_hepta_cognitive_types::hnmf::HnmfContractError::Conflict(
+                "memory meta shared generation vector"
+            )
+        ))
+    ));
+}
+
+#[test]
 fn checked_pre_tick_rejects_late_ledger_denial_before_any_tick() {
     let fixture = shadow_fixture(true);
     let first = meta_spec(&fixture);
