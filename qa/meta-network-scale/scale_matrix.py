@@ -76,8 +76,6 @@ PROVENANCE_FIELDS = (
     "measurement_digest",
 )
 
-
-
 # P5 is an evidence-shape validator, never an authority or release issuer.
 # Reject unknown members at every schema level so "qualified" extras cannot
 # be laundered into the evidence record by a later permissive consumer.
@@ -168,7 +166,9 @@ def validate_result(result: dict[str, Any]) -> list[str]:
     if not isinstance(provenance, dict):
         errors.append("provenance must be an object")
     else:
-        errors.extend(_reject_unregistered_keys(provenance, PROVENANCE_FIELDS, "provenance"))
+        errors.extend(
+            _reject_unregistered_keys(provenance, PROVENANCE_FIELDS, "provenance")
+        )
         for key in PROVENANCE_FIELDS:
             value = provenance.get(key)
             pattern = _HEX40 if key in {"source_commit", "source_tree"} else _HEX64
@@ -181,7 +181,9 @@ def validate_result(result: dict[str, Any]) -> list[str]:
     if not isinstance(evidence, dict):
         errors.append("evidence must be an object")
     else:
-        errors.extend(_reject_unregistered_keys(evidence, REQUIRED_EVIDENCE, "evidence"))
+        errors.extend(
+            _reject_unregistered_keys(evidence, REQUIRED_EVIDENCE, "evidence")
+        )
         for key in REQUIRED_EVIDENCE:
             if evidence.get(key) is not True:
                 errors.append(f"evidence.{key} must be true")
@@ -191,7 +193,9 @@ def validate_result(result: dict[str, Any]) -> list[str]:
         errors.append("evidence_receipts must be an object")
     else:
         errors.extend(
-            _reject_unregistered_keys(evidence_receipts, REQUIRED_EVIDENCE, "evidence_receipts")
+            _reject_unregistered_keys(
+                evidence_receipts, REQUIRED_EVIDENCE, "evidence_receipts"
+            )
         )
         for key in REQUIRED_EVIDENCE:
             value = evidence_receipts.get(key)
