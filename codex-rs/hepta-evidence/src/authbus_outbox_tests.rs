@@ -407,19 +407,40 @@ async fn bounded_capacity_prunes_only_terminal_history_and_keeps_replay_consumed
         .await
         .unwrap();
     let id = enqueue(&store, 1).await.delivery_id;
-    // Fill GLOBAL capacity with fixture rows spread across eight issuers.
-    // Production separately caps each issuer at 512 active messages; assigning
-    // all 4095 rows to one issuer would mask the global capacity boundary.
-    // These SQL fixture rows are not authenticated admissions.
-    sqlx::query("WITH RECURSIVE n(x) AS (SELECT 1 UNION ALL SELECT x+1 FROM n WHERE x < 4095)
-        INSERT INTO authbus_outbox SELECT randomblob(32),
-        'fixture:issuer:' || ((x - 1) / 512), key_epoch, 'fixture:' || x,
-        subject_id, scope_digest, payload_digest, sequence, expires_at_ms, signature, payload,
-        state, fence, attempts, worker_id, lease_until_ms, available_at_ms, created_at_ms,
-        updated_at_ms, terminal_at_ms, acknowledgement FROM authbus_outbox, n WHERE delivery_id = ?")
-        .bind(id.as_array().as_slice()).execute(&store.pool).await.unwrap();
+    // Fill the real global capacity without breaching the independent
+    // per-issuer limit. The first issuer retains 511 synthetic rows plus the
+    // original; seven other synthetic issuers each retain 512. Admission
+    // signatures are tested elsewhere: these are capacity-only fixture rows.
+    sqlx::query(
+        "WITH RECURSIVE n(x) AS
+            (SELECT 1 UNION ALL SELECT x + 1 FROM n WHERE x < ?)
+         INSERT INTO authbus_outbox SELECT randomblob(32),
+            CASE WHEN x < ? THEN issuer_id
+                 ELSE 'issuer:fixture:' || ((x - ?) / ?) END,
+            key_epoch, 'fixture:' || x,
+            subject_id, scope_digest, payload_digest, sequence, expires_at_ms, signature, payload,
+            state, fence, attempts, worker_id, lease_until_ms, available_at_ms, created_at_ms,
+            updated_at_ms, terminal_at_ms, acknowledgement
+         FROM authbus_outbox, n WHERE delivery_id = ?",
+    )
+    .bind(AUTHBUS_OUTBOX_MAX_ROWS - 1)
+    .bind(AUTHBUS_OUTBOX_MAX_ACTIVE_PER_ISSUER)
+    .bind(AUTHBUS_OUTBOX_MAX_ACTIVE_PER_ISSUER)
+    .bind(AUTHBUS_OUTBOX_MAX_ACTIVE_PER_ISSUER)
+    .bind(id.as_array().as_slice())
+    .execute(&store.pool)
+    .await
+    .unwrap();
+    let saturated: i64 = sqlx::query_scalar(
+        "SELECT COUNT(*) FROM authbus_outbox WHERE state IN ('queued', 'leased')",
+    )
+    .fetch_one(&store.pool)
+    .await
+    .unwrap();
+    assert_eq!(saturated, AUTHBUS_OUTBOX_MAX_ROWS);
     let maximum_fixture_issuer_active: i64 = sqlx::query_scalar(
-        "SELECT MAX(n) FROM (SELECT COUNT(*) AS n FROM authbus_outbox GROUP BY issuer_id)",
+        "SELECT MAX(n) FROM (SELECT COUNT(*) AS n FROM authbus_outbox
+         WHERE state IN ('queued', 'leased') GROUP BY issuer_id)",
     )
     .fetch_one(&store.pool)
     .await
@@ -479,10 +500,10 @@ async fn bounded_capacity_prunes_only_terminal_history_and_keeps_replay_consumed
     store.quarantine_authbus_issuer(&revoked).await.unwrap();
     // Exercise the normal host-confirmed revocation path for all synthetic
     // issuers; never delete active rows to make room for a fixture.
-    for group in 0..8 {
+    for group in 0..((AUTHBUS_OUTBOX_MAX_ROWS - 1) / AUTHBUS_OUTBOX_MAX_ACTIVE_PER_ISSUER) {
         let (issuer_template, _) = fixture(1, u64::MAX);
         let synthetic_revoked = IssuerRegistration {
-            issuer_id: StableId::new(format!("fixture:issuer:{group}")).unwrap(),
+            issuer_id: StableId::new(format!("issuer:fixture:{group}")).unwrap(),
             revoked: true,
             ..issuer_template
         };

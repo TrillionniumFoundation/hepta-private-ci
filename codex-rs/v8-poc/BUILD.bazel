@@ -2,8 +2,9 @@ load("//:defs.bzl", "codex_rust_crate")
 
 codex_rust_crate(
     name = "v8-poc",
-    # MODULE.bazel enables the matching Rust V8 feature on every target,
-    # including the sandboxed MSVC prebuilts. Keep the runtime assertion active.
+    # The linked Windows MSVC rusty_v8 artifact is sandbox-enabled, just as
+    # MODULE.bazel's v8 crate annotation is. Keep the wrapper feature aligned
+    # with that real native library on every supported target.
     crate_features = ["sandbox"],
     crate_name = "codex_v8_poc",
     deps_extra = ["@crates//:v8"],
