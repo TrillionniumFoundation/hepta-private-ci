@@ -6,6 +6,8 @@ on:
       - ".bazelversion"
       - "MODULE.bazel"
       - "MODULE.bazel.lock"
+      - "codex-rs/Cargo.lock"
+      - "codex-rs/**/Cargo.toml"
       - ".github/workflows/hepta-bazel-stable-lock-proposal.yml"
 
 permissions:
