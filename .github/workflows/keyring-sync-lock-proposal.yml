@@ -8,7 +8,7 @@ on:
       - ".github/workflows/keyring-sync-lock-proposal.yml"
 
 permissions:
-  contents: read
+  contents: write
 
 jobs:
   cargo-lock:
@@ -19,7 +19,7 @@ jobs:
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
           ref: ${{ github.event.pull_request.head.sha || github.sha }}
-          persist-credentials: false
+          persist-credentials: true
           fetch-depth: 0
       - uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582
         with:
@@ -30,8 +30,12 @@ jobs:
           set -euo pipefail
           cargo generate-lockfile --manifest-path codex-rs/Cargo.toml
           git diff --check
-          git diff --binary -- codex-rs/Cargo.lock > "${RUNNER_TEMP}/Cargo.lock.patch"
-          test -s "${RUNNER_TEMP}/Cargo.lock.patch"
+          if ! git diff --quiet -- codex-rs/Cargo.lock; then
+            git add codex-rs/Cargo.lock
+            git -c user.name="github-actions[bot]" -c user.email="41898282+github-actions[bot]@users.noreply.github.com" commit -m "chore: sync Cargo.lock for keyring-core providers"
+            git push origin "HEAD:${{ github.event.pull_request.head.ref || github.ref_name }}"
+          fi
+          git diff --binary -- codex-rs/Cargo.lock > "${RUNNER_TEMP}/Cargo.lock.patch" || true
           cp codex-rs/Cargo.lock "${RUNNER_TEMP}/Cargo.lock"
           grep -q '^name = "keyring-core"$' codex-rs/Cargo.lock
           if grep -q '^name = "zbus"$' codex-rs/Cargo.lock; then
