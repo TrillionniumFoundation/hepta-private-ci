@@ -402,6 +402,14 @@ async fn reqwest_default_route_preserves_transport_redirects() {
                     Err(error) => panic!("redirect server should accept: {error}"),
                 }
             };
+            // An accepted socket may inherit the nonblocking listener mode on
+            // macOS. Read the request with a bounded blocking timeout instead.
+            stream
+                .set_nonblocking(false)
+                .expect("redirect stream should enter blocking mode");
+            stream
+                .set_read_timeout(Some(Duration::from_secs(2)))
+                .expect("redirect stream should set its read timeout");
             let mut buffer = [0_u8; 1024];
             let size = stream
                 .read(&mut buffer)
