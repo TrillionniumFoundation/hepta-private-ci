@@ -1338,7 +1338,10 @@ fn curated_zip_rejects_duplicate_entry_without_overwriting_first_file() {
     if duplicate_rejected {
         extracted.expect("single-entry archive must extract");
     } else {
-        assert!(extracted.is_err(), "extraction must reject duplicate ZIP names");
+        assert!(
+            extracted.is_err(),
+            "extraction must reject duplicate ZIP names"
+        );
     }
     assert_eq!(
         std::fs::read(dir.path().join("manifest.json")).unwrap(),
