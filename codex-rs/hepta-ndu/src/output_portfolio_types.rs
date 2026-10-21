@@ -1,4 +1,8 @@
-use codex_hepta_types::{Digest32, FixedQ32, Generation, ProbabilityQ32, StableId};
+use codex_hepta_types::Digest32;
+use codex_hepta_types::FixedQ32;
+use codex_hepta_types::Generation;
+use codex_hepta_types::ProbabilityQ32;
+use codex_hepta_types::StableId;
 
 /// Output family used to decide whether a candidate may be blended or must be
 /// selected as a whole. Tool actions are represented for accounting only;
