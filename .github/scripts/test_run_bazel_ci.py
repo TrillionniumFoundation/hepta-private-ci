@@ -37,6 +37,9 @@ command = next(arg for arg in sys.argv[1:] if not arg.startswith('-'))
 if command == 'info':
     print(os.environ['BAZEL_PROBE_TESTLOGS'])
 elif command == 'query':
+    if os.environ.get('BAZEL_PROBE_QUERY_FAIL') == '1':
+        print('recorded query failure', file=sys.stderr)
+        sys.exit(37)
     if os.environ.get('BAZEL_PROBE_QUERY_FILE'):
         sys.stdout.buffer.write(Path(os.environ['BAZEL_PROBE_QUERY_FILE']).read_bytes())
     elif os.environ.get('BAZEL_PROBE_QUERY_CRLF') == '1':
@@ -149,6 +152,67 @@ class RunBazelCiIntegrationTest(unittest.TestCase):
             args.index("--repo_contents_cache=job scoped cache"),
         )
         self.assertEqual(args[args.index("--") + 1 :], ["//fake:target"])
+
+    def test_clippy_target_list_preserves_native_and_cross_lint_coverage(self) -> None:
+        native = "//codex-rs/core:core-all-test-bin"
+        cross = "//codex-rs/core:core-all-test-windows-cross-bin"
+        unit = "//codex-rs/core:core-unit-tests-bin"
+        other = "//codex-rs/fake:other-manual-helper"
+        query_file = self.root / "manual-targets.txt"
+        query_file.write_text("\n".join([native, cross, unit, other]) + "\n")
+        script = SCRIPTS.parents[1] / "scripts/list-bazel-clippy-targets.sh"
+        for runner_os, cross_compile in (
+            ("Linux", False),
+            ("macOS", False),
+            ("Windows", False),
+            ("Windows", True),
+        ):
+            with self.subTest(runner_os=runner_os, cross_compile=cross_compile):
+                env = {
+                    **self.env,
+                    "RUNNER_OS": runner_os,
+                    "BAZEL_PROBE_QUERY_FILE": str(query_file),
+                }
+                args = [self.bash, str(script)]
+                if cross_compile:
+                    args.append("--windows-cross-compile")
+                result = subprocess.run(
+                    args,
+                    env=env,
+                    check=False,
+                    capture_output=True,
+                    text=True,
+                    timeout=60,
+                )
+                self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+                self.assertEqual(
+                    result.stdout.splitlines(),
+                    [
+                        "//codex-rs/...",
+                        "-//codex-rs/v8-poc:all",
+                        cross if cross_compile else native,
+                        unit,
+                        other,
+                    ],
+                )
+
+    def test_clippy_target_discovery_failure_cannot_report_partial_coverage(
+        self,
+    ) -> None:
+        result = subprocess.run(
+            [
+                self.bash,
+                str(SCRIPTS.parents[1] / "scripts/list-bazel-clippy-targets.sh"),
+            ],
+            env={**self.env, "BAZEL_PROBE_QUERY_FAIL": "1"},
+            check=False,
+            capture_output=True,
+            text=True,
+            timeout=60,
+        )
+        self.assertEqual(result.returncode, 37, result.stdout + result.stderr)
+        self.assertEqual(result.stdout, "")
+        self.assertIn("recorded query failure", result.stderr)
 
     def test_large_windows_build_preserves_all_targets_without_a_large_native_command(
         self,
