@@ -32,6 +32,8 @@ mod intelligence_product;
 mod intuition_policy;
 mod lane_b_runtime;
 mod neuron_runtime;
+#[cfg(unix)]
+mod notes_channel;
 mod objective_runtime;
 mod plasticity_anchor_journal;
 mod plasticity_host;
@@ -162,6 +164,8 @@ pub use evidence_frontier::evidence_recovery_frontier_signing_bytes;
 pub use evidence_host::kernel_evidence_claims;
 #[cfg(target_os = "linux")]
 pub use hos2_device::AgentdHos2Device;
+#[cfg(unix)]
+pub use notes_channel::AgentdNotesChannel;
 pub use intelligence_ingress::AgentdIntelligenceInvocationProviderV1;
 pub use intelligence_ingress::AgentdIntelligenceInvocationV1;
 pub use intelligence_product::AgentdEvaluationBindingV1;
