@@ -590,6 +590,17 @@ impl<D: ProcessDriver> Supervisor<D> {
                 )
                 .map_err(|error| SupervisorError::ProductionAuthority(error.to_string()))?;
             supervisor.preflight_upgrade(agent_id, &target)?;
+            // The operator's abort is terminal for exactly this signed grant.
+            // Never let the same digest re-enter the effect boundary even if
+            // a pre-crash control revision was not durably advanced.
+            if slot.signed_intent.as_ref().is_some_and(|intent| {
+                intent.status == SignedIntentStatus::Aborted
+                    && intent.grant_sha256 == grant.digest().clone()
+            }) {
+                return Err(SupervisorError::ProductionAuthority(
+                    "aborted signed grant must not be replayed".to_string(),
+                ));
+            }
             if slot.signed_intent.as_ref().is_some_and(|intent| {
                 !matches!(
                     intent.status,
