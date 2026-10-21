@@ -47,6 +47,10 @@ use crate::cognitive_model::SourceRevisionId;
 use crate::cognitive_path::canonical_path_without_redirection;
 use crate::framing::frame_part;
 
+#[path = "cognitive_store_sync.rs"]
+mod sync;
+use sync::sync_cognitive_directory;
+
 #[path = "cognitive_store_recovery.rs"]
 mod recovery;
 pub use recovery::CognitiveRecoveryAnchor;
@@ -319,6 +323,8 @@ impl CognitiveStore {
         let path = resolve_active_database_path(&root)?;
         let sqlite_home = AbsolutePathBuf::try_from(root.to_path_buf())
             .map_err(|error| CognitiveStoreError::Invalid(error.to_string()))?;
+        #[cfg(windows)]
+        windows::prepare_database_file(&path)?;
         let pool = SqliteConfig::from_sqlite_home(sqlite_home)
             .open_durable_evidence_pool(&path)
             .await
@@ -495,6 +501,8 @@ pub(crate) async fn open_v2_test_pool(
     let path = root.join(COGNITIVE_DB_FILENAME);
     let sqlite_home = AbsolutePathBuf::try_from(root.to_path_buf())
         .map_err(|error| CognitiveStoreError::Invalid(error.to_string()))?;
+    #[cfg(windows)]
+    windows::prepare_database_file(&path)?;
     let pool = SqliteConfig::from_sqlite_home(sqlite_home)
         .open_durable_evidence_pool(&path)
         .await
@@ -1604,23 +1612,40 @@ pub(crate) fn publish_active_database(
             .mode(0o600)
             .custom_flags(libc::O_CLOEXEC | libc::O_NOFOLLOW)
             .open(&temporary)
-            .map_err(unavailable)?
+            .map_err(|error| {
+                unavailable(format!(
+                    "open cognitive active pointer temporary file: {error}"
+                ))
+            })?
     };
     #[cfg(not(unix))]
     let mut file = OpenOptions::new()
         .write(true)
         .create_new(true)
         .open(&temporary)
-        .map_err(unavailable)?;
+        .map_err(|error| {
+            unavailable(format!(
+                "open cognitive active pointer temporary file: {error}"
+            ))
+        })?;
 
     let result = (|| {
-        file.write_all(file_name.as_bytes()).map_err(unavailable)?;
-        file.write_all(b"\n").map_err(unavailable)?;
-        file.sync_all().map_err(unavailable)?;
-        fs::rename(&temporary, &pointer).map_err(unavailable)?;
-        File::open(root)
-            .and_then(|directory| directory.sync_all())
-            .map_err(unavailable)?;
+        file.write_all(file_name.as_bytes()).map_err(|error| {
+            unavailable(format!("write cognitive active pointer payload: {error}"))
+        })?;
+        file.write_all(b"\n").map_err(|error| {
+            unavailable(format!(
+                "write cognitive active pointer terminator: {error}"
+            ))
+        })?;
+        file.sync_all().map_err(|error| {
+            unavailable(format!(
+                "sync cognitive active pointer temporary file: {error}"
+            ))
+        })?;
+        fs::rename(&temporary, &pointer)
+            .map_err(|error| unavailable(format!("rename cognitive active pointer: {error}")))?;
+        sync_cognitive_directory(root)?;
         Ok(())
     })();
     if result.is_err() {
@@ -1629,7 +1654,14 @@ pub(crate) fn publish_active_database(
     result
 }
 
+#[cfg(windows)]
+#[path = "cognitive_store_windows.rs"]
+mod windows;
+
 fn create_private_directory(path: &Path) -> Result<PathBuf, CognitiveStoreError> {
+    #[cfg(windows)]
+    windows::create_private_directory(path)?;
+    #[cfg(not(windows))]
     fs::create_dir_all(path).map_err(unavailable)?;
     let canonical = canonical_path_without_redirection(path)
         .map_err(unavailable)?
@@ -1650,6 +1682,8 @@ fn create_private_directory(path: &Path) -> Result<PathBuf, CognitiveStoreError>
 }
 
 fn protect_database_file(_path: &Path) -> Result<(), CognitiveStoreError> {
+    #[cfg(windows)]
+    windows::verify_database_file(_path)?;
     #[cfg(unix)]
     {
         use std::os::unix::fs::PermissionsExt;
