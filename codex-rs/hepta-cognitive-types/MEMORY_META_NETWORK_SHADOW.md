@@ -93,3 +93,25 @@ Encoder feature digest is provided, not a running signed Encoder model.
 No measured GPU FLOP reduction, corpus-backed citation, exact deletion proof,
 future-time transfer superiority, replay/evaluation approval, or durable
 generation promotion is claimed. Full exact-head CI remains mandatory.
+
+## External evidence-owner admission seam (shadow only)
+
+`run_memory_meta_preselected_evidence_checked_shadow_v1` is an additive,
+opt-in wrapper around the deterministic pre-tick plan. Before the first
+admitted Cell tick, it passes every admitted Cell's exact
+`cell_id / support_digest / evidence_ledger_digest / snapshot_digest /
+source_frontier_digest / forget_frontier_digest` to a caller-supplied
+`FnMut(&MemoryMetaEvidenceLookupV1) -> bool` verifier. The wrapper fails the
+**entire** batch on any rejection; it never falls back to the unverified
+path. No deferred Cell runs or receives a fabricated evidence certificate.
+Three focused tests cover late-Cell denial before an invalid retrieval,
+tuple binding on acceptance, and empty-support abstention.
+
+**Trust boundary:** that callback must be implemented by an independently
+authenticated external ledger owner using a stable, pinned snapshot and
+exact tombstone/forget membership checking. A callback returning `true`
+is *not* a cryptographic signature, ledger inclusion proof, audit report or
+consistency guarantee. The ordinary unverified shadow control remains
+available for paired comparison and must never be promoted because of
+this seam. No persistent writer, FinalUse permission or production route
+has been added.
