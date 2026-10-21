@@ -1124,16 +1124,13 @@ fn extract_zipball_to_dir(bytes: &[u8], destination: &Path) -> Result<(), String
                     output_path.display()
                 )
             })?;
-        let copied = std::io::copy(
-            &mut (&mut entry).take(declared_size + 1),
-            &mut output,
-        )
-        .map_err(|err| {
-            format!(
-                "failed to write curated plugins file {}: {err}",
-                output_path.display()
-            )
-        })?;
+        let copied = std::io::copy(&mut (&mut entry).take(declared_size + 1), &mut output)
+            .map_err(|err| {
+                format!(
+                    "failed to write curated plugins file {}: {err}",
+                    output_path.display()
+                )
+            })?;
         if copied != declared_size {
             return Err("curated plugins zip entry expanded length mismatch".to_string());
         }
