@@ -8,22 +8,18 @@ license.workspace = true
 workspace = true
 
 [dependencies]
-keyring = { workspace = true, features = ["crypto-rust"] }
+keyring-core = { workspace = true }
 tracing = { workspace = true }
 
-[target.'cfg(target_os = "linux")'.dependencies]
-# The implementation uses synchronous Entry APIs; keep Linux on the matching D-Bus backend.
-# Keep the generated lock and cargo-deny evidence reviewable in this candidate.
-keyring = { workspace = true, features = ["linux-native-sync-persistent", "vendored"] }
+[target.'cfg(any(target_os = "linux", target_os = "freebsd", target_os = "openbsd"))'.dependencies]
+# Keep the synchronous API on the native D-Bus Secret Service provider.
+dbus-secret-service-keyring-store = { workspace = true, features = ["crypto-rust", "vendored"] }
 
 [target.'cfg(target_os = "macos")'.dependencies]
-keyring = { workspace = true, features = ["apple-native"] }
+apple-native-keyring-store = { workspace = true, features = ["keychain"] }
 
 [target.'cfg(target_os = "windows")'.dependencies]
-keyring = { workspace = true, features = ["windows-native"] }
-
-[target.'cfg(any(target_os = "freebsd", target_os = "openbsd"))'.dependencies]
-keyring = { workspace = true, features = ["sync-secret-service"] }
+windows-native-keyring-store = { workspace = true, default-features = false }
 
 [lib]
 test = false
