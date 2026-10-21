@@ -112,7 +112,8 @@ def mean_pool(tokens: Any, mask: Any, *, truncate_dim: int | None = None):
 def run_forward(*, candidate: str, snapshot: str | Path, media_root: str | Path,
                 records: list, revision: str, expected_inventory_sha256: str,
                 operator_accepted_terms: bool, device: str = "cpu",
-                truncate_dim: int | None = None) -> dict:
+                truncate_dim: int | None = None,
+                feature_output_dir: str | Path | None = None) -> dict:
     """Actually load a locally pinned checkpoint and execute ONE model/encoder call."""
     verified = verify_snapshot(
         snapshot, candidate=candidate, revision=revision,
@@ -180,6 +181,21 @@ def run_forward(*, candidate: str, snapshot: str | Path, media_root: str | Path,
     if candidate == "embeddinggemma2_740m" and pooled.shape[-1] != (truncate_dim or 768):
         raise TeacherForwardError("EmbeddingGemma 2 expected 768-wide projection")
     binary = pooled.detach().contiguous().cpu().numpy().tobytes()
+    feature_sha256 = hashlib.sha256(binary).hexdigest()
+    export_receipt = None
+    if feature_output_dir is not None:
+        # Explicitly optional: embeddings remain local, encrypted-at-rest
+        # policy is the operator's responsibility; never add to Git.
+        from feature_shard import write_shard
+
+        export_receipt = write_shard(
+            feature_output_dir, pooled, candidate=candidate,
+            revision=verified["revision"],
+            checkpoint_inventory_sha256=verified["inventory_sha256"],
+            ordered_source_manifest_sha256=source_digest,
+        )
+        if export_receipt["raw_feature_sha256"] != feature_sha256:
+            raise TeacherForwardError("offline feature shard digest mismatch")
     return {
         "schema": "hepta.teacher-local-forward.v1",
         "candidate": candidate,
@@ -188,7 +204,8 @@ def run_forward(*, candidate: str, snapshot: str | Path, media_root: str | Path,
         "ordered_source_manifest_sha256": source_digest,
         "batch_size": len(records),
         "feature_width": int(pooled.shape[-1]),
-        "feature_sha256": hashlib.sha256(binary).hexdigest(),
+        "feature_sha256": feature_sha256,
+        "feature_export": export_receipt,
         "owner_model_forward_hook_calls": module_calls[0],
         "physical_backend_kernel_count_attested": False,
         "elapsed_ms_one_unqualified_sample": round(elapsed_ms, 3),
@@ -212,6 +229,8 @@ def main() -> int:
     parser.add_argument("--operator-accepted-terms", action="store_true")
     parser.add_argument("--device", choices=("cpu", "cuda"), default="cpu")
     parser.add_argument("--truncate-dim", type=int)
+    parser.add_argument("--feature-output-dir",
+                        help="new owner-private feature shard directory outside Git checkout")
     args = parser.parse_args()
     try:
         records = json.loads(Path(args.records_json).read_text(encoding="utf-8"))
@@ -221,6 +240,7 @@ def main() -> int:
             expected_inventory_sha256=args.expected_inventory_sha256,
             operator_accepted_terms=args.operator_accepted_terms,
             device=args.device, truncate_dim=args.truncate_dim,
+            feature_output_dir=args.feature_output_dir,
         )
     except (TeacherSnapshotError, TeacherForwardError, OSError, ValueError,
             ImportError, RuntimeError) as error:
