@@ -128,6 +128,57 @@ fn receipt_requires_exact_payload_and_generation() {
 }
 
 #[test]
+fn known_terminal_receipt_cannot_omit_observed_outcome_digest() {
+    let value = intent();
+    for status in [ExecutionStatusV1::Completed, ExecutionStatusV1::Failed] {
+        let receipt = ExecutionReceiptV1 {
+            operation_id: value.cell.operation_id.clone(),
+            intent_digest: value.cell.intent_digest(),
+            generation: value.cell.generation,
+            final_payload_digest: value.cell.final_payload.clone(),
+            outcome_digest: None,
+            status,
+            recovery: RecoveryDispositionV1::None,
+            authority: AuthorityPosture::DENY_ALL,
+        };
+        assert_eq!(
+            receipt.validate_against(&value.cell),
+            Err(ExecutionContractError::MissingTerminalOutcome)
+        );
+    }
+}
+
+#[test]
+fn unobserved_native_failure_cannot_be_terminalized() {
+    let value = intent();
+    let outcome = ToolOutcomeV1 {
+        terminal_observed: false,
+        exit_code: None,
+        stdout_digest: None,
+        stderr_digest: None,
+        retryable: false,
+    };
+    let receipt = RuntimeReceiptV1 {
+        execution: ExecutionReceiptV1 {
+            operation_id: value.cell.operation_id.clone(),
+            intent_digest: value.cell.intent_digest(),
+            generation: value.cell.generation,
+            final_payload_digest: value.cell.final_payload.clone(),
+            outcome_digest: Some(outcome.outcome_digest()),
+            status: ExecutionStatusV1::Failed,
+            recovery: RecoveryDispositionV1::ReconcileSameOperation,
+            authority: AuthorityPosture::DENY_ALL,
+        },
+        runtime_intent_digest: value.intent_digest(),
+        tool_outcome: outcome,
+    };
+    assert_eq!(
+        receipt.validate_against(&value),
+        Err(ExecutionContractError::StatusOutcomeMismatch)
+    );
+}
+
+#[test]
 fn runtime_receipt_rechecks_tool_outcome_digest() {
     let value = intent();
     let outcome = ToolOutcomeV1 {
