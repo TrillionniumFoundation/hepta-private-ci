@@ -82,6 +82,7 @@ pub enum SharedFeatureErrorV2 {
     InvalidIdentity,
     InvalidFeature,
     Expired,
+    Fenced,
     CapacityExceeded,
     ConflictingSnapshot,
     Overflow,
@@ -95,6 +96,14 @@ impl fmt::Display for SharedFeatureErrorV2 {
 
 impl StdError for SharedFeatureErrorV2 {}
 
+/// Owner-issued cache fences are defense-in-depth only; they do not grant
+/// source reuse or final-use authority. They survive tensor eviction/expiry.
+#[derive(Clone, Copy, Debug)]
+struct ScopeFenceV2 {
+    minimum_epoch: u64,
+    current_generation: Option<u64>,
+}
+
 /// The identity + full bytes are checked even when a digest key matches.
 #[derive(Debug)]
 pub struct SharedFeatureCacheV2 {
@@ -102,6 +111,10 @@ pub struct SharedFeatureCacheV2 {
     maximum_bytes: usize,
     resident_bytes: usize,
     snapshots: BTreeMap<String, Arc<ImmutableFeatureSnapshotV2>>,
+    // Bounded separately from tensor entries; no eviction of revoked scope
+    // watermarks that would permit an old producer to reinsert stale data.
+    scope_fences: BTreeMap<(String, String), ScopeFenceV2>,
+    fences_sealed: bool,
 }
 
 impl SharedFeatureCacheV2 {
@@ -114,6 +127,8 @@ impl SharedFeatureCacheV2 {
             maximum_bytes,
             resident_bytes: 0,
             snapshots: BTreeMap::new(),
+            scope_fences: BTreeMap::new(),
+            fences_sealed: false,
         })
     }
 
@@ -129,6 +144,52 @@ impl SharedFeatureCacheV2 {
         self.resident_bytes
     }
 
+    fn scope_key(principal_id: &StableId, purpose_id: &StableId) -> (String, String) {
+        (
+            principal_id.as_str().to_owned(),
+            purpose_id.as_str().to_owned(),
+        )
+    }
+
+    fn admits_scope(&self, identity: &SharedFeatureIdentityV2) -> Result<bool, SharedFeatureErrorV2> {
+        if self.fences_sealed {
+            return Err(SharedFeatureErrorV2::CapacityExceeded);
+        }
+        Ok(self
+            .scope_fences
+            .get(&Self::scope_key(&identity.principal_id, &identity.purpose_id))
+            .is_none_or(|fence| {
+                identity.authority_epoch >= fence.minimum_epoch
+                    && fence
+                        .current_generation
+                        .is_none_or(|generation| identity.generation.get() == generation)
+            }))
+    }
+
+    fn scope_fence_mut(
+        &mut self,
+        principal_id: &StableId,
+        purpose_id: &StableId,
+    ) -> Option<&mut ScopeFenceV2> {
+        if self.fences_sealed {
+            return None;
+        }
+        let key = Self::scope_key(principal_id, purpose_id);
+        if !self.scope_fences.contains_key(&key)
+            && self.scope_fences.len() >= self.maximum_entries
+        {
+            // The revocation API returns a removed-count, not a Result.
+            // When a monotonic watermark cannot be retained, seal all cache
+            // reuse rather than silently forgetting old revocations.
+            self.fences_sealed = true;
+            return None;
+        }
+        Some(self.scope_fences.entry(key).or_insert(ScopeFenceV2 {
+            minimum_epoch: 0,
+            current_generation: None,
+        }))
+    }
+
     pub fn insert(
         &mut self,
         now_ms: u64,
@@ -137,6 +198,9 @@ impl SharedFeatureCacheV2 {
         features_q24: Arc<[i64]>,
     ) -> Result<Arc<ImmutableFeatureSnapshotV2>, SharedFeatureErrorV2> {
         let identity_digest = identity.digest()?.to_string();
+        if !self.admits_scope(&identity)? {
+            return Err(SharedFeatureErrorV2::Fenced);
+        }
         if expires_at_ms <= now_ms {
             return Err(SharedFeatureErrorV2::Expired);
         }
@@ -208,6 +272,9 @@ impl SharedFeatureCacheV2 {
         identity: &SharedFeatureIdentityV2,
     ) -> Result<Option<Arc<ImmutableFeatureSnapshotV2>>, SharedFeatureErrorV2> {
         let key = identity.digest()?.to_string();
+        if !self.admits_scope(identity)? {
+            return Ok(None);
+        }
         let Some(existing) = self.snapshots.get(&key) else {
             return Ok(None);
         };
@@ -226,10 +293,17 @@ impl SharedFeatureCacheV2 {
         purpose_id: &StableId,
         minimum_epoch: u64,
     ) -> usize {
+        let effective_epoch = if let Some(fence) = self.scope_fence_mut(principal_id, purpose_id)
+        {
+            fence.minimum_epoch = fence.minimum_epoch.max(minimum_epoch);
+            fence.minimum_epoch
+        } else {
+            u64::MAX
+        };
         self.retain(|snapshot| {
             snapshot.identity.principal_id != *principal_id
                 || snapshot.identity.purpose_id != *purpose_id
-                || snapshot.identity.authority_epoch >= minimum_epoch
+                || snapshot.identity.authority_epoch >= effective_epoch
         })
     }
 
@@ -239,10 +313,25 @@ impl SharedFeatureCacheV2 {
         purpose_id: &StableId,
         current_generation: Generation,
     ) -> usize {
+        let requested_generation = current_generation.get();
+        let effective_generation =
+            if let Some(fence) = self.scope_fence_mut(principal_id, purpose_id) {
+                match fence.current_generation {
+                    Some(previous) if requested_generation < previous => previous,
+                    _ => {
+                        fence.current_generation = Some(requested_generation);
+                        requested_generation
+                    }
+                }
+            } else {
+                // A valid Generation is nonzero. Seal/reject every targeted
+                // snapshot when we could not preserve another fence entry.
+                0
+            };
         self.retain(|snapshot| {
             snapshot.identity.principal_id != *principal_id
                 || snapshot.identity.purpose_id != *purpose_id
-                || snapshot.identity.generation == current_generation
+                || snapshot.identity.generation.get() == effective_generation
         })
     }
 
@@ -464,6 +553,94 @@ mod tests {
             1
         );
         assert_eq!(cache.len(), 1);
+    }
+
+    #[test]
+    fn late_producer_cannot_reinsert_a_revoked_epoch() {
+        let mut cache = SharedFeatureCacheV2::new(3, 128).expect("cache");
+        let stale = identity("p", "purpose", 2);
+        let current = identity("p", "purpose", 3);
+        let unrelated = identity("other", "purpose", 2);
+        let frame = cache
+            .insert(1, stale.clone(), 100, Arc::from([1_i64]))
+            .expect("stale initial");
+        let principal = StableId::new("p".to_string()).expect("principal");
+        let purpose = StableId::new("purpose".to_string()).expect("purpose");
+        assert_eq!(cache.revoke_before_epoch(&principal, &purpose, 3), 1);
+        assert_eq!(
+            cache.insert(2, stale.clone(), 100, Arc::from([1_i64])),
+            Err(SharedFeatureErrorV2::Fenced)
+        );
+        assert!(cache.get(2, &stale).expect("stale lookup").is_none());
+        assert_eq!(cache.revoke_before_epoch(&principal, &purpose, 2), 0);
+        assert_eq!(
+            cache.insert(2, stale, 100, Arc::from([1_i64])),
+            Err(SharedFeatureErrorV2::Fenced)
+        );
+        cache
+            .insert(2, current.clone(), 100, Arc::from([2_i64]))
+            .expect("new epoch");
+        cache
+            .insert(2, unrelated, 100, Arc::from([3_i64]))
+            .expect("unrelated scope");
+        assert!(cache.get(3, &current).expect("new lookup").is_some());
+        assert_eq!(frame.features_q24.as_ref(), &[1]);
+    }
+
+    #[test]
+    fn late_producer_cannot_rollback_a_generation_fence() {
+        let mut cache = SharedFeatureCacheV2::new(3, 128).expect("cache");
+        let old = identity("p", "purpose", 2);
+        let mut current = old.clone();
+        current.generation = Generation::new(8).expect("new generation");
+        cache
+            .insert(1, old.clone(), 100, Arc::from([1_i64]))
+            .expect("old frame");
+        let principal = StableId::new("p".to_string()).expect("principal");
+        let purpose = StableId::new("purpose".to_string()).expect("purpose");
+        assert_eq!(
+            cache.invalidate_other_generations(&principal, &purpose, current.generation),
+            1
+        );
+        assert_eq!(
+            cache.insert(2, old.clone(), 100, Arc::from([1_i64])),
+            Err(SharedFeatureErrorV2::Fenced)
+        );
+        cache
+            .insert(2, current.clone(), 100, Arc::from([2_i64]))
+            .expect("new generation");
+        assert_eq!(
+            cache.invalidate_other_generations(
+                &principal,
+                &purpose,
+                Generation::new(5).expect("old generation")
+            ),
+            0
+        );
+        assert!(cache.get(3, &old).expect("old lookup").is_none());
+        assert!(cache.get(3, &current).expect("current lookup").is_some());
+    }
+
+    #[test]
+    fn exhausted_fence_capacity_seals_future_cache_access() {
+        let mut cache = SharedFeatureCacheV2::new(1, 64).expect("cache");
+        let principal_a = StableId::new("a".to_string()).expect("a");
+        let principal_b = StableId::new("b".to_string()).expect("b");
+        let purpose = StableId::new("purpose".to_string()).expect("purpose");
+        let identity_a = identity("a", "purpose", 3);
+        cache
+            .insert(1, identity_a.clone(), 100, Arc::from([2_i64]))
+            .expect("initial frame");
+        assert_eq!(cache.revoke_before_epoch(&principal_a, &purpose, 3), 0);
+        assert_eq!(cache.revoke_before_epoch(&principal_b, &purpose, 4), 0);
+        assert_eq!(
+            cache.insert(2, identity("b", "purpose", 4), 100, Arc::from([3_i64])),
+            Err(SharedFeatureErrorV2::CapacityExceeded)
+        );
+        assert_eq!(
+            cache.get(2, &identity_a),
+            Err(SharedFeatureErrorV2::CapacityExceeded)
+        );
     }
 
     #[test]
