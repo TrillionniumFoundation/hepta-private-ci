@@ -363,7 +363,7 @@ async fn transcript_preview_for_history_mode(
             }
         };
         // TurnCompleted may precede the session becoming idle. Keep all real
-        // turns and retry only that observed transient protocol race.
+        // turns and retry only these explicit pre-admission refusals.
         let turn_start = tokio::time::timeout(std::time::Duration::from_secs(10), async {
             let mut attempt = 0_u32;
             loop {
@@ -382,7 +382,13 @@ async fn transcript_preview_for_history_mode(
                 match response {
                     Ok(started) => break started,
                     Err(TypedRequestError::Server { source, .. })
-                        if source.message == "failed to submit turn input: NotIdle" =>
+                        if source.code == -32603
+                            && source.data.is_none()
+                            && matches!(
+                            source.message.as_str(),
+                            "failed to submit turn input: NotIdle"
+                                | "failed to submit turn input: turn start is fenced while the session is terminalizing"
+                        ) =>
                     {
                         attempt += 1;
                         tokio::time::sleep(std::time::Duration::from_millis(25)).await;
