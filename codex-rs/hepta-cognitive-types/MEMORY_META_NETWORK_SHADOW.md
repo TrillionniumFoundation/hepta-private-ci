@@ -204,3 +204,23 @@ the whole 3–64-generation offline chain. The chain rejects reused topology
 proposal digests even when the reuse is nonadjacent and per-hop replay and
 evaluator references are otherwise distinct. None of these methods signs an
 artifact, approves training, applies a graph change or authorizes production.
+
+## Rehydrated pre-tick plan verification (shadow only)
+
+`MemoryMetaPreTickPlanV1::validate_against(policy, cue, snapshot, cells)` now
+recomputes the deterministic pre-tick admission over the **entire original**
+Cell set, including Cells not admitted to retrieval. It rejects altered
+admitted/deferred identities, forged resource reservations, changed policy or
+Cell routing metadata, and any attempt to change the sealed
+`current_snapshot_immutable / production_activation_allowed` posture.
+Replay is permutation-independent. This complements the separately checked
+post-tick `MemoryMetaRouteReceiptV1::validate_against` rather than treating
+a self-consistent digest as proof that a plan was correctly derived.
+
+These are local source-to-receipt consistency checks, **not** verification
+of authenticated Encoder execution, generated payload provenance, independent
+evidence-ledger inclusion, complete deletion, physical cost or production
+FinalUse. The plan's Debug-derived metadata commitment is still a shadow
+exact-source digest, not a canonical external wire protocol. Recompute
+against one authenticated and immutable input set before accepting any
+restored plan, and retain `SHADOW_ONLY / DENY_ALL / HOLD_NO_GO`.
