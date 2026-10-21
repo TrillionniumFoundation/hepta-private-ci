@@ -123,7 +123,7 @@ impl ImmutableFeatureSnapshotV1 {
     }
 }
 
-/// A same-generation batch of immutable feature snapshots.
+/// A same-generation, same-encoder batch of immutable feature snapshots.
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct FeatureBatchV1 {
     generation: Generation,
@@ -144,6 +144,13 @@ impl FeatureBatchV1 {
             .any(|snapshot| snapshot.generation() != generation)
         {
             return Err(CellBatchError::GenerationMismatch);
+        }
+        let encoder_digest = first.encoder_digest();
+        if snapshots
+            .iter()
+            .any(|snapshot| snapshot.encoder_digest() != encoder_digest)
+        {
+            return Err(CellBatchError::EncoderMismatch);
         }
         Ok(Self {
             generation,
@@ -413,6 +420,7 @@ pub enum CellBatchError {
     ZeroDigest(&'static str),
     GenerationNotSuccessor,
     GenerationMismatch,
+    EncoderMismatch,
     ZeroCapacity,
     QueueFull,
     DuplicateRequest,

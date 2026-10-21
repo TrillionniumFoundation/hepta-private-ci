@@ -219,9 +219,15 @@ impl SharedWorkerPoolV1 {
 
 fn digest_batch(requests: &[QueuedCellRequestV1]) -> Digest32 {
     let mut bytes = b"hepta.cell.worker.batch.v1".to_vec();
+    bytes.extend_from_slice(&(requests.len() as u64).to_be_bytes());
     for request in requests {
-        bytes.extend_from_slice(request.request_id.as_str().as_bytes());
-        bytes.extend_from_slice(request.scope_id.as_str().as_bytes());
+        // Frame each identity: concatenation without lengths aliases different
+        // (request, scope) pairs, and omitting the cell permits substitution.
+        for identity in [&request.request_id, &request.cell_id, &request.scope_id] {
+            let raw = identity.as_str().as_bytes();
+            bytes.extend_from_slice(&(raw.len() as u32).to_be_bytes());
+            bytes.extend_from_slice(raw);
+        }
         bytes.extend_from_slice(&request.feature_generation.get().to_be_bytes());
     }
     Digest32::of_bytes(&bytes)
