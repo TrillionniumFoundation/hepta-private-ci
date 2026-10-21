@@ -1,0 +1,16 @@
+{
+  "job_id": 119194391214,
+  "run_id": 39583123088,
+  "source_head": "48177153ad04605338c3a9a8dbd17defee9981bc",
+  "tested_merge": "3c32bedb07239b0cbdb38d100836258165cae633",
+  "base": "57636c7a17d4847eb5fd712409816fd040b4e90f",
+  "conclusion": "failure",
+  "failed_step": 19,
+  "failed_command": "uv run --frozen --project scripts ruff format --check scripts .github",
+  "format_failure": ".github/scripts/test_v8_cargo_smoke.py would reformat; 182 files already formatted",
+  "raw_bytes": 119088,
+  "raw_sha256": "7e577a96357be4319e7b544b7f6a36477e4dccb2c1cde608359b3fff27fa8b3d",
+  "xz_bytes": 18744,
+  "xz_sha256": "07cb143911bda639387624eae35ad59722f5b4139bfde962e85406d1f79cdd44",
+  "encoding": "Connector decoded job log encoded UTF-8 without line rewriting"
+}
