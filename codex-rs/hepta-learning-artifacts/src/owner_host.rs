@@ -1002,7 +1002,12 @@ impl LearningArtifactOwnerHost {
     pub fn recovery_required_operations(
         &self,
     ) -> Result<Vec<ArtifactOwnerPublicationCheckpointV1>, ArtifactOwnerHostError> {
-        let mut latest: BTreeMap<StableId, ArtifactOwnerPublicationCheckpointV1> = BTreeMap::new();
+        // Merely choosing the highest phase lets a forged or truncated
+        // Acknowledged checkpoint hide a crashed in-flight publication at
+        // service startup. First collect operation identities, then enforce
+        // the *same* contiguous checkpoint chain and immutable intent
+        // invariants as explicit operation recovery.
+        let mut operation_ids = std::collections::BTreeSet::new();
         for entry in fs::read_dir(self.root.join("transactions"))? {
             let entry = entry?;
             let metadata = fs::symlink_metadata(entry.path())?;
@@ -1014,17 +1019,23 @@ impl LearningArtifactOwnerHost {
             }
             let checkpoint =
                 decode_checkpoint(&read_small_record(&entry.path(), MAX_SMALL_RECORD_BYTES)?)?;
-            match latest.get(&checkpoint.operation_id) {
-                Some(existing) if phase_code(existing.phase) >= phase_code(checkpoint.phase) => {}
-                Some(_) | None => {
-                    latest.insert(checkpoint.operation_id.clone(), checkpoint);
-                }
+            // Reject orphan aliases and mismatched operation/phase filenames;
+            // they cannot be ignored when determining startup authority.
+            if entry.path() != self.checkpoint_path(&checkpoint.operation_id, checkpoint.phase) {
+                return Err(ArtifactOwnerHostError::CheckpointMismatch);
+            }
+            operation_ids.insert(checkpoint.operation_id);
+        }
+        let mut recovery_required = Vec::new();
+        for operation_id in operation_ids {
+            let recovery = self
+                .recover_publication(&operation_id)?
+                .ok_or(ArtifactOwnerHostError::CheckpointMissing)?;
+            if recovery.checkpoint.phase != ArtifactPublicationPhaseV1::Acknowledged {
+                recovery_required.push(recovery.checkpoint);
             }
         }
-        Ok(latest
-            .into_values()
-            .filter(|checkpoint| checkpoint.phase != ArtifactPublicationPhaseV1::Acknowledged)
-            .collect())
+        Ok(recovery_required)
     }
 
     pub fn recover_publication(
@@ -2065,6 +2076,103 @@ mod tests {
             20,
         )
         .fixture("fence is released");
+    }
+
+    #[test]
+    fn startup_rejects_orphan_terminal_checkpoint_and_missing_phases() {
+        let directory = TestDir::new();
+        let key = signer();
+        let scope = withdrawal_scope();
+        let scope_digest = scope.digest();
+        let owner = LearningArtifactOwnerHost::open(
+            &directory.0,
+            trust(&key, scope_digest),
+            lease(&key, scope_digest),
+            20,
+        )
+        .fixture("owner");
+        let withdrawals = DatasetWithdrawalRegistry::new_scoped(scope);
+        let admission = admit_manifest_at_withdrawal_head_v3(
+            &withdrawals,
+            withdrawals.head_digest(),
+            manifest(),
+            20,
+        )
+        .fixture("admission");
+        let transaction = owner
+            .begin_publication(
+                id("gap-operation"),
+                admission,
+                &withdrawals,
+                &ArtifactRegistry::new(),
+                Digest32::ZERO,
+                20,
+            )
+            .fixture("begin");
+        let mut forged = checkpoint_from_snapshot(
+            &transaction.snapshot(),
+            owner.writer_lease_digest(),
+        );
+        forged.phase = ArtifactPublicationPhaseV1::Acknowledged;
+        forged.acknowledged_at = Some(20);
+        write_create_only_or_exact(
+            &owner.checkpoint_path(
+                &id("gap-operation"),
+                ArtifactPublicationPhaseV1::Acknowledged,
+            ),
+            &encode_checkpoint(&forged),
+        )
+        .fixture("write forged terminal checkpoint");
+        assert!(matches!(
+            owner.recovery_required_operations(),
+            Err(ArtifactOwnerHostError::CheckpointGap)
+        ));
+    }
+
+    #[test]
+    fn startup_rejects_noncanonical_checkpoint_filenames() {
+        let directory = TestDir::new();
+        let key = signer();
+        let scope = withdrawal_scope();
+        let scope_digest = scope.digest();
+        let owner = LearningArtifactOwnerHost::open(
+            &directory.0,
+            trust(&key, scope_digest),
+            lease(&key, scope_digest),
+            20,
+        )
+        .fixture("owner");
+        let withdrawals = DatasetWithdrawalRegistry::new_scoped(scope);
+        let admission = admit_manifest_at_withdrawal_head_v3(
+            &withdrawals,
+            withdrawals.head_digest(),
+            manifest(),
+            20,
+        )
+        .fixture("admission");
+        let transaction = owner
+            .begin_publication(
+                id("filename-operation"),
+                admission,
+                &withdrawals,
+                &ArtifactRegistry::new(),
+                Digest32::ZERO,
+                20,
+            )
+            .fixture("begin");
+        let checkpoint = checkpoint_from_snapshot(
+            &transaction.snapshot(),
+            owner.writer_lease_digest(),
+        );
+        write_create_only_or_exact(
+            &directory.0.join("transactions").join("orphan.checkpoint"),
+            &encode_checkpoint(&checkpoint),
+        )
+        .fixture("write orphan alias");
+        assert!(matches!(
+            owner.recovery_required_operations(),
+            Err(ArtifactOwnerHostError::CheckpointMismatch)
+        ));
     }
 
     #[test]
