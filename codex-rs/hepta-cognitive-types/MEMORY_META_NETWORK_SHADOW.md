@@ -54,3 +54,42 @@ Until then: `SHADOW_ONLY / DENY_ALL / HOLD_NO_GO`.
 `codex-hepta-memory-retrieval::run_memory_meta_batch_shadow_v1` runs the existing typed MemoryCell tick for several Cells against a **single immutable** cue and engram snapshot, then routes the actual tick receipts through the new Meta-Network. It preflights Cell identities, shared Encoder and evidence frontiers before tick work; duplicate IDs or stale inputs reject. The adapter does **not** instantiate an Encoder, perform pre-inference sparse scheduling, inspect external ledger membership, or persist a winner. Its budget is an auditable post-tick route bound, not evidence that a physical GPU invocation was avoided.
 
 The unit tests exercise two typed Cells over real deterministic retrieval/engram fixtures, empty-support abstention and stale-frontier/duplicate preflight.
+
+## Pre-tick sparse admission candidate (shadow only)
+
+`codex-hepta-memory-retrieval::plan_memory_meta_pre_ticks_shadow_v1` and
+`run_memory_meta_preselected_shadow_v1` now offer a separately callable
+**pre-tick admission** path. It is not silently substituted for the original
+`run_memory_meta_batch_shadow_v1` full-batch baseline.
+
+- The entire submitted Cell set is checked against one frozen Encoder,
+  immutable snapshot, source/forget frontiers, and manifest/tick generation
+  before **any** Cell tick. Even a low-priority or non-admitted Cell with invalid
+  input/cue/objective is a hard rejection rather than a hidden omission.
+- Claimed external support, typed contradiction groups, relevance, the maximum
+  active-Cell count and a cumulative **reserved** compute budget are used
+  deterministically; ties resolve by cost and stable Cell identity. An unresolved
+  contradiction group is conservatively excluded before retrieval.
+- Only admitted Cells have actual `run_memory_cell_tick` called. The original
+  post-tick Meta-Network independently routes their real typed receipts and
+  can still abstain due to confidence/OOD/conflict. Deferred Cell results are
+  **not** fabricated.
+- The plan retains ordered admitted/deferred identities, reserved cost,
+  a SHA-256 commitment to the full **selection-metadata** input set and a
+  separate decision digest. This internal, exact-source Debug-framed shadow
+  digest is **not** a canonical wire schema, cryptographic signature, proof
+  of ledger membership, or evidence that a generated payload was valid.
+- The plan is `current_snapshot_immutable=true` and
+  `production_activation_allowed=false`; it grants no writer, artifact
+  selector, topology activation, model serving or FinalUse authority.
+
+Focused tests cover order-independent plans, genuinely skipped invalid
+non-admitted generated candidates, all-conflicted abstention, changed-metadata
+digest binding, and stale-forget/forged-cue fail-closed behavior.
+
+**Still blocked:** relevance/cost are caller-supplied estimates, not
+independently authenticated or calibrated predictions. A single shared
+Encoder feature digest is provided, not a running signed Encoder model.
+No measured GPU FLOP reduction, corpus-backed citation, exact deletion proof,
+future-time transfer superiority, replay/evaluation approval, or durable
+generation promotion is claimed. Full exact-head CI remains mandatory.
