@@ -1,8 +1,11 @@
 //! A dbus proxy for speaking with secret service's `Collection` Interface.
 
-use serde::{Deserialize, Serialize};
+use serde::Deserialize;
+use serde::Serialize;
 use std::collections::HashMap;
-use zbus::{OwnedObjectPath, Type, Variant};
+use zbus::OwnedObjectPath;
+use zbus::Type;
+use zbus::Variant;
 
 use super::SecretStruct;
 

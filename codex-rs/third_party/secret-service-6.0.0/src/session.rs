@@ -11,19 +11,23 @@
 //      This encoding uses the aes_key from the associated Session.
 
 use crate::Error;
-use crate::proxy::service::{OpenSessionResult, ServiceProxy};
-use crate::ss::{ALGORITHM_DH, ALGORITHM_PLAIN};
+use crate::proxy::service::OpenSessionResult;
+use crate::proxy::service::ServiceProxy;
+use crate::ss::ALGORITHM_DH;
+use crate::ss::ALGORITHM_PLAIN;
 
-use hybrid_array::{Array, typenum::U16};
-use num::{
-    FromPrimitive,
-    bigint::BigUint,
-    integer::Integer,
-    traits::{One, Zero},
-};
+use hybrid_array::Array;
+use hybrid_array::typenum::U16;
+use num::FromPrimitive;
+use num::bigint::BigUint;
+use num::integer::Integer;
+use num::traits::One;
+use num::traits::Zero;
 use zbus::OwnedObjectPath;
 
-use std::ops::{Mul, Rem, Shr};
+use std::ops::Mul;
+use std::ops::Rem;
+use std::ops::Shr;
 use std::sync::LazyLock;
 
 // for key exchange
@@ -211,8 +215,9 @@ fn powm(base: &BigUint, exp: &BigUint, modulus: &BigUint) -> BigUint {
 
 #[cfg(feature = "crypto-rust")]
 pub fn encrypt(data: &[u8], key: &AesKey, iv: &AesIv) -> Vec<u8> {
+    use aes::cipher::BlockModeEncrypt;
+    use aes::cipher::KeyIvInit;
     use aes::cipher::block_padding::Pkcs7;
-    use aes::cipher::{BlockModeEncrypt, KeyIvInit};
 
     type Aes128CbcEnc = cbc::Encryptor<aes::Aes128>;
 
@@ -221,8 +226,9 @@ pub fn encrypt(data: &[u8], key: &AesKey, iv: &AesIv) -> Vec<u8> {
 
 #[cfg(feature = "crypto-rust")]
 pub fn decrypt(encrypted_data: &[u8], key: &AesKey, iv: &AesIv) -> Result<Vec<u8>, Error> {
+    use aes::cipher::BlockModeDecrypt;
+    use aes::cipher::KeyIvInit;
     use aes::cipher::block_padding::Pkcs7;
-    use aes::cipher::{BlockModeDecrypt, KeyIvInit};
 
     type Aes128CbcDec = cbc::Decryptor<aes::Aes128>;
 

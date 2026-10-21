@@ -8,7 +8,9 @@
 //!
 //! [async `SecretService`]: crate::SecretService
 
-use crate::{EncryptionType, Error, SearchItemsResult};
+use crate::EncryptionType;
+use crate::Error;
+use crate::SearchItemsResult;
 use std::collections::HashMap;
 use zbus::OwnedObjectPath;
 

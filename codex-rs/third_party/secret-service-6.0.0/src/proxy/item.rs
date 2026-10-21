@@ -1,7 +1,8 @@
 //! A dbus proxy for speaking with secret service's `Item` Interface.
 
 use std::collections::HashMap;
-use zbus::{ObjectPath, OwnedObjectPath};
+use zbus::ObjectPath;
+use zbus::OwnedObjectPath;
 
 use super::SecretStruct;
 

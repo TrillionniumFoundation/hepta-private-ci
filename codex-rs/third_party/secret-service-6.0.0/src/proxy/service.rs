@@ -1,9 +1,14 @@
 //! A dbus proxy for speaking with secret service's `Service` Interface.
 
 use super::SecretStruct;
-use serde::{Deserialize, Serialize};
+use serde::Deserialize;
+use serde::Serialize;
 use std::collections::HashMap;
-use zbus::{ObjectPath, OwnedObjectPath, OwnedVariant, Type, Variant};
+use zbus::ObjectPath;
+use zbus::OwnedObjectPath;
+use zbus::OwnedVariant;
+use zbus::Type;
+use zbus::Variant;
 
 /// A dbus proxy for speaking with secret service's `Service` Interface.
 ///

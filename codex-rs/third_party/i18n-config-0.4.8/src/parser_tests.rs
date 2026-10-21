@@ -53,12 +53,21 @@ fn crate_manifest_and_parent_localization_still_resolve() {
         "[package]\nname = \"child\"\nversion = \"2.3.4\"\n",
     )
     .expect("child manifest");
-    let parent = Crate::from(directory.path(), /*parent*/ None, "i18n.toml")
-        .expect("parse parent crate");
+    let parent =
+        Crate::from(directory.path(), /*parent*/ None, "i18n.toml").expect("parse parent crate");
     let child = Crate::from(child, Some(&parent), "i18n.toml").expect("parse child crate");
-    assert_eq!((&parent.name, &parent.version), (&"parent".to_string(), &"1.2.3".to_string()));
-    assert_eq!((&child.name, &child.version), (&"child".to_string(), &"2.3.4".to_string()));
-    let (owner, config) = child.active_config().expect("resolve owner").expect("parent config");
+    assert_eq!(
+        (&parent.name, &parent.version),
+        (&"parent".to_string(), &"1.2.3".to_string())
+    );
+    assert_eq!(
+        (&child.name, &child.version),
+        (&"child".to_string(), &"2.3.4".to_string())
+    );
+    let (owner, config) = child
+        .active_config()
+        .expect("resolve owner")
+        .expect("parent config");
     assert_eq!(owner.path, parent.path);
     assert_eq!(config.fallback_language.to_string(), "en-US");
     assert_eq!(child.find_parent().expect("find parent").name, "parent");
@@ -74,6 +83,9 @@ fn invalid_toml_keeps_the_original_error_boundary_and_path() {
             assert_eq!(observed_path, path);
             assert!(!error.to_string().is_empty());
         }
-        other => panic!("malformed TOML did not preserve the parse boundary: {other:?}"),
+        _other => panic!(
+            "{}",
+            "malformed TOML did not preserve the parse boundary: {other:?}"
+        ),
     }
 }

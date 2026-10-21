@@ -1,9 +1,15 @@
 use std::collections::HashMap;
-use std::sync::{Arc, Once};
+use std::sync::Arc;
+use std::sync::Once;
 
-use super::{Store, cred::Specifier};
+use super::Store;
+use super::cred::Specifier;
 use crate::cred::Wrapper;
-use keyring_core::{CredentialStore, Entry, Error, api::CredentialPersistence, get_default_store};
+use keyring_core::CredentialStore;
+use keyring_core::Entry;
+use keyring_core::Error;
+use keyring_core::api::CredentialPersistence;
+use keyring_core::get_default_store;
 
 static SET_STORE: Once = Once::new();
 

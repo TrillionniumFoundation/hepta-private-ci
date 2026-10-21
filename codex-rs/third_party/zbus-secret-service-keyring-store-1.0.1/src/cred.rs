@@ -4,8 +4,10 @@ use std::sync::Arc;
 use zbus::OwnedObjectPath;
 
 use keyring_core::Entry;
-use keyring_core::api::{Credential, CredentialApi};
-use keyring_core::error::{Error, Result};
+use keyring_core::api::Credential;
+use keyring_core::api::CredentialApi;
+use keyring_core::error::Error;
+use keyring_core::error::Result;
 
 use crate::service::Service;
 

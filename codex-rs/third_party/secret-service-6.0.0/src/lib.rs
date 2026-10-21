@@ -141,7 +141,9 @@ use crate::ss::SS_COLLECTION_LABEL;
 use crate::util::exec_prompt;
 use futures_util::TryFutureExt;
 use std::collections::HashMap;
-use zbus::{ObjectPath, OwnedObjectPath, Variant};
+use zbus::ObjectPath;
+use zbus::OwnedObjectPath;
+use zbus::Variant;
 
 /// Secret Service Struct.
 ///

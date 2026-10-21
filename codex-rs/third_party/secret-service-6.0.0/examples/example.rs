@@ -1,5 +1,7 @@
-use secret_service::{EncryptionType, SecretService};
-use std::{collections::HashMap, str};
+use secret_service::EncryptionType;
+use secret_service::SecretService;
+use std::collections::HashMap;
+use std::str;
 
 #[tokio::main(flavor = "current_thread")]
 async fn main() {
