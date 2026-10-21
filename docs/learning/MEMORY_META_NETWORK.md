@@ -58,6 +58,33 @@ MetaNetworkPlanV1, MetaNetworkRouteReceiptV1 and
 MetaNetworkNextSnapshotCandidateV1. Unknown fields, alternate schema labels,
 non-canonical JSON, floats or a production posture are rejected.
 
+## Ledger receipt coverage (V1 supplement)
+
+The route-plan/ledger-root equality check alone cannot establish that each
+Cell bid and graph edge still references an admissible live receipt. The
+additive MetaNetworkEvidenceCatalogV1 is a **bounded, query-scoped projection**
+of the original source/forget owner's live and revoked receipt identities.
+The propose_meta_network_route_with_evidence_v1 gate requires every bid and
+every link (including OOD/omitted bids and edges that would suppress another
+Cell) to resolve to a live receipt. A missing, revoked or overlapping receipt,
+stale ledger/source/forget frontier, or changed admission receipt fails closed.
+The catalog has its own strict canonical cognitive wire identity.
+
+Catalog membership is not a source signature, ACL decision, fact-grounding
+proof or global deletion guarantee. The runtime must retrieve this catalog
+and witness from the **authenticated current evidence ledger owner**, using
+the existing authorization, source revision and revocation mechanisms.
+Caller-provided matching digests do not authenticate their own provenance.
+This contract introduces no second writer, ledger or retrieval owner.
+
+MetaNetworkNextSnapshotCandidateV1::validate_against_live_evidence recomputes
+the exact evidence-covered route before validating the successor. Independent
+Replay, immutable Artifact, held-out Evaluation and Topology Proposal owners
+must still authenticate their own referenced artifacts before any future
+snapshot admission. All new tests use synthetic receipt identifiers: they
+do not qualify a real evidence-owner integration, unlearning, learning gain
+or FinalUse.
+
 ## Learning is next-generation only
 
 MetaNetworkNextSnapshotCandidateV1 cannot execute or mutate anything.

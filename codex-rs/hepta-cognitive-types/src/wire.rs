@@ -34,6 +34,7 @@ use crate::memory_cell::MemoryCellTickInputV1;
 use crate::memory_cell::MemoryCellTickReceiptV1;
 use crate::meta_network::MetaNetworkNextSnapshotCandidateV1;
 use crate::meta_network::MetaNetworkPlanV1;
+use crate::meta_network_evidence::MetaNetworkEvidenceCatalogV1;
 use crate::meta_network::MetaNetworkRouteReceiptV1;
 
 pub const COGNITIVE_WIRE_VERSION_V1: u32 = 1;
@@ -175,6 +176,13 @@ impl_contract!(
     MemoryCellSplitProposalV1::validate
 );
 
+impl_contract!(
+    MetaNetworkEvidenceCatalogV1,
+    "MetaNetworkEvidenceCatalogV1",
+    "hepta.meta-network.evidence-catalog.v1",
+    65_536,
+    MetaNetworkEvidenceCatalogV1::validate
+);
 impl_contract!(
     MetaNetworkPlanV1,
     "MetaNetworkPlanV1",

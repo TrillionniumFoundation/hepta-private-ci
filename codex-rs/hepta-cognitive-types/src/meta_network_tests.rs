@@ -6,6 +6,8 @@ use super::*;
 use crate::hnmf::ModalityKindV1;
 use crate::hnmf_learning::EngramPopulationV1;
 use crate::memory_cell::MemoryCellRoleV1;
+use crate::meta_network_evidence::MetaNetworkEvidenceCatalogV1;
+use crate::meta_network_evidence::propose_meta_network_route_with_evidence_v1;
 use crate::wire::decode_wire_v1;
 use crate::wire::encode_wire_v1;
 
@@ -388,4 +390,121 @@ fn too_many_cells_and_resource_overruns_fail_validation() {
         plan.validate(),
         Err(HnmfContractError::Invalid("meta bid ood"))
     ));
+}
+
+fn live_catalog(plan: &MetaNetworkPlanV1) -> MetaNetworkEvidenceCatalogV1 {
+    let live_receipt_digests = plan
+        .bids
+        .iter()
+        .map(|bid| bid.evidence_receipt_digest)
+        .chain(plan.links.iter().map(|link| link.evidence_receipt_digest))
+        .collect();
+    MetaNetworkEvidenceCatalogV1 {
+        schema_version: META_NETWORK_SCHEMA_VERSION_V1,
+        ledger_root_digest: plan.ledger_root_digest,
+        source_frontier_digest: plan.source_frontier_digest,
+        forget_frontier_digest: plan.forget_frontier_digest,
+        admission_receipt_digest: plan.admission_receipt_digest,
+        live_receipt_digests,
+        revoked_receipt_digests: BTreeSet::new(),
+    }
+}
+
+#[test]
+fn live_evidence_catalog_covers_all_candidates_and_replays_next_snapshot() {
+    let plan = base_plan();
+    let catalog = live_catalog(&plan);
+    let route = propose_meta_network_route_with_evidence_v1(&plan, &witness(&plan), &catalog)
+        .unwrap_or_else(|error| panic!("covered route: {error:?}"));
+    assert_eq!(route, receipt(&plan));
+    successor(&route)
+        .validate_against_live_evidence(&route, &plan, &witness(&plan), &catalog)
+        .unwrap_or_else(|error| panic!("covered next snapshot: {error:?}"));
+}
+
+#[test]
+fn missing_or_revoked_bid_receipt_fails_even_when_bid_would_be_omitted() {
+    let mut plan = base_plan();
+    plan.bids[0].ood_ppm = 900_000;
+    let mut catalog = live_catalog(&plan);
+    let obsolete = plan.bids[0].evidence_receipt_digest;
+    catalog.live_receipt_digests.remove(&obsolete);
+    assert!(matches!(
+        propose_meta_network_route_with_evidence_v1(&plan, &witness(&plan), &catalog),
+        Err(HnmfContractError::Missing("meta bid evidence"))
+    ));
+    catalog.revoked_receipt_digests.insert(obsolete);
+    assert!(matches!(
+        propose_meta_network_route_with_evidence_v1(&plan, &witness(&plan), &catalog),
+        Err(HnmfContractError::Conflict("meta revoked bid evidence"))
+    ));
+}
+
+#[test]
+fn revoked_conflict_edge_cannot_suppress_a_live_cell() {
+    let plan = base_plan();
+    let mut catalog = live_catalog(&plan);
+    let revoked = plan.links[0].evidence_receipt_digest;
+    catalog.live_receipt_digests.remove(&revoked);
+    assert!(matches!(
+        propose_meta_network_route_with_evidence_v1(&plan, &witness(&plan), &catalog),
+        Err(HnmfContractError::Missing("meta link evidence"))
+    ));
+    catalog.revoked_receipt_digests.insert(revoked);
+    assert!(matches!(
+        propose_meta_network_route_with_evidence_v1(&plan, &witness(&plan), &catalog),
+        Err(HnmfContractError::Conflict("meta revoked link evidence"))
+    ));
+}
+
+#[test]
+fn evidence_catalog_frontier_and_live_revoked_overlap_fail_closed() {
+    let plan = base_plan();
+    let mut catalog = live_catalog(&plan);
+    catalog.forget_frontier_digest = digest("new-forget");
+    assert!(matches!(
+        catalog.validate_against_plan(&plan, &witness(&plan)),
+        Err(HnmfContractError::Conflict("meta evidence ledger frontier"))
+    ));
+    catalog.forget_frontier_digest = plan.forget_frontier_digest;
+    let overlapping = plan.bids[0].evidence_receipt_digest;
+    catalog.revoked_receipt_digests.insert(overlapping);
+    assert!(matches!(
+        catalog.validate(),
+        Err(HnmfContractError::Conflict("meta evidence live revoked overlap"))
+    ));
+}
+
+#[test]
+fn covered_next_snapshot_rejects_fabricated_route_and_stale_source() {
+    let plan = base_plan();
+    let catalog = live_catalog(&plan);
+    let mut route = receipt(&plan);
+    let candidate = successor(&route);
+    route.estimated_spend_units += 1;
+    assert!(matches!(
+        candidate.validate_against_live_evidence(&route, &plan, &witness(&plan), &catalog),
+        Err(HnmfContractError::Conflict("meta evidence route recomputation"))
+    ));
+    let route = receipt(&plan);
+    let mut newer_witness = witness(&plan);
+    newer_witness.source_frontier_digest = digest("newer-source");
+    assert!(candidate
+        .validate_against_live_evidence(&route, &plan, &newer_witness, &catalog)
+        .is_err());
+}
+
+#[test]
+fn evidence_catalog_strict_wire_roundtrips_and_rejects_extra_authority() {
+    let plan = base_plan();
+    let catalog = live_catalog(&plan);
+    let bytes = encode_wire_v1(&catalog)
+        .unwrap_or_else(|error| panic!("encode catalog: {error:?}"));
+    let decoded: MetaNetworkEvidenceCatalogV1 = decode_wire_v1(&bytes)
+        .unwrap_or_else(|error| panic!("decode catalog: {error:?}"));
+    assert_eq!(decoded, catalog);
+    let mut encoded = serde_json::to_value(&catalog)
+        .unwrap_or_else(|error| panic!("json catalog: {error:?}"));
+    encoded["mayWriteFacts"] = serde_json::json!(true);
+    assert!(serde_json::from_value::<MetaNetworkEvidenceCatalogV1>(encoded).is_err());
 }
