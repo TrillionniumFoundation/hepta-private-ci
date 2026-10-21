@@ -874,7 +874,7 @@ impl<D: ModelDriver + NeuronFeatureDriver> InferenceWorker<D> {
     /// (same authority instance), the exact binding, current revocation and
     /// expiry, and holds an active effect fence across the Worker call.
     /// No signing key or grant issuance exists in this Worker.
-    pub fn run_verified_stem_feature_receipt_v1(
+    pub(crate) fn run_verified_stem_feature_receipt_v1(
         &mut self,
         trusted_authority: &FinalUseAuthority,
         verified_use: VerifiedUseToken,
