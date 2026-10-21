@@ -664,7 +664,7 @@ opt-level = 0
 [patch.crates-io]
 # Matrix SDK 0.18 still exposes anymap2 in its event handler API. Keep that
 # API stable while replacing the unmaintained implementation with anymap3.
-anymap2 = { path = "third_party/anymap2-compat" }
+anymap2 = { path = "third_party/anymap2-compat", package = "anymap2-compat" }
 # Matrix SDK/eyeball-im still require imbl 6.x. Backport the upstream 7.0.2
 # bitmap import and patched chunk dependency without changing their public API.
 imbl = { path = "third_party/imbl-6.1.0" }
