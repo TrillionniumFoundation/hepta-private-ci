@@ -199,3 +199,61 @@ complete exact-HEAD cargo-deny, Architecture, V8 and cross-platform Bazel
 security/test gates; independent owner and permission acceptance.
 All new paths remain SHADOW_ONLY / DENY_ALL / HOLD_NO_GO and never
 select a production Stem, mutate external Memory or issue Cell actions.
+
+
+## P4: executable six-scale *synthetic* Cell fan-out and receipt robustness
+
+`qa/stem-bakeoff/scale_probe.py` runs a real **tiny random** 32-dimensional,
+one-layer frozen PyTorch Encoder and the actual `LightCellHead` /
+`SharedStemServer` implementation at **1, 8, 64, 256, 1024 and 4096**
+active Cells. It measures the shared module-forward hook delta and owner call
+delta for each request batch. An exact-head Linux shadow CI job executes the
+six-scale probe and asserts both counts equal the number of sampled batches.
+It also records per-Cell Head parameters, response-time samples/p50/p95/p99
+and the Linux **process-lifetime** peak RSS. No per-Cell Encoder is constructed
+by the probe.
+
+Run offline, without checkpoint downloads:
+
+~~~sh
+python3 -m unittest discover -s qa/stem-bakeoff -p 'test_scale_probe.py' -v
+python3 qa/stem-bakeoff/scale_probe.py --repeats 2
+~~~
+
+The CLI refuses duplicate, unsorted or unregistered Cell scales, invalid
+repeat counts and malformed seeds. The receipt hard-codes
+`may_satisfy_real_model_bakeoff_gate=false`,
+`model_pretrained=false`, `physical_gpu_kernel_count_attested=false`,
+`energy_measured=false`, `production_activation_allowed=false` and
+`SHADOW_ONLY/DENY_ALL/HOLD_NO_GO`. This probe deliberately cannot generate a
+`REAL_MODEL_OBSERVED` result for `evidence_gate.py`.
+
+**Interpretation is strictly bounded:** a random tiny Encoder does not
+measure 421M control, EmbeddingGemma 2, T5Gemma 2 or 150M/300M trained
+students. Two timing samples are a CI diagnostic, not statistically meaningful
+p99. A PyTorch module forward hook is not GPU kernel instrumentation. The
+process-lifetime high-water RSS can include unrelated allocations and is not
+a per-batch GPU peak. Model download/license, held-out datasets, future/OOD
+quality, independent evidence, energy and true target-hardware benchmark
+blockers remain open.
+
+`stem_bakeoff.py` and `evidence_gate.py` now also return structured
+fail-closed errors for malformed JSON root objects and non-array Cell
+components, rather than allowing unexpected Python type errors to interrupt
+the receipt assessment. No malformed receipt gains authority.
+
+
+### P4 checkpoint-custody regression fix
+
+The local snapshot inventory now rejects hardlinked regular files, not just
+symlinks. Otherwise a supposedly isolated checkpoint can alias a writable
+file outside its snapshot directory. After computing and comparing the
+independently pinned inventory digest, the verifier also rehashes bounded
+`config.json` bytes immediately before parsing `model_type`; a file swap
+between the inventory and parser is rejected. Both conditions have negative
+unit tests.
+
+These checks improve the local byte-custody boundary only. They do **not**
+make a mutable filesystem inherently immutable, prove upstream publisher
+identity, or replace a read-only mount/content-addressed verified
+materialization followed by independent source attestation.
