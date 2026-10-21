@@ -3,6 +3,7 @@ use crate::legacy_core::config::ConfigBuilder;
 use app_test_support::create_mock_responses_server_sequence;
 use app_test_support::write_mock_responses_config_toml;
 use codex_app_server_client::AppServerEvent;
+use codex_app_server_client::TypedRequestError;
 use codex_app_server_protocol::ClientRequest;
 use codex_app_server_protocol::RequestId;
 use codex_app_server_protocol::ServerNotification;
@@ -353,17 +354,38 @@ async fn transcript_preview_for_history_mode(
                 detail: None,
             }
         };
-        let _: TurnStartResponse = request_handle
-            .request_typed(ClientRequest::TurnStart {
-                request_id: RequestId::String(format!("preview-turn-start-{index}")),
-                params: TurnStartParams {
-                    thread_id: thread_id.to_string(),
-                    input: vec![input],
-                    ..Default::default()
-                },
+        // A TurnCompleted notification can precede Core releasing its active-turn
+        // reservation. Retry only that transient rejection; other errors fail.
+        let _: TurnStartResponse =
+            tokio::time::timeout(std::time::Duration::from_secs(10), async {
+                let mut attempt = 0_u32;
+                loop {
+                    let result = request_handle
+                        .request_typed(ClientRequest::TurnStart {
+                            request_id: RequestId::String(format!(
+                                "preview-turn-start-{index}-{attempt}"
+                            )),
+                            params: TurnStartParams {
+                                thread_id: thread_id.to_string(),
+                                input: vec![input.clone()],
+                                ..Default::default()
+                            },
+                        })
+                        .await;
+                    match result {
+                        Ok(response) => break response,
+                        Err(TypedRequestError::Server { source, .. })
+                            if source.message == "failed to submit turn input: NotIdle" =>
+                        {
+                            attempt += 1;
+                            tokio::time::sleep(std::time::Duration::from_millis(10)).await;
+                        }
+                        Err(error) => panic!("start turn: {error:?}"),
+                    }
+                }
             })
             .await
-            .expect("start turn");
+            .expect("turn should become idle after prior completion");
         tokio::time::timeout(std::time::Duration::from_secs(10), async {
             loop {
                 let Some(event) = app_server.next_event().await else {
