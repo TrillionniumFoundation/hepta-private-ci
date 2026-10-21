@@ -19,6 +19,8 @@ from native_source_bindings import BindingError, observe_native_bindings
 LANE = ROOT / "docs/lane-a-foundation"
 MATRIX_PATH = LANE / "MODULE_TRUTH_MATRIX.json"
 CAPABILITY_MAP_PATH = LANE / "CAPABILITY_EVIDENCE_MAP.json"
+OPS_CAPABILITY_MAP_PATH = LANE / "kernel.operations/CAPABILITY_EVIDENCE_V2.json"
+REFERENCE_OPERATIONS_SUMMARY = "explicit Agentd daemon lifecycle composition with observer-only reconciler and fail-closed default"
 BOUNDARY_POLICY_PATH = LANE / "BOUNDARY_POLICY.md"
 NATIVE_BINDINGS_PATH = (
     ROOT / "qualification/module-execution-dossiers/NATIVE_BINDINGS_LANE_A.json"
@@ -48,6 +50,17 @@ SECTIONS = [
     "## Known limits and non-claims",
     "## Verification",
     "## Integration prerequisites",
+]
+PLATFORM_TYPES_SECTIONS = [
+    "## Current executable contract",
+    "## Public symbols and source bindings",
+    "## Authority boundary",
+    "## Canonical compatibility",
+    "## Registry and numeric-profile admission",
+    "## Q32 semantic split",
+    "## Durability and product composition",
+    "## Owned target protocols still source-pending",
+    "## Verification",
 ]
 MIGRATIONS = [
     "0001_governance.sql",
@@ -309,8 +322,8 @@ def validate_source_specific(root: Path = ROOT) -> None:
         "codex-rs/hepta-types/src/lib.rs": ["pub use identity::IdentityError;"],
         "codex-rs/hepta-wire/src/envelope.rs": ["const WIRE_VERSION: u16 = 1;"],
         "codex-rs/hepta-operations/src/lib.rs": [
-            "In-memory reference model",
-            "does not provide durable storage",
+            "deterministic in-memory reference",
+            "DurableOperationStore",
         ],
         "codex-rs/hepta-operations/src/model.rs": [
             "pub struct ReferenceAuthorityWitness",
