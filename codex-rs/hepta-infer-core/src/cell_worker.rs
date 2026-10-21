@@ -117,6 +117,7 @@ pub struct CompatibleModelKeyV1 {
 #[derive(Clone, Debug, Default, Eq, PartialEq)]
 pub struct CompatibleModelIndexV1 {
     entries: BTreeMap<CompatibleModelKeyV1, BTreeSet<StableId>>,
+    entry_count: usize,
 }
 
 impl CompatibleModelIndexV1 {
@@ -132,12 +133,14 @@ impl CompatibleModelIndexV1 {
             .entries
             .get(&key)
             .is_some_and(|cells| cells.contains(&cell_id));
-        if !already_registered
-            && self.entries.values().map(BTreeSet::len).sum::<usize>() >= MAX_INDEX_ENTRIES
-        {
+        if !already_registered && self.entry_count >= MAX_INDEX_ENTRIES {
             return Err(CellWorkerError::IndexCapacity);
         }
-        self.entries.entry(key).or_default().insert(cell_id);
+        if self.entries.entry(key).or_default().insert(cell_id) {
+            // Keep registration O(log N): scanning all sets on every insert
+            // made the model's "second index" O(N^2) for large cell fleets.
+            self.entry_count += 1;
+        }
         Ok(())
     }
 
@@ -277,4 +280,22 @@ fn group_digest_frames_id_boundaries_and_cell_identity() {
     assert_ne!(baseline, boundary_collision, "IDs must be length framed");
     assert_ne!(baseline, different_cell, "cell identity must be included");
     assert_ne!(baseline, digest_batch(&[]), "batch size must be included");
+}
+
+#[cfg(test)]
+#[test]
+fn compatible_model_index_counts_unique_cells_without_recounting() {
+    let key = CompatibleModelKeyV1 {
+        model_digest: Digest32::of_bytes(b"model"),
+        encoder_digest: Digest32::of_bytes(b"encoder"),
+        output_width: 8,
+    };
+    let mut index = CompatibleModelIndexV1::default();
+    for number in 0..4096 {
+        let cell_id = StableId::new(format!("cell:index:{number}")).expect("cell");
+        index.register(key.clone(), cell_id.clone()).expect("register");
+        index.register(key.clone(), cell_id).expect("idempotent registration");
+    }
+    assert_eq!(index.entry_count, 4096);
+    assert_eq!(index.lookup(&key).len(), 4096);
 }
