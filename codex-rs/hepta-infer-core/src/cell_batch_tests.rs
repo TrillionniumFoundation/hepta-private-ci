@@ -118,3 +118,61 @@ fn queue_is_bounded_and_round_robin_fair() {
     assert_eq!(first[1].scope_id, id("scope:b"));
     assert_eq!(queue.len(), 1);
 }
+
+#[test]
+fn transient_scopes_are_reclaimed_after_drain() {
+    let mut queue = FairCellQueueV1::new(2).expect("queue");
+    for index in 0..4_096 {
+        let scope = id(&format!("scope:transient:{index}"));
+        queue
+            .push(QueuedCellRequestV1 {
+                request_id: id(&format!("request:transient:{index}")),
+                cell_id: id("cell:transient"),
+                scope_id: scope.clone(),
+                feature_generation: generation(1),
+            })
+            .expect("enqueue transient scope");
+        let drained = queue.drain_batch(1);
+        assert_eq!(drained.len(), 1);
+        assert_eq!(drained[0].scope_id, scope);
+        assert!(queue.is_empty());
+        assert!(
+            queue.queues.is_empty(),
+            "processed scope must not retain an empty queue"
+        );
+        assert!(queue.ready_scopes.is_empty());
+        assert!(queue.request_ids.is_empty());
+    }
+}
+
+#[test]
+fn partially_drained_scopes_preserve_round_robin_and_reclaim_on_completion() {
+    let mut queue = FairCellQueueV1::new(3).expect("queue");
+    for (number, scope) in [(1, "scope:a"), (2, "scope:a"), (3, "scope:b")] {
+        queue
+            .push(QueuedCellRequestV1 {
+                request_id: id(&format!("request:{number}")),
+                cell_id: id("cell:shared"),
+                scope_id: id(scope),
+                feature_generation: generation(1),
+            })
+            .expect("enqueue scope");
+    }
+    let first = queue.drain_batch(2);
+    assert_eq!(
+        first
+            .iter()
+            .map(|request| request.scope_id.as_str())
+            .collect::<Vec<_>>(),
+        vec!["scope:a", "scope:b"]
+    );
+    assert_eq!(queue.queues.len(), 1);
+    assert!(queue.queues.contains_key(&id("scope:a")));
+    assert_eq!(queue.len(), 1);
+    let last = queue.drain_batch(2);
+    assert_eq!(last.len(), 1);
+    assert_eq!(last[0].request_id, id("request:2"));
+    assert!(queue.queues.is_empty());
+    assert!(queue.ready_scopes.is_empty());
+    assert!(queue.request_ids.is_empty());
+}
