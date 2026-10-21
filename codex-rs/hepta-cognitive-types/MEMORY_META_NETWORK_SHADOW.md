@@ -105,6 +105,11 @@ full-batch path also validates the retrieval/dynamics policies when there are
 zero Cells. An empty or all-deferred batch is an abstention, not an exemption
 from those contracts.
 
+The shared preflight also rejects a Cell's claimed resource reservation if
+it exceeds that Cell's own declared tick budget, even when the network-wide
+budget has room. Estimates remain untrusted: no real GPU metering or budget
+accounting proof is inferred from this check.
+
 The input/plan shadow digest domains advance to
 `hepta.memory-meta.pretick.inputs.v2` and
 `hepta.memory-meta.pretick.plan.v2` to bind the actual cue digest and
