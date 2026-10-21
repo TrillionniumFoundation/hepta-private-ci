@@ -164,3 +164,25 @@ tombstone proof, nor protection from a revocation occurring *after* the
 second pass. Production still needs an authenticated snapshot-consistent
 owner with complete exact-delete propagation. Full exact-head Rust and
 cross-platform checks remain mandatory.
+
+## Local budget and full-chain replay invariants (shadow only)
+
+The common `MemoryMetaRoutingCandidateV1::validate` now rejects a
+routing cost greater than the Cell's declared tick budget, not only
+the global Meta-Network limit. The independent, deserializable
+`MemoryMetaRouteReceiptV1::validate` rejects zero or out-of-range
+per-Cell costs even when its route digest has been recomputed. This
+keeps pure routing, pre-tick admission and receipt validation aligned
+on nonzero bounded resource reservations; it does not establish that
+the estimates correspond to GPU or wall-clock usage.
+
+`MemoryCellNextSnapshotCandidateV1::validate_chain` checks a bounded
+oldest-first sequence of 3 to 64 offline proposals. In addition to
+pairwise model/topology continuity and frozen Base/Encoder/frontiers,
+Replay snapshot, Replay receipt and independent Evaluation digests
+must be unique across **the whole sequence**. Tests reject reuse
+across nonadjacent generations even where a two-generation
+`validate_after` check would pass. These are consistency checks
+over untrusted references, not signed Replay, evaluation independence,
+future-window performance, actual model training or activation authority.
+The qualification state remains **SHADOW_ONLY / DENY_ALL / HOLD_NO_GO**.
