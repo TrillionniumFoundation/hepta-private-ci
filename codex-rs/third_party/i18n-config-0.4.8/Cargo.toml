@@ -1,0 +1,18 @@
+[package]
+name = "i18n-config"
+version = "0.4.8"
+authors = ["Luke Frisken <l.frisken@gmail.com>", "cargo-i18n contributors"]
+edition = "2024"
+rust-version = "1.85.1"
+license = "MIT"
+repository = "https://github.com/kellpossible/cargo-i18n"
+description = "Localization config parsing for cargo-i18n (vendored security-compatible upstream)"
+readme = "README.md"
+publish = false
+
+[dependencies]
+log = "0.4"
+serde = { version = "1", features = ["derive"] }
+thiserror = "2"
+toml = "1.1.6"
+unic-langid = { version = "0.9", features = ["serde"] }
