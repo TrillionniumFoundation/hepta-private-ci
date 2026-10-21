@@ -5,6 +5,10 @@
 #[cfg(any(target_os = "windows", test))]
 mod ssh_config_dependencies;
 
+#[cfg(all(test, target_os = "windows"))]
+#[path = "private_state_native_probe_tests.rs"]
+mod private_state_native_probe;
+
 use std::fmt;
 use std::sync::Arc;
 
