@@ -6,6 +6,7 @@ are shared outside Neuron Cells; no per-Cell model or memory is created here.
 """
 from __future__ import annotations
 
+from copy import deepcopy
 from dataclasses import dataclass
 import hashlib
 import json
@@ -322,6 +323,58 @@ def _verify_optimizer_gradients(student: nn.Module,
         raise LatentBridgeError("offline distillation produced no Student gradients")
 
 
+def _guarded_offline_optimizer_step(optimizer: torch.optim.Optimizer,
+                                    expected_ids: tuple[int, ...],
+                                    expected_settings: tuple) -> None:
+    """Rollback pre-step weights and optimizer state on an unsafe stock step.
+
+    This isolates a research micro-step; it does not roll back forward-hook
+    side effects, external I/O, or supply a production training transaction.
+    """
+    if ("step" in vars(optimizer)
+            or optimizer._optimizer_step_pre_hooks
+            or optimizer._optimizer_step_post_hooks
+            or optimizer._optimizer_state_dict_pre_hooks
+            or optimizer._optimizer_state_dict_post_hooks
+            or optimizer._optimizer_load_state_dict_pre_hooks
+            or optimizer._optimizer_load_state_dict_post_hooks):
+        raise LatentBridgeError("instrumented offline optimizer step is unsupported")
+    parameters = [p for group in optimizer.param_groups for p in group["params"]]
+    if tuple(id(p) for p in parameters) != expected_ids:
+        raise LatentBridgeError("offline optimizer ownership changed before step")
+    if any(p.layout != torch.strided or not p.is_floating_point()
+           or not bool(torch.isfinite(p.detach()).all()) for p in parameters):
+        raise LatentBridgeError("nonfinite/unsupported pre-step offline weights")
+
+    # The old optimizer state must be deep-copied: state_dict() alone retains
+    # tensor aliases, including AdamW moments that step() overwrites in place.
+    parameter_snapshot = [p.detach().clone() for p in parameters]
+    state_snapshot = deepcopy(optimizer.state_dict())
+    try:
+        optimizer.step()
+        if tuple(id(p) for group in optimizer.param_groups
+                 for p in group["params"]) != expected_ids:
+            raise LatentBridgeError("offline optimizer ownership changed after step")
+        if any(p.layout != torch.strided or not bool(torch.isfinite(p.detach()).all())
+               for p in parameters):
+            raise LatentBridgeError("nonfinite post-step offline weights")
+        # A finite weight update may still create infinite AdamW moments; check
+        # state and scalar configuration AFTER the physical optimizer step.
+        if _verify_optimizer_step_safety(optimizer) != expected_settings:
+            raise LatentBridgeError("offline optimizer settings changed after step")
+    except Exception as error:
+        try:
+            with torch.no_grad():
+                for parameter, before in zip(parameters, parameter_snapshot):
+                    parameter.copy_(before)
+            optimizer.load_state_dict(state_snapshot)
+        except Exception as restore_error:
+            raise LatentBridgeError("offline optimizer rollback failed") from restore_error
+        if isinstance(error, LatentBridgeError):
+            raise
+        raise LatentBridgeError("offline optimizer step failed; state restored") from error
+
+
 def shadow_distill_step(student: nn.Module, slotizer: MultimodalSlotizer,
                         features: dict[str, torch.Tensor], source_digests: dict[str, str],
                         teacher_global: torch.Tensor, optimizer: torch.optim.Optimizer,
@@ -406,7 +459,8 @@ def shadow_distill_step(student: nn.Module, slotizer: MultimodalSlotizer,
     _verify_optimizer_gradients(student, optimizer)
     if _verify_optimizer_step_safety(optimizer) != optimizer_safety_binding:
         raise LatentBridgeError("offline optimizer configuration changed before step")
-    optimizer.step()
+    _guarded_offline_optimizer_step(optimizer, optimizer_binding,
+                                    optimizer_safety_binding)
     return {"loss": float(loss.detach()), "mse": float(mse.detach()),
             "cosine_loss": float(cosine.detach()), "generation": generation,
             "source_manifest_digest": slots.source_manifest_digest,
