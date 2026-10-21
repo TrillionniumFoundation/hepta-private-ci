@@ -48,12 +48,15 @@ impl FleetAuthorityPort {
 
     /// Same concrete owner mutation as `issue`, but returns the canonical
     /// non-authorizing audit witness for durable evidence composition.
+    ///
+    /// The caller's legacy clock is not an authority clock. The ledger must
+    /// use the timestamp independently verified at this final dispatch fence.
     pub fn issue_with_witness(
         &self,
         ledger: &mut LeaseLedger,
         lease_id: &str,
         expected_lease_revision: u64,
-        now_ms: u64,
+        _caller_now_ms: u64,
         grant: AllocationGrant,
     ) -> Result<(LeaseReceipt, VerifiedUseTokenWitnessV1), FleetAuthorityError> {
         let binding = allocation_binding(&grant)?;
@@ -62,8 +65,8 @@ impl FleetAuthorityPort {
             .verify_use(lease_id, expected_lease_revision, &binding)
             .map_err(FleetAuthorityError::Authority)?;
         let (result, witness) =
-            dispatch_authority_lease_with_witness(&self.verifier, token, &binding, |_| {
-                ledger.issue(now_ms, grant)
+            dispatch_authority_lease_with_witness(&self.verifier, token, &binding, |witness| {
+                ledger.issue(witness.verified_at_unix_ms, grant)
             })
             .map_err(FleetAuthorityError::Authority)?;
         let receipt = result.map_err(FleetAuthorityError::Fleet)?;
@@ -194,20 +197,23 @@ mod tests {
 
     fn ledger() -> LeaseLedger {
         let mut ledger = LeaseLedger::new();
-        ledger
-            .admit_host(HostObservation {
-                host_id: "host-one".into(),
-                failure_domain_id: "rack-one".into(),
-                generation: 1,
-                observed_at_ms: 1_000,
-                valid_until_ms: 10_000,
-                capacity: Resources {
-                    cpu_millis: 1_000,
-                    memory_bytes: 1 << 20,
-                    accelerator_millis: 1_000,
-                },
-            })
-            .expect("test fixture should succeed");
+        assert!(
+            ledger
+                .admit_host(HostObservation {
+                    host_id: "host-one".into(),
+                    failure_domain_id: "rack-one".into(),
+                    generation: 1,
+                    observed_at_ms: 1_000,
+                    valid_until_ms: 10_000,
+                    capacity: Resources {
+                        cpu_millis: 1_000,
+                        memory_bytes: 1 << 20,
+                        accelerator_millis: 1_000,
+                    },
+                })
+                .is_ok(),
+            "fleet ledger fixture host admission must succeed"
+        );
         ledger
     }
 
@@ -265,6 +271,46 @@ mod tests {
             port.issue(&mut ledger, "fleet-issue-one", 2, 2_001, grant)
                 .unwrap_err(),
             FleetAuthorityError::Authority(AuthorityLeaseError::Revoked)
+        );
+    }
+
+    #[test]
+    fn caller_clock_cannot_backdate_an_expired_allocation() {
+        let directory = tempfile::tempdir().expect("temporary directory");
+        std::fs::set_permissions(directory.path(), std::fs::Permissions::from_mode(0o700))
+            .expect("private authority directory");
+        let registry = AuthorityLeaseRegistry::open_state_dir_with_clock(
+            directory.path(),
+            "security-authority".into(),
+            AuthorityLeaseFrontier::for_empty_epoch(7).expect("empty authority frontier"),
+            Arc::new(FixedClock(9_500)),
+        )
+        .expect("trusted authority registry");
+        let grant = grant();
+        let binding = FleetAuthorityPort::binding_for_issue(&grant).expect("exact fleet binding");
+        registry
+            .put_lease(
+                AuthorityLease {
+                    schema_version: 1,
+                    lease_id: "fleet-expired-allocation".into(),
+                    authority_epoch: 7,
+                    revision: 1,
+                    binding,
+                    issued_at_unix_ms: 1_000,
+                    expires_at_unix_ms: 9_800,
+                },
+                0,
+            )
+            .expect("live lease beyond allocation expiration");
+
+        let port = FleetAuthorityPort::new(registry.verifier());
+        let mut ledger = ledger();
+        let error = port
+            .issue(&mut ledger, "fleet-expired-allocation", 1, 2_000, grant)
+            .expect_err("untrusted caller time cannot revive an expired allocation");
+        assert_eq!(
+            error,
+            FleetAuthorityError::Fleet(LeaseLedgerError::InvalidTime)
         );
     }
 

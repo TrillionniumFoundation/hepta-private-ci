@@ -1,0 +1,54 @@
+name: Hepta security sync-keyring full lock resolver
+
+on:
+  push:
+    branches:
+      - fix/3084-keyring-zbus-sync-20261021
+
+permissions:
+  contents: read
+
+jobs:
+  keyring-lock-evidence:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 40
+    steps:
+      - name: Checkout exact candidate
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          persist-credentials: false
+      - name: Install pinned Rust toolchain
+        uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582 # 1.95.0
+        with:
+          toolchain: 1.95.0
+      - name: Generate complete post-feature Cargo.lock evidence
+        shell: bash
+        run: |
+          set -uo pipefail
+          evidence="${RUNNER_TEMP}/keyring-lock-evidence"
+          mkdir -p "$evidence"
+          git rev-parse HEAD > "$evidence/source-head.txt"
+          git rev-parse 'HEAD^{tree}' > "$evidence/source-tree.txt"
+          cp codex-rs/Cargo.lock "$evidence/Cargo.lock.before"
+          cargo +1.95.0 update --manifest-path codex-rs/Cargo.toml -p keyring --precise 3.6.3 > "$evidence/update.log" 2>&1
+          rc=$?
+          printf '%s\n' "$rc" > "$evidence/update.exit"
+          cp codex-rs/Cargo.lock "$evidence/Cargo.lock"
+          git diff --binary -- codex-rs/Cargo.lock > "$evidence/Cargo.lock.patch"
+          git diff --name-only > "$evidence/changed-paths.txt"
+          if [[ "$rc" -eq 0 ]]; then
+            cargo +1.95.0 metadata --manifest-path codex-rs/Cargo.toml --locked --format-version 1 > /dev/null 2> "$evidence/metadata.log"
+            rc=$?
+          fi
+          printf '%s\n' "$rc" > "$evidence/qualification.exit"
+          echo "Cargo update / metadata exit: $rc"
+          cat "$evidence/changed-paths.txt"
+          grep -E -C 1 'name = "(zbus|zbus_names|zvariant|zvariant_derive|keyring)"' codex-rs/Cargo.lock | head -100 || true
+          exit "$rc"
+      - name: Upload immutable resolver evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: keyring-sync-resolver-${{ github.sha }}-${{ github.run_id }}
+          path: ${{ runner.temp }}/keyring-lock-evidence/
+          retention-days: 7
