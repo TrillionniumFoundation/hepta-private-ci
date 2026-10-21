@@ -183,7 +183,17 @@ async fn agentd_product_host_recovers_exact_cut_into_fenced_writer_generation()
     )
     .await?;
     let recovered_anchor = host.writer().recovery_anchor().await?;
-    assert_eq!(recovered_anchor, expected);
+    // open_with_recovery has already validated the exact predecessor cut.
+    // Opening the production writer subsequently commits the authorized
+    // generation-1 lease to the same database, so the current logical state
+    // digest MUST advance. Requiring the post-lease cut to equal the pre-lease
+    // witness would reject a correct durable writer acquisition.
+    assert_eq!(recovered_anchor.profile, expected.profile);
+    assert_eq!(recovered_anchor.owner_agent_id, expected.owner_agent_id);
+    assert_eq!(recovered_anchor.schema_digest, expected.schema_digest);
+    assert_ne!(recovered_anchor.state_digest, expected.state_digest);
+    assert_eq!(host.writer().generation(), 1);
+    assert_eq!(host.writer().lease_id(), "agentd-product-recovery-test");
 
     let now = i64::try_from(now_unix_seconds()?)?;
     let access = CognitiveAccess::agent_private(owner.clone());
