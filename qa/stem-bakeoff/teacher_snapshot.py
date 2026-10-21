@@ -59,6 +59,8 @@ def inventory(snapshot: str | Path) -> dict[str, Any]:
             metadata = target.lstat()
             if not stat.S_ISREG(metadata.st_mode):
                 raise TeacherSnapshotError("snapshot may contain only regular files")
+            if metadata.st_nlink != 1:
+                raise TeacherSnapshotError("snapshot may not contain hardlink aliases")
             total += metadata.st_size
             if len(entries) >= MAX_FILES or total > MAX_BYTES:
                 raise TeacherSnapshotError("checkpoint file/byte budget exceeded")
@@ -107,8 +109,23 @@ def verify_snapshot(snapshot: str | Path, *, candidate: str,
     if not any(name.endswith(".safetensors") for name in names):
         raise TeacherSnapshotError("safetensors checkpoint missing")
     try:
-        config = json.loads((Path(snapshot) / "config.json").read_text("utf-8"))
+        config_item = next(row for row in contents["entries"]
+                           if row["path"] == "config.json")
+        if config_item["bytes"] > 1024 * 1024:
+            raise TeacherSnapshotError("checkpoint config.json exceeds 1 MiB")
+        config_path = Path(snapshot) / "config.json"
+        if config_path.is_symlink():
+            raise TeacherSnapshotError("checkpoint config.json became a symlink")
+        # Re-read only bounded config bytes and confirm they match the pinned
+        # inventory. A mutation between inventory and parse must not silently
+        # change the model_type that was actually checked.
+        config_bytes = config_path.read_bytes()
+        if hashlib.sha256(config_bytes).hexdigest() != config_item["sha256"]:
+            raise TeacherSnapshotError("checkpoint config.json changed after hashing")
+        config = json.loads(config_bytes.decode("utf-8"))
     except (OSError, UnicodeError, ValueError) as error:
+        if isinstance(error, TeacherSnapshotError):
+            raise
         raise TeacherSnapshotError("invalid checkpoint config.json") from error
     if not isinstance(config, dict) or config.get("model_type") != MODEL_TYPES[candidate]:
         raise TeacherSnapshotError("checkpoint model_type not registered for candidate")
