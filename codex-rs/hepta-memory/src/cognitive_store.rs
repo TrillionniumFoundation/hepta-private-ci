@@ -333,6 +333,8 @@ impl CognitiveStore {
         let path = resolve_active_database_path(&root)?;
         let sqlite_home = AbsolutePathBuf::try_from(root.to_path_buf())
             .map_err(|error| CognitiveStoreError::Invalid(error.to_string()))?;
+        #[cfg(windows)]
+        windows::prepare_database_file(&path)?;
         let pool = SqliteConfig::from_sqlite_home(sqlite_home)
             .open_durable_evidence_pool(&path)
             .await
@@ -522,6 +524,8 @@ pub(crate) async fn open_v2_test_pool(
     let path = root.join(COGNITIVE_DB_FILENAME);
     let sqlite_home = AbsolutePathBuf::try_from(root.to_path_buf())
         .map_err(|error| CognitiveStoreError::Invalid(error.to_string()))?;
+    #[cfg(windows)]
+    windows::prepare_database_file(&path)?;
     let pool = SqliteConfig::from_sqlite_home(sqlite_home)
         .open_durable_evidence_pool(&path)
         .await
@@ -1673,7 +1677,14 @@ pub(crate) fn publish_active_database(
     result
 }
 
+#[cfg(windows)]
+#[path = "cognitive_store_windows.rs"]
+mod windows;
+
 fn create_private_directory(path: &Path) -> Result<PathBuf, CognitiveStoreError> {
+    #[cfg(windows)]
+    windows::create_private_directory(path)?;
+    #[cfg(not(windows))]
     fs::create_dir_all(path).map_err(unavailable)?;
     let canonical = canonical_path_without_redirection(path)
         .map_err(unavailable)?
@@ -1694,6 +1705,8 @@ fn create_private_directory(path: &Path) -> Result<PathBuf, CognitiveStoreError>
 }
 
 fn protect_database_file(_path: &Path) -> Result<(), CognitiveStoreError> {
+    #[cfg(windows)]
+    windows::verify_database_file(_path)?;
     #[cfg(unix)]
     {
         use std::os::unix::fs::PermissionsExt;
