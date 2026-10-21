@@ -251,6 +251,28 @@ impl MemoryMetaRouteReceiptV1 {
         }
         Ok(())
     }
+
+    /// Re-derive every routing decision against the supplied policy and full
+    /// original candidate set. An internally consistent receipt digest alone
+    /// cannot prove that its decisions follow the actual source inputs.
+    ///
+    /// This is deterministic replay verification, not ledger authentication:
+    /// callers must independently establish the trusted policy, candidates,
+    /// source/forget frontiers and external evidence inclusion.
+    pub fn validate_against(
+        &self,
+        policy: &MemoryMetaNetworkPolicyV1,
+        candidates: &[MemoryMetaRoutingCandidateV1],
+    ) -> Result<(), HnmfContractError> {
+        self.validate()?;
+        let expected = route_memory_cells_v1(policy, candidates)?;
+        if *self != expected.receipt {
+            return Err(HnmfContractError::Conflict(
+                "memory meta route source binding",
+            ));
+        }
+        Ok(())
+    }
 }
 
 /// This wrapper is not a wire contract: authority is sealed and always denied.
