@@ -29,10 +29,12 @@ impl OutputProtocolV1 {
             Self::ToolAction => 6,
         }
     }
-    /// Tool actions cannot be linearly blended by this selector.
+    /// Tool effects and discrete masked-unmask plans must be selected as
+    /// whole candidates. Continuous logits and latent directions are subject
+    /// to additional protocol and composition compatibility checks.
     #[must_use]
     pub(crate) const fn requires_whole_candidate(self) -> bool {
-        matches!(self, Self::ToolAction)
+        matches!(self, Self::ToolAction | Self::MaskedDiffusion)
     }
 }
 /// Semantic loss estimates collected over a frozen future window.
