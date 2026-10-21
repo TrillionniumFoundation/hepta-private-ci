@@ -1,0 +1,280 @@
+name: Validate the foundation Windows Git descendant fixture
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened, ready_for_review]
+    paths:
+      - codex-rs/git-utils/src/git_process_tests.rs
+      - .github/workflows/windows-git-native-fixture.yml
+
+permissions:
+  contents: read
+
+env:
+  CARGO_INCREMENTAL: "0"
+  CARGO_BUILD_JOBS: "2"
+  CARGO_PROFILE_TEST_DEBUG: "0"
+  CARGO_PROFILE_DEV_DEBUG: "0"
+  CARGO_TERM_COLOR: never
+  SOURCE_SHA: ${{ github.event.pull_request.head.sha }}
+  BASE_SOURCE: b58d870a2c38ebee0aa0b974d9f03767c888fa7e
+  FIXTURE_PATH: codex-rs/git-utils/src/git_process_tests.rs
+  FIXTURE_BLOB: 71c47aaf67f78cc40e47cf2249860b81fb29f5b6
+  VALIDATION_WORKFLOW: .github/workflows/windows-git-native-fixture.yml
+
+jobs:
+  windows-git-native-fixture:
+    if: >-
+      github.event_name == 'pull_request' &&
+      github.repository == 'TrillionniumFoundation/hepta-private-ci' &&
+      github.event.pull_request.head.repo.full_name == github.repository &&
+      github.event.pull_request.head.ref == 'agents/20261021/windows-git-native-fixture'
+    runs-on: windows-latest
+    timeout-minutes: 120
+    steps:
+      - name: Checkout this exact same-repository PR head without saved credentials
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Freeze the reviewed fixture and verify the two-file source boundary
+        shell: pwsh
+        run: |
+          @'
+          import hashlib
+          import json
+          import os
+          from pathlib import Path
+          import re
+          import subprocess
+
+          evidence = Path(os.environ["RUNNER_TEMP"]) / "windows-git-native-fixture"
+          evidence.mkdir()
+          def git(*args):
+              return subprocess.check_output(["git", *args], text=True).strip()
+          def identity(path):
+              return {"git_entry": git("ls-tree", "HEAD", "--", path),
+                      "git_blob": git("rev-parse", "HEAD:" + path),
+                      "worktree_blob": git("hash-object", "--path=" + path, path),
+                      "sha256": hashlib.sha256(Path(path).read_bytes()).hexdigest()}
+
+          event = json.loads(Path(os.environ["GITHUB_EVENT_PATH"]).read_text(encoding="utf-8"))
+          head = event["pull_request"]["head"]
+          source_sha = os.environ["SOURCE_SHA"]
+          base = os.environ["BASE_SOURCE"]
+          fixture = os.environ["FIXTURE_PATH"]
+          workflow = os.environ["VALIDATION_WORKFLOW"]
+          paths = [fixture, workflow, "codex-rs/Cargo.lock", "MODULE.bazel.lock",
+                   "codex-rs/git-utils/src/git_process.rs", "codex-rs/utils/pty/src/win/job.rs",
+                   "codex-rs/.config/nextest.toml", "codex-rs/rust-toolchain.toml",
+                   "justfile", "scripts/run-nextest.py", "scripts/just-shell.py"]
+          changed = git("diff", "--name-status", "--no-renames", base, "HEAD").splitlines()
+          source = {"source_sha": git("rev-parse", "HEAD"),
+                    "source_tree": git("rev-parse", "HEAD^{tree}"),
+                    "base_source": base, "base_tree": git("rev-parse", base + "^{tree}"),
+                    "event_head": head["sha"], "event_head_ref": head["ref"],
+                    "event_repository": head["repo"]["full_name"],
+                    "pull_request": event["number"], "github_sha": os.environ["GITHUB_SHA"],
+                    "workflow_ref": os.environ["GITHUB_WORKFLOW_REF"],
+                    "run_id": os.environ["GITHUB_RUN_ID"], "run_attempt": os.environ["GITHUB_RUN_ATTEMPT"],
+                    "changed_paths": changed, "files": {path: identity(path) for path in paths},
+                    "status": git("status", "--porcelain=v1", "--untracked-files=all"),
+                    "qualification": "native fixture regression only; original global/schema/Bazel CI remains required",
+                    "boundary_verified": False}
+          (evidence / "source-before.json").write_text(json.dumps(source, indent=2) + "\n")
+          assert re.fullmatch(r"[0-9a-f]{40}", source_sha)
+          assert source["source_sha"] == source_sha == head["sha"]
+          assert head["repo"]["full_name"] == "TrillionniumFoundation/hepta-private-ci"
+          assert head["ref"] == "agents/20261021/windows-git-native-fixture"
+          assert set(changed) == {"M\t" + fixture, "A\t" + workflow}, changed
+          assert not source["status"], source["status"]
+          subprocess.run(["git", "merge-base", "--is-ancestor", base, "HEAD"], check=True)
+          assert git("rev-parse", base + ":" + fixture) == "fafd04517317251dd14b94991c7311b72b781e7d"
+          assert source["files"][fixture]["git_blob"] == os.environ["FIXTURE_BLOB"]
+          for path, entry in source["files"].items():
+              assert entry["worktree_blob"] == entry["git_blob"], path
+              if path in (fixture, workflow):
+                  assert entry["git_entry"].startswith("100644 blob "), (path, entry)
+              else:
+                  assert entry["git_entry"] == git("ls-tree", base, "--", path), path
+          subprocess.run(["git", "diff", "--check", base, "HEAD"], check=True)
+          source["boundary_verified"] = True
+          (evidence / "source-before.json").write_text(json.dumps(source, indent=2) + "\n")
+          print(json.dumps(source, indent=2))
+          '@ | python -
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+
+      - name: Install the original repository test runners
+        uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
+        with:
+          tool: just@1.51.0,nextest@0.9.103
+
+      - name: Retain native tool versions
+        shell: pwsh
+        run: |
+          @'
+          import os
+          from pathlib import Path
+          import subprocess
+
+          evidence = Path(os.environ["RUNNER_TEMP"]) / "windows-git-native-fixture"
+          with (evidence / "tool-versions.log").open("wb") as output:
+              for command in [["rustc", "--version", "--verbose"], ["cargo", "--version"],
+                              ["just", "--version"], ["cargo", "nextest", "--version"],
+                              ["powershell.exe", "-NoProfile", "-NonInteractive", "-Command", "$PSVersionTable.PSVersion.ToString()"]]:
+                  subprocess.run(command, cwd="codex-rs", stdout=output, stderr=subprocess.STDOUT, check=True, timeout=600)
+          '@ | python -
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+
+      - name: Run each original timeout test and the complete Git utility package
+        shell: pwsh
+        run: |
+          @'
+          import json
+          import os
+          from pathlib import Path
+          import shutil
+          import subprocess
+          import time
+          import xml.etree.ElementTree as ET
+
+          evidence = Path(os.environ["RUNNER_TEMP"]) / "windows-git-native-fixture"
+          target = Path(os.environ["RUNNER_TEMP"]) / "windows-git-native-fixture-target"
+          os.environ["CARGO_TARGET_DIR"] = str(target)
+          junit = target / "nextest" / "local" / "junit.xml"
+          original_tests = ["git_process::tests::timed_out_git_wrapper_does_not_leave_child_process_running",
+                            "git_process::tests::timed_out_exited_git_wrapper_does_not_leave_child_process_running"]
+          helper = "git_process::tests::windows_git_child_lifetime_fixture"
+          common = ["just", "test", "--locked", "-p", "codex-git-utils", "--no-tests=fail", "--retries", "0"]
+          commands = [
+              ("wait-for-child", [*common, "--lib", "-E", "test(=" + original_tests[0] + ")", "--test-threads", "1"], 3300, [original_tests[0]]),
+              ("wrapper-exits-first", [*common, "--lib", "-E", "test(=" + original_tests[1] + ")", "--test-threads", "1"], 900, [original_tests[1]]),
+              ("full-git-utils", common, 1200, [*original_tests, helper]),
+          ]
+          records = []
+          cleanup_failed = False
+          for name, command, budget, required in commands:
+              record = {"name": name, "argv": command, "cwd": "codex-rs", "outer_timeout_seconds": budget,
+                        "started_at_unix": time.time(), "status": "running", "required_tests": required,
+                        "cargo_target_dir": str(target)}
+              records.append(record)
+              if cleanup_failed:
+                  record.update(status="blocked", reason="previous owned-process timeout cleanup failed")
+                  (evidence / "commands.json").write_text(json.dumps(records, indent=2) + "\n")
+                  continue
+              (evidence / "commands.json").write_text(json.dumps(records, indent=2) + "\n")
+              junit.unlink(missing_ok=True)
+              started = time.monotonic()
+              with (evidence / (name + ".stdout.log")).open("wb") as stdout, (evidence / (name + ".stderr.log")).open("wb") as stderr:
+                  try:
+                      process = subprocess.Popen(command, cwd="codex-rs", stdout=stdout, stderr=stderr)
+                      record["process_id"] = process.pid
+                      exit_code = process.wait(timeout=budget)
+                      record.update(exit_code=exit_code, timed_out=False,
+                                    status="passed" if exit_code == 0 else "failed")
+                  except subprocess.TimeoutExpired:
+                      record.update(exit_code=None, timed_out=True, status="failed")
+                      cleanup_command = ["taskkill.exe", "/PID", str(process.pid), "/T", "/F"]
+                      record["timeout_cleanup"] = {"argv": cleanup_command}
+                      try:
+                          with (evidence / (name + ".timeout-cleanup.log")).open("wb") as output:
+                              cleanup = subprocess.run(cleanup_command, stdout=output,
+                                                       stderr=subprocess.STDOUT, check=False, timeout=30)
+                          record["timeout_cleanup"]["exit_code"] = cleanup.returncode
+                          record["exit_code_after_cleanup"] = process.wait(timeout=30)
+                          cleanup_failed = cleanup.returncode != 0
+                      except (OSError, subprocess.TimeoutExpired) as error:
+                          record["timeout_cleanup"]["error"] = str(error)
+                          cleanup_failed = True
+                  except OSError as error:
+                      record.update(exit_code=None, timed_out=False, status="failed", error=str(error))
+              record["elapsed_seconds"] = time.monotonic() - started
+              try:
+                  if not junit.is_file():
+                      raise RuntimeError("This command did not produce a fresh repository-profile JUnit report")
+                  destination = evidence / (name + ".junit.xml")
+                  shutil.copyfile(junit, destination)
+                  report = ET.parse(destination)
+                  cases = []
+                  for case in report.iter("testcase"):
+                      failed = any(case.find(tag) is not None for tag in ("failure", "error"))
+                      skipped = case.find("skipped") is not None
+                      retried = any(case.find(tag) is not None for tag in ("rerunFailure", "rerunError", "flakyFailure", "flakyError"))
+                      cases.append({"name": case.get("name"), "classname": case.get("classname"),
+                                    "seconds": case.get("time"), "retried": retried,
+                                    "status": "failed" if failed else "skipped" if skipped else "passed"})
+                  counts = {status: sum(case["status"] == status for case in cases) for status in ("passed", "failed", "skipped")}
+                  counts.update(total=len(cases), retried=sum(case["retried"] for case in cases))
+                  names = {case["name"] for case in cases if case["status"] == "passed"}
+                  valid = bool(cases) and set(required) <= names and counts["failed"] == 0 and counts["retried"] == 0
+                  if name != "full-git-utils":
+                      valid = valid and counts["total"] == 1 and counts["skipped"] == 0
+                  record["junit"] = {"path": destination.name, "counts": counts, "cases": cases,
+                                     "required_tests_verified": valid}
+                  if not valid:
+                      record["status"] = "failed"
+              except (OSError, ET.ParseError, RuntimeError) as error:
+                  record.update(status="failed", junit_error=str(error))
+              (evidence / "commands.json").write_text(json.dumps(records, indent=2) + "\n")
+              print(json.dumps(record))
+          if len(records) != 3 or not all(record["status"] == "passed" for record in records):
+              raise SystemExit(1)
+          '@ | python -
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+
+      - name: Always verify unchanged source, locks and production inputs
+        if: always()
+        shell: pwsh
+        run: |
+          @'
+          import hashlib
+          import json
+          import os
+          from pathlib import Path
+          import subprocess
+
+          evidence = Path(os.environ["RUNNER_TEMP"]) / "windows-git-native-fixture"
+          evidence.mkdir(exist_ok=True)
+          def git(*args):
+              return subprocess.check_output(["git", *args], text=True).strip()
+          def identity(path):
+              return {"git_entry": git("ls-tree", "HEAD", "--", path),
+                      "git_blob": git("rev-parse", "HEAD:" + path),
+                      "worktree_blob": git("hash-object", "--path=" + path, path),
+                      "sha256": hashlib.sha256(Path(path).read_bytes()).hexdigest()}
+
+          verification = {"source_unchanged": False, "all_three_commands_passed": False,
+                          "qualification": "native fixture regression only; original global/schema/Bazel CI remains required"}
+          try:
+              before = json.loads((evidence / "source-before.json").read_text())
+              current = {"source_sha": git("rev-parse", "HEAD"), "source_tree": git("rev-parse", "HEAD^{tree}"),
+                         "files": {path: identity(path) for path in before["files"]},
+                         "status": git("status", "--porcelain=v1", "--untracked-files=all")}
+              (evidence / "source-after.json").write_text(json.dumps(current, indent=2) + "\n")
+              subprocess.run(["git", "diff", "--check"], check=True)
+              verification["source_unchanged"] = before.get("boundary_verified", False) and not current["status"] and all(current[key] == before[key] for key in current)
+              records = json.loads((evidence / "commands.json").read_text())
+              verification["all_three_commands_passed"] = len(records) == 3 and all(record["status"] == "passed" and record.get("exit_code") == 0 and record.get("junit", {}).get("required_tests_verified", False) for record in records)
+          except (OSError, KeyError, ValueError, subprocess.CalledProcessError) as error:
+              verification["error"] = str(error)
+          (evidence / "verification.json").write_text(json.dumps(verification, indent=2) + "\n")
+          inventory = [{"path": path.name, "bytes": path.stat().st_size,
+                        "sha256": hashlib.sha256(path.read_bytes()).hexdigest()}
+                       for path in sorted(evidence.iterdir()) if path.is_file() and path.name != "inventory.json"]
+          (evidence / "inventory.json").write_text(json.dumps({"verification": verification, "files": inventory}, indent=2) + "\n")
+          print(json.dumps(verification, indent=2))
+          if not verification["source_unchanged"] or not verification["all_three_commands_passed"]:
+              raise SystemExit(1)
+          '@ | python -
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+
+      - name: Always retain exact source identities, commands, outputs and JUnit
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: windows-git-native-fixture-${{ github.event.pull_request.head.sha }}-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/windows-git-native-fixture/
+          if-no-files-found: error
+          retention-days: 7
