@@ -606,6 +606,37 @@ impl MemoryCellNextSnapshotCandidateV1 {
         }
         Ok(())
     }
+
+    /// Validate a bounded, oldest-first set of offline learning proposals.
+    /// Adjacent checks alone permit reusing a replay/evaluator reference after
+    /// an intervening generation; reject reuse anywhere in the supplied chain.
+    /// Digest uniqueness is necessary but does not establish independent data,
+    /// evaluator provenance, signed artifacts or production authority.
+    pub fn validate_chain(chain: &[Self]) -> Result<(), HnmfContractError> {
+        if !(3..=64).contains(&chain.len()) {
+            return Err(HnmfContractError::Invalid(
+                "memory next-snapshot chain length",
+            ));
+        }
+        let mut replay_snapshots = BTreeSet::new();
+        let mut replay_receipts = BTreeSet::new();
+        let mut evaluations = BTreeSet::new();
+        for (index, candidate) in chain.iter().enumerate() {
+            candidate.validate()?;
+            if index > 0 {
+                candidate.validate_after(&chain[index - 1])?;
+            }
+            if !replay_snapshots.insert(candidate.replay_snapshot_digest)
+                || !replay_receipts.insert(candidate.replay_receipt_digest)
+                || !evaluations.insert(candidate.independent_evaluation_digest)
+            {
+                return Err(HnmfContractError::Conflict(
+                    "memory next-snapshot recycled chain evidence",
+                ));
+            }
+        }
+        Ok(())
+    }
 }
 
 #[cfg(test)]
