@@ -1,7 +1,10 @@
 import importlib.util
+import io
 import json
 import pathlib
+import tempfile
 import unittest
+from contextlib import redirect_stderr
 
 MODULE_PATH = pathlib.Path(__file__).with_name("scale_matrix.py")
 spec = importlib.util.spec_from_file_location("scale_matrix", MODULE_PATH)
@@ -215,6 +218,50 @@ class ScaleMatrixTests(unittest.TestCase):
             "results[35] must be an object",
             scale_matrix.validate_matrix(matrix),
         )
+
+    def test_duplicate_authority_and_nested_provenance_keys_fail_closed(self):
+        # A last-wins JSON decoder could hide a production authority claim
+        # or a conflicting provenance digest from another verifier.
+        for payload in (
+            '{"authority":"production","authority":"qualification_only"}',
+            '{"provenance":{"source_commit":"a","source_commit":"b"}}',
+        ):
+            with self.subTest(payload=payload), self.assertRaisesRegex(
+                ValueError, "duplicate JSON key"
+            ):
+                scale_matrix.load_strict_json(io.StringIO(payload))
+
+    def test_json_nonfinite_literals_and_nonobject_result_are_rejected(self):
+        for literal in ("NaN", "Infinity", "-Infinity"):
+            with self.subTest(literal=literal), self.assertRaisesRegex(
+                ValueError, "non-finite JSON token"
+            ):
+                scale_matrix.load_strict_json(io.StringIO('{"value":' + literal + '}'))
+        self.assertEqual(
+            scale_matrix.validate_result(["not", "a", "result"]),
+            ["result must be an object"],
+        )
+
+    def test_bounded_json_parser_rejects_oversized_and_non_utf8_input(self):
+        oversized = io.StringIO(" " * (scale_matrix.MAX_QUALIFICATION_JSON_BYTES + 1))
+        with self.assertRaisesRegex(ValueError, "exceeds 4 MiB input limit"):
+            scale_matrix.load_strict_json(oversized)
+        with self.assertRaisesRegex(ValueError, "must be valid UTF-8"):
+            scale_matrix.load_strict_json(io.BytesIO(bytes([0xFF])))
+
+    def test_cli_rejects_duplicate_keys_without_traceback(self):
+        with tempfile.TemporaryDirectory() as directory:
+            path = pathlib.Path(directory) / "ambiguous.json"
+            path.write_text(
+                '{"schema":"hepta.cell-execution-scale-result.v1",'
+                '"authority":"production","authority":"qualification_only"}',
+                encoding="utf-8",
+            )
+            stderr = io.StringIO()
+            with redirect_stderr(stderr):
+                exit_code = scale_matrix.main(["validate", str(path)])
+            self.assertEqual(exit_code, 1)
+            self.assertIn("duplicate JSON key: authority", stderr.getvalue())
 
 
 if __name__ == "__main__":

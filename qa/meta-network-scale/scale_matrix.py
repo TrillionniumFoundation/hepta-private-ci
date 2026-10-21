@@ -66,6 +66,8 @@ PROVENANCE_FIELDS = (
     "runtime_digest",
     "measurement_digest",
 )
+# Parsing must be bounded before the matrix row-count gate can run.
+MAX_QUALIFICATION_JSON_BYTES = 4 * 1024 * 1024
 
 
 def build_plan() -> dict[str, Any]:
@@ -98,7 +100,45 @@ def _finite_number(value: Any) -> bool:
         return False
 
 
-def validate_result(result: dict[str, Any]) -> list[str]:
+def _reject_duplicate_keys(pairs: list[tuple[str, Any]]) -> dict[str, Any]:
+    """Reject ambiguous object keys at every nested JSON object boundary."""
+    parsed: dict[str, Any] = {}
+    for key, value in pairs:
+        if key in parsed:
+            raise ValueError(f"duplicate JSON key: {key}")
+        parsed[key] = value
+    return parsed
+
+
+def _reject_nonfinite_token(value: str) -> Any:
+    raise ValueError(f"non-finite JSON token: {value}")
+
+
+def load_strict_json(stream: Any) -> Any:
+    """Bound and parse UTF-8 evidence without lossy duplicate-key coercion."""
+    raw = (
+        stream.buffer.read(MAX_QUALIFICATION_JSON_BYTES + 1)
+        if hasattr(stream, "buffer")
+        else stream.read(MAX_QUALIFICATION_JSON_BYTES + 1)
+    )
+    if isinstance(raw, str):
+        raw = raw.encode("utf-8")
+    if len(raw) > MAX_QUALIFICATION_JSON_BYTES:
+        raise ValueError("qualification JSON exceeds 4 MiB input limit")
+    try:
+        payload = raw.decode("utf-8")
+    except UnicodeDecodeError as error:
+        raise ValueError("qualification JSON must be valid UTF-8") from error
+    return json.loads(
+        payload,
+        object_pairs_hook=_reject_duplicate_keys,
+        parse_constant=_reject_nonfinite_token,
+    )
+
+
+def validate_result(result: Any) -> list[str]:
+    if not isinstance(result, dict):
+        return ["result must be an object"]
     errors: list[str] = []
     if result.get("schema") != "hepta.cell-execution-scale-result.v1":
         errors.append("schema must be hepta.cell-execution-scale-result.v1")
@@ -237,7 +277,11 @@ def main(argv: list[str]) -> int:
         json.dump(build_plan(), sys.stdout, indent=2)
         sys.stdout.write("\n")
         return 0
-    result = json.load(args.result)
+    try:
+        result = load_strict_json(args.result)
+    except ValueError as error:
+        print(f"invalid qualification JSON: {error}", file=sys.stderr)
+        return 1
     errors = validate_matrix(result) if args.command == "validate-matrix" else validate_result(result)
     if errors:
         for error in errors:
