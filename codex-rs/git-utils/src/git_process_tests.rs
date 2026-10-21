@@ -39,17 +39,24 @@ async fn assert_timed_out_git_wrapper_does_not_leave_child_process_running(
     let mut command = {
         let mut command = Command::new("powershell.exe");
         let child_command = "Set-Content -LiteralPath $env:CHILD_READY_FILE -Value ready; while (-not (Test-Path $env:RELEASE_CHILD_FILE)) { Start-Sleep -Milliseconds 25 }; Start-Sleep -Seconds 1; Set-Content -LiteralPath $env:CHILD_SURVIVED_FILE -Value survived; Start-Sleep -Seconds 60";
+        // Start-Process flattens ArgumentList into a single Windows command line.
+        // Forwarding a raw `-Command` string through that second layer loses
+        // quoting around semicolons, and the descendant never writes its ready
+        // marker. Encode the child script as PowerShell UTF-16LE instead: the
+        // true nested process must become ready before timeout cleanup is tested.
+        let child_launcher = "$encodedChild = [Convert]::ToBase64String([Text.Encoding]::Unicode.GetBytes($env:CHILD_PS_SCRIPT)); $child = Start-Process -FilePath powershell.exe -ArgumentList @('-NoProfile', '-NonInteractive', '-EncodedCommand', $encodedChild) -PassThru -NoNewWindow -ErrorAction Stop; [System.IO.File]::WriteAllText($env:CHILD_PID_FILE, [string]$child.Id);";
         let wrapper_command = match wrapper_lifetime {
-            GitWrapperLifetime::WaitForChild => format!(
-                "$child = Start-Process -FilePath powershell.exe -ArgumentList @('-NoProfile', '-NonInteractive', '-Command', '{child_command}') -PassThru -NoNewWindow; [System.IO.File]::WriteAllText($env:CHILD_PID_FILE, [string]$child.Id); Wait-Process -Id $child.Id"
-            ),
+            GitWrapperLifetime::WaitForChild => {
+                format!("{child_launcher} Wait-Process -Id $child.Id")
+            }
             GitWrapperLifetime::ExitBeforeTimeout => format!(
-                "$child = Start-Process -FilePath powershell.exe -ArgumentList @('-NoProfile', '-NonInteractive', '-Command', '{child_command}') -PassThru -NoNewWindow; [System.IO.File]::WriteAllText($env:CHILD_PID_FILE, [string]$child.Id); while (-not (Test-Path $env:RELEASE_WRAPPER_FILE)) {{ Start-Sleep -Milliseconds 25 }}"
+                "{child_launcher} while (-not (Test-Path $env:RELEASE_WRAPPER_FILE)) {{ Start-Sleep -Milliseconds 25 }}"
             ),
         };
         command
             .args(["-NoProfile", "-NonInteractive", "-Command"])
-            .arg(wrapper_command);
+            .arg(wrapper_command)
+            .env("CHILD_PS_SCRIPT", child_command);
         command
     };
     command
