@@ -9,6 +9,10 @@ import unittest
 from matched_structured_rag_gate import audit, payload
 
 
+@unittest.skipUnless(
+    os.environ.get("HEPTA_MATCHED_RAG_ARCHIVE"),
+    "Pinned original GitHub artifact is required; dedicated same-reader CI supplies it",
+)
 class FrozenSameReaderGateTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls):

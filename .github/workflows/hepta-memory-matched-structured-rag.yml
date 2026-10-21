@@ -19,7 +19,7 @@ concurrency:
   cancel-in-progress: false
 jobs:
   source-bound-hybrid-null:
-    if: github.event.pull_request.number == 1452 && github.event.pull_request.head.repo.full_name == github.repository
+    if: (github.event.pull_request.number == 1452 || github.event.pull_request.number == 2471) && github.event.pull_request.head.repo.full_name == github.repository
     runs-on: ubuntu-24.04
     timeout-minutes: 15
     env:

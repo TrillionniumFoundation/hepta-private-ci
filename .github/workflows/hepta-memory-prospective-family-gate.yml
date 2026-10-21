@@ -1,0 +1,41 @@
+name: MemoryCell prospective source-family isolation gate
+
+on:
+  pull_request:
+    paths:
+      - "scripts/memory_cell/prospective_family_gate.py"
+      - "scripts/memory_cell/test_prospective_family_gate.py"
+      - "scripts/memory_cell/paired_source_cut.py"
+      - "scripts/memory_cell/test_paired_source_cut.py"
+      - "codex-rs/hepta-intelligence-eval/MEMORY_CELL_SOURCE_CUT_BINDING_20261016.md"
+      - ".github/workflows/hepta-memory-prospective-family-gate.yml"
+  push:
+    branches:
+      - "research/memorycell-four-stage-audit-20261016"
+    paths:
+      - "scripts/memory_cell/prospective_family_gate.py"
+      - "scripts/memory_cell/test_prospective_family_gate.py"
+      - "scripts/memory_cell/paired_source_cut.py"
+      - "scripts/memory_cell/test_paired_source_cut.py"
+      - "codex-rs/hepta-intelligence-eval/MEMORY_CELL_SOURCE_CUT_BINDING_20261016.md"
+      - ".github/workflows/hepta-memory-prospective-family-gate.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  isolation:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          persist-credentials: false
+      - name: Reject pre-exposure contamination and provenance overclaims
+        run: |
+          set -euo pipefail
+          PYTHONPATH=scripts/memory_cell python3 -m unittest discover -s scripts/memory_cell -p 'test_prospective_family_gate.py' -v
+          PYTHONPATH=scripts/memory_cell python3 -m unittest discover -s scripts/memory_cell -p 'test_four_stage_evidence.py' -v
+          PYTHONPATH=scripts/memory_cell python3 -m unittest discover -s scripts/memory_cell -p 'test_paired_source_cut.py' -v
+          python3 -m compileall -q scripts/memory_cell/prospective_family_gate.py scripts/memory_cell/paired_source_cut.py
+          git diff --exit-code
