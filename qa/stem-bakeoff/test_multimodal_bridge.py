@@ -182,6 +182,65 @@ class SharedMultimodalBridgeTests(unittest.TestCase):
         with self.assertRaises(LatentBridgeError):
             s({'image': torch.randn(2, 300, 32)}, source_digests={'image':'a'*64}, generation=1)
 
+    def test_distinct_parameters_aliasing_one_storage_rejected_before_forward(self):
+        bridge = self.stem()
+        student = torch.nn.Linear(32, 32)
+        # Two different Parameter IDs point to exactly the same bytes.
+        student.weight = torch.nn.Parameter(
+            bridge.projectors['text'].weight.detach())
+        self.assertIsNot(student.weight, bridge.projectors['text'].weight)
+        self.assertEqual(student.weight.untyped_storage().data_ptr(),
+                         bridge.projectors['text'].weight.untyped_storage().data_ptr())
+        optimizer = torch.optim.SGD(
+            list(bridge.parameters()) + list(student.parameters()), lr=0.01)
+        before = bridge.projectors['text'].weight.detach().clone()
+        forwards = [0]
+
+        def count_projector(_module, _inputs, _output):
+            forwards[0] += 1
+
+        hook = bridge.projectors['text'].register_forward_hook(count_projector)
+        try:
+            with self.assertRaisesRegex(
+                    LatentBridgeError, 'overlapping offline optimizer parameter storage'):
+                shadow_distill_step(
+                    student, bridge, {'text': torch.ones(2, 32)},
+                    {'text': 'a' * 64}, torch.ones(2, 32),
+                    optimizer, generation=1)
+        finally:
+            hook.remove()
+        self.assertEqual(forwards[0], 0)
+        torch.testing.assert_close(
+            bridge.projectors['text'].weight, before, rtol=0, atol=0)
+
+    def test_forward_hook_cannot_introduce_late_student_slotizer_storage_alias(self):
+        bridge = self.stem()
+        student = torch.nn.Linear(32, 32)
+        optimizer = torch.optim.AdamW(
+            list(bridge.parameters()) + list(student.parameters()), lr=0.01)
+        before = bridge.projectors['text'].weight.detach().clone()
+        forwards = [0]
+
+        def introduce_alias(_module, _inputs, _output):
+            forwards[0] += 1
+            # Deliberately hostile hook: preserve Parameter ID but replace bytes.
+            student.weight.data = bridge.projectors['text'].weight.detach()
+
+        hook = bridge.projectors['text'].register_forward_hook(introduce_alias)
+        try:
+            with self.assertRaisesRegex(
+                    LatentBridgeError, 'overlapping offline optimizer parameter storage'):
+                shadow_distill_step(
+                    student, bridge, {'text': torch.ones(2, 32)},
+                    {'text': 'a' * 64}, torch.ones(2, 32),
+                    optimizer, generation=1)
+        finally:
+            hook.remove()
+        self.assertEqual(forwards[0], 1)
+        self.assertEqual(len(optimizer.state), 0)
+        torch.testing.assert_close(
+            bridge.projectors['text'].weight, before, rtol=0, atol=0)
+
     def test_foreign_cell_or_teacher_optimizer_parameters_rejected_before_forward(self):
         bridge = self.stem()
         student = build_encoder(StemSpec('tiny_training_only', 32, 1, 4),

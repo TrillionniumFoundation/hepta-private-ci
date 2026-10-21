@@ -198,6 +198,31 @@ class MultimodalSlotizer(nn.Module):
                            generation=generation)
 
 
+def _verify_optimizer_storage_isolation(parameters: list[nn.Parameter]) -> None:
+    """Fail closed when distinct parameters overlap physical backing storage.
+
+    Python Parameter identity is not tensor ownership: nn.Parameter(other.detach())
+    creates a new object that updates the same bytes. Conservatively reject
+    overlapping storages (including disjoint views of a common allocation).
+    Training intentionally tied weights requires an explicit single owner.
+    """
+    spans = []
+    for parameter in parameters:
+        if (parameter.layout != torch.strided or not parameter.is_floating_point()
+                or parameter.numel() == 0):
+            raise LatentBridgeError("unsupported offline optimizer parameter storage")
+        storage = parameter.untyped_storage()
+        address, size = storage.data_ptr(), storage.nbytes()
+        if address <= 0 or size <= 0:
+            raise LatentBridgeError("unsupported offline optimizer parameter storage")
+        spans.append((str(parameter.device), address, address + size))
+    spans.sort()
+    for (left_device, _, left_end), (right_device, right_start, _) in zip(
+            spans, spans[1:]):
+        if left_device == right_device and right_start < left_end:
+            raise LatentBridgeError("overlapping offline optimizer parameter storage")
+
+
 def _verify_optimizer_ownership(student: nn.Module, slotizer: MultimodalSlotizer,
                                 optimizer: torch.optim.Optimizer) -> tuple[int, ...]:
     """Prevent an offline Student step from updating another Cell or teacher."""
@@ -221,6 +246,9 @@ def _verify_optimizer_ownership(student: nn.Module, slotizer: MultimodalSlotizer
     # Frozen weights must opt out explicitly via requires_grad=False.
     if set(ids) != owned:
         raise LatentBridgeError("optimizer omits trainable Student/Slotizer parameters")
+    # Parameter object IDs alone do not prove exclusive ownership of bytes.
+    # This is rechecked after forward hooks before any physical weight step.
+    _verify_optimizer_storage_isolation(parameters)
     return ids
 
 
