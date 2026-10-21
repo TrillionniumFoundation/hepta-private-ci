@@ -932,3 +932,95 @@ fn final_use_revocation_after_claim_fences_worker_effect_entry() {
         Err(Error::FinalUseDenied),
     );
 }
+
+
+#[cfg(unix)]
+#[test]
+fn signed_stem_final_use_never_moves_across_worker_instances() {
+    // Both Workers have the exact same ResourceGrant, loaded Head, features,
+    // Scope/Principal and Generation. The signed request must still bind the
+    // individual selected Worker identity and reject first-use elsewhere.
+    let mut original = InferenceWorker::new(
+        100,
+        "worker.identity-A".into(),
+        3,
+        grant(),
+        Driver::default(),
+    )
+    .expect("source worker");
+    original.load_model(100, manifest()).expect("loaded A");
+    let mut other = InferenceWorker::new(
+        100,
+        "worker.identity-B".into(),
+        3,
+        grant(),
+        Driver::default(),
+    )
+    .expect("distinct destination worker");
+    other.load_model(100, manifest()).expect("loaded B");
+
+    let (source, access, head, features, auth) = scoped_shared_stem_fixture();
+    let a = original
+        .expected_stem_final_use_binding_v1(
+            100,
+            &source,
+            &access,
+            head.clone(),
+            &features,
+            &auth,
+        )
+        .expect("valid source proposal");
+    let b = other
+        .expected_stem_final_use_binding_v1(
+            100,
+            &source,
+            &access,
+            head.clone(),
+            &features,
+            &auth,
+        )
+        .expect("valid destination proposal");
+    assert_eq!(a.subject_id, b.subject_id);
+    assert_eq!(a.destination_id, b.destination_id);
+    assert_eq!(a.scope_sha256, b.scope_sha256);
+    assert_eq!(a.payload_sha256, b.payload_sha256);
+    assert_ne!(a.request_sha256, b.request_sha256);
+
+    // The same request/grant and domain-separated bytes are independently
+    // pinned by Python's signed_worker_request_digest_v2 test fixture.
+    let golden = stem_final_use_request_digest_v2(
+        &request(),
+        &grant(),
+        "worker.identity-A",
+        Digest32::of_bytes(b"bound-feature-ref"),
+    );
+    assert_eq!(
+        golden.to_string(),
+        "1edca4a4866ed8e285c1126c3073fc3fdbbc3a087d5c55cd37066700d3e71d1c"
+    );
+
+    let (authority, signed, _root) = signed_stem_final_use_fixture(a.clone());
+    let token = authority.claim(&signed, &a).expect("verified Worker A claim");
+
+    // This fails before entering the physical Head Driver. The original
+    // approval cannot be amended to cover the other Worker.
+    assert_eq!(
+        other.run_verified_stem_feature_receipt_v1(
+            &authority,
+            token,
+            100,
+            VerifiedStemFeatureDispatchV1 {
+                source: &source,
+                access: &access,
+                selected_head: head,
+                feature_vector_q24: &features,
+                authorization: auth,
+            },
+        ),
+        Err(Error::FinalUseDenied),
+    );
+    assert_eq!(
+        authority.claim(&signed, &a).unwrap_err(),
+        codex_hepta_contracts::FinalUseError::AlreadyClaimed,
+    );
+}
