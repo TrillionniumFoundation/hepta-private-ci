@@ -366,6 +366,42 @@ fn canonical_digest_does_not_authorize_zero_cost_route_receipts() {
 }
 
 #[test]
+fn a_rehashed_zero_utility_selection_is_not_a_valid_receipt() {
+    let mut receipt =
+        route(&policy(), &[candidate("cell:zero-utility", MemoryCellRoleV1::Semantic)]).receipt;
+    receipt.decisions[0].utility_ppm = 0;
+    // Recomputing the hash must not bypass the router's positive utility rule.
+    receipt.route_digest = canonical_meta_route_digest(&receipt)
+        .unwrap_or_else(|error| panic!("fixture digest: {error:?}"));
+    assert!(matches!(
+        receipt.validate(),
+        Err(HnmfContractError::Conflict("memory meta selected utility"))
+    ));
+}
+
+#[test]
+fn a_rehashed_duplicate_association_pair_cannot_change_its_group() {
+    let mut a = candidate("cell:association-a", MemoryCellRoleV1::Semantic);
+    let mut b = candidate("cell:association-b", MemoryCellRoleV1::CrossModal);
+    let group = digest("association:original");
+    a.association_group_digest = Some(group);
+    b.association_group_digest = Some(group);
+    let mut receipt = route(&policy(), &[a, b]).receipt;
+    assert_eq!(receipt.associations.len(), 1);
+
+    // No real candidate pair has two association-group identities.
+    let mut forged = receipt.associations[0].clone();
+    forged.association_group_digest = digest("association:forged-second-group");
+    receipt.associations.push(forged);
+    receipt.route_digest = canonical_meta_route_digest(&receipt)
+        .unwrap_or_else(|error| panic!("fixture digest: {error:?}"));
+    assert!(matches!(
+        receipt.validate(),
+        Err(HnmfContractError::Conflict("memory meta association"))
+    ));
+}
+
+#[test]
 fn routed_receipt_replay_requires_the_original_policy_and_candidate_set() {
     let original = [
         candidate("cell:episodic", MemoryCellRoleV1::Episodic),
