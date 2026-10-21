@@ -1,0 +1,43 @@
+name: Hepta Provider Terminal Context Qualification
+
+on:
+  pull_request:
+    paths:
+      - "codex-rs/core/src/client.rs"
+      - "codex-rs/core/src/client_provider_policy_tests.rs"
+      - ".github/workflows/hepta-provider-terminal-context.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  provider-terminal-contract:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-24.04, windows-latest]
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 45
+    defaults:
+      run:
+        working-directory: codex-rs
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          persist-credentials: false
+      - name: Install exact Rust toolchain
+        shell: bash
+        run: rustup toolchain install 1.95.0 --profile minimal --component rustfmt,clippy
+      - name: Verify exact changed crate Rust formatting
+        shell: bash
+        # Full-repository fmt remains covered by the original blocking-ci.
+        # On Windows, fmt --all invokes rustfmt with a command line longer
+        # than the Windows process limit (os error 206) before it reads source.
+        run: cargo +1.95.0 fmt -p codex-core -- --check
+      - name: Compile and execute all terminal-ack policy tests
+        shell: bash
+        run: cargo +1.95.0 test --locked -p codex-core --lib client_provider_policy_tests -- --nocapture
+      - name: Strict core Clippy
+        shell: bash
+        run: cargo +1.95.0 clippy --locked -p codex-core --all-targets -- -D warnings
