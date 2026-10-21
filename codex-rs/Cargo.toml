@@ -180,6 +180,7 @@ members = [
     "codex-api",
     "state",
     "terminal-detection",
+    "third_party/i18n-config-0.4.8",
     "test-binary-support",
     "thread-manager-sample",
     "thread-store",
@@ -673,6 +674,8 @@ inherits = "test"
 opt-level = 0
 
 [patch.crates-io]
+# Backport the upstream maintained TOML parser migration for age localization.
+i18n-config = { path = "third_party/i18n-config-0.4.8" }
 # Replace the unmaintained event-handler type map without changing store/crypto code.
 matrix-sdk = { path = "third_party/matrix-sdk-0.19.1" }
 # Matrix store encryption needs blake3 1.8.7; preserve Starlark APIs.
