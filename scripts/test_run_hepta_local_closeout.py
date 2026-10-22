@@ -69,7 +69,7 @@ class LocalCloseoutTests(unittest.TestCase):
             base = Path(root)
             src = base / "checkout"
             subprocess.run(["git", "init", "-q", str(src)], check=True)
-            (src / "plain.txt").write_text("no filters\\n", encoding="utf-8")
+            (src / "plain.txt").write_text("no filters\n", encoding="utf-8")
             subprocess.run(["git", "-C", str(src), "add", "plain.txt"], check=True)
             subprocess.run(["git", "-C", str(src), "-c", "user.name=LocalTest",
                             "-c", "user.email=local@example.invalid",
