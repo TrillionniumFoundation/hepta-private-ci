@@ -37,7 +37,12 @@ it is not used as an operation-order dependency.
 Migration `0016_operation_pre_boundary_rejections.sql` adds the immutable proof
 table and an expression index over the original outbox's boot, space and
 hexadecimal sequence fields. Original migrations 0001 through 0015 are not
-rewritten. The compiled schema oracle includes all four new schema objects.
+rewritten. Migration `0017_pre_boundary_rejection_insert_guard.sql` preserves
+0016 and rejects every proof identity collision before SQLite can perform a
+REPLACE deletion, including either declared unique key and an explicit rowid.
+This guard also applies with `recursive_triggers=OFF`; ordinary insertion of a
+fresh proof remains in the original claim-settlement transaction. The compiled
+schema oracle binds the new trigger definition as well as the four 0016 objects.
 This does not create an automatic production upgrade bypass: the original
 exact-cut recovery entry refuses a store whose schema/migration lineage differs
 from its authenticated current cut. Existing deployments must use their
@@ -178,7 +183,10 @@ authority and owner epochs, generation, and fence. Any intervening terminal or
 reconciliation event prevents insertion or later reuse. A new claim appends
 from exactly that settled head and requires a nonce absent from all rejected
 grants for this K. It retains the original 64-attempt maximum and existing
-backoff; it does not extend those limits.
+backoff; it does not extend those limits. `production_hos2_proof_tests.rs` covers
+both REPLACE forms against every identity, complete row preservation, an
+existing 0016 proof crossing migration 0017, normal reauthorization and fresh
+proof insertion, and rejection of a weakened guard on reopen.
 
 The actual Agentd production reconciliation loop first asks the existing host
 for eligible proofs. Only then does the already attached grant provider receive

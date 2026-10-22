@@ -929,3 +929,6 @@ mod ordering_tests;
 
 #[path = "production_hos2_conflict_tests.rs"]
 mod conflict_tests;
+
+#[path = "production_hos2_proof_tests.rs"]
+mod proof_tests;
