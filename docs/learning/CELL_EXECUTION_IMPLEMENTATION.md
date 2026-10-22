@@ -69,6 +69,15 @@ The adapter must validate the intent, submit the exact final payload digest, and
 return `RuntimeReceiptV1` after a terminal runtime observation. Runtime tool execution
 cannot mint Codex/model authority.
 
+The shared `execute_native_tool_intent(adapter, now_ms, intent)` entry point
+checks the complete native intent and absolute deadline **before** invoking the
+backend, then checks the returned `RuntimeReceiptV1` against the original
+intent **before** forwarding it. Call sites must use this verified entry point
+rather than trusting raw `NativeExecutionAdapter::execute` results. A structurally
+valid receipt remains untrusted as proof of an actual host effect until an
+independent host/observer and durable writer verify it. This gate does not
+provide a model or Final-use authorization.
+
 ## P4 — topology lifecycle
 
 Topology changes are candidates until independently evaluated and admitted. The
