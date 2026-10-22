@@ -136,6 +136,37 @@ class LocalCloseoutTests(unittest.TestCase):
             self.assertEqual(proof["blocked_git_config_keys"], ["filter.exec.clean"])
             self.assertFalse(probe.exists(), "source preflight executed an unreviewed filter")
 
+    def test_hidden_index_flags_rejected_even_for_unrequired_source(self):
+        with tempfile.TemporaryDirectory() as root:
+            source = Path(root)
+            subprocess.run(["git", "init", "-q", str(source)], check=True)
+            (source / "required.rs").write_text("original")
+            (source / "unrequired.rs").write_text("original")
+            subprocess.run(["git", "-C", str(source), "add", "."], check=True)
+            subprocess.run(["git", "-C", str(source), "-c", "user.name=LocalTest",
+                            "-c", "user.email=local@example.invalid",
+                            "commit", "-qm", "baseline"], check=True)
+            for flag in ("--assume-unchanged", "--skip-worktree"):
+                with self.subTest(flag=flag):
+                    subprocess.run(["git", "-C", str(source), "update-index", flag,
+                                    "unrequired.rs"], check=True)
+                    (source / "unrequired.rs").write_text("unreviewed bytes")
+                    # The payload is not among the required files; raw status
+                    # ignores the changed tracked file and reports a clean tree.
+                    self.assertEqual(subprocess.check_output(
+                        ["git", "-C", str(source), "status", "--porcelain=v1"],
+                        text=True,
+                    ), "")
+                    verdict = mod.git_snapshot(source)
+                    self.assertFalse(verdict["usable"], verdict)
+                    self.assertEqual(verdict["reason"], "unreviewed tracked index flags")
+                    self.assertGreater(verdict["hidden_index_entries"], 0)
+                    subprocess.run(["git", "-C", str(source), "update-index",
+                                    "--no-assume-unchanged", "--no-skip-worktree",
+                                    "unrequired.rs"], check=True)
+                    (source / "unrequired.rs").write_text("original")
+            self.assertTrue(mod.git_snapshot(source)["usable"])
+
     def test_linked_worktree_is_a_supported_exact_source(self):
         with tempfile.TemporaryDirectory() as root:
             base = Path(root)
@@ -337,7 +368,13 @@ class LocalCloseoutTests(unittest.TestCase):
                     target.write_text("changed bytes during test\\n")
                     modified = True
                     # This is the bypass of the original post-test status check.
-                    self.assertTrue(mod.git_snapshot(target_root)["clean"])
+                    # Raw porcelain is deliberately misleading here; the
+                    # stronger runner snapshot must refuse the hidden index flag.
+                    self.assertEqual(subprocess.check_output(
+                        ["git", "-C", str(target_root), "status", "--porcelain=v1"],
+                        text=True,
+                    ), "")
+                    self.assertFalse(mod.git_snapshot(target_root)["usable"])
                 return {"status": "PASS_LOCAL"}
 
             with patch.object(mod, "run_check", side_effect=green_tool_but_mutates_index_hidden_source), patch.object(

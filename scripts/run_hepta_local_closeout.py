@@ -232,6 +232,24 @@ def git_snapshot(path: Path) -> dict[str, Any]:
                 "path": str(path),
                 "blocked_git_config_keys": sorted(executable_git_config),
             }
+        # Git porcelain status deliberately ignores assume-unchanged and
+        # skip-worktree entries, even when their real bytes differ from HEAD.
+        # Reject these flags for the ENTIRE tracked index, not only the
+        # smaller declared required-file subset tested elsewhere.
+        index_rows = subprocess.run(
+            ["git", "-C", str(path), "ls-files", "--cached", "-v", "-z"],
+            capture_output=True, check=True, timeout=20,
+        ).stdout.split(b"\\0")
+        hidden_index_entries = sum(
+            1 for entry in index_rows if entry and not entry.startswith(b"H ")
+        )
+        if hidden_index_entries:
+            return {
+                "usable": False,
+                "reason": "unreviewed tracked index flags",
+                "path": str(path),
+                "hidden_index_entries": hidden_index_entries,
+            }
         # Git's linked worktrees use a .git *file*, not a directory. Verify the
         # canonical top level instead of testing a filesystem suffix.
         if cmd("rev-parse", "--is-inside-work-tree") != "true":
