@@ -35,6 +35,14 @@ class ScaleMatrixTests(unittest.TestCase):
         self.assertIn("metrics must be an object", errors)
         self.assertIn("metrics_receipt must be a lowercase SHA-256 digest", errors)
 
+    def test_non_object_single_result_is_rejected_without_crashing(self):
+        for invalid in (None, [], "record", 17):
+            with self.subTest(invalid=invalid):
+                self.assertEqual(
+                    scale_matrix.validate_result(invalid),
+                    ["result must be an object"],
+                )
+
     def test_complete_result_is_accepted(self):
         result = {
             "schema": "hepta.cell-execution-scale-result.v1",
@@ -193,7 +201,8 @@ class ScaleMatrixTests(unittest.TestCase):
             },
             "evidence": {key: True for key in scale_matrix.REQUIRED_EVIDENCE},
             "evidence_receipts": {
-                key: "f" * 64 for key in scale_matrix.REQUIRED_EVIDENCE
+                key: f"{5000 + index * len(scale_matrix.REQUIRED_EVIDENCE) + offset:064x}"
+                for offset, key in enumerate(scale_matrix.REQUIRED_EVIDENCE)
             },
             "metrics": {key: 0 for key in scale_matrix.REQUIRED_METRICS},
             "metrics_receipt": f"{1000 + index:064x}",
@@ -263,6 +272,20 @@ class ScaleMatrixTests(unittest.TestCase):
             "results[1].provenance.measurement_digest reused across matrix pairs",
             errors,
         )
+
+    def test_matrix_rejects_recycled_per_execution_evidence(self):
+        for evidence_key in scale_matrix.REQUIRED_EVIDENCE:
+            with self.subTest(evidence_key=evidence_key):
+                matrix = self.matrix()
+                matrix["results"][1]["evidence_receipts"][evidence_key] = (
+                    matrix["results"][0]["evidence_receipts"][evidence_key]
+                )
+                errors = scale_matrix.validate_matrix(matrix)
+                self.assertIn(
+                    f"results[1].evidence_receipts.{evidence_key} "
+                    "reused across matrix pairs",
+                    errors,
+                )
 
     def test_matrix_rejects_omissions_and_duplicate_pairs(self):
         matrix = self.matrix()
