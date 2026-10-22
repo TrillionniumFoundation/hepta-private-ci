@@ -787,3 +787,110 @@ fn positive_individual_scores_cannot_hide_negative_correlation_gain() {
         .any(|item| item.candidate_id == id("baseline")));
     assert!(receipt.total_utility > receipt.total_risk);
 }
+
+#[test]
+fn replay_rejects_altered_portfolio_receipt_even_when_digest_is_unchanged() {
+    let ctx = context(2);
+    let limits = budget(2);
+    let inputs = [
+        candidate("baseline", 0, 0, true),
+        candidate("candidate", 80, 10, false),
+    ];
+    let genuine = select_output_portfolio_v1(&ctx, &limits, &inputs)
+        .expect("construct advisory");
+    replay_verify_output_portfolio_selection_v1(&ctx, &limits, &inputs, &genuine)
+        .expect("original receipt replays");
+
+    let reordered = [inputs[1].clone(), inputs[0].clone()];
+    replay_verify_output_portfolio_selection_v1(&ctx, &limits, &reordered, &genuine)
+        .expect("canonical permutation replays");
+
+    let rejected = |changed: OutputPortfolioSelectionReceiptV1| {
+        assert_eq!(
+            replay_verify_output_portfolio_selection_v1(&ctx, &limits, &inputs, &changed)
+                .expect_err("no mutated receipt may replay"),
+            NduError::InvalidSolverReceipt("portfolio receipt replay mismatch")
+        );
+    };
+    let mut changed = genuine.clone();
+    changed.total_resource = q(77);
+    rejected(changed);
+    let mut changed = genuine.clone();
+    changed.total_latency = q(77);
+    rejected(changed);
+    let mut changed = genuine.clone();
+    changed.total_risk = q(77);
+    rejected(changed);
+    let mut changed = genuine.clone();
+    changed.frontier[0].semantic_risk = q(77);
+    rejected(changed);
+    let mut changed = genuine.clone();
+    changed.allocations[0].weight = q(50);
+    rejected(changed);
+    let mut changed = genuine.clone();
+    changed.disposition = OutputPortfolioDispositionV1::NoChange;
+    rejected(changed);
+    let mut changed = genuine.clone();
+    changed.selection_digest = Digest32::of_bytes(b"forged-receipt");
+    rejected(changed);
+}
+
+#[test]
+fn receipt_digest_commits_resource_latency_and_frontier_outputs() {
+    let ctx = context(2);
+    let limits = budget(2);
+    let inputs = [
+        candidate("baseline", 0, 0, true),
+        candidate("direction", 80, 10, false),
+    ];
+    let genuine = select_output_portfolio_v1(&ctx, &limits, &inputs)
+        .expect("construct advisory");
+    let sorted = canonical_candidates(&ctx, &inputs).expect("canonical candidates");
+    let covariance = canonical_covariance(&ctx, &inputs, &sorted)
+        .expect("canonical covariance");
+    let calculate = |
+        frontier: &[OutputPortfolioFrontierPointV1],
+        resource: FixedQ32,
+        latency: FixedQ32,
+    | {
+        digest_selection(
+            &ctx,
+            &limits,
+            &sorted,
+            &covariance,
+            &genuine.allocations,
+            frontier,
+            genuine.disposition,
+            genuine.total_risk,
+            genuine.total_utility,
+            resource,
+            latency,
+        )
+    };
+    assert_eq!(
+        genuine.selection_digest,
+        calculate(
+            &genuine.frontier,
+            genuine.total_resource,
+            genuine.total_latency,
+        )
+    );
+    assert_ne!(
+        genuine.selection_digest,
+        calculate(&genuine.frontier, q(77), genuine.total_latency)
+    );
+    assert_ne!(
+        genuine.selection_digest,
+        calculate(&genuine.frontier, genuine.total_resource, q(77))
+    );
+    let mut altered_frontier = genuine.frontier.clone();
+    altered_frontier[0].semantic_risk = q(77);
+    assert_ne!(
+        genuine.selection_digest,
+        calculate(
+            &altered_frontier,
+            genuine.total_resource,
+            genuine.total_latency,
+        )
+    );
+}
