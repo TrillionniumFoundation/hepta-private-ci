@@ -500,6 +500,10 @@ mod h7_artifact_qualification_tests;
 mod h7_trajectory_store_tests;
 
 #[cfg(test)]
+#[path = "h7_registry_fixture_tests.rs"]
+mod h7_registry_fixture_tests;
+
+#[cfg(test)]
 #[path = "h7_feedback_tests.rs"]
 mod h7_feedback_tests;
 

@@ -23,25 +23,13 @@ use codex_hepta_memory::CognitiveRuntime;
 use codex_hepta_memory::CognitiveStore;
 use codex_hepta_memory::CognitiveStoreError;
 #[cfg(feature = "qualification-cognitive-write")]
-use codex_hepta_memory::CompactFence;
-#[cfg(feature = "qualification-cognitive-write")]
-use codex_hepta_memory::H7TrajectoryAppend;
-#[cfg(feature = "qualification-cognitive-write")]
-use codex_hepta_memory::H7TrajectoryEventKind;
-#[cfg(feature = "qualification-cognitive-write")]
-use codex_hepta_memory::H7TrajectoryRecord;
-#[cfg(feature = "qualification-cognitive-write")]
-use codex_hepta_memory::LocalAdmission;
-#[cfg(feature = "qualification-cognitive-write")]
-use codex_hepta_memory::LocalTurnLifecycleBinding;
-#[cfg(feature = "qualification-cognitive-write")]
 use codex_hepta_memory::LogicalTurnAttemptRequest;
 #[cfg(feature = "qualification-cognitive-write")]
+use codex_hepta_memory::LogicalTurnEvidence;
+#[cfg(feature = "qualification-cognitive-write")]
+use codex_hepta_memory::LogicalTurnInspectionDisposition;
+#[cfg(feature = "qualification-cognitive-write")]
 use codex_hepta_memory::LogicalTurnRequest;
-#[cfg(feature = "qualification-cognitive-write")]
-use codex_hepta_memory::append_h7_trajectory_event_bound;
-#[cfg(feature = "qualification-cognitive-write")]
-use codex_hepta_memory::h7_trajectory_local_receipt_digest;
 use codex_hepta_paths::HeptaFleetRoot;
 use tokio::time::timeout;
 use tokio_util::sync::CancellationToken;
@@ -612,10 +600,36 @@ async fn qualification_prepare_quarantines_expired_registry_attempt_with_h7_evid
         .mark_app_server_ready()
         .expect("mark App Server ready");
 
+    // The memory unit-test producer created these real, bound writer rows at
+    // clock 1 with expiry 2. Import only the rows into a fresh real schema;
+    // reopening and the typed reads below verify the journals and H7 chain
+    // with the production clock. No expiry rewrite or wall-clock wait is used.
+    let initialized = CognitiveStore::open(&fixture.identity.layout)
+        .await
+        .expect("initialize cognitive schema");
+    let pool = sqlx::sqlite::SqlitePoolOptions::new()
+        .max_connections(1)
+        .connect_with(
+            sqlx::sqlite::SqliteConnectOptions::new()
+                .filename(initialized.path())
+                .foreign_keys(true),
+        )
+        .await
+        .expect("open fixture import connection");
+    let mut transaction = pool.begin().await.expect("fixture import transaction");
+    sqlx::raw_sql(include_str!(
+        "../../hepta-memory/tests/fixtures/h7-expired-registry.sql"
+    ))
+    .execute(&mut *transaction)
+    .await
+    .expect("load real expired registry fixture");
+    transaction.commit().await.expect("commit fixture import");
+    pool.close().await;
+    drop(initialized);
     let store = Arc::new(
         CognitiveStore::open(&fixture.identity.layout)
             .await
-            .expect("open cognitive store"),
+            .expect("reopen and verify persisted cognitive fixture"),
     );
     let fleet_generation = fixture
         .state
@@ -629,125 +643,48 @@ async fn qualification_prepare_quarantines_expired_registry_attempt_with_h7_evid
         Sha256Digest::for_bytes(format!("qualification:logical-binding:v1:{turn_id}").as_bytes()),
     )
     .expect("logical request");
-    let expires_at = SystemTime::now()
-        .duration_since(UNIX_EPOCH)
-        .expect("clock")
-        .as_secs()
-        + 1;
-    let old = LogicalTurnAttemptRequest::new(
-        "seed-terminal-attempt",
-        "seed-terminal-lease",
-        "seed-terminal-journal",
-        "seed-terminal-trajectory",
-        "seed-terminal-occurrence",
-        /*authority_epoch*/ 1,
-        fleet_generation,
-        /*generation*/ 1,
-        "seed-terminal-fence",
-        expires_at,
-    )
-    .expect("terminal attempt request");
-    let reservation = store
-        .reserve_or_replay_logical_turn(logical, old)
+    let mut registry_before = store
+        .inspect_logical_turn(logical.clone())
         .await
-        .expect("seed registry attempt");
-    let codex_hepta_memory::LogicalTurnReservation::Acquired { attempt } = reservation else {
-        panic!("seed must acquire registry attempt")
-    };
-    let head = store
+        .expect("inspect persisted registry");
+    assert_eq!(
+        registry_before.disposition,
+        LogicalTurnInspectionDisposition::ExpiredWithEvidence
+    );
+    assert_eq!(
+        registry_before.evidence,
+        LogicalTurnEvidence {
+            event_rows: 1,
+            outbox_rows: 1,
+            compact_rows: 0,
+            trajectory_rows: 2,
+        }
+    );
+    let attempt = registry_before
+        .head
+        .as_ref()
+        .expect("persisted active attempt");
+    assert!(attempt.is_active());
+    assert_eq!(attempt.owner_agent_id, fixture.identity.agent_id);
+    assert_eq!(attempt.owner_epoch, fleet_generation);
+    let head_before = store
         .inspect_local_lease_head(&attempt.lease_id)
         .await
-        .expect("inspect seeded head")
-        .head
-        .expect("seeded head");
-    let lease = store
-        .reopen_host_bound_lease(
-            head,
-            attempt.authority_epoch,
-            attempt.owner_epoch,
-            attempt.lease_expires_at_unix_seconds,
-        )
+        .expect("inspect expired head before prepare");
+    assert_eq!(
+        head_before.disposition,
+        LocalLeaseHeadDisposition::ExpiredActive
+    );
+    let trajectory_before = store
+        .read_h7_trajectory(&attempt.trajectory_id)
         .await
-        .expect("reopen seeded lease");
-    let fence = CompactFence::new(
-        attempt.authority_epoch,
-        attempt.owner_epoch,
-        attempt.generation,
-        attempt.fencing_token.clone(),
-    )
-    .expect("compact fence");
-    let executor = store
-        .open_local_compact_executor_bound(attempt.journal_id.clone(), fence, &lease)
-        .await
-        .expect("open compact executor");
-    let binding =
-        LocalTurnLifecycleBinding::from_handles(turn_id, &lease, &executor).expect("binding");
-    let payload = r#"{"schema_version":1,"external_effect":false,"kg_write_authority":false,"production_caller":false}"#;
-    let receipt = match lease
-        .admit(
-            attempt.occurrence_key.clone(),
-            "codex.turn.qualification.start.v1",
-            payload,
-        )
-        .await
-        .expect("admit local intent")
-    {
-        LocalAdmission::Queued(receipt) | LocalAdmission::Replay(receipt) => receipt,
-    };
-    let trajectory_id = attempt.trajectory_id.clone();
-    let start = H7TrajectoryRecord::new(
-        trajectory_id.clone(),
-        /*event_seq*/ 1,
-        format!("{trajectory_id}:event:turn-start"),
-        H7TrajectoryEventKind::TurnStart,
+        .expect("verify persisted H7 chain")
+        .expect("persisted H7 evidence");
+    assert!(trajectory_before.is_complete_qualification_terminal(
         turn_id,
-        attempt.occurrence_key.clone(),
-        /*causal_parent_seq*/ None,
-        /*causal_parent_sha256*/ None,
-        Sha256Digest::for_bytes(payload.as_bytes()),
-        Sha256Digest::for_bytes(b"qualification:observation-only-policy:v1"),
-        Sha256Digest::for_bytes(b"qualification:model-receipt:not-applicable:v1"),
-        h7_trajectory_local_receipt_digest(&receipt),
-        "turn_started",
-        /*reward_bps*/ 0,
-        /*safety_ok*/ true,
-        r#"{"source":"qualification_turn_writer"}"#,
-        "not_applicable",
-    )
-    .expect("start trajectory");
-    let H7TrajectoryAppend::Inserted {
-        event_sha256: parent,
-        ..
-    } = append_h7_trajectory_event_bound(&lease, &executor, &binding, &start)
-        .await
-        .expect("append H7 start")
-    else {
-        panic!("start must be inserted")
-    };
-    let terminal = H7TrajectoryRecord::terminal(
-        trajectory_id.clone(),
-        /*event_seq*/ 2,
-        format!("{trajectory_id}:event:terminal:stop"),
-        turn_id,
-        format!("{}:terminal", attempt.occurrence_key),
-        /*causal_parent_seq*/ 1,
-        parent,
-        Sha256Digest::for_bytes(b"terminal-state"),
-        Sha256Digest::for_bytes(b"qualification:observation-only-policy:v1"),
-        Sha256Digest::for_bytes(b"qualification:model-receipt:not-applicable:v1"),
-        Sha256Digest::for_bytes(b"terminal-receipt"),
-        "turn_stopped",
-        "turn_stopped",
-        r#"{"source":"qualification_turn_writer","terminal_action":"stop"}"#,
-    )
-    .expect("terminal trajectory");
-    append_h7_trajectory_event_bound(&lease, &executor, &binding, &terminal)
-        .await
-        .expect("append H7 terminal");
-    drop(binding);
-    drop(executor);
-    drop(lease);
-    tokio::time::sleep(Duration::from_secs(2)).await;
+        &attempt.occurrence_key,
+        &format!("{}:terminal", attempt.occurrence_key),
+    ));
 
     let result = prepare_qualification_turn_writer_input(
         Arc::clone(&fixture.state),
@@ -761,6 +698,11 @@ async fn qualification_prepare_quarantines_expired_registry_attempt_with_h7_evid
         result.is_err(),
         "terminal recovery returns no writable input"
     );
+    assert!(matches!(
+        &result,
+        Err(codex_hepta_memory_extension::QualificationTurnWriterInputError::Invalid(reason))
+            if reason == "logical-turn registry blocked qualification attempt with 4 evidence rows"
+    ));
     let inspected = store
         .inspect_local_lease_head(&attempt.lease_id)
         .await
@@ -770,6 +712,26 @@ async fn qualification_prepare_quarantines_expired_registry_attempt_with_h7_evid
         LocalLeaseHeadDisposition::ExpiredActive,
         "registry-backed H7 quarantine must not mutate the active registry head"
     );
+    assert_eq!(
+        inspected, head_before,
+        "complete lease head must be unchanged"
+    );
+    assert_eq!(
+        store
+            .read_h7_trajectory(&attempt.trajectory_id)
+            .await
+            .expect("verify H7 after quarantine"),
+        Some(trajectory_before),
+        "complete H7 chain must be unchanged"
+    );
+    let registry_after = store
+        .inspect_logical_turn(logical)
+        .await
+        .expect("inspect registry after quarantine");
+    // Only the time of this read may differ. Compare every durable identity,
+    // attempt, physical head, evidence count and disposition without omission.
+    registry_before.observed_at_unix_seconds = registry_after.observed_at_unix_seconds;
+    assert_eq!(registry_after, registry_before);
 }
 
 #[cfg(not(feature = "production-cognitive-write"))]
