@@ -37,7 +37,9 @@ permissions:
   contents: read
 concurrency:
   group: rust-ui-product-${{ github.event.pull_request.number }}
-  cancel-in-progress: false
+  # Only the latest source/base pair can qualify the current PR head.
+  # Cancel obsolete two-lane UI runs instead of serializing stale evidence.
+  cancel-in-progress: true
 jobs:
   robrix-host:
     if: github.event.pull_request.head.repo.full_name == github.repository

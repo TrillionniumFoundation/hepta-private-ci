@@ -111,6 +111,14 @@ class ProductGatewayWorkflowTests(unittest.TestCase):
             ROOT / ".github/workflows/ui-product-foundation.yml"
         ).read_text()
 
+    def test_obsolete_pr_ui_runs_are_cancelled_without_skipping_either_lane(self):
+        self.assertIn(
+            "group: rust-ui-product-${{ github.event.pull_request.number }}",
+            self.workflow,
+        )
+        self.assertIn("cancel-in-progress: true", self.workflow)
+        self.assertIn("lane: [source-head, base-merge]", self.workflow)
+
     def test_actual_entry_runs_between_default_and_fixture_renderers(self):
         steps = [
             "- id: default_browser",
