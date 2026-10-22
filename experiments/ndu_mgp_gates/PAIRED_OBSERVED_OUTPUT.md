@@ -155,3 +155,34 @@ This patch is additive to frozen parent #3282; no original #3039/#3213 negative
 heldout outcome, original #3055 source, product authority or deployed model is
 changed. The 75-test local CPU suite passed before publication. New exact-head
 CI must also pass; science remains `DRAFT / DENY_ALL / HOLD_NO_GO`.
+
+
+## Preregistered protected-task labels (isolated Draft amendment)
+
+Original-source isolation and an eight-source protected cohort are not enough
+to prevent **post-outcome subgroup relabeling**. The prior scorer trusted the
+`protected_task` boolean supplied in each heldout result row; it did not
+compare that boolean to the cohort's frozen registration. An independently
+reproduced adversarial 3-seed, 32-world/seed synthetic case changed *only*
+these booleans, preserving all decoded scores, inference costs, source counts,
+world IDs and strong comparator outputs: the old
+`all_provisional_gates_pass` changed from `False` to `True`.
+That flip can fabricate apparent protected-task quality/nonregression without
+changing the underlying experiment.
+
+This amendment requires the **complete Boolean** preregistration
+`protocol.heldout_protected_flags`, keyed by seed and indexed in exact
+`heldout_world_ids` order. Missing, incomplete, wrong-type or mismatched
+outcome labels are rejected before scoring, protected-group checks, or
+bootstrap. The explicit receipt flag
+`protected_labels_checked_against_frozen_manifest` reports this
+structural consistency only.
+
+The new manifest must be generated and independently sealed **before**
+frozen heldout model execution. If the frozen cohort has no such
+independently retrievable labels, it must remain unqualified instead of
+deriving them from the already-observed test output. A malicious party could
+still edit both the manifest and its result rows; **string comparisons and
+hashes alone are not authentication**. This code has no external trust root,
+signer, raw-media source identity verifier, observer, or production grant.
+All historic NDU negative results and `HOLD_NO_GO/DENY_ALL` remain intact.
