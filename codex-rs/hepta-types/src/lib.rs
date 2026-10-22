@@ -43,6 +43,7 @@ pub use execution_contract::ExecutionStatusV1;
 pub use execution_contract::FinalPayloadDigestV1;
 pub use execution_contract::GenerationFenceWitnessV1;
 pub use execution_contract::NativeExecutionAdapter;
+pub use execution_contract::execute_native_tool_intent;
 pub use execution_contract::RecoveryDispositionV1;
 pub use execution_contract::RuntimeExecutionError;
 pub use execution_contract::RuntimeReceiptV1;
