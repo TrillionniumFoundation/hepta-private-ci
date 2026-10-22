@@ -64,6 +64,25 @@ class LocalCloseoutTests(unittest.TestCase):
             (src / "untracked").write_text("x")
             self.assertFalse(mod.git_snapshot(src)["clean"])
 
+    def test_inactive_git_filter_does_not_block_clean_source(self):
+        with tempfile.TemporaryDirectory() as root:
+            base = Path(root)
+            src = base / "checkout"
+            subprocess.run(["git", "init", "-q", str(src)], check=True)
+            (src / "plain.txt").write_text("no filters\\n", encoding="utf-8")
+            subprocess.run(["git", "-C", str(src), "add", "plain.txt"], check=True)
+            subprocess.run(["git", "-C", str(src), "-c", "user.name=LocalTest",
+                            "-c", "user.email=local@example.invalid",
+                            "commit", "-q", "-m", "baseline"], check=True)
+            # Ubuntu Actions provides filter.lfs globally. Without matching
+            # tracked attributes, this harmless registration is not executable
+            # by git status and must not block normal local source checks.
+            subprocess.run(["git", "-C", str(src), "config", "filter.lfs.clean",
+                            "unused-git-lfs-clean-driver"], check=True)
+            result = mod.git_snapshot(src)
+            self.assertTrue(result["usable"], result)
+            self.assertTrue(result["clean"], result)
+
     @unittest.skipUnless(os.name == "posix", "POSIX executable Git config fixture")
     def test_git_fsmonitor_cannot_execute_during_source_snapshot(self):
         with tempfile.TemporaryDirectory() as root:
