@@ -153,7 +153,9 @@ impl CurrentMemoryRetrievalContext for TestRegistry {
         {
             Ok(mut staged) => {
                 use std::io::Write;
-                staged.write_all(&bytes).map_err(|error| error.to_string())?;
+                staged
+                    .write_all(&bytes)
+                    .map_err(|error| error.to_string())?;
                 staged.sync_all().map_err(|error| error.to_string())?;
             }
             Err(error) if error.kind() == std::io::ErrorKind::AlreadyExists => {
@@ -462,16 +464,21 @@ async fn failed_retention_preserves_actual_receipt_and_blocks_until_exact_acknow
     // payload is replayable without a new or forged checkpoint.
     let staged_path = registry.witness.with_extension("pending");
     std::fs::write(&staged_path, b"foreign-staged-witness").unwrap();
-    assert!(registry
-        .retain_checkpoint(
-            &owner,
-            1,
-            &pending.expected_plan,
-            &pending.receipt,
-            pending.recovery_anchor.as_ref().unwrap(),
-        )
-        .is_err());
-    assert_eq!(std::fs::read(&staged_path).unwrap(), b"foreign-staged-witness");
+    assert!(
+        registry
+            .retain_checkpoint(
+                &owner,
+                1,
+                &pending.expected_plan,
+                &pending.receipt,
+                pending.recovery_anchor.as_ref().unwrap(),
+            )
+            .is_err()
+    );
+    assert_eq!(
+        std::fs::read(&staged_path).unwrap(),
+        b"foreign-staged-witness"
+    );
     std::fs::remove_file(&staged_path).unwrap();
     let same = Retained {
         manifest: pending.expected_plan.manifest.clone(),
