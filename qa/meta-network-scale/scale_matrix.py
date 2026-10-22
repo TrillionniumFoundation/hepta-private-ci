@@ -263,6 +263,16 @@ def validate_result(result: dict[str, Any]) -> list[str]:
         errors.append("metrics_receipt must be a lowercase SHA-256 digest")
     elif not any(character != "0" for character in metrics_receipt):
         errors.append("metrics_receipt cannot be a zero digest")
+    # An independently observed learning/rollback claim is not a metrics
+    # receipt. The same digest cannot attest both types of evidence even
+    # when all individual hashes are well formed.
+    if isinstance(metrics_receipt, str) and isinstance(evidence_receipts, dict):
+        for claim in REQUIRED_EVIDENCE:
+            if metrics_receipt == evidence_receipts.get(claim):
+                errors.append(
+                    f"metrics_receipt reuses the {claim} evidence claim receipt"
+                )
+                break
     lifecycle = result.get("topology_lifecycle")
     if lifecycle != list(LIFECYCLE):
         errors.append("topology_lifecycle must contain the complete ordered lifecycle")
@@ -328,6 +338,11 @@ def validate_matrix(matrix: dict[str, Any]) -> list[str]:
                             "reused across matrix pairs"
                         )
                     evidence_receipts_seen[claim].add(receipt)
+                    if receipt in metrics_receipts_seen:
+                        errors.append(
+                            f"results[{index}].evidence_receipts.{claim} "
+                            "reuses a metrics receipt"
+                        )
                     prior_claim, prior_row = receipt_owners.setdefault(
                         receipt, (claim, index)
                     )
@@ -343,6 +358,12 @@ def validate_matrix(matrix: dict[str, Any]) -> list[str]:
                     f"results[{index}].metrics_receipt reused across matrix pairs"
                 )
             metrics_receipts_seen.add(metrics_receipt)
+            if metrics_receipt in receipt_owners:
+                prior_claim, _ = receipt_owners[metrics_receipt]
+                errors.append(
+                    f"results[{index}].metrics_receipt "
+                    f"reuses the {prior_claim} evidence claim receipt"
+                )
         provenance = row.get("provenance")
         if isinstance(provenance, dict):
             measurement_digest = provenance.get("measurement_digest")
