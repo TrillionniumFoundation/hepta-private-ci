@@ -82,6 +82,13 @@ pub fn select_output_portfolio_v1(
         if weight <= FixedQ32::ZERO {
             continue;
         }
+        // A fractional Cell direction leaves a nonzero NoChange remainder.
+        // That baseline is an emitted allocation and consumes one of the
+        // caller's max_selected slots; never hide it outside the count.
+        let required_slots = selected + 1 + usize::from(weight < remaining);
+        if required_slots > budget.max_selected {
+            continue;
+        }
         weights[index] = weight;
         let candidate_resource =
             weighted_sum(&weights, &candidates, |candidate| candidate.resource_cost)?;
