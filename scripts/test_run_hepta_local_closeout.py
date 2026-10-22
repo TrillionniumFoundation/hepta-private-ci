@@ -16,6 +16,34 @@ from scripts import run_hepta_local_closeout as mod
 
 
 class LocalCloseoutTests(unittest.TestCase):
+    def setUp(self):
+        # The hosted Python setup action injects two loader/build paths into
+        # this *test process*. Model a clean local runner without deleting the
+        # paths required to launch CPython subprocess fixtures. Production
+        # unreviewed_environment_keys() still rejects these overrides.
+        bootstrap_paths = {
+            key: os.environ[key]
+            for key in ("LD_LIBRARY_PATH", "PKG_CONFIG_PATH")
+            if os.environ.get(key)
+        }
+        verifier = mod.unreviewed_environment_keys
+
+        def fixture_environment(environment=None):
+            names = verifier(environment)
+            if environment is not None:
+                return names
+            return [
+                name for name in names
+                if name not in bootstrap_paths
+                or os.environ.get(name) != bootstrap_paths[name]
+            ]
+
+        guard = patch.object(
+            mod, "unreviewed_environment_keys", side_effect=fixture_environment
+        )
+        guard.start()
+        self.addCleanup(guard.stop)
+
     def test_unmounted_checkout_is_not_a_source(self):
         with tempfile.TemporaryDirectory() as root:
             result = mod.git_snapshot(Path(root) / "not-mount")
@@ -277,6 +305,61 @@ class LocalCloseoutTests(unittest.TestCase):
                 Path(root), 5, Path(root) / "descendant.log",
             )
             self.assertEqual(result["status"], "BLOCKED_DESCENDANTS")
+
+
+    def test_unreviewed_execution_env_is_rejected_without_disclosing_values(self):
+        cases = {
+            "GIT_CONFIG_COUNT": "1",
+            "GIT_CONFIG_KEY_0": "core.worktree",
+            "RUSTFLAGS": "--cfg=unreviewed",
+            "CARGO_TARGET_X86_64_UNKNOWN_LINUX_GNU_LINKER": "/tmp/fake-linker",
+            "RUSTC_WRAPPER": "/tmp/fake-rustc-wrapper",
+            "LD_PRELOAD": "/tmp/fake.so",
+            "PYTHONPATH": "/tmp/fake-python-tests",
+            "CARGO_HOME": "/tmp/fake-cargo-config",
+        }
+        for name, value in cases.items():
+            with self.subTest(variable=name):
+                self.assertEqual(
+                    mod.unreviewed_environment_keys({name: value}), [name]
+                )
+        self.assertEqual(
+            mod.unreviewed_environment_keys(
+                {"RUST_BACKTRACE": "full", "RUST_LOG": "warn", "CARGO_TERM_COLOR": "always"}
+            ),
+            [],
+        )
+
+    def test_env_poisoning_blocks_git_source_identity_before_subprocess(self):
+        with tempfile.TemporaryDirectory() as root, patch.dict(
+            mod.os.environ, {"GIT_CONFIG_COUNT": "1"}
+        ), patch.object(mod.subprocess, "run") as invoked:
+            proof = mod.git_snapshot(Path(root))
+            self.assertFalse(proof["usable"])
+            self.assertEqual(proof["reason"], "unreviewed local execution environment")
+            self.assertIn("GIT_CONFIG_COUNT", proof["blocked_environment_keys"])
+            self.assertNotIn("1", proof["blocked_environment_keys"])
+            invoked.assert_not_called()
+
+    def test_changed_loader_path_cannot_reuse_fixture_baseline(self):
+        with patch.dict(mod.os.environ, {"LD_LIBRARY_PATH": "/tmp/unreviewed-loader"}):
+            self.assertIn(
+                "LD_LIBRARY_PATH", mod.unreviewed_environment_keys()
+            )
+
+    def test_env_poisoning_blocks_checks_without_executing_any_binary(self):
+        with tempfile.TemporaryDirectory() as root, patch.dict(
+            mod.os.environ, {"RUSTFLAGS": "--cfg=unreviewed"}
+        ), patch.object(mod.subprocess, "Popen") as invoked:
+            location = Path(root) / "no-binary-executed.log"
+            result = mod.run_check(
+                [sys.executable, "-c", "print('fake green')"],
+                Path(root), 5, location
+            )
+            self.assertEqual(result["status"], "BLOCKED_UNREVIEWED_ENVIRONMENT")
+            self.assertEqual(result["blocked_environment_keys"], ["RUSTFLAGS"])
+            self.assertFalse(location.exists())
+            invoked.assert_not_called()
 
 
 if __name__ == "__main__":
