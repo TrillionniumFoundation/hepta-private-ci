@@ -411,7 +411,10 @@ def test_worker_source_mutation_blocks_every_case(
     MODULE.validate_report(report)
 
 
-@pytest.mark.parametrize("mutation", ("source", "overwrite", "unlink"))
+@pytest.mark.parametrize(
+    "mutation",
+    ("source", "overwrite", "unlink", "report-overwrite", "report-replace"),
+)
 def test_post_observer_mutation_revokes_signed_receipt(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch, mutation: str
 ) -> None:
@@ -452,8 +455,17 @@ def test_post_observer_mutation_revokes_signed_receipt(
                 (root / "tracked.py").write_text("VERSION = 9\n", encoding="utf-8")
             elif mutation == "overwrite":
                 workload.write_bytes(b"observer overwrote frozen tasks")
-            else:
+            elif mutation == "unlink":
                 workload.unlink()
+            elif mutation == "report-overwrite":
+                Path(env["HEPTA_MATRIX_REPORT"]).write_bytes(b'{"forged":true}\n')
+            elif mutation == "report-replace":
+                report_path = Path(env["HEPTA_MATRIX_REPORT"])
+                replacement = report_path.with_name("replacement-provisional.json")
+                replacement.write_bytes(report_path.read_bytes())
+                os.replace(replacement, report_path)
+            else:
+                raise AssertionError("unrecognized mutation fixture")
             return subprocess.CompletedProcess(argv, 0, json.dumps(claim), "")
         assert argv == ["fixture-worker"]
         case = {
@@ -482,7 +494,13 @@ def test_post_observer_mutation_revokes_signed_receipt(
     assert len(report["cases"]) == 64
     assert all(case["status"] == "measured" for case in report["cases"])
     assert report["status"] == "blocked"
-    expected_blocker = "source-checkout" if mutation == "source" else "frozen-workload"
+    expected_blocker = (
+        "source-checkout"
+        if mutation == "source"
+        else "frozen-workload"
+        if mutation in ("overwrite", "unlink")
+        else "independent-observer"
+    )
     assert expected_blocker in report["blockingCases"]
     # Post-observer tampering revokes the signature and must also bind the
     # independent-observer blocker in the final report.
