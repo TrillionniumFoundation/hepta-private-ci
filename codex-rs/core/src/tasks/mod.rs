@@ -1049,6 +1049,24 @@ impl Session {
         }
     }
 
+    /// Observes the currently registered admission fences without retiring
+    /// them or taking over their owners. Callers must still use normal Core
+    /// routing after this snapshot completes; another fence may appear later.
+    pub(crate) fn pending_admission_fence_completion(&self) -> Option<BoxFuture<'static, ()>> {
+        let mut completions = self.pending_start_transition_completions();
+        completions.extend(
+            self.pending_task_terminalization_completions_except(/*excluded_identity*/ None),
+        );
+        if completions.is_empty() {
+            return None;
+        }
+        Some(Box::pin(async move {
+            for completion in completions {
+                completion.wait().await;
+            }
+        }))
+    }
+
     pub(crate) fn has_pending_start_transition(&self) -> bool {
         self.has_pending_start_transition_except(/*ignored_identity*/ None)
     }
