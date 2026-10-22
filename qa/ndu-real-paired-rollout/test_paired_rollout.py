@@ -85,7 +85,7 @@ class PairedTests(unittest.TestCase):
                   'label':'cat','count':1,'largest_side':'left'}
         self.backend=Backend()
         self.cells=Cells()
-        self.header={'seeds':[11,29],'split':'train', 'budget_seconds':10.,
+        self.header={'seeds':[11,29],'split':'train', 'budget_seconds':10., 'model_revision':'fixture-only',
                      'cohort_manifest_sha256':digest('source fixture'),
                      'model_digest':digest('model'), 'objective_digest':digest('objective'),
                      'proposals':{arm:digest('proposal-'+arm) for arm in ARMS}}
@@ -168,6 +168,49 @@ class PairedTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError,'budget or method'):
             pr.to_terminal_batch(self.header,damaged,[self.ref],[self.obs])
 
+
+    def test_original_image_bytes_cannot_drift_before_or_during_encoding(self):
+        changed={**self.obs,'image_sha256':'0'*64}
+        row=pr.run_arm(self.backend,self.cells,changed,'semantic',seed=11,
+                       artifact_root=self.root/'artifacts')
+        self.assertEqual(row['termination'],'incomplete')
+        self.assertIn('source image bytes differ',row['failure'])
+        self.assertEqual(len(self.backend.seen),0)
+        self.assertEqual(len(self.backend.executed),0)
+
+        original=self.backend.encode
+        def corrupt_after_encode(observation):
+            encoded=original(observation)
+            Path(observation['image_path']).write_bytes(b'changed mid-episode')
+            return encoded
+        self.backend.encode=corrupt_after_encode
+        row=pr.run_arm(self.backend,self.cells,self.obs,'semantic',seed=11,
+                       artifact_root=self.root/'artifacts')
+        self.assertEqual(row['termination'],'incomplete')
+        self.assertIn('source image bytes changed during encoder',row['failure'])
+        self.assertEqual(len(self.backend.executed),0)
+
+    def test_frozen_image_seed_model_policy_and_label_are_checked_at_scoring(self):
+        rows=[pr.run_arm(self.backend,self.cells,self.obs,arm,seed=seed,
+                         artifact_root=self.root/'artifacts')
+              for seed in self.header['seeds'] for arm in ARMS]
+        for row in rows: row['plan_digest']=digest(self.header)
+        image=Path(self.obs['image_path'])
+        original=image.read_bytes()
+        image.write_bytes(b'edited after all predictions')
+        with self.assertRaisesRegex(ValueError,'source image bytes changed before terminal'):
+            pr.to_terminal_batch(self.header,rows,[self.ref],[self.obs])
+        image.write_bytes(original)
+
+        for field,value in (
+            ('sampling_seed',-1),('model_revision','forged-checkpoint'),
+            ('policy_version','other-controller/v1'),('label','wrong-category')
+        ):
+            altered=copy.deepcopy(rows)
+            altered[0][field]=value
+            with self.assertRaisesRegex(ValueError,'frozen model, stochastic seed'):
+                pr.to_terminal_batch(self.header,altered,[self.ref],[self.obs])
+
     def test_plan_rejects_unverified_cell_checkpoint_before_generating(self):
         from unittest.mock import patch
         model_dir=self.root/'fake-model'
@@ -204,6 +247,14 @@ class PairedTests(unittest.TestCase):
         self.assertEqual(len(result['source_sample']['images']),640)
         with self.assertRaises(FileExistsError):
             combine_exclusions(self.root/'prior.json',self.root/'v1.json',self.root/'both.json',require_pinned=False)
+        # A dangling symlink evades Path.exists(), but it must never be
+        # followed or cause creation of its attacker-selected destination.
+        victim=self.root/'uncreated-target.json'
+        link=self.root/'preplanted-link.json'
+        link.symlink_to(victim)
+        with self.assertRaises(FileExistsError):
+            combine_exclusions(self.root/'prior.json',self.root/'v1.json',link,require_pinned=False)
+        self.assertFalse(victim.exists())
 
 
 if __name__=='__main__':unittest.main()
