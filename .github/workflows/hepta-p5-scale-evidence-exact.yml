@@ -12,6 +12,10 @@ on:
       - "codex-rs/hepta-ndu/src/output_portfolio_tests.rs"
       - "codex-rs/hepta-ndu/src/output_portfolio_types.rs"
       - ".github/workflows/hepta-p5-scale-evidence-exact.yml"
+      # Changes to the NDU qualification protocol require fresh P5 shape evidence.
+      - ".github/workflows/hepta-ndu-portfolio-exact.yml"
+      - "scripts/test_hepta_ndu_portfolio_ci.py"
+
   workflow_dispatch: {}
 
 permissions:
