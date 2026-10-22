@@ -3142,21 +3142,8 @@ async fn multi_agent_v2_wait_agent_uses_configured_default_timeout() {
     let session = Arc::new(session);
     let turn = Arc::new(turn);
 
-    let early = timeout(
-        Duration::from_millis(/*millis*/ 20),
-        WaitAgentHandlerV2::default().handle(invocation(
-            session.clone(),
-            turn.clone(),
-            "wait_agent",
-            function_payload(json!({})),
-        )),
-    )
-    .await;
-    assert!(
-        early.is_err(),
-        "wait_agent should not return before the configured default timeout"
-    );
-
+    tokio::time::pause();
+    let started_at = tokio::time::Instant::now();
     let output = timeout(
         Duration::from_secs(/*secs*/ 1),
         WaitAgentHandlerV2::default().handle(invocation(
@@ -3169,6 +3156,14 @@ async fn multi_agent_v2_wait_agent_uses_configured_default_timeout() {
     .await
     .expect("configured default should be shorter than the test timeout")
     .expect("wait_agent should succeed");
+    let elapsed = started_at.elapsed();
+    tokio::time::resume();
+
+    assert!(
+        elapsed >= Duration::from_millis(/*millis*/ 50)
+            && elapsed <= Duration::from_millis(/*millis*/ 51),
+        "wait_agent should time out at the configured default: {elapsed:?}"
+    );
     let (content, success) = expect_text_output(output);
     let result: crate::tools::handlers::multi_agents_v2::wait::WaitAgentResult =
         serde_json::from_str(&content).expect("wait_agent result should be json");
