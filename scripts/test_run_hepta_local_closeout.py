@@ -161,9 +161,10 @@ class LocalCloseoutTests(unittest.TestCase):
                     self.assertFalse(verdict["usable"], verdict)
                     self.assertEqual(verdict["reason"], "unreviewed tracked index flags")
                     self.assertGreater(verdict["hidden_index_entries"], 0)
+                    clear_flag = ("--no-assume-unchanged" if flag == "--assume-unchanged"
+                                  else "--no-skip-worktree")
                     subprocess.run(["git", "-C", str(source), "update-index",
-                                    "--no-assume-unchanged", "--no-skip-worktree",
-                                    "unrequired.rs"], check=True)
+                                    clear_flag, "unrequired.rs"], check=True)
                     (source / "unrequired.rs").write_text("original")
             self.assertTrue(mod.git_snapshot(source)["usable"])
 
