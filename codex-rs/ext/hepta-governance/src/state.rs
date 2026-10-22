@@ -26,6 +26,8 @@ pub struct GovernanceState {
     pub(crate) mode: GovernanceMode,
     pub(crate) evidence: Result<Arc<HeptaEvidenceStore>, Arc<str>>,
     pub(crate) claims: Mutex<InProcessClaims>,
+    pub(crate) provider_request_required: bool,
+    pub(crate) provider_request_host: Option<crate::ProviderRequestEnforcementHost>,
 }
 
 impl GovernanceState {
@@ -35,6 +37,8 @@ impl GovernanceState {
             mode: GovernanceMode::Shadow,
             evidence: Err(Arc::from("governance disabled")),
             claims: Mutex::new(InProcessClaims::default()),
+            provider_request_required: false,
+            provider_request_host: None,
         }
     }
 
@@ -47,6 +51,8 @@ impl GovernanceState {
             mode,
             evidence,
             claims: Mutex::new(InProcessClaims::default()),
+            provider_request_required: false,
+            provider_request_host: None,
         }
     }
     pub(crate) fn owns_action(

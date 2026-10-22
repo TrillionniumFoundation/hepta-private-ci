@@ -176,6 +176,13 @@ late owner binding, selected-weight/CURRENT checks and actual loaded-attempt
 readback still require integration. Outer resource closure remains UNKNOWN for
 this slice; transport controls are not model execution or I10 evidence.
 
+The original provider lease and EvidenceStore now expose an opt-in digest-only
+encoded-body binding component, under `provider_encoded_requests_v1` and the
+same immutable attempt key. Missing or unavailable required hosts refuse binding;
+an unbound completion settles the original attempt as Indeterminate and returns
+an error. Host callbacks alone prove no loaded model or CURRENT selection. Core
+supervisor/actual caller wiring is still pending in this component commit.
+
 `IMPLEMENTATION_MAP.sourceBase` is historical provenance only. Exact candidate identity is derived from the checked-out Git candidate by `scripts/hepta-lane-b-truth.py verify`, which emits `exactHead` and `exactTree`; the map records this verifier-derived provenance contract instead of attempting to hard-code its own self-referential commit/tree.
 
 Current operating and state-format references:

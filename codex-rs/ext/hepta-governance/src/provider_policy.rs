@@ -24,6 +24,24 @@ impl GovernanceState {
         &self,
         input: ModelProviderInvocationInput<'_>,
     ) -> Result<ModelProviderPolicyDecision, ModelProviderPolicyError> {
+        if self.provider_request_required
+            && (!self.enabled
+                || self.mode != GovernanceMode::Enforce
+                || self.provider_request_host.is_none())
+        {
+            return Ok(provider_block(
+                "hepta_provider_request_host_required",
+                "required encoded request enforcement needs an enabled enforcing host",
+            ));
+        }
+        if self.provider_request_required
+            && input.transport != codex_extension_api::ModelProviderTransport::Http
+        {
+            return Ok(provider_block(
+                "hepta_provider_request_transport_unsupported",
+                "encoded request enforcement requires HTTP",
+            ));
+        }
         match (
             input.ephemeral_input_sha256,
             input.ephemeral_input_witness_sha256,
@@ -68,7 +86,9 @@ impl GovernanceState {
         };
         match self.mode {
             GovernanceMode::Shadow => match evidence.append_provider_intent(&intent).await {
-                Ok(AppendDisposition::Inserted) => Ok(durable_allow(evidence, intent, self.mode)),
+                Ok(AppendDisposition::Inserted) => Ok(durable_allow(
+                    evidence, intent, self.mode, /*request_host*/ None,
+                )),
                 Ok(AppendDisposition::AlreadyPresent) => {
                     tracing::warn!(
                         attempt_id = intent.attempt_id.as_str(),
@@ -83,9 +103,12 @@ impl GovernanceState {
                 ))),
             },
             GovernanceMode::Enforce => match evidence.claim_provider_intent(&intent).await {
-                Ok(ProviderIntentClaimDisposition::Inserted) => {
-                    Ok(durable_allow(evidence, intent, self.mode))
-                }
+                Ok(ProviderIntentClaimDisposition::Inserted) => Ok(durable_allow(
+                    evidence,
+                    intent,
+                    self.mode,
+                    self.provider_request_host.clone(),
+                )),
                 Ok(ProviderIntentClaimDisposition::ExactReplay) => {
                     let reason_code = match evidence.get_provider_attempt(&intent.attempt_id).await
                     {
