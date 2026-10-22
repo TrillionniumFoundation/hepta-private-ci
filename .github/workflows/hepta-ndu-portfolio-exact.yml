@@ -3,9 +3,19 @@ name: Hepta NDU portfolio exact-head native regression
 on:
   pull_request:
     paths:
-      - "codex-rs/hepta-ndu/src/output_portfolio.rs"
-      - "codex-rs/hepta-ndu/src/output_portfolio_types.rs"
-      - "codex-rs/hepta-ndu/src/output_portfolio_tests.rs"
+      # Native regressions depend on the direct Rust crates, lockfile, and
+      # compiler/format configuration, not just three portfolio source files.
+      - "codex-rs/hepta-ndu/**"
+      - "codex-rs/hepta-types/**"
+      - "codex-rs/hepta-contracts/**"
+      - "codex-rs/Cargo.toml"
+      - "codex-rs/Cargo.lock"
+      - "codex-rs/rust-toolchain.toml"
+      - "codex-rs/.cargo/**"
+      - ".cargo/**"
+      - "codex-rs/rustfmt.toml"
+      - "rustfmt.toml"
+      - "scripts/test_hepta_ndu_portfolio_ci.py"
       - ".github/workflows/hepta-ndu-portfolio-exact.yml"
   workflow_dispatch: {}
 
