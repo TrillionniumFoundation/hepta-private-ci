@@ -21,7 +21,6 @@ jobs:
     runs-on: ubuntu-24.04
     timeout-minutes: 45
     env:
-      CARGO_TARGET_DIR: ${{ runner.temp }}/hepta-native-head-target
       CARGO_PROFILE_DEV_DEBUG: "0"
       CARGO_PROFILE_TEST_DEBUG: "0"
       CARGO_PROFILE_RELEASE_DEBUG: "0"
@@ -45,6 +44,7 @@ jobs:
           set -euo pipefail
           test "$(git rev-parse HEAD)" = "$EXPECTED_SHA"
           test -z "$(git status --porcelain)"
+          printf 'CARGO_TARGET_DIR=%s\n' "$RUNNER_TEMP/hepta-native-task-head-target" >> "$GITHUB_ENV"
           mkdir "$RUNNER_TEMP/hepta-native-head"
           git rev-parse HEAD HEAD^{tree} > "$RUNNER_TEMP/hepta-native-head/source.txt"
       - uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582 # 1.95.0
@@ -56,20 +56,21 @@ jobs:
         run: |
           set -euo pipefail
           just test --locked -p codex-hepta-neuron --lib 2>&1 | tee "$RUNNER_TEMP/hepta-native-head/native-tests.log"
-          cargo clippy --locked -p codex-hepta-neuron --example native_task_head -- -D warnings 2>&1 | tee "$RUNNER_TEMP/hepta-native-head/clippy.log"
-      - name: Build the actual release evaluator
+          cargo clippy --locked -p codex-hepta-neuron --example native_task_head --example native_task_head_pool -- -D warnings 2>&1 | tee "$RUNNER_TEMP/hepta-native-head/clippy.log"
+      - name: Build the actual release evaluator and private pool driver
         working-directory: codex-rs
         run: |
           set -euo pipefail
-          cargo build --locked --release -p codex-hepta-neuron --example native_task_head 2>&1 | tee "$RUNNER_TEMP/hepta-native-head/build.log"
+          cargo build --locked --release -p codex-hepta-neuron --example native_task_head --example native_task_head_pool 2>&1 | tee "$RUNNER_TEMP/hepta-native-head/build.log"
           sha256sum "$CARGO_TARGET_DIR/release/examples/native_task_head" > "$RUNNER_TEMP/hepta-native-head/binary.sha256"
+          sha256sum "$CARGO_TARGET_DIR/release/examples/native_task_head_pool" > "$RUNNER_TEMP/hepta-native-head/pool-binary.sha256"
       - name: Install the pinned replay runtime
         run: |
           set -euo pipefail
           python3 -m venv "$RUNNER_TEMP/native-head-venv"
           "$RUNNER_TEMP/native-head-venv/bin/python" -m pip install --no-cache-dir --only-binary=:all: --index-url https://download.pytorch.org/whl/cpu 'torch==2.10.0' 'torchvision==0.25.0'
           "$RUNNER_TEMP/native-head-venv/bin/python" -m pip install --no-cache-dir --only-binary=:all: -r qa/stem-bakeoff/requirements-real.txt
-      - name: Verify the export and measurement boundaries
+      - name: Verify export, measurement and private pool boundaries
         run: |
           set -euo pipefail
           "$RUNNER_TEMP/native-head-venv/bin/python" -m unittest discover -s qa/stem-bakeoff -p 'test_native_task_head_*.py' -v 2>&1 | tee "$RUNNER_TEMP/hepta-native-head/export-tests.log"
@@ -116,6 +117,47 @@ jobs:
               stream.write('Missing required modalities return no prediction. Source, binary, artifacts and each request are hash-bound.\n\n')
               stream.write('Task-only replay and cloud-host resource observations do not qualify Agentd policy learning or target-device performance.\n')
           PY
+      - name: Execute eight bounded private Head pools from archived features
+        timeout-minutes: 15
+        env:
+          EXPECTED_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+        run: |
+          set -euo pipefail
+          mkdir "$RUNNER_TEMP/hepta-native-head/pool-inputs"
+          cp -a qa/stem-bakeoff/evidence/20261022-native-task-head/native-results "$RUNNER_TEMP/hepta-native-head/pool-inputs/native-results"
+          cp -a "$RUNNER_TEMP/hepta-native-head/replay/restored" "$RUNNER_TEMP/hepta-native-head/pool-inputs/restored"
+          pool_binary="$CARGO_TARGET_DIR/release/examples/native_task_head_pool"
+          pool_binary_sha="$(sha256sum "$pool_binary" | cut -d ' ' -f 1)"
+          "$RUNNER_TEMP/native-head-venv/bin/python" qa/stem-bakeoff/native_task_head_pool.py \
+            --p40-directory "$RUNNER_TEMP/hepta-native-head/pool-inputs" \
+            --binary "$pool_binary" --expected-binary "$pool_binary_sha" \
+            --expected-report 22e4560ca4ff2b1c604267c92aed71bbf1417e612018c6760930633ca52395e6 \
+            --expected-source "$EXPECTED_SHA" --output "$RUNNER_TEMP/hepta-native-head/pool-replay" \
+            2>&1 | tee "$RUNNER_TEMP/hepta-native-head/pool-replay.log"
+      - name: Independently audit every pool sample and source binding
+        env:
+          EXPECTED_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+        run: |
+          set -euo pipefail
+          pool_report_sha="$(sha256sum "$RUNNER_TEMP/hepta-native-head/pool-replay/report.json" | cut -d ' ' -f 1)"
+          "$RUNNER_TEMP/native-head-venv/bin/python" qa/stem-bakeoff/audit_native_task_head_pool.py \
+            --directory "$RUNNER_TEMP/hepta-native-head/pool-replay" --report-sha "$pool_report_sha" \
+            --repository "$GITHUB_WORKSPACE" --source "$EXPECTED_SHA" \
+            --binary "$CARGO_TARGET_DIR/release/examples/native_task_head_pool" \
+            --p40-directory "$RUNNER_TEMP/hepta-native-head/pool-inputs" \
+            --output "$RUNNER_TEMP/hepta-native-head/pool-audit.json" \
+            2>&1 | tee "$RUNNER_TEMP/hepta-native-head/pool-audit.log"
+          sha256sum "$RUNNER_TEMP/hepta-native-head/pool-audit.json" > "$RUNNER_TEMP/hepta-native-head/pool-audit.sha256"
+          cat >> "$GITHUB_STEP_SUMMARY" <<'SUMMARY'
+
+          ## Native private Head pools
+
+          Eight serial processes completed: gated and linear at 1, 32, 256 and 4096 private Heads. Each child enforced an 800 MiB address-space limit, a 90 second wall limit and bounded output; the full pool trial had a 12 minute budget.
+
+          Independent auditing checked all 32,768 dispatch samples, 128 full-fanout samples, source and artifact hashes, 256 original request lines and 2,048 reference predictions with the fixed absolute tolerance. Class and confidence decisions match exactly. Fanout reports median and maximum only.
+
+          These are copies of two fixed trained artifacts on a shared cloud host. They do not establish independent task learning, Encoder cost, architecture cost ranking, target-device performance or energy. All raw samples, including slow observations, are retained.
+          SUMMARY
       - name: Retain all actual native evidence
         if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
@@ -125,6 +167,11 @@ jobs:
             ${{ runner.temp }}/hepta-native-head/*.log
             ${{ runner.temp }}/hepta-native-head/source.txt
             ${{ runner.temp }}/hepta-native-head/binary.sha256
+            ${{ runner.temp }}/hepta-native-head/pool-binary.sha256
+            ${{ runner.temp }}/hepta-native-head/pool-audit.json
+            ${{ runner.temp }}/hepta-native-head/pool-audit.sha256
+            ${{ runner.temp }}/hepta-native-head/pool-replay/
+            ${{ runner.temp }}/hepta-native-head/pool-inputs/native-results/
             ${{ runner.temp }}/hepta-native-head/replay/native-results/
           if-no-files-found: error
           retention-days: 14

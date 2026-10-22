@@ -129,9 +129,12 @@ def audit(args):
     report = json.loads(raw)
     plan_raw = checked(root / "plan.json", report["plan_sha256"])
     plan, source = json.loads(plan_raw), report["source_identity"]
-    require(report["status"] == "PASS" and source == plan["source_identity"], "report/plan identity")
+    require(report["schema"] == "hepta.native-task-head-pool-replay.v1" and report["status"] == "PASS"
+            and plan["schema"] == "hepta.native-task-head-pool-plan.v1"
+            and source == plan["source_identity"], "report/plan identity")
     require(source["git_head_sha"] == args.source and source["working_tree_clean"] is True, "measurement source")
     require(set(source["source_file_sha256"]) == SOURCE_FILES, "measurement source inventory")
+    require(source["compiler_attestation_independently_verified"] is False, "source identity is not compiler attestation")
     def git(*words):
         return subprocess.check_output(["git", "--no-optional-locks", "-C", str(repository), *words])
     require(git("rev-parse", args.source + "^{tree}").decode().strip() == source["git_tree_sha"], "source tree")
@@ -172,6 +175,7 @@ def audit(args):
         artifact = report["artifacts"][mode]
         manifest = json.loads(checked(root / f"{mode}-head/manifest.json", artifact["manifest_sha256"]))
         weights = checked(root / f"{mode}-head/weights.f32le", manifest["weights_sha256"])
+        require(artifact["weights_sha256"] == digest(weights), "artifact weights digest")
         for part in ("manifest.json", "weights.f32le"):
             name = f"{mode}-head/{part}"
             require(checked(root / name) == checked(p40_root / "native-results" / name, p40["retained_file_sha256"][name]), "Head changed from P40")
