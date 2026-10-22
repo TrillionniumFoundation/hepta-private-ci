@@ -78,6 +78,7 @@ pub use model::UtilityContribution;
 pub use model::UtilityProfile;
 pub use output_portfolio::output_efficient_frontier_v1;
 pub use output_portfolio::select_output_portfolio_v1;
+pub use output_portfolio::verify_output_portfolio_receipt_v1;
 pub use output_portfolio_types::*;
 pub use owner::NduAuthenticatedOwnerV1;
 pub use owner::NduOwnerContextV1;
