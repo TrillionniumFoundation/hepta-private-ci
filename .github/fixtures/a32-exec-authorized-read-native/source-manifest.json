@@ -1,0 +1,160 @@
+{
+  "schema": "a32.rustfmt-source.v1",
+  "status": "frozen",
+  "branch": "diagnostic/a32-exec-authorized-read-native-20261022",
+  "base": "a32d73f00cfc292ff1ed4ac5cef958ca9f238020",
+  "base_tree": "603a3e5b69258e37653a828dda625efe45365d7e",
+  "selected_exec_product_tree": "d003ec7eb6ea4663110aeefd65e5ae656f57ca66",
+  "product_tree": "df4a7fc6d08258604ce0a0a1b03d024161470a83",
+  "files": [
+    {
+      "path": "codex-rs/exec-server/src/authorized_read_error.rs",
+      "base_blob": null,
+      "base_sha256": null,
+      "candidate_blob": "b4b51dc9a77b799585740ae6090902dc5b565de7",
+      "candidate_sha256": "bcaba3dee0612b8fc856a68bc75ff68cd1044443c26179b1ca53b528780e6d98",
+      "bytes": 3046,
+      "mode": "100644",
+      "components": [
+        "exec-authorized-read-classification"
+      ]
+    },
+    {
+      "path": "codex-rs/exec-server/src/authorized_read_error_tests.rs",
+      "base_blob": null,
+      "base_sha256": null,
+      "candidate_blob": "9eba834eeb48afb14656bf48d6cd427c2fd1d93e",
+      "candidate_sha256": "562b7566c773bef94d82ed16e9eb9fbc4d7d3c26d9ee07d2a6ebb7fff083ff4f",
+      "bytes": 2754,
+      "mode": "100644",
+      "components": [
+        "exec-authorized-read-classification",
+        "diagnostic-capability-requirement"
+      ]
+    },
+    {
+      "path": "codex-rs/exec-server/src/client.rs",
+      "base_blob": "329cd5a34cb35652fc6314507e80bcfe42c9649c",
+      "base_sha256": "b0cc65afd9f8bcf4fa6dbab5fb8e857557297c52420803251396d2864b7a8b4a",
+      "candidate_blob": "4417df29495880c89fbe299d560955d82383d2c1",
+      "candidate_sha256": "0c43690252574dbc2632071e7731f03fe777eb5ef5fb0a4ee80f8d32e90e441e",
+      "bytes": 122225,
+      "mode": "100644",
+      "components": [
+        "exec-authorized-read-classification"
+      ]
+    },
+    {
+      "path": "codex-rs/exec-server/src/lib.rs",
+      "base_blob": "8a2616a2001bcbb06b2b9bd1420c274c1c73cb81",
+      "base_sha256": "52b29e12c0c4584d327326ae2a6dee376542142b3534ee88607a6e2de23b4b92",
+      "candidate_blob": "096f712446110133d3b77fe7179c18434de04ff2",
+      "candidate_sha256": "09708562836a74a29104d51ee7acd839b241e8f5c46f1d6c7b3614f2fc55a5c0",
+      "bytes": 8871,
+      "mode": "100644",
+      "components": [
+        "exec-authorized-read-classification"
+      ]
+    },
+    {
+      "path": "codex-rs/exec-server/src/local_file_system_authorized_read_tests.rs",
+      "base_blob": "1f61a8f4546c33275a3db712f95db1ae71d0d9a7",
+      "base_sha256": "cbbc67a65b73deffe5798e0f197ade1f9c3e01687a624c19b57cd6fffbb571fd",
+      "candidate_blob": "96bb01ad55e75e932f9b4dba5603f6ddc4d03101",
+      "candidate_sha256": "7c7934c1166f6a5d9b4e882392447ca277859872c38da4732714690549eedd3b",
+      "bytes": 14235,
+      "mode": "100644",
+      "components": [
+        "exec-canonical-fixtures"
+      ]
+    },
+    {
+      "path": "codex-rs/exec-server/src/remote_file_system.rs",
+      "base_blob": "a578c0548e8b7437979e749dbcfa4d3f6a263835",
+      "base_sha256": "b2a37a65c1ef55b76b2ef5f55bc573137a02eda095b8d359f157b5d46df1bbeb",
+      "candidate_blob": "da7b3bbfcc1c303686a088b4540bbe548492ed8f",
+      "candidate_sha256": "7f26680bfa25105b0d3f0e5c84d5921a455b7e4779baa688f898813d4c5e1f67",
+      "bytes": 24348,
+      "mode": "100644",
+      "components": [
+        "exec-authorized-read-classification"
+      ]
+    },
+    {
+      "path": "codex-rs/exec-server/src/remote_file_system_path_uri_tests.rs",
+      "base_blob": "31a558947344e36b9eb3cabcc024639c169f0d47",
+      "base_sha256": "b7c755fbe11fa0b6e4d41e68e40a66a2f6e2eb93438520a175cf35843e87a23c",
+      "candidate_blob": "5e558fa6bb21f9fcdb10c960e4942a4b1ddc0b11",
+      "candidate_sha256": "b8ec660a3ff6b1aa5e1ae4e29a983a71195c554546b6b7e09eb9d8a8e716acdd",
+      "bytes": 41717,
+      "mode": "100644",
+      "components": [
+        "exec-authorized-read-classification",
+        "exec-explicit-false-capability"
+      ]
+    },
+    {
+      "path": "codex-rs/exec-server/src/server/file_system_handler.rs",
+      "base_blob": "30bb796a06eb7c9b5ebb68f5ace501ce8a15aedf",
+      "base_sha256": "e6e872f442cbb6e76151f96adaca2b04f99d5aade7fd2ae0b91b30b404b596c4",
+      "candidate_blob": "f4ba6b28cf8726756fb24a8186d2e2d414561513",
+      "candidate_sha256": "a7f86c8778c27f0ea9a2745fa539be835e2d1a70c49f1daea5af401ad4f186bd",
+      "bytes": 17574,
+      "mode": "100644",
+      "components": [
+        "exec-authorized-read-classification"
+      ]
+    },
+    {
+      "path": "codex-rs/exec-server/tests/authorized_read_rpc.rs",
+      "base_blob": "5ca50810629fa6debd6531e06866a197caf96a36",
+      "base_sha256": "3c9a365dab6cdb003fe843f58e41d2d6b1a2c1d7fd3bdb8de291a15210a7f0e9",
+      "candidate_blob": "57f54e2b68d12ba0a80002b4578a90a89ca4cd00",
+      "candidate_sha256": "ee1e7812a638ba74bab65ba29ab2045198f2aaf612914140477cdb7421e6bb2f",
+      "bytes": 4823,
+      "mode": "100644",
+      "components": [
+        "exec-canonical-fixtures",
+        "diagnostic-capability-requirement"
+      ]
+    },
+    {
+      "path": "codex-rs/exec-server/tests/file_system_unix.rs",
+      "base_blob": "2ebd7e53986eb4cceaabaad4b8bc1b3f55ba1d64",
+      "base_sha256": "79651ba2e486920d21f7ca6c1342fb2d91df3c8e07e51cde45c341afd59223d1",
+      "candidate_blob": "542dbbf52283b03a360a9bf915b5330d3675604f",
+      "candidate_sha256": "77eca15b11cc8eedb13b4573299735f67653926bad7a930e5b34c05dbc21b2c4",
+      "bytes": 59109,
+      "mode": "100644",
+      "components": [
+        "exec-canonical-fixtures"
+      ]
+    }
+  ],
+  "auxiliary_paths": [
+    ".github/fixtures/a32-exec-authorized-read-native/source-manifest.json",
+    ".github/scripts/a32_exec_authorized_read_native.py",
+    ".github/scripts/a32_exec_authorized_read_format.py",
+    ".github/workflows/a32-exec-authorized-read-native.yml"
+  ],
+  "allowed_formatted_paths": [
+    "codex-rs/exec-server/src/authorized_read_error.rs",
+    "codex-rs/exec-server/src/authorized_read_error_tests.rs",
+    "codex-rs/exec-server/src/client.rs",
+    "codex-rs/exec-server/src/lib.rs",
+    "codex-rs/exec-server/src/local_file_system_authorized_read_tests.rs",
+    "codex-rs/exec-server/src/remote_file_system.rs",
+    "codex-rs/exec-server/src/remote_file_system_path_uri_tests.rs",
+    "codex-rs/exec-server/src/server/file_system_handler.rs",
+    "codex-rs/exec-server/tests/authorized_read_rpc.rs",
+    "codex-rs/exec-server/tests/file_system_unix.rs"
+  ],
+  "diagnostic_only_test_overlay": {
+    "paths": [
+      "codex-rs/exec-server/src/authorized_read_error_tests.rs",
+      "codex-rs/exec-server/tests/authorized_read_rpc.rs"
+    ],
+    "sha256": "ae96ea411f9a3a1f2018d45052a4ee7d7743f7244b72edd59928c6136c3345e2"
+  },
+  "qualification": "local frozen diagnostic input; native proof pending; publication and execution require separate authorization"
+}

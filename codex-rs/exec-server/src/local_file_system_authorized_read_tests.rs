@@ -51,8 +51,9 @@ async fn stable_handle_read_rejects_hardlink_provenance_ambiguity() -> io::Resul
     }
 
     let temp_dir = tempfile::tempdir()?;
-    let allowed_dir = temp_dir.path().join("allowed");
-    let denied_dir = temp_dir.path().join("denied");
+    let physical_root = temp_dir.path().canonicalize()?;
+    let allowed_dir = physical_root.join("allowed");
+    let denied_dir = physical_root.join("denied");
     std::fs::create_dir_all(&allowed_dir)?;
     std::fs::create_dir_all(&denied_dir)?;
     let secret = denied_dir.join("secret.txt");
@@ -81,15 +82,16 @@ async fn stable_handle_read_authorizes_resolved_symlink_target() -> io::Result<(
         return Ok(());
     }
     let temp_dir = tempfile::tempdir()?;
-    let allowed_dir = temp_dir.path().join("allowed");
-    let denied_dir = temp_dir.path().join("denied");
+    let physical_root = temp_dir.path().canonicalize()?;
+    let allowed_dir = physical_root.join("allowed");
+    let denied_dir = physical_root.join("denied");
     std::fs::create_dir_all(&allowed_dir)?;
     std::fs::create_dir_all(&denied_dir)?;
     let allowed_file = allowed_dir.join("allowed.txt");
     let secret_file = denied_dir.join("secret.txt");
     std::fs::write(&allowed_file, b"allowed")?;
     std::fs::write(&secret_file, b"secret")?;
-    let allowed_link = temp_dir.path().join("allowed-link");
+    let allowed_link = physical_root.join("allowed-link");
     let denied_link = allowed_dir.join("denied-link");
     symlink(&allowed_file, &allowed_link)?;
     symlink(&secret_file, &denied_link)?;
@@ -113,7 +115,8 @@ async fn stable_handle_read_applies_deny_glob_to_resolved_target() -> io::Result
         return Ok(());
     }
     let temp_dir = tempfile::tempdir()?;
-    let allowed_dir = temp_dir.path().join("allowed");
+    let physical_root = temp_dir.path().canonicalize()?;
+    let allowed_dir = physical_root.join("allowed");
     std::fs::create_dir_all(&allowed_dir)?;
     let denied_file = allowed_dir.join("blocked.secret");
     std::fs::write(&denied_file, b"secret")?;
@@ -251,8 +254,9 @@ async fn stable_handle_read_keeps_authorized_handle_after_later_hardlink() -> io
         return Ok(());
     }
     let temp_dir = tempfile::tempdir()?;
-    let allowed_dir = temp_dir.path().join("allowed");
-    let denied_dir = temp_dir.path().join("denied");
+    let physical_root = temp_dir.path().canonicalize()?;
+    let allowed_dir = physical_root.join("allowed");
+    let denied_dir = physical_root.join("denied");
     std::fs::create_dir_all(&allowed_dir)?;
     std::fs::create_dir_all(&denied_dir)?;
     let path = allowed_dir.join("allowed.txt");
@@ -297,11 +301,12 @@ async fn stable_handle_read_redacts_missing_target_path() -> io::Result<()> {
         return Ok(());
     }
     let temp_dir = tempfile::tempdir()?;
-    let missing = temp_dir.path().join("SECRET-missing-target.txt");
+    let physical_root = temp_dir.path().canonicalize()?;
+    let missing = physical_root.join("SECRET-missing-target.txt");
     let error = authorized_read(
         &LocalFileSystem::unsandboxed(),
         &missing,
-        &read_sandbox(temp_dir.path())?,
+        &read_sandbox(&physical_root)?,
         128,
     )
     .await
@@ -335,11 +340,12 @@ async fn stable_handle_bounded_read_never_returns_oversize_prefix() -> io::Resul
         return Ok(());
     }
     let temp_dir = tempfile::tempdir()?;
-    let exact = temp_dir.path().join("exact.txt");
-    let oversized = temp_dir.path().join("oversized.txt");
+    let physical_root = temp_dir.path().canonicalize()?;
+    let exact = physical_root.join("exact.txt");
+    let oversized = physical_root.join("oversized.txt");
     std::fs::write(&exact, b"12345678")?;
     std::fs::write(&oversized, b"123456789")?;
-    let sandbox = read_sandbox(temp_dir.path())?;
+    let sandbox = read_sandbox(&physical_root)?;
     let file_system = LocalFileSystem::unsandboxed();
 
     assert_eq!(
