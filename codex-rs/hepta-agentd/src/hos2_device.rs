@@ -29,11 +29,32 @@ pub struct AgentdHos2Device {
     local_space: [u8; 16],
     manager_space: [u8; 16],
     recovery_space: [u8; 16],
+    observe_slot: u64,
+    observe_generation: u64,
     manage_slot: u64,
     manage_generation: u64,
     manager_history: (u64, u64),
     recovery_history: (u64, u64),
     maximum_cap_ns: u64,
+}
+
+/// One correlated N0 CPU observation, not an operation outcome or a grant.
+/// The observer namespace identifies this process's capability space; it is
+/// not the controlled resource's stable object ID. A later write still needs
+/// the original owner's immutable intent, live authority and revision CAS.
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct AgentdHos2Usage {
+    pub boot_id: [u8; 16],
+    pub observer_space_id: [u8; 16],
+    pub revision: u64,
+    pub sample_boottime_ns: u64,
+    pub cumulative_cpu_ns: u64,
+    pub window_start_ns: u64,
+    pub window_consumed_ns: u64,
+    pub active_cap_ns: u64,
+    pub active_period_ns: u64,
+    pub event_sequence: u64,
+    pub dropped_events: u64,
 }
 
 struct Response {
@@ -108,6 +129,8 @@ impl AgentdHos2Device {
             local_space,
             manager_space,
             recovery_space,
+            observe_slot: read64(bootstrap, /*offset*/ 32)?,
+            observe_generation: read64(bootstrap, /*offset*/ 40)?,
             manage_slot: read64(bootstrap, /*offset*/ 48)?,
             manage_generation: read64(bootstrap, /*offset*/ 56)?,
             manager_history: (
@@ -125,6 +148,8 @@ impl AgentdHos2Device {
             || device.manager_space == [0; 16]
             || device.recovery_space == [0; 16]
             || device.manager_space == device.recovery_space
+            || device.observe_slot == 0
+            || device.observe_generation == 0
             || device.manage_slot == 0
             || device.manage_generation == 0
             || device.maximum_cap_ns > HOS2_CPU_PERIOD_NS
@@ -152,6 +177,59 @@ impl AgentdHos2Device {
             return Err("native QueryAbi differs from HOS2BOOT v2".to_string());
         }
         Ok(device)
+    }
+
+    /// Read the already-delegated CPU object once, without allocating D,
+    /// retrying transport, publishing an outcome or sending a management call.
+    /// `request_id` is only a nonzero read correlation ID. Its value does not
+    /// consume the original owner's delivery sequence. The snapshot can supply
+    /// an observed revision for a new intent; it cannot settle an existing K.
+    pub fn read_usage(&self, request_id: u64) -> Result<AgentdHos2Usage, String> {
+        let response = self.exchange(
+            /*opcode*/ 2,
+            request_id,
+            self.observe_slot,
+            self.observe_generation,
+            &[],
+        )?;
+        if response.status != 0 || response.revision == 0 || response.payload.len() != 64 {
+            return Err("native CPU usage observation is unavailable".to_string());
+        }
+        let bytes = &response.payload;
+        let usage = AgentdHos2Usage {
+            boot_id: self.boot_id,
+            observer_space_id: self.local_space,
+            revision: response.revision,
+            sample_boottime_ns: read64(bytes, /*offset*/ 0)?,
+            cumulative_cpu_ns: read64(bytes, /*offset*/ 8)?,
+            window_start_ns: read64(bytes, /*offset*/ 16)?,
+            window_consumed_ns: read64(bytes, /*offset*/ 24)?,
+            active_cap_ns: read64(bytes, /*offset*/ 32)?,
+            active_period_ns: read64(bytes, /*offset*/ 40)?,
+            event_sequence: read64(bytes, /*offset*/ 48)?,
+            dropped_events: read64(bytes, /*offset*/ 56)?,
+        };
+        let elapsed = usage
+            .sample_boottime_ns
+            .checked_sub(usage.window_start_ns)
+            .ok_or_else(|| "native CPU usage window starts after its sample".to_string())?;
+        let expected_start =
+            usage.sample_boottime_ns - usage.sample_boottime_ns % HOS2_CPU_PERIOD_NS;
+        if usage.active_period_ns != HOS2_CPU_PERIOD_NS
+            || usage.window_start_ns != expected_start
+            || usage.window_consumed_ns > elapsed
+            || usage.window_consumed_ns > usage.cumulative_cpu_ns
+            || usage.cumulative_cpu_ns - usage.window_consumed_ns > usage.window_start_ns
+            || usage.cumulative_cpu_ns > usage.sample_boottime_ns
+            || usage.active_cap_ns > usage.active_period_ns
+            || usage.dropped_events > usage.event_sequence
+        {
+            return Err("native CPU usage violates the single-CPU accounting profile".to_string());
+        }
+        // Lowering the cap preserves already-consumed time. In particular,
+        // consumed > cap and cap == 0 are valid observations. A delegation's
+        // write ceiling also does not bound the state it is allowed to read.
+        Ok(usage)
     }
 
     /// Discover the value to persist before dispatch. The sequence is allocated
@@ -204,7 +282,7 @@ impl AgentdHos2Device {
         generation: u64,
         payload: &[u8],
     ) -> Result<Response, String> {
-        if payload.len() > 40 || sequence == 0 || sequence == u64::MAX {
+        if payload.len() > 40 || sequence == 0 || (sequence == u64::MAX && opcode != 2) {
             return Err("invalid bounded HOS2 frame".to_string());
         }
         let mut input = [0_u8; HEADER_BYTES + 40];

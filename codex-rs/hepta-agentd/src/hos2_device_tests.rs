@@ -124,10 +124,12 @@ impl ControlTransport for ScriptedTransport {
             .pop_front()
             .ok_or_else(|| "unexpected native exchange".to_string())?;
         assert_eq!(read_u16(input, /*offset*/ 8)?, opcode);
-        assert_eq!(
-            (read64(input, /*offset*/ 24)?, read64(input, /*offset*/ 32)?),
-            (1, 0)
-        );
+        assert_eq!(read64(input, /*offset*/ 32)?, 0);
+        if opcode == 2 {
+            assert_ne!(read64(input, /*offset*/ 24)?, 0);
+        } else {
+            assert_eq!(read64(input, /*offset*/ 24)?, 1);
+        }
         let response = response?;
         output[..4].copy_from_slice(b"HOSR");
         output[4..6].copy_from_slice(&2_u16.to_le_bytes());
@@ -150,11 +152,7 @@ fn fixture(
     fixture_for_role(/*role*/ 1, Some(install), query)
 }
 
-fn fixture_for_role(
-    role: u64,
-    install: Option<Result<Response, String>>,
-    query: Response,
-) -> TestResult<(AgentdHos2Device, Hos2InstallBudgetV1, Arc<Mutex<Script>>)> {
+fn bootstrap_for_role(role: u64) -> Vec<u8> {
     let mut bootstrap = vec![0; 4096];
     bootstrap[..8].copy_from_slice(b"HOS2BOOT");
     for (offset, value) in [
@@ -183,6 +181,15 @@ fn fixture_for_role(
         bootstrap[80..88].copy_from_slice(&4_u64.to_le_bytes());
         bootstrap[88..96].copy_from_slice(&1_u64.to_le_bytes());
     }
+    bootstrap
+}
+
+fn fixture_for_role(
+    role: u64,
+    install: Option<Result<Response, String>>,
+    query: Response,
+) -> TestResult<(AgentdHos2Device, Hos2InstallBudgetV1, Arc<Mutex<Script>>)> {
+    let bootstrap = bootstrap_for_role(role);
     let mut abi = vec![0; 48];
     abi[..16].copy_from_slice(if role == 1 { &[2; 16] } else { &[3; 16] });
     for (offset, value) in [(16, 4096_u32), (20, 40), (24, 64)] {
@@ -467,5 +474,349 @@ fn changed_boot_and_inaccessible_history_remain_unavailable() -> TestResult {
         let script = script.lock().map_err(|error| error.to_string())?;
         assert_eq!((script.requests.len(), script.replies.len()), (1, 1));
     }
+    Ok(())
+}
+
+fn usage_response(values: [u64; 8], revision: u64) -> Response {
+    Response {
+        status: 0,
+        revision,
+        payload: values.into_iter().flat_map(u64::to_le_bytes).collect(),
+    }
+}
+
+fn usage_fixture(
+    role: u64,
+    response: Result<Response, String>,
+) -> TestResult<(AgentdHos2Device, Arc<Mutex<Script>>)> {
+    let (device, _, script) = fixture_for_role(
+        role,
+        /*install*/ None,
+        applied_query(
+            /*previous_revision*/ 1,
+            /*effective_ns*/ 100_001_001,
+            /*consumed_ns*/ 999,
+        ),
+    )?;
+    script.lock().map_err(|error| error.to_string())?.replies = VecDeque::from([(2, response)]);
+    Ok((device, script))
+}
+
+#[test]
+fn read_usage_correlates_observer_handle_without_consuming_delivery_sequence() -> TestResult {
+    for role in [1, 3] {
+        // A lower or zero cap does not erase time already consumed.
+        for cap in [0, 20_000_000] {
+            let values = [
+                150_000_000,
+                135_000_000,
+                100_000_000,
+                35_000_000,
+                cap,
+                HOS2_CPU_PERIOD_NS,
+                9,
+                2,
+            ];
+            let (device, script) = usage_fixture(role, Ok(usage_response(values, /*revision*/ 7)))?;
+            let before = device.install_request(
+                /*sequence*/ 1, /*expected_revision*/ 7, /*cap_ns*/ 1_001,
+            )?;
+            let observed = device.read_usage(/*request_id*/ 41)?;
+            assert_eq!(
+                observed,
+                AgentdHos2Usage {
+                    boot_id: [1; 16],
+                    observer_space_id: if role == 1 { [2; 16] } else { [3; 16] },
+                    revision: 7,
+                    sample_boottime_ns: 150_000_000,
+                    cumulative_cpu_ns: 135_000_000,
+                    window_start_ns: 100_000_000,
+                    window_consumed_ns: 35_000_000,
+                    active_cap_ns: cap,
+                    active_period_ns: HOS2_CPU_PERIOD_NS,
+                    event_sequence: 9,
+                    dropped_events: 2,
+                }
+            );
+            script
+                .lock()
+                .map_err(|error| error.to_string())?
+                .replies
+                .push_back((2, Ok(usage_response(values, /*revision*/ 7))));
+            assert_eq!(device.read_usage(/*request_id*/ 42)?, observed);
+            assert_eq!(
+                device.install_request(
+                    /*sequence*/ 1,
+                    observed.revision,
+                    /*cap_ns*/ 1_001
+                )?,
+                before
+            );
+            let script = script.lock().map_err(|error| error.to_string())?;
+            assert_eq!(script.requests.len(), 3);
+            assert!(script.replies.is_empty());
+            for (request, expected_id) in script.requests[1..].iter().zip([41, 42]) {
+                assert_eq!(request.len(), 64);
+                assert_eq!(read_u16(request, /*offset*/ 8)?, 2);
+                assert_eq!(read32(request, /*offset*/ 16)?, 0);
+                assert_eq!(read64(request, /*offset*/ 24)?, expected_id);
+                assert_eq!(read64(request, /*offset*/ 40)?, 1);
+                assert_eq!(read64(request, /*offset*/ 48)?, 1);
+            }
+        }
+    }
+    Ok(())
+}
+
+#[test]
+fn read_usage_accepts_boot_origin_and_full_unsigned_observation_range() -> TestResult {
+    for sample in [
+        0,
+        1,
+        HOS2_CPU_PERIOD_NS - 1,
+        HOS2_CPU_PERIOD_NS,
+        HOS2_CPU_PERIOD_NS + 1,
+        u64::MAX,
+    ] {
+        let elapsed = sample % HOS2_CPU_PERIOD_NS;
+        let values = [
+            sample,
+            sample,
+            sample - elapsed,
+            elapsed,
+            HOS2_CPU_PERIOD_NS,
+            HOS2_CPU_PERIOD_NS,
+            u64::MAX,
+            u64::MAX,
+        ];
+        let (device, script) =
+            usage_fixture(/*role*/ 1, Ok(usage_response(values, u64::MAX)))?;
+        let observed = device.read_usage(/*request_id*/ u64::MAX)?;
+        assert_eq!(
+            observed,
+            AgentdHos2Usage {
+                boot_id: [1; 16],
+                observer_space_id: [2; 16],
+                revision: u64::MAX,
+                sample_boottime_ns: sample,
+                cumulative_cpu_ns: sample,
+                window_start_ns: sample - elapsed,
+                window_consumed_ns: elapsed,
+                active_cap_ns: HOS2_CPU_PERIOD_NS,
+                active_period_ns: HOS2_CPU_PERIOD_NS,
+                event_sequence: u64::MAX,
+                dropped_events: u64::MAX,
+            }
+        );
+        // MAX is a valid observation ID/revision, not a valid delivery ID or
+        // next-write revision. ReadUsage does not broaden either write bound.
+        assert!(
+            device
+                .install_request(
+                    u64::MAX,
+                    /*expected_revision*/ 1,
+                    /*cap_ns*/ 1_001
+                )
+                .is_err()
+        );
+        assert!(
+            device
+                .install_request(
+                    /*sequence*/ 1,
+                    observed.revision,
+                    /*cap_ns*/ 1_001
+                )
+                .is_err()
+        );
+        assert_eq!(
+            script
+                .lock()
+                .map_err(|error| error.to_string())?
+                .requests
+                .len(),
+            2
+        );
+    }
+    Ok(())
+}
+
+#[test]
+fn read_usage_rejects_impossible_single_cpu_snapshots() -> TestResult {
+    let valid = [
+        150_000_000,
+        135_000_000,
+        100_000_000,
+        35_000_000,
+        20_000_000,
+        HOS2_CPU_PERIOD_NS,
+        9,
+        2,
+    ];
+    for (field, value) in [
+        (0, 99_999_999),  // window starts after the sample
+        (1, 34_999_999),  // cumulative is less than this window
+        (1, 150_000_001), // cumulative exceeds the single-CPU clock
+        (1, 140_000_000), // prior-window cumulative exceeds window_start
+        (2, 99_999_999),  // not the exact fixed-period boundary
+        (3, 50_000_001),  // more runtime than elapsed in this window
+        (4, HOS2_CPU_PERIOD_NS + 1),
+        (5, HOS2_CPU_PERIOD_NS - 1),
+        (6, 1), // fewer events than drops
+        (7, 10),
+    ] {
+        let mut values = valid;
+        values[field] = value;
+        let (device, script) =
+            usage_fixture(/*role*/ 1, Ok(usage_response(values, /*revision*/ 7)))?;
+        assert!(
+            device.read_usage(/*request_id*/ 41).is_err(),
+            "accepted field {field}={value}"
+        );
+        assert_eq!(
+            script
+                .lock()
+                .map_err(|error| error.to_string())?
+                .requests
+                .len(),
+            2
+        );
+    }
+    Ok(())
+}
+
+#[test]
+fn read_usage_refusal_or_lost_reply_never_becomes_a_snapshot_or_retry() -> TestResult {
+    let values = [
+        150_000_000,
+        135_000_000,
+        100_000_000,
+        35_000_000,
+        20_000_000,
+        HOS2_CPU_PERIOD_NS,
+        0,
+        0,
+    ];
+    let mut short = usage_response(values, /*revision*/ 7);
+    short.payload.pop();
+    let responses = [
+        Err("explicit fixture lost reply".to_string()),
+        Ok(Response {
+            status: 4,
+            revision: 0,
+            payload: Vec::new(),
+        }),
+        Ok(usage_response(values, /*revision*/ 0)),
+        Ok(short),
+    ];
+    for response in responses {
+        let (device, script) = usage_fixture(/*role*/ 1, response)?;
+        assert!(device.read_usage(/*request_id*/ 41).is_err());
+        let script = script.lock().map_err(|error| error.to_string())?;
+        assert_eq!(script.requests.len(), 2);
+        assert!(script.replies.is_empty());
+        assert_eq!(read_u16(&script.requests[1], /*offset*/ 8)?, 2);
+    }
+    let (device, script) =
+        usage_fixture(/*role*/ 1, Ok(usage_response(values, /*revision*/ 7)))?;
+    assert!(device.read_usage(/*request_id*/ 0).is_err());
+    let script = script.lock().map_err(|error| error.to_string())?;
+    assert_eq!((script.requests.len(), script.replies.len()), (1, 1));
+    Ok(())
+}
+
+struct MutatedUsageReply {
+    script: ScriptedTransport,
+    offset: usize,
+    value: u8,
+}
+
+impl ControlTransport for MutatedUsageReply {
+    fn exchange(&self, input: &[u8], output: &mut [u8]) -> Result<(), String> {
+        self.script.exchange(input, output)?;
+        output[self.offset] = self.value;
+        Ok(())
+    }
+}
+
+#[test]
+fn read_usage_rejects_foreign_or_malformed_response_headers() -> TestResult {
+    for (offset, value) in [
+        (8, 3),   // a different opcode
+        (16, 65), // payload exceeds the bounded response
+        (20, 1),  // reserved response flags
+        (24, 42), // another read request
+        (40, 4),  // another kernel boot
+    ] {
+        let values = [
+            150_000_000,
+            135_000_000,
+            100_000_000,
+            35_000_000,
+            20_000_000,
+            HOS2_CPU_PERIOD_NS,
+            9,
+            2,
+        ];
+        let (mut device, script) =
+            usage_fixture(/*role*/ 1, Ok(usage_response(values, /*revision*/ 7)))?;
+        device.transport = Box::new(MutatedUsageReply {
+            script: ScriptedTransport(script.clone()),
+            offset,
+            value,
+        });
+        assert!(device.read_usage(/*request_id*/ 41).is_err());
+        assert_eq!(
+            script
+                .lock()
+                .map_err(|error| error.to_string())?
+                .requests
+                .len(),
+            2
+        );
+    }
+    Ok(())
+}
+
+#[test]
+fn native_usage_requires_an_existing_manager_or_recovery_observe_handle() -> TestResult {
+    for role in [1, 3] {
+        for offset in [32, 40] {
+            let mut bootstrap = bootstrap_for_role(role);
+            bootstrap[offset..offset + 8].fill(/*value*/ 0);
+            let script = Arc::new(Mutex::new(Script {
+                replies: VecDeque::new(),
+                requests: Vec::new(),
+            }));
+            assert!(
+                AgentdHos2Device::attach(Box::new(ScriptedTransport(script.clone())), &bootstrap,)
+                    .is_err()
+            );
+            assert!(
+                script
+                    .lock()
+                    .map_err(|error| error.to_string())?
+                    .requests
+                    .is_empty()
+            );
+        }
+    }
+    let script = Arc::new(Mutex::new(Script {
+        replies: VecDeque::new(),
+        requests: Vec::new(),
+    }));
+    assert!(
+        AgentdHos2Device::attach(
+            Box::new(ScriptedTransport(script.clone())),
+            &bootstrap_for_role(/*role*/ 2),
+        )
+        .is_err()
+    );
+    assert!(
+        script
+            .lock()
+            .map_err(|error| error.to_string())?
+            .requests
+            .is_empty()
+    );
     Ok(())
 }

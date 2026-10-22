@@ -90,6 +90,27 @@ Typed owner attachments in `AgentdState` remain explicit fields. `RuntimeTasks` 
 
 Configuration is immutable for one process generation. Changes affecting authority, schema, compatibility, model identity, objective semantics or resource policy create a new revision or generation. Hidden mutable singletons, unbounded queues and implicit store fallback are prohibited.
 
+### Explicit native HOS2 observation
+
+[`AgentdHos2Device::read_usage(request_id)`](../../../codex-rs/hepta-agentd/src/hos2_device.rs)
+issues one synchronous read through the bootstrap's existing observe handle.
+It requires the explicitly supplied process-bound `File` and trusted bootstrap
+bytes; discovery data does not grant authority. The request ID correlates this
+read and consumes no native delivery sequence. Transport failure returns an
+error without retry or a substitute snapshot.
+
+The returned `observer_space_id` identifies the observer's CapSpace, not the
+controlled resource's stable object ID. The validated revision can supply the
+original `install_request` CAS expectation; it may become stale before dispatch
+and cannot establish an existing operation's outcome. Original K↔D admission,
+FinalUse authorization, terminal publication and retirement remain with the
+same recovered writer. Lowering a cap preserves already-consumed CPU time.
+
+This API adds no CLI startup, native role loader, writer or issuer. Native
+composition still requires the original recovered host and external grant
+provider. The adapter's protocol tests do not establish native Agentd execution,
+production authority or G2 qualification.
+
 ### Explicit Notes destination bootstrap
 
 `hepta-memory::ProductionNotesTarget` consumes `trill.notes.replace.v1` through
