@@ -1161,3 +1161,51 @@ fn selection_digest_rejects_forged_candidate_snapshot_without_full_replay() {
         receipt.selection_digest
     );
 }
+
+#[test]
+fn duplicated_candidate_digest_is_not_an_independent_diversification_asset() {
+    let first = candidate("first", 60, 10, false);
+    let mut relabelled = candidate("second-id", 55, 5, false);
+    // Different IDs, utilities and alleged risk estimates are not two
+    // independent investments when the signed payload identity is the same.
+    relabelled.candidate_digest = first.candidate_digest;
+    relabelled.weight_cap = q(50);
+    let candidates = [candidate("baseline", 0, 0, true), first, relabelled];
+    let ctx = context(candidates.len());
+    let expected = NduError::InvalidSolverReceipt("duplicate portfolio candidate digest");
+
+    assert_eq!(
+        select_output_portfolio_v1(&ctx, &budget(3), &candidates),
+        Err(expected.clone())
+    );
+    assert_eq!(
+        output_efficient_frontier_v1(&ctx, &candidates),
+        Err(expected.clone())
+    );
+
+    // Input ordering and associated covariance positions cannot launder
+    // a reused proposal into the portfolio selector.
+    let reordered = [
+        candidates[2].clone(),
+        candidates[0].clone(),
+        candidates[1].clone(),
+    ];
+    assert_eq!(
+        select_output_portfolio_v1(&context(3), &budget(3), &reordered),
+        Err(expected)
+    );
+}
+
+#[test]
+fn a_relabelled_baseline_digest_cannot_be_a_risky_second_asset() {
+    let baseline = candidate("baseline", 0, 0, true);
+    let mut duplicate = candidate("new-id", 95, 0, false);
+    duplicate.candidate_digest = baseline.candidate_digest;
+    let candidates = [baseline, duplicate];
+    assert_eq!(
+        select_output_portfolio_v1(&context(2), &budget(2), &candidates),
+        Err(NduError::InvalidSolverReceipt(
+            "duplicate portfolio candidate digest"
+        ))
+    );
+}
