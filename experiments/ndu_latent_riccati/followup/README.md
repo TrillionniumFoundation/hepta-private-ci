@@ -65,3 +65,42 @@ Locally the exact source blobs were tested with Python 3, NumPy 2.3.5 and CPU Py
 - Production NDU covariance/conditional support, independent future-window observer, model CAS/CNS/Fence, Final-use, named-host 64–4096 Cell resource receipts and native Rust compatibility remain independent gates.
 
 This follow-up has no effect authority, no result-based test rewriting, no inference-time hidden label access and no permission to merge into production solely because 16 small unit tests pass.
+
+## Observed decoder-risk diagnostic (additive, SHADOW_ONLY)
+
+`observed_output.py` addresses a limitation that the existing finite-grid
+selector deliberately does **not** solve: a convex blend of standalone
+calibration losses is *not* the semantic loss of the latent-space mixture
+after a nonlinear decoder.
+
+This sidecar requires the evaluator to actually generate both the no-change
+baseline and selected portfolio from the same public inputs, verify that
+text/audio/image/video raw output arrays exist, and only then give the result
+to an external scorer. It computes upper-tail empirical CVaR90 with fractional
+mass after reducing each episode's repeated draws; missing/misaligned episode
+identities, missing modalities, invalid external scores, unsafe risk, ambiguity,
+quality or local generation-wall budget fail closed. The record retains
+rejected proposals, not only successes.
+
+Exact, locally tested source Git blobs:
+- `observed_output.py`: `d7d7a0cd8250b7be902d0436567fd7a0ed9c5f46`
+- `test_observed_output.py`: `98d34f0eac13dbf1fa6bfc0f4a49832b59947ae9`
+
+The 10 local CPU regression cases passed. The primary adversarial nonlinear
+example uses a decoder D(z)=z²: the standalone endpoints -1 and +1 both
+decode correctly, but the 50/50 latent mixture decodes to 0 and becomes
+incorrect. Reported baseline decoded CVaR90=0, actual selected decoded
+CVaR90=1, decision `REJECT_OBSERVED_OUTPUT / DENY_ALL`.
+
+**Evidence limits:** This is an artificial small decoder/assessor contract
+test, not trained natural media, a learned masked diffusion LLM, proof that
+independent callbacks cannot read hidden truth, an independently signed
+future-window evaluation, or a total physical-cost measurement. It does not
+modify any #3055 frozen protocol/test set, #3039 preregistered endpoint,
+or production NDU authority; passing the sidecar still says
+`scientific_efficacy_claim=False` and
+`independent_observer_authenticated=False`.
+
+The dedicated research CI now runs both the existing portfolio tests and
+`test_observed_output.py`. Exact-head CI and independent prospective
+decoded-output experiments remain separate blockers.
