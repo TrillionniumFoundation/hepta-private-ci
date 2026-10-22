@@ -26,7 +26,7 @@ impl WorkspaceBinding {
         let path = path.into();
         validate_absolute_normalized(&path, "workspace root")?;
         let canonical = path.canonicalize()?;
-        if canonical != path {
+        if !matches_canonical_path_spelling(&path, &canonical) {
             return Err(FleetRegistryError::Invalid(format!(
                 "workspace root must be canonical and must not traverse a symlink: {}",
                 path.display()
@@ -203,4 +203,64 @@ fn validate_absolute_normalized(path: &Path, label: &str) -> Result<(), FleetReg
         )));
     }
     Ok(())
+}
+
+// Windows std::fs::canonicalize emits a verbatim \\?\ drive prefix even
+// for a normal absolute C:\\... path. Compare spellings only; never resolve
+// the input a second time, since that would hide symlink traversal.
+fn matches_canonical_path_spelling(original: &Path, canonical: &Path) -> bool {
+    if original == canonical {
+        return true;
+    }
+    #[cfg(windows)]
+    {
+        if let Some(plain) = canonical
+            .to_str()
+            .and_then(|spelling| spelling.strip_prefix(r"\\?\"))
+        {
+            // Admit only the known drive-prefix representation difference.
+            // UNC and device namespace changes remain denied.
+            if plain.as_bytes().get(1) == Some(&b':')
+                && plain.as_bytes().get(2) == Some(&b'\\')
+            {
+                return original == Path::new(plain);
+            }
+        }
+    }
+    false
+}
+
+
+#[cfg(all(test, windows))]
+mod canonical_windows_tests {
+    use super::*;
+    use std::fs;
+
+    #[test]
+    fn verbatim_drive_prefix_only_is_not_a_symlink_redirection() {
+        assert!(matches_canonical_path_spelling(
+            Path::new(r"C:\\hepta\\workspace"),
+            Path::new(r"\\?\C:\\hepta\\workspace"),
+        ));
+        assert!(!matches_canonical_path_spelling(
+            Path::new(r"C:\\hepta\\linked-workspace"),
+            Path::new(r"\\?\C:\\hepta\\real-workspace"),
+        ));
+    }
+
+    #[test]
+    fn workspace_binding_accepts_existing_windows_drive_directory() {
+        let temp = tempfile::tempdir().expect("temp owner");
+        let fleet_path = temp.path().join("fleet");
+        let workspace_path = temp.path().join("workspace");
+        fs::create_dir(&fleet_path).expect("fleet root");
+        fs::create_dir(&workspace_path).expect("workspace root");
+        let fleet = HeptaFleetRoot::parse(fleet_path).expect("fleet path");
+        let workspace = WorkspaceBinding::new(workspace_path.clone(), &fleet)
+            .expect("native Windows drive spelling");
+        assert_eq!(
+            workspace.as_path(),
+            workspace_path.canonicalize().expect("canonical workspace")
+        );
+    }
 }
