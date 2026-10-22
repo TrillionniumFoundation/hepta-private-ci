@@ -912,3 +912,69 @@ fn psd_covariance_roundoff_must_not_publish_negative_semantic_risk() {
         Err(NduError::InvalidSolverReceipt("negative portfolio risk"))
     );
 }
+
+#[test]
+fn digest_commits_to_complete_public_receipt_and_every_candidate_snapshot() {
+    let candidates = [
+        candidate("baseline", 0, 0, true),
+        candidate("advisory", 80, 10, false),
+    ];
+    let state = context(candidates.len());
+    let limits = budget(2);
+    let receipt =
+        select_output_portfolio_v1(&state, &limits, &candidates).expect("advisory selection");
+    assert_eq!(
+        receipt.disposition,
+        OutputPortfolioDispositionV1::AdvisorySelection
+    );
+    let canonical = canonical_candidates(&state, &candidates).expect("canonical candidates");
+    let covariance =
+        canonical_covariance(&state, &candidates, &canonical).expect("canonical covariance");
+    let digest = |value: &OutputPortfolioSelectionReceiptV1| {
+        digest_selection(&state, &limits, &canonical, &covariance, value)
+    };
+    assert_eq!(digest(&receipt), receipt.selection_digest);
+
+    let mut changed = receipt.clone();
+    changed.objective_digest = Digest32::of_bytes(b"another objective");
+    assert_ne!(digest(&changed), receipt.selection_digest);
+    let mut changed = receipt.clone();
+    changed.generation = Generation::new(2).expect("new generation");
+    assert_ne!(digest(&changed), receipt.selection_digest);
+    let mut changed = receipt.clone();
+    changed.encoder_digest = Digest32::of_bytes(b"another encoder");
+    assert_ne!(digest(&changed), receipt.selection_digest);
+    let mut changed = receipt.clone();
+    changed.snapshot_digest = Digest32::of_bytes(b"another feature snapshot");
+    assert_ne!(digest(&changed), receipt.selection_digest);
+    let mut changed = receipt.clone();
+    changed.disposition = OutputPortfolioDispositionV1::NoChange;
+    assert_ne!(digest(&changed), receipt.selection_digest);
+    let mut changed = receipt.clone();
+    changed.allocations[0].weight = FixedQ32::ZERO;
+    assert_ne!(digest(&changed), receipt.selection_digest);
+    let mut changed = receipt.clone();
+    changed.frontier[0].utility_delta = q(1);
+    assert_ne!(digest(&changed), receipt.selection_digest);
+    let mut changed = receipt.clone();
+    changed.total_risk = q(1);
+    assert_ne!(digest(&changed), receipt.selection_digest);
+    let mut changed = receipt.clone();
+    changed.total_utility = q(1);
+    assert_ne!(digest(&changed), receipt.selection_digest);
+    let mut changed = receipt.clone();
+    changed.total_resource = q(1);
+    assert_ne!(digest(&changed), receipt.selection_digest);
+    let mut changed = receipt.clone();
+    changed.total_latency = q(1);
+    assert_ne!(digest(&changed), receipt.selection_digest);
+
+    // A consumer checking a public digest (but not repeating all validation)
+    // must still detect reuse of a candidate in a different feature binding.
+    let mut altered_candidates = canonical.clone();
+    altered_candidates[0].snapshot_digest = Digest32::of_bytes(b"foreign feature snapshot");
+    assert_ne!(
+        digest_selection(&state, &limits, &altered_candidates, &covariance, &receipt),
+        receipt.selection_digest
+    );
+}
