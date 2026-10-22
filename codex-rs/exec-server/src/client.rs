@@ -122,6 +122,8 @@ use crate::protocol::TerminateParams;
 use crate::protocol::TerminateResponse;
 use crate::protocol::WriteParams;
 use crate::protocol::WriteResponse;
+use crate::authorized_read_error::AuthorizedReadFailure;
+use crate::authorized_read_error::AuthorizedReadRpcError;
 use crate::rpc::RpcCallError;
 use crate::rpc::RpcClient;
 use crate::rpc_server_requests::MAX_IN_FLIGHT_SERVER_CALLS;
@@ -880,6 +882,17 @@ impl ExecServerClient {
         self.call(FS_READ_FILE_AUTHORIZED_METHOD, &params).await
     }
 
+    pub(crate) async fn fs_read_file_authorized_classified(
+        &self,
+        params: FsReadFileAuthorizedParams,
+    ) -> Result<FsReadFileResponse, AuthorizedReadRpcError> {
+        let rpc_client = self
+            .rpc_client()
+            .await
+            .map_err(AuthorizedReadRpcError::unclassified)?;
+        map_authorized_read_rpc_result(rpc_client.call(FS_READ_FILE_AUTHORIZED_METHOD, &params).await)
+    }
+
     pub async fn fs_open(&self, params: FsOpenParams) -> Result<FsOpenResponse, ExecServerError> {
         self.call(FS_OPEN_METHOD, &params).await
     }
@@ -1192,6 +1205,16 @@ impl ExecServerClient {
         let rpc_client = self.inner.rpc_client().await?;
         map_rpc_call_result(rpc_client.call_for_cleanup(method, params).await)
     }
+}
+
+fn map_authorized_read_rpc_result<T>(
+    result: Result<T, RpcCallError>,
+) -> Result<T, AuthorizedReadRpcError> {
+    let failure = match &result {
+        Err(RpcCallError::Server(error)) => AuthorizedReadFailure::from_rpc_error(error),
+        _ => None,
+    };
+    map_rpc_call_result(result).map_err(|error| AuthorizedReadRpcError { failure, error })
 }
 
 fn map_rpc_call_result<T>(result: Result<T, RpcCallError>) -> Result<T, ExecServerError> {
@@ -1714,6 +1737,44 @@ async fn handle_server_notification(
 
 #[cfg(test)]
 mod tests {
+    #[test]
+    fn authorized_read_call_preserves_only_recognized_metadata_and_transport_behavior() {
+        use super::AuthorizedReadFailure;
+        use super::RpcCallError;
+        use super::map_authorized_read_rpc_result;
+
+        let failure = AuthorizedReadFailure::BoundExceeded;
+        let error = map_authorized_read_rpc_result::<()>(Err(RpcCallError::Server(failure.rpc_error())))
+            .expect_err("typed server error");
+        assert_eq!(error.failure, Some(failure));
+        let error = map_authorized_read_rpc_result::<()>(Err(RpcCallError::Closed))
+            .expect_err("closed transport");
+        assert_eq!(error.failure, None);
+        assert!(matches!(error.error, super::ExecServerError::Disconnected(_)));
+        assert!(map_authorized_read_rpc_result(Ok(())).is_ok());
+    }
+
+    #[test]
+    fn authorized_read_call_does_not_classify_old_or_unrecognized_peer_errors() {
+        for data in [
+            None,
+            Some(serde_json::json!({"method": "fs/readFileAuthorized", "version": 2, "kind": "permissionDenied"})),
+            Some(serde_json::json!({"method": "fs/readFileAuthorized", "version": 1, "kind": "unknown"})),
+            Some(serde_json::json!({"method": "fs/readFileAuthorized", "version": 1, "kind": "boundExceeded"})),
+        ] {
+            let error = super::map_authorized_read_rpc_result::<()>(Err(super::RpcCallError::Server(
+                codex_exec_server_protocol::JSONRPCErrorError {
+                    code: -32600,
+                    message: "secret peer detail".to_string(),
+                    data,
+                },
+            )))
+            .expect_err("unrecognized metadata remains an error");
+            assert_eq!(error.failure, None);
+            assert!(matches!(error.error, super::ExecServerError::Server { code: -32600, .. }));
+        }
+    }
+
     use codex_exec_server_protocol::JSONRPCMessage;
     use codex_exec_server_protocol::JSONRPCNotification;
     use codex_exec_server_protocol::JSONRPCResponse;

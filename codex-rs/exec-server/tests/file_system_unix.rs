@@ -1111,7 +1111,8 @@ async fn file_system_bounded_authorized_read_enforces_limit_without_prefix(
     let file_system = context.file_system;
 
     let tmp = TempDir::new()?;
-    let root = tmp.path().join("allowed");
+    let physical_root = tmp.path().canonicalize()?;
+    let root = physical_root.join("allowed");
     std::fs::create_dir_all(&root)?;
     let exact_path = root.join("exact.txt");
     let oversized_path = root.join("oversized.txt");
@@ -1149,8 +1150,9 @@ async fn file_system_bounded_authorized_read_rejects_symlink_and_parent_escape(
     let file_system = context.file_system;
 
     let tmp = TempDir::new()?;
-    let allowed_dir = tmp.path().join("allowed");
-    let outside_dir = tmp.path().join("outside");
+    let physical_root = tmp.path().canonicalize()?;
+    let allowed_dir = physical_root.join("allowed");
+    let outside_dir = physical_root.join("outside");
     std::fs::create_dir_all(&allowed_dir)?;
     std::fs::create_dir_all(&outside_dir)?;
     let secret = outside_dir.join("secret.txt");

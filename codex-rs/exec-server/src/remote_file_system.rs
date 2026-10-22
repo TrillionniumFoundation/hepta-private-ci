@@ -25,6 +25,7 @@ use crate::RemoveOptions;
 use crate::WalkOptions;
 use crate::WalkOutcome;
 use crate::WriteFileOptions;
+use crate::authorized_read_error::AuthorizedReadRpcError;
 use crate::client::LazyRemoteExecServerClient;
 use crate::protocol::FsCanonicalizeParams;
 use crate::protocol::FsCopyParams;
@@ -127,13 +128,13 @@ impl RemoteFileSystem {
             return Err(unsupported_authorized_read());
         }
         let response = client
-            .fs_read_file_authorized(FsReadFileAuthorizedParams {
+            .fs_read_file_authorized_classified(FsReadFileAuthorizedParams {
                 path: path.clone(),
                 sandbox: sandbox.clone().drop_cwd_if_unused(),
                 max_bytes: max_bytes_u64,
             })
             .await
-            .map_err(map_authorized_read_remote_error)?;
+            .map_err(map_classified_authorized_read_remote_error)?;
         let max_encoded_len = max_bytes
             .checked_add(2)
             .and_then(|len| (len / 3).checked_mul(4))
@@ -508,6 +509,13 @@ fn unsupported_authorized_read() -> io::Error {
     )
 }
 
+fn map_classified_authorized_read_remote_error(error: AuthorizedReadRpcError) -> io::Error {
+    match error.failure {
+        Some(failure) => failure.into_io_error(),
+        None => map_authorized_read_remote_error(error.error),
+    }
+}
+
 fn map_authorized_read_remote_error(error: ExecServerError) -> io::Error {
     match error {
         ExecServerError::Server { code, .. } if code == METHOD_NOT_FOUND_ERROR_CODE => {
@@ -621,6 +629,41 @@ mod tests {
                 ),
             ]
         );
+    }
+
+    #[test]
+    fn typed_authorized_read_errors_preserve_fixed_kind_and_message() {
+        use crate::authorized_read_error::AuthorizedReadFailure;
+
+        for (failure, expected_kind, expected_message) in [
+            (AuthorizedReadFailure::PermissionDenied, io::ErrorKind::PermissionDenied, "Permission denied"),
+            (AuthorizedReadFailure::BoundExceeded, io::ErrorKind::InvalidData, "authorized file read exceeds bound"),
+        ] {
+            let error = map_classified_authorized_read_remote_error(AuthorizedReadRpcError {
+                failure: Some(failure),
+                error: ExecServerError::Server { code: failure.rpc_error().code, message: "secret peer detail".to_string() },
+            });
+            assert_eq!(error.kind(), expected_kind);
+            assert_eq!(error.to_string(), expected_message);
+        }
+    }
+
+    #[test]
+    fn old_peer_or_unknown_metadata_uses_existing_redacted_error_fallback() {
+        for (code, expected_kind, expected_message) in [
+            (-32600, io::ErrorKind::InvalidInput, "remote authorized file read was rejected"),
+            (-32602, io::ErrorKind::InvalidInput, "remote authorized file read was rejected"),
+            (-32603, io::ErrorKind::Other, "remote authorized file read failed"),
+            (-32601, io::ErrorKind::Unsupported, "remote exec-server does not support stable-handle authorized reads"),
+            (-32004, io::ErrorKind::NotFound, "remote authorized file is unavailable"),
+            (-32099, io::ErrorKind::Other, "remote authorized file read failed"),
+        ] {
+            let error = map_classified_authorized_read_remote_error(AuthorizedReadRpcError::unclassified(
+                ExecServerError::Server { code, message: "secret peer detail".to_string() },
+            ));
+            assert_eq!(error.kind(), expected_kind);
+            assert_eq!(error.to_string(), expected_message);
+        }
     }
 
     #[test]
