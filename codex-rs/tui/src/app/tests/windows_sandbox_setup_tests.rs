@@ -1,4 +1,5 @@
 use super::*;
+use pretty_assertions::assert_eq;
 
 #[tokio::test]
 async fn legacy_preflight_failure_preserves_permissions_and_restores_input() -> Result<()> {
