@@ -2,7 +2,7 @@
 //!
 //! No database, schema or writer is added. One SQLite read transaction binds
 //! revisions, citations, heads and source/projection frontiers. Only verified,
-//! currently valid heads are exposed as facts; tombstones remain visible.
+//! currently valid heads are exposed as typed records; tombstones remain visible.
 
 use std::collections::BTreeMap;
 
@@ -37,6 +37,7 @@ use crate::CognitiveScope;
 use crate::CognitiveStore;
 use crate::CognitiveStoreError;
 use crate::cognitive_store::unavailable;
+use crate::typed_memory_storage::RevisionAdmissionV1;
 
 const MAX_REVISIONS: usize = 16_384;
 const MAX_CITATIONS: usize = 65_536;
@@ -48,8 +49,8 @@ pub const MAX_LANE_C_SNAPSHOT_PAGE_HEADS: usize = 512;
 pub const MAX_LANE_C_PAGE_ANCESTRY_REVISIONS: usize = 16_384;
 pub const MAX_LANE_C_PAGE_CITATIONS: usize = 65_536;
 const LANE_C_HEAD_DIGEST_BATCH: i64 = 1_024;
-/// The current durable SQLite memory schema has no persisted kind discriminator.
-/// Its admitted memory revisions therefore project only as Fact until a schema migration adds one.
+/// Backward-compatible default for untyped legacy revisions. Snapshot paths
+/// read the immutable persisted discriminator and admission for every row.
 pub const DURABLE_SQLITE_MEMORY_KIND: MemoryKind = MemoryKind::Fact;
 
 /// Owner-observed frontiers in one exact scope. Counters count immutable rows;
@@ -469,6 +470,7 @@ impl CognitiveStore {
                 })?;
             let mut revision_query = QueryBuilder::<Sqlite>::new(
                 "SELECT r.memory_id, r.revision, r.content_sha256, r.verification,
+                        r.owner_agent_id, r.memory_kind, r.typed_admission_sha256, r.typed_admission_json,
                         r.lifecycle, r.valid_from_unix_seconds, r.valid_to_unix_seconds,
                         r.supersedes_revision, h.revision AS head_revision
                  FROM memory_revisions r LEFT JOIN memory_heads h ON h.memory_id = r.memory_id
@@ -590,11 +592,15 @@ impl CognitiveStore {
                     return Err(corrupt("tombstoned memory resurrection"));
                 }
                 let digest: String = row.try_get("content_sha256").map_err(unavailable)?;
+                let kind = RevisionAdmissionV1::from_row(&row)?.kind.memory_kind();
+                if prior.is_some_and(|record| record.kind != kind) {
+                    return Err(corrupt("memory kind changed across revision ancestry"));
+                }
                 let record = MemoryRecord {
                     record_id,
                     revision: Revision::new(u64::try_from(revision).map_err(corrupt)?)
                         .map_err(corrupt)?,
-                    kind: MemoryKind::Fact,
+                    kind,
                     content_digest: digest.parse().map_err(corrupt)?,
                     predecessor_digest: prior.map(MemoryRecord::record_digest),
                     citations: citations
@@ -695,6 +701,7 @@ impl CognitiveStore {
         let (scope_kind, workspace) = scope.database_parts();
         let rows = sqlx::query(
             "SELECT r.memory_id, r.revision, r.content_sha256, r.verification,
+                    r.owner_agent_id, r.memory_kind, r.typed_admission_sha256, r.typed_admission_json,
                     r.lifecycle, r.valid_from_unix_seconds, r.valid_to_unix_seconds,
                     r.supersedes_revision, h.revision AS head_revision
              FROM memory_revisions r LEFT JOIN memory_heads h ON h.memory_id = r.memory_id
@@ -813,11 +820,15 @@ impl CognitiveStore {
                 return Err(corrupt("tombstoned memory resurrection"));
             }
             let digest: String = row.try_get("content_sha256").map_err(unavailable)?;
+            let kind = RevisionAdmissionV1::from_row(&row)?.kind.memory_kind();
+            if prior.is_some_and(|record| record.kind != kind) {
+                return Err(corrupt("memory kind changed across revision ancestry"));
+            }
             let record = MemoryRecord {
                 record_id,
                 revision: Revision::new(u64::try_from(revision).map_err(corrupt)?)
                     .map_err(corrupt)?,
-                kind: DURABLE_SQLITE_MEMORY_KIND,
+                kind,
                 content_digest: digest.parse().map_err(corrupt)?,
                 predecessor_digest: prior.map(MemoryRecord::record_digest),
                 citations: citations

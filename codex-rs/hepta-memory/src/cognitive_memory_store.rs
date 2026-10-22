@@ -27,6 +27,8 @@ use crate::cognitive_store::CognitiveStoreError;
 use crate::cognitive_store::decode_scope;
 use crate::cognitive_store::unavailable;
 use crate::cognitive_store::validate_key;
+use crate::typed_memory_admission::TypedMemoryKindV1;
+use crate::typed_memory_storage::RevisionAdmissionV1;
 
 impl CognitiveStore {
     /// Creates a user-confirmed memory and fails if its stable identity exists.
@@ -100,6 +102,22 @@ impl CognitiveStore {
         access: &CognitiveAccess,
         draft: &MemoryDraft,
     ) -> Result<MemoryRevisionRecord, CognitiveStoreError> {
+        self.create_memory_revision_admitted_tx(
+            transaction,
+            access,
+            draft,
+            &RevisionAdmissionV1::legacy_fact(),
+        )
+        .await
+    }
+
+    pub(crate) async fn create_memory_revision_admitted_tx(
+        &self,
+        transaction: &mut Transaction<'_, Sqlite>,
+        access: &CognitiveAccess,
+        draft: &MemoryDraft,
+        admission: &RevisionAdmissionV1,
+    ) -> Result<MemoryRevisionRecord, CognitiveStoreError> {
         self.authorize(access, &draft.revision.scope)?;
         validate_key(&draft.stable_key, "stable memory key")?;
         validate_revision_draft(&draft.revision)?;
@@ -127,6 +145,7 @@ impl CognitiveStore {
             /*revision*/ 1,
             /*supersedes_revision*/ None,
             &draft.revision,
+            admission,
         )
         .await?;
         sqlx::query("INSERT INTO memory_heads (memory_id, revision) VALUES (?, 1)")
@@ -172,9 +191,29 @@ impl CognitiveStore {
         expected_revision: u64,
         draft: &MemoryRevisionDraft,
     ) -> Result<MemoryRevisionRecord, CognitiveStoreError> {
+        self.revise_memory_revision_admitted_tx(
+            transaction,
+            access,
+            memory_id,
+            expected_revision,
+            draft,
+            /*admission*/ None,
+        )
+        .await
+    }
+
+    pub(crate) async fn revise_memory_revision_admitted_tx(
+        &self,
+        transaction: &mut Transaction<'_, Sqlite>,
+        access: &CognitiveAccess,
+        memory_id: &StableMemoryId,
+        expected_revision: u64,
+        draft: &MemoryRevisionDraft,
+        admission: Option<&RevisionAdmissionV1>,
+    ) -> Result<MemoryRevisionRecord, CognitiveStoreError> {
         validate_revision_draft(draft)?;
         let row = sqlx::query(
-            "SELECT h.revision, r.scope_kind, r.workspace_sha256, r.lifecycle
+            "SELECT r.*
              FROM memory_heads h JOIN memory_revisions r
                ON r.memory_id = h.memory_id AND r.revision = h.revision
              WHERE h.memory_id = ?",
@@ -188,6 +227,25 @@ impl CognitiveStore {
         let current_scope = decode_scope(&row)?;
         let current_lifecycle: String = row.try_get("lifecycle").map_err(unavailable)?;
         self.authorize(access, &current_scope)?;
+        let previous_admission = RevisionAdmissionV1::from_row(&row)?;
+        let legacy = RevisionAdmissionV1::legacy_fact();
+        let admission = match admission {
+            Some(admission) if admission.kind == previous_admission.kind => admission,
+            Some(_) => {
+                return Err(CognitiveStoreError::AccessDenied(
+                    "memory kind cannot change across revisions".into(),
+                ));
+            }
+            None if matches!(draft.lifecycle, MemoryLifecycleState::Tombstoned { .. }) => {
+                &previous_admission
+            }
+            None if previous_admission.kind == TypedMemoryKindV1::Fact => &legacy,
+            None => {
+                return Err(CognitiveStoreError::AccessDenied(
+                    "non-Fact correction requires typed admission".into(),
+                ));
+            }
+        };
         if &current_scope != draft.scope_ref() {
             return Err(CognitiveStoreError::AccessDenied(
                 "memory scope cannot change across revisions".to_string(),
@@ -215,6 +273,7 @@ impl CognitiveStore {
             next_revision,
             Some(current_revision),
             draft,
+            admission,
         )
         .await?;
         let updated = sqlx::query(
@@ -305,6 +364,7 @@ pub(crate) async fn insert_revision(
     revision: i64,
     supersedes_revision: Option<i64>,
     draft: &MemoryRevisionDraft,
+    admission: &RevisionAdmissionV1,
 ) -> Result<(), CognitiveStoreError> {
     verify_citations(transaction, owner_agent_id, &draft.scope, &draft.citations).await?;
     let content_sha256 = Sha256Digest::for_bytes(draft.content.as_bytes());
@@ -315,8 +375,8 @@ pub(crate) async fn insert_revision(
             memory_id, revision, owner_agent_id, scope_kind, workspace_sha256,
             content, content_sha256, verification, lifecycle, tombstone_reason,
             valid_from_unix_seconds, valid_to_unix_seconds, supersedes_revision,
-            recorded_at_unix_seconds
-         ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, unixepoch())",
+            recorded_at_unix_seconds, memory_kind, typed_admission_sha256, typed_admission_json
+         ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, unixepoch(), ?, ?, ?)",
     )
     .bind(memory_id.as_str())
     .bind(revision)
@@ -331,6 +391,9 @@ pub(crate) async fn insert_revision(
     .bind(draft.valid_from_unix_seconds)
     .bind(draft.valid_to_unix_seconds)
     .bind(supersedes_revision)
+    .bind(admission.kind.as_str())
+    .bind(admission.sha256.as_ref().map(Sha256Digest::as_str))
+    .bind(&admission.json)
     .execute(&mut **transaction)
     .await
     .map_err(unavailable)?;

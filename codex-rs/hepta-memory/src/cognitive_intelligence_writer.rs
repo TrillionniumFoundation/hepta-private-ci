@@ -26,6 +26,7 @@ use crate::SourceRevisionId;
 use crate::StableMemoryId;
 use crate::cognitive_store::unavailable;
 use crate::framing::frame_part;
+use crate::typed_memory_storage::RevisionAdmissionV1;
 
 const EXTRACTOR_CONTRACT: &str = "structured_cognitive_kg_v1";
 pub(crate) const LEGACY_ZERO_FACT_CONTRACT: &str = "legacy_memory_api_zero_v1";
@@ -94,6 +95,26 @@ impl CognitiveStore {
         draft: &MemoryDraft,
         facts: &KgFactSetDraft,
     ) -> Result<CognitiveWriteReceipt, CognitiveStoreError> {
+        self.remember_admitted_with_kg_tx(
+            transaction,
+            access,
+            source,
+            draft,
+            facts,
+            &RevisionAdmissionV1::legacy_fact(),
+        )
+        .await
+    }
+
+    pub(crate) async fn remember_admitted_with_kg_tx(
+        &self,
+        transaction: &mut Transaction<'_, Sqlite>,
+        access: &CognitiveAccess,
+        source: &SourceDraft,
+        draft: &MemoryDraft,
+        facts: &KgFactSetDraft,
+        admission: &RevisionAdmissionV1,
+    ) -> Result<CognitiveWriteReceipt, CognitiveStoreError> {
         validate_source_binding(source, &draft.revision.scope, &draft.revision.content)?;
         if draft.revision.lifecycle != MemoryLifecycleState::Active {
             return Err(CognitiveStoreError::Invalid(
@@ -105,7 +126,7 @@ impl CognitiveStore {
         let mut bound_draft = draft.clone();
         bind_exact_citation(&mut bound_draft.revision, &citation)?;
         let memory = self
-            .create_memory_revision_tx(transaction, access, &bound_draft)
+            .create_memory_revision_admitted_tx(transaction, access, &bound_draft, admission)
             .await?;
         let canonical =
             self.canonicalize_fact_set(&memory, &citation, facts, EXTRACTOR_CONTRACT)?;
@@ -163,6 +184,30 @@ impl CognitiveStore {
         draft: &MemoryRevisionDraft,
         facts: &KgFactSetDraft,
     ) -> Result<CognitiveWriteReceipt, CognitiveStoreError> {
+        self.correct_admitted_with_kg_tx(
+            transaction,
+            access,
+            memory_id,
+            expected_revision,
+            source,
+            draft,
+            facts,
+            /*admission*/ None,
+        )
+        .await
+    }
+
+    pub(crate) async fn correct_admitted_with_kg_tx(
+        &self,
+        transaction: &mut Transaction<'_, Sqlite>,
+        access: &CognitiveAccess,
+        memory_id: &StableMemoryId,
+        expected_revision: u64,
+        source: &SourceDraft,
+        draft: &MemoryRevisionDraft,
+        facts: &KgFactSetDraft,
+        admission: Option<&RevisionAdmissionV1>,
+    ) -> Result<CognitiveWriteReceipt, CognitiveStoreError> {
         validate_source_binding(source, &draft.scope, &draft.content)?;
         if draft.verification != MemoryVerification::Verified
             || draft.lifecycle != MemoryLifecycleState::Active
@@ -176,12 +221,13 @@ impl CognitiveStore {
         let mut bound_draft = draft.clone();
         bind_exact_citation(&mut bound_draft, &citation)?;
         let memory = self
-            .revise_memory_revision_tx(
+            .revise_memory_revision_admitted_tx(
                 transaction,
                 access,
                 memory_id,
                 expected_revision,
                 &bound_draft,
+                admission,
             )
             .await?;
         let canonical =
