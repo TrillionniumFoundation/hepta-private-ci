@@ -2,6 +2,7 @@
 //! All ACL/mandatory-label changes are confined to this test's owned temporary fixture.
 
 use super::*;
+use pretty_assertions::assert_eq;
 use serde::Serialize;
 use std::path::Path;
 use windows_sys::Win32::Security::ACCESS_ALLOWED_ACE;
