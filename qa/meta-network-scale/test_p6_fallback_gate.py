@@ -239,5 +239,37 @@ class FallbackGateTests(unittest.TestCase):
             assess_signed_parity(native=n, codex=c, evaluation=e, trust=self.trust)
 
 
+    def test_all_evidence_roles_reject_low_order_and_noncanonical_trust_roots(self):
+        bad_roots = (
+            "00" * 32,
+            "01" + "00" * 31,
+            "c7176a703d4dd84fba3c0b760d10670f2a2053fa2c39ccc64ec7fd7792ac037a",
+            "ed" + "ff" * 30 + "7f",
+            "01" + "00" * 30 + "80",
+        )
+        for role in self.private:
+            claim = self.seal(role, {"fixture": "signed-with-legitimate-key"})
+            for encoded in bad_roots:
+                with self.subTest(role=role, bad_key=encoded):
+                    fake_trust = copy.deepcopy(self.trust)
+                    fake_trust[role][role] = encoded
+                    with self.assertRaisesRegex(EvidenceRejected, "non-prime-order"):
+                        verify_envelope(claim, fake_trust, role)
+
+    def test_zero_signature_with_zero_root_never_qualifies_as_independent_observer(self):
+        # OpenSSL/cryptography 46.0.4 may ACCEPT this forged signature
+        # for this exact domain-separated envelope without subgroup checks.
+        forged = {
+            "version": 1,
+            "role": "independent_observer",
+            "key_id": "observer-root",
+            "payload": {"marker": 3},
+            "signature": base64.b64encode(bytes(64)).decode("ascii"),
+        }
+        trust = {"independent_observer": {"observer-root": "00" * 32}}
+        with self.assertRaisesRegex(EvidenceRejected, "non-prime-order"):
+            verify_envelope(forged, trust, "independent_observer")
+
+
 if __name__ == "__main__":
     unittest.main()
