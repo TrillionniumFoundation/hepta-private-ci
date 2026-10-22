@@ -253,7 +253,7 @@ impl SharedWorkerPoolV1 {
     }
 
     pub fn drain(&mut self) -> SharedWorkerBatchV1 {
-        let requests = self.queue.drain_batch(self.maximum_batch);
+        let requests = self.queue.drain_batch_same_generation(self.maximum_batch);
         let group_digest = digest_batch(&requests);
         if !requests.is_empty() {
             // Draining schedules a batch; it does not verify model execution or
