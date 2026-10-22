@@ -206,4 +206,84 @@ class PairedTests(unittest.TestCase):
             combine_exclusions(self.root/'prior.json',self.root/'v1.json',self.root/'both.json',require_pinned=False)
 
 
+    def test_dev_requires_complete_identical_real_train_receipt(self):
+        """A standalone completion-marker must never unlock DEV inference."""
+        import json
+        with self.assertRaisesRegex(ValueError, 'published and complete'):
+            pr.verify_frozen_train(self.root, {'split':'dev'}, {}, min_source_groups=1)
+        (self.root/'train.complete.json').write_text('{"status":"completed_no_scientific_claim"}')
+        with self.assertRaisesRegex(ValueError, 'TRAIN plan missing'):
+            pr.verify_frozen_train(self.root, {'split':'dev'}, {}, min_source_groups=1)
+        cohort=self.root/'cohort'
+        cohort.mkdir()
+        source={'source_id':self.ref['source_id'], 'task_id':self.obs['task_id'],
+                'image_sha256':self.obs['image_sha256']}
+        manifest={'schema':'hepta.grounded-cohort.v1',
+                  'splits':{'train':{'count':1,'sources':[source]}}}
+        path=cohort/'manifest.json'
+        path.write_text(json.dumps(manifest))
+        meta={**manifest,'manifest_path':str(path)}
+        proposals={arm:digest(f'proposal:{arm}') for arm in ARMS}
+        plan={'schema':'hepta.ndu-real-five-arm-plan.v1','split':'train',
+              'cohort_manifest_sha256':pr.sha(path),
+              'model_digest':digest('base'),'model_revision':'fixture',
+              'cell_digest':digest('cells'), 'algorithm_digest':digest('source'),
+              'source_code_digests':{'frozen':'fixture'},
+              'objective_digest':digest('objective'),'budget_seconds':10.,
+              'temperature':.7,'seeds':[11,29],
+              'geometry_constraints':'all_arms_including_nochange',
+              'proposals':proposals,'scientific_claim':'unverified',
+              'promotion':'DENY_ALL'}
+        dev={**plan,'split':'dev'}
+        work=self.root/'train'
+        work.mkdir()
+        (work/'plan.json').write_text(json.dumps(plan))
+        rows=[]
+        journal=[]
+        for seed in (11,29):
+            for index,arm in enumerate(ARMS):
+                rows.append({'source_id':source['source_id'],
+                             'image_digest':source['image_sha256'], 'seed':seed,
+                             'arm':arm, 'proposal_digest':proposals[arm],
+                             'loss':0.25+0.01*index, 'covered':True,
+                             'wall_seconds':0.5, 'overrun':False})
+                journal.append({'task_id':source['task_id'],'seed':seed,'arm':arm,
+                                'source_image_sha256':source['image_sha256'],
+                                'plan_digest':digest(plan)})
+        terminal={'schema':pr.SCHEMA,'split':'train',
+                  'cohort_digest':digest({'manifest':pr.sha(path),'split':'train'}),
+                  'model_digest':plan['model_digest'],
+                  'objective_digest':plan['objective_digest'],
+                  'budget_seconds':10.,'rows':rows}
+        (work/'terminal-batch.json').write_text(json.dumps(terminal))
+        (work/'episodes.jsonl').write_text(''.join(json.dumps(r)+'\n' for r in journal))
+        complete={'status':'completed_no_scientific_claim','source_groups':1,'episodes':10,
+                  'plan_sha256':pr.sha(work/'plan.json'),
+                  'journal_sha256':pr.sha(work/'episodes.jsonl'),
+                  'terminal_batch_sha256':pr.sha(work/'terminal-batch.json')}
+        marker=self.root/'train.complete.json'
+        marker.write_text(json.dumps(complete))
+        receipt=pr.verify_frozen_train(self.root,dev,meta,min_source_groups=1)
+        self.assertEqual((receipt['verified'],receipt['sources'],receipt['episodes']),
+                         (True,1,10))
+        changed={**dev,'temperature':.8}
+        with self.assertRaisesRegex(ValueError,'differs from frozen TRAIN'):
+            pr.verify_frozen_train(self.root,changed,meta,min_source_groups=1)
+        prior=(work/'episodes.jsonl').read_text()
+        (work/'episodes.jsonl').write_text(prior+'\n')
+        with self.assertRaisesRegex(ValueError,'TRAIN journal missing or digest changed'):
+            pr.verify_frozen_train(self.root,dev,meta,min_source_groups=1)
+        (work/'episodes.jsonl').write_text(prior)
+        # Tampered terminal loss with spoofed updated checksum must also fail
+        # under source/seed/arm and original-image custody checks.
+        tampered=dict(terminal)
+        tampered['rows']=[dict(row) for row in rows]
+        tampered['rows'][0]['image_digest']=digest('other-image')
+        (work/'terminal-batch.json').write_text(json.dumps(tampered))
+        complete['terminal_batch_sha256']=pr.sha(work/'terminal-batch.json')
+        marker.write_text(json.dumps(complete))
+        with self.assertRaisesRegex(ValueError,'multiple image digests|original images'):
+            pr.verify_frozen_train(self.root,dev,meta,min_source_groups=1)
+
+
 if __name__=='__main__':unittest.main()

@@ -220,6 +220,83 @@ def to_terminal_batch(header, records, references, observations):
     return cohort
 
 
+def verify_frozen_train(work, dev_plan, manifest, *, min_source_groups=128):
+    """Do not unlock DEV from a mere filename or a stale previous TRAIN run.
+
+    This validates internal, content-addressed custody only. File digests do
+    not provide an independent attestation or authorize scientific promotion.
+    The test split remains sealed independently of this function.
+    """
+    from terminal_risk import validate
+    work = Path(work)
+    receipt_path = work/'train.complete.json'
+    if not receipt_path.is_file():
+        raise ValueError('DEV requires a published and complete frozen TRAIN receipt')
+    receipt = json.loads(receipt_path.read_text())
+    if not isinstance(receipt, dict) or receipt.get('status') != 'completed_no_scientific_claim':
+        raise ValueError('TRAIN receipt has no successful terminal publication')
+    train_dir = work/'train'
+    source_paths = {
+        'plan': train_dir/'plan.json',
+        'journal': train_dir/'episodes.jsonl',
+        'terminal': train_dir/'terminal-batch.json',
+    }
+    digest_fields = {'plan':'plan_sha256', 'journal':'journal_sha256',
+                     'terminal':'terminal_batch_sha256'}
+    for kind,path in source_paths.items():
+        if not path.is_file() or sha(path) != receipt.get(digest_fields[kind]):
+            raise ValueError(f'TRAIN {kind} missing or digest changed after completion')
+    train_plan = json.loads(source_paths['plan'].read_text())
+    if train_plan.get('split') != 'train' or dev_plan.get('split') != 'dev':
+        raise ValueError('dev/train roles or immutable plan identity mismatch')
+    excluded = {'split'}
+    if (set(train_plan) != set(dev_plan) or any(
+            train_plan[key] != dev_plan[key] for key in train_plan if key not in excluded)):
+        raise ValueError('DEV model, Cell, budget, seed, objective or source code differs from frozen TRAIN')
+    if (manifest.get('schema') != 'hepta.grounded-cohort.v1' or
+            sha(Path(manifest['manifest_path'])) != dev_plan['cohort_manifest_sha256']):
+        raise ValueError('original-image manifest is not the frozen TRAIN/DEV source')
+    train_sources = manifest.get('splits',{}).get('train',{}).get('sources',[])
+    expected_count = manifest.get('splits',{}).get('train',{}).get('count')
+    if (type(expected_count) is not int or expected_count < min_source_groups or
+            len(train_sources) != expected_count or
+            receipt.get('source_groups') != expected_count or
+            receipt.get('episodes') != expected_count*len(train_plan['seeds'])*len(ARMS)):
+        raise ValueError('TRAIN sources, seeds or five-arm episode count incomplete')
+    terminal = json.loads(source_paths['terminal'].read_text())
+    if (terminal.get('split') != 'train' or
+            terminal.get('cohort_digest') != digest({'manifest':dev_plan['cohort_manifest_sha256'],
+                                                     'split':'train'}) or
+            terminal.get('model_digest') != dev_plan['model_digest'] or
+            terminal.get('objective_digest') != dev_plan['objective_digest'] or
+            terminal.get('budget_seconds') != dev_plan['budget_seconds']):
+        raise ValueError('TRAIN terminal objective/model/cohort/budget identity changed')
+    validated = validate(terminal, min_source_groups=expected_count,
+                         min_seeds=len(train_plan['seeds']))
+    expected_source_images = {(s['source_id'],s['image_sha256']) for s in train_sources}
+    actual_source_images = set(validated['image_by_source'].items())
+    if actual_source_images != expected_source_images:
+        raise ValueError('TRAIN terminal source/image identity disagrees with original images')
+    if any(seeds != set(train_plan['seeds']) for seeds in validated['roster'].values()):
+        raise ValueError('TRAIN terminal seeds differ from frozen plan')
+    if validated['proposal_by_arm'] != train_plan['proposals']:
+        raise ValueError('TRAIN terminal Cell proposal digests differ from frozen plan')
+    # The original journal must be complete, not merely an arbitrary hash file.
+    journal = [json.loads(line) for line in source_paths['journal'].read_text().splitlines() if line.strip()]
+    lookup = {s['task_id']:s['image_sha256'] for s in train_sources}
+    expected_roster = {(task,arm,seed) for task in lookup
+                       for arm in ARMS for seed in train_plan['seeds']}
+    actual_roster = [(row.get('task_id'),row.get('arm'),row.get('seed')) for row in journal]
+    if (len(journal) != receipt['episodes'] or len(set(actual_roster)) != len(actual_roster) or
+            set(actual_roster) != expected_roster or
+            any(row.get('source_image_sha256') != lookup.get(row.get('task_id')) or
+                row.get('plan_digest') != digest(train_plan) for row in journal)):
+        raise ValueError('TRAIN journal does not match the original source/seed/arm roster')
+    return {'verified':True,'sources':expected_count,'episodes':len(journal),
+            'plan_sha256':receipt['plan_sha256'],
+            'terminal_batch_sha256':receipt['terminal_batch_sha256']}
+
+
 def main():
     parser=argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--cohort',required=True)
@@ -243,7 +320,14 @@ def main():
     identity=plan_identity(args.cohort,args.split,model_path=args.model,cells_path=args.cells,
                            budget=args.budget,seeds=seeds,code_dir=Path(__file__).resolve().parent,
                            temperature=args.temperature)
-    out=Path(args.work);out.mkdir(parents=True,exist_ok=True)
+    out=Path(args.work)
+    if args.split == 'dev':
+        manifest=json.loads((Path(args.cohort)/'manifest.json').read_text())
+        manifest['manifest_path']=str(Path(args.cohort)/'manifest.json')
+        verify_frozen_train(out, identity, manifest)
+    if (out/f'{args.split}.complete.json').exists():
+        raise FileExistsError('phase already completed; preserve the immutable receipt')
+    out.mkdir(parents=True,exist_ok=True)
     phase_dir=out/args.split;phase_dir.mkdir(exist_ok=True)
     record_path=phase_dir/'episodes.jsonl'; plan_path=phase_dir/'plan.json'
     if plan_path.exists():
