@@ -121,6 +121,10 @@ struct HostTestDevice {
     queries: AtomicUsize,
 }
 
+#[cfg(target_os = "linux")]
+#[path = "production_notes_host_tests.rs"]
+mod notes_tests;
+
 impl Hos2Device for HostTestDevice {
     fn install(
         &self,

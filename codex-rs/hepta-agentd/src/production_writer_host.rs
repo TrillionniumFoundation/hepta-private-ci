@@ -150,27 +150,15 @@ impl AgentdProductionOperationRuntimeConfig {
         Ok(())
     }
 
-    /// Attach operation dispatch to the same independently recovered owner
-    /// used for semantic mutations. This never opens a second writer or falls
-    /// back to an unauthenticated legacy store after recovery failure.
-    pub(crate) async fn attach(
-        self,
-        recovered_host: Arc<AgentdProductionWriterHost>,
-    ) -> Result<(Arc<AgentdProductionWriterHost>, Duration), AgentdError> {
-        let Self {
-            authority,
-            verifier,
-            lease_id,
-            lease_generation,
-            final_use,
-            target,
-            grants,
-            reconcile_interval,
-            additional_targets,
-        } = self;
-        if recovered_host.writer.authority() != &authority
-            || recovered_host.writer.lease_id() != lease_id
-            || recovered_host.writer.generation() != lease_generation
+    /// Reuse the same owner check before accepting an inherited destination
+    /// and again at runtime attachment. This check cannot mint a writer.
+    pub(crate) async fn validate_recovered_host(
+        &self,
+        recovered_host: &AgentdProductionWriterHost,
+    ) -> Result<(), AgentdError> {
+        if recovered_host.writer.authority() != &self.authority
+            || recovered_host.writer.lease_id() != self.lease_id
+            || recovered_host.writer.generation() != self.lease_generation
             || recovered_host.production_mutation().is_none()
         {
             return Err(AgentdError::GenerationFenced(
@@ -178,14 +166,33 @@ impl AgentdProductionOperationRuntimeConfig {
                     .to_string(),
             ));
         }
-        verifier
-            .verify(&authority, recovered_host.writer.owner_agent_id())
+        self.verifier
+            .verify(&self.authority, recovered_host.writer.owner_agent_id())
             .map_err(|reason| {
                 AgentdError::GenerationFenced(format!(
                     "production operation authority rejected: {reason}"
                 ))
             })?;
         recovered_host.writer.verify_current_authority().await?;
+        Ok(())
+    }
+
+    /// Attach operation dispatch to the same independently recovered owner
+    /// used for semantic mutations. This never opens a second writer or falls
+    /// back to an unauthenticated legacy store after recovery failure.
+    pub(crate) async fn attach(
+        self,
+        recovered_host: Arc<AgentdProductionWriterHost>,
+    ) -> Result<(Arc<AgentdProductionWriterHost>, Duration), AgentdError> {
+        self.validate_recovered_host(&recovered_host).await?;
+        let Self {
+            final_use,
+            target,
+            grants,
+            reconcile_interval,
+            additional_targets,
+            ..
+        } = self;
         let mut host = recovered_host.as_ref().clone().attach_target(
             final_use,
             target,

@@ -32,6 +32,10 @@ mod intelligence_product;
 mod intuition_policy;
 mod lane_b_runtime;
 mod neuron_runtime;
+#[cfg(target_os = "linux")]
+mod notes_bootstrap;
+#[cfg(unix)]
+mod notes_channel;
 mod objective_runtime;
 mod plasticity_anchor_journal;
 mod plasticity_host;
@@ -193,6 +197,8 @@ pub use lane_b_runtime::RunRecovery;
 pub use lane_b_runtime::RunSnapshot;
 pub use lane_b_runtime::RuntimeComposition;
 pub use neuron_runtime::AgentdNeuronOwner;
+#[cfg(unix)]
+pub use notes_channel::AgentdNotesChannel;
 pub use plasticity_host::AgentdPlasticityAdmissionInputV1;
 pub use plasticity_host::AgentdPlasticityAnchorStoreV1;
 pub use plasticity_host::AgentdPlasticityHostErrorV1;

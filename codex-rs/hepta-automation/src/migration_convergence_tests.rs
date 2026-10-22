@@ -8,7 +8,7 @@ async fn historical_pool(displaced: bool) -> (tempfile::TempDir, SqlitePool) {
         AbsolutePathBuf::try_from(directory.path().to_path_buf())
             .expect("SQLite fixture directory must be absolute"),
     )
-    .open_read_write_pool(&path)
+    .open_durable_evidence_pool(&path)
     .await
     .expect("SQLite owner");
     let mut connection = pool.acquire().await.expect("owner connection");
