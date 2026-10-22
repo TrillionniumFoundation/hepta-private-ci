@@ -17,7 +17,7 @@ use std::time::Instant;
 use std::time::SystemTime;
 use std::time::UNIX_EPOCH;
 
-use codex_arg0::Arg0DispatchPaths;
+pub use codex_arg0::Arg0DispatchPaths;
 use codex_hepta_contracts::AgentId;
 use codex_hepta_fleet::AgentLifecycle;
 use codex_hepta_fleet::AgentManifest;
@@ -78,6 +78,25 @@ impl CognitiveTestHost {
         model: &str,
         provider_base_url: &str,
     ) -> TestResult<Self> {
+        Self::start_with_runtime_paths(
+            root,
+            agent_id,
+            model,
+            provider_base_url,
+            Arg0DispatchPaths::default(),
+        )
+        .await
+    }
+
+    /// Start with the actual source-built Codex/helper paths supplied by the
+    /// caller's Cargo or Bazel binary resolver, never the test harness path.
+    pub async fn start_with_runtime_paths(
+        root: PathBuf,
+        agent_id: AgentId,
+        model: &str,
+        provider_base_url: &str,
+        runtime_paths: Arg0DispatchPaths,
+    ) -> TestResult<Self> {
         validate_config_scalar(model, "model")?;
         validate_config_scalar(provider_base_url, "provider base URL")?;
         std::fs::create_dir_all(&root)?;
@@ -116,6 +135,7 @@ impl CognitiveTestHost {
         )?);
         let store = Arc::new(CognitiveStore::open(&identity.layout).await?);
         state.attach_cognitive_store(Arc::clone(&store))?;
+        state.mark_runtime_prerequisites_ready()?;
         registry.compare_and_transition(&agent_id, 1, AgentLifecycle::Running)?;
         state.refresh_generation()?;
 
@@ -133,7 +153,7 @@ impl CognitiveTestHost {
         let control_task = tokio::spawn(control.run());
         let app_server_task = tokio::spawn(run_app_server(
             identity.clone(),
-            Arg0DispatchPaths::default(),
+            runtime_paths,
             CognitiveRuntime::Available(Arc::clone(&store)),
             Arc::clone(&state),
             /*production_writer_host*/ None,

@@ -199,6 +199,7 @@ def codex_rust_crate(
         integration_compile_data_extra = [],
         integration_test_args = [],
         unit_test_args = [],
+        unit_test_runfile_env = {},
         unit_test_dependency_replacements = {},
         unit_test_features = [],
         binary_test_target_compatible_with = [],
@@ -230,6 +231,8 @@ def codex_rust_crate(
         unit_test_dependency_replacements: Test-only workspace dependency variants.
             Replace the complete transitive closure when public types cross crates.
         unit_test_features: Additional features for the test-only library and harness.
+        unit_test_runfile_env: Binary labels mapped to runtime environment names
+            for unit tests, resolved by the existing workspace-root launcher.
         crate_srcs: Optional explicit srcs; defaults to `src/**/*.rs`.
         crate_edition: Rust edition override, if not default.
             You probably don't want this, it's only here for a single caller.
@@ -398,6 +401,7 @@ def codex_rust_crate(
         workspace_root_test(
             name = unit_test_name,
             env = test_env,
+            runfile_env = unit_test_runfile_env,
             test_bin = ":" + unit_test_binary,
             workspace_root_marker = "//codex-rs/utils/cargo-bin:repo_root.marker",
             tags = test_tags,

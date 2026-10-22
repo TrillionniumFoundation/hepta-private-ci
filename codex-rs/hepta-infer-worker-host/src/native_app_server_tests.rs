@@ -29,6 +29,7 @@ fn binding() -> CodexTurnBinding {
             }),
         },
         turn_id: StableId::new("turn-a").unwrap(),
+        messages: MessageOutput::default(),
     }
 }
 
@@ -45,8 +46,8 @@ fn observe_for_test(
     output: &mut NativeRunOutput,
     notification: ServerNotification,
 ) -> std::result::Result<bool, String> {
-    let binding = binding();
-    observe_event(output, &observed(notification), &binding)
+    let mut binding = binding();
+    observe_event(output, &observed(notification), &mut binding)
 }
 
 fn output() -> NativeRunOutput {
@@ -163,6 +164,7 @@ fn only_the_bound_turn_can_complete_the_native_request() {
 #[test]
 fn output_is_observed_bounded_and_never_predeclares_success() {
     let mut output = output();
+    let mut binding = binding();
     let delta = |thread: &str, text: String| {
         ServerNotification::AgentMessageDelta(AgentMessageDeltaNotification {
             thread_id: thread.to_string(),
@@ -171,12 +173,27 @@ fn output_is_observed_bounded_and_never_predeclares_success() {
             delta: text,
         })
     };
-    observe_for_test(&mut output, delta("unrelated", "discard".to_string())).unwrap();
-    observe_for_test(&mut output, delta("thread-a", "model output".to_string())).unwrap();
+    observe_event(
+        &mut output,
+        &observed(delta("unrelated", "discard".to_string())),
+        &mut binding,
+    )
+    .unwrap();
+    observe_event(
+        &mut output,
+        &observed(delta("thread-a", "model output".to_string())),
+        &mut binding,
+    )
+    .unwrap();
     assert_eq!(output.output, "model output");
     assert_eq!(output.status, NativeRunStatus::Indeterminate);
     assert!(
-        observe_for_test(&mut output, delta("thread-a", "x".repeat(MAX_OUTPUT_BYTES))).is_err()
+        observe_event(
+            &mut output,
+            &observed(delta("thread-a", "x".repeat(MAX_OUTPUT_BYTES))),
+            &mut binding
+        )
+        .is_err()
     );
     assert_eq!(output.output, "model output");
     assert!(!output.terminal_observed);
@@ -424,6 +441,7 @@ async fn real_agentd_worker_accepts_fresh_context_and_rejects_final_use_tombston
     use std::time::SystemTime;
     use std::time::UNIX_EPOCH;
 
+    use codex_hepta_agentd::test_support::Arg0DispatchPaths;
     use codex_hepta_agentd::test_support::CognitiveTestHost;
     use codex_hepta_infer_core::durable_control::DurableInferenceControl;
     use codex_hepta_infer_core::durable_control::native::NativeReservationState;
@@ -450,8 +468,17 @@ async fn real_agentd_worker_accepts_fresh_context_and_rejects_final_use_tombston
     let nonce = SystemTime::now().duration_since(UNIX_EPOCH)?.as_nanos();
     let root = std::env::temp_dir().join(format!("hepta-cognitive-worker-e2e-{nonce}"));
     let agent_id = codex_hepta_contracts::AgentId::parse(AGENT_ID)?;
-    let host =
-        CognitiveTestHost::start(root, agent_id, MODEL, &format!("{}/v1", server.uri())).await?;
+    let host = CognitiveTestHost::start_with_runtime_paths(
+        root,
+        agent_id,
+        MODEL,
+        &format!("{}/v1", server.uri()),
+        Arg0DispatchPaths {
+            codex_self_exe: Some(codex_utils_cargo_bin::cargo_bin("codex")?),
+            ..Default::default()
+        },
+    )
+    .await?;
     let _accepted_memory = host
         .seed_verified_memory("worker-final-use-accept", ACCEPT_MEMORY)
         .await?;
@@ -764,3 +791,6 @@ fn final_use_fence_rejects_owner_ingress_cancel_and_deadline_drift() {
         .is_err()
     );
 }
+
+#[path = "native_output_observation_tests.rs"]
+mod output_observation_tests;

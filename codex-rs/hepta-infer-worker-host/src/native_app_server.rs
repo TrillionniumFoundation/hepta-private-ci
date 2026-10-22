@@ -33,6 +33,7 @@ use codex_app_server_protocol::ThreadStartParams;
 use codex_app_server_protocol::ThreadStartResponse;
 use codex_app_server_protocol::ThreadUnsubscribeParams;
 use codex_app_server_protocol::TurnInterruptParams;
+use codex_app_server_protocol::TurnItemsView;
 use codex_app_server_protocol::TurnStartParams;
 use codex_app_server_protocol::TurnStartResponse;
 use codex_app_server_protocol::TurnStatus;
@@ -73,8 +74,11 @@ use codex_utils_absolute_path::AbsolutePathBuf;
 
 #[path = "native_run_control.rs"]
 mod control;
+#[path = "native_output.rs"]
+mod native_output;
 pub use control::NativeAdmission;
 pub use control::NativeIntelligenceRunBinding;
+use native_output::MessageOutput;
 use tokio::time::Instant;
 use tokio::time::timeout;
 use tokio::time::timeout_at;
@@ -152,6 +156,13 @@ pub struct AppServerModelDriver {
 struct CodexTurnBinding {
     intent: CodexOperationIntent,
     turn_id: StableId,
+    messages: MessageOutput,
+}
+
+impl CodexTurnBinding {
+    fn snapshot_output(&self, output: &mut NativeRunOutput) {
+        output.output = self.messages.render();
+    }
 }
 
 impl AppServerModelDriver {
@@ -868,9 +879,10 @@ impl AppServerModelDriver {
                 }
             }
         };
-        let binding = CodexTurnBinding {
+        let mut binding = CodexTurnBinding {
             intent: adapter_intent,
             turn_id: StableId::new(turn.id.clone())?,
+            messages: MessageOutput::default(),
         };
         let mut output = NativeRunOutput {
             thread_id: started.thread.id,
@@ -909,9 +921,10 @@ impl AppServerModelDriver {
                 deadline,
                 cancellation,
                 Some(&owner),
-                &binding,
+                &mut binding,
             )
             .await;
+        binding.snapshot_output(&mut output);
         if let Err(reason) = result {
             output.boundary_status = classify_observation_failure(&reason);
             output.stop_reason = Some(reason.clone());
@@ -948,9 +961,10 @@ impl AppServerModelDriver {
                     Instant::now() + INTERRUPT_GRACE,
                     &grace,
                     /*owner*/ None,
-                    &binding,
+                    &mut binding,
                 )
                 .await;
+            binding.snapshot_output(&mut output);
             loss_recorded?;
             cancel_recorded?;
             if !output.terminal_observed
@@ -1012,7 +1026,7 @@ impl AppServerModelDriver {
         deadline: Instant,
         cancellation: &CancellationToken,
         owner: Option<&AgentdClient>,
-        binding: &CodexTurnBinding,
+        binding: &mut CodexTurnBinding,
     ) -> std::result::Result<(), String> {
         let mut health_tick = tokio::time::interval(Duration::from_millis(500));
         loop {
@@ -1441,19 +1455,40 @@ async fn interrupt(client: &mut RemoteAppServerClient, output: &NativeRunOutput)
 fn observe_event(
     output: &mut NativeRunOutput,
     observed: &RemoteAppServerObservedEvent,
-    binding: &CodexTurnBinding,
+    binding: &mut CodexTurnBinding,
 ) -> std::result::Result<bool, String> {
     let AppServerEvent::ServerNotification(notification) = observed.event() else {
         return Ok(false);
     };
     match notification.as_ref() {
+        ServerNotification::ItemStarted(started)
+            if started.thread_id == output.thread_id && started.turn_id == output.turn_id =>
+        {
+            if let ThreadItem::AgentMessage { id, .. } = &started.item {
+                adapt_observed_event(&binding.intent, &binding.turn_id, observed)
+                    .map_err(|error| format!("invalid App Server output witness: {error}"))?;
+                // Register lifecycle order before potentially interleaved deltas.
+                binding.messages.delta(id, "")?;
+            }
+        }
         ServerNotification::AgentMessageDelta(delta)
             if delta.thread_id == output.thread_id && delta.turn_id == output.turn_id =>
         {
-            if delta.delta.len() > MAX_OUTPUT_BYTES.saturating_sub(output.output.len()) {
-                return Err("output byte limit exceeded".to_string());
-            }
+            adapt_observed_event(&binding.intent, &binding.turn_id, observed)
+                .map_err(|error| format!("invalid App Server output witness: {error}"))?;
+            binding.messages.delta(&delta.item_id, &delta.delta)?;
             output.output.push_str(&delta.delta);
+        }
+        ServerNotification::ItemCompleted(completed)
+            if completed.thread_id == output.thread_id && completed.turn_id == output.turn_id =>
+        {
+            if let ThreadItem::AgentMessage { id, text, .. } = &completed.item {
+                adapt_observed_event(&binding.intent, &binding.turn_id, observed)
+                    .map_err(|error| format!("invalid App Server output witness: {error}"))?;
+                if binding.messages.complete(id, text)? {
+                    binding.snapshot_output(output);
+                }
+            }
         }
         ServerNotification::ThreadTokenUsageUpdated(usage)
             if usage.thread_id == output.thread_id && usage.turn_id == output.turn_id =>
@@ -1474,6 +1509,26 @@ fn observe_event(
             let receipt = adapt_observed_event(&binding.intent, &binding.turn_id, observed)
                 .map_err(|error| format!("invalid App Server terminal witness: {error}"))?
                 .ok_or_else(|| "turn/completed did not produce terminal receipt".to_string())?;
+            match completed.turn.items_view {
+                TurnItemsView::NotLoaded if !completed.turn.items.is_empty() => {
+                    return Err("not-loaded turn contains output items".to_string());
+                }
+                TurnItemsView::Full => {
+                    binding
+                        .messages
+                        .full(completed.turn.items.iter().filter_map(|item| {
+                            if let ThreadItem::AgentMessage { id, text, .. } = item {
+                                Some((id.as_str(), text.as_str()))
+                            } else {
+                                None
+                            }
+                        }))?;
+                }
+                // Summary items are not a complete output source. Retain only
+                // the message bytes actually observed on the bound stream.
+                TurnItemsView::NotLoaded | TurnItemsView::Summary => {}
+            }
+            binding.snapshot_output(output);
             let physical_boundary = match receipt.status {
                 AdapterStatus::Succeeded => {
                     output.status = NativeRunStatus::Completed;

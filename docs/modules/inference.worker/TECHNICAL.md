@@ -137,6 +137,20 @@ The [current native implementation](../../../qualification/module-execution-doss
 
 Use the error/recovery path linked by the [current native implementation](../../../qualification/module-execution-dossiers/detail/inference.worker.md#8-current-native-implementation) and the module-specific fault cases in the [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/inference.worker.md). A source library or fixture cannot stand in for an unimplemented durable recovery or external reconciler.
 
+Hosted output observation retains per-item text within one bound turn, including
+the interrupt grace period. Completed message bytes replace that item's partial
+deltas; identical completions deduplicate, conflicting completions and later
+deltas refuse. The aggregate text limit remains 1 MiB, with at most 1,024 message
+identities of at most 128 bytes each. Thread, turn and original App Server
+transport bindings remain mandatory. Text completion grants no terminal status,
+FinalUse authority or success; those still require the existing terminal witness
+and current owner checks. A `NotLoaded` turn must contain no items. `Summary`
+preserves the actual stream bytes without supplying missing message text. `Full`
+replaces output atomically in its complete message order only after checking
+identity uniqueness, retention of every observed message, completed-byte
+consistency and the aggregate limit. Partial output is rendered in item order
+before any return or owner-loss settlement, including without a terminal event.
+
 [Shared failure, recovery and rollback requirements](../README.md#shared-failure-and-recovery) remain mandatory.
 
 ## 9. Security, privacy and threat controls
@@ -172,7 +186,14 @@ Current focused test sources (source references, not pass receipts):
 - [codex-rs/hepta-infer-worker-host/src/lib_tests.rs](../../../codex-rs/hepta-infer-worker-host/src/lib_tests.rs); named case: `terminal_success_requires_exact_authority_binding`.
 - [codex-rs/hepta-infer-worker-host/src/model_worker_tests.rs](../../../codex-rs/hepta-infer-worker-host/src/model_worker_tests.rs); named case: `loads_runs_and_unloads_exact_model_tuple`.
 
-In `codex-rs`, run `just test -p codex-hepta-infer-worker-host`. The command is a test invocation, not a stored result. Inspect the exact-candidate output for passes, failures and skips. The [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/inference.worker.md) separately labels target acceptance designs.
+In `codex-rs`, build the actual helper executable with
+`cargo build --locked -p codex-cli --bin codex`, then run
+`just test --locked -p codex-hepta-infer-worker-host`. The cross-crate Agentd
+test host receives explicit runtime paths from the repository binary resolver;
+the Bazel unit-test launcher supplies the same CLI through its runfiles mapping.
+The test harness executable is not a substitute for that CLI. These commands are
+test invocations, not stored results. Inspect the exact-candidate output for
+passes, failures and skips. The [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/inference.worker.md) separately labels target acceptance designs.
 
 [Shared verification and qualification requirements](../README.md#shared-verification-and-qualification) retain the source/merge, failure, compilation and independent-evidence obligations.
 
