@@ -71,9 +71,22 @@ fn shared_pool_reports_group_and_drop_metrics() {
     );
     let batch = pool.drain();
     assert_eq!(batch.requests.len(), 1);
-    assert_eq!(pool.metrics().groups_committed, 1);
-    assert_eq!(pool.metrics().activations_committed, 1);
+    assert_eq!(pool.metrics().groups_prepared, 1);
+    assert_eq!(pool.metrics().activations_prepared, 1);
+    assert_eq!(pool.metrics().groups_committed, 0);
+    assert_eq!(pool.metrics().activations_committed, 0);
     assert_eq!(pool.metrics().dropped_requests, 1);
+
+    // Empty drains and additional unexecuted work must never fabricate a
+    // durable group-commit receipt, even if the work was grouped successfully.
+    assert!(pool.drain().requests.is_empty());
+    assert_eq!(pool.metrics().groups_prepared, 1);
+    pool.submit(request(3, "scope:b")).expect("second submit");
+    assert_eq!(pool.drain().requests.len(), 1);
+    assert_eq!(pool.metrics().groups_prepared, 2);
+    assert_eq!(pool.metrics().activations_prepared, 2);
+    assert_eq!(pool.metrics().groups_committed, 0);
+    assert_eq!(pool.metrics().activations_committed, 0);
 }
 
 #[test]
