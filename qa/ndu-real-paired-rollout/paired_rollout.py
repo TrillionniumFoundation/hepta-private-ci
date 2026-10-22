@@ -95,8 +95,12 @@ def run_arm(backend, cells, observation, arm, *, seed=23, budget=10., artifact_r
     modifier = FrozenArm(arm, cells, backend.location_token_ids, backend.eos_token_id, geometry)
     result, error, artifact_path, artifact_digest = None, None, None, None
     try:
+        if sha(observation['image_path']) != observation['image_sha256']:
+            raise ValueError('source image bytes differ from frozen observation before encode')
         encoded = backend.encode(observation)
         components['encoder'].update(calls=1, wall_seconds=float(encoded.costs['encoder_seconds']))
+        if sha(observation['image_path']) != observation['image_sha256']:
+            raise ValueError('source image bytes changed during encoder execution')
         if time.perf_counter() - began >= budget:
             raise TimeoutError('image encoder consumed entire episode wall budget; no decoder invoked')
         # The backend's soft cap counts this episode's encoder and decoding work.
@@ -105,6 +109,8 @@ def run_arm(backend, cells, observation, arm, *, seed=23, budget=10., artifact_r
                                   checkpoint_stride=4, max_checkpoints=16,
                                   max_wall_seconds=remaining, do_sample=True,
                                   temperature=temperature, seed=stable_seed(observation['task_id'], seed))
+        if sha(observation['image_path']) != observation['image_sha256']:
+            raise ValueError('source image bytes changed during decoder execution')
         rc = result['costs']
         components['backbone'].update(calls=1, wall_seconds=float(rc['decoder_seconds']+rc['parsing_seconds']+rc['loop_overhead_seconds']))
         components['cell'].update(calls=int(modifier.seconds > 0 and arm != 'nochange'),
@@ -224,6 +230,11 @@ def to_terminal_batch(header, records, references, observations):
     by_obs={obs['task_id']:obs for obs in observations}
     if len(by_ref)!=len(references) or len(by_obs)!=len(observations) or set(by_ref)!=set(by_obs):
         raise ValueError('task/reference identity mismatch')
+    for observation in observations:
+        if sha(observation['image_path']) != observation['image_sha256']:
+            raise ValueError('source image bytes changed before terminal evaluation')
+    if not isinstance(header.get('model_revision'), str) or not header['model_revision']:
+        raise ValueError('missing frozen model revision')
     entries=[]
     for row in records:
         reference=by_ref[row['task_id']]
@@ -232,6 +243,11 @@ def to_terminal_batch(header, records, references, observations):
             raise ValueError('plan identity mismatch: receipts cannot be substituted')
         if row['source_image_sha256'] != obs['image_sha256']:
             raise ValueError('source image checksum changed')
+        if (row.get('sampling_seed') != stable_seed(row['task_id'], row['seed'])
+                or row.get('model_revision') != header['model_revision']
+                or row.get('policy_version') != f'paired-five-arm/{row["arm"]}/v1'
+                or row.get('label') != obs['target_category']):
+            raise ValueError('frozen model, stochastic seed, Cell policy or label mismatch')
         if row['budget_cap']!=header['budget_seconds'] or row['method']!=f'terminal-{row["arm"]}':
             raise ValueError('budget or method identity changed')
         score=score_episode(row,reference)
