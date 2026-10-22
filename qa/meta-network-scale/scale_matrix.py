@@ -108,6 +108,8 @@ def _finite_number(value: Any) -> bool:
 
 
 def validate_result(result: dict[str, Any]) -> list[str]:
+    if not isinstance(result, dict):
+        return ["result must be an object"]
     errors: list[str] = []
     if result.get("schema") != "hepta.cell-execution-scale-result.v1":
         errors.append("schema must be hepta.cell-execution-scale-result.v1")
@@ -229,12 +231,30 @@ def validate_matrix(matrix: dict[str, Any]) -> list[str]:
     # Distinct arms/sizes cannot reuse the same retained measurement.
     metrics_receipts_seen: set[str] = set()
     measurement_digests_seen: set[str] = set()
+    # Observations from different size/arm executions must not masquerade as
+    # independent future-window, fault, rollback or resource evidence when
+    # the same receipt is recycled. A shared holdout DATASET may be reused;
+    # the per-execution observation receipt must not.
+    evidence_receipts_seen: dict[str, set[str]] = {
+        key: set() for key in REQUIRED_EVIDENCE
+    }
     cohort_fields = ("source_commit", "source_tree", "target_host_digest")
     for index, row in enumerate(results):
         if not isinstance(row, dict):
             errors.append(f"results[{index}] must be an object")
             continue
         errors.extend(f"results[{index}].{error}" for error in validate_result(row))
+        receipts = row.get("evidence_receipts")
+        if isinstance(receipts, dict):
+            for evidence_key in REQUIRED_EVIDENCE:
+                receipt = receipts.get(evidence_key)
+                if isinstance(receipt, str) and _HEX64.fullmatch(receipt):
+                    if receipt in evidence_receipts_seen[evidence_key]:
+                        errors.append(
+                            f"results[{index}].evidence_receipts.{evidence_key} "
+                            "reused across matrix pairs"
+                        )
+                    evidence_receipts_seen[evidence_key].add(receipt)
         metrics_receipt = row.get("metrics_receipt")
         if isinstance(metrics_receipt, str) and _HEX64.fullmatch(metrics_receipt):
             if metrics_receipt in metrics_receipts_seen:
