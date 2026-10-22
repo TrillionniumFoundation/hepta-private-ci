@@ -52,6 +52,10 @@ mod recovery;
 pub use recovery::CognitiveRecoveryAnchor;
 pub use recovery::CognitiveRecoveryError;
 pub use recovery::CognitiveRecoveryRequirement;
+pub use recovery::CognitiveSchemaUpgradeHostV1;
+pub use recovery::CognitiveSchemaUpgradeTransitionV1;
+pub use recovery::CognitiveSchemaUpgradeWitnessV1;
+pub use recovery::PreparedCognitiveSchemaUpgradeV1;
 pub use recovery::RecoveredCognitiveReadOnly;
 
 const COGNITIVE_DB_FILENAME: &str = "cognitive_1.sqlite3";
