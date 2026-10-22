@@ -596,3 +596,64 @@ fn prompt_delivery_rejection_and_positions_fail_closed() {
         Err(Error::NonCanonicalTokenPositions)
     );
 }
+
+#[test]
+fn cell_codex_ingress_rejects_foreign_protocol_and_invalid_server_versions() {
+    let legacy = product_intent();
+    let binding = legacy.app_server_binding.as_ref().expect("product binding");
+    let organ = id("organ:test");
+    let cell = CellExecutionIntentV1 {
+        operation_id: legacy.operation_id.clone(),
+        cell_id: id("cell:test"),
+        organ_id: organ.clone(),
+        generation: binding.agent_generation,
+        kind: ExecutionIntentKindV1::CodexTurn,
+        codex_binding: Some(CodexTurnBindingV1 {
+            source_admission_digest: binding.source_admission_digest,
+            session_id: binding.session_id.clone(),
+            thread_id: legacy.thread_id.clone(),
+            client_user_message_id: binding.client_user_message_id.clone(),
+            user_input_digest: binding.user_input_digest,
+            protocol_id: binding.protocol_id.clone(),
+            app_server_version: binding.app_server_version.clone(),
+            codex_home_digest: binding.codex_home_digest,
+            connection_id: binding.connection_id,
+        }),
+        input_digest: legacy.payload_digest,
+        final_payload: FinalPayloadDigestV1 {
+            scope_id: organ,
+            generation: binding.agent_generation,
+            payload_kind: id(TURN_START_METHOD_ID),
+            digest: legacy.payload_digest,
+        },
+        deadline_ms: legacy.deadline_ms,
+    };
+
+    let accepted = adapt_codex_cell_intent(1_000, cell.clone()).expect("valid v2 ingress");
+    assert_eq!(accepted.status, AdapterStatus::Indeterminate);
+    assert_eq!(accepted.authority, AuthorityPosture::DENY_ALL);
+
+    let mut foreign = cell.clone();
+    foreign.codex_binding.as_mut().expect("binding").protocol_id =
+        id("codex.app-server.v3");
+    assert_eq!(
+        adapt_codex_cell_intent(1_000, foreign),
+        Err(Error::InvalidObservationIdentity("cell execution contract")),
+    );
+
+    let mut oversized = cell.clone();
+    oversized.codex_binding.as_mut().expect("binding").app_server_version =
+        "x".repeat(MAX_APP_SERVER_VERSION_BYTES + 1);
+    assert_eq!(
+        adapt_codex_cell_intent(1_000, oversized),
+        Err(Error::InvalidObservationIdentity("cell execution contract")),
+    );
+
+    let mut forged = cell;
+    forged.codex_binding.as_mut().expect("binding").app_server_version =
+        "v1.0\nforged".to_string();
+    assert_eq!(
+        adapt_codex_cell_intent(1_000, forged),
+        Err(Error::InvalidObservationIdentity("cell execution contract")),
+    );
+}
