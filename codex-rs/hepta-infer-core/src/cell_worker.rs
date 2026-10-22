@@ -12,6 +12,7 @@ use codex_hepta_types::Generation;
 use codex_hepta_types::StableId;
 
 use crate::cell_batch::CellBatchError;
+use crate::cell_batch::MAX_BATCH_ITEMS;
 use crate::cell_batch::FairCellQueueV1;
 use crate::cell_batch::ImmutableFeatureSnapshotV1;
 use crate::cell_batch::QueuedCellRequestV1;
@@ -226,6 +227,9 @@ impl SharedWorkerPoolV1 {
         if maximum_batch == 0 {
             return Err(CellWorkerError::ZeroBatchSize);
         }
+        if maximum_batch > MAX_BATCH_ITEMS {
+            return Err(CellWorkerError::BatchCapacity);
+        }
         Ok(Self {
             queue: FairCellQueueV1::new(maximum_queue).map_err(CellWorkerError::Queue)?,
             maximum_batch,
@@ -292,6 +296,7 @@ fn push_batch_id(bytes: &mut Vec<u8>, value: &StableId) {
 pub enum CellWorkerError {
     EmptyCellSet,
     IndexCapacity,
+    BatchCapacity,
     FeatureSnapshotConflict,
     StaleFeatureGeneration,
     InvalidModelKey,
