@@ -272,6 +272,35 @@
     "receipt": "image-execution.json",
     "receipt_file_sha256": "6a84121f178b3f25eb9c3c8532e52718d97e53b9334a3942f70e3652c3178de0"
   },
+  "post_execution_diagnostics": {
+    "binary_cells_at_baseline_holdout_accuracy": 16,
+    "binary_cells_better_than_constant_prior_ood_nll": 15,
+    "binary_confusion_matrices_retained": false,
+    "binary_constant_class_prior_nll_baseline": 0.5623351446188083,
+    "binary_majority_class_accuracy_baseline": 0.75,
+    "followup_required": "Predeclare a new protocol with fresh final cohorts; retain balanced accuracy, confusion matrices, positive-class recall and AUPRC; do not tune on these final holdouts.",
+    "multiclass_calibration": {
+      "embeddinggemma2_740m": {
+        "coverage_at_0_7": 0.03125,
+        "temperature": 0.25
+      },
+      "granite97m": {
+        "coverage_at_0_7": 0.03125,
+        "temperature": 0.25
+      },
+      "laya_encoder_only": {
+        "coverage_at_0_7": 0.0,
+        "temperature": 0.25
+      },
+      "mmbert_small": {
+        "coverage_at_0_7": 0.0,
+        "temperature": 0.25
+      }
+    },
+    "multiclass_temperature_hits_predeclared_grid_lower_bound": true,
+    "status": "descriptive review only; does not select or qualify a candidate",
+    "useful_positive_class_recognition_qualified": false
+  },
   "production_activation_allowed": false,
   "retained_head_artifacts": {
     "gated": {

@@ -216,7 +216,17 @@ learning and after final fanout. A changed source tree aborts the run.
 
 The per-scale Heads are actual private copies of one trained Head. Their
 allocation measures scaling; only the four separately trained binary tasks
-demonstrate independent parameter learning. A single event shared across
+demonstrate independent parameter learning. Each binary task has one positive
+class against three negative classes, so its majority-class accuracy baseline
+is 75%. Every candidate's four binary Cells report 75% accuracy on each
+historical holdout and the publisher OOD split. This does not establish better
+classification or positive-class recall than that baseline; the reports do not
+retain per-row predictions needed to infer their confusion matrices. Fifteen
+of the sixteen binary Cells have better OOD calibrated NLL than the constant
+class-prior predictor (NLL 0.562335), so probability scoring can improve even
+when classification accuracy does not. A follow-up protocol must retain
+confusion matrices, balanced accuracy and positive-class recall/AUPRC before
+claiming useful Cell specialization. A single event shared across
 4,096 Cells does not imply 4,096 distinct inputs can be encoded for free.
 Three latency samples per scale are descriptive measurements, not p95/p99 or
 production SLO evidence. Peak RSS, current RSS and tensor-storage bytes have
@@ -261,7 +271,13 @@ or zero-overhead serving claim.
 
 The fixed 0.7 task-confidence threshold accepted only 1/128 Granite OOD rows
 and 2/128 EG2 OOD rows; mmBERT and Laya accepted none. Thus classification
-accuracy alone does not close useful selective coverage. The retained summary
+accuracy alone does not close useful selective coverage. The four multiclass
+arms all selected temperature 0.25, the lower boundary of the predeclared grid;
+coverage was already low on calibration data (4/128 for Granite and EG2, zero
+for the other two). This is not solely evidence of OOD drift. A new training
+or calibration protocol needs fresh final evaluation cohorts; changing the
+grid or lowering 0.7 after reading these holdouts cannot qualify this run.
+The retained summary
 keeps target-domain learning/coverage, multimodal task quality, target-hardware
 latency/energy, full policy/state learning, and exact-head CI/parent admission
 explicitly unclosed. They cannot be turned into passes by execution receipts.

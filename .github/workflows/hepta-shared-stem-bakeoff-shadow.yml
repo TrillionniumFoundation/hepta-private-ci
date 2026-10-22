@@ -99,12 +99,13 @@ jobs:
       fail-fast: false
       max-parallel: 2
       matrix:
-        candidate: [granite97m, mmbert_small, embeddinggemma2_740m, laya_encoder_only]
+        candidate:
+          [granite97m, mmbert_small, embeddinggemma2_740m, laya_encoder_only]
     env:
       CANDIDATE: ${{ matrix.candidate }}
-      HF_HUB_OFFLINE: '1'
-      TRANSFORMERS_OFFLINE: '1'
-      TOKENIZERS_PARALLELISM: 'false'
+      HF_HUB_OFFLINE: "1"
+      TRANSFORMERS_OFFLINE: "1"
+      TOKENIZERS_PARALLELISM: "false"
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
