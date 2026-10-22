@@ -91,7 +91,9 @@ def _id(value: Any, name: str) -> None:
 def verify_envelope(envelope: Mapping[str, Any], trust: Mapping[str, Mapping[str, str]], expected_role: str) -> VerifiedEvidence:
     """Cryptographically verify one disjoint-role, explicitly configured public key."""
     e = _shape(dict(envelope), {"version", "role", "key_id", "payload", "signature"}, "envelope")
-    if e["version"] != 1 or e["role"] != expected_role or expected_role not in ROLES:
+    # bool/float compare equal to integer 1 in Python. Signing the canonical
+    # integer and then changing the visible version to True/1.0 must not pass.
+    if type(e["version"]) is not int or e["version"] != 1 or e["role"] != expected_role or expected_role not in ROLES:
         raise EvidenceRejected("unsupported evidence version or signer role")
     key_id = e["key_id"]
     _id(key_id, "key_id")

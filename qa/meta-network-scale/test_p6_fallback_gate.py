@@ -128,6 +128,16 @@ class FallbackGateTests(unittest.TestCase):
         with self.assertRaises(EvidenceRejected):
             self.fallback()
 
+    def test_signed_envelope_version_relabel_does_not_validate(self):
+        original = self.seal("final_use_issuer", self.grant)
+        for invalid_version in (True, 1.0, "1"):
+            with self.subTest(version=invalid_version):
+                altered = dict(original, version=invalid_version)
+                # The signature was genuinely made over integer 1, not the
+                # relabelled envelope; exact signed shape is mandatory.
+                with self.assertRaises(EvidenceRejected):
+                    self.fallback(grant=altered)
+
     def test_signature_mutation_fails(self):
         g = self.seal("final_use_issuer", self.grant)
         g["payload"]["expires_at_ms"] += 1000
