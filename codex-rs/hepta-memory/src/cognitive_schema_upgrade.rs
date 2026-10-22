@@ -364,3 +364,7 @@ fn filename(path: &std::path::Path) -> Result<String, CognitiveRecoveryError> {
             CognitiveRecoveryError::Indeterminate("upgrade database filename is invalid".into())
         })
 }
+
+#[cfg(all(test, unix))]
+#[path = "cognitive_schema_upgrade_tests.rs"]
+mod tests;
