@@ -1035,19 +1035,12 @@ fn selection_digest_binds_every_displayed_advisory_component() {
                        frontier: &[OutputPortfolioFrontierPointV1],
                        resource: FixedQ32,
                        latency: FixedQ32| {
-        digest_selection(
-            &state,
-            &limits,
-            &canonical,
-            &covariance,
-            &receipt.allocations,
-            disposition,
-            frontier,
-            receipt.total_risk,
-            receipt.total_utility,
-            resource,
-            latency,
-        )
+        let mut changed = receipt.clone();
+        changed.disposition = disposition;
+        changed.frontier = frontier.to_vec();
+        changed.total_resource = resource;
+        changed.total_latency = latency;
+        digest_selection(&state, &limits, &canonical, &covariance, &changed)
     };
     let original = fingerprint(
         receipt.disposition,
@@ -1092,6 +1085,57 @@ fn selection_digest_binds_every_displayed_advisory_component() {
             FixedQ32::ZERO,
         )
     );
+}
+
+#[test]
+fn selection_digest_binds_emitted_identity_and_candidate_snapshot_without_replay() {
+    let candidates = [
+        candidate("baseline", 0, 0, true),
+        candidate("private-head", 60, 10, false),
+    ];
+    let state = context(candidates.len());
+    let limits = budget(2);
+    let receipt =
+        select_output_portfolio_v1(&state, &limits, &candidates).expect("advisory receipt");
+    let canonical = canonical_candidates(&state, &candidates).expect("canonical candidates");
+    let covariance =
+        canonical_covariance(&state, &candidates, &canonical).expect("canonical covariance");
+    let digest_of = |value: &OutputPortfolioSelectionReceiptV1| {
+        digest_selection(&state, &limits, &canonical, &covariance, value)
+    };
+    assert_eq!(digest_of(&receipt), receipt.selection_digest);
+
+    let mut changed = receipt.clone();
+    changed.objective_digest = Digest32::of_bytes(b"another objective");
+    assert_ne!(digest_of(&changed), receipt.selection_digest);
+    let mut changed = receipt.clone();
+    changed.generation = Generation::new(2).expect("successor generation");
+    assert_ne!(digest_of(&changed), receipt.selection_digest);
+    let mut changed = receipt.clone();
+    changed.encoder_digest = Digest32::of_bytes(b"another encoder");
+    assert_ne!(digest_of(&changed), receipt.selection_digest);
+    let mut changed = receipt.clone();
+    changed.snapshot_digest = Digest32::of_bytes(b"another snapshot");
+    assert_ne!(digest_of(&changed), receipt.selection_digest);
+
+    let mut tampered_candidates = canonical.clone();
+    tampered_candidates[0].snapshot_digest = Digest32::of_bytes(b"foreign candidate snapshot");
+    assert_ne!(
+        digest_selection(&state, &limits, &tampered_candidates, &covariance, &receipt),
+        receipt.selection_digest
+    );
+    let mut changed = receipt.clone();
+    changed.total_risk = changed
+        .total_risk
+        .checked_add(FixedQ32::from_raw(1))
+        .expect("risk range");
+    assert_ne!(digest_of(&changed), receipt.selection_digest);
+    let mut changed = receipt.clone();
+    changed.total_utility = changed
+        .total_utility
+        .checked_add(FixedQ32::from_raw(1))
+        .expect("utility range");
+    assert_ne!(digest_of(&changed), receipt.selection_digest);
 }
 
 #[test]
