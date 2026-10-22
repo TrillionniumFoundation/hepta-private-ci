@@ -124,6 +124,28 @@ class ScaleMatrixTests(unittest.TestCase):
             "P4 qualification must reject missing metrics from the benchmark contract",
         )
 
+    def test_p5_exact_source_workflow_covers_input_metric_and_ndu_contracts(self):
+        # A change to an imported benchmark spec or the P3 selector must not
+        # leave the P5 evidence contract silently untested at the new source SHA.
+        workflow = (
+            pathlib.Path(__file__).resolve().parents[2]
+            / ".github"
+            / "workflows"
+            / "hepta-p5-scale-evidence-exact.yml"
+        ).read_text(encoding="utf-8")
+        pull_request_paths = workflow.partition("  workflow_dispatch:")[0]
+        expected = (
+            "qa/meta-network-scale/**",
+            "docs/learning/CELL_EXECUTION_BENCHMARK_MATRIX.json",
+            "codex-rs/hepta-ndu/src/output_portfolio.rs",
+            "codex-rs/hepta-ndu/src/output_portfolio_tests.rs",
+            "codex-rs/hepta-ndu/src/output_portfolio_types.rs",
+            ".github/workflows/hepta-p5-scale-evidence-exact.yml",
+        )
+        for path in expected:
+            with self.subTest(path=path):
+                self.assertIn(f'      - "{path}"', pull_request_paths)
+
     def test_p4_metrics_are_required_and_rate_units_are_bounded(self):
         for key in scale_matrix.REQUIRED_METRICS:
             with self.subTest(missing=key):
