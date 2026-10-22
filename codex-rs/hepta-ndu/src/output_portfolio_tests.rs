@@ -41,6 +41,7 @@ fn candidate(
     OutputPortfolioCandidateV1 {
         candidate_id: id(name),
         candidate_digest: Digest32::of_bytes(name.as_bytes()),
+        objective_digest: Digest32::of_bytes(b"objective"),
         snapshot_digest: Digest32::of_bytes(b"snapshot"),
         generation: Generation::new(1).expect("candidate generation"),
         encoder_digest: Digest32::of_bytes(b"encoder"),
@@ -847,5 +848,71 @@ fn portfolio_receipt_replay_rejects_mutated_allocation_and_digest() {
     assert_eq!(
         verify_output_portfolio_receipt_v1(&ctx, &limits, &original, &altered_generation),
         Err(NduError::InvalidSolverReceipt("portfolio receipt replay"))
+    );
+}
+
+#[test]
+fn duplicated_candidate_digest_is_not_an_independent_diversification_asset() {
+    let first = candidate("first", 60, 10, false);
+    let mut duplicated = candidate("second-id", 55, 5, false);
+    // Distinct StableIds, utilities and risk claims must not turn one
+    // immutable proposal payload into two independent allocations.
+    duplicated.candidate_digest = first.candidate_digest;
+    duplicated.weight_cap = q(50);
+    let candidates = [candidate("baseline", 0, 0, true), first, duplicated];
+    let ctx = context(candidates.len());
+    let expected = NduError::InvalidSolverReceipt("duplicate portfolio candidate digest");
+
+    assert_eq!(
+        select_output_portfolio_v1(&ctx, &budget(3), &candidates),
+        Err(expected.clone())
+    );
+    assert_eq!(
+        output_efficient_frontier_v1(&ctx, &candidates),
+        Err(expected)
+    );
+
+    // Reordering the input and covariance is not a means of bypassing the
+    // same uniqueness check.
+    let reordered = [
+        candidates[2].clone(),
+        candidates[0].clone(),
+        candidates[1].clone(),
+    ];
+    assert_eq!(
+        select_output_portfolio_v1(&context(3), &budget(3), &reordered)
+            .expect_err("duplicated payload must be rejected"),
+        NduError::InvalidSolverReceipt("duplicate portfolio candidate digest")
+    );
+}
+
+#[test]
+fn portfolio_rejects_cross_objective_proposals_with_matching_snapshot_bytes() {
+    let mut other_goal = candidate("other-goal", 95, 0, false);
+    other_goal.objective_digest = Digest32::of_bytes(b"different-objective");
+    let candidates = [candidate("baseline", 0, 0, true), other_goal];
+    let ctx = context(candidates.len());
+    let expected = NduError::InvalidSolverReceipt("portfolio candidate objective");
+
+    assert_eq!(
+        select_output_portfolio_v1(&ctx, &budget(2), &candidates),
+        Err(expected.clone())
+    );
+    assert_eq!(
+        output_efficient_frontier_v1(&ctx, &candidates),
+        Err(expected)
+    );
+
+    // Replaying with matching output bytes must not launder another
+    // objective's future utility into the current control decision.
+    let original = [
+        candidate("baseline", 0, 0, true),
+        candidate("same-snapshot", 30, 1, false),
+    ];
+    let receipt = select_output_portfolio_v1(&ctx, &budget(2), &original)
+        .expect("original objective-bound advice");
+    assert_eq!(
+        verify_output_portfolio_receipt_v1(&ctx, &budget(2), &candidates, &receipt),
+        Err(NduError::InvalidSolverReceipt("portfolio candidate objective"))
     );
 }

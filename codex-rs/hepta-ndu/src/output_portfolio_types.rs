@@ -54,6 +54,9 @@ pub struct SemanticRiskEstimateV1 {
 pub struct OutputPortfolioCandidateV1 {
     pub candidate_id: StableId,
     pub candidate_digest: Digest32,
+    /// Exact objective under which this Cell proposal and its future utility
+    /// estimate were produced. Same snapshot bytes do not imply same goal.
+    pub objective_digest: Digest32,
     pub snapshot_digest: Digest32,
     /// Source fence of the Cell proposal. Matching feature bytes do not
     /// authorize reusing a proposal across generations.
