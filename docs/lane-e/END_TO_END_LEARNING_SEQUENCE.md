@@ -307,7 +307,7 @@ attempt lineage, including rejection, interruption and no-update. Each round:
 
 The cross-repository interface anchors are I06 export, I07 evaluation, I08 Chain
 accepted-task observation, I09 release-closure fetch and I10 local installation
-and readback in the [Chain plan](https://github.com/TrillionniumFoundation/Trillionnium-Chain/blob/8d56f2f173d3e870846cf1129d48647f2b84540a/docs/development/TRNM_AI_NATIVE_BLOCKCHAIN_DEVELOPMENT_PLAN.md).
+and readback in the [Chain plan](https://github.com/TrillionniumFoundation/Trillionnium-Chain/blob/e80076e54050c9ba958a9b8f801e6890da5fdb98/docs/development/TRNM_AI_NATIVE_BLOCKCHAIN_DEVELOPMENT_PLAN.md).
 These are design-change anchors, not already deployed wire schemas. Preserve
 `DatasetSnapshotV1` exchange, complete V3 admission, `LearningArtifactManifestV1`
 compatibility and `EvaluationReceiptV1`/`LongitudinalEvaluationReceiptV1` meaning.
