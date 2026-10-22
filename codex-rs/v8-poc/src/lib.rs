@@ -36,6 +36,11 @@ mod tests {
         INIT.call_once(|| {
             v8::V8::initialize_platform(v8::new_default_platform(0, false).make_shared());
             v8::V8::initialize();
+
+            // Initialize the shared sandbox allocator before tests create
+            // isolates concurrently. In the linked V8 version, its first
+            // initialization is not synchronized.
+            drop(v8::new_default_allocator());
         });
     }
 

@@ -150,6 +150,9 @@ class RunBazelCiIntegrationTest(unittest.TestCase):
                 self.env.update(
                     RUNNER_OS=runner_os, GITHUB_ACTIONS="true", BAZEL_PROBE_FAIL="1"
                 )
+                if os.name == "nt":
+                    # This Unix simulation must bypass Git Bash's path conversion.
+                    self.env["MSYS2_ARG_CONV_EXCL"] = "*"
                 result, calls = self.run_wrapper(
                     "--remote-download-toplevel",
                     "--",

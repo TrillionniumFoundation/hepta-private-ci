@@ -2397,8 +2397,8 @@ mod tests {
     fn reserve_windows_managed_listeners_preserves_http_when_socks_port_is_busy() {
         let http_listener = StdTcpListener::bind(SocketAddr::from(([127, 0, 0, 1], 0))).unwrap();
         let http_addr = http_listener.local_addr().unwrap();
-        drop(http_listener);
         let occupied_socks = StdTcpListener::bind(SocketAddr::from(([127, 0, 0, 1], 0))).unwrap();
+        drop(http_listener);
 
         let reserved = reserve_windows_managed_listeners(
             http_addr,
