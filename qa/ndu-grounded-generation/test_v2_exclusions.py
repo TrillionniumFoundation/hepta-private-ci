@@ -120,6 +120,12 @@ class V2SourceExclusionTests(unittest.TestCase):
         with self.assertRaisesRegex(ExclusionError, "near-duplicate"):
             build_registry(a, b)
 
+    def test_malformed_historical_wrapper_rejected(self):
+        a, b = mock_input()
+        a["source_sample"] = None
+        with self.assertRaisesRegex(ExclusionError, "malformed historical"):
+            build_registry(a, b)
+
     def test_boolean_image_id_rejected(self):
         a, b = mock_input()
         b["splits"]["train"]["sources"][0]["image_id"] = True
