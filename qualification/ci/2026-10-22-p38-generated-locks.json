@@ -1,0 +1,91 @@
+{
+  "schema": "hepta.p38.generated-lock-import.v1",
+  "source_remote_sha": "db0d860811ffc37f0c462b030d0be3b8043955a8",
+  "source_local_sha": "b6df304fe906e1cdc579c737495cd90acd3a92c3",
+  "source_tree": "6286c110c50f9830dff24ca0b176b0c816b8f422",
+  "workflow_run": {
+    "id": 39727691353,
+    "attempt": 1,
+    "event": "push",
+    "conclusion": "success",
+    "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/39727691353"
+  },
+  "job": {
+    "id": 119655294843,
+    "name": "generate",
+    "conclusion": "success"
+  },
+  "artifact": {
+    "id": 12405655222,
+    "name": "hepta-p38-lockfiles-db0d860811ffc37f0c462b030d0be3b8043955a8-1",
+    "bytes": 328462,
+    "sha256": "b14879e164c0fd3f95852c3df4f31872f330feafbf67d28d7087452e522dd267",
+    "created_at": "2026-10-22T06:00:10Z"
+  },
+  "generation_receipt": {
+    "source_sha": "db0d860811ffc37f0c462b030d0be3b8043955a8",
+    "source_tree": "6286c110c50f9830dff24ca0b176b0c816b8f422",
+    "before_sha256": {
+      "MODULE.bazel": "aaae03b0fc03055cecd7ef060ab53299e1e62abba7082daf513e5c2d3feb0d5f",
+      "MODULE.bazel.lock": "825db8bf34237cef491eee58fa51c070d140f421df300ecb9086a474181eea31",
+      "codex-rs/Cargo.toml": "ddfc3f515cb114d23423060008d0db211ccbca0e722c78392d81b3210adb1543",
+      "codex-rs/Cargo.lock": "4457fc01b43c7218a6aaa5903098dd7308deba1125e42aeba8d7e188cad363b4"
+    },
+    "after_sha256": {
+      "MODULE.bazel": "aaae03b0fc03055cecd7ef060ab53299e1e62abba7082daf513e5c2d3feb0d5f",
+      "MODULE.bazel.lock": "63ee8041114a86fb2064282e466d4250abdf884b2b10dff21c91c412cecfcc4b",
+      "codex-rs/Cargo.toml": "ddfc3f515cb114d23423060008d0db211ccbca0e722c78392d81b3210adb1543",
+      "codex-rs/Cargo.lock": "4457fc01b43c7218a6aaa5903098dd7308deba1125e42aeba8d7e188cad363b4"
+    },
+    "outcomes": {
+      "cargo": "success",
+      "update": "success",
+      "check": "success"
+    },
+    "changed_files": ["MODULE.bazel.lock"],
+    "source_unchanged": true,
+    "qualified_locks": true
+  },
+  "verified_file_sha256": {
+    "MODULE.bazel.lock": "63ee8041114a86fb2064282e466d4250abdf884b2b10dff21c91c412cecfcc4b",
+    "bazel-lock-check.log": "8e1491071cc041649927998b33985b7b15c8648f0cabe79d336e55b7583a6aea",
+    "bazel-lock-update.log": "cf68b251b865ac5aecb9b5711ec68eab89af736a13b8e242b43f0266037e759f",
+    "cargo-metadata.log": "23555e2b12ae23f7ff636d0345b4caa500c7acffe541e839135598473d2b3162",
+    "codex-rs/Cargo.lock": "4457fc01b43c7218a6aaa5903098dd7308deba1125e42aeba8d7e188cad363b4",
+    "receipt.json": "353cf9d5626cd4b3f1852cb4e13e02b1feedcb0490dda3f5366425ee616d9e3d",
+    "source-sha.txt": "6e2f694cf7bbad111a2bf2c5cce003b9c746440905e0499f16d4035ddc79081b"
+  },
+  "original_cloud_commands": [
+    {
+      "command": "cargo metadata --format-version 1 --manifest-path codex-rs/Cargo.toml",
+      "outcome": "success"
+    },
+    {
+      "command": "just bazel-lock-update",
+      "effective_command": "bazel mod deps --lockfile_mode=update",
+      "bazel_version": "9.0.0",
+      "outcome": "success"
+    },
+    {
+      "command": "./scripts/check-module-bazel-lock.sh",
+      "effective_command": ".github/scripts/run_bazel_with_buildbuddy.py mod deps --lockfile_mode=error",
+      "outcome": "success"
+    }
+  ],
+  "import": {
+    "archive_matches_github_digest": true,
+    "parsed_exact_verified_bytes": true,
+    "verifier_sha256": "89c85ceb0271531315c504a2e8310465bbee6e621004a0283bddd31a221150a8",
+    "source_sha_tree_and_before_hashes_verified": true,
+    "artifact_hashes_verified_again_before_copy": true,
+    "cargo_lock_unchanged": true,
+    "module_lock_changes": "Nine removed and nine added crate metadata facts matching the previously resolved advisory repairs; no other JSON leaves changed.",
+    "manual_lock_editing": false,
+    "original_lock_check": "Passed in the exact-source cloud generation job against these exact artifact bytes."
+  },
+  "native_combined_verified": false,
+  "all_blockers_closed": false,
+  "remaining": [
+    "Original blocking CI, architecture source-head, and V8 canary require their actual terminal results on the final integrated source."
+  ]
+}
