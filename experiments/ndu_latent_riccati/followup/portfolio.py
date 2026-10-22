@@ -46,8 +46,17 @@ def cvar90(losses):
     x = np.asarray(losses, dtype=np.float64)
     if x.ndim != 1 or x.size < 4 or not np.isfinite(x).all():
         raise PortfolioRejected('invalid CVaR scenarios')
-    tail = max(1, math.ceil(0.1 * len(x)))
-    return float(np.sort(x)[-tail:].mean())
+    # Empirical upper-tail CVaR integrates exactly 10% of the probability mass.
+    # Averaging ceil(0.1*n) worst values underprices tail risk when n*0.1
+    # is fractional (e.g. [0]*10+[10] would incorrectly be valued at 5).
+    descending = np.sort(x)[::-1]
+    tail_mass = 0.1 * len(descending)
+    count = math.floor(tail_mass)
+    fractional = tail_mass - count
+    upper_loss = float(descending[:count].sum(dtype=np.float64))
+    if fractional:
+        upper_loss += fractional * float(descending[count])
+    return upper_loss / tail_mass
 
 
 def _validate(baseline, cells, budget, calibration_digest, objective_digest):
