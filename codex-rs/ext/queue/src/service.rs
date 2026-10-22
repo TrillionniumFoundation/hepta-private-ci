@@ -10,6 +10,7 @@ use std::time::SystemTime;
 use std::time::UNIX_EPOCH;
 
 use codex_core::CodexThread;
+use codex_core::IdleWorkPriority;
 use codex_core::StartIfIdleSubmission;
 use codex_core::ThreadManager;
 use codex_core::TurnInput;
@@ -1376,16 +1377,16 @@ where
                 // this callback returns. Keep the wake alive independently,
                 // then use ordinary admission after that exact cleanup ends.
                 let service = self.clone();
-                tokio::spawn(async move {
-                    tokio::select! {
-                        biased;
-                        () = thread.wait_until_terminated() => return,
-                        () = completion => {}
-                    }
-                    service
-                        .dispatch_idle_notification(thread_id, thread.as_ref())
-                        .await;
-                });
+                let dispatch_thread = Arc::clone(&thread);
+                if let Err(error) =
+                    thread.defer_idle_work(IdleWorkPriority::QueuedInput, completion, async move {
+                        service
+                            .dispatch_idle_notification(thread_id, dispatch_thread.as_ref())
+                            .await;
+                    })
+                {
+                    tracing::warn!(%thread_id, %error, "could not defer queued idle work");
+                }
                 return;
             }
             self.dispatch_idle_notification(thread_id, thread.as_ref())
