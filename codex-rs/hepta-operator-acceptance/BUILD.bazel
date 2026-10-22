@@ -1,3 +1,4 @@
+load("@crates//:defs.bzl", "all_crate_deps")
 load("@rules_rust//rust:defs.bzl", "rust_binary", "rust_library", "rust_test")
 
 rust_library(
@@ -17,7 +18,10 @@ rust_library(
         "@crates//:sha2",
         "@crates//:thiserror",
     ] + select({
-        "@platforms//os:windows": ["@crates//:winapi-util"],
+        "@platforms//os:windows": [
+            "//codex-rs/utils/path-utils",
+            "@crates//:winapi-util",
+        ],
         "//conditions:default": [],
     }),
 )
@@ -32,10 +36,9 @@ rust_test(
         ],
         "//conditions:default": [],
     }),
-    deps = [
-        "@crates//:pretty_assertions",
-        "@crates//:tempfile",
-    ],
+    # Resolve the target-specific native fixture SDK from generated Cargo
+    # metadata, using the same supported helper as the workspace crate macro.
+    deps = all_crate_deps(normal_dev = True),
 )
 
 rust_binary(

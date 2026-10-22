@@ -89,6 +89,9 @@ use std::task::Poll;
 use std::time::Duration;
 use tempfile::TempDir;
 use tokio::sync::Notify;
+use tokio_tungstenite::tungstenite::extensions::ExtensionsConfig;
+use tokio_tungstenite::tungstenite::extensions::compression::deflate::DeflateConfig;
+use tokio_tungstenite::tungstenite::protocol::WebSocketConfig;
 use tracing::Event;
 use tracing::Subscriber;
 use tracing::field::Visit;
@@ -1548,13 +1551,20 @@ async fn websocket_connection_reuses_attribution_but_rebinds_configured_extra() 
                 .expect("accept websocket connection");
             let handshakes = server_handshakes.clone();
             connections.spawn(async move {
-                let mut socket = tokio_tungstenite::accept_hdr_async(
+                // Match the client's compression offer without bypassing handshake validation.
+                let mut extensions = ExtensionsConfig::default();
+                extensions.permessage_deflate = Some(DeflateConfig::default());
+
+                let mut config = WebSocketConfig::default();
+                config.extensions = extensions;
+                let mut socket = tokio_tungstenite::accept_hdr_async_with_config(
                     tcp,
                     move |_request: &tokio_tungstenite::tungstenite::handshake::server::Request,
                           response: tokio_tungstenite::tungstenite::handshake::server::Response| {
                         handshakes.fetch_add(1, Ordering::SeqCst);
                         Ok(response)
                     },
+                    Some(config),
                 )
                 .await
                 .expect("websocket handshake");

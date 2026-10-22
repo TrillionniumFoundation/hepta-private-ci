@@ -1,8 +1,11 @@
 use std::fs::File;
 use std::fs::OpenOptions;
 use std::io::Read;
+#[cfg(not(windows))]
 use std::io::Seek;
+#[cfg(not(windows))]
 use std::io::SeekFrom;
+#[cfg(not(windows))]
 use std::io::Write;
 use std::path::Path;
 use std::path::PathBuf;
@@ -71,10 +74,14 @@ pub(crate) fn verify_secure_directory(path: &Path, label: &str) -> Result<(), Ac
     if metadata.file_type().is_symlink() || !metadata.is_dir() {
         return Err(invalid(format!("{label} must be a real directory")));
     }
+    #[cfg(windows)]
+    windows::verify_directory(path)?;
     verify_private_mode(&metadata, label)
 }
 
 pub(crate) fn secure_read(path: &Path, max_bytes: usize) -> Result<Vec<u8>, AcceptanceError> {
+    #[cfg(windows)]
+    windows::require_non_impersonating_thread()?;
     let mut options = OpenOptions::new();
     options.read(true);
     #[cfg(unix)]
@@ -89,6 +96,8 @@ pub(crate) fn secure_read(path: &Path, max_bytes: usize) -> Result<Vec<u8>, Acce
     verify_regular_metadata(&before, "input artifact")?;
     #[cfg(windows)]
     let windows_before = windows::FileSnapshot::capture(&file, "input artifact")?;
+    #[cfg(all(test, windows))]
+    windows::custody_tests::before_read(path);
     if before.len() > max_bytes as u64 {
         return Err(invalid("input artifact exceeds its read bound"));
     }
@@ -110,10 +119,14 @@ pub(crate) fn secure_read(path: &Path, max_bytes: usize) -> Result<Vec<u8>, Acce
     {
         return Err(invalid("input artifact changed while it was read"));
     }
+    #[cfg(windows)]
+    windows::require_non_impersonating_thread()?;
     Ok(bytes)
 }
 
 pub(crate) fn secure_hash(path: &Path) -> Result<(String, u64), AcceptanceError> {
+    #[cfg(windows)]
+    windows::require_non_impersonating_thread()?;
     let mut options = OpenOptions::new();
     options.read(true);
     #[cfg(unix)]
@@ -151,9 +164,17 @@ pub(crate) fn secure_hash(path: &Path) -> Result<(String, u64), AcceptanceError>
     {
         return Err(invalid("manifest artifact changed while it was hashed"));
     }
+    #[cfg(windows)]
+    windows::require_non_impersonating_thread()?;
     Ok((format!("{:x}", hasher.finalize()), before.len()))
 }
 
+#[cfg(windows)]
+pub(crate) fn write_private_new(path: &Path, bytes: &[u8]) -> Result<(), AcceptanceError> {
+    windows::write_private_new(path, bytes)
+}
+
+#[cfg(not(windows))]
 pub(crate) fn write_private_new(path: &Path, bytes: &[u8]) -> Result<(), AcceptanceError> {
     let parent = path
         .parent()
@@ -169,14 +190,10 @@ pub(crate) fn write_private_new(path: &Path, bytes: &[u8]) -> Result<(), Accepta
             .mode(0o600)
             .custom_flags(libc::O_CLOEXEC | libc::O_NOFOLLOW);
     }
-    #[cfg(windows)]
-    windows::configure_open(&mut options);
     let mut file = options.open(path)?;
     file.write_all(bytes)?;
     file.sync_all()?;
     let fd_after = file.metadata()?;
-    #[cfg(windows)]
-    let windows_after = windows::FileSnapshot::capture(&file, "sidecar artifact")?;
     let path_after = std::fs::metadata(path)?;
     let link_after = std::fs::symlink_metadata(path)?;
     verify_regular_metadata(&link_after, "sidecar artifact")?;
@@ -188,8 +205,6 @@ pub(crate) fn write_private_new(path: &Path, bytes: &[u8]) -> Result<(), Accepta
             "sidecar artifact path changed during durable write",
         ));
     }
-    #[cfg(windows)]
-    windows::verify_unchanged(&file, path, &windows_after, "sidecar artifact")?;
     file.seek(SeekFrom::Start(0))?;
     let mut fd_bytes = Vec::with_capacity(bytes.len());
     file.read_to_end(&mut fd_bytes)?;
@@ -218,6 +233,8 @@ pub(crate) fn write_private_atomic_replace(
         ));
     }
     verify_secure_directory(parent, "sidecar directory")?;
+    #[cfg(windows)]
+    let windows_parent = windows::OutputParent::open(parent)?;
     if let Ok(metadata) = std::fs::symlink_metadata(path) {
         verify_regular_metadata(&metadata, "replaced sidecar artifact")?;
         #[cfg(windows)]
@@ -225,6 +242,8 @@ pub(crate) fn write_private_atomic_replace(
     }
     write_private_new(temporary_path, bytes)?;
     let parent_before = std::fs::symlink_metadata(parent)?;
+    #[cfg(windows)]
+    windows_parent.verify(parent)?;
     let rename_result = std::fs::rename(temporary_path, path);
     if rename_result.is_err() {
         let _ = std::fs::remove_file(temporary_path);
@@ -238,6 +257,9 @@ pub(crate) fn write_private_atomic_replace(
     if persisted != bytes {
         return Err(invalid("atomic sidecar artifact differs after persistence"));
     }
+    #[cfg(windows)]
+    windows_parent.sync(parent)?;
+    #[cfg(not(windows))]
     File::open(parent)?.sync_all()?;
     Ok(())
 }
@@ -370,9 +392,18 @@ fn verify_private_mode(metadata: &std::fs::Metadata, label: &str) -> Result<(), 
     Ok(())
 }
 
-#[cfg(not(unix))]
+#[cfg(windows)]
+// Metadata alone cannot prove Windows privacy. Every Windows admission/read
+// caller additionally validates the exact handle through private_state_snapshot.
 fn verify_private_mode(_metadata: &std::fs::Metadata, _label: &str) -> Result<(), AcceptanceError> {
     Ok(())
+}
+
+#[cfg(not(any(unix, windows)))]
+fn verify_private_mode(_metadata: &std::fs::Metadata, _label: &str) -> Result<(), AcceptanceError> {
+    Err(invalid(
+        "private filesystem custody is unsupported on this platform",
+    ))
 }
 
 fn same_file_snapshot(before: &std::fs::Metadata, after: &std::fs::Metadata) -> bool {

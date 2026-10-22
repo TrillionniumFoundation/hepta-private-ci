@@ -1,0 +1,410 @@
+name: a32 SSHSIG custody diagnostic DRAFT - review before publication
+
+# LOCAL DRAFT ONLY. Exact auxiliary-inclusive tree, controls, adapter and triggers require
+# independent review and separate publication authorization. No PR/dispatch/workflow_call.
+# Job limits are provider ceilings, not controller process-kill deadlines; partial is not pass.
+on:
+  push:
+    branches: [diagnostic/a32-sshsig-custody-20261022]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: a32-sshsig-recovery-diagnostic-${{ github.ref }}
+  cancel-in-progress: false
+
+env:
+  SOURCE_SHA: ${{ github.sha }}
+  CARGO_TERM_COLOR: never
+  CARGO_INCREMENTAL: "0"
+  CARGO_BUILD_JOBS: "2"
+  CARGO_NET_GIT_FETCH_WITH_CLI: "true"
+  CARGO_PROFILE_DEV_DEBUG: "0"
+  CARGO_PROFILE_TEST_DEBUG: "0"
+  PYTHONDONTWRITEBYTECODE: "1"
+  PYTHONUTF8: "1"
+
+jobs:
+  resolver-linux:
+    runs-on: ubuntu-24.04
+    env:
+      QUALIFICATION_LANE: resolver-linux
+    timeout-minutes: 40
+    outputs:
+      lock-manifest-sha256: ${{ steps.ready.outputs.lock_manifest_sha256 }}
+      candidate-tree: ${{ steps.ready.outputs.candidate_tree }}
+    steps:
+      - name: Preserve canonical Git bytes on this disposable runner before checkout
+        id: eol
+        run: git config --global core.autocrlf false
+      - name: Check out exact diagnostic input, without stored credentials
+        id: checkout
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ env.SOURCE_SHA }}
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Select exact evidence interpreter
+        id: python
+        uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405
+        with:
+          python-version: "3.12.10"
+      - name: Freeze exact a32 source delta and original locks
+        id: source
+        run: python .github/scripts/a32_sshsig_qualification.py init "$RUNNER_TEMP/a32-sshsig-resolver-linux"
+      - name: Configure isolated build directories only, without sysctl or security changes
+        id: build
+        run: python .github/scripts/a32_sshsig_qualification.py paths "$RUNNER_TEMP/a32-sshsig-resolver-linux"
+      - name: Install checksum-pinned owner DotSlash release
+        id: dotslash
+        run: python .github/scripts/a32_sshsig_qualification.py dotslash "$RUNNER_TEMP/a32-sshsig-resolver-linux"
+      - name: Install SHA256-bound official Bazel 9.3.0, preserving home rc configuration
+        id: bazel
+        run: python .github/scripts/a32_sshsig_qualification.py bazel "$RUNNER_TEMP/a32-sshsig-resolver-linux"
+      - name: Require existing rustup so the install-script fallback is unreachable
+        id: rustup-prerequisite
+        shell: bash
+        run: command -v rustup >/dev/null || { echo 'HOLD - existing rustup required' >&2; exit 1; }
+      - name: Select repository Rust toolchain
+        id: rust
+        uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582
+        with:
+          toolchain: "1.95.0"
+          components: clippy,rustfmt,rust-src
+      - name: Require archive/checksum tools in the action's Bash environment; never install missing packages
+        id: archive-prerequisites
+        shell: bash
+        run: |
+          for tool in bash jq curl tar gzip; do
+            command -v "$tool" >/dev/null || { echo "HOLD - missing existing $tool" >&2; exit 1; }
+          done
+          command -v sha256sum >/dev/null || command -v shasum >/dev/null || { echo 'HOLD - checksum tool missing' >&2; exit 1; }
+          if [[ "$RUNNER_OS" == Windows ]]; then
+            command -v unzip >/dev/null || { echo 'HOLD - existing unzip required for pinned just.zip' >&2; exit 1; }
+          fi
+      - name: Install version-pinned native tools
+        id: tools
+        uses: taiki-e/install-action@a4d3f3f761dcd95cce1b72cb61cb6d1963438177
+        with:
+          fallback: none
+          checksum: "true"
+          tool: just@1.51.0,nextest@0.9.103,cargo-deny@0.19.0
+      - name: Install exact uv used by the existing runner scripts
+        id: uv
+        uses: astral-sh/setup-uv@08807647e7069bb48b6ef5acd8ec9567f424441b
+        with:
+          version: "0.11.3"
+      - name: Resolve real two-edge Cargo graph and stable Bazel 9.3 locks; enforce full deny policy
+        id: resolve
+        run: python .github/scripts/a32_sshsig_qualification.py resolve "$RUNNER_TEMP/a32-sshsig-resolver-linux"
+      - name: Record final source invariants and all step outcomes
+        id: collect
+        if: always() && steps.checkout.outcome == 'success' && steps.python.outcome == 'success'
+        env:
+          STEP_RESULTS: ${{ toJSON(steps) }}
+        run: python .github/scripts/a32_sshsig_qualification.py collect "$RUNNER_TEMP/a32-sshsig-resolver-linux"
+      - name: Require successful resolver-only gates and a clean settled seal before releasing locks
+        id: ready
+        run: python .github/scripts/a32_sshsig_parallel.py release-locks "$RUNNER_TEMP/a32-sshsig-resolver-linux-sealed"
+      - name: Retain same-run genuine locks (no repository writes)
+        if: success()
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f
+        with:
+          name: a32-sshsig-locks-${{ github.sha }}-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/a32-sshsig-resolver-linux-sealed/locks/
+          include-hidden-files: true
+          if-no-files-found: error
+          retention-days: 7
+      - name: Preserve resolver-only evidence even on failed resolution or policy
+        if: always()
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f
+        with:
+          name: a32-sshsig-resolver-linux-${{ github.sha }}-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/a32-sshsig-resolver-linux-sealed/
+          include-hidden-files: true
+          if-no-files-found: error
+          retention-days: 7
+
+  native-linux:
+    needs: resolver-linux
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
+    env:
+      QUALIFICATION_LANE: linux
+    steps:
+      - name: Preserve canonical Git bytes on this disposable runner before checkout
+        id: eol
+        run: git config --global core.autocrlf false
+      - name: Check out exact diagnostic input, without stored credentials
+        id: checkout
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ env.SOURCE_SHA }}
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Select exact evidence interpreter
+        id: python
+        uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405
+        with:
+          python-version: "3.12.10"
+      - name: Freeze exact a32 source delta and original locks
+        id: source
+        run: python .github/scripts/a32_sshsig_qualification.py init "$RUNNER_TEMP/a32-sshsig-linux"
+      - name: Retrieve the resolver locks from this exact run and attempt
+        id: download
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c
+        with:
+          name: a32-sshsig-locks-${{ github.sha }}-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/a32-sshsig-incoming/
+      - name: Consume the identical output-bound locks and candidate without regenerating
+        id: consume
+        env:
+          EXPECTED_LOCK_MANIFEST_SHA256: ${{ needs.resolver-linux.outputs.lock-manifest-sha256 }}
+          EXPECTED_CANDIDATE_TREE: ${{ needs.resolver-linux.outputs.candidate-tree }}
+        run: python .github/scripts/a32_sshsig_qualification.py consume "$RUNNER_TEMP/a32-sshsig-linux" --incoming "$RUNNER_TEMP/a32-sshsig-incoming"
+      - name: Configure isolated build directories only, without sysctl or security changes
+        id: build
+        run: python .github/scripts/a32_sshsig_qualification.py paths "$RUNNER_TEMP/a32-sshsig-linux"
+      - name: Install checksum-pinned owner DotSlash release
+        id: dotslash
+        run: python .github/scripts/a32_sshsig_qualification.py dotslash "$RUNNER_TEMP/a32-sshsig-linux"
+      - name: Install SHA256-bound official Bazel 9.3.0, preserving home rc configuration
+        id: bazel
+        run: python .github/scripts/a32_sshsig_qualification.py bazel "$RUNNER_TEMP/a32-sshsig-linux"
+      - name: Require existing rustup so the install-script fallback is unreachable
+        id: rustup-prerequisite
+        shell: bash
+        run: command -v rustup >/dev/null || { echo 'HOLD - existing rustup required' >&2; exit 1; }
+      - name: Select repository Rust toolchain
+        id: rust
+        uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582
+        with:
+          toolchain: "1.95.0"
+          components: clippy,rustfmt,rust-src
+      - name: Require archive/checksum tools in the action's Bash environment; never install missing packages
+        id: archive-prerequisites
+        shell: bash
+        run: |
+          for tool in bash jq curl tar gzip; do
+            command -v "$tool" >/dev/null || { echo "HOLD - missing existing $tool" >&2; exit 1; }
+          done
+          command -v sha256sum >/dev/null || command -v shasum >/dev/null || { echo 'HOLD - checksum tool missing' >&2; exit 1; }
+          if [[ "$RUNNER_OS" == Windows ]]; then
+            command -v unzip >/dev/null || { echo 'HOLD - existing unzip required for pinned just.zip' >&2; exit 1; }
+          fi
+      - name: Install version-pinned native tools
+        id: tools
+        uses: taiki-e/install-action@a4d3f3f761dcd95cce1b72cb61cb6d1963438177
+        with:
+          fallback: none
+          checksum: "true"
+          tool: just@1.51.0,nextest@0.9.103
+      - name: Install exact uv used by the existing runner scripts
+        id: uv
+        uses: astral-sh/setup-uv@08807647e7069bb48b6ef5acd8ec9567f424441b
+        with:
+          version: "0.11.3"
+      - name: Query existing Linux prerequisites; missing means HOLD, never install or change policy
+        id: prerequisites
+        run: python .github/scripts/a32_sshsig_qualification.py prerequisites "$RUNNER_TEMP/a32-sshsig-linux"
+      - name: Qualify full Linux path-utils, State, Memory and operator owners on the identical candidate
+        id: native
+        run: python .github/scripts/a32_sshsig_qualification.py native "$RUNNER_TEMP/a32-sshsig-linux"
+      - name: Record settled source invariants and native outcomes
+        id: collect
+        if: always() && steps.checkout.outcome == 'success' && steps.python.outcome == 'success'
+        env:
+          STEP_RESULTS: ${{ toJSON(steps) }}
+        run: python .github/scripts/a32_sshsig_qualification.py collect "$RUNNER_TEMP/a32-sshsig-linux"
+      - name: Preserve native Linux evidence on success or failure
+        if: always()
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f
+        with:
+          name: a32-sshsig-linux-${{ github.sha }}-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/a32-sshsig-linux-sealed/
+          include-hidden-files: true
+          if-no-files-found: error
+          retention-days: 7
+
+  native-windows:
+    needs: resolver-linux
+    runs-on: windows-latest
+    timeout-minutes: ${{ matrix.job_minutes }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - lane: windows
+            job_minutes: 90
+          - lane: windows-owner
+            job_minutes: 45
+    env:
+      QUALIFICATION_LANE: ${{ matrix.lane }}
+    defaults:
+      run:
+        shell: bash
+    steps:
+      - name: Preserve canonical Git bytes on this disposable runner before checkout
+        id: eol
+        run: |
+          git config --global core.autocrlf false
+          git config --global core.longpaths true
+      - name: Check out the identical diagnostic input without stored credentials
+        id: checkout
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ env.SOURCE_SHA }}
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Select exact evidence interpreter
+        id: python
+        uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405
+        with:
+          python-version: "3.12.10"
+      - name: Independent exact-hash query-only token preflight before strict source admission
+        id: preflight
+        run: python .github/scripts/a32_sshsig_preflight.py "$RUNNER_TEMP/a32-sshsig-${{ matrix.lane }}-preflight"
+      - name: Freeze same source and original locks (real tracked symlink required)
+        id: source
+        run: python .github/scripts/a32_sshsig_qualification.py init "$RUNNER_TEMP/a32-sshsig-${{ matrix.lane }}"
+      - name: Consume immutable same-attempt token observation without re-running or overwriting it
+        id: probe
+        run: python .github/scripts/a32_sshsig_qualification.py probe "$RUNNER_TEMP/a32-sshsig-${{ matrix.lane }}" --incoming "$RUNNER_TEMP/a32-sshsig-${{ matrix.lane }}-preflight"
+      - name: Retrieve locks from this run and attempt only
+        id: download
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c
+        with:
+          name: a32-sshsig-locks-${{ github.sha }}-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/a32-sshsig-incoming/
+      - name: Verify provenance and create identical clean local-only candidate
+        id: consume
+        env:
+          EXPECTED_LOCK_MANIFEST_SHA256: ${{ needs.resolver-linux.outputs.lock-manifest-sha256 }}
+          EXPECTED_CANDIDATE_TREE: ${{ needs.resolver-linux.outputs.candidate-tree }}
+        run: python .github/scripts/a32_sshsig_qualification.py consume "$RUNNER_TEMP/a32-sshsig-${{ matrix.lane }}" --incoming "$RUNNER_TEMP/a32-sshsig-incoming"
+      - name: Configure isolated build directories only, without Dev Drive provisioning or security changes
+        id: build
+        run: python .github/scripts/a32_sshsig_qualification.py paths "$RUNNER_TEMP/a32-sshsig-${{ matrix.lane }}"
+      - name: Install checksum-pinned owner DotSlash release
+        id: dotslash
+        run: python .github/scripts/a32_sshsig_qualification.py dotslash "$RUNNER_TEMP/a32-sshsig-${{ matrix.lane }}"
+      - name: Install SHA256-bound official Bazel 9.3.0, preserving home rc configuration
+        id: bazel
+        run: python .github/scripts/a32_sshsig_qualification.py bazel '${{ runner.temp }}/a32-sshsig-${{ matrix.lane }}'
+      - name: Require existing rustup so the install-script fallback is unreachable
+        id: rustup-prerequisite
+        shell: bash
+        run: command -v rustup >/dev/null || { echo 'HOLD - existing rustup required' >&2; exit 1; }
+      - name: Select repository Rust toolchain
+        id: rust
+        uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582
+        with:
+          toolchain: "1.95.0"
+          components: clippy,rustfmt,rust-src
+      - name: Reuse existing MSVC environment
+        id: msvc
+        uses: ./.github/actions/setup-msvc-env
+        with:
+          target: x86_64-pc-windows-msvc
+      - name: Require archive/checksum tools in the action's Bash environment; never install missing packages
+        id: archive-prerequisites
+        shell: bash
+        run: |
+          for tool in bash jq curl tar gzip; do
+            command -v "$tool" >/dev/null || { echo "HOLD - missing existing $tool" >&2; exit 1; }
+          done
+          command -v sha256sum >/dev/null || command -v shasum >/dev/null || { echo 'HOLD - checksum tool missing' >&2; exit 1; }
+          if [[ "$RUNNER_OS" == Windows ]]; then
+            command -v unzip >/dev/null || { echo 'HOLD - existing unzip required for pinned just.zip' >&2; exit 1; }
+          fi
+      - name: Install version-pinned native tools
+        id: tools
+        uses: taiki-e/install-action@a4d3f3f761dcd95cce1b72cb61cb6d1963438177
+        with:
+          fallback: none
+          checksum: "true"
+          tool: just@1.51.0,nextest@0.9.103
+      - name: Install exact uv
+        id: uv
+        uses: astral-sh/setup-uv@08807647e7069bb48b6ef5acd8ec9567f424441b
+        with:
+          version: "0.11.3"
+      - name: Full locked suites, exact counts and source-frozen acquisition/recovery controls via reviewed no-kill adapter
+        id: native
+        run: python .github/scripts/a32_sshsig_qualification.py native "$RUNNER_TEMP/a32-sshsig-${{ matrix.lane }}"
+      - name: Record final source invariants and step outcomes
+        id: collect
+        if: always() && steps.checkout.outcome == 'success' && steps.python.outcome == 'success'
+        env:
+          STEP_RESULTS: ${{ toJSON(steps) }}
+        run: python .github/scripts/a32_sshsig_qualification.py collect "$RUNNER_TEMP/a32-sshsig-${{ matrix.lane }}"
+      - name: Preserve native evidence on success or failure
+        if: always()
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f
+        with:
+          name: a32-sshsig-${{ matrix.lane }}-${{ github.sha }}-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/a32-sshsig-${{ matrix.lane }}-sealed/
+          include-hidden-files: true
+          if-no-files-found: error
+          retention-days: 7
+      - name: Preserve independent query observations even when strict checkout admission holds
+        if: always()
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f
+        with:
+          name: a32-sshsig-${{ matrix.lane }}-preflight-${{ github.sha }}-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/a32-sshsig-${{ matrix.lane }}-preflight/
+          if-no-files-found: error
+          retention-days: 7
+
+  aggregate:
+    if: always()
+    needs: [resolver-linux, native-linux, native-windows]
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - name: Preserve canonical checkout bytes
+        run: git config --global core.autocrlf false
+      - name: Check out exact reviewed aggregation code
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ env.SOURCE_SHA }}
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Select exact evidence interpreter
+        uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405
+        with:
+          python-version: "3.12.10"
+      - name: Retrieve exact resolver-linux evidence, never merge lane directories
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c
+        with:
+          name: a32-sshsig-resolver-linux-${{ github.sha }}-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/a32-aggregate-incoming/resolver-linux/
+      - name: Retrieve exact linux evidence, never merge lane directories
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c
+        with:
+          name: a32-sshsig-linux-${{ github.sha }}-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/a32-aggregate-incoming/linux/
+      - name: Retrieve exact windows evidence, never merge lane directories
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c
+        with:
+          name: a32-sshsig-windows-${{ github.sha }}-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/a32-aggregate-incoming/windows/
+      - name: Retrieve exact windows-owner evidence, never merge lane directories
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c
+        with:
+          name: a32-sshsig-windows-owner-${{ github.sha }}-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/a32-aggregate-incoming/windows-owner/
+      - name: Require resolver and every native lane with exact identities, counts and settled evidence
+        if: always()
+        env:
+          NEEDS_RESULTS: ${{ toJSON(needs) }}
+        run: python .github/scripts/a32_sshsig_parallel.py aggregate "$RUNNER_TEMP/a32-aggregate-incoming" --output "$RUNNER_TEMP/a32-aggregate/aggregate.json"
+      - name: Preserve immutable aggregate result or failure; independent review still required
+        if: always()
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f
+        with:
+          name: a32-sshsig-aggregate-${{ github.sha }}-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/a32-aggregate/
+          if-no-files-found: error
+          retention-days: 7

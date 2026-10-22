@@ -3,11 +3,11 @@ use std::io::Write;
 use std::path::Path;
 
 use pretty_assertions::assert_eq;
-use tempfile::TempDir;
 
 use super::VerifiedManifest;
 use super::parse_manifest;
 use crate::durable::sha256;
+use crate::test_support::PrivateTempDir;
 use crate::test_support::private_tempdir;
 
 #[test]
@@ -59,7 +59,7 @@ fn verified_manifest_rejects_symlinks() {
 }
 
 struct Fixture {
-    _temporary: TempDir,
+    _temporary: PrivateTempDir,
     root: std::path::PathBuf,
 }
 

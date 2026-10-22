@@ -3,6 +3,16 @@ use std::fs::OpenOptions;
 use std::os::windows::fs::OpenOptionsExt;
 use std::path::Path;
 
+use codex_utils_path::PrivateStateSnapshot;
+use codex_utils_path::private_state_snapshot;
+pub(super) use codex_utils_path::require_non_impersonating_thread;
+
+#[path = "durable_windows_output.rs"]
+mod output;
+pub(super) use output::OutputParent;
+pub(super) use output::verify_directory;
+pub(super) use output::write_private_new;
+
 use super::invalid;
 use crate::AcceptanceError;
 
@@ -16,8 +26,14 @@ pub(super) fn configure_open(options: &mut OpenOptions) {
     options.custom_flags(FILE_FLAG_OPEN_REPARSE_POINT);
 }
 
+#[cfg(test)]
+pub(super) fn sync_directory(path: &Path) -> Result<(), AcceptanceError> {
+    OutputParent::open(path)?.sync(path)
+}
+
 #[derive(Debug, Eq, PartialEq)]
 pub(super) struct FileSnapshot {
+    custody: PrivateStateSnapshot,
     attributes: u64,
     creation_time: Option<u64>,
     file_index: u64,
@@ -29,6 +45,8 @@ pub(super) struct FileSnapshot {
 
 impl FileSnapshot {
     pub(super) fn capture(file: &File, label: &str) -> Result<Self, AcceptanceError> {
+        require_non_impersonating_thread()?;
+        let custody = private_state_snapshot(file)?;
         // The safe wrapper queries GetFileInformationByHandle on this exact
         // borrowed handle; a separate pathname lookup cannot validate its links.
         let information = winapi_util::file::information(file)?;
@@ -42,6 +60,7 @@ impl FileSnapshot {
             return Err(invalid(format!("{label} must have exactly one hard link")));
         }
         Ok(Self {
+            custody,
             attributes,
             creation_time: information.creation_time(),
             file_index: information.file_index(),
@@ -67,6 +86,7 @@ pub(super) fn verify_unchanged(
             "{label} handle or path changed during verification"
         )));
     }
+    require_non_impersonating_thread()?;
     Ok(())
 }
 
@@ -77,6 +97,7 @@ pub(super) fn verify_path(path: &Path, label: &str) -> Result<(), AcceptanceErro
 }
 
 fn open_without_following(path: &Path) -> Result<File, AcceptanceError> {
+    require_non_impersonating_thread()?;
     let mut options = OpenOptions::new();
     options.read(true);
     configure_open(&mut options);
@@ -86,3 +107,7 @@ fn open_without_following(path: &Path) -> Result<File, AcceptanceError> {
 #[cfg(test)]
 #[path = "durable_windows_tests.rs"]
 mod tests;
+
+#[cfg(test)]
+#[path = "durable_windows_custody_tests.rs"]
+pub(super) mod custody_tests;

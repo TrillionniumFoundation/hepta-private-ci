@@ -14,9 +14,11 @@ use app_test_support::TestAppServer;
 use app_test_support::create_command_execution_sse_response;
 use app_test_support::create_final_assistant_message_sse_response;
 use app_test_support::create_mock_responses_server_sequence_unchecked;
+use codex_app_server_protocol::ActivePermissionProfile;
 use codex_app_server_protocol::ClientRequest;
 use codex_app_server_protocol::JSONRPCError;
 use codex_app_server_protocol::RequestId;
+use codex_app_server_protocol::SandboxPolicy as AppSandboxPolicy;
 use codex_app_server_protocol::ServerRequest;
 use codex_app_server_protocol::ThreadHistoryMode;
 use codex_app_server_protocol::ThreadItem;
@@ -43,6 +45,8 @@ use codex_app_server_protocol::TurnStartResponse;
 use codex_app_server_protocol::TurnStatus;
 use codex_app_server_protocol::UserInput;
 use codex_features::Feature;
+use codex_protocol::models::BUILT_IN_PERMISSION_PROFILE_READ_ONLY;
+use codex_protocol::models::BUILT_IN_PERMISSION_PROFILE_WORKSPACE;
 use codex_utils_absolute_path::AbsolutePathBuf;
 use core_test_support::responses as test_responses;
 use core_test_support::skip_if_remote;
@@ -734,6 +738,248 @@ async fn same_process_ephemeral_interrupted_turn_recovers_from_listener_state() 
         "ephemeral recovery must not inject new user input"
     );
     Ok(())
+}
+
+#[derive(Clone, Copy)]
+enum RecoveryPermissionChange {
+    Unchanged,
+    ReadOnly,
+    Removed,
+}
+
+#[tokio::test]
+async fn cold_resume_unchanged_custom_permission_profile_recovers_interrupted_turn() -> Result<()> {
+    skip_if_remote!(
+        Ok(()),
+        "kills a host-local app-server child before testing compatible recovery"
+    );
+    assert_cold_recovery_obeys_current_profile(RecoveryPermissionChange::Unchanged).await
+}
+
+#[tokio::test]
+async fn cold_resume_changed_permission_profile_revokes_interrupted_recovery() -> Result<()> {
+    skip_if_remote!(
+        Ok(()),
+        "kills a host-local app-server child before testing recovery permission drift"
+    );
+    assert_cold_recovery_obeys_current_profile(RecoveryPermissionChange::ReadOnly).await
+}
+
+#[tokio::test]
+async fn cold_resume_removed_permission_profile_revokes_interrupted_recovery() -> Result<()> {
+    skip_if_remote!(
+        Ok(()),
+        "kills a host-local app-server child before testing recovery permission revocation"
+    );
+    assert_cold_recovery_obeys_current_profile(RecoveryPermissionChange::Removed).await
+}
+
+async fn assert_cold_recovery_obeys_current_profile(
+    profile_change: RecoveryPermissionChange,
+) -> Result<()> {
+    for history_mode in [ThreadHistoryMode::Legacy, ThreadHistoryMode::Paginated] {
+        let mut responses = vec![create_final_assistant_message_sse_response(
+            "first response must never arrive",
+        )?];
+        if matches!(profile_change, RecoveryPermissionChange::Unchanged) {
+            responses.push(create_final_assistant_message_sse_response(
+                "recovered under the unchanged custom permission profile",
+            )?);
+        }
+        let server = create_delayed_first_responses_server(responses).await;
+        let codex_home = TempDir::new()?;
+        write_recovery_permission_config(
+            &server,
+            codex_home.path(),
+            Some(BUILT_IN_PERMISSION_PROFILE_WORKSPACE),
+        )?;
+        let mut first = TestAppServer::builder()
+            .with_codex_home(codex_home.path())
+            .without_managed_config()
+            .build_initialized_with_timeout(STARTUP_TIMEOUT)
+            .await?;
+        let persistent_workspace = recovery_workspace(&codex_home, "permission-drift")?;
+        let started = start_thread_with_persistent_environment(
+            &mut first,
+            persistent_workspace.clone(),
+            Some(history_mode),
+        )
+        .await?;
+        assert!(matches!(
+            started.sandbox,
+            AppSandboxPolicy::WorkspaceWrite { .. }
+        ));
+        assert_eq!(
+            started.active_permission_profile,
+            Some(ActivePermissionProfile {
+                id: "dev".to_string(),
+                extends: Some(BUILT_IN_PERMISSION_PROFILE_WORKSPACE.to_string()),
+            })
+        );
+        let original_roots = started.runtime_workspace_roots;
+        assert!(!original_roots.is_empty());
+        let thread_id = started.thread.id;
+        let turn_id = start_turn(
+            &mut first,
+            &thread_id,
+            ORIGINAL_USER_TEXT,
+            Some("permission-drift-client-id"),
+        )
+        .await?;
+        wait_for_model_request_count(&server, 1).await?;
+        first.kill_ungracefully().await?;
+        drop(first);
+
+        let dev_extends = match profile_change {
+            RecoveryPermissionChange::Unchanged => Some(BUILT_IN_PERMISSION_PROFILE_WORKSPACE),
+            RecoveryPermissionChange::ReadOnly => Some(BUILT_IN_PERMISSION_PROFILE_READ_ONLY),
+            RecoveryPermissionChange::Removed => None,
+        };
+        write_recovery_permission_config(&server, codex_home.path(), dev_extends)?;
+        let mut restarted = TestAppServer::builder()
+            .with_codex_home(codex_home.path())
+            .without_managed_config()
+            .build_initialized_with_timeout(STARTUP_TIMEOUT)
+            .await?;
+        let resume_id = restarted
+            .send_thread_resume_request(ThreadResumeParams {
+                thread_id: thread_id.clone(),
+                ..Default::default()
+            })
+            .await?;
+        let resumed: ThreadResumeResponse =
+            timeout(READ_TIMEOUT, restarted.read_response(resume_id)).await??;
+        // Frozen environment selections are not filesystem write authority.
+        // Current config must win even for a genuine durable recovery tail.
+        assert_eq!(resumed.cwd, persistent_workspace);
+        assert_eq!(resumed.runtime_workspace_roots, original_roots);
+        if matches!(profile_change, RecoveryPermissionChange::Unchanged) {
+            assert!(matches!(
+                resumed.sandbox,
+                AppSandboxPolicy::WorkspaceWrite { .. }
+            ));
+            assert_eq!(
+                resumed.active_permission_profile,
+                Some(ActivePermissionProfile {
+                    id: "dev".to_string(),
+                    extends: Some(BUILT_IN_PERMISSION_PROFILE_WORKSPACE.to_string()),
+                })
+            );
+            let recovered: TurnRecoverResponse = restarted
+                .request(|request_id| ClientRequest::TurnRecover {
+                    request_id,
+                    params: TurnRecoverParams {
+                        thread_id: thread_id.clone(),
+                        turn_id: turn_id.clone(),
+                    },
+                })
+                .await?;
+            assert_eq!(recovered.turn.id, turn_id);
+            assert_eq!(recovered.turn.status, TurnStatus::InProgress);
+            let completed: TurnCompletedNotification =
+                timeout(READ_TIMEOUT, restarted.read_notification("turn/completed")).await??;
+            assert_eq!(completed.thread_id, thread_id);
+            assert_eq!(completed.turn.id, turn_id);
+            assert_eq!(completed.turn.status, TurnStatus::Completed);
+            let requests = model_requests(&server).await?;
+            assert_eq!(requests.len(), 2);
+            let recovered_body = requests[1].body_json::<serde_json::Value>()?;
+            assert_eq!(count_exact_strings(&recovered_body, ORIGINAL_USER_TEXT), 1);
+            continue;
+        }
+        assert!(matches!(resumed.sandbox, AppSandboxPolicy::ReadOnly { .. }));
+        let expected_profile = if matches!(profile_change, RecoveryPermissionChange::Removed) {
+            ActivePermissionProfile::new(BUILT_IN_PERMISSION_PROFILE_READ_ONLY)
+        } else {
+            ActivePermissionProfile {
+                id: "dev".to_string(),
+                extends: Some(BUILT_IN_PERMISSION_PROFILE_READ_ONLY.to_string()),
+            }
+        };
+        assert_eq!(resumed.active_permission_profile, Some(expected_profile));
+        let error = recover_error(&mut restarted, &thread_id, &turn_id).await?;
+        assert_eq!(error.error.code, INVALID_REQUEST_ERROR_CODE);
+        assert!(
+            error.error.message.contains("no longer valid"),
+            "permission drift must reach Core's exact-context rejection: {}",
+            error.error.message
+        );
+        assert_eq!(
+            model_requests(&server).await?.len(),
+            1,
+            "revoked permissions must reject replay before another provider send"
+        );
+
+        // Reopening after another crash must retain the durable revocation,
+        // even if the operator restores the original profile and environment.
+        restarted.kill_ungracefully().await?;
+        drop(restarted);
+        write_recovery_permission_config(
+            &server,
+            codex_home.path(),
+            Some(BUILT_IN_PERMISSION_PROFILE_WORKSPACE),
+        )?;
+        let mut reopened = TestAppServer::builder()
+            .with_codex_home(codex_home.path())
+            .without_managed_config()
+            .build_initialized_with_timeout(STARTUP_TIMEOUT)
+            .await?;
+        let resume_id = reopened
+            .send_thread_resume_request(ThreadResumeParams {
+                thread_id: thread_id.clone(),
+                permissions: Some("dev".to_string()),
+                cwd: Some(persistent_workspace.as_path().display().to_string()),
+                runtime_workspace_roots: Some(original_roots.clone()),
+                ..Default::default()
+            })
+            .await?;
+        let resumed: ThreadResumeResponse =
+            timeout(READ_TIMEOUT, reopened.read_response(resume_id)).await??;
+        assert!(matches!(
+            resumed.sandbox,
+            AppSandboxPolicy::WorkspaceWrite { .. }
+        ));
+        assert_eq!(
+            resumed.active_permission_profile,
+            Some(ActivePermissionProfile {
+                id: "dev".to_string(),
+                extends: Some(BUILT_IN_PERMISSION_PROFILE_WORKSPACE.to_string()),
+            })
+        );
+        assert_eq!(resumed.cwd, persistent_workspace);
+        assert_eq!(resumed.runtime_workspace_roots, original_roots);
+        let error = recover_error(&mut reopened, &thread_id, &turn_id).await?;
+        assert_eq!(error.error.code, INVALID_REQUEST_ERROR_CODE);
+        assert!(
+            error.error.message.contains("not interrupted"),
+            "consumed recovery authority must not revive after restart: {}",
+            error.error.message
+        );
+        assert_eq!(model_requests(&server).await?.len(), 1);
+    }
+    Ok(())
+}
+
+fn write_recovery_permission_config(
+    server: &MockServer,
+    codex_home: &Path,
+    dev_extends: Option<&str>,
+) -> std::io::Result<()> {
+    let default_profile = if dev_extends.is_some() {
+        "dev"
+    } else {
+        BUILT_IN_PERMISSION_PROFILE_READ_ONLY
+    };
+    let mut config = MockResponsesConfig::new(&server.uri())
+        .with_approval_policy("untrusted")
+        .enable_feature(Feature::HeptaTurnRecovery)
+        .with_root_config(&format!(
+            "approvals_reviewer = \"user\"\ndefault_permissions = \"{default_profile}\""
+        ));
+    if let Some(extends) = dev_extends {
+        config = config.with_extra_config(&format!("[permissions.dev]\nextends = \"{extends}\""));
+    }
+    config.write(codex_home)
 }
 
 async fn configured_app(server: &MockServer) -> Result<(TestAppServer, TempDir)> {

@@ -20,6 +20,10 @@ name = "hepta-g5-trust-assessor"
 path = "src/g5_main.rs"
 test = false
 
+[features]
+# Explicit additional native matrix; setup denial must fail, never skip/pass.
+windows-custody-privileged-tests = []
+
 [lints]
 workspace = true
 
@@ -34,8 +38,19 @@ sha2 = { workspace = true }
 thiserror = { workspace = true }
 
 [target.'cfg(windows)'.dependencies]
+codex-utils-path = { workspace = true }
 winapi-util = { workspace = true }
 
 [dev-dependencies]
 pretty_assertions = { workspace = true }
 tempfile = { workspace = true }
+
+[target.'cfg(windows)'.dev-dependencies]
+windows-sys = { version = "0.52", features = [
+    "Win32_Foundation",
+    "Win32_Security",
+    "Win32_Security_Authorization",
+    "Win32_Storage_FileSystem",
+    "Win32_System_SystemServices",
+    "Win32_System_Threading",
+] }

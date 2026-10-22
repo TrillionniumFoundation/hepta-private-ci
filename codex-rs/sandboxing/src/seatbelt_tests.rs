@@ -1465,6 +1465,7 @@ fn create_seatbelt_args_with_read_only_git_and_codex_subpaths() {
     // Create a temporary workspace with two writable roots: one containing
     // top-level workspace metadata paths and one without them.
     let tmp = TempDir::new().expect("tempdir");
+    let physical_root = tmp.path().canonicalize().expect("canonical test root");
     let PopulatedTmp {
         vulnerable_root,
         vulnerable_root_canonical,
@@ -1473,8 +1474,8 @@ fn create_seatbelt_args_with_read_only_git_and_codex_subpaths() {
         dot_codex_canonical,
         empty_root,
         empty_root_canonical,
-    } = populate_tmpdir(tmp.path());
-    let cwd = tmp.path().join("cwd");
+    } = populate_tmpdir(&physical_root);
+    let cwd = physical_root.join("cwd");
     fs::create_dir_all(&cwd).expect("create cwd");
 
     // Build a policy that only includes the two test roots as writable and
@@ -2419,6 +2420,7 @@ fn create_seatbelt_args_for_cwd_as_git_repo() {
     // Create a temporary workspace with two writable roots: one containing
     // top-level workspace metadata paths and one without them.
     let tmp = TempDir::new().expect("tempdir");
+    let physical_root = tmp.path().canonicalize().expect("canonical test root");
     let PopulatedTmp {
         vulnerable_root,
         vulnerable_root_canonical,
@@ -2426,7 +2428,7 @@ fn create_seatbelt_args_for_cwd_as_git_repo() {
         dot_agents_canonical,
         dot_codex_canonical,
         ..
-    } = populate_tmpdir(tmp.path());
+    } = populate_tmpdir(&physical_root);
 
     // Build a policy that does not specify any writable_roots, but does
     // use the default ones (cwd and TMPDIR) and verifies the protected
