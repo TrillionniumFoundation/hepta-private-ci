@@ -94,6 +94,7 @@ UNREVIEWED_ENVIRONMENT_KEYS = frozenset({
     "GIT_DIR", "GIT_WORK_TREE", "GIT_COMMON_DIR", "GIT_INDEX_FILE",
     "GIT_OBJECT_DIRECTORY", "GIT_ALTERNATE_OBJECT_DIRECTORIES", "GIT_EXEC_PATH",
     "GIT_CONFIG", "GIT_CONFIG_GLOBAL", "GIT_CONFIG_SYSTEM", "GIT_CONFIG_NOSYSTEM",
+    "GIT_NAMESPACE", "GIT_REPLACE_REF_BASE", "GIT_GRAFT_FILE",
     "PYTHONPATH", "PYTHONHOME", "PYTHONSTARTUP", "PYTHONINSPECT",
     "BASH_ENV", "ENV", "CC", "CXX", "AR", "CFLAGS", "CXXFLAGS", "LDFLAGS",
     "MAKEFLAGS", "PKG_CONFIG_PATH", "PKG_CONFIG_LIBDIR", "CMAKE_TOOLCHAIN_FILE",
@@ -135,7 +136,7 @@ def committed_regular_file(repo_root: Path, relative: str) -> bool:
         if path.stat().st_size > MAX_PROOF_SOURCE_BYTES:
             return False
         row = subprocess.run(
-            ["git", "-C", str(repo_root), "ls-tree", "HEAD", "--", relative],
+            ["git", "--no-replace-objects", "-C", str(repo_root), "ls-tree", "HEAD", "--", relative],
             capture_output=True, text=True, check=True, timeout=10,
         ).stdout.strip()
         metadata, separator, found = row.partition("\t")
@@ -146,13 +147,13 @@ def committed_regular_file(repo_root: Path, relative: str) -> bool:
         ):
             return False
         length = subprocess.run(
-            ["git", "-C", str(repo_root), "cat-file", "-s", fields[2]],
+            ["git", "--no-replace-objects", "-C", str(repo_root), "cat-file", "-s", fields[2]],
             capture_output=True, text=True, check=True, timeout=10,
         ).stdout.strip()
         if int(length) > MAX_PROOF_SOURCE_BYTES:
             return False
         committed = subprocess.run(
-            ["git", "-C", str(repo_root), "cat-file", "blob", fields[2]],
+            ["git", "--no-replace-objects", "-C", str(repo_root), "cat-file", "blob", fields[2]],
             capture_output=True, check=True, timeout=10,
         ).stdout
         return path.read_bytes() == committed
@@ -174,11 +175,17 @@ def git_snapshot(path: Path) -> dict[str, Any]:
 
     def cmd(*args: str) -> str:
         return subprocess.run(
-            ["git", "-C", str(path), *args], capture_output=True, text=True,
+            ["git", "--no-replace-objects", "-C", str(path), *args], capture_output=True, text=True,
             check=True, timeout=10,
         ).stdout.strip()
 
     try:
+        # Replacement refs can alter object reads without appearing in Git status.
+        if cmd("for-each-ref", "--format=%(refname)", "refs/replace"):
+            return {
+                "usable": False, "path": str(path),
+                "reason": "unreviewed Git object replacement refs",
+            }
         # Git status may run an fsmonitor hook or a configured clean/process
         # filter on a tracked path. Inspect only Git config key NAMES before
         # status, never leaking command paths or tokens in the audit report.
@@ -206,11 +213,11 @@ def git_snapshot(path: Path) -> dict[str, Any]:
             # status; refusing it would make ordinary source CI inoperable.
             # check-attr evaluates tracked paths without running filter code.
             tracked = subprocess.run(
-                ["git", "-C", str(path), "ls-files", "--cached", "-z"],
+                ["git", "--no-replace-objects", "-C", str(path), "ls-files", "--cached", "-z"],
                 capture_output=True, check=True, timeout=20,
             ).stdout
             attributes = subprocess.run(
-                ["git", "-C", str(path), "check-attr", "-z", "--stdin", "filter"],
+                ["git", "--no-replace-objects", "-C", str(path), "check-attr", "-z", "--stdin", "filter"],
                 input=tracked, capture_output=True, check=True, timeout=20,
             ).stdout.split(b"\0")
             active_drivers = {
@@ -237,7 +244,7 @@ def git_snapshot(path: Path) -> dict[str, Any]:
         # Reject these flags for the ENTIRE tracked index, not only the
         # smaller declared required-file subset tested elsewhere.
         index_rows = subprocess.run(
-            ["git", "-C", str(path), "ls-files", "--cached", "-v", "-z"],
+            ["git", "--no-replace-objects", "-C", str(path), "ls-files", "--cached", "-v", "-z"],
             capture_output=True, check=True, timeout=20,
         ).stdout.split(b"\0")
         hidden_index_entries = sum(
@@ -294,6 +301,16 @@ def _stop_check_process_group(child: subprocess.Popen[bytes]) -> None:
         raise RuntimeError("local check descendants escaped cleanup") from exc
 
 
+def _has_isolated_process_groups() -> bool:
+    """Only POSIX start_new_session + killpg is currently implemented.
+
+    On Windows, killing the launcher alone does not fence orphan descendants.
+    Until a real Job Object owner is implemented, refuse execution instead of
+    emitting a misleading PASS_LOCAL for an unfenced process tree.
+    """
+    return os.name == "posix"
+
+
 def run_check(argv: list[str], cwd: Path, timeout: int, log_path: Path) -> dict[str, Any]:
     overrides = unreviewed_environment_keys()
     if overrides:
@@ -302,6 +319,8 @@ def run_check(argv: list[str], cwd: Path, timeout: int, log_path: Path) -> dict[
             "status": "BLOCKED_UNREVIEWED_ENVIRONMENT",
             "blocked_environment_keys": overrides,
         }
+    if not _has_isolated_process_groups():
+        return {"argv": argv, "status": "BLOCKED_PROCESS_ISOLATION_UNAVAILABLE"}
     if not shutil.which(argv[0]):
         return {"argv": argv, "status": "BLOCKED_TOOL_MISSING", "tool": argv[0]}
     if not cwd.is_dir():
@@ -351,11 +370,18 @@ def run_check(argv: list[str], cwd: Path, timeout: int, log_path: Path) -> dict[
                     blocked = "BLOCKED_OUTPUT_LIMIT"
                     _stop_check_process_group(child)
             if blocked is not None:
+                # The refusal marker is part of the file budget. Truncating
+                # to MAX_CHECK_LOG_BYTES *before* appending the marker breaks
+                # the strict bound for exactly the oversized-output case.
+                trailer = ("\nHEPTA_LOCAL_GATE: " + blocked + "\n").encode("utf-8")
                 out.flush()
-                if os.fstat(out.fileno()).st_size > MAX_CHECK_LOG_BYTES:
-                    os.ftruncate(out.fileno(), MAX_CHECK_LOG_BYTES)
+                body_budget = MAX_CHECK_LOG_BYTES - len(trailer)
+                if body_budget < 0:
+                    raise RuntimeError("local check output cap cannot hold denial trailer")
+                if os.fstat(out.fileno()).st_size > body_budget:
+                    os.ftruncate(out.fileno(), body_budget)
                 out.seek(0, os.SEEK_END)
-                out.write(("\nHEPTA_LOCAL_GATE: " + blocked + "\n").encode("utf-8"))
+                out.write(trailer)
             else:
                 out.write(exit_line)
             out.flush()
