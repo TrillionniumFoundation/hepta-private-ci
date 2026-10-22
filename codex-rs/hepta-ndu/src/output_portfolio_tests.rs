@@ -1039,3 +1039,81 @@ fn objective_bound_candidate_rejects_cross_objective_replay() {
         NduError::InvalidSolverReceipt("portfolio candidate objective")
     );
 }
+
+#[test]
+fn selection_digest_binds_all_published_receipt_fields_without_replay() {
+    let context = context(2);
+    let budget = budget(2);
+    let candidates = [
+        candidate("baseline", 0, 0, true),
+        candidate("private-head", 60, 10, false),
+    ];
+    let receipt =
+        select_output_portfolio_v1(&context, &budget, &candidates).expect("bounded receipt");
+    let canonical = canonical_candidates(&context, &candidates).expect("canonical candidates");
+    let covariance =
+        canonical_covariance(&context, &candidates, &canonical).expect("canonical covariance");
+    let digest_of = |value: &OutputPortfolioSelectionReceiptV1| {
+        digest_selection(&context, &budget, &canonical, &covariance, value)
+    };
+    assert_eq!(digest_of(&receipt), receipt.selection_digest);
+    assert_eq!(
+        verify_output_portfolio_receipt_v1(&context, &budget, &candidates, &receipt),
+        Ok(())
+    );
+    assert!(!receipt.frontier.is_empty());
+    assert!(!receipt.allocations.is_empty());
+
+    let one_ulp = FixedQ32::from_raw(1);
+    let mut changed = receipt.clone();
+    changed.total_resource = changed
+        .total_resource
+        .checked_add(one_ulp)
+        .expect("cost range");
+    assert_ne!(digest_of(&changed), receipt.selection_digest);
+
+    let mut changed = receipt.clone();
+    changed.total_latency = changed
+        .total_latency
+        .checked_add(one_ulp)
+        .expect("latency range");
+    assert_ne!(digest_of(&changed), receipt.selection_digest);
+
+    let mut changed = receipt.clone();
+    changed.total_risk = changed.total_risk.checked_add(one_ulp).expect("risk range");
+    assert_ne!(digest_of(&changed), receipt.selection_digest);
+
+    let mut changed = receipt.clone();
+    changed.total_utility = changed
+        .total_utility
+        .checked_add(one_ulp)
+        .expect("utility range");
+    assert_ne!(digest_of(&changed), receipt.selection_digest);
+
+    let mut changed = receipt.clone();
+    changed.disposition = OutputPortfolioDispositionV1::NoChange;
+    assert_ne!(digest_of(&changed), receipt.selection_digest);
+
+    let mut changed = receipt.clone();
+    changed.frontier[0].resource_cost = changed.frontier[0]
+        .resource_cost
+        .checked_add(one_ulp)
+        .expect("frontier resource range");
+    assert_ne!(digest_of(&changed), receipt.selection_digest);
+
+    let mut changed = receipt.clone();
+    changed.frontier.pop();
+    assert_ne!(digest_of(&changed), receipt.selection_digest);
+
+    let mut changed = receipt.clone();
+    changed.allocations[0].adjusted_score = changed.allocations[0]
+        .adjusted_score
+        .checked_add(one_ulp)
+        .expect("allocation score range");
+    assert_ne!(digest_of(&changed), receipt.selection_digest);
+
+    assert_eq!(
+        verify_output_portfolio_receipt_v1(&context, &budget, &candidates, &changed),
+        Err(NduError::InvalidSolverReceipt("portfolio receipt replay"))
+    );
+}
