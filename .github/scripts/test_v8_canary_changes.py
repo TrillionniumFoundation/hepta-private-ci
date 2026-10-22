@@ -15,7 +15,9 @@ class V8CanaryChangesTest(unittest.TestCase):
         workflow = (
             Path(__file__).resolve().parent.parent / "workflows" / "v8-canary.yml"
         ).read_text()
-        step = workflow.split("      - name: Smoke test staged artifact with Cargo", 1)[1]
+        step = workflow.split(
+            "      - name: Smoke test staged artifact with Cargo", 1
+        )[1]
         step = step.split("      - name: Upload staged artifacts", 1)[0]
         self.assertIn("RUSTUP_TOOLCHAIN=1.95.0", step)
         self.assertIn('RUSTC="$(dirname "${CARGO_1_95}")/rustc"', step)
