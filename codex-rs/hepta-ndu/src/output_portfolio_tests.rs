@@ -871,13 +871,14 @@ fn negative_standalone_score_can_hedge_positive_portfolio_exposure() {
     correlated.semantic_covariance[8] = q(50);
     let mut anchor = candidate("anchor", 100, 0, false);
     anchor.weight_cap = q(40);
-    let receipt = select_output_portfolio_v1(
-        &correlated,
-        &budget(3),
-        &[candidate("baseline", 0, 0, true), anchor, hedge],
-    )
-    .expect("a covariance-positive hedge may enter an advisory portfolio");
-    assert_eq!(receipt.disposition, OutputPortfolioDispositionV1::AdvisorySelection);
+    let candidates = [candidate("baseline", 0, 0, true), anchor, hedge];
+    let limits = budget(3);
+    let receipt = select_output_portfolio_v1(&correlated, &limits, &candidates)
+        .expect("a covariance-positive hedge may enter an advisory portfolio");
+    assert_eq!(
+        receipt.disposition,
+        OutputPortfolioDispositionV1::AdvisorySelection
+    );
     assert!(receipt.allocations.iter().any(|arm| {
         arm.candidate_id == id("anchor") && arm.weight == q(40)
     }));
@@ -889,15 +890,6 @@ fn negative_standalone_score_can_hedge_positive_portfolio_exposure() {
     }));
     assert!(receipt.total_risk < q(10));
     assert!(receipt.total_utility > receipt.total_risk);
-    verify_output_portfolio_receipt_v1(
-        &correlated,
-        &budget(3),
-        &[candidate("baseline", 0, 0, true), {
-            let mut anchor = candidate("anchor", 100, 0, false);
-            anchor.weight_cap = q(40);
-            anchor
-        }, candidate("hedge", 1, 3, false)],
-        &receipt,
-    )
-    .expect("hedged selection replays from immutable inputs");
+    verify_output_portfolio_receipt_v1(&correlated, &limits, &candidates, &receipt)
+        .expect("hedged selection replays from immutable inputs");
 }
