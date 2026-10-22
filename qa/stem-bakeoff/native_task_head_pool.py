@@ -132,8 +132,12 @@ def summarize(observed, cells, artifact, request_sha, reference):
             and observed["weights_sha256"] == artifact["weights_sha256"]
             and observed["request_stream_sha256"] == request_sha and observed["input_rows"] == 256,
             "native input/artifact identity differs")
+    dispatch_counts = observed["dispatch_calls_per_head"]
+    require(type(dispatch_counts) is list and len(dispatch_counts) == cells
+            and all(type(v) is int for v in dispatch_counts),
+            "per-Head dispatch counts must be exact integers")
     require(observed["warmup_calls"] == cells
-            and observed["dispatch_calls_per_head"] == [4096 // cells] * cells
+            and dispatch_counts == [4096 // cells] * cells
             and observed["fanout_predictions_per_sample"] == cells
             and observed["validation_extra_reference_calls"] == 272
             and observed["reference_validation_outside_measurement"] is True,
