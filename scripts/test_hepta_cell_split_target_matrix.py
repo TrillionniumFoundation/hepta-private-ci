@@ -197,6 +197,68 @@ def test_isolated_process_preserves_both_small_output_streams() -> None:
     assert output.stderr.strip() == "diagnostic"
 
 
+
+@pytest.mark.parametrize("alias", ("identical", "symlink", "hardlink"))
+def test_matrix_report_output_never_overwrites_frozen_workload(
+    tmp_path: Path, alias: str
+) -> None:
+    frozen = tmp_path / "frozen-tasks"
+    original = b"original frozen task corpus must remain unchanged"
+    frozen.write_bytes(original)
+    output = tmp_path / "matrix.json"
+    if alias == "identical":
+        output = frozen
+    elif alias == "symlink":
+        output.symlink_to(frozen)
+    else:
+        os.link(frozen, output)
+    with pytest.raises(ValueError, match="matrix report output"):
+        MODULE.run_matrix(
+            workload_command=None,
+            observer_command=None,
+            workload_digest=hashlib.sha256(original).hexdigest(),
+            source_commit="f" * 40,
+            workload_path=frozen,
+            output=output,
+        )
+    assert frozen.read_bytes() == original
+
+
+def test_matrix_report_symlink_cannot_overwrite_unrelated_artifact(
+    tmp_path: Path,
+) -> None:
+    protected = tmp_path / "protected-evidence"
+    protected.write_bytes(b"unrelated retained evidence")
+    output = tmp_path / "matrix.json"
+    output.symlink_to(protected)
+    with pytest.raises(ValueError, match="must not be a symlink"):
+        MODULE.run_matrix(
+            workload_command=None,
+            observer_command=None,
+            workload_digest="a" * 64,
+            source_commit="f" * 40,
+            output=output,
+        )
+    assert protected.read_bytes() == b"unrelated retained evidence"
+
+
+def test_matrix_report_atomic_replacement_leaves_no_staging_files(
+    tmp_path: Path,
+) -> None:
+    output = tmp_path / "matrix.json"
+    output.write_text("previous report", encoding="utf-8")
+    report = MODULE.run_matrix(
+        workload_command=None,
+        observer_command=None,
+        workload_digest="a" * 64,
+        source_commit="f" * 40,
+        output=output,
+    )
+    assert json.loads(output.read_text(encoding="utf-8")) == report
+    assert not list(tmp_path.glob(".matrix.json.*.tmp"))
+    MODULE.validate_report(report)
+
+
 def test_dry_run_is_blocked_until_workload_and_observer_exist(tmp_path: Path) -> None:
     output = tmp_path / "matrix.json"
     report = MODULE.run_matrix(
