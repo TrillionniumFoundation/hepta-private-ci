@@ -1,0 +1,28 @@
+{
+  "schema": "hepta.p40.native-workflow-context-fix.v1",
+  "at": "2026-10-22T13:43:23.301350+00:00",
+  "source_commit": "45cb5d09debe29024f55d6ed04bf6dce894ba08a",
+  "source_file": ".github/workflows/hepta-native-multimodal-head.yml",
+  "before_sha256": "c80f2ba788442a7acc5954f01a9810396a789b15f9de8307f9889e1f39b8b90e",
+  "after_sha256": "a6c9bffecfe0a246fac77c7f1520ddab05022cb9cf9ff11e61a670642b8a50bc",
+  "patch_sha256": "e2519a0a043a90f169f2cfca96f966b61d63cc4d9475defb777fdf9f86968734",
+  "original_cloud_runs": [
+    39747426958,
+    39736891647
+  ],
+  "cloud_jobs": 0,
+  "cloud_artifacts": 0,
+  "github_annotation_retrieval": "Unavailable: connector check-suites endpoint returned HTTP400 INVALID_ARGUMENT; no GitHub annotation text is fabricated.",
+  "official_context_reference": "https://docs.github.com/en/actions/reference/workflows-and-actions/contexts#context-availability",
+  "actionlint_version": "1.7.7",
+  "parser_red_exit": 1,
+  "parser_red_log_sha256": "229b23913b63b15354f27e50941fa92531b9bd2a9b1c597e35ceab53e15337cc",
+  "parser_red_error": "context \"runner\" is not allowed here at job.env CARGO_TARGET_DIR, line24:29",
+  "parser_green_exit": 0,
+  "parser_green_log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "shell_environment_handoff_with_spaces": "PASS",
+  "unchanged": "all test, release build, replay, digest binding, authority and artifact steps",
+  "native_cloud_execution_after_fix": "PENDING",
+  "frozen_3276_modified": false,
+  "remote_writes": false
+}
