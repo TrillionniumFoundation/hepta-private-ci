@@ -1,4 +1,5 @@
 mod compact;
+mod idle_work;
 mod lifecycle;
 mod regular;
 mod review;
@@ -79,6 +80,7 @@ use codex_protocol::error::CodexErr;
 use codex_protocol::error::CodexErrorDetails;
 use codex_protocol::error::Result as CodexResult;
 pub(crate) use compact::CompactTask;
+pub use idle_work::IdleWorkPriority;
 pub(crate) use regular::RegularTask;
 pub(crate) use review::ReviewTask;
 pub(crate) use user_shell::UserShellCommandMode;
