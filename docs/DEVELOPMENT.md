@@ -680,7 +680,7 @@ transport, persistent dataset future-admission/fanout and HF/held FinalUse open;
 it is not I10 or a three-model-round receipt.
 
 Cross-repository qualification follows the Chain plan's single
-[PN0–PN6 convergence sequence](https://github.com/TrillionniumFoundation/Trillionnium-Chain/blob/8caf5387a4342ae8431b23236154e7f5403997a6/docs/development/TRNM_AI_NATIVE_BLOCKCHAIN_DEVELOPMENT_PLAN.md#6-one-executable-convergence-sequence):
+[PN0–PN6 convergence sequence](https://github.com/TrillionniumFoundation/Trillionnium-Chain/blob/6724ed1905e11d30775738ad0eb84b53d1d9ea97/docs/development/TRNM_AI_NATIVE_BLOCKCHAIN_DEVELOPMENT_PLAN.md#6-one-executable-convergence-sequence):
 PN0 exact-source/security baseline → PN1 work security and PN2 bounded state →
 PN3 real-model closure → PN4 five-budget/effect-liability qualification →
 PN5 independent-operator WAN/discovery/availability → PN6 governed migration and
