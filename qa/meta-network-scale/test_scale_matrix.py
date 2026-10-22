@@ -124,6 +124,28 @@ class ScaleMatrixTests(unittest.TestCase):
             "P4 qualification must reject missing metrics from the benchmark contract",
         )
 
+    def test_p5_exact_source_workflow_covers_input_metric_and_ndu_contracts(self):
+        # A change to an imported benchmark spec or the P3 selector must not
+        # leave the P5 evidence contract silently untested at the new source SHA.
+        workflow = (
+            pathlib.Path(__file__).resolve().parents[2]
+            / ".github"
+            / "workflows"
+            / "hepta-p5-scale-evidence-exact.yml"
+        ).read_text(encoding="utf-8")
+        pull_request_paths = workflow.partition("  workflow_dispatch:")[0]
+        expected = (
+            "qa/meta-network-scale/**",
+            "docs/learning/CELL_EXECUTION_BENCHMARK_MATRIX.json",
+            "codex-rs/hepta-ndu/src/output_portfolio.rs",
+            "codex-rs/hepta-ndu/src/output_portfolio_tests.rs",
+            "codex-rs/hepta-ndu/src/output_portfolio_types.rs",
+            ".github/workflows/hepta-p5-scale-evidence-exact.yml",
+        )
+        for path in expected:
+            with self.subTest(path=path):
+                self.assertIn(f'      - "{path}"', pull_request_paths)
+
     def test_p4_metrics_are_required_and_rate_units_are_bounded(self):
         for key in scale_matrix.REQUIRED_METRICS:
             with self.subTest(missing=key):
@@ -411,6 +433,144 @@ class ScaleMatrixTests(unittest.TestCase):
         ][0]["metrics_receipt"]
         self.assertIn(
             "results[1].evidence_receipts.rollback reused as a metrics receipt",
+            scale_matrix.validate_matrix(matrix),
+        )
+
+    def test_measurement_digest_cannot_double_as_metrics_or_evidence_receipt(self):
+        for role in ("metrics", "future_window", "rollback"):
+            with self.subTest(role=role):
+                record = self.make_record(64, "shared_encoder")
+                if role == "metrics":
+                    record["provenance"]["measurement_digest"] = record["metrics_receipt"]
+                    expected = "metrics_receipt cannot reuse provenance measurement digest"
+                else:
+                    record["provenance"]["measurement_digest"] = record["evidence_receipts"][role]
+                    expected = (
+                        f"evidence_receipts.{role} cannot reuse provenance measurement digest"
+                    )
+                self.assertIn(expected, scale_matrix.validate_result(record))
+
+    def test_matrix_rejects_measurement_digest_replay_across_proof_roles(self):
+        # Both orderings must be rejected: measurement followed by a receipt,
+        # or receipt followed by a later relabelled measurement digest.
+        for proof_role in ("metrics", "evidence"):
+            for direction in ("measurement_first", "receipt_first"):
+                with self.subTest(role=proof_role, direction=direction):
+                    matrix = self.matrix()
+                    first, second = matrix["results"][:2]
+                    if proof_role == "metrics":
+                        if direction == "measurement_first":
+                            second["metrics_receipt"] = first["provenance"]["measurement_digest"]
+                            expected = (
+                                "results[1].metrics_receipt "
+                                "reused as a provenance measurement digest"
+                            )
+                        else:
+                            second["provenance"]["measurement_digest"] = first["metrics_receipt"]
+                            expected = (
+                                "results[1].provenance.measurement_digest "
+                                "reused as a metrics receipt"
+                            )
+                    else:
+                        if direction == "measurement_first":
+                            second["evidence_receipts"]["rollback"] = first["provenance"][
+                                "measurement_digest"
+                            ]
+                            expected = (
+                                "results[1].evidence_receipts.rollback "
+                                "reused as a provenance measurement digest"
+                            )
+                        else:
+                            second["provenance"]["measurement_digest"] = first[
+                                "evidence_receipts"
+                            ]["future_window"]
+                            expected = (
+                                "results[1].provenance.measurement_digest "
+                                "reused as an evidence claim receipt"
+                            )
+                    self.assertIn(expected, scale_matrix.validate_matrix(matrix))
+
+    def test_identity_roles_cannot_be_relabelled_as_single_row_evidence(self):
+        for identity in ("target_host_digest", "runtime_digest"):
+            for proof in ("measurement", "metrics", "rollback"):
+                with self.subTest(identity=identity, proof=proof):
+                    row = self.make_record(64, "shared_encoder")
+                    digest = row["provenance"][identity]
+                    if proof == "measurement":
+                        row["provenance"]["measurement_digest"] = digest
+                        expected = (
+                            f"provenance.{identity} cannot reuse measurement digest"
+                        )
+                    elif proof == "metrics":
+                        row["metrics_receipt"] = digest
+                        expected = f"metrics_receipt cannot reuse provenance {identity}"
+                    else:
+                        row["evidence_receipts"]["rollback"] = digest
+                        expected = (
+                            "evidence_receipts.rollback cannot reuse provenance "
+                            f"{identity}"
+                        )
+                    self.assertIn(expected, scale_matrix.validate_result(row))
+        row = self.make_record(64, "shared_encoder")
+        row["provenance"]["runtime_digest"] = row["provenance"]["target_host_digest"]
+        self.assertIn(
+            "provenance.runtime_digest cannot reuse target_host_digest",
+            scale_matrix.validate_result(row),
+        )
+
+    def test_matrix_denies_cross_row_identity_evidence_aliases_in_both_orders(self):
+        for proof in ("measurement", "metrics", "rollback"):
+            for direction in ("identity_first", "evidence_first"):
+                with self.subTest(proof=proof, direction=direction):
+                    matrix = self.matrix()
+                    first, second = matrix["results"][:2]
+                    if proof == "measurement":
+                        parent, key, label = (
+                            "provenance",
+                            "measurement_digest",
+                            "provenance.measurement_digest",
+                        )
+                    elif proof == "metrics":
+                        parent, key, label = None, "metrics_receipt", "metrics_receipt"
+                    else:
+                        parent, key, label = (
+                            "evidence_receipts",
+                            "rollback",
+                            "evidence_receipts.rollback",
+                        )
+                    first_value = first[parent][key] if parent else first[key]
+                    if direction == "identity_first":
+                        # The unmodified fixture shares one runtime identity
+                        # across rows. Give the first row a unique digest, so
+                        # second-row validation alone cannot reject the alias.
+                        first["provenance"]["runtime_digest"] = "f" * 64
+                        value = first["provenance"]["runtime_digest"]
+                        if parent:
+                            second[parent][key] = value
+                        else:
+                            second[key] = value
+                        affected = f"results[1].{label}"
+                    else:
+                        second["provenance"]["runtime_digest"] = first_value
+                        affected = f"results[0].{label}"
+                    # Both individual records remain shape-valid: only the
+                    # independent matrix-wide identity/proof census detects
+                    # this cross-row role replay.
+                    self.assertEqual(scale_matrix.validate_result(first), [])
+                    self.assertEqual(scale_matrix.validate_result(second), [])
+                    self.assertIn(
+                        f"{affected} reused as a runtime_digest identity digest",
+                        scale_matrix.validate_matrix(matrix),
+                    )
+
+    def test_matrix_denies_cross_row_host_runtime_identity_alias(self):
+        matrix = self.matrix()
+        matrix["results"][1]["provenance"]["runtime_digest"] = matrix["results"][0][
+            "provenance"
+        ]["target_host_digest"]
+        self.assertIn(
+            "results[1].provenance.runtime_digest "
+            "reused as a target_host_digest identity digest",
             scale_matrix.validate_matrix(matrix),
         )
 
