@@ -1,4 +1,5 @@
 use super::*;
+use pretty_assertions::assert_eq;
 
 pub(super) async fn assert_blocking_snapshot_waits_for_starting_environment() {
     let buffer: &'static std::sync::Mutex<Vec<u8>> =
