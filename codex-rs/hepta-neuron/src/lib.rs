@@ -30,6 +30,7 @@ mod runtime;
 mod runtime_types;
 mod shared_encoder;
 mod sparse;
+mod task_head_native;
 mod witness;
 
 pub use cell_evidence::CellEvidenceError;
@@ -150,6 +151,10 @@ pub use sparse::SparseError;
 pub use sparse::SparseSignalReceipt;
 pub use sparse::SparseTick;
 pub use sparse::sparse_tick;
+pub use task_head_native::LoadedTaskHeadV1;
+pub use task_head_native::TaskFeatureIdentityV1;
+pub use task_head_native::TaskHeadError;
+pub use task_head_native::TaskPredictionV1;
 pub use witness::FileAnchorWitnessStore;
 
 const MAX_FEATURES: usize = 4_096;
