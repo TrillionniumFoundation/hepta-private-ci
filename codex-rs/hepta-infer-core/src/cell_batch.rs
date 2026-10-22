@@ -215,8 +215,31 @@ impl CellAdapterHeadV1 {
         })
     }
 
-    /// Construct a successor head without mutating the active head.
+    /// Zero-delta parity keeps the currently selected generation immutable.
+    ///
+    /// A nonzero update must use `with_successor_delta` so that the changed
+    /// weights cannot be evaluated under the currently selected generation.
     pub fn with_delta(&self, delta: &[i64]) -> Result<Self, CellBatchError> {
+        if delta.len() != self.weights.len() {
+            return Err(CellBatchError::DeltaWidth);
+        }
+        if delta.iter().any(|update| *update != 0) {
+            return Err(CellBatchError::ParameterUpdateRequiresSuccessor);
+        }
+        Ok(self.clone())
+    }
+
+    /// Stage an updated candidate in the *next* generation. This creates a
+    /// value, not activation or promotion authority: Control still owns
+    /// selection, signed artifact admission and the route cutover.
+    pub fn with_successor_delta(
+        &self,
+        successor_generation: Generation,
+        delta: &[i64],
+    ) -> Result<Self, CellBatchError> {
+        if self.generation.next() != Ok(successor_generation) {
+            return Err(CellBatchError::GenerationNotSuccessor);
+        }
         if delta.len() != self.weights.len() {
             return Err(CellBatchError::DeltaWidth);
         }
@@ -233,7 +256,7 @@ impl CellAdapterHeadV1 {
         Self::new(
             self.cell_id.clone(),
             self.scope_id.clone(),
-            self.generation,
+            successor_generation,
             self.encoder_digest,
             weights,
             self.bias,
@@ -431,6 +454,7 @@ pub enum CellBatchError {
     EmptyInput,
     FeatureWidth,
     DeltaWidth,
+    ParameterUpdateRequiresSuccessor,
     ZeroDigest(&'static str),
     GenerationNotSuccessor,
     GenerationMismatch,
