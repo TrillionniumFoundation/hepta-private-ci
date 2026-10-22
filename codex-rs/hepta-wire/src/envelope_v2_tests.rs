@@ -6,7 +6,12 @@ fn id(value: &str) -> Result<StableId, Box<dyn Error>> {
 
 #[test]
 fn v2_round_trip_and_frozen_bytes_are_exact() -> Result<(), Box<dyn Error>> {
-    let envelope = WireEnvelopeV2::new(id("s")?, id("p")?, Generation::new(1)?, vec![1, 2, 3])?;
+    let envelope = WireEnvelopeV2::new(
+        id("s")?,
+        id("p")?,
+        Generation::new(/*value*/ 1)?,
+        vec![1, 2, 3],
+    )?;
     let golden: [u8; 59] = [
         0x48, 0x50, 0x54, 0x41, 0x00, 0x02, 0x00, 0x01, 0x00, 0x01, 0x00, 0x00, 0x00, 0x00, 0x00,
         0x00, 0x00, 0x01, 0x24, 0xc2, 0x25, 0xcf, 0x24, 0x2f, 0xbe, 0xf3, 0xf1, 0x42, 0x8a, 0xf4,
@@ -23,7 +28,7 @@ fn metadata_mutation_is_bound_by_v2_digest() -> Result<(), Box<dyn Error>> {
     let envelope = WireEnvelopeV2::new(
         id("schema.a")?,
         id("producer.a")?,
-        Generation::new(7)?,
+        Generation::new(/*value*/ 7)?,
         b"payload".to_vec(),
     )?;
     let encoded = envelope.encode();
@@ -57,7 +62,7 @@ fn v2_digest_is_not_only_a_payload_digest() -> Result<(), Box<dyn Error>> {
     let envelope = WireEnvelopeV2::new(
         id("hepta.test.v2")?,
         id("platform.wire")?,
-        Generation::new(2)?,
+        Generation::new(/*value*/ 2)?,
         b"same-payload".to_vec(),
     )?;
     assert_ne!(

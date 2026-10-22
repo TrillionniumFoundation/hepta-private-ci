@@ -15,7 +15,7 @@ fn one_byte_chunks_do_not_dispatch_until_complete() -> Result<(), Box<dyn Error>
     let frame = WireEnvelopeV2::new(
         stable("hepta.stream.v2")?,
         stable("runtime.codex")?,
-        Generation::new(1)?,
+        Generation::new(/*value*/ 1)?,
         b"payload".to_vec(),
     )?
     .encode();
@@ -36,14 +36,14 @@ fn consecutive_v1_and_v2_frames_decode_from_one_chunk() -> Result<(), Box<dyn Er
     let v1 = WireEnvelope::new(
         stable("hepta.stream.v1")?,
         stable("producer")?,
-        Generation::new(1)?,
+        Generation::new(/*value*/ 1)?,
         vec![1],
     )?
     .encode();
     let v2 = WireEnvelopeV2::new(
         stable("hepta.stream.v2")?,
         stable("producer")?,
-        Generation::new(2)?,
+        Generation::new(/*value*/ 2)?,
         vec![2],
     )?
     .encode();
@@ -60,8 +60,13 @@ fn consecutive_v1_and_v2_frames_decode_from_one_chunk() -> Result<(), Box<dyn Er
 
 #[test]
 fn oversized_advertised_payload_rejects_at_header_boundary() -> Result<(), Box<dyn Error>> {
-    let mut header =
-        WireEnvelopeV2::new(stable("s")?, stable("p")?, Generation::new(1)?, vec![1])?.encode();
+    let mut header = WireEnvelopeV2::new(
+        stable("s")?,
+        stable("p")?,
+        Generation::new(/*value*/ 1)?,
+        vec![1],
+    )?
+    .encode();
     header[50..54].copy_from_slice(&((MAX_WIRE_PAYLOAD_BYTES as u32) + 1).to_be_bytes());
     header.truncate(WIRE_HEADER_BYTES);
 
@@ -83,8 +88,13 @@ fn buffer_limit_rejects_before_copying_unbounded_chunk() {
 
 #[test]
 fn blocking_reader_validates_header_before_reading_body() -> Result<(), Box<dyn Error>> {
-    let mut oversized_header =
-        WireEnvelopeV2::new(stable("s")?, stable("p")?, Generation::new(1)?, vec![1])?.encode();
+    let mut oversized_header = WireEnvelopeV2::new(
+        stable("s")?,
+        stable("p")?,
+        Generation::new(/*value*/ 1)?,
+        vec![1],
+    )?
+    .encode();
     oversized_header[50..54].copy_from_slice(&((MAX_WIRE_PAYLOAD_BYTES as u32) + 1).to_be_bytes());
     oversized_header.truncate(WIRE_HEADER_BYTES);
 
@@ -102,7 +112,7 @@ fn blocking_reader_allocates_and_reads_only_after_admission() -> Result<(), Box<
     let frame = WireEnvelopeV2::new(
         stable("hepta.stream.v2")?,
         stable("producer")?,
-        Generation::new(3)?,
+        Generation::new(/*value*/ 3)?,
         b"body".to_vec(),
     )?
     .encode();

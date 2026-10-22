@@ -54,7 +54,7 @@ fn frozen_cross_language_vector_matches_exact_bytes_and_digest() {
             value: CanonicalValueV1::Digest(evidence),
         },
     ];
-    let encoded = canonical_encode_v1(&type_id, 1, &fields);
+    let encoded = canonical_encode_v1(&type_id, /*schema_version*/ 1, &fields);
     let Ok(encoded) = encoded else {
         panic!("canonical fixture should encode");
     };
@@ -65,7 +65,7 @@ fn frozen_cross_language_vector_matches_exact_bytes_and_digest() {
     );
     assert_eq!(
         {
-            let digest = canonical_digest_v1(&type_id, 1, &fields);
+            let digest = canonical_digest_v1(&type_id, /*schema_version*/ 1, &fields);
             let Ok(digest) = digest else {
                 panic!("canonical fixture should digest");
             };
@@ -114,7 +114,7 @@ fn integer_boundaries_unicode_and_empty_containers_are_frozen() {
             value: CanonicalValueV1::Map(&empty_map),
         },
     ];
-    let encoded = canonical_encode_v1(&type_id, 1, &fields);
+    let encoded = canonical_encode_v1(&type_id, /*schema_version*/ 1, &fields);
     let Ok(encoded) = encoded else {
         panic!("canonical boundary fixture should encode");
     };
@@ -123,7 +123,7 @@ fn integer_boundaries_unicode_and_empty_containers_are_frozen() {
         hex(&encoded),
         "485054430001002868657074612e706c6174666f726d2e74797065732e63616e6f6e6963616c2d6469676573742e76310023706c6174666f726d2e74797065733a63616e6f6e6963616c2d626f756e6461726965730000000100000008000b656d7074795f61727261790900000000000b656d7074795f627974657305000000000009656d7074795f6d61700a00000000000a656d7074795f74657874060000000000076936345f6d696e0480000000000000000008753132385f6d617803ffffffffffffffffffffffffffffffff00077536345f6d617802ffffffffffffffff0007756e69636f6465060000000a68c3a97074612fe99baa"
     );
-    let digest = canonical_digest_v1(&type_id, 1, &fields);
+    let digest = canonical_digest_v1(&type_id, /*schema_version*/ 1, &fields);
     let Ok(digest) = digest else {
         panic!("canonical boundary fixture should digest");
     };
@@ -168,8 +168,8 @@ fn field_and_map_order_are_canonical_but_array_order_is_semantic() {
         },
     ];
     assert_eq!(
-        canonical_encode_v1(&type_id, 1, &left),
-        canonical_encode_v1(&type_id, 1, &right)
+        canonical_encode_v1(&type_id, /*schema_version*/ 1, &left),
+        canonical_encode_v1(&type_id, /*schema_version*/ 1, &right)
     );
 
     let array_left = [CanonicalValueV1::U64(1), CanonicalValueV1::U64(2)];
@@ -177,7 +177,7 @@ fn field_and_map_order_are_canonical_but_array_order_is_semantic() {
     assert_ne!(
         canonical_digest_v1(
             &type_id,
-            1,
+            /*schema_version*/ 1,
             &[CanonicalFieldV1 {
                 name: "values",
                 value: CanonicalValueV1::Array(&array_left),
@@ -185,7 +185,7 @@ fn field_and_map_order_are_canonical_but_array_order_is_semantic() {
         ),
         canonical_digest_v1(
             &type_id,
-            1,
+            /*schema_version*/ 1,
             &[CanonicalFieldV1 {
                 name: "values",
                 value: CanonicalValueV1::Array(&array_right),
@@ -235,7 +235,7 @@ fn canonical_container_depth_is_exactly_bounded() {
     assert!(
         canonical_encode_v1(
             &type_id,
-            1,
+            /*schema_version*/ 1,
             &[CanonicalFieldV1 {
                 name: "value",
                 value: level2,
@@ -247,7 +247,7 @@ fn canonical_container_depth_is_exactly_bounded() {
     assert_eq!(
         canonical_encode_v1(
             &type_id,
-            1,
+            /*schema_version*/ 1,
             &[CanonicalFieldV1 {
                 name: "value",
                 value: level1,
@@ -271,7 +271,7 @@ fn malformed_canonical_inputs_fail_closed() {
         },
     ];
     assert_eq!(
-        canonical_encode_v1(&type_id, 1, &duplicate_fields),
+        canonical_encode_v1(&type_id, /*schema_version*/ 1, &duplicate_fields),
         Err(CanonicalDigestError::DuplicateField)
     );
 
@@ -288,7 +288,7 @@ fn malformed_canonical_inputs_fail_closed() {
     assert_eq!(
         canonical_encode_v1(
             &type_id,
-            1,
+            /*schema_version*/ 1,
             &[CanonicalFieldV1 {
                 name: "map",
                 value: CanonicalValueV1::Map(&duplicate_map),
@@ -299,7 +299,7 @@ fn malformed_canonical_inputs_fail_closed() {
     assert_eq!(
         canonical_encode_v1(
             &type_id,
-            0,
+            /*schema_version*/ 0,
             &[CanonicalFieldV1 {
                 name: "value",
                 value: CanonicalValueV1::U64(1),
@@ -312,13 +312,13 @@ fn malformed_canonical_inputs_fail_closed() {
         panic!("legacy stable ID fixture should be valid");
     };
     assert_eq!(
-        canonical_encode_v1(&unnamespaced, 1, &[]),
+        canonical_encode_v1(&unnamespaced, /*schema_version*/ 1, &[]),
         Err(CanonicalDigestError::InvalidTypeId)
     );
     assert_eq!(
         canonical_encode_v1(
             &type_id,
-            1,
+            /*schema_version*/ 1,
             &[CanonicalFieldV1 {
                 name: "Upper",
                 value: CanonicalValueV1::U64(1),
@@ -330,7 +330,7 @@ fn malformed_canonical_inputs_fail_closed() {
     assert_eq!(
         canonical_encode_v1(
             &type_id,
-            1,
+            /*schema_version*/ 1,
             &[CanonicalFieldV1 {
                 name: "payload",
                 value: CanonicalValueV1::Bytes(&oversized),
@@ -346,7 +346,7 @@ fn malformed_canonical_inputs_fail_closed() {
         MAX_CANONICAL_CONTAINER_ITEMS_V1 + 1
     ];
     assert_eq!(
-        canonical_encode_v1(&type_id, 1, &too_many),
+        canonical_encode_v1(&type_id, /*schema_version*/ 1, &too_many),
         Err(CanonicalDigestError::TooManyItems)
     );
 }
@@ -358,13 +358,13 @@ fn canonical_byte_validator_accepts_frozen_bytes_and_returns_same_digest() {
         name: "enabled",
         value: CanonicalValueV1::Bool(true),
     }];
-    let encoded = canonical_encode_v1(&type_id, 1, &fields)
+    let encoded = canonical_encode_v1(&type_id, /*schema_version*/ 1, &fields)
         .unwrap_or_else(|error| panic!("bool fixture should encode: {error}"));
     let validated = canonical_validate_v1(&encoded)
         .unwrap_or_else(|error| panic!("bool fixture should validate: {error}"));
     assert_eq!(
         validated,
-        canonical_digest_v1(&type_id, 1, &fields)
+        canonical_digest_v1(&type_id, /*schema_version*/ 1, &fields)
             .unwrap_or_else(|error| panic!("bool fixture should digest: {error}"))
     );
 }
@@ -376,7 +376,7 @@ fn canonical_byte_validator_rejects_invalid_bool_and_unknown_tag() {
         name: "enabled",
         value: CanonicalValueV1::Bool(true),
     }];
-    let encoded = canonical_encode_v1(&type_id, 1, &fields)
+    let encoded = canonical_encode_v1(&type_id, /*schema_version*/ 1, &fields)
         .unwrap_or_else(|error| panic!("bool fixture should encode: {error}"));
 
     let mut invalid_bool = encoded.clone();
@@ -409,9 +409,9 @@ fn canonical_v1_does_not_apply_unicode_normalization() {
         name: "value",
         value: CanonicalValueV1::Text("é"),
     }];
-    let nfc_digest = canonical_digest_v1(&type_id, 1, &nfc)
+    let nfc_digest = canonical_digest_v1(&type_id, /*schema_version*/ 1, &nfc)
         .unwrap_or_else(|error| panic!("NFC fixture should digest: {error}"));
-    let nfd_digest = canonical_digest_v1(&type_id, 1, &nfd)
+    let nfd_digest = canonical_digest_v1(&type_id, /*schema_version*/ 1, &nfd)
         .unwrap_or_else(|error| panic!("NFD fixture should digest: {error}"));
     assert_eq!(
         nfc_digest.to_string(),
@@ -427,7 +427,7 @@ fn canonical_v1_does_not_apply_unicode_normalization() {
 #[test]
 fn canonical_byte_validator_rejects_truncation_and_trailing_bytes() {
     let type_id = id("platform.types:validator-boundaries");
-    let encoded = canonical_encode_v1(&type_id, 1, &[])
+    let encoded = canonical_encode_v1(&type_id, /*schema_version*/ 1, &[])
         .unwrap_or_else(|error| panic!("empty fixture should encode: {error}"));
     assert_eq!(
         canonical_validate_v1(&encoded[..encoded.len() - 1]),

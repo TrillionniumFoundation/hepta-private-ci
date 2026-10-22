@@ -417,9 +417,9 @@ mod tests {
                     &producer,
                     ArtifactLifecycleStateV1::Proposed,
                     ArtifactLifecycleStateV1::Trained,
-                    20,
+                    /*occurred_at*/ 20,
                 ),
-                20,
+                /*now*/ 20,
             )
             .fixture("producer may publish trained state");
         assert_eq!(
@@ -433,9 +433,9 @@ mod tests {
                     &evaluator,
                     ArtifactLifecycleStateV1::Trained,
                     ArtifactLifecycleStateV1::Evaluated,
-                    21,
+                    /*occurred_at*/ 21,
                 ),
-                21,
+                /*now*/ 21,
             ),
             Err(ArtifactLifecycleJournalError::HeadMismatch)
         );
@@ -450,9 +450,9 @@ mod tests {
                     &evaluator,
                     ArtifactLifecycleStateV1::Trained,
                     ArtifactLifecycleStateV1::Evaluated,
-                    21,
+                    /*occurred_at*/ 21,
                 ),
-                21,
+                /*now*/ 21,
             )
             .fixture("independent evaluator may advance state");
         let denied = actor("intruder", LifecycleActorRoleV2::Selector);
@@ -467,9 +467,9 @@ mod tests {
                     &denied,
                     ArtifactLifecycleStateV1::Evaluated,
                     ArtifactLifecycleStateV1::Selected,
-                    22,
+                    /*occurred_at*/ 22,
                 ),
-                22,
+                /*now*/ 22,
             ),
             Err(ArtifactLifecycleJournalError::Transition(
                 ArtifactClosureError::InvalidLifecycleTransition
@@ -494,9 +494,9 @@ mod tests {
                     &producer,
                     ArtifactLifecycleStateV1::Proposed,
                     ArtifactLifecycleStateV1::Trained,
-                    20,
+                    /*occurred_at*/ 20,
                 ),
-                20,
+                /*now*/ 20,
             )
             .fixture("historical append succeeds while credential is current");
 
@@ -517,9 +517,9 @@ mod tests {
                     &producer,
                     ArtifactLifecycleStateV1::Proposed,
                     ArtifactLifecycleStateV1::Trained,
-                    99,
+                    /*occurred_at*/ 99,
                 ),
-                101,
+                /*now*/ 101,
             ),
             Err(ArtifactLifecycleJournalError::InvalidActorEvidence)
         );
@@ -542,9 +542,9 @@ mod tests {
                     &producer,
                     ArtifactLifecycleStateV1::Proposed,
                     ArtifactLifecycleStateV1::Trained,
-                    20,
+                    /*occurred_at*/ 20,
                 ),
-                20,
+                /*now*/ 20,
             )
             .fixture("append succeeds");
         let reopened = ArtifactLifecycleJournalV2::from_snapshot(journal.snapshot(), 20)

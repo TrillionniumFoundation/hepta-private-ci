@@ -65,21 +65,21 @@ fn scalar_registry() -> RegisteredGrammarV1 {
     registry(vec![(
         "x",
         RegisteredDomainV1::Scalar {
-            lower: FixedQ32::from_raw(-10),
-            upper: FixedQ32::from_raw(10),
+            lower: FixedQ32::from_raw(/*raw*/ -10),
+            upper: FixedQ32::from_raw(/*raw*/ 10),
         },
     )])
 }
 
 #[test]
 fn interval_intersection_returns_a_witness_and_ignores_soft_constraints() {
-    let mut soft = atom("soft", "x", interval(8, 9));
+    let mut soft = atom("soft", "x", interval(/*lower*/ 8, /*upper*/ 9));
     soft.precedence = AtomPrecedenceV1::Soft;
     let receipt = check_feasibility_v1(
         &scalar_registry(),
         vec![
-            atom("a", "x", interval(0, 2)),
-            atom("b", "x", interval(1, 3)),
+            atom("a", "x", interval(/*lower*/ 0, /*upper*/ 2)),
+            atom("b", "x", interval(/*lower*/ 1, /*upper*/ 3)),
             soft,
         ],
         budget(),
@@ -87,8 +87,8 @@ fn interval_intersection_returns_a_witness_and_ignores_soft_constraints() {
     let expected = registry(vec![(
         "x",
         RegisteredDomainV1::Scalar {
-            lower: FixedQ32::from_raw(1),
-            upper: FixedQ32::from_raw(2),
+            lower: FixedQ32::from_raw(/*raw*/ 1),
+            upper: FixedQ32::from_raw(/*raw*/ 2),
         },
     )]);
     assert_eq!(
@@ -105,9 +105,9 @@ fn interval_intersection_returns_a_witness_and_ignores_soft_constraints() {
 #[test]
 fn core_is_permutation_invariant_and_removes_irrelevant_atoms() {
     let atoms = [
-        atom("a", "x", interval(0, 1)),
-        atom("b", "x", interval(2, 3)),
-        atom("irrelevant", "x", interval(-5, 5)),
+        atom("a", "x", interval(/*lower*/ 0, /*upper*/ 1)),
+        atom("b", "x", interval(/*lower*/ 2, /*upper*/ 3)),
+        atom("irrelevant", "x", interval(/*lower*/ -5, /*upper*/ 5)),
     ];
     for order in [
         [0, 1, 2],
@@ -220,8 +220,8 @@ fn immutable_scope_and_generation_must_match_the_registered_snapshot() {
 #[test]
 fn unsupported_atoms_are_detected_before_a_known_conflict() {
     let atoms = vec![
-        atom("a", "x", interval(0, 1)),
-        atom("b", "x", interval(2, 3)),
+        atom("a", "x", interval(/*lower*/ 0, /*upper*/ 1)),
+        atom("b", "x", interval(/*lower*/ 2, /*upper*/ 3)),
         atom(
             "nonlinear",
             "x",
@@ -242,12 +242,12 @@ fn unsupported_atoms_are_detected_before_a_known_conflict() {
 
 #[test]
 fn unknown_axes_units_observers_and_origins_fail_closed() {
-    let mut cases = vec![atom("a", "unknown", interval(0, 1)); 4];
-    cases[1] = atom("a", "x", interval(0, 1));
+    let mut cases = vec![atom("a", "unknown", interval(/*lower*/ 0, /*upper*/ 1)); 4];
+    cases[1] = atom("a", "x", interval(/*lower*/ 0, /*upper*/ 1));
     cases[1].unit = id("other-unit");
-    cases[2] = atom("a", "x", interval(0, 1));
+    cases[2] = atom("a", "x", interval(/*lower*/ 0, /*upper*/ 1));
     cases[2].evidence_source = id("unknown-observer");
-    cases[3] = atom("a", "x", interval(0, 1));
+    cases[3] = atom("a", "x", interval(/*lower*/ 0, /*upper*/ 1));
     cases[3].origin_digest = Digest32::from_array([0; 32]);
     for candidate in cases {
         let result = check_feasibility_v1(&scalar_registry(), vec![candidate], budget());
@@ -262,9 +262,9 @@ fn unknown_axes_units_observers_and_origins_fail_closed() {
 #[test]
 fn exhaustion_never_exposes_a_partial_conflict_or_drops_an_atom() {
     let atoms = vec![
-        atom("a", "x", interval(0, 1)),
-        atom("b", "x", interval(2, 3)),
-        atom("0-irrelevant", "x", interval(-5, 5)),
+        atom("a", "x", interval(/*lower*/ 0, /*upper*/ 1)),
+        atom("b", "x", interval(/*lower*/ 2, /*upper*/ 3)),
+        atom("0-irrelevant", "x", interval(/*lower*/ -5, /*upper*/ 5)),
     ];
     for limited in [
         OracleBudgetV1 {
@@ -290,10 +290,16 @@ fn exhaustion_never_exposes_a_partial_conflict_or_drops_an_atom() {
 #[test]
 fn pilot_atom_bound_and_maximum_oracle_count_are_enforced() {
     let mut atoms = vec![
-        atom("a", "x", interval(0, 1)),
-        atom("b", "x", interval(2, 3)),
+        atom("a", "x", interval(/*lower*/ 0, /*upper*/ 1)),
+        atom("b", "x", interval(/*lower*/ 2, /*upper*/ 3)),
     ];
-    atoms.extend((2..256).map(|i| atom(&format!("irrelevant-{i:03}"), "x", interval(-5, 5))));
+    atoms.extend((2..256).map(|i| {
+        atom(
+            &format!("irrelevant-{i:03}"),
+            "x",
+            interval(/*lower*/ -5, /*upper*/ 5),
+        )
+    }));
     let result = check_feasibility_v1(
         &scalar_registry(),
         atoms.clone(),
@@ -307,7 +313,7 @@ fn pilot_atom_bound_and_maximum_oracle_count_are_enforced() {
         FeasibilityOutcomeV1::Infeasible { .. }
     ));
     assert_eq!(result.oracle_calls, 257);
-    atoms.push(atom("overflow", "x", interval(-5, 5)));
+    atoms.push(atom("overflow", "x", interval(/*lower*/ -5, /*upper*/ 5)));
     let result = check_feasibility_v1(&scalar_registry(), atoms.clone(), budget());
     assert!(matches!(
         result.outcome,
@@ -509,12 +515,16 @@ fn negative_closure_terminates_cycles_and_is_order_invariant() {
 #[ignore = "run only on a named target host through hepta-objective-target-measure.py"]
 fn measurement_conflict_extraction_v1() {
     let mut atoms = vec![
-        atom("a", "x", interval(0, 1)),
-        atom("b", "x", interval(2, 3)),
+        atom("a", "x", interval(/*lower*/ 0, /*upper*/ 1)),
+        atom("b", "x", interval(/*lower*/ 2, /*upper*/ 3)),
     ];
-    atoms.extend(
-        (2..256).map(|index| atom(&format!("irrelevant-{index:03}"), "x", interval(-5, 5))),
-    );
+    atoms.extend((2..256).map(|index| {
+        atom(
+            &format!("irrelevant-{index:03}"),
+            "x",
+            interval(/*lower*/ -5, /*upper*/ 5),
+        )
+    }));
     let samples = std::env::var("HEPTA_OBJECTIVE_MEASUREMENT_SAMPLES")
         .ok()
         .and_then(|value| value.parse::<usize>().ok())

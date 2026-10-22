@@ -3897,12 +3897,12 @@ impl Session {
         self: &Arc<Self>,
         task: Arc<dyn AnySessionTask>,
         turn_context: Arc<TurnContext>,
-        turn_state: Arc<Mutex<TurnState>>,
-        transition_identity: Arc<()>,
+        turn_transition: (Arc<Mutex<TurnState>>, Arc<()>),
         mut recovery_history_restore: Option<ContextManager>,
         reason: TurnAbortReason,
         completion: Arc<StartTransitionCompletion>,
     ) -> StartTransitionClearOutcome {
+        let (turn_state, transition_identity) = turn_transition;
         if !self
             .restore_recovery_history_if_current(
                 Some(&turn_state),
@@ -4042,8 +4042,7 @@ impl Session {
             .abort_unstarted_turn(
                 task,
                 turn_context,
-                Arc::clone(&turn_state),
-                Arc::clone(&transition_identity),
+                (Arc::clone(&turn_state), Arc::clone(&transition_identity)),
                 recovery_history_restore,
                 reason.clone(),
                 Arc::clone(&completion),

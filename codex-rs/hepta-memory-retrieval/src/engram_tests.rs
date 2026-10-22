@@ -34,9 +34,9 @@ fn snapshot_key() -> CognitiveSnapshotKeyV1 {
         knowledge_fact_frontier: 8,
         tombstone_frontier: 4,
         source_ledger_frontier: 11,
-        knowledge_graph_generation: generation(2),
-        compact_checkpoint_generation: generation(1),
-        prompt_registry_revision: revision(3),
+        knowledge_graph_generation: generation(/*value*/ 2),
+        compact_checkpoint_generation: generation(/*value*/ 1),
+        prompt_registry_revision: revision(/*value*/ 3),
         retrieval_profile_digest: digest("retrieval-profile"),
         encoder_preprocessor_digest: digest("encoder-profile"),
         authority_epoch: 5,
@@ -62,7 +62,7 @@ fn cue() -> MemoryCueV1 {
 fn record(number: u64) -> MemoryRecord {
     MemoryRecord {
         record_id: id(&format!("memory:{number}")),
-        revision: revision(1),
+        revision: revision(/*value*/ 1),
         kind: MemoryKind::Fact,
         content_digest: digest(&format!("content:{number}")),
         predecessor_digest: None,
@@ -103,7 +103,7 @@ fn retrieval_policy(maximum_results: u32) -> RetrievalPolicyV1 {
 fn support(number: u64) -> EngramSupportV1 {
     EngramSupportV1 {
         record_id: id(&format!("memory:{number}")),
-        record_revision: revision(1),
+        record_revision: revision(/*value*/ 1),
     }
 }
 
@@ -137,9 +137,9 @@ fn synapse(source: &str, target: &str, relation: SynapseRelationV1, weight: Fixe
 #[test]
 fn recurrent_association_changes_final_selection_order() {
     let cue = cue();
-    let retrieval_policy = retrieval_policy(2);
-    let high = candidate(1, 3_i64 << 30);
-    let low = candidate(2, 1_i64 << 28);
+    let retrieval_policy = retrieval_policy(/*maximum_results*/ 2);
+    let high = candidate(/*number*/ 1, 3_i64 << 30);
+    let low = candidate(/*number*/ 2, 1_i64 << 28);
     let plain = crate::recall(&cue, &retrieval_policy, vec![high.clone(), low.clone()])
         .expect("plain recall");
     assert_eq!(plain.selections[0].record_id, id("memory:1"));
@@ -151,13 +151,13 @@ fn recurrent_association_changes_final_selection_order() {
             node(
                 "node:1",
                 EngramPopulationV1::SemanticConcept,
-                vec![support(1)],
+                vec![support(/*number*/ 1)],
                 FixedQ32::from_raw(11_i64 << 28),
             ),
             node(
                 "node:2",
                 EngramPopulationV1::EpisodicBinding,
-                vec![support(2)],
+                vec![support(/*number*/ 2)],
                 FixedQ32::ZERO,
             ),
         ],
@@ -193,22 +193,22 @@ fn recurrent_association_changes_final_selection_order() {
 #[test]
 fn ret04_ablation_baselines_are_independent_and_resource_bounded() {
     let cue = cue();
-    let retrieval_policy = retrieval_policy(2);
+    let retrieval_policy = retrieval_policy(/*maximum_results*/ 2);
     let candidates = vec![
-        candidate(1, FixedQ32::ONE.raw()),
-        candidate(2, FixedQ32::ONE.raw()),
+        candidate(/*number*/ 1, FixedQ32::ONE.raw()),
+        candidate(/*number*/ 2, FixedQ32::ONE.raw()),
     ];
     let nodes = vec![
         node(
             "node:1",
             EngramPopulationV1::SemanticConcept,
-            vec![support(1)],
+            vec![support(/*number*/ 1)],
             FixedQ32::ZERO,
         ),
         node(
             "node:2",
             EngramPopulationV1::SemanticConcept,
-            vec![support(2)],
+            vec![support(/*number*/ 2)],
             FixedQ32::ZERO,
         ),
     ];
@@ -318,7 +318,8 @@ fn population_competition_never_exceeds_declared_active_bound() {
     dynamics.maximum_active_nodes = 8;
     dynamics.lateral_inhibition = FixedQ32::ZERO;
 
-    let union = build_candidate_union(&cue, &retrieval_policy(16), candidates).expect("union");
+    let union = build_candidate_union(&cue, &retrieval_policy(/*maximum_results*/ 16), candidates)
+        .expect("union");
     let receipt = settle_engram(&cue, &union, &snapshot, &dynamics).expect("settle");
     assert_eq!(receipt.active_nodes.len(), 8);
     assert_eq!(receipt.resources.active_nodes, 8);
@@ -329,8 +330,8 @@ fn population_competition_never_exceeds_declared_active_bound() {
 fn active_contradiction_forces_abstention() {
     let cue = cue();
     let candidates = vec![
-        candidate(1, FixedQ32::ONE.raw()),
-        candidate(2, FixedQ32::ONE.raw()),
+        candidate(/*number*/ 1, FixedQ32::ONE.raw()),
+        candidate(/*number*/ 2, FixedQ32::ONE.raw()),
     ];
     let snapshot = EngramSnapshotV1::new(
         cue.snapshot_key.vector_digest,
@@ -339,13 +340,13 @@ fn active_contradiction_forces_abstention() {
             node(
                 "node:left",
                 EngramPopulationV1::SemanticConcept,
-                vec![support(1)],
+                vec![support(/*number*/ 1)],
                 FixedQ32::ZERO,
             ),
             node(
                 "node:right",
                 EngramPopulationV1::SemanticConcept,
-                vec![support(2)],
+                vec![support(/*number*/ 2)],
                 FixedQ32::ZERO,
             ),
         ],
@@ -359,8 +360,14 @@ fn active_contradiction_forces_abstention() {
     .expect("snapshot");
     let mut dynamics = EngramDynamicsPolicyV1::product_default().expect("policy");
     dynamics.lateral_inhibition = FixedQ32::ZERO;
-    let packet = recall_with_engram(&cue, &retrieval_policy(2), candidates, &snapshot, &dynamics)
-        .expect("recall");
+    let packet = recall_with_engram(
+        &cue,
+        &retrieval_policy(/*maximum_results*/ 2),
+        candidates,
+        &snapshot,
+        &dynamics,
+    )
+    .expect("recall");
     assert_eq!(
         packet.disposition,
         RecallDispositionV1::Abstained(RecallAbstentionReasonV1::ContradictoryEvidence)
@@ -385,7 +392,7 @@ fn engram_snapshot_and_receipt_tampering_fail_closed() {
         vec![node(
             "node:1",
             EngramPopulationV1::SemanticConcept,
-            vec![support(1)],
+            vec![support(/*number*/ 1)],
             FixedQ32::ZERO,
         )],
         Vec::new(),
@@ -403,7 +410,7 @@ fn engram_snapshot_and_receipt_tampering_fail_closed() {
         vec![node(
             "node:1",
             EngramPopulationV1::SemanticConcept,
-            vec![support(1)],
+            vec![support(/*number*/ 1)],
             FixedQ32::ZERO,
         )],
         Vec::new(),
@@ -411,8 +418,8 @@ fn engram_snapshot_and_receipt_tampering_fail_closed() {
     .expect("snapshot");
     let union = build_candidate_union(
         &cue,
-        &retrieval_policy(1),
-        vec![candidate(1, FixedQ32::ONE.raw())],
+        &retrieval_policy(/*maximum_results*/ 1),
+        vec![candidate(/*number*/ 1, FixedQ32::ONE.raw())],
     )
     .expect("union");
     let policy = EngramDynamicsPolicyV1::product_default().expect("policy");
@@ -433,7 +440,7 @@ fn recomputed_structural_receipt_forgery_fails_closed() {
         vec![node(
             "node:1",
             EngramPopulationV1::SemanticConcept,
-            vec![support(1)],
+            vec![support(/*number*/ 1)],
             FixedQ32::ZERO,
         )],
         Vec::new(),
@@ -441,8 +448,8 @@ fn recomputed_structural_receipt_forgery_fails_closed() {
     .expect("snapshot");
     let union = build_candidate_union(
         &cue,
-        &retrieval_policy(1),
-        vec![candidate(1, FixedQ32::ONE.raw())],
+        &retrieval_policy(/*maximum_results*/ 1),
+        vec![candidate(/*number*/ 1, FixedQ32::ONE.raw())],
     )
     .expect("union");
     let policy = EngramDynamicsPolicyV1::product_default().expect("policy");
@@ -537,7 +544,7 @@ fn target_host_hnmf_reports_latency_percentiles_at_candidate_ceiling() {
         synapses,
     )
     .expect("qualification snapshot");
-    let policy = retrieval_policy(16);
+    let policy = retrieval_policy(/*maximum_results*/ 16);
     let dynamics = EngramDynamicsPolicyV1::product_default().expect("dynamics");
 
     let mut micros = Vec::with_capacity(100);
@@ -554,9 +561,9 @@ fn target_host_hnmf_reports_latency_percentiles_at_candidate_ceiling() {
     let resources = last_resources.expect("resource receipt");
     eprintln!(
         "{{\"schema\":\"hepta.memory-retrieval.target-host.v1\",\"phase\":\"hnmf\",\"candidate_events\":512,\"iterations\":100,\"p50_us\":{},\"p95_us\":{},\"p99_us\":{},\"expanded_nodes\":{},\"traversed_synapses\":{},\"active_nodes\":{},\"settling_steps\":{}}}",
-        percentile(&micros, 50, 100),
-        percentile(&micros, 95, 100),
-        percentile(&micros, 99, 100),
+        percentile(&micros, /*numerator*/ 50, /*denominator*/ 100),
+        percentile(&micros, /*numerator*/ 95, /*denominator*/ 100),
+        percentile(&micros, /*numerator*/ 99, /*denominator*/ 100),
         resources.expanded_nodes,
         resources.traversed_synapses,
         resources.active_nodes,
@@ -620,7 +627,7 @@ fn target_host_hnmf_validates_full_structural_ceiling() {
     snapshot.validate().expect("structural ceiling validates");
     let validate_us = validate_started.elapsed().as_micros();
 
-    let policy = retrieval_policy(16);
+    let policy = retrieval_policy(/*maximum_results*/ 16);
     let dynamics = EngramDynamicsPolicyV1::product_default().expect("dynamics");
     assert_eq!(dynamics.maximum_settling_steps, MAX_ENGRAM_SETTLING_STEPS);
 
@@ -643,9 +650,9 @@ fn target_host_hnmf_validates_full_structural_ceiling() {
 
     eprintln!(
         "{{\"schema\":\"hepta.memory-retrieval.target-host.v1\",\"phase\":\"hnmf-full-ceiling\",\"candidate_events\":512,\"nodes\":4096,\"synapses\":32768,\"iterations\":50,\"settling_steps\":4,\"p50_us\":{},\"p95_us\":{},\"p99_us\":{},\"build_us\":{},\"validate_us\":{},\"active_nodes\":{},\"traversed_synapses\":{}}}",
-        percentile(&micros, 50, 100),
-        percentile(&micros, 95, 100),
-        percentile(&micros, 99, 100),
+        percentile(&micros, /*numerator*/ 50, /*denominator*/ 100),
+        percentile(&micros, /*numerator*/ 95, /*denominator*/ 100),
+        percentile(&micros, /*numerator*/ 99, /*denominator*/ 100),
         build_us,
         validate_us,
         resources.active_nodes,

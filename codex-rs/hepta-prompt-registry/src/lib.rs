@@ -457,11 +457,11 @@ impl PromptRegistry {
             Some(Lifecycle::Draft),
             Lifecycle::Admitted,
             reviewer_id.clone(),
-            None,
+            /*admission_grant_id*/ None,
             evidence_digest,
-            None,
-            None,
-            None,
+            /*scope_digest*/ None,
+            /*reason_digest*/ None,
+            /*cutoff_unix_ms*/ None,
         );
         self.lifecycle_events.push(event);
         self.commit_revision(next_revision, /*revocation*/ false);
@@ -665,11 +665,11 @@ impl PromptRegistry {
             Some(Lifecycle::Admitted),
             Lifecycle::Retired,
             actor_id,
-            None,
+            /*admission_grant_id*/ None,
             evidence_digest,
-            None,
-            None,
-            None,
+            /*scope_digest*/ None,
+            /*reason_digest*/ None,
+            /*cutoff_unix_ms*/ None,
         );
         self.lifecycle_events.push(event);
         self.commit_revision(next_revision, /*revocation*/ false);
@@ -700,11 +700,11 @@ impl PromptRegistry {
             Some(from),
             Lifecycle::Revoked,
             actor_id,
-            None,
+            /*admission_grant_id*/ None,
             evidence_digest,
-            None,
-            None,
-            None,
+            /*scope_digest*/ None,
+            /*reason_digest*/ None,
+            /*cutoff_unix_ms*/ None,
         );
         self.lifecycle_events.push(event);
         self.commit_revision(next_revision, /*revocation*/ true);

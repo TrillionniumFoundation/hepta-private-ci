@@ -1,0 +1,427 @@
+{
+  "schema": "hepta.pn0.archive-enospc-and-derived-audit-repair.v1",
+  "recorded_at_utc": "2026-10-22T09:10:58.869069+00:00",
+  "base_public_source": {
+    "commit": "f8f03321a000f179d7a0e01548ca987656866af2",
+    "tree": "613f13d3d4d2b66d7cfdbcd82dc7898c47643fb8",
+    "base": "75531105b27329abaeb955e77c2c04a6d14f3bcb",
+    "actual_merge": "09e3e2736ba772d934b8374dcbfd72e6a32d77f6"
+  },
+  "observed_failure": {
+    "source": "cb481bb06d2e048d9cb4d6356cf78682ea620fb2",
+    "run": 39743869108,
+    "job": 119707416797,
+    "step": "Build nextest archive",
+    "primary_error_line": 4806,
+    "primary_error": "rustc-LLVM ERROR: IO failure on output stream: no space on device",
+    "secondary_error_line": 4816,
+    "affected_crates": [
+      "codex-app-server-protocol (lib test)",
+      "codex-hepta-objective (lib test)"
+    ],
+    "observed_output_volume": "D:/cargo-target",
+    "observed_compiler_debuginfo": 1,
+    "raw_log_file": "hepta-cb-job-119707416797.decoded.log.gzip.json",
+    "raw_log_file_sha256": "ac6a59e1a72d4af755ce28ce3181bda8675ef5f2e8a6f9538c48a88452988e49",
+    "original_decoded_log_sha256": "f142bd5ecdbcee067dd5de6d25f1dd0ae98b9d0ca6880e1f58ba124d9516e102",
+    "classification": "Confirmed resource ENOSPC; no Rust source/type/behavior failure is demonstrated by this job.",
+    "log_losslessness": "The raw payload round-trips exactly, including CRLF and ANSI. The native job ran predecessor CB, not a complete exact-current f8f acceptance."
+  },
+  "patch": {
+    "archive_commit": "44ddccd1d518ad294dfa6073e2d9a670361c02de",
+    "archive_tree": "993e4b2a4cf5a85d3a69768f43cb87547bc3c218",
+    "archive_change": "One existing archive_ci_test_no_debug=true call input plus two explanatory comments for tests_windows_arm64. The reusable workflow already supports this for macOS.",
+    "unmodified": "ci-test opt-level0/debug assertions, test inventory, archive producer identity, all shard selectors, partitions, positive/deletion/NTFS/60s criteria and Cargo/lock/source bytes.",
+    "debug_configuration": "Only debug-information amount and existing split-debuginfo setting change for the native ARM archive producer.",
+    "tradeoff": "Less debugger/backtrace debug information in that archive; capacity sufficiency and subsequent native execution are not proved.",
+    "official_cargo_reference": "https://doc.rust-lang.org/cargo/reference/profiles.html#debug"
+  },
+  "derived_audit": {
+    "repair_commit": "093cdc48557369a5e9d32e8f558391bba3177569",
+    "repair_tree": "7d010cf90743dccd329ca527bab719eb9f770532",
+    "path": "qualification/gap-closure/PLAN_AUDIT.json",
+    "cause": "All five builder inputs and old audit equal base f8f. Existing WORK_PACKAGES DOC-2 state was source_implemented_execution_pending while its derived audit still said blocked_external; the archive workflow is not an audit-builder input.",
+    "official_owner_functions": "scripts/hepta_source_registry_closure.py::_canonical_documents, _build_audit and _write_json(compact=True); no broad normalize or registry/source rewrite.",
+    "changed_top_fields": [
+      "unresolvedWorkPackages",
+      "workPackageStateCounts"
+    ],
+    "changed_work_packages": [
+      {
+        "id": "DOC-2-DEFAULT-BRANCH-SELECTION",
+        "before": {
+          "id": "DOC-2-DEFAULT-BRANCH-SELECTION",
+          "module": "control.engineering",
+          "state": "blocked_external",
+          "qualificationProfile": "documentation"
+        },
+        "after": {
+          "id": "DOC-2-DEFAULT-BRANCH-SELECTION",
+          "module": "control.engineering",
+          "state": "source_implemented_execution_pending",
+          "qualificationProfile": "documentation"
+        }
+      }
+    ],
+    "counts_before": {
+      "blocked_external": 2,
+      "planned": 43,
+      "source_implemented": 25,
+      "source_implemented_execution_pending": 19,
+      "source_implemented_semantic_review_pending": 2
+    },
+    "counts_after": {
+      "blocked_external": 1,
+      "planned": 43,
+      "source_implemented": 25,
+      "source_implemented_execution_pending": 20,
+      "source_implemented_semantic_review_pending": 2
+    },
+    "authority_unchanged": true,
+    "external_evidence_unchanged": true,
+    "original_failure": {
+      "suite": "test_hepta_verification_profiles.py",
+      "tests": 7,
+      "failed_subassertions": 3,
+      "reason": "PLAN_AUDIT.json is stale",
+      "retained_stdout_stderr": {
+        "original_bytes": 4298,
+        "original_sha256": "eeb80a7920fc6a4bb23d72fa12b617235ff602b43cad1899345cb5c0bc267e3e",
+        "gzip_bytes": 669,
+        "gzip_sha256": "2f7ea5eb9b6affed06aba28f6bde0a027b7c0229d16706726756f135e6c9a852",
+        "encoding": "base64(gzip(original UTF-8 decoded-log tool-response bytes)); no normalization",
+        "data": "H4sIAAAAAAACA+1W30/bMBB+919x60tbrU1hMDZV6kMlYEJCE5rYXhCyXOdCTF07sy90/e93CS1rp22oI5tURN7i3N333Y/vYsJIUpWU+2BoIWlRYJTKpbLAMDMxGu+iDDhTxskZnyvyYSH5ZeIpl0XwmbEYoUNVnBwLUvIOg8mMVsS+DxbJl7XTi/vDS/aJCTXCoAtJkoCfijrcjSqknzsMMsU7tL6YoSOpc9TTKClHjqespIAo54aRS+ITh3PjbmQkZZGRiqdn1QyN+9ROx2fnP5JbEZAqoMx8mKuQYirJ12FTr8sllLFpI2lsA3hPWADsCt3O0nzUXutTe63uu5jK11LZh9DtXw1R6aaOx3OFIE2ls1vUxOEnyFD1gKb1NPoyaGwkn61RN6U982nJXitvNmU9ramJFbOkhuHJfLcB26RZf15Xfa3ygIUPxK2UMed28o5TvMPIlzp/2ABKk7ljPpx/hWNRxacXvlk6m6n+/zH6+xESo0YeUQlpCM/wXyP6jTziMiiNE6Wn0Jn5SBBQMx/QylqwKlJ3yEv1lFOA1mDuwzQWbD+IOijS+SDLDlOVHug9nLwf1DXpa9PncVUmVEamoDh4tGDFotUDaxzC24MeGNdkv5g9QESbJSpGDHRSrdvOh/FFUnNZdFpr0VvdHlxdd8W4NmWOJyH4MIRzw+2D1GQZ8ttV++J8/FGOPx+fXSa30TswEWrE9jW8GnEEIU5N4GJa9gPtHfGdKMI+qDQ1VVhlAS1WiDFZmuI3Cmp1CntD8XsQIfp/5CBe1xT+jYJ284bwPNVy9GZTLduU6lFdLIO9KOLZKOKni+aLJl40IZoagk/Kwbu66rEq/1Gyt38YRS2Vk2PoZMrYMmAcHXTFd4SvE9nKEAAA"
+      }
+    },
+    "no_qualification_promotion": "The registry state remains execution_pending, not executed, accepted, production enabled or authorized."
+  },
+  "validation": {
+    "existing_python_suites": [
+      {
+        "suite": "test_hepta_windows_nextest_prerequisites",
+        "tests": 7,
+        "exit_code": 0,
+        "seconds": 0.01,
+        "retained_stdout_stderr": {
+          "original_bytes": 1346,
+          "original_sha256": "250f56c94c0121b2f419e80950b4bb12529bd57bac816014463a5379471a4ac2",
+          "gzip_bytes": 344,
+          "gzip_sha256": "27e0baa00ee9c04a74c7d24b259f638d73b8b6f1c84a5f7660682b5d472b615a",
+          "encoding": "base64(gzip(original UTF-8 decoded-log tool-response bytes)); no normalization",
+          "data": "H4sIAAAAAAACA7WTwU7DMAyG732KHuFANU48BBIghMTR8hJ3Dcvs4jjreHvSDhA9IG1QcoiSOPH/ObaNkoFTSQk6KUtU14U9gexJNXiCkEDphZyRry9svN1RbwhDYC9DAqbDdNorKb3mkELZNs9H693R+PDN9lT2qbEzZC/rpmlq2VbHR1mV2GAQ3bZRBnDCpuhscbqfhOY8bThYVoIerYNNRvXgkFkM1gTrtx5TWv7nThKdc7IwsLUJRCHzlmVg2EvMO4JdHl1iiOCi/APtGdJzZtGwCYyxxKkWLBQ/yH7KSOrRUSmRHfbTHBgmaV0e/3cU80iKbBvDprPPPLUSx5qajHQgl0e/S5Ofpjon/UhM6T9ZJ9I9eUAD66i0K2Fpx1J8kWD0huUjUiq3PXgt3bs0/h9QvmKqrhYZ1SNyfVOPWKkOXK+a1fUqVdX9bfUO3mx7/kIFAAA="
+        }
+      },
+      {
+        "suite": "test_hepta_rust_ci_feedback",
+        "tests": 20,
+        "exit_code": 0,
+        "seconds": 0.622,
+        "retained_stdout_stderr": {
+          "original_bytes": 3073,
+          "original_sha256": "bf8c11d0eba6bc7b4b4ae8328d41e173d56768894dffec9915e470c7b7396baa",
+          "gzip_bytes": 641,
+          "gzip_sha256": "ab65c4f449196304b365b2c1aa13da14e90fbdb94145293a2c5d595502f6b79b",
+          "encoding": "base64(gzip(original UTF-8 decoded-log tool-response bytes)); no normalization",
+          "data": "H4sIAAAAAAACA7WWwZLTMAyG732KHOFAZ6cHHmEvHJhhuGsUW25MHDtrKS19e+Q2u5Au0KwLvdRJrF+fZUm2EAtgyxQFUgYfDxi8BRdwz2AwxiQwInPzTsrMjkZByJMOjQdHZFs0/fYRWR7nh686j7eyUvd9s91um9RvzgYtRdMNmHvwDGMmpnwgC+0kYBMxFCtLAU/gUh5QQKdMQargKn0tgU2KzudB7cacmCDFcALTYdxTWWV96NYIL1GUlUTnc5qyIWB9NMJnh1UEf9G7diz6RTfZBMLIIDSMKWM+KaR04HygSoCbuksQh/rKlvAYCmXEvR9H/b8o+RTvzui3uVji7VE0jJ3aAZ+i4PcqglcqSyfPhdaiJk2hZTh66ZJmdUEFHYyT1C1+pfbvgTpC+7+AbmhfAXEKWBI7+Fi2yfSoNVUaU2kEZetimiutkuoNDpZoA0bvykDbkQt+351Hhqy2I0kpqJGPgNH+7FAmDWNtgdW7e4U9YVC3EVh8Scy5V7hJH9op2nrAm8JLlBEzDlqKuZAO5fCxHvcxqblhXcaviwA6UGkmGaTLRCB+qNzxu71eL0K6SyZDpKNmkQYfM2k+qQuNR9mRSyTqu/sbfVwBvjqSeqKRgU0a555YB3VbdwlyOZKh9dH6WC4WSYNbFqRfniaf1ehbaus2daX2EugSMv109jJP1Mhqujo9R2fROqCV2n8AOqbcu5COPJfSbA8RxR9ohujI9HfCrfdzBdphPl+/fLDa2Evffk7Alz51D99q+SXW5YDRm4ectKide27hegWjnFOugrkl+oKw+fBPfpsvGJvdQ1Occ+Nj87D9uNvxZvP50+YH2FrNswEMAAA="
+        }
+      },
+      {
+        "suite": "test_hepta_verification_profiles-after-audit",
+        "tests": 7,
+        "exit_code": 0,
+        "seconds": 5.25,
+        "retained_stdout_stderr": {
+          "original_bytes": 1465,
+          "original_sha256": "387d73e9a620b7722ef47e984ea0ae3c05b92e97db54f175156011999cb3f6f7",
+          "gzip_bytes": 345,
+          "gzip_sha256": "c6b04f747e314e581059098a19c28f2ec70150f8207d4df8768ece2d863b3e61",
+          "encoding": "base64(gzip(original UTF-8 decoded-log tool-response bytes)); no normalization",
+          "data": "H4sIAAAAAAACA71TzW7CMAy+9yl63A6rpkloD7HDpmniapnE0Iw2jhyHiref2wECcWJU661O/P34c5SyAhZtWYLuQfeJMmD0kEj6kHPgmEGoxxChtzoqyx7sZ8XaQhJeh45y/aAjTktJEXYkYR0cqvWebjTLs+rHb/HLenKjsyh4rJumqXlbTXAbTMBDJAFPO+o49RQVXEtum0FbMjzsQIUIhmDMRa0SaQhxA1mxI2NK97uaR8a1tSM9oBCsWQYUTx6UJ1DPrhyIQudnMXEL4bXcErfRxnBEgTDm+U1ODWJFBjcNwk+uuYijWTTfzHopvGdfrOvYbVctt7PULJmDNJK79d5CdilzOj7frmmbhBKLWlyQW4vM3hLaW1Eurj1tGjoNO9Nj/keejjDfP/h55Vxa/f81+vsKVU+zfNUnxvq1HsXkOsR60bwsnnNVvb9VP+yfZX25BQAA"
+        }
+      },
+      {
+        "suite": "test_hepta_gap_closure-after-audit",
+        "tests": 18,
+        "exit_code": 0,
+        "seconds": 4.158,
+        "retained_stdout_stderr": {
+          "original_bytes": 2807,
+          "original_sha256": "e801715bd7bbfb9267a74ce779c5e1d2813c767552439ef0dbfd8f73a0a95d10",
+          "gzip_bytes": 595,
+          "gzip_sha256": "caf591a9468c9a547d9d0d3aa07bf0fa22089b9f0b1429806b15b1c70c15b158",
+          "encoding": "base64(gzip(original UTF-8 decoded-log tool-response bytes)); no normalization",
+          "data": "H4sIAAAAAAACA62VsY7bMAyGdz+Fx3aogQNa4F6gQ9GhQNFdUCTaZiNLBkXnLm9fSnaSOg0ukXtZEiPk/3+kKJohsjLaB49GO2WDmQbwrNAf5CvQUWFUxoUIVmlvFUE3OU31B06JPYysVafHHDIRNF9fteFvVnKRj78kpuFtDh/rpmnqsK/m/B7MPkycIxwykEgFlAwCBcmzmOiu4prAIrGgeguvOWXyTNrsBbpFBzmL4DcYBluKUiC9ZoLUwZyiqctdjanTPrAKByBCC391nmAMEVPHSwG3+tyizSUNkzzvUp+l715yknbs9bj8NWg2vfJ6gG2ohSa3OHGRXlof1YAxou+yivzO2fmIwNm4DbPM4xblANSBCrsIdNCMwf9zLvHouQdGM8duAy22uWJN2osIgQEc52mSZGxlZrLiPObaquBd+YQWO6wJ0fcSKRdMdShq/oAUfF5TS6EEckvljFaKpZTbXNakDj1oUjFMZC61UpikWiYcS5nu6a3d5w6P0kmBDmSBcpuZYN5Tyx5/CeSK12CJ9ppqnGJ/XYG8VObZ3aVSSlnuK64JzjEhh502zmUppkrsNLp0pnJbdFt8EzdY3GZkPYwyXrJmImsHHmLMue3EYq/iHl5Uq9FtBXxUf013arb23WV1S2kwjFy8Dt4Ue8P3tIctHtIwWrXTEf7L/KbiAwTzZTBhGJDjuxCsFK8IWOfNrT228nx+ucOwE2J7lHek/M0yW+XNeFz6zFR9epdP9VP7+um5ThyxRl9/bp6+PMeq+vG9+gOJt/vC9woAAA=="
+        }
+      }
+    ],
+    "total_tests_passed": 52,
+    "original_assertions_preserved": true,
+    "zero_test_attempt": {
+      "pattern": "test_hepta_source_registry_closure.py",
+      "tests": 0,
+      "exit_code": 5,
+      "scope": "No matching test file; not counted as pass."
+    },
+    "just_fmt": "exit0, no changed formatter-owned file",
+    "git_diff_check": "PASS",
+    "strict_maps": "NOT PASS: learning.ledger mapped evidence PLAN_AUDIT.json changed after its source observation.",
+    "gap_qualification": "NOT PASS: delegates to the same stale map rejection.",
+    "next_required": "Create an actual GitHub source A containing these source/audit/evidence changes, then run official maps migrate and plasticity sync and strictly verify the actual metadata candidate. No map has been rebound to a local/nonpublic identity."
+  },
+  "latest_github_snapshot": {
+    "pr": {
+      "head": "f8f03321a000f179d7a0e01548ca987656866af2",
+      "base": "75531105b27329abaeb955e77c2c04a6d14f3bcb",
+      "merge": "09e3e2736ba772d934b8374dcbfd72e6a32d77f6",
+      "draft": true,
+      "mergeable": true,
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/2559"
+    },
+    "current_source_runs": [
+      {
+        "id": 39749239051,
+        "name": "Hepta architecture convergence",
+        "status": "pending",
+        "conclusion": null
+      },
+      {
+        "id": 39749238938,
+        "name": "Hepta Safe YAML RustSec Migration (shadow)",
+        "status": "queued",
+        "conclusion": null
+      },
+      {
+        "id": 39749239130,
+        "name": "Matrix SDK compatibility",
+        "status": "queued",
+        "conclusion": null
+      },
+      {
+        "id": 39749238937,
+        "name": "Hepta native PoN pair",
+        "status": "pending",
+        "conclusion": null
+      },
+      {
+        "id": 39749239015,
+        "name": "blocking-ci",
+        "status": "pending",
+        "conclusion": null
+      },
+      {
+        "id": 39749239019,
+        "name": "v8-canary",
+        "status": "queued",
+        "conclusion": null
+      },
+      {
+        "id": 39749238912,
+        "name": "Hepta Windows deletion boundary diagnostics",
+        "status": "queued",
+        "conclusion": null
+      }
+    ],
+    "predecessor_fullRust_run": 39743869108,
+    "predecessor_fullRust_source": "cb481bb06d2e048d9cb4d6356cf78682ea620fb2",
+    "visible_predecessor_jobs": [
+      {
+        "id": 119707416390,
+        "name": "Argument comment lint - macOS",
+        "status": "in_progress",
+        "conclusion": null,
+        "failed_steps": []
+      },
+      {
+        "id": 119707416789,
+        "name": "Lint/Build — ubuntu-24.04 - x86_64-unknown-linux-musl (release)",
+        "status": "in_progress",
+        "conclusion": null,
+        "failed_steps": []
+      },
+      {
+        "id": 119707416797,
+        "name": "Tests — windows-11-arm - aarch64-pc-windows-msvc / Build nextest archive",
+        "status": "completed",
+        "conclusion": "failure",
+        "failed_steps": [
+          "Build nextest archive"
+        ]
+      },
+      {
+        "id": 119707416806,
+        "name": "Argument comment lint package",
+        "status": "queued",
+        "conclusion": null,
+        "failed_steps": []
+      },
+      {
+        "id": 119707416824,
+        "name": "Lint/Build — macos-15 - aarch64-apple-darwin",
+        "status": "queued",
+        "conclusion": null,
+        "failed_steps": []
+      },
+      {
+        "id": 119707416835,
+        "name": "Tests — ubuntu-24.04 - x86_64-unknown-linux-gnu (remote) / Build nextest archive",
+        "status": "queued",
+        "conclusion": null,
+        "failed_steps": []
+      },
+      {
+        "id": 119707416894,
+        "name": "cargo shear",
+        "status": "queued",
+        "conclusion": null,
+        "failed_steps": []
+      },
+      {
+        "id": 119707416935,
+        "name": "Lint/Build — macos-15 - aarch64-apple-darwin (release)",
+        "status": "queued",
+        "conclusion": null,
+        "failed_steps": []
+      },
+      {
+        "id": 119707416936,
+        "name": "Lint/Build — windows-latest - x86_64-pc-windows-msvc (release)",
+        "status": "in_progress",
+        "conclusion": null,
+        "failed_steps": []
+      },
+      {
+        "id": 119707416937,
+        "name": "Tests — macos-15 - aarch64-apple-darwin / Build nextest archive",
+        "status": "in_progress",
+        "conclusion": null,
+        "failed_steps": []
+      },
+      {
+        "id": 119707416950,
+        "name": "Format / etc",
+        "status": "queued",
+        "conclusion": null,
+        "failed_steps": []
+      },
+      {
+        "id": 119707416972,
+        "name": "Lint/Build — ubuntu-24.04-arm - aarch64-unknown-linux-gnu",
+        "status": "completed",
+        "conclusion": "success",
+        "failed_steps": []
+      },
+      {
+        "id": 119707416985,
+        "name": "Lint/Build — ubuntu-24.04 - x86_64-unknown-linux-musl",
+        "status": "in_progress",
+        "conclusion": null,
+        "failed_steps": []
+      },
+      {
+        "id": 119707417011,
+        "name": "Lint/Build — ubuntu-24.04-arm - aarch64-unknown-linux-musl",
+        "status": "in_progress",
+        "conclusion": null,
+        "failed_steps": []
+      },
+      {
+        "id": 119707417015,
+        "name": "Lint/Build — windows-latest - x86_64-pc-windows-msvc",
+        "status": "in_progress",
+        "conclusion": null,
+        "failed_steps": []
+      },
+      {
+        "id": 119707417026,
+        "name": "Lint/Build — windows-11-arm - aarch64-pc-windows-msvc",
+        "status": "completed",
+        "conclusion": "success",
+        "failed_steps": []
+      },
+      {
+        "id": 119707417031,
+        "name": "Argument comment lint - Windows",
+        "status": "in_progress",
+        "conclusion": null,
+        "failed_steps": []
+      },
+      {
+        "id": 119707417042,
+        "name": "Argument comment lint - Linux",
+        "status": "queued",
+        "conclusion": null,
+        "failed_steps": []
+      },
+      {
+        "id": 119707417147,
+        "name": "Tests — windows-latest - x86_64-pc-windows-msvc / Build nextest archive",
+        "status": "in_progress",
+        "conclusion": null,
+        "failed_steps": []
+      },
+      {
+        "id": 119707417188,
+        "name": "Lint/Build — ubuntu-24.04-arm - aarch64-unknown-linux-musl (release)",
+        "status": "in_progress",
+        "conclusion": null,
+        "failed_steps": []
+      },
+      {
+        "id": 119707417193,
+        "name": "Lint/Build — ubuntu-24.04 - x86_64-unknown-linux-gnu",
+        "status": "queued",
+        "conclusion": null,
+        "failed_steps": []
+      },
+      {
+        "id": 119707417217,
+        "name": "Lint/Build — windows-11-arm - aarch64-pc-windows-msvc (release)",
+        "status": "completed",
+        "conclusion": "success",
+        "failed_steps": []
+      },
+      {
+        "id": 119707417248,
+        "name": "Lint/Build — macos-15 - x86_64-apple-darwin",
+        "status": "queued",
+        "conclusion": null,
+        "failed_steps": []
+      },
+      {
+        "id": 119707417490,
+        "name": "Tests — ubuntu-24.04-arm - aarch64-unknown-linux-gnu / Build nextest archive",
+        "status": "in_progress",
+        "conclusion": null,
+        "failed_steps": []
+      },
+      {
+        "id": 119731273469,
+        "name": "Tests — windows-11-arm - aarch64-pc-windows-msvc / Platform result",
+        "status": "queued",
+        "conclusion": null,
+        "failed_steps": []
+      },
+      {
+        "id": 119731275139,
+        "name": "Tests — windows-11-arm - aarch64-pc-windows-msvc / Tests shard ${{ matrix.shard }}/4",
+        "status": "completed",
+        "conclusion": "skipped",
+        "failed_steps": []
+      }
+    ],
+    "api_pagination_limit": "tool returns latest attempt first page only",
+    "scope": "Current f8f jobs are not passed; predecessor native Rust byte equivalence is not exact current-repository qualification."
+  },
+  "remote_actions": {
+    "push": false,
+    "pr_ref_update": false,
+    "rerun": false,
+    "second_fullRust_trigger": false
+  },
+  "native_execution": {
+    "performed_locally": false,
+    "new_archive_success_claimed": false,
+    "current_full_gate_pass_claimed": false
+  },
+  "limits": "The repair is concrete and locally reviewed by Python source controls. Current-source CI remains pending/queued; existing predecessor fullRust is not terminal. Functional Windows isolation, original positive tests and other unresolved blockers remain unqualified."
+}

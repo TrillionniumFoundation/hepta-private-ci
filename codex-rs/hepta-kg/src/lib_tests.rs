@@ -8,7 +8,7 @@ fn id(value: &str) -> StableId {
 }
 
 fn generation() -> Generation {
-    let Ok(value) = Generation::new(1) else {
+    let Ok(value) = Generation::new(/*value*/ 1) else {
         panic!("test generation must be valid");
     };
     value
@@ -30,12 +30,18 @@ fn rebuild_is_canonical_and_authority_free() {
     let left = rebuild(
         generation(),
         snapshot,
-        vec![edge("source:b", true), edge("source:a", true)],
+        vec![
+            edge("source:b", /*live*/ true),
+            edge("source:a", /*live*/ true),
+        ],
     );
     let right = rebuild(
         generation(),
         snapshot,
-        vec![edge("source:a", true), edge("source:b", true)],
+        vec![
+            edge("source:a", /*live*/ true),
+            edge("source:b", /*live*/ true),
+        ],
     );
     let (Ok(left), Ok(right)) = (left, right) else {
         panic!("projections must build");
@@ -47,7 +53,11 @@ fn rebuild_is_canonical_and_authority_free() {
 #[test]
 fn deleted_edges_do_not_enter_projection() {
     let snapshot = Digest32::of_bytes(b"snapshot");
-    let Ok(value) = rebuild(generation(), snapshot, vec![edge("source:a", false)]) else {
+    let Ok(value) = rebuild(
+        generation(),
+        snapshot,
+        vec![edge("source:a", /*live*/ false)],
+    ) else {
         panic!("projection must build");
     };
     assert!(value.edges.is_empty());
@@ -60,7 +70,10 @@ fn duplicate_edges_are_rejected() {
         rebuild(
             generation(),
             snapshot,
-            vec![edge("source:a", true), edge("source:a", true)]
+            vec![
+                edge("source:a", /*live*/ true),
+                edge("source:a", /*live*/ true)
+            ]
         ),
         Err(Error::DuplicateEdge("source:a".to_string()))
     );

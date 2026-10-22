@@ -83,8 +83,8 @@ impl Fixture {
             scope(),
             /*max_records*/ 16,
         ));
-        let first = checked(journal.commit(Digest32::ZERO, &tick(1)));
-        let second = checked(journal.commit(first.checkpoint_after, &tick(2)));
+        let first = checked(journal.commit(Digest32::ZERO, &tick(/*sequence*/ 1)));
+        let second = checked(journal.commit(first.checkpoint_after, &tick(/*sequence*/ 2)));
         Self {
             root,
             first,
@@ -121,7 +121,7 @@ fn anchored_reopen_preserves_the_exact_receipt_and_all_bytes() {
     let before = checked(fs::read(fixture.path()));
     let mut reopened = checked(fixture.open(fixture.anchor()));
     assert_eq!(
-        checked(reopened.commit(fixture.first.checkpoint_after, &tick(2))),
+        checked(reopened.commit(fixture.first.checkpoint_after, &tick(/*sequence*/ 2))),
         fixture.second
     );
     drop(reopened);
@@ -201,7 +201,7 @@ fn earlier_anchor_accepts_later_complete_frames_and_repairs_only_the_tail() {
         Some(fixture.second.checkpoint_after)
     );
     assert_eq!(
-        checked(recovered.commit(fixture.first.checkpoint_after, &tick(2))),
+        checked(recovered.commit(fixture.first.checkpoint_after, &tick(/*sequence*/ 2))),
         fixture.second
     );
     drop(recovered);
@@ -213,12 +213,12 @@ fn fully_rehashed_alternate_history_cannot_satisfy_the_trusted_anchor() {
     let fixture = Fixture::new();
     let full = checked(fs::read(fixture.path()));
     let mut alternate = full[..HEADER].to_vec();
-    let mut changed = tick(1);
+    let mut changed = tick(/*sequence*/ 1);
     changed.drive_q24[0] -= 1;
     let (state, first) = checked(sparse_tick(&config(), &changed, /*previous*/ None));
-    let (_, second) = checked(sparse_tick(&config(), &tick(2), Some(&state)));
+    let (_, second) = checked(sparse_tick(&config(), &tick(/*sequence*/ 2), Some(&state)));
     alternate.extend_from_slice(&encode_frame(&changed, &first));
-    alternate.extend_from_slice(&encode_frame(&tick(2), &second));
+    alternate.extend_from_slice(&encode_frame(&tick(/*sequence*/ 2), &second));
     assert_ne!(second.checkpoint_after, fixture.second.checkpoint_after);
     checked(fs::write(fixture.path(), &alternate));
     assert_eq!(

@@ -63,7 +63,7 @@ fn checkpoint_is_content_addressed_and_supports_binary_lookup() {
 #[test]
 fn checkpoint_revocation_frontier_changes_without_rewriting_history() {
     let mut ledger = LearningLedger::new();
-    let source = ledger.append(decision(0)).unwrap();
+    let source = ledger.append(decision(/*index*/ 0)).unwrap();
     let before = build_ledger_index_checkpoint(&ledger.snapshot()).unwrap();
     ledger
         .append(LedgerEvent::UnlearningLineageV1(

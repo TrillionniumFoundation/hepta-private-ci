@@ -1675,7 +1675,7 @@ mod tests {
         ArtifactOwnerTrustV1 {
             registry_id: id("learning-artifacts"),
             withdrawal_scope_digest: scope_digest,
-            minimum_registry_generation: Generation::new(1).fixture("generation"),
+            minimum_registry_generation: Generation::new(/*value*/ 1).fixture("generation"),
             genesis_predecessor_head_digest: Digest32::ZERO,
             minimum_authority_epoch: 1,
             writer_signers: vec![trusted_signer(key)],
@@ -1713,7 +1713,7 @@ mod tests {
         LearningArtifactManifestV2 {
             artifact_id: id("candidate"),
             kind: ArtifactKind::Model,
-            generation: Generation::new(1).fixture("generation"),
+            generation: Generation::new(/*value*/ 1).fixture("generation"),
             provenance_mode: ProvenanceModeV1::DatasetDerived,
             source_dataset_digests: vec![digest("dataset")],
             lineage_digests: vec![digest("lineage")],
@@ -1744,7 +1744,7 @@ mod tests {
             binding: digest("binding"),
             witness: RegistryHeadWitnessV1 {
                 registry_id: id("learning-artifacts"),
-                generation: Generation::new(1).fixture("generation"),
+                generation: Generation::new(/*value*/ 1).fixture("generation"),
                 head_digest,
                 predecessor_head_digest: Digest32::ZERO,
                 authority_epoch: 1,
@@ -1768,7 +1768,7 @@ mod tests {
             &directory.0,
             trust(&key, scope_digest),
             lease(&key, scope_digest),
-            20,
+            /*now*/ 20,
         )
         .fixture("first owner");
         assert!(matches!(
@@ -1776,7 +1776,7 @@ mod tests {
                 &directory.0,
                 trust(&key, scope_digest),
                 lease(&key, scope_digest),
-                20,
+                /*now*/ 20,
             )
             .fixture_error("second owner must be fenced"),
             ArtifactOwnerHostError::WriterFenceBusy
@@ -1786,7 +1786,7 @@ mod tests {
             &directory.0,
             trust(&key, scope_digest),
             lease(&key, scope_digest),
-            20,
+            /*now*/ 20,
         )
         .fixture("fence is released");
     }
@@ -1801,7 +1801,7 @@ mod tests {
             &directory.0,
             trust(&key, scope_digest),
             lease(&key, scope_digest),
-            20,
+            /*now*/ 20,
         )
         .fixture("owner");
         let withdrawals = DatasetWithdrawalRegistry::new_scoped(scope);
@@ -1809,7 +1809,7 @@ mod tests {
             &withdrawals,
             withdrawals.head_digest(),
             manifest(),
-            20,
+            /*now*/ 20,
         )
         .fixture("admission");
         let registry = ArtifactRegistry::new();
@@ -1820,11 +1820,11 @@ mod tests {
                 &withdrawals,
                 &registry,
                 Digest32::ZERO,
-                20,
+                /*now*/ 20,
             )
             .fixture("begin");
         transaction
-            .record_payload_durable(digest("payload"), 7)
+            .record_payload_durable(digest("payload"), /*encoded_bytes*/ 7)
             .fixture("payload durable");
         owner
             .persist_checkpoint(&transaction)
@@ -1836,7 +1836,7 @@ mod tests {
             &directory.0,
             trust(&key, scope_digest),
             lease(&key, scope_digest),
-            21,
+            /*now*/ 21,
         )
         .fixture("reopen");
         let recovery = reopened
@@ -1849,7 +1849,7 @@ mod tests {
         );
         assert!(recovery.requires_exact_snapshot);
         let resumed = reopened
-            .resume_publication(snapshot, 21)
+            .resume_publication(snapshot, /*now*/ 21)
             .fixture("exact snapshot resumes");
         assert_eq!(resumed.phase(), ArtifactPublicationPhaseV1::PayloadDurable);
     }
@@ -1865,7 +1865,7 @@ mod tests {
             &current_directory.0,
             trust(&key, scope_digest),
             lease(&key, scope_digest),
-            20,
+            /*now*/ 20,
         )
         .fixture("current owner");
         let head = signed_head(&key, scope_digest, digest("current-head"));
@@ -1879,7 +1879,7 @@ mod tests {
             trust(&key, scope_digest),
             lease(&key, scope_digest),
             head,
-            21,
+            /*now*/ 21,
         )
         .fixture_error("old backup must not satisfy independent current-head floor");
         assert!(matches!(
@@ -1933,11 +1933,12 @@ mod tests {
             root,
             trust(&key, scope_digest),
             lease(&key, scope_digest),
-            20,
+            /*now*/ 20,
         )
         .fixture("worker owner");
         let withdrawals = DatasetWithdrawalRegistry::new_scoped(scope);
-        let (registry, mut transaction) = deterministic_publication(&owner, &withdrawals, 20);
+        let (registry, mut transaction) =
+            deterministic_publication(&owner, &withdrawals, /*now*/ 20);
         let payload_relative = PathBuf::from("payloads").join(format!(
             "{}-{}.bin",
             id("candidate"),
@@ -1960,7 +1961,12 @@ mod tests {
             "payload-durable" | "registry-effect" | "registry-durable" | "head-effect"
             | "witness-durable" | "acknowledged" => {
                 owner
-                    .ensure_payload_durable(&mut transaction, &registry, b"payload", 20)
+                    .ensure_payload_durable(
+                        &mut transaction,
+                        &registry,
+                        b"payload",
+                        /*now*/ 20,
+                    )
                     .fixture("payload durable");
                 if stage == "payload-durable" {
                     durable_process_marker(root, stage);
@@ -1991,7 +1997,13 @@ mod tests {
                 }
 
                 owner
-                    .ensure_registry_durable(&mut transaction, &registry, &withdrawals, binding, 20)
+                    .ensure_registry_durable(
+                        &mut transaction,
+                        &registry,
+                        &withdrawals,
+                        binding,
+                        /*now*/ 20,
+                    )
                     .fixture("registry durable");
                 if stage == "registry-durable" {
                     durable_process_marker(root, stage);
@@ -2004,7 +2016,7 @@ mod tests {
                 if stage == "head-effect" {
                     let requirement = RegistryHeadRequirementV1 {
                         registry_id: id("learning-artifacts"),
-                        minimum_generation: Generation::new(1).fixture("generation"),
+                        minimum_generation: Generation::new(/*value*/ 1).fixture("generation"),
                         expected_predecessor_head_digest: Digest32::ZERO,
                         minimum_authority_epoch: 1,
                         now: 20,
@@ -2016,7 +2028,11 @@ mod tests {
                             head.witness.generation.get(),
                             owner
                                 .verifier
-                                .verify_signed_head(&head, &requirement, true)
+                                .verify_signed_head(
+                                    &head,
+                                    &requirement,
+                                    /*require_current_signer*/ true
+                                )
                                 .fixture("verify head")
                                 .witness_digest
                         )),
@@ -2035,7 +2051,7 @@ mod tests {
                 }
 
                 owner
-                    .ensure_witness_durable(&mut transaction, &head, &withdrawals, 20)
+                    .ensure_witness_durable(&mut transaction, &head, &withdrawals, /*now*/ 20)
                     .fixture("witness durable");
                 if stage == "witness-durable" {
                     durable_process_marker(root, stage);
@@ -2045,7 +2061,7 @@ mod tests {
                 }
 
                 owner
-                    .acknowledge(&mut transaction, &withdrawals, 20)
+                    .acknowledge(&mut transaction, &withdrawals, /*now*/ 20)
                     .fixture("acknowledge");
             }
             other => panic!("unknown process fault stage: {other}"),
@@ -2133,7 +2149,7 @@ mod tests {
                 &directory.0,
                 trust(&key, scope_digest),
                 lease(&key, scope_digest),
-                21,
+                /*now*/ 21,
             )
             .fixture("reopen owner after process death");
             let recovery = reopened
@@ -2144,7 +2160,7 @@ mod tests {
 
             if stage == "head-effect" {
                 let current = reopened
-                    .discover_current_head(21)
+                    .discover_current_head(/*now*/ 21)
                     .fixture("discover head after owner death")
                     .fixture("signed head survived process death");
                 assert_eq!(
@@ -2185,7 +2201,7 @@ mod tests {
             &directory.0,
             rotated_trust.clone(),
             lease(&old_key, scope_digest),
-            40,
+            /*now*/ 40,
         )
         .fixture("rotated owner");
 
@@ -2199,7 +2215,7 @@ mod tests {
             binding: digest("binding"),
             witness: RegistryHeadWitnessV1 {
                 registry_id: id("learning-artifacts"),
-                generation: Generation::new(2).fixture("generation"),
+                generation: Generation::new(/*value*/ 2).fixture("generation"),
                 head_digest: digest("head-two"),
                 predecessor_head_digest: head_one.witness.head_digest,
                 authority_epoch: 2,
@@ -2216,7 +2232,7 @@ mod tests {
             .fixture("persist rotated head");
 
         let latest = owner
-            .discover_current_head(40)
+            .discover_current_head(/*now*/ 40)
             .fixture("discover rotated chain")
             .fixture("rotated current head");
         assert_eq!(latest.signed, head_two);
@@ -2225,7 +2241,7 @@ mod tests {
             &old_only_directory.0,
             rotated_trust,
             lease(&old_key, scope_digest),
-            40,
+            /*now*/ 40,
         )
         .fixture("old-only owner");
         old_only_owner
@@ -2233,7 +2249,7 @@ mod tests {
             .fixture("persist old-only head");
         assert!(matches!(
             old_only_owner
-                .discover_current_head(40)
+                .discover_current_head(/*now*/ 40)
                 .fixture_error("revoked signer cannot remain current"),
             ArtifactOwnerHostError::SignerRevoked
         ));
@@ -2243,7 +2259,7 @@ mod tests {
         stale_epoch.signature = new_key.sign(&stale_epoch.signing_bytes()).to_bytes();
         let requirement = RegistryHeadRequirementV1 {
             registry_id: id("learning-artifacts"),
-            minimum_generation: Generation::new(2).fixture("generation"),
+            minimum_generation: Generation::new(/*value*/ 2).fixture("generation"),
             expected_predecessor_head_digest: head_one.witness.head_digest,
             minimum_authority_epoch: 2,
             now: 30,
@@ -2251,7 +2267,11 @@ mod tests {
         assert!(matches!(
             owner
                 .verifier
-                .verify_signed_head(&stale_epoch, &requirement, true)
+                .verify_signed_head(
+                    &stale_epoch,
+                    &requirement,
+                    /*require_current_signer*/ true
+                )
                 .fixture_error("rotated signer cannot regress authority epoch"),
             ArtifactOwnerHostError::SignerContext
         ));
@@ -2266,26 +2286,26 @@ mod tests {
             &directory.0,
             trust(&key, scope_digest),
             lease(&key, scope_digest),
-            20,
+            /*now*/ 20,
         )
         .fixture("owner");
         let head = signed_head(&key, scope_digest, digest("head"));
         let requirement = RegistryHeadRequirementV1 {
             registry_id: id("learning-artifacts"),
-            minimum_generation: Generation::new(1).fixture("generation"),
+            minimum_generation: Generation::new(/*value*/ 1).fixture("generation"),
             expected_predecessor_head_digest: Digest32::ZERO,
             minimum_authority_epoch: 1,
             now: 20,
         };
         owner
             .verifier
-            .verify_signed_head(&head, &requirement, true)
+            .verify_signed_head(&head, &requirement, /*require_current_signer*/ true)
             .fixture("signed head");
         owner
             .persist_signed_head_record(&head)
             .fixture("persist signed head");
         let discovered = owner
-            .discover_current_head(20)
+            .discover_current_head(/*now*/ 20)
             .fixture("discover")
             .fixture("current head");
         assert_eq!(discovered.signed, head);
@@ -2295,7 +2315,7 @@ mod tests {
         assert!(matches!(
             owner
                 .verifier
-                .verify_signed_head(&drift, &requirement, true)
+                .verify_signed_head(&drift, &requirement, /*require_current_signer*/ true)
                 .fixture_error("signature drift"),
             ArtifactOwnerHostError::InvalidSignature
         ));
@@ -2346,7 +2366,7 @@ mod tests {
             head.signature = key.sign(&head.signing_bytes()).to_bytes();
             let requirement = RegistryHeadRequirementV1 {
                 registry_id: id("learning-artifacts"),
-                minimum_generation: Generation::new(1).fixture("generation"),
+                minimum_generation: Generation::new(/*value*/ 1).fixture("generation"),
                 expected_predecessor_head_digest: Digest32::ZERO,
                 minimum_authority_epoch: 1,
                 now: 20,
@@ -2364,7 +2384,7 @@ mod tests {
             let first = view();
             first
                 .validity()
-                .validate_at(20)
+                .validate_at(/*now*/ 20)
                 .fixture("issuance is valid");
             let validity = first.validity();
             let loaded = crate::load_pinned_candidate(

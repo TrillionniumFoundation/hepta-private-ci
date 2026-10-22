@@ -302,18 +302,18 @@ mod tests {
 
     #[test]
     fn ledger_05_dataset_receipt_is_self_verifying() {
-        let receipt = freeze_dataset_receipt_v3(request(), 60).expect("valid receipt");
-        verify_dataset_snapshot_receipt_v3(&receipt, 60).expect("receipt verifies");
+        let receipt = freeze_dataset_receipt_v3(request(), /*now*/ 60).expect("valid receipt");
+        verify_dataset_snapshot_receipt_v3(&receipt, /*now*/ 60).expect("receipt verifies");
         assert_eq!(receipt.snapshot.pending_outcomes, 1);
         assert_eq!(receipt.snapshot.authority, AuthorityPosture::DENY_ALL);
     }
 
     #[test]
     fn ledger_05_dataset_receipt_rejects_semantic_field_drift() {
-        let mut receipt = freeze_dataset_receipt_v3(request(), 60).expect("valid receipt");
+        let mut receipt = freeze_dataset_receipt_v3(request(), /*now*/ 60).expect("valid receipt");
         receipt.correction_cut_digest = digest("changed-cut");
         assert_eq!(
-            verify_dataset_snapshot_receipt_v3(&receipt, 60),
+            verify_dataset_snapshot_receipt_v3(&receipt, /*now*/ 60),
             Err(DatasetReceiptError::DigestMismatch)
         );
     }

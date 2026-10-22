@@ -298,7 +298,7 @@ mod tests {
             candidate_id: id("candidate:a"),
             legal: true,
             hard_veto: false,
-            utility: FixedQ32::from_raw(1),
+            utility: FixedQ32::from_raw(/*raw*/ 1),
             calibrated_confidence: ProbabilityQ32::ONE,
             ood_score: ProbabilityQ32::ZERO,
             assignment_probability: ProbabilityQ32::ONE,
@@ -417,7 +417,7 @@ mod tests {
         );
 
         let mut tampered = request;
-        tampered.candidates[0].utility = FixedQ32::from_raw(2);
+        tampered.candidates[0].utility = FixedQ32::from_raw(/*raw*/ 2);
         assert_eq!(
             canonical_runtime_commitment_payload_v1(&tampered, &profile, &scoring, &assignment),
             Err(RuntimeCommitmentError::ScoringIdentityMismatch(
@@ -457,7 +457,7 @@ mod additional_substitution_tests {
             candidate_id: id("candidate:a"),
             legal: true,
             hard_veto: false,
-            utility: FixedQ32::from_raw(1),
+            utility: FixedQ32::from_raw(/*raw*/ 1),
             calibrated_confidence: ProbabilityQ32::ONE,
             ood_score: ProbabilityQ32::ZERO,
             assignment_probability: ProbabilityQ32::ONE,

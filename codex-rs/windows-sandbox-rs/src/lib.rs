@@ -75,6 +75,8 @@ mod hide_users;
 #[cfg(target_os = "windows")]
 mod identity;
 #[cfg(target_os = "windows")]
+mod legacy_boundary;
+#[cfg(target_os = "windows")]
 mod logging;
 #[cfg(target_os = "windows")]
 mod path_normalization;
@@ -231,6 +233,13 @@ pub use ipc_framed::read_frame;
 #[cfg(target_os = "windows")]
 pub use ipc_framed::write_frame;
 #[cfg(target_os = "windows")]
+pub use legacy_boundary::LegacyFilesystemIsolationUnavailable;
+#[cfg(target_os = "windows")]
+pub use legacy_boundary::WindowsFilesystemIsolationUnavailable;
+#[cfg(target_os = "windows")]
+#[doc(hidden)]
+pub use legacy_boundary::require_qualified_windows_filesystem;
+#[cfg(target_os = "windows")]
 pub use logging::current_log_file_path;
 #[cfg(target_os = "windows")]
 pub use logging::current_log_file_path_for_codex_home;
@@ -310,15 +319,9 @@ pub use token::LocalSid;
 #[cfg(target_os = "windows")]
 pub use token::convert_string_sid_to_sid;
 #[cfg(target_os = "windows")]
-pub use token::create_readonly_token_with_cap_from;
-#[cfg(target_os = "windows")]
 pub use token::create_readonly_token_with_caps_and_user_from;
 #[cfg(target_os = "windows")]
-pub use token::create_readonly_token_with_caps_from;
-#[cfg(target_os = "windows")]
 pub use token::create_workspace_write_token_with_caps_and_user_from;
-#[cfg(target_os = "windows")]
-pub use token::create_workspace_write_token_with_caps_from;
 #[cfg(target_os = "windows")]
 pub use token::get_current_token_for_restriction;
 #[cfg(target_os = "windows")]
@@ -749,6 +752,7 @@ mod windows_impl {
         ) else {
             return Ok(());
         };
+        super::legacy_boundary::require_qualified_legacy_filesystem()?;
         if !permissions.uses_write_capabilities_for_cwd(cwd, env_map) {
             return Ok(());
         }

@@ -11,7 +11,7 @@ fn reader_requires_existing_observation_inode_and_never_recreates_it() {
     let (directory, config, service, _) = published();
     let anchor = service
         .host
-        .discover_current_head(20)
+        .discover_current_head(/*now*/ 20)
         .fixture("current")
         .fixture("anchor")
         .signed;
@@ -21,12 +21,12 @@ fn reader_requires_existing_observation_inode_and_never_recreates_it() {
     let lock = directory.0.join("writer/current-observation.lock");
     let original = fs::read(&lock).fixture("retained lock bytes");
     fs::remove_file(&lock).fixture("remove lock");
-    assert!(reader.current_registry_view(20).is_err());
+    assert!(reader.current_registry_view(/*now*/ 20).is_err());
     assert!(ArtifactOwnerCurrentReaderV1::open(&directory.0, config.trust, anchor).is_err());
     assert!(!lock.exists(), "reader must not bootstrap a missing fence");
     fs::write(&lock, original).fixture("same bytes, different inode");
     assert!(matches!(
-        reader.current_registry_view(20),
+        reader.current_registry_view(/*now*/ 20),
         Err(ArtifactOwnerHostError::CurrentObservationFence)
     ));
     assert!(matches!(
@@ -41,7 +41,7 @@ fn reader_rejects_noncanonical_checkpoint_copies_and_unknown_entries() {
         let (directory, config, service, _) = published();
         let anchor = service
             .host
-            .discover_current_head(20)
+            .discover_current_head(/*now*/ 20)
             .fixture("current")
             .fixture("anchor")
             .signed;
@@ -60,7 +60,7 @@ fn reader_rejects_noncanonical_checkpoint_copies_and_unknown_entries() {
             fs::write(transactions.join("ignored.extension"), b"ignored").fixture("unknown entry");
         }
         assert!(matches!(
-            reader.current_registry_view(20),
+            reader.current_registry_view(/*now*/ 20),
             Err(ArtifactOwnerHostError::CheckpointMismatch)
         ));
     }
@@ -71,7 +71,7 @@ fn current_directory_bounds_count_every_entry_before_decoding_unique_operations(
     let (directory, config, service, _) = published();
     let anchor = service
         .host
-        .discover_current_head(20)
+        .discover_current_head(/*now*/ 20)
         .fixture("current")
         .fixture("anchor")
         .signed;
@@ -89,11 +89,11 @@ fn current_directory_bounds_count_every_entry_before_decoding_unique_operations(
         .fixture("entry");
     }
     assert!(matches!(
-        reader.current_registry_view(20),
+        reader.current_registry_view(/*now*/ 20),
         Err(ArtifactOwnerHostError::Capacity)
     ));
     assert!(matches!(
-        service.host.current_registry_view(20),
+        service.host.current_registry_view(/*now*/ 20),
         Err(ArtifactOwnerHostError::Capacity)
     ));
 }
@@ -103,12 +103,12 @@ fn signed_snapshot_replaced_by_fifo_rejects_before_blocking_open() {
     let (directory, config, service, _) = published();
     let anchor = service
         .host
-        .discover_current_head(20)
+        .discover_current_head(/*now*/ 20)
         .fixture("current")
         .fixture("anchor")
         .signed;
     let receipt = service
-        .current_registry_view(20)
+        .current_registry_view(/*now*/ 20)
         .fixture("original current")
         .receipt();
     let reader =
@@ -125,7 +125,7 @@ fn signed_snapshot_replaced_by_fifo_rejects_before_blocking_open() {
     assert!(status.success());
     let started = Instant::now();
     assert!(matches!(
-        reader.current_registry_view(20),
+        reader.current_registry_view(/*now*/ 20),
         Err(ArtifactOwnerHostError::CurrentObservationFence)
     ));
     assert!(

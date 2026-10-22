@@ -23,7 +23,7 @@ fn config() -> SparseConfig {
     SparseConfig {
         model_digest: Digest32::of_bytes(b"body-scope-model"),
         normalization_digest: Digest32::of_bytes(b"body-scope-normalization"),
-        generation: checked(Generation::new(1)),
+        generation: checked(Generation::new(/*value*/ 1)),
         width: 5,
         top_k: 1,
         temporal_decay_q24: Q / 2,
@@ -97,8 +97,12 @@ impl Drop for Fixture {
 #[test]
 fn successor_rejects_body_scope_drift() {
     let config = config();
-    let (previous, _) = checked(sparse_tick(&config, &tick(1), None));
-    let mut successor = tick(2);
+    let (previous, _) = checked(sparse_tick(
+        &config,
+        &tick(/*sequence*/ 1),
+        /*previous*/ None,
+    ));
+    let mut successor = tick(/*sequence*/ 2);
     successor.body_digest = Digest32::of_bytes(b"different-body");
     assert_eq!(
         sparse_tick(&config, &successor, Some(&previous)),
@@ -110,12 +114,22 @@ fn successor_rejects_body_scope_drift() {
 fn reopened_checkpoint_retains_body_scope_and_rejects_before_write() {
     let fixture = Fixture::new();
     let first = {
-        let mut journal = checked(SparseJournal::open(fixture.file(), config(), scope(), 4));
-        checked(journal.commit(Digest32::ZERO, &tick(1)))
+        let mut journal = checked(SparseJournal::open(
+            fixture.file(),
+            config(),
+            scope(),
+            /*max_records*/ 4,
+        ));
+        checked(journal.commit(Digest32::ZERO, &tick(/*sequence*/ 1)))
     };
     let before = checked(fs::read(fixture.path()));
-    let mut reopened = checked(SparseJournal::open(fixture.file(), config(), scope(), 4));
-    let mut successor = tick(2);
+    let mut reopened = checked(SparseJournal::open(
+        fixture.file(),
+        config(),
+        scope(),
+        /*max_records*/ 4,
+    ));
+    let mut successor = tick(/*sequence*/ 2);
     successor.body_digest = Digest32::of_bytes(b"different-body-after-reopen");
     assert_eq!(
         reopened.commit(first.checkpoint_after, &successor),

@@ -502,7 +502,7 @@ fn product_runner_binds_estimator_receipts_and_persists_signed_decision() {
         &evidence,
         ProductTimingEvidenceV1::Qualification,
         &verifier,
-        50,
+        /*now*/ 50,
         &mut sink,
     ) {
         Ok(value) => value,

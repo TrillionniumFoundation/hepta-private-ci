@@ -1203,9 +1203,9 @@ mod tests {
             .layout()
             .releases_root()
             .join(release_id.as_str());
-        set_mode(&release_root, 0o755)?;
+        set_mode(&release_root, /*mode*/ 0o755)?;
         std::fs::write(release_root.join("unexpected"), b"not allowed")?;
-        set_mode(&release_root, 0o555)?;
+        set_mode(&release_root, /*mode*/ 0o555)?;
         assert!(matches!(
             fixture
                 .registry
@@ -1230,7 +1230,7 @@ mod tests {
         std::fs::create_dir(&bin_root)?;
         let program = release_root.join(AGENTD_RELEASE_PROGRAM);
         std::fs::copy(&fixture.source, &program)?;
-        set_mode(&program, 0o555)?;
+        set_mode(&program, /*mode*/ 0o555)?;
         let metadata = LegacyReleaseMetadataV1 {
             schema_version: 1,
             release_id: release_id.clone(),
@@ -1243,7 +1243,7 @@ mod tests {
         write_new_json(&manifest, &metadata)?;
         set_mode(&manifest, /*mode*/ 0o444)?;
         set_mode(&bin_root, /*mode*/ 0o555)?;
-        set_mode(&release_root, 0o555)?;
+        set_mode(&release_root, /*mode*/ 0o555)?;
 
         let manifest_sha256 = sha256_file(&manifest)?;
         let allowance = ReleaseAllowance {
@@ -1260,7 +1260,7 @@ mod tests {
             .clone();
         let allowance_path = allowance_path(agent.layout.releases_root(), &release_id);
         write_new_json(&allowance_path, &allowance)?;
-        set_mode(&allowance_path, 0o444)?;
+        set_mode(&allowance_path, /*mode*/ 0o444)?;
 
         let resolved = fixture
             .registry
@@ -1289,9 +1289,9 @@ mod tests {
         fixture.registry.allow_release(&fixture.first, &v2)?;
         let first = fixture.registry.compare_and_set_release_state(
             &fixture.first,
-            0,
+            /*expected_generation*/ 0,
             Some(v1.clone()),
-            None,
+            /*previous*/ None,
         )?;
         let second = fixture.registry.compare_and_set_release_state(
             &fixture.first,
@@ -1315,9 +1315,9 @@ mod tests {
             .releases_root()
             .join(v2.as_str())
             .join(AGENTD_RELEASE_PROGRAM);
-        set_mode(&program, 0o755)?;
+        set_mode(&program, /*mode*/ 0o755)?;
         std::fs::write(&program, b"changed")?;
-        set_mode(&program, 0o555)?;
+        set_mode(&program, /*mode*/ 0o555)?;
         assert!(matches!(
             fixture.registry.resolve_release(&fixture.first, &v2),
             Err(FleetRegistryError::Corrupt(_))

@@ -568,7 +568,7 @@ mod tests {
         ArtifactOwnerTrustV1 {
             registry_id: id("learning-artifacts"),
             withdrawal_scope_digest: scope_digest,
-            minimum_registry_generation: Generation::new(1).fixture("generation"),
+            minimum_registry_generation: Generation::new(/*value*/ 1).fixture("generation"),
             genesis_predecessor_head_digest: Digest32::ZERO,
             minimum_authority_epoch: 1,
             writer_signers: vec![signer(key)],
@@ -598,7 +598,7 @@ mod tests {
         LearningArtifactManifestV2 {
             artifact_id: id("candidate"),
             kind: ArtifactKind::Model,
-            generation: Generation::new(1).fixture("generation"),
+            generation: Generation::new(/*value*/ 1).fixture("generation"),
             provenance_mode: ProvenanceModeV1::DatasetDerived,
             source_dataset_digests: vec![digest("dataset")],
             lineage_digests: vec![digest("lineage")],
@@ -629,7 +629,7 @@ mod tests {
             withdrawals,
             withdrawals.head_digest(),
             manifest(),
-            20,
+            /*now*/ 20,
         )
         .fixture("admission");
         let mut signed = SignedCurrentArtifactHeadV1 {
@@ -637,7 +637,7 @@ mod tests {
             binding: digest("binding"),
             witness: RegistryHeadWitnessV1 {
                 registry_id: id("learning-artifacts"),
-                generation: Generation::new(1).fixture("generation"),
+                generation: Generation::new(/*value*/ 1).fixture("generation"),
                 head_digest: head,
                 predecessor_head_digest: predecessor,
                 authority_epoch: 1,
@@ -683,7 +683,7 @@ mod tests {
             &withdrawals,
             withdrawals.head_digest(),
             manifest(),
-            20,
+            /*now*/ 20,
         )
         .fixture("admission for head calculation");
         let mut staged = ArtifactRegistry::new();
@@ -693,12 +693,12 @@ mod tests {
             &withdrawals,
             &staged,
             predecessor,
-            20,
+            /*now*/ 20,
         )
         .fixture("preview");
         service
             .host
-            .stage_compatibility_registration(&preview, &mut staged, 20)
+            .stage_compatibility_registration(&preview, &mut staged, /*now*/ 20)
             .fixture("preview registration");
         let request = publish_request(
             &key,
@@ -728,7 +728,7 @@ mod tests {
             ArtifactPublicationPhaseV1::Acknowledged
         );
         assert!(matches!(
-            service.current_registry_view(20),
+            service.current_registry_view(/*now*/ 20),
             Err(LearningArtifactOwnerServiceError::RecoveryRequired(operation_id))
                 if operation_id == request.operation_id
         ));
@@ -740,7 +740,7 @@ mod tests {
         ));
         assert_eq!(service.recovery_required(), Some(&request.operation_id));
         assert!(matches!(
-            service.current_registry_view(20),
+            service.current_registry_view(/*now*/ 20),
             Err(LearningArtifactOwnerServiceError::RecoveryRequired(operation_id))
                 if operation_id == request.operation_id
         ));
@@ -767,7 +767,7 @@ mod tests {
         let retry = service.publish(request.clone()).fixture("terminal retry");
         assert_eq!(retry, receipt);
         let current_view = service
-            .current_registry_view(20)
+            .current_registry_view(/*now*/ 20)
             .fixture("authenticated current registry view");
         assert_eq!(
             current_view.receipt().head_digest,
@@ -795,7 +795,7 @@ mod tests {
         assert!(reopened.recovery_required().is_none());
         assert_eq!(
             reopened
-                .current_registry_view(21)
+                .current_registry_view(/*now*/ 21)
                 .fixture("reopened authenticated current view")
                 .receipt()
                 .head_digest,
@@ -824,7 +824,7 @@ mod tests {
             &withdrawals,
             withdrawals.head_digest(),
             manifest(),
-            20,
+            /*now*/ 20,
         )
         .fixture("admission");
         let mut staged = service.registry().clone();
@@ -836,12 +836,12 @@ mod tests {
                 &withdrawals,
                 &staged,
                 predecessor,
-                20,
+                /*now*/ 20,
             )
             .fixture("durable publication intent");
         service
             .host
-            .stage_compatibility_registration(&transaction, &mut staged, 20)
+            .stage_compatibility_registration(&transaction, &mut staged, /*now*/ 20)
             .fixture("stage registration");
         let request = publish_request(
             &key,
@@ -851,7 +851,7 @@ mod tests {
         );
         service
             .host
-            .ensure_payload_durable(&mut transaction, &staged, &request.payload, 20)
+            .ensure_payload_durable(&mut transaction, &staged, &request.payload, /*now*/ 20)
             .fixture("durable payload");
         service
             .host
@@ -860,7 +860,7 @@ mod tests {
                 &staged,
                 &withdrawals,
                 digest("binding"),
-                20,
+                /*now*/ 20,
             )
             .fixture("durable registry");
         service
@@ -869,7 +869,7 @@ mod tests {
                 &mut transaction,
                 &request.signed_current_head,
                 &withdrawals,
-                20,
+                /*now*/ 20,
             )
             .fixture("durable CURRENT before acknowledgement");
         drop(service);
@@ -878,10 +878,10 @@ mod tests {
         // CURRENT is authentic, but the durable operation still needs its ACK.
         reopened
             .host
-            .current_registry_view(20)
+            .current_registry_view(/*now*/ 20)
             .fixture("host CURRENT exists");
         assert!(matches!(
-            reopened.current_registry_view(20),
+            reopened.current_registry_view(/*now*/ 20),
             Err(LearningArtifactOwnerServiceError::RecoveryRequired(operation_id))
                 if operation_id == id("operation")
         ));
@@ -889,7 +889,7 @@ mod tests {
             .publish(request)
             .fixture("reconcile exact publication");
         reopened
-            .current_registry_view(20)
+            .current_registry_view(/*now*/ 20)
             .fixture("CURRENT after reconciliation");
     }
 
@@ -955,7 +955,7 @@ mod tests {
         ));
         assert_eq!(service.recovery_required(), Some(&id("operation")));
         assert!(matches!(
-            service.current_registry_view(20),
+            service.current_registry_view(/*now*/ 20),
             Err(LearningArtifactOwnerServiceError::RecoveryRequired(operation_id))
                 if operation_id == id("operation")
         ));
@@ -976,7 +976,7 @@ mod tests {
             .publish(request)
             .fixture("reconcile exact publication");
         reopened
-            .current_registry_view(20)
+            .current_registry_view(/*now*/ 20)
             .fixture("use reconciled CURRENT");
     }
 }

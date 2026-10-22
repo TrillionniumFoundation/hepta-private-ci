@@ -72,7 +72,7 @@ fn request() -> NeuronModelRequestV1 {
     NeuronModelRequestV1 {
         request_id: checked(StableId::new("tick:1")),
         config_id: checked(StableId::new("config:1")),
-        generation: checked(Generation::new(1)),
+        generation: checked(Generation::new(/*value*/ 1)),
         model_id: checked(StableId::new("model.1")),
         encoder_digest: Digest32::of_bytes(b"encoder"),
         head_digest: Digest32::of_bytes(b"head"),

@@ -504,7 +504,7 @@ mod tests {
         ArtifactManifest {
             artifact_id: id("candidate"),
             kind: ArtifactKind::Model,
-            generation: must(Generation::new(2)),
+            generation: must(Generation::new(/*value*/ 2)),
             predecessor_id: None,
             content_digest: digest("payload"),
             objective_digest: digest("objective"),
@@ -528,7 +528,7 @@ mod tests {
         ArtifactOwnerTrustV1 {
             registry_id: id("registry"),
             withdrawal_scope_digest: digest("scope"),
-            minimum_registry_generation: must(Generation::new(1)),
+            minimum_registry_generation: must(Generation::new(/*value*/ 1)),
             genesis_predecessor_head_digest: Digest32::ZERO,
             minimum_authority_epoch: 1,
             writer_signers: vec![signer.clone()],
@@ -631,7 +631,7 @@ mod tests {
             &owner_trust,
         ));
         let signed = signed_selection(&key, selector.clone(), &manifest, &current);
-        let verified = must(verifier.verify(&signed, &current, 30));
+        let verified = must(verifier.verify(&signed, &current, /*now*/ 30));
         assert_eq!(verified.artifact_id(), &manifest.artifact_id);
         assert_eq!(verified.selector_id(), &selector);
         assert!(!verified.selection_digest().is_zero());
@@ -642,7 +642,7 @@ mod tests {
         drifted.registry_head_digest = digest("different-head");
         drifted.signature = key.sign(&drifted.signing_bytes()).to_bytes();
         assert!(matches!(
-            verifier.verify(&drifted, &current, 30),
+            verifier.verify(&drifted, &current, /*now*/ 30),
             Err(ArtifactSelectionError::CurrentHeadMismatch)
         ));
     }
@@ -661,7 +661,7 @@ mod tests {
         ));
         let signed = signed_selection(&key, producer, &manifest, &current);
         assert!(matches!(
-            verifier.verify(&signed, &current, 30),
+            verifier.verify(&signed, &current, /*now*/ 30),
             Err(ArtifactSelectionError::RoleCollision)
         ));
 
@@ -683,7 +683,7 @@ mod tests {
         ));
         let signed = signed_selection(&key, selector, &manifest, &current);
         assert!(matches!(
-            verifier.verify(&signed, &current, 30),
+            verifier.verify(&signed, &current, /*now*/ 30),
             Err(ArtifactSelectionError::SelectorRevoked)
         ));
     }
@@ -702,7 +702,7 @@ mod tests {
             &owner_trust,
         ));
         let signed = signed_selection(&key, id("selector"), &manifest, &current);
-        let verified = must(verifier.verify(&signed, &current, 30));
+        let verified = must(verifier.verify(&signed, &current, /*now*/ 30));
 
         let mut journal = ArtifactLifecycleJournalV2::new();
         let states = [
@@ -762,7 +762,7 @@ mod tests {
                     authority_epoch: 4,
                     occurred_at: 30,
                 },
-                30,
+                /*now*/ 30,
             ));
         }
 
@@ -773,7 +773,7 @@ mod tests {
             &producer,
             &verified,
             id("selection-event"),
-            30,
+            /*now*/ 30,
         ));
         assert_eq!(receipt.state, ArtifactLifecycleStateV1::Selected);
         let Some(last) = journal.records().last() else {
