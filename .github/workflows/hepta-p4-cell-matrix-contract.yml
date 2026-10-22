@@ -1,0 +1,59 @@
+name: Hepta P4 Cell matrix receipt contract (qualification only)
+
+on:
+  pull_request:
+    paths:
+      - "scripts/hepta-cell-split-target-matrix.py"
+      - "scripts/test_hepta_cell_split_target_matrix.py"
+      - ".github/workflows/hepta-p4-cell-matrix-contract.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  exact-source-matrix:
+    name: Validate 64-case matrix and fail-closed reports
+    # Python/uv integrity contract only; heavy Rust/Bazel gates run elsewhere.
+    # The sibling Cell Split signed-observer tests already qualify on this pool.
+    runs-on: ubuntu-slim
+    timeout-minutes: 12
+    env:
+      PYTHONDONTWRITEBYTECODE: "1"
+      EXPECTED_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+    steps:
+      - name: Checkout exact source without write credentials
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - name: Install Python 3.12
+        uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405 # v6.2.0
+        with:
+          python-version: "3.12"
+      - name: Install repository-approved uv
+        uses: astral-sh/setup-uv@08807647e7069bb48b6ef5acd8ec9567f424441b
+        with:
+          version: "0.11.3"
+      - name: Assert exact commit and exercise fixture-only P4 contract
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$EXPECTED_SHA"
+          uv run --no-project --with pytest==8.4.2 --with cryptography==46.0.4 \
+            python -m pytest -q -p no:cacheprovider scripts/test_hepta_cell_split_target_matrix.py
+      - name: Check Python format without mutation
+        shell: bash
+        run: |
+          set -euo pipefail
+          # Emit the exact non-mutating formatter diff before checking. This
+          # preserves the fail-closed gate and makes native-runner drift actionable.
+          uv run --frozen --project scripts ruff format --diff \
+            scripts/hepta-cell-split-target-matrix.py \
+            scripts/test_hepta_cell_split_target_matrix.py || true
+          uv run --frozen --project scripts ruff format --check \
+            scripts/hepta-cell-split-target-matrix.py \
+            scripts/test_hepta_cell_split_target_matrix.py
+      - name: Verify runner did not modify checkout
+        if: always() && !cancelled()
+        uses: ./.github/actions/check-clean-worktree
