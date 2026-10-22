@@ -100,7 +100,8 @@ class ScaleMatrixTests(unittest.TestCase):
             },
             "evidence": {key: True for key in scale_matrix.REQUIRED_EVIDENCE},
             "evidence_receipts": {
-                key: "f" * 64 for key in scale_matrix.REQUIRED_EVIDENCE
+                key: f"{2000 + index:064x}"
+                for index, key in enumerate(scale_matrix.REQUIRED_EVIDENCE)
             },
             "metrics": {key: 0 for key in scale_matrix.REQUIRED_METRICS},
             "metrics_receipt": "1" * 64,
@@ -162,7 +163,8 @@ class ScaleMatrixTests(unittest.TestCase):
             },
             "evidence": {key: True for key in scale_matrix.REQUIRED_EVIDENCE},
             "evidence_receipts": {
-                key: "f" * 64 for key in scale_matrix.REQUIRED_EVIDENCE
+                key: f"{2000 + index:064x}"
+                for index, key in enumerate(scale_matrix.REQUIRED_EVIDENCE)
             },
             "metrics": {key: 0 for key in scale_matrix.REQUIRED_METRICS},
             "metrics_receipt": "1" * 64,
@@ -238,7 +240,8 @@ class ScaleMatrixTests(unittest.TestCase):
             },
             "evidence": {key: True for key in scale_matrix.REQUIRED_EVIDENCE},
             "evidence_receipts": {
-                key: "f" * 64 for key in scale_matrix.REQUIRED_EVIDENCE
+                key: f"{2000 + index:064x}"
+                for index, key in enumerate(scale_matrix.REQUIRED_EVIDENCE)
             },
             "metrics": {key: 0 for key in scale_matrix.REQUIRED_METRICS},
             "metrics_receipt": "1" * 64,
@@ -363,6 +366,27 @@ class ScaleMatrixTests(unittest.TestCase):
                     f"results[1].evidence_receipts.{claim} reused across matrix pairs",
                     scale_matrix.validate_matrix(matrix),
                 )
+
+    def test_one_result_rejects_reused_receipt_for_different_claims(self):
+        record = self.make_record(64, "shared_encoder")
+        record["evidence_receipts"]["rollback"] = record["evidence_receipts"][
+            "future_window"
+        ]
+        self.assertIn(
+            "evidence_receipts.rollback reuses the future_window claim receipt",
+            scale_matrix.validate_result(record),
+        )
+
+    def test_matrix_rejects_cross_row_cross_claim_receipt_replay(self):
+        matrix = self.matrix()
+        self.assertEqual(scale_matrix.validate_matrix(matrix), [])
+        matrix["results"][1]["evidence_receipts"]["rollback"] = matrix["results"][0][
+            "evidence_receipts"
+        ]["future_window"]
+        self.assertIn(
+            "results[1].evidence_receipts.rollback reused for a different evidence claim",
+            scale_matrix.validate_matrix(matrix),
+        )
 
     def test_invalid_result_root_is_a_denial_not_an_exception(self):
         for malformed in ([], None, 42, ""):

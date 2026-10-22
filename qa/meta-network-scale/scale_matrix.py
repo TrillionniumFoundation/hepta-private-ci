@@ -199,6 +199,10 @@ def validate_result(result: dict[str, Any]) -> list[str]:
                 evidence_receipts, REQUIRED_EVIDENCE, "evidence_receipts"
             )
         )
+        # Each evidence claim must have its own retained receipt. Reusing one
+        # digest for both future-window and rollback, for example, obscures
+        # which independent observation supports which claim.
+        claim_by_receipt: dict[str, str] = {}
         for key in REQUIRED_EVIDENCE:
             value = evidence_receipts.get(key)
             if not isinstance(value, str) or _HEX64.fullmatch(value) is None:
@@ -207,6 +211,13 @@ def validate_result(result: dict[str, Any]) -> list[str]:
                 )
             elif not any(character != "0" for character in value):
                 errors.append(f"evidence_receipts.{key} cannot be a zero digest")
+            else:
+                previous_claim = claim_by_receipt.get(value)
+                if previous_claim is not None:
+                    errors.append(
+                        f"evidence_receipts.{key} reuses the {previous_claim} claim receipt"
+                    )
+                claim_by_receipt[value] = key
 
     metrics = result.get("metrics")
     if not isinstance(metrics, dict):
@@ -296,6 +307,10 @@ def validate_matrix(matrix: dict[str, Any]) -> list[str]:
     evidence_receipts_seen: dict[str, set[str]] = {
         claim: set() for claim in REQUIRED_EVIDENCE
     }
+    # Within each claim, no two experiment arms can share an observation.
+    # Across different claim names, a digest also cannot certify a separate
+    # row: a multi-claim attestation would need its own explicit schema.
+    receipt_owners: dict[str, tuple[str, int]] = {}
     cohort_fields = ("source_commit", "source_tree", "target_host_digest")
     for index, row in enumerate(results):
         if not isinstance(row, dict):
@@ -313,6 +328,14 @@ def validate_matrix(matrix: dict[str, Any]) -> list[str]:
                             "reused across matrix pairs"
                         )
                     evidence_receipts_seen[claim].add(receipt)
+                    prior_claim, prior_row = receipt_owners.setdefault(
+                        receipt, (claim, index)
+                    )
+                    if prior_claim != claim and prior_row != index:
+                        errors.append(
+                            f"results[{index}].evidence_receipts.{claim} "
+                            "reused for a different evidence claim"
+                        )
         metrics_receipt = row.get("metrics_receipt")
         if isinstance(metrics_receipt, str) and _HEX64.fullmatch(metrics_receipt):
             if metrics_receipt in metrics_receipts_seen:
