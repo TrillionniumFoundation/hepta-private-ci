@@ -205,25 +205,25 @@ pub fn select_output_portfolio_v1(
     })
 }
 
-\n/// Verifies that an advisory selection exactly replays from its bound inputs.
-\n/// This rejects altered allocations, frontier data, budgets, and receipt
-\n/// digests. It does not authenticate candidate signatures or future-window
-\n/// observations, and never grants permission to perform external effects.
-\npub fn verify_output_portfolio_selection_v1(
-\n    context: &OutputPortfolioContextV1,
-\n    budget: &OutputPortfolioBudgetV1,
-\n    candidates: &[OutputPortfolioCandidateV1],
-\n    receipt: &OutputPortfolioSelectionReceiptV1,
-\n) -> Result<(), NduError> {
-\n    let expected = select_output_portfolio_v1(context, budget, candidates)?;
-\n    if &expected != receipt {
-\n        return Err(NduError::InvalidSolverReceipt(
-\n            "portfolio selection receipt mismatch",
-\n        ));
-\n    }
-\n    Ok(())
-\n}
-\n/// Returns nondominated *single-candidate* points using utility↑, risk↓ and
+/// Verifies that an advisory selection exactly replays from its bound inputs.
+/// This rejects altered allocations, frontier data, budgets, and receipt
+/// digests. It does not authenticate candidate signatures or future-window
+/// observations, and never grants permission to perform external effects.
+pub fn verify_output_portfolio_selection_v1(
+    context: &OutputPortfolioContextV1,
+    budget: &OutputPortfolioBudgetV1,
+    candidates: &[OutputPortfolioCandidateV1],
+    receipt: &OutputPortfolioSelectionReceiptV1,
+) -> Result<(), NduError> {
+    let expected = select_output_portfolio_v1(context, budget, candidates)?;
+    if &expected != receipt {
+        return Err(NduError::InvalidSolverReceipt(
+            "portfolio selection receipt mismatch",
+        ));
+    }
+    Ok(())
+}
+/// Returns nondominated *single-candidate* points using utility↑, risk↓ and
 /// resource↓. The standalone risk includes covariance on the diagonal; these
 /// points are not a mixed-portfolio efficient frontier.
 pub fn output_efficient_frontier_v1(
