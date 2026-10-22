@@ -61,6 +61,28 @@ pub fn select_output_portfolio_v1(
         if scores[index] <= FixedQ32::ZERO {
             continue;
         }
+        // A hard-zero risk budget must admit only genuinely zero-risk
+        // directions. Q32 ties-to-even rounding can otherwise truncate a
+        // positive linear or quadratic loss to zero at a fractional weight,
+        // allowing a risk-bearing Cell while claiming zero total risk.
+        // Be conservative even when two directions might hedge each other:
+        // this advisory selector has no authenticated hedge proof.
+        if budget.risk_budget == FixedQ32::ZERO
+            && (risks[index] > FixedQ32::ZERO
+                || covariance[index * count + index] > FixedQ32::ZERO)
+        {
+            continue;
+        }
+        // Hard-zero resource/latency budgets also require exact zero cost.
+        // Multiplication by a fractional Q32 weight can round one positive
+        // least-significant cost unit to zero, despite real resource use.
+        if (budget.resource_budget == FixedQ32::ZERO
+            && candidates[index].resource_cost > FixedQ32::ZERO)
+            || (budget.latency_budget == FixedQ32::ZERO
+                && candidates[index].latency_cost > FixedQ32::ZERO)
+        {
+            continue;
+        }
         if selected_protocol.is_some_and(|protocol| protocol != candidates[index].protocol)
             || selected_domain
                 .is_some_and(|domain| domain != candidates[index].composition_domain_digest)
@@ -187,8 +209,12 @@ pub fn select_output_portfolio_v1(
         &candidates,
         &covariance,
         &allocations,
+        disposition,
+        &frontier,
         total_risk,
         total_utility,
+        total_resource,
+        total_latency,
     );
     Ok(OutputPortfolioSelectionReceiptV1 {
         objective_digest: context.objective_digest,
@@ -205,23 +231,6 @@ pub fn select_output_portfolio_v1(
         selection_digest,
     })
 }
-/// Replays a portfolio decision from its exact immutable inputs and rejects
-/// mutated or detached advisory receipts. This is a local consistency check,
-/// NOT a signature verifier, fresh future-window attestation, or an execution
-/// grant. Control must still enforce independent authority and final-use.
-pub fn verify_output_portfolio_receipt_v1(
-    context: &OutputPortfolioContextV1,
-    budget: &OutputPortfolioBudgetV1,
-    candidates: &[OutputPortfolioCandidateV1],
-    receipt: &OutputPortfolioSelectionReceiptV1,
-) -> Result<(), NduError> {
-    let expected = select_output_portfolio_v1(context, budget, candidates)?;
-    if &expected != receipt {
-        return Err(NduError::InvalidSolverReceipt("portfolio receipt replay"));
-    }
-    Ok(())
-}
-
 /// Returns nondominated *single-candidate* points using utility↑, risk↓ and
 /// resource↓. The standalone risk includes covariance on the diagonal; these
 /// points are not a mixed-portfolio efficient frontier.
@@ -245,6 +254,26 @@ pub fn output_efficient_frontier_v1(
     let standalone = standalone_risks(&risks, &covariance)?;
     Ok(efficient_frontier_from_canonical(&canonical, &standalone))
 }
+/// Replays a selector result and verifies every displayed field, including
+/// disposition, single-candidate frontier, resource and latency totals.
+/// This is local deterministic consistency checking, NOT authentication of
+/// the future-window evaluator, a signature, or permission to execute tools.
+pub fn verify_output_portfolio_receipt_v1(
+    context: &OutputPortfolioContextV1,
+    budget: &OutputPortfolioBudgetV1,
+    candidates: &[OutputPortfolioCandidateV1],
+    receipt: &OutputPortfolioSelectionReceiptV1,
+) -> Result<(), NduError> {
+    let expected = select_output_portfolio_v1(context, budget, candidates)?;
+    if expected == *receipt {
+        Ok(())
+    } else {
+        Err(NduError::InvalidSolverReceipt(
+            "portfolio receipt replay mismatch",
+        ))
+    }
+}
+
 fn canonical_candidates(
     context: &OutputPortfolioContextV1,
     candidates: &[OutputPortfolioCandidateV1],
@@ -274,6 +303,14 @@ fn canonical_candidates(
             || candidate.snapshot_digest != context.snapshot_digest
         {
             return Err(NduError::StateDigestMismatch);
+        }
+        // Equal feature bytes do not make an evaluator's utility or risk
+        // transferable to another objective. NoChange alone has no utility
+        // delta; every non-baseline proposal is objective-specific.
+        if candidate.objective_digest != context.objective_digest {
+            return Err(NduError::InvalidSolverReceipt(
+                "portfolio candidate objective",
+            ));
         }
         // Snapshot content equality is not equivalent to authority equality:
         // a byte-identical feature must not smuggle a stale Cell proposal
@@ -699,8 +736,12 @@ fn digest_selection(
     candidates: &[OutputPortfolioCandidateV1],
     covariance: &[FixedQ32],
     allocations: &[OutputPortfolioAllocationV1],
+    disposition: OutputPortfolioDispositionV1,
+    frontier: &[OutputPortfolioFrontierPointV1],
     total_risk: FixedQ32,
     total_utility: FixedQ32,
+    total_resource: FixedQ32,
+    total_latency: FixedQ32,
 ) -> Digest32 {
     let mut bytes = Vec::new();
     bytes.extend_from_slice(context.objective_digest.as_array());
@@ -728,10 +769,12 @@ fn digest_selection(
     for value in covariance {
         bytes.extend_from_slice(&value.raw().to_le_bytes());
     }
+    bytes.extend_from_slice(&(candidates.len() as u64).to_le_bytes());
     for candidate in candidates {
         bytes.extend_from_slice(candidate.candidate_id.as_str().as_bytes());
         bytes.push(0);
         bytes.extend_from_slice(candidate.candidate_digest.as_array());
+        bytes.extend_from_slice(candidate.objective_digest.as_array());
         bytes.extend_from_slice(&candidate.generation.get().to_le_bytes());
         bytes.extend_from_slice(candidate.encoder_digest.as_array());
         bytes.extend_from_slice(candidate.composition_domain_digest.as_array());
@@ -747,6 +790,7 @@ fn digest_selection(
         bytes.extend_from_slice(&candidate.weight_cap.raw().to_le_bytes());
         bytes.push(u8::from(candidate.is_no_change));
     }
+    bytes.extend_from_slice(&(allocations.len() as u64).to_le_bytes());
     for allocation in allocations {
         bytes.extend_from_slice(allocation.candidate_id.as_str().as_bytes());
         bytes.push(0);
@@ -754,8 +798,22 @@ fn digest_selection(
         bytes.extend_from_slice(&allocation.weight.raw().to_le_bytes());
         bytes.extend_from_slice(&allocation.adjusted_score.raw().to_le_bytes());
     }
+    bytes.push(match disposition {
+        OutputPortfolioDispositionV1::NoChange => 0,
+        OutputPortfolioDispositionV1::AdvisorySelection => 1,
+    });
+    bytes.extend_from_slice(&(frontier.len() as u64).to_le_bytes());
+    for point in frontier {
+        bytes.extend_from_slice(point.candidate_id.as_str().as_bytes());
+        bytes.push(0);
+        bytes.extend_from_slice(&point.utility_delta.raw().to_le_bytes());
+        bytes.extend_from_slice(&point.semantic_risk.raw().to_le_bytes());
+        bytes.extend_from_slice(&point.resource_cost.raw().to_le_bytes());
+    }
     bytes.extend_from_slice(&total_risk.raw().to_le_bytes());
     bytes.extend_from_slice(&total_utility.raw().to_le_bytes());
+    bytes.extend_from_slice(&total_resource.raw().to_le_bytes());
+    bytes.extend_from_slice(&total_latency.raw().to_le_bytes());
     Digest32::of_bytes(&bytes)
 }
 #[cfg(test)]
