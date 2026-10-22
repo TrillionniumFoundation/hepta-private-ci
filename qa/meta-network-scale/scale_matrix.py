@@ -108,6 +108,8 @@ def _finite_number(value: Any) -> bool:
 
 
 def validate_result(result: dict[str, Any]) -> list[str]:
+    if not isinstance(result, dict):
+        return ["result must be an object"]
     errors: list[str] = []
     if result.get("schema") != "hepta.cell-execution-scale-result.v1":
         errors.append("schema must be hepta.cell-execution-scale-result.v1")
@@ -229,12 +231,29 @@ def validate_matrix(matrix: dict[str, Any]) -> list[str]:
     # Distinct arms/sizes cannot reuse the same retained measurement.
     metrics_receipts_seen: set[str] = set()
     measurement_digests_seen: set[str] = set()
+    # Different experiment pairs require separately retained evidence for each
+    # claim. Reusing the same receipt across arms would let one successful
+    # fixture masquerade as evidence for every routed/encoder configuration.
+    evidence_receipts_seen: dict[str, set[str]] = {
+        claim: set() for claim in REQUIRED_EVIDENCE
+    }
     cohort_fields = ("source_commit", "source_tree", "target_host_digest")
     for index, row in enumerate(results):
         if not isinstance(row, dict):
             errors.append(f"results[{index}] must be an object")
             continue
         errors.extend(f"results[{index}].{error}" for error in validate_result(row))
+        evidence_receipts = row.get("evidence_receipts")
+        if isinstance(evidence_receipts, dict):
+            for claim in REQUIRED_EVIDENCE:
+                receipt = evidence_receipts.get(claim)
+                if isinstance(receipt, str) and _HEX64.fullmatch(receipt):
+                    if receipt in evidence_receipts_seen[claim]:
+                        errors.append(
+                            f"results[{index}].evidence_receipts.{claim} "
+                            "reused across matrix pairs"
+                        )
+                    evidence_receipts_seen[claim].add(receipt)
         metrics_receipt = row.get("metrics_receipt")
         if isinstance(metrics_receipt, str) and _HEX64.fullmatch(metrics_receipt):
             if metrics_receipt in metrics_receipts_seen:
