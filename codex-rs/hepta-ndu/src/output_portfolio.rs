@@ -21,17 +21,7 @@ pub fn select_output_portfolio_v1(
     validate_budget(budget)?;
     let count = candidates.len();
     validate_covariance(&covariance, count)?;
-    let baseline = candidates
-        .iter()
-        .position(|candidate| candidate.is_no_change)
-        .ok_or(NduError::MissingAbstainCandidate)?;
-    for index in 0..count {
-        if covariance[baseline * count + index] != FixedQ32::ZERO
-            || covariance[index * count + baseline] != FixedQ32::ZERO
-        {
-            return Err(NduError::InvalidSolverReceipt("no-change covariance"));
-        }
-    }
+    let baseline = validate_risk_free_baseline_covariance(&candidates, &covariance)?;
     let mut risks = Vec::with_capacity(count);
     let mut scores = Vec::with_capacity(count);
     for candidate in &candidates {
@@ -191,7 +181,31 @@ pub fn output_efficient_frontier_v1(
         .map(|candidate| scalar_risk_unweighted(&candidate.risk))
         .collect::<Result<Vec<_>, _>>()?;
     validate_covariance(&covariance, canonical.len())?;
+    // A reported frontier must obey the same risk-free NoChange invariant
+    // as the selector. Otherwise unqualified risk contexts can masquerade as
+    // valid frontier evidence even though admission would reject them.
+    validate_risk_free_baseline_covariance(&canonical, &covariance)?;
     Ok(efficient_frontier_from_canonical(&canonical, &risks))
+}
+/// Both selection and diagnostic-frontier publication require a genuinely
+/// risk-free NoChange asset, including its covariance with every direction.
+fn validate_risk_free_baseline_covariance(
+    candidates: &[OutputPortfolioCandidateV1],
+    covariance: &[FixedQ32],
+) -> Result<usize, NduError> {
+    let count = candidates.len();
+    let baseline = candidates
+        .iter()
+        .position(|candidate| candidate.is_no_change)
+        .ok_or(NduError::MissingAbstainCandidate)?;
+    for index in 0..count {
+        if covariance[baseline * count + index] != FixedQ32::ZERO
+            || covariance[index * count + baseline] != FixedQ32::ZERO
+        {
+            return Err(NduError::InvalidSolverReceipt("no-change covariance"));
+        }
+    }
+    Ok(baseline)
 }
 fn canonical_candidates(
     context: &OutputPortfolioContextV1,
