@@ -1,0 +1,269 @@
+name: Bedrock logout IO observation
+
+on:
+  pull_request:
+    branches:
+      - "agents/20261022/organ-owner-ci-convergence"
+    paths:
+      - "codex-rs/core/src/config/edit.rs"
+      - ".github/workflows/hepta-bedrock-logout-io.yml"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: bedrock-logout-io-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+env:
+  SOURCE_SHA: ${{ github.event.pull_request.head.sha }}
+  CARGO_INCREMENTAL: "0"
+  CARGO_BUILD_JOBS: "2"
+  CARGO_PROFILE_DEV_DEBUG: "0"
+  CARGO_PROFILE_TEST_DEBUG: "0"
+  RUST_BACKTRACE: "1"
+
+jobs:
+  original-logout:
+    if: >-
+      github.event.pull_request.head.repo.full_name == github.repository &&
+      github.event.pull_request.head.ref == 'agents/20261022/bedrock-logout-io-observation'
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - runner: ubuntu-24.04
+            target: x86_64-unknown-linux-gnu
+          - runner: windows-latest
+            target: x86_64-pc-windows-msvc
+    runs-on: ${{ matrix.runner }}
+    timeout-minutes: 90
+    steps:
+      - name: Checkout the exact candidate without saved credentials
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ env.SOURCE_SHA }}
+          persist-credentials: false
+      - uses: ./.github/actions/setup-ci
+      - name: Install original Linux build dependencies
+        if: runner.os == 'Linux'
+        shell: bash
+        run: |
+          set -euo pipefail
+          sudo apt-get update
+          sudo apt-get install -y build-essential pkg-config libcap-dev bubblewrap
+      - uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582
+        with:
+          toolchain: "1.95.0"
+          components: clippy,rustfmt,rust-src
+      - name: Restore original dependency downloads
+        uses: actions/cache/restore@668228422ae6a00e4ad889ee87cd7109ec5666a7
+        with:
+          path: |
+            ~/.cargo/bin/
+            ~/.cargo/registry/index/
+            ~/.cargo/registry/cache/
+            ~/.cargo/git/db/
+          key: bedrock-logout-io-cargo-${{ matrix.target }}-${{ hashFiles('codex-rs/Cargo.lock', 'codex-rs/rust-toolchain.toml') }}
+          restore-keys: |
+            cargo-home-${{ matrix.runner }}-${{ matrix.target }}-dev-
+      - uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
+        with:
+          tool: just@1.51.0,nextest@0.9.103
+      - name: Configure original verified V8 artifacts
+        uses: ./.github/actions/setup-rusty-v8
+        with:
+          target: ${{ matrix.target }}
+      - name: Require unchanged source and real loopback availability
+        id: prepared
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
+          git diff --check
+          git diff --exit-code
+          mkdir -p "$RUNNER_TEMP/bedrock-logout-io"
+          git rev-parse HEAD 'HEAD^{tree}' > "$RUNNER_TEMP/bedrock-logout-io/source.txt"
+          python - <<'PY'
+          import hashlib
+          import json
+          import subprocess
+          import os
+          from pathlib import Path
+          import socket
+          actual_pins = {}
+          pins = {
+              ".github/actions/setup-ci/action.yml": "8abd2dbd5f09585734f8213011a9ed540a2ee88e",
+              ".github/actions/setup-rusty-v8/action.yml": "449ab653fd10c07a8a2453b6efe095205157a8ee",
+              "justfile": "a215a76cf407ace9715bca39c20497014e7dd4dc",
+              "scripts/run-nextest.py": "1ed63abe84267b320cbfb0123a70aac5507f4595",
+              "codex-rs/.config/nextest.toml": "f0430497b34b5335929e24b9e19745f467362641",
+              "codex-rs/rust-toolchain.toml": "910c65114ec128a8317ee8257428451f3cd28230",
+              "codex-rs/app-server/tests/suite/v2/account.rs": "54ed7f31001c4665aa6c25e490c1fb697e240faf",
+              "codex-rs/app-server/tests/common/test_app_server.rs": "4d9f37e14bbc1b04d4129728dbf2dce9dbed0457",
+              "codex-rs/core/Cargo.toml": "df43645d3ca5e18e4ba526479a4c59cb103d3a5d",
+              "codex-rs/utils/path-utils/src/lib.rs": "f4c65951c6c830a752b2b2563d9716589959d83b",
+              "codex-rs/Cargo.lock": "f3d25a13d2680f9f618dd0de701ad41f7c7bb3f8",
+              "MODULE.bazel.lock": "51586f7c2b3918eec191d0ca9a7cdf1c9c7ab561",
+              "codex-rs/core/src/config/edit.rs": "1b142c30f72962e7f4d5e0f71acbe2c34aa8099c",
+              ".gitattributes": "17da38650745923743630d38d3eb0327b7a55d1f"
+          }
+          for path, expected_blob in pins.items():
+              contents = Path(path).read_bytes()
+              actual_blob = subprocess.check_output(
+                  ["git", "hash-object", "--path", path, path], text=True
+              ).strip()
+              if actual_blob != expected_blob:
+                  raise SystemExit(f"protected source changed: {path}")
+              actual_pins[path] = {"git_blob": actual_blob,
+                                   "worktree_sha256": hashlib.sha256(contents).hexdigest()}
+          output = Path(os.environ["RUNNER_TEMP"]) / "bedrock-logout-io"
+          (output / "source-pins.json").write_text(json.dumps(actual_pins, indent=2) + "\n")
+          if "CODEX_SANDBOX_NETWORK_DISABLED" in os.environ:
+              raise SystemExit("original network skip condition is present; cannot qualify")
+          with socket.socket() as listener:
+              listener.bind(("127.0.0.1", 0))
+              listener.listen(1)
+              with socket.create_connection(listener.getsockname(), timeout=5) as client:
+                  connection, _ = listener.accept()
+                  with connection:
+                      client.sendall(b"loopback")
+                      if connection.recv(8) != b"loopback":
+                          raise SystemExit("loopback preflight failed")
+          PY
+      - name: Run the unchanged original logout case with original local retries
+        if: ${{ !cancelled() && steps.prepared.outcome == 'success' }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          cd codex-rs
+          # Nextest 0.9.103 uses workspace_root / store.dir / profile / junit.path.
+          # This original local profile inherits default retries=1 and 30s x 2.
+          junit="$PWD/target/nextest/local/junit.xml"
+          previous="$RUNNER_TEMP/bedrock-logout-io/logout.previous.junit.xml"
+          test ! -L "$junit"
+          if [ -e "$junit" ]; then
+            test -f "$junit"
+            test ! -e "$previous"
+            test ! -L "$previous"
+            mv "$junit" "$previous"
+          fi
+          test ! -e "$junit"
+          set +e
+          just test --locked -p codex-app-server --test all -E 'test(=suite::v2::account::logout_managed_bedrock_restores_default_account::test_case_2_runtime_clears_bedrock_model)' --no-tests fail --success-output immediate --failure-output immediate 2>&1 | tee "$RUNNER_TEMP/bedrock-logout-io/logout.log"
+          statuses=("${PIPESTATUS[@]}")
+          set -e
+          status="${statuses[0]}"
+          tee_status="${statuses[1]}"
+          printf '%s\n' "$status" > "$RUNNER_TEMP/bedrock-logout-io/logout.exit"
+          printf '%s\n' "$tee_status" > "$RUNNER_TEMP/bedrock-logout-io/logout.tee-exit"
+          test -f "$junit"
+          test ! -L "$junit"
+          cp "$junit" "$RUNNER_TEMP/bedrock-logout-io/logout.junit.xml"
+          test "$tee_status" -eq 0
+          exit "$status"
+      - name: Record actual original result without treating observation as a repair
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          git diff --check
+          git diff --exit-code
+          python - <<'PY'
+          import hashlib
+          import json
+          import os
+          from pathlib import Path
+          import re
+          import xml.etree.ElementTree as ET
+          root = Path(os.environ["RUNNER_TEMP"]) / "bedrock-logout-io"
+          root.mkdir(parents=True, exist_ok=True)
+          expected = "suite::v2::account::logout_managed_bedrock_restores_default_account::test_case_2_runtime_clears_bedrock_model"
+          issues = []
+          post_source = {}
+          try:
+              before = json.loads((root / "source-pins.json").read_text())
+              if not before:
+                  issues.append("missing protected source witnesses")
+              for path, original in before.items():
+                  actual = hashlib.sha256(Path(path).read_bytes()).hexdigest()
+                  post_source[path] = actual
+                  if actual != original["worktree_sha256"]:
+                      issues.append(f"protected worktree bytes changed: {path}")
+          except (OSError, ValueError, KeyError, TypeError):
+              issues.append("missing or invalid protected source witnesses")
+          exits = {}
+          for label, filename in (("test", "logout.exit"), ("tee", "logout.tee-exit")):
+              try:
+                  exits[label] = int((root / filename).read_text().strip())
+              except (OSError, ValueError):
+                  exits[label] = None
+              if exits[label] != 0:
+                  issues.append(f"{label} did not report exit zero")
+          log_path = root / "logout.log"
+          if not log_path.is_file():
+              issues.append("missing original test output")
+          log = log_path.read_text(errors="replace") if log_path.is_file() else ""
+          if "Skipping test" in log:
+              issues.append("original test skipped internally")
+          clean_log = re.sub(r"\x1b\[[0-9;]*[A-Za-z]", "", log)
+          observations = []
+          unparsed = 0
+          for line_number, line in enumerate(clean_log.splitlines(), 1):
+              if "configuration atomic write failed" not in line:
+                  continue
+              stage = re.search(r'stage=(?:"config_write_atomically"|config_write_atomically)(?:\s|$)', line)
+              kind = re.search(r"error_kind=([A-Za-z][A-Za-z0-9_]*)(?:\s|$)", line)
+              code = re.search(r"raw_os_error=(None|Some\((-?\d+)\))(?:\s|$)", line)
+              if not (stage and kind and code):
+                  unparsed += 1
+                  continue
+              value = None if code.group(1) == "None" else int(code.group(2))
+              observations.append({"log_line": line_number, "stage": "config_write_atomically",
+                                   "error_kind": kind.group(1), "raw_os_error": value})
+          cases = []
+          try:
+              cases = ET.parse(root / "logout.junit.xml").findall(".//testcase")
+          except (OSError, ET.ParseError):
+              issues.append("missing or invalid fresh original JUnit")
+          if len(cases) != 1 or [case.get("name") for case in cases] != [expected]:
+              issues.append("original single testcase is missing or duplicated in JUnit")
+          terminal_tags = ("failure", "error", "skipped")
+          if any(case.find(tag) is not None for case in cases for tag in terminal_tags):
+              issues.append("original test did not pass")
+          retry_tags = ("flakyFailure", "flakyError", "rerunFailure", "rerunError")
+          prior_attempt_results = {
+              tag: sum(len(case.findall(tag)) for case in cases) for tag in retry_tags
+          }
+          result = {
+              "source_sha": os.environ.get("SOURCE_SHA"),
+              "runner_os": os.environ.get("RUNNER_OS"),
+              "test_name": expected,
+              "profile": "local",
+              "configured_retries": 1,
+              "configured_slow_timeout": {"period": "30s", "terminate_after": 2},
+              "protected_source_after": post_source,
+              "actual_command_exits": exits,
+              "original_test_passed": not issues,
+              "prior_attempt_results": prior_attempt_results,
+              "atomic_write_observations": observations,
+              "unparsed_observation_lines": unparsed,
+              "root_cause_established": False,
+              "production_fix_qualified": False,
+              "observation_scope": "A marker reports an atomic write failure during this test; it does not identify the four helper suboperations or prove the original logout failure was reproduced.",
+              "issues": issues,
+          }
+          (root / "verification.json").write_text(json.dumps(result, indent=2) + "\n")
+          print(json.dumps(result))
+          if issues:
+              raise SystemExit("original logout test evidence gate failed")
+          PY
+      - name: Retain actual source identity, tests and output
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: bedrock-logout-io-${{ matrix.target }}-${{ env.SOURCE_SHA }}-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/bedrock-logout-io/
+          if-no-files-found: error
+          retention-days: 14
+
