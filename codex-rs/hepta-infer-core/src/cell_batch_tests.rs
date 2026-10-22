@@ -12,8 +12,22 @@ fn digest(value: &str) -> Digest32 {
     Digest32::of_bytes(value.as_bytes())
 }
 
+fn fixture_snapshot(
+    generation: Generation,
+    encoder_digest: Digest32,
+    source_input: &str,
+    features: Vec<i64>,
+) -> Result<ImmutableFeatureSnapshotV1, CellBatchError> {
+    ImmutableFeatureSnapshotV1::new_for_input(
+        generation,
+        encoder_digest,
+        digest(source_input),
+        features,
+    )
+}
+
 fn snapshot() -> ImmutableFeatureSnapshotV1 {
-    ImmutableFeatureSnapshotV1::new(generation(1), digest("encoder"), vec![1, 2, 3])
+    fixture_snapshot(generation(1), digest("encoder"), "src:123", vec![1, 2, 3])
         .expect("snapshot")
 }
 
@@ -92,7 +106,7 @@ fn candidate_weight_updates_require_an_exact_successor_generation() {
         "a candidate must not evaluate an active generation's snapshot",
     );
     let successor_snapshot =
-        ImmutableFeatureSnapshotV1::new(generation(2), digest("encoder"), vec![1, 2, 3])
+        fixture_snapshot(generation(2), digest("encoder"), "src:123", vec![1, 2, 3])
             .expect("successor feature");
     assert_eq!(
         candidate
@@ -138,7 +152,7 @@ fn shared_snapshot_is_reused_by_multiple_heads() {
             .feature_generation,
         generation(1)
     );
-    let stale = ImmutableFeatureSnapshotV1::new(generation(2), digest("encoder"), vec![1, 2, 3])
+    let stale = fixture_snapshot(generation(2), digest("encoder"), "src:123", vec![1, 2, 3])
         .expect("successor snapshot");
     assert_eq!(
         first.activate(&stale),
@@ -149,7 +163,7 @@ fn shared_snapshot_is_reused_by_multiple_heads() {
 #[test]
 fn feature_and_activation_batches_preserve_generation() {
     let first = snapshot();
-    let second = ImmutableFeatureSnapshotV1::new(generation(1), digest("encoder"), vec![3, 2, 1])
+    let second = fixture_snapshot(generation(1), digest("encoder"), "src:321", vec![3, 2, 1])
         .expect("snapshot");
     let batch = FeatureBatchV1::new(vec![first, second]).expect("feature batch");
     let head = CellAdapterHeadV1::new(
@@ -220,7 +234,7 @@ fn queue_is_bounded_and_round_robin_fair() {
 fn same_generation_with_different_encoders_is_not_batch_compatible() {
     let expected = snapshot();
     let incompatible =
-        ImmutableFeatureSnapshotV1::new(generation(1), digest("different-encoder"), vec![1, 2, 3])
+        fixture_snapshot(generation(1), digest("different-encoder"), "src:123", vec![1, 2, 3])
             .expect("snapshot");
     assert_eq!(
         FeatureBatchV1::new(vec![expected, incompatible]),
@@ -240,10 +254,29 @@ fn cell_head_rejects_same_width_features_from_the_wrong_encoder() {
     )
     .expect("head");
     let incompatible =
-        ImmutableFeatureSnapshotV1::new(generation(1), digest("different-encoder"), vec![1, 2, 3])
+        fixture_snapshot(generation(1), digest("different-encoder"), "src:123", vec![1, 2, 3])
             .expect("snapshot");
     assert_eq!(
         head.activate(&incompatible),
         Err(CellBatchError::EncoderMismatch)
+    );
+}
+
+#[test]
+fn equal_feature_values_do_not_alias_distinct_source_input_digests() {
+    let first = fixture_snapshot(generation(1), digest("encoder"), "source:a", vec![7, 7, 7])
+        .expect("first source");
+    let second = fixture_snapshot(generation(1), digest("encoder"), "source:b", vec![7, 7, 7])
+        .expect("second source");
+    assert_eq!(first.features(), second.features());
+    assert_ne!(first.input_digest(), second.input_digest());
+    assert_eq!(
+        ImmutableFeatureSnapshotV1::new_for_input(
+            generation(1),
+            digest("encoder"),
+            Digest32::ZERO,
+            vec![7, 7, 7],
+        ),
+        Err(CellBatchError::ZeroDigest("input"))
     );
 }
