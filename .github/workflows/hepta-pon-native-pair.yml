@@ -37,9 +37,9 @@ jobs:
       CARGO_PROFILE_TEST_DEBUG: "0"
       CARGO_PROFILE_DEV_DEBUG: "0"
       PYTHONDONTWRITEBYTECODE: "1"
-      CHAIN_SOURCE_SHA: e467124838cc8342cedaa4b2c61096dbd7eb1247
+      CHAIN_SOURCE_SHA: 9e705ccf75b7318dcc4bda4815956f58beb10e72
       CHAIN_BASE_SHA: 9fedf7ecbbe07177069c030592b4e03dcffebb81
-      HEPTA_PON_CHAIN_SOURCE: ${{ matrix.lane == 'source-head' && 'e467124838cc8342cedaa4b2c61096dbd7eb1247' || '04fe19c480952545d1a4ac4cd00e750d4c92e801' }}
+      HEPTA_PON_CHAIN_SOURCE: ${{ matrix.lane == 'source-head' && '9e705ccf75b7318dcc4bda4815956f58beb10e72' || 'd554fb7651deedbd7670396be02c5af4be62e5ee' }}
     steps:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
         with:
@@ -283,15 +283,20 @@ jobs:
           assert report['wan_tps'] is None
           print('PASS: native consumer reexecution under public TCP load; no independent WAN qualification')
           PYNETWORK
-      - name: Build the actual pinned native Chain executable
+      - name: Build the actual pinned native Chain executable and signed task fixture
         run: |
           set -euo pipefail
-          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/pon-pair/chain-build.json" -- cargo +1.95.0 build --locked --release --manifest-path ../chain/trillionnium/Cargo.toml -p trnm-pon-node --bin trnm-pon-node
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/pon-pair/chain-build.json" -- cargo +1.95.0 build --locked --release --manifest-path ../chain/trillionnium/Cargo.toml -p trnm-pon-node --bin trnm-pon-node --example hepta_task_fixture
           binary="$(realpath ../chain/trillionnium/target/release/trnm-pon-node)"
           digest="$(sha256sum "$binary" | cut -d' ' -f1)"
           echo "HEPTA_PON_CHAIN_BINARY=$binary" >> "$GITHUB_ENV"
           echo "HEPTA_PON_CHAIN_SHA256=$digest" >> "$GITHUB_ENV"
           printf '%s\n' "$digest" > "$RUNNER_TEMP/pon-pair/chain-binary.sha256"
+          fixture="$(realpath ../chain/trillionnium/target/release/examples/hepta_task_fixture)"
+          fixture_digest="$(sha256sum "$fixture" | cut -d' ' -f1)"
+          echo "HEPTA_PON_TASK_FIXTURE=$fixture" >> "$GITHUB_ENV"
+          echo "HEPTA_PON_TASK_FIXTURE_SHA256=$fixture_digest" >> "$GITHUB_ENV"
+          printf '%s\n' "$fixture_digest" > "$RUNNER_TEMP/pon-pair/chain-task-fixture.sha256"
       - name: Prefetch locked Hepta dependencies before offline test execution
         timeout-minutes: 12
         env:
@@ -444,6 +449,11 @@ jobs:
           CARGO_NET_OFFLINE: "true"
         run: |
           python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/pon-pair/pon-pair.json" --minimum-tests 1 -- just test --locked -p codex-hepta-agentd --lib -E 'test(real_chain_sealed_submit_reconcile_confirm_reorg)' --run-ignored only --no-capture
+      - name: Require actual signed task acceptance through confirmation and reorganization
+        env:
+          CARGO_NET_OFFLINE: "true"
+        run: |
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/pon-pair/pon-task-pair.json" --minimum-tests 1 -- just test --locked -p codex-hepta-agentd --lib -E 'test(real_chain_signed_task_acceptance_confirm_and_reorg)' --run-ignored only --no-capture
       - name: Retain read-only source and prior Windows failure diagnostics
         if: always() && matrix.runner == 'ubuntu-24.04' && matrix.lane == 'source-head'
         env:

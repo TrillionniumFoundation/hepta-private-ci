@@ -122,3 +122,11 @@ mod native_tests;
 ))]
 #[path = "automation_effect_host_pon_chain_tests.rs"]
 mod chain_tests;
+
+#[cfg(all(
+    test,
+    target_os = "linux",
+    any(target_arch = "x86_64", target_arch = "aarch64")
+))]
+#[path = "automation_effect_host_pon_task_chain_tests.rs"]
+mod task_chain_tests;
