@@ -339,6 +339,18 @@ jobs:
           for selector in offline_terminal_recovery_replays_existing_final_once_and_ignores_late_delta persisted_terminal_identity_or_incomplete_items_cannot_complete_dispatch bounded_history_cursor_survives_restart_and_reaches_turn_older_than_1600; do
             python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/pon-pair/$selector.json" --minimum-tests 1 -- just test --locked -p codex-hepta-matrixd --lib -E "test($selector)" --no-capture
           done
+      - name: Require exact task acceptance identity regressions
+        env:
+          CARGO_NET_OFFLINE: "true"
+        run: |
+          set -euo pipefail
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/pon-pair/pon-task-acceptance-contract.json" --minimum-tests 3 -- just test --locked -p codex-hepta-agent-protocol --lib -E 'test(automation_chain_observation::tests::)' --no-capture
+      - name: Require native task acceptance parser regressions
+        env:
+          CARGO_NET_OFFLINE: "true"
+        run: |
+          set -euo pipefail
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/pon-pair/pon-task-acceptance-parser.json" --minimum-tests 2 -- just test --locked -p codex-hepta-agentd --lib -E 'test(pon_task_acceptance::tests::)' --no-capture
       - name: Require actual ranker and independent selection lifetime controls
         env:
           CARGO_NET_OFFLINE: "true"

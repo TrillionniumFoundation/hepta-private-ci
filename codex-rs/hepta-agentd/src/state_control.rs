@@ -672,7 +672,7 @@ impl AgentdState {
                     } => crate::AutomationEffectReconcileSnapshot {
                         state: crate::AutomationEffectReconcileState::Terminal,
                         effect: Some(effect_snapshot(*receipt)?),
-                        chain: chain.map(|chain| *chain),
+                        chain,
                     },
                     crate::automation_effect_host::AgentdAutomationEffectReconcileOutcome::Indeterminate => {
                         crate::AutomationEffectReconcileSnapshot {

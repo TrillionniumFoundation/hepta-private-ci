@@ -59,6 +59,9 @@ use sha2::Sha256;
 use crate::AgentdError;
 use crate::AgentdIdentity;
 
+#[path = "automation_effect_host_pon_task_acceptance.rs"]
+mod pon_task_acceptance;
+
 #[path = "automation_effect_host_pon_executable.rs"]
 mod pon_executable;
 #[path = "automation_effect_host_pon_process.rs"]
@@ -622,8 +625,12 @@ fn parse_pon_chain_observation(
         && active_work_depth_hex
             .as_deref()
             .is_some_and(|depth| depth >= min_confirmation_work_depth_hex);
+    let accepted_task = pon_task_acceptance::parse(result)?;
+    if accepted_task.is_some() && (!stored_exact || !active_chain_member) {
+        return None;
+    }
     Some(crate::AutomationEffectChainObservation {
-        schema_version: 3,
+        schema_version: codex_hepta_agent_protocol::AUTOMATION_EFFECT_CHAIN_OBSERVATION_VERSION,
         block_id,
         stored_exact,
         block_height,
@@ -641,6 +648,7 @@ fn parse_pon_chain_observation(
         confirmation_policy_satisfied,
         provider_effect_key: None,
         payload_sha256: None,
+        accepted_task,
         owner_generation,
         local_target_only: true,
         global_absence_authority: false,
@@ -1896,7 +1904,7 @@ mod tests {
         active["result"]["active_work_depth_hex"] = Value::String(expected_work_depth.clone());
         let observed = parse_pon_chain_observation(&active, 3, &format!("{}03", "00".repeat(63)))
             .expect("valid work depth");
-        assert_eq!(observed.schema_version, 3);
+        assert_eq!(observed.schema_version, 4);
         assert_eq!(observed.provider_effect_key, None);
         assert_eq!(observed.payload_sha256, None);
         assert_eq!(
