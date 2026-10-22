@@ -118,6 +118,48 @@ def unreviewed_environment_keys(environment: dict[str, str] | None = None) -> li
         )
     )
 
+
+MAX_PROOF_SOURCE_BYTES = 8 * 1024 * 1024
+
+
+def committed_regular_file(repo_root: Path, relative: str) -> bool:
+    """Bind a required file to bytes and regular-file mode in the exact HEAD.
+
+    Git status can omit ignored files and paths flagged assume-unchanged or
+    skip-worktree. Existence and a clean status alone never attest source bytes.
+    """
+    path = repo_root / relative
+    if unreviewed_environment_keys() or not path.is_file() or path.is_symlink():
+        return False
+    try:
+        if path.stat().st_size > MAX_PROOF_SOURCE_BYTES:
+            return False
+        row = subprocess.run(
+            ["git", "-C", str(repo_root), "ls-tree", "HEAD", "--", relative],
+            capture_output=True, text=True, check=True, timeout=10,
+        ).stdout.strip()
+        metadata, separator, found = row.partition("\t")
+        fields = metadata.split()
+        if (
+            not separator or found != relative or len(fields) != 3
+            or fields[0] not in ("100644", "100755") or fields[1] != "blob"
+        ):
+            return False
+        length = subprocess.run(
+            ["git", "-C", str(repo_root), "cat-file", "-s", fields[2]],
+            capture_output=True, text=True, check=True, timeout=10,
+        ).stdout.strip()
+        if int(length) > MAX_PROOF_SOURCE_BYTES:
+            return False
+        committed = subprocess.run(
+            ["git", "-C", str(repo_root), "cat-file", "blob", fields[2]],
+            capture_output=True, check=True, timeout=10,
+        ).stdout
+        return path.read_bytes() == committed
+    except (OSError, ValueError, subprocess.SubprocessError):
+        return False
+
+
 def git_snapshot(path: Path) -> dict[str, Any]:
     if not path.is_dir():
         return {"usable": False, "reason": "repository directory not mounted", "path": str(path)}
@@ -282,15 +324,15 @@ def main() -> int:
         missing = []
         for name, rel in spec["required"]:
             path = roots[name] / rel
-            exists = path.is_file()
+            exists = committed_regular_file(roots[name], rel)
             stage_result["files"].append({"path": f"{name}/{rel}", "present": exists})
             if not exists:
                 missing.append(f"{name}/{rel}")
         stage_result["missing_files"] = missing
-        if missing:
-            stage_result["status"] = "BLOCKED_SOURCE_NOT_PRESENT"
-        elif blocked_environment_keys:
+        if blocked_environment_keys:
             stage_result["status"] = "BLOCKED_UNREVIEWED_ENVIRONMENT"
+        elif missing:
+            stage_result["status"] = "BLOCKED_SOURCE_NOT_PRESENT"
         elif not all(report["sources"][name]["usable"] and before_checks[name]["usable"] for name in source_names):
             stage_result["status"] = "BLOCKED_NO_GIT_CHECKOUT"
         elif not all(report["sources"][name]["clean"] and before_checks[name]["clean"] for name in source_names):

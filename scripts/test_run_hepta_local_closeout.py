@@ -362,5 +362,37 @@ class LocalCloseoutTests(unittest.TestCase):
             invoked.assert_not_called()
 
 
+    def test_required_source_must_be_exact_tracked_regular_head_bytes(self):
+        with tempfile.TemporaryDirectory() as root:
+            source = Path(root)
+            subprocess.run(["git", "init", "-q", str(source)], check=True)
+            (source / ".gitignore").write_text("ignored.rs\n")
+            (source / "tracked.rs").write_bytes(b"committed bytes\n")
+            (source / "ignored.rs").write_bytes(b"untracked ignored payload")
+            (source / "symlink.rs").symlink_to(source / "tracked.rs")
+            subprocess.run(
+                ["git", "-C", str(source), "add", ".gitignore", "tracked.rs", "symlink.rs"],
+                check=True,
+            )
+            subprocess.run(
+                ["git", "-C", str(source), "-c", "user.name=LocalTest",
+                 "-c", "user.email=local@example.invalid",
+                 "commit", "-qm", "baseline"],
+                check=True,
+            )
+            self.assertTrue(mod.git_snapshot(source)["clean"])
+            self.assertTrue(mod.committed_regular_file(source, "tracked.rs"))
+            self.assertFalse(mod.committed_regular_file(source, "ignored.rs"))
+            self.assertFalse(mod.committed_regular_file(source, "symlink.rs"))
+            # Git can intentionally hide dirty bytes from porcelain status.
+            subprocess.run(
+                ["git", "-C", str(source), "update-index",
+                 "--assume-unchanged", "tracked.rs"], check=True,
+            )
+            (source / "tracked.rs").write_bytes(b"tampered after HEAD")
+            self.assertTrue(mod.git_snapshot(source)["clean"])
+            self.assertFalse(mod.committed_regular_file(source, "tracked.rs"))
+
+
 if __name__ == "__main__":
     unittest.main()
