@@ -392,6 +392,62 @@ fn completion_and_unknown_admission_enforce_recovery_posture() {
 }
 
 #[test]
+fn execution_receipt_status_recovery_matrix_is_fail_closed() {
+    let value = intent();
+    let mut receipt = ExecutionReceiptV1 {
+        operation_id: value.cell.operation_id.clone(),
+        intent_digest: value.cell.intent_digest(),
+        generation: value.cell.generation,
+        final_payload_digest: value.cell.final_payload.clone(),
+        outcome_digest: Some(digest("outcome")),
+        status: ExecutionStatusV1::Completed,
+        recovery: RecoveryDispositionV1::None,
+        authority: AuthorityPosture::DENY_ALL,
+    };
+    let statuses = [
+        ExecutionStatusV1::Completed,
+        ExecutionStatusV1::Failed,
+        ExecutionStatusV1::Indeterminate,
+        ExecutionStatusV1::Rejected,
+    ];
+    let recoveries = [
+        RecoveryDispositionV1::None,
+        RecoveryDispositionV1::RetryBeforeAdmission,
+        RecoveryDispositionV1::ReconcileSameOperation,
+        RecoveryDispositionV1::Quarantine,
+        RecoveryDispositionV1::RollbackToPredecessor,
+    ];
+    let allowed = [
+        (ExecutionStatusV1::Completed, RecoveryDispositionV1::None),
+        (ExecutionStatusV1::Failed, RecoveryDispositionV1::None),
+        (ExecutionStatusV1::Failed, RecoveryDispositionV1::ReconcileSameOperation),
+        (ExecutionStatusV1::Failed, RecoveryDispositionV1::Quarantine),
+        (ExecutionStatusV1::Failed, RecoveryDispositionV1::RollbackToPredecessor),
+        (ExecutionStatusV1::Indeterminate, RecoveryDispositionV1::ReconcileSameOperation),
+        (ExecutionStatusV1::Indeterminate, RecoveryDispositionV1::Quarantine),
+        (ExecutionStatusV1::Rejected, RecoveryDispositionV1::None),
+        (ExecutionStatusV1::Rejected, RecoveryDispositionV1::RetryBeforeAdmission),
+        (ExecutionStatusV1::Rejected, RecoveryDispositionV1::Quarantine),
+    ];
+    for &status in &statuses {
+        for &recovery in &recoveries {
+            receipt.status = status;
+            receipt.recovery = recovery;
+            let expected = if allowed.contains(&(status, recovery)) {
+                Ok(())
+            } else {
+                Err(ExecutionContractError::StatusRecoveryMismatch)
+            };
+            assert_eq!(
+                receipt.validate_against(&value.cell),
+                expected,
+                "status={status:?} recovery={recovery:?}"
+            );
+        }
+    }
+}
+
+#[test]
 fn nonzero_process_exit_cannot_be_a_successful_runtime_receipt() {
     let value = intent();
     let outcome = ToolOutcomeV1 {
