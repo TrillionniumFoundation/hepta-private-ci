@@ -18,6 +18,10 @@ use crate::StableId;
 
 
 pub const EXECUTION_CONTRACT_VERSION_V1: &str = "hepta.execution.contract.v1";
+/// The supported Codex protocol is a wire contract, not an upstream crate dependency.
+pub const CODEX_APP_SERVER_V2_PROTOCOL_ID_V1: &str = "codex.app-server.v2";
+/// Keep pure Cell admission at the same bound as the legacy App Server adapter.
+pub const MAX_CODEX_APP_SERVER_VERSION_BYTES_V1: usize = 128;
 
 /// The execution surface requested by a cell.
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
@@ -125,6 +129,14 @@ impl CodexTurnBindingV1 {
     pub fn validate(&self) -> Result<(), ExecutionContractError> {
         if self.app_server_version.is_empty() {
             return Err(ExecutionContractError::EmptyText("app server version"));
+        }
+        if self.app_server_version.len() > MAX_CODEX_APP_SERVER_VERSION_BYTES_V1
+            || self.app_server_version.bytes().any(|byte| byte.is_ascii_control())
+        {
+            return Err(ExecutionContractError::InvalidAppServerVersion);
+        }
+        if self.protocol_id.as_str() != CODEX_APP_SERVER_V2_PROTOCOL_ID_V1 {
+            return Err(ExecutionContractError::UnsupportedProtocol);
         }
         if self.source_admission_digest.is_zero() {
             return Err(ExecutionContractError::ZeroDigest("source admission"));
@@ -471,6 +483,8 @@ pub enum ExecutionContractError {
     ExpiredDeadline,
     ZeroDigest(&'static str),
     ZeroConnection,
+    InvalidAppServerVersion,
+    UnsupportedProtocol,
     PayloadScopeMismatch,
     ToolPayloadMismatch,
     WrongIntentKind,
