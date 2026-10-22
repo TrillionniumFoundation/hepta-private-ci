@@ -377,6 +377,39 @@ class ScaleMatrixTests(unittest.TestCase):
             scale_matrix.validate_result(record),
         )
 
+    def test_result_rejects_metrics_receipt_reused_for_learning_claim(self):
+        for claim in ("future_window", "rollback"):
+            with self.subTest(claim=claim):
+                record = self.make_record(64, "shared_encoder")
+                record["metrics_receipt"] = record["evidence_receipts"][claim]
+                self.assertIn(
+                    f"metrics_receipt reuses the {claim} evidence claim receipt",
+                    scale_matrix.validate_result(record),
+                )
+
+    def test_matrix_rejects_metrics_and_evidence_cross_row_alias(self):
+        matrix = self.matrix()
+        self.assertEqual(scale_matrix.validate_matrix(matrix), [])
+        # An earlier metric receipt cannot later certify future-window data.
+        matrix["results"][0]["metrics_receipt"] = matrix["results"][1][
+            "evidence_receipts"
+        ]["future_window"]
+        self.assertIn(
+            "results[1].evidence_receipts.future_window reuses a metrics receipt",
+            scale_matrix.validate_matrix(matrix),
+        )
+
+        matrix = self.matrix()
+        # An earlier rollback witness cannot later masquerade as a metric
+        # receipt, regardless of the row/arm where it was observed.
+        matrix["results"][1]["metrics_receipt"] = matrix["results"][0][
+            "evidence_receipts"
+        ]["rollback"]
+        self.assertIn(
+            "results[1].metrics_receipt reuses the rollback evidence claim receipt",
+            scale_matrix.validate_matrix(matrix),
+        )
+
     def test_matrix_rejects_cross_row_cross_claim_receipt_replay(self):
         matrix = self.matrix()
         self.assertEqual(scale_matrix.validate_matrix(matrix), [])
