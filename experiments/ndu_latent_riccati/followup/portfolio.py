@@ -288,6 +288,41 @@ def generate_with_cells(flow, decoder, context, encoder_estimate, noise,
     return {'latent': z, 'decoded': outputs, 'steps': steps}
 
 
+
+def supervised_cell_update(flow, decoder, cell_heads, optimizer, context,
+                           encoder_estimate, noise, weight_schedule,
+                           targets, externally_fixed_loss):
+    """P0 training-only Cell adapter update, not NDU joint training.
+
+    The flow/decoder remain frozen, and the optimizer must contain only Cell
+    weights. Ground truth enters an external training loss after the complete
+    decoded forward pass; it is NEVER passed into the rollout or Cell heads.
+    """
+    import torch
+    if any(p.requires_grad for module in (flow, decoder) for p in module.parameters()):
+        raise PortfolioRejected('trainable foundation/decoder in frozen Cell-only update')
+    cell_params = [p for cell in cell_heads for p in cell.parameters() if p.requires_grad]
+    allowed = {id(p) for p in cell_params}
+    optimizer_params = [p for group in optimizer.param_groups for p in group['params']]
+    if (not allowed or len(allowed) != len(cell_params) or
+            {id(p) for p in optimizer_params} != allowed or
+            len(optimizer_params) != len(cell_params)):
+        raise PortfolioRejected('optimizer is not exclusively bound to Cell parameters')
+    optimizer.zero_grad(set_to_none=True)
+    predicted = generate_with_cells(flow, decoder, context, encoder_estimate,
+                                    noise, cell_heads, weight_schedule)['decoded']
+    loss = externally_fixed_loss(predicted, targets)
+    if not isinstance(loss, torch.Tensor) or loss.numel() != 1 or not torch.isfinite(loss).all():
+        raise PortfolioRejected('nonfinite or non-scalar external training loss')
+    loss.backward()
+    norm = torch.nn.utils.clip_grad_norm_(cell_params, max_norm=1.)
+    if not torch.isfinite(norm):
+        raise PortfolioRejected('nonfinite Cell training gradient')
+    optimizer.step()
+    return {'loss': float(loss.detach()), 'gradient_norm': float(norm.detach()),
+            'updated_parameter_tensors': len(cell_params)}
+
+
 def masked_logit_step(logits, deltas, weights, mask, n_unmask):
     """P2 compatibility primitive, not a trained masked Diffusion LLM.
 
