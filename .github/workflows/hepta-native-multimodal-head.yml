@@ -24,6 +24,7 @@ jobs:
       CARGO_TARGET_DIR: ${{ runner.temp }}/hepta-native-head-target
       CARGO_PROFILE_DEV_DEBUG: "0"
       CARGO_PROFILE_TEST_DEBUG: "0"
+      CARGO_PROFILE_RELEASE_DEBUG: "0"
       CARGO_INCREMENTAL: "0"
       HF_HUB_OFFLINE: "1"
       TRANSFORMERS_OFFLINE: "1"
