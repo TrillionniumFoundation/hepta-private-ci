@@ -53,6 +53,14 @@ Only after these fixtures pass should the host add feature batching, activation
 batching, reusable immutable buffers, a compatible-model second index, per-scope
 worker lanes and group-commit metrics.
 
+The current `SharedWorkerPoolV1::drain` only increments
+`groups_drained` and `activations_drained`. It does **not** claim successful
+worker execution, durable metric publication, or a verified external effect.
+`groups_committed` and `activations_committed` remain zero until an
+independently observed production worker commit path is wired. Queue removal
+is not a receipt, and these staging counters do not close the P2 production
+group-commit blocker.
+
 ## P3 — native hepta-runtime fast path
 
 `NativeExecutionAdapter` is the in-process typed boundary. An implementation may
