@@ -67,6 +67,18 @@ builder = { package = "codex-sandboxing", workspace = true }
         self.assertEqual(len(errors), 1)
         self.assertIn("workspace: cannot resolve", errors[0])
 
+    def test_root_workspace_alias_updates_trigger_boundary_ci(self):
+        workflow = (
+            Path(__file__).resolve().parents[2]
+            / ".github"
+            / "workflows"
+            / "hepta-cell-codex-boundary.yml"
+        ).read_text(encoding="utf-8")
+        paths = workflow.partition("  workflow_dispatch:")[0]
+        self.assertIn('      - "codex-rs/Cargo.toml"', paths)
+        for name in checker.CELL_CRATES:
+            self.assertIn(f'      - "codex-rs/{name}/Cargo.toml"', paths)
+
     def test_workspace_renamed_core_cannot_bypass_gate(self):
         # A harmless-looking member alias inherits an actual codex-core crate.
         data = self.make_manifest('''
