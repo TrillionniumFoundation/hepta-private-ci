@@ -180,12 +180,17 @@ def evaluate(study: Mapping):
     # Dimension order (bootstrap, arm, metrics): same sampled seed/world draws
     # for every arm; no per-arm resampling or selecting the best test arm.
     deltas = np.empty((boots, len(CONTROLS), len(METRICS) + 1))
+    # Estimate uncertainty in the *ratio* itself. A point-average cost ratio
+    # hides per-training-seed resource spikes and is insufficient to claim
+    # resource comparability with independently chosen controllers.
+    bootstrap_cost_ratios = np.empty((boots, len(CONTROLS)))
     for k in range(boots):
         seed_sample = rng.integers(0, len(seeds), size=len(seeds))
         world_sample = rng.integers(0, size, size=(len(seeds), size))
         paired = np.stack([values[:, si, world_sample[t]] for t, si in enumerate(seed_sample)], axis=1)
         boot = summarize(paired)
         deltas[k] = boot[0] - boot[1:]
+        bootstrap_cost_ratios[k] = boot[0, -1] / boot[1:, -1]
     # Bonferroni across all six comparisons and loss/quality/ambiguity/
     # inconsistency/cost; positive loss differences are bad.
     tail_level = alpha / (len(CONTROLS) * (len(METRICS) + 1))
@@ -197,6 +202,7 @@ def evaluate(study: Mapping):
         upper = np.quantile(cloud, 1 - tail_level, axis=0)
         lower = np.quantile(cloud, tail_level, axis=0)
         ratio = point[0, -1] / point[index + 1, -1]
+        upper_cost_ratio = float(np.quantile(bootstrap_cost_ratios[:, index], 1 - tail_level))
         protected_delta = values[0, :, :, 1] - values[index + 1, :, :, 1]
         protected_ok = bool(np.all(protected_delta[protected] >= -1e-12))
         gates = {
@@ -204,13 +210,16 @@ def evaluate(study: Mapping):
             "factual_quality_noninferiority": bool(lower[1] >= -quality_tol),
             "ambiguity_noninferiority": bool(upper[2] <= ambiguity_tol),
             "consistency_noninferiority": bool(upper[3] <= inconsistency_tol),
-            "physical_total_cost": bool(ratio <= max_cost_ratio),
+            "physical_total_cost": bool(ratio <= max_cost_ratio and
+                                        upper_cost_ratio <= max_cost_ratio),
             "protected_task_no_regression": protected_ok,
         }
         local_all &= all(gates.values())
         out[name] = {"mean_pair_difference": dict(zip(("cvar90", "quality", "ambiguity", "inconsistency", "total_cost"), x.tolist())),
                      "simultaneous_lower": lower.tolist(), "simultaneous_upper": upper.tolist(),
-                     "observed_cost_ratio": ratio, "gates": gates}
+                     "observed_cost_ratio": ratio,
+                     "bootstrap_upper_cost_ratio": upper_cost_ratio,
+                     "gates": gates}
     receipt = {"schema": "hepta-mgp-paired-review-v1", "status": "HOLD_NO_GO", "authority": "DENY_ALL",
                "source": "LOCAL_RESEARCH_UNAUTHENTICATED", "scientific_superiority_proven": False,
                "all_provisional_gates_pass": bool(local_all and boots >= 2000),
