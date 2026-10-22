@@ -24,10 +24,21 @@ CELL_CRATES = (
 DEPENDENCY_SECTIONS = frozenset(
     ("dependencies", "dev-dependencies", "build-dependencies")
 )
-# Codex core, app-server, session, tools, SDK and protocol crates belong to the
-# shared execution spine. Standalone Hepta contracts and Codex pure utilities
-# are permitted: this gate prevents direct coupling, not all transitive use.
-ALLOWED_PREFIXES = ("codex-hepta-", "codex-utils-")
+# Admit only reviewed, authority-free Cell/Cognitive contract crates and pure
+# paths. Broad codex-hepta-* or codex-utils-* allowances could accidentally
+# admit agentd, tool/PTY, governance or production writer dependencies.
+ALLOWED_PACKAGES = frozenset(
+    (
+        "codex-hepta-types",
+        "codex-hepta-contracts",
+        "codex-hepta-infer-core",
+        "codex-hepta-ndu",
+        "codex-hepta-intuition",
+        "codex-hepta-plasticity",
+        "codex-hepta-cognitive-types",
+        "codex-utils-absolute-path",
+    )
+)
 
 
 def normalized_package(name: str) -> str:
@@ -36,7 +47,7 @@ def normalized_package(name: str) -> str:
 
 def prohibited_package(package: str) -> bool:
     package = normalized_package(package)
-    return package.startswith("codex-") and not package.startswith(ALLOWED_PREFIXES)
+    return package.startswith("codex-") and package not in ALLOWED_PACKAGES
 
 
 def check_manifest(
