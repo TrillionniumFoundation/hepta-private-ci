@@ -21,6 +21,7 @@ import os
 import platform
 import re
 import selectors
+import stat
 import secrets
 import shlex
 import signal
@@ -528,6 +529,26 @@ def _write_report_atomically(output: Path, report: dict[str, Any]) -> None:
         os.close(directory_fd)
 
 
+
+def _sealed_provisional_report_identity(
+    output: Path, expected_bytes: bytes
+) -> tuple[int, int]:
+    """Read a bounded, non-symlinked report and bind its original inode."""
+    flags = os.O_RDONLY | getattr(os, "O_NOFOLLOW", 0) | getattr(os, "O_NONBLOCK", 0)
+    try:
+        fd = os.open(output, flags)
+        with os.fdopen(fd, "rb") as stream:
+            metadata = os.fstat(stream.fileno())
+            if not stat.S_ISREG(metadata.st_mode) or metadata.st_nlink != 1:
+                raise ValueError("provisional report is not a private regular file")
+            # Never read arbitrary amounts of untrusted report data.
+            if stream.read(len(expected_bytes) + 1) != expected_bytes:
+                raise ValueError("provisional report bytes changed")
+            return metadata.st_dev, metadata.st_ino
+    except OSError as error:
+        raise ValueError("provisional report unavailable or redirected") from error
+
+
 def run_matrix(
     *,
     workload_command: str | None,
@@ -672,6 +693,12 @@ def run_matrix(
         ]
     )
     _write_report_atomically(output, provisional)
+    expected_provisional_bytes = (
+        json.dumps(provisional, sort_keys=True, indent=2) + "\n"
+    ).encode("utf-8")
+    original_provisional_identity = _sealed_provisional_report_identity(
+        output, expected_provisional_bytes
+    )
 
     observer_receipt: dict[str, Any] | None = None
     # Fail closed *before* spawning a supplied observer executable: a command
@@ -766,6 +793,22 @@ def run_matrix(
                     "verified": False,
                     "reason": "post-observer frozen workload changed or is missing",
                 }
+
+    # The observer receives a path to the provisional evidence. A valid
+    # signature cannot certify evidence that the observer replaced or rewrote,
+    # even if it later restored identical bytes at a different inode.
+    try:
+        current_identity = _sealed_provisional_report_identity(
+            output, expected_provisional_bytes
+        )
+        if current_identity != original_provisional_identity:
+            raise ValueError("provisional report inode changed")
+    except ValueError as error:
+        blocked.append("independent-observer")
+        observer_receipt = {
+            "verified": False,
+            "reason": f"post-observer provisional report custody violation: {error}",
+        }
 
     report = {
         **provisional,
