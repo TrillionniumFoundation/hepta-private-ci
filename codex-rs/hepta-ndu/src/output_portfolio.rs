@@ -1,11 +1,13 @@
 use crate::error::NduError;
 use crate::fixed::mul_q32_ties_even;
+use crate::output_portfolio_types::*;
 use codex_hepta_types::Digest32;
 use codex_hepta_types::FixedQ32;
 use codex_hepta_types::ProbabilityQ32;
+
 const MAX_PORTFOLIO_CANDIDATES: usize = 128;
 const MAX_FRONTIER_POINTS: usize = 128;
-use crate::output_portfolio_types::*;
+
 /// Selects a bounded output portfolio using deterministic greedy QP/MPC
 /// coordinates. The quadratic covariance term is evaluated exactly in Q32;
 /// the greedy step is intentional for the bounded Cell budget and is not
@@ -168,6 +170,7 @@ pub fn select_output_portfolio_v1(
         selection_digest,
     })
 }
+
 /// Returns nondominated single-candidate points using utility↑, risk↓ and
 /// resource↓. It is useful for visualising the efficient frontier before the
 /// budgeted controller commits to one advisory allocation.
@@ -186,6 +189,7 @@ pub fn output_efficient_frontier_v1(
     validate_baseline_covariance(&canonical, &covariance)?;
     Ok(efficient_frontier_from_canonical(&canonical, &risks))
 }
+
 fn canonical_candidates(
     context: &OutputPortfolioContextV1,
     candidates: &[OutputPortfolioCandidateV1],
@@ -261,6 +265,7 @@ fn canonical_candidates(
     }
     Ok(canonical)
 }
+
 fn canonical_covariance(
     context: &OutputPortfolioContextV1,
     original: &[OutputPortfolioCandidateV1],
@@ -288,6 +293,7 @@ fn canonical_covariance(
     }
     Ok(covariance)
 }
+
 fn validate_budget(budget: &OutputPortfolioBudgetV1) -> Result<(), NduError> {
     if budget.max_selected == 0 || budget.max_selected > MAX_PORTFOLIO_CANDIDATES {
         return Err(NduError::InvalidSolverReceipt("portfolio max selected"));
@@ -310,6 +316,7 @@ fn validate_budget(budget: &OutputPortfolioBudgetV1) -> Result<(), NduError> {
     }
     Ok(())
 }
+
 fn validate_risk(risk: &SemanticRiskEstimateV1) -> Result<(), NduError> {
     if risk.future_window_digest.is_zero() {
         return Err(NduError::InvalidSolverReceipt("future-window digest"));
@@ -322,6 +329,7 @@ fn validate_risk(risk: &SemanticRiskEstimateV1) -> Result<(), NduError> {
     }
     Ok(())
 }
+
 fn validate_covariance(covariance: &[FixedQ32], count: usize) -> Result<(), NduError> {
     let expected = count.checked_mul(count).ok_or(NduError::Arithmetic)?;
     if covariance.len() != expected {
@@ -357,6 +365,7 @@ fn validate_covariance(covariance: &[FixedQ32], count: usize) -> Result<(), NduE
     }
     Ok(())
 }
+
 /// A no-change asset has zero *incremental* covariance with every active
 /// direction. Require that invariant for both selection and frontier views.
 fn validate_baseline_covariance(
@@ -377,6 +386,7 @@ fn validate_baseline_covariance(
     }
     Ok(baseline)
 }
+
 fn zero_risk(future_window_digest: Digest32) -> SemanticRiskEstimateV1 {
     SemanticRiskEstimateV1 {
         future_window_digest,
@@ -386,6 +396,7 @@ fn zero_risk(future_window_digest: Digest32) -> SemanticRiskEstimateV1 {
         cross_modal_inconsistency: FixedQ32::ZERO,
     }
 }
+
 fn scalar_risk(
     risk: &SemanticRiskEstimateV1,
     budget: &OutputPortfolioBudgetV1,
@@ -409,6 +420,7 @@ fn scalar_risk(
         .map_err(|_| NduError::Arithmetic)?;
     mul_q32_ties_even(weighted, budget.risk_aversion)
 }
+
 fn scalar_risk_unweighted(risk: &SemanticRiskEstimateV1) -> Result<FixedQ32, NduError> {
     let failure = FixedQ32::from_raw(
         i64::try_from(risk.failure_probability.raw()).map_err(|_| NduError::Arithmetic)?,
@@ -421,6 +433,7 @@ fn scalar_risk_unweighted(risk: &SemanticRiskEstimateV1) -> Result<FixedQ32, Ndu
         .checked_add(risk.cross_modal_inconsistency)
         .map_err(|_| NduError::Arithmetic)
 }
+
 fn adjusted_score(
     candidate: &OutputPortfolioCandidateV1,
     risk: FixedQ32,
@@ -443,6 +456,7 @@ fn adjusted_score(
         })
         .map_err(|_| NduError::Arithmetic)
 }
+
 fn weighted_sum(
     weights: &[FixedQ32],
     candidates: &[OutputPortfolioCandidateV1],
@@ -456,6 +470,7 @@ fn weighted_sum(
     }
     Ok(total)
 }
+
 /// Enforces hard limits using the *portfolio* covariance, not a Cell's
 /// stand-alone score. All arithmetic is checked and failures deny selection.
 fn respects_portfolio_budgets(
@@ -472,6 +487,7 @@ fn respects_portfolio_budgets(
         && latency <= budget.latency_budget
         && risk <= budget.risk_budget)
 }
+
 fn quadratic_risk(
     weights: &[FixedQ32],
     risks: &[FixedQ32],
@@ -491,9 +507,11 @@ fn quadratic_risk(
     }
     Ok(total)
 }
+
 fn min_q32(left: FixedQ32, right: FixedQ32) -> FixedQ32 {
     if left < right { left } else { right }
 }
+
 fn efficient_frontier_from_canonical(
     candidates: &[OutputPortfolioCandidateV1],
     risks: &[FixedQ32],
@@ -527,6 +545,7 @@ fn efficient_frontier_from_canonical(
     points.truncate(MAX_FRONTIER_POINTS);
     points
 }
+
 fn digest_selection(
     context: &OutputPortfolioContextV1,
     budget: &OutputPortfolioBudgetV1,
@@ -589,6 +608,7 @@ fn digest_selection(
     bytes.extend_from_slice(&total_utility.raw().to_le_bytes());
     Digest32::of_bytes(&bytes)
 }
+
 #[cfg(test)]
 #[path = "output_portfolio_tests.rs"]
 mod tests;
