@@ -224,7 +224,7 @@ def evaluate(study: Mapping):
                 total = _number(cost["total"], "total", lower=1e-12)
                 _need(abs(subtotal - total) <= max(1e-9, total * 1e-7),
                       "physical cost ledger not reconciled")
-                over_budget = total > hard_cost_limit + max(1e-9, hard_cost_limit * 1e-7)
+                over_budget = total > hard_cost_limit
                 if over_budget:
                     # Keep the episode in the matched denominator, with actual
                     # overrun cost and registered total-failure output penalty.
