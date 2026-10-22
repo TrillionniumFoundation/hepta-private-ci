@@ -1273,7 +1273,7 @@ fn unavailable(_error: impl std::fmt::Display) -> AutomationError {
 
 fn create_private_directory(path: &Path) -> Result<(), AutomationError> {
     fs::create_dir_all(path).map_err(unavailable)?;
-    if path.canonicalize().map_err(unavailable)? != path {
+    if !matches_canonical_path_spelling(path, &path.canonicalize().map_err(unavailable)?) {
         return Err(AutomationError::Invalid);
     }
     #[cfg(unix)]
@@ -1371,3 +1371,53 @@ async fn reconcile_legacy_migration_ids(pool: &SqlitePool) -> Result<(), Automat
 #[cfg(test)]
 #[path = "migration_convergence_tests.rs"]
 mod migration_convergence_tests;
+
+// Windows std::fs::canonicalize emits a verbatim \\?\ drive prefix even
+// for a normal absolute C:\\... path. Compare spellings only; never resolve
+// the input a second time, since that would hide symlink traversal.
+fn matches_canonical_path_spelling(original: &Path, canonical: &Path) -> bool {
+    if original == canonical {
+        return true;
+    }
+    #[cfg(windows)]
+    {
+        if let Some(plain) = canonical
+            .to_str()
+            .and_then(|spelling| spelling.strip_prefix(r"\\?\"))
+        {
+            // Admit only the known drive-prefix representation difference.
+            // UNC and device namespace changes remain denied.
+            if plain.as_bytes().get(1) == Some(&b':')
+                && plain.as_bytes().get(2) == Some(&b'\\')
+            {
+                return original == Path::new(plain);
+            }
+        }
+    }
+    false
+}
+
+#[cfg(all(test, windows))]
+mod canonical_windows_tests {
+    use super::*;
+
+    #[test]
+    fn native_drive_path_creates_private_owner_directory() {
+        let temp = tempfile::tempdir().expect("private owner parent");
+        let owner = temp.path().join("owner");
+        create_private_directory(&owner).expect("normal Windows path");
+        assert!(owner.is_dir());
+    }
+
+    #[test]
+    fn prefix_normalization_never_equates_different_targets() {
+        assert!(matches_canonical_path_spelling(
+            Path::new(r"D:\hepta\owner"),
+            Path::new(r"\\?\D:\hepta\owner"),
+        ));
+        assert!(!matches_canonical_path_spelling(
+            Path::new(r"D:\hepta\link"),
+            Path::new(r"\\?\D:\hepta\target"),
+        ));
+    }
+}
