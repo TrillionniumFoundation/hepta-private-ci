@@ -1,0 +1,49 @@
+name: Hepta Bazel Lock Synchronization
+
+on:
+  push:
+    branches:
+      - dot/bazel-lock-sync-20261021
+    paths:
+      - .github/workflows/hepta-bazel-lock-sync.yml
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: hepta-bazel-lock-sync-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  update-lockfile:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 50
+    steps:
+      - name: Checkout exact candidate
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          persist-credentials: true
+
+      - name: Prepare Bazel
+        uses: ./.github/actions/prepare-bazel-ci
+        with:
+          target: x86_64-unknown-linux-gnu
+          cache-scope: hepta-lockfile-regeneration
+
+      - name: Regenerate and verify lock
+        shell: bash
+        run: |
+          set -euo pipefail
+          bazel mod deps --lockfile_mode=update
+          bazel mod deps --lockfile_mode=error
+          git diff --check
+          if git diff --quiet -- MODULE.bazel.lock; then
+            echo "Already synchronized"
+            exit 0
+          fi
+          git config user.name 'hepta-bazel-lock-bot'
+          git config user.email 'hepta-bazel-lock-bot@users.noreply.github.com'
+          git add -- MODULE.bazel.lock
+          git commit -m 'build: regenerate Bazel lock for current Cargo graph'
+          git push origin "HEAD:${GITHUB_REF_NAME}"
