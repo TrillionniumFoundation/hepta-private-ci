@@ -3874,7 +3874,7 @@ fn unavailable(_error: impl std::fmt::Display) -> MatrixDurableError {
 
 fn create_private_directory(path: &Path) -> Result<(), MatrixDurableError> {
     fs::create_dir_all(path).map_err(unavailable)?;
-    if path.canonicalize().map_err(unavailable)? != path {
+    if !matches_canonical_path_spelling(path, &path.canonicalize().map_err(unavailable)?) {
         return Err(MatrixDurableError::Invalid);
     }
     #[cfg(unix)]
@@ -3892,4 +3892,51 @@ fn protect_database_file(_path: &Path) -> Result<(), MatrixDurableError> {
         fs::set_permissions(_path, fs::Permissions::from_mode(0o600)).map_err(unavailable)?;
     }
     Ok(())
+}
+
+// Only the Windows drive-verbatim prefix is representational. Do not
+// canonicalize the input again: differing real paths must stay rejected.
+fn matches_canonical_path_spelling(original: &Path, canonical: &Path) -> bool {
+    if original == canonical {
+        return true;
+    }
+    #[cfg(windows)]
+    {
+        if let Some(plain) = canonical
+            .to_str()
+            .and_then(|spelling| spelling.strip_prefix(r"\\?\"))
+        {
+            if plain.as_bytes().get(1) == Some(&b':')
+                && plain.as_bytes().get(2) == Some(&b'\\')
+            {
+                return original == Path::new(plain);
+            }
+        }
+    }
+    false
+}
+
+#[cfg(all(test, windows))]
+mod canonical_windows_tests {
+    use super::*;
+
+    #[test]
+    fn windows_owner_root_accepts_verbatim_drive_only() {
+        let temp = tempfile::tempdir().expect("matrix private fixture");
+        let root = temp.path().join("matrix-owner");
+        create_private_directory(&root).expect("valid ordinary Windows owner root");
+        assert!(root.is_dir());
+    }
+
+    #[test]
+    fn windows_different_resolved_owner_is_not_admitted() {
+        assert!(matches_canonical_path_spelling(
+            Path::new(r"C:\hepta\matrix"),
+            Path::new(r"\\?\C:\hepta\matrix"),
+        ));
+        assert!(!matches_canonical_path_spelling(
+            Path::new(r"C:\hepta\redirect"),
+            Path::new(r"\\?\C:\hepta\matrix"),
+        ));
+    }
 }
