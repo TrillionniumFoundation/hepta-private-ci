@@ -255,6 +255,15 @@ fn fence_requires_old_writer_and_route_cutover() {
     };
     assert_eq!(base.validate(), Ok(()));
 
+    // A fabricated handoff without a predecessor must never pass solely
+    // because its digests and observed booleans look complete.
+    let mut missing_predecessor = base.clone();
+    missing_predecessor.predecessor_generation = None;
+    assert_eq!(
+        missing_predecessor.validate(),
+        Err(ExecutionContractError::NonSuccessorGeneration)
+    );
+
     let mut skipped = base.clone();
     skipped.generation = generation(5);
     assert_eq!(
