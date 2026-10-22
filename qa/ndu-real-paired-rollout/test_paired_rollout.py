@@ -238,23 +238,16 @@ class PairedTests(unittest.TestCase):
         work=self.root/'train'
         work.mkdir()
         (work/'plan.json').write_text(json.dumps(plan))
-        rows=[]
+        (cohort/'train.observations.jsonl').write_text(json.dumps(self.obs)+'\n')
+        (cohort/'train.references.jsonl').write_text(json.dumps(self.ref)+'\n')
         journal=[]
         for seed in (11,29):
-            for index,arm in enumerate(ARMS):
-                rows.append({'source_id':source['source_id'],
-                             'image_digest':source['image_sha256'], 'seed':seed,
-                             'arm':arm, 'proposal_digest':proposals[arm],
-                             'loss':0.25+0.01*index, 'covered':True,
-                             'wall_seconds':0.5, 'overrun':False})
-                journal.append({'task_id':source['task_id'],'seed':seed,'arm':arm,
-                                'source_image_sha256':source['image_sha256'],
-                                'plan_digest':digest(plan)})
-        terminal={'schema':pr.SCHEMA,'split':'train',
-                  'cohort_digest':digest({'manifest':pr.sha(path),'split':'train'}),
-                  'model_digest':plan['model_digest'],
-                  'objective_digest':plan['objective_digest'],
-                  'budget_seconds':10.,'rows':rows}
+            for arm in ARMS:
+                episode=pr.run_arm(self.backend,self.cells,self.obs,arm,seed=seed,
+                                   artifact_root=self.root/'generated',budget=10.)
+                episode['plan_digest']=digest(plan)
+                journal.append(episode)
+        terminal=pr.to_terminal_batch(plan,journal,[self.ref],[self.obs])
         (work/'terminal-batch.json').write_text(json.dumps(terminal))
         (work/'episodes.jsonl').write_text(''.join(json.dumps(r)+'\n' for r in journal))
         complete={'status':'completed_no_scientific_claim','source_groups':1,'episodes':10,
@@ -277,12 +270,22 @@ class PairedTests(unittest.TestCase):
         # Tampered terminal loss with spoofed updated checksum must also fail
         # under source/seed/arm and original-image custody checks.
         tampered=dict(terminal)
-        tampered['rows']=[dict(row) for row in rows]
+        tampered['rows']=[dict(row) for row in terminal['rows']]
         tampered['rows'][0]['image_digest']=digest('other-image')
         (work/'terminal-batch.json').write_text(json.dumps(tampered))
         complete['terminal_batch_sha256']=pr.sha(work/'terminal-batch.json')
         marker.write_text(json.dumps(complete))
         with self.assertRaisesRegex(ValueError,'multiple image digests|original images'):
+            pr.verify_frozen_train(self.root,dev,meta,min_source_groups=1)
+        # A valid terminal schema + updated receipt SHA can still fabricate
+        # covariance until every terminal score is reconstructed from outputs.
+        score_spoof=copy.deepcopy(terminal)
+        old=score_spoof['rows'][0]['loss']
+        score_spoof['rows'][0]['loss']=0.95 if old!=0.95 else 0.05
+        (work/'terminal-batch.json').write_text(json.dumps(score_spoof))
+        complete['terminal_batch_sha256']=pr.sha(work/'terminal-batch.json')
+        marker.write_text(json.dumps(complete))
+        with self.assertRaisesRegex(ValueError,'terminal scores differ'):
             pr.verify_frozen_train(self.root,dev,meta,min_source_groups=1)
 
 

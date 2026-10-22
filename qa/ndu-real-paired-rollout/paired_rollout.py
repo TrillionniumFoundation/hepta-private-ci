@@ -321,6 +321,20 @@ def verify_frozen_train(work, dev_plan, manifest, *, min_source_groups=128):
             any(row.get('source_image_sha256') != lookup.get(row.get('task_id')) or
                 row.get('plan_digest') != digest(train_plan) for row in journal)):
         raise ValueError('TRAIN journal does not match the original source/seed/arm roster')
+    # A mutable local receipt can be rehashed after its terminal scores are
+    # altered. Reproduce EVERY observed loss from the executed generator
+    # journal and original reference records, not from the terminal batch.
+    # This is internal consistency, not external custody/signature proof.
+    from cohort import iter_pairs
+    cohort_path = Path(manifest['manifest_path']).parent
+    pairs = list(iter_pairs(cohort_path, 'train'))
+    if {obs['task_id']: obs['image_sha256'] for obs, _ in pairs} != lookup:
+        raise ValueError('TRAIN evaluator input roster differs from source manifest')
+    rescored = to_terminal_batch(train_plan, journal,
+                                [ref for _, ref in pairs],
+                                [obs for obs, _ in pairs])
+    if rescored != terminal:
+        raise ValueError('TRAIN terminal scores differ from original journal and independent reference')
     return {'verified':True,'sources':expected_count,'episodes':len(journal),
             'plan_sha256':receipt['plan_sha256'],
             'terminal_batch_sha256':receipt['terminal_batch_sha256']}
