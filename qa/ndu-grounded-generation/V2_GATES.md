@@ -4,12 +4,14 @@
 completed **negative** v1 grounded-generation pilot (research PR #3213). It
 neither changes the frozen `protocol.json`, evaluation denominators or v1
 scores, nor constitutes a second multimodal model experiment. The original
-831-file archive and its score replay remain authoritative.
+831-file archive and its score replay remain authoritative. This audit pins its
+original report, protocol and 768-row journal SHA256 receipts; supplying a
+mutated replacement fails closed.
 
 ## What is checked now
 
 `capability_gate.py` consumes the **full raw 768-row journal**, original v1
-protocol and aggregate report from the unchanged evidence ZIP. It recomputes
+protocol and aggregate report from the unchanged evidence ZIP. It first checks the original pinned SHA256 identities of those three files. It recomputes
 and checks per-method episodes, original-source-group count, quality, severe
 rate, coverage, wall time, and fractional-boundary CVaR. It rejects incomplete
 method rosters, non-finite outcomes, incompatible source identities,
@@ -95,7 +97,7 @@ python qa/ndu-grounded-generation/cohort_firewall.py \
 # EXPECT EXIT STATUS 0 only if identity overlap is absent.
 ```
 
-These 15 standard-library tests require no model weights or downloading.
+These 16 standard-library tests require no model weights or downloading.
 
 Independent integrity replay of the original immutable evidence remains a
 separate prerequisite:
