@@ -56,12 +56,12 @@ fn profile_json() -> Vec<u8> {
             "axis": "evidence.confidence"
         }],
         "resources": {
-            "timeMicros": resource("time", "task", 1),
-            "tokenCount": resource("tokens", "task", 2),
-            "computeMicros": resource("compute", "environment", 3),
-            "memoryBytes": resource("memory", "environment", 4),
-            "networkBytes": resource("network", "principal", 5),
-            "externalEffectCount": resource("effects", "principal", 6)
+            "timeMicros": resource("time", "task", /*suffix*/ 1),
+            "tokenCount": resource("tokens", "task", /*suffix*/ 2),
+            "computeMicros": resource("compute", "environment", /*suffix*/ 3),
+            "memoryBytes": resource("memory", "environment", /*suffix*/ 4),
+            "networkBytes": resource("network", "principal", /*suffix*/ 5),
+            "externalEffectCount": resource("effects", "principal", /*suffix*/ 6)
         },
         "risk": {
             "evidenceSource": "profile.risk",

@@ -17,8 +17,14 @@ use crate::GenerateAttestationFuture;
 use crate::config::Config;
 use crate::model_provider_policy::ModelProviderPolicyContext;
 use crate::responses_metadata::CodexResponsesMetadata;
+use crate::responses_metadata::CodexResponsesRequestKind;
+use crate::responses_metadata::CompactionTurnMetadata;
 use crate::test_support::TestCodexResponsesRequestKind;
 use crate::test_support::responses_metadata as test_responses_metadata;
+use codex_analytics::CompactionImplementation;
+use codex_analytics::CompactionPhase;
+use codex_analytics::CompactionReason;
+use codex_analytics::CompactionTrigger;
 use codex_api::AgentIdentityTelemetry;
 use codex_api::ApiError;
 use codex_api::ResponseEvent;
@@ -329,6 +335,7 @@ fn websocket_connection_identity_binds_provider_and_stable_handshake_semantics()
         "thread-a".to_string(),
         "window-a".to_string(),
     );
+    metadata_a.request_kind = Some(CodexResponsesRequestKind::Turn);
     metadata_a.sandbox_mode = Some("workspace-write".to_string());
     metadata_a.turn_started_at_unix_ms = Some(1);
     let identity_a =
@@ -339,6 +346,11 @@ fn websocket_connection_identity_binds_provider_and_stable_handshake_semantics()
     volatile_metadata.session_id = "session-after-restart".to_string();
     volatile_metadata.window_id = "window-after-restart".to_string();
     volatile_metadata.turn_started_at_unix_ms = Some(2);
+    volatile_metadata.parent_turn_id = Some("parent-turn".to_string());
+    volatile_metadata.root_turn_id = Some("root-turn".to_string());
+    volatile_metadata.context_window_id = Some(uuid::Uuid::new_v4());
+    volatile_metadata.extra =
+        BTreeMap::from([("fiber_run_id".to_string(), "fiber-run".to_string())]);
     assert_eq!(
         identity_a,
         WebsocketConnectionIdentity::from_provider(
@@ -348,6 +360,54 @@ fn websocket_connection_identity_binds_provider_and_stable_handshake_semantics()
         )
         .expect("volatile identity")
     );
+    assert_ne!(
+        serde_json::to_value(volatile_metadata.turn_recovery_compatibility_projection())
+            .expect("changed per-turn recovery projection"),
+        serde_json::to_value(metadata_a.turn_recovery_compatibility_projection())
+            .expect("original recovery projection")
+    );
+
+    let mut prewarm_metadata = metadata_a.clone();
+    prewarm_metadata.request_kind = Some(CodexResponsesRequestKind::Prewarm);
+    let prewarm_recovery =
+        serde_json::to_value(prewarm_metadata.turn_recovery_compatibility_projection())
+            .expect("prewarm recovery projection");
+    assert_eq!(
+        identity_a,
+        WebsocketConnectionIdentity::from_provider(
+            &provider,
+            Some("feature-a"),
+            &prewarm_metadata,
+        )
+        .expect("prewarm socket identity")
+    );
+    assert_eq!(prewarm_recovery["request_kind"], "prewarm");
+    assert_ne!(
+        prewarm_recovery,
+        serde_json::to_value(metadata_a.turn_recovery_compatibility_projection())
+            .expect("turn recovery projection")
+    );
+    for request_kind in [
+        CodexResponsesRequestKind::Memory,
+        CodexResponsesRequestKind::Compaction(CompactionTurnMetadata::new(
+            CompactionTrigger::Auto,
+            CompactionReason::ContextLimit,
+            CompactionImplementation::ResponsesCompact,
+            CompactionPhase::PreTurn,
+        )),
+    ] {
+        let mut changed_kind = metadata_a.clone();
+        changed_kind.request_kind = Some(request_kind);
+        assert_ne!(
+            identity_a,
+            WebsocketConnectionIdentity::from_provider(
+                &provider,
+                Some("feature-a"),
+                &changed_kind,
+            )
+            .expect("different request kind identity")
+        );
+    }
 
     let mut changed_metadata = metadata_a.clone();
     changed_metadata.sandbox_mode = Some("danger-full-access".to_string());

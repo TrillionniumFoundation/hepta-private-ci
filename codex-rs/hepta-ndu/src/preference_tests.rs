@@ -194,7 +194,7 @@ fn iteration_exhaustion_is_unavailable() {
 
 #[test]
 fn parent_and_child_updates_cannot_share_generation() {
-    let generation = must(Generation::new(7));
+    let generation = must(Generation::new(/*value*/ 7));
     let error = must_err(validate_staged_updates(&[
         UpdateGeneration {
             generation,
@@ -217,7 +217,7 @@ fn parent_and_child_updates_cannot_share_generation() {
 
 #[test]
 fn unrelated_hierarchy_updates_can_share_generation() {
-    let generation = must(Generation::new(8));
+    let generation = must(Generation::new(/*value*/ 8));
     must(validate_staged_updates(&[
         UpdateGeneration {
             generation,
@@ -238,7 +238,7 @@ fn unrelated_hierarchy_updates_can_share_generation() {
 
 #[test]
 fn one_subject_cannot_select_two_artifacts_in_one_generation() {
-    let generation = must(Generation::new(9));
+    let generation = must(Generation::new(/*value*/ 9));
     let error = must_err(validate_staged_updates(&[
         UpdateGeneration {
             generation,
@@ -267,8 +267,8 @@ fn one_subject_cannot_select_two_artifacts_in_one_generation() {
 
 #[test]
 fn impossible_local_receipt_invariants_are_rejected() {
-    let revision = must(Revision::new(1));
-    let next_revision = must(Revision::new(2));
+    let revision = must(Revision::new(/*value*/ 1));
+    let next_revision = must(Revision::new(/*value*/ 2));
     let invalid = NduSolverIterationReceipt {
         subject_id: id("agent-a"),
         subject_class: SubjectClass::Agent,
@@ -288,7 +288,7 @@ fn impossible_local_receipt_invariants_are_rejected() {
         subject_id: id("agent-a"),
         subject_class: SubjectClass::Agent,
         objective_digest: Digest32::of_bytes(b"objective"),
-        generation: must(Generation::new(4)),
+        generation: must(Generation::new(/*value*/ 4)),
         event_digest: Digest32::of_bytes(b"event"),
         coefficient_digest: Digest32::of_bytes(b"coefficient"),
     };

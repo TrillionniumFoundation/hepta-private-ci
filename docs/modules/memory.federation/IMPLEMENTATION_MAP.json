@@ -2,8 +2,8 @@
   "schema": "hepta.module-implementation-map.v3",
   "schemaVersion": 3,
   "sourceBase": {
-    "commit": "8914a46dfc5984532f03dd2d559bf547ca4f1e69",
-    "tree": "1bd6444d2d980a9fdf06358dbee973b34722f0e1"
+    "commit": "85d0cce30b2583bba6997754a7fd8c2d4a19af2f",
+    "tree": "7142a9a69e686946c8e7b60ed8691906262ff713"
   },
   "laneId": "LANE-C-MEMORY",
   "module": "memory.federation",
@@ -150,13 +150,34 @@
   },
   "sourceIdentityPolicy": "candidate_or_exact_observation_v1",
   "observedAtHead": {
-    "commit": "8914a46dfc5984532f03dd2d559bf547ca4f1e69",
-    "tree": "1bd6444d2d980a9fdf06358dbee973b34722f0e1"
+    "commit": "85d0cce30b2583bba6997754a7fd8c2d4a19af2f",
+    "tree": "7142a9a69e686946c8e7b60ed8691906262ff713"
   },
   "observedSourcePaths": [
+    ".github/workflows/memory-federation-v2-final-verify.yml",
     "codex-rs/Cargo.lock",
     "codex-rs/Cargo.toml",
-    "codex-rs/hepta-memory-federation"
+    "codex-rs/app-server/src/lib.rs",
+    "codex-rs/core/tests/suite/model_provider_policy_http_ephemeral.rs",
+    "codex-rs/ext/hepta-memory/src/cognitive/federation.rs",
+    "codex-rs/hepta-agentd/src/runtime.rs",
+    "codex-rs/hepta-memory-federation",
+    "codex-rs/hepta-memory/src/cognitive_federation.rs",
+    "codex-rs/hepta-memory/src/cognitive_federation_tests.rs",
+    "codex-rs/hepta-memory/src/cognitive_path.rs",
+    "codex-rs/hepta-memory/src/cognitive_path_tests.rs",
+    "codex-rs/hepta-memory/src/cognitive_retrieval.rs",
+    "codex-rs/hepta-memory/src/cognitive_runtime.rs",
+    "codex-rs/hepta-memory/src/cognitive_runtime_tests.rs",
+    "codex-rs/hepta-memory/src/framing.rs",
+    "codex-rs/hepta-memory/src/lib.rs",
+    "docs/modules/MODULE_DOCS.json",
+    "docs/modules/memory.federation/TECHNICAL.md",
+    "docs/modules/memory.federation/V2_HARDENING.md",
+    "qualification/memory-federation/FINAL_V2_VERIFICATION.md",
+    "qualification/module-execution-dossiers/DETAILS.json",
+    "qualification/module-execution-dossiers/IMPLEMENTATION_PROFILES.json",
+    "qualification/module-execution-dossiers/detail/memory.federation.md"
   ],
   "productCallers": [
     {
@@ -172,8 +193,28 @@
   ],
   "sourceObjects": [
     {
+      "path": ".github/workflows/memory-federation-v2-final-verify.yml",
+      "object": "5e08c0d7d19c4df1e87b2cae7db83c8a1d4c236b"
+    },
+    {
+      "path": "codex-rs/Cargo.lock",
+      "object": "b796d291c279450e11042b6aaa1b348657f14f3a"
+    },
+    {
+      "path": "codex-rs/Cargo.toml",
+      "object": "70c7b8dc2bc9768f6fc673049c2e348baddce838"
+    },
+    {
+      "path": "codex-rs/app-server/src/lib.rs",
+      "object": "ba3913f5b97c049405d27a4e96bc8556b32fe847"
+    },
+    {
+      "path": "codex-rs/core/tests/suite/model_provider_policy_http_ephemeral.rs",
+      "object": "d34e4c243d3bd4f09b8fffd18a7121f11ee9abf9"
+    },
+    {
       "path": "codex-rs/ext/hepta-memory/src/cognitive/federation.rs",
-      "object": "61b143142015b17924d9f2804714fb9968b2e9a6"
+      "object": "27a6d17f374f43495f1f563681c43482c8bb970e"
     },
     {
       "path": "codex-rs/hepta-agentd/src/runtime.rs",
@@ -181,7 +222,7 @@
     },
     {
       "path": "codex-rs/hepta-memory-federation",
-      "object": "f2fb3418d116d61deae41ade0b4e1f8e9354172d"
+      "object": "2b8d3763a3d705ffd2910cbd6e1c4d59677416f3"
     },
     {
       "path": "codex-rs/hepta-memory-federation/src/v2.rs",
@@ -189,7 +230,27 @@
     },
     {
       "path": "codex-rs/hepta-memory-federation/src/v2_tests.rs",
-      "object": "040cc8abbd8414e4df9127ffd17069c4cec12c95"
+      "object": "462c78c1714cd9eab15e70fe64853e8a77d3f513"
+    },
+    {
+      "path": "codex-rs/hepta-memory/src/cognitive_federation.rs",
+      "object": "6a04c2f7552a0f7f29a9275fce661e49666c795c"
+    },
+    {
+      "path": "codex-rs/hepta-memory/src/cognitive_federation_tests.rs",
+      "object": "8c585d8f1326575141bc555112ee0e928c30ba3e"
+    },
+    {
+      "path": "codex-rs/hepta-memory/src/cognitive_path.rs",
+      "object": "72f6a6e248ef47348ac3e4c111cb149d1bbcb68f"
+    },
+    {
+      "path": "codex-rs/hepta-memory/src/cognitive_path_tests.rs",
+      "object": "63c60da63d887424edc3415e98634b1ef96f950f"
+    },
+    {
+      "path": "codex-rs/hepta-memory/src/cognitive_retrieval.rs",
+      "object": "3d4a656b34ab0e9623d6c1081346f81eaa54a5cd"
     },
     {
       "path": "codex-rs/hepta-memory/src/cognitive_runtime.rs",
@@ -200,8 +261,42 @@
       "object": "7f397fe3e35205bae51ef95c4475315559c2b0ea"
     },
     {
+      "path": "codex-rs/hepta-memory/src/framing.rs",
+      "object": "859121597095da843a2852eec569536bfe1e2c6a"
+    },
+    {
+      "path": "codex-rs/hepta-memory/src/lib.rs",
+      "object": "be8b5db419744eef83df58bec3cd6bb40756e114"
+    },
+    {
+      "path": "docs/modules/MODULE_DOCS.json",
+      "object": "1ac87f5e5d295510524239da07537ee5b183d3c2"
+    },
+    {
       "path": "docs/modules/memory.federation/TECHNICAL.md",
       "object": "cfe666c5e0d3fbc76b86382b6c3c738bd065a335"
+    },
+    {
+      "path": "docs/modules/memory.federation/V2_HARDENING.md",
+      "object": "822c82aa7f38d2f4fd8ae813dd57e3d4c8df613a"
+    },
+    {
+      "path": "qualification/memory-federation/FINAL_V2_VERIFICATION.md",
+      "object": "fc94e172e9950e99565e7b16faab56973a1108a4"
+    },
+    {
+      "path": "qualification/module-execution-dossiers/DETAILS.json",
+      "object": "92fdb55d077516fbc10d3eadcc914eb471129864"
+    },
+    {
+      "path": "qualification/module-execution-dossiers/IMPLEMENTATION_PROFILES.json",
+      "object": "f9754cc2f64f7e184cc8fceeca2994a194027319"
+    },
+    {
+      "path": "qualification/module-execution-dossiers/detail/memory.federation.md",
+      "object": "b1ad61774fcfdf6dbeace6276a365e0eda0f47f7"
     }
-  ]
+  ],
+  "sourceObservationScope": "Current source navigation was independently re-observed at sourceBase. Source objects and observed paths bind that source snapshot; this observation does not renew historical execution, acceptance, activation or release evidence.",
+  "headAttestationScope": "The unchanged headAttestation object records its historical candidate branch, base, head, tree and pending execution status. Its headMeaning and evidence paths are historical descriptions, not an attestation or execution receipt for the current sourceBase."
 }

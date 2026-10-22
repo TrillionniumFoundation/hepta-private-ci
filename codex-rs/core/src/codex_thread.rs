@@ -864,6 +864,12 @@ impl CodexThread {
         self.io.next_event().await
     }
 
+    /// Receive the event and its exact owner witness without awaiting terminalization.
+    /// This receive is cancellation-safe; adapters wait only after committing to handle the event.
+    pub async fn next_event_with_completion(&self) -> CodexResult<crate::EventDelivery> {
+        self.io.next_event_with_completion().await
+    }
+
     pub async fn agent_status(&self) -> AgentStatus {
         self.io.agent_status().await
     }

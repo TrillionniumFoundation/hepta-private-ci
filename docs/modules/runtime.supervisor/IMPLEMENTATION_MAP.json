@@ -2,8 +2,8 @@
   "schema": "hepta.module-implementation-map.v3",
   "schemaVersion": 3,
   "sourceBase": {
-    "commit": "8914a46dfc5984532f03dd2d559bf547ca4f1e69",
-    "tree": "1bd6444d2d980a9fdf06358dbee973b34722f0e1"
+    "commit": "85d0cce30b2583bba6997754a7fd8c2d4a19af2f",
+    "tree": "7142a9a69e686946c8e7b60ed8691906262ff713"
   },
   "laneId": "LANE-B-RUNTIME",
   "module": "runtime.supervisor",
@@ -301,7 +301,15 @@
         "symbol": "pub fn resolve_production_recovery(",
         "buildTarget": "codex-hepta-supervisor"
       },
-      "delegatedCallees": [],
+      "delegatedCallees": [
+        {
+          "role": "delegated_callee",
+          "path": "codex-rs/hepta-supervisor/src/unknown_recovery_owner.rs",
+          "symbol": "pub(crate) fn resolve_unknown_recovery_in_slot(",
+          "ownerModule": "runtime.supervisor",
+          "buildTarget": "codex-hepta-supervisor"
+        }
+      ],
       "tests": [
         {
           "path": "codex-rs/hepta-supervisor/src/supervisor_tests.rs",
@@ -317,9 +325,19 @@
           "path": "codex-rs/hepta-supervisor/src/release_transaction.rs",
           "kind": "durable_recovery_terminal_state",
           "command": "just test -p codex-hepta-supervisor --lib"
+        },
+        {
+          "path": "codex-rs/hepta-supervisor/src/unknown_recovery_owner_tests.rs",
+          "kind": "signed_unknown_disposition_owner_and_durability",
+          "command": "just test -p codex-hepta-supervisor --lib"
+        },
+        {
+          "path": "codex-rs/hepta-supervisor/src/unknown_recovery_compat_tests.rs",
+          "kind": "local_abort_fence_and_signed_unknown_compatibility",
+          "command": "just test -p codex-hepta-supervisor --lib"
         }
       ],
-      "sourceSemantics": "Quarantines ambiguous signed transitions as recovery_required while keeping owner-local status/recovery RPCs reachable. An independently signed recovery decision must bind the grant, signed-intent digest, release-transaction digest, observed immutable release bytes and current lifecycle/daemon-authority fences; the current admission frontier is revalidated again before terminal commit/rollback.",
+      "sourceSemantics": "Quarantines ambiguous signed transitions as recovery_required while keeping owner-local status/recovery RPCs reachable. For terminal commit/rollback, an independently signed recovery decision must bind the grant, signed-intent digest, release-transaction digest, observed immutable release bytes and current lifecycle/daemon-authority fences; the current admission frontier is revalidated again before terminal commit/rollback. A local Abort keeps the recovery fence. The separate signed v2 AbandonUnknown decision can resolve that fence only with both Agentd and Matrix handles and leases absent, lifecycle Failed or Stopped, no release transaction, and the exact current Fleet release generation, material and admission frontier revalidated before publication. The same owner atomically records Aborted with retained signed unknown history, preserves the restart budget and forbids old-grant resume or conversion to commit/rollback success. Promotion remains false and any future spawn requires ordinary lifecycle admission.",
       "operation": "reconcile_signed_intent",
       "nativeSymbol": "pub fn resolve_production_recovery(",
       "sourcePath": "codex-rs/hepta-supervisor/src/supervisor.rs",
@@ -369,12 +387,106 @@
     "codex-rs/hepta-agentd",
     "codex-rs/hepta-automation",
     "codex-rs/hepta-fleet",
-    "codex-rs/hepta-supervisor"
+    "codex-rs/hepta-supervisor",
+    "codex-rs/hepta-supervisor/src/release_transaction.rs",
+    "codex-rs/hepta-supervisor/src/signed_authority.rs",
+    "codex-rs/hepta-supervisor/src/signed_intent.rs",
+    "codex-rs/hepta-supervisor/src/signed_intent_recovery.rs",
+    "codex-rs/hepta-supervisor/src/supervisor.rs",
+    "codex-rs/hepta-supervisor/src/supervisor_tests.rs",
+    "codex-rs/hepta-supervisor/src/unix_tests.rs",
+    "codex-rs/hepta-supervisor/src/unknown_recovery_authority.rs",
+    "codex-rs/hepta-supervisor/src/unknown_recovery_compat_tests.rs",
+    "codex-rs/hepta-supervisor/src/unknown_recovery_owner.rs",
+    "codex-rs/hepta-supervisor/src/unknown_recovery_owner_tests.rs",
+    "docs/modules/runtime.supervisor/TECHNICAL.md"
   ],
   "observedAtHead": {
-    "commit": "8914a46dfc5984532f03dd2d559bf547ca4f1e69",
-    "tree": "1bd6444d2d980a9fdf06358dbee973b34722f0e1",
+    "commit": "85d0cce30b2583bba6997754a7fd8c2d4a19af2f",
+    "tree": "7142a9a69e686946c8e7b60ed8691906262ff713",
     "interpretation": "final exact repository-controlled source observation for runtime.supervisor convergence: typed Agentd drain and admitted-handler barrier, durable automation classification, production unsigned-release denial when a verifier is configured, unified release transaction/re-admission, transition-aware signed terminal recovery, durable bounded explicit and automatic restart semantics, expanded readiness gates, and recovery hydration that preserves durable authority state across process faults. Product activation, deployed trust roots, target-host qualification and independent acceptance remain external."
   },
-  "sourceIdentityPolicy": "candidate_or_exact_observation_v1"
+  "sourceIdentityPolicy": "candidate_or_exact_observation_v1",
+  "sourceObjects": [
+    {
+      "path": "codex-rs/Cargo.lock",
+      "object": "b796d291c279450e11042b6aaa1b348657f14f3a"
+    },
+    {
+      "path": "codex-rs/Cargo.toml",
+      "object": "70c7b8dc2bc9768f6fc673049c2e348baddce838"
+    },
+    {
+      "path": "codex-rs/app-server",
+      "object": "66ea57c4c6f6a4edd29f305c6838837a0cf610a2"
+    },
+    {
+      "path": "codex-rs/hepta-agent-protocol",
+      "object": "737f2b88a22ab2a33c6dc92832fb78e08292f3ba"
+    },
+    {
+      "path": "codex-rs/hepta-agentd",
+      "object": "66bcce284f0ea804f80620d71024446e076f6ff9"
+    },
+    {
+      "path": "codex-rs/hepta-automation",
+      "object": "6aff80da02f80af690372470b869842e22171a59"
+    },
+    {
+      "path": "codex-rs/hepta-fleet",
+      "object": "6c034eb921e8cd8fcabb898b089e00422f56449a"
+    },
+    {
+      "path": "codex-rs/hepta-supervisor",
+      "object": "84accc7bd0d33cae46f178ebfebc49fc588d0db9"
+    },
+    {
+      "path": "codex-rs/hepta-supervisor/src/release_transaction.rs",
+      "object": "fc0b8657107d450d2d81edd95ef44e8d1d8dbd27"
+    },
+    {
+      "path": "codex-rs/hepta-supervisor/src/signed_authority.rs",
+      "object": "ab6c1395d24e2da3f912bb1aa1bcee14a9d957e0"
+    },
+    {
+      "path": "codex-rs/hepta-supervisor/src/signed_intent.rs",
+      "object": "8ea97ac8cd0afd0fc990bc5465e6635b5aafb06e"
+    },
+    {
+      "path": "codex-rs/hepta-supervisor/src/signed_intent_recovery.rs",
+      "object": "47a37caeb8593d84958ccafafd8ca83a64068d24"
+    },
+    {
+      "path": "codex-rs/hepta-supervisor/src/supervisor.rs",
+      "object": "3d05358018770f556501d9355cc66625aa8834dc"
+    },
+    {
+      "path": "codex-rs/hepta-supervisor/src/supervisor_tests.rs",
+      "object": "6e28b041f152ebe5f45f162a18302d4052a5ced3"
+    },
+    {
+      "path": "codex-rs/hepta-supervisor/src/unix_tests.rs",
+      "object": "eb88a374cf9497fc794bba5b62b7c596a4a2200a"
+    },
+    {
+      "path": "codex-rs/hepta-supervisor/src/unknown_recovery_authority.rs",
+      "object": "08720da956fd810a6ea92063b199f7907fc2cb66"
+    },
+    {
+      "path": "codex-rs/hepta-supervisor/src/unknown_recovery_compat_tests.rs",
+      "object": "21d43ac9978357092030759a70909dbb3de18203"
+    },
+    {
+      "path": "codex-rs/hepta-supervisor/src/unknown_recovery_owner.rs",
+      "object": "23cc7991b926d6feee7fb702805289ac74c45220"
+    },
+    {
+      "path": "codex-rs/hepta-supervisor/src/unknown_recovery_owner_tests.rs",
+      "object": "8122e02e79b4b93b21b86081c61faeecddeca36d"
+    },
+    {
+      "path": "docs/modules/runtime.supervisor/TECHNICAL.md",
+      "object": "8cfb52edc43c44602638c9b2c7d2b8ae81275f76"
+    }
+  ]
 }

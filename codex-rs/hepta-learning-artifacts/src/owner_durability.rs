@@ -21,8 +21,13 @@ pub(super) fn create_root(path: &Path) -> Result<(), ArtifactOwnerHostError> {
 }
 
 pub(super) fn sync_file_and_parent(path: &Path) -> Result<(), ArtifactOwnerHostError> {
-    File::open(path)
-        .and_then(|file| file.sync_all())
+    // Windows FlushFileBuffers requires write access even for an existing file.
+    // Open and sync failures still fail closed; never create or truncate here.
+    #[cfg(windows)]
+    let file = File::options().read(true).write(true).open(path);
+    #[cfg(not(windows))]
+    let file = File::open(path);
+    file.and_then(|file| file.sync_all())
         .map_err(|_| ArtifactOwnerHostError::Indeterminate)?;
     sync_parent(path)
 }

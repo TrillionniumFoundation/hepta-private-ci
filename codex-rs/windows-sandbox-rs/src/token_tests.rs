@@ -17,6 +17,152 @@ use windows_sys::Win32::Security::TokenRestrictedSids;
 use windows_sys::Win32::Storage::FileSystem::DELETE;
 use windows_sys::Win32::Storage::FileSystem::FILE_ALL_ACCESS;
 
+// Read only the real, owned fixture ACL. The returned tuples identify the ACE
+// type, flags, mask and whether it matches the tested capability; no account
+// names or unrelated SID values are printed.
+fn fixture_acl_snapshot(
+    path: &std::path::Path,
+    capability: &LocalSid,
+) -> Result<Vec<(u8, u8, Option<u32>, bool)>> {
+    use windows_sys::Win32::Security::ACCESS_ALLOWED_ACE;
+    use windows_sys::Win32::Security::ACE_HEADER;
+    use windows_sys::Win32::Security::ACL_SIZE_INFORMATION;
+    use windows_sys::Win32::Security::AclSizeInformation;
+    use windows_sys::Win32::Security::GetAce;
+    use windows_sys::Win32::Security::GetAclInformation;
+
+    // SAFETY: the fixture exists; the descriptor owns its ACL until it is freed
+    // after the closure, including every early error path.
+    unsafe {
+        let (acl, descriptor) = fetch_dacl_handle(path)?;
+        let result = (|| {
+            anyhow::ensure!(!acl.is_null(), "fixture has a null DACL");
+            let mut information: ACL_SIZE_INFORMATION = std::mem::zeroed();
+            anyhow::ensure!(
+                GetAclInformation(
+                    acl,
+                    (&raw mut information).cast(),
+                    std::mem::size_of::<ACL_SIZE_INFORMATION>() as u32,
+                    AclSizeInformation,
+                ) != 0,
+                "GetAclInformation failed: {}",
+                GetLastError(),
+            );
+            let mut entries = Vec::new();
+            for index in 0..information.AceCount {
+                let mut ace = std::ptr::null_mut();
+                anyhow::ensure!(
+                    GetAce(acl, index, &mut ace) != 0,
+                    "GetAce failed: {}",
+                    GetLastError(),
+                );
+                let header = &*ace.cast::<ACE_HEADER>();
+                let (mask, matching) = if matches!(header.AceType, 0 | 1) {
+                    let ordinary = &*ace.cast::<ACCESS_ALLOWED_ACE>();
+                    (
+                        Some(ordinary.Mask),
+                        EqualSid(
+                            (&raw const ordinary.SidStart).cast_mut().cast(),
+                            capability.as_ptr(),
+                        ) != 0,
+                    )
+                } else {
+                    (None, false)
+                };
+                entries.push((header.AceType, header.AceFlags, mask, matching));
+            }
+            Ok(entries)
+        })();
+        if !descriptor.is_null() {
+            LocalFree(descriptor as HLOCAL);
+        }
+        result
+    }
+}
+
+// This evaluates one real descriptor, not the filesystem's separate parent
+// delete-child fallback. The existing file operations below remain the actual
+// confinement check. A diagnostic API error must not prevent those operations.
+fn fixture_access_check(
+    path: &std::path::Path,
+    token: HANDLE,
+    mut desired: u32,
+) -> Result<(bool, u32, u32)> {
+    use windows_sys::Win32::Security::AccessCheck;
+    use windows_sys::Win32::Security::Authorization::GetNamedSecurityInfoW;
+    use windows_sys::Win32::Security::DuplicateToken;
+    use windows_sys::Win32::Security::GENERIC_MAPPING;
+    use windows_sys::Win32::Security::GROUP_SECURITY_INFORMATION;
+    use windows_sys::Win32::Security::MapGenericMask;
+    use windows_sys::Win32::Security::OWNER_SECURITY_INFORMATION;
+    use windows_sys::Win32::Security::PRIVILEGE_SET;
+    use windows_sys::Win32::Security::SecurityImpersonation;
+    use windows_sys::Win32::Storage::FileSystem::FILE_GENERIC_EXECUTE;
+    use windows_sys::Win32::Storage::FileSystem::FILE_GENERIC_READ;
+    use windows_sys::Win32::Storage::FileSystem::FILE_GENERIC_WRITE;
+
+    // SAFETY: the fixture and input token remain live. The returned descriptor
+    // owns its embedded owner/group/DACL until LocalFree after every result;
+    // the duplicated impersonation token is independently closed by OwnedToken.
+    unsafe {
+        let mut descriptor = std::ptr::null_mut();
+        let code = GetNamedSecurityInfoW(
+            to_wide(path).as_ptr(),
+            SE_FILE_OBJECT,
+            OWNER_SECURITY_INFORMATION | GROUP_SECURITY_INFORMATION | DACL_SECURITY_INFORMATION,
+            std::ptr::null_mut(),
+            std::ptr::null_mut(),
+            std::ptr::null_mut(),
+            std::ptr::null_mut(),
+            &mut descriptor,
+        );
+        let result = (|| {
+            anyhow::ensure!(
+                code == ERROR_SUCCESS,
+                "GetNamedSecurityInfoW failed: {code}"
+            );
+            anyhow::ensure!(!descriptor.is_null(), "fixture has no security descriptor");
+            let mut impersonation = 0;
+            anyhow::ensure!(
+                DuplicateToken(token, SecurityImpersonation, &mut impersonation) != 0,
+                "DuplicateToken failed: {}",
+                GetLastError(),
+            );
+            let impersonation = OwnedToken(impersonation);
+            let mapping = GENERIC_MAPPING {
+                GenericRead: FILE_GENERIC_READ,
+                GenericWrite: FILE_GENERIC_WRITE,
+                GenericExecute: FILE_GENERIC_EXECUTE,
+                GenericAll: FILE_ALL_ACCESS,
+            };
+            MapGenericMask(&mut desired, &mapping);
+            let mut privileges: PRIVILEGE_SET = std::mem::zeroed();
+            let mut privilege_bytes = std::mem::size_of::<PRIVILEGE_SET>() as u32;
+            let mut granted = 0;
+            let mut allowed = 0;
+            anyhow::ensure!(
+                AccessCheck(
+                    descriptor,
+                    impersonation.0,
+                    desired,
+                    &mapping,
+                    &mut privileges,
+                    &mut privilege_bytes,
+                    &mut granted,
+                    &mut allowed,
+                ) != 0,
+                "AccessCheck failed: {} (privilege bytes {privilege_bytes})",
+                GetLastError(),
+            );
+            Ok((allowed != 0, granted, privileges.PrivilegeCount))
+        })();
+        if !descriptor.is_null() {
+            LocalFree(descriptor as HLOCAL);
+        }
+        result
+    }
+}
+
 struct OwnedToken(HANDLE);
 
 impl Drop for OwnedToken {
@@ -210,7 +356,13 @@ fn partial_delete_deny_is_repaired_before_native_workspace_writes() -> Result<()
         (repaired, denied),
         (true, [Some(std::io::ErrorKind::PermissionDenied); 2]),
     );
-    assert_eq!(repeated_repairs, (false, true, false));
+    assert_eq!(
+        repeated_repairs,
+        (false, true, false),
+        "actual directory ACL={:?}; actual file ACL={:?}",
+        fixture_acl_snapshot(fixture.path(), &capability)?,
+        fixture_acl_snapshot(&existing, &capability)?,
+    );
     assert_eq!(read, "before repair");
     assert_eq!(
         (std::fs::read_to_string(&existing)?, created.exists()),
@@ -260,6 +412,55 @@ fn workspace_capabilities_deny_writes_and_deletes_under_broad_identity_aces() ->
     let token = OwnedToken(unsafe {
         create_workspace_write_token_with_caps_from(base.0, &[cap_a.as_ptr(), cap_b.as_ptr()])?
     });
+    let outside_acl = (
+        fixture_acl_snapshot(&outside, &cap_a)?,
+        fixture_acl_snapshot(&outside.join("keep.txt"), &cap_a)?,
+        fixture_acl_snapshot(&outside.join("keep-dir"), &cap_a)?,
+    );
+    // SAFETY: token and every SID buffer remain owned throughout these native
+    // observations, before any impersonation or deletion can alter the fixture.
+    let restricting_sids = unsafe {
+        (
+            token_has_restricting_sid(token.0, cap_a.as_ptr())?,
+            token_has_restricting_sid(token.0, cap_b.as_ptr())?,
+            token_has_restricting_sid(token.0, logon.as_mut_ptr().cast())?,
+            token_has_restricting_sid(token.0, everyone.as_mut_ptr().cast())?,
+        )
+    };
+    // Read each descriptor before the original destructive attempts. Include
+    // known read/write and authorized-root controls; do not turn an API error
+    // into an apparent denial or short-circuit the real deletion assertions.
+    let access_checks = [
+        ("outside file DELETE", outside.join("keep.txt"), DELETE),
+        ("outside directory DELETE", outside.join("keep-dir"), DELETE),
+        (
+            "outside parent FILE_DELETE_CHILD",
+            outside.clone(),
+            windows_sys::Win32::Storage::FileSystem::FILE_DELETE_CHILD,
+        ),
+        (
+            "outside file FILE_WRITE_DATA",
+            outside.join("keep.txt"),
+            windows_sys::Win32::Storage::FileSystem::FILE_WRITE_DATA,
+        ),
+        (
+            "outside file FILE_READ_DATA",
+            outside.join("keep.txt"),
+            windows_sys::Win32::Storage::FileSystem::FILE_READ_DATA,
+        ),
+        (
+            "authorized file DELETE",
+            allowed[0].join("delete.txt"),
+            DELETE,
+        ),
+    ]
+    .map(|(label, path, desired)| {
+        (
+            label,
+            desired,
+            fixture_access_check(&path, token.0, desired).map_err(|error| error.to_string()),
+        )
+    });
     let (outside_read, refused) = {
         let _impersonation = unsafe { Impersonation::enter(token.0)? };
         for path in &allowed {
@@ -277,7 +478,13 @@ fn workspace_capabilities_deny_writes_and_deletes_under_broad_identity_aces() ->
         .map(|result| result.err().map(|error| error.kind()));
         (outside_read, refused)
     };
-    assert_eq!(refused, [Some(std::io::ErrorKind::PermissionDenied); 4]);
+    assert_eq!(
+        refused,
+        [Some(std::io::ErrorKind::PermissionDenied); 4],
+        "restricting (cap_a, cap_b, logon, everyone)={restricting_sids:?}; \
+         actual outside (parent, file, directory) ACL={outside_acl:?}; \
+         per-descriptor AccessCheck (label, desired, result(allowed, granted, privileges))={access_checks:?}",
+    );
     assert_eq!(outside_read, "outside");
     assert_eq!(
         (

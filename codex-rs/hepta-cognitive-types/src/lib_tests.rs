@@ -28,7 +28,7 @@ fn generation(value: u64) -> Generation {
 fn record(name: &str) -> MemoryRecord {
     MemoryRecord {
         record_id: id(name),
-        revision: revision(1),
+        revision: revision(/*value*/ 1),
         kind: MemoryKind::Fact,
         content_digest: digest(name.as_bytes()),
         predecessor_digest: None,
@@ -42,8 +42,14 @@ fn record(name: &str) -> MemoryRecord {
 
 #[test]
 fn snapshot_is_canonical_and_authority_free() {
-    let left = build_snapshot(generation(1), vec![record("record:b"), record("record:a")]);
-    let right = build_snapshot(generation(1), vec![record("record:a"), record("record:b")]);
+    let left = build_snapshot(
+        generation(/*value*/ 1),
+        vec![record("record:b"), record("record:a")],
+    );
+    let right = build_snapshot(
+        generation(/*value*/ 1),
+        vec![record("record:a"), record("record:b")],
+    );
     let (Ok(left), Ok(right)) = (left, right) else {
         panic!("canonical snapshots must build");
     };
@@ -54,7 +60,7 @@ fn snapshot_is_canonical_and_authority_free() {
 #[test]
 fn later_revision_requires_predecessor() {
     let mut value = record("record:1");
-    value.revision = revision(2);
+    value.revision = revision(/*value*/ 2);
     assert_eq!(value.validate(), Err(Error::MissingPredecessor));
 }
 
@@ -91,7 +97,7 @@ fn valid_v1_record_and_snapshot_digests_remain_stable() {
         value.record_digest().to_string(),
         "a63e977e68eb04a2a8d75217349dafc43d2fe4ad51b1364d6b059ae36551d7d4"
     );
-    let Ok(snapshot) = build_snapshot(generation(1), vec![value]) else {
+    let Ok(snapshot) = build_snapshot(generation(/*value*/ 1), vec![value]) else {
         panic!("valid snapshot must build");
     };
     assert_eq!(
@@ -105,7 +111,7 @@ fn valid_v1_record_and_snapshot_digests_remain_stable() {
 fn duplicate_record_revision_is_rejected() {
     let value = record("record:1");
     assert_eq!(
-        build_snapshot(generation(1), vec![value.clone(), value]),
+        build_snapshot(generation(/*value*/ 1), vec![value.clone(), value]),
         Err(Error::DuplicateRecord("record:1".to_string()))
     );
 }

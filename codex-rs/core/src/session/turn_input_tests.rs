@@ -547,7 +547,7 @@ async fn wait_until_idle(session: &Session) {
 async fn make_turn_recovery_session_and_context_with_rx() -> (
     Arc<Session>,
     Arc<TurnContext>,
-    async_channel::Receiver<Event>,
+    crate::event_delivery::EventReceiver,
 ) {
     let (mut session, mut turn_context, rx) = make_session_and_context_with_rx().await;
     Arc::get_mut(&mut session)

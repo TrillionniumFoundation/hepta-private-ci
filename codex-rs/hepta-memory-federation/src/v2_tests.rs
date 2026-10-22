@@ -229,7 +229,7 @@ fn terminal_response(query: &FederatedQueryV2) -> RemoteFederatedResponseV2 {
         response_digest: Digest32::ZERO,
         observed_frontier: 7,
         expires_unix_ms: 80,
-        items: vec![item(1), item(2), item(3)],
+        items: vec![item(/*number*/ 1), item(/*number*/ 2), item(/*number*/ 3)],
         completeness: FederatedCompletenessV2::Complete,
         terminal_observed: true,
     }
@@ -245,7 +245,7 @@ fn execute(
     let authority = current_authority();
     let control = FixtureControl::Pending;
     block_on(execute_once(
-        transport, &authority, &control, 10, query, lease,
+        transport, &authority, &control, /*now_unix_ms*/ 10, query, lease,
     ))
 }
 
@@ -495,7 +495,7 @@ fn post_io_revocation_suppresses_remote_items() {
         &transport,
         &authority,
         &control,
-        10,
+        /*now_unix_ms*/ 10,
         query.clone(),
         &lease(&query),
     ))
@@ -534,7 +534,7 @@ fn post_io_generation_drift_suppresses_remote_items() {
         &transport,
         &authority,
         &control,
-        10,
+        /*now_unix_ms*/ 10,
         query.clone(),
         &lease(&query),
     ))
@@ -557,7 +557,7 @@ fn preflight_revocation_blocks_transport_dispatch() {
             &PanicTransport,
             &authority,
             &control,
-            10,
+            /*now_unix_ms*/ 10,
             query.clone(),
             &lease(&query),
         )),
@@ -584,7 +584,7 @@ fn preflight_rejects_lease_longer_than_live_authority() {
             &transport,
             &authority,
             &control,
-            10,
+            /*now_unix_ms*/ 10,
             query,
             &widened_lease,
         )),
@@ -606,7 +606,7 @@ fn current_authority_observation_cannot_be_expired() {
             &PanicTransport,
             &authority,
             &control,
-            10,
+            /*now_unix_ms*/ 10,
             query.clone(),
             &lease(&query),
         )),
@@ -627,7 +627,7 @@ fn deadline_control_interrupts_pending_transport() {
             &PendingTransport,
             &authority,
             &control,
-            10,
+            /*now_unix_ms*/ 10,
             query.clone(),
             &lease(&query),
         )),
@@ -648,7 +648,7 @@ fn cancellation_control_interrupts_pending_transport() {
             &PendingTransport,
             &authority,
             &control,
-            10,
+            /*now_unix_ms*/ 10,
             query.clone(),
             &lease(&query),
         )),
@@ -678,7 +678,7 @@ fn post_io_observation_cannot_outlive_lease() {
             &transport,
             &authority,
             &control,
-            10,
+            /*now_unix_ms*/ 10,
             query.clone(),
             &lease(&query),
         )),
@@ -777,7 +777,7 @@ fn peer_scope_and_lease_drift_fail_closed() {
 fn duplicate_remote_identity_is_rejected() {
     let query = query();
     let mut response = terminal_response(&query);
-    response.items = vec![item(1), item(1)];
+    response.items = vec![item(/*number*/ 1), item(/*number*/ 1)];
     response.response_digest = response.compute_response_digest();
     let transport = FixtureTransport {
         result: Ok(FederationTransportResultV2::Terminal(response)),
@@ -842,7 +842,7 @@ fn cancellation_receipt_carries_no_success_assumption() {
             lease_epoch: 3,
             cancellation_nonce_digest: digest("cancel-nonce"),
         },
-        false,
+        /*terminal_observed*/ false,
     )
     .unwrap_or_else(|error| panic!("valid cancellation receipt: {error}"));
     assert!(!receipt.terminal_observed);

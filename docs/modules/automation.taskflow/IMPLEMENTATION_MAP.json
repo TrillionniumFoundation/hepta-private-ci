@@ -2,8 +2,8 @@
   "schema": "hepta.module-implementation-map.v3",
   "schemaVersion": 3,
   "sourceBase": {
-    "commit": "8914a46dfc5984532f03dd2d559bf547ca4f1e69",
-    "tree": "1bd6444d2d980a9fdf06358dbee973b34722f0e1"
+    "commit": "85d0cce30b2583bba6997754a7fd8c2d4a19af2f",
+    "tree": "7142a9a69e686946c8e7b60ed8691906262ff713"
   },
   "laneId": "LANE-B-RUNTIME",
   "module": "automation.taskflow",
@@ -178,14 +178,14 @@
           "command": "cargo test -p codex-hepta-automation --test authorized_effect"
         }
       ],
-      "sourceSemantics": "Computes the canonical typed effect-intent digest inside automation, verifies independently signed final-use subject/destination/scope/payload binding immediately around provider entry, appends an immutable provider-attempt row before contact, supports a synchronous driver and an async ProviderEffectAdapter bridge whose exact wire bytes are hashed before grant consumption, derives a provider-stable logical key from destination + TaskFlow run/step, and records initial plus terminal/proven-absent reconciliation evidence without blind redispatch.",
+      "sourceSemantics": "Computes the canonical typed effect-intent digest inside automation, verifies independently signed final-use subject/destination/scope/payload binding immediately around provider entry, appends an immutable provider-attempt row before contact, supports a synchronous driver and an async ProviderEffectAdapter bridge whose exact wire bytes are hashed before grant consumption, uses the driver recovery key (by default derived from destination + TaskFlow run/step) or the async ProviderEffectIntent key and durably binds that key with the exact validated nonempty wire bytes (at most 64 KiB) before contact, and records initial plus terminal/proven-absent reconciliation evidence without blind redispatch.",
       "operation": "execute_step",
       "nativeSymbol": "pub async fn execute_authorized_taskflow_effect",
       "sourcePath": "codex-rs/hepta-automation/src/authorized_effect.rs",
       "sourcePathExists": true,
       "productCallers": [],
       "productCompositionState": "async_bridge_source_composed_named_independent_authority_provider_host_pending",
-      "sourceBlob": "21db22ee30ffd50463b1721ef3fd8046ef5b3950"
+      "sourceBlob": "d100a4f67ceec6d5c1fc10e6c6bdefaff4dbc794"
     }
   ],
   "repositoryControlledGaps": [],
@@ -231,8 +231,8 @@
     "codex-rs/hepta-automation"
   ],
   "observedAtHead": {
-    "commit": "8914a46dfc5984532f03dd2d559bf547ca4f1e69",
-    "tree": "1bd6444d2d980a9fdf06358dbee973b34722f0e1"
+    "commit": "85d0cce30b2583bba6997754a7fd8c2d4a19af2f",
+    "tree": "7142a9a69e686946c8e7b60ed8691906262ff713"
   },
   "sourceIdentityPolicy": "candidate_or_exact_observation_v1",
   "exactSourceEvidence": {
@@ -240,7 +240,7 @@
     "entries": [
       {
         "path": "codex-rs/hepta-automation/src/schedule_v2.rs",
-        "blobSha": "efd8ce9d853b5fc17f7f71b639aea3f778c0fc6e"
+        "blobSha": "e51c52a3f424acc119fd26987f7af61e346b1007"
       },
       {
         "path": "codex-rs/hepta-automation/src/scheduler.rs",
@@ -248,11 +248,11 @@
       },
       {
         "path": "codex-rs/hepta-automation/src/lifecycle.rs",
-        "blobSha": "4fd34632b554984ed193fa58ffa78a99efd937d2"
+        "blobSha": "a214e8abea776307fecf6564caedc738efc965a4"
       },
       {
         "path": "codex-rs/hepta-automation/src/authorized_effect.rs",
-        "blobSha": "21db22ee30ffd50463b1721ef3fd8046ef5b3950"
+        "blobSha": "d100a4f67ceec6d5c1fc10e6c6bdefaff4dbc794"
       }
     ]
   },
@@ -265,6 +265,7 @@
     "codex-rs/hepta-agent-protocol",
     "codex-rs/hepta-agentd/src/automation.rs",
     "codex-rs/hepta-agentd/src/automation_recovery.rs",
+    "codex-rs/hepta-agentd/src/automation_service.rs",
     "codex-rs/hepta-agentd/src/client.rs",
     "codex-rs/hepta-agentd/src/lib.rs",
     "codex-rs/hepta-agentd/src/runtime.rs",
@@ -272,9 +273,23 @@
     "codex-rs/hepta-agentd/src/state_control.rs",
     "codex-rs/hepta-agentd/tests/five_agent_rolling_upgrade.rs",
     "codex-rs/hepta-automation",
+    "codex-rs/hepta-automation/migrations/0020_effect_dispatch_recovery_material.sql",
+    "codex-rs/hepta-automation/src/authorized_effect.rs",
+    "codex-rs/hepta-automation/src/effect_dispatch_ledger.rs",
+    "codex-rs/hepta-automation/src/lifecycle.rs",
+    "codex-rs/hepta-automation/src/schedule_v2.rs",
+    "codex-rs/hepta-automation/src/scheduler.rs",
+    "codex-rs/hepta-automation/src/store.rs",
+    "codex-rs/hepta-automation/src/taskflow_step.rs",
+    "codex-rs/hepta-automation/tests/authorized_effect.rs",
+    "codex-rs/hepta-automation/tests/automation.rs",
+    "codex-rs/hepta-automation/tests/durable_causal_chain.rs",
     "codex-rs/hepta-contracts",
     "codex-rs/hepta-operations",
-    "codex-rs/hepta-types"
+    "codex-rs/hepta-types",
+    "docs/modules/automation.taskflow/TECHNICAL.md",
+    "scripts/hepta-implementation-maps.py",
+    "scripts/test_hepta_module_source_roots.py"
   ],
   "repositoryControlledProductCompositionGaps": [
     "Async final-use/provider-effect bridge is source-composed, including exact wire-payload binding and durable provider-key recovery identity. Independently provisioned authority/provider configuration, deployed product selection and acceptance remain separately qualified."
@@ -303,12 +318,60 @@
   ],
   "sourceObjects": [
     {
+      "path": "CALLERS.toml",
+      "object": "a9f08f8729bf81a078ae3c4277e3a97ff2a564f4"
+    },
+    {
+      "path": "codex-rs/Cargo.lock",
+      "object": "b796d291c279450e11042b6aaa1b348657f14f3a"
+    },
+    {
+      "path": "codex-rs/Cargo.toml",
+      "object": "70c7b8dc2bc9768f6fc673049c2e348baddce838"
+    },
+    {
+      "path": "codex-rs/app-server-protocol/src/protocol/v2/thread.rs",
+      "object": "61ea73a23c2f3ccbdde2dabb31e088eadea9eb76"
+    },
+    {
+      "path": "codex-rs/app-server/src/request_processors/thread_processor.rs",
+      "object": "7f50435d37c2ff05a5ac2f203635334d1dcb6385"
+    },
+    {
+      "path": "codex-rs/hepta-agent-protocol",
+      "object": "737f2b88a22ab2a33c6dc92832fb78e08292f3ba"
+    },
+    {
       "path": "codex-rs/hepta-agentd/src/automation.rs",
       "object": "3ad02059094137917a6e32eafbd2598a242ef3d7"
     },
     {
+      "path": "codex-rs/hepta-agentd/src/automation_recovery.rs",
+      "object": "53f701a10a2395590784627a60e86922e2ff4567"
+    },
+    {
       "path": "codex-rs/hepta-agentd/src/automation_service.rs",
       "object": "2232cca24396190e924e73e032b713bcbfd49ddd"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/client.rs",
+      "object": "cbafcfb553ee8d7a2699878e12c7eda5f91a4a95"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/lib.rs",
+      "object": "46d6906e83378528c3fee7edfa8ee4280284e927"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/runtime.rs",
+      "object": "b3d9131f5b07c7f3d1f61c82657512985e7033ad"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/runtime_tests.rs",
+      "object": "463a1b756b43acc92dbbbe0ce05252ae19d3383b"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/state_control.rs",
+      "object": "d6fddb0fccc02297e6a6bac983cd8be62cef9580"
     },
     {
       "path": "codex-rs/hepta-agentd/tests/five_agent_rolling_upgrade.rs",
@@ -316,23 +379,27 @@
     },
     {
       "path": "codex-rs/hepta-automation",
-      "object": "90409d9839266b2992986bb98343f41f40bed4ae"
+      "object": "6aff80da02f80af690372470b869842e22171a59"
+    },
+    {
+      "path": "codex-rs/hepta-automation/migrations/0020_effect_dispatch_recovery_material.sql",
+      "object": "c5240481c83f294470dc9b6045fbc8b7bdc1165d"
     },
     {
       "path": "codex-rs/hepta-automation/src/authorized_effect.rs",
-      "object": "21db22ee30ffd50463b1721ef3fd8046ef5b3950"
+      "object": "d100a4f67ceec6d5c1fc10e6c6bdefaff4dbc794"
     },
     {
       "path": "codex-rs/hepta-automation/src/effect_dispatch_ledger.rs",
-      "object": "2f0a8cea98cecc940a785dae606861ab2053a109"
+      "object": "d3e64f1ee9e52dfe67fac41d72b68990822334d6"
     },
     {
       "path": "codex-rs/hepta-automation/src/lifecycle.rs",
-      "object": "4fd34632b554984ed193fa58ffa78a99efd937d2"
+      "object": "a214e8abea776307fecf6564caedc738efc965a4"
     },
     {
       "path": "codex-rs/hepta-automation/src/schedule_v2.rs",
-      "object": "efd8ce9d853b5fc17f7f71b639aea3f778c0fc6e"
+      "object": "e51c52a3f424acc119fd26987f7af61e346b1007"
     },
     {
       "path": "codex-rs/hepta-automation/src/scheduler.rs",
@@ -340,27 +407,47 @@
     },
     {
       "path": "codex-rs/hepta-automation/src/store.rs",
-      "object": "176b5c7200bea7d07d6642440d1f03c37209cef3"
+      "object": "d485c564e2e62215493496d028e04e24992800e3"
     },
     {
       "path": "codex-rs/hepta-automation/src/taskflow_step.rs",
-      "object": "e018c0b900ae9a0c0b1f9e920969357b8e1628b0"
+      "object": "73b13b9b761b404ebef9c4ff344ec43f1dbbc2f5"
     },
     {
       "path": "codex-rs/hepta-automation/tests/authorized_effect.rs",
-      "object": "15b84f5f00d149efbab5ab6ac68c29e116ce1a9d"
+      "object": "0cd3498bfe7c6764941c502bcd51cf372ba22a4e"
     },
     {
       "path": "codex-rs/hepta-automation/tests/automation.rs",
-      "object": "59e1f81d0efb3633a32edfbe37bdf599852919c2"
+      "object": "3a3b072f302bbf4b8ff48ae6cb0cd9070e62479f"
     },
     {
       "path": "codex-rs/hepta-automation/tests/durable_causal_chain.rs",
-      "object": "7e590c4e400adbfd86cb630728bbde0b6f845a47"
+      "object": "967c69e9754735aa163bcc1f1697a93b697d8c2e"
+    },
+    {
+      "path": "codex-rs/hepta-contracts",
+      "object": "a77e5952e0c6ddf697e49013476a9b0bec596f76"
+    },
+    {
+      "path": "codex-rs/hepta-operations",
+      "object": "225de5d97d26fecd2879bf927933549542395f91"
+    },
+    {
+      "path": "codex-rs/hepta-types",
+      "object": "05727abb7217631ee3e46e3736c53178aca4cc4a"
     },
     {
       "path": "docs/modules/automation.taskflow/TECHNICAL.md",
       "object": "a18df0b8b1f375191e0918da82a3a979f7ae89dc"
+    },
+    {
+      "path": "scripts/hepta-implementation-maps.py",
+      "object": "e8ae0fd675b7e3ca2911b80af92cc21021789fbe"
+    },
+    {
+      "path": "scripts/test_hepta_module_source_roots.py",
+      "object": "63761f57b05f2bef69a34ebc13597058cf7eb742"
     }
   ]
 }

@@ -47,6 +47,10 @@ on:
         required: false
         default: false
         type: boolean
+      archive_ci_test_no_debug:
+        required: false
+        default: false
+        type: boolean
 
 permissions:
   contents: read
@@ -56,13 +60,14 @@ jobs:
     name: Build nextest archive
     runs-on: ${{ inputs.archive_runner_group != '' && fromJSON(format('{{"group":"{0}","labels":"{1}"}}', inputs.archive_runner_group, inputs.archive_runner_labels)) || inputs.archive_runner != '' && inputs.archive_runner || inputs.runner_group != '' && fromJSON(format('{{"group":"{0}","labels":"{1}"}}', inputs.runner_group, inputs.runner_labels)) || inputs.runner }}
     timeout-minutes: 60
+    outputs:
+      windows_workspace_root: ${{ steps.windows_workspace.outputs.root }}
     defaults:
       run:
         working-directory: codex-rs
     env:
-      # Windows ARM64 archives are built on Windows x64, while their shards run
-      # on native Windows ARM64. Key producer-side caches by the archive runner
-      # so the cross-compile build reuses the Windows x64 cache lineage.
+      # Key producer-side caches by the actual archive runner, including the
+      # native Windows ARM64 producer used to retain compiled fixture paths.
       ARCHIVE_CACHE_RUNNER: ${{ inputs.archive_runner != '' && inputs.archive_runner || inputs.runner }}
       USE_SCCACHE: ${{ inputs.use_sccache && 'true' || 'false' }}
       CODEX_CI_PROFILE: ${{ inputs.profile }}
@@ -77,6 +82,15 @@ jobs:
           persist-credentials: false
 
       - uses: ./.github/actions/setup-ci
+
+      - name: Record compiled Windows workspace location
+        id: windows_workspace
+        if: ${{ runner.os == 'Windows' }}
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = 'Stop'
+          $root = (Resolve-Path -LiteralPath . -ErrorAction Stop).ProviderPath
+          "root=$root" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf8 -Append
 
       - name: Install Linux build dependencies
         if: ${{ runner.os == 'Linux' }}
@@ -173,7 +187,29 @@ jobs:
         with:
           target: ${{ inputs.target }}
 
+      - name: Configure archive-only ci-test debug information
+        if: ${{ inputs.archive_ci_test_no_debug }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$CODEX_CI_PROFILE" = ci-test
+          echo "CARGO_PROFILE_CI_TEST_DEBUG=0" >> "$GITHUB_ENV"
+          echo "CARGO_PROFILE_CI_TEST_SPLIT_DEBUGINFO=off" >> "$GITHUB_ENV"
+
+      - name: Observe macOS disk before the archive build
+        if: ${{ runner.os == 'macOS' }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          {
+            df -h "$GITHUB_WORKSPACE" "$RUNNER_TEMP"
+            for path in "$CARGO_TARGET_DIR" "${SCCACHE_DIR:-}" "$RUNNER_TEMP/nextest-archive"; do
+              if [[ -n "$path" && -d "$path" ]]; then du -sh "$path"; fi
+            done
+          } 2>&1 | tee "$RUNNER_TEMP/nextest-disk-before.log"
+
       - name: Build nextest archive
+        id: archive_build
         shell: bash
         run: |
           set -euo pipefail
@@ -184,6 +220,26 @@ jobs:
             --cargo-profile "${CODEX_CI_PROFILE}" \
             --timings \
             --archive-file "${archive_dir}/${NEXTEST_ARCHIVE_FILE}"
+
+      - name: Observe macOS disk after an archive build failure
+        if: ${{ always() && runner.os == 'macOS' && steps.archive_build.outcome == 'failure' }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          {
+            df -h "$GITHUB_WORKSPACE" "$RUNNER_TEMP"
+            for path in "$CARGO_TARGET_DIR" "${SCCACHE_DIR:-}" "$RUNNER_TEMP/nextest-archive"; do
+              if [[ -n "$path" && -d "$path" ]]; then du -sh "$path"; fi
+            done
+          } 2>&1 | tee "$RUNNER_TEMP/nextest-disk-failure.log"
+
+      - name: Upload macOS archive disk observations
+        if: ${{ always() && runner.os == 'macOS' }}
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f # v7.0.0
+        with:
+          name: nextest-disk-${{ inputs.artifact_id }}
+          path: ${{ runner.temp }}/nextest-disk-*.log
+          if-no-files-found: warn
 
       - name: Build runtime test helpers
         if: ${{ runner.os == 'Linux' || runner.os == 'Windows' }}
@@ -297,6 +353,35 @@ jobs:
           persist-credentials: false
 
       - uses: ./.github/actions/setup-ci
+
+      - name: Verify Windows fixture location and NTFS test temporary directory
+        if: ${{ runner.os == 'Windows' }}
+        shell: pwsh
+        env:
+          ARCHIVE_WINDOWS_WORKSPACE_ROOT: ${{ needs.archive.outputs.windows_workspace_root }}
+        run: |
+          $ErrorActionPreference = 'Stop'
+          $root = (Resolve-Path -LiteralPath . -ErrorAction Stop).ProviderPath
+          # nextest remaps its metadata, but cannot rewrite env! constants in
+          # archived test binaries, including CARGO_MANIFEST_DIR fixture paths.
+          if ([string]::IsNullOrWhiteSpace($env:ARCHIVE_WINDOWS_WORKSPACE_ROOT) -or
+              -not [string]::Equals($root, $env:ARCHIVE_WINDOWS_WORKSPACE_ROOT, [StringComparison]::OrdinalIgnoreCase)) {
+            throw "Archived Windows fixtures require the producer workspace: producer=$env:ARCHIVE_WINDOWS_WORKSPACE_ROOT consumer=$root"
+          }
+          # Keep build caches on the Dev Drive. The original native experiment
+          # requires NTFS, so qualify the actual newly created test-temp path.
+          $testTemp = Join-Path $env:RUNNER_TEMP ("ntfs-" + [guid]::NewGuid().ToString('N'))
+          New-Item -ItemType Directory -Path $testTemp -ErrorAction Stop | Out-Null
+          $probe = Join-Path $testTemp 'volume.preflight'
+          [System.IO.File]::WriteAllText($probe, 'nextest temporary volume preflight')
+          $volumes = @(Get-Volume -FilePath $probe -ErrorAction Stop)
+          if ($volumes.Count -ne 1 -or $volumes[0].FileSystem -ne 'NTFS') {
+            throw "Windows tests require an observed NTFS temporary volume at $probe"
+          }
+          Remove-Item -LiteralPath $probe -ErrorAction Stop
+          "TEMP=$testTemp" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+          "TMP=$testTemp" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+          Write-Output "Observed NTFS temporary directory: $testTemp; native tests must still execute."
 
       - name: Install Linux build dependencies
         if: ${{ runner.os == 'Linux' }}

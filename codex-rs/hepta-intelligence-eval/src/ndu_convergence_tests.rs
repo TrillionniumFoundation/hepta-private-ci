@@ -130,8 +130,9 @@ fn signed_pair(
 fn independent_signed_evidence_can_issue_accepted_deny_all_certificate() {
     let evidence = evidence();
     let (verifier, producer, evaluator) = signed_pair(&evidence);
-    let certificate = decide_ndu_convergence_v1(evidence, &producer, &evaluator, &verifier, 50)
-        .expect("decision");
+    let certificate =
+        decide_ndu_convergence_v1(evidence, &producer, &evaluator, &verifier, /*now*/ 50)
+            .expect("decision");
     assert_eq!(certificate.decision(), NduConvergenceDecisionV1::Accepted);
     assert_eq!(certificate.candidate_producer_identity(), &id("producer"));
     assert_eq!(certificate.evaluator_identity(), &id("evaluator"));
@@ -145,7 +146,7 @@ fn spectral_or_residual_failure_rejects_but_missing_support_is_unavailable() {
     spectral.spectral_radius_upper95_q32 = (95_i64 * (1_i64 << 32)) / 100;
     let (verifier, producer, evaluator) = signed_pair(&spectral);
     assert_eq!(
-        decide_ndu_convergence_v1(spectral, &producer, &evaluator, &verifier, 50)
+        decide_ndu_convergence_v1(spectral, &producer, &evaluator, &verifier, /*now*/ 50)
             .expect("decision")
             .decision(),
         NduConvergenceDecisionV1::Rejected
@@ -155,7 +156,7 @@ fn spectral_or_residual_failure_rejects_but_missing_support_is_unavailable() {
     missing.perturbation_evidence_digest = Digest32::ZERO;
     let (verifier, producer, evaluator) = signed_pair(&missing);
     assert_eq!(
-        decide_ndu_convergence_v1(missing, &producer, &evaluator, &verifier, 50)
+        decide_ndu_convergence_v1(missing, &producer, &evaluator, &verifier, /*now*/ 50)
             .expect("decision")
             .decision(),
         NduConvergenceDecisionV1::Unavailable
@@ -168,7 +169,7 @@ fn tampered_evaluator_payload_cannot_self_certify() {
     let (verifier, producer, mut evaluator) = signed_pair(&evidence);
     evaluator.payload_digest = digest("tampered");
     assert!(matches!(
-        decide_ndu_convergence_v1(evidence, &producer, &evaluator, &verifier, 50),
+        decide_ndu_convergence_v1(evidence, &producer, &evaluator, &verifier, /*now*/ 50),
         Err(NduConvergenceError::SignedEvidence(
             SignedEvidenceError::PayloadMismatch | SignedEvidenceError::InvalidSignature
         ))

@@ -793,7 +793,7 @@ async fn disabled_permissions_auto_accept_elicitation_with_empty_form_schema() {
         ElicitationRequestRouter::default(),
     );
     let (tx_event, _rx_event) = async_channel::bounded(1);
-    let sender = manager.make_sender("server".to_string(), Some(tx_event));
+    let sender = manager.make_sender("server".to_string(), Some(tx_event.into()));
 
     let response = sender(
         NumberOrString::Number(1),
@@ -828,7 +828,7 @@ async fn disabled_permissions_do_not_auto_accept_elicitation_with_requested_fiel
         ElicitationRequestRouter::default(),
     );
     let (tx_event, _rx_event) = async_channel::bounded(1);
-    let sender = manager.make_sender("server".to_string(), Some(tx_event));
+    let sender = manager.make_sender("server".to_string(), Some(tx_event.into()));
 
     let response = sender(
         NumberOrString::Number(1),
@@ -920,7 +920,7 @@ async fn assert_elicitation_declined_with_reviewer_calls(
         full_access_form_input_enabled_router(),
     );
     let (tx_event, rx_event) = async_channel::bounded(1);
-    let sender = manager.make_sender(server_name.to_string(), Some(tx_event));
+    let sender = manager.make_sender(server_name.to_string(), Some(tx_event.into()));
 
     let response = tokio::select! {
         biased;
@@ -961,7 +961,7 @@ async fn assert_requested_user_input_is_declined(
         router,
     );
     let (tx_event, rx_event) = async_channel::bounded(1);
-    let sender = manager.make_sender("server".to_string(), Some(tx_event));
+    let sender = manager.make_sender("server".to_string(), Some(tx_event.into()));
 
     let response = tokio::select! {
         biased;
@@ -1049,7 +1049,7 @@ async fn assert_disabled_permissions_surface_requested_user_input(
         router.clone(),
     );
     let (tx_event, rx_event) = async_channel::bounded(1);
-    let sender = manager.make_sender("server".to_string(), Some(tx_event));
+    let sender = manager.make_sender("server".to_string(), Some(tx_event.into()));
     let requested_schema = requested_user_input_schema();
     let mut pending = tokio::spawn(sender(
         NumberOrString::Number(1),
@@ -1305,8 +1305,8 @@ async fn shared_elicitation_router_targets_the_exact_pending_request() {
         router.clone(),
     );
     let (tx_event, rx_event) = async_channel::bounded(2);
-    let sender_a = manager_a.make_sender("server".to_string(), Some(tx_event.clone()));
-    let sender_b = manager_b.make_sender("server".to_string(), Some(tx_event));
+    let sender_a = manager_a.make_sender("server".to_string(), Some(tx_event.clone().into()));
+    let sender_b = manager_b.make_sender("server".to_string(), Some(tx_event.into()));
     let elicitation =
         codex_rmcp_client::Elicitation::Mcp(ElicitRequestParams::FormElicitationParams {
             meta: None,
@@ -1398,7 +1398,7 @@ async fn cancelled_elicitation_is_removed_without_affecting_other_pending_reques
         router.clone(),
     );
     let (tx_event, rx_event) = async_channel::bounded(2);
-    let sender = manager.make_sender("server".to_string(), Some(tx_event));
+    let sender = manager.make_sender("server".to_string(), Some(tx_event.into()));
     let elicitation =
         codex_rmcp_client::Elicitation::Mcp(ElicitRequestParams::FormElicitationParams {
             meta: None,
@@ -4301,7 +4301,7 @@ async fn reconcile_reusable_server(
                 EffectiveMcpServer::configured(config),
             )]),
             submit_id: "refresh".to_string(),
-            tx_event: Some(tx_event),
+            tx_event: Some(tx_event.into()),
             startup_cancellation_token: CancellationToken::new(),
             runtime_context,
             codex_apps_tools_cache: ConnectorRuntimeManager::default(),

@@ -30,7 +30,10 @@ fn request(items: Vec<ContextItem>) -> CompilationRequest {
 
 #[test]
 fn omitted_content_is_bound_without_changing_legacy_compilation() {
-    let first_request = request(vec![item("evidence:a", 8), item("evidence:tail", 8)]);
+    let first_request = request(vec![
+        item("evidence:a", /*tokens*/ 8),
+        item("evidence:tail", /*tokens*/ 8),
+    ]);
     let mut second_request = first_request.clone();
     second_request.items[1].content_digest = Digest32::of_bytes(b"changed tail");
 
@@ -60,9 +63,9 @@ fn omitted_content_is_bound_without_changing_legacy_compilation() {
 #[test]
 fn input_permutation_has_one_candidate_binding() {
     let mut first_request = request(vec![
-        item("evidence:c", 3),
-        item("evidence:a", 3),
-        item("evidence:b", 3),
+        item("evidence:c", /*tokens*/ 3),
+        item("evidence:a", /*tokens*/ 3),
+        item("evidence:b", /*tokens*/ 3),
     ]);
     let mut second_request = first_request.clone();
     second_request.items.reverse();
@@ -79,13 +82,13 @@ fn input_permutation_has_one_candidate_binding() {
 #[test]
 fn candidate_identity_and_omitted_tail_are_in_the_binding() {
     let first = compile_candidate_bound(request(vec![
-        item("evidence:head", 8),
-        item("evidence:tail-a", 8),
+        item("evidence:head", /*tokens*/ 8),
+        item("evidence:tail-a", /*tokens*/ 8),
     ]))
     .expect("first succeeds");
     let second = compile_candidate_bound(request(vec![
-        item("evidence:head", 8),
-        item("evidence:tail-b", 8),
+        item("evidence:head", /*tokens*/ 8),
+        item("evidence:tail-b", /*tokens*/ 8),
     ]))
     .expect("second succeeds");
 
@@ -106,8 +109,8 @@ fn candidate_identity_and_omitted_tail_are_in_the_binding() {
 
 #[test]
 fn mandatory_requirements_remain_bound_and_authority_free() {
-    let required = item("evidence:required", 8);
-    let optional = item("evidence:optional", 8);
+    let required = item("evidence:required", /*tokens*/ 8);
+    let optional = item("evidence:optional", /*tokens*/ 8);
     let request = request(vec![optional, required.clone()]);
     let requirements = CompilationRequirementsV1 {
         run_snapshot_digest: request.run_snapshot_digest,
@@ -135,7 +138,10 @@ fn mandatory_requirements_remain_bound_and_authority_free() {
 
 #[test]
 fn legacy_validation_errors_are_preserved() {
-    let invalid = request(vec![item("evidence:a", 8), item("evidence:a", 8)]);
+    let invalid = request(vec![
+        item("evidence:a", /*tokens*/ 8),
+        item("evidence:a", /*tokens*/ 8),
+    ]);
     assert_eq!(
         compile_candidate_bound(invalid),
         Err(Error::DuplicateItem("evidence:a".to_owned()))

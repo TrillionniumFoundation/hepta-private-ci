@@ -15,7 +15,8 @@ fn digest(value: &str) -> Digest32 {
 }
 
 fn registry() -> PromptRegistry {
-    PromptRegistry::new(64).unwrap_or_else(|error| panic!("valid registry: {error}"))
+    PromptRegistry::new(/*maximum_records*/ 64)
+        .unwrap_or_else(|error| panic!("valid registry: {error}"))
 }
 
 fn factor() -> PromptFactor {
@@ -122,7 +123,14 @@ fn exact_model_tuple_and_frozen_snapshot_gate_delivery() {
         .snapshot_v2(vector, &tuple)
         .unwrap_or_else(|error| panic!("snapshot: {error}"));
     let compatible = registry
-        .read_compatible_v2(&snapshot, vector, &tuple, 10, vec![id("factor:1")], 8)
+        .read_compatible_v2(
+            &snapshot,
+            vector,
+            &tuple,
+            /*now_unix_ms*/ 10,
+            vec![id("factor:1")],
+            /*maximum_results*/ 8,
+        )
         .unwrap_or_else(|error| panic!("compatible read: {error}"));
     assert_eq!(compatible.bindings, vec![binding()]);
     compatible
@@ -132,7 +140,14 @@ fn exact_model_tuple_and_frozen_snapshot_gate_delivery() {
     let mut wrong_tuple = tuple;
     wrong_tuple.tokenizer_digest = digest("wrong-tokenizer");
     assert_eq!(
-        registry.read_compatible_v2(&snapshot, vector, &wrong_tuple, 10, Vec::new(), 8,),
+        registry.read_compatible_v2(
+            &snapshot,
+            vector,
+            &wrong_tuple,
+            /*now_unix_ms*/ 10,
+            Vec::new(),
+            /*maximum_results*/ 8,
+        ),
         Err(PromptRegistryV2Error::SnapshotStale)
     );
 }
@@ -153,7 +168,14 @@ fn revocation_invalidates_old_snapshot_and_disables_realization() {
         .unwrap_or_else(|error| panic!("revoke: {error}"));
     assert!(registry.revocation_frontier() > 0);
     assert_eq!(
-        registry.read_compatible_v2(&old_snapshot, vector, &tuple, 10, Vec::new(), 8,),
+        registry.read_compatible_v2(
+            &old_snapshot,
+            vector,
+            &tuple,
+            /*now_unix_ms*/ 10,
+            Vec::new(),
+            /*maximum_results*/ 8,
+        ),
         Err(PromptRegistryV2Error::SnapshotStale)
     );
     assert!(
@@ -176,7 +198,14 @@ fn expired_or_missing_required_realization_fails_closed() {
         .snapshot_v2(vector, &tuple)
         .unwrap_or_else(|error| panic!("snapshot: {error}"));
     assert_eq!(
-        registry.read_compatible_v2(&snapshot, vector, &tuple, 100, vec![id("factor:1")], 8,),
+        registry.read_compatible_v2(
+            &snapshot,
+            vector,
+            &tuple,
+            /*now_unix_ms*/ 100,
+            vec![id("factor:1")],
+            /*maximum_results*/ 8,
+        ),
         Err(PromptRegistryV2Error::RequiredFactorUnavailable)
     );
 }
@@ -240,9 +269,9 @@ fn required_factors_are_not_starved_by_other_roles() {
             &snapshot,
             vector,
             &tuple,
-            10,
+            /*now_unix_ms*/ 10,
             vec![id("factor:2"), id("factor:1")],
-            2,
+            /*maximum_results*/ 2,
         )
         .unwrap_or_else(|error| panic!("required factors must fit: {error}"));
     assert_eq!(
@@ -294,9 +323,9 @@ fn equivalent_required_factor_order_has_one_canonical_digest() {
             &snapshot,
             vector,
             &tuple,
-            10,
+            /*now_unix_ms*/ 10,
             vec![id("factor:1"), id("factor:2")],
-            8,
+            /*maximum_results*/ 8,
         )
         .unwrap_or_else(|error| panic!("left: {error}"));
     let right = registry
@@ -304,9 +333,9 @@ fn equivalent_required_factor_order_has_one_canonical_digest() {
             &snapshot,
             vector,
             &tuple,
-            10,
+            /*now_unix_ms*/ 10,
             vec![id("factor:2"), id("factor:1")],
-            8,
+            /*maximum_results*/ 8,
         )
         .unwrap_or_else(|error| panic!("right: {error}"));
     assert_eq!(left.set_digest, right.set_digest);
@@ -337,7 +366,11 @@ fn payload_registration_supersedes_and_dereferences_exact_bytes() {
     first.payload_digest = Digest32::of_bytes(&payload);
     first.expires_unix_ms = None;
     registry
-        .register_realization_payload_v2(first.clone(), payload, None)
+        .register_realization_payload_v2(
+            first.clone(),
+            payload,
+            /*supersedes_realization_id*/ None,
+        )
         .unwrap_or_else(|error| panic!("payload register: {error}"));
 
     let next_payload = b"developer instruction v2".to_vec();
@@ -368,7 +401,13 @@ fn payload_registration_supersedes_and_dereferences_exact_bytes() {
         .snapshot_v2(vector, &tuple)
         .unwrap_or_else(|error| panic!("snapshot: {error}"));
     let delivery = registry
-        .dereference_realization_v2(&next.realization_id, &snapshot, vector, &tuple, 10)
+        .dereference_realization_v2(
+            &next.realization_id,
+            &snapshot,
+            vector,
+            &tuple,
+            /*now_unix_ms*/ 10,
+        )
         .unwrap_or_else(|error| panic!("dereference: {error}"));
     assert_eq!(delivery.payload, next_payload);
     delivery
@@ -386,7 +425,9 @@ fn payload_ceiling_rejects_atomically() {
     oversized.expires_unix_ms = None;
 
     assert_eq!(
-        registry.register_realization_payload_v2(oversized, payload, None),
+        registry.register_realization_payload_v2(
+            oversized, payload, /*supersedes_realization_id*/ None
+        ),
         Err(Error::PayloadTooLarge)
     );
     assert_eq!(registry, before);

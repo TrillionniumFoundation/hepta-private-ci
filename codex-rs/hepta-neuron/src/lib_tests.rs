@@ -27,10 +27,11 @@ fn request(generation: u64) -> StepRequest {
 
 #[test]
 fn step_is_deterministic_and_authority_free() {
-    let Ok((left_state, left_receipt)) = step(request(1), None) else {
+    let Ok((left_state, left_receipt)) = step(request(/*generation*/ 1), /*previous*/ None) else {
         panic!("first deterministic step must succeed");
     };
-    let Ok((right_state, right_receipt)) = step(request(1), None) else {
+    let Ok((right_state, right_receipt)) = step(request(/*generation*/ 1), /*previous*/ None)
+    else {
         panic!("second deterministic step must succeed");
     };
     assert_eq!(left_state, right_state);
@@ -40,31 +41,31 @@ fn step_is_deterministic_and_authority_free() {
 
 #[test]
 fn model_drift_is_rejected() {
-    let Ok((state, _)) = step(request(1), None) else {
+    let Ok((state, _)) = step(request(/*generation*/ 1), /*previous*/ None) else {
         panic!("initial step must succeed");
     };
-    let mut next = request(2);
+    let mut next = request(/*generation*/ 2);
     next.model_digest = digest(b"other-model");
     assert_eq!(step(next, Some(&state)), Err(Error::ModelDrift));
 }
 
 #[test]
 fn generation_must_advance() {
-    let Ok((state, _)) = step(request(1), None) else {
+    let Ok((state, _)) = step(request(/*generation*/ 1), /*previous*/ None) else {
         panic!("initial step must succeed");
     };
     assert_eq!(
-        step(request(1), Some(&state)),
+        step(request(/*generation*/ 1), Some(&state)),
         Err(Error::GenerationNotAdvanced)
     );
 }
 
 #[test]
 fn width_drift_is_rejected() {
-    let Ok((state, _)) = step(request(1), None) else {
+    let Ok((state, _)) = step(request(/*generation*/ 1), /*previous*/ None) else {
         panic!("initial step must succeed");
     };
-    let mut next = request(2);
+    let mut next = request(/*generation*/ 2);
     next.features.push(FixedQ32::ZERO);
     assert_eq!(step(next, Some(&state)), Err(Error::WidthDrift));
 }

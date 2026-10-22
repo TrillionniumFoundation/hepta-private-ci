@@ -2,8 +2,8 @@
   "schema": "hepta.module-implementation-map.v3",
   "schemaVersion": 3,
   "sourceBase": {
-    "commit": "8914a46dfc5984532f03dd2d559bf547ca4f1e69",
-    "tree": "1bd6444d2d980a9fdf06358dbee973b34722f0e1"
+    "commit": "85d0cce30b2583bba6997754a7fd8c2d4a19af2f",
+    "tree": "7142a9a69e686946c8e7b60ed8691906262ff713"
   },
   "laneId": "LANE-F-ADAPTIVE-POLICY",
   "module": "learning.plasticity",
@@ -18,7 +18,7 @@
   ],
   "sourceRootPresent": true,
   "productionImplementation": false,
-  "productCallerState": "agentd_process_bootstrap_and_named_learning_producer_source_composed_self_iteration_trigger_not_product_composed_or_target_host_qualified",
+  "productCallerState": "agentd_process_bootstrap_and_state_held_runtime_handle_source_composed_test_only_learning_submission_adapter_product_trigger_not_composed_or_target_host_qualified",
   "productionWriterState": "agentd_append_only_parameter_and_topology_anchor_fence_journal_plus_final_use_runtime_topology_executor_source_implemented_target_host_unproved",
   "operations": [
     {
@@ -221,7 +221,7 @@
       "operation": "agentd_plasticity_runtime_owner",
       "nativeSymbol": "PlasticityRuntimeOwnerV1",
       "sourcePath": "codex-rs/hepta-agentd/src/plasticity_runtime.rs",
-      "state": "named_agentd_runtime_bootstrap_creates_long_lived_owner_and_state_held_producer_generation_fenced_bounded_queue_restart_reconcile_tested_not_target_host_qualified",
+      "state": "named_agentd_runtime_bootstrap_creates_long_lived_owner_and_state_held_handle_generation_fenced_bounded_queue_restart_reconcile_tested_not_target_host_qualified",
       "authority": "proposal_registry_only",
       "tests": [
         "codex-rs/hepta-agentd/src/plasticity_runtime.rs::tests::runtime_queue_capacity_is_bounded",
@@ -252,7 +252,7 @@
       "operation": "agentd_named_parameter_submission",
       "nativeSymbol": "AgentdLearningPlasticityProducerV1::submit_parameter",
       "sourcePath": "codex-rs/hepta-agentd/src/plasticity_learning_producer.rs",
-      "state": "named_non_test_agentd_learning_producer_source_implemented_calls_state_submission_final_owner_revalidation_not_target_host_executed_or_qualified",
+      "state": "test_only_borrowed_agentd_parameter_submission_adapter_calls_runtime_handle_final_owner_revalidation_no_production_learning_caller_or_target_host_qualification",
       "authority": "proposal_registry_only",
       "tests": [
         "codex-rs/hepta-agentd/src/plasticity_runtime_lifetime_tests.rs::agentd_lifetime_owner_submits_restarts_and_reconciles_idempotently"
@@ -282,7 +282,7 @@
       "operation": "agentd_named_topology_submission",
       "nativeSymbol": "AgentdLearningPlasticityProducerV1::submit_topology",
       "sourcePath": "codex-rs/hepta-agentd/src/plasticity_learning_producer.rs",
-      "state": "named_non_test_agentd_learning_topology_producer_source_implemented_calls_state_submission_final_owner_revalidation_not_target_host_executed_or_qualified",
+      "state": "test_only_borrowed_agentd_topology_submission_adapter_calls_runtime_handle_final_owner_revalidation_no_production_learning_caller_or_target_host_qualification",
       "authority": "proposal_registry_only",
       "tests": [
         "codex-rs/hepta-agentd/src/plasticity_runtime_lifetime_tests.rs::agentd_lifetime_owner_submits_restarts_and_reconciles_idempotently"
@@ -621,7 +621,7 @@
     }
   ],
   "repositoryControlledGaps": [
-    "Compose a real non-test control.engineering/self-iteration coordinator that submits frozen, independently evaluated next-generation parameter/topology requests through AgentdLearningPlasticityProducerV1; the repository now has process bootstrap, the named producer and lifetime E2E, but IterationEnvelopeV1 still has no production caller.",
+    "Compose a real non-test control.engineering/self-iteration coordinator for frozen, independently evaluated next-generation parameter/topology requests. Process bootstrap and the state-held PlasticityRuntimeHandleV1 are composed, but AgentdLearningPlasticityProducerV1 and the AgentdState submit adapters are test-only; IterationEnvelopeV1 still has no production caller.",
     "Run exact-head and deterministic synthetic-merge compilation, tests, strict lint, document verification, Agentd process qualification, Lane F qualification and the live-runtime structural-canary regression for this final source/document head.",
     "Execute exact unified-candidate descriptor recovery, proposal lifetime and independent live-topology canary tests."
   ],
@@ -654,21 +654,33 @@
     {
       "sourcePath": "codex-rs/hepta-agentd/src/plasticity_learning_producer.rs",
       "nativeSymbol": "AgentdLearningPlasticityProducerV1",
-      "state": "compiled_producer_trigger_not_product_composed"
+      "state": "test_only_borrowed_submission_adapter_no_production_learning_caller"
     }
   ],
   "sourceObjects": [
+    {
+      "path": "codex-rs/Cargo.lock",
+      "object": "b796d291c279450e11042b6aaa1b348657f14f3a"
+    },
+    {
+      "path": "codex-rs/Cargo.toml",
+      "object": "70c7b8dc2bc9768f6fc673049c2e348baddce838"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/lib.rs",
+      "object": "46d6906e83378528c3fee7edfa8ee4280284e927"
+    },
     {
       "path": "codex-rs/hepta-agentd/src/plasticity_anchor_journal.rs",
       "object": "cb2c3ae9bbb75c067c7745e82c33cded0e241baa"
     },
     {
       "path": "codex-rs/hepta-agentd/src/plasticity_host.rs",
-      "object": "085d85fde32b89d59eb3169d8d8f6e7f005c2ac5"
+      "object": "350bd3c2a9b4689152ad945dd02ad8926882e2f8"
     },
     {
       "path": "codex-rs/hepta-agentd/src/plasticity_learning_producer.rs",
-      "object": "507dc9a4e89399a3a67dc48c8f8b12f2a1a46a67"
+      "object": "17118dded70ac697ff4df980473a537340a1bc37"
     },
     {
       "path": "codex-rs/hepta-agentd/src/plasticity_owner_evidence.rs",
@@ -680,11 +692,19 @@
     },
     {
       "path": "codex-rs/hepta-agentd/src/plasticity_runtime.rs",
-      "object": "d1c57448d9c344171ae85d0abe888fe990e7a021"
+      "object": "b7b4250c1b427839abebaed75da2b0309db80a8d"
     },
     {
       "path": "codex-rs/hepta-agentd/src/plasticity_runtime_lifetime_tests.rs",
       "object": "6fb6e22b86638b60871696a691db12baf16a1347"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/runtime.rs",
+      "object": "b3d9131f5b07c7f3d1f61c82657512985e7033ad"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/state.rs",
+      "object": "7f787dccb9318399b1a940aaac5e940dd5dbf029"
     },
     {
       "path": "codex-rs/hepta-agentd/src/topology_plasticity_host.rs",
@@ -692,23 +712,23 @@
     },
     {
       "path": "codex-rs/hepta-agentd/tests/plasticity_process_e2e.rs",
-      "object": "8b7a329216db2cd56d3c104214414dc0ffc61c47"
+      "object": "6d481ef26a1df0b85d3157b517e7af4af3df25d8"
     },
     {
       "path": "codex-rs/hepta-contracts",
-      "object": "ed5cc643157e33a323693954aab0cdc784be19ec"
+      "object": "a77e5952e0c6ddf697e49013476a9b0bec596f76"
     },
     {
       "path": "codex-rs/hepta-control-plane",
-      "object": "0167b4fc3f38f3428f604e09b676099f21d5ff0c"
+      "object": "d647d9adb53bd27c78f8a537bf3a08846676874f"
     },
     {
       "path": "codex-rs/hepta-evidence",
-      "object": "c64498a611cfdf3044d897a870d3398c205b48e3"
+      "object": "8b8fe421d879961991dcd66519eefabe760bc7dc"
     },
     {
       "path": "codex-rs/hepta-intelligence-eval",
-      "object": "0e61e82c7e344d7c2b1b07f70ab752fd2867e149"
+      "object": "24b2c715c92c69b014bf30f55bb6cf198d7a1b32"
     },
     {
       "path": "codex-rs/hepta-intelligence/src/plasticity_product.rs",
@@ -728,27 +748,27 @@
     },
     {
       "path": "codex-rs/hepta-learning-artifacts",
-      "object": "6c602a9ebf4042e39acba109635d17d64d434dcf"
+      "object": "184f69825b0d6ce11f9a54e7dea85ca7713d10af"
     },
     {
       "path": "codex-rs/hepta-learning-ledger",
-      "object": "e0413c9f6eecfd1665bafb7a1673c9726a9f71fa"
+      "object": "bcab8f86cae941448798563e23b5a8538655d235"
     },
     {
       "path": "codex-rs/hepta-learning-ledger/src/signed_evidence_tests.rs",
-      "object": "de3f456a9efd19a928924f94dcf0a9811e87d9c8"
+      "object": "2b9374f3dacf68d8a2dd6f27cc15337d383c37a8"
     },
     {
       "path": "codex-rs/hepta-ndu",
-      "object": "bb334a5a301a5d3988b0b5c660d914f5d1c7d01a"
+      "object": "538b1e17957f0c718bc32bd2163af0151fc1586e"
     },
     {
       "path": "codex-rs/hepta-neuron",
-      "object": "2e0cb699ff6d11dd63e996040d935153f4e63f57"
+      "object": "eaa2c4edbd838438c12575057384b1b4f288d883"
     },
     {
       "path": "codex-rs/hepta-plasticity",
-      "object": "3fed6654770ebd7d81ee9605eab4854eb5354702"
+      "object": "572057b530a34e0f896a790b28b2421c7244ba05"
     },
     {
       "path": "codex-rs/hepta-plasticity/src/durable_registry.rs",
@@ -756,7 +776,7 @@
     },
     {
       "path": "codex-rs/hepta-plasticity/src/durable_registry_tests.rs",
-      "object": "4e7db94da274ccb1b73bddec399c96485f2df58e"
+      "object": "bd9ddc2563d14a01178e0ec84f83eff16cddf3ef"
     },
     {
       "path": "codex-rs/hepta-plasticity/src/generator_v3.rs",
@@ -764,11 +784,11 @@
     },
     {
       "path": "codex-rs/hepta-plasticity/src/lib_tests.rs",
-      "object": "4d70719a24b10a088273dcb65e41e9f8f9293860"
+      "object": "5381e44d21485eb55e9a0e9350bda9877028704d"
     },
     {
       "path": "codex-rs/hepta-plasticity/src/parameter_mutation_policy_v1.rs",
-      "object": "faedfdd2e5ebe46e0227fb0cdd3b8b52a652b32a"
+      "object": "263844f4dc23082ffa2d521ed281402c256db00a"
     },
     {
       "path": "codex-rs/hepta-plasticity/src/parameter_v2.rs",
@@ -780,19 +800,19 @@
     },
     {
       "path": "codex-rs/hepta-plasticity/src/topology_governance.rs",
-      "object": "67293895c1de5d3edac98afcd1b8835317e3f656"
+      "object": "5b9975f42f56435f6b99ce87544c0671988472cb"
     },
     {
       "path": "codex-rs/hepta-plasticity/src/topology_registry.rs",
-      "object": "2c2de97583e2924b500edcb63b2e3b020165f81a"
+      "object": "c1ac362a72be62c16d99914dc2ebaa54375f773a"
     },
     {
       "path": "codex-rs/hepta-plasticity/src/topology_v2.rs",
-      "object": "07f89aed5d9c0162ed29f4b5feae6798883db6e2"
+      "object": "929d2a849c3a79e72afa2e3742276a8eb6175ce1"
     },
     {
       "path": "codex-rs/hepta-runtime/src/lib.rs",
-      "object": "145498ec9981af5ab490e45e1f2b647c406bf530"
+      "object": "8f09ccf8416ad60a626941de60b6e45dfbcb2815"
     },
     {
       "path": "codex-rs/hepta-runtime/src/organs_tests.rs",
@@ -806,5 +826,43 @@
       "path": "qualification/lane-f-shadow/tests/plasticity_structural_canary.rs",
       "object": "0ba0c909396cfdee1a315e889f7708b785594dc6"
     }
+  ],
+  "observedAtHead": {
+    "commit": "85d0cce30b2583bba6997754a7fd8c2d4a19af2f",
+    "tree": "7142a9a69e686946c8e7b60ed8691906262ff713"
+  },
+  "sourceObservationScope": "Current source navigation was independently re-observed at sourceBase. Source objects and observed paths bind that source snapshot; this observation does not renew historical execution, acceptance, activation or release evidence.",
+  "observedSourcePaths": [
+    "codex-rs/Cargo.lock",
+    "codex-rs/Cargo.toml",
+    "codex-rs/hepta-agentd/src/lib.rs",
+    "codex-rs/hepta-agentd/src/plasticity_anchor_journal.rs",
+    "codex-rs/hepta-agentd/src/plasticity_host.rs",
+    "codex-rs/hepta-agentd/src/plasticity_learning_producer.rs",
+    "codex-rs/hepta-agentd/src/plasticity_owner_evidence.rs",
+    "codex-rs/hepta-agentd/src/plasticity_process_bootstrap.rs",
+    "codex-rs/hepta-agentd/src/plasticity_runtime.rs",
+    "codex-rs/hepta-agentd/src/plasticity_runtime_lifetime_tests.rs",
+    "codex-rs/hepta-agentd/src/runtime.rs",
+    "codex-rs/hepta-agentd/src/state.rs",
+    "codex-rs/hepta-agentd/src/topology_plasticity_host.rs",
+    "codex-rs/hepta-agentd/tests/plasticity_process_e2e.rs",
+    "codex-rs/hepta-contracts",
+    "codex-rs/hepta-control-plane",
+    "codex-rs/hepta-evidence",
+    "codex-rs/hepta-intelligence-eval",
+    "codex-rs/hepta-intelligence/src/plasticity_product.rs",
+    "codex-rs/hepta-intelligence/src/plasticity_product_tests.rs",
+    "codex-rs/hepta-intelligence/src/topology_canary_product.rs",
+    "codex-rs/hepta-intelligence/src/topology_product.rs",
+    "codex-rs/hepta-learning-artifacts",
+    "codex-rs/hepta-learning-ledger",
+    "codex-rs/hepta-ndu",
+    "codex-rs/hepta-neuron",
+    "codex-rs/hepta-plasticity",
+    "codex-rs/hepta-runtime/src/lib.rs",
+    "codex-rs/hepta-runtime/src/organs_tests.rs",
+    "docs/modules/learning.plasticity/TECHNICAL.md",
+    "qualification/lane-f-shadow/tests/plasticity_structural_canary.rs"
   ]
 }

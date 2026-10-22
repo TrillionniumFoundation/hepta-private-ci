@@ -1,11 +1,9 @@
 use std::sync::Arc;
 
 use async_channel::Receiver;
-use async_channel::Sender;
 use codex_async_utils::OrCancelExt;
 use codex_extension_api::LoadedUserInstructions;
 use codex_protocol::protocol::AskForApproval;
-use codex_protocol::protocol::Event;
 use codex_protocol::protocol::EventMsg;
 use codex_protocol::protocol::Op;
 use codex_protocol::protocol::SessionSource;
@@ -71,7 +69,7 @@ pub(crate) async fn run_codex_thread_interactive(
         .model_client
         .responses_websocket_enabled();
 
-    let (tx_sub, rx_sub) = async_channel::bounded(SUBMISSION_CHANNEL_CAPACITY);
+    let (tx_sub, rx_sub) = crate::event_delivery::bounded(SUBMISSION_CHANNEL_CAPACITY);
     let (tx_ops, rx_ops) = async_channel::bounded(SUBMISSION_CHANNEL_CAPACITY);
     let conversation_history = initial_history.unwrap_or(InitialHistory::New);
     let forked_from_thread_id = conversation_history.forked_from_id();
@@ -230,18 +228,18 @@ pub(crate) async fn run_codex_thread_one_shot(
     }
 
     // Bridge events so we can observe completion and shut down automatically.
-    let (tx_bridge, rx_bridge) = async_channel::bounded(SUBMISSION_CHANNEL_CAPACITY);
+    let (tx_bridge, rx_bridge) = crate::event_delivery::bounded(SUBMISSION_CHANNEL_CAPACITY);
     let ops_tx = io.tx_sub.clone();
     let agent_status = io.agent_status.clone();
     let session_loop_termination = io.session_loop_termination.clone();
     let io_for_bridge = io;
     tokio::spawn(async move {
-        while let Ok(event) = io_for_bridge.next_event().await {
+        while let Ok(event) = io_for_bridge.next_event_with_completion().await {
             let should_shutdown = matches!(
-                event.msg,
+                event.event.msg,
                 EventMsg::TurnComplete(_) | EventMsg::TurnAborted(_)
             );
-            let _ = tx_bridge.send(event).await;
+            let _ = tx_bridge.send_delivery(event).await;
             if should_shutdown {
                 let _ = ops_tx
                     .send(Submission {
@@ -277,7 +275,7 @@ pub(crate) async fn run_codex_thread_one_shot(
 
 async fn forward_events(
     io: Arc<SessionIo>,
-    tx_sub: Sender<Event>,
+    tx_sub: crate::event_delivery::EventSender,
     cancel_token: CancellationToken,
 ) {
     let cancelled = cancel_token.cancelled();
@@ -289,22 +287,18 @@ async fn forward_events(
                 shutdown_delegate(&io).await;
                 break;
             }
-            event = io.next_event() => {
+            event = io.next_event_with_completion() => {
                 let event = match event {
                     Ok(event) => event,
                     Err(_) => break,
                 };
-                match event {
-                    Event {
-                        id: _,
-                        msg:
-                            EventMsg::TokenCount(_)
-                            | EventMsg::SessionConfigured(_)
-                            | EventMsg::McpStartupUpdate(_)
-                            | EventMsg::McpStartupComplete(_),
-                    } => {}
-                    other => {
-                        if !forward_event_or_shutdown(&io, &tx_sub, &cancel_token, other).await
+                match &event.event.msg {
+                    EventMsg::TokenCount(_)
+                    | EventMsg::SessionConfigured(_)
+                    | EventMsg::McpStartupUpdate(_)
+                    | EventMsg::McpStartupComplete(_) => {}
+                    _ => {
+                        if !forward_event_or_shutdown(&io, &tx_sub, &cancel_token, event).await
                         {
                             break;
                         }
@@ -335,11 +329,11 @@ async fn shutdown_delegate(io: &SessionIo) {
 
 async fn forward_event_or_shutdown(
     io: &SessionIo,
-    tx_sub: &Sender<Event>,
+    tx_sub: &crate::event_delivery::EventSender,
     cancel_token: &CancellationToken,
-    event: Event,
+    event: crate::EventDelivery,
 ) -> bool {
-    match tx_sub.send(event).or_cancel(cancel_token).await {
+    match tx_sub.send_delivery(event).or_cancel(cancel_token).await {
         Ok(Ok(())) => true,
         _ => {
             shutdown_delegate(io).await;

@@ -56,7 +56,7 @@ fn register(event_id: &str, manifest: ArtifactManifest) -> ArtifactEvent {
 
 #[test]
 fn registration_is_immutable_and_idempotent() {
-    let event = register("event-a", manifest("artifact-a", 1));
+    let event = register("event-a", manifest("artifact-a", /*generation*/ 1));
     let mut registry = ArtifactRegistry::new();
     let first = must(registry.append(event.clone()));
     let replay = must(registry.append(event));
@@ -75,8 +75,11 @@ fn registration_is_immutable_and_idempotent() {
 #[test]
 fn derived_artifact_requires_monotonic_matching_lineage() {
     let mut registry = ArtifactRegistry::new();
-    must(registry.append(register("event-a", manifest("artifact-a", 2))));
-    let mut derived = manifest("artifact-b", 1);
+    must(registry.append(register(
+        "event-a",
+        manifest("artifact-a", /*generation*/ 2),
+    )));
+    let mut derived = manifest("artifact-b", /*generation*/ 1);
     derived.predecessor_id = Some(id("artifact-a"));
 
     assert_eq!(
@@ -89,7 +92,10 @@ fn derived_artifact_requires_monotonic_matching_lineage() {
 fn quarantine_and_revoke_remove_candidate_eligibility() {
     let objective = Digest32::of_bytes(b"objective");
     let mut registry = ArtifactRegistry::new();
-    must(registry.append(register("event-a", manifest("artifact-a", 1))));
+    must(registry.append(register(
+        "event-a",
+        manifest("artifact-a", /*generation*/ 1),
+    )));
     assert_eq!(
         registry
             .eligible_candidates(ArtifactKind::Policy, objective)
@@ -123,8 +129,11 @@ fn quarantine_and_revoke_remove_candidate_eligibility() {
 fn ancestor_revocation_makes_derived_artifacts_ineligible() {
     let objective = Digest32::of_bytes(b"objective");
     let mut registry = ArtifactRegistry::new();
-    must(registry.append(register("event-a", manifest("artifact-a", 1))));
-    let mut derived = manifest("artifact-b", 2);
+    must(registry.append(register(
+        "event-a",
+        manifest("artifact-a", /*generation*/ 1),
+    )));
+    let mut derived = manifest("artifact-b", /*generation*/ 2);
     derived.predecessor_id = Some(id("artifact-a"));
     must(registry.append(register("event-b", derived)));
     assert_eq!(
@@ -153,7 +162,10 @@ fn ancestor_revocation_makes_derived_artifacts_ineligible() {
 #[test]
 fn artifact_producer_cannot_self_evaluate() {
     let mut registry = ArtifactRegistry::new();
-    must(registry.append(register("event-a", manifest("artifact-a", 1))));
+    must(registry.append(register(
+        "event-a",
+        manifest("artifact-a", /*generation*/ 1),
+    )));
 
     assert_eq!(
         must_err(registry.append(ArtifactEvent::Quarantine(StateChange {
@@ -169,8 +181,11 @@ fn artifact_producer_cannot_self_evaluate() {
 #[test]
 fn snapshot_replay_preserves_lineage_and_state() {
     let mut registry = ArtifactRegistry::new();
-    must(registry.append(register("event-a", manifest("artifact-a", 1))));
-    let mut derived = manifest("artifact-b", 2);
+    must(registry.append(register(
+        "event-a",
+        manifest("artifact-a", /*generation*/ 1),
+    )));
+    let mut derived = manifest("artifact-b", /*generation*/ 2);
     derived.predecessor_id = Some(id("artifact-a"));
     must(registry.append(register("event-b", derived)));
     let restored = must(ArtifactRegistry::from_snapshot(registry.snapshot()));
@@ -186,10 +201,16 @@ fn snapshot_replay_preserves_lineage_and_state() {
 #[test]
 fn event_identity_reuse_with_drift_fails() {
     let mut registry = ArtifactRegistry::new();
-    must(registry.append(register("event-a", manifest("artifact-a", 1))));
+    must(registry.append(register(
+        "event-a",
+        manifest("artifact-a", /*generation*/ 1),
+    )));
 
     assert_eq!(
-        must_err(registry.append(register("event-a", manifest("artifact-b", 1)))),
+        must_err(registry.append(register(
+            "event-a",
+            manifest("artifact-b", /*generation*/ 1)
+        ))),
         ArtifactRegistryError::IdentityConflict("event-a".to_owned())
     );
 }

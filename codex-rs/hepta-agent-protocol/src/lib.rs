@@ -3,6 +3,7 @@
 #![forbid(unsafe_code)]
 
 mod authbus;
+mod automation_chain_observation;
 mod capabilities;
 mod evidence;
 pub use authbus::AuthBusObjectiveBody;
@@ -13,6 +14,9 @@ pub use authbus::AuthBusTextState;
 pub use authbus::AuthBusTextStatus;
 pub use authbus::ObjectiveRunAdmission;
 pub use authbus::ObjectiveStartOutcome;
+pub use automation_chain_observation::AUTOMATION_EFFECT_CHAIN_OBSERVATION_VERSION;
+pub use automation_chain_observation::AutomationEffectTaskAcceptanceV1;
+pub use automation_chain_observation::ExpectedAutomationTaskAcceptanceV1;
 pub use capabilities::AGENTD_CAPABILITY_AUTOMATION_CALENDAR_V2;
 pub use capabilities::AGENTD_CAPABILITY_AUTOMATION_EXTERNAL_EFFECT;
 pub use capabilities::AGENTD_CAPABILITY_CANONICAL_INTELLIGENCE_V1;
@@ -338,7 +342,7 @@ impl AgentdRequest {
             method: AgentdMethod::AutomationExecuteEffect {
                 intent,
                 wire_payload_hex,
-                signed_grant,
+                signed_grant: Box::new(signed_grant),
                 command_id,
             },
         }
@@ -651,7 +655,7 @@ pub enum AgentdMethod {
     AutomationExecuteEffect {
         intent: AuthorizedEffectIntent,
         wire_payload_hex: String,
-        signed_grant: SignedFinalUseGrant,
+        signed_grant: Box<SignedFinalUseGrant>,
         command_id: String,
     },
     AutomationReconcileEffect {
@@ -748,6 +752,11 @@ pub struct AutomationEffectChainObservation {
     /// This is an effect binding only; it grants no selection or final-use authority.
     #[serde(default)]
     pub payload_sha256: Option<String>,
+    /// Exact settled task in the original packet, when unambiguous and active.
+    /// Introduced by observation version 4. Legacy observations remain readable
+    /// but cannot match a task acceptance or authorize a model change.
+    #[serde(default)]
+    pub accepted_task: Option<AutomationEffectTaskAcceptanceV1>,
     pub owner_generation: u64,
     pub local_target_only: bool,
     pub global_absence_authority: bool,
@@ -762,7 +771,7 @@ pub struct AutomationEffectReconcileSnapshot {
     pub state: AutomationEffectReconcileState,
     pub effect: Option<AutomationEffectSnapshot>,
     #[serde(default)]
-    pub chain: Option<AutomationEffectChainObservation>,
+    pub chain: Option<Box<AutomationEffectChainObservation>>,
 }
 
 #[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
@@ -1117,7 +1126,7 @@ mod tests {
                 read_digest: snapshot.read_digest.clone(),
                 omitted_records: snapshot.omitted_records,
                 items: snapshot.items.clone(),
-                plan: snapshot.plan.clone(),
+                plan: snapshot.plan,
             },
         };
         let bytes = serde_json::to_vec(&request).expect("serialize revalidation request");
@@ -1259,6 +1268,18 @@ mod tests {
             .iter()
             .flat_map(|byte| format!("{byte:02x}").chars().collect::<Vec<_>>())
             .collect::<String>();
+        let expected_wire = serde_json::json!({
+            "schema_version": AGENTD_CONTROL_SCHEMA_VERSION,
+            "request_id": 11,
+            "spawn_generation": 3,
+            "method": {
+                "type": "automation_execute_effect",
+                "intent": &intent,
+                "wire_payload_hex": &wire_payload_hex,
+                "signed_grant": &signed_grant,
+                "command_id": "effect-command",
+            },
+        });
         let request = AgentdRequest::automation_execute_effect(
             11,
             3,
@@ -1268,6 +1289,10 @@ mod tests {
             "effect-command".to_string(),
         );
         let bytes = serde_json::to_vec(&request).expect("serialize effect request");
+        assert_eq!(
+            serde_json::from_slice::<serde_json::Value>(&bytes).expect("read effect wire shape"),
+            expected_wire
+        );
         assert!(bytes.len() as u64 <= MAX_CONTROL_FRAME_BYTES);
         assert_eq!(
             serde_json::from_slice::<AgentdRequest>(&bytes).expect("parse effect request"),
@@ -1364,13 +1389,8 @@ mod tests {
             attach
         );
 
-        let cancel = AgentdRequest::run_cancel(
-            14,
-            3,
-            snapshot.run_id.clone(),
-            2,
-            "operator_request".to_string(),
-        );
+        let cancel =
+            AgentdRequest::run_cancel(14, 3, snapshot.run_id, 2, "operator_request".to_string());
         let cancel_bytes = serde_json::to_vec(&cancel).expect("serialize cancellation");
         assert!(cancel_bytes.len() as u64 <= MAX_CONTROL_FRAME_BYTES);
         assert_eq!(

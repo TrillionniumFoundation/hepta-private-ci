@@ -104,6 +104,7 @@ struct StoredRegistryV1 {
 pub struct DurableLeaseRegistryV1 {
     path: PathBuf,
     state: StoredRegistryV1,
+    requires_reopen: bool,
 }
 
 impl std::fmt::Debug for DurableLeaseRegistryV1 {
@@ -112,6 +113,7 @@ impl std::fmt::Debug for DurableLeaseRegistryV1 {
             .field("path", &self.path)
             .field("operation_count", &self.state.operations.len())
             .field("lease_count", &self.state.leases.len())
+            .field("requires_reopen", &self.requires_reopen)
             .finish()
     }
 }
@@ -127,6 +129,10 @@ pub enum LeaseRegistryErrorV1 {
     ObservationMismatch,
     CorruptState,
     Unavailable,
+    /// A successor was published, but its durability could not be confirmed.
+    IndeterminateDurability,
+    /// The live owner's state is no longer safe to use after an uncertain commit.
+    ReopenRequired,
 }
 
 impl std::fmt::Display for LeaseRegistryErrorV1 {
@@ -142,8 +148,14 @@ impl DurableLeaseRegistryV1 {
         let path = path.into();
         let state = if path.exists() {
             let mut bytes = Vec::new();
-            File::open(&path)
-                .and_then(|file| file.take(8 * 1024 * 1024 + 1).read_to_end(&mut bytes))
+            let file = File::options()
+                .read(true)
+                .write(true)
+                .open(&path)
+                .map_err(|_| LeaseRegistryErrorV1::Unavailable)?;
+            (&file)
+                .take(8 * 1024 * 1024 + 1)
+                .read_to_end(&mut bytes)
                 .map_err(|_| LeaseRegistryErrorV1::Unavailable)?;
             if bytes.len() > 8 * 1024 * 1024 {
                 return Err(LeaseRegistryErrorV1::CorruptState);
@@ -151,6 +163,12 @@ impl DurableLeaseRegistryV1 {
             let state: StoredRegistryV1 =
                 serde_json::from_slice(&bytes).map_err(|_| LeaseRegistryErrorV1::CorruptState)?;
             validate_state(&state)?;
+            // A complete successor can survive a failed post-rename sync in
+            // the page cache. Reading it is not a durability acknowledgement.
+            file.sync_all()
+                .map_err(|_| LeaseRegistryErrorV1::IndeterminateDurability)?;
+            sync_parent_directory(&path)
+                .map_err(|_| LeaseRegistryErrorV1::IndeterminateDurability)?;
             state
         } else {
             StoredRegistryV1 {
@@ -159,14 +177,34 @@ impl DurableLeaseRegistryV1 {
                 leases: BTreeMap::new(),
             }
         };
-        Ok(Self { path, state })
+        Ok(Self {
+            path,
+            state,
+            requires_reopen: false,
+        })
     }
 
+    /// Whether a failed publication requires dropping this owner and reopening
+    /// the stored state before reads, retries, or reconciliation can proceed.
+    pub fn requires_reopen(&self) -> bool {
+        self.requires_reopen
+    }
+
+    /// Returns no metadata while this owner requires reopening. Call
+    /// `requires_reopen` to distinguish that condition from an absent lease.
     pub fn lease(&self, lease_id: &str) -> Option<&SecretLeaseMetadataV1> {
+        if self.requires_reopen {
+            return None;
+        }
         self.state.leases.get(lease_id)
     }
 
+    /// Returns no metadata while this owner requires reopening. Call
+    /// `requires_reopen` to distinguish that condition from an absent operation.
     pub fn operation(&self, operation_id: &str) -> Option<&LeaseOperationV1> {
+        if self.requires_reopen {
+            return None;
+        }
         self.state.operations.get(operation_id)
     }
 
@@ -179,7 +217,7 @@ impl DurableLeaseRegistryV1 {
             operation_id,
             LeaseOperationKindV1::Issue,
             semantic_sha256,
-            None,
+            /*lease_id*/ None,
         )
     }
 
@@ -189,6 +227,7 @@ impl DurableLeaseRegistryV1 {
         lease_id: String,
         semantic_sha256: [u8; 32],
     ) -> Result<LeaseOperationV1, LeaseRegistryErrorV1> {
+        self.ensure_available()?;
         self.require_active(&lease_id)?;
         self.prepare(
             operation_id,
@@ -204,6 +243,7 @@ impl DurableLeaseRegistryV1 {
         lease_id: String,
         semantic_sha256: [u8; 32],
     ) -> Result<LeaseOperationV1, LeaseRegistryErrorV1> {
+        self.ensure_available()?;
         let lease = self
             .state
             .leases
@@ -227,6 +267,7 @@ impl DurableLeaseRegistryV1 {
         &mut self,
         operation_id: &str,
     ) -> Result<LeaseOperationV1, LeaseRegistryErrorV1> {
+        self.ensure_available()?;
         let mut next = self.state.clone();
         let operation = next
             .operations
@@ -259,6 +300,7 @@ impl DurableLeaseRegistryV1 {
         operation_id: &str,
         observation: ProviderLeaseObservationV1,
     ) -> Result<LeaseOperationV1, LeaseRegistryErrorV1> {
+        self.ensure_available()?;
         let current = self
             .state
             .operations
@@ -356,6 +398,7 @@ impl DurableLeaseRegistryV1 {
     }
 
     pub fn expire_at(&mut self, now_unix_ms: u64) -> Result<usize, LeaseRegistryErrorV1> {
+        self.ensure_available()?;
         let mut next = self.state.clone();
         let mut changed = 0usize;
         for lease in next.leases.values_mut() {
@@ -378,6 +421,7 @@ impl DurableLeaseRegistryV1 {
         semantic_sha256: [u8; 32],
         lease_id: Option<String>,
     ) -> Result<LeaseOperationV1, LeaseRegistryErrorV1> {
+        self.ensure_available()?;
         if !identifier(&operation_id)
             || semantic_sha256 == [0; 32]
             || lease_id.as_deref().is_some_and(|value| !identifier(value))
@@ -421,9 +465,23 @@ impl DurableLeaseRegistryV1 {
         Ok(())
     }
 
+    fn ensure_available(&self) -> Result<(), LeaseRegistryErrorV1> {
+        if self.requires_reopen {
+            Err(LeaseRegistryErrorV1::ReopenRequired)
+        } else {
+            Ok(())
+        }
+    }
+
     fn commit(&mut self, next: StoredRegistryV1) -> Result<(), LeaseRegistryErrorV1> {
+        self.ensure_available()?;
         validate_state(&next)?;
-        persist(&self.path, &next)?;
+        if let Err(error) = persist(&self.path, &next) {
+            if error == LeaseRegistryErrorV1::IndeterminateDurability {
+                self.requires_reopen = true;
+            }
+            return Err(error);
+        }
         self.state = next;
         Ok(())
     }
@@ -509,9 +567,16 @@ fn persist(path: &Path, state: &StoredRegistryV1) -> Result<(), LeaseRegistryErr
         .and_then(|()| file.sync_all())
         .map_err(|_| LeaseRegistryErrorV1::Unavailable)?;
     std::fs::rename(&next, path).map_err(|_| LeaseRegistryErrorV1::Unavailable)?;
-    File::open(parent)
-        .and_then(|directory| directory.sync_all())
-        .map_err(|_| LeaseRegistryErrorV1::Unavailable)
+    sync_parent_directory(path).map_err(|_| LeaseRegistryErrorV1::IndeterminateDurability)
+}
+
+fn sync_parent_directory(path: &Path) -> std::io::Result<()> {
+    let parent = path
+        .parent()
+        .ok_or_else(|| std::io::Error::other("lease registry has no parent directory"))?;
+    #[cfg(test)]
+    tests::fail_directory_sync_if_requested()?;
+    File::open(parent).and_then(|directory| directory.sync_all())
 }
 
 fn identifier(value: &str) -> bool {

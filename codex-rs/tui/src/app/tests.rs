@@ -7119,7 +7119,7 @@ async fn remembered_current_cwd_stays_at_launch_across_in_app_resumes() -> Resul
     std::fs::create_dir_all(&active_cwd)?;
     std::fs::create_dir_all(&first_session_cwd)?;
     std::fs::create_dir_all(&second_session_cwd)?;
-    let config = ConfigBuilder::default()
+    let mut config = ConfigBuilder::default()
         .codex_home(codex_home.clone())
         .loader_overrides(LoaderOverrides::without_managed_config_for_tests())
         .harness_overrides(ConfigOverrides {
@@ -7187,7 +7187,7 @@ async fn remembered_current_cwd_stays_at_launch_across_in_app_resumes() -> Resul
         });
     }
     let state_db =
-        crate::init_state_db_for_app_server_target(&config, &crate::AppServerTarget::Embedded)
+        crate::init_state_db_for_app_server_target(&mut config, &crate::AppServerTarget::Embedded)
             .await?;
     let mut app_server = crate::start_app_server_for_picker(
         &config,

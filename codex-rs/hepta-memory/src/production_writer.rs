@@ -47,6 +47,7 @@ use crate::LocalReconcileOutcome;
 use crate::LocalReplayFinalization;
 use crate::MemoryDraft;
 use crate::MemoryRevisionDraft;
+use crate::MemoryRevisionId;
 use crate::QueuedReceipt;
 use crate::SourceDraft;
 use crate::StableMemoryId;
@@ -1546,8 +1547,12 @@ impl ProductionCognitiveMutation for ProductionCognitiveMutationCapability {
     ) -> ProductionCognitiveMutationFuture<'a> {
         Box::pin(async move {
             self.writer.verify_current_authority().await?;
-            let prepared =
-                self.prepare_semantic_mutation("remember", source, None, &(draft, facts))?;
+            let prepared = self.prepare_semantic_mutation(
+                "remember",
+                source,
+                /*expected_predecessor_revision*/ None,
+                &(draft, facts),
+            )?;
             let mut transaction = self
                 .writer
                 .store()
@@ -1608,8 +1613,10 @@ impl ProductionCognitiveMutation for ProductionCognitiveMutationCapability {
                 .correct_with_kg_tx(
                     &mut transaction,
                     access,
-                    memory_id,
-                    expected_revision,
+                    &MemoryRevisionId {
+                        memory_id: memory_id.clone(),
+                        revision: expected_revision,
+                    },
                     source,
                     draft,
                     facts,

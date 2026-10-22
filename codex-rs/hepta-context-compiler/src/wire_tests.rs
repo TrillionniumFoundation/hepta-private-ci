@@ -36,8 +36,11 @@ fn compiler_composes_into_admitted_v2_transport_without_serializing_authority()
             contains_secret: false,
         }],
     };
-    let (receipt, envelope) =
-        compile_to_wire_v2(request, id("context.compiler"), Generation::new(1)?)?;
+    let (receipt, envelope) = compile_to_wire_v2(
+        request,
+        id("context.compiler"),
+        Generation::new(/*value*/ 1)?,
+    )?;
     assert_eq!(receipt.authority, AuthorityPosture::DENY_ALL);
     assert_eq!(
         envelope.schema().as_str(),
@@ -49,7 +52,11 @@ fn compiler_composes_into_admitted_v2_transport_without_serializing_authority()
     assert_eq!(decoded.context_digest, receipt.context_digest.to_string());
     assert!(!String::from_utf8_lossy(envelope.payload()).contains("authority"));
     assert!(matches!(
-        encode_compilation_receipt_wire_v2(&receipt, id("runtime.agentd"), Generation::new(2)?,),
+        encode_compilation_receipt_wire_v2(
+            &receipt,
+            id("runtime.agentd"),
+            Generation::new(/*value*/ 2)?,
+        ),
         Err(ContextWireError::UnexpectedProducer(_))
     ));
     Ok(())
@@ -62,7 +69,7 @@ fn context_wire_rejects_unknown_fields_and_duplicate_id_partitions() -> Result<(
     let invalid = WireEnvelopeV2::new(
         id(CONTEXT_COMPILATION_WIRE_SCHEMA_V2),
         id("context.compiler"),
-        Generation::new(1)?,
+        Generation::new(/*value*/ 1)?,
         format!(
             "{{\"compilation_id\":\"compile.1\",\"trusted_instruction_ids\":[\"item.1\"],\"untrusted_evidence_ids\":[],\"omitted_ids\":[],\"used_tokens\":1,\"context_digest\":\"{digest}\",\"authority\":true}}"
         )
@@ -78,7 +85,7 @@ fn context_wire_rejects_unknown_fields_and_duplicate_id_partitions() -> Result<(
     let duplicate = WireEnvelopeV2::new(
         id(CONTEXT_COMPILATION_WIRE_SCHEMA_V2),
         id("context.compiler"),
-        Generation::new(1)?,
+        Generation::new(/*value*/ 1)?,
         format!(
             "{{\"compilation_id\":\"compile.1\",\"trusted_instruction_ids\":[\"item.1\"],\"untrusted_evidence_ids\":[\"item.1\"],\"omitted_ids\":[],\"used_tokens\":1,\"context_digest\":\"{digest}\"}}"
         )
@@ -94,7 +101,7 @@ fn context_wire_rejects_unknown_fields_and_duplicate_id_partitions() -> Result<(
     let wrong_producer = WireEnvelopeV2::new(
         id(CONTEXT_COMPILATION_WIRE_SCHEMA_V2),
         id("runtime.agentd"),
-        Generation::new(1)?,
+        Generation::new(/*value*/ 1)?,
         format!(
             "{{\"compilation_id\":\"compile.1\",\"trusted_instruction_ids\":[],\"untrusted_evidence_ids\":[],\"omitted_ids\":[],\"used_tokens\":0,\"context_digest\":\"{digest}\"}}"
         )

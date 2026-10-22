@@ -51,7 +51,7 @@ fn request<'a>(
 }
 
 #[test]
-fn read_only_profile_without_overrides_keeps_restricted_token_backend() {
+fn read_only_profile_without_overrides_requires_elevated_broker() {
     let temp = TempDir::new().expect("tempdir");
     let cwd = temp.path().join("workspace");
     let codex_home = temp.path().join("codex-home");
@@ -68,7 +68,7 @@ fn read_only_profile_without_overrides_keeps_restricted_token_backend() {
     );
 
     assert_eq!(
-        WindowsSandboxBackend::RestrictedToken,
+        WindowsSandboxBackend::Elevated,
         select_windows_sandbox_backend(&request).expect("select backend")
     );
 }

@@ -144,9 +144,11 @@ impl CurrentArtifactStoreV1<'_> {
                 minimum_authority_epoch: minimum_epoch,
                 now: candidate.witness.issued_at,
             };
-            let verified =
-                self.verifier
-                    .verify_signed_head(&candidate, &historical_requirement, false)?;
+            let verified = self.verifier.verify_signed_head(
+                &candidate,
+                &historical_requirement,
+                /*require_current_signer*/ false,
+            )?;
             predecessor = candidate.witness.head_digest;
             minimum_generation = candidate
                 .witness
@@ -175,7 +177,7 @@ impl CurrentArtifactStoreV1<'_> {
             latest.signed.witness.authority_epoch,
             latest.signed.witness.issued_at,
             now,
-            true,
+            /*require_current*/ true,
         )?;
         if now > latest.signed.witness.expires_at {
             return Err(ArtifactOwnerHostError::CurrentHeadExpired);
@@ -203,8 +205,11 @@ impl CurrentArtifactStoreV1<'_> {
             minimum_authority_epoch: self.verifier.trust.minimum_authority_epoch,
             now: anchor.witness.issued_at,
         };
-        self.verifier
-            .verify_signed_head(anchor, &requirement, false)?;
+        self.verifier.verify_signed_head(
+            anchor,
+            &requirement,
+            /*require_current_signer*/ false,
+        )?;
         let path = self.signed_head_record_path(anchor);
         if !path.is_file()
             || read_small_record(&path, MAX_SMALL_RECORD_BYTES)? != encode_signed_head(anchor)

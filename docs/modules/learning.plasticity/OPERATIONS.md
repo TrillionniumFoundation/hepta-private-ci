@@ -10,18 +10,23 @@ The product-workspace adapter entrypoint is
 `codex-rs/hepta-intelligence::propose_authenticated_parameter_plasticity_v1`.
 It can construct and persist a proposal only. It has no selection, training,
 installation, runtime-topology, promotion or release authority. `codex-rs/hepta-agentd::propose_agentd_plasticity_v1` is now called by the long-lived
-`PlasticityRuntimeOwnerV1` supervised from the real Agentd `runtime.rs` task set. The state-held `AgentdLearningPlasticityProducerV1` is the named non-test producer for both parameter and topology submissions; it owns only the bounded handle. The owner recomputes the current artifact and durable learning-ledger frontiers
+`PlasticityRuntimeOwnerV1` supervised from the real Agentd `runtime.rs` task set.
+`AgentdState` retains the bounded `PlasticityRuntimeHandleV1` for its generation;
+the borrowed `AgentdLearningPlasticityProducerV1` submission adapter is compiled
+only for tests. The learning/self-iteration product caller remains uncomposed.
+The owner recomputes the current artifact and durable learning-ledger frontiers
 and requires context-bound owner evidence for dataset, update-rule, modulator,
 modulator-broadcast, eligibility, mutation-policy and per-parameter signals before
 invoking the adapter. Every owner query binds the live artifact/ledger heads; parameter signals additionally bind the exact eligibility, modulator, learning-rate and bound values used by deterministic generation. `DatasetSnapshotReceiptV3` and immutable Policy artifacts have concrete owner adapters; NDU projection state supplies the current modulator, the immutable broadcast-policy artifact binds projection weights, neuron.runtime supplies the anchored eligibility checkpoint, and exact ParameterSignal receipts recompute the consumed numeric values. All of these paths fail closed on stale, rolled-back, unavailable, wrong-owner or value-substituted state. A complete evidence-kind→owner allowlist is enforced
 separately from resolver authentication, so a valid receipt from the wrong owner
 cannot satisfy admission. The owner is attached explicitly through `AgentdConfig`, uses a bounded in-process
 queue and is fenced by the current Running/ready Agentd generation. No public plasticity
-wire method or fallback writer is created. `AgentdState::submit_parameter_plasticity_v1`
-and `submit_topology_plasticity_v1` are driven by the named non-test producer; the
-lifetime E2E proves first write, daemon restart, anchored reopen and idempotent replay
-for both proposal registries. This source composition is not evidence that a deployed
-target host executed or accepted it, so product execution remains unproved.
+wire method or fallback writer is created. The test-only
+`AgentdState::submit_parameter_plasticity_v1` and `submit_topology_plasticity_v1`
+borrow the retained handle through the test adapter. The existing lifetime fixture
+covers first write, daemon restart, anchored reopen and idempotent replay for both
+proposal registries. It does not establish a production learning caller or deployed
+target-host execution; product execution remains unproved.
 
 The selected host owns four independent facts: current learning-evidence trust state,
 current artifact/evidence frontier witness, authoritative owner-evidence resolution,
@@ -43,11 +48,13 @@ anchored reopen reconciles the durable file with previously acknowledged history
 
 ## Topology proposal operations
 
-Topology proposal construction is also source-composed through the named
-`AgentdLearningPlasticityProducerV1::submit_topology` /
-`AgentdState::submit_topology_plasticity_v1` boundary, then
-`propose_authenticated_topology_plasticity_v1` and
-`propose_agentd_topology_plasticity_v1`. Every update binds a typed
+The public `PlasticityRuntimeHandleV1::propose_topology` sends a request to the
+long-lived owner, which calls `propose_agentd_topology_plasticity_v1` and then the
+authenticated product adapter `propose_authenticated_topology_plasticity_v1`.
+The lifetime fixture reaches this channel through the test-only
+`AgentdState::submit_topology_plasticity_v1` and borrowed
+`AgentdLearningPlasticityProducerV1::submit_topology` adapter; a production learning
+caller is not yet composed. Every update binds a typed
 `WriterHandoffPlanV1` with distinct owners, an advancing writer fence, source-store,
 migration, rollback and acknowledgement-contract digests. The complete governed
 proposal is persisted in `DurableTopologyProposalRegistryV1`, with the same

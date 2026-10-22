@@ -660,7 +660,7 @@ impl TestCodexBuilder {
 
     async fn build_from_config(
         &mut self,
-        config: Config,
+        mut config: Config,
         cwd: Arc<TempDir>,
         home: Arc<TempDir>,
         resume_from: Option<PathBuf>,
@@ -668,7 +668,7 @@ impl TestCodexBuilder {
         environment_manager: Arc<codex_exec_server::EnvironmentManager>,
     ) -> anyhow::Result<TestCodex> {
         let auth = self.auth.clone();
-        let state_db = codex_core::init_state_db(&config).await;
+        let state_db = codex_core::init_state_db(&mut config).await;
         let thread_store = thread_store_from_config(&config, state_db.clone());
         let installation_id = resolve_installation_id(&config.codex_home).await?;
         let user_instructions_provider =

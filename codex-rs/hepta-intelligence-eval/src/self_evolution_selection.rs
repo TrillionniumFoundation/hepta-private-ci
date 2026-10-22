@@ -636,10 +636,10 @@ mod tests {
             selection_id: id("selection"),
             objective_digest: digest("objective"),
             predecessor_id: id("baseline"),
-            predecessor_generation: generation(7),
+            predecessor_generation: generation(/*value*/ 7),
             predecessor_artifact_digest: digest("baseline-bytes"),
             candidate_id: id("candidate"),
-            candidate_generation: generation(8),
+            candidate_generation: generation(/*value*/ 8),
             candidate_artifact_digest: digest("candidate-bytes"),
             no_change_baseline_id: id("baseline"),
             no_change_baseline_digest: digest("baseline-bytes"),
@@ -789,7 +789,7 @@ mod tests {
                     b"generator",
                 ),
                 b"generator",
-                50,
+                /*now*/ 50,
             )
             .expect("generator");
         let evaluator = verifier
@@ -803,7 +803,7 @@ mod tests {
                     b"evaluator",
                 ),
                 b"evaluator",
-                50,
+                /*now*/ 50,
             )
             .expect("evaluator");
         let observer = verifier
@@ -817,7 +817,7 @@ mod tests {
                     b"observer",
                 ),
                 b"observer",
-                50,
+                /*now*/ 50,
             )
             .expect("observer");
 
@@ -840,29 +840,33 @@ mod tests {
             LearningEvidenceRoleV1::Selector,
             &selector_payload,
         );
-        let selected =
-            admit_self_evolution_selection_v1(prepared, &selector_evidence, &verifier, 50)
-                .expect("independent selection");
+        let selected = admit_self_evolution_selection_v1(
+            prepared,
+            &selector_evidence,
+            &verifier,
+            /*now*/ 50,
+        )
+        .expect("independent selection");
         (selected, verifier, keys)
     }
 
     #[test]
     fn retained_selection_rechecks_signed_role_lifetimes_before_late_consumption() {
         let (selected, _, _) = selected_fixture(SelectorRevocation::NotRevoked);
-        assert!(selected.validate_at(50).is_ok());
-        assert!(selected.validate_at(90).is_ok());
-        assert!(selected.validate_at(19).is_err());
-        assert!(selected.validate_at(91).is_err());
+        assert!(selected.validate_at(/*now*/ 50).is_ok());
+        assert!(selected.validate_at(/*now*/ 90).is_ok());
+        assert!(selected.validate_at(/*now*/ 19).is_err());
+        assert!(selected.validate_at(/*now*/ 91).is_err());
         // Cloning the opaque admission retains its original validity bound.
-        assert!(selected.validate_at(91).is_err());
+        assert!(selected.validate_at(/*now*/ 91).is_err());
     }
 
     #[test]
     fn retained_selection_checks_revocation_already_present_in_admitted_trust() {
         let (selected, _, _) = selected_fixture(SelectorRevocation::At(80));
-        assert!(selected.validate_at(79).is_ok());
-        assert!(selected.validate_at(80).is_err());
-        assert!(selected.validate_at(81).is_err());
+        assert!(selected.validate_at(/*now*/ 79).is_ok());
+        assert!(selected.validate_at(/*now*/ 80).is_err());
+        assert!(selected.validate_at(/*now*/ 81).is_err());
     }
 
     #[test]
@@ -885,19 +889,19 @@ mod tests {
             regression,
             &rollback_evidence,
             &verifier,
-            50,
+            /*now*/ 50,
         )
         .expect("independent rollback");
-        assert_eq!(rollback.rollback_generation(), generation(9));
+        assert_eq!(rollback.rollback_generation(), generation(/*value*/ 9));
         assert_eq!(rollback.evaluator_id(), &id("evaluator"));
-        assert!(rollback.validate_at(90).is_ok());
-        assert!(rollback.validate_at(91).is_err());
+        assert!(rollback.validate_at(/*now*/ 90).is_ok());
+        assert!(rollback.validate_at(/*now*/ 91).is_err());
     }
 
     #[test]
     fn receipt_rejects_generation_rewind_and_baseline_drift() {
         let mut changed = receipt();
-        changed.candidate_generation = generation(9);
+        changed.candidate_generation = generation(/*value*/ 9);
         assert_eq!(
             selection_signing_payload_v1(&changed),
             Err(SelfEvolutionSelectionError::BindingMismatch)

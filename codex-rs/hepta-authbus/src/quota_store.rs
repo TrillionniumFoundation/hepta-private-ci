@@ -59,9 +59,9 @@ impl AuthBusAuthorityStore {
         .bind(spec.period_id.as_str())
         .bind(u64_bytes(spec.limit).as_slice())
         .bind(u64_bytes(spec.limit).as_slice())
-        .bind(u64_bytes(0).as_slice())
-        .bind(u64_bytes(0).as_slice())
-        .bind(u64_bytes(1).as_slice())
+        .bind(u64_bytes(/*value*/ 0).as_slice())
+        .bind(u64_bytes(/*value*/ 0).as_slice())
+        .bind(u64_bytes(/*value*/ 1).as_slice())
         .execute(&mut *tx)
         .await;
         if let Err(error) = result {
@@ -258,7 +258,7 @@ impl AuthBusAuthorityStore {
         .bind(decision.policy_id().as_str())
         .bind(u64_bytes(decision.policy_revision()).as_slice())
         .bind(decision.decision_digest().as_array().as_slice())
-        .bind(u64_bytes(1).as_slice())
+        .bind(u64_bytes(/*value*/ 1).as_slice())
         .bind(u64_bytes(request.expires_at_ms).as_slice())
         .bind(u64_bytes(time.wall_time_ms).as_slice())
         .bind(u64_bytes(time.wall_time_ms).as_slice())

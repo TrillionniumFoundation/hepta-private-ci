@@ -244,7 +244,7 @@ fn read_id(bytes: &mut &[u8]) -> Result<StableId, TabularPayloadError> {
     .map_err(|_| TabularPayloadError::Encoding)
 }
 fn decode(mut bytes: &[u8]) -> Result<TabularOperatorArtifactV1, TabularPayloadError> {
-    if take(&mut bytes, 8)? != MAGIC {
+    if take(&mut bytes, /*count*/ 8)? != MAGIC {
         return Err(TabularPayloadError::Encoding);
     }
     let artifact_id = read_id(&mut bytes)?;

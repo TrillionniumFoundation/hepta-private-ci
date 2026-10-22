@@ -193,6 +193,14 @@ impl FileSystemHandler {
                         .to_string(),
                 )
             })?;
+        // This RPC requires stronger provenance than the local trait's generic
+        // bounded sandbox stream. Use the same runtime probe as EnvironmentInfo
+        // before the local fallback can perform any filesystem access.
+        if !crate::local_file_system::stable_handle_authorized_read_available() {
+            return Err(internal_error(
+                "bounded authorized file reads are unsupported".to_string(),
+            ));
+        }
         let bytes = self
             .file_system
             .read_file_bounded_authorized(&params.path, &params.sandbox, max_bytes)

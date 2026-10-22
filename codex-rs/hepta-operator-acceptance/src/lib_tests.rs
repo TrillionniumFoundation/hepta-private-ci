@@ -64,10 +64,10 @@ fn validity_window_is_half_open_and_policy_bounded() {
     let evidence = evidence();
     let operator = operator();
     let challenge = challenge(&evidence, &operator);
-    validate_time_window(&challenge, 100).expect("inclusive start");
-    validate_time_window(&challenge, 199).expect("last valid second");
-    assert!(validate_time_window(&challenge, 99).is_err());
-    assert!(validate_time_window(&challenge, 200).is_err());
+    validate_time_window(&challenge, /*trusted_now*/ 100).expect("inclusive start");
+    validate_time_window(&challenge, /*trusted_now*/ 199).expect("last valid second");
+    assert!(validate_time_window(&challenge, /*trusted_now*/ 99).is_err());
+    assert!(validate_time_window(&challenge, /*trusted_now*/ 200).is_err());
 
     let mut too_long = challenge;
     too_long.expires_at_unix_seconds = 1_001;
@@ -196,9 +196,9 @@ fn durable_time_watermark_rejects_clock_rollback() {
     let temporary = private_tempdir("temporary sidecar");
     let sidecar = temporary.path().canonicalize().expect("canonical sidecar");
     let policy_sha256 = "a".repeat(64);
-    advance_time_watermark(&sidecar, 100, &policy_sha256).expect("initial watermark");
-    assert!(advance_time_watermark(&sidecar, 99, &policy_sha256).is_err());
-    advance_time_watermark(&sidecar, 101, &policy_sha256).expect("forward watermark");
+    advance_time_watermark(&sidecar, /*observed*/ 100, &policy_sha256).expect("initial watermark");
+    assert!(advance_time_watermark(&sidecar, /*observed*/ 99, &policy_sha256).is_err());
+    advance_time_watermark(&sidecar, /*observed*/ 101, &policy_sha256).expect("forward watermark");
     let (stored, _) =
         read_canonical::<TimeWatermark>(&sidecar.join(WATERMARK_FILE), "test watermark")
             .expect("read watermark");

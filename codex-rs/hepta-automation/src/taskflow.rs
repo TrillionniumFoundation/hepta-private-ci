@@ -1112,8 +1112,11 @@ impl AutomationStore {
                 "provider-absence transitions are restricted to automation recovery",
             ));
         }
-        self.apply_taskflow_command_inner(command, false, false)
-            .await
+        self.apply_taskflow_command_inner(
+            command, /*allow_proven_absence_requeue*/ false,
+            /*allow_effect_observation_quarantine*/ false,
+        )
+        .await
     }
 
     pub(crate) async fn apply_taskflow_requeue_proven_absent(
@@ -1128,8 +1131,11 @@ impl AutomationStore {
                 "internal requeue requires provider-absence transition",
             ));
         }
-        self.apply_taskflow_command_inner(command, true, false)
-            .await
+        self.apply_taskflow_command_inner(
+            command, /*allow_proven_absence_requeue*/ true,
+            /*allow_effect_observation_quarantine*/ false,
+        )
+        .await
     }
 
     pub(crate) async fn apply_taskflow_cancel_proven_absent(
@@ -1144,8 +1150,11 @@ impl AutomationStore {
                 "internal cancellation requires provider-absence transition",
             ));
         }
-        self.apply_taskflow_command_inner(command, true, false)
-            .await
+        self.apply_taskflow_command_inner(
+            command, /*allow_proven_absence_requeue*/ true,
+            /*allow_effect_observation_quarantine*/ false,
+        )
+        .await
     }
 
     pub(crate) async fn apply_taskflow_effect_observation_quarantine(
@@ -1160,8 +1169,11 @@ impl AutomationStore {
                 "effect observation quarantine requires indeterminate transition",
             ));
         }
-        self.apply_taskflow_command_inner(command, false, true)
-            .await
+        self.apply_taskflow_command_inner(
+            command, /*allow_proven_absence_requeue*/ false,
+            /*allow_effect_observation_quarantine*/ true,
+        )
+        .await
     }
 
     async fn apply_taskflow_command_inner(

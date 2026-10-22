@@ -167,7 +167,7 @@ fn native_config() -> SparseConfig {
     SparseConfig {
         model_digest: Digest32::of_bytes(b"head"),
         normalization_digest: Digest32::of_bytes(b"normalization"),
-        generation: checked(Generation::new(1)),
+        generation: checked(Generation::new(/*value*/ 1)),
         width: 5,
         top_k: 1,
         temporal_decay_q24: Q / 2,
@@ -276,7 +276,7 @@ fn canonical_runtime_commits_model_bound_calibrated_signal_and_recovers() {
         witness.clone(),
     ));
     let mut model = FakeModel::new();
-    let first = checked(runtime.tick(&mut model, input(1, Digest32::ZERO)));
+    let first = checked(runtime.tick(&mut model, input(/*sequence*/ 1, Digest32::ZERO)));
     assert!(!first.tick.abstain);
     assert_eq!(first.tick.sparsity_ppm, 200_000);
     assert_eq!(first.signal.model_runtime_digest.is_zero(), false);
@@ -298,7 +298,10 @@ fn canonical_runtime_commits_model_bound_calibrated_signal_and_recovers() {
         witness,
     ));
     assert_eq!(checked(recovered.current_anchor()), Some(first_anchor));
-    let second = checked(recovered.tick(&mut model, input(2, first_anchor.checkpoint_digest)));
+    let second = checked(recovered.tick(
+        &mut model,
+        input(/*sequence*/ 2, first_anchor.checkpoint_digest),
+    ));
     assert_eq!(
         second.tick.checkpoint_before,
         first_anchor.checkpoint_digest
@@ -321,7 +324,7 @@ fn witness_failure_after_commit_reconciles_without_reinvoking_model() {
         witness.clone(),
     ));
     witness.fail_next_compare_and_swap();
-    let tick = input(1, Digest32::ZERO);
+    let tick = input(/*sequence*/ 1, Digest32::ZERO);
     let mut model = FakeModel::new();
     let failure = runtime.tick(&mut model, tick.clone()).err();
     assert!(matches!(
@@ -355,7 +358,9 @@ fn model_identity_drift_rejects_before_checkpoint_mutation() {
     let mut model = FakeModel::new();
     model.corrupt_head = true;
     assert_eq!(
-        runtime.tick(&mut model, input(1, Digest32::ZERO)).err(),
+        runtime
+            .tick(&mut model, input(/*sequence*/ 1, Digest32::ZERO))
+            .err(),
         Some(NeuronRuntimeError::ModelBindingMismatch)
     );
     assert_eq!(checked(runtime.current_anchor()), None);
@@ -376,7 +381,7 @@ fn collapse_or_ood_forces_abstention_without_granting_authority() {
         MemoryWitness::default(),
     ));
     let mut model = FakeModel::new();
-    let output = checked(runtime.tick(&mut model, input(1, Digest32::ZERO)));
+    let output = checked(runtime.tick(&mut model, input(/*sequence*/ 1, Digest32::ZERO)));
     assert!(output.tick.abstain);
     assert!(!output.signal.authority.grants_any());
 }
@@ -397,10 +402,13 @@ fn expired_calibration_advances_state_but_forces_fail_closed_abstention() {
         witness,
     ));
     let mut model = FakeModel::new();
-    let first = checked(runtime.tick(&mut model, input(1, Digest32::ZERO)));
+    let first = checked(runtime.tick(&mut model, input(/*sequence*/ 1, Digest32::ZERO)));
     let first_anchor = checked(runtime.current_anchor()).expect("first anchor");
     assert!(!first.tick.abstain);
-    let second = checked(runtime.tick(&mut model, input(2, first_anchor.checkpoint_digest)));
+    let second = checked(runtime.tick(
+        &mut model,
+        input(/*sequence*/ 2, first_anchor.checkpoint_digest),
+    ));
     assert!(second.tick.abstain);
     assert_eq!(second.tick.confidence_ppm, 0);
     assert_eq!(second.tick.ood_ppm, 1_000_000);
@@ -428,11 +436,20 @@ fn runtime_rollover_and_chain_recovery_preserve_latest_witness() {
             witness.clone(),
         ));
         let mut model = FakeModel::new();
-        let first = checked(runtime.tick(&mut model, input(1, Digest32::ZERO)));
-        let second = checked(runtime.tick(&mut model, input(2, first.tick.checkpoint_after)));
+        let first = checked(runtime.tick(&mut model, input(/*sequence*/ 1, Digest32::ZERO)));
+        let second = checked(runtime.tick(
+            &mut model,
+            input(/*sequence*/ 2, first.tick.checkpoint_after),
+        ));
         checked(runtime.rollover(fixture.named_file("successor"), /*max_records*/ 2));
-        let third = checked(runtime.tick(&mut model, input(3, second.tick.checkpoint_after)));
-        let fourth = checked(runtime.tick(&mut model, input(4, third.tick.checkpoint_after)));
+        let third = checked(runtime.tick(
+            &mut model,
+            input(/*sequence*/ 3, second.tick.checkpoint_after),
+        ));
+        let fourth = checked(runtime.tick(
+            &mut model,
+            input(/*sequence*/ 4, third.tick.checkpoint_after),
+        ));
         JournalAnchor {
             sequence: 4,
             checkpoint_digest: fourth.tick.checkpoint_after,
@@ -473,7 +490,7 @@ fn deletion_rebuild_starts_fresh_successor_generation_without_old_state() {
         MemoryWitness::default(),
     ));
     let mut model = FakeModel::new();
-    let committed = checked(old_runtime.tick(&mut model, input(1, Digest32::ZERO)));
+    let committed = checked(old_runtime.tick(&mut model, input(/*sequence*/ 1, Digest32::ZERO)));
     let predecessor = JournalAnchor {
         sequence: 1,
         checkpoint_digest: committed.tick.checkpoint_after,
@@ -481,12 +498,12 @@ fn deletion_rebuild_starts_fresh_successor_generation_without_old_state() {
     drop(old_runtime);
 
     let mut successor_native = native_config();
-    successor_native.generation = checked(Generation::new(2));
+    successor_native.generation = checked(Generation::new(/*value*/ 2));
     let successor_config = runtime_config(&successor_native);
     let plan = NeuronDeletionRebuildPlanV1 {
         rebuild_id: checked(StableId::new("neuron-rebuild:runtime")),
-        predecessor_generation: checked(Generation::new(1)),
-        successor_generation: checked(Generation::new(2)),
+        predecessor_generation: checked(Generation::new(/*value*/ 1)),
+        successor_generation: checked(Generation::new(/*value*/ 2)),
         predecessor_checkpoint_digest: predecessor.checkpoint_digest,
         withdrawal_registry_head_digest: Digest32::of_bytes(b"withdrawal-head"),
         withdrawal_event_digest: Digest32::of_bytes(b"withdrawal-event"),
@@ -507,7 +524,7 @@ fn deletion_rebuild_starts_fresh_successor_generation_without_old_state() {
     ));
     assert!(!receipt.state_reused);
     assert_eq!(checked(rebuilt.current_anchor()), None);
-    let rebuilt_first = checked(rebuilt.tick(&mut model, input(1, Digest32::ZERO)));
+    let rebuilt_first = checked(rebuilt.tick(&mut model, input(/*sequence*/ 1, Digest32::ZERO)));
     assert_eq!(rebuilt_first.tick.checkpoint_before, Digest32::ZERO);
     assert_ne!(
         rebuilt_first.tick.checkpoint_after,

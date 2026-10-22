@@ -1570,7 +1570,8 @@ mod tests {
         file.sync_all().must("legacy fsync");
         drop(file);
 
-        let durable = DurablePromptRegistry::open_state_dir(&root, 64).must("migrate registry");
+        let durable = DurablePromptRegistry::open_state_dir(&root, /*maximum_records*/ 64)
+            .must("migrate registry");
         let factor = durable
             .registry()
             .must("registry")
@@ -1610,8 +1611,8 @@ mod tests {
             Err(crate::ProtocolCodecError::MissingAuthoritativeLineage)
         );
         drop(durable);
-        let reopened =
-            DurablePromptRegistry::open_state_dir(&root, 64).must("reopen migrated registry");
+        let reopened = DurablePromptRegistry::open_state_dir(&root, /*maximum_records*/ 64)
+            .must("reopen migrated registry");
         assert_eq!(
             reopened
                 .registry()
@@ -1675,7 +1676,8 @@ mod tests {
         file.sync_all().must("legacy fsync");
         drop(file);
 
-        let durable = DurablePromptRegistry::open_state_dir(&root, 64).must("migrate registry");
+        let durable = DurablePromptRegistry::open_state_dir(&root, /*maximum_records*/ 64)
+            .must("migrate registry");
         let registry = durable.registry().must("registry");
         assert_eq!(registry.revision().get(), 5);
         assert_eq!(registry.lifecycle_frontier(), 5);
@@ -1700,8 +1702,8 @@ mod tests {
         assert_eq!(imported_revocation.revision.get(), 4);
         drop(durable);
 
-        let reopened =
-            DurablePromptRegistry::open_state_dir(&root, 64).must("reopen migrated registry");
+        let reopened = DurablePromptRegistry::open_state_dir(&root, /*maximum_records*/ 64)
+            .must("reopen migrated registry");
         assert_eq!(
             reopened.registry().must("registry").revocation_frontier(),
             4
@@ -1736,7 +1738,8 @@ mod tests {
         let payload = b"persist this active realization".to_vec();
         {
             let mut durable =
-                DurablePromptRegistry::open_state_dir(&root, 64).must("open registry");
+                DurablePromptRegistry::open_state_dir(&root, /*maximum_records*/ 64)
+                    .must("open registry");
             durable
                 .register_factor(factor.clone())
                 .must("register factor");
@@ -1765,7 +1768,11 @@ mod tests {
                 expires_unix_ms: None,
             };
             durable
-                .register_realization_payload_v2(binding, payload.clone(), None)
+                .register_realization_payload_v2(
+                    binding,
+                    payload.clone(),
+                    /*supersedes_realization_id*/ None,
+                )
                 .must("register payload");
             durable
                 .store
@@ -1773,8 +1780,8 @@ mod tests {
                 .must("persist admission");
         }
 
-        let reopened =
-            DurablePromptRegistry::open_state_dir(&root, 64).must("reopen active registry");
+        let reopened = DurablePromptRegistry::open_state_dir(&root, /*maximum_records*/ 64)
+            .must("reopen active registry");
         assert_eq!(
             reopened
                 .registry()
@@ -1791,9 +1798,9 @@ mod tests {
                 &snapshot,
                 digest("generation-vector:active-reopen"),
                 &tuple,
-                10,
+                /*now_unix_ms*/ 10,
                 vec![factor.factor_id],
-                8,
+                /*maximum_results*/ 8,
             )
             .must("active realization remains readable after reopen");
         assert_eq!(compatible.bindings.len(), 1);
@@ -1803,7 +1810,7 @@ mod tests {
                 &snapshot,
                 digest("generation-vector:active-reopen"),
                 &tuple,
-                10,
+                /*now_unix_ms*/ 10,
             )
             .must("payload remains dereferenceable after reopen");
         assert_eq!(delivery.payload, payload);
@@ -1837,7 +1844,8 @@ mod tests {
         let payload = b"durable developer instruction".to_vec();
         let old_snapshot = {
             let mut durable =
-                DurablePromptRegistry::open_state_dir(&root, 64).must("open registry");
+                DurablePromptRegistry::open_state_dir(&root, /*maximum_records*/ 64)
+                    .must("open registry");
             durable
                 .register_factor(factor.clone())
                 .must("register factor");
@@ -1871,11 +1879,11 @@ mod tests {
                     &SignedAdmissionGrantV1 { grant, signature },
                     &factor,
                     digest("scope:durable"),
-                    20,
+                    /*now_unix_ms*/ 20,
                 )
                 .must("verified admission");
             durable
-                .admit_factor_verified(verified, 20)
+                .admit_factor_verified(verified, /*now_unix_ms*/ 20)
                 .must("admit factor");
 
             let binding = PromptRealizationBindingV2 {
@@ -1895,7 +1903,11 @@ mod tests {
                 expires_unix_ms: None,
             };
             durable
-                .register_realization_payload_v2(binding, payload.clone(), None)
+                .register_realization_payload_v2(
+                    binding,
+                    payload.clone(),
+                    /*supersedes_realization_id*/ None,
+                )
                 .must("register payload");
             let snapshot = durable
                 .snapshot_v2(digest("generation-vector"), &tuple)
@@ -1905,13 +1917,14 @@ mod tests {
                     &factor.factor_id,
                     &id("revoker:durable"),
                     digest("reason:revoked"),
-                    50,
+                    /*cutoff_unix_ms*/ 50,
                 )
                 .must("revoke factor");
             snapshot
         };
 
-        let reopened = DurablePromptRegistry::open_state_dir(&root, 64).must("reopen registry");
+        let reopened = DurablePromptRegistry::open_state_dir(&root, /*maximum_records*/ 64)
+            .must("reopen registry");
         assert_eq!(
             reopened
                 .registry()
@@ -1956,9 +1969,9 @@ mod tests {
                 &old_snapshot,
                 digest("generation-vector"),
                 &tuple,
-                60,
+                /*now_unix_ms*/ 60,
                 vec![factor.factor_id],
-                8,
+                /*maximum_results*/ 8,
             ),
             Err(DurableRegistryError::Read(
                 PromptRegistryV2Error::SnapshotStale
@@ -1985,7 +1998,8 @@ mod tests {
         .must("final-use authority");
 
         let mut durable =
-            DurablePromptRegistry::open_state_dir(&registry_root, 64).must("registry");
+            DurablePromptRegistry::open_state_dir(&registry_root, /*maximum_records*/ 64)
+                .must("registry");
         let factor = PromptFactor {
             factor_id: id("factor:final-use"),
             proposer_id: id("proposer:final-use"),
@@ -2133,7 +2147,8 @@ mod tests {
         .must("final-use authority");
 
         let mut durable =
-            DurablePromptRegistry::open_state_dir(&registry_root, 64).must("registry");
+            DurablePromptRegistry::open_state_dir(&registry_root, /*maximum_records*/ 64)
+                .must("registry");
         let factor = PromptFactor {
             factor_id: id("factor:lifecycle-final-use"),
             proposer_id: id("proposer:lifecycle-final-use"),
@@ -2245,7 +2260,8 @@ mod tests {
         drop(durable);
 
         let reopened =
-            DurablePromptRegistry::open_state_dir(&registry_root, 64).must("reopen registry");
+            DurablePromptRegistry::open_state_dir(&registry_root, /*maximum_records*/ 64)
+                .must("reopen registry");
         assert_eq!(
             reopened
                 .registry()
@@ -2269,8 +2285,8 @@ mod tests {
     fn post_rename_sync_failure_poison_writer_until_reopen() {
         let temporary = tempfile::tempdir().must("tempdir");
         let root = temporary.path().join("registry-indeterminate");
-        let mut durable =
-            DurablePromptRegistry::open_state_dir(&root, 64).must("initialize registry");
+        let mut durable = DurablePromptRegistry::open_state_dir(&root, /*maximum_records*/ 64)
+            .must("initialize registry");
         let factor = PromptFactor {
             factor_id: id("factor:indeterminate"),
             proposer_id: id("proposer:indeterminate"),
@@ -2331,7 +2347,8 @@ mod tests {
         ));
 
         drop(durable);
-        let reopened = DurablePromptRegistry::open_state_dir(&root, 64).must("reconcile by reopen");
+        let reopened = DurablePromptRegistry::open_state_dir(&root, /*maximum_records*/ 64)
+            .must("reconcile by reopen");
         assert!(!reopened.requires_reopen());
         assert_eq!(
             reopened
@@ -2348,7 +2365,8 @@ mod tests {
         let registry_root = temporary.path().join("registry-poisoned-grant");
         let authority_root = temporary.path().join("authority-poisoned-grant");
         let mut durable =
-            DurablePromptRegistry::open_state_dir(&registry_root, 64).must("registry");
+            DurablePromptRegistry::open_state_dir(&registry_root, /*maximum_records*/ 64)
+                .must("registry");
 
         let target = PromptFactor {
             factor_id: id("factor:grant-target"),
@@ -2427,7 +2445,8 @@ mod tests {
 
         drop(durable);
         let mut reopened =
-            DurablePromptRegistry::open_state_dir(&registry_root, 64).must("reopen registry");
+            DurablePromptRegistry::open_state_dir(&registry_root, /*maximum_records*/ 64)
+                .must("reopen registry");
         reopened
             .admit_factor_final_use(&authority, &signed, &target.factor_id, scope, evidence)
             .must("same grant remains unused after poisoned rejection");
@@ -2443,7 +2462,7 @@ mod tests {
 
     #[test]
     fn restore_validator_rejects_orphan_payload_and_lifecycle_drift() {
-        let mut registry = PromptRegistry::new(64).must("registry");
+        let mut registry = PromptRegistry::new(/*maximum_records*/ 64).must("registry");
         let factor = PromptFactor {
             factor_id: id("factor:restore-invariants"),
             proposer_id: id("proposer:restore-invariants"),
@@ -2484,21 +2503,23 @@ mod tests {
     fn concurrent_writer_is_rejected_by_owner_lock() {
         let temporary = tempfile::tempdir().must("tempdir");
         let root = temporary.path().join("registry-lock");
-        let first = DurablePromptRegistry::open_state_dir(&root, 64).must("first owner");
+        let first = DurablePromptRegistry::open_state_dir(&root, /*maximum_records*/ 64)
+            .must("first owner");
         assert!(matches!(
-            DurablePromptRegistry::open_state_dir(&root, 64),
+            DurablePromptRegistry::open_state_dir(&root, /*maximum_records*/ 64),
             Err(DurableRegistryError::StateLocked)
         ));
         drop(first);
-        DurablePromptRegistry::open_state_dir(&root, 64).must("reopen after owner exit");
+        DurablePromptRegistry::open_state_dir(&root, /*maximum_records*/ 64)
+            .must("reopen after owner exit");
     }
 
     #[test]
     fn storage_full_before_rename_keeps_predecessor_live_and_reopenable() {
         let temporary = tempfile::tempdir().must("tempdir");
         let root = temporary.path().join("registry-storage-full");
-        let mut durable =
-            DurablePromptRegistry::open_state_dir(&root, 64).must("initialize registry");
+        let mut durable = DurablePromptRegistry::open_state_dir(&root, /*maximum_records*/ 64)
+            .must("initialize registry");
         let first = PromptFactor {
             factor_id: id("factor:storage-predecessor"),
             proposer_id: id("proposer:storage"),
@@ -2533,7 +2554,8 @@ mod tests {
         assert!(!durable.requires_reopen());
         drop(durable);
 
-        let reopened = DurablePromptRegistry::open_state_dir(&root, 64).must("reopen predecessor");
+        let reopened = DurablePromptRegistry::open_state_dir(&root, /*maximum_records*/ 64)
+            .must("reopen predecessor");
         assert!(
             reopened
                 .registry()
@@ -2560,14 +2582,15 @@ mod tests {
         };
         {
             let mut durable =
-                DurablePromptRegistry::open_state_dir(&root, 64).must("initialize registry");
+                DurablePromptRegistry::open_state_dir(&root, /*maximum_records*/ 64)
+                    .must("initialize registry");
             durable.register_factor(factor).must("persist factor");
         }
         let path = root.join("registry.json");
         let bytes = std::fs::read(&path).must("state bytes");
         std::fs::write(&path, &bytes[..bytes.len() / 2]).must("truncate state");
         assert!(matches!(
-            DurablePromptRegistry::open_state_dir(&root, 64),
+            DurablePromptRegistry::open_state_dir(&root, /*maximum_records*/ 64),
             Err(DurableRegistryError::Corrupt)
         ));
     }
@@ -2613,7 +2636,7 @@ mod tests {
         drop(file);
 
         assert!(matches!(
-            DurablePromptRegistry::open_state_dir(&root, 64),
+            DurablePromptRegistry::open_state_dir(&root, /*maximum_records*/ 64),
             Err(DurableRegistryError::Corrupt)
         ));
         assert_eq!(std::fs::read(path).must("predecessor bytes"), bytes);
@@ -2637,7 +2660,8 @@ mod tests {
         };
         let expected_digest = {
             let mut durable =
-                DurablePromptRegistry::open_state_dir(&source_root, 64).must("source owner");
+                DurablePromptRegistry::open_state_dir(&source_root, /*maximum_records*/ 64)
+                    .must("source owner");
             durable
                 .register_factor(factor.clone())
                 .must("persist factor");
@@ -2646,7 +2670,7 @@ mod tests {
                     &factor.factor_id,
                     &id("actor:backup"),
                     digest("reason:backup"),
-                    7,
+                    /*cutoff_unix_ms*/ 7,
                 )
                 .must("revoke factor");
             durable.registry().must("registry").snapshot_digest()
@@ -2667,7 +2691,8 @@ mod tests {
         .must("copy referenced payload extents");
 
         let restored =
-            DurablePromptRegistry::open_state_dir(&restore_root, 64).must("restore owner");
+            DurablePromptRegistry::open_state_dir(&restore_root, /*maximum_records*/ 64)
+                .must("restore owner");
         let registry = restored.registry().must("registry");
         assert_eq!(registry.snapshot_digest(), expected_digest);
         assert_eq!(
@@ -2694,7 +2719,7 @@ mod tests {
             context_profile_digest: digest("context-profile:capacity"),
             locale_id: id("locale:en-US"),
         };
-        let mut core = PromptRegistry::new(512).must("core registry");
+        let mut core = PromptRegistry::new(/*maximum_records*/ 512).must("core registry");
         for index in 0..FACTOR_COUNT {
             let factor_id = id(&format!("factor:capacity:{index:03}"));
             let factor = PromptFactor {
@@ -2734,13 +2759,14 @@ mod tests {
                     expires_unix_ms: None,
                 },
                 payload,
-                None,
+                /*supersedes_realization_id*/ None,
             )
             .must("register realization");
         }
 
         let mut durable =
-            DurablePromptRegistry::open_state_dir(&root, 512).must("open durable registry");
+            DurablePromptRegistry::open_state_dir(&root, /*maximum_records*/ 512)
+                .must("open durable registry");
         durable.registry = core;
         let seed_start = Instant::now();
         durable
@@ -2756,7 +2782,14 @@ mod tests {
         let read_start = Instant::now();
         let snapshot = durable.snapshot_v2(vector, &tuple).must("snapshot");
         let compatible = durable
-            .read_compatible_v2(&snapshot, vector, &tuple, 10, Vec::new(), 128)
+            .read_compatible_v2(
+                &snapshot,
+                vector,
+                &tuple,
+                /*now_unix_ms*/ 10,
+                Vec::new(),
+                /*maximum_results*/ 128,
+            )
             .must("compatible read");
         let read_micros = read_start.elapsed().as_micros();
         assert_eq!(compatible.bindings.len(), FACTOR_COUNT);
@@ -2783,8 +2816,8 @@ mod tests {
         drop(durable);
 
         let reopen_start = Instant::now();
-        let reopened =
-            DurablePromptRegistry::open_state_dir(&root, 512).must("reopen capacity registry");
+        let reopened = DurablePromptRegistry::open_state_dir(&root, /*maximum_records*/ 512)
+            .must("reopen capacity registry");
         let reopen_micros = reopen_start.elapsed().as_micros();
         assert_eq!(
             reopened.registry().must("registry").revision(),
@@ -2800,9 +2833,12 @@ mod tests {
     fn reopen_rejects_resource_policy_drift() {
         let temporary = tempfile::tempdir().must("tempdir");
         let root = temporary.path().join("registry");
-        drop(DurablePromptRegistry::open_state_dir(&root, 64).must("initialize registry"));
+        drop(
+            DurablePromptRegistry::open_state_dir(&root, /*maximum_records*/ 64)
+                .must("initialize registry"),
+        );
         assert!(matches!(
-            DurablePromptRegistry::open_state_dir(&root, 65),
+            DurablePromptRegistry::open_state_dir(&root, /*maximum_records*/ 65),
             Err(DurableRegistryError::ConfigurationMismatch)
         ));
     }

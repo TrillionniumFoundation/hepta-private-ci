@@ -92,38 +92,17 @@ impl Session {
         start_transition_owner: Option<&std::sync::Arc<()>>,
         allow_shutdown: bool,
     ) {
-        if (!allow_shutdown && self.shutdown_started())
-            || self.has_pending_task_terminalization_except(terminalization_owner)
-            || self.has_pending_start_transition_except(start_transition_owner)
-        {
+        let Some(cause) = self
+            .thread_idle_cause_if_idle(
+                cause,
+                terminalization_owner,
+                start_transition_owner,
+                allow_shutdown,
+            )
+            .await
+        else {
             return;
-        }
-        let cause = {
-            let active_turn = self.active_turn.lock().await;
-            if (!allow_shutdown && self.shutdown_started())
-                || self.has_pending_task_terminalization_except(terminalization_owner)
-                || self.has_pending_start_transition_except(start_transition_owner)
-                || active_turn.is_some()
-            {
-                return;
-            }
-            if self.is_interrupted() {
-                ThreadIdleCause::Interrupted
-            } else {
-                cause
-            }
         };
-        if self.input_queue.has_trigger_turn_mailbox_items().await {
-            return;
-        }
-
-        if (!allow_shutdown && self.shutdown_started())
-            || self.has_pending_task_terminalization_except(terminalization_owner)
-            || self.has_pending_start_transition_except(start_transition_owner)
-        {
-            return;
-        }
-
         for contributor in self.services.extensions.thread_lifecycle_contributors() {
             contributor
                 .on_thread_idle(codex_extension_api::ThreadIdleInput {
@@ -133,6 +112,77 @@ impl Session {
                 })
                 .await;
         }
+    }
+
+    /// Schedule only after exact owner completion, with no intervening await.
+    /// The hint is independent of the completed terminalizer: cancellation or
+    /// a contributor failure cannot reopen its fence or acknowledge queue work.
+    pub(super) fn schedule_thread_admission_recheck(
+        self: &std::sync::Arc<Self>,
+        cause: ThreadIdleCause,
+    ) {
+        let session = std::sync::Arc::clone(self);
+        tokio::spawn(async move {
+            let Some(cause) = session
+                .thread_idle_cause_if_idle(
+                    cause, /*terminalization_owner*/ None,
+                    /*start_transition_owner*/ None, /*allow_shutdown*/ false,
+                )
+                .await
+            else {
+                return;
+            };
+            for contributor in session.services.extensions.thread_lifecycle_contributors() {
+                contributor
+                    .on_thread_admission_recheck(codex_extension_api::ThreadIdleInput {
+                        cause,
+                        session_store: &session.services.session_extension_data,
+                        thread_store: &session.services.thread_extension_data,
+                    })
+                    .await;
+            }
+        });
+    }
+
+    async fn thread_idle_cause_if_idle(
+        &self,
+        cause: ThreadIdleCause,
+        terminalization_owner: Option<&std::sync::Arc<()>>,
+        start_transition_owner: Option<&std::sync::Arc<()>>,
+        allow_shutdown: bool,
+    ) -> Option<ThreadIdleCause> {
+        if (!allow_shutdown && self.shutdown_started())
+            || self.has_pending_task_terminalization_except(terminalization_owner)
+            || self.has_pending_start_transition_except(start_transition_owner)
+        {
+            return None;
+        }
+        let cause = {
+            let active_turn = self.active_turn.lock().await;
+            if (!allow_shutdown && self.shutdown_started())
+                || self.has_pending_task_terminalization_except(terminalization_owner)
+                || self.has_pending_start_transition_except(start_transition_owner)
+                || active_turn.is_some()
+            {
+                return None;
+            }
+            if self.is_interrupted() {
+                ThreadIdleCause::Interrupted
+            } else {
+                cause
+            }
+        };
+        if self.input_queue.has_trigger_turn_mailbox_items().await {
+            return None;
+        }
+
+        if (!allow_shutdown && self.shutdown_started())
+            || self.has_pending_task_terminalization_except(terminalization_owner)
+            || self.has_pending_start_transition_except(start_transition_owner)
+        {
+            return None;
+        }
+        Some(cause)
     }
 
     pub(super) async fn emit_turn_abort_lifecycle(

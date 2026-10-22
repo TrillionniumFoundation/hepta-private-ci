@@ -1,0 +1,656 @@
+{
+  "schema": "hepta.exact83.native-failures-and-x64-pressure-candidate.v1",
+  "public_source_at_observation": "83b20a0f43d265a15216904c01194e8939647c65",
+  "actual_merge_at_observation": "44e863345e8f8438d6ec9f7550d794af4a6dffa4",
+  "source_scope": "These original executions are exact83 or its actual44e merge. A later source must retain their failed observations; this is not its execution receipt.",
+  "fullRust_run": 39755399167,
+  "fullRust_job_pagination": {
+    "per_page": 100,
+    "page": 1,
+    "total_count": 32,
+    "returned": 32,
+    "complete_snapshot": true,
+    "note": "The purpose-built first-page wrapper had expanded past30; approved raw workflow-run/jobs GET with per_page100 retained all32."
+  },
+  "fullRust_job_snapshot": [
+    {
+      "id": 119746003039,
+      "name": "cargo shear",
+      "head_sha": "83b20a0f43d265a15216904c01194e8939647c65",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 119746003058,
+      "name": "Lint/Build \u2014 windows-latest - x86_64-pc-windows-msvc (release)",
+      "head_sha": "83b20a0f43d265a15216904c01194e8939647c65",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 119746003097,
+      "name": "Lint/Build \u2014 macos-15 - aarch64-apple-darwin (release)",
+      "head_sha": "83b20a0f43d265a15216904c01194e8939647c65",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 119746003144,
+      "name": "Tests \u2014 ubuntu-24.04-arm - aarch64-unknown-linux-gnu / Build nextest archive",
+      "head_sha": "83b20a0f43d265a15216904c01194e8939647c65",
+      "status": "completed",
+      "conclusion": "failure"
+    },
+    {
+      "id": 119746003150,
+      "name": "Argument comment lint - macOS",
+      "head_sha": "83b20a0f43d265a15216904c01194e8939647c65",
+      "status": "queued",
+      "conclusion": null
+    },
+    {
+      "id": 119746003192,
+      "name": "Lint/Build \u2014 windows-11-arm - aarch64-pc-windows-msvc (release)",
+      "head_sha": "83b20a0f43d265a15216904c01194e8939647c65",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 119746003201,
+      "name": "Argument comment lint - Linux",
+      "head_sha": "83b20a0f43d265a15216904c01194e8939647c65",
+      "status": "in_progress",
+      "conclusion": null
+    },
+    {
+      "id": 119746003202,
+      "name": "Lint/Build \u2014 ubuntu-24.04-arm - aarch64-unknown-linux-musl (release)",
+      "head_sha": "83b20a0f43d265a15216904c01194e8939647c65",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 119746003286,
+      "name": "Format / etc",
+      "head_sha": "83b20a0f43d265a15216904c01194e8939647c65",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 119746003371,
+      "name": "Argument comment lint package",
+      "head_sha": "83b20a0f43d265a15216904c01194e8939647c65",
+      "status": "queued",
+      "conclusion": null
+    },
+    {
+      "id": 119746003380,
+      "name": "Argument comment lint - Windows",
+      "head_sha": "83b20a0f43d265a15216904c01194e8939647c65",
+      "status": "in_progress",
+      "conclusion": null
+    },
+    {
+      "id": 119746003391,
+      "name": "Tests \u2014 windows-latest - x86_64-pc-windows-msvc / Build nextest archive",
+      "head_sha": "83b20a0f43d265a15216904c01194e8939647c65",
+      "status": "in_progress",
+      "conclusion": null
+    },
+    {
+      "id": 119746003415,
+      "name": "Lint/Build \u2014 macos-15 - x86_64-apple-darwin",
+      "head_sha": "83b20a0f43d265a15216904c01194e8939647c65",
+      "status": "queued",
+      "conclusion": null
+    },
+    {
+      "id": 119746003444,
+      "name": "Lint/Build \u2014 ubuntu-24.04 - x86_64-unknown-linux-musl (release)",
+      "head_sha": "83b20a0f43d265a15216904c01194e8939647c65",
+      "status": "queued",
+      "conclusion": null
+    },
+    {
+      "id": 119746003452,
+      "name": "Tests \u2014 macos-15 - aarch64-apple-darwin / Build nextest archive",
+      "head_sha": "83b20a0f43d265a15216904c01194e8939647c65",
+      "status": "in_progress",
+      "conclusion": null
+    },
+    {
+      "id": 119746003514,
+      "name": "Lint/Build \u2014 ubuntu-24.04 - x86_64-unknown-linux-musl",
+      "head_sha": "83b20a0f43d265a15216904c01194e8939647c65",
+      "status": "in_progress",
+      "conclusion": null
+    },
+    {
+      "id": 119746003541,
+      "name": "Tests \u2014 ubuntu-24.04 - x86_64-unknown-linux-gnu (remote) / Build nextest archive",
+      "head_sha": "83b20a0f43d265a15216904c01194e8939647c65",
+      "status": "completed",
+      "conclusion": "failure"
+    },
+    {
+      "id": 119746003589,
+      "name": "Lint/Build \u2014 ubuntu-24.04 - x86_64-unknown-linux-gnu",
+      "head_sha": "83b20a0f43d265a15216904c01194e8939647c65",
+      "status": "in_progress",
+      "conclusion": null
+    },
+    {
+      "id": 119746003594,
+      "name": "Lint/Build \u2014 macos-15 - aarch64-apple-darwin",
+      "head_sha": "83b20a0f43d265a15216904c01194e8939647c65",
+      "status": "queued",
+      "conclusion": null
+    },
+    {
+      "id": 119746003595,
+      "name": "Lint/Build \u2014 windows-11-arm - aarch64-pc-windows-msvc",
+      "head_sha": "83b20a0f43d265a15216904c01194e8939647c65",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 119746003638,
+      "name": "Tests \u2014 windows-11-arm - aarch64-pc-windows-msvc / Build nextest archive",
+      "head_sha": "83b20a0f43d265a15216904c01194e8939647c65",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 119746003799,
+      "name": "Lint/Build \u2014 windows-latest - x86_64-pc-windows-msvc",
+      "head_sha": "83b20a0f43d265a15216904c01194e8939647c65",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 119746003810,
+      "name": "Lint/Build \u2014 ubuntu-24.04-arm - aarch64-unknown-linux-gnu",
+      "head_sha": "83b20a0f43d265a15216904c01194e8939647c65",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 119746003863,
+      "name": "Lint/Build \u2014 ubuntu-24.04-arm - aarch64-unknown-linux-musl",
+      "head_sha": "83b20a0f43d265a15216904c01194e8939647c65",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 119764495026,
+      "name": "Tests \u2014 ubuntu-24.04-arm - aarch64-unknown-linux-gnu / Platform result",
+      "head_sha": "83b20a0f43d265a15216904c01194e8939647c65",
+      "status": "queued",
+      "conclusion": null
+    },
+    {
+      "id": 119764496676,
+      "name": "Tests \u2014 ubuntu-24.04-arm - aarch64-unknown-linux-gnu / Tests shard ${{ matrix.shard }}/4",
+      "head_sha": "83b20a0f43d265a15216904c01194e8939647c65",
+      "status": "completed",
+      "conclusion": "skipped"
+    },
+    {
+      "id": 119769317811,
+      "name": "Tests \u2014 ubuntu-24.04 - x86_64-unknown-linux-gnu (remote) / Platform result",
+      "head_sha": "83b20a0f43d265a15216904c01194e8939647c65",
+      "status": "queued",
+      "conclusion": null
+    },
+    {
+      "id": 119769319953,
+      "name": "Tests \u2014 ubuntu-24.04 - x86_64-unknown-linux-gnu (remote) / Tests shard ${{ matrix.shard }}/4",
+      "head_sha": "83b20a0f43d265a15216904c01194e8939647c65",
+      "status": "completed",
+      "conclusion": "skipped"
+    },
+    {
+      "id": 119770366743,
+      "name": "Tests \u2014 windows-11-arm - aarch64-pc-windows-msvc / Tests shard 4/4",
+      "head_sha": "83b20a0f43d265a15216904c01194e8939647c65",
+      "status": "in_progress",
+      "conclusion": null
+    },
+    {
+      "id": 119770366806,
+      "name": "Tests \u2014 windows-11-arm - aarch64-pc-windows-msvc / Tests shard 1/4",
+      "head_sha": "83b20a0f43d265a15216904c01194e8939647c65",
+      "status": "in_progress",
+      "conclusion": null
+    },
+    {
+      "id": 119770366835,
+      "name": "Tests \u2014 windows-11-arm - aarch64-pc-windows-msvc / Tests shard 2/4",
+      "head_sha": "83b20a0f43d265a15216904c01194e8939647c65",
+      "status": "in_progress",
+      "conclusion": null
+    },
+    {
+      "id": 119770367012,
+      "name": "Tests \u2014 windows-11-arm - aarch64-pc-windows-msvc / Tests shard 3/4",
+      "head_sha": "83b20a0f43d265a15216904c01194e8939647c65",
+      "status": "in_progress",
+      "conclusion": null
+    }
+  ],
+  "arm_gnu_archive": {
+    "job": 119746003144,
+    "conclusion": "failure",
+    "terminal_evidence": [
+      {
+        "line": 4466,
+        "text": "2026-10-22T10:08:52.2800921Z ##[error]Process completed with exit code 143."
+      },
+      {
+        "line": 4467,
+        "text": "2026-10-22T10:08:52.2917749Z ##[error]The runner has received a shutdown signal. This can happen when the runner service is stopped, or a manually started runner is canceled."
+      }
+    ],
+    "cause_scope": "Runner shutdown/exit143 is observed. Why the runner stopped is unknown; not certified transient and not a proven source defect.",
+    "dependent_shards": "Skipped; not accepted."
+  },
+  "x64_gnu_archive": {
+    "job": 119746003541,
+    "conclusion": "failure",
+    "first_resource_observation": {
+      "line": 4473,
+      "text": "2026-10-22T10:19:21.5971304Z ##[warning]You are running out of disk space. The runner will stop working when the machine runs out of disk space. Free space left: 50 MB"
+    },
+    "first_link_error": {
+      "line": 4474,
+      "text": "2026-10-22T10:19:23.0527356Z error: linking with `cc` failed: exit status: 1"
+    },
+    "link_crashes": [
+      {
+        "line": 4494,
+        "text": "2026-10-22T10:19:23.4474306Z           collect2: fatal error: ld terminated with signal 7 [Bus error], core dumped"
+      },
+      {
+        "line": 4518,
+        "text": "2026-10-22T10:19:23.5225050Z           collect2: fatal error: ld terminated with signal 7 [Bus error], core dumped"
+      },
+      {
+        "line": 4522,
+        "text": "2026-10-22T10:19:23.5255128Z error: could not compile `codex-history-notes-extension` (lib test) due to 1 previous error"
+      },
+      {
+        "line": 4524,
+        "text": "2026-10-22T10:19:23.5314338Z error: could not compile `codex-chatgpt` (lib test) due to 1 previous error"
+      },
+      {
+        "line": 4531,
+        "text": "2026-10-22T10:20:01.8896241Z           0  libLLVM.so.22.1-rust-1.96.0-stable 0x00007f55e9d57097 collect2: fatal error: ld terminated with signal 7 [Bus error], core dumped"
+      },
+      {
+        "line": 4535,
+        "text": "2026-10-22T10:20:02.0234460Z error: could not compile `codex-core` (lib test) due to 1 previous error"
+      }
+    ],
+    "later_cache_failures": [
+      {
+        "line": 4626,
+        "text": "2026-10-22T10:20:12.2415012Z zstd: error 70 : Write error : cannot write block : No space left on device "
+      },
+      {
+        "line": 4666,
+        "text": "2026-10-22T10:20:14.5268452Z zstd: error 70 : Write error : cannot write block : No space left on device "
+      }
+    ],
+    "resource_observations": "Runner warned50MB free before the first linker failure; later cache writes explicitly failed ENOSPC. No df/du snapshot, memory or OOM evidence was collected for this Linux producer.",
+    "causality_limit": "Disk pressure is established, but these logs do not prove the unique cause of rust-lld SIGBUS or that disabling debug information is sufficient.",
+    "observed_minus_C_debuginfo1": false,
+    "debug_level_evidence": "The raw log contains no debuginfo string. Exact83 Cargo.toml670-674 selects debug=limited/inherits=test/opt-level0; the producer does not set the archive-only override and step16 is skipped. This is source configuration evidence, not an observed rustc -C invocation.",
+    "current_configuration": {
+      "workflow": ".github/workflows/rust-ci-full.yml:452-462",
+      "job": "tests_linux_x64_remote",
+      "runner": "ubuntu-24.04",
+      "target": "x86_64-unknown-linux-gnu",
+      "profile": "ci-test",
+      "artifact_id": "linux-x64-remote",
+      "remote_env": true,
+      "use_sccache": true,
+      "archive_ci_test_no_debug_before": false
+    },
+    "minimal_candidate": "Set only tests_linux_x64_remote archive_ci_test_no_debug=true using the existing reusable input. Native producer completion and original shards remain required.",
+    "tradeoff": "Archive binaries contain less debugger/backtrace information. Cargo dependency/profile/opt-level/assertion settings, target, test inventory, selectors, shards and timeouts are preserved."
+  },
+  "windows_boundary": [
+    {
+      "job": 119752031442,
+      "source_head": "83b20a0f43d265a15216904c01194e8939647c65",
+      "tested_commit": "83b20a0f43d265a15216904c01194e8939647c65",
+      "target_groups": [
+        {
+          "name": "Run original partial delete-deny repair regression",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 7,
+          "actual_summary": {
+            "line": 7381,
+            "text": "2026-10-22T10:18:05.8527395Z      Summary [   0.024s] 1 test run: 1 passed, 159 skipped"
+          }
+        },
+        {
+          "name": "Run original broad-identity deletion regression",
+          "status": "completed",
+          "conclusion": "failure",
+          "number": 8,
+          "actual_summary": {
+            "line": 7548,
+            "text": "2026-10-22T10:18:08.7907023Z      Summary [   0.054s] 1 test run: 0 passed, 1 failed, 159 skipped"
+          }
+        },
+        {
+          "name": "Run original restricted-process deletion boundary",
+          "status": "completed",
+          "conclusion": "failure",
+          "number": 9,
+          "actual_summary": {
+            "line": 7679,
+            "text": "2026-10-22T10:18:11.6145789Z      Summary [   0.040s] 1 test run: 0 passed, 1 failed, 159 skipped"
+          }
+        },
+        {
+          "name": "Probe held-root relative open and rename",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 10,
+          "actual_summary": {
+            "line": 7801,
+            "text": "2026-10-22T10:18:14.6958791Z      Summary [   0.056s] 1 test run: 1 passed, 159 skipped"
+          }
+        },
+        {
+          "name": "Probe held-root and input sharing boundaries",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 11,
+          "actual_summary": {
+            "line": 7917,
+            "text": "2026-10-22T10:18:17.7356773Z      Summary [   0.078s] 1 test run: 1 passed, 159 skipped"
+          }
+        },
+        {
+          "name": "Probe native reparse and hardlink rejection",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 12,
+          "actual_summary": {
+            "line": 8037,
+            "text": "2026-10-22T10:18:20.5213128Z      Summary [   0.043s] 1 test run: 1 passed, 159 skipped"
+          }
+        },
+        {
+          "name": "Probe separate native file and directory flushes",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 13,
+          "actual_summary": {
+            "line": 8151,
+            "text": "2026-10-22T10:18:23.2681545Z      Summary [   0.055s] 1 test run: 1 passed, 159 skipped"
+          }
+        },
+        {
+          "name": "Run all current native ACL unit controls",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 14,
+          "actual_summary": {
+            "line": 8308,
+            "text": "2026-10-22T10:18:26.1092582Z      Summary [   0.118s] 8 tests run: 8 passed, 152 skipped"
+          }
+        }
+      ],
+      "groups": 8,
+      "successful_groups": 6,
+      "failed_groups": 2,
+      "raw_token_broad_identity": {
+        "source": "codex-rs/windows-sandbox-rs/src/token_tests.rs:481",
+        "evidence": {
+          "line": 7478,
+          "text": "2026-10-22T10:18:08.7563731Z assertion failed: `(left == right)`: restricting (cap_a, cap_b, logon, everyone)=(true, true, false, false); actual outside (parent, file, directory) ACL=([(0, 3, Some(1245631), false), (0, 19, Some(2032127), false), (0, 19, Some(2032127), false), (0, 19, Some(2032127), false), (0, 19, Some(2032127), false), (0, 19, Some(2032127), false)], [(0, 16, Some(1245631), false), (0, 16, Some(2032127), false), (0, 16, Some(2032127), false), (0, 16, Some(2032127), false), (0, 16, Some(2032127), false), (0, 16, Some(2032127), false)], [(0, 19, Some(1245631), false), (0, 19, Some(2032127), false), (0, 19, Some(2032127), false), (0, 19, Some(2032127), false), (0, 19, Some(2032127), false), (0, 19, Some(2032127), false)]); per-descriptor AccessCheck (label, desired, result(allowed, granted, privileges))=[(\"outside file DELETE\", 65536, Ok((false, 0, 0))), (\"outside directory DELETE\", 65536, Ok((false, 0, 0))), (\"outside parent FILE_DELETE_CHILD\", 64, Ok((true, 64, 0))), (\"outside file FILE_WRITE_DATA\", 2, Ok((false, 0, 0))), (\"outside file FILE_READ_DATA\", 1, Ok((true, 1, 0))), (\"authorized file DELETE\", 65536, Ok((true, 65536, 0)))]"
+        },
+        "outcome": "FAIL: outside parent FILE_DELETE_CHILD remains granted and outside deletion succeeds."
+      },
+      "original_restricted_process_positive": {
+        "source": "codex-rs/windows-sandbox-rs/src/unified_exec/tests.rs:769",
+        "evidence": {
+          "line": 7649,
+          "text": "2026-10-22T10:18:11.5822314Z spawn legacy delete session: Windows filesystem isolation is unavailable: neither the direct token nor the account broker is qualified"
+        },
+        "outcome": "FAIL: managed spawn is refused by the typed safety cutoff; positive workspace-write availability remains unavailable."
+      },
+      "final_8_receipt_gate": "FAIL. Do not reinterpret safety refusal or six successful groups as full Windows qualification.",
+      "native_NT_probe_scope": "Four NT diagnostic groups succeed; their emitted owner_supported=false and power_loss_qualified=false remain unchanged."
+    },
+    {
+      "job": 119752031729,
+      "source_head": "83b20a0f43d265a15216904c01194e8939647c65",
+      "tested_commit": "44e863345e8f8438d6ec9f7550d794af4a6dffa4",
+      "target_groups": [
+        {
+          "name": "Run original partial delete-deny repair regression",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 7,
+          "actual_summary": {
+            "line": 7379,
+            "text": "2026-10-22T10:18:11.9266650Z      Summary [   0.037s] 1 test run: 1 passed, 159 skipped"
+          }
+        },
+        {
+          "name": "Run original broad-identity deletion regression",
+          "status": "completed",
+          "conclusion": "failure",
+          "number": 8,
+          "actual_summary": {
+            "line": 7546,
+            "text": "2026-10-22T10:18:14.8611856Z      Summary [   0.083s] 1 test run: 0 passed, 1 failed, 159 skipped"
+          }
+        },
+        {
+          "name": "Run original restricted-process deletion boundary",
+          "status": "completed",
+          "conclusion": "failure",
+          "number": 9,
+          "actual_summary": {
+            "line": 7677,
+            "text": "2026-10-22T10:18:17.5095810Z      Summary [   0.052s] 1 test run: 0 passed, 1 failed, 159 skipped"
+          }
+        },
+        {
+          "name": "Probe held-root relative open and rename",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 10,
+          "actual_summary": {
+            "line": 7799,
+            "text": "2026-10-22T10:18:20.1740102Z      Summary [   0.081s] 1 test run: 1 passed, 159 skipped"
+          }
+        },
+        {
+          "name": "Probe held-root and input sharing boundaries",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 11,
+          "actual_summary": {
+            "line": 7915,
+            "text": "2026-10-22T10:18:22.8730261Z      Summary [   0.054s] 1 test run: 1 passed, 159 skipped"
+          }
+        },
+        {
+          "name": "Probe native reparse and hardlink rejection",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 12,
+          "actual_summary": {
+            "line": 8035,
+            "text": "2026-10-22T10:18:25.4904516Z      Summary [   0.049s] 1 test run: 1 passed, 159 skipped"
+          }
+        },
+        {
+          "name": "Probe separate native file and directory flushes",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 13,
+          "actual_summary": {
+            "line": 8149,
+            "text": "2026-10-22T10:18:28.1419832Z      Summary [   0.088s] 1 test run: 1 passed, 159 skipped"
+          }
+        },
+        {
+          "name": "Run all current native ACL unit controls",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 14,
+          "actual_summary": {
+            "line": 8306,
+            "text": "2026-10-22T10:18:30.8092399Z      Summary [   0.109s] 8 tests run: 8 passed, 152 skipped"
+          }
+        }
+      ],
+      "groups": 8,
+      "successful_groups": 6,
+      "failed_groups": 2,
+      "raw_token_broad_identity": {
+        "source": "codex-rs/windows-sandbox-rs/src/token_tests.rs:481",
+        "evidence": {
+          "line": 7476,
+          "text": "2026-10-22T10:18:14.7981913Z assertion failed: `(left == right)`: restricting (cap_a, cap_b, logon, everyone)=(true, true, false, false); actual outside (parent, file, directory) ACL=([(0, 3, Some(1245631), false), (0, 19, Some(2032127), false), (0, 19, Some(2032127), false), (0, 19, Some(2032127), false), (0, 19, Some(2032127), false), (0, 19, Some(2032127), false)], [(0, 16, Some(1245631), false), (0, 16, Some(2032127), false), (0, 16, Some(2032127), false), (0, 16, Some(2032127), false), (0, 16, Some(2032127), false), (0, 16, Some(2032127), false)], [(0, 19, Some(1245631), false), (0, 19, Some(2032127), false), (0, 19, Some(2032127), false), (0, 19, Some(2032127), false), (0, 19, Some(2032127), false), (0, 19, Some(2032127), false)]); per-descriptor AccessCheck (label, desired, result(allowed, granted, privileges))=[(\"outside file DELETE\", 65536, Ok((false, 0, 0))), (\"outside directory DELETE\", 65536, Ok((false, 0, 0))), (\"outside parent FILE_DELETE_CHILD\", 64, Ok((true, 64, 0))), (\"outside file FILE_WRITE_DATA\", 2, Ok((false, 0, 0))), (\"outside file FILE_READ_DATA\", 1, Ok((true, 1, 0))), (\"authorized file DELETE\", 65536, Ok((true, 65536, 0)))]"
+        },
+        "outcome": "FAIL: outside parent FILE_DELETE_CHILD remains granted and outside deletion succeeds."
+      },
+      "original_restricted_process_positive": {
+        "source": "codex-rs/windows-sandbox-rs/src/unified_exec/tests.rs:769",
+        "evidence": {
+          "line": 7647,
+          "text": "2026-10-22T10:18:17.4776663Z spawn legacy delete session: Windows filesystem isolation is unavailable: neither the direct token nor the account broker is qualified"
+        },
+        "outcome": "FAIL: managed spawn is refused by the typed safety cutoff; positive workspace-write availability remains unavailable."
+      },
+      "final_8_receipt_gate": "FAIL. Do not reinterpret safety refusal or six successful groups as full Windows qualification.",
+      "native_NT_probe_scope": "Four NT diagnostic groups succeed; their emitted owner_supported=false and power_loss_qualified=false remain unchanged."
+    }
+  ],
+  "windows_arm_archive": {
+    "job": 119746003638,
+    "conclusion": "success",
+    "head_sha": "83b20a0f43d265a15216904c01194e8939647c65",
+    "completed_at": "2026-10-22T10:22:50Z",
+    "actual_environment": [
+      {
+        "line": 1931,
+        "text": "2026-10-22T09:34:09.5426212Z   CARGO_PROFILE_CI_TEST_DEBUG: 0"
+      },
+      {
+        "line": 1932,
+        "text": "2026-10-22T09:34:09.5426447Z   CARGO_PROFILE_CI_TEST_SPLIT_DEBUGINFO: off"
+      }
+    ],
+    "actual_archive": [
+      {
+        "line": 4878,
+        "text": "2026-10-22T10:09:40.8856693Z \u001b[32;1m   Archiving\u001b[0m \u001b[1m390\u001b[0m binaries (including \u001b[1m18\u001b[0m non-test binaries), \u001b[1m6\u001b[0m build script output directories, \u001b[1m13\u001b[0m linked paths, and \u001b[1m2\u001b[0m standard libraries to \u001b[1mC:\\a\\_temp/nextest-archive/nextest-windows-arm64.tar.zst\u001b[0m"
+      },
+      {
+        "line": 4879,
+        "text": "2026-10-22T10:15:56.4722432Z \u001b[32;1m    Archived\u001b[0m \u001b[1m876\u001b[0m files to \u001b[1mC:\\a\\_temp/nextest-archive/nextest-windows-arm64.tar.zst\u001b[0m in 6m 15.59s"
+      }
+    ],
+    "upload_evidence": [
+      {
+        "line": 5725,
+        "text": "2026-10-22T10:21:10.0395537Z Artifact nextest-archive-windows-arm64 successfully finalized. Artifact ID 12418408197"
+      },
+      {
+        "line": 5726,
+        "text": "2026-10-22T10:21:10.0396302Z Artifact nextest-archive-windows-arm64 has been successfully uploaded! Final size is 3543918877 bytes. Artifact ID is 12418408197"
+      },
+      {
+        "line": 5793,
+        "text": "2026-10-22T10:21:12.7596071Z Artifact nextest-test-helpers-windows-arm64 successfully finalized. Artifact ID 12418058939"
+      },
+      {
+        "line": 5794,
+        "text": "2026-10-22T10:21:12.7597400Z Artifact nextest-test-helpers-windows-arm64 has been successfully uploaded! Final size is 16362918 bytes. Artifact ID is 12418058939"
+      }
+    ],
+    "scope": "Exact83 archive producer completed successfully with the earlier debug0 fix. Four dependent shards are running; this closes this observed producer capacity failure only, not Windows tests, isolation, full CI or future-source execution.",
+    "no_large_artifact_downloaded": true
+  },
+  "raw_log_envelopes": [
+    {
+      "run": 39755399167,
+      "job": 119746003144,
+      "source_head": "83b20a0f43d265a15216904c01194e8939647c65",
+      "tested_commit": "83b20a0f43d265a15216904c01194e8939647c65",
+      "original_bytes": 365176,
+      "original_sha256": "5535d954fba7ab2784746e09bae69432a81cfa2127b2a4d322695d01a0d5b3c0",
+      "gzip_bytes": 63068,
+      "gzip_sha256": "4d1e1c7d15ec32b1b4576ec617506005e368cf8a369aeb64fb94930ce86a5c91",
+      "file": "hepta-83-job-119746003144.decoded.log.gzip.json",
+      "file_bytes": 84917,
+      "file_sha256": "10d5ef4f94931a6211d29e5e9ac25735738dbe6ff262ff086002500e66f87f9e"
+    },
+    {
+      "run": 39755399167,
+      "job": 119746003541,
+      "source_head": "83b20a0f43d265a15216904c01194e8939647c65",
+      "tested_commit": "83b20a0f43d265a15216904c01194e8939647c65",
+      "original_bytes": 474787,
+      "original_sha256": "f5f457278b31203467a349bad5077e199a37968c2e3cacffc3f60741ced4c0f2",
+      "gzip_bytes": 85278,
+      "gzip_sha256": "20d26db6c49fffef8fe2ed810cb24890e8829c86e0dfcbd1a3f5883dbcbb97d6",
+      "file": "hepta-83-job-119746003541.decoded.log.gzip.json",
+      "file_bytes": 114529,
+      "file_sha256": "bd3d32f8bdb8fa6892521802803314f7aefd0fb47de44baecf0f853c7cce5e2e"
+    },
+    {
+      "run": 39755403074,
+      "job": 119752031442,
+      "source_head": "83b20a0f43d265a15216904c01194e8939647c65",
+      "tested_commit": "83b20a0f43d265a15216904c01194e8939647c65",
+      "original_bytes": 1370776,
+      "original_sha256": "d617b0199b09a8bec5a4e90f9ab596031c79d2e10d551df7b7f156fb02c0f0fa",
+      "gzip_bytes": 152345,
+      "gzip_sha256": "d13c766862d72e775cc93c5a1a9bff047ef746156081b73023bb631ba2c615fe",
+      "file": "hepta-83-job-119752031442.decoded.log.gzip.json",
+      "file_bytes": 203955,
+      "file_sha256": "7ec4341bc8b3dc464a92f8c6b63ca3d5316ec3964f0eeee77845258ad7064af4"
+    },
+    {
+      "run": 39755403074,
+      "job": 119752031729,
+      "source_head": "83b20a0f43d265a15216904c01194e8939647c65",
+      "tested_commit": "44e863345e8f8438d6ec9f7550d794af4a6dffa4",
+      "original_bytes": 1370818,
+      "original_sha256": "20b3a3efa1467934b47dfb21b59156d66b5774fc64b58d665794768aeb83083f",
+      "gzip_bytes": 151879,
+      "gzip_sha256": "77417d97882c69e5d2cf5d013deef626a41bc99b016e85b4f065c5eaeb24900b",
+      "file": "hepta-83-job-119752031729.decoded.log.gzip.json",
+      "file_bytes": 203335,
+      "file_sha256": "8e1f449d51a815fe45e4d1f6af9a135968e6c3569cebef1832b3e2bf8632fce6"
+    },
+    {
+      "run": 39755399167,
+      "job": 119746003638,
+      "source_head": "83b20a0f43d265a15216904c01194e8939647c65",
+      "tested_commit": "83b20a0f43d265a15216904c01194e8939647c65",
+      "original_bytes": 602563,
+      "original_sha256": "3f6f380e7426fd6871f0571a35aea2635cad71b8c7be49d01049ce55b2006bc8",
+      "gzip_bytes": 93208,
+      "gzip_sha256": "d1257a8c8d700656e15b0ce3bbf6a16d915d5a2552f5e87d8f6c165fa58dbb7d",
+      "file": "hepta-83-job-119746003638.decoded.log.gzip.json",
+      "file_bytes": 125105,
+      "file_sha256": "79edeb6ddd2a6e6a1ab332ada476f9f507ce8fe6fb87e6bb2ab537bccf279a45"
+    }
+  ],
+  "source_validation": "Source-only controls are recorded separately for the exact local candidate. This historical native-evidence index does not renew failed jobs or claim future-source execution.",
+  "remote_actions": "No rerun, cancel, push or new workflow launch performed.",
+  "local_native_execution_performed": false
+}

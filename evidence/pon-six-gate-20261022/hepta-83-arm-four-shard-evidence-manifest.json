@@ -1,0 +1,130 @@
+{
+  "schema": "hepta.predecessor83.arm-four-shard-original-evidence.v1",
+  "run": 39755399167,
+  "source_head": "83b20a0f43d265a15216904c01194e8939647c65",
+  "current_source_review_base": "0db8508dbc8133a322ac510e21546548e2b69ea8",
+  "scope": "Retained predecessor83 native execution failures only. These jobs are not current0db results. All four complete decoded logs and every355failure/31timeout terminal record are retained, not just examples.",
+  "jobs": [
+    {
+      "job": 119770366806,
+      "shard": 1,
+      "conclusion": "failure",
+      "tests_exit_code": 100,
+      "summary": {
+        "line": 6608,
+        "text": "2026-10-22T10:45:03.0419763Z      Summary [ 990.826s] 4629 tests run: 4531 passed (8 slow, 9 flaky, 27 leaky), 88 failed, 10 timed out, 13843 skipped"
+      },
+      "tests_run": 4629,
+      "passed": 4531,
+      "failed": 88,
+      "timed_out": 10,
+      "skipped": 13843,
+      "original_decoded_json_sha256": "572ce45401e37b07f160cb7881561f2e6b4532b071086322a67e1ee36000803a",
+      "log": {
+        "schema": "exact-github-job-decoded-log-gzip-base64-v1",
+        "original_bytes": 929564,
+        "original_sha256": "7f397e547810f69cc445a1025f506f72d0c215580006358c0e52a7198e2d0600",
+        "gzip_bytes": 180636,
+        "gzip_sha256": "e92e7b2c59c9a3cc2e4559dd06c8e8495a97defbce352265cc7e01ea4aaaadac",
+        "file": "hepta-83-arm-shard1-job-119770366806.decoded.log.gzip.json",
+        "file_bytes": 241595,
+        "file_sha256": "5f1de13c9381d1065036e8cb5fcae1605f3d483e85278902da61df87743b8490"
+      }
+    },
+    {
+      "job": 119770366835,
+      "shard": 2,
+      "conclusion": "failure",
+      "tests_exit_code": 100,
+      "summary": {
+        "line": 5623,
+        "text": "2026-10-22T10:41:25.8490531Z      Summary [ 795.613s] 4489 tests run: 4398 passed (3 slow, 7 flaky, 17 leaky), 83 failed, 8 timed out, 13983 skipped"
+      },
+      "tests_run": 4489,
+      "passed": 4398,
+      "failed": 83,
+      "timed_out": 8,
+      "skipped": 13983,
+      "original_decoded_json_sha256": "fa29d66da8625a8a383f0f5f4b307ac352142ba296d368636dcee52d3728d29a",
+      "log": {
+        "schema": "exact-github-job-decoded-log-gzip-base64-v1",
+        "original_bytes": 499096,
+        "original_sha256": "6ed8730069570e813ff41829e2e240add089390ae2b166d9dbc08016a4e67c19",
+        "gzip_bytes": 67956,
+        "gzip_sha256": "d8ec67385677468e3ce801af4372f6951b4522874abbdfc4669a47a36aadb812",
+        "file": "hepta-83-arm-shard2-job-119770366835.decoded.log.gzip.json",
+        "file_bytes": 91354,
+        "file_sha256": "9cae458fb67451f11b535000eb5a25f51de45ed93a1234bf9a40cd8e50293d55"
+      }
+    },
+    {
+      "job": 119770367012,
+      "shard": 3,
+      "conclusion": "failure",
+      "tests_exit_code": 100,
+      "summary": {
+        "line": 6823,
+        "text": "2026-10-22T10:46:05.2986740Z      Summary [1036.525s] 4592 tests run: 4493 passed (4 slow, 13 flaky, 15 leaky), 92 failed, 7 timed out, 13880 skipped"
+      },
+      "tests_run": 4592,
+      "passed": 4493,
+      "failed": 92,
+      "timed_out": 7,
+      "skipped": 13880,
+      "original_decoded_json_sha256": "1f05e7038b7ae5b605b263a91ecc2df4450c0bb83106049a35a2ff0c5ef6e26e",
+      "log": {
+        "schema": "exact-github-job-decoded-log-gzip-base64-v1",
+        "original_bytes": 604453,
+        "original_sha256": "b965484d3121aa29d81f9289e842bfdc517637fcde9874250a1156e466527253",
+        "gzip_bytes": 83237,
+        "gzip_sha256": "17379b0df3ec29d1aa85a98a4f86fc8ea188b5dbe895523ef7e826e3f8a4c4d4",
+        "file": "hepta-83-arm-shard3-job-119770367012.decoded.log.gzip.json",
+        "file_bytes": 111730,
+        "file_sha256": "d2277d886f0702b9c7933453319561fe89627666a6d3d98b20604819c5377864"
+      }
+    },
+    {
+      "job": 119770366743,
+      "shard": 4,
+      "conclusion": "failure",
+      "tests_exit_code": 100,
+      "summary": {
+        "line": 7550,
+        "text": "2026-10-22T10:44:37.9325999Z      Summary [ 931.018s] 4612 tests run: 4514 passed (6 slow, 2 flaky, 24 leaky), 92 failed, 6 timed out, 13860 skipped"
+      },
+      "tests_run": 4612,
+      "passed": 4514,
+      "failed": 92,
+      "timed_out": 6,
+      "skipped": 13860,
+      "original_decoded_json_sha256": "f870af5e968a19e7def719420fe3f3c81706d8ce9e2068f184d78d4ea826fac1",
+      "log": {
+        "schema": "exact-github-job-decoded-log-gzip-base64-v1",
+        "original_bytes": 699011,
+        "original_sha256": "71f4e3257f5dbc774522788596b5a920064f2e024c18f54725bc153916050fd7",
+        "gzip_bytes": 91673,
+        "gzip_sha256": "1753e21e75687bb59ab851b7b71434afb4ae4e3d92ffb84c97f086ae1e526707",
+        "file": "hepta-83-arm-shard4-job-119770366743.decoded.log.gzip.json",
+        "file_bytes": 122978,
+        "file_sha256": "9a6cf199495bb39de0a092996494b6de39fe53569454db88e5ff069c22919523"
+      }
+    }
+  ],
+  "terminal_index": {
+    "schema": "hepta.retained-derived-json-gzip-base64.v1",
+    "original_bytes": 600000,
+    "original_sha256": "888b5ef39a1853de1e6feaf5a44f644f7c655059b17bbfae61968b02c773643d",
+    "gzip_bytes": 58431,
+    "gzip_sha256": "5e77495ac892bc4bcce951689d8d68223681afa98e8240a4d55f1452ee1cd265",
+    "file": "hepta-83-arm-all-terminal-outcomes.derived-json.gzip.json",
+    "file_bytes": 78689,
+    "file_sha256": "2be660653cae4734c089814f394c192ea5888a5664e9d72c4802ef05d0f96fa2"
+  },
+  "total_failures": 355,
+  "total_timeouts": 31,
+  "terminal_records": 386,
+  "terminal_header_line_bindings_checked": 386,
+  "native_acceptance": false,
+  "timeout_or_security_reinterpretation": "No failure is reclassified as success or certified transient. Resource/timeouts, Windows isolation, broad-identity deletion and other failures remain independent blockers.",
+  "encoding_scope": "Lossless deterministic gzip+base64 envelopes; no raw log/index byte normalization or original transport-hash claim."
+}

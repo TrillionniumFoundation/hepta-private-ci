@@ -23,7 +23,7 @@ fn digest(value: &str) -> Digest32 {
 fn candidate(number: u64) -> RetrievalCandidateIdentityV1 {
     RetrievalCandidateIdentityV1 {
         record_id: id(&format!("memory:{number:04}")),
-        record_revision: Revision::new(1).expect("revision"),
+        record_revision: Revision::new(/*value*/ 1).expect("revision"),
         record_digest: digest(&format!("record:{number:04}")),
     }
 }
@@ -72,7 +72,7 @@ fn bridge_preserves_complete_and_incomplete_assignment_facts() {
                 "record:incomplete"
             }),
             id("episode:retrieval"),
-            &observation(3, complete),
+            &observation(/*count*/ 3, complete),
         )
         .expect("bridge");
         let LedgerEvent::RetrievalAssignment(fact) = &event else {
@@ -98,9 +98,12 @@ fn bridge_preserves_complete_and_incomplete_assignment_facts() {
 
 #[test]
 fn maximum_retrieval_assignment_fits_existing_bounded_event_frame() {
-    let event =
-        retrieval_assignment_event(id("record:max"), id("episode:max"), &observation(512, true))
-            .expect("bridge");
+    let event = retrieval_assignment_event(
+        id("record:max"),
+        id("episode:max"),
+        &observation(/*count*/ 512, /*complete*/ true),
+    )
+    .expect("bridge");
     let encoded = encode_event(&event);
     assert!(encoded.len() <= crate::durable_codec::MAX_EVENT);
     let LedgerEvent::RetrievalAssignment(fact) = event else {
@@ -116,14 +119,14 @@ fn maximum_retrieval_assignment_fits_existing_bounded_event_frame() {
 
 #[test]
 fn delivery_aware_bridge_binds_only_the_final_exposed_subset() {
-    let observation = observation(20, true);
+    let observation = observation(/*count*/ 20, /*complete*/ true);
     let delivered = vec![observation.selected_candidates[3].clone()];
     let event = retrieval_assignment_event_with_delivery(
         id("record:delivery"),
         id("episode:delivery"),
         &observation,
         &delivered,
-        true,
+        /*context_exposed*/ true,
         Some(digest("published-context")),
     )
     .expect("delivery-aware bridge");
@@ -139,8 +142,8 @@ fn delivery_aware_bridge_binds_only_the_final_exposed_subset() {
         id("episode:no-exposure"),
         &observation,
         &[],
-        false,
-        None,
+        /*context_exposed*/ false,
+        /*published_context_digest*/ None,
     )
     .expect("no exposure");
     let LedgerEvent::RetrievalAssignment(fact) = no_exposure else {
@@ -155,7 +158,7 @@ fn delivery_aware_bridge_binds_only_the_final_exposed_subset() {
             id("episode:invalid-exposure"),
             &observation,
             &[observation.legal_candidates[19].clone()],
-            true,
+            /*context_exposed*/ true,
             Some(digest("published-context")),
         ),
         Err(RetrievalAssignmentBridgeError::DeliveredCandidateOutsideSelection)
@@ -164,7 +167,7 @@ fn delivery_aware_bridge_binds_only_the_final_exposed_subset() {
 
 #[test]
 fn downstream_policy_and_delivery_propensity_are_bound_separately() {
-    let observation = observation(20, true);
+    let observation = observation(/*count*/ 20, /*complete*/ true);
     let delivered = vec![observation.selected_candidates[0].clone()];
     let policy_digest = digest("learned-ranker-policy");
     let event = retrieval_assignment_event_with_delivery_policy(
@@ -172,7 +175,7 @@ fn downstream_policy_and_delivery_propensity_are_bound_separately() {
         id("episode:learned-delivery"),
         &observation,
         &delivered,
-        true,
+        /*context_exposed*/ true,
         Some(digest("published-context")),
         Some(policy_digest),
         ProbabilityQ32::ONE,
@@ -196,7 +199,7 @@ fn downstream_policy_and_delivery_propensity_are_bound_separately() {
             id("episode:zero-delivery"),
             &observation,
             &delivered,
-            true,
+            /*context_exposed*/ true,
             Some(digest("published-context")),
             Some(policy_digest),
             ProbabilityQ32::ZERO,
@@ -207,14 +210,14 @@ fn downstream_policy_and_delivery_propensity_are_bound_separately() {
 
 #[test]
 fn owner_bridge_uses_canonical_digest_indices_not_input_positions() {
-    let mut noncanonical = observation(3, true);
+    let mut noncanonical = observation(/*count*/ 3, /*complete*/ true);
     noncanonical.enumerated_candidates.reverse();
     noncanonical.legal_candidates.reverse();
     noncanonical.selected_candidates.reverse();
     noncanonical.observation_digest = noncanonical.compute_observation_digest();
     assert!(noncanonical.validate().is_err());
 
-    let canonical = observation(3, true);
+    let canonical = observation(/*count*/ 3, /*complete*/ true);
     let event =
         retrieval_assignment_event(id("record:canonical"), id("episode:canonical"), &canonical)
             .expect("bridge");
@@ -239,7 +242,7 @@ fn normalization_preserves_selected_and_delivered_candidate_identity() {
     let mut event = retrieval_assignment_event(
         id("record:remapped"),
         id("episode:remapped"),
-        &observation(3, true),
+        &observation(/*count*/ 3, /*complete*/ true),
     )
     .expect("bridge");
     let LedgerEvent::RetrievalAssignment(fact) = &mut event else {
@@ -273,7 +276,7 @@ fn selected_set_exceeding_decoder_capacity_is_rejected_atomically() {
     let mut event = retrieval_assignment_event(
         id("record:oversized-selection"),
         id("episode:oversized-selection"),
-        &observation(17, true),
+        &observation(/*count*/ 17, /*complete*/ true),
     )
     .expect("bridge");
     let LedgerEvent::RetrievalAssignment(fact) = &mut event else {
@@ -294,7 +297,7 @@ fn retrieval_encoding_has_a_distinct_tag_and_bounded_roundtrip() {
     let event = retrieval_assignment_event(
         id("record:codec-nine"),
         id("episode:codec-nine"),
-        &observation(512, true),
+        &observation(/*count*/ 512, /*complete*/ true),
     )
     .expect("bridge");
     let encoded = encode_event(&event);

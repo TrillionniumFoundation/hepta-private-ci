@@ -38,9 +38,9 @@ fn snapshot_key() -> CognitiveSnapshotKeyV1 {
         knowledge_fact_frontier: 8,
         tombstone_frontier: 4,
         source_ledger_frontier: 11,
-        knowledge_graph_generation: generation(2),
-        compact_checkpoint_generation: generation(1),
-        prompt_registry_revision: revision(3),
+        knowledge_graph_generation: generation(/*value*/ 2),
+        compact_checkpoint_generation: generation(/*value*/ 1),
+        prompt_registry_revision: revision(/*value*/ 3),
         retrieval_profile_digest: digest("retrieval-profile"),
         encoder_preprocessor_digest: digest("encoder-profile"),
         authority_epoch: 5,
@@ -94,7 +94,7 @@ fn policy() -> RetrievalPolicyV1 {
 fn record(number: u64) -> MemoryRecord {
     MemoryRecord {
         record_id: id(&format!("memory:{number}")),
-        revision: revision(1),
+        revision: revision(/*value*/ 1),
         kind: MemoryKind::Fact,
         content_digest: digest(&format!("content-{number}")),
         predecessor_digest: None,
@@ -127,13 +127,13 @@ fn candidate(
 fn channel_completion_order_cannot_change_union_or_recall() {
     let cue = cue();
     let policy = policy();
-    let first = record(1);
-    let second = record(2);
+    let first = record(/*number*/ 1);
+    let second = record(/*number*/ 2);
     let candidates = vec![
-        candidate(first.clone(), RetrievalChannelV1::Lexical, 1),
-        candidate(first, RetrievalChannelV1::Entity, 1),
-        candidate(second.clone(), RetrievalChannelV1::Lexical, 2),
-        candidate(second, RetrievalChannelV1::Entity, 2),
+        candidate(first.clone(), RetrievalChannelV1::Lexical, /*rank*/ 1),
+        candidate(first, RetrievalChannelV1::Entity, /*rank*/ 1),
+        candidate(second.clone(), RetrievalChannelV1::Lexical, /*rank*/ 2),
+        candidate(second, RetrievalChannelV1::Entity, /*rank*/ 2),
     ];
     let mut reversed = candidates.clone();
     reversed.reverse();
@@ -158,9 +158,17 @@ fn high_risk_contradiction_forces_abstention() {
     let cue = cue();
     let policy = policy();
     let group = digest("contradiction-group");
-    let mut first = candidate(record(1), RetrievalChannelV1::Lexical, 1);
+    let mut first = candidate(
+        record(/*number*/ 1),
+        RetrievalChannelV1::Lexical,
+        /*rank*/ 1,
+    );
     first.contradiction_group_digest = Some(group);
-    let mut second = candidate(record(2), RetrievalChannelV1::Entity, 1);
+    let mut second = candidate(
+        record(/*number*/ 2),
+        RetrievalChannelV1::Entity,
+        /*rank*/ 1,
+    );
     second.contradiction_group_digest = Some(group);
     let packet = recall(&cue, &policy, vec![first, second])
         .unwrap_or_else(|error| panic!("valid abstention: {error}"));
@@ -175,7 +183,11 @@ fn high_risk_contradiction_forces_abstention() {
 fn stale_generation_candidate_is_rejected_before_ranking() {
     let cue = cue();
     let policy = policy();
-    let mut stale = candidate(record(1), RetrievalChannelV1::Lexical, 1);
+    let mut stale = candidate(
+        record(/*number*/ 1),
+        RetrievalChannelV1::Lexical,
+        /*rank*/ 1,
+    );
     stale.generation_vector_digest = digest("stale-vector");
     assert_eq!(
         recall(&cue, &policy, vec![stale]),
@@ -189,7 +201,11 @@ fn stale_generation_candidate_is_rejected_before_ranking() {
 fn ood_and_insufficient_coverage_abstain_explicitly() {
     let cue = cue();
     let policy = policy();
-    let only_one_channel = candidate(record(1), RetrievalChannelV1::Lexical, 1);
+    let only_one_channel = candidate(
+        record(/*number*/ 1),
+        RetrievalChannelV1::Lexical,
+        /*rank*/ 1,
+    );
     let packet = recall(&cue, &policy, vec![only_one_channel])
         .unwrap_or_else(|error| panic!("coverage abstention: {error}"));
     assert_eq!(
@@ -197,8 +213,16 @@ fn ood_and_insufficient_coverage_abstain_explicitly() {
         RecallDispositionV1::Abstained(RecallAbstentionReasonV1::InsufficientChannelCoverage)
     );
 
-    let first = candidate(record(1), RetrievalChannelV1::Lexical, 1);
-    let mut second = candidate(record(2), RetrievalChannelV1::Entity, 1);
+    let first = candidate(
+        record(/*number*/ 1),
+        RetrievalChannelV1::Lexical,
+        /*rank*/ 1,
+    );
+    let mut second = candidate(
+        record(/*number*/ 2),
+        RetrievalChannelV1::Entity,
+        /*rank*/ 1,
+    );
     second.ood = ProbabilityQ32::ONE;
     let packet = recall(&cue, &policy, vec![first, second])
         .unwrap_or_else(|error| panic!("ood abstention: {error}"));
@@ -212,18 +236,26 @@ fn ood_and_insufficient_coverage_abstain_explicitly() {
 fn tombstones_and_duplicate_channel_candidates_fail_closed() {
     let cue = cue();
     let policy = policy();
-    let mut deleted = record(1);
+    let mut deleted = record(/*number*/ 1);
     deleted.state = RecordState::Tombstone;
     assert_eq!(
         recall(
             &cue,
             &policy,
-            vec![candidate(deleted, RetrievalChannelV1::Lexical, 1)]
+            vec![candidate(
+                deleted,
+                RetrievalChannelV1::Lexical,
+                /*rank*/ 1
+            )]
         ),
         Err(RecallErrorV1::TombstoneCandidate("memory:1".to_string()))
     );
 
-    let duplicate = candidate(record(2), RetrievalChannelV1::Lexical, 1);
+    let duplicate = candidate(
+        record(/*number*/ 2),
+        RetrievalChannelV1::Lexical,
+        /*rank*/ 1,
+    );
     assert_eq!(
         recall(&cue, &policy, vec![duplicate.clone(), duplicate]),
         Err(RecallErrorV1::DuplicateChannelCandidate(
@@ -266,9 +298,17 @@ fn score_floor_applies_to_every_returned_selection() {
         weight: FixedQ32::ONE,
         maximum_candidates: 16,
     }];
-    let high = candidate(record(1), RetrievalChannelV1::Lexical, 1);
-    let mut low = candidate(record(2), RetrievalChannelV1::Lexical, 2);
-    low.normalized_score = FixedQ32::from_raw(1);
+    let high = candidate(
+        record(/*number*/ 1),
+        RetrievalChannelV1::Lexical,
+        /*rank*/ 1,
+    );
+    let mut low = candidate(
+        record(/*number*/ 2),
+        RetrievalChannelV1::Lexical,
+        /*rank*/ 2,
+    );
+    low.normalized_score = FixedQ32::from_raw(/*raw*/ 1);
     let packet = recall(&cue, &policy, vec![high, low])
         .unwrap_or_else(|error| panic!("valid recall: {error}"));
     assert_eq!(packet.disposition, RecallDispositionV1::Recalled);
@@ -281,13 +321,13 @@ fn score_floor_applies_to_every_returned_selection() {
 fn public_union_and_packet_validators_reject_structural_tampering() {
     let cue = cue();
     let policy = policy();
-    let first = record(1);
-    let second = record(2);
+    let first = record(/*number*/ 1);
+    let second = record(/*number*/ 2);
     let candidates = vec![
-        candidate(first.clone(), RetrievalChannelV1::Lexical, 1),
-        candidate(first, RetrievalChannelV1::Entity, 1),
-        candidate(second.clone(), RetrievalChannelV1::Lexical, 2),
-        candidate(second, RetrievalChannelV1::Entity, 2),
+        candidate(first.clone(), RetrievalChannelV1::Lexical, /*rank*/ 1),
+        candidate(first, RetrievalChannelV1::Entity, /*rank*/ 1),
+        candidate(second.clone(), RetrievalChannelV1::Lexical, /*rank*/ 2),
+        candidate(second, RetrievalChannelV1::Entity, /*rank*/ 2),
     ];
     let union = build_candidate_union(&cue, &policy, candidates.clone())
         .unwrap_or_else(|error| panic!("union: {error}"));
@@ -318,8 +358,16 @@ fn public_packet_validator_rejects_impossible_counts_after_rehash() {
     let mut policy = policy();
     policy.minimum_distinct_channels = 1;
     let candidates = vec![
-        candidate(record(1), RetrievalChannelV1::Lexical, 1),
-        candidate(record(2), RetrievalChannelV1::Entity, 1),
+        candidate(
+            record(/*number*/ 1),
+            RetrievalChannelV1::Lexical,
+            /*rank*/ 1,
+        ),
+        candidate(
+            record(/*number*/ 2),
+            RetrievalChannelV1::Entity,
+            /*rank*/ 1,
+        ),
     ];
     let packet =
         recall(&cue, &policy, candidates).unwrap_or_else(|error| panic!("recall: {error}"));
@@ -348,9 +396,21 @@ fn property_all_candidate_permutations_have_one_union_and_recall() {
     let mut policy = policy();
     policy.minimum_distinct_channels = 1;
     let candidates = [
-        candidate(record(1), RetrievalChannelV1::Lexical, 1),
-        candidate(record(2), RetrievalChannelV1::Entity, 1),
-        candidate(record(3), RetrievalChannelV1::ContradictionSupport, 1),
+        candidate(
+            record(/*number*/ 1),
+            RetrievalChannelV1::Lexical,
+            /*rank*/ 1,
+        ),
+        candidate(
+            record(/*number*/ 2),
+            RetrievalChannelV1::Entity,
+            /*rank*/ 1,
+        ),
+        candidate(
+            record(/*number*/ 3),
+            RetrievalChannelV1::ContradictionSupport,
+            /*rank*/ 1,
+        ),
     ];
     let mut order = vec![0_usize, 1, 2];
     let mut expected_union = None;
@@ -449,23 +509,23 @@ fn canonical_context(
 fn legacy_recall_projects_to_canonical_shadow_without_fabricating_authority() {
     let cue = cue();
     let policy = policy();
-    let first = record(1);
-    let second = record(2);
+    let first = record(/*number*/ 1);
+    let second = record(/*number*/ 2);
     let legacy = recall(
         &cue,
         &policy,
         vec![
-            candidate(first.clone(), RetrievalChannelV1::Lexical, 1),
-            candidate(first, RetrievalChannelV1::Entity, 1),
-            candidate(second.clone(), RetrievalChannelV1::Lexical, 2),
-            candidate(second, RetrievalChannelV1::Entity, 2),
+            candidate(first.clone(), RetrievalChannelV1::Lexical, /*rank*/ 1),
+            candidate(first, RetrievalChannelV1::Entity, /*rank*/ 1),
+            candidate(second.clone(), RetrievalChannelV1::Lexical, /*rank*/ 2),
+            candidate(second, RetrievalChannelV1::Entity, /*rank*/ 2),
         ],
     )
     .unwrap_or_else(|error| panic!("legacy recall: {error}"));
 
     let canonical = adapt_generation_bound_recall_to_canonical_shadow_v1(
         &legacy,
-        canonical_context(&legacy, 2),
+        canonical_context(&legacy, /*candidate_count*/ 2),
     )
     .unwrap_or_else(|error| panic!("canonical shadow projection: {error}"));
 
@@ -488,13 +548,17 @@ fn legacy_abstention_maps_to_canonical_abstention_without_selected_events() {
     let legacy = recall(
         &cue,
         &policy,
-        vec![candidate(record(1), RetrievalChannelV1::Lexical, 1)],
+        vec![candidate(
+            record(/*number*/ 1),
+            RetrievalChannelV1::Lexical,
+            /*rank*/ 1,
+        )],
     )
     .unwrap_or_else(|error| panic!("legacy abstention: {error}"));
 
     let canonical = adapt_generation_bound_recall_to_canonical_shadow_v1(
         &legacy,
-        canonical_context(&legacy, 1),
+        canonical_context(&legacy, /*candidate_count*/ 1),
     )
     .unwrap_or_else(|error| panic!("canonical abstention: {error}"));
 
@@ -509,16 +573,16 @@ fn legacy_abstention_maps_to_canonical_abstention_without_selected_events() {
 fn canonical_shadow_receipt_cannot_undercount_legacy_selection() {
     let cue = cue();
     let policy = policy();
-    let first = record(1);
-    let second = record(2);
+    let first = record(/*number*/ 1);
+    let second = record(/*number*/ 2);
     let legacy = recall(
         &cue,
         &policy,
         vec![
-            candidate(first.clone(), RetrievalChannelV1::Lexical, 1),
-            candidate(first, RetrievalChannelV1::Entity, 1),
-            candidate(second.clone(), RetrievalChannelV1::Lexical, 2),
-            candidate(second, RetrievalChannelV1::Entity, 2),
+            candidate(first.clone(), RetrievalChannelV1::Lexical, /*rank*/ 1),
+            candidate(first, RetrievalChannelV1::Entity, /*rank*/ 1),
+            candidate(second.clone(), RetrievalChannelV1::Lexical, /*rank*/ 2),
+            candidate(second, RetrievalChannelV1::Entity, /*rank*/ 2),
         ],
     )
     .unwrap_or_else(|error| panic!("legacy recall: {error}"));
@@ -526,7 +590,7 @@ fn canonical_shadow_receipt_cannot_undercount_legacy_selection() {
     assert_eq!(
         adapt_generation_bound_recall_to_canonical_shadow_v1(
             &legacy,
-            canonical_context(&legacy, 1),
+            canonical_context(&legacy, /*candidate_count*/ 1),
         ),
         Err(RecallErrorV1::CanonicalAdapter(
             "candidate receipt undercounts legacy selected plus omitted events"
@@ -538,21 +602,21 @@ fn canonical_shadow_receipt_cannot_undercount_legacy_selection() {
 fn canonical_shadow_bridge_rejects_cross_packet_or_selection_drift() {
     let cue = cue();
     let policy = policy();
-    let first = record(1);
-    let second = record(2);
+    let first = record(/*number*/ 1);
+    let second = record(/*number*/ 2);
     let legacy = recall(
         &cue,
         &policy,
         vec![
-            candidate(first.clone(), RetrievalChannelV1::Lexical, 1),
-            candidate(first, RetrievalChannelV1::Entity, 1),
-            candidate(second.clone(), RetrievalChannelV1::Lexical, 2),
-            candidate(second, RetrievalChannelV1::Entity, 2),
+            candidate(first.clone(), RetrievalChannelV1::Lexical, /*rank*/ 1),
+            candidate(first, RetrievalChannelV1::Entity, /*rank*/ 1),
+            candidate(second.clone(), RetrievalChannelV1::Lexical, /*rank*/ 2),
+            candidate(second, RetrievalChannelV1::Entity, /*rank*/ 2),
         ],
     )
     .unwrap_or_else(|error| panic!("legacy recall: {error}"));
 
-    let mut wrong_packet = canonical_context(&legacy, 2);
+    let mut wrong_packet = canonical_context(&legacy, /*candidate_count*/ 2);
     wrong_packet.legacy_cue_digest = digest("different-legacy-cue");
     assert_eq!(
         adapt_generation_bound_recall_to_canonical_shadow_v1(&legacy, wrong_packet),
@@ -561,7 +625,7 @@ fn canonical_shadow_bridge_rejects_cross_packet_or_selection_drift() {
         ))
     );
 
-    let mut wrong_selection = canonical_context(&legacy, 2);
+    let mut wrong_selection = canonical_context(&legacy, /*candidate_count*/ 2);
     wrong_selection.selection_bindings[0].legacy_record_digest = digest("drifted-record");
     assert_eq!(
         adapt_generation_bound_recall_to_canonical_shadow_v1(&legacy, wrong_selection),

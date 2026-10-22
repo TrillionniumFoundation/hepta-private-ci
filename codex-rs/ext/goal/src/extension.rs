@@ -8,6 +8,7 @@ use codex_extension_api::ExtensionData;
 use codex_extension_api::ExtensionEventSink;
 use codex_extension_api::ExtensionFuture;
 use codex_extension_api::ExtensionRegistryBuilder;
+use codex_extension_api::ThreadIdleCause;
 use codex_extension_api::ThreadIdleInput;
 use codex_extension_api::ThreadLifecycleContributor;
 use codex_extension_api::ThreadResumeInput;
@@ -147,6 +148,9 @@ where
 
     fn on_thread_idle<'a>(&'a self, input: ThreadIdleInput<'a>) -> ExtensionFuture<'a, ()> {
         Box::pin(async move {
+            if input.cause == ThreadIdleCause::Interrupted {
+                return;
+            }
             let Some(runtime) = goal_runtime_handle(input.thread_store) else {
                 return;
             };
@@ -158,6 +162,15 @@ where
                 );
             }
         })
+    }
+
+    fn on_thread_admission_recheck<'a>(
+        &'a self,
+        input: ThreadIdleInput<'a>,
+    ) -> ExtensionFuture<'a, ()> {
+        // The goal idle hook only attempts ordinary continuation. Reuse the
+        // same Interrupted guard after the terminal owner's fence is released.
+        self.on_thread_idle(input)
     }
 
     fn on_thread_stop<'a>(&'a self, input: ThreadStopInput<'a>) -> ExtensionFuture<'a, ()> {

@@ -2,8 +2,8 @@
   "schema": "hepta.module-implementation-map.v3",
   "schemaVersion": 3,
   "sourceBase": {
-    "commit": "8914a46dfc5984532f03dd2d559bf547ca4f1e69",
-    "tree": "1bd6444d2d980a9fdf06358dbee973b34722f0e1"
+    "commit": "7a56b99e2839cda8fe207e5c1787a8e9320d3bac",
+    "tree": "d7f626ab7e1081fd22fb5f6298264d6b126b6750"
   },
   "laneId": "LANE-E-LEARNING",
   "module": "learning.operator",
@@ -294,13 +294,19 @@
   ],
   "sourceIdentityPolicy": "candidate_or_exact_observation_v1",
   "observedAtHead": {
-    "commit": "8914a46dfc5984532f03dd2d559bf547ca4f1e69",
-    "tree": "1bd6444d2d980a9fdf06358dbee973b34722f0e1"
+    "commit": "7a56b99e2839cda8fe207e5c1787a8e9320d3bac",
+    "tree": "d7f626ab7e1081fd22fb5f6298264d6b126b6750"
   },
   "observedSourcePaths": [
     "codex-rs/Cargo.lock",
     "codex-rs/Cargo.toml",
-    "codex-rs/hepta-bellman-operator"
+    "codex-rs/hepta-agentd/src/cognitive_context.rs",
+    "codex-rs/hepta-agentd/src/cognitive_ranker.rs",
+    "codex-rs/hepta-agentd/src/cognitive_ranker_tests.rs",
+    "codex-rs/hepta-agentd/src/state_control.rs",
+    "codex-rs/hepta-agentd/tests/terminal_cell_owner.rs",
+    "codex-rs/hepta-bellman-operator",
+    "docs/modules/learning.operator/TECHNICAL.md"
   ],
   "productCallers": [
     {
@@ -311,16 +317,36 @@
   ],
   "sourceObjects": [
     {
+      "path": "codex-rs/Cargo.lock",
+      "object": "b796d291c279450e11042b6aaa1b348657f14f3a"
+    },
+    {
+      "path": "codex-rs/Cargo.toml",
+      "object": "70c7b8dc2bc9768f6fc673049c2e348baddce838"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cognitive_context.rs",
+      "object": "ed471e437cd611d90fecae8615242a95e0433a43"
+    },
+    {
       "path": "codex-rs/hepta-agentd/src/cognitive_ranker.rs",
-      "object": "28e565a3569f9148e3d371b0150a02e14bf2fde4"
+      "object": "baf4e1ba6db9520dc0df84c5ccf067e00c5a63d0"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cognitive_ranker_tests.rs",
+      "object": "d433e5f0e08552c7a7529d86c1bd686a7ee23f42"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/state_control.rs",
+      "object": "d6fddb0fccc02297e6a6bac983cd8be62cef9580"
     },
     {
       "path": "codex-rs/hepta-agentd/tests/terminal_cell_owner.rs",
-      "object": "e6a6e032c59f36859327c08bbbcc0c0c7353b399"
+      "object": "0441205938ba338911bdcf35cbbfd88c3a5f4e4b"
     },
     {
       "path": "codex-rs/hepta-bellman-operator",
-      "object": "ed9f5bcd8b01a4cf3280ad749f6999c83ee24944"
+      "object": "a0a6d4cc78e8d5c5cc5ff6e0dc3e0b769a61f6b2"
     },
     {
       "path": "codex-rs/hepta-bellman-operator/src/authenticated.rs",
@@ -344,7 +370,7 @@
     },
     {
       "path": "codex-rs/hepta-bellman-operator/src/loaded.rs",
-      "object": "2f8452594305cf0d05ce1c034a33a6e004be55b2"
+      "object": "6e9c876f9c79e5125c891b308bdf5fdd27ed232f"
     },
     {
       "path": "codex-rs/hepta-bellman-operator/src/owner_terminal.rs",
@@ -362,5 +388,6 @@
       "path": "docs/modules/learning.operator/TECHNICAL.md",
       "object": "9fa795685e26a6074e893d4d8ae6f514c554d2e3"
     }
-  ]
+  ],
+  "sourceObservationScope": "Current source navigation was independently re-observed at sourceBase. Source objects and observed paths bind that source snapshot; this observation does not renew historical execution, acceptance, activation or release evidence."
 }

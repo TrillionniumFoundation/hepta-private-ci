@@ -59,7 +59,7 @@ type PendingTaskTerminalizationCompletion = (
 pub(crate) struct Session {
     pub(crate) thread_id: ThreadId,
     pub(crate) installation_id: String,
-    pub(super) tx_event: Sender<Event>,
+    pub(super) tx_event: crate::event_delivery::EventSender,
     pub(super) agent_status: watch::Sender<AgentStatus>,
     pub(super) state: Mutex<SessionState>,
     /// Serializes rebuild/apply cycles for the running proxy; each cycle
@@ -750,7 +750,7 @@ impl Session {
         models_manager: SharedModelsManager,
         model_info: ModelInfo,
         exec_policy: Arc<ExecPolicyManager>,
-        tx_event: Sender<Event>,
+        tx_event: crate::event_delivery::EventSender,
         agent_status: watch::Sender<AgentStatus>,
         mut initial_history: InitialHistory,
         fork_persistence: ForkPersistence,
