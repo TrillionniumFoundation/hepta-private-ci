@@ -29,9 +29,16 @@ class UnavailableReaderStub:
 
     def predict(self, state, questions):
         probs = {label: float(label == "UNKNOWN") for label in (*"ABCD", "UNKNOWN")}
-        return {"answers": {"answer": {"choice": "UNKNOWN", "confidence": 1.0,
-                                           "probabilities": probs}},
-                "usage": {"input_tokens": 128}}
+        return {
+            "answers": {
+                "answer": {
+                    "choice": "UNKNOWN",
+                    "confidence": 1.0,
+                    "probabilities": probs,
+                }
+            },
+            "usage": {"input_tokens": 128},
+        }
 
 
 class TwoSourceTests(unittest.TestCase):
@@ -57,11 +64,15 @@ class TwoSourceTests(unittest.TestCase):
     def test_full_condition_contains_both_independent_real_quotes(self):
         parent = {t["id"]: t for t in self.parent["tasks"]}
         for pair in self.paired["tasks"]:
-            src_a, src_b = (parent[tid]["source"]["quote"] for tid in pair["source_task_ids"])
+            src_a, src_b = (
+                parent[tid]["source"]["quote"] for tid in pair["source_task_ids"]
+            )
             state, questions = pair_request(self.parent, pair, "full", CHOICES)
             self.assertIn(src_a, state["untrusted_excerpt_1"])
             self.assertIn(src_b, state["untrusted_excerpt_2"])
-            self.assertEqual(set(questions["answer"]["criteria"]), set("ABCD") | {"UNKNOWN"})
+            self.assertEqual(
+                set(questions["answer"]["criteria"]), set("ABCD") | {"UNKNOWN"}
+            )
             withheld, _ = pair_request(self.parent, pair, "withheld", CHOICES)
             self.assertIn(src_a, withheld["untrusted_excerpt_1"])
             self.assertNotIn(src_b, withheld["untrusted_excerpt_2"])
@@ -76,8 +87,11 @@ class TwoSourceTests(unittest.TestCase):
             seen_positions = set()
             for variant in range(4):
                 choices, shift = option_presentation(
-                    {"id": task["id"], "choices": CHOICES}, 43, variant, presentations=4)
-                predicted_gold = "ABCD"[("ABCD".index(expected_label(task)) + shift) % 4]
+                    {"id": task["id"], "choices": CHOICES}, 43, variant, presentations=4
+                )
+                predicted_gold = "ABCD"[
+                    ("ABCD".index(expected_label(task)) + shift) % 4
+                ]
                 self.assertEqual(choices[predicted_gold], CHOICES[expected_label(task)])
                 seen_positions.add(predicted_gold)
                 for arm in ("none", "distractor", "withheld", "full", "injection"):
@@ -91,27 +105,53 @@ class TwoSourceTests(unittest.TestCase):
     def test_plain_lexical_control_does_not_solve_joint_truth(self):
         report = lexical_pair_audit(self.parent, self.paired, presentations=4)
         self.assertIn("not_model", report["evidence_class"])
-        self.assertEqual(report["result"]["full"],
-                         {"matched": 0, "total": 32, "abstentions": 32})
+        self.assertEqual(
+            report["result"]["full"], {"matched": 0, "total": 32, "abstentions": 32}
+        )
         self.assertEqual(report["result"]["withheld"]["matched"], 32)
         self.assertEqual(report["result"]["distractor"]["matched"], 32)
 
     def test_mock_reader_cannot_claim_efficacy_and_enforces_budget(self):
-        report = run_pairs(self.parent, self.paired, UnavailableReaderStub(),
-                           "a" * 64, presentations=4, include_injection=True,
-                           max_calls=160, max_input_tokens=512)
+        report = run_pairs(
+            self.parent,
+            self.paired,
+            UnavailableReaderStub(),
+            "a" * 64,
+            presentations=4,
+            include_injection=True,
+            max_calls=160,
+            max_input_tokens=512,
+        )
         self.assertEqual(report["model_calls"], 160)
         self.assertFalse(report["production_selection_authority"])
         self.assertIn("not_heldout", report["scope_limit"])
-        self.assertEqual(report["summaries"]["none"]["evidence_condition_accuracy"], 1.0)
-        self.assertEqual(report["summaries"]["withheld"]["evidence_condition_accuracy"], 1.0)
-        self.assertEqual(report["summaries"]["full"]["evidence_condition_accuracy"], 0.0)
+        self.assertEqual(
+            report["summaries"]["none"]["evidence_condition_accuracy"], 1.0
+        )
+        self.assertEqual(
+            report["summaries"]["withheld"]["evidence_condition_accuracy"], 1.0
+        )
+        self.assertEqual(
+            report["summaries"]["full"]["evidence_condition_accuracy"], 0.0
+        )
         with self.assertRaisesRegex(ReaderBenchError, "budget"):
-            run_pairs(self.parent, self.paired, UnavailableReaderStub(),
-                      "a" * 64, presentations=4, include_injection=True, max_calls=159)
+            run_pairs(
+                self.parent,
+                self.paired,
+                UnavailableReaderStub(),
+                "a" * 64,
+                presentations=4,
+                include_injection=True,
+                max_calls=159,
+            )
         with self.assertRaisesRegex(ReaderBenchError, "saturation"):
-            run_pairs(self.parent, self.paired, UnavailableReaderStub(),
-                      "a" * 64, max_input_tokens=128)
+            run_pairs(
+                self.parent,
+                self.paired,
+                UnavailableReaderStub(),
+                "a" * 64,
+                max_input_tokens=128,
+            )
 
     def test_unavailable_checkpoint_and_deterministic_lexical_cli(self):
         with tempfile.TemporaryDirectory() as d:
@@ -123,21 +163,45 @@ class TwoSourceTests(unittest.TestCase):
             self.assertEqual(json.loads(console.getvalue())["status"], "unavailable")
             self.assertFalse(output.exists())
             with contextlib.redirect_stdout(io.StringIO()):
-                self.assertEqual(main(["--lexical-control-only", "--presentations", "4",
-                                       "--output", str(output)]), 0)
+                self.assertEqual(
+                    main(
+                        [
+                            "--lexical-control-only",
+                            "--presentations",
+                            "4",
+                            "--output",
+                            str(output),
+                        ]
+                    ),
+                    0,
+                )
             receipt = json.loads(output.read_text())
             self.assertEqual(receipt["presentations"], 4)
-            self.assertEqual(receipt["source_verification"], "pinned_parent_manifest_only")
+            self.assertEqual(
+                receipt["source_verification"], "pinned_parent_manifest_only"
+            )
             first = output.read_bytes()
             with contextlib.redirect_stdout(io.StringIO()):
-                self.assertEqual(main(["--lexical-control-only", "--presentations", "4",
-                                       "--output", str(output)]), 0)
+                self.assertEqual(
+                    main(
+                        [
+                            "--lexical-control-only",
+                            "--presentations",
+                            "4",
+                            "--output",
+                            str(output),
+                        ]
+                    ),
+                    0,
+                )
             self.assertEqual(output.read_bytes(), first)
 
     def test_bad_dataset_bytes_fail_before_any_model_call(self):
         with tempfile.TemporaryDirectory() as d:
             parent_path = ROOT / "hepta_sngr_reader_cases.json"
-            content = json.loads((ROOT / "hepta_sngr_two_source_cases.json").read_text())
+            content = json.loads(
+                (ROOT / "hepta_sngr_two_source_cases.json").read_text()
+            )
             content["tasks"][0]["truths"][0] = False
             path = Path(d) / "modified.json"
             path.write_text(json.dumps(content))
