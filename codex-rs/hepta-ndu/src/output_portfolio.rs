@@ -757,11 +757,13 @@ fn digest_selection(
     for value in covariance {
         bytes.extend_from_slice(&value.raw().to_le_bytes());
     }
+    bytes.extend_from_slice(&(candidates.len() as u64).to_le_bytes());
     for candidate in candidates {
         bytes.extend_from_slice(candidate.candidate_id.as_str().as_bytes());
         bytes.push(0);
         bytes.extend_from_slice(candidate.candidate_digest.as_array());
         bytes.extend_from_slice(candidate.objective_digest.as_array());
+        bytes.extend_from_slice(candidate.snapshot_digest.as_array());
         bytes.extend_from_slice(&candidate.generation.get().to_le_bytes());
         bytes.extend_from_slice(candidate.encoder_digest.as_array());
         bytes.extend_from_slice(candidate.composition_domain_digest.as_array());

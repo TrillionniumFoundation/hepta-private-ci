@@ -1133,3 +1133,31 @@ fn selection_digest_binds_all_published_receipt_fields_without_replay() {
         Err(NduError::InvalidSolverReceipt("portfolio receipt replay"))
     );
 }
+
+#[test]
+fn selection_digest_rejects_forged_candidate_snapshot_without_full_replay() {
+    let candidates = [
+        candidate("baseline", 0, 0, true),
+        candidate("private-head", 60, 10, false),
+    ];
+    let context = context(candidates.len());
+    let budget = budget(2);
+    let receipt =
+        select_output_portfolio_v1(&context, &budget, &candidates).expect("advisory receipt");
+    let canonical = canonical_candidates(&context, &candidates).expect("canonical candidates");
+    let covariance =
+        canonical_covariance(&context, &candidates, &canonical).expect("canonical covariance");
+    assert_eq!(
+        digest_selection(&context, &budget, &canonical, &covariance, &receipt),
+        receipt.selection_digest
+    );
+    // This is an intentionally invalid input for digest-only consumers:
+    // complete replay would reject it, but the advertised selection hash
+    // must also change to prevent acceptance without full replay.
+    let mut foreign = canonical.clone();
+    foreign[0].snapshot_digest = Digest32::of_bytes(b"foreign-candidate-snapshot");
+    assert_ne!(
+        digest_selection(&context, &budget, &foreign, &covariance, &receipt),
+        receipt.selection_digest
+    );
+}
