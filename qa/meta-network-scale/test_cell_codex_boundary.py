@@ -43,6 +43,48 @@ serde = "1"
         self.assertTrue(any("codex-utils-absolute-path" in err for err in errors))
         self.assertTrue(any("serde" in err for err in errors))
 
+    def test_unreviewed_native_runtime_and_async_process_clients_fail(self):
+        data = self.make_manifest("""
+[dependencies]
+hepta-runtime = { version = "0.1.0" }
+renamed_tool = { package = "hepta-runtime", version = "0.1.0" }
+tokio = { version = "1.5", features = ["process"] }
+""")
+        errors = checker.check_manifest(data, "hepta-neuron")
+        self.assertEqual(len(errors), 3, errors)
+        self.assertTrue(any("hepta-runtime" in error for error in errors))
+        self.assertTrue(any("tokio" in error for error in errors))
+
+    def test_workspace_native_tool_alias_does_not_bypass_closed_allowlist(self):
+        data = self.make_manifest("""
+[dependencies]
+masked_native = { workspace = true }
+""")
+        workspace = {"masked_native": {"package": "hepta-runtime", "version": "0.1"}}
+        errors = checker.check_manifest(data, "hepta-neuron", workspace)
+        self.assertEqual(len(errors), 1, errors)
+        self.assertIn("hepta-runtime", errors[0])
+
+    def test_existing_evaluation_only_dependencies_still_allowed(self):
+        data = self.make_manifest("""
+[dependencies]
+codex-hepta-types = { path = "../hepta-types" }
+serde = { workspace = true, features = ["derive"] }
+serde_json = { workspace = true }
+[dev-dependencies]
+ed25519-dalek = { workspace = true }
+pretty_assertions = { workspace = true }
+tempfile = { workspace = true }
+""")
+        workspace = {
+            "serde": "1",
+            "serde_json": "1",
+            "ed25519-dalek": "2",
+            "pretty_assertions": "1",
+            "tempfile": "3",
+        }
+        self.assertEqual(checker.check_manifest(data, "hepta-ndu", workspace), [])
+
     def test_bare_core_and_renamed_harness_dependencies_fail(self):
         data = self.make_manifest('''
 [dependencies]

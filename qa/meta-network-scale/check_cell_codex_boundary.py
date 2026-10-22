@@ -41,6 +41,20 @@ ALLOWED_PACKAGES = frozenset(
     )
 )
 
+# A new dependency must be explicitly reviewed rather than silently acquiring
+# an execution client, native host tools, network transport or dynamic loader.
+# These external crates are already in the verified Cell crate manifests.
+ALLOWED_EXTERNAL_PACKAGES = frozenset(
+    (
+        "sha2",
+        "serde",
+        "serde-json",
+        "pretty-assertions",
+        "ed25519-dalek",
+        "tempfile",
+    )
+)
+
 
 def normalized_package(name: str) -> str:
     return name.lower().replace("_", "-")
@@ -101,16 +115,23 @@ def check_manifest(
                             f"{crate}: {location}.{alias} directly depends on "
                             f"the Codex execution crate {package}"
                         )
-                    elif (
-                        crate == "hepta-types"
-                        and isinstance(package, str)
-                        and normalized_package(package) != "sha2"
-                    ):
+                    elif isinstance(package, str):
+                        normalized = normalized_package(package)
                         location = ".".join((*keys, key))
-                        violations.append(
-                            f"{crate}: {location}.{alias} is not an approved "
-                            f"foundational dependency ({package})"
-                        )
+                        if crate == "hepta-types" and normalized != "sha2":
+                            violations.append(
+                                f"{crate}: {location}.{alias} is not an approved "
+                                f"foundational dependency ({package})"
+                            )
+                        elif (
+                            crate != "hepta-types"
+                            and normalized not in ALLOWED_PACKAGES
+                            and normalized not in ALLOWED_EXTERNAL_PACKAGES
+                        ):
+                            violations.append(
+                                f"{crate}: {location}.{alias} is not an approved "
+                                f"Cell dependency ({package})"
+                            )
             elif isinstance(child, dict):
                 visit(child, (*keys, key))
 
