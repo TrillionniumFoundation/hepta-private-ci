@@ -2,37 +2,37 @@
 
 **Status: DRAFT / RESEARCH_ONLY / SHADOW_ONLY / DENY_ALL / HOLD_NO_GO.**
 
-This *additive* follow-up is stacked on [the frozen continuous-latent research PR #3055](https://github.com/TrillionniumFoundation/hepta-private-ci/pull/3055). It does not modify that pilot's preregistered \`protocol.json\`, \`SOURCE_FREEZE.json\`, training, decoder, heldout split, analysis, or existing cloud-run request. The previous pilot's observed heldout outcomes cannot be reinterpreted as confirmatory evidence for this experiment. All future experiments require a separately frozen protocol and untouched samples.
+This *additive* follow-up is stacked on [the frozen continuous-latent research PR #3055](https://github.com/TrillionniumFoundation/hepta-private-ci/pull/3055). It does not modify that pilot's preregistered `protocol.json`, `SOURCE_FREEZE.json`, training, decoder, heldout split, analysis, or existing cloud-run request. The previous pilot's observed heldout outcomes cannot be reinterpreted as confirmatory evidence for this experiment. All future experiments require a separately frozen protocol and untouched samples.
 
 ## What this code actually does
 
-- \`portfolio.py\` supplies a **small reference optimizer**, computing an exhaustive optimum on a bounded **finite fractional-allocation grid** for at most four *same-protocol, same-domain* Cell candidates. This is neither a continuous global optimizer nor a Merton/FBSDE solution.
+- `portfolio.py` supplies a **small reference optimizer**, computing an exhaustive optimum on a bounded **finite fractional-allocation grid** for at most four *same-protocol, same-domain* Cell candidates. This is neither a continuous global optimizer nor a Merton/FBSDE solution.
 - A conditional utility estimate and **paired, external calibration** losses determine the shadow objective; risk includes the NoChange baseline, joint scenario variance, CVaR90, variable resource cost, and **once-per-active-Cell** cost. A candidate with negative standalone utility may have positive joint hedge value.
 - Inputs missing a calibration/objective identifier, paired scenarios, unique payload identity, compatible protocol/domain, finite utility, or admissible budgets fail closed.
 - Receipts include an immutable-input replay digest and **DENY_ALL**. Replaying a digest is not source authentication, external future-window attestation, a signer, or final-use authorization.
-- \`continuous_direction_step\` implements differentiable Euler combination of the **already registered** base flow plus bounded compatible Cell directions. Weight zero gives exact base-flow parity; numerical gradients can reach Cell heads. It does not train heads or access ground-truth facts.
-- \`masked_logit_step\` is a **P2 contract primitive**: same-vocabulary logit deltas are combinable, while the subsequent unmask action is atomic and only chooses currently masked positions. It is **not** a trained Diffusion LLM or proof of text-generation quality.
-- \`test_portfolio.py\` contains 13 deterministic tests, including 30 randomized profiles checked against an independent scalar enumeration.
+- `continuous_direction_step` implements differentiable Euler combination of the **already registered** base flow plus bounded compatible Cell directions. Weight zero gives exact base-flow parity; numerical gradients can reach Cell heads. It does not train heads or access ground-truth facts.
+- `masked_logit_step` is a **P2 contract primitive**: same-vocabulary logit deltas are combinable, while the subsequent unmask action is atomic and only chooses currently masked positions. It is **not** a trained Diffusion LLM or proof of text-generation quality.
+- `test_portfolio.py` contains 13 deterministic tests, including 30 randomized profiles checked against an independent scalar enumeration.
 
 ## Mathematical non-claims that must survive code review
 
-1. **Mixing losses is not mixing outputs.** Weighted standalone semantic losses are only a calibration proxy. For a nonlinear decoder, \`L(decode(z + sum(w_i*delta_i)))\` is generally not \`sum(w_i*L(decode(z+delta_i)))\`. A selected portfolio must be independently re-evaluated on *actual raw decoded* text/audio/image/video.
+1. **Mixing losses is not mixing outputs.** Weighted standalone semantic losses are only a calibration proxy. For a nonlinear decoder, `L(decode(z + sum(w_i*delta_i)))` is generally not `sum(w_i*L(decode(z+delta_i)))`. A selected portfolio must be independently re-evaluated on *actual raw decoded* text/audio/image/video.
 2. CVaR/variance reported here concern **paired calibration scenarios**, not an identified conditional stochastic process, causal future returns, heldout risk, or actual production loss.
 3. The bounded grid is an exact finite enumeration only for the values it is supplied. No smoothness, dynamic programming optimality, Pareto globality, QP/MPC globality, or learned NDU efficacy is claimed.
-4. The \`objective_digest\` and \`calibration_digest\` are caller-supplied *identifiers*; this library does not authenticate them. Selection is informational and may not influence live tools, irreversible streams, deployed artifacts, or production model promotion.
-5. \`masked_logits_v1\` and \`latent_velocity_v1\` candidates may **never** share a continuous portfolio. Actions and entire discrete unmask plans still need separate atomic selection.
+4. The `objective_digest` and `calibration_digest` are caller-supplied *identifiers*; this library does not authenticate them. Selection is informational and may not influence live tools, irreversible streams, deployed artifacts, or production model promotion.
+5. `masked_logits_v1` and `latent_velocity_v1` candidates may **never** share a continuous portfolio. Actions and entire discrete unmask plans still need separate atomic selection.
 6. A shared error across all modalities, an unknown future shift, or an incorrectly labeled calibration window cannot be repaired by output-risk covariance algebra.
 
 ## Running the isolated checks
 
 With Python 3.11, NumPy and PyTorch (CPU is sufficient):
 
-\`\`\`bash
+```bash
 cd experiments/ndu_latent_riccati/followup
 python -m unittest -v test_portfolio.py
-\`\`\`
+```
 
-Locally the exact source blobs were tested with Python 3, NumPy 2.3.5 and CPU PyTorch 2.10.0: **13 tests passed**, including randomized exhaustive reference checks. These are *local numerical regression tests*, not a qualifying native Rust CI receipt, dedicated-cloud run, or a scientific improvement result. The exact two committed Python blob SHAs were compared with the local \`git hash-object\` values to protect against source drift.
+Locally the exact source blobs were tested with Python 3, NumPy 2.3.5 and CPU PyTorch 2.10.0: **13 tests passed**, including randomized exhaustive reference checks. These are *local numerical regression tests*, not a qualifying native Rust CI receipt, dedicated-cloud run, or a scientific improvement result. The exact two committed Python blob SHAs were compared with the local `git hash-object` values to protect against source drift.
 
 ## Strict P0–P4 dependency/gate matrix
 
