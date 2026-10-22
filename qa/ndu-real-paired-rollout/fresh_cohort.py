@@ -53,7 +53,20 @@ def combine_exclusions(historical, prior_v1_manifest, output, *, require_pinned=
               'frozen_v1_manifest_sha256':frozen_sha,
               'claim':'COCO source ID and fingerprint exclusion only; not independent entity/pretraining claim'}
     output.parent.mkdir(parents=True,exist_ok=True)
-    output.write_text(json.dumps(manifest,sort_keys=True,allow_nan=False)+'\n')
+    flags = os.O_WRONLY | os.O_CREAT | os.O_EXCL
+    if os.name == 'posix':
+        flags |= os.O_NOFOLLOW
+    fd = os.open(output, flags, 0o600)
+    with os.fdopen(fd, 'w', encoding='utf-8') as stream:
+        stream.write(json.dumps(manifest, sort_keys=True, allow_nan=False)+'\n')
+        stream.flush()
+        os.fsync(stream.fileno())
+    if os.name == 'posix':
+        parent_fd = os.open(output.parent, os.O_RDONLY | os.O_DIRECTORY)
+        try:
+            os.fsync(parent_fd)
+        finally:
+            os.close(parent_fd)
     return manifest
 
 
