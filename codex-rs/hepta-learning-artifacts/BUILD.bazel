@@ -1,7 +1,13 @@
 load("//:defs.bzl", "codex_rust_crate")
 
+exports_files([
+    "tests/fixtures/p37-head/head.bundle",
+    "tests/fixtures/p37-head/weights.npz",
+])
+
 codex_rust_crate(
     name = "hepta-learning-artifacts",
+    compile_data = glob(["tests/fixtures/p37-head/*"]),
     crate_name = "codex_hepta_learning_artifacts",
     deps_extra = ["@crates//:pretty_assertions"],
 )
