@@ -388,6 +388,32 @@ class ScaleMatrixTests(unittest.TestCase):
             scale_matrix.validate_matrix(matrix),
         )
 
+    def test_metrics_receipt_must_not_reuse_an_evidence_claim(self):
+        record = self.make_record(64, "shared_encoder")
+        record["metrics_receipt"] = record["evidence_receipts"]["future_window"]
+        self.assertIn(
+            "metrics_receipt cannot reuse an evidence claim receipt",
+            scale_matrix.validate_result(record),
+        )
+
+    def test_matrix_rejects_cross_category_receipt_replay_in_both_orders(self):
+        matrix = self.matrix()
+        matrix["results"][1]["metrics_receipt"] = matrix["results"][0][
+            "evidence_receipts"
+        ]["future_window"]
+        self.assertIn(
+            "results[1].metrics_receipt reused as an evidence claim receipt",
+            scale_matrix.validate_matrix(matrix),
+        )
+        matrix = self.matrix()
+        matrix["results"][1]["evidence_receipts"]["rollback"] = matrix[
+            "results"
+        ][0]["metrics_receipt"]
+        self.assertIn(
+            "results[1].evidence_receipts.rollback reused as a metrics receipt",
+            scale_matrix.validate_matrix(matrix),
+        )
+
     def test_invalid_result_root_is_a_denial_not_an_exception(self):
         for malformed in ([], None, 42, ""):
             with self.subTest(value=malformed):

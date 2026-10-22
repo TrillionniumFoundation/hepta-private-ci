@@ -263,6 +263,8 @@ def validate_result(result: dict[str, Any]) -> list[str]:
         errors.append("metrics_receipt must be a lowercase SHA-256 digest")
     elif not any(character != "0" for character in metrics_receipt):
         errors.append("metrics_receipt cannot be a zero digest")
+    elif isinstance(evidence_receipts, dict) and metrics_receipt in evidence_receipts.values():
+        errors.append("metrics_receipt cannot reuse an evidence claim receipt")
     lifecycle = result.get("topology_lifecycle")
     if lifecycle != list(LIFECYCLE):
         errors.append("topology_lifecycle must contain the complete ordered lifecycle")
@@ -322,6 +324,11 @@ def validate_matrix(matrix: dict[str, Any]) -> list[str]:
             for claim in REQUIRED_EVIDENCE:
                 receipt = evidence_receipts.get(claim)
                 if isinstance(receipt, str) and _HEX64.fullmatch(receipt):
+                    if receipt in metrics_receipts_seen:
+                        errors.append(
+                            f"results[{index}].evidence_receipts.{claim} "
+                            "reused as a metrics receipt"
+                        )
                     if receipt in evidence_receipts_seen[claim]:
                         errors.append(
                             f"results[{index}].evidence_receipts.{claim} "
@@ -338,6 +345,11 @@ def validate_matrix(matrix: dict[str, Any]) -> list[str]:
                         )
         metrics_receipt = row.get("metrics_receipt")
         if isinstance(metrics_receipt, str) and _HEX64.fullmatch(metrics_receipt):
+            if metrics_receipt in receipt_owners:
+                errors.append(
+                    f"results[{index}].metrics_receipt "
+                    "reused as an evidence claim receipt"
+                )
             if metrics_receipt in metrics_receipts_seen:
                 errors.append(
                     f"results[{index}].metrics_receipt reused across matrix pairs"
