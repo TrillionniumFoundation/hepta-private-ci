@@ -1,0 +1,47 @@
+{
+  "schema": "hepta.p38.windows-v8-build-budget.v1",
+  "observed_head_sha": "9370b49332c35b7303528eafbb4733639d628283",
+  "observed_checkout_sha": "181eb981eec7c2ccd50cdfb45a1abec9458a4087",
+  "run_id": 39734404165,
+  "configured_timeout_minutes": 30,
+  "jobs": [
+    {
+      "job_id": 119688409818,
+      "target": "aarch64-pc-windows-msvc",
+      "started_at": "2026-10-22T07:06:00Z",
+      "completed_at": "2026-10-22T07:36:25Z",
+      "conclusion": "cancelled",
+      "source_cache_result": "not found for exact and fallback keys",
+      "last_build_output": "2026-10-22T07:09:14.2840644Z Compiling v8 v150.4.0",
+      "compiler_error_observed": false,
+      "raw_log_bytes": 156239,
+      "raw_log_sha256": "072d803326e10f2bbd4efa103ddb558bdf429fdd4295839bc7cdaa80da86c709",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/39734404165/job/119688409818"
+    },
+    {
+      "job_id": 119688409875,
+      "target": "x86_64-pc-windows-msvc",
+      "started_at": "2026-10-22T07:08:58Z",
+      "completed_at": "2026-10-22T07:39:28Z",
+      "conclusion": "cancelled",
+      "source_cache_result": "not found for exact and fallback keys",
+      "last_build_output": "2026-10-22T07:12:20.6937063Z Compiling v8 v150.4.0",
+      "compiler_error_observed": false,
+      "raw_log_bytes": 156901,
+      "raw_log_sha256": "9a559d944fe54542d92353364166e82e483660dbce3e48b215cae03309602505",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/39734404165/job/119688409875"
+    }
+  ],
+  "diagnosis": "Both cold source-build jobs were cancelled approximately 30 minutes after starting, consistent with the configured job budget. The build step had reached v8 compilation. Cargo buffered the detailed build output: continued per-action progress during the final interval is not established. No separate timeout annotation was retrieved.",
+  "repair": {
+    "file": ".github/workflows/v8-canary.yml",
+    "only_semantic_change": "jobs.build-windows-source.timeout-minutes",
+    "before_minutes": 30,
+    "after_minutes": 120,
+    "matrix_targets_preserved": 2,
+    "build_stage_link_smoke_artifact_and_clean_worktree_steps_preserved": true,
+    "validation": "PyYAML full-document equality after reverting exactly this timeout key; pinned Prettier 3.5.3 check."
+  },
+  "new_source_windows_build_pass_claimed": false,
+  "all_blockers_closed": false
+}

@@ -1,0 +1,549 @@
+{
+  "schema": "hepta.p38.native-linux-windows-macos-followup.v1",
+  "created_at": "2026-10-22T10:30:38.605320+00:00",
+  "qualification": "SOURCE_FIXES_READY_COMBINED_NATIVE_PENDING",
+  "base_commit": "f72dbb59cb430d0a2809ed63351faed2d04677a0",
+  "source_before_receipt": "ccacb366cb36c3477aef1574f51dc768acc40619",
+  "source_tree_before_receipt": "0a70c457ffc4d673dcbeef31b6d54e59b7b738b6",
+  "prior_receipts": [
+    "qualification/ci/2026-10-22-p38-native-shard2-followup.json",
+    "qualification/ci/2026-10-22-p38-native-macos-followup.json"
+  ],
+  "source_stages": [
+    {
+      "commit": "8293577fe569623fba21fdcbf9fbc8342a65c67c",
+      "tree": "d52c640d3bd527327294f0be4ac4e806ff7b83b8",
+      "change": "fix(ci): retain local Linux budgets without remote credentials",
+      "changed_lines": 113,
+      "donor": "new scoped change"
+    },
+    {
+      "commit": "8ba785ccb8052f2c5546f4d03f2ba7c88c8ce863",
+      "tree": "a20228dfb6873ba7d772983adc61d0fe9e319352",
+      "change": "test(agentd): retain a writable native terminal ledger directory",
+      "changed_lines": 17,
+      "donor": "2169ac7a96308c69daac654b2b42409f234aed45"
+    },
+    {
+      "commit": "b6ea3d95c529589142745cb2dac4787a7769adc9",
+      "tree": "3b7b1d8cc52c7024e2500a4969d2c5747875748b",
+      "change": "test(memory): retain canonical fleet roots across fixture reopen",
+      "changed_lines": 18,
+      "donor": "new scoped change"
+    },
+    {
+      "commit": "2bf70f8014104a66e13eaf995d6ee6b620222341",
+      "tree": "b6baf3ac06221a4093643565536f3ea085227ec1",
+      "change": "test(exec-server): stage native Windows helpers once per process",
+      "changed_lines": 39,
+      "donor": "a32d73f00cfc292ff1ed4ac5cef958ca9f238020"
+    },
+    {
+      "commit": "f488ec632b8756246dd3ed534da403fe1ce2ae1a",
+      "tree": "c759c6a7eb1384715a5f11e87a5d8c2e8c7776ca",
+      "change": "feat(acceptance): add bounded pinned SSHSIG verifier and strict regressions",
+      "changed_lines": 395,
+      "donor": "360606e01d69ae0ece2e1b09ac83ba704e5772bd"
+    },
+    {
+      "commit": "691000f1b1f3e55bac26bc0ee5ed101440b25ec7",
+      "tree": "3519157353417693edadb7b3a75c9810742394b7",
+      "change": "fix(acceptance): verify signatures through the privately pinned native path",
+      "changed_lines": 341,
+      "donor": "360606e01d69ae0ece2e1b09ac83ba704e5772bd"
+    },
+    {
+      "commit": "6fb836aa700e3b819ba5d2e2c01889af1752ea80",
+      "tree": "9e21764d1ec7d8a747879663636a64439a222c46",
+      "change": "test(acceptance): locate real Windows OpenSSH signing tools",
+      "changed_lines": 43,
+      "donor": "afd636632c9057255fd1085e24871e99165ec052"
+    },
+    {
+      "commit": "816d3abf168f8a048f2e5ea603143980b79c3b83",
+      "tree": "451059adb5a1d17d8ecdf7199cd2a54e286f9763",
+      "change": "test(acceptance): constrain signing inputs to canonical fixture roots",
+      "changed_lines": 126,
+      "donor": "eec986e414f86d5bdfa4d6a9a62649d35566c774"
+    },
+    {
+      "commit": "73260df38279de15e9a4cf65ac9263c8aad88ca2",
+      "tree": "04fcc0ac1c48455b91f66dee16a1a70c4aec9fa4",
+      "change": "fix(memory): expose the exact Unix test scope to Clippy",
+      "changed_lines": 3,
+      "donor": "new scoped change"
+    },
+    {
+      "commit": "e2fb686e6069a30b97244d8d682f1288edff3e97",
+      "tree": "fabb95c612616e5ccc65d0f40579d4f19d2f6fd1",
+      "change": "fix(acceptance): flush the retained writable native directory",
+      "changed_lines": 227,
+      "donor": "86f541ab6430a5f7168fd86e9925d7abb818e3ee"
+    },
+    {
+      "commit": "3462fc485c4d48d2558be466a15a3f6fafae6ead",
+      "tree": "1a6d57560ddeebe4b3b7dda12a8bc9aa564076f9",
+      "change": "test(state): bind rollout fixtures to the canonical SQLite home",
+      "changed_lines": 20,
+      "donor": "new scoped change"
+    },
+    {
+      "commit": "bc300f37944b80ce7efb7a634e3415f19d0fc596",
+      "tree": "fdb4836551773dad55ac20923c76b97c36721371",
+      "change": "test(supervisor): resolve native release and tracked runfile fixtures",
+      "changed_lines": 11,
+      "donor": "new scoped change"
+    },
+    {
+      "commit": "8043b865f78ecf15d41a2b1c5cc129de3a5cfeff",
+      "tree": "ceca14a51691e3d71b69ae0c8df678cd603d38bf",
+      "change": "feat(paths): retain existing recovery sources and create exclusive copies",
+      "changed_lines": 350,
+      "donor": "bee80748171eb565d0ffdb3084a09d09aaae19db"
+    },
+    {
+      "commit": "53c8d9a3c824b22ca0a36413d0f26a7b0c7bc747",
+      "tree": "854fcef22a6ef0666abb48f75541a57e2e7139c8",
+      "change": "fix(eval): release the holdout lock when its owner retires",
+      "changed_lines": 106,
+      "donor": "aa4e931a552c1408e96b6ad708f9b4e66bc1bd44"
+    },
+    {
+      "commit": "05906a0a090764967e3276a66ea3afc99c3eecc6",
+      "tree": "5c61939aab787f70b683fd4c628de8460512e338",
+      "change": "feat(paths): create a private directory without reopening an existing entry",
+      "changed_lines": 56,
+      "donor": "f7eba6f505ba05d2d221354bc856c0202304f7c3"
+    },
+    {
+      "commit": "46d7198b948c985cb54bd65a8097164563399370",
+      "tree": "0b536e3cbb44d2d8ce76e62b0ae1f3f4fcef02ef",
+      "change": "fix(shadow): use the retained Windows private-state I/O owner",
+      "changed_lines": 172,
+      "donor": "1b81bcaf2d7b5dfde260975874229829661b0ad0"
+    },
+    {
+      "commit": "9e96ae9043b9c2d54a9a6490979582843ff1c3c2",
+      "tree": "07a76b2503e12bae2d2cc416c70d2e5d3aa81668",
+      "change": "style(tests): spell holdout arguments and use the slice method reference",
+      "changed_lines": 12,
+      "donor": "new scoped change"
+    },
+    {
+      "commit": "d08d51c931b7d0b4724c3ec9c861acb196689e27",
+      "tree": "dd9219b0c7f2b9abeba41480b16a41e7a7a54888",
+      "change": "fix(deps): record native helper edges after original lock gates",
+      "changed_lines": 3,
+      "donor": "new scoped change"
+    },
+    {
+      "commit": "56578b6d4acf85d227b0e51651a7f0ae5402add9",
+      "tree": "1f0c267a1c49a178868a4be9af8044214243654d",
+      "change": "fix(exec-server): canonicalize existing authorized-read fixture roots",
+      "changed_lines": 23,
+      "donor": "new scoped change"
+    },
+    {
+      "commit": "af982e55037e20327c109863bbac471d8ce9b009",
+      "tree": "efa96e1875cfeb89e6cc38eaeae0dd90ee36aa64",
+      "change": "test(exec-server): assert exact bounded RPC and redacted read errors",
+      "changed_lines": 62,
+      "donor": "new scoped change"
+    },
+    {
+      "commit": "f4fd05c280e6e5324256b47920b8615760762918",
+      "tree": "df10f3f43024ef2852d99a7fe36a347e866e5020",
+      "change": "test(sandboxing): compare complete Seatbelt protected path mappings",
+      "changed_lines": 250,
+      "donor": "new scoped change"
+    },
+    {
+      "commit": "1afd2320b007eaffbd2cbd5093eb081e0c2d5016",
+      "tree": "f755b87a8b8ceade8210821b84c6231d7f735a97",
+      "change": "fix(ext-memory): canonicalize existing fixture and reopen roots",
+      "changed_lines": 37,
+      "donor": "new scoped change"
+    },
+    {
+      "commit": "ccacb366cb36c3477aef1574f51dc768acc40619",
+      "tree": "0a70c457ffc4d673dcbeef31b6d54e59b7b738b6",
+      "change": "fix(ci): budget the observed SDK V8 cold build within three hours",
+      "changed_lines": 7,
+      "donor": "new scoped change"
+    }
+  ],
+  "original_failure_evidence": [
+    {
+      "job_id": 119686716616,
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/39734404418/job/119686716616",
+      "execution_merge": "181eb981eec7c2ccd50cdfb45a1abec9458a4087",
+      "log_sha256": "a36a948092b7990111c3bee81baaf53d852e756ab6b1c50f043c5b6c58187e3c",
+      "observation": "Windows shard 4: Acceptance 13 failures, Shadow 17, Exec Windows 8, Agentd terminal 2. Core shards were cancelled without terminal test stdout; their root cause remains open."
+    },
+    {
+      "job_id": 119686716637,
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/39734404418/job/119686716637",
+      "execution_merge": "181eb981eec7c2ccd50cdfb45a1abec9458a4087",
+      "log_sha256": "49b000c81b3af04b7ae2b0fbb03522b76f33690eda8de6d99a8b6235886729b8",
+      "observation": "Linux Clippy: 16 expect_used diagnostics in the compound cfg(all(test, unix)) test module. Equivalent split cfg attributes reproduce RED then GREEN with the same pinned Clippy configuration."
+    },
+    {
+      "job_id": 119686716587,
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/39734404418/job/119686716587",
+      "execution_merge": "181eb981eec7c2ccd50cdfb45a1abec9458a4087",
+      "log_sha256": "81102d13a41eabbf9d0a5b9ddf081232719d05122c35880a0b0230d6c0be96f5",
+      "observation": "Mac ARM: 265/565 executed, 248 passed, 17 failed, 300 skipped. ENOSPC interrupted the build independently of assertion failures. Extension Memory had 44 passed and 56 canonical-root failures."
+    },
+    {
+      "job_id": 119689984355,
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/39736032886/job/119689984355",
+      "execution_merge": "d3730a550771e18898452edd161574eca33adb23",
+      "log_sha256": "b7d1ae0d329a54b3e6436d616dd61c096c922187b02539905417f5b074a71d11",
+      "observation": "Mac ARM: 249/565 executed, 233 passed, 16 failed, 316 skipped. Fixture identity, holdout lock retirement and remaining native target failures are individually classified; ENOSPC also prevented completion."
+    },
+    {
+      "job_id": 119686716534,
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/39734404418/job/119686716534",
+      "execution_merge": "181eb981eec7c2ccd50cdfb45a1abec9458a4087",
+      "log_sha256": "b4145b68c4abb1b5946c414df3663c76248012caf630a21199dcd361703e887b",
+      "observation": "Mac release build: real ENOSPC writing an Agentd params file and linking app-server output. No source compiler diagnostic was identified as the root failure."
+    },
+    {
+      "job_id": 119686716180,
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/39734404418/job/119686716180",
+      "execution_merge": "181eb981eec7c2ccd50cdfb45a1abec9458a4087",
+      "log_sha256": "10aacd6f0213f30745b61cd815c01f84d9fc4cc18dbd97699cf61779e8c9202a",
+      "observation": "SDK cancelled at the configured 120-minute boundary while V8 compilation advanced to 15016/16195 actions. No compiler error or explicit timeout annotation is claimed. The SDK job alone now has a 180-minute budget and retains every step."
+    }
+  ],
+  "owning_validation": [
+    {
+      "kind": "owning Linux regression RED",
+      "summary": "Three strict lock-retirement regressions failed before the production owner repair; two attempts each reported Busy.",
+      "command": [
+        "just",
+        "test",
+        "-p",
+        "codex-hepta-intelligence-eval",
+        "--lib",
+        "-E",
+        "test(owner_drop_releases_lock_) | test(failed_create_releases_lock_) | test(failed_recover_releases_lock_)"
+      ],
+      "source_commit": "bc300f37944b80ce7efb7a634e3415f19d0fc596",
+      "exit_code": 100,
+      "started_at": "2026-10-22T10:10:59.972233+00:00",
+      "completed_at": "2026-10-22T10:11:12.835139+00:00",
+      "log_sha256": "9f0edb11edf31ae0184f8588ea9e4efe1804bd9b262f13f16ab38cf516d3e8a6"
+    },
+    {
+      "kind": "owning Linux tests",
+      "summary": "118/118 passed, zero skipped, with exact donor aa4e931a applied. Live-owner Busy and rollback negatives retained.",
+      "command": [
+        "just",
+        "test",
+        "-p",
+        "codex-hepta-intelligence-eval",
+        "--lib"
+      ],
+      "source_commit": "bc300f37944b80ce7efb7a634e3415f19d0fc596",
+      "exit_code": 0,
+      "started_at": "2026-10-22T10:11:46.404682+00:00",
+      "completed_at": "2026-10-22T10:11:49.883317+00:00",
+      "log_sha256": "a6dd7b8233639111be450e952438a4ea90ba3832070ce0edc706f4fffb7342e5",
+      "donor_applied_uncommitted": "aa4e931a552c1408e96b6ad708f9b4e66bc1bd44"
+    },
+    {
+      "kind": "scoped Clippy",
+      "summary": "Original just fix succeeded after the sandbox-only local TCP restriction was removed through approved execution; no source change.",
+      "command": [
+        "just",
+        "fix",
+        "-p",
+        "codex-hepta-intelligence-eval",
+        "--lib"
+      ],
+      "source_commit": "bc300f37944b80ce7efb7a634e3415f19d0fc596",
+      "exit_code": 0,
+      "started_at": "2026-10-22T10:12:52.474302+00:00",
+      "completed_at": "2026-10-22T10:12:59.722201+00:00",
+      "log_sha256": "c9be543b93a39c1f1cc40d5fed92de2c2126cbe7bcca30750ca24edc1321473a",
+      "diff_before_sha256": "1a0ea1c75561d87d53763b22a63259ad157034d19697be155fffd43671b45cb9",
+      "diff_after_sha256": "1a0ea1c75561d87d53763b22a63259ad157034d19697be155fffd43671b45cb9"
+    },
+    {
+      "kind": "owning Linux tests",
+      "summary": "35/35 passed, zero skipped, including real ssh-keygen fixtures and parser/trust negatives. Windows-only retained-parent tests were not compiled on Linux.",
+      "command": [
+        "just",
+        "test",
+        "-p",
+        "codex-hepta-operator-acceptance",
+        "--lib"
+      ],
+      "source_commit": "05906a0a090764967e3276a66ea3afc99c3eecc6",
+      "exit_code": 0,
+      "started_at": "2026-10-22T10:14:31.181592+00:00",
+      "completed_at": "2026-10-22T10:14:34.950090+00:00",
+      "log_sha256": "64aa0cc460b15ec1d87b136cd0af5c2a53852dfa4adab31147999efb6fb90081",
+      "diff_before_sha256": "a73a4ce320ef294e598880f279b88a9a4de15e47f219b77ccf6f36f968321ace",
+      "diff_after_sha256": "a73a4ce320ef294e598880f279b88a9a4de15e47f219b77ccf6f36f968321ace"
+    },
+    {
+      "kind": "scoped Clippy",
+      "summary": "Original just fix succeeded with no source change.",
+      "command": [
+        "just",
+        "fix",
+        "-p",
+        "codex-hepta-operator-acceptance",
+        "--lib"
+      ],
+      "source_commit": "05906a0a090764967e3276a66ea3afc99c3eecc6",
+      "exit_code": 0,
+      "started_at": "2026-10-22T10:15:18.354276+00:00",
+      "completed_at": "2026-10-22T10:15:23.015479+00:00",
+      "log_sha256": "9c6a22cc6adc891869844f3e559c2978fbb0367b09c5b3e6ea0acfb09e517a73",
+      "diff_before_sha256": "a73a4ce320ef294e598880f279b88a9a4de15e47f219b77ccf6f36f968321ace",
+      "diff_after_sha256": "a73a4ce320ef294e598880f279b88a9a4de15e47f219b77ccf6f36f968321ace"
+    },
+    {
+      "kind": "owning Linux tests",
+      "summary": "32/32 passed, zero skipped. Original command was rerun with approved local loopback access after the sandbox run had one EPERM failure; no test skip or CODEX environment change.",
+      "command": [
+        "just",
+        "test",
+        "-p",
+        "codex-hepta-shadow-qualification",
+        "--lib"
+      ],
+      "source_commit": "05906a0a090764967e3276a66ea3afc99c3eecc6",
+      "exit_code": 0,
+      "started_at": "2026-10-22T10:17:14.989048+00:00",
+      "completed_at": "2026-10-22T10:17:15.911251+00:00",
+      "log_sha256": "6875fc37257c1bf43ddb177c7cfe0b1bc594417f8f5597e7ae3b23496fbc642f",
+      "diff_before_sha256": "6edc3b0184803a2a34c14ecf085c47990d5a6c7706eacbea2046797f9f020d17",
+      "diff_after_sha256": "6edc3b0184803a2a34c14ecf085c47990d5a6c7706eacbea2046797f9f020d17"
+    },
+    {
+      "kind": "scoped Clippy",
+      "summary": "Original just fix succeeded; one existing closure was mechanically changed to the equivalent slice method reference and committed separately.",
+      "command": [
+        "just",
+        "fix",
+        "-p",
+        "codex-hepta-shadow-qualification",
+        "--lib"
+      ],
+      "source_commit": "05906a0a090764967e3276a66ea3afc99c3eecc6",
+      "exit_code": 0,
+      "started_at": "2026-10-22T10:17:29.397159+00:00",
+      "completed_at": "2026-10-22T10:17:59.395423+00:00",
+      "log_sha256": "d20b04448a9074db64fe943460e91f317f4e81704c63f888efff0864ada77514",
+      "diff_before_sha256": "6edc3b0184803a2a34c14ecf085c47990d5a6c7706eacbea2046797f9f020d17",
+      "diff_after_sha256": "68c7a9f867e0473544e788d35c59d0d2672519653960d5bec8a7d4ede665bd4f"
+    }
+  ],
+  "isolated_validation": [
+    {
+      "scope": "Bazel credential-free Linux wrapper",
+      "red": "2 failures among 5 new tests",
+      "green": "53/53 tests passed",
+      "red_log_sha256": "8522ed7042892c17c43be61e0e2e59b6f6d9f8ebc924bd7bd881d01536269596",
+      "green_log_sha256": "39477db80e07dd617724fdf022b4696185cc3cf04d67d3ada466f916b13a5269",
+      "not_claimed": "Cloud build success"
+    },
+    {
+      "scope": "Pinned Clippy compound-cfg reproduction",
+      "results": {
+        "compound": {
+          "returncode": 1,
+          "stderr": "error: used `expect()` on a `Result` value\n --> /tmp/hepta-expect-cfg-clippy-repro/compound.rs:3:25\n  |\n3 |     fn helper() -> u8 { \"7\".parse().expect(\"fixture number\") }\n  |                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  |\n  = note: if this value is an `Err`, it will panic\n  = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.95.0/index.html#expect_used\n  = note: requested on the command line with `-D clippy::expect-used`\n\nerror: aborting due to 1 previous error\n\n",
+          "source_sha256": "57d0a9adfd17b5aa197dcdfcfdd72512f5c1ebc4776e056eff9c0b3d14958fef"
+        },
+        "separate": {
+          "returncode": 0,
+          "stderr": "",
+          "source_sha256": "2cbdf3639312d78184c343cac72cc20972b4c6f78569cd713be7591065b62a5d"
+        }
+      },
+      "not_claimed": "Complete Memory Clippy gate"
+    },
+    {
+      "scope": "Exact Seatbelt helper and its regression extracted from committed source",
+      "receipt": {
+        "source_commit": "1afd2320b007eaffbd2cbd5093eb081e0c2d5016",
+        "source_sha256": "1f9216728dcc80ef73daebc7e39983be6a7639d3e202c7ba6477571f3019c34f",
+        "exact_source_fragment_sha256": "2bf024fa5fb4cfef1ded20668f11dda4198ed64dbfc617abdd0179ae4ad8ed52",
+        "scope": "exact helper and its owning regression extracted; std assert_eq macro; not Cargo/native Seatbelt execution",
+        "compiler": "rustc 1.95.0 (59807616e 2026-04-14)",
+        "build_exit": 0,
+        "test_exit": 0,
+        "started_at": "2026-10-22T10:25:46.022177+00:00",
+        "completed_at": "2026-10-22T10:25:46.222998+00:00",
+        "logs": {
+          "build.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "test.log": "9ff06365ea3cbbd514782af740a5ed9fc8c56f1f4c893b4a4fba244b41bfe2b7"
+        }
+      },
+      "not_claimed": "Cargo build or native sandbox-exec execution"
+    }
+  ],
+  "dependency_graph": {
+    "resolver": {
+      "kind": "real Cargo resolver",
+      "summary": "Generated exactly three workspace-internal dependency edges; no registry version changes.",
+      "command": [
+        "cargo",
+        "tree",
+        "--offline",
+        "-p",
+        "codex-hepta-shadow-qualification",
+        "--target",
+        "x86_64-pc-windows-msvc",
+        "--edges",
+        "normal",
+        "--depth",
+        "1"
+      ],
+      "source_commit": "05906a0a090764967e3276a66ea3afc99c3eecc6",
+      "exit_code": 0,
+      "started_at": "2026-10-22T10:14:24.891450+00:00",
+      "completed_at": "2026-10-22T10:14:25.742230+00:00",
+      "log_sha256": "89ed2c1d73d7e30f518f692cdc9bd986259918f52cca0ce101f6168a95fc049f",
+      "diff_before_sha256": "17018b362a2415a20ce1521b9e14250c46ae55b16b0fae99f98cdd285aeb9b6d",
+      "diff_after_sha256": "1dc0a1736e6d93ab24840258deeaf77743e12c4e3c77602bef81cacc6edeae67"
+    },
+    "cargo_lock_sha256": "f11a317cd13092663372c3f6b5709266c9e1375baa55eb57f199b754faf418a1",
+    "module_lock_sha256": "63ee8041114a86fb2064282e466d4250abdf884b2b10dff21c91c412cecfcc4b",
+    "edges": [
+      "codex-exec-server -> codex-utils-cargo-bin",
+      "codex-hepta-supervisor -> codex-utils-cargo-bin",
+      "codex-hepta-shadow-qualification -> codex-utils-path"
+    ],
+    "original_gate_results": [
+      {
+        "command": ["just", "bazel-lock-update"],
+        "source_commit": "9e96ae9043b9c2d54a9a6490979582843ff1c3c2",
+        "cargo_sha256": "f11a317cd13092663372c3f6b5709266c9e1375baa55eb57f199b754faf418a1",
+        "module_sha256": "63ee8041114a86fb2064282e466d4250abdf884b2b10dff21c91c412cecfcc4b",
+        "exit_code": 0,
+        "completed_at": "2026-10-22T10:19:52.538249+00:00",
+        "log_sha256": "1e059ab80029813c65c640c4e4246227eb30b627c5fbd789aa02fdc19f91c8b0"
+      },
+      {
+        "command": ["just", "bazel-lock-check"],
+        "source_commit": "9e96ae9043b9c2d54a9a6490979582843ff1c3c2",
+        "cargo_sha256": "f11a317cd13092663372c3f6b5709266c9e1375baa55eb57f199b754faf418a1",
+        "module_sha256": "63ee8041114a86fb2064282e466d4250abdf884b2b10dff21c91c412cecfcc4b",
+        "exit_code": 0,
+        "completed_at": "2026-10-22T10:20:32.639578+00:00",
+        "log_sha256": "f16b618ed4ff8f95883a28aecfef7e5c0c1aba275f1480c9d3ab1f7b9750066b"
+      },
+      {
+        "command": [
+          "cargo-deny",
+          "--log-level",
+          "warn",
+          "--manifest-path",
+          "./codex-rs/Cargo.toml",
+          "--all-features",
+          "check"
+        ],
+        "source_commit": "9e96ae9043b9c2d54a9a6490979582843ff1c3c2",
+        "cargo_sha256": "f11a317cd13092663372c3f6b5709266c9e1375baa55eb57f199b754faf418a1",
+        "module_sha256": "63ee8041114a86fb2064282e466d4250abdf884b2b10dff21c91c412cecfcc4b",
+        "exit_code": 0,
+        "completed_at": "2026-10-22T10:24:11.431189+00:00",
+        "log_sha256": "03e2a5d4acaf679d3954cb214cf17fa729ec277993b6dc7d76b6b2a384988beb"
+      }
+    ],
+    "unchanged_bazel_lock": "The real update and subsequent original drift check both exited 0 and left MODULE.bazel.lock unchanged. No generated hash was edited by hand.",
+    "cargo_deny_summary": "advisories ok, bans ok, licenses ok, sources ok",
+    "advisory_database_head": "59ef7abf8ce56ea80fe7eba97ba3835449009fa4",
+    "failed_environment_attempts": [
+      "Sandbox-only Bazel profiler interface discovery failed before original commands succeeded with approved host network interfaces.",
+      "Sandbox-only Clippy/TCP and Shadow loopback attempts remain recorded as environment failures, not hidden passes."
+    ]
+  },
+  "new_macos_fixture_scope": {
+    "manifest_sha256": "a48f802d33bdff02e0df994cf9c2968d46eb8d276ab13dd2aa6eca1ad7062d98",
+    "validation_sha256": "93a8fc1376d0f5b9364302774288efcaca476cef32b4aa458494f485936f98bd",
+    "integration_sha256": "70e1f47b0772ef8149402cc9d72edb670f0f16fcde5c210a2c6ed9c89ef2ec92",
+    "exact_postimages_verified": true,
+    "seven_production_file_hashes_preserved": true,
+    "original_negatives_retained": [
+      "canonical path and symlink rejection",
+      "authorized-read inode, hardlink, ABA, outside root and byte limits",
+      "full Seatbelt protected path counts and both literal/subpath deny references",
+      "Memory no-authority, lease, witness and source writer assertions"
+    ],
+    "extension_memory": "56 original extension failures are distinct from the 158 main Memory failures. Ten extension fixture files include every initial, other-root and reopen normalization point.",
+    "native_macos": "PENDING"
+  },
+  "independent_reviews": {
+    "sshsig": {
+      "path": "/tmp/hepta-sshsig-readonly-review/review.json",
+      "sha256": "0033c646fb4ac4dc41fe07f58f32ebb6a9679ba45896e9f8d919a8eb1f9ca9d1",
+      "bytes": 9066
+    },
+    "exclusive_directory_and_shadow": "Read-only review of 05906a0a and 46d7198b found no concrete blocker: FILE_CREATE remains exclusive, existing reads use FILE_OPEN without creation, source and destination identities plus limits remain checked. No native execution claimed.",
+    "recovery_owner_8043": "Independent review requested and still pending when this receipt was prepared; self-review and source/format checks are complete."
+  },
+  "local_tools": {
+    "cargo-deny": {
+      "path": "/workspace/scratch/19dd72e63851/ci-tools/cargo-deny",
+      "version": "cargo-deny 0.19.0"
+    },
+    "cargo-nextest": {
+      "path": "/tmp/hepta-handoff-tools/bin/cargo-nextest",
+      "version": "cargo-nextest 0.9.149 (3fe4ef319 2026-10-20)\nrelease: 0.9.149\ncommit-hash: 3fe4ef31972f24e0c94cfe291718eab0fe678260\ncommit-date: 2026-10-20\nhost: x86_64-unknown-linux-gnu"
+    },
+    "rustc": {
+      "path": "/root/.rustup/toolchains/1.95.0-x86_64-unknown-linux-gnu/bin/rustc",
+      "version": "rustc 1.95.0 (59807616e 2026-04-14)"
+    },
+    "just": {
+      "path": "/workspace/scratch/19dd72e63851/ci-tools/just",
+      "version": "just 1.51.0"
+    }
+  },
+  "ci_nextest_version": "0.9.103; local owning tests used 0.9.149 and are not substitutes for exact CI execution",
+  "latest_remote_snapshot": {
+    "checked_at": "2026-10-22T10:26:13Z",
+    "snapshot_sha256": "8832f22999c8d1a85de8d5a8799958c69169a4fbe7884fc3528f80a68038f9f9",
+    "status": {
+      "p38": {
+        "head": "9370b49332c35b7303528eafbb4733639d628283",
+        "job_counts": {
+          "success": 17,
+          "cancelled": 7,
+          "failure": 7,
+          "skipped": 4,
+          "queued": 1
+        }
+      },
+      "p39": {
+        "head": "fcbde931edefeb95ed01063e268ecfc74d0d036d",
+        "job_counts": {
+          "success": 17,
+          "cancelled": 3,
+          "in_progress": 6,
+          "failure": 4,
+          "skipped": 4,
+          "queued": 2
+        }
+      }
+    },
+    "queue_root_cause": "UNKNOWN; queued counts are not evidence of organization capacity"
+  },
+  "pending": [
+    "Final combined source must run the original Linux, Windows and macOS CI gates after publishing; old source success is not transferred.",
+    "Windows outside DELETE and WRITE_RESTRICTED functional negatives remain OPEN; no blanket rejection, elevated-route substitution or weakened assertion was applied.",
+    "Windows Core shard cancellation lacks terminal test logs and remains undiagnosed.",
+    "Mac ENOSPC must be checked on the repaired resource-config path; no skipped targets count as passing.",
+    "New Exec/Seatbelt/main Memory/extension Memory and Windows-only fixture/owner changes have not been compiled and executed locally as complete owning targets. Local free space was approximately 1.17 GB after preserving logs and deleting only completed owned Bazel caches.",
+    "App-server metadata/auth/attestation and Bedrock followups identified in prior receipts remain separate open work; this batch does not claim to close them.",
+    "Scoped Clippy for the new Mac fixture crates and final required native CI remain pending; no lint or assertion gate was disabled."
+  ],
+  "no_remote_mutations": true
+}

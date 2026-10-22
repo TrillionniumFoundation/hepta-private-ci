@@ -12,6 +12,7 @@ use std::rc::Rc;
 use pretty_assertions::assert_eq;
 use windows_sys::Win32::Storage::FileSystem::CreateDirectoryW;
 
+use super::super::create_private_state_directory;
 use super::super::final_path;
 use super::super::open_private_state_directory;
 use super::super::wide_path;
@@ -75,6 +76,36 @@ fn private_directory_fixture(path: &Path) -> io::Result<File> {
         Ok(())
     })?;
     open_private_state_directory(path)
+}
+
+#[test]
+fn exclusive_private_creation_preserves_existing_directory_and_file() -> io::Result<()> {
+    let temporary = tempfile::tempdir()?;
+    let root = temporary.path().join("new-private-root");
+    drop(create_private_state_directory(&root)?);
+    drop(open_private_state_directory(&root)?);
+    fs::write(root.join("marker"), b"existing directory")?;
+    let file = temporary.path().join("existing-file");
+    fs::write(&file, b"existing file")?;
+
+    let directory_error = create_private_state_directory(&root)
+        .expect_err("exclusive creation must not reopen an existing directory");
+    let file_rejected = create_private_state_directory(&file).is_err();
+    assert_eq!(
+        (
+            directory_error.kind(),
+            file_rejected,
+            fs::read(root.join("marker"))?,
+            fs::read(&file)?,
+        ),
+        (
+            io::ErrorKind::AlreadyExists,
+            true,
+            b"existing directory".to_vec(),
+            b"existing file".to_vec(),
+        ),
+    );
+    Ok(())
 }
 
 #[test]

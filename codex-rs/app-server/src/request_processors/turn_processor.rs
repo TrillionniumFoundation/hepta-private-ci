@@ -14,6 +14,9 @@ use codex_skills::system_cache_root_dir;
 use crate::image_url::REMOTE_IMAGE_URL_ERROR;
 use crate::image_url::is_remote_image_url;
 
+const ADMISSION_FENCE_OBSERVATION_BUDGET: std::time::Duration =
+    std::time::Duration::from_secs(/*secs*/ 5);
+
 pub(super) fn validate_user_input_image_urls(
     input: &[V2UserInput],
 ) -> Result<(), JSONRPCErrorError> {
@@ -490,6 +493,24 @@ impl TurnRequestProcessor {
             );
             return Err(error);
         }
+        // A visible turn/completed can precede the old owner's final flush and
+        // idle callback. Observe that exact fence snapshot outside Core routing;
+        // never replay input or release a fence on the caller's behalf.
+        thread
+            .observe_admission_fences_until(
+                tokio::time::Instant::now() + ADMISSION_FENCE_OBSERVATION_BUDGET,
+            )
+            .await
+            .map_err(|err| {
+                let error =
+                    internal_error(format!("failed to observe previous turn retirement: {err}"));
+                self.track_error_response(&request_id, &error, /*error_type*/ None);
+                error
+            })?;
+        // Waiting conveys no direct-input or policy authority. Recheck before
+        // rebuilding settings, then retain the ordinary single routing attempt.
+        self.ensure_direct_input_allowed(&request_id, thread.as_ref())
+            .await?;
         Self::set_app_server_client_info(
             thread.as_ref(),
             app_server_client_name,

@@ -84,6 +84,13 @@ use creation_security::with_private_security;
 #[path = "private_state_windows_directory.rs"]
 mod directory;
 
+#[path = "private_state_windows_recovery.rs"]
+mod recovery;
+pub use recovery::create_private_recovery_copy;
+pub use recovery::open_existing_private_state_directory;
+pub use recovery::open_existing_private_state_directory_for_sync;
+pub use recovery::open_private_recovery_source;
+
 const ACCESS_ALLOWED_ACE_TYPE: u8 = 0;
 const ACCESS_DENIED_ACE_TYPE: u8 = 1;
 const INHERIT_ONLY_ACE: u8 = 0x08;
@@ -101,7 +108,15 @@ pub enum PrivateFileAccess {
 
 /// Creates or opens a retained private-state directory.
 pub fn open_private_state_directory(root: &Path) -> io::Result<File> {
-    let directory = directory::open(root)?;
+    let directory = directory::open(root, directory::DirectoryCreation::OpenOrCreate)?;
+    validate_handle(&directory, HandleKind::Directory)?;
+    Ok(directory)
+}
+
+/// Creates a new retained private directory, rejecting every existing entry.
+/// Existing ownership and permissions are never changed or silently accepted.
+pub fn create_private_state_directory(root: &Path) -> io::Result<File> {
+    let directory = directory::open(root, directory::DirectoryCreation::CreateNew)?;
     validate_handle(&directory, HandleKind::Directory)?;
     Ok(directory)
 }

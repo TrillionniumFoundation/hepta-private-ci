@@ -5,13 +5,7 @@
 //! or flips a release authority flag.  The external signer remains the only
 //! party that can produce the detached SSHSIG consumed by a later ceremony.
 
-#[cfg(unix)]
-use std::io::Write;
 use std::path::Path;
-#[cfg(unix)]
-use std::process::Command;
-#[cfg(unix)]
-use std::process::Stdio;
 
 use base64::Engine as _;
 use base64::engine::general_purpose::STANDARD;
@@ -32,6 +26,8 @@ use crate::durable::secure_read;
 use crate::durable::sha256;
 use crate::durable::verify_secure_directory;
 use crate::durable::write_private_new;
+use crate::sshsig::MAX_SIGNATURE_BYTES;
+use crate::sshsig::verify_ed25519;
 use crate::trust::SIGNATURE_ALGORITHM;
 use crate::trust::SSHSIG_NAMESPACE;
 
@@ -44,7 +40,6 @@ pub const G5_TRUST_POLICY_SCOPE: &str =
 pub const G5_CHALLENGE_SCOPE: &str = "g5_bounded_evidence_only_no_release_or_unfreeze_authority";
 
 const MAX_TRUST_FILE_BYTES: usize = 64 * 1024;
-const MAX_SIGNATURE_BYTES: usize = 4 * 1024;
 const MAX_LIFETIME_SECONDS: u64 = 900;
 const ASSESSMENT_STATUS_READY: &str = "READY_FOR_CHALLENGE";
 const ASSESSMENT_STATUS_SIGNATURE_VERIFIED: &str = "SIGNATURE_VERIFIED_NO_AUTHORITY";
@@ -435,13 +430,16 @@ fn assess_signature(
         ));
     }
     let digest = sha256(&bytes);
-    match verify_sshsig_bytes(
-        statement,
-        &bytes,
-        &trust.allowed_signers,
-        &trust.binding.principal,
-        SSHSIG_NAMESPACE,
-    ) {
+    let verification = parse_allowed_signer(&trust.allowed_signers, &trust.binding.principal)
+        .and_then(|fingerprint| {
+            if fingerprint != trust.binding.key_fingerprint {
+                return Err(invalid(
+                    "G5 signature binding differs from the private trust anchor",
+                ));
+            }
+            verify_ed25519(statement, &bytes, &fingerprint, SSHSIG_NAMESPACE)
+        });
+    match verification {
         Ok(()) => Ok((
             ASSESSMENT_STATUS_SIGNATURE_VERIFIED.to_string(),
             true,
@@ -832,105 +830,6 @@ fn take_ssh_string(bytes: &[u8]) -> Result<(&[u8], &[u8]), AcceptanceError> {
         .get(end..)
         .ok_or_else(|| invalid("truncated G5 SSH public key remainder"))?;
     Ok((value, rest))
-}
-
-fn verify_sshsig_bytes(
-    statement: &[u8],
-    signature_bytes: &[u8],
-    allowed_signers_bytes: &[u8],
-    principal: &str,
-    namespace: &str,
-) -> Result<(), AcceptanceError> {
-    #[cfg(unix)]
-    {
-        let allowed_signers = G5InheritedPipe::new(allowed_signers_bytes)?;
-        let signature = G5InheritedPipe::new(signature_bytes)?;
-        let mut child = Command::new("/usr/bin/ssh-keygen")
-            .args(["-Y", "verify", "-f"])
-            .arg(allowed_signers.child_path())
-            .args(["-I", principal, "-n", namespace, "-s"])
-            .arg(signature.child_path())
-            .env_clear()
-            .env("LANG", "C")
-            .env("LC_ALL", "C")
-            .stdin(Stdio::piped())
-            .stdout(Stdio::null())
-            .stderr(Stdio::null())
-            .spawn()
-            .map_err(|error| invalid(format!("failed to start G5 ssh-keygen: {error}")))?;
-        let write_result = child
-            .stdin
-            .take()
-            .ok_or_else(|| invalid("G5 ssh-keygen stdin is unavailable"))?
-            .write_all(statement);
-        let status = child.wait();
-        write_result?;
-        if !status?.success() {
-            return Err(invalid("G5 SSHSIG verification failed"));
-        }
-        Ok(())
-    }
-    #[cfg(not(unix))]
-    {
-        let _ = (
-            statement,
-            signature_bytes,
-            allowed_signers_bytes,
-            principal,
-            namespace,
-        );
-        Err(invalid("G5 SSHSIG verification requires Unix"))
-    }
-}
-
-#[cfg(unix)]
-struct G5InheritedPipe {
-    read_fd: std::os::fd::OwnedFd,
-}
-
-#[cfg(unix)]
-impl G5InheritedPipe {
-    fn new(bytes: &[u8]) -> Result<Self, AcceptanceError> {
-        use std::fs::File;
-        use std::os::fd::FromRawFd;
-        use std::os::fd::OwnedFd;
-
-        let mut raw = [-1; 2];
-        // SAFETY: `pipe` receives a valid two-element integer array and writes
-        // exactly two owned descriptors on success.
-        if unsafe { libc::pipe(raw.as_mut_ptr()) } != 0 {
-            return Err(std::io::Error::last_os_error().into());
-        }
-        // SAFETY: successful `pipe` returned two newly owned descriptors.
-        let read_fd = unsafe { OwnedFd::from_raw_fd(raw[0]) };
-        // SAFETY: successful `pipe` returned two newly owned descriptors.
-        let write_fd = unsafe { OwnedFd::from_raw_fd(raw[1]) };
-        clear_g5_close_on_exec(&read_fd)?;
-        let mut writer = File::from(write_fd);
-        writer.write_all(bytes)?;
-        drop(writer);
-        Ok(Self { read_fd })
-    }
-
-    fn child_path(&self) -> String {
-        use std::os::fd::AsRawFd;
-        format!("/dev/fd/{}", self.read_fd.as_raw_fd())
-    }
-}
-
-#[cfg(unix)]
-fn clear_g5_close_on_exec(fd: &std::os::fd::OwnedFd) -> Result<(), AcceptanceError> {
-    use std::os::fd::AsRawFd;
-
-    // SAFETY: `fcntl` receives a live descriptor and does not dereference
-    // application memory for F_GETFD/F_SETFD.
-    let flags = unsafe { libc::fcntl(fd.as_raw_fd(), libc::F_GETFD) };
-    if flags == -1
-        || unsafe { libc::fcntl(fd.as_raw_fd(), libc::F_SETFD, flags & !libc::FD_CLOEXEC) } == -1
-    {
-        return Err(std::io::Error::last_os_error().into());
-    }
-    Ok(())
 }
 
 #[cfg(test)]

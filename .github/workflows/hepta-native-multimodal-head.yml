@@ -42,6 +42,7 @@ jobs:
           EXPECTED_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
         run: |
           set -euo pipefail
+          printf 'CARGO_TARGET_DIR=%s/hepta-native-head-target\n' "$RUNNER_TEMP" >> "$GITHUB_ENV"
           test "$(git rev-parse HEAD)" = "$EXPECTED_SHA"
           test -z "$(git status --porcelain)"
           printf 'CARGO_TARGET_DIR=%s\n' "$RUNNER_TEMP/hepta-native-task-head-target" >> "$GITHUB_ENV"
