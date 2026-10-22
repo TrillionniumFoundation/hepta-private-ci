@@ -89,7 +89,7 @@ impl<D: ProcessDriver> Supervisor<D> {
                 let process_fault = supervisor.recover_slot(&agent_id, slot, &record, now).err();
                 supervisor.recover_restart_budget(&agent_id, slot, now)?;
                 supervisor.recover_release_transaction(&agent_id, slot, now)?;
-                supervisor.recover_signed_intent(&agent_id, slot, &record)?;
+                supervisor.recover_signed_intent(&agent_id, slot, &record, process_fault.is_none())?;
                 Ok(process_fault)
             });
             match result {
@@ -687,6 +687,7 @@ impl<D: ProcessDriver> Supervisor<D> {
         agent_id: &AgentId,
         slot: &mut AgentSlot<D::Process>,
         record: &AgentRecord,
+        process_recovery_succeeded: bool,
     ) -> Result<(), SupervisorError> {
         let intent = read_intent(record.layout.run_root())
             .map_err(|error| SupervisorError::Invalid(error.to_string()))?;
@@ -786,6 +787,7 @@ impl<D: ProcessDriver> Supervisor<D> {
                 ));
             }
             if intent.status == SignedIntentStatus::RecoveryRequired
+                && process_recovery_succeeded
                 && slot.runtime.is_none()
                 && self.record(agent_id)?.lifecycle.lifecycle == AgentLifecycle::Failed
             {
