@@ -228,6 +228,11 @@ impl RuntimeToolIntentV1 {
         if self.arguments_digest.is_zero() {
             return Err(ExecutionContractError::ZeroDigest("tool arguments"));
         }
+        // The submitted arguments must be the exact final-use payload. A
+        // separately bound digest is insufficient: the two cannot drift.
+        if self.arguments_digest != self.cell.final_payload.digest {
+            return Err(ExecutionContractError::ToolPayloadMismatch);
+        }
         Ok(())
     }
 
@@ -266,6 +271,12 @@ impl ToolOutcomeV1 {
             || self.stderr_digest.is_some_and(Digest32::is_zero)
         {
             return Err(ExecutionContractError::ZeroDigest("tool output"));
+        }
+        // An exit code is only observable when the tool reached terminality.
+        // Otherwise a forged "rejected before admission" receipt could
+        // conceal a completed process and authorize a second execution.
+        if !self.terminal_observed && self.exit_code.is_some() {
+            return Err(ExecutionContractError::StatusOutcomeMismatch);
         }
         Ok(())
     }
@@ -383,6 +394,13 @@ impl RuntimeReceiptV1 {
         {
             return Err(ExecutionContractError::StatusOutcomeMismatch);
         }
+        // Rejected means the effect did not reach the runtime. It must never
+        // carry a terminal observation and then claim retry-before-admission.
+        if self.execution.status == ExecutionStatusV1::Rejected
+            && self.tool_outcome.terminal_observed
+        {
+            return Err(ExecutionContractError::StatusOutcomeMismatch);
+        }
         Ok(())
     }
 }
@@ -424,6 +442,7 @@ pub enum ExecutionContractError {
     ZeroDigest(&'static str),
     ZeroConnection,
     PayloadScopeMismatch,
+    ToolPayloadMismatch,
     WrongIntentKind,
     MissingTerminalOutcome,
     MissingCodexBinding,
