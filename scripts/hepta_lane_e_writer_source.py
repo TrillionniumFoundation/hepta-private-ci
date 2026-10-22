@@ -95,11 +95,29 @@ def _expanded_features(manifest, requested):
     return enabled
 
 
+def _workspace_dependencies(path: Path, manifest: dict, documents: dict) -> dict:
+    explicit = manifest.get("package", {}).get("workspace")
+    candidates = (
+        [(path.parent / explicit / "Cargo.toml").resolve()]
+        if explicit is not None
+        else [parent / "Cargo.toml" for parent in path.parents]
+    )
+    for candidate in candidates:
+        owner = documents.get(candidate)
+        if owner is None and explicit is not None:
+            owner = tomllib.loads(candidate.read_text(encoding="utf-8"))
+        if owner is not None and "workspace" in owner:
+            return owner["workspace"].get("dependencies", {})
+    return {}
+
+
 def qualification_is_disabled(root: Path, manifest_path: Path) -> bool:
-    """Prove the exact qualification switch is absent from normal Cargo use.
+    """Refuse any declared normal-consumer route to the qualification switch.
 
     A new explicit Bazel enablement requires review rather than an automatic
     exemption. Dev-dependency fixtures do not enable a normal product build.
+    All consumer features count, including inactive optional routes; this is a
+    conservative source check, not a Cargo activation or resolution simulator.
     """
     manifest = tomllib.loads(manifest_path.read_text(encoding="utf-8"))
     if QUALIFICATION_FEATURE not in manifest.get("features", {}):
@@ -107,25 +125,31 @@ def qualification_is_disabled(root: Path, manifest_path: Path) -> bool:
     if QUALIFICATION_FEATURE in _expanded_features(manifest, ["default"]):
         return False
     package = manifest["package"]["name"]
-    consumers = [
-        tomllib.loads(path.read_text(encoding="utf-8"))
+    documents = {
+        path.resolve(): tomllib.loads(path.read_text(encoding="utf-8"))
         for path in (root / "codex-rs").rglob("Cargo.toml")
-    ]
-    workspace_dependencies = {
-        alias: spec
-        for consumer in consumers
-        for alias, spec in consumer.get("workspace", {}).get("dependencies", {}).items()
     }
-    for consumer in consumers:
-        defaults = _expanded_features(consumer, ["default"])
+    for path, consumer in documents.items():
+        workspace_dependencies = _workspace_dependencies(path, consumer, documents)
+        routes = {
+            value
+            for values in consumer.get("features", {}).values()
+            for value in values
+        }
         for alias, spec in _dependencies(consumer):
+            if isinstance(spec, str):
+                spec = {}
             if not isinstance(spec, dict):
-                continue
-            inherited = (
-                workspace_dependencies.get(alias, {}) if spec.get("workspace") else {}
-            )
+                raise ValueError("unclassified normal dependency specification")
+            inherited = {}
+            if spec.get("workspace"):
+                if alias not in workspace_dependencies:
+                    raise ValueError("unresolved normal workspace dependency")
+                inherited = workspace_dependencies[alias]
+                if isinstance(inherited, str):
+                    inherited = {}
             if not isinstance(inherited, dict):
-                inherited = {}
+                raise ValueError("unclassified workspace dependency specification")
             if spec.get("package", inherited.get("package", alias)) != package:
                 continue
             requested = set(spec.get("features", [])) | set(
@@ -133,7 +157,7 @@ def qualification_is_disabled(root: Path, manifest_path: Path) -> bool:
             )
             requested.update(
                 value.split("/", 1)[1]
-                for value in defaults
+                for value in routes
                 if value.startswith((f"{alias}/", f"{alias}?/"))
             )
             if QUALIFICATION_FEATURE in _expanded_features(manifest, requested):
@@ -173,9 +197,24 @@ def _outside_macros(code: str, positions: set[int]) -> set[int]:
     return outside
 
 
+def _has_unknown_attributes(code: str) -> bool:
+    # Unknown outer/procedural attributes can rewrite the item or its children.
+    # Refuse exemptions for the whole file rather than guess their expansion.
+    for match in re.finditer(r"#\s*!?\s*\[", code):
+        end = _closing(code, match.end() - 1, "[", "]")
+        if (
+            re.fullmatch(
+                r"\s*(?:cfg|allow)\s*\([^\[\]]*\)\s*", code[match.end() : end - 1]
+            )
+            is None
+        ):
+            return True
+    return False
+
+
 def product_source(text: str, qualification_disabled: bool) -> str:
     code = rust_code(text)
-    if not qualification_disabled:
+    if not qualification_disabled or _has_unknown_attributes(code):
         return code
     output = list(code)
     attribute = re.compile(
@@ -222,12 +261,9 @@ def writer_uses(code: str) -> set[str]:
     if re.search(r"(?:\.|::)\s*append_qualification\b", code):
         findings.add("legacy qualification append outside disabled qualification item")
     if "DurableLearningJournal" in code:
-        journals = {"DurableLearningJournal"}
-        journals.update(re.findall(r"\bDurableLearningJournal\s+as\s+(\w+)", code))
-        journal = "(?:" + "|".join(map(re.escape, sorted(journals))) + ")"
-        if re.search(r"\.\s*append_decision\b", code) or re.search(
-            rf"\b{journal}\s*>?\s*::\s*append_decision\b", code
-        ):
+        # With the legacy trait in scope, a concrete type or imported alias can
+        # name its associated method; restricting this to the trait name leaks.
+        if re.search(r"(?:\.|::)\s*append_decision\b", code):
             findings.add("legacy journal decision write")
     read_arm = re.compile(
         rf"\b{event}\s*::\s*({LEGACY_VARIANTS})\s*\(\s*(\w+)\s*\)"
@@ -235,7 +271,10 @@ def writer_uses(code: str) -> set[str]:
     )
     reads = {match.start(): match for match in read_arm.finditer(code)}
     masked = list(code)
-    for start in _outside_macros(code, set(reads)):
+    safe_reads = (
+        set() if _has_unknown_attributes(code) else _outside_macros(code, set(reads))
+    )
+    for start in safe_reads:
         match = reads[start]
         masked[start : match.end()] = " " * (match.end() - start)
     code = "".join(masked)

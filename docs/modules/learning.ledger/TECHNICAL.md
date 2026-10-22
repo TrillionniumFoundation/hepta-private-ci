@@ -208,9 +208,15 @@ patterns and the sealed journal's read-only import. Its qualification exception
 applies only to a standalone function compiled behind the exact disabled
 `qualification-legacy-learning-write` switch. Default feature expansion,
 normal dependency requests (including aliases and workspace inheritance), or
-explicit Bazel enablement prevent that exception. Runtime `cfg!`, unknown
-conditions, macro token trees, raw constructor aliases and grouped/wildcard
-imports cannot establish a read-only or disabled-write exemption. This bounded
+explicit Bazel enablement prevent that exception. Every declared normal
+consumer route counts, including an inactive optional feature forwarding to
+qualification; the inventory does not simulate Cargo activation. Workspace
+aliases resolve within each consumer's own explicit or nearest workspace.
+Runtime `cfg!`, unknown conditions, macro token trees, raw constructor aliases
+and grouped/wildcard imports cannot establish an exemption. Unknown outer or
+procedural attributes disable read and qualification exemptions for the file.
+With the legacy journal trait in scope, concrete-type and aliased UFCS calls
+or function pointers to `append_decision` remain write uses. This bounded
 lexical inventory supplements compilation and writer tests; it does not prove
 general Rust data flow or a deployed product learning loop.
 

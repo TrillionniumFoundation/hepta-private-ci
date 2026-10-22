@@ -681,6 +681,10 @@ uncompiled legacy `objective_ingress.rs`. The active Objective path remains
 `objective_runtime.rs` and its existing RunStart owner. The corrected inventory
 must reject adjacent product writes, default/consumer feature activation and
 constructor aliases while accepting those proven read/qualification cases.
+Its conservative consumer check rejects even an inactive optional route to
+qualification; unknown procedural attributes and concrete legacy UFCS writes
+cannot receive an exemption. Do not substitute this source check for Cargo
+compilation or the authenticated writer's runtime admission tests.
 Removing the orphan Objective files is a separate maintenance task in these
 same packages, dependent on confirming that no source-navigation evidence
 uses them. Closing this inventory defect neither establishes a production

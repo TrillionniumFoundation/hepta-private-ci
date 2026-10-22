@@ -290,6 +290,118 @@ fn product() { LedgerEvent::Decision(value); }
 """)
                 )
 
+    def test_transitive_default_or_optional_consumer_route_prevents_exemption(self):
+        mid = self.root / "codex-rs/mid/Cargo.toml"
+        mid.parent.mkdir()
+        mid.write_text(
+            '[package]\nname = "mid"\n[features]\ndefault = []\n'
+            'enable = ["product/qualification-legacy-learning-write"]\n'
+            '[dependencies]\nproduct = { path = "../product", optional = true }\n'
+        )
+        source = """
+#[cfg(feature = "qualification-legacy-learning-write")]
+fn product() { LedgerEvent::Decision(value); }
+"""
+        # A declared opt-in route is already enough to deny the exemption.
+        with self.subTest(route="declared_optional_feature"):
+            self.assertTrue(self.verify(source))
+        app = self.root / "codex-rs/app/Cargo.toml"
+        app.parent.mkdir()
+        app.write_text(
+            '[package]\nname = "app"\n[features]\ndefault = ["mid/enable"]\n'
+            '[dependencies]\nmid = { path = "../mid" }\n'
+        )
+        with self.subTest(route="transitive_app_default"):
+            self.assertTrue(self.verify(source))
+
+    def test_dependency_alias_is_resolved_in_its_own_workspace(self):
+        for directory, package in [("a", "product"), ("z", "unrelated")]:
+            workspace = self.root / "codex-rs" / directory
+            workspace.mkdir()
+            (workspace / "Cargo.toml").write_text(
+                '[workspace.dependencies]\nrenamed = { package = "'
+                + package
+                + '", path = "../'
+                + package
+                + '" }\n'
+            )
+            member = workspace / "member"
+            member.mkdir()
+            (member / "Cargo.toml").write_text(
+                '[package]\nname = "' + directory + '-consumer"\n'
+                '[features]\ndefault = ["renamed/qualification-legacy-learning-write"]\n'
+                "[dependencies]\nrenamed = { workspace = true }\n"
+            )
+        source = """
+#[cfg(feature = "qualification-legacy-learning-write")]
+fn product() { LedgerEvent::Decision(value); }
+"""
+        original_rglob = Path.rglob
+        with patch.object(
+            Path,
+            "rglob",
+            lambda path, pattern: iter(sorted(original_rglob(path, pattern))),
+        ):
+            self.assertTrue(self.verify(source))
+            consumer = self.root / "codex-rs/a/member/Cargo.toml"
+            consumer.write_text(
+                consumer.read_text().replace(
+                    'default = ["renamed/qualification-legacy-learning-write"]',
+                    "default = []",
+                )
+            )
+            self.assertEqual(self.verify(source), [])
+
+    def test_string_dependency_and_nondefault_route_prevent_exemption(self):
+        consumer = self.root / "codex-rs/consumer/Cargo.toml"
+        consumer.parent.mkdir()
+        consumer.write_text(
+            '[package]\nname = "consumer"\n'
+            '[features]\ndefault = []\nopt_in = ["product/qualification-legacy-learning-write"]\n'
+            '[dependencies]\nproduct = "1"\n'
+        )
+        self.assertTrue(
+            self.verify("""
+#[cfg(feature = "qualification-legacy-learning-write")]
+fn product() { LedgerEvent::Decision(value); }
+""")
+        )
+
+    def test_explicit_workspace_takes_precedence_over_nearest_workspace(self):
+        for directory, package in [("selected", "product"), ("nearest", "unrelated")]:
+            workspace = self.root / "codex-rs" / directory
+            workspace.mkdir()
+            (workspace / "Cargo.toml").write_text(
+                '[workspace.dependencies]\nrenamed = { package = "'
+                + package
+                + '", path = "../'
+                + package
+                + '" }\n'
+            )
+        consumer = self.root / "codex-rs/nearest/member/Cargo.toml"
+        consumer.parent.mkdir()
+        consumer.write_text(
+            '[package]\nname = "consumer"\nworkspace = "../../selected"\n'
+            '[features]\ndefault = []\noptional_route = ["renamed/qualification-legacy-learning-write"]\n'
+            "[dependencies]\nrenamed = { workspace = true }\n"
+        )
+        self.assertTrue(
+            self.verify("""
+#[cfg(feature = "qualification-legacy-learning-write")]
+fn product() { LedgerEvent::Decision(value); }
+""")
+        )
+
+    def test_unknown_outer_attributes_cannot_establish_read_or_cfg_exemption(self):
+        for source in [
+            '#[rewrite]\n#[cfg(feature = "qualification-legacy-learning-write")]\nfn product() { LedgerEvent::Decision(value); }',
+            '#[cfg(feature = "qualification-legacy-learning-write")]\n#[rewrite]\nfn product() { LedgerEvent::Decision(value); }',
+            '#[rewrite]\nmod product { #[cfg(feature = "qualification-legacy-learning-write")] fn write() { LedgerEvent::Decision(value); } }',
+            "#[rewrite]\nfn product(event: LedgerEvent) { match event { LedgerEvent::Decision(value) => &value.record_id, } }",
+        ]:
+            with self.subTest(source=source):
+                self.assertTrue(self.verify(source))
+
     def test_alias_and_grouped_variant_import_cannot_hide_raw_constructor(self):
         for source in [
             "use codex_hepta_learning_ledger::LedgerEvent as Event; fn product() { Event::Decision(value); }",
@@ -352,6 +464,8 @@ fn product() { journal.append_decision(head, decision); }
             "use codex_hepta_learning_ledger::DurableLearningJournal as Journal; fn product() { Journal::append_decision(journal, head, decision); }",
             "use codex_hepta_learning_ledger::DurableLearningJournal as Journal; fn product() { let write = Journal::append_decision; write(journal, head, decision); }",
             "fn product<T: DurableLearningJournal>() { <T as DurableLearningJournal>::append_decision(journal, head, decision); }",
+            "use codex_hepta_learning_ledger::DurableLearningJournal; fn product() { DurableLedger::append_decision(journal, head, decision); }",
+            "use codex_hepta_learning_ledger::DurableLearningJournal; use codex_hepta_learning_ledger::DurableLedger as Ledger; fn product() { let write = Ledger::append_decision; write(journal, head, decision); }",
         ]:
             with self.subTest(source=source):
                 self.assertTrue(self.verify(source))
