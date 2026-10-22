@@ -330,6 +330,21 @@ fn canonical_candidates(
     if baseline_count != 1 {
         return Err(NduError::MissingAbstainCandidate);
     }
+    // One payload cannot acquire an independent asset identity merely by
+    // changing its candidate_id.  Duplicates would let a Cell report the same
+    // direction twice and understate common exposure through an invented
+    // uncorrelated covariance row.  Candidate sets are deliberately bounded,
+    // so this quadratic uniqueness check is small and fully deterministic.
+    for (index, candidate) in canonical.iter().enumerate() {
+        if canonical[..index]
+            .iter()
+            .any(|earlier| earlier.candidate_digest == candidate.candidate_digest)
+        {
+            return Err(NduError::InvalidSolverReceipt(
+                "duplicate portfolio candidate digest",
+            ));
+        }
+    }
     Ok(canonical)
 }
 fn canonical_covariance(
