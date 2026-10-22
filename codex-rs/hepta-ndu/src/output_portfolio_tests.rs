@@ -773,17 +773,23 @@ fn positive_individual_scores_cannot_hide_negative_correlation_gain() {
         &[candidate("baseline", 0, 0, true), first, second],
     )
     .expect("prefer positive portfolio marginal utility");
-    assert!(receipt
-        .allocations
-        .iter()
-        .any(|item| item.candidate_id == id("a")));
-    assert!(!receipt
-        .allocations
-        .iter()
-        .any(|item| item.candidate_id == id("b")));
-    assert!(receipt
-        .allocations
-        .iter()
-        .any(|item| item.candidate_id == id("baseline")));
+    assert!(
+        receipt
+            .allocations
+            .iter()
+            .any(|item| item.candidate_id == id("a"))
+    );
+    assert!(
+        !receipt
+            .allocations
+            .iter()
+            .any(|item| item.candidate_id == id("b"))
+    );
+    assert!(
+        receipt
+            .allocations
+            .iter()
+            .any(|item| item.candidate_id == id("baseline"))
+    );
     assert!(receipt.total_utility > receipt.total_risk);
 }
