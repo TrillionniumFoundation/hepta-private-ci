@@ -1154,7 +1154,7 @@ mod tests {
             next_cursor: 9,
             latest_cursor: 12,
         }
-        .validate_after(7)
+        .validate_after(/*after_cursor*/ 7)
         .expect("contiguous batch");
 
         MatrixdEventBatch {
@@ -1163,7 +1163,7 @@ mod tests {
             next_cursor: 7,
             latest_cursor: 12,
         }
-        .validate_after(7)
+        .validate_after(/*after_cursor*/ 7)
         .expect("non-advancing gap");
 
         assert!(
@@ -1179,7 +1179,7 @@ mod tests {
                 next_cursor: 9,
                 latest_cursor: 9,
             }
-            .validate_after(7)
+            .validate_after(/*after_cursor*/ 7)
             .is_err()
         );
     }
@@ -1324,7 +1324,7 @@ mod tests {
             latest_cursor: MAX_PENDING_APPROVALS as u64,
         };
         batch
-            .validate_after(0)
+            .validate_after(/*after_cursor*/ 0)
             .expect("maximum event batch validates");
         let response = MatrixdResponse {
             payload: MatrixdPayload::Events(batch),
@@ -1370,8 +1370,8 @@ mod tests {
         );
 
         let logical_outbox = outbox_id(&agent, &room, "thread-a", "turn-a", "item-a", "final");
-        let revision_one = transaction_id(&logical_outbox, 1).expect("transaction");
-        let revision_two = transaction_id(&logical_outbox, 2).expect("transaction");
+        let revision_one = transaction_id(&logical_outbox, /*revision*/ 1).expect("transaction");
+        let revision_two = transaction_id(&logical_outbox, /*revision*/ 2).expect("transaction");
         assert_ne!(revision_one, revision_two);
         assert!(revision_one.as_str().starts_with("hepta-v1-"));
     }

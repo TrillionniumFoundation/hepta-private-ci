@@ -9,7 +9,7 @@ fn id(value: &str) -> StableId {
 }
 
 fn generation() -> Generation {
-    let result = Generation::new(7);
+    let result = Generation::new(/*value*/ 7);
     let Ok(value) = result else {
         panic!("test generation rejected");
     };

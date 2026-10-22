@@ -1012,8 +1012,8 @@ mod tests {
             module_id.clone(),
             id("owner:old"),
             id("owner:new"),
-            10,
-            11,
+            /*predecessor_writer_fence*/ 10,
+            /*successor_writer_fence*/ 11,
             digest(&format!("source:{label}")),
             migration,
             rollback,
@@ -1030,8 +1030,8 @@ mod tests {
                 window_id: id(&format!("window:{label}")),
                 window_digest: digest(&format!("window-digest:{label}")),
             },
-            baseline_generation: generation(10),
-            candidate_generation: generation(11),
+            baseline_generation: generation(/*value*/ 10),
+            candidate_generation: generation(/*value*/ 11),
             evaluation_digest: digest(&format!("evaluation:{label}")),
             rollback_predecessor_digest: artifact,
             changes: vec![TopologyChangeV2 {
@@ -1065,9 +1065,13 @@ mod tests {
         let file = TestFile::new();
         let scope = digest("resume-scope");
         {
-            let store =
-                DurableTopologyProposalRegistryV1::bootstrap_empty(file.create(), scope, 31, 8)
-                    .expect("bootstrap");
+            let store = DurableTopologyProposalRegistryV1::bootstrap_empty(
+                file.create(),
+                scope,
+                /*writer_fence*/ 31,
+                /*maximum_records*/ 8,
+            )
+            .expect("bootstrap");
             drop(store);
         }
         {
@@ -1082,8 +1086,8 @@ mod tests {
             let store = DurableTopologyProposalRegistryV1::resume_unacknowledged_bootstrap(
                 file.open(),
                 scope,
-                31,
-                8,
+                /*writer_fence*/ 31,
+                /*maximum_records*/ 8,
             )
             .expect("resume");
             assert_eq!(store.record_count(), Ok(0));
@@ -1098,8 +1102,8 @@ mod tests {
             let mut store = DurableTopologyProposalRegistryV1::resume_unacknowledged_bootstrap(
                 file.open(),
                 scope,
-                31,
-                8,
+                /*writer_fence*/ 31,
+                /*maximum_records*/ 8,
             )
             .expect("resume");
             store
@@ -1111,8 +1115,8 @@ mod tests {
             DurableTopologyProposalRegistryV1::resume_unacknowledged_bootstrap(
                 file.open(),
                 scope,
-                31,
-                8,
+                /*writer_fence*/ 31,
+                /*maximum_records*/ 8,
             )
             .err(),
             Some(DurableTopologyRegistryErrorV1::UnacknowledgedHistoryPresent)
@@ -1127,9 +1131,13 @@ mod tests {
         let first = governed("z-first");
         let second = governed("a-second");
         let (first_receipt, second_receipt, anchor) = {
-            let mut store =
-                DurableTopologyProposalRegistryV1::bootstrap_empty(file.create(), scope, 21, 8)
-                    .expect("bootstrap");
+            let mut store = DurableTopologyProposalRegistryV1::bootstrap_empty(
+                file.create(),
+                scope,
+                /*writer_fence*/ 21,
+                /*maximum_records*/ 8,
+            )
+            .expect("bootstrap");
             let first_receipt = store.append(Digest32::ZERO, first.clone()).expect("first");
             let second_receipt = store
                 .append(first_receipt.frame_digest, second)
@@ -1145,9 +1153,14 @@ mod tests {
         };
         assert_eq!(first_receipt.sequence, 1);
         assert_eq!(second_receipt.sequence, 2);
-        let reopened =
-            DurableTopologyProposalRegistryV1::reopen_anchored(file.open(), scope, 21, 8, anchor)
-                .expect("reopen");
+        let reopened = DurableTopologyProposalRegistryV1::reopen_anchored(
+            file.open(),
+            scope,
+            /*writer_fence*/ 21,
+            /*maximum_records*/ 8,
+            anchor,
+        )
+        .expect("reopen");
         assert_eq!(reopened.record_count(), Ok(2));
     }
 }

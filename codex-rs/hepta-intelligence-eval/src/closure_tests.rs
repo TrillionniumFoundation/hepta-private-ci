@@ -28,14 +28,14 @@ fn metric() -> MetricGateV1 {
         metric_id: id("task-utility"),
         direction: EvaluationDirectionV1::Maximize,
         candidate: EvaluationIntervalV1 {
-            lower: FixedQ32::from_raw(80),
-            upper: FixedQ32::from_raw(90),
+            lower: FixedQ32::from_raw(/*raw*/ 80),
+            upper: FixedQ32::from_raw(/*raw*/ 90),
         },
         baseline: EvaluationIntervalV1 {
-            lower: FixedQ32::from_raw(50),
-            upper: FixedQ32::from_raw(70),
+            lower: FixedQ32::from_raw(/*raw*/ 50),
+            upper: FixedQ32::from_raw(/*raw*/ 70),
         },
-        safety_floor: Some(FixedQ32::from_raw(75)),
+        safety_floor: Some(FixedQ32::from_raw(/*raw*/ 75)),
         support_digest: digest("metric-support"),
     }
 }
@@ -44,7 +44,7 @@ fn metric_contract() -> MetricContractV1 {
     MetricContractV1 {
         metric_id: id("task-utility"),
         direction: EvaluationDirectionV1::Maximize,
-        safety_floor: Some(FixedQ32::from_raw(75)),
+        safety_floor: Some(FixedQ32::from_raw(/*raw*/ 75)),
     }
 }
 
@@ -132,7 +132,7 @@ fn bundle() -> IndependentEvaluationBundleV1 {
 
 #[test]
 fn eval_03_intersects_superiority_safety_retention_and_unlearning() {
-    let decision = match decide_independently(bundle(), 50) {
+    let decision = match decide_independently(bundle(), /*now*/ 50) {
         Ok(decision) => decision,
         Err(error) => panic!("valid independent evaluation failed: {error}"),
     };
@@ -150,7 +150,7 @@ fn eval_04_rejects_role_collision_and_missing_future_windows() {
     let mut collision = bundle();
     collision.evaluator.signing_key_digest = collision.generator.signing_key_digest;
     assert!(matches!(
-        decide_independently(collision, 50),
+        decide_independently(collision, /*now*/ 50),
         Err(EvaluationClosureError::Role(CausalV2Error::RoleCollision(
             "signing key"
         )))
@@ -158,7 +158,7 @@ fn eval_04_rejects_role_collision_and_missing_future_windows() {
 
     let mut insufficient = bundle();
     insufficient.future_window_ids.truncate(1);
-    let decision = match decide_independently(insufficient, 50) {
+    let decision = match decide_independently(insufficient, /*now*/ 50) {
         Ok(decision) => decision,
         Err(error) => panic!("insufficient evidence should be a decision: {error}"),
     };
@@ -171,8 +171,8 @@ fn eval_04_rejects_role_collision_and_missing_future_windows() {
 #[test]
 fn evaluation_fails_candidate_when_interval_or_floor_does_not_pass() {
     let mut value = bundle();
-    value.metrics[0].candidate.lower = FixedQ32::from_raw(69);
-    let decision = match decide_independently(value, 50) {
+    value.metrics[0].candidate.lower = FixedQ32::from_raw(/*raw*/ 69);
+    let decision = match decide_independently(value, /*now*/ 50) {
         Ok(decision) => decision,
         Err(error) => panic!("failed metric should produce an ineligible decision: {error}"),
     };
@@ -254,7 +254,7 @@ fn final_holdout_registry_allows_exact_retry_but_blocks_adaptive_reuse() {
     assert_identity_conflict(&mut registry, changed_objective);
 
     let mut changed_threshold = original.clone();
-    changed_threshold.metric_contracts[0].safety_floor = Some(FixedQ32::from_raw(76));
+    changed_threshold.metric_contracts[0].safety_floor = Some(FixedQ32::from_raw(/*raw*/ 76));
     assert_identity_conflict(&mut registry, changed_threshold);
 
     let mut different_plan = original.clone();
@@ -317,14 +317,14 @@ fn independent_decision_consumes_bound_holdout_receipt() {
     let mut tampered_plan = bundle();
     tampered_plan.frozen_plan.plan_digest = digest("tampered-frozen-plan");
     assert_eq!(
-        decide_independently(tampered_plan, 50),
+        decide_independently(tampered_plan, /*now*/ 50),
         Err(EvaluationClosureError::FrozenPlanReceiptIntegrity)
     );
 
     let mut changed_scope = bundle();
     changed_scope.claim_scope = EvaluationClaimScopeV1::Qualification;
     assert_eq!(
-        decide_independently(changed_scope, 50),
+        decide_independently(changed_scope, /*now*/ 50),
         Err(EvaluationClosureError::FrozenPlanBindingMismatch(
             "claim scope"
         ))
@@ -333,14 +333,14 @@ fn independent_decision_consumes_bound_holdout_receipt() {
     let mut changed_use = bundle();
     changed_use.holdout_use.plan_digest = digest("adaptive-second-analysis");
     assert_eq!(
-        decide_independently(changed_use, 50),
+        decide_independently(changed_use, /*now*/ 50),
         Err(EvaluationClosureError::HoldoutUseReceiptIntegrity)
     );
 
     let mut changed_contract = bundle();
-    changed_contract.metrics[0].safety_floor = Some(FixedQ32::from_raw(76));
+    changed_contract.metrics[0].safety_floor = Some(FixedQ32::from_raw(/*raw*/ 76));
     assert_eq!(
-        decide_independently(changed_contract, 50),
+        decide_independently(changed_contract, /*now*/ 50),
         Err(EvaluationClosureError::FrozenPlanBindingMismatch(
             "metric contract"
         ))
@@ -349,7 +349,7 @@ fn independent_decision_consumes_bound_holdout_receipt() {
     let mut changed_candidate = bundle();
     changed_candidate.candidate_id = id("adaptive-candidate");
     assert_eq!(
-        decide_independently(changed_candidate, 50),
+        decide_independently(changed_candidate, /*now*/ 50),
         Err(EvaluationClosureError::FrozenPlanBindingMismatch(
             "candidate"
         ))
@@ -390,14 +390,14 @@ fn mixed_role_bundle()
             metric_id: id("resource-cost"),
             direction: EvaluationDirectionV1::Minimize,
             candidate: EvaluationIntervalV1 {
-                lower: FixedQ32::from_raw(95),
-                upper: FixedQ32::from_raw(100),
+                lower: FixedQ32::from_raw(/*raw*/ 95),
+                upper: FixedQ32::from_raw(/*raw*/ 100),
             },
             baseline: EvaluationIntervalV1 {
-                lower: FixedQ32::from_raw(80),
-                upper: FixedQ32::from_raw(90),
+                lower: FixedQ32::from_raw(/*raw*/ 80),
+                upper: FixedQ32::from_raw(/*raw*/ 90),
             },
-            safety_floor: Some(FixedQ32::from_raw(100)),
+            safety_floor: Some(FixedQ32::from_raw(/*raw*/ 100)),
             support_digest: digest("resource-support"),
         },
     ]);
@@ -428,7 +428,7 @@ fn mixed_role_bundle()
 fn preregistered_roles_allow_unchanged_safety_and_cost_within_budget()
 -> Result<(), EvaluationClosureError> {
     let (value, roles) = mixed_role_bundle()?;
-    let decision = decide_independently_v2(value.clone(), roles.clone(), 50)?;
+    let decision = decide_independently_v2(value.clone(), roles.clone(), /*now*/ 50)?;
     assert_eq!(
         (
             decision.disposition,
@@ -442,16 +442,16 @@ fn preregistered_roles_allow_unchanged_safety_and_cost_within_budget()
         )
     );
     assert_eq!(
-        decide_independently(value.clone(), 50),
+        decide_independently(value.clone(), /*now*/ 50),
         Err(EvaluationClosureError::FrozenPlanBindingMismatch(
             "metric contract"
         ))
     );
 
     let mut no_improvement = value.clone();
-    no_improvement.metrics[0].candidate.lower = FixedQ32::from_raw(75);
-    no_improvement.metrics[0].baseline.upper = FixedQ32::from_raw(75);
-    let failed = decide_independently_v2(no_improvement, roles.clone(), 50)?;
+    no_improvement.metrics[0].candidate.lower = FixedQ32::from_raw(/*raw*/ 75);
+    no_improvement.metrics[0].baseline.upper = FixedQ32::from_raw(/*raw*/ 75);
+    let failed = decide_independently_v2(no_improvement, roles.clone(), /*now*/ 50)?;
     assert_eq!(
         (failed.disposition, failed.failed_metrics),
         (
@@ -461,8 +461,8 @@ fn preregistered_roles_allow_unchanged_safety_and_cost_within_budget()
     );
 
     let mut over_budget = value.clone();
-    over_budget.metrics[2].candidate.upper = FixedQ32::from_raw(101);
-    let failed = decide_independently_v2(over_budget, roles.clone(), 50)?;
+    over_budget.metrics[2].candidate.upper = FixedQ32::from_raw(/*raw*/ 101);
+    let failed = decide_independently_v2(over_budget, roles.clone(), /*now*/ 50)?;
     assert_eq!(
         (failed.disposition, failed.failed_metrics),
         (
@@ -474,7 +474,7 @@ fn preregistered_roles_allow_unchanged_safety_and_cost_within_budget()
     let mut missing_support = value;
     missing_support.metrics[1].support_digest = Digest32::ZERO;
     assert_eq!(
-        decide_independently_v2(missing_support, roles, 50)?.disposition,
+        decide_independently_v2(missing_support, roles, /*now*/ 50)?.disposition,
         IndependentEvaluationDispositionV1::InsufficientEvidence
     );
     Ok(())
@@ -489,13 +489,13 @@ fn noninferiority_uses_direction_and_includes_the_registered_margin()
     ] {
         let (mut value, mut roles) = mixed_role_bundle()?;
         roles[1].role = MetricRoleV2::NonInferiority {
-            maximum_regression: FixedQ32::from_raw(5),
+            maximum_regression: FixedQ32::from_raw(/*raw*/ 5),
         };
         value.metrics[1].direction = direction;
         value.metrics[1].safety_floor = None;
         value.metrics[1].baseline = EvaluationIntervalV1 {
-            lower: FixedQ32::from_raw(50),
-            upper: FixedQ32::from_raw(50),
+            lower: FixedQ32::from_raw(/*raw*/ 50),
+            upper: FixedQ32::from_raw(/*raw*/ 50),
         };
         let boundary = match direction {
             EvaluationDirectionV1::Maximize => 45,
@@ -507,19 +507,19 @@ fn noninferiority_uses_direction_and_includes_the_registered_margin()
         };
         bind_metric_roles(&mut value, &roles)?;
         assert_eq!(
-            decide_independently_v2(value.clone(), roles.clone(), 50)?.disposition,
+            decide_independently_v2(value.clone(), roles.clone(), /*now*/ 50)?.disposition,
             IndependentEvaluationDispositionV1::EligibleForIndependentSelection
         );
         match direction {
             EvaluationDirectionV1::Maximize => {
-                value.metrics[1].candidate.lower = FixedQ32::from_raw(44)
+                value.metrics[1].candidate.lower = FixedQ32::from_raw(/*raw*/ 44)
             }
             EvaluationDirectionV1::Minimize => {
-                value.metrics[1].candidate.upper = FixedQ32::from_raw(56)
+                value.metrics[1].candidate.upper = FixedQ32::from_raw(/*raw*/ 56)
             }
         }
         assert_eq!(
-            decide_independently_v2(value, roles, 50)?.failed_metrics,
+            decide_independently_v2(value, roles, /*now*/ 50)?.failed_metrics,
             vec![id("safety-events")]
         );
     }
@@ -530,11 +530,11 @@ fn noninferiority_uses_direction_and_includes_the_registered_margin()
 fn role_contracts_cannot_be_changed_reordered_away_or_reused_on_holdout()
 -> Result<(), EvaluationClosureError> {
     let (value, roles) = mixed_role_bundle()?;
-    let original = decide_independently_v2(value.clone(), roles.clone(), 50)?;
+    let original = decide_independently_v2(value.clone(), roles.clone(), /*now*/ 50)?;
     let mut reordered = roles.clone();
     reordered.reverse();
     assert_eq!(
-        decide_independently_v2(value.clone(), reordered, 50)?,
+        decide_independently_v2(value.clone(), reordered, /*now*/ 50)?,
         original
     );
     let mut changed = roles.clone();
@@ -542,7 +542,7 @@ fn role_contracts_cannot_be_changed_reordered_away_or_reused_on_holdout()
         maximum_regression: FixedQ32::ONE,
     };
     assert_eq!(
-        decide_independently_v2(value.clone(), changed.clone(), 50),
+        decide_independently_v2(value.clone(), changed.clone(), /*now*/ 50),
         Err(EvaluationClosureError::FrozenPlanBindingMismatch(
             "metric contract"
         ))
@@ -568,7 +568,7 @@ fn role_contracts_cannot_be_changed_reordered_away_or_reused_on_holdout()
     let mut missing = roles.clone();
     missing.pop();
     assert_eq!(
-        decide_independently_v2(value.clone(), missing, 50),
+        decide_independently_v2(value.clone(), missing, /*now*/ 50),
         Err(EvaluationClosureError::FrozenPlanBindingMismatch(
             "metric role coverage"
         ))
@@ -576,7 +576,7 @@ fn role_contracts_cannot_be_changed_reordered_away_or_reused_on_holdout()
     let mut duplicate = roles;
     duplicate[1] = duplicate[0].clone();
     assert_eq!(
-        decide_independently_v2(value, duplicate, 50),
+        decide_independently_v2(value, duplicate, /*now*/ 50),
         Err(EvaluationClosureError::FrozenPlanBindingMismatch(
             "metric role coverage"
         ))
@@ -601,13 +601,13 @@ fn freezing_rejects_vacuous_or_invalid_metric_roles() -> Result<(), EvaluationCl
     for (role, label) in [
         (
             MetricRoleV2::PrimarySuperiority {
-                minimum_improvement: FixedQ32::from_raw(-1),
+                minimum_improvement: FixedQ32::from_raw(/*raw*/ -1),
             },
             "negative superiority margin",
         ),
         (
             MetricRoleV2::NonInferiority {
-                maximum_regression: FixedQ32::from_raw(-1),
+                maximum_regression: FixedQ32::from_raw(/*raw*/ -1),
             },
             "negative noninferiority margin",
         ),
@@ -642,14 +642,14 @@ fn primary_superiority_has_strict_margins_without_q32_subtraction_overflow()
         let roles = vec![MetricRoleContractV2 {
             metric_id: id("task-utility"),
             role: MetricRoleV2::PrimarySuperiority {
-                minimum_improvement: FixedQ32::from_raw(10),
+                minimum_improvement: FixedQ32::from_raw(/*raw*/ 10),
             },
         }];
         value.metrics[0].direction = direction;
         value.metrics[0].safety_floor = None;
         value.metrics[0].baseline = EvaluationIntervalV1 {
-            lower: FixedQ32::from_raw(50),
-            upper: FixedQ32::from_raw(50),
+            lower: FixedQ32::from_raw(/*raw*/ 50),
+            upper: FixedQ32::from_raw(/*raw*/ 50),
         };
         let boundary = match direction {
             EvaluationDirectionV1::Maximize => 60,
@@ -661,7 +661,7 @@ fn primary_superiority_has_strict_margins_without_q32_subtraction_overflow()
         };
         bind_metric_roles(&mut value, &roles)?;
         assert_eq!(
-            decide_independently_v2(value.clone(), roles.clone(), 50)?.disposition,
+            decide_independently_v2(value.clone(), roles.clone(), /*now*/ 50)?.disposition,
             IndependentEvaluationDispositionV1::Ineligible
         );
         let (candidate, baseline) = match direction {
@@ -677,7 +677,7 @@ fn primary_superiority_has_strict_margins_without_q32_subtraction_overflow()
             upper: FixedQ32::from_raw(baseline),
         };
         assert_eq!(
-            decide_independently_v2(value, roles, 50)?.disposition,
+            decide_independently_v2(value, roles, /*now*/ 50)?.disposition,
             IndependentEvaluationDispositionV1::EligibleForIndependentSelection
         );
     }
@@ -782,13 +782,19 @@ fn signed_evaluation_binds_metrics_roles_and_host_identities() {
     // Valid signatures and future-looking IDs alone no longer admit an
     // external longitudinal claim. V3 additionally requires observed time.
     assert_eq!(
-        decide_with_signed_evidence_v2(value.clone(), roles.clone(), &evidence, &verifier, 50),
+        decide_with_signed_evidence_v2(
+            value.clone(),
+            roles.clone(),
+            &evidence,
+            &verifier,
+            /*now*/ 50
+        ),
         Err(SignedEvaluationError::MissingLongitudinalTiming)
     );
     let mut edited = value.clone();
-    edited.metrics[0].candidate.upper = FixedQ32::from_raw(95);
+    edited.metrics[0].candidate.upper = FixedQ32::from_raw(/*raw*/ 95);
     assert_eq!(
-        decide_with_signed_evidence_v2(edited, roles, &evidence, &verifier, 50),
+        decide_with_signed_evidence_v2(edited, roles, &evidence, &verifier, /*now*/ 50),
         Err(SignedEvaluationError::Evidence(
             SignedEvidenceError::PayloadMismatch
         ))
@@ -796,18 +802,24 @@ fn signed_evaluation_binds_metrics_roles_and_host_identities() {
     let edited_roles = vec![MetricRoleContractV2 {
         metric_id: id("task-utility"),
         role: MetricRoleV2::PrimarySuperiority {
-            minimum_improvement: FixedQ32::from_raw(1),
+            minimum_improvement: FixedQ32::from_raw(/*raw*/ 1),
         },
     }];
     assert_eq!(
-        decide_with_signed_evidence_v2(value.clone(), edited_roles, &evidence, &verifier, 50),
+        decide_with_signed_evidence_v2(
+            value.clone(),
+            edited_roles,
+            &evidence,
+            &verifier,
+            /*now*/ 50
+        ),
         Err(SignedEvaluationError::Evidence(
             SignedEvidenceError::PayloadMismatch
         ))
     );
     // V2 signatures cannot authorize the legacy evaluator with different rules.
     assert_eq!(
-        decide_with_signed_evidence_v1(value, &evidence, &verifier, 50),
+        decide_with_signed_evidence_v1(value, &evidence, &verifier, /*now*/ 50),
         Err(SignedEvaluationError::Evidence(
             SignedEvidenceError::PayloadMismatch
         ))

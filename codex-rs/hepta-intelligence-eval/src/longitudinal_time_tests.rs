@@ -138,20 +138,38 @@ impl Fixture {
         evidence
     }
     fn attest(&mut self) -> SignedEvaluationEvidenceV1 {
-        let observed = future_window_signing_payload_v1(&self.bundle, &self.timing, 10)
-            .expect("observer bytes");
-        self.timing.observer = self.sign(2, LearningEvidenceRoleV1::Observer, &observed, 45);
-        let evaluated =
-            longitudinal_evaluation_signing_payload_v3(&self.bundle, &self.roles, &self.timing, 10)
-                .expect("evaluator bytes");
+        let observed = future_window_signing_payload_v1(
+            &self.bundle,
+            &self.timing,
+            /*minimum_window_micros*/ 10,
+        )
+        .expect("observer bytes");
+        self.timing.observer = self.sign(
+            /*index*/ 2,
+            LearningEvidenceRoleV1::Observer,
+            &observed,
+            /*issued_at*/ 45,
+        );
+        let evaluated = longitudinal_evaluation_signing_payload_v3(
+            &self.bundle,
+            &self.roles,
+            &self.timing,
+            /*minimum_window_micros*/ 10,
+        )
+        .expect("evaluator bytes");
         SignedEvaluationEvidenceV1 {
             generator_plan: self.sign(
-                0,
+                /*index*/ 0,
                 LearningEvidenceRoleV1::Generator,
                 self.bundle.frozen_plan.plan_digest.as_array(),
-                10,
+                /*issued_at*/ 10,
             ),
-            evaluator_bundle: self.sign(1, LearningEvidenceRoleV1::Evaluator, &evaluated, 50),
+            evaluator_bundle: self.sign(
+                /*index*/ 1,
+                LearningEvidenceRoleV1::Evaluator,
+                &evaluated,
+                /*issued_at*/ 50,
+            ),
         }
     }
     fn decide(
@@ -163,9 +181,9 @@ impl Fixture {
             self.roles.clone(),
             evidence,
             &self.timing,
-            10,
+            /*minimum_window_micros*/ 10,
             &self.verifier,
-            50,
+            /*now_unix_micros*/ 50,
         )
     }
 }
@@ -229,9 +247,9 @@ fn time_policy_observer_and_future_collection_cannot_be_substituted() {
             fixture.roles.clone(),
             &evidence,
             &fixture.timing,
-            9,
+            /*minimum_window_micros*/ 9,
             &fixture.verifier,
-            50
+            /*now_unix_micros*/ 50
         )
         .is_err()
     );
@@ -239,9 +257,9 @@ fn time_policy_observer_and_future_collection_cannot_be_substituted() {
         crate::longitudinal_time::validate_observed_windows(
             &fixture.bundle,
             &fixture.timing,
-            10,
-            10,
-            39
+            /*frozen_signature_time*/ 10,
+            /*minimum_window_micros*/ 10,
+            /*now*/ 39
         )
         .is_err()
     );

@@ -11,7 +11,7 @@ fn id(value: &str) -> StableId {
 }
 
 fn revision() -> Revision {
-    let Ok(value) = Revision::new(1) else {
+    let Ok(value) = Revision::new(/*value*/ 1) else {
         panic!("test revision must be valid");
     };
     value
@@ -44,15 +44,18 @@ fn ranking_is_deterministic_and_explainable() {
         snapshot_digest: snapshot,
         maximum_results: 2,
         candidates: vec![
-            candidate("memory:b", snapshot, 10),
-            candidate("memory:a", snapshot, 10),
+            candidate("memory:b", snapshot, /*score*/ 10),
+            candidate("memory:a", snapshot, /*score*/ 10),
         ],
     };
     let Ok(receipt) = retrieve(request) else {
         panic!("retrieval must succeed");
     };
     assert_eq!(receipt.results[0].record_id, id("memory:a"));
-    assert_eq!(receipt.results[0].lexical_score, FixedQ32::from_raw(10));
+    assert_eq!(
+        receipt.results[0].lexical_score,
+        FixedQ32::from_raw(/*raw*/ 10)
+    );
     assert!(!receipt.authority.grants_any());
 }
 
@@ -64,7 +67,11 @@ fn stale_candidate_snapshot_is_rejected() {
         query_digest: Digest32::of_bytes(b"query"),
         snapshot_digest: snapshot,
         maximum_results: 1,
-        candidates: vec![candidate("memory:a", Digest32::of_bytes(b"stale"), 10)],
+        candidates: vec![candidate(
+            "memory:a",
+            Digest32::of_bytes(b"stale"),
+            /*score*/ 10,
+        )],
     };
     assert_eq!(
         retrieve(request),
@@ -81,8 +88,8 @@ fn result_count_is_bounded() {
         snapshot_digest: snapshot,
         maximum_results: 1,
         candidates: vec![
-            candidate("memory:a", snapshot, 20),
-            candidate("memory:b", snapshot, 10),
+            candidate("memory:a", snapshot, /*score*/ 20),
+            candidate("memory:b", snapshot, /*score*/ 10),
         ],
     };
     let Ok(receipt) = retrieve(request) else {

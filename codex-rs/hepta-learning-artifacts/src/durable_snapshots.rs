@@ -652,7 +652,7 @@ mod tests {
                 &id("producer"),
                 actor.clone(),
                 trained_event(&actor),
-                20,
+                /*now*/ 20,
             )
             .unwrap_or_else(|error| panic!("lifecycle append failed: {error}"));
 
@@ -669,7 +669,13 @@ mod tests {
             ..trained_event(&actor)
         };
         assert_eq!(
-            recovered.append(recovered.head_digest(), &id("producer"), actor, next, 101),
+            recovered.append(
+                recovered.head_digest(),
+                &id("producer"),
+                actor,
+                next,
+                /*now*/ 101
+            ),
             Err(crate::ArtifactLifecycleJournalError::InvalidActorEvidence)
         );
     }

@@ -317,7 +317,7 @@ mod tests {
 
     #[test]
     fn forty_first_optional_module_can_be_added_and_removed() {
-        let mut value = fixture(41);
+        let mut value = fixture(/*count*/ 41);
         let added = RuntimeModuleCatalogV1::from_reviewed_json(&value.to_string())
             .expect("extension inside the resource bound");
         assert_eq!(added.len(), 41);
@@ -332,7 +332,7 @@ mod tests {
 
     #[test]
     fn removing_a_dependency_is_not_mistaken_for_safe_optional_removal() {
-        let mut value = fixture(2);
+        let mut value = fixture(/*count*/ 2);
         value["modules"][0]["uses"] = serde_json::json!(["module-1"]);
         RuntimeModuleCatalogV1::from_reviewed_json(&value.to_string()).expect("valid dependency");
         value["modules"].as_array_mut().expect("modules").pop();
@@ -344,14 +344,14 @@ mod tests {
 
     #[test]
     fn dynamic_manifests_keep_cycle_duplicate_and_resource_checks() {
-        let mut cycle = fixture(2);
+        let mut cycle = fixture(/*count*/ 2);
         cycle["modules"][0]["uses"] = serde_json::json!(["module-1"]);
         cycle["modules"][1]["uses"] = serde_json::json!(["module-0"]);
         assert!(matches!(
             RuntimeModuleCatalogV1::from_reviewed_json(&cycle.to_string()),
             Err(RuntimeModuleCatalogErrorV1::DependencyCycle)
         ));
-        let mut duplicate = fixture(2);
+        let mut duplicate = fixture(/*count*/ 2);
         duplicate["modules"][1]["id"] = serde_json::json!("module-0");
         assert!(matches!(
             RuntimeModuleCatalogV1::from_reviewed_json(&duplicate.to_string()),
@@ -379,7 +379,7 @@ mod tests {
             "unknown",
             "stateless ",
         ] {
-            let mut value = fixture(1);
+            let mut value = fixture(/*count*/ 1);
             value["modules"][0]["state"] = serde_json::json!(state);
             assert!(matches!(
                 RuntimeModuleCatalogV1::from_reviewed_json(&value.to_string()),
@@ -391,7 +391,7 @@ mod tests {
     #[test]
     fn every_explicit_state_spelling_remains_readable() {
         for state in ADMITTED_STATES {
-            let mut value = fixture(1);
+            let mut value = fixture(/*count*/ 1);
             value["modules"][0]["state"] = serde_json::json!(state);
             let catalog = RuntimeModuleCatalogV1::from_reviewed_json(&value.to_string())
                 .expect("explicit supported state");
@@ -401,7 +401,7 @@ mod tests {
 
     #[test]
     fn two_modules_cannot_claim_one_domain_even_with_the_same_team_owner() {
-        let mut value = fixture(2);
+        let mut value = fixture(/*count*/ 2);
         for row in value["modules"].as_array_mut().expect("modules") {
             row["state"] = serde_json::json!("stateful");
             row["writes"] = serde_json::json!(["owned-ledger"]);

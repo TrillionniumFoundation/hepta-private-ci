@@ -151,7 +151,7 @@ fn locked_file_store_replays_takeover_and_rejects_backup_rollback() {
         Ok(value) => value,
         Err(error) => panic!("create store: {error}"),
     };
-    let first = owner(store, None);
+    let first = owner(store, /*minimum*/ None);
     let first_anchor = first.anchor();
     let store = first.into_store();
     drop(store);
@@ -194,7 +194,11 @@ fn child_process_observes_lock_then_recovers_after_owner_exit() {
             Ok(file) => file,
             Err(error) => panic!("child open: {error}"),
         };
-        let result = LockedFileFinalHoldoutCasStoreV1::recover(file, digest("binding"), None);
+        let result = LockedFileFinalHoldoutCasStoreV1::recover(
+            file,
+            digest("binding"),
+            /*minimum*/ None,
+        );
         let expect_busy = std::env::var("HEPTA_FENCED_CAS_EXPECT_BUSY").is_ok();
         if expect_busy {
             assert_eq!(result.err(), Some(LockedFileCasErrorV1::Busy));
@@ -209,7 +213,7 @@ fn child_process_observes_lock_then_recovers_after_owner_exit() {
         Ok(value) => value,
         Err(error) => panic!("create store: {error}"),
     };
-    let first = owner(store, None);
+    let first = owner(store, /*minimum*/ None);
 
     let exe = match std::env::current_exe() {
         Ok(value) => value,
@@ -250,15 +254,19 @@ fn longer_divergent_history_cannot_skip_the_retained_minimum_prefix() {
     let temp = TempFile::new();
     let store = LockedFileFinalHoldoutCasStoreV1::create(temp.create(), digest("binding"))
         .unwrap_or_else(|error| panic!("create store: {error}"));
-    let first = owner(store, None);
+    let first = owner(store, /*minimum*/ None);
     let fence = first.fence().clone();
     let store = first.into_store();
     drop(store);
     let pre_minimum =
         fs::read(&temp.path).unwrap_or_else(|error| panic!("read pre-minimum backup: {error}"));
 
-    let store = LockedFileFinalHoldoutCasStoreV1::recover(temp.open(), digest("binding"), None)
-        .unwrap_or_else(|error| panic!("recover store: {error}"));
+    let store = LockedFileFinalHoldoutCasStoreV1::recover(
+        temp.open(),
+        digest("binding"),
+        /*minimum*/ None,
+    )
+    .unwrap_or_else(|error| panic!("recover store: {error}"));
     let mut canonical = FencedFinalHoldoutOwnerV1::recover(store, digest("binding"), fence.clone())
         .unwrap_or_else(|error| panic!("recover canonical owner: {error}"));
     canonical
@@ -270,8 +278,12 @@ fn longer_divergent_history_cannot_skip_the_retained_minimum_prefix() {
 
     fs::write(&temp.path, pre_minimum)
         .unwrap_or_else(|error| panic!("restore pre-minimum backup: {error}"));
-    let store = LockedFileFinalHoldoutCasStoreV1::recover(temp.open(), digest("binding"), None)
-        .unwrap_or_else(|error| panic!("recover divergent base: {error}"));
+    let store = LockedFileFinalHoldoutCasStoreV1::recover(
+        temp.open(),
+        digest("binding"),
+        /*minimum*/ None,
+    )
+    .unwrap_or_else(|error| panic!("recover divergent base: {error}"));
     let mut divergent = FencedFinalHoldoutOwnerV1::recover(store, digest("binding"), fence)
         .unwrap_or_else(|error| panic!("recover divergent owner: {error}"));
     divergent

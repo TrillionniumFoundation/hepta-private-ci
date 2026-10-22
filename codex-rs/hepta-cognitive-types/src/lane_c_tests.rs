@@ -26,9 +26,9 @@ fn vector() -> LaneCGenerationVectorV1 {
         knowledge_fact_frontier: 8,
         tombstone_frontier: 3,
         source_ledger_frontier: 12,
-        knowledge_graph_generation: generation(4),
-        compact_checkpoint_generation: generation(2),
-        prompt_registry_revision: revision(7),
+        knowledge_graph_generation: generation(/*value*/ 4),
+        compact_checkpoint_generation: generation(/*value*/ 2),
+        prompt_registry_revision: revision(/*value*/ 7),
         retrieval_profile_digest: digest("retrieval-profile"),
         encoder_preprocessor_digest: digest("encoder-profile"),
         authority_epoch: 9,
@@ -68,7 +68,7 @@ fn generation_vector_digest_binds_every_generation() {
 #[test]
 fn snapshot_key_rejects_digest_drift() {
     let mut key = snapshot_key();
-    key.vector.prompt_registry_revision = revision(8);
+    key.vector.prompt_registry_revision = revision(/*value*/ 8);
     assert_eq!(
         key.validate(),
         Err(LaneCContractError::DigestMismatch("generation_vector"))
@@ -117,7 +117,7 @@ fn federation_result_binds_coverage_snapshot_and_items() {
         items: vec![FederatedEvidenceItemV1 {
             source_owner_id: id("owner:1"),
             record_id: id("record:1"),
-            record_revision: revision(2),
+            record_revision: revision(/*value*/ 2),
             record_digest: digest("record"),
             support_digest: digest("support"),
             validity_digest: digest("validity"),
@@ -149,7 +149,7 @@ fn federation_result_binds_coverage_snapshot_and_items() {
 #[test]
 fn projection_publication_requires_exact_predecessor() {
     let generation_record = KnowledgeGraphGenerationV1 {
-        generation: generation(2),
+        generation: generation(/*value*/ 2),
         source_snapshot: snapshot_key(),
         source_manifest_digest: digest("manifest"),
         graph_profile_digest: digest("profile"),
@@ -159,7 +159,7 @@ fn projection_publication_requires_exact_predecessor() {
     };
     let mut receipt = ProjectionReceiptV1 {
         projection_id: id("projection:1"),
-        predecessor_generation: Some(generation(1)),
+        predecessor_generation: Some(generation(/*value*/ 1)),
         generation: generation_record,
         publication_digest: Digest32::ZERO,
         disposition: ProjectionDispositionV1::Published,
@@ -170,7 +170,7 @@ fn projection_publication_requires_exact_predecessor() {
         .validate()
         .unwrap_or_else(|error| panic!("valid projection: {error}"));
 
-    receipt.predecessor_generation = Some(generation(3));
+    receipt.predecessor_generation = Some(generation(/*value*/ 3));
     assert_eq!(
         receipt.validate(),
         Err(LaneCContractError::InvalidState(
@@ -183,7 +183,7 @@ fn projection_publication_requires_exact_predecessor() {
 fn compact_checkpoint_and_proof_are_non_authoritative() {
     let mut checkpoint = CompactCheckpointV1 {
         checkpoint_id: id("checkpoint:1"),
-        generation: generation(1),
+        generation: generation(/*value*/ 1),
         source_snapshot: snapshot_key(),
         support_manifest_digest: digest("support-manifest"),
         algorithm_digest: digest("algorithm"),
@@ -228,7 +228,7 @@ fn compact_checkpoint_and_proof_are_non_authoritative() {
 #[test]
 fn prompt_snapshot_and_delivery_observation_reject_stale_semantics() {
     let mut prompt = PromptRegistrySnapshotV1 {
-        revision: revision(4),
+        revision: revision(/*value*/ 4),
         registry_digest: digest("registry"),
         lifecycle_frontier: 10,
         revocation_frontier: 8,

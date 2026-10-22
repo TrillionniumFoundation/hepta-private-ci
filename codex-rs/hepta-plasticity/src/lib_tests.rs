@@ -76,16 +76,16 @@ fn legacy_request() -> ProposalRequest {
         proposal_id: id("proposal:1"),
         proposer_id: id("proposer:1"),
         evaluator_id: id("evaluator:1"),
-        baseline_generation: generation(1),
-        candidate_generation: generation(2),
+        baseline_generation: generation(/*value*/ 1),
+        candidate_generation: generation(/*value*/ 2),
         evaluation_digest: digest(b"evaluation"),
         evaluation_eligible: true,
-        maximum_absolute_delta: FixedQ32::from_raw(10),
+        maximum_absolute_delta: FixedQ32::from_raw(/*raw*/ 10),
         parameter_deltas: vec![ParameterDelta {
             parameter_id: id("parameter:1"),
-            delta: FixedQ32::from_raw(5),
-            lower_bound: FixedQ32::from_raw(-10),
-            upper_bound: FixedQ32::from_raw(10),
+            delta: FixedQ32::from_raw(/*raw*/ 5),
+            lower_bound: FixedQ32::from_raw(/*raw*/ -10),
+            upper_bound: FixedQ32::from_raw(/*raw*/ 10),
             evidence_digest: digest(b"parameter-evidence"),
         }],
         topology_deltas: vec![TopologyDelta {
@@ -121,8 +121,8 @@ fn parameter_delta(layer: &str, parameter: &str, value: i64, evidence: &[u8]) ->
         layer_id: id(layer),
         parameter_id: id(parameter),
         delta: FixedQ32::from_raw(value),
-        lower_bound: FixedQ32::from_raw(-10),
-        upper_bound: FixedQ32::from_raw(10),
+        lower_bound: FixedQ32::from_raw(/*raw*/ -10),
+        upper_bound: FixedQ32::from_raw(/*raw*/ 10),
         evidence_digest: digest(evidence),
     }
 }
@@ -138,8 +138,8 @@ fn v2_request() -> ParameterProposalRequestV2 {
             window_id: id("window:1"),
             window_digest: digest(b"window"),
         },
-        baseline_generation: generation(7),
-        candidate_generation: generation(8),
+        baseline_generation: generation(/*value*/ 7),
+        candidate_generation: generation(/*value*/ 8),
         dataset_digest: digest(b"dataset"),
         update_rule_digest: digest(b"update-rule"),
         modulator_digest: digest(b"modulator"),
@@ -162,8 +162,8 @@ fn v2_request() -> ParameterProposalRequestV2 {
                 candidate_id: id("candidate:update"),
                 kind: ParameterCandidateKindV2::Update,
                 parameter_deltas: vec![
-                    parameter_delta("layer:b", "parameter:b", -3, b"delta-b"),
-                    parameter_delta("layer:a", "parameter:a", 2, b"delta-a"),
+                    parameter_delta("layer:b", "parameter:b", /*value*/ -3, b"delta-b"),
+                    parameter_delta("layer:a", "parameter:a", /*value*/ 2, b"delta-a"),
                 ],
             },
             ParameterCandidateRequestV2 {
@@ -183,18 +183,18 @@ fn legacy_v1_is_explicit_read_only_and_never_upconverted() {
         Err(Error::LegacyWriteDisabled)
     );
     let record = ProposalRecord::LegacyV1(Box::new(legacy_proposal()));
-    let read = must(read_versioned_proposal(1, record.clone()));
+    let read = must(read_versioned_proposal(/*version*/ 1, record.clone()));
     assert_eq!(read.record, record);
     assert_eq!(
         read.digest_verification,
         ProposalDigestVerification::UnavailableLegacyMissingMaximumAbsoluteDelta
     );
     assert_eq!(
-        read_versioned_proposal(2, record),
+        read_versioned_proposal(/*version*/ 2, record),
         Err(Error::VersionPayloadMismatch)
     );
     assert_eq!(
-        dispatch_proposal_version(3),
+        dispatch_proposal_version(/*version*/ 3),
         Err(Error::UnsupportedVersion(3))
     );
 }
@@ -217,7 +217,10 @@ fn legacy_v1_raw_authority_ingress_and_missing_opaque_digest_fail_closed() {
     let mut proposal = legacy_proposal();
     proposal.proposal_digest = Digest32::ZERO;
     assert_eq!(
-        read_versioned_proposal(1, ProposalRecord::LegacyV1(Box::new(proposal))),
+        read_versioned_proposal(
+            /*version*/ 1,
+            ProposalRecord::LegacyV1(Box::new(proposal))
+        ),
         Err(Error::EmptyDigest("proposal"))
     );
 }
@@ -243,7 +246,7 @@ fn v2_matches_canonical_golden_vectors_and_grants_no_authority() {
         ProposalStatus::RequiresIndependentAcceptance
     );
     assert!(!proposal.authority.grants_any());
-    assert_eq!(proposal.candidate_generation, generation(8));
+    assert_eq!(proposal.candidate_generation, generation(/*value*/ 8));
     assert_eq!(
         proposal.candidates[1]
             .norm_metrics
@@ -265,10 +268,10 @@ fn v2_write_and_read_dispatch_are_exact() {
     )));
     assert_eq!(record.version(), ProposalVersion::ParameterV2);
     assert_eq!(
-        read_versioned_proposal(1, record.clone()),
+        read_versioned_proposal(/*version*/ 1, record.clone()),
         Err(Error::VersionPayloadMismatch)
     );
-    let read = must(read_versioned_proposal(2, record.clone()));
+    let read = must(read_versioned_proposal(/*version*/ 2, record.clone()));
     assert_eq!(read.record, record);
     assert_eq!(
         read.digest_verification,
@@ -303,7 +306,7 @@ fn v2_requires_distinct_role_ids_exact_successor_and_rollback() {
     assert_eq!(propose_v2(request), Err(Error::SelfEvaluation));
 
     let mut request = v2_request();
-    request.candidate_generation = generation(9);
+    request.candidate_generation = generation(/*value*/ 9);
     assert_eq!(propose_v2(request), Err(Error::GenerationNotExactSuccessor));
 
     let mut request = v2_request();
@@ -344,8 +347,8 @@ fn v2_digest_rejects_nonzero_header_binding_tampering() {
         |proposal| proposal.window.window_id = id("window:tampered"),
         |proposal| proposal.window.window_digest = digest(b"tampered-window"),
         |proposal| {
-            proposal.baseline_generation = generation(8);
-            proposal.candidate_generation = generation(9);
+            proposal.baseline_generation = generation(/*value*/ 8);
+            proposal.candidate_generation = generation(/*value*/ 9);
         },
         |proposal| proposal.dataset_digest = digest(b"tampered-dataset"),
         |proposal| proposal.update_rule_digest = digest(b"tampered-update"),
@@ -372,7 +375,7 @@ fn candidate_set_is_bounded_and_has_exactly_one_no_change() {
 
     let mut request = v2_request();
     request.candidates[0].parameter_deltas =
-        vec![parameter_delta("layer:a", "parameter:a", 1, b"delta"); 4_097];
+        vec![parameter_delta("layer:a", "parameter:a", /*value*/ 1, b"delta"); 4_097];
     assert_eq!(propose_v2(request), Err(Error::ParameterLimitExceeded));
 
     let mut request = v2_request();
@@ -411,7 +414,7 @@ fn candidate_set_is_bounded_and_has_exactly_one_no_change() {
     request.candidates[1].parameter_deltas.push(parameter_delta(
         "layer:a",
         "parameter:extra",
-        1,
+        /*value*/ 1,
         b"extra",
     ));
     assert_eq!(
@@ -456,15 +459,15 @@ fn update_candidates_reject_empty_zero_duplicate_and_unprofiled_deltas() {
 #[test]
 fn update_candidates_reject_bad_bounds_and_missing_evidence() {
     let mut request = v2_request();
-    request.candidates[0].parameter_deltas[0].lower_bound = FixedQ32::from_raw(5);
-    request.candidates[0].parameter_deltas[0].upper_bound = FixedQ32::from_raw(-5);
+    request.candidates[0].parameter_deltas[0].lower_bound = FixedQ32::from_raw(/*raw*/ 5);
+    request.candidates[0].parameter_deltas[0].upper_bound = FixedQ32::from_raw(/*raw*/ -5);
     assert_eq!(
         propose_v2(request),
         Err(Error::InvertedBounds("parameter:b".to_string()))
     );
 
     let mut request = v2_request();
-    request.candidates[0].parameter_deltas[0].upper_bound = FixedQ32::from_raw(-4);
+    request.candidates[0].parameter_deltas[0].upper_bound = FixedQ32::from_raw(/*raw*/ -4);
     assert_eq!(
         propose_v2(request),
         Err(Error::DeltaOutsideBounds("parameter:b".to_string()))
@@ -517,11 +520,18 @@ fn norm_profile_rejects_duplicate_zero_and_overflow_denominators() {
 #[test]
 fn per_layer_gate_is_not_implied_by_global_gate() {
     assert_eq!(
-        parameter_v2::within_relative_limit(100, 1_000_001_000_000, 2_500),
+        parameter_v2::within_relative_limit(
+            /*delta_squared*/ 100,
+            /*baseline_squared*/ 1_000_001_000_000,
+            /*maximum_relative_ppm*/ 2_500
+        ),
         Ok(true)
     );
     assert_eq!(
-        parameter_v2::within_relative_limit(100, 1_000_000, 5_000),
+        parameter_v2::within_relative_limit(
+            /*delta_squared*/ 100, /*baseline_squared*/ 1_000_000,
+            /*maximum_relative_ppm*/ 5_000
+        ),
         Ok(false)
     );
     let mut request = v2_request();
@@ -535,8 +545,12 @@ fn per_layer_gate_is_not_implied_by_global_gate() {
             baseline_squared_l2_raw_q64: 1_000_000_000_000,
         },
     ];
-    request.candidates[0].parameter_deltas =
-        vec![parameter_delta("layer:a", "parameter:a", 10, b"delta-a")];
+    request.candidates[0].parameter_deltas = vec![parameter_delta(
+        "layer:a",
+        "parameter:a",
+        /*value*/ 10,
+        b"delta-a",
+    )];
     assert_eq!(
         propose_v2(request),
         Err(Error::PerLayerTrustRegionExceeded(
@@ -548,15 +562,25 @@ fn per_layer_gate_is_not_implied_by_global_gate() {
 #[test]
 fn squared_relative_limit_accepts_the_boundary_and_fails_on_overflow() {
     assert_eq!(
-        parameter_v2::within_relative_limit(25, 1_000_000, 5_000),
+        parameter_v2::within_relative_limit(
+            /*delta_squared*/ 25, /*baseline_squared*/ 1_000_000,
+            /*maximum_relative_ppm*/ 5_000
+        ),
         Ok(true)
     );
     assert_eq!(
-        parameter_v2::within_relative_limit(26, 1_000_000, 5_000),
+        parameter_v2::within_relative_limit(
+            /*delta_squared*/ 26, /*baseline_squared*/ 1_000_000,
+            /*maximum_relative_ppm*/ 5_000
+        ),
         Ok(false)
     );
     assert_eq!(
-        parameter_v2::within_relative_limit(u128::MAX, u128::MAX, 5_000),
+        parameter_v2::within_relative_limit(
+            u128::MAX,
+            u128::MAX,
+            /*maximum_relative_ppm*/ 5_000
+        ),
         Err(Error::Arithmetic)
     );
 }
@@ -564,11 +588,17 @@ fn squared_relative_limit_accepts_the_boundary_and_fails_on_overflow() {
 #[test]
 fn global_gate_is_not_replaced_by_per_layer_gates() {
     assert_eq!(
-        parameter_v2::within_relative_limit(16, 1_000_000, 5_000),
+        parameter_v2::within_relative_limit(
+            /*delta_squared*/ 16, /*baseline_squared*/ 1_000_000,
+            /*maximum_relative_ppm*/ 5_000
+        ),
         Ok(true)
     );
     assert_eq!(
-        parameter_v2::within_relative_limit(32, 2_000_000, 2_500),
+        parameter_v2::within_relative_limit(
+            /*delta_squared*/ 32, /*baseline_squared*/ 2_000_000,
+            /*maximum_relative_ppm*/ 2_500
+        ),
         Ok(false)
     );
     let mut request = v2_request();
@@ -583,8 +613,8 @@ fn global_gate_is_not_replaced_by_per_layer_gates() {
         },
     ];
     request.candidates[0].parameter_deltas = vec![
-        parameter_delta("layer:a", "parameter:a", 4, b"delta-a"),
-        parameter_delta("layer:b", "parameter:b", 4, b"delta-b"),
+        parameter_delta("layer:a", "parameter:a", /*value*/ 4, b"delta-a"),
+        parameter_delta("layer:b", "parameter:b", /*value*/ 4, b"delta-b"),
     ];
     assert_eq!(
         propose_v2(request),
@@ -635,7 +665,7 @@ fn read_validation_rejects_tampered_metrics_digest_and_profile() {
 #[test]
 fn registry_is_unique_by_artifact_window_and_idempotent() {
     let proposal = must(propose_v2(v2_request()));
-    let mut registry = ProposalRegistry::new(4);
+    let mut registry = ProposalRegistry::new(/*maximum_records*/ 4);
     assert_eq!(
         registry.append_v2(proposal.clone()),
         Ok(AppendDisposition::Inserted)
@@ -680,7 +710,7 @@ fn registry_is_unique_by_artifact_window_and_idempotent() {
 fn registry_enforces_proposal_identity_capacity_and_legacy_read_only_state() {
     let legacy = legacy_proposal();
     let mut registry = must(ProposalRegistry::with_legacy_v1_history(
-        2,
+        /*maximum_records*/ 2,
         vec![legacy.clone()],
     ));
     assert_eq!(registry.get(&legacy.proposal_id), Some(&legacy));

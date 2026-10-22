@@ -27,14 +27,14 @@ fn path() -> RecursiveUtilityPath {
                 event_digest: Digest32::of_bytes(b"event-1"),
                 preference_digest: digest,
                 instant: FixedQ32::from_raw(Q / 2),
-                discount: FixedQ32::from_raw(3_435_973_837),
+                discount: FixedQ32::from_raw(/*raw*/ 3_435_973_837),
             },
             UtilityEvent {
                 sequence: 2,
                 event_digest: Digest32::of_bytes(b"event-2"),
                 preference_digest: digest,
                 instant: FixedQ32::from_raw(Q / 4),
-                discount: FixedQ32::from_raw(3_435_973_837),
+                discount: FixedQ32::from_raw(/*raw*/ 3_435_973_837),
             },
         ],
     }
@@ -97,7 +97,10 @@ fn negative_utility_uses_signed_rounding() {
         event.instant = FixedQ32::from_raw(-event.instant.raw());
     }
     let receipt = checked(evaluate_recursive_utility(&input));
-    assert_eq!(receipt.values[0], FixedQ32::from_raw(-5_755_256_177));
+    assert_eq!(
+        receipt.values[0],
+        FixedQ32::from_raw(/*raw*/ -5_755_256_177)
+    );
 }
 
 #[test]

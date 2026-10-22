@@ -84,6 +84,9 @@ unsafe fn ensure_inheritable_stdio(si: &mut STARTUPINFOW) -> Result<()> {
     Ok(())
 }
 
+/// Low-level process creation using the supplied token, without permission-profile
+/// admission or any filesystem isolation guarantee.
+///
 /// # Safety
 /// Caller must provide a valid primary token handle (`h_token`) with appropriate access,
 /// and the `argv`, `cwd`, and `env_map` must remain valid for the duration of the call.
@@ -220,6 +223,9 @@ impl PipeSpawnHandles {
 }
 
 /// Spawns a process with anonymous pipes and returns the relevant handles.
+///
+/// This low-level helper uses the supplied token without permission-profile
+/// admission or any filesystem isolation guarantee.
 #[allow(clippy::too_many_arguments)]
 pub fn spawn_process_with_pipes(
     h_token: HANDLE,

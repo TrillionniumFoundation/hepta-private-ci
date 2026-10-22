@@ -287,11 +287,11 @@ fn atomic_credit_batch(outcome_id: &str, terminal: i64) -> CreditAllocationBatch
         allocations: vec![
             CreditAllocationRecordV2 {
                 target_artifact_id: id("artifact-b"),
-                credit: FixedQ32::from_raw(50),
+                credit: FixedQ32::from_raw(/*raw*/ 50),
             },
             CreditAllocationRecordV2 {
                 target_artifact_id: id("artifact-a"),
-                credit: FixedQ32::from_raw(60),
+                credit: FixedQ32::from_raw(/*raw*/ 60),
             },
         ],
         conservation_residual: FixedQ32::from_raw(terminal - 110),
@@ -310,8 +310,8 @@ fn authenticated_corrections_form_one_linear_head_without_forks() {
         ledger.append(LedgerEvent::AuthenticatedOutcomeV2(authenticated_outcome(
             "record-auth-outcome-1",
             "auth-outcome-1",
-            None,
-            100,
+            /*predecessor*/ None,
+            /*value*/ 100,
         ))),
     );
     must(
@@ -319,7 +319,7 @@ fn authenticated_corrections_form_one_linear_head_without_forks() {
             "record-auth-outcome-2",
             "auth-outcome-2",
             Some("auth-outcome-1"),
-            120,
+            /*value*/ 120,
         ))),
     );
 
@@ -337,7 +337,7 @@ fn authenticated_corrections_form_one_linear_head_without_forks() {
         "record-auth-outcome-fork",
         "auth-outcome-fork",
         Some("auth-outcome-1"),
-        130,
+        /*value*/ 130,
     );
     assert_eq!(
         must_err(ledger.append(LedgerEvent::AuthenticatedOutcomeV2(fork))),
@@ -355,20 +355,20 @@ fn atomic_credit_batch_enforces_terminal_value_and_conservation() {
         ledger.append(LedgerEvent::AuthenticatedOutcomeV2(authenticated_outcome(
             "record-auth-outcome-1",
             "auth-outcome-1",
-            None,
-            120,
+            /*predecessor*/ None,
+            /*value*/ 120,
         ))),
     );
 
     let receipt = must(
         ledger.append(LedgerEvent::CreditBatchV2(atomic_credit_batch(
             "auth-outcome-1",
-            120,
+            /*terminal*/ 120,
         ))),
     );
     assert_eq!(receipt.disposition, AppendDisposition::Appended);
 
-    let mut duplicate = atomic_credit_batch("auth-outcome-1", 120);
+    let mut duplicate = atomic_credit_batch("auth-outcome-1", /*terminal*/ 120);
     duplicate.record_id = id("record-credit-batch-2");
     duplicate.batch_id = id("credit-batch-2");
     assert_eq!(
@@ -384,12 +384,12 @@ fn atomic_credit_batch_enforces_terminal_value_and_conservation() {
         wrong.append(LedgerEvent::AuthenticatedOutcomeV2(authenticated_outcome(
             "record-auth-outcome-1",
             "auth-outcome-1",
-            None,
-            120,
+            /*predecessor*/ None,
+            /*value*/ 120,
         ))),
     );
-    let mut nonconserving = atomic_credit_batch("auth-outcome-1", 120);
-    nonconserving.conservation_residual = FixedQ32::from_raw(9);
+    let mut nonconserving = atomic_credit_batch("auth-outcome-1", /*terminal*/ 120);
+    nonconserving.conservation_residual = FixedQ32::from_raw(/*raw*/ 9);
     assert_eq!(
         must_err(wrong.append(LedgerEvent::CreditBatchV2(nonconserving))),
         LedgerError::CreditConservation
@@ -406,14 +406,14 @@ fn explicit_unlearning_lineage_revokes_source_and_derived_credit() {
         ledger.append(LedgerEvent::AuthenticatedOutcomeV2(authenticated_outcome(
             "record-auth-outcome-1",
             "auth-outcome-1",
-            None,
-            120,
+            /*predecessor*/ None,
+            /*value*/ 120,
         ))),
     );
     must(
         ledger.append(LedgerEvent::CreditBatchV2(atomic_credit_batch(
             "auth-outcome-1",
-            120,
+            /*terminal*/ 120,
         ))),
     );
     let source_event_digest = ledger
@@ -479,8 +479,8 @@ fn authenticated_outcome_rejects_legacy_decision_ancestry() {
             ledger.append(LedgerEvent::AuthenticatedOutcomeV2(authenticated_outcome(
                 "record-auth-outcome-legacy",
                 "auth-outcome-legacy",
-                None,
-                120,
+                /*predecessor*/ None,
+                /*value*/ 120,
             ),))
         ),
         LedgerError::AuthenticatedDecisionRequired("episode-1".to_owned())
@@ -516,11 +516,12 @@ fn atomic_credit_rejects_legacy_outcome_and_credential_or_key_reuse() {
         shared_credential.append(LedgerEvent::AuthenticatedOutcomeV2(authenticated_outcome(
             "record-auth-outcome-credential",
             "auth-outcome-credential",
-            None,
-            120,
+            /*predecessor*/ None,
+            /*value*/ 120,
         ))),
     );
-    let mut credential_batch = atomic_credit_batch("auth-outcome-credential", 120);
+    let mut credential_batch =
+        atomic_credit_batch("auth-outcome-credential", /*terminal*/ 120);
     credential_batch.allocator_credential_chain_digest =
         Digest32::of_bytes(b"generator-credential");
     assert_eq!(
@@ -536,11 +537,11 @@ fn atomic_credit_rejects_legacy_outcome_and_credential_or_key_reuse() {
         shared_key.append(LedgerEvent::AuthenticatedOutcomeV2(authenticated_outcome(
             "record-auth-outcome-key",
             "auth-outcome-key",
-            None,
-            120,
+            /*predecessor*/ None,
+            /*value*/ 120,
         ))),
     );
-    let mut key_batch = atomic_credit_batch("auth-outcome-key", 120);
+    let mut key_batch = atomic_credit_batch("auth-outcome-key", /*terminal*/ 120);
     key_batch.allocator_signing_key_digest = Digest32::of_bytes(b"observer-key");
     assert_eq!(
         must_err(shared_key.append(LedgerEvent::CreditBatchV2(key_batch))),

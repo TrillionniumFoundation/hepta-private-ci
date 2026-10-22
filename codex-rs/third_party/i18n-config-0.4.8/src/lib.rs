@@ -247,7 +247,7 @@ impl<'a> Crate<'a> {
             .ok()
             .unwrap_or(None)
         {
-            Some(parent_path) => match Crate::from(parent_path, None, "i18n.toml") {
+            Some(parent_path) => match Crate::from(parent_path, /*parent*/ None, "i18n.toml") {
                 Ok(parent_crate) => {
                     debug!("Found parent ({0}) of {1}.", parent_crate, self);
                     Some(parent_crate)

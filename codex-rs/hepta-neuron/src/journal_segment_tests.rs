@@ -77,7 +77,7 @@ fn config() -> SparseConfig {
     SparseConfig {
         model_digest: Digest32::of_bytes(b"model"),
         normalization_digest: Digest32::of_bytes(b"normalization"),
-        generation: checked(Generation::new(1)),
+        generation: checked(Generation::new(/*value*/ 1)),
         width: 5,
         top_k: 1,
         temporal_decay_q24: Q / 2,
@@ -122,21 +122,21 @@ fn successor_segment_preserves_state_and_allows_exact_retry() {
         scope(),
         /*max_records*/ 2,
     ));
-    let first = checked(root.commit(Digest32::ZERO, &tick(1)));
-    let second = checked(root.commit(first.checkpoint_after, &tick(2)));
+    let first = checked(root.commit(Digest32::ZERO, &tick(/*sequence*/ 1)));
+    let second = checked(root.commit(first.checkpoint_after, &tick(/*sequence*/ 2)));
     assert_eq!(checked(root.remaining_capacity()), 0);
 
     let mut successor = checked(root.start_successor(fixture.file("successor"), /*max_records*/ 2));
-    let third = checked(successor.commit(second.checkpoint_after, &tick(3)));
-    let fourth = checked(successor.commit(third.checkpoint_after, &tick(4)));
+    let third = checked(successor.commit(second.checkpoint_after, &tick(/*sequence*/ 3)));
+    let fourth = checked(successor.commit(third.checkpoint_after, &tick(/*sequence*/ 4)));
     let before = locked_bytes(&successor.file);
     assert_eq!(
-        checked(successor.commit(second.checkpoint_after, &tick(3))),
+        checked(successor.commit(second.checkpoint_after, &tick(/*sequence*/ 3))),
         third
     );
     assert_eq!(locked_bytes(&successor.file), before);
     assert_eq!(
-        successor.commit(fourth.checkpoint_after, &tick(5)),
+        successor.commit(fourth.checkpoint_after, &tick(/*sequence*/ 5)),
         Err(JournalError::Capacity)
     );
 }
@@ -151,12 +151,12 @@ fn successor_reopen_requires_exact_predecessor_seed_and_acknowledged_suffix() {
             scope(),
             /*max_records*/ 2,
         ));
-        let first = checked(root.commit(Digest32::ZERO, &tick(1)));
-        let second = checked(root.commit(first.checkpoint_after, &tick(2)));
+        let first = checked(root.commit(Digest32::ZERO, &tick(/*sequence*/ 1)));
+        let second = checked(root.commit(first.checkpoint_after, &tick(/*sequence*/ 2)));
         let mut successor =
             checked(root.start_successor(fixture.file("successor"), /*max_records*/ 2));
-        let third = checked(successor.commit(second.checkpoint_after, &tick(3)));
-        let fourth = checked(successor.commit(third.checkpoint_after, &tick(4)));
+        let third = checked(successor.commit(second.checkpoint_after, &tick(/*sequence*/ 3)));
+        let fourth = checked(successor.commit(third.checkpoint_after, &tick(/*sequence*/ 4)));
         JournalAnchor {
             sequence: 4,
             checkpoint_digest: fourth.checkpoint_after,
@@ -205,12 +205,12 @@ fn missing_acknowledged_successor_frame_is_rejected_without_repair() {
             scope(),
             /*max_records*/ 2,
         ));
-        let first = checked(root.commit(Digest32::ZERO, &tick(1)));
-        let second = checked(root.commit(first.checkpoint_after, &tick(2)));
+        let first = checked(root.commit(Digest32::ZERO, &tick(/*sequence*/ 1)));
+        let second = checked(root.commit(first.checkpoint_after, &tick(/*sequence*/ 2)));
         let mut successor =
             checked(root.start_successor(fixture.file("successor"), /*max_records*/ 2));
-        let third = checked(successor.commit(second.checkpoint_after, &tick(3)));
-        let fourth = checked(successor.commit(third.checkpoint_after, &tick(4)));
+        let third = checked(successor.commit(second.checkpoint_after, &tick(/*sequence*/ 3)));
+        let fourth = checked(successor.commit(third.checkpoint_after, &tick(/*sequence*/ 4)));
         JournalAnchor {
             sequence: 4,
             checkpoint_digest: fourth.checkpoint_after,
@@ -243,22 +243,22 @@ fn plasticity_anchor_queries_preserve_global_sequence_across_rollover() {
         fixture.file("root"),
         config(),
         scope(),
-        2,
+        /*max_records*/ 2,
     ));
-    let first = checked(root.commit(Digest32::ZERO, &tick(1)));
-    let second = checked(root.commit(first.checkpoint_after, &tick(2)));
+    let first = checked(root.commit(Digest32::ZERO, &tick(/*sequence*/ 1)));
+    let second = checked(root.commit(first.checkpoint_after, &tick(/*sequence*/ 2)));
     let seed = JournalAnchor {
         sequence: 2,
         checkpoint_digest: second.checkpoint_after,
     };
-    let mut successor = checked(root.start_successor(fixture.file("successor"), 2));
+    let mut successor = checked(root.start_successor(fixture.file("successor"), /*max_records*/ 2));
     assert_eq!(checked(successor.current_anchor()), Some(seed));
     assert!(checked(successor.contains_anchor(seed)));
     assert!(!checked(successor.contains_anchor(JournalAnchor {
         sequence: 1,
         checkpoint_digest: first.checkpoint_after,
     })));
-    let third = checked(successor.commit(second.checkpoint_after, &tick(3)));
+    let third = checked(successor.commit(second.checkpoint_after, &tick(/*sequence*/ 3)));
     let current = JournalAnchor {
         sequence: 3,
         checkpoint_digest: third.checkpoint_after,
@@ -271,7 +271,8 @@ fn plasticity_anchor_queries_preserve_global_sequence_across_rollover() {
         checkpoint_digest: second.checkpoint_after,
     })));
     drop(successor);
-    let recovered = checked(root.recover_successor(fixture.file("successor"), 2, current));
+    let recovered =
+        checked(root.recover_successor(fixture.file("successor"), /*max_records*/ 2, current));
     assert_eq!(checked(recovered.current_anchor()), Some(current));
     assert!(checked(recovered.contains_anchor(seed)));
 }

@@ -29,12 +29,12 @@ fn plan() -> SequentialPlan {
         },
         behavior_policy: digest("behavior"),
         evaluation_policy: digest("evaluation"),
-        observation_generation: Generation::new(1).expect("generation"),
+        observation_generation: Generation::new(/*value*/ 1).expect("generation"),
         outcome_watermark: 20,
         minimum_trajectories: 1,
         minimum_depth_ess: FixedQ32::ONE,
-        maximum_step_ratio: q(10, 1),
-        maximum_cumulative_ratio: q(10, 1),
+        maximum_step_ratio: q(/*numerator*/ 10, /*denominator*/ 1),
+        maximum_cumulative_ratio: q(/*numerator*/ 10, /*denominator*/ 1),
     }
 }
 
@@ -42,16 +42,20 @@ fn trajectory(name: &str) -> Trajectory {
     let steps = (0..2)
         .map(|depth| {
             let behavior = if depth == 0 {
-                probability(1, 2)
+                probability(/*numerator*/ 1, /*denominator*/ 2)
             } else {
-                probability(1, 4)
+                probability(/*numerator*/ 1, /*denominator*/ 4)
             };
             let evaluation = if depth == 0 {
-                probability(1, 4)
+                probability(/*numerator*/ 1, /*denominator*/ 4)
             } else {
-                probability(1, 2)
+                probability(/*numerator*/ 1, /*denominator*/ 2)
             };
-            let predicted_return = if depth == 0 { q(1, 4) } else { q(1, 2) };
+            let predicted_return = if depth == 0 {
+                q(/*numerator*/ 1, /*denominator*/ 4)
+            } else {
+                q(/*numerator*/ 1, /*denominator*/ 2)
+            };
             let complement = |p: ProbabilityQ32| {
                 ProbabilityQ32::from_raw(ProbabilityQ32::ONE.raw() - p.raw()).expect("complement")
             };
@@ -76,9 +80,13 @@ fn trajectory(name: &str) -> Trajectory {
                     },
                 ],
                 chosen_action: id("chosen"),
-                reward: Some(if depth == 0 { q(1, 5) } else { FixedQ32::ONE }),
+                reward: Some(if depth == 0 {
+                    q(/*numerator*/ 1, /*denominator*/ 5)
+                } else {
+                    FixedQ32::ONE
+                }),
                 discount: if depth == 0 {
-                    probability(9, 10)
+                    probability(/*numerator*/ 9, /*denominator*/ 10)
                 } else {
                     ProbabilityQ32::ONE
                 },
@@ -107,15 +115,18 @@ fn trajectory(name: &str) -> Trajectory {
 #[test]
 fn two_step_backward_dr_matches_nine_tenths_and_reports_depth_support() {
     let estimate = estimate_sequential(&plan(), &[trajectory("episode")]).expect("estimate");
-    assert_eq!(estimate.doubly_robust, q(9, 10));
+    assert_eq!(
+        estimate.doubly_robust,
+        q(/*numerator*/ 9, /*denominator*/ 10)
+    );
     assert_eq!(estimate.per_decision_importance_sampling, FixedQ32::ONE);
     assert_eq!(
         estimate.trajectories,
         vec![TrajectoryEstimate {
             trajectory_id: id("episode"),
             per_decision_importance_sampling: FixedQ32::ONE,
-            doubly_robust: q(9, 10),
-            cumulative_weights: vec![q(1, 2), FixedQ32::ONE],
+            doubly_robust: q(/*numerator*/ 9, /*denominator*/ 10),
+            cumulative_weights: vec![q(/*numerator*/ 1, /*denominator*/ 2), FixedQ32::ONE],
         }]
     );
     assert_eq!(
@@ -124,7 +135,7 @@ fn two_step_backward_dr_matches_nine_tenths_and_reports_depth_support() {
             DepthSupport {
                 depth: 0,
                 effective_sample_size: FixedQ32::ONE,
-                maximum_cumulative_weight: q(1, 2),
+                maximum_cumulative_weight: q(/*numerator*/ 1, /*denominator*/ 2),
                 positive_weight_trajectories: 1
             },
             DepthSupport {
@@ -196,7 +207,10 @@ fn incomplete_or_unobserved_trajectories_are_insufficient_not_zero_reward() {
             SequentialEvidenceGap::CensoredTrajectory,
         ),
         (
-            |r| r.steps[1].observation_generation = Generation::new(2).expect("generation"),
+            |r| {
+                r.steps[1].observation_generation =
+                    Generation::new(/*value*/ 2).expect("generation")
+            },
             SequentialEvidenceGap::GenerationMismatch,
         ),
         (
@@ -236,7 +250,8 @@ fn zero_support_and_tiny_behavior_probability_reject_before_overflow() {
             SequentialEvidenceGap::UnsupportedAction
         ))
     );
-    row.steps[0].actions[0].behavior_probability = ProbabilityQ32::from_raw(1).expect("tiny");
+    row.steps[0].actions[0].behavior_probability =
+        ProbabilityQ32::from_raw(/*raw*/ 1).expect("tiny");
     row.steps[0].actions[1].behavior_probability =
         ProbabilityQ32::from_raw(ProbabilityQ32::ONE.raw() - 1).expect("complement");
     assert_eq!(
@@ -279,7 +294,7 @@ fn ordering_is_canonical_but_history_and_cluster_binding_are_not_erased() {
 #[test]
 fn deep_ess_and_joint_scope_cannot_inherit_a_weaker_local_floor() {
     let mut p = plan();
-    p.minimum_depth_ess = q(2, 1);
+    p.minimum_depth_ess = q(/*numerator*/ 2, /*denominator*/ 1);
     assert_eq!(
         estimate_sequential(&p, &[trajectory("episode")]),
         Err(SequentialError::InsufficientEvidence(
@@ -357,16 +372,19 @@ fn tiny_cumulative_weights_keep_q64_ess_and_underflow_is_explicit() {
         row.steps.truncate(1);
         row.steps[0].boundary = TrajectoryBoundary::Terminal;
         let actions = &mut row.steps[0].actions;
-        actions[0].evaluation_probability = ProbabilityQ32::from_raw(1).expect("tiny");
+        actions[0].evaluation_probability = ProbabilityQ32::from_raw(/*raw*/ 1).expect("tiny");
         actions[1].evaluation_probability =
             ProbabilityQ32::from_raw(ProbabilityQ32::ONE.raw() - 1).expect("complement");
     }
     let estimate = estimate_sequential(&p, &rows).expect("tiny but supported");
-    assert_eq!(estimate.depth_support[0].effective_sample_size, q(2, 1));
+    assert_eq!(
+        estimate.depth_support[0].effective_sample_size,
+        q(/*numerator*/ 2, /*denominator*/ 1)
+    );
     p.estimand.horizon = 2;
     let mut row = trajectory("episode");
     for step in &mut row.steps {
-        step.actions[0].evaluation_probability = ProbabilityQ32::from_raw(1).expect("tiny");
+        step.actions[0].evaluation_probability = ProbabilityQ32::from_raw(/*raw*/ 1).expect("tiny");
         step.actions[1].evaluation_probability =
             ProbabilityQ32::from_raw(ProbabilityQ32::ONE.raw() - 1).expect("complement");
     }
@@ -387,7 +405,7 @@ fn horizon_and_cumulative_limits_are_enforced() {
         Err(SequentialError::InvalidPlan)
     );
     p = plan();
-    p.maximum_cumulative_ratio = q(3, 4);
+    p.maximum_cumulative_ratio = q(/*numerator*/ 3, /*denominator*/ 4);
     assert_eq!(
         estimate_sequential(&p, &[trajectory("episode")]),
         Err(SequentialError::InsufficientEvidence(
@@ -396,7 +414,7 @@ fn horizon_and_cumulative_limits_are_enforced() {
     );
     p = plan();
     p.estimand.horizon = 1;
-    p.maximum_step_ratio = q(5, 4);
+    p.maximum_step_ratio = q(/*numerator*/ 5, /*denominator*/ 4);
     let mut row = trajectory("episode");
     row.steps.truncate(1);
     row.steps[0].boundary = TrajectoryBoundary::Terminal;
@@ -431,10 +449,10 @@ fn support_is_checked_at_each_depth_not_only_episode_entry() {
             .iter()
             .map(|depth| depth.effective_sample_size)
             .collect::<Vec<_>>(),
-        vec![q(2, 1), FixedQ32::ONE]
+        vec![q(/*numerator*/ 2, /*denominator*/ 1), FixedQ32::ONE]
     );
     let mut p = plan();
-    p.minimum_depth_ess = q(3, 2);
+    p.minimum_depth_ess = q(/*numerator*/ 3, /*denominator*/ 2);
     assert_eq!(
         estimate_sequential(&p, &rows),
         Err(SequentialError::InsufficientEvidence(
@@ -476,6 +494,9 @@ fn full_pilot_horizon_preserves_the_undiscounted_terminal_return() {
             estimate.doubly_robust,
             estimate.per_decision_importance_sampling
         ),
-        (q(128, 1), q(128, 1))
+        (
+            q(/*numerator*/ 128, /*denominator*/ 1),
+            q(/*numerator*/ 128, /*denominator*/ 1)
+        )
     );
 }

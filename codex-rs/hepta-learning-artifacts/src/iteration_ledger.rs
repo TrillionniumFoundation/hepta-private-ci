@@ -319,10 +319,10 @@ mod tests {
     fn envelope() -> IterationEnvelopeV1 {
         IterationEnvelopeV1 {
             envelope_id: id("env"),
-            base_commit: digest(1),
-            base_tree: digest(2),
-            objective_digest: digest(3),
-            grammar_digest: digest(4),
+            base_commit: digest(/*value*/ 1),
+            base_tree: digest(/*value*/ 2),
+            objective_digest: digest(/*value*/ 3),
+            grammar_digest: digest(/*value*/ 4),
             maximum_files: 1,
             maximum_diff_bytes: 1,
             maximum_candidates: 2,
@@ -335,9 +335,9 @@ mod tests {
             candidate_id: id("candidate"),
             envelope_id: id("env"),
             generator_identity: id("generator"),
-            semantic_diff_digest: digest(5),
-            test_plan_digest: digest(6),
-            rollback_digest: digest(7),
+            semantic_diff_digest: digest(/*value*/ 5),
+            test_plan_digest: digest(/*value*/ 6),
+            rollback_digest: digest(/*value*/ 7),
             predecessor: Some(id("base")),
             state: IterationCandidateStateV1::Drafted,
         }
@@ -361,14 +361,18 @@ mod tests {
             .transition(
                 &id("candidate"),
                 IterationCandidateStateV1::StaticallyValidated,
-                receipt(IterationEvidenceKindV1::StaticValidation, "generator", 8),
+                receipt(
+                    IterationEvidenceKindV1::StaticValidation,
+                    "generator",
+                    /*n*/ 8,
+                ),
             )
             .fixture("test fixture");
         ledger
             .transition(
                 &id("candidate"),
                 IterationCandidateStateV1::SandboxTested,
-                receipt(IterationEvidenceKindV1::Sandbox, "generator", 9),
+                receipt(IterationEvidenceKindV1::Sandbox, "generator", /*n*/ 9),
             )
             .fixture("test fixture");
         assert!(
@@ -376,7 +380,11 @@ mod tests {
                 .transition(
                     &id("candidate"),
                     IterationCandidateStateV1::IndependentlyEvaluated,
-                    receipt(IterationEvidenceKindV1::Evaluation, "generator", 10)
+                    receipt(
+                        IterationEvidenceKindV1::Evaluation,
+                        "generator",
+                        /*n*/ 10
+                    )
                 )
                 .is_err()
         );
@@ -384,7 +392,11 @@ mod tests {
             .transition(
                 &id("candidate"),
                 IterationCandidateStateV1::IndependentlyEvaluated,
-                receipt(IterationEvidenceKindV1::Evaluation, "evaluator", 10),
+                receipt(
+                    IterationEvidenceKindV1::Evaluation,
+                    "evaluator",
+                    /*n*/ 10,
+                ),
             )
             .fixture("test fixture");
         assert_eq!(ledger.events().len(), 3);
@@ -394,7 +406,11 @@ mod tests {
     fn snapshot_replay_is_exact_and_duplicate_receipts_fail() {
         let mut ledger = IterationLedgerV1::new(envelope()).fixture("test fixture");
         ledger.append_candidate(candidate()).fixture("test fixture");
-        let r = receipt(IterationEvidenceKindV1::StaticValidation, "generator", 8);
+        let r = receipt(
+            IterationEvidenceKindV1::StaticValidation,
+            "generator",
+            /*n*/ 8,
+        );
         ledger
             .transition(
                 &id("candidate"),

@@ -488,7 +488,6 @@ jobs:
     uses: ./.github/workflows/rust-ci-full-nextest-platform.yml
     with:
       runner: windows-11-arm
-      archive_runner: windows-latest
       target: aarch64-pc-windows-msvc
       profile: ci-test
       artifact_id: windows-arm64

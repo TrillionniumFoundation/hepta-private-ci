@@ -31,8 +31,16 @@ fn request(items: Vec<ContextItem>) -> CompilationRequest {
 #[test]
 fn evidence_never_becomes_instruction() {
     let Ok(receipt) = compile(request(vec![
-        item("evidence:1", ContextRole::UntrustedEvidence, 2),
-        item("instruction:1", ContextRole::TrustedInstruction, 2),
+        item(
+            "evidence:1",
+            ContextRole::UntrustedEvidence,
+            /*tokens*/ 2,
+        ),
+        item(
+            "instruction:1",
+            ContextRole::TrustedInstruction,
+            /*tokens*/ 2,
+        ),
     ])) else {
         panic!("compilation must succeed");
     };
@@ -43,7 +51,11 @@ fn evidence_never_becomes_instruction() {
 
 #[test]
 fn secret_bearing_item_is_rejected() {
-    let mut value = item("secret:1", ContextRole::UntrustedEvidence, 1);
+    let mut value = item(
+        "secret:1",
+        ContextRole::UntrustedEvidence,
+        /*tokens*/ 1,
+    );
     value.contains_secret = true;
     assert_eq!(
         compile(request(vec![value])),
@@ -54,8 +66,16 @@ fn secret_bearing_item_is_rejected() {
 #[test]
 fn optional_evidence_omission_is_explicit() {
     let Ok(receipt) = compile(request(vec![
-        item("evidence:a", ContextRole::UntrustedEvidence, 8),
-        item("evidence:b", ContextRole::UntrustedEvidence, 8),
+        item(
+            "evidence:a",
+            ContextRole::UntrustedEvidence,
+            /*tokens*/ 8,
+        ),
+        item(
+            "evidence:b",
+            ContextRole::UntrustedEvidence,
+            /*tokens*/ 8,
+        ),
     ])) else {
         panic!("compilation must succeed");
     };
@@ -67,8 +87,16 @@ fn optional_evidence_omission_is_explicit() {
 fn legacy_compile_cannot_omit_trusted_instructions() {
     assert_eq!(
         compile(request(vec![
-            item("instruction:a", ContextRole::TrustedInstruction, 8),
-            item("instruction:b", ContextRole::TrustedInstruction, 8),
+            item(
+                "instruction:a",
+                ContextRole::TrustedInstruction,
+                /*tokens*/ 8
+            ),
+            item(
+                "instruction:b",
+                ContextRole::TrustedInstruction,
+                /*tokens*/ 8
+            ),
         ])),
         Err(Error::InsufficientContext {
             required_tokens: 16,
@@ -93,7 +121,7 @@ fn oversized_required_cost_reports_the_exact_insufficient_floor() {
 
 #[test]
 fn duplicate_item_is_rejected() {
-    let value = item("item:1", ContextRole::UntrustedEvidence, 1);
+    let value = item("item:1", ContextRole::UntrustedEvidence, /*tokens*/ 1);
     assert_eq!(
         compile(request(vec![value.clone(), value])),
         Err(Error::DuplicateItem("item:1".to_string()))

@@ -175,7 +175,7 @@ fn rejects_duplicates_missing_evidence_and_invalid_rewards() {
         Err(TemporalFoldError::MissingEvidence)
     );
     training[0].evidence_digest = Digest32::of_bytes(b"restored");
-    training[0].outcome = FixedQ32::from_raw(-1);
+    training[0].outcome = FixedQ32::from_raw(/*raw*/ -1);
     assert_eq!(
         fit_temporal_fold(&plan, &training, &targets),
         Err(TemporalFoldError::InvalidOutcome)
