@@ -86,6 +86,34 @@ builder = { package = "codex-sandboxing", workspace = true }
         for variant in variants:
             self.assertTrue(checker.check_foundation_manifest(variant), variant)
 
+    def test_foundation_rejects_explicit_build_proc_macro_and_native_links(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            self.assertEqual(checker.check_foundation_build_boundary({}, root), [])
+            for declaration in (
+                {"package": {"build": "scripts/build.rs"}},
+                {"package": {"build": True}},
+                {"package": {"links": "native"}},
+                {"lib": {"proc-macro": True}},
+            ):
+                errors = checker.check_foundation_build_boundary(declaration, root)
+                self.assertEqual(len(errors), 1, declaration)
+            self.assertEqual(
+                checker.check_foundation_build_boundary({"package": {"build": False}}, root),
+                [],
+            )
+
+    def test_foundation_rejects_implicit_build_rs_even_without_build_dependencies(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            script = root / "build.rs"
+            script.write_text("fn main() {}\\n", encoding="utf-8")
+            self.assertTrue(checker.check_foundation_build_boundary({}, root))
+            script.unlink()
+            if hasattr(Path, "symlink_to"):
+                script.symlink_to(root / "absent.rs")
+                self.assertTrue(checker.check_foundation_build_boundary({}, root))
+
     def test_missing_manifest_is_a_failure_not_a_skip(self):
         with tempfile.TemporaryDirectory() as temp:
             errors = checker.check_workspace(Path(temp))
