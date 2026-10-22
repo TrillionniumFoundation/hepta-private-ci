@@ -24,8 +24,8 @@ HEX32 = re.compile(r"[0-9a-f]{64}\Z")
 ROLES = frozenset({"final_use_issuer", "independent_observer", "native_owner", "codex_owner", "independent_evaluator"})
 BACKENDS = frozenset({"native", "codex"})
 OP_FIELDS = frozenset({"operation_id", "scope_id", "generation", "intent_digest", "payload_digest", "tool_id", "host_scope", "idempotency_key", "owner_epoch"})
-RECORD_FIELDS = frozenset({"case_id", "task_digest", "source_tree_digest", "model_digest", "policy_digest", "budget_digest", "hardware_digest", "tool_digest", "scope_id", "generation", "sandbox_id", "status", "dispatch_count", "normalized_result_digest", "state_before_digest", "state_after_digest", "effect_receipt_digest", "failure_class"})
-SHARED_FIELDS = frozenset({"case_id", "task_digest", "source_tree_digest", "model_digest", "policy_digest", "budget_digest", "hardware_digest", "tool_digest", "scope_id", "generation", "state_before_digest"})
+RECORD_FIELDS = frozenset({"case_id", "task_digest", "source_tree_digest", "model_digest", "policy_digest", "budget_digest", "hardware_digest", "tool_digest", "normalized_intent_digest", "scope_id", "generation", "sandbox_id", "status", "dispatch_count", "terminal_observed", "normalized_result_digest", "state_before_digest", "state_after_digest", "effect_receipt_digest", "failure_class"})
+SHARED_FIELDS = frozenset({"case_id", "task_digest", "source_tree_digest", "model_digest", "policy_digest", "budget_digest", "hardware_digest", "tool_digest", "normalized_intent_digest", "scope_id", "generation", "state_before_digest"})
 
 
 class EvidenceRejected(ValueError):
@@ -196,17 +196,29 @@ def _record(rec: dict[str, Any]) -> None:
     _shape(rec, RECORD_FIELDS, "paired execution record")
     for key in ("case_id", "scope_id", "sandbox_id", "failure_class"):
         _id(rec[key], key)
-    for key in ("task_digest", "source_tree_digest", "model_digest", "policy_digest", "budget_digest", "hardware_digest", "tool_digest", "normalized_result_digest", "state_before_digest", "state_after_digest", "effect_receipt_digest"):
+    for key in ("task_digest", "source_tree_digest", "model_digest", "policy_digest", "budget_digest", "hardware_digest", "tool_digest", "normalized_intent_digest", "normalized_result_digest", "state_before_digest", "state_after_digest", "effect_receipt_digest"):
         _hex(rec[key], key)
     _positive_int(rec["generation"], "generation")
     if rec["status"] not in ("completed", "failed", "rejected"):
         raise EvidenceRejected("unresolved outcome is not a parity result")
     if type(rec["dispatch_count"]) is not int or rec["dispatch_count"] not in (0, 1):
         raise EvidenceRejected("unbounded or invalid dispatch count")
-    if rec["status"] == "rejected" and (rec["dispatch_count"] != 0 or rec["state_before_digest"] != rec["state_after_digest"]):
-        raise EvidenceRejected("rejected execution produced an effect")
-    if rec["status"] in ("completed", "failed") and rec["dispatch_count"] != 1:
-        raise EvidenceRejected("terminal execution has no observed dispatch")
+    # Receipt "completed" is not a success when it also reports a failure.
+    # Failed-after-dispatch is a terminal result only if the host observed the
+    # terminal effect, not an accepted RPC, timeout or transport disconnect.
+    if type(rec["terminal_observed"]) is not bool:
+        raise EvidenceRejected("terminal_observed must be Boolean")
+    if rec["status"] == "rejected":
+        if (rec["dispatch_count"] != 0 or rec["terminal_observed"]
+                or rec["state_before_digest"] != rec["state_after_digest"]):
+            raise EvidenceRejected("rejected execution produced an effect")
+        if rec["failure_class"] == "none":
+            raise EvidenceRejected("rejected execution requires an explicit denial class")
+    else:
+        if rec["dispatch_count"] != 1 or not rec["terminal_observed"]:
+            raise EvidenceRejected("terminal effect not independently observed")
+        if (rec["status"] == "completed") != (rec["failure_class"] == "none"):
+            raise EvidenceRejected("terminal status contradicts failure class")
 
 
 def assess_signed_parity(
@@ -225,7 +237,11 @@ def assess_signed_parity(
             raise EvidenceRejected(f"unmatched parity cohort: {field}")
     if n.payload["sandbox_id"] == c.payload["sandbox_id"]:
         raise EvidenceRejected("paired destructive effects must use distinct sandboxes")
-    for field in ("status", "normalized_result_digest", "state_after_digest", "failure_class"):
+    # The normalized operation can be shared, but physical owner/denial
+    # receipts are run-specific evidence and cannot be replayed across arms.
+    if n.payload["effect_receipt_digest"] == c.payload["effect_receipt_digest"]:
+        raise EvidenceRejected("native/Codex physical receipt replay")
+    for field in ("status", "terminal_observed", "normalized_result_digest", "state_after_digest", "failure_class"):
         if n.payload[field] != c.payload[field]:
             raise EvidenceRejected(f"native/Codex result mismatch: {field}")
     vpay = _shape(v.payload, {"case_id", "native_envelope_digest", "codex_envelope_digest", "heldout_digest", "evaluator_policy_digest", "result"}, "independent evaluation")
@@ -242,5 +258,5 @@ def assess_signed_parity(
         "codex_receipt": c.envelope_digest,
         "evaluator_receipt": v.envelope_digest,
         "production_qualified": False,
-        "remaining": "real host provenance, trusted external observer, full P6 scenarios, FinalUse consumption, failure injection, feature parity",
+        "remaining": "real host provenance, independently verified normalized intent and receipt bytes, trusted observer, full P6 scenarios, FinalUse consumption, failure injection, feature parity",
     }
