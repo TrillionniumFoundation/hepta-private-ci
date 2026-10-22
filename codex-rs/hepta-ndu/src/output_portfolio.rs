@@ -35,9 +35,14 @@ pub fn select_output_portfolio_v1(
     let mut risks = Vec::with_capacity(count);
     let mut scores = Vec::with_capacity(count);
     for candidate in &candidates {
-        let risk = scalar_risk(&candidate.risk, budget)?;
-        let score = adjusted_score(candidate, risk, budget)?;
-        risks.push(risk);
+        // Hard semantic risk is not an optimization preference: callers can
+        // lower risk_aversion (or an individual loss price) to zero, but must
+        // not thereby disable the independently specified risk_budget.
+        // Keep the receipt, frontier, and hard bound in the same raw units.
+        let hard_risk = scalar_risk_unweighted(&candidate.risk)?;
+        let priced_risk = scalar_risk(&candidate.risk, budget)?;
+        let score = adjusted_score(candidate, priced_risk, budget)?;
+        risks.push(hard_risk);
         scores.push(score);
     }
     let mut order: Vec<usize> = (0..count).filter(|index| *index != baseline).collect();
@@ -529,7 +534,8 @@ fn digest_selection(
     bytes.extend_from_slice(context.encoder_digest.as_array());
     bytes.extend_from_slice(context.snapshot_digest.as_array());
     bytes.extend_from_slice(context.future_window_digest.as_array());
-    bytes.extend_from_slice(&budget.max_selected.to_le_bytes());
+    // A receipt must replay identically on 32-bit and 64-bit hosts.
+    bytes.extend_from_slice(&(budget.max_selected as u64).to_le_bytes());
     for value in [
         budget.risk_budget,
         budget.resource_budget,
