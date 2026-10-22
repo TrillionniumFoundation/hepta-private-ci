@@ -362,3 +362,7 @@ fn erf_bounded(value: f64) -> f64 {
     };
     result.copysign(value)
 }
+
+#[cfg(test)]
+#[path = "task_head_native_tests.rs"]
+mod tests;
