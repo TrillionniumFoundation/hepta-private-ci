@@ -51,6 +51,8 @@ impl Drop for ExecServerHarness {
 pub(crate) struct TestCodexHelperPaths {
     pub(crate) codex_exe: PathBuf,
     pub(crate) codex_linux_sandbox_exe: Option<PathBuf>,
+    #[cfg(windows)]
+    _windows_sandbox_helpers: TempDir,
 }
 
 pub(crate) struct DisconnectableWebSocketProxy {
@@ -69,9 +71,25 @@ impl Drop for DisconnectableWebSocketProxy {
 
 pub(crate) fn test_codex_helper_paths() -> anyhow::Result<TestCodexHelperPaths> {
     let (helper_binary, codex_linux_sandbox_exe) = super::current_test_binary_helper_paths()?;
+    #[cfg(windows)]
+    let (helper_binary, windows_sandbox_helpers) = {
+        let directory = TempDir::new()?;
+        let test_name = helper_binary
+            .file_name()
+            .ok_or_else(|| anyhow!("test helper executable has no file name"))?;
+        let staged_test = directory.path().join(test_name);
+        std::fs::copy(&helper_binary, &staged_test)?;
+        for helper in ["codex-command-runner", "codex-windows-sandbox-setup"] {
+            let source = codex_utils_cargo_bin::cargo_bin(helper)?;
+            std::fs::copy(&source, directory.path().join(format!("{helper}.exe")))?;
+        }
+        (staged_test, directory)
+    };
     Ok(TestCodexHelperPaths {
         codex_exe: helper_binary,
         codex_linux_sandbox_exe,
+        #[cfg(windows)]
+        _windows_sandbox_helpers: windows_sandbox_helpers,
     })
 }
 
