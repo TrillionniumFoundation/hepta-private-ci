@@ -680,6 +680,15 @@ this ordering adds cross-repository evidence dependencies without a second DAG,
 optimizer, durable journal or authority issuer. Parameter, topology, executable
 and consensus upgrades retain their separate admission and release boundaries.
 
+PN0's first compatible dependency patch candidate updates OpenSSL to 0.10.81,
+cmov to 0.5.4, gix-packetline to 0.21.5, gix-sec to 0.13.3 and quinn-proto to
+0.11.15, with their required compatible helpers, through the existing Cargo and
+Bazel lock generators. Rust 1.96, manifests, source feature selections, registry
+checks and advisory policies stay fixed. Cargo's compatible Windows dependency
+edge re-selection still requires target-specific CI. This slice does not close
+the remaining vulnerable dependencies or the full PN0 security baseline; native
+consumer checks and the original security gates remain required.
+
 ## 20. First vertical learning slice
 
 `C1-PROMPTED-MEMORY-RETRIEVAL-RANK` executes:
