@@ -156,15 +156,13 @@ def bazel_args_without_remote_execution(
         separator_idx = len(args)
 
     prefix = list(args[:separator_idx])
+    requested_macos_ci = "--config=ci-macos" in prefix
     requested_windows_cross = "--config=ci-windows-cross" in prefix
     requested_native_windows_msvc = option_contains_value(
         prefix, "--platforms", "//:windows_x86_64_msvc"
     )
     prefix = [arg for arg in prefix if arg not in REMOTE_EXECUTION_CONFIGS]
     suffix = list(args[separator_idx:])
-    if env.get("RUNNER_OS") != "Windows":
-        return [*prefix, *suffix]
-
     command_idx = next(
         (idx for idx, arg in enumerate(prefix) if not arg.startswith("-")),
         None,
@@ -180,6 +178,23 @@ def bazel_args_without_remote_execution(
         "aquery",
         "info",
     }:
+        return [*prefix, *suffix]
+
+    if env.get("RUNNER_OS") != "Windows":
+        if (
+            requested_macos_ci
+            and env.get("RUNNER_OS") == "macOS"
+            and env.get("GITHUB_ACTIONS") == "true"
+        ):
+            # Removing RBE must not remove the requested CI memory/disk budget
+            # or Darwin test sandbox. Defaults precede explicit caller options.
+            return [
+                *prefix[: command_idx + 1],
+                "--config=ci-bazel",
+                "--strategy=TestRunner=darwin-sandbox,local",
+                *prefix[command_idx + 1 :],
+                *suffix,
+            ]
         return [*prefix, *suffix]
 
     injected_args: list[str] = []
