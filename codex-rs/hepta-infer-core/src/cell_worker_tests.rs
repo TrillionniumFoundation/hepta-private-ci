@@ -461,6 +461,124 @@ fn new_scope_generation_fences_reads_of_stale_encoder_keys() {
 }
 
 #[test]
+fn feature_cache_reclaims_retired_keys_without_touching_other_scopes() {
+    let mut cache = FeatureCacheV1::default();
+    let scope = id("scope:changing");
+    let other_scope = id("scope:independent");
+    let encoder = digest("encoder:shared");
+    let snapshot = |epoch, input: &str| {
+        ImmutableFeatureSnapshotV1::new_for_input(
+            generation(epoch),
+            encoder,
+            digest(input),
+            vec![1, 2, 3],
+        )
+        .expect("immutable feature")
+    };
+    let old_key = FeatureCacheKeyV1 {
+        scope_id: scope.clone(),
+        encoder_digest: encoder,
+        input_digest: digest("old:a"),
+    };
+    let other_key = FeatureCacheKeyV1 {
+        scope_id: other_scope.clone(),
+        encoder_digest: encoder,
+        input_digest: digest("unrelated"),
+    };
+    let successor_key = FeatureCacheKeyV1 {
+        scope_id: scope.clone(),
+        encoder_digest: encoder,
+        input_digest: digest("successor"),
+    };
+    cache.insert(scope.clone(), snapshot(3, "old:a")).expect("old A");
+    cache.insert(scope.clone(), snapshot(3, "old:b")).expect("old B");
+    cache
+        .insert(other_scope, snapshot(1, "unrelated"))
+        .expect("independent scope");
+    assert_eq!(cache.len(), 3);
+
+    cache
+        .insert(scope.clone(), snapshot(4, "successor"))
+        .expect("advance one scope");
+    assert_eq!(cache.len(), 2, "old scoped entries must release capacity");
+    assert!(cache.get(&old_key, generation(3)).is_none());
+    assert!(cache.get(&successor_key, generation(4)).is_some());
+    assert!(
+        cache.get(&other_key, generation(1)).is_some(),
+        "independent older generation must remain cached"
+    );
+    assert_eq!(
+        cache.insert(scope, snapshot(3, "old:a")),
+        Err(CellWorkerError::StaleFeatureGeneration)
+    );
+}
+
+#[test]
+fn feature_cache_reuses_full_capacity_for_new_scope_generation() {
+    let mut cache = FeatureCacheV1::default();
+    let scope = id("scope:full");
+    let encoder = digest("encoder:full");
+    for index in 0..MAX_INDEX_ENTRIES {
+        let snapshot = ImmutableFeatureSnapshotV1::new_for_input(
+            generation(1),
+            encoder,
+            digest(&format!("source:{index:05}")),
+            vec![i64::try_from(index).expect("bounded index")],
+        )
+        .expect("valid snapshot");
+        cache.insert(scope.clone(), snapshot).expect("fill cache");
+    }
+    assert_eq!(cache.len(), MAX_INDEX_ENTRIES);
+    let original_key = FeatureCacheKeyV1 {
+        scope_id: scope.clone(),
+        encoder_digest: encoder,
+        input_digest: digest("source:00000"),
+    };
+    let foreign_scope = id("scope:foreign");
+    let foreign = ImmutableFeatureSnapshotV1::new_for_input(
+        generation(1),
+        encoder,
+        digest("foreign"),
+        vec![1],
+    )
+    .expect("foreign snapshot");
+    assert_eq!(
+        cache.insert(foreign_scope.clone(), foreign),
+        Err(CellWorkerError::IndexCapacity),
+        "a full cache must not evict another scope's live entries"
+    );
+    assert!(
+        !cache.scope_high_watermarks.contains_key(&foreign_scope),
+        "failed admission must not burn a scope fence"
+    );
+    assert!(cache.get(&original_key, generation(1)).is_some());
+
+    let successor = ImmutableFeatureSnapshotV1::new_for_input(
+        generation(2),
+        encoder,
+        digest("successor"),
+        vec![9],
+    )
+    .expect("successor snapshot");
+    cache.insert(scope.clone(), successor).expect("retire old keys");
+    assert_eq!(cache.len(), 1, "expired keys must not starve new generation");
+    assert!(cache.get(&original_key, generation(1)).is_none());
+    assert_eq!(
+        cache.insert(
+            scope,
+            ImmutableFeatureSnapshotV1::new_for_input(
+                generation(1),
+                encoder,
+                digest("old-retry"),
+                vec![5],
+            )
+            .expect("old snapshot"),
+        ),
+        Err(CellWorkerError::StaleFeatureGeneration)
+    );
+}
+
+#[test]
 fn global_cutover_rejects_a_scope_that_is_already_newer() {
     let scope_a = id("scope:newer");
     let scope_b = id("scope:other");
