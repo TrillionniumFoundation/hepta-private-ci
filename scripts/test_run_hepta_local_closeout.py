@@ -258,6 +258,25 @@ class LocalCloseoutTests(unittest.TestCase):
             self.assertIn("test-only", p.read_text())
             self.assertEqual(len(r["log_sha256"]), 64)
 
+    def test_output_cap_includes_terminal_blocker_receipt(self):
+        # A child hitting RLIMIT_FSIZE fills the log to the exact budget.
+        # The refusal marker must not grow the finalized file beyond that cap.
+        with tempfile.TemporaryDirectory() as root:
+            log_path = Path(root) / "bounded.log"
+            cap = 4096
+            with patch.object(mod, "MAX_CHECK_LOG_BYTES", cap):
+                result = mod.run_check(
+                    [sys.executable, "-c", "import sys; sys.stdout.write('x' * 262144); sys.stdout.flush()"],
+                    Path(root), 10, log_path,
+                )
+            self.assertEqual(result["status"], "BLOCKED_OUTPUT_LIMIT", result)
+            data = log_path.read_bytes()
+            self.assertLessEqual(len(data), cap)
+            self.assertTrue(
+                data.endswith(b"\nHEPTA_LOCAL_GATE: BLOCKED_OUTPUT_LIMIT\n"),
+                "the denial trailer must survive truncation",
+            )
+
     def test_failing_check_not_relabelled(self):
         with tempfile.TemporaryDirectory() as root:
             r = mod.run_check([sys.executable, "-c", "raise SystemExit(7)"], Path(root), 10, Path(root) / "f.log")
