@@ -787,3 +787,44 @@ fn positive_individual_scores_cannot_hide_negative_correlation_gain() {
         .any(|item| item.candidate_id == id("baseline")));
     assert!(receipt.total_utility > receipt.total_risk);
 }
+
+#[test]
+fn portfolio_receipt_replay_rejects_mutated_allocation_and_digest() {
+    let original = [
+        candidate("baseline", 0, 0, true),
+        candidate("direction", 80, 0, false),
+    ];
+    let ctx = context(2);
+    let limits = budget(2);
+    let receipt = select_output_portfolio_v1(&ctx, &limits, &original)
+        .expect("canonical portfolio selection");
+
+    verify_output_portfolio_receipt_v1(&ctx, &limits, &original, &receipt)
+        .expect("exact receipt is replayable");
+    // Input ordering is not authority: the binding must survive the same
+    // canonical permutation used by the selection digest.
+    let reordered = [original[1].clone(), original[0].clone()];
+    verify_output_portfolio_receipt_v1(&ctx, &limits, &reordered, &receipt)
+        .expect("canonical inputs replay identically");
+
+    let mut altered_weight = receipt.clone();
+    altered_weight.allocations[0].weight = FixedQ32::ZERO;
+    assert_eq!(
+        verify_output_portfolio_receipt_v1(&ctx, &limits, &original, &altered_weight),
+        Err(NduError::InvalidSolverReceipt("portfolio receipt replay"))
+    );
+
+    let mut altered_digest = receipt.clone();
+    altered_digest.selection_digest = Digest32::of_bytes(b"forged-digest");
+    assert_eq!(
+        verify_output_portfolio_receipt_v1(&ctx, &limits, &original, &altered_digest),
+        Err(NduError::InvalidSolverReceipt("portfolio receipt replay"))
+    );
+
+    let mut altered_generation = receipt.clone();
+    altered_generation.generation = Generation::new(2).expect("nonzero generation");
+    assert_eq!(
+        verify_output_portfolio_receipt_v1(&ctx, &limits, &original, &altered_generation),
+        Err(NduError::InvalidSolverReceipt("portfolio receipt replay"))
+    );
+}
