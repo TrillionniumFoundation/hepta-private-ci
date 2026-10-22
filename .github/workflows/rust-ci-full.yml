@@ -459,6 +459,9 @@ jobs:
       artifact_id: linux-x64-remote
       remote_env: true
       use_sccache: true
+      # Reduce archive disk pressure after the runner reported 50 MB free before
+      # the linker crash. This candidate still requires native completion.
+      archive_ci_test_no_debug: true
     secrets: inherit
 
   tests_linux_arm64:
