@@ -11,6 +11,16 @@ from v8_canary_changes import windows_source_required
 
 
 class V8CanaryChangesTest(unittest.TestCase):
+    def test_native_cargo_smoke_uses_pinned_cargo_and_rustc(self) -> None:
+        workflow = (
+            Path(__file__).resolve().parent.parent / "workflows" / "v8-canary.yml"
+        ).read_text()
+        step = workflow.split("      - name: Smoke test staged artifact with Cargo", 1)[1]
+        step = step.split("      - name: Upload staged artifacts", 1)[0]
+        self.assertIn("RUSTUP_TOOLCHAIN=1.95.0", step)
+        self.assertIn('RUSTC="$(dirname "${CARGO_1_95}")/rustc"', step)
+        self.assertIn('"${CARGO_1_95}" "${cargo_args[@]}"', step)
+
     def test_resolved_v8_version(self) -> None:
         cargo_lock = b"""\
 [[package]]
