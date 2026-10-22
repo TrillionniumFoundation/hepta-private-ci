@@ -45,7 +45,9 @@ jobs:
 
   sdks:
     runs-on: ubuntu-24.04
-    timeout-minutes: 60
+    # Run 39715223201 reached the one-hour cap while still building V8.
+    # Retain the complete SDK checks within a bounded cold-build budget.
+    timeout-minutes: 120
     environment:
       name: bazel
       deployment: false
