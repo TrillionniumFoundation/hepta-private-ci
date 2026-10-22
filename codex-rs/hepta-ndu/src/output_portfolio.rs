@@ -385,13 +385,12 @@ fn covariance_positive_gain_weight(
         .map_err(|_| NduError::Arithmetic)?;
     let curvature = mul_q32_ties_even(twice_diagonal, risk_aversion)?;
     let mut proposed = maximum;
-    if !atomic
-        && curvature > FixedQ32::ZERO
-        && slope < mul_q32_ties_even(curvature, maximum)?
-    {
+    if !atomic && curvature > FixedQ32::ZERO && slope < mul_q32_ties_even(curvature, maximum)? {
         proposed = min_q32(
             maximum,
-            slope.checked_div(curvature).map_err(|_| NduError::Arithmetic)?,
+            slope
+                .checked_div(curvature)
+                .map_err(|_| NduError::Arithmetic)?,
         );
     }
     if proposed == FixedQ32::ZERO {
