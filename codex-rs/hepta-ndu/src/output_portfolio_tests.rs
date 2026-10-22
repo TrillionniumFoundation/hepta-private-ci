@@ -516,3 +516,63 @@ fn hard_slot_and_atomic_protocol_constraints_survive_fractional_optimization() {
     .expect("tool actions remain whole or skipped");
     assert_eq!(receipt.disposition, OutputPortfolioDispositionV1::NoChange);
 }
+
+#[test]
+fn hard_semantic_risk_budget_is_independent_of_pricing() {
+    // A zero risk aversion parameter only changes ranking; it must never
+    // convert positive tail/failure/inconsistency risk into a free asset.
+    for risk_component in 0..4 {
+        let mut limits = budget(2);
+        limits.risk_budget = q(10);
+        limits.risk_aversion = FixedQ32::ZERO;
+        limits.cvar_aversion = FixedQ32::ZERO;
+        limits.failure_aversion = FixedQ32::ZERO;
+        limits.inconsistency_aversion = FixedQ32::ZERO;
+        let mut exposure = candidate("risk-bearing", 90, 0, false);
+        match risk_component {
+            0 => exposure.risk.mean_loss = q(50),
+            1 => exposure.risk.cvar_loss = q(50),
+            2 => exposure.risk.failure_probability = probability(50),
+            _ => exposure.risk.cross_modal_inconsistency = q(50),
+        }
+        let receipt = select_output_portfolio_v1(
+            &context(2),
+            &limits,
+            &[candidate("baseline", 0, 0, true), exposure],
+        )
+        .expect("hard risk bound must hold regardless of scoring prices");
+        assert!(receipt.total_risk <= limits.risk_budget);
+        assert!(receipt.total_risk > FixedQ32::ZERO);
+        let active = receipt
+            .allocations
+            .iter()
+            .find(|item| item.candidate_id == id("risk-bearing"))
+            .expect("limited admissible allocation");
+        // 10% hard risk / 50% candidate risk caps weight at about 20%.
+        assert!(active.weight >= q(19));
+        assert!(active.weight <= q(21));
+        assert!(receipt.allocations.iter().any(|item| {
+            item.candidate_id == id("baseline") && item.weight > FixedQ32::ZERO
+        }));
+    }
+}
+
+#[test]
+fn optimization_risk_prices_still_affect_candidate_ranking() {
+    let mut limits = budget(1);
+    limits.risk_budget = q(100);
+    limits.risk_aversion = FixedQ32::ZERO;
+    let receipt = select_output_portfolio_v1(
+        &context(3),
+        &limits,
+        &[
+            candidate("baseline", 0, 0, true),
+            candidate("safer", 60, 10, false),
+            candidate("higher-utility", 80, 70, false),
+        ],
+    )
+    .expect("preference parameters are independent of hard limits");
+    assert_eq!(receipt.allocations.len(), 1);
+    assert_eq!(receipt.allocations[0].candidate_id, id("higher-utility"));
+    assert!(receipt.total_risk <= limits.risk_budget);
+}
