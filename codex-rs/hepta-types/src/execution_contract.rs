@@ -16,7 +16,6 @@ use crate::Digest32;
 use crate::Generation;
 use crate::StableId;
 
-
 pub const EXECUTION_CONTRACT_VERSION_V1: &str = "hepta.execution.contract.v1";
 /// The supported Codex protocol is a wire contract, not an upstream crate dependency.
 pub const CODEX_APP_SERVER_V2_PROTOCOL_ID_V1: &str = "codex.app-server.v2";
