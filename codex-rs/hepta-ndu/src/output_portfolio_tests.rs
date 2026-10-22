@@ -849,3 +849,34 @@ fn portfolio_receipt_replay_rejects_mutated_allocation_and_digest() {
         Err(NduError::InvalidSolverReceipt("portfolio receipt replay"))
     );
 }
+
+#[test]
+fn duplicated_candidate_digest_is_not_an_independent_diversification_asset() {
+    let first = candidate("first", 60, 10, false);
+    let mut duplicated = candidate("second-id", 55, 5, false);
+    // Distinct StableIds, utilities and risk claims must not turn one
+    // immutable proposal payload into two independent allocations.
+    duplicated.candidate_digest = first.candidate_digest;
+    duplicated.weight_cap = q(50);
+    let candidates = [candidate("baseline", 0, 0, true), first, duplicated];
+    let ctx = context(candidates.len());
+    let expected = NduError::InvalidSolverReceipt("duplicate portfolio candidate digest");
+
+    assert_eq!(
+        select_output_portfolio_v1(&ctx, &budget(3), &candidates),
+        Err(expected.clone())
+    );
+    assert_eq!(
+        output_efficient_frontier_v1(&ctx, &candidates),
+        Err(expected)
+    );
+
+    // Reordering the input and covariance is not a means of bypassing the
+    // same uniqueness check.
+    let reordered = [candidates[2].clone(), candidates[0].clone(), candidates[1].clone()];
+    assert_eq!(
+        select_output_portfolio_v1(&context(3), &budget(3), &reordered)
+            .expect_err("duplicated payload must be rejected"),
+        NduError::InvalidSolverReceipt("duplicate portfolio candidate digest")
+    );
+}
