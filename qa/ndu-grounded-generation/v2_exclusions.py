@@ -77,7 +77,10 @@ def build_registry(historical, v1_manifest, *, historical_sha=HISTORICAL_SHA256,
     if (not isinstance(historical, dict)
             or historical.get("schema") != "hepta.ndu.historical-exclusions.v1"):
         raise ExclusionError("the 384-image historical exclusion wrapper is required")
-    old = historical.get("source_sample", {}).get("images")
+    source_sample = historical.get("source_sample")
+    if not isinstance(source_sample, dict):
+        raise ExclusionError("malformed historical source_sample wrapper")
+    old = source_sample.get("images")
     if not isinstance(old, list) or len(old) != HISTORICAL_COUNT:
         raise ExclusionError("the full original 384-image roster is required")
     if (not isinstance(v1_manifest, dict)
