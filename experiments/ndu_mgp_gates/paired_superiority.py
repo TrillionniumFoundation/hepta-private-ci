@@ -73,9 +73,11 @@ def evaluate(study: Mapping):
     _need(all(isinstance(k, str) and k for k in flat_ids) and
           len(set(flat_ids)) == len(flat_ids), "missing/duplicated heldout world IDs")
     calibration_ids = protocol.get("calibration_world_ids")
-    _need(isinstance(calibration_ids, list) and
+    _need(isinstance(calibration_ids, list) and len(calibration_ids) > 0 and
+          all(isinstance(x, str) and x for x in calibration_ids) and
+          len(set(calibration_ids)) == len(calibration_ids) and
           len(set(flat_ids).intersection(calibration_ids)) == 0,
-          "calibration/heldout leakage or missing calibration lock")
+          "calibration/heldout leakage or invalid/empty calibration lock")
     _need(tuple(protocol.get("arms", [])) == ARMS, "comparison arms not exact/frozen")
     _need(protocol.get("validation_selected_best") in CONTROLS and
           isinstance(protocol.get("selection_lock_digest"), str) and
@@ -140,6 +142,13 @@ def evaluate(study: Mapping):
                         _need(dr["loss"] == failure_loss and dr["quality"] == 0 and
                               dr["ambiguity"] == 1 and dr["inconsistency"] == 1,
                               "a failed/overbudget output cannot be dropped or awarded quality")
+                    else:
+                        # A declared failure penalty must be no smaller than
+                        # any admitted successful semantic loss. Otherwise
+                        # a failed run can look *better* than successful arms
+                        # and manufacture CVaR/efficacy improvement.
+                        _number(dr["loss"], "completed loss vs registered failure penalty",
+                                upper=failure_loss)
                     for m, metric in enumerate(METRICS):
                         upper = float("inf") if metric == "loss" else 1
                         entries[k, m] = _number(dr[metric], metric, upper=upper)
@@ -152,7 +161,13 @@ def evaluate(study: Mapping):
                       "physical cost ledger not reconciled")
                 values[arm_idx[name], i, j, :len(METRICS)] = entries.mean(axis=0)
                 values[arm_idx[name], i, j, -1] = total
-    _need(bool(np.any(protected)), "no protected-task evaluation coverage")
+    # Protected-task comparisons are required for *every* registered seed,
+    # not merely one convenient world in the pooled cohort. A minimum 10%
+    # support (at least three independent worlds) prevents a single protected
+    # fixture from satisfying a cohort-level no-regression claim.
+    min_protected = max(3, math.ceil(0.1 * size))
+    _need(bool(np.all(protected.sum(axis=1) >= min_protected)),
+          "no protected-task or insufficient protected-task coverage per seed")
     # Every sampled heldout unit remains paired. Tail CVaR is computed within
     # seed AFTER draw aggregation, then averaged over training seeds.
     def summarize(v):

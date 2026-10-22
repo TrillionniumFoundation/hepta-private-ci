@@ -29,3 +29,35 @@ Local CPU replay of the **exact Git blob** versions `25b59c9a30bd7846660a27d47cb
 - P0 genuine encoder→flow→Cell→raw decoder frozen experiment, P1 positive independently scored matched-cost outcome, P2 a real frozen masked diffusion LLM, P3 natural sound/image/video with streaming constraints and P4 factorial train/test prospective replication remain open. Any failed scientific hypothesis remains a legitimate negative result, not a success to be manufactured by retuning.
 
 No tool or physical action execution is permitted. No signatures, final-use authorization, irreversible streaming, model promotion, main merge or production deployment follows from this harness.
+
+
+## Fail-closed intake corrections (2026-10-22 local regression)
+
+The first seven-arm evidence validator admitted three structurally invalid
+inputs even while its overall status remained `HOLD_NO_GO`:
+
+- A *completed* decoded loss larger than the protocol's `failure_loss` was
+  allowed. The result would make an execution failure look numerically **better**
+  than a successful output. Intake now requires completed loss ≤ the registered
+  failure penalty. If the task genuinely has unbounded raw loss, its preregistered
+  external scorer must first specify a consistent clipping/penalty contract;
+  the reviewer must not silently clip historical results post hoc.
+- One protected world in one training seed, with inadequate coverage in that
+  or other seeds, could satisfy the old pooled “any protected sample” check.
+  Intake now demands at least `max(3, ceil(10% * matched_worlds_per_seed))`
+  protected worlds independently in **each** registered training seed. This
+  is an admission/support threshold, not a statistical guarantee of subgroup
+  no-regression.
+- An empty or duplicated calibration-world ID manifest was accepted. The
+  registered calibration cohort now requires nonempty, distinct string IDs
+  and zero overlap with every heldout world.
+
+Four independent synthetic regressions preserve all preexisting checks and
+exercise the formerly accepted invalid inputs. On current-session local CPU,
+the full archived P0/P1 research subset was rerun with a reconstructed
+`BLOCKED` manifest because the prior standalone archive accidentally omitted
+`qualification.json`: **45/45 tests pass**, and final P0–P4 evidence assessment
+still exits nonzero as `HOLD_NO_GO`. The reconstructed manifest is a local
+test fixture, **not** the byte-identical published qualification record.
+No real model/generation, prospective heldout, target-host acceptance or
+scientific efficacy claim follows from these 45 tests.
