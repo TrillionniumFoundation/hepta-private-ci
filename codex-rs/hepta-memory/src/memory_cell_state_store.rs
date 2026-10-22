@@ -343,3 +343,7 @@ async fn load_head(
     };
     Ok(Some(LoadedMemoryCellCheckpointV1 { draft, receipt }))
 }
+
+#[cfg(test)]
+#[path = "memory_cell_state_store_tests.rs"]
+mod tests;
