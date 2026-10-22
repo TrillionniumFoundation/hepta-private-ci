@@ -118,9 +118,19 @@ impl FeatureCacheV1 {
         key: &FeatureCacheKeyV1,
         expected_generation: Generation,
     ) -> Option<&ImmutableFeatureSnapshotV1> {
-        self.entries
-            .get(key)
-            .filter(|snapshot| snapshot.generation() == expected_generation)
+        self.entries.get(key).filter(|snapshot| {
+            // An older key may still be present after a newer encoder/input
+            // was inserted in this scope. Physical presence is not a live
+            // generation permit, even if a caller requests the stale epoch.
+            snapshot.generation() == expected_generation
+                && self
+                    .scope_high_watermarks
+                    .get(&key.scope_id)
+                    .is_some_and(|current| *current == expected_generation)
+                && !self
+                    .minimum_generation
+                    .is_some_and(|minimum| expected_generation.get() < minimum.get())
+        })
     }
 
     /// Fence one independently versioned scope without evicting other scopes.
