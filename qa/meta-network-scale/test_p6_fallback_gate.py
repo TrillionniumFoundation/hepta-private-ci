@@ -42,7 +42,11 @@ class FallbackGateTests(unittest.TestCase):
         self.grant = {k: v for k, v in self.req.items() if k not in ("primary_backend", "fallback_backend")}
         self.grant.update(expires_at_ms=9000, allowed_backends=["native", "codex"])
         self.observation = {k: v for k, v in self.req.items() if k != "fallback_backend"}
-        self.observation.update(state="rejected_before_admission", dispatch_count=0, observation_digest=d("c"))
+        self.observation.update(state="rejected_before_admission", dispatch_count=0, observation_digest=d("c"),
+                                final_use_envelope_digest=verify_envelope(
+                                    self.seal("final_use_issuer", self.grant),
+                                    self.trust, "final_use_issuer",
+                                ).envelope_digest)
 
     def seal(self, role: str, payload: dict) -> dict:
         body = {"version": 1, "role": role, "key_id": role, "payload": copy.deepcopy(payload)}
@@ -86,6 +90,33 @@ class FallbackGateTests(unittest.TestCase):
 
     def test_positive_rejection_only_advisory(self):
         self.assertEqual(self.fallback(), Decision.ADVISORY_FALLBACK)
+
+    def test_old_pre_admission_observation_not_reusable_with_new_grant(self):
+        old_observation = self.seal("independent_observer", self.observation)
+        old_grant = self.seal("final_use_issuer", self.grant)
+        self.grant["expires_at_ms"] = 12000
+        new_grant = self.seal("final_use_issuer", self.grant)
+        self.assertNotEqual(old_grant["signature"], new_grant["signature"])
+        # Exact same op/epoch is not enough to attach an older denial to a
+        # later grant with a different signature and expiration.
+        with self.assertRaises(EvidenceRejected):
+            self.fallback(grant=new_grant, obs=old_observation, now_ms=9500)
+        self.observation["final_use_envelope_digest"] = verify_envelope(
+            new_grant, self.trust, "final_use_issuer"
+        ).envelope_digest
+        self.assertEqual(self.fallback(grant=new_grant, now_ms=9500),
+                         Decision.ADVISORY_FALLBACK)
+
+    def test_absent_or_forged_observation_grant_digest_is_denied(self):
+        for bogus in (None, d("0"), d("e")):
+            with self.subTest(bogus=bogus):
+                observation = dict(self.observation)
+                if bogus is None:
+                    observation.pop("final_use_envelope_digest")
+                else:
+                    observation["final_use_envelope_digest"] = bogus
+                with self.assertRaises(EvidenceRejected):
+                    self.fallback(obs=self.seal("independent_observer", observation))
 
     def test_unknown_effect_never_falls_back(self):
         for state in ("admitted", "indeterminate", "timeout", "cancel_pending", "failed_after_dispatch"):
