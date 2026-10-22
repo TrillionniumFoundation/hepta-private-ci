@@ -51,13 +51,13 @@ The signed path runs inside `with_slot()`, which temporarily removes the agent s
 
 ## 3. Explicit signed-intent recovery ceremony
 
-The supervisor deliberately does not infer success from `Running + target release`. An unresolved signed intent remains fail-closed because those observations do not independently prove that the exact grant caused the current state.
+The supervisor deliberately does not infer success from `Running + target release`. An unresolved signed intent remains fail-closed because those observations do not independently prove that the exact grant caused the current state. On recovery, a matching terminal release transaction can reconcile its signed intent only when the transition, grant, source/target releases and durable release state agree.
 
-The repository-controlled recovery ceremony currently supports one conservative terminal action: **abort the ambiguous grant after fencing its effects**. It does not support an operator command that simply marks the target successful.
+Otherwise the Agent remains in `RecoveryRequired`. Supervisord stays reachable for status and the signed recovery ceremony, while readiness and ordinary mutation of that Agent remain blocked. An adopted ambiguous process is fenced and termination is requested; the absence of a process alone does not clear the signed intent.
 
 ### 3.1 Inspect
 
-Run while supervisord is stopped or has failed closed:
+Read the current Agent status and production mutation state through supervisord. The inspection utility can also read the durable intent:
 
 ```text
 hepta-supervisor-intent-recovery inspect <agent-run-root>
@@ -74,31 +74,27 @@ Record at minimum:
 - `status`;
 - `intent_sha256`.
 
-Do not proceed if the run root or agent binding is uncertain.
+For a recovery decision, also retain the exact release transaction digest, registered immutable manifest and program digests, Fleet admission frontier, current lifecycle generation, control fence and daemon authority epoch. Refresh these values before final use. Do not proceed if the run root or Agent binding is uncertain.
 
-### 3.2 Authorize abort
+### 3.2 Obtain an independently signed recovery decision
 
-Use the exact `intent_sha256` returned by the immediately preceding inspection:
+Production recovery uses a `ProductionRecoveryDecision` from the independently controlled signer accepted by the daemon's externally pinned verifier. The decision binds the Agent, grant, intent, release transaction, observed release bytes, lifecycle generation, daemon authority epoch and validity window. Its supported terminal outcomes are `Committed` and `RolledBack`, with the expected release determined by the original upgrade or rollback transition.
 
-```text
-hepta-supervisor-intent-recovery abort <agent-run-root> <intent-sha256>
-```
+The legacy `hepta-supervisor-intent-recovery abort <agent-run-root> <intent-sha256>` utility only publishes a digest-bound `supervisor-signed-intent-recovery.json` directive. That unsigned directive is not a production recovery authorization and does not clear `RecoveryRequired`, including after daemon restart. The digest identifies intent bytes; it does not supply the independent signer or current release/control bindings.
 
-The tool publishes `supervisor-signed-intent-recovery.json`. The directive is digest-bound to the exact unresolved intent; if the intent changes, the stale directive does not apply.
+### 3.3 Submit through the existing recovery boundary
 
-### 3.3 Restart supervisord and reconcile
+Submit the decision with the current `SupervisordControlFence` through `SupervisordClient::resolve_production_recovery`, which invokes `ResolveProductionRecovery`. This daemon path requires a build with production authority enabled and an externally pinned production grant verifier.
 
-On recovery, supervisord:
+Before terminalization, supervisord:
 
-- refuses to infer target success;
-- fences/kills an adopted main child and Matrix companion if either is still present;
-- remains fail-closed while an ambiguous adopted process is still present;
-- only when no ambiguous process remains, persists the intent as terminal `Aborted` and clears pending automatic main restart state;
-- then permits normal supervisor recovery to continue.
+- validates the current control fence and requires the matching intent and release transaction to be recovery-required;
+- requires any ambiguous runtime to be fenced or absent;
+- re-resolves the expected release through Fleet and checks immutable program/manifest bytes and the complete admission frontier against the durable transaction;
+- verifies the independent signature, signer identity and epoch, decision validity window, exact transaction/intent/grant bindings, lifecycle generation and current daemon authority epoch;
+- persists the terminal release transaction with the recovery decision digest and the matching signed-intent outcome.
 
-If startup still reports `signed_intent_recovery_required`, verify that the fenced child actually exited and start supervisord again. Do not delete the intent or lease by hand merely to make startup pass.
-
-`Aborted` means “this grant is terminal and must not be resumed or inferred successful.” It does **not** assert that the source release remained active. A subsequent desired release state must go through a fresh independently authorized transition.
+If any binding or authority prerequisite is unavailable, the Agent remains quarantined. Do not delete intent, transaction or lease files to bypass the recovery fence, and do not blindly replay the ambiguous grant. A later release change requires a fresh independently authorized transition.
 
 ## 4. Crash-consistency qualification matrix
 
@@ -106,7 +102,7 @@ The following are required target-host tests. Source/unit tests are not substitu
 
 | Fault point | Required invariant after restart/recovery |
 | --- | --- |
-| after `Prepared` intent publication | daemon fails closed; request outcome is not reported as a safe rejection |
+| after `Prepared` intent publication | Agent remains quarantined with supervisord reachable for status/recovery; request outcome is not reported as a safe rejection |
 | after control revision advance | unresolved intent fences replay; revision/state digest cannot imply a clean rejection |
 | before child spawn | lifecycle/release state is reconcilable and no stale live lease is accepted |
 | after spawn, before process-lease publication | orphan cannot be silently treated as the authorized current child |
@@ -161,7 +157,7 @@ Repository-controlled verification for this change includes at least:
 - `restart_journal` unit tests for durable round-trip and conservative clock rollback handling;
 - `tests/restart_budget.rs` for supervisor crash/restart scheduling with a controlled process driver inside one daemon lifetime: exact durable attempts and pending state, 250/500/1000 ms backoff, four total spawns and the complete budget-exhaustion fault;
 - `tests/restart_budget_recovery.rs` for the same budget and timing invariants across three daemon recoveries around an admitted release and adopted live children;
-- `tests/signed_intent_recovery.rs` for fail-closed unresolved intent and exact-digest abort terminalization;
+- `tests/signed_intent_recovery.rs` for reachable recovery status, inactive Agent quarantine and rejection of a legacy unsigned digest-only abort directive as production recovery authority;
 - the existing release-transition, Matrix companion, lease/adoption, daemon protocol and production-authority tests.
 
 These are test identities, not target-host deployment receipts. CI must pass on the final source commit, and the target-host matrix in section 4 remains required.
