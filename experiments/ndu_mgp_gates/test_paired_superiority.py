@@ -160,6 +160,35 @@ class PairedEvidenceTests(unittest.TestCase):
         self.assertEqual(rec['worlds_per_seed'], 32)
         self.assertEqual(rec['status'], 'HOLD_NO_GO')
 
+    def test_successful_loss_cannot_exceed_registered_failure_penalty(self):
+        # Without this guard, a failed run (loss=2) looks better than an
+        # otherwise legitimate completed result (loss>2).
+        d = study_fixture()
+        d['worlds'][0]['outcomes']['ndu']['decoded_draw_scores'][0]['loss'] = 2.5
+        with self.assertRaisesRegex(EvidenceGap, 'completed loss'):
+            evaluate(d)
+
+    def test_calibration_manifest_nonempty_and_unique(self):
+        for ids in ([], ['calibration-a', 'calibration-a'], ['']):
+            d = study_fixture()
+            d['protocol']['calibration_world_ids'] = ids
+            with self.assertRaisesRegex(EvidenceGap, 'calibration'):
+                evaluate(d)
+
+    def test_each_training_seed_needs_protected_support(self):
+        d = study_fixture()
+        for row in d['worlds'][:32]:
+            row['protected_task'] = False
+        with self.assertRaisesRegex(EvidenceGap, 'protected-task coverage per seed'):
+            evaluate(d)
+
+    def test_one_protected_world_is_not_enough(self):
+        d = study_fixture()
+        for row in d['worlds'][:31]:
+            row['protected_task'] = False
+        with self.assertRaisesRegex(EvidenceGap, 'protected-task coverage per seed'):
+            evaluate(d)
+
     def test_unwitnessed_decoded_output_rejected(self):
         d = study_fixture()
         del d['worlds'][0]['outcomes']['ndu']['decoded_draw_scores'][0]['output_witness_sha256']
