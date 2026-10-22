@@ -81,13 +81,8 @@ fn cache_rejects_same_generation_equivocation_and_older_rewrites() {
     let encoder = digest("frozen-encoder");
     let input = digest("same-input");
     let snapshot = |number, values| {
-        ImmutableFeatureSnapshotV1::new_for_input(
-            generation(number),
-            encoder,
-            input,
-            values,
-        )
-        .expect("valid immutable feature snapshot")
+        ImmutableFeatureSnapshotV1::new_for_input(generation(number), encoder, input, values)
+            .expect("valid immutable feature snapshot")
     };
     let scope = id("scope:a");
     let key = FeatureCacheKeyV1 {
@@ -97,8 +92,12 @@ fn cache_rejects_same_generation_equivocation_and_older_rewrites() {
     };
     let mut cache = FeatureCacheV1::default();
     let original = snapshot(2, vec![1, 2, 3]);
-    cache.insert(scope.clone(), original.clone()).expect("first insert");
-    cache.insert(scope.clone(), original).expect("idempotent retry");
+    cache
+        .insert(scope.clone(), original.clone())
+        .expect("first insert");
+    cache
+        .insert(scope.clone(), original)
+        .expect("idempotent retry");
 
     assert_eq!(
         cache.insert(scope.clone(), snapshot(2, vec![3, 2, 1])),
@@ -106,11 +105,15 @@ fn cache_rejects_same_generation_equivocation_and_older_rewrites() {
         "same identity cannot produce two different feature vectors",
     );
     assert_eq!(
-        cache.get(&key, generation(2)).expect("original remains").features(),
+        cache
+            .get(&key, generation(2))
+            .expect("original remains")
+            .features(),
         &[1, 2, 3],
     );
 
-    cache.insert(scope.clone(), snapshot(3, vec![4, 5, 6]))
+    cache
+        .insert(scope.clone(), snapshot(3, vec![4, 5, 6]))
         .expect("forward generation replacement");
     assert_eq!(
         cache.insert(scope, snapshot(2, vec![1, 2, 3])),
@@ -119,7 +122,10 @@ fn cache_rejects_same_generation_equivocation_and_older_rewrites() {
     );
     assert!(cache.get(&key, generation(2)).is_none());
     assert_eq!(
-        cache.get(&key, generation(3)).expect("new generation remains").features(),
+        cache
+            .get(&key, generation(3))
+            .expect("new generation remains")
+            .features(),
         &[4, 5, 6],
     );
 }
@@ -144,10 +150,18 @@ fn retired_model_and_cell_eviction_are_idempotent() {
         output_width: 8,
     };
     let mut index = CompatibleModelIndexV1::default();
-    index.register(old_key.clone(), id("cell:a")).expect("old cell");
-    index.register(old_key.clone(), id("cell:b")).expect("other cell");
-    index.register(other_shape.clone(), id("cell:c")).expect("other shape");
-    index.register(new_key.clone(), id("cell:d")).expect("new model");
+    index
+        .register(old_key.clone(), id("cell:a"))
+        .expect("old cell");
+    index
+        .register(old_key.clone(), id("cell:b"))
+        .expect("other cell");
+    index
+        .register(other_shape.clone(), id("cell:c"))
+        .expect("other shape");
+    index
+        .register(new_key.clone(), id("cell:d"))
+        .expect("new model");
     assert_eq!(index.entry_count, 4);
 
     assert!(index.unregister(&old_key, &id("cell:a")));
