@@ -74,7 +74,7 @@ pub fn select_output_portfolio_v1(
         {
             continue;
         }
-        let weight = if candidates[index].protocol.requires_whole_candidate() {
+        let mut weight = if candidates[index].protocol.requires_whole_candidate() {
             remaining
         } else {
             min_q32(candidates[index].weight_cap, remaining)
@@ -83,24 +83,40 @@ pub fn select_output_portfolio_v1(
             continue;
         }
         // A fractional Cell direction leaves a nonzero NoChange remainder.
-        // That baseline is an emitted allocation and consumes one of the
-        // caller's max_selected slots; never hide it outside the count.
-        let required_slots = selected + 1 + usize::from(weight < remaining);
-        if required_slots > budget.max_selected {
+        // It must be represented explicitly within max_selected.
+        if selected + 1 + usize::from(weight < remaining) > budget.max_selected {
             continue;
         }
         weights[index] = weight;
-        let candidate_resource =
-            weighted_sum(&weights, &candidates, |candidate| candidate.resource_cost)?;
-        let candidate_latency =
-            weighted_sum(&weights, &candidates, |candidate| candidate.latency_cost)?;
-        let candidate_risk = quadratic_risk(&weights, &risks, &covariance)?;
-        if candidate_resource > budget.resource_budget
-            || candidate_latency > budget.latency_budget
-            || candidate_risk > budget.risk_budget
-        {
-            weights[index] = FixedQ32::ZERO;
-            continue;
+        if !respects_portfolio_budgets(&weights, &candidates, &risks, &covariance, budget)? {
+            if candidates[index].protocol.requires_whole_candidate() {
+                // Tool actions and discrete unmask plans are atomic.
+                weights[index] = FixedQ32::ZERO;
+                continue;
+            }
+            // The previously admitted portfolio (without this direction) is
+            // feasible. With nonnegative costs and PSD covariance, feasible
+            // nonnegative weights form an interval starting at zero. A Q32
+            // binary search finds its greatest representable endpoint.
+            let mut low = 0_i64;
+            let mut high = weight.raw();
+            while low < high {
+                let midpoint = low + (high - low + 1) / 2;
+                weights[index] = FixedQ32::from_raw(midpoint);
+                if respects_portfolio_budgets(&weights, &candidates, &risks, &covariance, budget)? {
+                    low = midpoint;
+                } else {
+                    high = midpoint - 1;
+                }
+            }
+            weight = FixedQ32::from_raw(low);
+            weights[index] = weight;
+            if weight == FixedQ32::ZERO
+                || selected + 1 + usize::from(weight < remaining) > budget.max_selected
+            {
+                weights[index] = FixedQ32::ZERO;
+                continue;
+            }
         }
         remaining = remaining
             .checked_sub(weight)
@@ -426,6 +442,22 @@ fn weighted_sum(
             .map_err(|_| NduError::Arithmetic)?;
     }
     Ok(total)
+}
+/// Enforces hard limits using the *portfolio* covariance, not a Cell's
+/// stand-alone score. All arithmetic is checked and failures deny selection.
+fn respects_portfolio_budgets(
+    weights: &[FixedQ32],
+    candidates: &[OutputPortfolioCandidateV1],
+    risks: &[FixedQ32],
+    covariance: &[FixedQ32],
+    budget: &OutputPortfolioBudgetV1,
+) -> Result<bool, NduError> {
+    let resource = weighted_sum(weights, candidates, |candidate| candidate.resource_cost)?;
+    let latency = weighted_sum(weights, candidates, |candidate| candidate.latency_cost)?;
+    let risk = quadratic_risk(weights, risks, covariance)?;
+    Ok(resource <= budget.resource_budget
+        && latency <= budget.latency_budget
+        && risk <= budget.risk_budget)
 }
 fn quadratic_risk(
     weights: &[FixedQ32],
