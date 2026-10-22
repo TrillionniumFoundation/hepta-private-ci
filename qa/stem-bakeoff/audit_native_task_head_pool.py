@@ -85,6 +85,15 @@ def check_samples(data, summary):
 
 def check_child(data, summary, count, artifact, request_sha, references):
     require(data["schema"] == "hepta.native-task-head-pool.v1" and data["status"] == "PASS", "native execution incomplete")
+    for key in ("cells", "resident_heads", "independently_trained_templates",
+                "weights_bytes_per_head", "private_weights_payload_bytes",
+                "warmup_calls", "input_rows", "fanout_predictions_per_sample",
+                "validation_extra_reference_calls"):
+        require(type(data[key]) is int, "native count must be an exact integer: " + key)
+    dispatch_counts = data["dispatch_calls_per_head"]
+    require(type(dispatch_counts) is list and len(dispatch_counts) == count
+            and all(type(v) is int for v in dispatch_counts),
+            "per-Head dispatch counts must be exact integers")
     require(data["cells"] == data["resident_heads"] == summary["cells"] == count, "resident count differs")
     require(data["independently_trained_templates"] == 1, "replica scope differs")
     require(data["weights_bytes_per_head"] == summary["weights_bytes_per_head"] == artifact["weights_bytes"], "per-Head bytes")
@@ -93,7 +102,7 @@ def check_child(data, summary, count, artifact, request_sha, references):
     for key in ("manifest_sha256", "weights_sha256"):
         require(data[key] == artifact[key], "Head source differs")
     require(data["request_stream_sha256"] == request_sha and data["input_rows"] == 256, "input identity")
-    require(data["dispatch_calls_per_head"] == [4096 // count] * count, "unvisited or uneven private Head")
+    require(dispatch_counts == [4096 // count] * count, "unvisited or uneven private Head")
     require(data["warmup_calls"] == data["fanout_predictions_per_sample"] == count, "execution schedule")
     require(data["validation_extra_reference_calls"] == 272
             and data["reference_validation_outside_measurement"] is True, "reference timing scope")
