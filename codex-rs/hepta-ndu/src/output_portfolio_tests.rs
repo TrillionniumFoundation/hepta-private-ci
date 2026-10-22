@@ -332,6 +332,17 @@ fn fractional_portfolio_counts_the_no_change_residual_against_max_selected() {
         OutputPortfolioDispositionV1::AdvisorySelection
     );
     assert_eq!(two_slots.allocations.len(), 2);
+    // Q32 percentages truncate independently: q(40) + q(60) = ONE - 1
+    // least-significant unit. The NoChange allocation is the exact residual.
+    let exact_no_change_residual = FixedQ32::ONE
+        .checked_sub(q(40))
+        .expect("Q32 complement must be representable");
+    assert_eq!(
+        q(40)
+            .checked_add(exact_no_change_residual)
+            .expect("bounded weights"),
+        FixedQ32::ONE
+    );
     assert!(
         two_slots
             .allocations
@@ -342,7 +353,10 @@ fn fractional_portfolio_counts_the_no_change_residual_against_max_selected() {
         two_slots
             .allocations
             .iter()
-            .any(|item| { item.candidate_id == id("baseline") && item.weight == q(60) })
+            .any(|item| {
+                item.candidate_id == id("baseline")
+                    && item.weight == exact_no_change_residual
+            })
     );
 }
 
@@ -533,6 +547,53 @@ fn hard_slot_and_atomic_protocol_constraints_survive_fractional_optimization() {
     )
     .expect("tool actions remain whole or skipped");
     assert_eq!(receipt.disposition, OutputPortfolioDispositionV1::NoChange);
+}
+
+#[test]
+fn hard_zero_risk_budget_rejects_positive_loss_hidden_by_q32_rounding() {
+    // A 1-ULP Q32 risk can be rounded to zero at a large fractional weight:
+    // 50% * 1 ULP = 0.5 ULP and ties-to-even reports zero. Likewise, a
+    // quadratic variance of 1 ULP rounds to zero for a 50% allocation.
+    // Hard-zero risk must reject those directions before solving.
+    let mut limits = budget(2);
+    limits.risk_budget = FixedQ32::ZERO;
+
+    for covariance_only in [false, true] {
+        let mut ctx = context(2);
+        let mut exposure = candidate("one-ulp-exposure", 80, 0, false);
+        if covariance_only {
+            ctx.semantic_covariance[3] = FixedQ32::from_raw(1);
+        } else {
+            exposure.risk.mean_loss = FixedQ32::from_raw(1);
+        }
+        let receipt = select_output_portfolio_v1(
+            &ctx,
+            &limits,
+            &[candidate("baseline", 0, 0, true), exposure],
+        )
+        .expect("a positive-risk direction cannot bypass a zero budget");
+        assert_eq!(receipt.disposition, OutputPortfolioDispositionV1::NoChange);
+        assert_eq!(receipt.allocations.len(), 1);
+        assert_eq!(receipt.allocations[0].candidate_id, id("baseline"));
+        assert_eq!(receipt.allocations[0].weight, FixedQ32::ONE);
+        assert_eq!(receipt.total_risk, FixedQ32::ZERO);
+    }
+
+    // Zero budget must not ban a genuinely risk-free relative direction.
+    let allowed = select_output_portfolio_v1(
+        &context(2),
+        &limits,
+        &[
+            candidate("baseline", 0, 0, true),
+            candidate("actually-zero-risk", 80, 0, false),
+        ],
+    )
+    .expect("the zero-risk feasible direction remains available");
+    assert_eq!(
+        allowed.disposition,
+        OutputPortfolioDispositionV1::AdvisorySelection
+    );
+    assert_eq!(allowed.total_risk, FixedQ32::ZERO);
 }
 
 #[test]
@@ -787,6 +848,61 @@ fn positive_individual_scores_cannot_hide_negative_correlation_gain() {
         .iter()
         .any(|item| item.candidate_id == id("baseline")));
     assert!(receipt.total_utility > receipt.total_risk);
+}
+
+#[test]
+fn fixed_switch_cost_cannot_be_amortized_by_fractional_weight() {
+    let mut limits = budget(2);
+    limits.switch_penalty = q(30);
+    let mut partial = candidate("partial-switch", 80, 0, false);
+    partial.weight_cap = q(10);
+    let denied = select_output_portfolio_v1(
+        &context(2),
+        &limits,
+        &[candidate("baseline", 0, 0, true), partial],
+    )
+    .expect("risk-free baseline remains feasible");
+    assert_eq!(denied.disposition, OutputPortfolioDispositionV1::NoChange);
+    assert_eq!(denied.allocations.len(), 1);
+
+    // The same fixed charge is affordable when the full positive gain
+    // is realized by a whole candidate, not diluted across a small share.
+    let admitted = select_output_portfolio_v1(
+        &context(2),
+        &limits,
+        &[
+            candidate("baseline", 0, 0, true),
+            candidate("whole-switch", 80, 0, false),
+        ],
+    )
+    .expect("full-weight admission");
+    assert_eq!(
+        admitted.disposition,
+        OutputPortfolioDispositionV1::AdvisorySelection
+    );
+    assert_eq!(admitted.allocations.len(), 1);
+    assert_eq!(admitted.allocations[0].weight, FixedQ32::ONE);
+}
+
+#[test]
+fn covariance_pricing_does_not_hide_fixed_switch_cost() {
+    let mut limits = budget(2);
+    limits.switch_penalty = q(45);
+    let mut measured = context(2);
+    measured.semantic_covariance[3] = q(50);
+    // Gross utility 0.8*w minus 0.5*w^2 peaks at w=0.8:
+    // the maximum gross gain is 0.32, below the fixed 0.45 cost.
+    let receipt = select_output_portfolio_v1(
+        &measured,
+        &limits,
+        &[
+            candidate("baseline", 0, 0, true),
+            candidate("covariant-switch", 80, 0, false),
+        ],
+    )
+    .expect("negative net gain selects no change");
+    assert_eq!(receipt.disposition, OutputPortfolioDispositionV1::NoChange);
+    assert_eq!(receipt.total_risk, FixedQ32::ZERO);
 }
 
 #[test]
