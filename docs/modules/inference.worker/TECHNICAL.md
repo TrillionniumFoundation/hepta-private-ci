@@ -157,8 +157,11 @@ worker generation, monotonic attempt sequence and original budget. Checked sums
 cannot exceed the original grant; lower observations never shrink reservations.
 Driver errors and `Unknown` preserve the attempt and block new load/run dispatch.
 Only matching original-attempt observations advance it: `NoEffect` can clear an
-attempt before ownership, while an owned resource requires `Released`. Rejected
-loads stay in cleanup and cannot become ready through reconciliation. Cleanup
+attempt before ownership, while an owned resource requires `Released`. Cleanup
+also latches every matching `Owned` observation, including malformed or
+foreign opaque identifiers: later `NoEffect` cannot release its reservation.
+Only the original attempt selects cleanup; these identifiers grant no authority.
+Rejected loads stay in cleanup and cannot become ready through reconciliation. Cleanup
 uses the original attempt, never an opaque handle from malformed/foreign output.
 `reconcile_load` only observes unresolved loads; it cannot reconcile an execution
 or unload. Expired admission grants still permit original-owner observation and
