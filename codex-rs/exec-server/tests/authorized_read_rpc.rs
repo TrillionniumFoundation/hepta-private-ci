@@ -54,8 +54,9 @@ async fn authorized_read_rpc_is_capability_gated_and_denies_outside_root() -> Re
     .await?;
 
     let temp = tempfile::tempdir()?;
-    let allowed_dir = temp.path().join("allowed");
-    let denied_dir = temp.path().join("denied");
+    let physical_root = temp.path().canonicalize()?;
+    let allowed_dir = physical_root.join("allowed");
+    let denied_dir = physical_root.join("denied");
     std::fs::create_dir_all(&allowed_dir)?;
     std::fs::create_dir_all(&denied_dir)?;
     let allowed_file = allowed_dir.join("allowed.txt");
@@ -65,6 +66,8 @@ async fn authorized_read_rpc_is_capability_gated_and_denies_outside_root() -> Re
 
     let sandbox = read_only_sandbox(&allowed_dir)?;
     let info = client.environment_info().await?;
+    // Diagnostic-only: require the real server capability on this native owner.
+    assert!(info.capabilities.stable_handle_authorized_read);
     let allowed = client
         .fs_read_file_authorized(FsReadFileAuthorizedParams {
             path: PathUri::from_host_native_path(&allowed_file)?,

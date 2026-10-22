@@ -15,6 +15,7 @@ use crate::GetMetadataOptions;
 use crate::ReadFileOptions;
 use crate::RemoveOptions;
 use crate::WriteFileOptions;
+use crate::authorized_read_error::AuthorizedReadFailure;
 use crate::file_read::FileReadHandleManager;
 use crate::local_file_system::LocalFileSystem;
 use crate::protocol::FS_READ_DIRECTORY_METHOD;
@@ -206,7 +207,7 @@ impl FileSystemHandler {
             .file_system
             .read_file_bounded_authorized(&params.path, &params.sandbox, max_bytes)
             .await
-            .map_err(map_fs_error)?;
+            .map_err(map_authorized_read_fs_error)?;
         Ok(FsReadFileResponse {
             data_base64: STANDARD.encode(bytes),
         })
@@ -376,6 +377,16 @@ fn validate_file_read_handle_id(handle_id: &str) -> Result<(), JSONRPCErrorError
     Ok(())
 }
 
+fn map_authorized_read_fs_error(err: io::Error) -> JSONRPCErrorError {
+    // Only LocalFileSystem's stable authorized-read implementation reaches
+    // this mapper. Its InvalidData is exclusively the overflow-sentinel
+    // rejection; OS access errors are already redacted to other kinds.
+    if let Some(failure) = AuthorizedReadFailure::from_io_kind(err.kind()) {
+        return failure.rpc_error();
+    }
+    map_fs_error(err)
+}
+
 fn map_fs_error(err: io::Error) -> JSONRPCErrorError {
     match err.kind() {
         io::ErrorKind::NotFound => not_found(err.to_string()),
@@ -397,6 +408,37 @@ mod tests {
     use crate::FileSystemSandboxContext;
     use crate::protocol::FsReadFileParams;
     use crate::protocol::FsWriteFileParams;
+
+    #[test]
+    fn authorized_read_classification_does_not_change_generic_fs_errors() {
+        for (kind, failure) in [
+            (
+                io::ErrorKind::PermissionDenied,
+                AuthorizedReadFailure::PermissionDenied,
+            ),
+            (
+                io::ErrorKind::InvalidData,
+                AuthorizedReadFailure::BoundExceeded,
+            ),
+        ] {
+            let classified = map_authorized_read_fs_error(io::Error::new(kind, "secret path"));
+            assert_eq!(classified, failure.rpc_error());
+            let generic = map_fs_error(io::Error::new(kind, "generic message"));
+            assert_eq!(generic.code, classified.code);
+            assert_eq!(generic.data, None);
+            assert_eq!(generic.message, "generic message");
+        }
+        for kind in [
+            io::ErrorKind::InvalidInput,
+            io::ErrorKind::NotFound,
+            io::ErrorKind::Other,
+        ] {
+            assert_eq!(
+                map_authorized_read_fs_error(io::Error::new(kind, "existing error")),
+                map_fs_error(io::Error::new(kind, "existing error"))
+            );
+        }
+    }
 
     #[tokio::test]
     async fn no_platform_sandbox_policies_do_not_require_configured_sandbox_helper() {
