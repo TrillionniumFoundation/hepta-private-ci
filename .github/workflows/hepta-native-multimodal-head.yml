@@ -21,7 +21,6 @@ jobs:
     runs-on: ubuntu-24.04
     timeout-minutes: 45
     env:
-      CARGO_TARGET_DIR: ${{ runner.temp }}/hepta-native-head-target
       CARGO_PROFILE_DEV_DEBUG: "0"
       CARGO_PROFILE_TEST_DEBUG: "0"
       CARGO_PROFILE_RELEASE_DEBUG: "0"
@@ -43,6 +42,7 @@ jobs:
           EXPECTED_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
         run: |
           set -euo pipefail
+          printf 'CARGO_TARGET_DIR=%s/hepta-native-head-target\n' "$RUNNER_TEMP" >> "$GITHUB_ENV"
           test "$(git rev-parse HEAD)" = "$EXPECTED_SHA"
           test -z "$(git status --porcelain)"
           mkdir "$RUNNER_TEMP/hepta-native-head"
