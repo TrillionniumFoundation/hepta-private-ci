@@ -6,10 +6,9 @@ use codex_hepta_types::ProbabilityQ32;
 const MAX_PORTFOLIO_CANDIDATES: usize = 128;
 const MAX_FRONTIER_POINTS: usize = 128;
 use crate::output_portfolio_types::*;
-/// Selects a bounded output portfolio using deterministic greedy QP/MPC
-/// coordinates. The quadratic covariance term is evaluated exactly in Q32;
-/// the greedy step is intentional for the bounded Cell budget and is not
-/// presented as a closed-form Merton solution.
+/// Deterministically selects a bounded, covariance-aware advisory portfolio.
+/// Greedy ordering and one-dimensional quadratic steps are not a global
+/// QP/MPC optimum or a closed-form Merton solution.
 pub fn select_output_portfolio_v1(
     context: &OutputPortfolioContextV1,
     budget: &OutputPortfolioBudgetV1,
@@ -116,6 +115,33 @@ pub fn select_output_portfolio_v1(
                 weights[index] = FixedQ32::ZERO;
                 continue;
             }
+        }
+        // Static candidate scores omit the correlation between previously
+        // accepted directions.  Only admit a step when its covariance-priced
+        // *marginal* gain is positive. Continuous directions may shrink to
+        // their one-dimensional optimum; discrete tool/unmask plans are atomic.
+        weight = covariance_positive_gain_weight(
+            index,
+            weight,
+            &weights,
+            &scores,
+            &covariance,
+            budget.risk_aversion,
+            candidates[index].protocol.requires_whole_candidate(),
+        )?;
+        weights[index] = weight;
+        if weight == FixedQ32::ZERO
+            || selected + 1 + usize::from(weight < remaining) > budget.max_selected
+        {
+            weights[index] = FixedQ32::ZERO;
+            continue;
+        }
+        // Reducing a coordinate from a feasible endpoint must retain the
+        // hard limits, including the separately enforced unweighted risk cap.
+        if !respects_portfolio_budgets(&weights, &candidates, &risks, &covariance, budget)? {
+            return Err(NduError::InvalidSolverReceipt(
+                "covariance-aware selection budget",
+            ));
         }
         remaining = remaining
             .checked_sub(weight)
@@ -316,6 +342,81 @@ fn canonical_covariance(
     }
     Ok(covariance)
 }
+
+/// Maximizes the one-dimensional incremental expected gain for one proposed
+/// direction while preserving the already accepted weights. The linear score
+/// prices the individual semantic risk and resource costs; the covariance
+/// penalty belongs to the full portfolio and must not be omitted here.
+///
+/// A negative or zero marginal gain is rejected in favor of the remaining
+/// NoChange allocation. Atomic protocols cannot be resized to manufacture
+/// a seemingly feasible fractional tool effect.
+fn covariance_positive_gain_weight(
+    index: usize,
+    maximum: FixedQ32,
+    weights: &[FixedQ32],
+    scores: &[FixedQ32],
+    covariance: &[FixedQ32],
+    risk_aversion: FixedQ32,
+    atomic: bool,
+) -> Result<FixedQ32, NduError> {
+    let count = weights.len();
+    let diagonal = covariance[index * count + index];
+    let mut cross = FixedQ32::ZERO;
+    for (other, weight) in weights.iter().enumerate() {
+        if other != index && *weight != FixedQ32::ZERO {
+            cross = cross
+                .checked_add(mul_q32_ties_even(
+                    *weight,
+                    covariance[index * count + other],
+                )?)
+                .map_err(|_| NduError::Arithmetic)?;
+        }
+    }
+    let twice_cross = cross.checked_add(cross).map_err(|_| NduError::Arithmetic)?;
+    let slope = scores[index]
+        .checked_sub(mul_q32_ties_even(twice_cross, risk_aversion)?)
+        .map_err(|_| NduError::Arithmetic)?;
+    if slope <= FixedQ32::ZERO {
+        return Ok(FixedQ32::ZERO);
+    }
+    let twice_diagonal = diagonal
+        .checked_add(diagonal)
+        .map_err(|_| NduError::Arithmetic)?;
+    let curvature = mul_q32_ties_even(twice_diagonal, risk_aversion)?;
+    let mut proposed = maximum;
+    if !atomic
+        && curvature > FixedQ32::ZERO
+        && slope < mul_q32_ties_even(curvature, maximum)?
+    {
+        proposed = min_q32(
+            maximum,
+            slope.checked_div(curvature).map_err(|_| NduError::Arithmetic)?,
+        );
+    }
+    if proposed == FixedQ32::ZERO {
+        return Ok(FixedQ32::ZERO);
+    }
+    // Rounding in Q32 can change the stationary point by a raw unit. Confirm
+    // that the exact proposed weight strictly improves over doing nothing.
+    let linear = mul_q32_ties_even(proposed, scores[index])?;
+    let squared = mul_q32_ties_even(proposed, proposed)?;
+    let quadratic_diagonal = mul_q32_ties_even(squared, diagonal)?;
+    let quadratic_cross = mul_q32_ties_even(proposed, twice_cross)?;
+    let covariance_delta = quadratic_diagonal
+        .checked_add(quadratic_cross)
+        .map_err(|_| NduError::Arithmetic)?;
+    let priced_covariance = mul_q32_ties_even(covariance_delta, risk_aversion)?;
+    let gain = linear
+        .checked_sub(priced_covariance)
+        .map_err(|_| NduError::Arithmetic)?;
+    if gain <= FixedQ32::ZERO {
+        Ok(FixedQ32::ZERO)
+    } else {
+        Ok(proposed)
+    }
+}
+
 fn validate_budget(budget: &OutputPortfolioBudgetV1) -> Result<(), NduError> {
     if budget.max_selected == 0 || budget.max_selected > MAX_PORTFOLIO_CANDIDATES {
         return Err(NduError::InvalidSolverReceipt("portfolio max selected"));

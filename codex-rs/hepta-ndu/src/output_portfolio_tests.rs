@@ -710,3 +710,80 @@ fn portfolio_rejects_cross_encoder_proposals_even_with_matching_feature_bytes() 
         error
     );
 }
+
+#[test]
+fn covariance_pricing_prevents_harmful_full_weight_allocation() {
+    let mut correlated = context(2);
+    correlated.semantic_covariance[3] = q(80);
+    let receipt = select_output_portfolio_v1(
+        &correlated,
+        &budget(2),
+        &[
+            candidate("baseline", 0, 0, true),
+            candidate("risky-direction", 40, 0, false),
+        ],
+    )
+    .expect("use a covariance-priced fractional direction");
+    assert_eq!(
+        receipt.disposition,
+        OutputPortfolioDispositionV1::AdvisorySelection
+    );
+    let active = receipt
+        .allocations
+        .iter()
+        .find(|item| item.candidate_id == id("risky-direction"))
+        .expect("strictly positive marginal allocation");
+    assert!(active.weight >= q(24));
+    assert!(active.weight <= q(26));
+    assert!(receipt.total_utility > receipt.total_risk);
+    assert_eq!(receipt.allocations.len(), 2);
+
+    // A one-slot receipt cannot hide the abstain residual.
+    let single_slot = select_output_portfolio_v1(
+        &correlated,
+        &budget(1),
+        &[
+            candidate("baseline", 0, 0, true),
+            candidate("risky-direction", 40, 0, false),
+        ],
+    )
+    .expect("no slot to represent a positive and a baseline arm");
+    assert_eq!(
+        single_slot.disposition,
+        OutputPortfolioDispositionV1::NoChange
+    );
+}
+
+#[test]
+fn positive_individual_scores_cannot_hide_negative_correlation_gain() {
+    let mut correlated = context(3);
+    // Candidate b looks profitable alone but is redundant against candidate a.
+    // This is symmetric diagonally dominant and therefore PSD.
+    correlated.semantic_covariance[4] = q(50);
+    correlated.semantic_covariance[5] = q(50);
+    correlated.semantic_covariance[7] = q(50);
+    correlated.semantic_covariance[8] = q(50);
+    let mut first = candidate("a", 50, 5, false);
+    let mut second = candidate("b", 50, 5, false);
+    first.weight_cap = q(50);
+    second.weight_cap = q(50);
+    let receipt = select_output_portfolio_v1(
+        &correlated,
+        &budget(3),
+        &[candidate("baseline", 0, 0, true), first, second],
+    )
+    .expect("prefer positive portfolio marginal utility");
+    assert!(receipt
+        .allocations
+        .iter()
+        .any(|item| item.candidate_id == id("a")));
+    assert!(!receipt
+        .allocations
+        .iter()
+        .any(|item| item.candidate_id == id("b")));
+    assert!(receipt
+        .allocations
+        .iter()
+        .any(|item| item.candidate_id == id("baseline")));
+    assert!(receipt.total_utility > receipt.total_risk);
+}
