@@ -52,16 +52,28 @@ def compact_training_report(result):
 def rss_observation():
     """Read actual process RSS, including PID-isolated executor environments."""
     try:
-        return {"bytes": psutil.Process().memory_info().rss, "source": "psutil"}
-    except (psutil.Error, OSError):
-        pass
-    try:
-        for line in Path("/proc/self/status").read_text().splitlines():
-            fields = line.split()
-            if len(fields) == 3 and fields[0] == "VmRSS:" and fields[2] == "kB":
-                return {"bytes": int(fields[1]) * 1024, "source": "/proc/self/status"}
-    except (OSError, ValueError):
-        pass
+        lines = Path("/proc/self/status").read_text().splitlines()
+    except (OSError, UnicodeError):
+        lines = []
+    proc_pid = None
+    for line in lines:
+        fields = line.split()
+        if (len(fields) == 2 and fields[0] == "Pid:"
+                and fields[1].isascii() and fields[1].isdigit()):
+            proc_pid = int(fields[1])
+        if (len(fields) == 3 and fields[0] == "VmRSS:" and fields[2] == "kB"
+                and fields[1].isascii() and fields[1].isdigit()):
+            return {"bytes": int(fields[1]) * 1024, "source": "/proc/self/status"}
+    # An apparently valid /proc/<os.getpid()> may name a different process when
+    # the executor and procfs use different PID namespaces. Fail closed unless
+    # the real self status establishes that their PID numbering agrees.
+    if proc_pid == os.getpid():
+        try:
+            rss = psutil.Process(os.getpid()).memory_info().rss
+            if type(rss) is int and rss >= 0:
+                return {"bytes": rss, "source": "psutil-verified-self-pid"}
+        except (psutil.Error, OSError):
+            pass
     return {"bytes": None, "source": "unavailable"}
 
 
