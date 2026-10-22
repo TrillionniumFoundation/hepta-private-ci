@@ -7,6 +7,7 @@ import torch
 from portfolio import (Budget, CellAsset, PortfolioRejected, cvar90, empirical_grid_frontier,
                        continuous_direction_step, masked_logit_step,
                        generate_with_cells, new_low_rank_cell_head,
+                       supervised_cell_update,
                        select_shadow_portfolio, verify_shadow_receipt)
 
 
@@ -201,6 +202,37 @@ class GenerativeMechanismTests(unittest.TestCase):
         loss = res['decoded']['text'].square().mean()
         loss.backward()
         self.assertGreater(float(cell.up.weight.grad.abs().sum()), 0)
+
+    def test_training_updates_only_cell_and_improves_external_decoded_loss(self):
+        torch.manual_seed(29)
+        class Base(torch.nn.Module):
+            def forward(self, z, t, context):
+                return z * 0
+        class Decoder(torch.nn.Module):
+            def forward(self, z):
+                return {'text': z[:, :2]}
+        base, decoder = Base(), Decoder()
+        head = new_low_rank_cell_head(rank=4)
+        context = torch.zeros(12, 32)
+        estimate, noise = torch.zeros(12, 6), torch.zeros(12, 7)
+        targets = {'text': torch.full((12, 2), .5)}
+        def external_loss(raw, external_targets):
+            return (raw['text'] - external_targets['text']).square().mean()
+        schedule = [[1.]]
+        optimizer = torch.optim.Adam(head.parameters(), lr=.04)
+        before = external_loss(generate_with_cells(base, decoder, context, estimate, noise,
+                                                   [head], schedule)['decoded'], targets).item()
+        for _ in range(35):
+            receipt = supervised_cell_update(base, decoder, [head], optimizer, context,
+                                             estimate, noise, schedule, targets, external_loss)
+        after = external_loss(generate_with_cells(base, decoder, context, estimate, noise,
+                                                  [head], schedule)['decoded'], targets).item()
+        self.assertLess(after, before * .08)
+        self.assertEqual(receipt['updated_parameter_tensors'], 3)
+        bad_base = torch.nn.Linear(7, 7)
+        with self.assertRaisesRegex(PortfolioRejected, 'trainable foundation'):
+            supervised_cell_update(bad_base, decoder, [head], optimizer, context,
+                                   estimate, noise, schedule, targets, external_loss)
 
     def test_masked_logits_only_choose_masked_positions(self):
         logits = torch.tensor([[[0., 4.], [3., 0.], [0., 0.]]])
