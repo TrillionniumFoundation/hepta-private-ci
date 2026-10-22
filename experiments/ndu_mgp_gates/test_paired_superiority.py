@@ -160,6 +160,49 @@ class PairedEvidenceTests(unittest.TestCase):
         with self.assertRaisesRegex(EvidenceGap, 'balanced independent source groups'):
             evaluate(d)
 
+    def test_completed_loss_must_not_exceed_failure_loss_cap(self):
+        d = study_fixture()
+        # A completed outcome worse than registered "failed" can incentivize
+        # a controller to abort; the external score domain is inconsistent.
+        d['worlds'][0]['outcomes']['ndu']['decoded_draw_scores'][0]['loss'] = 30.
+        with self.assertRaisesRegex(EvidenceGap, 'completed loss exceeds registered failure penalty'):
+            evaluate(d)
+
+    def test_strong_control_completed_loss_beyond_failure_penalty_rejected(self):
+        d = study_fixture()
+        d['worlds'][0]['outcomes']['free_controller']['decoded_draw_scores'][1]['loss'] = 2.0000001
+        with self.assertRaisesRegex(EvidenceGap, 'completed loss exceeds registered failure penalty'):
+            evaluate(d)
+
+    def test_completed_exact_failure_loss_boundary_permitted(self):
+        d = study_fixture()
+        d['worlds'][0]['outcomes']['ndu']['decoded_draw_scores'][0]['loss'] = 2.
+        rec = evaluate(d)
+        self.assertEqual(rec['status'], 'HOLD_NO_GO')
+
+    def test_tiny_cost_ledger_discrepancy_cannot_mint_budget_success(self):
+        d = study_fixture(bootstrap_replicates=2000)
+        d['protocol']['hard_world_cost_limit'] = 1.035e-7
+        for row in d['worlds']:
+            for arm, outcome in row['outcomes'].items():
+                cost = outcome['measured_cost']
+                for part in cost:
+                    cost[part] *= 1e-7
+                if arm == 'ndu':
+                    # True sum is ~1.04e-7 (over cap); dishonest measured
+                    # total ~1.032e-7 (under cap). Old abs_tol=1e-9
+                    # permitted provisional scientific success.
+                    cost['total'] -= 8e-10
+        with self.assertRaisesRegex(EvidenceGap, 'physical cost ledger not reconciled'):
+            evaluate(d)
+
+    def test_legitimate_float_roundoff_still_reconciles(self):
+        d = study_fixture()
+        cost = d['worlds'][0]['outcomes']['ndu']['measured_cost']
+        cost['total'] = cost['total'] * (1.0 + 1e-12)
+        rec = evaluate(d)
+        self.assertEqual(rec['status'], 'HOLD_NO_GO')
+
     def test_missing_absolute_cost_cap_is_rejected(self):
         d = study_fixture()
         del d['protocol']['hard_world_cost_limit']
