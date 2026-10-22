@@ -232,5 +232,52 @@ class LocalCloseoutTests(unittest.TestCase):
             self.assertTrue(all(x["status"] == "SOURCE_TESTED_EXTERNAL_EVIDENCE_PENDING" for x in report["stages"].values()))
 
 
+    def test_missing_local_git_binary_fails_closed(self):
+        with tempfile.TemporaryDirectory() as root, patch.object(
+            mod.subprocess, "run", side_effect=FileNotFoundError()
+        ):
+            proof = mod.git_snapshot(Path(root))
+            self.assertFalse(proof["usable"])
+            self.assertEqual(proof["reason"], "FileNotFoundError")
+
+    def test_bounded_cargo_log_flood_kills_child_and_records_digest(self):
+        with tempfile.TemporaryDirectory() as root:
+            location = Path(root) / "flood.log"
+            code = (
+                "import os\n"
+                "chunk = b'x' * 65536\n"
+                "while True: os.write(1, chunk)\n"
+            )
+            with patch.object(mod, "MAX_CHECK_LOG_BYTES", 128 * 1024):
+                receipt = mod.run_check(
+                    [sys.executable, "-c", code], Path(root), 5, location
+                )
+            self.assertEqual(receipt["status"], "BLOCKED_OUTPUT_LIMIT")
+            self.assertLessEqual(location.stat().st_size, 128 * 1024 + 64)
+            self.assertEqual(location.stat().st_mode & 0o777, 0o600)
+            import hashlib
+
+            self.assertEqual(
+                receipt["log_sha256"], hashlib.sha256(location.read_bytes()).hexdigest()
+            )
+
+    def test_successful_wrapper_with_live_descendant_is_not_a_success(self):
+        if os.name != "posix":
+            self.skipTest("POSIX process groups required")
+        with tempfile.TemporaryDirectory() as root:
+            code = (
+                "import subprocess, sys\n"
+                "subprocess.Popen([sys.executable, '-c', 'import time; time.sleep(20)'], "
+                "stdin=subprocess.DEVNULL, stdout=subprocess.DEVNULL, "
+                "stderr=subprocess.DEVNULL)\n"
+                "print('wrapper exited')\n"
+            )
+            result = mod.run_check(
+                [sys.executable, "-c", code],
+                Path(root), 5, Path(root) / "descendant.log",
+            )
+            self.assertEqual(result["status"], "BLOCKED_DESCENDANTS")
+
+
 if __name__ == "__main__":
     unittest.main()

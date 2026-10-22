@@ -104,8 +104,27 @@ def git_snapshot(path: Path) -> dict[str, Any]:
         state = cmd("status", "--porcelain=v1", "--untracked-files=all")
         return {"usable": True, "path": str(path), "commit": rev, "tree": tree,
                 "clean": state == "", "dirty_paths": len(state.splitlines())}
-    except (subprocess.CalledProcessError, subprocess.TimeoutExpired) as exc:
+    except (OSError, subprocess.CalledProcessError, subprocess.TimeoutExpired) as exc:
         return {"usable": False, "path": str(path), "reason": type(exc).__name__}
+
+
+MAX_CHECK_LOG_BYTES = 64 * 1024 * 1024
+CHECK_POLL_SECONDS = 0.05
+
+
+def _stop_check_process_group(child: subprocess.Popen[bytes]) -> None:
+    """Kill workers as one owner group, including descendants after launcher exit."""
+    try:
+        if os.name == "posix":
+            os.killpg(child.pid, signal.SIGKILL)
+        elif child.poll() is None:
+            child.kill()
+    except ProcessLookupError:
+        pass
+    try:
+        child.wait(timeout=5)
+    except subprocess.TimeoutExpired as exc:
+        raise RuntimeError("local check descendants escaped cleanup") from exc
 
 
 def run_check(argv: list[str], cwd: Path, timeout: int, log_path: Path) -> dict[str, Any]:
@@ -115,40 +134,66 @@ def run_check(argv: list[str], cwd: Path, timeout: int, log_path: Path) -> dict[
         return {"argv": argv, "status": "BLOCKED_WORKDIR_MISSING"}
     start = time.monotonic()
     try:
-        # Stream all Cargo/Bazel output to a private file; never hold a multi-GB
-        # compilation log in Python heap. Use no shell or network orchestration.
         fd = os.open(log_path, os.O_WRONLY | os.O_CREAT | os.O_EXCL, 0o600)
         with os.fdopen(fd, "wb") as out:
             out.write(("$ " + json.dumps(argv, ensure_ascii=False) + "\n").encode("utf-8"))
             out.flush()
-            child = subprocess.Popen(argv, cwd=cwd, stdout=out, stderr=subprocess.STDOUT,
-                                     env=os.environ.copy(), start_new_session=(os.name == "posix"))
+            child = subprocess.Popen(
+                argv, cwd=cwd, stdout=out, stderr=subprocess.STDOUT,
+                env=os.environ.copy(), start_new_session=(os.name == "posix"),
+            )
+            blocked = None
+            code = None
             try:
-                code = child.wait(timeout=timeout)
-            except subprocess.TimeoutExpired:
-                # Cargo can spawn rustc/test workers. Kill the process group on
-                # POSIX rather than leaving hidden test processes running.
-                try:
-                    if os.name == "posix":
-                        os.killpg(child.pid, signal.SIGKILL)
+                while True:
+                    code = child.poll()
+                    if os.fstat(out.fileno()).st_size > MAX_CHECK_LOG_BYTES:
+                        blocked = "BLOCKED_OUTPUT_LIMIT"
+                        break
+                    if code is not None:
+                        break
+                    if time.monotonic() - start >= timeout:
+                        blocked = "BLOCKED_TIMEOUT"
+                        break
+                    time.sleep(CHECK_POLL_SECONDS)
+                if blocked is not None:
+                    _stop_check_process_group(child)
+                elif os.name == "posix":
+                    try:
+                        os.killpg(child.pid, 0)
+                    except ProcessLookupError:
+                        pass
                     else:
-                        child.kill()
-                except ProcessLookupError:
-                    pass
-                child.wait()
-                out.write(b"\nHEPTA_LOCAL_GATE: TIMEOUT; child process terminated\n")
-                return {"argv": argv, "status": "BLOCKED_TIMEOUT", "seconds": round(time.monotonic() - start, 3), "log_path": str(log_path)}
-            out.write(f"\nHEPTA_LOCAL_GATE_EXIT: {code}\n".encode("utf-8"))
+                        _stop_check_process_group(child)
+                        blocked = "BLOCKED_DESCENDANTS"
+            except BaseException:
+                _stop_check_process_group(child)
+                raise
+            if blocked is not None:
+                out.flush()
+                if os.fstat(out.fileno()).st_size > MAX_CHECK_LOG_BYTES:
+                    os.ftruncate(out.fileno(), MAX_CHECK_LOG_BYTES)
+                out.seek(0, os.SEEK_END)
+                out.write(("\nHEPTA_LOCAL_GATE: " + blocked + "\n").encode("utf-8"))
+            else:
+                out.write(f"\nHEPTA_LOCAL_GATE_EXIT: {code}\n".encode("utf-8"))
             out.flush()
             os.fsync(out.fileno())
         digest = hashlib.sha256()
         with log_path.open("rb") as handle:
             for chunk in iter(lambda: handle.read(1024 * 1024), b""):
                 digest.update(chunk)
-        return {"argv": argv, "status": "PASS_LOCAL" if code == 0 else "FAIL_LOCAL",
-                "exit_code": code, "seconds": round(time.monotonic() - start, 3),
-                "log_path": str(log_path), "log_sha256": digest.hexdigest()}
-    except OSError as exc:
+        result = {
+            "argv": argv,
+            "status": blocked or ("PASS_LOCAL" if code == 0 else "FAIL_LOCAL"),
+            "seconds": round(time.monotonic() - start, 3),
+            "log_path": str(log_path),
+            "log_sha256": digest.hexdigest(),
+        }
+        if blocked is None:
+            result["exit_code"] = code
+        return result
+    except (OSError, RuntimeError) as exc:
         return {"argv": argv, "status": "BLOCKED_SYSTEM", "error_type": type(exc).__name__}
 
 
