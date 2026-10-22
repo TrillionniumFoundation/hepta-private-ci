@@ -1150,7 +1150,11 @@ fn sanitized_zip_file_mode(mode: Option<u32>) -> Result<Option<u32>, String> {
     if file_type != 0 && file_type != 0o100000 {
         return Err("curated plugins zip entry is not a regular file".to_string());
     }
-    Ok(Some(mode & 0o777))
+    // Extracted plugins must never remain group/world-writable: doing so
+    // would allow a lower-privilege local actor to replace staged source.
+    // Preserve owner access and executable bits; ignore write permissions
+    // granted to other users by untrusted ZIP metadata.
+    Ok(Some(mode & 0o755))
 }
 
 #[cfg(unix)]
