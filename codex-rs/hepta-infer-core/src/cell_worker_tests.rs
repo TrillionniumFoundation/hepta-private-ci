@@ -84,7 +84,10 @@ fn worker_microbatch_limit_matches_immutable_feature_batch() {
     }
     assert_eq!(pool.drain().requests.len(), MAX_BATCH_ITEMS);
     assert_eq!(pool.drain().requests.len(), 1);
-    assert_eq!(pool.metrics().activations_committed, 1025);
+    assert_eq!(pool.metrics().groups_dequeued, 2);
+    assert_eq!(pool.metrics().activations_dequeued, 1025);
+    assert_eq!(pool.metrics().groups_committed, 0);
+    assert_eq!(pool.metrics().activations_committed, 0);
 }
 
 #[test]
@@ -97,9 +100,15 @@ fn shared_pool_reports_group_and_drop_metrics() {
     );
     let batch = pool.drain();
     assert_eq!(batch.requests.len(), 1);
-    assert_eq!(pool.metrics().groups_committed, 1);
-    assert_eq!(pool.metrics().activations_committed, 1);
+    assert_eq!(pool.metrics().groups_dequeued, 1);
+    assert_eq!(pool.metrics().activations_dequeued, 1);
+    assert_eq!(pool.metrics().groups_committed, 0);
+    assert_eq!(pool.metrics().activations_committed, 0);
     assert_eq!(pool.metrics().dropped_requests, 1);
+    // Draining an empty queue is not another group commit.
+    assert!(pool.drain().requests.is_empty());
+    assert_eq!(pool.metrics().groups_dequeued, 1);
+    assert_eq!(pool.metrics().groups_committed, 0);
 }
 
 #[test]
