@@ -1,0 +1,120 @@
+name: Windows SQLite recovery source proposal
+
+on:
+  pull_request:
+    paths:
+      - "codex-rs/utils/path-utils/**"
+      - "codex-rs/state/**"
+      - "codex-rs/hepta-memory/**"
+      - ".github/workflows/hepta-windows-recovery-source-proposal.yml"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: windows-recovery-source-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+jobs:
+  source-proposal:
+    if: github.head_ref == 'agents/20261022/windows-recovery-identity'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 35
+    env:
+      SOURCE_HEAD: ${{ github.event.pull_request.head.sha }}
+      SOURCE_BASE: 9d84d3adf24d78cb590986a82250fa0d9b09b9f4
+    steps:
+      - name: Check out the exact candidate
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ env.SOURCE_HEAD }}
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Prepare the original Bazel and Rust environment
+        uses: ./.github/actions/prepare-bazel-ci
+        with:
+          target: x86_64-unknown-linux-gnu
+          cache-scope: windows-recovery-source
+      - name: Generate lock resolution and format the actual candidate
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$SOURCE_HEAD"
+          test -z "$(git status --porcelain --untracked-files=no)"
+          evidence="$RUNNER_TEMP/windows-recovery-source"
+          mkdir -p "$evidence"
+          git rev-parse 'HEAD^{tree}' > "$evidence/source-tree.txt"
+          (cd codex-rs && rustc --version --verbose) | tee "$evidence/rust-version.log"
+          (cd codex-rs && cargo metadata --format-version 1 > "$evidence/cargo-metadata.json")
+          just bazel-lock-update 2>&1 | tee "$evidence/bazel-update.log"
+          cp MODULE.bazel.lock "$evidence/MODULE.bazel.lock"
+          cp codex-rs/Cargo.lock "$evidence/Cargo.lock"
+          ./scripts/check-module-bazel-lock.sh 2>&1 | tee "$evidence/bazel-check.log"
+          just bazel-lock-update 2>&1 | tee "$evidence/bazel-repeat.log"
+          cmp MODULE.bazel.lock "$evidence/MODULE.bazel.lock"
+          (cd codex-rs && cargo metadata --locked --format-version 1 > "$evidence/cargo-metadata-locked.json")
+          cmp codex-rs/Cargo.lock "$evidence/Cargo.lock"
+          just fmt --base "$SOURCE_BASE" 2>&1 | tee "$evidence/format.log"
+          git diff --check
+          git diff --binary -- > "$evidence/generated.patch"
+          python3 - <<'PY'
+          import base64
+          import hashlib
+          import json
+          import os
+          import pathlib
+          import subprocess
+          evidence = pathlib.Path(os.environ["RUNNER_TEMP"]) / "windows-recovery-source"
+          changed = [p for p in subprocess.check_output(
+              ["git", "diff", "--name-only", "-z"]).decode().split("\0") if p]
+          allowed = {
+              "codex-rs/Cargo.lock", "MODULE.bazel.lock",
+              "codex-rs/hepta-memory/src/cognitive_store.rs",
+              "codex-rs/hepta-memory/src/cognitive_store_windows.rs",
+              "codex-rs/state/src/sqlite_recovery.rs",
+              "codex-rs/state/src/sqlite_recovery_image.rs",
+              "codex-rs/state/src/sqlite_recovery_windows.rs",
+              "codex-rs/state/src/sqlite_recovery_windows_tests.rs",
+              "codex-rs/utils/path-utils/src/lib.rs",
+              "codex-rs/utils/path-utils/src/private_state_windows.rs",
+              "codex-rs/utils/path-utils/src/private_state_windows_directory.rs",
+              "codex-rs/utils/path-utils/src/private_state_windows_recovery.rs",
+              "codex-rs/utils/path-utils/src/private_state_windows_recovery_tests.rs",
+          }
+          if not set(changed).issubset(allowed):
+              raise SystemExit(f"unexpected generator changes: {changed!r}")
+          patch = (evidence / "generated.patch").read_bytes()
+          if len(patch) > 512 * 1024:
+              raise SystemExit("generated source patch exceeds bounded export")
+          files = {}
+          for name in changed:
+              data = pathlib.Path(name).read_bytes()
+              files[name] = {
+                  "bytes": len(data),
+                  "sha256": hashlib.sha256(data).hexdigest(),
+                  "git_blob": subprocess.check_output(
+                      ["git", "hash-object", "--", name]).decode().strip(),
+              }
+          result = {
+              "source_head": os.environ["SOURCE_HEAD"],
+              "source_tree": (evidence / "source-tree.txt").read_text().strip(),
+              "generated_patch_sha256": hashlib.sha256(patch).hexdigest(),
+              "cargo_locked_metadata_passed": True,
+              "bazel_original_check_passed": True,
+              "repeat_generation_identical": True,
+              "tests_executed": False,
+              "files": files,
+          }
+          (evidence / "verification.json").write_text(json.dumps(result, indent=2) + "\n")
+          print("HEPTA_RECOVERY_SOURCE_PROPOSAL " + json.dumps(result))
+          print("HEPTA_RECOVERY_SOURCE_PATCH_BASE64 " + base64.b64encode(patch).decode())
+          PY
+      - name: Preserve generated source and actual command evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: windows-recovery-source-${{ env.SOURCE_HEAD }}-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/windows-recovery-source/
+          if-no-files-found: error
+          retention-days: 14
+
