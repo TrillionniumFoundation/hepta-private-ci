@@ -37,3 +37,29 @@ Prior #3251 compared calibration-world IDs with heldout-world IDs, but did not d
 This child requires independently frozen **training, validation, calibration and heldout** world-ID and original-source-group manifests; rejects pairwise overlap in **both** ID namespaces; rejects re-labelled heldout sources, unsupported imbalanced group sizes, duplicate calibration IDs and seed-group reuse; and samples full original-source clusters within sampled training seeds in the paired bootstrap. A measured total-cost **bootstrap upper bound**, not only its mean ratio, must fit the registered resource margin. It also rejects contradictory external scores for the same decoded-output witness on the same world. Training repeats of an original within its training partition remain allowed; this is a provenance contract, not a raw-image hashing or cryptographic observer.
 
 Tests are adversarial synthetic fixtures. Even with all checks passing, the manifests, external evaluator, actual decoder execution, pretrained model, cost readings and future-window identity are caller supplied and untrusted; **all decisions remain DRAFT / DENY_ALL / HOLD_NO_GO**. Existing #3039/#3213 negative results are untouched.
+
+
+## Absolute per-world physical budget correction (child Draft)
+
+The registered `max_total_cost_ratio` and paired mean-cost upper CI are **not a
+hard physical budget**: seven arms all spending 21 seconds can satisfy a
+1.05 cost ratio and pass the original cost gate despite a 2-second project
+budget. The baseline failure is reproducible using the earlier unmodified
+shadow evaluator on 3 seeds × 32 worlds.
+
+This additive research correction requires `protocol.hard_world_cost_limit`
+in the same `cost_units` already frozen externally, and compares every
+arm/world's reconciled measured total to that absolute limit. A world exceeding
+the cap must remain in its registered denominator with the **actual** measured
+overrun and the full `failed` penalty on **all** decoded draws, or the result
+is rejected. It reports `overbudget_episodes_by_arm`, and
+`absolute_world_cost_budget` cannot pass any strong-comparator gate when a
+single arm has an overrun. This is intentionally conservative: an
+out-of-budget baseline must not make an NDU win appear fair.
+
+Local synthetic CPU suite (including five hard-budget regressions) passes
+57/57 tests. The new source remains ordinary unauthenticated research input;
+the caller-provided cap, timing measurement and output witness require a
+separately trusted independent observer. No new model training, heldout
+evaluation, production resource monitoring, physical authorization or
+scientific NDU superiority has been established.

@@ -34,6 +34,7 @@ def study_fixture(*, strong_ndu=True, bootstrap_replicates=120):
         'bootstrap_replicates': bootstrap_replicates,
         'bootstrap_seed': 3001, 'familywise_alpha': 0.05,
         'draws_per_world': 2, 'failure_loss': 2.0, 'cost_units': 'measured_cpu_seconds',
+        'hard_world_cost_limit': 2.0,
     }
     worlds = []
     for seed in seeds:
@@ -157,6 +158,64 @@ class PairedEvidenceTests(unittest.TestCase):
         d['protocol']['heldout_source_group_ids']['101'][0] = 'src-101-1'
         d['worlds'][0]['source_group_id'] = 'src-101-1'
         with self.assertRaisesRegex(EvidenceGap, 'balanced independent source groups'):
+            evaluate(d)
+
+    def test_missing_absolute_cost_cap_is_rejected(self):
+        d = study_fixture()
+        del d['protocol']['hard_world_cost_limit']
+        with self.assertRaisesRegex(EvidenceGap, 'absolute world cost limit'):
+            evaluate(d)
+
+    def test_relative_equal_cost_cannot_override_absolute_hard_budget(self):
+        d = study_fixture(bootstrap_replicates=120)
+        # Every controller is ~21s: NDU remains cheaper than the ratio limit,
+        # but none is within the same registered 2s physical ceiling.
+        for row in d['worlds']:
+            for outcome in row['outcomes'].values():
+                outcome['measured_cost']['backbone'] += 20
+                outcome['measured_cost']['total'] += 20
+        with self.assertRaisesRegex(EvidenceGap, 'overbudget episode must receive failure penalty'):
+            evaluate(d)
+
+    def test_valid_overrun_is_penalized_retained_and_never_qualified(self):
+        d = study_fixture(bootstrap_replicates=120)
+        outcome = d['worlds'][0]['outcomes']['ndu']
+        outcome['measured_cost']['controller'] += 2
+        outcome['measured_cost']['total'] += 2
+        for score in outcome['decoded_draw_scores']:
+            score.update(status='failed', loss=2.0, quality=0.0,
+                         ambiguity=1.0, inconsistency=1.0)
+        receipt = evaluate(d)
+        self.assertEqual(receipt['worlds_per_seed'], 32)
+        self.assertEqual(receipt['overbudget_episodes_by_arm']['ndu'], 1)
+        self.assertEqual(receipt['registered_hard_world_cost_limit'], 2)
+        self.assertEqual(receipt['status'], 'HOLD_NO_GO')
+        for comparator in receipt['comparison'].values():
+            self.assertFalse(comparator['gates']['absolute_world_cost_budget'])
+        self.assertFalse(receipt['all_provisional_gates_pass'])
+
+    def test_all_arms_under_hard_budget_eligible_for_budget_subgate(self):
+        receipt = evaluate(study_fixture())
+        self.assertTrue(all(x['gates']['absolute_world_cost_budget']
+                            for x in receipt['comparison'].values()))
+        self.assertEqual(sum(receipt['overbudget_episodes_by_arm'].values()), 0)
+
+    def test_small_absolute_budget_has_no_dangerous_epsilon_floor(self):
+        d = study_fixture()
+        d['protocol']['hard_world_cost_limit'] = 1.035e-7
+        # All physical costs scale to ~1e-7. NDU costs ~1.04e-7:
+        # a 1e-9 absolute epsilon would mask this overrun.
+        for row in d['worlds']:
+            for outcome in row['outcomes'].values():
+                for key in outcome['measured_cost']:
+                    outcome['measured_cost'][key] *= 1e-7
+        with self.assertRaisesRegex(EvidenceGap, 'overbudget episode must receive failure penalty'):
+            evaluate(d)
+
+    def test_nonpositive_absolute_cap_is_rejected(self):
+        d = study_fixture()
+        d['protocol']['hard_world_cost_limit'] = 0.0
+        with self.assertRaisesRegex(EvidenceGap, 'absolute world cost limit'):
             evaluate(d)
 
     def test_cost_uncertainty_fails_even_when_mean_ratio_looks_safe(self):

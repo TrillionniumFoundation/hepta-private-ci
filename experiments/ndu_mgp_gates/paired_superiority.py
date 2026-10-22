@@ -135,6 +135,10 @@ def evaluate(study: Mapping):
     ambiguity_tol = _number(protocol.get("max_ambiguity_increase"), "ambiguity tolerance", upper=0.05)
     inconsistency_tol = _number(protocol.get("max_inconsistency_increase"), "inconsistency tolerance", upper=0.05)
     max_cost_ratio = _number(protocol.get("max_total_cost_ratio"), "cost ratio", lower=1, upper=1.1)
+    # A relative ratio alone cannot enforce a shared physical compute budget.
+    # Freeze the absolute measured per-world hard ceiling before heldout.
+    hard_cost_limit = _number(protocol.get("hard_world_cost_limit"),
+                              "absolute world cost limit", lower=1e-12)
     boots = protocol.get("bootstrap_replicates")
     _need(type(boots) is int and 100 <= boots <= 20000, "invalid bootstrap size")
     _need(type(protocol.get("bootstrap_seed")) is int, "missing preregistered bootstrap seed")
@@ -150,6 +154,7 @@ def evaluate(study: Mapping):
     size = counts[0]
     values = np.empty((len(ARMS), len(seeds), size, len(METRICS) + 1))
     protected = np.zeros((len(seeds), size), dtype=bool)
+    budget_overruns = np.zeros((len(ARMS), len(seeds), size), dtype=bool)
     arm_idx = {a: i for i, a in enumerate(ARMS)}
     seed_group_indexes = []
     for i, seed in enumerate(seeds):
@@ -219,6 +224,14 @@ def evaluate(study: Mapping):
                 total = _number(cost["total"], "total", lower=1e-12)
                 _need(abs(subtotal - total) <= max(1e-9, total * 1e-7),
                       "physical cost ledger not reconciled")
+                over_budget = total > hard_cost_limit
+                if over_budget:
+                    # Keep the episode in the matched denominator, with actual
+                    # overrun cost and registered total-failure output penalty.
+                    # An over-budget completed answer must not earn quality.
+                    _need(all(dr["status"] == "failed" for dr in drows),
+                          "overbudget episode must receive failure penalty")
+                budget_overruns[arm_idx[name], i, j] = over_budget
                 values[arm_idx[name], i, j, :len(METRICS)] = entries.mean(axis=0)
                 values[arm_idx[name], i, j, -1] = total
     _need(bool(np.any(protected)), "no protected-task evaluation coverage")
@@ -264,6 +277,10 @@ def evaluate(study: Mapping):
         protected_delta = values[0, :, :, 1] - values[index + 1, :, :, 1]
         protected_ok = bool(np.all(protected_delta[protected] >= -1e-12))
         gates = {
+            # Strong comparators must obey exactly the same preregistered
+            # absolute cap. A valid failed episode stays in the data but is
+            # not evidence of an equal-budget scientific win.
+            "absolute_world_cost_budget": bool(not budget_overruns.any()),
             "cvar90_incremental_superiority": bool(x[0] <= -min_gain and upper[0] < -min_gain),
             "factual_quality_noninferiority": bool(lower[1] >= -quality_tol),
             "ambiguity_noninferiority": bool(upper[2] <= ambiguity_tol),
@@ -283,12 +300,16 @@ def evaluate(study: Mapping):
                "worlds_per_seed": size,
                "independent_source_groups_per_seed": [len(x) for x in seed_group_indexes],
                "draws_per_world": draws,
+               "registered_hard_world_cost_limit": hard_cost_limit,
+               "overbudget_episodes_by_arm": {name: int(budget_overruns[k].sum())
+                                               for k, name in enumerate(ARMS)},
                "familywise_alpha": alpha, "bootstrap_replicates": boots,
                "comparator_selection": protocol["validation_selected_best"],
                "comparison": out,
                "limitations": ["untrusted caller supplied observations and metadata",
                                "frozen source manifests remain caller supplied, not independently authenticated",
                                "no independent observer, signature verification or prospective attestation",
+                               "absolute cost cap is caller-registered and not externally authenticated",
                                "does not execute a pretrained encoder, model, decoder or GPU inference",
                                "does not satisfy any P0-P4 production final-use gate"]}
     receipt["input_sha256"] = sha256(json.dumps(study, sort_keys=True, allow_nan=False,
