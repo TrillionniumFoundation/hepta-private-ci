@@ -307,3 +307,6 @@ fn unacknowledged_tail_cannot_supply_current_evidence_before_exact_retry() {
         .ensure_current()
         .unwrap();
 }
+
+#[path = "procedure_evidence_tests.rs"]
+mod procedure_evidence_tests;
