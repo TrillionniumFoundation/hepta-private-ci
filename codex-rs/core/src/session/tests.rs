@@ -13688,3 +13688,66 @@ async fn session_start_hooks_require_project_trust_without_config_toml() -> std:
 
     Ok(())
 }
+
+#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+async fn admission_fence_waiters_observe_cleanup_without_retiring_its_owner() {
+    struct BlockingThreadIdle {
+        entered: Arc<Notify>,
+        release: Arc<Notify>,
+    }
+
+    impl codex_extension_api::ThreadLifecycleContributor<crate::config::Config> for BlockingThreadIdle {
+        fn on_thread_idle<'a>(
+            &'a self,
+            _input: codex_extension_api::ThreadIdleInput<'a>,
+        ) -> codex_extension_api::ExtensionFuture<'a, ()> {
+            Box::pin(async move {
+                self.entered.notify_one();
+                self.release.notified().await;
+            })
+        }
+    }
+
+    let (mut session, turn_context) = make_session_and_context().await;
+    let entered = Arc::new(Notify::new());
+    let release = Arc::new(Notify::new());
+    let mut builder = codex_extension_api::ExtensionRegistryBuilder::<crate::config::Config>::new();
+    builder.thread_lifecycle_contributor(Arc::new(BlockingThreadIdle {
+        entered: Arc::clone(&entered),
+        release: Arc::clone(&release),
+    }));
+    session.services.extensions = Arc::new(builder.build());
+    let session = Arc::new(session);
+    session
+        .spawn_task(Arc::new(turn_context), Vec::new(), CompletingTask)
+        .await
+        .expect("completing task should start");
+
+    timeout(StdDuration::from_secs(2), entered.notified())
+        .await
+        .expect("finish should reach its fenced idle callback");
+    assert!(session.has_pending_task_terminalization());
+    let cancelled_waiter = session
+        .pending_admission_fence_completion()
+        .expect("terminalizer completion must be observable");
+    drop(cancelled_waiter);
+    assert!(session.has_pending_task_terminalization());
+
+    let mut waiter = session
+        .pending_admission_fence_completion()
+        .expect("dropping an observer must not retire the fence");
+    assert!(
+        timeout(StdDuration::from_millis(100), waiter.as_mut())
+            .await
+            .is_err(),
+        "an observer must not complete while idle lifecycle is still blocked"
+    );
+    assert!(session.has_pending_task_terminalization());
+
+    release.notify_one();
+    timeout(StdDuration::from_secs(2), waiter)
+        .await
+        .expect("the exact terminalizer should release its observers after cleanup");
+    assert!(!session.has_pending_task_terminalization());
+    assert!(session.pending_admission_fence_completion().is_none());
+}

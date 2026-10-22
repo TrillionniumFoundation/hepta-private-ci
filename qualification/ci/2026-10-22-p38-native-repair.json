@@ -1,0 +1,408 @@
+{
+  "schema": "hepta.p38.combined-native-repair-receipt.v1",
+  "recorded_at_utc": "2026-10-22T05:21:19.267414+00:00",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "tested_source_sha": "127769084d55704c234f85d7d5d039d398ec06fb",
+  "tested_source_tree": "c1a3fd0953c094b12a6853fb039920b9701129fa",
+  "source_base_sha": "dac730dc8ddbd96d87f6dc0c5eb94d3436d90a2b",
+  "published_initial_p38": {
+    "pr": 3118,
+    "remote_sha": "2dd2f3e7c51b8609d921637c73cbb88f770c7474",
+    "local_equivalent_sha": "c9f3e074759e1d124cae8fe8af3de5f39214034f",
+    "tree": "633b60dd501d8c3d73d2c70efa9d88af80c46711"
+  },
+  "original_failed_run": {
+    "run_id": 39715223201,
+    "pr_head_sha": "81e43756857c38891217598346a7f89235b5795b",
+    "windows_bazel_shard_1_job": 119617920629,
+    "windows_bazel_shard_3_job": 119617920590,
+    "cargo_deny_job": 119617920244,
+    "windows_clippy_job": 119617920746,
+    "windows_merge_checkout": "246a1b9ccff8023c34485cc7b085423b02a1c04d"
+  },
+  "stage_mapping": [
+    {
+      "commit": "e51f3d5c5c019a347d221c26346ef53129a351f5",
+      "tree": "e54739bc460d6a8329b22d0aae5b9da37c107fca",
+      "change": "fix(native): repair schema, subscriber and durable restart CI regressions"
+    },
+    {
+      "commit": "cd65a5a851ca70de32f73d8035b3ad0e97cb27d8",
+      "tree": "56d733eafba57c024b633b7a5354133fa0a878f4",
+      "change": "test(windows): use verified native Git descendant fixture"
+    },
+    {
+      "commit": "d93940c98dda0ee11ebfa4f156611e35cf2da885",
+      "tree": "966845006372265e120f4205dee58812a848582a",
+      "change": "ci(bazel): bound cold native builds at two hours"
+    },
+    {
+      "commit": "c9f3e074759e1d124cae8fe8af3de5f39214034f",
+      "tree": "633b60dd501d8c3d73d2c70efa9d88af80c46711",
+      "change": "fix(ci): select native-compatible Windows Clippy targets"
+    },
+    {
+      "commit": "46bb0fa81080767dcd1236bc2e2767a9c4e841af",
+      "tree": "105faa7a78ea6f1067bfe8d045eb107ba4557dcd",
+      "change": "ci(sdk): allow bounded cold V8 source builds to finish"
+    },
+    {
+      "commit": "9560a656b294cfa6966e1b4642d3cdd0a4b3e0e1",
+      "tree": "c860e0e60a30b797ba03e6ac81e2e51478e2ae2d",
+      "change": "fix(deps): close four advisories and stage exact Bazel lock generation"
+    },
+    {
+      "commit": "90b1dc725ad4cf2cc0e27f25e3ff52aebaec9885",
+      "tree": "ac80ffb7e30d8bd50e3a5b53250907367405584c",
+      "change": "fix(runtime): serialize shared V8 backing-store initialization",
+      "group": "01-v8-shared-pool.patch",
+      "patch_sha256": "1e9678c29bfce73fda6d3b2d742b7dfcc433f870e69c2cf0848532ae78798c68",
+      "donor_sha": "b58d870a2c38ebee0aa0b974d9f03767c888fa7e"
+    },
+    {
+      "commit": "0f51c7540fbb1e2d929fde5dd8f50e010b09653a",
+      "tree": "5bb579045f3c32d1d50e08022aca5944aa096366",
+      "change": "fix(plugins): reject duplicate YAML keys before typed metrics parsing",
+      "group": "02-yaml-duplicate-keys.patch",
+      "patch_sha256": "e9af431a7dd79198d44257d168c47c52570fb7f9635cd007a93ab84b18074226",
+      "donor_sha": "a6b6d19b7091a40aae9fd9e735f2e4a9bf2687fb"
+    },
+    {
+      "commit": "b5559b1aa657c8c78b5bfacd68c055b0ca71bec8",
+      "tree": "a03bc0d5c6a3c922b59776e4c68857ddaf274a0e",
+      "change": "fix(exec): gate authorized reads before generic path fallback",
+      "group": "03-authorized-read-capability.patch",
+      "patch_sha256": "1f206dfef18b6f19e000394756f78bc58af39bd404a575927469b17b14a18eaf",
+      "donor_sha": "0cc37c5f583037fab239a14e12cb89d5a0b93c29"
+    },
+    {
+      "commit": "7dcc03aaa31ac87f82ca8f85de2d458cc756fd12",
+      "tree": "347228e966ed9c7a96fff7656fa0612482d78201",
+      "change": "test(guardian): wait for the final classifier metric before assertions",
+      "group": "04-guardian-complete-metric-barrier.patch",
+      "patch_sha256": "281b2ed7425aa8a0fc209e4233fea96829f36e51ed12647f56d063020af3b3f0"
+    },
+    {
+      "commit": "b8d6d9cc8bba5b7a1b26ef8c2fac9796229764a2",
+      "tree": "bd20f5d3ff6e938dac7c01b21b079724246f3182",
+      "change": "test(authbus): exercise global capacity across bounded issuers",
+      "group": "05-authbus-capacity-fixture.patch",
+      "patch_sha256": "166a4bd282fffcb8fd7156042ce66d6a2b16c8f366c363c2376122b61546caa4",
+      "donor_sha": "b8716b012bd7dc5495348d128d9c7a16b4a11ce8"
+    },
+    {
+      "commit": "9804565770fbf6a5adcf1eecd6784b069a4a7db3",
+      "tree": "762a8b425129a4721e597806e17f51ca1d256971",
+      "change": "fix(matrixd): distinguish absent socket paths from existing entries",
+      "group": "06-matrixd-entry-check.patch",
+      "patch_sha256": "4639791e287d14c37f4c62950459e1b5a77c3d95319b715220a09001858d9455",
+      "donor_sha": "c210d26350ac57e527b4ff59663e5c8d518ff95a"
+    },
+    {
+      "commit": "db623e5fa316e19016f8c43db24c7eb5f052cf93",
+      "tree": "19bd09d220f0badf79bceb0c2bdbbf323c745ba3",
+      "change": "test(supervisor): retain signed recovery fences against unsigned directives",
+      "group": "07-signed-recovery-contract-test.patch",
+      "patch_sha256": "24e95d097211516ff97673612107a7a2bc559fd800ff7d78be09f9a5106ad501",
+      "donor_sha": "81082eb417aaeccc81832e20feae42c3caff37ba"
+    },
+    {
+      "commit": "fc3f7eaa020b0584e45d7953a835c395f5c007d2",
+      "tree": "c77d3f6bce140f8cc207b1883cdf1f0ebe9e2e31",
+      "change": "test(tui): wait through the observed preview turn idle transition",
+      "group": "08-transcript-observed-notidle.patch",
+      "patch_sha256": "5c6612183cd3b66f1ebf47e905547700772120252e3c46e5c6c43729aa702048",
+      "donor_sha": "302d8af457d12b41788003d5380e0d058629fc23"
+    },
+    {
+      "commit": "d88469a4726ca33e078ac3056f854f1d7a5d763f",
+      "tree": "4836a1dad114cc4972693ad8c1b13ef6a4ae90cf",
+      "change": "fix(queue): defer idle dispatch until exact admission fences retire",
+      "group": "09-queue-native-hooks-and-terminalization.patch",
+      "patch_sha256": "39c112512e9104853a2943de446aa9f71635b1291d377d89256cd3b4e8da00fb",
+      "donor_sha": "5bd91d442f4cc89bc8eec09a37dd00eced82b705"
+    },
+    {
+      "commit": "cf45e476832b8c713afcff6fed8d8db34f82c5a3",
+      "tree": "694d21803a25c2fa794dce394fe898beb71c7119",
+      "change": "fix(windows): add retained-directory security components and regressions",
+      "group": "01a-private-state-windows-components.patch",
+      "patch_sha256": "19122a3cdb5f5049e183411ee402bf503d7088e98916852d078ef71aba4dbdca",
+      "donor_shas": ["66f7bf10a2b34c6aad1c1b1f2718e5986f844051"]
+    },
+    {
+      "commit": "e3d4b6af320d6878924411906d998772fcf73288",
+      "tree": "bc0c126e62c98e53d045df426714783623197ddd",
+      "change": "fix(windows): expose private state owner with fail-closed validation",
+      "group": "01b-private-state-windows-owner.patch",
+      "patch_sha256": "9bded18b08d2701d57004dc07251a2e5747cdbf2118f4ad9680aa8d5b9d0d6f4",
+      "donor_shas": ["66f7bf10a2b34c6aad1c1b1f2718e5986f844051"]
+    },
+    {
+      "commit": "252917f212485ed962a3d0e457758ae126e48482",
+      "tree": "3f92456538a54525fbdb284e57691f1fc9adf311",
+      "change": "fix(registry): use private retained Windows state owner",
+      "group": "02-prompt-registry-windows-owner.patch",
+      "patch_sha256": "858a394aa45b68bd2a3a1ece0652cfb493647b1c75211c6d23179910388ae3e3",
+      "donor_shas": ["66f7bf10a2b34c6aad1c1b1f2718e5986f844051"]
+    },
+    {
+      "commit": "f536408808b48dda0bf4476b20c2a8f5d23dcbb3",
+      "tree": "859813cdff71acee38e14c45442ba5a90fb2105b",
+      "change": "fix(final-use): persist Windows nonce state through private owner",
+      "group": "03-final-use-windows-owner.patch",
+      "patch_sha256": "79a663c5432eac699e053ca535f79136ab412b9e98e80e9adc64604d972996ae",
+      "donor_shas": ["b58d870a2c38ebee0aa0b974d9f03767c888fa7e"]
+    },
+    {
+      "commit": "9254eda339e96454839c7549110f066961b30e17",
+      "tree": "c0a4587980f1c88cce9a47641f72b566aec8a198",
+      "change": "test(agentd): retain writable Windows directory sync fixtures",
+      "group": "04-ledger-directory-fixture.patch",
+      "patch_sha256": "4a1d7858959210d9263c37d99193eb2462e172f21c20168372c7c1eb54668367",
+      "donor_shas": ["b58d870a2c38ebee0aa0b974d9f03767c888fa7e"]
+    },
+    {
+      "commit": "accbb41cc3b44c3c34b3a4f617f921cc45b2c339",
+      "tree": "8c156b06286745096ebdb619b01fd1dacfcf922c",
+      "change": "fix(core): order bounded idle work after exact completion fences",
+      "group": "10-ordered-idle-core.patch",
+      "patch_sha256": "c41687a92ddd9c383c32fbfe495a8eda64e596b7eda00a32318ec61b0ad1de05",
+      "donor_sha": "48177153ad04605338c3a9a8dbd17defee9981bc"
+    },
+    {
+      "commit": "7c23ef7feba447fcef972b548deb6fdf3f64c3c0",
+      "tree": "801d33c8424f7307c6c7f909397dd06d8d5c6616",
+      "change": "fix(queue): preserve queued input priority before goal continuation",
+      "group": "11-queue-goal-ordered-wake.patch",
+      "patch_sha256": "e0e4920b738af58d7b7dcdc4c8c7b285c4eadd930b7d9b85ed40f7e841fd9068",
+      "donor_sha": "48177153ad04605338c3a9a8dbd17defee9981bc"
+    },
+    {
+      "commit": "5d186c00c5758e5703cd8d201d3a2331f119bc45",
+      "tree": "243f3af633c7afe9f08c0cd95543417fa9604dd3",
+      "change": "test(tui): interrupt an observed live response before shutdown",
+      "group": "12-background-exit-live-turn.patch",
+      "patch_sha256": "373ba281a4dfea118212aa24fcff43a393b22d7130d9e6414edce0721fff40d1",
+      "donor_sha": "48177153ad04605338c3a9a8dbd17defee9981bc"
+    },
+    {
+      "commit": "127769084d55704c234f85d7d5d039d398ec06fb",
+      "tree": "c1a3fd0953c094b12a6853fb039920b9701129fa",
+      "change": "build: resolve Windows private-state dependency edges"
+    }
+  ],
+  "original_shard3_repairs": [
+    {
+      "group": "01-v8-shared-pool.patch",
+      "targets": [
+        "//codex-rs/code-mode-host:code-mode-host-unit-tests",
+        "//codex-rs/code-mode-runtime:code-mode-runtime-unit-tests"
+      ],
+      "original_failure": "Both abort with partition_address_space.cc(301): !IsConfigurablePoolInitialized().",
+      "repair_mechanism": "Serialize isolate/context construction through the first actual ArrayBuffer backing-store allocation; release the shared mutex before normal cell work."
+    },
+    {
+      "group": "02-yaml-duplicate-keys.patch",
+      "targets": ["//codex-rs/core-plugins:core-plugins-unit-tests"],
+      "original_failure": "invalid_manifest_disables_metrics_without_disabling_attribution at script_attribution_tests.rs:260 accepts Some(ResolvedPluginMetricsOperation) where None is required.",
+      "repair_mechanism": "Run Value duplicate-key rejection on the exact bounded input bytes before typed parsing can collapse duplicate map entries."
+    },
+    {
+      "group": "03-authorized-read-capability.patch",
+      "targets": [
+        "//codex-rs/exec-server:exec-server-authorized_read_rpc-test"
+      ],
+      "original_failure": "authorized_read_rpc_is_capability_gated_and_denies_outside_root at authorized_read_rpc.rs:84: actual -32600, expected -32603.",
+      "repair_mechanism": "Reject unavailable stable-handle authorized reads before generic ExecutorFileSystem fallback; retain supported-platform outside-root denial and path redaction."
+    },
+    {
+      "group": "04-guardian-complete-metric-barrier.patch",
+      "targets": ["//codex-rs/ext/guardian-v2:guardian-v2-unit-tests"],
+      "original_failure": "contributor_uses_configured_prompt_effort_threshold_and_transcript at extension_tests.rs:1309: lag metrics interleave among truncation samples, while all token values match.",
+      "repair_mechanism": "Current test waits only for 9 samples, but classification emits 13 before manual approval adds lag samples. Wait for the final action/omitted truncation sample under the same five-second timeout; keep the full ordered metric equality assertion."
+    },
+    {
+      "group": "05-authbus-capacity-fixture.patch",
+      "targets": ["//codex-rs/hepta-evidence:hepta-evidence-unit-tests"],
+      "original_failure": "bounded_capacity_prunes_only_terminal_history_and_keeps_replay_consumed at authbus_outbox_tests.rs:57: unwrap Err(Capacity).",
+      "repair_mechanism": "Distribute 4095 synthetic active records over issuer groups of at most 512 so the global-4096 test reaches the intended cap; quarantine fixture issuers via the production API and retain replay/active-row assertions."
+    },
+    {
+      "group": "06-matrixd-entry-check.patch",
+      "targets": ["//codex-rs/hepta-matrixd:hepta-matrixd-unit-tests"],
+      "original_failure": "health_tracks_real_task_state_and_owner_uds_serves_exact_identity: AlreadyExists / matrixd control socket path is not stale for a fresh missing Windows socket.",
+      "repair_mechanism": "After NotFound or ConnectionRefused, inspect symlink_metadata. Only an actually absent entry bypasses stale cleanup; retain live, non-socket and dangling-link protections."
+    },
+    {
+      "group": "07-signed-recovery-contract-test.patch",
+      "targets": [
+        "//codex-rs/hepta-supervisor:hepta-supervisor-signed_intent_recovery-test"
+      ],
+      "original_failure": "exact_digest_abort_terminalizes_unresolved_intent at signed_intent_recovery.rs:162 expects recover() Err(SignedIntentRecoveryRequired).",
+      "repair_mechanism": "Match the existing fail-closed product contract: recovery stays reachable but inactive/quarantined; an unsigned digest-only abort directive never clears the independently signed production recovery fence."
+    },
+    {
+      "group": "08-transcript-observed-notidle.patch",
+      "targets": ["//codex-rs/tui:tui-unit-tests"],
+      "original_failure": "paginated_transcript_preview_pages_past_old_item_budget and transcript_preview_preserves_legacy_and_paginated_output at resume_picker_transcript_preview_tests.rs:366: failed to submit turn input: NotIdle.",
+      "repair_mechanism": "Retry only the observed Server/NotIdle response for at most ten seconds after a completed turn; preserve every real turn and all transcript assertions; other errors immediately fail."
+    },
+    {
+      "group": "09-queue-native-hooks-and-terminalization.patch",
+      "targets": ["//codex-rs/ext/queue:queue-queue_service-test"],
+      "original_failure": "Four hook tests cannot observe real Python hook/rejection; registered_queue_lifecycle_starts_messages_in_fifo_order receives one request where three are required.",
+      "repair_mechanism": "Pass PATHEXT into Windows tests and invoke the actual Python interpreter with correct shell quoting. For FIFO, return the idle callback before independently observing its own terminalizer's completion, then reacquire dispatch guard and recheck status through normal routing. Pre-routing StartIfIdle refusals are known NotSubmitted, preserving ambiguous post-start authority."
+    }
+  ],
+  "windows_owner": {
+    "original_failure": "Windows Prompt Registry/final-use paths returned UnsafeStateDirectory; ledger fixtures used an ordinary directory handle that could not exercise the real Windows durability path.",
+    "repair": "Acquire a retained private Windows directory without following reparse ancestors; verify the returned handle, current-token owner, private DACL, regular single-link child, and retained ancestry. Integrate the real owner into Prompt Registry and final-use; use a writable real directory sync handle in ledger fixtures.",
+    "manifest_sha256": "b187b22d56e463137cf22cc8ced042efd6cc1078286d1745e29ffe5d899b5d52",
+    "donor_blobs_match_after_format": 14,
+    "new_security_test_count": 17,
+    "new_security_tests": [
+      "rejects_junction_before_creating_private_leaf",
+      "rejects_ancestor_substitution_at_retained_open",
+      "new_directory_and_child_have_explicit_token_user_ownership",
+      "opening_existing_objects_never_rewrites_their_security",
+      "native_creation_rejects_nul_without_creating_a_prefix_path",
+      "relative_root_uses_one_absolute_spelling_for_create_and_open",
+      "malformed_ace_sid_bounds_fail_closed",
+      "malformed_getace_spans_fail_closed",
+      "public_read_access_is_not_private",
+      "retained_directory_opens_private_single_link_children",
+      "hard_link_is_rejected",
+      "retained_directory_pins_root_and_ancestor_until_drop",
+      "full_private_registry_roundtrip_reopens_without_resetting_owner_history",
+      "hard_link_is_rejected_before_registry_bytes_are_read",
+      "windows_nonce_burn_persists_across_real_private_store_reopen",
+      "windows_final_use_rejects_hardlinked_claims_before_nonce_replay",
+      "windows_final_use_denies_issuer_or_epoch_substitution"
+    ],
+    "preserved_contracts": [
+      "No rewriting security of existing objects.",
+      "Real ancestor substitution must occur before denial is accepted.",
+      "Malformed ACL/ACE/SID and hardlinked state are rejected.",
+      "Nonce burn survives reopen; truncated claims, issuer and epoch substitution remain errors.",
+      "Original Browser, ledger and Unix registry test bodies and assertions remain enabled."
+    ],
+    "historical_evidence_limit": "Older b58d870a owner tests passed on their exact head and the Agentd target passed on cae9d60b merge; neither qualifies the later owner or this combined source.",
+    "required_commands": [
+      "just test --locked -p codex-utils-path --lib -E 'test(private_state_windows::)' --test-threads 1 --no-tests fail --retries 0",
+      "just test --locked -p codex-hepta-prompt-registry --lib -E 'test(durable::windows::tests::)' --test-threads 1 --no-tests fail --retries 0",
+      "just test --locked -p codex-hepta-contracts --lib -E 'test(final_use::store::windows::tests::)' --test-threads 1 --no-tests fail --retries 0",
+      "just test --locked -p codex-hepta-agentd --lib -E 'test(browser_servo::tests::) | test(cognitive_retrieval_learning::tests::)' --test-threads 1 --no-tests fail --retries 0",
+      "Existing owning Bazel Windows //codex-rs/hepta-agentd:hepta-agentd-unit-tests target, with no additional case exclusions."
+    ]
+  },
+  "tui_followup": {
+    "manifest_sha256": "1cf7d55c6c28db7b1ac9e09bfa9a628cc8de02c245eb460db193ec0d5f8690c9",
+    "safety_retry_failure": "Five unchanged tests time out waiting for the final inherited Goal continuation request. Goal previously called StartIfIdle before the current terminalizer retired its completion fence and then discarded the refused wake.",
+    "repair": "Register bounded deferred work and return the lifecycle callback; await its exact completion. Queue and automatic work use separate FIFO chains; automatic work snapshots the queue tail after the fence, and Queue never waits on automatic work. Admission, durable authority and current AgentStatus checks remain mandatory.",
+    "capacity": 32,
+    "new_scheduler_tests": [
+      "deferred_idle_contributors_wait_for_fence_and_preserve_registration_order",
+      "deferred_idle_work_rejects_capacity_overflow",
+      "later_queued_input_precedes_automatic_work_observing_the_same_fence",
+      "thread_termination_cancels_waiting_idle_work_without_running_it"
+    ],
+    "new_queue_integration_test": "queued_input_precedes_an_older_automatic_notification_at_the_same_fence",
+    "background_exit": "Replace the unproven live shell fixture with an observed real provider request held behind an explicit SSE completion gate; retain the original interrupt and Exit(ShutdownFirst) assertions.",
+    "limits": [
+      "Original five safety-retry assertions and five-second deadlines are unchanged.",
+      "The original shell-exit subcause is not established by available logs.",
+      "Donor scheduler harness used Core wiring stubs and is not a combined native pass.",
+      "Existing caller-abort, ambiguous-admission, FIFO, durability and Goal tests remain required."
+    ]
+  },
+  "local_validation": {
+    "formatting": "Rust 1.95 rustfmt and repository just fmt on each committed source group passed; git diff --check passed. Native build execution was not attempted.",
+    "test_discovery": "defs.bzl native.glob src/**/*.rs includes new owner/Core modules; native.glob tests/*.rs creates //codex-rs/code-mode-runtime:code-mode-runtime-parallel_initialization-test. This is source inspection, not a Bazel query or execution.",
+    "cargo_resolver": {
+      "command": [
+        "cargo",
+        "metadata",
+        "--locked",
+        "--all-features",
+        "--format-version",
+        "1",
+        "--manifest-path",
+        "codex-rs/Cargo.toml"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 3.502,
+      "resource_stop": null,
+      "free_bytes": 2404749312,
+      "resolved_packages": 1523,
+      "log_sha256": "43c8463df4dc292b66528955ca82e0cb704e42344625635a20eabca79561cd6c",
+      "package_or_version_drift": false,
+      "new_edges": [
+        "codex-hepta-contracts -> codex-utils-path",
+        "codex-hepta-prompt-registry -> codex-utils-path",
+        "codex-utils-path -> winapi-util",
+        "codex-utils-path -> windows-sys 0.52.0"
+      ],
+      "lock_edge_generation": {
+        "command": "cargo metadata --offline --all-features --format-version 1 --manifest-path codex-rs/Cargo.toml",
+        "exit_code": 101,
+        "observation": "Cargo first generated the four real dependency edges, then refused to download the previously removed accessory 2.1.1 crate archive in offline mode.",
+        "subsequent_locked_full_metadata": "The recorded online --locked command restored the locked archives and resolved all 1523 packages without further lock changes."
+      }
+    },
+    "cargo_deny": {
+      "command": [
+        "cargo-deny",
+        "--log-level",
+        "warn",
+        "--manifest-path",
+        "./codex-rs/Cargo.toml",
+        "--all-features",
+        "check"
+      ],
+      "source_sha": "127769084d55704c234f85d7d5d039d398ec06fb",
+      "source_tree": "c1a3fd0953c094b12a6853fb039920b9701129fa",
+      "exit_code": 0,
+      "elapsed_seconds": 4.563,
+      "resource_stop": null,
+      "free_bytes": 2377736192,
+      "raw_log_sha256": "53b0d8b71bf92259a90194bdd06099472f5653afc07ac1cf25995b1228b111df",
+      "raw_log_bytes": 13273206,
+      "error_lines": [],
+      "summary": ["advisories ok, bans ok, licenses ok, sources ok"],
+      "advisory_db_head": "4b587f00996ebe5c05a73eaef105ef241e876414"
+    },
+    "input_sha256": {
+      "codex-rs/Cargo.toml": "ddfc3f515cb114d23423060008d0db211ccbca0e722c78392d81b3210adb1543",
+      "codex-rs/Cargo.lock": "4457fc01b43c7218a6aaa5903098dd7308deba1125e42aeba8d7e188cad363b4",
+      "codex-rs/deny.toml": "283d9b18f453a9bf0466dd24d1fd5957bec2c4e343c91230dc56042b06b08ecc",
+      "codex-rs/utils/path-utils/Cargo.toml": "5e23cfabdee9302d9d89057cc77b3ee8b7baacb1f5591639d227d9384ac19d05",
+      "codex-rs/hepta-contracts/Cargo.toml": "aea1dc99aee81bcabf8c8515f3ccfcdbe20cae9334720da298d2092dc9b9db92",
+      "codex-rs/hepta-prompt-registry/Cargo.toml": "ef0f67376bcd0f2d14cd48473472929d31c4ba51457a57ccfc1ca206663fc8e0",
+      "MODULE.bazel.lock": "825db8bf34237cef491eee58fa51c070d140f421df300ecb9086a474181eea31"
+    },
+    "dependency_repair_history": "qualification/ci/2026-10-22-p38-dependency-repair.json",
+    "tool_versions": {
+      "cargo": "1.95.0 (f2d3ce0bd 2026-03-21)",
+      "cargo_deny": "0.19.0",
+      "rustfmt": "Rust 1.95 toolchain",
+      "prettier": "3.5.3"
+    },
+    "prior_scoped_validation": "The unchanged Clippy target selector had 16 behavior tests pass at c9f3e074. This does not qualify any compiled native target."
+  },
+  "qualification": {
+    "cargo_deny_passed_on_combined_source": true,
+    "native_combined_verified": false,
+    "all_blockers_closed": false,
+    "bazel_lock": "Pending exact-source artifact-only workflow generation; original MODULE.bazel.lock is unchanged.",
+    "lock_workflow": ".github/workflows/hepta-p38-lockfile-generate.yml",
+    "required_before_closure": [
+      "Publish the exact combined source and generate Cargo.lock/MODULE.bazel.lock using the original just bazel-lock-update recipe.",
+      "Require source/hash receipt and original check-module-bazel-lock.sh success before importing artifacts.",
+      "Run all original applicable Rust/Bazel/Clippy/architecture gates; preserve the original five Windows shard-1 targets and eleven shard-3 targets.",
+      "Run all seventeen Windows owner regressions, four scheduler regressions, Queue priority integration, five original TUI safety-retry cases and the live-turn exit test."
+    ],
+    "no_gate_weakening": "No test exclusions, advisory ignores, permission waivers, skipped ownership assertions, fake native hooks or automatic remote writes are introduced.",
+    "resource_limit": "Local native builds remain pending because the full source graph exceeded the available disk during the earlier bounded Bazel resolver attempt; cloud lock generation retains all original checks."
+  }
+}

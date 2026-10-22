@@ -1188,7 +1188,22 @@ max_recent_non_user_entries = 8
             .latest_scored_tool_call
             .load(Ordering::Acquire)
             == 0
-            || metrics.0.lock().unwrap().len() < 9
+            // The score is published before classification and truncation
+            // metrics finish. Wait for the final truncation sample before
+            // the approval checks below append tool-call lag metrics.
+            || !metrics.0.lock().unwrap().iter().any(|sample| {
+                matches!(
+                    sample,
+                    RecordedMetric::Histogram(name, _, tags)
+                        if name == CLASSIFICATION_TRUNCATION_BYTES_METRIC
+                            && tags.iter().any(|(key, value)| {
+                                key == "component" && value == "action"
+                            })
+                            && tags.iter().any(|(key, value)| {
+                                key == "measurement" && value == "omitted"
+                            })
+                )
+            })
         {
             tokio::task::yield_now().await;
         }

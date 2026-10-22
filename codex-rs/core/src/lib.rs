@@ -50,6 +50,7 @@ pub use codex_thread::GuardianRootSnapshot;
 pub use codex_thread::InjectIfRunningError;
 pub use codex_thread::ThreadConfigSnapshot;
 pub use session::turn_context::TurnContext;
+pub use tasks::IdleWorkPriority;
 pub use user_message_admission::UserMessageAdmission;
 pub use user_message_admission::UserMessageAdmissionError;
 mod agent;
