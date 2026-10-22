@@ -190,6 +190,39 @@ class ScaleMatrixTests(unittest.TestCase):
         self.assertIn("evidence_receipts must be an object", errors)
         self.assertIn("metrics_receipt must be a lowercase SHA-256 digest", errors)
 
+    def test_zero_hash_placeholders_cannot_masquerade_as_scale_evidence(self):
+        # A zero identity is an absent/uninitialized pointer, not an actual
+        # Git object, signed observer receipt, runtime or measurement digest.
+        for key in scale_matrix.PROVENANCE_FIELDS:
+            with self.subTest(provenance=key):
+                record = self.make_record(64, "shared_encoder")
+                length = 40 if key in ("source_commit", "source_tree") else 64
+                record["provenance"][key] = "0" * length
+                self.assertIn(
+                    f"provenance.{key} cannot be a zero digest",
+                    scale_matrix.validate_result(record),
+                )
+        for key in scale_matrix.REQUIRED_EVIDENCE:
+            with self.subTest(evidence_receipt=key):
+                record = self.make_record(64, "shared_encoder")
+                record["evidence_receipts"][key] = "0" * 64
+                self.assertIn(
+                    f"evidence_receipts.{key} cannot be a zero digest",
+                    scale_matrix.validate_result(record),
+                )
+        record = self.make_record(64, "shared_encoder")
+        record["metrics_receipt"] = "0" * 64
+        self.assertIn(
+            "metrics_receipt cannot be a zero digest",
+            scale_matrix.validate_result(record),
+        )
+        matrix = self.matrix()
+        matrix["results"][0]["provenance"]["measurement_digest"] = "0" * 64
+        self.assertIn(
+            "results[0].provenance.measurement_digest cannot be a zero digest",
+            scale_matrix.validate_matrix(matrix),
+        )
+
     def test_non_finite_boolean_and_negative_metrics_are_rejected(self):
         result = {
             "schema": "hepta.cell-execution-scale-result.v1",
