@@ -354,11 +354,18 @@ def run_check(argv: list[str], cwd: Path, timeout: int, log_path: Path) -> dict[
                     blocked = "BLOCKED_OUTPUT_LIMIT"
                     _stop_check_process_group(child)
             if blocked is not None:
+                # The refusal marker is part of the file budget. Truncating
+                # to MAX_CHECK_LOG_BYTES *before* appending the marker breaks
+                # the strict bound for exactly the oversized-output case.
+                trailer = ("\nHEPTA_LOCAL_GATE: " + blocked + "\n").encode("utf-8")
                 out.flush()
-                if os.fstat(out.fileno()).st_size > MAX_CHECK_LOG_BYTES:
-                    os.ftruncate(out.fileno(), MAX_CHECK_LOG_BYTES)
+                body_budget = MAX_CHECK_LOG_BYTES - len(trailer)
+                if body_budget < 0:
+                    raise RuntimeError("local check output cap cannot hold denial trailer")
+                if os.fstat(out.fileno()).st_size > body_budget:
+                    os.ftruncate(out.fileno(), body_budget)
                 out.seek(0, os.SEEK_END)
-                out.write(("\nHEPTA_LOCAL_GATE: " + blocked + "\n").encode("utf-8"))
+                out.write(trailer)
             else:
                 out.write(exit_line)
             out.flush()
