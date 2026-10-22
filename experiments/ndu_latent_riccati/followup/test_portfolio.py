@@ -157,7 +157,31 @@ class PortfolioMechanismTests(unittest.TestCase):
         self.assertEqual(r['tail'], 5.)
 
     def test_cvar_tail_uses_worst_ceil_ten_percent(self):
+        # Integer tail mass remains equivalent to the old complete-worst-row rule.
         self.assertEqual(cvar90(np.arange(20)), 18.5)
+
+    def test_fractional_empirical_tail_is_not_ceil_average(self):
+        # 11 equiprobable scenarios => 1.1 scenarios in the 10% upper tail.
+        # The old ceil(1.1)=2 average would report 5, hiding a true 9.09 risk.
+        cases = np.r_[np.zeros(10), 10.0]
+        self.assertAlmostEqual(cvar90(cases), 10.0 / 1.1, places=12)
+        self.assertGreater(cvar90(cases), 6.0)
+        # 15 scenarios => one whole and half of the second-largest scenario.
+        self.assertAlmostEqual(cvar90(np.r_[np.zeros(13), 4., 10.]), 8.0)
+
+    def test_tail_cap_denies_infeasible_nochange(self):
+        baseline = np.r_[np.zeros(10), 10.0]
+        with self.assertRaisesRegex(PortfolioRejected, 'no feasible allocation'):
+            solve(baseline, [], Budget(cvar90_limit=6.0))
+
+    def test_tail_cap_restricts_positive_utility_cell(self):
+        # Old rounded CVaR admitted 100% exposure; the exact tail only
+        # admits half exposure under the declared hard 6.0 loss budget.
+        risky = make_asset('risky', np.r_[np.zeros(10), 10.0], utility=100.)
+        result = solve(np.zeros(11), [risky], Budget(grid=4, risk_aversion=0.,
+                                                   cvar90_limit=6.0))
+        self.assertEqual(result['allocations'][0]['ticks'], 2)
+        self.assertLessEqual(result['tail'], 6.0)
 
 
 class GenerativeMechanismTests(unittest.TestCase):
