@@ -123,7 +123,10 @@ pub enum OutputPortfolioDispositionV1 {
     NoChange,
     AdvisorySelection,
 }
-/// Replayable advisory receipt. It deliberately contains no execution token.
+/// Replayable advisory receipt. The selection digest binds all displayed
+/// fields, but does not establish external future-window evidence, execution
+/// authority or a signature. Consumers must independently replay/verify it.
+/// It deliberately contains no execution token.
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct OutputPortfolioSelectionReceiptV1 {
     pub objective_digest: Digest32,
