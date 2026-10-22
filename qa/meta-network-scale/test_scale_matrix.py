@@ -124,6 +124,19 @@ class ScaleMatrixTests(unittest.TestCase):
             "P4 qualification must reject missing metrics from the benchmark contract",
         )
 
+    def test_benchmark_spec_edits_cannot_skip_p5_evidence_ci(self):
+        workflow = (
+            pathlib.Path(__file__).resolve().parents[2]
+            / ".github"
+            / "workflows"
+            / "hepta-p5-scale-evidence-exact.yml"
+        ).read_text(encoding="utf-8")
+        pull_request_paths = workflow.partition("  workflow_dispatch:")[0]
+        self.assertIn(
+            '      - "docs/learning/CELL_EXECUTION_BENCHMARK_MATRIX.json"',
+            pull_request_paths,
+        )
+
     def test_p4_metrics_are_required_and_rate_units_are_bounded(self):
         for key in scale_matrix.REQUIRED_METRICS:
             with self.subTest(missing=key):
