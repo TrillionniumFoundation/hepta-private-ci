@@ -84,10 +84,33 @@ def require_native_host():
         require(not os.environ.get(name), f'forbidden test selection environment: {name}')
 
 
+def is_forbidden_v8_closure_label(label):
+    """Examine Bazel repository/package and rule names, never source basenames.
+
+    UUID version 8 uses src/v8.rs, and ARM crypto uses armv8 assembly files.
+    Neither is a V8 JavaScript runtime. Genuine V8 repositories, workspace
+    packages and named build targets remain forbidden.
+    """
+    package, colon, target = label.partition(':')
+    if re.search(r'//codex-rs/(?:core|cli|code-mode|code_mode|v8-poc)(?:/|$)', package, re.I):
+        return True
+    if re.search(r'(^|[/@_+])(?:rusty_)?v8(?:[/_:~+.-]|$)', package, re.I):
+        return True
+    # A bare Bazel rule :v8 or :rusty_v8 is executable/library identity;
+    # :src/v8.rs is merely a source file inside some other crate.
+    source_suffixes = ('.rs', '.c', '.cc', '.cpp', '.h', '.hpp', '.S', '.s', '.asm', '.pl')
+    return bool(
+        colon
+        and '/' not in target
+        and not target.endswith(source_suffixes)
+        and re.match(r'^(?:rusty_)?v8(?:$|[_+~.-])', target, re.I)
+    )
+
+
 def validate_closure(data):
     labels = sorted({line.split()[0] for line in data.decode().splitlines() if line.startswith(('//', '@'))})
     require(all(owner in labels for owner in OWNERS), 'configured closure missing an owning test target')
-    forbidden = [x for x in labels if re.search(r'(^|[/@_+])(?:rusty_)?v8(?:[/_:~+.-]|$)|//codex-rs/(?:core|cli|code-mode|code_mode|v8-poc)(?:/|:)', x, re.I)]
+    forbidden = [x for x in labels if is_forbidden_v8_closure_label(x)]
     require(not forbidden, f'unreviewed V8/full-CLI closure; stop, do not prune dependencies: {forbidden}')
     return labels
 
