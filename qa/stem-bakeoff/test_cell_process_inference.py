@@ -187,6 +187,32 @@ class CellProcessInferenceTests(unittest.TestCase):
         self.assertEqual(result["router_forward_calls"], 0)
         self.assertTrue(all(r["actual_calls"] == ["a"] for r in result["routes"]))
 
+    def test_late_withdrawal_rejects_snapshot_commit_without_adopting_successor(self):
+        predecessor = self.owner.current
+        original_commit = self.owner._owner.commit
+
+        def withdraw_after_cas(candidate, *, expected_parent_manifest_sha256):
+            original_commit(candidate, expected_parent_manifest_sha256=expected_parent_manifest_sha256)
+            self.withdrawals.revoke(predecessor.report["source_closure"][0])
+
+        # The first checks and the internal CAS succeed; the independent
+        # withdrawal view advances before post-admission verification.
+        with patch.object(self.owner._owner, "commit", side_effect=withdraw_after_cas):
+            with self.assertRaisesRegex(EvolutionError, "withdrawn"):
+                self.owner.commit(self.retired,
+                    expected_parent_manifest_sha256=predecessor.manifest_sha256)
+        self.assertIs(self.owner.current, predecessor)
+        self.assertEqual(self.owner.current.generation, 1)
+
+        # Neither predecessor nor successor becomes usable on a revoked
+        # source; the observed frontier is not rolled back with the pointer.
+        with self.assertRaises(EvolutionError):
+            self.owner.capture()
+        self.withdrawals.view = WithdrawalViewV1(IDENTITY.scope_id)
+        with self.assertRaisesRegex(EvolutionError, "frontier"):
+            self.owner.capture()
+        self.assertIs(self.owner.current, predecessor)
+
     def test_wrong_feature_scope_is_rejected_before_any_worker_forward(self):
         pool = self.pool()
         bad = cohort("different-scope", identity=replace(IDENTITY, scope_id="another-owner")).bundle
