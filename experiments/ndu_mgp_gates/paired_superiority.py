@@ -70,6 +70,16 @@ def evaluate(study: Mapping):
           "heldout world manifest must cover every registered seed")
     counts = [len(world_ids[str(s)]) for s in seeds]
     _need(len(set(counts)) == 1 and counts[0] >= 32, "need >=32 matched worlds per seed")
+    # Protected membership is part of the frozen evaluation plan, not a
+    # post-hoc label selected after observing model outputs or adverse losses.
+    protected_flags = protocol.get("heldout_protected_flags")
+    _need(isinstance(protected_flags, dict) and
+          set(protected_flags) == set(world_ids) and
+          all(isinstance(protected_flags[str(seed)], list) and
+              len(protected_flags[str(seed)]) == counts[i] and
+              all(type(flag) is bool for flag in protected_flags[str(seed)])
+              for i, seed in enumerate(seeds)),
+          "missing or invalid frozen protected-task label manifest")
     flat_ids = [k for s in seeds for k in world_ids[str(s)]]
     _need(all(isinstance(k, str) and k for k in flat_ids) and
           len(set(flat_ids)) == len(flat_ids), "missing/duplicated heldout world IDs")
@@ -187,8 +197,10 @@ def evaluate(study: Mapping):
                   "source-group identity differs from frozen heldout manifest")
             context = row.get("public_input_digest")
             _need(isinstance(context, str) and len(context) == 64, "missing public input identity")
-            protected[i, j] = row.get("protected_task") is True
             _need(type(row.get("protected_task")) is bool, "protected status missing")
+            _need(row["protected_task"] is protected_flags[str(seed)][j],
+                  "protected-task label differs from frozen heldout manifest")
+            protected[i, j] = protected_flags[str(seed)][j]
             outcomes = row.get("outcomes")
             _need(isinstance(outcomes, dict) and set(outcomes) == set(ARMS),
                   "missing required matched control or NDU")
@@ -357,6 +369,7 @@ def evaluate(study: Mapping):
                "independent_source_groups_per_seed": [len(x) for x in seed_group_indexes],
                "registered_min_protected_source_groups_per_seed": protected_source_floor,
                "protected_worlds_per_seed": protected_world_counts,
+               "protected_labels_checked_against_frozen_manifest": True,
                "protected_original_sources_per_seed": protected_source_counts,
                "registered_min_protected_ndu_quality": min_protected_quality,
                "registered_min_protected_ndu_completion": min_protected_completion,
