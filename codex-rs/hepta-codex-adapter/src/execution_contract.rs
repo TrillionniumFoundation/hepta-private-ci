@@ -339,13 +339,18 @@ impl ExecutionReceiptV1 {
         {
             return Err(ExecutionContractError::MissingTerminalOutcome);
         }
-        // A completed or terminally failed effect cannot be re-admitted.
-        // An unknown effect is reconcile-only, never pre-admission retry.
+        // Completed or failed effects cannot be re-admitted. A terminally
+        // failed operation may still need reconciliation under the same ID.
+        // Unknown effects are reconcile-only, never pre-admission retries.
         // Rollback after a known failure is a separate governed operation.
         let recovery_allowed = matches!(
             (self.status, self.recovery),
             (ExecutionStatusV1::Completed, RecoveryDispositionV1::None)
                 | (ExecutionStatusV1::Failed, RecoveryDispositionV1::None)
+                | (
+                    ExecutionStatusV1::Failed,
+                    RecoveryDispositionV1::ReconcileSameOperation
+                )
                 | (ExecutionStatusV1::Failed, RecoveryDispositionV1::Quarantine)
                 | (ExecutionStatusV1::Failed, RecoveryDispositionV1::RollbackToPredecessor)
                 | (
@@ -398,6 +403,14 @@ impl RuntimeReceiptV1 {
         // carry a terminal observation and then claim retry-before-admission.
         if self.execution.status == ExecutionStatusV1::Rejected
             && self.tool_outcome.terminal_observed
+        {
+            return Err(ExecutionContractError::StatusOutcomeMismatch);
+        }
+        // A nonzero native process exit is never a completed success. A
+        // terminal success cannot separately request a retry of that effect.
+        if self.execution.status == ExecutionStatusV1::Completed
+            && (self.tool_outcome.exit_code.is_some_and(|code| code != 0)
+                || self.tool_outcome.retryable)
         {
             return Err(ExecutionContractError::StatusOutcomeMismatch);
         }
