@@ -108,7 +108,15 @@ pub enum PrivateFileAccess {
 
 /// Creates or opens a retained private-state directory.
 pub fn open_private_state_directory(root: &Path) -> io::Result<File> {
-    let directory = directory::open(root)?;
+    let directory = directory::open(root, directory::DirectoryCreation::OpenOrCreate)?;
+    validate_handle(&directory, HandleKind::Directory)?;
+    Ok(directory)
+}
+
+/// Creates a new retained private directory, rejecting every existing entry.
+/// Existing ownership and permissions are never changed or silently accepted.
+pub fn create_private_state_directory(root: &Path) -> io::Result<File> {
+    let directory = directory::open(root, directory::DirectoryCreation::CreateNew)?;
     validate_handle(&directory, HandleKind::Directory)?;
     Ok(directory)
 }

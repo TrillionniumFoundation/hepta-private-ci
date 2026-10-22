@@ -10,6 +10,8 @@ pub use private_state_windows::PrivateFileAccess;
 #[cfg(windows)]
 pub use private_state_windows::create_private_recovery_copy;
 #[cfg(windows)]
+pub use private_state_windows::create_private_state_directory;
+#[cfg(windows)]
 pub use private_state_windows::open_existing_private_state_directory;
 #[cfg(windows)]
 pub use private_state_windows::open_existing_private_state_directory_for_sync;

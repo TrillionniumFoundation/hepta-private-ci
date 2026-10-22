@@ -28,6 +28,7 @@ use super::wide_path;
 use super::with_private_security;
 
 const FILE_OPEN_IF: u32 = 3;
+const FILE_CREATE: u32 = 2;
 const FILE_DIRECTORY_FILE: u32 = 1;
 const FILE_SYNCHRONOUS_IO_NONALERT: u32 = 0x20;
 const FILE_OPEN_REPARSE_POINT: u32 = 0x0020_0000;
@@ -62,7 +63,12 @@ unsafe extern "system" {
     ) -> NTSTATUS;
 }
 
-pub(super) fn open(root: &Path) -> io::Result<File> {
+pub(super) enum DirectoryCreation {
+    OpenOrCreate,
+    CreateNew,
+}
+
+pub(super) fn open(root: &Path, creation: DirectoryCreation) -> io::Result<File> {
     let mut name = wide_path(root)?;
     // Convert the already absolute Win32 verbatim spelling to the NT namespace.
     // This retains long paths and UNC (\\?\UNC\... -> \??\UNC\...) without
@@ -112,7 +118,10 @@ pub(super) fn open(root: &Path) -> io::Result<File> {
                 FILE_ATTRIBUTE_NORMAL,
                 // Retain the original no-delete-sharing pin until File drops.
                 FILE_SHARE_READ | FILE_SHARE_WRITE,
-                FILE_OPEN_IF,
+                match creation {
+                    DirectoryCreation::OpenOrCreate => FILE_OPEN_IF,
+                    DirectoryCreation::CreateNew => FILE_CREATE,
+                },
                 FILE_DIRECTORY_FILE | FILE_SYNCHRONOUS_IO_NONALERT | FILE_OPEN_REPARSE_POINT,
                 ptr::null(),
                 /*ea_length*/ 0,
