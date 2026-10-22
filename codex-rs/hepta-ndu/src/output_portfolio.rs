@@ -25,13 +25,7 @@ pub fn select_output_portfolio_v1(
         .iter()
         .position(|candidate| candidate.is_no_change)
         .ok_or(NduError::MissingAbstainCandidate)?;
-    for index in 0..count {
-        if covariance[baseline * count + index] != FixedQ32::ZERO
-            || covariance[index * count + baseline] != FixedQ32::ZERO
-        {
-            return Err(NduError::InvalidSolverReceipt("no-change covariance"));
-        }
-    }
+    ensure_no_change_covariance(&covariance, count, baseline)?;
     let mut risks = Vec::with_capacity(count);
     let mut scores = Vec::with_capacity(count);
     for candidate in &candidates {
@@ -156,7 +150,10 @@ pub fn select_output_portfolio_v1(
     } else {
         OutputPortfolioDispositionV1::AdvisorySelection
     };
-    let frontier = efficient_frontier_from_canonical(&candidates, &risks);
+    // A full-weight single candidate carries its covariance diagonal as
+    // well as its linear semantic loss. Do not display an understated frontier.
+    let frontier_risks = standalone_risks(&risks, &covariance)?;
+    let frontier = efficient_frontier_from_canonical(&candidates, &frontier_risks);
     let selection_digest = digest_selection(
         context,
         budget,
@@ -181,9 +178,9 @@ pub fn select_output_portfolio_v1(
         selection_digest,
     })
 }
-/// Returns nondominated single-candidate points using utility↑, risk↓ and
-/// resource↓. It is useful for visualising the efficient frontier before the
-/// budgeted controller commits to one advisory allocation.
+/// Returns nondominated *single-candidate* points using utility↑, risk↓ and
+/// resource↓. The standalone risk includes covariance on the diagonal; these
+/// points are not a mixed-portfolio efficient frontier.
 pub fn output_efficient_frontier_v1(
     context: &OutputPortfolioContextV1,
     candidates: &[OutputPortfolioCandidateV1],
@@ -196,7 +193,13 @@ pub fn output_efficient_frontier_v1(
         .map(|candidate| scalar_risk_unweighted(&candidate.risk))
         .collect::<Result<Vec<_>, _>>()?;
     validate_covariance(&covariance, canonical.len())?;
-    Ok(efficient_frontier_from_canonical(&canonical, &risks))
+    let baseline = canonical
+        .iter()
+        .position(|candidate| candidate.is_no_change)
+        .ok_or(NduError::MissingAbstainCandidate)?;
+    ensure_no_change_covariance(&covariance, canonical.len(), baseline)?;
+    let standalone = standalone_risks(&risks, &covariance)?;
+    Ok(efficient_frontier_from_canonical(&canonical, &standalone))
 }
 fn canonical_candidates(
     context: &OutputPortfolioContextV1,
@@ -485,6 +488,37 @@ fn quadratic_risk(
 }
 fn min_q32(left: FixedQ32, right: FixedQ32) -> FixedQ32 {
     if left < right { left } else { right }
+}
+/// NoChange is a zero-relative-risk fallback: its entire covariance row and
+/// column must be zero in both advisory selection and frontier inspection.
+fn ensure_no_change_covariance(
+    covariance: &[FixedQ32],
+    count: usize,
+    baseline: usize,
+) -> Result<(), NduError> {
+    for index in 0..count {
+        if covariance[baseline * count + index] != FixedQ32::ZERO
+            || covariance[index * count + baseline] != FixedQ32::ZERO
+        {
+            return Err(NduError::InvalidSolverReceipt("no-change covariance"));
+        }
+    }
+    Ok(())
+}
+/// Standalone exposure has unit weight, so its Q32 quadratic term is the
+/// covariance diagonal. Checked arithmetic must deny overflowing risk values.
+fn standalone_risks(
+    risks: &[FixedQ32],
+    covariance: &[FixedQ32],
+) -> Result<Vec<FixedQ32>, NduError> {
+    let count = risks.len();
+    (0..count)
+        .map(|index| {
+            risks[index]
+                .checked_add(covariance[index * count + index])
+                .map_err(|_| NduError::Arithmetic)
+        })
+        .collect()
 }
 fn efficient_frontier_from_canonical(
     candidates: &[OutputPortfolioCandidateV1],
