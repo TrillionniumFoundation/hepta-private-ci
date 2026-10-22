@@ -118,6 +118,48 @@ def unreviewed_environment_keys(environment: dict[str, str] | None = None) -> li
         )
     )
 
+
+MAX_PROOF_SOURCE_BYTES = 8 * 1024 * 1024
+
+
+def committed_regular_file(repo_root: Path, relative: str) -> bool:
+    """Bind a required file to bytes and regular-file mode in the exact HEAD.
+
+    Git status can omit ignored files and paths flagged assume-unchanged or
+    skip-worktree. Existence and a clean status alone never attest source bytes.
+    """
+    path = repo_root / relative
+    if unreviewed_environment_keys() or not path.is_file() or path.is_symlink():
+        return False
+    try:
+        if path.stat().st_size > MAX_PROOF_SOURCE_BYTES:
+            return False
+        row = subprocess.run(
+            ["git", "-C", str(repo_root), "ls-tree", "HEAD", "--", relative],
+            capture_output=True, text=True, check=True, timeout=10,
+        ).stdout.strip()
+        metadata, separator, found = row.partition("\t")
+        fields = metadata.split()
+        if (
+            not separator or found != relative or len(fields) != 3
+            or fields[0] not in ("100644", "100755") or fields[1] != "blob"
+        ):
+            return False
+        length = subprocess.run(
+            ["git", "-C", str(repo_root), "cat-file", "-s", fields[2]],
+            capture_output=True, text=True, check=True, timeout=10,
+        ).stdout.strip()
+        if int(length) > MAX_PROOF_SOURCE_BYTES:
+            return False
+        committed = subprocess.run(
+            ["git", "-C", str(repo_root), "cat-file", "blob", fields[2]],
+            capture_output=True, check=True, timeout=10,
+        ).stdout
+        return path.read_bytes() == committed
+    except (OSError, ValueError, subprocess.SubprocessError):
+        return False
+
+
 def git_snapshot(path: Path) -> dict[str, Any]:
     if not path.is_dir():
         return {"usable": False, "reason": "repository directory not mounted", "path": str(path)}
@@ -137,6 +179,59 @@ def git_snapshot(path: Path) -> dict[str, Any]:
         ).stdout.strip()
 
     try:
+        # Git status may run an fsmonitor hook or a configured clean/process
+        # filter on a tracked path. Inspect only Git config key NAMES before
+        # status, never leaking command paths or tokens in the audit report.
+        config_names = {
+            name.casefold()
+            for name in cmd("config", "--list", "--name-only", "-z").split("\0")
+            if name
+        }
+        executable_git_config = {
+            name for name in config_names
+            if name == "core.fsmonitor"
+            or (name.startswith("diff.") and name.endswith(".command"))
+            or (name.startswith("merge.") and name.endswith(".driver"))
+        }
+        filter_config_names = {
+            name for name in config_names
+            if name.startswith("filter.")
+            and name.rsplit(".", 1)[-1] in ("clean", "smudge", "process")
+        }
+        if filter_config_names and not executable_git_config:
+            # Any fsmonitor/diff/merge executable config blocks immediately.
+            # Even ls-files can invoke an enabled fsmonitor hook.
+            # Hosted runners install Git LFS filter commands globally. A
+            # registered but UNUSED driver cannot run during this worktree's
+            # status; refusing it would make ordinary source CI inoperable.
+            # check-attr evaluates tracked paths without running filter code.
+            tracked = subprocess.run(
+                ["git", "-C", str(path), "ls-files", "--cached", "-z"],
+                capture_output=True, check=True, timeout=20,
+            ).stdout
+            attributes = subprocess.run(
+                ["git", "-C", str(path), "check-attr", "-z", "--stdin", "filter"],
+                input=tracked, capture_output=True, check=True, timeout=20,
+            ).stdout.split(b"\0")
+            active_drivers = {
+                attributes[index + 2].decode("utf-8", "surrogateescape").casefold()
+                for index in range(0, len(attributes) - 2, 3)
+                if attributes[index + 1] == b"filter"
+                and attributes[index + 2] not in
+                (b"unspecified", b"unset", b"set")
+            }
+            executable_git_config.update(
+                name for name in filter_config_names
+                if name.removeprefix("filter.").rsplit(".", 1)[0]
+                in active_drivers
+            )
+        if executable_git_config:
+            return {
+                "usable": False,
+                "reason": "unreviewed executable Git configuration",
+                "path": str(path),
+                "blocked_git_config_keys": sorted(executable_git_config),
+            }
         # Git's linked worktrees use a .git *file*, not a directory. Verify the
         # canonical top level instead of testing a filesystem suffix.
         if cmd("rev-parse", "--is-inside-work-tree") != "true":
@@ -154,6 +249,16 @@ def git_snapshot(path: Path) -> dict[str, Any]:
 
 MAX_CHECK_LOG_BYTES = 64 * 1024 * 1024
 CHECK_POLL_SECONDS = 0.05
+
+
+def _set_kernel_file_output_cap() -> None:
+    """Run in a POSIX check child before exec, not in the parent process."""
+    import resource
+
+    resource.setrlimit(
+        resource.RLIMIT_FSIZE, (MAX_CHECK_LOG_BYTES, MAX_CHECK_LOG_BYTES)
+    )
+    resource.setrlimit(resource.RLIMIT_CORE, (0, 0))
 
 
 def _stop_check_process_group(child: subprocess.Popen[bytes]) -> None:
@@ -192,13 +297,14 @@ def run_check(argv: list[str], cwd: Path, timeout: int, log_path: Path) -> dict[
             child = subprocess.Popen(
                 argv, cwd=cwd, stdout=out, stderr=subprocess.STDOUT,
                 env=os.environ.copy(), start_new_session=(os.name == "posix"),
+                preexec_fn=_set_kernel_file_output_cap if os.name == "posix" else None,
             )
             blocked = None
             code = None
             try:
                 while True:
                     code = child.poll()
-                    if os.fstat(out.fileno()).st_size > MAX_CHECK_LOG_BYTES:
+                    if os.fstat(out.fileno()).st_size >= MAX_CHECK_LOG_BYTES:
                         blocked = "BLOCKED_OUTPUT_LIMIT"
                         break
                     if code is not None:
@@ -220,6 +326,12 @@ def run_check(argv: list[str], cwd: Path, timeout: int, log_path: Path) -> dict[
             except BaseException:
                 _stop_check_process_group(child)
                 raise
+            # Include the parent's exit receipt in the budget as well.
+            if blocked is None:
+                exit_line = f"\nHEPTA_LOCAL_GATE_EXIT: {code}\n".encode("utf-8")
+                if os.fstat(out.fileno()).st_size + len(exit_line) > MAX_CHECK_LOG_BYTES:
+                    blocked = "BLOCKED_OUTPUT_LIMIT"
+                    _stop_check_process_group(child)
             if blocked is not None:
                 out.flush()
                 if os.fstat(out.fileno()).st_size > MAX_CHECK_LOG_BYTES:
@@ -227,7 +339,7 @@ def run_check(argv: list[str], cwd: Path, timeout: int, log_path: Path) -> dict[
                 out.seek(0, os.SEEK_END)
                 out.write(("\nHEPTA_LOCAL_GATE: " + blocked + "\n").encode("utf-8"))
             else:
-                out.write(f"\nHEPTA_LOCAL_GATE_EXIT: {code}\n".encode("utf-8"))
+                out.write(exit_line)
             out.flush()
             os.fsync(out.fileno())
         digest = hashlib.sha256()
@@ -244,7 +356,7 @@ def run_check(argv: list[str], cwd: Path, timeout: int, log_path: Path) -> dict[
         if blocked is None:
             result["exit_code"] = code
         return result
-    except (OSError, RuntimeError) as exc:
+    except (OSError, RuntimeError, subprocess.SubprocessError) as exc:
         return {"argv": argv, "status": "BLOCKED_SYSTEM", "error_type": type(exc).__name__}
 
 
@@ -282,15 +394,15 @@ def main() -> int:
         missing = []
         for name, rel in spec["required"]:
             path = roots[name] / rel
-            exists = path.is_file()
+            exists = committed_regular_file(roots[name], rel)
             stage_result["files"].append({"path": f"{name}/{rel}", "present": exists})
             if not exists:
                 missing.append(f"{name}/{rel}")
         stage_result["missing_files"] = missing
-        if missing:
-            stage_result["status"] = "BLOCKED_SOURCE_NOT_PRESENT"
-        elif blocked_environment_keys:
+        if blocked_environment_keys:
             stage_result["status"] = "BLOCKED_UNREVIEWED_ENVIRONMENT"
+        elif missing:
+            stage_result["status"] = "BLOCKED_SOURCE_NOT_PRESENT"
         elif not all(report["sources"][name]["usable"] and before_checks[name]["usable"] for name in source_names):
             stage_result["status"] = "BLOCKED_NO_GIT_CHECKOUT"
         elif not all(report["sources"][name]["clean"] and before_checks[name]["clean"] for name in source_names):
