@@ -239,7 +239,7 @@ def git_snapshot(path: Path) -> dict[str, Any]:
         index_rows = subprocess.run(
             ["git", "-C", str(path), "ls-files", "--cached", "-v", "-z"],
             capture_output=True, check=True, timeout=20,
-        ).stdout.split(b"\\0")
+        ).stdout.split(b"\0")
         hidden_index_entries = sum(
             1 for entry in index_rows if entry and not entry.startswith(b"H ")
         )

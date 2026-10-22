@@ -575,7 +575,12 @@ class LocalCloseoutTests(unittest.TestCase):
                  "--assume-unchanged", "tracked.rs"], check=True,
             )
             (source / "tracked.rs").write_bytes(b"tampered after HEAD")
-            self.assertTrue(mod.git_snapshot(source)["clean"])
+            # Porcelain stays falsely clean, but index-aware identity MUST deny.
+            self.assertEqual(subprocess.check_output(
+                ["git", "-C", str(source), "status", "--porcelain=v1"],
+                text=True,
+            ), "")
+            self.assertFalse(mod.git_snapshot(source)["usable"])
             self.assertFalse(mod.committed_regular_file(source, "tracked.rs"))
 
 
