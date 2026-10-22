@@ -193,7 +193,9 @@ class ScaleMatrixTests(unittest.TestCase):
             },
             "evidence": {key: True for key in scale_matrix.REQUIRED_EVIDENCE},
             "evidence_receipts": {
-                claim: f"{2000 + index * len(scale_matrix.REQUIRED_EVIDENCE) + offset:064x}"
+                claim: (
+                    f"{2000 + index * len(scale_matrix.REQUIRED_EVIDENCE) + offset:064x}"
+                )
                 for offset, claim in enumerate(scale_matrix.REQUIRED_EVIDENCE)
             },
             "metrics": {key: 0 for key in scale_matrix.REQUIRED_METRICS},
@@ -283,7 +285,9 @@ class ScaleMatrixTests(unittest.TestCase):
 
     def test_invalid_top_level_result_is_rejected_without_exception(self):
         self.assertEqual(scale_matrix.validate_result([]), ["result must be an object"])
-        self.assertEqual(scale_matrix.validate_result(None), ["result must be an object"])
+        self.assertEqual(
+            scale_matrix.validate_result(None), ["result must be an object"]
+        )
 
     def test_matrix_rejects_omissions_and_duplicate_pairs(self):
         matrix = self.matrix()
