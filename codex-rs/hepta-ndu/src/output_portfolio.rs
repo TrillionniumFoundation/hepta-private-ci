@@ -204,6 +204,23 @@ pub fn select_output_portfolio_v1(
         selection_digest,
     })
 }
+/// Replays a portfolio decision from its exact immutable inputs and rejects
+/// mutated or detached advisory receipts. This is a local consistency check,
+/// NOT a signature verifier, fresh future-window attestation, or an execution
+/// grant. Control must still enforce independent authority and final-use.
+pub fn verify_output_portfolio_receipt_v1(
+    context: &OutputPortfolioContextV1,
+    budget: &OutputPortfolioBudgetV1,
+    candidates: &[OutputPortfolioCandidateV1],
+    receipt: &OutputPortfolioSelectionReceiptV1,
+) -> Result<(), NduError> {
+    let expected = select_output_portfolio_v1(context, budget, candidates)?;
+    if &expected != receipt {
+        return Err(NduError::InvalidSolverReceipt("portfolio receipt replay"));
+    }
+    Ok(())
+}
+
 /// Returns nondominated *single-candidate* points using utility↑, risk↓ and
 /// resource↓. The standalone risk includes covariance on the diagonal; these
 /// points are not a mixed-portfolio efficient frontier.
