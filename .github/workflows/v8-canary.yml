@@ -74,7 +74,8 @@ jobs:
         uses: ./.github/actions/check-clean-worktree
 
   build:
-    timeout-minutes: 30
+    # Leave a bounded budget for the full release pair and the Cargo smoke gate.
+    timeout-minutes: 120
     name: Build ${{ matrix.variant }} ${{ matrix.target }}
     needs: metadata
     # Metadata always runs; only relevant changes pay for the large matrix.

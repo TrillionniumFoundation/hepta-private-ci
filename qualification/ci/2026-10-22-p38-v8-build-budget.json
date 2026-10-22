@@ -1,0 +1,53 @@
+{
+  "schema": "hepta.p38.v8-build-budget-repair.v1",
+  "repair_parent_sha": "6415b32930c78723d76f83781b7ff7532f8cbe4c",
+  "repair_parent_tree": "385974683b61b70827cb2779f390085cf201a84b",
+  "observed_head_sha": "db0d860811ffc37f0c462b030d0be3b8043955a8",
+  "observed_checkout_sha": "ee31f4ed166cd0f720153ae06348fb8e9644f545",
+  "observed_merge_base_sha": "dac730dc8ddbd96d87f6dc0c5eb94d3436d90a2b",
+  "run_id": 39727698253,
+  "job": {
+    "id": 119664594301,
+    "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/39727698253/job/119664594301",
+    "name": "Build ptrcomp-sandbox x86_64-apple-darwin",
+    "conclusion": "cancelled",
+    "started_at": "2026-10-22T05:54:32Z",
+    "completed_at": "2026-10-22T06:24:57Z",
+    "elapsed_seconds": 1825,
+    "configured_timeout_minutes": 30,
+    "cancelled_step": "Build Bazel V8 release pair"
+  },
+  "decoded_log": {
+    "bytes": 643052,
+    "sha256": "d476e3df552cbed7648db9a0bca1f675dda93be5520a06fff623e9c324b09cc1",
+    "last_compile_progress": "2026-10-22T06:24:43.7526630Z [11,724 / 14,054] Compiling src/builtins/builtins-intl.cc [for tool]; 13s disk-cache, darwin-sandbox ... (30 actions, 4 running)",
+    "error_markers": [
+      "2026-10-22T06:24:47.2362140Z ##[error]The operation was canceled."
+    ],
+    "separate_timeout_annotation_retrieved": false,
+    "cache_hit_rate_measured": false
+  },
+  "diagnosis": "The single job was cancelled at its 30-minute budget while compilation continued to make progress. The matrix has fail-fast disabled and other builds continued. Budget exhaustion is supported by these observations; no separate platform timeout annotation is claimed.",
+  "repair": {
+    "file": ".github/workflows/v8-canary.yml",
+    "only_semantic_change": "jobs.build.timeout-minutes",
+    "before_minutes": 30,
+    "after_minutes": 120,
+    "rationale": "Allow the complete release pair and its Cargo smoke gate to finish within a bounded 120-minute job budget.",
+    "matrix_jobs_preserved": 12,
+    "all_other_job_values_preserved": true,
+    "all_build_flags_steps_smoke_checks_and_failure_propagation_preserved": true,
+    "other_job_timeouts_preserved": {
+      "metadata": "30",
+      "build-windows-source": "30"
+    }
+  },
+  "local_verification": {
+    "yaml_semantic_comparison": "PASS: restoring only jobs.build.timeout-minutes from 120 to 30 yields the complete original YAML document.",
+    "yaml_parser": "PyYAML 6.0.3",
+    "native_build_run_locally": false
+  },
+  "replacement_ci_pass_claimed": false,
+  "native_combined_verified": false,
+  "all_blockers_closed": false
+}
