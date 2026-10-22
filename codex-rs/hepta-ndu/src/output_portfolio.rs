@@ -615,6 +615,12 @@ fn quadratic_risk(
             total = total.checked_add(pair).map_err(|_| NduError::Arithmetic)?;
         }
     }
+    // Even a symmetric diagonally dominant PSD covariance can produce a
+    // negative least-significant Q32 unit after independently rounded terms.
+    // Never publish a negative semantic risk or treat it as budget headroom.
+    if total < FixedQ32::ZERO {
+        return Err(NduError::InvalidSolverReceipt("negative portfolio risk"));
+    }
     Ok(total)
 }
 fn min_q32(left: FixedQ32, right: FixedQ32) -> FixedQ32 {
