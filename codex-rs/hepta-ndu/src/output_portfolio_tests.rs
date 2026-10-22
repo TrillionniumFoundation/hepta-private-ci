@@ -535,6 +535,53 @@ fn hard_slot_and_atomic_protocol_constraints_survive_fractional_optimization() {
 }
 
 #[test]
+fn hard_zero_risk_budget_rejects_positive_loss_hidden_by_q32_rounding() {
+    // A 1-ULP Q32 risk can be rounded to zero at a large fractional weight:
+    // 50% * 1 ULP = 0.5 ULP and ties-to-even reports zero. Likewise, a
+    // quadratic variance of 1 ULP rounds to zero for a 50% allocation.
+    // Hard-zero risk must reject those directions before solving.
+    let mut limits = budget(2);
+    limits.risk_budget = FixedQ32::ZERO;
+
+    for covariance_only in [false, true] {
+        let mut ctx = context(2);
+        let mut exposure = candidate("one-ulp-exposure", 80, 0, false);
+        if covariance_only {
+            ctx.semantic_covariance[3] = FixedQ32::from_raw(1);
+        } else {
+            exposure.risk.mean_loss = FixedQ32::from_raw(1);
+        }
+        let receipt = select_output_portfolio_v1(
+            &ctx,
+            &limits,
+            &[candidate("baseline", 0, 0, true), exposure],
+        )
+        .expect("a positive-risk direction cannot bypass a zero budget");
+        assert_eq!(receipt.disposition, OutputPortfolioDispositionV1::NoChange);
+        assert_eq!(receipt.allocations.len(), 1);
+        assert_eq!(receipt.allocations[0].candidate_id, id("baseline"));
+        assert_eq!(receipt.allocations[0].weight, FixedQ32::ONE);
+        assert_eq!(receipt.total_risk, FixedQ32::ZERO);
+    }
+
+    // Zero budget must not ban a genuinely risk-free relative direction.
+    let allowed = select_output_portfolio_v1(
+        &context(2),
+        &limits,
+        &[
+            candidate("baseline", 0, 0, true),
+            candidate("actually-zero-risk", 80, 0, false),
+        ],
+    )
+    .expect("the zero-risk feasible direction remains available");
+    assert_eq!(
+        allowed.disposition,
+        OutputPortfolioDispositionV1::AdvisorySelection
+    );
+    assert_eq!(allowed.total_risk, FixedQ32::ZERO);
+}
+
+#[test]
 fn hard_semantic_risk_budget_is_independent_of_pricing() {
     // A zero risk aversion parameter only changes ranking; it must never
     // convert positive tail/failure/inconsistency risk into a free asset.
