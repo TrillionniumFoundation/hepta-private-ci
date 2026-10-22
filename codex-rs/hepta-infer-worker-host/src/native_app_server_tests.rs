@@ -407,7 +407,7 @@ fn cognitive_final_use_revalidation_follows_durable_dispatch_and_precedes_turn_s
         .find("owner.revalidate_cognitive_context(snapshot).await")
         .expect("final-use cognitive revalidation");
     let turn_start = source
-        .find("client.request_typed::<TurnStartResponse>(ClientRequest::TurnStart")
+        .find("send_authorized_turn_start(&mut client, entered_use, turn_params)")
         .expect("physical turn start");
     let durable_stop = source
         .find("control.abort_native_before_effect(")
@@ -415,6 +415,23 @@ fn cognitive_final_use_revalidation_follows_durable_dispatch_and_precedes_turn_s
     assert!(durable_dispatch < revalidation);
     assert!(revalidation < turn_start);
     assert!(durable_stop < turn_start);
+
+    let send_helper = source
+        .split_once("async fn send_authorized_turn_start(")
+        .expect("authorized turn-start helper")
+        .1
+        .split_once("\n}")
+        .expect("complete authorized turn-start helper")
+        .0;
+    assert!(send_helper.contains("_entered: EnteredUseToken"));
+    assert!(send_helper.contains(".request_typed_observed(ClientRequest::TurnStart {"));
+    assert_eq!(source.matches("ClientRequest::TurnStart {").count(), 1);
+    assert_eq!(
+        source
+            .matches("send_authorized_turn_start(&mut client, entered_use, turn_params)")
+            .count(),
+        1
+    );
 }
 
 #[cfg(unix)]

@@ -1839,7 +1839,10 @@ mod tests {
                 .expect_err("a redirected SQLite root must fail closed");
         assert_eq!(ErrorKind::InvalidInput, error.kind());
         assert_eq!(
-            "embedding runtime requires SQLite home /tmp/hepta-private-sqlite, but configuration resolved /tmp/hepta-shared-sqlite",
+            format!(
+                "embedding runtime requires SQLite home {}, but configuration resolved /tmp/hepta-shared-sqlite",
+                required.as_path().display(),
+            ),
             error.to_string()
         );
     }

@@ -2,9 +2,13 @@ use crate::winutil::to_wide;
 use anyhow::Result;
 use anyhow::anyhow;
 use std::ffi::c_void;
+use std::os::windows::io::AsRawHandle;
+use std::os::windows::io::FromRawHandle;
+use std::os::windows::io::OwnedHandle;
 use std::path::Path;
 use windows_sys::Win32::Foundation::CloseHandle;
 use windows_sys::Win32::Foundation::ERROR_SUCCESS;
+use windows_sys::Win32::Foundation::HANDLE;
 use windows_sys::Win32::Foundation::HLOCAL;
 use windows_sys::Win32::Foundation::INVALID_HANDLE_VALUE;
 use windows_sys::Win32::Foundation::LocalFree;
@@ -17,6 +21,7 @@ use windows_sys::Win32::Security::AclSizeInformation;
 use windows_sys::Win32::Security::Authorization::EXPLICIT_ACCESS_W;
 use windows_sys::Win32::Security::Authorization::GetNamedSecurityInfoW;
 use windows_sys::Win32::Security::Authorization::GetSecurityInfo;
+use windows_sys::Win32::Security::Authorization::SE_FILE_OBJECT;
 use windows_sys::Win32::Security::Authorization::SetEntriesInAclW;
 use windows_sys::Win32::Security::Authorization::SetNamedSecurityInfoW;
 use windows_sys::Win32::Security::Authorization::SetSecurityInfo;
@@ -42,9 +47,12 @@ use windows_sys::Win32::Storage::FileSystem::FILE_GENERIC_WRITE;
 use windows_sys::Win32::Storage::FileSystem::FILE_SHARE_DELETE;
 use windows_sys::Win32::Storage::FileSystem::FILE_SHARE_READ;
 use windows_sys::Win32::Storage::FileSystem::FILE_SHARE_WRITE;
+use windows_sys::Win32::Storage::FileSystem::FILE_STANDARD_INFO;
 use windows_sys::Win32::Storage::FileSystem::FILE_WRITE_ATTRIBUTES;
 use windows_sys::Win32::Storage::FileSystem::FILE_WRITE_DATA;
 use windows_sys::Win32::Storage::FileSystem::FILE_WRITE_EA;
+use windows_sys::Win32::Storage::FileSystem::FileStandardInfo;
+use windows_sys::Win32::Storage::FileSystem::GetFileInformationByHandleEx;
 use windows_sys::Win32::Storage::FileSystem::OPEN_EXISTING;
 use windows_sys::Win32::Storage::FileSystem::READ_CONTROL;
 const SE_KERNEL_OBJECT: u32 = 6;
@@ -271,11 +279,27 @@ pub unsafe fn dacl_has_write_allow_for_sid(p_dacl: *mut ACL, psid: *mut c_void) 
 }
 
 pub unsafe fn dacl_has_write_deny_for_sid(p_dacl: *mut ACL, psid: *mut c_void) -> bool {
-    dacl_has_complete_deny_for_sid(p_dacl, psid, DenyAceKind::Write.mask())
+    dacl_has_complete_deny_for_sid(
+        p_dacl,
+        psid,
+        DenyAceKind::Write.mask(),
+        DenyAceScope::Recursive,
+    )
 }
 
 pub unsafe fn dacl_has_read_deny_for_sid(p_dacl: *mut ACL, psid: *mut c_void) -> bool {
-    dacl_has_complete_deny_for_sid(p_dacl, psid, DenyAceKind::Read.mask())
+    dacl_has_complete_deny_for_sid(
+        p_dacl,
+        psid,
+        DenyAceKind::Read.mask(),
+        DenyAceScope::Recursive,
+    )
+}
+
+#[derive(Clone, Copy)]
+enum DenyAceScope {
+    Object,
+    Recursive,
 }
 
 // SAFETY: callers retain a valid ACL (or null) and valid SID throughout this query.
@@ -283,6 +307,7 @@ unsafe fn dacl_has_complete_deny_for_sid(
     p_dacl: *mut ACL,
     psid: *mut c_void,
     mut required_mask: u32,
+    scope: DenyAceScope,
 ) -> bool {
     if p_dacl.is_null() {
         return false;
@@ -307,6 +332,9 @@ unsafe fn dacl_has_complete_deny_for_sid(
     // same specific/standard rights without changing the mask we install.
     // SAFETY: both pointers refer to initialized stack values retained for the call.
     MapGenericMask(&mut required_mask, &mapping);
+    let recursive_flags = (CONTAINER_INHERIT_ACE | OBJECT_INHERIT_ACE) as u8;
+    let mut complete_effective_deny = false;
+    let mut complete_inheritable_deny = false;
     for i in 0..info.AceCount {
         let mut p_ace: *mut c_void = std::ptr::null_mut();
         if GetAce(p_dacl as *const ACL, i, &mut p_ace) == 0 {
@@ -319,11 +347,6 @@ unsafe fn dacl_has_complete_deny_for_sid(
         if hdr.AceType != ACCESS_DENIED_ACE_TYPE || (hdr.AceFlags & INHERITED_ACE) != 0 {
             return false;
         }
-        // Match the constructor's effective, recursively inheritable scope.
-        // Inherit-only, no-propagate, or missing child scope is insufficient.
-        if hdr.AceFlags != (CONTAINER_INHERIT_ACE | OBJECT_INHERIT_ACE) as u8 {
-            continue;
-        }
         let ace = &*(p_ace as *const ACCESS_DENIED_ACE);
         let base = p_ace as usize;
         let sid_ptr =
@@ -331,7 +354,24 @@ unsafe fn dacl_has_complete_deny_for_sid(
         let mut mask = ace.Mask;
         // SAFETY: both pointers refer to initialized stack values retained for the call.
         MapGenericMask(&mut mask, &mapping);
-        if EqualSid(sid_ptr, psid) != 0 && (mask & required_mask) == required_mask {
+        if EqualSid(sid_ptr, psid) == 0 || (mask & required_mask) != required_mask {
+            continue;
+        }
+        if hdr.AceFlags == recursive_flags {
+            return true;
+        }
+        // Windows can split an effective, inheritable ACE containing generic
+        // rights into an object-only ACE and a separate inherit-only ACE. Each
+        // half must independently deny every required right for this SID.
+        if hdr.AceFlags == 0 {
+            match scope {
+                DenyAceScope::Object => return true,
+                DenyAceScope::Recursive => complete_effective_deny = true,
+            }
+        } else if hdr.AceFlags == (recursive_flags | INHERIT_ONLY_ACE) {
+            complete_inheritable_deny = true;
+        }
+        if complete_effective_deny && complete_inheritable_deny {
             return true;
         }
     }
@@ -608,11 +648,49 @@ impl DenyAceKind {
 }
 
 unsafe fn add_deny_ace(path: &Path, psid: *mut c_void, kind: DenyAceKind) -> Result<bool> {
+    let raw_handle = CreateFileW(
+        to_wide(path).as_ptr(),
+        READ_CONTROL,
+        FILE_SHARE_READ | FILE_SHARE_WRITE | FILE_SHARE_DELETE,
+        std::ptr::null_mut(),
+        OPEN_EXISTING,
+        FILE_FLAG_BACKUP_SEMANTICS,
+        /*htemplatefile*/ 0,
+    );
+    if raw_handle == INVALID_HANDLE_VALUE {
+        return Err(anyhow!(
+            "CreateFileW failed for {}: {}",
+            path.display(),
+            std::io::Error::last_os_error()
+        ));
+    }
+    // SAFETY: CreateFileW returned a valid, uniquely owned handle. Retain it so
+    // object scope and the DACL are queried from the same open file object.
+    let handle = OwnedHandle::from_raw_handle(raw_handle as *mut c_void);
+    let mut standard_info: FILE_STANDARD_INFO = std::mem::zeroed();
+    if GetFileInformationByHandleEx(
+        handle.as_raw_handle() as HANDLE,
+        FileStandardInfo,
+        &mut standard_info as *mut _ as *mut c_void,
+        std::mem::size_of::<FILE_STANDARD_INFO>() as u32,
+    ) == 0
+    {
+        return Err(anyhow!(
+            "GetFileInformationByHandleEx failed for {}: {}",
+            path.display(),
+            std::io::Error::last_os_error()
+        ));
+    }
+    let scope = if standard_info.Directory != 0 {
+        DenyAceScope::Recursive
+    } else {
+        DenyAceScope::Object
+    };
     let mut p_sd: *mut c_void = std::ptr::null_mut();
     let mut p_dacl: *mut ACL = std::ptr::null_mut();
-    let code = GetNamedSecurityInfoW(
-        to_wide(path).as_ptr(),
-        1,
+    let code = GetSecurityInfo(
+        handle.as_raw_handle() as HANDLE,
+        SE_FILE_OBJECT,
         DACL_SECURITY_INFORMATION,
         std::ptr::null_mut(),
         std::ptr::null_mut(),
@@ -625,11 +703,17 @@ unsafe fn add_deny_ace(path: &Path, psid: *mut c_void, kind: DenyAceKind) -> Res
             LocalFree(p_sd as HLOCAL);
         }
         return Err(anyhow!(
-            "GetNamedSecurityInfoW failed for {}: {code}",
+            "GetSecurityInfo failed for {}: {code}",
             path.display()
         ));
     }
-    let result = if kind.already_present(p_dacl, psid) {
+    let already_present = match scope {
+        DenyAceScope::Object => {
+            dacl_has_complete_deny_for_sid(p_dacl, psid, kind.mask(), DenyAceScope::Object)
+        }
+        DenyAceScope::Recursive => kind.already_present(p_dacl, psid),
+    };
+    let result = if already_present {
         Ok(false)
     } else {
         let trustee = TRUSTEE_W {

@@ -40,6 +40,7 @@ use opentelemetry::trace::TraceId;
 use opentelemetry::trace::TracerProvider as _;
 use opentelemetry_sdk::propagation::TraceContextPropagator;
 use opentelemetry_sdk::trace::InMemorySpanExporter;
+use opentelemetry_sdk::trace::Sampler;
 use opentelemetry_sdk::trace::SdkTracerProvider;
 use opentelemetry_sdk::trace::SpanData;
 use pretty_assertions::assert_eq;
@@ -89,6 +90,7 @@ fn init_test_tracing() -> &'static TestTracing {
     TEST_TRACING.get_or_init(|| {
         let exporter = InMemorySpanExporter::default();
         let provider = SdkTracerProvider::builder()
+            .with_sampler(Sampler::ParentBased(Box::new(Sampler::AlwaysOn)))
             .with_simple_exporter(exporter.clone())
             .build();
         let tracer = provider.tracer("codex-app-server-message-processor-tests");

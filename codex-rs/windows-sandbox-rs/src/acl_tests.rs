@@ -245,3 +245,225 @@ fn deny_ace_update_failure_is_an_error() {
         r"SetNamedSecurityInfoW failed for C:\world-writable: 5"
     );
 }
+
+#[test]
+fn complete_denies_accept_normalized_recursive_pairs() -> Result<()> {
+    let sid = LocalSid::from_string("S-1-5-21-181-282-383-484")?;
+    let inherit_only = OBJECT_INHERIT_ACE | CONTAINER_INHERIT_ACE | u32::from(INHERIT_ONLY_ACE);
+    for (kind, mapped_mask) in [
+        (DenyAceKind::Read, FILE_GENERIC_READ),
+        (
+            DenyAceKind::Write,
+            FILE_GENERIC_WRITE | DELETE | FILE_DELETE_CHILD,
+        ),
+    ] {
+        for flags in [[0, inherit_only], [inherit_only, 0]] {
+            let mut acl = NativeAcl::new()?;
+            for flag in flags {
+                let mask = if flag == 0 { mapped_mask } else { kind.mask() };
+                acl.deny(&sid, mask, flag)?;
+            }
+            // SAFETY: the ACL and SID remain live throughout the query.
+            assert!(unsafe { kind.already_present(acl.as_ptr(), sid.as_ptr()) });
+        }
+    }
+    Ok(())
+}
+
+#[test]
+fn complete_denies_reject_incomplete_or_unsafe_recursive_pairs() -> Result<()> {
+    let sid = LocalSid::from_string("S-1-5-21-191-292-393-494")?;
+    let inherit_only = OBJECT_INHERIT_ACE | CONTAINER_INHERIT_ACE | u32::from(INHERIT_ONLY_ACE);
+    for (kind, full_mask, one_right) in [
+        (DenyAceKind::Read, FILE_GENERIC_READ, FILE_READ_EA),
+        (
+            DenyAceKind::Write,
+            FILE_GENERIC_WRITE | DELETE | FILE_DELETE_CHILD,
+            DELETE,
+        ),
+    ] {
+        for (case, entries) in [
+            ("missing effective half", vec![(full_mask, inherit_only)]),
+            ("missing inheritable half", vec![(full_mask, 0)]),
+            (
+                "partial effective half",
+                vec![(one_right, 0), (full_mask, inherit_only)],
+            ),
+            (
+                "partial inheritable half",
+                vec![(full_mask, 0), (one_right, inherit_only)],
+            ),
+            (
+                "fragmented effective rights",
+                vec![
+                    (full_mask & !one_right, 0),
+                    (one_right, 0),
+                    (full_mask, inherit_only),
+                ],
+            ),
+            (
+                "fragmented inheritable rights",
+                vec![
+                    (full_mask, 0),
+                    (full_mask & !one_right, inherit_only),
+                    (one_right, inherit_only),
+                ],
+            ),
+            (
+                "missing directory inheritance",
+                vec![
+                    (full_mask, 0),
+                    (full_mask, OBJECT_INHERIT_ACE | u32::from(INHERIT_ONLY_ACE)),
+                ],
+            ),
+            (
+                "missing file inheritance",
+                vec![
+                    (full_mask, 0),
+                    (
+                        full_mask,
+                        CONTAINER_INHERIT_ACE | u32::from(INHERIT_ONLY_ACE),
+                    ),
+                ],
+            ),
+            (
+                "effective no-propagate flag",
+                vec![
+                    (full_mask, NO_PROPAGATE_INHERIT_ACE),
+                    (full_mask, inherit_only),
+                ],
+            ),
+            (
+                "inheritable no-propagate flag",
+                vec![
+                    (full_mask, 0),
+                    (full_mask, inherit_only | NO_PROPAGATE_INHERIT_ACE),
+                ],
+            ),
+            (
+                "inherited effective half",
+                vec![
+                    (full_mask, u32::from(INHERITED_ACE)),
+                    (full_mask, inherit_only),
+                ],
+            ),
+            (
+                "inherited inheritable half",
+                vec![
+                    (full_mask, 0),
+                    (full_mask, inherit_only | u32::from(INHERITED_ACE)),
+                ],
+            ),
+        ] {
+            let mut acl = NativeAcl::new()?;
+            for (mask, flags) in entries {
+                acl.deny(&sid, mask, flags)?;
+            }
+            // SAFETY: the ACL and SID remain live throughout the query.
+            assert!(
+                !unsafe { kind.already_present(acl.as_ptr(), sid.as_ptr()) },
+                "{case}",
+            );
+        }
+    }
+    Ok(())
+}
+
+#[test]
+fn complete_split_denies_require_one_sid_and_precede_allows() -> Result<()> {
+    let sid = LocalSid::from_string("S-1-5-21-201-302-403-504")?;
+    let other_sid = LocalSid::from_string("S-1-5-21-211-312-413-514")?;
+    let inheritance = OBJECT_INHERIT_ACE | CONTAINER_INHERIT_ACE;
+    let inherit_only = inheritance | u32::from(INHERIT_ONLY_ACE);
+    for kind in [DenyAceKind::Read, DenyAceKind::Write] {
+        let mut acl = NativeAcl::new()?;
+        acl.deny(&sid, kind.mask(), /*flags*/ 0)?;
+        acl.deny(&other_sid, kind.mask(), inherit_only)?;
+        // SAFETY: both SIDs and the initialized ACL remain live.
+        assert!(!unsafe { kind.already_present(acl.as_ptr(), sid.as_ptr()) });
+
+        for flags in [[0, inherit_only], [inherit_only, 0]] {
+            let mut acl = NativeAcl::new()?;
+            acl.deny(&sid, kind.mask(), flags[0])?;
+            // SAFETY: append an allow between the two halves of a complete deny.
+            if unsafe {
+                AddAccessAllowedAceEx(
+                    acl.as_ptr(),
+                    ACL_REVISION,
+                    inheritance,
+                    FILE_ALL_ACCESS,
+                    sid.as_ptr(),
+                )
+            } == 0
+            {
+                return Err(std::io::Error::last_os_error().into());
+            }
+            acl.deny(&sid, kind.mask(), flags[1])?;
+            // SAFETY: the ACL and SID remain live throughout the query.
+            assert!(!unsafe { kind.already_present(acl.as_ptr(), sid.as_ptr()) });
+        }
+    }
+    Ok(())
+}
+
+#[test]
+fn object_scope_requires_a_complete_explicit_effective_deny() -> Result<()> {
+    let sid = LocalSid::from_string("S-1-5-21-221-322-423-524")?;
+    let inheritance = OBJECT_INHERIT_ACE | CONTAINER_INHERIT_ACE;
+    for (kind, full_mask, partial_mask) in [
+        (DenyAceKind::Read, FILE_GENERIC_READ, FILE_READ_EA),
+        (
+            DenyAceKind::Write,
+            FILE_GENERIC_WRITE | DELETE | FILE_DELETE_CHILD,
+            DELETE,
+        ),
+    ] {
+        for (flags, mask, expected) in [
+            (0, full_mask, true),
+            (inheritance, full_mask, true),
+            (inheritance | u32::from(INHERIT_ONLY_ACE), full_mask, false),
+            (u32::from(INHERITED_ACE), full_mask, false),
+            (inheritance | u32::from(INHERITED_ACE), full_mask, false),
+            (NO_PROPAGATE_INHERIT_ACE, full_mask, false),
+            (0, partial_mask, false),
+        ] {
+            let mut acl = NativeAcl::new()?;
+            acl.deny(&sid, mask, flags)?;
+            // SAFETY: the ACL and SID remain live throughout the query.
+            let complete = unsafe {
+                dacl_has_complete_deny_for_sid(
+                    acl.as_ptr(),
+                    sid.as_ptr(),
+                    kind.mask(),
+                    DenyAceScope::Object,
+                )
+            };
+            assert_eq!(complete, expected, "flags={flags:#x}, mask={mask:#x}");
+        }
+    }
+    Ok(())
+}
+
+#[test]
+fn native_complete_denies_are_idempotent_on_files_and_directories() -> Result<()> {
+    let sid = LocalSid::from_string("S-1-5-21-231-332-433-534")?;
+    for kind in [DenyAceKind::Read, DenyAceKind::Write] {
+        let fixture = tempfile::tempdir()?;
+        for (name, scope) in [
+            ("file", DenyAceScope::Object),
+            ("directory", DenyAceScope::Recursive),
+        ] {
+            let path = fixture.path().join(name);
+            match scope {
+                DenyAceScope::Object => std::fs::write(&path, "fixture")?,
+                DenyAceScope::Recursive => std::fs::create_dir(&path)?,
+            }
+            // SAFETY: the owned fixture exists and the validated SID is live.
+            let first = unsafe { add_deny_ace(&path, sid.as_ptr(), kind)? };
+            // SAFETY: query the actual ACL after Windows has normalized the ACE.
+            let repeated = unsafe { add_deny_ace(&path, sid.as_ptr(), kind)? };
+            assert_eq!((first, repeated), (true, false), "{name}");
+        }
+    }
+    Ok(())
+}
