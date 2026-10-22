@@ -9,6 +9,9 @@ on:
       - "codex-rs/hepta-infer-worker-host/**"
       - "codex-rs/Cargo.lock"
       - ".github/workflows/hepta-neuron-signed-admission.yml"
+      - "CALLERS.toml"
+      - "qa/b4-no-bypass/KERNEL_AUTHORITY_BOUNDARIES.json"
+      - "scripts/verify_hepta_callers.py"
   workflow_dispatch:
 
 permissions:
