@@ -115,16 +115,14 @@ async fn attestation_generate_round_trip_adds_header_to_responses_websocket_hand
             ..Default::default()
         })
         .await?;
-    let turn_response: JSONRPCResponse = timeout(
-        DEFAULT_READ_TIMEOUT,
-        mcp.read_stream_until_response_message(RequestId::Integer(turn_request_id)),
-    )
-    .await??;
-    let _: TurnStartResponse = to_response(turn_response)?;
-
+    // Startup may request attestation before turn/start responds. Pump both
+    // directions immediately instead of buffering the request past its deadline.
+    let turn_request_id = RequestId::Integer(turn_request_id);
+    let mut turn_response_received = false;
+    let mut turn_completed = false;
     let mut attestation_requests = 0;
     timeout(DEFAULT_READ_TIMEOUT, async {
-        loop {
+        while !turn_response_received || !turn_completed {
             match mcp.read_next_message().await? {
                 JSONRPCMessage::Request(request) => {
                     let request = ServerRequest::try_from(request)?;
@@ -140,14 +138,25 @@ async fn attestation_generate_round_trip_adds_header_to_responses_websocket_hand
                     )
                     .await?;
                 }
+                JSONRPCMessage::Response(response) if response.id == turn_request_id => {
+                    if turn_response_received {
+                        bail!("duplicate turn/start response");
+                    }
+                    let _: TurnStartResponse = to_response(response)?;
+                    turn_response_received = true;
+                }
+                JSONRPCMessage::Error(error) if error.id == turn_request_id => {
+                    bail!("turn/start failed: {error:?}");
+                }
                 JSONRPCMessage::Notification(notification)
                     if notification.method == "turn/completed" =>
                 {
-                    break Ok(());
+                    turn_completed = true;
                 }
                 _ => {}
             }
         }
+        Ok::<(), anyhow::Error>(())
     })
     .await??;
     assert!(attestation_requests > 0);
