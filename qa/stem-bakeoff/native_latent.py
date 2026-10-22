@@ -14,8 +14,11 @@ from typing import Iterable
 import torch
 from torch import nn
 
+from feature_bundle import FeatureBundleV1, FeatureIdentityV1
+
 MAX_CELL_FANOUT = 4096
 MAX_STEM_BATCH = 8
+MAX_CELL_BATCH_ELEMENTS = 2_097_152
 
 
 @dataclass(frozen=True)
@@ -144,19 +147,67 @@ class SharedStemServer:
 
     def evaluate(self, slots: torch.Tensor,
                  requests: Iterable[CellRequest]) -> dict:
-        try:
-            requests = list(islice(iter(requests), MAX_CELL_FANOUT + 1))
-        except TypeError as exc:
-            raise StemContractError("Cell requests must be iterable") from exc
-        if not 1 <= len(requests) <= MAX_CELL_FANOUT:
-            raise StemContractError("empty or over-budget Cell fan-out")
         if (not isinstance(slots, torch.Tensor) or slots.ndim != 3 or
                 slots.shape[-1] != self.width or
                 not 1 <= slots.shape[0] <= MAX_STEM_BATCH or
                 not 1 <= slots.shape[1] <= 128 or
                 not slots.is_floating_point() or not torch.isfinite(slots).all()):
             raise StemContractError("incompatible, nonfinite or over-budget slots")
+        prepared = self._prepare_requests(slots, requests)
+        # User hooks may mutate arguments; snapshots protect both the source
+        # slots and every Cell's local state before the Encoder is invoked.
+        frozen_slots = slots.detach().clone()
+        with torch.inference_mode():
+            tokens = self.encoder(frozen_slots)
+            self.owner_forward_calls += 1
+            if (not isinstance(tokens, torch.Tensor) or tokens.shape != slots.shape
+                    or tokens.device != slots.device or tokens.dtype != slots.dtype
+                    or not bool(torch.isfinite(tokens).all())):
+                raise StemContractError("invalid shared Encoder output")
+            feature = tokens.mean(dim=1)
+            results, copies = self._evaluate_heads(feature, prepared)
+        copies["source_snapshot_bytes"] = frozen_slots.numel() * frozen_slots.element_size()
+        copies["global_summary_bytes"] = feature.numel() * feature.element_size()
+        return self._receipt(results, encoder_calls=1, copies=copies)
+
+    def evaluate_bundle(self, bundle: FeatureBundleV1,
+                        requests: Iterable[CellRequest], *,
+                        expected_identity: FeatureIdentityV1) -> dict:
+        """Fan out real precomputed features without a second Encoder call.
+
+        The owner must supply its selected full identity, including processing
+        profile and scope. A checkpoint hash alone is insufficient for reuse.
+        """
+        if (type(bundle) is not FeatureBundleV1
+                or type(expected_identity) is not FeatureIdentityV1
+                or expected_identity.encoder_sha256 != self.encoder_sha256
+                or expected_identity.generation != self.generation):
+            raise StemContractError("feature bundle owner identity mismatch")
+        bundle.require_identity(expected_identity)
+        feature = bundle.read_global()
+        if feature.shape[1] != self.width:
+            raise StemContractError("feature bundle width mismatch")
+        prepared = self._prepare_requests(feature, requests)
+        with torch.inference_mode():
+            results, copies = self._evaluate_heads(feature, prepared)
+        bundle.verify_integrity()
+        copies["source_snapshot_bytes"] = feature.numel() * feature.element_size()
+        copies["global_summary_bytes"] = 0  # already computed by the source backend
+        return {**self._receipt(results, encoder_calls=0, copies=copies),
+                "feature_bundle_sha256": bundle.bundle_digest,
+                "source_record_digests": list(bundle.source_record_digests),
+                "used_precomputed_features": True}
+
+    def _prepare_requests(self, features, requests):
+        try:
+            requests = list(islice(iter(requests), MAX_CELL_FANOUT + 1))
+        except TypeError as exc:
+            raise StemContractError("Cell requests must be iterable") from exc
+        if not 1 <= len(requests) <= MAX_CELL_FANOUT:
+            raise StemContractError("empty or over-budget Cell fan-out")
         ids: set[str] = set()
+        prepared = []
+        state_elements = output_elements = 0
         for req in requests:
             if (not isinstance(req, CellRequest) or not isinstance(req.cell_id, str)
                     or not re.fullmatch(r"[a-zA-Z0-9_.:-]{1,128}", req.cell_id)
@@ -167,38 +218,64 @@ class SharedStemServer:
                     or re.fullmatch(r"[0-9a-f]{64}", req.external_memory_digest) is None):
                 raise StemContractError("Cell id/generation/head/memory binding mismatch")
             if (not isinstance(req.local_state, torch.Tensor)
-                    or req.local_state.shape != (slots.shape[0], req.head.state_width)
-                    or req.local_state.device != slots.device
-                    or req.local_state.dtype != slots.dtype
+                    or req.local_state.shape != (features.shape[0], req.head.state_width)
+                    or req.local_state.device != features.device
+                    or req.local_state.dtype != features.dtype
                     or not torch.isfinite(req.local_state).all()):
                 raise StemContractError("Cell local state invalid before Stem execution")
-            if any(p.device != slots.device or p.dtype != slots.dtype or
+            if any(p.device != features.device or p.dtype != features.dtype or
                    not bool(torch.isfinite(p).all()) for p in req.head.parameters()):
                 raise StemContractError("Cell Head parameters invalid before Stem execution")
+            state_elements += req.local_state.numel()
+            output_elements += features.shape[0] * (req.head.task_head.out_features
+                                                   + req.head.action_head.out_features + 3)
+            if max(state_elements, output_elements) > MAX_CELL_BATCH_ELEMENTS:
+                raise StemContractError("combined Cell state/output budget exceeded")
             ids.add(req.cell_id)
-        with torch.inference_mode():
-            # Exactly one Python Encoder owner call, regardless of Cell count.
-            tokens = self.encoder(slots)
-            self.owner_forward_calls += 1
-            if (not isinstance(tokens, torch.Tensor) or tokens.shape != slots.shape
-                    or tokens.device != slots.device or tokens.dtype != slots.dtype
-                    or not bool(torch.isfinite(tokens).all())):
-                raise StemContractError("invalid shared Encoder output")
-            feature = tokens.mean(dim=1)
-            results = []
-            for req in requests:
-                prediction = req.head(feature, req.local_state)
-                results.append({"cell_id": req.cell_id,
-                                "memory_digest": req.external_memory_digest,
-                                "posture": "DENY_ALL", "advisory": prediction})
+            prepared.append((req, req.local_state.detach().clone()))
+        return prepared
+
+    def _evaluate_heads(self, feature, prepared):
+        results = []
+        copies = {"accounting_kind": "tensor-payload-bytes-not-observed-peak",
+                  "local_state_snapshot_bytes": 0, "head_input_scratch_bytes": 0,
+                  "head_output_snapshot_bytes": 0}
+        for req, state in prepared:
+            # Sequential scratch copies are short lived; the shared source
+            # remains one snapshot even when an individual Head mutates input.
+            prediction = req.head(feature.clone(), state.clone())
+            state_bytes = state.numel() * state.element_size()
+            copies["local_state_snapshot_bytes"] += state_bytes
+            copies["head_input_scratch_bytes"] += feature.numel() * feature.element_size() + state_bytes
+            widths = {"task_logits": req.head.task_head.out_features,
+                      "action_logits": req.head.action_head.out_features,
+                      "value": 1, "uncertainty": 1, "gate": 1}
+            if (not isinstance(prediction, dict) or set(prediction) != set(widths)
+                    or any(not isinstance(prediction[k], torch.Tensor)
+                           or prediction[k].shape != (feature.shape[0], width)
+                           or prediction[k].dtype != feature.dtype
+                           or prediction[k].device != feature.device
+                           or not bool(torch.isfinite(prediction[k]).all())
+                           for k, width in widths.items())):
+                raise StemContractError("invalid Cell advisory after module hooks")
+            results.append({"cell_id": req.cell_id,
+                            "memory_digest": req.external_memory_digest,
+                            "posture": "DENY_ALL",
+                            "advisory": {k: v.detach().clone() for k, v in prediction.items()}})
+            copies["head_output_snapshot_bytes"] += sum(v.numel() * v.element_size()
+                                                          for v in prediction.values())
+        return results, copies
+
+    def _receipt(self, results, *, encoder_calls, copies):
         return {
             "mode": "SHADOW_ONLY", "authority": "DENY_ALL",
             "production_activation_allowed": False,
             "encoder_digest": self.encoder_sha256,
             "generation": self.generation,
-            "owner_forward_calls_for_this_batch": 1,
+            "owner_forward_calls_for_this_batch": encoder_calls,
             "physical_backend_forward_calls": None,
             "trained_checkpoint_verified": False,
             "performance_qualified": False,
+            "copy_accounting": copies,
             "cell_results": results,
         }
