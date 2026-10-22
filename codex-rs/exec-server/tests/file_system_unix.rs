@@ -90,6 +90,20 @@ fn assert_sandbox_denied(error: &std::io::Error) {
     }
 }
 
+fn assert_authorized_read_denied(implementation: FileSystemImplementation, error: &std::io::Error) {
+    let (kind, message) = match implementation {
+        FileSystemImplementation::Local => {
+            (std::io::ErrorKind::PermissionDenied, "Permission denied")
+        }
+        FileSystemImplementation::Remote => (
+            std::io::ErrorKind::InvalidInput,
+            "remote authorized file read was rejected",
+        ),
+    };
+    assert_eq!(error.kind(), kind);
+    assert_eq!(error.to_string(), message);
+}
+
 fn assert_normalized_path_rejected(error: &std::io::Error) {
     match error.kind() {
         std::io::ErrorKind::NotFound => assert!(
@@ -1133,8 +1147,20 @@ async fn file_system_bounded_authorized_read_enforces_limit_without_prefix(
         )
         .await
         .expect_err("a file larger than the bound must fail closed");
-    assert_eq!(error.kind(), std::io::ErrorKind::InvalidData);
-    assert_eq!(error.to_string(), "authorized file read exceeds bound");
+    // The remote adapter deliberately redacts every server -32603 error.
+    // The raw RPC test independently verifies the exact overflow wire error.
+    let (kind, message) = match implementation {
+        FileSystemImplementation::Local => (
+            std::io::ErrorKind::InvalidData,
+            "authorized file read exceeds bound",
+        ),
+        FileSystemImplementation::Remote => (
+            std::io::ErrorKind::Other,
+            "remote authorized file read failed",
+        ),
+    };
+    assert_eq!(error.kind(), kind);
+    assert_eq!(error.to_string(), message);
 
     Ok(())
 }
@@ -1169,7 +1195,7 @@ async fn file_system_bounded_authorized_read_rejects_symlink_and_parent_escape(
         )
         .await
         .expect_err("a symlink escaping the readable root must fail closed");
-    assert_sandbox_denied(&error);
+    assert_authorized_read_denied(implementation, &error);
 
     let parent_escape = allowed_dir
         .join("nested")
@@ -1185,7 +1211,7 @@ async fn file_system_bounded_authorized_read_rejects_symlink_and_parent_escape(
         )
         .await
         .expect_err("a parent traversal escaping the readable root must fail closed");
-    assert_normalized_path_rejected(&error);
+    assert_authorized_read_denied(implementation, &error);
 
     Ok(())
 }
