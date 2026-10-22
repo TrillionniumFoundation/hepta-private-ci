@@ -770,12 +770,21 @@ fn apply_blocking_to_resolved_file(
         return Ok(());
     }
 
-    write_atomically(&write_paths.write_path, &document.doc.to_string()).with_context(|| {
-        format!(
-            "failed to persist config at {}",
-            write_paths.write_path.display()
-        )
-    })?;
+    write_atomically(&write_paths.write_path, &document.doc.to_string())
+        .inspect_err(|err| {
+            tracing::warn!(
+                stage = "config_write_atomically",
+                error_kind = ?err.kind(),
+                raw_os_error = ?err.raw_os_error(),
+                "configuration atomic write failed"
+            );
+        })
+        .with_context(|| {
+            format!(
+                "failed to persist config at {}",
+                write_paths.write_path.display()
+            )
+        })?;
 
     Ok(())
 }
