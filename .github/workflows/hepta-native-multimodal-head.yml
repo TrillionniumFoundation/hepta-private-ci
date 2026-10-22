@@ -1,0 +1,134 @@
+name: Hepta native multimodal Head
+
+on:
+  pull_request:
+    paths:
+      - codex-rs/hepta-neuron/**
+      - codex-rs/hepta-types/**
+      - qa/stem-bakeoff/**
+      - .github/workflows/hepta-native-multimodal-head.yml
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: hepta-native-head-${{ github.event.pull_request.head.sha || github.sha }}
+  cancel-in-progress: false
+
+jobs:
+  retained-real-head-parity:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    env:
+      CARGO_TARGET_DIR: ${{ runner.temp }}/hepta-native-head-target
+      CARGO_PROFILE_DEV_DEBUG: "0"
+      CARGO_PROFILE_TEST_DEBUG: "0"
+      CARGO_INCREMENTAL: "0"
+      HF_HUB_OFFLINE: "1"
+      TRANSFORMERS_OFFLINE: "1"
+      TOKENIZERS_PARALLELISM: "false"
+      PYTHONUNBUFFERED: "1"
+    defaults:
+      run:
+        shell: bash
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - name: Bind the exact source
+        env:
+          EXPECTED_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$EXPECTED_SHA"
+          test -z "$(git status --porcelain)"
+          mkdir "$RUNNER_TEMP/hepta-native-head"
+          git rev-parse HEAD HEAD^{tree} > "$RUNNER_TEMP/hepta-native-head/source.txt"
+      - uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582 # 1.95.0
+      - uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
+        with:
+          tool: just@1.51.0,nextest@0.9.103
+      - name: Verify the native artifact and inference boundaries
+        working-directory: codex-rs
+        run: |
+          set -euo pipefail
+          just test --locked -p codex-hepta-neuron --lib 2>&1 | tee "$RUNNER_TEMP/hepta-native-head/native-tests.log"
+          cargo clippy --locked -p codex-hepta-neuron --example native_task_head -- -D warnings 2>&1 | tee "$RUNNER_TEMP/hepta-native-head/clippy.log"
+      - name: Build the actual release evaluator
+        working-directory: codex-rs
+        run: |
+          set -euo pipefail
+          cargo build --locked --release -p codex-hepta-neuron --example native_task_head 2>&1 | tee "$RUNNER_TEMP/hepta-native-head/build.log"
+          sha256sum "$CARGO_TARGET_DIR/release/examples/native_task_head" > "$RUNNER_TEMP/hepta-native-head/binary.sha256"
+      - name: Install the pinned replay runtime
+        run: |
+          set -euo pipefail
+          python3 -m venv "$RUNNER_TEMP/native-head-venv"
+          "$RUNNER_TEMP/native-head-venv/bin/python" -m pip install --no-cache-dir --only-binary=:all: --index-url https://download.pytorch.org/whl/cpu 'torch==2.10.0' 'torchvision==0.25.0'
+          "$RUNNER_TEMP/native-head-venv/bin/python" -m pip install --no-cache-dir --only-binary=:all: -r qa/stem-bakeoff/requirements-real.txt
+      - name: Verify the export and measurement boundaries
+        run: |
+          set -euo pipefail
+          "$RUNNER_TEMP/native-head-venv/bin/python" -m unittest discover -s qa/stem-bakeoff -p 'test_native_task_head_*.py' -v 2>&1 | tee "$RUNNER_TEMP/hepta-native-head/export-tests.log"
+      - name: Execute all retained real rows and bounded resource measurements
+        run: |
+          set -euo pipefail
+          "$RUNNER_TEMP/native-head-venv/bin/python" qa/stem-bakeoff/replay_native_task_head_v1.py \
+            --archive-directory qa/stem-bakeoff/evidence/20261022-real-multimodal \
+            --binary "$CARGO_TARGET_DIR/release/examples/native_task_head" \
+            --output "$RUNNER_TEMP/hepta-native-head/replay" --measure-cost \
+            2>&1 | tee "$RUNNER_TEMP/hepta-native-head/parity.log"
+      - name: Verify the bound replay receipt
+        env:
+          EXPECTED_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+        run: |
+          set -euo pipefail
+          "$RUNNER_TEMP/native-head-venv/bin/python" - <<'PY'
+          import hashlib, json, os
+          from pathlib import Path
+          root = Path(os.environ['RUNNER_TEMP']) / 'hepta-native-head/replay/native-results'
+          report = json.loads((root / 'report.json').read_bytes())
+          binary = Path(os.environ['CARGO_TARGET_DIR']) / 'release/examples/native_task_head'
+          if (report['status'] != 'PASS' or report['head_cost_measured'] is not True
+                  or report['source_identity']['git_head_sha'] != os.environ['EXPECTED_SHA']
+                  or report['source_identity']['working_tree_clean'] is not True
+                  or report['binary_sha256'] != hashlib.sha256(binary.read_bytes()).hexdigest()
+                  or report['native_task_head_executed'] is not True
+                  or report['new_training_or_calibration'] is not False
+                  or report['authority'] != 'DENY_ALL'):
+              raise ValueError('native replay source, binary or contract mismatch')
+          expected = {mode + '-' + case for mode in ('gated', 'linear') for case in
+              ('paired', 'missing_text', 'missing_image', 'shuffled_image', 'mixed_presence')}
+          if set(report['cases']) != expected or any(r['rows'] != 256 for r in report['cases'].values()):
+              raise ValueError('incomplete retained native row inventory')
+          actual = {path.relative_to(root).as_posix() for path in root.rglob('*') if path.is_file()}
+          if actual != set(report['retained_file_sha256']) | {'report.json'}:
+              raise ValueError('unindexed native evidence')
+          for name, digest in report['retained_file_sha256'].items():
+              if hashlib.sha256((root / name).read_bytes()).hexdigest() != digest:
+                  raise ValueError('native artifact digest differs: ' + name)
+          with open(os.environ['GITHUB_STEP_SUMMARY'], 'a') as stream:
+              stream.write('## Native multimodal task Head\n\n')
+              stream.write('Both retained Heads: 2,560 row responses; fixed numeric tolerance and exact class/acceptance checks passed.\n\n')
+              stream.write('Missing required modalities return no prediction. Source, binary, artifacts and each request are hash-bound.\n\n')
+              stream.write('Task-only replay and cloud-host resource observations do not qualify Agentd policy learning or target-device performance.\n')
+          PY
+      - name: Retain all actual native evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: hepta-native-head-${{ github.event.pull_request.head.sha || github.sha }}
+          path: |
+            ${{ runner.temp }}/hepta-native-head/*.log
+            ${{ runner.temp }}/hepta-native-head/source.txt
+            ${{ runner.temp }}/hepta-native-head/binary.sha256
+            ${{ runner.temp }}/hepta-native-head/replay/native-results/
+          if-no-files-found: error
+          retention-days: 14
+      - name: Confirm tracked source is unchanged
+        if: always()
+        run: |
+          git diff --check
+          git diff --exit-code
