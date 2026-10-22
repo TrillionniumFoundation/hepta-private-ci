@@ -61,6 +61,28 @@ pub fn select_output_portfolio_v1(
         if scores[index] <= FixedQ32::ZERO {
             continue;
         }
+        // A hard-zero risk budget must admit only genuinely zero-risk
+        // directions. Q32 ties-to-even rounding can otherwise truncate a
+        // positive linear or quadratic loss to zero at a fractional weight,
+        // allowing a risk-bearing Cell while claiming zero total risk.
+        // Be conservative even when two directions might hedge each other:
+        // this advisory selector has no authenticated hedge proof.
+        if budget.risk_budget == FixedQ32::ZERO
+            && (risks[index] > FixedQ32::ZERO
+                || covariance[index * count + index] > FixedQ32::ZERO)
+        {
+            continue;
+        }
+        // Hard-zero resource/latency budgets also require exact zero cost.
+        // Multiplication by a fractional Q32 weight can round one positive
+        // least-significant cost unit to zero, despite real resource use.
+        if (budget.resource_budget == FixedQ32::ZERO
+            && candidates[index].resource_cost > FixedQ32::ZERO)
+            || (budget.latency_budget == FixedQ32::ZERO
+                && candidates[index].latency_cost > FixedQ32::ZERO)
+        {
+            continue;
+        }
         if selected_protocol.is_some_and(|protocol| protocol != candidates[index].protocol)
             || selected_domain
                 .is_some_and(|domain| domain != candidates[index].composition_domain_digest)
