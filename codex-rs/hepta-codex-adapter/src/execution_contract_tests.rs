@@ -291,3 +291,84 @@ fn failed_runtime_receipt_requires_observed_terminal() {
     receipt.execution.status = ExecutionStatusV1::Indeterminate;
     assert_eq!(receipt.validate_against(&value), Ok(()));
 }
+
+#[test]
+fn completion_and_unknown_admission_enforce_recovery_posture() {
+    let value = intent();
+    let mut receipt = ExecutionReceiptV1 {
+        operation_id: value.cell.operation_id.clone(),
+        intent_digest: value.cell.intent_digest(),
+        generation: value.cell.generation,
+        final_payload_digest: value.cell.final_payload.clone(),
+        outcome_digest: Some(digest("outcome")),
+        status: ExecutionStatusV1::Completed,
+        recovery: RecoveryDispositionV1::None,
+        authority: AuthorityPosture::DENY_ALL,
+    };
+    assert_eq!(receipt.validate_against(&value.cell), Ok(()));
+
+    receipt.recovery = RecoveryDispositionV1::RetryBeforeAdmission;
+    assert_eq!(
+        receipt.validate_against(&value.cell),
+        Err(ExecutionContractError::StatusRecoveryMismatch)
+    );
+    receipt.status = ExecutionStatusV1::Indeterminate;
+    receipt.outcome_digest = None;
+    for invalid in [
+        RecoveryDispositionV1::None,
+        RecoveryDispositionV1::RetryBeforeAdmission,
+        RecoveryDispositionV1::RollbackToPredecessor,
+    ] {
+        receipt.recovery = invalid;
+        assert_eq!(
+            receipt.validate_against(&value.cell),
+            Err(ExecutionContractError::StatusRecoveryMismatch)
+        );
+    }
+    for safe in [
+        RecoveryDispositionV1::ReconcileSameOperation,
+        RecoveryDispositionV1::Quarantine,
+    ] {
+        receipt.recovery = safe;
+        assert_eq!(receipt.validate_against(&value.cell), Ok(()));
+    }
+}
+
+#[test]
+fn nonzero_process_exit_cannot_be_a_successful_runtime_receipt() {
+    let value = intent();
+    let outcome = ToolOutcomeV1 {
+        terminal_observed: true,
+        exit_code: Some(0),
+        stdout_digest: Some(digest("stdout")),
+        stderr_digest: None,
+        retryable: false,
+    };
+    let mut receipt = RuntimeReceiptV1 {
+        execution: ExecutionReceiptV1 {
+            operation_id: value.cell.operation_id.clone(),
+            intent_digest: value.cell.intent_digest(),
+            generation: value.cell.generation,
+            final_payload_digest: value.cell.final_payload.clone(),
+            outcome_digest: Some(outcome.outcome_digest()),
+            status: ExecutionStatusV1::Completed,
+            recovery: RecoveryDispositionV1::None,
+            authority: AuthorityPosture::DENY_ALL,
+        },
+        runtime_intent_digest: value.intent_digest(),
+        tool_outcome: outcome,
+    };
+    assert_eq!(receipt.validate_against(&value), Ok(()));
+
+    receipt.tool_outcome.exit_code = Some(17);
+    receipt.execution.outcome_digest = Some(receipt.tool_outcome.outcome_digest());
+    assert_eq!(
+        receipt.validate_against(&value),
+        Err(ExecutionContractError::StatusOutcomeMismatch)
+    );
+
+    // Non-process tools may have a terminal observation without an exit code.
+    receipt.tool_outcome.exit_code = None;
+    receipt.execution.outcome_digest = Some(receipt.tool_outcome.outcome_digest());
+    assert_eq!(receipt.validate_against(&value), Ok(()));
+}
