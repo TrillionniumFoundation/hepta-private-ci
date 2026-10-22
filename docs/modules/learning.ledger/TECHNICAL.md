@@ -203,6 +203,17 @@ One append transaction prepares and validates the full semantic event, compares 
 
 Legacy `LearningLedger`, `DurableLedger`, `SegmentedLedger` and `DurableLearningJournal` APIs remain readable compatibility/testing surfaces. New composed callers use `LedgerWriter`; compatibility availability is not permission to create a second production writer.
 
+The Lane E source inventory distinguishes writes from simple record-ID read
+patterns and the sealed journal's read-only import. Its qualification exception
+applies only to a standalone function compiled behind the exact disabled
+`qualification-legacy-learning-write` switch. Default feature expansion,
+normal dependency requests (including aliases and workspace inheritance), or
+explicit Bazel enablement prevent that exception. Runtime `cfg!`, unknown
+conditions, macro token trees, raw constructor aliases and grouped/wildcard
+imports cannot establish a read-only or disabled-write exemption. This bounded
+lexical inventory supplements compilation and writer tests; it does not prove
+general Rust data flow or a deployed product learning loop.
+
 [Shared concurrency and transaction requirements](../README.md#shared-concurrency-and-transactions) apply at the corresponding owner boundary.
 
 ## 8. Failure semantics, recovery and rollback

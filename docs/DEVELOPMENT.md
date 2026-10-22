@@ -672,6 +672,20 @@ this ordering adds cross-repository evidence dependencies without a second DAG,
 optimizer, durable journal or authority issuer. Parameter, topology, executable
 and consensus upgrades retain their separate admission and release boundaries.
 
+Within `LRN-1-DURABLE-EPISODE-LEDGER` and `INT-2-AGENTD-CODEX-COMPOSITION`,
+learning-platform owns the Lane E writer inventory and agent-runtime owns its
+actual caller/module bindings. Keep the original seven source-inventory
+failures as historical evidence: two were explicitly disabled qualification
+methods; five were a read-only trait import and record-ID patterns in the
+uncompiled legacy `objective_ingress.rs`. The active Objective path remains
+`objective_runtime.rs` and its existing RunStart owner. The corrected inventory
+must reject adjacent product writes, default/consumer feature activation and
+constructor aliases while accepting those proven read/qualification cases.
+Removing the orphan Objective files is a separate maintenance task in these
+same packages, dependent on confirming that no source-navigation evidence
+uses them. Closing this inventory defect neither establishes a production
+writer deployment nor closes the three-round real-model acceptance.
+
 ## 20. First vertical learning slice
 
 `C1-PROMPTED-MEMORY-RETRIEVAL-RANK` executes:
