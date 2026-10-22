@@ -2120,6 +2120,18 @@ async fn duplicate_queued_client_ids_dispatch_to_core_once() -> anyhow::Result<(
     .await;
     emit_idle(&service, thread_id).await;
 
+    // TurnComplete can precede terminal fence retirement. The idle callback
+    // then schedules reconciliation after that exact fence, so its return is
+    // not yet proof that the duplicate row has been durably removed.
+    tokio::time::timeout(Duration::from_secs(/*secs*/ 10), async {
+        loop {
+            if service.list(thread_id).await?.is_empty() {
+                return anyhow::Ok(());
+            }
+            tokio::time::sleep(Duration::from_millis(/*millis*/ 20)).await;
+        }
+    })
+    .await??;
     assert!(service.list(thread_id).await?.is_empty());
     assert_eq!(1, response.requests().len());
     assert_eq!(
