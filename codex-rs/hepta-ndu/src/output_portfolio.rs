@@ -128,6 +128,7 @@ pub fn select_output_portfolio_v1(
             &scores,
             &covariance,
             budget.risk_aversion,
+            budget.switch_penalty,
             candidates[index].protocol.requires_whole_candidate(),
         )?;
         weights[index] = weight;
@@ -373,6 +374,7 @@ fn covariance_positive_gain_weight(
     scores: &[FixedQ32],
     covariance: &[FixedQ32],
     risk_aversion: FixedQ32,
+    switch_penalty: FixedQ32,
     atomic: bool,
 ) -> Result<FixedQ32, NduError> {
     let count = weights.len();
@@ -389,7 +391,12 @@ fn covariance_positive_gain_weight(
         }
     }
     let twice_cross = cross.checked_add(cross).map_err(|_| NduError::Arithmetic)?;
-    let slope = scores[index]
+    // Ranking conservatively subtracts the switch cost, but optimization
+    // must price that cost once per admitted direction, not per Q32 weight.
+    let gross_score = scores[index]
+        .checked_add(switch_penalty)
+        .map_err(|_| NduError::Arithmetic)?;
+    let slope = gross_score
         .checked_sub(mul_q32_ties_even(twice_cross, risk_aversion)?)
         .map_err(|_| NduError::Arithmetic)?;
     if slope <= FixedQ32::ZERO {
@@ -413,7 +420,7 @@ fn covariance_positive_gain_weight(
     }
     // Rounding in Q32 can change the stationary point by a raw unit. Confirm
     // that the exact proposed weight strictly improves over doing nothing.
-    let linear = mul_q32_ties_even(proposed, scores[index])?;
+    let linear = mul_q32_ties_even(proposed, gross_score)?;
     let squared = mul_q32_ties_even(proposed, proposed)?;
     let quadratic_diagonal = mul_q32_ties_even(squared, diagonal)?;
     let quadratic_cross = mul_q32_ties_even(proposed, twice_cross)?;
@@ -423,6 +430,8 @@ fn covariance_positive_gain_weight(
     let priced_covariance = mul_q32_ties_even(covariance_delta, risk_aversion)?;
     let gain = linear
         .checked_sub(priced_covariance)
+        .map_err(|_| NduError::Arithmetic)?
+        .checked_sub(switch_penalty)
         .map_err(|_| NduError::Arithmetic)?;
     if gain <= FixedQ32::ZERO {
         Ok(FixedQ32::ZERO)
