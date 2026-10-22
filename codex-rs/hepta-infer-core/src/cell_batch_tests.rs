@@ -33,6 +33,77 @@ fn zero_delta_preserves_the_no_update_baseline() {
 }
 
 #[test]
+fn active_head_rejects_nonzero_same_generation_parameter_changes() {
+    let head = CellAdapterHeadV1::new(
+        id("cell:a"),
+        id("organ:a"),
+        generation(1),
+        digest("encoder"),
+        vec![2, 3, 5],
+        7,
+    )
+    .expect("head");
+    let baseline = head.activate(&snapshot()).expect("baseline");
+    assert_eq!(
+        head.with_delta(&[1, 0, 0]),
+        Err(CellBatchError::ParameterUpdateRequiresSuccessor),
+        "an altered head must not retain active generation",
+    );
+    assert_eq!(head.with_delta(&[0, 0]), Err(CellBatchError::DeltaWidth),);
+    assert_eq!(
+        head.activate(&snapshot())
+            .expect("old generation preserved"),
+        baseline
+    );
+}
+
+#[test]
+fn candidate_weight_updates_require_an_exact_successor_generation() {
+    let head = CellAdapterHeadV1::new(
+        id("cell:a"),
+        id("organ:a"),
+        generation(1),
+        digest("encoder"),
+        vec![2, 3, 5],
+        7,
+    )
+    .expect("head");
+    assert_eq!(
+        head.with_successor_delta(generation(1), &[1, 0, 0]),
+        Err(CellBatchError::GenerationNotSuccessor),
+    );
+    assert_eq!(
+        head.with_successor_delta(generation(3), &[1, 0, 0]),
+        Err(CellBatchError::GenerationNotSuccessor),
+    );
+    assert_eq!(
+        head.with_successor_delta(generation(2), &[1, 0]),
+        Err(CellBatchError::DeltaWidth),
+    );
+
+    let candidate = head
+        .with_successor_delta(generation(2), &[1, 0, 0])
+        .expect("candidate in successor generation");
+    assert_eq!(head.generation, generation(1));
+    assert_eq!(candidate.generation, generation(2));
+    assert_eq!(
+        candidate.activate(&snapshot()),
+        Err(CellBatchError::GenerationMismatch),
+        "a candidate must not evaluate an active generation's snapshot",
+    );
+    let successor_snapshot =
+        ImmutableFeatureSnapshotV1::new(generation(2), digest("encoder"), vec![1, 2, 3])
+            .expect("successor feature");
+    assert_eq!(
+        candidate
+            .activate(&successor_snapshot)
+            .expect("successor activation")
+            .score,
+        head.activate(&snapshot()).expect("old activation").score + 1
+    );
+}
+
+#[test]
 fn shared_snapshot_is_reused_by_multiple_heads() {
     let snapshot = snapshot();
     let first = CellAdapterHeadV1::new(
