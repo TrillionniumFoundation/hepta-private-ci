@@ -22,6 +22,14 @@ codex_rust_crate(
         "//codex-rs/windows-sandbox-rs:codex-command-runner",
         "//codex-rs/windows-sandbox-rs:codex-windows-sandbox-setup",
     ],
+    # Unit tests run through the Bazel workspace-root launcher, not Cargo.
+    # Surface the real CLI as a unit-test runfile and CARGO_BIN_EXE_codex;
+    # extra_binaries alone only configures integration-test environments.
+    # The sandbox inheritance test must execute the actual CLI rather than
+    # silently skipping its runtime-security assertions on Windows.
+    unit_test_extra_binaries = [
+        "//codex-rs/cli:codex",
+    ],
     integration_compile_data_extra = ["src/guardian/node_repl_policy.md"],
     integration_test_timeout = "long",
     run_tests_with_wine_exec = True,
