@@ -630,6 +630,38 @@ Implement `EMB-0` through `EMB-3`: shared sensor/body/reflex/actuation types, co
 
 Implement `ASM-0` through `ASM-4` against an owner-authorized, non-privileged Debian/POSIX fixture. Progress from read-only discovery to manifest/contract synthesis, credential-free sandboxing, reversible migration and explicit host enrollment. Cross-host or autonomous propagation is prohibited.
 
+### Audit remediation within the existing roadmap
+
+The following P0/P1/P2 labels are **audit severity**, not replacements for the
+P0–P8 delivery phases above or new work packages. Apply these exit conditions
+inside the named existing packages and their Development/Activation/Evidence
+DAGs. Source presence, a documentation pass and a controlled experiment remain
+separate from product composition, qualification and beneficial model evolution.
+
+| Severity / existing work | Accountable modules and owners | Required interface change and exit condition |
+|---|---|---|
+| P0 — real neural upgrade loop; `NEU-1-LOCAL-MODEL-BAKEOFF`, `LRN-1-DURABLE-EPISODE-LEDGER`, `LRN-2-CAUSAL-EVALUATION`, `ART-1-LEARNING-ARTIFACT-REGISTRY`, `ART-2-NEXT-SNAPSHOT-RELOAD-ROLLBACK`, `INT-2-AGENTD-CODEX-COMPOSITION` | `learning.*` / `neuron.runtime`: learning-platform; `intelligence.control`: intelligence-platform; `runtime.agentd`: agent-runtime; inference-platform owns loading/execution | Extend the existing manifest/evaluation/runtime-receipt adapters with registered versions for exact installed parent, full release closure and next-task readback. A named ordinary product caller completes three rounds on one real pretrained neural model; each round starts from the actually installed parent. Require independent future evaluation, cross-node fetch/load, local selection and next-task use. No-update is valid; three beneficial releases require three separately measured, installed improvements. See [Lane E sequence](lane-e/END_TO_END_LEARNING_SEQUENCE.md#8-real-neural-model-upgrade-through-the-ordinary-product-path). |
+| P0 — PoN security qualification; `TASKFLOW-1-EXECUTION-BOUNDARY`, `P0.8D-VERTICAL-SLICE`, `P0.9-EXTERNAL-GATES` | automation-platform / agent-runtime compose; qualification-plane consumes independent Chain evidence | Keep `ProviderEffectIntent` and `AutomationEffectChainObservation` as bounded settlement evidence. Chain PN1 must independently close work correctness, effective-cost/hardness and honest-service resistance. A correct transcript or local CI pass cannot substitute for the latter two decisions; an unqualified work profile cannot enter public deployment. No observation issues FinalUse or model-install authority. |
+| P1 — bounded state/resource and reorg recovery; `P0.8C-RESOURCE-BUDGETS`, `TASKFLOW-1-EXECUTION-BOUNDARY`, `ART-2-NEXT-SNAPSHOT-RELOAD-ROLLBACK` | runtime-control, automation-platform, learning-platform; Chain owns authenticated state | Chain's existing node owns I03–I05 parent/witness execution and retention; Hepta consumes bounded I08 task observations under their explicit verifier/trust contract, without becoming another state executor or replaying full history per task. Declare admission, pending obligations, fetch, CPU/memory/disk and reconciliation limits. PN2 qualifies migration/reorg recovery; Hepta rejects stale/oversized input and preserves Unknown effects without duplicate dispatch. |
+| P1 — P2P release availability; `ART-1-LEARNING-ARTIFACT-REGISTRY`, `ART-2-NEXT-SNAPSHOT-RELOAD-ROLLBACK`, `INFER-V4-T4`, `INFER-V4-T5` | learning-platform owns artifact facts; inference-platform owns loader/device use; Chain data-availability owner supplies bytes/retention evidence | Versioned manifest adapter binds base, tokenizer, runtime, quantization, tensor inventory, routing and all Cell dependencies. Fetch is verified before safe loader entry. Test interruption, poisoned peers, missing dependency, incompatible tensor and replica loss/repair; content addressing alone proves neither availability nor quality. See [artifact integration](modules/learning.artifacts/TECHNICAL.md#p2p-release-closure-and-loader-integration-target). |
+| P1 — independent evidence and withdrawal; `LRN-2-CAUSAL-EVALUATION`, `LONG-1-TEMPORAL-HOLDOUT`, `LONG-2-RETENTION-FORGETTING`, `LONG-3-UNLEARNING-NON-RESURRECTION` | learning-platform with qualification-plane independent evaluation; artifact/ledger writers remain unchanged | Pre-register objective, metrics, future windows, evaluator/controller separation and negative controls; retain failed/plateau/no-update rounds. Forged benchmark numbers and hash-valid poisoned weights must not qualify a release. Withdrawal/reorg/restore tests cannot resurrect a revoked artifact or repeat a committed external effect. |
+| P2 — throughput after the above boundaries; `P0.8C-RESOURCE-BUDGETS`, `INFER-V4-T4`, `INFER-V4-T5` | runtime-control and inference-platform; agent-runtime owns composition overhead | Measure complete task latency and throughput including fetch, hash, decoding, device transfer and Chain observation. Optimize immutable-base sharing, compatible batching, prefetch and bounded caches; preserve revocation freshness and generation fences. Compare p50/p95/p99, sustained rate, error rate and all resource ceilings under the same hardware/network/load; report cold and warm paths separately. |
+
+Cross-repository qualification follows the Chain plan's single
+[PN0–PN6 convergence sequence](https://github.com/TrillionniumFoundation/Trillionnium-Chain/blob/8d56f2f173d3e870846cf1129d48647f2b84540a/docs/development/TRNM_AI_NATIVE_BLOCKCHAIN_DEVELOPMENT_PLAN.md#6-one-executable-convergence-sequence):
+PN0 exact-source/security baseline → PN1 work security and PN2 bounded state →
+PN3 real-model closure → PN4 five-budget/effect-liability qualification →
+PN5 independent-operator WAN/discovery/availability → PN6 governed migration and
+activation. The link fixes audit-base phase semantics only; execution resolves
+both actual repository commits, contract versions and evidence anew. Offline,
+controlled PN3 work may run alongside PN1/PN2 but does not waive them or qualify
+a public network. PN5 requires at least three independent operators and 72 hours
+of WAN operation with discovery and replica repair, rather than three processes
+controlled by one administrator. Existing package predecessors remain mandatory;
+this ordering adds cross-repository evidence dependencies without a second DAG,
+optimizer, durable journal or authority issuer. Parameter, topology, executable
+and consensus upgrades retain their separate admission and release boundaries.
+
 ## 20. First vertical learning slice
 
 `C1-PROMPTED-MEMORY-RETRIEVAL-RANK` executes:
