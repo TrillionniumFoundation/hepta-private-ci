@@ -78,7 +78,9 @@ jobs:
           ref: ${{ github.sha }}
           persist-credentials: false
           filter: blob:none
-          sparse-checkout: experiments/ndu_latent_riccati
+          sparse-checkout: |
+            experiments/ndu_latent_riccati
+            experiments/ndu_mgp_gates
       - name: Create isolated pinned research environment
         run: |
           set -euo pipefail
@@ -93,6 +95,7 @@ jobs:
           "$PY" experiments/ndu_latent_riccati/oracle/benchmark.py --output "$RUNNER_TEMP/ndu-mgp-evidence/riccati.json"
           "$PY" experiments/ndu_latent_riccati/oracle/local_control_audit.py --output "$RUNNER_TEMP/ndu-mgp-evidence/nonlinear_control.json"
           "$PY" experiments/ndu_latent_riccati/review/codec_audit.py --output "$RUNNER_TEMP/ndu-mgp-evidence/codec.json"
+          "$PY" experiments/ndu_mgp_gates/p0_independent_lq.py | tee "$RUNNER_TEMP/ndu-mgp-evidence/independent-lq.log"
           "$PY" - <<'PY'
           import hashlib,json,os,pathlib,platform
           from importlib.metadata import version
