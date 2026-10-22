@@ -148,6 +148,13 @@ def evaluate(study: Mapping):
     _need(type(draws) is int and 1 <= draws <= 16, "unregistered draw count")
     cost_units = protocol.get("cost_units")
     _need(isinstance(cost_units, str) and len(cost_units) > 0, "missing measured cost unit")
+    # One protected world in the entire experiment is not a meaningful
+    # protected-task cohort. Require a preregistered minimum of genuinely
+    # separate original-source groups IN EACH training seed.
+    protected_source_floor = protocol.get("min_protected_source_groups_per_seed")
+    _need(type(protected_source_floor) is int and
+          8 <= protected_source_floor <= counts[0],
+          "invalid preregistered protected source-group coverage floor")
     observations = study.get("worlds")
     _need(isinstance(observations, list) and len(observations) == len(flat_ids),
           "unobserved or selectively omitted heldout worlds")
@@ -247,6 +254,12 @@ def evaluate(study: Mapping):
                 values[arm_idx[name], i, j, :len(METRICS)] = entries.mean(axis=0)
                 values[arm_idx[name], i, j, -1] = total
     _need(bool(np.any(protected)), "no protected-task evaluation coverage")
+    protected_world_counts = [int(protected[i].sum()) for i in range(len(seeds))]
+    protected_source_counts = [len({registered_sources[str(seed)][j]
+                                   for j in np.flatnonzero(protected[i])})
+                               for i, seed in enumerate(seeds)]
+    _need(all(n >= protected_source_floor for n in protected_source_counts),
+          "insufficient protected original-source groups in one or more seeds")
     # Every sampled heldout unit remains paired. Tail CVaR is computed within
     # seed AFTER draw aggregation, then averaged over training seeds.
     def summarize(v):
@@ -311,6 +324,9 @@ def evaluate(study: Mapping):
                "all_registered_worlds_seen": True, "registered_seeds": len(seeds),
                "worlds_per_seed": size,
                "independent_source_groups_per_seed": [len(x) for x in seed_group_indexes],
+               "registered_min_protected_source_groups_per_seed": protected_source_floor,
+               "protected_worlds_per_seed": protected_world_counts,
+               "protected_original_sources_per_seed": protected_source_counts,
                "draws_per_world": draws,
                "registered_hard_world_cost_limit": hard_cost_limit,
                "overbudget_episodes_by_arm": {name: int(budget_overruns[k].sum())
@@ -321,6 +337,7 @@ def evaluate(study: Mapping):
                "limitations": ["untrusted caller supplied observations and metadata",
                                "frozen source manifests remain caller supplied, not independently authenticated",
                                "no independent observer, signature verification or prospective attestation",
+                               "protected source coverage is metadata-only, not a population prevalence claim",
                                "absolute cost cap is caller-registered and not externally authenticated",
                                "does not execute a pretrained encoder, model, decoder or GPU inference",
                                "does not satisfy any P0-P4 production final-use gate"]}
