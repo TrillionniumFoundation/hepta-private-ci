@@ -217,7 +217,7 @@ impl DurableLeaseRegistryV1 {
             operation_id,
             LeaseOperationKindV1::Issue,
             semantic_sha256,
-            None,
+            /*lease_id*/ None,
         )
     }
 

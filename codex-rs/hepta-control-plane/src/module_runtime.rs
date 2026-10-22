@@ -284,7 +284,7 @@ impl RuntimeModuleRegistryV1 {
         if self.active.len() >= MAX_RUNTIME_MODULES {
             return Err(RuntimeModuleRegistryError::Bounds);
         }
-        self.ensure_writer_domains_available(&candidate.abi, None)?;
+        self.ensure_writer_domains_available(&candidate.abi, /*predecessor*/ None)?;
         self.records
             .get_mut(&key)
             .ok_or(RuntimeModuleRegistryError::UnknownCandidate)?

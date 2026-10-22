@@ -173,6 +173,30 @@ fn sharing_denies_directory_replacement_and_held_input_mutation() -> Result<()> 
     let replacement = fs::rename(path.join("input"), path.join("moved-input"));
     record_io("held_input_rename_attack", &replacement);
     ensure!(replacement.is_err(), "held input was replaceable");
+    let mut candidate = open_relative(
+        &root,
+        "replacement.next",
+        WRITE_ACCESS,
+        FILE_SHARE_READ,
+        FILE_CREATE,
+    )?;
+    candidate.write_all(b"replacement candidate")?;
+    candidate.sync_all()?;
+    let candidate_identity = identity(&candidate)?;
+    let held_target_replace = rename_relative(&root, &candidate, "input");
+    record_io(
+        "held_destination_relative_rename_attack",
+        &held_target_replace,
+    );
+    ensure!(
+        held_target_replace.is_err(),
+        "relative rename bypassed the held destination's sharing denial"
+    );
+    assert_eq!(identity(&candidate)?, candidate_identity);
+    assert_eq!(
+        fs::read(path.join("replacement.next"))?,
+        b"replacement candidate"
+    );
     let mut bytes = Vec::new();
     held.read_to_end(&mut bytes)?;
     assert_eq!(bytes, b"held input");
@@ -182,6 +206,15 @@ fn sharing_denies_directory_replacement_and_held_input_mutation() -> Result<()> 
     let mut after_close = OpenOptions::new().write(true).open(path.join("input"))?;
     after_close.write_all(b"after close")?;
     drop(after_close);
+    let unheld_target_replace = rename_relative(&root, &candidate, "input");
+    record_io(
+        "unheld_destination_relative_rename_control",
+        &unheld_target_replace,
+    );
+    unheld_target_replace?;
+    assert_eq!(identity(&candidate)?, candidate_identity);
+    drop(candidate);
+    assert_eq!(fs::read(path.join("input"))?, b"replacement candidate");
     fs::rename(path.join("input"), path.join("moved-input"))?;
     drop(root);
     fs::rename(&path, &moved)?;

@@ -77,7 +77,7 @@ pub fn canonical_encode_v1(
         }
         previous = Some(field.name.as_bytes());
         append_len_u16(&mut output, field.name.as_bytes())?;
-        encode_value(field.value, &mut output, 0)?;
+        encode_value(field.value, &mut output, /*depth*/ 0)?;
     }
     Ok(output)
 }
@@ -135,7 +135,7 @@ pub fn canonical_validate_v1(encoded: &[u8]) -> Result<Digest32, CanonicalDigest
             }
         }
         previous = Some(name_bytes);
-        validate_encoded_value(&mut reader, 0)?;
+        validate_encoded_value(&mut reader, /*depth*/ 0)?;
     }
     if !reader.is_complete() {
         return Err(CanonicalDigestError::TrailingBytes);
@@ -152,9 +152,9 @@ fn validate_encoded_value(
             0 | 1 => Ok(()),
             _ => Err(CanonicalDigestError::InvalidBool),
         },
-        0x02 => reader.take(8).map(|_| ()),
-        0x03 => reader.take(16).map(|_| ()),
-        0x04 => reader.take(8).map(|_| ()),
+        0x02 => reader.take(/*count*/ 8).map(|_| ()),
+        0x03 => reader.take(/*count*/ 16).map(|_| ()),
+        0x04 => reader.take(/*count*/ 8).map(|_| ()),
         0x05 => reader.read_len_u32().map(|_| ()),
         0x06 => {
             let bytes = reader.read_len_u32()?;
@@ -164,7 +164,7 @@ fn validate_encoded_value(
             }
             Ok(())
         }
-        0x07 => reader.take(32).map(|_| ()),
+        0x07 => reader.take(/*count*/ 32).map(|_| ()),
         0x08 => {
             let bytes = reader.read_len_u16()?;
             let stable_id =
@@ -242,16 +242,16 @@ impl<'a> Reader<'a> {
     }
 
     fn read_u8(&mut self) -> Result<u8, CanonicalDigestError> {
-        Ok(self.take(1)?[0])
+        Ok(self.take(/*count*/ 1)?[0])
     }
 
     fn read_u16(&mut self) -> Result<u16, CanonicalDigestError> {
-        let bytes = self.take(2)?;
+        let bytes = self.take(/*count*/ 2)?;
         Ok(u16::from_be_bytes([bytes[0], bytes[1]]))
     }
 
     fn read_u32(&mut self) -> Result<u32, CanonicalDigestError> {
-        let bytes = self.take(4)?;
+        let bytes = self.take(/*count*/ 4)?;
         Ok(u32::from_be_bytes([bytes[0], bytes[1], bytes[2], bytes[3]]))
     }
 
@@ -278,38 +278,38 @@ fn encode_value(
 ) -> Result<(), CanonicalDigestError> {
     match value {
         CanonicalValueV1::Bool(value) => {
-            append_u8(output, 0x01)?;
+            append_u8(output, /*value*/ 0x01)?;
             append_u8(output, u8::from(value))
         }
         CanonicalValueV1::U64(value) => {
-            append_u8(output, 0x02)?;
+            append_u8(output, /*value*/ 0x02)?;
             append(output, &value.to_be_bytes())
         }
         CanonicalValueV1::U128(value) => {
-            append_u8(output, 0x03)?;
+            append_u8(output, /*value*/ 0x03)?;
             append(output, &value.to_be_bytes())
         }
         CanonicalValueV1::I64(value) => {
-            append_u8(output, 0x04)?;
+            append_u8(output, /*value*/ 0x04)?;
             append(output, &value.to_be_bytes())
         }
         CanonicalValueV1::Bytes(value) => {
-            append_u8(output, 0x05)?;
+            append_u8(output, /*value*/ 0x05)?;
             append_len_u32(output, value)
         }
         CanonicalValueV1::Text(value) => {
             if value.contains('\0') {
                 return Err(CanonicalDigestError::InvalidText);
             }
-            append_u8(output, 0x06)?;
+            append_u8(output, /*value*/ 0x06)?;
             append_len_u32(output, value.as_bytes())
         }
         CanonicalValueV1::Digest(value) => {
-            append_u8(output, 0x07)?;
+            append_u8(output, /*value*/ 0x07)?;
             append(output, value.as_array())
         }
         CanonicalValueV1::StableId(value) => {
-            append_u8(output, 0x08)?;
+            append_u8(output, /*value*/ 0x08)?;
             append_len_u16(output, value.as_str().as_bytes())
         }
         CanonicalValueV1::Array(values) => {
@@ -319,7 +319,7 @@ fn encode_value(
             if values.len() > MAX_CANONICAL_CONTAINER_ITEMS_V1 {
                 return Err(CanonicalDigestError::TooManyItems);
             }
-            append_u8(output, 0x09)?;
+            append_u8(output, /*value*/ 0x09)?;
             append_u32(
                 output,
                 u32::try_from(values.len()).map_err(|_| CanonicalDigestError::TooManyItems)?,
@@ -336,7 +336,7 @@ fn encode_value(
             if entries.len() > MAX_CANONICAL_CONTAINER_ITEMS_V1 {
                 return Err(CanonicalDigestError::TooManyItems);
             }
-            append_u8(output, 0x0a)?;
+            append_u8(output, /*value*/ 0x0a)?;
             append_u32(
                 output,
                 u32::try_from(entries.len()).map_err(|_| CanonicalDigestError::TooManyItems)?,

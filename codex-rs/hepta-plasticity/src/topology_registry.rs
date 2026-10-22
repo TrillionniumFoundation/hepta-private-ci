@@ -659,7 +659,7 @@ fn decode_record(
         return Err(DurableTopologyRegistryErrorV1::Corrupt);
     }
     let proposal = decode_proposal(&mut r)?;
-    let handoff_count = r.bounded_len(31)?;
+    let handoff_count = r.bounded_len(/*maximum*/ 31)?;
     let mut handoffs = Vec::with_capacity(handoff_count);
     for _ in 0..handoff_count {
         handoffs.push(crate::WriterHandoffPlanV1 {
@@ -759,7 +759,7 @@ fn decode_proposal(
         Generation::new(r.u64()?).map_err(|_| DurableTopologyRegistryErrorV1::Corrupt)?;
     let evaluation_digest = r.digest()?;
     let rollback_predecessor_digest = r.digest()?;
-    let candidate_count = r.bounded_len(32)?;
+    let candidate_count = r.bounded_len(/*maximum*/ 32)?;
     let mut candidates = Vec::with_capacity(candidate_count);
     for _ in 0..candidate_count {
         let candidate_id = r.id()?;
@@ -768,7 +768,7 @@ fn decode_proposal(
             1 => TopologyCandidateKindV2::Update,
             _ => return Err(DurableTopologyRegistryErrorV1::Corrupt),
         };
-        let change_count = r.bounded_len(1)?;
+        let change_count = r.bounded_len(/*maximum*/ 1)?;
         let mut changes = Vec::with_capacity(change_count);
         for _ in 0..change_count {
             changes.push(TopologyChangeV2 {
@@ -867,10 +867,10 @@ impl Writer {
     fn optional_digest(&mut self, value: Option<Digest32>) {
         match value {
             Some(value) => {
-                self.u8(1);
+                self.u8(/*value*/ 1);
                 self.digest(value);
             }
-            None => self.u8(0),
+            None => self.u8(/*value*/ 0),
         }
     }
     fn len(&mut self, value: usize) -> Result<(), DurableTopologyRegistryErrorV1> {
@@ -938,7 +938,7 @@ impl<'a> Reader<'a> {
         Ok(value)
     }
     fn id(&mut self) -> Result<StableId, DurableTopologyRegistryErrorV1> {
-        let length = self.bounded_len(128)?;
+        let length = self.bounded_len(/*maximum*/ 128)?;
         let raw = std::str::from_utf8(self.take(length)?)
             .map_err(|_| DurableTopologyRegistryErrorV1::Corrupt)?;
         StableId::new(raw.to_owned()).map_err(|_| DurableTopologyRegistryErrorV1::Corrupt)
