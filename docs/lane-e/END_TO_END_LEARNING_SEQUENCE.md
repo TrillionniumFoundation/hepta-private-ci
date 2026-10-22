@@ -159,13 +159,13 @@ The evaluator cannot install, activate, merge, promote or release the artifact.
 
 Resource ceilings are stage-specific:
 
-| Stage | Bound |
-|---|---:|
-| Point OPE | `1,000,000` rows |
-| Tabular temporal fold | `100,000` rows |
-| Composed temporal holdout | `16,384` rows |
-| Sequential evaluator | `4,096` trajectories / `65,536` steps |
-| Sequential horizon | `128` |
+| Stage                     |                                 Bound |
+| ------------------------- | ------------------------------------: |
+| Point OPE                 |                      `1,000,000` rows |
+| Tabular temporal fold     |                        `100,000` rows |
+| Composed temporal holdout |                         `16,384` rows |
+| Sequential evaluator      | `4,096` trajectories / `65,536` steps |
+| Sequential horizon        |                                 `128` |
 
 A broad point-estimator bound must not be reused as the capacity claim for the
 composed temporal pipeline.
@@ -261,6 +261,11 @@ agent-runtime hosts them and inference-platform owns real model execution.
 The current tabular fit path in Section 2 remains useful reference evidence;
 it cannot certify this neural target. A hash-derived encoder, scripted answer
 lookup, synthetic GPU receipt or reference-only caller cannot satisfy it.
+
+The [inference.control local-text contract](../modules/inference.control/TECHNICAL.md)
+adds bounded exact UTF-8 request and untrusted readback/observation data only.
+Its hashes and shape checks precede a real tokenizer/worker composition; they
+execute no model and close neither I10 nor any three-round acceptance step.
 
 Use one identified pretrained neural backbone and bounded trainable head/adapter
 with a real backend, exact weights, tokenizer, tensor layout, precision, runtime,

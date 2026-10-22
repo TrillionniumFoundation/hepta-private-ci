@@ -54,6 +54,11 @@ None.
 
 The registered primary source is [codex-rs/hepta-infer-core/src/lib.rs](../../../codex-rs/hepta-infer-core/src/lib.rs); observed identifiers include `InferenceLedger`, `InferenceRequest`, `RequestRecord`, `submit`, `reserve`, `complete`. This is a source navigation binding, not proof that every target operation or production consumer exists. Read the [current native implementation](../../../qualification/module-execution-dossiers/detail/inference.control.md#8-current-native-implementation) alongside the [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/inference.control.md) for the implemented subset and remaining product work.
 
+The private [local text contract](../../../codex-rs/hepta-infer-core/src/local_text.rs)
+exports bounded in-process request and untrusted observation data. It has no
+driver, dispatch, durable record, CLI or product caller. The existing Q24 neuron
+feature contract retains its original meaning.
+
 ## 3. Boundary, responsibilities and non-goals
 
 Direct dependencies:
@@ -152,6 +157,24 @@ Every producer validates output before publication and binds semantic fields int
 
 Rust types and canonical JSON represent identical semantics. Tests cover round trips, maximum bounds, missing fields, unknown fields, invalid enums, canonical ordering and digest stability. Error mapping preserves rejected, unavailable, timed out, indeterminate, quarantined and terminally failed outcomes.
 
+The local-text V1 request hash binds request/operation/generation, selected release
+and complete dependency closure, tokenizer/preprocessor/chat-template identities,
+decoding policy, token bounds and the actual UTF-8 input. Input is nonempty and
+at most 32 KiB; output reports are at most 1 MiB. Exact bytes are retained without
+normalization or truncation. Each token bound is 1..1,000,000; 128 input and 8 output
+tokens remain experiment settings. A future real runtime must tokenize the rendered
+input with those selected components and enforce its actual request bounds before
+execution. Digest lookup or silent truncation cannot replace that work.
+
+Shape checks and the separate observation hash bind untrusted load/attempt, loaded
+root, tensor/adapter/runtime/device reports, status, optional usage and output.
+Absent usage stays unknown; failed/indeterminate reports may retain partial text
+and zero reported usage. Completed reports require reported usage and a positive
+input count. These checks perform no tensor readback, tokenization or model use;
+even consistent completed reports confer no authenticated terminality, model
+release, installation, FinalUse or I10 capability. No new serialized wire or
+cross-module admission port is introduced by these in-process data types.
+
 ## 6. Data authority, persistence and migrations
 
 Owned authoritative or rebuildable domains:
@@ -217,6 +240,7 @@ Current focused test sources (source references, not pass receipts):
 
 - [codex-rs/hepta-infer-core/src/durable_control_tests.rs](../../../codex-rs/hepta-infer-core/src/durable_control_tests.rs); named case: `reopens_exact_committed_state`.
 - [codex-rs/hepta-infer-core/src/lib_tests.rs](../../../codex-rs/hepta-infer-core/src/lib_tests.rs); named case: `request_lifecycle_is_fenced_and_authority_free`.
+- [codex-rs/hepta-infer-core/src/local_text_tests.rs](../../../codex-rs/hepta-infer-core/src/local_text_tests.rs); named cases: `every_request_context_and_real_input_affect_its_identity`, `partial_and_failed_reports_keep_unknown_usage_without_inventing_terminal_release`.
 
 In `codex-rs`, run `just test -p codex-hepta-infer-core -p codex-hepta-inferd`. The command is a test invocation, not a stored result. Inspect the exact-candidate output for passes, failures and skips. The [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/inference.control.md) separately labels target acceptance designs.
 
