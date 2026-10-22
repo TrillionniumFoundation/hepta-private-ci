@@ -1311,6 +1311,14 @@ fn curated_zip_modes_strip_privilege_bits_and_refuse_non_regular_files() {
         Some(0o644)
     );
     assert_eq!(sanitized_zip_file_mode(None).unwrap(), None);
+    assert_eq!(
+        sanitized_zip_file_mode(Some(0o100777)).unwrap(),
+        Some(0o755)
+    );
+    assert_eq!(
+        sanitized_zip_file_mode(Some(0o100666)).unwrap(),
+        Some(0o644)
+    );
     assert!(sanitized_zip_file_mode(Some(0o120777)).is_err());
     assert!(sanitized_zip_file_mode(Some(0o060666)).is_err());
 }

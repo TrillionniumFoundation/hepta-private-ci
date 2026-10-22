@@ -20,7 +20,7 @@ use codex_hepta_types::StableId;
 
 const FEATURE_WIDTH: usize = 8;
 const MAX_FEATURE_WIDTH: usize = 256;
-const MAX_BATCH_ITEMS: usize = 1_024;
+pub(crate) const MAX_BATCH_ITEMS: usize = 1_024;
 const MAX_QUEUE_ITEMS: usize = 16_384;
 
 /// An immutable feature snapshot that may be shared by many cell heads.
@@ -33,25 +33,30 @@ pub struct ImmutableFeatureSnapshotV1 {
 }
 
 impl ImmutableFeatureSnapshotV1 {
-    pub fn new(
+    /// Bind immutable features to the digest of the original source input.
+    ///
+    /// Distinct inputs can encode into identical features. Hashing feature
+    /// values as input identity would alias different requests in the cache.
+    /// The production Encoder owner must independently verify this provenance.
+    pub fn new_for_input(
         generation: Generation,
         encoder_digest: Digest32,
+        input_digest: Digest32,
         features: Vec<i64>,
     ) -> Result<Self, CellBatchError> {
         if encoder_digest.is_zero() {
             return Err(CellBatchError::ZeroDigest("encoder"));
         }
+        if input_digest.is_zero() {
+            return Err(CellBatchError::ZeroDigest("input"));
+        }
         if features.is_empty() || features.len() > MAX_FEATURE_WIDTH {
             return Err(CellBatchError::FeatureWidth);
-        }
-        let mut feature_bytes = Vec::with_capacity(features.len() * 8);
-        for feature in &features {
-            feature_bytes.extend_from_slice(&feature.to_be_bytes());
         }
         Ok(Self {
             generation,
             encoder_digest,
-            input_digest: Digest32::of_bytes(&feature_bytes),
+            input_digest,
             features: Arc::from(features),
         })
     }
@@ -86,20 +91,6 @@ impl ImmutableFeatureSnapshotV1 {
             Digest32::of_bytes(input),
             features,
         )
-    }
-
-    pub fn new_for_input(
-        generation: Generation,
-        encoder_digest: Digest32,
-        input_digest: Digest32,
-        features: Vec<i64>,
-    ) -> Result<Self, CellBatchError> {
-        if input_digest.is_zero() {
-            return Err(CellBatchError::ZeroDigest("input"));
-        }
-        let mut snapshot = Self::new(generation, encoder_digest, features)?;
-        snapshot.input_digest = input_digest;
-        Ok(snapshot)
     }
 
     #[must_use]
@@ -427,6 +418,54 @@ impl FairCellQueueV1 {
             if queue.is_empty() {
                 // Retire empty per-scope metadata. A bounded request queue must
                 // not retain every historical scope after its last dispatch.
+                self.queues.remove(&scope);
+            } else {
+                self.ready_scopes.push_back(scope);
+            }
+        }
+        batch
+    }
+
+    /// Prepare at most one feature generation per physical worker batch.
+    /// Different-generation heads remain queued in their original scope order;
+    /// postponing one head never discards or bypasses its scope's FIFO queue.
+    /// This is a scheduling fence, not a substitute for a final-use authority
+    /// or generation check at the actual model-execution boundary.
+    pub fn drain_batch_same_generation(&mut self, maximum: usize) -> Vec<QueuedCellRequestV1> {
+        let mut batch = Vec::with_capacity(maximum.min(self.length));
+        let mut selected_generation = None;
+        let mut deferred_scopes = 0_usize;
+        while batch.len() < maximum && !self.ready_scopes.is_empty() {
+            // Each active scope has been inspected without a compatible head.
+            // End the batch instead of spinning or repeatedly moving a stale
+            // generation ahead of other eligible work.
+            if deferred_scopes == self.ready_scopes.len() {
+                break;
+            }
+            let Some(scope) = self.ready_scopes.pop_front() else {
+                break;
+            };
+            let Some(queue) = self.queues.get_mut(&scope) else {
+                continue;
+            };
+            if let Some(generation) = selected_generation
+                && queue
+                    .front()
+                    .is_some_and(|request| request.feature_generation != generation)
+            {
+                self.ready_scopes.push_back(scope);
+                deferred_scopes += 1;
+                continue;
+            }
+            let Some(request) = queue.pop_front() else {
+                continue;
+            };
+            selected_generation.get_or_insert(request.feature_generation);
+            self.request_ids.remove(&request.request_id);
+            self.length -= 1;
+            batch.push(request);
+            deferred_scopes = 0;
+            if queue.is_empty() {
                 self.queues.remove(&scope);
             } else {
                 self.ready_scopes.push_back(scope);

@@ -801,3 +801,99 @@ fn positive_individual_scores_cannot_hide_negative_correlation_gain() {
         .any(|item| item.candidate_id == id("baseline")));
     assert!(receipt.total_utility > receipt.total_risk);
 }
+
+#[test]
+fn fixed_switch_cost_cannot_be_amortized_by_fractional_weight() {
+    let mut limits = budget(2);
+    limits.switch_penalty = q(30);
+    let mut partial = candidate("partial-switch", 80, 0, false);
+    partial.weight_cap = q(10);
+    let denied = select_output_portfolio_v1(
+        &context(2),
+        &limits,
+        &[candidate("baseline", 0, 0, true), partial],
+    )
+    .expect("risk-free baseline remains feasible");
+    assert_eq!(denied.disposition, OutputPortfolioDispositionV1::NoChange);
+    assert_eq!(denied.allocations.len(), 1);
+
+    // The same fixed charge is affordable when the full positive gain
+    // is realized by a whole candidate, not diluted across a small share.
+    let admitted = select_output_portfolio_v1(
+        &context(2),
+        &limits,
+        &[
+            candidate("baseline", 0, 0, true),
+            candidate("whole-switch", 80, 0, false),
+        ],
+    )
+    .expect("full-weight admission");
+    assert_eq!(
+        admitted.disposition,
+        OutputPortfolioDispositionV1::AdvisorySelection
+    );
+    assert_eq!(admitted.allocations.len(), 1);
+    assert_eq!(admitted.allocations[0].weight, FixedQ32::ONE);
+}
+
+#[test]
+fn covariance_pricing_does_not_hide_fixed_switch_cost() {
+    let mut limits = budget(2);
+    limits.switch_penalty = q(45);
+    let mut measured = context(2);
+    measured.semantic_covariance[3] = q(50);
+    // Gross utility 0.8*w minus 0.5*w^2 peaks at w=0.8:
+    // the maximum gross gain is 0.32, below the fixed 0.45 cost.
+    let receipt = select_output_portfolio_v1(
+        &measured,
+        &limits,
+        &[
+            candidate("baseline", 0, 0, true),
+            candidate("covariant-switch", 80, 0, false),
+        ],
+    )
+    .expect("negative net gain selects no change");
+    assert_eq!(receipt.disposition, OutputPortfolioDispositionV1::NoChange);
+    assert_eq!(receipt.total_risk, FixedQ32::ZERO);
+}
+
+#[test]
+fn portfolio_receipt_replay_rejects_mutated_allocation_and_digest() {
+    let original = [
+        candidate("baseline", 0, 0, true),
+        candidate("direction", 80, 0, false),
+    ];
+    let ctx = context(2);
+    let limits = budget(2);
+    let receipt = select_output_portfolio_v1(&ctx, &limits, &original)
+        .expect("canonical portfolio selection");
+
+    verify_output_portfolio_receipt_v1(&ctx, &limits, &original, &receipt)
+        .expect("exact receipt is replayable");
+    // Input ordering is not authority: the binding must survive the same
+    // canonical permutation used by the selection digest.
+    let reordered = [original[1].clone(), original[0].clone()];
+    verify_output_portfolio_receipt_v1(&ctx, &limits, &reordered, &receipt)
+        .expect("canonical inputs replay identically");
+
+    let mut altered_weight = receipt.clone();
+    altered_weight.allocations[0].weight = FixedQ32::ZERO;
+    assert_eq!(
+        verify_output_portfolio_receipt_v1(&ctx, &limits, &original, &altered_weight),
+        Err(NduError::InvalidSolverReceipt("portfolio receipt replay"))
+    );
+
+    let mut altered_digest = receipt.clone();
+    altered_digest.selection_digest = Digest32::of_bytes(b"forged-digest");
+    assert_eq!(
+        verify_output_portfolio_receipt_v1(&ctx, &limits, &original, &altered_digest),
+        Err(NduError::InvalidSolverReceipt("portfolio receipt replay"))
+    );
+
+    let mut altered_generation = receipt.clone();
+    altered_generation.generation = Generation::new(2).expect("nonzero generation");
+    assert_eq!(
+        verify_output_portfolio_receipt_v1(&ctx, &limits, &original, &altered_generation),
+        Err(NduError::InvalidSolverReceipt("portfolio receipt replay"))
+    );
+}
