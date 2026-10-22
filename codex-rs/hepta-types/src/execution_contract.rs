@@ -11,7 +11,10 @@
 use std::fmt;
 use std::future::Future;
 
-use crate::{AuthorityPosture, Digest32, Generation, StableId};
+use crate::AuthorityPosture;
+use crate::Digest32;
+use crate::Generation;
+use crate::StableId;
 
 
 pub const EXECUTION_CONTRACT_VERSION_V1: &str = "hepta.execution.contract.v1";
