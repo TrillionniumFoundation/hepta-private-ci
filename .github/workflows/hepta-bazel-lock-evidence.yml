@@ -1,0 +1,64 @@
+name: Hepta exact-source Bazel lock evidence
+
+on:
+  pull_request:
+    branches:
+      - dot/3089-windows-retained-registry-20261022
+    paths:
+      - .github/workflows/hepta-bazel-lock-evidence.yml
+
+permissions:
+  contents: read
+
+jobs:
+  produce-bazel-lock:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 40
+    steps:
+      - name: Checkout exact PR candidate
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          persist-credentials: false
+      - name: Prepare same Bazel environment as required CI
+        uses: ./.github/actions/prepare-bazel-ci
+        with:
+          target: x86_64-unknown-linux-gnu
+          cache-scope: bazel-lock-source-evidence
+      - name: Resolve Bazel dependency lock without mutating branches
+        shell: bash
+        run: |
+          set -euo pipefail
+          evidence="${RUNNER_TEMP}/hepta-bazel-lock-evidence"
+          mkdir -p "$evidence"
+          git rev-parse HEAD | tee "$evidence/source-head.txt"
+          git rev-parse 'HEAD^{tree}' | tee "$evidence/source-tree.txt"
+          cp MODULE.bazel.lock "$evidence/MODULE.bazel.lock.before"
+          python3 .github/scripts/run_bazel_with_buildbuddy.py mod deps --lockfile_mode=update
+          python3 .github/scripts/run_bazel_with_buildbuddy.py mod deps --lockfile_mode=error
+          git diff --binary -- MODULE.bazel.lock > "$evidence/MODULE.bazel.lock.patch"
+          cp MODULE.bazel.lock "$evidence/MODULE.bazel.lock"
+          git diff --exit-code -- codex-rs/Cargo.lock
+          python3 - <<'PY'
+          import base64
+          import hashlib
+          import pathlib
+          import subprocess
+          payload = pathlib.Path('MODULE.bazel.lock').read_bytes()
+          print('HEPTA_BAZEL_LOCK_BYTES=' + str(len(payload)), flush=True)
+          print('HEPTA_BAZEL_LOCK_SHA256=' + hashlib.sha256(payload).hexdigest(), flush=True)
+          blob_sha = subprocess.check_output(['git', 'hash-object', '--stdin'], input=payload).decode().strip()
+          print('HEPTA_BAZEL_LOCK_GIT_SHA=' + blob_sha, flush=True)
+          print('HEPTA_BAZEL_LOCK_BASE64_BEGIN', flush=True)
+          encoded = base64.b64encode(payload).decode('ascii')
+          for offset in range(0, len(encoded), 4000):
+              print('HEPTA_BAZEL_LOCK_CHUNK=' + encoded[offset:offset + 4000], flush=True)
+          print('HEPTA_BAZEL_LOCK_BASE64_END', flush=True)
+          PY
+      - name: Save independent generated lock and exact-source patch
+        if: always()
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f # v7.0.0
+        with:
+          name: hepta-bazel-lock-${{ github.sha }}-${{ github.run_id }}
+          path: ${{ runner.temp }}/hepta-bazel-lock-evidence/
+          if-no-files-found: warn
+          retention-days: 7
