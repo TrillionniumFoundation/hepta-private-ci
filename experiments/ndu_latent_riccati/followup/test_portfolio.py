@@ -6,6 +6,7 @@ import torch
 
 from portfolio import (Budget, CellAsset, PortfolioRejected, cvar90, empirical_grid_frontier,
                        continuous_direction_step, masked_logit_step,
+                       generate_with_cells, new_low_rank_cell_head,
                        select_shadow_portfolio, verify_shadow_receipt)
 
 
@@ -179,6 +180,27 @@ class GenerativeMechanismTests(unittest.TestCase):
         changed.square().mean().backward()
         self.assertIsNotNone(cell.p.grad)
         self.assertGreater(abs(float(cell.p.grad)), 0)
+
+    def test_cell_head_zero_initialization_and_real_decoded_flow(self):
+        class Base(torch.nn.Module):
+            def forward(self, z, t, context):
+                return z * 0 + 1
+        class Decoder(torch.nn.Module):
+            def forward(self, z):
+                return {'text': z[:, :2], 'audio': z[:, 2:4],
+                        'image': z[:, 4:5], 'video': z[:, 5:]}
+        context, estimate, noise = torch.zeros(2, 32), torch.zeros(2, 6), torch.zeros(2, 7)
+        cell = new_low_rank_cell_head()
+        self.assertTrue(torch.equal(cell(torch.zeros(2, 7), context), torch.zeros(2, 7)))
+        res = generate_with_cells(Base(), Decoder(), context, estimate, noise,
+                                  [cell], [[.5], [.2], [.1], [.9]])
+        baseline = generate_with_cells(Base(), Decoder(), context, estimate, noise,
+                                       [], [[], [], [], []])
+        self.assertTrue(torch.equal(res['latent'], baseline['latent']))
+        self.assertEqual(set(res['decoded']), {'text', 'audio', 'image', 'video'})
+        loss = res['decoded']['text'].square().mean()
+        loss.backward()
+        self.assertGreater(float(cell.up.weight.grad.abs().sum()), 0)
 
     def test_masked_logits_only_choose_masked_positions(self):
         logits = torch.tensor([[[0., 4.], [3., 0.], [0., 0.]]])
