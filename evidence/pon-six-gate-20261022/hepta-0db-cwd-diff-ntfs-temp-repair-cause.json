@@ -1,0 +1,133 @@
+{
+  "schema": "hepta.cwd-diff-and-ntfs-temp-minimal-repair-cause.v1",
+  "review_base": "0db8508dbc8133a322ac510e21546548e2b69ea8",
+  "predecessor_native_source": "83b20a0f43d265a15216904c01194e8939647c65",
+  "predecessor_run": 39755399167,
+  "feature_cause": {
+    "schema": "hepta.exact0db.apply-patch-cwd-diff-causal-review.v1",
+    "source": "0db8508dbc8133a322ac510e21546548e2b69ea8",
+    "source_tree": "fb8e74abb35d9ae07160ebd65fd078050a20e233",
+    "raw_failure": {
+      "run": 39755399167,
+      "job": 119770366835,
+      "source": "83b20a0f43d265a15216904c01194e8939647c65",
+      "path": "/workspace/scratch/ff4dad3c0eb8/tmp/current-ci-20261022/current0db-native-readback/predecessor83-job-119770366835.log",
+      "bytes": 499096,
+      "sha256": "6ed8730069570e813ff41829e2e240add089390ae2b166d9dbc08016a4e67c19",
+      "TRY1_panic_line": 1470,
+      "TRY1_value_line": 1471,
+      "TRY2_panic_line": 1491,
+      "TRY2_value_line": 1492
+    },
+    "source_byte_proof": [
+      {
+        "path": "codex-rs/core/tests/suite/apply_patch_cli.rs",
+        "source_blob": "b5dda68de7bb261622073cb2fdd21bf58810a049",
+        "predecessor83_identical": true,
+        "baseline755_relevant_bytes_identical": true
+      },
+      {
+        "path": "codex-rs/features/src/lib.rs",
+        "source_blob": "9a2a845642c6a8b7311f2aa23b573b66dfc8cb2d",
+        "predecessor83_identical": true,
+        "baseline755_relevant_bytes_identical": true
+      },
+      {
+        "path": "codex-rs/core/src/turn_diff_tracker.rs",
+        "source_blob": "06a2cd022e9c71daad1e3d3973ac2fb538255a0f",
+        "predecessor83_identical": true,
+        "baseline755_relevant_bytes_identical": true
+      },
+      {
+        "path": "codex-rs/core/src/session/turn.rs",
+        "source_blob": "1e2d42fc70a1ba1981e1bd53c8ed4cbd46fdd9fc",
+        "predecessor83_identical": true,
+        "baseline755_relevant_bytes_identical": true
+      }
+    ],
+    "cause": [
+      {
+        "source": "codex-rs/core/tests/suite/apply_patch_cli.rs:1762-1787",
+        "fact": "The retained originator matrix expects cwd/work.txt when CwdRelativeTurnDiffs is enabled, while config.cwd is parent/subdir."
+      },
+      {
+        "source": "codex-rs/core/tests/suite/apply_patch_cli.rs:1801-1815",
+        "fact": "The fixture writes a .git marker in parent and work.txt in cwd."
+      },
+      {
+        "source": "codex-rs/core/src/session/turn.rs:858-877",
+        "fact": "turn_diff_display_roots always searches .git and picks its parent root. The helper never reads the enabled feature."
+      },
+      {
+        "source": "codex-rs/core/src/turn_diff_tracker.rs:373-382",
+        "fact": "display_path strips the selected parent root, yielding subdir/work.txt as observed."
+      }
+    ],
+    "classification": "Pre-existing production presentation-feature wiring defect, not a Windows path-separator or current workflow-only source change.",
+    "history_limit": "The local repository is shallow; f8c blame boundary is not evidence of the actual introducing commit. Baseline755 contains the identical relevant source/test behavior.",
+    "minimal_reviewable_repair": "In turn_diff_display_roots, choose cwd.clone() when step_context.turn.config.features.enabled(Feature::CwdRelativeTurnDiffs), and retain the complete existing nearest-.git/fallback branch otherwise. Preserve all seven original enabled/disabled originator cases and path assertions.",
+    "safety_scope": "Only diff presentation-root selection changes; applied patch PathUri, actual mutation target, sandbox/approval policy, selectors and timeouts stay unchanged. Native execution is required to accept any implementation.",
+    "source_edited": false,
+    "native_execution_performed": false,
+    "worktree_or_HEAD_changed": false
+  },
+  "feature_repair": "turn_diff_display_roots uses cwd.clone when the existing CwdRelativeTurnDiffs flag is enabled; disabled nearest-.git/fallback expression is preserved exactly. The original seven originator/flag/path matrix cases and actual apply-patch PathUri/security policy are unchanged.",
+  "unix_socket_cause": {
+    "source": "codex-rs/app-server-transport/src/transport/unix_socket_tests.rs:58,69,202-206",
+    "source_blob": "ac0b2b00c44917e31a2e8da94fddf0e0b689e5cf",
+    "transport_and_test_unchanged_across_predecessor_and_review_base": true,
+    "workflow_prefix_introducing_commit": "85d0cce30b2583bba6997754a7fd8c2d4a19af2f",
+    "observed_TEMP_raw_line": 676,
+    "observed_TEMP": "C:\\a\\_temp\\nextest-ntfs-f767e431886943ea87266a920cba4546",
+    "observed_TEMP_utf8_bytes": 56,
+    "tempfile_default_child_shape": "\\.tmp followed by six ASCII random characters",
+    "actual_random_basename_not_logged": true,
+    "path_length_scope": "The exact TEMP root is observed; full socket-path length is deduced from the locked tempfile builder and unchanged test helper. The actual random basename/full socket string is not printed by the original panic.",
+    "tempfile_child_and_separator_bytes": 11,
+    "socket_suffix": "\\app-server-control\\app-server-control.sock",
+    "socket_suffix_utf8_bytes": 43,
+    "deduced_original_socket_bytes": 110,
+    "uds_windows_sun_path_capacity": 108,
+    "rejection_rule": "UTF-8 path byte length>=108 returns InvalidInput before bind.",
+    "repair_TEMP": "C:\\a\\_temp\\ntfs-f767e431886943ea87266a920cba4546",
+    "repair_TEMP_utf8_bytes": 48,
+    "deduced_repair_socket_bytes": 102,
+    "repair": "Remove only the cosmetic nextest- prefix; preserve full32hex GUID, producer-workspace binding, actual Get-Volume NTFS guard, preflight failures and original socket tests/timeouts.",
+    "scope_limit": "The measured fixture geometry fits this observed runner after shortening. It does not prove every future runner TEMP root is sufficiently short.",
+    "locked_dependencies": [
+      {
+        "path": "/root/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/uds_windows-1.1.0/src/stdnet/mod.rs",
+        "lines": "30,55-59,68-72",
+        "sha256": "199be6a31b1daeda88b4f2dae156ffadc8b591e4ef3a2609da2ede8ee11c9f67"
+      },
+      {
+        "path": "/root/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/tempfile-3.27.0/src/lib.rs",
+        "lines": "195,227-235",
+        "sha256": "d182721b62c126916b73bb4865ced5d3637bd1a4a77d27ea9e9708973e5f9493"
+      },
+      {
+        "path": "/root/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/tempfile-3.27.0/src/dir/mod.rs",
+        "lines": "218-219",
+        "sha256": "d144325a6528a9a6e7c78a42e0eec42ee401c3b834ef5851376323725756f219"
+      }
+    ],
+    "Cargo_lock_versions": "tempfile3.27.0 and uds_windows1.1.0 unchanged.",
+    "observed_TEMP_job": 119770366743,
+    "observed_TEMP_log": "hepta-83-arm-shard4-job-119770366743.decoded.log.gzip.json"
+  },
+  "retained_full_original_failures": {
+    "manifest": "hepta-83-arm-four-shard-evidence-manifest.json",
+    "manifest_sha256": "f843eca60b4e7725d08a0a74b08af62a318c18fb9872fbf072af519e339aea1b",
+    "failures": 355,
+    "timeouts": 31,
+    "full_nine_failed_jobs_manifest": {
+      "file": "hepta-83-full-rust-nine-failure-source-manifest.json",
+      "bytes": 14195,
+      "sha256": "3d4c3842203106c771deada629e329e431105b7d4b0edf19cf3d3c0d5bd42a4c"
+    }
+  },
+  "local_native_execution": "NOT_RUN: no existing local root/codex-rs target output and onlyabout1.1GB filesystem free; no Windows execution. Original native CI and exact-source future validation remain required.",
+  "source_control_validation": "Recorded separately on the final committed candidate; this source-cause record does not assert native test success.",
+  "maps_policy": "Any mapped-source drift must be rebound only after root creates an actual GitHub source anchor; no authority/readiness/acceptance upgrade is permitted.",
+  "feature_cause_readback_scope": "Embedded read-only causal review was recorded before this patch; its source_edited/worktree flags describe that earlier review, not this candidate."
+}

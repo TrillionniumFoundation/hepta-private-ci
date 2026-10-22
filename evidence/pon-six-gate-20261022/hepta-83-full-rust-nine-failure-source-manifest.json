@@ -1,0 +1,348 @@
+{
+  "schema": "hepta.predecessor83.full-rust-nine-original-failed-jobs.v1",
+  "source_head": "83b20a0f43d265a15216904c01194e8939647c65",
+  "run": 39755399167,
+  "review_base": "0db8508dbc8133a322ac510e21546548e2b69ea8",
+  "frozen_job_count": 39,
+  "failed_job_count": 9,
+  "cancelled_job_count": 4,
+  "archive_failures": [
+    {
+      "job": 119746003144,
+      "conclusion": "failure",
+      "classification_scope": "Runner shutdown and exit143 observed; initiating shutdown cause remains unknown. No source-failure, pass or certified-transient claim.",
+      "original_bytes": 365176,
+      "original_sha256": "5535d954fba7ab2784746e09bae69432a81cfa2127b2a4d322695d01a0d5b3c0",
+      "log": {
+        "file": "hepta-83-job-119746003144.decoded.log.gzip.json",
+        "bytes": 84917,
+        "sha256": "10d5ef4f94931a6211d29e5e9ac25735738dbe6ff262ff086002500e66f87f9e"
+      }
+    },
+    {
+      "job": 119746003541,
+      "conclusion": "failure",
+      "classification_scope": "lld SIGBUS observed; runner50MB warning precedes first link failure, later cache ENOSPC also observed. Unique cause and sufficiency of resource-pressure candidate are not established.",
+      "original_bytes": 474787,
+      "original_sha256": "f5f457278b31203467a349bad5077e199a37968c2e3cacffc3f60741ced4c0f2",
+      "log": {
+        "file": "hepta-83-job-119746003541.decoded.log.gzip.json",
+        "bytes": 114529,
+        "sha256": "bd3d32f8bdb8fa6892521802803314f7aefd0fb47de44baecf0f853c7cce5e2e"
+      }
+    }
+  ],
+  "windows_arm_failed_shards": [
+    {
+      "job": 119770366806,
+      "shard": 1,
+      "conclusion": "failure",
+      "tests_exit_code": 100,
+      "log": {
+        "schema": "exact-github-job-decoded-log-gzip-base64-v1",
+        "original_bytes": 929564,
+        "original_sha256": "7f397e547810f69cc445a1025f506f72d0c215580006358c0e52a7198e2d0600",
+        "gzip_bytes": 180636,
+        "gzip_sha256": "e92e7b2c59c9a3cc2e4559dd06c8e8495a97defbce352265cc7e01ea4aaaadac",
+        "file": "hepta-83-arm-shard1-job-119770366806.decoded.log.gzip.json",
+        "file_bytes": 241595,
+        "file_sha256": "5f1de13c9381d1065036e8cb5fcae1605f3d483e85278902da61df87743b8490"
+      }
+    },
+    {
+      "job": 119770366835,
+      "shard": 2,
+      "conclusion": "failure",
+      "tests_exit_code": 100,
+      "log": {
+        "schema": "exact-github-job-decoded-log-gzip-base64-v1",
+        "original_bytes": 499096,
+        "original_sha256": "6ed8730069570e813ff41829e2e240add089390ae2b166d9dbc08016a4e67c19",
+        "gzip_bytes": 67956,
+        "gzip_sha256": "d8ec67385677468e3ce801af4372f6951b4522874abbdfc4669a47a36aadb812",
+        "file": "hepta-83-arm-shard2-job-119770366835.decoded.log.gzip.json",
+        "file_bytes": 91354,
+        "file_sha256": "9cae458fb67451f11b535000eb5a25f51de45ed93a1234bf9a40cd8e50293d55"
+      }
+    },
+    {
+      "job": 119770367012,
+      "shard": 3,
+      "conclusion": "failure",
+      "tests_exit_code": 100,
+      "log": {
+        "schema": "exact-github-job-decoded-log-gzip-base64-v1",
+        "original_bytes": 604453,
+        "original_sha256": "b965484d3121aa29d81f9289e842bfdc517637fcde9874250a1156e466527253",
+        "gzip_bytes": 83237,
+        "gzip_sha256": "17379b0df3ec29d1aa85a98a4f86fc8ea188b5dbe895523ef7e826e3f8a4c4d4",
+        "file": "hepta-83-arm-shard3-job-119770367012.decoded.log.gzip.json",
+        "file_bytes": 111730,
+        "file_sha256": "d2277d886f0702b9c7933453319561fe89627666a6d3d98b20604819c5377864"
+      }
+    },
+    {
+      "job": 119770366743,
+      "shard": 4,
+      "conclusion": "failure",
+      "tests_exit_code": 100,
+      "log": {
+        "schema": "exact-github-job-decoded-log-gzip-base64-v1",
+        "original_bytes": 699011,
+        "original_sha256": "71f4e3257f5dbc774522788596b5a920064f2e024c18f54725bc153916050fd7",
+        "gzip_bytes": 91673,
+        "gzip_sha256": "1753e21e75687bb59ab851b7b71434afb4ae4e3d92ffb84c97f086ae1e526707",
+        "file": "hepta-83-arm-shard4-job-119770366743.decoded.log.gzip.json",
+        "file_bytes": 122978,
+        "file_sha256": "9a6cf199495bb39de0a092996494b6de39fe53569454db88e5ff069c22919523"
+      }
+    }
+  ],
+  "windows_arm_terminal_records": {
+    "failures": 355,
+    "timeouts": 31,
+    "records": 386,
+    "manifest": {
+      "file": "hepta-83-arm-four-shard-evidence-manifest.json",
+      "bytes": 5844,
+      "sha256": "f843eca60b4e7725d08a0a74b08af62a318c18fb9872fbf072af519e339aea1b"
+    }
+  },
+  "platform_aggregator_failures": [
+    {
+      "actual_shell_exit_code": 1,
+      "actual_shell_input": "needs shard result = skipped",
+      "causality_scope": "Observed aggregator shell explicitly rejects skipped; source-scoped platform archive/shard association is recorded. This readback does not infer the cause of archive cancellation or reclassify cancelled/skipped work as executed/passed.",
+      "classification": "upstream_non_success_propagation_no_new_test_body_failure",
+      "conclusion": "failure",
+      "job_id": 119764495026,
+      "name": "Tests — ubuntu-24.04-arm - aarch64-unknown-linux-gnu / Platform result",
+      "raw_decoded_bytes": 3451,
+      "raw_decoded_sha256": "9ad76df08344466e73589d66ffd8d827d0bd33c18de8b9acc464b0110a81d8b5",
+      "raw_log": "job-119764495026.log",
+      "skipped_shard_placeholder": {
+        "conclusion": "skipped",
+        "job_id": 119764496676,
+        "name": "Tests — ubuntu-24.04-arm - aarch64-unknown-linux-gnu / Tests shard ${{ matrix.shard }}/4"
+      },
+      "source_head": "83b20a0f43d265a15216904c01194e8939647c65",
+      "steps_file": "job-119764495026.steps.json",
+      "upstream_archive": {
+        "cancellation_cause": "not investigated by this readback",
+        "conclusion": "failure",
+        "job_id": 119746003144,
+        "name": "Tests — ubuntu-24.04-arm - aarch64-unknown-linux-gnu / Build nextest archive"
+      },
+      "steps": [
+        {
+          "name": "Set up job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 1
+        },
+        {
+          "name": "Confirm test shards passed",
+          "status": "completed",
+          "conclusion": "failure",
+          "number": 2
+        },
+        {
+          "name": "Complete job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 3
+        }
+      ],
+      "log": {
+        "file": "hepta-83-job-119764495026.decoded.log.gzip.json",
+        "bytes": 2441,
+        "sha256": "8b9d111720d78fe842635b357c5587d3f18207556c2590f7c51a2c706f7cc4d1"
+      },
+      "decoded_response": {
+        "file": "job-119764495026.decoded.json",
+        "bytes": 3923,
+        "sha256": "0579c56ad95341ac378e23a832b718136bf297d1b6a621e51d7edc10efdd38e5"
+      }
+    },
+    {
+      "actual_shell_exit_code": 1,
+      "actual_shell_input": "needs shard result = skipped",
+      "causality_scope": "Observed aggregator shell explicitly rejects skipped; source-scoped platform archive/shard association is recorded. This readback does not infer the cause of archive cancellation or reclassify cancelled/skipped work as executed/passed.",
+      "classification": "upstream_non_success_propagation_no_new_test_body_failure",
+      "conclusion": "failure",
+      "job_id": 119769317811,
+      "name": "Tests — ubuntu-24.04 - x86_64-unknown-linux-gnu (remote) / Platform result",
+      "raw_decoded_bytes": 3454,
+      "raw_decoded_sha256": "cbeac4b464499ff1d129a2eeb4b34b51d5e13b803e50b05a22a3fe4c2108ff19",
+      "raw_log": "job-119769317811.log",
+      "skipped_shard_placeholder": {
+        "conclusion": "skipped",
+        "job_id": 119769319953,
+        "name": "Tests — ubuntu-24.04 - x86_64-unknown-linux-gnu (remote) / Tests shard ${{ matrix.shard }}/4"
+      },
+      "source_head": "83b20a0f43d265a15216904c01194e8939647c65",
+      "steps_file": "job-119769317811.steps.json",
+      "upstream_archive": {
+        "cancellation_cause": "not investigated by this readback",
+        "conclusion": "failure",
+        "job_id": 119746003541,
+        "name": "Tests — ubuntu-24.04 - x86_64-unknown-linux-gnu (remote) / Build nextest archive"
+      },
+      "steps": [
+        {
+          "name": "Set up job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 1
+        },
+        {
+          "name": "Confirm test shards passed",
+          "status": "completed",
+          "conclusion": "failure",
+          "number": 2
+        },
+        {
+          "name": "Complete job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 3
+        }
+      ],
+      "log": {
+        "file": "hepta-83-job-119769317811.decoded.log.gzip.json",
+        "bytes": 2461,
+        "sha256": "63e4d67ae9204620aaa7532811e64ab0b09efdb440634585eda675a3e5dc4d25"
+      },
+      "decoded_response": {
+        "file": "job-119769317811.decoded.json",
+        "bytes": 3926,
+        "sha256": "a8bee9474345daf70a09960b2d338da60fad59234cf42b16bdb9cecebbeb0af5"
+      }
+    },
+    {
+      "actual_shell_exit_code": 1,
+      "actual_shell_input": "needs shard result = skipped",
+      "causality_scope": "Observed aggregator shell explicitly rejects skipped; source-scoped platform archive/shard association is recorded. This readback does not infer the cause of archive cancellation or reclassify cancelled/skipped work as executed/passed.",
+      "classification": "upstream_non_success_propagation_no_new_test_body_failure",
+      "conclusion": "failure",
+      "job_id": 119776864692,
+      "name": "Tests — windows-latest - x86_64-pc-windows-msvc / Platform result",
+      "raw_decoded_bytes": 3441,
+      "raw_decoded_sha256": "3c20a0c7134affe5875be961eed2314ec0fea261be4389445aafcb9b96749665",
+      "raw_log": "job-119776864692.log",
+      "skipped_shard_placeholder": {
+        "conclusion": "skipped",
+        "job_id": 119776867017,
+        "name": "Tests — windows-latest - x86_64-pc-windows-msvc / Tests shard ${{ matrix.shard }}/4"
+      },
+      "source_head": "83b20a0f43d265a15216904c01194e8939647c65",
+      "steps_file": "job-119776864692.steps.json",
+      "upstream_archive": {
+        "cancellation_cause": null,
+        "conclusion": "cancelled",
+        "job_id": 119746003391,
+        "name": "Tests — windows-latest - x86_64-pc-windows-msvc / Build nextest archive"
+      },
+      "steps": [
+        {
+          "name": "Set up job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 1
+        },
+        {
+          "name": "Confirm test shards passed",
+          "status": "completed",
+          "conclusion": "failure",
+          "number": 2
+        },
+        {
+          "name": "Complete job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 3
+        }
+      ],
+      "log": {
+        "file": "hepta-83-job-119776864692.decoded.log.gzip.json",
+        "bytes": 2441,
+        "sha256": "fcb617f01200bfb720189815126689af1bc9f201f583fff7d12ab8e5634c5621"
+      },
+      "decoded_response": {
+        "file": "job-119776864692.decoded.json",
+        "bytes": 3913,
+        "sha256": "eb723131fa7b89ce9509d68a4d1136d950a890a9163d9364416233a4681a497f"
+      }
+    }
+  ],
+  "source_readback_provenance": {
+    "manifest": {
+      "excludes": [
+        "manifest.json itself",
+        "summary.json written last"
+      ],
+      "files": [
+        {
+          "bytes": 161288,
+          "path": "frozen39-source-jobs.json",
+          "sha256": "0d3f1e61eb43c7d30b92add9756e22681a51eba5abcd63a7bcc7207dbf6b6c9e"
+        },
+        {
+          "bytes": 3923,
+          "path": "job-119764495026.decoded.json",
+          "sha256": "0579c56ad95341ac378e23a832b718136bf297d1b6a621e51d7edc10efdd38e5"
+        },
+        {
+          "bytes": 3451,
+          "path": "job-119764495026.log",
+          "sha256": "9ad76df08344466e73589d66ffd8d827d0bd33c18de8b9acc464b0110a81d8b5"
+        },
+        {
+          "bytes": 261,
+          "path": "job-119764495026.steps.json",
+          "sha256": "9d325f76d0b4fda672e41543dab62bf284b8bcacfb87ed64202f631f960e703a"
+        },
+        {
+          "bytes": 3926,
+          "path": "job-119769317811.decoded.json",
+          "sha256": "a8bee9474345daf70a09960b2d338da60fad59234cf42b16bdb9cecebbeb0af5"
+        },
+        {
+          "bytes": 3454,
+          "path": "job-119769317811.log",
+          "sha256": "cbeac4b464499ff1d129a2eeb4b34b51d5e13b803e50b05a22a3fe4c2108ff19"
+        },
+        {
+          "bytes": 261,
+          "path": "job-119769317811.steps.json",
+          "sha256": "9d325f76d0b4fda672e41543dab62bf284b8bcacfb87ed64202f631f960e703a"
+        },
+        {
+          "bytes": 3913,
+          "path": "job-119776864692.decoded.json",
+          "sha256": "eb723131fa7b89ce9509d68a4d1136d950a890a9163d9364416233a4681a497f"
+        },
+        {
+          "bytes": 3441,
+          "path": "job-119776864692.log",
+          "sha256": "3c20a0c7134affe5875be961eed2314ec0fea261be4389445aafcb9b96749665"
+        },
+        {
+          "bytes": 261,
+          "path": "job-119776864692.steps.json",
+          "sha256": "9d325f76d0b4fda672e41543dab62bf284b8bcacfb87ed64202f631f960e703a"
+        }
+      ],
+      "schema": "predecessor83-aggregator-readback-manifest-v1"
+    },
+    "manifest_sha256": "ae9fa6e29a29fc8ab8e5dddb2006d210e01587bf1196b54ab4dfb3072a1626a1",
+    "summary_sha256": "49bf83cd36a2ea7833e1dd9b1307332e20fe08e7a83c9b44cedc2964b2b48ac5",
+    "frozen39_source_snapshot_sha256": "0d3f1e61eb43c7d30b92add9756e22681a51eba5abcd63a7bcc7207dbf6b6c9e"
+  },
+  "claim_limits": [
+    "All nine original failed jobs have complete decoded raw log envelopes retained. The four ARM logs include all355 failed cases and31 timeouts; no subset is represented as the whole.",
+    "Three platform aggregators fail while rejecting skipped shard dependencies; they do not demonstrate new test-body failures. Windowsx64 archive cancellation cause is unknown.",
+    "The four cancelled jobs are not reclassified as passed, rerun or cancelled by this change.",
+    "These are predecessor83 execution results, not current0db execution results. No native acceptance, isolation qualification, timeout or authority promotion is granted."
+  ]
+}
