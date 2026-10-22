@@ -243,9 +243,11 @@ async fn expired_registry_fixture_matches_real_writers() {
                 .map(|name| format!("quote({name})"))
                 .collect::<Vec<_>>()
                 .join(" || ',' || ");
-            let rows = sqlx::query_scalar::<_, String>(&format!(
+            // Table/order fragments are fixed above; schema column identifiers
+            // are double-quoted with embedded quotes escaped before use.
+            let rows = sqlx::query_scalar::<_, String>(sqlx::AssertSqlSafe(format!(
                 "SELECT {quoted_values} FROM {table} ORDER BY {order}",
-            ))
+            )))
             .fetch_all(&store.pool)
             .await
             .expect("persisted fixture values");
@@ -270,7 +272,9 @@ async fn expired_registry_fixture_matches_real_writers() {
         .await
         .expect("fresh schema");
     let mut transaction = imported.pool.begin().await.expect("import transaction");
-    sqlx::raw_sql(&fixture)
+    // Replay only the SQL assembled above from fixed table names, escaped
+    // column identifiers and SQLite quote() of the real writers' values.
+    sqlx::raw_sql(sqlx::AssertSqlSafe(fixture.as_str()))
         .execute(&mut *transaction)
         .await
         .expect("import writer rows");
