@@ -334,6 +334,23 @@ impl AgentdConfig {
         self.with_cognitive_ranker(ranker)
     }
 
+    /// Attach the exact neural family through the same canonical product
+    /// qualification and selector owners, then the ordinary cognitive path.
+    /// The host must supply the existing inference/FinalUse port explicitly;
+    /// a descriptor or local qualification fixture cannot grant installation.
+    pub fn with_evaluated_neural_cognitive_bootstrap(
+        self,
+        input: crate::EvaluatedNeuralCognitiveBootstrapV1,
+    ) -> Result<Self, AgentdError> {
+        let ranker = crate::cognitive_bootstrap::load_evaluated_neural_cognitive_bootstrap_v1(
+            self.identity.agent_id.clone(),
+            self.identity.spawn_generation,
+            input,
+        )
+        .map_err(AgentdError::Invalid)?;
+        self.with_cognitive_ranker(ranker)
+    }
+
     /// Attach an externally-authorized long-lived production operation host.
     /// Default process-environment startup never manufactures or loads this
     /// authority; an embedding must provide the complete verified runtime

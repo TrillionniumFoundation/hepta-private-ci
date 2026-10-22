@@ -32,6 +32,18 @@ use codex_hepta_types::StableId;
 
 use crate::CognitiveContextItem;
 
+#[path = "neural_cognitive_ranker.rs"]
+mod neural;
+pub use neural::NeuralCognitiveInferencePortV1;
+pub use neural::NeuralCognitiveObservationV1;
+pub use neural::NeuralCognitivePinV1;
+pub use neural::NeuralCognitiveRequestV1;
+
+enum CognitiveRankModel {
+    Tabular(LoadedTabularOperatorV1),
+    Neural(neural::NeuralCognitiveModelV1),
+}
+
 enum RankerEvaluationAdmission {
     HostPinned,
     Selected(Box<VerifiedSelfEvolutionSelectionV1>),
@@ -176,7 +188,7 @@ pub struct PinnedCognitiveRanker {
     owner: AgentId,
     body_generation: u64,
     policy_digest: Digest32,
-    model: LoadedTabularOperatorV1,
+    model: CognitiveRankModel,
     current: Arc<dyn CurrentCognitiveRegistry>,
     current_owner_trust_digest: Digest32,
     admission: RankerEvaluationAdmission,
@@ -298,7 +310,7 @@ impl PinnedCognitiveRanker {
             owner,
             body_generation,
             policy_digest: model_pin.payload_digest,
-            model,
+            model: CognitiveRankModel::Tabular(model),
             current,
             current_owner_trust_digest,
             admission: RankerEvaluationAdmission::HostPinned,
@@ -548,9 +560,32 @@ impl PinnedCognitiveRanker {
         }
         let sensor = cognitive_sensor_id(query)?;
         let (observation, ranked) = self.with_current(|| {
+            if let CognitiveRankModel::Neural(model) = &self.model {
+                let scores = model.score(owner, generation, query, items)?;
+                let applied = scores.is_some();
+                let ranked = scores.map(|scores| {
+                    let mut order = scores.into_iter().enumerate().collect::<Vec<_>>();
+                    order.sort_by(|left, right| right.1.cmp(&left.1).then(left.0.cmp(&right.0)));
+                    order
+                        .into_iter()
+                        .map(|(index, _)| items[index].clone())
+                        .collect::<Vec<_>>()
+                });
+                return Ok((
+                    CognitiveRankObservation {
+                        policy_digest: self.policy_digest,
+                        propensity: ProbabilityQ32::ONE,
+                        applied,
+                    },
+                    ranked,
+                ));
+            }
+            let CognitiveRankModel::Tabular(model) = &self.model else {
+                return Err("unsupported cognitive model profile".to_owned());
+            };
             let mut scored = Vec::with_capacity(items.len());
             for (index, item) in items.iter().enumerate() {
-                match self.model.predict(&sensor, &cognitive_action_id(item)?) {
+                match model.predict(&sensor, &cognitive_action_id(item)?) {
                     Ok(prediction) => scored.push((index, prediction.value.raw())),
                     // Partial support abstains from this downstream policy
                     // decision rather than silently assigning a fabricated
