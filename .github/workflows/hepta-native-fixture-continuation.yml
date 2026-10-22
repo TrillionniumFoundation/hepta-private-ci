@@ -1,0 +1,28 @@
+name: Hepta native fixture continuation
+
+# Reuse the original Linux ARM archive and four unfiltered nextest shards after
+# the TUI test import repair. Full cross-platform qualification remains required.
+on:
+  push:
+    branches:
+      - "agents/hepta-native-fixtures-*"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: hepta-native-fixtures-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  tests_linux_arm64:
+    name: Tests — ubuntu-24.04-arm - aarch64-unknown-linux-gnu
+    uses: ./.github/workflows/rust-ci-full-nextest-platform.yml
+    with:
+      runner: ubuntu-24.04-arm
+      target: aarch64-unknown-linux-gnu
+      profile: ci-test
+      artifact_id: linux-arm64
+      use_sccache: true
+    secrets: inherit

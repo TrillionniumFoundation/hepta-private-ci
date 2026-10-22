@@ -1,0 +1,233 @@
+name: Hepta Windows ARM sandbox diagnostics
+
+# This independent ARM run retains the complete original sandbox library tests,
+# including the 12-case native deletion matrix. The existing x64 gate remains required.
+on:
+  push:
+    branches:
+      - "agents/hepta-windows-sandbox-arm-*"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: hepta-windows-sandbox-arm-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  windows-sandbox-arm:
+    name: Original Windows sandbox library tests on Windows ARM
+    runs-on: windows-11-arm
+    timeout-minutes: 45
+    defaults:
+      run:
+        shell: pwsh
+    env:
+      CARGO_INCREMENTAL: "0"
+      CARGO_BUILD_JOBS: "2"
+      CARGO_PROFILE_TEST_DEBUG: "0"
+      CARGO_PROFILE_DEV_DEBUG: "0"
+      CARGO_BUILD_TARGET: aarch64-pc-windows-msvc
+      RUSTUP_TOOLCHAIN: 1.95.0-aarch64-pc-windows-msvc
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - name: Configure native Rust host and temporary target
+        run: |
+          "CARGO_TARGET_DIR=$(Join-Path $env:RUNNER_TEMP 'windows-sandbox-arm-target')" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+          if (Get-Command rustup -ErrorAction SilentlyContinue) {
+            rustup set default-host aarch64-pc-windows-msvc
+            if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          }
+      - uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582 # 1.95.0
+      - uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532 # v2.62.49
+        with:
+          tool: just@1.51.0,nextest@0.9.103
+      - name: Verify native compiler and required LLVM tools
+        working-directory: codex-rs
+        run: |
+          $toolLog = Join-Path $env:RUNNER_TEMP 'windows-sandbox-arm-toolchain.txt'
+          $rustcOutput = rustc -vV 2>&1
+          $rustcExit = $LASTEXITCODE
+          $rustcText = $rustcOutput -join "`n"
+          $rustcText | Set-Content -LiteralPath $toolLog -Encoding utf8
+          if ($rustcExit -ne 0) { exit $rustcExit }
+          if ($rustcText -notmatch '(?m)^host: aarch64-pc-windows-msvc\r?$') { throw 'Rust host is not native Windows ARM64' }
+          if ($rustcText -notmatch '(?m)^release: 1\.95\.0\r?$') { throw 'unexpected Rust release' }
+          foreach ($tool in @('clang-cl', 'clang', 'just')) {
+            $resolved = Get-Command $tool -ErrorAction Stop
+            "$tool path: $($resolved.Source)" | Add-Content -LiteralPath $toolLog -Encoding utf8
+            $version = & $tool --version 2>&1
+            $versionExit = $LASTEXITCODE
+            $version | Add-Content -LiteralPath $toolLog -Encoding utf8
+            if ($versionExit -ne 0) { exit $versionExit }
+          }
+          $nextestVersion = cargo nextest --version 2>&1
+          $nextestExit = $LASTEXITCODE
+          $nextestVersion | Add-Content -LiteralPath $toolLog -Encoding utf8
+          Get-Content -LiteralPath $toolLog
+          if ($nextestExit -ne 0) { exit $nextestExit }
+      - name: Verify source and manifest graph
+        run: |
+          if ((git rev-parse HEAD).Trim() -ne "${{ github.sha }}") { throw 'unexpected source' }
+          python scripts/hepta_workspace.py
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+      - name: Build and stage the original runtime helpers
+        id: helpers
+        working-directory: codex-rs
+        run: |
+          $log = Join-Path $env:RUNNER_TEMP 'windows-sandbox-arm-build.log'
+          cmd.exe /d /s /c 'cargo build --locked -p codex-windows-sandbox --bin codex-windows-sandbox-setup --bin codex-command-runner > "%RUNNER_TEMP%\windows-sandbox-arm-build.log" 2>&1'
+          $buildExit = $LASTEXITCODE
+          $copies = @()
+          $stagingError = $null
+          if ($buildExit -eq 0) {
+            try {
+              $debugRoot = Join-Path $env:CARGO_TARGET_DIR "$env:CARGO_BUILD_TARGET/debug"
+              $depsRoot = Join-Path $debugRoot 'deps'
+              New-Item -ItemType Directory -Path $depsRoot -Force | Out-Null
+              foreach ($helper in @('codex-windows-sandbox-setup.exe', 'codex-command-runner.exe')) {
+                $source = Join-Path $debugRoot $helper
+                $destination = Join-Path $depsRoot $helper
+                Copy-Item -LiteralPath $source -Destination $destination
+                $sourceHash = (Get-FileHash -LiteralPath $source -Algorithm SHA256).Hash.ToLowerInvariant()
+                $destinationHash = (Get-FileHash -LiteralPath $destination -Algorithm SHA256).Hash.ToLowerInvariant()
+                $copies += [ordered]@{
+                  helper = $helper
+                  source_sha256 = $sourceHash
+                  staged_sha256 = $destinationHash
+                }
+                if ($sourceHash -ne $destinationHash) { throw 'runtime helper copy changed bytes' }
+              }
+            } catch {
+              $stagingError = $_.Exception.Message
+            }
+          }
+          [ordered]@{
+            source_sha = (git rev-parse HEAD).Trim()
+            source_tree = (git rev-parse 'HEAD^{tree}').Trim()
+            expected_sha = "${{ github.sha }}"
+            run_id = "${{ github.run_id }}"
+            run_attempt = "${{ github.run_attempt }}"
+            rustup_toolchain = $env:RUSTUP_TOOLCHAIN
+            cargo_build_target = $env:CARGO_BUILD_TARGET
+            command = 'cargo build --locked -p codex-windows-sandbox --bin codex-windows-sandbox-setup --bin codex-command-runner'
+            exit_code = $buildExit
+            log_bytes = (Get-Item -LiteralPath $log).Length
+            log_sha256 = (Get-FileHash -LiteralPath $log -Algorithm SHA256).Hash.ToLowerInvariant()
+            helper_copies = $copies
+            staging_error = $stagingError
+          } | ConvertTo-Json -Depth 5 | Set-Content -LiteralPath (Join-Path $env:RUNNER_TEMP 'windows-sandbox-arm-build-receipt.json') -Encoding utf8
+          Get-Content -LiteralPath $log
+          if ($buildExit -ne 0) { exit $buildExit }
+          if ($stagingError) { throw $stagingError }
+      - name: Run every original sandbox library test without retry
+        id: producer
+        working-directory: codex-rs
+        run: |
+          $debugRoot = Join-Path $env:CARGO_TARGET_DIR "$env:CARGO_BUILD_TARGET/debug"
+          $env:CARGO_BIN_EXE_codex_windows_sandbox_setup = Join-Path $debugRoot 'codex-windows-sandbox-setup.exe'
+          $env:CARGO_BIN_EXE_codex_command_runner = Join-Path $debugRoot 'codex-command-runner.exe'
+          $log = Join-Path $env:RUNNER_TEMP 'windows-sandbox-arm-native.log'
+          cmd.exe /d /s /c 'just test --locked -p codex-windows-sandbox --lib --test-threads 1 --no-tests fail --retries 0 > "%RUNNER_TEMP%\windows-sandbox-arm-native.log" 2>&1'
+          $testExit = $LASTEXITCODE
+          [ordered]@{
+            source_sha = (git rev-parse HEAD).Trim()
+            source_tree = (git rev-parse 'HEAD^{tree}').Trim()
+            expected_sha = "${{ github.sha }}"
+            run_id = "${{ github.run_id }}"
+            run_attempt = "${{ github.run_attempt }}"
+            rustup_toolchain = $env:RUSTUP_TOOLCHAIN
+            cargo_build_target = $env:CARGO_BUILD_TARGET
+            command = 'just test --locked -p codex-windows-sandbox --lib --test-threads 1 --no-tests fail --retries 0'
+            exit_code = $testExit
+            log_bytes = (Get-Item -LiteralPath $log).Length
+            log_sha256 = (Get-FileHash -LiteralPath $log -Algorithm SHA256).Hash.ToLowerInvariant()
+          } | ConvertTo-Json | Set-Content -LiteralPath (Join-Path $env:RUNNER_TEMP 'windows-sandbox-arm-native-receipt.json') -Encoding utf8
+          Get-Content -LiteralPath $log
+          exit $testExit
+      - name: Verify actual helper and test ARM64 executables
+        if: ${{ always() && steps.helpers.outcome != 'skipped' }}
+        working-directory: codex-rs
+        run: |
+          $debugRoot = Join-Path $env:CARGO_TARGET_DIR "$env:CARGO_BUILD_TARGET/debug"
+          $depsRoot = Join-Path $debugRoot 'deps'
+          $candidates = @()
+          $nativeExecutables = @()
+          $nativeErrors = @()
+          foreach ($helper in @('codex-windows-sandbox-setup.exe', 'codex-command-runner.exe')) {
+            $candidates += [ordered]@{ kind = 'helper-built'; path = (Join-Path $debugRoot $helper) }
+            $candidates += [ordered]@{ kind = 'helper-staged'; path = (Join-Path $depsRoot $helper) }
+          }
+          $tests = @(Get-ChildItem -LiteralPath $depsRoot -Filter 'codex_windows_sandbox-*.exe' -File -ErrorAction SilentlyContinue)
+          if ($tests.Count -eq 0) { $nativeErrors += 'no sandbox library test executable was produced' }
+          foreach ($test in $tests) {
+            $candidates += [ordered]@{ kind = 'library-test'; path = $test.FullName }
+          }
+          foreach ($candidate in $candidates) {
+            try {
+              $exe = Get-Item -LiteralPath $candidate.path -ErrorAction Stop
+              $reader = [System.IO.BinaryReader]::new([System.IO.File]::OpenRead($exe.FullName))
+              try {
+                if ($reader.ReadUInt16() -ne 0x5a4d) { throw 'executable has no DOS signature' }
+                $reader.BaseStream.Seek(0x3c, [System.IO.SeekOrigin]::Begin) | Out-Null
+                $peOffset = $reader.ReadInt32()
+                if ($peOffset -lt 0x40 -or $peOffset -gt ($reader.BaseStream.Length - 6)) { throw 'invalid PE offset' }
+                $reader.BaseStream.Seek($peOffset, [System.IO.SeekOrigin]::Begin) | Out-Null
+                if ($reader.ReadUInt32() -ne 0x00004550) { throw 'executable has no PE signature' }
+                $machine = $reader.ReadUInt16()
+              } finally {
+                $reader.Dispose()
+              }
+              $nativeExecutables += [ordered]@{
+                kind = $candidate.kind
+                path = [System.IO.Path]::GetRelativePath($env:CARGO_TARGET_DIR, $exe.FullName)
+                bytes = $exe.Length
+                sha256 = (Get-FileHash -LiteralPath $exe.FullName -Algorithm SHA256).Hash.ToLowerInvariant()
+                pe_machine = ('0x{0:X4}' -f $machine)
+              }
+              if ($machine -ne 0xaa64) { throw 'executable is not ARM64' }
+            } catch {
+              $nativeErrors += "$($candidate.path): $($_.Exception.Message)"
+            }
+          }
+          [ordered]@{
+            source_sha = (git rev-parse HEAD).Trim()
+            source_tree = (git rev-parse 'HEAD^{tree}').Trim()
+            expected_sha = "${{ github.sha }}"
+            run_id = "${{ github.run_id }}"
+            run_attempt = "${{ github.run_attempt }}"
+            rustup_toolchain = $env:RUSTUP_TOOLCHAIN
+            cargo_build_target = $env:CARGO_BUILD_TARGET
+            helper_step_outcome = "${{ steps.helpers.outcome }}"
+            test_step_outcome = "${{ steps.producer.outcome }}"
+            expected_pe_machine = '0xAA64'
+            native_executables = $nativeExecutables
+            native_validation_errors = $nativeErrors
+          } | ConvertTo-Json -Depth 5 | Set-Content -LiteralPath (Join-Path $env:RUNNER_TEMP 'windows-sandbox-arm-identity.json') -Encoding utf8
+          if ($nativeErrors.Count -ne 0 -and "${{ steps.producer.outcome }}" -eq 'success') {
+            throw ($nativeErrors -join "`n")
+          }
+      - name: Retain actual Windows output and native identity
+        if: always()
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f # v7.0.0
+        with:
+          name: windows-sandbox-arm-native-${{ github.run_id }}-attempt-${{ github.run_attempt }}
+          path: |
+            ${{ runner.temp }}/windows-sandbox-arm-build.log
+            ${{ runner.temp }}/windows-sandbox-arm-build-receipt.json
+            ${{ runner.temp }}/windows-sandbox-arm-native.log
+            ${{ runner.temp }}/windows-sandbox-arm-native-receipt.json
+            ${{ runner.temp }}/windows-sandbox-arm-toolchain.txt
+            ${{ runner.temp }}/windows-sandbox-arm-identity.json
+            ${{ env.CARGO_TARGET_DIR }}/nextest/local/junit.xml
+          if-no-files-found: warn
+          retention-days: 7
+      - name: Verify unchanged tracked source
+        if: always()
+        run: |
+          git diff --exit-code
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
