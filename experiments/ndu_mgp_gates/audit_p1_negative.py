@@ -63,7 +63,7 @@ def audit(protocol, summary, review):
     return {
         "scope": "frozen_prior_local_evidence_only",
         "qualification": "P1_HOLD_NO_GO",
-        "fresh_holdout_cv ar90_delta".replace(" ", ""): original["estimate"],
+        "fresh_holdout_cvar90_delta": original["estimate"],
         "confidence_interval": [original["ci_low"], original["ci_high"]],
         "required_absolute_reduction": minimum,
         "dedicated_execution_accepted": False,
