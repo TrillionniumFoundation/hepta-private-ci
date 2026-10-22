@@ -1,0 +1,238 @@
+{
+  "schema": "hepta.native-appserver-followup.v1",
+  "status": "SOURCE_READY_WITH_LIMITED_LOCAL_VALIDATION_NATIVE_COMBINATION_PENDING",
+  "recorded_at": "2026-10-22T14:05:15.553908+00:00",
+  "source": {
+    "local_base": "3276ab55007d6d3276106639d36edec67a861ef8",
+    "published_equivalent_base": "3dbaae20d47904bae2987993813b84f1479a7e8b",
+    "base_tree": "83f3723ac963fde571bb461264e319bea9e69e9a",
+    "local_source_head": "55943e6ee307388f4630f57b443bd0a418d7480c",
+    "local_source_tree": "96819a125b1cd2eb4a8f44c9131a4c7f7ff16f0c",
+    "no_remote_write_by_this_worker": true
+  },
+  "stages": [
+    {
+      "commit": "4a727834d66a9bb318786b2b2ac2d2008eadfe21",
+      "tree": "9a81ca720e83bff4ee9afd87d7e71c41661144aa",
+      "parent": "3276ab55007d6d3276106639d36edec67a861ef8",
+      "subject": "fix(core): separate websocket compatibility from recovery identity",
+      "numstat": [
+        "1\t1\tcodex-rs/core/src/client.rs",
+        "137\t0\tcodex-rs/core/src/client_tests.rs",
+        "16\t0\tcodex-rs/core/src/responses_metadata.rs",
+        "3\t5\tcodex-rs/core/src/session/turn.rs"
+      ]
+    },
+    {
+      "commit": "2b093f0ebbaed6ea008065c254ded53e69dde473",
+      "tree": "4c30bbe448edebc8f24eba0e2a865b8e834acdf7",
+      "parent": "4a727834d66a9bb318786b2b2ac2d2008eadfe21",
+      "subject": "fix(core): bind websocket reuse to the captured authentication",
+      "numstat": [
+        "15\t0\tcodex-rs/codex-api/src/auth.rs",
+        "28\t4\tcodex-rs/core/src/client.rs",
+        "72\t13\tcodex-rs/core/src/client_tests.rs",
+        "44\t0\tcodex-rs/core/src/client_websocket_auth.rs",
+        "117\t0\tcodex-rs/core/src/client_websocket_auth_tests.rs",
+        "20\t0\tcodex-rs/model-provider/src/auth.rs",
+        "81\t0\tcodex-rs/model-provider/src/auth_websocket_tests.rs"
+      ]
+    },
+    {
+      "commit": "11055b3e08d5b9ed57f077e50abcebc51647d687",
+      "tree": "aaf1b99151411fa7229793b909484c05585f00d1",
+      "parent": "2b093f0ebbaed6ea008065c254ded53e69dde473",
+      "subject": "test(app-server): answer attestation while awaiting turn startup",
+      "numstat": ["18\t9\tcodex-rs/app-server/tests/suite/v2/attestation.rs"]
+    },
+    {
+      "commit": "08d750db6ac2bd850cb50e375f0bea74495a8201",
+      "tree": "b25b4db17e09ffaf99bcfbe730ad936e22e683d2",
+      "parent": "11055b3e08d5b9ed57f077e50abcebc51647d687",
+      "subject": "fix(app-server): route Bedrock setup through guarded credential validation",
+      "numstat": [
+        "6\t3\tcodex-rs/app-server/src/message_processor.rs",
+        "18\t11\tcodex-rs/app-server/src/request_processors/account_processor/bedrock_setup.rs",
+        "28\t4\tcodex-rs/app-server/src/request_processors/bedrock_auth.rs",
+        "8\t0\tcodex-rs/aws-auth/src/lib.rs"
+      ]
+    },
+    {
+      "commit": "55943e6ee307388f4630f57b443bd0a418d7480c",
+      "tree": "96819a125b1cd2eb4a8f44c9131a4c7f7ff16f0c",
+      "parent": "08d750db6ac2bd850cb50e375f0bea74495a8201",
+      "subject": "test(app-server): preserve Bedrock credentials and configuration boundaries",
+      "numstat": ["452\t5\tcodex-rs/app-server/tests/suite/v2/bedrock_setup.rs"]
+    }
+  ],
+  "original_failure": {
+    "job_id": 119664821565,
+    "reported_pr_head": "db0d860811ffc37f0c462b030d0be3b8043955a8",
+    "actual_execution_merge": "ee31f4ed166cd0f720153ae06348fb8e9644f545",
+    "log_sha256": "aafb8096d29f5971e4af42296b82858480223e01e2593a9c1fb1d925bd135dd1",
+    "observations": [
+      "client_metadata HTTP: Core-owned context_window_id was not a UUID (6164-6166).",
+      "client_metadata WebSocket: prewarm on connection 0, then reconnect timeout (12302-12311).",
+      "residency WebSocket: Failed versus Completed after reconnect timeout; later header assertion did not run (8658-8669).",
+      "attestation retries 1 and 2: fixture buffered server request while awaiting turn response, 100ms timeout, late token then absent callback (11492-11503,11755-11766).",
+      "attestation retry 3: no initial timeout, but later HTTP fallback and 60s deadline still occurred (12092-12110).",
+      "Bedrock: three unique tests failed on unrouted -32601, not credential validation results (9262-9274,12190-12201,13636-13648)."
+    ]
+  },
+  "provenance": {
+    "donor_pr": 2961,
+    "donor_head": "c210d26350ac57e527b4ff59663e5c8d518ff95a",
+    "donor_ci_not_transferred": true,
+    "metadata_auth_exact_candidate_files": 9,
+    "metadata_auth_exact_donor_blobs": 8,
+    "sampling_exception": "Only the Session::responses_metadata sampling hunk is selected; unrelated CwdRelativeTurnDiffs changes are excluded.",
+    "bedrock_exact_donor_blobs": {
+      "codex-rs/app-server/src/message_processor.rs": "955db668d75d9c5d9c7fff196b3332dd8dacbcb4",
+      "codex-rs/app-server/src/request_processors/account_processor/bedrock_setup.rs": "321ce79fe27983157c794fa429371be99ea45bde",
+      "codex-rs/app-server/src/request_processors/bedrock_auth.rs": "1d7a3fda9ab97bad4bd507d8475d5e2eab533f4a",
+      "codex-rs/app-server/tests/suite/v2/bedrock_setup.rs": "6fdd1cc0626279226d0f1c8a863156f4695f246d",
+      "codex-rs/aws-auth/src/lib.rs": "17e205ecd95b38474f0757a9012ee203145fdc9d"
+    },
+    "attestation": "New test-only fixture patch from observed bidirectional RPC ordering; no donor pass claimed."
+  },
+  "resulting_behavior": [
+    "WebSocket connection compatibility omits only prewarm kind and root-turn correlation. Durable recovery identity and request-body metadata remain distinct.",
+    "Captured resolved authentication binds both reuse equality and the actual upgrade. Default providers compare all captured headers; stable AgentAssertion identity replaces only volatile Authorization proof while retaining credential, account, user, runtime, routing and task boundaries.",
+    "Attestation fixture services requests immediately while awaiting both a typed successful turn/start response and turn/completed. Duplicate success or matching RPC error fails; the original successful token envelope and one-handshake assertions remain.",
+    "Bedrock protocol endpoints call existing guarded methods. Failed SDK credential resolution returns before config writes; writable user command authentication is removed in the same validated edit, and another layer supplying command authentication is rejected."
+  ],
+  "local_validation": {
+    "aws_auth_owning_tests": {
+      "command": ["just", "test", "-p", "codex-aws-auth", "--lib", "--locked"],
+      "head": "55943e6ee307388f4630f57b443bd0a418d7480c",
+      "started_at": "2026-10-22T13:56:08.176689+00:00",
+      "completed_at": "2026-10-22T13:56:53.781204+00:00",
+      "exit_code": 0,
+      "source_mutated_during_command": false,
+      "log_sha256": "b8b2983699713fd429f838be50fb4df28efe170838fcef583cfe6fa0817a79ff",
+      "passed": 5,
+      "skipped": 0,
+      "scope": "Actual owning crate compilation and its five existing unit regressions; new AppServer Bedrock RPC tests are not covered by this result."
+    },
+    "aws_auth_owning_clippy_fix": {
+      "command": ["just", "fix", "-p", "codex-aws-auth", "--locked"],
+      "head": "55943e6ee307388f4630f57b443bd0a418d7480c",
+      "started_at": "2026-10-22T13:57:55.619843+00:00",
+      "completed_at": "2026-10-22T13:58:33.753065+00:00",
+      "exit_code": 0,
+      "source_mutated_during_command": false,
+      "log_sha256": "54a73c26a902d1ad13c246e96424b2920e9b4960b7f28bad13b373194be2704b"
+    },
+    "clippy_initial_sandbox_attempt": {
+      "exit_code": 101,
+      "error": "Cargo fix local TCP listener for locking was denied by the sandbox (EPERM).",
+      "resolution": "The same scoped command passed with approved local listener access; no sandbox environment flag changed."
+    },
+    "api_header_precedence_owning_tests": {
+      "command": [
+        "just",
+        "test",
+        "-p",
+        "codex-api",
+        "--lib",
+        "--locked",
+        "-E",
+        "test(merge_request_headers_matches_http_precedence) | test(authenticated_merge_exposes_auth_overridden_routing_hint)"
+      ],
+      "head": "55943e6ee307388f4630f57b443bd0a418d7480c",
+      "started_at": "2026-10-22T14:00:38.856421+00:00",
+      "completed_at": "2026-10-22T14:03:01.836364+00:00",
+      "exit_code": 0,
+      "source_mutated_during_command": false,
+      "log_sha256": "7e0d2922d0bdf7e13bd137db4c2056ca64cbf9202c6cb0b25847016b421ecc12",
+      "passed": 3,
+      "other_tests_filtered_out": 165,
+      "tests": [
+        "endpoint::responses_websocket::tests::merge_request_headers_matches_http_precedence",
+        "endpoint::realtime_websocket::methods::tests::merge_request_headers_matches_http_precedence",
+        "endpoint::responses_websocket::tests::authenticated_merge_exposes_auth_overridden_routing_hint"
+      ]
+    },
+    "auth_snapshot_isolated_module_tests": {
+      "head": "11055b3e08d5b9ed57f077e50abcebc51647d687",
+      "passed": 6,
+      "skipped": 0,
+      "source_files": {
+        "codex-rs/core/src/client_websocket_auth.rs": "a87064ef27ff47ed3dc5673a68de7ede5442a76da2afd2b96d9cba89eb1c3454",
+        "codex-rs/core/src/client_websocket_auth_tests.rs": "8964ba820a4ea870b01197ba3d83070ef5da07c907ef6e8c7813487eb4e0cf81"
+      },
+      "rustc": "rustc 1.95.0 (59807616e 2026-04-14)",
+      "compile_log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "test_log_sha256": "57fb0de16a3a2da5fce2bc092c82de5440c8ec8dc2ff2971b279ca8b89e9a108",
+      "scope": "Exact module and original tests with cached http1.4.0 and pretty_assertions; not the owning Core crate or Windows execution."
+    },
+    "format": {
+      "command": [
+        "just",
+        "fmt",
+        "--base",
+        "3276ab55007d6d3276106639d36edec67a861ef8"
+      ],
+      "head": "55943e6ee307388f4630f57b443bd0a418d7480c",
+      "started_at": "2026-10-22T13:59:02.687421+00:00",
+      "completed_at": "2026-10-22T13:59:03.238499+00:00",
+      "exit_code": 0,
+      "source_mutated_during_command": false,
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "format_check": {
+      "command": [
+        "just",
+        "fmt",
+        "--base",
+        "3276ab55007d6d3276106639d36edec67a861ef8",
+        "--check"
+      ],
+      "head": "55943e6ee307388f4630f57b443bd0a418d7480c",
+      "started_at": "2026-10-22T13:59:03.295570+00:00",
+      "completed_at": "2026-10-22T13:59:03.897688+00:00",
+      "exit_code": 0,
+      "source_mutated_during_command": false,
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "exact_source_guard_check": {
+      "unchanged_files": 15,
+      "bedrock_original_assertions_removed": false,
+      "bedrock_only_removed_original_lines": "Five TempDir constructors replaced with private-permission fixture creation.",
+      "dependencies_build_and_locks_changed": false
+    },
+    "scoped_codespell": {
+      "scope": "all changed source files and new receipt, not omitted sparse-checkout files",
+      "files": 16,
+      "exit_code": 0,
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "version": "2.4.3"
+    }
+  },
+  "unchanged_file_sha256": {
+    "codex-rs/app-server/src/attestation.rs": "28f9776283803b3a691f3f5736df6df060b77f6dfe22002b38c4df2056a229ef",
+    "codex-rs/app-server/src/request_processors/account_processor.rs": "28a1eccde11818dbcc30ce2d4f81cd9bfbe94ca74cfd8189a07726453d26fdaa",
+    "codex-rs/app-server-protocol/src/protocol/common.rs": "a5049882aba094a621df447407f978323debdec04d6289a94cb180c3cb4e6261",
+    "codex-rs/app-server/tests/suite/v2/client_metadata.rs": "a4579d1130def79b785cc2844a1bf3c046fcff78aca95f74a3df57d61f504dfc",
+    "codex-rs/app-server/tests/suite/v2/residency.rs": "902e38f7f0d3ef6c6b0b51ebdc5e5c873eac751c9a17182105548da8b4dc946f",
+    "codex-rs/codex-api/src/endpoint/responses_websocket.rs": "f8b8364529d1fdd0d70c22958ab47cf5fcb6b821d51a37303061459ea00bcc4b",
+    "codex-rs/core/src/turn_metadata.rs": "1d21ab04e964ceffebea0f675ce7e6907d9817895fdd49514ed41b6a5a142a02",
+    "codex-rs/core/src/turn_metadata_tests.rs": "99f29d0e9d96f09d6f4131a32c8a32f500f4ce7a15a3110e6397d9ec2033518c",
+    "codex-rs/Cargo.toml": "ddfc3f515cb114d23423060008d0db211ccbca0e722c78392d81b3210adb1543",
+    "codex-rs/Cargo.lock": "f11a317cd13092663372c3f6b5709266c9e1375baa55eb57f199b754faf418a1",
+    "MODULE.bazel.lock": "63ee8041114a86fb2064282e466d4250abdf884b2b10dff21c91c412cecfcc4b",
+    "codex-rs/core/BUILD.bazel": "7e4426b0956a9aedb523098a87378492e6cbfa34a4773ec9e52127039b2a0567",
+    "codex-rs/model-provider/BUILD.bazel": "44ddc1a051d41539b1188a022104e87477a094003c8d4af6e3dbfa4a6f5ffd27",
+    "codex-rs/aws-auth/BUILD.bazel": "3350d585f79506c94fadf2882877eb8822e4894eb77bee941683bc36c65a48dd",
+    "codex-rs/app-server/BUILD.bazel": "9c17d311022594bf97dd08667713a6d4c85ddd245c59b1d9cca57f5787508acd"
+  },
+  "remaining_qualification": [
+    "Full owning Core and model-provider compile/tests/Clippy, including real agent-key rotation, have not run for this combination.",
+    "AppServer public RPC metadata, residency, attestation and Bedrock integration tests have not run for this combination.",
+    "API owning Clippy has not run; the executed Clippy scope is codex-aws-auth only.",
+    "Original Windows Bazel ownership gates and other platform gates remain required; no Linux or donor result substitutes for them.",
+    "The 100ms attestation budget is unchanged; removing fixture-imposed delay does not guarantee scheduler-independent completion.",
+    "Additional original cold-resume workspace-root and plugin catalog TTL failures are outside these five stages and remain open.",
+    "The followup source must be published and evaluated at its own final SHA. Earlier queued runs or passes do not qualify it."
+  ]
+}

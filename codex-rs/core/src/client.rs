@@ -374,8 +374,27 @@ struct ConnectedWebsocket {
     identity: WebsocketConnectionIdentity,
 }
 
+#[path = "client_websocket_auth.rs"]
+mod websocket_auth;
+
+use websocket_auth::WebsocketAuthIdentity;
+use websocket_auth::WebsocketAuthSnapshot;
+
+fn snapshot_websocket_auth(api_auth: &dyn AuthProvider) -> WebsocketAuthSnapshot {
+    let headers = api_auth.to_auth_headers();
+    let identity = api_auth.websocket_auth_identity(&headers);
+    WebsocketAuthSnapshot::new(headers, identity)
+}
+
+impl AuthProvider for WebsocketAuthSnapshot {
+    fn add_auth_headers(&self, headers: &mut ApiHeaderMap) {
+        headers.extend(self.headers.clone());
+    }
+}
+
 #[derive(Clone, Eq, PartialEq)]
 struct WebsocketConnectionIdentity {
+    auth_identity: WebsocketAuthIdentity,
     provider_name: String,
     base_url: String,
     query_params: BTreeMap<String, String>,
@@ -387,17 +406,19 @@ struct WebsocketConnectionIdentity {
 impl WebsocketConnectionIdentity {
     fn from_provider(
         provider: &ApiProvider,
+        auth: &WebsocketAuthSnapshot,
         beta_features_header: Option<&str>,
         responses_metadata: &CodexResponsesMetadata,
     ) -> std::result::Result<Self, ApiError> {
         let compatibility_projection_json =
-            serde_json::to_vec(&responses_metadata.turn_recovery_compatibility_projection())
+            serde_json::to_vec(&responses_metadata.websocket_connection_compatibility_projection())
                 .map_err(|error| {
                     ApiError::Stream(format!(
                         "failed to bind websocket compatibility identity: {error}"
                     ))
                 })?;
         Ok(Self {
+            auth_identity: auth.identity.clone(),
             provider_name: provider.name.clone(),
             base_url: provider.base_url.clone(),
             query_params: provider
@@ -1404,7 +1425,7 @@ impl ModelClient {
         &'a self,
         session_telemetry: &'a SessionTelemetry,
         api_provider: codex_api::Provider,
-        api_auth: SharedAuthProvider,
+        api_auth: WebsocketAuthSnapshot,
         responses_metadata: &'a CodexResponsesMetadata,
         auth_context: AuthRequestTelemetryContext,
         request_route_telemetry: RequestRouteTelemetry,
@@ -1425,13 +1446,14 @@ impl ModelClient {
         &self,
         session_telemetry: &SessionTelemetry,
         api_provider: codex_api::Provider,
-        api_auth: SharedAuthProvider,
+        api_auth: WebsocketAuthSnapshot,
         responses_metadata: &CodexResponsesMetadata,
         auth_context: AuthRequestTelemetryContext,
         request_route_telemetry: RequestRouteTelemetry,
     ) -> std::result::Result<ConnectedWebsocket, ApiError> {
         let identity = WebsocketConnectionIdentity::from_provider(
             &api_provider,
+            &api_auth,
             self.state.beta_features_header.as_deref(),
             responses_metadata,
         )?;
@@ -1444,7 +1466,7 @@ impl ModelClient {
         );
         let websocket_connect_timeout = self.state.provider.info().websocket_connect_timeout();
         let start = Instant::now();
-        let websocket_client = ApiWebSocketResponsesClient::new(api_provider, api_auth);
+        let websocket_client = ApiWebSocketResponsesClient::new(api_provider, Arc::new(api_auth));
         let websocket_connect = websocket_client
             .connect(
                 &self.http_client_factory,
@@ -1751,7 +1773,7 @@ impl ModelClientSession {
             .connect_websocket_future(
                 session_telemetry,
                 client_setup.api_provider,
-                client_setup.api_auth,
+                snapshot_websocket_auth(client_setup.api_auth.as_ref()),
                 responses_metadata,
                 auth_context,
                 RequestRouteTelemetry::for_endpoint(RESPONSES_ENDPOINT),
@@ -1787,8 +1809,10 @@ impl ModelClientSession {
             auth_context,
             request_route_telemetry,
         } = params;
+        let api_auth = snapshot_websocket_auth(api_auth.as_ref());
         let desired_identity = WebsocketConnectionIdentity::from_provider(
             &api_provider,
+            &api_auth,
             self.client.state.beta_features_header.as_deref(),
             responses_metadata,
         )?;
