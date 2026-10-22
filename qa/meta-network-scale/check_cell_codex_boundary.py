@@ -135,7 +135,9 @@ def check_foundation_manifest(manifest: dict[str, Any]) -> list[str]:
     return violations
 
 
-def check_foundation_build_boundary(manifest: dict[str, Any], crate_root: Path) -> list[str]:
+def check_foundation_build_boundary(
+    manifest: dict[str, Any], crate_root: Path, crate: str = "hepta-types"
+) -> list[str]:
     """Deny compile-time effects even without extra Cargo dependencies.
 
     Cargo automatically executes an adjacent build.rs unless explicitly disabled.
@@ -146,18 +148,18 @@ def check_foundation_build_boundary(manifest: dict[str, Any], crate_root: Path) 
     package = manifest.get("package")
     package = package if isinstance(package, dict) else {}
     if "build" in package and package["build"] is not False:
-        violations.append("hepta-types: explicit build script is forbidden")
+        violations.append(f"{crate}: explicit build script is forbidden")
     if "links" in package:
-        violations.append("hepta-types: native linking declaration is forbidden")
+        violations.append(f"{crate}: native linking declaration is forbidden")
 
     lib = manifest.get("lib")
     lib = lib if isinstance(lib, dict) else {}
     if lib.get("proc-macro") is True:
-        violations.append("hepta-types: proc-macro entry point is forbidden")
+        violations.append(f"{crate}: proc-macro entry point is forbidden")
 
     implicit_build = crate_root / "build.rs"
     if implicit_build.is_symlink() or implicit_build.exists():
-        violations.append("hepta-types: implicit build.rs is forbidden")
+        violations.append(f"{crate}: implicit build.rs is forbidden")
     return violations
 
 
@@ -183,9 +185,9 @@ def check_workspace(root: Path) -> list[str]:
         if package_name != f"codex-{name}":
             violations.append(f"{name}: crate identity differs from expected codex-{name}")
         violations.extend(check_manifest(manifest, name, workspace_deps))
+        violations.extend(check_foundation_build_boundary(manifest, manifest_file.parent, name))
         if name == "hepta-types":
             violations.extend(check_foundation_manifest(manifest))
-            violations.extend(check_foundation_build_boundary(manifest, manifest_file.parent))
     return violations
 
 

@@ -114,6 +114,33 @@ builder = { package = "codex-sandboxing", workspace = true }
                 script.symlink_to(root / "absent.rs")
                 self.assertTrue(checker.check_foundation_build_boundary({}, root))
 
+    def test_implicit_build_script_on_any_cell_crate_is_denied(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            for name in checker.CELL_CRATES:
+                crate_root = root / name
+                crate_root.mkdir()
+                self.assertEqual(
+                    checker.check_foundation_build_boundary({}, crate_root, name), []
+                )
+                script = crate_root / "build.rs"
+                script.write_text("fn main() {}\\n", encoding="utf-8")
+                violations = checker.check_foundation_build_boundary({}, crate_root, name)
+                self.assertEqual(
+                    violations, [f"{name}: implicit build.rs is forbidden"]
+                )
+
+    def test_ci_monitors_implicit_scripts_for_every_cell_owner(self):
+        workflow = (
+            Path(__file__).resolve().parents[2]
+            / ".github"
+            / "workflows"
+            / "hepta-cell-codex-boundary.yml"
+        ).read_text(encoding="utf-8")
+        watched = workflow.partition("  workflow_dispatch:")[0]
+        for name in checker.CELL_CRATES:
+            self.assertIn(f'      - "codex-rs/{name}/build.rs"', watched)
+
     def test_missing_manifest_is_a_failure_not_a_skip(self):
         with tempfile.TemporaryDirectory() as temp:
             errors = checker.check_workspace(Path(temp))
