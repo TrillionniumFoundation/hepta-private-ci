@@ -28,7 +28,7 @@ SPLITS = ("train", "calibration", "future_1", "future_2", "ood")
 SHA256 = re.compile(r"[0-9a-f]{64}\Z")
 SHA40 = re.compile(r"[0-9a-f]{40}\Z")
 TEACHERS = frozenset(("embeddinggemma2_740m", "t5gemma2_encoder_270m"))
-STUDENTS = frozenset(("hepta_latent_150m", "hepta_latent_300m"))
+STUDENTS = frozenset(("hepta_latent_150m", "hepta_latent_300m", "hepta_shared_tiny64_v1"))
 
 
 class OfflineDistillError(ValueError):
