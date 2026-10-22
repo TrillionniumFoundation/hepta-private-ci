@@ -164,6 +164,29 @@ fn covariance_dimension_and_snapshot_are_fail_closed() {
 }
 
 #[test]
+fn frontier_rejects_a_nonzero_risk_free_baseline_covariance() {
+    let candidates = [
+        candidate("baseline", 0, 0, true),
+        candidate("direction", 80, 1, false),
+    ];
+    // Both matrices are symmetric, nonnegative and diagonally dominant,
+    // so covariance validation alone cannot enforce the risk-free asset.
+    for matrix in [
+        [q(1), FixedQ32::ZERO, FixedQ32::ZERO, q(1)],
+        [q(1), q(1), q(1), q(1)],
+    ] {
+        let mut invalid = context(2);
+        invalid.semantic_covariance = matrix.to_vec();
+        let error = output_efficient_frontier_v1(&invalid, &candidates)
+            .expect_err("risk-free baseline covariance must fail closed");
+        assert_eq!(error, NduError::InvalidSolverReceipt("no-change covariance"));
+        let error = select_output_portfolio_v1(&invalid, &budget(2), &candidates)
+            .expect_err("selection and frontier must reject the same risk context");
+        assert_eq!(error, NduError::InvalidSolverReceipt("no-change covariance"));
+    }
+}
+
+#[test]
 fn frontier_is_deterministic_and_excludes_dominated_candidate() {
     let points = output_efficient_frontier_v1(
         &context(4),
