@@ -57,3 +57,9 @@ python -m unittest discover -s qa/ndu-real-paired-rollout -p 'test_*.py' -v
 Eight new tests use a small **FAKE** backend and synthetic PNGs. They verify same-seed source input, causal logits modification, reference exclusion, exact roster, failure cost, source-hash guards and previous cohort exclusion. They are **not new real model results**. Any future real run must retain independent score, source provenance, timing, full trajectories and blind-test authority. Do not report tail-risk diversification just from a linear surrogate; only actual combined-output runs can validate a frontier.
 
 Status: **DRAFT / SHADOW_ONLY / DENY_ALL / HOLD_NO_GO**. No implicit tool authority, model promotion, real-device execution, memory writes, topology evolution, merge approval, or production release.
+
+## Frozen model bundle verification (P3 hardening)
+
+The five-arm runner now verifies every file in the 11-asset Florence acquisition manifest, including tokenizer.json, special token maps, processor and generation configurations, exact sizes and SHA256. It rejects symlinks, missing files and unexpected model-directory sidecars. It then binds the full inventory digest into every plan and immutable arm proposal, and binds the acquisition implementation as part of the source-code identity. A matching model.safetensors weight alone is insufficient to authorize a new experiment or resume. These hashes verify consistent supplied files, **not** external signer attestation.
+
+The provenance change is intentionally an incompatible identity refinement: rerunning any active TRAIN phase under this code requires a **new** run directory and newly frozen cohort/plan. No partial journal or prior terminal data may be spliced into a new plan. Original v1 archive/test results are unchanged.
