@@ -137,6 +137,59 @@ def git_snapshot(path: Path) -> dict[str, Any]:
         ).stdout.strip()
 
     try:
+        # Git status may run an fsmonitor hook or a configured clean/process
+        # filter on a tracked path. Inspect only Git config key NAMES before
+        # status, never leaking command paths or tokens in the audit report.
+        config_names = {
+            name.casefold()
+            for name in cmd("config", "--list", "--name-only", "-z").split("\0")
+            if name
+        }
+        executable_git_config = {
+            name for name in config_names
+            if name == "core.fsmonitor"
+            or (name.startswith("diff.") and name.endswith(".command"))
+            or (name.startswith("merge.") and name.endswith(".driver"))
+        }
+        filter_config_names = {
+            name for name in config_names
+            if name.startswith("filter.")
+            and name.rsplit(".", 1)[-1] in ("clean", "smudge", "process")
+        }
+        if filter_config_names and not executable_git_config:
+            # Any fsmonitor/diff/merge executable config blocks immediately.
+            # Even ls-files can invoke an enabled fsmonitor hook.
+            # Hosted runners install Git LFS filter commands globally. A
+            # registered but UNUSED driver cannot run during this worktree's
+            # status; refusing it would make ordinary source CI inoperable.
+            # check-attr evaluates tracked paths without running filter code.
+            tracked = subprocess.run(
+                ["git", "-C", str(path), "ls-files", "--cached", "-z"],
+                capture_output=True, check=True, timeout=20,
+            ).stdout
+            attributes = subprocess.run(
+                ["git", "-C", str(path), "check-attr", "-z", "--stdin", "filter"],
+                input=tracked, capture_output=True, check=True, timeout=20,
+            ).stdout.split(b"\0")
+            active_drivers = {
+                attributes[index + 2].decode("utf-8", "surrogateescape").casefold()
+                for index in range(0, len(attributes) - 2, 3)
+                if attributes[index + 1] == b"filter"
+                and attributes[index + 2] not in
+                (b"unspecified", b"unset", b"set")
+            }
+            executable_git_config.update(
+                name for name in filter_config_names
+                if name.removeprefix("filter.").rsplit(".", 1)[0]
+                in active_drivers
+            )
+        if executable_git_config:
+            return {
+                "usable": False,
+                "reason": "unreviewed executable Git configuration",
+                "path": str(path),
+                "blocked_git_config_keys": sorted(executable_git_config),
+            }
         # Git's linked worktrees use a .git *file*, not a directory. Verify the
         # canonical top level instead of testing a filesystem suffix.
         if cmd("rev-parse", "--is-inside-work-tree") != "true":
