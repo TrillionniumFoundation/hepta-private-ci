@@ -318,6 +318,16 @@ impl ExecutionReceiptV1 {
         if self.final_payload_digest.validate().is_err() {
             return Err(ExecutionContractError::ReceiptBindingMismatch);
         }
+        if self.outcome_digest.is_some_and(Digest32::is_zero) {
+            return Err(ExecutionContractError::ZeroDigest("execution outcome"));
+        }
+        if matches!(
+            self.status,
+            ExecutionStatusV1::Completed | ExecutionStatusV1::Failed
+        ) && self.outcome_digest.is_none()
+        {
+            return Err(ExecutionContractError::MissingTerminalOutcome);
+        }
         Ok(())
     }
 }
@@ -345,8 +355,10 @@ impl RuntimeReceiptV1 {
         if self.execution.outcome_digest != Some(self.tool_outcome.outcome_digest()) {
             return Err(ExecutionContractError::OutcomeDigestMismatch);
         }
-        if matches!(self.execution.status, ExecutionStatusV1::Completed)
-            && !self.tool_outcome.terminal_observed
+        if matches!(
+            self.execution.status,
+            ExecutionStatusV1::Completed | ExecutionStatusV1::Failed
+        ) && !self.tool_outcome.terminal_observed
         {
             return Err(ExecutionContractError::StatusOutcomeMismatch);
         }

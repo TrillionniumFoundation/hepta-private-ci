@@ -228,3 +228,66 @@ fn terminal_tool_outcome_has_a_nonzero_digest() {
     outcome.validate().expect("valid terminal outcome");
     assert!(!outcome.outcome_digest().is_zero());
 }
+
+#[test]
+fn terminal_execution_receipt_requires_nonzero_outcome_evidence() {
+    let value = intent();
+    let mut receipt = ExecutionReceiptV1 {
+        operation_id: value.cell.operation_id.clone(),
+        intent_digest: value.cell.intent_digest(),
+        generation: value.cell.generation,
+        final_payload_digest: value.cell.final_payload.clone(),
+        outcome_digest: None,
+        status: ExecutionStatusV1::Completed,
+        recovery: RecoveryDispositionV1::None,
+        authority: AuthorityPosture::DENY_ALL,
+    };
+    for status in [ExecutionStatusV1::Completed, ExecutionStatusV1::Failed] {
+        receipt.status = status;
+        assert_eq!(
+            receipt.validate_against(&value.cell),
+            Err(ExecutionContractError::MissingTerminalOutcome)
+        );
+    }
+    receipt.outcome_digest = Some(Digest32::ZERO);
+    assert_eq!(
+        receipt.validate_against(&value.cell),
+        Err(ExecutionContractError::ZeroDigest("execution outcome"))
+    );
+    receipt.status = ExecutionStatusV1::Indeterminate;
+    receipt.outcome_digest = None;
+    receipt.recovery = RecoveryDispositionV1::ReconcileSameOperation;
+    assert_eq!(receipt.validate_against(&value.cell), Ok(()));
+}
+
+#[test]
+fn failed_runtime_receipt_requires_observed_terminal() {
+    let value = intent();
+    let outcome = ToolOutcomeV1 {
+        terminal_observed: false,
+        exit_code: None,
+        stdout_digest: None,
+        stderr_digest: None,
+        retryable: false,
+    };
+    let mut receipt = RuntimeReceiptV1 {
+        execution: ExecutionReceiptV1 {
+            operation_id: value.cell.operation_id.clone(),
+            intent_digest: value.cell.intent_digest(),
+            generation: value.cell.generation,
+            final_payload_digest: value.cell.final_payload.clone(),
+            outcome_digest: Some(outcome.outcome_digest()),
+            status: ExecutionStatusV1::Failed,
+            recovery: RecoveryDispositionV1::ReconcileSameOperation,
+            authority: AuthorityPosture::DENY_ALL,
+        },
+        runtime_intent_digest: value.intent_digest(),
+        tool_outcome: outcome,
+    };
+    assert_eq!(
+        receipt.validate_against(&value),
+        Err(ExecutionContractError::StatusOutcomeMismatch)
+    );
+    receipt.execution.status = ExecutionStatusV1::Indeterminate;
+    assert_eq!(receipt.validate_against(&value), Ok(()));
+}
