@@ -116,6 +116,16 @@ impl<D: ProcessDriver> Supervisor<D> {
             Err(RestartBudgetError::Exhausted) => {
                 slot.restart_pending = false;
                 slot.restart_not_before = None;
+                // Exhaustion must be durable and observable across recovery;
+                // a denied restart never creates a new process or authority.
+                slot.restart_attempt = self.config.restart_max_attempts;
+                slot.restart_exhausted = true;
+                slot.event(
+                    record.lifecycle.generation,
+                    SupervisorEventKind::AutomaticRestartBudgetExhausted {
+                        attempts: self.config.restart_max_attempts,
+                    },
+                );
                 Some(SupervisorError::RestartBudgetExhausted(agent_id.clone()))
             }
             Err(error) => {
