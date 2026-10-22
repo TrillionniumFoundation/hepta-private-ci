@@ -282,6 +282,34 @@ def validate_result(result: dict[str, Any]) -> list[str]:
                     errors.append(
                         f"evidence_receipts.{claim} cannot reuse provenance measurement digest"
                     )
+    # Identity hashes for a host and a runtime must not be relabelled as
+    # measurements or retained evidence. This checks shape only, not custody.
+    if isinstance(provenance, dict):
+        host_digest = provenance.get("target_host_digest")
+        runtime_digest = provenance.get("runtime_digest")
+        if (
+            isinstance(host_digest, str)
+            and _HEX64.fullmatch(host_digest)
+            and host_digest == runtime_digest
+        ):
+            errors.append("provenance.runtime_digest cannot reuse target_host_digest")
+        for field in ("target_host_digest", "runtime_digest"):
+            identity_digest = provenance.get(field)
+            if not isinstance(identity_digest, str) or not _HEX64.fullmatch(
+                identity_digest
+            ):
+                continue
+            if identity_digest == provenance.get("measurement_digest"):
+                errors.append(f"provenance.{field} cannot reuse measurement digest")
+            if identity_digest == metrics_receipt:
+                errors.append(f"metrics_receipt cannot reuse provenance {field}")
+            if isinstance(evidence_receipts, dict):
+                for claim in REQUIRED_EVIDENCE:
+                    if identity_digest == evidence_receipts.get(claim):
+                        errors.append(
+                            f"evidence_receipts.{claim} cannot reuse provenance {field}"
+                        )
+
     lifecycle = result.get("topology_lifecycle")
     if lifecycle != list(LIFECYCLE):
         errors.append("topology_lifecycle must contain the complete ordered lifecycle")
@@ -314,6 +342,25 @@ def validate_matrix(matrix: dict[str, Any]) -> list[str]:
     if len(results) > required_count:
         return errors
 
+    # Precollect identity roles so a receipt cannot be relabelled into a
+    # *later* row's runtime, or vice versa. Reuse of one host/runtime under
+    # its own role is expected and is not an evidence replay.
+    identity_roles: dict[str, str] = {}
+    for index, row in enumerate(results):
+        provenance = row.get("provenance") if isinstance(row, dict) else None
+        if not isinstance(provenance, dict):
+            continue
+        for field in ("target_host_digest", "runtime_digest"):
+            digest = provenance.get(field)
+            if not isinstance(digest, str) or not _HEX64.fullmatch(digest):
+                continue
+            previous_role = identity_roles.setdefault(digest, field)
+            if previous_role != field:
+                errors.append(
+                    f"results[{index}].provenance.{field} "
+                    f"reused as a {previous_role} identity digest"
+                )
+
     expected = {(size, arm) for size in SIZES for arm in ARMS}
     seen: set[tuple[int, str]] = set()
     source_host: tuple[str, str, str] | None = None
@@ -341,6 +388,11 @@ def validate_matrix(matrix: dict[str, Any]) -> list[str]:
             for claim in REQUIRED_EVIDENCE:
                 receipt = evidence_receipts.get(claim)
                 if isinstance(receipt, str) and _HEX64.fullmatch(receipt):
+                    if receipt in identity_roles:
+                        errors.append(
+                            f"results[{index}].evidence_receipts.{claim} "
+                            f"reused as a {identity_roles[receipt]} identity digest"
+                        )
                     if receipt in metrics_receipts_seen:
                         errors.append(
                             f"results[{index}].evidence_receipts.{claim} "
@@ -367,6 +419,11 @@ def validate_matrix(matrix: dict[str, Any]) -> list[str]:
                         )
         metrics_receipt = row.get("metrics_receipt")
         if isinstance(metrics_receipt, str) and _HEX64.fullmatch(metrics_receipt):
+            if metrics_receipt in identity_roles:
+                errors.append(
+                    f"results[{index}].metrics_receipt "
+                    f"reused as a {identity_roles[metrics_receipt]} identity digest"
+                )
             if metrics_receipt in receipt_owners:
                 errors.append(
                     f"results[{index}].metrics_receipt "
@@ -389,6 +446,12 @@ def validate_matrix(matrix: dict[str, Any]) -> list[str]:
                 isinstance(measurement_digest, str)
                 and _HEX64.fullmatch(measurement_digest)
             ):
+                if measurement_digest in identity_roles:
+                    role = identity_roles[measurement_digest]
+                    errors.append(
+                        f"results[{index}].provenance.measurement_digest "
+                        f"reused as a {role} identity digest"
+                    )
                 if measurement_digest in measurement_digests_seen:
                     errors.append(
                         f"results[{index}].provenance.measurement_digest "
