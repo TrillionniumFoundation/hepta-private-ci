@@ -321,6 +321,22 @@ impl ExecutionReceiptV1 {
         if self.outcome_digest.is_some_and(Digest32::is_zero) {
             return Err(ExecutionContractError::ZeroDigest("execution outcome"));
         }
+        // A completed operation cannot simultaneously request recovery. An
+        // indeterminate operation may already have produced side effects, so
+        // retrying it as a pre-admission rejection is unsafe.
+        if self.status == ExecutionStatusV1::Completed
+            && self.recovery != RecoveryDispositionV1::None
+        {
+            return Err(ExecutionContractError::StatusRecoveryMismatch);
+        }
+        if self.status == ExecutionStatusV1::Indeterminate
+            && !matches!(
+                self.recovery,
+                RecoveryDispositionV1::ReconcileSameOperation | RecoveryDispositionV1::Quarantine
+            )
+        {
+            return Err(ExecutionContractError::StatusRecoveryMismatch);
+        }
         if matches!(
             self.status,
             ExecutionStatusV1::Completed | ExecutionStatusV1::Failed
@@ -359,6 +375,14 @@ impl RuntimeReceiptV1 {
             self.execution.status,
             ExecutionStatusV1::Completed | ExecutionStatusV1::Failed
         ) && !self.tool_outcome.terminal_observed
+        {
+            return Err(ExecutionContractError::StatusOutcomeMismatch);
+        }
+        // Process-backed tools must not report success when the observed
+        // process exit is nonzero. A missing exit code is valid for tools
+        // without a process, and is not treated as an implicit success code.
+        if self.execution.status == ExecutionStatusV1::Completed
+            && self.tool_outcome.exit_code.is_some_and(|code| code != 0)
         {
             return Err(ExecutionContractError::StatusOutcomeMismatch);
         }
@@ -410,6 +434,7 @@ pub enum ExecutionContractError {
     ReceiptBindingMismatch,
     OutcomeDigestMismatch,
     StatusOutcomeMismatch,
+    StatusRecoveryMismatch,
     WriterIdentityCollision,
     GenerationSelfPredecessor,
     NonSuccessorGeneration,
