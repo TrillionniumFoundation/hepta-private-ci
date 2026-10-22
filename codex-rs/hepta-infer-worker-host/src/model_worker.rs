@@ -15,6 +15,12 @@ use codex_hepta_types::Digest32;
 use codex_hepta_types::Generation;
 use codex_hepta_types::StableId;
 
+#[path = "model_load.rs"]
+mod model_load;
+pub use model_load::DriverLoadAttempt;
+pub use model_load::DriverLoadObservation;
+pub use model_load::DriverLoadState;
+
 const MAX_MODELS: usize = 8;
 const MAX_ACTIVE_REQUESTS: usize = 256;
 const MAX_TOKENS: u32 = 1_000_000;
@@ -147,20 +153,28 @@ impl fmt::Display for Error {
 
 impl StdError for Error {}
 
+/// Owns physical resources under the original bounded load attempt. Errors do
+/// not prove absence; reconciliation observes, and never repeats, that load.
 pub trait ModelDriver {
-    fn load(&mut self, manifest: &ModelManifest) -> Result<DriverModelHandle, Error>;
+    fn load(&mut self, attempt: &DriverLoadAttempt) -> Result<DriverLoadObservation, Error>;
+    fn reconcile_load(
+        &mut self,
+        attempt: &DriverLoadAttempt,
+    ) -> Result<DriverLoadObservation, Error>;
     fn run(
         &mut self,
         handle: &DriverModelHandle,
         request: &WorkerRequest,
     ) -> Result<DriverRunObservation, Error>;
-    /// Success confirms release. Repeated attempts for the same opaque handle
-    /// must reconcile an earlier failure without creating a second effect.
-    fn unload(&mut self, handle: DriverModelHandle) -> Result<(), Error>;
+    /// Release only resources acquired by this attempt, never a handle supplied
+    /// by an untrusted observation. Errors and Unknown retain ownership.
+    fn unload(&mut self, attempt: &DriverLoadAttempt) -> Result<DriverLoadObservation, Error>;
 }
 
 #[derive(Debug, Eq, PartialEq)]
 enum ModelLifecycle {
+    LoadUnresolved,
+    LoadRejected,
     Ready,
     ExecutionUnresolved,
     UnloadUnresolved,
@@ -169,7 +183,8 @@ enum ModelLifecycle {
 #[derive(Debug)]
 struct LoadedModel {
     manifest: ModelManifest,
-    handle: DriverModelHandle,
+    handle: Option<DriverModelHandle>,
+    attempt: DriverLoadAttempt,
     active_requests: usize,
     lifecycle: ModelLifecycle,
 }
@@ -182,6 +197,7 @@ pub struct InferenceWorker<D: ModelDriver> {
     driver: D,
     models: BTreeMap<String, LoadedModel>,
     active_requests: BTreeMap<String, String>,
+    load_sequence: u64,
 }
 
 impl<D: ModelDriver> InferenceWorker<D> {
@@ -204,6 +220,7 @@ impl<D: ModelDriver> InferenceWorker<D> {
             driver,
             models: BTreeMap::new(),
             active_requests: BTreeMap::new(),
+            load_sequence: 0,
         })
     }
 
@@ -211,43 +228,75 @@ impl<D: ModelDriver> InferenceWorker<D> {
         &self.worker_id
     }
 
+    /// Reserve the complete model resource envelope before invoking the driver.
+    /// Observed low-water marks never shrink this lifetime reservation.
     pub fn load_model(
         &mut self,
         now_ms: u64,
         manifest: ModelManifest,
+        reserved_memory_bytes: u64,
     ) -> Result<ModelLoadObservation, Error> {
         self.validate_current_grant(now_ms)?;
         validate_manifest(&manifest)?;
         if self.models.contains_key(&manifest.model_id) {
             return Err(Error::ModelAlreadyLoaded);
         }
-        let model_limit = self.grant.maximum_models.min(MAX_MODELS);
-        if self.models.len() >= model_limit {
+        self.refuse_unresolved_load()?;
+        let reserved = self
+            .models
+            .values()
+            .try_fold(/*init*/ 0_u64, |total, model| {
+                total
+                    .checked_add(model.attempt.reserved_memory_bytes)
+                    .ok_or(Error::ArithmeticOverflow)
+            })?;
+        let total = reserved
+            .checked_add(reserved_memory_bytes)
+            .ok_or(Error::ArithmeticOverflow)?;
+        if reserved_memory_bytes == 0
+            || total > self.grant.maximum_memory_bytes
+            || self.models.len() >= self.grant.maximum_models.min(MAX_MODELS)
+        {
             return Err(Error::ModelCapacity);
         }
-        let handle = self.driver.load(&manifest)?;
-        validate_identity(&handle.opaque_id, "model handle")?;
-        if handle.observed_memory_bytes > self.grant.maximum_memory_bytes {
-            self.driver.unload(handle)?;
-            return Err(Error::ModelCapacity);
-        }
-        let observation = ModelLoadObservation {
-            model_id: manifest.model_id.clone(),
+        let sequence = self
+            .load_sequence
+            .checked_add(1)
+            .ok_or(Error::ArithmeticOverflow)?;
+        let attempt = DriverLoadAttempt {
+            worker_id: self.worker_id.clone(),
             worker_generation: self.generation,
-            handle_id: handle.opaque_id.clone(),
-            observed_memory_bytes: handle.observed_memory_bytes,
-            terminal_observed: true,
+            sequence,
+            grant: self.grant.clone(),
+            manifest: manifest.clone(),
+            reserved_memory_bytes,
         };
+        self.load_sequence = sequence;
+        let model_id = manifest.model_id.clone();
         self.models.insert(
-            manifest.model_id.clone(),
+            model_id.clone(),
             LoadedModel {
                 manifest,
-                handle,
+                handle: None,
+                attempt: attempt.clone(),
                 active_requests: 0,
-                lifecycle: ModelLifecycle::Ready,
+                lifecycle: ModelLifecycle::LoadUnresolved,
             },
         );
-        Ok(observation)
+        let observed = self.driver.load(&attempt)?;
+        match self.apply_load(&model_id, observed)? {
+            DriverLoadState::Owned(handle) => Ok(ModelLoadObservation {
+                model_id,
+                worker_generation: self.generation,
+                handle_id: handle.opaque_id,
+                observed_memory_bytes: handle.observed_memory_bytes,
+                terminal_observed: true,
+            }),
+            DriverLoadState::NoEffect | DriverLoadState::Released => {
+                Err(Error::DriverFailure("load has no live model".to_string()))
+            }
+            DriverLoadState::Unknown => Err(Error::DriverFailure("load unresolved".to_string())),
+        }
     }
 
     pub fn run(
@@ -259,6 +308,7 @@ impl<D: ModelDriver> InferenceWorker<D> {
         self.validate_current_grant(now_ms)?;
         validate_identity(model_id, "model")?;
         validate_request(now_ms, &request)?;
+        self.refuse_unresolved_load()?;
         if self.active_requests.contains_key(&request.request_id) {
             return Err(Error::RequestCapacity);
         }
@@ -270,6 +320,7 @@ impl<D: ModelDriver> InferenceWorker<D> {
         if loaded.lifecycle != ModelLifecycle::Ready {
             return Err(Error::ActiveRequests);
         }
+        let handle = loaded.handle.as_ref().ok_or(Error::ActiveRequests)?;
         if request.model_digest != loaded.manifest.model_digest
             || request.reservation_model_digest != loaded.manifest.model_digest
         {
@@ -293,7 +344,7 @@ impl<D: ModelDriver> InferenceWorker<D> {
                 status: ExecutionStatus::Cancelled,
                 output_digest: None,
                 consumed_tokens: 0,
-                observed_memory_bytes: loaded.handle.observed_memory_bytes,
+                observed_memory_bytes: handle.observed_memory_bytes,
                 terminal_observed: true,
             });
         }
@@ -305,7 +356,7 @@ impl<D: ModelDriver> InferenceWorker<D> {
         self.active_requests
             .insert(request.request_id.clone(), model_id.to_string());
         loaded.lifecycle = ModelLifecycle::ExecutionUnresolved;
-        let observed = self.driver.run(&loaded.handle, &request)?;
+        let observed = self.driver.run(handle, &request)?;
         if observed.terminal_observed {
             self.active_requests.remove(&request.request_id);
             loaded.active_requests -= 1;
@@ -316,7 +367,7 @@ impl<D: ModelDriver> InferenceWorker<D> {
         {
             return Err(Error::TokenLimit);
         }
-        if observed.observed_memory_bytes > self.grant.maximum_memory_bytes {
+        if observed.observed_memory_bytes > loaded.attempt.reserved_memory_bytes {
             return Err(Error::ModelCapacity);
         }
         let (status, output_digest, terminal_observed) = if !observed.terminal_observed {
@@ -348,20 +399,16 @@ impl<D: ModelDriver> InferenceWorker<D> {
         })
     }
 
+    /// Cleanup of an existing owner remains available after its admission grant
+    /// expires. It grants no permission to load or run again.
     pub fn unload_model(
         &mut self,
         now_ms: u64,
         model_id: &str,
     ) -> Result<ModelUnloadObservation, Error> {
-        self.validate_current_grant(now_ms)?;
+        let _ = now_ms; // Preserve the existing caller API; cleanup is not new admission.
         validate_identity(model_id, "model")?;
-        let loaded = self.models.get_mut(model_id).ok_or(Error::ModelNotLoaded)?;
-        if loaded.active_requests != 0 || loaded.lifecycle == ModelLifecycle::ExecutionUnresolved {
-            return Err(Error::ActiveRequests);
-        }
-        loaded.lifecycle = ModelLifecycle::UnloadUnresolved;
-        self.driver.unload(loaded.handle.clone())?;
-        self.models.remove(model_id);
+        self.release_model(model_id)?;
         Ok(ModelUnloadObservation {
             model_id: model_id.to_string(),
             worker_generation: self.generation,
@@ -523,6 +570,7 @@ impl<D: ModelDriver + NeuronFeatureDriver> InferenceWorker<D> {
         validate_identity(model_id, "model")?;
         validate_request(now_ms, &request.authorization)?;
         validate_neuron_feature_request(&request)?;
+        self.refuse_unresolved_load()?;
         if self
             .active_requests
             .contains_key(&request.authorization.request_id)
@@ -537,6 +585,7 @@ impl<D: ModelDriver + NeuronFeatureDriver> InferenceWorker<D> {
         if loaded.lifecycle != ModelLifecycle::Ready {
             return Err(Error::ActiveRequests);
         }
+        let handle = loaded.handle.as_ref().ok_or(Error::ActiveRequests)?;
         if request.authorization.model_digest != loaded.manifest.model_digest
             || request.authorization.reservation_model_digest != loaded.manifest.model_digest
             || request.weights_digest != loaded.manifest.weights_digest
@@ -561,7 +610,7 @@ impl<D: ModelDriver + NeuronFeatureDriver> InferenceWorker<D> {
                 status: ExecutionStatus::Cancelled,
                 drive_q24: Vec::new(),
                 prediction_q24: Vec::new(),
-                observed_memory_bytes: loaded.handle.observed_memory_bytes,
+                observed_memory_bytes: handle.observed_memory_bytes,
                 transient_allocation_bytes: 0,
                 queue_age_micros: 0,
                 latency_micros: 0,
@@ -578,14 +627,14 @@ impl<D: ModelDriver + NeuronFeatureDriver> InferenceWorker<D> {
             model_id.to_string(),
         );
         loaded.lifecycle = ModelLifecycle::ExecutionUnresolved;
-        let observed = self.driver.run_neuron_features(&loaded.handle, &request)?;
+        let observed = self.driver.run_neuron_features(handle, &request)?;
         if observed.terminal_observed {
             self.active_requests
                 .remove(&request.authorization.request_id);
             loaded.active_requests -= 1;
             loaded.lifecycle = ModelLifecycle::Ready;
         }
-        if observed.observed_memory_bytes > self.grant.maximum_memory_bytes {
+        if observed.observed_memory_bytes > loaded.attempt.reserved_memory_bytes {
             return Err(Error::ModelCapacity);
         }
         let status = if !observed.terminal_observed {

@@ -143,14 +143,28 @@ error or an unobserved terminal state. Its typed unresolved lifecycle refuses
 further execution and unloading of that model with the existing `ActiveRequests`
 error; duplicate request identities retain `RequestCapacity`. Only an observed
 terminal result releases the request slot. Failed unloading retains and freezes
-the same handle; a retry must reconcile that exact opaque handle, and only
-successful unloading removes it. This component adds no durable journal or
+the same handle; a retry must release its original load attempt, and only
+confirmed resource release removes it. This component adds no durable journal or
 terminal reconciler. Dropping or restarting the owner does not prove resource
 release. These safeguards are prerequisites within existing `P0.8C-RESOURCE-BUDGETS`
 and `ART-2-NEXT-SNAPSHOT-RELOAD-ROLLBACK`; the hosted App Server path, real local
 neural backend, aggregate memory accounting and three-round model acceptance
-remain separately qualified boundaries. Initial-load rejection followed by
-failed cleanup also still needs a separately qualified handle owner.
+remain separately qualified boundaries.
+
+`load_model` now requires an explicit lifetime byte reservation. Before driver
+dispatch the existing model table retains the complete manifest/grant binding,
+worker generation, monotonic attempt sequence and original budget. Checked sums
+cannot exceed the original grant; lower observations never shrink reservations.
+Driver errors and `Unknown` preserve the attempt and block new load/run dispatch.
+Only matching original-attempt observations advance it: `NoEffect` can clear an
+attempt before ownership, while an owned resource requires `Released`. Rejected
+loads stay in cleanup and cannot become ready through reconciliation. Cleanup
+uses the original attempt, never an opaque handle from malformed/foreign output.
+`reconcile_load` only observes unresolved loads; it cannot reconcile an execution
+or unload. Expired admission grants still permit original-owner observation and
+cleanup, without admitting new work. Physical budget enforcement and real local
+driver consumption remain unqualified; fault-driver resource-table tests do not
+constitute RSS measurements or neural-backend acceptance.
 
 Hosted output observation retains per-item text within one bound turn, including
 the interrupt grace period. Completed message bytes replace that item's partial

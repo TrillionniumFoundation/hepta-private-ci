@@ -1,5 +1,8 @@
 use super::*;
 
+#[path = "model_load_tests.rs"]
+mod load_owner_tests;
+
 #[derive(Debug, Default)]
 struct Driver {
     fail_terminal: bool,
@@ -13,12 +16,22 @@ struct Driver {
 }
 
 impl ModelDriver for Driver {
-    fn load(&mut self, manifest: &ModelManifest) -> Result<DriverModelHandle, Error> {
+    fn load(&mut self, attempt: &DriverLoadAttempt) -> Result<DriverLoadObservation, Error> {
         self.loaded += 1;
-        Ok(DriverModelHandle {
-            opaque_id: format!("handle.{}", manifest.model_id),
-            observed_memory_bytes: 1_024,
+        Ok(DriverLoadObservation {
+            attempt: attempt.clone(),
+            state: DriverLoadState::Owned(DriverModelHandle {
+                opaque_id: format!("handle.{}", attempt.manifest.model_id),
+                observed_memory_bytes: 1_024,
+            }),
         })
+    }
+
+    fn reconcile_load(
+        &mut self,
+        _attempt: &DriverLoadAttempt,
+    ) -> Result<DriverLoadObservation, Error> {
+        Err(Error::DriverFailure("no pending test load".to_string()))
     }
 
     fn run(
@@ -48,14 +61,20 @@ impl ModelDriver for Driver {
         })
     }
 
-    fn unload(&mut self, handle: DriverModelHandle) -> Result<(), Error> {
-        self.unload_handles.push(handle);
+    fn unload(&mut self, attempt: &DriverLoadAttempt) -> Result<DriverLoadObservation, Error> {
+        self.unload_handles.push(DriverModelHandle {
+            opaque_id: format!("handle.{}", attempt.manifest.model_id),
+            observed_memory_bytes: 1_024,
+        });
         if self.unload_failures != 0 {
             self.unload_failures -= 1;
             return Err(Error::DriverFailure("unload unresolved".to_string()));
         }
         self.loaded = self.loaded.saturating_sub(1);
-        Ok(())
+        Ok(DriverLoadObservation {
+            attempt: attempt.clone(),
+            state: DriverLoadState::Released,
+        })
     }
 }
 
@@ -145,12 +164,21 @@ fn request() -> WorkerRequest {
     }
 }
 
+fn load(
+    worker: &mut InferenceWorker<Driver>,
+    manifest: ModelManifest,
+) -> Result<ModelLoadObservation, Error> {
+    worker.load_model(
+        /*now_ms*/ 100, manifest, /*reserved_memory_bytes*/ 2_048,
+    )
+}
+
 #[test]
 fn loads_runs_and_unloads_exact_model_tuple() {
     let mut worker =
         InferenceWorker::new(100, "worker.1".to_string(), 3, grant(), Driver::default())
             .expect("worker");
-    let loaded = worker.load_model(100, manifest()).expect("load");
+    let loaded = load(&mut worker, manifest()).expect("load");
     assert!(loaded.terminal_observed);
     let observed = worker.run(100, "model.1", request()).expect("run");
     assert_eq!(observed.status, ExecutionStatus::Succeeded);
@@ -168,7 +196,7 @@ fn rejects_changed_tokenizer_model_or_payload_tuple() {
     let mut worker =
         InferenceWorker::new(100, "worker.1".to_string(), 3, grant(), Driver::default())
             .expect("worker");
-    worker.load_model(100, manifest()).expect("load");
+    load(&mut worker, manifest()).expect("load");
     let mut changed = request();
     changed.lease_payload_digest = "4".repeat(64);
     assert_eq!(
@@ -191,7 +219,7 @@ fn lost_driver_terminality_is_indeterminate() {
     };
     let mut worker =
         InferenceWorker::new(100, "worker.1".to_string(), 3, grant(), driver).expect("worker");
-    worker.load_model(100, manifest()).expect("load");
+    load(&mut worker, manifest()).expect("load");
     let observed = worker.run(100, "model.1", request()).expect("run");
     assert_eq!(observed.status, ExecutionStatus::Indeterminate);
     assert!(!observed.terminal_observed);
@@ -220,9 +248,7 @@ fn executes_authenticated_neuron_feature_tuple_from_loaded_manifest() {
         InferenceWorker::new(100, "worker.1".to_string(), 3, grant(), Driver::default())
             .expect("worker");
     let expected_manifest = manifest();
-    worker
-        .load_model(100, expected_manifest.clone())
-        .expect("load");
+    load(&mut worker, expected_manifest.clone()).expect("load");
     let observed = worker
         .run_neuron_features(100, "model.1", neuron_feature_request())
         .expect("neuron features");
@@ -241,7 +267,7 @@ fn neuron_feature_path_rejects_payload_drift_and_driver_identity_drift() {
     let mut worker =
         InferenceWorker::new(100, "worker.1".to_string(), 3, grant(), Driver::default())
             .expect("worker");
-    worker.load_model(100, manifest()).expect("load");
+    load(&mut worker, manifest()).expect("load");
     let mut changed = neuron_feature_request();
     changed.feature_vector_q24[0] += 1;
     assert_eq!(
@@ -255,7 +281,7 @@ fn neuron_feature_path_rejects_payload_drift_and_driver_identity_drift() {
     };
     let mut worker =
         InferenceWorker::new(100, "worker.2".to_string(), 3, grant(), driver).expect("worker");
-    worker.load_model(100, manifest()).expect("load");
+    load(&mut worker, manifest()).expect("load");
     assert_eq!(
         worker.run_neuron_features(100, "model.1", neuron_feature_request()),
         Err(Error::FeatureOutputMismatch)
@@ -268,7 +294,7 @@ fn neuron_feature_worker_projects_exact_inference_control_receipt() {
         InferenceWorker::new(100, "worker.3".to_string(), 3, grant(), Driver::default())
             .expect("worker");
     let selected = manifest();
-    worker.load_model(100, selected.clone()).expect("load");
+    load(&mut worker, selected.clone()).expect("load");
     let receipt = worker
         .run_neuron_features_receipt(100, "model.1", neuron_feature_request())
         .expect("typed feature receipt");
@@ -339,7 +365,7 @@ fn unresolved_execution_keeps_original_request_and_freezes_both_dispatch_paths()
                 driver,
             )
             .expect("worker");
-            worker.load_model(/*now_ms*/ 100, manifest()).expect("load");
+            load(&mut worker, manifest()).expect("load");
             let handle = worker.models["model.1"].handle.clone();
             let expected = if fail_run {
                 Err(Error::DriverFailure("execution unresolved".to_string()))
@@ -401,12 +427,10 @@ fn unresolved_execution_keeps_its_worker_capacity_reservation() {
             driver,
         )
         .expect("worker");
-        worker.load_model(/*now_ms*/ 100, manifest()).expect("load");
+        load(&mut worker, manifest()).expect("load");
         let mut other = manifest();
         other.model_id = "model.2".to_string();
-        worker
-            .load_model(/*now_ms*/ 100, other)
-            .expect("other load");
+        load(&mut worker, other).expect("other load");
         assert_eq!(
             dispatch(&mut worker, path, "model.1", "request.1"),
             Ok(ExecutionStatus::Indeterminate)
@@ -435,7 +459,7 @@ fn observed_terminal_success_and_failure_release_requests_on_both_paths() {
                 driver,
             )
             .expect("worker");
-            worker.load_model(/*now_ms*/ 100, manifest()).expect("load");
+            load(&mut worker, manifest()).expect("load");
             let expected = if fail_terminal {
                 ExecutionStatus::Failed
             } else {
@@ -477,7 +501,7 @@ fn failed_unload_retains_and_freezes_original_handle_until_successful_retry() {
         driver,
     )
     .expect("worker");
-    worker.load_model(/*now_ms*/ 100, manifest()).expect("load");
+    load(&mut worker, manifest()).expect("load");
     let handle = worker.models["model.1"].handle.clone();
     assert_eq!(
         worker.unload_model(/*now_ms*/ 100, "model.1"),
@@ -490,7 +514,7 @@ fn failed_unload_retains_and_freezes_original_handle_until_successful_retry() {
     );
     assert_eq!(worker.driver.loaded, 1);
     assert_eq!(
-        worker.load_model(/*now_ms*/ 100, manifest()),
+        load(&mut worker, manifest()),
         Err(Error::ModelAlreadyLoaded)
     );
     for path in [DispatchPath::Tokens, DispatchPath::NeuronFeatures] {
@@ -502,7 +526,10 @@ fn failed_unload_retains_and_freezes_original_handle_until_successful_retry() {
     worker
         .unload_model(/*now_ms*/ 100, "model.1")
         .expect("reconcile unload");
-    assert_eq!(worker.driver.unload_handles, vec![handle.clone(), handle]);
+    assert_eq!(
+        worker.driver.unload_handles,
+        vec![handle.clone().expect("handle"), handle.expect("handle")]
+    );
     assert_eq!(worker.driver.dispatch_count, 0);
     assert!(worker.models.is_empty());
     assert!(worker.active_requests.is_empty());
