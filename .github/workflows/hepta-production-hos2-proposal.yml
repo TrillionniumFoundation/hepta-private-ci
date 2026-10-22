@@ -119,6 +119,11 @@ jobs:
           target: x86_64-unknown-linux-gnu
           cache-scope: production-hos2-proposal
 
+      - name: Install uv
+        uses: astral-sh/setup-uv@08807647e7069bb48b6ef5acd8ec9567f424441b # v8.1.0
+        with:
+          version: "0.11.3"
+
       - name: Install the repository-selected compiler and components
         id: rust
         uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582
@@ -255,7 +260,13 @@ jobs:
           inputs = paths(["git", "diff", "--name-only", "--no-renames", "-z", base, "HEAD"])
           selected = sorted(set(inputs + changed + untracked))
           allowed_roots = ("codex-rs/hepta-memory/", "codex-rs/hepta-agentd/")
-          allowed_files = {"codex-rs/Cargo.lock", "MODULE.bazel.lock", ".github/workflows/hepta-production-hos2-proposal.yml"}
+          allowed_files = {
+              "codex-rs/Cargo.lock",
+              "MODULE.bazel.lock",
+              ".github/workflows/hepta-production-hos2-proposal.yml",
+              "scripts/tests/test_hepta_ci_dependencies.py",
+              "scripts/tests/test_hepta_ci_scope.py",
+          }
           unexpected = [name for name in selected if name not in allowed_files and not name.startswith(allowed_roots)]
           files = []
           for name in selected:
