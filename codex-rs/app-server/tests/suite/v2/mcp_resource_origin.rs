@@ -194,18 +194,19 @@ async fn widget_reads_survive_history_modes_compaction_restarts_and_app_only_vis
                     app_server.read_stream_until_notification_message("turn/completed"),
                 )
                 .await??;
-                let turn_id = app_server
-                    .send_turn_start_request(TurnStartParams {
-                        thread_id: thread.id.clone(),
-                        input: vec![UserInput::Text {
-                            text: "What did the apps find?".to_string(),
-                            text_elements: Vec::new(),
-                        }],
-                        ..Default::default()
-                    })
+                app_server
+                    .start_turn_after_terminal_cleanup_with_timeout(
+                        TurnStartParams {
+                            thread_id: thread.id.clone(),
+                            input: vec![UserInput::Text {
+                                text: "What did the apps find?".to_string(),
+                                text_elements: Vec::new(),
+                            }],
+                            ..Default::default()
+                        },
+                        DEFAULT_READ_TIMEOUT,
+                    )
                     .await?;
-                let _: TurnStartResponse =
-                    timeout(DEFAULT_READ_TIMEOUT, app_server.read_response(turn_id)).await??;
                 timeout(
                     DEFAULT_READ_TIMEOUT,
                     app_server.read_stream_until_notification_message("turn/completed"),

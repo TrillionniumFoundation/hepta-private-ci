@@ -1851,6 +1851,10 @@ impl App {
                                 error = %err,
                                 "failed to preflight non-admin Windows sandbox setup"
                             );
+                            tx.send(AppEvent::WindowsSandboxLegacySetupFailed {
+                                error: err.to_string(),
+                            });
+                            return;
                         }
                         tx.send(AppEvent::EnableWindowsSandboxForAgentMode {
                             preset,
@@ -1863,6 +1867,11 @@ impl App {
                 {
                     let _ = (preset, profile_selection);
                 }
+            }
+            AppEvent::WindowsSandboxLegacySetupFailed { error } => {
+                self.chat_widget.clear_windows_sandbox_setup_status();
+                self.chat_widget
+                    .add_error_message(format!("Windows sandbox setup failed: {error}"));
             }
             AppEvent::BeginWindowsSandboxGrantReadRoot { path } => {
                 #[cfg(target_os = "windows")]

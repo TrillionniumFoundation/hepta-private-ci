@@ -1,0 +1,99 @@
+{
+  "schema": "hepta.app-server-cleanup-independent-source-review.v1",
+  "reviewer": "os_closure",
+  "reviewed_at_utc": "2026-10-21T13:54:30.251913+00:00",
+  "base_head": "fa0e8457ca5a3995e00ecec6534c1c68aa82fb28",
+  "diff_sha256": "f07eca7fe6f6d5b2219d3d4221ae1e7cb512ee1422729808f85f1a7e18d2ddf6",
+  "diff_bytes": 20942,
+  "files": [
+    {
+      "path": "codex-rs/app-server/tests/common/test_app_server.rs",
+      "bytes": 82072,
+      "sha256": "aa87141966b93385412fa0f1eee316ea750079a89829ea9baab4d13c47c08d42",
+      "git_blob": "eaed23d70cad07e73de6b071a3b1a9e92d9c9b9c"
+    },
+    {
+      "path": "codex-rs/app-server/tests/common/turn_start_after_cleanup.rs",
+      "bytes": 3279,
+      "sha256": "9d51d25d526e2a0b9d0aaa446f3f6057c10fd30d274bbd0e75e16f31364bab36",
+      "git_blob": "b39c6d169aa7c913e57b06a0173c38b26c360686"
+    },
+    {
+      "path": "codex-rs/app-server/tests/suite/v2/compaction.rs",
+      "bytes": 16842,
+      "sha256": "8707cbb9836253920304375f3f3dd1d8f9f0b4bb433e0f61bdbfd465ef8cba74",
+      "git_blob": "aa5ea06cd97285ae75871a1424433703e78e7ce9"
+    },
+    {
+      "path": "codex-rs/app-server/tests/suite/v2/host_skills.rs",
+      "bytes": 5795,
+      "sha256": "300d006d4a1d3989aa4f55800c4bae5c0ad57970e576ab2d1964dcd65089f4da",
+      "git_blob": "3037e050185a484518cf47d553da7016c81ed477"
+    },
+    {
+      "path": "codex-rs/app-server/tests/suite/v2/mcp_resource_origin.rs",
+      "bytes": 11512,
+      "sha256": "13816d46cdc24cb4473b4892c3d387f198c16e1e7a0c7401ffd717aef7a65cfc",
+      "git_blob": "110e17f48158d08fb0c17839ddb9ba0726e6b4b0"
+    },
+    {
+      "path": "codex-rs/app-server/tests/suite/v2/mcp_server_elicitation.rs",
+      "bytes": 54161,
+      "sha256": "215d4f213ab3b3e4f6a2c156ec5ef3d14b9abf1746bd1317599366049e798223",
+      "git_blob": "ad1593d64a7e0386078846dec788edf79506699d"
+    },
+    {
+      "path": "codex-rs/app-server/tests/suite/v2/thread_resume.rs",
+      "bytes": 189010,
+      "sha256": "4be1d22961ac3baee968df4a645e435efed7fa8444525372daf9972d9a1a0315",
+      "git_blob": "cb14f2a1508baf36affc6815cfd32d87783bc284"
+    },
+    {
+      "path": "codex-rs/app-server/tests/suite/v2/thread_revert.rs",
+      "bytes": 12867,
+      "sha256": "3bc3969193274db71059929eac1188d27a6b7cdaeee3bdbd47378f4d71c33874",
+      "git_blob": "e454977b8f7ce43d99a608b4ab2ac1b4a0d5eea5"
+    },
+    {
+      "path": "codex-rs/app-server/tests/suite/v2/thread_rollback.rs",
+      "bytes": 10507,
+      "sha256": "6824280ea902d374737b1653781cdd3acf02db1a1724f8d309922bdd42afeadb",
+      "git_blob": "1ac403a37474c892dd2c4630afd4da93d2d6c77d"
+    },
+    {
+      "path": "codex-rs/app-server/tests/suite/v2/turn_start.rs",
+      "bytes": 178213,
+      "sha256": "42d9cfd6d0f5acd72e9c4a1f9991898aa73d4536e763c43ac54a6d96a2ee236e",
+      "git_blob": "9108b89050b5a58644bbb8c7b624d16d811ddcc0"
+    }
+  ],
+  "scope": "Read-only source review; no compilation/native run and no edits to combined checkout. Qualification still requires original native CI and repository gates.",
+  "finding_closed": {
+    "original": "message_request_id matches server Request as well as Response/Error, but server/client counters independently start at zero. Request{id:n} before Response{id:n} would be consumed and cause bail rather than remain pending.",
+    "counterexample": "With current client id n and pending [server Request{id:n}, client Response{id:n}], old predicate selected the Request. Corrected predicate selects only the Response and retains the Request.",
+    "correction": "New helper predicate explicitly matches Response/Error ids; Request/Notification return false. Existing ordinary read/request methods remain unchanged."
+  },
+  "reviewed_boundaries": [
+    "Fresh client id allocated by unchanged send_request on every attempt.",
+    "Only exact -32603, data None, and the two full pre-admission refusal strings can retry; no fuzzy text or general internal-error retry.",
+    "send serialization/write/flush failure, read/parse failure, disconnect, timeout, response decoding failure and other errors terminate without resubmission.",
+    "One outer tokio timeout encloses all sends, response reads, parsing and 25 ms backoffs; timeout budget is not reset per attempt.",
+    "Nonmatching responses/errors and server requests/notifications remain in the existing pending buffer.",
+    "Production turn_processor maps NotSubmitted to the exact NotIdle error; terminalizing error originates before io.submit_turn_input or pending admission registration.",
+    "New callsites are successful fixture setup/next-turn paths; thread_resume rejection requests and their negative assertions remain ordinary and intact.",
+    "Explicit suite durations remain as passed; default helper uses existing DEFAULT_REQUEST_TIMEOUT (Windows 25 s, other platforms 10 s). No timeout increase added."
+  ],
+  "unchanged_methods": [
+    "pub async fn send_turn_start_request(",
+    "pub async fn request<T:",
+    "async fn send_request(",
+    "async fn send_jsonrpc_message(",
+    "pub async fn read_stream_until_response_message(",
+    "async fn read_stream_until_message<F>"
+  ],
+  "remaining_blocking_source_findings": [],
+  "limits": [
+    "The shared start_turn_and_wait_for_completion now bounds turn admission by existing default request timeout; previously it relied on its caller timeout. Completion wait and matching thread/turn check remain unchanged.",
+    "Source review is not native or Windows execution evidence."
+  ]
+}

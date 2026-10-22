@@ -1522,6 +1522,11 @@ fn validate_digest(value: &Sha256Digest, label: &str) -> Result<(), H7Trajectory
 }
 
 fn now_unix_seconds() -> Result<i64, H7TrajectoryStoreError> {
+    #[cfg(test)]
+    if let Some(seconds) = crate::h7_registry_fixture_tests::fixture_unix_seconds() {
+        return i64::try_from(seconds)
+            .map_err(|_| H7TrajectoryStoreError::Clock("timestamp overflow".to_string()));
+    }
     let seconds = SystemTime::now()
         .duration_since(UNIX_EPOCH)
         .map_err(|error| H7TrajectoryStoreError::Clock(error.to_string()))?

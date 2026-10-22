@@ -552,7 +552,9 @@ mod tests {
     use codex_hepta_paths::HeptaFleetRoot;
     use pretty_assertions::assert_eq;
     use tempfile::TempDir;
+    #[cfg(unix)]
     use tokio::io::AsyncBufReadExt;
+    #[cfg(unix)]
     use tokio::io::AsyncWriteExt;
 
     use super::*;
@@ -970,13 +972,77 @@ mod tests {
     }
 
     #[tokio::test]
+    async fn health_response_tracks_real_task_state() -> TestResult {
+        let temp = TempDir::new()?;
+        let fake = Arc::new(FakeTransport::default());
+        let (state, connections) = state(&temp, fake).await?;
+        let request = MatrixdRequest {
+            schema_version: MATRIXD_CONTROL_SCHEMA_VERSION,
+            request_id: 1,
+            agent_id: agent_id()?,
+            fence: None,
+            method: MatrixdMethod::Health,
+        };
+        let expected_fence = fence()?;
+        assert_eq!(
+            state.response(request).await,
+            MatrixdResponse {
+                schema_version: MATRIXD_CONTROL_SCHEMA_VERSION,
+                request_id: 1,
+                agent_id: agent_id()?,
+                release_id: "release-1".to_string(),
+                binding_revision: expected_fence.binding_revision,
+                binding_digest: expected_fence.binding_digest,
+                attached_agent_generation: expected_fence.attached_agent_generation,
+                process_incarnation: expected_fence.process_incarnation,
+                plane_epoch: expected_fence.plane_epoch,
+                payload: MatrixdPayload::Health(MatrixdHealth {
+                    lifecycle: MatrixdLifecycle::Degraded,
+                    process_id: std::process::id(),
+                    agentd_connected: false,
+                    matrix_sync_connected: false,
+                    fenced: false,
+                }),
+            }
+        );
+        connections.set_agentd_connected(/*connected*/ true);
+        connections.set_matrix_sync_connected(/*connected*/ true);
+        assert_eq!(connections.health().lifecycle, MatrixdLifecycle::Ready);
+        connections.set_fenced();
+        assert_eq!(connections.health().lifecycle, MatrixdLifecycle::Fenced);
+        Ok(())
+    }
+
+    #[cfg(windows)]
+    #[tokio::test]
+    async fn windows_control_socket_refuses_unverified_peer_identity_before_reading() -> TestResult
+    {
+        let temp = control_socket_test_directory()?;
+        let fake = Arc::new(FakeTransport::default());
+        let (state, _) = state(&temp, Arc::clone(&fake)).await?;
+        let socket = temp.path().join("unverified.mx");
+        let mut listener = UnixListener::bind(&socket).await?;
+        let _client = UnixStream::connect(&socket).await?;
+        let stream = listener.accept().await?;
+
+        // Leave the client connected without a frame. Authentication must
+        // reject it before reading any owner-local protocol bytes.
+        let error = timeout(IO_TIMEOUT, serve_connection(stream, state))
+            .await?
+            .expect_err("an unverified peer must not reach control dispatch");
+        assert!(matches!(
+            error,
+            MatrixdControlError::Io(error) if error.kind() == ErrorKind::Unsupported
+        ));
+        assert!(fake.cancellations.lock().await.is_empty());
+        assert!(fake.resolutions.lock().await.is_empty());
+        Ok(())
+    }
+
+    #[cfg(unix)]
+    #[tokio::test]
     async fn health_tracks_real_task_state_and_owner_uds_serves_exact_identity() -> TestResult {
-        // The product fleet root deliberately leaves Darwin `sun_path`
-        // headroom. The SSD test harness uses a much deeper TMPDIR, so put
-        // this socket-binding fixture under the canonical short temp root.
-        let temp = tempfile::Builder::new()
-            .prefix("hmx-control-")
-            .tempdir_in("/tmp")?;
+        let temp = control_socket_test_directory()?;
         let fake = Arc::new(FakeTransport::default());
         let (state, connections) = state(&temp, fake).await?;
         let socket = layout(&temp, &agent_id()?)?

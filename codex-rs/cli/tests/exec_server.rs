@@ -10,6 +10,7 @@ use std::io::Write as _;
 #[cfg(unix)]
 use std::net::TcpStream;
 use std::path::Path;
+use std::path::PathBuf;
 use std::process::Stdio;
 #[cfg(unix)]
 use std::thread;
@@ -46,8 +47,30 @@ use wiremock::ResponseTemplate;
 use wiremock::matchers::method;
 use wiremock::matchers::path;
 
+fn codex_executable_with_helpers(_codex_home: &Path) -> Result<PathBuf> {
+    let codex = codex_utils_cargo_bin::cargo_bin("codex")?;
+    #[cfg(windows)]
+    {
+        // Bazel binaries live in separate runfiles directories. Keep the real
+        // CLI and both real native helpers together for this fixture's lifetime.
+        let runtime = _codex_home.join("exec-server-runtime");
+        std::fs::create_dir(&runtime)?;
+        let staged = runtime.join("codex.exe");
+        std::fs::copy(&codex, &staged)?;
+        for helper in ["codex-command-runner", "codex-windows-sandbox-setup"] {
+            let source = codex_utils_cargo_bin::cargo_bin(helper)?;
+            std::fs::copy(&source, runtime.join(format!("{helper}.exe")))?;
+        }
+        Ok(staged)
+    }
+    #[cfg(not(windows))]
+    {
+        Ok(codex)
+    }
+}
+
 fn codex_command(codex_home: &Path) -> Result<assert_cmd::Command> {
-    let mut cmd = assert_cmd::Command::new(codex_utils_cargo_bin::cargo_bin("codex")?);
+    let mut cmd = assert_cmd::Command::new(codex_executable_with_helpers(codex_home)?);
     cmd.env("CODEX_HOME", codex_home);
     Ok(cmd)
 }
@@ -175,7 +198,8 @@ metrics_exporter = {{ otlp-http = {{ endpoint = "{collector_url}/v1/metrics", pr
 "#
         ),
     )?;
-    let mut command = tokio::process::Command::new(codex_utils_cargo_bin::cargo_bin("codex")?);
+    let mut command =
+        tokio::process::Command::new(codex_executable_with_helpers(codex_home.path())?);
     command
         .env("CODEX_HOME", codex_home.path())
         .env("CODEX_API_KEY", "test-api-key")
@@ -396,7 +420,7 @@ metrics_exporter = {{ otlp-http = {{ endpoint = "{base_url}/v1/metrics", protoco
     let argv = vec!["ping.exe", "-n", "61", "127.0.0.1"];
     #[cfg(not(windows))]
     let argv = vec!["/bin/sleep", "60"];
-    let codex_bin = codex_utils_cargo_bin::cargo_bin("codex")?;
+    let codex_bin = codex_executable_with_helpers(codex_home.path())?;
     let codex_home = codex_home.path().to_path_buf();
     let subprocess = async move {
         let mut command = tokio::process::Command::new(codex_bin);

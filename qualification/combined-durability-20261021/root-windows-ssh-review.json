@@ -1,0 +1,12 @@
+{
+  "observed_at_utc": "2026-10-21T14:03:33.062886+00:00",
+  "reviewer": "root assistant independent of implementing subagent",
+  "source_commit": "93850ac9fb1c066f18ae12e7d0a7044ab513f22c",
+  "files": [
+    "codex-rs/hepta-operator-acceptance/src/g5_trust_tests.rs",
+    "codex-rs/hepta-operator-acceptance/src/test_support.rs",
+    "codex-rs/hepta-operator-acceptance/src/trust_tests.rs"
+  ],
+  "result": "No blocking source-review findings. Canonical trust paths remain unchanged; each real OpenSSH process receives validated relative fixture paths and captures actual exit diagnostics. Existing success assertions and negative trust tests remain.",
+  "limits": "Only the published six-call Linux probe has executed. The original Windows exit cause is unproven; the complete original crate tests and Windows job must run. Output capture also changes standard handles, so a later success alone does not prove a unique path-conversion cause."
+}

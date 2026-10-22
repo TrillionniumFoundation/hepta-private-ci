@@ -1,0 +1,133 @@
+{
+  "job": {
+    "id": 119194391938,
+    "name": "Bazel / Bazel test on windows-latest for x86_64-pc-windows-msvc shard 4/4",
+    "status": "completed",
+    "conclusion": "cancelled",
+    "run_id": 39583123088,
+    "head_sha": "48177153ad04605338c3a9a8dbd17defee9981bc",
+    "started_at": "2026-10-21T12:07:39Z",
+    "completed_at": "2026-10-21T13:08:09Z",
+    "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/39583123088/job/119194391938",
+    "runner_name": "GitHub Actions 1000191646",
+    "labels": [
+      "windows-latest"
+    ],
+    "steps": [
+      {
+        "name": "Set up job",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 1,
+        "started_at": "2026-10-21T12:07:40Z",
+        "completed_at": "2026-10-21T12:07:41Z"
+      },
+      {
+        "name": "Run actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 2,
+        "started_at": "2026-10-21T12:07:41Z",
+        "completed_at": "2026-10-21T12:07:57Z"
+      },
+      {
+        "name": "Test BuildBuddy Bazel wrapper",
+        "status": "completed",
+        "conclusion": "skipped",
+        "number": 3,
+        "started_at": "2026-10-21T12:07:57Z",
+        "completed_at": "2026-10-21T12:07:57Z"
+      },
+      {
+        "name": "Prepare Bazel CI",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 4,
+        "started_at": "2026-10-21T12:07:57Z",
+        "completed_at": "2026-10-21T12:08:19Z"
+      },
+      {
+        "name": "Smoke test the native MSVC header parser",
+        "status": "completed",
+        "conclusion": "skipped",
+        "number": 5,
+        "started_at": "2026-10-21T12:08:19Z",
+        "completed_at": "2026-10-21T12:08:19Z"
+      },
+      {
+        "name": "bazel test shard",
+        "status": "completed",
+        "conclusion": "cancelled",
+        "number": 6,
+        "started_at": "2026-10-21T12:08:19Z",
+        "completed_at": "2026-10-21T13:07:59Z"
+      },
+      {
+        "name": "Upload Bazel execution logs",
+        "status": "completed",
+        "conclusion": "skipped",
+        "number": 7,
+        "started_at": "2026-10-21T13:07:59Z",
+        "completed_at": "2026-10-21T13:07:59Z"
+      },
+      {
+        "name": "Check for a clean worktree",
+        "status": "completed",
+        "conclusion": "skipped",
+        "number": 8,
+        "started_at": "2026-10-21T13:07:59Z",
+        "completed_at": "2026-10-21T13:07:59Z"
+      },
+      {
+        "name": "Post Prepare Bazel CI",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 15,
+        "started_at": "2026-10-21T13:07:59Z",
+        "completed_at": "2026-10-21T13:07:59Z"
+      },
+      {
+        "name": "Post Run actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 16,
+        "started_at": "2026-10-21T13:07:59Z",
+        "completed_at": "2026-10-21T13:08:07Z"
+      },
+      {
+        "name": "Complete job",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 17,
+        "started_at": "2026-10-21T13:08:07Z",
+        "completed_at": "2026-10-21T13:08:07Z"
+      }
+    ]
+  },
+  "observed_at": "2026-10-21T13:22:20.289Z",
+  "source_head": "48177153ad04605338c3a9a8dbd17defee9981bc",
+  "raw_log": {
+    "file": "job119194391938.log.xz",
+    "bytes": 569346,
+    "sha256": "7a9e7bf821ad3afe45f038bdfd6bafc0381c374499502bc326d1e0e284cb35c8",
+    "compressed_bytes": 61736,
+    "compressed_sha256": "3f9cac7e89e4002b50cd5296781ef4d55d484a620cabab65d42fcbec3b640e7a",
+    "bom": true,
+    "lf": 4572,
+    "crlf": 4571
+  },
+  "analysis": {
+    "fail_target_lines": [
+      "2026-10-21T12:37:28.0114912Z FAIL: //codex-rs/hepta-operator-acceptance:hepta-operator-acceptance-tests (Exit 101) (see D:/o/execroot/_main/bazel-out/windows_x86_64_msvc-fastbuild/testlogs/codex-rs/hepta-operator-acceptance/hepta-operator-acceptance-tests/test.log)",
+      "2026-10-21T12:42:44.9249854Z FAIL: //codex-rs/hepta-shadow-qualification:hepta-shadow-qualification-tests (Exit 101) (see D:/o/execroot/_main/bazel-out/windows_x86_64_msvc-fastbuild/testlogs/codex-rs/hepta-shadow-qualification/hepta-shadow-qualification-tests/test.log)",
+      "2026-10-21T12:51:22.4284897Z FAIL: //codex-rs/exec-server:exec-server-file_system_windows-test (Exit 101) (see D:/o/execroot/_main/bazel-out/windows_x86_64_msvc-fastbuild/testlogs/codex-rs/exec-server/exec-server-file_system_windows-test/test.log)",
+      "2026-10-21T12:57:09.5370070Z FAIL: //codex-rs/hepta-agentd:hepta-agentd-terminal_cell_owner-test (Exit 101) (see D:/o/execroot/_main/bazel-out/windows_x86_64_msvc-fastbuild/testlogs/codex-rs/hepta-agentd/hepta-agentd-terminal_cell_owner-test/test.log)"
+    ],
+    "error_annotations": [
+      "2026-10-21T13:07:59.0396176Z ##[error]The operation was canceled."
+    ],
+    "rust_error_lines": [],
+    "last_progress": "2026-10-21T13:07:49.6625404Z [3,947 / 3,973] 97 / 140 tests, 4 failed; Testing //codex-rs/ext/queue:queue-unit-tests; 582s local ... (26 actions, 18 running)",
+    "scope": "Original job conclusion and preceding diagnostics; cancellation is not a pass or proof of its initiator."
+  }
+}

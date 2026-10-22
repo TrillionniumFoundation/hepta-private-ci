@@ -162,21 +162,19 @@ async fn set_extra_roots(app_server: &mut TestAppServer, root: &std::path::Path)
 }
 
 async fn run_turn(app_server: &mut TestAppServer, thread_id: &str, prompt: &str) -> Result<()> {
-    let request_id = app_server
-        .send_turn_start_request(TurnStartParams {
-            thread_id: thread_id.to_string(),
-            input: vec![UserInput::Text {
-                text: prompt.to_string(),
-                text_elements: Vec::new(),
-            }],
-            ..Default::default()
-        })
+    app_server
+        .start_turn_after_terminal_cleanup_with_timeout(
+            TurnStartParams {
+                thread_id: thread_id.to_string(),
+                input: vec![UserInput::Text {
+                    text: prompt.to_string(),
+                    text_elements: Vec::new(),
+                }],
+                ..Default::default()
+            },
+            READ_TIMEOUT,
+        )
         .await?;
-    timeout(
-        READ_TIMEOUT,
-        app_server.read_stream_until_response_message(RequestId::Integer(request_id)),
-    )
-    .await??;
     timeout(
         READ_TIMEOUT,
         app_server.read_stream_until_notification_message("turn/completed"),

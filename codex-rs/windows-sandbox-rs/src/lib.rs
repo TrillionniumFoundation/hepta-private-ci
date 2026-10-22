@@ -53,7 +53,11 @@ mod allow;
 #[cfg(target_os = "windows")]
 mod audit;
 #[cfg(target_os = "windows")]
+mod backend_selection;
+#[cfg(target_os = "windows")]
 mod cap;
+#[cfg(target_os = "windows")]
+mod capture;
 #[cfg(target_os = "windows")]
 mod deny_read_acl;
 #[cfg(target_os = "windows")]
@@ -163,6 +167,8 @@ pub use cap::workspace_write_cap_sid_for_root;
 pub use cap::workspace_write_root_contains_path;
 #[cfg(target_os = "windows")]
 pub use cap::workspace_write_root_overlaps_path;
+#[cfg(target_os = "windows")]
+pub use capture::run_windows_sandbox_capture_for_level;
 #[cfg(target_os = "windows")]
 pub use conpty::ConptyInstance;
 #[cfg(target_os = "windows")]

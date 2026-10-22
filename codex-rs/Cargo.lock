@@ -3047,6 +3047,7 @@ dependencies = [
  "codex-model-provider-info",
  "codex-otel",
  "codex-protocol",
+ "codex-state",
  "codex-utils-absolute-path",
  "codex-utils-cargo-bin",
  "codex-utils-cli",
@@ -3061,6 +3062,7 @@ dependencies = [
  "pretty_assertions",
  "serde",
  "serde_json",
+ "sqlx",
  "supports-color 3.0.2",
  "tempfile",
  "tokio",
@@ -3096,6 +3098,7 @@ dependencies = [
  "codex-shell-command",
  "codex-test-binary-support",
  "codex-utils-absolute-path",
+ "codex-utils-cargo-bin",
  "codex-utils-home-dir",
  "codex-utils-path-uri",
  "codex-utils-pty",
@@ -3671,6 +3674,7 @@ version = "0.0.0"
 dependencies = [
  "codex-hepta-contracts",
  "codex-hepta-paths",
+ "codex-utils-path",
  "ed25519-dalek",
  "pretty_assertions",
  "serde",
@@ -4126,6 +4130,7 @@ dependencies = [
  "codex-hepta-objective",
  "codex-hepta-types",
  "codex-hepta-wire",
+ "codex-utils-path",
  "ed25519-dalek",
  "libc",
  "pretty_assertions",
@@ -5431,8 +5436,9 @@ dependencies = [
 name = "codex-utils-cargo-bin"
 version = "0.0.0"
 dependencies = [
- "assert_cmd",
+ "pretty_assertions",
  "runfiles",
+ "tempfile",
  "thiserror 2.0.21",
 ]
 

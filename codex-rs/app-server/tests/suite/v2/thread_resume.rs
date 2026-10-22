@@ -4038,22 +4038,20 @@ async fn thread_resume_keeps_in_flight_turn_streaming() -> Result<()> {
     .await??;
     primary.clear_message_buffer();
 
-    let turn_id = primary
-        .send_turn_start_request(TurnStartParams {
-            thread_id: thread.id.clone(),
-            client_user_message_id: None,
-            input: vec![UserInput::Text {
-                text: "respond with docs".to_string(),
-                text_elements: Vec::new(),
-            }],
-            ..Default::default()
-        })
+    primary
+        .start_turn_after_terminal_cleanup_with_timeout(
+            TurnStartParams {
+                thread_id: thread.id.clone(),
+                client_user_message_id: None,
+                input: vec![UserInput::Text {
+                    text: "respond with docs".to_string(),
+                    text_elements: Vec::new(),
+                }],
+                ..Default::default()
+            },
+            DEFAULT_READ_TIMEOUT,
+        )
         .await?;
-    timeout(
-        DEFAULT_READ_TIMEOUT,
-        primary.read_stream_until_response_message(RequestId::Integer(turn_id)),
-    )
-    .await??;
     timeout(
         DEFAULT_READ_TIMEOUT,
         primary.read_stream_until_notification_message("turn/started"),
@@ -4137,24 +4135,20 @@ async fn thread_resume_rejects_history_when_thread_is_running() -> Result<()> {
     primary.clear_message_buffer();
 
     let thread_id = thread.id.clone();
-    let running_turn_request_id = primary
-        .send_turn_start_request(TurnStartParams {
-            thread_id: thread_id.clone(),
-            client_user_message_id: None,
-            input: vec![UserInput::Text {
-                text: "keep running".to_string(),
-                text_elements: Vec::new(),
-            }],
-            ..Default::default()
-        })
+    let TurnStartResponse { turn: running_turn } = primary
+        .start_turn_after_terminal_cleanup_with_timeout(
+            TurnStartParams {
+                thread_id: thread_id.clone(),
+                client_user_message_id: None,
+                input: vec![UserInput::Text {
+                    text: "keep running".to_string(),
+                    text_elements: Vec::new(),
+                }],
+                ..Default::default()
+            },
+            DEFAULT_READ_TIMEOUT,
+        )
         .await?;
-    let running_turn_resp: JSONRPCResponse = timeout(
-        DEFAULT_READ_TIMEOUT,
-        primary.read_stream_until_response_message(RequestId::Integer(running_turn_request_id)),
-    )
-    .await??;
-    let TurnStartResponse { turn: running_turn } =
-        to_response::<TurnStartResponse>(running_turn_resp)?;
     assert_eq!(running_turn.items_view, TurnItemsView::NotLoaded);
     timeout(
         DEFAULT_READ_TIMEOUT,
@@ -4254,24 +4248,20 @@ async fn thread_resume_rejects_mismatched_path_for_running_thread_id() -> Result
     primary.clear_message_buffer();
 
     let thread_id = thread.id.clone();
-    let running_turn_request_id = primary
-        .send_turn_start_request(TurnStartParams {
-            thread_id: thread_id.clone(),
-            client_user_message_id: None,
-            input: vec![UserInput::Text {
-                text: "keep running".to_string(),
-                text_elements: Vec::new(),
-            }],
-            ..Default::default()
-        })
+    let TurnStartResponse { turn: running_turn } = primary
+        .start_turn_after_terminal_cleanup_with_timeout(
+            TurnStartParams {
+                thread_id: thread_id.clone(),
+                client_user_message_id: None,
+                input: vec![UserInput::Text {
+                    text: "keep running".to_string(),
+                    text_elements: Vec::new(),
+                }],
+                ..Default::default()
+            },
+            DEFAULT_READ_TIMEOUT,
+        )
         .await?;
-    let running_turn_resp: JSONRPCResponse = timeout(
-        DEFAULT_READ_TIMEOUT,
-        primary.read_stream_until_response_message(RequestId::Integer(running_turn_request_id)),
-    )
-    .await??;
-    let TurnStartResponse { turn: running_turn } =
-        to_response::<TurnStartResponse>(running_turn_resp)?;
     timeout(
         DEFAULT_READ_TIMEOUT,
         primary.read_stream_until_notification_message("turn/started"),
@@ -4825,24 +4815,22 @@ async fn thread_resume_replays_pending_file_change_request_approval() -> Result<
     .await??;
     primary.clear_message_buffer();
 
-    let running_turn_id = primary
-        .send_turn_start_request(TurnStartParams {
-            thread_id: thread.id.clone(),
-            client_user_message_id: None,
-            input: vec![UserInput::Text {
-                text: "apply patch".to_string(),
-                text_elements: Vec::new(),
-            }],
-            cwd: Some(workspace.clone()),
-            approval_policy: Some(AskForApproval::UnlessTrusted),
-            ..Default::default()
-        })
+    primary
+        .start_turn_after_terminal_cleanup_with_timeout(
+            TurnStartParams {
+                thread_id: thread.id.clone(),
+                client_user_message_id: None,
+                input: vec![UserInput::Text {
+                    text: "apply patch".to_string(),
+                    text_elements: Vec::new(),
+                }],
+                cwd: Some(workspace.clone()),
+                approval_policy: Some(AskForApproval::UnlessTrusted),
+                ..Default::default()
+            },
+            DEFAULT_READ_TIMEOUT,
+        )
         .await?;
-    timeout(
-        DEFAULT_READ_TIMEOUT,
-        primary.read_stream_until_response_message(RequestId::Integer(running_turn_id)),
-    )
-    .await??;
 
     let original_started = timeout(DEFAULT_READ_TIMEOUT, async {
         loop {

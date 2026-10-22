@@ -1,0 +1,62 @@
+{
+  "command": [
+    "python3",
+    "scripts/check_blob_size.py",
+    "--base",
+    "fa0e8457ca5a3995e00ecec6534c1c68aa82fb28",
+    "--head",
+    "HEAD",
+    "--allowlist",
+    ".github/blob-size-allowlist.txt"
+  ],
+  "cwd": "/workspace/scratch/337c309bc660/combined-durability-work",
+  "started_at_utc": "2026-10-21T13:58:36.947157+00:00",
+  "head_at_start": "450016edfbbdca0355b7fdaaba9458790504f8c0",
+  "source_hashes_before": {
+    "MODULE.bazel.lock": {
+      "bytes": 1745183,
+      "sha256": "f6c5dd1f2a09c66d6a4c387ff40d11afb7ed2309e541dcb6bff9ad5f410996c3"
+    },
+    "codex-rs/Cargo.lock": {
+      "bytes": 413726,
+      "sha256": "d8121cd206f40ef5a25009a041f0a75a1959155f62091ea494047c3d522c1476"
+    }
+  },
+  "limits": {
+    "cargo_jobs": 2,
+    "dev_debug": 0,
+    "test_debug": 0,
+    "incremental": 0,
+    "bazel_jobs": 2,
+    "bazel_xmx_mib": 1536
+  },
+  "memory_events_before": "low 0\nhigh 0\nmax 1318679\noom 0\noom_kill 0\noom_group_kill 0\n",
+  "pid": 26,
+  "exit_code": 0,
+  "elapsed_seconds": 2.0028162410017103,
+  "finished_at_utc": "2026-10-21T13:58:38.957150+00:00",
+  "source_hashes_after": {
+    "MODULE.bazel.lock": {
+      "bytes": 1745183,
+      "sha256": "f6c5dd1f2a09c66d6a4c387ff40d11afb7ed2309e541dcb6bff9ad5f410996c3"
+    },
+    "codex-rs/Cargo.lock": {
+      "bytes": 413726,
+      "sha256": "d8121cd206f40ef5a25009a041f0a75a1959155f62091ea494047c3d522c1476"
+    }
+  },
+  "peak_cgroup_bytes": {
+    "anon": 231604224,
+    "file": 6723624960,
+    "kernel": 1262280704
+  },
+  "minimum_free_bytes": 455880704,
+  "memory_events_after": "low 0\nhigh 0\nmax 1318679\noom 0\noom_kill 0\noom_group_kill 0\n",
+  "raw_log": {
+    "file": "continuation-blob-policy.log.xz",
+    "bytes": 7472,
+    "sha256": "d5389f4207d6ceac171f59a322b7e83ca75a9a9db831d8c0e3b529507e57e50f",
+    "compressed_bytes": 1336,
+    "compressed_sha256": "9cad2660c4f0435391918970d46107cbb86b9a4dd9ce0785f8ad6cb4b5ca0642"
+  }
+}

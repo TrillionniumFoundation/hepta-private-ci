@@ -251,25 +251,22 @@ async fn thread_revert_interrupts_active_turn_and_keeps_thread_loaded() -> Resul
         .await?;
 
     let TurnStartResponse { turn: active_turn } = mcp
-        .request(|request_id| ClientRequest::TurnStart {
-            request_id,
-            params: TurnStartParams {
-                thread_id: thread.id.clone(),
-                input: vec![UserInput::Text {
-                    text: "sleep".to_string(),
-                    text_elements: Vec::new(),
-                }],
-                collaboration_mode: Some(CollaborationMode {
-                    mode: ModeKind::Plan,
-                    settings: Settings {
-                        model: "mock-model".to_string(),
-                        reasoning_effort: Some(ReasoningEffort::Medium),
-                        developer_instructions: None,
-                    },
-                }),
-                approval_policy: Some(AskForApproval::Never),
-                ..Default::default()
-            },
+        .start_turn_after_terminal_cleanup(TurnStartParams {
+            thread_id: thread.id.clone(),
+            input: vec![UserInput::Text {
+                text: "sleep".to_string(),
+                text_elements: Vec::new(),
+            }],
+            collaboration_mode: Some(CollaborationMode {
+                mode: ModeKind::Plan,
+                settings: Settings {
+                    model: "mock-model".to_string(),
+                    reasoning_effort: Some(ReasoningEffort::Medium),
+                    developer_instructions: None,
+                },
+            }),
+            approval_policy: Some(AskForApproval::Never),
+            ..Default::default()
         })
         .await?;
     timeout(

@@ -1,0 +1,52 @@
+[
+  {
+    "head": "48177153ad04605338c3a9a8dbd17defee9981bc",
+    "job_id": "119194392010",
+    "job_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/jobs/119194392010",
+    "raw_archive_path": "/workspace/scratch/337c309bc660/combined-durability-work/qualification/ci-bazel-terminal-481-20261021/job119194392010.log.xz",
+    "raw_bytes": 634138,
+    "raw_sha256": "da3211f5a45b09c3e12d4713aa1123d8ff9c7a939320d5fb1da081aaaba3b7b6",
+    "archive_bytes": 64324,
+    "archive_sha256": "0d211c99deee0d093d9c7da33fad0b4356bb826b710acbac8d92c70da990db9f",
+    "first_failure_line": 3810,
+    "context_start_line": 3805,
+    "context_lines": [
+      "2026-10-21T12:46:55.4855353Z failures:",
+      "2026-10-21T12:46:55.4855586Z ",
+      "2026-10-21T12:46:55.4923819Z ---- git_process::tests::timed_out_exited_git_wrapper_does_not_leave_child_process_running stdout ----",
+      "2026-10-21T12:46:55.4933130Z ",
+      "2026-10-21T12:46:55.4934319Z thread 'git_process::tests::timed_out_exited_git_wrapper_does_not_leave_child_process_running' (3408) panicked at git-utils/src\\git_process_tests.rs:167:10:",
+      "2026-10-21T12:46:55.4935969Z wait for Git wrapper exit: Elapsed(())",
+      "2026-10-21T12:46:55.4936821Z note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace",
+      "2026-10-21T12:46:55.4937439Z ",
+      "2026-10-21T12:46:55.4937519Z ",
+      "2026-10-21T12:46:55.4937772Z failures:",
+      "2026-10-21T12:46:55.4938462Z     git_process::tests::timed_out_exited_git_wrapper_does_not_leave_child_process_running"
+    ]
+  },
+  {
+    "head": "52293403ea1e06465c41d24d39b54959bad40936",
+    "job_id": "119206185314",
+    "job_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/jobs/119206185314",
+    "raw_archive_path": "/workspace/scratch/337c309bc660/combined-durability-work/qualification/ci-bazel-terminal-3041-20261021/job119206185314.log.xz",
+    "raw_bytes": 708845,
+    "raw_sha256": "622727682e6d8205e724535ba7b40f6644640c7a28a834dced5338cc56248c7c",
+    "archive_bytes": 90612,
+    "archive_sha256": "fe71fc716e8082612b619d20a437a67365538415ddda232a1f35fd670bcfcc07",
+    "first_failure_line": 3571,
+    "context_start_line": 3566,
+    "context_lines": [
+      "2026-10-21T12:46:54.6114150Z failures:",
+      "2026-10-21T12:46:54.6114349Z ",
+      "2026-10-21T12:46:54.6114793Z ---- git_process::tests::timed_out_exited_git_wrapper_does_not_leave_child_process_running stdout ----",
+      "2026-10-21T12:46:54.6115569Z ",
+      "2026-10-21T12:46:54.6119138Z thread 'git_process::tests::timed_out_exited_git_wrapper_does_not_leave_child_process_running' (6016) panicked at git-utils/src\\git_process_tests.rs:167:10:",
+      "2026-10-21T12:46:54.6120117Z wait for Git wrapper exit: Elapsed(())",
+      "2026-10-21T12:46:54.6120934Z note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace",
+      "2026-10-21T12:46:54.6123959Z ",
+      "2026-10-21T12:46:54.6123965Z ",
+      "2026-10-21T12:46:54.6124101Z failures:",
+      "2026-10-21T12:46:54.6124641Z     git_process::tests::timed_out_exited_git_wrapper_does_not_leave_child_process_running"
+    ]
+  }
+]

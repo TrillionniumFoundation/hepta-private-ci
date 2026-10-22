@@ -5280,6 +5280,11 @@ fn digest_parts(domain: &[u8], parts: &[&[u8]]) -> Sha256Digest {
 }
 
 fn now_unix_seconds() -> Result<i64, LocalLeaseOutboxError> {
+    #[cfg(test)]
+    if let Some(seconds) = crate::h7_registry_fixture_tests::fixture_unix_seconds() {
+        return i64::try_from(seconds)
+            .map_err(|_| LocalLeaseOutboxError::Clock("timestamp overflow".to_string()));
+    }
     let seconds = SystemTime::now()
         .duration_since(UNIX_EPOCH)
         .map_err(|error| LocalLeaseOutboxError::Clock(error.to_string()))?

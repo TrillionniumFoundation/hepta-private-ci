@@ -1,0 +1,76 @@
+{
+  "command": [
+    "just",
+    "test",
+    "-p",
+    "codex-git-utils",
+    "--locked",
+    "-E",
+    "test(test_binary_git_wrapper)"
+  ],
+  "cwd": "/workspace/scratch/337c309bc660/os-git-wrapper-work",
+  "started_at_utc": "2026-10-21T13:20:28.399710+00:00",
+  "head_at_start": "1022172082781366a85935043b951872afda9f5f",
+  "source_hashes_before": {
+    "MODULE.bazel.lock": {
+      "bytes": 1745183,
+      "sha256": "f6c5dd1f2a09c66d6a4c387ff40d11afb7ed2309e541dcb6bff9ad5f410996c3"
+    },
+    "codex-rs/Cargo.lock": {
+      "bytes": 413681,
+      "sha256": "4a89de595739e85d8d0e01944914c62217287d2c7daccee8e6d85b1cb4afc941"
+    },
+    "codex-rs/git-utils/src/git_process.rs": {
+      "bytes": 2783,
+      "sha256": "80d4423fecc3d7e1569912b92fab50bfcb16785584358ed9ed92cfe4d5dc6ba5"
+    },
+    "codex-rs/git-utils/src/git_process_tests.rs": {
+      "bytes": 11518,
+      "sha256": "964e8fd8286fef6cd0a96f4901911f8c3d3fccc4756f8055a0943c4ed069dde2"
+    }
+  },
+  "limits": {
+    "cargo_jobs": 2,
+    "dev_debug": 0,
+    "test_debug": 0,
+    "incremental": 0
+  },
+  "platform": "linux",
+  "memory_events_before": "low 0\nhigh 0\nmax 1237781\noom 0\noom_kill 0\noom_group_kill 0\n",
+  "pid": 216390,
+  "exit_code": 100,
+  "elapsed_seconds": 11.011168722005095,
+  "finished_at_utc": "2026-10-21T13:20:39.418144+00:00",
+  "source_hashes_after": {
+    "MODULE.bazel.lock": {
+      "bytes": 1745183,
+      "sha256": "f6c5dd1f2a09c66d6a4c387ff40d11afb7ed2309e541dcb6bff9ad5f410996c3"
+    },
+    "codex-rs/Cargo.lock": {
+      "bytes": 413681,
+      "sha256": "4a89de595739e85d8d0e01944914c62217287d2c7daccee8e6d85b1cb4afc941"
+    },
+    "codex-rs/git-utils/src/git_process.rs": {
+      "bytes": 2783,
+      "sha256": "80d4423fecc3d7e1569912b92fab50bfcb16785584358ed9ed92cfe4d5dc6ba5"
+    },
+    "codex-rs/git-utils/src/git_process_tests.rs": {
+      "bytes": 11518,
+      "sha256": "964e8fd8286fef6cd0a96f4901911f8c3d3fccc4756f8055a0943c4ed069dde2"
+    }
+  },
+  "peak_cgroup_bytes": {
+    "anon": 857698304,
+    "file": 6699192320,
+    "kernel": 1068617728
+  },
+  "minimum_free_bytes": 568369152,
+  "memory_events_after": "low 0\nhigh 0\nmax 1240206\noom 0\noom_kill 0\noom_group_kill 0\n",
+  "raw_log": {
+    "file": "negative-cleanup-disabled-102217208.log.xz",
+    "bytes": 14611,
+    "sha256": "db7a95a4b2afe0411029f9fd63a75eec6b7f8f60e123fcac75150f9d3d53f193",
+    "compressed_bytes": 2020,
+    "compressed_sha256": "2319d85cf2a966764c82998fab626bebe7d1d3af754f0a77bab6bd386ffc1258"
+  }
+}

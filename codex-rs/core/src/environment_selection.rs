@@ -1221,6 +1221,15 @@ url = "ws://127.0.0.1:8765"
 
     #[tokio::test]
     async fn blocking_snapshot_waits_for_starting_environment() {
+        assert_blocking_snapshot_waits_with_scoped_tracing().await;
+    }
+
+    #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+    async fn blocking_snapshot_preserves_tracing_across_runtime_workers() {
+        assert_blocking_snapshot_waits_with_scoped_tracing().await;
+    }
+
+    async fn assert_blocking_snapshot_waits_with_scoped_tracing() {
         let buffer: &'static std::sync::Mutex<Vec<u8>> =
             Box::leak(Box::new(std::sync::Mutex::new(Vec::new())));
         let subscriber = tracing_subscriber::fmt()
@@ -1229,53 +1238,68 @@ url = "ws://127.0.0.1:8765"
             .with_span_events(FmtSpan::NEW)
             .with_writer(MockWriter::new(buffer))
             .finish();
-        let _subscriber_guard = tracing::subscriber::set_default(subscriber);
+        async {
+            let listener = TcpListener::bind("127.0.0.1:0")
+                .await
+                .expect("bind websocket listener");
+            let manager = Arc::new(
+                EnvironmentManager::create_for_tests(
+                    Some(format!(
+                        "ws://{}",
+                        listener.local_addr().expect("listener address")
+                    )),
+                    Some(test_runtime_paths()),
+                )
+                .await,
+            );
+            let selection = TurnEnvironmentSelection {
+                environment_id: REMOTE_ENVIRONMENT_ID.to_string(),
+                cwd: PathUri::from_abs_path(&AbsolutePathBuf::current_dir().expect("cwd")),
+                workspace_roots: Vec::new(),
+                config: EnvironmentConfigState::FromThread,
+            };
+            let environments = Arc::new(ThreadEnvironments::new(
+                manager,
+                crate::shell::default_user_shell(),
+                test_environment_config(),
+                ShellSnapshot::disabled(),
+                TurnEnvironmentSnapshot::default(),
+                /*non_blocking_snapshots*/ false,
+            ));
+            environments
+                .update_selections(std::slice::from_ref(&selection), &test_environment_config());
+            let (first_poll_tx, first_poll_rx) = tokio::sync::oneshot::channel();
+            let snapshot_task = tokio::spawn(
+                {
+                    let environments = Arc::clone(&environments);
+                    async move {
+                        let snapshot = environments.snapshot();
+                        tokio::pin!(snapshot);
+                        assert!(futures::poll!(&mut snapshot).is_pending());
+                        first_poll_tx.send(()).expect("observe pending snapshot");
+                        snapshot.await
+                    }
+                }
+                .with_current_subscriber(),
+            );
+            timeout(Duration::from_secs(5), first_poll_rx)
+                .await
+                .expect("snapshot should be polled before the environment starts")
+                .expect("snapshot reported its pending first poll");
+            assert!(!snapshot_task.is_finished());
 
-        let listener = TcpListener::bind("127.0.0.1:0")
-            .await
-            .expect("bind websocket listener");
-        let manager = Arc::new(
-            EnvironmentManager::create_for_tests(
-                Some(format!(
-                    "ws://{}",
-                    listener.local_addr().expect("listener address")
-                )),
-                Some(test_runtime_paths()),
-            )
-            .await,
-        );
-        let selection = TurnEnvironmentSelection {
-            environment_id: REMOTE_ENVIRONMENT_ID.to_string(),
-            cwd: PathUri::from_abs_path(&AbsolutePathBuf::current_dir().expect("cwd")),
-            workspace_roots: Vec::new(),
-            config: EnvironmentConfigState::FromThread,
-        };
-        let environments = Arc::new(ThreadEnvironments::new(
-            manager,
-            crate::shell::default_user_shell(),
-            test_environment_config(),
-            ShellSnapshot::disabled(),
-            TurnEnvironmentSnapshot::default(),
-            /*non_blocking_snapshots*/ false,
-        ));
-        environments
-            .update_selections(std::slice::from_ref(&selection), &test_environment_config());
-        let snapshot_task = tokio::spawn({
-            let environments = Arc::clone(&environments);
-            async move { environments.snapshot().await }
-        });
-        tokio::task::yield_now().await;
-        assert!(!snapshot_task.is_finished());
+            let server = tokio::spawn(serve_environment_info(listener).with_current_subscriber());
+            let snapshot = timeout(Duration::from_secs(5), snapshot_task)
+                .await
+                .expect("snapshot should finish after the environment starts")
+                .expect("snapshot task");
 
-        let server = tokio::spawn(serve_environment_info(listener));
-        let snapshot = timeout(Duration::from_secs(5), snapshot_task)
-            .await
-            .expect("snapshot should finish after the environment starts")
-            .expect("snapshot task");
-
-        assert!(snapshot.starting().next().is_none());
-        assert_eq!(snapshot.to_selections(), vec![selection]);
-        server.await.expect("server task");
+            assert!(snapshot.starting().next().is_none());
+            assert_eq!(snapshot.to_selections(), vec![selection]);
+            server.await.expect("server task");
+        }
+        .with_subscriber(subscriber)
+        .await;
 
         let logs = String::from_utf8(buffer.lock().expect("buffer lock").clone())
             .expect("UTF-8 tracing output");

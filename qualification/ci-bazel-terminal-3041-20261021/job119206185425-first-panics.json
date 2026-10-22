@@ -1,0 +1,151 @@
+{
+  "job_id": 119206185425,
+  "targets": [
+    "//codex-rs/hepta-operator-acceptance:hepta-operator-acceptance-tests",
+    "//codex-rs/hepta-shadow-qualification:hepta-shadow-qualification-tests",
+    "//codex-rs/exec-server:exec-server-file_system_windows-test"
+  ],
+  "first_panics": {
+    "g5_trust::tests::exact_head_and_predecessor_binding_is_required": {
+      "line": 3399,
+      "location": "codex-rs/hepta-operator-acceptance/src\\g5_trust_tests.rs:278:9:",
+      "context": [
+        "2026-10-21T12:48:43.6371598Z thread 'g5_trust::tests::exact_head_and_predecessor_binding_is_required' (4320) panicked at codex-rs/hepta-operator-acceptance/src\\g5_trust_tests.rs:278:9:",
+        "2026-10-21T12:48:43.6380247Z assertion failed: status.success()",
+        "2026-10-21T12:48:43.6530468Z note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace",
+        "2026-10-21T12:48:43.6627920Z "
+      ]
+    },
+    "g5_trust::tests::expiry_is_half_open_and_never_creates_acceptance": {
+      "line": 3405,
+      "location": "codex-rs/hepta-operator-acceptance/src\\g5_trust_tests.rs:278:9:",
+      "context": [
+        "2026-10-21T12:48:43.6851047Z thread 'g5_trust::tests::expiry_is_half_open_and_never_creates_acceptance' (2352) panicked at codex-rs/hepta-operator-acceptance/src\\g5_trust_tests.rs:278:9:",
+        "2026-10-21T12:48:43.6948171Z assertion failed: status.success()",
+        "2026-10-21T12:48:43.7007969Z "
+      ]
+    },
+    "g5_trust::tests::fresh_head_scoped_challenge_reaches_ready_without_authority": {
+      "line": 3410,
+      "location": "codex-rs/hepta-operator-acceptance/src\\g5_trust_tests.rs:278:9:",
+      "context": [
+        "2026-10-21T12:48:43.7269120Z thread 'g5_trust::tests::fresh_head_scoped_challenge_reaches_ready_without_authority' (5016) panicked at codex-rs/hepta-operator-acceptance/src\\g5_trust_tests.rs:278:9:",
+        "2026-10-21T12:48:43.7330316Z assertion failed: status.success()",
+        "2026-10-21T12:48:43.7336572Z "
+      ]
+    },
+    "g5_trust::tests::policy_and_revocation_files_must_be_canonical": {
+      "line": 3415,
+      "location": "codex-rs/hepta-operator-acceptance/src\\g5_trust_tests.rs:278:9:",
+      "context": [
+        "2026-10-21T12:48:43.7652185Z thread 'g5_trust::tests::policy_and_revocation_files_must_be_canonical' (1960) panicked at codex-rs/hepta-operator-acceptance/src\\g5_trust_tests.rs:278:9:",
+        "2026-10-21T12:48:43.7660277Z assertion failed: status.success()",
+        "2026-10-21T12:48:43.7811014Z "
+      ]
+    },
+    "g5_trust::tests::independently_signed_challenge_is_verified_but_not_accepted": {
+      "line": 3420,
+      "location": "codex-rs/hepta-operator-acceptance/src\\g5_trust_tests.rs:278:9:",
+      "context": [
+        "2026-10-21T12:48:43.7981077Z thread 'g5_trust::tests::independently_signed_challenge_is_verified_but_not_accepted' (3632) panicked at codex-rs/hepta-operator-acceptance/src\\g5_trust_tests.rs:278:9:",
+        "2026-10-21T12:48:43.8130255Z assertion failed: status.success()",
+        "2026-10-21T12:48:43.8227969Z "
+      ]
+    },
+    "g5_trust::tests::revocation_digest_change_invalidates_existing_challenge": {
+      "line": 3425,
+      "location": "codex-rs/hepta-operator-acceptance/src\\g5_trust_tests.rs:278:9:",
+      "context": [
+        "2026-10-21T12:48:43.8451072Z thread 'g5_trust::tests::revocation_digest_change_invalidates_existing_challenge' (8940) panicked at codex-rs/hepta-operator-acceptance/src\\g5_trust_tests.rs:278:9:",
+        "2026-10-21T12:48:43.8548231Z assertion failed: status.success()",
+        "2026-10-21T12:48:43.8620003Z "
+      ]
+    },
+    "g5_trust::tests::revocation_is_external_and_fail_closed_before_challenge_issuance": {
+      "line": 3430,
+      "location": "codex-rs/hepta-operator-acceptance/src\\g5_trust_tests.rs:278:9:",
+      "context": [
+        "2026-10-21T12:48:43.8834463Z thread 'g5_trust::tests::revocation_is_external_and_fail_closed_before_challenge_issuance' (8388) panicked at codex-rs/hepta-operator-acceptance/src\\g5_trust_tests.rs:278:9:",
+        "2026-10-21T12:48:43.8837385Z assertion failed: status.success()",
+        "2026-10-21T12:48:43.8869680Z "
+      ]
+    },
+    "trust::tests::mutable_binding_cannot_relabel_the_pinned_principal": {
+      "line": 3435,
+      "location": "codex-rs/hepta-operator-acceptance/src\\trust_tests.rs:169:9:",
+      "context": [
+        "2026-10-21T12:48:43.9104269Z thread 'trust::tests::mutable_binding_cannot_relabel_the_pinned_principal' (5548) panicked at codex-rs/hepta-operator-acceptance/src\\trust_tests.rs:169:9:",
+        "2026-10-21T12:48:43.9190012Z generate test-only Ed25519 key",
+        "2026-10-21T12:48:43.9479945Z "
+      ]
+    },
+    "trust::tests::sshsig_verifies_only_exact_namespace_against_pinned_policy": {
+      "line": 3440,
+      "location": "codex-rs/hepta-operator-acceptance/src\\trust_tests.rs:169:9:",
+      "context": [
+        "2026-10-21T12:48:44.0351243Z thread 'trust::tests::sshsig_verifies_only_exact_namespace_against_pinned_policy' (6020) panicked at codex-rs/hepta-operator-acceptance/src\\trust_tests.rs:169:9:",
+        "2026-10-21T12:48:44.0560501Z generate test-only Ed25519 key",
+        "2026-10-21T12:48:44.0867935Z "
+      ]
+    },
+    "trust::tests::mutable_binding_cannot_replace_the_privately_pinned_signer": {
+      "line": 3445,
+      "location": "codex-rs/hepta-operator-acceptance/src\\trust_tests.rs:169:9:",
+      "context": [
+        "2026-10-21T12:48:44.1331155Z thread 'trust::tests::mutable_binding_cannot_replace_the_privately_pinned_signer' (5592) panicked at codex-rs/hepta-operator-acceptance/src\\trust_tests.rs:169:9:",
+        "2026-10-21T12:48:44.1520268Z generate test-only Ed25519 key",
+        "2026-10-21T12:48:44.1660272Z "
+      ]
+    },
+    "trust::tests::stored_signature_base64_is_bounded_before_decoding": {
+      "line": 3450,
+      "location": "codex-rs/hepta-operator-acceptance/src\\trust_tests.rs:169:9:",
+      "context": [
+        "2026-10-21T12:48:44.2170952Z thread 'trust::tests::stored_signature_base64_is_bounded_before_decoding' (1372) panicked at codex-rs/hepta-operator-acceptance/src\\trust_tests.rs:169:9:",
+        "2026-10-21T12:48:44.2350384Z generate test-only Ed25519 key",
+        "2026-10-21T12:48:44.2489849Z "
+      ]
+    },
+    "trust::tests::trust_policy_pins_store_principal_fingerprint_and_allowed_signers": {
+      "line": 3455,
+      "location": "codex-rs/hepta-operator-acceptance/src\\trust_tests.rs:169:9:",
+      "context": [
+        "2026-10-21T12:48:44.2999183Z thread 'trust::tests::trust_policy_pins_store_principal_fingerprint_and_allowed_signers' (2460) panicked at codex-rs/hepta-operator-acceptance/src\\trust_tests.rs:169:9:",
+        "2026-10-21T12:48:44.3130102Z generate test-only Ed25519 key",
+        "2026-10-21T12:48:44.3208919Z "
+      ]
+    },
+    "trust::tests::trust_policy_digest_is_external_and_fail_closed": {
+      "line": 3460,
+      "location": "codex-rs/hepta-operator-acceptance/src\\trust_tests.rs:169:9:",
+      "context": [
+        "2026-10-21T12:48:44.3459118Z thread 'trust::tests::trust_policy_digest_is_external_and_fail_closed' (8760) panicked at codex-rs/hepta-operator-acceptance/src\\trust_tests.rs:169:9:",
+        "2026-10-21T12:48:44.3529932Z generate test-only Ed25519 key",
+        "2026-10-21T12:48:44.3648127Z ",
+        "2026-10-21T12:48:44.3739672Z ",
+        "2026-10-21T12:48:44.3781049Z failures:",
+        "2026-10-21T12:48:44.3850384Z     g5_trust::tests::exact_head_and_predecessor_binding_is_required",
+        "2026-10-21T12:48:44.3975926Z     g5_trust::tests::expiry_is_half_open_and_never_creates_acceptance",
+        "2026-10-21T12:48:44.4064041Z     g5_trust::tests::fresh_head_scoped_challenge_reaches_ready_without_authority",
+        "2026-10-21T12:48:44.4095963Z     g5_trust::tests::independently_signed_challenge_is_verified_but_not_accepted",
+        "2026-10-21T12:48:44.4165602Z     g5_trust::tests::policy_and_revocation_files_must_be_canonical",
+        "2026-10-21T12:48:44.4295992Z     g5_trust::tests::revocation_digest_change_invalidates_existing_challenge",
+        "2026-10-21T12:48:44.4384060Z     g5_trust::tests::revocation_is_external_and_fail_closed_before_challenge_issuance",
+        "2026-10-21T12:48:44.4415933Z     trust::tests::mutable_binding_cannot_relabel_the_pinned_principal",
+        "2026-10-21T12:48:44.4485774Z     trust::tests::mutable_binding_cannot_replace_the_privately_pinned_signer",
+        "2026-10-21T12:48:44.4615966Z     trust::tests::sshsig_verifies_only_exact_namespace_against_pinned_policy"
+      ]
+    },
+    "child_tests::persists_inbound_wire_before_rejecting_invalid_json": {
+      "line": 3595,
+      "location": "codex-rs/hepta-shadow-qualification/src\\child_tests.rs:17:5:",
+      "context": [
+        "2026-10-21T12:52:54.8784581Z thread 'child_tests::persists_inbound_wire_before_rejecting_invalid_json' (5332) panicked at codex-rs/hepta-shadow-qualification/src\\child_tests.rs:17:5:",
+        "2026-10-21T12:52:54.8786344Z assertion failed: root.join(\"app_server-inbound-000001.receipt.json\").is_file()",
+        "2026-10-21T12:52:54.8787596Z note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace",
+        "2026-10-21T12:52:54.8788949Z "
+      ]
+    }
+  },
+  "scope": "Diagnostics before original cancellation; no claim of full suite completion."
+}

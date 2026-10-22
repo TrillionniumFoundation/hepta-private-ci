@@ -105,6 +105,7 @@ def execute_logged(
     *,
     maximum_bytes: int = 64 * 1024 * 1024,
     timeout_seconds: float = 3600,
+    resource_log: Path | None = None,
 ) -> dict:
     """Bound a POSIX command group, retain raw output, and reap its direct child.
 
@@ -127,6 +128,8 @@ def execute_logged(
     timed_out = exceeded = False
     data = bytearray()
     started = time.monotonic()
+    observer = None
+    resources = None
     with log.open("xb") as stream:
         process = subprocess.Popen(
             command,
@@ -138,6 +141,16 @@ def execute_logged(
         descriptor = process.stdout.fileno()
         completed = False
         try:
+            if resource_log is not None:
+                try:
+                    from scripts.hepta_ci_resources import ResourceObserver
+                except ModuleNotFoundError as error:
+                    if error.name != "scripts":
+                        raise
+                    from hepta_ci_resources import ResourceObserver
+
+                observer = ResourceObserver(resource_log)
+                observer.sample(process.pid)
             os.set_blocking(descriptor, False)
             with selectors.DefaultSelector() as selector:
                 selector.register(descriptor, selectors.EVENT_READ)
@@ -146,6 +159,8 @@ def execute_logged(
                     if time.monotonic() - started >= timeout_seconds:
                         timed_out = True
                         break
+                    if observer is not None:
+                        observer.sample(process.pid)
                     ready = (
                         selector.select(
                             min(
@@ -189,11 +204,14 @@ def execute_logged(
                 except ProcessLookupError:
                     pass
             process.wait()
+            if observer is not None:
+                observer.sample(process.pid, final=True)
+                resources = observer.close()
             process.stdout.close()
             stream.flush()
             os.fsync(stream.fileno())
     passed, failed = observed_test_counts(data.decode("utf-8", errors="replace"))
-    return {
+    record = {
         "returncode": process.returncode,
         "timed_out": timed_out,
         "output_limit_exceeded": exceeded,
@@ -202,6 +220,9 @@ def execute_logged(
         "observed_passed_tests": passed,
         "observed_failed_tests": failed,
     }
+    if resource_log is not None:
+        record["resource_observations"] = resources
+    return record
 
 
 def run(
@@ -210,6 +231,7 @@ def run(
     *,
     minimum_tests: int = 0,
     timeout_seconds: float = 3600,
+    observe_resources: bool = False,
 ) -> int:
     if not command or type(minimum_tests) is not int or minimum_tests < 0:
         raise ValueError("a command and nonnegative minimum test count are required")
@@ -235,6 +257,8 @@ def run(
             "status": "running",
             "command_exit_code": None,
         }
+        if observe_resources:
+            record["resource_observations_requested"] = True
         json.dump(record, stream, sort_keys=True)
         stream.write("\n")
         stream.flush()
@@ -272,7 +296,14 @@ def run(
             raise ValueError("an explicit source-head or base-merge lane is required")
         log = output.with_name(output.name + "." + uuid.uuid4().hex + ".log")
         record["log_file"] = log.name
-        execution = execute_logged(command, log, timeout_seconds=timeout_seconds)
+        execution = execute_logged(
+            command,
+            log,
+            timeout_seconds=timeout_seconds,
+            resource_log=log.with_suffix(".resources.jsonl")
+            if observe_resources
+            else None,
+        )
         record.update(execution)
         record["log_file"] = log.name
         record["minimum_tests"] = minimum_tests
@@ -330,6 +361,7 @@ def main() -> int:
     parser.add_argument("--output", type=Path, required=True)
     parser.add_argument("--minimum-tests", type=int, default=0)
     parser.add_argument("--timeout-seconds", type=float, default=3600)
+    parser.add_argument("--observe-resources", action="store_true")
     parser.add_argument("command", nargs=argparse.REMAINDER)
     args = parser.parse_args()
     command = args.command[1:] if args.command[:1] == ["--"] else args.command
@@ -339,6 +371,7 @@ def main() -> int:
             command,
             minimum_tests=args.minimum_tests,
             timeout_seconds=args.timeout_seconds,
+            observe_resources=args.observe_resources,
         )
     except (OSError, ValueError, subprocess.SubprocessError) as error:
         print(f"CI command not dispatched: {error}", file=sys.stderr)

@@ -1,0 +1,150 @@
+name: Hepta platform recovery qualification
+
+# Opt in through the existing full-ci recovery branch; preserve the original
+# qualifications while collecting the native evidence needed to repair them.
+on:
+  push:
+    branches: ["agents/hepta-platform-recovery-full-ci-*"]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: hepta-platform-recovery-qualification-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  memory-fixture:
+    name: Real H7 registry fixture writer
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    env:
+      CARGO_INCREMENTAL: "0"
+      CARGO_BUILD_JOBS: "2"
+      CARGO_PROFILE_TEST_DEBUG: "0"
+      CARGO_PROFILE_DEV_DEBUG: "0"
+      CARGO_TARGET_DIR: ${{ runner.temp }}/h7-fixture-target
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582 # 1.95.0
+      - uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532 # v2.62.49
+        with:
+          tool: just@1.51.0,nextest@0.9.103
+      - name: Verify source and manifest graph
+        run: |
+          test "$(git rev-parse HEAD)" = "${{ github.sha }}"
+          python3 scripts/hepta_workspace.py
+      - name: Run the real writer and its unchanged golden comparison
+        id: producer
+        working-directory: codex-rs
+        env:
+          HEPTA_H7_REGISTRY_FIXTURE_OUTPUT: ${{ runner.temp }}/h7-expired-registry-${{ github.run_id }}-${{ github.run_attempt }}.sql
+        run: |
+          test_exit=0
+          just test --locked -p codex-hepta-memory --lib \
+            -E 'test(h7_registry_fixture_tests::expired_registry_fixture_matches_real_writers)' \
+            --no-tests fail --retries 0 > "$RUNNER_TEMP/h7-real-writer.log" 2>&1 || test_exit=$?
+          cat "$RUNNER_TEMP/h7-real-writer.log"
+          exit "$test_exit"
+      - name: Retain the actual writer output
+        if: always()
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f # v7.0.0
+        with:
+          name: h7-real-writer-${{ github.run_id }}-attempt-${{ github.run_attempt }}
+          path: |
+            ${{ runner.temp }}/h7-expired-registry-${{ github.run_id }}-${{ github.run_attempt }}.sql
+            ${{ runner.temp }}/h7-real-writer.log
+            ${{ env.CARGO_TARGET_DIR }}/nextest/local/junit.xml
+          if-no-files-found: warn
+          retention-days: 7
+      - name: Verify unchanged tracked source
+        if: always()
+        run: git diff --exit-code
+
+  windows-sandbox:
+    name: Original Windows sandbox unit tests and deletion diagnostics
+    runs-on: windows-latest
+    timeout-minutes: 45
+    env:
+      CARGO_INCREMENTAL: "0"
+      CARGO_BUILD_JOBS: "2"
+      CARGO_PROFILE_TEST_DEBUG: "0"
+      CARGO_PROFILE_DEV_DEBUG: "0"
+      CARGO_TARGET_DIR: ${{ runner.temp }}/windows-sandbox-target
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582 # 1.95.0
+      - uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532 # v2.62.49
+        with:
+          tool: just@1.51.0,nextest@0.9.103
+      - name: Build the real runtime helpers
+        working-directory: codex-rs
+        shell: pwsh
+        run: |
+          cmd.exe /d /s /c 'cargo build --locked -p codex-windows-sandbox --bin codex-windows-sandbox-setup --bin codex-command-runner > "%RUNNER_TEMP%\windows-sandbox-build.log" 2>&1'
+          $buildExit = $LASTEXITCODE
+          Get-Content -LiteralPath (Join-Path $env:RUNNER_TEMP "windows-sandbox-build.log")
+          if ($buildExit -ne 0) { exit $buildExit }
+          $debugRoot = Join-Path $env:CARGO_TARGET_DIR "debug"
+          $depsRoot = Join-Path $debugRoot "deps"
+          New-Item -ItemType Directory -Path $depsRoot -Force | Out-Null
+          foreach ($helper in @("codex-windows-sandbox-setup.exe", "codex-command-runner.exe")) {
+            $source = Join-Path $debugRoot $helper
+            $destination = Join-Path $depsRoot $helper
+            Copy-Item -LiteralPath $source -Destination $destination
+            if ((Get-FileHash -LiteralPath $source).Hash -ne (Get-FileHash -LiteralPath $destination).Hash) {
+              throw "runtime helper copy changed bytes"
+            }
+          }
+      - name: Run every Windows sandbox library test without retry
+        working-directory: codex-rs
+        shell: pwsh
+        run: |
+          if ((git rev-parse HEAD).Trim() -ne "${{ github.sha }}") { throw "unexpected source" }
+          $env:CARGO_BIN_EXE_codex_windows_sandbox_setup = Join-Path $env:CARGO_TARGET_DIR "debug/codex-windows-sandbox-setup.exe"
+          $env:CARGO_BIN_EXE_codex_command_runner = Join-Path $env:CARGO_TARGET_DIR "debug/codex-command-runner.exe"
+          $log = Join-Path $env:RUNNER_TEMP "windows-sandbox-native.log"
+          cmd.exe /d /s /c 'just test --locked -p codex-windows-sandbox --lib --test-threads 1 --no-tests fail --retries 0 > "%RUNNER_TEMP%\windows-sandbox-native.log" 2>&1'
+          $testExit = $LASTEXITCODE
+          [ordered]@{
+            source_sha = (git rev-parse HEAD).Trim()
+            source_tree = (git rev-parse 'HEAD^{tree}').Trim()
+            expected_sha = "${{ github.sha }}"
+            run_id = "${{ github.run_id }}"
+            run_attempt = "${{ github.run_attempt }}"
+            command = "just test --locked -p codex-windows-sandbox --lib --test-threads 1 --no-tests fail --retries 0"
+            exit_code = $testExit
+            log_bytes = (Get-Item -LiteralPath $log).Length
+            log_sha256 = (Get-FileHash -LiteralPath $log -Algorithm SHA256).Hash.ToLowerInvariant()
+          } | ConvertTo-Json | Set-Content -LiteralPath (Join-Path $env:RUNNER_TEMP "windows-sandbox-native-receipt.json") -Encoding utf8
+          Get-Content -LiteralPath $log
+          exit $testExit
+      - name: Retain native Windows output and status
+        if: always()
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f # v7.0.0
+        with:
+          name: windows-sandbox-native-${{ github.run_id }}-attempt-${{ github.run_attempt }}
+          path: |
+            ${{ runner.temp }}/windows-sandbox-build.log
+            ${{ runner.temp }}/windows-sandbox-native.log
+            ${{ runner.temp }}/windows-sandbox-native-receipt.json
+            ${{ env.CARGO_TARGET_DIR }}/nextest/local/junit.xml
+          if-no-files-found: warn
+          retention-days: 7
+      - name: Verify unchanged tracked source
+        if: always()
+        shell: pwsh
+        run: |
+          git diff --exit-code
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+
+  agentd-process:
+    name: Original Agentd process qualification
+    uses: ./.github/workflows/hepta-gap-agentd-process.yml

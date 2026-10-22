@@ -1,0 +1,186 @@
+{
+  "command": [
+    "just",
+    "fmt",
+    "--base",
+    "fa0e8457ca5a3995e00ecec6534c1c68aa82fb28"
+  ],
+  "cwd": "/workspace/scratch/337c309bc660/combined-durability-work/codex-rs",
+  "started_at_utc": "2026-10-21T13:54:38.113683+00:00",
+  "head_at_start": "fa0e8457ca5a3995e00ecec6534c1c68aa82fb28",
+  "source_hashes_before": {
+    "MODULE.bazel.lock": {
+      "bytes": 1745183,
+      "sha256": "f6c5dd1f2a09c66d6a4c387ff40d11afb7ed2309e541dcb6bff9ad5f410996c3"
+    },
+    "codex-rs/Cargo.lock": {
+      "bytes": 413726,
+      "sha256": "d8121cd206f40ef5a25009a041f0a75a1959155f62091ea494047c3d522c1476"
+    },
+    "codex-rs/app-server/tests/common/test_app_server.rs": {
+      "bytes": 82072,
+      "sha256": "aa87141966b93385412fa0f1eee316ea750079a89829ea9baab4d13c47c08d42"
+    },
+    "codex-rs/app-server/tests/common/turn_start_after_cleanup.rs": {
+      "bytes": 3279,
+      "sha256": "9d51d25d526e2a0b9d0aaa446f3f6057c10fd30d274bbd0e75e16f31364bab36"
+    },
+    "codex-rs/app-server/tests/suite/v2/compaction.rs": {
+      "bytes": 16842,
+      "sha256": "8707cbb9836253920304375f3f3dd1d8f9f0b4bb433e0f61bdbfd465ef8cba74"
+    },
+    "codex-rs/app-server/tests/suite/v2/host_skills.rs": {
+      "bytes": 5795,
+      "sha256": "300d006d4a1d3989aa4f55800c4bae5c0ad57970e576ab2d1964dcd65089f4da"
+    },
+    "codex-rs/app-server/tests/suite/v2/mcp_resource_origin.rs": {
+      "bytes": 11512,
+      "sha256": "13816d46cdc24cb4473b4892c3d387f198c16e1e7a0c7401ffd717aef7a65cfc"
+    },
+    "codex-rs/app-server/tests/suite/v2/mcp_server_elicitation.rs": {
+      "bytes": 54161,
+      "sha256": "215d4f213ab3b3e4f6a2c156ec5ef3d14b9abf1746bd1317599366049e798223"
+    },
+    "codex-rs/app-server/tests/suite/v2/thread_resume.rs": {
+      "bytes": 189010,
+      "sha256": "4be1d22961ac3baee968df4a645e435efed7fa8444525372daf9972d9a1a0315"
+    },
+    "codex-rs/app-server/tests/suite/v2/thread_revert.rs": {
+      "bytes": 12867,
+      "sha256": "3bc3969193274db71059929eac1188d27a6b7cdaeee3bdbd47378f4d71c33874"
+    },
+    "codex-rs/app-server/tests/suite/v2/thread_rollback.rs": {
+      "bytes": 10507,
+      "sha256": "6824280ea902d374737b1653781cdd3acf02db1a1724f8d309922bdd42afeadb"
+    },
+    "codex-rs/app-server/tests/suite/v2/turn_start.rs": {
+      "bytes": 178213,
+      "sha256": "42d9cfd6d0f5acd72e9c4a1f9991898aa73d4536e763c43ac54a6d96a2ee236e"
+    },
+    "codex-rs/ext/queue/tests/queue_service.rs": {
+      "bytes": 111696,
+      "sha256": "440daed0eea15e34fe883d8a416798a533faedb8dab7ed5df2b4a73f4a4438f9"
+    },
+    "codex-rs/hepta-matrixd/src/control.rs": {
+      "bytes": 40241,
+      "sha256": "6efdbf58df736c020da5fc5158f593c5fb356cf3b4e655c4929b7430237879ba"
+    },
+    "codex-rs/tui/src/resume_picker_transcript_preview_tests.rs": {
+      "bytes": 18806,
+      "sha256": "aa97215b43f161f9ec51ccb5a89dd3471dd94fd27ee0b79ada0ab243bf82ca12"
+    },
+    "codex-rs/utils/cargo-bin/Cargo.toml": {
+      "bytes": 352,
+      "sha256": "70d2c516f059d8c9ded41cae6cd0e1f4802b150fd7d9f8da964e72aeb9f7cd9e"
+    },
+    "codex-rs/utils/cargo-bin/src/lib.rs": {
+      "bytes": 8357,
+      "sha256": "dbb010f19a6d50475e8e44b9c4a32d01ac5395f63c1cddd67026bc0e2ee3e8f3"
+    },
+    "codex-rs/utils/cargo-bin/tests/cargo_fallback.rs": {
+      "bytes": 2652,
+      "sha256": "a840934b26bf5e1b3b20e52c23dd91fd5b87731517e0d463fe9453f0f8121985"
+    }
+  },
+  "limits": {
+    "cargo_jobs": 2,
+    "dev_debug": 0,
+    "test_debug": 0,
+    "incremental": 0,
+    "bazel_jobs": 2,
+    "bazel_xmx_mib": 1536
+  },
+  "memory_events_before": "low 0\nhigh 0\nmax 1318679\noom 0\noom_kill 0\noom_group_kill 0\n",
+  "pid": 26,
+  "exit_code": 0,
+  "elapsed_seconds": 2.0026250439987052,
+  "finished_at_utc": "2026-10-21T13:54:40.123296+00:00",
+  "source_hashes_after": {
+    "MODULE.bazel.lock": {
+      "bytes": 1745183,
+      "sha256": "f6c5dd1f2a09c66d6a4c387ff40d11afb7ed2309e541dcb6bff9ad5f410996c3"
+    },
+    "codex-rs/Cargo.lock": {
+      "bytes": 413726,
+      "sha256": "d8121cd206f40ef5a25009a041f0a75a1959155f62091ea494047c3d522c1476"
+    },
+    "codex-rs/app-server/tests/common/test_app_server.rs": {
+      "bytes": 82072,
+      "sha256": "aa87141966b93385412fa0f1eee316ea750079a89829ea9baab4d13c47c08d42"
+    },
+    "codex-rs/app-server/tests/common/turn_start_after_cleanup.rs": {
+      "bytes": 3279,
+      "sha256": "9d51d25d526e2a0b9d0aaa446f3f6057c10fd30d274bbd0e75e16f31364bab36"
+    },
+    "codex-rs/app-server/tests/suite/v2/compaction.rs": {
+      "bytes": 16909,
+      "sha256": "c183efc0335819ca2868e7a274453f50c475d726b9a85e035ef8023f9217a250"
+    },
+    "codex-rs/app-server/tests/suite/v2/host_skills.rs": {
+      "bytes": 5858,
+      "sha256": "0f9adcee837cd24e09ac9afaca6bf2baa7dfbda3816e2a7ed1053999882a92d8"
+    },
+    "codex-rs/app-server/tests/suite/v2/mcp_resource_origin.rs": {
+      "bytes": 11611,
+      "sha256": "dee036ed79b445a6fc753a01535661eaedac664979b0997594167690cc8bd925"
+    },
+    "codex-rs/app-server/tests/suite/v2/mcp_server_elicitation.rs": {
+      "bytes": 54161,
+      "sha256": "215d4f213ab3b3e4f6a2c156ec5ef3d14b9abf1746bd1317599366049e798223"
+    },
+    "codex-rs/app-server/tests/suite/v2/thread_resume.rs": {
+      "bytes": 189286,
+      "sha256": "c92a62cd907e3d7ee9b4117609a1d4246035defc87a23030b8ab44d7b17bfec8"
+    },
+    "codex-rs/app-server/tests/suite/v2/thread_revert.rs": {
+      "bytes": 12807,
+      "sha256": "dd7ccc33ac97ffe6a5124ef28db766cd49ed44528a27a7cb0578f309db8edd9a"
+    },
+    "codex-rs/app-server/tests/suite/v2/thread_rollback.rs": {
+      "bytes": 10517,
+      "sha256": "9a50c7eae45222080351090f93d1a0e417a818b587bb423192e3a3c24906fb0c"
+    },
+    "codex-rs/app-server/tests/suite/v2/turn_start.rs": {
+      "bytes": 178213,
+      "sha256": "42d9cfd6d0f5acd72e9c4a1f9991898aa73d4536e763c43ac54a6d96a2ee236e"
+    },
+    "codex-rs/ext/queue/tests/queue_service.rs": {
+      "bytes": 111696,
+      "sha256": "440daed0eea15e34fe883d8a416798a533faedb8dab7ed5df2b4a73f4a4438f9"
+    },
+    "codex-rs/hepta-matrixd/src/control.rs": {
+      "bytes": 40245,
+      "sha256": "013fab7dabd27e55934406af35435c5bbbb0d7c17ee4888eaf1aa82c9c69c6ee"
+    },
+    "codex-rs/tui/src/resume_picker_transcript_preview_tests.rs": {
+      "bytes": 18806,
+      "sha256": "aa97215b43f161f9ec51ccb5a89dd3471dd94fd27ee0b79ada0ab243bf82ca12"
+    },
+    "codex-rs/utils/cargo-bin/Cargo.toml": {
+      "bytes": 352,
+      "sha256": "70d2c516f059d8c9ded41cae6cd0e1f4802b150fd7d9f8da964e72aeb9f7cd9e"
+    },
+    "codex-rs/utils/cargo-bin/src/lib.rs": {
+      "bytes": 8365,
+      "sha256": "d64cec44524a479352d2bb4e3b26fa95cef307a9120349286c2ba827e3174327"
+    },
+    "codex-rs/utils/cargo-bin/tests/cargo_fallback.rs": {
+      "bytes": 2652,
+      "sha256": "a840934b26bf5e1b3b20e52c23dd91fd5b87731517e0d463fe9453f0f8121985"
+    }
+  },
+  "peak_cgroup_bytes": {
+    "anon": 150011904,
+    "file": 6679674880,
+    "kernel": 1259663360
+  },
+  "minimum_free_bytes": 473133056,
+  "memory_events_after": "low 0\nhigh 0\nmax 1318679\noom 0\noom_kill 0\noom_group_kill 0\n",
+  "raw_log": {
+    "file": "continuation-source-format.log.xz",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "compressed_bytes": 32,
+    "compressed_sha256": "0040f94d11d0039505328a90b2ff48968db873e9e7967307631bf40ef5679275"
+  }
+}

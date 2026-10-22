@@ -1,0 +1,192 @@
+{
+  "job": {
+    "id": 119194391125,
+    "name": "sdk / sdks",
+    "status": "completed",
+    "conclusion": "cancelled",
+    "run_id": 39583123088,
+    "head_sha": "48177153ad04605338c3a9a8dbd17defee9981bc",
+    "started_at": "2026-10-21T12:06:26Z",
+    "completed_at": "2026-10-21T13:06:50Z",
+    "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/39583123088/job/119194391125",
+    "runner_name": "GitHub Actions 1000191638",
+    "labels": [
+      "ubuntu-24.04"
+    ],
+    "steps": [
+      {
+        "name": "Set up job",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 1,
+        "started_at": "2026-10-21T12:06:27Z",
+        "completed_at": "2026-10-21T12:06:30Z"
+      },
+      {
+        "name": "Checkout repository",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 2,
+        "started_at": "2026-10-21T12:06:30Z",
+        "completed_at": "2026-10-21T12:06:35Z"
+      },
+      {
+        "name": "Install Linux bwrap build dependencies",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 3,
+        "started_at": "2026-10-21T12:06:35Z",
+        "completed_at": "2026-10-21T12:06:44Z"
+      },
+      {
+        "name": "Setup pnpm",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 4,
+        "started_at": "2026-10-21T12:06:44Z",
+        "completed_at": "2026-10-21T12:06:45Z"
+      },
+      {
+        "name": "Setup Node.js",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 5,
+        "started_at": "2026-10-21T12:06:45Z",
+        "completed_at": "2026-10-21T12:06:46Z"
+      },
+      {
+        "name": "Set up Bazel CI",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 6,
+        "started_at": "2026-10-21T12:06:46Z",
+        "completed_at": "2026-10-21T12:06:56Z"
+      },
+      {
+        "name": "Build codex and code-mode host with Bazel",
+        "status": "completed",
+        "conclusion": "cancelled",
+        "number": 7,
+        "started_at": "2026-10-21T12:06:56Z",
+        "completed_at": "2026-10-21T13:06:46Z"
+      },
+      {
+        "name": "Warm up Bazel-built SDK executables",
+        "status": "completed",
+        "conclusion": "skipped",
+        "number": 8,
+        "started_at": "2026-10-21T13:06:46Z",
+        "completed_at": "2026-10-21T13:06:46Z"
+      },
+      {
+        "name": "Install dependencies",
+        "status": "completed",
+        "conclusion": "skipped",
+        "number": 9,
+        "started_at": "2026-10-21T13:06:46Z",
+        "completed_at": "2026-10-21T13:06:46Z"
+      },
+      {
+        "name": "Build SDK packages",
+        "status": "completed",
+        "conclusion": "skipped",
+        "number": 10,
+        "started_at": "2026-10-21T13:06:46Z",
+        "completed_at": "2026-10-21T13:06:46Z"
+      },
+      {
+        "name": "Lint SDK packages",
+        "status": "completed",
+        "conclusion": "skipped",
+        "number": 11,
+        "started_at": "2026-10-21T13:06:46Z",
+        "completed_at": "2026-10-21T13:06:46Z"
+      },
+      {
+        "name": "Test SDK packages",
+        "status": "completed",
+        "conclusion": "skipped",
+        "number": 12,
+        "started_at": "2026-10-21T13:06:46Z",
+        "completed_at": "2026-10-21T13:06:46Z"
+      },
+      {
+        "name": "Save bazel repository cache",
+        "status": "completed",
+        "conclusion": "skipped",
+        "number": 13,
+        "started_at": "2026-10-21T13:06:46Z",
+        "completed_at": "2026-10-21T13:06:46Z"
+      },
+      {
+        "name": "Check for a clean worktree",
+        "status": "completed",
+        "conclusion": "skipped",
+        "number": 14,
+        "started_at": "2026-10-21T13:06:46Z",
+        "completed_at": "2026-10-21T13:06:46Z"
+      },
+      {
+        "name": "Post Set up Bazel CI",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 25,
+        "started_at": "2026-10-21T13:06:46Z",
+        "completed_at": "2026-10-21T13:06:46Z"
+      },
+      {
+        "name": "Post Setup Node.js",
+        "status": "completed",
+        "conclusion": "skipped",
+        "number": 26,
+        "started_at": "2026-10-21T13:06:46Z",
+        "completed_at": "2026-10-21T13:06:46Z"
+      },
+      {
+        "name": "Post Setup pnpm",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 27,
+        "started_at": "2026-10-21T13:06:46Z",
+        "completed_at": "2026-10-21T13:06:47Z"
+      },
+      {
+        "name": "Post Checkout repository",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 28,
+        "started_at": "2026-10-21T13:06:47Z",
+        "completed_at": "2026-10-21T13:06:47Z"
+      },
+      {
+        "name": "Complete job",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 29,
+        "started_at": "2026-10-21T13:06:47Z",
+        "completed_at": "2026-10-21T13:06:47Z"
+      }
+    ]
+  },
+  "observed_at": "2026-10-21T13:22:20.289Z",
+  "source_head": "48177153ad04605338c3a9a8dbd17defee9981bc",
+  "raw_log": {
+    "file": "job119194391125.log.xz",
+    "bytes": 895238,
+    "sha256": "e9a9612de8daaa9fb97a343efa6fa3203b9ce22db476de7ce3a1dd02b6259ded",
+    "compressed_bytes": 78912,
+    "compressed_sha256": "5175f9093d2b38518f9e68ca75221e54ea1bd566e7ea7535318b961656b3dbc3",
+    "bom": true,
+    "lf": 7183,
+    "crlf": 0
+  },
+  "analysis": {
+    "fail_target_lines": [],
+    "error_annotations": [
+      "2026-10-21T13:06:46.9428208Z ##[error]The operation was canceled."
+    ],
+    "rust_error_lines": [],
+    "last_progress": "2026-10-21T13:06:45.8374388Z [13,058 / 16,834] Compiling external/v8+/icu/torque-generated/src/objects/cpp-heap-external-object-tq-csa.cc [for tool]; 12s disk-cache, linux-sandbox ... (30 actions, 4 running)",
+    "scope": "Original job conclusion and preceding diagnostics; cancellation is not a pass or proof of its initiator."
+  }
+}

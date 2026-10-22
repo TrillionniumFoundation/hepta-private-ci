@@ -1801,6 +1801,10 @@ fn non_negative_count(value: i64, label: &str) -> Result<u64, LogicalTurnRegistr
 }
 
 fn now_unix_seconds() -> Result<u64, LogicalTurnRegistryError> {
+    #[cfg(test)]
+    if let Some(seconds) = crate::h7_registry_fixture_tests::fixture_unix_seconds() {
+        return Ok(seconds);
+    }
     let seconds = SystemTime::now()
         .duration_since(UNIX_EPOCH)
         .map_err(|error| LogicalTurnRegistryError::Clock(error.to_string()))?

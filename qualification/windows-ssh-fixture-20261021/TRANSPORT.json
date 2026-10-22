@@ -1,0 +1,130 @@
+{
+  "schema": "hepta_original_packet_transport_v1",
+  "created_at": "2026-10-21T14:08:15.447791+00:00",
+  "original_packet_directory": "windows-ssh-fixture-20261021",
+  "source_commit": "93850ac9fb1c066f18ae12e7d0a7044ab513f22c",
+  "archive": {
+    "file": "original-packet.tar.xz",
+    "bytes": 81576,
+    "sha256": "6778da4bd0dae1d3a2040d2b56b2a9e020ab76131522bd63de3de2e7584562b6",
+    "tar_bytes": 174080,
+    "tar_sha256": "fcf01f0021255bbe6aecc786934ebfcf1b0425185eeaeed751fa38f996da4c9e"
+  },
+  "original_manifest_sha256": "f2515dcf7c9461a874a5a44a0e41d6bf077c888f75666d301e9eb58f4f035f88",
+  "members": [
+    {
+      "path": "ANALYSIS.json",
+      "bytes": 14324,
+      "sha256": "25e1ac7d93d1ba2b9d6203ea6e9302623a34aed03be872a17c494359645a312d"
+    },
+    {
+      "path": "LINUX_BOUNDARY_VALIDATION.json",
+      "bytes": 3739,
+      "sha256": "bfcbd9cf7a1dd64795f4be87c257a3bd5ee7c9a7277c1de4b058d0ff1ce4d316"
+    },
+    {
+      "path": "MANIFEST.json",
+      "bytes": 3646,
+      "sha256": "f2515dcf7c9461a874a5a44a0e41d6bf077c888f75666d301e9eb58f4f035f88"
+    },
+    {
+      "path": "README.md",
+      "bytes": 4531,
+      "sha256": "432402391786b48ab7a6bd56c6e9de850733d15f73933eab412607895ccc2bc6"
+    },
+    {
+      "path": "SCOUT_TRIGGER_BOUNDARY.json",
+      "bytes": 1140,
+      "sha256": "02410f08e82932716c2a9afb329b256d8ee8d3f8cd5a097796279f37ee6a0f69"
+    },
+    {
+      "path": "SOURCE_IDENTITY.json",
+      "bytes": 1175,
+      "sha256": "75fccbb268fe49f9fcaad3ad2eb5a0443f6be2a318c7922a5e2aa5e46c4e0639"
+    },
+    {
+      "path": "bundle-verify.stderr.txt",
+      "bytes": 109,
+      "sha256": "82c524d86756c38de0fbf5655eb487715d11afc1b80cc4d5acc22cc2f15796dd"
+    },
+    {
+      "path": "bundle-verify.stdout.txt",
+      "bytes": 238,
+      "sha256": "4581c30351768358d0f8cc3253438ef0b192bcc659e406c0dc7eb1f322057178"
+    },
+    {
+      "path": "compile.stderr.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "compile.stdout.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "live-probe.stderr.txt",
+      "bytes": 1260,
+      "sha256": "28ed6e2d252cf5c0933795ea767e78481c87939c42991243334e603b90cfe6de"
+    },
+    {
+      "path": "live-probe.stdout.txt",
+      "bytes": 641,
+      "sha256": "a9830869316ea33f7336c8db82aa53507296e97ac1a8a094261e820d4797e903"
+    },
+    {
+      "path": "live_ssh_probe.rs",
+      "bytes": 4825,
+      "sha256": "a97c73f1e5bc340bbc97364e2672fb8431107e17f2cff96f6c5436e7beef2926"
+    },
+    {
+      "path": "original/job119206185425-first-panics.json",
+      "bytes": 9376,
+      "sha256": "5610cf02fba5604823fe85d347f133344ee83cd8f20899d90460ce7295f020c8"
+    },
+    {
+      "path": "original/job119206185425.json",
+      "bytes": 5072,
+      "sha256": "4a909e1f2a996dcbee4104e827adcc4354d2678d7869eb26c079a4d75f9465f2"
+    },
+    {
+      "path": "original/job119206185425.log.xz",
+      "bytes": 60576,
+      "sha256": "5792ac59cf9f56041f811fea660e430a37d4db5f71cb9206d9ca39ae6d23c3ad"
+    },
+    {
+      "path": "source.bundle",
+      "bytes": 2221,
+      "sha256": "0880a8d90bc2acc0cd166fc62701c463a646b6aac96d03e57d98f88ce0f39097"
+    },
+    {
+      "path": "source.patch",
+      "bytes": 9014,
+      "sha256": "25f2c6a8c34d49482464be6d0e1069d3c4894e96222d58d900117a8df4200944"
+    },
+    {
+      "path": "source/codex-rs/hepta-operator-acceptance/src/g5_trust_tests.rs",
+      "bytes": 14645,
+      "sha256": "cb60b01ff59460c03d3d9a3af5647e4a96dc56bcc643e7509e8d546b6b7a4d46"
+    },
+    {
+      "path": "source/codex-rs/hepta-operator-acceptance/src/test_support.rs",
+      "bytes": 2779,
+      "sha256": "9090e73e9cb315cf29db9fb8fa85f355cda19e44802bee984db1a7e5edb1f5e6"
+    },
+    {
+      "path": "source/codex-rs/hepta-operator-acceptance/src/trust_tests.rs",
+      "bytes": 10371,
+      "sha256": "a70db1ba3b9ad62f8cf75a6696e9a4d57f0167500d2606d0b6fca51731088c6b"
+    }
+  ],
+  "file_count": 21,
+  "all_original_bytes_preserved": true,
+  "roundtrip_all_members_verified": true,
+  "plain_original_diff_check": {
+    "exit_code": 2,
+    "cause": "Original git bundle stdout trailing space and literal blank-context lines in source.patch",
+    "receipt": "../combined-durability-20261021/continuation-ssh-evidence-whitespace.json"
+  },
+  "qualification": "PENDING_ORIGINAL_WINDOWS_CI"
+}

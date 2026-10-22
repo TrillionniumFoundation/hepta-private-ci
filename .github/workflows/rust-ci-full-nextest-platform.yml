@@ -353,7 +353,9 @@ jobs:
           if [[ "${RUNNER_OS}" == "Windows" ]]; then
             archive_file="$(cygpath -w "${archive_file}")"
             workspace_root="$(cygpath -w "${workspace_root}")"
+            export HEPTA_H7_REGISTRY_FIXTURE_OUTPUT="$(cygpath -w "${HEPTA_H7_REGISTRY_FIXTURE_OUTPUT}")"
           fi
+          export INSTA_WORKSPACE_ROOT="${workspace_root}"
 
           if [[ "${RUNNER_OS}" == "Linux" ]]; then
             helper_dir="${RUNNER_TEMP}/${TEST_HELPERS_ARTIFACT}"
@@ -404,7 +406,18 @@ jobs:
         env:
           RUST_BACKTRACE: 1
           RUST_MIN_STACK: "8388608" # 8 MiB
+          HEPTA_H7_REGISTRY_FIXTURE_OUTPUT: ${{ runner.temp }}/h7-expired-registry-${{ github.run_id }}-${{ github.run_attempt }}-${{ inputs.artifact_id }}-shard-${{ matrix.shard }}.sql
           NEXTEST_STATUS_LEVEL: leak
+          INSTA_UPDATE: new
+
+      - name: Upload H7 registry fixture from real writers
+        if: ${{ always() && steps.test.outcome == 'failure' }}
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f # v7.0.0
+        with:
+          name: h7-expired-registry-${{ inputs.artifact_id }}-shard-${{ matrix.shard }}-attempt-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/h7-expired-registry-${{ github.run_id }}-${{ github.run_attempt }}-${{ inputs.artifact_id }}-shard-${{ matrix.shard }}.sql
+          if-no-files-found: warn
+          retention-days: 7
 
       - name: Upload nextest JUnit report
         if: always()
@@ -413,6 +426,15 @@ jobs:
           name: nextest-junit-rust-ci-${{ inputs.artifact_id }}-shard-${{ matrix.shard }}
           path: ${{ env.CARGO_TARGET_DIR }}/nextest/default/junit.xml
           if-no-files-found: warn
+
+      - name: Upload pending Insta snapshots
+        if: failure() && steps.test.outcome == 'failure'
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f # v7.0.0
+        with:
+          name: nextest-insta-rust-ci-${{ inputs.artifact_id }}-shard-${{ matrix.shard }}-attempt-${{ github.run_attempt }}
+          path: ${{ github.workspace }}/codex-rs/**/snapshots/*.snap.new
+          if-no-files-found: ignore
+          retention-days: 7
 
       - name: Tear down remote test env
         if: ${{ always() && runner.os == 'Linux' && inputs.remote_env }}

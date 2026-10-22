@@ -115,6 +115,38 @@ fn exec_repo_root() -> anyhow::Result<std::path::PathBuf> {
     Ok(codex_utils_cargo_bin::repo_root()?)
 }
 
+/// Lose only the SQLite index row, without issuing a hard-delete command.
+/// `delete_thread` also permanently seals the independent queue owner and is
+/// therefore not a fixture for repairable metadata loss.
+async fn remove_thread_index_row(
+    state_db: &codex_state::StateRuntime,
+    thread_id: ThreadId,
+) -> anyhow::Result<()> {
+    assert!(state_db.get_thread(thread_id).await?.is_some());
+    assert!(
+        !state_db
+            .thread_queue()
+            .thread_queue_is_sealed_for_deletion(thread_id)
+            .await?
+    );
+    let sqlite = state_db.sqlite();
+    let pool = sqlite.open_read_write_pool(&sqlite.state_db_path()).await?;
+    let removed = sqlx::query("DELETE FROM threads WHERE id = ?")
+        .bind(thread_id.to_string())
+        .execute(&pool)
+        .await?;
+    pool.close().await;
+    assert_eq!(removed.rows_affected(), 1);
+    assert!(state_db.get_thread(thread_id).await?.is_none());
+    assert!(
+        !state_db
+            .thread_queue()
+            .thread_queue_is_sealed_for_deletion(thread_id)
+            .await?
+    );
+    Ok(())
+}
+
 fn exec_sse_response(index: usize) -> String {
     let response_id = format!("resp-exec-{index}");
     let message_id = format!("msg-exec-{index}");
@@ -273,7 +305,7 @@ async fn exec_resume_last_repairs_rollout_missing_from_state_db() -> anyhow::Res
     let state_db = init_state_db(&config)
         .await
         .expect("state DB should initialize");
-    assert_eq!(state_db.delete_thread(thread_id).await?, 1);
+    remove_thread_index_row(&state_db, thread_id).await?;
     state_db
         .mark_backfill_complete(/*last_watermark*/ None)
         .await?;
@@ -336,7 +368,7 @@ async fn exec_resume_last_trusts_usable_state_db_candidate() -> anyhow::Result<(
     let state_db = init_state_db(&config)
         .await
         .expect("state DB should initialize");
-    assert_eq!(state_db.delete_thread(newer_thread_id).await?, 1);
+    remove_thread_index_row(&state_db, newer_thread_id).await?;
     state_db
         .mark_backfill_complete(/*last_watermark*/ None)
         .await?;

@@ -1,0 +1,120 @@
+{
+  "job": {
+    "id": 119194391990,
+    "run_id": 39583123088,
+    "name": "Bazel / Bazel clippy on ubuntu-24.04 for x86_64-unknown-linux-gnu",
+    "head_sha": "48177153ad04605338c3a9a8dbd17defee9981bc",
+    "status": "completed",
+    "conclusion": "cancelled",
+    "started_at": "2026-10-21T12:37:38Z",
+    "completed_at": "2026-10-21T13:38:00Z",
+    "runner_name": "GitHub Actions 1000191887",
+    "labels": [
+      "ubuntu-24.04"
+    ],
+    "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/39583123088/job/119194391990",
+    "steps": [
+      {
+        "name": "Set up job",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 1,
+        "started_at": "2026-10-21T12:37:38Z",
+        "completed_at": "2026-10-21T12:37:40Z"
+      },
+      {
+        "name": "Run actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 2,
+        "started_at": "2026-10-21T12:37:40Z",
+        "completed_at": "2026-10-21T12:37:46Z"
+      },
+      {
+        "name": "Prepare Bazel CI",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 3,
+        "started_at": "2026-10-21T12:37:46Z",
+        "completed_at": "2026-10-21T12:37:57Z"
+      },
+      {
+        "name": "bazel build --config=clippy lint targets",
+        "status": "completed",
+        "conclusion": "cancelled",
+        "number": 4,
+        "started_at": "2026-10-21T12:37:57Z",
+        "completed_at": "2026-10-21T13:37:56Z"
+      },
+      {
+        "name": "Upload Bazel execution logs",
+        "status": "completed",
+        "conclusion": "skipped",
+        "number": 5,
+        "started_at": "2026-10-21T13:37:56Z",
+        "completed_at": "2026-10-21T13:37:56Z"
+      },
+      {
+        "name": "Save bazel repository cache",
+        "status": "completed",
+        "conclusion": "skipped",
+        "number": 6,
+        "started_at": "2026-10-21T13:37:56Z",
+        "completed_at": "2026-10-21T13:37:56Z"
+      },
+      {
+        "name": "Check for a clean worktree",
+        "status": "completed",
+        "conclusion": "skipped",
+        "number": 7,
+        "started_at": "2026-10-21T13:37:56Z",
+        "completed_at": "2026-10-21T13:37:56Z"
+      },
+      {
+        "name": "Post Prepare Bazel CI",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 13,
+        "started_at": "2026-10-21T13:37:56Z",
+        "completed_at": "2026-10-21T13:37:56Z"
+      },
+      {
+        "name": "Post Run actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 14,
+        "started_at": "2026-10-21T13:37:56Z",
+        "completed_at": "2026-10-21T13:37:59Z"
+      },
+      {
+        "name": "Complete job",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 15,
+        "started_at": "2026-10-21T13:37:59Z",
+        "completed_at": "2026-10-21T13:37:59Z"
+      }
+    ]
+  },
+  "observed_at": "2026-10-21T13:43:21.304Z",
+  "source_head": "48177153ad04605338c3a9a8dbd17defee9981bc",
+  "raw_log": {
+    "file": "job119194391990.log.xz",
+    "bytes": 1174329,
+    "sha256": "5bbf72f3f4210ed9b824fcdba2778f68f5d927cbf1e1d988004c9dbf4cc202a2",
+    "compressed_bytes": 100196,
+    "compressed_sha256": "29371eedc0eedc5e69958703ece5dbb7f56f5214e27ab0e5b15cfa18979668bf",
+    "bom": true,
+    "lf": 9505,
+    "crlf": 0
+  },
+  "analysis": {
+    "fail_target_lines": [],
+    "error_annotations": [
+      "2026-10-21T13:37:56.3499795Z ##[error]The operation was canceled."
+    ],
+    "rust_error_lines": [],
+    "last_progress": "2026-10-21T13:37:55.6216335Z [19,700 / 26,044] Compiling src/wasm/module-instantiate.cc [for tool]; 21s disk-cache, linux-sandbox ... (30 actions, 4 running)",
+    "scope": "Original job conclusion and preceding diagnostics; cancellation is not a pass or proof of its initiator."
+  }
+}

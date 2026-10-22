@@ -18,7 +18,7 @@ module exercises the public parsing entry points.
 
 ## Compatibility and features
 
-Both manifests use upstream's `toml = "1.1.6"` requirement. The product lock
+Both manifests retain the reconciled base's `toml = "1.1.8"` requirement. The product lock
 already contains the compatible `1.1.8+spec-1.1.0`; this patch reuses that version.
 Only `std`, `serde`, and `parse` are enabled. Serialization and other optional
 features are not needed by either parsing call.

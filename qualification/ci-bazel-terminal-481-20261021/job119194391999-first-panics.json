@@ -1,0 +1,1741 @@
+{
+  "job_id": 119194391999,
+  "targets": [
+    "//codex-rs/hepta-memory:hepta-memory-unit-tests",
+    "//codex-rs/state:state-unit-tests",
+    "//codex-rs/sandboxing:sandboxing-unit-tests",
+    "//codex-rs/hepta-automation:hepta-automation-automation-test",
+    "//codex-rs/thread-store:thread-store-unit-tests",
+    "//codex-rs/hepta-bao-adapter:hepta-bao-adapter-unit-tests",
+    "//codex-rs/rollout:rollout-unit-tests",
+    "//codex-rs/core-plugins:core-plugins-unit-tests",
+    "//codex-rs/hepta-supervisor:hepta-supervisor-robrix_control_projection-test",
+    "//codex-rs/external-agent-migration:external-agent-migration-unit-tests",
+    "//codex-rs/hepta-supervisor:hepta-supervisor-paired_process_product-test"
+  ],
+  "first_panics": {
+    "cognitive_compact_tests::qualification_h5_h6_typed_handoff_rejects_stale_fenced_postcondition": {
+      "line": 8937,
+      "location": "hepta-memory/src/cognitive_compact_tests.rs:174:10:",
+      "context": [
+        "2026-10-21T12:49:31.1986770Z thread 'cognitive_compact_tests::qualification_h5_h6_typed_handoff_rejects_stale_fenced_postcondition' (197507) panicked at hepta-memory/src/cognitive_compact_tests.rs:174:10:",
+        "2026-10-21T12:49:31.1987530Z open Agent-local store: Invalid(\"per-agent cognitive root must be canonical and must not traverse a symlink\")",
+        "2026-10-21T12:49:31.1987870Z "
+      ]
+    },
+    "cognitive_compact_tests::available_runtime_hooks_are_read_only_for_the_cognitive_store": {
+      "line": 8942,
+      "location": "hepta-memory/src/cognitive_compact_tests.rs:391:10:",
+      "context": [
+        "2026-10-21T12:49:31.1989050Z thread 'cognitive_compact_tests::available_runtime_hooks_are_read_only_for_the_cognitive_store' (197502) panicked at hepta-memory/src/cognitive_compact_tests.rs:391:10:",
+        "2026-10-21T12:49:31.1989790Z open cognitive store: Invalid(\"per-agent cognitive root must be canonical and must not traverse a symlink\")",
+        "2026-10-21T12:49:31.1990270Z note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace",
+        "2026-10-21T12:49:31.1990520Z "
+      ]
+    },
+    "cognitive_federation_tests::expired_and_corrupt_capabilities_fail_closed_without_cross_agent_fallback": {
+      "line": 8948,
+      "location": "hepta-memory/src/cognitive_federation_tests.rs:271:10:",
+      "context": [
+        "2026-10-21T12:49:31.1991790Z thread 'cognitive_federation_tests::expired_and_corrupt_capabilities_fail_closed_without_cross_agent_fallback' (197510) panicked at hepta-memory/src/cognitive_federation_tests.rs:271:10:",
+        "2026-10-21T12:49:31.1992540Z owner store: Invalid(\"per-agent cognitive root must be canonical and must not traverse a symlink\")",
+        "2026-10-21T12:49:31.1992840Z "
+      ]
+    },
+    "cognitive_federation_tests::explicit_grant_is_owner_written_consumer_read_only_and_scope_exact": {
+      "line": 8953,
+      "location": "hepta-memory/src/cognitive_federation_tests.rs:32:10:",
+      "context": [
+        "2026-10-21T12:49:31.1993870Z thread 'cognitive_federation_tests::explicit_grant_is_owner_written_consumer_read_only_and_scope_exact' (197511) panicked at hepta-memory/src/cognitive_federation_tests.rs:32:10:",
+        "2026-10-21T12:49:31.1994990Z owner store: Invalid(\"per-agent cognitive root must be canonical and must not traverse a symlink\")",
+        "2026-10-21T12:49:31.1995340Z "
+      ]
+    },
+    "cognitive_federation_tests::five_agents_keep_private_stores_and_only_explicit_consumers_federate": {
+      "line": 8958,
+      "location": "hepta-memory/src/cognitive_federation_tests.rs:356:62:",
+      "context": [
+        "2026-10-21T12:49:31.1996440Z thread 'cognitive_federation_tests::five_agents_keep_private_stores_and_only_explicit_consumers_federate' (197512) panicked at hepta-memory/src/cognitive_federation_tests.rs:356:62:",
+        "2026-10-21T12:49:31.1997170Z store: Invalid(\"per-agent cognitive root must be canonical and must not traverse a symlink\")",
+        "2026-10-21T12:49:31.1997570Z "
+      ]
+    },
+    "cognitive_federation_tests::revoke_is_observed_by_the_next_physical_send_revalidation": {
+      "line": 8963,
+      "location": "hepta-memory/src/cognitive_federation_tests.rs:177:10:",
+      "context": [
+        "2026-10-21T12:49:31.1998540Z thread 'cognitive_federation_tests::revoke_is_observed_by_the_next_physical_send_revalidation' (197513) panicked at hepta-memory/src/cognitive_federation_tests.rs:177:10:",
+        "2026-10-21T12:49:31.1999420Z owner store: Invalid(\"per-agent cognitive root must be canonical and must not traverse a symlink\")",
+        "2026-10-21T12:49:31.1999720Z "
+      ]
+    },
+    "cognitive_intelligence_writer_tests::canonical_fact_order_and_identity_are_bound_to_a_hard_coded_oracle": {
+      "line": 8968,
+      "location": "hepta-memory/src/cognitive_intelligence_writer_tests.rs:495:14:",
+      "context": [
+        "2026-10-21T12:49:31.2000850Z thread 'cognitive_intelligence_writer_tests::canonical_fact_order_and_identity_are_bound_to_a_hard_coded_oracle' (197515) panicked at hepta-memory/src/cognitive_intelligence_writer_tests.rs:495:14:",
+        "2026-10-21T12:49:31.2001610Z store: Invalid(\"per-agent cognitive root must be canonical and must not traverse a symlink\")",
+        "2026-10-21T12:49:31.2001900Z "
+      ]
+    },
+    "cognitive_intelligence_writer_tests::canonical_entity_keeps_multiple_occurrences_and_conflict_rolls_everything_back": {
+      "line": 8973,
+      "location": "hepta-memory/src/cognitive_intelligence_writer_tests.rs:390:10:",
+      "context": [
+        "2026-10-21T12:49:31.2003300Z thread 'cognitive_intelligence_writer_tests::canonical_entity_keeps_multiple_occurrences_and_conflict_rolls_everything_back' (197514) panicked at hepta-memory/src/cognitive_intelligence_writer_tests.rs:390:10:",
+        "2026-10-21T12:49:31.2004300Z store: Invalid(\"per-agent cognitive root must be canonical and must not traverse a symlink\")",
+        "2026-10-21T12:49:31.2004590Z "
+      ]
+    },
+    "cognitive_intelligence_writer_tests::product_writer_atomically_remembers_corrects_forgets_and_blocks_resurrection": {
+      "line": 8978,
+      "location": "hepta-memory/src/cognitive_intelligence_writer_tests.rs:75:10:",
+      "context": [
+        "2026-10-21T12:49:31.2005810Z thread 'cognitive_intelligence_writer_tests::product_writer_atomically_remembers_corrects_forgets_and_blocks_resurrection' (197516) panicked at hepta-memory/src/cognitive_intelligence_writer_tests.rs:75:10:",
+        "2026-10-21T12:49:31.2007200Z store: Invalid(\"per-agent cognitive root must be canonical and must not traverse a symlink\")",
+        "2026-10-21T12:49:31.2007510Z "
+      ]
+    },
+    "cognitive_intelligence_writer_tests::projection_and_fact_receipts_survive_clean_reopen": {
+      "line": 8983,
+      "location": "hepta-memory/src/cognitive_intelligence_writer_tests.rs:526:10:",
+      "context": [
+        "2026-10-21T12:49:31.2008560Z thread 'cognitive_intelligence_writer_tests::projection_and_fact_receipts_survive_clean_reopen' (197517) panicked at hepta-memory/src/cognitive_intelligence_writer_tests.rs:526:10:",
+        "2026-10-21T12:49:31.2009300Z seed store: Invalid(\"per-agent cognitive root must be canonical and must not traverse a symlink\")",
+        "2026-10-21T12:49:31.2009600Z "
+      ]
+    },
+    "cognitive_intelligence_writer_tests::projection_scope_limit_rolls_back_new_scope_but_allows_existing_scope_generation": {
+      "line": 8988,
+      "location": "hepta-memory/src/cognitive_intelligence_writer_tests.rs:213:10:",
+      "context": [
+        "2026-10-21T12:49:31.2010850Z thread 'cognitive_intelligence_writer_tests::projection_scope_limit_rolls_back_new_scope_but_allows_existing_scope_generation' (197518) panicked at hepta-memory/src/cognitive_intelligence_writer_tests.rs:213:10:",
+        "2026-10-21T12:49:31.2011660Z store: Invalid(\"per-agent cognitive root must be canonical and must not traverse a symlink\")",
+        "2026-10-21T12:49:31.2011940Z "
+      ]
+    },
+    "cognitive_intelligence_writer_tests::reopen_rejects_fact_count_and_canonical_digest_tampering": {
+      "line": 8993,
+      "location": "hepta-memory/src/cognitive_intelligence_writer_tests.rs:526:10:",
+      "context": [
+        "2026-10-21T12:49:31.2013000Z thread 'cognitive_intelligence_writer_tests::reopen_rejects_fact_count_and_canonical_digest_tampering' (197519) panicked at hepta-memory/src/cognitive_intelligence_writer_tests.rs:526:10:",
+        "2026-10-21T12:49:31.2013760Z seed store: Invalid(\"per-agent cognitive root must be canonical and must not traverse a symlink\")",
+        "2026-10-21T12:49:31.2014050Z "
+      ]
+    },
+    "cognitive_intelligence_writer_tests::reopen_rejects_same_name_permissive_trigger_and_fts_count_tampering": {
+      "line": 8998,
+      "location": "hepta-memory/src/cognitive_intelligence_writer_tests.rs:526:10:",
+      "context": [
+        "2026-10-21T12:49:31.2015190Z thread 'cognitive_intelligence_writer_tests::reopen_rejects_same_name_permissive_trigger_and_fts_count_tampering' (197520) panicked at hepta-memory/src/cognitive_intelligence_writer_tests.rs:526:10:",
+        "2026-10-21T12:49:31.2015960Z seed store: Invalid(\"per-agent cognitive root must be canonical and must not traverse a symlink\")",
+        "2026-10-21T12:49:31.2016260Z "
+      ]
+    },
+    "cognitive_kg_oracle_tests::canonical_v2_sqlite_restart_query_correction_and_tombstone_are_one_chain": {
+      "line": 9003,
+      "location": "hepta-memory/src/cognitive_kg_oracle_tests.rs:262:59:",
+      "context": [
+        "2026-10-21T12:49:31.2017320Z thread 'cognitive_kg_oracle_tests::canonical_v2_sqlite_restart_query_correction_and_tombstone_are_one_chain' (197522) panicked at hepta-memory/src/cognitive_kg_oracle_tests.rs:262:59:",
+        "2026-10-21T12:49:31.2018040Z store: Invalid(\"per-agent cognitive root must be canonical and must not traverse a symlink\")",
+        "2026-10-21T12:49:31.2023280Z "
+      ]
+    },
+    "cognitive_kg_oracle_tests::canonical_entity_shape_conflicts_while_live_and_evolves_after_correction": {
+      "line": 9008,
+      "location": "hepta-memory/src/cognitive_kg_oracle_tests.rs:517:59:",
+      "context": [
+        "2026-10-21T12:49:31.2024700Z thread 'cognitive_kg_oracle_tests::canonical_entity_shape_conflicts_while_live_and_evolves_after_correction' (197521) panicked at hepta-memory/src/cognitive_kg_oracle_tests.rs:517:59:",
+        "2026-10-21T12:49:31.2025480Z store: Invalid(\"per-agent cognitive root must be canonical and must not traverse a symlink\")",
+        "2026-10-21T12:49:31.2026010Z "
+      ]
+    },
+    "cognitive_kg_store_tests::product_projection_is_scoped_cited_append_only_and_fts_backed": {
+      "line": 9013,
+      "location": "hepta-memory/src/cognitive_kg_store_tests.rs:38:10:",
+      "context": [
+        "2026-10-21T12:49:31.2027060Z thread 'cognitive_kg_store_tests::product_projection_is_scoped_cited_append_only_and_fts_backed' (197523) panicked at hepta-memory/src/cognitive_kg_store_tests.rs:38:10:",
+        "2026-10-21T12:49:31.2027810Z store: Invalid(\"per-agent cognitive root must be canonical and must not traverse a symlink\")",
+        "2026-10-21T12:49:31.2028120Z "
+      ]
+    },
+    "cognitive_memory_store_tests::memory_identity_survives_verified_revisions_and_tombstone": {
+      "line": 9018,
+      "location": "hepta-memory/src/cognitive_memory_store_tests.rs:23:10:",
+      "context": [
+        "2026-10-21T12:49:31.2029400Z thread 'cognitive_memory_store_tests::memory_identity_survives_verified_revisions_and_tombstone' (197524) panicked at hepta-memory/src/cognitive_memory_store_tests.rs:23:10:",
+        "2026-10-21T12:49:31.2030120Z store: Invalid(\"per-agent cognitive root must be canonical and must not traverse a symlink\")",
+        "2026-10-21T12:49:31.2030420Z "
+      ]
+    },
+    "cognitive_retrieval::observation::tests::observation_excludes_other_scopes_expired_and_withdrawn_memories": {
+      "line": 9023,
+      "location": "hepta-memory/src/cognitive_retrieval_observation_tests.rs:302:10:",
+      "context": [
+        "2026-10-21T12:49:31.2031700Z thread 'cognitive_retrieval::observation::tests::observation_excludes_other_scopes_expired_and_withdrawn_memories' (197527) panicked at hepta-memory/src/cognitive_retrieval_observation_tests.rs:302:10:",
+        "2026-10-21T12:49:31.2032590Z store: Invalid(\"per-agent cognitive root must be canonical and must not traverse a symlink\")",
+        "2026-10-21T12:49:31.2032930Z "
+      ]
+    },
+    "cognitive_retrieval::observation::tests::omitted_candidate_content_is_bound_even_when_selected_ids_do_not_change": {
+      "line": 9028,
+      "location": "hepta-memory/src/cognitive_retrieval_observation_tests.rs:373:10:",
+      "context": [
+        "2026-10-21T12:49:31.2034230Z thread 'cognitive_retrieval::observation::tests::omitted_candidate_content_is_bound_even_when_selected_ids_do_not_change' (197528) panicked at hepta-memory/src/cognitive_retrieval_observation_tests.rs:373:10:",
+        "2026-10-21T12:49:31.2035070Z store: Invalid(\"per-agent cognitive root must be canonical and must not traverse a symlink\")",
+        "2026-10-21T12:49:31.2035360Z "
+      ]
+    },
+    "cognitive_retrieval::observation::tests::typed_kg_relations_feed_only_their_declared_retrieval_channels": {
+      "line": 9033,
+      "location": "hepta-memory/src/cognitive_retrieval_observation_tests.rs:160:10:",
+      "context": [
+        "2026-10-21T12:49:31.2036580Z thread 'cognitive_retrieval::observation::tests::typed_kg_relations_feed_only_their_declared_retrieval_channels' (197530) panicked at hepta-memory/src/cognitive_retrieval_observation_tests.rs:160:10:",
+        "2026-10-21T12:49:31.2037400Z store: Invalid(\"per-agent cognitive root must be canonical and must not traverse a symlink\")",
+        "2026-10-21T12:49:31.2037720Z "
+      ]
+    },
+    "cognitive_retrieval::observation::tests::saturated_channels_observe_limits_before_dedup_and_preserve_top_four": {
+      "line": 9038,
+      "location": "hepta-memory/src/cognitive_retrieval_observation_tests.rs:53:10:",
+      "context": [
+        "2026-10-21T12:49:31.2038960Z thread 'cognitive_retrieval::observation::tests::saturated_channels_observe_limits_before_dedup_and_preserve_top_four' (197529) panicked at hepta-memory/src/cognitive_retrieval_observation_tests.rs:53:10:",
+        "2026-10-21T12:49:31.2039800Z store: Invalid(\"per-agent cognitive root must be canonical and must not traverse a symlink\")",
+        "2026-10-21T12:49:31.2040120Z "
+      ]
+    },
+    "cognitive_retrieval_adapter::tests::execution_context_rejects_retrieval_profile_drift": {
+      "line": 9043,
+      "location": "hepta-memory/src/cognitive_retrieval_adapter_tests.rs:73:10:",
+      "context": [
+        "2026-10-21T12:49:31.2041150Z thread 'cognitive_retrieval_adapter::tests::execution_context_rejects_retrieval_profile_drift' (197531) panicked at hepta-memory/src/cognitive_retrieval_adapter_tests.rs:73:10:",
+        "2026-10-21T12:49:31.2041890Z store: Invalid(\"per-agent cognitive root must be canonical and must not traverse a symlink\")",
+        "2026-10-21T12:49:31.2042170Z "
+      ]
+    },
+    "cognitive_retrieval_adapter::tests::owner_adapter_exposes_pre_top_four_bounded_candidates": {
+      "line": 9048,
+      "location": "hepta-memory/src/cognitive_retrieval_adapter_tests.rs:109:10:",
+      "context": [
+        "2026-10-21T12:49:31.2043220Z thread 'cognitive_retrieval_adapter::tests::owner_adapter_exposes_pre_top_four_bounded_candidates' (197532) panicked at hepta-memory/src/cognitive_retrieval_adapter_tests.rs:109:10:",
+        "2026-10-21T12:49:31.2044080Z store: Invalid(\"per-agent cognitive root must be canonical and must not traverse a symlink\")",
+        "2026-10-21T12:49:31.2044360Z "
+      ]
+    },
+    "cognitive_retrieval_adapter::tests::typed_kg_relations_route_to_exact_owner_channels_without_generic_relabelling": {
+      "line": 9053,
+      "location": "hepta-memory/src/cognitive_retrieval_adapter_tests.rs:183:10:",
+      "context": [
+        "2026-10-21T12:49:31.2045560Z thread 'cognitive_retrieval_adapter::tests::typed_kg_relations_route_to_exact_owner_channels_without_generic_relabelling' (197534) panicked at hepta-memory/src/cognitive_retrieval_adapter_tests.rs:183:10:",
+        "2026-10-21T12:49:31.2046440Z store: Invalid(\"per-agent cognitive root must be canonical and must not traverse a symlink\")",
+        "2026-10-21T12:49:31.2046720Z "
+      ]
+    },
+    "cognitive_retrieval_adapter::tests::owner_adapter_rejects_observation_from_a_different_cut": {
+      "line": 9058,
+      "location": "hepta-memory/src/cognitive_retrieval_adapter_tests.rs:322:10:",
+      "context": [
+        "2026-10-21T12:49:31.2047770Z thread 'cognitive_retrieval_adapter::tests::owner_adapter_rejects_observation_from_a_different_cut' (197533) panicked at hepta-memory/src/cognitive_retrieval_adapter_tests.rs:322:10:",
+        "2026-10-21T12:49:31.2048490Z store: Invalid(\"per-agent cognitive root must be canonical and must not traverse a symlink\")",
+        "2026-10-21T12:49:31.2048770Z "
+      ]
+    },
+    "cognitive_retrieval_tests::graph_channel_has_one_global_bound_across_deduplicated_canonical_seeds": {
+      "line": 9063,
+      "location": "hepta-memory/src/cognitive_retrieval_tests.rs:547:10:",
+      "context": [
+        "2026-10-21T12:49:31.2049830Z thread 'cognitive_retrieval_tests::graph_channel_has_one_global_bound_across_deduplicated_canonical_seeds' (197536) panicked at hepta-memory/src/cognitive_retrieval_tests.rs:547:10:",
+        "2026-10-21T12:49:31.2050540Z store: Invalid(\"per-agent cognitive root must be canonical and must not traverse a symlink\")",
+        "2026-10-21T12:49:31.2050830Z "
+      ]
+    },
+    "cognitive_retrieval_tests::batch_revalidation_is_ordered_and_uses_one_read_snapshot_across_generation_drift": {
+      "line": 9068,
+      "location": "hepta-memory/src/cognitive_retrieval_tests.rs:255:10:",
+      "context": [
+        "2026-10-21T12:49:31.2051960Z thread 'cognitive_retrieval_tests::batch_revalidation_is_ordered_and_uses_one_read_snapshot_across_generation_drift' (197535) panicked at hepta-memory/src/cognitive_retrieval_tests.rs:255:10:",
+        "2026-10-21T12:49:31.2052700Z store: Invalid(\"per-agent cognitive root must be canonical and must not traverse a symlink\")",
+        "2026-10-21T12:49:31.2052980Z "
+      ]
+    },
+    "cognitive_retrieval_tests::retrieval_fails_closed_across_agent_and_workspace_scope": {
+      "line": 9073,
+      "location": "hepta-memory/src/cognitive_retrieval_tests.rs:205:10:",
+      "context": [
+        "2026-10-21T12:49:31.2053910Z thread 'cognitive_retrieval_tests::retrieval_fails_closed_across_agent_and_workspace_scope' (197537) panicked at hepta-memory/src/cognitive_retrieval_tests.rs:205:10:",
+        "2026-10-21T12:49:31.2054590Z store: Invalid(\"per-agent cognitive root must be canonical and must not traverse a symlink\")",
+        "2026-10-21T12:49:31.2054870Z "
+      ]
+    },
+    "cognitive_retrieval_tests::retrieval_rrf_is_deterministic_explainable_and_revalidated": {
+      "line": 9078,
+      "location": "hepta-memory/src/cognitive_retrieval_tests.rs:50:10:",
+      "context": [
+        "2026-10-21T12:49:31.2055830Z thread 'cognitive_retrieval_tests::retrieval_rrf_is_deterministic_explainable_and_revalidated' (197538) panicked at hepta-memory/src/cognitive_retrieval_tests.rs:50:10:",
+        "2026-10-21T12:49:31.2056760Z store: Invalid(\"per-agent cognitive root must be canonical and must not traverse a symlink\")",
+        "2026-10-21T12:49:31.2057040Z "
+      ]
+    },
+    "cognitive_retrieval_tests::shared_canonical_entity_keeps_surviving_support_after_peer_correction_and_forget": {
+      "line": 9083,
+      "location": "hepta-memory/src/cognitive_retrieval_tests.rs:397:10:",
+      "context": [
+        "2026-10-21T12:49:31.2058180Z thread 'cognitive_retrieval_tests::shared_canonical_entity_keeps_surviving_support_after_peer_correction_and_forget' (197540) panicked at hepta-memory/src/cognitive_retrieval_tests.rs:397:10:",
+        "2026-10-21T12:49:31.2058930Z store: Invalid(\"per-agent cognitive root must be canonical and must not traverse a symlink\")",
+        "2026-10-21T12:49:31.2059400Z "
+      ]
+    },
+    "cognitive_runtime::identity::tests::capability_identity_is_not_equal_database_paths_or_equal_contents": {
+      "line": 9088,
+      "location": "hepta-memory/src/cognitive_runtime_identity_tests.rs:18:14:",
+      "context": [
+        "2026-10-21T12:49:31.2060490Z thread 'cognitive_runtime::identity::tests::capability_identity_is_not_equal_database_paths_or_equal_contents' (197541) panicked at hepta-memory/src/cognitive_runtime_identity_tests.rs:18:14:",
+        "2026-10-21T12:49:31.2061240Z store: Invalid(\"per-agent cognitive root must be canonical and must not traverse a symlink\")",
+        "2026-10-21T12:49:31.2061520Z "
+      ]
+    },
+    "cognitive_runtime::identity::tests::federated_identity_includes_consumer_enrollment_and_omission_coverage": {
+      "line": 9093,
+      "location": "hepta-memory/src/cognitive_runtime_identity_tests.rs:42:14:",
+      "context": [
+        "2026-10-21T12:49:31.2095400Z thread 'cognitive_runtime::identity::tests::federated_identity_includes_consumer_enrollment_and_omission_coverage' (197542) panicked at hepta-memory/src/cognitive_runtime_identity_tests.rs:42:14:",
+        "2026-10-21T12:49:31.2096500Z store: Invalid(\"per-agent cognitive root must be canonical and must not traverse a symlink\")",
+        "2026-10-21T12:49:31.2096820Z "
+      ]
+    },
+    "cognitive_runtime_tests::legacy_compatibility_helper_cannot_downgrade_product_v2_runtime": {
+      "line": 9098,
+      "location": "hepta-memory/src/cognitive_runtime_tests.rs:289:10:",
+      "context": [
+        "2026-10-21T12:49:31.2097840Z thread 'cognitive_runtime_tests::legacy_compatibility_helper_cannot_downgrade_product_v2_runtime' (197546) panicked at hepta-memory/src/cognitive_runtime_tests.rs:289:10:",
+        "2026-10-21T12:49:31.2098560Z owner store: Invalid(\"per-agent cognitive root must be canonical and must not traverse a symlink\")",
+        "2026-10-21T12:49:31.2098860Z "
+      ]
+    },
+    "cognitive_runtime_tests::legacy_federation_is_not_admitted_to_product_attachment_api": {
+      "line": 9103,
+      "location": "hepta-memory/src/cognitive_runtime_tests.rs:238:10:",
+      "context": [
+        "2026-10-21T12:49:31.2099810Z thread 'cognitive_runtime_tests::legacy_federation_is_not_admitted_to_product_attachment_api' (197547) panicked at hepta-memory/src/cognitive_runtime_tests.rs:238:10:",
+        "2026-10-21T12:49:31.2100500Z owner store: Invalid(\"per-agent cognitive root must be canonical and must not traverse a symlink\")",
+        "2026-10-21T12:49:31.2100810Z "
+      ]
+    },
+    "cognitive_runtime_tests::product_v2_composition_reports_omitted_owner_candidates": {
+      "line": 9108,
+      "location": "hepta-memory/src/cognitive_runtime_tests.rs:402:10:",
+      "context": [
+        "2026-10-21T12:49:31.2101720Z thread 'cognitive_runtime_tests::product_v2_composition_reports_omitted_owner_candidates' (197548) panicked at hepta-memory/src/cognitive_runtime_tests.rs:402:10:",
+        "2026-10-21T12:49:31.2102420Z consumer store: Invalid(\"per-agent cognitive root must be canonical and must not traverse a symlink\")",
+        "2026-10-21T12:49:31.2102720Z "
+      ]
+    },
+    "cognitive_runtime_tests::product_v2_reports_peer_truncation_before_aggregation": {
+      "line": 9113,
+      "location": "hepta-memory/src/cognitive_runtime_tests.rs:429:10:",
+      "context": [
+        "2026-10-21T12:49:31.2103620Z thread 'cognitive_runtime_tests::product_v2_reports_peer_truncation_before_aggregation' (197549) panicked at hepta-memory/src/cognitive_runtime_tests.rs:429:10:",
+        "2026-10-21T12:49:31.2104310Z consumer store: Invalid(\"per-agent cognitive root must be canonical and must not traverse a symlink\")",
+        "2026-10-21T12:49:31.2104620Z "
+      ]
+    },
+    "cognitive_runtime_tests::product_v2_runtime_reads_only_explicit_grants_and_preserves_coverage": {
+      "line": 9118,
+      "location": "hepta-memory/src/cognitive_runtime_tests.rs:57:10:",
+      "context": [
+        "2026-10-21T12:49:31.2105630Z thread 'cognitive_runtime_tests::product_v2_runtime_reads_only_explicit_grants_and_preserves_coverage' (197550) panicked at hepta-memory/src/cognitive_runtime_tests.rs:57:10:",
+        "2026-10-21T12:49:31.2106350Z owner store: Invalid(\"per-agent cognitive root must be canonical and must not traverse a symlink\")",
+        "2026-10-21T12:49:31.2106650Z "
+      ]
+    },
+    "cognitive_runtime_tests::product_v2_scope_mismatch_is_not_enrolled_or_dispatched": {
+      "line": 9123,
+      "location": "hepta-memory/src/cognitive_runtime_tests.rs:364:10:",
+      "context": [
+        "2026-10-21T12:49:31.2107550Z thread 'cognitive_runtime_tests::product_v2_scope_mismatch_is_not_enrolled_or_dispatched' (197551) panicked at hepta-memory/src/cognitive_runtime_tests.rs:364:10:",
+        "2026-10-21T12:49:31.2108380Z owner store: Invalid(\"per-agent cognitive root must be canonical and must not traverse a symlink\")",
+        "2026-10-21T12:49:31.2109100Z "
+      ]
+    },
+    "cognitive_runtime_tests::product_v2_unobservable_owner_is_explicit_failed_discovery_coverage": {
+      "line": 9128,
+      "location": "hepta-memory/src/cognitive_runtime_tests.rs:335:10:",
+      "context": [
+        "2026-10-21T12:49:31.2110120Z thread 'cognitive_runtime_tests::product_v2_unobservable_owner_is_explicit_failed_discovery_coverage' (197552) panicked at hepta-memory/src/cognitive_runtime_tests.rs:335:10:",
+        "2026-10-21T12:49:31.2110840Z consumer store: Invalid(\"per-agent cognitive root must be canonical and must not traverse a symlink\")",
+        "2026-10-21T12:49:31.2111140Z "
+      ]
+    },
+    "cognitive_store::recovery::tests::byte_identical_rename_replacement_can_recover_only_with_current_witness": {
+      "line": 9133,
+      "location": "hepta-memory/src/cognitive_store_recovery_tests.rs:68:10:",
+      "context": [
+        "2026-10-21T12:49:31.2112400Z thread 'cognitive_store::recovery::tests::byte_identical_rename_replacement_can_recover_only_with_current_witness' (197554) panicked at hepta-memory/src/cognitive_store_recovery_tests.rs:68:10:",
+        "2026-10-21T12:49:31.2113140Z store: Invalid(\"per-agent cognitive root must be canonical and must not traverse a symlink\")",
+        "2026-10-21T12:49:31.2113420Z "
+      ]
+    },
+    "cognitive_store::recovery::tests::cold_read_only::cold_recovery_rejects_revision_change_and_forgetting_rollback": {
+      "line": 9138,
+      "location": "hepta-memory/src/cognitive_store_recovery_tests.rs:68:10:",
+      "context": [
+        "2026-10-21T12:49:31.2114580Z thread 'cognitive_store::recovery::tests::cold_read_only::cold_recovery_rejects_revision_change_and_forgetting_rollback' (197555) panicked at hepta-memory/src/cognitive_store_recovery_tests.rs:68:10:",
+        "2026-10-21T12:49:31.2115340Z store: Invalid(\"per-agent cognitive root must be canonical and must not traverse a symlink\")",
+        "2026-10-21T12:49:31.2115620Z "
+      ]
+    },
+    "cognitive_store::recovery::tests::cold_read_only::cold_reopen_reads_canonical_snapshot_without_mutating_source": {
+      "line": 9143,
+      "location": "hepta-memory/src/cognitive_store_recovery_tests.rs:68:10:",
+      "context": [
+        "2026-10-21T12:49:31.2116760Z thread 'cognitive_store::recovery::tests::cold_read_only::cold_reopen_reads_canonical_snapshot_without_mutating_source' (197556) panicked at hepta-memory/src/cognitive_store_recovery_tests.rs:68:10:",
+        "2026-10-21T12:49:31.2117520Z store: Invalid(\"per-agent cognitive root must be canonical and must not traverse a symlink\")",
+        "2026-10-21T12:49:31.2117810Z "
+      ]
+    },
+    "cognitive_store::recovery::tests::cold_read_only::crash_reopen_refuses_pending_wal": {
+      "line": 9148,
+      "location": "hepta-memory/src/cognitive_store_recovery_tests.rs:68:10:",
+      "context": [
+        "2026-10-21T12:49:31.2118740Z thread 'cognitive_store::recovery::tests::cold_read_only::crash_reopen_refuses_pending_wal' (197557) panicked at hepta-memory/src/cognitive_store_recovery_tests.rs:68:10:",
+        "2026-10-21T12:49:31.2119420Z store: Invalid(\"per-agent cognitive root must be canonical and must not traverse a symlink\")",
+        "2026-10-21T12:49:31.2119700Z "
+      ]
+    },
+    "cognitive_store::recovery::tests::cold_read_only::stable_inspection_metadata_cannot_authenticate_changed_content": {
+      "line": 9153,
+      "location": "hepta-memory/src/cognitive_store_recovery_tests.rs:68:10:",
+      "context": [
+        "2026-10-21T12:49:31.2120870Z thread 'cognitive_store::recovery::tests::cold_read_only::stable_inspection_metadata_cannot_authenticate_changed_content' (197558) panicked at hepta-memory/src/cognitive_store_recovery_tests.rs:68:10:",
+        "2026-10-21T12:49:31.2121640Z store: Invalid(\"per-agent cognitive root must be canonical and must not traverse a symlink\")",
+        "2026-10-21T12:49:31.2121920Z "
+      ]
+    },
+    "cognitive_store::recovery::tests::corrupt_physical_fts_cannot_obtain_a_witness_or_trigger_recovery_io": {
+      "line": 9158,
+      "location": "hepta-memory/src/cognitive_store_recovery_tests.rs:68:10:",
+      "context": [
+        "2026-10-21T12:49:31.2123010Z thread 'cognitive_store::recovery::tests::corrupt_physical_fts_cannot_obtain_a_witness_or_trigger_recovery_io' (197559) panicked at hepta-memory/src/cognitive_store_recovery_tests.rs:68:10:",
+        "2026-10-21T12:49:31.2123740Z store: Invalid(\"per-agent cognitive root must be canonical and must not traverse a symlink\")",
+        "2026-10-21T12:49:31.2124030Z "
+      ]
+    },
+    "cognitive_store::recovery::tests::exact_current_cut_recovers_writable_generation_and_persists_activation": {
+      "line": 9163,
+      "location": "hepta-memory/src/cognitive_store_recovery_tests.rs:68:10:",
+      "context": [
+        "2026-10-21T12:49:31.2125210Z thread 'cognitive_store::recovery::tests::exact_current_cut_recovers_writable_generation_and_persists_activation' (197560) panicked at hepta-memory/src/cognitive_store_recovery_tests.rs:68:10:",
+        "2026-10-21T12:49:31.2125950Z store: Invalid(\"per-agent cognitive root must be canonical and must not traverse a symlink\")",
+        "2026-10-21T12:49:31.2126230Z "
+      ]
+    },
+    "cognitive_store::recovery::tests::hostile_file_identities_fail_closed_without_additional_mutation": {
+      "line": 9168,
+      "location": "hepta-memory/src/cognitive_store_recovery_tests.rs:68:10:",
+      "context": [
+        "2026-10-21T12:49:31.2127350Z thread 'cognitive_store::recovery::tests::hostile_file_identities_fail_closed_without_additional_mutation' (197561) panicked at hepta-memory/src/cognitive_store_recovery_tests.rs:68:10:",
+        "2026-10-21T12:49:31.2128070Z store: Invalid(\"per-agent cognitive root must be canonical and must not traverse a symlink\")",
+        "2026-10-21T12:49:31.2128360Z "
+      ]
+    },
+    "cognitive_store::recovery::tests::post_rename_publication_failure_is_indeterminate_and_retains_candidate": {
+      "line": 9173,
+      "location": "hepta-memory/src/cognitive_store_recovery_tests.rs:68:10:",
+      "context": [
+        "2026-10-21T12:49:31.2129480Z thread 'cognitive_store::recovery::tests::post_rename_publication_failure_is_indeterminate_and_retains_candidate' (197562) panicked at hepta-memory/src/cognitive_store_recovery_tests.rs:68:10:",
+        "2026-10-21T12:49:31.2130230Z store: Invalid(\"per-agent cognitive root must be canonical and must not traverse a symlink\")",
+        "2026-10-21T12:49:31.2130510Z "
+      ]
+    },
+    "cognitive_store::recovery::tests::predecessor_witness_is_rejected_and_current_witness_recovers": {
+      "line": 9178,
+      "location": "hepta-memory/src/cognitive_store_recovery_tests.rs:68:10:",
+      "context": [
+        "2026-10-21T12:49:31.2131640Z thread 'cognitive_store::recovery::tests::predecessor_witness_is_rejected_and_current_witness_recovers' (197563) panicked at hepta-memory/src/cognitive_store_recovery_tests.rs:68:10:",
+        "2026-10-21T12:49:31.2132360Z store: Invalid(\"per-agent cognitive root must be canonical and must not traverse a symlink\")",
+        "2026-10-21T12:49:31.2132650Z "
+      ]
+    },
+    "cognitive_store::recovery::tests::recovery_bounds_large_rows_before_loading_payloads_and_rejects_unknown_tables": {
+      "line": 9183,
+      "location": "hepta-memory/src/cognitive_store_recovery_tests.rs:68:10:",
+      "context": [
+        "2026-10-21T12:49:31.2133820Z thread 'cognitive_store::recovery::tests::recovery_bounds_large_rows_before_loading_payloads_and_rejects_unknown_tables' (197564) panicked at hepta-memory/src/cognitive_store_recovery_tests.rs:68:10:",
+        "2026-10-21T12:49:31.2134580Z store: Invalid(\"per-agent cognitive root must be canonical and must not traverse a symlink\")",
+        "2026-10-21T12:49:31.2134860Z "
+      ]
+    },
+    "cognitive_store::recovery::tests::revoked_owner_profile_and_witness_checks_precede_recovery_admission": {
+      "line": 9188,
+      "location": "hepta-memory/src/cognitive_store_recovery_tests.rs:68:10:",
+      "context": [
+        "2026-10-21T12:49:31.2145200Z thread 'cognitive_store::recovery::tests::revoked_owner_profile_and_witness_checks_precede_recovery_admission' (197565) panicked at hepta-memory/src/cognitive_store_recovery_tests.rs:68:10:",
+        "2026-10-21T12:49:31.2145970Z store: Invalid(\"per-agent cognitive root must be canonical and must not traverse a symlink\")",
+        "2026-10-21T12:49:31.2146270Z "
+      ]
+    },
+    "cognitive_store::recovery::tests::writable_recovery_requires_exclusive_store_fence": {
+      "line": 9193,
+      "location": "hepta-memory/src/cognitive_store_recovery_tests.rs:68:10:",
+      "context": [
+        "2026-10-21T12:49:31.2147220Z thread 'cognitive_store::recovery::tests::writable_recovery_requires_exclusive_store_fence' (197566) panicked at hepta-memory/src/cognitive_store_recovery_tests.rs:68:10:",
+        "2026-10-21T12:49:31.2147910Z store: Invalid(\"per-agent cognitive root must be canonical and must not traverse a symlink\")",
+        "2026-10-21T12:49:31.2148190Z "
+      ]
+    },
+    "cognitive_store_tests::competing_memory_corrections_rollback_the_losing_source": {
+      "line": 9198,
+      "location": "hepta-memory/src/cognitive_store_tests.rs:596:10:",
+      "context": [
+        "2026-10-21T12:49:31.2149090Z thread 'cognitive_store_tests::competing_memory_corrections_rollback_the_losing_source' (197569) panicked at hepta-memory/src/cognitive_store_tests.rs:596:10:",
+        "2026-10-21T12:49:31.2149770Z seed store: Invalid(\"per-agent cognitive root must be canonical and must not traverse a symlink\")",
+        "2026-10-21T12:49:31.2150700Z "
+      ]
+    },
+    "cognitive_store_tests::concurrent_source_identity_conflict_commits_exactly_one_payload": {
+      "line": 9203,
+      "location": "hepta-memory/src/cognitive_store_tests.rs:103:10:",
+      "context": [
+        "2026-10-21T12:49:31.2151690Z thread 'cognitive_store_tests::concurrent_source_identity_conflict_commits_exactly_one_payload' (197570) panicked at hepta-memory/src/cognitive_store_tests.rs:103:10:",
+        "2026-10-21T12:49:31.2152390Z first writer: Invalid(\"per-agent cognitive root must be canonical and must not traverse a symlink\")",
+        "2026-10-21T12:49:31.2152690Z "
+      ]
+    },
+    "cognitive_store_tests::h7_trajectory_schema_is_bound_and_append_only": {
+      "line": 9208,
+      "location": "hepta-memory/src/cognitive_store_tests.rs:488:10:",
+      "context": [
+        "2026-10-21T12:49:31.2153600Z thread 'cognitive_store_tests::h7_trajectory_schema_is_bound_and_append_only' (197571) panicked at hepta-memory/src/cognitive_store_tests.rs:488:10:",
+        "2026-10-21T12:49:31.2154280Z H7 trajectory store: Invalid(\"per-agent cognitive root must be canonical and must not traverse a symlink\")",
+        "2026-10-21T12:49:31.2154600Z "
+      ]
+    },
+    "cognitive_store_tests::projection_failure_rolls_back_source_memory_and_facts_before_reopen": {
+      "line": 9213,
+      "location": "hepta-memory/src/cognitive_store_tests.rs:596:10:",
+      "context": [
+        "2026-10-21T12:49:31.2155580Z thread 'cognitive_store_tests::projection_failure_rolls_back_source_memory_and_facts_before_reopen' (197572) panicked at hepta-memory/src/cognitive_store_tests.rs:596:10:",
+        "2026-10-21T12:49:31.2156280Z seed store: Invalid(\"per-agent cognitive root must be canonical and must not traverse a symlink\")",
+        "2026-10-21T12:49:31.2156570Z "
+      ]
+    },
+    "cognitive_store_tests::reopen_recomputes_current_projection_digests_and_exact_fts_rows": {
+      "line": 9218,
+      "location": "hepta-memory/src/cognitive_store_tests.rs:596:10:",
+      "context": [
+        "2026-10-21T12:49:31.2157530Z thread 'cognitive_store_tests::reopen_recomputes_current_projection_digests_and_exact_fts_rows' (197573) panicked at hepta-memory/src/cognitive_store_tests.rs:596:10:",
+        "2026-10-21T12:49:31.2158220Z seed store: Invalid(\"per-agent cognitive root must be canonical and must not traverse a symlink\")",
+        "2026-10-21T12:49:31.2158520Z "
+      ]
+    },
+    "cognitive_store_tests::reopen_rejects_0008_migration_checksum_drift_without_repair": {
+      "line": 9223,
+      "location": "hepta-memory/src/cognitive_store_tests.rs:880:10:",
+      "context": [
+        "2026-10-21T12:49:31.2159440Z thread 'cognitive_store_tests::reopen_rejects_0008_migration_checksum_drift_without_repair' (197574) panicked at hepta-memory/src/cognitive_store_tests.rs:880:10:",
+        "2026-10-21T12:49:31.2160160Z open cognitive store: Invalid(\"per-agent cognitive root must be canonical and must not traverse a symlink\")",
+        "2026-10-21T12:49:31.2160480Z "
+      ]
+    },
+    "cognitive_store_tests::reopen_rejects_canonical_generation_and_publication_digest_tamper": {
+      "line": 9228,
+      "location": "hepta-memory/src/cognitive_store_tests.rs:596:10:",
+      "context": [
+        "2026-10-21T12:49:31.2161460Z thread 'cognitive_store_tests::reopen_rejects_canonical_generation_and_publication_digest_tamper' (197575) panicked at hepta-memory/src/cognitive_store_tests.rs:596:10:",
+        "2026-10-21T12:49:31.2162160Z seed store: Invalid(\"per-agent cognitive root must be canonical and must not traverse a symlink\")",
+        "2026-10-21T12:49:31.2162450Z "
+      ]
+    },
+    "cognitive_store_tests::reopen_rejects_foreign_owned_rows_inside_agent_local_store": {
+      "line": 9233,
+      "location": "hepta-memory/src/cognitive_store_tests.rs:661:10:",
+      "context": [
+        "2026-10-21T12:49:31.2163450Z thread 'cognitive_store_tests::reopen_rejects_foreign_owned_rows_inside_agent_local_store' (197576) panicked at hepta-memory/src/cognitive_store_tests.rs:661:10:",
+        "2026-10-21T12:49:31.2164200Z owner store: Invalid(\"per-agent cognitive root must be canonical and must not traverse a symlink\")",
+        "2026-10-21T12:49:31.2164500Z "
+      ]
+    },
+    "cognitive_store_tests::source_acknowledgement_retry_survives_wal_reader_and_reopen": {
+      "line": 9238,
+      "location": "hepta-memory/src/cognitive_store_tests.rs:148:60:",
+      "context": [
+        "2026-10-21T12:49:31.2165430Z thread 'cognitive_store_tests::source_acknowledgement_retry_survives_wal_reader_and_reopen' (197577) panicked at hepta-memory/src/cognitive_store_tests.rs:148:60:",
+        "2026-10-21T12:49:31.2166100Z writer: Invalid(\"per-agent cognitive root must be canonical and must not traverse a symlink\")",
+        "2026-10-21T12:49:31.2166510Z "
+      ]
+    },
+    "cognitive_store_tests::stores_are_per_agent_append_only_and_scope_fail_closed": {
+      "line": 9243,
+      "location": "hepta-memory/src/cognitive_store_tests.rs:40:10:",
+      "context": [
+        "2026-10-21T12:49:31.2167380Z thread 'cognitive_store_tests::stores_are_per_agent_append_only_and_scope_fail_closed' (197578) panicked at hepta-memory/src/cognitive_store_tests.rs:40:10:",
+        "2026-10-21T12:49:31.2168050Z first store: Invalid(\"per-agent cognitive root must be canonical and must not traverse a symlink\")",
+        "2026-10-21T12:49:31.2168350Z "
+      ]
+    },
+    "cognitive_store_tests::v2_fixture_migrates_forward_preserving_memory_and_revoking_legacy_projection": {
+      "line": 9248,
+      "location": "hepta-memory/src/cognitive_store_tests.rs:924:10:",
+      "context": [
+        "2026-10-21T12:49:31.2169500Z thread 'cognitive_store_tests::v2_fixture_migrates_forward_preserving_memory_and_revoking_legacy_projection' (197579) panicked at hepta-memory/src/cognitive_store_tests.rs:924:10:",
+        "2026-10-21T12:49:31.2170230Z v2 store: Invalid(\"per-agent cognitive root must be canonical and must not traverse a symlink\")",
+        "2026-10-21T12:49:31.2170530Z "
+      ]
+    },
+    "h7_trajectory_store_tests::bound_read_rejects_terminal_trajectory_from_prior_lease_head": {
+      "line": 9253,
+      "location": "hepta-memory/src/h7_trajectory_store_tests.rs:73:10:",
+      "context": [
+        "2026-10-21T12:49:31.2171490Z thread 'h7_trajectory_store_tests::bound_read_rejects_terminal_trajectory_from_prior_lease_head' (197610) panicked at hepta-memory/src/h7_trajectory_store_tests.rs:73:10:",
+        "2026-10-21T12:49:31.2172180Z store: Invalid(\"per-agent cognitive root must be canonical and must not traverse a symlink\")",
+        "2026-10-21T12:49:31.2172460Z "
+      ]
+    },
+    "h7_trajectory_store_tests::bound_trajectory_is_append_only_causal_and_reopenable": {
+      "line": 9258,
+      "location": "hepta-memory/src/h7_trajectory_store_tests.rs:73:10:",
+      "context": [
+        "2026-10-21T12:49:31.2173360Z thread 'h7_trajectory_store_tests::bound_trajectory_is_append_only_causal_and_reopenable' (197611) panicked at hepta-memory/src/h7_trajectory_store_tests.rs:73:10:",
+        "2026-10-21T12:49:31.2174030Z store: Invalid(\"per-agent cognitive root must be canonical and must not traverse a symlink\")",
+        "2026-10-21T12:49:31.2174320Z "
+      ]
+    },
+    "h7_trajectory_store_tests::head_scoped_expired_terminal_gate_survives_store_reopen": {
+      "line": 9263,
+      "location": "hepta-memory/src/h7_trajectory_store_tests.rs:116:10:",
+      "context": [
+        "2026-10-21T12:49:31.2175240Z thread 'h7_trajectory_store_tests::head_scoped_expired_terminal_gate_survives_store_reopen' (197613) panicked at hepta-memory/src/h7_trajectory_store_tests.rs:116:10:",
+        "2026-10-21T12:49:31.2175910Z store: Invalid(\"per-agent cognitive root must be canonical and must not traverse a symlink\")",
+        "2026-10-21T12:49:31.2176190Z "
+      ]
+    },
+    "h7_trajectory_store_tests::recovery_read_observes_expired_terminal_without_appending_h7_rows": {
+      "line": 9268,
+      "location": "hepta-memory/src/h7_trajectory_store_tests.rs:116:10:",
+      "context": [
+        "2026-10-21T12:49:31.2177200Z thread 'h7_trajectory_store_tests::recovery_read_observes_expired_terminal_without_appending_h7_rows' (197615) panicked at hepta-memory/src/h7_trajectory_store_tests.rs:116:10:",
+        "2026-10-21T12:49:31.2177900Z store: Invalid(\"per-agent cognitive root must be canonical and must not traverse a symlink\")",
+        "2026-10-21T12:49:31.2178190Z "
+      ]
+    },
+    "h7_trajectory_store_tests::trajectory_rejects_gap_parent_policy_and_stale_binding": {
+      "line": 9273,
+      "location": "hepta-memory/src/h7_trajectory_store_tests.rs:73:10:",
+      "context": [
+        "2026-10-21T12:49:31.2179100Z thread 'h7_trajectory_store_tests::trajectory_rejects_gap_parent_policy_and_stale_binding' (197617) panicked at hepta-memory/src/h7_trajectory_store_tests.rs:73:10:",
+        "2026-10-21T12:49:31.2180550Z store: Invalid(\"per-agent cognitive root must be canonical and must not traverse a symlink\")",
+        "2026-10-21T12:49:31.2180930Z "
+      ]
+    },
+    "h7_trajectory_store_tests::trajectory_rejects_mixed_generation_event_chain": {
+      "line": 9278,
+      "location": "hepta-memory/src/h7_trajectory_store_tests.rs:73:10:",
+      "context": [
+        "2026-10-21T12:49:31.2182170Z thread 'h7_trajectory_store_tests::trajectory_rejects_mixed_generation_event_chain' (197618) panicked at hepta-memory/src/h7_trajectory_store_tests.rs:73:10:",
+        "2026-10-21T12:49:31.2183180Z store: Invalid(\"per-agent cognitive root must be canonical and must not traverse a symlink\")",
+        "2026-10-21T12:49:31.2183760Z "
+      ]
+    },
+    "lane_c_snapshot_tests::context_binding_rejects_forged_owner_frontiers_and_clock_regression": {
+      "line": 9283,
+      "location": "hepta-memory/src/lane_c_snapshot_tests.rs:423:68:",
+      "context": [
+        "2026-10-21T12:49:31.2200520Z thread 'lane_c_snapshot_tests::context_binding_rejects_forged_owner_frontiers_and_clock_regression' (197626) panicked at hepta-memory/src/lane_c_snapshot_tests.rs:423:68:",
+        "2026-10-21T12:49:31.2201700Z called `Result::unwrap()` on an `Err` value: Invalid(\"per-agent cognitive root must be canonical and must not traverse a symlink\")",
+        "2026-10-21T12:49:31.2202090Z "
+      ]
+    },
+    "lane_c_snapshot_tests::durable_lane_c_page_continuation_rejects_intervening_owner_change": {
+      "line": 9288,
+      "location": "hepta-memory/src/lane_c_snapshot_tests.rs:144:68:",
+      "context": [
+        "2026-10-21T12:49:31.2203360Z thread 'lane_c_snapshot_tests::durable_lane_c_page_continuation_rejects_intervening_owner_change' (197627) panicked at hepta-memory/src/lane_c_snapshot_tests.rs:144:68:",
+        "2026-10-21T12:49:31.2204260Z called `Result::unwrap()` on an `Err` value: Invalid(\"per-agent cognitive root must be canonical and must not traverse a symlink\")",
+        "2026-10-21T12:49:31.2204630Z "
+      ]
+    },
+    "lane_c_snapshot_tests::durable_lane_c_pages_preserve_ancestry_and_global_tombstone_frontier": {
+      "line": 9293,
+      "location": "hepta-memory/src/lane_c_snapshot_tests.rs:54:68:",
+      "context": [
+        "2026-10-21T12:49:31.2205630Z thread 'lane_c_snapshot_tests::durable_lane_c_pages_preserve_ancestry_and_global_tombstone_frontier' (197628) panicked at hepta-memory/src/lane_c_snapshot_tests.rs:54:68:",
+        "2026-10-21T12:49:31.2206410Z called `Result::unwrap()` on an `Err` value: Invalid(\"per-agent cognitive root must be canonical and must not traverse a symlink\")",
+        "2026-10-21T12:49:31.2206780Z "
+      ]
+    },
+    "lane_c_snapshot_tests::existing_sqlite_writes_are_readable_by_new_lane_c_after_reopen": {
+      "line": 9298,
+      "location": "hepta-memory/src/lane_c_snapshot_tests.rs:190:53:",
+      "context": [
+        "2026-10-21T12:49:31.2207710Z thread 'lane_c_snapshot_tests::existing_sqlite_writes_are_readable_by_new_lane_c_after_reopen' (197630) panicked at hepta-memory/src/lane_c_snapshot_tests.rs:190:53:",
+        "2026-10-21T12:49:31.2208490Z called `Result::unwrap()` on an `Err` value: Invalid(\"per-agent cognitive root must be canonical and must not traverse a symlink\")",
+        "2026-10-21T12:49:31.2208850Z "
+      ]
+    },
+    "lane_c_snapshot_tests::retained_cut_detects_old_valid_backup_after_ordinary_reopen": {
+      "line": 9303,
+      "location": "hepta-memory/src/lane_c_snapshot_tests.rs:452:53:",
+      "context": [
+        "2026-10-21T12:49:31.2209760Z thread 'lane_c_snapshot_tests::retained_cut_detects_old_valid_backup_after_ordinary_reopen' (197631) panicked at hepta-memory/src/lane_c_snapshot_tests.rs:452:53:",
+        "2026-10-21T12:49:31.2210510Z called `Result::unwrap()` on an `Err` value: Invalid(\"per-agent cognitive root must be canonical and must not traverse a symlink\")",
+        "2026-10-21T12:49:31.2210880Z "
+      ]
+    },
+    "lane_c_snapshot_tests::scope_provisional_and_time_filters_do_not_leak_unadmitted_facts": {
+      "line": 9308,
+      "location": "hepta-memory/src/lane_c_snapshot_tests.rs:350:68:",
+      "context": [
+        "2026-10-21T12:49:31.2211840Z thread 'lane_c_snapshot_tests::scope_provisional_and_time_filters_do_not_leak_unadmitted_facts' (197632) panicked at hepta-memory/src/lane_c_snapshot_tests.rs:350:68:",
+        "2026-10-21T12:49:31.2212610Z called `Result::unwrap()` on an `Err` value: Invalid(\"per-agent cognitive root must be canonical and must not traverse a symlink\")",
+        "2026-10-21T12:49:31.2212970Z "
+      ]
+    },
+    "lane_c_snapshot_tests::tombstone_invalidates_prior_cut_and_survives_reopen": {
+      "line": 9313,
+      "location": "hepta-memory/src/lane_c_snapshot_tests.rs:280:53:",
+      "context": [
+        "2026-10-21T12:49:31.2213830Z thread 'lane_c_snapshot_tests::tombstone_invalidates_prior_cut_and_survives_reopen' (197633) panicked at hepta-memory/src/lane_c_snapshot_tests.rs:280:53:",
+        "2026-10-21T12:49:31.2214570Z called `Result::unwrap()` on an `Err` value: Invalid(\"per-agent cognitive root must be canonical and must not traverse a symlink\")",
+        "2026-10-21T12:49:31.2214930Z "
+      ]
+    },
+    "local_atomic_witness_tests::witness_receipt_validation_rejects_tampered_digest_and_identity": {
+      "line": 9318,
+      "location": "hepta-memory/src/local_atomic_witness_tests.rs:76:10:",
+      "context": [
+        "2026-10-21T12:49:31.2216070Z thread 'local_atomic_witness_tests::witness_receipt_validation_rejects_tampered_digest_and_identity' (197634) panicked at hepta-memory/src/local_atomic_witness_tests.rs:76:10:",
+        "2026-10-21T12:49:31.2216790Z store: Invalid(\"per-agent cognitive root must be canonical and must not traverse a symlink\")",
+        "2026-10-21T12:49:31.2217070Z "
+      ]
+    },
+    "local_atomic_witness_tests::writer_couples_lease_fence_and_compact_witness_idempotently": {
+      "line": 9323,
+      "location": "hepta-memory/src/local_atomic_witness_tests.rs:76:10:",
+      "context": [
+        "2026-10-21T12:49:31.2218040Z thread 'local_atomic_witness_tests::writer_couples_lease_fence_and_compact_witness_idempotently' (197636) panicked at hepta-memory/src/local_atomic_witness_tests.rs:76:10:",
+        "2026-10-21T12:49:31.2218790Z store: Invalid(\"per-agent cognitive root must be canonical and must not traverse a symlink\")",
+        "2026-10-21T12:49:31.2219090Z "
+      ]
+    },
+    "local_atomic_witness_tests::writer_fault_rolls_back_compact_row_and_allows_exact_retry": {
+      "line": 9328,
+      "location": "hepta-memory/src/local_atomic_witness_tests.rs:76:10:",
+      "context": [
+        "2026-10-21T12:49:31.2220040Z thread 'local_atomic_witness_tests::writer_fault_rolls_back_compact_row_and_allows_exact_retry' (197638) panicked at hepta-memory/src/local_atomic_witness_tests.rs:76:10:",
+        "2026-10-21T12:49:31.2220730Z store: Invalid(\"per-agent cognitive root must be canonical and must not traverse a symlink\")",
+        "2026-10-21T12:49:31.2221010Z "
+      ]
+    },
+    "local_atomic_witness_tests::writer_rejects_stale_or_terminal_lease_and_fence_rebinding": {
+      "line": 9333,
+      "location": "hepta-memory/src/local_atomic_witness_tests.rs:76:10:",
+      "context": [
+        "2026-10-21T12:49:31.2221970Z thread 'local_atomic_witness_tests::writer_rejects_stale_or_terminal_lease_and_fence_rebinding' (197639) panicked at hepta-memory/src/local_atomic_witness_tests.rs:76:10:",
+        "2026-10-21T12:49:31.2222650Z store: Invalid(\"per-agent cognitive root must be canonical and must not traverse a symlink\")",
+        "2026-10-21T12:49:31.2222930Z "
+      ]
+    },
+    "local_compact_executor_tests::bound_compact_journal_survives_terminal_lease_and_store_reopen": {
+      "line": 9338,
+      "location": "hepta-memory/src/local_compact_executor_tests.rs:116:10:",
+      "context": [
+        "2026-10-21T12:49:31.2223950Z thread 'local_compact_executor_tests::bound_compact_journal_survives_terminal_lease_and_store_reopen' (197640) panicked at hepta-memory/src/local_compact_executor_tests.rs:116:10:",
+        "2026-10-21T12:49:31.2224660Z store: Invalid(\"per-agent cognitive root must be canonical and must not traverse a symlink\")",
+        "2026-10-21T12:49:31.2224950Z "
+      ]
+    },
+    "local_compact_executor_tests::bound_compact_mutation_rejects_lease_expiry_after_open": {
+      "line": 9343,
+      "location": "hepta-memory/src/local_compact_executor_tests.rs:116:10:",
+      "context": [
+        "2026-10-21T12:49:31.2225900Z thread 'local_compact_executor_tests::bound_compact_mutation_rejects_lease_expiry_after_open' (197641) panicked at hepta-memory/src/local_compact_executor_tests.rs:116:10:",
+        "2026-10-21T12:49:31.2226600Z store: Invalid(\"per-agent cognitive root must be canonical and must not traverse a symlink\")",
+        "2026-10-21T12:49:31.2226880Z "
+      ]
+    },
+    "local_compact_executor_tests::bound_compact_mutations_reject_released_lease_without_compact_rows": {
+      "line": 9348,
+      "location": "hepta-memory/src/local_compact_executor_tests.rs:116:10:",
+      "context": [
+        "2026-10-21T12:49:31.2227930Z thread 'local_compact_executor_tests::bound_compact_mutations_reject_released_lease_without_compact_rows' (197642) panicked at hepta-memory/src/local_compact_executor_tests.rs:116:10:",
+        "2026-10-21T12:49:31.2228650Z store: Invalid(\"per-agent cognitive root must be canonical and must not traverse a symlink\")",
+        "2026-10-21T12:49:31.2228930Z "
+      ]
+    },
+    "local_compact_executor_tests::bound_compact_replay_is_idempotent_while_lease_active": {
+      "line": 9353,
+      "location": "hepta-memory/src/local_compact_executor_tests.rs:116:10:",
+      "context": [
+        "2026-10-21T12:49:31.2229870Z thread 'local_compact_executor_tests::bound_compact_replay_is_idempotent_while_lease_active' (197643) panicked at hepta-memory/src/local_compact_executor_tests.rs:116:10:",
+        "2026-10-21T12:49:31.2230560Z store: Invalid(\"per-agent cognitive root must be canonical and must not traverse a symlink\")",
+        "2026-10-21T12:49:31.2230840Z "
+      ]
+    },
+    "local_compact_executor_tests::bound_lease_terminalization_without_compact_journal_is_allowed": {
+      "line": 9358,
+      "location": "hepta-memory/src/local_compact_executor_tests.rs:116:10:",
+      "context": [
+        "2026-10-21T12:49:31.2231980Z thread 'local_compact_executor_tests::bound_lease_terminalization_without_compact_journal_is_allowed' (197644) panicked at hepta-memory/src/local_compact_executor_tests.rs:116:10:",
+        "2026-10-21T12:49:31.2232690Z store: Invalid(\"per-agent cognitive root must be canonical and must not traverse a symlink\")",
+        "2026-10-21T12:49:31.2232980Z "
+      ]
+    },
+    "local_compact_executor_tests::compact_reopen_binds_authority_and_owner_epochs_and_rejects_legacy_nulls": {
+      "line": 9363,
+      "location": "hepta-memory/src/local_compact_executor_tests.rs:1924:10:",
+      "context": [
+        "2026-10-21T12:49:31.2234120Z thread 'local_compact_executor_tests::compact_reopen_binds_authority_and_owner_epochs_and_rejects_legacy_nulls' (197645) panicked at hepta-memory/src/local_compact_executor_tests.rs:1924:10:",
+        "2026-10-21T12:49:31.2234860Z store: Invalid(\"per-agent cognitive root must be canonical and must not traverse a symlink\")",
+        "2026-10-21T12:49:31.2235150Z "
+      ]
+    },
+    "local_compact_executor_tests::compact_reopen_rejects_foreign_owner_row_sharing_journal_id": {
+      "line": 9368,
+      "location": "hepta-memory/src/local_compact_executor_tests.rs:1781:10:",
+      "context": [
+        "2026-10-21T12:49:31.2245520Z thread 'local_compact_executor_tests::compact_reopen_rejects_foreign_owner_row_sharing_journal_id' (197647) panicked at hepta-memory/src/local_compact_executor_tests.rs:1781:10:",
+        "2026-10-21T12:49:31.2246340Z store: Invalid(\"per-agent cognitive root must be canonical and must not traverse a symlink\")",
+        "2026-10-21T12:49:31.2246640Z "
+      ]
+    },
+    "local_compact_executor_tests::compact_reopen_rejects_orphan_bound_lease_head": {
+      "line": 9373,
+      "location": "hepta-memory/src/local_compact_executor_tests.rs:116:10:",
+      "context": [
+        "2026-10-21T12:49:31.2247600Z thread 'local_compact_executor_tests::compact_reopen_rejects_orphan_bound_lease_head' (197648) panicked at hepta-memory/src/local_compact_executor_tests.rs:116:10:",
+        "2026-10-21T12:49:31.2248280Z store: Invalid(\"per-agent cognitive root must be canonical and must not traverse a symlink\")",
+        "2026-10-21T12:49:31.2248560Z "
+      ]
+    },
+    "local_compact_executor_tests::compact_rotation_rejects_old_journal_and_accepts_new_journal_id": {
+      "line": 9378,
+      "location": "hepta-memory/src/local_compact_executor_tests.rs:116:10:",
+      "context": [
+        "2026-10-21T12:49:31.2249600Z thread 'local_compact_executor_tests::compact_rotation_rejects_old_journal_and_accepts_new_journal_id' (197649) panicked at hepta-memory/src/local_compact_executor_tests.rs:116:10:",
+        "2026-10-21T12:49:31.2250310Z store: Invalid(\"per-agent cognitive root must be canonical and must not traverse a symlink\")",
+        "2026-10-21T12:49:31.2250590Z "
+      ]
+    },
+    "local_compact_executor_tests::read_rehydration_is_pure_until_explicit_rehydrate": {
+      "line": 9383,
+      "location": "hepta-memory/src/local_compact_executor_tests.rs:1608:10:",
+      "context": [
+        "2026-10-21T12:49:31.2251520Z thread 'local_compact_executor_tests::read_rehydration_is_pure_until_explicit_rehydrate' (197654) panicked at hepta-memory/src/local_compact_executor_tests.rs:1608:10:",
+        "2026-10-21T12:49:31.2252200Z store: Invalid(\"per-agent cognitive root must be canonical and must not traverse a symlink\")",
+        "2026-10-21T12:49:31.2252480Z "
+      ]
+    },
+    "local_compact_executor_tests::rehydration_marker_tamper_fails_closed_on_restart": {
+      "line": 9388,
+      "location": "hepta-memory/src/local_compact_executor_tests.rs:2006:10:",
+      "context": [
+        "2026-10-21T12:49:31.2253410Z thread 'local_compact_executor_tests::rehydration_marker_tamper_fails_closed_on_restart' (197655) panicked at hepta-memory/src/local_compact_executor_tests.rs:2006:10:",
+        "2026-10-21T12:49:31.2254080Z store: Invalid(\"per-agent cognitive root must be canonical and must not traverse a symlink\")",
+        "2026-10-21T12:49:31.2254360Z "
+      ]
+    },
+    "local_compact_executor_tests::sqlite_checkpoint_commit_reopen_and_rehydrate_replay": {
+      "line": 9393,
+      "location": "hepta-memory/src/local_compact_executor_tests.rs:862:10:",
+      "context": [
+        "2026-10-21T12:49:31.2255320Z thread 'local_compact_executor_tests::sqlite_checkpoint_commit_reopen_and_rehydrate_replay' (197656) panicked at hepta-memory/src/local_compact_executor_tests.rs:862:10:",
+        "2026-10-21T12:49:31.2256010Z store: Invalid(\"per-agent cognitive root must be canonical and must not traverse a symlink\")",
+        "2026-10-21T12:49:31.2256290Z "
+      ]
+    },
+    "local_compact_executor_tests::stale_fence_and_sqlite_tamper_fail_closed": {
+      "line": 9398,
+      "location": "hepta-memory/src/local_compact_executor_tests.rs:1729:10:",
+      "context": [
+        "2026-10-21T12:49:31.2257510Z thread 'local_compact_executor_tests::stale_fence_and_sqlite_tamper_fail_closed' (197657) panicked at hepta-memory/src/local_compact_executor_tests.rs:1729:10:",
+        "2026-10-21T12:49:31.2258160Z store: Invalid(\"per-agent cognitive root must be canonical and must not traverse a symlink\")",
+        "2026-10-21T12:49:31.2258450Z "
+      ]
+    },
+    "local_compact_executor_tests::terminal_bound_lease_transition_rejects_foreign_compact_row": {
+      "line": 9403,
+      "location": "hepta-memory/src/local_compact_executor_tests.rs:116:10:",
+      "context": [
+        "2026-10-21T12:49:31.2259570Z thread 'local_compact_executor_tests::terminal_bound_lease_transition_rejects_foreign_compact_row' (197659) panicked at hepta-memory/src/local_compact_executor_tests.rs:116:10:",
+        "2026-10-21T12:49:31.2260290Z store: Invalid(\"per-agent cognitive root must be canonical and must not traverse a symlink\")",
+        "2026-10-21T12:49:31.2260570Z "
+      ]
+    },
+    "local_compact_executor_tests::terminal_bound_lease_transitions_audit_compact_journal_atomically": {
+      "line": 9408,
+      "location": "hepta-memory/src/local_compact_executor_tests.rs:116:10:",
+      "context": [
+        "2026-10-21T12:49:31.2261630Z thread 'local_compact_executor_tests::terminal_bound_lease_transitions_audit_compact_journal_atomically' (197660) panicked at hepta-memory/src/local_compact_executor_tests.rs:116:10:",
+        "2026-10-21T12:49:31.2262350Z store: Invalid(\"per-agent cognitive root must be canonical and must not traverse a symlink\")",
+        "2026-10-21T12:49:31.2262630Z "
+      ]
+    },
+    "local_compact_executor_tests::unknown_outcome_survives_reopen_until_explicit_reconcile": {
+      "line": 9413,
+      "location": "hepta-memory/src/local_compact_executor_tests.rs:1668:10:",
+      "context": [
+        "2026-10-21T12:49:31.2263610Z thread 'local_compact_executor_tests::unknown_outcome_survives_reopen_until_explicit_reconcile' (197661) panicked at hepta-memory/src/local_compact_executor_tests.rs:1668:10:",
+        "2026-10-21T12:49:31.2264310Z store: Invalid(\"per-agent cognitive root must be canonical and must not traverse a symlink\")",
+        "2026-10-21T12:49:31.2264590Z "
+      ]
+    },
+    "local_compact_hooks::tests::runtime_hooks_persist_checkpoint_and_rehydrate_once": {
+      "line": 9418,
+      "location": "hepta-memory/src/local_compact_hooks.rs:393:14:",
+      "context": [
+        "2026-10-21T12:49:31.2265500Z thread 'local_compact_hooks::tests::runtime_hooks_persist_checkpoint_and_rehydrate_once' (197662) panicked at hepta-memory/src/local_compact_hooks.rs:393:14:",
+        "2026-10-21T12:49:31.2266150Z store: Invalid(\"per-agent cognitive root must be canonical and must not traverse a symlink\")",
+        "2026-10-21T12:49:31.2266430Z "
+      ]
+    },
+    "local_lease_outbox_tests::acquire_replay_and_atomic_admission_are_idempotent": {
+      "line": 9423,
+      "location": "hepta-memory/src/local_lease_outbox_tests.rs:54:10:",
+      "context": [
+        "2026-10-21T12:49:31.2267310Z thread 'local_lease_outbox_tests::acquire_replay_and_atomic_admission_are_idempotent' (197663) panicked at hepta-memory/src/local_lease_outbox_tests.rs:54:10:",
+        "2026-10-21T12:49:31.2268010Z cognitive store: Invalid(\"per-agent cognitive root must be canonical and must not traverse a symlink\")",
+        "2026-10-21T12:49:31.2268320Z "
+      ]
+    },
+    "local_lease_outbox_tests::bound_expiry_is_explicit_timeout_rollback_and_exact_head_reopens_generation": {
+      "line": 9428,
+      "location": "hepta-memory/src/local_lease_outbox_tests.rs:54:10:",
+      "context": [
+        "2026-10-21T12:49:31.2269400Z thread 'local_lease_outbox_tests::bound_expiry_is_explicit_timeout_rollback_and_exact_head_reopens_generation' (197664) panicked at hepta-memory/src/local_lease_outbox_tests.rs:54:10:",
+        "2026-10-21T12:49:31.2270150Z cognitive store: Invalid(\"per-agent cognitive root must be canonical and must not traverse a symlink\")",
+        "2026-10-21T12:49:31.2270460Z "
+      ]
+    },
+    "local_lease_outbox_tests::event_and_outbox_faults_leave_no_partial_rows": {
+      "line": 9433,
+      "location": "hepta-memory/src/local_lease_outbox_tests.rs:54:10:",
+      "context": [
+        "2026-10-21T12:49:31.2271300Z thread 'local_lease_outbox_tests::event_and_outbox_faults_leave_no_partial_rows' (197666) panicked at hepta-memory/src/local_lease_outbox_tests.rs:54:10:",
+        "2026-10-21T12:49:31.2271970Z cognitive store: Invalid(\"per-agent cognitive root must be canonical and must not traverse a symlink\")",
+        "2026-10-21T12:49:31.2272270Z "
+      ]
+    },
+    "local_lease_outbox_tests::expiry_and_replay_finalization_reject_missing_outbox_pair": {
+      "line": 9438,
+      "location": "hepta-memory/src/local_lease_outbox_tests.rs:54:10:",
+      "context": [
+        "2026-10-21T12:49:31.2273280Z thread 'local_lease_outbox_tests::expiry_and_replay_finalization_reject_missing_outbox_pair' (197667) panicked at hepta-memory/src/local_lease_outbox_tests.rs:54:10:",
+        "2026-10-21T12:49:31.2273980Z cognitive store: Invalid(\"per-agent cognitive root must be canonical and must not traverse a symlink\")",
+        "2026-10-21T12:49:31.2274290Z "
+      ]
+    },
+    "local_lease_outbox_tests::expiry_rejects_legacy_unbound_leases": {
+      "line": 9443,
+      "location": "hepta-memory/src/local_lease_outbox_tests.rs:54:10:",
+      "context": [
+        "2026-10-21T12:49:31.2275110Z thread 'local_lease_outbox_tests::expiry_rejects_legacy_unbound_leases' (197668) panicked at hepta-memory/src/local_lease_outbox_tests.rs:54:10:",
+        "2026-10-21T12:49:31.2275760Z cognitive store: Invalid(\"per-agent cognitive root must be canonical and must not traverse a symlink\")",
+        "2026-10-21T12:49:31.2276060Z "
+      ]
+    },
+    "local_lease_outbox_tests::generation_cas_release_and_stale_handle_fail_closed": {
+      "line": 9448,
+      "location": "hepta-memory/src/local_lease_outbox_tests.rs:54:10:",
+      "context": [
+        "2026-10-21T12:49:31.2276950Z thread 'local_lease_outbox_tests::generation_cas_release_and_stale_handle_fail_closed' (197670) panicked at hepta-memory/src/local_lease_outbox_tests.rs:54:10:",
+        "2026-10-21T12:49:31.2277630Z cognitive store: Invalid(\"per-agent cognitive root must be canonical and must not traverse a symlink\")",
+        "2026-10-21T12:49:31.2277940Z "
+      ]
+    },
+    "local_lease_outbox_tests::host_bound_reopen_requires_exact_head_and_binding": {
+      "line": 9453,
+      "location": "hepta-memory/src/local_lease_outbox_tests.rs:54:10:",
+      "context": [
+        "2026-10-21T12:49:31.2278800Z thread 'local_lease_outbox_tests::host_bound_reopen_requires_exact_head_and_binding' (197671) panicked at hepta-memory/src/local_lease_outbox_tests.rs:54:10:",
+        "2026-10-21T12:49:31.2279480Z cognitive store: Invalid(\"per-agent cognitive root must be canonical and must not traverse a symlink\")",
+        "2026-10-21T12:49:31.2279790Z "
+      ]
+    },
+    "local_lease_outbox_tests::host_bound_successor_cas_requires_lexicographically_newer_epochs": {
+      "line": 9458,
+      "location": "hepta-memory/src/local_lease_outbox_tests.rs:54:10:",
+      "context": [
+        "2026-10-21T12:49:31.2280790Z thread 'local_lease_outbox_tests::host_bound_successor_cas_requires_lexicographically_newer_epochs' (197672) panicked at hepta-memory/src/local_lease_outbox_tests.rs:54:10:",
+        "2026-10-21T12:49:31.2281510Z cognitive store: Invalid(\"per-agent cognitive root must be canonical and must not traverse a symlink\")",
+        "2026-10-21T12:49:31.2281820Z "
+      ]
+    },
+    "local_lease_outbox_tests::indeterminate_replay_is_status_aware_and_releases_without_dispatch": {
+      "line": 9463,
+      "location": "hepta-memory/src/local_lease_outbox_tests.rs:1120:10:",
+      "context": [
+        "2026-10-21T12:49:31.2282840Z thread 'local_lease_outbox_tests::indeterminate_replay_is_status_aware_and_releases_without_dispatch' (197673) panicked at hepta-memory/src/local_lease_outbox_tests.rs:1120:10:",
+        "2026-10-21T12:49:31.2283540Z store: Invalid(\"per-agent cognitive root must be canonical and must not traverse a symlink\")",
+        "2026-10-21T12:49:31.2283830Z "
+      ]
+    },
+    "local_lease_outbox_tests::inspect_local_lease_head_is_read_only_and_classifies_fences": {
+      "line": 9468,
+      "location": "hepta-memory/src/local_lease_outbox_tests.rs:54:10:",
+      "context": [
+        "2026-10-21T12:49:31.2284770Z thread 'local_lease_outbox_tests::inspect_local_lease_head_is_read_only_and_classifies_fences' (197674) panicked at hepta-memory/src/local_lease_outbox_tests.rs:54:10:",
+        "2026-10-21T12:49:31.2289610Z cognitive store: Invalid(\"per-agent cognitive root must be canonical and must not traverse a symlink\")",
+        "2026-10-21T12:49:31.2289960Z "
+      ]
+    },
+    "local_lease_outbox_tests::lease_head_cas_rejects_stale_terminal_head_and_digest_mismatch": {
+      "line": 9473,
+      "location": "hepta-memory/src/local_lease_outbox_tests.rs:54:10:",
+      "context": [
+        "2026-10-21T12:49:31.2291000Z thread 'local_lease_outbox_tests::lease_head_cas_rejects_stale_terminal_head_and_digest_mismatch' (197676) panicked at hepta-memory/src/local_lease_outbox_tests.rs:54:10:",
+        "2026-10-21T12:49:31.2291720Z cognitive store: Invalid(\"per-agent cognitive root must be canonical and must not traverse a symlink\")",
+        "2026-10-21T12:49:31.2292040Z "
+      ]
+    },
+    "local_lease_outbox_tests::lease_terminalization_rejects_unresolved_outbox_until_occurrence_is_settled": {
+      "line": 9478,
+      "location": "hepta-memory/src/local_lease_outbox_tests.rs:54:10:",
+      "context": [
+        "2026-10-21T12:49:31.2293400Z thread 'local_lease_outbox_tests::lease_terminalization_rejects_unresolved_outbox_until_occurrence_is_settled' (197677) panicked at hepta-memory/src/local_lease_outbox_tests.rs:54:10:",
+        "2026-10-21T12:49:31.2294150Z cognitive store: Invalid(\"per-agent cognitive root must be canonical and must not traverse a symlink\")",
+        "2026-10-21T12:49:31.2294460Z "
+      ]
+    },
+    "local_lease_outbox_tests::maximum_length_lease_id_keeps_generated_row_ids_bounded": {
+      "line": 9483,
+      "location": "hepta-memory/src/local_lease_outbox_tests.rs:54:10:",
+      "context": [
+        "2026-10-21T12:49:31.2295500Z thread 'local_lease_outbox_tests::maximum_length_lease_id_keeps_generated_row_ids_bounded' (197679) panicked at hepta-memory/src/local_lease_outbox_tests.rs:54:10:",
+        "2026-10-21T12:49:31.2296200Z cognitive store: Invalid(\"per-agent cognitive root must be canonical and must not traverse a symlink\")",
+        "2026-10-21T12:49:31.2296520Z "
+      ]
+    },
+    "local_lease_outbox_tests::new_generation_retry_of_old_occurrence_is_stale_not_corrupt": {
+      "line": 9488,
+      "location": "hepta-memory/src/local_lease_outbox_tests.rs:54:10:",
+      "context": [
+        "2026-10-21T12:49:31.2297460Z thread 'local_lease_outbox_tests::new_generation_retry_of_old_occurrence_is_stale_not_corrupt' (197680) panicked at hepta-memory/src/local_lease_outbox_tests.rs:54:10:",
+        "2026-10-21T12:49:31.2298170Z cognitive store: Invalid(\"per-agent cognitive root must be canonical and must not traverse a symlink\")",
+        "2026-10-21T12:49:31.2298480Z "
+      ]
+    },
+    "local_lease_outbox_tests::operation_event_and_outbox_are_one_atomic_transaction_across_every_fault_boundary": {
+      "line": 9493,
+      "location": "hepta-memory/src/local_lease_outbox_tests.rs:54:10:",
+      "context": [
+        "2026-10-21T12:49:31.2299590Z thread 'local_lease_outbox_tests::operation_event_and_outbox_are_one_atomic_transaction_across_every_fault_boundary' (197681) panicked at hepta-memory/src/local_lease_outbox_tests.rs:54:10:",
+        "2026-10-21T12:49:31.2300370Z cognitive store: Invalid(\"per-agent cognitive root must be canonical and must not traverse a symlink\")",
+        "2026-10-21T12:49:31.2300680Z "
+      ]
+    },
+    "local_lease_outbox_tests::queued_replay_returns_original_receipt_and_keeps_lease_active": {
+      "line": 9498,
+      "location": "hepta-memory/src/local_lease_outbox_tests.rs:54:10:",
+      "context": [
+        "2026-10-21T12:49:31.2301640Z thread 'local_lease_outbox_tests::queued_replay_returns_original_receipt_and_keeps_lease_active' (197685) panicked at hepta-memory/src/local_lease_outbox_tests.rs:54:10:",
+        "2026-10-21T12:49:31.2302340Z cognitive store: Invalid(\"per-agent cognitive root must be canonical and must not traverse a symlink\")",
+        "2026-10-21T12:49:31.2302650Z "
+      ]
+    },
+    "local_lease_outbox_tests::reopen_rejects_late_reconcile_after_terminal_outcome": {
+      "line": 9503,
+      "location": "hepta-memory/src/local_lease_outbox_tests.rs:1672:10:",
+      "context": [
+        "2026-10-21T12:49:31.2303560Z thread 'local_lease_outbox_tests::reopen_rejects_late_reconcile_after_terminal_outcome' (197686) panicked at hepta-memory/src/local_lease_outbox_tests.rs:1672:10:",
+        "2026-10-21T12:49:31.2304220Z store: Invalid(\"per-agent cognitive root must be canonical and must not traverse a symlink\")",
+        "2026-10-21T12:49:31.2304510Z "
+      ]
+    },
+    "local_lease_outbox_tests::replay_acquisition_rejects_corrupt_child_chain_before_returning_handle": {
+      "line": 9508,
+      "location": "hepta-memory/src/local_lease_outbox_tests.rs:54:10:",
+      "context": [
+        "2026-10-21T12:49:31.2305550Z thread 'local_lease_outbox_tests::replay_acquisition_rejects_corrupt_child_chain_before_returning_handle' (197687) panicked at hepta-memory/src/local_lease_outbox_tests.rs:54:10:",
+        "2026-10-21T12:49:31.2306290Z cognitive store: Invalid(\"per-agent cognitive root must be canonical and must not traverse a symlink\")",
+        "2026-10-21T12:49:31.2306600Z "
+      ]
+    },
+    "local_lease_outbox_tests::replay_finalization_keeps_lease_active_when_another_occurrence_is_unresolved": {
+      "line": 9513,
+      "location": "hepta-memory/src/local_lease_outbox_tests.rs:54:10:",
+      "context": [
+        "2026-10-21T12:49:31.2307690Z thread 'local_lease_outbox_tests::replay_finalization_keeps_lease_active_when_another_occurrence_is_unresolved' (197688) panicked at hepta-memory/src/local_lease_outbox_tests.rs:54:10:",
+        "2026-10-21T12:49:31.2308550Z cognitive store: Invalid(\"per-agent cognitive root must be canonical and must not traverse a symlink\")",
+        "2026-10-21T12:49:31.2308860Z "
+      ]
+    },
+    "local_lease_outbox_tests::replay_without_admission_is_explicit_and_keeps_lease_writable": {
+      "line": 9518,
+      "location": "hepta-memory/src/local_lease_outbox_tests.rs:54:10:",
+      "context": [
+        "2026-10-21T12:49:31.2309830Z thread 'local_lease_outbox_tests::replay_without_admission_is_explicit_and_keeps_lease_writable' (197689) panicked at hepta-memory/src/local_lease_outbox_tests.rs:54:10:",
+        "2026-10-21T12:49:31.2310540Z cognitive store: Invalid(\"per-agent cognitive root must be canonical and must not traverse a symlink\")",
+        "2026-10-21T12:49:31.2310850Z "
+      ]
+    },
+    "local_lease_outbox_tests::sqlite_full_aborts_operation_event_and_outbox_atomically_and_reopens_cleanly": {
+      "line": 9523,
+      "location": "hepta-memory/src/local_lease_outbox_tests.rs:54:10:",
+      "context": [
+        "2026-10-21T12:49:31.2311990Z thread 'local_lease_outbox_tests::sqlite_full_aborts_operation_event_and_outbox_atomically_and_reopens_cleanly' (197690) panicked at hepta-memory/src/local_lease_outbox_tests.rs:54:10:",
+        "2026-10-21T12:49:31.2312740Z cognitive store: Invalid(\"per-agent cognitive root must be canonical and must not traverse a symlink\")",
+        "2026-10-21T12:49:31.2313050Z "
+      ]
+    },
+    "local_lease_outbox_tests::successor_terminalization_ignores_unresolved_expired_generation": {
+      "line": 9528,
+      "location": "hepta-memory/src/local_lease_outbox_tests.rs:54:10:",
+      "context": [
+        "2026-10-21T12:49:31.2314050Z thread 'local_lease_outbox_tests::successor_terminalization_ignores_unresolved_expired_generation' (197691) panicked at hepta-memory/src/local_lease_outbox_tests.rs:54:10:",
+        "2026-10-21T12:49:31.2314780Z cognitive store: Invalid(\"per-agent cognitive root must be canonical and must not traverse a symlink\")",
+        "2026-10-21T12:49:31.2315080Z "
+      ]
+    },
+    "local_lease_outbox_tests::tampered_child_chain_cannot_be_terminalized_by_release_or_rollback": {
+      "line": 9533,
+      "location": "hepta-memory/src/local_lease_outbox_tests.rs:54:10:",
+      "context": [
+        "2026-10-21T12:49:31.2316090Z thread 'local_lease_outbox_tests::tampered_child_chain_cannot_be_terminalized_by_release_or_rollback' (197692) panicked at hepta-memory/src/local_lease_outbox_tests.rs:54:10:",
+        "2026-10-21T12:49:31.2316810Z cognitive store: Invalid(\"per-agent cognitive root must be canonical and must not traverse a symlink\")",
+        "2026-10-21T12:49:31.2317120Z "
+      ]
+    },
+    "local_lease_outbox_tests::tampered_event_chain_is_rejected_on_reopen": {
+      "line": 9538,
+      "location": "hepta-memory/src/local_lease_outbox_tests.rs:54:10:",
+      "context": [
+        "2026-10-21T12:49:31.2317930Z thread 'local_lease_outbox_tests::tampered_event_chain_is_rejected_on_reopen' (197693) panicked at hepta-memory/src/local_lease_outbox_tests.rs:54:10:",
+        "2026-10-21T12:49:31.2318580Z cognitive store: Invalid(\"per-agent cognitive root must be canonical and must not traverse a symlink\")",
+        "2026-10-21T12:49:31.2318890Z "
+      ]
+    },
+    "local_lease_outbox_tests::terminal_or_indeterminate_occurrence_never_replays_as_queued": {
+      "line": 9543,
+      "location": "hepta-memory/src/local_lease_outbox_tests.rs:54:10:",
+      "context": [
+        "2026-10-21T12:49:31.2319850Z thread 'local_lease_outbox_tests::terminal_or_indeterminate_occurrence_never_replays_as_queued' (197694) panicked at hepta-memory/src/local_lease_outbox_tests.rs:54:10:",
+        "2026-10-21T12:49:31.2320560Z cognitive store: Invalid(\"per-agent cognitive root must be canonical and must not traverse a symlink\")",
+        "2026-10-21T12:49:31.2320870Z "
+      ]
+    },
+    "local_lease_outbox_tests::terminal_recovery_rejects_missing_event_outbox_pair_without_appending_lease": {
+      "line": 9548,
+      "location": "hepta-memory/src/local_lease_outbox_tests.rs:54:10:",
+      "context": [
+        "2026-10-21T12:49:31.2321950Z thread 'local_lease_outbox_tests::terminal_recovery_rejects_missing_event_outbox_pair_without_appending_lease' (197695) panicked at hepta-memory/src/local_lease_outbox_tests.rs:54:10:",
+        "2026-10-21T12:49:31.2322690Z cognitive store: Invalid(\"per-agent cognitive root must be canonical and must not traverse a symlink\")",
+        "2026-10-21T12:49:31.2323000Z "
+      ]
+    },
+    "local_lease_outbox_tests::unknown_reconcile_survives_reopen_and_never_claims_effect": {
+      "line": 9553,
+      "location": "hepta-memory/src/local_lease_outbox_tests.rs:1069:10:",
+      "context": [
+        "2026-10-21T12:49:31.2323940Z thread 'local_lease_outbox_tests::unknown_reconcile_survives_reopen_and_never_claims_effect' (197696) panicked at hepta-memory/src/local_lease_outbox_tests.rs:1069:10:",
+        "2026-10-21T12:49:31.2324700Z store: Invalid(\"per-agent cognitive root must be canonical and must not traverse a symlink\")",
+        "2026-10-21T12:49:31.2324980Z "
+      ]
+    },
+    "local_lease_outbox_tests::verifier_accepts_direct_queued_apply_and_reject_after_reopen": {
+      "line": 9558,
+      "location": "hepta-memory/src/local_lease_outbox_tests.rs:1771:10:",
+      "context": [
+        "2026-10-21T12:49:31.2325950Z thread 'local_lease_outbox_tests::verifier_accepts_direct_queued_apply_and_reject_after_reopen' (197697) panicked at hepta-memory/src/local_lease_outbox_tests.rs:1771:10:",
+        "2026-10-21T12:49:31.2326630Z store: Invalid(\"per-agent cognitive root must be canonical and must not traverse a symlink\")",
+        "2026-10-21T12:49:31.2326920Z "
+      ]
+    },
+    "local_lease_outbox_tests::verify_current_rejects_expired_active_head_but_reopen_allows_explicit_expiry": {
+      "line": 9563,
+      "location": "hepta-memory/src/local_lease_outbox_tests.rs:54:10:",
+      "context": [
+        "2026-10-21T12:49:31.2328110Z thread 'local_lease_outbox_tests::verify_current_rejects_expired_active_head_but_reopen_allows_explicit_expiry' (197698) panicked at hepta-memory/src/local_lease_outbox_tests.rs:54:10:",
+        "2026-10-21T12:49:31.2328860Z cognitive store: Invalid(\"per-agent cognitive root must be canonical and must not traverse a symlink\")",
+        "2026-10-21T12:49:31.2364620Z "
+      ]
+    },
+    "local_memory_saga::tests::candidate_saga_applies_once_and_replays_without_double_write": {
+      "line": 9568,
+      "location": "hepta-memory/src/local_memory_saga.rs:854:14:",
+      "context": [
+        "2026-10-21T12:49:31.2365740Z thread 'local_memory_saga::tests::candidate_saga_applies_once_and_replays_without_double_write' (197699) panicked at hepta-memory/src/local_memory_saga.rs:854:14:",
+        "2026-10-21T12:49:31.2366450Z store: Invalid(\"per-agent cognitive root must be canonical and must not traverse a symlink\")",
+        "2026-10-21T12:49:31.2366760Z "
+      ]
+    },
+    "local_memory_saga::tests::pending_candidate_can_be_revoked_without_target_write": {
+      "line": 9573,
+      "location": "hepta-memory/src/local_memory_saga.rs:854:14:",
+      "context": [
+        "2026-10-21T12:49:31.2367650Z thread 'local_memory_saga::tests::pending_candidate_can_be_revoked_without_target_write' (197700) panicked at hepta-memory/src/local_memory_saga.rs:854:14:",
+        "2026-10-21T12:49:31.2368310Z store: Invalid(\"per-agent cognitive root must be canonical and must not traverse a symlink\")",
+        "2026-10-21T12:49:31.2368590Z "
+      ]
+    },
+    "local_memory_saga::tests::queued_target_success_recovery_does_not_append_a_second_revision": {
+      "line": 9578,
+      "location": "hepta-memory/src/local_memory_saga.rs:854:14:",
+      "context": [
+        "2026-10-21T12:49:31.2369560Z thread 'local_memory_saga::tests::queued_target_success_recovery_does_not_append_a_second_revision' (197701) panicked at hepta-memory/src/local_memory_saga.rs:854:14:",
+        "2026-10-21T12:49:31.2370250Z store: Invalid(\"per-agent cognitive root must be canonical and must not traverse a symlink\")",
+        "2026-10-21T12:49:31.2370530Z "
+      ]
+    },
+    "local_memory_saga::tests::queued_tombstone_replay_rejects_source_binding_drift": {
+      "line": 9583,
+      "location": "hepta-memory/src/local_memory_saga.rs:854:14:",
+      "context": [
+        "2026-10-21T12:49:31.2371410Z thread 'local_memory_saga::tests::queued_tombstone_replay_rejects_source_binding_drift' (197702) panicked at hepta-memory/src/local_memory_saga.rs:854:14:",
+        "2026-10-21T12:49:31.2372060Z store: Invalid(\"per-agent cognitive root must be canonical and must not traverse a symlink\")",
+        "2026-10-21T12:49:31.2372340Z "
+      ]
+    },
+    "local_memory_saga::tests::stable_key_conflict_with_different_source_is_rejected_not_adopted": {
+      "line": 9588,
+      "location": "hepta-memory/src/local_memory_saga.rs:854:14:",
+      "context": [
+        "2026-10-21T12:49:31.2373310Z thread 'local_memory_saga::tests::stable_key_conflict_with_different_source_is_rejected_not_adopted' (197704) panicked at hepta-memory/src/local_memory_saga.rs:854:14:",
+        "2026-10-21T12:49:31.2373990Z store: Invalid(\"per-agent cognitive root must be canonical and must not traverse a symlink\")",
+        "2026-10-21T12:49:31.2374270Z "
+      ]
+    },
+    "local_memory_saga::tests::tombstone_conflict_with_different_source_is_rejected_not_adopted": {
+      "line": 9593,
+      "location": "hepta-memory/src/local_memory_saga.rs:854:14:",
+      "context": [
+        "2026-10-21T12:49:31.2375240Z thread 'local_memory_saga::tests::tombstone_conflict_with_different_source_is_rejected_not_adopted' (197705) panicked at hepta-memory/src/local_memory_saga.rs:854:14:",
+        "2026-10-21T12:49:31.2376240Z store: Invalid(\"per-agent cognitive root must be canonical and must not traverse a symlink\")",
+        "2026-10-21T12:49:31.2376530Z "
+      ]
+    },
+    "local_memory_saga::tests::tombstone_saga_is_append_only_and_idempotent": {
+      "line": 9598,
+      "location": "hepta-memory/src/local_memory_saga.rs:854:14:",
+      "context": [
+        "2026-10-21T12:49:31.2377330Z thread 'local_memory_saga::tests::tombstone_saga_is_append_only_and_idempotent' (197706) panicked at hepta-memory/src/local_memory_saga.rs:854:14:",
+        "2026-10-21T12:49:31.2377950Z store: Invalid(\"per-agent cognitive root must be canonical and must not traverse a symlink\")",
+        "2026-10-21T12:49:31.2378230Z "
+      ]
+    },
+    "local_memory_saga::tests::tombstone_target_commit_recovery_after_reopen_is_idempotent": {
+      "line": 9603,
+      "location": "hepta-memory/src/local_memory_saga.rs:854:14:",
+      "context": [
+        "2026-10-21T12:49:31.2379280Z thread 'local_memory_saga::tests::tombstone_target_commit_recovery_after_reopen_is_idempotent' (197707) panicked at hepta-memory/src/local_memory_saga.rs:854:14:",
+        "2026-10-21T12:49:31.2379950Z store: Invalid(\"per-agent cognitive root must be canonical and must not traverse a symlink\")",
+        "2026-10-21T12:49:31.2380240Z "
+      ]
+    },
+    "local_turn_binding::tests::exact_bound_handles_form_a_local_only_contract": {
+      "line": 9608,
+      "location": "hepta-memory/src/local_turn_binding.rs:330:14:",
+      "context": [
+        "2026-10-21T12:49:31.2381060Z thread 'local_turn_binding::tests::exact_bound_handles_form_a_local_only_contract' (197710) panicked at hepta-memory/src/local_turn_binding.rs:330:14:",
+        "2026-10-21T12:49:31.2381690Z store: Invalid(\"per-agent cognitive root must be canonical and must not traverse a symlink\")",
+        "2026-10-21T12:49:31.2381980Z "
+      ]
+    },
+    "local_turn_binding::tests::legacy_lease_or_executor_is_rejected_fail_closed": {
+      "line": 9613,
+      "location": "hepta-memory/src/local_turn_binding.rs:330:14:",
+      "context": [
+        "2026-10-21T12:49:31.2382820Z thread 'local_turn_binding::tests::legacy_lease_or_executor_is_rejected_fail_closed' (197711) panicked at hepta-memory/src/local_turn_binding.rs:330:14:",
+        "2026-10-21T12:49:31.2383460Z store: Invalid(\"per-agent cognitive root must be canonical and must not traverse a symlink\")",
+        "2026-10-21T12:49:31.2383740Z "
+      ]
+    },
+    "local_turn_binding::tests::mismatched_store_or_fence_is_rejected": {
+      "line": 9618,
+      "location": "hepta-memory/src/local_turn_binding.rs:330:14:",
+      "context": [
+        "2026-10-21T12:49:31.2384500Z thread 'local_turn_binding::tests::mismatched_store_or_fence_is_rejected' (197712) panicked at hepta-memory/src/local_turn_binding.rs:330:14:",
+        "2026-10-21T12:49:31.2385100Z store: Invalid(\"per-agent cognitive root must be canonical and must not traverse a symlink\")",
+        "2026-10-21T12:49:31.2385380Z "
+      ]
+    },
+    "local_turn_binding::tests::turn_identity_and_digest_tampering_fail_closed": {
+      "line": 9623,
+      "location": "hepta-memory/src/local_turn_binding.rs:330:14:",
+      "context": [
+        "2026-10-21T12:49:31.2386210Z thread 'local_turn_binding::tests::turn_identity_and_digest_tampering_fail_closed' (197713) panicked at hepta-memory/src/local_turn_binding.rs:330:14:",
+        "2026-10-21T12:49:31.2386850Z store: Invalid(\"per-agent cognitive root must be canonical and must not traverse a symlink\")",
+        "2026-10-21T12:49:31.2387140Z "
+      ]
+    },
+    "logical_turn_registry_tests::concurrent_reservations_have_one_acquired_and_one_existing": {
+      "line": 9628,
+      "location": "hepta-memory/src/logical_turn_registry_tests.rs:21:10:",
+      "context": [
+        "2026-10-21T12:49:31.2388110Z thread 'logical_turn_registry_tests::concurrent_reservations_have_one_acquired_and_one_existing' (197714) panicked at hepta-memory/src/logical_turn_registry_tests.rs:21:10:",
+        "2026-10-21T12:49:31.2388840Z cognitive store: Invalid(\"per-agent cognitive root must be canonical and must not traverse a symlink\")",
+        "2026-10-21T12:49:31.2389150Z "
+      ]
+    },
+    "logical_turn_registry_tests::evidence_blocks_expired_takeover": {
+      "line": 9633,
+      "location": "hepta-memory/src/logical_turn_registry_tests.rs:21:10:",
+      "context": [
+        "2026-10-21T12:49:31.2389920Z thread 'logical_turn_registry_tests::evidence_blocks_expired_takeover' (197715) panicked at hepta-memory/src/logical_turn_registry_tests.rs:21:10:",
+        "2026-10-21T12:49:31.2390570Z cognitive store: Invalid(\"per-agent cognitive root must be canonical and must not traverse a symlink\")",
+        "2026-10-21T12:49:31.2390950Z "
+      ]
+    },
+    "logical_turn_registry_tests::expired_attempt_without_evidence_has_one_takeover_winner": {
+      "line": 9638,
+      "location": "hepta-memory/src/logical_turn_registry_tests.rs:21:10:",
+      "context": [
+        "2026-10-21T12:49:31.2391910Z thread 'logical_turn_registry_tests::expired_attempt_without_evidence_has_one_takeover_winner' (197716) panicked at hepta-memory/src/logical_turn_registry_tests.rs:21:10:",
+        "2026-10-21T12:49:31.2392620Z cognitive store: Invalid(\"per-agent cognitive root must be canonical and must not traverse a symlink\")",
+        "2026-10-21T12:49:31.2392930Z "
+      ]
+    },
+    "logical_turn_registry_tests::expired_takeover_rejects_regressing_owner_epoch": {
+      "line": 9643,
+      "location": "hepta-memory/src/logical_turn_registry_tests.rs:21:10:",
+      "context": [
+        "2026-10-21T12:49:31.2393870Z thread 'logical_turn_registry_tests::expired_takeover_rejects_regressing_owner_epoch' (197717) panicked at hepta-memory/src/logical_turn_registry_tests.rs:21:10:",
+        "2026-10-21T12:49:31.2394570Z cognitive store: Invalid(\"per-agent cognitive root must be canonical and must not traverse a symlink\")",
+        "2026-10-21T12:49:31.2394880Z "
+      ]
+    },
+    "logical_turn_registry_tests::identity_payload_mismatch_is_a_conflict_without_new_attempt": {
+      "line": 9648,
+      "location": "hepta-memory/src/logical_turn_registry_tests.rs:21:10:",
+      "context": [
+        "2026-10-21T12:49:31.2395860Z thread 'logical_turn_registry_tests::identity_payload_mismatch_is_a_conflict_without_new_attempt' (197718) panicked at hepta-memory/src/logical_turn_registry_tests.rs:21:10:",
+        "2026-10-21T12:49:31.2396570Z cognitive store: Invalid(\"per-agent cognitive root must be canonical and must not traverse a symlink\")",
+        "2026-10-21T12:49:31.2396880Z "
+      ]
+    },
+    "logical_turn_registry_tests::live_different_attempt_is_existing_in_flight_without_side_effects": {
+      "line": 9653,
+      "location": "hepta-memory/src/logical_turn_registry_tests.rs:21:10:",
+      "context": [
+        "2026-10-21T12:49:31.2397910Z thread 'logical_turn_registry_tests::live_different_attempt_is_existing_in_flight_without_side_effects' (197719) panicked at hepta-memory/src/logical_turn_registry_tests.rs:21:10:",
+        "2026-10-21T12:49:31.2398660Z cognitive store: Invalid(\"per-agent cognitive root must be canonical and must not traverse a symlink\")",
+        "2026-10-21T12:49:31.2398970Z "
+      ]
+    },
+    "logical_turn_registry_tests::logical_turn_inspection_classifies_active_and_expired_evidence": {
+      "line": 9658,
+      "location": "hepta-memory/src/logical_turn_registry_tests.rs:21:10:",
+      "context": [
+        "2026-10-21T12:49:31.2399970Z thread 'logical_turn_registry_tests::logical_turn_inspection_classifies_active_and_expired_evidence' (197720) panicked at hepta-memory/src/logical_turn_registry_tests.rs:21:10:",
+        "2026-10-21T12:49:31.2400700Z cognitive store: Invalid(\"per-agent cognitive root must be canonical and must not traverse a symlink\")",
+        "2026-10-21T12:49:31.2401010Z "
+      ]
+    },
+    "logical_turn_registry_tests::logical_turn_inspection_missing_is_read_only": {
+      "line": 9663,
+      "location": "hepta-memory/src/logical_turn_registry_tests.rs:21:10:",
+      "context": [
+        "2026-10-21T12:49:31.2401930Z thread 'logical_turn_registry_tests::logical_turn_inspection_missing_is_read_only' (197721) panicked at hepta-memory/src/logical_turn_registry_tests.rs:21:10:",
+        "2026-10-21T12:49:31.2402610Z cognitive store: Invalid(\"per-agent cognitive root must be canonical and must not traverse a symlink\")",
+        "2026-10-21T12:49:31.2402930Z "
+      ]
+    },
+    "logical_turn_registry_tests::logical_turn_inspection_observes_fresh_head_after_takeover": {
+      "line": 9668,
+      "location": "hepta-memory/src/logical_turn_registry_tests.rs:21:10:",
+      "context": [
+        "2026-10-21T12:49:31.2403890Z thread 'logical_turn_registry_tests::logical_turn_inspection_observes_fresh_head_after_takeover' (197722) panicked at hepta-memory/src/logical_turn_registry_tests.rs:21:10:",
+        "2026-10-21T12:49:31.2406820Z cognitive store: Invalid(\"per-agent cognitive root must be canonical and must not traverse a symlink\")",
+        "2026-10-21T12:49:31.2407160Z "
+      ]
+    },
+    "logical_turn_registry_tests::logical_turn_inspection_reports_conflict_and_terminal_lease": {
+      "line": 9673,
+      "location": "hepta-memory/src/logical_turn_registry_tests.rs:21:10:",
+      "context": [
+        "2026-10-21T12:49:31.2408670Z thread 'logical_turn_registry_tests::logical_turn_inspection_reports_conflict_and_terminal_lease' (197723) panicked at hepta-memory/src/logical_turn_registry_tests.rs:21:10:",
+        "2026-10-21T12:49:31.2409980Z cognitive store: Invalid(\"per-agent cognitive root must be canonical and must not traverse a symlink\")",
+        "2026-10-21T12:49:31.2410390Z "
+      ]
+    },
+    "logical_turn_registry_tests::physical_attempt_identity_cannot_alias_another_logical_turn": {
+      "line": 9678,
+      "location": "hepta-memory/src/logical_turn_registry_tests.rs:21:10:",
+      "context": [
+        "2026-10-21T12:49:31.2411650Z thread 'logical_turn_registry_tests::physical_attempt_identity_cannot_alias_another_logical_turn' (197724) panicked at hepta-memory/src/logical_turn_registry_tests.rs:21:10:",
+        "2026-10-21T12:49:31.2412730Z cognitive store: Invalid(\"per-agent cognitive root must be canonical and must not traverse a symlink\")",
+        "2026-10-21T12:49:31.2413040Z "
+      ]
+    },
+    "logical_turn_registry_tests::takeover_fault_rolls_back_lease_and_registry_rows": {
+      "line": 9683,
+      "location": "hepta-memory/src/logical_turn_registry_tests.rs:21:10:",
+      "context": [
+        "2026-10-21T12:49:31.2421630Z thread 'logical_turn_registry_tests::takeover_fault_rolls_back_lease_and_registry_rows' (197728) panicked at hepta-memory/src/logical_turn_registry_tests.rs:21:10:",
+        "2026-10-21T12:49:31.2422370Z cognitive store: Invalid(\"per-agent cognitive root must be canonical and must not traverse a symlink\")",
+        "2026-10-21T12:49:31.2422680Z "
+      ]
+    },
+    "logical_turn_registry_tests::reserve_and_exact_replay_are_one_row": {
+      "line": 9688,
+      "location": "hepta-memory/src/logical_turn_registry_tests.rs:21:10:",
+      "context": [
+        "2026-10-21T12:49:31.2423480Z thread 'logical_turn_registry_tests::reserve_and_exact_replay_are_one_row' (197727) panicked at hepta-memory/src/logical_turn_registry_tests.rs:21:10:",
+        "2026-10-21T12:49:31.2424140Z cognitive store: Invalid(\"per-agent cognitive root must be canonical and must not traverse a symlink\")",
+        "2026-10-21T12:49:31.2424450Z "
+      ]
+    },
+    "logical_turn_registry_tests::takeover_reopens_with_historical_witness_and_fences_old_handle": {
+      "line": 9693,
+      "location": "hepta-memory/src/logical_turn_registry_tests.rs:21:10:",
+      "context": [
+        "2026-10-21T12:49:31.2425470Z thread 'logical_turn_registry_tests::takeover_reopens_with_historical_witness_and_fences_old_handle' (197729) panicked at hepta-memory/src/logical_turn_registry_tests.rs:21:10:",
+        "2026-10-21T12:49:31.2426210Z cognitive store: Invalid(\"per-agent cognitive root must be canonical and must not traverse a symlink\")",
+        "2026-10-21T12:49:31.2426520Z "
+      ]
+    },
+    "logical_turn_registry_tests::tampered_registry_digest_is_rejected_on_reopen": {
+      "line": 9698,
+      "location": "hepta-memory/src/logical_turn_registry_tests.rs:21:10:",
+      "context": [
+        "2026-10-21T12:49:31.2427400Z thread 'logical_turn_registry_tests::tampered_registry_digest_is_rejected_on_reopen' (197730) panicked at hepta-memory/src/logical_turn_registry_tests.rs:21:10:",
+        "2026-10-21T12:49:31.2428090Z cognitive store: Invalid(\"per-agent cognitive root must be canonical and must not traverse a symlink\")",
+        "2026-10-21T12:49:31.2428390Z "
+      ]
+    },
+    "memory_admission::tests::admission_persists_provisional_without_kg_facts": {
+      "line": 9703,
+      "location": "hepta-memory/src/memory_admission.rs:351:14:",
+      "context": [
+        "2026-10-21T12:49:31.2429240Z thread 'memory_admission::tests::admission_persists_provisional_without_kg_facts' (197731) panicked at hepta-memory/src/memory_admission.rs:351:14:",
+        "2026-10-21T12:49:31.2429890Z store: Invalid(\"per-agent cognitive root must be canonical and must not traverse a symlink\")",
+        "2026-10-21T12:49:31.2430170Z "
+      ]
+    },
+    "memory_admission::tests::verification_requires_explicit_content_bound_evidence_and_cas": {
+      "line": 9708,
+      "location": "hepta-memory/src/memory_admission.rs:382:14:",
+      "context": [
+        "2026-10-21T12:49:31.2431120Z thread 'memory_admission::tests::verification_requires_explicit_content_bound_evidence_and_cas' (197733) panicked at hepta-memory/src/memory_admission.rs:382:14:",
+        "2026-10-21T12:49:31.2431780Z store: Invalid(\"per-agent cognitive root must be canonical and must not traverse a symlink\")",
+        "2026-10-21T12:49:31.2432070Z "
+      ]
+    },
+    "shared_experience::tests::independent_agents_share_only_declared_use_and_current_evidence": {
+      "line": 9713,
+      "location": "hepta-memory/src/shared_experience_tests.rs:16:59:",
+      "context": [
+        "2026-10-21T12:49:31.2433060Z thread 'shared_experience::tests::independent_agents_share_only_declared_use_and_current_evidence' (197855) panicked at hepta-memory/src/shared_experience_tests.rs:16:59:",
+        "2026-10-21T12:49:31.2434040Z called `Result::unwrap()` on an `Err` value: Invalid(\"per-agent cognitive root must be canonical and must not traverse a symlink\")",
+        "2026-10-21T12:49:31.2434420Z "
+      ]
+    },
+    "shared_experience::tests::last_active_revision_can_be_revoked_and_stays_revoked_after_restart": {
+      "line": 9718,
+      "location": "hepta-memory/src/shared_experience_tests.rs:278:59:",
+      "context": [
+        "2026-10-21T12:49:31.2435420Z thread 'shared_experience::tests::last_active_revision_can_be_revoked_and_stays_revoked_after_restart' (197856) panicked at hepta-memory/src/shared_experience_tests.rs:278:59:",
+        "2026-10-21T12:49:31.2436210Z called `Result::unwrap()` on an `Err` value: Invalid(\"per-agent cognitive root must be canonical and must not traverse a symlink\")",
+        "2026-10-21T12:49:31.2436570Z "
+      ]
+    },
+    "shared_experience::tests::migration_rebuilds_exact_schema_and_source_withdrawal_never_reopens_use": {
+      "line": 9723,
+      "location": "hepta-memory/src/shared_experience_tests.rs:200:51:",
+      "context": [
+        "2026-10-21T12:49:31.2437910Z thread 'shared_experience::tests::migration_rebuilds_exact_schema_and_source_withdrawal_never_reopens_use' (197857) panicked at hepta-memory/src/shared_experience_tests.rs:200:51:",
+        "2026-10-21T12:49:31.2438710Z called `Result::unwrap()` on an `Err` value: Invalid(\"per-agent cognitive root must be canonical and must not traverse a symlink\")",
+        "2026-10-21T12:49:31.2439070Z ",
+        "2026-10-21T12:49:31.2439080Z ",
+        "2026-10-21T12:49:31.2439130Z failures:",
+        "2026-10-21T12:49:31.2439410Z     cognitive_compact_tests::available_runtime_hooks_are_read_only_for_the_cognitive_store",
+        "2026-10-21T12:49:31.2439900Z     cognitive_compact_tests::qualification_h5_h6_typed_handoff_rejects_stale_fenced_postcondition",
+        "2026-10-21T12:49:31.2440430Z     cognitive_federation_tests::expired_and_corrupt_capabilities_fail_closed_without_cross_agent_fallback",
+        "2026-10-21T12:49:31.2440970Z     cognitive_federation_tests::explicit_grant_is_owner_written_consumer_read_only_and_scope_exact",
+        "2026-10-21T12:49:31.2441490Z     cognitive_federation_tests::five_agents_keep_private_stores_and_only_explicit_consumers_federate",
+        "2026-10-21T12:49:31.2441990Z     cognitive_federation_tests::revoke_is_observed_by_the_next_physical_send_revalidation",
+        "2026-10-21T12:49:31.2442550Z     cognitive_intelligence_writer_tests::canonical_entity_keeps_multiple_occurrences_and_conflict_rolls_everything_back",
+        "2026-10-21T12:49:31.2443150Z     cognitive_intelligence_writer_tests::canonical_fact_order_and_identity_are_bound_to_a_hard_coded_oracle",
+        "2026-10-21T12:49:31.2443750Z     cognitive_intelligence_writer_tests::product_writer_atomically_remembers_corrects_forgets_and_blocks_resurrection",
+        "2026-10-21T12:49:31.2444300Z     cognitive_intelligence_writer_tests::projection_and_fact_receipts_survive_clean_reopen"
+      ]
+    },
+    "seatbelt::tests::create_seatbelt_args_for_cwd_as_git_repo": {
+      "line": 10313,
+      "location": "sandboxing/src/seatbelt_tests.rs:2510:5:",
+      "context": [
+        "2026-10-21T12:52:23.5372560Z thread 'seatbelt::tests::create_seatbelt_args_for_cwd_as_git_repo' (210601) panicked at sandboxing/src/seatbelt_tests.rs:2510:5:",
+        "2026-10-21T12:52:23.5373250Z missing -DWRITABLE_ROOT_0_EXCLUDED_2=/private/var/folders/nj/vtw8zd2j31d1gdrtntc5y4600000gn/T/.tmpWx9fmg/vulnerable_root/.codex: [",
+        "2026-10-21T12:52:23.5373900Z     \"-p\",",
+        "2026-10-21T12:52:23.5401120Z     \"(version 1)\\n\\n; inspired by Chrome's sandbox policy:\\n; https://source.chromium.org/chromium/chromium/src/+/main:sandbox/policy/mac/common.sb;l=273-319;drc=7b3962fe2e5fc9e2ee58000dc8fbf3429d84d3bd\\n; https://source.chromium.org/chromium/chromium/src/+/main:sandbox/policy/mac/renderer.sb;l=64;drc=7b3962fe2e5fc9e2ee58000dc8fbf3429d84d3bd\\n\\n; start with closed-by-default\\n(deny default)\\n\\n; child processes inherit the policy of their parent\\n(allow process-exec)\\n(allow process-fork)\\n(allow signal (target same-sandbox))\\n\\n; process-info\\n(allow process-info* (target same-sandbox))\\n\\n(allow file-write-data\\n  (require-all\\n    (path \\\"/dev/null\\\")\\n    (vnode-type CHARACTER-DEVICE)))\\n\\n; sysctls permitted.\\n(allow sysctl-read\\n  (sysctl-name \\\"hw.activecpu\\\")\\n  (sysctl-name \\\"hw.busfrequency_compat\\\")\\n  (sysctl-name \\\"hw.byteorder\\\")\\n  (sysctl-name \\\"hw.cacheconfig\\\")\\n  (sysctl-name \\\"hw.cachelinesize_compat\\\")\\n  (sysctl-name \\\"hw.cpufamily\\\")\\n  (sysctl-name \\\"hw.cpufrequency_compat\\\")\\n  (sysctl-name \\\"hw.cputype\\\")\\n  (sysctl-name \\\"hw.l1dcachesize_compat\\\")\\n  (sysctl-name \\\"hw.l1icachesize_compat\\\")\\n  (sysctl-name \\\"hw.l2cachesize_compat\\\")\\n  (sysctl-name \\\"hw.l3cachesize_compat\\\")\\n  (sysctl-name \\\"hw.logicalcpu_max\\\")\\n  (sysctl-name \\\"hw.machine\\\")\\n  (sysctl-name \\\"hw.model\\\")\\n  (sysctl-name \\\"hw.memsize\\\")\\n  (sysctl-name \\\"hw.ncpu\\\")\\n  (sysctl-name \\\"hw.nperflevels\\\")\\n  ; Chrome locks these CPU feature detection down a bit more tightly,\\n  ; but mostly for fingerprinting concerns which isn't an issue for codex.\\n  (sysctl-name-prefix \\\"hw.optional.arm.\\\")\\n  (sysctl-name-prefix \\\"hw.optional.armv8_\\\")\\n  (sysctl-name \\\"hw.packages\\\")\\n  (sysctl-name \\\"hw.pagesize_compat\\\")\\n  (sysctl-name \\\"hw.pagesize\\\")\\n  (sysctl-name \\\"hw.physicalcpu\\\")\\n  (sysctl-name \\\"hw.physicalcpu_max\\\")\\n  (sysctl-name \\\"hw.logicalcpu\\\")\\n  (sysctl-name \\\"hw.cpufrequency\\\")\\n  (sysctl-name \\\"hw.tbfrequency_compat\\\")\\n  (sysctl-name \\\"hw.vectorunit\\\")\\n  (sysctl-name \\\"machdep.cpu.brand_string\\\")\\n  (sysctl-name \\\"kern.argmax\\\")\\n  (sysctl-name \\\"kern.hostname\\\")\\n  (sysctl-name \\\"kern.maxfilesperproc\\\")\\n  (sysctl-name \\\"kern.maxproc\\\")\\n  (sysctl-name \\\"kern.osproductversion\\\")\\n  (sysctl-name \\\"kern.osrelease\\\")\\n  (sysctl-name \\\"kern.ostype\\\")\\n  (sysctl-name \\\"kern.osvariant_status\\\")\\n  (sysctl-name \\\"kern.osversion\\\")\\n  (sysctl-name \\\"kern.secure_kernel\\\")\\n  ; Python's ProcessPoolExecutor queries this through sysconf(_SC_SEM_NSEMS_MAX).\\n  (sysctl-name \\\"kern.sysv.semmns\\\")\\n  (sysctl-name \\\"kern.usrstack64\\\")\\n  (sysctl-name \\\"kern.version\\\")\\n  (sysctl-name \\\"sysctl.proc_cputype\\\")\\n  (sysctl-name \\\"vm.loadavg\\\")\\n  (sysctl-name-prefix \\\"hw.perflevel\\\")\\n  (sysctl-name-prefix \\\"kern.proc.pgrp.\\\")\\n  (sysctl-name-prefix \\\"kern.proc.pid.\\\")\\n  (sysctl-name-prefix \\\"net.routetable.\\\")\\n)\\n\\n; Allow Java to read some CPU info. This is misclassified as a \\\"write\\\" because\\n; userspace passes a memory buffer to the sysctl, but conceptually it is a read.\\n(allow sysctl-write\\n  (sysctl-name \\\"kern.grade_cputype\\\"))\\n\\n; IOKit\\n(allow iokit-open\\n  (iokit-registry-entry-class \\\"RootDomainUserClient\\\")\\n)\\n\\n; needed to look up user info, see https://crbug.com/792228\\n(allow mach-lookup\\n  (global-name \\\"com.apple.system.opendirectoryd.libinfo\\\")\\n)\\n\\n; Needed for python multiprocessing on MacOS for the SemLock\\n(allow ipc-posix-sem)\\n\\n; Needed for PyTorch/libomp on macOS to register OpenMP runtimes.\\n(allow ipc-posix-shm-read-data\\n  ipc-posix-shm-write-create\\n  ipc-posix-shm-write-unlink\\n  (ipc-posix-name-regex #\\\"^/__KMP_REGISTERED_LIB_[0-9]+$\\\"))\\n\\n(allow mach-lookup\\n  (global-name \\\"com.apple.PowerManagement.control\\\")\\n)\\n\\n; allow openpty()\\n(allow pseudo-tty)\\n(allow file-read* file-write* file-ioctl (literal \\\"/dev/ptmx\\\"))\\n(allow file-read* file-write*\\n  (require-all\\n    (regex #\\\"^/dev/ttys[0-9]+\\\")\\n    (extension \\\"com.apple.sandbox.pty\\\")))\\n; PTYs created before entering seatbelt may lack the extension; allow ioctl\\n; on those slave ttys so interactive shells detect a TTY and remain functional.\\n(allow file-ioctl (regex #\\\"^/dev/ttys[0-9]+\\\"))\\n\\n; allow read-only file operations\\n(allow file-read*)\\n(allow file-write*\\n(require-all (subpath (param \\\"WRITABLE_ROOT_0\\\")) (require-not (literal (param \\\"WRITABLE_ROOT_0_EXCLUDED_0\\\"))) (require-not (subpath (param \\\"WRITABLE_ROOT_0_EXCLUDED_0\\\"))) (require-not (literal (param \\\"WRITABLE_ROOT_0_EXCLUDED_1\\\"))) (require-not (subpath (param \\\"WRITABLE_ROOT_0_EXCLUDED_1\\\"))) (require-not (literal (param \\\"WRITABLE_ROOT_0_EXCLUDED_2\\\"))) (require-not (subpath (param \\\"WRITABLE_ROOT_0_EXCLUDED_2\\\"))) (require-not (regex #\\\"^/private/var/folders/nj/vtw8zd2j31d1gdrtntc5y4600000gn/T/\\\\.tmpWx9fmg/vulnerable_root/\\\\.git(/.*)?$\\\")) (require-not (regex #\\\"^/private/var/folders/nj/vtw8zd2j31d1gdrtntc5y4600000gn/T/\\\\.tmpWx9fmg/vulnerable_root/\\\\.agents(/.*)?$\\\")) (require-not (regex #\\\"^/private/var/folders/nj/vtw8zd2j31d1gdrtntc5y4600000gn/T/\\\\.tmpWx9fmg/vulnerable_root/\\\\.codex(/.*)?$\\\")) ) (require-all (subpath (param \\\"WRITABLE_ROOT_1\\\")) (require-not (regex #\\\"^/private/tmp/\\\\.git(/.*)?$\\\")) (require-not (regex #\\\"^/private/tmp/\\\\.agents(/.*)?$\\\")) (require-not (regex #\\\"^/private/tmp/\\\\.codex(/.*)?$\\\")) ) (require-all (subpath (param \\\"WRITABLE_ROOT_2\\\")) (require-not (literal (param \\\"WRITABLE_ROOT_2_EXCLUDED_0\\\"))) (require-not (subpath (param \\\"WRITABLE_ROOT_2_EXCLUDED_0\\\"))) (require-not (literal (param \\\"WRITABLE_ROOT_2_EXCLUDED_1\\\"))) (require-not (subpath (param \\\"WRITABLE_ROOT_2_EXCLUDED_1\\\"))) (require-not (literal (param \\\"WRITABLE_ROOT_2_EXCLUDED_2\\\"))) (require-not (subpath (param \\\"WRITABLE_ROOT_2_EXCLUDED_2\\\"))) (require-not (regex #\\\"^/private/var/folders/nj/vtw8zd2j31d1gdrtntc5y4600000gn/T/\\\\.git(/.*)?$\\\")) (require-not (regex #\\\"^/private/var/folders/nj/vtw8zd2j31d1gdrtntc5y4600000gn/T/\\\\.agents(/.*)?$\\\")) (require-not (regex #\\\"^/private/var/folders/nj/vtw8zd2j31d1gdrtntc5y4600000gn/T/\\\\.codex(/.*)?$\\\")) )\\n)\\n(deny file-write-unlink (require-all (literal (param \\\"WRITABLE_ROOT_0\\\")) (vnode-type DIRECTORY)))\\n(deny file-write-unlink (require-all (literal (param \\\"WRITABLE_ROOT_1\\\")) (vnode-type DIRECTORY)))\\n(deny file-write-unlink (require-all (literal (param \\\"WRITABLE_ROOT_2\\\")) (vnode-type DIRECTORY)))\\n\\n; Preferences IPC can expose data outside the filesystem read roots.\\n; Include this policy only when filesystem reads are unrestricted.\\n(allow ipc-posix-shm-read* (ipc-posix-name-prefix \\\"apple.cfprefs.\\\"))\\n(allow mach-lookup\\n  (global-name \\\"com.apple.cfprefsd.daemon\\\")\\n  (global-name \\\"com.apple.cfprefsd.agent\\\")\\n  (local-name \\\"com.apple.cfprefsd.agent\\\"))\\n(allow user-preference-read)\\n\\n\\n(deny file-write-unlink (require-all (vnode-type DIRECTORY) (literal (param \\\"PROTECTED_ANCESTOR_0\\\"))))\\n(deny file-write-unlink (require-all (vnode-type DIRECTORY) (literal (param \\\"PROTECTED_ANCESTOR_1\\\"))))\\n(deny file-write-unlink (require-all (vnode-type DIRECTORY) (literal (param \\\"PROTECTED_ANCESTOR_2\\\"))))\",",
+        "2026-10-21T12:52:23.5435750Z     \"-DWRITABLE_ROOT_0=/private/var/folders/nj/vtw8zd2j31d1gdrtntc5y4600000gn/T/.tmpWx9fmg/vulnerable_root\",",
+        "2026-10-21T12:52:23.5436480Z     \"-DWRITABLE_ROOT_0_EXCLUDED_0=/private/var/folders/nj/vtw8zd2j31d1gdrtntc5y4600000gn/T/.tmpWx9fmg/vulnerable_root/.git\",",
+        "2026-10-21T12:52:23.5437160Z     \"-DWRITABLE_ROOT_0_EXCLUDED_1=/private/var/folders/nj/vtw8zd2j31d1gdrtntc5y4600000gn/T/.tmpWx9fmg/vulnerable_root/.codex\",",
+        "2026-10-21T12:52:23.5441930Z     \"-DWRITABLE_ROOT_0_EXCLUDED_2=/private/var/folders/nj/vtw8zd2j31d1gdrtntc5y4600000gn/T/.tmpWx9fmg/vulnerable_root/.agents\",",
+        "2026-10-21T12:52:23.5442410Z     \"-DWRITABLE_ROOT_1=/private/tmp\",",
+        "2026-10-21T12:52:23.5442720Z     \"-DWRITABLE_ROOT_2=/private/var/folders/nj/vtw8zd2j31d1gdrtntc5y4600000gn/T\",",
+        "2026-10-21T12:52:23.5443270Z     \"-DWRITABLE_ROOT_2_EXCLUDED_0=/private/var/folders/nj/vtw8zd2j31d1gdrtntc5y4600000gn/T/.tmpWx9fmg/vulnerable_root/.git\",",
+        "2026-10-21T12:52:23.5444760Z     \"-DWRITABLE_ROOT_2_EXCLUDED_1=/private/var/folders/nj/vtw8zd2j31d1gdrtntc5y4600000gn/T/.tmpWx9fmg/vulnerable_root/.agents\",",
+        "2026-10-21T12:52:23.5445440Z     \"-DWRITABLE_ROOT_2_EXCLUDED_2=/private/var/folders/nj/vtw8zd2j31d1gdrtntc5y4600000gn/T/.tmpWx9fmg/vulnerable_root/.codex\",",
+        "2026-10-21T12:52:23.5446000Z     \"-DPROTECTED_ANCESTOR_0=/private/var/folders/nj/vtw8zd2j31d1gdrtntc5y4600000gn/T\",",
+        "2026-10-21T12:52:23.5446950Z     \"-DPROTECTED_ANCESTOR_1=/private/var/folders/nj/vtw8zd2j31d1gdrtntc5y4600000gn/T/.tmpWx9fmg\","
+      ]
+    },
+    "seatbelt::tests::create_seatbelt_args_with_read_only_git_and_codex_subpaths": {
+      "line": 10340,
+      "location": "sandboxing/src/seatbelt_tests.rs:1604:5:",
+      "context": [
+        "2026-10-21T12:52:23.5451090Z thread 'seatbelt::tests::create_seatbelt_args_with_read_only_git_and_codex_subpaths' (210613) panicked at sandboxing/src/seatbelt_tests.rs:1604:5:",
+        "2026-10-21T12:52:23.5451750Z assertion failed: `(left == right)`: unexpected writable-root parameter definitions in [",
+        "2026-10-21T12:52:23.5452440Z     \"-p\",",
+        "2026-10-21T12:52:23.5485640Z     \"(version 1)\\n\\n; inspired by Chrome's sandbox policy:\\n; https://source.chromium.org/chromium/chromium/src/+/main:sandbox/policy/mac/common.sb;l=273-319;drc=7b3962fe2e5fc9e2ee58000dc8fbf3429d84d3bd\\n; https://source.chromium.org/chromium/chromium/src/+/main:sandbox/policy/mac/renderer.sb;l=64;drc=7b3962fe2e5fc9e2ee58000dc8fbf3429d84d3bd\\n\\n; start with closed-by-default\\n(deny default)\\n\\n; child processes inherit the policy of their parent\\n(allow process-exec)\\n(allow process-fork)\\n(allow signal (target same-sandbox))\\n\\n; process-info\\n(allow process-info* (target same-sandbox))\\n\\n(allow file-write-data\\n  (require-all\\n    (path \\\"/dev/null\\\")\\n    (vnode-type CHARACTER-DEVICE)))\\n\\n; sysctls permitted.\\n(allow sysctl-read\\n  (sysctl-name \\\"hw.activecpu\\\")\\n  (sysctl-name \\\"hw.busfrequency_compat\\\")\\n  (sysctl-name \\\"hw.byteorder\\\")\\n  (sysctl-name \\\"hw.cacheconfig\\\")\\n  (sysctl-name \\\"hw.cachelinesize_compat\\\")\\n  (sysctl-name \\\"hw.cpufamily\\\")\\n  (sysctl-name \\\"hw.cpufrequency_compat\\\")\\n  (sysctl-name \\\"hw.cputype\\\")\\n  (sysctl-name \\\"hw.l1dcachesize_compat\\\")\\n  (sysctl-name \\\"hw.l1icachesize_compat\\\")\\n  (sysctl-name \\\"hw.l2cachesize_compat\\\")\\n  (sysctl-name \\\"hw.l3cachesize_compat\\\")\\n  (sysctl-name \\\"hw.logicalcpu_max\\\")\\n  (sysctl-name \\\"hw.machine\\\")\\n  (sysctl-name \\\"hw.model\\\")\\n  (sysctl-name \\\"hw.memsize\\\")\\n  (sysctl-name \\\"hw.ncpu\\\")\\n  (sysctl-name \\\"hw.nperflevels\\\")\\n  ; Chrome locks these CPU feature detection down a bit more tightly,\\n  ; but mostly for fingerprinting concerns which isn't an issue for codex.\\n  (sysctl-name-prefix \\\"hw.optional.arm.\\\")\\n  (sysctl-name-prefix \\\"hw.optional.armv8_\\\")\\n  (sysctl-name \\\"hw.packages\\\")\\n  (sysctl-name \\\"hw.pagesize_compat\\\")\\n  (sysctl-name \\\"hw.pagesize\\\")\\n  (sysctl-name \\\"hw.physicalcpu\\\")\\n  (sysctl-name \\\"hw.physicalcpu_max\\\")\\n  (sysctl-name \\\"hw.logicalcpu\\\")\\n  (sysctl-name \\\"hw.cpufrequency\\\")\\n  (sysctl-name \\\"hw.tbfrequency_compat\\\")\\n  (sysctl-name \\\"hw.vectorunit\\\")\\n  (sysctl-name \\\"machdep.cpu.brand_string\\\")\\n  (sysctl-name \\\"kern.argmax\\\")\\n  (sysctl-name \\\"kern.hostname\\\")\\n  (sysctl-name \\\"kern.maxfilesperproc\\\")\\n  (sysctl-name \\\"kern.maxproc\\\")\\n  (sysctl-name \\\"kern.osproductversion\\\")\\n  (sysctl-name \\\"kern.osrelease\\\")\\n  (sysctl-name \\\"kern.ostype\\\")\\n  (sysctl-name \\\"kern.osvariant_status\\\")\\n  (sysctl-name \\\"kern.osversion\\\")\\n  (sysctl-name \\\"kern.secure_kernel\\\")\\n  ; Python's ProcessPoolExecutor queries this through sysconf(_SC_SEM_NSEMS_MAX).\\n  (sysctl-name \\\"kern.sysv.semmns\\\")\\n  (sysctl-name \\\"kern.usrstack64\\\")\\n  (sysctl-name \\\"kern.version\\\")\\n  (sysctl-name \\\"sysctl.proc_cputype\\\")\\n  (sysctl-name \\\"vm.loadavg\\\")\\n  (sysctl-name-prefix \\\"hw.perflevel\\\")\\n  (sysctl-name-prefix \\\"kern.proc.pgrp.\\\")\\n  (sysctl-name-prefix \\\"kern.proc.pid.\\\")\\n  (sysctl-name-prefix \\\"net.routetable.\\\")\\n)\\n\\n; Allow Java to read some CPU info. This is misclassified as a \\\"write\\\" because\\n; userspace passes a memory buffer to the sysctl, but conceptually it is a read.\\n(allow sysctl-write\\n  (sysctl-name \\\"kern.grade_cputype\\\"))\\n\\n; IOKit\\n(allow iokit-open\\n  (iokit-registry-entry-class \\\"RootDomainUserClient\\\")\\n)\\n\\n; needed to look up user info, see https://crbug.com/792228\\n(allow mach-lookup\\n  (global-name \\\"com.apple.system.opendirectoryd.libinfo\\\")\\n)\\n\\n; Needed for python multiprocessing on MacOS for the SemLock\\n(allow ipc-posix-sem)\\n\\n; Needed for PyTorch/libomp on macOS to register OpenMP runtimes.\\n(allow ipc-posix-shm-read-data\\n  ipc-posix-shm-write-create\\n  ipc-posix-shm-write-unlink\\n  (ipc-posix-name-regex #\\\"^/__KMP_REGISTERED_LIB_[0-9]+$\\\"))\\n\\n(allow mach-lookup\\n  (global-name \\\"com.apple.PowerManagement.control\\\")\\n)\\n\\n; allow openpty()\\n(allow pseudo-tty)\\n(allow file-read* file-write* file-ioctl (literal \\\"/dev/ptmx\\\"))\\n(allow file-read* file-write*\\n  (require-all\\n    (regex #\\\"^/dev/ttys[0-9]+\\\")\\n    (extension \\\"com.apple.sandbox.pty\\\")))\\n; PTYs created before entering seatbelt may lack the extension; allow ioctl\\n; on those slave ttys so interactive shells detect a TTY and remain functional.\\n(allow file-ioctl (regex #\\\"^/dev/ttys[0-9]+\\\"))\\n\\n; allow read-only file operations\\n(allow file-read*)\\n(allow file-write*\\n(require-all (subpath (param \\\"WRITABLE_ROOT_0\\\")) (require-not (literal (param \\\"WRITABLE_ROOT_0_EXCLUDED_0\\\"))) (require-not (subpath (param \\\"WRITABLE_ROOT_0_EXCLUDED_0\\\"))) (require-not (literal (param \\\"WRITABLE_ROOT_0_EXCLUDED_1\\\"))) (require-not (subpath (param \\\"WRITABLE_ROOT_0_EXCLUDED_1\\\"))) (require-not (literal (param \\\"WRITABLE_ROOT_0_EXCLUDED_2\\\"))) (require-not (subpath (param \\\"WRITABLE_ROOT_0_EXCLUDED_2\\\"))) (require-not (regex #\\\"^/private/var/folders/nj/vtw8zd2j31d1gdrtntc5y4600000gn/T/\\\\.tmpvYtjGD/cwd/\\\\.git(/.*)?$\\\")) (require-not (regex #\\\"^/private/var/folders/nj/vtw8zd2j31d1gdrtntc5y4600000gn/T/\\\\.tmpvYtjGD/cwd/\\\\.agents(/.*)?$\\\")) (require-not (regex #\\\"^/private/var/folders/nj/vtw8zd2j31d1gdrtntc5y4600000gn/T/\\\\.tmpvYtjGD/cwd/\\\\.codex(/.*)?$\\\")) ) (require-all (subpath (param \\\"WRITABLE_ROOT_1\\\")) (require-not (literal (param \\\"WRITABLE_ROOT_1_EXCLUDED_0\\\"))) (require-not (subpath (param \\\"WRITABLE_ROOT_1_EXCLUDED_0\\\"))) (require-not (literal (param \\\"WRITABLE_ROOT_1_EXCLUDED_1\\\"))) (require-not (subpath (param \\\"WRITABLE_ROOT_1_EXCLUDED_1\\\"))) (require-not (regex #\\\"^/private/var/folders/nj/vtw8zd2j31d1gdrtntc5y4600000gn/T/\\\\.tmpvYtjGD/vulnerable_root/\\\\.git(/.*)?$\\\")) (require-not (regex #\\\"^/private/var/folders/nj/vtw8zd2j31d1gdrtntc5y4600000gn/T/\\\\.tmpvYtjGD/vulnerable_root/\\\\.agents(/.*)?$\\\")) (require-not (regex #\\\"^/private/var/folders/nj/vtw8zd2j31d1gdrtntc5y4600000gn/T/\\\\.tmpvYtjGD/vulnerable_root/\\\\.codex(/.*)?$\\\")) ) (require-all (subpath (param \\\"WRITABLE_ROOT_2\\\")) (require-not (regex #\\\"^/private/var/folders/nj/vtw8zd2j31d1gdrtntc5y4600000gn/T/\\\\.tmpvYtjGD/empty_root/\\\\.git(/.*)?$\\\")) (require-not (regex #\\\"^/private/var/folders/nj/vtw8zd2j31d1gdrtntc5y4600000gn/T/\\\\.tmpvYtjGD/empty_root/\\\\.agents(/.*)?$\\\")) (require-not (regex #\\\"^/private/var/folders/nj/vtw8zd2j31d1gdrtntc5y4600000gn/T/\\\\.tmpvYtjGD/empty_root/\\\\.codex(/.*)?$\\\")) )\\n)\\n(deny file-write-unlink (require-all (literal (param \\\"WRITABLE_ROOT_0\\\")) (vnode-type DIRECTORY)))\\n(deny file-write-unlink (require-all (literal (param \\\"WRITABLE_ROOT_1\\\")) (vnode-type DIRECTORY)))\\n(deny file-write-unlink (require-all (literal (param \\\"WRITABLE_ROOT_2\\\")) (vnode-type DIRECTORY)))\\n\\n; Preferences IPC can expose data outside the filesystem read roots.\\n; Include this policy only when filesystem reads are unrestricted.\\n(allow ipc-posix-shm-read* (ipc-posix-name-prefix \\\"apple.cfprefs.\\\"))\\n(allow mach-lookup\\n  (global-name \\\"com.apple.cfprefsd.daemon\\\")\\n  (global-name \\\"com.apple.cfprefsd.agent\\\")\\n  (local-name \\\"com.apple.cfprefsd.agent\\\"))\\n(allow user-preference-read)\\n\\n\\n(deny file-write-unlink (require-all (vnode-type DIRECTORY) (literal (param \\\"PROTECTED_ANCESTOR_0\\\"))))\\n(deny file-write-unlink (require-all (vnode-type DIRECTORY) (literal (param \\\"PROTECTED_ANCESTOR_1\\\"))))\",",
+        "2026-10-21T12:52:23.5510710Z     \"-DWRITABLE_ROOT_0=/private/var/folders/nj/vtw8zd2j31d1gdrtntc5y4600000gn/T/.tmpvYtjGD/cwd\",",
+        "2026-10-21T12:52:23.5511270Z     \"-DWRITABLE_ROOT_0_EXCLUDED_0=/private/var/folders/nj/vtw8zd2j31d1gdrtntc5y4600000gn/T/.tmpvYtjGD/cwd/.codex\",",
+        "2026-10-21T12:52:23.5511870Z     \"-DWRITABLE_ROOT_0_EXCLUDED_1=/private/var/folders/nj/vtw8zd2j31d1gdrtntc5y4600000gn/T/.tmpvYtjGD/cwd/.git\",",
+        "2026-10-21T12:52:23.5512470Z     \"-DWRITABLE_ROOT_0_EXCLUDED_2=/private/var/folders/nj/vtw8zd2j31d1gdrtntc5y4600000gn/T/.tmpvYtjGD/cwd/.agents\",",
+        "2026-10-21T12:52:23.5513460Z     \"-DWRITABLE_ROOT_1=/private/var/folders/nj/vtw8zd2j31d1gdrtntc5y4600000gn/T/.tmpvYtjGD/vulnerable_root\",",
+        "2026-10-21T12:52:23.5514080Z     \"-DWRITABLE_ROOT_1_EXCLUDED_0=/private/var/folders/nj/vtw8zd2j31d1gdrtntc5y4600000gn/T/.tmpvYtjGD/vulnerable_root/.git\",",
+        "2026-10-21T12:52:23.5514740Z     \"-DWRITABLE_ROOT_1_EXCLUDED_1=/private/var/folders/nj/vtw8zd2j31d1gdrtntc5y4600000gn/T/.tmpvYtjGD/vulnerable_root/.codex\",",
+        "2026-10-21T12:52:23.5515360Z     \"-DWRITABLE_ROOT_2=/private/var/folders/nj/vtw8zd2j31d1gdrtntc5y4600000gn/T/.tmpvYtjGD/empty_root\",",
+        "2026-10-21T12:52:23.5516440Z     \"-DPROTECTED_ANCESTOR_0=/private/var/folders/nj/vtw8zd2j31d1gdrtntc5y4600000gn/T/.tmpvYtjGD/cwd\",",
+        "2026-10-21T12:52:23.5517030Z     \"-DPROTECTED_ANCESTOR_1=/private/var/folders/nj/vtw8zd2j31d1gdrtntc5y4600000gn/T/.tmpvYtjGD/vulnerable_root\",",
+        "2026-10-21T12:52:23.5517430Z     \"--\","
+      ]
+    },
+    "v1_store_migrates_atomically_to_dispatch_outcome_schema": {
+      "line": 10861,
+      "location": "hepta-automation/tests/automation.rs:1039:10:",
+      "context": [
+        "2026-10-21T12:56:44.2309130Z thread 'v1_store_migrates_atomically_to_dispatch_outcome_schema' (226410) panicked at hepta-automation/tests/automation.rs:1039:10:",
+        "2026-10-21T12:56:44.2310710Z remove v14 run revision from v1 fixture: Database(SqliteError { code: 1, message: \"error in trigger automation_timer_lifecycle_drain: no such table: main.automation_dispatch_outcomes\" })",
+        "2026-10-21T12:56:44.2311410Z note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace",
+        "2026-10-21T12:56:44.2311660Z ",
+        "2026-10-21T12:56:44.2311670Z ",
+        "2026-10-21T12:56:44.2311730Z failures:",
+        "2026-10-21T12:56:44.2311930Z     v1_store_migrates_atomically_to_dispatch_outcome_schema",
+        "2026-10-21T12:56:44.2312290Z ",
+        "2026-10-21T12:56:44.2312520Z test result: FAILED. 17 passed; 1 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.98s",
+        "2026-10-21T12:56:44.2312820Z ",
+        "2026-10-21T12:56:44.2312930Z ================================================================================",
+        "2026-10-21T12:56:45.6107260Z [16,365 / 18,341] 141 / 569 tests, 4 failed; Testing //codex-rs/prompts:prompts-unit-tests; 1s disk-cache, darwin-sandbox ... (30 actions, 4 running)",
+        "2026-10-21T12:56:46.6703760Z [16,366 / 18,341] 141 / 569 tests, 4 failed; Testing //codex-rs/prompts:prompts-unit-tests; 2s disk-cache, darwin-sandbox ... (30 actions, 5 running)",
+        "2026-10-21T12:56:47.8629720Z [16,367 / 18,341] 141 / 569 tests, 4 failed; Testing //codex-rs/prompts:prompts-unit-tests; 3s disk-cache, darwin-sandbox ... (30 actions, 4 running)",
+        "2026-10-21T12:56:49.1972340Z [16,367 / 18,341] 141 / 569 tests, 4 failed; Testing //codex-rs/prompts:prompts-unit-tests; 5s disk-cache, darwin-sandbox ... (30 actions, 5 running)"
+      ]
+    },
+    "local::list_threads::tests::list_threads_preserves_sqlite_title_search_results": {
+      "line": 11376,
+      "location": "thread-store/src/local/list_threads.rs:479:9:",
+      "context": [
+        "2026-10-21T13:00:25.3850700Z thread 'local::list_threads::tests::list_threads_preserves_sqlite_title_search_results' (238067) panicked at thread-store/src/local/list_threads.rs:479:9:",
+        "2026-10-21T13:00:25.3853900Z assertion failed: `(left == right)`",
+        "2026-10-21T13:00:25.3854090Z ",
+        "2026-10-21T13:00:25.3854200Z Diff < left / right > :",
+        "2026-10-21T13:00:25.3854410Z <[]",
+        "2026-10-21T13:00:25.3854580Z >[",
+        "2026-10-21T13:00:25.3854750Z >    ThreadId {",
+        "2026-10-21T13:00:25.3854980Z >        uuid: 00000000-0000-0000-0000-000000000067,",
+        "2026-10-21T13:00:25.3855240Z >    },",
+        "2026-10-21T13:00:25.3855950Z >]",
+        "2026-10-21T13:00:25.3856080Z ",
+        "2026-10-21T13:00:25.3856130Z ",
+        "2026-10-21T13:00:25.3856350Z note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace",
+        "2026-10-21T13:00:25.3856640Z "
+      ]
+    },
+    "local::list_threads::tests::list_paginated_threads_uses_sqlite_name_over_legacy_compatibility": {
+      "line": 11392,
+      "location": "thread-store/src/local/list_threads.rs:548:9:",
+      "context": [
+        "2026-10-21T13:00:25.3858120Z thread 'local::list_threads::tests::list_paginated_threads_uses_sqlite_name_over_legacy_compatibility' (238061) panicked at thread-store/src/local/list_threads.rs:548:9:",
+        "2026-10-21T13:00:25.3858930Z assertion failed: `(left == right)`",
+        "2026-10-21T13:00:25.3859110Z ",
+        "2026-10-21T13:00:25.3859220Z Diff < left / right > :",
+        "2026-10-21T13:00:25.3859430Z <0",
+        "2026-10-21T13:00:25.3859940Z >1",
+        "2026-10-21T13:00:25.3860070Z ",
+        "2026-10-21T13:00:25.3860120Z ",
+        "2026-10-21T13:00:25.3860170Z "
+      ]
+    },
+    "local::rollout_migration::tests::migration_preserves_legacy_displayed_thread_names": {
+      "line": 11403,
+      "location": "thread-store/src/local/rollout_migration_tests.rs:1852:10:",
+      "context": [
+        "2026-10-21T13:00:25.3861270Z thread 'local::rollout_migration::tests::migration_preserves_legacy_displayed_thread_names' (238577) panicked at thread-store/src/local/rollout_migration_tests.rs:1852:10:",
+        "2026-10-21T13:00:25.3862180Z renamed title thread",
+        "2026-10-21T13:00:25.3862350Z "
+      ]
+    },
+    "local::thread_history_materialization::tests::split_homes_support_backfill_listing_and_paginated_history": {
+      "line": 11408,
+      "location": "thread-store/src/local/thread_history_materialization_tests.rs:177:5:",
+      "context": [
+        "2026-10-21T13:00:25.3864370Z thread 'local::thread_history_materialization::tests::split_homes_support_backfill_listing_and_paginated_history' (239299) panicked at thread-store/src/local/thread_history_materialization_tests.rs:177:5:",
+        "2026-10-21T13:00:25.3865160Z assertion failed: `(left == right)`",
+        "2026-10-21T13:00:25.3865360Z ",
+        "2026-10-21T13:00:25.3865480Z Diff < left / right > :",
+        "2026-10-21T13:00:25.3865690Z <0",
+        "2026-10-21T13:00:25.3865860Z >1",
+        "2026-10-21T13:00:25.3865980Z ",
+        "2026-10-21T13:00:25.3866030Z ",
+        "2026-10-21T13:00:25.3866080Z "
+      ]
+    },
+    "local::update_thread_metadata::tests::observed_metadata_normalizes_cwd_for_list_filters": {
+      "line": 11419,
+      "location": "thread-store/src/local/update_thread_metadata.rs:2161:9:",
+      "context": [
+        "2026-10-21T13:00:25.3868180Z thread 'local::update_thread_metadata::tests::observed_metadata_normalizes_cwd_for_list_filters' (239462) panicked at thread-store/src/local/update_thread_metadata.rs:2161:9:",
+        "2026-10-21T13:00:25.3868800Z assertion failed: `(left == right)`",
+        "2026-10-21T13:00:25.3869010Z ",
+        "2026-10-21T13:00:25.3869750Z Diff < left / right > :",
+        "2026-10-21T13:00:25.3870210Z <[]",
+        "2026-10-21T13:00:25.3870380Z >[",
+        "2026-10-21T13:00:25.3870560Z >    ThreadId {",
+        "2026-10-21T13:00:25.3870790Z >        uuid: 00000000-0000-0000-0000-00000000013c,",
+        "2026-10-21T13:00:25.3871050Z >    },",
+        "2026-10-21T13:00:25.3871220Z >]",
+        "2026-10-21T13:00:25.3871540Z ",
+        "2026-10-21T13:00:25.3871600Z ",
+        "2026-10-21T13:00:25.3871670Z "
+      ]
+    },
+    "local::update_thread_metadata::tests::section_moves_persist_in_sqlite_without_changing_the_rollout": {
+      "line": 11434,
+      "location": "thread-store/src/local/update_thread_metadata.rs:995:14:",
+      "context": [
+        "2026-10-21T13:00:25.3873150Z thread 'local::update_thread_metadata::tests::section_moves_persist_in_sqlite_without_changing_the_rollout' (239496) panicked at thread-store/src/local/update_thread_metadata.rs:995:14:",
+        "2026-10-21T13:00:25.3874370Z list pinned thread: Internal { message: \"state DB unavailable for filtered thread listing\" }",
+        "2026-10-21T13:00:25.3874710Z ",
+        "2026-10-21T13:00:25.3874760Z ",
+        "2026-10-21T13:00:25.3874870Z failures:",
+        "2026-10-21T13:00:25.3875300Z     local::list_threads::tests::list_paginated_threads_uses_sqlite_name_over_legacy_compatibility",
+        "2026-10-21T13:00:25.3884340Z     local::list_threads::tests::list_threads_preserves_sqlite_title_search_results",
+        "2026-10-21T13:00:25.3884880Z     local::rollout_migration::tests::migration_preserves_legacy_displayed_thread_names",
+        "2026-10-21T13:00:25.3885450Z     local::thread_history_materialization::tests::split_homes_support_backfill_listing_and_paginated_history",
+        "2026-10-21T13:00:25.3890490Z     local::update_thread_metadata::tests::observed_metadata_normalizes_cwd_for_list_filters",
+        "2026-10-21T13:00:25.3891090Z     local::update_thread_metadata::tests::section_moves_persist_in_sqlite_without_changing_the_rollout",
+        "2026-10-21T13:00:25.3891450Z ",
+        "2026-10-21T13:00:25.3891720Z test result: FAILED. 222 passed; 6 failed; 0 ignored; 0 measured; 0 filtered out; finished in 4.99s",
+        "2026-10-21T13:00:25.3912340Z ",
+        "2026-10-21T13:00:25.3912590Z ================================================================================"
+      ]
+    },
+    "https_consumer::tests::authbus_timeout_keeps_quota_held_as_indeterminate": {
+      "line": 11544,
+      "location": "hepta-bao-adapter/src/https_consumer_tests.rs:725:52:",
+      "context": [
+        "2026-10-21T13:01:47.5714800Z thread 'https_consumer::tests::authbus_timeout_keeps_quota_held_as_indeterminate' (244752) panicked at hepta-bao-adapter/src/https_consumer_tests.rs:725:52:",
+        "2026-10-21T13:01:47.5816490Z called `Result::unwrap()` on an `Err` value: UnsafeCheckpoint",
+        "2026-10-21T13:01:47.5917880Z note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace",
+        "2026-10-21T13:01:47.6018730Z "
+      ]
+    },
+    "https_consumer::tests::authbus_product_path_reserves_fences_final_use_and_settles_observed_cost": {
+      "line": 11550,
+      "location": "hepta-bao-adapter/src/https_consumer_tests.rs:681:52:",
+      "context": [
+        "2026-10-21T13:01:47.6325930Z thread 'https_consumer::tests::authbus_product_path_reserves_fences_final_use_and_settles_observed_cost' (244751) panicked at hepta-bao-adapter/src/https_consumer_tests.rs:681:52:",
+        "2026-10-21T13:01:47.6427870Z called `Result::unwrap()` on an `Err` value: UnsafeCheckpoint",
+        "2026-10-21T13:01:47.6528620Z ",
+        "2026-10-21T13:01:47.6629070Z ",
+        "2026-10-21T13:01:47.6729880Z failures:",
+        "2026-10-21T13:01:47.6838560Z     https_consumer::tests::authbus_product_path_reserves_fences_final_use_and_settles_observed_cost",
+        "2026-10-21T13:01:47.6940060Z     https_consumer::tests::authbus_timeout_keeps_quota_held_as_indeterminate",
+        "2026-10-21T13:01:47.7040900Z ",
+        "2026-10-21T13:01:47.7141790Z test result: FAILED. 30 passed; 2 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.43s",
+        "2026-10-21T13:01:47.7242790Z ",
+        "2026-10-21T13:01:47.7362470Z ================================================================================",
+        "2026-10-21T13:01:47.8651220Z [16,573 / 18,357] 158 / 569 tests, 6 failed; Testing //codex-rs/shell-escalation:shell-escalation-unit-tests; 36s disk-cache, darwin-sandbox ... (30 actions, 5 running)",
+        "2026-10-21T13:01:49.0153260Z [16,574 / 18,357] 158 / 569 tests, 6 failed; Testing //codex-rs/shell-escalation:shell-escalation-unit-tests; 37s disk-cache, darwin-sandbox ... (30 actions, 6 running)",
+        "2026-10-21T13:01:50.3471650Z [16,574 / 18,357] 158 / 569 tests, 6 failed; Testing //codex-rs/shell-escalation:shell-escalation-unit-tests; 38s disk-cache, darwin-sandbox ... (30 actions, 7 running)",
+        "2026-10-21T13:01:51.4046300Z [16,575 / 18,357] 158 / 569 tests, 6 failed; Testing //codex-rs/shell-escalation:shell-escalation-unit-tests; 39s disk-cache, darwin-sandbox ... (30 actions, 6 running)"
+      ]
+    },
+    "recorder::tests::list_threads_default_filter_returns_filesystem_scan_results": {
+      "line": 11764,
+      "location": "rollout/src/recorder_tests.rs:1405:5:",
+      "context": [
+        "2026-10-21T13:03:50.9988510Z thread 'recorder::tests::list_threads_default_filter_returns_filesystem_scan_results' (253194) panicked at rollout/src/recorder_tests.rs:1405:5:",
+        "2026-10-21T13:03:50.9989080Z assertion failed: `(left == right)`",
+        "2026-10-21T13:03:50.9989290Z ",
+        "2026-10-21T13:03:50.9989430Z Diff < left / right > :",
+        "2026-10-21T13:03:50.9989690Z <0",
+        "2026-10-21T13:03:50.9989990Z >1",
+        "2026-10-21T13:03:50.9990130Z ",
+        "2026-10-21T13:03:50.9990130Z ",
+        "2026-10-21T13:03:50.9990290Z note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace",
+        "2026-10-21T13:03:50.9990610Z "
+      ]
+    },
+    "recorder::tests::list_threads_search_repairs_stale_state_db_hits_before_returning": {
+      "line": 11776,
+      "location": "rollout/src/recorder_tests.rs:1651:5:",
+      "context": [
+        "2026-10-21T13:03:50.9991940Z thread 'recorder::tests::list_threads_search_repairs_stale_state_db_hits_before_returning' (253281) panicked at rollout/src/recorder_tests.rs:1651:5:",
+        "2026-10-21T13:03:50.9992590Z assertion failed: `(left == right)`",
+        "2026-10-21T13:03:50.9992790Z ",
+        "2026-10-21T13:03:50.9992970Z Diff < left / right > :",
+        "2026-10-21T13:03:50.9993200Z <0",
+        "2026-10-21T13:03:50.9993450Z >1",
+        "2026-10-21T13:03:50.9993600Z ",
+        "2026-10-21T13:03:50.9993610Z ",
+        "2026-10-21T13:03:50.9993610Z "
+      ]
+    },
+    "recorder::tests::list_threads_state_db_only_skips_jsonl_repair_scan": {
+      "line": 11787,
+      "location": "rollout/src/recorder_tests.rs:1346:5:",
+      "context": [
+        "2026-10-21T13:03:50.9994670Z thread 'recorder::tests::list_threads_state_db_only_skips_jsonl_repair_scan' (253337) panicked at rollout/src/recorder_tests.rs:1346:5:",
+        "2026-10-21T13:03:50.9995350Z assertion failed: `(left == right)`",
+        "2026-10-21T13:03:50.9995500Z ",
+        "2026-10-21T13:03:50.9995650Z Diff < left / right > :",
+        "2026-10-21T13:03:50.9995960Z <0",
+        "2026-10-21T13:03:50.9996240Z >1",
+        "2026-10-21T13:03:50.9996400Z ",
+        "2026-10-21T13:03:50.9996400Z ",
+        "2026-10-21T13:03:50.9996400Z ",
+        "2026-10-21T13:03:50.9996400Z ",
+        "2026-10-21T13:03:50.9996530Z failures:",
+        "2026-10-21T13:03:50.9996850Z     recorder::tests::list_threads_default_filter_returns_filesystem_scan_results",
+        "2026-10-21T13:03:50.9997400Z     recorder::tests::list_threads_search_repairs_stale_state_db_hits_before_returning",
+        "2026-10-21T13:03:50.9998000Z     recorder::tests::list_threads_state_db_only_skips_jsonl_repair_scan",
+        "2026-10-21T13:03:50.9998220Z "
+      ]
+    },
+    "startup_sync::tests::extract_zipball_masks_special_permission_bits": {
+      "line": 12238,
+      "location": "core-plugins/src/startup_sync_tests.rs:1442:9:",
+      "context": [
+        "2026-10-21T13:03:52.6950900Z thread 'startup_sync::tests::extract_zipball_masks_special_permission_bits' (254389) panicked at core-plugins/src/startup_sync_tests.rs:1442:9:",
+        "2026-10-21T13:03:52.6951660Z assertion failed: `(left == right)`: fixture must preserve SUID/SGID/sticky bits before extraction",
+        "2026-10-21T13:03:52.6951960Z ",
+        "2026-10-21T13:03:52.6952020Z Diff < left / right > :",
+        "2026-10-21T13:03:52.6952170Z  Some(",
+        "2026-10-21T13:03:52.6952290Z <    33261,",
+        "2026-10-21T13:03:52.6952420Z >    36845,",
+        "2026-10-21T13:03:52.6952540Z  )",
+        "2026-10-21T13:03:52.6952610Z ",
+        "2026-10-21T13:03:52.6952610Z ",
+        "2026-10-21T13:03:52.6952770Z note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace",
+        "2026-10-21T13:03:52.6953010Z ",
+        "2026-10-21T13:03:52.6953010Z ",
+        "2026-10-21T13:03:52.6953070Z failures:",
+        "2026-10-21T13:03:52.6953380Z     startup_sync::tests::extract_zipball_masks_special_permission_bits"
+      ]
+    },
+    "service::tests::plugins::marketplaces::import_plugins_infers_external_official_marketplace_when_missing_from_settings": {
+      "line": 12569,
+      "location": "external-agent-migration/src/service_tests/plugins/marketplaces.rs:513:5:",
+      "context": [
+        "2026-10-21T13:07:37.8360700Z thread 'service::tests::plugins::marketplaces::import_plugins_infers_external_official_marketplace_when_missing_from_settings' (270357) panicked at external-agent-migration/src/service_tests/plugins/marketplaces.rs:513:5:",
+        "2026-10-21T13:07:37.8362350Z assertion failed: `(left == right)`",
+        "2026-10-21T13:07:37.8362760Z ",
+        "2026-10-21T13:07:37.8363270Z Diff < left / right > :",
+        "2026-10-21T13:07:37.8363610Z <[]",
+        "2026-10-21T13:07:37.8364570Z >[",
+        "2026-10-21T13:07:37.8365850Z >    \"claude-plugins-official\",",
+        "2026-10-21T13:07:37.8367090Z >]",
+        "2026-10-21T13:07:37.8367420Z ",
+        "2026-10-21T13:07:37.8367530Z ",
+        "2026-10-21T13:07:37.8368100Z note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace",
+        "2026-10-21T13:07:37.8368460Z ",
+        "2026-10-21T13:07:37.8368560Z ",
+        "2026-10-21T13:07:37.8369160Z failures:",
+        "2026-10-21T13:07:37.8370010Z     service::tests::plugins::marketplaces::import_plugins_infers_external_official_marketplace_when_missing_from_settings"
+      ]
+    }
+  },
+  "scope": "Diagnostics before original cancellation; no claim of full suite completion."
+}

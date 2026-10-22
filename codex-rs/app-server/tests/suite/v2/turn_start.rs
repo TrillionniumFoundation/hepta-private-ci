@@ -1812,18 +1812,15 @@ async fn turn_start_emits_notifications_and_accepts_model_override() -> Result<(
 
     // Send a second turn that exercises the overrides path: change the model.
     let TurnStartResponse { turn: turn2 } = mcp
-        .request(|request_id| ClientRequest::TurnStart {
-            request_id,
-            params: TurnStartParams {
-                thread_id: thread.id.clone(),
-                client_user_message_id: None,
-                input: vec![V2UserInput::Text {
-                    text: "Second".to_string(),
-                    text_elements: Vec::new(),
-                }],
-                model: Some("mock-model-override".to_string()),
-                ..Default::default()
-            },
+        .start_turn_after_terminal_cleanup(TurnStartParams {
+            thread_id: thread.id.clone(),
+            client_user_message_id: None,
+            input: vec![V2UserInput::Text {
+                text: "Second".to_string(),
+                text_elements: Vec::new(),
+            }],
+            model: Some("mock-model-override".to_string()),
+            ..Default::default()
         })
         .await?;
     assert!(!turn2.id.is_empty());
@@ -2261,18 +2258,15 @@ async fn turn_start_change_personality_mid_thread_v2() -> Result<()> {
     .await??;
 
     let _turn2: TurnStartResponse = mcp
-        .request(|request_id| ClientRequest::TurnStart {
-            request_id,
-            params: TurnStartParams {
-                thread_id: thread.id.clone(),
-                client_user_message_id: None,
-                input: vec![V2UserInput::Text {
-                    text: "Hello again".to_string(),
-                    text_elements: Vec::new(),
-                }],
-                personality: Some(Personality::Friendly),
-                ..Default::default()
-            },
+        .start_turn_after_terminal_cleanup(TurnStartParams {
+            thread_id: thread.id.clone(),
+            client_user_message_id: None,
+            input: vec![V2UserInput::Text {
+                text: "Hello again".to_string(),
+                text_elements: Vec::new(),
+            }],
+            personality: Some(Personality::Friendly),
+            ..Default::default()
         })
         .await?;
 
@@ -4525,18 +4519,15 @@ async fn turn_start_file_change_approval_accept_for_session_persists_v2() -> Res
 
     // Second turn: apply a patch to the same file. Approval should be skipped due to AcceptForSession.
     let TurnStartResponse { turn: turn_2 } = mcp
-        .request(|request_id| ClientRequest::TurnStart {
-            request_id,
-            params: TurnStartParams {
-                thread_id: thread.id.clone(),
-                client_user_message_id: None,
-                input: vec![V2UserInput::Text {
-                    text: "apply patch 2".into(),
-                    text_elements: Vec::new(),
-                }],
-                cwd: Some(workspace.clone()),
-                ..Default::default()
-            },
+        .start_turn_after_terminal_cleanup(TurnStartParams {
+            thread_id: thread.id.clone(),
+            client_user_message_id: None,
+            input: vec![V2UserInput::Text {
+                text: "apply patch 2".into(),
+                text_elements: Vec::new(),
+            }],
+            cwd: Some(workspace.clone()),
+            ..Default::default()
         })
         .await?;
 

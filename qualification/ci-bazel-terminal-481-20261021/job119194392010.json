@@ -1,0 +1,120 @@
+{
+  "job": {
+    "id": 119194392010,
+    "name": "Bazel / Bazel test on windows-latest for x86_64-pc-windows-msvc shard 1/4",
+    "status": "completed",
+    "conclusion": "failure",
+    "run_id": 39583123088,
+    "head_sha": "48177153ad04605338c3a9a8dbd17defee9981bc",
+    "started_at": "2026-10-21T12:05:11Z",
+    "completed_at": "2026-10-21T13:00:03Z",
+    "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/39583123088/job/119194392010",
+    "runner_name": "GitHub Actions 1000191620",
+    "labels": [
+      "windows-latest"
+    ],
+    "steps": [
+      {
+        "name": "Set up job",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 1,
+        "started_at": "2026-10-21T12:05:12Z",
+        "completed_at": "2026-10-21T12:05:13Z"
+      },
+      {
+        "name": "Run actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 2,
+        "started_at": "2026-10-21T12:05:13Z",
+        "completed_at": "2026-10-21T12:05:28Z"
+      },
+      {
+        "name": "Test BuildBuddy Bazel wrapper",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 3,
+        "started_at": "2026-10-21T12:05:28Z",
+        "completed_at": "2026-10-21T12:05:39Z"
+      },
+      {
+        "name": "Prepare Bazel CI",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 4,
+        "started_at": "2026-10-21T12:05:39Z",
+        "completed_at": "2026-10-21T12:06:00Z"
+      },
+      {
+        "name": "Smoke test the native MSVC header parser",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 5,
+        "started_at": "2026-10-21T12:06:00Z",
+        "completed_at": "2026-10-21T12:06:52Z"
+      },
+      {
+        "name": "bazel test shard",
+        "status": "completed",
+        "conclusion": "failure",
+        "number": 6,
+        "started_at": "2026-10-21T12:06:52Z",
+        "completed_at": "2026-10-21T12:59:54Z"
+      },
+      {
+        "name": "Upload Bazel execution logs",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 7,
+        "started_at": "2026-10-21T12:59:55Z",
+        "completed_at": "2026-10-21T12:59:58Z"
+      },
+      {
+        "name": "Check for a clean worktree",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 8,
+        "started_at": "2026-10-21T12:59:58Z",
+        "completed_at": "2026-10-21T12:59:59Z"
+      },
+      {
+        "name": "Post Prepare Bazel CI",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 15,
+        "started_at": "2026-10-21T12:59:59Z",
+        "completed_at": "2026-10-21T12:59:59Z"
+      },
+      {
+        "name": "Post Run actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 16,
+        "started_at": "2026-10-21T12:59:59Z",
+        "completed_at": "2026-10-21T13:00:02Z"
+      },
+      {
+        "name": "Complete job",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 17,
+        "started_at": "2026-10-21T13:00:02Z",
+        "completed_at": "2026-10-21T13:00:02Z"
+      }
+    ]
+  },
+  "observed_at": "2026-10-21 13:03:09 UTC",
+  "source_head": "48177153ad04605338c3a9a8dbd17defee9981bc",
+  "raw_log": {
+    "file": "job119194392010.log.xz",
+    "encoding": "UTF-8 exactly as dedicated job log tool returned",
+    "bytes": 634138,
+    "sha256": "da3211f5a45b09c3e12d4713aa1123d8ff9c7a939320d5fb1da081aaaba3b7b6",
+    "compressed_bytes": 64324,
+    "compressed_sha256": "0d211c99deee0d093d9c7da33fad0b4356bb826b710acbac8d92c70da990db9f",
+    "bom": true,
+    "lf": 4789,
+    "crlf": 4788
+  }
+}

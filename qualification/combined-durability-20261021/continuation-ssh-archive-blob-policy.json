@@ -1,0 +1,62 @@
+{
+  "command": [
+    "python3",
+    "scripts/check_blob_size.py",
+    "--base",
+    "fa0e8457ca5a3995e00ecec6534c1c68aa82fb28",
+    "--head",
+    "HEAD",
+    "--allowlist",
+    ".github/blob-size-allowlist.txt"
+  ],
+  "cwd": "/workspace/scratch/337c309bc660/combined-durability-work",
+  "started_at_utc": "2026-10-21T14:08:16.009553+00:00",
+  "head_at_start": "ed20baed741d2e2f2831b19fa72bd968fec2b4e1",
+  "source_hashes_before": {
+    "MODULE.bazel.lock": {
+      "bytes": 1745183,
+      "sha256": "f6c5dd1f2a09c66d6a4c387ff40d11afb7ed2309e541dcb6bff9ad5f410996c3"
+    },
+    "codex-rs/Cargo.lock": {
+      "bytes": 413726,
+      "sha256": "d8121cd206f40ef5a25009a041f0a75a1959155f62091ea494047c3d522c1476"
+    }
+  },
+  "limits": {
+    "cargo_jobs": 2,
+    "dev_debug": 0,
+    "test_debug": 0,
+    "incremental": 0,
+    "bazel_jobs": 2,
+    "bazel_xmx_mib": 1536
+  },
+  "memory_events_before": "low 0\nhigh 0\nmax 1322567\noom 0\noom_kill 0\noom_group_kill 0\n",
+  "pid": 26,
+  "exit_code": 0,
+  "elapsed_seconds": 2.003283124999143,
+  "finished_at_utc": "2026-10-21T14:08:18.019209+00:00",
+  "source_hashes_after": {
+    "MODULE.bazel.lock": {
+      "bytes": 1745183,
+      "sha256": "f6c5dd1f2a09c66d6a4c387ff40d11afb7ed2309e541dcb6bff9ad5f410996c3"
+    },
+    "codex-rs/Cargo.lock": {
+      "bytes": 413726,
+      "sha256": "d8121cd206f40ef5a25009a041f0a75a1959155f62091ea494047c3d522c1476"
+    }
+  },
+  "peak_cgroup_bytes": {
+    "anon": 190832640,
+    "file": 5981700096,
+    "kernel": 1087676416
+  },
+  "minimum_free_bytes": 1023647744,
+  "memory_events_after": "low 0\nhigh 0\nmax 1322567\noom 0\noom_kill 0\noom_group_kill 0\n",
+  "raw_log": {
+    "file": "continuation-ssh-archive-blob-policy.log.xz",
+    "bytes": 9851,
+    "sha256": "a86e71c40fb0af5d10b6cf7075854a73dd68f672b12b37a76b63a78457025cd0",
+    "compressed_bytes": 1632,
+    "compressed_sha256": "ac72f6b478f82ecd4f97d4ad069a9a5be13d7503e7cd366bd9ec22440398562c"
+  }
+}

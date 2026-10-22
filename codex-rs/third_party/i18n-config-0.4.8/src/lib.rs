@@ -398,3 +398,7 @@ pub fn locate_crate_paths() -> Result<CratePaths, I18nConfigError> {
 #[cfg(test)]
 #[path = "config_tests.rs"]
 mod tests;
+
+#[cfg(test)]
+#[path = "parser_tests.rs"]
+mod parser_tests;
