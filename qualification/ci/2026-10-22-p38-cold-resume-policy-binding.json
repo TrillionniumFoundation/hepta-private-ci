@@ -1,0 +1,197 @@
+{
+  "schema_version": 1,
+  "recorded_at": "2026-10-22T14:30:06.836083+00:00",
+  "scope": "P38 AppServer named-policy cold-resume root binding",
+  "base_commit": "e2fe930fe6e188539264c69bf09a1b74ea48641c",
+  "source_commit": "3c23d4adb231a0b4ece56fc4204dddb9bd2b78b4",
+  "source_tree": "80c8aadfb037fb7476c62021c9ac632c625cbb83",
+  "source_changed_lines": 335,
+  "original_failure": {
+    "job_id": 119664821565,
+    "log_sha256": "aafb8096d29f5971e4af42296b82858480223e01e2593a9c1fb1d925bd135dd1",
+    "execution_merge_sha": "ee31f4ed166cd0f720153ae06348fb8e9644f545",
+    "pull_request_head_sha": "db0d860811ffc37f0c462b030d0be3b8043955a8",
+    "test": "suite::v2::thread_resume::cold_resume_reresolves_persisted_active_permission_profile",
+    "log_lines": [9275, 9337],
+    "observed": "The current dev profile resolved to read-only, but the cold-resume response retained the historical runtime workspace root."
+  },
+  "mechanism": [
+    "Bind inferred roots to the full effective permission policy from the same named-profile TurnContext; a later settings event cannot rebind that older environment.",
+    "Resolve current config and requirements normally. On policy inequality, remove only history-inferred root overrides and their resume environment, then resolve current config once more.",
+    "Consume the binding before the reload, so the load loop performs at most two attempts. Loader errors retain the original fail-closed response.",
+    "Typed and raw caller roots bypass inference. Unchanged named policy retains roots. Historical permission policy is never restored as current authority.",
+    "Legacy unnamed contexts retain their prior behavior; no persisted wire shape or public API type changed."
+  ],
+  "validation": {
+    "exact_module": {
+      "result": "PASS",
+      "tests_passed": 8,
+      "tests_failed": 0,
+      "tests_ignored": 0,
+      "owning_appserver_execution": false,
+      "scope": "rustc compiled the unchanged actual codex_history source against cached real dependencies, then compiled and executed the exact changed persisted_resume_settings module and sibling tests through the same RolloutItem reexport. This is not the owning AppServer crate or RPC suite.",
+      "rustc_version": "rustc 1.95.0 (59807616e 2026-04-14)",
+      "receipt_sha256": "d2dcc9c36ac98e34a543ab27dfb17f8a8def862d92c2e5d0b5a4e6044b6f0040",
+      "test_log_sha256": "30f9e799fa33f3b36857de751915f661acc233379c2d3f51488addea2ac1ba6a",
+      "module_sha256": "1d9f348240f0324ed632883b263f44f35d85cd0f425c10542cfb983863b7c30e",
+      "tests_sha256": "a49a218dd2a31a237ff249e84ce1acbce4dc86af135de379de1698723e3bc6d4",
+      "earlier_attempt": "Cached history artifacts initially failed to compile with E0460 protocol metadata mismatch; rebuilding the actual history module resolved that isolated harness issue. No pass is claimed for the failed attempt."
+    },
+    "static_checks": [
+      {
+        "command": [
+          "just",
+          "fmt",
+          "--base",
+          "e2fe930fe6e188539264c69bf09a1b74ea48641c"
+        ],
+        "exit_code": 0,
+        "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "command": [
+          "just",
+          "fmt",
+          "--base",
+          "e2fe930fe6e188539264c69bf09a1b74ea48641c",
+          "--check"
+        ],
+        "exit_code": 0,
+        "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "command": ["git", "diff", "--check"],
+        "exit_code": 0,
+        "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "command": [
+          "/tmp/hepta-codespell-2.4.3/bin/codespell",
+          "--ignore-words",
+          ".codespellignore",
+          "--skip",
+          "./.git",
+          "codex-rs/app-server/README.md",
+          "codex-rs/app-server/src/request_processors/persisted_resume_settings.rs",
+          "codex-rs/app-server/src/request_processors/persisted_resume_settings_tests.rs",
+          "codex-rs/app-server/src/request_processors/thread_processor.rs",
+          "codex-rs/app-server/tests/suite/v2/thread_resume.rs",
+          "codex-rs/app-server/tests/suite/v2/thread_resume_permission_roots_tests.rs"
+        ],
+        "exit_code": 0,
+        "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    ],
+    "protected_source_guard": {
+      "result": "PASS",
+      "receipt_sha256": "5639d96f8860ec9248a1df80af0be0a07858d4664ec04b52631dbc179a00cc2c",
+      "files": [
+        {
+          "path": "codex-rs/app-server/tests/suite/v2/turn_recover.rs",
+          "sha256": "4709d3de4368f33ac9d3d46a6350f1b5cff966914870ce47adb7203a34125b03",
+          "unchanged": true
+        },
+        {
+          "path": "codex-rs/core/src/session/turn_input.rs",
+          "sha256": "7959e38afd075c5cad233a7d1ba59b3406b1de96d9076e444a51ce8ac33b9841",
+          "unchanged": true
+        },
+        {
+          "path": "codex-rs/core/src/thread_manager.rs",
+          "sha256": "d9631505c673632e53d91122f9d1491dcea0ca1d3ac4360f7aa0fa95e5934f89",
+          "unchanged": true
+        },
+        {
+          "path": "codex-rs/core/src/config/mod.rs",
+          "sha256": "ebbeae65aa387cce085524de709516e2877e6c4ea15738cd26dbe531bf74b65b",
+          "unchanged": true
+        },
+        {
+          "path": "codex-rs/app-server/Cargo.toml",
+          "sha256": "5ed7586048d3d0d98c42a1563ae12acb70252bd7d46f81cf1649c10faa800e5d",
+          "unchanged": true
+        },
+        {
+          "path": "codex-rs/app-server/BUILD.bazel",
+          "sha256": "9c17d311022594bf97dd08667713a6d4c85ddd245c59b1d9cca57f5787508acd",
+          "unchanged": true
+        },
+        {
+          "path": "codex-rs/Cargo.lock",
+          "sha256": "f11a317cd13092663372c3f6b5709266c9e1375baa55eb57f199b754faf418a1",
+          "unchanged": true
+        },
+        {
+          "path": "MODULE.bazel.lock",
+          "sha256": "63ee8041114a86fb2064282e466d4250abdf884b2b10dff21c91c412cecfcc4b",
+          "unchanged": true
+        }
+      ],
+      "original_thread_resume_bytes_unchanged_after_removing_new_module_hook": true,
+      "original_thread_resume_sha256": "1b4e0cd16d4ea23424da72dc6694e324c3d1f7a41ff37bb2379f3a1c3ae60394",
+      "bazel_compile_data_glob": "tests/**"
+    },
+    "independent_source_review": {
+      "reviewer": "multimodal_differentiation",
+      "result": "No concrete permission weakening or reload race blocker found. Reviewed same-context policy binding, materialized full policy comparison, single reload, paired roots/environment removal, explicit overrides, and unchanged recovery admission.",
+      "native_execution_claimed": false
+    }
+  },
+  "new_regressions": {
+    "module_executed": [
+      "later_settings_do_not_rebind_old_roots_to_a_different_permission_policy",
+      "legacy_named_turn_context_uses_its_authoritative_permission_projection"
+    ],
+    "public_rpc_authored_not_executed": [
+      "unchanged_named_policy_preserves_runtime_roots_on_cold_resume",
+      "changed_policy_body_invalidates_inferred_roots_even_with_the_same_profile_id",
+      "changed_named_policy_preserves_explicit_typed_and_raw_roots"
+    ]
+  },
+  "source_files": [
+    {
+      "path": "codex-rs/app-server/README.md",
+      "sha256": "f9686e66036b3dbe3e7348a32b4abf7f4d96baf7b0a686e2edf1c9af835643b2",
+      "git_blob": "b1bd3e40a4945c32243f1f41249cd60b626e8c9d"
+    },
+    {
+      "path": "codex-rs/app-server/src/request_processors/persisted_resume_settings.rs",
+      "sha256": "1d9f348240f0324ed632883b263f44f35d85cd0f425c10542cfb983863b7c30e",
+      "git_blob": "78302e2783189b2e8d0bee4963bbdf612a106fae"
+    },
+    {
+      "path": "codex-rs/app-server/src/request_processors/persisted_resume_settings_tests.rs",
+      "sha256": "a49a218dd2a31a237ff249e84ce1acbce4dc86af135de379de1698723e3bc6d4",
+      "git_blob": "c59a68cb974d0e775edd46cac822b08b3d6a8926"
+    },
+    {
+      "path": "codex-rs/app-server/src/request_processors/thread_processor.rs",
+      "sha256": "4c5f17b8bb9c03b4fb5d31804ea8917ddb3a34823d7117d0ce5951e8c9646175",
+      "git_blob": "3bad68745912077cc34a49ba12cf7cecb06840a5"
+    },
+    {
+      "path": "codex-rs/app-server/tests/suite/v2/thread_resume.rs",
+      "sha256": "ea945c6fc37665571b463edd12cb84367446dda6d85fed75611c5767a8cfa830",
+      "git_blob": "7a4958dcf02dda8d96415ded01f7537ef22f8656"
+    },
+    {
+      "path": "codex-rs/app-server/tests/suite/v2/thread_resume_permission_roots_tests.rs",
+      "sha256": "2e5a7a05e8cf2d83cf3e02c9404cc1ff716fd3f2faa52ee461c4e7d9e06150d8",
+      "git_blob": "9d9e31573198c3ee645042844a76346a3df50d2a"
+    }
+  ],
+  "pending": [
+    "Owning codex-app-server build and just test, including the original failed cold-resume case, all three new public RPC tests, and unchanged turn_recover positive/negative contracts.",
+    "Owning codex-app-server Clippy via just fix.",
+    "Windows, macOS, and full composed native CI on the final remote source.",
+    "The plugin TTL duplicate-fetch failure remains open; no speculative cache/startup change is included."
+  ],
+  "resource_limit": {
+    "available_bytes_before_bounded_validation": 946503680,
+    "full_owning_build_started": false,
+    "reason": "The configured local disk had less than 1 GB available and no complete current AppServer dependency closure; this stage retains the owning native gate for cloud CI."
+  },
+  "all_native_blockers_closed": false,
+  "production_qualification_claimed": false,
+  "remote_mutation_performed_by_this_stage": false
+}
