@@ -3,9 +3,6 @@ name: NDU-MGP exact-head research preflight
 on:
   push:
     branches: [research/ndu-mgp-p0-p4-qualification-20261022]
-    paths:
-      - 'experiments/ndu_mgp_gates/**'
-      - '.github/workflows/ndu-mgp-preflight.yml'
   workflow_dispatch:
 
 permissions:
