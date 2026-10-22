@@ -1,0 +1,27 @@
+{
+  "schema": 2,
+  "source_commit": "a32d73f00cfc292ff1ed4ac5cef958ca9f238020",
+  "source_tree": "603a3e5b69258e37653a828dda625efe45365d7e",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "branch": "refs/heads/diagnostic/a32-sdk-repaired-keyless-20261022",
+  "added_paths": [
+    ".github/workflows/a32-sdk-keyless-diagnostic.yml",
+    ".github/scripts/sdk_diagnostic.py",
+    ".github/sdk-diagnostic/source.json",
+    ".github/sdk-diagnostic/tools.json"
+  ],
+  "bazel_version": "9.3.0",
+  "optional_rc_line": "try-import %workspace%/user.bazelrc",
+  "modified_paths": {
+    ".github/workflows/sdk.yml": {
+      "before": [
+        "100644",
+        "520d5905b1f3b38c8483490df6d2caf1fdd4e9bb"
+      ],
+      "after": [
+        "100644",
+        "86646d2848b29c76630cb12f132373410f4fa40c"
+      ]
+    }
+  }
+}

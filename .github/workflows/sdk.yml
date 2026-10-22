@@ -79,6 +79,16 @@ jobs:
         with:
           target: x86_64-unknown-linux-gnu
 
+      # Restore only repository downloads into the path consumed by the shared
+      # Bazel wrapper. A cache miss or unavailable service must not skip the build.
+      - name: Restore bazel repository cache
+        id: cache_bazel_repository_restore
+        continue-on-error: true
+        uses: actions/cache/restore@668228422ae6a00e4ad889ee87cd7109ec5666a7 # v5.0.4
+        with:
+          path: ${{ steps.setup_bazel.outputs.repository-cache-path }}
+          key: bazel-cache-x86_64-unknown-linux-gnu-${{ hashFiles('MODULE.bazel', 'codex-rs/Cargo.lock', 'codex-rs/Cargo.toml') }}
+
       - name: Build codex and code-mode host with Bazel
         env:
           BUILDBUDDY_API_KEY: ${{ secrets.BUILDBUDDY_API_KEY }}
@@ -108,8 +118,28 @@ jobs:
             local target="$1"
             local executable_name="$2"
             local cquery_output=""
+            local cquery_stdout=""
+            local cquery_status=0
             local candidate
             local resolved_output
+
+            # Capture the producer status before treating stdout as an output path.
+            # Process substitution would hide a failed cquery that printed a path first.
+            if cquery_stdout="$(
+              ./.github/scripts/run-bazel-ci.sh \
+                -- \
+                cquery \
+                --output=files \
+                -- \
+                "${target}"
+            )"; then
+              :
+            else
+              cquery_status="$?"
+              printf '%s\n' "${cquery_stdout}" >&2
+              echo "Bazel cquery failed for ${target} with status ${cquery_status}." >&2
+              return "${cquery_status}"
+            fi
 
             while IFS= read -r candidate; do
               if [[ "${candidate}" != /* && "${candidate}" != bazel-out/* ]]; then
@@ -118,14 +148,7 @@ jobs:
               if [[ "$(basename "${candidate}")" == "${executable_name}" ]]; then
                 cquery_output="${candidate}"
               fi
-            done < <(
-              ./.github/scripts/run-bazel-ci.sh \
-                -- \
-                cquery \
-                --output=files \
-                -- \
-                "${target}"
-            )
+            done <<< "${cquery_stdout}"
 
             if [[ -z "${cquery_output}" ]]; then
               echo "Bazel did not report ${executable_name} for ${target}." >&2
@@ -182,7 +205,7 @@ jobs:
         run: pnpm -r --filter ./sdk/typescript run test
 
       - name: Save bazel repository cache
-        if: always() && !cancelled() && steps.setup_bazel.outputs.cache-hit != 'true'
+        if: always() && !cancelled() && steps.setup_bazel.outcome == 'success' && steps.cache_bazel_repository_restore.outputs.cache-hit != 'true'
         continue-on-error: true
         uses: actions/cache/save@668228422ae6a00e4ad889ee87cd7109ec5666a7 # v5.0.4
         with:
