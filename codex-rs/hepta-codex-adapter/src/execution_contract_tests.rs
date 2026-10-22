@@ -387,10 +387,6 @@ fn receipt_recovery_posture_never_authorizes_unsafe_replay() {
             RecoveryDispositionV1::RetryBeforeAdmission,
         ),
         (
-            ExecutionStatusV1::Failed,
-            RecoveryDispositionV1::ReconcileSameOperation,
-        ),
-        (
             ExecutionStatusV1::Indeterminate,
             RecoveryDispositionV1::None,
         ),
@@ -423,6 +419,10 @@ fn receipt_recovery_posture_never_authorizes_unsafe_replay() {
     for (status, recovery) in [
         (ExecutionStatusV1::Completed, RecoveryDispositionV1::None),
         (ExecutionStatusV1::Failed, RecoveryDispositionV1::None),
+        (
+            ExecutionStatusV1::Failed,
+            RecoveryDispositionV1::ReconcileSameOperation,
+        ),
         (ExecutionStatusV1::Failed, RecoveryDispositionV1::Quarantine),
         (
             ExecutionStatusV1::Failed,
@@ -449,5 +449,108 @@ fn receipt_recovery_posture_never_authorizes_unsafe_replay() {
         receipt.status = status;
         receipt.recovery = recovery;
         assert_eq!(receipt.validate_against(&value.cell), Ok(()));
+    }
+}
+
+#[test]
+fn native_success_requires_zero_exit_and_no_retry_signal() {
+    let value = intent();
+    let outcome = ToolOutcomeV1 {
+        terminal_observed: true,
+        exit_code: Some(0),
+        stdout_digest: Some(digest("stdout")),
+        stderr_digest: None,
+        retryable: false,
+    };
+    let mut receipt = RuntimeReceiptV1 {
+        execution: ExecutionReceiptV1 {
+            operation_id: value.cell.operation_id.clone(),
+            intent_digest: value.cell.intent_digest(),
+            generation: value.cell.generation,
+            final_payload_digest: value.cell.final_payload.clone(),
+            outcome_digest: Some(outcome.outcome_digest()),
+            status: ExecutionStatusV1::Completed,
+            recovery: RecoveryDispositionV1::None,
+            authority: AuthorityPosture::DENY_ALL,
+        },
+        runtime_intent_digest: value.intent_digest(),
+        tool_outcome: outcome,
+    };
+    assert_eq!(receipt.validate_against(&value), Ok(()));
+
+    receipt.tool_outcome.exit_code = Some(17);
+    receipt.execution.outcome_digest = Some(receipt.tool_outcome.outcome_digest());
+    assert_eq!(
+        receipt.validate_against(&value),
+        Err(ExecutionContractError::StatusOutcomeMismatch)
+    );
+
+    receipt.tool_outcome.exit_code = Some(0);
+    receipt.tool_outcome.retryable = true;
+    receipt.execution.outcome_digest = Some(receipt.tool_outcome.outcome_digest());
+    assert_eq!(
+        receipt.validate_against(&value),
+        Err(ExecutionContractError::StatusOutcomeMismatch)
+    );
+
+    receipt.tool_outcome.retryable = false;
+    receipt.tool_outcome.exit_code = None;
+    receipt.execution.outcome_digest = Some(receipt.tool_outcome.outcome_digest());
+    assert_eq!(receipt.validate_against(&value), Ok(()));
+}
+
+#[test]
+fn execution_status_recovery_matrix_is_exhaustively_fail_closed() {
+    let value = intent();
+    let mut receipt = ExecutionReceiptV1 {
+        operation_id: value.cell.operation_id.clone(),
+        intent_digest: value.cell.intent_digest(),
+        generation: value.cell.generation,
+        final_payload_digest: value.cell.final_payload.clone(),
+        outcome_digest: Some(digest("outcome")),
+        status: ExecutionStatusV1::Completed,
+        recovery: RecoveryDispositionV1::None,
+        authority: AuthorityPosture::DENY_ALL,
+    };
+    let statuses = [
+        ExecutionStatusV1::Completed,
+        ExecutionStatusV1::Failed,
+        ExecutionStatusV1::Indeterminate,
+        ExecutionStatusV1::Rejected,
+    ];
+    let recoveries = [
+        RecoveryDispositionV1::None,
+        RecoveryDispositionV1::RetryBeforeAdmission,
+        RecoveryDispositionV1::ReconcileSameOperation,
+        RecoveryDispositionV1::Quarantine,
+        RecoveryDispositionV1::RollbackToPredecessor,
+    ];
+    let allowed = [
+        (ExecutionStatusV1::Completed, RecoveryDispositionV1::None),
+        (ExecutionStatusV1::Failed, RecoveryDispositionV1::None),
+        (ExecutionStatusV1::Failed, RecoveryDispositionV1::ReconcileSameOperation),
+        (ExecutionStatusV1::Failed, RecoveryDispositionV1::Quarantine),
+        (ExecutionStatusV1::Failed, RecoveryDispositionV1::RollbackToPredecessor),
+        (ExecutionStatusV1::Indeterminate, RecoveryDispositionV1::ReconcileSameOperation),
+        (ExecutionStatusV1::Indeterminate, RecoveryDispositionV1::Quarantine),
+        (ExecutionStatusV1::Rejected, RecoveryDispositionV1::None),
+        (ExecutionStatusV1::Rejected, RecoveryDispositionV1::RetryBeforeAdmission),
+        (ExecutionStatusV1::Rejected, RecoveryDispositionV1::Quarantine),
+    ];
+    for &status in &statuses {
+        for &recovery in &recoveries {
+            receipt.status = status;
+            receipt.recovery = recovery;
+            let expected = if allowed.contains(&(status, recovery)) {
+                Ok(())
+            } else {
+                Err(ExecutionContractError::StatusRecoveryMismatch)
+            };
+            assert_eq!(
+                receipt.validate_against(&value.cell),
+                expected,
+                "status={status:?} recovery={recovery:?}"
+            );
+        }
     }
 }
