@@ -172,7 +172,8 @@ class LocalCloseoutTests(unittest.TestCase):
             self.assertEqual(code, 2)
             report = json.loads(next((base / "results").glob("run-*/acceptance.json")).read_text())
             self.assertTrue(all(s["status"] == "BLOCKED_NOT_RUN" for s in report["stages"].values()))
-            self.assertFalse(report["production_qualified"])+
+            self.assertFalse(report["production_qualified"])
+
     def test_source_mutation_during_green_tests_never_reports_exact_source(self):
         with tempfile.TemporaryDirectory() as root:
             base = Path(root)
