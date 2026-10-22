@@ -422,10 +422,17 @@ def main() -> int:
                                                           run_dir / f"{stage.lower()}-{index}.log"))
             states = [c["status"] for c in stage_result["checks"]]
             after_checks = {name: git_snapshot(roots[name]) for name in source_names}
+            # A clean Git status is NOT a post-test source-byte proof: an
+            # assume-unchanged/skip-worktree path may silently drift from HEAD.
+            unchanged_required_files = all(
+                committed_regular_file(roots[name], rel)
+                for name, rel in spec["required"]
+            )
+            stage_result["post_check_required_source_bytes_match_head"] = unchanged_required_files
             # Tests may create tracked or untracked files, change checked-out
             # branches or rewrite generated source. Never report success for a
             # test that no longer matches the frozen initial Git identity.
-            if any(
+            if not unchanged_required_files or any(
                 not after_checks[name]["usable"]
                 or not after_checks[name]["clean"]
                 or any(after_checks[name][field] != report["sources"][name][field]

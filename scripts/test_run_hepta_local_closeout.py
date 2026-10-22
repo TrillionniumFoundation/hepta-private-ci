@@ -305,6 +305,54 @@ class LocalCloseoutTests(unittest.TestCase):
             self.assertEqual(report["stages"]["P0"]["status"], "BLOCKED_SOURCE_CHANGED_DURING_CHECKS")
             self.assertFalse(report["production_qualified"])
 
+    def test_assume_unchanged_post_test_mutation_cannot_claim_source_tested(self):
+        # git status alone remains clean even when an assume-unchanged source
+        # is modified after it was successfully attested before test execution.
+        with tempfile.TemporaryDirectory() as root:
+            base = Path(root)
+            roots = {"hepta": base / "hepta", "runtime": base / "runtime"}
+            for path in roots.values():
+                path.mkdir()
+                subprocess.run(["git", "init", "-q", str(path)], check=True)
+            for stage in mod.STAGES.values():
+                for repo, rel in stage["required"]:
+                    file = roots[repo] / rel
+                    file.parent.mkdir(parents=True, exist_ok=True)
+                    file.write_text("frozen source\\n")
+            for path in roots.values():
+                subprocess.run(["git", "-C", str(path), "add", "."], check=True)
+                subprocess.run(["git", "-C", str(path), "-c", "user.name=LocalTest",
+                                "-c", "user.email=local@example.invalid",
+                                "commit", "-qm", "freeze"], check=True)
+            target_repo, target_rel = mod.STAGES["P0"]["required"][0]
+            target_root = roots[target_repo]
+            target = target_root / target_rel
+            modified = False
+
+            def green_tool_but_mutates_index_hidden_source(*_args, **_kwargs):
+                nonlocal modified
+                if not modified:
+                    subprocess.run(["git", "-C", str(target_root), "update-index",
+                                    "--assume-unchanged", "--", target_rel], check=True)
+                    target.write_text("changed bytes during test\\n")
+                    modified = True
+                    # This is the bypass of the original post-test status check.
+                    self.assertTrue(mod.git_snapshot(target_root)["clean"])
+                return {"status": "PASS_LOCAL"}
+
+            with patch.object(mod, "run_check", side_effect=green_tool_but_mutates_index_hidden_source), patch.object(
+                sys, "argv", ["run", "--hepta", str(roots["hepta"]), "--runtime", str(roots["runtime"]),
+                              "--report-dir", str(base / "results"), "--execute-checks"]
+            ), contextlib.redirect_stdout(io.StringIO()):
+                code = mod.main()
+            self.assertTrue(modified)
+            self.assertEqual(code, 2)
+            report = json.loads(next((base / "results").glob("run-*/acceptance.json")).read_text())
+            p0 = report["stages"]["P0"]
+            self.assertEqual(p0["status"], "BLOCKED_SOURCE_CHANGED_DURING_CHECKS")
+            self.assertFalse(p0["post_check_required_source_bytes_match_head"])
+            self.assertFalse(report["production_qualified"])
+
     def test_all_local_checks_cannot_claim_full_acceptance(self):
         with tempfile.TemporaryDirectory() as root:
             base = Path(root)
