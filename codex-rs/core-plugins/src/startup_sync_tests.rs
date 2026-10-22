@@ -1332,7 +1332,20 @@ fn curated_zip_rejects_duplicate_entry_without_overwriting_first_file() {
         Err(zip::result::ZipError::InvalidArchive("Duplicate filename")) => true,
         Err(error) => panic!("unexpected duplicate ZIP admission result: {error}"),
     };
-    let zip = writer.finish().unwrap().into_inner();
+    // When the ZIP writer rejects a duplicate name, that writer is poisoned:
+    // finish() can return the same InvalidArchive error. Rebuild the original
+    // single-entry archive independently to exercise extraction without
+    // mistaking writer finalization for an extraction-boundary failure.
+    let zip = if duplicate_rejected {
+        let mut clean_writer = ZipWriter::new(std::io::Cursor::new(Vec::new()));
+        clean_writer
+            .start_file("root/manifest.json", options)
+            .unwrap();
+        clean_writer.write_all(b"original").unwrap();
+        clean_writer.finish().unwrap().into_inner()
+    } else {
+        writer.finish().unwrap().into_inner()
+    };
     let dir = tempdir().unwrap();
     let extracted = extract_zipball_to_dir(&zip, dir.path());
     if duplicate_rejected {
