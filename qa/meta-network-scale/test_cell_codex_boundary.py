@@ -366,7 +366,7 @@ crossterm = { git = "https://example.invalid/pin", rev = "abc123" }
                 encoding="utf-8",
             )
             (root / "codex-rs/hepta-codex-adapter/src/execution_contract.rs").write_text(
-                'pub use codex_hepta_types::*;\n', encoding="utf-8"
+                "".join(f"pub use codex_hepta_types::{name};\\n" for name in checker.PURE_NATIVE_EXPORTS), encoding="utf-8"
             )
             errors = checker.check_pure_cell_contract(root)
             self.assertEqual(len(errors), 2, errors)
@@ -390,12 +390,56 @@ crossterm = { git = "https://example.invalid/pin", rev = "abc123" }
                 'pub trait NativeExecutionAdapter {}\n', encoding="utf-8"
             )
             (root / "codex-rs/hepta-codex-adapter/src/execution_contract.rs").write_text(
-                'pub use codex_hepta_types::*;\npub struct RuntimeReceiptV1 {}\n',
+                "".join(f"pub use codex_hepta_types::{name};\\n" for name in checker.PURE_NATIVE_EXPORTS) + 'pub struct RuntimeReceiptV1 {}\\n',
                 encoding="utf-8",
             )
             errors = checker.check_pure_cell_contract(root)
             self.assertEqual(len(errors), 1, errors)
             self.assertIn("duplicate execution contract", errors[0])
+
+
+    def test_native_facade_requires_every_direct_pure_reexport(self):
+        canonical = "".join(
+            f"pub use codex_hepta_types::{name};\\n"
+            for name in checker.PURE_NATIVE_EXPORTS
+        )
+        self.assertEqual(checker.check_native_facade_exports(canonical), [])
+        for name in checker.PURE_NATIVE_EXPORTS:
+            with self.subTest(name=name):
+                removed = canonical.replace(
+                    f"pub use codex_hepta_types::{name};\\n", ""
+                )
+                errors = checker.check_native_facade_exports(removed)
+                self.assertTrue(any(name in err for err in errors), errors)
+
+    def test_native_facade_rejects_private_alias_and_shadowed_struct(self):
+        canonical = "".join(
+            f"pub use codex_hepta_types::{name};\\n"
+            for name in checker.PURE_NATIVE_EXPORTS
+        )
+        for injection in (
+            "pub type RuntimeToolIntentV1 = u32;\\n",
+            "pub(crate) struct GenerationFenceWitnessV1;\\n",
+            "enum ToolOutcomeV1 { Unreviewed }\\n",
+            "pub const EXECUTION_CONTRACT_VERSION_V1: u8 = 255;\\n",
+        ):
+            with self.subTest(injection=injection):
+                errors = checker.check_native_facade_exports(canonical + injection)
+                self.assertEqual(len(errors), 1, errors)
+                self.assertIn("duplicate execution contract", errors[0])
+
+    def test_native_facade_rejects_wrong_module_and_renamed_exports(self):
+        canonical = "".join(
+            f"pub use codex_hepta_types::{name};\\n"
+            for name in checker.PURE_NATIVE_EXPORTS
+        )
+        spoofed = canonical.replace(
+            "pub use codex_hepta_types::RuntimeReceiptV1;",
+            "pub use codex_core::RuntimeReceiptV1;",
+        )
+        errors = checker.check_native_facade_exports(spoofed)
+        self.assertEqual(len(errors), 1, errors)
+        self.assertIn("RuntimeReceiptV1", errors[0])
 
     def test_pure_contract_source_changes_trigger_exact_ci(self):
         workflow = (
