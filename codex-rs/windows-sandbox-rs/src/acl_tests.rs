@@ -189,16 +189,7 @@ fn native_deny_entries(path: &Path, sid: &LocalSid) -> Result<Vec<(u8, u32)>> {
                 let trustee = std::ptr::addr_of!(deny.SidStart).cast_mut().cast();
                 // SAFETY: both SIDs are valid and live throughout the comparison.
                 if unsafe { EqualSid(trustee, sid.as_ptr()) } != 0 {
-                    let mut mask = deny.Mask;
-                    let mapping = GENERIC_MAPPING {
-                        GenericRead: FILE_GENERIC_READ,
-                        GenericWrite: FILE_GENERIC_WRITE,
-                        GenericExecute: FILE_GENERIC_EXECUTE,
-                        GenericAll: FILE_ALL_ACCESS,
-                    };
-                    // SAFETY: both arguments refer to live initialized stack values.
-                    unsafe { MapGenericMask(&mut mask, &mapping) };
-                    entries.push((header.AceFlags, mask));
+                    entries.push((header.AceFlags, deny.Mask));
                 }
             }
         }

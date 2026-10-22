@@ -685,6 +685,15 @@ unsafe fn add_deny_ace(path: &Path, psid: *mut c_void, kind: DenyAceKind) -> Res
         };
         let mut explicit: EXPLICIT_ACCESS_W = std::mem::zeroed();
         explicit.grfAccessPermissions = kind.mask();
+        let mapping = GENERIC_MAPPING {
+            GenericRead: FILE_GENERIC_READ,
+            GenericWrite: FILE_GENERIC_WRITE,
+            GenericExecute: FILE_GENERIC_EXECUTE,
+            GenericAll: FILE_ALL_ACCESS,
+        };
+        // Install the same complete specific rights checked above. Keeping
+        // generic bits for native inheritance can split effective and child ACEs.
+        MapGenericMask(&mut explicit.grfAccessPermissions, &mapping);
         explicit.grfAccessMode = DENY_ACCESS;
         explicit.grfInheritance = scope.inheritance();
         explicit.Trustee = trustee;
