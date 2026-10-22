@@ -12,6 +12,7 @@ use codex_hepta_types::Generation;
 use codex_hepta_types::StableId;
 
 use crate::cell_batch::CellBatchError;
+use crate::cell_batch::MAX_BATCH_ITEMS;
 use crate::cell_batch::FairCellQueueV1;
 use crate::cell_batch::ImmutableFeatureSnapshotV1;
 use crate::cell_batch::QueuedCellRequestV1;
@@ -214,6 +215,10 @@ pub struct SharedWorkerBatchV1 {
 
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct GroupCommitMetricsV1 {
+    /// Dequeue counters measure scheduling, not completed native effects.
+    pub groups_dequeued: u64,
+    pub activations_dequeued: u64,
+    /// Reserved for independently verified terminal receipts and durable writer acknowledgments.
     pub groups_committed: u64,
     pub activations_committed: u64,
     pub dropped_requests: u64,
@@ -232,10 +237,15 @@ impl SharedWorkerPoolV1 {
         if maximum_batch == 0 {
             return Err(CellWorkerError::ZeroBatchSize);
         }
+        if maximum_batch > MAX_BATCH_ITEMS {
+            return Err(CellWorkerError::BatchCapacity);
+        }
         Ok(Self {
             queue: FairCellQueueV1::new(maximum_queue).map_err(CellWorkerError::Queue)?,
             maximum_batch,
             metrics: GroupCommitMetricsV1 {
+                groups_dequeued: 0,
+                activations_dequeued: 0,
                 groups_committed: 0,
                 activations_committed: 0,
                 dropped_requests: 0,
@@ -255,10 +265,12 @@ impl SharedWorkerPoolV1 {
         let requests = self.queue.drain_batch(self.maximum_batch);
         let group_digest = digest_batch(&requests);
         if !requests.is_empty() {
-            self.metrics.groups_committed = self.metrics.groups_committed.saturating_add(1);
-            self.metrics.activations_committed = self
+            // A queue drain is neither backend execution nor durable commit.
+            // Failed, cancelled or lost batches must not inflate success metrics.
+            self.metrics.groups_dequeued = self.metrics.groups_dequeued.saturating_add(1);
+            self.metrics.activations_dequeued = self
                 .metrics
-                .activations_committed
+                .activations_dequeued
                 .saturating_add(requests.len() as u64);
         }
         SharedWorkerBatchV1 {
@@ -298,6 +310,7 @@ fn push_batch_id(bytes: &mut Vec<u8>, value: &StableId) {
 pub enum CellWorkerError {
     EmptyCellSet,
     IndexCapacity,
+    BatchCapacity,
     FeatureSnapshotConflict,
     StaleFeatureGeneration,
     InvalidModelKey,
