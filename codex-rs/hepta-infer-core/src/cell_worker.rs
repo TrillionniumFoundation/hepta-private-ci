@@ -123,6 +123,42 @@ impl FeatureCacheV1 {
             .filter(|snapshot| snapshot.generation() == expected_generation)
     }
 
+    /// Fence one independently versioned scope without evicting other scopes.
+    ///
+    /// Per-scope generations need not be numerically synchronized. A global
+    /// cutover uses `invalidate_generation`; an organ-local cutover must not
+    /// discard valid features owned by an unrelated organ at an older epoch.
+    /// Record the watermark even when this scope had no cached feature.
+    pub fn invalidate_scope_generation(
+        &mut self,
+        scope_id: StableId,
+        generation: Generation,
+    ) -> Result<(), CellWorkerError> {
+        if self
+            .minimum_generation
+            .is_some_and(|minimum| generation.get() < minimum.get())
+            || self
+                .scope_high_watermarks
+                .get(&scope_id)
+                .is_some_and(|previous| generation.get() < previous.get())
+        {
+            return Err(CellWorkerError::StaleFeatureGeneration);
+        }
+        if !self.scope_high_watermarks.contains_key(&scope_id)
+            && self.scope_high_watermarks.len() >= MAX_INDEX_ENTRIES
+        {
+            return Err(CellWorkerError::IndexCapacity);
+        }
+        self.scope_high_watermarks
+            .insert(scope_id.clone(), generation);
+        self.entries.retain(|key, snapshot| {
+            key.scope_id != scope_id || snapshot.generation() == generation
+        });
+        Ok(())
+    }
+
+    /// A globally coordinated cutover; callers with independent scope
+    /// generations must use `invalidate_scope_generation` instead.
     pub fn invalidate_generation(&mut self, generation: Generation) {
         // Keep a monotone floor. Clearing an entry is not permission to
         // reintroduce an older snapshot under the same or another cache key.
