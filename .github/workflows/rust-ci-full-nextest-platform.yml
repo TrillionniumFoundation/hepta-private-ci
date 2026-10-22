@@ -47,6 +47,10 @@ on:
         required: false
         default: false
         type: boolean
+      archive_ci_test_no_debug:
+        required: false
+        default: false
+        type: boolean
 
 permissions:
   contents: read
@@ -173,7 +177,29 @@ jobs:
         with:
           target: ${{ inputs.target }}
 
+      - name: Configure archive-only ci-test debug information
+        if: ${{ inputs.archive_ci_test_no_debug }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$CODEX_CI_PROFILE" = ci-test
+          echo "CARGO_PROFILE_CI_TEST_DEBUG=0" >> "$GITHUB_ENV"
+          echo "CARGO_PROFILE_CI_TEST_SPLIT_DEBUGINFO=off" >> "$GITHUB_ENV"
+
+      - name: Observe macOS disk before the archive build
+        if: ${{ runner.os == 'macOS' }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          {
+            df -h "$GITHUB_WORKSPACE" "$RUNNER_TEMP"
+            for path in "$CARGO_TARGET_DIR" "${SCCACHE_DIR:-}" "$RUNNER_TEMP/nextest-archive"; do
+              if [[ -n "$path" && -d "$path" ]]; then du -sh "$path"; fi
+            done
+          } 2>&1 | tee "$RUNNER_TEMP/nextest-disk-before.log"
+
       - name: Build nextest archive
+        id: archive_build
         shell: bash
         run: |
           set -euo pipefail
@@ -184,6 +210,26 @@ jobs:
             --cargo-profile "${CODEX_CI_PROFILE}" \
             --timings \
             --archive-file "${archive_dir}/${NEXTEST_ARCHIVE_FILE}"
+
+      - name: Observe macOS disk after an archive build failure
+        if: ${{ always() && runner.os == 'macOS' && steps.archive_build.outcome == 'failure' }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          {
+            df -h "$GITHUB_WORKSPACE" "$RUNNER_TEMP"
+            for path in "$CARGO_TARGET_DIR" "${SCCACHE_DIR:-}" "$RUNNER_TEMP/nextest-archive"; do
+              if [[ -n "$path" && -d "$path" ]]; then du -sh "$path"; fi
+            done
+          } 2>&1 | tee "$RUNNER_TEMP/nextest-disk-failure.log"
+
+      - name: Upload macOS archive disk observations
+        if: ${{ always() && runner.os == 'macOS' }}
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f # v7.0.0
+        with:
+          name: nextest-disk-${{ inputs.artifact_id }}
+          path: ${{ runner.temp }}/nextest-disk-*.log
+          if-no-files-found: warn
 
       - name: Build runtime test helpers
         if: ${{ runner.os == 'Linux' || runner.os == 'Windows' }}

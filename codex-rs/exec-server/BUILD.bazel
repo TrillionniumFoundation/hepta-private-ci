@@ -6,7 +6,6 @@ codex_rust_crate(
     deps_extra = [
         "@crates//:opentelemetry",
         "@crates//:opentelemetry_sdk",
-        "@crates//:toml",
     ],
     extra_binaries = [
         "//codex-rs/bwrap:bwrap",
