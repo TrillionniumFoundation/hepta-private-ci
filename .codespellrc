@@ -1,6 +1,8 @@
 [codespell]
 # Ref: https://github.com/codespell-project/codespell#using-a-config-file
 skip = .git*,vendor,third_party,*-lock.yaml,*.lock,.codespellrc,*test.ts,*.jsonl,frame*.txt,*.snap,*.snap.new
+# Preserve the exact upstream COCO caption while checking all other dataset lines.
+exclude-file = .codespell-exclude-lines
 check-hidden = true
 ignore-regex = ^\s*"image/\S+": ".*|\b(afterAll)\b
 ignore-words-list = ratatui,ser,iTerm,iterm2,iterm,te,TE,PASE,SEH,disjointness

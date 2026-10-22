@@ -2,11 +2,16 @@
 
 from dataclasses import replace
 import hashlib
+import io
+import json
 import math
 from pathlib import Path
 import tempfile
 import unittest
+from unittest import mock
+import zipfile
 
+import numpy as np
 import torch
 
 from cell_head_training import (HeadCohortV1, HeadTrainingConfigV1,
@@ -36,6 +41,24 @@ def cohort(name, *, identity=IDENTITY, rows=24):
         source_record_digests=tuple(digest(f"{name}:{i}") for i in range(rows)),
         identity=identity, missing_mask=missing)
     return HeadCohortV1(bundle, labels, tuple(f"{name}-story-{i}" for i in range(rows)))
+
+
+def repack_artifact(path, mutation):
+    """Re-sign adversarial tensor bytes so tests reach the structural boundary."""
+    with zipfile.ZipFile(path / "weights.npz") as archive:
+        entries = {name: archive.read(name) for name in archive.namelist()}
+    mutation(entries)
+    stream = io.BytesIO()
+    with zipfile.ZipFile(stream, "w") as archive:
+        for name, payload in entries.items():
+            archive.writestr(name, payload)
+    weights = stream.getvalue()
+    (path / "weights.npz").write_bytes(weights)
+    manifest = json.loads((path / "manifest.json").read_bytes())
+    manifest["weights_file_sha256"] = hashlib.sha256(weights).hexdigest()
+    raw = json.dumps(manifest, sort_keys=True, separators=(",", ":"), allow_nan=False).encode()
+    (path / "manifest.json").write_bytes(raw)
+    return hashlib.sha256(raw).hexdigest()
 
 
 class CellHeadTrainingTests(unittest.TestCase):
@@ -127,6 +150,8 @@ class CellHeadTrainingTests(unittest.TestCase):
             original = self.trained.predict_task(self.holdouts["future_1"].bundle)
             restored = loaded.predict_task(self.holdouts["future_1"].bundle)
             self.assertTrue(torch.equal(original["task_probabilities"], restored["task_probabilities"]))
+            self.assertTrue(torch.equal(original["task_logits"], restored["task_logits"]))
+            self.assertEqual(original["temperature"], restored["temperature"])
             self.assertEqual(loaded.report, self.trained.report)
             with self.assertRaises(FileExistsError):
                 save_head_artifact(self.trained, path)
@@ -144,6 +169,53 @@ class CellHeadTrainingTests(unittest.TestCase):
             with self.assertRaisesRegex(HeadTrainingError, "weights"):
                 load_head_artifact(path, expected_manifest_sha256=receipt["manifest_sha256"],
                                    expected_identity=IDENTITY)
+
+    def test_huge_array_declarations_rejected_before_numpy_allocation(self):
+        for version, writer in (((1, 0), np.lib.format.write_array_header_1_0),
+                                ((2, 0), np.lib.format.write_array_header_2_0)):
+            with self.subTest(version=version), tempfile.TemporaryDirectory() as temporary:
+                path = Path(temporary) / "head"
+                save_head_artifact(self.trained, path)
+                stream = io.BytesIO()
+                writer(stream, {"descr": "<f4", "fortran_order": False, "shape": (2**40,)})
+                digest = repack_artifact(path, lambda entries:
+                    entries.__setitem__("task_head.weight.npy", stream.getvalue()))
+                with mock.patch("cell_head_training.np.load", side_effect=AssertionError("array allocation reached")):
+                    with self.assertRaisesRegex(HeadTrainingError, "header"):
+                        load_head_artifact(path, expected_manifest_sha256=digest, expected_identity=IDENTITY)
+
+    def test_invalid_tensor_headers_and_payload_lengths_rejected_before_loading(self):
+        array = self.trained._head.state_dict()["task_head.weight"].numpy()
+        header = {"descr": np.lib.format.dtype_to_descr(array.dtype),
+                  "fortran_order": False, "shape": array.shape}
+        cases = []
+        for update in ({"descr": "|O"}, {"descr": "<f8"}, {"fortran_order": True}):
+            stream = io.BytesIO()
+            np.lib.format.write_array_header_1_0(stream, header | update)
+            cases.append(stream.getvalue() + array.tobytes())
+        stream = io.BytesIO()
+        np.lib.format.write_array_header_1_0(stream, header)
+        valid = stream.getvalue() + array.tobytes()
+        cases.extend((valid[:-1], valid + b"extra", b"\x93NUMPY\x02\x00" + (2**32 - 1).to_bytes(4, "little")))
+        for index, payload in enumerate(cases):
+            with self.subTest(case=index), tempfile.TemporaryDirectory() as temporary:
+                path = Path(temporary) / "head"
+                save_head_artifact(self.trained, path)
+                digest = repack_artifact(path, lambda entries:
+                    entries.__setitem__("task_head.weight.npy", payload))
+                with mock.patch("cell_head_training.np.load", side_effect=AssertionError("array allocation reached")):
+                    with self.assertRaisesRegex(HeadTrainingError, "header"):
+                        load_head_artifact(path, expected_manifest_sha256=digest, expected_identity=IDENTITY)
+
+    def test_exact_tensor_member_names_checked_before_loading(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            path = Path(temporary) / "head"
+            save_head_artifact(self.trained, path)
+            digest = repack_artifact(path, lambda entries:
+                entries.__setitem__("foreign.npy", entries.pop("task_head.weight.npy")))
+            with mock.patch("cell_head_training.np.load", side_effect=AssertionError("array allocation reached")):
+                with self.assertRaisesRegex(HeadTrainingError, "archive"):
+                    load_head_artifact(path, expected_manifest_sha256=digest, expected_identity=IDENTITY)
 
     def test_corrupt_bundle_bytes_cannot_be_trained_or_predicted(self):
         broken = cohort("broken")

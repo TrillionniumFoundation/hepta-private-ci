@@ -1,0 +1,63 @@
+{
+  "schema_version": 1,
+  "source_commit": "5878b07dc117bc3356a2b00b8df1e3a7a4a5c35f",
+  "original_failure": {
+    "head_sha": "7a1526d7004620f2d049ee2eecae9a8a8f9ab904",
+    "checked_merge_sha": "7a359b28f307d1cd17ce3e07e8f25be5e3ac4d89",
+    "workflow_run_id": 39730365837,
+    "job_id": 119663766437,
+    "job_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/39730365837/job/119663766437",
+    "decoded_log_sha256": "acbd67b9c4b00bd1911f726d8f6e0e138a02997948782ca4c3c8fc26e7858939",
+    "decoded_log_bytes": 27130,
+    "reported_error_count": 1,
+    "path": "qa/stem-bakeoff/coco_caption_sample_v1.json",
+    "line": 790,
+    "caption_id": 542986,
+    "image_id": 345252
+  },
+  "repair": {
+    "kind": "exact upstream quote line exclusion",
+    "configuration": ".codespellrc",
+    "exclude_file": ".codespell-exclude-lines",
+    "excluded_lines": 1,
+    "exception_sha256": "741146335a0f1be9d2fc756c1fd7899a2d5d6cdd0926e6cc775efcd680a250c2",
+    "whole_file_exclusion_removed": true,
+    "word_allowlist_unchanged": true,
+    "workflow_unchanged": true,
+    "reason": "Keep external dataset bytes fixed while checking every other caption and source line.",
+    "official_implementation": "https://github.com/codespell-project/codespell/blob/v2.4.3/codespell_lib/_codespell.py"
+  },
+  "validation": {
+    "codespell_version": "2.4.3",
+    "command": [
+      "codespell",
+      "--ignore-words",
+      ".codespellignore",
+      "--skip",
+      "./.git"
+    ],
+    "scope": "Complete checkout of the source commit with this configuration change.",
+    "tracked_files_at_source": 8976,
+    "before_exit_code": 65,
+    "after_exit_code": 0,
+    "negative_cases": {
+      "exact_quoted_line": {
+        "exit_code": 0,
+        "expected_exit_code": 0
+      },
+      "same_spelling_other_context": {
+        "exit_code": 65,
+        "expected_exit_code": 65
+      },
+      "modified_quoted_line": {
+        "exit_code": 65,
+        "expected_exit_code": 65
+      }
+    },
+    "corpus_sha256_before": "bdcd27245d5435820ddd6ef305b42bdeca236e4411839f1d209d314547567b23",
+    "corpus_sha256_after": "bdcd27245d5435820ddd6ef305b42bdeca236e4411839f1d209d314547567b23",
+    "quoted_line_occurrences_in_corpus": 1,
+    "caption_text_sha256": "6f8f4da97f31af2b00025018d869deed6a029edd1a20d8fa13870dea20731b06"
+  },
+  "new_remote_head_ci_complete": false
+}

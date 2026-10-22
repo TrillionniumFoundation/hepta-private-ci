@@ -1,0 +1,33 @@
+..............................................................................................................................................................................................
+Writing model shards:   0%|          | 0/1 [00:00<?, ?it/s]
+Writing model shards: 100%|██████████| 1/1 [00:00<00:00, 1543.16it/s]
+<frozen importlib._bootstrap>:488: DeprecationWarning: builtin type SwigPyPacked has no __module__ attribute
+<frozen importlib._bootstrap>:488: DeprecationWarning: builtin type SwigPyObject has no __module__ attribute
+
+Loading weights:   0%|          | 0/8 [00:00<?, ?it/s]
+Loading weights: 100%|██████████| 8/8 [00:00<00:00, 7678.36it/s]
+
+Loading weights:   0%|          | 0/7 [00:00<?, ?it/s]
+Loading weights: 100%|██████████| 7/7 [00:00<00:00, 7298.07it/s]
+[transformers] [1mModernBertModel LOAD REPORT[0m from: /tmp/tmp6_gspffx
+Key                              | Status  |
+---------------------------------+---------+-
+embeddings.tok_embeddings.weight | MISSING |
+
+Notes:
+- MISSING:	those params were newly initialized because missing from the checkpoint. Consider training on your downstream task.
+.............
+Writing model shards:   0%|          | 0/1 [00:00<?, ?it/s]
+Writing model shards: 100%|██████████| 1/1 [00:00<00:00, 3026.19it/s]
+
+Loading weights:   0%|          | 0/8 [00:00<?, ?it/s]
+Loading weights: 100%|██████████| 8/8 [00:00<00:00, 3826.05it/s]
+
+Loading weights:   0%|          | 0/8 [00:00<?, ?it/s]
+Loading weights: 100%|██████████| 8/8 [00:00<00:00, 12950.38it/s]
+......................................................
+----------------------------------------------------------------------
+Ran 257 tests in 7.633s
+
+OK
+sys:1: DeprecationWarning: builtin type swigvarlink has no __module__ attribute
