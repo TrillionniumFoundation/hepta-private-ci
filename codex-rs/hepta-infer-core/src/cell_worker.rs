@@ -208,7 +208,13 @@ pub struct SharedWorkerBatchV1 {
 
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct GroupCommitMetricsV1 {
+    /// Batches removed from the queue; not terminal execution or durable commit.
+    pub groups_drained: u64,
+    /// Activations removed from the queue; not verified worker completions.
+    pub activations_drained: u64,
+    /// Must remain zero until an independently observed commit is wired.
     pub groups_committed: u64,
+    /// Must remain zero until an independently observed commit is wired.
     pub activations_committed: u64,
     pub dropped_requests: u64,
 }
@@ -230,6 +236,8 @@ impl SharedWorkerPoolV1 {
             queue: FairCellQueueV1::new(maximum_queue).map_err(CellWorkerError::Queue)?,
             maximum_batch,
             metrics: GroupCommitMetricsV1 {
+                groups_drained: 0,
+                activations_drained: 0,
                 groups_committed: 0,
                 activations_committed: 0,
                 dropped_requests: 0,
@@ -249,10 +257,12 @@ impl SharedWorkerPoolV1 {
         let requests = self.queue.drain_batch(self.maximum_batch);
         let group_digest = digest_batch(&requests);
         if !requests.is_empty() {
-            self.metrics.groups_committed = self.metrics.groups_committed.saturating_add(1);
-            self.metrics.activations_committed = self
+            // Dequeue is not a terminal tool result or a persisted group commit.
+            // Never count a batch as committed before independent worker evidence.
+            self.metrics.groups_drained = self.metrics.groups_drained.saturating_add(1);
+            self.metrics.activations_drained = self
                 .metrics
-                .activations_committed
+                .activations_drained
                 .saturating_add(requests.len() as u64);
         }
         SharedWorkerBatchV1 {
