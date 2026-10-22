@@ -234,7 +234,7 @@ index b8bf8bd..573f463 100644
 +    name = "fp16",
 +    build_file_content = 'load("@rules_cc//cc:defs.bzl", "cc_library")\n\ncc_library(\n    name = "fp16",\n    hdrs = glob(["include/**/*.h"]),\n    include_prefix = "third_party/fp16/src/include",\n    includes = ["include"],\n    strip_include_prefix = "include",\n    visibility = ["//visibility:public"],\n)\n',
 +    commit = "3d2de1816307bac63c16a297e8c4dc501b4076df",
-+    remote = "https://chromium.googlesource.com/external/github.com/Maratyszcza/FP16.git",
++    remote = "https://github.com/Maratyszcza/FP16.git",
  )
 
 -single_version_override(

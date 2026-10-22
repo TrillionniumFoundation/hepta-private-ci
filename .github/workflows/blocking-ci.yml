@@ -45,6 +45,10 @@ jobs:
           set -euo pipefail
           python3 -m unittest -v scripts.tests.test_hepta_ci_scope scripts.tests.test_hepta_ci_dependencies
           python3 -m unittest -v scripts.test_hepta_readiness_semantics
+          # The scale-evidence matrix validator is a Python qualification gate,
+          # not a Rust package: run its rejection tests on every PR, including
+          # when native owners are unaffected and hepta-scoped is skipped.
+          python3 -m unittest discover -v -s qa/meta-network-scale -p 'test_scale_matrix.py'
           args=(--head "$HEAD_SHA" --github-output "$GITHUB_OUTPUT")
           if [ "$EVENT_NAME" = "pull_request" ]; then
             args+=(--base "$BASE_SHA")
@@ -125,7 +129,14 @@ jobs:
     needs: scope
     if: needs.scope.outputs.native == 'true' && needs.scope.outputs.full_repo != 'true'
     runs-on: ubuntu-24.04
-    timeout-minutes: 40
+    timeout-minutes: 65
+    env:
+      # Full reverse-consumer coverage remains required. Bound Rust artifact
+      # size and simultaneous linker pressure on the finite hosted runner.
+      CARGO_INCREMENTAL: "0"
+      CARGO_BUILD_JOBS: "2"
+      CARGO_PROFILE_DEV_DEBUG: "0"
+      CARGO_PROFILE_TEST_DEBUG: "0"
     steps:
       - name: Checkout exact candidate
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
@@ -133,6 +144,24 @@ jobs:
           ref: ${{ github.event.pull_request.head.sha || github.sha }}
           fetch-depth: 0
           persist-credentials: false
+
+      - name: Reclaim unused hosted SDK space before exhaustive native tests
+        shell: bash
+        run: |
+          set -euo pipefail
+          echo "Runner disk before reclaiming unrelated SDKs:"
+          df -h "$GITHUB_WORKSPACE"
+          # Only remove unrelated preinstalled SDKs from this ephemeral Linux
+          # runner. Never remove checked-out code, rustc/cargo, Cargo.lock,
+          # downloaded crates, target outputs or retained qualification data.
+          for unused_sdk in /usr/local/lib/android /opt/ghc; do
+            if [[ -d "$unused_sdk" && ! -L "$unused_sdk" ]]; then
+              sudo du -sh "$unused_sdk"
+              sudo rm -rf --one-file-system -- "$unused_sdk"
+            fi
+          done
+          echo "Runner disk after SDK reclamation:"
+          df -h "$GITHUB_WORKSPACE"
 
       - name: Prepare native test prerequisites before compilation
         run: |
@@ -148,12 +177,25 @@ jobs:
       - uses: facebook/install-dotslash@1e4e7b3e07eaca387acb98f1d4720e0bee8dbb6a
       - run: sudo install -m 0755 "$(command -v dotslash)" /usr/local/bin/dotslash
       - name: Resolve verified V8 artifacts for affected host crates
+        id: v8_ready
         env:
           CODEX_REPO_ROOT: ${{ github.workspace }}
           PYTHONPATH: scripts
         run: python3 scripts/hepta_ci_v8.py
 
+      - name: Check formatting of exact affected Cargo owners
+        if: ${{ !cancelled() && steps.v8_ready.outcome == 'success' }}
+        env:
+          SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+          TESTED_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+          BASE_SHA: ${{ github.event.pull_request.base.sha || github.event.before }}
+          HEPTA_CI_LANE: source-head
+        run: >-
+          python3 scripts/hepta_ci_dependencies.py --base "$BASE_SHA" --tested "$TESTED_SHA"
+          --action fmt --record-output "$RUNNER_TEMP/impact-fmt.json"
+
       - name: Test affected owners and reverse consumers, not a hand-written package list
+        if: ${{ !cancelled() && steps.v8_ready.outcome == 'success' }}
         env:
           SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
           TESTED_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
@@ -164,6 +206,26 @@ jobs:
           python3 scripts/hepta_ci_dependencies.py --base "$BASE_SHA" --tested "$TESTED_SHA"
           --output "$RUNNER_TEMP/cargo-impact.json" --run
 
+      - name: Clippy correctness of exact affected Cargo owners
+        if: ${{ !cancelled() && steps.v8_ready.outcome == 'success' }}
+        env:
+          SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+          TESTED_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+          BASE_SHA: ${{ github.event.pull_request.base.sha || github.event.before }}
+          HEPTA_CI_LANE: source-head
+        run: >-
+          python3 scripts/hepta_ci_dependencies.py --base "$BASE_SHA" --tested "$TESTED_SHA"
+          --action clippy --record-output "$RUNNER_TEMP/impact-clippy.json"
+
+      - name: Retain actual native runner disk diagnostic
+        if: always()
+        shell: bash
+        run: |
+          df -h "$GITHUB_WORKSPACE"
+          if [ -d codex-rs/target ]; then
+            du -sh codex-rs/target
+          fi
+
       - name: Retain dependency plan and real command output
         if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
@@ -172,6 +234,8 @@ jobs:
           path: |
             ${{ runner.temp }}/cargo-impact.json
             ${{ runner.temp }}/impact-test.json*
+            ${{ runner.temp }}/impact-fmt.json*
+            ${{ runner.temp }}/impact-clippy.json*
           if-no-files-found: error
           retention-days: 14
 
