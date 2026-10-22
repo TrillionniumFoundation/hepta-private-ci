@@ -4,6 +4,8 @@ on:
   pull_request:
     paths:
       - "qa/meta-network-scale/**"
+      # These metrics are imported by the source-owned P5 test itself.
+      - "docs/learning/CELL_EXECUTION_BENCHMARK_MATRIX.json"
       # P5 evidence assertions must also requalify against every modified
       # published P3 selector/receipt contract on the *same exact source SHA*.
       - "codex-rs/hepta-ndu/src/output_portfolio.rs"
