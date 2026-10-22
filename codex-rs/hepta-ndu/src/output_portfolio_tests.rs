@@ -331,6 +331,17 @@ fn fractional_portfolio_counts_the_no_change_residual_against_max_selected() {
         OutputPortfolioDispositionV1::AdvisorySelection
     );
     assert_eq!(two_slots.allocations.len(), 2);
+    // Q32 percentages truncate independently: q(40) + q(60) = ONE - 1
+    // least-significant unit. The NoChange allocation is the exact residual.
+    let exact_no_change_residual = FixedQ32::ONE
+        .checked_sub(q(40))
+        .expect("Q32 complement must be representable");
+    assert_eq!(
+        q(40)
+            .checked_add(exact_no_change_residual)
+            .expect("bounded weights"),
+        FixedQ32::ONE
+    );
     assert!(
         two_slots
             .allocations
@@ -341,7 +352,10 @@ fn fractional_portfolio_counts_the_no_change_residual_against_max_selected() {
         two_slots
             .allocations
             .iter()
-            .any(|item| { item.candidate_id == id("baseline") && item.weight == q(60) })
+            .any(|item| {
+                item.candidate_id == id("baseline")
+                    && item.weight == exact_no_change_residual
+            })
     );
 }
 
