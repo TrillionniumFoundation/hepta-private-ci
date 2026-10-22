@@ -77,4 +77,3 @@ async fn read_write_pool_cold_connections_observe_under_external_writer_and_pres
     }
     Ok(())
 }
-
