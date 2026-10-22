@@ -1,0 +1,219 @@
+{
+  "base": "a32d73f00cfc292ff1ed4ac5cef958ca9f238020",
+  "files": [
+    {
+      "path": ".github/fixtures/windows-private-state-acquisition/path-check-open.patch",
+      "base_blob": "990f6942839df90fabf67bec629b8fe3f8675fb7",
+      "candidate_blob": "0a50fa82e4746f1da5a178c5e987568e97f3aa47",
+      "candidate_sha256": "2afdd0034ac20e4a1d86e73063eea74eac1eccd09bf74b511d48dad3616efe73",
+      "owner_blob": "0a50fa82e4746f1da5a178c5e987568e97f3aa47",
+      "exact_owner_bytes": true
+    },
+    {
+      "path": ".github/scripts/check_windows_private_state_acquisition.py",
+      "base_blob": "463a600d92cc9a964561e9691058566e06fa8e59",
+      "candidate_blob": "095877326adabaea64b70366342aa69717f7a152",
+      "candidate_sha256": "b44d3ef4a79b9765685db1dbf67d9bae8127f24680ec0d9467b72655f64531cd",
+      "owner_blob": "095877326adabaea64b70366342aa69717f7a152",
+      "exact_owner_bytes": true
+    },
+    {
+      "path": "codex-rs/hepta-memory/Cargo.toml",
+      "base_blob": "6ba04f39f78e7d6295c9922d279e37e0492180f2",
+      "candidate_blob": "cb4bfd2bcee54570ca60535432620178a6f4c17d",
+      "candidate_sha256": "68447808be2ddac5ff50bc7f8baceac73738fe6c43ed68e3621945e14703e5e8",
+      "owner_blob": "cb4bfd2bcee54570ca60535432620178a6f4c17d",
+      "exact_owner_bytes": true
+    },
+    {
+      "path": "codex-rs/hepta-memory/src/cognitive_store.rs",
+      "base_blob": "b52e3a1aa275c178a075677f5df9faa832173b41",
+      "candidate_blob": "7a9eeb4aa2cc34ca1dd3e92eb5eac2bb375ed87e",
+      "candidate_sha256": "3035586eef841005cff66b749b5d6169cf23ccef36f9d95a3029560eb331c4a8",
+      "owner_blob": "f54f64965775b8db54924bc475c9daa696394155",
+      "exact_owner_bytes": false
+    },
+    {
+      "path": "codex-rs/hepta-memory/src/cognitive_store_recovery.rs",
+      "base_blob": "b04217a0de797501c61262b20b8c52d2bd1b1822",
+      "candidate_blob": "cc229f6d570975e5190bf294d365ab540ec49773",
+      "candidate_sha256": "8f7b5b0b4e83df1a4e7336832e594919bd005a8c4e85d38ff0b0a013c39efa82",
+      "owner_blob": "cc229f6d570975e5190bf294d365ab540ec49773",
+      "exact_owner_bytes": true
+    },
+    {
+      "path": "codex-rs/hepta-memory/src/cognitive_store_sync.rs",
+      "base_blob": null,
+      "candidate_blob": "bcc8283e81f5571f2fe49d25e2fa957c8043cf75",
+      "candidate_sha256": "241e5a929fdecafab14b0a38a17e053f571a6f444d03b25156b7c1694a343596",
+      "owner_blob": "bcc8283e81f5571f2fe49d25e2fa957c8043cf75",
+      "exact_owner_bytes": true
+    },
+    {
+      "path": "codex-rs/hepta-memory/src/cognitive_store_windows.rs",
+      "base_blob": null,
+      "candidate_blob": "91f978e4bf6ec7eba57a87e63afdc773b2c26412",
+      "candidate_sha256": "61992277c39c95a998072ff961e6017f2da41c5877a8d7974076070b0d93e01c",
+      "owner_blob": "91f978e4bf6ec7eba57a87e63afdc773b2c26412",
+      "exact_owner_bytes": true
+    },
+    {
+      "path": "codex-rs/state/.gitattributes",
+      "base_blob": null,
+      "candidate_blob": "b2943f35ebbd5fc4fca44a4b07fa0409e93d2b69",
+      "candidate_sha256": "aa0e0d087831fe840d0769c3c5c6e1bd4f1d9fc256a627aee18f3cd1be4ca21f",
+      "owner_blob": "b2943f35ebbd5fc4fca44a4b07fa0409e93d2b69",
+      "exact_owner_bytes": true
+    },
+    {
+      "path": "codex-rs/state/Cargo.toml",
+      "base_blob": "334f8c7a98199777a025abfa91aa18f0b7bbb008",
+      "candidate_blob": "e0592a99be37153ca5b9311171a9185b03645ec9",
+      "candidate_sha256": "30daf336991ae62ab2ac5023a4ef3bc298dbcb7d73c6c5e88020886c1fd3f2dd",
+      "owner_blob": "e0592a99be37153ca5b9311171a9185b03645ec9",
+      "exact_owner_bytes": true
+    },
+    {
+      "path": "codex-rs/state/src/sqlite_recovery.rs",
+      "base_blob": "7093f94b445e0cf468f1528ceb8a827beaf2d4af",
+      "candidate_blob": "8958a7a3afe3027ab34499bb5fc7630e87714bf8",
+      "candidate_sha256": "7277e9d47a1d36cdba8536ce99e0f3b100d0b0f4dd018702af94361b8100de4e",
+      "owner_blob": "8958a7a3afe3027ab34499bb5fc7630e87714bf8",
+      "exact_owner_bytes": true
+    },
+    {
+      "path": "codex-rs/state/src/sqlite_recovery_image.rs",
+      "base_blob": "af8dea5f59165477866903325c94c3f1742f502e",
+      "candidate_blob": "4227b0e685a51218a4be0f530668456cbe96b2e1",
+      "candidate_sha256": "6b77392c4018c054e7f21d34cd69547bd8405e74e137408f0f8a64a9c9d20131",
+      "owner_blob": "4227b0e685a51218a4be0f530668456cbe96b2e1",
+      "exact_owner_bytes": true
+    },
+    {
+      "path": "codex-rs/state/src/sqlite_recovery_windows.rs",
+      "base_blob": null,
+      "candidate_blob": "99f20b031b3ea0db4eb22ee0f7ea80bb03616dc7",
+      "candidate_sha256": "65f352bb0ccca0a92e6dadb96682962f9fb440a1d98941b6ed867b3ef7d62c43",
+      "owner_blob": "99f20b031b3ea0db4eb22ee0f7ea80bb03616dc7",
+      "exact_owner_bytes": true
+    },
+    {
+      "path": "codex-rs/state/src/sqlite_recovery_windows_tests.rs",
+      "base_blob": null,
+      "candidate_blob": "fc814768aa688ca03afba22fff0322378ac51fa5",
+      "candidate_sha256": "8cfc7556761dfc9561b191807cf8ab897a174c5b8edfb58b18899e2e78862ea2",
+      "owner_blob": "fc814768aa688ca03afba22fff0322378ac51fa5",
+      "exact_owner_bytes": true
+    },
+    {
+      "path": "codex-rs/state/tests/windows-recovery-controls/controls.json",
+      "base_blob": null,
+      "candidate_blob": "f6587618cf053b313cc1e62e107ce8fa92f0fc48",
+      "candidate_sha256": "02f7ef6ede19fe5b71a55a25eadc0f2dc287f4470b750fa420e8dd20308ca7d1",
+      "owner_blob": "f6587618cf053b313cc1e62e107ce8fa92f0fc48",
+      "exact_owner_bytes": true
+    },
+    {
+      "path": "codex-rs/state/tests/windows-recovery-controls/refresh.py",
+      "base_blob": null,
+      "candidate_blob": "d1d17ca56a8df758ced652e0d319a74f6c1b2043",
+      "candidate_sha256": "595c44c9c66949e1538cb5c35f8adc2e49b26fb462e9e61e4db914e3cb2a0e0b",
+      "owner_blob": "d1d17ca56a8df758ced652e0d319a74f6c1b2043",
+      "exact_owner_bytes": true
+    },
+    {
+      "path": "codex-rs/state/tests/windows-recovery-controls/run.py",
+      "base_blob": null,
+      "candidate_blob": "8bf599a26ae42284726de7ee7a79621625325a19",
+      "candidate_sha256": "3bb0cff6191868908c77ac46e266549ef12d075ffba544aa71191b95c87b0eaa",
+      "owner_blob": "8bf599a26ae42284726de7ee7a79621625325a19",
+      "exact_owner_bytes": true
+    },
+    {
+      "path": "codex-rs/state/tests/windows-recovery-controls/shared-source.patch",
+      "base_blob": null,
+      "candidate_blob": "b72df03ee0d66be12ec7e507ec761d97e210ca06",
+      "candidate_sha256": "4c78fc642107988d583173ebd183912f0864e3e90551f17abde87067b1c373ff",
+      "owner_blob": "b72df03ee0d66be12ec7e507ec761d97e210ca06",
+      "exact_owner_bytes": true
+    },
+    {
+      "path": "codex-rs/state/tests/windows-recovery-controls/skip-snapshot.patch",
+      "base_blob": null,
+      "candidate_blob": "59ef960cefd816fb869f954ba42046185a62d6ee",
+      "candidate_sha256": "4bd558f62c39567bd6d862ab2003366845ded3a6931363fa08b0a24150c3025a",
+      "owner_blob": "59ef960cefd816fb869f954ba42046185a62d6ee",
+      "exact_owner_bytes": true
+    },
+    {
+      "path": "codex-rs/state/tests/windows-recovery-controls/test_run.py",
+      "base_blob": null,
+      "candidate_blob": "023b62689dc8c08e15e817878dc5f9e76ffaed8e",
+      "candidate_sha256": "1a9afadb01c0b50db0c3aae8891f0534cfa18f94de29b30105c376b41322a447",
+      "owner_blob": "023b62689dc8c08e15e817878dc5f9e76ffaed8e",
+      "exact_owner_bytes": true
+    },
+    {
+      "path": "codex-rs/utils/path-utils/src/lib.rs",
+      "base_blob": "f4c65951c6c830a752b2b2563d9716589959d83b",
+      "candidate_blob": "e94176a2021170c98a683c6c02b4e0b9da95dccb",
+      "candidate_sha256": "9734ba913d250ebe5b73e29f529a260c7fda0f8d289810a1c34fb31387da2949",
+      "owner_blob": "e94176a2021170c98a683c6c02b4e0b9da95dccb",
+      "exact_owner_bytes": true
+    },
+    {
+      "path": "codex-rs/utils/path-utils/src/private_state_windows.rs",
+      "base_blob": "03a8170a874621c362e1b135df654016207082d5",
+      "candidate_blob": "3ebcb1e14785fe6db7c93ab61cf421e7bb861f9c",
+      "candidate_sha256": "6e0cda6d9daf6ed0f95c820d4e01dd3ac4a5e173f8b714ca87f1477cd5be996a",
+      "owner_blob": "3ebcb1e14785fe6db7c93ab61cf421e7bb861f9c",
+      "exact_owner_bytes": true
+    },
+    {
+      "path": "codex-rs/utils/path-utils/src/private_state_windows_directory.rs",
+      "base_blob": "b4e85af5ba4f2a92d37bbec2c3fa1d65795ce6c4",
+      "candidate_blob": "215c4532c4d9e65312b0d61f45773e60254a5cb7",
+      "candidate_sha256": "8c7552e3a45f2bf67f2f6fbd66036e4d71306b1cc40a27a6c8d43d6aee0101fb",
+      "owner_blob": "215c4532c4d9e65312b0d61f45773e60254a5cb7",
+      "exact_owner_bytes": true
+    },
+    {
+      "path": "codex-rs/utils/path-utils/src/private_state_windows_recovery.rs",
+      "base_blob": null,
+      "candidate_blob": "b3fb50a68615f4c19412ec11eb92a3a9e6ec0c59",
+      "candidate_sha256": "54a1d8f4c592392e2d91546970de3895dc0f087bd10f22631ec796d7a9152385",
+      "owner_blob": "b3fb50a68615f4c19412ec11eb92a3a9e6ec0c59",
+      "exact_owner_bytes": true
+    },
+    {
+      "path": "codex-rs/utils/path-utils/src/private_state_windows_snapshot.rs",
+      "base_blob": null,
+      "candidate_blob": "47a50e7bf633e2b78cb04c3a3574b14372654027",
+      "candidate_sha256": "b688e2e2e9df488eac3b0479417f853bfe15f8495b22697a5b895cb4d00c93bb",
+      "owner_blob": "47a50e7bf633e2b78cb04c3a3574b14372654027",
+      "exact_owner_bytes": true
+    },
+    {
+      "path": "codex-rs/utils/path-utils/src/private_state_windows_snapshot_tests.rs",
+      "base_blob": null,
+      "candidate_blob": "3e8e03b95cbcd2b3d9e97620ea54a55123e0a054",
+      "candidate_sha256": "21db096e2d272e834e82fa1bbcc0b161b14066cb9047a811238762c120144fab",
+      "owner_blob": "3e8e03b95cbcd2b3d9e97620ea54a55123e0a054",
+      "exact_owner_bytes": true
+    }
+  ],
+  "schema": 1,
+  "base_tree": "603a3e5b69258e37653a828dda625efe45365d7e",
+  "branch": "diagnostic/a32-memory-recovery-20261022",
+  "locks": [
+    "codex-rs/Cargo.lock",
+    "MODULE.bazel.lock"
+  ],
+  "auxiliary_paths": [
+    ".github/fixtures/a32-memory-qualification/source-manifest.json",
+    ".github/scripts/a32_memory_qualification.py",
+    ".github/scripts/a32_memory_qualification_guard.py",
+    ".github/scripts/test_a32_memory_qualification.py",
+    ".github/workflows/a32-windows-memory-qualification.yml"
+  ]
+}

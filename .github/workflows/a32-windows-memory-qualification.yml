@@ -1,0 +1,206 @@
+name: a32 Memory recovery diagnostic
+
+# Intentionally no PR/workflow_call/dispatch trigger and no source publication.
+on:
+  push:
+    branches: [diagnostic/a32-memory-recovery-20261022]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: a32-memory-recovery-diagnostic-${{ github.ref }}
+  cancel-in-progress: false
+
+env:
+  SOURCE_SHA: ${{ github.sha }}
+  CARGO_TERM_COLOR: never
+  CARGO_INCREMENTAL: "0"
+  CARGO_BUILD_JOBS: "2"
+  CARGO_NET_GIT_FETCH_WITH_CLI: "true"
+  CARGO_PROFILE_DEV_DEBUG: "0"
+  CARGO_PROFILE_TEST_DEBUG: "0"
+  PYTHONDONTWRITEBYTECODE: "1"
+  PYTHONUTF8: "1"
+
+jobs:
+  resolver-linux:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 90
+    outputs:
+      lock-manifest-sha256: ${{ steps.resolve.outputs.lock_manifest_sha256 }}
+      candidate-tree: ${{ steps.resolve.outputs.candidate_tree }}
+    steps:
+      - name: Preserve canonical Git bytes on this disposable runner before checkout
+        id: eol
+        run: git config --global core.autocrlf false
+      - name: Check out exact diagnostic input, without stored credentials
+        id: checkout
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ env.SOURCE_SHA }}
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Select exact evidence interpreter
+        id: python
+        uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405
+        with:
+          python-version: "3.12.10"
+      - name: Freeze exact a32 source delta and original locks
+        id: source
+        run: python .github/scripts/a32_memory_qualification.py init "$RUNNER_TEMP/a32-memory-linux"
+      - name: Reuse existing host build paths without a mutable tool installer
+        id: build
+        uses: ./.github/actions/setup-ci-build
+      - name: Install checksum-pinned owner DotSlash release
+        id: dotslash
+        run: python .github/scripts/a32_memory_qualification.py dotslash "$RUNNER_TEMP/a32-memory-linux"
+      - name: Select exact Bazelisk and repository Bazel 9.3.0
+        id: bazel
+        uses: bazel-contrib/setup-bazel@c5acdfb288317d0b5c0bbd7a396a3dc868bb0f86
+        with:
+          bazelisk-version: "1.28.1"
+          output-base: ${{ steps.build.outputs.bazel-output-base }}
+      - name: Select repository Rust toolchain
+        id: rust
+        uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582
+        with:
+          toolchain: "1.95.0"
+          components: clippy,rustfmt,rust-src
+      - name: Install version-pinned native tools
+        id: tools
+        uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
+        with:
+          tool: just@1.51.0,nextest@0.9.103,cargo-deny@0.19.0
+      - name: Install exact uv used by the existing runner scripts
+        id: uv
+        uses: astral-sh/setup-uv@08807647e7069bb48b6ef5acd8ec9567f424441b
+        with:
+          version: "0.11.3"
+      - name: Install standard Linux build prerequisites
+        id: prerequisites
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y build-essential bubblewrap libcap-dev pkg-config
+      - name: Resolve real two-edge Cargo graph and stable Bazel 9.3 locks; enforce full deny policy
+        id: resolve
+        run: python .github/scripts/a32_memory_qualification.py resolve "$RUNNER_TEMP/a32-memory-linux"
+      - name: Qualify full Linux path-utils, State and Memory suites on generated candidate
+        id: native
+        run: python .github/scripts/a32_memory_qualification.py native "$RUNNER_TEMP/a32-memory-linux"
+      - name: Record final source invariants and all step outcomes
+        id: collect
+        if: always() && steps.checkout.outcome == 'success' && steps.python.outcome == 'success'
+        env:
+          STEP_RESULTS: ${{ toJSON(steps) }}
+        run: python .github/scripts/a32_memory_qualification.py collect "$RUNNER_TEMP/a32-memory-linux"
+      - name: Retain same-run genuine locks (no repository writes)
+        if: success()
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f
+        with:
+          name: a32-memory-locks-${{ github.sha }}-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/a32-memory-linux/locks/
+          include-hidden-files: true
+          if-no-files-found: error
+          retention-days: 7
+      - name: Preserve Linux evidence even on failed resolution, policy, or native tests
+        if: always()
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f
+        with:
+          name: a32-memory-linux-${{ github.sha }}-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/a32-memory-linux/
+          include-hidden-files: true
+          if-no-files-found: error
+          retention-days: 7
+
+  native-windows:
+    needs: resolver-linux
+    runs-on: windows-latest
+    timeout-minutes: 180
+    defaults:
+      run:
+        shell: bash
+    steps:
+      - name: Preserve canonical Git bytes on this disposable runner before checkout
+        id: eol
+        run: |
+          git config --global core.autocrlf false
+          git config --global core.longpaths true
+      - name: Check out the identical diagnostic input without stored credentials
+        id: checkout
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ env.SOURCE_SHA }}
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Select exact evidence interpreter
+        id: python
+        uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405
+        with:
+          python-version: "3.12.10"
+      - name: Freeze same source and original locks
+        id: source
+        run: python .github/scripts/a32_memory_qualification.py init "$RUNNER_TEMP/a32-memory-windows"
+      - name: Retrieve locks from this run and attempt only
+        id: download
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c
+        with:
+          name: a32-memory-locks-${{ github.sha }}-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/a32-memory-incoming/
+      - name: Verify provenance and create identical clean local-only candidate
+        id: consume
+        env:
+          EXPECTED_LOCK_MANIFEST_SHA256: ${{ needs.resolver-linux.outputs.lock-manifest-sha256 }}
+          EXPECTED_CANDIDATE_TREE: ${{ needs.resolver-linux.outputs.candidate-tree }}
+        run: python .github/scripts/a32_memory_qualification.py consume "$RUNNER_TEMP/a32-memory-windows" --incoming "$RUNNER_TEMP/a32-memory-incoming"
+      - name: Reuse existing Windows Dev Drive and build paths
+        id: build
+        uses: ./.github/actions/setup-ci-build
+      - name: Install checksum-pinned owner DotSlash release
+        id: dotslash
+        run: python .github/scripts/a32_memory_qualification.py dotslash "$RUNNER_TEMP/a32-memory-windows"
+      - name: Select exact native Bazelisk and repository Bazel 9.3.0
+        id: bazel
+        uses: bazel-contrib/setup-bazel@c5acdfb288317d0b5c0bbd7a396a3dc868bb0f86
+        with:
+          bazelisk-version: "1.28.1"
+          output-base: ${{ steps.build.outputs.bazel-output-base }}
+      - name: Select repository Rust toolchain
+        id: rust
+        uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582
+        with:
+          toolchain: "1.95.0"
+          components: clippy,rustfmt,rust-src
+      - name: Reuse existing MSVC environment
+        id: msvc
+        uses: ./.github/actions/setup-msvc-env
+        with:
+          target: x86_64-pc-windows-msvc
+      - name: Install version-pinned native tools
+        id: tools
+        uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
+        with:
+          tool: just@1.51.0,nextest@0.9.103
+      - name: Install exact uv
+        id: uv
+        uses: astral-sh/setup-uv@08807647e7069bb48b6ef5acd8ec9567f424441b
+        with:
+          version: "0.11.3"
+      - name: Full locked suites, original five failures and unmodified acquisition/recovery controls
+        id: native
+        run: python .github/scripts/a32_memory_qualification.py native "$RUNNER_TEMP/a32-memory-windows"
+      - name: Record final source invariants and step outcomes
+        id: collect
+        if: always() && steps.checkout.outcome == 'success' && steps.python.outcome == 'success'
+        env:
+          STEP_RESULTS: ${{ toJSON(steps) }}
+        run: python .github/scripts/a32_memory_qualification.py collect "$RUNNER_TEMP/a32-memory-windows"
+      - name: Preserve native evidence on success or failure
+        if: always()
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f
+        with:
+          name: a32-memory-windows-${{ github.sha }}-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/a32-memory-windows/
+          include-hidden-files: true
+          if-no-files-found: error
+          retention-days: 7

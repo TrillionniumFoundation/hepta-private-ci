@@ -18,6 +18,14 @@ use std::sync::Arc;
 #[path = "sqlite_recovery_image.rs"]
 mod image;
 
+#[cfg(windows)]
+#[path = "sqlite_recovery_windows.rs"]
+mod windows;
+#[cfg(windows)]
+use windows::RetainedObject;
+#[cfg(windows)]
+use windows::RetainedOptionalObject;
+
 #[cfg(unix)]
 use std::ffi::CString;
 #[cfg(unix)]
@@ -80,24 +88,27 @@ pub struct ExistingSqliteRecoveryGuard {
 #[derive(Debug)]
 struct RecoveryGuardInner {
     database_path: PathBuf,
-    #[cfg(unix)]
+    #[cfg(any(unix, windows))]
     parent: RetainedObject,
-    #[cfg(unix)]
+    #[cfg(any(unix, windows))]
     database: RetainedObject,
-    #[cfg(unix)]
+    #[cfg(any(unix, windows))]
     sidecars: [RetainedOptionalObject; 3],
 }
 
 impl SqliteConfig {
     /// Retain the parent, database, WAL, SHM, and rollback-journal identities.
     ///
-    /// Opening descriptors is read-only and uses `O_NOFOLLOW`; this operation
-    /// never creates, truncates, renames, chmods, checkpoints, or opens SQLite.
+    /// Opening sources is read-only and rejects redirects. Unix uses
+    /// `O_NOFOLLOW`; Windows retains native no-reparse, no-write/delete-share
+    /// handles and validates their complete identity and private ACL. This
+    /// operation never creates, truncates, renames, chmods, checkpoints, or
+    /// opens SQLite.
     pub fn bind_existing_recovery_database(
         &self,
         path: &Path,
     ) -> Result<ExistingSqliteRecoveryGuard, SqliteRecoveryError> {
-        if path.parent() != Some(self.home()) {
+        if !recovery_parent_matches(path, self.home()) {
             return Err(SqliteRecoveryError::Indeterminate);
         }
         ExistingSqliteRecoveryGuard::bind(path)
@@ -126,13 +137,29 @@ impl SqliteConfig {
     }
 }
 
+fn recovery_parent_matches(path: &Path, home: &Path) -> bool {
+    let Some(parent) = path.parent() else {
+        return false;
+    };
+    #[cfg(windows)]
+    {
+        windows::same_recovery_path(parent, home)
+    }
+    #[cfg(not(windows))]
+    {
+        parent == home
+    }
+}
+
 impl ExistingSqliteRecoveryGuard {
-    #[cfg(unix)]
+    #[cfg(any(unix, windows))]
     fn bind(database_path: &Path) -> Result<Self, SqliteRecoveryError> {
         let parent_path = database_path
             .parent()
             .ok_or(SqliteRecoveryError::Indeterminate)?;
+        #[cfg(unix)]
         let canonical_parent = parent_path.canonicalize().map_err(indeterminate)?;
+        #[cfg(unix)]
         if canonical_parent != parent_path {
             return Err(SqliteRecoveryError::Indeterminate);
         }
@@ -168,7 +195,7 @@ impl ExistingSqliteRecoveryGuard {
         Ok(guard)
     }
 
-    #[cfg(not(unix))]
+    #[cfg(not(any(unix, windows)))]
     fn bind(database_path: &Path) -> Result<Self, SqliteRecoveryError> {
         let _ = database_path;
         Err(SqliteRecoveryError::Indeterminate)
@@ -182,7 +209,7 @@ impl ExistingSqliteRecoveryGuard {
     }
 
     fn revalidate_for(&self, config: &SqliteConfig) -> Result<(), SqliteRecoveryError> {
-        if self.inner.database_path.parent() != Some(config.home()) {
+        if !recovery_parent_matches(&self.inner.database_path, config.home()) {
             return Err(SqliteRecoveryError::Indeterminate);
         }
         self.revalidate()
@@ -198,7 +225,19 @@ impl ExistingSqliteRecoveryGuard {
         Ok(())
     }
 
-    #[cfg(not(unix))]
+    #[cfg(windows)]
+    fn revalidate(&self) -> Result<(), SqliteRecoveryError> {
+        self.inner.parent.revalidate_parent()?;
+        self.inner
+            .database
+            .revalidate_file(&self.inner.parent.descriptor)?;
+        for sidecar in &self.inner.sidecars {
+            sidecar.revalidate(&self.inner.parent.descriptor)?;
+        }
+        Ok(())
+    }
+
+    #[cfg(not(any(unix, windows)))]
     fn revalidate(&self) -> Result<(), SqliteRecoveryError> {
         Err(SqliteRecoveryError::Indeterminate)
     }
@@ -390,14 +429,14 @@ fn openat_read_only(parent: &File, file_name: &OsStr) -> Result<File, SqliteReco
     Ok(unsafe { File::from_raw_fd(descriptor) })
 }
 
-#[cfg(unix)]
+#[cfg(any(unix, windows))]
 fn sqlite_sidecar_path(database_path: &Path, suffix: &str) -> PathBuf {
     let mut path = database_path.as_os_str().to_os_string();
     path.push(suffix);
     PathBuf::from(path)
 }
 
-#[cfg(unix)]
+#[cfg(any(unix, windows))]
 fn indeterminate(_: std::io::Error) -> SqliteRecoveryError {
     SqliteRecoveryError::Indeterminate
 }
@@ -405,3 +444,7 @@ fn indeterminate(_: std::io::Error) -> SqliteRecoveryError {
 #[cfg(all(test, unix))]
 #[path = "sqlite_recovery_tests.rs"]
 mod tests;
+
+#[cfg(all(test, windows))]
+#[path = "sqlite_recovery_windows_tests.rs"]
+mod windows_tests;
