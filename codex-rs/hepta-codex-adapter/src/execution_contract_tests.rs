@@ -509,6 +509,61 @@ fn native_success_requires_zero_exit_and_no_retry_signal() {
 }
 
 #[test]
+fn runtime_retryability_only_applies_to_pre_admission_rejections() {
+    let value = intent();
+    let mut outcome = ToolOutcomeV1 {
+        terminal_observed: true,
+        exit_code: Some(8),
+        stdout_digest: Some(digest("failed-effect-output")),
+        stderr_digest: None,
+        retryable: true,
+    };
+    let mut receipt = RuntimeReceiptV1 {
+        execution: ExecutionReceiptV1 {
+            operation_id: value.cell.operation_id.clone(),
+            intent_digest: value.cell.intent_digest(),
+            generation: value.cell.generation,
+            final_payload_digest: value.cell.final_payload.clone(),
+            outcome_digest: Some(outcome.outcome_digest()),
+            status: ExecutionStatusV1::Failed,
+            recovery: RecoveryDispositionV1::ReconcileSameOperation,
+            authority: AuthorityPosture::DENY_ALL,
+        },
+        runtime_intent_digest: value.intent_digest(),
+        tool_outcome: outcome.clone(),
+    };
+    assert_eq!(
+        receipt.validate_against(&value),
+        Err(ExecutionContractError::StatusRecoveryMismatch),
+        "a failed effect must never advertise pre-admission retry"
+    );
+
+    receipt.execution.status = ExecutionStatusV1::Indeterminate;
+    receipt.execution.recovery = RecoveryDispositionV1::Quarantine;
+    assert_eq!(
+        receipt.validate_against(&value),
+        Err(ExecutionContractError::StatusRecoveryMismatch),
+        "unknown effect state must not be re-dispatched"
+    );
+
+    outcome.terminal_observed = false;
+    outcome.exit_code = None;
+    outcome.stdout_digest = None;
+    receipt.tool_outcome = outcome.clone();
+    receipt.execution.outcome_digest = Some(outcome.outcome_digest());
+    receipt.execution.status = ExecutionStatusV1::Rejected;
+    receipt.execution.recovery = RecoveryDispositionV1::Quarantine;
+    assert_eq!(
+        receipt.validate_against(&value),
+        Err(ExecutionContractError::StatusRecoveryMismatch),
+        "a quarantined rejection cannot advertise pre-admission retry"
+    );
+
+    receipt.execution.recovery = RecoveryDispositionV1::RetryBeforeAdmission;
+    assert_eq!(receipt.validate_against(&value), Ok(()));
+}
+
+#[test]
 fn execution_status_recovery_matrix_is_exhaustively_fail_closed() {
     let value = intent();
     let mut receipt = ExecutionReceiptV1 {

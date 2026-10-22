@@ -71,9 +71,15 @@ fn shared_pool_reports_group_and_drop_metrics() {
     );
     let batch = pool.drain();
     assert_eq!(batch.requests.len(), 1);
-    assert_eq!(pool.metrics().groups_committed, 1);
-    assert_eq!(pool.metrics().activations_committed, 1);
+    assert_eq!(pool.metrics().groups_dequeued, 1);
+    assert_eq!(pool.metrics().activations_dequeued, 1);
+    assert_eq!(pool.metrics().groups_committed, 0);
+    assert_eq!(pool.metrics().activations_committed, 0);
     assert_eq!(pool.metrics().dropped_requests, 1);
+    // Queue dispatch alone must not masquerade as a physical worker outcome.
+    assert!(pool.drain().requests.is_empty());
+    assert_eq!(pool.metrics().groups_dequeued, 1);
+    assert_eq!(pool.metrics().groups_committed, 0);
 }
 
 #[test]

@@ -418,6 +418,15 @@ impl RuntimeReceiptV1 {
         {
             return Err(ExecutionContractError::StatusOutcomeMismatch);
         }
+        // Retryability is only safe after a witnessed rejection before
+        // admission. A failed, ambiguous, or quarantined effect cannot signal
+        // retry even if the status/recovery pair is otherwise valid.
+        if self.tool_outcome.retryable
+            && (self.execution.status != ExecutionStatusV1::Rejected
+                || self.execution.recovery != RecoveryDispositionV1::RetryBeforeAdmission)
+        {
+            return Err(ExecutionContractError::StatusRecoveryMismatch);
+        }
         Ok(())
     }
 }
