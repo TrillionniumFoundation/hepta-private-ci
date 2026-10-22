@@ -361,6 +361,51 @@ def check_workspace(root: Path) -> list[str]:
     return violations
 
 
+
+# The Codex facade is a compatibility path, never a second ABI definition.
+# Exact explicit re-exports make missing, shadowed and local aliases reviewable.
+PURE_NATIVE_EXPORTS = (
+    "EXECUTION_CONTRACT_VERSION_V1",
+    "CellExecutionIntentV1",
+    "CodexTurnBindingV1",
+    "ExecutionContractError",
+    "ExecutionIntentKindV1",
+    "ExecutionReceiptV1",
+    "ExecutionStatusV1",
+    "FinalPayloadDigestV1",
+    "GenerationFenceWitnessV1",
+    "NativeExecutionAdapter",
+    "RecoveryDispositionV1",
+    "RuntimeExecutionError",
+    "RuntimeReceiptV1",
+    "RuntimeToolIntentV1",
+    "ToolOutcomeV1",
+)
+
+
+def check_native_facade_exports(facade_source: str) -> list[str]:
+    """Source-only ABI custody guard; Rust compilation remains mandatory."""
+    import re
+
+    violations: list[str] = []
+    for name in PURE_NATIVE_EXPORTS:
+        expected = rf"(?m)^[ \t]*pub[ \t]+use[ \t]+codex_hepta_types[ \t]*::[ \t]*{re.escape(name)}[ \t]*;[ \t]*(?://.*)?$"
+        if not re.search(expected, facade_source):
+            violations.append(
+                f"hepta-codex-adapter: missing direct pure ABI re-export {name}"
+            )
+
+    protected_names = "|".join(re.escape(name) for name in PURE_NATIVE_EXPORTS)
+    local_definition = (
+        rf"\b(?:pub(?:\s*\([^)]*\))?\s+)?"
+        rf"(?:struct|enum|trait|type|union|const|static)\s+"
+        rf"(?:{protected_names})\b"
+    )
+    if re.search(local_definition, facade_source):
+        violations.append("hepta-codex-adapter: duplicate execution contract definition")
+    return violations
+
+
 def check_pure_cell_contract(root: Path) -> list[str]:
     """Ensure source Cell contracts remain independent of Codex and effects.
 
@@ -412,12 +457,7 @@ def check_pure_cell_contract(root: Path) -> list[str]:
         errors.append("hepta-types: pure execution contract imports a Codex crate")
     if "pub trait NativeExecutionAdapter" not in pure_source:
         errors.append("hepta-types: native execution contract missing")
-    if "pub use codex_hepta_types::" not in facade_source:
-        errors.append("hepta-codex-adapter: compatibility facade missing")
-    # Prevent a second, independently mutable execution/receipt shape in
-    # the Codex facade, which could bypass pure contract validation.
-    if re.search(r"\b(?:pub\s+)?(?:struct|enum|trait)\s+(?:CellExecutionIntentV1|ExecutionReceiptV1|RuntimeReceiptV1)\b", facade_source):
-        errors.append("hepta-codex-adapter: duplicate execution contract definition")
+    errors.extend(check_native_facade_exports(facade_source))
     return errors
 
 
