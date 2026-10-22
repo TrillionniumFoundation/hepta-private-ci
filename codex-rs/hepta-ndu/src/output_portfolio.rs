@@ -73,6 +73,16 @@ pub fn select_output_portfolio_v1(
         {
             continue;
         }
+        // Hard-zero resource/latency budgets also require exact zero cost.
+        // Multiplication by a fractional Q32 weight can round one positive
+        // least-significant cost unit to zero, despite real resource use.
+        if (budget.resource_budget == FixedQ32::ZERO
+            && candidates[index].resource_cost > FixedQ32::ZERO)
+            || (budget.latency_budget == FixedQ32::ZERO
+                && candidates[index].latency_cost > FixedQ32::ZERO)
+        {
+            continue;
+        }
         if selected_protocol.is_some_and(|protocol| protocol != candidates[index].protocol)
             || selected_domain
                 .is_some_and(|domain| domain != candidates[index].composition_domain_digest)
