@@ -828,3 +828,46 @@ fn native_gate_forwards_only_a_validated_receipt() {
     );
     assert_eq!(adapter.calls.load(std::sync::atomic::Ordering::SeqCst), 1);
 }
+
+#[test]
+fn silent_native_process_exit_is_valid_terminal_evidence() {
+    let value = intent();
+    let mut receipt = valid_native_receipt(&value);
+    // Empty stdout/stderr are normal for successful native commands.
+    receipt.tool_outcome.stdout_digest = None;
+    receipt.execution.outcome_digest = Some(receipt.tool_outcome.outcome_digest());
+    assert_eq!(receipt.tool_outcome.validate(), Ok(()));
+    assert_eq!(receipt.validate_against(&value), Ok(()));
+
+    // Silent nonzero exits are terminal failures, never Completed successes.
+    receipt.tool_outcome.exit_code = Some(21);
+    receipt.execution.outcome_digest = Some(receipt.tool_outcome.outcome_digest());
+    assert_eq!(
+        receipt.validate_against(&value),
+        Err(ExecutionContractError::StatusOutcomeMismatch),
+    );
+    receipt.execution.status = ExecutionStatusV1::Failed;
+    receipt.execution.recovery = RecoveryDispositionV1::ReconcileSameOperation;
+    assert_eq!(receipt.validate_against(&value), Ok(()));
+
+    // No output AND no exit observation cannot be promoted into terminality.
+    receipt.tool_outcome.exit_code = None;
+    receipt.execution.outcome_digest = Some(receipt.tool_outcome.outcome_digest());
+    assert_eq!(
+        receipt.tool_outcome.validate(),
+        Err(ExecutionContractError::MissingTerminalOutcome),
+    );
+    assert_eq!(
+        receipt.validate_against(&value),
+        Err(ExecutionContractError::MissingTerminalOutcome),
+    );
+
+    // An exit code cannot claim terminality if no terminal observation exists.
+    receipt.tool_outcome.exit_code = Some(0);
+    receipt.tool_outcome.terminal_observed = false;
+    receipt.execution.outcome_digest = Some(receipt.tool_outcome.outcome_digest());
+    assert_eq!(
+        receipt.validate_against(&value),
+        Err(ExecutionContractError::StatusOutcomeMismatch),
+    );
+}
