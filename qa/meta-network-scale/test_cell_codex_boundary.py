@@ -79,6 +79,29 @@ builder = { package = "codex-sandboxing", workspace = true }
         for name in checker.CELL_CRATES:
             self.assertIn(f'      - "codex-rs/{name}/Cargo.toml"', paths)
 
+    def test_p3_p5_claim_changes_trigger_fresh_cell_codex_proof(self):
+        # Cell/Codex proof is source-specific, not transferable from the
+        # earlier qualification SHA after scale or NDU evidence changes.
+        workflow = (
+            Path(__file__).resolve().parents[2]
+            / ".github"
+            / "workflows"
+            / "hepta-cell-codex-boundary.yml"
+        ).read_text(encoding="utf-8")
+        paths = workflow.partition("  workflow_dispatch:")[0]
+        for source in (
+            "qa/meta-network-scale/scale_matrix.py",
+            "qa/meta-network-scale/test_scale_matrix.py",
+            "docs/learning/CELL_EXECUTION_BENCHMARK_MATRIX.json",
+            "codex-rs/hepta-ndu/src/output_portfolio.rs",
+            "codex-rs/hepta-ndu/src/output_portfolio_types.rs",
+            "codex-rs/hepta-ndu/src/output_portfolio_tests.rs",
+            ".github/workflows/hepta-ndu-portfolio-exact.yml",
+            "scripts/test_hepta_ndu_portfolio_ci.py",
+        ):
+            with self.subTest(source=source):
+                self.assertIn(f'      - "{source}"', paths)
+
     def test_workspace_renamed_core_cannot_bypass_gate(self):
         # A harmless-looking member alias inherits an actual codex-core crate.
         data = self.make_manifest('''

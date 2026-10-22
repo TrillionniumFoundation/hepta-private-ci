@@ -12,6 +12,17 @@ on:
       - "codex-rs/hepta-cognitive-types/Cargo.toml"
       - "qa/meta-network-scale/check_cell_codex_boundary.py"
       - "qa/meta-network-scale/test_cell_codex_boundary.py"
+      # A new scale/evidence or NDU claim changes the complete exact
+      # candidate; requalify the Cell/Codex boundary rather than carrying
+      # the earlier source SHA's PASS across the integration.
+      - "qa/meta-network-scale/scale_matrix.py"
+      - "qa/meta-network-scale/test_scale_matrix.py"
+      - "docs/learning/CELL_EXECUTION_BENCHMARK_MATRIX.json"
+      - "codex-rs/hepta-ndu/src/output_portfolio.rs"
+      - "codex-rs/hepta-ndu/src/output_portfolio_types.rs"
+      - "codex-rs/hepta-ndu/src/output_portfolio_tests.rs"
+      - ".github/workflows/hepta-ndu-portfolio-exact.yml"
+      - "scripts/test_hepta_ndu_portfolio_ci.py"
       - ".github/workflows/hepta-cell-codex-boundary.yml"
   workflow_dispatch: {}
 

@@ -28,6 +28,7 @@ DIRECT_NATIVE_INPUTS = {
     "qa/meta-network-scale/test_cell_codex_boundary.py",
     "qa/meta-network-scale/scale_matrix.py",
     "qa/meta-network-scale/test_scale_matrix.py",
+    "docs/learning/CELL_EXECUTION_BENCHMARK_MATRIX.json",
     ".github/workflows/hepta-cell-codex-boundary.yml",
     ".github/workflows/hepta-p5-scale-evidence-exact.yml",
     "scripts/test_hepta_ndu_portfolio_ci.py",
