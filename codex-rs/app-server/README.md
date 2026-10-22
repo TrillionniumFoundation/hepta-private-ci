@@ -82,6 +82,14 @@ Use the thread APIs to create, list, or archive conversations. Drive a conversat
 - Stream events: After `turn/start`, keep reading JSON-RPC notifications on stdout. You’ll see `item/started`, `item/completed`, deltas like `item/agentMessage/delta`, tool progress, etc. These represent streaming model output plus any side effects (commands, tool calls, reasoning notes).
 - Finish the turn: When the model is done (or the turn is interrupted via making the `turn/interrupt` call), the server sends `turn/completed` with the final turn state and token usage.
 
+`turn/completed` may arrive before Core finishes the turn's persistence and idle
+callbacks. A subsequent `turn/start` observes the currently registered admission
+fences for at most five seconds before preparing settings and routing the input
+once. Shutdown, a replacement admission, a new fence, or an exhausted observation
+budget returns an error; waiting does not bypass permissions or reserve an idle
+turn. Normal admission still rechecks state, and an unfenced running turn retains
+the usual steering behavior.
+
 ## Initialization
 
 Clients must send a single `initialize` request per transport connection before invoking any other method on that connection, then acknowledge with an `initialized` notification. The server returns the user agent string it will present to upstream services, `codexHome` for the server's Codex home directory, and `platformFamily` and `platformOs` strings describing the app-server runtime target; subsequent requests issued before initialization receive a `"Not initialized"` error, and repeated `initialize` calls on the same connection receive an `"Already initialized"` error.
