@@ -158,12 +158,36 @@ missing = { workspace = true }
             Path(__file__).resolve().parents[2]
             / ".github" / "workflows" / "hepta-cell-codex-boundary.yml"
         ).read_text(encoding="utf-8")
+        # Only pull_request.paths can cause the isolation check to rerun.
+        # A marker elsewhere (e.g. comments or workflow_dispatch) is not a gate.
+        path_section = workflow.partition("  workflow_dispatch:")[0]
+        patterns = [
+            line[len('      - "') : -1]
+            for line in path_section.splitlines()
+            if line.startswith('      - "') and line.endswith('"')
+        ]
         for tracked in (
-            '      - "codex-rs/hepta-types/Cargo.toml"',
-            '      - "codex-rs/hepta-types/src/**"',
-            '      - "codex-rs/hepta-codex-adapter/src/execution_contract.rs"',
+            "codex-rs/hepta-types/Cargo.toml",
+            "codex-rs/hepta-types/src/**",
+            "codex-rs/hepta-codex-adapter/Cargo.toml",
+            "codex-rs/hepta-codex-adapter/src/**",
         ):
-            self.assertIn(tracked, workflow)
+            self.assertIn(tracked, patterns)
+        # The P0 native dispatch gateway lives in lib.rs, not only the
+        # compatibility facade's execution_contract.rs module. CI must
+        # requalify the exact source whenever its callers or tests change.
+        from fnmatch import fnmatchcase
+
+        for source in (
+            "codex-rs/hepta-codex-adapter/src/lib.rs",
+            "codex-rs/hepta-codex-adapter/src/execution_contract.rs",
+            "codex-rs/hepta-codex-adapter/src/execution_contract_tests.rs",
+            "codex-rs/hepta-codex-adapter/Cargo.toml",
+        ):
+            self.assertTrue(
+                any(fnmatchcase(source, pattern) for pattern in patterns),
+                f"Cell/Codex boundary CI does not track {source}",
+            )
 
 
 if __name__ == "__main__":
