@@ -13,6 +13,13 @@ import math
 from pathlib import Path
 
 
+PINNED_V1_SHA256 = {
+    "episodes": "b9e7e0a53622b9b87e29507684684389aaf798e97bf53b0d4e93f44570786e39",
+    "protocol": "47888294da05a7e0faa4b912b58738fc245f9c6c42d0bd03354284e3a55733cf",
+    "report": "e854f0603109d64c325667ca01315122e4056a0ce536d85b80c19ddabd3154a7",
+}
+
+
 class EvidenceError(ValueError):
     pass
 
@@ -55,6 +62,8 @@ def _reconcile_report(report, roster, expected_methods):
         if task_id in source_map and source_map[task_id] != sources:
             raise EvidenceError(f"source ID changed across seeds: {task_id}")
         source_map[task_id] = sources
+    if len({next(iter(x)) for x in source_map.values()}) != len(source_map):
+        raise EvidenceError("more than one task ID shares an original source")
     alpha = report.get("alpha")
     if type(alpha) not in (int, float) or not 0 < alpha < 1:
         raise EvidenceError("invalid CVaR alpha")
@@ -222,8 +231,12 @@ def main(argv=None):
             "protocol": bundle / "code" / "protocol.json",
             "episodes": bundle / "raw" / "test.episodes.jsonl",
         }
+        actual_hashes = {key: hashlib.sha256(value.read_bytes()).hexdigest() for key,value in paths.items()}
+        if actual_hashes != PINNED_V1_SHA256:
+            raise EvidenceError("v1 original evidence identities changed; refuse to audit a different run")
         result = evaluate_capabilities(_load_json(paths["report"]), _load_json(paths["protocol"]), _load_rows(paths["episodes"]))
-        result["measurement_receipt_hashes"] = {key: hashlib.sha256(value.read_bytes()).hexdigest() for key,value in paths.items()}
+        result["measurement_receipt_hashes"] = actual_hashes
+        result["pinned_v1_evidence_verified"] = True
         status = 0 if result["all_scientific_gates_closed"] else 2
     except (OSError, KeyError, TypeError, ValueError, json.JSONDecodeError) as exc:
         result = {"schema": "hepta.ndu-capability-gates.v2-preflight-1", "status": "invalid_evidence", "error": str(exc), "all_scientific_gates_closed": False}
