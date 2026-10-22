@@ -341,6 +341,73 @@ crossterm = { git = "https://example.invalid/pin", rev = "abc123" }
             self.assertEqual(len(errors), 1, errors)
             self.assertIn("cannot read reviewed", errors[0])
 
+    def test_pure_contract_is_present_and_free_of_codex_imports(self):
+        root = Path(__file__).resolve().parents[2]
+        self.assertEqual(checker.check_pure_cell_contract(root), [])
+
+    def test_pure_contract_rejects_renamed_target_dependency_and_codex_source(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            (root / "codex-rs/hepta-types/src").mkdir(parents=True)
+            (root / "codex-rs/hepta-codex-adapter/src").mkdir(parents=True)
+            (root / "codex-rs/Cargo.toml").write_text(
+                '[workspace]\n[workspace.dependencies]\nsha2 = "0.10"\n', encoding="utf-8"
+            )
+            manifest = root / "codex-rs/hepta-types/Cargo.toml"
+            manifest.write_text(
+                '[package]\nname = "codex-hepta-types"\n'
+                '[dependencies]\nsha2 = { workspace = true }\n'
+                '[target."cfg(unix)".build-dependencies]\n'
+                'innocent = { package = "codex-core", version = "1" }\n',
+                encoding="utf-8",
+            )
+            (root / "codex-rs/hepta-types/src/execution_contract.rs").write_text(
+                'use codex_core::Codex;\npub trait NativeExecutionAdapter {}\n',
+                encoding="utf-8",
+            )
+            (root / "codex-rs/hepta-codex-adapter/src/execution_contract.rs").write_text(
+                'pub use codex_hepta_types::*;\n', encoding="utf-8"
+            )
+            errors = checker.check_pure_cell_contract(root)
+            self.assertEqual(len(errors), 2, errors)
+            self.assertTrue(any("non-pure dependency" in error for error in errors))
+            self.assertTrue(any("imports a Codex crate" in error for error in errors))
+
+    def test_codex_facade_cannot_create_second_contract_definition(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            (root / "codex-rs/hepta-types/src").mkdir(parents=True)
+            (root / "codex-rs/hepta-codex-adapter/src").mkdir(parents=True)
+            (root / "codex-rs/Cargo.toml").write_text(
+                '[workspace]\n[workspace.dependencies]\nsha2 = "0.10"\n', encoding="utf-8"
+            )
+            (root / "codex-rs/hepta-types/Cargo.toml").write_text(
+                '[package]\nname = "codex-hepta-types"\n'
+                '[dependencies]\nsha2 = { workspace = true }\n',
+                encoding="utf-8",
+            )
+            (root / "codex-rs/hepta-types/src/execution_contract.rs").write_text(
+                'pub trait NativeExecutionAdapter {}\n', encoding="utf-8"
+            )
+            (root / "codex-rs/hepta-codex-adapter/src/execution_contract.rs").write_text(
+                'pub use codex_hepta_types::*;\npub struct RuntimeReceiptV1 {}\n',
+                encoding="utf-8",
+            )
+            errors = checker.check_pure_cell_contract(root)
+            self.assertEqual(len(errors), 1, errors)
+            self.assertIn("duplicate execution contract", errors[0])
+
+    def test_pure_contract_source_changes_trigger_exact_ci(self):
+        workflow = (
+            Path(__file__).resolve().parents[2] / ".github/workflows/hepta-cell-codex-boundary.yml"
+        ).read_text(encoding="utf-8")
+        for required in (
+            "codex-rs/hepta-types/Cargo.toml",
+            "codex-rs/hepta-types/src/**",
+            "codex-rs/hepta-codex-adapter/src/execution_contract.rs",
+        ):
+            self.assertIn(required, workflow)
+
 
 if __name__ == "__main__":
     unittest.main()
