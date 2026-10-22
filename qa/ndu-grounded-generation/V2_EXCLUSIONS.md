@@ -35,7 +35,7 @@ cross-roster duplicate fingerprint under the stated identity rule. Registry
 SHA256: **`55c25e153f582633030004420f1babdf14188eef32814c006c16371eb78d298b`**.
 The original v1 builder's actual `_exclusions` function successfully parsed
 the generated file, read 640 rows, and returned exactly that checksum.
-Fourteen local standard-library positive/negative controls passed.
+Fourteen local standard-library positive/negative controls passed, plus one Pillow-backed synthetic end-to-end integration of the unchanged cohort builder. That fixture built and validated four new sources while rejecting a historical ID without opening its absent JPEG.
 
 The resulting JSON can be preserved as a separate artifact. The GitHub
 receipt intentionally stores only the digest/validation instructions rather
@@ -49,6 +49,8 @@ set `V1` to the extracted directory:
 ```bash
 python -m unittest discover -s qa/ndu-grounded-generation \
   -p 'test_v2_exclusions.py' -v
+python -m unittest discover -s qa/ndu-grounded-generation \
+  -p 'test_v2_cohort_integration.py' -v
 
 python qa/ndu-grounded-generation/v2_exclusions.py \
   --historical "$V1/code/historical_exclusions.json" \
