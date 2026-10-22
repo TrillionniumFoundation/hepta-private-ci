@@ -73,6 +73,49 @@ fn codex_cell_intent_enters_existing_adapter_spine() {
 }
 
 #[test]
+fn codex_binding_rejects_unsupported_protocol_and_noncanonical_version() {
+    let mut cell = intent().cell;
+    cell.kind = ExecutionIntentKindV1::CodexTurn;
+    cell.codex_binding = Some(CodexTurnBindingV1 {
+        source_admission_digest: digest("admission"),
+        session_id: id("session:1"),
+        thread_id: id("thread:1"),
+        client_user_message_id: id("message:1"),
+        user_input_digest: digest("input"),
+        protocol_id: id("codex.app-server.v2"),
+        app_server_version: "v2".to_owned(),
+        codex_home_digest: digest("codex-home"),
+        connection_id: 1,
+    });
+    assert_eq!(cell.validate(), Ok(()));
+
+    cell.codex_binding.as_mut().expect("binding").protocol_id = id("codex.app-server.v1");
+    assert_eq!(
+        cell.validate(),
+        Err(ExecutionContractError::UnsupportedCodexProtocol)
+    );
+
+    cell.codex_binding.as_mut().expect("binding").protocol_id = id("codex.app-server.v2");
+    cell.codex_binding
+        .as_mut()
+        .expect("binding")
+        .app_server_version = "v2\\n".replace("\\n", "\n");
+    assert_eq!(
+        cell.validate(),
+        Err(ExecutionContractError::InvalidAppServerVersion)
+    );
+
+    cell.codex_binding
+        .as_mut()
+        .expect("binding")
+        .app_server_version = "v".repeat(crate::MAX_APP_SERVER_VERSION_BYTES + 1);
+    assert_eq!(
+        cell.validate(),
+        Err(ExecutionContractError::InvalidAppServerVersion)
+    );
+}
+
+#[test]
 fn runtime_intent_rejects_codex_kind() {
     let mut value = intent();
     value.cell.kind = ExecutionIntentKindV1::CodexTurn;
