@@ -121,6 +121,8 @@ class GitGraphTests(unittest.TestCase):
         self.addCleanup(self.temp.cleanup)
         self.root = Path(self.temp.name)
         self.git("init", "-q")
+        # Wait for automatic maintenance before the temporary repository is cleaned up.
+        self.git("config", "maintenance.autoDetach", "false")
         self.git("config", "user.name", "CI regression")
         self.git("config", "user.email", "ci@example.invalid")
         self.write(
@@ -217,6 +219,8 @@ class DocumentInputTests(unittest.TestCase):
         self.addCleanup(self.tmp.cleanup)
         self.root = Path(self.tmp.name)
         self.git("init", "-q")
+        # Wait for automatic maintenance before the temporary repository is cleaned up.
+        self.git("config", "maintenance.autoDetach", "false")
         self.git("config", "user.name", "Regression")
         self.git("config", "user.email", "regression@example.invalid")
         self.write(

@@ -177,6 +177,8 @@ class ScopeTests(unittest.TestCase):
                 )
 
             git("init", "-q")
+            # Wait for automatic maintenance before the temporary repository is cleaned up.
+            git("config", "maintenance.autoDetach", "false")
             git("config", "user.name", "Scope Test")
             git("config", "user.email", "scope@localhost")
             old = root / "codex-rs/hepta-infer-core/src/old.rs"
