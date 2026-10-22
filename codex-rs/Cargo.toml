@@ -676,6 +676,8 @@ matrix-sdk-sqlite = { path = "third_party/matrix-sdk-sqlite-0.18.0" }
 # Backport Matrix SDK's upstream IdentityBasedStrategy panic fix while the
 # workspace remains on the Rust-1.95-compatible 0.18 release line.
 matrix-sdk-crypto = { path = "third_party/matrix-sdk-crypto-0.18.0" }
+# Use the reviewed upstream TOML replacement until i18n-config publishes it.
+i18n-config = { git = "https://github.com/kellpossible/cargo-i18n", rev = "2ce7b1dfe9a8cc224288bf50cbc2a67a6de863c4" }
 # Uncomment to debug local changes.
 # ratatui = { path = "../../ratatui" }
 crossterm = { git = "https://github.com/openai-oss-forks/crossterm", rev = "45fecb9508105988f42fe6ff0441783ed3717f92" }
