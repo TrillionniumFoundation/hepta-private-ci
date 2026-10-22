@@ -2,6 +2,36 @@
 
 use super::*;
 
+pub(super) struct ExecutionResources {
+    pub(super) terminal_observed: bool,
+    pub(super) observed_memory_bytes: u64,
+}
+
+pub(super) fn settle_execution_resources(
+    loaded: &mut LoadedModel,
+    requests: &mut BTreeMap<String, String>,
+    request_id: &str,
+    observed: ExecutionResources,
+) -> Result<(), Error> {
+    let over_budget = observed.observed_memory_bytes > loaded.attempt.reserved_memory_bytes;
+    if observed.terminal_observed {
+        requests.remove(request_id);
+        loaded.active_requests -= 1;
+        loaded.lifecycle = if over_budget {
+            ModelLifecycle::ResourceOverBudget
+        } else {
+            ModelLifecycle::Ready
+        };
+    } else if over_budget {
+        loaded.lifecycle = ModelLifecycle::ExecutionOverBudget;
+    }
+    if over_budget {
+        Err(Error::ModelCapacity)
+    } else {
+        Ok(())
+    }
+}
+
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct DriverLoadAttempt {
     pub worker_id: String,
@@ -46,7 +76,10 @@ impl<D: ModelDriver> InferenceWorker<D> {
         if self.models.values().any(|model| {
             matches!(
                 model.lifecycle,
-                ModelLifecycle::LoadUnresolved | ModelLifecycle::LoadRejected
+                ModelLifecycle::LoadUnresolved
+                    | ModelLifecycle::LoadRejected
+                    | ModelLifecycle::ExecutionOverBudget
+                    | ModelLifecycle::ResourceOverBudget
             )
         }) {
             return Err(Error::ActiveRequests);
@@ -114,7 +147,12 @@ impl<D: ModelDriver> InferenceWorker<D> {
 
     pub(super) fn release_model(&mut self, model_id: &str) -> Result<(), Error> {
         let loaded = self.models.get_mut(model_id).ok_or(Error::ModelNotLoaded)?;
-        if loaded.active_requests != 0 || loaded.lifecycle == ModelLifecycle::ExecutionUnresolved {
+        if loaded.active_requests != 0
+            || matches!(
+                loaded.lifecycle,
+                ModelLifecycle::ExecutionUnresolved | ModelLifecycle::ExecutionOverBudget
+            )
+        {
             return Err(Error::ActiveRequests);
         }
         loaded.lifecycle = match loaded.lifecycle {
@@ -124,7 +162,10 @@ impl<D: ModelDriver> InferenceWorker<D> {
             ModelLifecycle::Ready | ModelLifecycle::UnloadUnresolved => {
                 ModelLifecycle::UnloadUnresolved
             }
-            ModelLifecycle::ExecutionUnresolved => return Err(Error::ActiveRequests),
+            ModelLifecycle::ResourceOverBudget => ModelLifecycle::ResourceOverBudget,
+            ModelLifecycle::ExecutionUnresolved | ModelLifecycle::ExecutionOverBudget => {
+                return Err(Error::ActiveRequests);
+            }
         };
         let observed = self.driver.unload(&loaded.attempt)?;
         if observed.attempt != loaded.attempt {
@@ -134,6 +175,9 @@ impl<D: ModelDriver> InferenceWorker<D> {
             DriverLoadState::Released => {}
             DriverLoadState::NoEffect if loaded.handle.is_none() => {}
             DriverLoadState::Owned(handle) => {
+                if handle.observed_memory_bytes > loaded.attempt.reserved_memory_bytes {
+                    loaded.lifecycle = ModelLifecycle::ResourceOverBudget;
+                }
                 loaded.handle.get_or_insert(handle);
                 return Err(Error::DriverFailure("release unresolved".to_string()));
             }

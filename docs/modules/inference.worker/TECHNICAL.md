@@ -169,6 +169,13 @@ cleanup, without admitting new work. Physical budget enforcement and real local
 driver consumption remain unqualified; fault-driver resource-table tests do not
 constitute RSS measurements or neural-backend acceptance.
 
+A reported lifetime envelope violation freezes all new model loads and both run
+paths until the original attempt is confirmed `Released`. Observed execution
+termination releases that request, but leaves the model cleanup-only rather than
+ready; unknown execution retains its active request and forbids unload. Cleanup
+`Owned` observations can also latch an envelope violation. An in-budget token
+limit error remains a request error and does not freeze the live model.
+
 Hosted output observation retains per-item text within one bound turn, including
 the interrupt grace period. Completed message bytes replace that item's partial
 deltas; identical completions deduplicate, conflicting completions and later

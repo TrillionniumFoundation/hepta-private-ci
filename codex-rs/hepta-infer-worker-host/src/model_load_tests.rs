@@ -3,6 +3,9 @@ use super::*;
 #[path = "model_cleanup_tests.rs"]
 mod cleanup_tests;
 
+#[path = "model_envelope_tests.rs"]
+mod envelope_tests;
+
 const NOW_MS: u64 = 100;
 const EXPIRED_MS: u64 = 10_000;
 const KIB: u64 = 1_024;

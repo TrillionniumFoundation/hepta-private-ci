@@ -177,6 +177,8 @@ enum ModelLifecycle {
     LoadRejected,
     Ready,
     ExecutionUnresolved,
+    ExecutionOverBudget,
+    ResourceOverBudget,
     UnloadUnresolved,
 }
 
@@ -357,18 +359,19 @@ impl<D: ModelDriver> InferenceWorker<D> {
             .insert(request.request_id.clone(), model_id.to_string());
         loaded.lifecycle = ModelLifecycle::ExecutionUnresolved;
         let observed = self.driver.run(handle, &request)?;
-        if observed.terminal_observed {
-            self.active_requests.remove(&request.request_id);
-            loaded.active_requests -= 1;
-            loaded.lifecycle = ModelLifecycle::Ready;
-        }
+        model_load::settle_execution_resources(
+            loaded,
+            &mut self.active_requests,
+            &request.request_id,
+            model_load::ExecutionResources {
+                terminal_observed: observed.terminal_observed,
+                observed_memory_bytes: observed.observed_memory_bytes,
+            },
+        )?;
         if observed.consumed_tokens > request.maximum_tokens
             || observed.consumed_tokens > request.reservation_maximum_tokens
         {
             return Err(Error::TokenLimit);
-        }
-        if observed.observed_memory_bytes > loaded.attempt.reserved_memory_bytes {
-            return Err(Error::ModelCapacity);
         }
         let (status, output_digest, terminal_observed) = if !observed.terminal_observed {
             (ExecutionStatus::Indeterminate, None, false)
@@ -628,15 +631,15 @@ impl<D: ModelDriver + NeuronFeatureDriver> InferenceWorker<D> {
         );
         loaded.lifecycle = ModelLifecycle::ExecutionUnresolved;
         let observed = self.driver.run_neuron_features(handle, &request)?;
-        if observed.terminal_observed {
-            self.active_requests
-                .remove(&request.authorization.request_id);
-            loaded.active_requests -= 1;
-            loaded.lifecycle = ModelLifecycle::Ready;
-        }
-        if observed.observed_memory_bytes > loaded.attempt.reserved_memory_bytes {
-            return Err(Error::ModelCapacity);
-        }
+        model_load::settle_execution_resources(
+            loaded,
+            &mut self.active_requests,
+            &request.authorization.request_id,
+            model_load::ExecutionResources {
+                terminal_observed: observed.terminal_observed,
+                observed_memory_bytes: observed.observed_memory_bytes,
+            },
+        )?;
         let status = if !observed.terminal_observed {
             ExecutionStatus::Indeterminate
         } else if observed.succeeded {
