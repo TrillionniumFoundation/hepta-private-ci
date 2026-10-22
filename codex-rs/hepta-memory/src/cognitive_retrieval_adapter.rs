@@ -13,6 +13,7 @@ use codex_hepta_memory_retrieval::EngramDynamicsPolicyV1;
 use codex_hepta_memory_retrieval::EngramSnapshotV1;
 use codex_hepta_memory_retrieval::GeneratedCandidateInputV1;
 use codex_hepta_memory_retrieval::GeneratedRecallV1;
+use codex_hepta_memory_retrieval::MemoryCueV1;
 use codex_hepta_memory_retrieval::RetrievalAssignmentObservationV1;
 use codex_hepta_memory_retrieval::RetrievalChannelCandidateV1;
 use codex_hepta_memory_retrieval::RetrievalChannelV1;
@@ -122,6 +123,36 @@ pub fn execute_owner_observation(
     acquired_at_unix_ms: u64,
     lease_expires_unix_ms: u64,
 ) -> Result<OwnerRetrievalExecutionV1, CognitiveStoreError> {
+    let (cue, generated) = prepare_owner_observation(
+        observation,
+        cut,
+        context,
+        request_digest,
+        acquired_at_unix_ms,
+        lease_expires_unix_ms,
+    )?;
+    let recall = recall_generated_with_engram(
+        &cue,
+        &context.retrieval_policy,
+        &generated,
+        &context.engram_snapshot,
+        &context.dynamics_policy,
+    )
+    .map_err(|error| CognitiveStoreError::Conflict(error.to_string()))?;
+    let assignment =
+        observe_retrieval_assignment(&cue, &context.retrieval_policy, &generated, &recall)
+            .map_err(|error| CognitiveStoreError::Conflict(error.to_string()))?;
+    Ok(OwnerRetrievalExecutionV1 { recall, assignment })
+}
+
+pub(crate) fn prepare_owner_observation(
+    observation: &RetrievalObservation,
+    cut: &DurableCognitiveSnapshot,
+    context: &RetrievalExecutionContextV1,
+    request_digest: Digest32,
+    acquired_at_unix_ms: u64,
+    lease_expires_unix_ms: u64,
+) -> Result<(MemoryCueV1, GeneratedCandidateInputV1), CognitiveStoreError> {
     context.validate()?;
     if request_digest.is_zero() {
         return Err(CognitiveStoreError::Invalid(
@@ -154,18 +185,7 @@ pub fn execute_owner_observation(
         context.cue_profile_digest,
     )
     .map_err(|error| CognitiveStoreError::Invalid(error.to_string()))?;
-    let recall = recall_generated_with_engram(
-        &cue,
-        &context.retrieval_policy,
-        &generated,
-        &context.engram_snapshot,
-        &context.dynamics_policy,
-    )
-    .map_err(|error| CognitiveStoreError::Conflict(error.to_string()))?;
-    let assignment =
-        observe_retrieval_assignment(&cue, &context.retrieval_policy, &generated, &recall)
-            .map_err(|error| CognitiveStoreError::Conflict(error.to_string()))?;
-    Ok(OwnerRetrievalExecutionV1 { recall, assignment })
+    Ok((cue, generated))
 }
 
 pub(crate) fn generated_input_from_owner_observation(

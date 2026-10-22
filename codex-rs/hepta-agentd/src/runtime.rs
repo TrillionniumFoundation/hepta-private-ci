@@ -75,6 +75,7 @@ pub async fn run(
     let retrieval_mode = config.cognitive_retrieval_mode();
     let retrieval_context = config.cognitive_retrieval_context();
     let retrieval_learning = config.cognitive_retrieval_learning();
+    let memory_cell_persistence = config.memory_cell_persistence();
     require_cognitive_retrieval_context_for_mode(retrieval_mode, retrieval_context.is_some())?;
     let intuition_policy_host = config.intuition_policy_host();
     let intelligence_product = config.intelligence_product_runner();
@@ -128,6 +129,14 @@ pub async fn run(
         state.cognitive_retrieval_learning.set(sink).map_err(|_| {
             AgentdError::Invalid("cognitive retrieval learning sink already attached".to_string())
         })?;
+    }
+    if let Some(persistence) = memory_cell_persistence {
+        state
+            .memory_cell_persistence
+            .set(persistence)
+            .map_err(|_| {
+                AgentdError::Invalid("MemoryCell persistence already attached".to_string())
+            })?;
     }
     match (trust_file, checkpoint_file) {
         (Some(trust), Some(checkpoint)) => {

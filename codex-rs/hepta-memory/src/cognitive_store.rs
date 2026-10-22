@@ -353,6 +353,13 @@ impl CognitiveStore {
         &self.path
     }
 
+    /// Drain the shared SQLite pool before releasing this handle's owner lock.
+    /// Hosts must first stop admissions and release other store/writer handles;
+    /// dropping a pool alone does not wait for its final WAL checkpoint.
+    pub async fn close(self) {
+        self.pool.close().await;
+    }
+
     pub fn owner_agent_id(&self) -> &AgentId {
         &self.owner_agent_id
     }
