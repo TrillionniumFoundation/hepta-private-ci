@@ -280,3 +280,32 @@ pub fn encrypt(data: &[u8], key: &AesKey, iv: &AesIv) -> Vec<u8> {
 pub fn decrypt(encrypted_data: &[u8], key: &AesKey, iv: &AesIv) -> Result<Vec<u8>, Error> {
     feature_needed!()
 }
+
+#[cfg(test)]
+mod test {
+    use super::*;
+
+    #[test]
+    fn should_create_plain_session() {
+        zruntime::block_on(async {
+            let conn = zbus::Connection::session().await.unwrap();
+            let service_proxy = ServiceProxy::new(&conn).await.unwrap();
+            let session = Session::new(&service_proxy, EncryptionType::Plain)
+                .await
+                .unwrap();
+            assert!(session.get_aes_key().is_none());
+        });
+    }
+
+    #[test]
+    fn should_create_encrypted_session() {
+        zruntime::block_on(async {
+            let conn = zbus::Connection::session().await.unwrap();
+            let service_proxy = ServiceProxy::new(&conn).await.unwrap();
+            let session = Session::new(&service_proxy, EncryptionType::Dh)
+                .await
+                .unwrap();
+            assert!(session.get_aes_key().is_some());
+        });
+    }
+}
