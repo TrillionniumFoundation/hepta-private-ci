@@ -55,6 +55,10 @@ mod share;
 #[path = "remote_tests.rs"]
 mod tests;
 
+#[cfg(test)]
+#[path = "remote_cache_publish_tests.rs"]
+mod cache_publish_tests;
+
 pub use remote_installed_plugin_sync::RemoteInstalledPluginBundleSyncError;
 pub use remote_installed_plugin_sync::RemoteInstalledPluginBundleSyncOutcome;
 pub use remote_installed_plugin_sync::RemotePluginCacheMutationGuard;
@@ -457,6 +461,12 @@ pub enum RemotePluginCatalogError {
 
     #[error("{0}")]
     CacheRemove(String),
+
+    #[error("failed to publish remote plugin catalog cache (kind={kind:?}, os_code={os_code:?})")]
+    CachePublish {
+        kind: std::io::ErrorKind,
+        os_code: Option<i32>,
+    },
 }
 
 impl RemotePluginCatalogError {
@@ -484,6 +494,7 @@ impl RemotePluginCatalogError {
             | Self::ArchiveTooLarge { .. }
             | Self::MissingUploadEtag
             | Self::UnexpectedResponse(_)
+            | Self::CachePublish { .. }
             | Self::CacheRemove(_) => None,
         }
     }
@@ -950,7 +961,11 @@ pub(crate) async fn fetch_and_cache_remote_plugin_catalog(
 ) -> Result<(), RemotePluginCatalogError> {
     let auth = ensure_chatgpt_auth(auth)?;
     let plugins = fetch_directory_plugins_for_scope(config, auth, scope).await?;
-    catalog_cache::write_cached_directory_plugins(codex_home, config, auth, scope, &plugins);
+    catalog_cache::write_cached_directory_plugins(codex_home, config, auth, scope, &plugins)
+        .map_err(|error| RemotePluginCatalogError::CachePublish {
+            kind: error.kind(),
+            os_code: error.raw_os_error(),
+        })?;
     Ok(())
 }
 
@@ -1995,8 +2010,17 @@ async fn fetch_directory_plugins_for_scope_with_cache(
     }
 
     let plugins = fetch_directory_plugins_for_scope(config, auth, scope).await?;
-    if let Some(codex_home) = codex_home {
-        catalog_cache::write_cached_directory_plugins(codex_home, config, auth, scope, &plugins);
+    if let Some(codex_home) = codex_home
+        && let Err(error) =
+            catalog_cache::write_cached_directory_plugins(codex_home, config, auth, scope, &plugins)
+    {
+        // The foreground catalog remains usable even when its optional disk cache cannot publish.
+        tracing::warn!(
+            scope = ?scope,
+            error_kind = ?error.kind(),
+            os_code = ?error.raw_os_error(),
+            "failed to publish remote plugin catalog cache; returning fetched plugins"
+        );
     }
     Ok(DirectoryPluginsFetchOutcome {
         plugins,
