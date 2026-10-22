@@ -586,7 +586,12 @@ async fn bedrock_endpoints_require_explicit_experimental_api() -> Result<()> {
             )
             .await?;
         assert!(matches!(initialized, JSONRPCMessage::Response(_)));
-        assert_bedrock_requests_denied(&mut app_server, None, codex_home.path()).await?;
+        assert_bedrock_requests_denied(
+            &mut app_server,
+            /*expected_message*/ None,
+            codex_home.path(),
+        )
+        .await?;
     }
     Ok(())
 }
