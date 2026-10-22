@@ -274,7 +274,14 @@ pub struct ToolOutcomeV1 {
 
 impl ToolOutcomeV1 {
     pub fn validate(&self) -> Result<(), ExecutionContractError> {
-        if self.terminal_observed && self.stdout_digest.is_none() && self.stderr_digest.is_none() {
+        // A silent process can terminate with a trustworthy exit observation
+        // but no stdout/stderr bytes. The process exit code is itself a
+        // terminal marker; missing *all* markers still fails closed.
+        if self.terminal_observed
+            && self.exit_code.is_none()
+            && self.stdout_digest.is_none()
+            && self.stderr_digest.is_none()
+        {
             return Err(ExecutionContractError::MissingTerminalOutcome);
         }
         // An exit status is a terminal process observation. Accepting it with
