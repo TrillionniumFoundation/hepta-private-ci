@@ -156,6 +156,48 @@ def select_shadow_portfolio(baseline_losses, assets, budget, *,
     return receipt
 
 
+
+def empirical_grid_frontier(baseline_losses, assets, budget, *,
+                            calibration_digest, objective_digest, max_points=256):
+    """All nondominated feasible *grid-proxy* points, never a global latent frontier.
+
+    A point dominates another when it has at least as much utility and no
+    greater variance, CVaR90 or physical cost, with one strict improvement.
+    This is a finite shadow report, not a stochastic-control certificate.
+    """
+    if not 1 <= max_points <= 1024:
+        raise PortfolioRejected('invalid frontier bound')
+    cells = sorted(tuple(assets), key=lambda c: c.asset_id)
+    base = _validate(baseline_losses, cells, budget, calibration_digest, objective_digest)
+    def dominates(left, right):
+        weak = (left['utility_delta'] >= right['utility_delta'] - 1e-12
+                and left['variance'] <= right['variance'] + 1e-12
+                and left['tail'] <= right['tail'] + 1e-12
+                and left['cost'] <= right['cost'] + 1e-12)
+        strict = (left['utility_delta'] > right['utility_delta'] + 1e-12
+                  or left['variance'] < right['variance'] - 1e-12
+                  or left['tail'] < right['tail'] - 1e-12
+                  or left['cost'] < right['cost'] - 1e-12)
+        return weak and strict
+    frontier = []
+    for ticks in product(range(budget.grid + 1), repeat=len(cells)):
+        if (sum(ticks) > budget.grid or sum(x > 0 for x in ticks) > budget.max_cells or
+                any(x > c.cap_ticks for x, c in zip(ticks, cells))):
+            continue
+        row = _evaluate(base, cells, ticks, budget)
+        if row['cost'] > budget.cost_limit + 1e-12 or row['tail'] > budget.cvar90_limit + 1e-12:
+            continue
+        point = {'ticks': tuple(ticks), **row}
+        if any(dominates(previous, point) for previous in frontier):
+            continue
+        frontier = [previous for previous in frontier if not dominates(point, previous)]
+        frontier.append(point)
+        if len(frontier) > max_points:
+            raise PortfolioRejected('frontier capacity exceeded; do not silently truncate')
+    frontier.sort(key=lambda p: (p['variance'], p['tail'], -p['utility_delta'], p['cost'], p['ticks']))
+    return frontier
+
+
 def verify_shadow_receipt(receipt, baseline_losses, assets, budget, *,
                           calibration_digest, objective_digest):
     expected = select_shadow_portfolio(baseline_losses, assets, budget,
