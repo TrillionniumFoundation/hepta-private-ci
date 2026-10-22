@@ -28,7 +28,7 @@ const ALLOWED: &[u8] = b"ALLOWED";
 const SECRET: &[u8] = b"SECRET";
 
 fn read_only_sandbox(root: &Path) -> Result<FileSystemSandboxContext> {
-    let root = AbsolutePathBuf::from_absolute_path(root)?;
+    let root = AbsolutePathBuf::from_absolute_path(root.canonicalize()?)?;
     let policy = FileSystemSandboxPolicy::restricted(vec![FileSystemSandboxEntry::new(
         FileSystemPath::Path {
             path: PathUri::from_abs_path(&root),
