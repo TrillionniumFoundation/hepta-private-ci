@@ -1,0 +1,177 @@
+# LOCAL PROPOSAL ONLY. Requires separate exact-commit review and execution authorization.
+name: a32 heavy SDK capability diagnostic v2 (not full CI qualification)
+permissions:
+  contents: read
+jobs:
+  sdks:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 120
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+      with:
+        persist-credentials: false
+        fetch-depth: 2
+    - name: Guard approved source and record unchanged namespace policy
+      shell: bash
+      run: python3 .github/scripts/sdk_diagnostic.py preflight-sdk
+    - name: Install Linux bwrap build dependencies
+      shell: bash
+      run: |
+        set -euo pipefail
+        sudo apt-get update -y
+        sudo DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends pkg-config libcap-dev
+    - name: Setup pnpm
+      uses: pnpm/action-setup@a8198c4bff370c8506180b035930dea56dbd5288
+      with:
+        run_install: false
+    - name: Setup Node.js
+      uses: actions/setup-node@53b83947a5a98c8d113130e565377fae1a50d02f
+      with:
+        node-version: 22
+        cache: pnpm
+    - name: Set up Bazel CI
+      id: setup_bazel
+      shell: bash
+      run: python3 .github/scripts/sdk_diagnostic.py bootstrap
+    - name: Restore bazel repository cache
+      id: cache_bazel_repository_restore
+      continue-on-error: true
+      uses: actions/cache/restore@668228422ae6a00e4ad889ee87cd7109ec5666a7
+      with:
+        path: ${{ steps.setup_bazel.outputs.repository-cache-path }}
+        key: bazel-cache-x86_64-unknown-linux-gnu-${{ hashFiles('MODULE.bazel', 'codex-rs/Cargo.lock', 'codex-rs/Cargo.toml') }}
+    - name: Build codex and code-mode host with Bazel
+      env:
+        BUILDBUDDY_API_KEY: ''
+      shell: bash
+      run: |
+        set -euo pipefail
+        codex_target="//codex-rs/cli:codex"
+        code_mode_host_target="//codex-rs/code-mode-host:codex-code-mode-host"
+
+        # Use the shared CI wrapper so fork PRs fall back cleanly when
+        # BuildBuddy credentials are unavailable. The SDK tests need both
+        # executables on disk because codex resolves code-mode-host as a
+        # sibling process at runtime.
+        ./.github/scripts/run-bazel-ci.sh \
+          --remote-download-toplevel \
+          -- \
+          build \
+          --build_metadata=COMMIT_SHA=${GITHUB_SHA} \
+          --build_metadata=TAG_job=sdk \
+          -- \
+          "${codex_target}" \
+          "${code_mode_host_target}"
+
+        # Resolve exact output files through the same wrapper/config path as
+        # the build instead of relying on Bazel convenience symlinks.
+        resolve_bazel_executable() {
+          local target="$1"
+          local executable_name="$2"
+          local cquery_output=""
+          local cquery_stdout=""
+          local cquery_status=0
+          local candidate
+          local resolved_output
+
+          # Capture the producer status before treating stdout as an output path.
+          # Process substitution would hide a failed cquery that printed a path first.
+          if cquery_stdout="$(
+            ./.github/scripts/run-bazel-ci.sh \
+              -- \
+              cquery \
+              --output=files \
+              -- \
+              "${target}"
+          )"; then
+            :
+          else
+            cquery_status="$?"
+            printf '%s\n' "${cquery_stdout}" >&2
+            echo "Bazel cquery failed for ${target} with status ${cquery_status}." >&2
+            return "${cquery_status}"
+          fi
+
+          while IFS= read -r candidate; do
+            if [[ "${candidate}" != /* && "${candidate}" != bazel-out/* ]]; then
+              continue
+            fi
+            if [[ "$(basename "${candidate}")" == "${executable_name}" ]]; then
+              cquery_output="${candidate}"
+            fi
+          done <<< "${cquery_stdout}"
+
+          if [[ -z "${cquery_output}" ]]; then
+            echo "Bazel did not report ${executable_name} for ${target}." >&2
+            return 1
+          fi
+
+          if [[ "${cquery_output}" = /* ]]; then
+            resolved_output="${cquery_output}"
+          else
+            resolved_output="${GITHUB_WORKSPACE}/${cquery_output}"
+          fi
+          if [[ ! -e "${resolved_output}" ]]; then
+            echo "Unable to locate ${target} at ${resolved_output}." >&2
+            return 1
+          fi
+          printf '%s\n' "${resolved_output}"
+        }
+
+        codex_bazel_output_path="$(resolve_bazel_executable "${codex_target}" codex)"
+        code_mode_host_bazel_output_path="$(
+          resolve_bazel_executable \
+            "${code_mode_host_target}" \
+            codex-code-mode-host
+        )"
+
+        # Stage both sibling executables into one stable workspace directory.
+        # The tests spawn codex repeatedly; codex then discovers the host next
+        # to itself without requiring a source checkout or a Bazel invocation.
+        install_dir="${GITHUB_WORKSPACE}/.tmp/sdk-ci"
+        mkdir -p "${install_dir}"
+        install -m 755 "${codex_bazel_output_path}" "${install_dir}/codex"
+        install -m 755 \
+          "${code_mode_host_bazel_output_path}" \
+          "${install_dir}/codex-code-mode-host"
+        echo "CODEX_EXEC_PATH=${install_dir}/codex" >> "$GITHUB_ENV"
+    - name: Warm up Bazel-built SDK executables
+      shell: bash
+      run: |
+        set -euo pipefail
+        "${CODEX_EXEC_PATH}" --version
+        "${CODEX_EXEC_PATH%/*}/codex-code-mode-host" --help >/dev/null
+    - name: Install dependencies
+      run: pnpm install --frozen-lockfile
+    - name: Build SDK packages
+      run: pnpm -r --filter ./sdk/typescript run build
+    - name: Lint SDK packages
+      run: pnpm -r --filter ./sdk/typescript run lint
+    - name: Test SDK packages
+      run: pnpm -r --filter ./sdk/typescript run test
+    - name: Save bazel repository cache
+      if: always() && !cancelled() && steps.setup_bazel.outcome == 'success' && steps.cache_bazel_repository_restore.outputs.cache-hit
+        != 'true'
+      continue-on-error: true
+      uses: actions/cache/save@668228422ae6a00e4ad889ee87cd7109ec5666a7
+      with:
+        path: ${{ steps.setup_bazel.outputs.repository-cache-path }}
+        key: bazel-cache-x86_64-unknown-linux-gnu-${{ hashFiles('MODULE.bazel', 'codex-rs/Cargo.lock', 'codex-rs/Cargo.toml') }}
+    - name: Check for a clean worktree
+      if: always() && !cancelled()
+      uses: ./.github/actions/check-clean-worktree
+    - name: Recheck source, index and raw bytes
+      if: always() && !cancelled()
+      shell: bash
+      run: python3 .github/scripts/sdk_diagnostic.py final
+    if: github.repository == 'TrillionniumFoundation/hepta-private-ci' && github.event_name == 'push' && github.ref == 'refs/heads/diagnostic/a32-sdk-capability-native-v2-20261022'
+'on':
+  push:
+    branches:
+    - diagnostic/a32-sdk-capability-native-v2-20261022
+env:
+  BUILDBUDDY_API_KEY: ''
+concurrency:
+  group: a32-sdk-capability-native-v2-${{ github.ref }}
+  cancel-in-progress: false
