@@ -63,3 +63,34 @@ the caller-provided cap, timing measurement and output witness require a
 separately trusted independent observer. No new model training, heldout
 evaluation, production resource monitoring, physical authorization or
 scientific NDU superiority has been established.
+
+
+## Semantic failure-penalty and small-budget ledger integrity (child Draft)
+
+An original decoder outcome marked **completed** previously accepted any finite
+nonnegative `loss`, even if the registered fixed penalty for a `failed`
+draw was lower. A completed loss of 30 and failed loss of 2 were both legal:
+abort/failure could appear statistically safer than success. This correction
+**fails closed** on a completed loss exceeding `failure_loss`, on *every* NDU
+and strong-control arm. The registered external evaluator must bound its
+completed-loss domain or specify a valid failure penalty **before** touching
+new heldout data. The patch does not clamp values, rewrite labels or retune
+the existing experiment after seeing heldout.
+
+The former physical ledger reconciliation accepted an **absolute** discrepancy
+of `1e-9` even for costs around `1e-7`. For a registered cap `1.035e-7`,
+the original reference could record `actual_subtotal=1.04e-7`,
+`declared_total=1.032e-7` and incorrectly pass a *provisional* 2,000-bootstrap
+comparison under a 1.05 cost ratio. The new check uses a **scale-relative**
+`math.isclose(..., rel_tol=1e-10, abs_tol=0)`, preserving genuine IEEE-754
+roundoff without a unit-dependent escape hatch. The already strict absolute
+`total > hard_world_cost_limit` admission is retained.
+
+Five synthetic adversarial/boundary tests are added: NDU severe completed
+loss, strong comparator severe completed loss, equality at the frozen maximum,
+fraudulent tiny cost ledger, and allowable tiny roundoff. Locally 63/63
+`pytest` tests pass with Python 3.13 / NumPy 2.3.5 / torch 2.10 CPU.
+This is a **research metadata validator**, not real decoded-output generation,
+source authentication, scientific superiority, or trusted physical metering.
+The published #3039 and #3213 negative results, frozen #3055 protocol,
+production authority, and all model weights remain unchanged.
