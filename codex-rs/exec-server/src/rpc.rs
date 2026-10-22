@@ -909,6 +909,7 @@ mod tests {
     async fn inbound_request_span_stays_open_until_event_consumption() {
         let span_exporter = InMemorySpanExporter::default();
         let tracer_provider = SdkTracerProvider::builder()
+            .with_sampler(opentelemetry_sdk::trace::Sampler::AlwaysOn)
             .with_simple_exporter(span_exporter.clone())
             .build();
         let subscriber = tracing_subscriber::registry().with(

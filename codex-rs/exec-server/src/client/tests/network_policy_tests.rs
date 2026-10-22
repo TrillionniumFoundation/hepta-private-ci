@@ -315,6 +315,7 @@ async fn abandoned_process_start_unregisters_and_cleans_up() {
 async fn policy_requests_use_process_decider_and_cancel_on_unregister() {
     let span_exporter = InMemorySpanExporter::default();
     let tracer_provider = SdkTracerProvider::builder()
+        .with_sampler(opentelemetry_sdk::trace::Sampler::AlwaysOn)
         .with_simple_exporter(span_exporter.clone())
         .build();
     let subscriber = tracing_subscriber::registry().with(

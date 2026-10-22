@@ -73,6 +73,7 @@ mod tests {
     async fn telemetry_entrypoint_emits_root_span() {
         let exporter = InMemorySpanExporter::default();
         let provider = SdkTracerProvider::builder()
+            .with_sampler(opentelemetry_sdk::trace::Sampler::AlwaysOn)
             .with_simple_exporter(exporter.clone())
             .build();
         let subscriber = tracing_subscriber::registry()
