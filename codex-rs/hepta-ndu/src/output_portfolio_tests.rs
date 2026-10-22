@@ -1064,6 +1064,22 @@ fn selection_digest_binds_all_published_receipt_fields_without_replay() {
     assert!(!receipt.frontier.is_empty());
     assert!(!receipt.allocations.is_empty());
 
+    let mut changed = receipt.clone();
+    changed.objective_digest = Digest32::of_bytes(b"other-objective");
+    assert_ne!(digest_of(&changed), receipt.selection_digest);
+
+    let mut changed = receipt.clone();
+    changed.generation = Generation::new(2).expect("successor generation");
+    assert_ne!(digest_of(&changed), receipt.selection_digest);
+
+    let mut changed = receipt.clone();
+    changed.encoder_digest = Digest32::of_bytes(b"other-encoder");
+    assert_ne!(digest_of(&changed), receipt.selection_digest);
+
+    let mut changed = receipt.clone();
+    changed.snapshot_digest = Digest32::of_bytes(b"other-snapshot");
+    assert_ne!(digest_of(&changed), receipt.selection_digest);
+
     let one_ulp = FixedQ32::from_raw(1);
     let mut changed = receipt.clone();
     changed.total_resource = changed
