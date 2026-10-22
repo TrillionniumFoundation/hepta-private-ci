@@ -1,0 +1,230 @@
+name: Windows sandbox exact19f diagnostic
+
+on:
+  push:
+    branches: [agents/20261022/windows-sandbox-exact19f-diagnostic]
+    paths: [.github/workflows/windows-sandbox-exact19f-diagnostic.yml]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: windows-sandbox-exact19f-diagnostic
+  cancel-in-progress: false
+
+env:
+  SOURCE_SHA: 19f2c83ac16e01a99ba3419f3976d3084f41b103
+  SOURCE_TREE: bf9142f6f6af2a368bdbb5dafcc969087c44777f
+  WORKFLOW_PATH: .github/workflows/windows-sandbox-exact19f-diagnostic.yml
+  CARGO_INCREMENTAL: "0"
+  CARGO_BUILD_JOBS: "2"
+  CARGO_PROFILE_TEST_DEBUG: "0"
+  CARGO_PROFILE_DEV_DEBUG: "0"
+  CARGO_TERM_COLOR: never
+  CARGO_NET_GIT_FETCH_WITH_CLI: "true"
+
+jobs:
+  diagnostic:
+    if: github.repository == 'TrillionniumFoundation/hepta-private-ci' && github.event_name == 'push' && github.ref == 'refs/heads/agents/20261022/windows-sandbox-exact19f-diagnostic'
+    runs-on: windows-latest
+    timeout-minutes: 100
+    steps:
+      - name: Checkout the exact diagnostic-bearing source
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: 19f2c83ac16e01a99ba3419f3976d3084f41b103
+          fetch-depth: 0
+          persist-credentials: false
+        timeout-minutes: 10
+
+      - name: Bind test source separately from workflow source
+        id: bind
+        shell: pwsh
+        timeout-minutes: 5
+        run: |
+          $env:EVIDENCE_DIR = Join-Path $env:RUNNER_TEMP "windows-sandbox-exact19f-$env:GITHUB_RUN_ID-$env:GITHUB_RUN_ATTEMPT"
+          $env:CARGO_TARGET_DIR = Join-Path $env:RUNNER_TEMP "windows-sandbox-exact19f-target"
+          "EVIDENCE_DIR=$env:EVIDENCE_DIR" >> $env:GITHUB_ENV
+          "CARGO_TARGET_DIR=$env:CARGO_TARGET_DIR" >> $env:GITHUB_ENV
+          @'
+          import hashlib, json, os, subprocess
+          from pathlib import Path
+          e = Path(os.environ["EVIDENCE_DIR"])
+          e.mkdir()
+          def git(*args):
+              return subprocess.check_output(["git", *args], text=True).strip()
+          paths = ["codex-rs/windows-sandbox-rs/src/token_tests.rs",
+                   "codex-rs/windows-sandbox-rs/src/acl_tests.rs",
+                   "codex-rs/windows-sandbox-rs/src/token.rs",
+                   "codex-rs/windows-sandbox-rs/src/acl.rs",
+                   "codex-rs/windows-sandbox-rs/src/unified_exec/tests.rs",
+                   "codex-rs/Cargo.toml", "codex-rs/Cargo.lock", "MODULE.bazel.lock",
+                   "codex-rs/windows-sandbox-rs/Cargo.toml",
+                   "codex-rs/.config/nextest.toml", "codex-rs/rust-toolchain.toml",
+                   "justfile", "scripts/run-nextest.py", "scripts/just-shell.py"]
+          source = {"head": git("rev-parse", "HEAD"), "tree": git("rev-parse", "HEAD^{tree}"),
+                    "status": git("status", "--porcelain=v1", "--untracked-files=all"),
+                    "files": {p: {"blob": git("rev-parse", "HEAD:" + p),
+                                  "worktree_blob": git("hash-object", "--path=" + p, p),
+                                  "sha256": hashlib.sha256(Path(p).read_bytes()).hexdigest()} for p in paths}}
+          workflow_sha = os.environ["GITHUB_SHA"]
+          workflow = os.environ["WORKFLOW_PATH"]
+          workflow_bytes = subprocess.check_output(["git", "show", workflow_sha + ":" + workflow])
+          (e / "workflow-source.yml").write_bytes(workflow_bytes)
+          receipt = {"source": source, "workflow_sha": workflow_sha,
+                     "workflow_blob": git("rev-parse", workflow_sha + ":" + workflow),
+                     "workflow_sha256": hashlib.sha256(workflow_bytes).hexdigest(),
+                     "workflow_ref": os.environ["GITHUB_WORKFLOW_REF"],
+                     "workflow_diff": git("diff", "--name-status", "--no-renames", os.environ["SOURCE_SHA"], workflow_sha).splitlines(),
+                     "run_id": os.environ["GITHUB_RUN_ID"], "run_attempt": os.environ["GITHUB_RUN_ATTEMPT"],
+                     "qualification": "Seven selected original tests with new diagnostic argv; not the original Bazel shard or complete Windows qualification",
+                     "verified": False}
+          (e / "source-before.json").write_text(json.dumps(receipt, indent=2) + "\n")
+          assert os.name == "nt" and os.environ["RUNNER_OS"] == "Windows"
+          assert source["head"] == os.environ["SOURCE_SHA"] and source["tree"] == os.environ["SOURCE_TREE"]
+          assert not source["status"], source["status"]
+          assert receipt["workflow_diff"] == ["A\t" + workflow], receipt["workflow_diff"]
+          subprocess.run(["git", "merge-base", "--is-ancestor", os.environ["SOURCE_SHA"], workflow_sha], check=True)
+          assert source["files"][paths[0]]["blob"] == "7b1bf73f8c9fca900ef042fb33958795184d6b79"
+          for p, item in source["files"].items():
+              assert item["blob"] == item["worktree_blob"], p
+          receipt["verified"] = True
+          (e / "source-before.json").write_text(json.dumps(receipt, indent=2) + "\n")
+          '@ | python -
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+
+      - name: Install the pinned repository compiler
+        uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582
+        with:
+          toolchain: "1.95.0"
+        timeout-minutes: 10
+
+      - name: Install the existing pinned repository test runners
+        uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
+        with:
+          tool: just@1.51.0,nextest@0.9.103
+        timeout-minutes: 5
+
+      - name: Run both original test groups and retain every failure
+        shell: pwsh
+        timeout-minutes: 60
+        run: |
+          @'
+          import hashlib, json, os, shutil, subprocess, sys, time
+          from pathlib import Path
+          import xml.etree.ElementTree as ET
+          e = Path(os.environ["EVIDENCE_DIR"])
+          with (e / "tool-versions.log").open("wb") as output:
+              for command in [["rustc", "--version", "--verbose"], ["cargo", "--version"],
+                              ["just", "--version"], ["cargo", "nextest", "--version"]]:
+                  output.write((json.dumps(command) + "\n").encode())
+                  output.flush()
+                  subprocess.run(command, cwd="codex-rs", stdout=output, stderr=subprocess.STDOUT, check=True)
+          groups = {
+              "delete-negatives": [
+                  "token::tests::partial_delete_deny_is_repaired_before_native_workspace_writes",
+                  "token::tests::workspace_capabilities_deny_writes_and_deletes_under_broad_identity_aces",
+                  "unified_exec::tests::legacy_workspace_write_delete_is_limited_to_writable_roots"],
+              "acl-suite": [
+                  "acl::tests::complete_denies_compare_mapped_masks_and_require_every_right",
+                  "acl::tests::complete_denies_require_effective_recursive_scope_and_precede_allows",
+                  "acl::tests::partial_read_deny_is_repaired_before_native_file_data_access",
+                  "acl::tests::deny_ace_update_failure_is_an_error"]}
+          junit = Path("codex-rs/target/nextest/local/junit.xml")
+          assert not junit.exists(), "Fresh checkout unexpectedly contains an old JUnit report"
+          records = []
+          for name, expected in groups.items():
+              expression = " | ".join("test(=" + item + ")" for item in expected)
+              argv = ["just", "test", "--locked", "-p", "codex-windows-sandbox", "--lib",
+                      "-E", expression, "--test-threads", "1", "--no-tests", "fail", "--retries", "0",
+                      "--failure-output", "immediate-final", "--success-output", "final"]
+              # The unchanged repository shim already supplies --no-fail-fast.
+              record = {"name": name, "argv": argv, "cwd": "codex-rs", "expected": expected,
+                        "started_unix": time.time(), "exit_code": None, "status": "running",
+                        "fresh_junit_verified": False}
+              records.append(record)
+              path = e / (name + ".json")
+              path.write_text(json.dumps(record, indent=2) + "\n")
+              stdout, stderr = e / (name + ".stdout.log"), e / (name + ".stderr.log")
+              try:
+                  assert not junit.exists(), "Previous raw JUnit was not safely archived"
+                  with stdout.open("wb") as out, stderr.open("wb") as err:
+                      record["exit_code"] = subprocess.run(argv, cwd="codex-rs", stdout=out, stderr=err).returncode
+                  archived = e / (name + ".junit.xml")
+                  shutil.copyfile(junit, archived)
+                  assert archived.read_bytes() == junit.read_bytes()
+                  junit.unlink()  # All original bytes remain in the group-specific artifact.
+                  report = ET.parse(archived)
+                  cases = [{"name": case.get("name"), "classname": case.get("classname"),
+                            "failed": any(node.tag in ("failure", "error") for node in case),
+                            "skipped": case.find("skipped") is not None,
+                            "retried": any(node.tag in ("rerunFailure", "rerunError", "flakyFailure", "flakyError") for node in case)}
+                           for case in report.iter("testcase")]
+                  names = [case["name"] for case in cases]
+                  record["cases"] = cases
+                  record["fresh_junit_verified"] = len(names) == len(expected) and set(names) == set(expected) and not any(case["skipped"] or case["retried"] for case in cases)
+                  passed = record["exit_code"] == 0 and record["fresh_junit_verified"] and not any(case["failed"] for case in cases)
+                  record["status"] = "passed" if passed else "failed"
+              except Exception as error:
+                  record.update(status="failed", error=repr(error))
+              record["finished_unix"] = time.time()
+              path.write_text(json.dumps(record, indent=2) + "\n")
+              print(json.dumps(record), flush=True)
+              for log in (stdout, stderr):
+                  if log.exists():
+                      print("::group::" + log.name, flush=True)
+                      sys.stdout.buffer.write(log.read_bytes())
+                      sys.stdout.buffer.flush()
+                      print("\n::endgroup::", flush=True)
+          (e / "commands.json").write_text(json.dumps(records, indent=2) + "\n")
+          if len(records) != 2 or not all(r["status"] == "passed" for r in records):
+              raise SystemExit(1)
+          '@ | python -
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+
+      - name: Always verify unchanged source and exact group completion
+        if: always()
+        shell: pwsh
+        timeout-minutes: 5
+        run: |
+          @'
+          import hashlib, json, os, subprocess
+          from pathlib import Path
+          e = Path(os.environ["RUNNER_TEMP"]) / ("windows-sandbox-exact19f-" + os.environ["GITHUB_RUN_ID"] + "-" + os.environ["GITHUB_RUN_ATTEMPT"])
+          e.mkdir(exist_ok=True)
+          result = {"source_unchanged": False, "both_groups_passed": False,
+                    "qualification": "Selected original tests only; no full-shard qualification"}
+          try:
+              before = json.loads((e / "source-before.json").read_text())
+              def git(*args):
+                  return subprocess.check_output(["git", *args], text=True).strip()
+              after = {"head": git("rev-parse", "HEAD"), "tree": git("rev-parse", "HEAD^{tree}"),
+                       "status": git("status", "--porcelain=v1", "--untracked-files=all"),
+                       "files": {p: {"blob": git("rev-parse", "HEAD:" + p),
+                                     "worktree_blob": git("hash-object", "--path=" + p, p),
+                                     "sha256": hashlib.sha256(Path(p).read_bytes()).hexdigest()} for p in before["source"]["files"]}}
+              (e / "source-after.json").write_text(json.dumps(after, indent=2) + "\n")
+              result["source_unchanged"] = before["verified"] and after == before["source"]
+              records = json.loads((e / "commands.json").read_text())
+              result["both_groups_passed"] = [r["name"] for r in records] == ["delete-negatives", "acl-suite"] and all(r["status"] == "passed" and r["exit_code"] == 0 and r["fresh_junit_verified"] for r in records)
+          except Exception as error:
+              result["error"] = repr(error)
+          (e / "verification.json").write_text(json.dumps(result, indent=2) + "\n")
+          files = [{"path": p.name, "bytes": p.stat().st_size, "sha256": hashlib.sha256(p.read_bytes()).hexdigest()}
+                   for p in sorted(e.iterdir()) if p.is_file() and p.name != "inventory.json"]
+          (e / "inventory.json").write_text(json.dumps({"verification": result, "files": files}, indent=2) + "\n")
+          print(json.dumps(result, indent=2))
+          if not result["source_unchanged"] or not result["both_groups_passed"]:
+              raise SystemExit(1)
+          '@ | python -
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+
+      - name: Always retain diagnostic evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: windows-sandbox-exact19f-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/windows-sandbox-exact19f-${{ github.run_id }}-${{ github.run_attempt }}/
+          if-no-files-found: error
+          retention-days: 7
+        timeout-minutes: 5
