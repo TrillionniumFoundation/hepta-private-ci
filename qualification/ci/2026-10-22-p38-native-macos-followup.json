@@ -1,0 +1,358 @@
+{
+  "schema": "hepta.p38.macos-followup.evidence.v1",
+  "captured_at_utc": "2026-10-22T09:37:18.524797+00:00",
+  "prior_frozen_local_source": "322a2ddc6ca774225790d7115203b1b7c2a4d917",
+  "source": "f5d05b2735d44b88a5cf7edc6f892ea060180fd8",
+  "source_tree": "8c9f0954031686a34b86e2d72e17fbd0c8609fd4",
+  "original_ci": {
+    "job_id": 119686716618,
+    "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/39734404418/job/119686716618",
+    "pr_head": "9370b49332c35b7303528eafbb4733639d628283",
+    "execution_merge": "181eb981eec7c2ccd50cdfb45a1abec9458a4087",
+    "base": "dac730dc8ddbd96d87f6dc0c5eb94d3436d90a2b",
+    "platform": "macos-15-intel / x86_64-apple-darwin; macOS 15.7.9",
+    "conclusion": "cancelled",
+    "completed_at": "2026-10-22T09:17:45Z",
+    "last_observed_build_progress": "13950/16066 actions, 134/565 tests, 4 failed targets; compiler still active before cancellation",
+    "log": {
+      "path": "/tmp/hepta-p38-job-119686716618.log",
+      "bytes": 1469139,
+      "sha256": "a34a9ac27350baafae8555469cfcbfb47ce55adfb8d0de5db5ab777ae05c2fe8"
+    }
+  },
+  "stages": [
+    {
+      "commit": "14508c25978d502d8c9cb25ff8d11488c5b4128f",
+      "tree": "86de667c80b7fae7f38bf63c93933d0ccc7de485",
+      "patch": "04-state-cold-connection-initialization.patch",
+      "patch_sha256": "d7633311a654cfd4ef96812c368707fdae576f9f43813577092236742a3146b4",
+      "files": [
+        "codex-rs/state/src/sqlite.rs",
+        "codex-rs/state/src/sqlite_connection_tests.rs"
+      ],
+      "message": "fix(state): keep cold SQLite readers from taking writer locks",
+      "parent": "322a2ddc6ca774225790d7115203b1b7c2a4d917",
+      "changed_lines": 119
+    },
+    {
+      "commit": "3ada67e9c68cac0ddfeffcff71cdd70f3fe06db9",
+      "tree": "203e0999fdbf81ae25856a76576f959838199f6c",
+      "patch": "01-state-cold-image-canonical-fixtures.patch",
+      "patch_sha256": "b91253dac9dbddf078b69f622717b5cd1f53de31ed59a026fb3796828774119f",
+      "files": ["codex-rs/state/src/sqlite_recovery_image_tests.rs"],
+      "message": "test(state): canonicalize immutable image fixture homes",
+      "parent": "14508c25978d502d8c9cb25ff8d11488c5b4128f",
+      "changed_lines": 2
+    },
+    {
+      "commit": "4586b0b89c215d0c6747a6146dff91b02368ea86",
+      "tree": "daa2ab6e37e9f19fd0ef596f5e83356d3717b6dc",
+      "patch": "02-bao-authbus-canonical-fixture-roots.patch",
+      "patch_sha256": "6b17fe0742e05c3b5cb643053c117328e1a23153c09f13942726d803bcc01448",
+      "files": ["codex-rs/hepta-bao-adapter/src/https_consumer_tests.rs"],
+      "message": "test(bao): use canonical AuthBus fixture directories",
+      "parent": "3ada67e9c68cac0ddfeffcff71cdd70f3fe06db9",
+      "changed_lines": 6
+    },
+    {
+      "commit": "efda517aea3bf425d16bbc372cf07fa4af9cf6d0",
+      "tree": "cdf19c12842a0b554fbc62160e6f6d38eb4d4587",
+      "patch": "03-http-redirect-blocking-stream.patch",
+      "patch_sha256": "fbad544970169551a98f1b7012f7805b04ec7f20113c13db19e088c73b1e65a3",
+      "files": [
+        "codex-rs/http-client/src/route_aware_redirect_integration_tests.rs"
+      ],
+      "message": "test(http-client): use bounded blocking redirect streams",
+      "parent": "4586b0b89c215d0c6747a6146dff91b02368ea86",
+      "changed_lines": 4
+    },
+    {
+      "commit": "f5d05b2735d44b88a5cf7edc6f892ea060180fd8",
+      "parent": "efda517aea3bf425d16bbc372cf07fa4af9cf6d0",
+      "tree": "8c9f0954031686a34b86e2d72e17fbd0c8609fd4",
+      "message": "style(state): format cold-connection regression",
+      "files": ["codex-rs/state/src/sqlite_connection_tests.rs"],
+      "changed_lines": 1
+    }
+  ],
+  "repairs": [
+    {
+      "scope": "State cold physical connections",
+      "original_failure": "runtime::backfill::tests::get_backfill_state_succeeds_while_another_connection_holds_writer_slot: SQLite code 5 database is locked",
+      "mechanism": "SQLx 0.9.0 previously reissued auto_vacuum=INCREMENTAL for every physical connection; SQLite 3.51.3 requires the writer slot even for a no-op assignment. Initialize only a new zero-page database before WAL under one deferred transaction. Existing NONE/FULL/INCREMENTAL layouts remain unchanged.",
+      "donor_commit": "db065880425a69151005a44b44fad6bf0918feb1",
+      "donor_pr": 1299,
+      "production_method_matches_exact_donor": true,
+      "production_method_sha256": "9ac662a4f93eea8e00765f1835081d9560836028f0cdde3382c3e16babb435a0",
+      "retained": "Original backfill test body unchanged; new donor regression covers three vacuum modes and five simultaneously retained cold physical connections, committed values, synchronous NORMAL, foreign keys and the original 5000ms busy timeout.",
+      "limits": "Original warm-connection test passed on the Linux baseline; the new deterministic cold-connection regression failed before the fix and passed afterwards. This is a writable initializer, not a general read-only recovery API; first initialization and journal-mode transitions may write. Competing empty-database initialization may fail BUSY instead of fabricating success."
+    },
+    {
+      "scope": "State immutable image fixtures",
+      "original_failures": [
+        "sqlite_recovery::image::tests::cold_image_is_immutable_and_reconnects_to_same_copy",
+        "sqlite_recovery::image::tests::cold_image_rejects_wrong_guard_replacement_sidecars_and_size"
+      ],
+      "mechanism": "Canonicalize each created 0700 home before constructing the strict recovery guard; production guard unchanged.",
+      "same_owner_pattern_donor": {
+        "pr": 1310,
+        "commit": "9485c1f112760126717c8f558791788f8430a15d",
+        "squash": "87bb35d51e514cdc2fe96792259b089193f015ac",
+        "path": "codex-rs/state/src/sqlite_recovery_tests.rs",
+        "blob": "c039a1b56cfbb53ff4d90d0fe1fbd6018f4be370",
+        "scope": "Reuse created-private-home canonicalization pattern; not an exact donor for these four failing cases.",
+        "native_pass_transferred": false,
+        "claimed_14_case_run_independently_verified": false
+      },
+      "limits": "Noncanonical temporary fixture roots are a source-backed common mechanism; original logs omit the actual fixture paths, so repaired native execution is still required."
+    },
+    {
+      "scope": "Bao AuthBus fixture roots",
+      "original_failures": [
+        "https_consumer::tests::authbus_product_path_reserves_fences_final_use_and_settles_observed_cost",
+        "https_consumer::tests::authbus_timeout_keeps_quota_held_as_indeterminate"
+      ],
+      "mechanism": "Canonicalize both existing 0700 TempDir roots before joining database/checkpoint names. Retain both TempDir owners and all original test bodies.",
+      "retained": "Successful settlement remains (0,0,1); timeout remains exact Indeterminate/TimedOut with held quota (0,1,0); host path guards, signing, fsync and consumer authorization unchanged.",
+      "limits": "Native macOS owning execution required to confirm the path diagnosis."
+    },
+    {
+      "scope": "HTTP redirect fixture stream",
+      "original_failure": "outbound_proxy::redirect_integration_tests::route_aware_pool_re_resolves_redirects_and_logs_only_final_outcome: OS 35 WouldBlock on accepted stream, followed by IncompleteMessage",
+      "mechanism": "Explicitly restore blocking mode on the accepted socket before its existing two-second read timeout. Nonblocking listener accept deadline and all route, header, log and secret assertions remain.",
+      "same_pattern_donor_pr": 2982,
+      "same_pattern_donor_head": "86df62990c48984566dbb95c4726b10dd618a52e",
+      "donor_limits": "Neighboring redirect fixture contains this pattern; not an exact native pass for this integration fixture."
+    }
+  ],
+  "linux_warm_baseline": {
+    "command": [
+      "just",
+      "test",
+      "-p",
+      "codex-state",
+      "--lib",
+      "-E",
+      "test(get_backfill_state_succeeds_while_another_connection_holds_writer_slot)"
+    ],
+    "source": "322a2ddc6ca774225790d7115203b1b7c2a4d917",
+    "started_at": "2026-10-22T09:22:23.554052+00:00",
+    "completed_at": "2026-10-22T09:25:47.950823+00:00",
+    "exit_code": 0,
+    "platform": "Linux; original failure was macOS",
+    "log": "/tmp/hepta-mac-state-backfill-baseline.log",
+    "bytes": 16524,
+    "sha256": "92b86900edb9c470dcdfa645ba014983d64519c59f79b07cce5d23482f3821ea"
+  },
+  "linux_cold_regression_before_fix": {
+    "command": [
+      "just",
+      "test",
+      "-p",
+      "codex-state",
+      "--lib",
+      "-E",
+      "test(read_write_pool_cold_connections_observe_under_external_writer_and_preserve_vacuum_modes)"
+    ],
+    "source": "322a2ddc6ca774225790d7115203b1b7c2a4d917",
+    "test_only_patch_file_sha256": {
+      "codex-rs/state/src/sqlite.rs": "f6a883b86b10c1cb7921cd49a36b67e97699b29a31caf079542f8557f1f462ed",
+      "codex-rs/state/src/sqlite_connection_tests.rs": "4f9a9d9e83249054226d60361932917093f45920335819fab95da1eb15b2deeb"
+    },
+    "started_at": "2026-10-22T09:27:38.222795+00:00",
+    "completed_at": "2026-10-22T09:27:51.546886+00:00",
+    "exit_code": 100,
+    "platform": "Linux; exact donor regression on unchanged production code",
+    "log": "/tmp/hepta-state-cold-connection-red.log",
+    "bytes": 12223,
+    "sha256": "913016a81ca4fe90e6d174f6bb9a9459a293ff8e521fcdbd10fb459c70701698"
+  },
+  "linux_component_tests": [
+    {
+      "command": ["just", "test", "-p", "codex-state", "--lib"],
+      "source": "efda517aea3bf425d16bbc372cf07fa4af9cf6d0",
+      "started_at": "2026-10-22T09:30:02.497828+00:00",
+      "completed_at": "2026-10-22T09:30:19.207615+00:00",
+      "exit_code": 0,
+      "platform": "Linux; macOS qualification pending",
+      "log": "/tmp/hepta-macos-followup-codex-state-tests.log",
+      "bytes": 37936,
+      "sha256": "a68b9a9877c33973842278476b002a948a81373a4ecfa12c3302c6b6dcdf1fea"
+    },
+    {
+      "command": ["just", "test", "-p", "codex-http-client", "--lib"],
+      "source": "efda517aea3bf425d16bbc372cf07fa4af9cf6d0",
+      "started_at": "2026-10-22T09:30:19.208046+00:00",
+      "completed_at": "2026-10-22T09:31:03.309284+00:00",
+      "exit_code": 0,
+      "platform": "Linux; macOS qualification pending",
+      "log": "/tmp/hepta-macos-followup-codex-http-client-tests.log",
+      "bytes": 17543,
+      "sha256": "8a4a3dc6d8d5fbeced3b9dc7939584b5788ac179ffaa4a191c6d339e9f0e862b"
+    },
+    {
+      "command": ["just", "test", "-p", "codex-hepta-bao-adapter", "--lib"],
+      "source": "efda517aea3bf425d16bbc372cf07fa4af9cf6d0",
+      "started_at": "2026-10-22T09:31:03.309728+00:00",
+      "completed_at": "2026-10-22T09:33:37.288184+00:00",
+      "exit_code": 0,
+      "platform": "Linux; macOS qualification pending",
+      "log": "/tmp/hepta-macos-followup-codex-hepta-bao-adapter-tests.log",
+      "bytes": 18622,
+      "sha256": "1a9c1aa290c7836e246ca90b8fb41c724af518d6069bb6c5e38a8f0aa7593bfd"
+    }
+  ],
+  "linux_component_totals": {
+    "codex-state": {
+      "passed": 215,
+      "skipped": 0
+    },
+    "codex-http-client": {
+      "passed": 83,
+      "skipped": 0
+    },
+    "codex-hepta-bao-adapter": {
+      "passed": 32,
+      "skipped": 0
+    }
+  },
+  "protected_files": [
+    {
+      "path": "codex-rs/state/src/runtime/backfill.rs",
+      "equal": true,
+      "sha256": "1341af9476af71abc5b6245c75b701f0b3fbf8cb7fe2570f22753fec9ad83458"
+    },
+    {
+      "path": "codex-rs/state/src/sqlite_recovery.rs",
+      "equal": true,
+      "sha256": "5c387d97f161a4e688505de9d95763049aef569def307962653598cc33170a02"
+    },
+    {
+      "path": "codex-rs/state/src/sqlite_recovery_image.rs",
+      "equal": true,
+      "sha256": "60610912a99967c9055b2275a5d1c0e7b96cd4d769279b630b0d44cbe46d5dac"
+    },
+    {
+      "path": "codex-rs/http-client/src/outbound_proxy.rs",
+      "equal": true,
+      "sha256": "0486978806a9cd5c8f552e985ed9b0c987392cdcdae35ec8b0a555539221aa52"
+    },
+    {
+      "path": "codex-rs/Cargo.lock",
+      "equal": true,
+      "sha256": "dbbbaa6ed5ed2b4574bb7a98d9cf9197c2118c99a305336ae6be7a92c49a01b6"
+    },
+    {
+      "path": "MODULE.bazel.lock",
+      "equal": true,
+      "sha256": "63ee8041114a86fb2064282e466d4250abdf884b2b10dff21c91c412cecfcc4b"
+    },
+    {
+      "path": "codex-rs/state/src/sqlite_recovery_tests.rs",
+      "equal": true,
+      "sha256": "14d85fca2a4ebf0aee13c9cc0bc4bf3a010c6c286973a383a476d0f7b4045e16"
+    },
+    {
+      "path": "codex-rs/hepta-authbus/src/host.rs",
+      "equal": true,
+      "sha256": "66686ca7ad0efe6d041d3c521e11fbda64988a26685f981f4d5d2160c77b6ca0"
+    },
+    {
+      "path": "codex-rs/hepta-bao-adapter/src/https_consumer.rs",
+      "equal": true,
+      "sha256": "78ebb074a9a9a1fc359be8bbf760f50dbd3fa2f644863556075947c6b0009e20"
+    }
+  ],
+  "dependency_graph": {
+    "changed_files_since_verified_graph_fe040251": [],
+    "cargo_lock_sha256": "dbbbaa6ed5ed2b4574bb7a98d9cf9197c2118c99a305336ae6be7a92c49a01b6",
+    "bazel_lock_sha256": "63ee8041114a86fb2064282e466d4250abdf884b2b10dff21c91c412cecfcc4b",
+    "new_dependency_or_lock_regeneration_required": false
+  },
+  "qualification_limits": [
+    "Local component executions are Linux, not macOS or Windows.",
+    "Full combined-source original required CI gates remain pending.",
+    "Four original failed targets include Fleet, already addressed by the prior frozen batch; this receipt does not relabel its pending macOS execution as passed.",
+    "Independent Windows outside-root DELETE and remaining AppServer failure families are not closed by this follow-up.",
+    "No remote branch, CI queue, cancellation, retry or gate policy was changed by this batch."
+  ],
+  "executed_test_source": "efda517aea3bf425d16bbc372cf07fa4af9cf6d0",
+  "post_test_source_delta": {
+    "path": "codex-rs/state/src/sqlite_connection_tests.rs",
+    "change": "Only one surplus trailing blank line removed by the repository formatter; function bytes unchanged."
+  },
+  "scoped_clippy": [
+    {
+      "command": ["just", "fix", "-p", "codex-state", "--lib"],
+      "source": "efda517aea3bf425d16bbc372cf07fa4af9cf6d0",
+      "started_at": "2026-10-22T09:34:37.031062+00:00",
+      "completed_at": "2026-10-22T09:36:24.422729+00:00",
+      "exit_code": 0,
+      "log": "/tmp/hepta-macos-followup-codex-state-fix-native.log",
+      "bytes": 6316,
+      "sha256": "8e5ce6671731241b811298dc40a3e0f30ed7e36b484f265ea28f68a46ed5e231",
+      "working_tree_diff": ""
+    },
+    {
+      "command": ["just", "fix", "-p", "codex-http-client", "--lib"],
+      "source": "efda517aea3bf425d16bbc372cf07fa4af9cf6d0",
+      "started_at": "2026-10-22T09:36:24.430719+00:00",
+      "completed_at": "2026-10-22T09:36:52.017574+00:00",
+      "exit_code": 0,
+      "log": "/tmp/hepta-macos-followup-codex-http-client-fix-native.log",
+      "bytes": 2675,
+      "sha256": "709ef704d86c3badce213c98a490d6981c93f611d3ac1359f6b77f89682ad189",
+      "working_tree_diff": ""
+    },
+    {
+      "command": ["just", "fix", "-p", "codex-hepta-bao-adapter", "--lib"],
+      "source": "efda517aea3bf425d16bbc372cf07fa4af9cf6d0",
+      "started_at": "2026-10-22T09:36:52.025507+00:00",
+      "completed_at": "2026-10-22T09:38:13.286778+00:00",
+      "exit_code": 0,
+      "log": "/tmp/hepta-macos-followup-codex-hepta-bao-adapter-fix-native.log",
+      "bytes": 5547,
+      "sha256": "14a5deaf2926becaf7ae640a8ed0747ca043b77e7d7ac4e6ae4283a373667c57",
+      "working_tree_diff": ""
+    }
+  ],
+  "scoped_clippy_initial_sandbox_attempt": [
+    {
+      "command": ["just", "fix", "-p", "codex-state", "--lib"],
+      "source": "efda517aea3bf425d16bbc372cf07fa4af9cf6d0",
+      "started_at": "2026-10-22T09:34:21.049313+00:00",
+      "completed_at": "2026-10-22T09:34:21.301141+00:00",
+      "exit_code": 101,
+      "log": "/tmp/hepta-macos-followup-codex-state-fix.log",
+      "bytes": 209,
+      "sha256": "6bb10e993781fcfafa03cdc3bb9385d58a4125ed406243f1ca86f8aa893f5afd",
+      "working_tree_diff": ""
+    }
+  ],
+  "clippy_warning_boundary": "All three scoped just fix commands exited zero without source edits. Bao retained its pre-existing consume_kv_v2_with_authbus 8/7 too_many_arguments warning; this is not a warning-free strict-Clippy claim.",
+  "repository_format": {
+    "command": [
+      "just",
+      "fmt",
+      "--base",
+      "322a2ddc6ca774225790d7115203b1b7c2a4d917"
+    ],
+    "started_at": "2026-10-22T09:38:54.262222+00:00",
+    "completed_at": "2026-10-22T09:38:54.466488+00:00",
+    "exit_code": 0,
+    "log": "/tmp/hepta-macos-followup-format.log",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "working_tree_diff": " codex-rs/state/src/sqlite_connection_tests.rs | 1 -\n 1 file changed, 1 deletion(-)\n"
+  },
+  "tools": {
+    "rust": "1.95.0",
+    "local_nextest": "0.9.149",
+    "ci_nextest_pin": "0.9.103",
+    "sqlx": "0.9.0",
+    "libsqlite3-sys": "0.37.0",
+    "bundled_sqlite": "3.51.3",
+    "codespell": "2.4.3",
+    "prettier": "3.5.3"
+  }
+}
