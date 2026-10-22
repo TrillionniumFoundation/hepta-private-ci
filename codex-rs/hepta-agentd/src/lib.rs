@@ -166,6 +166,8 @@ pub use evidence_frontier::evidence_recovery_frontier_signing_bytes;
 pub use evidence_host::kernel_evidence_claims;
 #[cfg(target_os = "linux")]
 pub use hos2_device::AgentdHos2Device;
+#[cfg(target_os = "linux")]
+pub use hos2_device::AgentdHos2Usage;
 pub use intelligence_ingress::AgentdIntelligenceInvocationProviderV1;
 pub use intelligence_ingress::AgentdIntelligenceInvocationV1;
 pub use intelligence_product::AgentdEvaluationBindingV1;
