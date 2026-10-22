@@ -848,6 +848,14 @@ fn portfolio_receipt_replay_rejects_mutated_allocation_and_digest() {
         verify_output_portfolio_receipt_v1(&ctx, &limits, &original, &altered_generation),
         Err(NduError::InvalidSolverReceipt("portfolio receipt replay"))
     );
+
+    assert_eq!(receipt.future_window_digest, ctx.future_window_digest);
+    let mut altered_window = receipt.clone();
+    altered_window.future_window_digest = Digest32::of_bytes(b"forged-future-window");
+    assert_eq!(
+        verify_output_portfolio_receipt_v1(&ctx, &limits, &original, &altered_window),
+        Err(NduError::InvalidSolverReceipt("portfolio receipt replay"))
+    );
 }
 
 #[test]
@@ -946,6 +954,9 @@ fn digest_commits_to_complete_public_receipt_and_every_candidate_snapshot() {
     assert_ne!(digest(&changed), receipt.selection_digest);
     let mut changed = receipt.clone();
     changed.snapshot_digest = Digest32::of_bytes(b"another feature snapshot");
+    assert_ne!(digest(&changed), receipt.selection_digest);
+    let mut changed = receipt.clone();
+    changed.future_window_digest = Digest32::of_bytes(b"another future window");
     assert_ne!(digest(&changed), receipt.selection_digest);
     let mut changed = receipt.clone();
     changed.disposition = OutputPortfolioDispositionV1::NoChange;
