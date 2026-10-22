@@ -186,9 +186,9 @@ External evidence gates:
 
 ## 9. `channel.matrix`
 
-Owns Matrix ingress projection, sync frontier, dispatch ledger, outbox, and transaction identities.
+The existing MatrixDurableStore owns per-Agent inbox, room/thread bindings, sync frontier, dispatch ledger, outbox and stable transaction identities; MatrixSendObserver has separate in-memory state only.
 
-A homeserver event observation settles send terminality; App Server turn completion and HTTP acceptance cannot substitute.
+The live sender records the homeserver send acknowledgement event ID as OutboxState::Sent. This proves that acknowledgement, not recipient reading or a separately observed sync echo. MatrixSendObserver models a stronger observation target but is not wired to the live sender or a trusted observer.
 
 | Operation | Class | Owner entrypoint |
 |---|---|---|
@@ -198,13 +198,19 @@ A homeserver event observation settles send terminality; App Server turn complet
 
 Remaining repository implementation gaps:
 
-- Integrate any new send-observer state with the existing MatrixDurableStore transaction identity; the component alone is not a second durable sender.
+- Bind the live SDK send boundary to independently issued current operation/room/final-payload authority and revocation; room/revision/generation checks and observer digest equality are not VerifiedUseToken consumption.
+- Integrate the stronger send-observation contract with the existing MatrixDurableStore transaction identity and an authenticated observer; preserve the homeserver send acknowledgement as a distinct claim.
+- Supply authenticated owner-controlled reconciliation for parked uncertain transport outcomes, preserving the stable transaction after retry exhaustion or crash without a new PUT.
+- Supply provider-context withdrawal and authenticated resolution for durable dispatched-source redaction scope quarantine; retaining issued dispatch identity and blocking new work does not prove remote terminality or restored-data erasure.
+- Compose the bounded gap-fill helper into the live sync path before accepting limited timelines; current live rejection preserves the cursor but is not reconnect completion.
+- Enforce HTTP response byte admission before SDK decoding, total retained inbox/outbox capacity and authenticated archival/rotation; event_capacity bounds batch/change/control/scrub work only and V2 journals have fixed 65536-record lifetime ceilings.
+- Add bounded persisted-history item pagination and an owner-side terminal/freshness seam; outer 16x100 turn/RPC windows do not bound per-turn Full item hydration, and the five-second client timeout does not cancel server hydration.
 
 External evidence gates:
 
-- real enrolled homeserver/user/device/encryption identity
-- live sync and send transport callsites
-- rate-limit/reconnect/redaction/restore target qualification
+- independently provisioned enrolled homeserver/user/device credentials, encryption and current authority/configuration trust
+- exact-candidate real homeserver sync/send, encrypted wire identity, lost-acknowledgement and authenticated observer qualification
+- selected-host rate-limit/reconnect/redaction/restore/capacity measurements and independent acceptance
 
 ## 10. `browser.servo`
 
