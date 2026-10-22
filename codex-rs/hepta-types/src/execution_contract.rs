@@ -498,36 +498,6 @@ pub trait NativeExecutionAdapter: Send + Sync {
     ) -> impl Future<Output = Result<RuntimeReceiptV1, RuntimeExecutionError>> + Send;
 }
 
-/// Admit a native tool call through the shared structural safety gate.
-///
-/// Unlike calling `NativeExecutionAdapter::execute` directly, this entry
-/// rejects an invalid or expired intent before any backend invocation and
-/// rechecks the returned receipt against the exact tool, arguments, host,
-/// idempotency key, generation and payload before forwarding it to the caller.
-///
-/// This does not authenticate physical host evidence, grant Final-use, or
-/// replace the production writer / independent observer.
-pub async fn execute_native_tool_intent<A: NativeExecutionAdapter>(
-    adapter: &A,
-    now_ms: u64,
-    intent: RuntimeToolIntentV1,
-) -> Result<RuntimeReceiptV1, RuntimeExecutionError> {
-    intent
-        .validate()
-        .map_err(RuntimeExecutionError::InvalidIntent)?;
-    if now_ms >= intent.cell.deadline_ms {
-        return Err(RuntimeExecutionError::InvalidIntent(
-            ExecutionContractError::ExpiredDeadline,
-        ));
-    }
-
-    let receipt = adapter.execute(intent.clone()).await?;
-    receipt
-        .validate_against(&intent)
-        .map_err(RuntimeExecutionError::InvalidReceipt)?;
-    Ok(receipt)
-}
-
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub enum ExecutionContractError {
     EmptyText(&'static str),
