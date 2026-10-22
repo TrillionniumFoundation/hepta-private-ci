@@ -1,5 +1,8 @@
 use super::*;
 
+#[path = "objective_history_tests.rs"]
+mod history;
+
 fn digest(byte: char) -> String {
     byte.to_string().repeat(64)
 }

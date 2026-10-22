@@ -1,0 +1,70 @@
+name: Keyring synchronous backend lock proposal
+
+on:
+  pull_request:
+    paths:
+      - "codex-rs/keyring-store/Cargo.toml"
+      - "codex-rs/Cargo.lock"
+      - ".github/workflows/keyring-sync-lock-proposal.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  cargo-lock:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - name: Check out exact candidate
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+          fetch-depth: 0
+      - uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582
+        with:
+          toolchain: 1.95.0
+      - name: Re-resolve Cargo graph after feature change
+        shell: bash
+        run: |
+          set -euo pipefail
+          cargo update --manifest-path codex-rs/Cargo.toml -p keyring --precise 4.2.0
+          git diff --check
+          git diff --binary -- codex-rs/Cargo.lock > "${RUNNER_TEMP}/Cargo.lock.patch"
+          test -s "${RUNNER_TEMP}/Cargo.lock.patch"
+          cp codex-rs/Cargo.lock "${RUNNER_TEMP}/Cargo.lock"
+          grep -q '^name = "keyring"$' codex-rs/Cargo.lock
+          if grep -q '^name = "zbus"$' codex-rs/Cargo.lock; then
+            echo "::warning::zbus remains in the resolved graph; retain the postimage for dependency-path review"
+          fi
+      - name: Run cargo-deny advisory probe for evidence
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "${RUNNER_TEMP}/cargo-deny"
+          curl --fail --silent --show-error --location \
+            https://github.com/EmbarkStudios/cargo-deny/releases/download/0.19.0/cargo-deny-0.19.0-x86_64-unknown-linux-musl.tar.gz \
+            | tar -xz -C "${RUNNER_TEMP}/cargo-deny" --strip-components=1 cargo-deny-0.19.0-x86_64-unknown-linux-musl/cargo-deny
+          (cd codex-rs && "${RUNNER_TEMP}/cargo-deny/cargo-deny" check advisories) > "${RUNNER_TEMP}/cargo-deny/advisories.log" 2>&1 || true
+          grep -E "RUSTSEC-|advisories|error|warning|failed" "${RUNNER_TEMP}/cargo-deny/advisories.log" > "${RUNNER_TEMP}/cargo-deny/report.txt" || true
+          cat "${RUNNER_TEMP}/cargo-deny/report.txt"
+      - name: Emit exact Cargo.lock postimage for review
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          from pathlib import Path
+
+          for index, line in enumerate(Path("codex-rs/Cargo.lock").read_text().splitlines(), start=1):
+              print(f"HEPTA_LOCK_LINE:{index:06d}:{line}")
+          PY
+
+      - name: Upload real Cargo.lock postimage
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: keyring-sync-cargo-lock-${{ github.run_id }}-${{ github.run_attempt }}
+          path: |
+            ${{ runner.temp }}/Cargo.lock
+            ${{ runner.temp }}/Cargo.lock.patch
+            ${{ runner.temp }}/cargo-deny/
+          retention-days: 7

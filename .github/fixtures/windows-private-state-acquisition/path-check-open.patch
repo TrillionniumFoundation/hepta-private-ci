@@ -1,0 +1,20 @@
+diff --git a/codex-rs/utils/path-utils/src/private_state_windows_directory.rs b/codex-rs/utils/path-utils/src/private_state_windows_directory.rs
+--- a/codex-rs/utils/path-utils/src/private_state_windows_directory.rs
++++ b/codex-rs/utils/path-utils/src/private_state_windows_directory.rs
+@@ -24 +23,0 @@
+-use windows_sys::Win32::System::Kernel::OBJ_DONT_REPARSE;
+@@ -66,0 +66,11 @@
++    use std::os::windows::fs::MetadataExt;
++
++    for ancestor in std::path::absolute(root)?.ancestors() {
++        let metadata = std::fs::symlink_metadata(ancestor)?;
++        if metadata.file_attributes()
++            & windows_sys::Win32::Storage::FileSystem::FILE_ATTRIBUTE_REPARSE_POINT
++            != 0
++        {
++            return Err(unsafe_state("private state ancestry contains a reparse point"));
++        }
++    }
+@@ -92 +102 @@
+-            attributes: OBJ_CASE_INSENSITIVE as u32 | OBJ_DONT_REPARSE as u32,
++            attributes: OBJ_CASE_INSENSITIVE as u32,
