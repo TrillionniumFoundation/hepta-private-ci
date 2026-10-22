@@ -1,0 +1,41 @@
+name: NDU MGP shadow numerical invariants
+
+on:
+  pull_request:
+    paths:
+      - 'experiments/ndu_latent_riccati/followup/**'
+      - '.github/workflows/ndu-mgp-shadow.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  reference-oracle:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    steps:
+      - name: Checkout exact PR source
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          persist-credentials: false
+      - name: Isolated CPU numerical dependencies
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -m venv /tmp/ndu-mgp-shadow-venv
+          source /tmp/ndu-mgp-shadow-venv/bin/activate
+          python -m pip install --no-cache-dir --disable-pip-version-check 'numpy==1.26.4'
+          python -m pip install --no-cache-dir --disable-pip-version-check 'torch==2.5.1+cpu' --index-url https://download.pytorch.org/whl/cpu
+      - name: Run 16 local numerical contract tests
+        shell: bash
+        run: |
+          set -euo pipefail
+          source /tmp/ndu-mgp-shadow-venv/bin/activate
+          python -m compileall -q experiments/ndu_latent_riccati/followup
+          cd experiments/ndu_latent_riccati/followup
+          python -m unittest -v test_portfolio.py
+      - name: State non-activation scope
+        shell: bash
+        run: |
+          printf '%s\n' 'Numeric shadow only: no model evaluation, no heldout, no NDU production authority, no CI promotion.'
