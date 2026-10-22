@@ -146,5 +146,67 @@ class TeacherPoolingTests(unittest.TestCase):
             mean_pool(torch.zeros(2, 2, 32), torch.ones(2, 2), truncate_dim=256)
 
 
+
+    def test_t5_processor_rejects_extra_fields_and_misaligned_rows(self):
+        from teacher_forward import _validate_t5_encoder_inputs
+        good = {
+            "input_ids": torch.tensor([[1, 2], [3, 4]], dtype=torch.int64),
+            "attention_mask": torch.tensor([[1, 1], [1, 0]], dtype=torch.int64),
+            "pixel_values": torch.ones(2, 3, 2, 2),
+        }
+        bounded = _validate_t5_encoder_inputs(good, batch_size=2, with_image=True)
+        self.assertEqual(set(bounded), set(good))
+        # The original path moved every returned tensor to CUDA even if the
+        # Encoder never consumed it.
+        unexpected = dict(good, unused_tensor=torch.ones(1))
+        wrong_batch = dict(good, input_ids=torch.tensor([[1, 2]]))
+        wrong_mask = dict(good, attention_mask=torch.ones(2, 3, dtype=torch.long))
+        bad_channels = dict(good, pixel_values=torch.ones(2, 1, 2, 2))
+        bad_pixel_batch = dict(good, pixel_values=torch.ones(1, 3, 2, 2))
+        too_large = dict(good, pixel_values=torch.empty(1, 3, 1, 1)
+                         .expand(2, 3, 4096, 4096))
+        for rejected in (unexpected, wrong_batch, wrong_mask, bad_channels,
+                         bad_pixel_batch, too_large):
+            with self.subTest(fields=list(rejected)):
+                with self.assertRaises(TeacherForwardError):
+                    _validate_t5_encoder_inputs(rejected, batch_size=2,
+                                                with_image=True)
+
+    def test_t5_processor_rejects_empty_nonbinary_and_noninteger_tokens(self):
+        from teacher_forward import _validate_t5_encoder_inputs
+        ids = torch.tensor([[1, 2], [3, 4]])
+        mask = torch.tensor([[1, 1], [1, 0]])
+        good = {"input_ids": ids, "attention_mask": mask}
+        self.assertEqual(set(_validate_t5_encoder_inputs(
+            good, batch_size=2, with_image=False)), set(good))
+        for rejected in (
+            dict(good, attention_mask=torch.tensor([[1, 1], [0, 0]])),
+            dict(good, attention_mask=torch.tensor([[1, 2], [1, 0]])),
+            dict(good, input_ids=ids.float()),
+            dict(good, input_ids=ids - 8),
+            dict(good, input_ids=torch.empty(2, 0, dtype=torch.long)),
+            dict(good, pixel_values=torch.ones(2, 3, 2, 2)),
+        ):
+            with self.assertRaises(TeacherForwardError):
+                _validate_t5_encoder_inputs(rejected, batch_size=2,
+                                            with_image=False)
+
+    def test_t5_processor_rejects_nonfinite_and_wrong_dtype_pixels(self):
+        from teacher_forward import _validate_t5_encoder_inputs
+        good = {
+            "input_ids": torch.tensor([[1, 2]]),
+            "attention_mask": torch.tensor([[1, 1]]),
+            "pixel_values": torch.ones(1, 3, 2, 2),
+        }
+        for pixels in (
+            torch.full((1, 3, 2, 2), float("nan")),
+            torch.full((1, 3, 2, 2), float("inf")),
+            torch.ones(1, 3, 2, 2, dtype=torch.int64),
+        ):
+            with self.assertRaises(TeacherForwardError):
+                _validate_t5_encoder_inputs(
+                    dict(good, pixel_values=pixels), batch_size=1,
+                    with_image=True)
+
 if __name__ == "__main__":
     unittest.main()

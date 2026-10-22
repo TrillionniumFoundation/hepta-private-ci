@@ -140,6 +140,56 @@ def mean_pool(tokens: Any, mask: Any, *, truncate_dim: int | None = None):
     return F.normalize(pooled, p=2, dim=-1, eps=1e-8)
 
 
+MAX_T5_PROCESSED_PIXEL_ELEMENTS = 3 * MAX_T5_IMAGE_PIXELS
+
+
+def _validate_t5_encoder_inputs(inputs: object, *, batch_size: int,
+                                with_image: bool) -> dict:
+    """Fence exact processor fields, row identity and GPU transfer budgets.
+
+    Processors are local and pinned but may emit malformed tensors. Reject
+    unexpected fields instead of silently uploading unused tensors to CUDA.
+    This is an interface/budget guard, not a sandbox for executable plugins.
+    """
+    import torch
+
+    fields = {"input_ids", "attention_mask"}
+    if with_image:
+        fields.add("pixel_values")
+    if not isinstance(inputs, Mapping) or set(inputs) != fields:
+        raise TeacherForwardError("unexpected or missing T5 encoder processor fields")
+    ids, mask = inputs["input_ids"], inputs["attention_mask"]
+    if (not isinstance(ids, torch.Tensor)
+            or not isinstance(mask, torch.Tensor)
+            or ids.ndim != 2 or mask.ndim != 2
+            or ids.shape != mask.shape
+            or ids.shape[0] != batch_size
+            or not 0 < ids.shape[1] <= MAX_SEQUENCE):
+        raise TeacherForwardError("T5 token batch and attention shape mismatch")
+    if (ids.dtype not in (torch.int32, torch.int64)
+            or ids.device.type != "cpu"
+            or mask.dtype not in (torch.bool, torch.uint8, torch.int8,
+                                  torch.int16, torch.int32, torch.int64)
+            or mask.device.type != "cpu"):
+        raise TeacherForwardError("T5 token ids/mask must be CPU integer tensors")
+    if (not bool((ids >= 0).all())
+            or not bool(((mask == 0) | (mask == 1)).all())
+            or not bool((mask.sum(dim=1) > 0).all())):
+        raise TeacherForwardError("invalid T5 token ids or attention mask")
+    if with_image:
+        pixels = inputs["pixel_values"]
+        if (not isinstance(pixels, torch.Tensor) or pixels.ndim != 4
+                or pixels.shape[0] != batch_size or pixels.shape[1] != 3
+                or not 0 < pixels.shape[2] * pixels.shape[3] <= MAX_T5_IMAGE_PIXELS
+                or pixels.numel() > MAX_T5_PROCESSED_PIXEL_ELEMENTS):
+            raise TeacherForwardError("T5 processor image shape or batch budget exceeded")
+        if (pixels.device.type != "cpu"
+                or pixels.dtype not in (torch.float16, torch.bfloat16, torch.float32)
+                or not bool(torch.isfinite(pixels).all())):
+            raise TeacherForwardError("T5 processor image pixels must be finite CPU floats")
+    return {field: inputs[field] for field in
+            ("input_ids", "attention_mask", "pixel_values") if field in fields}
+
 def run_forward(*, candidate: str, snapshot: str | Path, media_root: str | Path,
                 records: list, revision: str, expected_inventory_sha256: str,
                 operator_accepted_terms: bool, device: str = "cpu",
@@ -252,17 +302,13 @@ def run_forward(*, candidate: str, snapshot: str | Path, media_root: str | Path,
                                truncation=True, max_length=MAX_SEQUENCE,
                                return_tensors="pt")
         observed_module = model.get_encoder()
-    if (not isinstance(inputs, Mapping) or "attention_mask" not in inputs
+    if candidate == "t5gemma2_encoder_270m":
+        inputs = _validate_t5_encoder_inputs(
+            inputs, batch_size=validated_batch_size, with_image=t5_with_image)
+    elif (not isinstance(inputs, Mapping) or "attention_mask" not in inputs
             or inputs["attention_mask"].ndim != 2
             or inputs["attention_mask"].shape[1] > MAX_SEQUENCE):
         raise TeacherForwardError("missing or unbounded teacher attention mask")
-    if t5_with_image:
-        pixels = inputs.get("pixel_values")
-        if (not isinstance(pixels, torch.Tensor) or pixels.ndim != 4
-                or pixels.shape[0] != validated_batch_size
-                or not pixels.is_floating_point()
-                or not bool(torch.isfinite(pixels).all())):
-            raise TeacherForwardError("T5 processor must bind finite image pixels")
     inputs = {key: val.to(device) if isinstance(val, torch.Tensor) else val
               for key, val in inputs.items()}
     module_calls = [0]
