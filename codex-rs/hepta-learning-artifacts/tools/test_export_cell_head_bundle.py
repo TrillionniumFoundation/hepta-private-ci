@@ -49,6 +49,14 @@ class ExportTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "authority mismatch"):
             build_bundle(json.dumps(self.manifest).encode(), self.weights, b"{}", lambda _: b"")
 
+    def test_descendant_cannot_erase_inherited_sources_in_a_standalone_bundle(self):
+        self.manifest["report"]["evolution"] = {
+            "requires_evolution_snapshot": True,
+            "parent_source_closure_sha256": "a" * 64,
+        }
+        with self.assertRaisesRegex(ValueError, "complete evolution source closure"):
+            build_bundle(json.dumps(self.manifest).encode(), self.weights, b"{}", lambda _: b"")
+
 
 if __name__ == "__main__":
     unittest.main()

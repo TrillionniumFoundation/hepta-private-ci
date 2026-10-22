@@ -56,6 +56,14 @@ research cohort identity, not an authenticated production memory ledger. Future
 and OOD evaluation labels are not training inputs. The changing forget frontier
 comes from the fresh owner withdrawal view, not from this static bundle.
 
+The standalone exporter rejects reports carrying an `evolution` lineage. A
+split, continued, or merged Head inherits its ancestors' training and calibration
+sources, including Router learning. Its latest local replay is not the complete
+source closure. Importing those descendants requires a separately versioned
+closure contract and owner validation; deleting the evolution declaration is
+not an authorized conversion. Offline evolution remains outside this native
+bundle's supported provenance format.
+
 The native tests publish and reopen the real bytes, and reject disk corruption,
 wrong identity, old predecessor/current pins, mismatched owner provenance and
 subsequent dataset withdrawal. Their signing key and device/objective identities

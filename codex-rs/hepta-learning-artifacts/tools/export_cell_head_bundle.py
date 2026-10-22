@@ -72,6 +72,11 @@ def build_bundle(manifest_bytes, weights, run_bytes, read_source):
             and 0 < len(weights) <= 16 * 1024 * 1024, "payload budget")
     manifest, run = json.loads(manifest_bytes), json.loads(run_bytes)
     report = manifest["report"]
+    # V1 binds only a fresh Head's train/calibration datasets. Warm starts and
+    # distillation inherit additional sources that require the full evolution
+    # snapshot; exporting just these NPZ bytes would erase that dependency cut.
+    require("evolution" not in report,
+            "descendant Head requires a complete evolution source closure")
     require(manifest["schema"] == "hepta.cell-head-artifact.v1"
             and manifest["weights_file"] == "weights.npz"
             and manifest["weights_file_sha256"] == sha(weights)
