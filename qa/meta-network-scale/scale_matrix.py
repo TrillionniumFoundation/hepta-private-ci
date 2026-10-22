@@ -290,12 +290,29 @@ def validate_matrix(matrix: dict[str, Any]) -> list[str]:
     # Distinct arms/sizes cannot reuse the same retained measurement.
     metrics_receipts_seen: set[str] = set()
     measurement_digests_seen: set[str] = set()
+    # Each experiment pair must retain its own independently observable
+    # evidence for a given claim. Without this fence, one row's future-window
+    # or rollback receipt can be replayed under a different routing arm.
+    evidence_receipts_seen: dict[str, set[str]] = {
+        claim: set() for claim in REQUIRED_EVIDENCE
+    }
     cohort_fields = ("source_commit", "source_tree", "target_host_digest")
     for index, row in enumerate(results):
         if not isinstance(row, dict):
             errors.append(f"results[{index}] must be an object")
             continue
         errors.extend(f"results[{index}].{error}" for error in validate_result(row))
+        evidence_receipts = row.get("evidence_receipts")
+        if isinstance(evidence_receipts, dict):
+            for claim in REQUIRED_EVIDENCE:
+                receipt = evidence_receipts.get(claim)
+                if isinstance(receipt, str) and _HEX64.fullmatch(receipt):
+                    if receipt in evidence_receipts_seen[claim]:
+                        errors.append(
+                            f"results[{index}].evidence_receipts.{claim} "
+                            "reused across matrix pairs"
+                        )
+                    evidence_receipts_seen[claim].add(receipt)
         metrics_receipt = row.get("metrics_receipt")
         if isinstance(metrics_receipt, str) and _HEX64.fullmatch(metrics_receipt):
             if metrics_receipt in metrics_receipts_seen:
