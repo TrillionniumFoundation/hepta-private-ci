@@ -26,7 +26,7 @@ Then it calls the previously published official COCO loader with a **new selecti
 
 ## How to execute on a permitted project worker
 
-From the repository root, install the v1 pinned dependencies (as already documented in `qa/ndu-grounded-generation/README.md`). Set `$MODEL` to the **verified original Florence-2** directory, `$CELLS` to the **preserved P1 trained cells.pt**, `$ANNOTATIONS` to the official pinned `instances_val2017.json`, `$PRIOR_V1` to the preserved original P1 `cohort/manifest.json`, `$OUT` to a **fresh empty run directory**.
+From the repository root, install the v1 pinned dependencies (as already documented in `qa/ndu-grounded-generation/README.md`). Set `$MODEL` to the **verified original Florence-2** directory, `$CELLS` to the **preserved P1 trained cells.pt** (SHA256 `1508a2f4f633b1fa44e05f2a7b750c642e3a39360cf59224d3d4790f31a04396`, now enforced before generating), `$ANNOTATIONS` to the official pinned `instances_val2017.json`, `$PRIOR_V1` to the preserved original P1 `cohort/manifest.json`, `$OUT` to a **fresh empty run directory**.
 
 ```bash
 python qa/ndu-real-paired-rollout/fresh_cohort.py \
@@ -54,6 +54,6 @@ python -m unittest discover -s qa/ndu-terminal-portfolio -p 'test_*.py' -v
 python -m unittest discover -s qa/ndu-real-paired-rollout -p 'test_*.py' -v
 ```
 
-Seven new tests use a small **FAKE** backend and synthetic PNGs. They verify same-seed source input, causal logits modification, reference exclusion, exact roster, failure cost, source-hash guards and previous cohort exclusion. They are **not new real model results**. Any future real run must retain independent score, source provenance, timing, full trajectories and blind-test authority. Do not report tail-risk diversification just from a linear surrogate; only actual combined-output runs can validate a frontier.
+Eight new tests use a small **FAKE** backend and synthetic PNGs. They verify same-seed source input, causal logits modification, reference exclusion, exact roster, failure cost, source-hash guards and previous cohort exclusion. They are **not new real model results**. Any future real run must retain independent score, source provenance, timing, full trajectories and blind-test authority. Do not report tail-risk diversification just from a linear surrogate; only actual combined-output runs can validate a frontier.
 
 Status: **DRAFT / SHADOW_ONLY / DENY_ALL / HOLD_NO_GO**. No implicit tool authority, model promotion, real-device execution, memory writes, topology evolution, merge approval, or production release.

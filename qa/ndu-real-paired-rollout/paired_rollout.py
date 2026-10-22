@@ -20,6 +20,8 @@ if P2.is_dir():
     sys.path.insert(0, str(P2))
 from terminal_risk import ARMS, SCHEMA, digest, validate
 
+P1_CELLS_SHA256 = "1508a2f4f633b1fa44e05f2a7b750c642e3a39360cf59224d3d4790f31a04396"
+
 # Keep v1 scientific code frozen: reuse the exact published backend and scorer.
 V1 = Path(__file__).resolve().parent.parent / 'ndu-grounded-generation'
 if V1.is_dir():
@@ -157,6 +159,8 @@ def plan_identity(cohort, split, *, model_path, cells_path, budget, seeds, code_
     src=Path(code_dir)
     algorithm=sha(src/'paired_rollout.py')
     cell_digest=sha(cells_path)
+    if cell_digest != P1_CELLS_SHA256:
+        raise ValueError('Cell checkpoint does not match the frozen P1 trained four-Cell artifact')
     model_digest=sha(Path(model_path)/'model.safetensors')
     if model_digest != WEIGHT_SHA256:
         raise ValueError('unexpected unfrozen base model')

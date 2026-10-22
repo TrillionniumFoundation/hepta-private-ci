@@ -168,6 +168,24 @@ class PairedTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError,'budget or method'):
             pr.to_terminal_batch(self.header,damaged,[self.ref],[self.obs])
 
+    def test_plan_rejects_unverified_cell_checkpoint_before_generating(self):
+        from unittest.mock import patch
+        model_dir=self.root/'fake-model'
+        model_dir.mkdir()
+        (model_dir/'model.safetensors').write_bytes(b'fixture checkpoint')
+        checkpoint=self.root/'cells.pt'
+        checkpoint.write_bytes(b'unsigned untrusted Cell weights')
+        cohort=self.root/'new-cohort'
+        cohort.mkdir()
+        (cohort/'manifest.json').write_text(__import__('json').dumps({
+            'schema':'hepta.grounded-cohort.v1','evidence_kind':'real-coco',
+            'prior_images_excluded':640}))
+        (cohort/'train.references.jsonl').write_text('')
+        fake_backend.WEIGHT_SHA256=pr.sha(model_dir/'model.safetensors')
+        with self.assertRaisesRegex(ValueError,'does not match the frozen P1'):
+            pr.plan_identity(cohort,'train',model_path=model_dir,cells_path=checkpoint,
+                             budget=10.,seeds=[11,29],code_dir=Path(pr.__file__).parent,temperature=.7)
+
     def test_fresh_cohort_exclusion_requires_original_v1_manifest(self):
         historical={'source_sample':{'images':[{'image_id':i, 'image_sha256':digest(f'h-{i}'),
                            'decoded_rgb_sha256':digest(f'r-{i}'),'dhash64':'0'*16} for i in range(384)]}}
