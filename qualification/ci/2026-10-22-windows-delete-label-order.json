@@ -1,0 +1,127 @@
+{
+  "schema": "hepta.windows-delete-label-order.v1",
+  "recorded_utc": "2026-10-22T15:06:36.739165+00:00",
+  "source_commit": "753910e74f8d40295a4a178ddd3c0ddbd23134b4",
+  "source_tree": "8c2bd54ccb4f2cd6e84703571f10ab43601ba2e7",
+  "parent_commit": "a82fcbda5307431daab07568dd7931683f8ee10f",
+  "production_sandbox_qualified": false,
+  "change": {
+    "file": "codex-rs/windows-sandbox-rs/src/token_delete_diagnostics_tests.rs",
+    "before_sha256": "9ba8be04ae1ac9bd60cafbf228a54e3f442c4a2edbc509dcfe76dad9534d71ce",
+    "after_sha256": "e99cae799aab6636464472ae18589e8c19a3b0ac164587f0ac508d893de913e9",
+    "lines_added": 15,
+    "lines_deleted": 3,
+    "description": "Set the four protected child DACLs and mandatory labels before replacing parent inheritance; attach fixed route/role error context without external paths."
+  },
+  "actual_failure": {
+    "head_sha": "52818afa93eec98fe46ae0b09b6f79eb13e86cde",
+    "run_id": 39799535649,
+    "run_attempt": 1,
+    "job_id": 119895966918,
+    "log_sha256": "27e1fff304a2ed7f110aab6313663fd9080d7c97062e69f5947071897b78692e",
+    "failure": "set fixture ACL/label: 5",
+    "recorded_routes": 4,
+    "missing_route": "preexisting_low_both",
+    "first_four_routes_integrity_rid": 12288,
+    "stdout_test_results": {
+      "run": 4,
+      "passed": 1,
+      "failed": 3,
+      "skipped": 148
+    },
+    "junit_present": false,
+    "junit_results_claimed": false
+  },
+  "mechanism": {
+    "status": "source-and-documentation-supported hypothesis; original error lacks object role, so the exact failed object and corrected native outcome are pending",
+    "label_set_requires": "WRITE_OWNER",
+    "label_query_requires": "READ_CONTROL",
+    "parent_dacl_inheritance_changes_can_affect_existing_children": true,
+    "children_are_protected_before_parent_update": true,
+    "readback_validators_unchanged": true,
+    "route_token_created_only_after_all_acl_label_setup": true
+  },
+  "primary_sources": [
+    {
+      "url": "https://learn.microsoft.com/en-us/windows/win32/secauthz/security-information",
+      "supports": "LABEL_SECURITY_INFORMATION set requires WRITE_OWNER; query requires READ_CONTROL."
+    },
+    {
+      "url": "https://learn.microsoft.com/en-us/windows/win32/api/aclapi/nf-aclapi-setnamedsecurityinfow",
+      "supports": "Setting DACL or SACL information propagates inheritable ACE changes to existing children under inheritance rules."
+    }
+  ],
+  "validation": {
+    "owning_windows_compile": "NOT_RUN",
+    "owning_windows_tests": "PENDING_ON_NEW_SOURCE",
+    "owning_windows_clippy": "NOT_RUN",
+    "reason": "No reusable owning MSVC cache; approximately 878 MB free, no cold build authorized. Linux formatting is not Windows native acceptance.",
+    "commands": [
+      {
+        "command": "just fmt",
+        "exit_code": 0
+      },
+      {
+        "command": "just fmt --check",
+        "exit_code": 0
+      },
+      {
+        "command": "git diff --check",
+        "exit_code": 0
+      },
+      {
+        "command": "PYTHONPATH=/tmp/hepta-codespell-2.4.3 /tmp/hepta-codespell-2.4.3/bin/codespell codex-rs/windows-sandbox-rs/src/token_delete_diagnostics_tests.rs",
+        "exit_code": 0
+      }
+    ],
+    "rustfmt_version": "1.95.0",
+    "codespell_version": "2.4.3",
+    "helper_bytes_unchanged_except_context_import": true,
+    "route_definitions_unchanged": true,
+    "native_operations_and_assertion_suffix_bytes_unchanged": true,
+    "protected_files": [
+      {
+        "path": "codex-rs/windows-sandbox-rs/src/token.rs",
+        "sha256": "3fe5daee06868755f298a415864e4087984f95b1d20325a86687638bba4cd8ac"
+      },
+      {
+        "path": "codex-rs/windows-sandbox-rs/src/acl.rs",
+        "sha256": "7dd4054f8764fc677ddc116e4f828d465d9734cf5a0b85cd985cdd582b1f2bd8"
+      },
+      {
+        "path": "codex-rs/windows-sandbox-rs/src/token_tests.rs",
+        "sha256": "24e57f475065231758559e08382e16a37a15d32912a0435652e2fc3fb2496d58"
+      },
+      {
+        "path": "codex-rs/windows-sandbox-rs/src/unified_exec/tests.rs",
+        "sha256": "1c433d36d0099a33d1e96570b77a753ade76bdfa3f1dec1e91197895c3b3715e"
+      },
+      {
+        "path": "codex-rs/windows-sandbox-rs/src/unified_exec/backends/legacy.rs",
+        "sha256": "121082fbb179ea82e808201e8478622c07c73ec90cecc9c25ce7b2f8b447f969"
+      },
+      {
+        "path": "codex-rs/windows-sandbox-rs/Cargo.toml",
+        "sha256": "183a3691be018640668dfb766f29651d8fd75ab08f7fd526f3d378ae2a86469d"
+      },
+      {
+        "path": "codex-rs/Cargo.lock",
+        "sha256": "f11a317cd13092663372c3f6b5709266c9e1375baa55eb57f199b754faf418a1"
+      },
+      {
+        "path": "MODULE.bazel.lock",
+        "sha256": "63ee8041114a86fb2064282e466d4250abdf884b2b10dff21c91c412cecfcc4b"
+      },
+      {
+        "path": ".github/workflows/hepta-windows-delete-diagnostics.yml",
+        "sha256": "af9d2707eef964d7a05eb97dc8574f8e766fa789c07a5d0d3da546abdc47359c"
+      }
+    ]
+  },
+  "remaining": [
+    "The native parent FILE_DELETE_CHILD route still allows outside file and directory deletion on the previous exact source; this fixture change does not repair production isolation.",
+    "The fifth route has no native result yet; Low integrity is not claimed as a production fix.",
+    "The original legacy command test has a separate current failure in permitted-root deletes; do not reuse an older escape-shaped tuple.",
+    "The prior workflow has no JUnit artifact; stdout observations are kept separate from machine-readable qualification."
+  ]
+}

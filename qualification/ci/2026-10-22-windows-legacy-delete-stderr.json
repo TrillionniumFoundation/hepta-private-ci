@@ -1,0 +1,88 @@
+{
+  "schema": "hepta.windows-legacy-delete-stderr.v1",
+  "recorded_utc": "2026-10-22T15:08:59.686641+00:00",
+  "source_commit": "20e5762839f9e06235df9c861a4796c9da56acc3",
+  "source_tree": "871ea84e3b5b40265ea88e2aea478ad0398aeb1e",
+  "parent_commit": "3e1f5574fab9b515e48954b3be95efe3f86b3703",
+  "production_sandbox_qualified": false,
+  "change": {
+    "path": "codex-rs/windows-sandbox-rs/src/unified_exec/tests.rs",
+    "test": "legacy_workspace_write_delete_is_limited_to_writable_roots",
+    "lines_added": 16,
+    "lines_deleted": 0,
+    "before_sha256": "1c433d36d0099a33d1e96570b77a753ade76bdfa3f1dec1e91197895c3b3715e",
+    "after_sha256": "cb39f2176ca4b2ccf76b2ee68bd52fb267ec3f2e9ec9c3fdcdf32341817b3600",
+    "description": "Move the existing stderr receiver into a concurrent drain before calling the unchanged stdout/exit helper; join with a 10-second bound and print stderr before the unchanged native assertions."
+  },
+  "original_failure": {
+    "head_sha": "52818afa93eec98fe46ae0b09b6f79eb13e86cde",
+    "run_id": 39799535649,
+    "run_attempt": 1,
+    "job_id": 119895966918,
+    "log_sha256": "27e1fff304a2ed7f110aab6313663fd9080d7c97062e69f5947071897b78692e",
+    "actual_tuple": [0, true, true, true, "outside", true],
+    "expected_tuple": [0, false, false, false, "outside", true],
+    "stdout_contains_four_file_paths": true,
+    "stderr_originally_discarded_by_test_helper": true,
+    "access_denied_as_cause": "NOT_ESTABLISHED; await actual stderr on the new source"
+  },
+  "validation": {
+    "just_fmt": "PASS",
+    "just_fmt_check": "PASS",
+    "git_diff_check": "PASS",
+    "codespell_2_4_3": "PASS",
+    "whole_file_equal_after_removing_two_diagnostic_insertions": true,
+    "test_assertion_suffix_byte_identical": true,
+    "other_tests_byte_identical": true,
+    "shared_helper_byte_identical": true,
+    "spawn_permissions_commands_timeout_unchanged": true,
+    "typed_api_source_checked": "SpawnedProcess.stderr_rx is tokio::sync::mpsc::Receiver<Vec<u8>>; std::mem::replace uses an immediately closed receiver of the same inferred type. Existing Tokio runtime, timeout and mpsc imports are reused.",
+    "owning_windows_compile": "NOT_RUN",
+    "owning_windows_tests": "PENDING_ON_NEW_SOURCE",
+    "owning_windows_clippy": "NOT_RUN",
+    "reason": "No reusable owning MSVC target cache; no cold build performed within the available disk budget. Formatting and source review are not native acceptance.",
+    "protected_files": [
+      {
+        "path": "codex-rs/windows-sandbox-rs/src/token.rs",
+        "sha256": "3fe5daee06868755f298a415864e4087984f95b1d20325a86687638bba4cd8ac"
+      },
+      {
+        "path": "codex-rs/windows-sandbox-rs/src/acl.rs",
+        "sha256": "7dd4054f8764fc677ddc116e4f828d465d9734cf5a0b85cd985cdd582b1f2bd8"
+      },
+      {
+        "path": "codex-rs/windows-sandbox-rs/src/token_tests.rs",
+        "sha256": "24e57f475065231758559e08382e16a37a15d32912a0435652e2fc3fb2496d58"
+      },
+      {
+        "path": "codex-rs/windows-sandbox-rs/src/token_delete_diagnostics_tests.rs",
+        "sha256": "e99cae799aab6636464472ae18589e8c19a3b0ac164587f0ac508d893de913e9"
+      },
+      {
+        "path": "codex-rs/windows-sandbox-rs/src/unified_exec/backends/legacy.rs",
+        "sha256": "121082fbb179ea82e808201e8478622c07c73ec90cecc9c25ce7b2f8b447f969"
+      },
+      {
+        "path": ".github/workflows/hepta-windows-delete-diagnostics.yml",
+        "sha256": "af9d2707eef964d7a05eb97dc8574f8e766fa789c07a5d0d3da546abdc47359c"
+      },
+      {
+        "path": "codex-rs/windows-sandbox-rs/Cargo.toml",
+        "sha256": "183a3691be018640668dfb766f29651d8fd75ab08f7fd526f3d378ae2a86469d"
+      },
+      {
+        "path": "codex-rs/Cargo.lock",
+        "sha256": "f11a317cd13092663372c3f6b5709266c9e1375baa55eb57f199b754faf418a1"
+      },
+      {
+        "path": "MODULE.bazel.lock",
+        "sha256": "63ee8041114a86fb2064282e466d4250abdf884b2b10dff21c91c412cecfcc4b"
+      }
+    ]
+  },
+  "remaining": [
+    "No production token, ACL, backend, command, permission or acceptance assertion was changed.",
+    "The prior log demonstrates failure of permitted-root deletion; it does not establish an AccessDenied error or repeat the older outside-deletion failure shape.",
+    "Parent FILE_DELETE_CHILD isolation and Low-route native execution remain independently open."
+  ]
+}

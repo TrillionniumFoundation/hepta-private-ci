@@ -2,6 +2,7 @@
 //! All ACL/mandatory-label changes are confined to this test's owned temporary fixture.
 
 use super::*;
+use anyhow::Context;
 use pretty_assertions::assert_eq;
 use serde::Serialize;
 use std::path::Path;
@@ -287,11 +288,22 @@ fn workspace_delete_permission_routes_diagnostic_matrix() -> Result<()> {
         for path in &directories {
             std::fs::create_dir(path)?;
         }
-        let parent_sddl = fixture_acl(&outside, READ_EXECUTE | parent_right, label)?;
+        // Set child labels before replacing parent inheritance, which can remove
+        // the WRITE_OWNER access required to set a mandatory label.
         let mut object_sddl = Vec::new();
-        for path in victims.iter().chain(&directories) {
-            object_sddl.push(fixture_acl(path, READ_EXECUTE | object_right, label)?);
+        for (role, path) in [
+            ("control_file", &victims[0]),
+            ("restricted_file", &victims[1]),
+            ("control_directory", &directories[0]),
+            ("restricted_directory", &directories[1]),
+        ] {
+            object_sddl.push(
+                fixture_acl(path, READ_EXECUTE | object_right, label)
+                    .with_context(|| format!("prepare {name} {role} ACL/label"))?,
+            );
         }
+        let parent_sddl = fixture_acl(&outside, READ_EXECUTE | parent_right, label)
+            .with_context(|| format!("prepare {name} parent ACL/label"))?;
         // The Low outside label, when selected, exists before this route's
         // restricted token is created by the unchanged production factory.
         let route_token = OwnedToken(unsafe {

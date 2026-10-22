@@ -767,10 +767,26 @@ fn legacy_workspace_write_delete_is_limited_to_writable_roots() {
         )
         .await
         .expect("spawn legacy delete session");
+        let mut spawned = spawned;
+        let (_, unused_stderr_rx) = mpsc::channel(/*buffer*/ 1);
+        let mut stderr_rx = std::mem::replace(&mut spawned.stderr_rx, unused_stderr_rx);
+        let stderr_task = tokio::spawn(async move {
+            let mut stderr = Vec::new();
+            while let Some(chunk) = stderr_rx.recv().await {
+                stderr.extend(chunk);
+            }
+            stderr
+        });
         let (stdout, exit_code) =
             collect_stdout_and_exit(spawned, codex_home.path(), Duration::from_secs(/*secs*/ 10))
                 .await;
         let stdout = String::from_utf8_lossy(&stdout);
+        let stderr = timeout(Duration::from_secs(/*secs*/ 10), stderr_task)
+            .await
+            .expect("timed out waiting for legacy delete stderr")
+            .expect("legacy delete stderr task join");
+        let stderr = String::from_utf8_lossy(&stderr);
+        eprintln!("legacy delete stderr={stderr:?}");
 
         assert_eq!(
             (
