@@ -261,6 +261,7 @@ class ScaleMatrixTests(unittest.TestCase):
             scale_matrix.SIZES.index(size) * len(scale_matrix.ARMS)
             + scale_matrix.ARMS.index(arm)
         )
+        evidence_id_base = 2000 + index * len(scale_matrix.REQUIRED_EVIDENCE)
         return {
             "schema": "hepta.cell-execution-scale-result.v1",
             "size": size,
@@ -275,7 +276,8 @@ class ScaleMatrixTests(unittest.TestCase):
             },
             "evidence": {key: True for key in scale_matrix.REQUIRED_EVIDENCE},
             "evidence_receipts": {
-                key: "f" * 64 for key in scale_matrix.REQUIRED_EVIDENCE
+                claim: f"{evidence_id_base + offset:064x}"
+                for offset, claim in enumerate(scale_matrix.REQUIRED_EVIDENCE)
             },
             "metrics": {key: 0 for key in scale_matrix.REQUIRED_METRICS},
             "metrics_receipt": f"{1000 + index:064x}",
@@ -345,6 +347,22 @@ class ScaleMatrixTests(unittest.TestCase):
             "results[1].provenance.measurement_digest reused across matrix pairs",
             errors,
         )
+
+    def test_matrix_rejects_cross_arm_recycled_evidence(self):
+        matrix = self.matrix()
+        self.assertEqual(scale_matrix.validate_matrix(matrix), [])
+        # Future-window and rollback receipts from one size/arm cannot be
+        # replayed as independently observed evidence for a different pair.
+        for claim in ("future_window", "rollback"):
+            with self.subTest(claim=claim):
+                matrix = self.matrix()
+                matrix["results"][1]["evidence_receipts"][claim] = matrix["results"][0][
+                    "evidence_receipts"
+                ][claim]
+                self.assertIn(
+                    f"results[1].evidence_receipts.{claim} reused across matrix pairs",
+                    scale_matrix.validate_matrix(matrix),
+                )
 
     def test_matrix_rejects_omissions_and_duplicate_pairs(self):
         matrix = self.matrix()
