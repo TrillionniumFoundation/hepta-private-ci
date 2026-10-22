@@ -413,3 +413,106 @@ fn no_change_protocol_cannot_masquerade_as_a_second_positive_asset() {
         NduError::InvalidSolverReceipt("unmarked no-change asset")
     );
 }
+
+#[test]
+fn fractionally_admits_a_direction_to_honor_semantic_risk_budget() {
+    let mut limits = budget(2);
+    limits.risk_budget = q(8);
+    let receipt = select_output_portfolio_v1(
+        &context(2),
+        &limits,
+        &[
+            candidate("baseline", 0, 0, true),
+            candidate("limited-by-risk", 80, 20, false),
+        ],
+    )
+    .expect("bounded fractional risk allocation");
+    assert_eq!(receipt.disposition, OutputPortfolioDispositionV1::AdvisorySelection);
+    assert!(receipt.total_risk <= limits.risk_budget);
+    let active = receipt
+        .allocations
+        .iter()
+        .find(|item| item.candidate_id == id("limited-by-risk"))
+        .expect("a feasible direction is retained");
+    let abstain = receipt
+        .allocations
+        .iter()
+        .find(|item| item.candidate_id == id("baseline"))
+        .expect("unused weight stays with no-change");
+    assert!(active.weight >= q(39));
+    assert!(active.weight <= q(40));
+    assert_eq!(
+        active.weight.checked_add(abstain.weight).expect("weights sum"),
+        FixedQ32::ONE
+    );
+}
+
+#[test]
+fn fractionally_admits_a_direction_to_honor_resource_and_latency_budgets() {
+    let mut limits = budget(2);
+    limits.resource_budget = q(5);
+    limits.latency_budget = q(2);
+    let receipt = select_output_portfolio_v1(
+        &context(2),
+        &limits,
+        &[candidate("baseline", 0, 0, true), candidate("bounded", 80, 0, false)],
+    )
+    .expect("bounded fractional resource allocation");
+    assert!(receipt.total_resource <= limits.resource_budget);
+    assert!(receipt.total_latency <= limits.latency_budget);
+    assert_eq!(receipt.allocations.len(), 2);
+    let active = receipt
+        .allocations
+        .iter()
+        .find(|item| item.candidate_id == id("bounded"))
+        .expect("direction admitted");
+    assert!(active.weight >= q(39));
+    assert!(active.weight <= q(40));
+}
+
+#[test]
+fn covariance_risk_budget_bounds_fractional_weight() {
+    let mut limits = budget(2);
+    limits.risk_budget = q(20);
+    let mut correlated = context(2);
+    correlated.semantic_covariance[3] = q(80);
+    let receipt = select_output_portfolio_v1(
+        &correlated,
+        &limits,
+        &[candidate("baseline", 0, 0, true), candidate("variance", 80, 0, false)],
+    )
+    .expect("PSD risk-bounded selection");
+    assert!(receipt.total_risk <= limits.risk_budget);
+    let active = receipt
+        .allocations
+        .iter()
+        .find(|item| item.candidate_id == id("variance"))
+        .expect("partial covariance-aware direction");
+    assert!(active.weight >= q(49));
+    assert!(active.weight <= q(50));
+}
+
+#[test]
+fn hard_slot_and_atomic_protocol_constraints_survive_fractional_optimization() {
+    let mut limits = budget(1);
+    limits.resource_budget = q(2);
+    let receipt = select_output_portfolio_v1(
+        &context(2),
+        &limits,
+        &[candidate("baseline", 0, 0, true), candidate("partial", 80, 0, false)],
+    )
+    .expect("no hidden slot for residual baseline");
+    assert_eq!(receipt.disposition, OutputPortfolioDispositionV1::NoChange);
+
+    limits.max_selected = 2;
+    let mut tool = candidate("tool", 80, 0, false);
+    tool.protocol = OutputProtocolV1::ToolAction;
+    tool.resource_cost = q(10);
+    let receipt = select_output_portfolio_v1(
+        &context(2),
+        &limits,
+        &[candidate("baseline", 0, 0, true), tool],
+    )
+    .expect("tool actions remain whole or skipped");
+    assert_eq!(receipt.disposition, OutputPortfolioDispositionV1::NoChange);
+}
