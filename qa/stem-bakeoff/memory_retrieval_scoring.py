@@ -76,12 +76,26 @@ def calibrate_threshold(rows_by_threshold):
 
 def paired_group_interval(left, right, *, seed=20261022, samples=4000):
     """Descriptive bootstrap of whole conversations, not question bootstrap."""
-    if [r["query_id"] for r in left] != [r["query_id"] for r in right]:
+    if type(samples) is not int or not 1 <= samples <= 10000:
+        raise ValueError("bounded positive bootstrap samples required")
+    if len(left) != len(right):
         raise ValueError("paired question census differs")
-    grouped = defaultdict(list)
+    # Denominator parity alone is insufficient: a mismatched source family or
+    # gold annotation would silently contaminate the conversation bootstrap.
+    immutable = ("query_id", "group", "category", "annotation_status",
+                 "evidence_has_image", "gold_evidence_count", "unresolved_evidence")
+    seen_ids = set()
     for a, b in zip(left, right):
+        if any(a[key] != b[key] for key in immutable):
+            raise ValueError("paired evidence/source identity differs")
+        qid = a["query_id"]
+        if type(qid) is not str or qid in seen_ids:
+            raise ValueError("invalid or duplicate paired query identity")
+        seen_ids.add(qid)
         if (a["support_recall"] is None) != (b["support_recall"] is None):
             raise ValueError("paired score denominator differs")
+    grouped = defaultdict(list)
+    for a, b in zip(left, right):
         if a["support_recall"] is not None:
             grouped[a["group"]].append(a["all_support_recalled"] - b["all_support_recalled"])
     means = [mean(values) for _, values in sorted(grouped.items())]

@@ -109,6 +109,20 @@ class MemoryRetrievalProbeTests(unittest.TestCase):
         changed[0]["query_id"] = "changed"
         with self.assertRaises(ValueError):
             paired_group_interval(left, changed)
+        # Same question IDs alone cannot authenticate a paired cohort.
+        for field, value in (("group", "different-root"), ("category", 5),
+                             ("annotation_status", "adversarial"),
+                             ("gold_evidence_count", 2), ("evidence_has_image", True),
+                             ("unresolved_evidence", ["forged-source"])):
+            altered = deepcopy(right)
+            altered[0][field] = value
+            with self.subTest(field=field), self.assertRaises(ValueError):
+                paired_group_interval(left, altered, samples=100)
+        with self.assertRaisesRegex(ValueError, "duplicate"):
+            paired_group_interval(left[:2], right[:2], samples=100)
+        for count in (0, -1, 10001, False, 1.0):
+            with self.subTest(samples=count), self.assertRaises(ValueError):
+                paired_group_interval(left[:1], right[:1], samples=count)
 
 
 if __name__ == "__main__":
