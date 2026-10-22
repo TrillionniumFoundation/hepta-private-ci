@@ -262,6 +262,12 @@ impl ToolOutcomeV1 {
         if self.terminal_observed && self.stdout_digest.is_none() && self.stderr_digest.is_none() {
             return Err(ExecutionContractError::MissingTerminalOutcome);
         }
+        // An exit status is a terminal process observation. Accepting it with
+        // terminal_observed=false would turn conflicting evidence into a
+        // digest-valid indeterminate outcome.
+        if !self.terminal_observed && self.exit_code.is_some() {
+            return Err(ExecutionContractError::StatusOutcomeMismatch);
+        }
         if self.stdout_digest.is_some_and(Digest32::is_zero)
             || self.stderr_digest.is_some_and(Digest32::is_zero)
         {
@@ -337,6 +343,13 @@ impl ExecutionReceiptV1 {
         {
             return Err(ExecutionContractError::StatusRecoveryMismatch);
         }
+        // A failed operation may already have produced side effects. It is
+        // never proof that the same effect can be retried before admission.
+        if self.status == ExecutionStatusV1::Failed
+            && self.recovery == RecoveryDispositionV1::RetryBeforeAdmission
+        {
+            return Err(ExecutionContractError::StatusRecoveryMismatch);
+        }
         if matches!(
             self.status,
             ExecutionStatusV1::Completed | ExecutionStatusV1::Failed
@@ -384,6 +397,17 @@ impl RuntimeReceiptV1 {
         if self.execution.status == ExecutionStatusV1::Completed
             && self.tool_outcome.exit_code.is_some_and(|code| code != 0)
         {
+            return Err(ExecutionContractError::StatusOutcomeMismatch);
+        }
+        // Rejection means that the native tool never ran. A terminal native
+        // result belongs to Completed/Failed, not Rejected. Similarly, a
+        // completed effect cannot carry an outcome-level retry signal.
+        if self.execution.status == ExecutionStatusV1::Rejected
+            && self.tool_outcome.terminal_observed
+        {
+            return Err(ExecutionContractError::StatusOutcomeMismatch);
+        }
+        if self.execution.status == ExecutionStatusV1::Completed && self.tool_outcome.retryable {
             return Err(ExecutionContractError::StatusOutcomeMismatch);
         }
         Ok(())
