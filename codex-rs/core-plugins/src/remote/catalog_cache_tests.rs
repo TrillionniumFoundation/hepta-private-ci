@@ -71,12 +71,48 @@ fn global_catalog_cache_reuses_legacy_cache_file() {
         &auth,
         RemotePluginScope::Global,
         &[],
-    );
+    )
+    .expect("publish refreshed catalog");
     let refreshed_cache: RemotePluginCatalogDiskCache = serde_json::from_slice(
         &std::fs::read(&legacy_cache_path).expect("read refreshed legacy cache"),
     )
     .expect("parse refreshed legacy cache");
     assert!(refreshed_cache.fetched_at.is_some());
+}
+
+#[test]
+fn catalog_publication_reports_replace_failure_and_preserves_destination() {
+    let codex_home = tempfile::tempdir().expect("create codex home");
+    let config = RemotePluginServiceConfig::new(
+        "https://chatgpt.com/backend-api".to_string(),
+        crate::test_support::test_http_client_factory(),
+    );
+    let auth = CodexAuth::Headers(AuthHeaders::new(http::HeaderMap::new()));
+    let key = RemotePluginCatalogCacheKey::new(&config, &auth, RemotePluginScope::Global)
+        .expect("global cache identity");
+    let destination = cache_path(codex_home.path(), &key);
+    std::fs::create_dir_all(&destination).expect("occupy publication destination with directory");
+    let marker = destination.join("retain.txt");
+    std::fs::write(&marker, "retained bytes").expect("write existing destination marker");
+
+    write_cached_directory_plugins(
+        codex_home.path(),
+        &config,
+        &auth,
+        RemotePluginScope::Global,
+        &[],
+    )
+    .expect_err("publishing a file over a nonempty directory must fail");
+
+    assert!(destination.is_dir());
+    assert_eq!(std::fs::read_to_string(marker).unwrap(), "retained bytes");
+    assert_eq!(
+        std::fs::read_dir(destination.parent().unwrap())
+            .unwrap()
+            .count(),
+        1,
+        "failed publication must clean its temporary file"
+    );
 }
 
 #[test]
@@ -94,7 +130,8 @@ fn header_auth_does_not_cache_private_catalogs_without_a_stable_identity() {
         &auth,
         RemotePluginScope::Global,
         &[],
-    );
+    )
+    .expect("publish global catalog");
     assert!(
         load_cached_directory_plugins(codex_home.path(), &config, &auth, RemotePluginScope::Global)
             .is_some()
@@ -110,7 +147,8 @@ fn header_auth_does_not_cache_private_catalogs_without_a_stable_identity() {
         };
         let insecure_cache_path = cache_path(codex_home.path(), &insecure_cache_key);
 
-        write_cached_directory_plugins(codex_home.path(), &config, &auth, scope, &[]);
+        write_cached_directory_plugins(codex_home.path(), &config, &auth, scope, &[])
+            .expect("skip private catalog without a stable identity");
         assert!(!insecure_cache_path.exists());
 
         let insecure_cache = RemotePluginCatalogDiskCache {

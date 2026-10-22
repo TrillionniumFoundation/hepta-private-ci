@@ -103,8 +103,12 @@ jobs:
             'token::tests::delete_diagnostics::workspace_delete_permission_routes_diagnostic_matrix'
           )
           $filter = ($expected | ForEach-Object { "test(=$_)" }) -join ' | '
+          # nextest 0.9.103 does not inherit default.junit.path into the local profile.
+          # Its store is relative to the Cargo workspace, independently of CARGO_TARGET_DIR.
+          $nextestJunit = Join-Path (Get-Location) 'target/nextest/default/junit.xml'
+          if (Test-Path -LiteralPath $nextestJunit) { throw 'Unexpected preexisting nextest JUnit report' }
           $testArgs = @(
-            'test', '--locked', '-p', 'codex-windows-sandbox', '--lib',
+            'test', '--profile', 'default', '--locked', '-p', 'codex-windows-sandbox', '--lib',
             '-E', $filter, '--test-threads', '1', '--retries', '0',
             '--no-tests', 'fail', '--failure-output', 'final',
             '--success-output', 'final'
@@ -120,7 +124,7 @@ jobs:
           $selected = @()
           $failedCount = $null
           $selectionError = $null
-          $junitFiles = @(Get-ChildItem "$env:CARGO_TARGET_DIR/nextest" -Filter junit.xml -Recurse -ErrorAction SilentlyContinue)
+          $junitFiles = @(Get-Item -LiteralPath $nextestJunit -ErrorAction SilentlyContinue)
           if ($junitFiles.Count -eq 1) {
             Copy-Item $junitFiles[0].FullName "$env:EVIDENCE_DIR/junit.xml"
             [xml]$junit = Get-Content "$env:EVIDENCE_DIR/junit.xml" -Raw
