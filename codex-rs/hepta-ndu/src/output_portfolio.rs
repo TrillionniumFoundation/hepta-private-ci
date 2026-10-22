@@ -728,6 +728,12 @@ fn digest_selection(
     receipt: &OutputPortfolioSelectionReceiptV1,
 ) -> Digest32 {
     let mut bytes = b"hepta.ndu.portfolio.complete-receipt.v2".to_vec();
+    // A digest-only reader sees the published record, not our caller's
+    // immutable context. Bind these emitted identities directly too.
+    bytes.extend_from_slice(receipt.objective_digest.as_array());
+    bytes.extend_from_slice(&receipt.generation.get().to_le_bytes());
+    bytes.extend_from_slice(receipt.encoder_digest.as_array());
+    bytes.extend_from_slice(receipt.snapshot_digest.as_array());
     bytes.extend_from_slice(context.objective_digest.as_array());
     bytes.extend_from_slice(&context.generation.get().to_le_bytes());
     bytes.extend_from_slice(context.encoder_digest.as_array());
