@@ -893,3 +893,22 @@ fn negative_standalone_score_can_hedge_positive_portfolio_exposure() {
     verify_output_portfolio_receipt_v1(&correlated, &limits, &candidates, &receipt)
         .expect("hedged selection replays from immutable inputs");
 }
+
+#[test]
+fn psd_covariance_roundoff_must_not_publish_negative_semantic_risk() {
+    // Symmetric diagonally dominant covariance is PSD. Its independent Q32
+    // rounded quadratic terms nevertheless sum to -1 raw unit for this exact
+    // valid pair of nonnegative weights; do not advertise negative risk.
+    let sigma = FixedQ32::from_raw(15_267_966);
+    let opposite = FixedQ32::from_raw(-15_267_966);
+    let covariance = [sigma, opposite, opposite, sigma];
+    validate_covariance(&covariance, 2).expect("matrix is positive semidefinite");
+    let weights = [
+        FixedQ32::from_raw(916_018_598),
+        FixedQ32::from_raw(916_348_498),
+    ];
+    assert_eq!(
+        quadratic_risk(&weights, &[FixedQ32::ZERO; 2], &covariance),
+        Err(NduError::InvalidSolverReceipt("negative portfolio risk"))
+    );
+}
