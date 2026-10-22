@@ -24,8 +24,10 @@ jobs:
     # Code-mode unit tests run on every Bazel target. When authenticated RBE
     # is available, the Windows-cross shards exercise the source-built V8 path.
     # Run 39715223201 hit the one-hour cap during a cold V8 source build.
-    # Allow the complete native test graph to finish within a two-hour cap.
-    timeout-minutes: 120
+    # Run 39727698191's Intel Mac leg reached 13,910/16,027 actions and
+    # 107/565 tests at two hours while V8 was still compiling. Give only that
+    # matrix leg a three-hour cap; keep its complete test graph and failures.
+    timeout-minutes: ${{ matrix.os == 'macos-15-intel' && 180 || 120 }}
     strategy:
       fail-fast: false
       matrix:
@@ -343,7 +345,9 @@ jobs:
         uses: ./.github/actions/check-clean-worktree
 
   clippy:
-    timeout-minutes: 120
+    # Run 39727698191's Mac Clippy leg was still compiling V8 at action
+    # 16,689/18,699 when its two-hour budget expired.
+    timeout-minutes: ${{ matrix.os == 'macos-15' && 180 || 120 }}
     strategy:
       fail-fast: false
       matrix:
