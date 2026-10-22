@@ -293,8 +293,13 @@ impl FleetRegistry {
             set_mode(&bin_root, /*mode*/ 0o555)?;
             sync_directory(&bin_root)?;
             sync_directory(&staging)?;
-            set_mode(&staging, /*mode*/ 0o555)?;
+            // Some native hosts refuse renaming an already read-only directory.
+            // Children are sealed and synced before the name moves. The name
+            // alone grants no authority: catalog admission rejects a writable
+            // outer directory, including residue left before sealing below.
             std::fs::rename(&staging, &final_root)?;
+            set_mode(&final_root, /*mode*/ 0o555)?;
+            sync_directory(&final_root)?;
             sync_directory(self.layout().releases_root())?;
             Ok(())
         })();
