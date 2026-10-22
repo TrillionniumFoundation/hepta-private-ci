@@ -241,6 +241,89 @@ fn rejected_runtime_receipt_cannot_claim_observed_effect_termination() {
 }
 
 #[test]
+fn pre_admission_retry_rejects_partial_output_and_mismatched_retry_flags() {
+    let value = intent();
+    let mut outcome = ToolOutcomeV1 {
+        terminal_observed: false,
+        exit_code: None,
+        stdout_digest: None,
+        stderr_digest: None,
+        retryable: true,
+    };
+    let mut receipt = RuntimeReceiptV1 {
+        execution: ExecutionReceiptV1 {
+            operation_id: value.cell.operation_id.clone(),
+            intent_digest: value.cell.intent_digest(),
+            generation: value.cell.generation,
+            final_payload_digest: value.cell.final_payload.clone(),
+            outcome_digest: Some(outcome.outcome_digest()),
+            status: ExecutionStatusV1::Rejected,
+            recovery: RecoveryDispositionV1::RetryBeforeAdmission,
+            authority: AuthorityPosture::DENY_ALL,
+        },
+        runtime_intent_digest: value.intent_digest(),
+        tool_outcome: outcome.clone(),
+    };
+    assert_eq!(receipt.validate_against(&value), Ok(()));
+
+    // A partially observed tool effect cannot be called a rejection before
+    // admission, even when the backend has not reported terminality.
+    for (stdout, stderr) in [
+        (Some(digest("partial-stdout")), None),
+        (None, Some(digest("partial-stderr"))),
+    ] {
+        outcome.stdout_digest = stdout;
+        outcome.stderr_digest = stderr;
+        receipt.tool_outcome = outcome.clone();
+        receipt.execution.outcome_digest = Some(outcome.outcome_digest());
+        assert_eq!(
+            receipt.validate_against(&value),
+            Err(ExecutionContractError::StatusOutcomeMismatch)
+        );
+    }
+
+    outcome.stdout_digest = None;
+    outcome.stderr_digest = None;
+    outcome.retryable = false;
+    receipt.tool_outcome = outcome.clone();
+    receipt.execution.outcome_digest = Some(outcome.outcome_digest());
+    assert_eq!(
+        receipt.validate_against(&value),
+        Err(ExecutionContractError::StatusRecoveryMismatch)
+    );
+
+    // A quarantined rejection must not claim the effect can be retried.
+    receipt.execution.recovery = RecoveryDispositionV1::Quarantine;
+    outcome.retryable = true;
+    receipt.tool_outcome = outcome.clone();
+    receipt.execution.outcome_digest = Some(outcome.outcome_digest());
+    assert_eq!(
+        receipt.validate_against(&value),
+        Err(ExecutionContractError::StatusRecoveryMismatch)
+    );
+
+    // An ambiguous effect is reconcile-only and must never advertise retry.
+    receipt.execution.status = ExecutionStatusV1::Indeterminate;
+    receipt.execution.recovery = RecoveryDispositionV1::ReconcileSameOperation;
+    assert_eq!(
+        receipt.validate_against(&value),
+        Err(ExecutionContractError::StatusRecoveryMismatch)
+    );
+
+    // A terminal failure is also not a new-operation retry permit.
+    outcome.terminal_observed = true;
+    outcome.stdout_digest = Some(digest("terminal-error"));
+    receipt.tool_outcome = outcome.clone();
+    receipt.execution.outcome_digest = Some(outcome.outcome_digest());
+    receipt.execution.status = ExecutionStatusV1::Failed;
+    receipt.execution.recovery = RecoveryDispositionV1::None;
+    assert_eq!(
+        receipt.validate_against(&value),
+        Err(ExecutionContractError::StatusRecoveryMismatch)
+    );
+}
+
+#[test]
 fn fence_requires_old_writer_and_route_cutover() {
     let base = GenerationFenceWitnessV1 {
         scope_id: id("organ:build"),
