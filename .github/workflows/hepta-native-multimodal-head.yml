@@ -45,7 +45,6 @@ jobs:
           printf 'CARGO_TARGET_DIR=%s/hepta-native-head-target\n' "$RUNNER_TEMP" >> "$GITHUB_ENV"
           test "$(git rev-parse HEAD)" = "$EXPECTED_SHA"
           test -z "$(git status --porcelain)"
-          printf 'CARGO_TARGET_DIR=%s\n' "$RUNNER_TEMP/hepta-native-task-head-target" >> "$GITHUB_ENV"
           mkdir "$RUNNER_TEMP/hepta-native-head"
           git rev-parse HEAD HEAD^{tree} > "$RUNNER_TEMP/hepta-native-head/source.txt"
       - uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582 # 1.95.0
