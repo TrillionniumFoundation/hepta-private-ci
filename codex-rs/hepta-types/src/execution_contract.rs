@@ -283,7 +283,11 @@ pub struct ToolOutcomeV1 {
 
 impl ToolOutcomeV1 {
     pub fn validate(&self) -> Result<(), ExecutionContractError> {
-        if self.terminal_observed && self.stdout_digest.is_none() && self.stderr_digest.is_none() {
+        if self.terminal_observed
+            && self.exit_code.is_none()
+            && self.stdout_digest.is_none()
+            && self.stderr_digest.is_none()
+        {
             return Err(ExecutionContractError::MissingTerminalOutcome);
         }
         if self.stdout_digest.is_some_and(Digest32::is_zero)
@@ -430,19 +434,33 @@ impl RuntimeReceiptV1 {
         {
             return Err(ExecutionContractError::StatusOutcomeMismatch);
         }
-        // Rejected means the effect did not reach the runtime. It must never
-        // carry a terminal observation and then claim retry-before-admission.
-        if self.execution.status == ExecutionStatusV1::Rejected
-            && self.tool_outcome.terminal_observed
-        {
-            return Err(ExecutionContractError::StatusOutcomeMismatch);
-        }
         // A nonzero native process exit is never a completed success. A
         // terminal success cannot separately request a retry of that effect.
         if self.execution.status == ExecutionStatusV1::Completed
             && (self.tool_outcome.exit_code.is_some_and(|code| code != 0)
                 || self.tool_outcome.retryable)
         {
+            return Err(ExecutionContractError::StatusOutcomeMismatch);
+        }
+        // Rejection is strictly pre-admission: neither a terminal result nor
+        // partial stdout/stderr may have been observed from a native tool.
+        // Otherwise a side-effecting, interrupted operation could be mislabeled
+        // retry-safe even with a correctly recomputed outcome digest.
+        if self.execution.status == ExecutionStatusV1::Rejected
+            && (self.tool_outcome.terminal_observed
+                || self.tool_outcome.stdout_digest.is_some()
+                || self.tool_outcome.stderr_digest.is_some())
+        {
+            return Err(ExecutionContractError::StatusOutcomeMismatch);
+        }
+        // A native retry hint and a recovery directive must agree. A tool that
+        // may have been admitted cannot authorize a fresh attempt through a
+        // lower-level retryable bit, even when the observed outcome digest is
+        // valid. Only a pre-admission rejection with no native evidence may
+        // claim RetryBeforeAdmission; all other states are non-retryable here.
+        let safe_to_retry = self.execution.status == ExecutionStatusV1::Rejected
+            && self.execution.recovery == RecoveryDispositionV1::RetryBeforeAdmission;
+        if self.tool_outcome.retryable != safe_to_retry {
             return Err(ExecutionContractError::StatusOutcomeMismatch);
         }
         Ok(())
@@ -453,6 +471,7 @@ impl RuntimeReceiptV1 {
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub enum RuntimeExecutionError {
     InvalidIntent(ExecutionContractError),
+    InvalidReceipt(ExecutionContractError),
     Rejected,
     Indeterminate,
     Transport(String),
