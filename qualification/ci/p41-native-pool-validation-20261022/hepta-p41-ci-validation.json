@@ -1,0 +1,136 @@
+{
+  "checks": {
+    "formatter": {
+      "command": "/tmp/hepta-handoff-tools/bin/just fmt",
+      "cwd": "/tmp/hepta-p41-pool/codex-rs",
+      "exit_code": 0,
+      "output": "No changed files need formatting. Use --all for a full repository check.\n",
+      "tests_rerun_after_formatter": false
+    },
+    "git_diff_check": {
+      "exit_code": 0
+    },
+    "read_only_original_observation_audit": {
+      "absolute_tolerance": 2e-05,
+      "bytes": 5968,
+      "decisions_compared_exactly": true,
+      "measurement_reexecuted": false,
+      "path": "/tmp/hepta-p41-ci-audit-existing-final.json",
+      "raw_dispatch_samples_checked": 32768,
+      "raw_fanout_samples_checked": 128,
+      "reference_predictions_compared": 2048,
+      "request_rows_rehashed": 256,
+      "sha256": "3013ee706a1505f2e95e397215ba3ef2340c0f68a2b796daccefa818314d6c8e",
+      "status": "PASS"
+    },
+    "unit_fault_regressions": {
+      "actual_log": {
+        "bytes": 3375,
+        "path": "/tmp/hepta-p41-ci-pool-tests.log",
+        "sha256": "dc5f1713490bf0bbc91840605fc8d8769ebc44ffd7f81a13d5843f84c17f5a7c"
+      },
+      "command": "python -m unittest discover -s qa/stem-bakeoff -p 'test_native_task_head_pool*.py' -v",
+      "cwd": "/tmp/hepta-p41-pool",
+      "exit_code": 0,
+      "model_quality_evidence": false,
+      "new_audit_tests": 7,
+      "original_pool_tests": 11,
+      "tests_passed": 18
+    },
+    "workflow_syntax": {
+      "actions_semantic_validator_executed": false,
+      "bash_n_run_blocks": 10,
+      "bytes": 913,
+      "inline_python_syntax": true,
+      "path": "/tmp/hepta-p41-ci-syntax-validation.json",
+      "sha256": "567f29b700f4182f2f573409aaae3050a0eeea29466844a1b47c2bf4de382cd7",
+      "yaml_parse": true
+    }
+  },
+  "configured_cloud_trial": {
+    "actual_execution_status": "PENDING_PUBLICATION_AND_GITHUB_JOB",
+    "address_space_hard_limit_bytes": 838860800,
+    "child_wall_seconds": 90,
+    "dispatch_samples_per_process": 4096,
+    "fanout_samples_per_process": 16,
+    "frozen_archive_reused": true,
+    "full_fanout_summary": [
+      "median",
+      "max"
+    ],
+    "linux_runner": "ubuntu-24.04",
+    "native_binary_release": true,
+    "original_encoder_or_images_downloaded": false,
+    "private_heads": [
+      1,
+      32,
+      256,
+      4096
+    ],
+    "raw_request_stream_and_all_samples_retained": true,
+    "runtime_cargo_target_dir_fix_retained": true,
+    "serial_processes": 8,
+    "template_modes": [
+      "gated",
+      "linear"
+    ],
+    "trial_wall_seconds": 720,
+    "workflow_step_timeout_minutes": 15
+  },
+  "integration_note": "Root combines the two stages with its independently fixed source; original f885 measurement/report bytes remain unchanged. Source mapping and any later cloud receipts must be recorded separately.",
+  "not_executed_locally_for_this_ci_layer": [
+    "new native build",
+    "new benchmark run",
+    "GitHub Actions job",
+    "independent peer code review"
+  ],
+  "original_measurement_source": {
+    "git_head_sha": "f8855a7ac07af47b618199a3a9ccb87ff9552a5c",
+    "git_tree_sha": "231ed14ea73a71c6d2ac3fe353b1779419154f53",
+    "unchanged_file_sha256": {
+      "codex-rs/hepta-neuron/examples/native_task_head_pool.rs": "6294c5786f5223cacc3f74a62e6e0b5908bdad7653eabf25106cfd597c7ff0ed",
+      "qa/stem-bakeoff/native_task_head_pool.py": "21fffc60c82a7f4c02e1b04a3bde413c2e8b21336fa4bb4cc9be8f94710ec07f",
+      "qa/stem-bakeoff/test_native_task_head_pool.py": "f3d6eaa5942060df1638e04aec10dff43d43416b3bc914df1483ba0928294f4e"
+    }
+  },
+  "schema": "hepta.p41-native-pool-ci-prepublication-validation.v1",
+  "scope": {
+    "action_execution_allowed": false,
+    "architecture_cost_ranking_established": false,
+    "authority": "DENY_ALL",
+    "compiler_attestation_independently_verified": false,
+    "energy_joules": null,
+    "head_only": true,
+    "independently_trained_tasks_at_4096": false,
+    "independently_trained_templates": 2,
+    "new_independent_quality_trial": false,
+    "target_device_qualified": false,
+    "task_admission_allowed": false
+  },
+  "source": {
+    "clean_at_read_only_audit": true,
+    "file_sha256": {
+      ".github/workflows/hepta-native-multimodal-head.yml": "9dcdde3903966a576912603146a6b2da5836189033056e10f0254b9cf46aa064",
+      "qa/stem-bakeoff/audit_native_task_head_pool.py": "09788d5a421fa56ce3862c480556061bb65cf15eabf325f91245f6d5a8fb78d7",
+      "qa/stem-bakeoff/test_native_task_head_pool_audit.py": "33afcfac6a638169932bc66b7824e098798c37c23e340d73d96b0b664c548e5c"
+    },
+    "git_head_sha": "a9a1581ddf49b3268939b69ff74c101f70b334bc",
+    "git_tree_sha": "3799d5f5fd7fd977a19c7137505ef6cbadbf306f"
+  },
+  "stages": [
+    {
+      "added_lines": 341,
+      "commit": "8ad31750346b86a9ca54c226c3081a9abba94ba8",
+      "purpose": "independent stdlib evidence audit and seven meaningful fault regressions",
+      "tree": "29a89cbc3a04cb301344a768061e5bcc82f9292f"
+    },
+    {
+      "added_lines": 57,
+      "commit": "a9a1581ddf49b3268939b69ff74c101f70b334bc",
+      "purpose": "shared native workflow pool execution, retained raw artifacts and explicit audit pins",
+      "removed_lines": 6,
+      "tree": "3799d5f5fd7fd977a19c7137505ef6cbadbf306f"
+    }
+  ],
+  "status": "LOCAL_CHECKS_PASS_CLOUD_EXECUTION_PENDING"
+}

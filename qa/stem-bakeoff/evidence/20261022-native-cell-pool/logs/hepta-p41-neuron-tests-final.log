@@ -1,0 +1,125 @@
+RUST_MIN_STACK=8388608 NEXTEST_PROFILE=local python3 ../scripts/run-nextest.py "$@"
+   Compiling codex-hepta-neuron v0.0.0 (/tmp/hepta-p41-pool/codex-rs/hepta-neuron)
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#generic-array@0.14.7` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#proc-macro2@1.0.106` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#quote@1.0.45` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#serde_core@1.0.228` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#zmij@1.0.19` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#serde@1.0.228` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#serde_json@1.0.149` which wasn't produced by cargo metadata
+    Finished `release` profile [optimized] target(s) in 16.51s
+────────────
+ Nextest run ID 809c0c91-352f-42b3-87d8-20b417313692 with nextest profile: local
+    Starting 110 tests across 1 binary
+        PASS [   0.007s] (  1/110) codex-hepta-neuron cell_evidence::tests::binds_head_and_runtime_receipts_into_replayable_evidence
+        PASS [   0.011s] (  2/110) codex-hepta-neuron cell_head::tests::each_cell_gets_private_head_outputs_from_one_shared_feature_artifact
+        PASS [   0.010s] (  3/110) codex-hepta-neuron deletion::tests::deletion_rebuild_is_fresh_generation_and_never_reuses_state
+        PASS [   0.011s] (  4/110) codex-hepta-neuron cell_head::tests::binding_generation_cell_and_width_fences_fail_closed
+        PASS [   0.012s] (  5/110) codex-hepta-neuron cell_evidence::tests::evidence_fences_authority_calibration_and_receipt_integrity
+        PASS [   0.012s] (  6/110) codex-hepta-neuron deletion::tests::deletion_rebuild_rejects_skipped_generation_and_missing_deletion
+        PASS [   0.014s] (  7/110) codex-hepta-neuron cell_head::tests::head_definition_is_digest_and_shape_bound
+        PASS [   0.007s] (  8/110) codex-hepta-neuron inference_control::tests::corrupted_or_indeterminate_control_receipt_fails_closed
+        PASS [   0.010s] (  9/110) codex-hepta-neuron inference_control::tests::inference_control_receipt_maps_to_exact_local_runtime_evidence
+        PASS [   0.023s] ( 10/110) codex-hepta-neuron cell_evidence::tests::evidence_fences_cell_and_head_binding
+        PASS [   0.018s] ( 11/110) codex-hepta-neuron journal::anchor_tests::anchored_reopen_preserves_the_exact_receipt_and_all_bytes
+        PASS [   0.014s] ( 12/110) codex-hepta-neuron journal::anchor_tests::fully_rehashed_alternate_history_cannot_satisfy_the_trusted_anchor
+        PASS [   0.015s] ( 13/110) codex-hepta-neuron journal::anchor_tests::lost_complete_acknowledged_frame_is_rejected_without_repair
+        PASS [   0.023s] ( 14/110) codex-hepta-neuron journal::anchor_tests::empty_replacement_is_not_initialized_when_history_was_acknowledged
+        PASS [   0.019s] ( 15/110) codex-hepta-neuron journal::anchor_tests::matching_anchor_does_not_hide_corruption_in_a_later_full_frame
+        PASS [   0.033s] ( 16/110) codex-hepta-neuron journal::anchor_tests::earlier_anchor_accepts_later_complete_frames_and_repairs_only_the_tail
+        PASS [   0.023s] ( 17/110) codex-hepta-neuron journal::anchor_tests::malformed_anchor_rejects_before_file_mutation
+        PASS [   0.018s] ( 18/110) codex-hepta-neuron journal::anchor_tests::wrong_anchor_does_not_truncate_an_unacknowledged_tail
+        PASS [   0.033s] ( 19/110) codex-hepta-neuron journal::tests::child_process_commit_and_exit
+        PASS [   0.051s] ( 20/110) codex-hepta-neuron journal::segment_tests::plasticity_anchor_queries_preserve_global_sequence_across_rollover
+        PASS [   0.053s] ( 21/110) codex-hepta-neuron journal::segment_tests::missing_acknowledged_successor_frame_is_rejected_without_repair
+        PASS [   0.038s] ( 22/110) codex-hepta-neuron journal::tests::committed_checkpoint_and_receipt_survive_reopen
+        PASS [   0.047s] ( 23/110) codex-hepta-neuron journal::tests::changed_retry_and_stale_compare_and_swap_do_not_mutate_file
+        PASS [   0.010s] ( 24/110) codex-hepta-neuron journal::tests::complete_unacknowledged_frame_is_reconciled_on_reopen
+        PASS [   0.010s] ( 25/110) codex-hepta-neuron journal::tests::equal_retry_after_later_commit_does_not_append
+        PASS [   0.059s] ( 26/110) codex-hepta-neuron journal::segment_tests::successor_reopen_requires_exact_predecessor_seed_and_acknowledged_suffix
+        PASS [   0.055s] ( 27/110) codex-hepta-neuron journal::segment_tests::successor_segment_preserves_state_and_allows_exact_retry
+        PASS [   0.020s] ( 28/110) codex-hepta-neuron journal::tests::complete_corruption_is_rejected_without_truncation
+        PASS [   0.010s] ( 29/110) codex-hepta-neuron journal::tests::independent_writer_is_fenced_and_lock_releases_on_drop
+        PASS [   0.014s] ( 30/110) codex-hepta-neuron journal::tests::failed_recovery_releases_acquired_lock_before_journal_exists
+        PASS [   0.013s] ( 31/110) codex-hepta-neuron journal::tests::invalid_tick_and_record_cap_do_not_append
+        PASS [   0.017s] ( 32/110) codex-hepta-neuron journal::tests::incomplete_header_and_excess_file_size_are_not_repaired
+        PASS [   0.016s] ( 33/110) codex-hepta-neuron journal::tests::owner_drop_releases_lock_with_a_transient_duplicate_alive
+        PASS [   0.009s] ( 34/110) codex-hepta-neuron journal::tests::write_error_requires_reopen_and_reconciliation
+        PASS [   0.012s] ( 35/110) codex-hepta-neuron journal::tests::valid_frame_checksum_cannot_hide_invalid_checkpoint_chain
+        PASS [   0.019s] ( 36/110) codex-hepta-neuron journal::tests::process_exit_without_destructors_releases_lock_and_keeps_committed_frame
+        PASS [   0.008s] ( 37/110) codex-hepta-neuron multimodal_stem::tests::duplicate_and_unknown_modalities_are_rejected
+        PASS [   0.010s] ( 38/110) codex-hepta-neuron journal::tests::wrong_generation_and_scope_do_not_reinitialize_journal
+        PASS [   0.009s] ( 39/110) codex-hepta-neuron multimodal_stem::tests::ordered_projection_appends_missing_mask_and_provenance
+        PASS [   0.008s] ( 40/110) codex-hepta-neuron multimodal_stem::tests::projector_digest_and_manifest_order_are_bound
+        PASS [   0.009s] ( 41/110) codex-hepta-neuron multimodal_stem::tests::provenance_and_shape_fences_fail_closed
+        PASS [   0.008s] ( 42/110) codex-hepta-neuron plasticity::tests::explicit_group_mapping_applies_positive_and_negative_modulation
+        PASS [   0.008s] ( 43/110) codex-hepta-neuron multimodal_stem::tests::source_digest_is_independent_of_present_input_order
+        PASS [   0.009s] ( 44/110) codex-hepta-neuron plasticity::tests::global_l1_trust_region_projects_without_changing_inputs
+        PASS [   0.007s] ( 45/110) codex-hepta-neuron plasticity::tests::zero_modulator_produces_zero_candidate_delta
+        PASS [   0.007s] ( 46/110) codex-hepta-neuron population_v2::tests::distinct_temporal_and_activation_dimensions_use_population_then_global_competition
+        PASS [   0.009s] ( 47/110) codex-hepta-neuron plasticity::tests::implicit_broadcast_and_overweight_rows_are_rejected
+        PASS [   0.008s] ( 48/110) codex-hepta-neuron population_v2::tests::every_activation_requires_a_registered_temporal_projection
+        PASS [   0.008s] ( 49/110) codex-hepta-neuron population_v2::tests::population_profile_is_deterministic_and_supports_recurrent_successors
+        PASS [   0.012s] ( 50/110) codex-hepta-neuron population_v2::tests::population_partition_must_be_complete_and_non_overlapping
+        PASS [   0.006s] ( 51/110) codex-hepta-neuron protocol::tests::canonical_signal_roundtrip_rejects_unknown_fields
+        PASS [   0.009s] ( 52/110) codex-hepta-neuron protocol::tests::canonical_runtime_config_roundtrip_rejects_unknown_fields
+        PASS [   0.008s] ( 53/110) codex-hepta-neuron protocol::tests::canonical_tick_input_roundtrip_rejects_unknown_fields
+        PASS [   0.010s] ( 54/110) codex-hepta-neuron protocol::tests::canonical_tick_receipt_projects_only_registered_resource_fields
+        PASS [   0.008s] ( 55/110) codex-hepta-neuron protocol::tests::checkpoint_is_derived_from_committed_state_and_roundtrips
+        PASS [   0.007s] ( 56/110) codex-hepta-neuron protocol::tests::checkpoint_publication_rejects_forged_owner_summary
+        PASS [   0.008s] ( 57/110) codex-hepta-neuron qualification::tests::config_ablations_remove_only_the_named_mechanism
+        PASS [   0.007s] ( 58/110) codex-hepta-neuron qualification::tests::eligibility_and_modulator_ablations_are_explicit_and_deterministic
+        PASS [   0.008s] ( 59/110) codex-hepta-neuron qualification::tests::resource_summary_rejects_mixed_host_profiles
+        PASS [   0.010s] ( 60/110) codex-hepta-neuron qualification::tests::supplied_resource_samples_have_deterministic_percentiles_without_claiming_authority
+        PASS [   0.009s] ( 61/110) codex-hepta-neuron runtime::tests::model_identity_drift_rejects_before_checkpoint_mutation
+        PASS [   0.015s] ( 62/110) codex-hepta-neuron runtime::tests::canonical_runtime_commits_model_bound_calibrated_signal_and_recovers
+        PASS [   0.016s] ( 63/110) codex-hepta-neuron runtime::tests::deletion_rebuild_starts_fresh_successor_generation_without_old_state
+        PASS [   0.018s] ( 64/110) codex-hepta-neuron runtime::tests::collapse_or_ood_forces_abstention_without_granting_authority
+        PASS [   0.017s] ( 65/110) codex-hepta-neuron runtime::tests::expired_calibration_advances_state_but_forces_fail_closed_abstention
+        PASS [   0.009s] ( 66/110) codex-hepta-neuron shared_encoder::tests::duplicate_cells_and_bad_output_are_rejected_before_sharing
+        PASS [   0.005s] ( 67/110) codex-hepta-neuron shared_encoder::tests::generation_and_digest_fences_fail_closed
+        PASS [   0.011s] ( 68/110) codex-hepta-neuron runtime::tests::witness_failure_after_commit_reconciles_without_reinvoking_model
+        PASS [   0.010s] ( 69/110) codex-hepta-neuron shared_encoder::tests::one_forward_is_shared_by_all_cells
+        PASS [   0.020s] ( 70/110) codex-hepta-neuron runtime::tests::runtime_rollover_and_chain_recovery_preserve_latest_witness
+        PASS [   0.008s] ( 71/110) codex-hepta-neuron sparse::tests::changed_config_is_rejected
+        PASS [   0.008s] ( 72/110) codex-hepta-neuron sparse::tests::changed_scope_or_objective_is_rejected
+        PASS [   0.008s] ( 73/110) codex-hepta-neuron sparse::body_scope_tests::successor_rejects_body_scope_drift
+        PASS [   0.007s] ( 74/110) codex-hepta-neuron sparse::tests::clock_regression_is_rejected
+        PASS [   0.015s] ( 75/110) codex-hepta-neuron sparse::body_scope_tests::reopened_checkpoint_retains_body_scope_and_rejects_before_write
+        PASS [   0.007s] ( 76/110) codex-hepta-neuron sparse::tests::damaged_checkpoint_is_rejected
+        PASS [   0.006s] ( 77/110) codex-hepta-neuron sparse::tests::edge_order_does_not_change_config_or_output
+        PASS [   0.008s] ( 78/110) codex-hepta-neuron sparse::tests::invalid_dimensions_and_extreme_top_k_fail_without_overflow
+        PASS [   0.009s] ( 79/110) codex-hepta-neuron sparse::tests::duplicate_edges_and_row_norm_overflow_are_rejected
+        PASS [   0.005s] ( 80/110) codex-hepta-neuron sparse::tests::invalid_inhibition_is_rejected
+        PASS [   0.009s] ( 81/110) codex-hepta-neuron sparse::tests::lateral_inhibition_changes_winner
+        PASS [   0.007s] ( 82/110) codex-hepta-neuron sparse::tests::missing_digest_invalid_width_and_unbounded_input_are_rejected
+        PASS [   0.009s] ( 83/110) codex-hepta-neuron sparse::tests::replay_or_skipped_sequence_is_rejected
+        PASS [   0.009s] ( 84/110) codex-hepta-neuron sparse::tests::saturation_and_eligibility_l1_projection_are_counted
+        PASS [   0.009s] ( 85/110) codex-hepta-neuron sparse::tests::signed_multiply_rounds_half_to_even
+        PASS [   0.017s] ( 86/110) codex-hepta-neuron sparse::tests::long_replay_remains_bounded_and_immutable
+        PASS [   0.008s] ( 87/110) codex-hepta-neuron sparse::tests::supplied_numeric_values_are_bound_not_just_caller_digest
+        PASS [   0.008s] ( 88/110) codex-hepta-neuron sparse::tests::silent_input_has_zero_activation_with_nonnegative_thresholds
+        PASS [   0.007s] ( 89/110) codex-hepta-neuron sparse::tests::tick_is_replay_deterministic_and_inputs_are_immutable
+        PASS [   0.007s] ( 90/110) codex-hepta-neuron sparse::tests::tie_uses_canonical_unit_and_homeostasis_is_exact
+        PASS [   0.008s] ( 91/110) codex-hepta-neuron sparse::tests::ticks_advance_sequence_without_changing_artifact_generation
+        PASS [   0.006s] ( 92/110) codex-hepta-neuron task_head_native::tests::bounded_metadata_rejects_oversized_dimensions_before_tensor_allocation
+        PASS [   0.006s] ( 93/110) codex-hepta-neuron task_head_native::tests::erf_branches_match_high_precision_values_and_preserve_odd_symmetry
+        PASS [   0.008s] ( 94/110) codex-hepta-neuron task_head_native::tests::exact_identity_and_revocation_epoch_are_required_at_use
+        PASS [   0.005s] ( 95/110) codex-hepta-neuron task_head_native::tests::nonfinite_parameters_inputs_and_finite_overflow_fail_closed
+        PASS [   0.008s] ( 96/110) codex-hepta-neuron task_head_native::tests::manifest_pin_payload_hash_and_exact_shape_are_independent_fences
+        PASS [   0.007s] ( 97/110) codex-hepta-neuron task_head_native::tests::nonzero_gate_gelu_residual_and_temperature_match_independent_torch_values
+        PASS [   0.008s] ( 98/110) codex-hepta-neuron task_head_native::tests::missing_required_modalities_return_no_prediction_before_arithmetic
+        PASS [   0.011s] ( 99/110) codex-hepta-neuron task_head_native::tests::invalid_identity_encodings_and_duplicate_keys_are_not_admitted
+        PASS [   0.008s] (100/110) codex-hepta-neuron task_head_native::tests::unknown_fields_and_contract_relaxations_are_rejected
+        PASS [   0.007s] (101/110) codex-hepta-neuron task_head_native::tests::width_3073_uses_the_final_feature_in_the_learned_nonlinear_path
+        PASS [   0.006s] (102/110) codex-hepta-neuron tests::generation_must_advance
+        PASS [   0.008s] (103/110) codex-hepta-neuron tests::step_is_deterministic_and_authority_free
+        PASS [   0.010s] (104/110) codex-hepta-neuron tests::model_drift_is_rejected
+        PASS [   0.008s] (105/110) codex-hepta-neuron tests::width_drift_is_rejected
+        PASS [   0.210s] (106/110) codex-hepta-neuron journal::anchor_tests::every_partial_acknowledged_frame_is_preserved_as_failure_evidence
+        PASS [   0.009s] (107/110) codex-hepta-neuron witness::tests::witness_history_survives_reopen_and_fences_stale_cas
+        PASS [   0.011s] (108/110) codex-hepta-neuron witness::tests::witness_capacity_and_independent_writer_are_bounded
+        PASS [   0.009s] (109/110) codex-hepta-neuron witness::tests::wrong_scope_generation_and_corruption_never_reinitialize_history
+        PASS [   0.367s] (110/110) codex-hepta-neuron journal::tests::every_partial_frame_boundary_recovers_only_the_predecessor
+────────────
+     Summary [   0.454s] 110 tests run: 110 passed, 0 skipped
