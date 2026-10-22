@@ -195,7 +195,10 @@ missing = { workspace = true }
             (root / "codex-rs" / checker.CELL_CRATES[0] / "Cargo.toml").write_text(
                 '[package]\nname = "codex-core"\n', encoding="utf-8"
             )
-            self.assertEqual(len(checker.check_workspace(root)), 1)
+            errors = checker.check_workspace(root)
+            self.assertEqual(len(errors), 2, errors)
+            self.assertTrue(any("crate identity differs" in err for err in errors))
+            self.assertTrue(any("wrong package identity" in err for err in errors))
 
 
     def test_internal_allowlisted_name_cannot_point_to_git_or_other_path(self):
