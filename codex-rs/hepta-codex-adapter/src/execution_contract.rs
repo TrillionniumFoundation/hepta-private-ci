@@ -342,35 +342,35 @@ impl ExecutionReceiptV1 {
         if self.outcome_digest.is_some_and(Digest32::is_zero) {
             return Err(ExecutionContractError::ZeroDigest("execution outcome"));
         }
-        // A completed operation cannot simultaneously request recovery. An
-        // indeterminate operation may already have produced side effects, so
-        // retrying it as a pre-admission rejection is unsafe.
-        if self.status == ExecutionStatusV1::Completed
-            && self.recovery != RecoveryDispositionV1::None
-        {
-            return Err(ExecutionContractError::StatusRecoveryMismatch);
-        }
-        if self.status == ExecutionStatusV1::Indeterminate
-            && !matches!(
-                self.recovery,
-                RecoveryDispositionV1::ReconcileSameOperation | RecoveryDispositionV1::Quarantine
-            )
-        {
-            return Err(ExecutionContractError::StatusRecoveryMismatch);
-        }
-        // A failed operation may already have produced side effects. It is
-        // never proof that the same effect can be retried before admission.
-        if self.status == ExecutionStatusV1::Failed
-            && self.recovery == RecoveryDispositionV1::RetryBeforeAdmission
-        {
-            return Err(ExecutionContractError::StatusRecoveryMismatch);
-        }
         if matches!(
             self.status,
             ExecutionStatusV1::Completed | ExecutionStatusV1::Failed
         ) && self.outcome_digest.is_none()
         {
             return Err(ExecutionContractError::MissingTerminalOutcome);
+        }
+        // Exhaustively classify every status/recovery pair. In particular,
+        // rejection cannot request a rollback or reconcile an effect that was
+        // never admitted; an admitted failure may still require reconciliation.
+        // Do not interpret a new enum variant as implicitly permitted.
+        let recovery_allowed = matches!(
+            (self.status, self.recovery),
+            (ExecutionStatusV1::Completed, RecoveryDispositionV1::None)
+                | (ExecutionStatusV1::Failed, RecoveryDispositionV1::None)
+                | (ExecutionStatusV1::Failed, RecoveryDispositionV1::ReconcileSameOperation)
+                | (ExecutionStatusV1::Failed, RecoveryDispositionV1::Quarantine)
+                | (ExecutionStatusV1::Failed, RecoveryDispositionV1::RollbackToPredecessor)
+                | (
+                    ExecutionStatusV1::Indeterminate,
+                    RecoveryDispositionV1::ReconcileSameOperation
+                )
+                | (ExecutionStatusV1::Indeterminate, RecoveryDispositionV1::Quarantine)
+                | (ExecutionStatusV1::Rejected, RecoveryDispositionV1::None)
+                | (ExecutionStatusV1::Rejected, RecoveryDispositionV1::RetryBeforeAdmission)
+                | (ExecutionStatusV1::Rejected, RecoveryDispositionV1::Quarantine)
+        );
+        if !recovery_allowed {
+            return Err(ExecutionContractError::StatusRecoveryMismatch);
         }
         Ok(())
     }
