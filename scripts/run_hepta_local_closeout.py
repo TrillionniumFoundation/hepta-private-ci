@@ -198,6 +198,16 @@ MAX_CHECK_LOG_BYTES = 64 * 1024 * 1024
 CHECK_POLL_SECONDS = 0.05
 
 
+def _set_kernel_file_output_cap() -> None:
+    """Run in a POSIX check child before exec, not in the parent process."""
+    import resource
+
+    resource.setrlimit(
+        resource.RLIMIT_FSIZE, (MAX_CHECK_LOG_BYTES, MAX_CHECK_LOG_BYTES)
+    )
+    resource.setrlimit(resource.RLIMIT_CORE, (0, 0))
+
+
 def _stop_check_process_group(child: subprocess.Popen[bytes]) -> None:
     """Kill workers as one owner group, including descendants after launcher exit."""
     try:
@@ -234,13 +244,14 @@ def run_check(argv: list[str], cwd: Path, timeout: int, log_path: Path) -> dict[
             child = subprocess.Popen(
                 argv, cwd=cwd, stdout=out, stderr=subprocess.STDOUT,
                 env=os.environ.copy(), start_new_session=(os.name == "posix"),
+                preexec_fn=_set_kernel_file_output_cap if os.name == "posix" else None,
             )
             blocked = None
             code = None
             try:
                 while True:
                     code = child.poll()
-                    if os.fstat(out.fileno()).st_size > MAX_CHECK_LOG_BYTES:
+                    if os.fstat(out.fileno()).st_size >= MAX_CHECK_LOG_BYTES:
                         blocked = "BLOCKED_OUTPUT_LIMIT"
                         break
                     if code is not None:
@@ -262,6 +273,12 @@ def run_check(argv: list[str], cwd: Path, timeout: int, log_path: Path) -> dict[
             except BaseException:
                 _stop_check_process_group(child)
                 raise
+            # Include the parent's exit receipt in the budget as well.
+            if blocked is None:
+                exit_line = f"\nHEPTA_LOCAL_GATE_EXIT: {code}\n".encode("utf-8")
+                if os.fstat(out.fileno()).st_size + len(exit_line) > MAX_CHECK_LOG_BYTES:
+                    blocked = "BLOCKED_OUTPUT_LIMIT"
+                    _stop_check_process_group(child)
             if blocked is not None:
                 out.flush()
                 if os.fstat(out.fileno()).st_size > MAX_CHECK_LOG_BYTES:
@@ -269,7 +286,7 @@ def run_check(argv: list[str], cwd: Path, timeout: int, log_path: Path) -> dict[
                 out.seek(0, os.SEEK_END)
                 out.write(("\nHEPTA_LOCAL_GATE: " + blocked + "\n").encode("utf-8"))
             else:
-                out.write(f"\nHEPTA_LOCAL_GATE_EXIT: {code}\n".encode("utf-8"))
+                out.write(exit_line)
             out.flush()
             os.fsync(out.fileno())
         digest = hashlib.sha256()
@@ -286,7 +303,7 @@ def run_check(argv: list[str], cwd: Path, timeout: int, log_path: Path) -> dict[
         if blocked is None:
             result["exit_code"] = code
         return result
-    except (OSError, RuntimeError) as exc:
+    except (OSError, RuntimeError, subprocess.SubprocessError) as exc:
         return {"argv": argv, "status": "BLOCKED_SYSTEM", "error_type": type(exc).__name__}
 
 
