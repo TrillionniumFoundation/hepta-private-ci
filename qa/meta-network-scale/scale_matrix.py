@@ -309,6 +309,7 @@ def validate_result(result: dict[str, Any]) -> list[str]:
                         errors.append(
                             f"evidence_receipts.{claim} cannot reuse provenance {field}"
                         )
+
     lifecycle = result.get("topology_lifecycle")
     if lifecycle != list(LIFECYCLE):
         errors.append("topology_lifecycle must contain the complete ordered lifecycle")
@@ -359,6 +360,7 @@ def validate_matrix(matrix: dict[str, Any]) -> list[str]:
                     f"results[{index}].provenance.{field} "
                     f"reused as a {previous_role} identity digest"
                 )
+
     expected = {(size, arm) for size in SIZES for arm in ARMS}
     seen: set[tuple[int, str]] = set()
     source_host: tuple[str, str, str] | None = None
@@ -445,9 +447,10 @@ def validate_matrix(matrix: dict[str, Any]) -> list[str]:
                 and _HEX64.fullmatch(measurement_digest)
             ):
                 if measurement_digest in identity_roles:
+                    role = identity_roles[measurement_digest]
                     errors.append(
                         f"results[{index}].provenance.measurement_digest "
-                        f"reused as a {identity_roles[measurement_digest]} identity digest"
+                        f"reused as a {role} identity digest"
                     )
                 if measurement_digest in measurement_digests_seen:
                     errors.append(
