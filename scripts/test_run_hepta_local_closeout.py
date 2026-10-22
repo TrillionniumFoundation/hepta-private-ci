@@ -289,6 +289,34 @@ class LocalCloseoutTests(unittest.TestCase):
                 receipt["log_sha256"], hashlib.sha256(location.read_bytes()).hexdigest()
             )
 
+
+    def test_posix_kernel_log_cap_is_enforced_before_parent_poll(self):
+        if os.name != "posix":
+            self.skipTest("POSIX RLIMIT_FSIZE only")
+        with tempfile.TemporaryDirectory() as root:
+            marker = Path(root) / "kernel-limit-observed"
+            source = (
+                "import os, signal, errno\n"
+                "from pathlib import Path\n"
+                "signal.signal(signal.SIGXFSZ, signal.SIG_IGN)\n"
+                "try:\n"
+                "    while True: os.write(1, b'x' * 16384)\n"
+                "except OSError as error:\n"
+                f"    Path({str(marker)!r}).write_text(str(error.errno))\n"
+            )
+            with patch.object(mod, "MAX_CHECK_LOG_BYTES", 128 * 1024), patch.object(
+                mod, "CHECK_POLL_SECONDS", 0.5
+            ):
+                receipt = mod.run_check(
+                    [sys.executable, "-c", source],
+                    Path(root), 5, Path(root) / "kernel-fsize.log"
+                )
+            self.assertEqual(receipt["status"], "BLOCKED_OUTPUT_LIMIT")
+            self.assertEqual(marker.read_text(), "27")  # errno.EFBIG
+            self.assertLessEqual(
+                (Path(root) / "kernel-fsize.log").stat().st_size, 128 * 1024 + 80
+            )
+
     def test_successful_wrapper_with_live_descendant_is_not_a_success(self):
         if os.name != "posix":
             self.skipTest("POSIX process groups required")
