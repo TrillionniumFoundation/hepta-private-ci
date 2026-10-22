@@ -485,7 +485,8 @@ class ScaleMatrixTests(unittest.TestCase):
                     else:
                         row["evidence_receipts"]["rollback"] = digest
                         expected = (
-                            f"evidence_receipts.rollback cannot reuse provenance {identity}"
+                            "evidence_receipts.rollback cannot reuse provenance "
+                            f"{identity}"
                         )
                     self.assertIn(expected, scale_matrix.validate_result(row))
         row = self.make_record(64, "shared_encoder")
@@ -502,34 +503,29 @@ class ScaleMatrixTests(unittest.TestCase):
                     matrix = self.matrix()
                     first, second = matrix["results"][:2]
                     if proof == "measurement":
-                        def get_proof(row):
-                            return row["provenance"]["measurement_digest"]
-
-                        def set_proof(row, digest):
-                            row["provenance"]["measurement_digest"] = digest
-
-                        label = "provenance.measurement_digest"
+                        parent, key, label = (
+                            "provenance",
+                            "measurement_digest",
+                            "provenance.measurement_digest",
+                        )
                     elif proof == "metrics":
-                        def get_proof(row):
-                            return row["metrics_receipt"]
-
-                        def set_proof(row, digest):
-                            row["metrics_receipt"] = digest
-
-                        label = "metrics_receipt"
+                        parent, key, label = None, "metrics_receipt", "metrics_receipt"
                     else:
-                        def get_proof(row):
-                            return row["evidence_receipts"]["rollback"]
-
-                        def set_proof(row, digest):
-                            row["evidence_receipts"]["rollback"] = digest
-
-                        label = "evidence_receipts.rollback"
+                        parent, key, label = (
+                            "evidence_receipts",
+                            "rollback",
+                            "evidence_receipts.rollback",
+                        )
+                    first_value = first[parent][key] if parent else first[key]
                     if direction == "identity_first":
-                        set_proof(second, first["provenance"]["runtime_digest"])
+                        value = first["provenance"]["runtime_digest"]
+                        if parent:
+                            second[parent][key] = value
+                        else:
+                            second[key] = value
                         affected = f"results[1].{label}"
                     else:
-                        second["provenance"]["runtime_digest"] = get_proof(first)
+                        second["provenance"]["runtime_digest"] = first_value
                         affected = f"results[0].{label}"
                     self.assertIn(
                         f"{affected} reused as a runtime_digest identity digest",
