@@ -425,8 +425,14 @@ impl RuntimeReceiptV1 {
         {
             return Err(ExecutionContractError::StatusOutcomeMismatch);
         }
-        // A completed effect cannot carry an outcome-level retry signal.
-        if self.execution.status == ExecutionStatusV1::Completed && self.tool_outcome.retryable {
+        // A native retry hint and a recovery directive must agree. A tool that
+        // may have been admitted cannot authorize a fresh attempt through a
+        // lower-level retryable bit, even when the observed outcome digest is
+        // valid. Only a pre-admission rejection with no native evidence may
+        // claim RetryBeforeAdmission; all other states are non-retryable here.
+        let safe_to_retry = self.execution.status == ExecutionStatusV1::Rejected
+            && self.execution.recovery == RecoveryDispositionV1::RetryBeforeAdmission;
+        if self.tool_outcome.retryable != safe_to_retry {
             return Err(ExecutionContractError::StatusOutcomeMismatch);
         }
         Ok(())
