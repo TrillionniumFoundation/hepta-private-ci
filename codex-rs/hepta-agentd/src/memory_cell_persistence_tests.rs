@@ -471,10 +471,7 @@ async fn failed_retention_preserves_actual_receipt_and_blocks_until_exact_acknow
             pending.recovery_anchor.as_ref().unwrap(),
         )
         .is_err());
-    assert_eq!(
-        std::fs::read(&staged_path).unwrap(),
-        b"foreign-staged-witness"
-    );
+    assert_eq!(std::fs::read(&staged_path).unwrap(), b"foreign-staged-witness");
     std::fs::remove_file(&staged_path).unwrap();
     let same = Retained {
         manifest: pending.expected_plan.manifest.clone(),
