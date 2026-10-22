@@ -99,8 +99,11 @@ class MemoryRetrievalProbeTests(unittest.TestCase):
     def test_cluster_interval_is_paired_and_uses_source_groups(self):
         query = Query("a:1", "a", "x")
         expected = Gold(4, ("D1:1",), (), False)
-        left = [score_query(query, expected, ["D1:1"])] * 100
-        right = [score_query(query, expected, [])] * 100
+        # Different questions can share one source family; repeated query
+        # identities cannot masquerade as additional paired observations.
+        cohort = [replace(query, query_id=f"a:{i}") for i in range(100)]
+        left = [score_query(q, expected, ["D1:1"]) for q in cohort]
+        right = [score_query(q, expected, []) for q in cohort]
         result = paired_group_interval(left, right, samples=100)
         self.assertEqual(result["groups"], 1)
         self.assertEqual(result["percentile_95_interval"], [1.0, 1.0])
@@ -119,7 +122,7 @@ class MemoryRetrievalProbeTests(unittest.TestCase):
             with self.subTest(field=field), self.assertRaises(ValueError):
                 paired_group_interval(left, altered, samples=100)
         with self.assertRaisesRegex(ValueError, "duplicate"):
-            paired_group_interval(left[:2], right[:2], samples=100)
+            paired_group_interval([left[0], left[0]], [right[0], right[0]], samples=100)
         for count in (0, -1, 10001, False, 1.0):
             with self.subTest(samples=count), self.assertRaises(ValueError):
                 paired_group_interval(left[:1], right[:1], samples=count)
