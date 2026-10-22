@@ -35,6 +35,7 @@ def study_fixture(*, strong_ndu=True, bootstrap_replicates=120):
         'bootstrap_seed': 3001, 'familywise_alpha': 0.05,
         'draws_per_world': 2, 'failure_loss': 2.0, 'cost_units': 'measured_cpu_seconds',
         'hard_world_cost_limit': 2.0,
+        'min_protected_source_groups_per_seed': 8,
     }
     worlds = []
     for seed in seeds:
@@ -356,6 +357,49 @@ class PairedEvidenceTests(unittest.TestCase):
             x['quality'] = 0
         rec = evaluate(d)
         self.assertFalse(rec['comparison']['free_controller']['gates']['protected_task_no_regression'])
+
+    def test_missing_registered_protected_coverage_floor_rejected(self):
+        d = study_fixture()
+        del d['protocol']['min_protected_source_groups_per_seed']
+        with self.assertRaisesRegex(EvidenceGap, 'preregistered protected source-group'):
+            evaluate(d)
+
+    def test_minimum_of_one_protected_source_not_allowed(self):
+        d = study_fixture()
+        d['protocol']['min_protected_source_groups_per_seed'] = 1
+        with self.assertRaisesRegex(EvidenceGap, 'preregistered protected source-group'):
+            evaluate(d)
+
+    def test_single_protected_world_does_not_certify_96_worlds(self):
+        d = study_fixture(bootstrap_replicates=2000)
+        for row in d['worlds']:
+            row['protected_task'] = False
+        d['worlds'][0]['protected_task'] = True
+        with self.assertRaisesRegex(EvidenceGap, 'insufficient protected original-source groups'):
+            evaluate(d)
+
+    def test_missing_protected_cohort_in_one_training_seed_denied(self):
+        d = study_fixture()
+        for row in d['worlds']:
+            if row['seed'] == 211:
+                row['protected_task'] = False
+        with self.assertRaisesRegex(EvidenceGap, 'insufficient protected original-source groups'):
+            evaluate(d)
+
+    def test_repeated_views_of_one_source_do_not_count_as_independent_protected(self):
+        d = study_fixture()
+        for row in d['worlds']:
+            row['protected_task'] = row['world_id'] in {'heldout-101-0', 'heldout-101-1'} or (row['seed'] != 101 and row['protected_task'])
+        with self.assertRaisesRegex(EvidenceGap, 'insufficient protected original-source groups'):
+            evaluate(d)
+
+    def test_valid_protected_original_source_receipts_are_per_seed(self):
+        d = study_fixture()
+        out = evaluate(d)
+        self.assertEqual(out['registered_min_protected_source_groups_per_seed'], 8)
+        self.assertEqual(out['protected_worlds_per_seed'], [8, 8, 8])
+        self.assertEqual(out['protected_original_sources_per_seed'], [8, 8, 8])
+        self.assertEqual(out['status'], 'HOLD_NO_GO')
 
     def test_missing_protected_coverage_rejected(self):
         d = study_fixture()
