@@ -1,4 +1,7 @@
 #![allow(clippy::expect_used)]
+#[path = "clients/observed_integrity.rs"]
+mod observed_integrity;
+
 use std::sync::Arc;
 use std::sync::Mutex;
 use std::time::Duration;

@@ -342,3 +342,14 @@ this controlled result does not establish decentralized public qualification.
 Reorg, withdrawal, lost acknowledgement, stale generation, restart after route
 publication and unavailable replicas must preserve one logical operation,
 reject revoked bytes and reconcile Unknown effects before any unsafe retry.
+
+Within the same P0/PN3/I10 work, the explicit observed, single-attempt Responses
+transport preserves its actual prepared request across authentication and rejects
+changes before sending. Its [API controls](../../codex-rs/codex-api/tests/clients/observed_integrity.rs)
+exercise encoding/compression, mutation refusals and the original dispatch witness;
+they use transport fixtures, not a model. No production caller currently installs
+the encoded-body observer. This prerequisite does not implement a local HF
+provider, late compiled-body FinalUse, selected-weight loading or next-task use.
+Those must remain on the existing App Server/provider spine, with the same-run
+owner and actual load-attempt/closure/tokenizer/decoding bindings. Outer resource
+closure remains UNKNOWN; no three-round or I10 result follows from this guard.

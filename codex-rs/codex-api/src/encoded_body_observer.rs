@@ -15,6 +15,13 @@ pub enum EncodedRequestTerminal {
 /// core provider terminal path. A product owner can therefore bind the exact
 /// model request semantics to a terminal delivery disposition without granting
 /// the API layer any domain authority.
+///
+/// Observed Responses calls must select a single transport attempt. That path
+/// refuses changes to prepared bytes, destination, framing and timeout after
+/// authentication. Authentication retains its replacement contract on ordinary
+/// unobserved calls. Observation is not final-payload authorization or proof of
+/// any loaded model, and installing an observer requires an admitted Core policy
+/// attempt; no production caller currently installs one.
 pub trait EncodedRequestBodyObserver: Send + Sync + std::fmt::Debug {
     fn observe_encoded_body<'a>(&'a self, body: &'a [u8]) -> BoxFuture<'a, Result<(), String>>;
 

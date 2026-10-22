@@ -163,6 +163,19 @@ The deployed execution spine is the existing codex-app-server package under code
 
 The named Hepta native inference caller is deliberately **model-only**: the App Server tool planner returns an empty router for the `hepta-infer-worker` client identity before MCP, connector, extension, dynamic-tool or core-tool planning. That deny-only identity can remove capability but never grant it. Any future external tool effect must enter a separately authorized effect-owner path with its own final-use grant, durable operation identity and terminal observer; the `dispatch_tool` source mapping to codex-core is navigation/delegation evidence only and is not proof of an authorized tool effect.
 
+The explicit observed, single-attempt Responses path now retains a
+[prepared request snapshot](../../../codex-rs/codex-api/src/observed_request_integrity.rs)
+after encoding/compression and rejects authentication changes to actual wire
+bytes, method, URL, compression, framing or timeout before transport invocation.
+Rejection leaves the dispatch witness unset. Ordinary unobserved requests retain
+the authentication provider's replacement contract. An observed call cannot use
+implicit transport retries. The existing encoded-body observer has no production
+caller; this integrity guard neither installs it nor authorizes a compiled body.
+App Server remains the sole model-call spine. A real fixed HF provider, same-run
+late owner binding, selected-weight/CURRENT checks and actual loaded-attempt
+readback still require integration. Outer resource closure remains UNKNOWN for
+this slice; transport controls are not model execution or I10 evidence.
+
 `IMPLEMENTATION_MAP.sourceBase` is historical provenance only. Exact candidate identity is derived from the checked-out Git candidate by `scripts/hepta-lane-b-truth.py verify`, which emits `exactHead` and `exactTree`; the map records this verifier-derived provenance contract instead of attempting to hard-code its own self-referential commit/tree.
 
 Current operating and state-format references:

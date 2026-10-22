@@ -1,6 +1,7 @@
 use crate::auth::SharedAuthProvider;
 use crate::dispatch_metadata::RequestDispatchMetadata;
 use crate::error::ApiError;
+use crate::observed_request_integrity::ObservedRequestSnapshot;
 use crate::provider::Provider;
 use crate::telemetry::run_with_request_telemetry;
 use codex_client::EncodedJsonBody;
@@ -258,6 +259,13 @@ impl<T: HttpTransport> EndpointSession<T> {
             StreamRetryMode::ProviderDefault => None,
             StreamRetryMode::SingleTransportAttempt(metadata) => Some(metadata),
         };
+        let observed_request = dispatch_metadata
+            .as_ref()
+            .filter(|metadata| metadata.observed_request)
+            .map(|_| ObservedRequestSnapshot::capture(&request))
+            .transpose()
+            .map_err(|change| TransportError::Build(change.to_string()))?
+            .map(Arc::new);
         let stream = run_with_request_telemetry(
             retry_policy,
             self.request_telemetry.clone(),
@@ -266,8 +274,14 @@ impl<T: HttpTransport> EndpointSession<T> {
                 let auth = self.auth.clone();
                 let transport = &self.transport;
                 let dispatch_metadata = dispatch_metadata.clone();
+                let observed_request = observed_request.clone();
                 async move {
                     let req = auth.apply_auth(req).await.map_err(TransportError::from)?;
+                    if let Some(snapshot) = observed_request {
+                        snapshot
+                            .validate(&req)
+                            .map_err(|change| TransportError::Build(change.to_string()))?;
+                    }
                     if let Some(dispatch_metadata) = dispatch_metadata {
                         dispatch_metadata
                             .validate_headers(&req.headers)
