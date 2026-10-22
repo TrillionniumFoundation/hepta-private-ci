@@ -8,6 +8,7 @@ utilities, but execution effects must enter through the typed adapter owner.
 from __future__ import annotations
 
 import argparse
+import posixpath
 from pathlib import Path
 import sys
 import tomllib
@@ -65,6 +66,96 @@ def prohibited_package(package: str) -> bool:
     return package.startswith("codex-") and package not in ALLOWED_PACKAGES
 
 
+
+# These are exact checked-in source directories, not merely permitted Cargo
+# package names. A crate could otherwise impersonate an approved dependency
+# via git, an alternate registry, or a path outside this workspace.
+LOCAL_PACKAGE_DIRECTORIES = {
+    "codex-hepta-types": "hepta-types",
+    "codex-hepta-contracts": "hepta-contracts",
+    "codex-hepta-infer-core": "hepta-infer-core",
+    "codex-hepta-ndu": "hepta-ndu",
+    "codex-hepta-intuition": "hepta-intuition",
+    "codex-hepta-plasticity": "hepta-plasticity",
+    "codex-hepta-cognitive-types": "hepta-cognitive-types",
+    "codex-utils-absolute-path": "utils/absolute-path",
+}
+SOURCE_OVERRIDE_KEYS = frozenset(("git", "registry", "branch", "tag", "rev"))
+
+
+def dependency_origin_violation(
+    alias: str,
+    declaration: Any,
+    package: str,
+    crate: str,
+    workspace_dependencies: dict[str, Any] | None,
+) -> str | None:
+    """Pin approved package *origins* as well as package names.
+
+    This is lexical Cargo source-custody validation, not a substitute for
+    Cargo.lock verification, a complete transitive graph, or an OS sandbox.
+    The production caller always supplies the root workspace dependencies.
+    """
+    normalized = normalized_package(package)
+    if (
+        normalized not in LOCAL_PACKAGE_DIRECTORIES
+        and normalized not in ALLOWED_EXTERNAL_PACKAGES
+    ):
+        return None
+
+    source = declaration
+    inherited = isinstance(declaration, dict) and declaration.get("workspace") is True
+    if inherited:
+        if workspace_dependencies is None:
+            # Standalone unit-callers may lack the root manifest. The actual
+            # check_workspace CLI always supplies it.
+            return None
+        source = workspace_dependencies.get(alias)
+        if source is None:
+            return "missing inherited workspace source"
+        if any(key in declaration for key in (*SOURCE_OVERRIDE_KEYS, "path")):
+            return "workspace member overrides inherited dependency source"
+        root_package = (
+            source.get("package", alias) if isinstance(source, dict) else alias
+        )
+        member_package = declaration.get("package", root_package)
+        if (
+            not isinstance(root_package, str)
+            or not isinstance(member_package, str)
+            or normalized_package(root_package) != normalized_package(member_package)
+        ):
+            return "workspace dependency package identity differs from member"
+
+    if normalized in LOCAL_PACKAGE_DIRECTORIES:
+        if not isinstance(source, dict):
+            return "approved local package lacks a pinned local path"
+        if any(key in source for key in (*SOURCE_OVERRIDE_KEYS, "version")):
+            return "approved local package has a non-local or mixed source"
+        relative = source.get("path")
+        if (
+            not isinstance(relative, str)
+            or not relative
+            or posixpath.isabs(relative)
+        ):
+            return "approved local package lacks a relative source path"
+        # Workspace-root paths resolve relative to codex-rs/. Direct member
+        # paths resolve relative to codex-rs/<crate>/.
+        resolved = posixpath.normpath(
+            posixpath.join("" if inherited else crate, relative)
+        )
+        if resolved != LOCAL_PACKAGE_DIRECTORIES[normalized]:
+            return (
+                f"approved local package resolves to {resolved!r}, expected "
+                f"{LOCAL_PACKAGE_DIRECTORIES[normalized]!r}"
+            )
+    elif isinstance(source, dict):
+        if any(key in source for key in (*SOURCE_OVERRIDE_KEYS, "path")):
+            return "approved external package uses an unreviewed source"
+    elif not isinstance(source, str):
+        return "approved external package has an invalid source declaration"
+    return None
+
+
 def check_manifest(
     manifest: dict[str, Any], crate: str, workspace_dependencies: dict[str, Any] | None = None
 ) -> list[str]:
@@ -118,6 +209,13 @@ def check_manifest(
                     elif isinstance(package, str):
                         normalized = normalized_package(package)
                         location = ".".join((*keys, key))
+                        origin_error = dependency_origin_violation(
+                            alias, declaration, package, crate, workspace_dependencies
+                        )
+                        if origin_error is not None:
+                            violations.append(
+                                f"{crate}: {location}.{alias} source custody: {origin_error}"
+                            )
                         if crate == "hepta-types" and normalized != "sha2":
                             violations.append(
                                 f"{crate}: {location}.{alias} is not an approved "
