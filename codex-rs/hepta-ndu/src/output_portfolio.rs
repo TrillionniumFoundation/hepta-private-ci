@@ -357,6 +357,21 @@ fn canonical_candidates(
     if baseline_count != 1 {
         return Err(NduError::MissingAbstainCandidate);
     }
+    // One immutable proposal cannot be represented as two independently
+    // diversified assets by changing candidate_id. Otherwise a repeated
+    // candidate_digest could receive an invented uncorrelated covariance
+    // row and double-count its future-window utility. At most 128 proposals
+    // are admitted, so deterministic quadratic uniqueness is bounded.
+    for (index, candidate) in canonical.iter().enumerate() {
+        if canonical[..index]
+            .iter()
+            .any(|earlier| earlier.candidate_digest == candidate.candidate_digest)
+        {
+            return Err(NduError::InvalidSolverReceipt(
+                "duplicate portfolio candidate digest",
+            ));
+        }
+    }
     Ok(canonical)
 }
 fn canonical_covariance(

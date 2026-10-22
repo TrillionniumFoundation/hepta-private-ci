@@ -124,6 +124,19 @@ class ScaleMatrixTests(unittest.TestCase):
             "P4 qualification must reject missing metrics from the benchmark contract",
         )
 
+    def test_benchmark_spec_edits_cannot_skip_p5_evidence_ci(self):
+        workflow = (
+            pathlib.Path(__file__).resolve().parents[2]
+            / ".github"
+            / "workflows"
+            / "hepta-p5-scale-evidence-exact.yml"
+        ).read_text(encoding="utf-8")
+        pull_request_paths = workflow.partition("  workflow_dispatch:")[0]
+        self.assertIn(
+            '      - "docs/learning/CELL_EXECUTION_BENCHMARK_MATRIX.json"',
+            pull_request_paths,
+        )
+
     def test_p4_metrics_are_required_and_rate_units_are_bounded(self):
         for key in scale_matrix.REQUIRED_METRICS:
             with self.subTest(missing=key):
@@ -375,6 +388,39 @@ class ScaleMatrixTests(unittest.TestCase):
         self.assertIn(
             "evidence_receipts.rollback reuses the future_window claim receipt",
             scale_matrix.validate_result(record),
+        )
+
+    def test_result_rejects_metrics_receipt_reused_for_learning_claim(self):
+        for claim in ("future_window", "rollback"):
+            with self.subTest(claim=claim):
+                record = self.make_record(64, "shared_encoder")
+                record["metrics_receipt"] = record["evidence_receipts"][claim]
+                self.assertIn(
+                    f"metrics_receipt reuses the {claim} evidence claim receipt",
+                    scale_matrix.validate_result(record),
+                )
+
+    def test_matrix_rejects_metrics_and_evidence_cross_row_alias(self):
+        matrix = self.matrix()
+        self.assertEqual(scale_matrix.validate_matrix(matrix), [])
+        # An earlier metric receipt cannot later certify future-window data.
+        matrix["results"][0]["metrics_receipt"] = matrix["results"][1][
+            "evidence_receipts"
+        ]["future_window"]
+        self.assertIn(
+            "results[1].evidence_receipts.future_window reuses a metrics receipt",
+            scale_matrix.validate_matrix(matrix),
+        )
+
+        matrix = self.matrix()
+        # An earlier rollback witness cannot later masquerade as a metric
+        # receipt, regardless of the row/arm where it was observed.
+        matrix["results"][1]["metrics_receipt"] = matrix["results"][0][
+            "evidence_receipts"
+        ]["rollback"]
+        self.assertIn(
+            "results[1].metrics_receipt reuses the rollback evidence claim receipt",
+            scale_matrix.validate_matrix(matrix),
         )
 
     def test_matrix_rejects_cross_row_cross_claim_receipt_replay(self):
