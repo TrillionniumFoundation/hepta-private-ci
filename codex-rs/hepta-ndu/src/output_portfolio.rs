@@ -61,6 +61,27 @@ pub fn select_output_portfolio_v1(
         if scores[index] <= FixedQ32::ZERO {
             continue;
         }
+        // A hard-zero risk budget must admit only genuinely zero-risk
+        // directions. Q32 ties-to-even rounding can otherwise truncate a
+        // positive linear or quadratic loss to zero at a fractional weight,
+        // allowing a risk-bearing Cell while claiming zero total risk.
+        // Be conservative even when two directions might hedge each other:
+        // this advisory selector has no authenticated hedge proof.
+        if budget.risk_budget == FixedQ32::ZERO
+            && (risks[index] > FixedQ32::ZERO || covariance[index * count + index] > FixedQ32::ZERO)
+        {
+            continue;
+        }
+        // Hard-zero resource/latency budgets also require exact zero cost.
+        // Multiplication by a fractional Q32 weight can round one positive
+        // least-significant cost unit to zero, despite real resource use.
+        if (budget.resource_budget == FixedQ32::ZERO
+            && candidates[index].resource_cost > FixedQ32::ZERO)
+            || (budget.latency_budget == FixedQ32::ZERO
+                && candidates[index].latency_cost > FixedQ32::ZERO)
+        {
+            continue;
+        }
         if selected_protocol.is_some_and(|protocol| protocol != candidates[index].protocol)
             || selected_domain
                 .is_some_and(|domain| domain != candidates[index].composition_domain_digest)
@@ -127,6 +148,7 @@ pub fn select_output_portfolio_v1(
             &scores,
             &covariance,
             budget.risk_aversion,
+            budget.switch_penalty,
             candidates[index].protocol.requires_whole_candidate(),
         )?;
         weights[index] = weight;
@@ -180,16 +202,10 @@ pub fn select_output_portfolio_v1(
     // well as its linear semantic loss. Do not display an understated frontier.
     let frontier_risks = standalone_risks(&risks, &covariance)?;
     let frontier = efficient_frontier_from_canonical(&candidates, &frontier_risks);
-    let selection_digest = digest_selection(
-        context,
-        budget,
-        &candidates,
-        &covariance,
-        &allocations,
-        total_risk,
-        total_utility,
-    );
-    Ok(OutputPortfolioSelectionReceiptV1 {
+    // Construct the exact published record before deriving its digest.
+    // Digest-only evidence consumers must not accept a changed frontier,
+    // disposition or resource/latency total under the original hash.
+    let mut receipt = OutputPortfolioSelectionReceiptV1 {
         objective_digest: context.objective_digest,
         generation: context.generation,
         encoder_digest: context.encoder_digest,
@@ -201,8 +217,11 @@ pub fn select_output_portfolio_v1(
         total_risk,
         total_resource,
         total_latency,
-        selection_digest,
-    })
+        selection_digest: Digest32::ZERO,
+    };
+    receipt.selection_digest =
+        digest_selection(context, budget, &candidates, &covariance, &receipt);
+    Ok(receipt)
 }
 /// Replays a portfolio decision from its exact immutable inputs and rejects
 /// mutated or detached advisory receipts. This is a local consistency check,
@@ -273,6 +292,14 @@ fn canonical_candidates(
             || candidate.snapshot_digest != context.snapshot_digest
         {
             return Err(NduError::StateDigestMismatch);
+        }
+        // Equal feature bytes do not make an evaluator's utility or risk
+        // transferable to another objective. NoChange alone has no utility
+        // delta; every non-baseline proposal is objective-specific.
+        if candidate.objective_digest != context.objective_digest {
+            return Err(NduError::InvalidSolverReceipt(
+                "portfolio candidate objective",
+            ));
         }
         // Snapshot content equality is not equivalent to authority equality:
         // a byte-identical feature must not smuggle a stale Cell proposal
@@ -375,6 +402,7 @@ fn covariance_positive_gain_weight(
     scores: &[FixedQ32],
     covariance: &[FixedQ32],
     risk_aversion: FixedQ32,
+    switch_penalty: FixedQ32,
     atomic: bool,
 ) -> Result<FixedQ32, NduError> {
     let count = weights.len();
@@ -391,7 +419,12 @@ fn covariance_positive_gain_weight(
         }
     }
     let twice_cross = cross.checked_add(cross).map_err(|_| NduError::Arithmetic)?;
-    let slope = scores[index]
+    // Ranking conservatively subtracts the switch cost, but optimization
+    // must price that cost once per admitted direction, not per Q32 weight.
+    let gross_score = scores[index]
+        .checked_add(switch_penalty)
+        .map_err(|_| NduError::Arithmetic)?;
+    let slope = gross_score
         .checked_sub(mul_q32_ties_even(twice_cross, risk_aversion)?)
         .map_err(|_| NduError::Arithmetic)?;
     if slope <= FixedQ32::ZERO {
@@ -415,7 +448,7 @@ fn covariance_positive_gain_weight(
     }
     // Rounding in Q32 can change the stationary point by a raw unit. Confirm
     // that the exact proposed weight strictly improves over doing nothing.
-    let linear = mul_q32_ties_even(proposed, scores[index])?;
+    let linear = mul_q32_ties_even(proposed, gross_score)?;
     let squared = mul_q32_ties_even(proposed, proposed)?;
     let quadratic_diagonal = mul_q32_ties_even(squared, diagonal)?;
     let quadratic_cross = mul_q32_ties_even(proposed, twice_cross)?;
@@ -425,6 +458,8 @@ fn covariance_positive_gain_weight(
     let priced_covariance = mul_q32_ties_even(covariance_delta, risk_aversion)?;
     let gain = linear
         .checked_sub(priced_covariance)
+        .map_err(|_| NduError::Arithmetic)?
+        .checked_sub(switch_penalty)
         .map_err(|_| NduError::Arithmetic)?;
     if gain <= FixedQ32::ZERO {
         Ok(FixedQ32::ZERO)
@@ -688,11 +723,15 @@ fn digest_selection(
     budget: &OutputPortfolioBudgetV1,
     candidates: &[OutputPortfolioCandidateV1],
     covariance: &[FixedQ32],
-    allocations: &[OutputPortfolioAllocationV1],
-    total_risk: FixedQ32,
-    total_utility: FixedQ32,
+    receipt: &OutputPortfolioSelectionReceiptV1,
 ) -> Digest32 {
-    let mut bytes = Vec::new();
+    let mut bytes = b"hepta.ndu.portfolio.complete-receipt.v2".to_vec();
+    // A digest-only reader sees the published record, not our caller's
+    // immutable context. Bind these emitted identities directly too.
+    bytes.extend_from_slice(receipt.objective_digest.as_array());
+    bytes.extend_from_slice(&receipt.generation.get().to_le_bytes());
+    bytes.extend_from_slice(receipt.encoder_digest.as_array());
+    bytes.extend_from_slice(receipt.snapshot_digest.as_array());
     bytes.extend_from_slice(context.objective_digest.as_array());
     bytes.extend_from_slice(&context.generation.get().to_le_bytes());
     bytes.extend_from_slice(context.encoder_digest.as_array());
@@ -722,6 +761,7 @@ fn digest_selection(
         bytes.extend_from_slice(candidate.candidate_id.as_str().as_bytes());
         bytes.push(0);
         bytes.extend_from_slice(candidate.candidate_digest.as_array());
+        bytes.extend_from_slice(candidate.objective_digest.as_array());
         bytes.extend_from_slice(&candidate.generation.get().to_le_bytes());
         bytes.extend_from_slice(candidate.encoder_digest.as_array());
         bytes.extend_from_slice(candidate.composition_domain_digest.as_array());
@@ -737,15 +777,33 @@ fn digest_selection(
         bytes.extend_from_slice(&candidate.weight_cap.raw().to_le_bytes());
         bytes.push(u8::from(candidate.is_no_change));
     }
-    for allocation in allocations {
+    // Include every *published* receipt field, including the single-candidate
+    // frontier and non-risk cost totals. Previously, these were only covered by
+    // optional full replay, not by the selection_digest advertised to readers.
+    bytes.push(match receipt.disposition {
+        OutputPortfolioDispositionV1::NoChange => 0,
+        OutputPortfolioDispositionV1::AdvisorySelection => 1,
+    });
+    bytes.extend_from_slice(&(receipt.frontier.len() as u64).to_le_bytes());
+    for point in &receipt.frontier {
+        bytes.extend_from_slice(point.candidate_id.as_str().as_bytes());
+        bytes.push(0);
+        bytes.extend_from_slice(&point.utility_delta.raw().to_le_bytes());
+        bytes.extend_from_slice(&point.semantic_risk.raw().to_le_bytes());
+        bytes.extend_from_slice(&point.resource_cost.raw().to_le_bytes());
+    }
+    bytes.extend_from_slice(&(receipt.allocations.len() as u64).to_le_bytes());
+    for allocation in &receipt.allocations {
         bytes.extend_from_slice(allocation.candidate_id.as_str().as_bytes());
         bytes.push(0);
         bytes.push(allocation.protocol.tag());
         bytes.extend_from_slice(&allocation.weight.raw().to_le_bytes());
         bytes.extend_from_slice(&allocation.adjusted_score.raw().to_le_bytes());
     }
-    bytes.extend_from_slice(&total_risk.raw().to_le_bytes());
-    bytes.extend_from_slice(&total_utility.raw().to_le_bytes());
+    bytes.extend_from_slice(&receipt.total_risk.raw().to_le_bytes());
+    bytes.extend_from_slice(&receipt.total_utility.raw().to_le_bytes());
+    bytes.extend_from_slice(&receipt.total_resource.raw().to_le_bytes());
+    bytes.extend_from_slice(&receipt.total_latency.raw().to_le_bytes());
     Digest32::of_bytes(&bytes)
 }
 #[cfg(test)]

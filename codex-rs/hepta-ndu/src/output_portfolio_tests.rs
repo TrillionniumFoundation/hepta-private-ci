@@ -41,6 +41,7 @@ fn candidate(
     OutputPortfolioCandidateV1 {
         candidate_id: id(name),
         candidate_digest: Digest32::of_bytes(name.as_bytes()),
+        objective_digest: Digest32::of_bytes(b"objective"),
         snapshot_digest: Digest32::of_bytes(b"snapshot"),
         generation: Generation::new(1).expect("candidate generation"),
         encoder_digest: Digest32::of_bytes(b"encoder"),
@@ -348,15 +349,9 @@ fn fractional_portfolio_counts_the_no_change_residual_against_max_selected() {
             .iter()
             .any(|item| { item.candidate_id == id("fractional") && item.weight == q(40) })
     );
-    assert!(
-        two_slots
-            .allocations
-            .iter()
-            .any(|item| {
-                item.candidate_id == id("baseline")
-                    && item.weight == exact_no_change_residual
-            })
-    );
+    assert!(two_slots.allocations.iter().any(|item| {
+        item.candidate_id == id("baseline") && item.weight == exact_no_change_residual
+    }));
 }
 
 #[test]
@@ -546,6 +541,120 @@ fn hard_slot_and_atomic_protocol_constraints_survive_fractional_optimization() {
     )
     .expect("tool actions remain whole or skipped");
     assert_eq!(receipt.disposition, OutputPortfolioDispositionV1::NoChange);
+}
+
+#[test]
+fn hard_zero_resource_and_latency_budgets_reject_rounded_positive_costs() {
+    // 40% of one Q32 least-significant cost unit rounds to zero.
+    // A hard zero budget must reject that exposure before weighted totals.
+    for resource_cost in [true, false] {
+        let mut limits = budget(2);
+        let mut exposure = candidate("tiny-positive-cost", 80, 0, false);
+        exposure.weight_cap = q(40);
+        if resource_cost {
+            limits.resource_budget = FixedQ32::ZERO;
+            exposure.resource_cost = FixedQ32::from_raw(1);
+        } else {
+            limits.latency_budget = FixedQ32::ZERO;
+            exposure.latency_cost = FixedQ32::from_raw(1);
+        }
+        let receipt = select_output_portfolio_v1(
+            &context(2),
+            &limits,
+            &[candidate("baseline", 0, 0, true), exposure],
+        )
+        .expect("a positive cost must never fit a hard-zero limit");
+        assert_eq!(receipt.disposition, OutputPortfolioDispositionV1::NoChange);
+        assert_eq!(receipt.allocations.len(), 1);
+        assert_eq!(receipt.allocations[0].candidate_id, id("baseline"));
+    }
+
+    // The hard-zero gate must still admit a genuinely free, riskless
+    // fractional direction and preserve its exact NoChange residual.
+    let mut limits = budget(2);
+    limits.resource_budget = FixedQ32::ZERO;
+    limits.latency_budget = FixedQ32::ZERO;
+    let mut free = candidate("free-direction", 80, 0, false);
+    free.resource_cost = FixedQ32::ZERO;
+    free.latency_cost = FixedQ32::ZERO;
+    free.weight_cap = q(40);
+    let receipt = select_output_portfolio_v1(
+        &context(2),
+        &limits,
+        &[candidate("baseline", 0, 0, true), free],
+    )
+    .expect("genuinely zero-cost directions remain admissible");
+    assert_eq!(
+        receipt.disposition,
+        OutputPortfolioDispositionV1::AdvisorySelection
+    );
+    assert_eq!(receipt.total_resource, FixedQ32::ZERO);
+    assert_eq!(receipt.total_latency, FixedQ32::ZERO);
+    let active = receipt
+        .allocations
+        .iter()
+        .find(|allocation| allocation.candidate_id == id("free-direction"))
+        .expect("zero-cost direction admitted");
+    let baseline = receipt
+        .allocations
+        .iter()
+        .find(|allocation| allocation.candidate_id == id("baseline"))
+        .expect("unspent weight stays with NoChange");
+    assert_eq!(active.weight, q(40));
+    assert_eq!(
+        active
+            .weight
+            .checked_add(baseline.weight)
+            .expect("exact Q32 complement"),
+        FixedQ32::ONE
+    );
+}
+
+#[test]
+fn hard_zero_risk_budget_rejects_positive_loss_hidden_by_q32_rounding() {
+    // A 1-ULP Q32 risk can be rounded to zero at a large fractional weight:
+    // 50% * 1 ULP = 0.5 ULP and ties-to-even reports zero. Likewise, a
+    // quadratic variance of 1 ULP rounds to zero for a 50% allocation.
+    // Hard-zero risk must reject those directions before solving.
+    let mut limits = budget(2);
+    limits.risk_budget = FixedQ32::ZERO;
+
+    for covariance_only in [false, true] {
+        let mut ctx = context(2);
+        let mut exposure = candidate("one-ulp-exposure", 80, 0, false);
+        if covariance_only {
+            ctx.semantic_covariance[3] = FixedQ32::from_raw(1);
+        } else {
+            exposure.risk.mean_loss = FixedQ32::from_raw(1);
+        }
+        let receipt = select_output_portfolio_v1(
+            &ctx,
+            &limits,
+            &[candidate("baseline", 0, 0, true), exposure],
+        )
+        .expect("a positive-risk direction cannot bypass a zero budget");
+        assert_eq!(receipt.disposition, OutputPortfolioDispositionV1::NoChange);
+        assert_eq!(receipt.allocations.len(), 1);
+        assert_eq!(receipt.allocations[0].candidate_id, id("baseline"));
+        assert_eq!(receipt.allocations[0].weight, FixedQ32::ONE);
+        assert_eq!(receipt.total_risk, FixedQ32::ZERO);
+    }
+
+    // Zero budget must not ban a genuinely risk-free relative direction.
+    let allowed = select_output_portfolio_v1(
+        &context(2),
+        &limits,
+        &[
+            candidate("baseline", 0, 0, true),
+            candidate("actually-zero-risk", 80, 0, false),
+        ],
+    )
+    .expect("the zero-risk feasible direction remains available");
+    assert_eq!(
+        allowed.disposition,
+        OutputPortfolioDispositionV1::AdvisorySelection
+    );
+    assert_eq!(allowed.total_risk, FixedQ32::ZERO);
 }
 
 #[test]
@@ -808,6 +917,60 @@ fn positive_individual_scores_cannot_hide_negative_correlation_gain() {
     assert!(receipt.total_utility > receipt.total_risk);
 }
 
+#[test]
+fn fixed_switch_cost_cannot_be_amortized_by_fractional_weight() {
+    let mut limits = budget(2);
+    limits.switch_penalty = q(30);
+    let mut partial = candidate("partial-switch", 80, 0, false);
+    partial.weight_cap = q(10);
+    let denied = select_output_portfolio_v1(
+        &context(2),
+        &limits,
+        &[candidate("baseline", 0, 0, true), partial],
+    )
+    .expect("risk-free baseline remains feasible");
+    assert_eq!(denied.disposition, OutputPortfolioDispositionV1::NoChange);
+    assert_eq!(denied.allocations.len(), 1);
+
+    // The same fixed charge is affordable when the full positive gain
+    // is realized by a whole candidate, not diluted across a small share.
+    let admitted = select_output_portfolio_v1(
+        &context(2),
+        &limits,
+        &[
+            candidate("baseline", 0, 0, true),
+            candidate("whole-switch", 80, 0, false),
+        ],
+    )
+    .expect("full-weight admission");
+    assert_eq!(
+        admitted.disposition,
+        OutputPortfolioDispositionV1::AdvisorySelection
+    );
+    assert_eq!(admitted.allocations.len(), 1);
+    assert_eq!(admitted.allocations[0].weight, FixedQ32::ONE);
+}
+
+#[test]
+fn covariance_pricing_does_not_hide_fixed_switch_cost() {
+    let mut limits = budget(2);
+    limits.switch_penalty = q(45);
+    let mut measured = context(2);
+    measured.semantic_covariance[3] = q(50);
+    // Gross utility 0.8*w minus 0.5*w^2 peaks at w=0.8:
+    // the maximum gross gain is 0.32, below the fixed 0.45 cost.
+    let receipt = select_output_portfolio_v1(
+        &measured,
+        &limits,
+        &[
+            candidate("baseline", 0, 0, true),
+            candidate("covariant-switch", 80, 0, false),
+        ],
+    )
+    .expect("negative net gain selects no change");
+    assert_eq!(receipt.disposition, OutputPortfolioDispositionV1::NoChange);
+    assert_eq!(receipt.total_risk, FixedQ32::ZERO);
+}
 
 #[test]
 fn portfolio_receipt_replay_rejects_mutated_allocation_and_digest() {
@@ -846,6 +1009,127 @@ fn portfolio_receipt_replay_rejects_mutated_allocation_and_digest() {
     altered_generation.generation = Generation::new(2).expect("nonzero generation");
     assert_eq!(
         verify_output_portfolio_receipt_v1(&ctx, &limits, &original, &altered_generation),
+        Err(NduError::InvalidSolverReceipt("portfolio receipt replay"))
+    );
+}
+
+#[test]
+fn objective_bound_candidate_rejects_cross_objective_replay() {
+    let state = context(2);
+    let limits = budget(2);
+    let mut foreign = candidate("same-feature-different-objective", 90, 0, false);
+    foreign.objective_digest = Digest32::of_bytes(b"foreign-objective");
+    let candidates = [candidate("baseline", 0, 0, true), foreign];
+    assert_eq!(
+        select_output_portfolio_v1(&state, &limits, &candidates)
+            .expect_err("a Cell utility estimate belongs to exactly one objective"),
+        NduError::InvalidSolverReceipt("portfolio candidate objective")
+    );
+    assert_eq!(
+        output_efficient_frontier_v1(&state, &candidates)
+            .expect_err("a frontier cannot contain cross-objective utility estimates"),
+        NduError::InvalidSolverReceipt("portfolio candidate objective")
+    );
+
+    let mut changed_context = state;
+    changed_context.objective_digest = Digest32::of_bytes(b"foreign-objective");
+    assert_eq!(
+        select_output_portfolio_v1(&changed_context, &limits, &candidates)
+            .expect_err("switching the objective must not make the original baseline valid"),
+        NduError::InvalidSolverReceipt("portfolio candidate objective")
+    );
+}
+
+#[test]
+fn selection_digest_binds_all_published_receipt_fields_without_replay() {
+    let context = context(2);
+    let budget = budget(2);
+    let candidates = [
+        candidate("baseline", 0, 0, true),
+        candidate("private-head", 60, 10, false),
+    ];
+    let receipt =
+        select_output_portfolio_v1(&context, &budget, &candidates).expect("bounded receipt");
+    let canonical = canonical_candidates(&context, &candidates).expect("canonical candidates");
+    let covariance =
+        canonical_covariance(&context, &candidates, &canonical).expect("canonical covariance");
+    let digest_of = |value: &OutputPortfolioSelectionReceiptV1| {
+        digest_selection(&context, &budget, &canonical, &covariance, value)
+    };
+    assert_eq!(digest_of(&receipt), receipt.selection_digest);
+    assert_eq!(
+        verify_output_portfolio_receipt_v1(&context, &budget, &candidates, &receipt),
+        Ok(())
+    );
+    assert!(!receipt.frontier.is_empty());
+    assert!(!receipt.allocations.is_empty());
+
+    let mut changed = receipt.clone();
+    changed.objective_digest = Digest32::of_bytes(b"other-objective");
+    assert_ne!(digest_of(&changed), receipt.selection_digest);
+
+    let mut changed = receipt.clone();
+    changed.generation = Generation::new(2).expect("successor generation");
+    assert_ne!(digest_of(&changed), receipt.selection_digest);
+
+    let mut changed = receipt.clone();
+    changed.encoder_digest = Digest32::of_bytes(b"other-encoder");
+    assert_ne!(digest_of(&changed), receipt.selection_digest);
+
+    let mut changed = receipt.clone();
+    changed.snapshot_digest = Digest32::of_bytes(b"other-snapshot");
+    assert_ne!(digest_of(&changed), receipt.selection_digest);
+
+    let one_ulp = FixedQ32::from_raw(1);
+    let mut changed = receipt.clone();
+    changed.total_resource = changed
+        .total_resource
+        .checked_add(one_ulp)
+        .expect("cost range");
+    assert_ne!(digest_of(&changed), receipt.selection_digest);
+
+    let mut changed = receipt.clone();
+    changed.total_latency = changed
+        .total_latency
+        .checked_add(one_ulp)
+        .expect("latency range");
+    assert_ne!(digest_of(&changed), receipt.selection_digest);
+
+    let mut changed = receipt.clone();
+    changed.total_risk = changed.total_risk.checked_add(one_ulp).expect("risk range");
+    assert_ne!(digest_of(&changed), receipt.selection_digest);
+
+    let mut changed = receipt.clone();
+    changed.total_utility = changed
+        .total_utility
+        .checked_add(one_ulp)
+        .expect("utility range");
+    assert_ne!(digest_of(&changed), receipt.selection_digest);
+
+    let mut changed = receipt.clone();
+    changed.disposition = OutputPortfolioDispositionV1::NoChange;
+    assert_ne!(digest_of(&changed), receipt.selection_digest);
+
+    let mut changed = receipt.clone();
+    changed.frontier[0].resource_cost = changed.frontier[0]
+        .resource_cost
+        .checked_add(one_ulp)
+        .expect("frontier resource range");
+    assert_ne!(digest_of(&changed), receipt.selection_digest);
+
+    let mut changed = receipt.clone();
+    changed.frontier.pop();
+    assert_ne!(digest_of(&changed), receipt.selection_digest);
+
+    let mut changed = receipt.clone();
+    changed.allocations[0].adjusted_score = changed.allocations[0]
+        .adjusted_score
+        .checked_add(one_ulp)
+        .expect("allocation score range");
+    assert_ne!(digest_of(&changed), receipt.selection_digest);
+
+    assert_eq!(
+        verify_output_portfolio_receipt_v1(&context, &budget, &candidates, &changed),
         Err(NduError::InvalidSolverReceipt("portfolio receipt replay"))
     );
 }

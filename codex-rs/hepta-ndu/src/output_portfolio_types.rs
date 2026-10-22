@@ -54,6 +54,9 @@ pub struct SemanticRiskEstimateV1 {
 pub struct OutputPortfolioCandidateV1 {
     pub candidate_id: StableId,
     pub candidate_digest: Digest32,
+    /// Objective-specific utility/risk cannot be reused just because an
+    /// encoder produced the same immutable feature bytes.
+    pub objective_digest: Digest32,
     pub snapshot_digest: Digest32,
     /// Source fence of the Cell proposal. Matching feature bytes do not
     /// authorize reusing a proposal across generations.
