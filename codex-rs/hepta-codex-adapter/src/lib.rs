@@ -49,6 +49,7 @@ pub use execution_contract::RuntimeExecutionError;
 pub use execution_contract::RuntimeReceiptV1;
 pub use execution_contract::RuntimeToolIntentV1;
 pub use execution_contract::ToolOutcomeV1;
+pub use execution_contract::execute_native_tool_intent;
 pub use runtime_prompt::PromptRuntimeAttachmentV1;
 pub use runtime_prompt::PromptRuntimeDeveloperFragmentV1;
 pub use runtime_prompt::PromptRuntimeDispatchFuture;
