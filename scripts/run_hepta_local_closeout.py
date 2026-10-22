@@ -82,6 +82,50 @@ STAGES = {
 }
 
 
+def required_file_pin(root: Path, rel: str) -> dict[str, Any]:
+    """Reject ignored/untracked and symlinked required files on a clean Git tree.
+
+    'git status --porcelain' being empty is insufficient: Git ignores can hide
+    untracked inputs, and a committed symlink can point to mutable external
+    bytes. A source-only acceptance gate must not bless either as pinned.
+    """
+    relative = Path(rel)
+    target = root / relative
+    info: dict[str, Any] = {"present": target.is_file(), "pinned": False}
+    if not info["present"]:
+        info["reason"] = "MISSING_REGULAR_FILE"
+        return info
+    if relative.is_absolute() or ".." in relative.parts:
+        info["reason"] = "UNSAFE_RELATIVE_PATH"
+        return info
+    cursor = root
+    for component in relative.parts:
+        cursor = cursor / component
+        if cursor.is_symlink():
+            info["reason"] = "SYMLINKED_SOURCE_PATH"
+            return info
+    try:
+        tracked = subprocess.run(
+            ["git", "-C", str(root), "ls-files", "--stage", "--", rel],
+            capture_output=True, text=True, check=True, timeout=10,
+        ).stdout.splitlines()
+    except (OSError, subprocess.CalledProcessError, subprocess.TimeoutExpired):
+        info["reason"] = "GIT_INDEX_UNAVAILABLE"
+        return info
+    entries = []
+    for line in tracked:
+        metadata, sep, path = line.partition("\t")
+        fields = metadata.split()
+        if sep and path == rel and len(fields) == 3:
+            entries.append((fields[0], fields[2]))
+    if entries != [("100644", "0")] and entries != [("100755", "0")]:
+        info["reason"] = "NOT_A_SINGLE_TRACKED_REGULAR_FILE"
+        return info
+    info["pinned"] = True
+    info["reason"] = "TRACKED_REGULAR_FILE"
+    return info
+
+
 def git_snapshot(path: Path) -> dict[str, Any]:
     if not path.is_dir():
         return {"usable": False, "reason": "repository directory not mounted", "path": str(path)}
@@ -182,15 +226,20 @@ def main() -> int:
         source_names = {name for name, _ in spec["required"]}
         before_checks = {name: git_snapshot(roots[name]) for name in source_names}
         missing = []
+        unpinned = []
         for name, rel in spec["required"]:
-            path = roots[name] / rel
-            exists = path.is_file()
-            stage_result["files"].append({"path": f"{name}/{rel}", "present": exists})
-            if not exists:
+            pin = required_file_pin(roots[name], rel)
+            stage_result["files"].append({"path": f"{name}/{rel}", **pin})
+            if not pin["present"]:
                 missing.append(f"{name}/{rel}")
+            elif not pin["pinned"]:
+                unpinned.append(f"{name}/{rel}")
         stage_result["missing_files"] = missing
+        stage_result["unpinned_files"] = unpinned
         if missing:
             stage_result["status"] = "BLOCKED_SOURCE_NOT_PRESENT"
+        elif unpinned:
+            stage_result["status"] = "BLOCKED_SOURCE_UNPINNED"
         elif not all(report["sources"][name]["usable"] and before_checks[name]["usable"] for name in source_names):
             stage_result["status"] = "BLOCKED_NO_GIT_CHECKOUT"
         elif not all(report["sources"][name]["clean"] and before_checks[name]["clean"] for name in source_names):
