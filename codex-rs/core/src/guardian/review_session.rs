@@ -1321,6 +1321,22 @@ async fn wait_for_guardian_review(
                             analytics_result.time_to_first_token_ms = turn_complete
                                 .time_to_first_token_ms
                                 .and_then(|ms| u64::try_from(ms).ok());
+                            // The terminal event precedes normal finish-owner cleanup. Reuse and
+                            // fork publication must wait for that exact owner's completion.
+                            if let Some(completion) = review_session
+                                .session
+                                .pending_normal_turn_finish_completion(expected_turn_id)
+                                && let Err(outcome) = run_before_review_deadline(
+                                    deadline,
+                                    external_cancel,
+                                    completion,
+                                )
+                                .await
+                            {
+                                // This turn's terminal event is already consumed. Do not wait for
+                                // another one or reuse a trunk whose finish owner is still pending.
+                                return (outcome, false, false);
+                            }
                             if turn_complete.last_agent_message.is_none()
                                 && let Some(error) = last_error
                             {
@@ -1530,6 +1546,10 @@ async fn interrupt_and_drain_turn(
 }
 
 #[cfg(test)]
+#[path = "review_session_completion_tests.rs"]
+mod completion_tests;
+
+#[cfg(test)]
 mod tests {
     use super::*;
     use codex_protocol::openai_models::AutoReviewMessages;
@@ -1613,7 +1633,7 @@ mod tests {
         }
     }
 
-    async fn test_review_params() -> GuardianReviewSessionParams {
+    pub(super) async fn test_review_params() -> GuardianReviewSessionParams {
         let (session, turn) = crate::session::tests::make_session_and_context().await;
         let model = turn.model_info.slug.clone();
         let reasoning_effort = turn.reasoning_effort.clone();
