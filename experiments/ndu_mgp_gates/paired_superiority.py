@@ -151,6 +151,12 @@ def evaluate(study: Mapping):
     # One protected world in the entire experiment is not a meaningful
     # protected-task cohort. Require a preregistered minimum of genuinely
     # separate original-source groups IN EACH training seed.
+    # Coverage of protected sources is not evidence those tasks were served.
+    # Require separate, preregistered absolute quality/completion minima.
+    min_protected_quality = _number(protocol.get("min_protected_ndu_quality"),
+                                    "absolute protected quality floor", lower=0.5, upper=1.0)
+    min_protected_completion = _number(protocol.get("min_protected_ndu_completion"),
+                                       "absolute protected completion floor", lower=0.5, upper=1.0)
     protected_source_floor = protocol.get("min_protected_source_groups_per_seed")
     _need(type(protected_source_floor) is int and
           8 <= protected_source_floor <= counts[0],
@@ -161,6 +167,7 @@ def evaluate(study: Mapping):
     size = counts[0]
     values = np.empty((len(ARMS), len(seeds), size, len(METRICS) + 1))
     protected = np.zeros((len(seeds), size), dtype=bool)
+    ndu_completed_fraction = np.zeros((len(seeds), size), dtype=np.float64)
     budget_overruns = np.zeros((len(ARMS), len(seeds), size), dtype=bool)
     arm_idx = {a: i for i, a in enumerate(ARMS)}
     seed_group_indexes = []
@@ -251,6 +258,9 @@ def evaluate(study: Mapping):
                     _need(all(dr["status"] == "failed" for dr in drows),
                           "overbudget episode must receive failure penalty")
                 budget_overruns[arm_idx[name], i, j] = over_budget
+                if name == "ndu":
+                    ndu_completed_fraction[i, j] = sum(
+                        dr["status"] == "completed" for dr in drows) / draws
                 values[arm_idx[name], i, j, :len(METRICS)] = entries.mean(axis=0)
                 values[arm_idx[name], i, j, -1] = total
     _need(bool(np.any(protected)), "no protected-task evaluation coverage")
@@ -260,6 +270,26 @@ def evaluate(study: Mapping):
                                for i, seed in enumerate(seeds)]
     _need(all(n >= protected_source_floor for n in protected_source_counts),
           "insufficient protected original-source groups in one or more seeds")
+    # Source-equal estimates, rather than view-equal ones, prevent repeated
+    # views of one protected source from manufacturing quality or completion.
+    # These are procedural minima, not independent fairness confidence bounds.
+    protected_quality_by_seed = []
+    protected_completion_by_seed = []
+    for i, seed in enumerate(seeds):
+        protected_sources = sorted({registered_sources[str(seed)][j]
+                                    for j in np.flatnonzero(protected[i])})
+        group_quality = []
+        group_completion = []
+        for source in protected_sources:
+            indices = [j for j in np.flatnonzero(protected[i])
+                       if registered_sources[str(seed)][j] == source]
+            group_quality.append(float(values[0, i, indices, 1].mean()))
+            group_completion.append(float(ndu_completed_fraction[i, indices].mean()))
+        protected_quality_by_seed.append(float(np.mean(group_quality)))
+        protected_completion_by_seed.append(float(np.mean(group_completion)))
+    protected_service = (all(x >= min_protected_quality for x in protected_quality_by_seed)
+                         and all(x >= min_protected_completion
+                                 for x in protected_completion_by_seed))
     # Every sampled heldout unit remains paired. Tail CVaR is computed within
     # seed AFTER draw aggregation, then averaged over training seeds.
     def summarize(v):
@@ -312,6 +342,7 @@ def evaluate(study: Mapping):
             "consistency_noninferiority": bool(upper[3] <= inconsistency_tol),
             "physical_total_cost": bool(ratio <= max_cost_ratio and cost_margin_upper <= 0),
             "protected_task_no_regression": protected_ok,
+            "protected_task_absolute_service": bool(protected_service),
         }
         local_all &= all(gates.values())
         out[name] = {"mean_pair_difference": dict(zip(("cvar90", "quality", "ambiguity", "inconsistency", "total_cost"), x.tolist())),
@@ -327,6 +358,10 @@ def evaluate(study: Mapping):
                "registered_min_protected_source_groups_per_seed": protected_source_floor,
                "protected_worlds_per_seed": protected_world_counts,
                "protected_original_sources_per_seed": protected_source_counts,
+               "registered_min_protected_ndu_quality": min_protected_quality,
+               "registered_min_protected_ndu_completion": min_protected_completion,
+               "ndu_protected_source_equal_quality_by_seed": protected_quality_by_seed,
+               "ndu_protected_source_equal_completion_by_seed": protected_completion_by_seed,
                "draws_per_world": draws,
                "registered_hard_world_cost_limit": hard_cost_limit,
                "overbudget_episodes_by_arm": {name: int(budget_overruns[k].sum())
@@ -338,6 +373,7 @@ def evaluate(study: Mapping):
                                "frozen source manifests remain caller supplied, not independently authenticated",
                                "no independent observer, signature verification or prospective attestation",
                                "protected source coverage is metadata-only, not a population prevalence claim",
+                               "absolute protected service floors are caller-registered, not independent fairness tests",
                                "absolute cost cap is caller-registered and not externally authenticated",
                                "does not execute a pretrained encoder, model, decoder or GPU inference",
                                "does not satisfy any P0-P4 production final-use gate"]}
