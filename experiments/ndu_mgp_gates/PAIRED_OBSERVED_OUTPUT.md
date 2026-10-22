@@ -94,3 +94,31 @@ This is a **research metadata validator**, not real decoded-output generation,
 source authentication, scientific superiority, or trusted physical metering.
 The published #3039 and #3213 negative results, frozen #3055 protocol,
 production authority, and all model weights remain unchanged.
+
+
+## Protected-task cohort representation (child Draft, fail-closed)
+
+Previous P1 evaluation required only `np.any(protected)`; a synthetic
+experiment with **one protected world among 96** (three registered seeds)
+could report every comparator's `protected_task_no_regression=True` and
+`all_provisional_gates_pass=True` if other thresholds were satisfied.
+One original source is not valid multi-seed protected-task coverage.
+
+The revised research protocol requires an explicit
+`min_protected_source_groups_per_seed` integer **at least 8**, locked before
+heldout, and a minimum of this many distinct **original-source groups in
+each training seed**. Views/crops of one original source cannot satisfy the
+requirement. The report exposes `protected_worlds_per_seed`,
+`protected_original_sources_per_seed` and the registered floor. Missing
+coverage in even one seed fails closed. Six synthetic adversarial/boundary
+regressions cover missing or trivially low floor, one protected world, absent
+seed cohort, repeated-source aliasing and complete per-seed receipts;
+**69/69 local Python CPU checks pass**.
+
+The eight-source floor is a **minimum research provenance sanity guard**,
+not proof of statistical power or representative protected-population
+coverage. Actual generalization and non-regression still require externally
+frozen protected labels, source-identity verification, sample-size/power
+analysis, prospective independent holdout, and physical model execution.
+This change does not alter #3055/#3039/#3213 frozen studies or authorize
+model deployment/Final-use.
