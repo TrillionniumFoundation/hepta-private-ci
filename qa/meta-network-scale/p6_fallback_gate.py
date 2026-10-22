@@ -161,7 +161,7 @@ def assess_fallback(
     observation = verify_envelope(primary_observation, trust, "independent_observer")
     _separate_signers(grant, observation)
     gp = _shape(grant.payload, OP_FIELDS | {"expires_at_ms", "allowed_backends"}, "signed FinalUse")
-    op = _shape(observation.payload, OP_FIELDS | {"primary_backend", "state", "dispatch_count", "observation_digest"}, "signed observation")
+    op = _shape(observation.payload, OP_FIELDS | {"primary_backend", "state", "dispatch_count", "observation_digest", "final_use_envelope_digest"}, "signed observation")
     _op(gp)
     _op(op)
     for k in OP_FIELDS:
@@ -169,6 +169,12 @@ def assess_fallback(
             raise EvidenceRejected(f"signed {k} mismatch")
     if op["primary_backend"] != req["primary_backend"]:
         raise EvidenceRejected("primary backend mismatch")
+    # Independent rejection is scoped to the exact issuer-signed envelope.
+    # A newly issued FinalUse cannot reuse a signed denial from an older grant
+    # just because operation, generation, idempotency and owner epoch match.
+    _hex(op["final_use_envelope_digest"], "observed FinalUse envelope")
+    if op["final_use_envelope_digest"] != grant.envelope_digest:
+        raise EvidenceRejected("stale observation from a different signed FinalUse grant")
     if type(gp["expires_at_ms"]) is not int or now_ms >= gp["expires_at_ms"]:
         raise EvidenceRejected("expired FinalUse evidence")
     backs = gp["allowed_backends"]
