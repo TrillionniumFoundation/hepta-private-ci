@@ -75,8 +75,8 @@ class LocalCloseoutTests(unittest.TestCase):
                             "commit", "-q", "--allow-empty", "-m", "baseline"], check=True)
             probe = base / "hook-executed"
             hook = base / "fsmonitor.sh"
-            hook.write_text('#!/bin/sh\\nprintf x >> "' + str(probe) +
-                            '"\\nprintf "\\n"\\n', encoding="utf-8")
+            hook.write_text('#!/bin/sh\nprintf x >> "' + str(probe) +
+                            '"\nprintf "\n"\n', encoding="utf-8")
             hook.chmod(0o700)
             subprocess.run(["git", "-C", str(src), "config",
                             "core.fsmonitor", str(hook)], check=True)
@@ -94,16 +94,16 @@ class LocalCloseoutTests(unittest.TestCase):
             src = base / "checkout"
             subprocess.run(["git", "init", "-q", str(src)], check=True)
             source = src / "content.txt"
-            source.write_text("original\\n", encoding="utf-8")
-            (src / ".gitattributes").write_text("content.txt filter=exec\\n", encoding="utf-8")
+            source.write_text("original\n", encoding="utf-8")
+            (src / ".gitattributes").write_text("content.txt filter=exec\n", encoding="utf-8")
             subprocess.run(["git", "-C", str(src), "add", "."], check=True)
             subprocess.run(["git", "-C", str(src), "-c", "user.name=LocalTest",
                             "-c", "user.email=local@example.invalid",
                             "commit", "-q", "-m", "baseline"], check=True)
             probe = base / "filter-executed"
             driver = base / "filter.sh"
-            driver.write_text('#!/bin/sh\\nprintf x >> "' + str(probe) +
-                              '"\\ncat\\n', encoding="utf-8")
+            driver.write_text('#!/bin/sh\nprintf x >> "' + str(probe) +
+                              '"\ncat\n', encoding="utf-8")
             driver.chmod(0o700)
             subprocess.run(["git", "-C", str(src), "config",
                             "filter.exec.clean", str(driver)], check=True)
