@@ -389,7 +389,7 @@ def check_native_facade_exports(facade_source: str) -> list[str]:
 
     violations: list[str] = []
     for name in PURE_NATIVE_EXPORTS:
-        expected = rf"(?m)^[ \\t]*pub[ \\t]+use[ \\t]+codex_hepta_types[ \\t]*::[ \\t]*{re.escape(name)}[ \\t]*;[ \\t]*(?://.*)?$"
+        expected = rf"(?m)^[ \t]*pub[ \t]+use[ \t]+codex_hepta_types[ \t]*::[ \t]*{re.escape(name)}[ \t]*;[ \t]*(?://.*)?$"
         if not re.search(expected, facade_source):
             violations.append(
                 f"hepta-codex-adapter: missing direct pure ABI re-export {name}"
@@ -397,9 +397,9 @@ def check_native_facade_exports(facade_source: str) -> list[str]:
 
     protected_names = "|".join(re.escape(name) for name in PURE_NATIVE_EXPORTS)
     local_definition = (
-        rf"\\b(?:pub(?:\\s*\\([^)]*\\))?\\s+)?"
-        rf"(?:struct|enum|trait|type|union|const|static)\\s+"
-        rf"(?:{protected_names})\\b"
+        rf"\b(?:pub(?:\s*\([^)]*\))?\s+)?"
+        rf"(?:struct|enum|trait|type|union|const|static)\s+"
+        rf"(?:{protected_names})\b"
     )
     if re.search(local_definition, facade_source):
         violations.append("hepta-codex-adapter: duplicate execution contract definition")
