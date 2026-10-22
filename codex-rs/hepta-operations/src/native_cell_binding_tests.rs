@@ -137,6 +137,21 @@ fn old_generation_or_foreign_outbox_claim_is_rejected() {
         check_native_cell_outbox_claim_v1(10_000, &request, bytes, &stale),
         Err(NativeCellBindingError::ForeignOrExpiredClaim)
     );
+    // The purported lease may expire at the request deadline, never after it.
+    // Longer grants must not silently extend a Cell's bounded admission.
+    let mut after_deadline = valid.clone();
+    after_deadline.expires_at_unix_ms = request.cell.deadline_ms + 1;
+    assert_eq!(
+        check_native_cell_outbox_claim_v1(10_000, &request, bytes, &after_deadline),
+        Err(NativeCellBindingError::ForeignOrExpiredClaim)
+    );
+    let mut at_deadline = valid.clone();
+    at_deadline.expires_at_unix_ms = request.cell.deadline_ms;
+    assert_eq!(
+        check_native_cell_outbox_claim_v1(10_000, &request, bytes, &at_deadline),
+        Ok(())
+    );
+
     stale = valid;
     stale.intent.payload_digest = digest(b"other");
     assert_eq!(
