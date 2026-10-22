@@ -182,3 +182,43 @@ Phase journals are append-only and resumable under unchanged recorded identities
 ## Further scientific gates
 
 The next capability claims require their own evidence: 8–16 actual decisions on tasks long enough to exercise them; independently generated language and pixels with cross-modal semantic assessment; terminal-output loss covariance estimated from independent outcomes; comparison at matched actual cost and coverage; independent confirmatory cohorts and additional decoding seeds; and a complete state/noise model for continuous FBSDE or Merton control theory. Passing source, replay or artifact checks does not close these separate questions.
+
+## Post-hoc PNG outline audit (supplemental, not part of the frozen pilot)
+
+The original experiment intentionally scored PNG byte integrity and dimensions, not
+whether each drawn rectangle matched its own predicted coordinates. The
+[separate overlay auditor](overlay_audit.py) now checks the four visible red
+perimeters of every predicted box in the archived test PNGs, using the
+content-addressed artifact digest and reference frame size independently from
+the generating actor. A small tolerance allows palette quantization. This
+post-hoc screen uses a 90% perimeter coverage threshold and has synthetic
+negative controls for shifted boxes, digest tampering, size mismatches,
+malformed digests, invalid boxes and duplicate rows. It does **not** inspect
+the original JPEG, prove that the boxes locate real objects, or establish
+independently generated image pixels or language.
+
+The supplemental receipt is recorded at
+[overlay-geometry-audit.json](../ndu-grounded-evidence/2026-10-22/overlay-geometry-audit.json).
+It checks 768 test episodes and 820 predicted rectangles: no mismatched
+perimeters, minimum eligible-rectangle coverage 0.952380952. It also accounts
+for ten outputs with no predicted boxes. The original 768 pilot scores,
+experiment selection, calibration, and protocol remain untouched.
+
+To independently repeat this supplemental check after unpacking the pinned
+evidence archive, with the repository checkout still available:
+
+```bash
+python qa/ndu-grounded-generation/overlay_audit.py \
+  --episodes /absolute/path/to/bundle/raw/test.episodes.jsonl \
+  --artifact-root /absolute/path/to/bundle/artifacts \
+  --references /absolute/path/to/bundle/cohort/test.references.jsonl \
+  --output /absolute/path/outside/bundle/overlay-geometry-audit.json
+python -m unittest discover \
+  -s qa/ndu-grounded-generation -p 'test_overlay_audit.py'
+```
+
+This later audit is not inside the immutable 831-file original ZIP manifest
+and is not used to revise the experiment outcome. Test thresholds and this
+screen were introduced after original test results became available. The
+[model-free evidence replayer](../ndu-grounded-evidence/2026-10-22/portable-replay.json)
+continues to validate the original pilot independently.
