@@ -64,6 +64,78 @@ class LocalCloseoutTests(unittest.TestCase):
             (src / "untracked").write_text("x")
             self.assertFalse(mod.git_snapshot(src)["clean"])
 
+    def test_inactive_git_filter_does_not_block_clean_source(self):
+        with tempfile.TemporaryDirectory() as root:
+            base = Path(root)
+            src = base / "checkout"
+            subprocess.run(["git", "init", "-q", str(src)], check=True)
+            (src / "plain.txt").write_text("no filters\n", encoding="utf-8")
+            subprocess.run(["git", "-C", str(src), "add", "plain.txt"], check=True)
+            subprocess.run(["git", "-C", str(src), "-c", "user.name=LocalTest",
+                            "-c", "user.email=local@example.invalid",
+                            "commit", "-q", "-m", "baseline"], check=True)
+            # Ubuntu Actions provides filter.lfs globally. Without matching
+            # tracked attributes, this harmless registration is not executable
+            # by git status and must not block normal local source checks.
+            subprocess.run(["git", "-C", str(src), "config", "filter.lfs.clean",
+                            "unused-git-lfs-clean-driver"], check=True)
+            result = mod.git_snapshot(src)
+            self.assertTrue(result["usable"], result)
+            self.assertTrue(result["clean"], result)
+
+    @unittest.skipUnless(os.name == "posix", "POSIX executable Git config fixture")
+    def test_git_fsmonitor_cannot_execute_during_source_snapshot(self):
+        with tempfile.TemporaryDirectory() as root:
+            base = Path(root)
+            src = base / "checkout"
+            subprocess.run(["git", "init", "-q", str(src)], check=True)
+            subprocess.run(["git", "-C", str(src), "-c", "user.name=LocalTest",
+                            "-c", "user.email=local@example.invalid",
+                            "commit", "-q", "--allow-empty", "-m", "baseline"], check=True)
+            probe = base / "hook-executed"
+            hook = base / "fsmonitor.sh"
+            hook.write_text('#!/bin/sh\nprintf x >> "' + str(probe) +
+                            '"\nprintf "\n"\n', encoding="utf-8")
+            hook.chmod(0o700)
+            subprocess.run(["git", "-C", str(src), "config",
+                            "core.fsmonitor", str(hook)], check=True)
+
+            proof = mod.git_snapshot(src)
+            self.assertFalse(proof["usable"])
+            self.assertEqual(proof["reason"], "unreviewed executable Git configuration")
+            self.assertEqual(proof["blocked_git_config_keys"], ["core.fsmonitor"])
+            self.assertFalse(probe.exists(), "source preflight executed an unreviewed Git hook")
+
+    @unittest.skipUnless(os.name == "posix", "POSIX executable Git config fixture")
+    def test_git_clean_filter_cannot_execute_during_source_snapshot(self):
+        with tempfile.TemporaryDirectory() as root:
+            base = Path(root)
+            src = base / "checkout"
+            subprocess.run(["git", "init", "-q", str(src)], check=True)
+            source = src / "content.txt"
+            source.write_text("original\n", encoding="utf-8")
+            (src / ".gitattributes").write_text("content.txt filter=exec\n", encoding="utf-8")
+            subprocess.run(["git", "-C", str(src), "add", "."], check=True)
+            subprocess.run(["git", "-C", str(src), "-c", "user.name=LocalTest",
+                            "-c", "user.email=local@example.invalid",
+                            "commit", "-q", "-m", "baseline"], check=True)
+            probe = base / "filter-executed"
+            driver = base / "filter.sh"
+            driver.write_text('#!/bin/sh\nprintf x >> "' + str(probe) +
+                              '"\ncat\n', encoding="utf-8")
+            driver.chmod(0o700)
+            subprocess.run(["git", "-C", str(src), "config",
+                            "filter.exec.clean", str(driver)], check=True)
+            # Even an unchanged file can trigger a clean filter when Git
+            # refreshes metadata. The marker is outside the tracked tree.
+            modified = source.stat().st_mtime_ns + 3_000_000_000
+            os.utime(source, ns=(modified, modified))
+
+            proof = mod.git_snapshot(src)
+            self.assertFalse(proof["usable"])
+            self.assertEqual(proof["blocked_git_config_keys"], ["filter.exec.clean"])
+            self.assertFalse(probe.exists(), "source preflight executed an unreviewed filter")
+
     def test_linked_worktree_is_a_supported_exact_source(self):
         with tempfile.TemporaryDirectory() as root:
             base = Path(root)
@@ -289,6 +361,34 @@ class LocalCloseoutTests(unittest.TestCase):
                 receipt["log_sha256"], hashlib.sha256(location.read_bytes()).hexdigest()
             )
 
+
+    def test_posix_kernel_log_cap_is_enforced_before_parent_poll(self):
+        if os.name != "posix":
+            self.skipTest("POSIX RLIMIT_FSIZE only")
+        with tempfile.TemporaryDirectory() as root:
+            marker = Path(root) / "kernel-limit-observed"
+            source = (
+                "import os, signal, errno\n"
+                "from pathlib import Path\n"
+                "signal.signal(signal.SIGXFSZ, signal.SIG_IGN)\n"
+                "try:\n"
+                "    while True: os.write(1, b'x' * 16384)\n"
+                "except OSError as error:\n"
+                f"    Path({str(marker)!r}).write_text(str(error.errno))\n"
+            )
+            with patch.object(mod, "MAX_CHECK_LOG_BYTES", 128 * 1024), patch.object(
+                mod, "CHECK_POLL_SECONDS", 0.5
+            ):
+                receipt = mod.run_check(
+                    [sys.executable, "-c", source],
+                    Path(root), 5, Path(root) / "kernel-fsize.log"
+                )
+            self.assertEqual(receipt["status"], "BLOCKED_OUTPUT_LIMIT")
+            self.assertEqual(marker.read_text(), "27")  # errno.EFBIG
+            self.assertLessEqual(
+                (Path(root) / "kernel-fsize.log").stat().st_size, 128 * 1024 + 80
+            )
+
     def test_successful_wrapper_with_live_descendant_is_not_a_success(self):
         if os.name != "posix":
             self.skipTest("POSIX process groups required")
@@ -360,6 +460,38 @@ class LocalCloseoutTests(unittest.TestCase):
             self.assertEqual(result["blocked_environment_keys"], ["RUSTFLAGS"])
             self.assertFalse(location.exists())
             invoked.assert_not_called()
+
+
+    def test_required_source_must_be_exact_tracked_regular_head_bytes(self):
+        with tempfile.TemporaryDirectory() as root:
+            source = Path(root)
+            subprocess.run(["git", "init", "-q", str(source)], check=True)
+            (source / ".gitignore").write_text("ignored.rs\n")
+            (source / "tracked.rs").write_bytes(b"committed bytes\n")
+            (source / "ignored.rs").write_bytes(b"untracked ignored payload")
+            (source / "symlink.rs").symlink_to(source / "tracked.rs")
+            subprocess.run(
+                ["git", "-C", str(source), "add", ".gitignore", "tracked.rs", "symlink.rs"],
+                check=True,
+            )
+            subprocess.run(
+                ["git", "-C", str(source), "-c", "user.name=LocalTest",
+                 "-c", "user.email=local@example.invalid",
+                 "commit", "-qm", "baseline"],
+                check=True,
+            )
+            self.assertTrue(mod.git_snapshot(source)["clean"])
+            self.assertTrue(mod.committed_regular_file(source, "tracked.rs"))
+            self.assertFalse(mod.committed_regular_file(source, "ignored.rs"))
+            self.assertFalse(mod.committed_regular_file(source, "symlink.rs"))
+            # Git can intentionally hide dirty bytes from porcelain status.
+            subprocess.run(
+                ["git", "-C", str(source), "update-index",
+                 "--assume-unchanged", "tracked.rs"], check=True,
+            )
+            (source / "tracked.rs").write_bytes(b"tampered after HEAD")
+            self.assertTrue(mod.git_snapshot(source)["clean"])
+            self.assertFalse(mod.committed_regular_file(source, "tracked.rs"))
 
 
 if __name__ == "__main__":
