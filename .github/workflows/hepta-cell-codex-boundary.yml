@@ -3,6 +3,9 @@ name: Hepta Cell Codex execution boundary
 on:
   pull_request:
     paths:
+      - ".cargo/**"
+      - "codex-rs/.cargo/**"
+      - "codex-rs/hepta-*/.cargo/**"
       - "codex-rs/Cargo.toml"
       - "codex-rs/hepta-types/Cargo.toml"
       - "codex-rs/hepta-types/src/execution_contract.rs"

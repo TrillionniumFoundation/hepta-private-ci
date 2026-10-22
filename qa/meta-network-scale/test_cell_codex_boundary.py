@@ -342,5 +342,117 @@ crossterm = { git = "https://example.invalid/pin", rev = "abc123" }
             self.assertIn("cannot read reviewed", errors[0])
 
 
+
+class CargoConfigurationSourceTests(unittest.TestCase):
+    """A manifest-pinned Cell dependency must not be rebound through Cargo config."""
+
+    def setUp(self):
+        self.temp = tempfile.TemporaryDirectory()
+        self.addCleanup(self.temp.cleanup)
+        self.root = Path(self.temp.name)
+
+    def add(self, data, sub="codex-rs", basename="config.toml"):
+        folder = self.root / sub / ".cargo"
+        folder.mkdir(parents=True, exist_ok=True)
+        target = folder / basename
+        target.write_text(data, encoding="utf-8")
+        return target
+
+    def test_approved_existing_windows_rustflags(self):
+        self.add('''[target.'cfg(all(windows, target_env = "msvc"))']
+rustflags = ["-C", "link-arg=/STACK:8388608"]
+''')
+        self.assertEqual(checker.check_cargo_configuration_sources(self.root), [])
+
+    def test_source_replacement_rejected(self):
+        self.add('''[source.crates-io]
+replace-with = "shadow"
+[source.shadow]
+directory = "/unsafe"
+''')
+        self.assertIn("[source]", str(checker.check_cargo_configuration_sources(self.root)))
+
+    def test_registry_default_rejected(self):
+        self.add('''[registry]
+default = "malicious"
+''')
+        self.assertIn("[registry]", str(checker.check_cargo_configuration_sources(self.root)))
+
+    def test_other_registries_rejected(self):
+        self.add('''[registries.shadow]
+index = "https://example.invalid/index"
+''')
+        self.assertIn("[registries]", str(checker.check_cargo_configuration_sources(self.root)))
+
+    def test_root_and_member_configs_rejected(self):
+        self.add('[source.crates-io]\nreplace-with = "shadow"\n', sub="")
+        self.add('[source.crates-io]\nreplace-with = "shadow"\n',
+                 sub="codex-rs/hepta-types", basename="config")
+        self.assertEqual(len(checker.check_cargo_configuration_sources(self.root)), 2)
+
+    def test_redirected_cargo_home_rejected(self):
+        self.add('''[env]
+CARGO_HOME = "/tmp/fake-registry"
+''')
+        self.assertIn("CARGO_HOME", str(checker.check_cargo_configuration_sources(self.root)))
+
+    def test_tool_wrapper_rejected(self):
+        self.add('''[build]
+rustc-wrapper = "./tool"
+''')
+        self.assertIn("rustc-wrapper", str(checker.check_cargo_configuration_sources(self.root)))
+
+    def test_target_runner_rejected(self):
+        self.add('''[target.x86_64-unknown-linux-gnu]
+runner = "/tmp/shadow"
+''')
+        self.assertIn("runner", str(checker.check_cargo_configuration_sources(self.root)))
+
+    def test_target_linker_rejected(self):
+        self.add('''[target.aarch64-unknown-linux-gnu]
+linker = "/tmp/shadow"
+''')
+        self.assertIn("linker", str(checker.check_cargo_configuration_sources(self.root)))
+
+    def test_invalid_toml_refused(self):
+        self.add("[source\n")
+        self.assertIn("unreadable Cargo configuration",
+                      str(checker.check_cargo_configuration_sources(self.root)))
+
+    def test_symlink_file_refused(self):
+        outside = self.root / "outside"
+        outside.write_text('''[source.crates-io]
+replace-with = "shadow"
+''')
+        folder = self.root / "codex-rs" / ".cargo"
+        folder.mkdir(parents=True)
+        (folder / "config.toml").symlink_to(outside)
+        self.assertIn("symbolic link",
+                      str(checker.check_cargo_configuration_sources(self.root)))
+
+    def test_symlink_dir_refused(self):
+        outside = self.root / "outside"
+        outside.mkdir()
+        inside = self.root / "codex-rs" / "hepta-types"
+        inside.mkdir(parents=True)
+        (inside / ".cargo").symlink_to(outside, target_is_directory=True)
+        self.assertIn("symbolic link",
+                      str(checker.check_cargo_configuration_sources(self.root)))
+
+    def test_malformed_target_refused(self):
+        self.add('[target]\nx = "non-table"\n')
+        self.assertIn("malformed target",
+                      str(checker.check_cargo_configuration_sources(self.root)))
+
+    def test_source_config_path_changes_trigger_exact_head_gate(self):
+        workflow = (
+            Path(__file__).resolve().parents[2] / ".github" /
+            "workflows" / "hepta-cell-codex-boundary.yml"
+        ).read_text(encoding="utf-8")
+        for trigger in ('      - ".cargo/**"', '      - "codex-rs/.cargo/**"',
+                        '      - "codex-rs/hepta-*/.cargo/**"'):
+            self.assertIn(trigger, workflow)
+
+
 if __name__ == "__main__":
     unittest.main()
