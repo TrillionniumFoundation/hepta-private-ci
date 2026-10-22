@@ -23,6 +23,7 @@ use core_test_support::responses::WebSocketConnectionConfig;
 use core_test_support::responses::start_websocket_server_with_headers;
 use core_test_support::skip_if_no_network;
 use pretty_assertions::assert_eq;
+use std::collections::VecDeque;
 use std::path::Path;
 use tempfile::TempDir;
 use tokio::time::Duration;
@@ -94,12 +95,19 @@ async fn attestation_generate_round_trip_adds_header_to_responses_websocket_hand
         bail!("expected initialize response, got {initialized:?}");
     };
 
+    let mut attestation_requests = 0;
+    let mut pending_messages = VecDeque::new();
     let thread_request_id = mcp
         .send_thread_start_request_with_auto_env(ThreadStartParams::default())
         .await?;
     let thread_response: JSONRPCResponse = timeout(
         DEFAULT_READ_TIMEOUT,
-        mcp.read_stream_until_response_message(RequestId::Integer(thread_request_id)),
+        read_response_while_servicing_attestation(
+            &mut mcp,
+            RequestId::Integer(thread_request_id),
+            &mut attestation_requests,
+            &mut pending_messages,
+        ),
     )
     .await??;
     let ThreadStartResponse { thread, .. } = to_response(thread_response)?;
@@ -117,15 +125,24 @@ async fn attestation_generate_round_trip_adds_header_to_responses_websocket_hand
         .await?;
     let turn_response: JSONRPCResponse = timeout(
         DEFAULT_READ_TIMEOUT,
-        mcp.read_stream_until_response_message(RequestId::Integer(turn_request_id)),
+        read_response_while_servicing_attestation(
+            &mut mcp,
+            RequestId::Integer(turn_request_id),
+            &mut attestation_requests,
+            &mut pending_messages,
+        ),
     )
     .await??;
     let _: TurnStartResponse = to_response(turn_response)?;
 
-    let mut attestation_requests = 0;
     timeout(DEFAULT_READ_TIMEOUT, async {
         loop {
-            match mcp.read_next_message().await? {
+            let message = if let Some(message) = pending_messages.pop_front() {
+                message
+            } else {
+                mcp.read_next_message().await?
+            };
+            match message {
                 JSONRPCMessage::Request(request) => {
                     let request = ServerRequest::try_from(request)?;
                     let ServerRequest::AttestationGenerate { request_id, .. } = request else {
@@ -165,6 +182,40 @@ async fn attestation_generate_round_trip_adds_header_to_responses_websocket_hand
 
     websocket_server.shutdown().await;
     Ok(())
+}
+
+// Thread/turn responses can arrive after an attestation request. Service the
+// reverse RPC immediately so waiting for the response does not exhaust the
+// production attestation deadline. Retain notifications for the completion loop.
+async fn read_response_while_servicing_attestation(
+    mcp: &mut TestAppServer,
+    request_id: RequestId,
+    attestation_requests: &mut usize,
+    pending_messages: &mut VecDeque<JSONRPCMessage>,
+) -> Result<JSONRPCResponse> {
+    loop {
+        match mcp.read_next_message().await? {
+            JSONRPCMessage::Request(request) => {
+                let request = ServerRequest::try_from(request)?;
+                let ServerRequest::AttestationGenerate { request_id, .. } = request else {
+                    bail!("expected attestation/generate request, got {request:?}");
+                };
+                *attestation_requests += 1;
+                mcp.send_response(
+                    request_id,
+                    serde_json::to_value(AttestationGenerateResponse {
+                        token: ATTESTATION_HEADER.into(),
+                    })?,
+                )
+                .await?;
+            }
+            JSONRPCMessage::Response(response) if response.id == request_id => return Ok(response),
+            JSONRPCMessage::Error(error) if error.id == request_id => {
+                bail!("expected successful response for {request_id:?}, got {error:?}");
+            }
+            message => pending_messages.push_back(message),
+        }
+    }
 }
 
 fn create_chatgpt_websocket_config(codex_home: &Path, server_uri: &str) -> std::io::Result<()> {
