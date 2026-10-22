@@ -475,6 +475,26 @@ class LocalCloseoutTests(unittest.TestCase):
                 (Path(root) / "kernel-fsize.log").stat().st_size, 128 * 1024 + 80
             )
 
+    def test_nonposix_without_job_object_cannot_execute_local_gate(self):
+        # A launcher can exit zero while its descendants continue running on
+        # Windows. Refuse to certify that as a completed local gate until the
+        # execution owner has a whole-process-tree kill/reap primitive.
+        with tempfile.TemporaryDirectory() as root, patch.object(
+            mod, "_has_isolated_process_groups", return_value=False
+        ), patch.object(mod.subprocess, "Popen") as spawned:
+            location = Path(root) / "no-unfenced-windows-check.log"
+            receipt = mod.run_check(
+                [sys.executable, "-c", "print('fake pass')"],
+                Path(root),
+                5,
+                location,
+            )
+            self.assertEqual(
+                receipt["status"], "BLOCKED_PROCESS_ISOLATION_UNAVAILABLE"
+            )
+            self.assertFalse(location.exists())
+            spawned.assert_not_called()
+
     def test_successful_wrapper_with_live_descendant_is_not_a_success(self):
         if os.name != "posix":
             self.skipTest("POSIX process groups required")
@@ -547,6 +567,49 @@ class LocalCloseoutTests(unittest.TestCase):
             self.assertFalse(location.exists())
             invoked.assert_not_called()
 
+
+    def test_local_git_replace_ref_cannot_launder_uncommitted_source(self):
+        # A local replace ref is not visible in porcelain status. Without
+        # --no-replace-objects, cat-file returns a substituted blob from HEAD.
+        with tempfile.TemporaryDirectory() as root:
+            source = Path(root)
+            target = source / "tracked.rs"
+            subprocess.run(["git", "init", "-q", str(source)], check=True)
+            target.write_bytes(b"frozen original\\n")
+            subprocess.run(["git", "-C", str(source), "add", "tracked.rs"], check=True)
+            subprocess.run([
+                "git", "-C", str(source), "-c", "user.name=LocalTest",
+                "-c", "user.email=local@example.invalid", "commit", "-qm", "baseline"
+            ], check=True)
+            old_oid = subprocess.run([
+                "git", "-C", str(source), "rev-parse", "HEAD:tracked.rs"
+            ], check=True, capture_output=True, text=True).stdout.strip()
+            malicious = b"unreviewed replacement\\n"
+            new_oid = subprocess.run([
+                "git", "-C", str(source), "hash-object", "-w", "--stdin"
+            ], input=malicious, check=True, capture_output=True).stdout.decode().strip()
+            subprocess.run([
+                "git", "-C", str(source), "replace", old_oid, new_oid
+            ], check=True)
+            subprocess.run([
+                "git", "-C", str(source), "update-index",
+                "--assume-unchanged", "tracked.rs"
+            ], check=True)
+            target.write_bytes(malicious)
+            self.assertEqual(subprocess.run([
+                "git", "-C", str(source), "status", "--porcelain=v1"
+            ], check=True, capture_output=True, text=True).stdout.strip(), "")
+            # The vulnerable command would accept the altered bytes as HEAD.
+            substituted = subprocess.run([
+                "git", "-C", str(source), "cat-file", "blob", old_oid
+            ], check=True, capture_output=True).stdout
+            self.assertEqual(substituted, malicious)
+            proof = mod.git_snapshot(source)
+            self.assertFalse(proof["usable"], proof)
+            self.assertEqual(
+                proof["reason"], "unreviewed Git object replacement refs"
+            )
+            self.assertFalse(mod.committed_regular_file(source, "tracked.rs"))
 
     def test_required_source_must_be_exact_tracked_regular_head_bytes(self):
         with tempfile.TemporaryDirectory() as root:
