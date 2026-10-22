@@ -35,7 +35,7 @@ cross-roster duplicate fingerprint under the stated identity rule. Registry
 SHA256: **`55c25e153f582633030004420f1babdf14188eef32814c006c16371eb78d298b`**.
 The original v1 builder's actual `_exclusions` function successfully parsed
 the generated file, read 640 rows, and returned exactly that checksum.
-Thirteen local standard-library positive/negative controls passed.
+Fourteen local standard-library positive/negative controls passed.
 
 The resulting JSON can be preserved as a separate artifact. The GitHub
 receipt intentionally stores only the digest/validation instructions rather
