@@ -787,3 +787,98 @@ fn positive_individual_scores_cannot_hide_negative_correlation_gain() {
         .any(|item| item.candidate_id == id("baseline")));
     assert!(receipt.total_utility > receipt.total_risk);
 }
+
+#[test]
+fn replay_verifier_accepts_exact_candidate_and_rejects_receipt_mutations() {
+    let ctx = context(2);
+    let limits = budget(2);
+    let proposals = [
+        candidate("baseline", 0, 0, true),
+        candidate("direction", 80, 10, false),
+    ];
+    let receipt = select_output_portfolio_v1(&ctx, &limits, &proposals)
+        .expect("deterministic advisory selection");
+    assert_eq!(receipt.disposition, OutputPortfolioDispositionV1::AdvisorySelection);
+    verify_output_portfolio_selection_v1(&ctx, &limits, &proposals, &receipt)
+        .expect("same candidate and evidence replay");
+
+    let expected_failure =
+        NduError::InvalidSolverReceipt("portfolio selection receipt mismatch");
+    let mut wrong_digest = receipt.clone();
+    wrong_digest.selection_digest = Digest32::ZERO;
+    assert_eq!(
+        verify_output_portfolio_selection_v1(&ctx, &limits, &proposals, &wrong_digest)
+            .expect_err("digest mutation cannot be replayed"),
+        expected_failure
+    );
+
+    let mut forged_disposition = receipt.clone();
+    forged_disposition.disposition = OutputPortfolioDispositionV1::NoChange;
+    assert_eq!(
+        verify_output_portfolio_selection_v1(&ctx, &limits, &proposals, &forged_disposition)
+            .expect_err("advisory cannot masquerade as abstention"),
+        expected_failure
+    );
+
+    let mut forged_weight = receipt.clone();
+    forged_weight.allocations[0].weight = q(99);
+    assert_eq!(
+        verify_output_portfolio_selection_v1(&ctx, &limits, &proposals, &forged_weight)
+            .expect_err("allocation tampering cannot be replayed"),
+        expected_failure
+    );
+
+    let mut forged_frontier = receipt.clone();
+    forged_frontier.frontier.clear();
+    assert_eq!(
+        verify_output_portfolio_selection_v1(&ctx, &limits, &proposals, &forged_frontier)
+            .expect_err("frontier omission cannot be replayed"),
+        expected_failure
+    );
+}
+
+#[test]
+fn replay_verifier_refuses_repricing_and_covariance_substitution() {
+    let ctx = context(2);
+    let limits = budget(2);
+    let proposals = [
+        candidate("baseline", 0, 0, true),
+        candidate("direction", 80, 10, false),
+    ];
+    let receipt = select_output_portfolio_v1(&ctx, &limits, &proposals)
+        .expect("deterministic advisory selection");
+
+    let mut repriced = limits.clone();
+    repriced.risk_aversion = q(50);
+    assert_eq!(
+        verify_output_portfolio_selection_v1(&ctx, &repriced, &proposals, &receipt)
+            .expect_err("different risk pricing cannot reuse receipt"),
+        NduError::InvalidSolverReceipt("portfolio selection receipt mismatch")
+    );
+
+    let mut altered_covariance = ctx.clone();
+    altered_covariance.semantic_covariance[3] = q(5);
+    assert_eq!(
+        verify_output_portfolio_selection_v1(
+            &altered_covariance,
+            &limits,
+            &proposals,
+            &receipt,
+        )
+        .expect_err("different loss covariance cannot reuse receipt"),
+        NduError::InvalidSolverReceipt("portfolio selection receipt mismatch")
+    );
+
+    let mut stale = proposals[1].clone();
+    stale.generation = Generation::new(2).expect("generation");
+    assert_eq!(
+        verify_output_portfolio_selection_v1(
+            &ctx,
+            &limits,
+            &[proposals[0].clone(), stale],
+            &receipt,
+        )
+        .expect_err("replay cannot admit a stale generation"),
+        NduError::InvalidSolverReceipt("portfolio candidate generation")
+    );
+}
