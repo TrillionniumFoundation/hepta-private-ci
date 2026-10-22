@@ -55,6 +55,34 @@ class EvidencePartitionTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "omits"):
             grouping.validate_partition(self.root, self.sources, self.entries[:-1])
 
+    def test_worker_artifacts_are_preserved_without_a_browser_claim(self):
+        paths = [
+            "test-results/robrix-default/.playwright-artifacts-0/temporary.png",
+            "test-results/robrix-fixtures/.playwright-artifacts-2/nested/temporary.png",
+        ]
+        for index, name in enumerate(paths):
+            target = self.root / name
+            target.parent.mkdir(parents=True, exist_ok=True)
+            target.write_bytes(f"temporary worker snapshot {index}".encode())
+        sources = grouping.collect_sources(self.root)
+        entries = [(source, grouping.group_for_path(source.relative_to(self.root))) for source in sources]
+        inventory = grouping.write_groups(self.root, "a" * 40, sources, entries)
+        records = {item["path"]: item for item in inventory}
+        self.assertEqual(set(records), set(self.paths + paths))
+        summary = json.loads((self.root / "test-results/evidence-groups/summary/evidence-manifest.json").read_text())
+        self.assertEqual(summary["files"], inventory)
+        self.assertFalse(summary["qualification"])
+        for name in paths:
+            original = (self.root / name).read_bytes()
+            saved = self.root / "test-results/evidence-groups/summary" / name
+            self.assertEqual(saved.read_bytes(), original)
+            self.assertEqual(records[name], {
+                "path": name,
+                "group": "summary",
+                "bytes": len(original),
+                "sha256": hashlib.sha256(original).hexdigest(),
+            })
+
     def test_duplicate_source_fails(self):
         with self.assertRaisesRegex(ValueError, "duplicate"):
             grouping.validate_partition(self.root, self.sources, self.entries + self.entries[:1])
@@ -67,7 +95,7 @@ class EvidencePartitionTests(unittest.TestCase):
             grouping.validate_partition(self.root, self.sources, entries)
 
     def test_unrecognized_browser_or_nonfixture_sidebar_fails(self):
-        for name in ["test-results/robrix-fixtures/robrix-sidebar-case-unknown/file.png", "test-results/robrix-default/robrix-sidebar-case-webkit/file.png"]:
+        for name in ["test-results/robrix-fixtures/robrix-sidebar-case-unknown/file.png", "test-results/robrix-default/robrix-sidebar-case-webkit/file.png", "test-results/robrix-default/.playwright-artifacts-unknown/file.png", "test-results/robrix-fixtures/.playwright-artifacts-1-webkit/file.png"]:
             with self.assertRaises(ValueError):
                 grouping.group_for_path(Path(name))
 

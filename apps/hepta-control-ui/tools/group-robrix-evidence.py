@@ -3,6 +3,7 @@
 import hashlib
 import json
 import os
+import re
 import shutil
 import subprocess
 from pathlib import Path
@@ -29,6 +30,12 @@ def group_for_path(relative):
     if scope == "buffer-diagnostic":
         return "diagnostic"
     if len(parts) == 3:
+        return "summary"
+    if parts[2].startswith(".playwright-artifacts-"):
+        if not re.fullmatch(r"\.playwright-artifacts-[0-9]+", parts[2]):
+            raise ValueError(f"Unclassified worker evidence: {relative}")
+        # Worker indices do not identify a browser. Preserve temporary artifacts
+        # in the complete inventory without granting browser qualification.
         return "summary"
     browser = parts[2].rsplit("-", 1)[-1]
     if browser not in BROWSERS:
