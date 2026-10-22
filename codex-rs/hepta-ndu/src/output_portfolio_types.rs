@@ -54,6 +54,9 @@ pub struct SemanticRiskEstimateV1 {
 pub struct OutputPortfolioCandidateV1 {
     pub candidate_id: StableId,
     pub candidate_digest: Digest32,
+    /// Objective-specific utility/risk cannot be reused just because an
+    /// encoder produced the same immutable feature bytes.
+    pub objective_digest: Digest32,
     pub snapshot_digest: Digest32,
     /// Source fence of the Cell proposal. Matching feature bytes do not
     /// authorize reusing a proposal across generations.
@@ -123,7 +126,10 @@ pub enum OutputPortfolioDispositionV1 {
     NoChange,
     AdvisorySelection,
 }
-/// Replayable advisory receipt. It deliberately contains no execution token.
+/// Replayable advisory receipt. The selection digest binds all displayed
+/// fields, but does not establish external future-window evidence, execution
+/// authority or a signature. Consumers must independently replay/verify it.
+/// It deliberately contains no execution token.
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct OutputPortfolioSelectionReceiptV1 {
     pub objective_digest: Digest32,
