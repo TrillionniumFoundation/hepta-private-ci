@@ -167,18 +167,37 @@ impl FeatureCacheV1 {
         Ok(())
     }
 
-    /// A globally coordinated cutover; callers with independent scope
-    /// generations must use `invalidate_scope_generation` instead.
-    pub fn invalidate_generation(&mut self, generation: Generation) {
-        // Keep a monotone floor. Clearing an entry is not permission to
-        // reintroduce an older snapshot under the same or another cache key.
-        self.minimum_generation = Some(
-            self.minimum_generation
-                .filter(|minimum| minimum.get() > generation.get())
-                .unwrap_or(generation),
-        );
+    /// Checked fleet-wide cutover. Reject a stale epoch before changing any
+    /// entries or fences. A global cutover must not evict a newer scoped
+    /// snapshot, even when its own floor has not advanced yet.
+    ///
+    /// Scopes with independent timelines must instead use
+    /// `invalidate_scope_generation`.
+    pub fn try_invalidate_generation(
+        &mut self,
+        generation: Generation,
+    ) -> Result<(), CellWorkerError> {
+        if self
+            .minimum_generation
+            .is_some_and(|minimum| generation.get() < minimum.get())
+            || self
+                .scope_high_watermarks
+                .values()
+                .any(|current| generation.get() < current.get())
+        {
+            return Err(CellWorkerError::StaleFeatureGeneration);
+        }
+        self.minimum_generation = Some(generation);
         self.entries
             .retain(|_, snapshot| snapshot.generation() == generation);
+        Ok(())
+    }
+
+    /// Compatibility entry point: a stale fleet-wide cutover is a no-op, never
+    /// a destructive eviction. New Control callers must use the checked API
+    /// to observe and reject stale cutover requests explicitly.
+    pub fn invalidate_generation(&mut self, generation: Generation) {
+        let _ = self.try_invalidate_generation(generation);
     }
 
     #[must_use]

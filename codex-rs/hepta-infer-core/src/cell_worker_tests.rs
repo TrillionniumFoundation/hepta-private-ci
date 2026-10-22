@@ -44,8 +44,13 @@ fn stale_feature_generation_is_not_readable() {
     assert!(cache.get(&key, generation(2)).is_some());
     cache.invalidate_generation(generation(2));
     assert_eq!(cache.len(), 1);
+    assert_eq!(
+        cache.try_invalidate_generation(generation(1)),
+        Err(CellWorkerError::StaleFeatureGeneration),
+    );
     cache.invalidate_generation(generation(1));
-    assert_eq!(cache.len(), 0);
+    assert_eq!(cache.len(), 1, "stale cutover must not destroy live features");
+    assert!(cache.get(&key, generation(2)).is_some());
 }
 
 #[test]
@@ -193,8 +198,12 @@ fn cache_cutover_keeps_monotone_floor_across_scopes_and_eviction() {
         Err(CellWorkerError::StaleFeatureGeneration),
     );
     cache.insert(id("scope:a"), snapshot(3)).expect("current generation");
+    assert_eq!(
+        cache.try_invalidate_generation(generation(2)),
+        Err(CellWorkerError::StaleFeatureGeneration),
+    );
     cache.invalidate_generation(generation(2));
-    assert!(cache.is_empty());
+    assert_eq!(cache.len(), 1, "a stale cutover must leave live data intact");
 
     // A stale invalidation request must not lower the epoch floor.
     assert_eq!(
@@ -370,4 +379,84 @@ fn new_scope_generation_fences_reads_of_stale_encoder_keys() {
         "stale snapshot must not remain readable after later scoped generation",
     );
     assert!(cache.get(&new_key, generation(5)).is_some());
+}
+
+#[test]
+fn global_cutover_rejects_a_scope_that_is_already_newer() {
+    let scope_a = id("scope:newer");
+    let scope_b = id("scope:other");
+    let encoder = digest("encoder:shared");
+    let input_a = digest("input:newer");
+    let input_b = digest("input:other");
+    let make_snapshot = |epoch, input| {
+        ImmutableFeatureSnapshotV1::new_for_input(
+            generation(epoch),
+            encoder,
+            input,
+            vec![1, 2, 3],
+        )
+        .expect("snapshot")
+    };
+    let key_a = FeatureCacheKeyV1 {
+        scope_id: scope_a.clone(),
+        encoder_digest: encoder,
+        input_digest: input_a,
+    };
+    let key_b = FeatureCacheKeyV1 {
+        scope_id: scope_b.clone(),
+        encoder_digest: encoder,
+        input_digest: input_b,
+    };
+
+    let mut cache = FeatureCacheV1::default();
+    cache
+        .insert(scope_a, make_snapshot(9, input_a))
+        .expect("newer scope");
+    cache
+        .insert(scope_b, make_snapshot(8, input_b))
+        .expect("independent older scope");
+    let before = cache.clone();
+    assert_eq!(
+        cache.try_invalidate_generation(generation(8)),
+        Err(CellWorkerError::StaleFeatureGeneration),
+    );
+    assert_eq!(cache, before, "rejection must be transactional");
+    cache.invalidate_generation(generation(8));
+    assert_eq!(cache, before, "legacy entry point must also fail closed");
+    assert!(cache.get(&key_a, generation(9)).is_some());
+    assert!(cache.get(&key_b, generation(8)).is_some());
+
+    cache
+        .try_invalidate_generation(generation(9))
+        .expect("monotone fleet-wide cutover");
+    assert!(cache.get(&key_a, generation(9)).is_some());
+    assert!(cache.get(&key_b, generation(8)).is_none());
+    assert_eq!(cache.len(), 1);
+}
+
+#[test]
+fn empty_global_cache_floor_is_not_rolled_back() {
+    let mut cache = FeatureCacheV1::default();
+    cache
+        .try_invalidate_generation(generation(12))
+        .expect("initial fleet fence");
+    let before = cache.clone();
+    assert_eq!(
+        cache.try_invalidate_generation(generation(11)),
+        Err(CellWorkerError::StaleFeatureGeneration),
+    );
+    cache.invalidate_generation(generation(11));
+    assert_eq!(cache, before, "stale cutover preserves empty-scope fence");
+
+    let older = ImmutableFeatureSnapshotV1::new_for_input(
+        generation(11),
+        digest("encoder"),
+        digest("input"),
+        vec![1, 2],
+    )
+    .expect("snapshot");
+    assert_eq!(
+        cache.insert(id("scope:unseen"), older),
+        Err(CellWorkerError::StaleFeatureGeneration),
+    );
 }
