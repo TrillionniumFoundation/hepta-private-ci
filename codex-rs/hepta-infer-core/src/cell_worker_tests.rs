@@ -333,3 +333,41 @@ fn scoped_cutover_of_empty_scope_fences_old_reinsertion() {
         .expect("idempotent exact cutover");
     assert_eq!(cache.len(), 1);
 }
+
+#[test]
+fn new_scope_generation_fences_reads_of_stale_encoder_keys() {
+    let mut cache = FeatureCacheV1::default();
+    let scope = id("scope:learning");
+    let old = ImmutableFeatureSnapshotV1::new_for_input(
+        generation(4),
+        digest("encoder:original"),
+        digest("input:original"),
+        vec![3, 4],
+    )
+    .expect("old snapshot");
+    let new = ImmutableFeatureSnapshotV1::new_for_input(
+        generation(5),
+        digest("encoder:replacement"),
+        digest("input:replacement"),
+        vec![7, 8],
+    )
+    .expect("new snapshot");
+    let old_key = FeatureCacheKeyV1 {
+        scope_id: scope.clone(),
+        encoder_digest: old.encoder_digest(),
+        input_digest: old.input_digest(),
+    };
+    let new_key = FeatureCacheKeyV1 {
+        scope_id: scope.clone(),
+        encoder_digest: new.encoder_digest(),
+        input_digest: new.input_digest(),
+    };
+    cache.insert(scope.clone(), old).expect("seed");
+    assert!(cache.get(&old_key, generation(4)).is_some());
+    cache.insert(scope, new).expect("advance scope watermark");
+    assert!(
+        cache.get(&old_key, generation(4)).is_none(),
+        "stale snapshot must not remain readable after later scoped generation",
+    );
+    assert!(cache.get(&new_key, generation(5)).is_some());
+}
