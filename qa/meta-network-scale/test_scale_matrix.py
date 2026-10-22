@@ -179,6 +179,7 @@ class ScaleMatrixTests(unittest.TestCase):
             scale_matrix.SIZES.index(size) * len(scale_matrix.ARMS)
             + scale_matrix.ARMS.index(arm)
         )
+        evidence_id_base = 2000 + index * len(scale_matrix.REQUIRED_EVIDENCE)
         return {
             "schema": "hepta.cell-execution-scale-result.v1",
             "size": size,
@@ -193,9 +194,7 @@ class ScaleMatrixTests(unittest.TestCase):
             },
             "evidence": {key: True for key in scale_matrix.REQUIRED_EVIDENCE},
             "evidence_receipts": {
-                claim: (
-                    f"{2000 + index * len(scale_matrix.REQUIRED_EVIDENCE) + offset:064x}"
-                )
+                claim: f"{evidence_id_base + offset:064x}"
                 for offset, claim in enumerate(scale_matrix.REQUIRED_EVIDENCE)
             },
             "metrics": {key: 0 for key in scale_matrix.REQUIRED_METRICS},
