@@ -1,0 +1,207 @@
+name: Owner compatibility regressions
+
+on:
+  pull_request:
+    paths:
+      - "codex-rs/core/src/client_tests.rs"
+      - "codex-rs/app-server/src/message_processor.rs"
+      - "codex-rs/app-server/src/request_processors/account_processor/bedrock_setup.rs"
+      - ".github/workflows/hepta-owner-compatibility-regressions.yml"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: owner-compatibility-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+env:
+  SOURCE_SHA: ${{ github.event.pull_request.head.sha }}
+  CARGO_INCREMENTAL: "0"
+  CARGO_BUILD_JOBS: "2"
+  CARGO_PROFILE_DEV_DEBUG: "0"
+  CARGO_PROFILE_TEST_DEBUG: "0"
+  RUST_BACKTRACE: "1"
+
+jobs:
+  original-regressions:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - runner: ubuntu-24.04
+            target: x86_64-unknown-linux-gnu
+          - runner: windows-latest
+            target: x86_64-pc-windows-msvc
+    runs-on: ${{ matrix.runner }}
+    timeout-minutes: 90
+    steps:
+      - name: Checkout the exact candidate without saved credentials
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ env.SOURCE_SHA }}
+          persist-credentials: false
+      - uses: ./.github/actions/setup-ci
+      - name: Install original Linux build dependencies
+        if: runner.os == 'Linux'
+        shell: bash
+        run: |
+          set -euo pipefail
+          sudo apt-get update
+          sudo apt-get install -y build-essential pkg-config libcap-dev bubblewrap
+      - uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582
+        with:
+          toolchain: "1.95.0"
+          components: clippy,rustfmt,rust-src
+      - name: Restore original dependency downloads
+        uses: actions/cache/restore@668228422ae6a00e4ad889ee87cd7109ec5666a7
+        with:
+          path: |
+            ~/.cargo/bin/
+            ~/.cargo/registry/index/
+            ~/.cargo/registry/cache/
+            ~/.cargo/git/db/
+          key: owner-compatibility-cargo-${{ matrix.target }}-${{ hashFiles('codex-rs/Cargo.lock', 'codex-rs/rust-toolchain.toml') }}
+          restore-keys: |
+            cargo-home-${{ matrix.runner }}-${{ matrix.target }}-dev-
+      - uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
+        with:
+          tool: just@1.51.0,nextest@0.9.103
+      - name: Configure original verified V8 artifacts
+        uses: ./.github/actions/setup-rusty-v8
+        with:
+          target: ${{ matrix.target }}
+      - name: Require unchanged source and real loopback availability
+        id: prepared
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
+          git diff --check
+          git diff --exit-code
+          mkdir -p "$RUNNER_TEMP/owner-compatibility"
+          git rev-parse HEAD 'HEAD^{tree}' > "$RUNNER_TEMP/owner-compatibility/source.txt"
+          python - <<'PY'
+          import hashlib
+          import os
+          from pathlib import Path
+          import socket
+          config = Path("codex-rs/.config/nextest.toml").read_bytes()
+          if hashlib.sha256(config).hexdigest() != "78b998d1fcb16dfef6b243a4b18748c1b28ce2d5a28d57f1f477adf0546e5ac6":
+              raise SystemExit("original nextest local/JUnit configuration changed")
+          if "CODEX_SANDBOX_NETWORK_DISABLED" in os.environ:
+              raise SystemExit("original network skip condition is present; cannot qualify")
+          with socket.socket() as listener:
+              listener.bind(("127.0.0.1", 0))
+              listener.listen(1)
+              with socket.create_connection(listener.getsockname(), timeout=5) as client:
+                  connection, _ = listener.accept()
+                  with connection:
+                      client.sendall(b"loopback")
+                      if connection.recv(8) != b"loopback":
+                          raise SystemExit("loopback preflight failed")
+          PY
+      - name: Run the original WebSocket attribution and rebinding regression
+        if: ${{ !cancelled() && steps.prepared.outcome == 'success' }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          cd codex-rs
+          # Nextest 0.9.103: workspace_root / store.dir / profile / junit.path.
+          # The original local profile inherits junit.xml; Cargo's target dir is separate.
+          junit="$PWD/target/nextest/local/junit.xml"
+          previous="$RUNNER_TEMP/owner-compatibility/websocket.previous.junit.xml"
+          test ! -L "$junit"
+          if [ -e "$junit" ]; then
+            test -f "$junit"
+            test ! -e "$previous"
+            test ! -L "$previous"
+            mv "$junit" "$previous"
+          fi
+          test ! -e "$junit"
+          set +e
+          just test --locked -p codex-core --lib -E 'test(=client::tests::websocket_connection_reuses_attribution_but_rebinds_configured_extra)' --no-tests fail --retries 0 --success-output immediate 2>&1 | tee "$RUNNER_TEMP/owner-compatibility/websocket.log"
+          status=$?
+          set -e
+          printf '%s\n' "$status" > "$RUNNER_TEMP/owner-compatibility/websocket.exit"
+          test -f "$junit"
+          test ! -L "$junit"
+          cp "$junit" "$RUNNER_TEMP/owner-compatibility/websocket.junit.xml"
+          if grep -F "Skipping test" "$RUNNER_TEMP/owner-compatibility/websocket.log"; then
+            echo "The original network test did not execute"
+            exit 1
+          fi
+          exit "$status"
+      - name: Run all three original Bedrock integration regressions
+        if: ${{ !cancelled() && steps.prepared.outcome == 'success' }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          cd codex-rs
+          # Nextest 0.9.103: workspace_root / store.dir / profile / junit.path.
+          # The original local profile inherits junit.xml; Cargo's target dir is separate.
+          junit="$PWD/target/nextest/local/junit.xml"
+          previous="$RUNNER_TEMP/owner-compatibility/bedrock.previous.junit.xml"
+          test ! -L "$junit"
+          if [ -e "$junit" ]; then
+            test -f "$junit"
+            test ! -e "$previous"
+            test ! -L "$previous"
+            mv "$junit" "$previous"
+          fi
+          test ! -e "$junit"
+          set +e
+          just test --locked -p codex-app-server --test all -E 'test(suite::v2::bedrock_setup::)' --no-tests fail --retries 0 --success-output immediate 2>&1 | tee "$RUNNER_TEMP/owner-compatibility/bedrock.log"
+          status=$?
+          set -e
+          printf '%s\n' "$status" > "$RUNNER_TEMP/owner-compatibility/bedrock.exit"
+          test -f "$junit"
+          test ! -L "$junit"
+          cp "$junit" "$RUNNER_TEMP/owner-compatibility/bedrock.junit.xml"
+          exit "$status"
+      - name: Require original tests, non-skipped results and immutable tracked source
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          git diff --check
+          git diff --exit-code
+          python - <<'PY'
+          import json
+          import os
+          from pathlib import Path
+          import xml.etree.ElementTree as ET
+          root = Path(os.environ["RUNNER_TEMP"]) / "owner-compatibility"
+          expected = {
+              "websocket": {"client::tests::websocket_connection_reuses_attribution_but_rebinds_configured_extra"},
+              "bedrock": {
+                  "suite::v2::bedrock_setup::discover_bedrock_profiles_and_environment_credentials",
+                  "suite::v2::bedrock_setup::setup_bedrock_profile_and_environment",
+                  "suite::v2::bedrock_setup::setup_bedrock_rejects_invalid_or_conflicting_credentials",
+              },
+          }
+          result = {}
+          for suite, names in expected.items():
+              if (root / f"{suite}.exit").read_text().strip() != "0":
+                  raise SystemExit(f"{suite}: actual test command failed")
+              cases = ET.parse(root / f"{suite}.junit.xml").findall(".//testcase")
+              actual = [case.get("name") for case in cases]
+              if len(actual) != len(names) or set(actual) != names:
+                  raise SystemExit(f"{suite}: original test selection was not executed")
+              if any(case.find(tag) is not None for case in cases for tag in ("failure", "error", "skipped")):
+                  raise SystemExit(f"{suite}: original test did not pass")
+              if "Skipping test" in (root / f"{suite}.log").read_text(errors="replace"):
+                  raise SystemExit(f"{suite}: original test skipped internally")
+              result[suite] = {"passed_tests": len(cases), "names": sorted(names)}
+          (root / "verification.json").write_text(json.dumps(result, indent=2) + "\n")
+          print(json.dumps(result))
+          PY
+      - name: Retain actual source identity, tests and output
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: owner-compatibility-${{ matrix.target }}-${{ env.SOURCE_SHA }}-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/owner-compatibility/
+          if-no-files-found: error
+          retention-days: 14
+

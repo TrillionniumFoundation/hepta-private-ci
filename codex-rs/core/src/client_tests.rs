@@ -1548,13 +1548,15 @@ async fn websocket_connection_reuses_attribution_but_rebinds_configured_extra() 
                 .expect("accept websocket connection");
             let handshakes = server_handshakes.clone();
             connections.spawn(async move {
-                let mut socket = tokio_tungstenite::accept_hdr_async(
+                // The pinned fork requires a config when the client offers extensions.
+                let mut socket = tokio_tungstenite::accept_hdr_async_with_config(
                     tcp,
                     move |_request: &tokio_tungstenite::tungstenite::handshake::server::Request,
                           response: tokio_tungstenite::tungstenite::handshake::server::Response| {
                         handshakes.fetch_add(1, Ordering::SeqCst);
                         Ok(response)
                     },
+                    Some(Default::default()),
                 )
                 .await
                 .expect("websocket handshake");
