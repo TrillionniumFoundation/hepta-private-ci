@@ -593,3 +593,67 @@ fn optimization_risk_prices_still_affect_candidate_ranking() {
     assert_eq!(receipt.allocations[0].candidate_id, id("higher-utility"));
     assert!(receipt.total_risk <= limits.risk_budget);
 }
+
+#[test]
+fn standalone_frontier_includes_covariance_and_preserves_nondominance() {
+    let mut correlated = context(3);
+    correlated.semantic_covariance[4] = q(40);
+    let candidates = [
+        candidate("baseline", 0, 0, true),
+        candidate("high-upside", 80, 10, false),
+        candidate("stable", 70, 20, false),
+    ];
+    // Ignoring the diagonal would incorrectly let high-upside dominate
+    // stable: the former has 10% linear loss but 40% standalone variance.
+    let points = output_efficient_frontier_v1(&correlated, &candidates)
+        .expect("covariance-aware standalone frontier");
+    let high = points
+        .iter()
+        .find(|point| point.candidate_id == id("high-upside"))
+        .expect("higher-upside frontier point");
+    let stable = points
+        .iter()
+        .find(|point| point.candidate_id == id("stable"))
+        .expect("lower-variance frontier point");
+    assert_eq!(
+        high.semantic_risk,
+        q(10).checked_add(q(40)).expect("Q32 risk")
+    );
+    assert_eq!(stable.semantic_risk, q(20));
+
+    let selected = select_output_portfolio_v1(&correlated, &budget(2), &candidates)
+        .expect("advisory selection");
+    assert_eq!(selected.frontier, points);
+}
+
+#[test]
+fn standalone_frontier_rejects_nonzero_abstain_covariance() {
+    let mut malformed = context(2);
+    malformed.semantic_covariance[0] = q(1);
+    let error = output_efficient_frontier_v1(
+        &malformed,
+        &[
+            candidate("baseline", 0, 0, true),
+            candidate("direction", 70, 10, false),
+        ],
+    )
+    .expect_err("no-change must remain zero relative covariance");
+    assert_eq!(
+        error,
+        NduError::InvalidSolverReceipt("no-change covariance")
+    );
+}
+
+#[test]
+fn standalone_frontier_denies_risk_overflow() {
+    let mut correlated = context(2);
+    correlated.semantic_covariance[3] = q(1);
+    let mut candidate_with_max_loss = candidate("max-loss", 80, 0, false);
+    candidate_with_max_loss.risk.mean_loss = FixedQ32::from_raw(i64::MAX);
+    let error = output_efficient_frontier_v1(
+        &correlated,
+        &[candidate("baseline", 0, 0, true), candidate_with_max_loss],
+    )
+    .expect_err("standalone variance must be added with checked arithmetic");
+    assert_eq!(error, NduError::Arithmetic);
+}
