@@ -27,7 +27,7 @@ jobs:
           source /tmp/ndu-mgp-shadow-venv/bin/activate
           python -m pip install --no-cache-dir --disable-pip-version-check 'numpy==1.26.4'
           python -m pip install --no-cache-dir --disable-pip-version-check 'torch==2.5.1+cpu' --index-url https://download.pytorch.org/whl/cpu
-      - name: Run 14 local numerical contract tests
+      - name: Run 15 local numerical contract tests
         shell: bash
         run: |
           set -euo pipefail
