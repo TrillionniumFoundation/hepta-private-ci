@@ -1,0 +1,44 @@
+name: A32 configured V8 closure classifier (exact source)
+
+on:
+  pull_request:
+    paths:
+      - ".github/scripts/a32_exec_authorized_read_native.py"
+      - ".github/scripts/test_a32_exec_native_closure.py"
+      - ".github/workflows/a32-exec-closure-classifier.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  exact-source-classifier:
+    name: Reject real V8 while accepting UUIDv8 source labels
+    runs-on: ubuntu-slim
+    timeout-minutes: 12
+    env:
+      PYTHONDONTWRITEBYTECODE: "1"
+      EXPECTED_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405 # v6.2.0
+        with:
+          python-version: "3.12"
+      - name: Bind checkout and run original classifier's regression cases
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$EXPECTED_SHA"
+          python3 -m unittest discover -s .github/scripts -p 'test_a32_exec_native_closure.py' -v
+      - name: Reject source mutation
+        if: always() && !cancelled()
+        shell: bash
+        run: |
+          set -euo pipefail
+          git diff --check
+          git diff --exit-code
+          git diff --cached --exit-code
+          test -z "$(git status --porcelain=v1 --untracked-files=all)"
