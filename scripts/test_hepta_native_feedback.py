@@ -89,9 +89,7 @@ class NativeFeedbackPolicyTests(unittest.TestCase):
         self.assertIn("impact-test.json*", scoped)
         self.assertIn("impact-clippy.json*", scoped)
         self.assertIn("id: v8_ready", scoped)
-        self.assertEqual(
-            scoped.count("steps.v8_ready.outcome == 'success'"), 3
-        )
+        self.assertEqual(scoped.count("steps.v8_ready.outcome == 'success'"), 3)
         self.assertLess(
             scoped.index("Check formatting of exact affected Cargo owners"),
             scoped.index("Clippy correctness of exact affected Cargo owners"),
