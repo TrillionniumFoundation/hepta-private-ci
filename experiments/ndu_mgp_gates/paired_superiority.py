@@ -203,6 +203,15 @@ def evaluate(study: Mapping):
                         _need(dr["loss"] == failure_loss and dr["quality"] == 0 and
                               dr["ambiguity"] == 1 and dr["inconsistency"] == 1,
                               "a failed/overbudget output cannot be dropped or awarded quality")
+                    else:
+                        # A failed decode is registered as the WORST allowed loss.
+                        # If completed outputs can score worse than that value,
+                        # aborting can look statistically safer than completion.
+                        # Reject mismatched scoring domains rather than clipping
+                        # after observing heldout outputs.
+                        _need(type(dr["loss"]) in (float, int) and
+                              math.isfinite(dr["loss"]) and dr["loss"] <= failure_loss,
+                              "completed loss exceeds registered failure penalty")
                     for m, metric in enumerate(METRICS):
                         upper = float("inf") if metric == "loss" else 1
                         entries[k, m] = _number(dr[metric], metric, upper=upper)
@@ -222,7 +231,10 @@ def evaluate(study: Mapping):
                       "incomplete physical total cost receipt")
                 subtotal = sum(_number(cost[x], x) for x in COST_PARTS)
                 total = _number(cost["total"], "total", lower=1e-12)
-                _need(abs(subtotal - total) <= max(1e-9, total * 1e-7),
+                # Never allow a fixed absolute epsilon to under-report tiny
+                # physical budgets. IEEE-754 rounding is scale-relative;
+                # cost understatement must not become an admission loophole.
+                _need(math.isclose(subtotal, total, rel_tol=1e-10, abs_tol=0.0),
                       "physical cost ledger not reconciled")
                 over_budget = total > hard_cost_limit
                 if over_budget:
