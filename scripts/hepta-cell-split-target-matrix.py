@@ -529,7 +529,6 @@ def _write_report_atomically(output: Path, report: dict[str, Any]) -> None:
         os.close(directory_fd)
 
 
-
 def _sealed_provisional_report_identity(
     output: Path, expected_bytes: bytes
 ) -> tuple[int, int]:
