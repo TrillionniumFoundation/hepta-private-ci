@@ -13,6 +13,16 @@ spec.loader.exec_module(checker)
 
 
 class CellCodexBoundaryTests(unittest.TestCase):
+    def populate_local_source_tree(self, root: Path):
+        for package, relative in checker.LOCAL_PACKAGE_DIRECTORIES.items():
+            directory = root / "codex-rs" / relative
+            directory.mkdir(parents=True, exist_ok=True)
+            manifest = directory / "Cargo.toml"
+            if not manifest.exists():
+                manifest.write_text(
+                    f'[package]\nname = "{package}"\n', encoding="utf-8"
+                )
+
     def make_manifest(self, dependencies: str) -> dict:
         return tomllib.loads('[package]\nname = "codex-hepta-neuron"\n' + dependencies)
 
@@ -180,11 +190,156 @@ missing = { workspace = true }
                 (target / "Cargo.toml").write_text(
                     f'[package]\nname = "codex-{name}"\n', encoding="utf-8"
                 )
+            self.populate_local_source_tree(root)
             self.assertEqual(checker.check_workspace(root), [])
             (root / "codex-rs" / checker.CELL_CRATES[0] / "Cargo.toml").write_text(
                 '[package]\nname = "codex-core"\n', encoding="utf-8"
             )
-            self.assertEqual(len(checker.check_workspace(root)), 1)
+            errors = checker.check_workspace(root)
+            self.assertEqual(len(errors), 2, errors)
+            self.assertTrue(any("crate identity differs" in err for err in errors))
+            self.assertTrue(any("wrong package identity" in err for err in errors))
+
+
+    def test_internal_allowlisted_name_cannot_point_to_git_or_other_path(self):
+        data = self.make_manifest("""
+[dependencies]
+codex-hepta-types = { git = "https://example.invalid/fake.git" }
+masked = { package = "codex-hepta-types", path = "../../unreviewed" }
+""")
+        errors = checker.check_manifest(data, "hepta-neuron")
+        self.assertEqual(len(errors), 2, errors)
+        self.assertTrue(all("source custody" in error for error in errors))
+
+    def test_workspace_inherited_local_path_must_match_reviewed_directory(self):
+        data = self.make_manifest("""
+[dependencies]
+codex-hepta-types = { workspace = true }
+""")
+        rejected = checker.check_manifest(
+            data, "hepta-neuron",
+            {"codex-hepta-types": {"path": "different-hepta-types"}},
+        )
+        self.assertEqual(len(rejected), 1, rejected)
+        accepted = checker.check_manifest(
+            data, "hepta-neuron",
+            {"codex-hepta-types": {"path": "hepta-types"}},
+        )
+        self.assertEqual(accepted, [])
+
+    def test_workspace_alias_cannot_rewrite_inherited_package_identity(self):
+        data = self.make_manifest("""
+[dependencies]
+local = { package = "codex-hepta-types", workspace = true }
+""")
+        errors = checker.check_manifest(
+            data, "hepta-neuron",
+            {"local": {"package": "codex-hepta-contracts", "path": "hepta-contracts"}},
+        )
+        self.assertEqual(len(errors), 1, errors)
+        self.assertIn("package identity", errors[0])
+
+    def test_allowlisted_external_package_cannot_rebind_source(self):
+        data = self.make_manifest("""
+[dependencies]
+serde = { path = "../rogue" }
+serde_json = { registry = "unreviewed", version = "1" }
+sha2 = { git = "https://example.invalid/sha2" }
+""")
+        errors = checker.check_manifest(data, "hepta-neuron")
+        self.assertEqual(len(errors), 3, errors)
+        self.assertTrue(all("source custody" in error for error in errors))
+
+    def test_workspace_external_package_git_override_is_denied(self):
+        data = self.make_manifest("""
+[dependencies]
+serde = { workspace = true, features = ["derive"] }
+""")
+        errors = checker.check_manifest(
+            data, "hepta-neuron",
+            {"serde": {"git": "https://example.invalid/serde.git"}},
+        )
+        self.assertEqual(len(errors), 1, errors)
+        self.assertIn("unreviewed source", errors[0])
+
+    def test_approved_workspace_utility_and_external_registry_still_pass(self):
+        data = self.make_manifest("""
+[dependencies]
+codex-utils-absolute-path = { workspace = true }
+serde = { workspace = true, features = ["derive"] }
+""")
+        errors = checker.check_manifest(
+            data, "hepta-neuron",
+            {
+                "codex-utils-absolute-path": {"path": "utils/absolute-path"},
+                "serde": {"version": "1", "features": ["rc"]},
+            },
+        )
+        self.assertEqual(errors, [])
+
+    def test_windows_target_dependency_cannot_redirect_approved_package(self):
+        data = self.make_manifest("""
+[target.'cfg(windows)'.dependencies]
+types_alias = { package = "codex-hepta-types", path = "../wrong-owner" }
+""")
+        errors = checker.check_manifest(data, "hepta-neuron")
+        self.assertEqual(len(errors), 1, errors)
+        self.assertIn("source custody", errors[0])
+
+    def test_patch_can_not_rebind_approved_external_or_local_crate(self):
+        root = tomllib.loads("""
+[patch.crates-io]
+serde = { path = "vendored/other-serde" }
+masked_sha2 = { package = "sha2", git = "https://example.invalid/fork" }
+codex-hepta-types = { path = "wrong-dir" }
+""")
+        errors = checker.check_root_source_overrides(root)
+        self.assertEqual(len(errors), 3, errors)
+        self.assertTrue(all("overrides approved" in error for error in errors))
+
+    def test_replace_can_not_rebind_approved_external_crate(self):
+        root = {"replace": {"serde:1.0.0": {"path": "vendored/fork"}}}
+        errors = checker.check_root_source_overrides(root)
+        self.assertEqual(len(errors), 1, errors)
+        self.assertIn("replace.serde:1.0.0", errors[0])
+
+    def test_unrelated_pinned_cargo_patches_are_preserved(self):
+        root = tomllib.loads("""
+[patch.crates-io]
+imbl = { path = "third_party/imbl-6.1.0" }
+crossterm = { git = "https://example.invalid/pin", rev = "abc123" }
+""")
+        self.assertEqual(checker.check_root_source_overrides(root), [])
+
+    def test_local_source_identity_and_manifest_symlinks_fail_closed(self):
+        with tempfile.TemporaryDirectory() as temp:
+            root = Path(temp)
+            self.populate_local_source_tree(root)
+            self.assertEqual(checker.check_local_source_directories(root), [])
+            source = root / "codex-rs" / "hepta-types"
+            manifest = source / "Cargo.toml"
+            valid = manifest.read_text(encoding="utf-8")
+            manifest.write_text('[package]\nname = "codex-core"\n', encoding="utf-8")
+            errors = checker.check_local_source_directories(root)
+            self.assertEqual(len(errors), 1, errors)
+            self.assertIn("wrong package identity", errors[0])
+            manifest.write_text(valid, encoding="utf-8")
+            original = root / "original-hepta-types"
+            source.rename(original)
+            source.symlink_to(original, target_is_directory=True)
+            errors = checker.check_local_source_directories(root)
+            self.assertEqual(len(errors), 1, errors)
+            self.assertIn("symbolic link", errors[0])
+
+    def test_missing_local_source_manifest_is_not_accepted(self):
+        with tempfile.TemporaryDirectory() as temp:
+            root = Path(temp)
+            self.populate_local_source_tree(root)
+            missing = root / "codex-rs" / "hepta-contracts" / "Cargo.toml"
+            missing.unlink()
+            errors = checker.check_local_source_directories(root)
+            self.assertEqual(len(errors), 1, errors)
+            self.assertIn("cannot read reviewed", errors[0])
 
 
 if __name__ == "__main__":
