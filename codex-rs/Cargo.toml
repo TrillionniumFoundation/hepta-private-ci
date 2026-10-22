@@ -661,6 +661,9 @@ inherits = "test"
 opt-level = 0
 
 [patch.crates-io]
+# RUSTSEC-2026-0374: retain encrypted age storage and replace unmaintained
+# basic-toml with a pinned reviewed i18n-config using maintained toml.
+i18n-config = { path = "third_party/i18n-config-0.4.8" }
 # Matrix SDK 0.18 still exposes anymap2 in its event handler API. Keep that
 # API stable while replacing the unmaintained implementation with anymap3.
 anymap2 = { path = "third_party/anymap2-compat" }
