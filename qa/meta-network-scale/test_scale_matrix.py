@@ -468,6 +468,85 @@ class ScaleMatrixTests(unittest.TestCase):
                             )
                     self.assertIn(expected, scale_matrix.validate_matrix(matrix))
 
+    def test_identity_roles_cannot_be_relabelled_as_single_row_evidence(self):
+        for identity in ("target_host_digest", "runtime_digest"):
+            for proof in ("measurement", "metrics", "rollback"):
+                with self.subTest(identity=identity, proof=proof):
+                    row = self.make_record(64, "shared_encoder")
+                    digest = row["provenance"][identity]
+                    if proof == "measurement":
+                        row["provenance"]["measurement_digest"] = digest
+                        expected = (
+                            f"provenance.{identity} cannot reuse measurement digest"
+                        )
+                    elif proof == "metrics":
+                        row["metrics_receipt"] = digest
+                        expected = f"metrics_receipt cannot reuse provenance {identity}"
+                    else:
+                        row["evidence_receipts"]["rollback"] = digest
+                        expected = (
+                            f"evidence_receipts.rollback cannot reuse provenance {identity}"
+                        )
+                    self.assertIn(expected, scale_matrix.validate_result(row))
+        row = self.make_record(64, "shared_encoder")
+        row["provenance"]["runtime_digest"] = row["provenance"]["target_host_digest"]
+        self.assertIn(
+            "provenance.runtime_digest cannot reuse target_host_digest",
+            scale_matrix.validate_result(row),
+        )
+
+    def test_matrix_denies_cross_row_identity_evidence_aliases_in_both_orders(self):
+        for proof in ("measurement", "metrics", "rollback"):
+            for direction in ("identity_first", "evidence_first"):
+                with self.subTest(proof=proof, direction=direction):
+                    matrix = self.matrix()
+                    first, second = matrix["results"][:2]
+                    if proof == "measurement":
+                        def get_proof(row):
+                            return row["provenance"]["measurement_digest"]
+
+                        def set_proof(row, digest):
+                            row["provenance"]["measurement_digest"] = digest
+
+                        label = "provenance.measurement_digest"
+                    elif proof == "metrics":
+                        def get_proof(row):
+                            return row["metrics_receipt"]
+
+                        def set_proof(row, digest):
+                            row["metrics_receipt"] = digest
+
+                        label = "metrics_receipt"
+                    else:
+                        def get_proof(row):
+                            return row["evidence_receipts"]["rollback"]
+
+                        def set_proof(row, digest):
+                            row["evidence_receipts"]["rollback"] = digest
+
+                        label = "evidence_receipts.rollback"
+                    if direction == "identity_first":
+                        set_proof(second, first["provenance"]["runtime_digest"])
+                        affected = f"results[1].{label}"
+                    else:
+                        second["provenance"]["runtime_digest"] = get_proof(first)
+                        affected = f"results[0].{label}"
+                    self.assertIn(
+                        f"{affected} reused as a runtime_digest identity digest",
+                        scale_matrix.validate_matrix(matrix),
+                    )
+
+    def test_matrix_denies_cross_row_host_runtime_identity_alias(self):
+        matrix = self.matrix()
+        matrix["results"][1]["provenance"]["runtime_digest"] = matrix["results"][0][
+            "provenance"
+        ]["target_host_digest"]
+        self.assertIn(
+            "results[1].provenance.runtime_digest "
+            "reused as a target_host_digest identity digest",
+            scale_matrix.validate_matrix(matrix),
+        )
+
     def test_invalid_result_root_is_a_denial_not_an_exception(self):
         for malformed in ([], None, 42, ""):
             with self.subTest(value=malformed):
