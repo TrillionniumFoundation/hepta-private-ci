@@ -104,6 +104,12 @@ serving path must require the modalities for which its Head was validated or
 route to an independently validated alternative. This experiment remains
 `SHADOW_ONLY`, `DENY_ALL`, with production activation disabled.
 
+A later, separate [presence-contract check](../20261022-presence-guard/README.md)
+adds an explicit required-text/image research entry point. On these same saved
+Heads it rejects all missing rows before a forward and preserves complete-row
+predictions exactly. This input-contract regression does not alter the original
+experiment or demonstrate native serving integration or missing-input robustness.
+
 ## Actual resource measurements
 
 | Resource                                      |           Observed value | Scope                                                   |
@@ -189,7 +195,8 @@ it does not require the Encoder checkpoint or additional training.
 | Real paired multimodal research loop                   | Passed the fixed research screen                             | New harder/independent task before broader semantic claims                              |
 | Effective task learning and paired confidence coverage | Passed on this held-out cohort                               | Independent domain validation before production qualification                           |
 | Gated benefit over linear                              | Not established                                              | Positive preregistered paired gain on new data, including calibration quality           |
-| Missing-modality serving                               | High-confidence failure observed                             | Enforced presence routing or separately validated fallback                              |
+| Missing-modality serving                               | Raw failure retained; separate research guard verified       | Enforce the validated contract in the actual serving path or validate a fallback        |
+| Native trained-Head integration                        | Research artifacts retained; native equivalence not verified | Real driver, compatible artifact execution and numerical/identity parity                |
 | Stateful/full policy learning                          | Not trained                                                  | Actual episodes, state transitions, actions, rewards/targets and independent evaluation |
 | Target-device performance                              | Not measured                                                 | Named target hardware, real load, queue-inclusive p95/p99 and measured energy           |
 | Final composed CI                                      | Pending applicable exact-source checks                       | Terminal success for the final source and required base/merge combinations              |

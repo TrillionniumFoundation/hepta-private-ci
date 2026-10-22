@@ -1,0 +1,39 @@
+{
+  "actual_retained_head_regression": {
+    "input_cases": 10,
+    "new_training": false,
+    "per_case_rows": 256,
+    "report_sha256": "23ef35e48e613e6ed2a790db0f30f368c5384d67f42248621b50e2f764f61125",
+    "status": "PASS",
+    "trained_real_heads": 2
+  },
+  "all_blockers_closed": false,
+  "authority": "DENY_ALL",
+  "checked_source_sha256": {
+    ".github/workflows/hepta-multimodal-research.yml": "f21d9f614ce6f4625299ea9e06796de0e4db968dc640786cc663756f615e7859",
+    "qa/stem-bakeoff/replay_presence_guard_v1.py": "c6f41ab776ac491786bc43dcf93665767f87215f810528fcde8ce92ed74138bb",
+    "qa/stem-bakeoff/research_presence_guard.py": "8e2efae52b02fce586405a752a45d0c108c2a663b1685088bb0d4571d3ed7c0f",
+    "qa/stem-bakeoff/test_multimodal_presence_guard.py": "1312137abafadd24f738f40905332c683b03b3c3a58003719b874f2e301d7430"
+  },
+  "composed_native_source_sha": "db0d860811ffc37f0c462b030d0be3b8043955a8",
+  "final_composed_native_ci_verified": false,
+  "native_runtime_integration_verified": false,
+  "observed_at_utc": "2026-10-22T05:48:56.951323+00:00",
+  "production_activation_allowed": false,
+  "research_source_sha": "b280c643703277a72263de9bda9ffd46b8bd8dbf",
+  "schema": "hepta.presence-guard-validation.v1",
+  "stem_suite": {
+    "command": "OMP_NUM_THREADS=4 MKL_NUM_THREADS=4 python -m unittest discover -s qa/stem-bakeoff -p test_*.py",
+    "display_log_normalization": "splitlines; strip trailing whitespace; final newline",
+    "elapsed_seconds": 7.633,
+    "exit_code": 0,
+    "log_file": "stem-tests.txt",
+    "log_sha256": "73f5d5cf753c493df55e1aa1ac43d0e7704e98f5bbb5a3999d7fd4148da608b7",
+    "raw_log_archive": "stem-tests.raw.txt.gz",
+    "raw_log_archive_sha256": "b08a9cb035d1f77d53684a99112645b63071e619624a068e5275d8b8e801fa0b",
+    "raw_log_sha256": "74df3e32d2210b1353210f34b69698592bb9334bfc7d9b70442b74ac0136f237",
+    "real_pretrained_forwards_in_unit_suite": false,
+    "tests_run": 257
+  },
+  "target_device_verified": false
+}
