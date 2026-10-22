@@ -1,0 +1,49 @@
+{
+  "kind": "diagnostic_only_no_fix_or_qualification",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "commit": "9d84d3adf24d78cb590986a82250fa0d9b09b9f4",
+  "tree": "4d0fca61293a7b2af0c64651d2629e59571745b3",
+  "test_filter": "sqlite_writer_rotates_256_times_without_consuming_new_service_identities",
+  "original_epoch_count": 256,
+  "original_test_timeout_seconds": 60,
+  "original_operations_assertions_and_deadlines_retained": true,
+  "changes": "Bounded constant-schema stderr markers before original phases; Instant reads and a relaxed open-call counter only. No new async operation, pool, SQL, RPC, sleep, retry, or authority decision.",
+  "measurement_limit": "Diagnostic timing includes marker output overhead; no root-cause or speed qualification follows without the actual trace and an unchanged-oracle noninstrumented retest.",
+  "files": [
+    {
+      "path": "codex-rs/hepta-agentd/src/runtime_service_writer_rotation_tests.rs",
+      "preimage_git_blob": "113eb616222f7fd5ff9171f8124dc239bf632579",
+      "preimage_sha256": "eeb93146abd97c8110ea04ef260e9d0fb0c2a6519b5903d3a6e012266b4e8126",
+      "postimage_bytes": 8810,
+      "postimage_sha256": "9cbbbfe9cc5fced0ca418d7f3c430b77413d01a1a703c3e3b207ca5d90ef86c8",
+      "added_lines": 35,
+      "removed_lines": 0
+    },
+    {
+      "path": "codex-rs/hepta-automation/src/timer_lifecycle.rs",
+      "preimage_git_blob": "9ff5154eb6c245d14907cfbfb393f9cb5f85e17e",
+      "preimage_sha256": "7c635ba57a2aee51e7fa798e4b7dd95772c774636a1f0e4e951ef1592d2323e5",
+      "postimage_bytes": 9629,
+      "postimage_sha256": "e6088567cd6b026e550c5f08c915b4c781f84e1dcfece5f7b290ec7f7548be1e",
+      "added_lines": 15,
+      "removed_lines": 0
+    },
+    {
+      "path": "codex-rs/hepta-automation/src/store.rs",
+      "preimage_git_blob": "176b5c7200bea7d07d6642440d1f03c37209cef3",
+      "preimage_sha256": "dd23c4b0fdd40f2a3f053bf92424bda755bb2c431b69a969052966a8efec07f9",
+      "postimage_bytes": 57452,
+      "postimage_sha256": "7779b346dd862dea66a4e1dcfddc53a5e53c1c4f73d64a3e8a78d5dbb5861090",
+      "added_lines": 21,
+      "removed_lines": 0
+    }
+  ],
+  "patch": {
+    "path": "diagnostic.patch",
+    "size": 9671,
+    "sha256": "7f6d696c2711bb8eded5ee933bda1bf4fb0267f7afe41b6923176b158146db68"
+  },
+  "rustfmt": "not_available_locally_root_must_format_and_record_actual_postimage",
+  "compiled": false,
+  "executed": false
+}

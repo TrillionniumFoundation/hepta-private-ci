@@ -1,0 +1,230 @@
+--- a/codex-rs/hepta-agentd/src/runtime_service_writer_rotation_tests.rs
++++ b/codex-rs/hepta-agentd/src/runtime_service_writer_rotation_tests.rs
+@@ -103,6 +103,14 @@
+ 
+ #[tokio::test]
+ async fn sqlite_writer_rotates_256_times_without_consuming_new_service_identities() {
++    let rotation_started = std::time::Instant::now();
++    let rotation_progress = |epoch: u64, phase: &str| {
++        let elapsed_us = rotation_started.elapsed().as_micros();
++        eprintln!(
++            "WRITER_ROTATION_TEST epoch={epoch} phase={phase} elapsed_us={elapsed_us}"
++        );
++    };
++    rotation_progress(0, "fixture");
+     let directory = tempfile::tempdir().unwrap();
+     let root = directory.path().canonicalize().unwrap();
+     let fleet = HeptaFleetRoot::parse(root.join("fleet")).unwrap();
+@@ -118,15 +126,21 @@
+     .unwrap();
+     registry.register(manifest).unwrap();
+     let layout = fleet.layout().agent(&agent);
++    rotation_progress(0, "initial_open");
+     let mut store = AutomationStore::open(&layout).await.unwrap();
++    rotation_progress(0, "initial_open_complete");
+     let first_writer = store.clone();
+     let original = draft("one durable effect across repeated owner handoff");
+     let stop = CancellationToken::new();
+     let mut host = RuntimeTasks::new(stop.clone(), Duration::from_secs(2)).unwrap();
+     for epoch in 1..=256 {
++        rotation_progress(epoch, "status");
+         assert_eq!(store.timer_status().await.unwrap().writer_epoch, epoch);
++        rotation_progress(epoch, "attach");
+         let client = attach(&mut host, store.clone(), epoch);
++        rotation_progress(epoch, "request");
+         let receipt = ask(&client, original.clone()).await;
++        rotation_progress(epoch, "receipt_and_stale_retire");
+         if epoch > 1 {
+             assert_eq!(
+                 receipt.disposition,
+@@ -138,11 +152,15 @@
+                     .is_err()
+             );
+         }
++        rotation_progress(epoch, "list");
+         assert_eq!(store.list_tasks(10).await.unwrap().len(), 1);
++        rotation_progress(epoch, "quiesce");
+         assert!(store.quiesce_timer().await.unwrap().can_handoff());
++        rotation_progress(epoch, "retire_current");
+         host.retire_optional_generation(NAME, generation(epoch))
+             .await
+             .unwrap();
++        rotation_progress(epoch, "retirement_assertions");
+         assert!(client.is_closed());
+         assert_eq!(host.active_count(), 0);
+         assert_eq!(host.remaining_admission_slots(), 127);
+@@ -150,12 +168,16 @@
+         assert_eq!(host.retired_names.len(), 1);
+         assert!(!stop.is_cancelled());
+         if epoch < 256 {
++            rotation_progress(epoch, "handoff");
+             let next = store.handoff_timer().await.unwrap();
++            rotation_progress(epoch, "successor_status");
+             assert_eq!(
+                 next.timer_status().await.unwrap().phase,
+                 TimerPhase::Draining
+             );
++            rotation_progress(epoch, "resume");
+             next.resume_timer().await.unwrap();
++            rotation_progress(epoch, "stale_write");
+             let new_effect = draft("stale owner must not create a new effect");
+             let intent = automation_task_operation_intent(
+                 store.owner_agent_id(),
+@@ -167,24 +189,33 @@
+                 store.create_task_from_operation(&intent, &new_effect).await,
+                 Err(AutomationError::TimerFenced)
+             );
++            rotation_progress(epoch, "replace_store");
+             store = next;
+         }
++        rotation_progress(epoch, "epoch_complete");
+     }
++    rotation_progress(256, "retire_timer");
+     assert_eq!(
+         store.retire_timer().await.unwrap().phase,
+         TimerPhase::Retired
+     );
++    rotation_progress(256, "host_shutdown");
+     host.shutdown().await;
++    rotation_progress(256, "current_pool_close");
+     store.close().await;
++    rotation_progress(256, "final_reopen");
+     let reopened = AutomationStore::open(&layout).await.unwrap();
++    rotation_progress(256, "reopened_status");
+     assert_eq!(
+         reopened.timer_status().await.unwrap().phase,
+         TimerPhase::Retired
+     );
++    rotation_progress(256, "retired_resume_fence");
+     assert_eq!(
+         reopened.resume_timer().await,
+         Err(AutomationError::TimerFenced)
+     );
++    rotation_progress(256, "retained_receipt");
+     let intent =
+         automation_task_operation_intent(reopened.owner_agent_id(), &original, generation(1))
+             .unwrap();
+@@ -196,7 +227,11 @@
+         retained.disposition,
+         DestinationApplyDisposition::AlreadyApplied
+     );
++    rotation_progress(256, "reopened_list");
+     assert_eq!(reopened.list_tasks(10).await.unwrap().len(), 1);
++    rotation_progress(256, "first_writer_drop");
+     drop(first_writer);
++    rotation_progress(256, "reopened_pool_close");
+     reopened.close().await;
+-}
++    rotation_progress(256, "done");
++}
+--- a/codex-rs/hepta-automation/src/timer_lifecycle.rs
++++ b/codex-rs/hepta-automation/src/timer_lifecycle.rs
+@@ -91,8 +91,19 @@
+     /// an old database or reviving a predecessor handle. If reopening fails
+     /// after commit, storage remains draining and the old writer stays fenced.
+     pub async fn handoff_timer(&self) -> Result<Self, AutomationError> {
+-        let (mut transaction, _) = self.begin_timer_write().await?;
+-        let status = read_status(&mut transaction).await?;
++        let rotation_started = std::time::Instant::now();
++        let rotation_epoch = self.timer_epoch();
++        let rotation_progress = |phase: &str| {
++            let elapsed_us = rotation_started.elapsed().as_micros();
++            eprintln!(
++                "WRITER_ROTATION_HANDOFF epoch={rotation_epoch} phase={phase} elapsed_us={elapsed_us}"
++            );
++        };
++        rotation_progress("begin_writer");
++        let (mut transaction, _) = self.begin_timer_write().await?;
++        rotation_progress("read_status");
++        let status = read_status(&mut transaction).await?;
++        rotation_progress("advance_epoch");
+         if !status.can_handoff() {
+             return Err(AutomationError::Conflict);
+         }
+@@ -105,17 +116,21 @@
+             .execute(&mut *transaction)
+             .await
+             .map_err(unavailable)?;
+-        transaction.commit().await.map_err(unavailable)?;
++        rotation_progress("commit");
++        transaction.commit().await.map_err(unavailable)?;
++        rotation_progress("reopen");
+         let root = self
+             .path()
+             .parent()
+             .ok_or(AutomationError::Corrupt)?
+             .to_path_buf();
+         let successor = Self::open_root(root, self.owner_agent_id().clone()).await?;
++        rotation_progress("successor_epoch");
+         if successor.timer_epoch() != next {
+             successor.close().await;
+             return Err(AutomationError::Conflict);
+         }
++        rotation_progress("done");
+         Ok(successor)
+     }
+ 
+--- a/codex-rs/hepta-automation/src/store.rs
++++ b/codex-rs/hepta-automation/src/store.rs
+@@ -49,22 +49,39 @@
+         root: PathBuf,
+         owner_agent_id: AgentId,
+     ) -> Result<Self, AutomationError> {
++        static ROTATION_OPEN_ID: std::sync::atomic::AtomicU64 =
++            std::sync::atomic::AtomicU64::new(0);
++        let rotation_open_id =
++            ROTATION_OPEN_ID.fetch_add(1, std::sync::atomic::Ordering::Relaxed);
++        let rotation_started = std::time::Instant::now();
++        let rotation_progress = |phase: &str| {
++            let elapsed_us = rotation_started.elapsed().as_micros();
++            eprintln!(
++                "WRITER_ROTATION_OPEN open={rotation_open_id} phase={phase} elapsed_us={elapsed_us}"
++            );
++        };
++        rotation_progress("private_directory");
+         create_private_directory(&root)?;
+         let path = root.join(AUTOMATION_DB_FILENAME);
+         let sqlite_home = AbsolutePathBuf::try_from(root).map_err(|_| AutomationError::Invalid)?;
++        rotation_progress("connect_pool");
+         let pool = SqliteConfig::from_sqlite_home(sqlite_home)
+             .open_durable_evidence_pool(&path)
+             .await
+             .map_err(unavailable)?;
++        rotation_progress("legacy_migrations");
+         if let Err(error) = reconcile_legacy_migration_ids(&pool).await {
+             pool.close().await;
+             return Err(error);
+         }
++        rotation_progress("migrations");
+         if MIGRATOR.run(&pool).await.is_err() {
+             pool.close().await;
+             return Err(AutomationError::Unavailable);
+         }
++        rotation_progress("database_permissions");
+         protect_database_file(&path)?;
++        rotation_progress("metadata");
+         sqlx::query(
+             "INSERT INTO automation_meta (singleton, schema_version, owner_agent_id)
+              VALUES (1, ?, ?) ON CONFLICT(singleton) DO NOTHING",
+@@ -74,17 +91,21 @@
+         .execute(&pool)
+         .await
+         .map_err(unavailable)?;
++        rotation_progress("verify_store");
+         verify_store(&pool, &owner_agent_id).await?;
++        rotation_progress("read_epoch");
+         let timer_epoch: i64 = sqlx::query_scalar(
+             "SELECT writer_epoch FROM automation_timer_lifecycle WHERE singleton = 1",
+         )
+         .fetch_one(&pool)
+         .await
+         .map_err(unavailable)?;
++        rotation_progress("validate_epoch");
+         if timer_epoch <= 0 {
+             pool.close().await;
+             return Err(AutomationError::Corrupt);
+         }
++        rotation_progress("done");
+         Ok(Self {
+             pool,
+             owner_agent_id,

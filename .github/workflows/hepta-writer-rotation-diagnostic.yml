@@ -1,0 +1,136 @@
+name: Hepta original writer rotation diagnostic
+
+# This isolated carrier adds only this workflow and its four frozen inputs.
+# The original owner test and its default deadline remain unchanged apart
+# from the reviewed phase observations applied inside the job.
+on:
+  push:
+    branches: [agents/20261022/writer-rotation-diagnostic]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: hepta-writer-rotation-diagnostic-${{ github.ref }}
+  cancel-in-progress: false
+
+env:
+  SOURCE_SHA: ${{ github.sha }}
+  PYTHONDONTWRITEBYTECODE: "1"
+  RUST_BACKTRACE: "1"
+  CARGO_INCREMENTAL: "0"
+  CARGO_BUILD_JOBS: "2"
+  CARGO_PROFILE_DEV_DEBUG: "0"
+  CARGO_TERM_COLOR: never
+  TMPDIR: /tmp
+
+jobs:
+  original-writer-rotation:
+    name: Original 256 rotations, default 60-second test deadline
+    runs-on: ubuntu-24.04
+    # This includes a fresh original Agentd build. The test itself retains
+    # profile.local -> profile.default: 30s x 2 and one original retry.
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Verify the exact base and apply frozen observations
+        id: prepare
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 scripts/hepta_writer_rotation_diagnostic/run_ci.py prepare \
+            --output "$RUNNER_TEMP/writer-rotation"
+      - uses: ./.github/actions/setup-ci
+      - name: Install original Linux build dependencies
+        shell: bash
+        run: |
+          set -euo pipefail
+          sudo apt-get update
+          sudo apt-get install -y build-essential pkg-config libcap-dev bubblewrap
+      - uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582
+        with:
+          toolchain: "1.95.0"
+          components: clippy,rustfmt,rust-src
+      - name: Compute original dependency cache identity
+        id: cache-identity
+        shell: bash
+        run: |
+          set -euo pipefail
+          echo "lock=$(sha256sum codex-rs/Cargo.lock | cut -d ' ' -f 1)" >> "$GITHUB_OUTPUT"
+          echo "toolchain=$(sha256sum codex-rs/rust-toolchain.toml | cut -d ' ' -f 1)" >> "$GITHUB_OUTPUT"
+      - uses: actions/cache/restore@668228422ae6a00e4ad889ee87cd7109ec5666a7
+        id: cargo-cache
+        with:
+          path: |
+            ~/.cargo/bin/
+            ~/.cargo/registry/index/
+            ~/.cargo/registry/cache/
+            ~/.cargo/git/db/
+          key: cargo-home-ubuntu-24.04-x86_64-unknown-linux-gnu-dev-${{ steps.cache-identity.outputs.lock }}-${{ steps.cache-identity.outputs.toolchain }}
+          restore-keys: |
+            cargo-home-ubuntu-24.04-x86_64-unknown-linux-gnu-dev-
+      - uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
+        with:
+          tool: just@1.51.0,nextest@0.9.103
+      - name: Resolve original verified V8 build artifacts
+        env:
+          CODEX_REPO_ROOT: ${{ github.workspace }}
+          PYTHONPATH: scripts
+        run: python3 scripts/hepta_ci_v8.py
+      - name: Record actual tools before the test
+        shell: bash
+        working-directory: codex-rs
+        run: |
+          set -euo pipefail
+          {
+            rustc --version --verbose
+            cargo --version
+            cargo nextest --version
+            just --version
+            python3 --version
+          } 2>&1 | tee "$RUNNER_TEMP/writer-rotation/tool-versions.log"
+      - name: Execute the original test with its original deadline and retry
+        id: original-test
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 scripts/hepta_writer_rotation_diagnostic/run_ci.py run \
+            --output "$RUNNER_TEMP/writer-rotation"
+      - name: Verify original assertions, configuration and frozen source bytes remain
+        if: ${{ always() && steps.prepare.outcome == 'success' }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 scripts/hepta_writer_rotation_diagnostic/run_ci.py verify \
+            --output "$RUNNER_TEMP/writer-rotation"
+      - name: Summarize each actual attempt and retain the real test outcome
+        if: ${{ always() }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 scripts/hepta_writer_rotation_diagnostic/run_ci.py summarize \
+            --output "$RUNNER_TEMP/writer-rotation"
+      - name: Retain complete failure logs and bounded phase summary
+        if: ${{ always() }}
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: hepta-writer-rotation-${{ github.sha }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/writer-rotation/
+          if-no-files-found: error
+          retention-days: 7
+      - name: Save dependency downloads
+        if: ${{ always() && !cancelled() && steps.cargo-cache.outputs.cache-hit != 'true' && steps.cache-identity.outcome == 'success' }}
+        continue-on-error: true
+        uses: actions/cache/save@668228422ae6a00e4ad889ee87cd7109ec5666a7
+        with:
+          path: |
+            ~/.cargo/bin/
+            ~/.cargo/registry/index/
+            ~/.cargo/registry/cache/
+            ~/.cargo/git/db/
+          key: cargo-home-ubuntu-24.04-x86_64-unknown-linux-gnu-dev-${{ steps.cache-identity.outputs.lock }}-${{ steps.cache-identity.outputs.toolchain }}
