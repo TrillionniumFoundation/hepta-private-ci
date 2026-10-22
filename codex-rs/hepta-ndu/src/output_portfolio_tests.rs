@@ -849,3 +849,55 @@ fn portfolio_receipt_replay_rejects_mutated_allocation_and_digest() {
         Err(NduError::InvalidSolverReceipt("portfolio receipt replay"))
     );
 }
+
+#[test]
+fn negative_standalone_score_can_hedge_positive_portfolio_exposure() {
+    // Independently this Cell loses utility, but with a negatively correlated
+    // admitted direction its marginal covariance gain is strictly positive.
+    let hedge = candidate("hedge", 1, 3, false);
+    let alone = select_output_portfolio_v1(
+        &context(2),
+        &budget(2),
+        &[candidate("baseline", 0, 0, true), hedge.clone()],
+    )
+    .expect("an isolated negative-direction asset falls back to no change");
+    assert_eq!(alone.disposition, OutputPortfolioDispositionV1::NoChange);
+
+    let mut correlated = context(3);
+    // [baseline, anchor, hedge] is symmetric diagonally dominant (PSD).
+    correlated.semantic_covariance[4] = q(50);
+    correlated.semantic_covariance[5] = q(-50);
+    correlated.semantic_covariance[7] = q(-50);
+    correlated.semantic_covariance[8] = q(50);
+    let mut anchor = candidate("anchor", 100, 0, false);
+    anchor.weight_cap = q(40);
+    let receipt = select_output_portfolio_v1(
+        &correlated,
+        &budget(3),
+        &[candidate("baseline", 0, 0, true), anchor, hedge],
+    )
+    .expect("a covariance-positive hedge may enter an advisory portfolio");
+    assert_eq!(receipt.disposition, OutputPortfolioDispositionV1::AdvisorySelection);
+    assert!(receipt.allocations.iter().any(|arm| {
+        arm.candidate_id == id("anchor") && arm.weight == q(40)
+    }));
+    assert!(receipt.allocations.iter().any(|arm| {
+        arm.candidate_id == id("hedge") && arm.weight > FixedQ32::ZERO
+    }));
+    assert!(receipt.allocations.iter().any(|arm| {
+        arm.candidate_id == id("baseline") && arm.weight > FixedQ32::ZERO
+    }));
+    assert!(receipt.total_risk < q(10));
+    assert!(receipt.total_utility > receipt.total_risk);
+    verify_output_portfolio_receipt_v1(
+        &correlated,
+        &budget(3),
+        &[candidate("baseline", 0, 0, true), {
+            let mut anchor = candidate("anchor", 100, 0, false);
+            anchor.weight_cap = q(40);
+            anchor
+        }, candidate("hedge", 1, 3, false)],
+        &receipt,
+    )
+    .expect("hedged selection replays from immutable inputs");
+}
