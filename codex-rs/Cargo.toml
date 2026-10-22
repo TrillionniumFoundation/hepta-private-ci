@@ -661,6 +661,9 @@ inherits = "test"
 opt-level = 0
 
 [patch.crates-io]
+# RUSTSEC-2026-0374: keep encrypted age storage, replace archived basic-toml
+# transitive parser with reviewed i18n-config using maintained toml.
+i18n-config = { path = "third_party/i18n-config-0.4.8" }
 # Matrix SDK/eyeball-im still require imbl 6.x. Backport the upstream 7.0.2
 # bitmap import and patched chunk dependency without changing their public API.
 imbl = { path = "third_party/imbl-6.1.0" }
