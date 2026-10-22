@@ -156,7 +156,9 @@ def git_snapshot(path: Path) -> dict[str, Any]:
             if name.startswith("filter.")
             and name.rsplit(".", 1)[-1] in ("clean", "smudge", "process")
         }
-        if filter_config_names:
+        if filter_config_names and not executable_git_config:
+            # Any fsmonitor/diff/merge executable config blocks immediately.
+            # Even ls-files can invoke an enabled fsmonitor hook.
             # Hosted runners install Git LFS filter commands globally. A
             # registered but UNUSED driver cannot run during this worktree's
             # status; refusing it would make ordinary source CI inoperable.
