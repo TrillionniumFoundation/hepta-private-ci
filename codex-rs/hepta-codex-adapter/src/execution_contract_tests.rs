@@ -99,7 +99,7 @@ fn codex_binding_rejects_unsupported_protocol_and_noncanonical_version() {
     cell.codex_binding
         .as_mut()
         .expect("binding")
-        .app_server_version = "v2\\n".replace("\\n", "\n");
+        .app_server_version = "v2\n".to_owned();
     assert_eq!(
         cell.validate(),
         Err(ExecutionContractError::InvalidAppServerVersion)
