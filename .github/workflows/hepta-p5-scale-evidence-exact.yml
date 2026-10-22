@@ -1,0 +1,50 @@
+name: Hepta P5 scale evidence exact-source contract
+
+on:
+  pull_request:
+    paths:
+      - "qa/meta-network-scale/**"
+      - ".github/workflows/hepta-p5-scale-evidence-exact.yml"
+  workflow_dispatch: {}
+
+permissions:
+  contents: read
+
+concurrency:
+  group: hepta-p5-scale-${{ github.event.pull_request.head.ref || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  exact-source:
+    name: P5 36-row evidence integrity (non-authorizing)
+    runs-on: ubuntu-slim
+    timeout-minutes: 10
+    env:
+      PYTHONDONTWRITEBYTECODE: "1"
+      PYTHONHASHSEED: "0"
+      EXPECTED_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+    steps:
+      - name: Checkout exact proposed source
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - name: Install pinned Python runtime
+        uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405 # v6.2.0
+        with:
+          python-version: "3.12"
+      - name: Enforce complete strict P5 source-owned regressions
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$EXPECTED_SHA"
+          python3 -m unittest discover -v -s qa/meta-network-scale -p 'test_scale_matrix.py'
+      - name: Require no source mutation
+        if: always() && !cancelled()
+        shell: bash
+        run: |
+          set -euo pipefail
+          git diff --check
+          git diff --exit-code
+          git diff --cached --exit-code
+          test -z "$(git status --porcelain=v1 --untracked-files=all)"
