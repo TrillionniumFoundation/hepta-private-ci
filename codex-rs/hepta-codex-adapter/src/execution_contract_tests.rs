@@ -194,6 +194,20 @@ fn fence_requires_old_writer_and_route_cutover() {
     };
     assert_eq!(base.validate(), Ok(()));
 
+    let mut missing = base.clone();
+    missing.predecessor_generation = None;
+    assert_eq!(
+        missing.validate(),
+        Err(ExecutionContractError::NonSuccessorGeneration)
+    );
+    let mut invented_initial_handoff = base.clone();
+    invented_initial_handoff.generation = generation(1);
+    invented_initial_handoff.predecessor_generation = None;
+    assert_eq!(
+        invented_initial_handoff.validate(),
+        Err(ExecutionContractError::NonSuccessorGeneration)
+    );
+
     let mut skipped = base.clone();
     skipped.generation = generation(5);
     assert_eq!(
