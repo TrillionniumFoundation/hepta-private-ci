@@ -5,6 +5,12 @@
 //! the same format can coordinate host failover. Recovery accepts an
 //! independently retained minimum anchor and fails closed on rollback.
 
+//! On Unix constructors take sole cooperative lock-management authority;
+//! externally prelocked/active aliases are unsupported, passive references are
+//! supported. Successful acquisition is explicitly released even on constructor
+//! error. Fork-inherited stores are not authorized to perform operations.
+//! Non-Unix platforms retain the previous close-only release behavior.
+
 use std::error::Error as StdError;
 use std::fmt;
 use std::fs::File;
@@ -26,6 +32,7 @@ use crate::FinalHoldoutJournalV1;
 use crate::HoldoutWriterFenceV1;
 use crate::closure::decode_holdout_plan;
 use crate::closure::encode_holdout_plan;
+use crate::holdout_file_lock::AcquiredFile;
 
 const MAGIC: &[u8; 8] = b"HEPTFC01";
 const HEADER: usize = 72;
@@ -57,7 +64,7 @@ impl fmt::Display for LockedFileCasErrorV1 {
 impl StdError for LockedFileCasErrorV1 {}
 
 pub struct LockedFileFinalHoldoutCasStoreV1 {
-    file: File,
+    file: AcquiredFile,
     binding: Digest32,
     state: Option<FinalHoldoutCasRecordV1>,
     length: u64,
@@ -65,8 +72,18 @@ pub struct LockedFileFinalHoldoutCasStoreV1 {
 }
 
 impl LockedFileFinalHoldoutCasStoreV1 {
-    pub fn create(mut file: File, binding: Digest32) -> Result<Self, LockedFileCasErrorV1> {
-        acquire(&file, binding)?;
+    ///
+    /// # File lock management (Unix)
+    /// Transfers sole cooperative lock-management authority. Externally
+    /// prelocked files and active aliases (locking, unlocking, writing or acting
+    /// as owners) are unsupported; passive descriptor references are allowed.
+    /// After successful acquisition, even a constructor error explicitly
+    /// attempts to release the lock; release failures quarantine local ownership.
+    /// Fork-inherited stores cannot perform operations;
+    /// exec is required before creating stores after registry initialization.
+    /// Other platforms retain close-only release, without this new guarantee.
+    pub fn create(file: File, binding: Digest32) -> Result<Self, LockedFileCasErrorV1> {
+        let mut file = acquire(file, binding)?;
         if file.metadata().map_err(io_error)?.len() != 0 {
             return Err(LockedFileCasErrorV1::AlreadyInitialized);
         }
@@ -86,12 +103,22 @@ impl LockedFileFinalHoldoutCasStoreV1 {
         })
     }
 
+    ///
+    /// # File lock management (Unix)
+    /// Transfers sole cooperative lock-management authority. Externally
+    /// prelocked files and active aliases (locking, unlocking, writing or acting
+    /// as owners) are unsupported; passive descriptor references are allowed.
+    /// After successful acquisition, even a constructor error explicitly
+    /// attempts to release the lock; release failures quarantine local ownership.
+    /// Fork-inherited stores cannot perform operations;
+    /// exec is required before creating stores after registry initialization.
+    /// Other platforms retain close-only release, without this new guarantee.
     pub fn recover(
-        mut file: File,
+        file: File,
         binding: Digest32,
         minimum: Option<FinalHoldoutCasAnchorV1>,
     ) -> Result<Self, LockedFileCasErrorV1> {
-        acquire(&file, binding)?;
+        let mut file = acquire(file, binding)?;
         let length = file.metadata().map_err(io_error)?.len();
         if length > MAX_BYTES {
             return Err(LockedFileCasErrorV1::Capacity);
@@ -160,6 +187,7 @@ impl LockedFileFinalHoldoutCasStoreV1 {
     }
 
     #[must_use]
+    /// Cached metadata only; not proof of current ownership after fork.
     pub fn anchor(&self) -> Option<FinalHoldoutCasAnchorV1> {
         self.state.as_ref().map(record_anchor)
     }
@@ -170,6 +198,9 @@ impl FinalHoldoutCasStoreV1 for LockedFileFinalHoldoutCasStoreV1 {
         &mut self,
         binding: Digest32,
     ) -> Result<Option<FinalHoldoutCasRecordV1>, FinalHoldoutCasStoreError> {
+        self.file
+            .check_process()
+            .map_err(|_| FinalHoldoutCasStoreError::Indeterminate)?;
         if self.poisoned {
             return Err(FinalHoldoutCasStoreError::Indeterminate);
         }
@@ -195,6 +226,9 @@ impl FinalHoldoutCasStoreV1 for LockedFileFinalHoldoutCasStoreV1 {
         expected: Option<Digest32>,
         next: &FinalHoldoutCasRecordV1,
     ) -> Result<(), FinalHoldoutCasStoreError> {
+        self.file
+            .check_process()
+            .map_err(|_| FinalHoldoutCasStoreError::Indeterminate)?;
         if self.poisoned {
             return Err(FinalHoldoutCasStoreError::Indeterminate);
         }
@@ -426,14 +460,14 @@ fn record_anchor(record: &FinalHoldoutCasRecordV1) -> FinalHoldoutCasAnchorV1 {
     }
 }
 
-fn acquire(file: &File, binding: Digest32) -> Result<(), LockedFileCasErrorV1> {
+fn acquire(file: File, binding: Digest32) -> Result<AcquiredFile, LockedFileCasErrorV1> {
     if binding.is_zero() {
         return Err(LockedFileCasErrorV1::Binding);
     }
     if !file.metadata().map_err(io_error)?.is_file() {
         return Err(LockedFileCasErrorV1::NotRegular);
     }
-    file.try_lock().map_err(|error| match error {
+    AcquiredFile::acquire(file).map_err(|error| match error {
         TryLockError::WouldBlock => LockedFileCasErrorV1::Busy,
         TryLockError::Error(error) => LockedFileCasErrorV1::Io(error.kind()),
     })

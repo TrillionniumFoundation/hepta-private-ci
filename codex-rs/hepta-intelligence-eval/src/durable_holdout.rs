@@ -6,6 +6,12 @@
 //! cooperating local owners, not hostile writers, cloned handles or remote
 //! nodes. Contended production ownership must use `FencedFinalHoldoutOwnerV1`
 //! over a host-provided linearizable `FinalHoldoutCasStoreV1`.
+//! On Unix constructors take sole cooperative lock-management authority;
+//! externally prelocked/active aliases are unsupported, passive references are
+//! supported. Successful acquisition is explicitly released even on constructor
+//! error. Fork-inherited stores are not authorized to perform operations.
+//! Non-Unix platforms retain the previous close-only release behavior.
+
 use std::error::Error;
 use std::fmt;
 use std::fs::File;
@@ -22,6 +28,7 @@ use crate::FinalHoldoutJournalV1;
 use crate::HoldoutUseDispositionV1;
 use crate::closure::decode_holdout_plan;
 use crate::closure::encode_holdout_plan;
+use crate::holdout_file_lock::AcquiredFile;
 use codex_hepta_types::Digest32;
 
 const MAGIC: &[u8; 8] = b"HEPTHO01";
@@ -85,7 +92,7 @@ impl From<io::Error> for DurableHoldoutError {
 }
 
 pub struct DurableFinalHoldoutJournalV1 {
-    file: File,
+    file: AcquiredFile,
     journal: FinalHoldoutJournalV1,
     binding: Digest32,
     length: u64,
@@ -93,8 +100,18 @@ pub struct DurableFinalHoldoutJournalV1 {
 }
 impl DurableFinalHoldoutJournalV1 {
     /// Explicit initialization only; never use creation as a recovery fallback.
-    pub fn create(mut file: File, binding: Digest32) -> Result<Self, DurableHoldoutError> {
-        acquire(&file, binding)?;
+    ///
+    /// # File lock management (Unix)
+    /// Transfers sole cooperative lock-management authority. Externally
+    /// prelocked files and active aliases (locking, unlocking, writing or acting
+    /// as owners) are unsupported; passive descriptor references are allowed.
+    /// After successful acquisition, even a constructor error explicitly
+    /// attempts to release the lock; release failures quarantine local ownership.
+    /// Fork-inherited stores cannot perform operations;
+    /// exec is required before creating stores after registry initialization.
+    /// Other platforms retain close-only release, without this new guarantee.
+    pub fn create(file: File, binding: Digest32) -> Result<Self, DurableHoldoutError> {
+        let mut file = acquire(file, binding)?;
         if file.metadata()?.len() != 0 {
             return Err(DurableHoldoutError::AlreadyInitialized);
         }
@@ -117,12 +134,22 @@ impl DurableFinalHoldoutJournalV1 {
 
     /// Replay without trimming, recreating or inferring an anchor from this file.
     /// The minimum anchor must survive independently of backups of this store.
+    ///
+    /// # File lock management (Unix)
+    /// Transfers sole cooperative lock-management authority. Externally
+    /// prelocked files and active aliases (locking, unlocking, writing or acting
+    /// as owners) are unsupported; passive descriptor references are allowed.
+    /// After successful acquisition, even a constructor error explicitly
+    /// attempts to release the lock; release failures quarantine local ownership.
+    /// Fork-inherited stores cannot perform operations;
+    /// exec is required before creating stores after registry initialization.
+    /// Other platforms retain close-only release, without this new guarantee.
     pub fn recover(
-        mut file: File,
+        file: File,
         binding: Digest32,
         minimum: HoldoutAnchorV1,
     ) -> Result<Self, DurableHoldoutError> {
-        acquire(&file, binding)?;
+        let mut file = acquire(file, binding)?;
         if (minimum.sequence == 0) != minimum.head.is_zero()
             || minimum.sequence > MAX_RECORDS as u64
         {
@@ -209,6 +236,9 @@ impl DurableFinalHoldoutJournalV1 {
         expected: HoldoutAnchorV1,
         plan: &CrossFoldPlanReceiptV1,
     ) -> Result<FinalHoldoutJournalReceiptV1, DurableHoldoutError> {
+        self.file
+            .check_process()
+            .map_err(|_| DurableHoldoutError::Indeterminate)?;
         if self.poisoned {
             return Err(DurableHoldoutError::Poisoned);
         }
@@ -260,6 +290,9 @@ impl DurableFinalHoldoutJournalV1 {
         expected: HoldoutAnchorV1,
         plan: &CrossFoldPlanReceiptV1,
     ) -> Result<FinalHoldoutJournalReceiptV1, DurableHoldoutError> {
+        self.file
+            .check_process()
+            .map_err(|_| DurableHoldoutError::Indeterminate)?;
         if self.poisoned {
             return Err(DurableHoldoutError::Poisoned);
         }
@@ -313,6 +346,7 @@ impl DurableFinalHoldoutJournalV1 {
             }
         }
     }
+    /// Cached metadata only; not proof of current ownership after fork.
     pub fn anchor(&self) -> HoldoutAnchorV1 {
         HoldoutAnchorV1 {
             sequence: self.journal.records().len() as u64,
@@ -321,14 +355,14 @@ impl DurableFinalHoldoutJournalV1 {
     }
 }
 
-fn acquire(file: &File, binding: Digest32) -> Result<(), DurableHoldoutError> {
+fn acquire(file: File, binding: Digest32) -> Result<AcquiredFile, DurableHoldoutError> {
     if binding.is_zero() {
         return Err(DurableHoldoutError::Binding);
     }
     if !file.metadata()?.is_file() {
         return Err(DurableHoldoutError::NotRegular);
     }
-    file.try_lock().map_err(|error| match error {
+    AcquiredFile::acquire(file).map_err(|error| match error {
         TryLockError::WouldBlock => DurableHoldoutError::Busy,
         TryLockError::Error(error) => DurableHoldoutError::Io(error.kind()),
     })

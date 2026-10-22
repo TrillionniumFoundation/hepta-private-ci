@@ -221,6 +221,27 @@ generation from that anchor. Cross-host deployment of this backend additionally
 requires a shared filesystem with qualified linearizable lock and fsync
 semantics.
 
+On Unix, both `LockedFileFinalHoldoutCasStoreV1::{create,recover}` and
+`DurableFinalHoldoutJournalV1::{create,recover}` take sole cooperative
+**lock-management authority** over the supplied already-authorized regular file.
+Externally prelocked files and active aliases that lock, unlock, write or act as
+owners are unsupported. Passive descriptor references are supported: they do
+not extend the owner's lock lifetime. After successful acquisition, constructor
+errors and final store destruction explicitly release the lock. This is an
+explicit tightening of the former arbitrary-File contract, not detection of
+unknown external OFD locks. A shared process-local device/inode lease registry
+rejects duplicate library owners across both backends; it does not coordinate
+separately linked copies of the library. Unlock failure or registry poisoning
+quarantines ownership rather than permitting unsafe takeover.
+
+Fork-inherited stores cannot perform operations, including external-authority
+CAS. Cached anchor getters are not evidence of current ownership. If the
+registry was initialized before fork, a child must exec before creating new
+stores; child cleanup never explicitly unlocks the parent's lock or accesses
+an inherited registry mutex. Non-Unix backends retain close-only release; no
+new prompt-release or alias-protection guarantee is made for Windows or other
+platforms. No file format, durability ordering or authority requirement changes.
+
 The evaluated-shadow caller now consumes only the sealed `ProductQualificationReceiptV1`, rechecks current trust/dataset/candidate bindings and never re-runs low-level signed admission. This leaves one repository-controlled product qualification spine.
 
 ## 7. Runtime, concurrency and transaction model

@@ -1,0 +1,123 @@
+name: a32 eval lock lifecycle native diagnostic
+
+# Publication and native execution are separately gated by independent review.
+on:
+  push:
+    branches: [diagnostic/a32-eval-lock-native-20261022]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: a32-eval-lock-native-${{ github.ref }}
+  cancel-in-progress: false
+
+env:
+  SOURCE_SHA: ${{ github.sha }}
+  CARGO_TERM_COLOR: never
+  PYTHONUTF8: "1"
+  PYTHONDONTWRITEBYTECODE: "1"
+
+jobs:
+  native-macos-arm:
+    if: github.repository == 'TrillionniumFoundation/hepta-private-ci' && github.event_name == 'push' && github.ref == 'refs/heads/diagnostic/a32-eval-lock-native-20261022'
+    runs-on: macos-15
+    # Same diagnostic platform ceiling as the already executed Mac bootstrap;
+    # no Rust-test or subprocess timeout, termination, retry, or thread override.
+    timeout-minutes: 100
+    defaults:
+      run:
+        shell: bash
+    steps:
+      - name: Record exact event and immutable attempt identity
+        id: bootstrap
+        run: |
+          mkdir -p "$RUNNER_TEMP/a32-eval-native"
+          python3 -I -B - <<'PY'
+          import json, os
+          from pathlib import Path
+          keys = ('GITHUB_SHA', 'GITHUB_REF', 'GITHUB_REPOSITORY', 'GITHUB_EVENT_NAME', 'GITHUB_RUN_ID', 'GITHUB_RUN_ATTEMPT', 'RUNNER_OS', 'RUNNER_ARCH', 'ImageOS', 'ImageVersion')
+          p = Path(os.environ['RUNNER_TEMP']) / 'a32-eval-native/job-input.json'
+          p.write_text(json.dumps({k: os.environ.get(k) for k in keys}, indent=2) + '\n')
+          cache = Path(os.environ['RUNNER_TOOL_CACHE']) / 'Python/3.12.10/arm64'
+          observation = {'path': str(cache), 'directory_present': cache.is_dir(), 'complete_marker_present': Path(str(cache) + '.complete').is_file()}
+          (p.parent / 'python-toolcache-before.json').write_text(json.dumps(observation, indent=2) + '\n')
+          PY
+      - name: Check out exact event SHA without retained credentials
+        id: checkout
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ env.SOURCE_SHA }}
+          fetch-depth: 2
+          persist-credentials: false
+      - name: Set up pinned Python
+        id: python
+        uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405
+        with:
+          python-version: "3.12.10"
+          architecture: arm64
+          check-latest: false
+          token: ""
+      - name: Record Python resolution and toolcache hit or official-install path
+        id: python-provenance
+        env:
+          ACTION_PYTHON_PATH: ${{ steps.python.outputs.python-path }}
+          ACTION_PYTHON_VERSION: ${{ steps.python.outputs.python-version }}
+        run: |
+          python3 -I -B - <<'PYTHON'
+          import json, os, platform, sys
+          from pathlib import Path
+          root = Path(os.environ['RUNNER_TEMP']) / 'a32-eval-native'
+          before = json.loads((root / 'python-toolcache-before.json').read_text())
+          hit = before['directory_present'] and before['complete_marker_present']
+          record = {'before': before, 'route_by_pinned_action_contract': 'toolcache-hit' if hit else 'toolcache-miss-official-install', 'action_python_path': os.environ['ACTION_PYTHON_PATH'], 'action_python_version': os.environ['ACTION_PYTHON_VERSION'], 'sys_executable': sys.executable, 'real_executable': str(Path(sys.executable).resolve()), 'actual_version': platform.python_version(), 'input_token_explicitly_empty': True, 'dependency_cache_requested': False, 'action_log_required_for_independent_route_confirmation': True}
+          (root / 'python-resolution.json').write_text(json.dumps(record, indent=2) + '\n')
+          assert platform.python_version() == '3.12.10'
+          assert os.environ['ACTION_PYTHON_VERSION'] == '3.12.10'
+          PYTHON
+      - name: Verify full source, original locks, event and actual ARM host
+        id: preflight
+        run: |
+          python3 -I -B .github/scripts/a32_eval_lock_native.py preflight \
+            --repo "$GITHUB_WORKSPACE" --source-sha "$SOURCE_SHA" \
+            --artifact-root "$RUNNER_TEMP/a32-eval-native"
+      - name: Install digest-pinned native Bazel and DotSlash in a task-local directory
+        id: tools
+        run: |
+          python3 -I -B .github/scripts/a32_eval_lock_native.py install-tools \
+            --repo "$GITHUB_WORKSPACE" --source-sha "$SOURCE_SHA" \
+            --artifact-root "$RUNNER_TEMP/a32-eval-native"
+          echo "$RUNNER_TEMP/a32-eval-tools" >> "$GITHUB_PATH"
+      - name: Audit original Bazel closure, census 127 and run the fixed 21 full suites
+        id: native
+        run: |
+          python3 -I -B .github/scripts/a32_eval_lock_native.py run \
+            --repo "$GITHUB_WORKSPACE" --source-sha "$SOURCE_SHA" \
+            --artifact-root "$RUNNER_TEMP/a32-eval-native"
+      - name: Preserve all step outcomes and require complete native qualification
+        if: always()
+        env:
+          STEP_OUTCOMES: ${{ toJSON(steps) }}
+        run: |
+          python3 -I -B - <<'PY'
+          import json, os
+          from pathlib import Path
+          root = Path(os.environ['RUNNER_TEMP']) / 'a32-eval-native'
+          root.mkdir(parents=True, exist_ok=True)
+          outcomes = json.loads(os.environ['STEP_OUTCOMES'])
+          (root / 'step-outcomes.json').write_text(json.dumps(outcomes, indent=2) + '\n')
+          path = root / 'run/receipt.json'
+          receipt = json.loads(path.read_text()) if path.is_file() else {}
+          assert outcomes.get('native', {}).get('outcome') == 'success'
+          assert receipt.get('complete') is True and receipt.get('qualified') is True and receipt.get('source_unchanged') is True
+          assert len(receipt['results']) == 22 and all(r['qualified'] is True for r in receipt['results'])
+          PY
+      - name: Upload settled evidence, never live command destinations
+        if: always()
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f
+        with:
+          name: a32-eval-native-${{ github.sha }}-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/a32-eval-native
+          include-hidden-files: true
+          if-no-files-found: error
+          retention-days: 7
