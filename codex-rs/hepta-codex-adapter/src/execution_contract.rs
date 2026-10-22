@@ -356,15 +356,27 @@ impl ExecutionReceiptV1 {
                     RecoveryDispositionV1::ReconcileSameOperation
                 )
                 | (ExecutionStatusV1::Failed, RecoveryDispositionV1::Quarantine)
-                | (ExecutionStatusV1::Failed, RecoveryDispositionV1::RollbackToPredecessor)
+                | (
+                    ExecutionStatusV1::Failed,
+                    RecoveryDispositionV1::RollbackToPredecessor
+                )
                 | (
                     ExecutionStatusV1::Indeterminate,
                     RecoveryDispositionV1::ReconcileSameOperation
                 )
-                | (ExecutionStatusV1::Indeterminate, RecoveryDispositionV1::Quarantine)
+                | (
+                    ExecutionStatusV1::Indeterminate,
+                    RecoveryDispositionV1::Quarantine
+                )
                 | (ExecutionStatusV1::Rejected, RecoveryDispositionV1::None)
-                | (ExecutionStatusV1::Rejected, RecoveryDispositionV1::RetryBeforeAdmission)
-                | (ExecutionStatusV1::Rejected, RecoveryDispositionV1::Quarantine)
+                | (
+                    ExecutionStatusV1::Rejected,
+                    RecoveryDispositionV1::RetryBeforeAdmission
+                )
+                | (
+                    ExecutionStatusV1::Rejected,
+                    RecoveryDispositionV1::Quarantine
+                )
         );
         if !recovery_allowed {
             return Err(ExecutionContractError::StatusRecoveryMismatch);
