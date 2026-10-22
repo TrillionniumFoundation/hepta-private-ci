@@ -1,0 +1,29 @@
+{
+  "schema": "hepta.portable-evidence-replay.v1",
+  "replay_pass": true,
+  "files_manifest_sha256": "fc44b3aa7cb4396a2a17d593a8892e7ef62af213c88d0bb2183f7325743c6bc8",
+  "verified_files": 831,
+  "verified_bytes": 129958634,
+  "test_journal_sha256": "b9e7e0a53622b9b87e29507684684389aaf798e97bf53b0d4e93f44570786e39",
+  "test_episodes": 768,
+  "compared_fields": [
+    "alpha",
+    "artifact_scope",
+    "cost_scope",
+    "empirical_frontier",
+    "engineering_pass",
+    "errors",
+    "experiment_blockers",
+    "experiment_pass",
+    "paired_comparisons",
+    "points",
+    "production_pass",
+    "quality_rule",
+    "required_methods",
+    "schema",
+    "scores",
+    "severe_rule"
+  ],
+  "mismatched_fields": [],
+  "scope": "Exact portable file integrity and model-free recomputation of the retained evaluator fields. No regeneration or remeasurement of historical timing."
+}
