@@ -156,6 +156,57 @@ def dependency_origin_violation(
     return None
 
 
+
+def check_root_source_overrides(workspace: dict[str, Any]) -> list[str]:
+    """Disallow Cargo patch/replace rebinding of Cell-approved packages.
+
+    A pinned direct declaration is insufficient if the root manifest can
+    replace the same package through [patch] or [replace].
+    """
+    violations: list[str] = []
+    approved = set(LOCAL_PACKAGE_DIRECTORIES) | set(ALLOWED_EXTERNAL_PACKAGES)
+    patches = workspace.get("patch", {})
+    if not isinstance(patches, dict):
+        return ["workspace: patch source overrides must be a table"]
+    for registry, entries in patches.items():
+        if not isinstance(entries, dict):
+            violations.append(f"workspace: malformed patch source {registry}")
+            continue
+        for alias, declaration in entries.items():
+            if not isinstance(alias, str):
+                violations.append("workspace: malformed patch dependency alias")
+                continue
+            package = (
+                declaration.get("package", alias)
+                if isinstance(declaration, dict)
+                else alias
+            )
+            if (
+                normalized_package(alias) in approved
+                or isinstance(package, str)
+                and normalized_package(package) in approved
+            ):
+                violations.append(
+                    f"workspace: patch.{registry}.{alias} overrides approved "
+                    "Cell dependency source"
+                )
+    replacements = workspace.get("replace", {})
+    if not isinstance(replacements, dict):
+        violations.append("workspace: replace source overrides must be a table")
+    else:
+        for key in replacements:
+            if not isinstance(key, str):
+                violations.append("workspace: malformed replacement package")
+                continue
+            package = key.rsplit("#", 1)[-1].split(":", 1)[0]
+            if normalized_package(package) in approved:
+                violations.append(
+                    f"workspace: replace.{key} overrides approved "
+                    "Cell dependency source"
+                )
+    return violations
+
+
 def check_manifest(
     manifest: dict[str, Any], crate: str, workspace_dependencies: dict[str, Any] | None = None
 ) -> list[str]:
@@ -247,6 +298,7 @@ def check_workspace(root: Path) -> list[str]:
             raise ValueError("workspace.dependencies must be a table")
     except (OSError, UnicodeError, tomllib.TOMLDecodeError, KeyError, TypeError, ValueError) as exc:
         return [f"workspace: cannot resolve dependency inheritance: {exc}"]
+    violations.extend(check_root_source_overrides(workspace))
     for name in CELL_CRATES:
         manifest_file = root / "codex-rs" / name / "Cargo.toml"
         try:
