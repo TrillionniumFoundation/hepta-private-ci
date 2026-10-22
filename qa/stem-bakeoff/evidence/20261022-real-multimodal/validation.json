@@ -1,0 +1,41 @@
+{
+  "actual_model_experiment": {
+    "engineering_status": "COMPLETE",
+    "fixed_primary": "gated",
+    "quality_qualified": true,
+    "report_sha256": "26c74e604c9404f93677d64687603f50afbf0414e7773c07a4237f5f9cbe0211"
+  },
+  "all_blockers_closed": false,
+  "composed_native_head": "db0d860811ffc37f0c462b030d0be3b8043955a8",
+  "formatting": {
+    "codespell_new_code_and_evidence": "PASS",
+    "prettier_documentation": "PASS",
+    "repository_just_fmt": "PASS; no changed files require formatting"
+  },
+  "native_ci_verified": false,
+  "replay": {
+    "archive_manifest_sha256": "2a853d6c975b30d98a8c79348f01bb3f5b26f36793f2986826a5deed3ea4454e",
+    "archive_sha256": "f101122f01dee7a68842dd5294dbcecc0512c984c91249eb77cc0d7d2dbf1fec",
+    "authority": "DENY_ALL",
+    "fixed_plan_and_complete_inventory_verified": true,
+    "head_count": 6,
+    "original_image_encoding_repeated": false,
+    "predictions_match_exactly": true,
+    "production_activation_allowed": false,
+    "quality_qualified": true,
+    "replayed_ledgers": 20,
+    "replayer_sha256": "b375b3960a258c343d922d743aff5eb2707c543f19772ed8ea71a17b2e82ea03",
+    "restored_members": 91,
+    "source_sha": "b280c643703277a72263de9bda9ffd46b8bd8dbf"
+  },
+  "research_source_sha": "b280c643703277a72263de9bda9ffd46b8bd8dbf",
+  "schema": "hepta.multimodal-local-validation.v1",
+  "stem_suite": {
+    "command": "OMP_NUM_THREADS=4 MKL_NUM_THREADS=4 python -m unittest discover -s qa/stem-bakeoff -p test_*.py",
+    "elapsed_seconds": 7.819,
+    "exit_code": 0,
+    "includes_real_model_forwards": false,
+    "log_sha256": "3f97ff63345336669d1e17f4d1cd2b7538a46d4c4886972470011fff6f615bff",
+    "tests_run": 246
+  }
+}

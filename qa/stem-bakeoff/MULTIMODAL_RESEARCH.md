@@ -7,6 +7,12 @@ fixed interventions, calibrated predictions and reloadable Head tensors.
 The workflow reports engineering completion and research qualification
 separately. Neither result grants production authority.
 
+The first completed real run and its complete retained evidence are documented
+in [the 2026-10-22 results](evidence/20261022-real-multimodal/RESULTS.md).
+Its fixed gated research screen passed. The result also records the lack of a
+reliable gated-over-linear gain, high-confidence missing-modality failures,
+and the still-open policy, target-device and composed-CI requirements.
+
 The implementation is `multimodal_cohorts.py` → `multimodal_features.py` →
 `multimodal_research.py`. The one-job workflow is
 `.github/workflows/hepta-multimodal-research.yml`. The existing

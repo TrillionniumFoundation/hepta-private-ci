@@ -1,0 +1,52 @@
+{
+  "authority": "DENY_ALL",
+  "command_argv": [
+    "python",
+    "qa/stem-bakeoff/audit_multimodal_v1.py",
+    "--repo",
+    "/workspace/scratch/19dd72e63851/hepta",
+    "--cohorts",
+    "/tmp/hepta-coco-cohorts-v1",
+    "--bank",
+    "/tmp/hepta-coco-bank-v1",
+    "--results",
+    "/tmp/hepta-coco-research-v1",
+    "--output",
+    "/tmp/hepta-mm-published-audit-final",
+    "--threads",
+    "2"
+  ],
+  "comparison_ignored_top_level_fields": [
+    "audited_at",
+    "repository_head"
+  ],
+  "experiment_implementation_imported": false,
+  "imports": [
+    "PIL",
+    "argparse",
+    "collections",
+    "datetime",
+    "hashlib",
+    "itertools",
+    "json",
+    "math",
+    "numpy",
+    "pathlib",
+    "subprocess",
+    "torch",
+    "torch.nn.functional",
+    "unicodedata"
+  ],
+  "independently_recomputed_ledgers": 20,
+  "maximum_logit_absolute_difference": 4.76837158203125e-06,
+  "original_audit_sha256": "dd58bd943c227b6ac20376ee8cd861eb8f6c3c3723e7bfc1affcf98da988f6fc",
+  "original_photos_verified": 384,
+  "production_activation_allowed": false,
+  "replayed_audit_sha256": "83da456fc41e07333edd8413a1e24f31b6791a84ca251d96cfce640959d1b227",
+  "report_sha256": "26c74e604c9404f93677d64687603f50afbf0414e7773c07a4237f5f9cbe0211",
+  "schema": "hepta.independent-multimodal-audit-replay.v1",
+  "script": "qa/stem-bakeoff/audit_multimodal_v1.py",
+  "script_sha256": "0b09bac499508950d5546393ee3c3401a650340538b9fcdff960f8dd0216f559",
+  "status": "PASS",
+  "substantive_replay_exact_equal": true
+}
