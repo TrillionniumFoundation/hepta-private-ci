@@ -468,6 +468,66 @@ class ScaleMatrixTests(unittest.TestCase):
                             )
                     self.assertIn(expected, scale_matrix.validate_matrix(matrix))
 
+    def test_identity_digests_cannot_relabel_proof_roles(self):
+        for identity_role in ("target_host_digest", "runtime_digest"):
+            for proof_role in ("measurement", "metrics", "future_window", "rollback"):
+                with self.subTest(identity=identity_role, role=proof_role):
+                    record = self.make_record(64, "shared_encoder")
+                    identity_digest = record["provenance"][identity_role]
+                    if proof_role == "measurement":
+                        record["provenance"]["measurement_digest"] = identity_digest
+                        expected = (
+                            "provenance.measurement_digest cannot reuse "
+                            f"provenance.{identity_role}"
+                        )
+                    elif proof_role == "metrics":
+                        record["metrics_receipt"] = identity_digest
+                        expected = f"metrics_receipt cannot reuse provenance.{identity_role}"
+                    else:
+                        record["evidence_receipts"][proof_role] = identity_digest
+                        expected = (
+                            f"evidence_receipts.{proof_role} cannot reuse "
+                            f"provenance.{identity_role}"
+                        )
+                    self.assertIn(expected, scale_matrix.validate_result(record))
+        record = self.make_record(64, "shared_encoder")
+        record["provenance"]["runtime_digest"] = record["provenance"]["target_host_digest"]
+        self.assertIn(
+            "provenance.runtime_digest cannot reuse provenance.target_host_digest",
+            scale_matrix.validate_result(record),
+        )
+
+    def test_identity_role_replay_across_rows_is_rejected_in_both_orders(self):
+        for proof_role in ("measurement", "metrics", "evidence"):
+            for direction in ("identity_first", "identity_second"):
+                with self.subTest(proof=proof_role, direction=direction):
+                    matrix = self.matrix()
+                    first, second = matrix["results"][:2]
+                    identity_row, receipt_row = (
+                        (first, second)
+                        if direction == "identity_first"
+                        else (second, first)
+                    )
+                    # Unique runtime identity for exactly one row: a
+                    # cross-row alias cannot be caught by per-row validation.
+                    identity_digest = "f" * 64
+                    identity_row["provenance"]["runtime_digest"] = identity_digest
+                    if proof_role == "measurement":
+                        receipt_row["provenance"]["measurement_digest"] = identity_digest
+                        receipt_label = "provenance.measurement_digest"
+                    elif proof_role == "metrics":
+                        receipt_row["metrics_receipt"] = identity_digest
+                        receipt_label = "metrics_receipt"
+                    else:
+                        receipt_row["evidence_receipts"]["rollback"] = identity_digest
+                        receipt_label = "evidence_receipts.rollback"
+                    receipt_index = 1 if direction == "identity_first" else 0
+                    self.assertIn(
+                        f"results[{receipt_index}].{receipt_label} "
+                        "reused as provenance.runtime_digest identity",
+                        scale_matrix.validate_matrix(matrix),
+                    )
+
     def test_invalid_result_root_is_a_denial_not_an_exception(self):
         for malformed in ([], None, 42, ""):
             with self.subTest(value=malformed):

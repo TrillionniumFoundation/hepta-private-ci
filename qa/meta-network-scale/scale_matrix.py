@@ -282,6 +282,39 @@ def validate_result(result: dict[str, Any]) -> list[str]:
                     errors.append(
                         f"evidence_receipts.{claim} cannot reuse provenance measurement digest"
                     )
+    # Host/runtime identity and measured/evaluated receipts are independent
+    # proof domains. A reused digest cannot establish two distinct claims.
+    if isinstance(provenance, dict):
+        host_digest = provenance.get("target_host_digest")
+        runtime_digest = provenance.get("runtime_digest")
+        if (
+            isinstance(host_digest, str)
+            and _HEX64.fullmatch(host_digest)
+            and host_digest == runtime_digest
+        ):
+            errors.append(
+                "provenance.runtime_digest cannot reuse provenance.target_host_digest"
+            )
+        for identity_role in ("target_host_digest", "runtime_digest"):
+            identity_digest = provenance.get(identity_role)
+            if not isinstance(identity_digest, str) or not _HEX64.fullmatch(
+                identity_digest
+            ):
+                continue
+            if identity_digest == measurement_digest:
+                errors.append(
+                    f"provenance.measurement_digest cannot reuse provenance.{identity_role}"
+                )
+            if identity_digest == metrics_receipt:
+                errors.append(
+                    f"metrics_receipt cannot reuse provenance.{identity_role}"
+                )
+            if isinstance(evidence_receipts, dict):
+                for claim in REQUIRED_EVIDENCE:
+                    if evidence_receipts.get(claim) == identity_digest:
+                        errors.append(
+                            f"evidence_receipts.{claim} cannot reuse provenance.{identity_role}"
+                        )
     lifecycle = result.get("topology_lifecycle")
     if lifecycle != list(LIFECYCLE):
         errors.append("topology_lifecycle must contain the complete ordered lifecycle")
@@ -326,6 +359,25 @@ def validate_matrix(matrix: dict[str, Any]) -> list[str]:
     evidence_receipts_seen: dict[str, set[str]] = {
         claim: set() for claim in REQUIRED_EVIDENCE
     }
+    # Preindex all role-typed identity digests before validating receipts.
+    # This catches relabelling in either row order while retaining legitimate
+    # repeated target-host/runtime identities in the same identity role.
+    identity_roles_seen: dict[str, str] = {}
+    for row in results:
+        if not isinstance(row, dict):
+            continue
+        provenance = row.get("provenance")
+        if not isinstance(provenance, dict):
+            continue
+        for role in ("target_host_digest", "runtime_digest"):
+            value = provenance.get(role)
+            if isinstance(value, str) and _HEX64.fullmatch(value):
+                original_role = identity_roles_seen.setdefault(value, role)
+                if original_role != role:
+                    errors.append(
+                        f"provenance.{role} reused as provenance.{original_role} identity"
+                    )
+
     # Within each claim, no two experiment arms can share an observation.
     # Across different claim names, a digest also cannot certify a separate
     # row: a multi-claim attestation would need its own explicit schema.
@@ -341,6 +393,12 @@ def validate_matrix(matrix: dict[str, Any]) -> list[str]:
             for claim in REQUIRED_EVIDENCE:
                 receipt = evidence_receipts.get(claim)
                 if isinstance(receipt, str) and _HEX64.fullmatch(receipt):
+                    identity_role = identity_roles_seen.get(receipt)
+                    if identity_role is not None:
+                        errors.append(
+                            f"results[{index}].evidence_receipts.{claim} "
+                            f"reused as provenance.{identity_role} identity"
+                        )
                     if receipt in metrics_receipts_seen:
                         errors.append(
                             f"results[{index}].evidence_receipts.{claim} "
@@ -367,6 +425,12 @@ def validate_matrix(matrix: dict[str, Any]) -> list[str]:
                         )
         metrics_receipt = row.get("metrics_receipt")
         if isinstance(metrics_receipt, str) and _HEX64.fullmatch(metrics_receipt):
+            identity_role = identity_roles_seen.get(metrics_receipt)
+            if identity_role is not None:
+                errors.append(
+                    f"results[{index}].metrics_receipt "
+                    f"reused as provenance.{identity_role} identity"
+                )
             if metrics_receipt in receipt_owners:
                 errors.append(
                     f"results[{index}].metrics_receipt "
@@ -389,6 +453,12 @@ def validate_matrix(matrix: dict[str, Any]) -> list[str]:
                 isinstance(measurement_digest, str)
                 and _HEX64.fullmatch(measurement_digest)
             ):
+                identity_role = identity_roles_seen.get(measurement_digest)
+                if identity_role is not None:
+                    errors.append(
+                        f"results[{index}].provenance.measurement_digest "
+                        f"reused as provenance.{identity_role} identity"
+                    )
                 if measurement_digest in measurement_digests_seen:
                     errors.append(
                         f"results[{index}].provenance.measurement_digest "
