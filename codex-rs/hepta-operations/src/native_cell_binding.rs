@@ -77,6 +77,9 @@ pub fn check_native_cell_outbox_claim_v1(
         || claim.fence == 0
         || claim.attempts == 0
         || claim.expires_at_unix_ms <= now_unix_ms
+        // A preflight lease cannot extend the original Cell request deadline.
+        // Post-deadline reconciliation belongs to the existing durable owner.
+        || claim.expires_at_unix_ms > intent.cell.deadline_ms
     {
         return Err(NativeCellBindingError::ForeignOrExpiredClaim);
     }
