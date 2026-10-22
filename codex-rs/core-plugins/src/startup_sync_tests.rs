@@ -1338,9 +1338,7 @@ fn curated_zip_rejects_duplicate_entry_without_overwriting_first_file() {
     // mistaking writer finalization for an extraction-boundary failure.
     let zip = if duplicate_rejected {
         let mut clean_writer = ZipWriter::new(std::io::Cursor::new(Vec::new()));
-        clean_writer
-            .start_file("root/manifest.json", options)
-            .unwrap();
+        clean_writer.start_file("root/manifest.json", options).unwrap();
         clean_writer.write_all(b"original").unwrap();
         clean_writer.finish().unwrap().into_inner()
     } else {
