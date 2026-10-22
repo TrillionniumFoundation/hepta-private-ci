@@ -16,6 +16,13 @@ codex_rust_crate(
     crate_name = "codex_hepta_agentd",
     integration_test_timeout = "long",
     unit_test_dependency_replacements = _UNIT_TEST_DEPENDENCIES,
+    # Cargo gives this particular fixture a dev-only raw learning writer;
+    # never expose append_qualification on the production ledger target.
+    integration_test_dependency_replacements = {
+        "plasticity_process_e2e": {
+            "//codex-rs/hepta-learning-ledger": "//codex-rs/hepta-learning-ledger:hepta-learning-ledger-qualification-lib",
+        },
+    },
 )
 
 # Compile the local writer qualification separately from the default product
