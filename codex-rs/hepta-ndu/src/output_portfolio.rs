@@ -21,17 +21,7 @@ pub fn select_output_portfolio_v1(
     validate_budget(budget)?;
     let count = candidates.len();
     validate_covariance(&covariance, count)?;
-    let baseline = candidates
-        .iter()
-        .position(|candidate| candidate.is_no_change)
-        .ok_or(NduError::MissingAbstainCandidate)?;
-    for index in 0..count {
-        if covariance[baseline * count + index] != FixedQ32::ZERO
-            || covariance[index * count + baseline] != FixedQ32::ZERO
-        {
-            return Err(NduError::InvalidSolverReceipt("no-change covariance"));
-        }
-    }
+    let baseline = validate_baseline_covariance(&candidates, &covariance)?;
     let mut risks = Vec::with_capacity(count);
     let mut scores = Vec::with_capacity(count);
     for candidate in &candidates {
@@ -103,7 +93,9 @@ pub fn select_output_portfolio_v1(
             while low < high {
                 let midpoint = low + (high - low + 1) / 2;
                 weights[index] = FixedQ32::from_raw(midpoint);
-                if respects_portfolio_budgets(&weights, &candidates, &risks, &covariance, budget)? {
+                if respects_portfolio_budgets(
+                    &weights, &candidates, &risks, &covariance, budget,
+                )? {
                     low = midpoint;
                 } else {
                     high = midpoint - 1;
@@ -191,6 +183,7 @@ pub fn output_efficient_frontier_v1(
         .map(|candidate| scalar_risk_unweighted(&candidate.risk))
         .collect::<Result<Vec<_>, _>>()?;
     validate_covariance(&covariance, canonical.len())?;
+    validate_baseline_covariance(&canonical, &covariance)?;
     Ok(efficient_frontier_from_canonical(&canonical, &risks))
 }
 fn canonical_candidates(
@@ -363,6 +356,26 @@ fn validate_covariance(covariance: &[FixedQ32], count: usize) -> Result<(), NduE
         }
     }
     Ok(())
+}
+/// A no-change asset has zero *incremental* covariance with every active
+/// direction. Require that invariant for both selection and frontier views.
+fn validate_baseline_covariance(
+    candidates: &[OutputPortfolioCandidateV1],
+    covariance: &[FixedQ32],
+) -> Result<usize, NduError> {
+    let count = candidates.len();
+    let baseline = candidates
+        .iter()
+        .position(|candidate| candidate.is_no_change)
+        .ok_or(NduError::MissingAbstainCandidate)?;
+    for index in 0..count {
+        if covariance[baseline * count + index] != FixedQ32::ZERO
+            || covariance[index * count + baseline] != FixedQ32::ZERO
+        {
+            return Err(NduError::InvalidSolverReceipt("no-change covariance"));
+        }
+    }
+    Ok(baseline)
 }
 fn zero_risk(future_window_digest: Digest32) -> SemanticRiskEstimateV1 {
     SemanticRiskEstimateV1 {
