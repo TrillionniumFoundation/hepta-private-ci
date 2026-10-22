@@ -187,5 +187,91 @@ missing = { workspace = true }
             self.assertEqual(len(checker.check_workspace(root)), 1)
 
 
+    def test_internal_allowlisted_name_cannot_point_to_git_or_other_path(self):
+        data = self.make_manifest("""
+[dependencies]
+codex-hepta-types = { git = "https://example.invalid/fake.git" }
+masked = { package = "codex-hepta-types", path = "../../unreviewed" }
+""")
+        errors = checker.check_manifest(data, "hepta-neuron")
+        self.assertEqual(len(errors), 2, errors)
+        self.assertTrue(all("source custody" in error for error in errors))
+
+    def test_workspace_inherited_local_path_must_match_reviewed_directory(self):
+        data = self.make_manifest("""
+[dependencies]
+codex-hepta-types = { workspace = true }
+""")
+        rejected = checker.check_manifest(
+            data, "hepta-neuron",
+            {"codex-hepta-types": {"path": "different-hepta-types"}},
+        )
+        self.assertEqual(len(rejected), 1, rejected)
+        accepted = checker.check_manifest(
+            data, "hepta-neuron",
+            {"codex-hepta-types": {"path": "hepta-types"}},
+        )
+        self.assertEqual(accepted, [])
+
+    def test_workspace_alias_cannot_rewrite_inherited_package_identity(self):
+        data = self.make_manifest("""
+[dependencies]
+local = { package = "codex-hepta-types", workspace = true }
+""")
+        errors = checker.check_manifest(
+            data, "hepta-neuron",
+            {"local": {"package": "codex-hepta-contracts", "path": "hepta-contracts"}},
+        )
+        self.assertEqual(len(errors), 1, errors)
+        self.assertIn("package identity", errors[0])
+
+    def test_allowlisted_external_package_cannot_rebind_source(self):
+        data = self.make_manifest("""
+[dependencies]
+serde = { path = "../rogue" }
+serde_json = { registry = "unreviewed", version = "1" }
+sha2 = { git = "https://example.invalid/sha2" }
+""")
+        errors = checker.check_manifest(data, "hepta-neuron")
+        self.assertEqual(len(errors), 3, errors)
+        self.assertTrue(all("source custody" in error for error in errors))
+
+    def test_workspace_external_package_git_override_is_denied(self):
+        data = self.make_manifest("""
+[dependencies]
+serde = { workspace = true, features = ["derive"] }
+""")
+        errors = checker.check_manifest(
+            data, "hepta-neuron",
+            {"serde": {"git": "https://example.invalid/serde.git"}},
+        )
+        self.assertEqual(len(errors), 1, errors)
+        self.assertIn("unreviewed source", errors[0])
+
+    def test_approved_workspace_utility_and_external_registry_still_pass(self):
+        data = self.make_manifest("""
+[dependencies]
+codex-utils-absolute-path = { workspace = true }
+serde = { workspace = true, features = ["derive"] }
+""")
+        errors = checker.check_manifest(
+            data, "hepta-neuron",
+            {
+                "codex-utils-absolute-path": {"path": "utils/absolute-path"},
+                "serde": {"version": "1", "features": ["rc"]},
+            },
+        )
+        self.assertEqual(errors, [])
+
+    def test_windows_target_dependency_cannot_redirect_approved_package(self):
+        data = self.make_manifest("""
+[target.'cfg(windows)'.dependencies]
+types_alias = { package = "codex-hepta-types", path = "../wrong-owner" }
+""")
+        errors = checker.check_manifest(data, "hepta-neuron")
+        self.assertEqual(len(errors), 1, errors)
+        self.assertIn("source custody", errors[0])
+
+
 if __name__ == "__main__":
     unittest.main()
