@@ -30,6 +30,32 @@ fn router_is_deterministic_and_sorted() {
 }
 
 #[test]
+fn router_bounds_raw_input_before_sort_and_deduplication() {
+    // A repeated ID is still one logical cell, but the raw input must not
+    // consume unbounded sort/dedup CPU before the capacity check.
+    assert_eq!(
+        DeterministicRouterV1::new(vec![id("cell:repeated"); MAX_INDEX_ENTRIES + 1]),
+        Err(CellWorkerError::IndexCapacity)
+    );
+
+    let cells = (0..MAX_INDEX_ENTRIES)
+        .map(|index| id(&format!("cell:bounded:{index:05}")))
+        .collect::<Vec<_>>();
+    let router = DeterministicRouterV1::new(cells).expect("bounded router");
+    assert_eq!(router.cells().len(), MAX_INDEX_ENTRIES);
+    assert_eq!(
+        DeterministicRouterV1::new(vec![id("cell:one"), id("cell:one")])
+            .expect("small duplicate set")
+            .cells(),
+        &[id("cell:one")]
+    );
+    assert_eq!(
+        DeterministicRouterV1::new(Vec::new()),
+        Err(CellWorkerError::EmptyCellSet)
+    );
+}
+
+#[test]
 fn stale_feature_generation_is_not_readable() {
     let snapshot = ImmutableFeatureSnapshotV1::encode(generation(2), digest("encoder"), b"input")
         .expect("snapshot");

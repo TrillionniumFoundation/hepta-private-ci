@@ -26,11 +26,17 @@ pub struct DeterministicRouterV1 {
 
 impl DeterministicRouterV1 {
     pub fn new(mut cells: Vec<StableId>) -> Result<Self, CellWorkerError> {
-        cells.sort();
-        cells.dedup();
         if cells.is_empty() {
             return Err(CellWorkerError::EmptyCellSet);
         }
+        // Cap the raw input before sorting or deduplication: even a vector
+        // containing only duplicate IDs can otherwise force unbounded O(n log n)
+        // admission work on this shared worker's hot configuration path.
+        if cells.len() > MAX_INDEX_ENTRIES {
+            return Err(CellWorkerError::IndexCapacity);
+        }
+        cells.sort();
+        cells.dedup();
         Ok(Self { cells })
     }
 
