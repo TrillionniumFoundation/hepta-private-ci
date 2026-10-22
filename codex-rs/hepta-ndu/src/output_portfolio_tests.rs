@@ -331,6 +331,17 @@ fn fractional_portfolio_counts_the_no_change_residual_against_max_selected() {
         OutputPortfolioDispositionV1::AdvisorySelection
     );
     assert_eq!(two_slots.allocations.len(), 2);
+    // Q32 percentages truncate independently: q(40) + q(60) = ONE - 1
+    // least-significant unit. The NoChange allocation is the exact residual.
+    let exact_no_change_residual = FixedQ32::ONE
+        .checked_sub(q(40))
+        .expect("Q32 complement must be representable");
+    assert_eq!(
+        q(40)
+            .checked_add(exact_no_change_residual)
+            .expect("bounded weights"),
+        FixedQ32::ONE
+    );
     assert!(
         two_slots
             .allocations
@@ -341,7 +352,10 @@ fn fractional_portfolio_counts_the_no_change_residual_against_max_selected() {
         two_slots
             .allocations
             .iter()
-            .any(|item| { item.candidate_id == id("baseline") && item.weight == q(60) })
+            .any(|item| {
+                item.candidate_id == id("baseline")
+                    && item.weight == exact_no_change_residual
+            })
     );
 }
 
@@ -792,4 +806,46 @@ fn positive_individual_scores_cannot_hide_negative_correlation_gain() {
             .any(|item| item.candidate_id == id("baseline"))
     );
     assert!(receipt.total_utility > receipt.total_risk);
+}
+
+
+#[test]
+fn portfolio_receipt_replay_rejects_mutated_allocation_and_digest() {
+    let original = [
+        candidate("baseline", 0, 0, true),
+        candidate("direction", 80, 0, false),
+    ];
+    let ctx = context(2);
+    let limits = budget(2);
+    let receipt = select_output_portfolio_v1(&ctx, &limits, &original)
+        .expect("canonical portfolio selection");
+
+    verify_output_portfolio_receipt_v1(&ctx, &limits, &original, &receipt)
+        .expect("exact receipt is replayable");
+    // Input ordering is not authority: the binding must survive the same
+    // canonical permutation used by the selection digest.
+    let reordered = [original[1].clone(), original[0].clone()];
+    verify_output_portfolio_receipt_v1(&ctx, &limits, &reordered, &receipt)
+        .expect("canonical inputs replay identically");
+
+    let mut altered_weight = receipt.clone();
+    altered_weight.allocations[0].weight = FixedQ32::ZERO;
+    assert_eq!(
+        verify_output_portfolio_receipt_v1(&ctx, &limits, &original, &altered_weight),
+        Err(NduError::InvalidSolverReceipt("portfolio receipt replay"))
+    );
+
+    let mut altered_digest = receipt.clone();
+    altered_digest.selection_digest = Digest32::of_bytes(b"forged-digest");
+    assert_eq!(
+        verify_output_portfolio_receipt_v1(&ctx, &limits, &original, &altered_digest),
+        Err(NduError::InvalidSolverReceipt("portfolio receipt replay"))
+    );
+
+    let mut altered_generation = receipt.clone();
+    altered_generation.generation = Generation::new(2).expect("nonzero generation");
+    assert_eq!(
+        verify_output_portfolio_receipt_v1(&ctx, &limits, &original, &altered_generation),
+        Err(NduError::InvalidSolverReceipt("portfolio receipt replay"))
+    );
 }
