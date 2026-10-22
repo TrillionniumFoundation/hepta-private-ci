@@ -53,6 +53,13 @@ Only after these fixtures pass should the host add feature batching, activation
 batching, reusable immutable buffers, a compatible-model second index, per-scope
 worker lanes and group-commit metrics.
 
+`SharedWorkerPoolV1::drain()` reports `groups_dequeued` and
+`activations_dequeued` as scheduling observations only. The
+`groups_committed` and `activations_committed` counters remain zero until an
+actual backend terminal receipt is independently checked and durably committed
+by the worker/evidence owner; dequeueing must not manufacture throughput,
+learning, or successful model-execution evidence.
+
 ## P3 — native hepta-runtime fast path
 
 `NativeExecutionAdapter` is the in-process typed boundary. An implementation may
