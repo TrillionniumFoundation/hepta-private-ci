@@ -207,6 +207,52 @@ def check_root_source_overrides(workspace: dict[str, Any]) -> list[str]:
     return violations
 
 
+def check_local_source_directories(root: Path) -> list[str]:
+    """Require reviewed local Cargo sources to remain real, identified dirs.
+
+    Prevent an approved lexical path from following a checked-in symlink or
+    a replaced manifest whose package name no longer matches the allowlist.
+    """
+    violations: list[str] = []
+    workspace = root / "codex-rs"
+    if workspace.is_symlink():
+        return ["workspace: codex-rs source root is a symbolic link"]
+    for package, relative in LOCAL_PACKAGE_DIRECTORIES.items():
+        directory = workspace
+        diverted = False
+        for component in relative.split("/"):
+            directory = directory / component
+            if directory.is_symlink():
+                violations.append(
+                    f"workspace: {package} source path contains a symbolic link"
+                )
+                diverted = True
+                break
+        if diverted:
+            continue
+        manifest_path = directory / "Cargo.toml"
+        if manifest_path.is_symlink():
+            violations.append(
+                f"workspace: {package} source Cargo.toml is a symbolic link"
+            )
+            continue
+        try:
+            manifest = tomllib.loads(manifest_path.read_text(encoding="utf-8"))
+            info = manifest["package"]
+            actual = info["name"] if isinstance(info, dict) else None
+        except (OSError, UnicodeError, tomllib.TOMLDecodeError, KeyError) as exc:
+            violations.append(
+                f"workspace: cannot read reviewed {package} source identity: {exc}"
+            )
+            continue
+        if actual != package:
+            violations.append(
+                f"workspace: reviewed source {relative} has wrong package identity "
+                f"{actual!r} (expected {package!r})"
+            )
+    return violations
+
+
 def check_manifest(
     manifest: dict[str, Any], crate: str, workspace_dependencies: dict[str, Any] | None = None
 ) -> list[str]:
@@ -299,6 +345,7 @@ def check_workspace(root: Path) -> list[str]:
     except (OSError, UnicodeError, tomllib.TOMLDecodeError, KeyError, TypeError, ValueError) as exc:
         return [f"workspace: cannot resolve dependency inheritance: {exc}"]
     violations.extend(check_root_source_overrides(workspace))
+    violations.extend(check_local_source_directories(root))
     for name in CELL_CRATES:
         manifest_file = root / "codex-rs" / name / "Cargo.toml"
         try:
