@@ -177,7 +177,8 @@ fn cached_remote_plugin_catalog_scopes_returns_existing_scopes() {
             &auth,
             scope,
             &[],
-        );
+        )
+        .expect("publish scoped catalog");
     }
 
     assert_eq!(
