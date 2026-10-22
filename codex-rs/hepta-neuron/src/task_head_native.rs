@@ -196,7 +196,11 @@ impl LoadedTaskHeadV1 {
         let mut hidden = Vec::with_capacity(rank);
         for row in 0..rank {
             let start = down_start + row * width;
-            let x = affine(&self.weights[start..start + width], features, 0.0)?;
+            let x = affine(
+                &self.weights[start..start + width],
+                features,
+                /*bias*/ 0.0,
+            )?;
             let x64 = f64::from(x);
             hidden.push(checked_f32(
                 0.5 * x64 * (1.0 + erf_bounded(x64 * std::f64::consts::FRAC_1_SQRT_2)),
@@ -205,7 +209,11 @@ impl LoadedTaskHeadV1 {
         let mut adapted = Vec::with_capacity(width);
         for (row, feature) in features.iter().enumerate() {
             let start = up_start + row * rank;
-            let residual = affine(&self.weights[start..start + rank], &hidden, 0.0)?;
+            let residual = affine(
+                &self.weights[start..start + rank],
+                &hidden,
+                /*bias*/ 0.0,
+            )?;
             let value = *feature + gate * residual;
             if !value.is_finite() {
                 return Err(TaskHeadError::NonFinite);

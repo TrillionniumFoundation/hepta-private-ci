@@ -42,7 +42,12 @@ fn fixture() -> (Value, Vec<u8>) {
         1.0, 0.5, -0.25, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, // up
         0.7, -1.3, 0.0, 0.0, 0.0, -0.6, 0.2, 0.0, 0.0, 0.0, 0.1, -0.2, // task
     ]);
-    (manifest(5, 2, 2, 2, &bytes), bytes)
+    (
+        manifest(
+            /*width*/ 5, /*state*/ 2, /*rank*/ 2, /*tasks*/ 2, &bytes,
+        ),
+        bytes,
+    )
 }
 
 fn load(header: &Value, weights: &[u8]) -> Result<LoadedTaskHeadV1, TaskHeadError> {
@@ -61,7 +66,11 @@ fn assert_error(result: Result<LoadedTaskHeadV1, TaskHeadError>, expected: TaskH
 fn nonzero_gate_gelu_residual_and_temperature_match_independent_torch_values() {
     let (header, weights) = fixture();
     let head = must(load(&header, &weights));
-    let result = must(head.predict(&[1.0, -2.0, 0.0, 0.0, 0.0], head.feature_identity(), 3));
+    let result = must(head.predict(
+        &[1.0, -2.0, 0.0, 0.0, 0.0],
+        head.feature_identity(),
+        /*present_mask*/ 3,
+    ));
     // CPU Torch 2.10, GELU approximate="none", with explicitly zero state.
     let expected_logits = [4.015066623687744, -1.5683350563049316];
     let expected_probabilities = [0.999415714035679, 0.0005842859643210744];
@@ -96,14 +105,17 @@ fn width_3073_uses_the_final_feature_in_the_learned_nonlinear_path() {
     weights[task + width - 1] = 1.0;
     weights[task + 2 * width - 1] = -1.0;
     let bytes = payload(&weights);
-    let head = must(load(&manifest(width, state, rank, 2, &bytes), &bytes));
+    let head = must(load(
+        &manifest(width, state, rank, /*tasks*/ 2, &bytes),
+        &bytes,
+    ));
     let mut features = vec![0.0; width];
     features[width - 1] = 1.0;
-    let result = must(head.predict(&features, head.feature_identity(), 3));
+    let result = must(head.predict(&features, head.feature_identity(), /*present_mask*/ 3));
     assert!((result.task_logits[0] - 1.420_672_4).abs() < 1e-6);
     assert!((result.task_logits[1] + 1.420_672_4).abs() < 1e-6);
     features[width - 1] = 0.0;
-    let zero = must(head.predict(&features, head.feature_identity(), 3));
+    let zero = must(head.predict(&features, head.feature_identity(), /*present_mask*/ 3));
     assert_eq!(zero.task_logits, vec![0.0, 0.0]);
     assert_eq!(zero.task_probabilities, vec![0.5, 0.5]);
     assert_eq!(zero.predicted_class, 0); // Ties retain the first task class.
@@ -122,7 +134,11 @@ fn missing_required_modalities_return_no_prediction_before_arithmetic() {
         );
     }
     assert_eq!(
-        head.predict(&[1.0, -2.0, 0.0, 0.0, 0.0], head.feature_identity(), 0x83),
+        head.predict(
+            &[1.0, -2.0, 0.0, 0.0, 0.0],
+            head.feature_identity(),
+            /*present_mask*/ 0x83
+        ),
         Err(TaskHeadError::InvalidPresenceMask)
     );
 }
@@ -151,7 +167,11 @@ fn exact_identity_and_revocation_epoch_are_required_at_use() {
         };
         let identity = must(serde_json::from_value(changed));
         assert_eq!(
-            head.predict(&[1.0, -2.0, 0.0, 0.0, 0.0], &identity, 3),
+            head.predict(
+                &[1.0, -2.0, 0.0, 0.0, 0.0],
+                &identity,
+                /*present_mask*/ 3
+            ),
             Err(TaskHeadError::FeatureIdentityMismatch)
         );
     }
@@ -276,12 +296,16 @@ fn nonfinite_parameters_inputs_and_finite_overflow_fail_closed() {
     let (header, weights) = fixture();
     let head = must(load(&header, &weights));
     assert_eq!(
-        head.predict(&[1.0], head.feature_identity(), 3),
+        head.predict(&[1.0], head.feature_identity(), /*present_mask*/ 3),
         Err(TaskHeadError::FeatureShape)
     );
     for nonfinite in [f32::NAN, f32::INFINITY, f32::NEG_INFINITY] {
         assert_eq!(
-            head.predict(&[1.0, nonfinite, 0.0, 0.0, 0.0], head.feature_identity(), 3),
+            head.predict(
+                &[1.0, nonfinite, 0.0, 0.0, 0.0],
+                head.feature_identity(),
+                /*present_mask*/ 3
+            ),
             Err(TaskHeadError::NonFinite)
         );
         let mut changed = weights.clone();
@@ -296,7 +320,11 @@ fn nonfinite_parameters_inputs_and_finite_overflow_fail_closed() {
     declared["weights_sha256"] = json!(Digest32::of_bytes(&changed).to_string());
     let huge = must(load(&declared, &changed));
     assert_eq!(
-        huge.predict(&[f32::MAX, 1.0, 0.0, 0.0, 0.0], huge.feature_identity(), 3),
+        huge.predict(
+            &[f32::MAX, 1.0, 0.0, 0.0, 0.0],
+            huge.feature_identity(),
+            /*present_mask*/ 3
+        ),
         Err(TaskHeadError::NonFinite)
     );
 }
