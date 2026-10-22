@@ -24,6 +24,12 @@ DIRECT_NATIVE_INPUTS = {
     ".cargo/**",
     "codex-rs/rustfmt.toml",
     "rustfmt.toml",
+    "qa/meta-network-scale/check_cell_codex_boundary.py",
+    "qa/meta-network-scale/test_cell_codex_boundary.py",
+    "qa/meta-network-scale/scale_matrix.py",
+    "qa/meta-network-scale/test_scale_matrix.py",
+    ".github/workflows/hepta-cell-codex-boundary.yml",
+    ".github/workflows/hepta-p5-scale-evidence-exact.yml",
     "scripts/test_hepta_ndu_portfolio_ci.py",
     ".github/workflows/hepta-ndu-portfolio-exact.yml",
 }
