@@ -918,6 +918,50 @@ fn positive_individual_scores_cannot_hide_negative_correlation_gain() {
 }
 
 #[test]
+fn negative_standalone_score_can_hedge_a_positive_cell_portfolio() {
+    let mut measured = context(3);
+    // Symmetric diagonally dominant covariance with a zero NoChange row.
+    // The second direction has negative standalone value but positive
+    // marginal gain after the first direction is admitted.
+    measured.semantic_covariance[4] = q(50);
+    measured.semantic_covariance[5] = q(-40);
+    measured.semantic_covariance[7] = q(-40);
+    measured.semantic_covariance[8] = q(40);
+    let mut primary = candidate("a-primary", 60, 0, false);
+    primary.weight_cap = q(50);
+    let hedge = candidate("b-hedge", 0, 5, false);
+    let isolated = select_output_portfolio_v1(
+        &context(2),
+        &budget(2),
+        &[candidate("baseline", 0, 0, true), hedge.clone()],
+    )
+    .expect("reject isolated negative-value Cell");
+    assert_eq!(isolated.disposition, OutputPortfolioDispositionV1::NoChange);
+
+    let candidates = [candidate("baseline", 0, 0, true), primary, hedge];
+    let limits = budget(3);
+    let receipt = select_output_portfolio_v1(&measured, &limits, &candidates)
+        .expect("admit a beneficial joint hedge");
+    assert_eq!(
+        receipt.disposition,
+        OutputPortfolioDispositionV1::AdvisorySelection
+    );
+    for name in ["a-primary", "b-hedge", "baseline"] {
+        assert!(
+            receipt
+                .allocations
+                .iter()
+                .any(|allocation| allocation.candidate_id == id(name))
+        );
+    }
+    // The joint loss is less than the 50%-weight primary alone (0.125).
+    assert!(receipt.total_risk < q(12));
+    assert_eq!(receipt.allocations.len(), 3);
+    verify_output_portfolio_receipt_v1(&measured, &limits, &candidates, &receipt)
+        .expect("exact replay of covariance-dependent hedge");
+}
+
+#[test]
 fn fixed_switch_cost_cannot_be_amortized_by_fractional_weight() {
     let mut limits = budget(2);
     limits.switch_penalty = q(30);

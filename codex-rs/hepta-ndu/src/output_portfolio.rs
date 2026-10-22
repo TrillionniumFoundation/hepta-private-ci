@@ -58,9 +58,11 @@ pub fn select_output_portfolio_v1(
         if selected >= budget.max_selected || remaining == FixedQ32::ZERO {
             break;
         }
-        if scores[index] <= FixedQ32::ZERO {
-            continue;
-        }
+        // A negative standalone score can still hedge a previously
+        // admitted Cell when independently supplied semantic covariance is
+        // negative. The marginal-gain check below, rather than an isolated
+        // score threshold, must decide whether the joint portfolio improves.
+        // With no active Cell the same check still rejects nonpositive gains.
         // A hard-zero risk budget must admit only genuinely zero-risk
         // directions. Q32 ties-to-even rounding can otherwise truncate a
         // positive linear or quadratic loss to zero at a fractional weight,
