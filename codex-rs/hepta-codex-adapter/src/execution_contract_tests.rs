@@ -237,6 +237,20 @@ fn fence_requires_old_writer_and_route_cutover() {
     };
     assert_eq!(base.validate(), Ok(()));
 
+    let mut missing = base.clone();
+    missing.predecessor_generation = None;
+    assert_eq!(
+        missing.validate(),
+        Err(ExecutionContractError::NonSuccessorGeneration)
+    );
+    let mut invented_initial_handoff = base.clone();
+    invented_initial_handoff.generation = generation(1);
+    invented_initial_handoff.predecessor_generation = None;
+    assert_eq!(
+        invented_initial_handoff.validate(),
+        Err(ExecutionContractError::NonSuccessorGeneration)
+    );
+
     let mut skipped = base.clone();
     skipped.generation = generation(5);
     assert_eq!(
@@ -413,5 +427,90 @@ fn nonzero_process_exit_cannot_be_a_successful_runtime_receipt() {
     // Non-process tools may have a terminal observation without an exit code.
     receipt.tool_outcome.exit_code = None;
     receipt.execution.outcome_digest = Some(receipt.tool_outcome.outcome_digest());
+    assert_eq!(receipt.validate_against(&value), Ok(()));
+}
+
+#[test]
+fn failed_receipt_never_retries_as_unadmitted() {
+    let value = intent();
+    let mut receipt = ExecutionReceiptV1 {
+        operation_id: value.cell.operation_id.clone(),
+        intent_digest: value.cell.intent_digest(),
+        generation: value.cell.generation,
+        final_payload_digest: value.cell.final_payload.clone(),
+        outcome_digest: Some(digest("failed outcome")),
+        status: ExecutionStatusV1::Failed,
+        recovery: RecoveryDispositionV1::RetryBeforeAdmission,
+        authority: AuthorityPosture::DENY_ALL,
+    };
+    assert_eq!(
+        receipt.validate_against(&value.cell),
+        Err(ExecutionContractError::StatusRecoveryMismatch)
+    );
+    receipt.recovery = RecoveryDispositionV1::ReconcileSameOperation;
+    assert_eq!(receipt.validate_against(&value.cell), Ok(()));
+}
+
+#[test]
+fn native_tool_exit_and_status_must_be_consistent() {
+    let value = intent();
+    let outcome = ToolOutcomeV1 {
+        terminal_observed: true,
+        exit_code: Some(0),
+        stdout_digest: Some(digest("stdout")),
+        stderr_digest: None,
+        retryable: false,
+    };
+    let mut receipt = RuntimeReceiptV1 {
+        execution: ExecutionReceiptV1 {
+            operation_id: value.cell.operation_id.clone(),
+            intent_digest: value.cell.intent_digest(),
+            generation: value.cell.generation,
+            final_payload_digest: value.cell.final_payload.clone(),
+            outcome_digest: Some(outcome.outcome_digest()),
+            status: ExecutionStatusV1::Completed,
+            recovery: RecoveryDispositionV1::None,
+            authority: AuthorityPosture::DENY_ALL,
+        },
+        runtime_intent_digest: value.intent_digest(),
+        tool_outcome: outcome,
+    };
+    assert_eq!(receipt.validate_against(&value), Ok(()));
+
+    // A successful native tool is not an unadmitted rejection.
+    receipt.execution.status = ExecutionStatusV1::Rejected;
+    assert_eq!(
+        receipt.validate_against(&value),
+        Err(ExecutionContractError::StatusOutcomeMismatch)
+    );
+
+    // A completed effect is not independently marked retryable.
+    receipt.execution.status = ExecutionStatusV1::Completed;
+    receipt.tool_outcome.retryable = true;
+    receipt.execution.outcome_digest = Some(receipt.tool_outcome.outcome_digest());
+    assert_eq!(
+        receipt.validate_against(&value),
+        Err(ExecutionContractError::StatusOutcomeMismatch)
+    );
+
+    // Even a digest-matching exit code is invalid without terminal observation.
+    receipt.tool_outcome.retryable = false;
+    receipt.tool_outcome.terminal_observed = false;
+    receipt.execution.outcome_digest = Some(receipt.tool_outcome.outcome_digest());
+    assert_eq!(
+        receipt.tool_outcome.validate(),
+        Err(ExecutionContractError::StatusOutcomeMismatch)
+    );
+    assert_eq!(
+        receipt.validate_against(&value),
+        Err(ExecutionContractError::StatusOutcomeMismatch)
+    );
+
+    // A genuine pre-admission rejection has no observed native tool exit.
+    receipt.tool_outcome.exit_code = None;
+    receipt.tool_outcome.stdout_digest = None;
+    receipt.execution.outcome_digest = Some(receipt.tool_outcome.outcome_digest());
+    receipt.execution.status = ExecutionStatusV1::Rejected;
+    receipt.execution.recovery = RecoveryDispositionV1::RetryBeforeAdmission;
     assert_eq!(receipt.validate_against(&value), Ok(()));
 }
