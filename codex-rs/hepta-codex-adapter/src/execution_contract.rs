@@ -90,9 +90,13 @@ impl GenerationFenceWitnessV1 {
         if self.predecessor_generation == Some(self.generation) {
             return Err(ExecutionContractError::GenerationSelfPredecessor);
         }
-        if let Some(predecessor) = self.predecessor_generation
-            && predecessor.get().checked_add(1) != Some(self.generation.get())
-        {
+        // This witness describes a handoff between two distinct writers.
+        // A missing predecessor is not evidence of a valid cutover, even
+        // when the fence and migration digest fields are populated.
+        let predecessor = self
+            .predecessor_generation
+            .ok_or(ExecutionContractError::NonSuccessorGeneration)?;
+        if predecessor.get().checked_add(1) != Some(self.generation.get()) {
             return Err(ExecutionContractError::NonSuccessorGeneration);
         }
         if !self.old_writer_fenced || !self.route_cutover_observed {
