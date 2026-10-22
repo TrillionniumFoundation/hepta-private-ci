@@ -237,9 +237,13 @@ async fn pre_boundary_proof_guard_definition_is_checked_on_reopen() -> TestResul
     ] {
         let directory = tempfile::tempdir()?;
         let fixture = Fixture::open(directory.path()).await?;
+        // Keep the schema replacement on one connection so a pooled connection
+        // cannot prepare CREATE against its cached pre-DROP trigger definition.
+        let mut transaction = fixture.writer.store.pool.begin().await?;
         sqlx::query("DROP TRIGGER cognitive_operation_pre_boundary_rejections_no_replace")
-            .execute(&fixture.writer.store.pool).await?;
-        sqlx::raw_sql(replacement).execute(&fixture.writer.store.pool).await?;
+            .execute(&mut *transaction).await?;
+        sqlx::raw_sql(replacement).execute(&mut *transaction).await?;
+        transaction.commit().await?;
         fixture.writer.store.pool.close().await;
         drop(fixture);
         let error = match Fixture::open(directory.path()).await {

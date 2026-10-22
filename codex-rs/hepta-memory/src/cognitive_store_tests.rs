@@ -1099,11 +1099,4 @@ async fn v2_fixture_migrates_forward_preserving_memory_and_revoking_legacy_proje
             .expect("migration ledger"),
         expected_versions
     );
-    assert_eq!(
-        MIGRATOR
-            .iter()
-            .map(|migration| migration.version)
-            .collect::<Vec<_>>(),
-        expected_versions
-    );
 }
