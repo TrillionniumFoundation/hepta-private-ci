@@ -3,6 +3,7 @@ from __future__ import annotations
 
 import base64
 import copy
+import hashlib
 import json
 import sys
 from pathlib import Path
@@ -69,7 +70,9 @@ class FallbackGateTests(unittest.TestCase):
             "scope_id": "organ-a", "generation": 7, "sandbox_id": sandbox,
             "status": "completed", "dispatch_count": 1,
             "normalized_result_digest": d("2"), "state_before_digest": d("3"),
-            "state_after_digest": d("4"), "effect_receipt_digest": d("5"),
+            "state_after_digest": d("4"),
+            "effect_receipt_digest": hashlib.sha256(("receipt:" + sandbox).encode()).hexdigest(),
+            "normalized_intent_digest": d("8"), "terminal_observed": True,
             "failure_class": "none",
         }
 
@@ -213,6 +216,65 @@ class FallbackGateTests(unittest.TestCase):
         result = assess_signed_parity(native=n, codex=c, evaluation=e, trust=self.trust)
         self.assertFalse(result["production_qualified"])
         self.assertEqual(result["case_id"], "frozen-case")
+
+
+    def test_same_physical_receipt_cannot_prove_two_independent_sandboxes(self):
+        rec = self.record("codex-sandbox")
+        rec["effect_receipt_digest"] = self.record("native-sandbox")["effect_receipt_digest"]
+        n, c, e = self.pair(crec=rec)
+        with self.assertRaisesRegex(EvidenceRejected, "receipt replay"):
+            assess_signed_parity(native=n, codex=c, evaluation=e, trust=self.trust)
+
+    def test_normalized_operation_digest_mismatch_is_refused(self):
+        rec = self.record("codex-sandbox")
+        rec["normalized_intent_digest"] = d("9")
+        n, c, e = self.pair(crec=rec)
+        with self.assertRaisesRegex(EvidenceRejected, "unmatched parity cohort"):
+            assess_signed_parity(native=n, codex=c, evaluation=e, trust=self.trust)
+
+    def test_terminal_observation_and_failure_class_agree(self):
+        for status, failure_class in (("completed", "transport_failure"),
+                                      ("failed", "none"), ("rejected", "none")):
+            with self.subTest(status=status):
+                rec = self.record("native-sandbox")
+                rec.update(status=status, failure_class=failure_class)
+                if status == "rejected":
+                    rec.update(dispatch_count=0, terminal_observed=False,
+                               state_after_digest=rec["state_before_digest"])
+                n, c, e = self.pair(nrec=rec)
+                with self.assertRaises(EvidenceRejected):
+                    assess_signed_parity(native=n, codex=c, evaluation=e, trust=self.trust)
+        for observed in (False, 0, 1, "true", None):
+            with self.subTest(observed=observed):
+                rec = self.record("native-sandbox")
+                rec["terminal_observed"] = observed
+                n, c, e = self.pair(nrec=rec)
+                with self.assertRaises(EvidenceRejected):
+                    assess_signed_parity(native=n, codex=c, evaluation=e, trust=self.trust)
+
+    def test_matched_failures_and_denials_are_negative_controls_not_success_parity(self):
+        for status, failure_class, count, observed in (("failed", "process_exit_nonzero", 1, True),
+                                                       ("rejected", "policy_denied", 0, False)):
+            with self.subTest(status=status):
+                native = self.record("native-sandbox")
+                codex = self.record("codex-sandbox")
+                for rec in (native, codex):
+                    rec.update(status=status, failure_class=failure_class,
+                               dispatch_count=count, terminal_observed=observed)
+                    if status == "rejected":
+                        rec["state_after_digest"] = rec["state_before_digest"]
+                n, c, e = self.pair(nrec=native, crec=codex)
+                result = assess_signed_parity(native=n, codex=c, evaluation=e, trust=self.trust)
+                self.assertEqual(result["evidence_shape"], "signed_matched_negative_only")
+                self.assertFalse(result["functional_parity_eligible"])
+                self.assertFalse(result["production_qualified"])
+
+    def test_completed_success_may_be_offline_advisory_only(self):
+        n, c, e = self.pair()
+        result = assess_signed_parity(native=n, codex=c, evaluation=e, trust=self.trust)
+        self.assertTrue(result["functional_parity_eligible"])
+        self.assertEqual(result["evidence_shape"], "signed_matched_offline")
+        self.assertFalse(result["production_qualified"])
 
     def test_parity_input_cohort_mismatch(self):
         for k, v in (("source_tree_digest", d("9")), ("policy_digest", d("9")),
