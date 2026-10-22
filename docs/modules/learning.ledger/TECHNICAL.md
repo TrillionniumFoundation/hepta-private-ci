@@ -390,11 +390,13 @@ For `learning.ledger`, this document grants no runtime, production, model, provi
 - `unbounded_resource_or_retry`
 
 <!-- BEGIN GENERATED EXACT REGISTRY PROJECTION -->
+
 ### Exact closed-world registry projection
 
 This generated projection binds `learning.ledger` to the current canonical contract, protocol, data, delivery and threat registries. The registries remain authoritative; this block is a digest-checked documentation projection.
 
 **Produced contracts:**
+
 - `CandidateSetCompletenessReceiptV1`
 - `CreditAssignmentReceiptV1`
 - `DatasetSnapshotV1`
@@ -410,6 +412,7 @@ This generated projection binds `learning.ledger` to the current canonical contr
 - `OutcomeWatermarkV1`
 
 **Consumed contracts:**
+
 - `ContextCompilationReceiptV1`
 - `DomainRead::cross_owner_outboxV1`
 - `DomainRead::operation_ledgerV1`
@@ -431,6 +434,7 @@ This generated projection binds `learning.ledger` to the current canonical contr
 - `RunStartSnapshotV1`
 
 **Typed protocols:**
+
 - `CandidateSetCompletenessReceiptV1`
 - `ContextCompilationReceiptV1`
 - `CreditAssignmentReceiptV1`
@@ -454,6 +458,7 @@ This generated projection binds `learning.ledger` to the current canonical contr
 - `RunStartSnapshotV1`
 
 **Owned data domains:**
+
 - `candidate_set_completeness_receipt_v1`
 - `learning_credit_ledger`
 - `learning_episode_ledger`
@@ -461,15 +466,18 @@ This generated projection binds `learning.ledger` to the current canonical contr
 - `outcome_watermark_v1`
 
 **Read data domains:**
+
 - `cross_owner_outbox`
 - `ndu_update_receipt_v1`
 - `operation_ledger`
 
 **Work packages:**
+
 - `LRN-0-CAUSAL-LEARNING-CONTRACTS`
 - `LRN-1-DURABLE-EPISODE-LEDGER`
 
 **Owned threats:**
+
 - `candidate_set_omission`
 - `credit_double_count`
 - `delayed_reward_misattribution`

@@ -476,11 +476,13 @@ For `learning.artifacts`, this document grants no runtime, production, model, pr
 - `unbounded_resource_or_retry`
 
 <!-- BEGIN GENERATED EXACT REGISTRY PROJECTION -->
+
 ### Exact closed-world registry projection
 
 This generated projection binds `learning.artifacts` to the current canonical contract, protocol, data, delivery and threat registries. The registries remain authoritative; this block is a digest-checked documentation projection.
 
 **Produced contracts:**
+
 - `DomainRead::learning_artifact_registryV1`
 - `DomainRead::operator_sensor_core_registryV1`
 - `LearningArtifactManifestV1`
@@ -494,6 +496,7 @@ This generated projection binds `learning.artifacts` to the current canonical co
 - `OperatorSensorCoreManifestV1`
 
 **Consumed contracts:**
+
 - `AlgorithmFaultReceiptV1`
 - `BellmanOperatorArtifactV1`
 - `CandidateEvaluationReceiptV1`
@@ -517,6 +520,7 @@ This generated projection binds `learning.artifacts` to the current canonical co
 - `UnlearningComplianceReceiptV1`
 
 **Typed protocols:**
+
 - `AlgorithmFaultReceiptV1`
 - `CandidateEvaluationReceiptV1`
 - `ConformanceReceiptV1`
@@ -537,11 +541,13 @@ This generated projection binds `learning.artifacts` to the current canonical co
 - `UnlearningComplianceReceiptV1`
 
 **Owned data domains:**
+
 - `learning_artifact_registry`
 - `operator_sensor_core_manifest_v1`
 - `operator_sensor_core_registry`
 
 **Read data domains:**
+
 - `algorithm_fault_receipt_v1`
 - `candidate_evaluation_receipt_v1`
 - `conformance_receipt_v1`
@@ -558,11 +564,13 @@ This generated projection binds `learning.artifacts` to the current canonical co
 - `topology_proposal_v1`
 
 **Work packages:**
+
 - `ART-1-LEARNING-ARTIFACT-REGISTRY`
 - `ART-2-NEXT-SNAPSHOT-RELOAD-ROLLBACK`
 - `HBO-1-OPERATOR-SENSOR-CORE`
 
 **Owned threats:**
+
 - `artifact_lineage_break`
 - `current_run_artifact_swap`
 - `operator_sensor_clustering`
