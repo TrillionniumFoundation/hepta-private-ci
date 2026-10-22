@@ -55,12 +55,44 @@ builder = { package = "codex-sandboxing", workspace = true }
     def test_missing_manifest_is_a_failure_not_a_skip(self):
         with tempfile.TemporaryDirectory() as temp:
             errors = checker.check_workspace(Path(temp))
-        self.assertEqual(len(errors), len(checker.CELL_CRATES))
-        self.assertTrue(all("cannot parse" in error for error in errors))
+        self.assertEqual(len(errors), 1)
+        self.assertIn("workspace: cannot resolve", errors[0])
+
+    def test_workspace_renamed_core_cannot_bypass_gate(self):
+        # A harmless-looking member alias inherits an actual codex-core crate.
+        data = self.make_manifest('''
+[dependencies]
+innocent = { workspace = true }
+''')
+        workspace = {"innocent": {"package": "codex-core", "path": "core"}}
+        errors = checker.check_manifest(data, "hepta-neuron", workspace)
+        self.assertEqual(len(errors), 1)
+        self.assertIn("codex-core", errors[0])
+
+    def test_workspace_member_cannot_override_package_to_codex_core(self):
+        data = self.make_manifest('''
+[dependencies]
+innocent = { workspace = true, package = "codex-core" }
+''')
+        workspace = {"innocent": {"package": "codex-hepta-types"}}
+        errors = checker.check_manifest(data, "hepta-neuron", workspace)
+        self.assertEqual(len(errors), 1)
+        self.assertIn("codex-core", errors[0])
+
+    def test_workspace_unknown_dependency_fails_closed(self):
+        data = self.make_manifest('''
+[dependencies]
+missing = { workspace = true }
+''')
+        self.assertEqual(len(checker.check_manifest(data, "hepta-neuron", {})), 1)
 
     def test_identity_mismatch_fails_even_with_allowed_dependencies(self):
         with tempfile.TemporaryDirectory() as temp:
             root = Path(temp)
+            (root / "codex-rs").mkdir()
+            (root / "codex-rs" / "Cargo.toml").write_text(
+                "[workspace]\n[workspace.dependencies]\n", encoding="utf-8"
+            )
             for name in checker.CELL_CRATES:
                 target = root / "codex-rs" / name
                 target.mkdir(parents=True)
