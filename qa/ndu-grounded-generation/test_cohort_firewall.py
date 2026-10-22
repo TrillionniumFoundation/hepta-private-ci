@@ -99,5 +99,86 @@ class CohortFirewallTests(unittest.TestCase):
             self.assertEqual(json.loads((root / "receipt.json").read_text())["status"], "fail")
 
 
+    def test_historical_wrapper_malformed_and_identity_mismatch(self):
+        for sample in (None, [], 0, {"images": None}):
+            with self.subTest(sample=sample), self.assertRaises(CohortContractError):
+                load_sources({"schema": "hepta.ndu.historical-exclusions.v1",
+                              "source_sample": sample}, "history", historical=True)
+        prior = image(17)
+        prior["image_id"] = 18
+        with self.assertRaisesRegex(CohortContractError, "source_id/image_id mismatch"):
+            load_sources({"schema": "hepta.ndu.historical-exclusions.v1",
+                          "source_sample": {"images": [prior]}}, "history", historical=True)
+
+    def test_complete_v2_history_rosters_are_required(self):
+        with self.assertRaisesRegex(CohortContractError, "requires both"):
+            check_cohort(self.new, [self.old], require_complete_history=True)
+        v1 = manifest()
+        next_id = 0
+        for split, count in zip(("train", "dev", "calibration", "test"), (128, 32, 32, 64)):
+            v1["splits"][split] = {
+                "count": count,
+                "sources": [image(next_id + i) for i in range(count)],
+            }
+            next_id += count
+        wrapper = {"schema": "hepta.ndu.historical-exclusions.v1",
+                   "source_sample": {"images": [
+                       {**image(i + 1000), "image_id": i + 1000}
+                       for i in range(384)]}}
+        with self.assertRaisesRegex(CohortContractError, "384-source"):
+            check_cohort(manifest(10000), [v1, {
+                "schema": wrapper["schema"],
+                "source_sample": {"images": wrapper["source_sample"]["images"][:383]},
+            }], require_complete_history=True)
+        result = check_cohort(manifest(10000), [v1, wrapper],
+                              require_complete_history=True)
+        self.assertEqual(result["status"], "pass")
+        self.assertTrue(result["historical_roster_shape_confirmed"])
+        self.assertFalse(result["independent_history_trust_established"])
+
+    def test_unbounded_candidate_and_comparison_budget_fail_closed(self):
+        too_many = manifest(32)
+        too_many["splits"]["train"]["sources"] = [image(20000 + i) for i in range(2049)]
+        too_many["splits"]["train"]["count"] = 2049
+        with self.assertRaisesRegex(CohortContractError, "source limit exceeded"):
+            check_cohort(too_many, [self.old])
+        many = manifest(10000)
+        for split in ("train", "dev", "calibration", "test"):
+            many["splits"][split]["sources"] = [
+                image(30000 + 1000 * n + i)
+                for n, i in enumerate(range(400))]
+            many["splits"][split]["count"] = 400
+        old = manifest(2000)
+        for split in ("train", "dev", "calibration", "test"):
+            old["splits"][split]["sources"] = [
+                image(40000 + 1000 * n + i)
+                for n, i in enumerate(range(400))]
+            old["splits"][split]["count"] = 400
+        with self.assertRaisesRegex(CohortContractError, "comparison budget"):
+            check_cohort(many, [old])
+
+    def test_cli_refuses_unpinned_or_incomplete_history(self):
+        with tempfile.TemporaryDirectory() as td:
+            root = Path(td)
+            (root / "candidate.json").write_text(json.dumps(self.new))
+            raw = json.dumps(self.old).encode()
+            (root / "history.json").write_bytes(raw)
+            base = [sys.executable, str(Path(__file__).parent / "cohort_firewall.py"),
+                    "--candidate", str(root / "candidate.json"),
+                    "--historical", str(root / "history.json"),
+                    "--output", str(root / "receipt.json")]
+            for extra, expected_error in [
+                ([], "out-of-band SHA256"),
+                (["--historical-sha256", "0" * 64], "historical SHA256 mismatch"),
+                (["--historical-sha256", hashlib.sha256(raw).hexdigest()],
+                 "requires both"),
+            ]:
+                result = subprocess.run(base + extra, capture_output=True, text=True)
+                self.assertEqual(result.returncode, 2, result.stderr)
+                receipt = json.loads((root / "receipt.json").read_text())
+                self.assertEqual(receipt["status"], "fail")
+                self.assertIn(expected_error, receipt["error"])
+
+
 if __name__ == "__main__":
     unittest.main()

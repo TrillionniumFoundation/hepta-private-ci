@@ -55,8 +55,13 @@ supplemental audit, **not** a replacement for v1's frozen score report.
 
 ## Source-cohort firewall (for a future v2 study)
 
-`cohort_firewall.py` requires a candidate four-split manifest and at least
-one pinned historical input. It accepts existing
+`cohort_firewall.py` requires a candidate four-split manifest and **both**
+original historical source rosters: the 256-source v1 cohort in its original
+128/32/32/64 split sizes and the 384-image exclusions wrapper. The CLI refuses
+missing history and requires a raw SHA256 pin for each history file, supplied
+from an independently controlled record. Computing a pin from untrusted data
+at run time is **not independent authentication**; even a matching caller pin
+cannot prove entity independence, pretraining decontamination, or signer custody. It accepts existing
 `hepta.grounded-cohort.v1` manifests and the 384-image
 `hepta.ndu.historical-exclusions.v1` wrapper. It fails closed if any candidate
 source collides with another candidate or historical source by:
@@ -66,8 +71,13 @@ source collides with another candidate or historical source by:
 - decoded RGB SHA256;
 - 64-bit perceptual dHash with Hamming distance at most four.
 
-Missing fields, unsupported schemas, missing source groups, invalid counts
-and missing historical evidence cause explicit nonzero exits. It verifies
+Missing fields, unsupported schemas, inconsistent historical image/source IDs,
+missing source groups, invalid counts, missing pins, altered pinned historical
+bytes and incomplete historical rosters cause explicit nonzero exits. Manifest
+bytes are capped at 16 MiB; candidate sources at 2,048, historical sources at
+4,096, pairwise comparisons at 2,000,000 and recorded violations at 4,096.
+Resource overruns yield a typed denial, never a partial PASS. Direct library
+calls without `require_complete_history=True` are *diagnostics only*. It verifies
 **observable image identities only**: real-world entity identity and
 foundation-model pretraining overlap remain outside what hashes can prove.
 
@@ -93,11 +103,15 @@ python qa/ndu-grounded-generation/cohort_firewall.py \
   --candidate /path/to/a/new/v2/cohort/manifest.json \
   --historical /path/to/v1/hepta-ndu-evidence-v1-20261022/cohort/manifest.json \
   --historical qa/ndu-grounded-generation/historical_exclusions.json \
+  --historical-sha256 "$TRUSTED_V1_MANIFEST_SHA256" \
+  --historical-sha256 "$TRUSTED_384_EXCLUSIONS_SHA256" \
   --output /tmp/v2-cohort-firewall.json
 # EXPECT EXIT STATUS 0 only if identity overlap is absent.
 ```
 
-These 16 standard-library tests require no model weights or downloading.
+These 20 standard-library tests require no model weights or downloading.
+The trusted SHA256 variables must be populated by the independent evidence
+owner, not taken from the candidate or a self-asserted receipt.
 
 Independent integrity replay of the original immutable evidence remains a
 separate prerequisite:
