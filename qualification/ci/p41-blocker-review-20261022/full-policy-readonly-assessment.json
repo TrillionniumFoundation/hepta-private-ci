@@ -1,0 +1,175 @@
+{
+  "builds_or_model_runs": 0,
+  "conclusion": "Reusable authoritative ledger, state recovery, terminal-value training and evaluation primitives exist. The actual shared nonlinear Head remains zero-state task-only. Neither full-policy learning nor an authentic episode data source has been established in this session.",
+  "discovery_limits": {
+    "connected_tool_names": "No cloud environment/SSH/terminal/device connection tool identified; Sites environment-variable tools are unrelated and unused.",
+    "peer_device_check": "multimodal_differentiation reports no authorized episode endpoint; target runner listing blocked by connector URL allowlist. This is an access boundary, not proof no data exists anywhere.",
+    "repository_and_qualification_search": "Only source/protocol/qualification material identified; synthetic fixtures are not production episodes.",
+    "scratch_filename_search": "No Hepta *.ledger, *bootstrap*.json, *episode*.jsonl, *dataset*receipt*.json or *learning*snapshot*.json discovered in the bounded-pattern search. Two unrelated project paths were excluded without opening. /tmp/codex-daemon-0 returned Permission denied and was not bypassed."
+  },
+  "existing": [
+    {
+      "capability": "authenticated decision/outcome, current freeze/read/revocation",
+      "limits": "read_dataset_records <=4096 source records; independent Observer/Evaluator trust; pending/censored is not zero reward",
+      "path": "codex-rs/hepta-learning-ledger/src/production.rs",
+      "symbols": [
+        "LedgerWriter::append_decision",
+        "LedgerWriter::append_outcome",
+        "LedgerWriter::freeze_dataset",
+        "LedgerWriter::read_dataset_records",
+        "LedgerWriter::revalidate_dataset_snapshot"
+      ]
+    },
+    {
+      "capability": "canonical episode/outcome read views",
+      "limits": "digests/metadata views, not a complete state tensor or trajectory dataset; only finalized appropriate outcomes",
+      "path": "codex-rs/hepta-learning-ledger/src/protocol.rs",
+      "symbols": [
+        "LearningEpisodeV1::from_snapshot",
+        "OutcomeReceiptV1::try_from"
+      ]
+    },
+    {
+      "capability": "closed-segment read-only inspection",
+      "limits": "host-authorized read handle and current independently authenticated anchor required; no repair, no live writer lock coexistence, no ongoing revocation authority",
+      "path": "codex-rs/hepta-learning-ledger/src/durable.rs",
+      "symbols": [
+        "inspect_ledger"
+      ]
+    },
+    {
+      "capability": "bounded state recurrence, persistence, witness and replay",
+      "limits": "SparseCheckpoint temporal values private; public NeuronCheckpointV1 is digest/summary; current TaskHead has no state transition ABI",
+      "path": "codex-rs/hepta-neuron/src/runtime.rs",
+      "symbols": [
+        "NeuronRuntime::tick",
+        "NeuronRuntime::canonical_checkpoint",
+        "NeuronRuntime::current_eligibility_sample"
+      ]
+    },
+    {
+      "capability": "owner-derived terminal-value baseline",
+      "limits": "single run-snapshot/state, fixed action set and unit, finalized outcomes; not a recurrent policy or calibrated uncertainty learner",
+      "path": "codex-rs/hepta-bellman-operator/src/owner_terminal.rs",
+      "symbols": [
+        "freeze_terminal_cell_from_owner_v1",
+        "fit_terminal_cell_from_owner_v1"
+      ]
+    },
+    {
+      "capability": "shared replay caller and pinned artifact load/use",
+      "limits": "one exact granted Memory source; no model adoption or effect authority",
+      "path": "codex-rs/hepta-agentd/src/shared_terminal_cell.rs",
+      "symbols": [
+        "AgentdSharedReplayHostV1::train",
+        "AgentdSharedReplayHostV1::load",
+        "AgentdSharedReplayHostV1::predict"
+      ]
+    },
+    {
+      "capability": "temporal/sequential evaluation and sealed holdout consumer",
+      "limits": "requires authenticated complete action/propensity/outcome and temporal groups; existing source is not evidence of real inputs",
+      "path": "codex-rs/hepta-intelligence-eval/src/product_runner.rs",
+      "symbols": [
+        "ProductEvaluationRunnerV1::evaluate_temporal_comparison",
+        "FinalHoldoutProviderV1::release_after_consumption"
+      ]
+    }
+  ],
+  "implementation_gaps": [
+    {
+      "detail": "No existing demonstrated adapter joins frozen decision/outcome records to exact feature tensors, before/after state, legal action semantics and complete trajectory metadata for the shared nonlinear Head.",
+      "id": "owner-backed-state-action-outcome-join"
+    },
+    {
+      "detail": "cell_head_training makes all local states zero and only trains task/gate/down/up. Action/value/uncertainty remain frozen untrained. LightCellHead accepts state only as gate input and defines no recurrent update.",
+      "id": "stateful-full-head-training"
+    },
+    {
+      "detail": "P40 exporter and LoadedTaskHeadV1 intentionally accept zero_state_only and only gate/down/up/task tensors. Q24 affine CellHeadV1 has a different operator and cannot be substituted for gated/GELU parameters.",
+      "id": "full-head-native-contract"
+    },
+    {
+      "detail": "outcome_credit_v2 provides LedgerWriter adapters. AgentdIntelligenceProductRunner append_decision/append_outcome are guarded by nondefault qualification-legacy-learning-write and emit legacy V1 facts. Those are not an authenticated V2 product outcome endpoint; generic runtime/task terminal status is not an objective reward.",
+      "id": "live-authenticated-outcome-composition"
+    }
+  ],
+  "input_gaps": [
+    "No observed host-authorized real Hepta ledger/snapshot descriptor plus current independent witness/root in this session.",
+    "No matched real pre/post state tensors and full feature identities from actual action episodes.",
+    "No established legal action vocabulary/semantics, logged behavior distribution and independent observed utility in a fixed unit profile.",
+    "No new independent future-window/episode/principal holdout with outcome watermark and current corrections/revocations."
+  ],
+  "production_activated": false,
+  "proposed_small_slices": [
+    {
+      "honest_completion": "owner-backed materialization boundary and typed insufficient-evidence reporting, not trained full policy",
+      "interface": "borrow &LedgerWriter + &DatasetSnapshotReceiptV3 + now; delegate bounded read/revalidation; emit immutable ordered event references, episode completeness and missing-input reasons",
+      "kind": "implementable source and CI boundary now",
+      "limit": "<300 core lines plus separate fault regressions; no alternate ledger, data signing, guessed labels or production admission",
+      "location": "new owner_episode_view module within codex-hepta-bellman-operator (or equivalent existing-owner read adapter)",
+      "order": 1
+    },
+    {
+      "honest_completion": "deterministic owner state extraction/replay, not learned recurrent memory",
+      "interface": "resolve an actual canonical checkpoint and exact feature reference by digest, bind cell/generation/sequence/predecessor, replay-check before/after; only bounded snapshot access",
+      "kind": "implementable state integrity boundary after profile is fixed",
+      "limit": "do not derive temporal vectors from hashes, copy zero state into real rows, or reinterpret unrelated episodes",
+      "location": "existing hepta-neuron checkpoint owner plus a separate read-only feature/state resolver",
+      "order": 2
+    },
+    {
+      "honest_completion": "real owner-derived terminal-value learning only",
+      "interface": "freeze/fit existing constant-state baseline, export/load the exact tabular payload, evaluate held-out independent outcomes",
+      "kind": "reuse immediately when authentic eligible data arrives",
+      "limit": "keep its narrow state/action/unit profile; count insufficient action support as rejection",
+      "location": "owner_terminal.rs + AgentdSharedReplayHostV1",
+      "order": 3
+    },
+    {
+      "honest_completion": "engineering and quality are separate receipts; no efficacy conclusion until valid future evaluation",
+      "interface": "train valid action target/observed value with explicit transition rule; separately calibrate uncertainty on independent calibration data; native parity and owner correction/revocation checks",
+      "kind": "requires authentic joined data and a preregistered new training/evaluation plan",
+      "limit": "preserve all prior thresholds/evidence; behavior cloning is not policy improvement; predictions never become OutcomeReceipt",
+      "location": "new stateful Head trainer/export schema/native adapter alongside frozen P40 code",
+      "order": 4
+    }
+  ],
+  "read_only": true,
+  "recommendation": "First close the existing-owner read/join and state identity boundaries. Do not construct a new trainer benchmark from static COCO, CI fixture events or model-generated reward to claim the full-policy blocker closed.",
+  "schema": "hepta.full-policy-readonly-assessment.v1",
+  "source_file_sha256": {
+    "codex-rs/hepta-agentd/Cargo.toml": "011528024bbcb547a2aa256904b6102a05f17af7c91ace5300d7559e4ab8d94b",
+    "codex-rs/hepta-agentd/src/cognitive_retrieval_learning.rs": "16482cc8ccafc71f4244bebeab6319ab4d7f06b3be24db5005128a7a5356289c",
+    "codex-rs/hepta-agentd/src/intelligence_product_runner.rs": "1ec59d88c457bc9a6efe19d03746c0ee68afb678308faea43114caff93d1c4c2",
+    "codex-rs/hepta-agentd/src/main.rs": "00f3134561b2f5773c1f114fba897e369db9f2c4f28192086596a37bf93ba319",
+    "codex-rs/hepta-agentd/src/plasticity_process_bootstrap.rs": "24ee0eafbbd26e8d017cbeac6befbfc3babf89b916cade3350d1505059bf4fad",
+    "codex-rs/hepta-agentd/src/shared_terminal_cell.rs": "880a9531dbd83c932cc11a1bd2e039203dc73161a50b65a34a63ad9a6017732c",
+    "codex-rs/hepta-bellman-operator/src/dataset_bound.rs": "572eed281b65a0e5ad50f689dd7810e4658e5a0104114ac93476ccc98ab07960",
+    "codex-rs/hepta-bellman-operator/src/owner_terminal.rs": "5a2687e0610e687e86c2a06ea7a107dea7fdc1da2963182107d0e8b6b8f37d12",
+    "codex-rs/hepta-bellman-operator/src/world_model.rs": "7d6f229ebdde8ef439eba8ec42682762853dba926636070e45d8ad7484ef57b6",
+    "codex-rs/hepta-intelligence-eval/src/product_runner.rs": "15e82c5fb2b58ec0fffbb74e2b05be75ede0f3d0e21603b95e047edd6ca9fcf4",
+    "codex-rs/hepta-intelligence-eval/src/sequential_model.rs": "660000e0c91fba18b798749cd989998095491eacec9f2b3797eb75c7a1c720de",
+    "codex-rs/hepta-intelligence-eval/src/temporal_fold.rs": "87251bd060f24727fcf90fe9f53308eb6c9185fbcd0a38566f7108be672ebf2b",
+    "codex-rs/hepta-intelligence/src/outcome_credit_v2.rs": "ab4f298078f3b4c3092f99ec90365c7880ebdac0e6be88d5879eb44d3adbe2dc",
+    "codex-rs/hepta-learning-ledger/INSPECTION.md": "5d9651a4bd6708ca22dae711587603f15e43433e76cf3bbdd1977a3c4928cd6e",
+    "codex-rs/hepta-learning-ledger/src/durable.rs": "598041d22b9b61d900372058f6181c48edfba5e04463b49f834414c24a3aa4fc",
+    "codex-rs/hepta-learning-ledger/src/model.rs": "fb5aa0c5716d1f75ec424dee4951a1f9b610225af6d0de2538ed4664cf7f2ad8",
+    "codex-rs/hepta-learning-ledger/src/production.rs": "182ebc861129278f517278cefe66df3fb369c3b892ae3d73046ebd8be6341f7c",
+    "codex-rs/hepta-learning-ledger/src/protocol.rs": "cf455d3595ff482a53c541bc5af378601a143ff79b133da1631c6bb81a493a58",
+    "codex-rs/hepta-neuron/src/cell_head.rs": "1c1f81c3dcf8e9839b1f45223272304816dc4e3625e46e68ba491f01f959a4e7",
+    "codex-rs/hepta-neuron/src/protocol.rs": "240a3ae18713aea814dad483c9470c34212a1d4d50a9aae84007e8f3dbc6bf35",
+    "codex-rs/hepta-neuron/src/runtime.rs": "bace4a3c36a2a4199a975aeac73041011ed487b2d308c75c4e062b25e6451fad",
+    "codex-rs/hepta-neuron/src/runtime_types.rs": "754e5b324af9762bab507ff9543484a91f2e67c8fbc88f9505a1d2bf194cba3b",
+    "codex-rs/hepta-neuron/src/sparse.rs": "bc5a1f64ddfda4e603e590d62b0ed01fa5b0b3cd54f1d1d4407477af5bed2810",
+    "codex-rs/hepta-neuron/src/task_head_native.rs": "a75cdad0fbcb4e99141e1b35d6525f595b06a1759e56e32fe0f4df7f3986c227",
+    "docs/learning/CAUSAL_LONGITUDINAL_SPEC.md": "71d497ce81c0fef8fd2e3de25fe0a3785486d93e93d9e6db555248712b86d1b8",
+    "docs/learning/STEM_BAKEOFF.md": "09c575112e7783b0843df39b6c9b4c691434aa52d06daf0c274d3cf1eda9e975",
+    "qa/stem-bakeoff/cell_head_training.py": "90bc397602a6c59177ece45f818f33718960fb4864dcb33a2c89e2b2e1a06f4f",
+    "qa/stem-bakeoff/export_native_task_head_v1.py": "d81a10db59f3957063a8cad499dc858bdc517e77b495636abdccbca9790b4bea",
+    "qa/stem-bakeoff/native_latent.py": "6d8db8a5911d4104d93b7e2084d8c2653fadb3191685b9cad8f34db2ab5fbc29"
+  },
+  "source_sha": "8dcc835362c10330031230e1f713ad0a4a77f251",
+  "source_tree": "ae129148628b5f4ab8c95e247b05908eac3a8a05",
+  "unchanged_acceptance": "Existing STEM bake-off and causal longitudinal requirements remain in force; no thresholds, labels, old holdouts or scientific modules were changed."
+}

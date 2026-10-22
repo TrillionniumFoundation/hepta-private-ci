@@ -1,0 +1,44 @@
+{
+  "schema": "hepta.windows-delete-workflow-readonly-review.v1",
+  "reviewed_at": "2026-10-22T14:27:01.729718+00:00",
+  "reviewer": "encoder_candidates",
+  "head_sha": "705e28a445403b3c8924dc7a1ab2ff6698856907",
+  "tree_sha": "bf6404b25faf4fb29b87a09480cfcfde2cd7a420",
+  "checkout_clean": true,
+  "file_sha256": {
+    ".github/workflows/hepta-windows-delete-diagnostics.yml": "af9d2707eef964d7a05eb97dc8574f8e766fa789c07a5d0d3da546abdc47359c",
+    "justfile": "74f869224eba12fc4212b043428e7f5b35b551d26f5b06161c25d8aca525f124",
+    "scripts/just-shell.py": "444d6b328d44abf6453b77b6acce2a0c881fc162ff30b20f352c85067797fbe9",
+    "scripts/run-nextest.py": "45c4e35d1ff24840d9e1e05331af0b89475bfe1aec3231afc56fecb8cea66127",
+    "codex-rs/.config/nextest.toml": "78b998d1fcb16dfef6b243a4b18748c1b28ce2d5a28d57f1f477adf0546e5ac6",
+    "codex-rs/windows-sandbox-rs/src/token_tests.rs": "24e57f475065231758559e08382e16a37a15d32912a0435652e2fc3fb2496d58",
+    "codex-rs/windows-sandbox-rs/src/token_delete_diagnostics_tests.rs": "d0492ee9b130334e8967b8a37fc56bd50508051a025637621c7f661804d718ee",
+    "codex-rs/windows-sandbox-rs/src/unified_exec/tests.rs": "1c433d36d0099a33d1e96570b77a753ade76bdfa3f1dec1e91197895c3b3715e"
+  },
+  "scope": "PowerShell invocation, exact four-test selection, JUnit and raw-route evidence handling; Rust ACL matrix reviewed separately by hepta_repository",
+  "blocking_findings": [],
+  "verified_by_source_reading": [
+    "All four exact filter names match their lib test module paths; --lib selects codex-windows-sandbox owning library.",
+    "just test preserves positional filter expression through the repository shell adapter and uses NEXTEST_PROFILE=local.",
+    "Both normal and scoped-metadata run-nextest command paths explicitly add --no-fail-fast. The original failure cases do not cancel the diagnostic matrix via default fail-fast.",
+    "The workflow explicitly uses --test-threads 1, --retries 0 and --no-tests fail; both successful and failing captured output are requested at final reporting.",
+    "Native command error handling permits nonzero just exit to be recorded; LASTEXITCODE is copied immediately after its Tee-Object pipeline before evidence parsing.",
+    "Exactly one JUnit file is required; exactly the four expected testcase names and no skipped nodes are required; failure/error nodes are counted; nonzero native exit is propagated.",
+    "Five route JSON records and the exact sorted five-name set are required. Missing, duplicate, or extra routes cannot grant successful workflow completion.",
+    "Exact PR/dispatch commit and clean tracked checkout are checked before execution, observed source files are hashed, then source pin and tracked file equality are checked again before artifact hashing.",
+    "Evidence and step summary explicitly deny sandbox qualification; original blocking CI remains required; always steps retain available failure evidence."
+  ],
+  "limits": [
+    "No PowerShell executable is available in this Linux scratch environment; PowerShell parsing/execution has not been exercised.",
+    "No owning Windows build or test was executed during this review; installer/network/platform execution remains pending.",
+    "This review establishes no Windows confinement, sandbox qualification, device qualification or original CI closure.",
+    "The retained routes are diagnostic observations, not independent proof that production DELETE authority is correct."
+  ],
+  "powershell_locally_available": false,
+  "native_tests_executed": false,
+  "build_executed": false,
+  "repository_changed": false,
+  "remote_actions": false,
+  "qualification_granted": false,
+  "prior_fleet_operation_status": "Stopped; separate preserved receipt retains UNKNOWN for unacknowledged ROG wrapper submission; no additional GET or mutation during this review."
+}

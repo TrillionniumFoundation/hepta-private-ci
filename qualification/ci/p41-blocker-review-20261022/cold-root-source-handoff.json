@@ -1,0 +1,64 @@
+{
+  "frozen_at": "2026-10-22T14:30:27.595569+00:00",
+  "worktree": "/tmp/hepta-ci-appserver-next-20261022",
+  "branch": "codex/stem-p38-appserver-followup-next-20261022",
+  "base_commit": "e2fe930fe6e188539264c69bf09a1b74ea48641c",
+  "final_commit": "70de52f9508f460c54be19e21e716db969f9b928",
+  "final_tree": "b813a5fd496ed3faea6892f4d8c9b27febbb14eb",
+  "clean": true,
+  "commits": [
+    {
+      "local_commit": "3c23d4adb231a0b4ece56fc4204dddb9bd2b78b4",
+      "tree": "80c8aadfb037fb7476c62021c9ac632c625cbb83",
+      "parents": [
+        "e2fe930fe6e188539264c69bf09a1b74ea48641c"
+      ],
+      "subject": "fix(app-server): bind inferred resume roots to their effective policy",
+      "changed_lines": 335,
+      "files": [
+        "codex-rs/app-server/README.md",
+        "codex-rs/app-server/src/request_processors/persisted_resume_settings.rs",
+        "codex-rs/app-server/src/request_processors/persisted_resume_settings_tests.rs",
+        "codex-rs/app-server/src/request_processors/thread_processor.rs",
+        "codex-rs/app-server/tests/suite/v2/thread_resume.rs",
+        "codex-rs/app-server/tests/suite/v2/thread_resume_permission_roots_tests.rs"
+      ]
+    },
+    {
+      "local_commit": "70de52f9508f460c54be19e21e716db969f9b928",
+      "tree": "b813a5fd496ed3faea6892f4d8c9b27febbb14eb",
+      "parents": [
+        "3c23d4adb231a0b4ece56fc4204dddb9bd2b78b4"
+      ],
+      "subject": "docs(ci): record scoped cold-resume policy validation",
+      "changed_lines": 197,
+      "files": [
+        "qualification/ci/2026-10-22-p38-cold-resume-policy-binding.json"
+      ]
+    }
+  ],
+  "receipt_path": "qualification/ci/2026-10-22-p38-cold-resume-policy-binding.json",
+  "receipt_sha256": "4c0b95ba5e5ee14a7b90487fd6fc2dcefc7ce559f6367433d491d3645226607b",
+  "checks": {
+    "exact_module_tests": {
+      "passed": 8,
+      "failed": 0,
+      "ignored": 0,
+      "scope": "exact changed module and real codex_history/protocol types; not owning AppServer"
+    },
+    "fmt": "PASS",
+    "fmt_check": "PASS",
+    "diff_check": "PASS",
+    "scoped_codespell_2_4_3": "PASS",
+    "protected_source_guard": "PASS",
+    "owning_appserver_rpc_and_native": "PENDING",
+    "owning_appserver_clippy": "PENDING"
+  },
+  "remote_writes": false,
+  "plugin_ttl_speculative_change": false,
+  "windows_review": {
+    "path": "/tmp/hepta-windows-delete-rust-readonly-review.json",
+    "sha256": "0a965cca2fcf3abc90d5cac6989c45e2029794d8741825d8f9ea2d763eeb5dcb",
+    "result": "No blocking Rust/Win32/DACL source finding; native execution not claimed"
+  }
+}

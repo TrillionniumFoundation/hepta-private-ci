@@ -1,0 +1,9 @@
+error[E0463]: can't find crate for `codex_history`
+ --> /tmp/hepta-ci-appserver-next-20261022/codex-rs/app-server/src/request_processors/persisted_resume_settings.rs:6:5
+  |
+6 | use codex_rollout::RolloutItem;
+  |     ^^^^^^^^^^^^^ can't find crate
+
+error: aborting due to 1 previous error
+
+For more information about this error, try `rustc --explain E0463`.
