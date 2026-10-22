@@ -41,6 +41,7 @@ use crate::signed_authority::ProductionRecoveryOutcome;
 use crate::signed_intent::SignedIntentStatus;
 use crate::signed_intent::SignedSupervisorIntent;
 use crate::signed_intent::read_intent;
+use crate::signed_intent::read_recovery_directive;
 use crate::signed_intent::write_intent;
 
 /// Lifecycle-only controller with one process handle and bounded buffers per agent.
@@ -88,7 +89,12 @@ impl<D: ProcessDriver> Supervisor<D> {
                 let process_fault = supervisor.recover_slot(&agent_id, slot, &record, now).err();
                 supervisor.recover_restart_budget(&agent_id, slot, now)?;
                 supervisor.recover_release_transaction(&agent_id, slot, now)?;
-                supervisor.recover_signed_intent(&agent_id, slot, &record)?;
+                supervisor.recover_signed_intent(
+                    &agent_id,
+                    slot,
+                    &record,
+                    process_fault.is_none(),
+                )?;
                 Ok(process_fault)
             });
             match result {
@@ -686,6 +692,7 @@ impl<D: ProcessDriver> Supervisor<D> {
         agent_id: &AgentId,
         slot: &mut AgentSlot<D::Process>,
         record: &AgentRecord,
+        process_recovery_succeeded: bool,
     ) -> Result<(), SupervisorError> {
         let intent = read_intent(record.layout.run_root())
             .map_err(|error| SupervisorError::Invalid(error.to_string()))?;
@@ -700,7 +707,9 @@ impl<D: ProcessDriver> Supervisor<D> {
         slot.signed_intent = Some(intent.clone());
         if matches!(
             intent.status,
-            SignedIntentStatus::Committed | SignedIntentStatus::RolledBack
+            SignedIntentStatus::Committed
+                | SignedIntentStatus::RolledBack
+                | SignedIntentStatus::Aborted
         ) {
             return Ok(());
         }
@@ -764,6 +773,33 @@ impl<D: ProcessDriver> Supervisor<D> {
             if let Some(status) = terminal_status {
                 let terminal = intent
                     .with_status(status)
+                    .map_err(|error| SupervisorError::Invalid(error.to_string()))?;
+                write_intent(record.layout.run_root(), &terminal)
+                    .map_err(|error| SupervisorError::Invalid(error.to_string()))?;
+                slot.signed_intent = Some(terminal);
+                return Ok(());
+            }
+        }
+
+        // A digest-bound operator abort is terminal only after a prior
+        // recovery-required fence, when the process is absent and the durable
+        // lifecycle is Failed. This records no rollback or external-effect
+        // success. A stale directive must never clear a different intent.
+        if let Some(directive) = read_recovery_directive(record.layout.run_root())
+            .map_err(|error| SupervisorError::Invalid(error.to_string()))?
+        {
+            if directive.intent_sha256 != intent.intent_sha256 {
+                return Err(SupervisorError::Invalid(
+                    "signed intent recovery directive digest mismatch".to_string(),
+                ));
+            }
+            if intent.status == SignedIntentStatus::RecoveryRequired
+                && process_recovery_succeeded
+                && slot.runtime.is_none()
+                && self.record(agent_id)?.lifecycle.lifecycle == AgentLifecycle::Failed
+            {
+                let terminal = intent
+                    .with_status(SignedIntentStatus::Aborted)
                     .map_err(|error| SupervisorError::Invalid(error.to_string()))?;
                 write_intent(record.layout.run_root(), &terminal)
                     .map_err(|error| SupervisorError::Invalid(error.to_string()))?;
