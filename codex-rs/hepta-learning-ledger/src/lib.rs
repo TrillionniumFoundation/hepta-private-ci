@@ -83,6 +83,8 @@ pub use model::PromptDeliveryObservation;
 pub use model::RetrievalAssignmentFact;
 pub use model::Revocation;
 pub use model::UnlearningLineageEventV1;
+pub use production::CurrentAuthenticatedOutcomeV1;
+pub use production::CurrentOutcomeHostClockV1;
 pub use production::DatasetFreezePlanV2;
 pub use production::LedgerWriter;
 pub use production::ProductionDecisionV2;

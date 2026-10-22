@@ -19,6 +19,10 @@ use crate::verify_independent_roles;
 const MAX_SIGNERS: usize = 64;
 const MAX_PAYLOAD_BYTES: usize = 1_048_576;
 
+#[path = "current_actor.rs"]
+mod current_actor;
+pub(crate) use current_actor::CurrentLearningActorV1;
+
 #[derive(Clone, Copy, Debug, Eq, Ord, PartialEq, PartialOrd)]
 pub enum LearningEvidenceRoleV1 {
     Generator,

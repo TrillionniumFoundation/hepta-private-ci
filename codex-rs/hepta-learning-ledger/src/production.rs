@@ -58,6 +58,11 @@ use crate::verify_dataset_snapshot_receipt_v3;
 
 const MAX_PRODUCTION_CANDIDATES: usize = 128;
 
+#[path = "current_outcome.rs"]
+mod current_outcome;
+pub use current_outcome::CurrentAuthenticatedOutcomeV1;
+pub use current_outcome::CurrentOutcomeHostClockV1;
+
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct ProductionDecisionV2 {
     pub record_id: StableId,
@@ -163,6 +168,7 @@ pub struct LedgerWriter {
     backend: LedgerBackend,
     witness: LedgerWitnessStore,
     trust: ActivatedLearningTrustV1,
+    outcome_clock: current_outcome::CurrentOutcomeClockState,
 }
 
 impl LedgerWriter {
@@ -213,6 +219,7 @@ impl LedgerWriter {
             backend,
             witness,
             trust,
+            outcome_clock: current_outcome::CurrentOutcomeClockState::default(),
         })
     }
 
