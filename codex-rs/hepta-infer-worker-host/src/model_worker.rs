@@ -226,9 +226,26 @@ impl<D: ModelDriver> InferenceWorker<D> {
             return Err(Error::ModelCapacity);
         }
         let handle = self.driver.load(&manifest)?;
-        validate_identity(&handle.opaque_id, "model handle")?;
-        if handle.observed_memory_bytes > self.grant.maximum_memory_bytes {
-            self.driver.unload(handle)?;
+        let invalid_handle = validate_identity(&handle.opaque_id, "model handle").err();
+        let exceeds_memory = handle.observed_memory_bytes > self.grant.maximum_memory_bytes;
+        if invalid_handle.is_some() || exceeds_memory {
+            // Even a rejected load may have installed a physical model.
+            // Failure to clean up must not forget its only opaque handle.
+            if let Err(error) = self.driver.unload(handle.clone()) {
+                self.models.insert(
+                    manifest.model_id.clone(),
+                    LoadedModel {
+                        manifest,
+                        handle,
+                        active_requests: 0,
+                        lifecycle: ModelLifecycle::UnloadUnresolved,
+                    },
+                );
+                return Err(error);
+            }
+            if let Some(error) = invalid_handle {
+                return Err(error);
+            }
             return Err(Error::ModelCapacity);
         }
         let observation = ModelLoadObservation {
