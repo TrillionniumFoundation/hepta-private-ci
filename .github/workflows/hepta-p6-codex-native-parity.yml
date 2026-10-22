@@ -1,6 +1,9 @@
 name: Hepta P6 Codex Native fallback shadow gate
 
 on:
+  push:
+    branches:
+      - "dot/p0-p6-signed-fallback-qualification-20261022"
   pull_request:
     paths:
       - "qa/meta-network-scale/p6_fallback_gate.py"
