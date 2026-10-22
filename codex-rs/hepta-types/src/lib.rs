@@ -9,6 +9,7 @@
 mod bounded;
 mod canonical_digest;
 mod digest;
+mod execution_contract;
 mod fixed;
 mod identity;
 mod numeric_conversion;
@@ -32,6 +33,23 @@ pub use canonical_digest::canonical_encode_v1;
 pub use canonical_digest::canonical_validate_v1;
 pub use digest::Digest32;
 pub use digest::DigestParseError;
+pub use execution_contract::{
+    CellExecutionIntentV1,
+    CodexTurnBindingV1,
+    EXECUTION_CONTRACT_VERSION_V1,
+    ExecutionContractError,
+    ExecutionIntentKindV1,
+    ExecutionReceiptV1,
+    ExecutionStatusV1,
+    FinalPayloadDigestV1,
+    GenerationFenceWitnessV1,
+    NativeExecutionAdapter,
+    RecoveryDispositionV1,
+    RuntimeExecutionError,
+    RuntimeReceiptV1,
+    RuntimeToolIntentV1,
+    ToolOutcomeV1,
+};
 pub use fixed::FIXED_Q32_ARITHMETIC_PROFILE_V1;
 pub use fixed::FixedQ32;
 pub use fixed::FixedQ32Error;
