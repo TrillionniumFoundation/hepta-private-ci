@@ -58,9 +58,10 @@ pub fn select_output_portfolio_v1(
         if selected >= budget.max_selected || remaining == FixedQ32::ZERO {
             break;
         }
-        if scores[index] <= FixedQ32::ZERO {
-            continue;
-        }
+        // A negative standalone score can still be a useful hedge against an
+        // already admitted direction with negative semantic covariance. Let
+        // covariance_positive_gain_weight decide the actual marginal gain;
+        // an isolated negative-score direction still returns zero weight.
         if selected_protocol.is_some_and(|protocol| protocol != candidates[index].protocol)
             || selected_domain
                 .is_some_and(|domain| domain != candidates[index].composition_domain_digest)
