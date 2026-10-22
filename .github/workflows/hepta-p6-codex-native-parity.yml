@@ -5,6 +5,8 @@ on:
     paths:
       - "qa/meta-network-scale/p6_fallback_gate.py"
       - "qa/meta-network-scale/test_p6_fallback_gate.py"
+      - "scripts/run_hepta_local_closeout.py"
+      - "scripts/test_run_hepta_local_closeout.py"
       - "codex-rs/hepta-types/src/execution_contract.rs"
       - "codex-rs/hepta-codex-adapter/src/**"
       - "codex-rs/hepta-operations/src/**"
@@ -50,6 +52,7 @@ jobs:
           set -euo pipefail
           test "$(git rev-parse HEAD)" = "$EXPECTED_SHA"
           python3 -m unittest discover -v -s qa/meta-network-scale -p 'test_p6_fallback_gate.py'
+          python3 -m unittest discover -v -s scripts -p 'test_run_hepta_local_closeout.py'
       - name: Require original exact source unchanged
         if: always() && !cancelled()
         shell: bash
