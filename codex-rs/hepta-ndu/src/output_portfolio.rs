@@ -197,7 +197,8 @@ pub fn select_output_portfolio_v1(
         total_latency,
         selection_digest: Digest32::ZERO,
     };
-    receipt.selection_digest = digest_selection(context, budget, &candidates, &covariance, &receipt);
+    receipt.selection_digest =
+        digest_selection(context, budget, &candidates, &covariance, &receipt);
     Ok(receipt)
 }
 /// Replays a portfolio decision from its exact immutable inputs and rejects
