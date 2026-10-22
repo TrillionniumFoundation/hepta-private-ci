@@ -188,6 +188,7 @@ pub fn select_output_portfolio_v1(
         generation: context.generation,
         encoder_digest: context.encoder_digest,
         snapshot_digest: context.snapshot_digest,
+        future_window_digest: context.future_window_digest,
         disposition,
         allocations,
         frontier,
@@ -700,6 +701,7 @@ fn digest_selection(
     bytes.extend_from_slice(&receipt.generation.get().to_le_bytes());
     bytes.extend_from_slice(receipt.encoder_digest.as_array());
     bytes.extend_from_slice(receipt.snapshot_digest.as_array());
+    bytes.extend_from_slice(receipt.future_window_digest.as_array());
     bytes.extend_from_slice(context.objective_digest.as_array());
     bytes.extend_from_slice(&context.generation.get().to_le_bytes());
     bytes.extend_from_slice(context.encoder_digest.as_array());
