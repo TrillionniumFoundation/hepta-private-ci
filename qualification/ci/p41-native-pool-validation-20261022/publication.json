@@ -22,11 +22,19 @@
   },
   "evidence_package": {
     "path": "qa/stem-bakeoff/evidence/20261022-native-cell-pool",
-    "files": 66,
-    "bytes": 2201317,
-    "manifest_sha256": "48180760e9f2771f859e80cfd1df057a4fdfc19572403520cec47024172d1170",
-    "checksums_sha256": "9c8486ca465e1bcc2d83b3add942b5664e2817557036279ed94c8b5c932561be",
-    "originals_modified": false
+    "benchmark_rerun": false,
+    "bytes": 2238126,
+    "files": 70,
+    "manifest_sha256": "61e4253d1f5507f43f794ba432e0bbe1becca8a553259c21368cd90dd140e996",
+    "original_payload_bytes_modified": false,
+    "path_mapping": {
+      "README.md": "original-notes/initial-package-README.md",
+      "source-snapshot/codex-rs/hepta-neuron/examples/native_task_head_pool.rs": "source-snapshot/codex-rs/hepta-neuron/examples/native_task_head_pool.rs.source",
+      "source-snapshot/codex-rs/hepta-neuron/src/lib.rs": "source-snapshot/codex-rs/hepta-neuron/src/lib.rs.source",
+      "source-snapshot/codex-rs/hepta-neuron/src/task_head_native.rs": "source-snapshot/codex-rs/hepta-neuron/src/task_head_native.rs.source"
+    },
+    "schema": "hepta.p41-publication-package-receipt.v1",
+    "sha256sums_sha256": "943acdfcf1709ce61a617c9240d1e929e63d4e8dfa90fb9d2fab241b01a8b7c0"
   },
   "independent_source_review": {
     "reviewed_scope": "root inspected original pool driver, runner, tests, complete auditor and composed workflow; independent Windows owner review was delivered separately",
@@ -80,5 +88,13 @@
       "remote": "89ad290a86703649562f919343b43c4bc5f71a89",
       "tree": "001e07a6edaf9002dd67796601da849251b5db38"
     }
-  ]
+  ],
+  "initial_package": {
+    "path": "qa/stem-bakeoff/evidence/20261022-native-cell-pool",
+    "files": 66,
+    "bytes": 2201317,
+    "manifest_sha256": "48180760e9f2771f859e80cfd1df057a4fdfc19572403520cec47024172d1170",
+    "checksums_sha256": "9c8486ca465e1bcc2d83b3add942b5664e2817557036279ed94c8b5c932561be",
+    "originals_modified": false
+  }
 }

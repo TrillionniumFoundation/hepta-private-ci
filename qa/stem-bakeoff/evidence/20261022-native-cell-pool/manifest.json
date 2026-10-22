@@ -5,10 +5,10 @@
   "fanout_samples": 128,
   "files": {
     "README.md": {
-      "bytes": 3278,
-      "kind": "package-documentation",
-      "original_source": "generated packaging scope and instructions",
-      "sha256": "8ab1c98855827cd2735657bd791aad5bda9b6255b8a28faf4e27e4646be78a6b"
+      "bytes": 3850,
+      "kind": "publication-documentation",
+      "original_source": "initial package README plus path explanation",
+      "sha256": "a7d0d5faa3e2e67ea447b51cc7cc4aa473a1bbe83bf1057ae592dc85d464f80c"
     },
     "RECONSTRUCT.sh": {
       "bytes": 2131,
@@ -45,6 +45,18 @@
       "kind": "unchanged-original",
       "original_source": "/tmp/hepta-p41-verify-results.py",
       "sha256": "f98c468aae3f617869598cf6122e9cecf056f33aa91d54099d75118b4fdd2337"
+    },
+    "checks/initial-package-SHA256SUMS": {
+      "bytes": 6657,
+      "kind": "unchanged-initial-package-index",
+      "original_source": "/tmp/hepta-p41-evidence-package-f8855a7/SHA256SUMS",
+      "sha256": "9c8486ca465e1bcc2d83b3add942b5664e2817557036279ed94c8b5c932561be"
+    },
+    "checks/initial-package-manifest.json": {
+      "bytes": 19100,
+      "kind": "unchanged-initial-package-index",
+      "original_source": "/tmp/hepta-p41-evidence-package-f8855a7/manifest.json",
+      "sha256": "48180760e9f2771f859e80cfd1df057a4fdfc19572403520cec47024172d1170"
     },
     "checks/native-fixture-probe/1.json": {
       "bytes": 82096,
@@ -117,6 +129,12 @@
       "kind": "packaging-script",
       "original_source": "/tmp/hepta-p41-package-evidence.py",
       "sha256": "6d5efe9a5fccbcaf63cadb592e6a784c712f97d1c23f7d20adfe47c325a673d3"
+    },
+    "checks/publication_package.py": {
+      "bytes": 4817,
+      "kind": "publication-packaging-script",
+      "original_source": "/tmp/hepta-p41-publication-package.py",
+      "sha256": "8934bd5be40f7df5ca561c2c35bf5479bd0775911a9dc4ba34ddc42e0a3988fc"
     },
     "input-references.json": {
       "bytes": 4226,
@@ -322,6 +340,12 @@
       "original_source": "/tmp/hepta-p41-README.md",
       "sha256": "5873610f6735792685ccfa336f7469679b28709b4b986e0af2d82976db71bdc8"
     },
+    "original-notes/initial-package-README.md": {
+      "bytes": 3278,
+      "kind": "package-documentation",
+      "original_source": "generated packaging scope and instructions",
+      "sha256": "8ab1c98855827cd2735657bd791aad5bda9b6255b8a28faf4e27e4646be78a6b"
+    },
     "references/p40/gated-paired.jsonl": {
       "bytes": 153679,
       "kind": "unchanged-p40-reference",
@@ -346,19 +370,19 @@
       "original_source": "/tmp/hepta-p41-pool/qa/stem-bakeoff/evidence/20261022-real-multimodal/archive-manifest.json",
       "sha256": "2a853d6c975b30d98a8c79348f01bb3f5b26f36793f2986826a5deed3ea4454e"
     },
-    "source-snapshot/codex-rs/hepta-neuron/examples/native_task_head_pool.rs": {
+    "source-snapshot/codex-rs/hepta-neuron/examples/native_task_head_pool.rs.source": {
       "bytes": 10996,
       "kind": "exact-git-source-blob",
       "original_source": "f8855a7ac07af47b618199a3a9ccb87ff9552a5c:codex-rs/hepta-neuron/examples/native_task_head_pool.rs",
       "sha256": "6294c5786f5223cacc3f74a62e6e0b5908bdad7653eabf25106cfd597c7ff0ed"
     },
-    "source-snapshot/codex-rs/hepta-neuron/src/lib.rs": {
+    "source-snapshot/codex-rs/hepta-neuron/src/lib.rs.source": {
       "bytes": 11729,
       "kind": "exact-git-source-blob",
       "original_source": "f8855a7ac07af47b618199a3a9ccb87ff9552a5c:codex-rs/hepta-neuron/src/lib.rs",
       "sha256": "839b884d6853dd8a2b62dc36e45dd2c71f84c7637b2250e93f517c1bb27b7206"
     },
-    "source-snapshot/codex-rs/hepta-neuron/src/task_head_native.rs": {
+    "source-snapshot/codex-rs/hepta-neuron/src/task_head_native.rs.source": {
       "bytes": 12910,
       "kind": "exact-git-source-blob",
       "original_source": "f8855a7ac07af47b618199a3a9ccb87ff9552a5c:codex-rs/hepta-neuron/src/task_head_native.rs",
@@ -412,10 +436,22 @@
     }
   ],
   "original_measurements_modified": false,
-  "payload_bytes": 2175560,
-  "payload_file_count": 64,
+  "payload_bytes": 2209984,
+  "payload_file_count": 68,
+  "publication_normalization": {
+    "benchmark_rerun": false,
+    "initial_manifest_sha256": "48180760e9f2771f859e80cfd1df057a4fdfc19572403520cec47024172d1170",
+    "initial_sha256sums_sha256": "9c8486ca465e1bcc2d83b3add942b5664e2817557036279ed94c8b5c932561be",
+    "original_payload_bytes_modified": false,
+    "path_mapping": {
+      "README.md": "original-notes/initial-package-README.md",
+      "source-snapshot/codex-rs/hepta-neuron/examples/native_task_head_pool.rs": "source-snapshot/codex-rs/hepta-neuron/examples/native_task_head_pool.rs.source",
+      "source-snapshot/codex-rs/hepta-neuron/src/lib.rs": "source-snapshot/codex-rs/hepta-neuron/src/lib.rs.source",
+      "source-snapshot/codex-rs/hepta-neuron/src/task_head_native.rs": "source-snapshot/codex-rs/hepta-neuron/src/task_head_native.rs.source"
+    }
+  },
   "report_sha256": "f4ed9cce8f33cb26764933cbc2b950239c9b7e2f8360410b051467a50ca8abe0",
-  "schema": "hepta.p41-evidence-package.v1",
+  "schema": "hepta.p41-evidence-package.v2",
   "source_commit": "f8855a7ac07af47b618199a3a9ccb87ff9552a5c",
   "source_tree": "231ed14ea73a71c6d2ac3fe353b1779419154f53"
 }

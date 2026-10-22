@@ -47,3 +47,13 @@ No benchmark, model inference, encoding or training was rerun while packaging.
 The new shell reproduction recipe is documentation, not an additionally executed
 test. Original local tests and native checks keep their own source/time scope;
 this package makes no claim that remote CI has completed.
+
+## Repository publication paths
+
+The archived Rust snapshots use `.rs.source` suffixes so repository formatters
+do not rewrite historical evidence with a different configuration. Their bytes
+and original Git blob identities are unchanged. The initial package README and
+indexes are retained separately; the current `manifest.json` and `SHA256SUMS`
+cover the publication paths. Run the original packager followed by
+`checks/publication_package.py` to reproduce this mechanical transformation.
+No original measurement, timing sample, trained weight or test log is changed.
