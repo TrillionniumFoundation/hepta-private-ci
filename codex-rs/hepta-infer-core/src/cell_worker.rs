@@ -12,6 +12,7 @@ use codex_hepta_types::Generation;
 use codex_hepta_types::StableId;
 
 use crate::cell_batch::CellBatchError;
+use crate::cell_batch::MAX_BATCH_ITEMS;
 use crate::cell_batch::FairCellQueueV1;
 use crate::cell_batch::ImmutableFeatureSnapshotV1;
 use crate::cell_batch::QueuedCellRequestV1;
@@ -65,6 +66,10 @@ pub struct FeatureCacheKeyV1 {
 #[derive(Clone, Debug, Default, Eq, PartialEq)]
 pub struct FeatureCacheV1 {
     entries: BTreeMap<FeatureCacheKeyV1, ImmutableFeatureSnapshotV1>,
+    // Invalidating the last snapshot must not reopen a retired scope generation.
+    scope_high_watermarks: BTreeMap<StableId, Generation>,
+    // An explicit cutover fences even scopes that have not cached a feature.
+    minimum_generation: Option<Generation>,
 }
 
 impl FeatureCacheV1 {
@@ -73,8 +78,26 @@ impl FeatureCacheV1 {
         scope_id: StableId,
         snapshot: ImmutableFeatureSnapshotV1,
     ) -> Result<(), CellWorkerError> {
+        let generation = snapshot.generation();
+        if self
+            .minimum_generation
+            .is_some_and(|minimum| generation.get() < minimum.get())
+            || self
+                .scope_high_watermarks
+                .get(&scope_id)
+                .is_some_and(|previous| generation.get() < previous.get())
+        {
+            return Err(CellWorkerError::StaleFeatureGeneration);
+        }
+        // Watermarks are bounded independently from live entries because old
+        // keys may disappear during a generation cutover.
+        if !self.scope_high_watermarks.contains_key(&scope_id)
+            && self.scope_high_watermarks.len() >= MAX_INDEX_ENTRIES
+        {
+            return Err(CellWorkerError::IndexCapacity);
+        }
         let key = FeatureCacheKeyV1 {
-            scope_id,
+            scope_id: scope_id.clone(),
             encoder_digest: snapshot.encoder_digest(),
             input_digest: snapshot.input_digest(),
         };
@@ -88,10 +111,33 @@ impl FeatureCacheV1 {
             if existing.generation() == snapshot.generation() && existing != &snapshot {
                 return Err(CellWorkerError::FeatureSnapshotConflict);
             }
-        } else if self.entries.len() >= MAX_INDEX_ENTRIES {
+        }
+        // Advancing a scope makes all its older feature snapshots unreadable.
+        // Reclaim their slots at admission, not only on explicit cutovers:
+        // otherwise repeated encoder/input rotations exhaust the bounded cache.
+        let advances_scope = self
+            .scope_high_watermarks
+            .get(&scope_id)
+            .is_some_and(|previous| previous.get() < generation.get());
+        // Capacity validation must happen before touching entries or fences.
+        // A full cache may reuse retired keys within this scope, but must not
+        // evict another scope's live features to admit a new key.
+        if !self.entries.contains_key(&key)
+            && self.entries.len() >= MAX_INDEX_ENTRIES
+            && !(advances_scope
+                && self.entries.iter().any(|(cached_key, cached)| {
+                    cached_key.scope_id == scope_id && cached.generation().get() < generation.get()
+                }))
+        {
             return Err(CellWorkerError::IndexCapacity);
         }
+        if advances_scope {
+            self.entries.retain(|cached_key, cached| {
+                cached_key.scope_id != scope_id || cached.generation() == generation
+            });
+        }
         self.entries.insert(key, snapshot);
+        self.scope_high_watermarks.insert(scope_id, generation);
         Ok(())
     }
 
@@ -101,14 +147,86 @@ impl FeatureCacheV1 {
         key: &FeatureCacheKeyV1,
         expected_generation: Generation,
     ) -> Option<&ImmutableFeatureSnapshotV1> {
-        self.entries
-            .get(key)
-            .filter(|snapshot| snapshot.generation() == expected_generation)
+        self.entries.get(key).filter(|snapshot| {
+            // An older key may still be present after a newer encoder/input
+            // was inserted in this scope. Physical presence is not a live
+            // generation permit, even if a caller requests the stale epoch.
+            snapshot.generation() == expected_generation
+                && self
+                    .scope_high_watermarks
+                    .get(&key.scope_id)
+                    .is_some_and(|current| *current == expected_generation)
+                && !self
+                    .minimum_generation
+                    .is_some_and(|minimum| expected_generation.get() < minimum.get())
+        })
     }
 
-    pub fn invalidate_generation(&mut self, generation: Generation) {
+    /// Fence one independently versioned scope without evicting other scopes.
+    ///
+    /// Per-scope generations need not be numerically synchronized. A global
+    /// cutover uses `invalidate_generation`; an organ-local cutover must not
+    /// discard valid features owned by an unrelated organ at an older epoch.
+    /// Record the watermark even when this scope had no cached feature.
+    pub fn invalidate_scope_generation(
+        &mut self,
+        scope_id: StableId,
+        generation: Generation,
+    ) -> Result<(), CellWorkerError> {
+        if self
+            .minimum_generation
+            .is_some_and(|minimum| generation.get() < minimum.get())
+            || self
+                .scope_high_watermarks
+                .get(&scope_id)
+                .is_some_and(|previous| generation.get() < previous.get())
+        {
+            return Err(CellWorkerError::StaleFeatureGeneration);
+        }
+        if !self.scope_high_watermarks.contains_key(&scope_id)
+            && self.scope_high_watermarks.len() >= MAX_INDEX_ENTRIES
+        {
+            return Err(CellWorkerError::IndexCapacity);
+        }
+        self.scope_high_watermarks
+            .insert(scope_id.clone(), generation);
+        self.entries.retain(|key, snapshot| {
+            key.scope_id != scope_id || snapshot.generation() == generation
+        });
+        Ok(())
+    }
+
+    /// Checked fleet-wide cutover. Reject a stale epoch before changing any
+    /// entries or fences. A global cutover must not evict a newer scoped
+    /// snapshot, even when its own floor has not advanced yet.
+    ///
+    /// Scopes with independent timelines must instead use
+    /// `invalidate_scope_generation`.
+    pub fn try_invalidate_generation(
+        &mut self,
+        generation: Generation,
+    ) -> Result<(), CellWorkerError> {
+        if self
+            .minimum_generation
+            .is_some_and(|minimum| generation.get() < minimum.get())
+            || self
+                .scope_high_watermarks
+                .values()
+                .any(|current| generation.get() < current.get())
+        {
+            return Err(CellWorkerError::StaleFeatureGeneration);
+        }
+        self.minimum_generation = Some(generation);
         self.entries
             .retain(|_, snapshot| snapshot.generation() == generation);
+        Ok(())
+    }
+
+    /// Compatibility entry point: a stale fleet-wide cutover is a no-op, never
+    /// a destructive eviction. New Control callers must use the checked API
+    /// to observe and reject stale cutover requests explicitly.
+    pub fn invalidate_generation(&mut self, generation: Generation) {
+        let _ = self.try_invalidate_generation(generation);
     }
 
     #[must_use]
@@ -214,6 +332,10 @@ pub struct SharedWorkerBatchV1 {
 
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct GroupCommitMetricsV1 {
+    /// Dequeue counters measure scheduling, not completed native effects.
+    pub groups_dequeued: u64,
+    pub activations_dequeued: u64,
+    /// Reserved for independently verified terminal receipts and durable writer acknowledgments.
     pub groups_committed: u64,
     pub activations_committed: u64,
     pub dropped_requests: u64,
@@ -232,10 +354,15 @@ impl SharedWorkerPoolV1 {
         if maximum_batch == 0 {
             return Err(CellWorkerError::ZeroBatchSize);
         }
+        if maximum_batch > MAX_BATCH_ITEMS {
+            return Err(CellWorkerError::BatchCapacity);
+        }
         Ok(Self {
             queue: FairCellQueueV1::new(maximum_queue).map_err(CellWorkerError::Queue)?,
             maximum_batch,
             metrics: GroupCommitMetricsV1 {
+                groups_dequeued: 0,
+                activations_dequeued: 0,
                 groups_committed: 0,
                 activations_committed: 0,
                 dropped_requests: 0,
@@ -252,13 +379,15 @@ impl SharedWorkerPoolV1 {
     }
 
     pub fn drain(&mut self) -> SharedWorkerBatchV1 {
-        let requests = self.queue.drain_batch(self.maximum_batch);
+        let requests = self.queue.drain_batch_same_generation(self.maximum_batch);
         let group_digest = digest_batch(&requests);
         if !requests.is_empty() {
-            self.metrics.groups_committed = self.metrics.groups_committed.saturating_add(1);
-            self.metrics.activations_committed = self
+            // A queue drain is neither backend execution nor durable commit.
+            // Failed, cancelled or lost batches must not inflate success metrics.
+            self.metrics.groups_dequeued = self.metrics.groups_dequeued.saturating_add(1);
+            self.metrics.activations_dequeued = self
                 .metrics
-                .activations_committed
+                .activations_dequeued
                 .saturating_add(requests.len() as u64);
         }
         SharedWorkerBatchV1 {
@@ -298,6 +427,7 @@ fn push_batch_id(bytes: &mut Vec<u8>, value: &StableId) {
 pub enum CellWorkerError {
     EmptyCellSet,
     IndexCapacity,
+    BatchCapacity,
     FeatureSnapshotConflict,
     StaleFeatureGeneration,
     InvalidModelKey,
