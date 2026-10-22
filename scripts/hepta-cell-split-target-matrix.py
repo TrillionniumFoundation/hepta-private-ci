@@ -21,6 +21,7 @@ import os
 import platform
 import re
 import selectors
+import secrets
 import shlex
 import signal
 import subprocess
@@ -468,20 +469,63 @@ def _check_report_output_target(output: Path, workload_path: Path | None) -> Non
 
 
 def _write_report_atomically(output: Path, report: dict[str, Any]) -> None:
-    """Replace the report pathname without following a swapped output symlink."""
+    """Durably publish under a pinned POSIX parent, without following redirects."""
     output.parent.mkdir(parents=True, exist_ok=True)
-    fd, temporary_name = tempfile.mkstemp(
-        prefix=f".{output.name}.", suffix=".tmp", dir=output.parent
-    )
-    temporary = Path(temporary_name)
+    if os.name != "posix":
+        # Diagnostic-only compatibility: measured worker execution is POSIX-only.
+        fd, temporary_name = tempfile.mkstemp(
+            prefix=f".{output.name}.", suffix=".tmp", dir=output.parent
+        )
+        temporary = Path(temporary_name)
+        try:
+            with os.fdopen(fd, "w", encoding="utf-8") as stream:
+                stream.write(json.dumps(report, sort_keys=True, indent=2) + "\n")
+                stream.flush()
+                os.fsync(stream.fileno())
+            os.replace(temporary, output)
+        finally:
+            temporary.unlink(missing_ok=True)
+        return
+
+    # The directory file descriptor pins the publication directory even if
+    # another process replaces its path with a symlink mid-operation.
     try:
+        directory_fd = os.open(
+            output.parent, os.O_RDONLY | os.O_DIRECTORY | os.O_NOFOLLOW
+        )
+    except OSError as error:
+        raise ValueError("matrix report parent must be a real directory") from error
+
+    temporary_name = f".{output.name}.{secrets.token_hex(16)}.tmp"
+    staged = False
+    try:
+        fd = os.open(
+            temporary_name,
+            os.O_WRONLY | os.O_CREAT | os.O_EXCL | os.O_NOFOLLOW,
+            0o600,
+            dir_fd=directory_fd,
+        )
+        staged = True
         with os.fdopen(fd, "w", encoding="utf-8") as stream:
             stream.write(json.dumps(report, sort_keys=True, indent=2) + "\n")
             stream.flush()
             os.fsync(stream.fileno())
-        os.replace(temporary, output)
+        os.replace(
+            temporary_name,
+            output.name,
+            src_dir_fd=directory_fd,
+            dst_dir_fd=directory_fd,
+        )
+        staged = False
+        # fsync(file) does not make the new filename durable across power loss.
+        os.fsync(directory_fd)
     finally:
-        temporary.unlink(missing_ok=True)
+        if staged:
+            try:
+                os.unlink(temporary_name, dir_fd=directory_fd)
+            except FileNotFoundError:
+                pass
+        os.close(directory_fd)
 
 
 def run_matrix(

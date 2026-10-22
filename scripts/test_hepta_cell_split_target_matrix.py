@@ -965,3 +965,82 @@ def test_metrics_reject_unrecognized_claim_fields() -> None:
     metrics = {**example_metrics(), "productionQualified": True}
     with pytest.raises(ValueError, match="unrecognized fields"):
         MODULE.validate_metrics(metrics)
+
+
+@pytest.mark.skipif(os.name != "posix", reason="requires POSIX pinned directory")
+def test_report_atomic_replace_fsyncs_file_and_parent(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    import stat
+
+    actual_fsync = os.fsync
+    observed = []
+
+    def recording_fsync(fd: int) -> None:
+        mode = os.fstat(fd).st_mode
+        observed.append("directory" if stat.S_ISDIR(mode) else "file")
+        actual_fsync(fd)
+
+    monkeypatch.setattr(os, "fsync", recording_fsync)
+    destination = tmp_path / "reports" / "receipt.json"
+    MODULE._write_report_atomically(destination, {"authority": "DENY_ALL"})
+    assert observed == ["file", "directory"]
+    assert json.loads(destination.read_text()) == {"authority": "DENY_ALL"}
+    assert list(destination.parent.glob(".receipt.json.*.tmp")) == []
+
+
+@pytest.mark.skipif(os.name != "posix", reason="requires POSIX pinned directory")
+def test_report_atomic_replace_updates_without_orphaned_staging(
+    tmp_path: Path,
+) -> None:
+    destination = tmp_path / "matrix.json"
+    for number in (1, 2, 3):
+        MODULE._write_report_atomically(destination, {"revision": number})
+        assert json.loads(destination.read_text()) == {"revision": number}
+    assert sorted(item.name for item in tmp_path.iterdir()) == ["matrix.json"]
+
+
+@pytest.mark.skipif(os.name != "posix", reason="requires POSIX pinned directory")
+def test_report_atomic_replace_rejects_symlink_parent(tmp_path: Path) -> None:
+    real = tmp_path / "real"
+    real.mkdir()
+    alias = tmp_path / "alias"
+    alias.symlink_to(real, target_is_directory=True)
+    with pytest.raises(ValueError, match="parent must be a real directory"):
+        MODULE._write_report_atomically(alias / "receipt.json", {"status": "blocked"})
+    assert list(real.iterdir()) == []
+
+
+@pytest.mark.skipif(os.name != "posix", reason="requires POSIX pinned directory")
+def test_report_atomic_replace_failure_preserves_previous_receipt(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    destination = tmp_path / "report.json"
+    destination.write_text("old-report")
+
+    def failing_replace(
+        src: str, dst: str, *, src_dir_fd: int, dst_dir_fd: int
+    ) -> None:
+        assert src_dir_fd == dst_dir_fd
+        assert (tmp_path / src).is_file()
+        raise OSError("simulated rename failure")
+
+    monkeypatch.setattr(os, "replace", failing_replace)
+    with pytest.raises(OSError, match="simulated rename failure"):
+        MODULE._write_report_atomically(destination, {"status": "blocked"})
+    assert destination.read_text() == "old-report"
+    assert sorted(item.name for item in tmp_path.iterdir()) == ["report.json"]
+
+
+@pytest.mark.skipif(os.name != "posix", reason="requires POSIX pinned directory")
+def test_report_atomic_replace_never_follows_existing_symlink(
+    tmp_path: Path,
+) -> None:
+    protected = tmp_path / "protected"
+    protected.write_text("unchanged")
+    destination = tmp_path / "report.json"
+    destination.symlink_to(protected)
+    MODULE._write_report_atomically(destination, {"status": "blocked"})
+    assert not destination.is_symlink()
+    assert protected.read_text() == "unchanged"
+    assert json.loads(destination.read_text()) == {"status": "blocked"}
