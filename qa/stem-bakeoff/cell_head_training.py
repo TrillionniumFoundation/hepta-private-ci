@@ -193,7 +193,9 @@ class TrainedCellHeadV1:
             state = torch.zeros((len(features), self._head.state_width))
             logits = self._head(features, state)["task_logits"]
             probabilities = torch.softmax(logits / self._report["temperature"], dim=-1)
-        return {"task_probabilities": probabilities.clone(),
+        return {"task_logits": logits.clone(),
+                "temperature": self._report["temperature"],
+                "task_probabilities": probabilities.clone(),
                 "accepted": probabilities.max(dim=-1).values >=
                 self._report["config"]["confidence_threshold"],
                 "feature_bundle_sha256": bundle.bundle_digest, "authority": "DENY_ALL"}
@@ -368,17 +370,44 @@ def load_head_artifact(directory: str | Path, *, expected_manifest_sha256: str,
     if type(report["feature_width"]) is not int or not 1 <= report["feature_width"] <= 4096:
         raise HeadTrainingError("invalid artifact feature width")
     head = _new_head(report["feature_width"], config)
+    expected_state = head.state_dict()
     with zipfile.ZipFile(io.BytesIO(payloads["weights.npz"])) as archive:
         entries = archive.infolist()
-        if (len(entries) != len(head.state_dict())
-                or len({entry.filename for entry in entries}) != len(entries)
+        if (len(entries) != len(expected_state)
+                or {entry.filename for entry in entries} != {name + ".npy" for name in expected_state}
                 or sum(entry.file_size for entry in entries) > MAX_ARTIFACT_BYTES):
             raise HeadTrainingError("invalid or over-budget Head tensor archive")
+        # A tiny NPY member can declare a huge array. Validate headers before
+        # np.load can allocate from their shapes, even under a retained hash.
+        for entry in entries:
+            expected = expected_state[entry.filename[:-4]]
+            with archive.open(entry) as stream:
+                try:
+                    version = np.lib.format.read_magic(stream)
+                    if version not in ((1, 0), (2, 0)):
+                        raise ValueError("unsupported NPY version")
+                    size_width = 2 if version == (1, 0) else 4
+                    size_bytes = stream.read(size_width)
+                    header_size = int.from_bytes(size_bytes, "little")
+                    if len(size_bytes) != size_width or not 0 < header_size <= 4096:
+                        raise ValueError("oversized or incomplete NPY header")
+                    header = stream.read(header_size)
+                    if len(header) != header_size:
+                        raise ValueError("truncated NPY header")
+                    reader = (np.lib.format.read_array_header_1_0 if version == (1, 0)
+                              else np.lib.format.read_array_header_2_0)
+                    shape, fortran, dtype = reader(io.BytesIO(size_bytes + header),
+                                                  max_header_size=4096)
+                except (ValueError, EOFError, zipfile.BadZipFile) as error:
+                    raise HeadTrainingError("invalid Head tensor NPY header") from error
+                if (shape != tuple(expected.shape) or fortran or dtype != np.dtype("float32")
+                        or entry.file_size - stream.tell() != expected.numel() * 4):
+                    raise HeadTrainingError("Head tensor header shape/dtype/byte length mismatch")
     with np.load(io.BytesIO(payloads["weights.npz"]), allow_pickle=False) as arrays:
-        if set(arrays.files) != set(head.state_dict()):
+        if set(arrays.files) != set(expected_state):
             raise HeadTrainingError("Head tensor inventory differs")
         state = {}
-        for name, expected in head.state_dict().items():
+        for name, expected in expected_state.items():
             array = arrays[name]
             if array.dtype != np.float32 or array.shape != tuple(expected.shape) or not np.isfinite(array).all():
                 raise HeadTrainingError("invalid Head tensor shape/dtype/value")
