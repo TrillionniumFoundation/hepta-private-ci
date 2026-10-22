@@ -328,6 +328,27 @@ impl ExecutionReceiptV1 {
         {
             return Err(ExecutionContractError::MissingTerminalOutcome);
         }
+        // A completed or terminally failed effect cannot be re-admitted.
+        // An unknown effect is reconcile-only, never pre-admission retry.
+        // Rollback after a known failure is a separate governed operation.
+        let recovery_allowed = matches!(
+            (self.status, self.recovery),
+            (ExecutionStatusV1::Completed, RecoveryDispositionV1::None)
+                | (ExecutionStatusV1::Failed, RecoveryDispositionV1::None)
+                | (ExecutionStatusV1::Failed, RecoveryDispositionV1::Quarantine)
+                | (ExecutionStatusV1::Failed, RecoveryDispositionV1::RollbackToPredecessor)
+                | (
+                    ExecutionStatusV1::Indeterminate,
+                    RecoveryDispositionV1::ReconcileSameOperation
+                )
+                | (ExecutionStatusV1::Indeterminate, RecoveryDispositionV1::Quarantine)
+                | (ExecutionStatusV1::Rejected, RecoveryDispositionV1::None)
+                | (ExecutionStatusV1::Rejected, RecoveryDispositionV1::RetryBeforeAdmission)
+                | (ExecutionStatusV1::Rejected, RecoveryDispositionV1::Quarantine)
+        );
+        if !recovery_allowed {
+            return Err(ExecutionContractError::StatusRecoveryMismatch);
+        }
         Ok(())
     }
 }
@@ -410,6 +431,7 @@ pub enum ExecutionContractError {
     ReceiptBindingMismatch,
     OutcomeDigestMismatch,
     StatusOutcomeMismatch,
+    StatusRecoveryMismatch,
     WriterIdentityCollision,
     GenerationSelfPredecessor,
     NonSuccessorGeneration,
