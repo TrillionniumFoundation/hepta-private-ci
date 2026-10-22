@@ -413,3 +413,52 @@ fn no_change_protocol_cannot_masquerade_as_a_second_positive_asset() {
         NduError::InvalidSolverReceipt("unmarked no-change asset")
     );
 }
+
+#[test]
+fn covariance_can_make_a_locally_positive_cell_worse_than_no_change() {
+    let mut shared_context = context(2);
+    // The candidate has 40% estimated utility and no standalone mean loss,
+    // but 60% covariance risk; this must not be an advisory promotion.
+    shared_context.semantic_covariance[3] = q(60);
+    let receipt = select_output_portfolio_v1(
+        &shared_context,
+        &budget(1),
+        &[
+            candidate("baseline", 0, 0, true),
+            candidate("high-covariance", 40, 0, false),
+        ],
+    )
+    .expect("covariance-aware no-change fallback");
+
+    assert_eq!(receipt.disposition, OutputPortfolioDispositionV1::NoChange);
+    assert_eq!(receipt.allocations.len(), 1);
+    assert_eq!(receipt.allocations[0].candidate_id, id("baseline"));
+    assert_eq!(receipt.allocations[0].weight, FixedQ32::ONE);
+    assert_eq!(receipt.total_utility, FixedQ32::ZERO);
+    assert_eq!(receipt.total_risk, FixedQ32::ZERO);
+    assert_eq!(receipt.total_resource, FixedQ32::ZERO);
+}
+
+#[test]
+fn covariance_risk_below_net_utility_allows_advisory_selection() {
+    let mut shared_context = context(2);
+    shared_context.semantic_covariance[3] = q(5);
+    let receipt = select_output_portfolio_v1(
+        &shared_context,
+        &budget(1),
+        &[
+            candidate("baseline", 0, 0, true),
+            candidate("measured-improvement", 40, 0, false),
+        ],
+    )
+    .expect("bounded covariance-aware selection");
+
+    assert_eq!(
+        receipt.disposition,
+        OutputPortfolioDispositionV1::AdvisorySelection
+    );
+    assert_eq!(receipt.allocations.len(), 1);
+    assert_eq!(receipt.allocations[0].candidate_id, id("measured-improvement"));
+    assert_eq!(receipt.total_risk, q(5));
+    assert_eq!(receipt.total_utility, q(40));
+}
