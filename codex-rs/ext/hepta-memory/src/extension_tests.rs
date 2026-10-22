@@ -899,6 +899,7 @@ async fn policy_gated_runtime_never_registers_legacy_turn_callback() {
     let temp = TempDir::new().expect("temp");
     let fleet_root = temp.path().join("fleet");
     fs::create_dir_all(&fleet_root).expect("fleet root");
+    let fleet_root = fleet_root.canonicalize().expect("canonical fleet root");
     let fleet = HeptaFleetRoot::parse(fleet_root).expect("fleet");
     let owner = AgentId::parse("00000000-0000-4000-8000-000000000103").expect("owner");
     let store = Arc::new(

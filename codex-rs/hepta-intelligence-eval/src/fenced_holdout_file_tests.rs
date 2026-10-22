@@ -8,6 +8,7 @@ use std::sync::atomic::AtomicU64;
 use std::sync::atomic::Ordering;
 
 use codex_hepta_types::FixedQ32;
+use pretty_assertions::assert_eq;
 
 use crate::CrossFoldPartitionV1;
 use crate::CrossFoldPlanV1;
@@ -142,6 +143,72 @@ fn owner(
             Err(error) => panic!("recover owner: {error}"),
         },
     }
+}
+
+#[test]
+fn owner_drop_releases_lock_while_a_duplicate_handle_remains_open()
+-> Result<(), Box<dyn std::error::Error>> {
+    let temp = TempFile::new();
+    let file = temp.create();
+    let retained = file.try_clone()?;
+    let store = LockedFileFinalHoldoutCasStoreV1::create(file, digest("binding"))?;
+    drop(store);
+
+    let recovered = LockedFileFinalHoldoutCasStoreV1::recover(
+        temp.open(),
+        digest("binding"),
+        /*minimum*/ None,
+    )?;
+    assert_eq!(
+        (recovered.anchor(), retained.metadata()?.len()),
+        (None, HEADER as u64),
+    );
+    Ok(())
+}
+
+#[test]
+fn failed_create_releases_lock_without_changing_existing_bytes()
+-> Result<(), Box<dyn std::error::Error>> {
+    let temp = TempFile::new();
+    let mut file = temp.create();
+    file.write_all(b"already initialized")?;
+    let retained = file.try_clone()?;
+    let result = LockedFileFinalHoldoutCasStoreV1::create(file, digest("binding"));
+    assert_eq!(
+        (result.err(), fs::read(&temp.path)?),
+        (
+            Some(LockedFileCasErrorV1::AlreadyInitialized),
+            b"already initialized".to_vec(),
+        ),
+    );
+
+    let next = temp.open();
+    next.try_lock()?;
+    assert_eq!(retained.metadata()?.len(), next.metadata()?.len());
+    Ok(())
+}
+
+#[test]
+fn failed_recover_releases_lock_without_changing_corrupt_bytes()
+-> Result<(), Box<dyn std::error::Error>> {
+    let temp = TempFile::new();
+    let mut file = temp.create();
+    file.write_all(b"truncated")?;
+    let retained = file.try_clone()?;
+    let result =
+        LockedFileFinalHoldoutCasStoreV1::recover(file, digest("binding"), /*minimum*/ None);
+    assert_eq!(
+        (result.err(), fs::read(&temp.path)?),
+        (
+            Some(LockedFileCasErrorV1::MissingHeader),
+            b"truncated".to_vec()
+        ),
+    );
+
+    let next = temp.open();
+    next.try_lock()?;
+    assert_eq!(retained.metadata()?.len(), next.metadata()?.len());
+    Ok(())
 }
 
 #[test]

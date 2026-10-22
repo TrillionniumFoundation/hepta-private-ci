@@ -82,6 +82,14 @@ Use the thread APIs to create, list, or archive conversations. Drive a conversat
 - Stream events: After `turn/start`, keep reading JSON-RPC notifications on stdout. You’ll see `item/started`, `item/completed`, deltas like `item/agentMessage/delta`, tool progress, etc. These represent streaming model output plus any side effects (commands, tool calls, reasoning notes).
 - Finish the turn: When the model is done (or the turn is interrupted via making the `turn/interrupt` call), the server sends `turn/completed` with the final turn state and token usage.
 
+`turn/completed` may arrive before Core finishes the turn's persistence and idle
+callbacks. A subsequent `turn/start` observes the currently registered admission
+fences for at most five seconds before preparing settings and routing the input
+once. Shutdown, a replacement admission, a new fence, or an exhausted observation
+budget returns an error; waiting does not bypass permissions or reserve an idle
+turn. Normal admission still rechecks state, and an unfenced running turn retains
+the usual steering behavior.
+
 ## Initialization
 
 Clients must send a single `initialize` request per transport connection before invoking any other method on that connection, then acknowledge with an `initialized` notification. The server returns the user agent string it will present to upstream services, `codexHome` for the server's Codex home directory, and `platformFamily` and `platformOs` strings describing the app-server runtime target; subsequent requests issued before initialization receive a `"Not initialized"` error, and repeated `initialize` calls on the same connection receive an `"Already initialized"` error.
@@ -616,12 +624,16 @@ Paginated threads support the same views. Their `full` view is materialized from
 `thread/items/list` pages full persisted items across a thread, optionally filtered to one turn:
 
 ```json
-{ "method": "thread/items/list", "id": 25, "params": {
+{
+  "method": "thread/items/list",
+  "id": 25,
+  "params": {
     "threadId": "thr_123",
     "turnId": "turn_456",
     "limit": 100,
     "sortDirection": "asc"
-} }
+  }
+}
 ```
 
 Each returned entry includes the containing `turnId` and its full `item`, so clients can group
@@ -2046,30 +2058,34 @@ MCP tool hooks appear with `handlerType: "mcpTool"`. Their `server` and `tool` f
 {
   "id": 28,
   "result": {
-    "data": [{
-      "cwd": "/Users/me/project",
-      "hooks": [{
-        "key": "/Users/me/.codex/config.toml:pre_tool_use:0:0",
-        "eventName": "pre_tool_use",
-        "handlerType": "command",
-        "async": false,
-        "isManaged": false,
-        "matcher": "Bash",
-        "command": "python3 /Users/me/hook.py",
-        "timeoutSec": 5,
-        "statusMessage": "running hook",
-        "additionalContextLimit": null,
-        "sourcePath": "/Users/me/.codex/config.toml",
-        "source": "user",
-        "pluginId": null,
-        "displayOrder": 0,
-        "enabled": true,
-        "currentHash": "sha256:...",
-        "trustStatus": "untrusted"
-      }],
-      "warnings": [],
-      "errors": []
-    }]
+    "data": [
+      {
+        "cwd": "/Users/me/project",
+        "hooks": [
+          {
+            "key": "/Users/me/.codex/config.toml:pre_tool_use:0:0",
+            "eventName": "pre_tool_use",
+            "handlerType": "command",
+            "async": false,
+            "isManaged": false,
+            "matcher": "Bash",
+            "command": "python3 /Users/me/hook.py",
+            "timeoutSec": 5,
+            "statusMessage": "running hook",
+            "additionalContextLimit": null,
+            "sourcePath": "/Users/me/.codex/config.toml",
+            "source": "user",
+            "pluginId": null,
+            "displayOrder": 0,
+            "enabled": true,
+            "currentHash": "sha256:...",
+            "trustStatus": "untrusted"
+          }
+        ],
+        "warnings": [],
+        "errors": []
+      }
+    ]
   }
 }
 ```
@@ -2081,21 +2097,24 @@ To disable a non-managed hook, upsert a state entry at `hooks.state` with `confi
   "method": "config/batchWrite",
   "id": 29,
   "params": {
-    "edits": [{
-      "keyPath": "hooks.state",
-      "value": {
-        "/Users/me/.codex/config.toml:pre_tool_use:0:0": {
-          "enabled": false
-        }
-      },
-      "mergeStrategy": "upsert"
-    }],
+    "edits": [
+      {
+        "keyPath": "hooks.state",
+        "value": {
+          "/Users/me/.codex/config.toml:pre_tool_use:0:0": {
+            "enabled": false
+          }
+        },
+        "mergeStrategy": "upsert"
+      }
+    ],
     "reloadUserConfig": true
   }
 }
 ```
 
 To re-enable it, upsert the same hook key with `"enabled": true`.
+
 ## Apps
 
 Use `app/installed` to read installed apps and whether each app is currently enabled and callable.

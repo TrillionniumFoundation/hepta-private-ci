@@ -215,6 +215,7 @@ use codex_protocol::error::Result as CodexResult;
 #[cfg(test)]
 use codex_protocol::exec_output::StreamOutput;
 
+pub(crate) mod admission_fence_observation;
 mod code_mode_warning;
 pub(crate) mod context_window;
 mod environment;

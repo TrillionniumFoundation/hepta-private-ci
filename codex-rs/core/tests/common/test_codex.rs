@@ -57,6 +57,7 @@ use codex_protocol::protocol::ThreadHistoryMode;
 use codex_protocol::protocol::ThreadSettingsOverrides;
 use codex_protocol::protocol::TurnEnvironmentSelection;
 use codex_protocol::protocol::TurnEnvironmentSelections;
+use codex_protocol::turn_input::TurnInputSubmission;
 use codex_protocol::user_input::UserInput;
 use codex_thread_store::ThreadStore;
 use codex_utils_absolute_path::AbsolutePathBuf;
@@ -1061,7 +1062,8 @@ impl TestCodex {
         let turn_environment_selections = environments.map(|environments| {
             TurnEnvironmentSelections::new(self.config.cwd.clone(), environments)
         });
-        self.codex
+        let submission = self
+            .codex
             .start_or_steer_turn(
                 TurnInputRequest::user_input(vec![UserInput::Text {
                     text: prompt.into(),
@@ -1085,9 +1087,21 @@ impl TestCodex {
                 }),
             )
             .await?;
+        let admitted_turn_id = match submission {
+            TurnInputSubmission::Started { turn_id } | TurnInputSubmission::Steered { turn_id } => {
+                turn_id
+            }
+            TurnInputSubmission::NotSubmitted { reason } => {
+                return Err(anyhow!(
+                    "test turn admission rejected before waiting for TurnStarted: {reason:?}"
+                ));
+            }
+        };
 
         let turn_id = wait_for_event_match(&self.codex, |event| match event {
-            EventMsg::TurnStarted(event) => Some(event.turn_id.clone()),
+            EventMsg::TurnStarted(event) if event.turn_id == admitted_turn_id => {
+                Some(event.turn_id.clone())
+            }
             _ => None,
         })
         .await;

@@ -227,7 +227,7 @@ impl PairFleet {
             agents.push(agent_id);
         }
         let release_id = ReleaseId::parse("paired-process-fixture-v1")?;
-        let fixture_binary = std::env::current_exe()?;
+        let fixture_binary = std::env::current_exe()?.canonicalize()?;
         let child_args = vec![
             "--exact".to_string(),
             "paired_child_process".to_string(),

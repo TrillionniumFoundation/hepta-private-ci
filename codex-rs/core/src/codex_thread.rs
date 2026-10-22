@@ -332,6 +332,24 @@ impl CodexThread {
         self.session.pending_admission_fence_completion()
     }
 
+    /// Observes only the admission fences registered when its snapshot is taken.
+    ///
+    /// Call outside owner callbacks and the submission dispatcher. The absolute
+    /// deadline bounds lock acquisition and completion waits. Success grants no
+    /// authority or idle reservation: callers must recheck permissions and use
+    /// normal Core routing, which may still refuse or steer their input.
+    pub async fn observe_admission_fences_until(
+        &self,
+        deadline: tokio::time::Instant,
+    ) -> Result<(), crate::AdmissionFenceObservationError> {
+        crate::session::admission_fence_observation::observe(
+            &self.session,
+            self.io.session_loop_termination.clone(),
+            deadline,
+        )
+        .await
+    }
+
     pub async fn emit_thread_idle_lifecycle_if_idle(&self, cause: ThreadIdleCause) {
         self.session.emit_thread_idle_lifecycle_if_idle(cause).await;
     }

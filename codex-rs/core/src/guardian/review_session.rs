@@ -1184,6 +1184,12 @@ async fn run_review_on_session(
             }),
         TurnInputMode::StartIfIdle,
     );
+    let submission = async {
+        if let Some(completion) = review_session.session.pending_admission_fence_completion() {
+            completion.await;
+        }
+        submission.await
+    };
     let submit_result = run_before_review_deadline(
         deadline,
         params.external_cancel.as_ref(),

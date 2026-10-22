@@ -1,0 +1,342 @@
+{
+  "schema": "hepta.p38.native-followup.v1",
+  "recorded_utc": "2026-10-22T07:59:35.172093+00:00",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "base_commit": "9370b49332c35b7303528eafbb4733639d628283",
+  "tested_source_commit": "62f7c178fdc328acdf50ae8d7c360d798ad3f2f1",
+  "tested_source_tree": "6b04b2e1e1c6366e88dc51212b249a98e2fed15c",
+  "original_failed_merge_checkout": "ee31f4ed166cd0f720153ae06348fb8e9644f545",
+  "original_run_id": 39727698191,
+  "stages": [
+    {
+      "commit": "de2f4d0bb6fc25d69502955e8986576a81dabf51",
+      "tree": "69bfe39322bb7b81ca52c83a77497e2afc599a45",
+      "subject": "fix(v8-poc): serialize first sandbox allocator initialization",
+      "mechanism": "Serialize first isolate, context and shared sandbox allocator setup; release the mutex before evaluating JavaScript.",
+      "validation_boundary": "Actual Linux sandbox V8 tests passed, including eight concurrent isolate creations. Windows execution remains pending."
+    },
+    {
+      "commit": "1c3e0fb928a9b81aed9d59a0b42bc4563974cdca",
+      "tree": "5edcae362d58fd7063084e4371d91212c6e42bbd",
+      "subject": "test(queue): await durable duplicate reconciliation",
+      "mechanism": "Wait within ten seconds for durable duplicate reconciliation after the existing idle callback; keep the three original queue and message-count assertions.",
+      "validation_boundary": "Original Windows failure read. Full owning Queue execution remains pending."
+    },
+    {
+      "commit": "5a8087e4c8e9c3f161492456dcf646ca0744c39f",
+      "tree": "8be088af96f68c856309835d833e64e346d50b0b",
+      "subject": "fix(guardian): await prior admission fence within review budget",
+      "mechanism": "Await the previous typed admission fence inside the existing Guardian review deadline and cancellation boundary.",
+      "validation_boundary": "Exact donor file reproduced; owning Core execution remains pending."
+    },
+    {
+      "commit": "bb1648dab8dd371a1729f77796ed8ec17f095ff1",
+      "tree": "51824cbb3b3fd4436aebb19fbdd8267706b4dfcf",
+      "subject": "fix(uds): verify Windows peer process owner before control reads",
+      "mechanism": "Resolve the connected Windows socket peer PID, hold and check its live process handle, compare TokenUser SIDs, then recheck peer identity and liveness.",
+      "validation_boundary": "Linux UDS tests passed; all Windows peer tests cross-compiled and passed Clippy. Native Windows and different-account integration execution remain pending."
+    },
+    {
+      "commit": "002e0937750dac289f904518158de2fad38562e3",
+      "tree": "7f1f1c28be4f5dd8b5d135068729a9cebeeb3000",
+      "subject": "fix(agentd): distinguish AF_UNIX entries without following links",
+      "mechanism": "Inspect the opened reparse entry without following it and accept only the AF_UNIX tag; Agentd distinguishes missing, live, stale, ordinary and linked entries.",
+      "validation_boundary": "Final Windows UDS cross-Clippy passed. Agentd and Windows filesystem execution remain pending."
+    },
+    {
+      "commit": "c2b93187b429ee7f1eab811d8e301708a59e6931",
+      "tree": "e90cb10f4e23d9cff2640fd4d42ad1a050921943",
+      "subject": "test(core): bind environment trace collection to each async poll",
+      "mechanism": "Bind the complete async snapshot fixture and its child task to the same owned tracing Dispatch at every poll; keep the original span assertions and add a two-worker variant.",
+      "validation_boundary": "Formatting and recursive source inclusion checked. This is a candidate repair until the owning Core tests execute."
+    },
+    {
+      "commit": "62f7c178fdc328acdf50ae8d7c360d798ad3f2f1",
+      "tree": "6b04b2e1e1c6366e88dc51212b249a98e2fed15c",
+      "subject": "ci(v8): give Windows cold source builds a bounded two-hour budget",
+      "mechanism": "Raise only the two Windows cold source-build job budgets from thirty to one hundred twenty minutes; preserve their full build and smoke checks.",
+      "validation_boundary": "Observed cancellation timing and buffered compiler output are documented separately; no successful new Windows build is claimed."
+    }
+  ],
+  "original_evidence": [
+    {
+      "job_id": 119664821471,
+      "source_commit": "db0d860811ffc37f0c462b030d0be3b8043955a8",
+      "findings": [
+        "V8 configurable sandbox pool initialized concurrently",
+        "Queue duplicate cleanup asserted before durable terminal reconciliation",
+        "Matrixd Windows peer gate returned Unsupported",
+        "Agentd existing AF_UNIX entry was misclassified"
+      ],
+      "name": "hepta-p38-windows-shard3-119664821471.log",
+      "bytes": 617383,
+      "sha256": "e9e453f88a2eae7af6be82904277cd5e83d0e062c2a3f45d0481b37b9c980fd2"
+    },
+    {
+      "job_id": 119664821494,
+      "source_commit": "db0d860811ffc37f0c462b030d0be3b8043955a8",
+      "findings": [
+        "Guardian reused trunk did not produce the second assessment",
+        "Environment snapshot trace lacked the expected parent span"
+      ],
+      "name": "hepta-p38-job-119664821494.log",
+      "bytes": 755384,
+      "sha256": "60ac982d6578b24a1165e00f04fcf0ec919c6df72208795268d7cf1fb21e9d24"
+    },
+    {
+      "job_id": 119664821605,
+      "source_commit": "db0d860811ffc37f0c462b030d0be3b8043955a8",
+      "findings": [
+        "Windows release build completed with 5191 actions; job failed only the old MODULE.bazel.lock clean-worktree check"
+      ],
+      "name": "hepta-p38-job-119664821605.log",
+      "bytes": 658770,
+      "sha256": "1604197bb75df783e33b81a32660e5a004e3315e29ca80e1da608629761303d6"
+    },
+    {
+      "job_id": 119664821457,
+      "source_commit": "db0d860811ffc37f0c462b030d0be3b8043955a8",
+      "findings": [
+        "Windows Clippy build completed with 6582 actions; job failed only the old MODULE.bazel.lock clean-worktree check"
+      ],
+      "name": "hepta-p38-job-119664821457.log",
+      "bytes": 901731,
+      "sha256": "2040a0873c9ae8291a438d211efe021f07ce20611bc395d62aa69d33b7eba781"
+    }
+  ],
+  "guardian_provenance": {
+    "donor_pr": 2968,
+    "donor_head": "48177153ad04605338c3a9a8dbd17defee9981bc",
+    "file": "codex-rs/core/src/guardian/review_session.rs",
+    "exact_donor_and_result_git_blob": "779e59183f87dd2d3f5cf45b802d3ab67801f861",
+    "donor_ci_is_not_final_source_ci": true
+  },
+  "tools": {
+    "rustc": "1.95.0 (59807616e 2026-04-14)",
+    "cargo": "1.95.0 (f2d3ce0bd 2026-03-21)",
+    "just": "1.51.0",
+    "bazel": "9.0.0",
+    "cargo_deny": "0.19.0",
+    "nextest_actual_local": "0.9.149 (3fe4ef319 2026-10-20)",
+    "nextest_ci_pin": "0.9.103",
+    "prettier": "3.5.3",
+    "codespell": "2.4.3"
+  },
+  "validation": [
+    {
+      "command": "just test -p codex-uds",
+      "exit_code": 0,
+      "passed": 7,
+      "skipped": 0,
+      "platform": "Linux x86_64",
+      "boundary": "Executed during peer-gate development before the Windows entry-classification addition. No final-tree Windows test pass is inferred.",
+      "name": "hepta-uds-native-followup-tests-unsandboxed.log",
+      "bytes": 1862,
+      "sha256": "8150337fd8991a8b484732b628b5e80e779b5076f16c2cf0f379a73b2f3a1b20"
+    },
+    {
+      "command": "just fix -p codex-uds",
+      "exit_code": 0,
+      "boundary": "Scoped Linux Clippy automatic fix; local socket permission was granted by the execution approval system. Three existing Clippy configuration warnings remained.",
+      "name": "hepta-uds-native-clippy-fix.log",
+      "bytes": 1642,
+      "sha256": "8e1d6d4f9bd8797a47da574cc90a916bb2b879a408219e5232c5435b6de9601c"
+    },
+    {
+      "command": "cargo clippy -p codex-uds --tests --target x86_64-pc-windows-msvc",
+      "exit_code": 0,
+      "platform": "Linux host with official Rust Windows standard library",
+      "boundary": "Final Windows peer and entry test code type-checked; the Windows tests were not executed.",
+      "name": "hepta-uds-final-windows-clippy.log",
+      "bytes": 150,
+      "sha256": "1f32843c6db7e99e3c594059fbcac0f2853c7b172d6902f47ebeff5249ecb20f"
+    },
+    {
+      "command": "just test -p codex-v8-poc --features sandbox",
+      "exit_code": 0,
+      "passed": 7,
+      "skipped": 0,
+      "platform": "Linux x86_64",
+      "parallel_threads_in_new_regression": 8,
+      "boundary": "Actual sandbox V8 execution using the verified official archive and matching bindings. The V8 source file is unchanged in the final source.",
+      "name": "hepta-v8-native-followup-tests.log",
+      "bytes": 5987,
+      "sha256": "f618cfd0b9240f290d18431ec8545704d86e8f8393a642344e428410edecb852"
+    },
+    {
+      "command": "just fix -p codex-v8-poc --features sandbox",
+      "exit_code": 0,
+      "name": "hepta-v8-native-followup-clippy.log",
+      "bytes": 1377,
+      "sha256": "116c6503ccad9a415c06ff4f6c922c6ec667918aaedbbbd90d3dce57a0315763"
+    },
+    {
+      "command": "just fmt and explicit recursive rustfmt --check on the changed module roots",
+      "exit_code": 0,
+      "name": "hepta-native-followup-rustfmt.log",
+      "bytes": 530,
+      "sha256": "1d126a9a58a3b27ac409c1fb1c667778515f4fb266243088bd31c6063d8efbcb"
+    },
+    {
+      "command": "cargo metadata --format-version 1 --offline --locked",
+      "exit_code": 0,
+      "packages": 1523,
+      "nodes": 1523,
+      "finished_utc": "2026-10-22T07:57:01.567800+00:00",
+      "output_sha256": "07676cd75b6aad6172d9217ddda3f78ff5a1cb9fc6ba4cdb28f8fc608b5782de"
+    },
+    {
+      "command": "cargo-deny --log-level warn --manifest-path ./codex-rs/Cargo.toml --all-features check",
+      "exit_code": 0,
+      "source_commit": "62f7c178fdc328acdf50ae8d7c360d798ad3f2f1",
+      "advisory_db_head_before": "59ef7abf8ce56ea80fe7eba97ba3835449009fa4",
+      "advisory_db_head_after": "59ef7abf8ce56ea80fe7eba97ba3835449009fa4",
+      "finished_utc": "2026-10-22T07:55:38.349784+00:00",
+      "result": "advisories ok, bans ok, licenses ok, sources ok",
+      "log_bytes": 13272460,
+      "log_sha256": "b4e6e4d39f3df05b1fde16ab4bf4f83a89829752c9746b70b9ea1004e8ff084f"
+    },
+    {
+      "command": "just bazel-lock-update",
+      "exit_code": 0,
+      "boundary": "Original repository recipe, Bazel 9.0.0, isolated caches and normal CA verification; no recipe or digest was bypassed.",
+      "name": "hepta-uds-final-bazel-lock-update.log",
+      "bytes": 1938,
+      "sha256": "c7f3ac27b9c3727b79c0922d427027e250391ff0c8a8f731d12b917de9eef0b5"
+    },
+    {
+      "command": "./scripts/check-module-bazel-lock.sh",
+      "exit_code": 0,
+      "boundary": "Original complete lock check; MODULE.bazel.lock remained byte-identical.",
+      "name": "hepta-uds-final-bazel-lock-check.log",
+      "bytes": 718,
+      "sha256": "36e3240f1f3887828467ac2d886b6f060ceff72f7ea4cbccb4cf847ffc157604"
+    },
+    {
+      "command": "codespell --ignore-words .codespellignore --skip ./.git",
+      "exit_code": 0,
+      "version": "2.4.3",
+      "boundary": "Complete isolated checkout with the new source and receipt. Existing repository spelling policy unchanged.",
+      "log_bytes": 0,
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ],
+  "fixed_inputs": {
+    "rust_windows_std_archive": {
+      "version": "1.95.0",
+      "target": "x86_64-pc-windows-msvc",
+      "sha256": "7c659bdc88646e7e1befa370881bd311be87b26f006933a28b40dcab2f7cc832"
+    },
+    "v8_sandbox_archive_sha256": "a35c75d1f26e6a983885a45b33490a4ebe54f05050568b32b89cfb421b30b583",
+    "v8_sandbox_bindings_sha256": "7727826ae479bdb645e807239fb12d1f8e2e23de7a6cf16f5ee592690d1d8506"
+  },
+  "dependency_result": {
+    "change": "The codex-uds Windows dependency now points to the already locked windows-sys 0.61.2 with the required API features.",
+    "external_package_versions_changed": false,
+    "cargo_lock": {
+      "bytes": 419347,
+      "sha256": "19af4f0f04c38f75b2d9e4f4c0e7098fc7fbd00000bd578b2799d22f23e31589"
+    },
+    "module_bazel_lock": {
+      "bytes": 1668609,
+      "sha256": "63ee8041114a86fb2064282e466d4250abdf884b2b10dff21c91c412cecfcc4b"
+    },
+    "module_bazel_lock_unchanged_from_base": true
+  },
+  "new_regression_counts": {
+    "windows_peer": 6,
+    "windows_entry_classification": 3,
+    "agentd_entry_handling": 5,
+    "additional_trace_executor_variant": 1,
+    "v8_parallel_first_use": 1
+  },
+  "windows_v8_budget_receipt": "qualification/ci/2026-10-22-p38-windows-v8-build-budget.json",
+  "source_files": {
+    ".github/workflows/v8-canary.yml": {
+      "bytes": 17487,
+      "sha256": "fb6889487e42c046182f4d3fa4435e1d5f34e09c7b3a032aa6b272bf6794798f"
+    },
+    "codex-rs/Cargo.lock": {
+      "bytes": 419347,
+      "sha256": "19af4f0f04c38f75b2d9e4f4c0e7098fc7fbd00000bd578b2799d22f23e31589"
+    },
+    "codex-rs/core/src/environment_selection.rs": {
+      "bytes": 70292,
+      "sha256": "a6d3702c02cc357924bd4cda6d43fd7f70f32999a17db7ca97fba47884661142"
+    },
+    "codex-rs/core/src/environment_selection/tests/snapshot_trace_tests.rs": {
+      "bytes": 3791,
+      "sha256": "34aea89392b19b1f5f3fd51cfbf8dc34626e32f90118eaa4d14be5f81abe732e"
+    },
+    "codex-rs/core/src/guardian/review_session.rs": {
+      "bytes": 96440,
+      "sha256": "18600e85075642386bdb9f2b99baf443b5efad08898ee256828c68c9ce04520e"
+    },
+    "codex-rs/ext/queue/tests/queue_service.rs": {
+      "bytes": 111815,
+      "sha256": "68f2f752e99bb799983fd7c089e4a80f0f586ebc71ef7fe1ff44874202c86c3f"
+    },
+    "codex-rs/hepta-agentd/src/control.rs": {
+      "bytes": 8136,
+      "sha256": "76fb3e20a730f5d17e9f55dd973f9b853fb3eee4add6a41446bd5ea9a447e987"
+    },
+    "codex-rs/hepta-agentd/src/control_socket_entry_tests.rs": {
+      "bytes": 2000,
+      "sha256": "fc41fcfee7932eb9d688b91a61556052c0086420ffa73011a1f1ca0d96bc1539"
+    },
+    "codex-rs/uds/Cargo.toml": {
+      "bytes": 935,
+      "sha256": "e32eb38c50c284226da3fbf61c607f10b0cfa819003d2b725e390549902b0154"
+    },
+    "codex-rs/uds/src/lib.rs": {
+      "bytes": 14610,
+      "sha256": "3e07ebb9e79b2c20049a90fad143c8ec213cda3abb857a113cd9f120f3d6bf24"
+    },
+    "codex-rs/uds/src/lib_tests.rs": {
+      "bytes": 5651,
+      "sha256": "aa2b38e42942c0dcd105dbb4d44a34ea746ef48c6bdd7a6cc14e5ae579e77b10"
+    },
+    "codex-rs/uds/src/windows_peer.rs": {
+      "bytes": 7445,
+      "sha256": "e874a46f8dd297d6e33e2c41692def04dbb221130f8d8e1d6e754607b44f9100"
+    },
+    "codex-rs/uds/src/windows_peer_tests.rs": {
+      "bytes": 4327,
+      "sha256": "be0ab1d8522940f64cd524602885159342961c761fa8f1273bf1d843ea865e96"
+    },
+    "codex-rs/uds/src/windows_socket_entry.rs": {
+      "bytes": 2364,
+      "sha256": "b97853eceb5e4f3f198e070c688ceb651958bbe60279e89bf8540026173455ac"
+    },
+    "codex-rs/uds/src/windows_socket_entry_tests.rs": {
+      "bytes": 1705,
+      "sha256": "ac693f3724a679fe130ff41864713c4fd888bd049a478f3351f12fa7cdef7ff4"
+    },
+    "codex-rs/v8-poc/src/lib.rs": {
+      "bytes": 4159,
+      "sha256": "70f37113ca470b463c7bda6346e96655321e23e20de9721502e7095de537a999"
+    },
+    "qualification/ci/2026-10-22-p38-windows-v8-build-budget.json": {
+      "bytes": 2408,
+      "sha256": "f7301ac28e12d8535a1ae3265fa0b2145285d29a6f04d177b4a9ee56cbd4f1b7"
+    }
+  },
+  "pending": [
+    "Native Windows UDS, Matrixd and Agentd execution, including the real connected child-process and reparse-entry tests.",
+    "Complete owning Queue and Core tests for duplicate reconciliation, Guardian reuse and snapshot tracing.",
+    "All applicable CI gates on the newly published source and its downstream merge trees.",
+    "Newly observed old-source Windows shard 2 failures: AppServer admission, execution recovery, helper discovery, platform fixtures, migration fixtures and Windows sandbox permission assertions. These are not declared repaired by this receipt."
+  ],
+  "newly_observed_failure": {
+    "run_id": 39727698191,
+    "job_id": 119664821565,
+    "source_commit": "db0d860811ffc37f0c462b030d0be3b8043955a8",
+    "failed_targets": 13,
+    "name": "hepta-p38-job-119664821565.log",
+    "bytes": 3508440,
+    "sha256": "aafb8096d29f5971e4af42296b82858480223e01e2593a9c1fb1d925bd135dd1"
+  },
+  "native_windows_tests_pass_claimed": false,
+  "all_blockers_closed": false,
+  "production_qualification_claimed": false
+}
