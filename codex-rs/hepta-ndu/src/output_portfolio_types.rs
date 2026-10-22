@@ -130,6 +130,9 @@ pub struct OutputPortfolioSelectionReceiptV1 {
     pub generation: Generation,
     pub encoder_digest: Digest32,
     pub snapshot_digest: Digest32,
+    /// Frozen evaluation-window binding carried in the public advisory receipt.
+    /// This is not an independent signature or a proof of real observations.
+    pub future_window_digest: Digest32,
     pub disposition: OutputPortfolioDispositionV1,
     pub allocations: Vec<OutputPortfolioAllocationV1>,
     pub frontier: Vec<OutputPortfolioFrontierPointV1>,

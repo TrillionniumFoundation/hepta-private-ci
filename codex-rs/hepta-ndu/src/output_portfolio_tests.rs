@@ -348,15 +348,9 @@ fn fractional_portfolio_counts_the_no_change_residual_against_max_selected() {
             .iter()
             .any(|item| { item.candidate_id == id("fractional") && item.weight == q(40) })
     );
-    assert!(
-        two_slots
-            .allocations
-            .iter()
-            .any(|item| {
-                item.candidate_id == id("baseline")
-                    && item.weight == exact_no_change_residual
-            })
-    );
+    assert!(two_slots.allocations.iter().any(|item| {
+        item.candidate_id == id("baseline") && item.weight == exact_no_change_residual
+    }));
 }
 
 #[test]
@@ -808,7 +802,6 @@ fn positive_individual_scores_cannot_hide_negative_correlation_gain() {
     assert!(receipt.total_utility > receipt.total_risk);
 }
 
-
 #[test]
 fn portfolio_receipt_replay_rejects_mutated_allocation_and_digest() {
     let original = [
@@ -848,6 +841,14 @@ fn portfolio_receipt_replay_rejects_mutated_allocation_and_digest() {
         verify_output_portfolio_receipt_v1(&ctx, &limits, &original, &altered_generation),
         Err(NduError::InvalidSolverReceipt("portfolio receipt replay"))
     );
+
+    assert_eq!(receipt.future_window_digest, ctx.future_window_digest);
+    let mut altered_window = receipt.clone();
+    altered_window.future_window_digest = Digest32::of_bytes(b"forged-future-window");
+    assert_eq!(
+        verify_output_portfolio_receipt_v1(&ctx, &limits, &original, &altered_window),
+        Err(NduError::InvalidSolverReceipt("portfolio receipt replay"))
+    );
 }
 
 #[test]
@@ -879,15 +880,24 @@ fn negative_standalone_score_can_hedge_positive_portfolio_exposure() {
         receipt.disposition,
         OutputPortfolioDispositionV1::AdvisorySelection
     );
-    assert!(receipt.allocations.iter().any(|arm| {
-        arm.candidate_id == id("anchor") && arm.weight == q(40)
-    }));
-    assert!(receipt.allocations.iter().any(|arm| {
-        arm.candidate_id == id("hedge") && arm.weight > FixedQ32::ZERO
-    }));
-    assert!(receipt.allocations.iter().any(|arm| {
-        arm.candidate_id == id("baseline") && arm.weight > FixedQ32::ZERO
-    }));
+    assert!(
+        receipt
+            .allocations
+            .iter()
+            .any(|arm| { arm.candidate_id == id("anchor") && arm.weight == q(40) })
+    );
+    assert!(
+        receipt
+            .allocations
+            .iter()
+            .any(|arm| { arm.candidate_id == id("hedge") && arm.weight > FixedQ32::ZERO })
+    );
+    assert!(
+        receipt
+            .allocations
+            .iter()
+            .any(|arm| { arm.candidate_id == id("baseline") && arm.weight > FixedQ32::ZERO })
+    );
     assert!(receipt.total_risk < q(10));
     assert!(receipt.total_utility > receipt.total_risk);
     verify_output_portfolio_receipt_v1(&correlated, &limits, &candidates, &receipt)
@@ -946,6 +956,9 @@ fn digest_commits_to_complete_public_receipt_and_every_candidate_snapshot() {
     assert_ne!(digest(&changed), receipt.selection_digest);
     let mut changed = receipt.clone();
     changed.snapshot_digest = Digest32::of_bytes(b"another feature snapshot");
+    assert_ne!(digest(&changed), receipt.selection_digest);
+    let mut changed = receipt.clone();
+    changed.future_window_digest = Digest32::of_bytes(b"another future window");
     assert_ne!(digest(&changed), receipt.selection_digest);
     let mut changed = receipt.clone();
     changed.disposition = OutputPortfolioDispositionV1::NoChange;
