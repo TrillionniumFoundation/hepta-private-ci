@@ -1,9 +1,10 @@
 //! Native Windows checks of retained identity, sharing, and private creation.
 
-use super::*;
 use super::super::PrivateFileAccess;
 use super::super::open_private_state_child;
 use super::super::open_private_state_directory;
+use super::*;
+use pretty_assertions::assert_eq;
 use std::fs;
 use std::fs::FileTimes;
 use std::fs::OpenOptions;
@@ -12,7 +13,6 @@ use std::os::windows::fs::OpenOptionsExt;
 use std::process::Command;
 use std::time::Duration;
 use std::time::UNIX_EPOCH;
-use pretty_assertions::assert_eq;
 use windows_sys::Win32::Security::Authorization::SetSecurityInfo;
 use windows_sys::Win32::Security::PROTECTED_DACL_SECURITY_INFORMATION;
 use windows_sys::Win32::Storage::FileSystem::FILE_FLAG_OPEN_REPARSE_POINT;
@@ -62,8 +62,18 @@ fn existing_only_acquisition_does_not_create_or_accept_stream_names() -> io::Res
     assert!(!root.try_exists()?);
     drop(open_private_state_directory(&root)?);
     let directory = RetainedPrivateStateDirectory::open_existing(&root)?;
-    assert!(directory.retain_file(OsStr::new("missing.sqlite3"))?.is_none());
-    for name in ["../escape", "nested\\child", "database:stream", "C:\\escape", "."] {
+    assert!(
+        directory
+            .retain_file(OsStr::new("missing.sqlite3"))?
+            .is_none()
+    );
+    for name in [
+        "../escape",
+        "nested\\child",
+        "database:stream",
+        "C:\\escape",
+        ".",
+    ] {
         assert!(directory.retain_file(OsStr::new(name)).is_err());
         assert!(directory.create_new_file(OsStr::new(name)).is_err());
     }
@@ -124,10 +134,15 @@ fn rejects_hardlinks_and_junctions_without_touching_redirected_state() -> io::Re
     let leaf_alias = root.join("redirected-file");
     junction(temporary.path(), &leaf_alias)?;
     let directory = RetainedPrivateStateDirectory::open_existing(&root)?;
-    let denied = directory.retain_file(OsStr::new("redirected-file")).is_err();
+    let denied = directory
+        .retain_file(OsStr::new("redirected-file"))
+        .is_err();
     drop(directory);
     fs::remove_dir(leaf_alias)?;
-    assert!(denied, "a directory reparse leaf is not a regular recovery input");
+    assert!(
+        denied,
+        "a directory reparse leaf is not a regular recovery input"
+    );
     Ok(())
 }
 
@@ -143,24 +158,40 @@ fn security_drift_is_rejected_without_repairing_the_actual_dacl() -> io::Result<
     // Change actual security while the data handle is retained. This is not a
     // fake snapshot mutation: NULL DACL makes this real file unsafe to retain.
     let status = unsafe {
-        SetSecurityInfo(security_writer.as_raw_handle() as HANDLE, 1,
+        SetSecurityInfo(
+            security_writer.as_raw_handle() as HANDLE,
+            1,
             DACL_SECURITY_INFORMATION | PROTECTED_DACL_SECURITY_INFORMATION,
-            ptr::null_mut(), ptr::null_mut(), ptr::null_mut(), ptr::null_mut())
+            ptr::null_mut(),
+            ptr::null_mut(),
+            ptr::null_mut(),
+            ptr::null_mut(),
+        )
     };
     assert_eq!(status, ERROR_SUCCESS);
     assert!(directory.verify_file_unchanged(&file).is_err());
     let mut dacl: *mut ACL = ptr::null_mut();
     let mut descriptor = ptr::null_mut();
     let status = unsafe {
-        GetSecurityInfo(security_writer.as_raw_handle() as HANDLE, 1,
-            DACL_SECURITY_INFORMATION, ptr::null_mut(), ptr::null_mut(),
-            &mut dacl, ptr::null_mut(), &mut descriptor)
+        GetSecurityInfo(
+            security_writer.as_raw_handle() as HANDLE,
+            1,
+            DACL_SECURITY_INFORMATION,
+            ptr::null_mut(),
+            ptr::null_mut(),
+            &mut dacl,
+            ptr::null_mut(),
+            &mut descriptor,
+        )
     };
     let remains_unsafe = status == ERROR_SUCCESS && !descriptor.is_null() && dacl.is_null();
     if !descriptor.is_null() {
         unsafe { LocalFree(descriptor as HLOCAL) };
     }
-    assert!(remains_unsafe, "failed validation must not repair source security");
+    assert!(
+        remains_unsafe,
+        "failed validation must not repair source security"
+    );
     assert_eq!(fs::read(path)?, b"unchanged bytes");
     Ok(())
 }

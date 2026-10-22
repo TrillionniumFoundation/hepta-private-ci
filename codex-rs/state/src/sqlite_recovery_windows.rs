@@ -20,40 +20,60 @@ impl RetainedBundle {
     pub(super) fn bind(path: &Path) -> Result<Self, SqliteRecoveryError> {
         let parent = path.parent().ok_or(SqliteRecoveryError::Indeterminate)?;
         let name = path.file_name().ok_or(SqliteRecoveryError::Indeterminate)?;
-        let directory = RetainedPrivateStateDirectory::open_existing(parent)
-            .map_err(super::indeterminate)?;
-        let database = directory.retain_file(name).map_err(super::indeterminate)?
+        let directory =
+            RetainedPrivateStateDirectory::open_existing(parent).map_err(super::indeterminate)?;
+        let database = directory
+            .retain_file(name)
+            .map_err(super::indeterminate)?
             .ok_or(SqliteRecoveryError::Indeterminate)?;
         let mut sidecars = Vec::new();
         for suffix in ["-wal", "-shm", "-journal"] {
             let mut sidecar = name.to_os_string();
             sidecar.push(suffix);
-            let retained = directory.retain_file(&sidecar).map_err(super::indeterminate)?;
+            let retained = directory
+                .retain_file(&sidecar)
+                .map_err(super::indeterminate)?;
             sidecars.push((sidecar, retained));
         }
         let result = Self {
             directory,
             database,
-            sidecars: sidecars.try_into().map_err(|_| SqliteRecoveryError::Indeterminate)?,
+            sidecars: sidecars
+                .try_into()
+                .map_err(|_| SqliteRecoveryError::Indeterminate)?,
         };
         result.revalidate()?;
         Ok(result)
     }
 
     pub(super) fn revalidate(&self) -> Result<(), SqliteRecoveryError> {
-        self.directory.verify_unchanged().map_err(super::indeterminate)?;
-        self.directory.verify_file_unchanged(&self.database).map_err(super::indeterminate)?;
+        self.directory
+            .verify_unchanged()
+            .map_err(super::indeterminate)?;
+        self.directory
+            .verify_file_unchanged(&self.database)
+            .map_err(super::indeterminate)?;
         for (name, file) in &self.sidecars {
             match file {
-                Some(file) => self.directory.verify_file_unchanged(file).map_err(super::indeterminate)?,
+                Some(file) => self
+                    .directory
+                    .verify_file_unchanged(file)
+                    .map_err(super::indeterminate)?,
                 None => {
-                    if self.directory.retain_file(name).map_err(super::indeterminate)?.is_some() {
+                    if self
+                        .directory
+                        .retain_file(name)
+                        .map_err(super::indeterminate)?
+                        .is_some()
+                    {
                         return Err(SqliteRecoveryError::Indeterminate);
                     }
                 }
             }
         }
-        self.directory.verify_unchanged().map_err(super::indeterminate)
+        self.directory
+            .verify_unchanged()
+            .map_err(super::indeterminate)
     }
 
     pub(super) fn cold_bytes(&self) -> Result<Vec<u8>, SqliteRecoveryError> {
@@ -80,7 +100,9 @@ impl RetainedBundle {
             if file.len() > MAX_FILE_BYTES {
                 return Err(SqliteRecoveryError::Unavailable);
             }
-            total = total.checked_add(file.len()).ok_or(SqliteRecoveryError::Unavailable)?;
+            total = total
+                .checked_add(file.len())
+                .ok_or(SqliteRecoveryError::Unavailable)?;
         }
         if self.database.is_empty() || total > MAX_BUNDLE_BYTES {
             return Err(SqliteRecoveryError::Unavailable);
@@ -90,25 +112,37 @@ impl RetainedBundle {
         let journal = journal.map(retained_bytes).transpose()?;
         self.revalidate()?;
 
-        let name = target.file_name().ok_or(SqliteRecoveryError::Indeterminate)?;
+        let name = target
+            .file_name()
+            .ok_or(SqliteRecoveryError::Indeterminate)?;
         let output_names = ["", "-wal", "-shm", "-journal"].map(|suffix| {
             let mut name = name.to_os_string();
             name.push(suffix);
             name
         });
         for name in &output_names {
-            if self.directory.retain_file(name).map_err(super::indeterminate)?.is_some() {
+            if self
+                .directory
+                .retain_file(name)
+                .map_err(super::indeterminate)?
+                .is_some()
+            {
                 return Err(SqliteRecoveryError::Indeterminate);
             }
         }
-        let output = [(&output_names[0], Some(database.as_slice())),
-                      (&output_names[1], wal.as_deref()),
-                      (&output_names[3], journal.as_deref())];
+        let output = [
+            (&output_names[0], Some(database.as_slice())),
+            (&output_names[1], wal.as_deref()),
+            (&output_names[3], journal.as_deref()),
+        ];
         let mut created = Vec::new();
         let result = (|| {
             for (name, bytes) in output {
                 let Some(bytes) = bytes else { continue };
-                let file = self.directory.create_new_file(name).map_err(super::indeterminate)?;
+                let file = self
+                    .directory
+                    .create_new_file(name)
+                    .map_err(super::indeterminate)?;
                 // Record creation before the first fallible write so a partial
                 // new output is included in failure cleanup. Never touch inputs.
                 let index = created.len();
@@ -134,7 +168,8 @@ impl RetainedBundle {
 fn retained_bytes(file: &RetainedPrivateStateFile) -> Result<Vec<u8>, SqliteRecoveryError> {
     let length = usize::try_from(file.len()).map_err(|_| SqliteRecoveryError::Unavailable)?;
     let mut bytes = vec![0; length];
-    file.read_exact_at(&mut bytes, 0).map_err(super::indeterminate)?;
+    file.read_exact_at(&mut bytes, 0)
+        .map_err(super::indeterminate)?;
     Ok(bytes)
 }
 

@@ -1,7 +1,7 @@
 //! Acquire the private directory without a separate path check or creation.
 
-use std::ffi::c_void;
 use std::ffi::OsStr;
+use std::ffi::c_void;
 use std::fs::File;
 use std::io;
 use std::mem::size_of;
@@ -21,8 +21,8 @@ use windows_sys::Win32::Storage::FileSystem::DELETE;
 use windows_sys::Win32::Storage::FileSystem::FILE_ATTRIBUTE_NORMAL;
 use windows_sys::Win32::Storage::FileSystem::FILE_GENERIC_READ;
 use windows_sys::Win32::Storage::FileSystem::FILE_GENERIC_WRITE;
-use windows_sys::Win32::Storage::FileSystem::FILE_SHARE_READ;
 use windows_sys::Win32::Storage::FileSystem::FILE_SHARE_DELETE;
+use windows_sys::Win32::Storage::FileSystem::FILE_SHARE_READ;
 use windows_sys::Win32::Storage::FileSystem::FILE_SHARE_WRITE;
 use windows_sys::Win32::System::IO::IO_STATUS_BLOCK;
 use windows_sys::Win32::System::IO::IO_STATUS_BLOCK_0;
@@ -197,12 +197,9 @@ pub(super) fn recovery_child(
     };
     with_private_security(|security| {
         let (desired_access, share_access, disposition, descriptor) = match access {
-            RecoveryChildAccess::RetainReadOnly => (
-                FILE_GENERIC_READ,
-                FILE_SHARE_READ,
-                FILE_OPEN,
-                ptr::null(),
-            ),
+            RecoveryChildAccess::RetainReadOnly => {
+                (FILE_GENERIC_READ, FILE_SHARE_READ, FILE_OPEN, ptr::null())
+            }
             RecoveryChildAccess::CreateNew => (
                 FILE_GENERIC_READ | FILE_GENERIC_WRITE | DELETE,
                 FILE_SHARE_READ | FILE_SHARE_WRITE | FILE_SHARE_DELETE,

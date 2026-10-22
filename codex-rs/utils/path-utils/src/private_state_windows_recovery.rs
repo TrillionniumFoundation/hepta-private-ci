@@ -71,20 +71,30 @@ impl RetainedPrivateStateDirectory {
         let descriptor = directory::open_existing(path)?;
         let snapshot = Snapshot::capture(&descriptor, HandleKind::Directory)?;
         let path = final_path(&descriptor)?;
-        Ok(Self { descriptor, path, snapshot })
+        Ok(Self {
+            descriptor,
+            path,
+            snapshot,
+        })
     }
 
     /// Retain a read-only child. Absence is distinct from any acquisition error.
     pub fn retain_file(&self, name: &OsStr) -> io::Result<Option<RetainedPrivateStateFile>> {
         let descriptor = match directory::recovery_child(
-            &self.descriptor, name, directory::RecoveryChildAccess::RetainReadOnly,
+            &self.descriptor,
+            name,
+            directory::RecoveryChildAccess::RetainReadOnly,
         ) {
             Ok(file) => file,
             Err(error) if error.kind() == io::ErrorKind::NotFound => return Ok(None),
             Err(error) => return Err(error),
         };
         let snapshot = Snapshot::capture(&descriptor, HandleKind::File)?;
-        Ok(Some(RetainedPrivateStateFile { descriptor, name: name.to_os_string(), snapshot }))
+        Ok(Some(RetainedPrivateStateFile {
+            descriptor,
+            name: name.to_os_string(),
+            snapshot,
+        }))
     }
 
     /// Verify both the retained directory and its original namespace identity.
@@ -101,7 +111,8 @@ impl RetainedPrivateStateDirectory {
 
     /// Verify the same name still denotes the same unchanged retained file.
     pub fn verify_file_unchanged(&self, file: &RetainedPrivateStateFile) -> io::Result<()> {
-        let reopened = self.retain_file(&file.name)?
+        let reopened = self
+            .retain_file(&file.name)?
             .ok_or_else(|| unsafe_state("retained private file disappeared"))?;
         if Snapshot::capture(&file.descriptor, HandleKind::File)? != file.snapshot
             || reopened.snapshot != file.snapshot
@@ -117,7 +128,9 @@ impl RetainedPrivateStateDirectory {
     pub fn create_new_file(&self, name: &OsStr) -> io::Result<File> {
         validate_handle(&self.descriptor, HandleKind::Directory)?;
         let file = directory::recovery_child(
-            &self.descriptor, name, directory::RecoveryChildAccess::CreateNew,
+            &self.descriptor,
+            name,
+            directory::RecoveryChildAccess::CreateNew,
         )?;
         validate_handle(&file, HandleKind::File)?;
         Ok(file)
@@ -135,10 +148,14 @@ impl RetainedPrivateStateDirectory {
         // SAFETY: the owned file and correctly sized Win32 input live through
         // this call. A successful deletion disposition takes effect on close.
         if unsafe {
-            SetFileInformationByHandle(file.as_raw_handle() as HANDLE, FileDispositionInfo,
+            SetFileInformationByHandle(
+                file.as_raw_handle() as HANDLE,
+                FileDispositionInfo,
                 (&disposition as *const FILE_DISPOSITION_INFO).cast(),
-                size_of::<FILE_DISPOSITION_INFO>() as u32)
-        } == 0 {
+                size_of::<FILE_DISPOSITION_INFO>() as u32,
+            )
+        } == 0
+        {
             return Err(io::Error::last_os_error());
         }
         Ok(())
@@ -162,7 +179,8 @@ impl RetainedPrivateStateFile {
             match self.descriptor.seek_read(output, offset) {
                 Ok(0) => return Err(io::Error::from(io::ErrorKind::UnexpectedEof)),
                 Ok(read) => {
-                    offset = offset.checked_add(read as u64)
+                    offset = offset
+                        .checked_add(read as u64)
                         .ok_or_else(|| io::Error::from(io::ErrorKind::InvalidInput))?;
                     output = &mut output[read..];
                 }
@@ -197,19 +215,35 @@ impl Snapshot {
         let mut basic: FILE_BASIC_INFO = unsafe { std::mem::zeroed() };
         let mut standard: FILE_STANDARD_INFO = unsafe { std::mem::zeroed() };
         if unsafe {
-            GetFileInformationByHandleEx(handle, FileIdInfo,
-                (&mut id as *mut FILE_ID_INFO).cast(), size_of::<FILE_ID_INFO>() as u32)
-        } == 0 || unsafe {
-            GetFileInformationByHandleEx(handle, FileBasicInfo,
-                (&mut basic as *mut FILE_BASIC_INFO).cast(), size_of::<FILE_BASIC_INFO>() as u32)
-        } == 0 || unsafe {
-            GetFileInformationByHandleEx(handle, FileStandardInfo,
-                (&mut standard as *mut FILE_STANDARD_INFO).cast(), size_of::<FILE_STANDARD_INFO>() as u32)
-        } == 0 {
+            GetFileInformationByHandleEx(
+                handle,
+                FileIdInfo,
+                (&mut id as *mut FILE_ID_INFO).cast(),
+                size_of::<FILE_ID_INFO>() as u32,
+            )
+        } == 0
+            || unsafe {
+                GetFileInformationByHandleEx(
+                    handle,
+                    FileBasicInfo,
+                    (&mut basic as *mut FILE_BASIC_INFO).cast(),
+                    size_of::<FILE_BASIC_INFO>() as u32,
+                )
+            } == 0
+            || unsafe {
+                GetFileInformationByHandleEx(
+                    handle,
+                    FileStandardInfo,
+                    (&mut standard as *mut FILE_STANDARD_INFO).cast(),
+                    size_of::<FILE_STANDARD_INFO>() as u32,
+                )
+            } == 0
+        {
             return Err(io::Error::last_os_error());
         }
         let directory = matches!(kind, HandleKind::Directory);
-        if standard.EndOfFile < 0 || standard.DeletePending != 0
+        if standard.EndOfFile < 0
+            || standard.DeletePending != 0
             || (standard.Directory != 0) != directory
             || (basic.FileAttributes & FILE_ATTRIBUTE_DIRECTORY != 0) != directory
             || basic.FileAttributes & FILE_ATTRIBUTE_REPARSE_POINT != 0
@@ -238,9 +272,18 @@ fn security_snapshot(file: &File) -> io::Result<Vec<u8>> {
     let mut descriptor = ptr::null_mut();
     // SAFETY: GetSecurityInfo allocates the self-relative descriptor. All
     // returned pointers are used only before the single LocalFree below.
-    let status = unsafe { GetSecurityInfo(file.as_raw_handle() as HANDLE,
-        1, OWNER_SECURITY_INFORMATION | DACL_SECURITY_INFORMATION,
-        &mut owner, ptr::null_mut(), &mut dacl, ptr::null_mut(), &mut descriptor) };
+    let status = unsafe {
+        GetSecurityInfo(
+            file.as_raw_handle() as HANDLE,
+            1,
+            OWNER_SECURITY_INFORMATION | DACL_SECURITY_INFORMATION,
+            &mut owner,
+            ptr::null_mut(),
+            &mut dacl,
+            ptr::null_mut(),
+            &mut descriptor,
+        )
+    };
     let result = (|| {
         if status != ERROR_SUCCESS || descriptor.is_null() || owner.is_null() || dacl.is_null() {
             return Err(unsafe_state("incomplete recovery security descriptor"));

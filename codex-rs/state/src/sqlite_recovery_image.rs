@@ -195,31 +195,31 @@ impl SqliteConfig {
             guard.revalidate_for(self)?;
             #[cfg(unix)]
             let mut bytes = {
-            if guard
-                .inner
-                .sidecars
-                .iter()
-                .any(|sidecar| matches!(sidecar, RetainedOptionalObject::Present(_)))
-            {
-                return Err(SqliteRecoveryError::Indeterminate);
-            }
-            let size = guard
-                .inner
-                .database
-                .descriptor
-                .metadata()
-                .map_err(super::indeterminate)?
-                .len();
-            if !(100..=128 * 1024 * 1024).contains(&size) {
-                return Err(SqliteRecoveryError::Indeterminate);
-            }
-            let mut bytes = vec![0; size as usize];
-            guard
-                .inner
-                .database
-                .descriptor
-                .read_exact_at(&mut bytes, 0)
-                .map_err(super::indeterminate)?;
+                if guard
+                    .inner
+                    .sidecars
+                    .iter()
+                    .any(|sidecar| matches!(sidecar, RetainedOptionalObject::Present(_)))
+                {
+                    return Err(SqliteRecoveryError::Indeterminate);
+                }
+                let size = guard
+                    .inner
+                    .database
+                    .descriptor
+                    .metadata()
+                    .map_err(super::indeterminate)?
+                    .len();
+                if !(100..=128 * 1024 * 1024).contains(&size) {
+                    return Err(SqliteRecoveryError::Indeterminate);
+                }
+                let mut bytes = vec![0; size as usize];
+                guard
+                    .inner
+                    .database
+                    .descriptor
+                    .read_exact_at(&mut bytes, 0)
+                    .map_err(super::indeterminate)?;
                 bytes
             };
             #[cfg(windows)]
