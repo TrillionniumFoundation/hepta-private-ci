@@ -247,6 +247,14 @@ class PairedTests(unittest.TestCase):
         self.assertEqual(len(result['source_sample']['images']),640)
         with self.assertRaises(FileExistsError):
             combine_exclusions(self.root/'prior.json',self.root/'v1.json',self.root/'both.json',require_pinned=False)
+        # A dangling symlink evades Path.exists(), but it must never be
+        # followed or cause creation of its attacker-selected destination.
+        victim=self.root/'uncreated-target.json'
+        link=self.root/'preplanted-link.json'
+        link.symlink_to(victim)
+        with self.assertRaises(FileExistsError):
+            combine_exclusions(self.root/'prior.json',self.root/'v1.json',link,require_pinned=False)
+        self.assertFalse(victim.exists())
 
 
 if __name__=='__main__':unittest.main()
