@@ -33,6 +33,8 @@ pub use canonical_digest::canonical_encode_v1;
 pub use canonical_digest::canonical_validate_v1;
 pub use digest::Digest32;
 pub use digest::DigestParseError;
+pub use execution_contract::CODEX_APP_SERVER_V2_PROTOCOL_ID_V1;
+pub use execution_contract::MAX_CODEX_APP_SERVER_VERSION_BYTES_V1;
 pub use execution_contract::CellExecutionIntentV1;
 pub use execution_contract::CodexTurnBindingV1;
 pub use execution_contract::EXECUTION_CONTRACT_VERSION_V1;
