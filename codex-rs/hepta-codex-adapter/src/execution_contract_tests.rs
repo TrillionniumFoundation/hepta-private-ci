@@ -618,8 +618,91 @@ fn native_tool_exit_and_status_must_be_consistent() {
     // A genuine pre-admission rejection has no observed native tool exit.
     receipt.tool_outcome.exit_code = None;
     receipt.tool_outcome.stdout_digest = None;
+    receipt.tool_outcome.retryable = true;
     receipt.execution.outcome_digest = Some(receipt.tool_outcome.outcome_digest());
     receipt.execution.status = ExecutionStatusV1::Rejected;
     receipt.execution.recovery = RecoveryDispositionV1::RetryBeforeAdmission;
+    assert_eq!(receipt.validate_against(&value), Ok(()));
+}
+
+#[test]
+fn native_retry_hint_requires_exact_preadmission_recovery() {
+    let value = intent();
+    let outcome = ToolOutcomeV1 {
+        terminal_observed: false,
+        exit_code: None,
+        stdout_digest: None,
+        stderr_digest: None,
+        retryable: true,
+    };
+    let mut receipt = RuntimeReceiptV1 {
+        execution: ExecutionReceiptV1 {
+            operation_id: value.cell.operation_id.clone(),
+            intent_digest: value.cell.intent_digest(),
+            generation: value.cell.generation,
+            final_payload_digest: value.cell.final_payload.clone(),
+            outcome_digest: Some(outcome.outcome_digest()),
+            status: ExecutionStatusV1::Rejected,
+            recovery: RecoveryDispositionV1::RetryBeforeAdmission,
+            authority: AuthorityPosture::DENY_ALL,
+        },
+        runtime_intent_digest: value.intent_digest(),
+        tool_outcome: outcome,
+    };
+    // Only this exact pre-admission state is eligible for a new attempt.
+    assert_eq!(receipt.validate_against(&value), Ok(()));
+
+    // A valid, digested backend hint cannot override reconciliation, a
+    // quarantine or a rejected operation's explicit no-retry posture.
+    for (status, recovery) in [
+        (
+            ExecutionStatusV1::Indeterminate,
+            RecoveryDispositionV1::ReconcileSameOperation,
+        ),
+        (
+            ExecutionStatusV1::Indeterminate,
+            RecoveryDispositionV1::Quarantine,
+        ),
+        (ExecutionStatusV1::Rejected, RecoveryDispositionV1::None),
+        (ExecutionStatusV1::Rejected, RecoveryDispositionV1::Quarantine),
+    ] {
+        receipt.execution.status = status;
+        receipt.execution.recovery = recovery;
+        assert_eq!(
+            receipt.validate_against(&value),
+            Err(ExecutionContractError::StatusOutcomeMismatch),
+            "status={status:?} recovery={recovery:?}"
+        );
+    }
+
+    // Likewise, the recovery instruction cannot authorize a retry if the
+    // backend explicitly marks that same pre-admission result non-retryable.
+    receipt.execution.status = ExecutionStatusV1::Rejected;
+    receipt.execution.recovery = RecoveryDispositionV1::RetryBeforeAdmission;
+    receipt.tool_outcome.retryable = false;
+    receipt.execution.outcome_digest = Some(receipt.tool_outcome.outcome_digest());
+    assert_eq!(
+        receipt.validate_against(&value),
+        Err(ExecutionContractError::StatusOutcomeMismatch)
+    );
+
+    // Admitted failures may be reconciled, but not repeated as fresh effects.
+    receipt.execution.status = ExecutionStatusV1::Failed;
+    receipt.execution.recovery = RecoveryDispositionV1::ReconcileSameOperation;
+    receipt.tool_outcome.terminal_observed = true;
+    receipt.tool_outcome.exit_code = Some(9);
+    receipt.tool_outcome.stderr_digest = Some(digest("native error"));
+    receipt.tool_outcome.retryable = true;
+    receipt.execution.outcome_digest = Some(receipt.tool_outcome.outcome_digest());
+    assert_eq!(
+        receipt.validate_against(&value),
+        Err(ExecutionContractError::StatusOutcomeMismatch)
+    );
+
+    receipt.tool_outcome.retryable = false;
+    receipt.execution.outcome_digest = Some(receipt.tool_outcome.outcome_digest());
+    assert_eq!(receipt.validate_against(&value), Ok(()));
+    receipt.execution.status = ExecutionStatusV1::Indeterminate;
+    receipt.execution.recovery = RecoveryDispositionV1::ReconcileSameOperation;
     assert_eq!(receipt.validate_against(&value), Ok(()));
 }
