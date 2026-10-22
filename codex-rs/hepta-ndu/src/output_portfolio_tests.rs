@@ -873,7 +873,11 @@ fn duplicated_candidate_digest_is_not_an_independent_diversification_asset() {
 
     // Reordering the input and covariance is not a means of bypassing the
     // same uniqueness check.
-    let reordered = [candidates[2].clone(), candidates[0].clone(), candidates[1].clone()];
+    let reordered = [
+        candidates[2].clone(),
+        candidates[0].clone(),
+        candidates[1].clone(),
+    ];
     assert_eq!(
         select_output_portfolio_v1(&context(3), &budget(3), &reordered)
             .expect_err("duplicated payload must be rejected"),
