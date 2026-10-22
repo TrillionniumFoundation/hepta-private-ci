@@ -380,7 +380,7 @@ rustflags = ["-C", "link-arg=-Wl,--stack,8388608"]
                       'target = "unexpected-triple"',
                       'target-dir = "/tmp/unreviewed"'):
             with self.subTest(field=field):
-                self.add('[build]\\n' + field + '\\n')
+                self.add('[build]\n' + field + '\n')
                 self.assertTrue(checker.check_cargo_configuration_sources(self.root))
 
     def test_target_rustflags_are_closed_world(self):
@@ -390,19 +390,19 @@ rustflags = ["-C", "link-arg=-Wl,--stack,8388608"]
             ('aarch64-pc-windows-msvc', '["-C", "link-arg=/STACK:8388608", "-C", "link-arg=/arm64hazardfree"]', 'codex-rs/hepta-types'),
         ):
             with self.subTest(target=target, sub=sub):
-                path = self.add(f'[target.{target}]\\nrustflags = {flags}\\n', sub=sub)
+                path = self.add(f'[target.{target}]\nrustflags = {flags}\n', sub=sub)
                 self.assertIn('rustflags', str(checker.check_cargo_configuration_sources(self.root)))
                 path.unlink()
 
     def test_target_rustdocflags_denied(self):
-        self.add('[target.x86_64-unknown-linux-gnu]\\nrustdocflags = ["--cfg", "unreviewed"]\\n')
+        self.add('[target.x86_64-unknown-linux-gnu]\nrustdocflags = ["--cfg", "unreviewed"]\n')
         self.assertIn('rustdocflags', str(checker.check_cargo_configuration_sources(self.root)))
 
     def test_loader_and_compiler_environment_injection_denied(self):
         for key, value in (('LD_PRELOAD', '/tmp/evil.so'), ('PATH', '/tmp/malware'),
                            ('RUSTUP_TOOLCHAIN', 'nightly'), ('CC', 'malicious-cc')):
             with self.subTest(key=key):
-                self.add(f'[env]\\n{key} = "{value}"\\n')
+                self.add(f'[env]\n{key} = "{value}"\n')
                 self.assertIn(key, str(checker.check_cargo_configuration_sources(self.root)))
 
     def test_source_replacement_rejected(self):
