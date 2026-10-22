@@ -241,7 +241,7 @@ class LocalCloseoutTests(unittest.TestCase):
             data = log_path.read_bytes()
             self.assertLessEqual(len(data), cap)
             self.assertTrue(
-                data.endswith(b"\\nHEPTA_LOCAL_GATE: BLOCKED_OUTPUT_LIMIT\\n"),
+                data.endswith(b"\nHEPTA_LOCAL_GATE: BLOCKED_OUTPUT_LIMIT\n"),
                 "the denial trailer must survive truncation",
             )
 
