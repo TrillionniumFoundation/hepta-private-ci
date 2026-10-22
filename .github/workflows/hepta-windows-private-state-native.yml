@@ -4,6 +4,8 @@ on:
   pull_request:
     paths:
       - "codex-rs/utils/path-utils/**"
+      - "codex-rs/state/**"
+      - "codex-rs/hepta-memory/**"
       - "codex-rs/hepta-prompt-registry/**"
       - "codex-rs/hepta-contracts/**"
       - "codex-rs/hepta-agentd/**"
@@ -61,6 +63,18 @@ jobs:
           Set-Location codex-rs
           just test --locked -p codex-utils-path --lib -E 'test(private_state_windows::)' --test-threads 1 --no-tests fail --retries 0
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+      - name: Exercise retained SQLite identity and cold-image Windows recovery
+        shell: pwsh
+        run: |
+          Set-Location codex-rs
+          just test --locked -p codex-state --lib --test-threads 1 --no-tests fail --retries 0
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+      - name: Exercise the original cognitive recovery owner and all four regressions
+        shell: pwsh
+        run: |
+          Set-Location codex-rs
+          just test --locked -p codex-hepta-memory --lib --test-threads 1 --no-tests fail --retries 0
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
       - name: Exercise actual Prompt Registry Windows durable owner
         shell: pwsh
         run: |
@@ -85,7 +99,7 @@ jobs:
         shell: pwsh
         run: |
           Set-Location codex-rs
-          cargo fmt --package codex-utils-path --package codex-hepta-prompt-registry --package codex-hepta-contracts --package codex-hepta-agentd -- --check
+          cargo fmt --package codex-utils-path --package codex-state --package codex-hepta-memory --package codex-hepta-prompt-registry --package codex-hepta-contracts --package codex-hepta-agentd -- --check
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
       - name: Prove directory acquisition rejects both original native attacks
         shell: pwsh
@@ -113,3 +127,34 @@ jobs:
           path: ${{ runner.temp }}/private-state-acquisition
           if-no-files-found: warn
           retention-days: 14
+
+  linux-recovery-regression:
+    name: Retained SQLite and original cognitive owner regressions on Linux
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    steps:
+      - name: Checkout immutable PR head without saved credentials
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - name: Install repository test runners
+        uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
+        with:
+          tool: just@1.51.0,nextest@0.9.103
+      - name: Verify source and execute the unchanged package gates
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "${{ github.event.pull_request.head.sha || github.sha }}"
+          cd codex-rs
+          rustc --version --verbose
+          just test --locked -p codex-utils-path -p codex-state -p codex-hepta-memory --lib --test-threads 2 --no-tests fail --retries 0
+      - name: Confirm tracked source remains unchanged
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          git diff --check
+          git diff --exit-code
+

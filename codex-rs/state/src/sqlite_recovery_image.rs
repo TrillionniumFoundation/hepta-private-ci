@@ -155,7 +155,18 @@ impl SqliteConfig {
             }
             result
         }
-        #[cfg(not(unix))]
+        #[cfg(windows)]
+        {
+            if target.parent() != Some(self.home())
+                || target == guard.inner.database_path
+                || target.file_name().is_none()
+            {
+                return Err(SqliteRecoveryError::Indeterminate);
+            }
+            guard.revalidate_for(self)?;
+            guard.inner.retained.materialize(target)
+        }
+        #[cfg(not(any(unix, windows)))]
         {
             let _ = (guard, target);
             Err(SqliteRecoveryError::Unavailable)
@@ -163,7 +174,7 @@ impl SqliteConfig {
     }
 
     #[cfg_attr(
-        unix,
+        any(unix, windows),
         expect(
             clippy::disallowed_methods,
             reason = "this is codex-state's retained-descriptor cold-image connection shim"
@@ -173,13 +184,17 @@ impl SqliteConfig {
         &self,
         guard: &ExistingSqliteRecoveryGuard,
     ) -> Result<SqlitePool, SqliteRecoveryError> {
-        #[cfg(unix)]
+        #[cfg(any(unix, windows))]
         {
+            #[cfg(unix)]
             use super::RetainedOptionalObject;
+            #[cfg(unix)]
             use std::os::unix::fs::FileExt;
             use std::sync::Arc;
 
             guard.revalidate_for(self)?;
+            #[cfg(unix)]
+            let mut bytes = {
             if guard
                 .inner
                 .sidecars
@@ -205,6 +220,10 @@ impl SqliteConfig {
                 .descriptor
                 .read_exact_at(&mut bytes, 0)
                 .map_err(super::indeterminate)?;
+                bytes
+            };
+            #[cfg(windows)]
+            let mut bytes = guard.inner.retained.cold_bytes()?;
             guard.revalidate_for(self)?;
             if &bytes[..16] != b"SQLite format 3\0"
                 || !matches!((bytes[18], bytes[19]), (1, 1) | (2, 2))
@@ -273,7 +292,7 @@ impl SqliteConfig {
             }
             Ok(pool)
         }
-        #[cfg(not(unix))]
+        #[cfg(not(any(unix, windows)))]
         {
             let _ = guard;
             Err(SqliteRecoveryError::Unavailable)
