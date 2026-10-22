@@ -1,0 +1,61 @@
+name: Hepta Cell Codex execution boundary
+
+on:
+  pull_request:
+    paths:
+      - "codex-rs/Cargo.toml"
+      - "codex-rs/hepta-neuron/Cargo.toml"
+      - "codex-rs/hepta-intuition/Cargo.toml"
+      - "codex-rs/hepta-ndu/Cargo.toml"
+      - "codex-rs/hepta-plasticity/Cargo.toml"
+      - "codex-rs/hepta-infer-core/Cargo.toml"
+      - "codex-rs/hepta-cognitive-types/Cargo.toml"
+      - "codex-rs/hepta-types/Cargo.toml"
+      - "codex-rs/hepta-types/src/**"
+      - "codex-rs/hepta-codex-adapter/src/execution_contract.rs"
+      - "qa/meta-network-scale/check_cell_codex_boundary.py"
+      - "qa/meta-network-scale/test_cell_codex_boundary.py"
+      - ".github/workflows/hepta-cell-codex-boundary.yml"
+  workflow_dispatch: {}
+
+permissions:
+  contents: read
+
+concurrency:
+  group: hepta-cell-codex-boundary-${{ github.event.pull_request.head.ref || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  exact-source:
+    name: Cell/Codex direct-dependency isolation (non-authorizing)
+    runs-on: ubuntu-slim
+    timeout-minutes: 10
+    env:
+      PYTHONDONTWRITEBYTECODE: "1"
+      EXPECTED_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+    steps:
+      - name: Checkout exact proposed source
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - name: Install pinned Python runtime
+        uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405 # v6.2.0
+        with:
+          python-version: "3.12"
+      - name: Enforce direct-dependency boundary and negative regressions
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$EXPECTED_SHA"
+          python3 qa/meta-network-scale/check_cell_codex_boundary.py
+          python3 -m unittest discover -v -s qa/meta-network-scale -p 'test_cell_codex_boundary.py'
+      - name: Enforce clean exact source
+        if: always() && !cancelled()
+        shell: bash
+        run: |
+          set -euo pipefail
+          git diff --check
+          git diff --exit-code
+          git diff --cached --exit-code
+          test -z "$(git status --porcelain=v1 --untracked-files=all)"
