@@ -40,9 +40,17 @@ pub use canonical::prepare_intelligence_run;
 pub use canonical::validate_current_snapshot;
 
 mod evaluated_shadow;
+mod memory_head_candidate;
 mod ndu_stochastic_admission;
 mod neuron_runtime;
 mod outcome_credit_v2;
+
+pub use memory_head_candidate::MemoryHeadCandidateContextV1;
+pub use memory_head_candidate::MemoryHeadCandidateErrorV1;
+pub use memory_head_candidate::MemoryHeadCandidateRequestV1;
+pub use memory_head_candidate::PreparedMemoryHeadCandidateV1;
+pub use memory_head_candidate::memory_head_candidate_signing_payload_v1;
+pub use memory_head_candidate::prepare_memory_head_candidate_v1;
 
 pub use evaluated_shadow::EvaluatedShadowError;
 pub use evaluated_shadow::EvaluatedShadowReceiptV1;
