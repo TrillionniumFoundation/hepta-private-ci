@@ -1,0 +1,133 @@
+{
+  "schema": "hepta.windows-delete-macro-resolution-fix.v1",
+  "recorded_at": "2026-10-22T14:51:11.082752+00:00",
+  "base_commit": "705e28a445403b3c8924dc7a1ab2ff6698856907",
+  "source_commit": "b0efc15e2acf713fc54a272024f59b9b5be24850",
+  "source_tree": "f7cc9adedc0e9e43ac7203c70ad830186515e5c6",
+  "scope": "One explicit test macro import; no diagnostic, assertion, production token, ACL, workflow, dependency, or lock changes.",
+  "original_cloud_failure": {
+    "workflow_run_id": 39796412833,
+    "run_attempt": 1,
+    "job_id": 119884603027,
+    "exact_checkout_sha": "0bdda0fea030b2104368b6ccd6a753d8ea07ae20",
+    "checkout_was_pull_request_merge": false,
+    "rust_toolchain": "1.95.0-x86_64-pc-windows-msvc",
+    "log_bytes": 152407,
+    "log_sha256": "5dc1e278e90706b4eb0ad78de853d0f28478569da658cde2db46557f1165cb56",
+    "compiler_error": "E0659: assert_eq is ambiguous between the parent glob import and the prelude macro.",
+    "error_count": 5,
+    "source_locations": [
+      "token_delete_diagnostics_tests.rs:250:13",
+      "token_delete_diagnostics_tests.rs:343:9",
+      "token_delete_diagnostics_tests.rs:348:13",
+      "token_delete_diagnostics_tests.rs:353:9",
+      "token_delete_diagnostics_tests.rs:358:5"
+    ],
+    "log_error_lines": [1697, 1717, 1737, 1757, 1777],
+    "cargo_test_no_run_exit": 101,
+    "just_exit": 1,
+    "required_native_tests_executed": 0
+  },
+  "change": {
+    "file": "codex-rs/windows-sandbox-rs/src/token_delete_diagnostics_tests.rs",
+    "added_line": "use pretty_assertions::assert_eq;",
+    "reason": "Explicitly resolve the same pretty_assertions macro already used by the parent test module; all five existing invocations and operands remain unchanged.",
+    "source_before_sha256": "d0492ee9b130334e8967b8a37fc56bd50508051a025637621c7f661804d718ee",
+    "source_after_sha256": "9ba8be04ae1ac9bd60cafbf228a54e3f442c4a2edbc509dcfe76dad9534d71ce",
+    "prior_final_composition_b6c1a9b_has_identical_preimage": true
+  },
+  "local_validation": {
+    "format_checks": [
+      {
+        "name": "fmt",
+        "command": [
+          "just",
+          "fmt",
+          "--base",
+          "705e28a445403b3c8924dc7a1ab2ff6698856907"
+        ],
+        "exit_code": 0,
+        "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "name": "fmt-check",
+        "command": [
+          "just",
+          "fmt",
+          "--base",
+          "705e28a445403b3c8924dc7a1ab2ff6698856907",
+          "--check"
+        ],
+        "exit_code": 0,
+        "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "name": "diff-check",
+        "command": ["git", "diff", "--check"],
+        "exit_code": 0,
+        "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    ],
+    "one_line_only": true,
+    "all_existing_diagnostic_bytes_preserved": true,
+    "assert_eq_invocations_before": 5,
+    "assert_eq_invocations_after": 5,
+    "protected_files": [
+      {
+        "path": "codex-rs/windows-sandbox-rs/src/token_tests.rs",
+        "sha256": "24e57f475065231758559e08382e16a37a15d32912a0435652e2fc3fb2496d58",
+        "unchanged": true
+      },
+      {
+        "path": "codex-rs/windows-sandbox-rs/src/token.rs",
+        "sha256": "3fe5daee06868755f298a415864e4087984f95b1d20325a86687638bba4cd8ac",
+        "unchanged": true
+      },
+      {
+        "path": "codex-rs/windows-sandbox-rs/src/acl.rs",
+        "sha256": "7dd4054f8764fc677ddc116e4f828d465d9734cf5a0b85cd985cdd582b1f2bd8",
+        "unchanged": true
+      },
+      {
+        "path": "codex-rs/windows-sandbox-rs/src/unified_exec/tests.rs",
+        "sha256": "1c433d36d0099a33d1e96570b77a753ade76bdfa3f1dec1e91197895c3b3715e",
+        "unchanged": true
+      },
+      {
+        "path": "codex-rs/windows-sandbox-rs/src/unified_exec/backends/legacy.rs",
+        "sha256": "121082fbb179ea82e808201e8478622c07c73ec90cecc9c25ce7b2f8b447f969",
+        "unchanged": true
+      },
+      {
+        "path": "codex-rs/windows-sandbox-rs/Cargo.toml",
+        "sha256": "183a3691be018640668dfb766f29651d8fd75ab08f7fd526f3d378ae2a86469d",
+        "unchanged": true
+      },
+      {
+        "path": "codex-rs/Cargo.lock",
+        "sha256": "f11a317cd13092663372c3f6b5709266c9e1375baa55eb57f199b754faf418a1",
+        "unchanged": true
+      },
+      {
+        "path": "MODULE.bazel.lock",
+        "sha256": "63ee8041114a86fb2064282e466d4250abdf884b2b10dff21c91c412cecfcc4b",
+        "unchanged": true
+      },
+      {
+        "path": ".github/workflows/hepta-windows-delete-diagnostics.yml",
+        "sha256": "af9d2707eef964d7a05eb97dc8574f8e766fa789c07a5d0d3da546abdc47359c",
+        "unchanged": true
+      }
+    ],
+    "validation_receipt_sha256": "9614376f82ecc07258204517eb2808ff8cb73a9bf402f5b635adba85ede0ec8e",
+    "windows_owning_compile": "NOT_RUN",
+    "windows_owning_clippy": "NOT_RUN",
+    "windows_owning_tests": "NOT_RUN",
+    "reason": "The inspected local task caches contain Linux debug/release artifacts and a Windows standard-library sysroot, but no reusable owning windows-sandbox MSVC dependency cache. With approximately 891 MB available, no full Windows dependency build was started."
+  },
+  "remaining_gate": "Run the unchanged focused workflow on the newly composed exact remote source; all four required native tests and five diagnostic routes remain required. A compiler repair is not a sandbox qualification.",
+  "sandbox_qualified": false,
+  "original_blocking_ci_required": true,
+  "new_remote_native_success_claimed": false,
+  "remote_writes_performed": false
+}
