@@ -202,20 +202,9 @@ pub fn select_output_portfolio_v1(
     // well as its linear semantic loss. Do not display an understated frontier.
     let frontier_risks = standalone_risks(&risks, &covariance)?;
     let frontier = efficient_frontier_from_canonical(&candidates, &frontier_risks);
-    let selection_digest = digest_selection(
-        context,
-        budget,
-        &candidates,
-        &covariance,
-        &allocations,
-        disposition,
-        &frontier,
-        total_risk,
-        total_utility,
-        total_resource,
-        total_latency,
-    );
-    Ok(OutputPortfolioSelectionReceiptV1 {
+    // Bind the hash to exactly the public receipt that a downstream observer
+    // consumes, rather than only to our local context and solver outputs.
+    let mut receipt = OutputPortfolioSelectionReceiptV1 {
         objective_digest: context.objective_digest,
         generation: context.generation,
         encoder_digest: context.encoder_digest,
@@ -227,8 +216,11 @@ pub fn select_output_portfolio_v1(
         total_risk,
         total_resource,
         total_latency,
-        selection_digest,
-    })
+        selection_digest: Digest32::ZERO,
+    };
+    receipt.selection_digest =
+        digest_selection(context, budget, &candidates, &covariance, &receipt);
+    Ok(receipt)
 }
 /// Returns nondominated *single-candidate* points using utility↑, risk↓ and
 /// resource↓. The standalone risk includes covariance on the diagonal; these
@@ -733,15 +725,15 @@ fn digest_selection(
     budget: &OutputPortfolioBudgetV1,
     candidates: &[OutputPortfolioCandidateV1],
     covariance: &[FixedQ32],
-    allocations: &[OutputPortfolioAllocationV1],
-    disposition: OutputPortfolioDispositionV1,
-    frontier: &[OutputPortfolioFrontierPointV1],
-    total_risk: FixedQ32,
-    total_utility: FixedQ32,
-    total_resource: FixedQ32,
-    total_latency: FixedQ32,
+    receipt: &OutputPortfolioSelectionReceiptV1,
 ) -> Digest32 {
-    let mut bytes = Vec::new();
+    // Domain-separate the full published output from older selector hashes.
+    // Exclude only selection_digest itself to avoid a self-reference.
+    let mut bytes = b"hepta.ndu.portfolio.complete-receipt.v2".to_vec();
+    bytes.extend_from_slice(receipt.objective_digest.as_array());
+    bytes.extend_from_slice(&receipt.generation.get().to_le_bytes());
+    bytes.extend_from_slice(receipt.encoder_digest.as_array());
+    bytes.extend_from_slice(receipt.snapshot_digest.as_array());
     bytes.extend_from_slice(context.objective_digest.as_array());
     bytes.extend_from_slice(&context.generation.get().to_le_bytes());
     bytes.extend_from_slice(context.encoder_digest.as_array());
@@ -773,6 +765,7 @@ fn digest_selection(
         bytes.push(0);
         bytes.extend_from_slice(candidate.candidate_digest.as_array());
         bytes.extend_from_slice(candidate.objective_digest.as_array());
+        bytes.extend_from_slice(candidate.snapshot_digest.as_array());
         bytes.extend_from_slice(&candidate.generation.get().to_le_bytes());
         bytes.extend_from_slice(candidate.encoder_digest.as_array());
         bytes.extend_from_slice(candidate.composition_domain_digest.as_array());
@@ -788,30 +781,30 @@ fn digest_selection(
         bytes.extend_from_slice(&candidate.weight_cap.raw().to_le_bytes());
         bytes.push(u8::from(candidate.is_no_change));
     }
-    bytes.extend_from_slice(&(allocations.len() as u64).to_le_bytes());
-    for allocation in allocations {
+    bytes.extend_from_slice(&(receipt.allocations.len() as u64).to_le_bytes());
+    for allocation in &receipt.allocations {
         bytes.extend_from_slice(allocation.candidate_id.as_str().as_bytes());
         bytes.push(0);
         bytes.push(allocation.protocol.tag());
         bytes.extend_from_slice(&allocation.weight.raw().to_le_bytes());
         bytes.extend_from_slice(&allocation.adjusted_score.raw().to_le_bytes());
     }
-    bytes.push(match disposition {
+    bytes.push(match receipt.disposition {
         OutputPortfolioDispositionV1::NoChange => 0,
         OutputPortfolioDispositionV1::AdvisorySelection => 1,
     });
-    bytes.extend_from_slice(&(frontier.len() as u64).to_le_bytes());
-    for point in frontier {
+    bytes.extend_from_slice(&(receipt.frontier.len() as u64).to_le_bytes());
+    for point in &receipt.frontier {
         bytes.extend_from_slice(point.candidate_id.as_str().as_bytes());
         bytes.push(0);
         bytes.extend_from_slice(&point.utility_delta.raw().to_le_bytes());
         bytes.extend_from_slice(&point.semantic_risk.raw().to_le_bytes());
         bytes.extend_from_slice(&point.resource_cost.raw().to_le_bytes());
     }
-    bytes.extend_from_slice(&total_risk.raw().to_le_bytes());
-    bytes.extend_from_slice(&total_utility.raw().to_le_bytes());
-    bytes.extend_from_slice(&total_resource.raw().to_le_bytes());
-    bytes.extend_from_slice(&total_latency.raw().to_le_bytes());
+    bytes.extend_from_slice(&receipt.total_risk.raw().to_le_bytes());
+    bytes.extend_from_slice(&receipt.total_utility.raw().to_le_bytes());
+    bytes.extend_from_slice(&receipt.total_resource.raw().to_le_bytes());
+    bytes.extend_from_slice(&receipt.total_latency.raw().to_le_bytes());
     Digest32::of_bytes(&bytes)
 }
 #[cfg(test)]
