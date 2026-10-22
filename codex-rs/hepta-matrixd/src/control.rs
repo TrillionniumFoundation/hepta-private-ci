@@ -976,7 +976,13 @@ mod tests {
         let temp = TempDir::new()?;
         let fake = Arc::new(FakeTransport::default());
         let (state, connections) = state(&temp, fake).await?;
-        let request = fenced_request(MatrixdMethod::Health)?;
+        let request = MatrixdRequest {
+            schema_version: MATRIXD_CONTROL_SCHEMA_VERSION,
+            request_id: 1,
+            agent_id: agent_id()?,
+            fence: None,
+            method: MatrixdMethod::Health,
+        };
         let expected_fence = fence()?;
         assert_eq!(
             state.response(request).await,
