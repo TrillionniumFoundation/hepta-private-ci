@@ -113,10 +113,44 @@ pub fn select_output_portfolio_v1(
         }
     }
     weights[baseline] = remaining;
-    let total_risk = quadratic_risk(&weights, &risks, &covariance)?;
-    let total_resource = weighted_sum(&weights, &candidates, |candidate| candidate.resource_cost)?;
-    let total_latency = weighted_sum(&weights, &candidates, |candidate| candidate.latency_cost)?;
-    let total_utility = weighted_sum(&weights, &candidates, |candidate| candidate.utility_delta)?;
+    let mut total_risk = quadratic_risk(&weights, &risks, &covariance)?;
+    let mut total_resource =
+        weighted_sum(&weights, &candidates, |candidate| candidate.resource_cost)?;
+    let mut total_latency =
+        weighted_sum(&weights, &candidates, |candidate| candidate.latency_cost)?;
+    let mut total_utility =
+        weighted_sum(&weights, &candidates, |candidate| candidate.utility_delta)?;
+
+    // The greedy ordering only prices each direction's marginal risk.
+    // Cross-cell covariance is a portfolio-wide loss, so a positive local
+    // score does not prove that the final allocation beats NoChange.
+    // Admit an advisory change only when the complete net improvement is
+    // strictly positive after covariance, resources and switch costs.
+    if selected > 0 {
+        let resource_penalty = mul_q32_ties_even(total_resource, budget.resource_price)?;
+        let latency_penalty = mul_q32_ties_even(total_latency, budget.latency_price)?;
+        let net_improvement = total_utility
+            .checked_sub(total_risk)
+            .map_err(|_| NduError::Arithmetic)?
+            .checked_sub(resource_penalty)
+            .map_err(|_| NduError::Arithmetic)?
+            .checked_sub(latency_penalty)
+            .map_err(|_| NduError::Arithmetic)?
+            .checked_sub(budget.switch_penalty)
+            .map_err(|_| NduError::Arithmetic)?;
+        if net_improvement <= FixedQ32::ZERO {
+            // Preserve the exact, fully financed no-update baseline.
+            // This is a selection failure, not permission to spend more
+            // resources or bypass the independently enforced Final-use gate.
+            weights.fill(FixedQ32::ZERO);
+            weights[baseline] = FixedQ32::ONE;
+            total_risk = FixedQ32::ZERO;
+            total_resource = FixedQ32::ZERO;
+            total_latency = FixedQ32::ZERO;
+            total_utility = FixedQ32::ZERO;
+        }
+    }
+
     let allocations = candidates
         .iter()
         .enumerate()
