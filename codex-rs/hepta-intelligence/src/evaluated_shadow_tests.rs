@@ -158,6 +158,72 @@ fn ledger_at(path: &std::path::Path, fixture: &Fixture) -> LedgerWriter {
     .unwrap()
 }
 
+fn reopen_ledger_at(
+    path: &std::path::Path,
+    fixture: &Fixture,
+    recovery: LedgerRecovery,
+) -> LedgerWriter {
+    let file = OpenOptions::new()
+        .read(true)
+        .write(true)
+        .open(path)
+        .unwrap();
+    let ledger = DurableLedger::recover(
+        file,
+        digest("host-authorized-ledger"),
+        /*max_records*/ 1,
+        recovery,
+    )
+    .unwrap();
+    let witness = OpenOptions::new()
+        .read(true)
+        .write(true)
+        .open(witness_path(path))
+        .unwrap();
+    let witness = LedgerWitnessStore::recover(witness, digest("host-authorized-ledger")).unwrap();
+    let ledger_directory = open_ledger_directory(path.parent().unwrap()).unwrap();
+    let witness_directory = open_ledger_directory(path.parent().unwrap()).unwrap();
+    LedgerWriter::from_durable(
+        ledger,
+        witness,
+        fixture.trust_activation(),
+        &ledger_directory,
+        &witness_directory,
+    )
+    .unwrap()
+}
+
+fn closed_bytes_and_reopen(
+    ledger: LedgerWriter,
+    path: &std::path::Path,
+    fixture: &Fixture,
+) -> (LedgerWriter, Vec<u8>) {
+    let expected_records = ledger.records().unwrap();
+    let frontier = ledger.witness_frontier().unwrap();
+    let recovery = if expected_records.is_empty() {
+        // Only this live owner's known empty history has no acknowledged anchor.
+        assert_eq!(
+            frontier.anchor,
+            LedgerAnchor {
+                sequence: 0,
+                chain_digest: Digest32::ZERO,
+            }
+        );
+        LedgerRecovery::Unacknowledged
+    } else {
+        LedgerRecovery::Acknowledged(frontier.anchor)
+    };
+    // Windows denies reads through an independently opened handle while the
+    // writer owns its exclusive byte-range lock. Inspect only after owner drop,
+    // then recover using the witness retained before reading the journal bytes.
+    drop(ledger);
+    let bytes = fs::read(path).unwrap();
+    let reopened = reopen_ledger_at(path, fixture, recovery);
+    assert_eq!(reopened.records().unwrap(), expected_records);
+    assert_eq!(reopened.witness_frontier().unwrap(), frontier);
+    (reopened, bytes)
+}
+
 #[test]
 fn durable_stage_records_a_decision_and_retries_after_reopen_without_new_bytes() {
     let fixture = Fixture::new();
@@ -186,39 +252,16 @@ fn durable_stage_records_a_decision_and_retries_after_reopen_without_new_bytes()
     assert_eq!(decision.record_id, fixture.run.run_id);
     assert_eq!(decision.selected_candidate_id, id("action"));
     assert_eq!(decision.selected_propensity, ProbabilityQ32::ONE);
-    let original_bytes = fs::read(&path).unwrap();
     drop(ledger);
-    let file = OpenOptions::new()
-        .read(true)
-        .write(true)
-        .open(&path)
-        .unwrap();
-    let reopened_ledger = DurableLedger::recover(
-        file,
-        digest("host-authorized-ledger"),
-        /*max_records*/ 1,
+    let original_bytes = fs::read(&path).unwrap();
+    let mut reopened = reopen_ledger_at(
+        &path,
+        &fixture,
         LedgerRecovery::Acknowledged(LedgerAnchor {
             sequence: 1,
             chain_digest: append.chain_digest,
         }),
-    )
-    .unwrap();
-    let witness = OpenOptions::new()
-        .read(true)
-        .write(true)
-        .open(witness_path(&path))
-        .unwrap();
-    let witness = LedgerWitnessStore::recover(witness, digest("host-authorized-ledger")).unwrap();
-    let ledger_directory = open_ledger_directory(path.parent().unwrap()).unwrap();
-    let witness_directory = open_ledger_directory(path.parent().unwrap()).unwrap();
-    let mut reopened = LedgerWriter::from_durable(
-        reopened_ledger,
-        witness,
-        fixture.trust_activation(),
-        &ledger_directory,
-        &witness_directory,
-    )
-    .unwrap();
+    );
     assert_eq!(reopened.records().unwrap(), expected_records);
     let replay = run_evaluated_shadow_v1(
         fixture.request(),
@@ -235,7 +278,8 @@ fn durable_stage_records_a_decision_and_retries_after_reopen_without_new_bytes()
     replay_append.disposition = AppendDisposition::Appended;
     assert_eq!(replay_append, append);
     assert_eq!(replay.pipeline, receipt.pipeline);
-    assert_eq!(fs::read(&path).unwrap(), original_bytes);
+    let (mut reopened, replay_bytes) = closed_bytes_and_reopen(reopened, &path, &fixture);
+    assert_eq!(replay_bytes, original_bytes);
     let mut drift = fixture.request();
     drift.intuition.sequence += 1;
     drift.decision_evidence =
@@ -247,6 +291,7 @@ fn durable_stage_records_a_decision_and_retries_after_reopen_without_new_bytes()
             ProductionLedgerError::Durable(DurableLedgerError::Semantic(_))
         ))
     ));
+    drop(reopened);
     assert_eq!(fs::read(&path).unwrap(), original_bytes);
 }
 
@@ -273,14 +318,15 @@ fn invalid_authentication_artifact_or_dataset_never_calls_any_port() {
         mutate(&mut fixture);
         let temp = tempfile::tempdir().unwrap();
         let path = temp.path().join("ledger");
-        let mut ledger = ledger_at(&path, &fixture);
-        let before = fs::read(&path).unwrap();
+        let ledger = ledger_at(&path, &fixture);
+        let (mut ledger, before) = closed_bytes_and_reopen(ledger, &path, &fixture);
         assert!(
             run_evaluated_shadow_v1(fixture.request(), &mut ledger, &mut ports, /*now*/ 50)
                 .is_err()
         );
         assert!(ports.calls.is_empty());
         assert!(ledger.records().unwrap().is_empty());
+        drop(ledger);
         assert_eq!(fs::read(path).unwrap(), before);
     }
 }
@@ -295,14 +341,15 @@ fn old_signed_evidence_cannot_enter_a_recomputed_new_authority_epoch() {
     let mut ports = Ports::new(&fixture);
     let temp = tempfile::tempdir().unwrap();
     let path = temp.path().join("ledger");
-    let mut ledger = ledger_at(&path, &fixture);
-    let before = fs::read(&path).unwrap();
+    let ledger = ledger_at(&path, &fixture);
+    let (mut ledger, before) = closed_bytes_and_reopen(ledger, &path, &fixture);
     assert!(matches!(
         run_evaluated_shadow_v1(fixture.request(), &mut ledger, &mut ports, /*now*/ 50,),
         Err(EvaluatedShadowError::Binding("authority epoch"))
     ));
     assert!(ports.calls.is_empty());
     assert!(ledger.records().unwrap().is_empty());
+    drop(ledger);
     assert_eq!(fs::read(path).unwrap(), before);
 }
 
@@ -379,7 +426,7 @@ fn ledger_conflict_capacity_and_io_uncertainty_cannot_report_learning_recorded()
     assert!(ledger.records().unwrap().is_empty());
     let receipt =
         run_evaluated_shadow_v1(fixture.request(), &mut ledger, &mut ports, /*now*/ 50).unwrap();
-    let before = fs::read(&path).unwrap();
+    let (mut ledger, before) = closed_bytes_and_reopen(ledger, &path, &fixture);
     let mut second = fixture.request();
     second.run.run_id = id("second-run");
     second.intuition.decision_id = id("second-run");
@@ -394,6 +441,7 @@ fn ledger_conflict_capacity_and_io_uncertainty_cannot_report_learning_recorded()
             ProductionLedgerError::Durable(DurableLedgerError::Capacity)
         ))
     ));
+    drop(ledger);
     assert_eq!(fs::read(path).unwrap(), before);
 
     let path = temp.path().join("faulted-ledger");
