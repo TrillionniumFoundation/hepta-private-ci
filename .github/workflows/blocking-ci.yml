@@ -45,6 +45,10 @@ jobs:
           set -euo pipefail
           python3 -m unittest -v scripts.tests.test_hepta_ci_scope scripts.tests.test_hepta_ci_dependencies
           python3 -m unittest -v scripts.test_hepta_readiness_semantics
+          # The scale-evidence matrix validator is a Python qualification gate,
+          # not a Rust package: run its rejection tests on every PR, including
+          # when native owners are unaffected and hepta-scoped is skipped.
+          python3 -m unittest discover -v -s qa/meta-network-scale -p 'test_scale_matrix.py'
           args=(--head "$HEAD_SHA" --github-output "$GITHUB_OUTPUT")
           if [ "$EVENT_NAME" = "pull_request" ]; then
             args+=(--base "$BASE_SHA")
