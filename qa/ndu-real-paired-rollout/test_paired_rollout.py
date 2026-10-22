@@ -186,6 +186,23 @@ class PairedTests(unittest.TestCase):
             pr.plan_identity(cohort,'train',model_path=model_dir,cells_path=checkpoint,
                              budget=10.,seeds=[11,29],code_dir=Path(pr.__file__).parent,temperature=.7)
 
+    def test_repeated_seed_roster_is_rejected_before_any_asset_load(self):
+        """A duplicated seed must not create pseudoreplicated Cell observations."""
+        import json
+        cohort=self.root/'fresh-cohort'
+        cohort.mkdir()
+        (cohort/'manifest.json').write_text(json.dumps({
+            'evidence_kind':'real-coco',
+            'schema':'hepta.grounded-cohort.v1',
+            'prior_images_excluded':640,
+        }))
+        (cohort/'train.references.jsonl').write_text('')
+        with self.assertRaisesRegex(ValueError, 'distinct|unique|duplicate'):
+            pr.plan_identity(cohort, 'train', model_path=self.root/'no-model',
+                             cells_path=self.root/'no-cells', budget=10.,
+                             seeds=[11,11,29], code_dir=Path(pr.__file__).parent,
+                             temperature=0.7)
+
     def test_fresh_cohort_exclusion_requires_original_v1_manifest(self):
         historical={'source_sample':{'images':[{'image_id':i, 'image_sha256':digest(f'h-{i}'),
                            'decoded_rgb_sha256':digest(f'r-{i}'),'dhash64':'0'*16} for i in range(384)]}}

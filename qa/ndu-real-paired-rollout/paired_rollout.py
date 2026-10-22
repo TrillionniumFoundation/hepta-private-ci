@@ -179,8 +179,9 @@ def plan_identity(cohort, split, *, model_path, cells_path, budget, seeds, code_
         raise ValueError('must exclude historical 384 and frozen v1 256 image sources')
     if not (cohort / f'{split}.references.jsonl').exists():
         raise ValueError('missing separately stored evaluator references')
-    if not all(type(s) is int and s>=0 for s in seeds) or len(set(seeds)) < 2:
-        raise ValueError('at least two distinct seeds per source required')
+    if (len(seeds) < 2 or not all(type(s) is int and 0 <= s < 2**31 for s in seeds)
+            or len(set(seeds)) != len(seeds)):
+        raise ValueError('at least two unique seeds per source required; duplicates are forbidden')
     # Cell proposal identity includes the exact frozen base, adapter, control
     # implementation and decoding parameters. Identity is not signed proof.
     src=Path(code_dir)
@@ -412,6 +413,7 @@ def main():
                     stream.write(json.dumps(row,sort_keys=True,allow_nan=False)+'\n')
                     stream.flush()
                     os.fsync(stream.fileno())
+                    seen.add(key)
                     previous.append(row)
     # Truth is not loaded until all generated outputs have been committed.
     references=[ref for _,ref in iter_pairs(args.cohort,args.split)]
