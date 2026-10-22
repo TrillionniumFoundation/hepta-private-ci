@@ -1,0 +1,203 @@
+name: Hepta real multimodal research
+
+on:
+  pull_request:
+    paths:
+      - qa/stem-bakeoff/**
+      - .github/workflows/hepta-multimodal-research.yml
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: hepta-multimodal-${{ github.event.pull_request.head.sha || github.sha }}
+  cancel-in-progress: false
+
+jobs:
+  real-caption-pair-research:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 120
+    env:
+      HF_HUB_OFFLINE: "1"
+      TRANSFORMERS_OFFLINE: "1"
+      TOKENIZERS_PARALLELISM: "false"
+      PYTHONUNBUFFERED: "1"
+    defaults:
+      run:
+        shell: bash
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - name: Verify source and initialize evidence directory
+        env:
+          EXPECTED_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$EXPECTED_SHA"
+          git diff --check
+          mkdir "$RUNNER_TEMP/hepta-multimodal"
+          git rev-parse HEAD > "$RUNNER_TEMP/hepta-multimodal/source-sha.txt"
+      - name: Install pinned CPU runtime
+        run: |
+          set -euo pipefail
+          python3 -m venv "$RUNNER_TEMP/multimodal-venv"
+          "$RUNNER_TEMP/multimodal-venv/bin/python" -m pip install --no-cache-dir --only-binary=:all: --index-url https://download.pytorch.org/whl/cpu 'torch==2.10.0' 'torchvision==0.25.0' 2>&1 | tee "$RUNNER_TEMP/hepta-multimodal/runtime-install.log"
+          "$RUNNER_TEMP/multimodal-venv/bin/python" -m pip install --no-cache-dir --only-binary=:all: -r qa/stem-bakeoff/requirements-real.txt 2>&1 | tee -a "$RUNNER_TEMP/hepta-multimodal/runtime-install.log"
+      - name: Check data, features, training, ledgers and research behavior
+        run: |
+          set -euo pipefail
+          "$RUNNER_TEMP/multimodal-venv/bin/python" -m unittest discover -s qa/stem-bakeoff -p 'test_multimodal_*.py' -v 2>&1 | tee "$RUNNER_TEMP/hepta-multimodal/tests.log"
+          "$RUNNER_TEMP/multimodal-venv/bin/python" -m unittest discover -s qa/stem-bakeoff -p 'test_prediction_ledger.py' -v 2>&1 | tee -a "$RUNNER_TEMP/hepta-multimodal/tests.log"
+          "$RUNNER_TEMP/multimodal-venv/bin/python" -m unittest discover -s qa/stem-bakeoff -p 'test_cell_head_training.py' -v 2>&1 | tee -a "$RUNNER_TEMP/hepta-multimodal/tests.log"
+      - name: Acquire pinned COCO captions and original photos
+        run: |
+          set -euo pipefail
+          "$RUNNER_TEMP/multimodal-venv/bin/python" - <<'PY' 2>&1 | tee "$RUNNER_TEMP/hepta-multimodal/data-acquisition.log"
+          import json, os, sys
+          from pathlib import Path
+          sys.path.insert(0, 'qa/stem-bakeoff')
+          from multimodal_cohorts import ARCHIVE_URL, ARCHIVE_BYTES, ARCHIVE_SHA256, fetch_file, prepare_cohorts
+          root = Path(os.environ['RUNNER_TEMP']) / 'hepta-multimodal'
+          archive = root / 'annotations.zip'
+          fetch_file(ARCHIVE_URL, archive, expected_sha256=ARCHIVE_SHA256,
+              expected_bytes=ARCHIVE_BYTES, limit=ARCHIVE_BYTES)
+          prepare_cohorts(archive=archive, output=root / 'cohorts', download_images=True)
+          manifest = json.loads((root / 'cohorts' / 'manifest.json').read_bytes())
+          print(json.dumps({'archive_sha256': ARCHIVE_SHA256,
+              'split_images': manifest['split_images'], 'source_sample_sha256': manifest['source_sample_sha256']}))
+          PY
+      - name: Acquire the registered immutable EG2 checkpoint
+        run: |
+          set -euo pipefail
+          "$RUNNER_TEMP/multimodal-venv/bin/python" qa/stem-bakeoff/fetch_real_checkpoint.py --candidate embeddinggemma2_740m --destination "$RUNNER_TEMP/hepta-multimodal/checkpoint" 2>&1 | tee "$RUNNER_TEMP/hepta-multimodal/checkpoint-acquisition.log"
+      - name: Encode each caption and photo once into a verified feature bank
+        run: |
+          set -euo pipefail
+          inventory_sha256=$("$RUNNER_TEMP/multimodal-venv/bin/python" -c 'import json,sys; print(json.load(open(sys.argv[1]))["inventory_sha256"])' "$RUNNER_TEMP/hepta-multimodal/checkpoint.acquisition.json")
+          # Same registered EG2 terms acceptance as the existing shared-Stem workflow.
+          "$RUNNER_TEMP/multimodal-venv/bin/python" qa/stem-bakeoff/multimodal_features.py \
+            --cohorts "$RUNNER_TEMP/hepta-multimodal/cohorts" \
+            --snapshot "$RUNNER_TEMP/hepta-multimodal/checkpoint" \
+            --inventory-sha256 "$inventory_sha256" \
+            --output "$RUNNER_TEMP/hepta-multimodal/bank" \
+            --operator-accepted-terms --threads 4 --batch-size 2 \
+            2>&1 | tee "$RUNNER_TEMP/hepta-multimodal/feature-bank.log"
+      - name: Train, reload and score the fixed research plan
+        run: |
+          set -euo pipefail
+          bank_sha256=$("$RUNNER_TEMP/multimodal-venv/bin/python" -c 'import hashlib,sys; print(hashlib.sha256(open(sys.argv[1],"rb").read()).hexdigest())' "$RUNNER_TEMP/hepta-multimodal/bank/manifest.json")
+          "$RUNNER_TEMP/multimodal-venv/bin/python" qa/stem-bakeoff/multimodal_research.py \
+            --cohorts "$RUNNER_TEMP/hepta-multimodal/cohorts" \
+            --bank "$RUNNER_TEMP/hepta-multimodal/bank" \
+            --expected-bank-sha256 "$bank_sha256" \
+            --output "$RUNNER_TEMP/hepta-multimodal/results" --threads 4 \
+            2>&1 | tee "$RUNNER_TEMP/hepta-multimodal/research.log"
+      - name: Verify completed evidence separately from research qualification
+        run: |
+          set -euo pipefail
+          "$RUNNER_TEMP/multimodal-venv/bin/python" - <<'PY'
+          import hashlib, json, os, re, stat
+          from pathlib import Path, PurePosixPath
+          root = Path(os.environ['RUNNER_TEMP']) / 'hepta-multimodal'
+          output = root / 'results'
+          report_path = output / 'report.json'
+          if output.is_symlink() or report_path.is_symlink() or not report_path.is_file() or report_path.stat().st_size > 512 * 1024:
+              raise ValueError('missing or invalid completed research report')
+          raw = report_path.read_bytes()
+          report = json.loads(raw)
+          if (report.get('schema') != 'hepta.multimodal-research-report.v1'
+                  or report.get('engineering_status') != 'COMPLETE'
+                  or report.get('authority') != 'DENY_ALL'
+                  or report.get('production_activation_allowed') is not False
+                  or type(report.get('quality_qualified')) is not bool):
+              raise ValueError('incomplete research execution or authority mismatch')
+          screens = report.get('multimodal_screens', {})
+          if (report.get('plan', {}).get('primary_mode') != 'gated'
+                  or set(screens) != {'linear', 'gated'}
+                  or any(type(value.get('multimodal_gain_research_screen_passed')) is not bool
+                      or value.get('status') not in {'PASS_RESEARCH_SCREEN', 'FAIL_RESEARCH_SCREEN', 'INSUFFICIENT'}
+                      for value in screens.values())
+                  or type(report.get('minority_primary_recall_check')) is not bool
+                  or report['quality_qualified'] is not (
+                      screens['gated']['multimodal_gain_research_screen_passed']
+                      and report['minority_primary_recall_check'])):
+              raise ValueError('research qualification differs from the fixed primary rule')
+          index = report.get('artifact_sha256')
+          if not isinstance(index, dict) or not index:
+              raise ValueError('external artifact hash index required')
+          actual = set()
+          for path in output.rglob('*'):
+              if path.is_symlink():
+                  raise ValueError('research artifacts cannot contain symlinks')
+              if path.is_file() and path != report_path:
+                  actual.add(path.relative_to(output).as_posix())
+          if actual != set(index):
+              raise ValueError('unindexed or missing research artifacts')
+          for name, expected in index.items():
+              relative = PurePosixPath(name)
+              if (relative.is_absolute() or '..' in relative.parts or relative.as_posix() != name
+                      or not isinstance(expected, str) or re.fullmatch(r'[0-9a-f]{64}', expected) is None):
+                  raise ValueError('invalid artifact path or digest')
+              path = output / name
+              if not stat.S_ISREG(path.stat().st_mode):
+                  raise ValueError('regular research artifact required')
+              digest = hashlib.sha256()
+              with path.open('rb') as stream:
+                  while block := stream.read(1024 * 1024):
+                      digest.update(block)
+              if digest.hexdigest() != expected:
+                  raise ValueError('research artifact bytes differ from report: ' + name)
+          for category, payload_name, digest_name in (
+                  ('head_artifacts', 'weights.npz', 'weights_file_sha256'),
+                  ('ledgers', 'predictions.npz', 'arrays_sha256')):
+              records = report.get(category)
+              if not isinstance(records, dict) or not records:
+                  raise ValueError('Head and ledger records required')
+              for record in records.values():
+                  prefix = record['directory'] + '/'
+                  if (record.get('round_trip_verified') is not True
+                          or index.get(prefix + 'manifest.json') != record['manifest_sha256']
+                          or index.get(prefix + payload_name) != record[digest_name]):
+                      raise ValueError('external Head or ledger hash record mismatch')
+          receipt = {'source_sha': (root / 'source-sha.txt').read_text().strip(),
+              'report_sha256': hashlib.sha256(raw).hexdigest(),
+              'verified_artifact_count': len(index), 'engineering_status': 'COMPLETE',
+              'quality_qualified': report['quality_qualified'],
+              'authority': 'DENY_ALL', 'production_activation_allowed': False}
+          (root / 'review-receipt.json').write_text(json.dumps(receipt, sort_keys=True, indent=2) + '\n')
+          with open(os.environ['GITHUB_STEP_SUMMARY'], 'a') as summary:
+              summary.write('## Real multimodal research\n\n')
+              summary.write('Engineering execution: **COMPLETE**; all indexed artifact bytes verified.\n\n')
+              summary.write('Research quality qualified: **' + str(report['quality_qualified']).lower() + '**.\n\n')
+              summary.write('The primary Head mode is preregistered as `gated`; `linear` is a structural control.\n\n')
+              for mode in ('gated', 'linear'):
+                  summary.write('- `' + mode + '`: **' + screens[mode]['status'] + '**\n')
+              summary.write('\nMinority positive-recall check: **' + str(report['minority_primary_recall_check']).lower() + '**.\n\n')
+              summary.write('A successful workflow records completed evidence, including a failed research screen. It never authorizes production activation.\n\n')
+              summary.write('Full metrics, screen checks, minority diagnostics and per-row ledgers are in the retained report artifacts.\n')
+          print(json.dumps(receipt, indent=2))
+          PY
+      - name: Preserve reports, ledgers, trained tensors and partial evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: hepta-multimodal-${{ github.event.pull_request.head.sha || github.sha }}
+          path: |
+            ${{ runner.temp }}/hepta-multimodal/source-sha.txt
+            ${{ runner.temp }}/hepta-multimodal/*.log
+            ${{ runner.temp }}/hepta-multimodal/*.acquisition.json
+            ${{ runner.temp }}/hepta-multimodal/review-receipt.json
+            ${{ runner.temp }}/hepta-multimodal/cohorts/*.json
+            ${{ runner.temp }}/hepta-multimodal/cohorts/*.jsonl
+            ${{ runner.temp }}/hepta-multimodal/bank/
+            ${{ runner.temp }}/hepta-multimodal/results/
+          if-no-files-found: error
+          retention-days: 14
+      - name: Confirm source tree unchanged
+        if: always()
+        run: |
+          git diff --check
+          git diff --exit-code
