@@ -47,15 +47,30 @@ impl NotesTargetIdentity {
     }
 
     pub fn destination_id(&self) -> String {
-        format!("trill.notes:{}:{}:{}", self.session_instance, self.task_id, self.incarnation)
+        format!(
+            "trill.notes:{}:{}:{}",
+            self.session_instance, self.task_id, self.incarnation
+        )
     }
 
     pub fn scope_digest(&self) -> Digest32 {
-        Digest32::of_bytes(format!("trill.notes.scope.v1\0{}\0{}\0{}", self.session_instance, self.task_id, self.incarnation).as_bytes())
+        Digest32::of_bytes(
+            format!(
+                "trill.notes.scope.v1\0{}\0{}\0{}",
+                self.session_instance, self.task_id, self.incarnation
+            )
+            .as_bytes(),
+        )
     }
 
     pub fn predecessor_digest(&self, revision: u64) -> Digest32 {
-        Digest32::of_bytes(format!("trill.notes.predecessor.v1\0{}\0{}\0{}\0{}", self.session_instance, self.task_id, self.incarnation, revision).as_bytes())
+        Digest32::of_bytes(
+            format!(
+                "trill.notes.predecessor.v1\0{}\0{}\0{}\0{}",
+                self.session_instance, self.task_id, self.incarnation, revision
+            )
+            .as_bytes(),
+        )
     }
 }
 
@@ -99,9 +114,18 @@ struct NotesResponse {
 #[derive(Deserialize)]
 #[serde(tag = "status", rename_all = "snake_case", deny_unknown_fields)]
 enum NotesResult {
-    Applied { previous_revision: u64, revision: u64, text_sha256: String },
-    NotApplied { reason: NotAppliedReason, current_revision: u64 },
-    Unknown { current_revision: u64 },
+    Applied {
+        previous_revision: u64,
+        revision: u64,
+        text_sha256: String,
+    },
+    NotApplied {
+        reason: NotAppliedReason,
+        current_revision: u64,
+    },
+    Unknown {
+        current_revision: u64,
+    },
 }
 
 #[derive(Deserialize)]
@@ -140,18 +164,23 @@ pub fn notes_operation_intent(
         target.scope_digest(),
         policy_generation,
         Some(target.predecessor_digest(parsed.expected_revision)),
-    ).map_err(|error| error.to_string())
+    )
+    .map_err(|error| error.to_string())
 }
 
 fn parse_replace(target: &NotesTargetIdentity, raw: &str) -> Result<NotesReplace, String> {
     if raw.is_empty() || raw.len() > NOTES_REQUEST_MAX_BYTES {
         return Err("Notes request exceeds its bound".to_string());
     }
-    let parsed: NotesReplace = serde_json::from_str(raw).map_err(|_| "invalid Notes request schema")?;
+    let parsed: NotesReplace =
+        serde_json::from_str(raw).map_err(|_| "invalid Notes request schema")?;
     target.validate()?;
-    if parsed.schema_version != 1 || !matches!(parsed.action, ReplaceAction::ReplaceNote)
-        || parsed.target != *target || parsed.destination_id != target.destination_id()
-        || parsed.text.len() > 4096 || StableId::new(&parsed.operation_id).is_err()
+    if parsed.schema_version != 1
+        || !matches!(parsed.action, ReplaceAction::ReplaceNote)
+        || parsed.target != *target
+        || parsed.destination_id != target.destination_id()
+        || parsed.text.len() > 4096
+        || StableId::new(&parsed.operation_id).is_err()
     {
         return Err("Notes request does not match the application".to_string());
     }
@@ -166,17 +195,31 @@ pub struct ProductionNotesTarget {
 }
 
 impl ProductionNotesTarget {
-    pub fn new(identity: NotesTargetIdentity, channel: Arc<dyn NotesPrivateChannel>) -> Result<Self, String> {
+    pub fn new(
+        identity: NotesTargetIdentity,
+        channel: Arc<dyn NotesPrivateChannel>,
+    ) -> Result<Self, String> {
         identity.validate()?;
-        Ok(Self { destination: identity.destination_id(), identity, channel })
+        Ok(Self {
+            destination: identity.destination_id(),
+            identity,
+            channel,
+        })
     }
 
     fn decode(&self, request: &ProductionDispatchRequest) -> Result<NotesReplace, String> {
         let parsed = parse_replace(&self.identity, &request.payload_json)?;
-        let intent = notes_operation_intent(&self.identity, &request.payload_json,
+        let intent = notes_operation_intent(
+            &self.identity,
+            &request.payload_json,
             StableId::new(&request.operation_subject_id).map_err(|error| error.to_string())?,
-            Generation::new(request.operation_policy_generation).map_err(|error| error.to_string())?)?;
-        let predecessor = self.identity.predecessor_digest(parsed.expected_revision).to_string();
+            Generation::new(request.operation_policy_generation)
+                .map_err(|error| error.to_string())?,
+        )?;
+        let predecessor = self
+            .identity
+            .predecessor_digest(parsed.expected_revision)
+            .to_string();
         if request.schema_version != crate::PRODUCTION_DURABLE_WRITER_SCHEMA_VERSION
             || request.namespace != crate::PRODUCTION_DURABLE_WRITER_NAMESPACE
             || request.topic != NOTES_REPLACE_TOPIC_V1
@@ -186,7 +229,10 @@ impl ProductionNotesTarget {
             || request.payload_sha256 != Sha256Digest::for_bytes(request.payload_json.as_bytes())
             || request.operation_scope_sha256.as_str() != intent.scope_digest().to_string()
             || request.operation_semantic_sha256.as_str() != intent.semantic_digest().to_string()
-            || request.expected_predecessor_sha256.as_ref().map(Sha256Digest::as_str)
+            || request
+                .expected_predecessor_sha256
+                .as_ref()
+                .map(Sha256Digest::as_str)
                 != Some(predecessor.as_str())
         {
             return Err("Notes request differs from the original durable operation".to_string());
@@ -194,22 +240,36 @@ impl ProductionNotesTarget {
         Ok(parsed)
     }
 
-    fn response(&self, bytes: Vec<u8>, request: &NotesReplace, digest: &str) -> Result<(NotesResult, String), String> {
+    fn response(
+        &self,
+        bytes: Vec<u8>,
+        request: &NotesReplace,
+        digest: &str,
+    ) -> Result<(NotesResult, String), String> {
         if bytes.is_empty() || bytes.len() > NOTES_RESPONSE_MAX_BYTES {
             return Err("Notes response exceeds its bound".to_string());
         }
-        let response: NotesResponse = serde_json::from_slice(&bytes).map_err(|_| "invalid Notes response schema")?;
-        if response.schema_version != 1 || response.target != self.identity
-            || response.operation_id != request.operation_id || response.payload_sha256 != digest
+        let response: NotesResponse =
+            serde_json::from_slice(&bytes).map_err(|_| "invalid Notes response schema")?;
+        if response.schema_version != 1
+            || response.target != self.identity
+            || response.operation_id != request.operation_id
+            || response.payload_sha256 != digest
         {
             return Err("Notes response identity mismatch".to_string());
         }
-        if let NotesResult::Applied { previous_revision, revision, text_sha256 } = &response.result
+        if let NotesResult::Applied {
+            previous_revision,
+            revision,
+            text_sha256,
+        } = &response.result
             && (*previous_revision != request.expected_revision
                 || previous_revision.checked_add(1) != Some(*revision)
                 || *text_sha256 != Sha256Digest::for_bytes(request.text.as_bytes()).as_str())
         {
-            return Err("Notes response does not prove the requested document mutation".to_string());
+            return Err(
+                "Notes response does not prove the requested document mutation".to_string(),
+            );
         }
         let receipt = String::from_utf8(bytes).map_err(|_| "Notes response is not UTF-8")?;
         Ok((response.result, receipt))
@@ -222,18 +282,34 @@ impl ProductionOutboxTarget for ProductionNotesTarget {
         // consumer entry. Constructing an unpolled future cannot defer effect.
         let outcome = match self.decode(&request) {
             Err(reason) => ProductionTargetOutcome::Rejected { reason },
-            Ok(parsed) => match self.channel.exchange(request.payload_json.as_bytes())
-                .and_then(|bytes| self.response(bytes, &parsed, request.payload_sha256.as_str())) {
-                Ok((NotesResult::Applied { .. }, receipt)) => ProductionTargetOutcome::Committed { receipt },
-                Ok((NotesResult::NotApplied { reason, current_revision }, receipt)) => {
+            Ok(parsed) => match self
+                .channel
+                .exchange(request.payload_json.as_bytes())
+                .and_then(|bytes| self.response(bytes, &parsed, request.payload_sha256.as_str()))
+            {
+                Ok((NotesResult::Applied { .. }, receipt)) => {
+                    ProductionTargetOutcome::Committed { receipt }
+                }
+                Ok((
+                    NotesResult::NotApplied {
+                        reason,
+                        current_revision,
+                    },
+                    receipt,
+                )) => {
                     let _ = (reason, current_revision);
                     ProductionTargetOutcome::NotApplied { reason: receipt }
                 }
                 Ok((NotesResult::Unknown { current_revision }, _)) => {
                     self.channel.invalidate();
-                    ProductionTargetOutcome::Indeterminate { reason: format!("Notes receipt unavailable at revision {current_revision}") }
+                    ProductionTargetOutcome::Indeterminate {
+                        reason: format!("Notes receipt unavailable at revision {current_revision}"),
+                    }
                 }
-                Err(reason) => { self.channel.invalidate(); ProductionTargetOutcome::Indeterminate { reason } }
+                Err(reason) => {
+                    self.channel.invalidate();
+                    ProductionTargetOutcome::Indeterminate { reason }
+                }
             },
         };
         Box::pin(async move { outcome })
@@ -241,22 +317,44 @@ impl ProductionOutboxTarget for ProductionNotesTarget {
 }
 
 impl FinalUseProductionOutboxTarget for ProductionNotesTarget {
-    fn destination_id(&self) -> &str { &self.destination }
+    fn destination_id(&self) -> &str {
+        &self.destination
+    }
 
-    fn observe_terminal<'a>(&'a self, request: &'a ProductionDispatchRequest) -> ProductionTerminalObservationFuture<'a> {
+    fn observe_terminal<'a>(
+        &'a self,
+        request: &'a ProductionDispatchRequest,
+    ) -> ProductionTerminalObservationFuture<'a> {
         let observation = match self.decode(request) {
             Err(reason) => ProductionTerminalObservation::Unavailable { reason },
             Ok(parsed) => {
-                let query = NotesObserve { schema_version: 1, action: "observe", target: &self.identity,
-                    operation_id: &parsed.operation_id, payload_sha256: request.payload_sha256.as_str() };
-                let result = serde_json::to_vec(&query).map_err(|error| error.to_string())
+                let query = NotesObserve {
+                    schema_version: 1,
+                    action: "observe",
+                    target: &self.identity,
+                    operation_id: &parsed.operation_id,
+                    payload_sha256: request.payload_sha256.as_str(),
+                };
+                let result = serde_json::to_vec(&query)
+                    .map_err(|error| error.to_string())
                     .and_then(|bytes| self.channel.exchange(&bytes))
-                    .and_then(|bytes| self.response(bytes, &parsed, request.payload_sha256.as_str()));
+                    .and_then(|bytes| {
+                        self.response(bytes, &parsed, request.payload_sha256.as_str())
+                    });
                 match result {
-                    Ok((NotesResult::Applied { .. }, receipt)) => ProductionTerminalObservation::Applied { receipt },
-                    Ok((NotesResult::Unknown { .. } | NotesResult::NotApplied { .. }, _)) =>
-                        ProductionTerminalObservation::Indeterminate { reason: "Notes has no retained receipt for this exact operation".to_string() },
-                    Err(reason) => { self.channel.invalidate(); ProductionTerminalObservation::Unavailable { reason } }
+                    Ok((NotesResult::Applied { .. }, receipt)) => {
+                        ProductionTerminalObservation::Applied { receipt }
+                    }
+                    Ok((NotesResult::Unknown { .. } | NotesResult::NotApplied { .. }, _)) => {
+                        ProductionTerminalObservation::Indeterminate {
+                            reason: "Notes has no retained receipt for this exact operation"
+                                .to_string(),
+                        }
+                    }
+                    Err(reason) => {
+                        self.channel.invalidate();
+                        ProductionTerminalObservation::Unavailable { reason }
+                    }
                 }
             }
         };
@@ -265,7 +363,10 @@ impl FinalUseProductionOutboxTarget for ProductionNotesTarget {
 }
 
 fn lower_hex(value: &str, length: usize) -> bool {
-    value.len() == length && value.bytes().all(|byte| byte.is_ascii_digit() || (b'a'..=b'f').contains(&byte))
+    value.len() == length
+        && value
+            .bytes()
+            .all(|byte| byte.is_ascii_digit() || (b'a'..=b'f').contains(&byte))
 }
 
 #[cfg(test)]

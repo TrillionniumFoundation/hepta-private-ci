@@ -32,6 +32,8 @@ mod intelligence_product;
 mod intuition_policy;
 mod lane_b_runtime;
 mod neuron_runtime;
+#[cfg(target_os = "linux")]
+mod notes_bootstrap;
 #[cfg(unix)]
 mod notes_channel;
 mod objective_runtime;
@@ -164,8 +166,6 @@ pub use evidence_frontier::evidence_recovery_frontier_signing_bytes;
 pub use evidence_host::kernel_evidence_claims;
 #[cfg(target_os = "linux")]
 pub use hos2_device::AgentdHos2Device;
-#[cfg(unix)]
-pub use notes_channel::AgentdNotesChannel;
 pub use intelligence_ingress::AgentdIntelligenceInvocationProviderV1;
 pub use intelligence_ingress::AgentdIntelligenceInvocationV1;
 pub use intelligence_product::AgentdEvaluationBindingV1;
@@ -197,6 +197,8 @@ pub use lane_b_runtime::RunRecovery;
 pub use lane_b_runtime::RunSnapshot;
 pub use lane_b_runtime::RuntimeComposition;
 pub use neuron_runtime::AgentdNeuronOwner;
+#[cfg(unix)]
+pub use notes_channel::AgentdNotesChannel;
 pub use plasticity_host::AgentdPlasticityAdmissionInputV1;
 pub use plasticity_host::AgentdPlasticityAnchorStoreV1;
 pub use plasticity_host::AgentdPlasticityHostErrorV1;

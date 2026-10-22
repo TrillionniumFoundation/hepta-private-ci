@@ -46,7 +46,10 @@ fn lost_reply_permanently_disables_further_effect_entry() -> TestResult {
     });
     assert!(channel.exchange(b"effect").is_err());
     assert!(channel.exchange(b"effect").is_err());
-    assert_eq!(peer.join().expect("application thread")?, [0, 0, 0, 6, b'e', b'f', b'f', b'e', b'c', b't']);
+    assert_eq!(
+        peer.join().expect("application thread")?,
+        [0, 0, 0, 6, b'e', b'f', b'f', b'e', b'c', b't']
+    );
     assert!(channel.disabled.load(Ordering::Acquire));
     Ok(())
 }
@@ -74,7 +77,11 @@ fn invalid_bound_does_not_write_and_explicit_invalidation_is_permanent() -> Test
     let (owner, mut application) = UnixStream::pair()?;
     let channel = AgentdNotesChannel::from_private_channel(owner)?;
     assert!(channel.exchange(&[]).is_err());
-    assert!(channel.exchange(&vec![0; NOTES_REQUEST_MAX_BYTES + 1]).is_err());
+    assert!(
+        channel
+            .exchange(&vec![0; NOTES_REQUEST_MAX_BYTES + 1])
+            .is_err()
+    );
     channel.invalidate();
     assert!(channel.exchange(b"effect").is_err());
     let mut byte = [0; 1];

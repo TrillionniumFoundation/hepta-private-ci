@@ -189,7 +189,14 @@ roots, `AgentdFinalUseGrantProvider` is an injected production interface; its
 concrete signing implementation is confined to test fixtures. Therefore a
 deployment without an independently authenticated recovery cut, live source
 authority/verifier, existing FinalUse trust state, real external grant provider,
-or private Session channel remains blocked. The standalone OS Session does not
+or private Session channel remains blocked. Production FinalUse construction
+uses `FinalUseAuthority::open_state_dir_with_issuer_keys` with the trusted bounded
+issuer keyring and revocation head, a deployment-protected `AuthorityClock`, and
+an independently retained `AuthorityFrontierStore`. Private issuer-key custody,
+the clock and the compare-and-swap frontier still require deployment
+qualification. The compatibility `open_state_dir` constructor used by the test
+fixture has a system clock and no external rollback oracle; it is not evidence
+that those production inputs exist. The standalone OS Session does not
 export its private endpoint or register this writer automatically. No default
 signer, test issuer, read-only organ, environment switch, or ordinary IPC request
 fills those missing capabilities.
@@ -206,6 +213,94 @@ and real socketpair with an explicitly synthetic issuer and application model.
 It covers original-binding dispatch, durable publication after ACK and no
 replay after ACK loss. This is not a production issuer, launched GUI, native
 kernel execution, deployment activation or release receipt.
+
+#### Session-owned descriptor handoff on Linux
+
+The trusted parent can create a private `UnixDatagram::pair`, retain one end,
+and give the other as stdin to `trill-session --notes-bootstrap-stdin`. Session
+starts only its initial Build Notes task (task id 1) through this mode and sends
+one bounded `offer_notes_target` datagram with exactly one `SCM_RIGHTS` stream
+descriptor. Ordinary Session IPC never exports this endpoint. The source owner
+checks the datagram and effect descriptor types, anonymous addresses, strict
+schema, incarnation and derived destination; it receives the descriptor with
+`MSG_CMSG_CLOEXEC`. Every rejection closes all received descriptors. The shared
+offer/ACK fixture is `codex-rs/hepta-agentd/tests/fixtures/notes-bootstrap-v1.json`.
+
+For an existing HOS2 or other primary destination, use the same runtime
+configuration and provider. The recovered writer must still be unregistered;
+the existing runtime installs the complete configuration exactly once:
+
+```rust
+// All authority, recovery and primary-target inputs are already provided by
+// trusted host bootstrap; `operations` owns the existing external provider.
+let (parent_channel, session_channel) = std::os::unix::net::UnixDatagram::pair()?;
+let inherited: std::os::fd::OwnedFd = session_channel.into();
+let mut session = std::process::Command::new(session_binary)
+    .arg("--notes-bootstrap-stdin")
+    .stdin(std::process::Stdio::from(inherited))
+    .spawn()?;
+let registered = operations.with_notes_from_session(
+    &config, recovered_host.as_ref(), parent_channel, notes_final_use,
+).await;
+let (operations, notes_identity) = match registered {
+    Ok(registered) => registered,
+    Err(error) => {
+        let _ = session.kill();
+        let _ = session.wait();
+        return Err(error);
+    }
+};
+let config = config.with_production_writer_host(recovered_host)?
+    .with_production_operations(operations)?;
+// Hand this config to the existing Agentd run entry. Keep/reap `session` in
+// the parent lifecycle; use notes_identity.destination_id() in source intents.
+```
+
+The supplied executable path must already be the trusted, pinned Session
+binary. This API does not discover a program on PATH, install an issuer, start
+an alternative daemon, or create a ledger. The complete authority verification
+is reused before the handoff and at normal runtime attachment. `attached`
+means only that the owner accepted explicit destination composition. It is not
+an authority grant, a successful mutation, a running-service readiness token,
+or a durable receipt. If runtime startup subsequently fails, the parent shuts
+down/reaps its Session and preserves the original owner's recovery rules.
+
+Direct embeddings that already dispatch through the original host can use
+`attach_notes_from_session(bootstrap, final_use, grants).await` for the first
+destination, or `attach_additional_notes_from_session(bootstrap, final_use).await`
+to retain their existing provider. These consume the handoff channel once.
+There is no replacement, second-offer, reconnect or automatic effect replay
+path. The two-second handoff deadline and a lost ACK cause Session to close its
+effect aliases and reap its own initial Notes child; this cleanup never asserts
+that a possibly entered operation was cancelled or did not apply.
+
+An additional ignored qualification test launches the selected real Session
+and App binaries through that same parent handoff, uses the existing recovered
+SQLite writer and explicitly synthetic test issuer, proves issuer refusal does
+not enter Notes, then commits one real Notes replacement. Run only under an
+owned isolated Xvfb, with absolute companion paths already tied to the release
+candidate:
+
+```sh
+TRILL_NOTES_PROBE_ISOLATED=1 \
+HEPTA_NOTES_SESSION_BIN=/absolute/pinned-os-build/trill-session \
+HEPTA_NOTES_QUALIFICATION_OUTPUT=/absolute/owned-results/notes-owner-ui.json \
+just test -p codex-hepta-agentd notes_actual_ui_original_owner_roundtrip --run-ignored only
+```
+
+`trill-app-window` must be beside the selected Session binary. The test uses a
+fresh private runtime directory, removes inherited Hepta monitor selectors,
+and waits up to ten seconds for read-only snapshots to identify the same Session
+and initial Build Notes task, running with the same incarnation, the parent's
+attachment ACK and the first application layout. Each snapshot exchange has a
+two-second I/O deadline and a 64 KiB response bound. This readiness wait occurs
+before dispatch and does not extend the Notes effect channel's two-second
+deadline or confer authority. It records both executable SHA-256 values and
+the observed first-layout timestamp, asks its own Session to cancel/reap the
+Notes child, and cleans up its own process group. The output explicitly marks
+production authority, pixels and native-kernel qualification false. Missing
+display isolation or binaries fail this selected test; the normal suite does
+not silently run it against an ambient desktop.
 
 ### Multiscale DecisionCell integration target
 

@@ -36,11 +36,16 @@ pub struct AgentdNotesChannel {
 impl AgentdNotesChannel {
     pub fn from_private_channel(stream: UnixStream) -> io::Result<Self> {
         if !stream.local_addr()?.is_unnamed() || !stream.peer_addr()?.is_unnamed() {
-            return Err(io::Error::new(io::ErrorKind::PermissionDenied,
-                "Notes requires an inherited unnamed socketpair"));
+            return Err(io::Error::new(
+                io::ErrorKind::PermissionDenied,
+                "Notes requires an inherited unnamed socketpair",
+            ));
         }
         stream.set_nonblocking(false)?;
-        Ok(Self { stream: Mutex::new(stream), disabled: AtomicBool::new(false) })
+        Ok(Self {
+            stream: Mutex::new(stream),
+            disabled: AtomicBool::new(false),
+        })
     }
 }
 
@@ -49,7 +54,10 @@ impl NotesPrivateChannel for AgentdNotesChannel {
         if request.is_empty() || request.len() > NOTES_REQUEST_MAX_BYTES {
             return Err("invalid Notes request bound".to_string());
         }
-        let mut stream = self.stream.try_lock().map_err(|_| "Notes channel busy or poisoned")?;
+        let mut stream = self
+            .stream
+            .try_lock()
+            .map_err(|_| "Notes channel busy or poisoned")?;
         if self.disabled.load(Ordering::Acquire) {
             return Err("Notes channel is unavailable".to_string());
         }
@@ -82,16 +90,41 @@ impl AgentdProductionWriterHost {
         final_use: FinalUseAuthority,
         grants: Arc<dyn AgentdFinalUseGrantProvider>,
     ) -> Result<Self, AgentdError> {
+        let target = self.notes_target(identity, stream).await?;
+        self.attach_target(final_use, Arc::new(target), grants)
+    }
+
+    /// Add one fixed Notes destination while retaining the original host's
+    /// existing external provider. There is no replacement or fallback issuer.
+    pub async fn attach_additional_notes_target(
+        self,
+        identity: NotesTargetIdentity,
+        stream: UnixStream,
+        final_use: FinalUseAuthority,
+    ) -> Result<Self, AgentdError> {
+        if !self.has_target() {
+            return Err(AgentdError::Invalid(
+                "additional Notes destination requires the original grant provider".to_string(),
+            ));
+        }
+        let target = self.notes_target(identity, stream).await?;
+        self.attach_additional_target(final_use, Arc::new(target))
+    }
+
+    async fn notes_target(
+        &self,
+        identity: NotesTargetIdentity,
+        stream: UnixStream,
+    ) -> Result<ProductionNotesTarget, AgentdError> {
         if self.production_mutation().is_none() {
             return Err(AgentdError::Invalid(
-                "Notes requires the independently recovered production writer".to_string()));
+                "Notes requires the independently recovered production writer".to_string(),
+            ));
         }
         self.writer().verify_current_authority().await?;
         identity.validate().map_err(AgentdError::Invalid)?;
         let channel = AgentdNotesChannel::from_private_channel(stream)?;
-        let target = ProductionNotesTarget::new(identity, Arc::new(channel))
-            .map_err(AgentdError::Invalid)?;
-        self.attach_target(final_use, Arc::new(target), grants)
+        ProductionNotesTarget::new(identity, Arc::new(channel)).map_err(AgentdError::Invalid)
     }
 }
 
@@ -103,7 +136,10 @@ fn exchange(stream: &mut UnixStream, request: &[u8]) -> io::Result<Vec<u8>> {
     read_before(stream, &mut prefix, deadline)?;
     let length = u32::from_be_bytes(prefix) as usize;
     if length == 0 || length > NOTES_RESPONSE_MAX_BYTES {
-        return Err(io::Error::new(io::ErrorKind::InvalidData, "Notes response bound"));
+        return Err(io::Error::new(
+            io::ErrorKind::InvalidData,
+            "Notes response bound",
+        ));
     }
     let mut response = vec![0; length];
     read_before(stream, &mut response, deadline)?;
@@ -111,7 +147,9 @@ fn exchange(stream: &mut UnixStream, request: &[u8]) -> io::Result<Vec<u8>> {
 }
 
 fn remaining(deadline: Instant) -> io::Result<Duration> {
-    deadline.checked_duration_since(Instant::now()).filter(|left| !left.is_zero())
+    deadline
+        .checked_duration_since(Instant::now())
+        .filter(|left| !left.is_zero())
         .ok_or_else(|| io::Error::new(io::ErrorKind::TimedOut, "Notes total deadline"))
 }
 
