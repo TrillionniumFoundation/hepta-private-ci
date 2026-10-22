@@ -174,5 +174,56 @@ class RealModelBakeoffTests(unittest.TestCase):
         self.assertNotEqual(first, runner.model_tensor_digest(model))
 
 
+class RssObservationTests(unittest.TestCase):
+    def test_proc_self_rss_takes_priority_over_wrong_namespace_psutil(self):
+        status = "Pid:\t136888\nVmRSS:\t233816 kB\n"
+        with patch.object(runner.Path, "read_text", return_value=status), \
+                patch.object(runner.os, "getpid", return_value=5), \
+                patch.object(runner.psutil, "Process") as reader:
+            reader.return_value.memory_info.return_value.rss = 2_125_824
+            self.assertEqual(runner.rss_observation(),
+                             {"bytes": 233816 * 1024, "source": "/proc/self/status"})
+            reader.assert_not_called()
+
+    def test_mismatched_proc_pid_never_reads_psutil(self):
+        with patch.object(runner.Path, "read_text", return_value="Pid:\t136888\n"), \
+                patch.object(runner.os, "getpid", return_value=5), \
+                patch.object(runner.psutil, "Process") as reader:
+            self.assertEqual(runner.rss_observation(), {"bytes": None, "source": "unavailable"})
+            reader.assert_not_called()
+
+    def test_unreadable_proc_self_has_no_unverified_fallback(self):
+        with patch.object(runner.Path, "read_text", side_effect=OSError("unavailable")), \
+                patch.object(runner.psutil, "Process") as reader:
+            self.assertEqual(runner.rss_observation(), {"bytes": None, "source": "unavailable"})
+            reader.assert_not_called()
+
+    def test_psutil_fallback_requires_confirmed_self_pid(self):
+        with patch.object(runner.Path, "read_text", return_value="Pid:\t5\n"), \
+                patch.object(runner.os, "getpid", return_value=5), \
+                patch.object(runner.psutil, "Process") as reader:
+            reader.return_value.memory_info.return_value.rss = 123_456
+            self.assertEqual(runner.rss_observation(),
+                             {"bytes": 123_456, "source": "psutil-verified-self-pid"})
+            reader.assert_called_once_with(5)
+
+    def test_negative_or_malformed_proc_rss_is_not_measurement(self):
+        for value in ("-1 kB", "nan kB", "123 bytes", "3.5 kB"):
+            with self.subTest(value=value), \
+                    patch.object(runner.Path, "read_text", return_value=f"Pid:\t136888\nVmRSS:\t{value}\n"), \
+                    patch.object(runner.os, "getpid", return_value=5), \
+                    patch.object(runner.psutil, "Process") as reader:
+                self.assertEqual(runner.rss_observation(), {"bytes": None, "source": "unavailable"})
+                reader.assert_not_called()
+
+    def test_negative_psutil_rss_is_not_measurement(self):
+        with patch.object(runner.Path, "read_text", return_value="Pid:\t5\n"), \
+                patch.object(runner.os, "getpid", return_value=5), \
+                patch.object(runner.psutil, "Process") as reader:
+            reader.return_value.memory_info.return_value.rss = -1
+            self.assertEqual(runner.rss_observation(), {"bytes": None, "source": "unavailable"})
+            reader.assert_called_once_with(5)
+
+
 if __name__ == "__main__":
     unittest.main()

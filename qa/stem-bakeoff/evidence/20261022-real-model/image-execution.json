@@ -1,0 +1,264 @@
+{
+  "authority": "DENY_ALL",
+  "elapsed_ms": 13574.555635001161,
+  "energy_measured": false,
+  "feature_evidence": {
+    "bundle_sha256": "8470db5809e665249a9a6b779879e78f77ab32d82fb8e578bef0c6260b74a9ac",
+    "cache_key": "48d426496f411d84933e399434668d1cacc67b0b4bf910525577b0879afc0f87",
+    "feature_payload_bytes": 859595,
+    "global_shape": [
+      1,
+      768
+    ],
+    "identity": {
+      "checkpoint_revision": "914f7f89142e33e77833254d9c9b90c3cef7303b",
+      "encoder_sha256": "f23c2a1f6efc56f54a4ab96fe637eeef21da42dab6bf084eb90cbc91e6f1f5ce",
+      "generation": 1,
+      "preprocess_sha256": "d8800327d643699e47776605ea2c79ca825f4b491f8db1cddfaa39e915fa6dfd",
+      "purpose": "research",
+      "revocation_epoch": 0,
+      "scope_id": "research-local"
+    },
+    "missing_mask": [
+      [
+        false,
+        false,
+        true,
+        true,
+        true
+      ]
+    ],
+    "padding_token_count": 0,
+    "region_alignment_attested": false,
+    "retained_view_manifest": {
+      "authority": "DENY_ALL",
+      "identity": {
+        "checkpoint_revision": "914f7f89142e33e77833254d9c9b90c3cef7303b",
+        "encoder_sha256": "f23c2a1f6efc56f54a4ab96fe637eeef21da42dab6bf084eb90cbc91e6f1f5ce",
+        "generation": 1,
+        "preprocess_sha256": "d8800327d643699e47776605ea2c79ca825f4b491f8db1cddfaa39e915fa6dfd",
+        "purpose": "research",
+        "revocation_epoch": 0,
+        "scope_id": "research-local"
+      },
+      "modalities": [
+        "text",
+        "image",
+        "audio",
+        "video",
+        "ui_event"
+      ],
+      "schema": "hepta.feature-bundle.v1",
+      "source_independently_attested": false,
+      "source_record_digests": [
+        "41a528b3d7739f771b7f8e4853aca8bf6c19615cf3831ecad0a2d780abf7bf52"
+      ],
+      "views": {
+        "global_features": {
+          "bytes_sha256": "9fa38f80f0a16c1b53c115f9240f459b46492faeb3f8740da9e9dca17a5807de",
+          "dtype": "torch.float32",
+          "shape": [
+            1,
+            768
+          ]
+        },
+        "missing_mask": {
+          "bytes_sha256": "8e0c5acc0a2f5318a160746b497253cd00ffc3c75e838fd5b0deab2a23eeaff7",
+          "dtype": "torch.bool",
+          "shape": [
+            1,
+            5
+          ]
+        },
+        "modality_ids": {
+          "bytes_sha256": "f2e15760ec1e3eefb993e94814e38b14d0507c50cbcf6f75915faa37e172cbfa",
+          "dtype": "torch.int64",
+          "shape": [
+            1,
+            278
+          ]
+        },
+        "token_features": {
+          "bytes_sha256": "5ac2c7309aadc8a5edaa3d04851f74ed1fe03fb96d1a5060e4cc4187916cff4e",
+          "dtype": "torch.float32",
+          "shape": [
+            1,
+            278,
+            768
+          ]
+        },
+        "token_valid": {
+          "bytes_sha256": "13cf890f7fb85b1bb0932fd8b34bb72cc95ce65cde8a8291032b4ea3e6864032",
+          "dtype": "torch.bool",
+          "shape": [
+            1,
+            278
+          ]
+        }
+      }
+    },
+    "source_record_digests": [
+      "41a528b3d7739f771b7f8e4853aca8bf6c19615cf3831ecad0a2d780abf7bf52"
+    ],
+    "time_alignment_attested": false,
+    "token_semantics": "contextualized states tagged by original modality marker",
+    "token_shape": [
+      1,
+      278,
+      768
+    ],
+    "valid_token_counts_by_modality": {
+      "audio": 0,
+      "image": 256,
+      "text": 22,
+      "ui_event": 0,
+      "video": 0
+    }
+  },
+  "forward_receipt": {
+    "authority": "DENY_ALL",
+    "batch_size": 1,
+    "candidate": "embeddinggemma2_740m",
+    "checkpoint_inventory_sha256": "036c9188478057bada1b51ef856f3567509daf1e85efb9da283be1a69be0cb9b",
+    "checkpoint_parameter_count": 744371512,
+    "checkpoint_revision": "914f7f89142e33e77833254d9c9b90c3cef7303b",
+    "device": "cpu",
+    "encode_ms": 6864.223963002587,
+    "feature_bundle_sha256": "8470db5809e665249a9a6b779879e78f77ab32d82fb8e578bef0c6260b74a9ac",
+    "forward_ms": 4958.661609001865,
+    "load_ms": 4022.773295000661,
+    "loaded_parameter_count": 438760448,
+    "loaded_scope": "text_image",
+    "mode": "SHADOW_ONLY",
+    "model_forward_calls": 1,
+    "model_forward_calls_total": 1,
+    "model_performance_qualified": false,
+    "physical_backend_kernel_count_attested": false,
+    "profile": "text_image",
+    "resident_storage_count": 631,
+    "resident_storage_excludes": [
+      "activations",
+      "allocator_overhead",
+      "tokenizer",
+      "features",
+      "cell_heads",
+      "optimizer"
+    ],
+    "resident_tensor_storage_bytes": 1755045092,
+    "schema": "hepta.real-encoder-forward.v1",
+    "snapshot_artifact_bytes": 1525805910,
+    "token_count": 278,
+    "trainable_parameter_count": 0
+  },
+  "independent_hardware_attestation": false,
+  "input": {
+    "decoded_rgb_payload_bytes": 196608,
+    "expected_source_record_sha256": "41a528b3d7739f771b7f8e4853aca8bf6c19615cf3831ecad0a2d780abf7bf52",
+    "image_file_bytes": 1163,
+    "image_file_sha256": "12f52aa693485d7a5e6ad043d8c3d60c34b67a8e4f16573d326f2ea2b5fbd026",
+    "image_shape": [
+      256,
+      256,
+      3
+    ],
+    "record": {
+      "fixture_id": "procedural-red-square-blue-circle-v1",
+      "quality_labels": null,
+      "source_kind": "procedural-execution-fixture"
+    },
+    "submitted_record": {
+      "image": "procedural_input.png",
+      "text": "A red square and a blue circle on a white background."
+    },
+    "text_utf8_sha256": "104683ca78c8664e88aa1278151510c6fbdcba145106d8186a5310d26e08bab4"
+  },
+  "input_kind": "procedural-execution-fixture-without-quality-labels",
+  "multimodal_quality_qualified": false,
+  "observed_model_inputs": {
+    "semantics": "observed input tensors; excludes allocator and activation memory",
+    "tensor_payload_bytes": 7786208,
+    "tensors": {
+      "attention_mask": {
+        "bytes_sha256": "467a80a455535d2031af7127ad3b7605e8deacc59636aefd9e09fb7ff7f66891",
+        "dtype": "torch.int64",
+        "payload_bytes": 2224,
+        "shape": [
+          1,
+          278
+        ]
+      },
+      "image_position_ids": {
+        "bytes_sha256": "934c56f857c80d9b0b401aab88a02ba083e0260b922535150e9847071e3c74bc",
+        "dtype": "torch.int64",
+        "payload_bytes": 40320,
+        "shape": [
+          1,
+          2520,
+          2
+        ]
+      },
+      "input_ids": {
+        "bytes_sha256": "9f2c7ba48fe9dde780015296ca5a3b27ba8a11d7be9119734b3a8461c6b79dfb",
+        "dtype": "torch.int64",
+        "payload_bytes": 2224,
+        "shape": [
+          1,
+          278
+        ]
+      },
+      "pixel_values": {
+        "bytes_sha256": "6cd47bb4432ceb7c5ce4c05360e62bb013f5c5c59a9b7f6e93d08758d2d453b1",
+        "dtype": "torch.float32",
+        "payload_bytes": 7741440,
+        "shape": [
+          1,
+          2520,
+          768
+        ]
+      }
+    },
+    "unique_input_storage_bytes": 7786208
+  },
+  "observed_module_calls": {
+    "model": 1,
+    "vision": 1
+  },
+  "probe_overhead": "input hashing and feature snapshot copies are included in timings/RSS",
+  "process_lifetime_peak_rss_bytes": {
+    "after_forward_and_retention": 3042967552,
+    "after_load": 3042967552,
+    "before_load": 221188096
+  },
+  "production_activation_allowed": false,
+  "receipt_sha256": "ed22d79843fc78058420ed5cf3c27d2ec6f443ece6e201cdb4ebb5a3002283a2",
+  "rss_semantics": "process lifetime peak; not incremental per-input allocation",
+  "saved_feature_views": {
+    "global_features": {
+      "bytes": 3200,
+      "file": "global_features.npy",
+      "file_sha256": "b1b9a609ee86a7e2c9cea2ce5ed9e3ea0dee6a48c0e1e3338030536b721ec738"
+    },
+    "missing_mask": {
+      "bytes": 133,
+      "file": "missing_mask.npy",
+      "file_sha256": "17679ead4cc6618e91d3be62861ff16f60ca0ce1cc9bfac5cadf53f6d9d2c364"
+    },
+    "modality_ids": {
+      "bytes": 2352,
+      "file": "modality_ids.npy",
+      "file_sha256": "02ea987d25f7448864e8d0b5fcfd2792f2b8af5b0c23048dc194647975aaf6a9"
+    },
+    "token_features": {
+      "bytes": 854144,
+      "file": "token_features.npy",
+      "file_sha256": "01ad250c011f6ada23eae7d98579bafacbec09fa216adb27d2266d7ae9f7f069"
+    },
+    "token_valid": {
+      "bytes": 406,
+      "file": "token_valid.npy",
+      "file_sha256": "8d116d128033783cd352480f3d54a13da6acda0460895894a57c990affb0f9d8"
+    }
+  },
+  "schema": "hepta.real-text-image-execution-probe.v1",
+  "status": "EXECUTED"
+}

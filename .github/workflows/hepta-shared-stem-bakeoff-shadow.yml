@@ -68,6 +68,7 @@ jobs:
           python3 -m venv "$RUNNER_TEMP/hepta-stem-venv"
           "$RUNNER_TEMP/hepta-stem-venv/bin/python" -m pip install --only-binary=:all: --index-url https://download.pytorch.org/whl/cpu 'torch==2.10.0'
           "$RUNNER_TEMP/hepta-stem-venv/bin/python" -m pip install --only-binary=:all: 'numpy==2.2.6'
+          "$RUNNER_TEMP/hepta-stem-venv/bin/python" -m pip install --only-binary=:all: -r qa/stem-bakeoff/requirements-real.txt
       - name: Execute real tiny latent forward and meta parameter budgets
         run: |
           set -euo pipefail
@@ -79,9 +80,108 @@ jobs:
           "$RUNNER_TEMP/hepta-stem-venv/bin/python" -m unittest discover -s qa/stem-bakeoff -p 'test_teacher_feature_export.py' -v
           "$RUNNER_TEMP/hepta-stem-venv/bin/python" -m unittest discover -s qa/stem-bakeoff -p 'test_offline_shard_distill.py' -v
           "$RUNNER_TEMP/hepta-stem-venv/bin/python" -m unittest discover -s qa/stem-bakeoff -p 'test_scale_probe.py' -v
+          "$RUNNER_TEMP/hepta-stem-venv/bin/python" -m unittest discover -s qa/stem-bakeoff -p 'test_feature_bundle.py' -v
+          "$RUNNER_TEMP/hepta-stem-venv/bin/python" -m unittest discover -s qa/stem-bakeoff -p 'test_cell_head_training.py' -v
+          "$RUNNER_TEMP/hepta-stem-venv/bin/python" -m unittest discover -s qa/stem-bakeoff -p 'test_real*.py' -v
           "$RUNNER_TEMP/hepta-stem-venv/bin/python" qa/stem-bakeoff/scale_probe.py --repeats 2 > "$RUNNER_TEMP/stem-scale-probe.json"
           "$RUNNER_TEMP/hepta-stem-venv/bin/python" -c 'import json,sys; r=json.load(open(sys.argv[1])); assert [x["cells"] for x in r["measurements"]] == [1,8,64,256,1024,4096]; assert all(x["module_forward_hook_calls"] == 2 and x["owner_forward_calls"] == 2 for x in r["measurements"]); assert r["may_satisfy_real_model_bakeoff_gate"] is False; assert r["production_activation_allowed"] is False' "$RUNNER_TEMP/stem-scale-probe.json"
           cat "$RUNNER_TEMP/stem-scale-probe.json"
+      - name: Confirm source tree unchanged
+        if: always()
+        run: |
+          git diff --check
+          git diff --exit-code
+
+  real-checkpoint-text-bakeoff:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 40
+    strategy:
+      fail-fast: false
+      max-parallel: 2
+      matrix:
+        candidate:
+          [granite97m, mmbert_small, embeddinggemma2_740m, laya_encoder_only]
+    env:
+      CANDIDATE: ${{ matrix.candidate }}
+      HF_HUB_OFFLINE: "1"
+      TRANSFORMERS_OFFLINE: "1"
+      TOKENIZERS_PARALLELISM: "false"
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - name: Verify exact source identity
+        env:
+          EXPECTED_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$EXPECTED_SHA"
+          git diff --check
+      - name: Install pinned real-model CPU runtime
+        run: |
+          set -euo pipefail
+          python3 -m venv "$RUNNER_TEMP/real-venv"
+          "$RUNNER_TEMP/real-venv/bin/python" -m pip install --only-binary=:all: --index-url https://download.pytorch.org/whl/cpu 'torch==2.10.0' 'torchvision==0.25.0'
+          "$RUNNER_TEMP/real-venv/bin/python" -m pip install --only-binary=:all: -r qa/stem-bakeoff/requirements-real.txt
+      - name: Acquire pinned public checkpoint and chronological source data
+        run: |
+          set -euo pipefail
+          "$RUNNER_TEMP/real-venv/bin/python" qa/stem-bakeoff/fetch_real_checkpoint.py --candidate "$CANDIDATE" --destination "$RUNNER_TEMP/checkpoint"
+          curl --fail --location --retry 3 --max-time 300 'https://archive.ics.uci.edu/static/public/359/news+aggregator.zip' --output "$RUNNER_TEMP/news.zip"
+          "$RUNNER_TEMP/real-venv/bin/python" qa/stem-bakeoff/prepare_news_cohorts.py --archive "$RUNNER_TEMP/news.zip" --output "$RUNNER_TEMP/news-cohorts"
+      - name: Run offline fixed-plan learning and actual Head fanout
+        run: |
+          set -euo pipefail
+          "$RUNNER_TEMP/real-venv/bin/python" - <<'PY'
+          import json, os, sys
+          from pathlib import Path
+          sys.path.insert(0, 'qa/stem-bakeoff')
+          from convert_mmbert import convert_mmbert
+          from real_encoder import CANDIDATES
+          from real_model_bakeoff import run_bakeoff
+          root = Path(os.environ['RUNNER_TEMP'])
+          candidate = os.environ['CANDIDATE']
+          receipt = json.loads((root / 'checkpoint.acquisition.json').read_text())
+          snapshot = root / 'checkpoint'
+          digest = receipt['inventory_sha256']
+          if candidate == 'mmbert_small':
+              conversion = convert_mmbert(source=snapshot, output=root / 'converted',
+                  revision=CANDIDATES[candidate]['revision'], expected_inventory_sha256=digest,
+                  operator_accepted_terms=True)
+              snapshot, digest = root / 'converted', conversion['output_inventory_sha256']
+          run_bakeoff(candidate=candidate, snapshot=snapshot, inventory_sha256=digest,
+              cohorts=root / 'news-cohorts', archive=root / 'news.zip',
+              output=root / 'real-results', operator_accepted_terms=True)
+          PY
+      - name: Run actual EG2 image tower execution probe
+        if: matrix.candidate == 'embeddinggemma2_740m'
+        run: |
+          set -euo pipefail
+          "$RUNNER_TEMP/real-venv/bin/python" - <<'PY'
+          import json, os, sys
+          from pathlib import Path
+          sys.path.insert(0, 'qa/stem-bakeoff')
+          from real_media_probe import run_probe
+          import torch
+          torch.set_num_threads(2)
+          root = Path(os.environ['RUNNER_TEMP'])
+          receipt = json.loads((root / 'checkpoint.acquisition.json').read_text())
+          run_probe(snapshot=root / 'checkpoint',
+              expected_inventory_sha256=receipt['inventory_sha256'],
+              output=root / 'media-results', operator_accepted_terms=True)
+          PY
+      - name: Preserve reviewable reports and trained Head tensors
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: stem-real-${{ matrix.candidate }}-${{ github.event.pull_request.head.sha || github.sha }}
+          path: |
+            ${{ runner.temp }}/real-results/
+            ${{ runner.temp }}/media-results/
+            ${{ runner.temp }}/checkpoint.acquisition.json
+          if-no-files-found: error
+          retention-days: 14
       - name: Confirm source tree unchanged
         if: always()
         run: |
