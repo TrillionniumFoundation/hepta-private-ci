@@ -141,6 +141,8 @@ class ScaleMatrixTests(unittest.TestCase):
             "codex-rs/hepta-ndu/src/output_portfolio_tests.rs",
             "codex-rs/hepta-ndu/src/output_portfolio_types.rs",
             ".github/workflows/hepta-p5-scale-evidence-exact.yml",
+            ".github/workflows/hepta-ndu-portfolio-exact.yml",
+            "scripts/test_hepta_ndu_portfolio_ci.py",
         )
         for path in expected:
             with self.subTest(path=path):
