@@ -154,8 +154,11 @@ fn owner_drop_releases_lock_while_a_duplicate_handle_remains_open()
     let store = LockedFileFinalHoldoutCasStoreV1::create(file, digest("binding"))?;
     drop(store);
 
-    let recovered =
-        LockedFileFinalHoldoutCasStoreV1::recover(temp.open(), digest("binding"), None)?;
+    let recovered = LockedFileFinalHoldoutCasStoreV1::recover(
+        temp.open(),
+        digest("binding"),
+        /*minimum*/ None,
+    )?;
     assert_eq!(
         (recovered.anchor(), retained.metadata()?.len()),
         (None, HEADER as u64),
@@ -192,7 +195,8 @@ fn failed_recover_releases_lock_without_changing_corrupt_bytes()
     let mut file = temp.create();
     file.write_all(b"truncated")?;
     let retained = file.try_clone()?;
-    let result = LockedFileFinalHoldoutCasStoreV1::recover(file, digest("binding"), None);
+    let result =
+        LockedFileFinalHoldoutCasStoreV1::recover(file, digest("binding"), /*minimum*/ None);
     assert_eq!(
         (result.err(), fs::read(&temp.path)?),
         (
