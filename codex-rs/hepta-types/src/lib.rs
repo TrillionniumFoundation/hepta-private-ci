@@ -48,7 +48,6 @@ pub use execution_contract::RuntimeExecutionError;
 pub use execution_contract::RuntimeReceiptV1;
 pub use execution_contract::RuntimeToolIntentV1;
 pub use execution_contract::ToolOutcomeV1;
-pub use execution_contract::execute_native_tool_intent;
 pub use fixed::FIXED_Q32_ARITHMETIC_PROFILE_V1;
 pub use fixed::FixedQ32;
 pub use fixed::FixedQ32Error;
