@@ -25,6 +25,7 @@ import shlex
 import signal
 import subprocess
 import sys
+import tempfile
 import time
 from pathlib import Path
 from typing import Any
@@ -453,6 +454,36 @@ def assert_exact_source_checkout(repo_root: Path, source_commit: str) -> None:
         raise ValueError("measured repository checkout is dirty")
 
 
+def _check_report_output_target(output: Path, workload_path: Path | None) -> None:
+    """Reject report paths that could overwrite frozen source evidence."""
+    if output.is_symlink():
+        raise ValueError("matrix report output must not be a symlink")
+    if output.exists() and not output.is_file():
+        raise ValueError("matrix report output must be a regular file")
+    if workload_path is not None and (
+        output.resolve(strict=False) == workload_path.resolve(strict=False)
+        or (output.exists() and output.samefile(workload_path))
+    ):
+        raise ValueError("matrix report output aliases frozen workload")
+
+
+def _write_report_atomically(output: Path, report: dict[str, Any]) -> None:
+    """Replace the report pathname without following a swapped output symlink."""
+    output.parent.mkdir(parents=True, exist_ok=True)
+    fd, temporary_name = tempfile.mkstemp(
+        prefix=f".{output.name}.", suffix=".tmp", dir=output.parent
+    )
+    temporary = Path(temporary_name)
+    try:
+        with os.fdopen(fd, "w", encoding="utf-8") as stream:
+            stream.write(json.dumps(report, sort_keys=True, indent=2) + "\n")
+            stream.flush()
+            os.fsync(stream.fileno())
+        os.replace(temporary, output)
+    finally:
+        temporary.unlink(missing_ok=True)
+
+
 def run_matrix(
     *,
     workload_command: str | None,
@@ -476,6 +507,7 @@ def run_matrix(
     repo_root = Path(__file__).resolve().parent.parent
     if workload_command is not None:
         assert_exact_source_checkout(repo_root, source_commit)
+    _check_report_output_target(output, workload_path)
     if workload_path is not None:
         actual_workload_digest = hashlib.sha256(workload_path.read_bytes()).hexdigest()
         if actual_workload_digest != workload_digest:
@@ -595,10 +627,7 @@ def run_matrix(
             for row in rows
         ]
     )
-    output.parent.mkdir(parents=True, exist_ok=True)
-    output.write_text(
-        json.dumps(provisional, sort_keys=True, indent=2) + "\n", encoding="utf-8"
-    )
+    _write_report_atomically(output, provisional)
 
     observer_receipt: dict[str, Any] | None = None
     # Fail closed *before* spawning a supplied observer executable: a command
@@ -701,9 +730,7 @@ def run_matrix(
         "status": "qualified" if not blocked else "blocked",
         "reportDigest": digest({**provisional, "observer": observer_receipt}),
     }
-    output.write_text(
-        json.dumps(report, sort_keys=True, indent=2) + "\n", encoding="utf-8"
-    )
+    _write_report_atomically(output, report)
     return report
 
 
