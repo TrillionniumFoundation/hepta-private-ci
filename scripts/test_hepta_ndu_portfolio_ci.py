@@ -2,6 +2,7 @@
 
 These are source-level workflow contract checks, not native Rust evidence.
 """
+
 from __future__ import annotations
 
 from pathlib import Path
