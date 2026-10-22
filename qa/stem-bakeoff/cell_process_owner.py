@@ -47,19 +47,13 @@ class SnapshotProcessOwnerV1:
         with self._owner._lock:
             view = self._observe(candidate.identity)
             candidate.require_current(lambda: view)
-            predecessor = self._owner.current
-            self._owner.commit(candidate, expected_parent_manifest_sha256=expected_parent_manifest_sha256)
-            try:
-                # Recheck the external frontier after the in-memory CAS. A
-                # withdrawn ancestor discovered here must not leave a rejected
-                # successor selected. This is only an in-process shadow owner,
-                # not a substitute for a durable production transaction.
-                candidate.require_current(lambda: self._observe(candidate.identity))
-            except Exception:
-                self._owner._current = predecessor
-                # Preserve the observed withdrawal frontier: restoring the old
-                # pointer is not authorization to use a now-revoked ancestor.
-                raise
+            # A second external observation is required after the internal
+            # owner's first eligibility check, but BEFORE it publishes the
+            # successor. A failed final check must never expose that successor.
+            self._owner.commit(candidate,
+                expected_parent_manifest_sha256=expected_parent_manifest_sha256,
+                final_admission_check=lambda: candidate.require_current(
+                    lambda: self._observe(candidate.identity)))
 
 
 def _route(snapshot, bundle, budget_units):
