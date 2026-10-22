@@ -329,12 +329,18 @@ fn fractional_portfolio_counts_the_no_change_residual_against_max_selected() {
         OutputPortfolioDispositionV1::AdvisorySelection
     );
     assert_eq!(two_slots.allocations.len(), 2);
-    assert!(two_slots.allocations.iter().any(|item| {
-        item.candidate_id == id("fractional") && item.weight == q(40)
-    }));
-    assert!(two_slots.allocations.iter().any(|item| {
-        item.candidate_id == id("baseline") && item.weight == q(60)
-    }));
+    assert!(
+        two_slots
+            .allocations
+            .iter()
+            .any(|item| { item.candidate_id == id("fractional") && item.weight == q(40) })
+    );
+    assert!(
+        two_slots
+            .allocations
+            .iter()
+            .any(|item| { item.candidate_id == id("baseline") && item.weight == q(60) })
+    );
 }
 
 #[test]
