@@ -1,0 +1,67 @@
+name: a32 Wine isolated and original-suite diagnostic
+on:
+  push:
+    branches:
+      - diagnostic/a32-wine-repro-20261022
+permissions:
+  contents: read
+concurrency:
+  group: a32-wine-diagnostic-${{ github.ref }}
+  cancel-in-progress: false
+env:
+  SOURCE_SHA: ${{ github.sha }}
+  PYTHONDONTWRITEBYTECODE: "1"
+  PYTHONUTF8: "1"
+jobs:
+  wine-local-linux:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    steps:
+      - name: Preserve exact checkout bytes
+        id: checkout_bytes
+        run: git config --global core.autocrlf false
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        id: checkout
+        with:
+          ref: ${{ env.SOURCE_SHA }}
+          fetch-depth: 2
+          persist-credentials: false
+      - uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405
+        id: python
+        with:
+          python-version: "3.12.10"
+      - name: Guard exact a32 product and input commit
+        id: guard
+        run: python .github/scripts/a32_wine_diagnostic.py init "$RUNNER_TEMP/a32-wine-evidence"
+      - name: Harness contract tests (not native Wine tests)
+        id: contracts
+        run: python -m unittest discover -s .github/scripts -p test_a32_wine_diagnostic.py -v
+      - uses: ./.github/actions/setup-ci-build
+        id: build
+      - name: Install checksum-pinned DotSlash 0.5.9
+        id: dotslash
+        run: python .github/scripts/a32_wine_diagnostic.py dotslash "$RUNNER_TEMP/a32-wine-evidence"
+      - uses: bazel-contrib/setup-bazel@c5acdfb288317d0b5c0bbd7a396a3dc868bb0f86
+        id: bazel
+        with:
+          bazelisk-version: "1.28.1"
+          output-base: ${{ steps.build.outputs.bazel-output-base }}
+      - name: Original parallel suite, then four exact isolated cases (all outcomes)
+        id: native
+        timeout-minutes: 32
+        run: python .github/scripts/a32_wine_diagnostic.py run "$RUNNER_TEMP/a32-wine-evidence"
+      - name: Guard final sources and freeze complete or partial evidence
+        id: collect
+        if: always() && steps.checkout.outcome == 'success' && steps.python.outcome == 'success'
+        env:
+          STEP_RESULTS: ${{ toJSON(steps) }}
+        run: python .github/scripts/a32_wine_diagnostic.py collect "$RUNNER_TEMP/a32-wine-evidence"
+      - uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f
+        id: artifact
+        if: always()
+        with:
+          name: a32-wine-evidence-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/a32-wine-frozen
+          include-hidden-files: true
+          if-no-files-found: error
+          retention-days: 7
