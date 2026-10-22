@@ -153,11 +153,11 @@ impl CognitiveStore {
                     "cognitive recovery root does not exist".to_string(),
                 )
             })?;
-        if canonical_root != root {
-            return Err(CognitiveRecoveryError::Indeterminate(
-                "cognitive recovery root is redirected".to_string(),
-            ));
-        }
+        // canonical_path_without_redirection already checks each component
+        // and rejects redirections (including Windows reparse points). The
+        // returned spelling may legitimately have a Windows verbatim prefix
+        // while the requested native path does not; raw PathBuf inequality
+        // is therefore not a second redirect check.
         let exclusive_guard = CognitiveStoreOpenGuard::acquire_exclusive(&canonical_root)
             .map_err(|error| CognitiveRecoveryError::Unavailable(error.to_string()))?;
         let source_path = resolve_active_database_path(&canonical_root)

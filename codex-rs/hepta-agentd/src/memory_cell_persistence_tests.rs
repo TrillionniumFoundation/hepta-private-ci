@@ -143,14 +143,35 @@ impl CurrentMemoryRetrievalContext for TestRegistry {
             anchor: anchor.clone(),
         };
         let pending = self.witness.with_extension("pending");
-        std::fs::write(
-            &pending,
-            serde_json::to_vec(&retained).map_err(|error| error.to_string())?,
-        )
-        .map_err(|error| error.to_string())?;
-        std::fs::File::open(&pending)
-            .and_then(|file| file.sync_all())
-            .map_err(|error| error.to_string())?;
+        let bytes = serde_json::to_vec(&retained).map_err(|error| error.to_string())?;
+        // Windows FlushFileBuffers requires a write-capable handle. Never
+        // truncate an unrelated staged witness after a crash/retry.
+        match std::fs::OpenOptions::new()
+            .write(true)
+            .create_new(true)
+            .open(&pending)
+        {
+            Ok(mut staged) => {
+                use std::io::Write;
+                staged.write_all(&bytes).map_err(|error| error.to_string())?;
+                staged.sync_all().map_err(|error| error.to_string())?;
+            }
+            Err(error) if error.kind() == std::io::ErrorKind::AlreadyExists => {
+                let metadata =
+                    std::fs::symlink_metadata(&pending).map_err(|error| error.to_string())?;
+                if !metadata.file_type().is_file()
+                    || std::fs::read(&pending).map_err(|error| error.to_string())? != bytes
+                {
+                    return Err("conflicting staged witness cannot be overwritten".into());
+                }
+                std::fs::OpenOptions::new()
+                    .write(true)
+                    .open(&pending)
+                    .and_then(|file| file.sync_all())
+                    .map_err(|error| error.to_string())?;
+            }
+            Err(error) => return Err(error.to_string()),
+        }
         std::fs::rename(&pending, &self.witness).map_err(|error| error.to_string())?;
         #[cfg(unix)]
         std::fs::File::open(self.witness.parent().ok_or("witness parent")?)
@@ -436,6 +457,33 @@ async fn failed_retention_preserves_actual_receipt_and_blocks_until_exact_acknow
         pending.receipt
     );
     registry.fail_retention.store(false, Ordering::SeqCst);
+    // Simulate a crash after staging but before rename. A conflicting
+    // temporary witness must remain untouched; the identical staged
+    // payload is replayable without a new or forged checkpoint.
+    let staged_path = registry.witness.with_extension("pending");
+    std::fs::write(&staged_path, b"foreign-staged-witness").unwrap();
+    assert!(registry
+        .retain_checkpoint(
+            &owner,
+            1,
+            &pending.expected_plan,
+            &pending.receipt,
+            pending.recovery_anchor.as_ref().unwrap(),
+        )
+        .is_err());
+    assert_eq!(
+        std::fs::read(&staged_path).unwrap(),
+        b"foreign-staged-witness"
+    );
+    std::fs::remove_file(&staged_path).unwrap();
+    let same = Retained {
+        manifest: pending.expected_plan.manifest.clone(),
+        sequence: pending.receipt.logical_sequence,
+        checkpoint: pending.receipt.checkpoint_digest,
+        cut: pending.receipt.owner_cut_digest,
+        anchor: pending.recovery_anchor.clone().unwrap(),
+    };
+    std::fs::write(&staged_path, serde_json::to_vec(&same).unwrap()).unwrap();
     registry
         .retain_checkpoint(
             &owner,
