@@ -1,0 +1,48 @@
+name: NDU-MGP preserve preregistered P1 failure
+
+on:
+  push:
+    branches: [research/ndu-mgp-p0-p4-qualification-20261022]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  frozen-negative-audit:
+    if: github.repository == 'TrillionniumFoundation/hepta-private-ci'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 12
+    steps:
+      - name: Checkout current exact-head auditor
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+          filter: blob:none
+          sparse-checkout: experiments/ndu_mgp_gates
+      - name: Checkout immutable prior pilot
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: 9da3c2b98bf427c5812cdc332d4adda1fc23bac6
+          path: frozen-prior-pilot
+          persist-credentials: false
+          filter: blob:none
+          sparse-checkout: experiments/multimodal_output_portfolio
+      - name: Run local manipulation regressions
+        run: python3 -m unittest discover -s experiments/ndu_mgp_gates -p 'test_audit_p1_negative.py' -v
+      - name: Independently compare published protocol/summary/review
+        run: |
+          set -euo pipefail
+          python3 experiments/ndu_mgp_gates/audit_p1_negative.py \
+            --pilot-root frozen-prior-pilot/experiments/multimodal_output_portfolio \
+            --receipt "$RUNNER_TEMP/frozen-p1-audit.json"
+          echo 'P1 prior fresh-heldout efficacy NOT CONFIRMED; source pinned and negative evidence retained.' >> "$GITHUB_STEP_SUMMARY"
+      - name: Preserve read-only audit receipt
+        if: always()
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f
+        with:
+          name: frozen-p1-negative-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/frozen-p1-audit.json
+          if-no-files-found: warn
+          retention-days: 30

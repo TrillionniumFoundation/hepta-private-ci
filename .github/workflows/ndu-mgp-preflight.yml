@@ -1,0 +1,113 @@
+name: NDU-MGP exact-head research preflight
+
+on:
+  push:
+    branches: [research/ndu-mgp-p0-p4-qualification-20261022]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ndu-mgp-preflight-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  structural:
+    if: github.repository == 'TrillionniumFoundation/hepta-private-ci'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 12
+    steps:
+      - name: Sparse checkout exact source
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+          filter: blob:none
+          sparse-checkout: |
+            experiments/ndu_latent_riccati
+            experiments/ndu_mgp_gates
+            .github/workflows/ndu-mgp-preflight.yml
+      - name: Verify frozen P0 source and registered protocol
+        shell: bash
+        run: |
+          python3 - <<'PY'
+          import hashlib,json,pathlib
+          root=pathlib.Path("experiments/ndu_latent_riccati")
+          freeze=json.loads((root/"SOURCE_FREEZE.json").read_text())
+          request=json.loads((root/"CLOUD_RUN_REQUEST.json").read_text())
+          assert freeze["implementation_commit"] == request["implementation_commit"]
+          assert not freeze["formal_heldout_accessed"]
+          for name,expected in freeze["files"].items():
+              target=root/name
+              assert target.is_file(),name
+              assert hashlib.sha256(target.read_bytes()).hexdigest()==expected,name
+          assert request["protocol_sha256"]==freeze["files"]["protocol.json"]
+          print("P0 source freeze verified; this is not a heldout execution receipt")
+          PY
+      - name: Compile frozen experimental modules
+        run: python3 -m compileall -q experiments/ndu_latent_riccati experiments/ndu_mgp_gates
+      - name: Run fail-closed qualification tests
+        run: |
+          python3 -m unittest discover -s experiments/ndu_mgp_gates -p 'test_verify.py' -v
+          set +e
+          python3 experiments/ndu_mgp_gates/verify.py experiments/ndu_mgp_gates/qualification.json > /tmp/ndu-gates.log 2>&1
+          exit_code=$?
+          set -e
+          cat /tmp/ndu-gates.log
+          test "$exit_code" -eq 1
+          grep -q HOLD_NO_GO /tmp/ndu-gates.log
+          echo 'Research admission correctly remains HOLD_NO_GO' >> "$GITHUB_STEP_SUMMARY"
+
+  numerical-oracle:
+    needs: structural
+    runs-on: ubuntu-24.04
+    timeout-minutes: 40
+    env:
+      OMP_NUM_THREADS: '1'
+      OPENBLAS_NUM_THREADS: '1'
+      MKL_NUM_THREADS: '1'
+      PYTHONDONTWRITEBYTECODE: '1'
+    steps:
+      - name: Sparse checkout exact source
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+          filter: blob:none
+          sparse-checkout: |
+            experiments/ndu_latent_riccati
+            experiments/ndu_mgp_gates
+      - name: Create isolated pinned research environment
+        run: |
+          set -euo pipefail
+          python3 -m venv "$RUNNER_TEMP/ndu-mgp-venv"
+          "$RUNNER_TEMP/ndu-mgp-venv/bin/python" -m pip install --disable-pip-version-check --no-input --index-url https://pypi.org/simple numpy==1.26.4 scipy==1.14.1
+          "$RUNNER_TEMP/ndu-mgp-venv/bin/python" -m pip install --disable-pip-version-check --no-input --index-url https://download.pytorch.org/whl/cpu torch==2.5.1
+      - name: Independently rerun mathematical and nonlinear audits
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/ndu-mgp-evidence"
+          PY="$RUNNER_TEMP/ndu-mgp-venv/bin/python"
+          "$PY" experiments/ndu_latent_riccati/oracle/benchmark.py --output "$RUNNER_TEMP/ndu-mgp-evidence/riccati.json"
+          "$PY" experiments/ndu_latent_riccati/oracle/local_control_audit.py --output "$RUNNER_TEMP/ndu-mgp-evidence/nonlinear_control.json"
+          "$PY" experiments/ndu_latent_riccati/review/codec_audit.py --output "$RUNNER_TEMP/ndu-mgp-evidence/codec.json"
+          "$PY" experiments/ndu_mgp_gates/p0_independent_lq.py | tee "$RUNNER_TEMP/ndu-mgp-evidence/independent-lq.log"
+          "$PY" - <<'PY'
+          import hashlib,json,os,pathlib,platform
+          from importlib.metadata import version
+          root=pathlib.Path(os.environ['RUNNER_TEMP'])/'ndu-mgp-evidence'
+          data={"source_sha":os.environ["GITHUB_SHA"],"execution_tier":"github_hosted_oracle_preflight_not_dedicated","python":platform.python_version(),"versions":{m:version(m) for m in ("numpy","scipy","torch")}}
+          for f in sorted(root.glob("*.json")):
+              data[f.name+"_sha256"]=hashlib.sha256(f.read_bytes()).hexdigest()
+          (root/"receipt.json").write_text(json.dumps(data,indent=2)+"\n")
+          print(json.dumps(data,indent=2))
+          PY
+      - name: Preserve numerical evidence even on failure
+        if: always()
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f
+        with:
+          name: ndu-mgp-oracle-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/ndu-mgp-evidence
+          if-no-files-found: warn
+          retention-days: 30
