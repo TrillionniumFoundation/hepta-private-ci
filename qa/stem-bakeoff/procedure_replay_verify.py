@@ -19,39 +19,72 @@ from procedure_replay_observer import observe
 from procedure_replay_probe import require_plan, write_json
 
 
+MAX_MEMBER_BYTES = 16 * 1024 * 1024
+MAX_EXPANDED_BYTES = 16 * 1024 * 1024
+
+
+def archive_member(root, name):
+    """Return a bounded regular file beneath the evidence root, without symlinks."""
+    root = Path(root).resolve(strict=True)
+    if type(name) is not str or not name or "\\" in name:
+        raise ValueError("invalid archive member name")
+    relative = Path(name)
+    if relative.is_absolute() or ".." in relative.parts:
+        raise ValueError("archive member escaped evidence root")
+    path = root / relative
+    if not path.is_file() or path.stat().st_size > MAX_MEMBER_BYTES:
+        raise ValueError("archive member missing or over byte budget")
+    current = path
+    while current != root:
+        if current.is_symlink():
+            raise ValueError("symlink archive member or ancestor")
+        current = current.parent
+    if not path.resolve(strict=True).is_relative_to(root):
+        raise ValueError("archive member escaped evidence root")
+    return path
+
+
 def read_rows(path):
-    with gzip.open(path, "rt") as stream:
-        return [json.loads(line) for line in stream]
+    with gzip.open(path, "rb") as stream:
+        raw = stream.read(MAX_EXPANDED_BYTES + 1)
+    if len(raw) > MAX_EXPANDED_BYTES:
+        raise ValueError("expanded evidence exceeds byte budget")
+    return [json.loads(line) for line in raw.splitlines()]
 
 
 def verify(target, expected_plan_sha256):
-    target = Path(target)
+    # This historical auditor still contains assertions. Optimized Python
+    # must refuse verification rather than disable the audit and claim passed.
+    if not __debug__:
+        raise ValueError("optimized Python disables required archive audit assertions")
+    target = Path(target).resolve(strict=True)
     plan = require_plan(target, expected_plan_sha256)
-    result = json.loads((target / "result.json").read_bytes())
-    inventory = json.loads((target / "inventory.json").read_bytes())
+    result = json.loads(archive_member(target, "result.json").read_bytes())
+    inventory = json.loads(archive_member(target, "inventory.json").read_bytes())
     for row in inventory:
-        raw = (target / row["path"]).read_bytes()
+        raw = archive_member(target, row["path"]).read_bytes()
         assert len(raw) == row["bytes"] and sha(raw) == row["sha256"], row["path"]
-    snapshot = read_rows(target / "source_snapshot.jsonl.gz")
+    snapshot = read_rows(archive_member(target, "source_snapshot.jsonl.gz"))
     assert {row["path"]: sha(row["utf8"].encode()) for row in snapshot} == plan["source_code_sha256"]
     assert all(row["sha256"] == sha(row["utf8"].encode()) for row in snapshot)
-    encoder = json.loads((target / "encoder_manifest.json").read_bytes())
-    with np.load(target / "pooled_features.npz", allow_pickle=False) as archive:
+    encoder = json.loads(archive_member(target, "encoder_manifest.json").read_bytes())
+    with np.load(archive_member(target, "pooled_features.npz"), allow_pickle=False) as archive:
         assert archive.files == ["pooled"]
         features = archive["pooled"]
         assert list(features.shape) == encoder["shape"] == [192, 384]
         assert features.dtype == np.float32 and np.isfinite(features).all()
         assert sha(features.tobytes()) == encoder["feature_bytes_sha256"]
-    assert sha((target / "pooled_features.npz").read_bytes()) == encoder["npz_sha256"]
+    assert sha(archive_member(target, "pooled_features.npz").read_bytes()) == encoder["npz_sha256"]
     assert sum(row["model_forward_calls"] for row in encoder["receipts"]) == 24
     assert sum(row["batch_size"] for row in encoder["receipts"]) == 192
     cases = {case.query.query_id: case for case in make_cases()}
-    files = [target / "replay_attempts.jsonl.gz", target / "bm25_evaluation.jsonl.gz"]
-    files += [target / f"{arm}-{policy}.jsonl.gz" for arm in result["arms"]
+    files = [archive_member(target, "replay_attempts.jsonl.gz"),
+             archive_member(target, "bm25_evaluation.jsonl.gz")]
+    files += [archive_member(target, f"{arm}-{policy}.jsonl.gz") for arm in result["arms"]
               for policy in ("forced", "confidence_0.7")]
     totals, summaries = Counter(), {}
     for path in files:
-        rows = read_rows(path)
+        rows = read_rows(archive_member(target, path.name))
         observed = Counter()
         groups = defaultdict(Counter)
         keys = set()
@@ -106,7 +139,7 @@ def verify(target, expected_plan_sha256):
             assert all(row["use_rejected"] for row in report["withdrawal"])
             assert [row["actual_head_module_calls"] for row in report["withdrawal"]] == [0, 0, 0, 1]
     return {"schema": "hepta.procedure-replay-archive-audit.v1", "status": "passed",
-        "plan_sha256": expected_plan_sha256, "result_sha256": sha((target / "result.json").read_bytes()),
+        "plan_sha256": expected_plan_sha256, "result_sha256": sha(archive_member(target, "result.json").read_bytes()),
         "auditor_sha256": sha(Path(__file__).read_bytes()), "inventory_files_verified": len(inventory),
         "source_closure_members_verified": len(snapshot), "totals": dict(totals), "files": summaries,
         "fresh_selector_encoder_or_procedure_executions": 0,
