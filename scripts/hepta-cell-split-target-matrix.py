@@ -454,7 +454,6 @@ def assert_exact_source_checkout(repo_root: Path, source_commit: str) -> None:
         raise ValueError("measured repository checkout is dirty")
 
 
-
 def _check_report_output_target(output: Path, workload_path: Path | None) -> None:
     """Reject report paths that could overwrite frozen source evidence."""
     if output.is_symlink():

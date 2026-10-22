@@ -197,7 +197,6 @@ def test_isolated_process_preserves_both_small_output_streams() -> None:
     assert output.stderr.strip() == "diagnostic"
 
 
-
 @pytest.mark.parametrize("alias", ("identical", "symlink", "hardlink"))
 def test_matrix_report_output_never_overwrites_frozen_workload(
     tmp_path: Path, alias: str
