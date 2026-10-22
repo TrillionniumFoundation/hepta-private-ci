@@ -21,7 +21,8 @@ pub enum EncodedRequestTerminal {
 /// authentication. Authentication retains its replacement contract on ordinary
 /// unobserved calls. Observation is not final-payload authorization or proof of
 /// any loaded model, and installing an observer requires an admitted Core policy
-/// attempt; no production caller currently installs one.
+/// attempt. Core can install an attempt-local observer for an explicitly
+/// required policy lease; ordinary embeddings leave that capability absent.
 pub trait EncodedRequestBodyObserver: Send + Sync + std::fmt::Debug {
     fn observe_encoded_body<'a>(&'a self, body: &'a [u8]) -> BoxFuture<'a, Result<(), String>>;
 

@@ -6,7 +6,7 @@ async fn encoded_request_rejects_sqlite_dynamic_type_substitution() {
     let store = HeptaEvidenceStore::open(&sqlite_config(&temp))
         .await
         .expect("open");
-    let intent = intent(118);
+    let intent = intent(/*nonce*/ 118);
     store.claim_provider_intent(&intent).await.expect("claim");
     let digest = Sha256Digest::for_bytes(b"complete encoded body");
     let invalid_length = 1.5_f64;
@@ -37,11 +37,11 @@ async fn encoded_request_requires_exact_pending_intent_valid_length_and_immutabl
     let store = HeptaEvidenceStore::open(&sqlite_config(&temp))
         .await
         .expect("open");
-    let intent = intent(117);
+    let intent = intent(/*nonce*/ 117);
     let digest = Sha256Digest::for_bytes(b"complete encoded body");
     assert!(
         store
-            .bind_provider_encoded_request_v1(&intent, &digest, 21)
+            .bind_provider_encoded_request_v1(&intent, &digest, /*bytes*/ 21)
             .await
             .is_err()
     );
@@ -58,27 +58,31 @@ async fn encoded_request_requires_exact_pending_intent_valid_length_and_immutabl
     wrong.binding.turn_id = "wrong-turn".into();
     assert!(
         store
-            .bind_provider_encoded_request_v1(&wrong, &digest, 21)
+            .bind_provider_encoded_request_v1(&wrong, &digest, /*bytes*/ 21)
             .await
             .is_err()
     );
     assert_eq!(
         store
-            .bind_provider_encoded_request_v1(&intent, &digest, 21)
+            .bind_provider_encoded_request_v1(&intent, &digest, /*bytes*/ 21)
             .await
             .expect("bind"),
         AppendDisposition::Inserted
     );
     assert_eq!(
         store
-            .bind_provider_encoded_request_v1(&intent, &digest, 21)
+            .bind_provider_encoded_request_v1(&intent, &digest, /*bytes*/ 21)
             .await
             .expect("exact replay"),
         AppendDisposition::AlreadyPresent
     );
     assert!(
         store
-            .bind_provider_encoded_request_v1(&intent, &Sha256Digest::for_bytes(b"changed"), 21)
+            .bind_provider_encoded_request_v1(
+                &intent,
+                &Sha256Digest::for_bytes(b"changed"),
+                /*bytes*/ 21
+            )
             .await
             .is_err()
     );
@@ -99,7 +103,7 @@ async fn encoded_request_requires_exact_pending_intent_valid_length_and_immutabl
         .expect("terminal");
     assert!(
         store
-            .bind_provider_encoded_request_v1(&intent, &digest, 21)
+            .bind_provider_encoded_request_v1(&intent, &digest, /*bytes*/ 21)
             .await
             .is_err()
     );

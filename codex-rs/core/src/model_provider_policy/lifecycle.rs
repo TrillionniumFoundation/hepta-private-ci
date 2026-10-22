@@ -5,6 +5,7 @@ use codex_extension_api::ModelProviderInvocationInput;
 use codex_extension_api::ModelProviderPolicyDecision;
 use codex_extension_api::ModelProviderPolicyError;
 use codex_extension_api::ModelProviderPolicyFuture;
+use codex_extension_api::ModelProviderSha256Digest;
 use codex_extension_api::ModelProviderTerminal;
 use std::sync::Arc;
 use tokio::sync::mpsc;
@@ -86,10 +87,12 @@ pub(crate) async fn begin_active_model_provider_policy(
 ) -> Result<ModelProviderPolicyBegin, ModelProviderPolicyError> {
     let supervisor = LeaseSupervisor::new();
     let mut lease_count = 0usize;
+    let mut encoded_body_required = false;
 
     for contributor in active.contributors {
         match contributor.begin(copy_input(&input)).await {
             Ok(ModelProviderPolicyDecision::Allow { lease }) => {
+                encoded_body_required |= lease.encoded_body_required();
                 supervisor.add(lease)?;
                 lease_count += 1;
             }
@@ -151,16 +154,39 @@ pub(crate) async fn begin_active_model_provider_policy(
         Ok(ModelProviderPolicyBegin::NoPolicy)
     } else {
         Ok(ModelProviderPolicyBegin::Allow {
-            lease: Box::new(CompositeModelProviderAttemptLease { supervisor }),
+            lease: Box::new(CompositeModelProviderAttemptLease {
+                supervisor,
+                encoded_body_required,
+            }),
         })
     }
 }
 
 struct CompositeModelProviderAttemptLease {
     supervisor: LeaseSupervisor,
+    encoded_body_required: bool,
 }
 
 impl ModelProviderAttemptLease for CompositeModelProviderAttemptLease {
+    fn encoded_body_required(&self) -> bool {
+        self.encoded_body_required
+    }
+
+    fn bind_encoded_body_v1<'a>(
+        &'a mut self,
+        digest: ModelProviderSha256Digest,
+        bytes: u64,
+    ) -> ModelProviderPolicyFuture<'a, ()> {
+        if !self.encoded_body_required {
+            return Box::pin(async {
+                Err(ModelProviderPolicyError::new(
+                    "model_provider_encoded_body_unsupported",
+                    "composite has no enforcing body lease",
+                ))
+            });
+        }
+        Box::pin(self.supervisor.bind(digest, bytes))
+    }
     fn finish(
         self: Box<Self>,
         terminal: ModelProviderTerminal,
@@ -195,6 +221,32 @@ impl LeaseSupervisor {
         })
     }
 
+    async fn bind(
+        &self,
+        digest: ModelProviderSha256Digest,
+        bytes: u64,
+    ) -> Result<(), ModelProviderPolicyError> {
+        let (acknowledge, acknowledged) = oneshot::channel();
+        self.commands
+            .send(LeaseCommand::Bind {
+                digest,
+                bytes,
+                acknowledge,
+            })
+            .map_err(|_| {
+                ModelProviderPolicyError::new(
+                    "model_provider_policy_binding_stopped",
+                    "binding supervisor stopped",
+                )
+            })?;
+        acknowledged.await.map_err(|_| {
+            ModelProviderPolicyError::new(
+                "model_provider_policy_binding_stopped",
+                "binding supervisor dropped acknowledgement",
+            )
+        })?
+    }
+
     async fn finish(
         self,
         terminal: ModelProviderTerminal,
@@ -224,6 +276,11 @@ impl LeaseSupervisor {
 
 enum LeaseCommand {
     Add(Box<dyn ModelProviderAttemptLease>),
+    Bind {
+        digest: ModelProviderSha256Digest,
+        bytes: u64,
+        acknowledge: oneshot::Sender<Result<(), ModelProviderPolicyError>>,
+    },
     Finish {
         terminal: ModelProviderTerminal,
         aggregate_reason_code: &'static str,
@@ -236,6 +293,22 @@ async fn run_lease_supervisor(mut commands: mpsc::UnboundedReceiver<LeaseCommand
     while let Some(command) = commands.recv().await {
         match command {
             LeaseCommand::Add(lease) => leases.push(lease),
+            LeaseCommand::Bind {
+                digest,
+                bytes,
+                acknowledge,
+            } => {
+                let mut result = Ok(());
+                for lease in &mut leases {
+                    if lease.encoded_body_required()
+                        && let Err(error) = lease.bind_encoded_body_v1(digest.clone(), bytes).await
+                    {
+                        result = Err(error);
+                        break;
+                    }
+                }
+                let _ = acknowledge.send(result);
+            }
             LeaseCommand::Finish {
                 terminal,
                 aggregate_reason_code,

@@ -169,19 +169,25 @@ after encoding/compression and rejects authentication changes to actual wire
 bytes, method, URL, compression, framing or timeout before transport invocation.
 Rejection leaves the dispatch witness unset. Ordinary unobserved requests retain
 the authentication provider's replacement contract. An observed call cannot use
-implicit transport retries. The existing encoded-body observer has no production
-caller; this integrity guard neither installs it nor authorizes a compiled body.
+implicit transport retries. Required provider leases now install an attempt-local
+encoded-body observer through their original supervisor and terminal owner.
 App Server remains the sole model-call spine. A real fixed HF provider, same-run
 late owner binding, selected-weight/CURRENT checks and actual loaded-attempt
 readback still require integration. Outer resource closure remains UNKNOWN for
-this slice; transport controls are not model execution or I10 evidence.
+this slice; request controls are not model execution or I10 evidence.
 
 The original provider lease and EvidenceStore now expose an opt-in digest-only
 encoded-body binding component, under `provider_encoded_requests_v1` and the
 same immutable attempt key. Missing or unavailable required hosts refuse binding;
 an unbound completion settles the original attempt as Indeterminate and returns
-an error. Host callbacks alone prove no loaded model or CURRENT selection. Core
-supervisor/actual caller wiring is still pending in this component commit.
+an error. The App Server embedding must explicitly require and supply its host;
+ordinary runtimes leave this off. Only HTTP turns are supported. A pre-send
+refusal is fatal after the same attempt is settled, preventing implicit retry.
+Observers retain weak owner references, so cancellation settles the original
+operation using its actual transport witness. This hook adds no retry or release
+path; it does not replace existing sent-error handling with model reconciliation.
+Host callbacks alone prove no loaded model, CURRENT selection or a FinalUse
+permit held across dispatch. No embedding currently supplies a real HF backend.
 
 `IMPLEMENTATION_MAP.sourceBase` is historical provenance only. Exact candidate identity is derived from the checked-out Git candidate by `scripts/hepta-lane-b-truth.py verify`, which emits `exactHead` and `exactTree`; the map records this verifier-derived provenance contract instead of attempting to hard-code its own self-referential commit/tree.
 

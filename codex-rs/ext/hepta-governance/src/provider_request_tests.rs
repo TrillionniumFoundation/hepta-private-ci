@@ -1,5 +1,60 @@
 use super::*;
 
+#[tokio::test]
+async fn required_encoded_request_rejects_unsupported_kind_and_transport_before_claim() {
+    let temp = TempDir::new().expect("temp");
+    let evidence = evidence(&temp).await;
+    let mut state = GovernanceState::enabled(GovernanceMode::Enforce, Ok(evidence.clone()));
+    state.provider_request_required = true;
+    state.provider_request_host =
+        Some(crate::ProviderRequestEnforcementHost::from_fn(|_, _, _| {
+            Box::pin(async { Ok(()) })
+        }));
+    let (session, thread, turn) = stores();
+    let digests = digests(b"endpoint");
+    for (kind, transport) in [
+        (
+            ModelProviderRequestKind::Turn,
+            ModelProviderTransport::WebSocket,
+        ),
+        (
+            ModelProviderRequestKind::Compaction,
+            ModelProviderTransport::Http,
+        ),
+        (
+            ModelProviderRequestKind::Memory,
+            ModelProviderTransport::Http,
+        ),
+        (
+            ModelProviderRequestKind::Prewarm,
+            ModelProviderTransport::Http,
+        ),
+    ] {
+        let mut invocation = input(
+            &session,
+            &thread,
+            &turn,
+            "unsupported",
+            "unsupported",
+            &digests,
+        );
+        invocation.request_kind = kind;
+        invocation.transport = transport;
+        assert!(
+            matches!(state.begin_provider(invocation).await.expect("decision"),
+            ModelProviderPolicyDecision::Block { ref reason_code, .. }
+            if reason_code == "hepta_provider_request_scope_unsupported")
+        );
+    }
+    assert_eq!(
+        evidence
+            .pending_provider_attempt_count()
+            .await
+            .expect("pending"),
+        0
+    );
+}
+
 async fn required_lease(
     host: crate::ProviderRequestEnforcementHost,
 ) -> (
@@ -34,34 +89,36 @@ async fn required_lease(
 
 #[tokio::test]
 async fn required_encoded_request_rejects_missing_host_without_shadow_fallback() {
-    let temp = TempDir::new().expect("temp dir");
-    let evidence = evidence(&temp).await;
-    let mut state = GovernanceState::enabled(GovernanceMode::Shadow, Ok(evidence.clone()));
-    state.provider_request_required = true;
-    let (session, thread, turn) = stores();
-    let digests = digests(b"endpoint");
-    let decision = state
-        .begin_provider(input(
-            &session,
-            &thread,
-            &turn,
-            "missing-host",
-            "missing-host-binding",
-            &digests,
-        ))
-        .await
-        .expect("typed decision");
-    assert!(
-        matches!(decision, ModelProviderPolicyDecision::Block { ref reason_code, .. }
-        if reason_code == "hepta_provider_request_host_required")
-    );
-    assert_eq!(
-        evidence
-            .pending_provider_attempt_count()
+    for mode in [GovernanceMode::Shadow, GovernanceMode::Enforce] {
+        let temp = TempDir::new().expect("temp dir");
+        let evidence = evidence(&temp).await;
+        let mut state = GovernanceState::enabled(mode, Ok(evidence.clone()));
+        state.provider_request_required = true;
+        let (session, thread, turn) = stores();
+        let digests = digests(b"endpoint");
+        let decision = state
+            .begin_provider(input(
+                &session,
+                &thread,
+                &turn,
+                "missing-host",
+                "missing-host-binding",
+                &digests,
+            ))
             .await
-            .expect("pending"),
-        0
-    );
+            .expect("typed decision");
+        assert!(
+            matches!(decision, ModelProviderPolicyDecision::Block { ref reason_code, .. }
+        if reason_code == "hepta_provider_request_host_required")
+        );
+        assert_eq!(
+            evidence
+                .pending_provider_attempt_count()
+                .await
+                .expect("pending"),
+            0
+        );
+    }
 }
 
 #[tokio::test]

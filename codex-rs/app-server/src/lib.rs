@@ -566,6 +566,10 @@ pub struct AppServerRuntimeOptions {
     /// this absent; only an embedding that already owns an exercise-bound
     /// attachment may install the runtime.codex delivery bridge.
     pub hepta_prompt_runtime_host: Option<codex_hepta_prompt_extension::PromptRuntimeHost>,
+    /// Explicit embedding-only Enforce profile. Missing host blocks provider sends.
+    pub hepta_provider_request_enforcement_required: bool,
+    pub hepta_provider_request_enforcement_host:
+        Option<codex_hepta_governance::ProviderRequestEnforcementHost>,
     /// Embedding-owned feature states applied after ordinary config layers
     /// and per-request overrides. Empty for ordinary Codex runtimes; a local
     /// embedding can use this to keep a capability boundary fail-closed.
@@ -615,6 +619,14 @@ impl std::fmt::Debug for AppServerRuntimeOptions {
                 &self.hepta_qualification_turn_writer,
             )
             .field("hepta_prompt_runtime_host", &self.hepta_prompt_runtime_host)
+            .field(
+                "hepta_provider_request_enforcement_required",
+                &self.hepta_provider_request_enforcement_required,
+            )
+            .field(
+                "hepta_provider_request_enforcement_host",
+                &self.hepta_provider_request_enforcement_host,
+            )
             .field("required_feature_states", &self.required_feature_states)
             .finish()
     }
@@ -652,6 +664,10 @@ impl PartialEq for AppServerRuntimeOptions {
                 == other.hepta_qualification_turn_writer_enabled
             && self.hepta_qualification_turn_writer == other.hepta_qualification_turn_writer
             && self.hepta_prompt_runtime_host == other.hepta_prompt_runtime_host
+            && self.hepta_provider_request_enforcement_required
+                == other.hepta_provider_request_enforcement_required
+            && self.hepta_provider_request_enforcement_host
+                == other.hepta_provider_request_enforcement_host
             && self.required_feature_states == other.required_feature_states
     }
 }
@@ -676,6 +692,8 @@ impl Default for AppServerRuntimeOptions {
             hepta_qualification_turn_writer_enabled: false,
             hepta_qualification_turn_writer: None,
             hepta_prompt_runtime_host: None,
+            hepta_provider_request_enforcement_required: false,
+            hepta_provider_request_enforcement_host: None,
             required_feature_states: BTreeMap::new(),
         }
     }
@@ -1180,6 +1198,10 @@ pub async fn run_main_with_transport_options(
                     .hepta_qualification_turn_writer_enabled,
                 qualification_turn_writer: runtime_options.hepta_qualification_turn_writer,
                 prompt_runtime_host: runtime_options.hepta_prompt_runtime_host,
+                provider_request_enforcement_required: runtime_options
+                    .hepta_provider_request_enforcement_required,
+                provider_request_enforcement_host: runtime_options
+                    .hepta_provider_request_enforcement_host,
             },
         }));
         let mut thread_created_rx = processor.thread_created_receiver();

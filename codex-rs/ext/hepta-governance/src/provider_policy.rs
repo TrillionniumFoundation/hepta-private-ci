@@ -35,11 +35,12 @@ impl GovernanceState {
             ));
         }
         if self.provider_request_required
-            && input.transport != codex_extension_api::ModelProviderTransport::Http
+            && (input.transport != codex_extension_api::ModelProviderTransport::Http
+                || input.request_kind != codex_extension_api::ModelProviderRequestKind::Turn)
         {
             return Ok(provider_block(
-                "hepta_provider_request_transport_unsupported",
-                "encoded request enforcement requires HTTP",
+                "hepta_provider_request_scope_unsupported",
+                "encoded request enforcement requires an HTTP turn",
             ));
         }
         match (

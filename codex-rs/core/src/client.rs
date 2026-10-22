@@ -2149,6 +2149,12 @@ impl ModelClientSession {
 
             let stream_result = match admitted_provider_attempt.as_ref() {
                 Some(attempt) => {
+                    if let Some(observer) = attempt
+                        .owner
+                        .encoded_observer(options.encoded_body_observer.clone())
+                    {
+                        options.encoded_body_observer = Some(observer);
+                    }
                     client
                         .stream_request_single_attempt(
                             request,
@@ -2159,6 +2165,19 @@ impl ModelClientSession {
                 }
                 None => client.stream_request(request, options).await,
             };
+            if stream_result.is_err()
+                && admitted_provider_attempt.as_ref().is_some_and(|attempt| {
+                    attempt.owner.encoded_body_required() && !attempt.dispatch.transport_invoked()
+                })
+                && let Some(attempt) = admitted_provider_attempt.take()
+            {
+                attempt
+                    .finish_immediate(/*http_status*/ None, "http")
+                    .await?;
+                return Err(CodexErr::Fatal(
+                    "required encoded provider request was not dispatched".into(),
+                ));
+            }
             let governed_memory_attempt = admitted_provider_attempt.is_some()
                 && provider_policy_context.is_some_and(|context| {
                     context.request_kind == ModelProviderRequestKind::Memory
