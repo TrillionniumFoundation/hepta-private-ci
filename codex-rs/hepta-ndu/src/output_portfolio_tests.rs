@@ -427,7 +427,10 @@ fn fractionally_admits_a_direction_to_honor_semantic_risk_budget() {
         ],
     )
     .expect("bounded fractional risk allocation");
-    assert_eq!(receipt.disposition, OutputPortfolioDispositionV1::AdvisorySelection);
+    assert_eq!(
+        receipt.disposition,
+        OutputPortfolioDispositionV1::AdvisorySelection
+    );
     assert!(receipt.total_risk <= limits.risk_budget);
     let active = receipt
         .allocations
@@ -442,7 +445,10 @@ fn fractionally_admits_a_direction_to_honor_semantic_risk_budget() {
     assert!(active.weight >= q(39));
     assert!(active.weight <= q(40));
     assert_eq!(
-        active.weight.checked_add(abstain.weight).expect("weights sum"),
+        active
+            .weight
+            .checked_add(abstain.weight)
+            .expect("weights sum"),
         FixedQ32::ONE
     );
 }
@@ -455,7 +461,10 @@ fn fractionally_admits_a_direction_to_honor_resource_and_latency_budgets() {
     let receipt = select_output_portfolio_v1(
         &context(2),
         &limits,
-        &[candidate("baseline", 0, 0, true), candidate("bounded", 80, 0, false)],
+        &[
+            candidate("baseline", 0, 0, true),
+            candidate("bounded", 80, 0, false),
+        ],
     )
     .expect("bounded fractional resource allocation");
     assert!(receipt.total_resource <= limits.resource_budget);
@@ -479,7 +488,10 @@ fn covariance_risk_budget_bounds_fractional_weight() {
     let receipt = select_output_portfolio_v1(
         &correlated,
         &limits,
-        &[candidate("baseline", 0, 0, true), candidate("variance", 80, 0, false)],
+        &[
+            candidate("baseline", 0, 0, true),
+            candidate("variance", 80, 0, false),
+        ],
     )
     .expect("PSD risk-bounded selection");
     assert!(receipt.total_risk <= limits.risk_budget);
@@ -499,7 +511,10 @@ fn hard_slot_and_atomic_protocol_constraints_survive_fractional_optimization() {
     let receipt = select_output_portfolio_v1(
         &context(2),
         &limits,
-        &[candidate("baseline", 0, 0, true), candidate("partial", 80, 0, false)],
+        &[
+            candidate("baseline", 0, 0, true),
+            candidate("partial", 80, 0, false),
+        ],
     )
     .expect("no hidden slot for residual baseline");
     assert_eq!(receipt.disposition, OutputPortfolioDispositionV1::NoChange);
@@ -551,9 +566,11 @@ fn hard_semantic_risk_budget_is_independent_of_pricing() {
         // 10% hard risk / 50% candidate risk caps weight at about 20%.
         assert!(active.weight >= q(19));
         assert!(active.weight <= q(21));
-        assert!(receipt.allocations.iter().any(|item| {
-            item.candidate_id == id("baseline") && item.weight > FixedQ32::ZERO
-        }));
+        assert!(
+            receipt.allocations.iter().any(|item| {
+                item.candidate_id == id("baseline") && item.weight > FixedQ32::ZERO
+            })
+        );
     }
 }
 
