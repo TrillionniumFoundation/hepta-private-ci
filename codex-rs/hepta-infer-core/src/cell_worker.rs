@@ -208,6 +208,11 @@ pub struct SharedWorkerBatchV1 {
 
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct GroupCommitMetricsV1 {
+    /// Work dequeued and grouped, but not yet durably committed.
+    pub groups_prepared: u64,
+    pub activations_prepared: u64,
+    /// Only a verified durable writer may advance these counters. The V1
+    /// scheduling primitive has no persistence owner and leaves them at zero.
     pub groups_committed: u64,
     pub activations_committed: u64,
     pub dropped_requests: u64,
@@ -230,6 +235,8 @@ impl SharedWorkerPoolV1 {
             queue: FairCellQueueV1::new(maximum_queue).map_err(CellWorkerError::Queue)?,
             maximum_batch,
             metrics: GroupCommitMetricsV1 {
+                groups_prepared: 0,
+                activations_prepared: 0,
                 groups_committed: 0,
                 activations_committed: 0,
                 dropped_requests: 0,
@@ -246,13 +253,15 @@ impl SharedWorkerPoolV1 {
     }
 
     pub fn drain(&mut self) -> SharedWorkerBatchV1 {
-        let requests = self.queue.drain_batch(self.maximum_batch);
+        let requests = self.queue.drain_batch_same_generation(self.maximum_batch);
         let group_digest = digest_batch(&requests);
         if !requests.is_empty() {
-            self.metrics.groups_committed = self.metrics.groups_committed.saturating_add(1);
-            self.metrics.activations_committed = self
+            // Draining schedules a batch; it does not verify model execution or
+            // commit any durable receipt. Do not manufacture commit metrics here.
+            self.metrics.groups_prepared = self.metrics.groups_prepared.saturating_add(1);
+            self.metrics.activations_prepared = self
                 .metrics
-                .activations_committed
+                .activations_prepared
                 .saturating_add(requests.len() as u64);
         }
         SharedWorkerBatchV1 {

@@ -71,9 +71,22 @@ fn shared_pool_reports_group_and_drop_metrics() {
     );
     let batch = pool.drain();
     assert_eq!(batch.requests.len(), 1);
-    assert_eq!(pool.metrics().groups_committed, 1);
-    assert_eq!(pool.metrics().activations_committed, 1);
+    assert_eq!(pool.metrics().groups_prepared, 1);
+    assert_eq!(pool.metrics().activations_prepared, 1);
+    assert_eq!(pool.metrics().groups_committed, 0);
+    assert_eq!(pool.metrics().activations_committed, 0);
     assert_eq!(pool.metrics().dropped_requests, 1);
+
+    // Empty drains and additional unexecuted work must never fabricate a
+    // durable group-commit receipt, even if the work was grouped successfully.
+    assert!(pool.drain().requests.is_empty());
+    assert_eq!(pool.metrics().groups_prepared, 1);
+    pool.submit(request(3, "scope:b")).expect("second submit");
+    assert_eq!(pool.drain().requests.len(), 1);
+    assert_eq!(pool.metrics().groups_prepared, 2);
+    assert_eq!(pool.metrics().activations_prepared, 2);
+    assert_eq!(pool.metrics().groups_committed, 0);
+    assert_eq!(pool.metrics().activations_committed, 0);
 }
 
 #[test]
@@ -176,4 +189,46 @@ fn retired_model_and_cell_eviction_are_idempotent() {
     assert_eq!(index.lookup(&new_key), vec![id("cell:d")]);
     assert_eq!(index.entry_count, 1);
     assert_eq!(index.entries.len(), 1);
+}
+
+#[test]
+fn shared_worker_does_not_mix_generations_or_skip_deferred_scope_heads() {
+    let mut pool = SharedWorkerPoolV1::new(5, 4).expect("pool");
+    let mut b1 = request(2, "scope:b");
+    b1.feature_generation = generation(2);
+    let mut a2 = request(4, "scope:a");
+    a2.feature_generation = generation(2);
+    let mut b2 = request(5, "scope:b");
+    b2.feature_generation = generation(2);
+
+    pool.submit(request(1, "scope:a")).expect("first generation");
+    pool.submit(b1).expect("other generation");
+    pool.submit(request(3, "scope:c")).expect("compatible scope");
+    pool.submit(a2).expect("successor within same scope");
+    pool.submit(b2).expect("successor within deferred scope");
+
+    let first = pool.drain();
+    assert_eq!(
+        first.requests.iter().map(|r| r.request_id.as_str()).collect::<Vec<_>>(),
+        vec!["request:1", "request:3"],
+    );
+    assert!(first
+        .requests
+        .iter()
+        .all(|r| r.feature_generation == generation(1)));
+
+    let second = pool.drain();
+    assert_eq!(second.requests.len(), 3);
+    assert!(second
+        .requests
+        .iter()
+        .all(|r| r.feature_generation == generation(2)));
+    assert!(pool.drain().requests.is_empty());
+
+    // An empty drain and deferred incompatible heads are not dropped.
+    assert_eq!(pool.metrics().groups_prepared, 2);
+    assert_eq!(pool.metrics().activations_prepared, 5);
+    assert_eq!(pool.metrics().groups_committed, 0);
+    assert_eq!(pool.metrics().activations_committed, 0);
+    assert_eq!(pool.metrics().dropped_requests, 0);
 }
