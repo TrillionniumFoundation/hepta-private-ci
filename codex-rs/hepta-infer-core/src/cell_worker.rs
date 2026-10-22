@@ -111,8 +111,30 @@ impl FeatureCacheV1 {
             if existing.generation() == snapshot.generation() && existing != &snapshot {
                 return Err(CellWorkerError::FeatureSnapshotConflict);
             }
-        } else if self.entries.len() >= MAX_INDEX_ENTRIES {
+        }
+        // Advancing a scope makes all its older feature snapshots unreadable.
+        // Reclaim their slots at admission, not only on explicit cutovers:
+        // otherwise repeated encoder/input rotations exhaust the bounded cache.
+        let advances_scope = self
+            .scope_high_watermarks
+            .get(&scope_id)
+            .is_some_and(|previous| previous.get() < generation.get());
+        // Capacity validation must happen before touching entries or fences.
+        // A full cache may reuse retired keys within this scope, but must not
+        // evict another scope's live features to admit a new key.
+        if !self.entries.contains_key(&key)
+            && self.entries.len() >= MAX_INDEX_ENTRIES
+            && !(advances_scope
+                && self.entries.iter().any(|(cached_key, cached)| {
+                    cached_key.scope_id == scope_id && cached.generation().get() < generation.get()
+                }))
+        {
             return Err(CellWorkerError::IndexCapacity);
+        }
+        if advances_scope {
+            self.entries.retain(|cached_key, cached| {
+                cached_key.scope_id != scope_id || cached.generation() == generation
+            });
         }
         self.entries.insert(key, snapshot);
         self.scope_high_watermarks.insert(scope_id, generation);
