@@ -37,6 +37,15 @@ other = { package = "codex_tools", version = "1" }
         for package in ("codex-core", "codex-app-server-client", "codex_tools"):
             self.assertTrue(any(package in value for value in errors), errors)
 
+    def test_hepta_effect_owner_and_nonpure_codex_utils_are_forbidden(self):
+        data = self.make_manifest('''
+[dependencies]
+codex-hepta-agentd = { workspace = true }
+codex-utils-pty = { workspace = true }
+''')
+        errors = checker.check_manifest(data, "hepta-neuron")
+        self.assertEqual(len(errors), 2)
+
     def test_target_dev_and_build_tables_cannot_bypass_gate(self):
         data = self.make_manifest('''
 [target.'cfg(windows)'.dependencies]
