@@ -787,3 +787,125 @@ fn positive_individual_scores_cannot_hide_negative_correlation_gain() {
         .any(|item| item.candidate_id == id("baseline")));
     assert!(receipt.total_utility > receipt.total_risk);
 }
+
+#[test]
+fn receipt_integrity_replay_rejects_tampered_fields() {
+    let source = [
+        candidate("baseline", 0, 0, true),
+        candidate("direction", 80, 1, false),
+    ];
+    let state = context(source.len());
+    let limits = budget(2);
+    let receipt = select_output_portfolio_v1(&state, &limits, &source)
+        .expect("deterministic advisory receipt");
+    assert_eq!(
+        receipt.disposition,
+        OutputPortfolioDispositionV1::AdvisorySelection
+    );
+    verify_output_portfolio_receipt_v1(&state, &limits, &source, &receipt)
+        .expect("untampered receipt must replay exactly");
+
+    let mut tampered_resource = receipt.clone();
+    tampered_resource.total_resource = FixedQ32::ZERO;
+    let mut tampered_latency = receipt.clone();
+    tampered_latency.total_latency = FixedQ32::ZERO;
+    let mut tampered_disposition = receipt.clone();
+    tampered_disposition.disposition = OutputPortfolioDispositionV1::NoChange;
+    let mut tampered_frontier = receipt.clone();
+    tampered_frontier.frontier.clear();
+    let mut tampered_allocation = receipt.clone();
+    tampered_allocation.allocations[0].weight = FixedQ32::ZERO;
+    let mut tampered_digest = receipt.clone();
+    tampered_digest.selection_digest = Digest32::ZERO;
+
+    for forged in [
+        tampered_resource,
+        tampered_latency,
+        tampered_disposition,
+        tampered_frontier,
+        tampered_allocation,
+        tampered_digest,
+    ] {
+        assert_eq!(
+            verify_output_portfolio_receipt_v1(&state, &limits, &source, &forged)
+                .expect_err("a forged advisory receipt must fail closed"),
+            NduError::InvalidSolverReceipt("portfolio receipt replay mismatch")
+        );
+    }
+}
+
+#[test]
+fn selection_digest_binds_every_displayed_advisory_component() {
+    let source = [
+        candidate("baseline", 0, 0, true),
+        candidate("direction", 80, 1, false),
+    ];
+    let state = context(source.len());
+    let limits = budget(2);
+    let receipt = select_output_portfolio_v1(&state, &limits, &source)
+        .expect("deterministic advisory receipt");
+    let canonical = canonical_candidates(&state, &source).expect("canonical candidates");
+    let covariance =
+        canonical_covariance(&state, &source, &canonical).expect("canonical covariance");
+    let fingerprint = |disposition: OutputPortfolioDispositionV1,
+                       frontier: &[OutputPortfolioFrontierPointV1],
+                       resource: FixedQ32,
+                       latency: FixedQ32| {
+        digest_selection(
+            &state,
+            &limits,
+            &canonical,
+            &covariance,
+            &receipt.allocations,
+            disposition,
+            frontier,
+            receipt.total_risk,
+            receipt.total_utility,
+            resource,
+            latency,
+        )
+    };
+    let original = fingerprint(
+        receipt.disposition,
+        &receipt.frontier,
+        receipt.total_resource,
+        receipt.total_latency,
+    );
+    assert_eq!(original, receipt.selection_digest);
+    assert_ne!(
+        original,
+        fingerprint(
+            OutputPortfolioDispositionV1::NoChange,
+            &receipt.frontier,
+            receipt.total_resource,
+            receipt.total_latency,
+        )
+    );
+    assert_ne!(
+        original,
+        fingerprint(
+            receipt.disposition,
+            &[],
+            receipt.total_resource,
+            receipt.total_latency,
+        )
+    );
+    assert_ne!(
+        original,
+        fingerprint(
+            receipt.disposition,
+            &receipt.frontier,
+            FixedQ32::ZERO,
+            receipt.total_latency,
+        )
+    );
+    assert_ne!(
+        original,
+        fingerprint(
+            receipt.disposition,
+            &receipt.frontier,
+            receipt.total_resource,
+            FixedQ32::ZERO,
+        )
+    );
+}
