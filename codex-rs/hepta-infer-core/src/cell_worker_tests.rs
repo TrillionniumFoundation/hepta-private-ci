@@ -88,6 +88,39 @@ fn compatible_model_index_is_stable() {
 }
 
 #[test]
+fn worker_microbatch_limit_matches_immutable_feature_batch() {
+    assert_eq!(
+        SharedWorkerPoolV1::new(16_384, MAX_BATCH_ITEMS + 1),
+        Err(CellWorkerError::BatchCapacity),
+        "one worker dispatch must not exceed bounded shared-Encoder feature batches",
+    );
+    assert_eq!(
+        SharedWorkerPoolV1::new(16_384, usize::MAX),
+        Err(CellWorkerError::BatchCapacity),
+    );
+    assert_eq!(
+        SharedWorkerPoolV1::new(1, 0),
+        Err(CellWorkerError::ZeroBatchSize),
+    );
+
+    let mut pool = SharedWorkerPoolV1::new(MAX_BATCH_ITEMS + 1, MAX_BATCH_ITEMS)
+        .expect("maximum admissible microbatch");
+    for number in 0..=MAX_BATCH_ITEMS {
+        pool.submit(request(
+            u64::try_from(number).expect("bounded request index"),
+            "scope:bounded",
+        ))
+        .expect("bounded queue admission");
+    }
+    assert_eq!(pool.drain().requests.len(), MAX_BATCH_ITEMS);
+    assert_eq!(pool.drain().requests.len(), 1);
+    assert_eq!(pool.metrics().groups_dequeued, 2);
+    assert_eq!(pool.metrics().activations_dequeued, 1025);
+    assert_eq!(pool.metrics().groups_committed, 0);
+    assert_eq!(pool.metrics().activations_committed, 0);
+}
+
+#[test]
 fn shared_pool_reports_group_and_drop_metrics() {
     let mut pool = SharedWorkerPoolV1::new(1, 1).expect("pool");
     pool.submit(request(1, "scope:a")).expect("submit");
@@ -97,9 +130,15 @@ fn shared_pool_reports_group_and_drop_metrics() {
     );
     let batch = pool.drain();
     assert_eq!(batch.requests.len(), 1);
-    assert_eq!(pool.metrics().groups_committed, 1);
-    assert_eq!(pool.metrics().activations_committed, 1);
+    assert_eq!(pool.metrics().groups_dequeued, 1);
+    assert_eq!(pool.metrics().activations_dequeued, 1);
+    assert_eq!(pool.metrics().groups_committed, 0);
+    assert_eq!(pool.metrics().activations_committed, 0);
     assert_eq!(pool.metrics().dropped_requests, 1);
+    // Repeated empty drains are not scheduling events or durable commits.
+    assert!(pool.drain().requests.is_empty());
+    assert_eq!(pool.metrics().groups_dequeued, 1);
+    assert_eq!(pool.metrics().groups_committed, 0);
 }
 
 #[test]
