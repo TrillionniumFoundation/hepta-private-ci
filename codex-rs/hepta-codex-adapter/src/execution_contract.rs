@@ -418,9 +418,22 @@ impl RuntimeReceiptV1 {
         // Rejected means the effect did not reach the runtime. It must never
         // carry a terminal observation and then claim retry-before-admission.
         if self.execution.status == ExecutionStatusV1::Rejected
-            && self.tool_outcome.terminal_observed
+            && (self.tool_outcome.terminal_observed
+                || self.tool_outcome.exit_code.is_some()
+                || self.tool_outcome.stdout_digest.is_some()
+                || self.tool_outcome.stderr_digest.is_some())
         {
+            // A retry-safe pre-admission rejection cannot carry any evidence
+            // that a tool started. Partial stdout/stderr is enough to make
+            // the effect ambiguous even without a terminal observation.
             return Err(ExecutionContractError::StatusOutcomeMismatch);
+        }
+        let retry_before_admission = self.execution.status == ExecutionStatusV1::Rejected
+            && self.execution.recovery == RecoveryDispositionV1::RetryBeforeAdmission;
+        if self.tool_outcome.retryable != retry_before_admission {
+            // Unknown, terminal and quarantined effects must never advertise
+            // retryability through an independent tool-outcome flag.
+            return Err(ExecutionContractError::StatusRecoveryMismatch);
         }
         // A nonzero native process exit is never a completed success. A
         // terminal success cannot separately request a retry of that effect.
