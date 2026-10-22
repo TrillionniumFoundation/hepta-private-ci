@@ -102,6 +102,7 @@ fn latest_settings_snapshot_wins() {
         active_permission_profile: Some(ActivePermissionProfile::new("dev")),
         runtime_cwd: None,
         runtime_workspace_roots: None,
+        runtime_permission_profile: None,
     };
     let history = vec![
         settings_item(
@@ -127,6 +128,7 @@ fn latest_turn_context_wins_over_earlier_settings_update() {
         active_permission_profile: Some(ActivePermissionProfile::read_only()),
         runtime_cwd: Some(cwd()),
         runtime_workspace_roots: Some(vec![workspace_root("turn-2-root")]),
+        runtime_permission_profile: Some(PermissionProfile::read_only()),
     };
     let history = vec![
         settings_item(
@@ -173,6 +175,7 @@ fn older_reviewer_is_used_when_latest_turn_context_omits_it() {
             active_permission_profile: None,
             runtime_cwd: Some(cwd()),
             runtime_workspace_roots: Some(vec![workspace_root("turn-2-root")]),
+            runtime_permission_profile: None,
         })
     );
 }
@@ -203,6 +206,7 @@ fn later_settings_snapshot_does_not_erase_turn_context_workspace_roots() {
             active_permission_profile: Some(ActivePermissionProfile::new("dev")),
             runtime_cwd: Some(cwd()),
             runtime_workspace_roots: Some(vec![persisted_root]),
+            runtime_permission_profile: None,
         })
     );
 }
@@ -255,5 +259,63 @@ fn turn_context_without_workspace_roots_restores_explicit_empty_list() {
             .expect("persisted settings")
             .runtime_workspace_roots,
         Some(Vec::new())
+    );
+}
+
+#[test]
+fn later_settings_do_not_rebind_old_roots_to_a_different_permission_policy() {
+    let persisted_root = workspace_root("persisted-root");
+    let mut history = vec![
+        turn_context_item(
+            "turn-1",
+            AskForApproval::Never,
+            Some(ApprovalsReviewer::User),
+            Some(ActivePermissionProfile::new("dev")),
+            Some(vec![persisted_root.clone()]),
+        ),
+        settings_item(
+            AskForApproval::OnRequest,
+            ApprovalsReviewer::User,
+            Some(ActivePermissionProfile::new("dev")),
+        ),
+    ];
+    let RolloutItem::EventMsg(EventMsg::ThreadSettingsApplied(event)) = &mut history[1] else {
+        panic!("expected settings snapshot");
+    };
+    event.thread_settings.permission_profile = PermissionProfile::Disabled;
+
+    assert_eq!(
+        latest_persisted_resume_settings(&history),
+        Some(PersistedResumeSettings {
+            approval_policy: AskForApproval::OnRequest,
+            approvals_reviewer: Some(ApprovalsReviewer::User),
+            active_permission_profile: Some(ActivePermissionProfile::new("dev")),
+            runtime_cwd: Some(cwd()),
+            runtime_workspace_roots: Some(vec![persisted_root]),
+            runtime_permission_profile: Some(PermissionProfile::read_only()),
+        })
+    );
+}
+
+#[test]
+fn legacy_named_turn_context_uses_its_authoritative_permission_projection() {
+    let mut item = turn_context_item(
+        "legacy-turn",
+        AskForApproval::Never,
+        Some(ApprovalsReviewer::User),
+        Some(ActivePermissionProfile::new("dev")),
+        /*workspace_roots*/ None,
+    );
+    let RolloutItem::TurnContext(context) = &mut item else {
+        panic!("expected turn context");
+    };
+    context.permission_profile = None;
+    context.sandbox_policy = SandboxPolicy::DangerFullAccess;
+
+    assert_eq!(
+        latest_persisted_resume_settings(&[item])
+            .expect("legacy named settings")
+            .runtime_permission_profile,
+        Some(PermissionProfile::Disabled)
     );
 }
