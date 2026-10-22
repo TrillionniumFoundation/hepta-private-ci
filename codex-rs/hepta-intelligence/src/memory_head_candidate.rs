@@ -258,3 +258,6 @@ fn check_binding(
     Ok(())
 }
 
+#[cfg(test)]
+#[path = "memory_head_candidate_tests.rs"]
+mod tests;
