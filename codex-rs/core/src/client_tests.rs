@@ -324,6 +324,10 @@ fn websocket_connection_identity_binds_provider_and_stable_handshake_semantics()
         },
         stream_idle_timeout: Duration::from_secs(5),
     };
+    let auth = super::snapshot_websocket_auth(&BearerAuthProvider::for_test(
+        Some("identity-test-token"),
+        Some("identity-test-account"),
+    ));
     let mut metadata_a = CodexResponsesMetadata::new(
         "installation-a".to_string(),
         "session-a".to_string(),
@@ -334,9 +338,13 @@ fn websocket_connection_identity_binds_provider_and_stable_handshake_semantics()
     metadata_a.request_kind = Some(CodexResponsesRequestKind::Turn);
     metadata_a.root_turn_id = Some("root-turn-a".to_string());
     metadata_a.turn_started_at_unix_ms = Some(1);
-    let identity_a =
-        WebsocketConnectionIdentity::from_provider(&provider, Some("feature-a"), &metadata_a)
-            .expect("identity a");
+    let identity_a = WebsocketConnectionIdentity::from_provider(
+        &provider,
+        &auth,
+        Some("feature-a"),
+        &metadata_a,
+    )
+    .expect("identity a");
 
     let mut prewarm_metadata = metadata_a.clone();
     prewarm_metadata.request_kind = Some(CodexResponsesRequestKind::Prewarm);
@@ -345,6 +353,7 @@ fn websocket_connection_identity_binds_provider_and_stable_handshake_semantics()
         identity_a,
         WebsocketConnectionIdentity::from_provider(
             &provider,
+            &auth,
             Some("feature-a"),
             &prewarm_metadata,
         )
@@ -396,8 +405,13 @@ fn websocket_connection_identity_binds_provider_and_stable_handshake_semantics()
     later_root.root_turn_id = Some("root-turn-b".to_string());
     assert_eq!(
         identity_a,
-        WebsocketConnectionIdentity::from_provider(&provider, Some("feature-a"), &later_root)
-            .expect("root correlation does not change the connection"),
+        WebsocketConnectionIdentity::from_provider(
+            &provider,
+            &auth,
+            Some("feature-a"),
+            &later_root
+        )
+        .expect("root correlation does not change the connection"),
     );
     assert_ne!(
         turn_recovery,
@@ -416,14 +430,20 @@ fn websocket_connection_identity_binds_provider_and_stable_handshake_semantics()
     other_kind.request_kind = Some(CodexResponsesRequestKind::Memory);
     assert_ne!(
         identity_a,
-        WebsocketConnectionIdentity::from_provider(&provider, Some("feature-a"), &other_kind)
-            .expect("memory connection identity"),
+        WebsocketConnectionIdentity::from_provider(
+            &provider,
+            &auth,
+            Some("feature-a"),
+            &other_kind
+        )
+        .expect("memory connection identity"),
     );
     prewarm_metadata.sandbox_mode = Some("danger-full-access".to_string());
     assert_ne!(
         identity_a,
         WebsocketConnectionIdentity::from_provider(
             &provider,
+            &auth,
             Some("feature-a"),
             &prewarm_metadata,
         )
@@ -438,6 +458,7 @@ fn websocket_connection_identity_binds_provider_and_stable_handshake_semantics()
         identity_a,
         WebsocketConnectionIdentity::from_provider(
             &provider,
+            &auth,
             Some("feature-a"),
             &volatile_metadata,
         )
@@ -450,6 +471,7 @@ fn websocket_connection_identity_binds_provider_and_stable_handshake_semantics()
         identity_a,
         WebsocketConnectionIdentity::from_provider(
             &provider,
+            &auth,
             Some("feature-a"),
             &changed_metadata,
         )
@@ -457,8 +479,13 @@ fn websocket_connection_identity_binds_provider_and_stable_handshake_semantics()
     );
     assert_ne!(
         identity_a,
-        WebsocketConnectionIdentity::from_provider(&provider, Some("feature-b"), &metadata_a,)
-            .expect("changed beta identity")
+        WebsocketConnectionIdentity::from_provider(
+            &provider,
+            &auth,
+            Some("feature-b"),
+            &metadata_a,
+        )
+        .expect("changed beta identity")
     );
 
     let mut changed_parent = metadata_a.clone();
@@ -479,8 +506,13 @@ fn websocket_connection_identity_binds_provider_and_stable_handshake_semantics()
     ] {
         assert_ne!(
             identity_a,
-            WebsocketConnectionIdentity::from_provider(&provider, Some("feature-a"), &changed)
-                .expect("changed compatibility metadata"),
+            WebsocketConnectionIdentity::from_provider(
+                &provider,
+                &auth,
+                Some("feature-a"),
+                &changed
+            )
+            .expect("changed compatibility metadata"),
         );
     }
     let mut renamed_provider = provider.clone();
@@ -498,10 +530,36 @@ fn websocket_connection_identity_binds_provider_and_stable_handshake_semantics()
     for changed in [renamed_provider, changed_query, changed_headers] {
         assert_ne!(
             identity_a,
-            WebsocketConnectionIdentity::from_provider(&changed, Some("feature-a"), &metadata_a)
-                .expect("changed provider setup"),
+            WebsocketConnectionIdentity::from_provider(
+                &changed,
+                &auth,
+                Some("feature-a"),
+                &metadata_a
+            )
+            .expect("changed provider setup"),
         );
     }
+
+    for changed_auth in [
+        BearerAuthProvider::for_test(Some("different-token"), Some("identity-test-account")),
+        BearerAuthProvider::for_test(Some("identity-test-token"), Some("different-account")),
+        BearerAuthProvider::for_test(/*token*/ None, /*account_id*/ None),
+    ] {
+        let changed_auth = super::snapshot_websocket_auth(&changed_auth);
+        assert_ne!(
+            identity_a,
+            WebsocketConnectionIdentity::from_provider(
+                &provider,
+                &changed_auth,
+                Some("feature-a"),
+                &metadata_a,
+            )
+            .expect("changed resolved auth must reconnect"),
+        );
+    }
+    let debug = format!("{identity_a:?}");
+    assert!(!debug.contains("identity-test-token"));
+    assert!(!debug.contains("identity-test-account"));
 
     let mut changed_provider = provider;
     changed_provider.base_url = "https://other.example.test/v1".to_string();
@@ -509,6 +567,7 @@ fn websocket_connection_identity_binds_provider_and_stable_handshake_semantics()
         identity_a,
         WebsocketConnectionIdentity::from_provider(
             &changed_provider,
+            &auth,
             Some("feature-a"),
             &metadata_a,
         )
