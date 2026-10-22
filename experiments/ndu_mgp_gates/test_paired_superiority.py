@@ -134,6 +134,26 @@ class PairedEvidenceTests(unittest.TestCase):
         rec = evaluate(d)
         self.assertFalse(rec['comparison']['free_controller']['gates']['physical_total_cost'])
 
+    def test_variable_seed_cost_invalidates_point_only_fairness(self):
+        d = study_fixture(bootstrap_replicates=300)
+        # Registration permits at most 1.05 x the comparator total cost.
+        # Expected cost is ~1.02 x but a bad seed costs ~1.15 x.
+        for row in d['worlds']:
+            c = row['outcomes']['ndu']['measured_cost']
+            if row['seed'] == 101:
+                c['controller'] += .12
+                c['total'] += .12
+            else:
+                c['controller'] -= .015
+                c['verifier'] -= .06
+                c['total'] -= .075
+        rec = evaluate(d)
+        actual = rec['comparison']['free_controller']
+        self.assertLess(actual['observed_cost_ratio'], 1.05)
+        self.assertGreater(actual['bootstrap_upper_cost_ratio'], 1.05)
+        self.assertFalse(actual['gates']['physical_total_cost'])
+        self.assertEqual(rec['status'], 'HOLD_NO_GO')
+
     def test_protected_task_world_deterioration_is_not_averaged_away(self):
         d = study_fixture()
         dr = d['worlds'][0]['outcomes']['ndu']['decoded_draw_scores']
