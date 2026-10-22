@@ -89,7 +89,7 @@ class LocalCloseoutTests(unittest.TestCase):
             base = Path(root)
             src = base / "checkout"
             subprocess.run(["git", "init", "-q", str(src)], check=True)
-            (src / "source.rs").write_text("pub fn source() {}\\n")
+            (src / "source.rs").write_text("pub fn source() {}\n")
             subprocess.run(["git", "-C", str(src), "add", "source.rs"], check=True)
             subprocess.run(
                 ["git", "-C", str(src), "-c", "user.name=LocalTest",
@@ -100,7 +100,7 @@ class LocalCloseoutTests(unittest.TestCase):
             script = hooks / "pre-commit"
             marker = base / "hook-invoked"
             script.write_text(
-                '#!/bin/sh\\nprintf ran > "' + str(marker) + '"\\n',
+                '#!/bin/sh\nprintf ran > "' + str(marker) + '"\n',
                 encoding="utf-8",
             )
             script.chmod(0o700)
