@@ -179,6 +179,8 @@ def main() -> int:
     }
     for stage, spec in STAGES.items():
         stage_result: dict[str, Any] = {"status": "BLOCKED", "files": [], "checks": [], "external_evidence_needed": spec["external"]}
+        source_names = {name for name, _ in spec["required"]}
+        before_checks = {name: git_snapshot(roots[name]) for name in source_names}
         missing = []
         for name, rel in spec["required"]:
             path = roots[name] / rel
@@ -189,13 +191,16 @@ def main() -> int:
         stage_result["missing_files"] = missing
         if missing:
             stage_result["status"] = "BLOCKED_SOURCE_NOT_PRESENT"
-        elif not all(report["sources"][name]["usable"] for name in ({name for name, _ in spec["required"]})):
+        elif not all(report["sources"][name]["usable"] and before_checks[name]["usable"] for name in source_names):
             stage_result["status"] = "BLOCKED_NO_GIT_CHECKOUT"
-        elif not all(report["sources"][name]["clean"] for name in ({name for name, _ in spec["required"]})):
+        elif not all(report["sources"][name]["clean"] and before_checks[name]["clean"] for name in source_names):
             # A dirty checkout cannot prove which source produced a test result.
-            # This is enforced even when checks are not requested, rather than
-            # reporting an apparently replayable source manifest.
             stage_result["status"] = "BLOCKED_DIRTY_WORKTREE"
+        elif any(
+            before_checks[name][field] != report["sources"][name][field]
+            for name in source_names for field in ("commit", "tree")
+        ):
+            stage_result["status"] = "BLOCKED_SOURCE_IDENTITY_CHANGED"
         elif not args.execute_checks:
             stage_result["status"] = "BLOCKED_NOT_RUN"
         else:
@@ -204,8 +209,21 @@ def main() -> int:
                 stage_result["checks"].append(run_check(argv, folder, args.timeout_sec,
                                                           run_dir / f"{stage.lower()}-{index}.log"))
             states = [c["status"] for c in stage_result["checks"]]
-            stage_result["status"] = ("SOURCE_TESTED_EXTERNAL_EVIDENCE_PENDING" if all(s == "PASS_LOCAL" for s in states)
-                                      else "BLOCKED_CHECKS_FAILED_OR_UNAVAILABLE")
+            after_checks = {name: git_snapshot(roots[name]) for name in source_names}
+            # Tests may create tracked or untracked files, change checked-out
+            # branches or rewrite generated source. Never report success for a
+            # test that no longer matches the frozen initial Git identity.
+            if any(
+                not after_checks[name]["usable"]
+                or not after_checks[name]["clean"]
+                or any(after_checks[name][field] != report["sources"][name][field]
+                       for field in ("commit", "tree"))
+                for name in source_names
+            ):
+                stage_result["status"] = "BLOCKED_SOURCE_CHANGED_DURING_CHECKS"
+            else:
+                stage_result["status"] = ("SOURCE_TESTED_EXTERNAL_EVIDENCE_PENDING" if all(s == "PASS_LOCAL" for s in states)
+                                          else "BLOCKED_CHECKS_FAILED_OR_UNAVAILABLE")
         report["stages"][stage] = stage_result
     results_path = run_dir / "acceptance.json"
     fd = os.open(results_path, os.O_WRONLY | os.O_CREAT | os.O_EXCL, 0o600)

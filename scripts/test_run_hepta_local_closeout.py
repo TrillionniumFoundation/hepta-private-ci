@@ -174,6 +174,37 @@ class LocalCloseoutTests(unittest.TestCase):
             self.assertTrue(all(s["status"] == "BLOCKED_NOT_RUN" for s in report["stages"].values()))
             self.assertFalse(report["production_qualified"])
 
+    def test_source_mutation_during_green_tests_never_reports_exact_source(self):
+        with tempfile.TemporaryDirectory() as root:
+            base = Path(root)
+            roots = {"hepta": base / "hepta", "runtime": base / "runtime"}
+            for path in roots.values():
+                path.mkdir()
+                subprocess.run(["git", "init", "-q", str(path)], check=True)
+            for stage in mod.STAGES.values():
+                for repo, rel in stage["required"]:
+                    file = roots[repo] / rel
+                    file.parent.mkdir(parents=True, exist_ok=True)
+                    file.write_text("baseline")
+            for path in roots.values():
+                subprocess.run(["git", "-C", str(path), "add", "."], check=True)
+                subprocess.run(["git", "-C", str(path), "-c", "user.name=LocalTest",
+                                "-c", "user.email=local@example.invalid", "commit", "-qm", "baseline"], check=True)
+
+            def claims_pass_but_changes_source(*args, **kwargs):
+                (roots["hepta"] / "uncommitted-during-test").write_text("mutation")
+                return {"status": "PASS_LOCAL"}
+
+            with patch.object(mod, "run_check", side_effect=claims_pass_but_changes_source), patch.object(
+                sys, "argv", ["run", "--hepta", str(roots["hepta"]), "--runtime", str(roots["runtime"]),
+                              "--report-dir", str(base / "results"), "--execute-checks"]
+            ), contextlib.redirect_stdout(io.StringIO()):
+                code = mod.main()
+            self.assertEqual(code, 2)
+            report = json.loads(next((base / "results").glob("run-*/acceptance.json")).read_text())
+            self.assertEqual(report["stages"]["P0"]["status"], "BLOCKED_SOURCE_CHANGED_DURING_CHECKS")
+            self.assertFalse(report["production_qualified"])
+
     def test_all_local_checks_cannot_claim_full_acceptance(self):
         with tempfile.TemporaryDirectory() as root:
             base = Path(root)
