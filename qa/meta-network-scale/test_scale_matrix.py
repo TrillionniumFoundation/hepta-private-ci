@@ -518,6 +518,10 @@ class ScaleMatrixTests(unittest.TestCase):
                         )
                     first_value = first[parent][key] if parent else first[key]
                     if direction == "identity_first":
+                        # The unmodified fixture shares one runtime identity
+                        # across rows. Give the first row a unique digest, so
+                        # second-row validation alone cannot reject the alias.
+                        first["provenance"]["runtime_digest"] = "f" * 64
                         value = first["provenance"]["runtime_digest"]
                         if parent:
                             second[parent][key] = value
@@ -527,6 +531,11 @@ class ScaleMatrixTests(unittest.TestCase):
                     else:
                         second["provenance"]["runtime_digest"] = first_value
                         affected = f"results[0].{label}"
+                    # Both individual records remain shape-valid: only the
+                    # independent matrix-wide identity/proof census detects
+                    # this cross-row role replay.
+                    self.assertEqual(scale_matrix.validate_result(first), [])
+                    self.assertEqual(scale_matrix.validate_result(second), [])
                     self.assertIn(
                         f"{affected} reused as a runtime_digest identity digest",
                         scale_matrix.validate_matrix(matrix),
