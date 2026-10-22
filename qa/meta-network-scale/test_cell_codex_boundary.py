@@ -360,9 +360,50 @@ class CargoConfigurationSourceTests(unittest.TestCase):
 
     def test_approved_existing_windows_rustflags(self):
         self.add('''[target.'cfg(all(windows, target_env = "msvc"))']
-rustflags = ["-C", "link-arg=/STACK:8388608"]
+rustflags = ["-C", "link-arg=/STACK:8388608", "-C", "target-feature=+crt-static"]
 ''')
         self.assertEqual(checker.check_cargo_configuration_sources(self.root), [])
+
+    def test_full_reviewed_windows_baseline_target_rustflags_pass(self):
+        self.add("""[target.'cfg(all(windows, target_env = "msvc"))']
+rustflags = ["-C", "link-arg=/STACK:8388608", "-C", "target-feature=+crt-static"]
+[target.aarch64-pc-windows-msvc]
+rustflags = ["-C", "link-arg=/STACK:8388608", "-C", "link-arg=/arm64hazardfree"]
+[target.'cfg(all(windows, target_env = "gnu"))']
+rustflags = ["-C", "link-arg=-Wl,--stack,8388608"]
+""")
+        self.assertEqual(checker.check_cargo_configuration_sources(self.root), [])
+
+    def test_build_compiler_flags_and_target_redirects_are_forbidden(self):
+        for field in ('rustflags = ["--cfg", "bypass_security"]',
+                      'rustdocflags = ["--cfg", "bypass_security"]',
+                      'target = "unexpected-triple"',
+                      'target-dir = "/tmp/unreviewed"'):
+            with self.subTest(field=field):
+                self.add('[build]\n' + field + '\n')
+                self.assertTrue(checker.check_cargo_configuration_sources(self.root))
+
+    def test_target_rustflags_are_closed_world(self):
+        for target, flags, sub in (
+            ('x86_64-unknown-linux-gnu', '["-C", "link-arg=-Wl,-rpath,/tmp/untrusted"]', 'codex-rs'),
+            ('aarch64-pc-windows-msvc', '["-C", "link-arg=/arm64hazardfree"]', 'codex-rs'),
+            ('aarch64-pc-windows-msvc', '["-C", "link-arg=/STACK:8388608", "-C", "link-arg=/arm64hazardfree"]', 'codex-rs/hepta-types'),
+        ):
+            with self.subTest(target=target, sub=sub):
+                path = self.add(f'[target.{target}]\nrustflags = {flags}\n', sub=sub)
+                self.assertIn('rustflags', str(checker.check_cargo_configuration_sources(self.root)))
+                path.unlink()
+
+    def test_target_rustdocflags_denied(self):
+        self.add('[target.x86_64-unknown-linux-gnu]\nrustdocflags = ["--cfg", "unreviewed"]\n')
+        self.assertIn('rustdocflags', str(checker.check_cargo_configuration_sources(self.root)))
+
+    def test_loader_and_compiler_environment_injection_denied(self):
+        for key, value in (('LD_PRELOAD', '/tmp/evil.so'), ('PATH', '/tmp/malware'),
+                           ('RUSTUP_TOOLCHAIN', 'nightly'), ('CC', 'malicious-cc')):
+            with self.subTest(key=key):
+                self.add(f'[env]\n{key} = "{value}"\n')
+                self.assertIn(key, str(checker.check_cargo_configuration_sources(self.root)))
 
     def test_source_replacement_rejected(self):
         self.add('''[source.crates-io]

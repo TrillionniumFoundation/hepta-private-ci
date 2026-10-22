@@ -336,6 +336,19 @@ def check_manifest(
 
 
 CARGO_CONFIG_NAMES = ("config", "config.toml")
+# Only these reviewed Windows target flags are admitted from the canonical
+# codex-rs/.cargo/config.toml. Arbitrary cfg/link flags can alter compiled code.
+APPROVED_WINDOWS_RUSTFLAGS = {
+    'cfg(all(windows, target_env = "msvc"))': [
+        "-C", "link-arg=/STACK:8388608", "-C", "target-feature=+crt-static",
+    ],
+    "aarch64-pc-windows-msvc": [
+        "-C", "link-arg=/STACK:8388608", "-C", "link-arg=/arm64hazardfree",
+    ],
+    'cfg(all(windows, target_env = "gnu"))': [
+        "-C", "link-arg=-Wl,--stack,8388608",
+    ],
+}
 
 
 def check_cargo_configuration_sources(root: Path) -> list[str]:
@@ -383,14 +396,16 @@ def check_cargo_configuration_sources(root: Path) -> list[str]:
             if not isinstance(configured_env, dict):
                 violations.append(f"workspace: {place} has malformed [env] configuration")
             else:
+                # Build environment can change tool executables, compiler
+                # libraries and dynamic loading (PATH, CC, LD_PRELOAD, etc.).
+                # None is present in the checked-in baseline configuration.
                 for key in configured_env:
-                    if not isinstance(key, str) or key.upper().startswith(("CARGO_", "RUSTC_", "RUSTDOC_", "RUSTFLAGS")):
-                        violations.append(f"workspace: {place} configures unreviewed build environment {key!r}")
+                    violations.append(f"workspace: {place} configures unreviewed build environment {key!r}")
             build = config.get("build", {})
             if not isinstance(build, dict):
                 violations.append(f"workspace: {place} has malformed [build] configuration")
             else:
-                for key in ("rustc", "rustc-wrapper", "rustc-workspace-wrapper", "rustdoc"):
+                for key in ("rustc", "rustc-wrapper", "rustc-workspace-wrapper", "rustdoc", "rustflags", "rustdocflags", "target", "target-dir"):
                     if key in build:
                         violations.append(f"workspace: {place} defines unreviewed compiler executable {key}")
             targets = config.get("target", {})
@@ -401,9 +416,17 @@ def check_cargo_configuration_sources(root: Path) -> list[str]:
                     if not isinstance(definition, dict):
                         violations.append(f"workspace: {place} has malformed target {triple!r}")
                     else:
-                        for key in ("runner", "linker"):
+                        for key in ("runner", "linker", "rustdocflags"):
                             if key in definition:
                                 violations.append(f"workspace: {place} defines unreviewed target {triple!r} {key}")
+                        if "rustflags" in definition and (
+                            place != "codex-rs/.cargo/config.toml"
+                            or triple not in APPROVED_WINDOWS_RUSTFLAGS
+                            or definition["rustflags"] != APPROVED_WINDOWS_RUSTFLAGS[triple]
+                        ):
+                            violations.append(
+                                f"workspace: {place} defines unreviewed target {triple!r} rustflags"
+                            )
     return violations
 
 
