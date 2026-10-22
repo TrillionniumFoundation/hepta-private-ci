@@ -137,6 +137,30 @@ def git_snapshot(path: Path) -> dict[str, Any]:
         ).stdout.strip()
 
     try:
+        # Git status is NOT source-only when core.fsmonitor or attribute filter
+        # commands are configured: it can run arbitrary local programs while
+        # still returning a clean worktree. Inspect effective config names
+        # before running status; do not include config VALUES in reports.
+        config_names = {
+            name.casefold()
+            for name in cmd("config", "--list", "--name-only", "-z").split("\0")
+            if name
+        }
+        executable_git_config = sorted(
+            name for name in config_names
+            if name == "core.fsmonitor"
+            or (name.startswith("filter.") and name.rsplit(".", 1)[-1]
+                in ("clean", "smudge", "process"))
+            or (name.startswith("diff.") and name.endswith(".command"))
+            or (name.startswith("merge.") and name.endswith(".driver"))
+        )
+        if executable_git_config:
+            return {
+                "usable": False,
+                "reason": "unreviewed executable Git configuration",
+                "path": str(path),
+                "blocked_git_config_keys": executable_git_config,
+            }
         # Git's linked worktrees use a .git *file*, not a directory. Verify the
         # canonical top level instead of testing a filesystem suffix.
         if cmd("rev-parse", "--is-inside-work-tree") != "true":
