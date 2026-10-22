@@ -200,6 +200,18 @@ class PairedEvidenceTests(unittest.TestCase):
                             for x in receipt['comparison'].values()))
         self.assertEqual(sum(receipt['overbudget_episodes_by_arm'].values()), 0)
 
+    def test_small_absolute_budget_has_no_dangerous_epsilon_floor(self):
+        d = study_fixture()
+        d['protocol']['hard_world_cost_limit'] = 1.035e-7
+        # All physical costs scale to ~1e-7. NDU costs ~1.04e-7:
+        # a 1e-9 absolute epsilon would mask this overrun.
+        for row in d['worlds']:
+            for outcome in row['outcomes'].values():
+                for key in outcome['measured_cost']:
+                    outcome['measured_cost'][key] *= 1e-7
+        with self.assertRaisesRegex(EvidenceGap, 'overbudget episode must receive failure penalty'):
+            evaluate(d)
+
     def test_nonpositive_absolute_cap_is_rejected(self):
         d = study_fixture()
         d['protocol']['hard_world_cost_limit'] = 0.0
