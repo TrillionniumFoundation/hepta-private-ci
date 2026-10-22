@@ -579,6 +579,26 @@ impl LearningArtifactOwnerHost {
         Ok(relative)
     }
 
+    pub(crate) fn read_current_payload(
+        &self,
+        current: &VerifiedCurrentRegistryViewV1,
+        artifact_id: &StableId,
+    ) -> Result<Vec<u8>, ArtifactOwnerHostError> {
+        let manifest = current
+            .registry()
+            .manifest(artifact_id)
+            .ok_or(ArtifactOwnerHostError::CheckpointMismatch)?;
+        let path = self
+            .root
+            .join("payloads")
+            .join(format!("{artifact_id}-{}.bin", manifest.content_digest));
+        Ok(read_candidate_payload(
+            File::open(path)?,
+            current.registry(),
+            artifact_id,
+        )?)
+    }
+
     pub fn ensure_registry_durable(
         &self,
         transaction: &mut ArtifactPublicationTransactionV1,
