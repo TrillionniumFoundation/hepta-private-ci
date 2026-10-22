@@ -251,6 +251,6 @@ for case in DOC["rejections"]:
         validate_raw(raw)
     except ValueError:
         continue
-    raise SystemExit(f"{case['id']}: raw-byte rejection oracle accepted invalid bytes")
+    raise SystemExit(f"{case['id']}: rejection oracle accepted invalid case")
 
 print(f"platform.types Python raw rejection vectors: {len(DOC['rejections'])} rejected")

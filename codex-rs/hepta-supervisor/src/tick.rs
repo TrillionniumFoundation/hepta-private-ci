@@ -107,7 +107,9 @@ impl<D: ProcessDriver> Supervisor<D> {
                 slot.restart_pending = true;
                 slot.event(
                     record.lifecycle.generation,
-                    SupervisorEventKind::RestartQueued,
+                    SupervisorEventKind::AutomaticRestartQueued {
+                        attempt: claim.attempt,
+                    },
                 );
                 None
             }

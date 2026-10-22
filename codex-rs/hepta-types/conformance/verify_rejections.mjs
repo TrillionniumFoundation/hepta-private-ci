@@ -280,7 +280,7 @@ for (const c of DOC.rejections) {
     rejected = true;
   }
   if (!rejected) {
-    throw new Error(c.id + ": raw-byte rejection oracle accepted invalid bytes");
+    throw new Error(c.id + ": rejection oracle accepted invalid case");
   }
 }
 

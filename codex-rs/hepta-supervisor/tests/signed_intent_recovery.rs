@@ -153,30 +153,150 @@ fn exact_digest_abort_terminalizes_unresolved_intent() -> Result<(), SupervisorE
     .map_err(|error| SupervisorError::Invalid(error.to_string()))?;
     write_intent_raw(record.layout.run_root(), &intent)?;
 
-    let first = Supervisor::recover(
+    let (recovered, _report) = Supervisor::recover(
         fleet.registry.clone(),
         NoProcessDriver,
         config(),
         Instant::now(),
-    );
-    assert!(matches!(
-        first,
-        Err(SupervisorError::SignedIntentRecoveryRequired(agent_id))
-            if agent_id == fleet.agent_id
-    ));
+    )?;
+    assert!(recovered.production_recovery_required(&fleet.agent_id)?);
+    drop(recovered);
 
     let directive = SignedIntentRecoveryDirective::abort(intent.intent_sha256)
         .map_err(|error| SupervisorError::Invalid(error.to_string()))?;
     write_signed_intent_recovery_directive(record.layout.run_root(), &directive)
         .map_err(|error| SupervisorError::Invalid(error.to_string()))?;
 
-    let (_recovered, report) =
-        Supervisor::recover(fleet.registry, NoProcessDriver, config(), Instant::now())?;
+    let (_recovered, report) = Supervisor::recover(
+        fleet.registry.clone(),
+        NoProcessDriver,
+        config(),
+        Instant::now(),
+    )?;
     assert!(report.faults.is_empty());
     let terminal = read_signed_intent(record.layout.run_root())
         .map_err(|error| SupervisorError::Invalid(error.to_string()))?
         .expect("terminal intent");
     assert_eq!(terminal.status, SignedIntentStatus::Aborted);
     assert_eq!(terminal.target_release, "target-release");
+
+    // An already-terminalized intent must never re-enter RecoveryRequired.
+    let (replayed, report) =
+        Supervisor::recover(fleet.registry, NoProcessDriver, config(), Instant::now())?;
+    assert!(report.faults.is_empty());
+    assert!(!replayed.any_production_recovery_required());
+    Ok(())
+}
+
+#[test]
+fn wrong_digest_abort_does_not_clear_recovery_fence() -> Result<(), SupervisorError> {
+    let fleet = fleet()?;
+    let starting =
+        fleet
+            .registry
+            .compare_and_transition(&fleet.agent_id, 0, AgentLifecycle::Starting)?;
+    let failed = fleet.registry.compare_and_transition(
+        &fleet.agent_id,
+        starting.generation,
+        AgentLifecycle::Failed,
+    )?;
+    let record = fleet
+        .registry
+        .load()?
+        .agent(&fleet.agent_id)
+        .cloned()
+        .expect("registered agent");
+    let intent = SignedSupervisorIntent::new(
+        Sha256Digest::for_bytes(b"grant"),
+        fleet.agent_id.to_string(),
+        H7H89ProductionTransition::Upgrade,
+        "source-release",
+        "target-release",
+        4,
+        failed.generation,
+        9,
+        SignedIntentStatus::RecoveryRequired,
+    )
+    .map_err(|error| SupervisorError::Invalid(error.to_string()))?;
+    write_intent_raw(record.layout.run_root(), &intent)?;
+    let (recovered, _) = Supervisor::recover(
+        fleet.registry.clone(),
+        NoProcessDriver,
+        config(),
+        Instant::now(),
+    )?;
+    assert!(recovered.production_recovery_required(&fleet.agent_id)?);
+    drop(recovered);
+
+    let wrong_digest = Sha256Digest::for_bytes(b"unrelated-intent");
+    let directive = SignedIntentRecoveryDirective::abort(wrong_digest)
+        .map_err(|error| SupervisorError::Invalid(error.to_string()))?;
+    write_signed_intent_recovery_directive(record.layout.run_root(), &directive)
+        .map_err(|error| SupervisorError::Invalid(error.to_string()))?;
+
+    let error = Supervisor::recover(fleet.registry, NoProcessDriver, config(), Instant::now())
+        .err()
+        .expect("a stale abort directive must be rejected");
+    assert!(matches!(
+        error,
+        SupervisorError::Invalid(reason) if reason.contains("digest mismatch")
+    ));
+    let persisted = read_signed_intent(record.layout.run_root())
+        .map_err(|error| SupervisorError::Invalid(error.to_string()))?
+        .expect("fenced intent");
+    assert_eq!(persisted.status, SignedIntentStatus::RecoveryRequired);
+    Ok(())
+}
+
+#[test]
+fn process_recovery_fault_cannot_consume_an_abort_directive() -> Result<(), SupervisorError> {
+    let fleet = fleet()?;
+    let starting =
+        fleet
+            .registry
+            .compare_and_transition(&fleet.agent_id, 0, AgentLifecycle::Starting)?;
+    let failed = fleet.registry.compare_and_transition(
+        &fleet.agent_id,
+        starting.generation,
+        AgentLifecycle::Failed,
+    )?;
+    let record = fleet
+        .registry
+        .load()?
+        .agent(&fleet.agent_id)
+        .cloned()
+        .expect("registered agent");
+    let intent = SignedSupervisorIntent::new(
+        Sha256Digest::for_bytes(b"grant"),
+        fleet.agent_id.to_string(),
+        H7H89ProductionTransition::Upgrade,
+        "source-release",
+        "target-release",
+        4,
+        failed.generation,
+        9,
+        SignedIntentStatus::RecoveryRequired,
+    )
+    .map_err(|error| SupervisorError::Invalid(error.to_string()))?;
+    write_intent_raw(record.layout.run_root(), &intent)?;
+    let directive = SignedIntentRecoveryDirective::abort(intent.intent_sha256)
+        .map_err(|error| SupervisorError::Invalid(error.to_string()))?;
+    write_signed_intent_recovery_directive(record.layout.run_root(), &directive)
+        .map_err(|error| SupervisorError::Invalid(error.to_string()))?;
+
+    // A corrupt process lease means the host cannot establish the absence of
+    // an old process. The matching Abort directive must remain unapplied.
+    std::fs::write(
+        record.layout.run_root().join("supervisor-process.json"),
+        b"{invalid",
+    )?;
+    let (recovered, report) =
+        Supervisor::recover(fleet.registry, NoProcessDriver, config(), Instant::now())?;
+    assert!(!report.faults.is_empty());
+    assert!(recovered.production_recovery_required(&fleet.agent_id)?);
+    let persisted = read_signed_intent(record.layout.run_root())
+        .map_err(|error| SupervisorError::Invalid(error.to_string()))?
+        .expect("retained recovery intent");
+    assert_eq!(persisted.status, SignedIntentStatus::RecoveryRequired);
     Ok(())
 }
