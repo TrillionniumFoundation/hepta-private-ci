@@ -46,7 +46,8 @@ jobs:
           test "$(git rev-parse HEAD)" = "$EXPECTED_SHA"
           test -z "$(git status --porcelain=v1 --untracked-files=all)"
           test "$(rustc --version | cut -d' ' -f2)" = "1.95.0"
-          cargo metadata --manifest-path codex-rs/Cargo.toml --locked --no-deps --format-version 1 >/dev/null
+          # Resolve the full locked graph; --no-deps misses stale transitive lock entries.
+          cargo metadata --manifest-path codex-rs/Cargo.toml --locked --format-version 1 >/dev/null
       - name: Check unchanged NDU Rust formatting
         shell: bash
         run: |
