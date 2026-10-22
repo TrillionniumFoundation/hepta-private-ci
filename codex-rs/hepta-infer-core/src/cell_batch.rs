@@ -215,6 +215,12 @@ impl CellAdapterHeadV1 {
         })
     }
 
+    /// The exact immutable Encoder artifact this head may consume.
+    #[must_use]
+    pub const fn encoder_digest(&self) -> Digest32 {
+        self.encoder_digest
+    }
+
     /// Construct a successor head without mutating the active head.
     pub fn with_delta(&self, delta: &[i64]) -> Result<Self, CellBatchError> {
         if delta.len() != self.weights.len() {

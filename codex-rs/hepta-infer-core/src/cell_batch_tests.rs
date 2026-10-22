@@ -76,6 +76,57 @@ fn shared_snapshot_is_reused_by_multiple_heads() {
 }
 
 #[test]
+fn head_refuses_foreign_encoder_at_matching_generation_and_width() {
+    let head = CellAdapterHeadV1::new(
+        id("cell:a"),
+        id("organ:a"),
+        generation(1),
+        digest("encoder"),
+        vec![1, 1, 1],
+        0,
+    )
+    .expect("bound head");
+    let foreign = ImmutableFeatureSnapshotV1::new(
+        generation(1),
+        digest("foreign-encoder"),
+        vec![1, 2, 3],
+    )
+    .expect("foreign snapshot");
+    assert_eq!(
+        head.activate(&foreign),
+        Err(CellBatchError::EncoderMismatch)
+    );
+    let batch = FeatureBatchV1::new(vec![foreign.clone()]).expect("foreign batch");
+    assert_eq!(
+        head.activate_batch(&batch),
+        Err(CellBatchError::EncoderMismatch)
+    );
+
+    let unchanged = head.with_delta(&[0, 0, 0]).expect("zero-delta");
+    assert_eq!(unchanged.encoder_digest(), digest("encoder"));
+    assert_eq!(unchanged.activate(&snapshot()), head.activate(&snapshot()));
+    assert_eq!(
+        unchanged.activate(&foreign),
+        Err(CellBatchError::EncoderMismatch)
+    );
+}
+
+#[test]
+fn head_requires_nonzero_encoder_identity() {
+    assert_eq!(
+        CellAdapterHeadV1::new(
+            id("cell:a"),
+            id("organ:a"),
+            generation(1),
+            Digest32::ZERO,
+            vec![1, 1, 1],
+            0,
+        ),
+        Err(CellBatchError::ZeroDigest("encoder"))
+    );
+}
+
+#[test]
 fn feature_and_activation_batches_preserve_generation() {
     let first = snapshot();
     let second = ImmutableFeatureSnapshotV1::new(generation(1), digest("encoder"), vec![3, 2, 1])
