@@ -1086,9 +1086,9 @@ fn checked_pre_tick_rejects_late_ledger_denial_before_any_tick() {
     second.manifest.cell_id = id("memory-cell:semantic:2");
     second.manifest.role = MemoryCellRoleV1::Semantic;
     second.tick_input.cell_id = second.manifest.cell_id.clone();
-    // If this second Cell reaches a tick it fails as an unrelated retrieval
-    // error. The external denial must reject the *whole* batch first.
-    second.generated_input.batches.clear();
+    // Both generators remain valid here; the separate generator preflight
+    // regression asserts malformed batches fail before any owner callback.
+    // This regression isolates a late external denial before any Cell tick.
     let denied_id = second.manifest.cell_id.clone();
     let first_id = first.manifest.cell_id.clone();
     let mut checked = Vec::new();
