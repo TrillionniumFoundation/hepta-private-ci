@@ -60,6 +60,61 @@ impl TestFleet {
     }
 }
 
+#[cfg(windows)]
+#[test]
+fn registration_creates_all_private_roots_with_native_ownership() -> Result<(), FleetRegistryError>
+{
+    let fleet = TestFleet::new()?;
+    let record = fleet
+        .registry
+        .register(fleet.manifest(FIRST_AGENT_ID, &fleet.first_workspace)?)?;
+    for child in [
+        "",
+        "home",
+        "run",
+        "logs",
+        "releases",
+        "cognitive",
+        "matrix",
+        "automation",
+        "matrix/secrets",
+    ] {
+        drop(codex_utils_path::open_existing_private_state_directory(
+            &record.layout.agent_root().join(child),
+        )?);
+    }
+    Ok(())
+}
+
+#[cfg(windows)]
+#[test]
+fn private_creation_does_not_repair_or_replace_existing_entries() -> std::io::Result<()> {
+    let temporary = tempfile::tempdir()?;
+    let directory = temporary.path().join("existing-directory");
+    fs::create_dir(&directory)?;
+    fs::write(directory.join("marker"), b"directory marker")?;
+    let file = temporary.path().join("existing-file");
+    fs::write(&file, b"file marker")?;
+
+    let rejected = [
+        super::create_private_directory(&directory).is_err(),
+        super::create_private_directory(&file).is_err(),
+    ];
+    assert_eq!(
+        (
+            rejected,
+            fs::read(directory.join("marker"))?,
+            fs::read(&file)?
+        ),
+        (
+            [true, true],
+            b"directory marker".to_vec(),
+            b"file marker".to_vec(),
+        ),
+    );
+    Ok(())
+}
+
 #[test]
 fn two_agents_reload_with_isolated_paths_and_generations() -> Result<(), FleetRegistryError> {
     let fleet = TestFleet::new()?;

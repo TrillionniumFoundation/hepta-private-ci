@@ -8,6 +8,8 @@ mod private_state_windows;
 #[cfg(windows)]
 pub use private_state_windows::PrivateFileAccess;
 #[cfg(windows)]
+pub use private_state_windows::create_private_state_directory;
+#[cfg(windows)]
 pub use private_state_windows::open_private_state_child;
 #[cfg(windows)]
 pub use private_state_windows::open_private_state_directory;
