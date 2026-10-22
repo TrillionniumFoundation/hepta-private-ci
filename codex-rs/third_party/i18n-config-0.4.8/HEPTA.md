@@ -22,9 +22,10 @@ generated from this local path patch. This uses the same resolved dependencies
 and version as production consumers. Cloud evidence checks the generated
 library's type, version and actual dependency edges before building it.
 
-The registry packaging lock, original workspace-inheriting manifest, `.gitignore`
-and registry VCS marker are omitted; the root generated Cargo/Bazel locks govern
-the shipped dependency. Original README, changelog, source modules and MIT
-license are retained. No RustSec waiver is added. This source proposal is not
+The original workspace-inheriting `Cargo.toml.orig` is retained for source
+auditing. The actual dependency graph is defined by the normalized `Cargo.toml`
+and root generated Cargo/Bazel locks. The registry packaging lock, `.gitignore`
+and registry VCS marker are omitted. Original README, changelog, source modules
+and MIT license are retained. No RustSec waiver is added. This source proposal is not
 qualified until its cloud-generated locks are reviewed and exact-head original
 security and platform checks pass.
