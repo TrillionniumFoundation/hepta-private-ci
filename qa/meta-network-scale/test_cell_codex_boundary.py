@@ -96,6 +96,8 @@ builder = { package = "codex-sandboxing", workspace = true }
             "codex-rs/hepta-ndu/src/output_portfolio.rs",
             "codex-rs/hepta-ndu/src/output_portfolio_types.rs",
             "codex-rs/hepta-ndu/src/output_portfolio_tests.rs",
+            ".github/workflows/hepta-ndu-portfolio-exact.yml",
+            "scripts/test_hepta_ndu_portfolio_ci.py",
         ):
             with self.subTest(source=source):
                 self.assertIn(f'      - "{source}"', paths)
