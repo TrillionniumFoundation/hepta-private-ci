@@ -90,12 +90,12 @@ impl GenerationFenceWitnessV1 {
         if self.predecessor_generation == Some(self.generation) {
             return Err(ExecutionContractError::GenerationSelfPredecessor);
         }
-        // This witness describes a handoff between two distinct writers.
-        // A missing predecessor is not evidence of a valid cutover, even
-        // when the fence and migration digest fields are populated.
-        let predecessor = self
-            .predecessor_generation
-            .ok_or(ExecutionContractError::NonSuccessorGeneration)?;
+        // A writer handoff must identify exactly which preceding generation
+        // was fenced. None would bypass the successor check and allow a
+        // self-asserted cutover receipt without a predecessor identity.
+        let Some(predecessor) = self.predecessor_generation else {
+            return Err(ExecutionContractError::NonSuccessorGeneration);
+        };
         if predecessor.get().checked_add(1) != Some(self.generation.get()) {
             return Err(ExecutionContractError::NonSuccessorGeneration);
         }
@@ -122,8 +122,19 @@ pub struct CodexTurnBindingV1 {
 
 impl CodexTurnBindingV1 {
     pub fn validate(&self) -> Result<(), ExecutionContractError> {
+        if self.protocol_id.as_str() != crate::APP_SERVER_V2_PROTOCOL_ID {
+            return Err(ExecutionContractError::UnsupportedCodexProtocol);
+        }
         if self.app_server_version.is_empty() {
             return Err(ExecutionContractError::EmptyText("app server version"));
+        }
+        if self.app_server_version.len() > crate::MAX_APP_SERVER_VERSION_BYTES
+            || self
+                .app_server_version
+                .bytes()
+                .any(|byte| byte.is_ascii_control())
+        {
+            return Err(ExecutionContractError::InvalidAppServerVersion);
         }
         if self.source_admission_digest.is_zero() {
             return Err(ExecutionContractError::ZeroDigest("source admission"));
@@ -268,19 +279,26 @@ pub struct ToolOutcomeV1 {
 
 impl ToolOutcomeV1 {
     pub fn validate(&self) -> Result<(), ExecutionContractError> {
-        if self.terminal_observed && self.stdout_digest.is_none() && self.stderr_digest.is_none() {
+        // A silent process can terminate with a trustworthy exit observation
+        // but no stdout/stderr bytes. The process exit code is itself a
+        // terminal marker; missing *all* markers still fails closed.
+        if self.terminal_observed
+            && self.exit_code.is_none()
+            && self.stdout_digest.is_none()
+            && self.stderr_digest.is_none()
+        {
             return Err(ExecutionContractError::MissingTerminalOutcome);
+        }
+        // An exit status is a terminal process observation. Accepting it with
+        // terminal_observed=false would turn conflicting evidence into a
+        // digest-valid indeterminate outcome.
+        if !self.terminal_observed && self.exit_code.is_some() {
+            return Err(ExecutionContractError::StatusOutcomeMismatch);
         }
         if self.stdout_digest.is_some_and(Digest32::is_zero)
             || self.stderr_digest.is_some_and(Digest32::is_zero)
         {
             return Err(ExecutionContractError::ZeroDigest("tool output"));
-        }
-        // An exit code is only observable when the tool reached terminality.
-        // Otherwise a forged "rejected before admission" receipt could
-        // conceal a completed process and authorize a second execution.
-        if !self.terminal_observed && self.exit_code.is_some() {
-            return Err(ExecutionContractError::StatusOutcomeMismatch);
         }
         Ok(())
     }
@@ -343,40 +361,25 @@ impl ExecutionReceiptV1 {
         {
             return Err(ExecutionContractError::MissingTerminalOutcome);
         }
-        // Completed or failed effects cannot be re-admitted. A terminally
-        // failed operation may still need reconciliation under the same ID.
-        // Unknown effects are reconcile-only, never pre-admission retries.
-        // Rollback after a known failure is a separate governed operation.
+        // Exhaustively classify every status/recovery pair. In particular,
+        // rejection cannot request a rollback or reconcile an effect that was
+        // never admitted; an admitted failure may still require reconciliation.
+        // Do not interpret a new enum variant as implicitly permitted.
         let recovery_allowed = matches!(
             (self.status, self.recovery),
             (ExecutionStatusV1::Completed, RecoveryDispositionV1::None)
                 | (ExecutionStatusV1::Failed, RecoveryDispositionV1::None)
-                | (
-                    ExecutionStatusV1::Failed,
-                    RecoveryDispositionV1::ReconcileSameOperation
-                )
+                | (ExecutionStatusV1::Failed, RecoveryDispositionV1::ReconcileSameOperation)
                 | (ExecutionStatusV1::Failed, RecoveryDispositionV1::Quarantine)
-                | (
-                    ExecutionStatusV1::Failed,
-                    RecoveryDispositionV1::RollbackToPredecessor
-                )
+                | (ExecutionStatusV1::Failed, RecoveryDispositionV1::RollbackToPredecessor)
                 | (
                     ExecutionStatusV1::Indeterminate,
                     RecoveryDispositionV1::ReconcileSameOperation
                 )
-                | (
-                    ExecutionStatusV1::Indeterminate,
-                    RecoveryDispositionV1::Quarantine
-                )
+                | (ExecutionStatusV1::Indeterminate, RecoveryDispositionV1::Quarantine)
                 | (ExecutionStatusV1::Rejected, RecoveryDispositionV1::None)
-                | (
-                    ExecutionStatusV1::Rejected,
-                    RecoveryDispositionV1::RetryBeforeAdmission
-                )
-                | (
-                    ExecutionStatusV1::Rejected,
-                    RecoveryDispositionV1::Quarantine
-                )
+                | (ExecutionStatusV1::Rejected, RecoveryDispositionV1::RetryBeforeAdmission)
+                | (ExecutionStatusV1::Rejected, RecoveryDispositionV1::Quarantine)
         );
         if !recovery_allowed {
             return Err(ExecutionContractError::StatusRecoveryMismatch);
@@ -415,19 +418,33 @@ impl RuntimeReceiptV1 {
         {
             return Err(ExecutionContractError::StatusOutcomeMismatch);
         }
-        // Rejected means the effect did not reach the runtime. It must never
-        // carry a terminal observation and then claim retry-before-admission.
-        if self.execution.status == ExecutionStatusV1::Rejected
-            && self.tool_outcome.terminal_observed
+        // Process-backed tools must not report success when the observed
+        // process exit is nonzero. A missing exit code is valid for tools
+        // without a process, and is not treated as an implicit success code.
+        if self.execution.status == ExecutionStatusV1::Completed
+            && self.tool_outcome.exit_code.is_some_and(|code| code != 0)
         {
             return Err(ExecutionContractError::StatusOutcomeMismatch);
         }
-        // A nonzero native process exit is never a completed success. A
-        // terminal success cannot separately request a retry of that effect.
-        if self.execution.status == ExecutionStatusV1::Completed
-            && (self.tool_outcome.exit_code.is_some_and(|code| code != 0)
-                || self.tool_outcome.retryable)
+        // Rejection is strictly pre-admission: neither a terminal result nor
+        // partial stdout/stderr may have been observed from a native tool.
+        // Otherwise a side-effecting, interrupted operation could be mislabeled
+        // retry-safe even with a correctly recomputed outcome digest.
+        if self.execution.status == ExecutionStatusV1::Rejected
+            && (self.tool_outcome.terminal_observed
+                || self.tool_outcome.stdout_digest.is_some()
+                || self.tool_outcome.stderr_digest.is_some())
         {
+            return Err(ExecutionContractError::StatusOutcomeMismatch);
+        }
+        // A native retry hint and a recovery directive must agree. A tool that
+        // may have been admitted cannot authorize a fresh attempt through a
+        // lower-level retryable bit, even when the observed outcome digest is
+        // valid. Only a pre-admission rejection with no native evidence may
+        // claim RetryBeforeAdmission; all other states are non-retryable here.
+        let safe_to_retry = self.execution.status == ExecutionStatusV1::Rejected
+            && self.execution.recovery == RecoveryDispositionV1::RetryBeforeAdmission;
+        if self.tool_outcome.retryable != safe_to_retry {
             return Err(ExecutionContractError::StatusOutcomeMismatch);
         }
         Ok(())
@@ -438,6 +455,7 @@ impl RuntimeReceiptV1 {
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub enum RuntimeExecutionError {
     InvalidIntent(ExecutionContractError),
+    InvalidReceipt(ExecutionContractError),
     Rejected,
     Indeterminate,
     Transport(String),
@@ -464,12 +482,44 @@ pub trait NativeExecutionAdapter: Send + Sync {
     ) -> impl Future<Output = Result<RuntimeReceiptV1, RuntimeExecutionError>> + Send;
 }
 
+/// Admit a native tool call through the shared structural safety gate.
+///
+/// Unlike calling `NativeExecutionAdapter::execute` directly, this entry
+/// rejects an invalid or expired intent before any backend invocation and
+/// rechecks the returned receipt against the exact tool, arguments, host,
+/// idempotency key, generation and payload before forwarding it to the caller.
+///
+/// This does not authenticate physical host evidence, grant Final-use, or
+/// replace the production writer / independent observer.
+pub async fn execute_native_tool_intent<A: NativeExecutionAdapter>(
+    adapter: &A,
+    now_ms: u64,
+    intent: RuntimeToolIntentV1,
+) -> Result<RuntimeReceiptV1, RuntimeExecutionError> {
+    intent
+        .validate()
+        .map_err(RuntimeExecutionError::InvalidIntent)?;
+    if now_ms >= intent.cell.deadline_ms {
+        return Err(RuntimeExecutionError::InvalidIntent(
+            ExecutionContractError::ExpiredDeadline,
+        ));
+    }
+
+    let receipt = adapter.execute(intent.clone()).await?;
+    receipt
+        .validate_against(&intent)
+        .map_err(RuntimeExecutionError::InvalidReceipt)?;
+    Ok(receipt)
+}
+
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub enum ExecutionContractError {
     EmptyText(&'static str),
     ExpiredDeadline,
     ZeroDigest(&'static str),
     ZeroConnection,
+    UnsupportedCodexProtocol,
+    InvalidAppServerVersion,
     PayloadScopeMismatch,
     ToolPayloadMismatch,
     WrongIntentKind,
