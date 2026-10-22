@@ -118,8 +118,19 @@ pub struct CodexTurnBindingV1 {
 
 impl CodexTurnBindingV1 {
     pub fn validate(&self) -> Result<(), ExecutionContractError> {
+        if self.protocol_id.as_str() != crate::APP_SERVER_V2_PROTOCOL_ID {
+            return Err(ExecutionContractError::UnsupportedCodexProtocol);
+        }
         if self.app_server_version.is_empty() {
             return Err(ExecutionContractError::EmptyText("app server version"));
+        }
+        if self.app_server_version.len() > crate::MAX_APP_SERVER_VERSION_BYTES
+            || self
+                .app_server_version
+                .bytes()
+                .any(|byte| byte.is_ascii_control())
+        {
+            return Err(ExecutionContractError::InvalidAppServerVersion);
         }
         if self.source_admission_digest.is_zero() {
             return Err(ExecutionContractError::ZeroDigest("source admission"));
@@ -426,6 +437,8 @@ pub enum ExecutionContractError {
     ExpiredDeadline,
     ZeroDigest(&'static str),
     ZeroConnection,
+    UnsupportedCodexProtocol,
+    InvalidAppServerVersion,
     PayloadScopeMismatch,
     WrongIntentKind,
     MissingTerminalOutcome,
