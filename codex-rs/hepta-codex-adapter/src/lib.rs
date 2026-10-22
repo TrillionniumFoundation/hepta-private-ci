@@ -70,8 +70,8 @@ pub use wire::codex_operation_intent_wire_schema_v2;
 pub use wire::decode_codex_operation_intent_wire_v2;
 pub use wire::encode_codex_operation_intent_wire_v2;
 
-const MAX_APP_SERVER_VERSION_BYTES: usize = 128;
-pub const APP_SERVER_V2_PROTOCOL_ID: &str = "codex.app-server.v2";
+const MAX_APP_SERVER_VERSION_BYTES: usize = codex_hepta_types::MAX_CODEX_APP_SERVER_VERSION_BYTES_V1;
+pub const APP_SERVER_V2_PROTOCOL_ID: &str = codex_hepta_types::CODEX_APP_SERVER_V2_PROTOCOL_ID_V1;
 pub const TURN_START_METHOD_ID: &str = "turn.start";
 pub const TURN_START_RPC_METHOD: &str = "turn/start";
 pub const THREAD_READ_RPC_METHOD: &str = "thread/read";
