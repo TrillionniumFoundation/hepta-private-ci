@@ -4,7 +4,9 @@ use crate::acl::ensure_allow_mask_aces;
 use crate::acl::ensure_allow_write_aces;
 use crate::acl::fetch_dacl_handle;
 use pretty_assertions::assert_eq;
+use windows_sys::Win32::Security::Authorization::ConvertSecurityDescriptorToStringSecurityDescriptorW;
 use windows_sys::Win32::Security::Authorization::DENY_ACCESS;
+use windows_sys::Win32::Security::Authorization::SDDL_REVISION_1;
 use windows_sys::Win32::Security::Authorization::SE_FILE_OBJECT;
 use windows_sys::Win32::Security::Authorization::SetNamedSecurityInfoW;
 use windows_sys::Win32::Security::CONTAINER_INHERIT_ACE;
@@ -28,6 +30,64 @@ impl Drop for OwnedToken {
 }
 
 struct Impersonation;
+
+fn trace_fixture_dacl(label: &str, path: &std::path::Path) {
+    let snapshot = (|| -> Result<String> {
+        // Query only the owned fixture. Keep the native DACL's order, masks and
+        // inheritance flags so failures distinguish storage normalization from an
+        // ineffective deny. This helper never changes an ACL or impersonates.
+        // SAFETY: the descriptor owns its DACL until the conversion has copied it.
+        let (_, descriptor) = unsafe { fetch_dacl_handle(path)? };
+        let mut encoded = std::ptr::null_mut();
+        let mut encoded_len = 0;
+        // SAFETY: the descriptor and output pointers stay live for conversion. Each
+        // returned allocation is freed exactly once, including the failure path.
+        let (ok, error) = unsafe {
+            let ok = ConvertSecurityDescriptorToStringSecurityDescriptorW(
+                descriptor,
+                SDDL_REVISION_1,
+                DACL_SECURITY_INFORMATION,
+                &mut encoded,
+                &mut encoded_len,
+            );
+            let error = if ok == 0 { GetLastError() } else { 0 };
+            LocalFree(descriptor as HLOCAL);
+            (ok, error)
+        };
+        if ok == 0 || encoded.is_null() || encoded_len == 0 {
+            if !encoded.is_null() {
+                // SAFETY: encoded is the conversion's still-owned allocation.
+                unsafe { LocalFree(encoded as HLOCAL) };
+            }
+            return Err(anyhow!("fixture DACL conversion failed ({label}): {error}"));
+        }
+        // SAFETY: Windows returned the allocation's UTF-16 capacity. Read only
+        // through the first NUL, within that bound, and copy before freeing it.
+        let sddl = unsafe {
+            let mut len = 0;
+            while len < encoded_len as usize && *encoded.add(len) != 0 {
+                len += 1;
+            }
+            if len == encoded_len as usize {
+                LocalFree(encoded as HLOCAL);
+                return Err(anyhow!("fixture DACL string has no terminator ({label})"));
+            }
+            let units = std::slice::from_raw_parts(encoded, len);
+            let value = String::from_utf16_lossy(units);
+            LocalFree(encoded as HLOCAL);
+            value
+        };
+        Ok(sddl)
+    })();
+    match snapshot {
+        Ok(sddl) => eprintln!(
+            "fixture DACL {label}: path={} directory={} sddl={sddl}",
+            path.display(),
+            path.is_dir()
+        ),
+        Err(error) => eprintln!("fixture DACL {label}: unavailable: {error:#}"),
+    }
+}
 
 impl Impersonation {
     unsafe fn enter(token: HANDLE) -> Result<Self> {
@@ -172,6 +232,8 @@ fn partial_delete_deny_is_repaired_before_native_workspace_writes() -> Result<()
         code
     };
     anyhow::ensure!(code == ERROR_SUCCESS, "seed partial delete deny: {code}");
+    trace_fixture_dacl("partial directory deny", fixture.path());
+    trace_fixture_dacl("partial inherited file deny", &existing);
     // SAFETY: the base token stays owned until restricted-token creation completes.
     let base = OwnedToken(unsafe { get_current_token_for_restriction()? });
     // SAFETY: the owned base token and validated capability SID are live; the
@@ -186,6 +248,8 @@ fn partial_delete_deny_is_repaired_before_native_workspace_writes() -> Result<()
     }
     // SAFETY: the fixture and validated capability SID are live for the repair.
     let repaired = unsafe { add_deny_write_ace(fixture.path(), capability.as_ptr())? };
+    trace_fixture_dacl("first directory repair", fixture.path());
+    trace_fixture_dacl("file after directory repair", &existing);
     // SAFETY: the same objects remain live. Check native directory and file
     // storage retains the constructor's complete mask and inheritance scope.
     let repeated_repairs = unsafe {
@@ -195,6 +259,8 @@ fn partial_delete_deny_is_repaired_before_native_workspace_writes() -> Result<()
             add_deny_write_ace(&existing, capability.as_ptr())?,
         )
     };
+    trace_fixture_dacl("repeated directory repair", fixture.path());
+    trace_fixture_dacl("repeated file repair", &existing);
     let (read, denied) = {
         // SAFETY: token remains owned throughout this impersonation scope.
         let _impersonation = unsafe { Impersonation::enter(token.0)? };
@@ -257,6 +323,12 @@ fn workspace_capabilities_deny_writes_and_deletes_under_broad_identity_aces() ->
     }
     std::fs::write(outside.join("keep.txt"), "outside")?;
     std::fs::create_dir(outside.join("keep-dir"))?;
+    trace_fixture_dacl("broad parent", fixture.path());
+    trace_fixture_dacl("allowed workspace", &allowed[0]);
+    trace_fixture_dacl("allowed temp", &allowed[1]);
+    trace_fixture_dacl("outside parent", &outside);
+    trace_fixture_dacl("outside file", &outside.join("keep.txt"));
+    trace_fixture_dacl("outside directory", &outside.join("keep-dir"));
     let token = OwnedToken(unsafe {
         create_workspace_write_token_with_caps_from(base.0, &[cap_a.as_ptr(), cap_b.as_ptr()])?
     });
