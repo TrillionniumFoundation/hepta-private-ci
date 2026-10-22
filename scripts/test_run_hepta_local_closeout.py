@@ -16,6 +16,102 @@ from scripts import run_hepta_local_closeout as mod
 
 
 class LocalCloseoutTests(unittest.TestCase):
+    def test_tracked_regular_file_is_pinned(self):
+        with tempfile.TemporaryDirectory() as root:
+            repo = Path(root) / "repo"
+            repo.mkdir()
+            subprocess.run(["git", "init", "-q", str(repo)], check=True)
+            (repo / "module.rs").write_text("fn main() {}", encoding="utf-8")
+            subprocess.run(["git", "-C", str(repo), "add", "module.rs"], check=True)
+            result = mod.required_file_pin(repo, "module.rs")
+            self.assertTrue(result["present"])
+            self.assertTrue(result["pinned"])
+            self.assertEqual(result["reason"], "TRACKED_REGULAR_FILE")
+
+    def test_clean_git_worktree_with_external_symlink_is_not_pinned(self):
+        with tempfile.TemporaryDirectory() as root:
+            base = Path(root)
+            repo = base / "repo"
+            repo.mkdir()
+            subprocess.run(["git", "init", "-q", str(repo)], check=True)
+            external = base / "unreviewed.rs"
+            external.write_text("unreviewed contents", encoding="utf-8")
+            (repo / "module.rs").symlink_to(external)
+            subprocess.run(["git", "-C", str(repo), "add", "module.rs"], check=True)
+            subprocess.run(["git", "-C", str(repo), "-c", "user.name=LocalTest",
+                            "-c", "user.email=local@example.invalid", "commit",
+                            "-qm", "tracked symlink"], check=True)
+            self.assertTrue(mod.git_snapshot(repo)["clean"])
+            result = mod.required_file_pin(repo, "module.rs")
+            self.assertTrue(result["present"])
+            self.assertFalse(result["pinned"])
+            self.assertEqual(result["reason"], "SYMLINKED_SOURCE_PATH")
+
+    def test_clean_worktree_with_ignored_untracked_required_file_is_not_pinned(self):
+        with tempfile.TemporaryDirectory() as root:
+            repo = Path(root) / "repo"
+            repo.mkdir()
+            subprocess.run(["git", "init", "-q", str(repo)], check=True)
+            (repo / ".gitignore").write_text("module.rs\n", encoding="utf-8")
+            subprocess.run(["git", "-C", str(repo), "add", ".gitignore"], check=True)
+            subprocess.run(["git", "-C", str(repo), "-c", "user.name=LocalTest",
+                            "-c", "user.email=local@example.invalid", "commit",
+                            "-qm", "ignore module"], check=True)
+            (repo / "module.rs").write_text("ignored attacker controlled file", encoding="utf-8")
+            self.assertTrue(mod.git_snapshot(repo)["clean"])
+            result = mod.required_file_pin(repo, "module.rs")
+            self.assertTrue(result["present"])
+            self.assertFalse(result["pinned"])
+            self.assertEqual(result["reason"], "NOT_A_SINGLE_TRACKED_REGULAR_FILE")
+
+    def test_symlinked_parent_and_path_traversal_are_not_pinned(self):
+        with tempfile.TemporaryDirectory() as root:
+            base = Path(root)
+            repo = base / "repo"
+            repo.mkdir()
+            subprocess.run(["git", "init", "-q", str(repo)], check=True)
+            outside = base / "outside"
+            outside.mkdir()
+            (outside / "module.rs").write_text("external", encoding="utf-8")
+            (repo / "src").symlink_to(outside)
+            self.assertEqual(mod.required_file_pin(repo, "src/module.rs")["reason"], "SYMLINKED_SOURCE_PATH")
+            self.assertEqual(mod.required_file_pin(repo, "../outside/module.rs")["reason"], "UNSAFE_RELATIVE_PATH")
+
+    def test_symlinked_required_file_blocks_stage_despite_mocked_green_checks(self):
+        with tempfile.TemporaryDirectory() as root:
+            base = Path(root)
+            roots = {"hepta": base / "hepta", "runtime": base / "runtime"}
+            for path in roots.values():
+                path.mkdir()
+                subprocess.run(["git", "init", "-q", str(path)], check=True)
+            for stage in mod.STAGES.values():
+                for repo, rel in stage["required"]:
+                    path = roots[repo] / rel
+                    path.parent.mkdir(parents=True, exist_ok=True)
+                    path.write_text("tracked regular", encoding="utf-8")
+            target = roots["hepta"] / mod.STAGES["P0"]["required"][0][1]
+            target.unlink()
+            external = base / "external.rs"
+            external.write_text("unreviewed", encoding="utf-8")
+            target.symlink_to(external)
+            for path in roots.values():
+                subprocess.run(["git", "-C", str(path), "add", "."], check=True)
+                subprocess.run(["git", "-C", str(path), "-c", "user.name=LocalTest",
+                                "-c", "user.email=local@example.invalid", "commit",
+                                "-qm", "baseline"], check=True)
+            with patch.object(mod, "run_check", return_value={"status": "PASS_LOCAL"}), patch.object(
+                sys, "argv", ["run", "--hepta", str(roots["hepta"]), "--runtime",
+                              str(roots["runtime"]), "--report-dir", str(base / "results"),
+                              "--execute-checks"]
+            ), contextlib.redirect_stdout(io.StringIO()):
+                code = mod.main()
+            self.assertEqual(code, 2)
+            report = json.loads(next((base / "results").glob("run-*/acceptance.json")).read_text())
+            self.assertEqual(report["stages"]["P0"]["status"], "BLOCKED_SOURCE_UNPINNED")
+            self.assertEqual(report["stages"]["P0"]["checks"], [])
+            self.assertEqual(report["stages"]["P0"]["files"][0]["reason"], "SYMLINKED_SOURCE_PATH")
+            self.assertFalse(report["production_qualified"])
+
     def test_unmounted_checkout_is_not_a_source(self):
         with tempfile.TemporaryDirectory() as root:
             result = mod.git_snapshot(Path(root) / "not-mount")
