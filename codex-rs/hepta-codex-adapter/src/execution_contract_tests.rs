@@ -448,6 +448,59 @@ fn execution_receipt_status_recovery_matrix_is_fail_closed() {
 }
 
 #[test]
+fn pre_admission_rejection_cannot_claim_observed_native_output() {
+    let value = intent();
+    let outcome = ToolOutcomeV1 {
+        terminal_observed: false,
+        exit_code: None,
+        stdout_digest: None,
+        stderr_digest: None,
+        retryable: true,
+    };
+    let mut receipt = RuntimeReceiptV1 {
+        execution: ExecutionReceiptV1 {
+            operation_id: value.cell.operation_id.clone(),
+            intent_digest: value.cell.intent_digest(),
+            generation: value.cell.generation,
+            final_payload_digest: value.cell.final_payload.clone(),
+            outcome_digest: Some(outcome.outcome_digest()),
+            status: ExecutionStatusV1::Rejected,
+            recovery: RecoveryDispositionV1::RetryBeforeAdmission,
+            authority: AuthorityPosture::DENY_ALL,
+        },
+        runtime_intent_digest: value.intent_digest(),
+        tool_outcome: outcome,
+    };
+    // A refusal before dispatch has no native output, and remains retry-safe.
+    assert_eq!(receipt.validate_against(&value), Ok(()));
+
+    // Partial native output contradicts pre-admission rejection even without
+    // a process exit. Bind each forged output to its matching digest so the
+    // security gate, not the digest-integrity gate, rejects it.
+    for (stdout, stderr) in [
+        (Some(digest("stdout")), None),
+        (None, Some(digest("stderr"))),
+        (Some(digest("stdout")), Some(digest("stderr"))),
+    ] {
+        receipt.tool_outcome.stdout_digest = stdout;
+        receipt.tool_outcome.stderr_digest = stderr;
+        receipt.execution.outcome_digest = Some(receipt.tool_outcome.outcome_digest());
+        assert_eq!(
+            receipt.validate_against(&value),
+            Err(ExecutionContractError::StatusOutcomeMismatch)
+        );
+
+        // The same partial bytes may be genuine indeterminate evidence: they
+        // require same-operation reconciliation, never a new retry admission.
+        receipt.execution.status = ExecutionStatusV1::Indeterminate;
+        receipt.execution.recovery = RecoveryDispositionV1::ReconcileSameOperation;
+        assert_eq!(receipt.validate_against(&value), Ok(()));
+        receipt.execution.status = ExecutionStatusV1::Rejected;
+        receipt.execution.recovery = RecoveryDispositionV1::RetryBeforeAdmission;
+    }
+}
+
+#[test]
 fn nonzero_process_exit_cannot_be_a_successful_runtime_receipt() {
     let value = intent();
     let outcome = ToolOutcomeV1 {
