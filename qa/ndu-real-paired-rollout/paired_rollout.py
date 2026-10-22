@@ -4,10 +4,12 @@ Paired rollouts are a prerequisite for terminal-risk covariance, not evidence of
 NDU optimality. The actor receives observation only; terminal truth is parent-only.
 """
 import argparse
+from contextlib import contextmanager
 import hashlib
 import json
 import math
 import os
+import stat
 from pathlib import Path
 import sys
 import time
@@ -357,17 +359,41 @@ def verify_frozen_train(work, dev_plan, manifest, *, min_source_groups=128):
             'terminal_batch_sha256':receipt['terminal_batch_sha256']}
 
 
-def main():
-    parser=argparse.ArgumentParser(description=__doc__)
-    parser.add_argument('--cohort',required=True)
-    parser.add_argument('--model',required=True)
-    parser.add_argument('--cells',required=True)
-    parser.add_argument('--split',choices=['train','dev','test'],required=True)
-    parser.add_argument('--work',required=True)
-    parser.add_argument('--budget',type=float,default=10.)
-    parser.add_argument('--seeds',default='23,41')
-    parser.add_argument('--temperature',type=float,default=0.7)
-    args=parser.parse_args()
+@contextmanager
+def exclusive_workdir_lock(work):
+    """Single-writer durable journal lease for the Linux P3 experiment.
+
+    The lock inode remains on disk and is intentionally NEVER unlinked:
+    unlinking a live advisory lock permits two writers on distinct inodes.
+    Process exit releases the flock even on a crash. An unsupported OS is
+    rejected rather than continuing without serialization.
+    """
+    if os.name != 'posix' or not hasattr(os, 'O_NOFOLLOW'):
+        raise RuntimeError('paired five-arm journaling requires POSIX no-follow and flock')
+    import fcntl
+    root=Path(work)
+    if root.is_symlink() or (root.exists() and not root.is_dir()):
+        raise ValueError('work directory must be a real directory, not a symlink')
+    root.mkdir(parents=True,exist_ok=True,mode=0o700)
+    flags=os.O_RDWR | os.O_CREAT | os.O_NOFOLLOW | getattr(os,'O_CLOEXEC',0)
+    descriptor=os.open(root/'.hepta-ndu-p3.lock',flags,0o600)
+    try:
+        info=os.fstat(descriptor)
+        if not stat.S_ISREG(info.st_mode) or info.st_nlink != 1:
+            raise ValueError('work lock must be a single, private regular inode')
+        try:
+            fcntl.flock(descriptor,fcntl.LOCK_EX | fcntl.LOCK_NB)
+        except BlockingIOError as exc:
+            raise RuntimeError('five-arm work directory already active; parallel journal writers denied') from exc
+        try:
+            yield
+        finally:
+            fcntl.flock(descriptor,fcntl.LOCK_UN)
+    finally:
+        os.close(descriptor)
+
+
+def _run_frozen_phase(args):
     from backend import FlorenceBackend
     from cells import FourCells
     from cohort import validate_splits,load_observations,iter_pairs
@@ -443,6 +469,21 @@ def main():
               'source_groups':len(observations),'status':'completed_no_scientific_claim'}
     (out/f'{args.split}.complete.json').write_text(json.dumps(complete,sort_keys=True,indent=2)+'\n')
     print(json.dumps(complete))
+
+
+def main():
+    parser=argparse.ArgumentParser(description=__doc__)
+    parser.add_argument('--cohort',required=True)
+    parser.add_argument('--model',required=True)
+    parser.add_argument('--cells',required=True)
+    parser.add_argument('--split',choices=['train','dev','test'],required=True)
+    parser.add_argument('--work',required=True)
+    parser.add_argument('--budget',type=float,default=10.)
+    parser.add_argument('--seeds',default='23,41')
+    parser.add_argument('--temperature',type=float,default=0.7)
+    args=parser.parse_args()
+    with exclusive_workdir_lock(Path(args.work)):
+        _run_frozen_phase(args)
 
 
 if __name__ == '__main__':

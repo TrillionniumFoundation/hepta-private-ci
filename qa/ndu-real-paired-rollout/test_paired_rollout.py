@@ -208,6 +208,40 @@ class PairedTests(unittest.TestCase):
             with self.assertRaisesRegex(ValueError,'frozen model, stochastic seed'):
                 pr.to_terminal_batch(self.header,altered,[self.ref],[self.obs])
 
+    def test_exclusive_workdir_guard_prevents_parallel_writers(self):
+        # Must serialize actual concurrent writers, not only reject duplicate
+        # receipts once both already modified the same append-only journal.
+        import subprocess
+        import sys
+        import os
+        work=self.root/'durable-five-arm-run'
+        if os.name != 'posix':
+            with self.assertRaisesRegex(RuntimeError, 'requires POSIX'):
+                with pr.exclusive_workdir_lock(work):
+                    pass
+            return
+        with pr.exclusive_workdir_lock(work):
+            with self.assertRaisesRegex(RuntimeError,'already active'):
+                with pr.exclusive_workdir_lock(work):
+                    pass
+            child="from pathlib import Path; import paired_rollout as p; " \
+                  "p.exclusive_workdir_lock(Path("+repr(str(work))+")).__enter__()"
+            env=dict(os.environ)
+            env['PYTHONPATH']=str(Path(pr.__file__).resolve().parent)+os.pathsep+env.get('PYTHONPATH','')
+            r=subprocess.run([sys.executable,'-c',child],env=env,
+                             capture_output=True,text=True,timeout=15)
+            self.assertNotEqual(r.returncode,0)
+            self.assertIn('already active',r.stderr)
+        with pr.exclusive_workdir_lock(work):
+            pass
+        lock=work/'.hepta-ndu-p3.lock'
+        self.assertTrue(lock.exists())
+        lock.unlink()
+        lock.symlink_to(work/'foreign-target')
+        with self.assertRaises((ValueError,OSError)):
+            with pr.exclusive_workdir_lock(work):
+                pass
+
     def test_plan_rejects_unverified_cell_checkpoint_before_generating(self):
         from unittest.mock import patch
         model_dir=self.root/'fake-model'
