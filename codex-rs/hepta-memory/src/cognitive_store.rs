@@ -61,6 +61,12 @@ const COGNITIVE_RECOVERED_DB_PREFIX: &str = "cognitive_recovered_v1_";
 static MIGRATOR: sqlx::migrate::Migrator = sqlx::migrate!("./migrations");
 
 const REQUIRED_SCHEMA_OBJECTS: &[(&str, &str)] = &[
+    ("cognitive_memory_cell_checkpoints", "table"),
+    ("cognitive_memory_cell_checkpoints_no_update", "trigger"),
+    ("cognitive_memory_cell_checkpoints_no_delete", "trigger"),
+    ("cognitive_memory_cell_heads", "table"),
+    ("cognitive_memory_cell_heads_no_delete", "trigger"),
+    ("cognitive_memory_cell_heads_monotonic", "trigger"),
     ("shared_experience_use_events", "table"),
     ("shared_experience_use_no_update", "trigger"),
     ("shared_experience_use_no_delete", "trigger"),
@@ -200,7 +206,7 @@ const REQUIRED_SCHEMA_OBJECTS: &[(&str, &str)] = &[
     ("cognitive_operation_dispatch_claims_expiry_lookup", "index"),
 ];
 const REQUIRED_SCHEMA_ORACLE_SHA256: &str =
-    "046f23bab5d4c779735c762159c79e61cfe3a6a8a35e18ff8ec4f40e5c4e2be2";
+    "58b210d8065a05856a1e18ad37342a7b65b0f542909b85b1a7683c78e72db1e5";
 
 #[derive(Debug, thiserror::Error)]
 pub enum CognitiveStoreError {

@@ -669,6 +669,23 @@ impl CognitiveStore {
         scope: &CognitiveScope,
         now_unix_seconds: i64,
     ) -> Result<DurableCognitiveSnapshot, CognitiveStoreError> {
+        let mut transaction = self.pool.begin().await.map_err(unavailable)?;
+        let snapshot = self
+            .lane_c_snapshot_tx(&mut transaction, access, scope, now_unix_seconds)
+            .await?;
+        transaction.commit().await.map_err(unavailable)?;
+        Ok(snapshot)
+    }
+
+    /// Acquire the same bounded owner cut while a composite operation holds
+    /// its transaction, so a concurrent forget cannot split validation/write.
+    pub(crate) async fn lane_c_snapshot_tx(
+        &self,
+        transaction: &mut sqlx::Transaction<'_, Sqlite>,
+        access: &CognitiveAccess,
+        scope: &CognitiveScope,
+        now_unix_seconds: i64,
+    ) -> Result<DurableCognitiveSnapshot, CognitiveStoreError> {
         self.authorize(access, scope)?;
         if now_unix_seconds < 0 {
             return Err(CognitiveStoreError::Invalid(
@@ -676,7 +693,6 @@ impl CognitiveStore {
             ));
         }
         let (scope_kind, workspace) = scope.database_parts();
-        let mut transaction = self.pool.begin().await.map_err(unavailable)?;
         let rows = sqlx::query(
             "SELECT r.memory_id, r.revision, r.content_sha256, r.verification,
                     r.lifecycle, r.valid_from_unix_seconds, r.valid_to_unix_seconds,
@@ -689,7 +705,7 @@ impl CognitiveStore {
         .bind(scope_kind)
         .bind(workspace)
         .bind((MAX_REVISIONS + 1) as i64)
-        .fetch_all(&mut *transaction)
+        .fetch_all(&mut **transaction)
         .await
         .map_err(unavailable)?;
         if rows.len() > MAX_REVISIONS {
@@ -707,7 +723,7 @@ impl CognitiveStore {
         )
         .bind(self.owner_agent_id.as_str()).bind(scope_kind).bind(workspace)
         .bind((MAX_CITATIONS + 1) as i64)
-        .fetch_all(&mut *transaction).await.map_err(unavailable)?;
+        .fetch_all(&mut **transaction).await.map_err(unavailable)?;
         if citation_rows.len() > MAX_CITATIONS {
             return Err(CognitiveStoreError::Unavailable(
                 "Lane C citation capacity exceeded".to_string(),
@@ -729,7 +745,7 @@ impl CognitiveStore {
         let source_count: i64 = sqlx::query_scalar(
             "SELECT count(*) FROM (SELECT 1 FROM source_ledger WHERE owner_agent_id = ? AND scope_kind = ? AND workspace_sha256 IS ? LIMIT 65537)",
         ).bind(self.owner_agent_id.as_str()).bind(scope_kind).bind(workspace)
-            .fetch_one(&mut *transaction).await.map_err(unavailable)?;
+            .fetch_one(&mut **transaction).await.map_err(unavailable)?;
         if source_count > MAX_SOURCES {
             return Err(CognitiveStoreError::Unavailable(
                 "Lane C source capacity exceeded".to_string(),
@@ -743,13 +759,13 @@ impl CognitiveStore {
         .bind(self.owner_agent_id.as_str())
         .bind(scope_kind)
         .bind(workspace)
-        .fetch_one(&mut *transaction)
+        .fetch_one(&mut **transaction)
         .await
         .map_err(unavailable)?;
         let graph_generation: Option<i64> =
             sqlx::query_scalar("SELECT generation FROM kg_projection WHERE projection_scope = ?")
                 .bind(scope.projection_key())
-                .fetch_optional(&mut *transaction)
+                .fetch_optional(&mut **transaction)
                 .await
                 .map_err(unavailable)?;
         let memory_frontier = rows.len() as u64;
@@ -855,7 +871,6 @@ impl CognitiveStore {
             heads,
         )
         .map_err(corrupt)?;
-        transaction.commit().await.map_err(unavailable)?;
         let scope_id = StableId::new(format!(
             "cognitive:{}:{}",
             self.owner_agent_id.as_str(),
