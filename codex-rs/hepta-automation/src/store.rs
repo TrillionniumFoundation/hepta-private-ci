@@ -1397,7 +1397,6 @@ fn matches_canonical_path_spelling(original: &Path, canonical: &Path) -> bool {
     false
 }
 
-
 #[cfg(all(test, windows))]
 mod canonical_windows_tests {
     use super::*;
@@ -1413,12 +1412,12 @@ mod canonical_windows_tests {
     #[test]
     fn prefix_normalization_never_equates_different_targets() {
         assert!(matches_canonical_path_spelling(
-            Path::new(r"D:\\hepta\\owner"),
-            Path::new(r"\\?\D:\\hepta\\owner"),
+            Path::new(r"D:\hepta\owner"),
+            Path::new(r"\\?\D:\hepta\owner"),
         ));
         assert!(!matches_canonical_path_spelling(
-            Path::new(r"D:\\hepta\\link"),
-            Path::new(r"\\?\D:\\hepta\\target"),
+            Path::new(r"D:\hepta\link"),
+            Path::new(r"\\?\D:\hepta\target"),
         ));
     }
 }
