@@ -12,7 +12,7 @@ This *additive* follow-up is stacked on [the frozen continuous-latent research P
 - Receipts include an immutable-input replay digest and **DENY_ALL**. Replaying a digest is not source authentication, external future-window attestation, a signer, or final-use authorization.
 - `continuous_direction_step` implements differentiable Euler combination of the **already registered** base flow plus bounded compatible Cell directions. Weight zero gives exact base-flow parity; numerical gradients can reach Cell heads. It does not train heads or access ground-truth facts.
 - `masked_logit_step` is a **P2 contract primitive**: same-vocabulary logit deltas are combinable, while the subsequent unmask action is atomic and only chooses currently masked positions. It is **not** a trained Diffusion LLM or proof of text-generation quality.
-- `test_portfolio.py` contains 13 deterministic tests, including 30 randomized profiles checked against an independent scalar enumeration.
+- `test_portfolio.py` contains 14 deterministic tests, including 30 randomized profiles checked against an independent scalar enumeration.
 
 ## Mathematical non-claims that must survive code review
 
@@ -32,7 +32,7 @@ cd experiments/ndu_latent_riccati/followup
 python -m unittest -v test_portfolio.py
 ```
 
-Locally the exact source blobs were tested with Python 3, NumPy 2.3.5 and CPU PyTorch 2.10.0: **13 tests passed**, including randomized exhaustive reference checks. These are *local numerical regression tests*, not a qualifying native Rust CI receipt, dedicated-cloud run, or a scientific improvement result. The exact two committed Python blob SHAs were compared with the local `git hash-object` values to protect against source drift.
+Locally the exact source blobs were tested with Python 3, NumPy 2.3.5 and CPU PyTorch 2.10.0: **14 tests passed**, including randomized exhaustive reference checks. These are *local numerical regression tests*, not a qualifying native Rust CI receipt, dedicated-cloud run, or a scientific improvement result. The exact two committed Python blob SHAs were compared with the local `git hash-object` values to protect against source drift.
 
 ## Strict P0–P4 dependency/gate matrix
 
@@ -62,4 +62,4 @@ Locally the exact source blobs were tested with Python 3, NumPy 2.3.5 and CPU Py
 - #3055's [blocking-ci 39612160175](https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/39612160175) failed, including cargo-deny dependency advisories, macOS Bazel dragonbox fetch HTTP 503 and Windows sandbox ACL tests. Security advisories are not waived by the research shadow tests.
 - Production NDU covariance/conditional support, independent future-window observer, model CAS/CNS/Fence, Final-use, named-host 64–4096 Cell resource receipts and native Rust compatibility remain independent gates.
 
-This follow-up has no effect authority, no result-based test rewriting, no inference-time hidden label access and no permission to merge into production solely because 13 small unit tests pass.
+This follow-up has no effect authority, no result-based test rewriting, no inference-time hidden label access and no permission to merge into production solely because 14 small unit tests pass.
