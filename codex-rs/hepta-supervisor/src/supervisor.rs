@@ -89,7 +89,12 @@ impl<D: ProcessDriver> Supervisor<D> {
                 let process_fault = supervisor.recover_slot(&agent_id, slot, &record, now).err();
                 supervisor.recover_restart_budget(&agent_id, slot, now)?;
                 supervisor.recover_release_transaction(&agent_id, slot, now)?;
-                supervisor.recover_signed_intent(&agent_id, slot, &record, process_fault.is_none())?;
+                supervisor.recover_signed_intent(
+                    &agent_id,
+                    slot,
+                    &record,
+                    process_fault.is_none(),
+                )?;
                 Ok(process_fault)
             });
             match result {
@@ -702,7 +707,9 @@ impl<D: ProcessDriver> Supervisor<D> {
         slot.signed_intent = Some(intent.clone());
         if matches!(
             intent.status,
-            SignedIntentStatus::Committed | SignedIntentStatus::RolledBack | SignedIntentStatus::Aborted
+            SignedIntentStatus::Committed
+                | SignedIntentStatus::RolledBack
+                | SignedIntentStatus::Aborted
         ) {
             return Ok(());
         }

@@ -167,8 +167,12 @@ fn exact_digest_abort_terminalizes_unresolved_intent() -> Result<(), SupervisorE
     write_signed_intent_recovery_directive(record.layout.run_root(), &directive)
         .map_err(|error| SupervisorError::Invalid(error.to_string()))?;
 
-    let (_recovered, report) =
-        Supervisor::recover(fleet.registry.clone(), NoProcessDriver, config(), Instant::now())?;
+    let (_recovered, report) = Supervisor::recover(
+        fleet.registry.clone(),
+        NoProcessDriver,
+        config(),
+        Instant::now(),
+    )?;
     assert!(report.faults.is_empty());
     let terminal = read_signed_intent(record.layout.run_root())
         .map_err(|error| SupervisorError::Invalid(error.to_string()))?
@@ -282,7 +286,10 @@ fn process_recovery_fault_cannot_consume_an_abort_directive() -> Result<(), Supe
 
     // A corrupt process lease means the host cannot establish the absence of
     // an old process. The matching Abort directive must remain unapplied.
-    std::fs::write(record.layout.run_root().join("supervisor-process.json"), b"{invalid")?;
+    std::fs::write(
+        record.layout.run_root().join("supervisor-process.json"),
+        b"{invalid",
+    )?;
     let (recovered, report) =
         Supervisor::recover(fleet.registry, NoProcessDriver, config(), Instant::now())?;
     assert!(!report.faults.is_empty());
