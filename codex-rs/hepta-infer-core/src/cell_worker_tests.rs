@@ -71,8 +71,11 @@ fn shared_pool_reports_group_and_drop_metrics() {
     );
     let batch = pool.drain();
     assert_eq!(batch.requests.len(), 1);
-    assert_eq!(pool.metrics().groups_committed, 1);
-    assert_eq!(pool.metrics().activations_committed, 1);
+    // Dequeueing a batch is not worker execution or an fsynced metric commit.
+    assert_eq!(pool.metrics().groups_drained, 1);
+    assert_eq!(pool.metrics().activations_drained, 1);
+    assert_eq!(pool.metrics().groups_committed, 0);
+    assert_eq!(pool.metrics().activations_committed, 0);
     assert_eq!(pool.metrics().dropped_requests, 1);
 }
 
