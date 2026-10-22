@@ -13,12 +13,12 @@ pub use codex_hepta_types::ExecutionStatusV1;
 pub use codex_hepta_types::FinalPayloadDigestV1;
 pub use codex_hepta_types::GenerationFenceWitnessV1;
 pub use codex_hepta_types::NativeExecutionAdapter;
-pub use codex_hepta_types::execute_native_tool_intent;
 pub use codex_hepta_types::RecoveryDispositionV1;
 pub use codex_hepta_types::RuntimeExecutionError;
 pub use codex_hepta_types::RuntimeReceiptV1;
 pub use codex_hepta_types::RuntimeToolIntentV1;
 pub use codex_hepta_types::ToolOutcomeV1;
+pub use codex_hepta_types::execute_native_tool_intent;
 
 #[cfg(test)]
 use codex_hepta_types::{AuthorityPosture, Digest32, Generation, StableId};
