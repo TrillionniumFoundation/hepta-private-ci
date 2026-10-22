@@ -1,0 +1,136 @@
+{
+  "schema": "hepta.p38.dependency-repair-receipt.v1",
+  "recorded_at_utc": "2026-10-22",
+  "original_source_sha": "81e43756857c38891217598346a7f89235b5795b",
+  "repair_parent_sha": "46bb0fa81080767dcd1236bc2e2767a9c4e841af",
+  "original_input_sha256": {
+    "codex-rs/Cargo.toml": "6e7f250329fdbb8baf95722d161488aa87affc5731654bf31fadefa7fae4a0ba",
+    "codex-rs/Cargo.lock": "51f99683a21c464a1b6f240eb5f67b50337a5e4d6613d3f46b3f781aa4555adf",
+    "codex-rs/deny.toml": "5bbe1ae84387bbfd2a09400df3dde4e9e3e6e97d3efe0ac33f68c9067257f83c",
+    "MODULE.bazel.lock": "825db8bf34237cef491eee58fa51c070d140f421df300ecb9086a474181eea31"
+  },
+  "repaired_input_sha256": {
+    "codex-rs/Cargo.toml": "ddfc3f515cb114d23423060008d0db211ccbca0e722c78392d81b3210adb1543",
+    "codex-rs/Cargo.lock": "84e3ad677078a64b3271a2071e7355dd39c97389b0db43d2b45e91d24f02a995",
+    "codex-rs/deny.toml": "283d9b18f453a9bf0466dd24d1fd5957bec2c4e343c91230dc56042b06b08ecc",
+    "MODULE.bazel.lock": "825db8bf34237cef491eee58fa51c070d140f421df300ecb9086a474181eea31"
+  },
+  "tools": {
+    "cargo": "1.95.0 (f2d3ce0bd 2026-03-21)",
+    "cargo_deny": "0.19.0",
+    "cargo_deny_official_archive_sha256": "0e8c2aa59128612c90d9e09c02204e912f29a5b8d9a64671b94608cbe09e064f",
+    "bazel": "9.0.0",
+    "bazel_official_binary_sha256": "c44a93f25398c68f904fa1d19b61d321de6c0d2f09dca375d7bc0dc9b9428403"
+  },
+  "advisory_database": {
+    "url": "https://github.com/RustSec/advisory-db",
+    "head": "4b587f00996ebe5c05a73eaef105ef241e876414"
+  },
+  "original_gate": {
+    "command": "cargo-deny --log-level warn --manifest-path ./codex-rs/Cargo.toml --all-features check",
+    "exit_code": 1,
+    "summary": "advisories FAILED, bans ok, licenses ok, sources ok",
+    "raw_log_sha256": "21c9940787185ef12bace958ae7d8ff4bd210e6b099b6a4a9828070439dc78c1",
+    "raw_log_bytes": 13332568,
+    "errors": [
+      {
+        "id": "RUSTSEC-2026-0374",
+        "crate": "basic-toml",
+        "version": "0.1.10",
+        "kind": "unmaintained"
+      },
+      {
+        "id": "RUSTSEC-2026-0382",
+        "crate": "rustls-webpki",
+        "version": "0.103.15",
+        "kind": "vulnerability"
+      },
+      {
+        "id": "RUSTSEC-2026-0383",
+        "crate": "webpki-root-certs",
+        "version": "1.0.5",
+        "kind": "vulnerability"
+      },
+      {
+        "id": "RUSTSEC-2026-0381",
+        "crate": "webpki-roots",
+        "version": "1.0.9",
+        "kind": "vulnerability"
+      }
+    ]
+  },
+  "repair": {
+    "resolver_command": "cargo update --manifest-path codex-rs/Cargo.toml -p toml@1.1.4+spec-1.1.0 -p toml_writer -p toml_datetime@1.1.1+spec-1.1.0 -p toml_parser -p rustls-webpki -p webpki-root-certs -p webpki-roots",
+    "removed": "basic-toml 0.1.10",
+    "pinned_i18n_config": {
+      "repository": "https://github.com/kellpossible/cargo-i18n",
+      "revision": "2ce7b1dfe9a8cc224288bf50cbc2a67a6de863c4",
+      "version": "0.4.8",
+      "upstream_change": "Use maintained toml instead of basic-toml; MSRV 1.85.1."
+    },
+    "patched_tls_versions": {
+      "rustls-webpki": "0.103.16",
+      "webpki-root-certs": "1.0.10",
+      "webpki-roots": "1.0.10"
+    },
+    "required_toml_support_versions": {
+      "serde_spanned": "1.1.2",
+      "toml": "1.1.8+spec-1.1.0",
+      "toml_datetime": "1.1.2+spec-1.1.0",
+      "toml_parser": "1.1.5+spec-1.1.0",
+      "toml_writer": "1.1.3+spec-1.1.0"
+    },
+    "policy": "No advisory ignores or check levels changed; add only the exact official cargo-i18n Git repository to allow-git, retaining immutable-revision enforcement."
+  },
+  "repaired_gate": {
+    "command": "cargo-deny --log-level warn --manifest-path ./codex-rs/Cargo.toml --all-features check",
+    "exit_code": 0,
+    "summary": "advisories ok, bans ok, licenses ok, sources ok",
+    "errors": 0,
+    "raw_log_sha256": "5cee28378ee953a22ead09d9848278066f3850f7e7cbcf35f8c2379b0fcadf86",
+    "raw_log_bytes": 13192788
+  },
+  "local_bazel_lock_attempt": {
+    "command": "just bazel-lock-update",
+    "first_exit_code": 37,
+    "first_log_sha256": "faa25b4413679c7f32d67bf22fe5b8495160470f65b2bb7814a218833dfa15dc",
+    "first_error": "Bundled JVM lacked the environment CA; PKIX path building failed.",
+    "corrective_configuration": "Use existing OS-managed /etc/ssl/certs/java/cacerts; certificate verification remains enabled.",
+    "retry": {
+      "command": ["just", "bazel-lock-update"],
+      "returncode": 143,
+      "resource_stop": "free disk below 600 MiB floor",
+      "elapsed_seconds": 14.017,
+      "free_bytes": 492593152
+    },
+    "retry_log_sha256": "d6a382513918437473f983794dd57dc8ed852c358b6540b00e61263100bf4d22",
+    "module_bazel_lock_changed": false,
+    "result": "pending_cloud_generation",
+    "followup_workflow": ".github/workflows/hepta-p38-lockfile-generate.yml"
+  },
+  "sdk_timeout": {
+    "run_id": 39715223201,
+    "job_id": 119617920260,
+    "annotation": "The job has exceeded the maximum execution time of 1h0m0s",
+    "last_progress": "13,270 / 16,192 actions; V8 src/debug/debug.cc still compiling",
+    "change": "sdks timeout-minutes 60 to 120; original build, lint and test commands retained",
+    "validation": "Parsed YAML matches the previous job exactly after restoring the single timeout scalar.",
+    "annotation_json_sha256": "5815d25a9a1835a8928ecb41bf2e61a3d73ce17496a47cc98c8bf10d4480f940"
+  },
+  "workflow_receipt_validation": {
+    "passed_cases": [
+      "qualified generated locks",
+      "failed gate remains unqualified",
+      "source modification rejected",
+      "advanced source HEAD rejected",
+      "wrong checkout rejected"
+    ],
+    "shell_syntax": "All embedded shell blocks passed bash -n."
+  },
+  "limits": [
+    "Raw cargo-deny logs are retained locally and hashed here, not committed.",
+    "The repaired cargo-deny run uses the complete unchanged gate; existing nonblocking warnings remain.",
+    "The Bazel lock must be generated and pass the original drift check on the exact published source before this dependency stage is qualified.",
+    "No native Rust/Bazel tests or production activation are claimed by this receipt."
+  ]
+}

@@ -1,0 +1,473 @@
+{
+  "schema": "hepta.p38.native-shard2-followup.v1",
+  "recorded_utc": "2026-10-22T09:16:59.683850+00:00",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "base_commit": "63a02397e1ac287edc879e06d2ff31ebc2d390c1",
+  "assembled_source_commit": "e75c425098bc67b93cb094eac9cf863778e18eb2",
+  "assembled_source_tree": "cb71d0633ebce08d21c5c78f4cd0d8a2e1155961",
+  "tested_core_source_commit": "454cab7c4d97b40a716b30296f27acfaf0c2a42e",
+  "tested_core_source_tree": "e57f282385c507cff29f2cb38a6f7a899db85730",
+  "source_identity_note": "These are local Git commits. Remote publishing must preserve each tree exactly and record any different API-created commit IDs before qualifying remote CI.",
+  "previous_receipt": "qualification/ci/2026-10-22-p38-native-followup.json",
+  "stages": [
+    {
+      "commit": "0682d5dfeb557db61cb551e58813245ce7420f12",
+      "tree": "fadf65f633f91f11b7bcdb6f312da2fe2e7f10d6",
+      "subject": "test(authbus): flush copied checkpoints through writable Windows handles",
+      "changed_lines": 13
+    },
+    {
+      "commit": "9f1a1fae10a64564d0fc9dd2b768abb3ee70cab0",
+      "tree": "4c25793391f51a991aa27856437b8695cbdd7615",
+      "subject": "test(intelligence): open actual Windows directory sync handles",
+      "changed_lines": 58
+    },
+    {
+      "commit": "7be101b1747ae4570cdc79b4a5e2e7a700ad8dbd",
+      "tree": "c4942d484b82b4599252967330b15529679c1439",
+      "subject": "test(memory): require ordered complete V15 migration history",
+      "changed_lines": 4
+    },
+    {
+      "commit": "c516d7b00e5e1ccdfbde44735f45063eb3278191",
+      "tree": "87e07318155ff83e7acfbb0d0cf6c11588ab5c70",
+      "subject": "test(automation): rewind new objects in dependency order",
+      "changed_lines": 18
+    },
+    {
+      "commit": "413570fd5c61ce3ec3b6f4182f7178f16b511e47",
+      "tree": "74113350fb9ce8227ae20d5d18807b35115f5b12",
+      "subject": "test(codex-adapter): use native absolute recovery paths",
+      "changed_lines": 3
+    },
+    {
+      "commit": "24058e285354b54ec85860528944b257f01d2bd1",
+      "tree": "a8e1155cad68e2519e2e61020b3a709d3768c735",
+      "subject": "fix(bao-adapter): flush registry parent through a real Windows directory handle",
+      "changed_lines": 29
+    },
+    {
+      "commit": "6693511c4fea0716a869a7a17c8e146a92801fbc",
+      "tree": "49538212d1abee1397d93664dba4b4938f1dded8",
+      "subject": "test(infer-worker): track the typed authorized physical turn call",
+      "changed_lines": 2
+    },
+    {
+      "commit": "3d241af847e503f30d44345a013028f1da4f5491",
+      "tree": "4561a006e08526f8211caf4184af5d9d683e0e0f",
+      "subject": "test(app-server): compare native absolute SQLite home fixtures",
+      "changed_lines": 15
+    },
+    {
+      "commit": "7bdae841623f5298a8100eb7b75fde4baf144db4",
+      "tree": "67e54059b2495dfdebca7a60e14ac21587a95649",
+      "subject": "test(git-utils): use a native wrapper for exact descendant lifetime",
+      "changed_lines": 100
+    },
+    {
+      "commit": "cce76801c2af3c8c09b9c883e4494747a4d66fa0",
+      "tree": "c47726e476a068acd236aecb7ff4916ed99b64b3",
+      "subject": "test(exec): distinguish unindexed rollouts from hard deletion",
+      "changed_lines": 169
+    },
+    {
+      "commit": "05b45a37db6e523b4942e226aa1f6050c59fdfa7",
+      "tree": "c157c4add30f76ed6e47478de53e430a82a9d848",
+      "subject": "test(cli): stage exact Windows helpers in an isolated fixture",
+      "changed_lines": 45
+    },
+    {
+      "commit": "bcaff97af1869e5057ea8cae99b77f1f9ce89baa",
+      "tree": "4e1e04757bca7f1463015bcf11e18fd611dc6c02",
+      "subject": "test(core): expose rejected turn admission before event waits",
+      "changed_lines": 18
+    },
+    {
+      "commit": "12fcbf4a653aa39042d995bcbf0a66e48ddf331b",
+      "tree": "d1cc32482e733775ac2b58402103cfb481ab2dd0",
+      "subject": "fix(ci): retain local macOS build budgets without RBE credentials",
+      "changed_lines": 114
+    },
+    {
+      "commit": "fe040251bbbe3d95d8dd42630b636cab343dd9b4",
+      "tree": "4233889c90c15c5927c1531298d3e87018c53f77",
+      "subject": "ci: bound cold macOS native tests and lint at three hours",
+      "changed_lines": 10
+    },
+    {
+      "commit": "c29669341d44f4e3f1e3d0ac95301efc4e7ef84f",
+      "tree": "0f988092c671abff5479e2d53c8fd99abfce0805",
+      "subject": "fix(core): observe exact admission fences with a bounded deadline",
+      "changed_lines": 466
+    },
+    {
+      "commit": "d4c4098bddde34d288d924f35d4b83e54923d0b7",
+      "tree": "6808e79599e15cb5d0855952190558dbacc61f5a",
+      "subject": "fix(app-server): observe previous retirement before routing one turn",
+      "changed_lines": 168
+    },
+    {
+      "commit": "f44de742a9f66df9d8bbe274ed8e74fc1ec1708f",
+      "tree": "7fe5df61c6a092b908cb9c298900df38cac2273a",
+      "subject": "fix(fleet): seal published native release directory after rename",
+      "changed_lines": 77
+    },
+    {
+      "commit": "059a8a1b4a97ff341b0c95c9eaeb6088014e1855",
+      "tree": "238fa01b10cfaf68cc954ff0ecbad0eb72652b24",
+      "subject": "fix(windows): retain ACL repair object and preserve complete native deny scope",
+      "changed_lines": 246
+    },
+    {
+      "commit": "11776e5862a6c029f08720cdbedd5786178ce89a",
+      "tree": "29faeb6dc2d8a7e5fbda4f567fd9e8808bd8bee6",
+      "subject": "fix(core): disambiguate snapshot trace equality assertion",
+      "changed_lines": 1
+    },
+    {
+      "commit": "454cab7c4d97b40a716b30296f27acfaf0c2a42e",
+      "tree": "e57f282385c507cff29f2cb38a6f7a899db85730",
+      "subject": "test(core): bind held start observation to the real admission epoch",
+      "changed_lines": 7
+    },
+    {
+      "commit": "6c884fa4d5b926eaa218e7982bfaa110b39817db",
+      "tree": "37b07a360fc25968de0cf13379fa8fe4d9a46357",
+      "subject": "test(app-server): remove obsolete platform fixture import",
+      "changed_lines": 1
+    },
+    {
+      "commit": "e75c425098bc67b93cb094eac9cf863778e18eb2",
+      "tree": "cb71d0633ebce08d21c5c78f4cd0d8a2e1155961",
+      "subject": "style(app-server): format touched API examples with pinned Prettier",
+      "changed_lines": 81
+    }
+  ],
+  "original_failure": {
+    "run_id": 39727698191,
+    "job_id": 119664821565,
+    "head_sha": "db0d860811ffc37f0c462b030d0be3b8043955a8",
+    "failed_targets": 13,
+    "log_name": "hepta-p38-job-119664821565.log",
+    "log_bytes": 3508440,
+    "log_sha256": "aafb8096d29f5971e4af42296b82858480223e01e2593a9c1fb1d925bd135dd1"
+  },
+  "later_same_source_family_failures": [
+    {
+      "job_id": 119689984403,
+      "head_sha": "fcbde931edefeb95ed01063e268ecfc74d0d036d",
+      "log_name": "hepta-p39-job-119689984403.log",
+      "log_bytes": 666109,
+      "log_sha256": "a1b344995384a70174ab7ab4f14ef5e950cc8e82f9e7aed4cdd394183ee600c5"
+    },
+    {
+      "job_id": 119689984523,
+      "head_sha": "fcbde931edefeb95ed01063e268ecfc74d0d036d",
+      "log_name": "hepta-p39-job-119689984523.log",
+      "log_bytes": 701189,
+      "log_sha256": "5ac80569b627c6111ed33efa41cb1b9f9da839b3e3214e22c2561104cff0b4fa"
+    },
+    {
+      "job_id": 119689984580,
+      "head_sha": "fcbde931edefeb95ed01063e268ecfc74d0d036d",
+      "log_name": "hepta-p39-job-119689984580.log",
+      "log_bytes": 3674391,
+      "log_sha256": "ecb5eec2ab2c877f4eebb48ecba2b2e5668a7ac6949d314ef823ff3cbe8e87e5"
+    }
+  ],
+  "exact_fixture_donors": [
+    {
+      "commit": "0682d5dfeb557db61cb551e58813245ce7420f12",
+      "donor_pr": 2939,
+      "donor_head": "0604afb68975b67ac1c6fa123492bd407badd0bb",
+      "exact_complete_postimages": 1
+    },
+    {
+      "commit": "9f1a1fae10a64564d0fc9dd2b768abb3ee70cab0",
+      "donor_pr": 3089,
+      "donor_head": "a111a2f28af2ef15dfd24225db38e6a2048123dc",
+      "exact_complete_postimages": 3
+    },
+    {
+      "commit": "7be101b1747ae4570cdc79b4a5e2e7a700ad8dbd",
+      "donor_pr": 2743,
+      "donor_head": "4290ec6480944af84646e8846dfe5e3dc5e73f81",
+      "exact_complete_postimages": 1
+    },
+    {
+      "commit": "c516d7b00e5e1ccdfbde44735f45063eb3278191",
+      "donor_pr": 1548,
+      "donor_head": "fdb49e920895d56228f238b591ed7481735bc242",
+      "exact_complete_postimages": 1
+    },
+    {
+      "commit": "413570fd5c61ce3ec3b6f4182f7178f16b511e47",
+      "donor_pr": 2981,
+      "donor_head": "2ab20fe11c0fc221fc33c3c6b9f5e64c1085670b",
+      "exact_complete_postimages": 1
+    },
+    {
+      "commit": "cce76801c2af3c8c09b9c883e4494747a4d66fa0",
+      "donor_pr": 1426,
+      "donor_commit": "97b35381d0201e2a2b4b57606955af4d8da99752",
+      "selection": "Three test-support/fixture paths only; durable hard-deletion refusal preserved."
+    },
+    {
+      "commit": "05b45a37db6e523b4942e226aa1f6050c59fdfa7",
+      "donor_pr": 1551,
+      "donor_head": "23b60df4ba4b0f8d92b4178187cc6aecf88604e2",
+      "selection": "CLI BUILD and isolated helper fixture only; original cloud-policy assertions preserved."
+    }
+  ],
+  "local_validation": [
+    {
+      "platform": "Linux x86_64",
+      "passed": 80,
+      "skipped": 0,
+      "log_name": "hepta-shard2-intelligence-tests.log",
+      "log_bytes": 16553,
+      "log_sha256": "e21ae281f0a30f6bbf0d8f5b7dfac351131ecfdf62b1e5b96adaa0a933049047",
+      "owning_package": "codex-hepta-intelligence",
+      "runner": "just test",
+      "selection": "Library tests; the earlier log does not separately bind all invocation arguments or a final Git source SHA."
+    },
+    {
+      "platform": "Linux x86_64",
+      "passed": 38,
+      "skipped": 0,
+      "log_name": "hepta-shard2-git-utils-tests-openssl.log",
+      "log_bytes": 24296,
+      "log_sha256": "07d5eab2fa157ee70d7879307015962441eaa7d665eaa9df10c308dd582e122e",
+      "owning_package": "codex-git-utils",
+      "runner": "just test",
+      "selection": "Library tests; the earlier log does not separately bind all invocation arguments or a final Git source SHA."
+    },
+    {
+      "platform": "Linux x86_64",
+      "passed": 32,
+      "skipped": 0,
+      "log_name": "hepta-shard2-bao-tests-native.log",
+      "log_bytes": 14081,
+      "log_sha256": "5d8a00d22e6d3bb6e13a0af435bf887b38b61d09afa2aa545e507266bd0f92fb",
+      "owning_package": "codex-hepta-bao-adapter",
+      "runner": "just test",
+      "selection": "Library tests; the earlier log does not separately bind all invocation arguments or a final Git source SHA."
+    },
+    {
+      "command": "just test -p codex-hepta-fleet --lib",
+      "platform": "Linux x86_64",
+      "passed": 42,
+      "skipped": 0,
+      "log_name": "hepta-fleet-publication-tests.log",
+      "log_bytes": 9652,
+      "log_sha256": "41a46e472ced26599750833f590558c5aabcb489d69af1e7d45b7c7ab3ab394e"
+    },
+    {
+      "command": "just test -p codex-core --lib -E test(admission_fence_observation) | test(blocking_snapshot_waits_for_starting_environment)",
+      "platform": "Linux x86_64",
+      "passed": 11,
+      "skipped": 2426,
+      "log_name": "hepta-core-bounded-fence-tests-final.log",
+      "log_bytes": 15139,
+      "log_sha256": "8b219ec162c28ed53fd9fe9e68c62c658fcab829af98d4b353daf04962ce4e9b",
+      "source_commit": "454cab7c4d97b40a716b30296f27acfaf0c2a42e",
+      "finished_utc": "2026-10-22T08:59:27.173513+00:00",
+      "selection": "Nine admission-fence lifecycle tests and two owned tracing-dispatch tests. This is not a complete Core suite."
+    },
+    {
+      "command": "just fix -p codex-core --lib",
+      "source_commit": "454cab7c4d97b40a716b30296f27acfaf0c2a42e",
+      "exit_code": 0,
+      "finished_utc": "2026-10-22T09:08:54.511147+00:00",
+      "source_changed": false,
+      "log_name": "hepta-core-bounded-fence-fix.log",
+      "log_bytes": 32347,
+      "log_sha256": "156c1005dda3f5f269c0a80bb4f806da742b528f9b9d242e48f8587a32f42fc6"
+    },
+    {
+      "command": "just fix -p codex-hepta-fleet --lib",
+      "exit_code": 0,
+      "source_changed": false,
+      "log_name": "hepta-fleet-publication-fix-native.log",
+      "log_bytes": 1755,
+      "log_sha256": "f9ebdca9a0f964e0fb505746ac00f57d5f869789919ec1d8629ececb581c6c96"
+    },
+    {
+      "command": "python3 -m unittest discover -s .github/scripts -p test_run_bazel*.py",
+      "source_commit": "454cab7c4d97b40a716b30296f27acfaf0c2a42e",
+      "passed": 48,
+      "platform": "Linux Python fixtures for command construction; not macOS execution",
+      "log_name": "hepta-macos-local-ci-wrapper-final-tests.log",
+      "log_bytes": 147,
+      "log_sha256": "e46f7a4f1d912be508331ce67f3a3ea74798ebcc31239e19526860c2c0a3c851"
+    },
+    {
+      "command": "just fix -p codex-app-server --lib",
+      "source_commit": "454cab7c4d97b40a716b30296f27acfaf0c2a42e",
+      "exit_code": 0,
+      "source_changes": " M codex-rs/app-server/src/lib.rs\n",
+      "scope": "Compile and Clippy only; public RPC test execution remains pending.",
+      "log_name": "hepta-appserver-bounded-fence-fix.log",
+      "log_bytes": 12107,
+      "log_sha256": "94d9eaef6a7656b1d9b3f8c5a90ad44aefe0c7b1edbf6bc3889ccc44c4016017"
+    }
+  ],
+  "validation_scope": "Component tests were executed while assembling these stages. Only the explicitly source-bound Core run is a final source test receipt; none of these local selections substitutes for combined native Windows/macOS or full required CI.",
+  "core_clippy_warning": "The scoped command completed without edits and retained the existing core/client.rs map_response_events too_many_arguments warning; a strict warning-free gate is not claimed by this command.",
+  "final_mechanical_changes": "After the Core run, AppServer Clippy removed one unused Path import and pinned Prettier formatted three inherited JSON examples plus one blank line in the touched API README. All 84 JSON blocks retained semantic equality and all other nonblank lines remained identical. Core source is byte-identical to its tested commit.",
+  "retained_core_failed_attempts": [
+    {
+      "source_commit": "f44de742a9f66df9d8bbe274ed8e74fc1ec1708f",
+      "exit_code": 101,
+      "log_name": "hepta-core-bounded-fence-tests.log",
+      "log_sha256": "2759168eb744557a05a7bd934f885c7d635f1352b6c4e19f776bda6f314f3048",
+      "diagnosis": "Compile E0659: ambiguous assert_eq import in the earlier tracing fixture. Corrected by explicit pretty_assertions import in 11776e5; no test executed on this attempt."
+    },
+    {
+      "source_commit": "11776e5862a6c029f08720cdbedd5786178ce89a",
+      "exit_code": 100,
+      "log_name": "hepta-core-bounded-fence-tests-retry.log",
+      "log_sha256": "29c695449326beea97b342dd3778ca527c28d03dbab010845ef6a341bb6e6bde",
+      "diagnosis": "Ten passed, one new fixture failed: real spawn owner increments epoch before entering held start callback. Corrected to exact old epoch + 1 and Stale in 454cab7. No production state changed and no Busy-or-Stale relaxation."
+    }
+  ],
+  "local_tool_versions": {
+    "rustc": "1.95.0",
+    "cargo": "1.95.0",
+    "just": "1.51.0",
+    "nextest": "0.9.149",
+    "ci_nextest_pin": "0.9.103",
+    "cargo_deny": "0.19.0",
+    "bazel": "9.0.0",
+    "prettier": "3.5.3",
+    "codespell": "2.4.3"
+  },
+  "dependency_gates": {
+    "cargo_deny": {
+      "command": [
+        "cargo-deny",
+        "--log-level",
+        "warn",
+        "--manifest-path",
+        "./codex-rs/Cargo.toml",
+        "--all-features",
+        "check"
+      ],
+      "source_commit": "fe040251bbbe3d95d8dd42630b636cab343dd9b4",
+      "source_tree": "4233889c90c15c5927c1531298d3e87018c53f77",
+      "advisory_db_head_before": "59ef7abf8ce56ea80fe7eba97ba3835449009fa4",
+      "started_utc": "2026-10-22T08:28:56.654211+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 5.138,
+      "finished_utc": "2026-10-22T08:29:01.792182+00:00",
+      "advisory_db_head_after": "59ef7abf8ce56ea80fe7eba97ba3835449009fa4",
+      "log_sha256": "ccd0f7c48dbc47255f582891dfc2866d0c8ba4d4944959d1e99c3c2a7f5dab7e",
+      "log_bytes": 13272412,
+      "log_path": "/tmp/hepta-shard2-cargo-deny.log"
+    },
+    "original_bazel_update": {
+      "command": ["just", "bazel-lock-update"],
+      "source_commit": "fe040251bbbe3d95d8dd42630b636cab343dd9b4",
+      "source_tree": "4233889c90c15c5927c1531298d3e87018c53f77",
+      "started_utc": "2026-10-22T08:31:00.387672+00:00",
+      "before_module_sha256": "63ee8041114a86fb2064282e466d4250abdf884b2b10dff21c91c412cecfcc4b",
+      "cargo_lock_sha256": "dbbbaa6ed5ed2b4574bb7a98d9cf9197c2118c99a305336ae6be7a92c49a01b6",
+      "exit_code": 0,
+      "elapsed_seconds": 21.181,
+      "finished_utc": "2026-10-22T08:31:21.563131+00:00",
+      "after_module_sha256": "63ee8041114a86fb2064282e466d4250abdf884b2b10dff21c91c412cecfcc4b",
+      "log_sha256": "4159f2f341dafdefcd8b1b1f9365214a12906e6cb206373d4182714e21a1adc8",
+      "log_bytes": 2171
+    },
+    "original_bazel_lock_check": {
+      "source_commit": "fe040251bbbe3d95d8dd42630b636cab343dd9b4",
+      "command": "./scripts/check-module-bazel-lock.sh",
+      "exit_code": 0,
+      "observed_at": "2026-10-22T08:36:01.565911+00:00",
+      "log": "/tmp/hepta-shard2-bazel-lock-check.log",
+      "log_bytes": 718,
+      "log_sha256": "36e3240f1f3887828467ac2d886b6f060ceff72f7ea4cbccb4cf847ffc157604",
+      "cargo_lock_sha256": "dbbbaa6ed5ed2b4574bb7a98d9cf9197c2118c99a305336ae6be7a92c49a01b6",
+      "module_lock_sha256": "63ee8041114a86fb2064282e466d4250abdf884b2b10dff21c91c412cecfcc4b"
+    },
+    "graph_input_files_changed_after_gates": [],
+    "module_lock_manually_edited": false
+  },
+  "fleet_component_native_donor": {
+    "donor_pr": 1467,
+    "donor_merged": false,
+    "donor_commit": "4da345c2a9071e120b26d5eac9aa64ee821cebf3",
+    "donor_parent": "bb200d54d420847ccfc892c039cbf54d3960a408",
+    "native_artifact_id": 11655298903,
+    "native_artifact_sha256": "a0c3cf4ed5a7cb3cd533cf58b0214545a9743ed54bd1e99d7942f209def43658",
+    "native_run": 38014172124,
+    "native_job": 114100682019,
+    "native_staged_source": "9993398be88eb10d3721d712f8be5fd191841804",
+    "native_staged_tests": 42,
+    "native_staged_failed": 0,
+    "native_staged_ignored": 0,
+    "native_staged_clippy": "success",
+    "imported_blobs_verified_against_downloaded_artifact": {
+      "codex-rs/hepta-fleet/src/release.rs": "b5b450a2a2a55f31e6e7f0c01eac88464bfa4317",
+      "codex-rs/hepta-fleet/src/release_copy_tests.rs": "51123f86b48372423e0fe4d683b3f143fb5eb1ce"
+    },
+    "registry_fixture_already_canonicalizes_not_replaced": true,
+    "current_combined_macos_windows_execution": "pending"
+  },
+  "windows_acl_scope": {
+    "donor_pr": 3065,
+    "donor_commits": [
+      "766984b50e26ed9312e99095fd38ce1c615457bd",
+      "e16a8ce4f795dda2f3a964553e6ab8fa63949266",
+      "3fe4de5e9e0242a9d9507178e5c49e3ec7df6559"
+    ],
+    "applied_files": [
+      "codex-rs/windows-sandbox-rs/src/acl.rs",
+      "codex-rs/windows-sandbox-rs/src/acl_tests.rs",
+      "codex-rs/windows-sandbox-rs/src/unified_exec/acl_setup_tests.rs"
+    ],
+    "original_token_tests_sha256": "b9ba4c055e5a65c645ae5c2ea8c5a0e6c256718b7705f28f5274079064eb5b2f",
+    "token_tests_preserved_exactly": true,
+    "independent_readonly_review": "encoder_candidates; APIs/features/build declarations checked; source-only, no native claim",
+    "new_dependencies": false,
+    "new_build_declarations": false,
+    "native_windows_execution": "pending",
+    "outside_delete_containment_failures": "OPEN; not addressed by ACL repair"
+  },
+  "macos_budget": {
+    "structural_comparison": {
+      "source_parent": "12fcbf4a653aa39042d995bcbf0a66e48ddf331b",
+      "before_sha256": "edc5d20a6ca6bc35eb9817e2da3cd28b5b8c0980e0bc19a8e69130bb9d0d374a",
+      "after_sha256": "dd0de2860d0a705525c4806e6196bf20b55289f8ec51db5c215475085a247ab8",
+      "budget_changes": {
+        "test": {
+          "before": "120",
+          "after": "${{ matrix.os == 'macos-15-intel' && 180 || 120 }}"
+        },
+        "clippy": {
+          "before": "120",
+          "after": "${{ matrix.os == 'macos-15' && 180 || 120 }}"
+        }
+      },
+      "all_other_workflow_data_equal": true
+    },
+    "reason": "The original Intel test and ARM Clippy jobs were cancelled after 120 minutes while V8 compilation still made progress. Only these two budgets became 180 minutes; matrix, targets, flags and assertions remain. Keyless local macOS execution now retains ci-bazel debug/disk-cache budgets and Darwin runner configuration.",
+    "original_release_failure": "ARM release reached app-server-client compilation and failed with ENOSPC; restoring the existing ci-bazel settings addresses the missing local budget, not a skipped gate."
+  },
+  "boundaries": [
+    "Observer waits once on exact owner completion handles under one absolute deadline, then rechecks epoch, shutdown, active turn and replacement fences. Observation never retires an owner or grants admission; original routing and permission checks still decide.",
+    "The public AppServer integration regression was added but has not been executed locally. Core lifecycle execution alone cannot establish that all original NotIdle cases are repaired.",
+    "Core responses_headers helper now exposes NotSubmitted immediately and matches the admitted turn ID. The original timeout cause remains unproven; this is a diagnostic improvement, not a claimed functional closure.",
+    "Native Windows ACL tests and positive writable-root behavior remain required. Two outside DELETE assertions are still open; same-open-object ACL repair does not establish complete token containment.",
+    "Original denied operations, hard-delete tombstones, exact OS error assertions, matrix targets, checks and fixture deadlines are retained. No new ignored tests or gate removal was introduced.",
+    "One original sandboxed Bao execution hit local IPC EPERM; the same tests were actually rerun with authorized local IPC and all 32 passed. No sandbox environment variable was changed to skip tests."
+  ],
+  "pending": [
+    "Native combined Windows and macOS execution, full owning suites and all applicable required CI on the newly published exact head and downstream merges.",
+    "AppServer non-NotIdle failures including HTTP/WebSocket metadata, auth snapshot, Bedrock routing, cold resume, plugin TTL and attestation callback ordering. Separate metadata/auth and Bedrock candidates are not included here.",
+    "Windows outside-root DELETE and protected-directory containment with original positive allowed-root operations still passing."
+  ],
+  "all_blockers_closed": false,
+  "combined_native_pass_claimed": false,
+  "production_qualification_claimed": false
+}

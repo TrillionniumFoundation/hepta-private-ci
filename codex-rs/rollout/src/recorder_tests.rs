@@ -36,7 +36,12 @@ use uuid::Uuid;
 fn test_config(codex_home: &Path) -> RolloutConfig {
     RolloutConfig {
         codex_home: codex_home.to_path_buf(),
-        sqlite: codex_state::SqliteConfig::new_for_testing(codex_home.abs()),
+        sqlite: codex_state::SqliteConfig::new_for_testing(
+            codex_home
+                .canonicalize()
+                .expect("canonical SQLite home")
+                .abs(),
+        ),
         cwd: codex_home.to_path_buf(),
         model_provider_id: "test-provider".to_string(),
         generate_memories: true,

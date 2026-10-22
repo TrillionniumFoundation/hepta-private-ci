@@ -26,6 +26,9 @@ pub fn linked_v8_has_sandbox() -> bool {
 #[cfg(test)]
 mod tests {
     use pretty_assertions::assert_eq;
+    use std::sync::Arc;
+    use std::sync::Barrier;
+    use std::sync::Mutex;
     use std::sync::Once;
 
     use super::bazel_target;
@@ -42,11 +45,20 @@ mod tests {
     fn evaluate_expression(expression: &str) -> String {
         initialize_v8();
 
+        // The sandboxed allocator initializes a process-wide pool lazily.
+        // Protect its first backing-store allocation along with isolate setup;
+        // expression execution remains independent after initialization.
+        static ISOLATE_INITIALIZATION: Mutex<()> = Mutex::new(());
+        let initialization = ISOLATE_INITIALIZATION
+            .lock()
+            .expect("V8 isolate initialization mutex must not be poisoned");
         let isolate = &mut v8::Isolate::new(Default::default());
         v8::scope!(let scope, isolate);
 
         let context = v8::Context::new(scope, Default::default());
         let scope = &mut v8::ContextScope::new(scope, context);
+        let _initial_buffer = v8::ArrayBuffer::new(scope, /*byte_length*/ 1);
+        drop(initialization);
         let source = v8::String::new(scope, expression).expect("expression should be valid UTF-8");
         let script = v8::Script::compile(scope, source, None).expect("expression should compile");
         let result = script.run(scope).expect("expression should evaluate");
@@ -77,6 +89,26 @@ mod tests {
     #[test]
     fn evaluates_string_concatenation() {
         assert_eq!(evaluate_expression("'hello ' + 'world'"), "hello world");
+    }
+
+    #[test]
+    fn parallel_expression_evaluation_keeps_isolates_independent() {
+        let barrier = Arc::new(Barrier::new(/*n*/ 8));
+        let workers = (0..8)
+            .map(|value| {
+                let barrier = Arc::clone(&barrier);
+                std::thread::spawn(move || {
+                    barrier.wait();
+                    let expression = format!(
+                        "const bytes = new Uint8Array(32); bytes.fill({value}); bytes[0] + bytes[31]"
+                    );
+                    assert_eq!(evaluate_expression(&expression), (value * 2).to_string());
+                })
+            })
+            .collect::<Vec<_>>();
+        for worker in workers {
+            worker.join().expect("parallel V8 worker should complete");
+        }
     }
 
     #[test]

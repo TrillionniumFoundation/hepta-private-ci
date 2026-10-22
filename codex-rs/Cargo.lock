@@ -1341,15 +1341,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "2af50177e190e07a26ab74f8b1efbfe2ef87da2116221318cb1c2e82baf7de06"
 
 [[package]]
-name = "basic-toml"
-version = "0.1.10"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "ba62675e8242a4c4e806d12f11d136e626e6c8361d6b829310732241652a178a"
-dependencies = [
- "serde",
-]
-
-[[package]]
 name = "bech32"
 version = "0.9.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -3126,6 +3117,7 @@ dependencies = [
  "codex-shell-command",
  "codex-test-binary-support",
  "codex-utils-absolute-path",
+ "codex-utils-cargo-bin",
  "codex-utils-home-dir",
  "codex-utils-path-uri",
  "codex-utils-pty",
@@ -3648,6 +3640,7 @@ name = "codex-hepta-contracts"
 version = "0.0.0"
 dependencies = [
  "codex-utils-cargo-bin",
+ "codex-utils-path",
  "ed25519-dalek",
  "pretty_assertions",
  "rustix 1.1.4",
@@ -4104,6 +4097,7 @@ version = "0.0.0"
 dependencies = [
  "codex-hepta-contracts",
  "codex-hepta-types",
+ "codex-utils-path",
  "ed25519-dalek",
  "rustix 1.1.4",
  "serde",
@@ -4148,6 +4142,7 @@ dependencies = [
  "codex-hepta-objective",
  "codex-hepta-types",
  "codex-hepta-wire",
+ "codex-utils-path",
  "ed25519-dalek",
  "libc",
  "pretty_assertions",
@@ -4178,6 +4173,7 @@ dependencies = [
  "codex-hepta-paths",
  "codex-hepta-types",
  "codex-uds",
+ "codex-utils-cargo-bin",
  "constant_time_eq 0.3.1",
  "ed25519-dalek",
  "jsonschema",
@@ -5396,6 +5392,7 @@ dependencies = [
  "tokio",
  "tokio-util",
  "uds_windows",
+ "windows-sys 0.61.2",
 ]
 
 [[package]]
@@ -5534,6 +5531,8 @@ dependencies = [
  "dunce",
  "pretty_assertions",
  "tempfile",
+ "winapi-util",
+ "windows-sys 0.52.0",
 ]
 
 [[package]]
@@ -9317,14 +9316,12 @@ dependencies = [
 [[package]]
 name = "i18n-config"
 version = "0.4.8"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "3e06b90c8a0d252e203c94344b21e35a30f3a3a85dc7db5af8f8df9f3e0c63ef"
+source = "git+https://github.com/kellpossible/cargo-i18n?rev=2ce7b1dfe9a8cc224288bf50cbc2a67a6de863c4#2ce7b1dfe9a8cc224288bf50cbc2a67a6de863c4"
 dependencies = [
- "basic-toml",
  "log",
  "serde",
- "serde_derive",
- "thiserror 1.0.69",
+ "thiserror 2.0.18",
+ "toml 1.1.8+spec-1.1.0",
  "unic-langid",
 ]
 
@@ -13879,7 +13876,7 @@ dependencies = [
  "ruma-identifiers-validation",
  "serde",
  "syn 2.0.117",
- "toml 1.1.4+spec-1.1.0",
+ "toml 1.1.8+spec-1.1.0",
 ]
 
 [[package]]
@@ -14075,9 +14072,9 @@ checksum = "f87165f0995f63a9fbeea62b64d10b4d9d8e78ec6d7d51fb2125fda7bb36788f"
 
 [[package]]
 name = "rustls-webpki"
-version = "0.103.15"
+version = "0.103.16"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "f3c3cf1d8b1e7d4927e2d154c3fcb02979afb9939629c62cd9048d4f07b60ac2"
+checksum = "4443b1b6d39d7c663139942cc4558262562d2c84123bb6282ef177009ca8b281"
 dependencies = [
  "aws-lc-rs",
  "ring",
@@ -14685,9 +14682,9 @@ dependencies = [
 
 [[package]]
 name = "serde_spanned"
-version = "1.1.1"
+version = "1.1.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "6662b5879511e06e8999a8a235d848113e942c9124f211511b16466ee2995f26"
+checksum = "4e7523beb55eece201a2356bee0bbca0d1ab466c14c07703b2e0ee6d42cb0c2c"
 dependencies = [
  "serde_core",
 ]
@@ -16316,14 +16313,16 @@ dependencies = [
 
 [[package]]
 name = "toml"
-version = "1.1.4+spec-1.1.0"
+version = "1.1.8+spec-1.1.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "3aace63f4bbcdfc2c965b059de67119c89c4017a70d633be6c104910f67056f5"
+checksum = "20489e00e4d8741d6be680764cc12e270655e375a20d1011e844a9c3379e678d"
 dependencies = [
+ "indexmap 2.14.0",
  "serde_core",
  "serde_spanned",
- "toml_datetime 1.1.1+spec-1.1.0",
+ "toml_datetime 1.1.2+spec-1.1.0",
  "toml_parser",
+ "toml_writer",
  "winnow 1.0.4",
 ]
 
@@ -16338,9 +16337,9 @@ dependencies = [
 
 [[package]]
 name = "toml_datetime"
-version = "1.1.1+spec-1.1.0"
+version = "1.1.2+spec-1.1.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "3165f65f62e28e0115a00b2ebdd37eb6f3b641855f9d636d3cd4103767159ad7"
+checksum = "2b86d767906c6c42421dcba507eb9d203e779497710a47782a224bb871653053"
 dependencies = [
  "serde_core",
 ]
@@ -16372,18 +16371,18 @@ dependencies = [
 
 [[package]]
 name = "toml_parser"
-version = "1.1.3+spec-1.1.0"
+version = "1.1.5+spec-1.1.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "1d38ac1cf9b95face32296c0a3ede1fdc270627c9d9c02a7274dd6d960dc4d56"
+checksum = "baa693a8032d7e1cada7d0041e96126df243179ff061456783ac7f12bda4744c"
 dependencies = [
  "winnow 1.0.4",
 ]
 
 [[package]]
 name = "toml_writer"
-version = "1.0.6+spec-1.1.0"
+version = "1.1.3+spec-1.1.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "ab16f14aed21ee8bfd8ec22513f7287cd4a91aa92e44edfe2c17ddd004e92607"
+checksum = "06bdbd8cfc056b8d2e2e85f29b56a3bdbecb527cef81eb39e3e7b98af4652770"
 
 [[package]]
 name = "tonic"
@@ -17469,18 +17468,18 @@ dependencies = [
 
 [[package]]
 name = "webpki-root-certs"
-version = "1.0.5"
+version = "1.0.10"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "36a29fc0408b113f68cf32637857ab740edfafdf460c326cd2afaa2d84cc05dc"
+checksum = "58ec80e73fd8baf57bf0d9615554c75348bda990d6d5bbeab964dd068319fecb"
 dependencies = [
  "rustls-pki-types",
 ]
 
 [[package]]
 name = "webpki-roots"
-version = "1.0.9"
+version = "1.0.10"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "7dcd9d09a39985f5344844e66b0c530a33843579125f23e21e9f0f220850f22a"
+checksum = "1c1c8e20c8a38fc7d65abfe74eb7280e4aa667e8eec8bc84996d2874810748d9"
 dependencies = [
  "rustls-pki-types",
 ]

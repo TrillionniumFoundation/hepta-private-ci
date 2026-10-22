@@ -1,0 +1,140 @@
+name: Hepta P38 exact-source lockfile generation
+
+# Push-only avoids duplicating this maintenance run for every stacked PR base.
+on:
+  push:
+    branches: [codex/stem-p38-native-ci-closure-20261022]
+    paths:
+      - .github/workflows/hepta-p38-lockfile-generate.yml
+      - codex-rs/**/Cargo.toml
+      - codex-rs/Cargo.lock
+      - MODULE.bazel
+
+permissions:
+  contents: read
+
+concurrency:
+  group: hepta-p38-lockfiles-${{ github.sha }}
+  cancel-in-progress: false
+
+jobs:
+  generate:
+    if: github.repository == 'TrillionniumFoundation/hepta-private-ci'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    env:
+      SOURCE_SHA: ${{ github.sha }}
+    steps:
+      - name: Checkout exact branch head without credentials
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+
+      - name: Bind the original files to the exact source
+        id: snapshot
+        env:
+          LOCK_EVIDENCE_DIR: ${{ runner.temp }}/hepta-p38-lockfiles
+        shell: bash
+        run: |
+          set -euo pipefail
+          echo "LOCK_EVIDENCE_DIR=${LOCK_EVIDENCE_DIR}" >> "${GITHUB_ENV}"
+          python3 - <<'PY'
+          import hashlib
+          import json
+          import os
+          from pathlib import Path
+          import subprocess
+
+          source = subprocess.check_output(["git", "rev-parse", "HEAD"], text=True).strip()
+          if source != os.environ["SOURCE_SHA"]:
+              raise SystemExit("checkout does not match the requested source")
+          evidence = Path(os.environ["LOCK_EVIDENCE_DIR"])
+          evidence.mkdir(parents=True, exist_ok=True)
+          files = ("MODULE.bazel", "MODULE.bazel.lock", "codex-rs/Cargo.toml", "codex-rs/Cargo.lock")
+          receipt = {
+              "source_sha": source,
+              "source_tree": subprocess.check_output(["git", "rev-parse", "HEAD^{tree}"], text=True).strip(),
+              "before_sha256": {name: hashlib.sha256(Path(name).read_bytes()).hexdigest() for name in files},
+          }
+          (evidence / "source-sha.txt").write_text(source + "\n")
+          (evidence / "receipt.json").write_text(json.dumps(receipt, indent=2) + "\n")
+          PY
+
+      - name: Install pinned Rust toolchain
+        uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582 # 1.95.0
+
+      - name: Regenerate Cargo metadata against the exact source
+        id: cargo
+        env:
+          CARGO_NET_GIT_FETCH_WITH_CLI: "true"
+        shell: bash
+        run: |
+          cargo metadata --format-version 1 --manifest-path codex-rs/Cargo.toml > /dev/null 2> "${LOCK_EVIDENCE_DIR}/cargo-metadata.log"
+
+      - name: Prepare existing Bazel CI toolchain
+        uses: ./.github/actions/prepare-bazel-ci
+        with:
+          target: x86_64-unknown-linux-gnu
+          cache-scope: p38-lockfile-generation
+
+      - name: Regenerate the Bazel lock with the original recipe
+        id: update
+        shell: bash
+        run: |
+          set -euo pipefail
+          just bazel-lock-update 2>&1 | tee "${LOCK_EVIDENCE_DIR}/bazel-lock-update.log"
+
+      - name: Run the original lockfile drift check
+        id: check
+        shell: bash
+        run: |
+          set -euo pipefail
+          ./scripts/check-module-bazel-lock.sh 2>&1 | tee "${LOCK_EVIDENCE_DIR}/bazel-lock-check.log"
+
+      - name: Bind generated locks and outcomes to the source
+        if: always() && steps.snapshot.outcome == 'success'
+        env:
+          CARGO_OUTCOME: ${{ steps.cargo.outcome }}
+          UPDATE_OUTCOME: ${{ steps.update.outcome }}
+          CHECK_OUTCOME: ${{ steps.check.outcome }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import hashlib
+          import json
+          import os
+          from pathlib import Path
+          import shutil
+          import subprocess
+
+          evidence = Path(os.environ["LOCK_EVIDENCE_DIR"])
+          receipt = json.loads((evidence / "receipt.json").read_text())
+          receipt["after_sha256"] = {
+              name: hashlib.sha256(Path(name).read_bytes()).hexdigest()
+              for name in receipt["before_sha256"]
+          }
+          receipt["outcomes"] = {name: os.environ[name.upper() + "_OUTCOME"] for name in ("cargo", "update", "check")}
+          changed = subprocess.check_output(["git", "diff", "HEAD", "--name-only"], text=True).splitlines()
+          source = subprocess.check_output(["git", "rev-parse", "HEAD"], text=True).strip()
+          receipt["changed_files"] = changed
+          receipt["source_unchanged"] = source == receipt["source_sha"] and set(changed) <= {"MODULE.bazel.lock", "codex-rs/Cargo.lock"}
+          receipt["qualified_locks"] = receipt["source_unchanged"] and all(value == "success" for value in receipt["outcomes"].values())
+          for name in ("MODULE.bazel.lock", "codex-rs/Cargo.lock"):
+              destination = evidence / name
+              destination.parent.mkdir(parents=True, exist_ok=True)
+              shutil.copyfile(name, destination)
+          (evidence / "receipt.json").write_text(json.dumps(receipt, indent=2) + "\n")
+          if not receipt["source_unchanged"]:
+              raise SystemExit("generation changed files outside the two locks or advanced source")
+          PY
+
+      - name: Retain exact locks, receipts and original command logs
+        if: always()
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f # v7.0.0
+        with:
+          name: hepta-p38-lockfiles-${{ github.sha }}-${{ github.run_attempt }}
+          retention-days: 7
+          if-no-files-found: error
+          path: ${{ runner.temp }}/hepta-p38-lockfiles

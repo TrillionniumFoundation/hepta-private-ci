@@ -45,7 +45,10 @@ jobs:
 
   sdks:
     runs-on: ubuntu-24.04
-    timeout-minutes: 60
+    # Job 119686716180 was cancelled at the two-hour boundary while V8
+    # compilation was still progressing (15,016 of 16,195 build actions).
+    # Keep all SDK checks within a bounded cold-build budget.
+    timeout-minutes: 180
     environment:
       name: bazel
       deployment: false

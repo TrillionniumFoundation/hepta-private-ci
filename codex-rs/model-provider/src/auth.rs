@@ -85,6 +85,22 @@ struct AgentIdentityAuthProvider {
 }
 
 impl AuthProvider for AgentIdentityAuthProvider {
+    fn websocket_auth_identity(&self, headers: &HeaderMap) -> Option<Vec<u8>> {
+        let authorization = headers.get(http::header::AUTHORIZATION)?;
+        if !authorization.as_bytes().starts_with(b"AgentAssertion ") {
+            return None;
+        }
+        // The signed timestamp changes for each proof. The immutable record
+        // binds its signing key, account, user, runtime, and routing boundary;
+        // the task binds the scoped authority. Keep these bytes in memory only.
+        serde_json::to_vec(&(
+            "agent-assertion-v1",
+            self.auth.record(),
+            self.auth.run_task_id(),
+        ))
+        .ok()
+    }
+
     fn add_auth_headers(&self, headers: &mut HeaderMap) {
         let record = self.auth.record();
         let header_value = authorization_header_for_agent_task(
@@ -338,6 +354,10 @@ pub fn auth_provider_from_auth_manager(
         expected_auth: expected_auth.clone(),
     })
 }
+
+#[cfg(test)]
+#[path = "auth_websocket_tests.rs"]
+mod websocket_tests;
 
 #[cfg(test)]
 mod tests {

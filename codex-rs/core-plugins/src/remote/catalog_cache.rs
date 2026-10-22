@@ -126,19 +126,18 @@ pub(crate) fn write_cached_directory_plugins(
     auth: &CodexAuth,
     scope: RemotePluginScope,
     plugins: &[RemotePluginDirectoryItem],
-) {
+) -> std::io::Result<()> {
     let Some(cache_key) = RemotePluginCatalogCacheKey::new(config, auth, scope) else {
-        return;
+        return Ok(());
     };
     let cache_path = cache_path(codex_home, &cache_key);
-    let Ok(contents) = serde_json::to_string_pretty(&RemotePluginCatalogDiskCache {
+    let contents = serde_json::to_string_pretty(&RemotePluginCatalogDiskCache {
         schema_version: REMOTE_PLUGIN_CATALOG_DISK_CACHE_SCHEMA_VERSION,
         fetched_at: Some(Utc::now()),
         plugins: plugins.to_vec(),
-    }) else {
-        return;
-    };
-    let _ = codex_utils_path::write_atomically(&cache_path, &contents);
+    })
+    .map_err(std::io::Error::other)?;
+    codex_utils_path::write_atomically(&cache_path, &contents)
 }
 
 pub(crate) fn remove_cached_directory_plugins(

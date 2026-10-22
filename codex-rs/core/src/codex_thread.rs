@@ -69,6 +69,7 @@ use codex_thread_store::ThreadStoreResult;
 use codex_utils_absolute_path::AbsolutePathBuf;
 use codex_utils_path_uri::LegacyAppPathString;
 use codex_utils_path_uri::PathUri;
+use futures::future::BoxFuture;
 use rmcp::model::ReadResourceRequestParams;
 use std::path::PathBuf;
 use std::sync::Arc;
@@ -320,6 +321,35 @@ impl CodexThread {
         }
     }
 
+    /// Observes completion of the admission fences that are currently pending.
+    ///
+    /// An idle lifecycle callback may run while its terminalizer still owns a
+    /// fence. Move this future to an independent owned task before awaiting it;
+    /// awaiting the callback's own fence inside that callback would deadlock.
+    /// Completion grants no admission authority: normal StartIfIdle routing
+    /// must recheck thread state and every fence before accepting input.
+    pub fn pending_admission_fence_completion(&self) -> Option<BoxFuture<'static, ()>> {
+        self.session.pending_admission_fence_completion()
+    }
+
+    /// Observes only the admission fences registered when its snapshot is taken.
+    ///
+    /// Call outside owner callbacks and the submission dispatcher. The absolute
+    /// deadline bounds lock acquisition and completion waits. Success grants no
+    /// authority or idle reservation: callers must recheck permissions and use
+    /// normal Core routing, which may still refuse or steer their input.
+    pub async fn observe_admission_fences_until(
+        &self,
+        deadline: tokio::time::Instant,
+    ) -> Result<(), crate::AdmissionFenceObservationError> {
+        crate::session::admission_fence_observation::observe(
+            &self.session,
+            self.io.session_loop_termination.clone(),
+            deadline,
+        )
+        .await
+    }
+
     pub async fn emit_thread_idle_lifecycle_if_idle(&self, cause: ThreadIdleCause) {
         self.session.emit_thread_idle_lifecycle_if_idle(cause).await;
     }
@@ -396,12 +426,25 @@ impl CodexThread {
                 ));
             }
         };
-        self.session
-            .services
-            .agent_control
-            .ensure_execution_capacity_for_turn_start(self)
-            .await
-            .map_err(UserMessageAdmissionError::Admission)?;
+        if matches!(&mode, TurnInputMode::StartIfIdle) {
+            if let Some(reason) = self
+                .session
+                .services
+                .agent_control
+                .check_execution_capacity_for_turn_start(self)
+                .await
+                .map_err(UserMessageAdmissionError::Admission)?
+            {
+                return Ok((TurnInputSubmission::NotSubmitted { reason }, None));
+            }
+        } else {
+            self.session
+                .services
+                .agent_control
+                .ensure_execution_capacity_for_turn_start(self)
+                .await
+                .map_err(UserMessageAdmissionError::Admission)?;
+        }
 
         let submission_id = crate::session::new_submission_id();
         let (_pending_admission, admission) = self

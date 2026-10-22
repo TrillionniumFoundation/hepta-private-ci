@@ -151,6 +151,28 @@ fn observation(label: &str) -> RetrievalAssignmentObservationV1 {
     value
 }
 
+// A directory is a valid durability barrier on Windows only when opened with
+// FILE_FLAG_BACKUP_SEMANTICS. Keep the real directory handle: replacing it with
+// a regular file would stop exercising the ledger/witness directory sync path.
+fn open_directory_for_sync(path: &std::path::Path) -> std::io::Result<File> {
+    #[cfg(windows)]
+    {
+        use std::os::windows::fs::OpenOptionsExt;
+
+        const FILE_FLAG_BACKUP_SEMANTICS: u32 = 0x0200_0000;
+        const FILE_FLAG_OPEN_REPARSE_POINT: u32 = 0x0020_0000;
+        OpenOptions::new()
+            .read(true)
+            .write(true)
+            .custom_flags(FILE_FLAG_BACKUP_SEMANTICS | FILE_FLAG_OPEN_REPARSE_POINT)
+            .open(path)
+    }
+    #[cfg(not(windows))]
+    {
+        File::open(path)
+    }
+}
+
 fn sink() -> (tempfile::TempDir, CognitiveRetrievalLearningSink) {
     let temp = tempfile::tempdir().expect("temp");
     let binding = digest("agentd-retrieval-learning");
@@ -170,8 +192,8 @@ fn sink() -> (tempfile::TempDir, CognitiveRetrievalLearningSink) {
         .expect("witness file");
     let ledger = DurableLedger::create(ledger_file, binding, 128).expect("ledger");
     let witness = LedgerWitnessStore::create(witness_file, binding).expect("witness");
-    let ledger_directory = File::open(temp.path()).expect("ledger directory");
-    let witness_directory = File::open(temp.path()).expect("witness directory");
+    let ledger_directory = open_directory_for_sync(temp.path()).expect("ledger directory");
+    let witness_directory = open_directory_for_sync(temp.path()).expect("witness directory");
     let writer = LedgerWriter::from_durable(
         ledger,
         witness,

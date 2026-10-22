@@ -1,4 +1,9 @@
 use super::*;
+use crate::app::session_lifecycle::ThreadAttachPresentation;
+use codex_utils_absolute_path::test_support::PathExt;
+use core_test_support::responses;
+use core_test_support::streaming_sse::StreamingSseChunk;
+use core_test_support::streaming_sse::start_streaming_sse_server;
 use pretty_assertions::assert_eq;
 
 fn prepare_local_daemon_thread(app: &mut App) -> Result<ThreadId> {
@@ -144,19 +149,68 @@ async fn run_in_background_detaches_without_interrupting_main_or_side_threads() 
 
 #[tokio::test]
 async fn exit_interrupts_before_requesting_shutdown() -> Result<()> {
+    let (release_response, blocked_response) = tokio::sync::oneshot::channel();
+    let (server, _completions) = start_streaming_sse_server(vec![vec![
+        StreamingSseChunk {
+            gate: None,
+            body: responses::sse(vec![responses::ev_response_created("exit-response")]),
+        },
+        StreamingSseChunk {
+            gate: Some(blocked_response),
+            body: responses::sse(vec![responses::ev_completed("exit-response")]),
+        },
+    ]])
+    .await;
     let (mut app, mut app_event_rx, mut op_rx) = make_test_app_with_channels().await;
     prepare_running_local_daemon(&mut app)?;
-    app.chat_widget
-        .set_feature_enabled(Feature::Goals, /*enabled*/ true);
-    let (mut app_server, mut tui) =
-        prepare_background_exit_test(&app, &mut app_event_rx, &mut op_rx).await?;
-    let started = app_server
-        .start_thread(app.chat_widget.config_ref())
-        .await?;
+    let codex_home = tempdir()?;
+    std::fs::write(
+        codex_home.path().join("config.toml"),
+        format!(
+            r#"
+model = "gpt-5.2"
+model_provider = "background-exit-test"
+
+[model_providers.background-exit-test]
+name = "Background exit test"
+base_url = "{}/v1"
+wire_api = "responses"
+request_max_retries = 0
+stream_max_retries = 0
+
+[features]
+goals = true
+"#,
+            server.uri()
+        ),
+    )?;
+    app.config.codex_home = codex_home.path().to_path_buf().abs();
+    app.config.sqlite = codex_state::SqliteConfig::new_for_testing(codex_home.path().abs());
+    app.config.model = Some("gpt-5.2".to_string());
+    app.config.model_provider_id = "background-exit-test".to_string();
+    app.config.model_provider = ModelProviderInfo {
+        name: "Background exit test".to_string(),
+        base_url: Some(format!("{}/v1", server.uri())),
+        request_max_retries: Some(0),
+        stream_max_retries: Some(0),
+        ..ModelProviderInfo::default()
+    };
+    app.config
+        .features
+        .enable(Feature::Goals)
+        .expect("test config should allow goals");
+    let mut tui = crate::tui::test_support::make_test_tui()?;
+    let mut app_server = Box::pin(crate::start_embedded_app_server_for_picker(&app.config)).await?;
+    let started = app_server.start_thread(&app.config).await?;
     let thread_id = started.session.thread_id;
-    app.active_thread_id = Some(thread_id);
-    app.chat_widget
-        .handle_thread_session(started.session.clone());
+    let thread_session = started.session.clone();
+    app.replace_chat_widget_with_app_server_thread(
+        &mut tui,
+        started,
+        ThreadAttachPresentation::SessionLineage,
+        /*initial_user_message*/ None,
+    )
+    .await?;
     let goal = app_server
         .thread_goal_set(
             thread_id,
@@ -179,13 +233,17 @@ async fn exit_interrupts_before_requesting_shutdown() -> Result<()> {
         ),
         /*replay_kind*/ None,
     );
-    let command = if cfg!(windows) {
-        "Start-Sleep -Seconds 30"
-    } else {
-        "sleep 30"
+    while app_event_rx.try_recv().is_ok() {}
+    app.chat_widget
+        .apply_external_edit("Keep this turn running until interrupted".to_string());
+    app.chat_widget
+        .handle_key_event(KeyEvent::new(KeyCode::Enter, KeyModifiers::NONE));
+    let turn = loop {
+        if let AppEvent::CodexOp(turn @ AppCommand::UserTurn { .. }) = app_event_rx.try_recv()? {
+            break turn;
+        }
     };
-    app_server
-        .thread_shell_command(thread_id, command.to_string())
+    app.submit_thread_op(&mut app_server, thread_id, turn)
         .await?;
     let turn_id = loop {
         let event = time::timeout(Duration::from_secs(/*secs*/ 5), app_server.next_event())
@@ -199,11 +257,20 @@ async fn exit_interrupts_before_requesting_shutdown() -> Result<()> {
             break notification.turn.id.clone();
         }
     };
+    // TurnStarted alone does not prove that an external command is still
+    // running. This response cannot finish before the explicit release, so
+    // interruption exercises a live turn on every supported platform.
+    time::timeout(
+        Duration::from_secs(/*secs*/ 5),
+        server.wait_for_request_count(/*count*/ 1),
+    )
+    .await
+    .expect("the live turn should reach the gated model response");
     app.thread_event_channels.insert(
         thread_id,
         ThreadEventChannel::new_with_session(
             THREAD_EVENT_CHANNEL_CAPACITY,
-            started.session,
+            thread_session,
             vec![test_turn(&turn_id, TurnStatus::InProgress, Vec::new())],
         ),
     );
@@ -230,6 +297,9 @@ async fn exit_interrupts_before_requesting_shutdown() -> Result<()> {
         app_event_rx.try_recv(),
         Ok(AppEvent::Exit(ExitMode::ShutdownFirst))
     );
+    let _ = release_response.send(());
+    app_server.shutdown().await?;
+    server.shutdown().await;
     Ok(())
 }
 

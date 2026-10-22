@@ -140,7 +140,7 @@ def option_contains_value(args: Sequence[str], option: str, value: str) -> bool:
 def bazel_args_without_remote_execution(
     args: Sequence[str], env: Mapping[str, str]
 ) -> list[str]:
-    """Remove credentialed RBE configs and select a coherent local Windows ABI.
+    """Remove credentialed RBE while retaining local CI budgets and Windows ABI.
 
     The pinned hermetic LLVM toolchain builds GNU Windows target C/C++ inputs,
     while native MSVC Rust targets and host-loaded proc macros must consume
@@ -156,15 +156,14 @@ def bazel_args_without_remote_execution(
         separator_idx = len(args)
 
     prefix = list(args[:separator_idx])
+    requested_linux_ci = "--config=ci-linux" in prefix
+    requested_macos_ci = "--config=ci-macos" in prefix
     requested_windows_cross = "--config=ci-windows-cross" in prefix
     requested_native_windows_msvc = option_contains_value(
         prefix, "--platforms", "//:windows_x86_64_msvc"
     )
     prefix = [arg for arg in prefix if arg not in REMOTE_EXECUTION_CONFIGS]
     suffix = list(args[separator_idx:])
-    if env.get("RUNNER_OS") != "Windows":
-        return [*prefix, *suffix]
-
     command_idx = next(
         (idx for idx, arg in enumerate(prefix) if not arg.startswith("-")),
         None,
@@ -180,6 +179,34 @@ def bazel_args_without_remote_execution(
         "aquery",
         "info",
     }:
+        return [*prefix, *suffix]
+
+    if env.get("RUNNER_OS") != "Windows":
+        local_ci_args = []
+        if (
+            requested_macos_ci
+            and env.get("RUNNER_OS") == "macOS"
+            and env.get("GITHUB_ACTIONS") == "true"
+        ):
+            local_ci_args = [
+                "--config=ci-bazel",
+                "--strategy=TestRunner=darwin-sandbox,local",
+            ]
+        elif (
+            requested_linux_ci
+            and env.get("RUNNER_OS") == "Linux"
+            and env.get("GITHUB_ACTIONS") == "true"
+        ):
+            local_ci_args = ["--config=ci-bazel"]
+        if local_ci_args:
+            # Preserve the CI memory/disk budget and any native test sandbox.
+            # Defaults precede explicit caller options; RBE platforms stay out.
+            return [
+                *prefix[: command_idx + 1],
+                *local_ci_args,
+                *prefix[command_idx + 1 :],
+                *suffix,
+            ]
         return [*prefix, *suffix]
 
     injected_args: list[str] = []
