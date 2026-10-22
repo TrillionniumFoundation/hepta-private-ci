@@ -52,6 +52,13 @@ jobs:
           "$RUNNER_TEMP/multimodal-venv/bin/python" -m unittest discover -s qa/stem-bakeoff -p 'test_multimodal_*.py' -v 2>&1 | tee "$RUNNER_TEMP/hepta-multimodal/tests.log"
           "$RUNNER_TEMP/multimodal-venv/bin/python" -m unittest discover -s qa/stem-bakeoff -p 'test_prediction_ledger.py' -v 2>&1 | tee -a "$RUNNER_TEMP/hepta-multimodal/tests.log"
           "$RUNNER_TEMP/multimodal-venv/bin/python" -m unittest discover -s qa/stem-bakeoff -p 'test_cell_head_training.py' -v 2>&1 | tee -a "$RUNNER_TEMP/hepta-multimodal/tests.log"
+      - name: Verify presence rejection against the retained real Heads
+        run: |
+          set -euo pipefail
+          "$RUNNER_TEMP/multimodal-venv/bin/python" qa/stem-bakeoff/replay_presence_guard_v1.py \
+            --archive-directory qa/stem-bakeoff/evidence/20261022-real-multimodal \
+            --output "$RUNNER_TEMP/hepta-multimodal/retained-presence-check" \
+            2>&1 | tee "$RUNNER_TEMP/hepta-multimodal/presence-check.log"
       - name: Acquire pinned COCO captions and original photos
         run: |
           set -euo pipefail
@@ -194,6 +201,7 @@ jobs:
             ${{ runner.temp }}/hepta-multimodal/cohorts/*.jsonl
             ${{ runner.temp }}/hepta-multimodal/bank/
             ${{ runner.temp }}/hepta-multimodal/results/
+            ${{ runner.temp }}/hepta-multimodal/retained-presence-check/guard-results/
           if-no-files-found: error
           retention-days: 14
       - name: Confirm source tree unchanged
