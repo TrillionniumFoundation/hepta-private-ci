@@ -88,6 +88,7 @@ jobs:
           "$RUNNER_TEMP/hepta-stem-venv/bin/python" -m unittest discover -s qa/stem-bakeoff -p 'test_cell_process_inference.py' -v
           "$RUNNER_TEMP/hepta-stem-venv/bin/python" -m unittest discover -s qa/stem-bakeoff -p 'test_shared_student_training.py' -v
           "$RUNNER_TEMP/hepta-stem-venv/bin/python" -m unittest discover -s qa/stem-bakeoff -p 'test_procedure_replay.py' -v
+          "$RUNNER_TEMP/hepta-stem-venv/bin/python" -m unittest discover -s qa/stem-bakeoff -p 'test_procedure_native_export.py' -v
           "$RUNNER_TEMP/hepta-stem-venv/bin/python" -m unittest discover -s qa/stem-bakeoff -p 'test_real*.py' -v
           "$RUNNER_TEMP/hepta-stem-venv/bin/python" qa/stem-bakeoff/scale_probe.py --repeats 2 > "$RUNNER_TEMP/stem-scale-probe.json"
           "$RUNNER_TEMP/hepta-stem-venv/bin/python" -c 'import json,sys; r=json.load(open(sys.argv[1])); assert [x["cells"] for x in r["measurements"]] == [1,8,64,256,1024,4096]; assert all(x["module_forward_hook_calls"] == 2 and x["owner_forward_calls"] == 2 for x in r["measurements"]); assert r["may_satisfy_real_model_bakeoff_gate"] is False; assert r["production_activation_allowed"] is False' "$RUNNER_TEMP/stem-scale-probe.json"
