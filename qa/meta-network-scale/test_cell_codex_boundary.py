@@ -65,7 +65,12 @@ builder = { package = "codex-sandboxing", workspace = true }
         allowed = {"dependencies": {"sha2": {"workspace": True}}}
         self.assertEqual(checker.check_foundation_manifest(allowed), [])
         for package in ("tokio", "rmcp", "reqwest", "codex-core"):
-            variant = {"dependencies": {"sha2": {"workspace": True}, "alias": {"package": package, "version": "1"}}}
+            variant = {
+                "dependencies": {
+                    "sha2": {"workspace": True},
+                    "alias": {"package": package, "version": "1"},
+                }
+            }
             errors = checker.check_foundation_manifest(variant)
             self.assertEqual(len(errors), 1, errors)
             self.assertIn("exactly sha2", errors[0])
@@ -132,13 +137,17 @@ missing = { workspace = true }
             root = Path(temp)
             (root / "codex-rs").mkdir()
             (root / "codex-rs" / "Cargo.toml").write_text(
-                "[workspace]\n[workspace.dependencies]\n", encoding="utf-8"
+                "[workspace]\n[workspace.dependencies]\nsha2 = \"0.10\"\n", encoding="utf-8"
             )
             for name in checker.CELL_CRATES:
                 target = root / "codex-rs" / name
                 target.mkdir(parents=True)
                 (target / "Cargo.toml").write_text(
-                    f'[package]\nname = "codex-{name}"\n', encoding="utf-8"
+                    (
+                        f'[package]\nname = "codex-{name}"\n'
+                        + ('[dependencies]\nsha2 = { workspace = true }\n' if name == "hepta-types" else "")
+                    ),
+                    encoding="utf-8",
                 )
             self.assertEqual(checker.check_workspace(root), [])
             (root / "codex-rs" / checker.CELL_CRATES[0] / "Cargo.toml").write_text(
