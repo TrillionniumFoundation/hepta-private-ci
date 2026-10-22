@@ -5,7 +5,8 @@ on:
     paths:
       - "codex-rs/Cargo.toml"
       - "codex-rs/hepta-types/Cargo.toml"
-      - "codex-rs/hepta-types/src/execution_contract.rs"
+      - "codex-rs/hepta-types/src/**"
+      - "codex-rs/hepta-codex-adapter/src/execution_contract.rs"
       - "codex-rs/hepta-neuron/Cargo.toml"
       - "codex-rs/hepta-intuition/Cargo.toml"
       - "codex-rs/hepta-ndu/Cargo.toml"
