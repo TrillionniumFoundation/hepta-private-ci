@@ -283,6 +283,12 @@ attempt lineage, including rejection, interruption and no-update. Each round:
    Ineligible/insufficient evidence takes the explicit no-update branch: record
    the decision, retain/revalidate the installed parent and prove its next-task
    use; do not run candidate selection or installation for a rejected artifact.
+   Continue directly to step 6 using that parent; record unexecuted steps 4–5 as
+   NOT_APPLICABLE with the decision reason in the versioned campaign record,
+   without fabricating a task settlement, fetch or installation receipt or
+   silently extending existing strict schemas. Reconcile any previously admitted
+   Unknown effect under its original identity. This branch does not waive the
+   separately required successful cross-node I09/I10 load-and-next-task cohort.
 4. For an eligible update, submit only owner-approved task/evaluation/artifact
    references through the existing TaskFlow/PoN effect seam. Reconcile the exact submitted packet,
    task, output, active membership, depth and cumulative work. Chain settlement
