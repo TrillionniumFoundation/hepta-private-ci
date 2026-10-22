@@ -82,9 +82,53 @@ STAGES = {
 }
 
 
+
+# Source/tree attestations are not meaningful when process-environment
+# overrides can redirect Git, the compiler, Cargo dependencies or Python tests.
+# Reject known execution-affecting overrides by NAME; never copy their values
+# (which may contain private machine paths/secrets) into a receipt.
+UNREVIEWED_ENVIRONMENT_KEYS = frozenset({
+    "CARGO_HOME", "RUSTUP_HOME", "RUSTUP_TOOLCHAIN", "RUSTC", "RUSTDOC",
+    "RUSTFLAGS", "RUSTDOCFLAGS", "RUSTC_WRAPPER", "RUSTC_WORKSPACE_WRAPPER",
+    "RUSTC_BOOTSTRAP", "CARGO_ENCODED_RUSTFLAGS", "CARGO_ENCODED_RUSTDOCFLAGS",
+    "GIT_DIR", "GIT_WORK_TREE", "GIT_COMMON_DIR", "GIT_INDEX_FILE",
+    "GIT_OBJECT_DIRECTORY", "GIT_ALTERNATE_OBJECT_DIRECTORIES", "GIT_EXEC_PATH",
+    "GIT_CONFIG", "GIT_CONFIG_GLOBAL", "GIT_CONFIG_SYSTEM", "GIT_CONFIG_NOSYSTEM",
+    "PYTHONPATH", "PYTHONHOME", "PYTHONSTARTUP", "PYTHONINSPECT",
+    "BASH_ENV", "ENV", "CC", "CXX", "AR", "CFLAGS", "CXXFLAGS", "LDFLAGS",
+    "MAKEFLAGS", "PKG_CONFIG_PATH", "PKG_CONFIG_LIBDIR", "CMAKE_TOOLCHAIN_FILE",
+})
+UNREVIEWED_ENVIRONMENT_PREFIXES = (
+    "GIT_CONFIG_", "CARGO_BUILD_", "CARGO_TARGET_", "CARGO_PROFILE_",
+    "CARGO_REGISTRIES_", "CARGO_SOURCE_", "CARGO_UNSTABLE_",
+    "RUSTUP_", "LD_", "DYLD_", "PYTEST_",
+)
+
+
+def unreviewed_environment_keys(environment: dict[str, str] | None = None) -> list[str]:
+    """Return only unreviewed override names, never their sensitive values."""
+    environ = os.environ if environment is None else environment
+    return sorted(
+        key
+        for key, value in environ.items()
+        if value
+        and (
+            key in UNREVIEWED_ENVIRONMENT_KEYS
+            or key.startswith(UNREVIEWED_ENVIRONMENT_PREFIXES)
+        )
+    )
+
 def git_snapshot(path: Path) -> dict[str, Any]:
     if not path.is_dir():
         return {"usable": False, "reason": "repository directory not mounted", "path": str(path)}
+    overrides = unreviewed_environment_keys()
+    if overrides:
+        return {
+            "usable": False,
+            "reason": "unreviewed local execution environment",
+            "path": str(path),
+            "blocked_environment_keys": overrides,
+        }
 
     def cmd(*args: str) -> str:
         return subprocess.run(
@@ -128,6 +172,13 @@ def _stop_check_process_group(child: subprocess.Popen[bytes]) -> None:
 
 
 def run_check(argv: list[str], cwd: Path, timeout: int, log_path: Path) -> dict[str, Any]:
+    overrides = unreviewed_environment_keys()
+    if overrides:
+        return {
+            "argv": argv,
+            "status": "BLOCKED_UNREVIEWED_ENVIRONMENT",
+            "blocked_environment_keys": overrides,
+        }
     if not shutil.which(argv[0]):
         return {"argv": argv, "status": "BLOCKED_TOOL_MISSING", "tool": argv[0]}
     if not cwd.is_dir():
@@ -208,6 +259,7 @@ def main() -> int:
     if args.timeout_sec < 1:
         parser.error("--timeout-sec must be positive")
     roots = {"hepta": args.hepta.resolve(), "runtime": args.runtime.resolve()}
+    blocked_environment_keys = unreviewed_environment_keys()
     if args.report_dir.is_symlink():
         parser.error("report directory must not be a symlink")
     report_dir = args.report_dir.resolve()
@@ -219,6 +271,7 @@ def main() -> int:
     report: dict[str, Any] = {
         "schema": "hepta.local.p0-p6.source-audit.v1", "time_utc": dt.datetime.now(dt.timezone.utc).isoformat(),
         "sources": {name: git_snapshot(path) for name, path in roots.items()},
+        "blocked_environment_keys": blocked_environment_keys,
         "production_qualified": False, "stages": {},
         "warning": "Source/test results are NOT signed independent target-host/model acceptance; no deployment rights are conferred.",
     }
@@ -236,6 +289,8 @@ def main() -> int:
         stage_result["missing_files"] = missing
         if missing:
             stage_result["status"] = "BLOCKED_SOURCE_NOT_PRESENT"
+        elif blocked_environment_keys:
+            stage_result["status"] = "BLOCKED_UNREVIEWED_ENVIRONMENT"
         elif not all(report["sources"][name]["usable"] and before_checks[name]["usable"] for name in source_names):
             stage_result["status"] = "BLOCKED_NO_GIT_CHECKOUT"
         elif not all(report["sources"][name]["clean"] and before_checks[name]["clean"] for name in source_names):

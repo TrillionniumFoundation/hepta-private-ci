@@ -279,5 +279,54 @@ class LocalCloseoutTests(unittest.TestCase):
             self.assertEqual(result["status"], "BLOCKED_DESCENDANTS")
 
 
+    def test_unreviewed_execution_env_is_rejected_without_disclosing_values(self):
+        cases = {
+            "GIT_CONFIG_COUNT": "1",
+            "GIT_CONFIG_KEY_0": "core.worktree",
+            "RUSTFLAGS": "--cfg=unreviewed",
+            "CARGO_TARGET_X86_64_UNKNOWN_LINUX_GNU_LINKER": "/tmp/fake-linker",
+            "RUSTC_WRAPPER": "/tmp/fake-rustc-wrapper",
+            "LD_PRELOAD": "/tmp/fake.so",
+            "PYTHONPATH": "/tmp/fake-python-tests",
+            "CARGO_HOME": "/tmp/fake-cargo-config",
+        }
+        for name, value in cases.items():
+            with self.subTest(variable=name):
+                self.assertEqual(
+                    mod.unreviewed_environment_keys({name: value}), [name]
+                )
+        self.assertEqual(
+            mod.unreviewed_environment_keys(
+                {"RUST_BACKTRACE": "full", "RUST_LOG": "warn", "CARGO_TERM_COLOR": "always"}
+            ),
+            [],
+        )
+
+    def test_env_poisoning_blocks_git_source_identity_before_subprocess(self):
+        with tempfile.TemporaryDirectory() as root, patch.dict(
+            mod.os.environ, {"GIT_CONFIG_COUNT": "1"}
+        ), patch.object(mod.subprocess, "run") as invoked:
+            proof = mod.git_snapshot(Path(root))
+            self.assertFalse(proof["usable"])
+            self.assertEqual(proof["reason"], "unreviewed local execution environment")
+            self.assertIn("GIT_CONFIG_COUNT", proof["blocked_environment_keys"])
+            self.assertNotIn("1", proof["blocked_environment_keys"])
+            invoked.assert_not_called()
+
+    def test_env_poisoning_blocks_checks_without_executing_any_binary(self):
+        with tempfile.TemporaryDirectory() as root, patch.dict(
+            mod.os.environ, {"RUSTFLAGS": "--cfg=unreviewed"}
+        ), patch.object(mod.subprocess, "Popen") as invoked:
+            location = Path(root) / "no-binary-executed.log"
+            result = mod.run_check(
+                [sys.executable, "-c", "print('fake green')"],
+                Path(root), 5, location
+            )
+            self.assertEqual(result["status"], "BLOCKED_UNREVIEWED_ENVIRONMENT")
+            self.assertEqual(result["blocked_environment_keys"], ["RUSTFLAGS"])
+            self.assertFalse(location.exists())
+            invoked.assert_not_called()
+
+
 if __name__ == "__main__":
     unittest.main()
