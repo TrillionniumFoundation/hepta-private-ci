@@ -237,6 +237,57 @@ def continuous_direction_step(flow, z, context, t, dt, cell_heads, weights):
     return z + dt * velocity
 
 
+
+def new_low_rank_cell_head(latent_dim=7, condition_dim=32, rank=8):
+    """Zero-initialized, trainable adapter; uses one shared generative backbone.
+
+    Returned module uses a state_dict rather than a separate full model; zero
+    initialization guarantees no-change forward parity before training.
+    """
+    import torch
+    from torch import nn
+    if latent_dim < 1 or condition_dim < 1 or not 1 <= rank <= 64:
+        raise PortfolioRejected('unsupported low-rank Cell shape')
+    class Head(nn.Module):
+        def __init__(self):
+            super().__init__()
+            self.down = nn.Linear(latent_dim + condition_dim, rank)
+            self.up = nn.Linear(rank, latent_dim, bias=False)
+            nn.init.zeros_(self.up.weight)
+        def forward(self, z, context):
+            return self.up(self.down(torch.cat((z, context), -1)).tanh())
+    return Head()
+
+
+def generate_with_cells(flow, decoder, context, encoder_estimate, noise,
+                        cell_heads, weight_schedule):
+    """Decode actual raw outputs after a time-varying Cell-portfolio rollout.
+
+    The encoder estimate is public inference context, never the hidden label.
+    The schedule may be supplied by a shadow controller, but this function has
+    no independent authorization or claims about output loss. Decoder is the
+    same frozen Decoder object for all comparison arms.
+    """
+    import torch
+    if (context.ndim != 2 or context.shape[1] != 32 or
+            encoder_estimate.shape != (len(context), 6) or
+            noise.shape != (len(context), 7) or not weight_schedule):
+        raise PortfolioRejected('invalid shared-encoder flow initialization')
+    z = torch.cat((encoder_estimate + 0.5 * noise[:, :6], noise[:, 6:]), -1)
+    steps = len(weight_schedule)
+    if steps > 64:
+        raise PortfolioRejected('unbounded flow rollout')
+    for k, weights in enumerate(weight_schedule):
+        z = continuous_direction_step(flow, z, context, k / steps, 1 / steps,
+                                      cell_heads, weights)
+    outputs = decoder(z)
+    if not isinstance(outputs, dict) or not outputs:
+        raise PortfolioRejected('decoder did not emit raw output dictionary')
+    if not all(torch.isfinite(value).all() for value in outputs.values()):
+        raise PortfolioRejected('nonfinite decoded output')
+    return {'latent': z, 'decoded': outputs, 'steps': steps}
+
+
 def masked_logit_step(logits, deltas, weights, mask, n_unmask):
     """P2 compatibility primitive, not a trained masked Diffusion LLM.
 
