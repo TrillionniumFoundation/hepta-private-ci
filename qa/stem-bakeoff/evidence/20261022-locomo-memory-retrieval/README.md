@@ -109,7 +109,7 @@ The report therefore keeps `superiority_established=false`.
 
 The aggregate improvement is primarily single-hop context recovery. Neighbor
 expansion can consume slots needed by distant evidence; the observed multi-hop
-regression remains a blocker. No parameter or topology has been retuned on these
+regression remains a blocker. No parameter or topology has been tuned using these
 evaluation results.
 
 Calibration selects Meta threshold **0**, so every evaluation question receives
