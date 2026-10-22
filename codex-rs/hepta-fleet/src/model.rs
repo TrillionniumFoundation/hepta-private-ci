@@ -230,7 +230,6 @@ fn matches_canonical_path_spelling(original: &Path, canonical: &Path) -> bool {
     false
 }
 
-
 #[cfg(all(test, windows))]
 mod canonical_windows_tests {
     use super::*;
@@ -239,12 +238,12 @@ mod canonical_windows_tests {
     #[test]
     fn verbatim_drive_prefix_only_is_not_a_symlink_redirection() {
         assert!(matches_canonical_path_spelling(
-            Path::new(r"C:\\hepta\\workspace"),
-            Path::new(r"\\?\C:\\hepta\\workspace"),
+            Path::new(r"C:\hepta\workspace"),
+            Path::new(r"\\?\C:\hepta\workspace"),
         ));
         assert!(!matches_canonical_path_spelling(
-            Path::new(r"C:\\hepta\\linked-workspace"),
-            Path::new(r"\\?\C:\\hepta\\real-workspace"),
+            Path::new(r"C:\hepta\linked-workspace"),
+            Path::new(r"\\?\C:\hepta\real-workspace"),
         ));
     }
 
