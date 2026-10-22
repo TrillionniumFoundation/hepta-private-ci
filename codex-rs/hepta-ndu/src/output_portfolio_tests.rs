@@ -991,3 +991,47 @@ fn digest_commits_to_complete_public_receipt_and_every_candidate_snapshot() {
         receipt.selection_digest
     );
 }
+
+#[test]
+fn duplicate_cell_proposal_digest_cannot_masquerade_as_diversified_assets() {
+    let first = candidate("first", 60, 10, false);
+    let mut disguised = candidate("second-id", 55, 5, false);
+    disguised.candidate_digest = first.candidate_digest;
+    disguised.weight_cap = q(50);
+    let candidates = [candidate("baseline", 0, 0, true), first, disguised];
+    let expected = NduError::InvalidSolverReceipt("duplicate portfolio candidate digest");
+    assert_eq!(
+        select_output_portfolio_v1(&context(3), &budget(3), &candidates),
+        Err(expected.clone())
+    );
+    assert_eq!(
+        output_efficient_frontier_v1(&context(3), &candidates),
+        Err(expected.clone())
+    );
+
+    // Reordering both candidates and their zero covariance input cannot
+    // turn a duplicated immutable proposal into two distinct assets.
+    let reordered = [
+        candidates[2].clone(),
+        candidates[0].clone(),
+        candidates[1].clone(),
+    ];
+    assert_eq!(
+        select_output_portfolio_v1(&context(3), &budget(3), &reordered),
+        Err(expected)
+    );
+}
+
+#[test]
+fn relabelled_no_change_payload_cannot_become_risky_second_asset() {
+    let baseline = candidate("baseline", 0, 0, true);
+    let mut disguised = candidate("second", 95, 0, false);
+    disguised.candidate_digest = baseline.candidate_digest;
+    let candidates = [baseline, disguised];
+    assert_eq!(
+        select_output_portfolio_v1(&context(2), &budget(2), &candidates),
+        Err(NduError::InvalidSolverReceipt(
+            "duplicate portfolio candidate digest"
+        ))
+    );
+}

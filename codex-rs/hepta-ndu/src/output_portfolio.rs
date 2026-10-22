@@ -328,6 +328,19 @@ fn canonical_candidates(
     if baseline_count != 1 {
         return Err(NduError::MissingAbstainCandidate);
     }
+    // Relabeling one signed proposal must not manufacture a second
+    // independent Cell asset with different claimed covariance/utility.
+    // Bounded to 128 candidates; maintain deterministic input ordering.
+    for (index, candidate) in canonical.iter().enumerate() {
+        if canonical[..index]
+            .iter()
+            .any(|earlier| earlier.candidate_digest == candidate.candidate_digest)
+        {
+            return Err(NduError::InvalidSolverReceipt(
+                "duplicate portfolio candidate digest",
+            ));
+        }
+    }
     Ok(canonical)
 }
 fn canonical_covariance(
