@@ -516,3 +516,57 @@ fn hard_slot_and_atomic_protocol_constraints_survive_fractional_optimization() {
     .expect("tool actions remain whole or skipped");
     assert_eq!(receipt.disposition, OutputPortfolioDispositionV1::NoChange);
 }
+
+#[test]
+fn frontier_rejects_nonzero_no_change_covariance() {
+    let candidates = [
+        candidate("baseline", 0, 0, true),
+        candidate("asset", 80, 0, false),
+    ];
+    let mut bad = context(2);
+    bad.semantic_covariance[0] = q(10);
+    let error = output_efficient_frontier_v1(&bad, &candidates)
+        .expect_err("a corrupted no-change covariance cannot enter the frontier");
+    assert_eq!(
+        error,
+        NduError::InvalidSolverReceipt("no-change covariance")
+    );
+    let error = select_output_portfolio_v1(&bad, &budget(2), &candidates)
+        .expect_err("selection and frontier must enforce identical covariance bounds");
+    assert_eq!(
+        error,
+        NduError::InvalidSolverReceipt("no-change covariance")
+    );
+}
+
+#[test]
+fn multiple_partial_directions_never_hide_the_residual_no_change_slot() {
+    let mut a = candidate("first", 80, 0, false);
+    a.weight_cap = q(30);
+    let mut b = candidate("second", 70, 0, false);
+    b.weight_cap = q(30);
+    let candidates = [candidate("baseline", 0, 0, true), a, b];
+
+    let two_slots = select_output_portfolio_v1(&context(3), &budget(2), &candidates)
+        .expect("at most one continuous head plus no-change");
+    assert_eq!(two_slots.allocations.len(), 2);
+    assert!(
+        !two_slots
+            .allocations
+            .iter()
+            .any(|item| item.candidate_id == id("second"))
+    );
+
+    let three_slots = select_output_portfolio_v1(&context(3), &budget(3), &candidates)
+        .expect("two heads plus an explicit no-change remainder");
+    assert_eq!(three_slots.allocations.len(), 3);
+    assert_eq!(
+        three_slots
+            .allocations
+            .iter()
+            .map(|item| item.weight)
+            .try_fold(FixedQ32::ZERO, |sum, weight| sum.checked_add(weight))
+            .expect("checked portfolio weight sum"),
+        FixedQ32::ONE
+    );
+}
