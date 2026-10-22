@@ -414,14 +414,18 @@ impl RuntimeReceiptV1 {
         {
             return Err(ExecutionContractError::StatusOutcomeMismatch);
         }
-        // Rejection means that the native tool never ran. A terminal native
-        // result belongs to Completed/Failed, not Rejected. Similarly, a
-        // completed effect cannot carry an outcome-level retry signal.
+        // Rejection is strictly pre-admission: neither a terminal result nor
+        // partial stdout/stderr may have been observed from a native tool.
+        // Otherwise a side-effecting, interrupted operation could be mislabeled
+        // retry-safe even with a correctly recomputed outcome digest.
         if self.execution.status == ExecutionStatusV1::Rejected
-            && self.tool_outcome.terminal_observed
+            && (self.tool_outcome.terminal_observed
+                || self.tool_outcome.stdout_digest.is_some()
+                || self.tool_outcome.stderr_digest.is_some())
         {
             return Err(ExecutionContractError::StatusOutcomeMismatch);
         }
+        // A completed effect cannot carry an outcome-level retry signal.
         if self.execution.status == ExecutionStatusV1::Completed && self.tool_outcome.retryable {
             return Err(ExecutionContractError::StatusOutcomeMismatch);
         }
