@@ -3117,6 +3117,7 @@ dependencies = [
  "codex-shell-command",
  "codex-test-binary-support",
  "codex-utils-absolute-path",
+ "codex-utils-cargo-bin",
  "codex-utils-home-dir",
  "codex-utils-path-uri",
  "codex-utils-pty",
@@ -3350,7 +3351,6 @@ name = "codex-git-utils"
 version = "0.0.0"
 dependencies = [
  "anyhow",
- "base64 0.22.1",
  "chrono",
  "codex-file-system",
  "codex-protocol",
@@ -4142,6 +4142,7 @@ dependencies = [
  "codex-hepta-objective",
  "codex-hepta-types",
  "codex-hepta-wire",
+ "codex-utils-path",
  "ed25519-dalek",
  "libc",
  "pretty_assertions",
@@ -4172,6 +4173,7 @@ dependencies = [
  "codex-hepta-paths",
  "codex-hepta-types",
  "codex-uds",
+ "codex-utils-cargo-bin",
  "constant_time_eq 0.3.1",
  "ed25519-dalek",
  "jsonschema",
@@ -5390,6 +5392,7 @@ dependencies = [
  "tokio",
  "tokio-util",
  "uds_windows",
+ "windows-sys 0.61.2",
 ]
 
 [[package]]

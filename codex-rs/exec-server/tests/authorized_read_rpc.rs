@@ -28,7 +28,7 @@ const ALLOWED: &[u8] = b"ALLOWED";
 const SECRET: &[u8] = b"SECRET";
 
 fn read_only_sandbox(root: &Path) -> Result<FileSystemSandboxContext> {
-    let root = AbsolutePathBuf::from_absolute_path(root)?;
+    let root = AbsolutePathBuf::from_absolute_path(root.canonicalize()?)?;
     let policy = FileSystemSandboxPolicy::restricted(vec![FileSystemSandboxEntry::new(
         FileSystemPath::Path {
             path: PathUri::from_abs_path(&root),
@@ -85,6 +85,34 @@ async fn authorized_read_rpc_is_capability_gated_and_denies_outside_root() -> Re
             assert_eq!(message, "bounded authorized file reads are unsupported");
         }
         Err(error) => bail!("unexpected authorized-read failure: {error:?}"),
+    }
+
+    if info.capabilities.stable_handle_authorized_read {
+        let bounded_file = allowed_dir.join("bounded.txt");
+        std::fs::write(&bounded_file, b"12345678")?;
+        let exact = client
+            .fs_read_file_authorized(FsReadFileAuthorizedParams {
+                path: PathUri::from_host_native_path(&bounded_file)?,
+                sandbox: sandbox.clone(),
+                max_bytes: 8,
+            })
+            .await?;
+        assert_eq!(STANDARD.decode(exact.data_base64)?, b"12345678");
+        std::fs::write(&bounded_file, b"123456789")?;
+        let overflow = client
+            .fs_read_file_authorized(FsReadFileAuthorizedParams {
+                path: PathUri::from_host_native_path(&bounded_file)?,
+                sandbox: sandbox.clone(),
+                max_bytes: 8,
+            })
+            .await
+            .expect_err("oversized authorized RPC must reject without returning a prefix");
+        let ExecServerError::Server { code, message } = &overflow else {
+            bail!("expected overflow wire error, got {overflow:?}");
+        };
+        assert_eq!(*code, -32603);
+        assert_eq!(message, "authorized file read exceeds bound");
+        assert!(!overflow.to_string().contains("bounded.txt"));
     }
 
     let denied = client

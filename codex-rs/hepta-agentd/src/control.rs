@@ -180,14 +180,29 @@ async fn prepare_socket(socket_path: &Path) -> Result<(), AgentdError> {
                 ),
             )));
         }
-        Err(error) if error.kind() == ErrorKind::NotFound => return Ok(()),
-        Err(error) if error.kind() == ErrorKind::ConnectionRefused => {}
-        Err(_error) if !socket_path.exists() => return Ok(()),
+        Err(error)
+            if matches!(
+                error.kind(),
+                ErrorKind::NotFound | ErrorKind::ConnectionRefused
+            ) => {}
         Err(error) => {
             return Err(io_context(
                 /* operation */ "probe existing agentd control socket",
                 /* path */ socket_path,
                 /* source */ error,
+            ));
+        }
+    }
+    // Inspect the entry itself: following an AF_UNIX reparse point or dangling
+    // symlink can report NotFound even though a rendezvous entry still exists.
+    match tokio::fs::symlink_metadata(socket_path).await {
+        Ok(_) => {}
+        Err(error) if error.kind() == ErrorKind::NotFound => return Ok(()),
+        Err(error) => {
+            return Err(io_context(
+                "inspect agentd socket entry",
+                socket_path,
+                error,
             ));
         }
     }
@@ -209,6 +224,10 @@ async fn prepare_socket(socket_path: &Path) -> Result<(), AgentdError> {
         )))
     }
 }
+
+#[cfg(test)]
+#[path = "control_socket_entry_tests.rs"]
+mod socket_entry_tests;
 
 #[cfg(unix)]
 async fn set_owner_only(path: &Path) -> Result<(), AgentdError> {

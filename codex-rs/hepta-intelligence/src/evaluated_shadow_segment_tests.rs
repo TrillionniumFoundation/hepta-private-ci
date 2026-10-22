@@ -18,7 +18,22 @@ fn open(root: &std::path::Path, name: &str, create: bool) -> std::fs::File {
 }
 
 fn directory(root: &std::path::Path) -> std::fs::File {
-    std::fs::File::open(root).unwrap()
+    // Preserve real directory fsync instead of substituting a file handle.
+    // Windows directory opens require FILE_FLAG_BACKUP_SEMANTICS.
+    #[cfg(windows)]
+    {
+        use std::os::windows::fs::OpenOptionsExt;
+        OpenOptions::new()
+            .read(true)
+            .write(true)
+            .custom_flags(0x0200_0000) // FILE_FLAG_BACKUP_SEMANTICS
+            .open(root)
+            .expect("open durable directory handle on Windows")
+    }
+    #[cfg(not(windows))]
+    {
+        std::fs::File::open(root).expect("open durable directory handle")
+    }
 }
 
 fn writer(
