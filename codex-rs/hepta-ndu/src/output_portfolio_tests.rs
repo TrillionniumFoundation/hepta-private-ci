@@ -1047,7 +1047,6 @@ fn covariance_pricing_does_not_hide_fixed_switch_cost() {
     assert_eq!(receipt.total_risk, FixedQ32::ZERO);
 }
 
-
 #[test]
 fn duplicate_cell_proposal_digest_cannot_masquerade_as_diversified_assets() {
     let first = candidate("first", 60, 10, false);
