@@ -53,8 +53,9 @@ impl ProductionDurableWriter {
         final_use: FinalUseAuthority,
         evidence: Arc<dyn TypedMemoryEvidenceVerifierV1>,
     ) -> Result<ProductionTypedMemoryCapabilityV1, ProductionWriterError> {
+        let production_mutation = self.cognitive_mutation_capability()?;
         Ok(ProductionTypedMemoryCapabilityV1 {
-            mutation: self.cognitive_mutation_capability()?,
+            mutation: production_mutation,
             final_use,
             evidence,
         })

@@ -84,7 +84,10 @@ symbol = "ProductionDurableWriter::cognitive_mutation_capability"
 call_pattern = '\bcognitive_mutation_capability\s*\('
 definition_path = "codex-rs/hepta-memory/src/production_writer.rs"
 definition_markers = ["pub struct ProductionCognitiveMutationCapability", "pub fn cognitive_mutation_capability", "production_cognitive_mutation_sealed"]
-product_callers = ["codex-rs/hepta-agentd/src/production_writer_host.rs"]
+product_callers = [
+  "codex-rs/hepta-agentd/src/production_writer_host.rs",
+  "codex-rs/hepta-memory/src/production_typed_memory.rs",
+]
 caller_markers = ["cognitive_mutation_capability", "production_mutation"]
 
 [[boundary]]
