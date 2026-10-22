@@ -277,6 +277,11 @@ fn canonical_candidates(
         // Snapshot content equality is not equivalent to authority equality:
         // a byte-identical feature must not smuggle a stale Cell proposal
         // through a newer Supervisor generation or different encoder.
+        if candidate.objective_digest != context.objective_digest {
+            return Err(NduError::InvalidSolverReceipt(
+                "portfolio candidate objective",
+            ));
+        }
         if candidate.generation != context.generation {
             return Err(NduError::InvalidSolverReceipt(
                 "portfolio candidate generation",
@@ -737,6 +742,7 @@ fn digest_selection(
         bytes.extend_from_slice(candidate.candidate_id.as_str().as_bytes());
         bytes.push(0);
         bytes.extend_from_slice(candidate.candidate_digest.as_array());
+        bytes.extend_from_slice(candidate.objective_digest.as_array());
         bytes.extend_from_slice(&candidate.generation.get().to_le_bytes());
         bytes.extend_from_slice(candidate.encoder_digest.as_array());
         bytes.extend_from_slice(candidate.composition_domain_digest.as_array());
