@@ -122,3 +122,36 @@ frozen protected labels, source-identity verification, sample-size/power
 analysis, prospective independent holdout, and physical model execution.
 This change does not alter #3055/#3039/#3213 frozen studies or authorize
 model deployment/Final-use.
+
+
+## Protected-task absolute service guard (child research amendment)
+
+The #3282 source-coverage minimum is necessary but **not sufficient**: a
+synthetic 3-training-seed, 512-world-per-seed paired cohort can have eight
+distinct protected original sources per seed, with **every protected draw
+failing in every arm**, yet all six comparative NDU CVaR/non-regression gates
+and `all_provisional_gates_pass` returned true. This is not evidence that
+protected tasks are served. The original all-failed contrast is retained as
+the new negative control, never as a successful NDU run.
+
+Before any heldout, register both:
+- `min_protected_ndu_quality`: required source-equal **absolute** NDU
+  protected-task mean quality in each training seed, in [0.5, 1].
+- `min_protected_ndu_completion`: required source-equal **absolute**
+  completed-draw fraction in each training seed, in [0.5, 1].
+
+These thresholds are compulsory and have no dynamic default. The evaluator
+counts each distinct protected original source once (averaging its protected
+views first), separately for every training seed, and publishes the source-equal
+quality and completion rates. `protected_task_absolute_service` blocks
+**every** provisional strong-baseline comparison when either floor fails.
+Existing per-world protected non-regression and minimum independent source
+coverage remain mandatory. The documented procedural floors are conservative
+research safeguards, **not** a validated statistical-power result, verified
+protected-label source, production safety certification, or substitute for
+independent bias/error audits.
+
+This patch is additive to frozen parent #3282; no original #3039/#3213 negative
+heldout outcome, original #3055 source, product authority or deployed model is
+changed. The 75-test local CPU suite passed before publication. New exact-head
+CI must also pass; science remains `DRAFT / DENY_ALL / HOLD_NO_GO`.

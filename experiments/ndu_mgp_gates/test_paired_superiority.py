@@ -36,6 +36,8 @@ def study_fixture(*, strong_ndu=True, bootstrap_replicates=120):
         'draws_per_world': 2, 'failure_loss': 2.0, 'cost_units': 'measured_cpu_seconds',
         'hard_world_cost_limit': 2.0,
         'min_protected_source_groups_per_seed': 8,
+        'min_protected_ndu_quality': 0.80,
+        'min_protected_ndu_completion': 0.80,
     }
     worlds = []
     for seed in seeds:
@@ -400,6 +402,88 @@ class PairedEvidenceTests(unittest.TestCase):
         self.assertEqual(out['protected_worlds_per_seed'], [8, 8, 8])
         self.assertEqual(out['protected_original_sources_per_seed'], [8, 8, 8])
         self.assertEqual(out['status'], 'HOLD_NO_GO')
+
+    def test_missing_absolute_protected_quality_floor_rejected(self):
+        d = study_fixture()
+        del d['protocol']['min_protected_ndu_quality']
+        with self.assertRaisesRegex(EvidenceGap, 'absolute protected quality floor'):
+            evaluate(d)
+
+    def test_missing_absolute_protected_completion_floor_rejected(self):
+        d = study_fixture()
+        del d['protocol']['min_protected_ndu_completion']
+        with self.assertRaisesRegex(EvidenceGap, 'absolute protected completion floor'):
+            evaluate(d)
+
+    def test_nonmeaningful_protected_floor_rejected(self):
+        d = study_fixture()
+        d['protocol']['min_protected_ndu_quality'] = 1e-6
+        with self.assertRaisesRegex(EvidenceGap, 'absolute protected quality floor'):
+            evaluate(d)
+        d = study_fixture()
+        d['protocol']['min_protected_ndu_completion'] = 0.1
+        with self.assertRaisesRegex(EvidenceGap, 'absolute protected completion floor'):
+            evaluate(d)
+
+    def test_normal_protected_service_is_recorded_by_seed(self):
+        result = evaluate(study_fixture(bootstrap_replicates=100))
+        self.assertEqual(result['ndu_protected_source_equal_quality_by_seed'], [0.92]*3)
+        self.assertEqual(result['ndu_protected_source_equal_completion_by_seed'], [1.0]*3)
+        self.assertTrue(all(r['gates']['protected_task_absolute_service']
+                            for r in result['comparison'].values()))
+
+    def test_both_ndu_and_controls_fail_all_protected_would_false_pass(self):
+        d = study_fixture(bootstrap_replicates=2000)
+        # Eight distinct original sources per seed are protected but never
+        # produce ANY valid response. In 512 worlds/seed, risk CVaR still wins
+        # on unprotected majority, so comparative noninferiority alone is unsafe.
+        enlarged = []
+        for seed in d['protocol']['seeds']:
+            prior = [row for row in d['worlds'] if row['seed'] == seed]
+            world_ids, source_ids = [], []
+            for j in range(512):
+                row = copy.deepcopy(prior[j % 32])
+                world_id = f'heldout-{seed}-{j}'
+                source = f'src-{seed}-{j // 2}'
+                identity = H(world_id + ' publicly visible')
+                row.update(world_id=world_id, source_group_id=source,
+                           public_input_digest=identity, protected_task=j < 16)
+                for name, out in row['outcomes'].items():
+                    out['public_input_digest'] = identity
+                    for k, score in enumerate(out['decoded_draw_scores']):
+                        score['output_witness_sha256'] = H(f'{world_id}-{name}-draw-{k}')
+                        if j < 16:
+                            score.update(status='failed', loss=2.0, quality=0.0,
+                                         ambiguity=1.0, inconsistency=1.0)
+                enlarged.append(row)
+                world_ids.append(world_id)
+                source_ids.append(source)
+            d['protocol']['heldout_world_ids'][str(seed)] = world_ids
+            d['protocol']['heldout_source_group_ids'][str(seed)] = source_ids
+        d['worlds'] = enlarged
+        result = evaluate(d)
+        self.assertEqual(result['protected_original_sources_per_seed'], [8] * 3)
+        self.assertEqual(result['ndu_protected_source_equal_quality_by_seed'], [0.0] * 3)
+        self.assertEqual(result['ndu_protected_source_equal_completion_by_seed'], [0.0] * 3)
+        self.assertFalse(result['all_provisional_gates_pass'])
+        for arm in result['comparison'].values():
+            self.assertTrue(arm['gates']['cvar90_incremental_superiority'])
+            self.assertTrue(arm['gates']['protected_task_no_regression'])
+            self.assertFalse(arm['gates']['protected_task_absolute_service'])
+
+    def test_equal_protected_quality_below_floor_rejects_even_if_no_regression(self):
+        d = study_fixture(bootstrap_replicates=120)
+        for row in d['worlds']:
+            if row['protected_task']:
+                for outcome in row['outcomes'].values():
+                    for draw in outcome['decoded_draw_scores']:
+                        draw['quality'] = 0.5
+        result = evaluate(d)
+        self.assertTrue(all(x['gates']['protected_task_no_regression']
+                            for x in result['comparison'].values()))
+        self.assertFalse(any(x['gates']['protected_task_absolute_service']
+                             for x in result['comparison'].values()))
+        self.assertEqual(result['ndu_protected_source_equal_quality_by_seed'], [0.5]*3)
 
     def test_missing_protected_coverage_rejected(self):
         d = study_fixture()
