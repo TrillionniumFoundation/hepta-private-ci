@@ -1,0 +1,191 @@
+name: Hepta Windows DELETE focused diagnostics
+
+on:
+  pull_request:
+    paths:
+      - ".github/workflows/hepta-windows-delete-diagnostics.yml"
+      - "codex-rs/windows-sandbox-rs/**"
+      - "codex-rs/Cargo.lock"
+      - "codex-rs/.config/nextest.toml"
+      - "scripts/run-nextest.py"
+      - "justfile"
+  workflow_call:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: hepta-windows-delete-${{ github.event.pull_request.number || github.ref }}-${{ github.event.pull_request.head.sha || github.sha }}
+  cancel-in-progress: true
+
+jobs:
+  native-delete-routes:
+    runs-on: windows-2025
+    timeout-minutes: 45
+    env:
+      EXPECTED_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+      CARGO_INCREMENTAL: "0"
+      CARGO_PROFILE_DEV_DEBUG: "0"
+      CARGO_PROFILE_TEST_DEBUG: "0"
+      CARGO_TERM_COLOR: never
+      CARGO_NET_GIT_FETCH_WITH_CLI: "true"
+    defaults:
+      run:
+        shell: pwsh
+    steps:
+      - name: Checkout exact PR head or dispatch commit
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ env.EXPECTED_SHA }}
+          persist-credentials: false
+          fetch-depth: 1
+
+      - name: Bind clean source and diagnostic boundary
+        run: |
+          $ErrorActionPreference = 'Stop'
+          $head = (git rev-parse HEAD).Trim()
+          if ($env:EXPECTED_SHA -notmatch '^[0-9a-f]{40}$' -or $head -cne $env:EXPECTED_SHA) {
+            throw 'Checkout does not match the exact requested source SHA'
+          }
+          if (git status --porcelain) { throw 'Source checkout is not clean' }
+          $env:EVIDENCE_DIR = Join-Path $env:RUNNER_TEMP 'hepta-windows-delete'
+          $targetDir = Join-Path $env:RUNNER_TEMP 'hepta-windows-delete-target'
+          "EVIDENCE_DIR=$env:EVIDENCE_DIR" | Add-Content $env:GITHUB_ENV
+          "CARGO_TARGET_DIR=$targetDir" | Add-Content $env:GITHUB_ENV
+          New-Item -ItemType Directory -Force $env:EVIDENCE_DIR | Out-Null
+          $paths = @(
+            '.github/workflows/hepta-windows-delete-diagnostics.yml', 'justfile',
+            'scripts/run-nextest.py', 'codex-rs/.config/nextest.toml',
+            'codex-rs/Cargo.toml', 'codex-rs/Cargo.lock',
+            'codex-rs/windows-sandbox-rs/Cargo.toml',
+            'codex-rs/windows-sandbox-rs/src/token.rs',
+            'codex-rs/windows-sandbox-rs/src/token_tests.rs',
+            'codex-rs/windows-sandbox-rs/src/token_delete_diagnostics_tests.rs',
+            'codex-rs/windows-sandbox-rs/src/acl.rs',
+            'codex-rs/windows-sandbox-rs/src/unified_exec/tests.rs',
+            'codex-rs/windows-sandbox-rs/src/unified_exec/backends/legacy.rs'
+          )
+          $hashes = [ordered]@{}
+          foreach ($path in $paths) {
+            $hashes[$path] = (Get-FileHash $path -Algorithm SHA256).Hash.ToLowerInvariant()
+          }
+          [ordered]@{
+            schema = 'hepta.windows-delete-source.v1'
+            source_sha = $head
+            source_tree = (git rev-parse 'HEAD^{tree}').Trim()
+            checkout_clean = $true
+            checkout_file_sha256 = $hashes
+            os_version = [Environment]::OSVersion.VersionString
+            run_id = $env:GITHUB_RUN_ID
+            run_attempt = $env:GITHUB_RUN_ATTEMPT
+            sandbox_qualified = $false
+            scope = 'Focused native permission diagnostics; original blocking CI remains required'
+          } | ConvertTo-Json -Depth 8 | Set-Content "$env:EVIDENCE_DIR/source.json" -Encoding utf8
+
+      - name: Install pinned Rust toolchain
+        uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582
+
+      - name: Install repository test tools
+        uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
+        with:
+          tool: just@1.51.0,nextest@0.9.103
+
+      - name: Run all three original failures and native DELETE matrix
+        working-directory: codex-rs
+        run: |
+          $ErrorActionPreference = 'Stop'
+          $PSNativeCommandUseErrorActionPreference = $false
+          $expected = @(
+            'token::tests::partial_delete_deny_is_repaired_before_native_workspace_writes',
+            'token::tests::workspace_capabilities_deny_writes_and_deletes_under_broad_identity_aces',
+            'unified_exec::tests::legacy_workspace_write_delete_is_limited_to_writable_roots',
+            'token::tests::delete_diagnostics::workspace_delete_permission_routes_diagnostic_matrix'
+          )
+          $filter = ($expected | ForEach-Object { "test(=$_)" }) -join ' | '
+          $testArgs = @(
+            'test', '--locked', '-p', 'codex-windows-sandbox', '--lib',
+            '-E', $filter, '--test-threads', '1', '--retries', '0',
+            '--no-tests', 'fail', '--failure-output', 'final',
+            '--success-output', 'final'
+          )
+          rustc -Vv | Set-Content "$env:EVIDENCE_DIR/tools.log" -Encoding utf8
+          cargo -V | Add-Content "$env:EVIDENCE_DIR/tools.log"
+          just --version | Add-Content "$env:EVIDENCE_DIR/tools.log"
+          cargo nextest --version | Add-Content "$env:EVIDENCE_DIR/tools.log"
+          [ordered]@{ executable = 'just'; arguments = $testArgs; expected_tests = $expected } |
+            ConvertTo-Json -Depth 6 | Set-Content "$env:EVIDENCE_DIR/command.json" -Encoding utf8
+          & just @testArgs 2>&1 | Tee-Object -FilePath "$env:EVIDENCE_DIR/stdout.log"
+          $testExit = $LASTEXITCODE
+          $selected = @()
+          $failedCount = $null
+          $selectionError = $null
+          $junitFiles = @(Get-ChildItem "$env:CARGO_TARGET_DIR/nextest" -Filter junit.xml -Recurse -ErrorAction SilentlyContinue)
+          if ($junitFiles.Count -eq 1) {
+            Copy-Item $junitFiles[0].FullName "$env:EVIDENCE_DIR/junit.xml"
+            [xml]$junit = Get-Content "$env:EVIDENCE_DIR/junit.xml" -Raw
+            $cases = @($junit.SelectNodes('//testcase'))
+            $selected = @($cases | ForEach-Object { $_.name })
+            $failedCount = @($cases | Where-Object { $_.SelectSingleNode('failure') -or $_.SelectSingleNode('error') }).Count
+            if ($selected.Count -ne 4 -or @(Compare-Object ($expected | Sort-Object) ($selected | Sort-Object)).Count -ne 0) {
+              $selectionError = 'The executed JUnit cases do not equal the four exact required tests'
+            }
+            if (@($cases | Where-Object { $_.SelectSingleNode('skipped') }).Count -ne 0) {
+              $selectionError = 'A required test was skipped'
+            }
+          } else {
+            $selectionError = 'Exactly one native nextest JUnit report is required; build or execution may be incomplete'
+          }
+          $records = @(Get-Content "$env:EVIDENCE_DIR/stdout.log" | ForEach-Object { $_.TrimStart() } | Where-Object { $_.StartsWith('HEPTA_DELETE_DIAGNOSTIC ') })
+          $records | ForEach-Object { $_.Substring('HEPTA_DELETE_DIAGNOSTIC '.Length) } |
+            Set-Content "$env:EVIDENCE_DIR/routes.jsonl" -Encoding utf8
+          $routes = @($records | ForEach-Object { $_.Substring('HEPTA_DELETE_DIAGNOSTIC '.Length) | ConvertFrom-Json })
+          $expectedRoutes = @('neither', 'direct_delete_only', 'parent_delete_child_only', 'both', 'preexisting_low_both')
+          $routesComplete = $routes.Count -eq 5 -and @(Compare-Object ($expectedRoutes | Sort-Object) (@($routes.route) | Sort-Object)).Count -eq 0
+          [ordered]@{
+            schema = 'hepta.windows-delete-native-run.v1'
+            source_sha = $env:EXPECTED_SHA
+            test_exit_code = $testExit
+            expected_tests = $expected
+            observed_tests = $selected
+            failed_test_count = $failedCount
+            selection_error = $selectionError
+            observed_route_count = $routes.Count
+            all_routes_recorded = $routesComplete
+            sandbox_qualified = $false
+            production_token_modified = $false
+            original_blocking_ci_required = $true
+          } | ConvertTo-Json -Depth 8 | Set-Content "$env:EVIDENCE_DIR/native-run.json" -Encoding utf8
+          "### Windows DELETE focused diagnostics`nNative test exit: $testExit`nObserved cases: $($selected.Count)/4`nRoutes: $($routes.Count)/5`nSandbox qualification: **not granted**; original blocking CI remains required." |
+            Add-Content $env:GITHUB_STEP_SUMMARY
+          if ($testExit -ne 0) { exit $testExit }
+          if ($selectionError -or -not $routesComplete -or $failedCount -ne 0) { throw 'Native evidence is incomplete or failed; see native-run.json' }
+
+      - name: Verify unchanged source and hash retained evidence
+        if: always()
+        run: |
+          $ErrorActionPreference = 'Stop'
+          if (-not (Test-Path "$env:EVIDENCE_DIR/source.json")) { throw 'Source receipt missing' }
+          $source = Get-Content "$env:EVIDENCE_DIR/source.json" -Raw | ConvertFrom-Json
+          if ((git rev-parse HEAD).Trim() -cne $env:EXPECTED_SHA) { throw 'Source SHA changed' }
+          foreach ($entry in $source.checkout_file_sha256.PSObject.Properties) {
+            if ((Get-FileHash $entry.Name -Algorithm SHA256).Hash.ToLowerInvariant() -cne $entry.Value) {
+              throw "Source file changed: $($entry.Name)"
+            }
+          }
+          git diff --exit-code HEAD
+          if ($LASTEXITCODE -ne 0) { throw 'Tracked source changed during native execution' }
+          $hashes = [ordered]@{}
+          foreach ($file in (Get-ChildItem $env:EVIDENCE_DIR -File)) {
+            $hashes[$file.Name] = (Get-FileHash $file.FullName -Algorithm SHA256).Hash.ToLowerInvariant()
+          }
+          $hashes | ConvertTo-Json | Set-Content "$env:EVIDENCE_DIR/artifact-sha256.json" -Encoding utf8
+
+      - name: Retain native stdout, nextest results, routes and source receipts
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: hepta-windows-delete-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ env.EVIDENCE_DIR }}
+          if-no-files-found: error
+          retention-days: 14
