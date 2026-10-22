@@ -244,3 +244,130 @@ fn cache_watermark_spans_different_encoder_and_input_keys_within_scope() {
         "a stale write cannot resurrect a retired encoder key",
     );
 }
+
+#[test]
+fn scoped_feature_cache_cutover_preserves_unrelated_scopes() {
+    let encoder = digest("encoder:shared");
+    let make_snapshot = |epoch, input: &str| {
+        ImmutableFeatureSnapshotV1::new_for_input(
+            generation(epoch),
+            encoder,
+            digest(input),
+            vec![10, 20, 30],
+        )
+        .expect("valid immutable feature")
+    };
+    let scope_a = id("scope:a");
+    let scope_b = id("scope:b");
+    let key_a = FeatureCacheKeyV1 {
+        scope_id: scope_a.clone(),
+        encoder_digest: encoder,
+        input_digest: digest("input:a"),
+    };
+    let key_b = FeatureCacheKeyV1 {
+        scope_id: scope_b.clone(),
+        encoder_digest: encoder,
+        input_digest: digest("input:b"),
+    };
+    let mut cache = FeatureCacheV1::default();
+    cache
+        .insert(scope_a.clone(), make_snapshot(2, "input:a"))
+        .expect("scope A generation 2");
+    cache
+        .insert(scope_b.clone(), make_snapshot(1, "input:b"))
+        .expect("scope B independent generation 1");
+
+    cache
+        .invalidate_scope_generation(scope_a.clone(), generation(3))
+        .expect("only A crosses its generation fence");
+    assert!(cache.get(&key_a, generation(2)).is_none());
+    assert!(cache.get(&key_b, generation(1)).is_some());
+    assert_eq!(cache.len(), 1, "unrelated scope is not evicted");
+
+    assert_eq!(
+        cache.insert(scope_a.clone(), make_snapshot(2, "input:a")),
+        Err(CellWorkerError::StaleFeatureGeneration),
+        "retired scope A generation cannot reappear",
+    );
+    assert_eq!(
+        cache.invalidate_scope_generation(scope_a.clone(), generation(2)),
+        Err(CellWorkerError::StaleFeatureGeneration),
+        "stale cutover cannot lower scope A's watermark",
+    );
+    cache
+        .insert(scope_a.clone(), make_snapshot(3, "input:a"))
+        .expect("A successor remains admissible");
+    cache
+        .insert(scope_b.clone(), make_snapshot(1, "input:b"))
+        .expect("B is unaffected by A's cutover");
+    assert!(cache.get(&key_a, generation(3)).is_some());
+    assert!(cache.get(&key_b, generation(1)).is_some());
+}
+
+#[test]
+fn scoped_cutover_of_empty_scope_fences_old_reinsertion() {
+    let mut cache = FeatureCacheV1::default();
+    let scope = id("scope:empty");
+    let snapshot = |epoch| {
+        ImmutableFeatureSnapshotV1::new_for_input(
+            generation(epoch),
+            digest("encoder"),
+            digest("original"),
+            vec![1, 2],
+        )
+        .expect("snapshot")
+    };
+    cache
+        .invalidate_scope_generation(scope.clone(), generation(7))
+        .expect("publish fence without cached key");
+    assert!(cache.is_empty());
+    assert_eq!(
+        cache.insert(scope.clone(), snapshot(6)),
+        Err(CellWorkerError::StaleFeatureGeneration),
+    );
+    cache
+        .insert(scope.clone(), snapshot(7))
+        .expect("at-fence snapshot");
+    cache
+        .invalidate_scope_generation(scope, generation(7))
+        .expect("idempotent exact cutover");
+    assert_eq!(cache.len(), 1);
+}
+
+#[test]
+fn new_scope_generation_fences_reads_of_stale_encoder_keys() {
+    let mut cache = FeatureCacheV1::default();
+    let scope = id("scope:learning");
+    let old = ImmutableFeatureSnapshotV1::new_for_input(
+        generation(4),
+        digest("encoder:original"),
+        digest("input:original"),
+        vec![3, 4],
+    )
+    .expect("old snapshot");
+    let new = ImmutableFeatureSnapshotV1::new_for_input(
+        generation(5),
+        digest("encoder:replacement"),
+        digest("input:replacement"),
+        vec![7, 8],
+    )
+    .expect("new snapshot");
+    let old_key = FeatureCacheKeyV1 {
+        scope_id: scope.clone(),
+        encoder_digest: old.encoder_digest(),
+        input_digest: old.input_digest(),
+    };
+    let new_key = FeatureCacheKeyV1 {
+        scope_id: scope.clone(),
+        encoder_digest: new.encoder_digest(),
+        input_digest: new.input_digest(),
+    };
+    cache.insert(scope.clone(), old).expect("seed");
+    assert!(cache.get(&old_key, generation(4)).is_some());
+    cache.insert(scope, new).expect("advance scope watermark");
+    assert!(
+        cache.get(&old_key, generation(4)).is_none(),
+        "stale snapshot must not remain readable after later scoped generation",
+    );
+    assert!(cache.get(&new_key, generation(5)).is_some());
+}
