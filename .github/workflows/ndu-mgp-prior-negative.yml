@@ -3,10 +3,6 @@ name: NDU-MGP preserve preregistered P1 failure
 on:
   push:
     branches: [research/ndu-mgp-p0-p4-qualification-20261022]
-    paths:
-      - 'experiments/ndu_mgp_gates/audit_p1_negative.py'
-      - 'experiments/ndu_mgp_gates/test_audit_p1_negative.py'
-      - '.github/workflows/ndu-mgp-prior-negative.yml'
   workflow_dispatch:
 
 permissions:
