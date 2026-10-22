@@ -414,6 +414,60 @@ class ScaleMatrixTests(unittest.TestCase):
             scale_matrix.validate_matrix(matrix),
         )
 
+    def test_measurement_digest_cannot_double_as_metrics_or_evidence_receipt(self):
+        for role in ("metrics", "future_window", "rollback"):
+            with self.subTest(role=role):
+                record = self.make_record(64, "shared_encoder")
+                if role == "metrics":
+                    record["provenance"]["measurement_digest"] = record["metrics_receipt"]
+                    expected = "metrics_receipt cannot reuse provenance measurement digest"
+                else:
+                    record["provenance"]["measurement_digest"] = record["evidence_receipts"][role]
+                    expected = (
+                        f"evidence_receipts.{role} cannot reuse provenance measurement digest"
+                    )
+                self.assertIn(expected, scale_matrix.validate_result(record))
+
+    def test_matrix_rejects_measurement_digest_replay_across_proof_roles(self):
+        # Both orderings must be rejected: measurement followed by a receipt,
+        # or receipt followed by a later relabelled measurement digest.
+        for proof_role in ("metrics", "evidence"):
+            for direction in ("measurement_first", "receipt_first"):
+                with self.subTest(role=proof_role, direction=direction):
+                    matrix = self.matrix()
+                    first, second = matrix["results"][:2]
+                    if proof_role == "metrics":
+                        if direction == "measurement_first":
+                            second["metrics_receipt"] = first["provenance"]["measurement_digest"]
+                            expected = (
+                                "results[1].metrics_receipt "
+                                "reused as a provenance measurement digest"
+                            )
+                        else:
+                            second["provenance"]["measurement_digest"] = first["metrics_receipt"]
+                            expected = (
+                                "results[1].provenance.measurement_digest "
+                                "reused as a metrics receipt"
+                            )
+                    else:
+                        if direction == "measurement_first":
+                            second["evidence_receipts"]["rollback"] = first["provenance"][
+                                "measurement_digest"
+                            ]
+                            expected = (
+                                "results[1].evidence_receipts.rollback "
+                                "reused as a provenance measurement digest"
+                            )
+                        else:
+                            second["provenance"]["measurement_digest"] = first[
+                                "evidence_receipts"
+                            ]["future_window"]
+                            expected = (
+                                "results[1].provenance.measurement_digest "
+                                "reused as an evidence claim receipt"
+                            )
+                    self.assertIn(expected, scale_matrix.validate_matrix(matrix))
+
     def test_invalid_result_root_is_a_denial_not_an_exception(self):
         for malformed in ([], None, 42, ""):
             with self.subTest(value=malformed):

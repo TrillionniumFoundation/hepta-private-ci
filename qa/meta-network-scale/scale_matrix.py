@@ -265,6 +265,23 @@ def validate_result(result: dict[str, Any]) -> list[str]:
         errors.append("metrics_receipt cannot be a zero digest")
     elif isinstance(evidence_receipts, dict) and metrics_receipt in evidence_receipts.values():
         errors.append("metrics_receipt cannot reuse an evidence claim receipt")
+    # The measurement bytes, a metrics receipt and independently retained
+    # evidence claims are distinct proof roles. Do not let one raw digest
+    # masquerade as multiple roles even within a single experiment result.
+    measurement_digest = (
+        provenance.get("measurement_digest")
+        if isinstance(provenance, dict)
+        else None
+    )
+    if isinstance(measurement_digest, str) and _HEX64.fullmatch(measurement_digest):
+        if metrics_receipt == measurement_digest:
+            errors.append("metrics_receipt cannot reuse provenance measurement digest")
+        if isinstance(evidence_receipts, dict):
+            for claim in REQUIRED_EVIDENCE:
+                if evidence_receipts.get(claim) == measurement_digest:
+                    errors.append(
+                        f"evidence_receipts.{claim} cannot reuse provenance measurement digest"
+                    )
     lifecycle = result.get("topology_lifecycle")
     if lifecycle != list(LIFECYCLE):
         errors.append("topology_lifecycle must contain the complete ordered lifecycle")
@@ -329,6 +346,11 @@ def validate_matrix(matrix: dict[str, Any]) -> list[str]:
                             f"results[{index}].evidence_receipts.{claim} "
                             "reused as a metrics receipt"
                         )
+                    if receipt in measurement_digests_seen:
+                        errors.append(
+                            f"results[{index}].evidence_receipts.{claim} "
+                            "reused as a provenance measurement digest"
+                        )
                     if receipt in evidence_receipts_seen[claim]:
                         errors.append(
                             f"results[{index}].evidence_receipts.{claim} "
@@ -350,6 +372,11 @@ def validate_matrix(matrix: dict[str, Any]) -> list[str]:
                     f"results[{index}].metrics_receipt "
                     "reused as an evidence claim receipt"
                 )
+            if metrics_receipt in measurement_digests_seen:
+                errors.append(
+                    f"results[{index}].metrics_receipt "
+                    "reused as a provenance measurement digest"
+                )
             if metrics_receipt in metrics_receipts_seen:
                 errors.append(
                     f"results[{index}].metrics_receipt reused across matrix pairs"
@@ -366,6 +393,16 @@ def validate_matrix(matrix: dict[str, Any]) -> list[str]:
                     errors.append(
                         f"results[{index}].provenance.measurement_digest "
                         "reused across matrix pairs"
+                    )
+                if measurement_digest in metrics_receipts_seen:
+                    errors.append(
+                        f"results[{index}].provenance.measurement_digest "
+                        "reused as a metrics receipt"
+                    )
+                if measurement_digest in receipt_owners:
+                    errors.append(
+                        f"results[{index}].provenance.measurement_digest "
+                        "reused as an evidence claim receipt"
                     )
                 measurement_digests_seen.add(measurement_digest)
         size, arm = row.get("size"), row.get("arm")
