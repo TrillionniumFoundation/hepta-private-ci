@@ -186,8 +186,12 @@ pub fn select_output_portfolio_v1(
         &candidates,
         &covariance,
         &allocations,
+        disposition,
+        &frontier,
         total_risk,
         total_utility,
+        total_resource,
+        total_latency,
     );
     Ok(OutputPortfolioSelectionReceiptV1 {
         objective_digest: context.objective_digest,
@@ -227,6 +231,26 @@ pub fn output_efficient_frontier_v1(
     let standalone = standalone_risks(&risks, &covariance)?;
     Ok(efficient_frontier_from_canonical(&canonical, &standalone))
 }
+/// Replays a selector result and verifies every displayed field, including
+/// disposition, single-candidate frontier, resource and latency totals.
+/// This is local deterministic consistency checking, NOT authentication of
+/// the future-window evaluator, a signature, or permission to execute tools.
+pub fn verify_output_portfolio_receipt_v1(
+    context: &OutputPortfolioContextV1,
+    budget: &OutputPortfolioBudgetV1,
+    candidates: &[OutputPortfolioCandidateV1],
+    receipt: &OutputPortfolioSelectionReceiptV1,
+) -> Result<(), NduError> {
+    let expected = select_output_portfolio_v1(context, budget, candidates)?;
+    if expected == *receipt {
+        Ok(())
+    } else {
+        Err(NduError::InvalidSolverReceipt(
+            "portfolio receipt replay mismatch",
+        ))
+    }
+}
+
 fn canonical_candidates(
     context: &OutputPortfolioContextV1,
     candidates: &[OutputPortfolioCandidateV1],
@@ -673,8 +697,12 @@ fn digest_selection(
     candidates: &[OutputPortfolioCandidateV1],
     covariance: &[FixedQ32],
     allocations: &[OutputPortfolioAllocationV1],
+    disposition: OutputPortfolioDispositionV1,
+    frontier: &[OutputPortfolioFrontierPointV1],
     total_risk: FixedQ32,
     total_utility: FixedQ32,
+    total_resource: FixedQ32,
+    total_latency: FixedQ32,
 ) -> Digest32 {
     let mut bytes = Vec::new();
     bytes.extend_from_slice(context.objective_digest.as_array());
@@ -702,6 +730,7 @@ fn digest_selection(
     for value in covariance {
         bytes.extend_from_slice(&value.raw().to_le_bytes());
     }
+    bytes.extend_from_slice(&(candidates.len() as u64).to_le_bytes());
     for candidate in candidates {
         bytes.extend_from_slice(candidate.candidate_id.as_str().as_bytes());
         bytes.push(0);
@@ -721,6 +750,7 @@ fn digest_selection(
         bytes.extend_from_slice(&candidate.weight_cap.raw().to_le_bytes());
         bytes.push(u8::from(candidate.is_no_change));
     }
+    bytes.extend_from_slice(&(allocations.len() as u64).to_le_bytes());
     for allocation in allocations {
         bytes.extend_from_slice(allocation.candidate_id.as_str().as_bytes());
         bytes.push(0);
@@ -728,8 +758,22 @@ fn digest_selection(
         bytes.extend_from_slice(&allocation.weight.raw().to_le_bytes());
         bytes.extend_from_slice(&allocation.adjusted_score.raw().to_le_bytes());
     }
+    bytes.push(match disposition {
+        OutputPortfolioDispositionV1::NoChange => 0,
+        OutputPortfolioDispositionV1::AdvisorySelection => 1,
+    });
+    bytes.extend_from_slice(&(frontier.len() as u64).to_le_bytes());
+    for point in frontier {
+        bytes.extend_from_slice(point.candidate_id.as_str().as_bytes());
+        bytes.push(0);
+        bytes.extend_from_slice(&point.utility_delta.raw().to_le_bytes());
+        bytes.extend_from_slice(&point.semantic_risk.raw().to_le_bytes());
+        bytes.extend_from_slice(&point.resource_cost.raw().to_le_bytes());
+    }
     bytes.extend_from_slice(&total_risk.raw().to_le_bytes());
     bytes.extend_from_slice(&total_utility.raw().to_le_bytes());
+    bytes.extend_from_slice(&total_resource.raw().to_le_bytes());
+    bytes.extend_from_slice(&total_latency.raw().to_le_bytes());
     Digest32::of_bytes(&bytes)
 }
 #[cfg(test)]
