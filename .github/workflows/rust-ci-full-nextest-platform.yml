@@ -370,7 +370,7 @@ jobs:
           }
           # Keep build caches on the Dev Drive. The original native experiment
           # requires NTFS, so qualify the actual newly created test-temp path.
-          $testTemp = Join-Path $env:RUNNER_TEMP ("nextest-ntfs-" + [guid]::NewGuid().ToString('N'))
+          $testTemp = Join-Path $env:RUNNER_TEMP ("ntfs-" + [guid]::NewGuid().ToString('N'))
           New-Item -ItemType Directory -Path $testTemp -ErrorAction Stop | Out-Null
           $probe = Join-Path $testTemp 'volume.preflight'
           [System.IO.File]::WriteAllText($probe, 'nextest temporary volume preflight')

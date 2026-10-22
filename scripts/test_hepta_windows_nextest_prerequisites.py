@@ -62,7 +62,7 @@ def check_contract(full: str, platform: str) -> None:
         "if ([string]::IsNullOrWhiteSpace($env:ARCHIVE_WINDOWS_WORKSPACE_ROOT) -or\n"
         "              -not [string]::Equals($root, $env:ARCHIVE_WINDOWS_WORKSPACE_ROOT, [StringComparison]::OrdinalIgnoreCase)) {\n"
         '            throw "Archived Windows fixtures require the producer workspace:',
-        "$testTemp = Join-Path $env:RUNNER_TEMP (\"nextest-ntfs-\" + [guid]::NewGuid().ToString('N'))",
+        "$testTemp = Join-Path $env:RUNNER_TEMP (\"ntfs-\" + [guid]::NewGuid().ToString('N'))",
         "New-Item -ItemType Directory -Path $testTemp -ErrorAction Stop",
         "$probe = Join-Path $testTemp 'volume.preflight'",
         "[System.IO.File]::WriteAllText($probe, 'nextest temporary volume preflight')",

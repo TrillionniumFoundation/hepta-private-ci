@@ -175,7 +175,7 @@ fn unknown_or_noncanonical_stored_json_is_rejected() {
         .canonicalize()
         .expect("canonical test store");
     let unknown = root.join("unknown.json");
-    write_private_new(
+    write_reader_fixture(
         &unknown,
         br#"{"extra":true,"last_observed_unix_seconds":1,"schema":"hepta_operator_acceptance_time_watermark_v1","schema_version":1,"trust_policy_sha256":"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"}"#,
     )
@@ -183,7 +183,7 @@ fn unknown_or_noncanonical_stored_json_is_rejected() {
     assert!(read_canonical::<TimeWatermark>(&unknown, "unknown test JSON").is_err());
 
     let noncanonical = root.join("noncanonical.json");
-    write_private_new(
+    write_reader_fixture(
         &noncanonical,
         br#"{"schema":"hepta_operator_acceptance_time_watermark_v1","last_observed_unix_seconds":1,"schema_version":1,"trust_policy_sha256":"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"}"#,
     )
@@ -191,6 +191,7 @@ fn unknown_or_noncanonical_stored_json_is_rejected() {
     assert!(read_canonical::<TimeWatermark>(&noncanonical, "noncanonical test JSON").is_err());
 }
 
+#[cfg(unix)]
 #[test]
 fn durable_time_watermark_rejects_clock_rollback() {
     let temporary = private_tempdir("temporary sidecar");
@@ -205,6 +206,7 @@ fn durable_time_watermark_rejects_clock_rollback() {
     assert_eq!(stored.last_observed_unix_seconds, 101);
 }
 
+#[cfg(unix)]
 #[test]
 fn read_only_lock_never_creates_missing_state() {
     let temporary = private_tempdir("temporary read-only store");
@@ -255,8 +257,8 @@ fn exact_replay_returns_same_receipt_and_conflicting_claim_fails() {
         .expect("canonical replay store");
     let receipt_path = root.join(RECEIPT_FILE);
     let claim_path = root.join(CLAIM_FILE);
-    write_private_new(&receipt_path, &canonical_json(&receipt).unwrap()).unwrap();
-    write_private_new(&claim_path, &canonical_json(&claim).unwrap()).unwrap();
+    write_reader_fixture(&receipt_path, &canonical_json(&receipt).unwrap()).unwrap();
+    write_reader_fixture(&claim_path, &canonical_json(&claim).unwrap()).unwrap();
     let replay = validate_idempotent_replay(
         &receipt_path,
         &claim_path,
@@ -277,6 +279,26 @@ fn exact_replay_returns_same_receipt_and_conflicting_claim_fails() {
         )
         .is_err()
     );
+}
+
+// Inputs for read-only parser/replay tests, never product receipt issuance.
+// Unix retains the original private writer. Other platforms seed ordinary
+// controlled files while the production private-owner gate remains refused.
+fn write_reader_fixture(path: &std::path::Path, bytes: &[u8]) -> Result<(), AcceptanceError> {
+    #[cfg(unix)]
+    {
+        write_private_new(path, bytes)
+    }
+    #[cfg(not(unix))]
+    {
+        let mut file = std::fs::OpenOptions::new()
+            .write(true)
+            .create_new(true)
+            .open(path)?;
+        std::io::Write::write_all(&mut file, bytes)?;
+        file.sync_all()?;
+        Ok(())
+    }
 }
 
 fn operator() -> OperatorBinding {
