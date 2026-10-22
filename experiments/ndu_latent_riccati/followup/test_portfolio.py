@@ -4,7 +4,7 @@ import unittest
 import numpy as np
 import torch
 
-from portfolio import (Budget, CellAsset, PortfolioRejected, cvar90,
+from portfolio import (Budget, CellAsset, PortfolioRejected, cvar90, empirical_grid_frontier,
                        continuous_direction_step, masked_logit_step,
                        select_shadow_portfolio, verify_shadow_receipt)
 
@@ -92,6 +92,26 @@ class PortfolioMechanismTests(unittest.TestCase):
         scalar_proxy = .5 * (a - y) ** 2 + .5 * (b - y) ** 2
         actual_loss = (.5 * a + .5 * b - y) ** 2
         self.assertNotAlmostEqual(scalar_proxy, actual_loss)
+
+    def test_finite_pareto_frontier_contains_scalarized_selection(self):
+        base = [3., 3., 3., 3.]
+        a = make_asset('a', [0, 4, 0, 4], .70, cap=2)
+        b = make_asset('b', [4, 0, 4, 0], -.05, cap=2)
+        budget = Budget(grid=4, risk_aversion=1., cvar90_limit=5.)
+        pts = empirical_grid_frontier(base, [a, b], budget,
+                                      calibration_digest='train-calibration-v1',
+                                      objective_digest='objective-immutable-v1')
+        r = solve(base, [a, b], budget)
+        allocated = {x['id']: x['ticks'] for x in r['allocations']}
+        chosen = (allocated.get('a', 0), allocated.get('b', 0))
+        self.assertIn(chosen, {p['ticks'] for p in pts})
+        # NoChange remains eligible but may be Pareto-dominated when Cell cost is zero.
+        self.assertNotIn((0, 0), {p['ticks'] for p in pts})
+        self.assertGreaterEqual(len(pts), 2)
+        with self.assertRaisesRegex(PortfolioRejected, 'capacity'):
+            empirical_grid_frontier(base, [a, b], budget,
+                                    calibration_digest='train-calibration-v1',
+                                    objective_digest='objective-immutable-v1', max_points=1)
 
     def test_independent_grid_oracle_over_variable_profiles(self):
         # Independent scalar implementation: no call into portfolio._evaluate.
