@@ -537,14 +537,32 @@ fn execution_status_recovery_matrix_is_exhaustively_fail_closed() {
     let allowed = [
         (ExecutionStatusV1::Completed, RecoveryDispositionV1::None),
         (ExecutionStatusV1::Failed, RecoveryDispositionV1::None),
-        (ExecutionStatusV1::Failed, RecoveryDispositionV1::ReconcileSameOperation),
+        (
+            ExecutionStatusV1::Failed,
+            RecoveryDispositionV1::ReconcileSameOperation,
+        ),
         (ExecutionStatusV1::Failed, RecoveryDispositionV1::Quarantine),
-        (ExecutionStatusV1::Failed, RecoveryDispositionV1::RollbackToPredecessor),
-        (ExecutionStatusV1::Indeterminate, RecoveryDispositionV1::ReconcileSameOperation),
-        (ExecutionStatusV1::Indeterminate, RecoveryDispositionV1::Quarantine),
+        (
+            ExecutionStatusV1::Failed,
+            RecoveryDispositionV1::RollbackToPredecessor,
+        ),
+        (
+            ExecutionStatusV1::Indeterminate,
+            RecoveryDispositionV1::ReconcileSameOperation,
+        ),
+        (
+            ExecutionStatusV1::Indeterminate,
+            RecoveryDispositionV1::Quarantine,
+        ),
         (ExecutionStatusV1::Rejected, RecoveryDispositionV1::None),
-        (ExecutionStatusV1::Rejected, RecoveryDispositionV1::RetryBeforeAdmission),
-        (ExecutionStatusV1::Rejected, RecoveryDispositionV1::Quarantine),
+        (
+            ExecutionStatusV1::Rejected,
+            RecoveryDispositionV1::RetryBeforeAdmission,
+        ),
+        (
+            ExecutionStatusV1::Rejected,
+            RecoveryDispositionV1::Quarantine,
+        ),
     ];
     for &status in &statuses {
         for &recovery in &recoveries {
