@@ -55,6 +55,11 @@ pub struct OutputPortfolioCandidateV1 {
     pub candidate_id: StableId,
     pub candidate_digest: Digest32,
     pub snapshot_digest: Digest32,
+    /// Source fence of the Cell proposal. Matching feature bytes do not
+    /// authorize reusing a proposal across generations.
+    pub generation: Generation,
+    /// Exact encoder artifact that produced this Cell proposal.
+    pub encoder_digest: Digest32,
     /// Exact codec/vocabulary/latent geometry, phase and denoising schedule
     /// contract for composing directions. Distinct heads may share a snapshot
     /// without sharing a valid output coordinate space.

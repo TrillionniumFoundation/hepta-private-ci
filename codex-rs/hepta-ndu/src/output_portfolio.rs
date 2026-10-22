@@ -231,6 +231,19 @@ fn canonical_candidates(
         {
             return Err(NduError::StateDigestMismatch);
         }
+        // Snapshot content equality is not equivalent to authority equality:
+        // a byte-identical feature must not smuggle a stale Cell proposal
+        // through a newer Supervisor generation or different encoder.
+        if candidate.generation != context.generation {
+            return Err(NduError::InvalidSolverReceipt(
+                "portfolio candidate generation",
+            ));
+        }
+        if candidate.encoder_digest != context.encoder_digest {
+            return Err(NduError::InvalidSolverReceipt(
+                "portfolio candidate encoder",
+            ));
+        }
         if !candidate.is_no_change && candidate.composition_domain_digest.is_zero() {
             return Err(NduError::InvalidSolverReceipt("composition domain digest"));
         }
@@ -592,6 +605,8 @@ fn digest_selection(
         bytes.extend_from_slice(candidate.candidate_id.as_str().as_bytes());
         bytes.push(0);
         bytes.extend_from_slice(candidate.candidate_digest.as_array());
+        bytes.extend_from_slice(&candidate.generation.get().to_le_bytes());
+        bytes.extend_from_slice(candidate.encoder_digest.as_array());
         bytes.extend_from_slice(candidate.composition_domain_digest.as_array());
         bytes.push(candidate.protocol.tag());
         bytes.extend_from_slice(candidate.risk.future_window_digest.as_array());

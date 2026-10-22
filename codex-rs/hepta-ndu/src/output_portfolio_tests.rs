@@ -42,6 +42,8 @@ fn candidate(
         candidate_id: id(name),
         candidate_digest: Digest32::of_bytes(name.as_bytes()),
         snapshot_digest: Digest32::of_bytes(b"snapshot"),
+        generation: Generation::new(1).expect("candidate generation"),
+        encoder_digest: Digest32::of_bytes(b"encoder"),
         composition_domain_digest: if is_no_change {
             Digest32::ZERO
         } else {
@@ -656,4 +658,55 @@ fn standalone_frontier_denies_risk_overflow() {
     )
     .expect_err("standalone variance must be added with checked arithmetic");
     assert_eq!(error, NduError::Arithmetic);
+}
+
+#[test]
+fn portfolio_rejects_cross_generation_proposals_even_with_matching_feature_bytes() {
+    let mut stale = candidate("stale", 90, 0, false);
+    stale.generation = Generation::new(2).expect("successor generation");
+    let candidates = [candidate("baseline", 0, 0, true), stale];
+    let ctx = context(2);
+    let error = select_output_portfolio_v1(&ctx, &budget(2), &candidates)
+        .expect_err("a matching snapshot digest cannot authorize a different generation");
+    assert_eq!(
+        error,
+        NduError::InvalidSolverReceipt("portfolio candidate generation")
+    );
+    assert_eq!(
+        output_efficient_frontier_v1(&ctx, &candidates)
+            .expect_err("frontier must validate the same provenance"),
+        error
+    );
+
+    let mut mismatched_baseline = candidate("baseline", 0, 0, true);
+    mismatched_baseline.generation = Generation::new(2).expect("successor generation");
+    let error = select_output_portfolio_v1(
+        &ctx,
+        &budget(2),
+        &[mismatched_baseline, candidate("fresh", 90, 0, false)],
+    )
+    .expect_err("the baseline also belongs to the exact generation");
+    assert_eq!(
+        error,
+        NduError::InvalidSolverReceipt("portfolio candidate generation")
+    );
+}
+
+#[test]
+fn portfolio_rejects_cross_encoder_proposals_even_with_matching_feature_bytes() {
+    let mut wrong_encoder = candidate("wrong-encoder", 90, 0, false);
+    wrong_encoder.encoder_digest = Digest32::of_bytes(b"another-encoder");
+    let candidates = [candidate("baseline", 0, 0, true), wrong_encoder];
+    let ctx = context(2);
+    let error = select_output_portfolio_v1(&ctx, &budget(2), &candidates)
+        .expect_err("an unrelated encoder cannot reuse this feature binding");
+    assert_eq!(
+        error,
+        NduError::InvalidSolverReceipt("portfolio candidate encoder")
+    );
+    assert_eq!(
+        output_efficient_frontier_v1(&ctx, &candidates)
+            .expect_err("the standalone frontier must also reject encoder drift"),
+        error
+    );
 }
