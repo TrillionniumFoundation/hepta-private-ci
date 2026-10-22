@@ -135,6 +135,11 @@ class CohortFirewallTests(unittest.TestCase):
         self.assertEqual(result["status"], "pass")
         self.assertTrue(result["historical_roster_shape_confirmed"])
         self.assertFalse(result["independent_history_trust_established"])
+        duplicate = copy.deepcopy(wrapper)
+        duplicate["source_sample"]["images"][1] = duplicate["source_sample"]["images"][0]
+        with self.assertRaisesRegex(CohortContractError, "duplicate identities"):
+            check_cohort(manifest(10000), [v1, duplicate],
+                         require_complete_history=True)
 
     def test_unbounded_candidate_and_comparison_budget_fail_closed(self):
         too_many = manifest(32)

@@ -129,6 +129,10 @@ def check_cohort(candidate, history, *, max_hamming=4, require_complete_history=
                     raise CohortContractError("incomplete original v1 source roster")
             elif count != 384:
                 raise CohortContractError("incomplete 384-source historical exclusions")
+    if require_complete_history:
+        historical_ids = [row["source_id"] for row in old_sources]
+        if len(set(historical_ids)) != len(historical_ids):
+            raise CohortContractError("duplicate identities in historical source roster")
     comparisons = (len(new_sources) * (len(new_sources) - 1) // 2
                    + len(new_sources) * len(old_sources))
     if comparisons > MAX_PAIR_COMPARISONS:
@@ -173,7 +177,10 @@ def main(argv=None):
             raise CohortContractError("each historical manifest requires an out-of-band SHA256")
 
         def read_bounded(path):
-            raw = Path(path).read_bytes()
+            file = Path(path)
+            if file.stat().st_size > MAX_INPUT_BYTES:
+                raise CohortContractError("cohort manifest byte limit exceeded")
+            raw = file.read_bytes()
             if len(raw) > MAX_INPUT_BYTES:
                 raise CohortContractError("cohort manifest byte limit exceeded")
             return raw

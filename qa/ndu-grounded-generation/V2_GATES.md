@@ -76,7 +76,10 @@ missing source groups, invalid counts, missing pins, altered pinned historical
 bytes and incomplete historical rosters cause explicit nonzero exits. Manifest
 bytes are capped at 16 MiB; candidate sources at 2,048, historical sources at
 4,096, pairwise comparisons at 2,000,000 and recorded violations at 4,096.
-Resource overruns yield a typed denial, never a partial PASS. Direct library
+Historical source IDs must also be unique across the complete rosters. Input
+byte limits are checked before and after file reading, to avoid allocating
+oversized manifests. Resource overruns yield a typed denial, never a partial
+PASS. Direct library
 calls without `require_complete_history=True` are *diagnostics only*. It verifies
 **observable image identities only**: real-world entity identity and
 foundation-model pretraining overlap remain outside what hashes can prove.
