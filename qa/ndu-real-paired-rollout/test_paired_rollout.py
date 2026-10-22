@@ -1,0 +1,191 @@
+"""Execution-contract tests use fake tensors and synthetic PNGs, not capability evidence."""
+import copy
+import hashlib
+from pathlib import Path
+import sys
+import tempfile
+import time
+from types import ModuleType, SimpleNamespace
+import unittest
+
+import torch
+from PIL import Image
+
+# This fake provides the shape of the trusted frozen backend for unit tests.
+V1 = Path(__file__).resolve().parent.parent / 'ndu-grounded-generation'
+if V1.exists(): sys.path.insert(0,str(V1))
+P2 = Path(__file__).resolve().parent.parent / 'ndu-terminal-portfolio'
+if P2.exists(): sys.path.insert(0,str(P2))
+fake_backend = ModuleType('backend')
+fake_backend.OBSERVATION_FIELDS = frozenset(('task_id','image_path','image_sha256','prompt','target_category'))
+fake_backend.MODEL_REVISION = 'fixture-only'
+fake_backend.explanation = lambda category, boxes: (
+    f'There are {len(boxes)} {category} instances. '
+    + ('No largest instance.' if not boxes else 'The largest instance is on the left.'))
+sys.modules['backend']=fake_backend
+
+import paired_rollout as pr
+from fresh_cohort import combine_exclusions
+from evaluate import score_episode
+from terminal_risk import ARMS, digest, validate
+
+
+class Cells:
+    def delta(self, hidden, weights, vocabulary_size):
+        delta=torch.zeros(vocabulary_size)
+        delta[7]=sum((i+1)*float(w) for i,w in enumerate(weights))
+        return delta, None
+
+
+class Backend:
+    location_token_ids = list(range(100))
+    eos_token_id=101
+    def __init__(self):self.seen=[];self.executed=[];self.fail=False
+    def encode(self, observation):
+        if set(observation)!=fake_backend.OBSERVATION_FIELDS:raise ValueError('reference leak')
+        self.seen.append(dict(observation))
+        now=time.perf_counter();time.sleep(.003)
+        return SimpleNamespace(costs={'encoder_seconds':time.perf_counter()-now})
+    def generate(self, encoded, *, modifier, max_new_tokens, checkpoint_stride,
+                 max_checkpoints, max_wall_seconds, do_sample, temperature, seed):
+        self.executed.append({'seed':seed,'sample':do_sample,'temp':temperature,'modifier':modifier.arm})
+        if self.fail: raise RuntimeError('deliberate fixture failure')
+        t0=time.perf_counter()
+        prefix=[102]
+        logits=torch.zeros(102)
+        logits[7]=5
+        state={'hidden':torch.ones(4),'logits':logits,'token_ids':prefix,'checkpoint':0,
+               'step':0,'checkpoint_changed':True,'remaining_seconds':max_wall_seconds}
+        update=modifier(state)
+        assert update['weights']==[float(i+1==ARMS.index(modifier.arm)) for i in range(4)]
+        assert update['action']==ARMS.index(modifier.arm)
+        time.sleep(.003)
+        # Box is intentionally different per action; scoring is external.
+        x=.1 + ARMS.index(modifier.arm)*.05
+        return {'boxes':[[x,.1,x+.3,.9]],'controls':[{'argmax_changed':False}],
+                'termination':'eos','tokens':[102,101], 'raw_text':'fixture',
+                'costs':{'decoder_seconds':.002,'parsing_seconds':0.,
+                         'loop_overhead_seconds':max(0.,time.perf_counter()-t0-.002-modifier.seconds),
+                         'modifier_seconds':modifier.seconds,'cell_seconds':0.,
+                         'decoder_forward_calls':1,'generated_tokens':1,'actual_checkpoints':1}}
+
+
+class PairedTests(unittest.TestCase):
+    def setUp(self):
+        self.tmp=tempfile.TemporaryDirectory()
+        self.addCleanup(self.tmp.cleanup)
+        self.root=Path(self.tmp.name)
+        image=self.root/'fixture.png'
+        Image.new('RGB',(64,32),'white').save(image)
+        self.obs={'task_id':'fixture-001','image_path':str(image),
+                  'image_sha256':hashlib.sha256(image.read_bytes()).hexdigest(),
+                  'prompt':'locate cat','target_category':'cat'}
+        self.ref={'task_id':'fixture-001','source_id':'synthetic:fixture001',
+                  'image_size':[64,32], 'boxes':[[.1,.1,.4,.9]],
+                  'label':'cat','count':1,'largest_side':'left'}
+        self.backend=Backend()
+        self.cells=Cells()
+        self.header={'seeds':[11,29],'split':'train', 'budget_seconds':10.,
+                     'cohort_manifest_sha256':digest('source fixture'),
+                     'model_digest':digest('model'), 'objective_digest':digest('objective'),
+                     'proposals':{arm:digest('proposal-'+arm) for arm in ARMS}}
+
+    def test_live_modifier_is_preselection_and_zero_arm_uses_same_constraints(self):
+        from cells import apply_constraints
+        logits=torch.zeros(102)
+        logits[100]=5
+        fake={'hidden':torch.ones(4), 'logits':logits,'token_ids':[102],
+              'checkpoint':0,'checkpoint_changed':True,'step':0,'remaining_seconds':10.}
+        zero=pr.FrozenArm('nochange',self.cells,list(range(100)),101,True)(fake)
+        one=pr.FrozenArm('semantic',self.cells,list(range(100)),101,True)(fake)
+        self.assertTrue(torch.isneginf(zero['logits'][99]))
+        self.assertTrue(torch.isneginf(one['logits'][99]))
+        self.assertEqual(float(zero['logits'][7]),float(logits[7]))
+        self.assertEqual(float(one['logits'][7]),float(logits[7]+1))
+
+    def test_five_arms_two_seeds_and_ledger(self):
+        rows=[]
+        for seed in self.header['seeds']:
+            for arm in ARMS:
+                row=pr.run_arm(self.backend,self.cells,self.obs,arm,seed=seed,
+                               artifact_root=self.root/'artifacts',budget=10.)
+                self.assertEqual(row['termination'],'completed')
+                self.assertAlmostEqual(row['ledger_minus_wall_seconds'],0.,places=5)
+                self.assertEqual(row['executed_encoder_calls'],1)
+                self.assertIsNone(row['failure'])
+                score=score_episode(row,self.ref)
+                self.assertEqual(score['coverage'],1.0)
+                row['plan_digest']=digest(self.header)
+                rows.append(row)
+        self.assertEqual(len(self.backend.seen),10)
+        self.assertEqual(len(self.backend.executed),10)
+        self.assertTrue(all('source_id' not in obs and 'boxes' not in obs for obs in self.backend.seen))
+        self.assertTrue(all(run['sample'] for run in self.backend.executed))
+        paired=pr.to_terminal_batch(self.header,rows,[self.ref],[self.obs])
+        self.assertEqual(len(paired['rows']),10)
+        self.assertEqual(len(validate(paired,min_source_groups=1)['sources']),1)
+
+    def test_incomplete_exception_is_not_silently_removed(self):
+        self.backend.fail=True
+        error=pr.run_arm(self.backend,self.cells,self.obs,'semantic',seed=11,
+                         artifact_root=self.root/'artifacts',budget=10.)
+        self.assertIsNotNone(error['failure'])
+        self.assertEqual(error['termination'],'incomplete')
+        self.assertAlmostEqual(error['ledger_minus_wall_seconds'],0.,places=5)
+        self.assertEqual(score_episode(error,self.ref)['coverage'],0)
+
+    def test_encoder_timeout_is_charged_and_prevents_decoder(self):
+        result=pr.run_arm(self.backend,self.cells,self.obs,'semantic',seed=11,
+                          artifact_root=self.root/'artifacts',budget=0.0001)
+        self.assertEqual(result['termination'],'incomplete')
+        self.assertIn('TimeoutError',result['failure'])
+        self.assertEqual(len(self.backend.executed),0)
+        self.assertEqual(result['executed_encoder_calls'],1)
+        self.assertGreater(result['actual_wall_seconds'],result['budget_cap'])
+        self.assertAlmostEqual(result['ledger_minus_wall_seconds'],0.,places=5)
+        self.assertEqual(score_episode(result,self.ref)['loss'],1.)
+
+    def test_reference_and_roster_cannot_enter_actor(self):
+        with self.assertRaisesRegex(ValueError,'actor observation'):
+            pr.run_arm(self.backend,self.cells,{**self.obs,'boxes':self.ref['boxes']},'semantic',
+                       seed=11,artifact_root=self.root/'artifacts')
+        rows=[pr.run_arm(self.backend,self.cells,self.obs,'nochange',seed=11,artifact_root=self.root/'artifacts')]
+        with self.assertRaisesRegex(ValueError,'incomplete exact five-arm'):
+            pr.to_terminal_batch(self.header,rows,[self.ref],[self.obs])
+        with self.assertRaisesRegex(ValueError,'unsupported Cell arm'):
+            pr.FrozenArm('untrusted-tool',self.cells,[],101,True)
+
+    def test_resumed_proposals_are_distinct_and_source_id_aligned(self):
+        rows=[pr.run_arm(self.backend,self.cells,self.obs,arm,seed=seed,
+                         artifact_root=self.root/'artifacts') for seed in (11,29) for arm in ARMS]
+        for row in rows:row['plan_digest']=digest(self.header)
+        damaged=copy.deepcopy(rows)
+        damaged[0]['source_image_sha256']='0'*64
+        with self.assertRaisesRegex(ValueError,'source image checksum'):
+            pr.to_terminal_batch(self.header,damaged,[self.ref],[self.obs])
+        damaged=copy.deepcopy(rows)
+        damaged[0]['budget_cap']=9
+        with self.assertRaisesRegex(ValueError,'budget or method'):
+            pr.to_terminal_batch(self.header,damaged,[self.ref],[self.obs])
+
+    def test_fresh_cohort_exclusion_requires_original_v1_manifest(self):
+        historical={'source_sample':{'images':[{'image_id':i, 'image_sha256':digest(f'h-{i}'),
+                           'decoded_rgb_sha256':digest(f'r-{i}'),'dhash64':'0'*16} for i in range(384)]}}
+        v1={'schema':'hepta.grounded-cohort.v1','splits':{}}
+        for n,split in enumerate(('train','dev','calibration','test')):
+            start=384+sum((128,32,32,64)[:n]); size=(128,32,32,64)[n]
+            v1['splits'][split]={'count':size,'sources':[
+                 {'image_id':i,'image_sha256':digest(f'h-{i}'),
+                  'decoded_rgb_sha256':digest(f'r-{i}'),'dhash64':'f'*16}
+                 for i in range(start,start+size)]}
+        (self.root/'prior.json').write_text(__import__('json').dumps(historical))
+        (self.root/'v1.json').write_text(__import__('json').dumps(v1))
+        with self.assertRaisesRegex(ValueError,'frozen byte digests'):
+            combine_exclusions(self.root/'prior.json',self.root/'v1.json',self.root/'both.json')
+        result=combine_exclusions(self.root/'prior.json',self.root/'v1.json',self.root/'both.json',require_pinned=False)
+        self.assertEqual(len(result['source_sample']['images']),640)
+        with self.assertRaises(FileExistsError):
+            combine_exclusions(self.root/'prior.json',self.root/'v1.json',self.root/'both.json',require_pinned=False)
+
+
+if __name__=='__main__':unittest.main()
