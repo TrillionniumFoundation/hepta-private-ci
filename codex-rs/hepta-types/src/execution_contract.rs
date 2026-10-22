@@ -17,6 +17,10 @@ use crate::Generation;
 use crate::StableId;
 
 pub const EXECUTION_CONTRACT_VERSION_V1: &str = "hepta.execution.contract.v1";
+// Match the existing Codex Adapter ingress bound before an untrusted Cell
+// binding can be admitted or digested through the new native contract.
+const MAX_APP_SERVER_VERSION_BYTES: usize = 128;
+const CODEX_APP_SERVER_V2_PROTOCOL_ID: &str = "codex.app-server.v2";
 
 /// The execution surface requested by a cell.
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
@@ -122,8 +126,19 @@ pub struct CodexTurnBindingV1 {
 
 impl CodexTurnBindingV1 {
     pub fn validate(&self) -> Result<(), ExecutionContractError> {
+        if self.protocol_id.as_str() != CODEX_APP_SERVER_V2_PROTOCOL_ID {
+            return Err(ExecutionContractError::UnsupportedProtocol);
+        }
         if self.app_server_version.is_empty() {
             return Err(ExecutionContractError::EmptyText("app server version"));
+        }
+        if self.app_server_version.len() > MAX_APP_SERVER_VERSION_BYTES
+            || self
+                .app_server_version
+                .bytes()
+                .any(|byte| byte.is_ascii_control())
+        {
+            return Err(ExecutionContractError::InvalidText("app server version"));
         }
         if self.source_admission_digest.is_zero() {
             return Err(ExecutionContractError::ZeroDigest("source admission"));
@@ -467,6 +482,8 @@ pub trait NativeExecutionAdapter: Send + Sync {
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub enum ExecutionContractError {
     EmptyText(&'static str),
+    InvalidText(&'static str),
+    UnsupportedProtocol,
     ExpiredDeadline,
     ZeroDigest(&'static str),
     ZeroConnection,

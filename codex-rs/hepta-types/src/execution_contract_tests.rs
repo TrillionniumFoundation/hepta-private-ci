@@ -126,3 +126,54 @@ fn pure_cell_intent_requires_explicit_backend_binding() {
         Err(ExecutionContractError::MissingCodexBinding),
     );
 }
+
+#[test]
+fn pure_codex_binding_rejects_unbounded_and_control_character_versions() {
+    let mut cell = intent().cell;
+    cell.kind = ExecutionIntentKindV1::CodexTurn;
+    cell.codex_binding = Some(CodexTurnBindingV1 {
+        source_admission_digest: digest("source-admission"),
+        session_id: id("session:1"),
+        thread_id: id("thread:1"),
+        client_user_message_id: id("message:1"),
+        user_input_digest: digest("user-input"),
+        protocol_id: id("codex.app-server.v2"),
+        app_server_version: "v2".to_owned(),
+        codex_home_digest: digest("codex-home"),
+        connection_id: 1,
+    });
+
+    assert_eq!(cell.validate(), Ok(()));
+    let binding = cell.codex_binding.as_mut().expect("Codex binding");
+    binding.app_server_version = "v".repeat(128);
+    assert_eq!(cell.validate(), Ok(()), "the existing 128-byte bound is inclusive");
+
+    cell.codex_binding.as_mut().expect("Codex binding").app_server_version = "v".repeat(129);
+    assert_eq!(
+        cell.validate(),
+        Err(ExecutionContractError::InvalidText("app server version")),
+    );
+
+    cell.codex_binding.as_mut().expect("Codex binding").app_server_version =
+        "v2\nforged-header".to_owned();
+    assert_eq!(
+        cell.validate(),
+        Err(ExecutionContractError::InvalidText("app server version")),
+    );
+
+    cell.codex_binding.as_mut().expect("Codex binding").app_server_version.clear();
+    assert_eq!(
+        cell.validate(),
+        Err(ExecutionContractError::EmptyText("app server version")),
+    );
+
+    // Matching the old adapter also means rejecting an unsupported v1
+    // dispatch protocol instead of accepting any well-formed StableId.
+    let binding = cell.codex_binding.as_mut().expect("Codex binding");
+    binding.app_server_version = "v2".to_owned();
+    binding.protocol_id = id("unregistered.protocol");
+    assert_eq!(
+        cell.validate(),
+        Err(ExecutionContractError::UnsupportedProtocol),
+    );
+}

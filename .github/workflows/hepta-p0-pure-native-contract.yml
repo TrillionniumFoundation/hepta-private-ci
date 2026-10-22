@@ -1,0 +1,72 @@
+name: Hepta P0 pure Native contract qualification
+
+on:
+  pull_request:
+    paths:
+      - "codex-rs/hepta-types/src/**"
+      - "codex-rs/hepta-types/Cargo.toml"
+      - "codex-rs/hepta-codex-adapter/src/execution_contract.rs"
+      - "codex-rs/Cargo.toml"
+      - "codex-rs/Cargo.lock"
+      - ".github/workflows/hepta-p0-pure-native-contract.yml"
+  workflow_dispatch: {}
+
+permissions:
+  contents: read
+
+concurrency:
+  group: hepta-p0-native-contract-${{ github.event.pull_request.head.ref || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  native-types:
+    name: Exact-source pure Hepta types fmt, tests and Clippy
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    env:
+      CARGO_INCREMENTAL: "0"
+      CARGO_BUILD_JOBS: "2"
+      PYTHONDONTWRITEBYTECODE: "1"
+      EXPECTED_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+    steps:
+      - name: Checkout immutable candidate without write credentials
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - name: Install exact reviewed Rust toolchain
+        uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582 # 1.95.0
+        with:
+          components: rustfmt,clippy
+      - name: Bind exact HEAD, Cargo graph and environment
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$EXPECTED_SHA"
+          rustc --version
+          cargo --version
+          cargo metadata --manifest-path codex-rs/Cargo.toml --locked --no-deps --format-version 1 >/dev/null
+      - name: Check exact pure types formatting, without rewriting source
+        shell: bash
+        run: |
+          set -euo pipefail
+          cargo fmt --manifest-path codex-rs/Cargo.toml -p codex-hepta-types -- --check
+      - name: Run actual authority-free Cell execution contract tests
+        shell: bash
+        run: |
+          set -euo pipefail
+          cargo test --manifest-path codex-rs/Cargo.toml --locked -p codex-hepta-types --lib
+      - name: Run strict pure types correctness Clippy
+        shell: bash
+        run: |
+          set -euo pipefail
+          cargo clippy --manifest-path codex-rs/Cargo.toml --locked -p codex-hepta-types --lib -- -D clippy::correctness
+      - name: Verify original source remained untouched
+        if: always() && !cancelled()
+        shell: bash
+        run: |
+          set -euo pipefail
+          git diff --check
+          git diff --exit-code
+          git diff --cached --exit-code
+          test -z "$(git status --porcelain=v1 --untracked-files=all)"
