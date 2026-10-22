@@ -991,3 +991,102 @@ fn digest_commits_to_complete_public_receipt_and_every_candidate_snapshot() {
         receipt.selection_digest
     );
 }
+
+#[test]
+fn fixed_switch_cost_cannot_be_amortized_by_fractional_weight() {
+    let mut limits = budget(2);
+    limits.switch_penalty = q(30);
+    let mut partial = candidate("partial-switch", 80, 0, false);
+    partial.weight_cap = q(10);
+    let denied = select_output_portfolio_v1(
+        &context(2),
+        &limits,
+        &[candidate("baseline", 0, 0, true), partial],
+    )
+    .expect("risk-free baseline remains feasible");
+    assert_eq!(denied.disposition, OutputPortfolioDispositionV1::NoChange);
+    assert_eq!(denied.allocations.len(), 1);
+
+    // The same fixed charge is affordable when the full positive gain
+    // is realized by a whole candidate, not diluted across a small share.
+    let admitted = select_output_portfolio_v1(
+        &context(2),
+        &limits,
+        &[
+            candidate("baseline", 0, 0, true),
+            candidate("whole-switch", 80, 0, false),
+        ],
+    )
+    .expect("full-weight admission");
+    assert_eq!(
+        admitted.disposition,
+        OutputPortfolioDispositionV1::AdvisorySelection
+    );
+    assert_eq!(admitted.allocations.len(), 1);
+    assert_eq!(admitted.allocations[0].weight, FixedQ32::ONE);
+}
+
+#[test]
+fn covariance_pricing_does_not_hide_fixed_switch_cost() {
+    let mut limits = budget(2);
+    limits.switch_penalty = q(45);
+    let mut measured = context(2);
+    measured.semantic_covariance[3] = q(50);
+    // Gross utility 0.8*w minus 0.5*w^2 peaks at w=0.8:
+    // the maximum gross gain is 0.32, below the fixed 0.45 cost.
+    let receipt = select_output_portfolio_v1(
+        &measured,
+        &limits,
+        &[
+            candidate("baseline", 0, 0, true),
+            candidate("covariant-switch", 80, 0, false),
+        ],
+    )
+    .expect("negative net gain selects no change");
+    assert_eq!(receipt.disposition, OutputPortfolioDispositionV1::NoChange);
+    assert_eq!(receipt.total_risk, FixedQ32::ZERO);
+}
+
+#[test]
+fn duplicate_cell_proposal_digest_cannot_masquerade_as_diversified_assets() {
+    let first = candidate("first", 60, 10, false);
+    let mut disguised = candidate("second-id", 55, 5, false);
+    disguised.candidate_digest = first.candidate_digest;
+    disguised.weight_cap = q(50);
+    let candidates = [candidate("baseline", 0, 0, true), first, disguised];
+    let expected = NduError::InvalidSolverReceipt("duplicate portfolio candidate digest");
+    assert_eq!(
+        select_output_portfolio_v1(&context(3), &budget(3), &candidates),
+        Err(expected.clone())
+    );
+    assert_eq!(
+        output_efficient_frontier_v1(&context(3), &candidates),
+        Err(expected.clone())
+    );
+
+    // Reordering both candidates and their zero covariance input cannot
+    // turn a duplicated immutable proposal into two distinct assets.
+    let reordered = [
+        candidates[2].clone(),
+        candidates[0].clone(),
+        candidates[1].clone(),
+    ];
+    assert_eq!(
+        select_output_portfolio_v1(&context(3), &budget(3), &reordered),
+        Err(expected)
+    );
+}
+
+#[test]
+fn relabelled_no_change_payload_cannot_become_risky_second_asset() {
+    let baseline = candidate("baseline", 0, 0, true);
+    let mut disguised = candidate("second", 95, 0, false);
+    disguised.candidate_digest = baseline.candidate_digest;
+    let candidates = [baseline, disguised];
+    assert_eq!(
+        select_output_portfolio_v1(&context(2), &budget(2), &candidates),
+        Err(NduError::InvalidSolverReceipt(
+            "duplicate portfolio candidate digest"
+        ))
+    );
+}
