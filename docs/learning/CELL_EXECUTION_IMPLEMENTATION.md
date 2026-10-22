@@ -30,6 +30,11 @@ must be checked through `RuntimeReceiptV1::validate_against` (including its
 `runtime_intent_digest`); validating only the embedded Cell-level
 `ExecutionReceiptV1` is insufficient to prove the exact tool operation.
 This remains a contract check, not independent proof of a physical tool effect.
+The receipt validator rejects any nonzero process exit or retry flag on a
+successful native completion. A native outcome may advertise `retryable` only
+when the enclosing receipt is `Rejected / RetryBeforeAdmission`; a failed,
+indeterminate or quarantined effect cannot be re-dispatched based on its tool
+outcome alone. The effect owner must still prove physical pre-admission rejection.
 
 ## P1–P2 — shared encoder and worker host
 
@@ -51,7 +56,11 @@ Required fixtures are:
 
 Only after these fixtures pass should the host add feature batching, activation
 batching, reusable immutable buffers, a compatible-model second index, per-scope
-worker lanes and group-commit metrics.
+worker lanes and group-commit metrics. The current `SharedWorkerPoolV1::drain`
+reports `groups_dequeued` and `activations_dequeued` as scheduling metrics,
+not worker completion. `groups_committed` and `activations_committed` must
+remain zero until a real terminal worker receipt and durable metrics writer are
+wired; queue drain is not evidence of successful inference or tool execution.
 
 ## P3 — native hepta-runtime fast path
 
