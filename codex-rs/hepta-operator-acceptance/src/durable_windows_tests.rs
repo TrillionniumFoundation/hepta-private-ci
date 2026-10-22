@@ -39,3 +39,25 @@ fn path_replacement_after_open_is_rejected() {
 
     assert!(verify_unchanged(&file, &artifact, &before, "artifact").is_err());
 }
+
+#[test]
+fn directory_flush_persists_new_and_replaced_sidecars() {
+    let temporary = tempfile::tempdir().expect("temporary sidecar directory");
+    let artifact = temporary.path().join("artifact");
+    let replacement = temporary.path().join("replacement");
+    crate::durable::write_private_new(&artifact, b"first").expect("persist first sidecar");
+    assert_eq!(secure_read(&artifact, 64).expect("read first sidecar"), b"first");
+    crate::durable::write_private_atomic_replace(&artifact, &replacement, b"second")
+        .expect("persist replacement sidecar");
+    assert_eq!(secure_read(&artifact, 64).expect("read replacement sidecar"), b"second");
+    assert!(!replacement.exists());
+}
+
+#[test]
+fn directory_flush_rejects_regular_files_and_missing_paths() {
+    let temporary = tempfile::tempdir().expect("temporary sidecar directory");
+    let artifact = temporary.path().join("artifact");
+    std::fs::write(&artifact, b"sealed").expect("write regular file");
+    assert!(super::sync_directory(&artifact).is_err());
+    assert!(super::sync_directory(&temporary.path().join("missing")).is_err());
+}

@@ -13,6 +13,8 @@ use windows_sys::Win32::Security::AddAccessAllowedAceEx;
 use windows_sys::Win32::Security::AddAccessDeniedAceEx;
 use windows_sys::Win32::Security::Authorization::SE_FILE_OBJECT;
 use windows_sys::Win32::Security::InitializeAcl;
+use windows_sys::Win32::Security::IsValidAcl;
+use windows_sys::Win32::Security::IsValidSid;
 use windows_sys::Win32::Security::NO_PROPAGATE_INHERIT_ACE;
 use windows_sys::Win32::Storage::FileSystem::FILE_READ_DATA;
 use windows_sys::Win32::Storage::FileSystem::FILE_READ_EA;
@@ -161,6 +163,15 @@ fn native_deny_entries(path: &Path, sid: &LocalSid) -> Result<Vec<(u8, u32)>> {
     // SAFETY: the existing path is live; this function owns the returned descriptor.
     let (dacl, descriptor) = unsafe { fetch_dacl_handle(path)? };
     let result = (|| {
+        // A successful security query may return a null DACL. Neither ACL
+        // validation nor GetAclInformation accepts that pointer.
+        if dacl.is_null() {
+            return Err(anyhow!("native fixture returned a null DACL"));
+        }
+        // SAFETY: the descriptor owns this non-null native ACL.
+        if unsafe { IsValidAcl(dacl) } == 0 {
+            return Err(anyhow!("native fixture returned an invalid ACL"));
+        }
         let mut entries = Vec::new();
         let mut info: ACL_SIZE_INFORMATION = unsafe { std::mem::zeroed() };
         // SAFETY: the descriptor retains the ACL; info is writable and correctly sized.
@@ -175,18 +186,49 @@ fn native_deny_entries(path: &Path, sid: &LocalSid) -> Result<Vec<(u8, u32)>> {
         {
             return Err(std::io::Error::last_os_error().into());
         }
+        let acl_start = dacl as usize;
+        let acl_bytes_in_use = info.AclBytesInUse as usize;
         for index in 0..info.AceCount {
             let mut ace = std::ptr::null_mut();
             // SAFETY: the descriptor retains each ACE returned by the ACL query.
             if unsafe { GetAce(dacl, index, &mut ace) } == 0 {
                 return Err(std::io::Error::last_os_error().into());
             }
-            // SAFETY: GetAce returned a live native ACE header.
-            let header = unsafe { &*(ace as *const ACE_HEADER) };
+            if ace.is_null()
+                || !ace.cast::<ACCESS_DENIED_ACE>().is_aligned()
+                || !native_ace_span_fits_acl(
+                    acl_start,
+                    acl_bytes_in_use,
+                    ace as usize,
+                    std::mem::size_of::<ACE_HEADER>(),
+                )
+            {
+                return Err(anyhow!("native fixture returned an invalid ACE pointer"));
+            }
+            // SAFETY: the complete header lies within the retained ACL bytes.
+            let header = unsafe { std::ptr::read_unaligned(ace.cast::<ACE_HEADER>()) };
+            let ace_size = usize::from(header.AceSize);
+            if !native_ace_span_fits_acl(acl_start, acl_bytes_in_use, ace as usize, ace_size) {
+                return Err(anyhow!("native fixture ACE extends outside the ACL"));
+            }
             if header.AceType == ACCESS_DENIED_ACE_TYPE {
-                // SAFETY: the native header identifies an ACCESS_DENIED_ACE.
-                let deny = unsafe { &*(ace as *const ACCESS_DENIED_ACE) };
-                let trustee = std::ptr::addr_of!(deny.SidStart).cast_mut().cast();
+                if !native_deny_sid_fits_ace(ace_size, /*sub_authority_count*/ 0) {
+                    return Err(anyhow!("native fixture deny ACE has a truncated SID"));
+                }
+                let sid_offset = std::mem::offset_of!(ACCESS_DENIED_ACE, SidStart);
+                // SAFETY: the fixed SID header is contained in the checked ACE.
+                // Retain its original address, not SidStart in a stack copy.
+                let trustee = unsafe { ace.cast::<u8>().add(sid_offset) }.cast::<c_void>();
+                // SAFETY: the count byte is inside the checked fixed SID header.
+                let sub_authority_count = unsafe { *trustee.cast::<u8>().add(1) };
+                if !native_deny_sid_fits_ace(ace_size, sub_authority_count)
+                    // SAFETY: the complete SID lies within the retained ACE.
+                    || unsafe { IsValidSid(trustee) } == 0
+                {
+                    return Err(anyhow!("native fixture deny ACE has an invalid SID"));
+                }
+                // SAFETY: all fixed fields fit within the checked deny ACE.
+                let deny = unsafe { std::ptr::read_unaligned(ace.cast::<ACCESS_DENIED_ACE>()) };
                 // SAFETY: both SIDs are valid and live throughout the comparison.
                 if unsafe { EqualSid(trustee, sid.as_ptr()) } != 0 {
                     entries.push((header.AceFlags, deny.Mask));
@@ -198,6 +240,75 @@ fn native_deny_entries(path: &Path, sid: &LocalSid) -> Result<Vec<(u8, u32)>> {
     // SAFETY: no ACL or ACE reference escapes the closure; release the owned descriptor.
     unsafe { LocalFree(descriptor as HLOCAL) };
     result
+}
+
+// Match the checked-span policy in utils/path-utils/private_state_windows.rs
+// without exposing that private module as a cross-crate test API.
+fn native_ace_span_fits_acl(
+    acl_start: usize,
+    acl_bytes_in_use: usize,
+    ace_start: usize,
+    span: usize,
+) -> bool {
+    if span < std::mem::size_of::<ACE_HEADER>() {
+        return false;
+    }
+    let Some(first_ace) = acl_start.checked_add(std::mem::size_of::<ACL>()) else {
+        return false;
+    };
+    let Some(acl_end) = acl_start.checked_add(acl_bytes_in_use) else {
+        return false;
+    };
+    let Some(ace_end) = ace_start.checked_add(span) else {
+        return false;
+    };
+    ace_start >= first_ace && ace_end <= acl_end
+}
+
+fn native_deny_sid_fits_ace(ace_size: usize, sub_authority_count: u8) -> bool {
+    let Some(sid_bytes) = ace_size.checked_sub(std::mem::offset_of!(ACCESS_DENIED_ACE, SidStart))
+    else {
+        return false;
+    };
+    let required_bytes = 8 + usize::from(sub_authority_count) * 4;
+    sid_bytes >= required_bytes
+}
+
+#[test]
+fn native_ace_spans_reject_truncation_and_overflow() {
+    let acl_start = 0x1000_usize;
+    let acl_header = std::mem::size_of::<ACL>();
+    let ace_header = std::mem::size_of::<ACE_HEADER>();
+    let first_ace = acl_start + acl_header;
+    let allocated = acl_header + 32;
+    for (acl, bytes, ace, span, expected) in [
+        (acl_start, allocated, first_ace, ace_header, true),
+        (acl_start, allocated, first_ace, 32, true),
+        (acl_start, allocated, acl_start, ace_header, false),
+        (acl_start, allocated, first_ace - 1, ace_header, false),
+        (acl_start, allocated, first_ace, ace_header - 1, false),
+        (acl_start, allocated, first_ace + 1, 32, false),
+        (acl_start, acl_header - 1, first_ace, ace_header, false),
+        (usize::MAX - 1, 32, usize::MAX - 1, ace_header, false),
+        (acl_start, allocated, usize::MAX - 1, 32, false),
+    ] {
+        assert_eq!(native_ace_span_fits_acl(acl, bytes, ace, span), expected);
+    }
+}
+
+#[test]
+fn native_deny_sid_spans_reject_truncated_sub_authorities() {
+    let sid_offset = std::mem::offset_of!(ACCESS_DENIED_ACE, SidStart);
+    for (size, count, expected) in [
+        (sid_offset - 1, 0, false),
+        (sid_offset + 7, 0, false),
+        (sid_offset + 8, 0, true),
+        (sid_offset + 11, 1, false),
+        (sid_offset + 12, 1, true),
+        (sid_offset + 12, u8::MAX, false),
+    ] {
+        assert_eq!(native_deny_sid_fits_ace(size, count), expected);
+    }
 }
 
 #[test]

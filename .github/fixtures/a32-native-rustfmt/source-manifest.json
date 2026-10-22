@@ -1,0 +1,464 @@
+{
+  "allowed_formatted_paths": [
+    "codex-rs/app-server/src/message_processor.rs",
+    "codex-rs/app-server/src/request_processors/account_processor/bedrock_setup.rs",
+    "codex-rs/app-server/src/request_processors/thread_processor.rs",
+    "codex-rs/app-server/tests/suite/v2/bedrock_setup.rs",
+    "codex-rs/app-server/tests/suite/v2/thread_resume.rs",
+    "codex-rs/app-server/tests/suite/v2/turn_recover.rs",
+    "codex-rs/core/src/client_tests.rs",
+    "codex-rs/hepta-agentd/tests/support/terminal_cell_owner.rs",
+    "codex-rs/hepta-bao-adapter/src/https_consumer_tests.rs",
+    "codex-rs/hepta-memory/src/cognitive_store.rs",
+    "codex-rs/hepta-memory/src/cognitive_store_recovery.rs",
+    "codex-rs/hepta-memory/src/cognitive_store_sync.rs",
+    "codex-rs/hepta-memory/src/cognitive_store_windows.rs",
+    "codex-rs/hepta-memory/src/cognitive_test_support.rs",
+    "codex-rs/hepta-memory/src/h7_trajectory_store_tests.rs",
+    "codex-rs/hepta-memory/src/local_turn_binding.rs",
+    "codex-rs/hepta-operator-acceptance/src/durable.rs",
+    "codex-rs/hepta-operator-acceptance/src/durable_windows.rs",
+    "codex-rs/hepta-operator-acceptance/src/durable_windows_tests.rs",
+    "codex-rs/hepta-shadow-qualification/src/durable.rs",
+    "codex-rs/hepta-supervisor/tests/robrix_control_projection.rs",
+    "codex-rs/http-client/src/outbound_proxy_redirect_coverage_tests.rs",
+    "codex-rs/http-client/src/route_aware_client_pool_tests.rs",
+    "codex-rs/http-client/src/route_aware_redirect_integration_tests.rs",
+    "codex-rs/protocol/src/permission_profile_intersection_tests.rs",
+    "codex-rs/rmcp-client/tests/streamable_http_remote.rs",
+    "codex-rs/rollout/src/recorder_tests.rs",
+    "codex-rs/sandboxing/src/seatbelt_tests.rs",
+    "codex-rs/state/src/sqlite_recovery.rs",
+    "codex-rs/state/src/sqlite_recovery_image.rs",
+    "codex-rs/state/src/sqlite_recovery_image_tests.rs",
+    "codex-rs/state/src/sqlite_recovery_windows.rs",
+    "codex-rs/state/src/sqlite_recovery_windows_tests.rs",
+    "codex-rs/thread-store/src/local/test_support.rs",
+    "codex-rs/thread-store/src/local/thread_history_materialization_tests.rs",
+    "codex-rs/utils/path-utils/src/lib.rs",
+    "codex-rs/utils/path-utils/src/private_state_windows.rs",
+    "codex-rs/utils/path-utils/src/private_state_windows_directory.rs",
+    "codex-rs/utils/path-utils/src/private_state_windows_recovery.rs",
+    "codex-rs/utils/path-utils/src/private_state_windows_snapshot.rs",
+    "codex-rs/utils/path-utils/src/private_state_windows_snapshot_tests.rs",
+    "codex-rs/windows-sandbox-rs/src/acl_tests.rs",
+    "codex-rs/windows-sandbox-rs/src/unified_exec/acl_setup_tests.rs"
+  ],
+  "auxiliary_paths": [
+    ".github/fixtures/a32-native-rustfmt/source-manifest.json",
+    ".github/scripts/a32_native_rustfmt.py",
+    ".github/workflows/a32-native-rustfmt-diagnostic.yml"
+  ],
+  "base": "a32d73f00cfc292ff1ed4ac5cef958ca9f238020",
+  "base_tree": "603a3e5b69258e37653a828dda625efe45365d7e",
+  "branch": "diagnostic/a32-native-rustfmt-20261022",
+  "files": [
+    {
+      "base_blob": "990f6942839df90fabf67bec629b8fe3f8675fb7",
+      "candidate_blob": "0a50fa82e4746f1da5a178c5e987568e97f3aa47",
+      "candidate_sha256": "2afdd0034ac20e4a1d86e73063eea74eac1eccd09bf74b511d48dad3616efe73",
+      "mode": "100644",
+      "path": ".github/fixtures/windows-private-state-acquisition/path-check-open.patch"
+    },
+    {
+      "base_blob": "463a600d92cc9a964561e9691058566e06fa8e59",
+      "candidate_blob": "095877326adabaea64b70366342aa69717f7a152",
+      "candidate_sha256": "b44d3ef4a79b9765685db1dbf67d9bae8127f24680ec0d9467b72655f64531cd",
+      "mode": "100644",
+      "path": ".github/scripts/check_windows_private_state_acquisition.py"
+    },
+    {
+      "base_blob": "4c7cb72bdb00174b7087250879328f9875ed3db6",
+      "candidate_blob": "f1b0664888042c7f42c81800809e57f1608c1086",
+      "candidate_sha256": "4562cba38b3f7aa4793b052c42af09eb5edab4c570f64d9f3a524651ce0ea1e1",
+      "mode": "100644",
+      "path": "codex-rs/Cargo.lock"
+    },
+    {
+      "base_blob": "1c83eb476c5a613855e352a95e64862698143fd3",
+      "candidate_blob": "955db668d75d9c5d9c7fff196b3332dd8dacbcb4",
+      "candidate_sha256": "60e0a0dc84aa9cf192e7b09dc5590148d9ceeaaa429f6bfe1a48974939347504",
+      "mode": "100644",
+      "path": "codex-rs/app-server/src/message_processor.rs"
+    },
+    {
+      "base_blob": "1f329984bffd499dc14533e8538400c3ddf304e8",
+      "candidate_blob": "9e7cb31856c2b938c6a8ba73f8affb36bd4b5e3d",
+      "candidate_sha256": "af9ceab5047c7ee06bba84d47684748b38bfbb32e287db4a6fca84b2b45fa6fa",
+      "mode": "100644",
+      "path": "codex-rs/app-server/src/request_processors/account_processor/bedrock_setup.rs"
+    },
+    {
+      "base_blob": "6126faf53271e6108c96394b0217bc763213cf86",
+      "candidate_blob": "a3db7dc4b163b074107b028d9e93a39b5e35f853",
+      "candidate_sha256": "681b317405615192468a8a5ea5c171c2ab662dd0901732174a8edcaeaf58bf84",
+      "mode": "100644",
+      "path": "codex-rs/app-server/src/request_processors/thread_processor.rs"
+    },
+    {
+      "base_blob": "87cfaf3ae45eafbc54dad94a96226f4a807209a5",
+      "candidate_blob": "4f33789fa0e69d2a17115bf01cf069ee2155ea4c",
+      "candidate_sha256": "228d7ea570976de2c3c5eaa73fd4faa585fc22137a10c37edf88d4ab8f7c9e51",
+      "mode": "100644",
+      "path": "codex-rs/app-server/tests/suite/v2/bedrock_setup.rs"
+    },
+    {
+      "base_blob": "dd7a2a0ac42627200bfbce5a4ddf80e8781439ab",
+      "candidate_blob": "ce19c6a082bbea56ef42d0ce1e786a09b5a2df5e",
+      "candidate_sha256": "838358fb5d077b338093697b5f5290b6f3044fe0380aa7252b949ac20f8278bb",
+      "mode": "100644",
+      "path": "codex-rs/app-server/tests/suite/v2/thread_resume.rs"
+    },
+    {
+      "base_blob": "7aa8b98e4751e953743d298850966bc2cdfb9fa6",
+      "candidate_blob": "d5f6aec49c5deae66d86d64bc17e66ce1fb7ead7",
+      "candidate_sha256": "ae2c945c197908fde33a2412296438450727d827ecd9b2a788a65663e111d26c",
+      "mode": "100644",
+      "path": "codex-rs/app-server/tests/suite/v2/turn_recover.rs"
+    },
+    {
+      "base_blob": "9fc8c34f9fc624d42f94af0992ace90ac568fb5c",
+      "candidate_blob": "512cd999e8429d4a9f086cf00cc0cdd6963f2f12",
+      "candidate_sha256": "c5c0ee4ada4135e4460cd06500d3a03d8975ca9ac320fa01370492f6ec4ab337",
+      "mode": "100644",
+      "path": "codex-rs/core/src/client_tests.rs"
+    },
+    {
+      "base_blob": "614e487920415af06040aa24532508ac5a3887bc",
+      "candidate_blob": "2d798961472cd91ec09c319e2ee5ef678e223aae",
+      "candidate_sha256": "177398266c809ad164cfa74f4ab16942fd6fc76f7c769845bab84cdb9476fb7d",
+      "mode": "100644",
+      "path": "codex-rs/hepta-agentd/tests/support/terminal_cell_owner.rs"
+    },
+    {
+      "base_blob": "82d4eb7cf7df7dc8181ecfbb6c06473f8b156d8a",
+      "candidate_blob": "13fa3cd6721c30a965d04d7e35c23427ebe56157",
+      "candidate_sha256": "7a61d40f74da627f584bd74cb76584d458c11787f469c6a7db54227bc0ae2c8b",
+      "mode": "100644",
+      "path": "codex-rs/hepta-bao-adapter/src/https_consumer_tests.rs"
+    },
+    {
+      "base_blob": "6ba04f39f78e7d6295c9922d279e37e0492180f2",
+      "candidate_blob": "cb4bfd2bcee54570ca60535432620178a6f4c17d",
+      "candidate_sha256": "68447808be2ddac5ff50bc7f8baceac73738fe6c43ed68e3621945e14703e5e8",
+      "mode": "100644",
+      "path": "codex-rs/hepta-memory/Cargo.toml"
+    },
+    {
+      "base_blob": "b52e3a1aa275c178a075677f5df9faa832173b41",
+      "candidate_blob": "7a9eeb4aa2cc34ca1dd3e92eb5eac2bb375ed87e",
+      "candidate_sha256": "3035586eef841005cff66b749b5d6169cf23ccef36f9d95a3029560eb331c4a8",
+      "mode": "100644",
+      "path": "codex-rs/hepta-memory/src/cognitive_store.rs"
+    },
+    {
+      "base_blob": "b04217a0de797501c61262b20b8c52d2bd1b1822",
+      "candidate_blob": "cc229f6d570975e5190bf294d365ab540ec49773",
+      "candidate_sha256": "8f7b5b0b4e83df1a4e7336832e594919bd005a8c4e85d38ff0b0a013c39efa82",
+      "mode": "100644",
+      "path": "codex-rs/hepta-memory/src/cognitive_store_recovery.rs"
+    },
+    {
+      "base_blob": null,
+      "candidate_blob": "bcc8283e81f5571f2fe49d25e2fa957c8043cf75",
+      "candidate_sha256": "241e5a929fdecafab14b0a38a17e053f571a6f444d03b25156b7c1694a343596",
+      "mode": "100644",
+      "path": "codex-rs/hepta-memory/src/cognitive_store_sync.rs"
+    },
+    {
+      "base_blob": null,
+      "candidate_blob": "91f978e4bf6ec7eba57a87e63afdc773b2c26412",
+      "candidate_sha256": "61992277c39c95a998072ff961e6017f2da41c5877a8d7974076070b0d93e01c",
+      "mode": "100644",
+      "path": "codex-rs/hepta-memory/src/cognitive_store_windows.rs"
+    },
+    {
+      "base_blob": "dbd71ef718ae11c5d4a3568a3f9ed4f381236473",
+      "candidate_blob": "11306805bca685a18758b50c16659a75092e0077",
+      "candidate_sha256": "a23027d9f04293a0830ebd76a315f8f8a7a6b4844f072519be1c2d33402cf151",
+      "mode": "100644",
+      "path": "codex-rs/hepta-memory/src/cognitive_test_support.rs"
+    },
+    {
+      "base_blob": "14b629d44b36d9c93acff4c90300ee356af4d130",
+      "candidate_blob": "1f080c913fab362a68b7a988c7b871b57f24fe31",
+      "candidate_sha256": "f81c26a9e7ed3b9c5a251118003afdf37f4fded329441af3470dd44898f5d57e",
+      "mode": "100644",
+      "path": "codex-rs/hepta-memory/src/h7_trajectory_store_tests.rs"
+    },
+    {
+      "base_blob": "e9adb5979c37aa47eeeded998597f6703013bf70",
+      "candidate_blob": "090ca350ac2089e0a610b39914400abeb1d593fe",
+      "candidate_sha256": "0794bf1a554508c56795b5b70184a8e1b0c2543a7c94e00dccca32827c9e7a95",
+      "mode": "100644",
+      "path": "codex-rs/hepta-memory/src/local_turn_binding.rs"
+    },
+    {
+      "base_blob": "ba562fe38aaa24ff445f790020673af67f285b76",
+      "candidate_blob": "e6234a935a0b7ccdee36360ab774d0a7c4c45c8b",
+      "candidate_sha256": "5d1833a0b3e5856335c1f40a663e4d763b240e3d6d0ac546aae72a09eeb338d2",
+      "mode": "100644",
+      "path": "codex-rs/hepta-operator-acceptance/src/durable.rs"
+    },
+    {
+      "base_blob": "04c1ee508ae6d9f1cb0c97b91ac4700cc323c0fd",
+      "candidate_blob": "53d0bbe834bf2ab2025aa66edb7efda670c9006f",
+      "candidate_sha256": "97859f67dfdec6592e319922cf10f2d4499da7cabff757199b15d95dcbaca176",
+      "mode": "100644",
+      "path": "codex-rs/hepta-operator-acceptance/src/durable_windows.rs"
+    },
+    {
+      "base_blob": "4a0c88f052a7c65360e45894c4c2809edda4f817",
+      "candidate_blob": "7e49618459ba2dddf2211c135b023a96f7120308",
+      "candidate_sha256": "7058470037f031fe20015fd55a399739f9913dce322ab7fd3cf3880490606307",
+      "mode": "100644",
+      "path": "codex-rs/hepta-operator-acceptance/src/durable_windows_tests.rs"
+    },
+    {
+      "base_blob": "e77e54428de0903db8759613a1d72d4bb142ac98",
+      "candidate_blob": "872189962e925531c050813849e68a7978acddbb",
+      "candidate_sha256": "1507176ca28f207656642a0724a07bdf1745598319895ec92d98962016779eff",
+      "mode": "100644",
+      "path": "codex-rs/hepta-shadow-qualification/src/durable.rs"
+    },
+    {
+      "base_blob": "7e0bfea1cb7526fcbb282a52b63b59f80a695817",
+      "candidate_blob": "cae0e1ceb68910231a0ab6cf3d0f11030cf40ee2",
+      "candidate_sha256": "543997be9bef91d4e946a4fe1d3f0eeb515f4334b245c0e6328d4cbd3f581f8d",
+      "mode": "100644",
+      "path": "codex-rs/hepta-supervisor/BUILD.bazel"
+    },
+    {
+      "base_blob": "01dfc5694bf9750464233eb7e0ace3b89827e08d",
+      "candidate_blob": "d2abb8b561a299f5d3294dc0bdc906c3dd46544a",
+      "candidate_sha256": "57bfcfb789e4fa6032fcacdc9d81afa6a6c0ae2234b9102b41394a3de0e60b95",
+      "mode": "100644",
+      "path": "codex-rs/hepta-supervisor/tests/robrix_control_projection.rs"
+    },
+    {
+      "base_blob": "ed10af742e87fb172e0af3320a434117eea896fe",
+      "candidate_blob": "d94f391206a109cd1e6b31cc911be0d28e40c1bb",
+      "candidate_sha256": "19c72c3348f9984318cac448d75b06bd436cac6fb0eb92cf5241308fd471a5c8",
+      "mode": "100644",
+      "path": "codex-rs/http-client/src/outbound_proxy_redirect_coverage_tests.rs"
+    },
+    {
+      "base_blob": "e3848397bd5b646cb99cacda2ae6a21f1170e0cc",
+      "candidate_blob": "bffc6cae8701c393646dbfc7867fd1692efeaac9",
+      "candidate_sha256": "46ee227c61a5f6f744ee5d7a0281e9828114df9e73827c9eb57605b02c8389d9",
+      "mode": "100644",
+      "path": "codex-rs/http-client/src/route_aware_client_pool_tests.rs"
+    },
+    {
+      "base_blob": "91119ca08c3281d8a4bb9a89dbe2d9c0654ce563",
+      "candidate_blob": "93a2beb4c502bd3cfc3b4fd82c019ae903866886",
+      "candidate_sha256": "de236f0ef016915bfa809be1258eea48e84a387bc2bb959732bc66f2dd071fb7",
+      "mode": "100644",
+      "path": "codex-rs/http-client/src/route_aware_redirect_integration_tests.rs"
+    },
+    {
+      "base_blob": "6245c79713b119e61c1be567a1c7cc2d38ecd686",
+      "candidate_blob": "f586d1925171b45449aa2e421affb1a5ee86f7c4",
+      "candidate_sha256": "6e5b879e9c0d444cdf1377cb036e0be679bd17b442714285c0d29669ab7639d4",
+      "mode": "100644",
+      "path": "codex-rs/protocol/src/permission_profile_intersection_tests.rs"
+    },
+    {
+      "base_blob": "7df871976bc3ae13d99122a8cbb2128fd7244dae",
+      "candidate_blob": "7014b37cd08f65bbeb9f9d29f56af6dd077ad639",
+      "candidate_sha256": "c888b499c5c6c014fb1d15e10c99b163005e72e996f0444f7eb976c788c39e53",
+      "mode": "100644",
+      "path": "codex-rs/rmcp-client/tests/streamable_http_remote.rs"
+    },
+    {
+      "base_blob": "0c4e663aa35bea92fd4cae88b3d2fe1a1384e24d",
+      "candidate_blob": "c91fd117fd6f96adf7fdd50145a7d55ec5391798",
+      "candidate_sha256": "ef8f94c389c9b3ba113d9319017773bad4517fbaa7a9c5d0195a948e4f719fd7",
+      "mode": "100644",
+      "path": "codex-rs/rollout/src/recorder_tests.rs"
+    },
+    {
+      "base_blob": "f5db9e271617aefdc61e829dc01f8b3185396caf",
+      "candidate_blob": "ba5ccd664959f64478200cb1c36294a31410c4c3",
+      "candidate_sha256": "b81529e4342296f3f3f770664b413a683c0d857e3ef61d2dfe0c90891f01ef50",
+      "mode": "100644",
+      "path": "codex-rs/sandboxing/src/seatbelt_tests.rs"
+    },
+    {
+      "base_blob": null,
+      "candidate_blob": "b2943f35ebbd5fc4fca44a4b07fa0409e93d2b69",
+      "candidate_sha256": "aa0e0d087831fe840d0769c3c5c6e1bd4f1d9fc256a627aee18f3cd1be4ca21f",
+      "mode": "100644",
+      "path": "codex-rs/state/.gitattributes"
+    },
+    {
+      "base_blob": "334f8c7a98199777a025abfa91aa18f0b7bbb008",
+      "candidate_blob": "e0592a99be37153ca5b9311171a9185b03645ec9",
+      "candidate_sha256": "30daf336991ae62ab2ac5023a4ef3bc298dbcb7d73c6c5e88020886c1fd3f2dd",
+      "mode": "100644",
+      "path": "codex-rs/state/Cargo.toml"
+    },
+    {
+      "base_blob": "7093f94b445e0cf468f1528ceb8a827beaf2d4af",
+      "candidate_blob": "8958a7a3afe3027ab34499bb5fc7630e87714bf8",
+      "candidate_sha256": "7277e9d47a1d36cdba8536ce99e0f3b100d0b0f4dd018702af94361b8100de4e",
+      "mode": "100644",
+      "path": "codex-rs/state/src/sqlite_recovery.rs"
+    },
+    {
+      "base_blob": "af8dea5f59165477866903325c94c3f1742f502e",
+      "candidate_blob": "4227b0e685a51218a4be0f530668456cbe96b2e1",
+      "candidate_sha256": "6b77392c4018c054e7f21d34cd69547bd8405e74e137408f0f8a64a9c9d20131",
+      "mode": "100644",
+      "path": "codex-rs/state/src/sqlite_recovery_image.rs"
+    },
+    {
+      "base_blob": "22ebb0275279f95ef2e3ad7e0696915cd5d54053",
+      "candidate_blob": "c68afe15e84f7213b91833bf8d6b2a3ca6dc6162",
+      "candidate_sha256": "1030f9ca97c08031771d4aa2c6b1420ba35c1417911683b1c5bc06ab164a6e73",
+      "mode": "100644",
+      "path": "codex-rs/state/src/sqlite_recovery_image_tests.rs"
+    },
+    {
+      "base_blob": null,
+      "candidate_blob": "99f20b031b3ea0db4eb22ee0f7ea80bb03616dc7",
+      "candidate_sha256": "65f352bb0ccca0a92e6dadb96682962f9fb440a1d98941b6ed867b3ef7d62c43",
+      "mode": "100644",
+      "path": "codex-rs/state/src/sqlite_recovery_windows.rs"
+    },
+    {
+      "base_blob": null,
+      "candidate_blob": "fc814768aa688ca03afba22fff0322378ac51fa5",
+      "candidate_sha256": "8cfc7556761dfc9561b191807cf8ab897a174c5b8edfb58b18899e2e78862ea2",
+      "mode": "100644",
+      "path": "codex-rs/state/src/sqlite_recovery_windows_tests.rs"
+    },
+    {
+      "base_blob": null,
+      "candidate_blob": "f6587618cf053b313cc1e62e107ce8fa92f0fc48",
+      "candidate_sha256": "02f7ef6ede19fe5b71a55a25eadc0f2dc287f4470b750fa420e8dd20308ca7d1",
+      "mode": "100644",
+      "path": "codex-rs/state/tests/windows-recovery-controls/controls.json"
+    },
+    {
+      "base_blob": null,
+      "candidate_blob": "d1d17ca56a8df758ced652e0d319a74f6c1b2043",
+      "candidate_sha256": "595c44c9c66949e1538cb5c35f8adc2e49b26fb462e9e61e4db914e3cb2a0e0b",
+      "mode": "100644",
+      "path": "codex-rs/state/tests/windows-recovery-controls/refresh.py"
+    },
+    {
+      "base_blob": null,
+      "candidate_blob": "8bf599a26ae42284726de7ee7a79621625325a19",
+      "candidate_sha256": "3bb0cff6191868908c77ac46e266549ef12d075ffba544aa71191b95c87b0eaa",
+      "mode": "100644",
+      "path": "codex-rs/state/tests/windows-recovery-controls/run.py"
+    },
+    {
+      "base_blob": null,
+      "candidate_blob": "b72df03ee0d66be12ec7e507ec761d97e210ca06",
+      "candidate_sha256": "4c78fc642107988d583173ebd183912f0864e3e90551f17abde87067b1c373ff",
+      "mode": "100644",
+      "path": "codex-rs/state/tests/windows-recovery-controls/shared-source.patch"
+    },
+    {
+      "base_blob": null,
+      "candidate_blob": "59ef960cefd816fb869f954ba42046185a62d6ee",
+      "candidate_sha256": "4bd558f62c39567bd6d862ab2003366845ded3a6931363fa08b0a24150c3025a",
+      "mode": "100644",
+      "path": "codex-rs/state/tests/windows-recovery-controls/skip-snapshot.patch"
+    },
+    {
+      "base_blob": null,
+      "candidate_blob": "023b62689dc8c08e15e817878dc5f9e76ffaed8e",
+      "candidate_sha256": "1a9afadb01c0b50db0c3aae8891f0534cfa18f94de29b30105c376b41322a447",
+      "mode": "100644",
+      "path": "codex-rs/state/tests/windows-recovery-controls/test_run.py"
+    },
+    {
+      "base_blob": "e7b014b43b073c475f4a9bf6f29fa7e8268f895d",
+      "candidate_blob": "446a6a236281828177cd5a5e0b8033b3327d3dd7",
+      "candidate_sha256": "5f7bc30222477d258d66320c7808c440ba99d3221b2ec2ffc978beb75549a83c",
+      "mode": "100644",
+      "path": "codex-rs/thread-store/src/local/test_support.rs"
+    },
+    {
+      "base_blob": "42f1df3533cd9914727cc81fa40a97345e1404f5",
+      "candidate_blob": "6ab06b239d981aef1b70a014a9acb2275cb0fcf5",
+      "candidate_sha256": "6061b63b93e12933b76778a3dd48c4cbe7ee2b9ca03bedf677a43138d94c1960",
+      "mode": "100644",
+      "path": "codex-rs/thread-store/src/local/thread_history_materialization_tests.rs"
+    },
+    {
+      "base_blob": "f4c65951c6c830a752b2b2563d9716589959d83b",
+      "candidate_blob": "e94176a2021170c98a683c6c02b4e0b9da95dccb",
+      "candidate_sha256": "9734ba913d250ebe5b73e29f529a260c7fda0f8d289810a1c34fb31387da2949",
+      "mode": "100644",
+      "path": "codex-rs/utils/path-utils/src/lib.rs"
+    },
+    {
+      "base_blob": "03a8170a874621c362e1b135df654016207082d5",
+      "candidate_blob": "3ebcb1e14785fe6db7c93ab61cf421e7bb861f9c",
+      "candidate_sha256": "6e0cda6d9daf6ed0f95c820d4e01dd3ac4a5e173f8b714ca87f1477cd5be996a",
+      "mode": "100644",
+      "path": "codex-rs/utils/path-utils/src/private_state_windows.rs"
+    },
+    {
+      "base_blob": "b4e85af5ba4f2a92d37bbec2c3fa1d65795ce6c4",
+      "candidate_blob": "215c4532c4d9e65312b0d61f45773e60254a5cb7",
+      "candidate_sha256": "8c7552e3a45f2bf67f2f6fbd66036e4d71306b1cc40a27a6c8d43d6aee0101fb",
+      "mode": "100644",
+      "path": "codex-rs/utils/path-utils/src/private_state_windows_directory.rs"
+    },
+    {
+      "base_blob": null,
+      "candidate_blob": "b3fb50a68615f4c19412ec11eb92a3a9e6ec0c59",
+      "candidate_sha256": "54a1d8f4c592392e2d91546970de3895dc0f087bd10f22631ec796d7a9152385",
+      "mode": "100644",
+      "path": "codex-rs/utils/path-utils/src/private_state_windows_recovery.rs"
+    },
+    {
+      "base_blob": null,
+      "candidate_blob": "47a50e7bf633e2b78cb04c3a3574b14372654027",
+      "candidate_sha256": "b688e2e2e9df488eac3b0479417f853bfe15f8495b22697a5b895cb4d00c93bb",
+      "mode": "100644",
+      "path": "codex-rs/utils/path-utils/src/private_state_windows_snapshot.rs"
+    },
+    {
+      "base_blob": null,
+      "candidate_blob": "3e8e03b95cbcd2b3d9e97620ea54a55123e0a054",
+      "candidate_sha256": "21db096e2d272e834e82fa1bbcc0b161b14066cb9047a811238762c120144fab",
+      "mode": "100644",
+      "path": "codex-rs/utils/path-utils/src/private_state_windows_snapshot_tests.rs"
+    },
+    {
+      "base_blob": "3ba6a267aadcaf00666a250889aa85e78c61b886",
+      "candidate_blob": "730ccc1df4bbd2baae2070f250f78f2d94d10204",
+      "candidate_sha256": "533f42c95ac92194d79e3eb1e03e0f5009337eed5d5ef8f4e521c7ee7d6e17f3",
+      "mode": "100644",
+      "path": "codex-rs/windows-sandbox-rs/src/acl_tests.rs"
+    },
+    {
+      "base_blob": "f2ea4c8636dca50fba18e1f5f26781146419ac9f",
+      "candidate_blob": "088fad9921cb6f292a0ff97375efcca75422b992",
+      "candidate_sha256": "d4fe913a376cd49fbad7743a14d0790234ba3b6edf2a988f99c0b5ed33cd1396",
+      "mode": "100644",
+      "path": "codex-rs/windows-sandbox-rs/src/unified_exec/acl_setup_tests.rs"
+    },
+    {
+      "base_blob": "52c5ae8652c7f19181928899941f9d35f750214f",
+      "candidate_blob": "da22535fe976e7513960c1eb1c8ce9b721df6fa3",
+      "candidate_sha256": "ec3228be4e02c37cc95bc9129c7ccc8132537a5667425ae55d5ea999fcc3b013",
+      "mode": "100644",
+      "path": "patches/rules_rust_windows_process_wrapper_skip_temp_outputs.patch"
+    }
+  ],
+  "freeze_scope": "local byte-frozen diagnostic review input only; no publication or native qualification",
+  "product_patch_sha256": "b15ebf3d3bd38bf932824118dfa3520a3089308cbc5fbe044c7dc116f6f65f4e",
+  "product_tree": "2f72b9761221602d4c2d4bde8961a2c101893a0a",
+  "product_variant": "candidate-without-sshsig-plus-typed-acl-with-generated-lock-with-macos-fixtures",
+  "qualification_transferred": false,
+  "schema": "a32.rustfmt-source.v1",
+  "source_control_closure_sha256": "c6375beb2bc95ce1f848a8c64e4d9ba5a785af7913a44729eb2e4156af91e368",
+  "status": "frozen"
+}

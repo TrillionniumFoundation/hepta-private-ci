@@ -1455,6 +1455,89 @@ async fn cold_resume_restores_profile_selected_by_settings_update() -> Result<()
     Ok(())
 }
 
+#[tokio::test]
+async fn cold_resume_completed_same_profile_reresolves_request_only_roots() -> Result<()> {
+    let server = create_mock_responses_server_repeating_assistant("Done").await;
+    for history_mode in [ThreadHistoryMode::Legacy, ThreadHistoryMode::Paginated] {
+        let codex_home = TempDir::new()?;
+        let first_request_root = TempDir::new()?;
+        let second_request_root = TempDir::new()?;
+        let request_only_roots = vec![
+            AbsolutePathBuf::from_absolute_path(first_request_root.path())?,
+            AbsolutePathBuf::from_absolute_path(second_request_root.path())?,
+        ];
+        write_dev_permission_config(&server.uri(), codex_home.path(), ":workspace")?;
+        let thread_id = {
+            let mut mcp = TestAppServer::builder()
+                .with_codex_home(codex_home.path())
+                .without_managed_config()
+                .build_initialized()
+                .await?;
+            let thread_id = materialize_dev_permission_thread(&mut mcp, history_mode).await?;
+            timeout(
+                DEFAULT_READ_TIMEOUT,
+                mcp.start_turn_and_wait_for_completion(TurnStartParams {
+                    thread_id: thread_id.clone(),
+                    runtime_workspace_roots: Some(request_only_roots.clone()),
+                    input: vec![UserInput::Text {
+                        text: "complete with two request-only runtime roots".to_string(),
+                        text_elements: Vec::new(),
+                    }],
+                    ..Default::default()
+                }),
+            )
+            .await??;
+            let resume_id = mcp
+                .send_thread_resume_request(ThreadResumeParams {
+                    thread_id: thread_id.clone(),
+                    ..Default::default()
+                })
+                .await?;
+            let live: ThreadResumeResponse =
+                timeout(DEFAULT_READ_TIMEOUT, mcp.read_response(resume_id)).await??;
+            assert_eq!(
+                live.runtime_workspace_roots, request_only_roots,
+                "a live rejoin must retain the request-selected multi-root environment"
+            );
+            thread_id
+        };
+
+        // Config and the dev profile are unchanged. Without a recovery tail or
+        // explicit resume roots, current config derives the single cwd root.
+        let mut mcp = TestAppServer::builder()
+            .with_codex_home(codex_home.path())
+            .without_managed_config()
+            .build_initialized()
+            .await?;
+        let resume_id = mcp
+            .send_thread_resume_request(ThreadResumeParams {
+                thread_id,
+                ..Default::default()
+            })
+            .await?;
+        let resumed: ThreadResumeResponse =
+            timeout(DEFAULT_READ_TIMEOUT, mcp.read_response(resume_id)).await??;
+        assert!(matches!(resumed.sandbox, AppSandboxPolicy::WorkspaceWrite { .. }));
+        assert_eq!(
+            resumed.active_permission_profile,
+            Some(ActivePermissionProfile {
+                id: "dev".to_string(),
+                extends: Some(BUILT_IN_PERMISSION_PROFILE_WORKSPACE.to_string()),
+            })
+        );
+        assert!(
+            !request_only_roots.contains(&resumed.cwd),
+            "request-only roots must differ from the current default cwd root"
+        );
+        assert_eq!(
+            resumed.runtime_workspace_roots,
+            vec![resumed.cwd],
+            "completed cold resume must resolve roots from current config, not the last request"
+        );
+    }
+    Ok(())
+}
+
 async fn materialize_dev_permission_thread(
     mcp: &mut TestAppServer,
     history_mode: ThreadHistoryMode,

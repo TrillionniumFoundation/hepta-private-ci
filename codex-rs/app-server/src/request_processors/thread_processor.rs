@@ -7,6 +7,7 @@ use super::thread_input::ensure_direct_input_allowed;
 use super::*;
 use crate::error_code::method_not_found;
 use codex_app_server_protocol::SelectedCapabilityRoot;
+use codex_app_server_protocol::ThreadHistoryBuilder;
 use codex_app_server_protocol::ThreadRevertParams;
 use codex_app_server_protocol::ThreadRevertResponse;
 use codex_app_server_protocol::ThreadRevertedNotification;
@@ -4331,6 +4332,15 @@ impl ThreadRequestProcessor {
         let InitialHistory::Resumed(resumed_history) = thread_history else {
             return (None, None);
         };
+        // Only a canonical recoverable tail needs its frozen runtime roots.
+        // Completed or otherwise ineligible history must use current config;
+        // an eligible tail still does not override current permission profiles
+        // or Core's exact-context validation and durable revocation.
+        let mut history_builder = ThreadHistoryBuilder::new();
+        for item in resumed_history.history.iter() {
+            history_builder.handle_rollout_item(item);
+        }
+        let has_recovery_candidate = history_builder.recovery_candidate().is_some();
         let mut persisted_runtime_environment = None;
         if let Some(persisted_settings) = latest_persisted_resume_settings(&resumed_history.history)
         {
@@ -4340,7 +4350,8 @@ impl ThreadRequestProcessor {
             let has_raw_workspace_roots_override = request_overrides
                 .as_ref()
                 .is_some_and(|overrides| overrides.contains_key("workspace_roots"));
-            if typesafe_overrides.cwd.is_none()
+            if has_recovery_candidate
+                && typesafe_overrides.cwd.is_none()
                 && typesafe_overrides.workspace_roots.is_none()
                 && !has_raw_cwd_override
                 && !has_raw_workspace_roots_override
@@ -4350,7 +4361,10 @@ impl ThreadRequestProcessor {
                     .clone()
                     .zip(persisted_settings.runtime_workspace_roots.clone());
             }
-            if typesafe_overrides.workspace_roots.is_none() && !has_raw_workspace_roots_override {
+            if has_recovery_candidate
+                && typesafe_overrides.workspace_roots.is_none()
+                && !has_raw_workspace_roots_override
+            {
                 typesafe_overrides.workspace_roots =
                     persisted_settings.runtime_workspace_roots.clone();
             }

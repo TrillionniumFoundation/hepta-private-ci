@@ -349,9 +349,15 @@ fn writer_reproduces_the_tracked_artifact_set_byte_for_byte() -> Result<()> {
 }
 
 fn read_tracked_artifacts() -> Result<BTreeMap<String, Vec<u8>>> {
-    read_artifacts(
-        &std::path::PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("fixtures/robrix-control-v2"),
-    )
+    // Bazel's workspace_root_test launcher runs in codex-rs. Its compile-time
+    // CARGO_MANIFEST_DIR points into an ephemeral compile sandbox instead.
+    let manifest_dir = match option_env!("BAZEL_PACKAGE") {
+        Some(package) => package
+            .strip_prefix("codex-rs/")
+            .context("Bazel fixture package must be under codex-rs")?,
+        None => env!("CARGO_MANIFEST_DIR"),
+    };
+    read_artifacts(&std::path::PathBuf::from(manifest_dir).join("fixtures/robrix-control-v2"))
 }
 
 fn read_artifacts(root: &std::path::Path) -> Result<BTreeMap<String, Vec<u8>>> {

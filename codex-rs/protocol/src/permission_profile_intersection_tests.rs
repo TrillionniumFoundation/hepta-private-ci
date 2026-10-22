@@ -95,8 +95,44 @@ fn intersection(
 
 #[test]
 fn effective_workspace_intersection_preserves_network_metadata_and_temp() {
-    let temp = TempDir::new().expect("workspace");
-    let root = canonical(&temp);
+    const WORKSPACE_ENV: &str = "CODEX_PROTOCOL_TEST_PERMISSION_INTERSECTION_WORKSPACE";
+    let Some(workspace_path) = std::env::var_os(WORKSPACE_ENV) else {
+        // TempDir::new() can live under writable :tmpdir (including under Bazel).
+        // Bind a separate temp root only in a subprocess, not the parallel test runner.
+        let fixture = TempDir::new().expect("fixture");
+        let fixture_root = canonical(&fixture);
+        let workspace = fixture_root.join("workspace");
+        let tmpdir = fixture_root.join("tmpdir");
+        for path in [&workspace, &tmpdir] {
+            std::fs::create_dir(path.as_path()).expect("fixture directory");
+        }
+        let output = std::process::Command::new(std::env::current_exe().expect("test binary"))
+            .env(WORKSPACE_ENV, workspace.as_path())
+            .env("TMPDIR", tmpdir.as_path())
+            .arg("--exact")
+            .arg(
+                "permission_profile_intersection::tests::effective_workspace_intersection_preserves_network_metadata_and_temp",
+            )
+            .output()
+            .expect("run workspace intersection subprocess test");
+        assert!(
+            output.status.success(),
+            "workspace intersection subprocess test failed\nstdout:\n{}\nstderr:\n{}",
+            String::from_utf8_lossy(&output.stdout),
+            String::from_utf8_lossy(&output.stderr)
+        );
+        // A zero-match --exact invocation also exits successfully.
+        assert_eq!(
+            std::fs::read_to_string(workspace.join("assertions-completed").as_path())
+                .expect("subprocess ran all workspace intersection assertions"),
+            "complete"
+        );
+        return;
+    };
+    let root = absolute(Path::new(&workspace_path));
+    let tmpdir = absolute(Path::new(&std::env::var_os("TMPDIR").expect("fixture tmpdir")));
+    assert!(!root.as_path().starts_with(tmpdir.as_path()));
+    assert!(!tmpdir.as_path().starts_with(root.as_path()));
     let project = root.join("project");
     std::fs::create_dir(project.as_path()).expect("project directory");
     let gitdir = root.join("external-gitdir");
@@ -112,8 +148,21 @@ fn effective_workspace_intersection_preserves_network_metadata_and_temp() {
         .entries
         .push(skipped(gitdir.clone().into(), Read));
     let requested = PermissionProfile::from_runtime_permissions(&requested_policy, Restricted);
+    assert_eq!(
+        requested_policy.resolve_access_with_cwd(root.as_path(), project.as_path()),
+        Read
+    );
     let result = intersection(&authority, &requested, &project);
     let policy = result.file_system_sandbox_policy();
+
+    assert_eq!(
+        [&authority, &requested, &result].map(|profile| {
+            profile
+                .file_system_sandbox_policy()
+                .resolve_access_with_cwd(tmpdir.as_path(), project.as_path())
+        }),
+        [Write, Write, Write]
+    );
 
     assert_eq!(
         [&root, &project]
@@ -136,6 +185,8 @@ fn effective_workspace_intersection_preserves_network_metadata_and_temp() {
     let strict = intersection(&requested, &strict, &project).file_system_sandbox_policy();
     let git_protection = entry(project.join(".git").as_path(), Read);
     assert!(strict.entries.contains(&git_protection));
+    std::fs::write(root.join("assertions-completed").as_path(), "complete")
+        .expect("record completed workspace intersection assertions");
 }
 
 #[test]

@@ -11,9 +11,10 @@ use uuid::Uuid;
 use super::LocalThreadStoreConfig;
 
 pub(super) fn test_config(codex_home: &Path) -> LocalThreadStoreConfig {
+    let sqlite_home = codex_home.canonicalize().expect("canonical test SQLite home");
     LocalThreadStoreConfig {
         codex_home: codex_home.to_path_buf(),
-        sqlite: codex_state::SqliteConfig::new_for_testing(codex_home.abs()),
+        sqlite: codex_state::SqliteConfig::new_for_testing(sqlite_home.as_path().abs()),
         default_model_provider_id: "test-provider".to_string(),
     }
 }

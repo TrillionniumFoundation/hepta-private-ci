@@ -200,6 +200,9 @@ pub(crate) fn write_private_new(path: &Path, bytes: &[u8]) -> Result<(), Accepta
     if parent_after.file_type().is_symlink() || !same_file_identity(&parent_before, &parent_after) {
         return Err(invalid("sidecar parent changed during durable write"));
     }
+    #[cfg(windows)]
+    windows::sync_directory(parent)?;
+    #[cfg(not(windows))]
     File::open(parent)?.sync_all()?;
     Ok(())
 }
@@ -238,6 +241,9 @@ pub(crate) fn write_private_atomic_replace(
     if persisted != bytes {
         return Err(invalid("atomic sidecar artifact differs after persistence"));
     }
+    #[cfg(windows)]
+    windows::sync_directory(parent)?;
+    #[cfg(not(windows))]
     File::open(parent)?.sync_all()?;
     Ok(())
 }
