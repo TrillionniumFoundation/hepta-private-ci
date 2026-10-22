@@ -26,6 +26,8 @@ mod startup;
 mod thread_usage;
 #[path = "tests/turn_submission.rs"]
 mod turn_submission;
+#[path = "tests/windows_sandbox_setup_tests.rs"]
+mod windows_sandbox_setup_tests;
 
 use super::*;
 use crate::app_backtrack::BacktrackSelection;

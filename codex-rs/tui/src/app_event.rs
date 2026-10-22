@@ -1031,6 +1031,12 @@ pub(crate) enum AppEvent {
         profile_selection: Option<PermissionProfileSelection>,
     },
 
+    /// Stop the non-elevated setup flow after preflight rejects the permissions.
+    #[cfg_attr(not(target_os = "windows"), allow(dead_code))]
+    WindowsSandboxLegacySetupFailed {
+        error: String,
+    },
+
     /// Begin a non-elevated grant of read access for an additional directory.
     #[cfg_attr(not(target_os = "windows"), allow(dead_code))]
     BeginWindowsSandboxGrantReadRoot {
