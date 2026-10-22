@@ -550,6 +550,73 @@ fn hard_slot_and_atomic_protocol_constraints_survive_fractional_optimization() {
 }
 
 #[test]
+fn hard_zero_resource_and_latency_budgets_reject_rounded_positive_costs() {
+    // 40% of one Q32 least-significant cost unit rounds to zero.
+    // A hard zero budget must reject that exposure before weighted totals.
+    for resource_cost in [true, false] {
+        let mut limits = budget(2);
+        let mut exposure = candidate("tiny-positive-cost", 80, 0, false);
+        exposure.weight_cap = q(40);
+        if resource_cost {
+            limits.resource_budget = FixedQ32::ZERO;
+            exposure.resource_cost = FixedQ32::from_raw(1);
+        } else {
+            limits.latency_budget = FixedQ32::ZERO;
+            exposure.latency_cost = FixedQ32::from_raw(1);
+        }
+        let receipt = select_output_portfolio_v1(
+            &context(2),
+            &limits,
+            &[candidate("baseline", 0, 0, true), exposure],
+        )
+        .expect("a positive cost must never fit a hard-zero limit");
+        assert_eq!(receipt.disposition, OutputPortfolioDispositionV1::NoChange);
+        assert_eq!(receipt.allocations.len(), 1);
+        assert_eq!(receipt.allocations[0].candidate_id, id("baseline"));
+    }
+
+    // The hard-zero gate must still admit a genuinely free, riskless
+    // fractional direction and preserve its exact NoChange residual.
+    let mut limits = budget(2);
+    limits.resource_budget = FixedQ32::ZERO;
+    limits.latency_budget = FixedQ32::ZERO;
+    let mut free = candidate("free-direction", 80, 0, false);
+    free.resource_cost = FixedQ32::ZERO;
+    free.latency_cost = FixedQ32::ZERO;
+    free.weight_cap = q(40);
+    let receipt = select_output_portfolio_v1(
+        &context(2),
+        &limits,
+        &[candidate("baseline", 0, 0, true), free],
+    )
+    .expect("genuinely zero-cost directions remain admissible");
+    assert_eq!(
+        receipt.disposition,
+        OutputPortfolioDispositionV1::AdvisorySelection
+    );
+    assert_eq!(receipt.total_resource, FixedQ32::ZERO);
+    assert_eq!(receipt.total_latency, FixedQ32::ZERO);
+    let active = receipt
+        .allocations
+        .iter()
+        .find(|allocation| allocation.candidate_id == id("free-direction"))
+        .expect("zero-cost direction admitted");
+    let baseline = receipt
+        .allocations
+        .iter()
+        .find(|allocation| allocation.candidate_id == id("baseline"))
+        .expect("unspent weight stays with NoChange");
+    assert_eq!(active.weight, q(40));
+    assert_eq!(
+        active
+            .weight
+            .checked_add(baseline.weight)
+            .expect("exact Q32 complement"),
+        FixedQ32::ONE
+    );
+}
+
+#[test]
 fn hard_zero_risk_budget_rejects_positive_loss_hidden_by_q32_rounding() {
     // A 1-ULP Q32 risk can be rounded to zero at a large fractional weight:
     // 50% * 1 ULP = 0.5 ULP and ties-to-even reports zero. Likewise, a
