@@ -8,6 +8,7 @@ from __future__ import annotations
 from hashlib import sha256
 import json
 import math
+from collections import defaultdict
 from typing import Mapping
 
 import numpy as np
@@ -73,9 +74,55 @@ def evaluate(study: Mapping):
     _need(all(isinstance(k, str) and k for k in flat_ids) and
           len(set(flat_ids)) == len(flat_ids), "missing/duplicated heldout world IDs")
     calibration_ids = protocol.get("calibration_world_ids")
-    _need(isinstance(calibration_ids, list) and
-          len(set(flat_ids).intersection(calibration_ids)) == 0,
+    _need(isinstance(calibration_ids, list) and calibration_ids and
+          all(isinstance(w, str) and w for w in calibration_ids) and
+          len(set(calibration_ids)) == len(calibration_ids) and
+          not set(flat_ids).intersection(calibration_ids),
           "calibration/heldout leakage or missing calibration lock")
+    # Frozen original-source groups prevent correlated image/prompt variants from
+    # masquerading as independent heldout worlds in the bootstrap.
+    registered_sources = protocol.get("heldout_source_group_ids")
+    _need(isinstance(registered_sources, dict) and
+          set(registered_sources) == set(world_ids) and
+          all(isinstance(registered_sources[str(seed)], list) and
+              len(registered_sources[str(seed)]) == counts[k] and
+              all(isinstance(src, str) and src for src in registered_sources[str(seed)])
+              for k, seed in enumerate(seeds)),
+          "missing or incomplete frozen heldout source-group manifest")
+    source_ids = [src for seed in seeds
+                  for src in registered_sources[str(seed)]]
+    calibration_sources = protocol.get("calibration_source_group_ids")
+    _need(isinstance(calibration_sources, list) and calibration_sources and
+          all(isinstance(src, str) and src for src in calibration_sources) and
+          len(set(calibration_sources)) == len(calibration_sources) and
+          not set(source_ids).intersection(calibration_sources),
+          "calibration/heldout source-group leakage or missing source lock")
+    _need(sum(len(set(registered_sources[str(seed)])) for seed in seeds) ==
+          len(set(source_ids)),
+          "independent-seed source-group reuse requires another paired design")
+    # Training, validation (which selects the comparator), calibration, and
+    # heldout sets must have disjoint WORLD and ORIGINAL SOURCE identities.
+    # Otherwise another crop/view of a training/validation source can leak
+    # information into untouched heldout even with different world IDs.
+    frozen_splits = {"heldout": (set(flat_ids), set(source_ids)),
+                     "calibration": (set(calibration_ids), set(calibration_sources))}
+    for split in ("training", "validation"):
+        split_worlds = protocol.get(split + "_world_ids")
+        split_sources = protocol.get(split + "_source_group_ids")
+        _need(isinstance(split_worlds, list) and split_worlds and
+              all(isinstance(w, str) and w for w in split_worlds) and
+              len(set(split_worlds)) == len(split_worlds) and
+              isinstance(split_sources, list) and len(split_sources) == len(split_worlds) and
+              all(isinstance(src, str) and src for src in split_sources),
+              "missing/invalid " + split + " frozen world/source manifest")
+        frozen_splits[split] = (set(split_worlds), set(split_sources))
+    names = tuple(frozen_splits)
+    for i, left in enumerate(names):
+        for right in names[i + 1:]:
+            _need(not frozen_splits[left][0].intersection(frozen_splits[right][0]),
+                  "cross-split world leakage: " + left + " / " + right)
+            _need(not frozen_splits[left][1].intersection(frozen_splits[right][1]),
+                  "cross-split original-source leakage: " + left + " / " + right)
     _need(tuple(protocol.get("arms", [])) == ARMS, "comparison arms not exact/frozen")
     _need(protocol.get("validation_selected_best") in CONTROLS and
           isinstance(protocol.get("selection_lock_digest"), str) and
@@ -104,11 +151,21 @@ def evaluate(study: Mapping):
     values = np.empty((len(ARMS), len(seeds), size, len(METRICS) + 1))
     protected = np.zeros((len(seeds), size), dtype=bool)
     arm_idx = {a: i for i, a in enumerate(ARMS)}
+    seed_group_indexes = []
     for i, seed in enumerate(seeds):
+        groups = defaultdict(list)
+        for j, source in enumerate(registered_sources[str(seed)]):
+            groups[source].append(j)
+        _need(len(groups) >= 8 and len({len(members) for members in groups.values()}) == 1,
+              "need >=8 balanced independent source groups per seed")
+        seed_group_indexes.append([np.asarray(members, dtype=np.int64)
+                                   for members in groups.values()])
         for j, world_id in enumerate(world_ids[str(seed)]):
             row = observations[i * size + j]
             _need(isinstance(row, dict) and row.get("seed") == seed and
                   row.get("world_id") == world_id, "heldout world order/identity mismatch")
+            _need(row.get("source_group_id") == registered_sources[str(seed)][j],
+                  "source-group identity differs from frozen heldout manifest")
             context = row.get("public_input_digest")
             _need(isinstance(context, str) and len(context) == 64, "missing public input identity")
             protected[i, j] = row.get("protected_task") is True
@@ -116,6 +173,7 @@ def evaluate(study: Mapping):
             outcomes = row.get("outcomes")
             _need(isinstance(outcomes, dict) and set(outcomes) == set(ARMS),
                   "missing required matched control or NDU")
+            witnessed_scores = {}
             for name in ARMS:
                 out = outcomes[name]
                 _need(isinstance(out, dict) and out.get("public_input_digest") == context and
@@ -143,6 +201,17 @@ def evaluate(study: Mapping):
                     for m, metric in enumerate(METRICS):
                         upper = float("inf") if metric == "loss" else 1
                         entries[k, m] = _number(dr[metric], metric, upper=upper)
+                    witness = dr["output_witness_sha256"]
+                    # The same raw output with the same external world cannot
+                    # have inconsistent metrics merely because an arm renamed it.
+                    score = (dr["status"], *entries[k].tolist())
+                    if witness in witnessed_scores:
+                        previous = witnessed_scores[witness]
+                        _need(previous[0] == score[0] and
+                              all(abs(a - b) <= 1e-12 for a, b in
+                                  zip(previous[1:], score[1:])),
+                              "contradictory scores for the same decoded witness")
+                    witnessed_scores[witness] = score
                 cost = out.get("measured_cost")
                 _need(isinstance(cost, dict) and set(cost) == set(COST_PARTS + ("total",)),
                       "incomplete physical total cost receipt")
@@ -162,15 +231,24 @@ def evaluate(study: Mapping):
         return res
     point = summarize(values)
     rng = np.random.default_rng(protocol["bootstrap_seed"])
-    # Dimension order (bootstrap, arm, metrics): same sampled seed/world draws
-    # for every arm; no per-arm resampling or selecting the best test arm.
+    # Simultaneously bootstrap complete original-source clusters, then
+    # training seeds, paired identically across every NDU/strong-control arm.
+    # Independent per-world resampling spuriously narrows confidence bounds
+    # when augmented views share a source.
     deltas = np.empty((boots, len(CONTROLS), len(METRICS) + 1))
+    cost_margin = np.empty((boots, len(CONTROLS)))
     for k in range(boots):
         seed_sample = rng.integers(0, len(seeds), size=len(seeds))
-        world_sample = rng.integers(0, size, size=(len(seeds), size))
-        paired = np.stack([values[:, si, world_sample[t]] for t, si in enumerate(seed_sample)], axis=1)
+        block_samples = []
+        for si in seed_sample:
+            groups = seed_group_indexes[si]
+            chosen = rng.integers(0, len(groups), size=len(groups))
+            sample_idx = np.concatenate([groups[g] for g in chosen])
+            block_samples.append(values[:, si, sample_idx])
+        paired = np.stack(block_samples, axis=1)
         boot = summarize(paired)
         deltas[k] = boot[0] - boot[1:]
+        cost_margin[k] = boot[0, -1] - max_cost_ratio * boot[1:, -1]
     # Bonferroni across all six comparisons and loss/quality/ambiguity/
     # inconsistency/cost; positive loss differences are bad.
     tail_level = alpha / (len(CONTROLS) * (len(METRICS) + 1))
@@ -182,6 +260,7 @@ def evaluate(study: Mapping):
         upper = np.quantile(cloud, 1 - tail_level, axis=0)
         lower = np.quantile(cloud, tail_level, axis=0)
         ratio = point[0, -1] / point[index + 1, -1]
+        cost_margin_upper = float(np.quantile(cost_margin[:, index], 1 - tail_level))
         protected_delta = values[0, :, :, 1] - values[index + 1, :, :, 1]
         protected_ok = bool(np.all(protected_delta[protected] >= -1e-12))
         gates = {
@@ -189,22 +268,26 @@ def evaluate(study: Mapping):
             "factual_quality_noninferiority": bool(lower[1] >= -quality_tol),
             "ambiguity_noninferiority": bool(upper[2] <= ambiguity_tol),
             "consistency_noninferiority": bool(upper[3] <= inconsistency_tol),
-            "physical_total_cost": bool(ratio <= max_cost_ratio),
+            "physical_total_cost": bool(ratio <= max_cost_ratio and cost_margin_upper <= 0),
             "protected_task_no_regression": protected_ok,
         }
         local_all &= all(gates.values())
         out[name] = {"mean_pair_difference": dict(zip(("cvar90", "quality", "ambiguity", "inconsistency", "total_cost"), x.tolist())),
                      "simultaneous_lower": lower.tolist(), "simultaneous_upper": upper.tolist(),
-                     "observed_cost_ratio": ratio, "gates": gates}
+                     "observed_cost_ratio": ratio,
+                     "cost_noninferiority_margin_upper": cost_margin_upper, "gates": gates}
     receipt = {"schema": "hepta-mgp-paired-review-v1", "status": "HOLD_NO_GO", "authority": "DENY_ALL",
                "source": "LOCAL_RESEARCH_UNAUTHENTICATED", "scientific_superiority_proven": False,
                "all_provisional_gates_pass": bool(local_all and boots >= 2000),
                "all_registered_worlds_seen": True, "registered_seeds": len(seeds),
-               "worlds_per_seed": size, "draws_per_world": draws,
+               "worlds_per_seed": size,
+               "independent_source_groups_per_seed": [len(x) for x in seed_group_indexes],
+               "draws_per_world": draws,
                "familywise_alpha": alpha, "bootstrap_replicates": boots,
                "comparator_selection": protocol["validation_selected_best"],
                "comparison": out,
                "limitations": ["untrusted caller supplied observations and metadata",
+                               "frozen source manifests remain caller supplied, not independently authenticated",
                                "no independent observer, signature verification or prospective attestation",
                                "does not execute a pretrained encoder, model, decoder or GPU inference",
                                "does not satisfy any P0-P4 production final-use gate"]}

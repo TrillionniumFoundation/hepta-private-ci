@@ -29,3 +29,11 @@ Local CPU replay of the **exact Git blob** versions `25b59c9a30bd7846660a27d47cb
 - P0 genuine encoder→flow→Cell→raw decoder frozen experiment, P1 positive independently scored matched-cost outcome, P2 a real frozen masked diffusion LLM, P3 natural sound/image/video with streaming constraints and P4 factorial train/test prospective replication remain open. Any failed scientific hypothesis remains a legitimate negative result, not a success to be manufactured by retuning.
 
 No tool or physical action execution is permitted. No signatures, final-use authorization, irreversible streaming, model promotion, main merge or production deployment follows from this harness.
+
+## Four-way split and original-source integrity amendment (child Draft)
+
+Prior #3251 compared calibration-world IDs with heldout-world IDs, but did not demand original-source manifests for **training** or **validation**. An image with a different crop/augment ID could therefore appear as an allegedly fresh heldout item after it influenced training or baseline selection. Per-world seed bootstrap also treated repeated views of one source as independent. Neither shortcut supports independent generalization claims.
+
+This child requires independently frozen **training, validation, calibration and heldout** world-ID and original-source-group manifests; rejects pairwise overlap in **both** ID namespaces; rejects re-labelled heldout sources, unsupported imbalanced group sizes, duplicate calibration IDs and seed-group reuse; and samples full original-source clusters within sampled training seeds in the paired bootstrap. A measured total-cost **bootstrap upper bound**, not only its mean ratio, must fit the registered resource margin. It also rejects contradictory external scores for the same decoded-output witness on the same world. Training repeats of an original within its training partition remain allowed; this is a provenance contract, not a raw-image hashing or cryptographic observer.
+
+Tests are adversarial synthetic fixtures. Even with all checks passing, the manifests, external evaluator, actual decoder execution, pretrained model, cost readings and future-window identity are caller supplied and untrusted; **all decisions remain DRAFT / DENY_ALL / HOLD_NO_GO**. Existing #3039/#3213 negative results are untouched.

@@ -14,7 +14,14 @@ def study_fixture(*, strong_ndu=True, bootstrap_replicates=120):
     ids = {str(s): [f'heldout-{s}-{i}' for i in range(32)] for s in seeds}
     p = {
         'seeds': seeds, 'heldout_world_ids': ids,
+        'heldout_source_group_ids': {str(s): [f'src-{s}-{i//2}' for i in range(32)]
+                                     for s in seeds},
         'calibration_world_ids': [f'calibration-{i}' for i in range(100)],
+        'calibration_source_group_ids': [f'calibration-src-{i}' for i in range(100)],
+        'training_world_ids': [f'training-{i}' for i in range(128)],
+        'training_source_group_ids': [f'training-src-{i//2}' for i in range(128)],
+        'validation_world_ids': [f'validation-{i}' for i in range(32)],
+        'validation_source_group_ids': [f'validation-src-{i//2}' for i in range(32)],
         'arms': list(ARMS), 'validation_selected_best': 'free_controller',
         'selection_lock_digest': H('frozen-validation-selection'),
         'model_digest': H('shared-encoder-flow'),
@@ -64,6 +71,7 @@ def study_fixture(*, strong_ndu=True, bootstrap_replicates=120):
                     'measured_cost': {**parts, 'total': sum(parts.values())},
                 }
             worlds.append({'seed': seed, 'world_id': wid,
+                           'source_group_id': f'src-{seed}-{idx//2}',
                            'public_input_digest': identity,
                            'protected_task': idx % 4 == 0,
                            'outcomes': arms})
@@ -71,6 +79,111 @@ def study_fixture(*, strong_ndu=True, bootstrap_replicates=120):
 
 
 class PairedEvidenceTests(unittest.TestCase):
+    def test_missing_training_source_manifest_rejected(self):
+        d = study_fixture()
+        del d['protocol']['training_source_group_ids']
+        with self.assertRaisesRegex(EvidenceGap, 'training frozen world/source manifest'):
+            evaluate(d)
+
+    def test_missing_validation_selection_source_manifest_rejected(self):
+        d = study_fixture()
+        del d['protocol']['validation_world_ids']
+        with self.assertRaisesRegex(EvidenceGap, 'validation frozen world/source manifest'):
+            evaluate(d)
+
+    def test_training_source_aliases_heldout_despite_distinct_world_id(self):
+        d = study_fixture()
+        d['protocol']['training_source_group_ids'][0] = 'src-101-0'
+        with self.assertRaisesRegex(EvidenceGap, 'original-source leakage'):
+            evaluate(d)
+
+    def test_validation_source_aliases_heldout_despite_distinct_world_id(self):
+        d = study_fixture()
+        d['protocol']['validation_source_group_ids'][0] = 'src-307-0'
+        with self.assertRaisesRegex(EvidenceGap, 'original-source leakage'):
+            evaluate(d)
+
+    def test_training_world_id_reuses_heldout_identifier(self):
+        d = study_fixture()
+        d['protocol']['training_world_ids'][0] = d['worlds'][0]['world_id']
+        with self.assertRaisesRegex(EvidenceGap, 'cross-split world leakage'):
+            evaluate(d)
+
+    def test_training_calibration_sources_overlap(self):
+        d = study_fixture()
+        d['protocol']['training_source_group_ids'][0] = 'calibration-src-9'
+        with self.assertRaisesRegex(EvidenceGap, 'original-source leakage'):
+            evaluate(d)
+
+    def test_validation_training_sources_overlap(self):
+        d = study_fixture()
+        d['protocol']['validation_source_group_ids'][1] = 'training-src-13'
+        with self.assertRaisesRegex(EvidenceGap, 'original-source leakage'):
+            evaluate(d)
+
+    def test_missing_training_id_rejects_even_if_sources_present(self):
+        d = study_fixture()
+        d['protocol']['training_world_ids'][0] = ''
+        with self.assertRaisesRegex(EvidenceGap, 'training frozen world/source manifest'):
+            evaluate(d)
+
+    def test_group_resampling_is_locked_and_visible(self):
+        rec = evaluate(study_fixture())
+        self.assertEqual(rec['independent_source_groups_per_seed'], [16, 16, 16])
+
+    def test_single_source_repeated_views_cannot_count_as_32_worlds(self):
+        d = study_fixture()
+        seed = d['protocol']['seeds'][0]
+        d['protocol']['heldout_source_group_ids'][str(seed)] = [f'src-{seed}-same'] * 32
+        for row in d['worlds'][:32]:
+            row['source_group_id'] = f'src-{seed}-same'
+        with self.assertRaisesRegex(EvidenceGap, 'balanced independent source groups'):
+            evaluate(d)
+
+    def test_relabelled_source_group_rejected(self):
+        d = study_fixture()
+        d['worlds'][0]['source_group_id'] = 'fake-independent-source'
+        with self.assertRaisesRegex(EvidenceGap, 'source-group identity'):
+            evaluate(d)
+
+    def test_calibration_source_overlap_rejected(self):
+        d = study_fixture()
+        d['protocol']['calibration_source_group_ids'].append('src-101-0')
+        with self.assertRaisesRegex(EvidenceGap, 'source-group leakage'):
+            evaluate(d)
+
+    def test_unbalanced_source_groups_rejected(self):
+        d = study_fixture()
+        d['protocol']['heldout_source_group_ids']['101'][0] = 'src-101-1'
+        d['worlds'][0]['source_group_id'] = 'src-101-1'
+        with self.assertRaisesRegex(EvidenceGap, 'balanced independent source groups'):
+            evaluate(d)
+
+    def test_cost_uncertainty_fails_even_when_mean_ratio_looks_safe(self):
+        d = study_fixture(bootstrap_replicates=1000)
+        for row in d['worlds'][:2]:
+            cost = row['outcomes']['ndu']['measured_cost']
+            cost['controller'] += 0.52
+            cost['total'] += 0.52
+        comparison = evaluate(d)['comparison']['free_controller']
+        self.assertLess(comparison['observed_cost_ratio'], 1.05)
+        self.assertGreater(comparison['cost_noninferiority_margin_upper'], 0)
+        self.assertFalse(comparison['gates']['physical_total_cost'])
+
+    def test_calibration_source_manifest_cannot_repeat_ids(self):
+        d = study_fixture()
+        d['protocol']['calibration_source_group_ids'].append('calibration-src-0')
+        with self.assertRaisesRegex(EvidenceGap, 'source-group leakage'):
+            evaluate(d)
+
+    def test_same_raw_witness_with_different_score_rejected(self):
+        d = study_fixture()
+        row = d['worlds'][0]['outcomes']
+        row['ndu']['decoded_draw_scores'][0]['output_witness_sha256'] = \
+            row['no_change']['decoded_draw_scores'][0]['output_witness_sha256']
+        with self.assertRaisesRegex(EvidenceGap, 'contradictory scores'):
+            evaluate(d)
+
     def test_full_synthetic_strong_ndu_still_cannot_claim_scientific_authority(self):
         rec = evaluate(study_fixture(bootstrap_replicates=120))
         self.assertEqual(rec['status'], 'HOLD_NO_GO')
@@ -169,7 +282,7 @@ class PairedEvidenceTests(unittest.TestCase):
     def test_no_real_decoder_outputs_claimed(self):
         rec = evaluate(study_fixture())
         self.assertIn('untrusted caller', rec['limitations'][0])
-        self.assertIn('does not execute', rec['limitations'][2])
+        self.assertTrue(any('does not execute' in item for item in rec['limitations']))
         self.assertEqual(len(rec['input_sha256']), 64)
 
 
