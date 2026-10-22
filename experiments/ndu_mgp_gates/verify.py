@@ -29,6 +29,13 @@ def qualify(data):
             if not isinstance(sha,str) or len(sha)!=40 or any(ch not in "0123456789abcdef" for ch in sha): failures.append(phase+"."+name+": missing exact source SHA")
             if item.get("study_status") not in ("pre_registered_holdout","prospective_replication","exact_head_ci"):
                 failures.append(phase+"."+name+": no qualified evidence class")
+    # Never treat self-declared "independent-verified", a URL and a source SHA
+    # as authenticated evidence. This CLI only validates *shape*. No signer,
+    # trusted observer, real runner, independent future window or anti-rollback
+    # verifier is supplied to this tool. A syntactically perfect forged packet
+    # must remain HOLD_NO_GO rather than printing QUALIFIED.
+    if not failures:
+        failures.append("UNVERIFIED_TRUST: shape-only metadata cannot establish external acceptance")
     return failures
 def main(path):
     try:
@@ -36,7 +43,7 @@ def main(path):
         problems=qualify(data)
     except (OSError,TypeError,ValueError) as exc:
         print("HOLD_NO_GO:",exc);return 2
-    print("QUALIFIED" if not problems else "HOLD_NO_GO")
+    print("HOLD_NO_GO")
     for p in problems: print("BLOCKER",p)
     return 1 if problems else 0
 if __name__=="__main__":
