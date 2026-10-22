@@ -1,9 +1,15 @@
 use std::collections::HashMap;
-use std::sync::{Arc, Once};
+use std::sync::Arc;
+use std::sync::Once;
 
-use super::{Store, cred::Specifier};
+use super::Store;
+use super::cred::Specifier;
 use crate::cred::Wrapper;
-use keyring_core::{CredentialStore, Entry, Error, api::CredentialPersistence, get_default_store};
+use keyring_core::CredentialStore;
+use keyring_core::Entry;
+use keyring_core::Error;
+use keyring_core::api::CredentialPersistence;
+use keyring_core::get_default_store;
 
 static SET_STORE: Once = Once::new();
 
@@ -66,9 +72,9 @@ fn test_round_trip_no_delete(case: &str, entry: &Entry, in_pass: &str) {
     let out_pass = entry
         .get_password()
         .unwrap_or_else(|err| panic!("Can't get password: {case}: {err:?}"));
-    assert_eq!(
-        in_pass, out_pass,
-        "Passwords don't match for {case}: set='{in_pass}', get='{out_pass}'",
+    assert!(
+        in_pass == out_pass.as_str(),
+        "Passwords don't match for {case}"
     )
 }
 
@@ -93,9 +99,9 @@ pub fn test_round_trip_secret(case: &str, entry: &Entry, in_secret: &[u8]) {
     let out_secret = entry
         .get_secret()
         .unwrap_or_else(|err| panic!("Can't get secret for {case}: {err:?}"));
-    assert_eq!(
-        in_secret, &out_secret,
-        "Secrets don't match for {case}: set='{in_secret:?}', get='{out_secret:?}'",
+    assert!(
+        in_secret == out_secret.as_slice(),
+        "Secrets don't match for {case}",
     );
     entry
         .delete_credential()
