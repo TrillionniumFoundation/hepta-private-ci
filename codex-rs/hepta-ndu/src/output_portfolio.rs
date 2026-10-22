@@ -223,6 +223,7 @@ pub fn verify_output_portfolio_selection_v1(
     }
     Ok(())
 }
+
 /// Returns nondominated *single-candidate* points using utility↑, risk↓ and
 /// resource↓. The standalone risk includes covariance on the diagonal; these
 /// points are not a mixed-portfolio efficient frontier.
