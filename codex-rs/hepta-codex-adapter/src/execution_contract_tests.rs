@@ -35,7 +35,7 @@ fn intent() -> RuntimeToolIntentV1 {
             deadline_ms: 100,
         },
         tool_id: id("runtime.exec"),
-        arguments_digest: digest("arguments"),
+        arguments_digest: digest("payload"),
         idempotency_key: id("operation:1"),
         host_scope: id("host:local"),
     }
@@ -159,10 +159,6 @@ fn runtime_receipt_rechecks_tool_outcome_digest() {
             ..value.clone()
         },
         RuntimeToolIntentV1 {
-            arguments_digest: digest("different-arguments"),
-            ..value.clone()
-        },
-        RuntimeToolIntentV1 {
             idempotency_key: id("operation:reused"),
             ..value.clone()
         },
@@ -177,6 +173,71 @@ fn runtime_receipt_rechecks_tool_outcome_digest() {
             Err(ExecutionContractError::ReceiptBindingMismatch)
         );
     }
+
+    let mut different_arguments = value.clone();
+    different_arguments.arguments_digest = digest("different-arguments");
+    assert_ne!(value.intent_digest(), different_arguments.intent_digest());
+    assert_eq!(
+        receipt.validate_against(&different_arguments),
+        Err(ExecutionContractError::ToolPayloadMismatch)
+    );
+}
+
+#[test]
+fn runtime_tool_requires_exact_final_use_payload() {
+    let mut value = intent();
+    assert_eq!(value.validate(), Ok(()));
+
+    value.cell.final_payload.digest = digest("changed-final-use");
+    assert_eq!(
+        value.validate(),
+        Err(ExecutionContractError::ToolPayloadMismatch)
+    );
+}
+
+#[test]
+fn nonterminal_outcome_cannot_claim_a_process_exit() {
+    let value = ToolOutcomeV1 {
+        terminal_observed: false,
+        exit_code: Some(0),
+        stdout_digest: None,
+        stderr_digest: None,
+        retryable: true,
+    };
+    assert_eq!(
+        value.validate(),
+        Err(ExecutionContractError::StatusOutcomeMismatch)
+    );
+}
+
+#[test]
+fn rejected_runtime_receipt_cannot_claim_observed_effect_termination() {
+    let intent = intent();
+    let outcome = ToolOutcomeV1 {
+        terminal_observed: true,
+        exit_code: Some(0),
+        stdout_digest: Some(digest("observed-effect")),
+        stderr_digest: None,
+        retryable: true,
+    };
+    let receipt = RuntimeReceiptV1 {
+        execution: ExecutionReceiptV1 {
+            operation_id: intent.cell.operation_id.clone(),
+            intent_digest: intent.cell.intent_digest(),
+            generation: intent.cell.generation,
+            final_payload_digest: intent.cell.final_payload.clone(),
+            outcome_digest: Some(outcome.outcome_digest()),
+            status: ExecutionStatusV1::Rejected,
+            recovery: RecoveryDispositionV1::RetryBeforeAdmission,
+            authority: AuthorityPosture::DENY_ALL,
+        },
+        runtime_intent_digest: intent.intent_digest(),
+        tool_outcome: outcome,
+    };
+    assert_eq!(
+        receipt.validate_against(&intent),
+        Err(ExecutionContractError::StatusOutcomeMismatch)
+    );
 }
 
 #[test]
