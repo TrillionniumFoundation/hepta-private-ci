@@ -359,10 +359,65 @@ class CargoConfigurationSourceTests(unittest.TestCase):
         return target
 
     def test_approved_existing_windows_rustflags(self):
+        # Byte/shape-equivalent to the real codex-rs/.cargo/config.toml.
         self.add('''[target.'cfg(all(windows, target_env = "msvc"))']
-rustflags = ["-C", "link-arg=/STACK:8388608"]
+rustflags = ["-C", "link-arg=/STACK:8388608", "-C", "target-feature=+crt-static"]
+[target.aarch64-pc-windows-msvc]
+rustflags = ["-C", "link-arg=/STACK:8388608", "-C", "link-arg=/arm64hazardfree"]
+[target.'cfg(all(windows, target_env = "gnu"))']
+rustflags = ["-C", "link-arg=-Wl,--stack,8388608"]
 ''')
         self.assertEqual(checker.check_cargo_configuration_sources(self.root), [])
+
+    def test_target_rustflags_cannot_override_reviewed_windows_or_linux_profiles(self):
+        for triple, flags, sub in (
+            ('x86_64-unknown-linux-gnu', '["-C", "link-arg=-Wl,-rpath,/tmp/rogue"]', 'codex-rs'),
+            ('aarch64-pc-windows-msvc', '["-C", "link-arg=/arm64hazardfree"]', 'codex-rs'),
+            ('aarch64-pc-windows-msvc', '["-C", "link-arg=/STACK:8388608", "-C", "link-arg=/arm64hazardfree"]', 'codex-rs/hepta-types'),
+        ):
+            with self.subTest(triple=triple, sub=sub):
+                path = self.add(f'[target.{triple}]\nrustflags = {flags}\n', sub=sub)
+                self.assertIn('rustflags', str(checker.check_cargo_configuration_sources(self.root)))
+                path.unlink()
+
+    def test_unreviewed_build_flags_and_target_redirects_denied(self):
+        for entry in ('rustflags = ["--cfg", "bypass_auth"]',
+                      'rustdocflags = ["--cfg", "bypass_auth"]',
+                      'target = "unexpected-triple"',
+                      'target-dir = "/tmp/unreviewed"',
+                      'jobs = 1024'):
+            with self.subTest(entry=entry):
+                self.add('[build]\n' + entry + '\n')
+                self.assertIn('[build]', str(checker.check_cargo_configuration_sources(self.root)))
+
+    def test_loader_and_compiler_environment_injection_denied(self):
+        for key, value in (('LD_PRELOAD', '/tmp/evil.so'), ('PATH', '/tmp/malware'),
+                           ('RUSTUP_TOOLCHAIN', 'nightly'), ('CC', 'malicious-cc')):
+            with self.subTest(key=key):
+                self.add(f'[env]\n{key} = "{value}"\n')
+                self.assertIn(key, str(checker.check_cargo_configuration_sources(self.root)))
+
+    def test_unknown_cargo_execution_and_transport_tables_denied(self):
+        configs = (
+            '[alias]\ncheck = "!./unreviewed-wrapper"\n',
+            '[credential-alias.custom]\nargs = ["/tmp/provider"]\n',
+            '[credential]\nprovider = "cargo:token-from-stdout /tmp/provider"\n',
+            '[http]\nproxy = "http://proxy.example.invalid"\n',
+            '[net]\ngit-fetch-with-cli = true\n',
+            '[unstable]\nunstable-options = true\n',
+        )
+        for config in configs:
+            with self.subTest(config=config):
+                self.add(config)
+                self.assertIn('unreviewed Cargo configuration',
+                              str(checker.check_cargo_configuration_sources(self.root)))
+
+    def test_unreviewed_target_fields_denied(self):
+        for config in ('[target.x86_64-unknown-linux-gnu]\nar = "/tmp/rogue"\n',
+                       '[target.aarch64-pc-windows-msvc]\nunknown = "not-reviewed"\n'):
+            with self.subTest(config=config):
+                self.add(config)
+                self.assertIn('unreviewed target', str(checker.check_cargo_configuration_sources(self.root)))
 
     def test_source_replacement_rejected(self):
         self.add('''[source.crates-io]
