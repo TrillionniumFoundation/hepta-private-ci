@@ -33,25 +33,30 @@ pub struct ImmutableFeatureSnapshotV1 {
 }
 
 impl ImmutableFeatureSnapshotV1 {
-    pub fn new(
+    /// Bind immutable features to the digest of the original source input.
+    ///
+    /// Distinct inputs can encode into identical features. Hashing feature
+    /// values as input identity would alias different requests in the cache.
+    /// The production Encoder owner must independently verify this provenance.
+    pub fn new_for_input(
         generation: Generation,
         encoder_digest: Digest32,
+        input_digest: Digest32,
         features: Vec<i64>,
     ) -> Result<Self, CellBatchError> {
         if encoder_digest.is_zero() {
             return Err(CellBatchError::ZeroDigest("encoder"));
         }
+        if input_digest.is_zero() {
+            return Err(CellBatchError::ZeroDigest("input"));
+        }
         if features.is_empty() || features.len() > MAX_FEATURE_WIDTH {
             return Err(CellBatchError::FeatureWidth);
-        }
-        let mut feature_bytes = Vec::with_capacity(features.len() * 8);
-        for feature in &features {
-            feature_bytes.extend_from_slice(&feature.to_be_bytes());
         }
         Ok(Self {
             generation,
             encoder_digest,
-            input_digest: Digest32::of_bytes(&feature_bytes),
+            input_digest,
             features: Arc::from(features),
         })
     }
@@ -86,20 +91,6 @@ impl ImmutableFeatureSnapshotV1 {
             Digest32::of_bytes(input),
             features,
         )
-    }
-
-    pub fn new_for_input(
-        generation: Generation,
-        encoder_digest: Digest32,
-        input_digest: Digest32,
-        features: Vec<i64>,
-    ) -> Result<Self, CellBatchError> {
-        if input_digest.is_zero() {
-            return Err(CellBatchError::ZeroDigest("input"));
-        }
-        let mut snapshot = Self::new(generation, encoder_digest, features)?;
-        snapshot.input_digest = input_digest;
-        Ok(snapshot)
     }
 
     #[must_use]
