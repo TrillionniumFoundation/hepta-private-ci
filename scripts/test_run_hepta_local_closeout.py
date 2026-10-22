@@ -317,6 +317,26 @@ class LocalCloseoutTests(unittest.TestCase):
                 (Path(root) / "kernel-fsize.log").stat().st_size, 128 * 1024 + 80
             )
 
+    def test_nonposix_without_job_object_cannot_execute_local_gate(self):
+        # A launcher can exit zero while its descendants continue running on
+        # Windows. Refuse to certify that as a completed local gate until the
+        # execution owner has a whole-process-tree kill/reap primitive.
+        with tempfile.TemporaryDirectory() as root, patch.object(
+            mod, "_has_isolated_process_groups", return_value=False
+        ), patch.object(mod.subprocess, "Popen") as spawned:
+            location = Path(root) / "no-unfenced-windows-check.log"
+            receipt = mod.run_check(
+                [sys.executable, "-c", "print('fake pass')"],
+                Path(root),
+                5,
+                location,
+            )
+            self.assertEqual(
+                receipt["status"], "BLOCKED_PROCESS_ISOLATION_UNAVAILABLE"
+            )
+            self.assertFalse(location.exists())
+            spawned.assert_not_called()
+
     def test_successful_wrapper_with_live_descendant_is_not_a_success(self):
         if os.name != "posix":
             self.skipTest("POSIX process groups required")

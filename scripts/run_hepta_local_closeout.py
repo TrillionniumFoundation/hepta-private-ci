@@ -223,6 +223,16 @@ def _stop_check_process_group(child: subprocess.Popen[bytes]) -> None:
         raise RuntimeError("local check descendants escaped cleanup") from exc
 
 
+def _has_isolated_process_groups() -> bool:
+    """Only POSIX start_new_session + killpg is currently implemented.
+
+    On Windows, killing the launcher alone does not fence orphan descendants.
+    Until a real Job Object owner is implemented, refuse execution instead of
+    emitting a misleading PASS_LOCAL for an unfenced process tree.
+    """
+    return os.name == "posix"
+
+
 def run_check(argv: list[str], cwd: Path, timeout: int, log_path: Path) -> dict[str, Any]:
     overrides = unreviewed_environment_keys()
     if overrides:
@@ -231,6 +241,8 @@ def run_check(argv: list[str], cwd: Path, timeout: int, log_path: Path) -> dict[
             "status": "BLOCKED_UNREVIEWED_ENVIRONMENT",
             "blocked_environment_keys": overrides,
         }
+    if not _has_isolated_process_groups():
+        return {"argv": argv, "status": "BLOCKED_PROCESS_ISOLATION_UNAVAILABLE"}
     if not shutil.which(argv[0]):
         return {"argv": argv, "status": "BLOCKED_TOOL_MISSING", "tool": argv[0]}
     if not cwd.is_dir():
