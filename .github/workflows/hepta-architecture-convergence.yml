@@ -126,6 +126,11 @@ jobs:
         run: |
           set -euo pipefail
           python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/repository-controls.json" --minimum-tests 1 -- python3 -m unittest -v scripts.tests.test_hepta_repository_controls scripts.test_hepta_control_hardening scripts.test_hepta_candidate_transport_workflow
+      - name: P5 exact-head scale evidence fail-closed regressions
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -m unittest -v qa/meta-network-scale/test_scale_matrix.py
       - name: Prepare native prerequisites
         if: steps.execution.outputs.run_native == 'true' && steps.scope.outputs.native == 'true'
         run: |

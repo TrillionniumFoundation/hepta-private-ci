@@ -76,6 +76,47 @@ PROVENANCE_FIELDS = (
     "measurement_digest",
 )
 
+# P5 is an evidence-shape validator, never an authority or release issuer.
+# Reject unknown members at every schema level so "qualified" extras cannot
+# be laundered into the evidence record by a later permissive consumer.
+RESULT_FIELDS = (
+    "schema",
+    "size",
+    "arm",
+    "authority",
+    "provenance",
+    "evidence",
+    "evidence_receipts",
+    "metrics",
+    "metrics_receipt",
+    "topology_lifecycle",
+)
+MATRIX_FIELDS = ("schema", "authority", "results")
+MAX_INPUT_BYTES = 2 * 1024 * 1024
+
+
+def _reject_unregistered_keys(
+    record: dict[str, Any], allowed: tuple[str, ...], scope: str
+) -> list[str]:
+    return [
+        f"{scope}.{key} is not a registered field"
+        for key in record
+        if key not in allowed
+    ]
+
+
+def _reject_duplicate_json_members(pairs: list[tuple[str, Any]]) -> dict[str, Any]:
+    result: dict[str, Any] = {}
+    for key, value in pairs:
+        if key in result:
+            raise ValueError(f"duplicate JSON member: {key}")
+        result[key] = value
+    return result
+
+
+def _reject_non_finite_json_constant(value: str) -> None:
+    raise ValueError(f"non-finite JSON constant: {value}")
+
 
 def build_plan() -> dict[str, Any]:
     return {
@@ -108,7 +149,10 @@ def _finite_number(value: Any) -> bool:
 
 
 def validate_result(result: dict[str, Any]) -> list[str]:
+    if not isinstance(result, dict):
+        return ["result must be an object"]
     errors: list[str] = []
+    errors.extend(_reject_unregistered_keys(result, RESULT_FIELDS, "result"))
     if result.get("schema") != "hepta.cell-execution-scale-result.v1":
         errors.append("schema must be hepta.cell-execution-scale-result.v1")
     if type(result.get("size")) is not int or result.get("size") not in SIZES:
@@ -122,6 +166,9 @@ def validate_result(result: dict[str, Any]) -> list[str]:
     if not isinstance(provenance, dict):
         errors.append("provenance must be an object")
     else:
+        errors.extend(
+            _reject_unregistered_keys(provenance, PROVENANCE_FIELDS, "provenance")
+        )
         for key in PROVENANCE_FIELDS:
             value = provenance.get(key)
             pattern = _HEX40 if key in {"source_commit", "source_tree"} else _HEX64
@@ -134,6 +181,9 @@ def validate_result(result: dict[str, Any]) -> list[str]:
     if not isinstance(evidence, dict):
         errors.append("evidence must be an object")
     else:
+        errors.extend(
+            _reject_unregistered_keys(evidence, REQUIRED_EVIDENCE, "evidence")
+        )
         for key in REQUIRED_EVIDENCE:
             if evidence.get(key) is not True:
                 errors.append(f"evidence.{key} must be true")
@@ -142,6 +192,11 @@ def validate_result(result: dict[str, Any]) -> list[str]:
     if not isinstance(evidence_receipts, dict):
         errors.append("evidence_receipts must be an object")
     else:
+        errors.extend(
+            _reject_unregistered_keys(
+                evidence_receipts, REQUIRED_EVIDENCE, "evidence_receipts"
+            )
+        )
         for key in REQUIRED_EVIDENCE:
             value = evidence_receipts.get(key)
             if not isinstance(value, str) or _HEX64.fullmatch(value) is None:
@@ -153,6 +208,7 @@ def validate_result(result: dict[str, Any]) -> list[str]:
     if not isinstance(metrics, dict):
         errors.append("metrics must be an object")
     else:
+        errors.extend(_reject_unregistered_keys(metrics, REQUIRED_METRICS, "metrics"))
         for key in REQUIRED_METRICS:
             if key not in metrics:
                 errors.append(f"metrics.{key} is required")
@@ -167,7 +223,6 @@ def validate_result(result: dict[str, Any]) -> list[str]:
                 and value > 1
             ):
                 errors.append(f"metrics.{key} must be a unit-interval rate")
-
 
         # Physical byte sizes and event counts cannot be fractional.
         for key in (
@@ -197,7 +252,6 @@ def validate_result(result: dict[str, Any]) -> list[str]:
     return errors
 
 
-
 def validate_matrix(matrix: dict[str, Any]) -> list[str]:
     """Validate a COMPLETE comparable qualification cohort, not host authenticity.
 
@@ -209,6 +263,7 @@ def validate_matrix(matrix: dict[str, Any]) -> list[str]:
     if not isinstance(matrix, dict):
         return ["matrix must be an object"]
     errors: list[str] = []
+    errors.extend(_reject_unregistered_keys(matrix, MATRIX_FIELDS, "matrix"))
     if matrix.get("schema") != "hepta.cell-execution-scale-matrix-result.v1":
         errors.append("matrix schema mismatch")
     if matrix.get("authority") != "qualification_only":
@@ -289,15 +344,28 @@ def main(argv: list[str]) -> int:
     subparsers = parser.add_subparsers(dest="command", required=True)
     subparsers.add_parser("plan")
     validate = subparsers.add_parser("validate")
-    validate.add_argument("result", type=argparse.FileType("r"))
+    validate.add_argument("result", type=argparse.FileType("rb"))
     validate_matrix_command = subparsers.add_parser("validate-matrix")
-    validate_matrix_command.add_argument("result", type=argparse.FileType("r"))
+    validate_matrix_command.add_argument("result", type=argparse.FileType("rb"))
     args = parser.parse_args(argv)
     if args.command == "plan":
         json.dump(build_plan(), sys.stdout, indent=2)
         sys.stdout.write("\n")
         return 0
-    result = json.load(args.result)
+    # Bound parsing before json.loads allocates an untrusted nested structure.
+    payload = args.result.read(MAX_INPUT_BYTES + 1)
+    if len(payload) > MAX_INPUT_BYTES:
+        print("qualification input exceeds the 2 MiB limit", file=sys.stderr)
+        return 1
+    try:
+        result = json.loads(
+            payload,
+            object_pairs_hook=_reject_duplicate_json_members,
+            parse_constant=_reject_non_finite_json_constant,
+        )
+    except (ValueError, UnicodeError, RecursionError) as exc:
+        print(f"invalid qualification JSON: {exc}", file=sys.stderr)
+        return 1
     errors = (
         validate_matrix(result)
         if args.command == "validate-matrix"
