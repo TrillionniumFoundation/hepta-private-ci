@@ -126,3 +126,77 @@ fn pure_cell_intent_requires_explicit_backend_binding() {
         Err(ExecutionContractError::MissingCodexBinding),
     );
 }
+
+fn codex_intent() -> CellExecutionIntentV1 {
+    let mut value = intent().cell;
+    value.kind = ExecutionIntentKindV1::CodexTurn;
+    value.codex_binding = Some(CodexTurnBindingV1 {
+        source_admission_digest: digest("admission"),
+        session_id: id("session:7"),
+        thread_id: id("thread:7"),
+        client_user_message_id: id("message:7"),
+        user_input_digest: digest("user input"),
+        protocol_id: id(CODEX_APP_SERVER_V2_PROTOCOL_ID_V1),
+        app_server_version: "1.0.0".to_string(),
+        codex_home_digest: digest("codex home"),
+        connection_id: 7,
+    });
+    value
+}
+
+#[test]
+fn pure_cell_codex_binding_matches_adapter_protocol_and_version_gate() {
+    let original = codex_intent();
+    assert_eq!(original.validate(), Ok(()));
+
+    let mut changed = original.clone();
+    changed.codex_binding.as_mut().expect("binding").protocol_id =
+        id("codex.app-server.v3");
+    assert_eq!(
+        changed.validate(),
+        Err(ExecutionContractError::UnsupportedProtocol),
+    );
+
+    let mut changed = original.clone();
+    changed.codex_binding.as_mut().expect("binding").app_server_version =
+        "v".repeat(MAX_CODEX_APP_SERVER_VERSION_BYTES_V1 + 1);
+    assert_eq!(
+        changed.validate(),
+        Err(ExecutionContractError::InvalidAppServerVersion),
+    );
+
+    let mut changed = original.clone();
+    changed.codex_binding.as_mut().expect("binding").app_server_version =
+        "v1.0\nforged".to_string();
+    assert_eq!(
+        changed.validate(),
+        Err(ExecutionContractError::InvalidAppServerVersion),
+    );
+
+    let mut changed = original;
+    changed.codex_binding.as_mut().expect("binding").app_server_version.clear();
+    assert_eq!(
+        changed.validate(),
+        Err(ExecutionContractError::EmptyText("app server version")),
+    );
+}
+
+#[test]
+fn pure_codex_intent_digest_binds_protocol_version_and_connection() {
+    let original = codex_intent();
+    let original_digest = original.intent_digest();
+
+    let mut changed = original.clone();
+    changed.codex_binding.as_mut().expect("binding").protocol_id =
+        id("codex.app-server.v3");
+    assert_ne!(changed.intent_digest(), original_digest);
+
+    let mut changed = original.clone();
+    changed.codex_binding.as_mut().expect("binding").app_server_version =
+        "1.0.1".to_string();
+    assert_ne!(changed.intent_digest(), original_digest);
+
+    let mut changed = original;
+    changed.codex_binding.as_mut().expect("binding").connection_id += 1;
+    assert_ne!(changed.intent_digest(), original_digest);
+}
