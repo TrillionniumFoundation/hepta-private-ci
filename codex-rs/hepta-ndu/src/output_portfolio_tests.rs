@@ -311,6 +311,33 @@ fn incompatible_composition_domains_cannot_be_blended() {
 }
 
 #[test]
+fn fractional_portfolio_counts_the_no_change_residual_against_max_selected() {
+    let mut fractional = candidate("fractional", 70, 0, false);
+    fractional.weight_cap = q(40);
+    let candidates = [candidate("baseline", 0, 0, true), fractional];
+
+    let one_slot = select_output_portfolio_v1(&context(2), &budget(1), &candidates)
+        .expect("a single slot cannot represent a fractional direction and the baseline");
+    assert_eq!(one_slot.disposition, OutputPortfolioDispositionV1::NoChange);
+    assert_eq!(one_slot.allocations.len(), 1);
+    assert_eq!(one_slot.allocations[0].weight, FixedQ32::ONE);
+
+    let two_slots = select_output_portfolio_v1(&context(2), &budget(2), &candidates)
+        .expect("bounded two-asset advisory allocation");
+    assert_eq!(
+        two_slots.disposition,
+        OutputPortfolioDispositionV1::AdvisorySelection
+    );
+    assert_eq!(two_slots.allocations.len(), 2);
+    assert!(two_slots.allocations.iter().any(|item| {
+        item.candidate_id == id("fractional") && item.weight == q(40)
+    }));
+    assert!(two_slots.allocations.iter().any(|item| {
+        item.candidate_id == id("baseline") && item.weight == q(60)
+    }));
+}
+
+#[test]
 fn missing_composition_domain_is_rejected() {
     let mut unbound = candidate("unbound", 70, 0, false);
     unbound.composition_domain_digest = Digest32::ZERO;
