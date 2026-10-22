@@ -130,6 +130,13 @@ jobs:
     if: needs.scope.outputs.native == 'true' && needs.scope.outputs.full_repo != 'true'
     runs-on: ubuntu-24.04
     timeout-minutes: 65
+    env:
+      # Full reverse-consumer coverage remains required. Bound Rust artifact
+      # size and simultaneous linker pressure on the finite hosted runner.
+      CARGO_INCREMENTAL: "0"
+      CARGO_BUILD_JOBS: "2"
+      CARGO_PROFILE_DEV_DEBUG: "0"
+      CARGO_PROFILE_TEST_DEBUG: "0"
     steps:
       - name: Checkout exact candidate
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
@@ -137,6 +144,24 @@ jobs:
           ref: ${{ github.event.pull_request.head.sha || github.sha }}
           fetch-depth: 0
           persist-credentials: false
+
+      - name: Reclaim unused hosted SDK space before exhaustive native tests
+        shell: bash
+        run: |
+          set -euo pipefail
+          echo "Runner disk before reclaiming unrelated SDKs:"
+          df -h "$GITHUB_WORKSPACE"
+          # Only remove unrelated preinstalled SDKs from this ephemeral Linux
+          # runner. Never remove checked-out code, rustc/cargo, Cargo.lock,
+          # downloaded crates, target outputs or retained qualification data.
+          for unused_sdk in /usr/local/lib/android /opt/ghc; do
+            if [[ -d "$unused_sdk" && ! -L "$unused_sdk" ]]; then
+              sudo du -sh "$unused_sdk"
+              sudo rm -rf --one-file-system -- "$unused_sdk"
+            fi
+          done
+          echo "Runner disk after SDK reclamation:"
+          df -h "$GITHUB_WORKSPACE"
 
       - name: Prepare native test prerequisites before compilation
         run: |
@@ -191,6 +216,15 @@ jobs:
         run: >-
           python3 scripts/hepta_ci_dependencies.py --base "$BASE_SHA" --tested "$TESTED_SHA"
           --action clippy --record-output "$RUNNER_TEMP/impact-clippy.json"
+
+      - name: Retain actual native runner disk diagnostic
+        if: always()
+        shell: bash
+        run: |
+          df -h "$GITHUB_WORKSPACE"
+          if [ -d codex-rs/target ]; then
+            du -sh codex-rs/target
+          fi
 
       - name: Retain dependency plan and real command output
         if: always()
