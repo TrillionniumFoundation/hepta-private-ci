@@ -581,3 +581,125 @@ fn execution_status_recovery_matrix_is_exhaustively_fail_closed() {
         }
     }
 }
+
+struct StubNativeAdapter {
+    calls: std::sync::atomic::AtomicUsize,
+    receipt: RuntimeReceiptV1,
+}
+
+impl NativeExecutionAdapter for StubNativeAdapter {
+    async fn execute(
+        &self,
+        _intent: RuntimeToolIntentV1,
+    ) -> Result<RuntimeReceiptV1, RuntimeExecutionError> {
+        self.calls.fetch_add(1, std::sync::atomic::Ordering::SeqCst);
+        Ok(self.receipt.clone())
+    }
+}
+
+fn valid_native_receipt(value: &RuntimeToolIntentV1) -> RuntimeReceiptV1 {
+    let tool_outcome = ToolOutcomeV1 {
+        terminal_observed: true,
+        exit_code: Some(0),
+        stdout_digest: Some(digest("output")),
+        stderr_digest: None,
+        retryable: false,
+    };
+    RuntimeReceiptV1 {
+        execution: ExecutionReceiptV1 {
+            operation_id: value.cell.operation_id.clone(),
+            intent_digest: value.cell.intent_digest(),
+            generation: value.cell.generation,
+            final_payload_digest: value.cell.final_payload.clone(),
+            outcome_digest: Some(tool_outcome.outcome_digest()),
+            status: ExecutionStatusV1::Completed,
+            recovery: RecoveryDispositionV1::None,
+            authority: AuthorityPosture::DENY_ALL,
+        },
+        runtime_intent_digest: value.intent_digest(),
+        tool_outcome,
+    }
+}
+
+fn ready_native<F: std::future::Future>(future: F) -> F::Output {
+    let mut future = std::pin::pin!(future);
+    let mut context = std::task::Context::from_waker(std::task::Waker::noop());
+    match future.as_mut().poll(&mut context) {
+        std::task::Poll::Ready(result) => result,
+        std::task::Poll::Pending => panic!("stubbed native adapter must resolve immediately"),
+    }
+}
+
+#[test]
+fn native_gate_rejects_invalid_or_expired_intent_without_dispatch() {
+    let value = intent();
+    let adapter = StubNativeAdapter {
+        calls: std::sync::atomic::AtomicUsize::new(0),
+        receipt: valid_native_receipt(&value),
+    };
+
+    assert_eq!(
+        ready_native(execute_native_tool_intent(
+            &adapter,
+            value.cell.deadline_ms,
+            value.clone(),
+        )),
+        Err(RuntimeExecutionError::InvalidIntent(
+            ExecutionContractError::ExpiredDeadline
+        ))
+    );
+    let mut wrong_scope = value.clone();
+    wrong_scope.cell.final_payload.scope_id = id("organ:foreign");
+    assert_eq!(
+        ready_native(execute_native_tool_intent(&adapter, 99, wrong_scope)),
+        Err(RuntimeExecutionError::InvalidIntent(
+            ExecutionContractError::PayloadScopeMismatch
+        ))
+    );
+    assert_eq!(adapter.calls.load(std::sync::atomic::Ordering::SeqCst), 0);
+}
+
+#[test]
+fn native_gate_rejects_forged_backend_receipts() {
+    let value = intent();
+    let mut adapter = StubNativeAdapter {
+        calls: std::sync::atomic::AtomicUsize::new(0),
+        receipt: valid_native_receipt(&value),
+    };
+
+    adapter.receipt.runtime_intent_digest = digest("different-native-operation");
+    assert_eq!(
+        ready_native(execute_native_tool_intent(&adapter, 99, value.clone())),
+        Err(RuntimeExecutionError::InvalidReceipt(
+            ExecutionContractError::ReceiptBindingMismatch
+        ))
+    );
+
+    adapter.receipt = valid_native_receipt(&value);
+    adapter.receipt.execution.status = ExecutionStatusV1::Rejected;
+    adapter.receipt.execution.recovery = RecoveryDispositionV1::RetryBeforeAdmission;
+    adapter.receipt.tool_outcome.retryable = true;
+    adapter.receipt.execution.outcome_digest = Some(adapter.receipt.tool_outcome.outcome_digest());
+    assert_eq!(
+        ready_native(execute_native_tool_intent(&adapter, 99, value)),
+        Err(RuntimeExecutionError::InvalidReceipt(
+            ExecutionContractError::StatusOutcomeMismatch
+        ))
+    );
+    assert_eq!(adapter.calls.load(std::sync::atomic::Ordering::SeqCst), 2);
+}
+
+#[test]
+fn native_gate_forwards_only_a_validated_receipt() {
+    let value = intent();
+    let receipt = valid_native_receipt(&value);
+    let adapter = StubNativeAdapter {
+        calls: std::sync::atomic::AtomicUsize::new(0),
+        receipt: receipt.clone(),
+    };
+    assert_eq!(
+        ready_native(execute_native_tool_intent(&adapter, 99, value)),
+        Ok(receipt)
+    );
+    assert_eq!(adapter.calls.load(std::sync::atomic::Ordering::SeqCst), 1);
+}
