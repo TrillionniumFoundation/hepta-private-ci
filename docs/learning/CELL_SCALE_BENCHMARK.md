@@ -15,7 +15,10 @@ one size/arm. The matrix validator additionally requires exactly 36 records
 (one per size and comparison arm), rejects duplicates, and enforces one
 source commit, source tree and target-host cohort across comparisons.
 The matrix also rejects one measurement or metering receipt reused for distinct
-size/arm pairs. The single-result validator requires all 15 benchmark metrics,
+size/arm pairs, or an identical per-execution future-window, fault, rollback,
+negative-transfer or resource evidence receipt recycled across those pairs.
+A common held-out dataset identity may be shared across arms; the digest of
+each independently observed arm's evidence must remain distinct. The single-result validator requires all 15 benchmark metrics,
 monotonic p50/p95/p99 percentiles and integral byte/event counts. These are
 record-consistency checks, not target-host authentication.
 Both paths check future-window and negative-transfer evidence, lesion/ablation,
