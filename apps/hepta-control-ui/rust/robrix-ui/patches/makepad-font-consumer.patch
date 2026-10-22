@@ -1,0 +1,244 @@
+--- a/makepad-draw/src/shader/draw_text.rs
++++ b/makepad-draw/src/shader/draw_text.rs
+@@ -3303,8 +3303,18 @@
+-            }
+-            Some(ResolvedGlyph::Raster(rasterized_glyph)) => self.draw_rasterized_glyph(
+-                glyph_origin,
+-                glyph.font_size_in_lpxs,
+-                glyph.color,
+-                rasterized_glyph,
+-                output,
+-            ),
++                #[cfg(target_arch = "wasm32")]
++                crate::makepad_platform::hepta_font_consumer::drawn(
++                    glyph.font.id().hepta_observation_id(), glyph.id, 1,
++                );
++            }
++            Some(ResolvedGlyph::Raster(rasterized_glyph)) => {
++                self.draw_rasterized_glyph(
++                    glyph_origin,
++                    glyph.font_size_in_lpxs,
++                    glyph.color,
++                    rasterized_glyph,
++                    output,
++                );
++                #[cfg(target_arch = "wasm32")]
++                crate::makepad_platform::hepta_font_consumer::drawn(
++                    glyph.font.id().hepta_observation_id(), glyph.id, 2,
++                );
++            }
+@@ -3621,0 +3632,4 @@
++                    #[cfg(target_arch = "wasm32")]
++                    crate::makepad_platform::hepta_font_consumer::defined(
++                        font_id.hepta_observation_id(), &member.resource_path, data.as_slice(),
++                    );
+--- a/makepad-draw/src/text/font.rs
++++ b/makepad-draw/src/text/font.rs
+@@ -27,0 +28,4 @@
++impl FontId {
++    #[cfg(target_arch = "wasm32")]
++    pub(crate) fn hepta_observation_id(self) -> u64 { self.0 }
++}
+@@ -90,0 +95,2 @@
++        #[cfg(target_arch = "wasm32")]
++        crate::makepad_platform::hepta_font_consumer::parsed(id.0, face.data().as_slice());
+--- a/makepad-draw/src/text/loader.rs
++++ b/makepad-draw/src/text/loader.rs
+@@ -138,0 +139,2 @@
++        #[cfg(target_arch = "wasm32")]
++        crate::makepad_platform::hepta_font_consumer::parse_started(id.hepta_observation_id());
+--- /dev/null
++++ b/makepad-platform/src/hepta_font_consumer.rs
+@@ -0,0 +1,168 @@
++//! Optional bounded observations of existing font work. Never loads, parses, or draws.
++//! Only the diagnostic debugger enables this before application initialization.
++use std::{cell::RefCell, collections::HashSet, sync::atomic::{AtomicBool, Ordering}};
++
++const MAX_EVENTS: usize = 512;
++const MAX_HASHED_BYTES: usize = 256 * 1024 * 1024;
++const MAX_SNAPSHOT: usize = 256 * 1024;
++#[derive(Default)]
++struct State {
++    nonce: u32,
++    sealed: bool,
++    overflow: bool,
++    hashed_bytes: usize,
++    event_bytes: usize,
++    events: Vec<String>,
++    draws: HashSet<(u64, u16, u8)>,
++    snapshot: Vec<u8>,
++}
++thread_local! { static STATE: RefCell<State> = RefCell::new(State::default()); }
++static ENABLED: AtomicBool = AtomicBool::new(false);
++
++fn hex(bytes: &[u8]) -> String {
++    const DIGITS: &[u8; 16] = b"0123456789abcdef";
++    let mut out = String::with_capacity(bytes.len() * 2);
++    for &byte in bytes {
++        out.push(DIGITS[(byte >> 4) as usize] as char);
++        out.push(DIGITS[(byte & 15) as usize] as char);
++    }
++    out
++}
++impl State {
++    fn active(&self) -> bool {
++        self.nonce != 0 && !self.sealed && !self.overflow
++    }
++    fn push(&mut self, fields: String) {
++        if self.events.len() >= MAX_EVENTS {
++            self.overflow = true;
++            return;
++        }
++        let event = format!("{{\"seq\":{},{} }}", self.events.len() + 1, fields);
++        // Reserve separators plus the fixed snapshot envelope before retaining.
++        let Some(total) = self.event_bytes.checked_add(event.len() + 1) else {
++            self.overflow = true;
++            return;
++        };
++        if total > MAX_SNAPSHOT - 256 {
++            self.overflow = true;
++            return;
++        }
++        self.event_bytes = total;
++        self.events.push(event);
++    }
++    fn digest(&mut self, bytes: &[u8]) -> Option<String> {
++        if bytes.len() > 64 * 1024 * 1024
++            || self.hashed_bytes.checked_add(bytes.len()).map_or(true, |n| n > MAX_HASHED_BYTES)
++        {
++            self.overflow = true;
++            return None;
++        }
++        self.hashed_bytes += bytes.len();
++        Some(hex(&crate::makepad_network::digest::sha256_hash(bytes)))
++    }
++}
++
++// These Rust entry points are not exported to WASM or reachable from page input.
++pub(crate) fn http_response_mapped(request: u64, public_request: u64) {
++    if !ENABLED.load(Ordering::Acquire) { return; }
++    STATE.with(|state| {
++        let mut state = state.borrow_mut();
++        if !state.active() { return; }
++        state.push(format!("\"stage\":\"http-response\",\"request\":\"{request}\",\"publicRequest\":\"{public_request}\""));
++    });
++}
++pub(crate) fn adopted(request: u64, path: &str, bytes: &[u8]) {
++    if !ENABLED.load(Ordering::Acquire) { return; }
++    if !path.ends_with(".ttf") && !path.ends_with(".otf") { return; }
++    STATE.with(|state| {
++        let mut state = state.borrow_mut();
++        if !state.active() { return; }
++        if path.len() > 2048 { state.overflow = true; return; }
++        if let Some(hash) = state.digest(bytes) {
++            state.push(format!("\"stage\":\"adopt\",\"request\":\"{request}\",\"pathHex\":\"{}\",\"bytes\":{},\"sha256\":\"{hash}\"", hex(path.as_bytes()), bytes.len()));
++        }
++    });
++}
++// Public to the draw crate through its existing platform dependency, not a WASM export.
++pub fn defined(font: u64, path: &str, bytes: &[u8]) {
++    if !ENABLED.load(Ordering::Acquire) { return; }
++    STATE.with(|state| {
++        let mut state = state.borrow_mut();
++        if !state.active() { return; }
++        if path.len() > 2048 { state.overflow = true; return; }
++        if let Some(hash) = state.digest(bytes) {
++            state.push(format!("\"stage\":\"define\",\"font\":\"{font}\",\"pathHex\":\"{}\",\"bytes\":{},\"sha256\":\"{hash}\"", hex(path.as_bytes()), bytes.len()));
++        }
++    });
++}
++pub fn parse_started(font: u64) {
++    if !ENABLED.load(Ordering::Acquire) { return; }
++    STATE.with(|state| {
++        let mut state = state.borrow_mut();
++        if !state.active() { return; }
++        state.push(format!("\"stage\":\"parse-start\",\"font\":\"{font}\""));
++    });
++}
++pub fn parsed(font: u64, bytes: &[u8]) {
++    if !ENABLED.load(Ordering::Acquire) { return; }
++    STATE.with(|state| {
++        let mut state = state.borrow_mut();
++        if !state.active() { return; }
++        if let Some(hash) = state.digest(bytes) {
++            state.push(format!("\"stage\":\"parse\",\"font\":\"{font}\",\"bytes\":{},\"sha256\":\"{hash}\"", bytes.len()));
++        }
++    });
++}
++pub fn drawn(font: u64, glyph: u16, kind: u8) {
++    if !ENABLED.load(Ordering::Acquire) { return; }
++    STATE.with(|state| {
++        let mut state = state.borrow_mut();
++        if !state.active() { return; }
++        // Repeated natural draws are not duplicate admissions. Retain one sample
++        // per exact font/glyph/instance-kind; never request a shape or redraw.
++        if state.draws.len() >= MAX_EVENTS { state.overflow = true; return; }
++        if state.draws.insert((font, glyph, kind)) {
++            state.push(format!("\"stage\":\"draw\",\"font\":\"{font}\",\"glyph\":{glyph},\"kind\":{kind}"));
++        }
++    });
++}
++
++#[no_mangle]
++pub extern "C" fn hepta_font_consumer_enable(nonce: u32) -> u32 {
++    STATE.with(|state| {
++        let mut state = state.borrow_mut();
++        if nonce == 0 || state.nonce != 0 || state.sealed { return 0; }
++        state.nonce = nonce;
++        ENABLED.store(true, Ordering::Release);
++        1
++    })
++}
++#[no_mangle]
++pub extern "C" fn hepta_font_consumer_seal(nonce: u32) -> u32 {
++    STATE.with(|state| {
++        let mut state = state.borrow_mut();
++        if nonce == 0 || nonce != state.nonce || state.sealed { return 0; }
++        state.sealed = true;
++        ENABLED.store(false, Ordering::Release);
++        let value = format!("{{\"version\":2,\"nonce\":{},\"sealed\":true,\"overflow\":{},\"hashedBytes\":{},\"events\":[{}]}}", state.nonce, state.overflow, state.hashed_bytes, state.events.join(","));
++        if value.len() > MAX_SNAPSHOT { state.overflow = true; return 0; }
++        state.snapshot = value.into_bytes();
++        1
++    })
++}
++#[no_mangle]
++pub extern "C" fn hepta_font_consumer_snapshot_ptr(nonce: u32) -> u32 {
++    STATE.with(|state| {
++        let state = state.borrow();
++        if nonce == 0 || nonce != state.nonce || !state.sealed { return 0; }
++        state.snapshot.as_ptr() as u32
++    })
++}
++#[no_mangle]
++pub extern "C" fn hepta_font_consumer_snapshot_len(nonce: u32) -> u32 {
++    STATE.with(|state| {
++        let state = state.borrow();
++        if nonce == 0 || nonce != state.nonce || !state.sealed { return 0; }
++        state.snapshot.len() as u32
++    })
++}
+--- a/makepad-platform/src/lib.rs
++++ b/makepad-platform/src/lib.rs
+@@ -112,0 +113,2 @@
++#[cfg(target_arch = "wasm32")]
++pub mod hepta_font_consumer;
+--- a/makepad-platform/src/script/res.rs
++++ b/makepad-platform/src/script/res.rs
+@@ -160,0 +161,4 @@
++                #[cfg(target_arch = "wasm32")]
++                if let CxScriptResourceData::Loaded(bytes) = &res.data {
++                    crate::hepta_font_consumer::adopted(request_id.0, &res.abs_path, bytes);
++                }
+--- a/makepad-platform/src/os/web/web_network.rs
++++ b/makepad-platform/src/os/web/web_network.rs
+@@ -107,6 +107,9 @@
+             state.by_public.remove(&pending.public_request_id);
+             pending
+         };
++        crate::hepta_font_consumer::http_response_mapped(
++            internal_request_id.0, pending.public_request_id.0,
++        );
+         let _ = pending.sink.emit(NetworkResponse::HttpResponse {
+             request_id: pending.public_request_id,
+             response: HttpResponse::from_header_string(

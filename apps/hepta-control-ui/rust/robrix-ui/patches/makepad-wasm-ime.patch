@@ -1,0 +1,676 @@
+--- a/src/os/web/from_wasm.rs
++++ b/src/os/web/from_wasm.rs
+@@ -83 +83 @@
+-    pub response: String,
++    pub response: Vec<u32>,
+@@ -172,0 +173,13 @@
++
++/// Native DOM text/selection mirror. All offsets are UTF-16 code units.
++#[derive(FromWasm)]
++pub struct FromWasmSyncImeState {
++    pub text: Vec<u32>,
++    pub selection_start: u32,
++    pub selection_end: u32,
++    pub selection_backward: bool,
++    pub has_composition: bool,
++    pub composition_start: u32,
++    pub composition_end: u32,
++}
++
+--- a/src/os/web/to_wasm.rs
++++ b/src/os/web/to_wasm.rs
+@@ -566,0 +567,56 @@
++pub struct ToWasmTextCut {}
++
++/// Flush owner edits before the next browser-native input reads its mirror.
++#[derive(ToWasm)]
++pub struct ToWasmImeRequestState {
++    pub time: f64,
++}
++
++#[derive(ToWasm)]
++pub struct ToWasmImeState {
++    pub text: Vec<u32>,
++    pub selection_start: u32,
++    pub selection_end: u32,
++    pub selection_backward: bool,
++    pub has_composition: bool,
++    pub composition_start: u32,
++    pub composition_end: u32,
++    pub was_paste: bool,
++}
++
++impl From<ToWasmImeState> for TextInputEvent {
++    fn from(value: ToWasmImeState) -> Self {
++        use crate::event::{CharOffset, FullTextState};
++        // The pinned generic String wire codec confuses UTF-16 with scalars.
++        // Explicit scalar arrays preserve astral characters in both directions.
++        let text: String = value.text.into_iter()
++            .map(|codepoint| char::from_u32(codepoint).unwrap_or(char::REPLACEMENT_CHARACTER))
++            .collect();
++        let offset = |index: u32| {
++            let mut units = 0;
++            let mut count = 0;
++            for character in text.chars() {
++                units += character.len_utf16();
++                if units > index as usize { break; }
++                count += 1;
++            }
++            CharOffset(count)
++        };
++        let first = offset(value.selection_start);
++        let last = offset(value.selection_end);
++        let (start, end) = (first.min(last), first.max(last));
++        let comp_first = offset(value.composition_start);
++        let comp_last = offset(value.composition_end);
++        let composition = (value.has_composition && comp_first != comp_last)
++            .then(|| comp_first.min(comp_last)..comp_first.max(comp_last));
++        let selection = if value.selection_backward { end..start } else { start..end };
++        Self {
++            was_paste: value.was_paste,
++            full_state_sync: Some(FullTextState { text, selection, composition }),
++            ..Default::default()
++        }
++    }
++}
++
++
++#[derive(ToWasm)]
+--- a/src/os/web/web.rs
++++ b/src/os/web/web.rs
+@@ -384,0 +385,25 @@
++                live_id!(ToWasmImeState) => {
++                    let value = ToWasmImeState::read_to_wasm(&mut to_wasm);
++                    if value.text.len() > 1_048_576 {
++                        crate::error!("Web IME state exceeds the native input limit");
++                    } else {
++                        self.call_event_handler(&Event::TextInput(value.into()));
++                    }
++                }
++                live_id!(ToWasmImeRequestState) => {
++                    let value = ToWasmImeRequestState::read_to_wasm(&mut to_wasm);
++                    // Build the pending owner draw now so SyncImeState is returned
++                    // in this pump. GPU presentation remains on the normal RAF.
++                    if self.need_redrawing() && value.time.is_finite() {
++                        self.call_draw_event(value.time);
++                    }
++                }
++                live_id!(ToWasmTextCut) => {
++                    let response = Rc::new(RefCell::new(None));
++                    self.call_event_handler(&Event::TextCut(TextClipboardEvent {
++                        response: response.clone(),
++                    }));
++                    let response = response.borrow_mut().take().unwrap_or_default();
++                    self.os.from_wasm(FromWasmTextCopyResponse { response: response.chars().map(|character| character as u32).collect() });
++                }
++
+@@ -392 +417 @@
+-                        self.os.from_wasm(FromWasmTextCopyResponse { response });
++                        self.os.from_wasm(FromWasmTextCopyResponse { response: response.chars().map(|character| character as u32).collect() });
+@@ -1113,0 +1139,22 @@
++                CxOsOp::SyncImeState { text, selection, composition } => {
++                    let selection_backward = selection.start > selection.end;
++                    let selection_start = selection.start.min(selection.end).to_utf16_index(&text) as u32;
++                    let selection_end = selection.start.max(selection.end).to_utf16_index(&text) as u32;
++                    let (has_composition, composition_start, composition_end) = composition
++                        .map(|range| {
++                            let start = range.start.min(range.end).to_utf16_index(&text) as u32;
++                            let end = range.start.max(range.end).to_utf16_index(&text) as u32;
++                            (start != end, start, end)
++                        })
++                        .unwrap_or((false, 0, 0));
++                    self.os.from_wasm(FromWasmSyncImeState {
++                        text: text.chars().map(|character| character as u32).collect(),
++                        selection_start, selection_end, selection_backward, has_composition,
++                        composition_start, composition_end,
++                    });
++                }
++                // cx_api::show_clipboard_actions documents these as mobile-only
++                // native toolbar controls (desktop backends also ignore them).
++                // Browser ClipboardEvents below perform actual copy/cut/paste;
++                // the browser does not expose native context-menu open/close APIs.
++                CxOsOp::ShowClipboardActions { .. } | CxOsOp::HideClipboardActions => {}
+@@ -1489,0 +1537,3 @@
++            ToWasmTextCut::to_js_code(),
++            ToWasmImeState::to_js_code(),
++            ToWasmImeRequestState::to_js_code(),
+@@ -1546,0 +1597 @@
++            FromWasmSyncImeState::to_js_code(),
+--- a/src/os/web/web.js
++++ b/src/os/web/web.js
+@@ -1,0 +2,263 @@
++
++// BEGIN MAKEPAD WEB IME BRIDGE
++// DOM is the native editor/IME buffer. Rust TextInput remains the model owner.
++// Offsets on this bridge are UTF-16, matching textarea APIs; Rust converts them.
++export const MAKEPAD_WEB_IME_MAX_UNITS = 1_048_576;
++function makepad_ime_scalar(codepoint) {
++    return Number.isInteger(codepoint) && codepoint >= 0 && codepoint <= 0x10ffff
++        && (codepoint < 0xd800 || codepoint > 0xdfff) ? codepoint : 0xfffd;
++}
++export function makepad_ime_codepoints(text) {
++    if (text.length > MAKEPAD_WEB_IME_MAX_UNITS) throw new RangeError('Web IME text exceeds the native input limit');
++    return Array.from(text, character => makepad_ime_scalar(character.codePointAt(0)));
++}
++export function makepad_ime_string(codepoints) {
++    if (!Array.isArray(codepoints)) throw new TypeError('Invalid Web IME scalar payload');
++    if (codepoints.length > MAKEPAD_WEB_IME_MAX_UNITS) throw new RangeError('Web IME text exceeds the native input limit');
++    const text = codepoints.map(codepoint => String.fromCodePoint(makepad_ime_scalar(codepoint))).join('');
++    if (text.length > MAKEPAD_WEB_IME_MAX_UNITS) throw new RangeError('Web IME text exceeds the native input limit');
++    return text;
++}
++export function makepad_ime_offset(text, offset) {
++    offset = Number.isFinite(offset) ? Math.max(0, Math.min(text.length, Math.floor(offset))) : 0;
++    if (offset > 0 && offset < text.length && text.charCodeAt(offset) >= 0xdc00
++        && text.charCodeAt(offset) <= 0xdfff && text.charCodeAt(offset - 1) >= 0xd800
++        && text.charCodeAt(offset - 1) <= 0xdbff) offset--;
++    return offset;
++}
++
++export class MakepadWebIme {
++    constructor(host, text_area) {
++        this.host = host;
++        this.ta = text_area;
++        this.active = false;
++        this.editable = false;
++        this.ta.readOnly = true;
++        this.applying = false;
++        this.composition = null;
++        this.last_state = null;
++        this.pending_commit = null;
++    }
++
++    show() {
++        this.editable = true;
++        this.ta.readOnly = false;
++    }
++
++    state(text = this.ta.value, start = this.ta.selectionStart,
++        end = this.ta.selectionEnd, composition = null, was_paste = false) {
++        start = makepad_ime_offset(text, start);
++        end = makepad_ime_offset(text, end);
++        const backward = start > end || (start !== end && this.ta.selectionDirection === 'backward');
++        const comp_start = composition ? makepad_ime_offset(text, composition[0]) : 0;
++        const comp_end = composition ? makepad_ime_offset(text, composition[1]) : 0;
++        return {
++            text, selection_start: Math.min(start, end), selection_end: Math.max(start, end),
++            selection_backward: backward,
++            has_composition: comp_start !== comp_end,
++            composition_start: Math.min(comp_start, comp_end),
++            composition_end: Math.max(comp_start, comp_end),
++            was_paste,
++        };
++    }
++
++    write(state) {
++        this.applying = true;
++        try {
++            if (this.ta.value !== state.text) this.ta.value = state.text;
++            const anchor = makepad_ime_offset(state.text, state.selection_start);
++            const cursor = makepad_ime_offset(state.text, state.selection_end);
++            const start = Math.min(anchor, cursor), end = Math.max(anchor, cursor);
++            const backward = start !== end && (state.selection_backward || anchor > cursor);
++            const direction = backward ? 'backward' : 'forward';
++            if (this.ta.selectionStart !== start || this.ta.selectionEnd !== end
++                || (start !== end && this.ta.selectionDirection !== direction)) {
++                this.ta.setSelectionRange(start, end, direction);
++            }
++        } finally {
++            this.applying = false;
++        }
++    }
++
++    sync(state) {
++        state = { ...state, text: makepad_ime_string(state.text) };
++        const comp_start = makepad_ime_offset(state.text, state.composition_start);
++        const comp_end = makepad_ime_offset(state.text, state.composition_end);
++        state = { ...state, has_composition: state.has_composition && comp_start !== comp_end,
++            composition_start: Math.min(comp_start, comp_end),
++            composition_end: Math.max(comp_start, comp_end) };
++        this.active = true;
++        if (this.composition && state.has_composition) {
++            // Assigning .value during a live native composition cancels the IME.
++            // Rebase its next update on Rust's surrounding text instead. This also
++            // preserves an authorized programmatic edit outside the marked range.
++            this.composition.prefix = state.text.slice(0, state.composition_start);
++            this.composition.suffix = state.text.slice(state.composition_end);
++            this.last_state = null;
++            return;
++        }
++        if (this.composition && !state.has_composition
++            && state.text === this.composition.prefix + this.composition.suffix
++            && makepad_ime_offset(state.text, state.selection_start) === this.composition.prefix.length
++            && makepad_ime_offset(state.text, state.selection_end) === this.composition.prefix.length) {
++            // An empty (or entirely filtered) preedit has no Rust marked range,
++            // but the native IME session still lasts until compositionend/blur.
++            // Acknowledge its empty echo without cancelling the next candidate.
++            this.last_state = this.state(state.text, state.selection_start, state.selection_end);
++            return;
++        }
++        if (this.composition) {
++            // A Rust selection/focus change ended the old composition. Drop late
++            // compositionend/input from that session before accepting another field.
++            this.composition = null;
++            this.pending_commit = null;
++        }
++        this.write(state);
++        this.last_state = this.state();
++    }
++
++    send(state) {
++        if (!this.active || !this.editable || this.applying || this.host.webgl_context_lost) return;
++        const previous = this.last_state;
++        if (previous && Object.keys(state).every(key => state[key] === previous[key])) return;
++        let codepoints;
++        try { codepoints = makepad_ime_codepoints(state.text); }
++        catch (error) {
++            if (previous) this.write(previous);
++            throw error;
++        }
++        const normalized = makepad_ime_string(codepoints);
++        if (normalized !== state.text) {
++            state = { ...state, text: normalized };
++            this.write(state);
++        }
++        this.last_state = { ...state };
++        this.host.to_wasm.ToWasmImeState({ ...state, text: codepoints });
++        this.host.do_wasm_pump();
++    }
++
++    flush() {
++        // Rust owns navigation, deletion, undo and field selection. Those edits
++        // normally publish SyncImeState at the next draw. Flush that draw before
++        // a subsequent native input can send a stale textarea snapshot back.
++        if (this.host.webgl_context_lost) return;
++        this.host.to_wasm.ToWasmImeRequestState({ time: performance.now() / 1000 });
++        this.host.do_wasm_pump();
++    }
++
++    start() {
++        if (!this.active || !this.editable) return;
++        this.pending_commit = null;
++        const start = this.ta.selectionStart;
++        const end = this.ta.selectionEnd;
++        this.composition = {
++            native_prefix: this.ta.value.slice(0, start),
++            native_suffix: this.ta.value.slice(end),
++            prefix: this.ta.value.slice(0, start),
++            suffix: this.ta.value.slice(end),
++            data: '',
++        };
++    }
++
++    update(data) {
++        const composition = this.composition;
++        if (!composition) return;
++        composition.data = data || '';
++        const start = composition.prefix.length;
++        const end = start + composition.data.length;
++        this.send(this.state(
++            composition.prefix + composition.data + composition.suffix,
++            end, end, end > start ? [start, end] : null,
++        ));
++    }
++
++    end(data) {
++        const composition = this.composition;
++        if (!composition) return;
++        const input = data || '';
++        const end = composition.prefix.length + input.length;
++        const final_state = this.state(composition.prefix + input + composition.suffix, end, end);
++        this.composition = null;
++        this.pending_commit = { data: input, state: final_state };
++        // Native compositionend and the final input have different ordering in
++        // browsers. Full state is idempotent; never append the committed text.
++        this.write(final_state);
++        this.send(final_state);
++        this.flush();
++    }
++
++    before_input(event) {
++        if (!this.active || this.applying) return;
++        if (!this.composition && !event.isComposing
++            && !/Composition/.test(event.inputType || '')) {
++            // This is a new edit, including another identical character.
++            this.pending_commit = null;
++        }
++    }
++
++    input(event) {
++        if (!this.active || this.applying) return;
++        if (this.composition) {
++            if (typeof event.data === 'string') this.update(event.data);
++            return;
++        }
++        if (event.isComposing || /Composition/.test(event.inputType || '')) {
++            if (this.pending_commit) this.write(this.pending_commit.state);
++            return;
++        }
++        this.send(this.state(undefined, undefined, undefined, null,
++            event.inputType === 'insertFromPaste'));
++        this.flush();
++    }
++
++    select() {
++        if (!this.active || this.applying || this.composition) return;
++        this.send(this.state());
++    }
++
++    clipboard(event, cut) {
++        if (!this.active || !event.clipboardData || this.host.webgl_context_lost) return;
++        event.preventDefault();
++        if (this.composition) this.end(this.composition.data);
++        this.host.text_copy_response = '';
++        if (cut && this.editable) this.host.to_wasm.ToWasmTextCut();
++        else this.host.to_wasm.ToWasmTextCopy();
++        this.host.do_wasm_pump();
++        event.clipboardData.setData('text/plain', this.host.text_copy_response || '');
++        this.flush();
++    }
++
++    paste(event) {
++        if (!this.active || !this.editable || !event.clipboardData || this.host.webgl_context_lost) return;
++        event.preventDefault();
++        if (this.composition) this.end(this.composition.data);
++        this.flush();
++        const text = event.clipboardData.getData('text/plain');
++        const start = this.ta.selectionStart;
++        const end = start + text.length;
++        const state = this.state(this.ta.value.slice(0, start) + text
++            + this.ta.value.slice(this.ta.selectionEnd), end, end, null, true);
++        this.pending_commit = null;
++        this.write(state);
++        this.send(state);
++        this.flush();
++    }
++
++    hide() {
++        this.active = false;
++        this.editable = false;
++        this.ta.readOnly = true;
++        this.composition = null;
++        this.pending_commit = null;
++        this.last_state = null;
++        this.write(this.state('', 0, 0));
++    }
++
++    blur() {
++        // A native blur should finish the marked text once; it must never
++        // immediately steal focus back from another DOM element or browser UI.
++        if (this.composition) this.end(this.composition.data);
++        this.pending_commit = null;
++    }
++}
++// END MAKEPAD WEB IME BRIDGE
+@@ -1192 +1455 @@
+-        this.text_copy_response = args.response
++        this.text_copy_response = makepad_ime_string(args.response)
+@@ -1399,0 +1663 @@
++        if (this.ime) this.ime.show();
+@@ -1402,0 +1667,4 @@
++    FromWasmSyncImeState(args) {
++        if (this.ime) this.ime.sync(args);
++    }
++
+@@ -1403,0 +1672,9 @@
++        if (this.ime) {
++            const old_area = this.text_area;
++            const had_focus = document.activeElement === old_area;
++            this.ime.hide();
++            // Retire the DOM event target at a Rust focus boundary. Late native
++            // IME events retain its inactive controller, never the next field.
++            old_area.remove();
++            this.bind_keyboard(had_focus);
++        }
+@@ -3312,0 +3590 @@
++            if (this.ime && this.ime.active) this.ime.flush();
+@@ -3325,0 +3604 @@
++            if (this.ime && this.ime.active) this.ime.flush();
+@@ -3333,0 +3613 @@
++            if (this.ime && this.ime.active) this.ime.flush();
+@@ -3551 +3831 @@
+-    bind_keyboard() {
++    bind_keyboard(focus = true) {
+@@ -3600,72 +3880,35 @@
+-        //document.addEventListener('focusout', this.onFocusOut.bind(this))
+-        var was_paste = false;
+-        this.neutralize_ime = false;
+-        var last_len = 0;
+-
+-        this.handlers.on_cut = e => {
+-            setTimeout(_ => {
+-                ta.value = "";
+-                last_len = 0;
+-            }, 0)
+-        }
+-
+-        ta.addEventListener('cut', e => this.handlers.on_cut(e));
+-
+-        this.handlers.on_copy = e => {
+-            setTimeout(_ => {
+-                ta.value = "";
+-                last_len = 0;
+-            }, 0)
+-        }
+-
+-        ta.addEventListener('copy', e => this.handlers.on_copy(e));
+-
+-        this.handlers.on_paste = e => {
+-            was_paste = true;
+-        }
+-
+-        ta.addEventListener('paste', e => this.handlers.on_paste(e));
+-
+-        this.handlers.on_select = e => { }
+-
+-        ta.addEventListener('select', e => this.handlers.on_select(e))
+-
+-        this.handlers.on_input = e => {
+-            // if IME composition is in progress, do not handle the normal input event
+-            if (is_composing) {
+-                // console.log('⏸️ Skipping input event during composition');
+-                return;
+-            }
+-            if (ta.value.length > 0) {
+-                if (was_paste) {
+-                    was_paste = false;
+-
+-                    this.to_wasm.ToWasmTextInput({
+-                        was_paste: true,
+-                        input: ta.value.substring(last_len),
+-                        replace_last: false,
+-                    })
+-                    ta.value = "";
+-                }
+-                else {
+-                    var replace_last = false;
+-                    var text_value = ta.value;
+-                    if (ta.value.length >= 2) { // we want the second char
+-                        text_value = ta.value.substring(1, 2);
+-                        ta.value = text_value;
+-                    }
+-                    else if (ta.value.length == 1 && last_len == ta.value.length) { // its an IME replace
+-                        replace_last = true;
+-                    }
+-                    // we should send a replace last
+-                    if (replace_last || text_value != '\n') {
+-                        this.to_wasm.ToWasmTextInput({
+-                            was_paste: false,
+-                            input: text_value,
+-                            replace_last: replace_last,
+-                        });
+-                    }
+-                }
+-                this.do_wasm_pump();
+-            }
+-            last_len = ta.value.length;
++        this.ime = new MakepadWebIme(this, ta);
++        const ime = this.ime;
++        ta.addEventListener('copy', event => ime.clipboard(event, false));
++        ta.addEventListener('cut', event => ime.clipboard(event, true));
++        ta.addEventListener('paste', event => ime.paste(event));
++        ta.addEventListener('beforeinput', event => ime.before_input(event));
++        ta.addEventListener('input', event => ime.input(event));
++        ta.addEventListener('select', () => ime.select());
++        ta.addEventListener('compositionstart', () => ime.start());
++        ta.addEventListener('compositionupdate', event => ime.update(event.data));
++        ta.addEventListener('compositionend', event => ime.end(event.data));
++        ta.addEventListener('blur', () => ime.blur());
++        ta.addEventListener('mousedown', event => this.handlers.on_mouse_down(event));
++        ta.addEventListener('mouseup', event => this.handlers.on_mouse_up(event));
++        ta.addEventListener('wheel', event => this.handlers.on_mouse_wheel(event));
++        ta.addEventListener('contextmenu', event => this.handlers.on_contextmenu(event));
++
++        this.handlers.on_keydown = event => {
++            this.resume_audio_from_gesture();
++            if (event.isComposing || ime.composition || event.keyCode === 229) return;
++            const code = event.keyCode;
++            const primary = event.ctrlKey || event.metaKey;
++            // Let browser copy/cut/paste fire trusted ClipboardEvents. Rust owns
++            // all other editing/navigation commands and their undo history.
++            if ([8, 9, 13, 33, 34, 35, 36, 37, 38, 39, 40, 46].includes(code)
++                || (primary && [65, 89, 90].includes(code))
++                || (code === 121 && event.shiftKey && !primary && !event.altKey)) {
++                event.preventDefault();
++            }
++            this.to_wasm.ToWasmKeyDown({key: {
++                key_code: code, char_code: event.charCode, is_repeat: event.repeat,
++                time: event.timeStamp / 1000, modifiers: pack_key_modifier(event),
++            }});
++            this.do_wasm_pump();
++            ime.flush();
+@@ -3673,120 +3916,7 @@
+-        ta.addEventListener('input', e => this.handlers.on_input(e));
+-
+-        // add composition events handling, this is the standard way to handle IME input
+-        var is_composing = false;
+-        var composition_data = "";
+-
+-        ta.addEventListener('compositionstart', e => {
+-            is_composing = true;
+-            composition_data = "";
+-        });
+-
+-        ta.addEventListener('compositionupdate', e => {
+-            composition_data = e.data || "";
+-        });
+-
+-        ta.addEventListener('compositionend', e => {
+-            is_composing = false;
+-
+-            // send final IME input result
+-            if (!this.webgl_context_lost && e.data && e.data !== '\n') {
+-                this.to_wasm.ToWasmTextInput({
+-                    was_paste: false,
+-                    input: e.data,
+-                    replace_last: composition_data.length > 0, // 如果之前有组合数据，则替换
+-                });
+-                this.do_wasm_pump();
+-            }
+-
+-            composition_data = "";
+-            // clear textarea
+-            ta.value = "";
+-            last_len = 0;
+-        });
+-
+-        ta.addEventListener('mousedown', e => this.handlers.on_mouse_down(e));
+-        ta.addEventListener('mouseup', e => this.handlers.on_mouse_up(e));
+-        ta.addEventListener('wheel', e => this.handlers.on_mouse_wheel(e));
+-
+-        ta.addEventListener('contextmenu', e => this.handlers.on_contextmenu(e));
+-
+-        ta.addEventListener('blur', e => {
+-            this.focus_keyboard_input();
+-        })
+-
+-        var ugly_ime_hack = false;
+-
+-        this.handlers.on_keydown = e => {
+-            this.resume_audio_from_gesture();
+-            let code = e.keyCode;
+-
+-            //if (code == 91) {firefox_logo_key = true; e.preventDefault();}
+-            if (code == 18 || code == 17 || code == 16) e.preventDefault(); // alt
+-            if (code === 8 || code === 9) e.preventDefault() // backspace/tab
+-            if (code === 121 && e.shiftKey && !e.ctrlKey && !e.altKey && !e.metaKey) {
+-                e.preventDefault() // Shift+F10: tweaker
+-            }
+-            if ((code === 88 || code == 67) && (e.metaKey || e.ctrlKey)) { // copy or cut
+-                // we need to request the clipboard
+-                this.to_wasm.ToWasmTextCopy();
+-                this.do_wasm_pump();
+-                ta.value = this.text_copy_response;
+-                ta.selectionStart = 0;
+-                ta.selectionEnd = ta.value.length;
+-            }
+-            //    this.keyboardCut = true // x cut
+-            //if(code === 65 && (e.metaKey || e.ctrlKey)) this.keyboardSelectAll = true     // all (select all)
+-            if (code === 89 && (e.metaKey || e.ctrlKey)) e.preventDefault() // all (select all)
+-            if (code === 83 && (e.metaKey || e.ctrlKey)) e.preventDefault() // ctrl s
+-            if (code === 90 && (e.metaKey || e.ctrlKey)) {
+-                this.update_text_area_pos();
+-                ta.value = "";
+-                ugly_ime_hack = true;
+-                ta.readOnly = true;
+-                e.preventDefault()
+-            }
+-            // if we are using arrow keys, home or end
+-            let key_code = e.keyCode;
+-
+-            if (key_code >= 33 && key_code <= 40) {
+-                ta.value = "";
+-                last_len = ta.value.length;
+-            }
+-            //if(key_code
+-            this.to_wasm.ToWasmKeyDown({
+-                key: {
+-                    key_code: key_code,
+-                    char_code: e.charCode,
+-                    is_repeat: e.repeat,
+-                    time: e.timeStamp / 1000.0,
+-                    modifiers: pack_key_modifier(e)
+-                }
+-            })
+-
+-            this.do_wasm_pump();
+-            this.resume_audio_from_gesture();
+-        };
+-
+-        ta.addEventListener('keydown', e => this.handlers.on_keydown(e));
+-
+-        this.handlers.on_keyup = e => {
+-            let code = e.keyCode;
+-
+-            if (code == 18 || code == 17 || code == 16) e.preventDefault(); // alt
+-            if (code == 91) { e.preventDefault(); }
+-            var ta = this.text_area;
+-            if (ugly_ime_hack) {
+-                ugly_ime_hack = false;
+-                document.body.removeChild(ta);
+-                this.bind_keyboard();
+-                this.update_text_area_pos();
+-            }
+-            this.to_wasm.ToWasmKeyUp({
+-                key: {
+-                    key_code: e.keyCode,
+-                    char_code: e.charCode,
+-                    is_repeat: e.repeat,
+-                    time: e.timeStamp / 1000.0,
+-                    modifiers: pack_key_modifier(e)
+-                }
+-            })
++        this.handlers.on_keyup = event => {
++            if (event.isComposing || ime.composition || event.keyCode === 229) return;
++            this.to_wasm.ToWasmKeyUp({key: {
++                key_code: event.keyCode, char_code: event.charCode,
++                is_repeat: event.repeat, time: event.timeStamp / 1000,
++                modifiers: pack_key_modifier(event),
++            }});
+@@ -3795 +3925,2 @@
+-        ta.addEventListener('keyup', e => this.handlers.on_keyup(e));
++        ta.addEventListener('keydown', event => this.handlers.on_keydown(event));
++        ta.addEventListener('keyup', event => this.handlers.on_keyup(event));
+@@ -3797 +3928 @@
+-        ta.focus();
++        if (focus) ta.focus();
