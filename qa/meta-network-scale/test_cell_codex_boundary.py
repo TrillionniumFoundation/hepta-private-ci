@@ -13,6 +13,16 @@ spec.loader.exec_module(checker)
 
 
 class CellCodexBoundaryTests(unittest.TestCase):
+    def populate_local_source_tree(self, root: Path):
+        for package, relative in checker.LOCAL_PACKAGE_DIRECTORIES.items():
+            directory = root / "codex-rs" / relative
+            directory.mkdir(parents=True, exist_ok=True)
+            manifest = directory / "Cargo.toml"
+            if not manifest.exists():
+                manifest.write_text(
+                    f'[package]\nname = "{package}"\n', encoding="utf-8"
+                )
+
     def make_manifest(self, dependencies: str) -> dict:
         return tomllib.loads('[package]\nname = "codex-hepta-neuron"\n' + dependencies)
 
@@ -180,6 +190,7 @@ missing = { workspace = true }
                 (target / "Cargo.toml").write_text(
                     f'[package]\nname = "codex-{name}"\n', encoding="utf-8"
                 )
+            self.populate_local_source_tree(root)
             self.assertEqual(checker.check_workspace(root), [])
             (root / "codex-rs" / checker.CELL_CRATES[0] / "Cargo.toml").write_text(
                 '[package]\nname = "codex-core"\n', encoding="utf-8"
@@ -296,6 +307,36 @@ imbl = { path = "third_party/imbl-6.1.0" }
 crossterm = { git = "https://example.invalid/pin", rev = "abc123" }
 """)
         self.assertEqual(checker.check_root_source_overrides(root), [])
+
+    def test_local_source_identity_and_manifest_symlinks_fail_closed(self):
+        with tempfile.TemporaryDirectory() as temp:
+            root = Path(temp)
+            self.populate_local_source_tree(root)
+            self.assertEqual(checker.check_local_source_directories(root), [])
+            source = root / "codex-rs" / "hepta-types"
+            manifest = source / "Cargo.toml"
+            valid = manifest.read_text(encoding="utf-8")
+            manifest.write_text('[package]\nname = "codex-core"\n', encoding="utf-8")
+            errors = checker.check_local_source_directories(root)
+            self.assertEqual(len(errors), 1, errors)
+            self.assertIn("wrong package identity", errors[0])
+            manifest.write_text(valid, encoding="utf-8")
+            original = root / "original-hepta-types"
+            source.rename(original)
+            source.symlink_to(original, target_is_directory=True)
+            errors = checker.check_local_source_directories(root)
+            self.assertEqual(len(errors), 1, errors)
+            self.assertIn("symbolic link", errors[0])
+
+    def test_missing_local_source_manifest_is_not_accepted(self):
+        with tempfile.TemporaryDirectory() as temp:
+            root = Path(temp)
+            self.populate_local_source_tree(root)
+            missing = root / "codex-rs" / "hepta-contracts" / "Cargo.toml"
+            missing.unlink()
+            errors = checker.check_local_source_directories(root)
+            self.assertEqual(len(errors), 1, errors)
+            self.assertIn("cannot read reviewed", errors[0])
 
 
 if __name__ == "__main__":
