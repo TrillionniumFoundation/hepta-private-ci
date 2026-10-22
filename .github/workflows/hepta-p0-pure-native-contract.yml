@@ -21,7 +21,7 @@ concurrency:
 
 jobs:
   native-types:
-    name: Exact-source pure types and native adapter fmt, tests and Clippy
+    name: Exact-source pure Hepta types fmt, tests and Clippy
     runs-on: ubuntu-24.04
     timeout-minutes: 60
     env:
