@@ -10,6 +10,9 @@ use tokio::io::AsyncRead;
 use tokio::io::AsyncWrite;
 use tokio::io::ReadBuf;
 
+#[cfg(windows)]
+mod windows_peer;
+
 /// Creates `socket_dir` if needed and restricts it to the current user where
 /// the platform exposes Unix permissions.
 pub async fn prepare_private_socket_directory(socket_dir: impl AsRef<Path>) -> IoResult<()> {
@@ -68,7 +71,7 @@ impl UnixStream {
     ///
     /// Owner-only socket permissions protect rendezvous by path; this check
     /// additionally binds accepted mutation authority to the kernel-reported
-    /// peer identity on Unix.
+    /// peer identity on supported Unix systems and Windows.
     pub fn ensure_current_user_peer(&self) -> IoResult<()> {
         platform::ensure_current_user_peer(&self.inner)
     }
@@ -323,11 +326,8 @@ mod platform {
             .map(Stream)
     }
 
-    pub(super) fn ensure_current_user_peer(_stream: &Stream) -> IoResult<()> {
-        Err(io::Error::new(
-            io::ErrorKind::Unsupported,
-            "peer user identity is unavailable on this platform",
-        ))
+    pub(super) fn ensure_current_user_peer(stream: &Stream) -> IoResult<()> {
+        super::windows_peer::ensure_current_user_peer(stream.0.get_ref().get_ref().as_raw_socket())
     }
 
     pub(super) async fn is_stale_socket_path(socket_path: &Path) -> IoResult<bool> {

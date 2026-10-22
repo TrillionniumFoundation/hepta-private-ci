@@ -130,6 +130,7 @@ async fn connected_streams() -> std::io::Result<(tempfile::TempDir, UnixStream, 
 }
 
 #[cfg(any(
+    windows,
     target_os = "linux",
     target_os = "android",
     target_os = "macos",
@@ -148,6 +149,7 @@ async fn peer_identity_gate_accepts_same_user_on_supported_platforms() -> std::i
 }
 
 #[cfg(not(any(
+    windows,
     target_os = "linux",
     target_os = "android",
     target_os = "macos",
