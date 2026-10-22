@@ -426,6 +426,54 @@ impl FairCellQueueV1 {
         batch
     }
 
+    /// Prepare at most one feature generation per physical worker batch.
+    /// Different-generation heads remain queued in their original scope order;
+    /// postponing one head never discards or bypasses its scope's FIFO queue.
+    /// This is a scheduling fence, not a substitute for a final-use authority
+    /// or generation check at the actual model-execution boundary.
+    pub fn drain_batch_same_generation(&mut self, maximum: usize) -> Vec<QueuedCellRequestV1> {
+        let mut batch = Vec::with_capacity(maximum.min(self.length));
+        let mut selected_generation = None;
+        let mut deferred_scopes = 0_usize;
+        while batch.len() < maximum && !self.ready_scopes.is_empty() {
+            // Each active scope has been inspected without a compatible head.
+            // End the batch instead of spinning or repeatedly moving a stale
+            // generation ahead of other eligible work.
+            if deferred_scopes == self.ready_scopes.len() {
+                break;
+            }
+            let Some(scope) = self.ready_scopes.pop_front() else {
+                break;
+            };
+            let Some(queue) = self.queues.get_mut(&scope) else {
+                continue;
+            };
+            if let Some(generation) = selected_generation
+                && queue
+                    .front()
+                    .is_some_and(|request| request.feature_generation != generation)
+            {
+                self.ready_scopes.push_back(scope);
+                deferred_scopes += 1;
+                continue;
+            }
+            let Some(request) = queue.pop_front() else {
+                continue;
+            };
+            selected_generation.get_or_insert(request.feature_generation);
+            self.request_ids.remove(&request.request_id);
+            self.length -= 1;
+            batch.push(request);
+            deferred_scopes = 0;
+            if queue.is_empty() {
+                self.queues.remove(&scope);
+            } else {
+                self.ready_scopes.push_back(scope);
+            }
+        }
+        batch
+    }
+
     #[must_use]
     pub const fn len(&self) -> usize {
         self.length
