@@ -176,6 +176,8 @@ def validate_result(result: dict[str, Any]) -> list[str]:
                 errors.append(
                     f"provenance.{key} must be a lowercase hexadecimal digest"
                 )
+            elif not any(character != "0" for character in value):
+                errors.append(f"provenance.{key} cannot be a zero digest")
 
     evidence = result.get("evidence")
     if not isinstance(evidence, dict):
@@ -203,6 +205,8 @@ def validate_result(result: dict[str, Any]) -> list[str]:
                 errors.append(
                     f"evidence_receipts.{key} must be a lowercase SHA-256 digest"
                 )
+            elif not any(character != "0" for character in value):
+                errors.append(f"evidence_receipts.{key} cannot be a zero digest")
 
     metrics = result.get("metrics")
     if not isinstance(metrics, dict):
@@ -246,6 +250,8 @@ def validate_result(result: dict[str, Any]) -> list[str]:
         or _HEX64.fullmatch(metrics_receipt) is None
     ):
         errors.append("metrics_receipt must be a lowercase SHA-256 digest")
+    elif not any(character != "0" for character in metrics_receipt):
+        errors.append("metrics_receipt cannot be a zero digest")
     lifecycle = result.get("topology_lifecycle")
     if lifecycle != list(LIFECYCLE):
         errors.append("topology_lifecycle must contain the complete ordered lifecycle")
