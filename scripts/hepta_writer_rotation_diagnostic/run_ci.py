@@ -2,6 +2,7 @@
 """Run one original writer-rotation test with frozen observation-only additions."""
 
 import argparse
+from datetime import datetime
 import hashlib
 import json
 import os
@@ -147,8 +148,20 @@ def prepare(output):
 
 
 def junit_path():
-    require(bool(os.environ.get("CARGO_TARGET_DIR")), "existing setup-ci did not set CARGO_TARGET_DIR")
-    return Path(os.environ["CARGO_TARGET_DIR"]) / "nextest/local/junit.xml"
+    config_bytes = (ROOT / CONFIG).read_bytes()
+    require(digest(config_bytes) == CONFIG_SHA, "original nextest configuration was changed")
+    config = tomllib.loads(config_bytes.decode())
+    # Nextest 0.9.103 resolves store.dir from the workspace root, independently
+    # of Cargo's build target directory, then appends the selected profile.
+    store = config.get("store", {}).get("dir", "target/nextest")
+    require(store == "target/nextest", "original nextest store directory drift")
+    profiles = config["profile"]
+    require(profiles["default"].get("junit") == {"path": "junit.xml"}
+            and "junit" not in profiles["local"], "original inherited JUnit path drift")
+    path = ROOT / "codex-rs" / store / "local" / profiles["default"]["junit"]["path"]
+    require(path.resolve().is_relative_to((ROOT / "codex-rs").resolve()),
+            "JUnit path escapes the original workspace")
+    return path
 
 
 def run_test(output):
@@ -157,8 +170,11 @@ def run_test(output):
     require(not overrides, f"refuse inherited nextest overrides: {overrides}")
     user_config = Path(os.environ.get("XDG_CONFIG_HOME", Path.home() / ".config")) / "nextest/config.toml"
     require(not user_config.exists(), "refuse an inherited nextest user configuration")
-    require(not junit_path().exists(), "refuse a pre-existing JUnit result")
-    require(not (output / "test.log").exists(), "refuse a pre-existing test log")
+    report = junit_path()
+    require(not report.exists() and not report.is_symlink(), "refuse a pre-existing JUnit result")
+    for name in ("test.log", "test-process.json", "phase-summary.json", "junit.xml"):
+        path = output / name
+        require(not path.exists() and not path.is_symlink(), f"refuse a pre-existing run artifact: {name}")
     status = {
         "command": COMMAND, "working_directory": "codex-rs", "test": TEST,
         "environment": {name: os.environ.get(name) for name in RECORDED_ENV},
@@ -166,6 +182,8 @@ def run_test(output):
         "profile_set_by_original_just_recipe": "local",
         "timeout_and_retry_configuration": "unchanged original repository configuration",
         "inherited_nextest_override_present": False,
+        "junit_path": str(report.relative_to(ROOT)), "junit_absent_before_run": True,
+        "started_at_unix_ms": time.time_ns() // 1_000_000,
     }
     write_json(output / "test-process.json", status)
     started = time.monotonic()
@@ -180,8 +198,12 @@ def run_test(output):
                 sys.stdout.buffer.write(chunk)
                 sys.stdout.buffer.flush()
             code = process.wait()
-    status.update(completed=True, exit_code=code, elapsed_seconds=time.monotonic() - started)
+    status.update(completed=True, exit_code=code, elapsed_seconds=time.monotonic() - started,
+                  completed_at_unix_ms=time.time_ns() // 1_000_000)
     status["log"] = file_identity(output / "test.log")
+    status["junit_at_completion"] = (
+        file_identity(report) if report.is_file() and not report.is_symlink() else None
+    )
     write_json(output / "test-process.json", status)
     return code if code >= 0 else 128 - code
 
@@ -249,16 +271,32 @@ def attempts_from_log(path):
     return [summarize_attempt(lines) for lines in attempts]
 
 
-def junit_identity(path):
-    require(path.is_file(), "no JUnit report for the original local profile")
+def junit_identity(path, process):
+    require(path.is_file() and not path.is_symlink(), "no regular JUnit report for the original local profile")
     require(path.stat().st_size <= 16 * 1024 * 1024, "unexpectedly large single-test JUnit report")
+    require(process.get("junit_absent_before_run") is True
+            and process.get("junit_path") == str(path.relative_to(ROOT)),
+            "no matching run-bound JUnit receipt; retain older runs for independent recovery")
+    require(process.get("started") is True and process.get("completed") is True,
+            "JUnit requires a completed test process")
+    start, end = process.get("started_at_unix_ms"), process.get("completed_at_unix_ms")
+    require(type(start) is int and type(end) is int and 0 < start <= end,
+            "missing or invalid JUnit run interval")
+    identity = file_identity(path)
+    require(identity == process.get("junit_at_completion"), "JUnit differs from the completed run receipt")
     document = ET.parse(path)
+    timestamp = document.getroot().get("timestamp")
+    require(isinstance(timestamp, str), "JUnit run timestamp is missing")
+    observed = datetime.fromisoformat(timestamp)
+    require(observed.tzinfo is not None and start <= int(observed.timestamp() * 1000) <= end,
+            "JUnit timestamp is outside the recorded run interval")
     cases = document.findall(".//testcase")
     require(len(cases) == 1 and cases[0].get("name") == TEST, "JUnit does not contain exactly the selected original test")
     case = cases[0]
     failure = any(case.find(tag) is not None for tag in ("failure", "error", "skipped"))
     return {
-        **file_identity(path), "test": case.get("name"), "classname": case.get("classname"),
+        **identity, "path": str(path.relative_to(ROOT)), "run_timestamp": timestamp,
+        "test": case.get("name"), "classname": case.get("classname"),
         "time": case.get("time"), "final_outcome_passed": not failure,
         "prior_failure_entries": sum(len(case.findall(tag)) for tag in (
             "flakyFailure", "flakyError", "rerunFailure", "rerunError",
@@ -267,6 +305,9 @@ def junit_identity(path):
 
 
 def summarize(output):
+    for name in ("phase-summary.json", "junit.xml"):
+        path = output / name
+        require(not path.exists() and not path.is_symlink(), f"refuse to overwrite retained run artifact: {name}")
     summary = {
         "kind": "host_writer_rotation_phase_diagnostic_not_blocker_closure",
         "base": BASE, "test": TEST, "original_epochs": 256,
@@ -277,14 +318,18 @@ def summarize(output):
     try:
         summary["process"] = json.loads((output / "test-process.json").read_text())
         summary["log"] = file_identity(output / "test.log")
+        require(summary["process"].get("log") == summary["log"], "test log differs from the completed run receipt")
         summary["attempts"] = attempts_from_log(output / "test.log")
     except (OSError, ValueError, KeyError) as error:
         summary["errors"].append(str(error))
     try:
         report = junit_path()
-        if report.is_file():
-            shutil.copyfile(report, output / "junit.xml")
-        summary["junit"] = junit_identity(report)
+        summary["junit"] = junit_identity(report, summary.get("process", {}))
+        with report.open("rb") as source, (output / "junit.xml").open("xb") as destination:
+            shutil.copyfileobj(source, destination)
+        require(file_identity(output / "junit.xml") == {
+            key: summary["junit"][key] for key in ("bytes", "sha256")
+        }, "retained JUnit copy differs from the completed run receipt")
     except (OSError, ValueError, ET.ParseError) as error:
         summary["errors"].append(str(error))
     process = summary.get("process", {})
