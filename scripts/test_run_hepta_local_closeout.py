@@ -83,6 +83,74 @@ class LocalCloseoutTests(unittest.TestCase):
             self.assertTrue(result["usable"], result)
             self.assertTrue(result["clean"], result)
 
+    @unittest.skipUnless(os.name == "posix", "POSIX executable hooks fixture")
+    def test_clean_source_refuses_executable_default_git_hook(self):
+        with tempfile.TemporaryDirectory() as root:
+            base = Path(root)
+            src = base / "checkout"
+            subprocess.run(["git", "init", "-q", str(src)], check=True)
+            (src / "source.rs").write_text("pub fn source() {}\\n")
+            subprocess.run(["git", "-C", str(src), "add", "source.rs"], check=True)
+            subprocess.run(
+                ["git", "-C", str(src), "-c", "user.name=LocalTest",
+                 "-c", "user.email=local@example.invalid", "commit", "-qm", "base"],
+                check=True,
+            )
+            hooks = src / ".git" / "hooks"
+            script = hooks / "pre-commit"
+            marker = base / "hook-invoked"
+            script.write_text(
+                '#!/bin/sh\\nprintf ran > "' + str(marker) + '"\\n',
+                encoding="utf-8",
+            )
+            script.chmod(0o700)
+            self.assertEqual(
+                subprocess.run(["git", "-C", str(src), "status", "--porcelain=v1"],
+                               check=True, capture_output=True, text=True).stdout.strip(),
+                "",
+            )
+            proof = mod.git_snapshot(src)
+            self.assertFalse(proof["usable"], proof)
+            self.assertEqual(proof["reason"], "unreviewed executable Git hooks")
+            self.assertEqual(proof["blocked_git_hook_names"], ["pre-commit"])
+            self.assertFalse(marker.exists(), "source preflight ran a Git hook")
+            script.rename(hooks / "pre-commit.sample")
+            self.assertTrue(mod.git_snapshot(src)["usable"])
+
+    @unittest.skipUnless(os.name == "posix", "POSIX executable hooks fixture")
+    def test_custom_hooks_path_and_linked_hooks_directory_are_rejected(self):
+        with tempfile.TemporaryDirectory() as root:
+            base = Path(root)
+            src = base / "checkout"
+            subprocess.run(["git", "init", "-q", str(src)], check=True)
+            subprocess.run(
+                ["git", "-C", str(src), "-c", "user.name=LocalTest",
+                 "-c", "user.email=local@example.invalid", "commit",
+                 "--allow-empty", "-qm", "baseline"],
+                check=True,
+            )
+            subprocess.run(
+                ["git", "-C", str(src), "config",
+                 "core.hooksPath", str(base / "outside-hooks")], check=True,
+            )
+            proof = mod.git_snapshot(src)
+            self.assertFalse(proof["usable"])
+            self.assertEqual(
+                proof["reason"], "unreviewed executable Git hooks path"
+            )
+            subprocess.run(
+                ["git", "-C", str(src), "config", "--unset", "core.hooksPath"],
+                check=True,
+            )
+            hook_dir = src / ".git" / "hooks"
+            hook_dir.rename(src / ".git" / "hooks-original")
+            hook_dir.symlink_to(base, target_is_directory=True)
+            proof = mod.git_snapshot(src)
+            self.assertFalse(proof["usable"])
+            self.assertEqual(
+                proof["reason"], "unreviewed executable Git hooks path"
+            )
+
     @unittest.skipUnless(os.name == "posix", "POSIX executable Git config fixture")
     def test_git_fsmonitor_cannot_execute_during_source_snapshot(self):
         with tempfile.TemporaryDirectory() as root:

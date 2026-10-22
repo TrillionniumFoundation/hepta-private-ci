@@ -14,6 +14,7 @@ import hashlib
 import json
 import os
 import signal
+import stat
 from pathlib import Path
 import shutil
 import subprocess
@@ -122,6 +123,18 @@ def unreviewed_environment_keys(environment: dict[str, str] | None = None) -> li
 
 MAX_PROOF_SOURCE_BYTES = 8 * 1024 * 1024
 
+# Only runnable hook entry-point basenames have Git hook semantics. Fresh git
+# init creates executable *.sample files; those samples never run as hooks.
+GIT_ACTIVE_HOOK_NAMES = frozenset({
+    "applypatch-msg", "pre-applypatch", "post-applypatch", "pre-commit",
+    "pre-merge-commit", "prepare-commit-msg", "commit-msg", "post-commit",
+    "pre-rebase", "post-checkout", "post-merge", "pre-push", "pre-receive",
+    "update", "proc-receive", "post-receive", "post-update",
+    "push-to-checkout", "pre-auto-gc", "post-rewrite", "sendemail-validate",
+    "fsmonitor-watchman", "post-index-change", "reference-transaction",
+    "p4-changelist", "p4-prepare-changelist", "p4-post-changelist",
+})
+
 
 def committed_regular_file(repo_root: Path, relative: str) -> bool:
     """Bind a required file to bytes and regular-file mode in the exact HEAD.
@@ -188,6 +201,50 @@ def git_snapshot(path: Path) -> dict[str, Any]:
             for name in cmd("config", "--list", "--name-only", "-z").split("\0")
             if name
         }
+        # A clean Git index does not show executables in .git/hooks. A local
+        # qualification command may itself perform Git writes, which can run
+        # an active hook. Refuse executable hooks and an unreviewed custom
+        # hooksPath before any status/cargo/test subprocess is started.
+        if "core.hookspath" in config_names:
+            return {
+                "usable": False, "path": str(path),
+                "reason": "unreviewed executable Git hooks path",
+            }
+        hooks_location = cmd("rev-parse", "--git-path", "hooks")
+        if not hooks_location:
+            return {
+                "usable": False, "path": str(path),
+                "reason": "Git hooks path unavailable",
+            }
+        hooks = Path(hooks_location)
+        if not hooks.is_absolute():
+            hooks = path / hooks
+        try:
+            if hooks.is_symlink() or (hooks.exists() and not hooks.is_dir()):
+                return {
+                    "usable": False, "path": str(path),
+                    "reason": "unreviewed executable Git hooks path",
+                }
+            if hooks.is_dir():
+                active_hooks = []
+                for entry in hooks.iterdir():
+                    if entry.name not in GIT_ACTIVE_HOOK_NAMES:
+                        continue
+                    mode = entry.lstat().st_mode
+                    if stat.S_ISLNK(mode) or (stat.S_ISREG(mode) and mode & 0o111):
+                        active_hooks.append(entry.name)
+                if active_hooks:
+                    return {
+                        "usable": False, "path": str(path),
+                        "reason": "unreviewed executable Git hooks",
+                        "blocked_git_hook_names": sorted(active_hooks),
+                    }
+        except OSError:
+            return {
+                "usable": False, "path": str(path),
+                "reason": "Git hooks inventory unavailable",
+            }
+
         executable_git_config = {
             name for name in config_names
             if name == "core.fsmonitor"
