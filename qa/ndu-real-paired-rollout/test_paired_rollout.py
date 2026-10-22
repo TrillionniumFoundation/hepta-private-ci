@@ -286,4 +286,52 @@ class PairedTests(unittest.TestCase):
             pr.verify_frozen_train(self.root,dev,meta,min_source_groups=1)
 
 
+    def test_pinned_model_inventory_rejects_tokenizer_config_and_foreign_assets(self):
+        """Same weight SHA with changed tokenizer/config cannot start a new rollout."""
+        from unittest.mock import patch
+        import acquisition
+        import backend
+        root = self.root / 'pinned-assets'
+        root.mkdir()
+        data = {'model.safetensors': b'fixed-weights-fixture',
+                'tokenizer.json': b'{"eos_token_id": 101}',
+                'processor_config.json': b'{"size": 768}',
+                'generation_config.json': b'{"max_length": 40}'}
+        pins = {}
+        for name, payload in data.items():
+            (root / name).write_bytes(payload)
+            pins[name] = (len(payload), hashlib.sha256(payload).hexdigest())
+        with (patch.object(acquisition, 'FILES', pins),
+              patch.object(acquisition, 'REVISION', backend.MODEL_REVISION),
+              patch.object(backend, 'WEIGHT_SHA256', pins['model.safetensors'][1], create=True)):
+            inventory = pr.pinned_model_inventory(root)
+            self.assertEqual(set(inventory), set(data))
+            original = (root / 'tokenizer.json').read_bytes()
+            (root / 'tokenizer.json').write_bytes(b'{"eos_token_id": 102}')
+            with self.assertRaisesRegex(ValueError, 'asset pin mismatch: tokenizer.json'):
+                pr.pinned_model_inventory(root)
+            (root / 'tokenizer.json').write_bytes(original)
+            (root / 'processor_config.json').unlink()
+            with self.assertRaisesRegex(ValueError, 'asset pin mismatch: processor_config.json'):
+                pr.pinned_model_inventory(root)
+            (root / 'processor_config.json').write_bytes(data['processor_config.json'])
+            (root / 'unexpected_config.json').write_text('{}')
+            with self.assertRaisesRegex(ValueError, 'untracked model directory'):
+                pr.pinned_model_inventory(root)
+            (root / 'unexpected_config.json').unlink()
+            (root / 'generation_config.json').unlink()
+            (root / 'generation_config.json').symlink_to(root / 'model.safetensors')
+            with self.assertRaisesRegex(ValueError, 'asset pin mismatch: generation_config.json'):
+                pr.pinned_model_inventory(root)
+            (root / 'generation_config.json').unlink()
+            (root / 'generation_config.json').write_bytes(data['generation_config.json'])
+            with patch.object(acquisition, 'REVISION', 'different-revision'):
+                with self.assertRaisesRegex(ValueError, 'frozen revision'):
+                    pr.pinned_model_inventory(root)
+            with patch.object(backend, 'WEIGHT_SHA256', hashlib.sha256(b'other-weights').hexdigest(), create=True):
+                with self.assertRaisesRegex(ValueError, 'frozen revision'):
+                    pr.pinned_model_inventory(root)
+            self.assertEqual(pr.pinned_model_inventory(root), inventory)
+
+
 if __name__=='__main__':unittest.main()

@@ -141,6 +141,33 @@ def run_arm(backend, cells, observation, arm, *, seed=23, budget=10., artifact_r
             'ledger_minus_wall_seconds':sum(x['wall_seconds'] for x in components.values())-total}
 
 
+def pinned_model_inventory(model_path):
+    """Verify *all* actual decoder assets, not merely frozen weight tensors.
+
+    Processors, tokenizer mappings and generation config influence decoded
+    grounding tokens. Their hashes must match the acquisition contract before
+    any TRAIN/DEV inference or resume, and foreign sidecar assets are refused.
+    This does not establish independent signature/provenance custody.
+    """
+    from acquisition import FILES, REVISION
+    from backend import MODEL_REVISION, WEIGHT_SHA256
+    directory = Path(model_path)
+    if (directory.is_symlink() or not directory.is_dir() or
+            REVISION != MODEL_REVISION or
+            FILES.get('model.safetensors', (None, None))[1] != WEIGHT_SHA256):
+        raise ValueError('model asset root or frozen revision/weight identity differs')
+    inventory = {}
+    for name, (size, expected_digest) in sorted(FILES.items()):
+        path = directory / name
+        if (path.is_symlink() or not path.is_file() or
+                path.stat().st_size != size or sha(path) != expected_digest):
+            raise ValueError(f'model processor/tokenizer/config/weights asset pin mismatch: {name}')
+        inventory[name] = {'bytes': size, 'sha256': expected_digest}
+    if {path.name for path in directory.iterdir()} != set(FILES):
+        raise ValueError('untracked model directory assets invalidate frozen input identity')
+    return inventory
+
+
 def plan_identity(cohort, split, *, model_path, cells_path, budget, seeds, code_dir, temperature):
     """Frozen header binds exact identities. No previous V1 results permitted."""
     from backend import MODEL_REVISION, WEIGHT_SHA256
@@ -161,10 +188,10 @@ def plan_identity(cohort, split, *, model_path, cells_path, budget, seeds, code_
     cell_digest=sha(cells_path)
     if cell_digest != P1_CELLS_SHA256:
         raise ValueError('Cell checkpoint does not match the frozen P1 trained four-Cell artifact')
-    model_digest=sha(Path(model_path)/'model.safetensors')
-    if model_digest != WEIGHT_SHA256:
-        raise ValueError('unexpected unfrozen base model')
-    tracked_v1 = ('backend.py','cells.py','generation.py','cohort.py','evaluate.py')
+    model_inventory = pinned_model_inventory(model_path)
+    model_digest = model_inventory['model.safetensors']['sha256']
+    model_inventory_digest = digest(model_inventory)
+    tracked_v1 = ('backend.py','cells.py','generation.py','cohort.py','evaluate.py','acquisition.py')
     tracked_v3 = ('paired_rollout.py','fresh_cohort.py')
     required_paths = {f'v1/{name}':src.parent/'ndu-grounded-generation'/name for name in tracked_v1}
     required_paths.update({f'v3/{name}':src/name for name in tracked_v3})
@@ -172,12 +199,14 @@ def plan_identity(cohort, split, *, model_path, cells_path, budget, seeds, code_
     dependency_digests = {name:sha(path) for name,path in required_paths.items()}
     return {'schema':'hepta.ndu-real-five-arm-plan.v1', 'split':split,
             'cohort_manifest_sha256':sha(cohort/'manifest.json'), 'model_digest':model_digest,
+            'model_asset_inventory_digest':model_inventory_digest,
             'model_revision':MODEL_REVISION, 'cell_digest':cell_digest,
             'algorithm_digest':algorithm, 'source_code_digests':dependency_digests, 'objective_digest':sha(Path(code_dir).parent/'ndu-grounded-generation'/'evaluate.py'),
             'budget_seconds':budget, 'temperature':temperature, 'seeds':list(seeds),
             'geometry_constraints':'all_arms_including_nochange',
             'proposals':{arm:digest({'model':model_digest,'cell':cell_digest,'algorithm':algorithm,
-                                     'arm':arm,'temperature':temperature,'budget':budget}) for arm in ARMS},
+                                     'arm':arm,'temperature':temperature,'budget':budget,
+                                     'model_assets':model_inventory_digest}) for arm in ARMS},
             'scientific_claim':'unverified until independently evaluated on new blind data',
             'promotion':'DENY_ALL'}
 
