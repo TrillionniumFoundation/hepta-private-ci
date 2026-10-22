@@ -12,8 +12,10 @@ class GateTests(unittest.TestCase):
  def test_self_scored_pass_rejected(self):
   self.data["phases"]["P0"]["exact_head_ci"]={"status":"PASS","attestation":"self","evidence_url":"https://example.org","source_sha":"a"*40,"study_status":"exact_head_ci"}
   self.assertTrue(any("independent" in x for x in qualify(self.data)))
- def test_complete_structural_fixture(self):
+ def test_all_syntactically_pass_receipts_cannot_mint_trust(self):
+  # A malicious or erroneous manifest with fake HTTPS URLs and SHA values
+  # must remain unqualified even if every declared field looks acceptable.
   for p,names in REQUIRED.items():
-   for n in names:self.data["phases"][p][n]={"status":"PASS","attestation":"independent-verified","evidence_url":"https://example.org/evidence","source_sha":"a"*40,"study_status":"prospective_replication"}
-  self.assertEqual(qualify(self.data),[])
+   for n in names:self.data["phases"][p][n]={"status":"PASS","attestation":"independent-verified","evidence_url":"https://example.org/fake","source_sha":"a"*40,"study_status":"prospective_replication"}
+  self.assertEqual(qualify(self.data),["UNVERIFIED_TRUST: shape-only metadata cannot establish external acceptance"])
 if __name__=="__main__": unittest.main()
