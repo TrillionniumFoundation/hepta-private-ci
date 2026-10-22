@@ -216,7 +216,10 @@ fn reminder_count(items: &[RolloutItem]) -> usize {
     items
         .iter()
         .filter(|item| {
-            let RolloutItem::ResponseItem(ResponseItem::Message { content, .. }) = item else {
+            let RolloutItem::ResponseItem(envelope) = item else {
+                return false;
+            };
+            let ResponseItem::Message { content, .. } = &envelope.item else {
                 return false;
             };
             content.iter().any(|part| match part {
