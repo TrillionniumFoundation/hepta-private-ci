@@ -36,6 +36,9 @@ for raw in sys.stdin.buffer:
     if mode == "authority": result["action_execution_allowed"] = True
     if mode == "null_prediction": result["prediction"] = None
     if mode == "nonfinite": p["task_logits"][0] = float("nan")
+    if mode == "huge_logits": p["task_logits"][0] = 10 ** 400
+    if mode == "huge_probs": p["task_probabilities"][0] = 10 ** 400
+    if mode == "huge_gate": p["gate"] = 10 ** 400
     if mode == "unstable": p["gate"] = 0.25 if index % 2 else 0.5
     if mode == "wrong_acceptance": p["accepted"] = False
     if mode == "early_exit": sys.exit(4)
@@ -154,9 +157,18 @@ class NativeCostTests(unittest.TestCase):
                 self.run_cost(requests=link)
             launch.assert_not_called()
 
+    def test_giant_integer_request_is_denied_before_native_launch(self):
+        self.rows[0]["features"][0] = 10 ** 400
+        self.write_requests()
+        with patch.object(cost.subprocess, "Popen") as launch:
+            with self.assertRaisesRegex(cost.NativeCostError, "request feature identity"):
+                self.run_cost()
+            launch.assert_not_called()
+
     def test_protocol_corruption_and_authority_never_produce_measurement_receipt(self):
         modes = ("wrong_request", "wrong_source", "wrong_artifact", "wrong_index", "authority",
-                 "null_prediction", "nonfinite", "wrong_acceptance", "duplicate", "oversized", "extra", "early_exit")
+                 "null_prediction", "nonfinite", "huge_logits", "huge_probs", "huge_gate",
+                 "wrong_acceptance", "duplicate", "oversized", "extra", "early_exit")
         for mode in modes:
             with self.subTest(mode=mode):
                 self.fixture(mode)
