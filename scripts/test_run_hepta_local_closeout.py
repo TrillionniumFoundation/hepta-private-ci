@@ -16,6 +16,34 @@ from scripts import run_hepta_local_closeout as mod
 
 
 class LocalCloseoutTests(unittest.TestCase):
+    def setUp(self):
+        # The hosted Python setup action injects two loader/build paths into
+        # this *test process*. Model a clean local runner without deleting the
+        # paths required to launch CPython subprocess fixtures. Production
+        # unreviewed_environment_keys() still rejects these overrides.
+        bootstrap_paths = {
+            key: os.environ[key]
+            for key in ("LD_LIBRARY_PATH", "PKG_CONFIG_PATH")
+            if os.environ.get(key)
+        }
+        verifier = mod.unreviewed_environment_keys
+
+        def fixture_environment(environment=None):
+            names = verifier(environment)
+            if environment is not None:
+                return names
+            return [
+                name for name in names
+                if name not in bootstrap_paths
+                or os.environ.get(name) != bootstrap_paths[name]
+            ]
+
+        guard = patch.object(
+            mod, "unreviewed_environment_keys", side_effect=fixture_environment
+        )
+        guard.start()
+        self.addCleanup(guard.stop)
+
     def test_unmounted_checkout_is_not_a_source(self):
         with tempfile.TemporaryDirectory() as root:
             result = mod.git_snapshot(Path(root) / "not-mount")
@@ -312,6 +340,12 @@ class LocalCloseoutTests(unittest.TestCase):
             self.assertIn("GIT_CONFIG_COUNT", proof["blocked_environment_keys"])
             self.assertNotIn("1", proof["blocked_environment_keys"])
             invoked.assert_not_called()
+
+    def test_changed_loader_path_cannot_reuse_fixture_baseline(self):
+        with patch.dict(mod.os.environ, {"LD_LIBRARY_PATH": "/tmp/unreviewed-loader"}):
+            self.assertIn(
+                "LD_LIBRARY_PATH", mod.unreviewed_environment_keys()
+            )
 
     def test_env_poisoning_blocks_checks_without_executing_any_binary(self):
         with tempfile.TemporaryDirectory() as root, patch.dict(
