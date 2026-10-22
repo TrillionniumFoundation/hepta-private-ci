@@ -24,6 +24,10 @@ use codex_hepta_types::Revision;
 use ed25519_dalek::Signer;
 use ed25519_dalek::SigningKey;
 
+#[cfg(any(target_os = "linux", target_os = "macos"))]
+#[path = "cognitive_artifact_unlearning_tests.rs"]
+mod unlearning;
+
 fn id(value: &str) -> StableId {
     StableId::new(value).expect("valid id")
 }
