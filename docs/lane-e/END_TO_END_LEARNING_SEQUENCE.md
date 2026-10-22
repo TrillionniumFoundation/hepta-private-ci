@@ -274,9 +274,12 @@ attempt lineage, including rejection, interruption and no-update. Each round:
 2. Ledger-owned authenticated decisions, independent terminal outcomes and a
    frozen dataset produce the next candidate off the current-run path. Train
    only inside its admitted bounds; create immutable manifest/lineage and bytes.
-3. Freeze the independent evaluation plan before outcomes are inspected. Use
-   unused future windows, disjoint task/principal lineage, independent controller,
-   credential and signing key, matched lifecycle cost, a frozen baseline, best
+3. Freeze the reproducible engineering evaluation plan and declared task bytes,
+   versions, exposure/reuse and budgets. Public or previously seen tasks are
+   admissible; unseen future data and independent data custody are not entry
+   conditions for the three-round mechanism test. Preserve the existing evaluator
+   and selector authority, credential and signing key, matched lifecycle cost,
+   a frozen baseline, best
    single expert and simple-merge controls. Compare the complete routed model as
    well as the changed Cell; test retention, safety, poisoning/backdoor, OOD,
    support and withdrawal. Existing causal/longitudinal estimators still apply.
@@ -304,7 +307,7 @@ attempt lineage, including rejection, interruption and no-update. Each round:
 
 The cross-repository interface anchors are I06 export, I07 evaluation, I08 Chain
 accepted-task observation, I09 release-closure fetch and I10 local installation
-and readback in the [Chain plan](https://github.com/TrillionniumFoundation/Trillionnium-Chain/blob/8d56f2f173d3e870846cf1129d48647f2b84540a/docs/development/TRNM_AI_NATIVE_BLOCKCHAIN_DEVELOPMENT_PLAN.md).
+and readback in the [Chain plan](https://github.com/TrillionniumFoundation/Trillionnium-Chain/blob/e80076e54050c9ba958a9b8f801e6890da5fdb98/docs/development/TRNM_AI_NATIVE_BLOCKCHAIN_DEVELOPMENT_PLAN.md).
 These are design-change anchors, not already deployed wire schemas. Preserve
 `DatasetSnapshotV1` exchange, complete V3 admission, `LearningArtifactManifestV1`
 compatibility and `EvaluationReceiptV1`/`LongitudinalEvaluationReceiptV1` meaning.
@@ -321,7 +324,10 @@ its actual installed parent's predeclared improvement threshold/confidence rule,
 passing retention/safety/resource floors, being loaded, and serving the next
 ordinary task. No-update, replayed outcomes or forced degradation of a baseline
 cannot count as improvement. Preserve the existing requirement of at least two
-calendar windows; a reused future holdout is no longer future evidence.
+calendar windows for longitudinal efficacy claims; a reused future holdout is
+no longer future evidence. Engineering results are reported on the named test
+dataset and do not imply generalization to unknown tasks. Independent future
+data is not a blocker for this controlled mechanism test.
 
 Retain exact paired commits, product caller, signed role/controller provenance,
 model/tensor roots, datasets, sealed plans, raw measurements, task/effect IDs,
