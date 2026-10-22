@@ -16,7 +16,6 @@ use crate::Digest32;
 use crate::Generation;
 use crate::StableId;
 
-
 pub const EXECUTION_CONTRACT_VERSION_V1: &str = "hepta.execution.contract.v1";
 
 /// The execution surface requested by a cell.
@@ -515,7 +514,6 @@ fn push_optional_digest(bytes: &mut Vec<u8>, value: Option<Digest32>) {
         None => bytes.push(0),
     }
 }
-
 
 #[cfg(test)]
 #[path = "execution_contract_tests.rs"]
