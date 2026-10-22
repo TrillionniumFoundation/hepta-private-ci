@@ -126,6 +126,13 @@ jobs:
     if: needs.scope.outputs.native == 'true' && needs.scope.outputs.full_repo != 'true'
     runs-on: ubuntu-24.04
     timeout-minutes: 40
+    # Conserve ephemeral runner disk for the complete reverse-consumer test set.
+    # These settings affect debug symbols and Cargo build scheduling, not test selection.
+    env:
+      CARGO_INCREMENTAL: "0"
+      CARGO_BUILD_JOBS: "2"
+      CARGO_PROFILE_TEST_DEBUG: "0"
+      CARGO_PROFILE_DEV_DEBUG: "0"
     steps:
       - name: Checkout exact candidate
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
@@ -133,6 +140,20 @@ jobs:
           ref: ${{ github.event.pull_request.head.sha || github.sha }}
           fetch-depth: 0
           persist-credentials: false
+
+      - name: Reclaim unused hosted SDKs before Rust compilation
+        shell: bash
+        run: |
+          set -euo pipefail
+          df -h "$GITHUB_WORKSPACE"
+          # Hosted image SDKs are unrelated to this Linux Rust native lane.
+          for sdk in /usr/local/lib/android /usr/share/dotnet /opt/hostedtoolcache/CodeQL /usr/local/share/powershell; do
+            if [ -d "$sdk" ]; then
+              sudo rm -rf -- "$sdk"
+            fi
+          done
+          sudo apt-get clean
+          df -h "$GITHUB_WORKSPACE"
 
       - name: Prepare native test prerequisites before compilation
         run: |
@@ -163,6 +184,13 @@ jobs:
           python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/impact-test.json" --
           python3 scripts/hepta_ci_dependencies.py --base "$BASE_SHA" --tested "$TESTED_SHA"
           --output "$RUNNER_TEMP/cargo-impact.json" --run
+
+      - name: Report disk usage after scoped execution
+        if: always()
+        shell: bash
+        run: |
+          df -h "$GITHUB_WORKSPACE"
+          du -sh codex-rs/target 2>/dev/null || true
 
       - name: Retain dependency plan and real command output
         if: always()
