@@ -65,6 +65,10 @@ fn trusted(
 }
 
 fn activated_trust() -> ActivatedLearningTrustV1 {
+    activated_trust_for_domain(/*root_seed*/ 99, /*generation*/ 1)
+}
+
+fn activated_trust_for_domain(root_seed: u8, generation: u64) -> ActivatedLearningTrustV1 {
     let trust = LearningEvidenceTrustV1 {
         scope_digest: digest("scope"),
         objective_digest: digest("objective"),
@@ -102,7 +106,7 @@ fn activated_trust() -> ActivatedLearningTrustV1 {
             ),
         ],
     };
-    let key = SigningKey::from_bytes(&[99; 32]);
+    let key = SigningKey::from_bytes(&[root_seed; 32]);
     let root = LearningTrustRootV1 {
         root_id: id("learning-root"),
         scope_digest: digest("scope"),
@@ -114,7 +118,7 @@ fn activated_trust() -> ActivatedLearningTrustV1 {
     let mut signed = SignedLearningTrustDistributionV1 {
         distribution: LearningTrustDistributionV1 {
             distribution_id: id("trust-distribution"),
-            generation: 1,
+            generation,
             effective_at: 20,
             trust,
         },

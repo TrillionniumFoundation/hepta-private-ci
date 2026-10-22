@@ -88,6 +88,15 @@ fn confirmed_unlearning_uses_actual_signed_record_and_independent_witness_after_
     let fact = writer
         .verify_committed_unlearning(&request, &dataset, &evidence, /*now*/ 50)
         .unwrap();
+    let trust = activated_trust();
+    assert_eq!(
+        (
+            fact.ledger_binding(),
+            fact.root_digest(),
+            fact.distribution_digest()
+        ),
+        (binding(), trust.root_digest(), trust.distribution_digest())
+    );
     assert_eq!(
         (
             fact.record_id(),

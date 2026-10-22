@@ -131,6 +131,20 @@ impl LearningArtifactOwnerService {
         &self.registry
     }
 
+    /// Check this original service's immutable host identity, including while
+    /// an operation requires recovery. This grants no CURRENT/use authority and
+    /// neither clears uncertainty nor bypasses the original signed mutation.
+    pub fn verify_owner_binding(
+        &self,
+        trust_digest: Digest32,
+        storage_binding: Digest32,
+    ) -> Result<(), LearningArtifactOwnerServiceError> {
+        if self.host.trust_digest() != trust_digest || self.storage_binding != storage_binding {
+            return Err(LearningArtifactOwnerServiceError::RequestMismatch);
+        }
+        Ok(())
+    }
+
     /// Return the exact authenticated CURRENT registry view for read-only
     /// product consumers. This delegates current-head discovery, signature
     /// validation and snapshot binding to the fenced artifact owner.

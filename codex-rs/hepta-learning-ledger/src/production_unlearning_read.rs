@@ -9,6 +9,9 @@ pub struct VerifiedCommittedUnlearningV1<'a> {
     lineage: &'a UnlearningLineageEventV1,
     event_digest: Digest32,
     frontier: LedgerWitnessFrontier,
+    ledger_binding: Digest32,
+    root_digest: Digest32,
+    distribution_digest: Digest32,
 }
 
 impl VerifiedCommittedUnlearningV1<'_> {
@@ -32,14 +35,27 @@ impl VerifiedCommittedUnlearningV1<'_> {
     pub fn frontier(&self) -> LedgerWitnessFrontier {
         self.frontier
     }
+    #[must_use]
+    pub fn ledger_binding(&self) -> Digest32 {
+        self.ledger_binding
+    }
+    #[must_use]
+    pub fn root_digest(&self) -> Digest32 {
+        self.root_digest
+    }
+    #[must_use]
+    pub fn distribution_digest(&self) -> Digest32 {
+        self.distribution_digest
+    }
 }
 
 impl LedgerWriter {
-    /// Verify the supplied original signed evidence against current trust and
+    /// Verify the supplied original signed evidence against this writer's
+    /// selected activated trust snapshot (including signer/evidence validity) and
     /// resolve its exact already-committed event through the original index.
     /// No public append receipt, copied snapshot or caller frontier is accepted.
-    /// A real but unacknowledged ledger tail blocks this read. Expired/rotated
-    /// evidence fails closed for new delivery; it never undoes an artifact denial
+    /// A real but unacknowledged ledger tail blocks this read. Evidence invalid
+    /// under that snapshot fails closed for new delivery; it never undoes an artifact denial
     /// already acknowledged by the artifact owner. This is not FinalUse authority.
     pub fn verify_committed_unlearning(
         &self,
@@ -113,6 +129,9 @@ impl LedgerWriter {
             lineage,
             event_digest: record.event_digest,
             frontier,
+            ledger_binding: self.backend.binding(),
+            root_digest: self.trust.root_digest(),
+            distribution_digest: self.trust.distribution_digest(),
         })
     }
 }

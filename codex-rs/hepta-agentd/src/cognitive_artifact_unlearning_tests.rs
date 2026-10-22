@@ -5,6 +5,16 @@ use codex_hepta_types::FixedQ32;
 use codex_hepta_types::Generation;
 use std::fs;
 
+#[path = "cognitive_artifact_unlearning_delivery_tests.rs"]
+mod delivery;
+
+enum Target {
+    Exact,
+    OtherDataset,
+    OtherBinding,
+    OtherTrust,
+}
+
 struct Case {
     temp: tempfile::TempDir,
     sink: CognitiveRetrievalLearningSink,
@@ -92,6 +102,10 @@ fn copy_store(source: &std::path::Path, target: &std::path::Path) {
 }
 
 fn case() -> Case {
+    case_with(Target::Exact)
+}
+
+fn case_with(target: Target) -> Case {
     let (temp, sink) = sink();
     let mut writer = sink.writer.lock().unwrap();
     let candidates = vec![id("action"), id("abstain")];
@@ -190,7 +204,7 @@ fn case() -> Case {
         expires_at: 1000,
         revoked_at: None,
     };
-    let trust = art::ArtifactOwnerTrustV1 {
+    let mut trust = art::ArtifactOwnerTrustV1 {
         registry_id: id("artifact-registry"),
         withdrawal_scope_digest: withdrawals.scope_digest().unwrap(),
         minimum_registry_generation: Generation::new(1).unwrap(),
@@ -199,6 +213,12 @@ fn case() -> Case {
         writer_signers: vec![signer.clone()],
         head_signers: vec![signer],
     };
+    if matches!(target, Target::OtherTrust) {
+        let mut additional = trust.head_signers[0].clone();
+        additional.signer_id = id("other-head-signer");
+        additional.verifying_key = SigningKey::from_bytes(&[19; 32]).verifying_key().to_bytes();
+        trust.head_signers.push(additional);
+    }
     let mut lease = art::SignedArtifactWriterLeaseV1 {
         lease_id: id("lease"),
         producer_id: id("generator"),
@@ -221,7 +241,11 @@ fn case() -> Case {
         writer_lease: lease,
         required_current_head: None,
         withdrawal_registry: withdrawals.clone(),
-        storage_binding: digest("artifact-binding"),
+        storage_binding: if matches!(target, Target::OtherBinding) {
+            digest("different-artifact-binding")
+        } else {
+            digest("artifact-binding")
+        },
         now: 20,
     };
     let mut service = art::LearningArtifactOwnerService::open(config.clone()).unwrap();
@@ -230,7 +254,11 @@ fn case() -> Case {
         kind: art::ArtifactKind::Model,
         generation: Generation::new(1).unwrap(),
         provenance_mode: art::ProvenanceModeV1::DatasetDerived,
-        source_dataset_digests: vec![dataset.snapshot.dataset_digest],
+        source_dataset_digests: vec![if matches!(target, Target::OtherDataset) {
+            digest("different-dataset")
+        } else {
+            dataset.snapshot.dataset_digest
+        }],
         lineage_digests: vec![last.chain_digest],
         predecessor_ids: vec![],
         rollback_predecessor: None,
@@ -296,6 +324,8 @@ fn case() -> Case {
         })
         .unwrap();
     config.required_current_head = Some(published.clone());
+    drop(service);
+    let service = art::LearningArtifactOwnerService::open(config.clone()).unwrap();
     let reader =
         art::ArtifactOwnerCurrentReaderV1::open(&config.root, config.trust.clone(), published)
             .unwrap();

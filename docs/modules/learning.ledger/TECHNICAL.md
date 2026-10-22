@@ -201,10 +201,14 @@ The [current native implementation](../../../qualification/module-execution-doss
 
 `LedgerWriter::verify_committed_unlearning` verifies the original signed
 UnlearningAuthority evidence against current trust and the exact indexed committed
-event, historical dataset and source membership. It requires the actual backend
+event, historical dataset and source membership. Here current trust means the
+writer's selected activated snapshot and its signer/evidence validity checks;
+root/distribution windows are checked at activation, not newly enforced as
+per-operation expiry. The host owns newest-revocation distribution and key custody.
+The read requires the actual backend
 and independently retained witness frontiers to agree. The returned opaque fact
 borrows that writer; it is not a deserializable receipt, artifact-membership proof
-or dispatch permission. Expired or rotated evidence blocks new handoff. A later
+or dispatch permission. Evidence invalid under that snapshot blocks new handoff. A later
 artifact denial remains subject to the artifact owner's own durable CURRENT and
 recovery rules; this read neither issues that denial nor supplies its signing
 transport, dataset-wide withdrawal or FinalUse authority.

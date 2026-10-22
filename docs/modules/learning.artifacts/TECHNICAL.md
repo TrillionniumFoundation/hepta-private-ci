@@ -243,6 +243,22 @@ Create-only file writers hold an exclusive advisory file lock through the empty-
 
 Iteration bookkeeping is separately bounded and authority-free. `IterationLedgerV1` can record typed externally produced evidence and replay candidate state, but it does not execute a sandbox, evaluate code, select a candidate, merge source or release an artifact.
 
+Agentd's explicit `CognitiveRetrievalLearningSink::revoke_artifact_from_unlearning`
+composes the original owners for one already-committed unlearning event. Immutable
+host pins bind the original ledger store/root/distribution and artifact
+trust/storage; no request can supply its own owner binding. The full V2 manifest
+must match the actual registry index and contain the exact dataset digest.
+The original independently signed CURRENT still authorizes the exact Revoke
+operation/reason and successor. `verify_owner_binding` checks only the service's
+immutable identity, including during recovery; it grants no CURRENT or use
+authority. The original writer/O/checkpoint/ACK path alone performs mutation and
+same-operation reconciliation. The host retains its signed CURRENT floor.
+
+This opt-in library composition is off by default. It does not add source
+unlearning ingestion, a daemon command, signing transport, dataset-wide persistent
+withdrawal/future-admission protection, complete V2 descendant fanout, erasure,
+HF inference or held FinalUse. Those integrations remain open.
+
 ## 8. Failure semantics, recovery and rollback
 
 The module fails closed on digest mismatch, scope mismatch, predecessor mismatch, stale withdrawal head, invalid lifecycle transition, expired mutation credentials, invalid current-head witness, non-canonical durable bytes, capacity exhaustion and publication phase skips.
