@@ -183,7 +183,10 @@ impl Codec for RecallDispositionV1 {
     }
 }
 
-fields!(EngramSupportV1 { record_id, record_revision });
+fields!(EngramSupportV1 {
+    record_id,
+    record_revision
+});
 fields!(EngramNodeV1 {
     node_id, population, support, threshold, confidence, generation_vector_digest,
 });

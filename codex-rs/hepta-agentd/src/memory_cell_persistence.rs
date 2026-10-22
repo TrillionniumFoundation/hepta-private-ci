@@ -75,7 +75,7 @@ impl AgentdMemoryCellPersistenceHostV1 {
     /// acknowledgement. This never bootstraps, rewrites bytes, or chooses an
     /// older anchor. Retention remains the independently authenticated host's job.
     pub async fn acknowledge_retained_checkpoint(&self) -> Result<(), String> {
-        let _guard = self.operation.lock().await;
+        let _guard = Arc::clone(&self.operation).lock_owned().await;
         let pending = self
             .pending
             .lock()

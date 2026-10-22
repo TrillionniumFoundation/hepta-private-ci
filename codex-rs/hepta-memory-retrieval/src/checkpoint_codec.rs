@@ -137,12 +137,7 @@ fn encode<T: Codec>(value: &T, magic: &[u8], maximum: usize) -> Result<Vec<u8>> 
     Ok(writer.bytes)
 }
 
-fn decode<T: Codec>(
-    bytes: &[u8],
-    expected: Digest32,
-    magic: &[u8],
-    maximum: usize,
-) -> Result<T> {
+fn decode<T: Codec>(bytes: &[u8], expected: Digest32, magic: &[u8], maximum: usize) -> Result<T> {
     if bytes.len() > maximum {
         return Err(MemoryCheckpointCodecErrorV1::SizeLimit);
     }

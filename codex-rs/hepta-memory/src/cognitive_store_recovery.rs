@@ -374,7 +374,13 @@ async fn capture(
     connection: &mut SqliteConnection,
     owner: &AgentId,
 ) -> Result<CognitiveRecoveryAnchor, CognitiveStoreError> {
-    capture_profile(connection, owner, REQUIRED_SCHEMA_OBJECTS, REQUIRED_SCHEMA_ORACLE_SHA256).await
+    capture_profile(
+        connection,
+        owner,
+        REQUIRED_SCHEMA_OBJECTS,
+        REQUIRED_SCHEMA_ORACLE_SHA256,
+    )
+    .await
 }
 
 async fn capture_profile(
