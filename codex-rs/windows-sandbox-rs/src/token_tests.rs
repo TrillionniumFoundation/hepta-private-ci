@@ -33,6 +33,9 @@ use windows_sys::Win32::Storage::FileSystem::FILE_GENERIC_EXECUTE;
 use windows_sys::Win32::Storage::FileSystem::FILE_GENERIC_READ;
 use windows_sys::Win32::Storage::FileSystem::FILE_GENERIC_WRITE;
 
+#[path = "token_mode_probe_tests.rs"]
+mod token_mode_probe;
+
 struct OwnedToken(HANDLE);
 
 impl Drop for OwnedToken {
@@ -364,6 +367,12 @@ fn workspace_capabilities_deny_writes_and_deletes_under_broad_identity_aces() ->
         (outside_read, refused)
     };
     trace_parent_delete_child_authority(&base, &token, [&cap_a, &cap_b], &other_cap);
+    token_mode_probe::trace_full_restriction_comparison(
+        &base,
+        &token,
+        [&cap_a, &cap_b],
+        &other_cap,
+    );
     assert_eq!(refused, [Some(std::io::ErrorKind::PermissionDenied); 4]);
     assert_eq!(outside_read, "outside");
     assert_eq!(
