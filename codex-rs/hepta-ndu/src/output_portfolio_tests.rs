@@ -41,6 +41,7 @@ fn candidate(
     OutputPortfolioCandidateV1 {
         candidate_id: id(name),
         candidate_digest: Digest32::of_bytes(name.as_bytes()),
+        objective_digest: Digest32::of_bytes(b"objective"),
         snapshot_digest: Digest32::of_bytes(b"snapshot"),
         generation: Generation::new(1).expect("candidate generation"),
         encoder_digest: Digest32::of_bytes(b"encoder"),
@@ -1009,5 +1010,32 @@ fn portfolio_receipt_replay_rejects_mutated_allocation_and_digest() {
     assert_eq!(
         verify_output_portfolio_receipt_v1(&ctx, &limits, &original, &altered_generation),
         Err(NduError::InvalidSolverReceipt("portfolio receipt replay"))
+    );
+}
+
+#[test]
+fn objective_bound_candidate_rejects_cross_objective_replay() {
+    let state = context(2);
+    let limits = budget(2);
+    let mut foreign = candidate("same-feature-different-objective", 90, 0, false);
+    foreign.objective_digest = Digest32::of_bytes(b"foreign-objective");
+    let candidates = [candidate("baseline", 0, 0, true), foreign];
+    assert_eq!(
+        select_output_portfolio_v1(&state, &limits, &candidates)
+            .expect_err("a Cell utility estimate belongs to exactly one objective"),
+        NduError::InvalidSolverReceipt("portfolio candidate objective")
+    );
+    assert_eq!(
+        output_efficient_frontier_v1(&state, &candidates)
+            .expect_err("a frontier cannot contain cross-objective utility estimates"),
+        NduError::InvalidSolverReceipt("portfolio candidate objective")
+    );
+
+    let mut changed_context = state;
+    changed_context.objective_digest = Digest32::of_bytes(b"foreign-objective");
+    assert_eq!(
+        select_output_portfolio_v1(&changed_context, &limits, &candidates)
+            .expect_err("switching the objective must not make the original baseline valid"),
+        NduError::InvalidSolverReceipt("portfolio candidate objective")
     );
 }
