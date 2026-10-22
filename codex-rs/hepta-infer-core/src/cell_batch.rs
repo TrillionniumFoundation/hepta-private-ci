@@ -20,7 +20,7 @@ use codex_hepta_types::StableId;
 
 const FEATURE_WIDTH: usize = 8;
 const MAX_FEATURE_WIDTH: usize = 256;
-const MAX_BATCH_ITEMS: usize = 1_024;
+pub(crate) const MAX_BATCH_ITEMS: usize = 1_024;
 const MAX_QUEUE_ITEMS: usize = 16_384;
 
 /// An immutable feature snapshot that may be shared by many cell heads.

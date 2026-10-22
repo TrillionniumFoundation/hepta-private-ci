@@ -62,6 +62,32 @@ fn compatible_model_index_is_stable() {
 }
 
 #[test]
+fn worker_microbatch_limit_matches_immutable_feature_batch() {
+    assert_eq!(
+        SharedWorkerPoolV1::new(16_384, MAX_BATCH_ITEMS + 1),
+        Err(CellWorkerError::BatchCapacity),
+        "one worker dispatch must not exceed the bounded feature microbatch",
+    );
+    assert_eq!(
+        SharedWorkerPoolV1::new(1, 0),
+        Err(CellWorkerError::ZeroBatchSize),
+    );
+
+    let mut pool = SharedWorkerPoolV1::new(MAX_BATCH_ITEMS + 1, MAX_BATCH_ITEMS)
+        .expect("maximum admissible microbatch");
+    for number in 0..=MAX_BATCH_ITEMS {
+        pool.submit(request(
+            u64::try_from(number).expect("bounded request index"),
+            "scope:bounded",
+        ))
+        .expect("bounded queue admission");
+    }
+    assert_eq!(pool.drain().requests.len(), MAX_BATCH_ITEMS);
+    assert_eq!(pool.drain().requests.len(), 1);
+    assert_eq!(pool.metrics().activations_committed, 1025);
+}
+
+#[test]
 fn shared_pool_reports_group_and_drop_metrics() {
     let mut pool = SharedWorkerPoolV1::new(1, 1).expect("pool");
     pool.submit(request(1, "scope:a")).expect("submit");
