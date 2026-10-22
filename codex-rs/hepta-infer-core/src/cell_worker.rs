@@ -66,6 +66,10 @@ pub struct FeatureCacheKeyV1 {
 #[derive(Clone, Debug, Default, Eq, PartialEq)]
 pub struct FeatureCacheV1 {
     entries: BTreeMap<FeatureCacheKeyV1, ImmutableFeatureSnapshotV1>,
+    // Invalidating the last snapshot must not reopen a retired scope generation.
+    scope_high_watermarks: BTreeMap<StableId, Generation>,
+    // An explicit cutover fences even scopes that have not cached a feature.
+    minimum_generation: Option<Generation>,
 }
 
 impl FeatureCacheV1 {
@@ -74,8 +78,26 @@ impl FeatureCacheV1 {
         scope_id: StableId,
         snapshot: ImmutableFeatureSnapshotV1,
     ) -> Result<(), CellWorkerError> {
+        let generation = snapshot.generation();
+        if self
+            .minimum_generation
+            .is_some_and(|minimum| generation.get() < minimum.get())
+            || self
+                .scope_high_watermarks
+                .get(&scope_id)
+                .is_some_and(|previous| generation.get() < previous.get())
+        {
+            return Err(CellWorkerError::StaleFeatureGeneration);
+        }
+        // Watermarks are bounded independently from live entries because old
+        // keys may disappear during a generation cutover.
+        if !self.scope_high_watermarks.contains_key(&scope_id)
+            && self.scope_high_watermarks.len() >= MAX_INDEX_ENTRIES
+        {
+            return Err(CellWorkerError::IndexCapacity);
+        }
         let key = FeatureCacheKeyV1 {
-            scope_id,
+            scope_id: scope_id.clone(),
             encoder_digest: snapshot.encoder_digest(),
             input_digest: snapshot.input_digest(),
         };
@@ -93,6 +115,7 @@ impl FeatureCacheV1 {
             return Err(CellWorkerError::IndexCapacity);
         }
         self.entries.insert(key, snapshot);
+        self.scope_high_watermarks.insert(scope_id, generation);
         Ok(())
     }
 
@@ -102,14 +125,86 @@ impl FeatureCacheV1 {
         key: &FeatureCacheKeyV1,
         expected_generation: Generation,
     ) -> Option<&ImmutableFeatureSnapshotV1> {
-        self.entries
-            .get(key)
-            .filter(|snapshot| snapshot.generation() == expected_generation)
+        self.entries.get(key).filter(|snapshot| {
+            // An older key may still be present after a newer encoder/input
+            // was inserted in this scope. Physical presence is not a live
+            // generation permit, even if a caller requests the stale epoch.
+            snapshot.generation() == expected_generation
+                && self
+                    .scope_high_watermarks
+                    .get(&key.scope_id)
+                    .is_some_and(|current| *current == expected_generation)
+                && !self
+                    .minimum_generation
+                    .is_some_and(|minimum| expected_generation.get() < minimum.get())
+        })
     }
 
-    pub fn invalidate_generation(&mut self, generation: Generation) {
+    /// Fence one independently versioned scope without evicting other scopes.
+    ///
+    /// Per-scope generations need not be numerically synchronized. A global
+    /// cutover uses `invalidate_generation`; an organ-local cutover must not
+    /// discard valid features owned by an unrelated organ at an older epoch.
+    /// Record the watermark even when this scope had no cached feature.
+    pub fn invalidate_scope_generation(
+        &mut self,
+        scope_id: StableId,
+        generation: Generation,
+    ) -> Result<(), CellWorkerError> {
+        if self
+            .minimum_generation
+            .is_some_and(|minimum| generation.get() < minimum.get())
+            || self
+                .scope_high_watermarks
+                .get(&scope_id)
+                .is_some_and(|previous| generation.get() < previous.get())
+        {
+            return Err(CellWorkerError::StaleFeatureGeneration);
+        }
+        if !self.scope_high_watermarks.contains_key(&scope_id)
+            && self.scope_high_watermarks.len() >= MAX_INDEX_ENTRIES
+        {
+            return Err(CellWorkerError::IndexCapacity);
+        }
+        self.scope_high_watermarks
+            .insert(scope_id.clone(), generation);
+        self.entries.retain(|key, snapshot| {
+            key.scope_id != scope_id || snapshot.generation() == generation
+        });
+        Ok(())
+    }
+
+    /// Checked fleet-wide cutover. Reject a stale epoch before changing any
+    /// entries or fences. A global cutover must not evict a newer scoped
+    /// snapshot, even when its own floor has not advanced yet.
+    ///
+    /// Scopes with independent timelines must instead use
+    /// `invalidate_scope_generation`.
+    pub fn try_invalidate_generation(
+        &mut self,
+        generation: Generation,
+    ) -> Result<(), CellWorkerError> {
+        if self
+            .minimum_generation
+            .is_some_and(|minimum| generation.get() < minimum.get())
+            || self
+                .scope_high_watermarks
+                .values()
+                .any(|current| generation.get() < current.get())
+        {
+            return Err(CellWorkerError::StaleFeatureGeneration);
+        }
+        self.minimum_generation = Some(generation);
         self.entries
             .retain(|_, snapshot| snapshot.generation() == generation);
+        Ok(())
+    }
+
+    /// Compatibility entry point: a stale fleet-wide cutover is a no-op, never
+    /// a destructive eviction. New Control callers must use the checked API
+    /// to observe and reject stale cutover requests explicitly.
+    pub fn invalidate_generation(&mut self, generation: Generation) {
+        let _ = self.try_invalidate_generation(generation);
     }
 
     #[must_use]
