@@ -277,8 +277,11 @@ async fn a_new_start_fence_is_not_adopted_or_waited_by_old_observation() {
     timeout(BUDGET, gate.start_entered.notified())
         .await
         .expect("new real start owner is held before attachment");
-    assert_eq!(session.turn_epoch.load(Ordering::Acquire), epoch);
-    assert_eq!(observation.await, Err(Error::Busy));
+    // The real spawn owner consumes recovery mutation authority before its
+    // start callback. That advances the epoch once, before task attachment.
+    assert_eq!(session.turn_epoch.load(Ordering::Acquire), epoch + 1);
+    assert!(!new_start.is_finished());
+    assert_eq!(observation.await, Err(Error::Stale));
     assert!(session.has_pending_start_transition());
     assert_start_refused(&session).await;
     gate.start_release.notify_one();
