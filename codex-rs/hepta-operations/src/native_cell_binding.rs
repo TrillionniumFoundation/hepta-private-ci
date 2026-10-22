@@ -21,6 +21,7 @@ pub enum NativeCellBindingError {
     ArgumentBytesMismatch,
     DeadlineExpired,
     ForeignOrExpiredClaim,
+    InvalidInternalDestination,
 }
 
 impl fmt::Display for NativeCellBindingError {
@@ -55,7 +56,7 @@ pub fn bind_native_cell_to_durable_outbox_v1(
         operation_id: intent.cell.operation_id.clone(),
         expected_predecessor: None,
         destination: StableId::new(NATIVE_DESTINATION)
-            .expect("static destination is a valid StableId"),
+            .map_err(|_| NativeCellBindingError::InvalidInternalDestination)?,
         payload_digest: intent.intent_digest(),
         owner_generation: intent.cell.generation,
     })
