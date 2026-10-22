@@ -272,6 +272,31 @@ types_alias = { package = "codex-hepta-types", path = "../wrong-owner" }
         self.assertEqual(len(errors), 1, errors)
         self.assertIn("source custody", errors[0])
 
+    def test_patch_can_not_rebind_approved_external_or_local_crate(self):
+        root = tomllib.loads("""
+[patch.crates-io]
+serde = { path = "vendored/other-serde" }
+masked_sha2 = { package = "sha2", git = "https://example.invalid/fork" }
+codex-hepta-types = { path = "wrong-dir" }
+""")
+        errors = checker.check_root_source_overrides(root)
+        self.assertEqual(len(errors), 3, errors)
+        self.assertTrue(all("overrides approved" in error for error in errors))
+
+    def test_replace_can_not_rebind_approved_external_crate(self):
+        root = {"replace": {"serde:1.0.0": {"path": "vendored/fork"}}}
+        errors = checker.check_root_source_overrides(root)
+        self.assertEqual(len(errors), 1, errors)
+        self.assertIn("replace.serde:1.0.0", errors[0])
+
+    def test_unrelated_pinned_cargo_patches_are_preserved(self):
+        root = tomllib.loads("""
+[patch.crates-io]
+imbl = { path = "third_party/imbl-6.1.0" }
+crossterm = { git = "https://example.invalid/pin", rev = "abc123" }
+""")
+        self.assertEqual(checker.check_root_source_overrides(root), [])
+
 
 if __name__ == "__main__":
     unittest.main()
