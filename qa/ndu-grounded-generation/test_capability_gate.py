@@ -81,6 +81,14 @@ class CapabilityTests(unittest.TestCase):
         result = evaluate_capabilities(r, p, e)
         self.assertNotEqual(result["gates"]["independent_text_and_pixel_generation"]["status"], "pass")
 
+    def test_different_tasks_same_original_source_rejected(self):
+        r, p, e = make_fixtures()
+        for row in e:
+            if row["task_id"] == "t1":
+                row["score"]["source_id"] = "source0"
+        with self.assertRaisesRegex(EvidenceError, "shares an original source"):
+            evaluate_capabilities(r, p, e)
+
     def test_empty_missing_and_duplicate_rows_rejected(self):
         r,p,e = make_fixtures()
         for bad in ([], [dict(e[0])] * 2):
