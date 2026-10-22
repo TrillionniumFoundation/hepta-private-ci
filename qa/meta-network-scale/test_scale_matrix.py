@@ -1,6 +1,9 @@
+import contextlib
 import importlib.util
+import io
 import json
 import pathlib
+import tempfile
 import unittest
 
 MODULE_PATH = pathlib.Path(__file__).with_name("scale_matrix.py")
@@ -34,6 +37,53 @@ class ScaleMatrixTests(unittest.TestCase):
         self.assertIn("evidence_receipts must be an object", errors)
         self.assertIn("metrics must be an object", errors)
         self.assertIn("metrics_receipt must be a lowercase SHA-256 digest", errors)
+
+    def test_result_rejects_unregistered_authority_claims_at_every_depth(self):
+        for scope in (
+            "result",
+            "provenance",
+            "evidence",
+            "evidence_receipts",
+            "metrics",
+        ):
+            with self.subTest(scope=scope):
+                result = self.make_record(64, "shared_encoder")
+                target = result if scope == "result" else result[scope]
+                target["final_use_authorized"] = True
+                self.assertIn(
+                    f"{scope}.final_use_authorized is not a registered field",
+                    scale_matrix.validate_result(result),
+                )
+
+    def test_matrix_rejects_undeclared_release_and_row_claims(self):
+        matrix = self.matrix()
+        matrix["production_admission"] = True
+        self.assertIn(
+            "matrix.production_admission is not a registered field",
+            scale_matrix.validate_matrix(matrix),
+        )
+
+        matrix = self.matrix()
+        matrix["results"][3]["release_approved"] = True
+        self.assertIn(
+            "results[3].result.release_approved is not a registered field",
+            scale_matrix.validate_matrix(matrix),
+        )
+
+    def test_cli_rejects_duplicate_nonfinite_and_oversized_json(self):
+        # No parser should silently pick the last of two authority values.
+        inputs = (
+            b'{"authority":"production","authority":"qualification_only"}',
+            b'{"authority":NaN}',
+            b" " * (scale_matrix.MAX_INPUT_BYTES + 1),
+        )
+        with tempfile.TemporaryDirectory() as directory:
+            path = pathlib.Path(directory) / "untrusted.json"
+            for payload in inputs:
+                with self.subTest(payload_size=len(payload)):
+                    path.write_bytes(payload)
+                    with contextlib.redirect_stderr(io.StringIO()):
+                        self.assertEqual(scale_matrix.main(["validate", str(path)]), 1)
 
     def test_complete_result_is_accepted(self):
         result = {
@@ -140,6 +190,39 @@ class ScaleMatrixTests(unittest.TestCase):
         self.assertIn("evidence_receipts must be an object", errors)
         self.assertIn("metrics_receipt must be a lowercase SHA-256 digest", errors)
 
+    def test_zero_hash_placeholders_cannot_masquerade_as_scale_evidence(self):
+        # A zero identity is an absent/uninitialized pointer, not an actual
+        # Git object, signed observer receipt, runtime or measurement digest.
+        for key in scale_matrix.PROVENANCE_FIELDS:
+            with self.subTest(provenance=key):
+                record = self.make_record(64, "shared_encoder")
+                length = 40 if key in ("source_commit", "source_tree") else 64
+                record["provenance"][key] = "0" * length
+                self.assertIn(
+                    f"provenance.{key} cannot be a zero digest",
+                    scale_matrix.validate_result(record),
+                )
+        for key in scale_matrix.REQUIRED_EVIDENCE:
+            with self.subTest(evidence_receipt=key):
+                record = self.make_record(64, "shared_encoder")
+                record["evidence_receipts"][key] = "0" * 64
+                self.assertIn(
+                    f"evidence_receipts.{key} cannot be a zero digest",
+                    scale_matrix.validate_result(record),
+                )
+        record = self.make_record(64, "shared_encoder")
+        record["metrics_receipt"] = "0" * 64
+        self.assertIn(
+            "metrics_receipt cannot be a zero digest",
+            scale_matrix.validate_result(record),
+        )
+        matrix = self.matrix()
+        matrix["results"][0]["provenance"]["measurement_digest"] = "0" * 64
+        self.assertIn(
+            "results[0].provenance.measurement_digest cannot be a zero digest",
+            scale_matrix.validate_matrix(matrix),
+        )
+
     def test_non_finite_boolean_and_negative_metrics_are_rejected(self):
         result = {
             "schema": "hepta.cell-execution-scale-result.v1",
@@ -172,13 +255,13 @@ class ScaleMatrixTests(unittest.TestCase):
         errors = scale_matrix.validate_result(result)
         self.assertIn("metrics.p99_ms must be a finite number", errors)
 
-
     def make_record(self, size, arm):
         # Deterministic fixture digests remain distinct across experiment arms.
         index = (
             scale_matrix.SIZES.index(size) * len(scale_matrix.ARMS)
             + scale_matrix.ARMS.index(arm)
         )
+        evidence_id_base = 2000 + index * len(scale_matrix.REQUIRED_EVIDENCE)
         return {
             "schema": "hepta.cell-execution-scale-result.v1",
             "size": size,
@@ -193,7 +276,8 @@ class ScaleMatrixTests(unittest.TestCase):
             },
             "evidence": {key: True for key in scale_matrix.REQUIRED_EVIDENCE},
             "evidence_receipts": {
-                key: "f" * 64 for key in scale_matrix.REQUIRED_EVIDENCE
+                claim: f"{evidence_id_base + offset:064x}"
+                for offset, claim in enumerate(scale_matrix.REQUIRED_EVIDENCE)
             },
             "metrics": {key: 0 for key in scale_matrix.REQUIRED_METRICS},
             "metrics_receipt": f"{1000 + index:064x}",
@@ -263,6 +347,30 @@ class ScaleMatrixTests(unittest.TestCase):
             "results[1].provenance.measurement_digest reused across matrix pairs",
             errors,
         )
+
+    def test_matrix_rejects_recycled_claim_receipts_across_arms(self):
+        matrix = self.matrix()
+        self.assertEqual(scale_matrix.validate_matrix(matrix), [])
+        # The same future-window or rollback witness cannot certify both
+        # no-change and a different routed/encoder experiment pair.
+        for claim in ("future_window", "rollback"):
+            with self.subTest(claim=claim):
+                matrix = self.matrix()
+                matrix["results"][1]["evidence_receipts"][claim] = matrix["results"][0][
+                    "evidence_receipts"
+                ][claim]
+                self.assertIn(
+                    f"results[1].evidence_receipts.{claim} reused across matrix pairs",
+                    scale_matrix.validate_matrix(matrix),
+                )
+
+    def test_invalid_result_root_is_a_denial_not_an_exception(self):
+        for malformed in ([], None, 42, ""):
+            with self.subTest(value=malformed):
+                self.assertEqual(
+                    scale_matrix.validate_result(malformed),
+                    ["result must be an object"],
+                )
 
     def test_matrix_rejects_omissions_and_duplicate_pairs(self):
         matrix = self.matrix()
