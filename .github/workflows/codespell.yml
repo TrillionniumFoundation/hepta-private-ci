@@ -25,6 +25,10 @@ jobs:
         uses: codespell-project/actions-codespell@8f01853be192eb0f849a5c7d721450e7a467c579 # v2.2
         with:
           ignore_words_file: .codespellignore
+          # This action passes --skip explicitly, overriding .codespellrc's
+          # skip setting. Keep the immutable upstream COCO caption sample
+          # byte-identical and exclude only that sample, not product sources.
+          skip: ./.git,./qa/stem-bakeoff/coco_caption_sample_v1.json
 
       - name: Check for a clean worktree
         if: always() && !cancelled()
