@@ -102,6 +102,33 @@ class JointEvidenceGenerationTests(unittest.TestCase):
         self.assertGreaterEqual(independent_fixture_score(
             materialize_four(changed), truth=1, cfg=cfg), 4)
 
+    def test_frozen_controller_fails_when_witness_reuses_common_wrong_source(self):
+        # Nominal controller assumes a 98% conditionally independent witness.
+        # In this shift the paid "witness" ALWAYS repeats common report zero,
+        # independent of hidden truth. It adds no information but is believed.
+        cfg = Config(horizon=2, cost_shadow_price=.05, risk_aversion=1)
+        s = mode_state('hard', self.start, 10)
+        ctl = JointController(cfg)
+        frozen = lambda state: ctl.solve(state)[0]
+        nominal = full_outcome_audit(s, cfg, frozen)
+        shifted = full_outcome_audit(s, cfg, frozen,
+                         witness_channel="shared_report_zero")
+        no = JointController(cfg, allow_query=False)
+        shifted_no_query = full_outcome_audit(s, cfg,
+                         lambda state: no.solve(state)[0],
+                         witness_channel="shared_report_zero")
+        self.assertEqual(nominal["first_action"], QUERY)
+        self.assertEqual(shifted["first_action"], QUERY)
+        self.assertGreater(shifted["mean_external_loss"],
+                           nominal["mean_external_loss"] + 1.0)
+        self.assertLess(shifted["recursive_fullpath_utility"],
+                        nominal["recursive_fullpath_utility"] - 0.1)
+        self.assertGreater(shifted["mean_modeled_cost"], 4)
+        self.assertLessEqual(shifted_no_query["mean_modeled_cost"], 10)
+        self.assertTrue(shifted["unmodeled_channel_shift_has_no_robustness_guarantee"])
+        with self.assertRaises(ValueError):
+            full_outcome_audit(s, cfg, frozen, witness_channel="unspecified")
+
     def test_query_cannot_spend_mandatory_emission_reserve(self):
         cfg = Config(horizon=2, risk_aversion=1)
         state = mode_state('hard', (2, 2, 2, 2), cfg.emission_reserve)
