@@ -10,6 +10,7 @@
 mod organs;
 mod execution_port;
 pub use execution_port::RuntimeExecutionPortV1;
+pub use execution_port::RuntimeCutoverStageV1;
 mod topology_execution;
 
 use std::fmt;
