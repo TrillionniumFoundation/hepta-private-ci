@@ -8,3 +8,5 @@ mod support;
 mod hmi_fixture;
 #[path = "hmi_owner_v3/audio_observation_tests.rs"]
 mod audio;
+#[path = "hmi_owner_v3/lifecycle_tests.rs"]
+mod lifecycle;
