@@ -41,6 +41,7 @@ jobs:
           python3 -m unittest discover -s qa/stem-bakeoff -p 'test_teacher_forward.py' -v
           python3 -m unittest discover -s qa/stem-bakeoff -p 'test_teacher_media_seal.py' -v
           python3 -m unittest discover -s qa/stem-bakeoff -p 'test_memory_retrieval_probe.py' -v
+          python3 -m unittest discover -s qa/stem-bakeoff -p 'test_memory_nine_arm_gate.py' -v
           python3 -m py_compile qa/stem-bakeoff/stem_bakeoff.py qa/stem-bakeoff/evidence_gate.py qa/stem-bakeoff/teacher_snapshot.py qa/stem-bakeoff/teacher_forward.py qa/stem-bakeoff/teacher_media_seal.py qa/stem-bakeoff/test_teacher_media_seal.py qa/stem-bakeoff/feature_shard.py qa/stem-bakeoff/offline_shard_distill.py qa/stem-bakeoff/test_offline_shard_distill.py
       - name: Confirm source tree unchanged
         if: always()
