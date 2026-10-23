@@ -47,6 +47,11 @@ use crate::cognitive_model::SourceRevisionId;
 use crate::cognitive_path::canonical_path_without_redirection;
 use crate::framing::frame_part;
 
+#[path = "cognitive_store_active_pointer.rs"]
+mod active_pointer;
+use active_pointer::active_pointer_temporary_name;
+use active_pointer::parse_active_pointer;
+
 #[path = "cognitive_store_sync.rs"]
 mod sync;
 use sync::sync_cognitive_directory;
@@ -1536,12 +1541,12 @@ fn bounded_limit(maximum: usize) -> Result<i64, CognitiveStoreError> {
 
 pub(crate) fn recovered_database_filename(
     anchor: &CognitiveRecoveryAnchor,
-    writer_fence: &Sha256Digest,
+    generation_discriminator: &Sha256Digest,
 ) -> String {
     let mut hasher = Sha256::new();
     frame_part(&mut hasher, b"hepta:cognitive:recovered-generation:v1");
     frame_part(&mut hasher, anchor.state_digest.as_str().as_bytes());
-    frame_part(&mut hasher, writer_fence.as_str().as_bytes());
+    frame_part(&mut hasher, generation_discriminator.as_str().as_bytes());
     frame_part(&mut hasher, &std::process::id().to_be_bytes());
     let nonce = SystemTime::now()
         .duration_since(UNIX_EPOCH)
@@ -1612,17 +1617,7 @@ fn resolve_active_database_path(root: &Path) -> Result<PathBuf, CognitiveStoreEr
         .take(257)
         .read_to_string(&mut value)
         .map_err(unavailable)?;
-    if value.len() > 256 {
-        return Err(CognitiveStoreError::Corrupt(
-            "cognitive active database pointer exceeds its bound".to_string(),
-        ));
-    }
-    let value = value.trim();
-    if !valid_recovered_database_filename(value) {
-        return Err(CognitiveStoreError::Corrupt(
-            "cognitive active database pointer is invalid".to_string(),
-        ));
-    }
+    let value = parse_active_pointer(&value)?;
     let path = root.join(value);
     let canonical = canonical_path_without_redirection(&path)
         .map_err(unavailable)?
@@ -1668,15 +1663,7 @@ pub(crate) fn publish_active_database(
             )
         })?;
     let pointer = root.join(COGNITIVE_ACTIVE_DB_POINTER);
-    let generation = file_name
-        .strip_prefix(COGNITIVE_RECOVERED_DB_PREFIX)
-        .and_then(|value| value.strip_suffix(".sqlite3"))
-        .unwrap_or("invalid");
-    let temporary = root.join(format!(
-        "{COGNITIVE_ACTIVE_DB_POINTER}.tmp-{}-{}",
-        std::process::id(),
-        &generation[..generation.len().min(16)]
-    ));
+    let temporary = root.join(active_pointer_temporary_name(file_name)?);
 
     #[cfg(unix)]
     let mut file = {
