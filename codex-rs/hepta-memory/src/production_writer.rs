@@ -2119,6 +2119,12 @@ pub trait FinalUseProductionOutboxTarget: ProductionOutboxTarget {
     /// the actual synchronous effect entry. The compatibility default retains
     /// delivery-only validation; it does not qualify legacy async adapters as
     /// physical final-use boundaries.
+    ///
+    /// `Err(FinalUseError)` asserts that the requested destination effect or
+    /// worker boundary was not entered. After possible entry, return
+    /// `Ok(Indeterminate { .. })` on uncertainty and retain its original owner.
+    /// Retained admission bookkeeping is distinct from the requested effect;
+    /// it does not permit a relaunch or prove resource release.
     fn dispatch_verified<'a>(
         &'a self,
         dispatch: ProductionVerifiedDispatch,
