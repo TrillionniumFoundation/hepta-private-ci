@@ -195,13 +195,27 @@ def full_outcome_audit(initial: JointState, cfg: Config,
     if witness_channel not in ("declared_independent", "shared_report_zero"):
         raise ValueError("unregistered external witness law")
     rows: list[tuple[Fraction, int, int, bool, int, str]] = []
-    action_at_initial = choose(initial)
+    # A policy supplied to this scorer is part of the observed-source claim.
+    # A changing or history/hidden-truth-dependent callback can otherwise
+    # declare one first_action, execute another, and launder the discrepancy
+    # into a perfectly normalized outcome/cost receipt. Markov actions must be
+    # reproducible from the same *public* JointState across every truth path.
+    observed_actions: dict[JointState, str | Allocation] = {}
+
+    def observed_policy_action(s: JointState) -> str | Allocation:
+        action = choose(s)
+        if s in observed_actions and observed_actions[s] != action:
+            raise ValueError("non-deterministic public-state policy replay")
+        observed_actions[s] = action
+        return action
+
+    action_at_initial = observed_policy_action(initial)
 
     def visit(s: JointState, truth: int, probability: Fraction, spent: int,
               ever_queried: bool, generator_calls: int):
         if not probability:
             return
-        action = choose(s)
+        action = observed_policy_action(s)
         if action == EMIT:
             raw = materialize_four(s)
             loss = independent_fixture_score(raw, truth, cfg)
