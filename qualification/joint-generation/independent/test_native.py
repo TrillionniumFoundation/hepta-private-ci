@@ -17,6 +17,27 @@ from independent.native import NativeGenerator, SOURCE, compile_native
 from independent.gain_head import AffineGainHead
 
 
+class NativeCompilerArgumentTests(unittest.TestCase):
+    def test_compiler_disables_contraction_without_running_a_build(self):
+        with tempfile.TemporaryDirectory() as directory:
+            target = Path(directory) / "mock.so"
+
+            def completed(argv, **kwargs):
+                if "--version" in argv:
+                    return subprocess.CompletedProcess(argv, 0, "fixture cc\n", "")
+                target.write_bytes(b"mock library, no compiler executed")
+                return subprocess.CompletedProcess(argv, 0, "", "")
+
+            with patch("independent.native.shutil.which", return_value="/fixture/cc"), \
+                 patch("independent.native.platform.platform", return_value="fixture platform"), \
+                 patch("independent.native.subprocess.run", side_effect=completed) as process:
+                receipt = compile_native(target)
+        self.assertEqual(process.call_count, 2)
+        self.assertIn("-ffp-contract=off", receipt["argv"])
+        self.assertNotIn("-ffast-math", receipt["argv"])
+        self.assertFalse(receipt["cached_compilation_used"])
+
+
 class NativeTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls):

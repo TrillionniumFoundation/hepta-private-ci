@@ -4,7 +4,7 @@ from pathlib import Path
 import subprocess
 import tempfile
 import unittest
-from unittest.mock import patch
+from unittest.mock import Mock, patch
 from types import SimpleNamespace
 
 import numpy as np
@@ -129,6 +129,33 @@ class FrozenRunnerTests(unittest.TestCase):
 
 
 class CandidateSchedulingTests(unittest.TestCase):
+    def test_optimizer_binding_uses_explicit_library_and_admits_setup_before_constructor(self):
+        model = SimpleNamespace()
+        adapter = object()
+        setup = Mock(return_value={"compare_ops": 5})
+        prepared = Mock(return_value=adapter)
+        fake = SimpleNamespace(setup_work=setup, NativeAdam=prepared)
+        plan = {"adaptation_optimizer": "native-adam-v1"}
+        with patch.dict(run.sys.modules, {"independent.native_adam": fake}):
+            self.assertEqual(run.adaptation_optimizer_work(model, plan, empty_moments=True), {"compare_ops": 5})
+            setup.assert_called_once_with(model, empty_moments=True)
+            ledger = WorkLedger("optimizer-prepare", total_cap=5)
+            self.assertIs(run.adaptation_optimizer(model, plan,
+                {"native_compile": {"library_path": "/explicit/shared.so"}}, "/unused", ledger), adapter)
+            prepared.assert_called_once_with(model, library_path="/explicit/shared.so")
+            self.assertEqual((ledger.consumed_units, ledger.totals["native_adam_prepares"]), (5, 1))
+            prepared.reset_mock()
+            run.adaptation_optimizer(model, plan, {}, "/explicit/run", WorkLedger("fallback"))
+            prepared.assert_called_once_with(model, library_path="/explicit/run/build/libjoint.so")
+            prepared.reset_mock()
+            with self.assertRaises(BudgetExceeded):
+                run.adaptation_optimizer(model, plan, {}, "/unused", WorkLedger("short", total_cap=4))
+            prepared.assert_not_called()
+            self.assertIsNone(run.adaptation_optimizer(model, {}, {}, "/unused", None))
+            for unknown in (None, False, "unknown"):
+                with self.subTest(unknown=unknown), self.assertRaisesRegex(ValueError, "adaptation optimizer"):
+                    run.adaptation_optimizer_work(model, {"adaptation_optimizer": unknown})
+
     def test_real_mixed_update_charges_only_executed_work_below_driver_reservation(self):
         from independent.learning import setup_work
         from model import JointModel
@@ -187,7 +214,7 @@ class CandidateSchedulingTests(unittest.TestCase):
             "A": {"active_cpu": 6.0, "name": "A"}, "N": {"active_cpu": 9.0, "name": "N"}})
         self.assertEqual(len(retained), 9)
 
-    def mixed_candidate(self, cap):
+    def mixed_candidate(self, cap, *, native_optimizer=False):
         now, calls = [0.0], []
         rng, expected_rng = np.random.default_rng(9011), np.random.default_rng(9011)
         model = SimpleNamespace(dimensions=(202, 12, 192, 4))
@@ -204,9 +231,13 @@ class CandidateSchedulingTests(unittest.TestCase):
             "static_modes": ["full"], "compute_price": .02}
         common = {"cpu_seconds": 0, "reference_full_cpu_ns": 1,
                   "calibrations": {11: {"cpu_ns": {"full": 1}}}}
+        if native_optimizer:
+            plan["adaptation_optimizer"] = "native-adam-v1"
+            common["native_compile"] = {"library_path": "/explicit/shared.so"}
 
         class Objective:
             def __init__(self, *args, ledger, **kwargs):
+                self.optimizer = kwargs.get("optimizer")
                 ledger.charge_kernel("search_setup", "fixture", scalar_ops=2)
 
             def step(self, current, x, y, lr, *, ledger, full_mask):
@@ -265,6 +296,19 @@ class CandidateSchedulingTests(unittest.TestCase):
         self.assertEqual(calls, [])
         self.assertEqual(progress["ledger"].consumed_units, 2)
         np.testing.assert_array_equal(rng.integers(1000, size=8), expected_rng.integers(1000, size=8))
+
+    def test_candidate_prepares_and_retains_native_optimizer_with_paid_setup(self):
+        adapter = object()
+        setup, prepared = Mock(return_value={"compare_ops": 5}), Mock(return_value=adapter)
+        fake = SimpleNamespace(setup_work=setup, NativeAdam=prepared)
+        with patch.dict(run.sys.modules, {"independent.native_adam": fake}):
+            _, row, _, _, _, progress = self.mixed_candidate(43, native_optimizer=True)
+        self.assertEqual(row["objective_step_units"], 17)
+        state = progress["_selected_states"][11]
+        self.assertIs(state["objective"].optimizer, adapter)
+        prepared.assert_called_once_with(state["model"], library_path="/explicit/shared.so")
+        self.assertEqual([call.kwargs["empty_moments"] for call in setup.call_args_list], [True, False])
+        self.assertEqual(progress["ledger"].consumed_units, 5 + 2 + 17 + 3)
 
     def test_generator_exception_flushes_active_cpu_without_charging_idle(self):
         now, progress = [0.0], {}

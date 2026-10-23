@@ -54,7 +54,7 @@ def compile_native(output_path):
     target = Path(output_path).resolve()
     target.parent.mkdir(parents=True, exist_ok=True)
     version = subprocess.run([compiler, "--version"], capture_output=True, text=True, check=True)
-    argv = [compiler, "-O3", "-std=c11", "-shared", "-fPIC", str(SOURCE), "-o", str(target), "-lm"]
+    argv = [compiler, "-O3", "-ffp-contract=off", "-std=c11", "-shared", "-fPIC", str(SOURCE), "-o", str(target), "-lm"]
     completed = subprocess.run(argv, capture_output=True, text=True)
     receipt = {"schema": "hepta.native-build.v1", "argv": argv,
                "compiler_version": version.stdout.splitlines()[0], "library_path": str(target),

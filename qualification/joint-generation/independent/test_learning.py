@@ -1,6 +1,6 @@
 import copy
 import unittest
-from unittest.mock import patch
+from unittest.mock import Mock, patch
 
 import numpy as np
 
@@ -46,6 +46,81 @@ class EfficientLearningTests(unittest.TestCase):
                 np.testing.assert_array_equal(actual.params[key], expected.params[key])
             for key in ("decoder", "decoder_bias"):
                 np.testing.assert_array_equal(actual.params[key], self.model.params[key])
+
+    def assert_model_state_identical(self, actual, expected):
+        self.assertEqual(actual.dimensions, expected.dimensions)
+        self.assertEqual(actual.updates, expected.updates)
+        self.assertEqual(set(actual.params), set(expected.params))
+        self.assertEqual(set(actual._moments), set(expected._moments))
+        for key in actual.params:
+            self.assertEqual(actual.params[key].dtype, expected.params[key].dtype)
+            self.assertEqual(actual.params[key].shape, expected.params[key].shape)
+            self.assertEqual(actual.params[key].tobytes(), expected.params[key].tobytes(), key)
+        for key, (mean, variance, step) in actual._moments.items():
+            expected_mean, expected_variance, expected_step = expected._moments[key]
+            self.assertEqual(mean.tobytes(), expected_mean.tobytes(), key)
+            self.assertEqual(variance.tobytes(), expected_variance.tobytes(), key)
+            self.assertEqual(step, expected_step, key)
+
+    def test_injected_optimizer_receives_unchanged_content_gradients_and_preserves_two_updates(self):
+        content = {"encoder", "bias", "text", "text_bias", "image", "image_bias"}
+        for arm in ("S", "H", "A", "N"):
+            with self.subTest(arm=arm):
+                actual, expected = self.model.clone(), self.model.clone()
+                actual_ledger, expected_ledger = WorkLedger(arm), WorkLedger(arm)
+                optimizer = Mock(spec=["apply_gradients"])
+                optimizer.apply_gradients.side_effect = lambda model, grads, lr: model.apply_gradients(grads, lr)
+                injected = CachedObjective(arm, actual, ledger=actual_ledger, optimizer=optimizer)
+                legacy = CachedObjective(arm, expected, ledger=expected_ledger)
+                self.assertIs(injected.optimizer, optimizer)
+                self.assertIsNone(legacy.optimizer)
+                for index, (x, y, lr) in enumerate(((self.x, self.y, 0.003),
+                                                    (self.x[::-1], self.y[::-1], 0.001)), 1):
+                    with patch.object(expected, "apply_gradients", wraps=expected.apply_gradients) as reference:
+                        expected_loss = legacy.step(expected, x, y, lr, ledger=expected_ledger)
+                    actual_loss = injected.step(actual, x, y, lr, ledger=actual_ledger)
+                    self.assertEqual(optimizer.apply_gradients.call_count, index)
+                    passed_model, gradients, passed_lr = optimizer.apply_gradients.call_args.args
+                    reference.assert_called_once()
+                    reference_gradients, reference_lr = reference.call_args.args
+                    self.assertIs(passed_model, actual)
+                    self.assertEqual((passed_lr, reference_lr), (lr, lr))
+                    self.assertEqual(set(gradients), content)
+                    self.assertEqual(set(reference_gradients), content)
+                    for key in content:
+                        self.assertEqual(gradients[key].shape, reference_gradients[key].shape)
+                        self.assertEqual(gradients[key].tobytes(), reference_gradients[key].tobytes(), key)
+                    self.assertEqual(np.float64(actual_loss).tobytes(), np.float64(expected_loss).tobytes())
+                    self.assert_model_state_identical(actual, expected)
+                    self.assertEqual(actual_ledger.snapshot(), expected_ledger.snapshot())
+                self.assertIs(injected.optimizer, optimizer)
+
+    def test_budget_rejection_never_calls_injected_optimizer_or_changes_model(self):
+        for arm in ("S", "H", "A", "N"):
+            with self.subTest(arm=arm):
+                model = self.model.clone()
+                optimizer = Mock(spec=["apply_gradients"])
+                objective = CachedObjective(arm, model, optimizer=optimizer)
+                expected = copy.deepcopy(model)
+                ledger = WorkLedger(arm, total_cap=1)
+                before = ledger.snapshot()
+                with self.assertRaises(BudgetExceeded):
+                    objective.step(model, self.x, self.y, 0.003, ledger=ledger)
+                optimizer.apply_gradients.assert_not_called()
+                self.assert_model_state_identical(model, expected)
+                self.assertEqual(ledger.snapshot(), before)
+
+    def test_invalid_optimizer_rejects_before_cache_preparation(self):
+        for arm in ("S", "H", "A", "N"):
+            for optimizer in (object(), {"apply_gradients": lambda *args: None},
+                              Mock(apply_gradients=1)):
+                with self.subTest(arm=arm, optimizer=type(optimizer).__name__):
+                    ledger = WorkLedger(arm)
+                    before = ledger.snapshot()
+                    with patch("independent.learning.outcome_table", side_effect=AssertionError("unused cache")):
+                        with self.assertRaisesRegex(TypeError, "optimizer must provide apply_gradients"):
+                            CachedObjective(arm, self.model, optimizer=optimizer, ledger=ledger)
+                    self.assertEqual(ledger.snapshot(), before)
 
     def test_supervised_arms_never_prepare_or_execute_joint_utility(self):
         for arm in ("S", "H"):

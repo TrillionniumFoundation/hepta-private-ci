@@ -209,6 +209,29 @@ def adaptation_step_work(dimensions, system, plan):
     return mixed_step_work(dimensions, system, plan["batch_size"], low_rows=None)
 
 
+def adaptation_optimizer_work(model, plan, *, empty_moments=False):
+    if "adaptation_optimizer" not in plan:
+        return {}
+    if plan["adaptation_optimizer"] != "native-adam-v1":
+        raise ValueError("unsupported adaptation optimizer")
+    from independent.native_adam import setup_work
+    return setup_work(model, empty_moments=empty_moments)
+
+
+def adaptation_optimizer(model, plan, common, run, ledger):
+    """Prepare the requested adapter inside the candidate's billed setup."""
+    work = adaptation_optimizer_work(model, plan)
+    if not work:
+        return None
+    from independent.native_adam import NativeAdam
+    library = common.get("native_compile", {}).get("library_path")
+    if library is None:
+        library = str((Path(run) / "build/libjoint.so").resolve())
+    ledger.charge_kernel("search_setup", "native_adam_prepare", **work,
+                         counts={"native_adam_prepares": 1})
+    return NativeAdam(model, library_path=library)
+
+
 def batch_validation(model, data, ledger, *, stage="search_validation"):
     n = len(data["labels"])
     ledger.charge_kernel(stage, "two_view_validation", **validation_work(model, n),
@@ -359,7 +382,8 @@ def _train_system_candidates(system, plan, run, shared, bases, train, val, commo
     n_candidates = len(plan["model_seeds"]) * len(plan["learning_rates"])
     representative = next(iter(bases.values()))
     fixed_validation = ledger.estimate_kernel(**validation_work(representative, len(val["labels"])))
-    fixed_setup = ledger.estimate_kernel(**setup_work(representative.dimensions, system))
+    fixed_setup = ledger.estimate_kernel(**setup_work(representative.dimensions, system)) + ledger.estimate_kernel(
+        **adaptation_optimizer_work(representative, plan, empty_moments=True))
     available = (ledger.remaining_units - extra_units - plan["tail_reserve_units"]
                  - n_candidates * (fixed_validation + fixed_setup))
     candidate_units = available // n_candidates
@@ -374,8 +398,10 @@ def _train_system_candidates(system, plan, run, shared, bases, train, val, commo
             current = {"name": name, "seed": seed, "learning_rate": lr, "updates": 0}
             guard("candidate_setup", current)
             model = plain_copy(bases[seed])
+            optimizer = adaptation_optimizer(model, plan, common, run, ledger)
             objective = CachedObjective(system, model, rho=plan["rho"],
-                ce_anchor=plan["ce_anchor"], ledger=ledger)
+                ce_anchor=plan["ce_anchor"], ledger=ledger,
+                **({"optimizer": optimizer} if optimizer is not None else {}))
             guard("candidate_setup_complete", current)
             rng = np.random.default_rng(seed + 9000)
             step_units = ledger.estimate_kernel(**adaptation_step_work(model.dimensions, system, plan))
@@ -454,7 +480,7 @@ def _train_system_candidates(system, plan, run, shared, bases, train, val, commo
     selected = [{**row, "mode": mode, "controller_file": None, "controller_sha256": None,
                  "controller_type": None} for row in results if row["learning_rate"] == lr]
     progress["_selected_states"] = {row["seed"]: states[row["name"]] for row in selected}
-    del model, objective, rng
+    del model, objective, optimizer, rng
     states.clear()  # Release every unselected optimizer inside this billed interval.
     cost.update(selected_lr=lr, selected_static_mode=mode)
     guard("content_selection_complete")

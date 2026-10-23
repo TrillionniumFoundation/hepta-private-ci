@@ -135,7 +135,7 @@ class CachedObjective:
     """
 
     def __init__(self, arm, model, *, rho=1.5, ce_anchor=0.2,
-                 ledger=None, stage="search_setup"):
+                 ledger=None, stage="search_setup", optimizer=None):
         self.arm = _arm(arm)
         if (type(rho) not in (int, float) or not np.isfinite(rho) or not 0 < rho <= 1e6
                 or type(ce_anchor) not in (int, float) or not np.isfinite(ce_anchor)
@@ -143,6 +143,9 @@ class CachedObjective:
             raise ValueError("finite positive fixed risk and CE coefficients required")
         if hasattr(model, "ledger"):
             raise ValueError("plain JointModel required; automatic instrumentation would double charge")
+        if optimizer is not None and not callable(getattr(optimizer, "apply_gradients", None)):
+            raise TypeError("optimizer must provide apply_gradients")
+        self.optimizer = optimizer
         self.dimensions = tuple(model.dimensions)
         self.rho = float(rho)
         self.ce_weight = 1.0 if self.arm == "S" else float(ce_anchor)
@@ -272,5 +275,8 @@ class CachedObjective:
         gradients = {"encoder": x.T @ dh if mixed is None else mixed.encoder_gradient(dh), "bias": dh.sum(0),
             "text": hidden.T @ dt, "text_bias": dt.sum(0),
             "image": hidden.T @ di, "image_bias": di.sum(0)}
-        model.apply_gradients(gradients, lr)
+        if self.optimizer is None:
+            model.apply_gradients(gradients, lr)
+        else:
+            self.optimizer.apply_gradients(model, gradients, lr)
         return loss
