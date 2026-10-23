@@ -45,7 +45,7 @@ class PreregisteredComparisonTests(unittest.TestCase):
         with self.assertRaisesRegex(Unavailable, "incomplete paired"):
             assess_paired_a0_a5(rows[:-1], F, P)
         with self.assertRaisesRegex(Unavailable, "duplicate arm"):
-            assess_paired_a0_a5(rows + (rows[0],), F, P)
+            assess_paired_a0_a5(rows + (replace(rows[0], work_key="new-execution"),), F, P)
 
     def test_train_leakage_and_critic_drift(self):
         rows = paired_rows()
