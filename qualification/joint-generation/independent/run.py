@@ -434,6 +434,7 @@ def _train_system_candidates(system, plan, run, shared, bases, train, val, commo
     selected = [{**row, "mode": mode, "controller_file": None, "controller_sha256": None,
                  "controller_type": None} for row in results if row["learning_rate"] == lr]
     progress["_selected_states"] = {row["seed"]: states[row["name"]] for row in selected}
+    del model, objective, rng
     states.clear()  # Release every unselected optimizer inside this billed interval.
     cost.update(selected_lr=lr, selected_static_mode=mode)
     guard("content_selection_complete")
