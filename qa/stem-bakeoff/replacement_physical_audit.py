@@ -153,6 +153,9 @@ def audit_arm(name: str, result: Any, spec: dict) -> list[str]:
             or compat["registered_config_rewrite"] !=
                (compat["original_tokenizer_inventory_sha256"] !=
                 compat["effective_tokenizer_inventory_sha256"])
+            or compat["registered_config_rewrite"] !=
+               (compat["original_tokenizer_config_sha256"] !=
+                compat["effective_tokenizer_config_sha256"])
             or compat["no_original_snapshot_mutation_observed"] is not True
         ):
             errors.append(f"{name}: inconsistent tokenizer rewrite or original-weight identity")
