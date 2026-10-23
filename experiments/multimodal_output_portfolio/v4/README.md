@@ -77,7 +77,8 @@ not a ceiling count of worst examples.
 This is a unit-testable stress **counterexample on toy media and modeled
 integer units**, with no pretrained Decoder/Cell, source-disjoint natural
 heldout, real wall/energy measurements, or independent witness to a
-real-world terminal fact. The Controller itself is unchanged. The
+real-world terminal fact. The independently defined counterfactual scorer remains unchanged; the
+finite Controller receives an isolated bounded-work implementation below. The
 exhaustive helper must not run on a production inference hot path.
 
 Run:
@@ -86,6 +87,31 @@ cd experiments/multimodal_output_portfolio/v4
 python3 -m unittest discover -v -p "test_*.py"
 python3 -m compileall -q portfolio.py counterfactual_audit.py test_*.py
 ```
+
+## Bounded finite solver work and cache ownership
+
+The original `@lru_cache(maxsize=65536)` on `Controller.solve(self, state)`
+created a **module-global cache whose keys retain Controller instances**.
+Finishing an episode did not promptly release its controller from the cache.
+It also bounded *cached entries*, not total branch expansions or solver work.
+
+The follow-up uses one instance-owned, exact `State` memo per Controller and
+rejects expansion beyond **32,768 unique states** or **1,000,000 enumerated
+shock branches**. Bound exhaustion is a fail-closed research error; it is not
+silently turned into a feasible STOP or a proven low-cost optimal policy.
+
+`work_receipt()` now reports expanded states, cache hits, evaluated branches,
+cached states and the fixed caps. `execute` includes those counters in the
+hashed **`hepta.ndu.modality-portfolio.trace.v2`** payload, changing its schema
+rather than reinterpreting earlier v1 trace bytes. The new
+`test_solver_work.py` checks completed-controller garbage collection,
+cross-controller isolation, deterministic replay, cache hits, fail-closed
+caps and complete four-modal emission.
+
+Counters are logical source-level work units **not CPU time, GPU FLOPs,
+resident bytes, energy or target-host latency**. They do not make a CPU-heavy
+exhaustive optimizer production-suitable; a learned bounded policy head or
+precomputed finite lookup and independent physical benchmarks remain required.
 
 ## Next independently measured scientific experiment
 
