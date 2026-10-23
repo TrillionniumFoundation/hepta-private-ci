@@ -44,8 +44,14 @@ const MAX_SPEECH_BYTES: usize = 4096;
 
 #[path = "hmi_events.rs"]
 mod events;
+#[path = "hmi_owner_types.rs"]
+mod owner_types;
+pub use owner_types::*;
 #[path = "hmi_requests.rs"]
 mod requests;
+#[path = "hmi_media_jsonl.rs"]
+mod media_jsonl;
+pub use media_jsonl::*;
 
 #[derive(Clone, Debug, Eq, PartialEq, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase", deny_unknown_fields)]
