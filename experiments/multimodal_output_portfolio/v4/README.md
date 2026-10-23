@@ -124,6 +124,35 @@ admission**. There is no encoder, trained model, decoder, CUDA, target-device
 energy or end-to-end queueing cost in these measurements; runs across
 uncontrolled hosts are not directly comparable.
 
+## Offline exact-policy compilation: System-1 bounded lookup path
+
+`snapshot_policy.py` compiles the finite Bellman policy for **one admitted
+source SHA, profile, initial state and finite shock support**, recording only
+states reachable when that policy is followed. Its deterministic artifact
+SHA-256 binds profile, source, initial conditions, state/action/value rows;
+stored values use their hexadecimal floating representation rather than
+rounding their serialized text. The returned read-only lookup cannot call the
+Bellman solver and fails closed on a changed source/profile/scope or an
+unrepresented state. The caller-supplied source identity is not an
+independent signature or production authorization.
+
+`test_snapshot_policy.py` compares the **entire actual finite trajectory**
+against the original Controller for 128 matched random seeds, including
+actions, decoded toy text/audio/image/video, resource charges and externally
+computed synthetic terminal losses. It also mocks Controller.solve to throw
+during online execution; a lookup that secretly re-solves cannot pass.
+
+`benchmark_snapshot.py` separately reports offline compilation time/work,
+cold online exact-solve time, per-decision compiled lookup time and complete
+toy-rollout time on the same named host. These are measured physical times
+for the **finite Python synthetic fixture**, not neural-Decoder latency,
+trained value-head performance, production selection or end-to-end
+four-modality quality. The ready snapshot is only valid on the frozen finite
+reachable set, and compiling it is deliberately *not* counted as free if
+lifecycle economics are compared. It does not establish that a high-dimensional
+natural model can fit a complete policy table; that requires a separately
+trained/calibrated light Value/Policy Head.
+
 ## Next independently measured scientific experiment
 
 Replace the synthetic proxy-state/decoder fixtures with a source-pinned **real** shared Encoder plus four output decoders, observed partial latents, actual Neural/Cell feature invocation and all separately paid decoder/verifier/selection costs. Preregister source-disjoint natural tasks, multiple training seeds and common random-number draws, then compare same-information/static, MoE, risk-neutral MPC, fixed-risk MPC, dynamic NDU and best-of-N with independent decoded-output scoring and risk/coverage/cost thresholds. Train/inference factorial ablations are essential to determine whether NDU changes learned generation rather than only selecting an existing candidate. Do not enable or deploy any output-portfolio policy based only on this code.
