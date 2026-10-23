@@ -65,6 +65,12 @@ class SignedEvidenceTests(unittest.TestCase):
                         observed_at=at, quality=.9, risk=.1,
                         perceptual_evaluator_digest=P,
                         source_to_output_verified=True, output_to_source_verified=True,
+                        source_to_output_evidence_digest=hashlib.sha256(
+                            f"{episode}:{arm}:forward".encode()).hexdigest(),
+                        output_to_source_evidence_digest=hashlib.sha256(
+                            f"{episode}:{arm}:reverse".encode()).hexdigest(),
+                        cross_modal_claims_digest=hashlib.sha256(
+                            f"{episode}:{arm}:claims".encode()).hexdigest(),
                         modalities=["text", "image", "audio", "video"], av_skew_ms=90)
         meter = dict(identity, role="host_meter", source="host_metered",
                      gpu_seconds=.05, cpu_seconds=.1, energy_joules=3.2,
@@ -229,6 +235,29 @@ class SignedEvidenceTests(unittest.TestCase):
             self.assertEqual(contrast["method"], "bonferroni-hoeffding")
             self.assertFalse(contrast["independent_clusters_verified"])
             self.assertGreater(contrast["quality_delta_familywise_lcb95"], 0)
+
+
+
+    def test_unsigned_or_reused_perceptual_evidence_never_suffices(self):
+        for mutation in (
+            {"source_to_output_evidence_digest": ""},
+            {"cross_modal_claims_digest": "0" * 64},
+            {"output_to_source_evidence_digest": None},
+        ):
+            entry = self.pair()
+            payload = dict(entry["observer"]["payload"], **mutation)
+            entry["observer"] = self.signature(payload, self.private_obs)
+            with self.subTest(mutation=mutation), self.assertRaisesRegex(
+                    EvidenceRejected, "perceptual evidence"):
+                self.verify(entry)
+
+        entry = self.pair()
+        payload = dict(entry["observer"]["payload"])
+        payload["output_to_source_evidence_digest"] = payload[
+            "source_to_output_evidence_digest"]
+        entry["observer"] = self.signature(payload, self.private_obs)
+        with self.assertRaisesRegex(EvidenceRejected, "separately identified"):
+            self.verify(entry)
 
 
 
