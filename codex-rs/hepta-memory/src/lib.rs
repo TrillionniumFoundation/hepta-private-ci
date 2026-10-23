@@ -63,6 +63,7 @@ pub use production_notes::ProductionNotesTarget;
 pub use production_notes::notes_operation_intent;
 pub use production_writer::Hos2RetirementObservation;
 pub use production_writer::Hos2RetirementPermit;
+pub use production_writer::NotesRetirementPermit;
 
 pub use shared_experience::SharedExperienceGrantV1;
 pub use shared_experience::SharedExperiencePurposeV1;

@@ -16,6 +16,7 @@ use std::time::Duration;
 use std::time::Instant;
 
 use codex_hepta_contracts::FinalUseAuthority;
+use codex_hepta_memory::NotesPrivateChannel;
 use codex_hepta_memory::NotesTargetIdentity;
 use codex_hepta_memory::ProductionNotesTarget;
 use serde::Deserialize;
@@ -105,17 +106,28 @@ impl AgentdProductionWriterHost {
         attachment: Attachment,
     ) -> Result<(Self, NotesTargetIdentity), AgentdError> {
         let deadline = Instant::now() + Duration::from_secs(2);
-        let (offer, endpoint) = receive_session(&bootstrap, deadline)?;
+        let (offer, endpoint, recovery) = receive_session(&bootstrap, deadline)?;
         let identity = offer.target.clone();
         let attached = tokio::time::timeout(remaining(deadline)?, async {
             match attachment {
                 Attachment::Primary(grants) => {
-                    self.attach_notes_target(identity.clone(), endpoint, final_use, grants)
-                        .await
+                    self.attach_notes_recoverable_target(
+                        identity.clone(),
+                        endpoint,
+                        recovery,
+                        final_use,
+                        grants,
+                    )
+                    .await
                 }
                 Attachment::Additional => {
-                    self.attach_additional_notes_target(identity.clone(), endpoint, final_use)
-                        .await
+                    self.attach_additional_notes_recoverable_target(
+                        identity.clone(),
+                        endpoint,
+                        recovery,
+                        final_use,
+                    )
+                    .await
                 }
             }
         })
@@ -151,6 +163,55 @@ impl AgentdProductionOperationRuntimeConfig {
         bootstrap: UnixDatagram,
         final_use: FinalUseAuthority,
     ) -> Result<(Self, NotesTargetIdentity), AgentdError> {
+        self.with_notes_from_session_channel(
+            config,
+            recovered_host,
+            bootstrap,
+            final_use,
+            |effect, recovery| {
+                let channel = AgentdNotesChannel::from_private_channels(effect, recovery)?;
+                Ok(Arc::new(channel) as Arc<dyn NotesPrivateChannel>)
+            },
+        )
+        .await
+    }
+
+    /// Test-only fault injection wraps the actual inherited transport after
+    /// the same recovered-owner validation. It cannot create an issuer,
+    /// replace the writer, or skip the production bootstrap checks.
+    #[cfg(test)]
+    pub(crate) async fn with_notes_from_session_test_channel<F>(
+        self,
+        config: &AgentdConfig,
+        recovered_host: &AgentdProductionWriterHost,
+        bootstrap: UnixDatagram,
+        final_use: FinalUseAuthority,
+        channel_factory: F,
+    ) -> Result<(Self, NotesTargetIdentity), AgentdError>
+    where
+        F: FnOnce(UnixStream, UnixDatagram) -> Result<Arc<dyn NotesPrivateChannel>, AgentdError>,
+    {
+        self.with_notes_from_session_channel(
+            config,
+            recovered_host,
+            bootstrap,
+            final_use,
+            channel_factory,
+        )
+        .await
+    }
+
+    async fn with_notes_from_session_channel<F>(
+        self,
+        config: &AgentdConfig,
+        recovered_host: &AgentdProductionWriterHost,
+        bootstrap: UnixDatagram,
+        final_use: FinalUseAuthority,
+        channel_factory: F,
+    ) -> Result<(Self, NotesTargetIdentity), AgentdError>
+    where
+        F: FnOnce(UnixStream, UnixDatagram) -> Result<Arc<dyn NotesPrivateChannel>, AgentdError>,
+    {
         let deadline = Instant::now() + Duration::from_secs(2);
         self.validate_for(config)?;
         if recovered_host.destination_count() != 0 {
@@ -164,13 +225,11 @@ impl AgentdProductionOperationRuntimeConfig {
         .map_err(|_| {
             io::Error::new(io::ErrorKind::TimedOut, "Notes owner validation deadline")
         })??;
-        let (offer, endpoint) = receive_session(&bootstrap, deadline)?;
+        let (offer, endpoint, recovery) = receive_session(&bootstrap, deadline)?;
         let identity = offer.target.clone();
-        let target = ProductionNotesTarget::new(
-            identity.clone(),
-            Arc::new(AgentdNotesChannel::from_private_channel(endpoint)?),
-        )
-        .map_err(AgentdError::Invalid)?;
+        let target =
+            ProductionNotesTarget::new(identity.clone(), channel_factory(endpoint, recovery)?)
+                .map_err(AgentdError::Invalid)?;
         let configured = match self.with_additional_target(final_use, Arc::new(target)) {
             Ok(configured) => configured,
             Err(error) => {
@@ -186,7 +245,7 @@ impl AgentdProductionOperationRuntimeConfig {
 fn receive_session(
     bootstrap: &UnixDatagram,
     deadline: Instant,
-) -> Result<(NotesOffer, UnixStream), AgentdError> {
+) -> Result<(NotesOffer, UnixStream, UnixDatagram), AgentdError> {
     require_socket(bootstrap.as_raw_fd(), libc::SOCK_DGRAM)?;
     if !bootstrap.local_addr()?.is_unnamed() || !bootstrap.peer_addr()?.is_unnamed() {
         return Err(AgentdError::Invalid(
@@ -200,7 +259,7 @@ fn receive_session(
 fn receive_offer(
     bootstrap: &UnixDatagram,
     deadline: Instant,
-) -> Result<(NotesOffer, UnixStream), AgentdError> {
+) -> Result<(NotesOffer, UnixStream, UnixDatagram), AgentdError> {
     bootstrap.set_read_timeout(Some(remaining(deadline)?))?;
     let mut bytes = [0_u8; MAX_BOOTSTRAP_BYTES + 1];
     // Word alignment permits cmsghdr access. Extra capacity lets us own and
@@ -227,7 +286,7 @@ fn receive_offer(
     let (mut descriptors, ancillary_valid) = received_descriptors(&message);
     if message.msg_flags & (libc::MSG_TRUNC | libc::MSG_CTRUNC) != 0
         || !ancillary_valid
-        || descriptors.len() != 1
+        || descriptors.len() != 2
         || length == 0
         || length as usize > MAX_BOOTSTRAP_BYTES
     {
@@ -238,13 +297,23 @@ fn receive_offer(
     let offer: NotesOffer = serde_json::from_slice(&bytes[..length as usize])
         .map_err(|_| AgentdError::Protocol("invalid Notes bootstrap schema".to_string()))?;
     offer.target.validate().map_err(AgentdError::Invalid)?;
-    if offer.schema_version != 1
+    if offer.schema_version != 2
         || !matches!(offer.action, OfferAction::OfferNotesTarget)
         || offer.target.task_id != 1
         || offer.destination_id != offer.target.destination_id()
     {
         return Err(AgentdError::Protocol(
             "Notes bootstrap differs from its initial application identity".to_string(),
+        ));
+    }
+    let recovery = descriptors
+        .pop()
+        .ok_or_else(|| AgentdError::Protocol("Notes recovery endpoint is absent".to_string()))?;
+    require_socket(recovery.as_raw_fd(), libc::SOCK_DGRAM)?;
+    let recovery = UnixDatagram::from(recovery);
+    if !recovery.local_addr()?.is_unnamed() || !recovery.peer_addr()?.is_unnamed() {
+        return Err(AgentdError::Protocol(
+            "Notes recovery must be an inherited unnamed datagram".to_string(),
         ));
     }
     let descriptor = descriptors
@@ -257,7 +326,7 @@ fn receive_offer(
             "Notes endpoint must be an inherited unnamed stream".to_string(),
         ));
     }
-    Ok((offer, endpoint))
+    Ok((offer, endpoint, recovery))
 }
 
 fn received_descriptors(message: &libc::msghdr) -> (Vec<OwnedFd>, bool) {
@@ -343,7 +412,7 @@ fn acknowledge(
     deadline: Instant,
 ) -> Result<(), AgentdError> {
     let response = serde_json::to_vec(&Registration {
-        schema_version: 1,
+        schema_version: 2,
         action: "notes_target_registration",
         target: &offer.target,
         destination_id: &offer.destination_id,

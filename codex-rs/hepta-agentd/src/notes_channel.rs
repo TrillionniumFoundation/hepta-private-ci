@@ -4,6 +4,7 @@ use std::io;
 use std::io::Read;
 use std::io::Write;
 use std::net::Shutdown;
+use std::os::unix::net::UnixDatagram;
 use std::os::unix::net::UnixStream;
 use std::sync::Arc;
 use std::sync::Mutex;
@@ -31,6 +32,7 @@ use crate::AgentdProductionWriterHost;
 pub struct AgentdNotesChannel {
     stream: Mutex<UnixStream>,
     disabled: AtomicBool,
+    recovery: Option<Mutex<UnixDatagram>>,
 }
 
 impl AgentdNotesChannel {
@@ -45,7 +47,20 @@ impl AgentdNotesChannel {
         Ok(Self {
             stream: Mutex::new(stream),
             disabled: AtomicBool::new(false),
+            recovery: None,
         })
+    }
+    pub fn from_private_channels(effect: UnixStream, recovery: UnixDatagram) -> io::Result<Self> {
+        if !recovery.local_addr()?.is_unnamed() || !recovery.peer_addr()?.is_unnamed() {
+            return Err(io::Error::new(
+                io::ErrorKind::PermissionDenied,
+                "Notes recovery requires an inherited unnamed datagram pair",
+            ));
+        }
+        recovery.set_nonblocking(false)?;
+        let mut channel = Self::from_private_channel(effect)?;
+        channel.recovery = Some(Mutex::new(recovery));
+        Ok(channel)
     }
 }
 
@@ -68,6 +83,69 @@ impl NotesPrivateChannel for AgentdNotesChannel {
             return Err("Notes exchange is ambiguous; channel permanently closed".to_string());
         }
         result.map_err(|error| error.to_string())
+    }
+
+    fn recovery_exchange(&self, request: &[u8]) -> Result<Vec<u8>, String> {
+        if request.is_empty() || request.len() > NOTES_REQUEST_MAX_BYTES {
+            return Err("invalid Notes recovery bound".to_string());
+        }
+        let expected: serde_json::Value =
+            serde_json::from_slice(request).map_err(|_| "invalid Notes recovery request")?;
+        let action = expected["action"]
+            .as_str()
+            .ok_or("missing Notes recovery action")?;
+        if !matches!(action, "observe" | "acknowledge_terminal") {
+            return Err("Notes recovery cannot carry effects".to_string());
+        }
+        let channel = self
+            .recovery
+            .as_ref()
+            .ok_or("Notes recovery endpoint was not supplied")?
+            .try_lock()
+            .map_err(|_| "Notes recovery busy or poisoned")?;
+        let deadline = Instant::now() + Duration::from_secs(2);
+        channel
+            .set_write_timeout(Some(
+                remaining(deadline).map_err(|error| error.to_string())?,
+            ))
+            .map_err(|error| error.to_string())?;
+        if channel.send(request).map_err(|error| error.to_string())? != request.len() {
+            return Err("partial Notes recovery datagram".to_string());
+        }
+        let mut buffer = [0_u8; NOTES_RESPONSE_MAX_BYTES + 1];
+        // Late replies are correlated by the entire immutable target/K/payload
+        // tuple and action shape. A timeout never closes this independent lane.
+        for _ in 0..16 {
+            channel
+                .set_read_timeout(Some(
+                    remaining(deadline).map_err(|error| error.to_string())?,
+                ))
+                .map_err(|error| error.to_string())?;
+            let length = channel
+                .recv(&mut buffer)
+                .map_err(|error| error.to_string())?;
+            if length == 0 || length > NOTES_RESPONSE_MAX_BYTES {
+                continue;
+            }
+            let Ok(reply) = serde_json::from_slice::<serde_json::Value>(&buffer[..length]) else {
+                continue;
+            };
+            if reply["schema_version"] != expected["schema_version"]
+                || reply["target"] != expected["target"]
+                || reply["operation_id"] != expected["operation_id"]
+                || reply["payload_sha256"] != expected["payload_sha256"]
+            {
+                continue;
+            }
+            if action == "observe" && reply.get("result").is_some()
+                || action == "acknowledge_terminal"
+                    && reply["receipt_sha256"] == expected["receipt_sha256"]
+                    && reply.get("status").is_some()
+            {
+                return Ok(buffer[..length].to_vec());
+            }
+        }
+        Err("too many unrelated Notes recovery responses".to_string())
     }
 
     fn invalidate(&self) {
@@ -109,6 +187,54 @@ impl AgentdProductionWriterHost {
         }
         let target = self.notes_target(identity, stream).await?;
         self.attach_additional_target(final_use, Arc::new(target))
+    }
+
+    pub async fn attach_notes_recoverable_target(
+        self,
+        identity: NotesTargetIdentity,
+        effect: UnixStream,
+        recovery: UnixDatagram,
+        final_use: FinalUseAuthority,
+        grants: Arc<dyn AgentdFinalUseGrantProvider>,
+    ) -> Result<Self, AgentdError> {
+        let target = self
+            .notes_recoverable_target(identity, effect, recovery)
+            .await?;
+        self.attach_target(final_use, Arc::new(target), grants)
+    }
+
+    pub async fn attach_additional_notes_recoverable_target(
+        self,
+        identity: NotesTargetIdentity,
+        effect: UnixStream,
+        recovery: UnixDatagram,
+        final_use: FinalUseAuthority,
+    ) -> Result<Self, AgentdError> {
+        if !self.has_target() {
+            return Err(AgentdError::Invalid(
+                "additional Notes destination requires the original grant provider".to_string(),
+            ));
+        }
+        let target = self
+            .notes_recoverable_target(identity, effect, recovery)
+            .await?;
+        self.attach_additional_target(final_use, Arc::new(target))
+    }
+
+    async fn notes_recoverable_target(
+        &self,
+        identity: NotesTargetIdentity,
+        effect: UnixStream,
+        recovery: UnixDatagram,
+    ) -> Result<ProductionNotesTarget, AgentdError> {
+        if self.production_mutation().is_none() {
+            return Err(AgentdError::Invalid(
+                "Notes requires the independently recovered production writer".to_string(),
+            ));
+        }
+        self.writer().verify_current_authority().await?;
+        let channel = AgentdNotesChannel::from_private_channels(effect, recovery)?;
+        ProductionNotesTarget::new(identity, Arc::new(channel)).map_err(AgentdError::Invalid)
     }
 
     async fn notes_target(

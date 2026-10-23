@@ -128,7 +128,7 @@ async fn notes_host_fixture() -> Result<NotesHostFixture, Box<dyn Error>> {
 }
 
 #[tokio::test]
-async fn notes_recovered_writer_publishes_model_ack_and_never_replays_lost_ack()
+async fn notes_recovered_writer_persists_lost_reply_and_retires_without_replay()
 -> Result<(), Box<dyn Error>> {
     let NotesHostFixture {
         directory: _directory,
@@ -174,6 +174,8 @@ async fn notes_recovered_writer_publishes_model_ack_and_never_replays_lost_ack()
     let (owner_bootstrap, session_bootstrap) = UnixDatagram::pair()?;
     session_bootstrap.set_read_timeout(Some(Duration::from_secs(4)))?;
     let (source_channel, mut application) = UnixStream::pair()?;
+    let (recovery_source, recovery_application) = UnixDatagram::pair()?;
+    recovery_application.set_read_timeout(Some(Duration::from_secs(10)))?;
     application.set_read_timeout(Some(Duration::from_secs(10)))?;
     application.set_write_timeout(Some(Duration::from_secs(10)))?;
     let entries = Arc::new(AtomicUsize::new(0));
@@ -181,7 +183,7 @@ async fn notes_recovered_writer_publishes_model_ack_and_never_replays_lost_ack()
     let peer_identity = identity.clone();
     let peer = std::thread::spawn(move || -> Result<Vec<String>, String> {
         let offer = serde_json::to_vec(&serde_json::json!({
-            "schema_version":1,"action":"offer_notes_target","target":peer_identity,
+            "schema_version":2,"action":"offer_notes_target","target":peer_identity,
             "destination_id":peer_identity.destination_id()
         }))
         .map_err(|error| error.to_string())?;
@@ -198,20 +200,26 @@ async fn notes_recovered_writer_publishes_model_ack_and_never_replays_lost_ack()
             message.msg_iovlen = 1;
             message.msg_control = control.as_mut_ptr().cast();
             message.msg_controllen =
-                libc::CMSG_SPACE(mem::size_of::<libc::c_int>() as u32) as usize;
+                libc::CMSG_SPACE((2 * mem::size_of::<libc::c_int>()) as u32) as usize;
             let header = libc::CMSG_FIRSTHDR(&message);
             (*header).cmsg_level = libc::SOL_SOCKET;
             (*header).cmsg_type = libc::SCM_RIGHTS;
-            (*header).cmsg_len = libc::CMSG_LEN(mem::size_of::<libc::c_int>() as u32) as usize;
+            (*header).cmsg_len =
+                libc::CMSG_LEN((2 * mem::size_of::<libc::c_int>()) as u32) as usize;
             libc::CMSG_DATA(header)
                 .cast::<libc::c_int>()
                 .write(source_channel.as_raw_fd());
+            libc::CMSG_DATA(header)
+                .cast::<libc::c_int>()
+                .add(1)
+                .write(recovery_source.as_raw_fd());
             libc::sendmsg(session_bootstrap.as_raw_fd(), &message, libc::MSG_NOSIGNAL)
         };
         if sent != offer.len() as isize {
             return Err("fixture bootstrap send failed".to_string());
         }
         drop(source_channel);
+        drop(recovery_source);
         let mut ack = [0_u8; 1024];
         let size = session_bootstrap
             .recv(&mut ack)
@@ -220,7 +228,7 @@ async fn notes_recovered_writer_publishes_model_ack_and_never_replays_lost_ack()
             serde_json::from_slice(&ack[..size]).map_err(|error| error.to_string())?;
         assert_eq!(
             ack,
-            serde_json::json!({"schema_version":1,"action":"notes_target_registration",
+            serde_json::json!({"schema_version":2,"action":"notes_target_registration",
             "target":peer_identity,"destination_id":peer_identity.destination_id(),"status":"attached"})
         );
         drop(session_bootstrap);
@@ -247,11 +255,6 @@ async fn notes_recovered_writer_publishes_model_ack_and_never_replays_lost_ack()
                 .to_string();
             applied.push(text.clone());
             peer_entries.fetch_add(1, Ordering::SeqCst);
-            if revision == 1 {
-                // The model changed; lose the ACK and close this incarnation's
-                // transport. Neither reconciliation nor restart may resend.
-                break;
-            }
             let response = serde_json::to_vec(&serde_json::json!({
                 "schema_version":1,"target":peer_identity,
                 "operation_id":request["operation_id"],
@@ -259,12 +262,66 @@ async fn notes_recovered_writer_publishes_model_ack_and_never_replays_lost_ack()
                 "result":{"status":"applied","previous_revision":revision,
                     "revision":revision + 1,"text_sha256":Sha256Digest::for_bytes(text.as_bytes()).as_str()}
             })).map_err(|error| error.to_string())?;
-            application
-                .write_all(&(response.len() as u32).to_be_bytes())
+            if revision == 0 {
+                application
+                    .write_all(&(response.len() as u32).to_be_bytes())
+                    .map_err(|error| error.to_string())?;
+                application
+                    .write_all(&response)
+                    .map_err(|error| error.to_string())?;
+            } else {
+                // A real lost effect reply must not close the independent
+                // observation lane or cause a second effect entry.
+                application
+                    .shutdown(std::net::Shutdown::Both)
+                    .map_err(|error| error.to_string())?;
+                let mut bytes = [0_u8; 8192];
+                let length = recovery_application
+                    .recv(&mut bytes)
+                    .map_err(|error| error.to_string())?;
+                let query: serde_json::Value =
+                    serde_json::from_slice(&bytes[..length]).map_err(|error| error.to_string())?;
+                assert_eq!(query["action"], "observe");
+                assert_eq!(query["operation_id"], request["operation_id"]);
+                assert_eq!(
+                    query["payload_sha256"],
+                    Sha256Digest::for_bytes(&payload).as_str()
+                );
+                recovery_application
+                    .send(&response)
+                    .map_err(|error| error.to_string())?;
+            }
+            let mut bytes = [0_u8; 8192];
+            let attempts = if revision == 0 { 1 } else { 2 };
+            for attempt in 0..attempts {
+                let length = recovery_application
+                    .recv(&mut bytes)
+                    .map_err(|error| error.to_string())?;
+                let ack: serde_json::Value =
+                    serde_json::from_slice(&bytes[..length]).map_err(|error| error.to_string())?;
+                assert_eq!(ack["action"], "acknowledge_terminal");
+                assert_eq!(ack["operation_id"], request["operation_id"]);
+                assert_eq!(
+                    ack["payload_sha256"],
+                    Sha256Digest::for_bytes(&payload).as_str()
+                );
+                assert_eq!(
+                    ack["receipt_sha256"],
+                    Sha256Digest::for_bytes(&response).as_str()
+                );
+                if revision == 1 && attempt == 0 {
+                    continue;
+                } // lose only retirement ACK
+                let reply = serde_json::to_vec(&serde_json::json!({
+                    "schema_version":1, "target":peer_identity, "operation_id":ack["operation_id"],
+                    "payload_sha256":ack["payload_sha256"], "receipt_sha256":ack["receipt_sha256"],
+                    "status":if attempt == 0 { "released" } else { "already_released" }
+                }))
                 .map_err(|error| error.to_string())?;
-            application
-                .write_all(&response)
-                .map_err(|error| error.to_string())?;
+                recovery_application
+                    .send(&reply)
+                    .map_err(|error| error.to_string())?;
+            }
         }
         Ok(applied)
     });
@@ -321,6 +378,12 @@ async fn notes_recovered_writer_publishes_model_ack_and_never_replays_lost_ack()
     assert!(receipts[0].target_receipt.is_some());
     assert_eq!(receipts[1].state, LocalOutcomeState::Indeterminate);
     assert!(receipts[1].target_receipt.is_none());
+    host.reconcile(32).await?;
+    assert_eq!(
+        host.writer().status("notes-host-1").await?,
+        LocalOutcomeState::Committed
+    );
+    host.reconcile(32).await?;
     assert_eq!(
         peer.join().expect("application model thread")?,
         vec![
@@ -328,11 +391,10 @@ async fn notes_recovered_writer_publishes_model_ack_and_never_replays_lost_ack()
             "authorized model revision 2".to_string()
         ]
     );
-    host.reconcile(32).await?;
     assert_eq!(host.reauthorize_pending(32).await?, 0);
     assert_eq!(
         host.writer().status("notes-host-1").await?,
-        LocalOutcomeState::Indeterminate
+        LocalOutcomeState::Committed
     );
     assert_eq!(entries.load(Ordering::SeqCst), 2);
     assert_eq!(issuer.requests.load(Ordering::SeqCst), 2);
