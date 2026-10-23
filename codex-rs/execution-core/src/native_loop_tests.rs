@@ -275,3 +275,37 @@ fn variable_length_run_and_operation_ids_cannot_alias_successor_state() {
         .unwrap();
     assert_ne!(first_done.state_digest(), second_done.state_digest());
 }
+
+#[test]
+fn action_and_step_receipt_identity_are_part_of_successor_state() {
+    let initial = start();
+    let first_proposal = proposed(&initial, AgentStepDisposition::InvokeModel);
+    let mut second_proposal = first_proposal.clone();
+    second_proposal.action_digest = Some(digest(9));
+
+    let first_waiting = initial.accept_step(&first_proposal, 1).unwrap();
+    let second_waiting = initial.accept_step(&second_proposal, 1).unwrap();
+    let first_observation = external(NativeExternalKindV1::Model);
+    let mut second_observation = first_observation.clone();
+    second_observation.action_digest = Some(digest(9));
+
+    let first_done = first_waiting
+        .accept_external(&first_observation, &TrustedFixture, 2)
+        .unwrap();
+    let second_done = second_waiting
+        .accept_external(&second_observation, &TrustedFixture, 2)
+        .unwrap();
+    assert_ne!(first_done.state_digest(), second_done.state_digest());
+
+    // Different step receipts must also produce distinct replay state, even if
+    // the model or tool output digest is identical.
+    let mut third_proposal = first_proposal;
+    third_proposal.observation_digest = digest(10);
+    let third_waiting = initial.accept_step(&third_proposal, 1).unwrap();
+    let mut third_observation = first_observation;
+    third_observation.step_observation_digest = digest(10);
+    let third_done = third_waiting
+        .accept_external(&third_observation, &TrustedFixture, 2)
+        .unwrap();
+    assert_ne!(first_done.state_digest(), third_done.state_digest());
+}
