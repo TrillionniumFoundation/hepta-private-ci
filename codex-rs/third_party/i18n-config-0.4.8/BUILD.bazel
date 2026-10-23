@@ -5,3 +5,10 @@ codex_rust_crate(
     crate_edition = "2018",
     crate_name = "i18n_config",
 )
+
+# Generated @crates dependency labels refer to the versioned external target.
+# Preserve the canonical rust_library and expose only its Bazel alias.
+alias(
+    name = "i18n-config-0.4.8",
+    actual = ":i18n-config",
+)
