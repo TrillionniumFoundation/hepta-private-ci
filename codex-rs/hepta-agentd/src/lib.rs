@@ -5,6 +5,12 @@
 //! It does not implement a second runtime kernel or a fleet-wide message bus.
 
 mod app_runtime;
+#[cfg(target_os = "linux")]
+mod authority_host_service;
+#[cfg(target_os = "linux")]
+pub use authority_host_service::HostAuthorityLane;
+#[cfg(target_os = "linux")]
+pub use authority_host_service::HostAuthorityService;
 mod authbus_checkpoint;
 mod authbus_dispatch;
 mod authbus_ingress;

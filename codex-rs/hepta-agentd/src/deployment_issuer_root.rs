@@ -3,6 +3,7 @@
 
 use super::*;
 use codex_hepta_contracts::authority_lease::AuthorityLeaseBinding;
+use codex_hepta_contracts::authority_lease::AuthorityLeaseError;
 use codex_hepta_contracts::authority_lease::AuthorityLeaseVerifier;
 
 pub(super) struct ProtectedLease {
@@ -31,13 +32,18 @@ impl ProtectedLease {
         let lease = self
             .verifier
             .read_lease(&self.id)
-            .map_err(io::Error::other)?
-            .ok_or_else(|| io::Error::other("original lease missing"))?
+            .map_err(lease_error)?
+            .ok_or_else(|| {
+                io::Error::new(io::ErrorKind::PermissionDenied, "original lease missing")
+            })?
             .lease;
         // Never use the expiry from an older clone when a concurrent admin
         // installs the requested newer revision before verify_use/fencing.
         if lease.revision != self.revision {
-            return Err(io::Error::other("original lease revision mismatch"));
+            return Err(io::Error::new(
+                io::ErrorKind::PermissionDenied,
+                "original lease revision mismatch",
+            ));
         }
         let expected = AuthorityLeaseBinding {
             principal_id: binding.subject_id.clone(),
@@ -49,12 +55,25 @@ impl ProtectedLease {
         let token = self
             .verifier
             .verify_use(&self.id, self.revision, &expected)
-            .map_err(io::Error::other)?;
+            .map_err(lease_error)?;
         self.verifier
             .with_dispatch_boundary(token, &expected, || {
                 dispatch(lease.authority_epoch, lease.expires_at_unix_ms)
             })
-            .map_err(io::Error::other)?
+            .map_err(lease_error)?
+    }
+}
+
+fn lease_error(error: AuthorityLeaseError) -> io::Error {
+    match error {
+        AuthorityLeaseError::LeaseNotFound
+        | AuthorityLeaseError::Revoked
+        | AuthorityLeaseError::BindingMismatch
+        | AuthorityLeaseError::RevisionMismatch
+        | AuthorityLeaseError::EpochMismatch
+        | AuthorityLeaseError::NotYetValid
+        | AuthorityLeaseError::Expired => io::Error::new(io::ErrorKind::PermissionDenied, error),
+        _ => io::Error::other(error),
     }
 }
 
