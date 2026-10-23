@@ -265,7 +265,7 @@ operations hold the original writer lease dispatch fence through local reads and
 the final post-I/O clock observation. They share the original 16KiB bound; an
 oversized complete head is refused without truncation. V1 remains available.
 
-This service extension is not qualified as available on the persistent host yet.
+At the first V2 stage, this service extension had not passed persistent-host availability qualification.
 The initial two actual data-bind qualification attempts refused during the older
 initialization path, before writer registration: the fixed one-second protected
 clock horizon was exceeded by actual filesystem synchronization. Those failures
@@ -303,3 +303,26 @@ Tests use private same-UID socketpairs for protocol faults and verify public
 root-identity rejection; these do not establish deployment qualification for a
 root service or a consumer running under a separate UID. That qualification
 requires the real launcher, registered original consumer and protected backend.
+
+Protected frontier reads can reuse a durability witness for an immutable record
+that this exact backend handle has already acknowledged. The witness retains the
+open file descriptor and complete encoded bytes. Every read still takes the
+original publication lock, reopens and validates the current private file, and
+compares its device/inode plus every byte. This avoids repeated file/directory
+sync only for that exact retained record. A new handle or replacement inode,
+changed bytes (even at the same length), or any I/O failure requires actual
+synchronization again. Failed publication never installs a witness. This is no
+mtime/size/hash shortcut and supplies no new authority or rollback guarantee.
+All protected clock post-I/O, rollback and one-second horizon guards remain.
+
+The witness stage passed the original blocked-publication/durability tests plus
+four new real-file cases: exact repeated read, a second handle's replacement
+(including equal bytes with a new inode), same-inode same-length changed bytes,
+and failed read followed by restoration. A controlled length-only comparison
+made the changed-byte test incorrectly return a value and fail. On the real
+root-owned data bind, subsequent dedicated-UID60001 qualification verified the
+retained proof at sequence 1, original Objective/FinalUse sequences 2/3, and a
+111ms V2 read-before-feed observation. The expired-writer and legacy V1 cases
+also passed. The earlier initialization failures remain valid evidence of
+host-I/O unavailability; this is no sustained latency SLA, current-cut witness,
+full production writer or G2/native qualification.

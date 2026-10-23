@@ -27,6 +27,9 @@ mod issuer_tests;
 #[path = "authority_host_store_durable_tests.rs"]
 mod durable_tests;
 
+#[path = "authority_host_store_cache_tests.rs"]
+mod cache_tests;
+
 const OWNER: &str = "local-host-authority";
 
 // Tests exercise real filesystem persistence as their ordinary test UID. This
