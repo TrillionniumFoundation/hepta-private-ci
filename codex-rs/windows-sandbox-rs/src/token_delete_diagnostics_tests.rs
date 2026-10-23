@@ -282,7 +282,7 @@ fn workspace_delete_permission_routes_diagnostic_matrix() -> Result<()> {
     // No failed assertion is ignored: every expectation is checked below.
     let mut denied = Vec::new();
     let mut observed_control = Vec::new();
-    let mut expected_control = Vec::new();
+    let mut expected_control_results = Vec::new();
     let mut observed_control_denials = Vec::new();
     let mut expected_control_denials = Vec::new();
     let mut outside_reads = Vec::new();
@@ -363,7 +363,7 @@ fn workspace_delete_permission_routes_diagnostic_matrix() -> Result<()> {
             }
         }
         observed_control.extend(control.iter().map(|outcome| outcome.succeeded));
-        expected_control.extend([expected_control; 2]);
+        expected_control_results.extend([expected_control; 2]);
         if !expected_control {
             observed_control_denials.extend(control.iter().map(|outcome| outcome.win32_error));
             expected_control_denials.extend([Some(5); 2]);
@@ -374,7 +374,7 @@ fn workspace_delete_permission_routes_diagnostic_matrix() -> Result<()> {
     // Keep the original fail-closed assertions, but run them after every
     // native route has produced evidence. A DELETE escape or unexpectedly
     // privileged control still fails this security regression.
-    assert_eq!(observed_control, expected_control);
+    assert_eq!(observed_control, expected_control_results);
     assert_eq!(observed_control_denials, expected_control_denials);
     assert_eq!(outside_reads, vec!["outside"; routes.len()]);
     assert_eq!(denied, vec![Some(5); routes.len() * 2]);
