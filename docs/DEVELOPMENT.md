@@ -680,11 +680,18 @@ this ordering adds cross-repository evidence dependencies without a second DAG,
 optimizer, durable journal or authority issuer. Parameter, topology, executable
 and consensus upgrades retain their separate admission and release boundaries.
 
-The paired Chain PN1 campaign still fails its original CPU-depletion requirement:
-honest confirmation and measured accounting succeed, but the fixed hostile input
-does not exhaust paid credit under the existing challenge limit and refill policy.
-These PN0 repairs retain that failure and every original assertion; no inferred
-charge, reduced budget or replacement workload qualifies the original campaign.
+The earlier Chain `6724ed1` campaign did not observe genuine paid-credit
+depletion. On Chain `873d5cb`, all three baseline phases and all three late-product
+phases pass their original criteria. Each of the three from-zero phases now
+observes genuine depletion, but only after its third honest round has ended;
+none has a complete depleted meter sample inside any honest round. That required
+overlap is their sole failed phase predicate. All original honest confirmations,
+receiver/client state comparisons, actor completion and accounting observations
+remain successful. These are separate source-bound results: the older failure is
+not the current failure, and the three current from-zero trials remain failed.
+These PN0 repairs preserve both sets of observations, the original fixed round
+schedule and every assertion; no inferred charge, reduced budget or replacement
+workload qualifies the original campaign.
 
 PN0's first compatible dependency patch candidate updates OpenSSL to 0.10.81,
 cmov to 0.5.4, gix-packetline to 0.21.5, gix-sec to 0.13.3 and quinn-proto to
@@ -725,8 +732,19 @@ additional protocol fixture failures discovered by that alias run were separatel
 reproduced against the original production source and repaired without changing
 their assertions. These results bind each component's tested source; no combined
 native rerun or macOS success is claimed. Exact-source hosted CI remains required,
-and Windows' explicit Unix-only durable owner/FinalUse backends and directory-sync
-failures remain separate blockers. The job-time increase does not close them.
+and Windows' explicit Unix-only durable owner/FinalUse backends remain separate
+blockers. The job-time increase does not close them.
+
+The bounded Windows directory-handle candidate opens actual write-capable handles
+with backup semantics for the Agentd test ledger/witness and Bao lease-parent
+flushes. Five Agentd retrieval-learning tests and ten Bao lease-lifecycle tests
+pass on Linux against each component's tested source; that does not compile or
+execute the Windows branches. Both file and directory sync errors still propagate,
+and the existing negative assertions remain intact. Six focused core/queue tests
+also pass on Linux with preserved tracing context, deterministic test timers and
+private, quoted hook fixtures. Exact-source Windows native CI is pending,
+including the separate unsupported private-owner backend boundary;
+these handle repairs do not qualify owner SID/DACL checks or FinalUse durability.
 
 The next PN0 DNS dependency candidate retains the original Rama alpha.4
 resolver trait and constructor signatures, and vendors its published `rama-dns`
