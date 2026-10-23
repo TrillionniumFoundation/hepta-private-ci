@@ -181,11 +181,11 @@ class ScopeTests(unittest.TestCase):
                 self.assertEqual(len(keys), 1)
                 key = keys[0]
                 self.assertIn(
-                    "::\u0024{{ github.event.pull_request.head.repo.full_name || github.repository }}::",
+                    "::${{ github.event.pull_request.head.repo.full_name || github.repository }}::",
                     key,
                 )
                 self.assertIn(
-                    "\u0024{{ github.event.pull_request.head.ref || github.ref_name }}",
+                    "${{ github.event.pull_request.head.ref || github.ref_name }}",
                     key,
                 )
 
