@@ -68,18 +68,72 @@ def pinned_file(directory, reference):
     return raw
 
 
+def repair_patch_digest(commit):
+    files = commit["files"]
+    if not files or not all("filename" in file and "patch" in file for file in files):
+        return None
+    return sha(canonical(sorted((file["filename"], file["patch"]) for file in files)))
+
+
+def source_groups(cases):
+    """Conservative connected components of declared and observed ancestry.
+
+    A renamed cause cannot make repeated commits, repair patches or original
+    failure bytes independent. Generic success logs are deliberately excluded.
+    """
+    parents = list(range(len(cases)))
+
+    def root(index):
+        while parents[index] != index:
+            parents[index] = parents[parents[index]]
+            index = parents[index]
+        return index
+
+    seen = {}
+    for index, case in enumerate(cases):
+        identities = [("declared_cause", case["root_cause"])]
+        identities += [
+            ("commit", case.get("project"), case[field])
+            for field in ("failed_commit", "fixed_commit")
+            if case.get(field)
+        ]
+        identities += [
+            (field, case[field])
+            for field in (
+                "commit_evidence_sha256",
+                "failure_log_sha256",
+                "repair_patch_sha256",
+            )
+            if case.get(field)
+        ]
+        for identity in identities:
+            if identity in seen:
+                parents[root(index)] = root(seen[identity])
+            else:
+                seen[identity] = index
+    groups = {}
+    for index, case in enumerate(cases):
+        groups.setdefault(root(index), []).append(case)
+    return list(groups.values())
+
+
+def source_group_ids(cases):
+    """Return aligned canonical component IDs for training and evaluation."""
+    identities = {}
+    for component in source_groups(cases):
+        group = sha(canonical(sorted(case["id"] for case in component)))
+        identities.update({case["id"]: group for case in component})
+    return [identities[case["id"]] for case in cases]
+
+
 def partition_cases(cases, train_until, validation_until):
     """Purge groups crossing time boundaries; never split one repair family."""
     first, second = timestamp(train_until), timestamp(validation_until)
     if first > second:
         raise ValueError("ordered time cutoffs required")
-    groups = {}
-    for case in cases:
-        # Root-cause groups are global, so another project cannot leak the same
-        # repair family into a later split under a different project spelling.
-        groups.setdefault(case["root_cause"], []).append(case)
+    groups = source_groups(cases)
     partitions = {name: [] for name in ("train", "validation", "future", "purged")}
-    for values in groups.values():
+    for values in groups:
         earliest = min(timestamp(x["observed_at"]) for x in values)
         latest = max(timestamp(x["resolved_at"]) for x in values)
         split = (
@@ -149,7 +203,17 @@ def produce(manifest_path, output):
             raise ValueError(
                 "bounded original symptom, repair label and history required"
             )
-        observed, resolved = failed["updated_at"], passed["updated_at"]
+        first_observed = failed.get("created_at")
+        observed = first_observed or failed["updated_at"]
+        resolved = passed["updated_at"]
+        attempts = [run.get("run_attempt") for run in (failed, passed)]
+        if any(
+            value is not None and (type(value) is not int or value < 1)
+            for value in attempts
+        ):
+            raise ValueError("positive run attempts or explicit unknown required")
+        if timestamp(observed) > timestamp(failed["updated_at"]):
+            raise ValueError("failure creation follows its last update")
         if timestamp(observed) > timestamp(resolved):
             raise ValueError("verification predates failure")
         record = {
@@ -159,6 +223,13 @@ def produce(manifest_path, output):
         record.update(
             project=project,
             observed_at=observed,
+            first_observed_at=first_observed,
+            observation_time_basis="run_created_at"
+            if first_observed
+            else "unknown_first_seen",
+            failed_updated_at=failed["updated_at"],
+            failed_run_attempt=attempts[0],
+            success_run_attempt=attempts[1],
             resolved_at=resolved,
             symptom=symptom,
             failed_commit=failed["head_sha"],
@@ -169,7 +240,10 @@ def produce(manifest_path, output):
             failure_log_sha256=sha(bad_log),
             success_log_sha256=sha(good_log),
             commit_evidence_sha256=entry["fix"]["sha256"],
-            prospective_at_registration=timestamp(observed) > registered
+            repair_patch_sha256=repair_patch_digest(commit),
+            prospective_at_registration=first_observed is not None
+            and attempts[0] is not None
+            and timestamp(first_observed) > registered
             and not entry["previously_seen"],
         )
         record["source_digest"] = sha(canonical(record))
@@ -188,7 +262,7 @@ def produce(manifest_path, output):
     train_projects = {r["project"] for r in records if r["id"] in partitions["train"]}
     future = [r for r in records if r["id"] in partitions["future"]]
     result = dict(
-        schema="hepta.domain.dataset.v1",
+        schema="hepta.domain.dataset.v2",
         cases=records,
         partitions=partitions,
         manifest_sha256=sha(original),
@@ -196,7 +270,7 @@ def produce(manifest_path, output):
         source_bytes=sum(map(len, sources.values())),
         source_inventory={key: len(raw) for key, raw in sources.items()},
         scope="hepta-ci-domain-development",
-        independent_groups=len({r["root_cause"] for r in records}),
+        independent_groups=len(source_groups(records)),
         future_unseen_projects=[
             r["id"] for r in future if r["project"] not in train_projects
         ],
@@ -225,8 +299,10 @@ def load_dataset(path, expected_sha256):
     if sha(raw) != expected_sha256:
         raise ValueError("dataset pin changed")
     data = json.loads(raw)
-    if data["schema"] != "hepta.domain.dataset.v1":
-        raise ValueError("unsupported dataset")
+    if data["schema"] != "hepta.domain.dataset.v2":
+        raise ValueError(
+            "unsupported dataset: rebuild legacy partitions from original sources"
+        )
     manifest = (Path(path).parent / "input-manifest.json").read_bytes()
     if sha(manifest) != data["manifest_sha256"]:
         raise ValueError("original source manifest changed")
@@ -247,6 +323,69 @@ def load_dataset(path, expected_sha256):
             )
         ):
             raise ValueError("case source binding changed")
+    # A valid byte pin does not make legacy or manually reassigned partitions
+    # independent. Recompute over the entire census before selecting train rows.
+    original = json.loads(manifest)
+    entries = {entry["id"]: entry for entry in original["cases"]}
+    case_ids = [case["id"] for case in data["cases"]]
+    if len(set(case_ids)) != len(case_ids) or set(case_ids) != set(entries):
+        raise ValueError("dataset differs from complete original incident census")
+    expected = partition_cases(
+        data["cases"], original["train_until"], original["validation_until"]
+    )
+    if data["partitions"] != expected or data["independent_groups"] != len(
+        source_groups(data["cases"])
+    ):
+        raise ValueError("dataset source components or temporal partitions changed")
+    raw_runs = json.loads(
+        (Path(path).parent / "evidence" / original["runs"]["sha256"]).read_bytes()
+    )
+    runs = raw_runs["workflow_runs"] if isinstance(raw_runs, dict) else raw_runs
+    by_id = {run["id"]: run for run in runs}
+    prospective = []
+    for case in data["cases"]:
+        entry = entries[case["id"]]
+        failed = by_id[entry["failed_run_id"]]
+        passed = by_id[entry["success_run_id"]]
+        commit = json.loads(
+            (Path(path).parent / "evidence" / entry["fix"]["sha256"]).read_bytes()
+        )
+        ancestry = dict(
+            failed_run_id=failed["id"],
+            success_run_id=passed["id"],
+            failed_commit=failed["head_sha"],
+            fixed_commit=commit["sha"],
+            project=failed["repository"]["full_name"],
+            failure_log_sha256=entry["failure_log"]["sha256"],
+            success_log_sha256=entry["success_log"]["sha256"],
+            commit_evidence_sha256=entry["fix"]["sha256"],
+            repair_patch_sha256=repair_patch_digest(commit),
+            resolved_at=passed["updated_at"],
+        )
+        ancestry.update(
+            {key: entry[key] for key in ("root_cause", "symptom", "previously_seen")}
+        )
+        if any(case[key] != value for key, value in ancestry.items()):
+            raise ValueError("dataset ancestry differs from original incident sources")
+        first_seen = failed.get("created_at")
+        observed = first_seen or failed["updated_at"]
+        prospective_case = bool(
+            first_seen is not None
+            and failed.get("run_attempt") is not None
+            and timestamp(first_seen) > timestamp(original["registered_at"])
+            and not case["previously_seen"]
+        )
+        if (
+            case["first_observed_at"],
+            case["observed_at"],
+            case["failed_run_attempt"],
+            case["prospective_at_registration"],
+        ) != (first_seen, observed, failed.get("run_attempt"), prospective_case):
+            raise ValueError("dataset first observation differs from original run")
+        if case["id"] in expected["future"] and prospective_case:
+            prospective.append(case["id"])
+    if data["prospective_cases"] != prospective:
+        raise ValueError("dataset prospective census changed")
     return data
 
 

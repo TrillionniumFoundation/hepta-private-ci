@@ -137,3 +137,33 @@ python -B -m unittest discover -s scripts/memory_cell_domain -p 'test_*.py' -v
 
 The unit test source exports are explicitly synthetic contract fixtures. They
 are never added to the real cohort or counted as scientific memory evidence.
+
+## Source independence and observation clocks
+
+New datasets conservatively form connected components from declared root causes,
+repository-scoped failed/fixed commit ancestry, original failure-log hashes,
+commit-evidence hashes, and exact repair patch content. A shared repair or source
+cannot become independent by relabeling a cause. Components spanning a cutoff
+are purged together; generic success-log text is not a grouping identity.
+`independent_groups` counts these components, not annotation strings.
+
+A run's `created_at`, not its last `updated_at`, establishes the earliest observed
+incident time available here. Original run attempts and update times are retained.
+Missing creation or attempt metadata stays explicitly unverified and cannot
+qualify as prospective. A later rerun of an old task cannot manufacture a future
+cohort. These checks do not independently attest an annotator's previous exposure
+or detect every semantic near-duplicate; independent future acceptance still
+requires the frozen source protocol and an external observation boundary.
+
+The same recomputed component IDs feed trial admission and both learned/random
+fission partitions. A single ancestry component is rejected before model loading
+or output creation, even if its rows carry different root-cause labels. Exact
+commit or tiny-patch matching may conservatively overmerge sequential incidents;
+this reduces available sample count rather than splitting known dependencies.
+Near-duplicate semantic patch detection is not implemented by exact hashing.
+
+New output uses dataset schema v2. The loader rejects v1 inputs rather than
+trusting old partitions and recomputes the full-census temporal components and
+prospective flags against retained original run metadata before selecting any
+training rows. Rebuild new experiments from original manifests; do not rewrite
+previously frozen evidence to make it conform.

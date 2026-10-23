@@ -66,7 +66,7 @@ class DomainDataTests(unittest.TestCase):
                         dict(
                             sha=fixed,
                             parents=[dict(sha=failed)],
-                            files=[dict(filename="test.py", patch="+fixed")],
+                            files=[dict(filename="test.py", patch=f"+fixed_{i}")],
                         ),
                     ),
                     failure_log=source(f"bad-{i}.log", symptom.encode()),
