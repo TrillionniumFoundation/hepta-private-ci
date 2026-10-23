@@ -1,0 +1,221 @@
+{
+  "checkpoints": [
+    {
+      "CPU": 0.05612116500000042,
+      "units": 11750460,
+      "update": 1,
+      "values": {
+        "KEEP": {
+          "greedy": {
+            "both_wrong": 0.0234375,
+            "code_disagreement": 0.00390625,
+            "image_correct": 0.9765625,
+            "image_only_correct": 0.00390625,
+            "joint_success": 0.97265625,
+            "pixel_mse": 0.0005277280026926755,
+            "semantic_disagreement": 0.00390625,
+            "text_correct": 0.97265625,
+            "text_only_correct": 0.0,
+            "wrong_agreement": 0.0234375
+          },
+          "means": {
+            "both_wrong": 0.035981837572171355,
+            "ce": 0.6881322233325398,
+            "code_disagreement": 0.18680513010782823,
+            "image_correct": 0.87539856750561,
+            "image_only_correct": 0.08769575050058234,
+            "joint_success": 0.7877028170050278,
+            "pixel_mse": 0.00816514922869649,
+            "raw_reward": 0.7931792837021466,
+            "semantic_disagreement": 0.18680513010782823,
+            "text_correct": 0.8763224119272462,
+            "text_only_correct": 0.08861959492221863,
+            "wrong_agreement": 0.025492052887144106,
+            "wrong_disagreement": 0.01048978468502725
+          }
+        },
+        "log2": {
+          "greedy": {
+            "both_wrong": 0.0234375,
+            "code_disagreement": 0.00390625,
+            "image_correct": 0.9765625,
+            "image_only_correct": 0.00390625,
+            "joint_success": 0.97265625,
+            "pixel_mse": 0.0005277280026926755,
+            "semantic_disagreement": 0.00390625,
+            "text_correct": 0.97265625,
+            "text_only_correct": 0.0,
+            "wrong_agreement": 0.0234375
+          },
+          "means": {
+            "both_wrong": 0.04214127439694877,
+            "ce": 0.929858141748577,
+            "code_disagreement": 0.010668818322934362,
+            "image_correct": 0.9534773048603589,
+            "image_only_correct": 0.0046103588460791765,
+            "joint_success": 0.9488669460142796,
+            "pixel_mse": 0.0017932949376737494,
+            "raw_reward": 0.9522263809013866,
+            "semantic_disagreement": 0.010668818322934362,
+            "text_correct": 0.953248366756972,
+            "text_only_correct": 0.004381420742692429,
+            "wrong_agreement": 0.04046423566278603,
+            "wrong_disagreement": 0.0016770387341627493
+          }
+        }
+      }
+    },
+    {
+      "CPU": 0.2571353389999995,
+      "units": 315147112,
+      "update": 128,
+      "values": {
+        "KEEP": {
+          "greedy": {
+            "both_wrong": 0.015625,
+            "code_disagreement": 0.0,
+            "image_correct": 0.984375,
+            "image_only_correct": 0.0,
+            "joint_success": 0.984375,
+            "pixel_mse": 0.0003665514588615306,
+            "semantic_disagreement": 0.0,
+            "text_correct": 0.984375,
+            "text_only_correct": 0.0,
+            "wrong_agreement": 0.015625
+          },
+          "means": {
+            "both_wrong": 0.016296109301229024,
+            "ce": 0.9277964000331436,
+            "code_disagreement": 0.036793703737429864,
+            "image_correct": 0.9664285122411573,
+            "image_only_correct": 0.019203330736408085,
+            "joint_success": 0.9472251815047492,
+            "pixel_mse": 0.0011371900099300491,
+            "raw_reward": 0.9501136038004083,
+            "semantic_disagreement": 0.036793703737429864,
+            "text_correct": 0.964500559962363,
+            "text_only_correct": 0.017275378457613653,
+            "wrong_agreement": 0.015981114757820877,
+            "wrong_disagreement": 0.0003149945434081475
+          }
+        },
+        "log2": {
+          "greedy": {
+            "both_wrong": 0.015625,
+            "code_disagreement": 0.0,
+            "image_correct": 0.984375,
+            "image_only_correct": 0.0,
+            "joint_success": 0.984375,
+            "pixel_mse": 0.0003665514588615306,
+            "semantic_disagreement": 0.0,
+            "text_correct": 0.984375,
+            "text_only_correct": 0.0,
+            "wrong_agreement": 0.015625
+          },
+          "means": {
+            "both_wrong": 0.019615489426375865,
+            "ce": 0.976441366584731,
+            "code_disagreement": 0.0019256266447543117,
+            "image_correct": 0.9796187005063233,
+            "image_only_correct": 0.001134547958932445,
+            "joint_success": 0.9784841525473909,
+            "pixel_mse": 0.00047417368393288894,
+            "raw_reward": 0.9803422059012845,
+            "semantic_disagreement": 0.0019256266447543117,
+            "text_correct": 0.9792499626146918,
+            "text_only_correct": 0.0007658100673009149,
+            "wrong_agreement": 0.01959022080785489,
+            "wrong_disagreement": 2.5268618520979374e-05
+          }
+        }
+      }
+    },
+    {
+      "CPU": 0.48455565799999967,
+      "units": 620857080,
+      "update": 256,
+      "values": {
+        "KEEP": {
+          "greedy": {
+            "both_wrong": 0.01171875,
+            "code_disagreement": 0.0,
+            "image_correct": 0.98828125,
+            "image_only_correct": 0.0,
+            "joint_success": 0.98828125,
+            "pixel_mse": 0.0002859563553416895,
+            "semantic_disagreement": 0.0,
+            "text_correct": 0.98828125,
+            "text_only_correct": 0.0,
+            "wrong_agreement": 0.01171875
+          },
+          "means": {
+            "both_wrong": 0.010016233760673414,
+            "ce": 0.9578155484717623,
+            "code_disagreement": 0.019891194642571833,
+            "image_correct": 0.9804356867254405,
+            "image_only_correct": 0.010172527747572796,
+            "joint_success": 0.9702631589778676,
+            "pixel_mse": 0.0007156263143242776,
+            "raw_reward": 0.9719048566078887,
+            "semantic_disagreement": 0.019891194642571833,
+            "text_correct": 0.9798112384917539,
+            "text_only_correct": 0.009548079513886112,
+            "wrong_agreement": 0.009845646379560485,
+            "wrong_disagreement": 0.00017058738111293083
+          }
+        },
+        "log2": {
+          "greedy": {
+            "both_wrong": 0.01171875,
+            "code_disagreement": 0.0,
+            "image_correct": 0.98828125,
+            "image_only_correct": 0.0,
+            "joint_success": 0.98828125,
+            "pixel_mse": 0.0002859563553416895,
+            "semantic_disagreement": 0.0,
+            "text_correct": 0.98828125,
+            "text_only_correct": 0.0,
+            "wrong_agreement": 0.01171875
+          },
+          "means": {
+            "both_wrong": 0.010318416529384925,
+            "ce": 0.987388274800059,
+            "code_disagreement": 0.0019044501590270192,
+            "image_correct": 0.9887863173566118,
+            "image_only_correct": 0.00100497780925708,
+            "joint_success": 0.9877813395473547,
+            "pixel_mse": 0.00028749111207552737,
+            "raw_reward": 0.9887917247691076,
+            "semantic_disagreement": 0.0019044501590270192,
+            "text_correct": 0.9886766056613581,
+            "text_only_correct": 0.0008952661140033281,
+            "wrong_agreement": 0.010314210293618306,
+            "wrong_disagreement": 4.2062357666158726e-06
+          }
+        }
+      }
+    }
+  ],
+  "clocks": {
+    "bias": 338,
+    "encoder": 338,
+    "image": 338,
+    "image_bias": 338,
+    "text": 338,
+    "text_bias": 338
+  },
+  "digest": "fb66d15d0648b8047ddb82a21d7f1c46d9242f8aec77074dabe0dfff0b46e9c1",
+  "family": "A",
+  "initialization_CPU": 0.0006617660000003411,
+  "initialization_ledger_end": 7338764025,
+  "initialization_units": 7288,
+  "ordinal": 18,
+  "per_step_kernel_units": 2300130,
+  "recipe": "independent",
+  "rng_seed": 10047,
+  "seed": 47,
+  "stop": "slot_CPU_preflight",
+  "training_CPU": 0.5755388660000005,
+  "training_units_including_checkpoints": 810664448,
+  "updates": 338
+}
