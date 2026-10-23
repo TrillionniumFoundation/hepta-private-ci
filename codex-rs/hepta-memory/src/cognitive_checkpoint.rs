@@ -18,6 +18,10 @@ use crate::ObjectiveSenderWriterFence;
 use crate::cognitive_checkpoint_wire::*;
 use crate::cognitive_store::CognitiveCommitGate;
 
+#[path = "cognitive_checkpoint_publication.rs"]
+mod publication;
+pub(crate) use publication::BoundOwnerPublication;
+
 /// Fixed-peer, bounded asynchronous transport for the private protected-host
 /// protocol. The caller supplies exact UTF-8 JSON bytes. Implementations frame
 /// them with a four-byte big-endian length, enforce the 32-KiB response limit,

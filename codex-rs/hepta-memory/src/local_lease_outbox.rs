@@ -1753,7 +1753,7 @@ impl LocalLeaseOutbox {
     ) -> Result<DurableOperationDispatchBinding, LocalLeaseOutboxError> {
         let mut transaction = self
             .store
-            .pool
+            .observation_pool()
             .begin()
             .await
             .map_err(crate::cognitive_store::unavailable)?;
@@ -1819,7 +1819,7 @@ impl LocalLeaseOutbox {
             expected_predecessor_sha256,
         };
         transaction
-            .commit()
+            .rollback()
             .await
             .map_err(crate::cognitive_store::unavailable)?;
         Ok(binding)

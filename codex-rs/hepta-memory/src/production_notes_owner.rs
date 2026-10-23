@@ -93,13 +93,21 @@ impl ProductionDurableWriter {
                 "Notes retirement targets another topic".to_string(),
             ));
         }
+        // Keep the original write-serialization lock through publication and
+        // the synchronous metadata ACK. This pool is physically read-only.
+        let mut transaction = self
+            .store
+            .observation_pool()
+            .begin_with("BEGIN IMMEDIATE")
+            .await
+            .map_err(|error| ProductionWriterError::Durability(error.to_string()))?;
         let (kind, receipt, digest): (String, String, String) = sqlx::query_as(
             "SELECT event_kind, payload_json, payload_sha256 FROM cognitive_local_events
              WHERE lease_id = ? AND occurrence_key = ? ORDER BY event_sequence DESC LIMIT 1",
         )
         .bind(self.lease_id())
         .bind(operation_id)
-        .fetch_optional(&self.store.pool)
+        .fetch_optional(&mut *transaction)
         .await
         .map_err(|error| ProductionWriterError::Durability(error.to_string()))?
         .ok_or_else(|| {
@@ -119,20 +127,20 @@ impl ProductionDurableWriter {
                 "Notes terminal event is not applied".to_string(),
             ));
         }
-        self.verify_authority().await?;
+        self.acknowledge_bound_owner_transaction(&mut transaction)
+            .await?;
         let permit = NotesRetirementPermit { request, receipt };
         // Recheck the original verifier after all SQLite awaits and immediately
         // before the synchronous metadata-only destination call.
-        self.authority
-            .validate_for_agent(self.store.owner_agent_id())?;
-        self.live_verifier
-            .as_ref()
-            .ok_or(ProductionWriterError::LiveVerifierRequired)?
-            .verify(&self.authority, self.store.owner_agent_id())
-            .map_err(ProductionWriterError::AuthorityRejected)?;
-        target
+        self.retirement_live_check()?;
+        let retired = target
             .retire_notes_receipt(&permit)
-            .map_err(ProductionWriterError::Durability)
+            .map_err(ProductionWriterError::Durability);
+        transaction
+            .rollback()
+            .await
+            .map_err(|error| ProductionWriterError::Durability(error.to_string()))?;
+        retired
     }
 
     pub(super) async fn retry_notes_retirement<T: FinalUseProductionOutboxTarget + ?Sized>(
@@ -153,7 +161,7 @@ impl ProductionDurableWriter {
                AND e.event_kind = 'reconcile_committed'
              ORDER BY e.event_sequence DESC LIMIT 1",
         ).bind(self.lease_id()).bind(target.destination_id()).bind(crate::NOTES_REPLACE_TOPIC_V1)
-            .fetch_optional(&self.store.pool).await
+            .fetch_optional(self.store.observation_pool()).await
             .map_err(|error| ProductionWriterError::Durability(error.to_string()))?;
         if let Some(operation_id) = latest {
             self.retire_notes_receipt(target, &operation_id).await?;

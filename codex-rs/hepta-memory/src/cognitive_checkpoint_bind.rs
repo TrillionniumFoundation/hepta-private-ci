@@ -111,6 +111,7 @@ impl CognitiveStore {
                 "read-only observer differs from the recovered owner cut".to_string(),
             ));
         }
+        self.bound_publication = Some(coordinator.clone());
         attempt.acknowledge();
         Ok((self, coordinator))
     }

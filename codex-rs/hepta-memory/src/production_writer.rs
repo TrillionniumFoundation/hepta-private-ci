@@ -90,6 +90,9 @@ mod hos2_owner;
 pub use hos2_owner::Hos2RetirementObservation;
 pub use hos2_owner::Hos2RetirementPermit;
 
+#[path = "production_owner_publication.rs"]
+mod owner_publication;
+
 #[path = "production_notes_owner.rs"]
 mod notes_owner;
 pub(crate) use notes_owner::NotesPreDispatchRejection;
@@ -1038,7 +1041,7 @@ impl ProductionDurableWriter {
         .bind(i64::try_from(limit).map_err(|_| {
             ProductionWriterError::Invalid("reconcile batch limit overflow".to_string())
         })?)
-        .fetch_all(&self.store.pool)
+        .fetch_all(self.store.observation_pool())
         .await
         .map_err(|error| ProductionWriterError::Durability(error.to_string()))?;
 
@@ -1155,7 +1158,7 @@ impl ProductionDurableWriter {
         )
         .bind(self.lease_id())
         .bind(occurrence_key)
-        .fetch_optional(&self.store.pool)
+        .fetch_optional(self.store.observation_pool())
         .await
         .map_err(|error| ProductionWriterError::Durability(error.to_string()))?
         .ok_or_else(|| {

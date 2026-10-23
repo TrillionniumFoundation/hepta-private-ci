@@ -249,6 +249,7 @@ pub enum CognitiveStoreError {
 pub struct CognitiveStore {
     pub(crate) pool: SqlitePool,
     observation_pool: Option<SqlitePool>,
+    bound_publication: Option<Arc<dyn crate::cognitive_checkpoint::BoundOwnerPublication>>,
     pub(crate) owner_agent_id: AgentId,
     path: PathBuf,
     pub(crate) commit_gate: CognitiveCommitGate,
@@ -330,6 +331,12 @@ impl CognitiveStoreOpenGuard {
 }
 
 impl CognitiveStore {
+    pub(crate) fn bound_owner_publication(
+        &self,
+    ) -> Option<&Arc<dyn crate::cognitive_checkpoint::BoundOwnerPublication>> {
+        self.bound_publication.as_ref()
+    }
+
     pub(crate) fn from_read_only_pool(
         pool: SqlitePool,
         owner_agent_id: AgentId,
@@ -338,6 +345,7 @@ impl CognitiveStore {
         Self {
             pool,
             observation_pool: None,
+            bound_publication: None,
             owner_agent_id,
             path,
             commit_gate: CognitiveCommitGate::default(),
@@ -376,6 +384,7 @@ impl CognitiveStore {
         Ok(Self {
             pool,
             observation_pool: None,
+            bound_publication: None,
             owner_agent_id: layout.agent_id().clone(),
             path,
             commit_gate,

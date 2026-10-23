@@ -51,7 +51,10 @@ impl FinalUseProductionOutboxTarget for Observer {
         Ok(())
     }
 }
-async fn prepared_notes(fixture: &ManagedFixture) -> (String, Arc<Observer>) {
+async fn prepared_notes(
+    writer: &ProductionDurableWriter,
+    peer: Arc<ProtocolPeer>,
+) -> (String, Arc<Observer>) {
     let golden: serde_json::Value =
         serde_json::from_str(include_str!("../tests/fixtures/notes-target-v1.json")).unwrap();
     let payload = golden["request_utf8"].as_str().unwrap().to_string();
@@ -60,17 +63,15 @@ async fn prepared_notes(fixture: &ManagedFixture) -> (String, Arc<Observer>) {
     let intent = notes_operation_intent(
         &identity,
         &payload,
-        StableId::new(fixture.writer.owner_agent_id().as_str()).unwrap(),
+        StableId::new(writer.owner_agent_id().as_str()).unwrap(),
         Generation::new(1).unwrap(),
     )
     .unwrap();
-    let queued = fixture
-        .writer
+    let queued = writer
         .prepare_operation(intent, crate::NOTES_REPLACE_TOPIC_V1, payload)
         .await
         .unwrap();
-    fixture
-        .writer
+    writer
         .mark_indeterminate(&queued.occurrence_key, "fixture app applied; reply lost")
         .await
         .unwrap();
@@ -82,7 +83,7 @@ async fn prepared_notes(fixture: &ManagedFixture) -> (String, Arc<Observer>) {
                 .as_str()
                 .unwrap()
                 .to_string(),
-            peer: fixture.peer.clone(),
+            peer,
             retirements: AtomicUsize::new(0),
             retired_head: Mutex::new(None),
         }),
@@ -93,7 +94,7 @@ async fn notes_retirement_waits_for_bound_whole_owner_publication() {
     let fixture = ManagedFixture::new().await;
     fixture.sender().acknowledge_owner_cut().await.unwrap();
     let before = fixture.peer.receipt.lock().unwrap().clone();
-    let (operation, target) = prepared_notes(&fixture).await;
+    let (operation, target) = prepared_notes(&fixture.writer, fixture.peer.clone()).await;
     fixture
         .peer
         .hold_current_reply
@@ -120,4 +121,136 @@ async fn notes_retirement_waits_for_bound_whole_owner_publication() {
         fixture.store.recovery_anchor().await.unwrap(),
         before.head.last_current
     );
+}
+
+#[tokio::test]
+async fn notes_retirement_acknowledges_exact_terminal_cut_without_an_objective() {
+    let fixture = ManagedFixture::new().await;
+    let (operation, target) = prepared_notes(&fixture.writer, fixture.peer.clone()).await;
+    fixture
+        .writer
+        .reconcile_target_batch(target.as_ref(), /*limit*/ 1)
+        .await
+        .unwrap();
+    let cut = fixture.store.recovery_anchor().await.unwrap();
+    let acknowledged = target.retired_head.lock().unwrap().clone().unwrap();
+    assert_eq!(acknowledged.head.phase, CognitiveCheckpointPhase::Current);
+    assert_eq!(acknowledged.head.last_current, cut);
+    assert_eq!(target.retirements.load(Ordering::SeqCst), 1);
+    let objective_count: i64 =
+        sqlx::query_scalar("SELECT COUNT(*) FROM cognitive_objective_sender_requests")
+            .fetch_one(fixture.store.observation_pool())
+            .await
+            .unwrap();
+    assert_eq!(objective_count, 0);
+    fixture
+        .writer
+        .retire_notes_receipt(target.as_ref(), &operation)
+        .await
+        .unwrap();
+    assert_eq!(
+        fixture
+            .writer
+            .reconcile_target_batch(target.as_ref(), /*limit*/ 1)
+            .await
+            .unwrap(),
+        0
+    );
+    assert_eq!(
+        *fixture.peer.receipt.lock().unwrap(),
+        acknowledged,
+        "metadata retries and an empty reconciliation poll must not dirty Current or mutate its token"
+    );
+    assert_eq!(target.retirements.load(Ordering::SeqCst), 3);
+}
+
+#[tokio::test]
+async fn notes_retirement_cancelled_publication_retains_receipt_and_never_reopens_writer() {
+    let fixture = ManagedFixture::new().await;
+    let (operation, target) = prepared_notes(&fixture.writer, fixture.peer.clone()).await;
+    fixture
+        .peer
+        .hold_current_reply
+        .store(true, Ordering::SeqCst);
+    let writer = fixture.writer.clone();
+    let destination = target.clone();
+    let task = tokio::spawn(async move {
+        writer
+            .reconcile_target_batch(destination.as_ref(), /*limit*/ 1)
+            .await
+    });
+    tokio::time::timeout(Duration::from_secs(5), fixture.peer.published.notified())
+        .await
+        .unwrap();
+    task.abort();
+    assert!(task.await.unwrap_err().is_cancelled());
+    assert_eq!(target.retirements.load(Ordering::SeqCst), 0);
+    assert!(fixture.store.commit_gate.is_fenced());
+    assert_eq!(
+        fixture.writer.status(&operation).await.unwrap(),
+        LocalOutcomeState::Committed
+    );
+    // Only an independent exact Current readback can retire the existing
+    // receipt after a lost ACK. This grants no new effect or write permission.
+    fixture
+        .peer
+        .hold_current_reply
+        .store(false, Ordering::SeqCst);
+    fixture.peer.wrong_owner_reply.store(true, Ordering::SeqCst);
+    assert!(
+        fixture
+            .writer
+            .retire_notes_receipt(target.as_ref(), &operation)
+            .await
+            .is_err()
+    );
+    assert_eq!(target.retirements.load(Ordering::SeqCst), 0);
+    fixture
+        .peer
+        .wrong_owner_reply
+        .store(false, Ordering::SeqCst);
+    let before = fixture.peer.receipt.lock().unwrap().clone();
+    fixture
+        .writer
+        .retire_notes_receipt(target.as_ref(), &operation)
+        .await
+        .unwrap();
+    assert_eq!(target.retirements.load(Ordering::SeqCst), 1);
+    assert_eq!(*fixture.peer.receipt.lock().unwrap(), before);
+    assert!(fixture.store.commit_gate.is_fenced());
+    assert!(fixture.writer.verify_current_authority().await.is_err());
+}
+
+#[tokio::test]
+async fn notes_retirement_managed_owner_without_bound_capability_cannot_fall_back_to_local_commit()
+{
+    let managed = ManagedFixture::new().await;
+    let fixture = Fixture::new().await;
+    let (operation, target) = prepared_notes(&fixture.writer, managed.peer.clone()).await;
+    // Persist a real original terminal receipt in the unmanaged fixture before
+    // simulating a managed owner with a missing private publication binding.
+    let request = fixture
+        .writer
+        .reconciliation_request(&operation, &target.destination)
+        .await
+        .unwrap();
+    fixture
+        .writer
+        .settle_notes_terminal(
+            &request,
+            &target.receipt,
+            crate::LocalReconcileOutcome::Committed,
+        )
+        .await
+        .unwrap();
+    fixture.store.commit_gate.manage_commits();
+    assert!(
+        fixture
+            .writer
+            .retire_notes_receipt(target.as_ref(), &operation)
+            .await
+            .is_err()
+    );
+    assert_eq!(target.retirements.load(Ordering::SeqCst), 0);
+    assert!(fixture.store.commit_gate.is_fenced());
 }
