@@ -16,7 +16,7 @@ pub(super) fn qualify(stream: &mut UnixStream) -> Result<(), Box<dyn std::error:
     assert_eq!(read.status, CognitiveCheckpointStatus::Ack);
     let current = read.head.as_ref().ok_or("missing actual Current head")?;
     assert_eq!(current.phase, CognitiveCheckpointPhase::Current);
-    assert_eq!(current.counter, 0);
+    assert_eq!(current.counter, 1);
     let original_cut = current.last_current.clone();
     let begin = request(2, "begin_writes", serde_json::to_value(read.token)?);
     let dirty: CognitiveCheckpointResponse =
@@ -44,7 +44,7 @@ pub(super) fn qualify(stream: &mut UnixStream) -> Result<(), Box<dyn std::error:
     assert_eq!(fenced.status, CognitiveCheckpointStatus::Ack);
     let head = fenced.head.as_ref().ok_or("missing Fenced")?;
     assert_eq!(head.phase, CognitiveCheckpointPhase::Fenced);
-    assert_eq!(head.counter, 2);
+    assert_eq!(head.counter, 3);
     assert_eq!(head.last_current, original_cut);
     let refused: CognitiveCheckpointResponse = serde_json::from_value(exchange(
         stream,
