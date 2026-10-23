@@ -127,3 +127,23 @@ base bytes stay fixed; existing data/RNG/loss and all benefit gates remain.
 Its real variable-step work and floating-point reordering require hand-fixture
 gradient, optimizer and admission tests before any new source-frozen build.
 No operator saving or acceptance is credited before implementation/measurement.
+
+That folded implementation was subsequently frozen and actually run in
+[t10](runs/codex-cloud-efficient-r2-t10/REPORT.md). It admitted more useful
+content updates but retained exit 2 and complete dynamic CPU-net -0.002650.
+The following [native-Adam t11](runs/codex-cloud-efficient-r2-t11/REPORT.md)
+also held all caps and retained exit 2, with dynamic CPU-net -0.002637. Its
+bounded TRAIN-only decision-regret diagnostic retained slightly worse raw
+routing gain despite lower decision regret; that diagnostic is not qualification.
+
+The separately preregistered CORE experiment reused these useful-only training
+kernels with four always-full arms. Its first construction failed on an
+unnecessary cyclic calibration constraint before model training. The reviewed
+global balanced-flow repair retained all original margins, seeds and thresholds.
+The next [actual core build and sole test](runs/codex-cloud-core-c1-t2/REPORT.md)
+passed training readiness but failed all six primary interval requirements.
+All twelve selected content models were genuinely trained and all costs held;
+positive content/NDU means remain uncertain. The core test is permanently
+consumed. R2's unopened test and stronger failed dynamic gate stay separate.
+Further work must have a TRAIN/validation justification and a new prospective
+scientific protocol; another test opening cannot substitute for this failure.

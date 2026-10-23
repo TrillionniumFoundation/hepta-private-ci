@@ -93,6 +93,34 @@ Those engineering/negative-control gates do not establish the six failed
 incremental-benefit claims. Positive report-only N-minus-S intervals also cannot
 replace A-minus-H and N-minus-A or turn this failed conjunction into a pass.
 
+An independent [saved-artifact audit](formal-saved-artifact-audit.json) found no
+source/model/native/input binding discrepancy or scalar CPU-net error (maximum
+residual 3.33e-16). It used saved receipts only, without inference or bootstrap.
+Its separate intersection audit is limited to saved IDs: complete TRAIN/validation
+ID sets were not retained, so their full disjointness relies on the successful
+frozen evaluator leakage guard, not merely on different manifest hashes.
+
+## External serving and export/reload
+
+The selected seed-11 NDU always-full model was exported to a hash-bound native
+bundle and served a handcrafted external RGB input plus instruction, without
+labels, dataset construction, external observer or evaluation. The actual output
+caption was `blue cross right`, with a valid 8x8 RGB [PNG](portable-smoke/first/output.png).
+Reloading the exported model/library reproduced the sampled choices, PNG and
+checkpoint exactly; checkpoint restore also passed. The call guard recorded zero
+forbidden training/dataset/observer/evaluation calls. Original artifacts and both
+opening-marker hashes were unchanged.
+
+See [portable report](portable-smoke/report.json), request, bundle, both outputs,
+checkpoints and checksums in `portable-smoke/`. The worker exited 0 and recorded
+0.439331662 seconds CPU before report persistence. This administrative single
+request smoke is outside build/formal measurement; it establishes artifact
+operation only. It explicitly records `formal_qualified=false`.
+
+Frozen source checks passed: 221 independent tests and the unchanged root's 49
+tests, with original logs retained here. Formatter and diff checks also passed.
+No source test or serving smoke substitutes for the failed scientific endpoint.
+
 ## Scope and remaining work
 
 The trainable two-modality implementation and reserved canonical modality

@@ -1,0 +1,201 @@
+{
+  "administrative_script_note": "An initial audit-only Python script had a parse-time SyntaxError (else72 typo), before any statements executed. The corrected saved-artifact audit exited 0. No separate console file was created or fabricated; tool output retains the error and corrected result.",
+  "checks": {
+    "all_four_arm_and_three_contrast_nine_metric_intervals": true,
+    "build_caps": true,
+    "build_ledger_receipt_match": true,
+    "ci_protocol_metadata": true,
+    "committed_source_sha": true,
+    "complete_cpu_algebra": true,
+    "corruption_positive": true,
+    "current_source_sha": true,
+    "failure_status": true,
+    "markers_bound": true,
+    "native_sha": true,
+    "one_forward_zero_budget": true,
+    "per_row_lengths": true,
+    "plan_protocol_sha": true,
+    "r2_absent": true,
+    "selected_model_sha": true,
+    "selection_sha_bound": true,
+    "six_gate_decisions": true,
+    "six_positive_means_crossing_CI": true,
+    "source_identity": true,
+    "split_manifest_hashes_distinct": true,
+    "test_archive_sha": true,
+    "test_array_inventory": true,
+    "test_disjoint_retained_train_calibration": true,
+    "test_input_byte_sha": true,
+    "test_manifest_sha": true,
+    "test_rows_sources": true,
+    "twelve_unique_full_rows": true
+  },
+  "complete_cpu_net_algebra": {
+    "build_attribution": "entire arm CPU / three selected seeds; no common-cost subtraction",
+    "formula": "saved mean U - price * (saved service CPU / 1152 + saved prepare CPU / H + saved per-seed build CPU / H) / R",
+    "horizon": 100000,
+    "maximum_absolute_residual": 3.3306690738754696e-16,
+    "price": 0.02,
+    "reference_full_cpu_ns": 763512.875,
+    "tolerance": 1e-12
+  },
+  "created_utc": "2026-10-23T14:45:22.375289+00:00",
+  "disjointness_evidence_limit": "Archived test input-byte hashes, source IDs, groups and manifest digests match; 72 retained TRAIN-calibration source/input identities are disjoint from archived test. Full TRAIN/validation source-ID and input-hash sets are not retained, so this audit cannot independently re-intersect all three complete splits without prohibited reconstruction. Distinct saved split manifest digests and successful frozen evaluator leakage guards supply that existing run evidence; digest inequality alone is not a proof of set disjointness.",
+  "experiment_id": "core-c1",
+  "formal_execution_commit": "06837d982fa314a80e6f8fb06f8e213af68d4cc5",
+  "formal_outcome": {
+    "all_six_primary_intervals_cross_zero": true,
+    "all_six_primary_means_positive": true,
+    "benefit_verified": false,
+    "core_markers_retained": true,
+    "exit_code": 1,
+    "ndu_minus_supervised": "descriptive only; positive intervals do not replace any failed primary",
+    "r2_marker_absent": true
+  },
+  "hashes": {
+    "evaluation_execution_sha256": "704a9b3c0781de3e243f9d415cf6ba817d59082635a43457808c552865a87723",
+    "freeze_sha256": "8f969a4953465228af05c507dfa7a43c195f74041ac25411b0a7d3e4b6ad21e8",
+    "input_artifact_sha256": "da5d2fb3accc6b3564b0408f4fb5fe7d80f865dfcb8363436901197dc347d137",
+    "plan_sha256": "94d84d8eb1af73c4c766604b3ddbcac0be2d9a2b1638b2afa10acf8216c2762b",
+    "protocol_sha256": "1dc19b8b52baef0963e26d7af8886a713a007db5876bfffb5774b1550a08313c",
+    "result_sha256": "6dddd2b9aed82e8214974d2182de5e44d1d778cd10d98f267a430e95c782a301",
+    "selection_sha256": "8141ed76433b8663f51f4c3adb39ef0313b05d35e3804458b293185941f96881",
+    "source_inventory_canonical_sha256": "126e1a3e3105d604dee64e1439d199e1a36f60bd4c92dc5c6a8ebafdaa8a0787"
+  },
+  "observations": {
+    "bootstrap_replicates_saved": 2000,
+    "build_costs": {
+      "additive": {
+        "cpu_seconds": 9.595203997,
+        "operator_units": 9293559091
+      },
+      "anchor": {
+        "cpu_seconds": 9.616731124000003,
+        "operator_units": 10421593721
+      },
+      "ndu": {
+        "cpu_seconds": 9.502996020000007,
+        "operator_units": 9871183893
+      },
+      "supervised": {
+        "cpu_seconds": 9.446719911000011,
+        "operator_units": 10607956859
+      }
+    },
+    "fixed_batch_cohorts": 18,
+    "maximum_allowed_greedy_drop": 0.02,
+    "maximum_saved_greedy_drop": 0.01128472222222221,
+    "model_seeds": [
+      11,
+      23,
+      47
+    ],
+    "physical_source_clusters": 72,
+    "physical_sources": 72,
+    "rows_per_source": 16,
+    "system_seed_rows": 12,
+    "test_rows": 1152
+  },
+  "saved_primary_intervals": {
+    "additive_minus_anchor:cpu_net_utility": {
+      "ci95": [
+        -0.0077690285845104625,
+        0.02438687194000457
+      ],
+      "cluster_kind": "fixed_service_batch_cohort",
+      "clusters": 18,
+      "mean": 0.0114888033594955,
+      "physical_source_groups": null,
+      "replicates": 2000,
+      "seeds": [
+        11,
+        23,
+        47
+      ]
+    },
+    "additive_minus_anchor:joint_success": {
+      "ci95": [
+        -0.003381343936090409,
+        0.0238057257050716
+      ],
+      "cluster_kind": "physical_source",
+      "clusters": 72,
+      "mean": 0.011794093134436497,
+      "physical_source_groups": 72,
+      "replicates": 2000,
+      "seeds": [
+        11,
+        23,
+        47
+      ]
+    },
+    "additive_minus_anchor:task_utility": {
+      "ci95": [
+        -0.0024484826945920537,
+        0.022745976296605186
+      ],
+      "cluster_kind": "physical_source",
+      "clusters": 72,
+      "mean": 0.011477969078075488,
+      "physical_source_groups": 72,
+      "replicates": 2000,
+      "seeds": [
+        11,
+        23,
+        47
+      ]
+    },
+    "ndu_minus_additive:cpu_net_utility": {
+      "ci95": [
+        -0.00738914565405188,
+        0.02305609549934771
+      ],
+      "cluster_kind": "fixed_service_batch_cohort",
+      "clusters": 18,
+      "mean": 0.005840754070118955,
+      "physical_source_groups": null,
+      "replicates": 2000,
+      "seeds": [
+        11,
+        23,
+        47
+      ]
+    },
+    "ndu_minus_additive:joint_success": {
+      "ci95": [
+        -0.007273004395903053,
+        0.02103282894213583
+      ],
+      "cluster_kind": "physical_source",
+      "clusters": 72,
+      "mean": 0.005889640688898467,
+      "physical_source_groups": 72,
+      "replicates": 2000,
+      "seeds": [
+        11,
+        23,
+        47
+      ]
+    },
+    "ndu_minus_additive:task_utility": {
+      "ci95": [
+        -0.00645884488974276,
+        0.01975275494052518
+      ],
+      "cluster_kind": "physical_source",
+      "clusters": 72,
+      "mean": 0.005739066200621463,
+      "physical_source_groups": 72,
+      "replicates": 2000,
+      "seeds": [
+        11,
+        23,
+        47
+      ]
+    }
+  },
+  "schema": "hepta.core-c1.saved-formal-artifact-audit.v1",
+  "scope": "Read-only inspection of existing saved JSON/NPZ and hashes, source commit bytes, and scalar CPU-net algebra only. No dataset constructor, model inference, training, bootstrap, utility recomputation, score tuning, formal rerun or modification of original formal artifacts. This new file is administrative audit evidence.",
+  "source_commit": "cff9562102a21eb2a852daa61810e2e0b576ed9d",
+  "source_files_checked": 62
+}
