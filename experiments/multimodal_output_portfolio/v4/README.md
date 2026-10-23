@@ -199,6 +199,29 @@ witness, authorize calls, identify preferences, or show any superiority
 for natural video/audio/image/text. It does not reopen, modify or close
 frozen v1–v3 outcomes or v3 R03/R05 scientific-efficacy blockers.
 
+## Bounded planning and strong receding myopic comparator
+
+The exact joint Bellman solver now has an explicit `max_states` cap
+(default 50,000 distinct cache misses, maximum admitted 65,536).
+Exhaustion throws a typed `ValueError` and **does not** return a partial
+search while claiming global optimality. A separately callable
+`one_step_mpc` enumerates only feasible one-step QUERY/REFINE/EMIT
+successors (each one-step witness branch and common-shock branch counted),
+replans on new observable state, and provides a deterministic bound on
+terminal decoder evaluations per action. It requires no latent history
+expansion. The finite independent audit tests that realized receding-MPC
+utility cannot exceed the model's exact Bellman value under the **same**
+admitted nominal law, while every path still pays decoder and activation
+cost. Tests intentionally trigger exact-planner cap failure and verify
+the separate one-step fallback remains feasible.
+
+These are **logical work-count and solver-correctness controls**, not
+measured millisecond inference latency, RAM, energy, or foundation-model
+scaling. The current runtime does not automatically substitute an
+unauthorized fallback on a failed planner, and the `max_states` counter
+belongs to one controller instance. A native production owner must bind
+such a fallback explicitly and record actual CPU/accelerator work.
+
 ## Next independently measured scientific experiment
 
 Replace the synthetic proxy-state/decoder fixtures with a source-pinned **real** shared Encoder plus four output decoders, observed partial latents, actual Neural/Cell feature invocation and all separately paid decoder/verifier/selection costs. Preregister source-disjoint natural tasks, multiple training seeds and common random-number draws, then compare same-information/static, MoE, risk-neutral MPC, fixed-risk MPC, dynamic NDU and best-of-N with independent decoded-output scoring and risk/coverage/cost thresholds. Train/inference factorial ablations are essential to determine whether NDU changes learned generation rather than only selecting an existing candidate. Do not enable or deploy any output-portfolio policy based only on this code.
