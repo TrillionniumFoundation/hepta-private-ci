@@ -10,20 +10,22 @@ import sys
 import time
 
 from .cost import AdmissionRefused, Budget, BudgetExceeded, cpu_ns
+from .lifecycle import Progress, atomic_json, worker_signals
 
 HERE = Path(__file__).resolve().parent
 ROOT = HERE.parent
-FROZEN = HERE / "FROZEN.json"
+FROZEN = HERE / "FROZEN-recovery-v2.json"
+PROTOCOL = HERE / "protocol-recovery-v2.json"
 MARKER = HERE / "D-PROBE-OPENED.json"
 NS = 10**9
 
 
 def write_json(path, value):
-    Path(path).write_text(json.dumps(value, indent=2, sort_keys=True, allow_nan=False) + "\n")
+    atomic_json(path, value)
 
 
 def sources():
-    files = list(HERE.glob("*.py")) + [HERE / "protocol.json", HERE / "MIT-DATA-LICENSE.txt",
+    files = list(HERE.glob("*.py")) + [HERE / "protocol.json", PROTOCOL, HERE / "MIT-DATA-LICENSE.txt",
         ROOT / "contracts.py", ROOT / "multimodal_contract.py",
         ROOT / "research/fashion-mnist-candidate-20261023/plan.json"]
     return {str(p.relative_to(ROOT)): hashlib.sha256(p.read_bytes()).hexdigest()
@@ -38,6 +40,7 @@ def freeze():
     write_json(FROZEN, {"schema": "hepta.fashion-D-freeze.v1", "sources": sources(),
         "source_commit": head, "numpy": importlib.metadata.version("numpy"),
         "threadpoolctl": importlib.metadata.version("threadpoolctl"),
+        "previous_freeze_sha256": hashlib.sha256((HERE / "FROZEN.json").read_bytes()).hexdigest(),
         "candidate_commit": "dedbb0a0d3470dd58bfafbe770c8d916f7ff17cc",
         "created_unix_ns": time.time_ns(), "scope": "D preprobe only; no formal evaluation"})
 
@@ -207,6 +210,20 @@ def fit_actor(features, targets, folds, seed, budget, policy_start, output, prot
     return chosen, fits, oof, actor.predict(features[:64]), actor.digest()
 
 
+def prepare_policy_indices(fit, policy, metadata):
+    import numpy as np
+    position = {int(row): i for i, row in enumerate(fit)}
+    return (np.asarray([position[int(row)] for row in policy]),
+            np.asarray([metadata["rows"][int(row)]["fold"] for row in policy]))
+
+
+def close_shared_preparation(fit, policy, metadata, budget, protocol):
+    pindex, folds = prepare_policy_indices(fit, policy, metadata)
+    row = budget.row("shared_intake_noise_and_policy_indices", 0)
+    budget.check(phase_ns=protocol["shared_CPU_ns"])
+    return pindex, folds, row["end_cpu_ns"]
+
+
 def worker(data_path, out):
     preflight(data_path, out)
     if any(os.environ.get(key) != "1" for key in
@@ -215,7 +232,8 @@ def worker(data_path, out):
     output = Path(out)
     output.mkdir(parents=True)
     budget = Budget(output)
-    protocol = json.loads((HERE / "protocol.json").read_text())
+    protocol = json.loads(PROTOCOL.read_text())
+    progress = Progress(output, protocol["seeds"])
     terminal = {"schema": "hepta.fashion-D-preprobe-result.v1", "status": "failed",
                 "qualification": False, "measurement_started": False, "seeds": [],
                 "started_seeds": []}
@@ -227,6 +245,7 @@ def worker(data_path, out):
             json.dump({"freeze_sha256": hashlib.sha256(FROZEN.read_bytes()).hexdigest(),
                        "output": str(output.resolve()), "started_unix_ns": time.time_ns()}, f)
         terminal["measurement_started"] = True
+        progress.start_stage("shared")
         import numpy as np
         from threadpoolctl import threadpool_info
         from .data import load_train, noisy_images
@@ -245,25 +264,30 @@ def worker(data_path, out):
         write_json(output / "all-TRAIN-identities.json", data["metadata"])
         np.save(output / "FIT-noisy.npy", z)
         (output / "MIT-DATA-LICENSE.txt").write_bytes((HERE / "MIT-DATA-LICENSE.txt").read_bytes())
-        budget.row("shared_intake_and_FIT_noise", 0)
-        budget.check(phase_ns=protocol["shared_CPU_ns"])
-        position = {int(row): i for i, row in enumerate(fit)}
-        pindex = np.asarray([position[int(row)] for row in policy])
-        folds = np.asarray([data["metadata"]["rows"][int(row)]["fold"] for row in policy])
+        pindex, folds, build_boundary = close_shared_preparation(
+            fit, policy, data["metadata"], budget, protocol)
+        progress.complete_stage("shared")
         for seed in protocol["seeds"]:
+            # Transition bookkeeping belongs to the following build, which
+            # starts at the preceding exact closing timestamp.
+            build_start = build_boundary
             terminal["started_seeds"].append(seed)
             terminal["active_seed"] = seed
-            build_start = cpu_ns()
+            progress.start_stage("content", seed)
             folder = output / str(seed)
             folder.mkdir()
             model = ContentModel(seed)
             training = train_content(model, z, clean, y[fit], seed, budget, folder, protocol)
+            progress.complete_stage("content", seed)
             policy_start = cpu_ns()
+            progress.start_stage("export", seed)
             model.export(folder / "final.npz", include_optimizer=True)
             reloaded = ContentModel.load(folder / "final.npz")
             if (reloaded.digest() != model.digest()
                     or reloaded.optimizer_digest() != model.optimizer_digest()):
                 raise RuntimeError("content/optimizer export-reload mismatch")
+            progress.complete_stage("export", seed)
+            progress.start_stage("policy", seed)
             features, values, wire_bytes = labels_and_features(model, z[pindex], clean[pindex], y[policy], budget, folder, policy_start, protocol)
             targets = np.column_stack([values[s] for s in ("JT", "JI", "JJ")])
             best_static = max(float(v.mean()) for v in values.values())
@@ -276,6 +300,9 @@ def worker(data_path, out):
             budget.check(start_ns=policy_start, phase_ns=protocol["policy_selection_export_CPU_ns"])
             budget.check(start_ns=build_start, phase_ns=protocol["seed_build_CPU_ns"])
             if not oracle > best_static:
+                progress.complete_stage("policy", seed)
+                budget.check(start_ns=policy_start, phase_ns=protocol["policy_selection_export_CPU_ns"])
+                build_boundary = budget.row(f"seed-{seed}-complete-build", build_start)["end_cpu_ns"]
                 terminal["status"] = "negative_development_probe"
                 terminal["reason"] = "predeclared negative: no positive oracle raw headroom"
                 break
@@ -294,7 +321,9 @@ def worker(data_path, out):
                 raise RuntimeError("actor export/reload mismatch")
             budget.check(start_ns=policy_start, phase_ns=protocol["policy_selection_export_CPU_ns"])
             budget.check(start_ns=build_start, phase_ns=protocol["seed_build_CPU_ns"])
-            budget.row(f"seed-{seed}-complete-build", build_start)
+            progress.complete_stage("policy", seed)
+            budget.check(start_ns=policy_start, phase_ns=protocol["policy_selection_export_CPU_ns"])
+            build_boundary = budget.row(f"seed-{seed}-complete-build", build_start)["end_cpu_ns"]
             if not value > best_constant:
                 terminal["status"] = "negative_development_probe"
                 terminal["reason"] = "predeclared negative: OOF does not improve best constant final action"
@@ -306,6 +335,8 @@ def worker(data_path, out):
     except Exception as error:
         terminal["reason"] = type(error).__name__ + ": " + str(error)
     finally:
+        progress.interrupt_for_receipt()
+        terminal.update(progress.snapshot())
         terminal["exit_code"] = code
         terminal["unrun_seeds"] = [seed for seed in protocol["seeds"]
                                    if seed not in terminal["started_seeds"]]
@@ -317,6 +348,13 @@ def worker(data_path, out):
         except BudgetExceeded as error:
             code = 1
             terminal.update(status="failed", exit_code=1, reason="required receipt tail: " + str(error))
+            write_json(output / "result.json", terminal)
+        progress.complete_stage("final_receipt")
+        try:
+            budget.check()
+        except BudgetExceeded as error:
+            code = 1
+            terminal.update(status="failed", exit_code=1, reason="required progress tail: " + str(error))
             write_json(output / "result.json", terminal)
     return code
 
@@ -338,7 +376,8 @@ def main():
         return 0
     if not args.data or not args.out:
         parser.error("worker requires local --data and --out")
-    return worker(args.data, args.out)
+    with worker_signals():
+        return worker(args.data, args.out)
 
 
 if __name__ == "__main__":
