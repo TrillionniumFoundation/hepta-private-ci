@@ -4,6 +4,12 @@
 
 `paired_superiority.py` accepts **individual actual decoded-output scores**, never blends per-Cell standalone scalar losses to infer risk for a combined latent direction. Before scoring, a separately implemented inference runner and external evaluator must freeze real model/decoder, objective, action basis, draw count, seed IDs, heldout cohort, validation comparator and measured physical cost units. This script cannot prove that those supplied fields are authentic.
 
+## V2 frozen protected-cohort contract
+
+This descendant of #3316 accepts only `hepta-mgp-paired-v2` and emits `hepta-mgp-paired-review-v2`. Older v1 studies remain historical, not silently upgraded to the stronger protected-task claim. The preregistered protocol must enumerate a `protected_world_ids` map keyed by every registered seed, containing unique nonempty subsets of each seed's heldout IDs. Every seed must also include unprotected examples. A supplied row's `protected_task` must match the frozen membership exactly; moving a failing world into or out of the protected cohort is an evidence gap, never an allowed quality improvement. Calibration cohorts must be nonempty, typed, unique, and disjoint from heldout. SHA256-shaped identities must be lowercase hexadecimal, not merely 64 arbitrary characters.
+
+The receipt binds an exact digest of the claimed protected-cohort map and per-seed counts, **not** an authenticated signature, timestamp or independently validated cohort. Production and scientific authorization remain `DENY_ALL / HOLD_NO_GO`. The old 15-test/source-SHA reference below documents an earlier revision; new exact-head verification is required for this V2 implementation.
+
 ## Fail-closed entry requirements
 
 - Three or more unique training seeds and **at least 32 complete, registered heldout worlds per seed**; reject any calibration/heldout ID collision, hidden missing outcomes, mismatched draw counts and reorderings.
