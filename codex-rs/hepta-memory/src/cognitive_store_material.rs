@@ -36,9 +36,6 @@ pub(super) async fn validate_private_candidate(
         .await
         .map_err(|error| CognitiveRecoveryError::Unavailable(error.to_string()))?;
     let authenticated = async {
-        verify_store(&pool, owner)
-            .await
-            .map_err(|error| CognitiveRecoveryError::Indeterminate(error.to_string()))?;
         let mut transaction = pool
             .begin_with("BEGIN IMMEDIATE")
             .await
@@ -64,6 +61,13 @@ pub(super) async fn validate_private_candidate(
             .commit()
             .await
             .map_err(|error| CognitiveRecoveryError::Unavailable(error.to_string()))?;
+
+        // Authenticate the bounded schema and full cut above before any
+        // quick_check/foreign_key_check can evaluate candidate SQL expressions.
+        // Release the sole pooled connection before the original store check.
+        verify_store(&pool, owner)
+            .await
+            .map_err(|error| CognitiveRecoveryError::Indeterminate(error.to_string()))?;
 
         Ok(())
     }

@@ -2,6 +2,56 @@ use super::*;
 use codex_state::RootSqliteMaterialSource;
 use std::ffi::OsStr;
 
+#[tokio::test]
+async fn private_material_rejects_unregistered_schema_before_check_expressions() {
+    let temp = TempDir::new().unwrap();
+    let owner = agent_id(173);
+    let candidate_layout = layout(&temp, &owner);
+    let (store, _, _) = seeded(&temp, &owner).await;
+    let cut = store.recovery_anchor().await.unwrap();
+    sqlx::query("CREATE TABLE unregistered_material (value TEXT CHECK(value = 'allowed'))")
+        .execute(store.observation_pool())
+        .await
+        .unwrap();
+    sqlx::query("PRAGMA ignore_check_constraints = ON")
+        .execute(store.observation_pool())
+        .await
+        .unwrap();
+    sqlx::query("INSERT INTO unregistered_material VALUES ('rejected')")
+        .execute(store.observation_pool())
+        .await
+        .unwrap();
+    sqlx::query("PRAGMA ignore_check_constraints = OFF")
+        .execute(store.observation_pool())
+        .await
+        .unwrap();
+    store.observation_pool().close().await;
+    drop(store);
+    let config = SqliteConfig::from_sqlite_home(
+        AbsolutePathBuf::try_from(candidate_layout.cognitive_root().to_path_buf()).unwrap(),
+    );
+    let result = super::super::material::validate_private_candidate(
+        &config,
+        &candidate_layout
+            .cognitive_root()
+            .join("cognitive_1.sqlite3"),
+        &owner,
+        &cut,
+        candidate_layout.cognitive_root(),
+        &CognitiveCommitGate::default(),
+    )
+    .await;
+    let error = result.unwrap_err().to_string();
+    assert!(
+        error.contains("table"),
+        "original schema admission: {error}"
+    );
+    assert!(
+        !error.contains("quick_check"),
+        "premature CHECK evaluation: {error}"
+    );
+}
+
 fn protected_temp() -> TempDir {
     let root = std::env::var_os("HEPTA_TEST_ROOT_MATERIAL_DESTINATION")
         .expect("actual Root fixture must provide a protected destination");
