@@ -92,6 +92,10 @@ jobs:
           canonical_config = config.replace(b"\r\n", b"\n")
           if b"\r" in canonical_config or hashlib.sha256(canonical_config).hexdigest() != "78b998d1fcb16dfef6b243a4b18748c1b28ce2d5a28d57f1f477adf0546e5ac6":
               raise SystemExit("original nextest local/JUnit configuration changed")
+          # Only the per-run JUnit reporter is added to the byte-verified
+          # upstream Nextest config; no test filter, retry or skip changes.
+          reporter = Path(os.environ["RUNNER_TEMP"]) / "owner-compatibility/nextest-junit.toml"
+          reporter.write_bytes(canonical_config + b'\n[profile.local.junit]\npath = "junit.xml"\n')
           if "CODEX_SANDBOX_NETWORK_DISABLED" in os.environ:
               raise SystemExit("original network skip condition is present; cannot qualify")
           with socket.socket() as listener:
@@ -124,7 +128,7 @@ jobs:
           fi
           test ! -e "$junit"
           set +e
-          just test --locked -p codex-core --lib -E 'test(=client::tests::websocket_connection_reuses_attribution_but_rebinds_configured_extra)' --no-tests fail --retries 0 --success-output immediate 2>&1 | tee "$RUNNER_TEMP/owner-compatibility/websocket.log"
+          just test --locked -p codex-core --lib -E 'test(=client::tests::websocket_connection_reuses_attribution_but_rebinds_configured_extra)' --config-file "$RUNNER_TEMP/owner-compatibility/nextest-junit.toml" --no-tests fail --retries 0 --success-output immediate 2>&1 | tee "$RUNNER_TEMP/owner-compatibility/websocket.log"
           status=$?
           set -e
           printf '%s\n' "$status" > "$RUNNER_TEMP/owner-compatibility/websocket.exit"
@@ -156,7 +160,7 @@ jobs:
           fi
           test ! -e "$junit"
           set +e
-          just test --locked -p codex-app-server --test all -E 'test(suite::v2::bedrock_setup::)' --no-tests fail --retries 0 --success-output immediate 2>&1 | tee "$RUNNER_TEMP/owner-compatibility/bedrock.log"
+          just test --locked -p codex-app-server --test all -E 'test(suite::v2::bedrock_setup::)' --config-file "$RUNNER_TEMP/owner-compatibility/nextest-junit.toml" --no-tests fail --retries 0 --success-output immediate 2>&1 | tee "$RUNNER_TEMP/owner-compatibility/bedrock.log"
           status=$?
           set -e
           printf '%s\n' "$status" > "$RUNNER_TEMP/owner-compatibility/bedrock.exit"
