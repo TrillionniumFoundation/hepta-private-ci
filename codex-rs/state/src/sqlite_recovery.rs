@@ -17,6 +17,9 @@ use std::sync::Arc;
 
 #[path = "sqlite_recovery_image.rs"]
 mod image;
+#[path = "sqlite_root_material.rs"]
+mod root_material;
+pub use root_material::RootSqliteMaterialSource;
 
 #[cfg(unix)]
 use std::ffi::CString;
@@ -129,6 +132,15 @@ impl SqliteConfig {
 impl ExistingSqliteRecoveryGuard {
     #[cfg(unix)]
     fn bind(database_path: &Path) -> Result<Self, SqliteRecoveryError> {
+        Self::bind_for_owner(database_path, OwnerRule::CurrentUser)
+    }
+
+    #[cfg(unix)]
+    fn bind_for_owner(
+        database_path: &Path,
+        owner_rule: OwnerRule,
+    ) -> Result<Self, SqliteRecoveryError> {
+        owner_rule.expected_uid()?;
         let parent_path = database_path
             .parent()
             .ok_or(SqliteRecoveryError::Indeterminate)?;
@@ -137,23 +149,31 @@ impl ExistingSqliteRecoveryGuard {
             return Err(SqliteRecoveryError::Indeterminate);
         }
 
-        let parent = RetainedObject::bind_parent(parent_path)?;
+        let parent = RetainedObject::bind_parent(parent_path, owner_rule)?;
         let database_name = database_path
             .file_name()
             .ok_or(SqliteRecoveryError::Indeterminate)?;
-        let database = RetainedObject::bind_file(&parent.descriptor, database_path, database_name)?;
+        let database = RetainedObject::bind_file(
+            &parent.descriptor,
+            database_path,
+            database_name,
+            owner_rule,
+        )?;
         let sidecars = [
             RetainedOptionalObject::bind(
                 &parent.descriptor,
                 sqlite_sidecar_path(database_path, "-wal"),
+                owner_rule,
             )?,
             RetainedOptionalObject::bind(
                 &parent.descriptor,
                 sqlite_sidecar_path(database_path, "-shm"),
+                owner_rule,
             )?,
             RetainedOptionalObject::bind(
                 &parent.descriptor,
                 sqlite_sidecar_path(database_path, "-journal"),
+                owner_rule,
             )?,
         ];
         let guard = Self {
@@ -212,19 +232,40 @@ enum ObjectKind {
 }
 
 #[cfg(unix)]
+#[derive(Clone, Copy, Debug)]
+enum OwnerRule {
+    CurrentUser,
+    RegisteredRootSource(u32),
+}
+
+#[cfg(unix)]
+impl OwnerRule {
+    fn expected_uid(self) -> Result<u32, SqliteRecoveryError> {
+        // SAFETY: `geteuid` has no preconditions and does not dereference memory.
+        let actual = unsafe { libc::geteuid() };
+        match self {
+            Self::CurrentUser => Ok(actual),
+            Self::RegisteredRootSource(uid) if actual == 0 && uid != 0 => Ok(uid),
+            Self::RegisteredRootSource(_) => Err(SqliteRecoveryError::Indeterminate),
+        }
+    }
+}
+
+#[cfg(unix)]
 #[derive(Debug)]
 struct RetainedObject {
     path: PathBuf,
     kind: ObjectKind,
     snapshot: FileSnapshot,
     descriptor: File,
+    owner_rule: OwnerRule,
 }
 
 #[cfg(unix)]
 impl RetainedObject {
-    fn bind_parent(path: &Path) -> Result<Self, SqliteRecoveryError> {
+    fn bind_parent(path: &Path, owner_rule: OwnerRule) -> Result<Self, SqliteRecoveryError> {
         let before = std::fs::symlink_metadata(path).map_err(indeterminate)?;
-        let snapshot = FileSnapshot::validated(&before, ObjectKind::PrivateDirectory)?;
+        let snapshot = FileSnapshot::validated(&before, ObjectKind::PrivateDirectory, owner_rule)?;
         let descriptor = OpenOptions::new()
             .read(true)
             .custom_flags(libc::O_CLOEXEC | libc::O_DIRECTORY | libc::O_NOFOLLOW | libc::O_NONBLOCK)
@@ -233,6 +274,7 @@ impl RetainedObject {
         let opened = FileSnapshot::validated(
             &descriptor.metadata().map_err(indeterminate)?,
             ObjectKind::PrivateDirectory,
+            owner_rule,
         )?;
         if opened != snapshot {
             return Err(SqliteRecoveryError::Indeterminate);
@@ -242,6 +284,7 @@ impl RetainedObject {
             kind: ObjectKind::PrivateDirectory,
             snapshot,
             descriptor,
+            owner_rule,
         })
     }
 
@@ -249,13 +292,15 @@ impl RetainedObject {
         parent: &File,
         path: &Path,
         file_name: &OsStr,
+        owner_rule: OwnerRule,
     ) -> Result<Self, SqliteRecoveryError> {
         let before = std::fs::symlink_metadata(path).map_err(indeterminate)?;
-        let snapshot = FileSnapshot::validated(&before, ObjectKind::PrivateFile)?;
+        let snapshot = FileSnapshot::validated(&before, ObjectKind::PrivateFile, owner_rule)?;
         let descriptor = openat_read_only(parent, file_name)?;
         let opened = FileSnapshot::validated(
             &descriptor.metadata().map_err(indeterminate)?,
             ObjectKind::PrivateFile,
+            owner_rule,
         )?;
         if opened != snapshot {
             return Err(SqliteRecoveryError::Indeterminate);
@@ -265,6 +310,7 @@ impl RetainedObject {
             kind: ObjectKind::PrivateFile,
             snapshot,
             descriptor,
+            owner_rule,
         })
     }
 
@@ -272,10 +318,12 @@ impl RetainedObject {
         let path_snapshot = FileSnapshot::validated(
             &std::fs::symlink_metadata(&self.path).map_err(indeterminate)?,
             self.kind,
+            self.owner_rule,
         )?;
         let descriptor_snapshot = FileSnapshot::validated(
             &self.descriptor.metadata().map_err(indeterminate)?,
             self.kind,
+            self.owner_rule,
         )?;
         if path_snapshot != self.snapshot || descriptor_snapshot != self.snapshot {
             return Err(SqliteRecoveryError::Indeterminate);
@@ -293,11 +341,15 @@ enum RetainedOptionalObject {
 
 #[cfg(unix)]
 impl RetainedOptionalObject {
-    fn bind(parent: &File, path: PathBuf) -> Result<Self, SqliteRecoveryError> {
+    fn bind(
+        parent: &File,
+        path: PathBuf,
+        owner_rule: OwnerRule,
+    ) -> Result<Self, SqliteRecoveryError> {
         match std::fs::symlink_metadata(&path) {
             Ok(_) => {
                 let file_name = path.file_name().ok_or(SqliteRecoveryError::Indeterminate)?;
-                RetainedObject::bind_file(parent, &path, file_name).map(Self::Present)
+                RetainedObject::bind_file(parent, &path, file_name, owner_rule).map(Self::Present)
             }
             Err(error) if error.kind() == std::io::ErrorKind::NotFound => Ok(Self::Absent(path)),
             Err(_) => Err(SqliteRecoveryError::Indeterminate),
@@ -332,10 +384,13 @@ struct FileSnapshot {
 
 #[cfg(unix)]
 impl FileSnapshot {
-    fn validated(metadata: &Metadata, kind: ObjectKind) -> Result<Self, SqliteRecoveryError> {
+    fn validated(
+        metadata: &Metadata,
+        kind: ObjectKind,
+        owner_rule: OwnerRule,
+    ) -> Result<Self, SqliteRecoveryError> {
         let mode = metadata.mode() & 0o7777;
-        // SAFETY: `geteuid` has no preconditions and does not dereference memory.
-        let effective_user = unsafe { libc::geteuid() };
+        let effective_user = owner_rule.expected_uid()?;
         let valid = match kind {
             ObjectKind::PrivateDirectory => {
                 metadata.is_dir()

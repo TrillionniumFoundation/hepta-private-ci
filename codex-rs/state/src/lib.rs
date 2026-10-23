@@ -46,6 +46,7 @@ pub use model::RolloutMigrationState;
 pub use runtime::StateRuntime;
 pub use sqlite::SqliteConfig;
 pub use sqlite_recovery::ExistingSqliteRecoveryGuard;
+pub use sqlite_recovery::RootSqliteMaterialSource;
 pub use sqlite_recovery::SqliteRecoveryError;
 
 pub use audit::ThreadStateAuditRow;
