@@ -24,6 +24,10 @@ use codex_hepta_types::StableId;
 use ed25519_dalek::Signer;
 use ed25519_dalek::SigningKey;
 
+#[allow(
+    clippy::unwrap_used,
+    reason = "Fixed test-fixture identifiers and scalar values are valid by construction."
+)]
 fn id(value: &str) -> StableId {
     StableId::new(value.to_owned()).unwrap()
 }
@@ -101,13 +105,21 @@ use codex_hepta_learning_ledger::activate_learning_trust;
 use codex_hepta_types::Generation;
 use std::sync::Arc;
 
-fn activate(trust: LearningEvidenceTrustV1, now: u64) -> ActivatedLearningTrustV1 {
+#[allow(
+    clippy::unwrap_used,
+    reason = "Fixed signed fixture construction must fail the test if its contract changes."
+)]
+fn activate(
+    trust: LearningEvidenceTrustV1,
+    now: u64,
+    distribution_expires_at: u64,
+) -> ActivatedLearningTrustV1 {
     let root_key = SigningKey::from_bytes(&[99; 32]);
     let root = LearningTrustRootV1 {
         root_id: id("learning-root"),
         scope_digest: trust.scope_digest,
         verifying_key: root_key.verifying_key().to_bytes(),
-        valid_from: now - 200,
+        valid_from: now.saturating_sub(200),
         expires_at: now + 120_000,
         revoked_at: None,
     };
@@ -115,12 +127,12 @@ fn activate(trust: LearningEvidenceTrustV1, now: u64) -> ActivatedLearningTrustV
         distribution: LearningTrustDistributionV1 {
             distribution_id: id("distribution"),
             generation: 1,
-            effective_at: now - 100,
+            effective_at: now.saturating_sub(100),
             trust,
         },
         root_id: root.root_id.clone(),
-        issued_at: now - 150,
-        expires_at: now + 60_000,
+        issued_at: now.saturating_sub(150),
+        expires_at: distribution_expires_at,
         signature: [0; 64],
     };
     distribution.signature = root_key
@@ -132,6 +144,31 @@ fn activate(trust: LearningEvidenceTrustV1, now: u64) -> ActivatedLearningTrustV
 pub(super) fn evidence_fixture(
     binding: &AgentdEvaluationBindingV1,
     now: u64,
+) -> (ActivatedLearningTrustV1, AgentdSignedEvaluationV1) {
+    evidence_fixture_with_distribution_expiry(binding, now, now + 60_000)
+}
+
+#[allow(
+    clippy::unwrap_used,
+    reason = "Fixed signed fixture construction must fail the test if its contract changes."
+)]
+pub(super) fn evidence_fixture_with_distribution_expiry(
+    binding: &AgentdEvaluationBindingV1,
+    now: u64,
+    distribution_expires_at: u64,
+) -> (ActivatedLearningTrustV1, AgentdSignedEvaluationV1) {
+    evidence_fixture_with_trust_windows(binding, now, distribution_expires_at, None)
+}
+
+#[allow(
+    clippy::unwrap_used,
+    reason = "The fixture's root-signed trust must be generated from the requested validity windows."
+)]
+pub(super) fn evidence_fixture_with_trust_windows(
+    binding: &AgentdEvaluationBindingV1,
+    now: u64,
+    distribution_expires_at: u64,
+    evaluator_revoked_at: Option<u64>,
 ) -> (ActivatedLearningTrustV1, AgentdSignedEvaluationV1) {
     let objective_digest = binding.objective_digest;
     let dataset_digest = digest("dataset");
@@ -239,11 +276,11 @@ pub(super) fn evidence_fixture(
                 controller_id: evaluator.principal_id.clone(),
                 verifying_key: evaluator_key.verifying_key().to_bytes(),
                 roles: vec![LearningEvidenceRoleV1::Evaluator],
-                revoked_at: None,
+                revoked_at: evaluator_revoked_at,
             },
         ],
     };
-    let trust = activate(trust_definition, now);
+    let trust = activate(trust_definition, now, distribution_expires_at);
     let verifier = trust.verifier();
 
     let payload = evaluation_signing_payload_v2(&bundle, &roles).unwrap();
@@ -309,6 +346,10 @@ fn input(binding: &AgentdEvaluationBindingV1) -> CanonicalPortInputV1 {
     }
 }
 
+#[allow(
+    clippy::unwrap_used,
+    reason = "Fixed signed fixture construction must fail the test if its contract changes."
+)]
 fn session(binding: &AgentdEvaluationBindingV1, now: u64) -> AgentdEvaluationSessionV1 {
     let (trust, signed) = evidence_fixture(binding, now);
     AgentdEvaluationSessionV1 {
@@ -328,12 +369,62 @@ fn session(binding: &AgentdEvaluationBindingV1, now: u64) -> AgentdEvaluationSes
 }
 
 #[test]
+#[allow(
+    clippy::unwrap_used,
+    reason = "Test setup and success assertions intentionally fail the test on unexpected errors."
+)]
 fn signed_candidate_passes_only_with_bound_owner_run_context_and_root_trust() {
     let binding = binding();
     let receipt = session(&binding, 1_000)
         .evaluate(&input(&binding), &binding.selected_candidate_id, 1_000)
         .unwrap();
     assert!(!receipt.is_zero());
+}
+
+#[test]
+#[allow(
+    clippy::unwrap_used,
+    reason = "Test setup and success assertions intentionally fail the test on unexpected errors."
+)]
+fn expired_distribution_rejects_still_valid_signed_evaluation_use() {
+    let binding = binding();
+    let (trust, signed) = evidence_fixture_with_distribution_expiry(
+        &binding, /*now*/ 100, /*distribution_expires_at*/ 175,
+    );
+    let now = 176;
+    let payload = intelligence_evaluation_binding_payload_v1(&binding, &signed.evidence).unwrap();
+    assert!(
+        trust
+            .verifier()
+            .verify(
+                LearningEvidenceRoleV1::Evaluator,
+                &signed.use_attestation,
+                &payload,
+                now,
+            )
+            .is_ok()
+    );
+    let mut at_expiry = session(&binding, /*now*/ 100);
+    at_expiry.trust = Arc::new(trust.clone());
+    at_expiry.signed = signed.clone();
+    assert!(
+        at_expiry
+            .evaluate(
+                &input(&binding),
+                &binding.selected_candidate_id,
+                /*now*/ 175
+            )
+            .is_ok()
+    );
+    let mut value = session(&binding, /*now*/ 100);
+    value.trust = Arc::new(trust);
+    value.signed = signed;
+    assert!(matches!(
+        value.evaluate(&input(&binding), &binding.selected_candidate_id, now),
+        Err(AgentdIntelligenceEvaluationError::Evidence(
+            codex_hepta_learning_ledger::SignedEvidenceError::ValidityWindow
+        ))
+    ));
 }
 
 #[test]

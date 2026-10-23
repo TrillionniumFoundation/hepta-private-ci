@@ -70,6 +70,10 @@ use ed25519_dalek::SigningKey;
 
 use super::*;
 
+#[allow(
+    clippy::expect_used,
+    reason = "Identifiers are fixed test-fixture values."
+)]
 fn id(value: &str) -> StableId {
     StableId::new(value).expect("id")
 }
@@ -89,6 +93,10 @@ fn principal(name: &str, key: &SigningKey) -> AuthenticatedPrincipalV1 {
     }
 }
 
+#[allow(
+    clippy::expect_used,
+    reason = "The signed trust fixture has fixed valid principals and keys."
+)]
 fn evidence_verifier() -> (LearningEvidenceVerifierV1, SigningKey, SigningKey) {
     let producer_key = SigningKey::from_bytes(&[31; 32]);
     let evaluator_key = SigningKey::from_bytes(&[32; 32]);
@@ -156,6 +164,10 @@ struct Fixture {
     well_posedness: codex_hepta_intelligence_eval::NduWellPosednessCertificateV1,
 }
 
+#[allow(
+    clippy::expect_used,
+    reason = "Setup failures must fail this fixed artifact-admission test fixture."
+)]
 fn fixture() -> Fixture {
     let dir = tempfile::tempdir().expect("tempdir");
     let snapshot_path = dir.path().join("registry.snapshot");
@@ -415,6 +427,10 @@ fn fixture() -> Fixture {
     }
 }
 
+#[allow(
+    clippy::expect_used,
+    reason = "This helper asserts successful verification of the signed fixture registry view."
+)]
 fn verified_current_view(fixture: &Fixture, now: u64) -> VerifiedCurrentRegistryViewV1 {
     let key = SigningKey::from_bytes(&[41; 32]);
     let signer_id = id("artifact-current-head-signer");

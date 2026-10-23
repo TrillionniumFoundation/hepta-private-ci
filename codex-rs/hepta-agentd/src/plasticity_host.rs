@@ -701,6 +701,10 @@ pub fn resolve_agentd_plasticity_admission_v1(
 /// Actual Agentd host callsite. It recomputes owner-store frontiers immediately
 /// before the product adapter runs, so a stale Observer signature cannot be
 /// transplanted across artifact/ledger changes.
+#[allow(
+    clippy::too_many_arguments,
+    reason = "Preserve the public V1 host signature and its explicit independent owner inputs"
+)]
 pub fn propose_agentd_plasticity_v1(
     mut request: ParameterPlasticityProductRequestV1,
     artifacts: &ArtifactRegistry,

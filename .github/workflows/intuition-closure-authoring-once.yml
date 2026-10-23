@@ -1,0 +1,58 @@
+name: intuition.policy Workspace Export (read-only)
+
+on:
+  push:
+    branches: [codex/intuition-policy-production-closure-20260927]
+    paths:
+      - ".github/workflows/intuition-closure-authoring-once.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: intuition-workspace-export-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  export-exact-workspace:
+    name: Export exact candidate workspace without credentials
+    runs-on: macos-15
+    timeout-minutes: 15
+    steps:
+      - name: Check out immutable candidate
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 1
+          persist-credentials: false
+          clean: true
+      - name: Build reproducible source archive
+        env:
+          EXPECTED_SHA: ${{ github.sha }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$EXPECTED_SHA"
+          test -z "$(git status --porcelain=v1)"
+          output="$RUNNER_TEMP/intuition-workspace"
+          mkdir -p "$output"
+          git archive --format=tar.gz --prefix=hepta-private-ci/ \
+            -o "$output/hepta-private-ci-$EXPECTED_SHA.tar.gz" "$EXPECTED_SHA"
+          shasum -a 256 "$output/hepta-private-ci-$EXPECTED_SHA.tar.gz" \
+            > "$output/hepta-private-ci-$EXPECTED_SHA.tar.gz.sha256"
+          printf 'source_commit=%s\nsource_tree=%s\n' \
+            "$EXPECTED_SHA" "$(git rev-parse "$EXPECTED_SHA^{tree}")" \
+            > "$output/IDENTITY.txt"
+      - name: Upload exact source archive
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: intuition-workspace-${{ github.sha }}
+          path: ${{ runner.temp }}/intuition-workspace/
+          if-no-files-found: error
+          retention-days: 3
+      - name: Assert checkout stayed clean
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -z "$(git status --porcelain=v1)"

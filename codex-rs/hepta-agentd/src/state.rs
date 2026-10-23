@@ -41,6 +41,7 @@ pub(crate) struct AgentdState {
     pub(crate) cognitive_retrieval_learning:
         std::sync::OnceLock<Arc<crate::CognitiveRetrievalLearningSink>>,
     pub(crate) intuition_policy: std::sync::OnceLock<Arc<crate::AgentdIntuitionPolicyHostV1>>,
+    pub(crate) intuition_serving_profile: crate::intuition_policy_serving::ServingProfile,
     pub(crate) authbus: std::sync::OnceLock<Arc<crate::authbus_ingress::TextIngress>>,
     pub(crate) production_operations: std::sync::OnceLock<Arc<crate::AgentdProductionWriterHost>>,
     pub(crate) evidence: std::sync::OnceLock<Arc<crate::evidence_host::EvidenceHost>>,
@@ -79,6 +80,18 @@ impl AgentdState {
         registry: FleetRegistry,
         event_capacity: usize,
     ) -> Result<Self, AgentdError> {
+        let profile = crate::intuition_policy_serving::ServingProfile::from_environment()?;
+        Self::new_with_intuition_profile(identity, registry, event_capacity, profile)
+    }
+
+    /// Inject the immutable profile at startup. Tests and embedded development
+    /// hosts select compatibility explicitly, without mutating process globals.
+    pub(crate) fn new_with_intuition_profile(
+        identity: AgentdIdentity,
+        registry: FleetRegistry,
+        event_capacity: usize,
+        intuition_serving_profile: crate::intuition_policy_serving::ServingProfile,
+    ) -> Result<Self, AgentdError> {
         let mut events = EventBuffer::new(event_capacity)?;
         events.push(AgentdEventKind::Bootstrapped);
         events.push(AgentdEventKind::Lifecycle {
@@ -86,12 +99,13 @@ impl AgentdState {
             generation: identity.spawn_generation,
         });
         let configuration_material = format!(
-            "{}|{}|{}|{}|{}",
+            "{}|{}|{}|{}|{}|{}",
             identity.agent_id,
             identity.spawn_generation,
             identity.workspace.display(),
             identity.home_root.display(),
-            identity.run_root.display()
+            identity.run_root.display(),
+            intuition_serving_profile.as_str()
         );
         let ports_material = format!(
             "{}|{}|{}",
@@ -139,6 +153,7 @@ impl AgentdState {
             cognitive_retrieval_learning: std::sync::OnceLock::new(),
             plasticity_runtime: std::sync::OnceLock::new(),
             intuition_policy: std::sync::OnceLock::new(),
+            intuition_serving_profile,
             runtime: Mutex::new(RuntimeState {
                 current_generation: identity.spawn_generation,
                 lifecycle: AgentLifecycle::Starting,
@@ -175,6 +190,10 @@ impl AgentdState {
 
     /// Named Agentd-owned producer boundary for governed parameter plasticity.
     /// Callers never receive the mutable writer or a second owner handle.
+    #[allow(
+        dead_code,
+        reason = "Reserved production seam; learning.plasticity tracks the uncomposed self-iteration trigger"
+    )]
     pub(crate) async fn submit_parameter_plasticity_v1(
         &self,
         request: codex_hepta_intelligence::ParameterPlasticityProductRequestV1,
@@ -192,6 +211,10 @@ impl AgentdState {
 
     /// Named Agentd-owned producer boundary for governed topology plasticity.
     /// The long-lived owner performs final artifact/ledger/trust/anchor checks.
+    #[allow(
+        dead_code,
+        reason = "Reserved production seam; learning.plasticity tracks the uncomposed self-iteration trigger"
+    )]
     pub(crate) async fn submit_topology_plasticity_v1(
         &self,
         request: codex_hepta_intelligence::TopologyPlasticityProductRequestV1,
@@ -566,28 +589,73 @@ impl AgentdState {
             && runtime.app_server_ready
             && !runtime.fenced)
     }
+
     pub(crate) fn canonical_intelligence_enabled(&self) -> bool {
         self.intelligence_product.get().is_some() && self.intelligence_invocation.get().is_some()
     }
 
-    /// Prepare the exact durable Objective through the configured canonical
-    /// seven-owner composition, then atomically freeze its run/context identity
-    /// into the sole Agentd run coordinator. None is explicit compatibility
-    /// mode: both the runner and host-owned invocation provider must be present
-    /// before canonical execution is attempted or advertised.
+    pub(crate) fn require_intuition_host_configuration(&self) -> Result<(), AgentdError> {
+        self.intuition_serving_profile
+            .require_host(
+                self.intuition_policy
+                    .get()
+                    .is_some_and(|host| host.is_product_ready()),
+            )
+            .map_err(|code| AgentdError::Invalid(code.to_string()))
+    }
+
+    /// Prepare through the existing seven-owner composition, then retain the
+    /// authenticated policy receipt through run/context admission. No-host
+    /// compatibility is possible only under an explicit development profile.
     pub(crate) async fn start_canonical_intelligence(
         &self,
         record: &RunStartRecordV1,
-    ) -> Result<Option<crate::AgentdIntelligenceAdmittedOutcomeV1>, AgentdError> {
+    ) -> Result<Option<crate::intuition_policy_service::CanonicalIntuitionAdmissionV2>, AgentdError>
+    {
+        // This check precedes every early return, including an entirely absent
+        // canonical composition. The inner serving gate alone cannot guard it.
+        self.require_intuition_host_configuration()?;
         let (Some(runner), Some(provider)) = (
             self.intelligence_product.get(),
             self.intelligence_invocation.get(),
         ) else {
+            if self.intuition_policy.get().is_some()
+                || self.intelligence_product.get().is_some()
+                || self.intelligence_invocation.get().is_some()
+            {
+                return Err(AgentdError::Protocol(
+                    "agentd.intuition.service.canonical_composition_required".to_string(),
+                ));
+            }
             return Ok(None);
         };
 
+        // RunStart carries the current Fleet lifecycle generation. The frozen
+        // canonical body separately identifies this process launch; Running
+        // advances the lifecycle beyond that spawn generation.
+        self.require_current_run_start(record)?;
+        if self
+            .runs
+            .lock()
+            .map_err(poisoned_state)?
+            .run(record.snapshot.run_id.as_str())
+            .is_some()
+        {
+            return Err(AgentdError::Invalid(
+                "agentd.intuition.service.run_admission_replay_requires_reconciliation".to_string(),
+            ));
+        }
         let invocation = provider.build(&self.identity, record)?;
         invocation.validate(&self.identity, record)?;
+        let crate::AgentdIntelligenceInvocationV1 {
+            request,
+            inputs,
+            intuition_product,
+        } = invocation;
+        let episode_id = request.run_id.clone();
+        let run_snapshot_digest = request.snapshot.digest();
+        let canonical_snapshot = request.snapshot.clone();
+        let intuition_request = inputs.intuition_request.clone();
 
         // Freeze only the small immutable composition while holding the run
         // lock. Owner execution is allowed to block without monopolizing run
@@ -598,73 +666,178 @@ impl AgentdState {
             .map_err(poisoned_state)?
             .composition()
             .clone();
-        let outcome = runner
-            .prepare_for_composition(&composition, invocation.request, invocation.inputs)
-            .await
-            .map_err(|error| {
-                AgentdError::Protocol(format!(
-                    "canonical intelligence preparation failed: {error}"
-                ))
-            })?;
-
-        match outcome {
-            crate::AgentdIntelligenceProductOutcomeV1::Ready(prepared) => {
-                // Owner preparation is asynchronous. Revalidate the durable
-                // signed Objective and Fleet fence again after it completes,
-                // twice as the compatibility path does at its final boundary.
-                let first_now = self.require_current_run_start(record)?;
-                let second_now = self.require_current_run_start(record)?;
-                let now_ms = first_now.max(second_now);
-                let snapshot = prepared.run_snapshot();
-                let attachment = prepared.context_attachment();
-                let mut runs = self.runs.lock().map_err(poisoned_state)?;
-                let admitted = runs
-                    .start_run(
-                        now_ms,
-                        crate::RunSnapshot {
-                            run_id: snapshot.run_id,
-                            request_digest: snapshot.request_digest,
-                            objective_digest: snapshot.objective_digest,
-                            body_digest: snapshot.body_digest,
-                            artifact_set_digest: snapshot.artifact_set_digest,
-                            authority_epoch: snapshot.authority_epoch,
-                            generation: snapshot.generation,
-                            fence_digest: snapshot.fence_digest,
-                            deadline_ms: snapshot.deadline_ms,
-                        },
-                    )
-                    .map_err(run_error)?;
-                let run_receipt = runs
-                    .attach_context(
-                        now_ms,
-                        admitted.revision,
-                        crate::ContextAttachment {
-                            run_id: attachment.run_id,
-                            request_digest: attachment.request_digest,
-                            objective_digest: attachment.objective_digest,
-                            body_digest: attachment.body_digest,
-                            artifact_set_digest: attachment.artifact_set_digest,
-                            authority_epoch: attachment.authority_epoch,
-                            generation: attachment.generation,
-                            fence_digest: attachment.fence_digest,
-                            deadline_ms: attachment.deadline_ms,
-                            context_digest: attachment.context_digest,
-                            compilation_receipt_digest: attachment.compilation_receipt_digest,
-                        },
-                    )
-                    .map_err(run_error)?;
-                Ok(Some(crate::AgentdIntelligenceAdmittedOutcomeV1::Ready {
-                    prepared,
-                    run_receipt,
-                }))
+        let outcome = match &intuition_product {
+            Some(product) => {
+                runner
+                    .prepare_for_product_composition(&composition, request, inputs, product)
+                    .await
             }
-            crate::AgentdIntelligenceProductOutcomeV1::Abstained => {
-                Ok(Some(crate::AgentdIntelligenceAdmittedOutcomeV1::Abstained))
-            }
-            crate::AgentdIntelligenceProductOutcomeV1::SlowPath => {
-                Ok(Some(crate::AgentdIntelligenceAdmittedOutcomeV1::SlowPath))
+            None => {
+                runner
+                    .prepare_for_composition(&composition, request, inputs)
+                    .await
             }
         }
+        .map_err(|error| {
+            AgentdError::Protocol(format!(
+                "canonical intelligence preparation failed: {error}"
+            ))
+        })?;
+
+        let policy_now = self.require_current_run_start(record)?;
+        let authenticated_intuition =
+            crate::intuition_policy_serving::authenticate_canonical_intuition(
+                self,
+                intuition_product,
+                intuition_request,
+                episode_id,
+                run_snapshot_digest,
+                &outcome,
+                policy_now,
+                |clock| {
+                    runner
+                        .require_current_snapshot(&canonical_snapshot)
+                        .map_err(|error| {
+                            AgentdError::Protocol(format!(
+                                "canonical intelligence final-use fence failed: {error}"
+                            ))
+                        })?;
+                    self.require_current_run_start(record)?;
+                    if let crate::AgentdIntelligenceProductOutcomeV1::Ready(prepared) = &outcome {
+                        let now = clock.now().map_err(|error| {
+                            AgentdError::from(crate::AgentdIntuitionServiceErrorV1::Policy(error))
+                        })?;
+                        runner.require_current_evaluation(now).map_err(|error| {
+                            AgentdError::Protocol(format!(
+                                "canonical evaluation final-use fence failed: {error}"
+                            ))
+                        })?;
+                        prepared.revalidate_evaluation(now).map_err(|error| {
+                            AgentdError::Protocol(format!(
+                                "canonical evaluation evidence final-use fence failed: {error}"
+                            ))
+                        })?;
+                    }
+                    let now = clock.now().map_err(|error| {
+                        AgentdError::from(crate::AgentdIntuitionServiceErrorV1::Policy(error))
+                    })?;
+                    crate::intuition_policy_service::require_live_run_start_authentication(
+                        now,
+                        record.authentication.expires_at_ms,
+                    )?;
+                    crate::intuition_policy_service::require_live_intuition_deadline(
+                        now,
+                        crate::intuition_policy_service::run_start_deadline_ms(record)?,
+                    )?;
+                    if let crate::AgentdIntelligenceProductOutcomeV1::Ready(prepared) = &outcome {
+                        crate::intuition_policy_service::require_live_intuition_deadline(
+                            now,
+                            prepared.run_snapshot().deadline_ms,
+                        )?;
+                    }
+                    Ok(())
+                },
+            )?;
+
+        // All fallible operations after policy commit stay inside this result.
+        // The final conversion retains the receipt on every failure, including
+        // either freshness check, run-lock acquisition and context attachment.
+        let admission = (|| {
+            runner
+                .require_current_snapshot(&canonical_snapshot)
+                .map_err(|error| {
+                    AgentdError::Protocol(format!(
+                        "canonical intelligence admission fence failed: {error}"
+                    ))
+                })?;
+            self.require_current_run_start(record)?;
+            match outcome {
+                crate::AgentdIntelligenceProductOutcomeV1::Ready(prepared) => {
+                    let snapshot = prepared.run_snapshot();
+                    let attachment = prepared.context_attachment();
+                    // Do not wait after sampling final-use qualification, or invert
+                    // the existing runtime -> runs lock order with a callback.
+                    let mut runs = self.runs.try_lock().map_err(|error| match error {
+                        std::sync::TryLockError::WouldBlock => {
+                            AgentdError::Overloaded { retry_after_ms: 25 }
+                        }
+                        std::sync::TryLockError::Poisoned(_) => AgentdError::Protocol(
+                            "agent run coordinator mutex is poisoned".to_string(),
+                        ),
+                    })?;
+                    let now_ms = unix_now_ms()?;
+                    runner.require_current_evaluation(now_ms).map_err(|error| {
+                        AgentdError::Protocol(format!(
+                            "canonical evaluation admission fence failed: {error}"
+                        ))
+                    })?;
+                    prepared.revalidate_evaluation(now_ms).map_err(|error| {
+                        AgentdError::Protocol(format!(
+                            "canonical evaluation evidence admission fence failed: {error}"
+                        ))
+                    })?;
+                    let now_ms = unix_now_ms()?;
+                    crate::intuition_policy_service::require_live_intuition_deadline(
+                        now_ms,
+                        crate::intuition_policy_service::run_start_deadline_ms(record)?,
+                    )?;
+                    crate::intuition_policy_service::require_live_run_start_authentication(
+                        now_ms,
+                        record.authentication.expires_at_ms,
+                    )?;
+                    let admitted = runs
+                        .start_run(
+                            now_ms,
+                            crate::RunSnapshot {
+                                run_id: snapshot.run_id,
+                                request_digest: snapshot.request_digest,
+                                objective_digest: snapshot.objective_digest,
+                                body_digest: snapshot.body_digest,
+                                artifact_set_digest: snapshot.artifact_set_digest,
+                                authority_epoch: snapshot.authority_epoch,
+                                generation: snapshot.generation,
+                                fence_digest: snapshot.fence_digest,
+                                deadline_ms: snapshot.deadline_ms,
+                            },
+                        )
+                        .map_err(run_error)?;
+                    let run_receipt = runs
+                        .attach_context(
+                            now_ms,
+                            admitted.revision,
+                            crate::ContextAttachment {
+                                run_id: attachment.run_id,
+                                request_digest: attachment.request_digest,
+                                objective_digest: attachment.objective_digest,
+                                body_digest: attachment.body_digest,
+                                artifact_set_digest: attachment.artifact_set_digest,
+                                authority_epoch: attachment.authority_epoch,
+                                generation: attachment.generation,
+                                fence_digest: attachment.fence_digest,
+                                deadline_ms: attachment.deadline_ms,
+                                context_digest: attachment.context_digest,
+                                compilation_receipt_digest: attachment.compilation_receipt_digest,
+                            },
+                        )
+                        .map_err(run_error)?;
+                    Ok(crate::AgentdIntelligenceAdmittedOutcomeV1::Ready {
+                        prepared,
+                        run_receipt,
+                    })
+                }
+                crate::AgentdIntelligenceProductOutcomeV1::Abstained => {
+                    Ok(crate::AgentdIntelligenceAdmittedOutcomeV1::Abstained)
+                }
+                crate::AgentdIntelligenceProductOutcomeV1::SlowPath => {
+                    Ok(crate::AgentdIntelligenceAdmittedOutcomeV1::SlowPath)
+                }
+            }
+        })();
+        crate::intuition_policy_service::finish_canonical_admission(
+            admission,
+            authenticated_intuition,
+        )
+        .map(Some)
     }
 
     /// Revalidate a durable run-start record against the current owner trust,
@@ -705,7 +878,6 @@ impl AgentdState {
 
     fn require_current_run_start(&self, record: &RunStartRecordV1) -> Result<u64, AgentdError> {
         crate::authbus_ingress::require_ready(self)?;
-        let now_ms = crate::authbus_ingress::now_ms()?;
         let current_generation = self
             .runtime
             .lock()
@@ -740,9 +912,15 @@ impl AgentdState {
             },
             signature: authentication.signature,
         };
+        let issuer = trust.issuer()?;
+        let now_ms = crate::authbus_ingress::now_ms()?;
+        crate::intuition_policy_service::require_live_intuition_deadline(
+            now_ms,
+            crate::intuition_policy_service::run_start_deadline_ms(record)?,
+        )?;
         message
             .authenticate(
-                &trust.issuer()?,
+                &issuer,
                 objective_run_scope(&self.identity),
                 authentication.signed_body_digest,
                 now_ms,

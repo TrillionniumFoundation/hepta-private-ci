@@ -124,11 +124,19 @@ impl ObjectiveRuntimeHost {
                 continue;
             }
             if authentication_is_current(record, &trust, agentd.identity(), now_ms)? {
-                if agentd.canonical_intelligence_enabled() {
+                // A missing composition must not bypass Production through
+                // startup replay. Admission and recovery use the same profile.
+                agentd.require_intuition_host_configuration()?;
+                if agentd.canonical_intelligence_enabled()
+                    || agentd.intuition_policy.get().is_some()
+                    || agentd.intelligence_product.get().is_some()
+                    || agentd.intelligence_invocation.get().is_some()
+                {
                     // A RunStart publication predates the seven-owner handoff.
                     // Until that exact handoff is durably recovered, startup
-                    // must wait for the authenticated ObjectiveStart retry
-                    // rather than silently entering the compatibility path.
+                    // leaves this publication quarantined. An authenticated
+                    // retry requires reconciliation, never a compatibility
+                    // projection or a newly generated policy Decision.
                     continue;
                 }
                 agentd.start_current_run_start(&state.journal, &record.snapshot.run_id)?;
@@ -281,6 +289,23 @@ impl ObjectiveRuntimeHost {
             (published, record)
         };
 
+        if published.publication.disposition == RunStartAppendDisposition::IdempotentReplay
+            && record.disposition == RunStartObjectiveDispositionV1::Compiled
+            && (agentd.canonical_intelligence_enabled()
+                || agentd.intuition_policy.get().is_some()
+                || agentd.intelligence_product.get().is_some()
+                || agentd.intelligence_invocation.get().is_some())
+        {
+            // Publication deduplication serializes concurrent requests, but the
+            // seven-owner handoff is not yet durable. Rebuilding that handoff
+            // would rerun owners instead of restoring the original receipt.
+            // Compiler-native ExplicitAbstain has no such handoff: its entire
+            // result is this immutable publication, reauthenticated below.
+            return Err(AgentdError::Invalid(
+                "agentd.intuition.service.durable_handoff_reconciliation_required".to_string(),
+            ));
+        }
+
         authbus_ingress::require_ready(agentd)?;
         let current = authbus.trust(agentd)?;
         if !authentication_is_current(
@@ -297,14 +322,18 @@ impl ObjectiveRuntimeHost {
         let disposition = match record.disposition {
             RunStartObjectiveDispositionV1::Compiled => {
                 match agentd.start_canonical_intelligence(&record).await? {
-                    Some(crate::AgentdIntelligenceAdmittedOutcomeV1::Ready { .. }) => {
-                        "canonical_ready"
-                    }
-                    Some(crate::AgentdIntelligenceAdmittedOutcomeV1::Abstained) => {
-                        "canonical_abstained"
-                    }
-                    Some(crate::AgentdIntelligenceAdmittedOutcomeV1::SlowPath) => {
-                        "canonical_slow_path"
+                    Some(admission) => {
+                        // This terminal event is observational, not a durable
+                        // audit or transport acknowledgement. The in-process
+                        // result retains the full authenticated policy receipt.
+                        if let Some(policy) = admission.policy_receipt() {
+                            tracing::info!(
+                                policy_receipt_digest = %policy.service_receipt_digest,
+                                admission_binding_digest = ?admission.binding_digest(),
+                                "canonical intuition admission bound"
+                            );
+                        }
+                        admission.disposition()
                     }
                     None => {
                         agentd.start_current_run_start_record(&record)?;

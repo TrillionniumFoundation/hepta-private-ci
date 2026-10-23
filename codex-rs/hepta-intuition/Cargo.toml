@@ -10,6 +10,13 @@ name = "codex_hepta_intuition"
 path = "src/lib.rs"
 doctest = false
 
+[features]
+# Historical V1/V2 decision functions remain available for replay, shadow
+# qualification and downstream migration. Product serving paths must use the
+# production contract and authenticated V3 admission.
+default = ["legacy-intuition-api"]
+legacy-intuition-api = []
+
 [lints]
 workspace = true
 

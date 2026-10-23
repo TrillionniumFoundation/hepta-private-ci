@@ -102,6 +102,10 @@ pub(crate) async fn read_with_retrieval_context(
     .await
 }
 
+#[allow(
+    clippy::too_many_arguments,
+    reason = "Keep the existing typed retrieval, ranker and durable learning owner inputs explicit at this host seam"
+)]
 pub(crate) async fn read_with_retrieval_context_and_learning(
     store: &CognitiveStore,
     owner: &AgentId,
@@ -504,6 +508,10 @@ pub(crate) async fn revalidate(
     .await
 }
 
+#[allow(
+    clippy::too_many_arguments,
+    reason = "Final-use revalidation keeps the frozen snapshot, plan and independent current owner inputs explicit"
+)]
 pub(crate) async fn revalidate_with_retrieval_context(
     store: &CognitiveStore,
     owner: &AgentId,

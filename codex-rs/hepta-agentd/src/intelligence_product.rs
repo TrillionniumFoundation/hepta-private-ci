@@ -32,13 +32,12 @@ pub use evaluation::AgentdEvaluationBindingV1;
 use evaluation::AgentdEvaluationSessionV1;
 pub use evaluation::AgentdIntelligenceEvaluationError;
 pub use evaluation::AgentdSignedEvaluationV1;
+use evaluation::PreparedEvaluationUseV1;
 pub use evaluation::intelligence_evaluation_binding_payload_v1;
 
-use std::collections::BTreeMap;
 use std::error::Error as StdError;
 use std::fmt;
 use std::path::PathBuf;
-use std::str::FromStr;
 use std::time::Duration;
 use std::time::Instant;
 use std::time::SystemTime;
@@ -46,6 +45,7 @@ use std::time::UNIX_EPOCH;
 
 use codex_hepta_context_compiler::CompilationRequest;
 use codex_hepta_context_compiler::compile;
+#[cfg(test)]
 use codex_hepta_intelligence::CanonicalFreshnessOracleV1;
 use codex_hepta_intelligence::CanonicalIntelligenceError;
 use codex_hepta_intelligence::CanonicalIntelligenceRunRequestV1;
@@ -58,14 +58,17 @@ use codex_hepta_intelligence::CanonicalPortInputV1;
 use codex_hepta_intelligence::CanonicalPortReceiptV1;
 use codex_hepta_intelligence::CanonicalRunOutcomeV1;
 use codex_hepta_intelligence::CanonicalStageV1;
-use codex_hepta_intelligence::CurrentOwnerStateV1;
 use codex_hepta_intelligence::IntelligenceHostEnvelopeV1;
 use codex_hepta_intelligence::prepare_intelligence_run;
+#[cfg(feature = "qualification-legacy-learning-write")]
 use codex_hepta_intelligence::validate_current_snapshot;
 use codex_hepta_intelligence_eval::EvaluationRequest;
 use codex_hepta_intuition::CalibratedDecisionRequestV1;
 use codex_hepta_intuition::CalibratedDispositionV1;
+use codex_hepta_intuition::CanonicalPolicyProfileV1;
+use codex_hepta_intuition::ProductionDispositionV1;
 use codex_hepta_intuition::decide_calibrated_v2;
+use codex_hepta_intuition::decide_calibrated_v4;
 #[cfg(feature = "qualification-legacy-learning-write")]
 use codex_hepta_learning_ledger::DurableLearningJournal;
 #[cfg(feature = "qualification-legacy-learning-write")]
@@ -90,7 +93,6 @@ use codex_hepta_prompt_optimizer::OptimizationRequest;
 use codex_hepta_prompt_optimizer::optimize;
 use codex_hepta_types::AuthorityPosture;
 use codex_hepta_types::Digest32;
-use codex_hepta_types::Generation;
 use codex_hepta_types::StableId;
 use ed25519_dalek::Signature;
 use ed25519_dalek::Verifier;
@@ -128,89 +130,12 @@ pub struct IntelligenceAuthorityVerifierV1 {
 
 const MAX_INTELLIGENCE_AUTHORITY_FILE_BYTES: u64 = 64 * 1024;
 
-struct FileBackedFreshnessOracleV1 {
-    path: PathBuf,
-    verifier: IntelligenceAuthorityVerifierV1,
-}
+#[path = "intelligence_authority_read.rs"]
+mod authority_read;
 
-impl FileBackedFreshnessOracleV1 {
-    fn new(path: PathBuf, verifier: IntelligenceAuthorityVerifierV1) -> Self {
-        Self { path, verifier }
-    }
-
-    fn read(
-        &self,
-        requested: &StableId,
-    ) -> Result<CurrentOwnerStateV1, CanonicalIntelligenceError> {
-        validate_authority_file_path(&self.path, requested)?;
-        let metadata = std::fs::metadata(&self.path)
-            .map_err(|_| CanonicalIntelligenceError::FreshnessUnavailable(requested.clone()))?;
-        if metadata.len() == 0 || metadata.len() > MAX_INTELLIGENCE_AUTHORITY_FILE_BYTES {
-            return Err(CanonicalIntelligenceError::FreshnessUnavailable(
-                requested.clone(),
-            ));
-        }
-        let bytes = std::fs::read(&self.path)
-            .map_err(|_| CanonicalIntelligenceError::FreshnessUnavailable(requested.clone()))?;
-        let file: IntelligenceAuthorityFileV1 = serde_json::from_slice(&bytes)
-            .map_err(|_| CanonicalIntelligenceError::FreshnessUnavailable(requested.clone()))?;
-        verify_authority_file(&file, &self.verifier, requested)?;
-        if file.schema_version != 1 || file.authority_epoch == 0 {
-            return Err(CanonicalIntelligenceError::FreshnessUnavailable(
-                requested.clone(),
-            ));
-        }
-        let frontier = Digest32::from_str(&file.revocation_frontier_digest)
-            .map_err(|_| CanonicalIntelligenceError::FreshnessUnavailable(requested.clone()))?;
-        if frontier.is_zero() {
-            return Err(CanonicalIntelligenceError::FreshnessUnavailable(
-                requested.clone(),
-            ));
-        }
-        let mut seen = BTreeMap::new();
-        for owner in file.owners {
-            let owner_id = StableId::new(owner.owner_id.clone())
-                .map_err(|_| CanonicalIntelligenceError::FreshnessUnavailable(requested.clone()))?;
-            if seen.insert(owner_id.clone(), owner).is_some() {
-                return Err(CanonicalIntelligenceError::FreshnessUnavailable(
-                    requested.clone(),
-                ));
-            }
-        }
-        let owner = seen
-            .remove(requested)
-            .ok_or_else(|| CanonicalIntelligenceError::FreshnessUnavailable(requested.clone()))?;
-        let generation = Generation::new(owner.generation)
-            .map_err(|_| CanonicalIntelligenceError::FreshnessUnavailable(requested.clone()))?;
-        let implementation_digest = Digest32::from_str(&owner.implementation_digest)
-            .map_err(|_| CanonicalIntelligenceError::FreshnessUnavailable(requested.clone()))?;
-        let key_digest = Digest32::from_str(&owner.key_digest)
-            .map_err(|_| CanonicalIntelligenceError::FreshnessUnavailable(requested.clone()))?;
-        if implementation_digest.is_zero() || key_digest.is_zero() || owner.key_epoch == 0 {
-            return Err(CanonicalIntelligenceError::FreshnessUnavailable(
-                requested.clone(),
-            ));
-        }
-        Ok(CurrentOwnerStateV1 {
-            owner_id: requested.clone(),
-            generation,
-            implementation_digest,
-            key_digest,
-            key_epoch: owner.key_epoch,
-            authority_epoch: file.authority_epoch,
-            revocation_frontier_digest: frontier,
-        })
-    }
-}
-
-impl CanonicalFreshnessOracleV1 for FileBackedFreshnessOracleV1 {
-    fn current(
-        &mut self,
-        owner_id: &StableId,
-    ) -> Result<CurrentOwnerStateV1, CanonicalIntelligenceError> {
-        self.read(owner_id)
-    }
-}
+#[path = "intelligence_authority.rs"]
+mod authority;
+use authority::FileBackedFreshnessOracleV1;
 
 pub struct AgentdIntelligenceOwnerInputsV1 {
     pub objective_envelope: ObjectiveSourceEnvelopeV1,
@@ -230,6 +155,11 @@ pub struct AgentdIntelligenceOwnerInputsV1 {
     pub signed_evaluation: Option<AgentdSignedEvaluationV1>,
 }
 
+enum AgentdIntuitionComputationV1 {
+    Compatibility,
+    Product(Box<CanonicalPolicyProfileV1>),
+}
+
 struct AgentdOwnerPortsV1 {
     objective_envelope: Option<ObjectiveSourceEnvelopeV1>,
     objective_profile: Option<ObjectiveAdmissionProfileV1>,
@@ -243,9 +173,11 @@ struct AgentdOwnerPortsV1 {
     neural_previous: Option<Option<SparseCheckpoint>>,
     prompt_request: Option<OptimizationRequest>,
     intuition_request: Option<CalibratedDecisionRequestV1>,
+    intuition_computation: AgentdIntuitionComputationV1,
     context_request: Option<CompilationRequest>,
     evaluation_request: Option<EvaluationRequest>,
     evaluation_session: Option<AgentdEvaluationSessionV1>,
+    evaluation_use: Option<Box<PreparedEvaluationUseV1>>,
     selected_candidate: Option<StableId>,
 }
 
@@ -253,6 +185,7 @@ impl AgentdOwnerPortsV1 {
     fn new(
         value: AgentdIntelligenceOwnerInputsV1,
         evaluation_session: Option<AgentdEvaluationSessionV1>,
+        intuition_computation: AgentdIntuitionComputationV1,
     ) -> Self {
         Self {
             objective_envelope: Some(value.objective_envelope),
@@ -267,9 +200,11 @@ impl AgentdOwnerPortsV1 {
             neural_previous: Some(value.neural_previous),
             prompt_request: Some(value.prompt_request),
             intuition_request: Some(value.intuition_request),
+            intuition_computation,
             context_request: Some(value.context_request),
             evaluation_request: Some(value.evaluation_request),
             evaluation_session,
+            evaluation_use: None,
             selected_candidate: None,
         }
     }
@@ -301,6 +236,23 @@ impl AgentdOwnerPortsV1 {
             output_digest,
             decision,
             authority: AuthorityPosture::DENY_ALL,
+        })
+    }
+
+    fn selected_intuition(
+        input: &CanonicalPortInputV1,
+        candidate_id: &StableId,
+        propensities: &[codex_hepta_intuition::CalibratedCandidatePropensityV1],
+    ) -> Result<CanonicalPortDecisionV1, CanonicalPortFailureV1> {
+        let propensity = propensities
+            .iter()
+            .find(|row| &row.candidate_id == candidate_id)
+            .map(|row| row.probability)
+            .filter(|value| value.raw() > 0)
+            .ok_or_else(|| Self::reject(input.stage, "selected propensity"))?;
+        Ok(CanonicalPortDecisionV1::Selected {
+            candidate_id: candidate_id.clone(),
+            propensity,
         })
     }
 
@@ -473,31 +425,43 @@ impl CanonicalOwnerPortsV1 for AgentdOwnerPortsV1 {
             return Err(Self::reject(input.stage, "intuition objective"));
         }
         let started = Instant::now();
-        let receipt = decide_calibrated_v2(request)
-            .map_err(|_| Self::reject(input.stage, "intuition decision"))?;
+        // Product routing uses the exact immutable invocation profile. This
+        // worker remains pure: serving authenticates that same profile and
+        // commits the Decision only after canonical preparation completes.
+        let (decision, receipt_digest, authority) = match &self.intuition_computation {
+            AgentdIntuitionComputationV1::Compatibility => {
+                let receipt = decide_calibrated_v2(request)
+                    .map_err(|_| Self::reject(input.stage, "intuition decision"))?;
+                let decision = match &receipt.disposition {
+                    CalibratedDispositionV1::Selected(candidate_id) => {
+                        Self::selected_intuition(input, candidate_id, &receipt.propensities)?
+                    }
+                    CalibratedDispositionV1::Abstained(_) => CanonicalPortDecisionV1::Abstained,
+                    CalibratedDispositionV1::SlowPath(_) => CanonicalPortDecisionV1::SlowPath,
+                };
+                (decision, receipt.receipt_digest, receipt.authority)
+            }
+            AgentdIntuitionComputationV1::Product(profile) => {
+                let receipt = decide_calibrated_v4(request, profile)
+                    .map_err(|_| Self::reject(input.stage, "intuition decision"))?;
+                let decision = match &receipt.disposition {
+                    ProductionDispositionV1::Selected(candidate_id) => {
+                        Self::selected_intuition(input, candidate_id, &receipt.propensities)?
+                    }
+                    ProductionDispositionV1::Abstained(_) => CanonicalPortDecisionV1::Abstained,
+                    ProductionDispositionV1::SlowPath(_) => CanonicalPortDecisionV1::SlowPath,
+                };
+                (decision, receipt.receipt_digest, receipt.authority)
+            }
+        };
         Self::within_budget(input, started)?;
-        if receipt.authority.grants_any() {
+        if authority.grants_any() {
             return Err(Self::reject(input.stage, "intuition authority"));
         }
-        let decision = match &receipt.disposition {
-            CalibratedDispositionV1::Selected(candidate_id) => {
-                let probability = receipt
-                    .propensities
-                    .iter()
-                    .find(|row| &row.candidate_id == candidate_id)
-                    .map(|row| row.probability)
-                    .filter(|value| value.raw() > 0)
-                    .ok_or_else(|| Self::reject(input.stage, "selected propensity"))?;
-                self.selected_candidate = Some(candidate_id.clone());
-                CanonicalPortDecisionV1::Selected {
-                    candidate_id: candidate_id.clone(),
-                    propensity: probability,
-                }
-            }
-            CalibratedDispositionV1::Abstained(_) => CanonicalPortDecisionV1::Abstained,
-            CalibratedDispositionV1::SlowPath(_) => CanonicalPortDecisionV1::SlowPath,
-        };
-        Self::receipt(input, "intuition.policy", receipt.receipt_digest, decision)
+        if let CanonicalPortDecisionV1::Selected { candidate_id, .. } = &decision {
+            self.selected_candidate = Some(candidate_id.clone());
+        }
+        Self::receipt(input, "intuition.policy", receipt_digest, decision)
     }
 
     fn compile_context(
@@ -546,9 +510,16 @@ impl CanonicalOwnerPortsV1 for AgentdOwnerPortsV1 {
         let started = Instant::now();
         let now = wall_clock_ms().map_err(|_| Self::reject(input.stage, "evaluation clock"))?;
         let receipt = session
+            .clone()
             .evaluate(input, &request.candidate_id, now)
             .map_err(|_| Self::reject(input.stage, "signed evaluation binding or evidence"))?;
         Self::within_budget(input, started)?;
+        self.evaluation_use = Some(Box::new(PreparedEvaluationUseV1 {
+            session,
+            input: input.clone(),
+            candidate: request.candidate_id,
+            receipt,
+        }));
         Self::receipt(
             input,
             "learning.eval",
@@ -566,9 +537,17 @@ pub struct PreparedAgentdIntelligenceRunV1 {
     candidate_ids: Vec<StableId>,
     run_snapshot: crate::AgentRunSnapshot,
     context_attachment: crate::AgentContextAttachment,
+    evaluation_use: Box<PreparedEvaluationUseV1>,
 }
 
 impl PreparedAgentdIntelligenceRunV1 {
+    pub(crate) fn revalidate_evaluation(
+        &self,
+        now: u64,
+    ) -> Result<(), AgentdIntelligenceEvaluationError> {
+        self.evaluation_use.revalidate(&self.envelope, now)
+    }
+
     #[must_use]
     pub fn run_snapshot(&self) -> crate::AgentRunSnapshot {
         self.run_snapshot.clone()
@@ -581,6 +560,10 @@ impl PreparedAgentdIntelligenceRunV1 {
 }
 
 #[derive(Clone, Debug, Eq, PartialEq)]
+#[allow(
+    clippy::large_enum_variant,
+    reason = "Preserve the public V1 outcome payload type and complete immutable prepared run"
+)]
 pub enum AgentdIntelligenceProductOutcomeV1 {
     Ready(PreparedAgentdIntelligenceRunV1),
     Abstained,
@@ -590,6 +573,10 @@ pub enum AgentdIntelligenceProductOutcomeV1 {
 /// Result of the canonical runner after the exact prepared envelope has also
 /// crossed the Agentd-owned run-admission and context-attachment boundary.
 #[derive(Clone, Debug, Eq, PartialEq)]
+#[allow(
+    clippy::large_enum_variant,
+    reason = "Preserve the public V1 admission payload types and complete prepared run and receipt"
+)]
 pub enum AgentdIntelligenceAdmittedOutcomeV1 {
     Ready {
         prepared: PreparedAgentdIntelligenceRunV1,
@@ -668,41 +655,6 @@ fn verify_authority_file(
         .map_err(|_| CanonicalIntelligenceError::FreshnessUnavailable(requested.clone()))
 }
 
-#[cfg(unix)]
-fn validate_authority_file_path(
-    path: &std::path::Path,
-    requested: &StableId,
-) -> Result<(), CanonicalIntelligenceError> {
-    use std::os::unix::fs::PermissionsExt;
-
-    let metadata = std::fs::symlink_metadata(path)
-        .map_err(|_| CanonicalIntelligenceError::FreshnessUnavailable(requested.clone()))?;
-    if metadata.file_type().is_symlink()
-        || !metadata.is_file()
-        || metadata.permissions().mode() & 0o022 != 0
-    {
-        return Err(CanonicalIntelligenceError::FreshnessUnavailable(
-            requested.clone(),
-        ));
-    }
-    Ok(())
-}
-
-#[cfg(not(unix))]
-fn validate_authority_file_path(
-    path: &std::path::Path,
-    requested: &StableId,
-) -> Result<(), CanonicalIntelligenceError> {
-    let metadata = std::fs::metadata(path)
-        .map_err(|_| CanonicalIntelligenceError::FreshnessUnavailable(requested.clone()))?;
-    if !metadata.is_file() {
-        return Err(CanonicalIntelligenceError::FreshnessUnavailable(
-            requested.clone(),
-        ));
-    }
-    Ok(())
-}
-
 fn wall_clock_ms() -> Result<u64, AgentdIntelligenceProductError> {
     let millis = SystemTime::now()
         .duration_since(UNIX_EPOCH)
@@ -719,6 +671,10 @@ pub struct PendingIntelligenceLedgerAppendV1 {
 }
 
 #[derive(Debug)]
+#[allow(
+    clippy::large_enum_variant,
+    reason = "The public V1 error retains the exact pending append for recovery without changing its payload type"
+)]
 pub enum AgentdIntelligenceLedgerError {
     Currentness(CanonicalIntelligenceError),
     Ledger(DurableLedgerError),

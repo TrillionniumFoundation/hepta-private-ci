@@ -20,9 +20,10 @@ use codex_hepta_types::StableId;
 mod binding;
 
 pub use binding::canonical_calibrated_request_digest_v1;
+pub(crate) use binding::canonical_request_digest_with_risk;
 pub use binding::decide_calibrated_v2;
 
-const MAX_CANDIDATES: usize = 128;
+use crate::MAX_CANDIDATES;
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub enum RiskClass {
@@ -186,7 +187,21 @@ impl StdError for CalibratedError {}
 pub fn decide_calibrated(
     request: CalibratedDecisionRequestV1,
 ) -> Result<CalibratedIntuitionReceiptV1, CalibratedError> {
-    validate_request(&request)?;
+    decide_calibrated_with_routing(&request, KernelRiskRouting::RequestRisk)
+}
+
+/// Internal routing input, not a wire risk classification or authority grant.
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+pub(crate) enum KernelRiskRouting {
+    RequestRisk,
+    ProfileSlowPath,
+}
+
+pub(crate) fn decide_calibrated_with_routing(
+    request: &CalibratedDecisionRequestV1,
+    routing: KernelRiskRouting,
+) -> Result<CalibratedIntuitionReceiptV1, CalibratedError> {
+    validate_request(request)?;
 
     let mut legal_count = 0usize;
     let mut ood_count = 0usize;
@@ -209,26 +224,27 @@ pub fn decide_calibrated(
         eligible.push(candidate);
     }
 
-    validate_assignment(&request, &eligible)?;
+    validate_assignment(request, &eligible)?;
 
-    let disposition = if request.risk_class == RiskClass::High {
-        CalibratedDispositionV1::SlowPath(SlowPathReasonV1::HighRisk)
-    } else if legal_count == 0 {
-        CalibratedDispositionV1::Abstained(AbstentionReasonV1::NoLegalCandidate)
-    } else if eligible.is_empty() && ood_count > 0 {
-        CalibratedDispositionV1::SlowPath(SlowPathReasonV1::OutOfDistribution)
-    } else if eligible.is_empty() && low_confidence_count > 0 {
-        CalibratedDispositionV1::SlowPath(SlowPathReasonV1::LowConfidence)
-    } else if eligible.is_empty() {
-        CalibratedDispositionV1::SlowPath(SlowPathReasonV1::Unsupported)
-    } else {
-        select(&request, &eligible)?
-    };
+    let disposition =
+        if request.risk_class == RiskClass::High || routing == KernelRiskRouting::ProfileSlowPath {
+            CalibratedDispositionV1::SlowPath(SlowPathReasonV1::HighRisk)
+        } else if legal_count == 0 {
+            CalibratedDispositionV1::Abstained(AbstentionReasonV1::NoLegalCandidate)
+        } else if eligible.is_empty() && ood_count > 0 {
+            CalibratedDispositionV1::SlowPath(SlowPathReasonV1::OutOfDistribution)
+        } else if eligible.is_empty() && low_confidence_count > 0 {
+            CalibratedDispositionV1::SlowPath(SlowPathReasonV1::LowConfidence)
+        } else if eligible.is_empty() {
+            CalibratedDispositionV1::SlowPath(SlowPathReasonV1::Unsupported)
+        } else {
+            select(request, &eligible)?
+        };
 
     let (propensities, abstain_probability, slow_path_probability) =
-        output_distribution(&request, &disposition)?;
+        output_distribution(request, &disposition)?;
     let receipt_digest = digest_receipt(
-        &request,
+        request,
         &disposition,
         &propensities,
         abstain_probability,
@@ -236,7 +252,7 @@ pub fn decide_calibrated(
     )?;
 
     Ok(CalibratedIntuitionReceiptV1 {
-        decision_id: request.decision_id,
+        decision_id: request.decision_id.clone(),
         disposition,
         propensities,
         abstain_probability,
@@ -250,9 +266,7 @@ pub fn decide_calibrated(
 }
 
 fn validate_request(request: &CalibratedDecisionRequestV1) -> Result<(), CalibratedError> {
-    if !(1..=MAX_CANDIDATES).contains(&request.candidates.len()) {
-        return Err(CalibratedError::CandidateCountOutOfRange);
-    }
+    validate_candidate_count(request.candidates.len())?;
     for (name, digest) in [
         ("objective", request.objective_digest),
         ("objective class", request.objective_class_digest),
@@ -328,7 +342,6 @@ fn validate_request(request: &CalibratedDecisionRequestV1) -> Result<(), Calibra
     }
 
     let mut previous: Option<&StableId> = None;
-    let mut seen = BTreeSet::new();
     for candidate in &request.candidates {
         if let Some(prior) = previous
             && prior >= &candidate.candidate_id
@@ -336,11 +349,6 @@ fn validate_request(request: &CalibratedDecisionRequestV1) -> Result<(), Calibra
             return Err(CalibratedError::NonCanonicalCandidateOrder);
         }
         previous = Some(&candidate.candidate_id);
-        if !seen.insert(candidate.candidate_id.clone()) {
-            return Err(CalibratedError::DuplicateCandidate(
-                candidate.candidate_id.to_string(),
-            ));
-        }
         if candidate.support_digest.is_zero() {
             return Err(CalibratedError::EmptyDigest("candidate support"));
         }
@@ -497,6 +505,7 @@ fn output_distribution(
 pub fn canonical_candidate_set_digest_v1(
     candidates: &[CalibratedActionCandidateV1],
 ) -> Result<Digest32, CalibratedError> {
+    validate_candidate_count(candidates.len())?;
     let mut bytes = b"hepta.intuition.calibrated-candidate-set.v1".to_vec();
     push_len(&mut bytes, candidates.len())?;
     for candidate in candidates {
@@ -517,6 +526,7 @@ pub fn canonical_candidate_set_digest_v1(
 pub fn canonical_candidate_order_digest_v1(
     candidates: &[CalibratedActionCandidateV1],
 ) -> Result<Digest32, CalibratedError> {
+    validate_candidate_count(candidates.len())?;
     let mut bytes = b"hepta.intuition.calibrated-candidate-order.v1".to_vec();
     push_len(&mut bytes, candidates.len())?;
     for candidate in candidates {
@@ -525,12 +535,38 @@ pub fn canonical_candidate_order_digest_v1(
     Ok(Digest32::of_bytes(&bytes))
 }
 
+pub(crate) fn validate_candidate_count(count: usize) -> Result<(), CalibratedError> {
+    if !(1..=MAX_CANDIDATES).contains(&count) {
+        return Err(CalibratedError::CandidateCountOutOfRange);
+    }
+    Ok(())
+}
+
 fn digest_receipt(
     request: &CalibratedDecisionRequestV1,
     disposition: &CalibratedDispositionV1,
     propensities: &[CalibratedCandidatePropensityV1],
     abstain_probability: ProbabilityQ32,
     slow_path_probability: ProbabilityQ32,
+) -> Result<Digest32, CalibratedError> {
+    digest_receipt_with_risk(
+        request,
+        disposition,
+        propensities,
+        abstain_probability,
+        slow_path_probability,
+        request.risk_class,
+    )
+}
+
+/// Read-only historical digest view; never used to choose an action.
+pub(crate) fn digest_receipt_with_risk(
+    request: &CalibratedDecisionRequestV1,
+    disposition: &CalibratedDispositionV1,
+    propensities: &[CalibratedCandidatePropensityV1],
+    abstain_probability: ProbabilityQ32,
+    slow_path_probability: ProbabilityQ32,
+    encoded_risk: RiskClass,
 ) -> Result<Digest32, CalibratedError> {
     let mut bytes = b"hepta.intuition.calibrated-decision.v1".to_vec();
     push_id(&mut bytes, &request.decision_id)?;
@@ -550,7 +586,7 @@ fn digest_receipt(
     bytes.extend_from_slice(&request.minimum_confidence.raw().to_be_bytes());
     bytes.extend_from_slice(&request.maximum_ece_ppm.to_be_bytes());
     bytes.extend_from_slice(&request.maximum_ood_false_acceptance_ppm.to_be_bytes());
-    bytes.push(risk_code(request.risk_class));
+    bytes.push(risk_code(encoded_risk));
     match disposition {
         CalibratedDispositionV1::Selected(candidate_id) => {
             bytes.push(0);

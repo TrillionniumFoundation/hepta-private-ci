@@ -58,6 +58,10 @@ struct Score {
     ood_score_ppm: u32,
 }
 
+#[allow(
+    clippy::unwrap_used,
+    reason = "Only fixed test-fixture identifiers are accepted."
+)]
 fn id(value: &str) -> StableId {
     StableId::new(value).unwrap()
 }
@@ -66,11 +70,19 @@ fn digest(value: &str) -> Digest32 {
     Digest32::of_bytes(value.as_bytes())
 }
 
+#[allow(
+    clippy::unwrap_used,
+    reason = "Fixture probabilities are already bounded to one million ppm."
+)]
 fn probability_ppm(ppm: u32) -> ProbabilityQ32 {
     let raw = (u128::from(ProbabilityQ32::ONE.raw()) * u128::from(ppm)) / 1_000_000;
     ProbabilityQ32::from_raw(raw as u64).unwrap()
 }
 
+#[allow(
+    clippy::unwrap_used,
+    reason = "Malformed frozen model bytes must fail this qualification fixture."
+)]
 fn parse_model() -> LinearScorer {
     let text = std::str::from_utf8(MODEL_BYTES).unwrap();
     let get = |key: &str| -> i64 {
@@ -92,6 +104,10 @@ fn parse_model() -> LinearScorer {
     }
 }
 
+#[allow(
+    clippy::unwrap_used,
+    reason = "The fixed model and fixture inputs have checked representable score ranges."
+)]
 fn score(model: LinearScorer, x_q16: i64, y_q16: i64) -> Score {
     let confidence = model.bias_confidence_ppm
         + (i128::from(x_q16) * i128::from(model.x_confidence_ppm_per_q16) / 65_536) as i64
@@ -111,6 +127,10 @@ fn score(model: LinearScorer, x_q16: i64, y_q16: i64) -> Score {
     }
 }
 
+#[allow(
+    clippy::unwrap_used,
+    reason = "Parsing and range failures in the frozen calibration fixture must fail the test."
+)]
 fn calibration_ece_ppm(model: LinearScorer) -> (u32, Digest32) {
     let mut bins = [(0_u64, 0_u64, 0_u64); 5];
     let mut rows = 0_u64;
@@ -150,6 +170,10 @@ fn calibration_ece_ppm(model: LinearScorer) -> (u32, Digest32) {
     )
 }
 
+#[allow(
+    clippy::unwrap_used,
+    reason = "Parsing and range failures in the frozen OOD fixture must fail the test."
+)]
 fn ood_false_acceptance_ppm(model: LinearScorer, maximum_in_domain_ppm: u32) -> u32 {
     let mut ood_rows = 0_u64;
     let mut false_accepts = 0_u64;

@@ -27,8 +27,11 @@ source/test navigation maps. They do not self-certify maturity or grant authorit
 self-referential candidate commit. This module opts into
 `mappingSourceIdentityMode=exact_blob`: every mapped operation records the Git blob OID
 of its current `sourcePath`; `observedAtHead` covers the complete current source/evidence
-set; and the global verifier requires the provenance commit to be an ancestor, recomputes
-every `HEAD:<sourcePath>` blob and rejects a missing or stale current observation. A
+set. The global verifier validates the immutable provenance commit/tree as actual Git
+objects; it requires the current observation to be an ancestor of the candidate,
+recomputes every `HEAD:<sourcePath>` blob and rejects a missing, detached or stale
+current observation. Detached integration provenance cannot stand in for the current
+source observation or execution evidence. A
 mapping migration updates the exact blobs and current observation without rewriting
 `sourceBase`. Exact candidate commit/tree execution identity remains the responsibility
 of source-head and deterministic synthetic-merge execution receipts.

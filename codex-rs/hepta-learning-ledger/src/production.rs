@@ -235,6 +235,14 @@ impl LedgerWriter {
         self.trust.verifier()
     }
 
+    /// Validate the active root-signed distribution before admitting current
+    /// evidence, including policy qualifications using this writer's verifier.
+    pub fn revalidate_trust(&self, now: u64) -> Result<(), ProductionLedgerError> {
+        self.trust
+            .validate_current(now)
+            .map_err(ProductionLedgerError::Trust)
+    }
+
     #[must_use]
     pub fn trust_distribution_digest(&self) -> Digest32 {
         self.trust.distribution_digest()
@@ -324,6 +332,7 @@ impl LedgerWriter {
         now: u64,
     ) -> Result<AppendReceipt, ProductionLedgerError> {
         let payload = decision_signing_payload_v2(&request)?;
+        self.revalidate_trust(now)?;
         let verified = self.trust.verifier().verify(
             LearningEvidenceRoleV1::Generator,
             evidence,
@@ -370,6 +379,7 @@ impl LedgerWriter {
         now: u64,
     ) -> Result<AppendReceipt, ProductionLedgerError> {
         let payload = outcome_signing_payload_v2(&outcome);
+        self.revalidate_trust(now)?;
         let verified = self.trust.verifier().verify(
             LearningEvidenceRoleV1::Observer,
             evidence,
@@ -429,6 +439,7 @@ impl LedgerWriter {
             .sort_by_key(|allocation| allocation.target_id.clone());
         let finalized = finalize_credit_batch(batch.clone(), now)?;
         let payload = credit_batch_signing_payload_v2(&batch, finalized.batch_digest);
+        self.revalidate_trust(now)?;
         let verified = self.trust.verifier().verify(
             LearningEvidenceRoleV1::CreditAllocator,
             evidence,
@@ -509,6 +520,7 @@ impl LedgerWriter {
         }
 
         let payload = unlearning_signing_payload_v1(&request);
+        self.revalidate_trust(now)?;
         let verified = self.trust.verifier().verify(
             LearningEvidenceRoleV1::UnlearningAuthority,
             evidence,
@@ -641,6 +653,7 @@ impl LedgerWriter {
     ) -> Result<DatasetSnapshotReceiptV3, ProductionLedgerError> {
         let snapshot = self.backend.snapshot()?;
         let payload = dataset_freeze_signing_payload_v2(&snapshot, &plan)?;
+        self.revalidate_trust(now)?;
         let verified = self.trust.verifier().verify(
             LearningEvidenceRoleV1::Evaluator,
             evidence,
@@ -1186,6 +1199,7 @@ pub enum ProductionLedgerError {
     Durable(DurableLedgerError),
     Ledger(LedgerError),
     Evidence(SignedEvidenceError),
+    Trust(crate::LearningTrustDistributionError),
     Causal(CausalV2Error),
     Dataset(DatasetReceiptError),
     Binding(&'static str),

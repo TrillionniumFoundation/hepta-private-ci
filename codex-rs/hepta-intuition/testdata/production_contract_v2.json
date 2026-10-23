@@ -1,0 +1,34 @@
+{
+  "schema": "hepta.intuition.production-contract-golden.v1",
+  "encoding": {
+    "digest": "sha256",
+    "integer": "big-endian",
+    "length": "u32",
+    "stableId": "u32-byte-length || utf8",
+    "candidateOrder": "semantic-and-preserved"
+  },
+  "fixture": {
+    "candidateId": "candidate:a",
+    "legal": true,
+    "hardVeto": false,
+    "supportLabel": "support:a",
+    "utilityRawI64": 7,
+    "confidenceRawU64": 4294967296,
+    "oodRawU64": 0,
+    "assignmentProbabilityRawU64": 0,
+    "assignmentMode": "deterministic",
+    "policyGenerationU64": 4,
+    "modelLabel": "model",
+    "featureSnapshotLabel": "feature-snapshot",
+    "featureSchemaLabel": "feature-schema",
+    "scorerContractLabel": "scorer-contract",
+    "policyLabel": "policy"
+  },
+  "digests": {
+    "candidateIdentityV2": "0f68fab105bf87ac3deccd9e600f50f3ac3f73d76b60cbb015f12f1f1b8cf4c3",
+    "scoredOutputsV2": "c68b21558abeb706fa2ff0a891260f13203d63d5ceeb74ca14ee6549388f8867",
+    "assignmentDistributionV2": "b64df105e2dd632556aac5f1d9875f1f4f12c6e70e03c4358d017088a8bbbc0c",
+    "scoringCommitmentV2": "8bae263cd6515398507323bd9b6702bea6303af58e9ac841ae72f814b6025422",
+    "assignmentCommitmentV2": "813530d434f0c0568dbfd256f352013a038b9824d4767418b36432da9e38efef"
+  }
+}

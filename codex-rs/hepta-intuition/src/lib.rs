@@ -7,6 +7,7 @@
 
 // Retain the historical module path as well as explicit root exports.
 pub mod calibrated;
+mod production;
 mod qualified;
 mod runtime_commitment;
 
@@ -26,8 +27,27 @@ pub use calibrated::SlowPathReasonV1;
 pub use calibrated::canonical_calibrated_request_digest_v1;
 pub use calibrated::canonical_candidate_order_digest_v1;
 pub use calibrated::canonical_candidate_set_digest_v1;
+#[cfg(feature = "legacy-intuition-api")]
 pub use calibrated::decide_calibrated;
+#[cfg(feature = "legacy-intuition-api")]
 pub use calibrated::decide_calibrated_v2;
+pub use production::AssignmentCommitmentV2;
+pub use production::BoundedValueError;
+pub use production::PPM_SCALE;
+pub use production::PolicyGeneration;
+pub use production::Ppm;
+pub use production::ProductionDispositionV1;
+pub use production::ProductionIntuitionReceiptV1;
+pub use production::ProductionPolicyError;
+pub use production::ProductionSlowPathReasonV1;
+pub use production::ScoringCommitmentV2;
+pub use production::canonical_assignment_commitment_digest_v2;
+pub use production::canonical_assignment_distribution_digest_v2;
+pub use production::canonical_candidate_identity_digest_v2;
+pub use production::canonical_runtime_commitment_payload_v2;
+pub use production::canonical_scored_outputs_digest_v2;
+pub use production::canonical_scoring_commitment_digest_v2;
+pub use production::decide_calibrated_v4;
 pub use qualified::CanonicalPolicyProfileV1;
 pub use qualified::CanonicalRiskRuleV1;
 pub use qualified::LearnedScorerContractV1;

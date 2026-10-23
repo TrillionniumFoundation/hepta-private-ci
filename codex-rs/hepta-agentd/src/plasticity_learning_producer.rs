@@ -21,6 +21,10 @@ use crate::PlasticityRuntimeHandleV1;
 /// writers, anchor stores, trust roots or authoritative owner stores.
 #[derive(Clone)]
 pub(crate) struct AgentdLearningPlasticityProducerV1 {
+    #[allow(
+        dead_code,
+        reason = "Retain the reserved owner handle; the learning.plasticity self-iteration trigger is not yet product-composed"
+    )]
     handle: PlasticityRuntimeHandleV1,
 }
 
@@ -29,6 +33,10 @@ impl AgentdLearningPlasticityProducerV1 {
         Self { handle }
     }
 
+    #[allow(
+        dead_code,
+        reason = "Reserved production seam; learning.plasticity tracks the uncomposed self-iteration trigger"
+    )]
     pub(crate) async fn submit_parameter(
         &self,
         request: ParameterPlasticityProductRequestV1,
@@ -37,6 +45,10 @@ impl AgentdLearningPlasticityProducerV1 {
         self.handle.propose_parameter(request, now).await
     }
 
+    #[allow(
+        dead_code,
+        reason = "Reserved production seam; learning.plasticity tracks the uncomposed self-iteration trigger"
+    )]
     pub(crate) async fn submit_topology(
         &self,
         request: TopologyPlasticityProductRequestV1,

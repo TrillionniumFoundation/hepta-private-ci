@@ -31,8 +31,8 @@ use codex_hepta_learning_ledger::LearningEvidenceVerifierV1;
 use codex_hepta_learning_ledger::LedgerWriter;
 use codex_hepta_learning_ledger::SignedEvidenceError;
 use codex_hepta_learning_ledger::SignedLearningEvidenceV1;
-use codex_hepta_learning_ledger::verify_independent_roles;
 use codex_hepta_learning_ledger::verify_signed_role_separation;
+use codex_hepta_learning_ledger::verify_verified_role_separation;
 use codex_hepta_types::Digest32;
 
 use crate::EvaluatedShadowError;
@@ -108,6 +108,12 @@ pub fn decide_authenticated_intuition_v1(
     verifier: &LearningEvidenceVerifierV1,
     now: u64,
 ) -> Result<AuthenticatedIntuitionDecisionV1, IntuitionQualificationError> {
+    // The signature envelope scopes a trusted signer; its signed payload can
+    // still name another objective. Bind both layers before any disposition,
+    // including abstention and slow path, which never reach the ledger writer.
+    if request.objective_digest != verifier.objective_digest() {
+        return Err(SignedEvidenceError::ContextMismatch.into());
+    }
     let completeness_payload = canonical_completeness_evidence_payload_v1(&request)?;
     let qualification_payload = canonical_qualification_evidence_payload_v1(&request, &profile)?;
     let generator = verifier.verify(
@@ -188,6 +194,12 @@ pub fn decide_authenticated_intuition_v2(
     verifier: &LearningEvidenceVerifierV1,
     now: u64,
 ) -> Result<AuthenticatedIntuitionDecisionV2, IntuitionQualificationError> {
+    // The signature envelope scopes a trusted signer; its signed payload can
+    // still name another objective. Bind both layers before any disposition,
+    // including abstention and slow path, which never reach the ledger writer.
+    if request.objective_digest != verifier.objective_digest() {
+        return Err(SignedEvidenceError::ContextMismatch.into());
+    }
     let completeness_payload = canonical_completeness_evidence_payload_v1(&request)?;
     let profile_qualification_payload = canonical_profile_qualification_payload_v1(&profile)?;
     let runtime_payload =
@@ -214,7 +226,8 @@ pub fn decide_authenticated_intuition_v2(
 
     verify_signed_role_separation(&generator, &evaluator, now)?;
     verify_signed_role_separation(&generator, &observer, now)?;
-    verify_independent_roles(evaluator.principal(), observer.principal(), now)?;
+    // Distinct evaluator and observer keys can still share one controller.
+    verify_verified_role_separation(&evaluator, &observer, now)?;
 
     let profile_digest = canonical_policy_profile_digest_v1(&profile)?;
     let scoring_commitment_digest = canonical_scoring_commitment_digest_v1(&scoring)?;

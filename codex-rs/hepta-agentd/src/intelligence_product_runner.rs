@@ -3,6 +3,47 @@
 use super::*;
 
 impl AgentdIntelligenceProductRunnerV1 {
+    /// Recheck the frozen seven-owner snapshot at the actual Agentd use site.
+    /// Preparation cannot cache this answer across a learning-writer lock wait.
+    pub(crate) fn require_current_snapshot(
+        &self,
+        snapshot: &CanonicalIntelligenceSnapshotV1,
+    ) -> Result<(), AgentdIntelligenceProductError> {
+        let oracle = FileBackedFreshnessOracleV1::new(
+            self.authority_file.clone(),
+            self.authority_verifier.clone(),
+        );
+        oracle
+            .validate_snapshot(snapshot)
+            .map_err(AgentdIntelligenceProductError::Canonical)
+    }
+
+    /// Evaluation leases are consumed only by selected canonical runs.
+    pub(crate) fn require_current_evaluation(
+        &self,
+        now: u64,
+    ) -> Result<(), AgentdIntelligenceProductError> {
+        if let Some(trust) = &self.evaluation_trust {
+            trust
+                .validate_current(now)
+                .map_err(|_| AgentdIntelligenceProductError::InvalidAuthorityVerifier)?;
+        }
+        Ok(())
+    }
+
+    pub(crate) fn require_current_prepared(
+        &self,
+        prepared: &PreparedAgentdIntelligenceRunV1,
+        now: u64,
+    ) -> Result<(), AgentdIntelligenceProductError> {
+        self.require_current_snapshot(&prepared.snapshot)?;
+        let now = now.max(wall_clock_ms()?);
+        self.require_current_evaluation(now)?;
+        prepared
+            .revalidate_evaluation(now)
+            .map_err(|_| AgentdIntelligenceProductError::InvalidAuthorityVerifier)
+    }
+
     pub fn new(
         authority_file: PathBuf,
         authority_verifier: IntelligenceAuthorityVerifierV1,
@@ -71,12 +112,66 @@ impl AgentdIntelligenceProductRunnerV1 {
 
     /// Run the seven-owner preparation against one frozen Agentd composition
     /// without retaining the run-coordinator mutex across owner execution.
+    /// This entrypoint retains historical compatibility computation. Agentd's
+    /// authenticated serving path uses the product invocation profile instead.
     pub async fn prepare_for_composition(
         &self,
         composition: &crate::RuntimeComposition,
         request: CanonicalIntelligenceRunRequestV1,
-        mut inputs: AgentdIntelligenceOwnerInputsV1,
+        inputs: AgentdIntelligenceOwnerInputsV1,
     ) -> Result<AgentdIntelligenceProductOutcomeV1, AgentdIntelligenceProductError> {
+        self.prepare_for_composition_with_intuition(
+            composition,
+            request,
+            inputs,
+            AgentdIntuitionComputationV1::Compatibility,
+        )
+        .await
+    }
+
+    /// The product invocation supplies the same immutable profile that serving
+    /// authenticates at final use. It grants no ledger or effect capabilities
+    /// to the worker and does not create a second policy owner.
+    pub(crate) async fn prepare_for_product_composition(
+        &self,
+        composition: &crate::RuntimeComposition,
+        request: CanonicalIntelligenceRunRequestV1,
+        inputs: AgentdIntelligenceOwnerInputsV1,
+        intuition_product: &crate::intelligence_ingress::AgentdIntuitionProductInvocationV1,
+    ) -> Result<AgentdIntelligenceProductOutcomeV1, AgentdIntelligenceProductError> {
+        self.prepare_for_composition_with_intuition(
+            composition,
+            request,
+            inputs,
+            AgentdIntuitionComputationV1::Product(Box::new(intuition_product.profile.clone())),
+        )
+        .await
+    }
+
+    pub(super) async fn prepare_for_composition_with_intuition(
+        &self,
+        composition: &crate::RuntimeComposition,
+        request: CanonicalIntelligenceRunRequestV1,
+        mut inputs: AgentdIntelligenceOwnerInputsV1,
+        intuition_computation: AgentdIntuitionComputationV1,
+    ) -> Result<AgentdIntelligenceProductOutcomeV1, AgentdIntelligenceProductError> {
+        // Bound raw owner inputs before cloning IDs, hashing, or queueing work.
+        let maximum = match &intuition_computation {
+            AgentdIntuitionComputationV1::Compatibility => {
+                crate::intelligence_ingress::MAX_COMPATIBILITY_INTUITION_CANDIDATES
+            }
+            AgentdIntuitionComputationV1::Product(_) => crate::MAX_PRODUCT_INTUITION_CANDIDATES,
+        };
+        let legal_count = request.legal_candidates.candidates.len();
+        let intuition_count = inputs.intuition_request.candidates.len();
+        if legal_count > maximum || intuition_count > maximum {
+            return Err(AgentdIntelligenceProductError::Canonical(
+                CanonicalIntelligenceError::InvalidCandidateSet("candidate count"),
+            ));
+        }
+        if legal_count != intuition_count {
+            return Err(AgentdIntelligenceProductError::CandidateSetMismatch);
+        }
         let candidate_ids = request
             .legal_candidates
             .candidates
@@ -118,14 +213,14 @@ impl AgentdIntelligenceProductRunnerV1 {
                     .evaluation_trust
                     .as_ref()
                     .ok_or(AgentdIntelligenceProductError::InvalidAuthorityVerifier)?;
-                let mut oracle = FileBackedFreshnessOracleV1::new(
+                let oracle = FileBackedFreshnessOracleV1::new(
                     authority_file.clone(),
                     authority_verifier.clone(),
                 );
                 let owner_id = StableId::new("learning.eval")
                     .map_err(|_| AgentdIntelligenceProductError::InvalidAuthorityVerifier)?;
                 let current_owner = oracle
-                    .current(&owner_id)
+                    .current_from_snapshot(&snapshot, &owner_id)
                     .map_err(AgentdIntelligenceProductError::Canonical)?;
                 Some(AgentdEvaluationSessionV1 {
                     run_id: request.run_id.clone(),
@@ -136,26 +231,29 @@ impl AgentdIntelligenceProductRunnerV1 {
             }
         };
         let mut worker = self.spawn_owner_work(move || {
-            let mut ports = AgentdOwnerPortsV1::new(inputs, evaluation_session);
+            let mut ports =
+                AgentdOwnerPortsV1::new(inputs, evaluation_session, intuition_computation);
             let mut oracle = FileBackedFreshnessOracleV1::new(authority_file, authority_verifier);
-            prepare_intelligence_run(request, &mut ports, &mut oracle)
+            let outcome = prepare_intelligence_run(request, &mut ports, &mut oracle);
+            (outcome, ports.evaluation_use)
         })?;
-        let outcome = timeout(Duration::from_micros(timeout_micros), &mut worker)
+        let (outcome, evaluation_use) = timeout(Duration::from_micros(timeout_micros), &mut worker)
             .await
             .map_err(|_| {
                 worker.abort();
                 AgentdIntelligenceProductError::TimedOut
             })?
-            .map_err(|_| AgentdIntelligenceProductError::WorkerCrashed)?
-            .map_err(AgentdIntelligenceProductError::Canonical)?;
+            .map_err(|_| AgentdIntelligenceProductError::WorkerCrashed)?;
+        let outcome = outcome.map_err(AgentdIntelligenceProductError::Canonical)?;
 
         match outcome {
             CanonicalRunOutcomeV1::Ready(envelope) => {
-                let mut oracle = FileBackedFreshnessOracleV1::new(
+                let oracle = FileBackedFreshnessOracleV1::new(
                     self.authority_file.clone(),
                     self.authority_verifier.clone(),
                 );
-                validate_current_snapshot(&snapshot, &mut oracle)
+                oracle
+                    .validate_snapshot(&snapshot)
                     .map_err(AgentdIntelligenceProductError::Canonical)?;
                 let mut bytes = b"hepta.agentd.intelligence-dispatch-proposal.v1\0".to_vec();
                 bytes.extend_from_slice(envelope.envelope_digest.as_array());
@@ -197,6 +295,8 @@ impl AgentdIntelligenceProductRunnerV1 {
                         candidate_ids,
                         run_snapshot,
                         context_attachment,
+                        evaluation_use: evaluation_use
+                            .ok_or(AgentdIntelligenceProductError::InvalidAuthorityVerifier)?,
                     },
                 ))
             }
@@ -219,10 +319,13 @@ impl AgentdIntelligenceProductRunnerV1 {
     ) -> Result<AgentdIntelligenceAdmittedOutcomeV1, AgentdIntelligenceProductError> {
         match self.prepare(coordinator, request, inputs).await? {
             AgentdIntelligenceProductOutcomeV1::Ready(prepared) => {
+                let now = wall_clock_ms()?;
+                self.require_current_prepared(&prepared, now)?;
+                let now = wall_clock_ms()?;
                 let snapshot = prepared.run_snapshot();
                 let admitted = coordinator
                     .start_run(
-                        wall_clock_ms()?,
+                        now,
                         crate::RunSnapshot {
                             run_id: snapshot.run_id,
                             request_digest: snapshot.request_digest,

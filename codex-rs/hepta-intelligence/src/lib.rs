@@ -6,6 +6,11 @@
 
 #![forbid(unsafe_code)]
 
+// `CanonicalRunOutcomeV1` intentionally keeps its bounded ready envelope inline.
+// Boxing that public product boundary would add heap allocation and break the
+// stable API solely to satisfy a size heuristic; the enum is constructed once
+// and consumed immediately at the Agentd handoff.
+#[allow(clippy::large_enum_variant)]
 mod canonical;
 
 pub use canonical::AdvisoryDecisionReceiptV1;
@@ -104,6 +109,7 @@ pub use topology_product::topology_evaluation_signing_payload_v1;
 pub use topology_product::topology_generation_signing_payload_v1;
 
 mod intuition_qualification;
+mod intuition_qualification_v3;
 
 pub use intuition_qualification::AuthenticatedIntuitionDecisionV1;
 pub use intuition_qualification::AuthenticatedIntuitionDecisionV2;
@@ -116,6 +122,9 @@ pub use intuition_qualification::QualifiedEvaluatedShadowRequestV2;
 pub use intuition_qualification::decide_authenticated_intuition_v1;
 pub use intuition_qualification::decide_authenticated_intuition_v2;
 pub use intuition_qualification::run_qualified_evaluated_shadow_v2;
+pub use intuition_qualification_v3::AuthenticatedIntuitionDecisionV3;
+pub use intuition_qualification_v3::IntuitionQualificationErrorV3;
+pub use intuition_qualification_v3::decide_authenticated_intuition_v3;
 pub use neuron_runtime::run_neuron_tick_v1;
 
 mod capability_snapshot;
