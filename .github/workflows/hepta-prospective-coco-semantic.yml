@@ -1,0 +1,123 @@
+name: Hepta prospective COCO semantic source seal (research only)
+
+on:
+  pull_request:
+    paths:
+      - qa/stem-bakeoff/prospective_semantic_cohorts.py
+      - qa/stem-bakeoff/test_prospective_semantic_cohorts.py
+      - docs/learning/STEM_P44_PROSPECTIVE_SEMANTIC.md
+      - .github/workflows/hepta-prospective-coco-semantic.yml
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: hepta-prospective-semantic-${{ github.event.pull_request.head.sha || github.sha }}
+  cancel-in-progress: false
+
+jobs:
+  source-contract:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - name: Verify exact HEAD and clean tree
+        env:
+          EXPECTED_HEAD: ${{ github.event.pull_request.head.sha || github.sha }}
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$EXPECTED_HEAD"
+          git diff --check
+      - name: Install bounded image parser
+        run: |
+          set -euo pipefail
+          python3 -m venv "$RUNNER_TEMP/p44-venv"
+          "$RUNNER_TEMP/p44-venv/bin/python" -m pip install --only-binary=:all: 'Pillow==11.3.0'
+      - name: Run adversarial selection and replay tests in normal and optimized Python
+        run: |
+          set -euo pipefail
+          "$RUNNER_TEMP/p44-venv/bin/python" -m unittest discover -s qa/stem-bakeoff -p 'test_prospective_semantic_cohorts.py' -v
+          "$RUNNER_TEMP/p44-venv/bin/python" -O -m unittest discover -s qa/stem-bakeoff -p 'test_prospective_semantic_cohorts.py' -v
+          "$RUNNER_TEMP/p44-venv/bin/python" -m py_compile qa/stem-bakeoff/prospective_semantic_cohorts.py
+      - name: Verify source unchanged
+        if: always()
+        run: |
+          git diff --check
+          git diff --exit-code
+
+  seal-real-coco:
+    needs: source-contract
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - name: Verify exact original source HEAD
+        env:
+          EXPECTED_HEAD: ${{ github.event.pull_request.head.sha || github.sha }}
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$EXPECTED_HEAD"
+          git diff --check
+      - name: Install bounded original-image parser
+        run: |
+          set -euo pipefail
+          python3 -m venv "$RUNNER_TEMP/p44-venv"
+          "$RUNNER_TEMP/p44-venv/bin/python" -m pip install --only-binary=:all: 'Pillow==11.3.0'
+      - name: Acquire original annotation archive (official SHA verified in source seal)
+        run: |
+          set -euo pipefail
+          curl --fail --location --retry 3 --connect-timeout 30 --max-time 900 \
+            'https://s3.amazonaws.com/images.cocodataset.org/annotations/annotations_trainval2017.zip' \
+            --output "$RUNNER_TEMP/coco-annotations.zip"
+      - name: Seal 112 new original photos and frozen ontology labels before any model execution
+        run: |
+          set -euo pipefail
+          "$RUNNER_TEMP/p44-venv/bin/python" qa/stem-bakeoff/prospective_semantic_cohorts.py seal \
+            --archive "$RUNNER_TEMP/coco-annotations.zip" --output "$RUNNER_TEMP/semantic-seal" \
+            | tee "$RUNNER_TEMP/seal-receipt.json"
+          "$RUNNER_TEMP/p44-venv/bin/python" qa/stem-bakeoff/prospective_semantic_cohorts.py audit \
+            --archive "$RUNNER_TEMP/coco-annotations.zip" --source "$RUNNER_TEMP/semantic-seal" \
+            | tee "$RUNNER_TEMP/replay-receipt.json"
+          python3 - <<'PY'
+          import json, os, pathlib
+          root = pathlib.Path(os.environ['RUNNER_TEMP'])
+          seal = json.loads((root / 'seal-receipt.json').read_text())
+          audit = json.loads((root / 'replay-receipt.json').read_text())
+          manifest = json.loads((root / 'semantic-seal' / 'manifest.json').read_text())
+          assert seal['photos'] == 112 and seal['rows'] == 224
+          assert seal['production_activation_allowed'] is False
+          assert audit['status'] == 'SOURCE_REPLAY_VERIFIED'
+          assert audit['independent_prepublication_verified'] is False
+          assert audit['real_model_executed'] is False
+          assert audit['quality_qualified'] is False
+          assert audit['authority'] == 'DENY_ALL'
+          assert manifest['total_photos'] == 112 and manifest['total_rows'] == 224
+          assert manifest['multimodal_quality_qualified'] is False
+          assert manifest['authority'] == 'DENY_ALL'
+          PY
+      - name: Preserve source manifests and original data receipts only
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: hepta-p44-prospective-seal-${{ github.event.pull_request.head.sha || github.sha }}
+          path: |
+            ${{ runner.temp }}/seal-receipt.json
+            ${{ runner.temp }}/replay-receipt.json
+            ${{ runner.temp }}/semantic-seal/frozen-selection.json
+            ${{ runner.temp }}/semantic-seal/source-seal.json
+            ${{ runner.temp }}/semantic-seal/manifest.json
+            ${{ runner.temp }}/semantic-seal/*.jsonl
+          if-no-files-found: warn
+          retention-days: 14
+      - name: Verify original source tree unchanged
+        if: always()
+        run: |
+          git diff --check
+          git diff --exit-code
