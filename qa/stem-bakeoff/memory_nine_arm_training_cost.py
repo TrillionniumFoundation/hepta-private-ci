@@ -107,11 +107,13 @@ def verify_training_receipts(plan, package):
         )
         for event in events:
             keys(event, (
-                "phase", "source_roots", "optimizer_updates", "optimizer_examples",
+                "arm", "phase", "source_roots", "optimizer_updates", "optimizer_examples",
                 "work_units", "forward_calls", "cpu_ns", "before_sha256",
                 "after_sha256", "record_sha256",
             ), "physical training event")
             phase = event["phase"]
+            require(event["arm"] == arm,
+                    "physical training event belongs to a different arm")
             require(type(phase) is str and phase in PHASES[arm]
                     and phase not in phases, "duplicate or unregistered work phase")
             phases.add(phase)
