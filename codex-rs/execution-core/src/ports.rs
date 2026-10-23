@@ -14,7 +14,7 @@ use sha2::{Digest, Sha256};
 
 use crate::{
     Currentness, ExecutionBinding, ExecutionError, ExecutionJournal, ExecutionStarted,
-    ExecutionVerifier,
+    ExecutionVerifier, FinalUse,
 };
 
 /// Object-safe transport for Codex, native inference and future providers.
@@ -141,9 +141,53 @@ impl ModelObservationV1 {
     }
 }
 
-/// Model selection and authenticated provider execution remain inference-owner duties.
+/// The model admission verifier is an independent owner-side authority.
+/// It must check a real, current, signed, operation- and payload-bound FinalUse,
+/// issuer revocation frontier, resource grant, deadlines, generation and cancellation.
+/// A model backend must independently recheck immediately before physical turn/start.
+pub trait ModelStartVerifier: Send + Sync {
+    fn verify_model_start(&self, request: &ModelInvocationV1) -> Result<(), PortError>;
+}
+
+/// A non-serializable model-start handle. Unlike a raw model request this
+/// requires a verified FinalUse claim and an independent verifier invocation.
+/// The handle alone is neither a physical token nor a durable dispatch receipt.
+#[derive(Debug)]
+pub struct CheckedModelInvocationV1 {
+    request: ModelInvocationV1,
+    request_digest: String,
+}
+
+impl CheckedModelInvocationV1 {
+    pub fn admit(
+        request: ModelInvocationV1,
+        verifier: &impl ModelStartVerifier,
+    ) -> Result<Self, PortError> {
+        let request_digest = request.digest()?;
+        if !matches!(request.binding.final_use, FinalUse::Verified { .. }) {
+            return Err(PortError::Denied);
+        }
+        verifier.verify_model_start(&request)?;
+        Ok(Self {
+            request,
+            request_digest,
+        })
+    }
+
+    pub fn request(&self) -> &ModelInvocationV1 {
+        &self.request
+    }
+
+    pub fn request_digest(&self) -> &str {
+        &self.request_digest
+    }
+}
+
+/// The physical ModelPort accepts only a checked, non-serializable handle.
+/// Provider dispatch still requires a durable owner WAL and a final-use recheck.
 pub trait ModelPort: Send + Sync {
-    fn infer<'a>(&'a self, request: &'a ModelInvocationV1) -> PortFuture<'a, ModelObservationV1>;
+    fn infer<'a>(&'a self, checked: &'a CheckedModelInvocationV1)
+        -> PortFuture<'a, ModelObservationV1>;
 }
 
 /// In-memory verifier-invocation evidence, not an authority token or durable WAL.

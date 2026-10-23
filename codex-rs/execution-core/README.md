@@ -58,3 +58,23 @@ the independent Final-use issuer for physical effects, reconcile lost
 acknowledgements and fail closed on generation/revocation drift. The
 existing Codex App Server remains authoritative until an independent
 full P2/P4 physical cutover qualification succeeds.
+
+## Model physical admission hardening (P1)
+
+`ModelPort::infer` accepts `CheckedModelInvocationV1`, not a raw
+`ModelInvocationV1`. The checked handle is non-serializable and cannot be
+constructed through a JSON claim. `CheckedModelInvocationV1::admit` requires
+a structurally verified FinalUse witness **and** a separate
+`ModelStartVerifier` call. This is intentionally only an owner-side
+admission seam: a production provider must still independently verify the
+issuer signature, nonce, resource and payload binding, live cancellation,
+deadline, generation and revocation frontier immediately before physical
+`turn/start`, after durable write-ahead admission.
+
+Source tests include a rejecting verifier, a missing-FinalUse rejection
+and an explicit unit-test-only allowing verifier. They cannot establish
+a live provider grant or physical acceptance. Existing production
+`AppServerModelDriver` is unchanged by this shadow protocol and must not
+be reclassified as `ModelPort` qualified until the bridge maps actual
+provider input/output usage, exact source/model identity, terminal
+observations and lost-ack reconciliation.
