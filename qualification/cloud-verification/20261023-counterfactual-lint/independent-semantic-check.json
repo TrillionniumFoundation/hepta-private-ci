@@ -1,0 +1,78 @@
+{
+  "raw_AST_equality_claimed": false,
+  "normalized_AST_equal": true,
+  "normalizations": [
+    "remove baseline unused portfolio.actions import",
+    "rewrite new nested dynamic_policy def to equivalent Assign(lambda) AST"
+  ],
+  "differential_cases": [
+    {
+      "horizon": 1,
+      "risk": 0,
+      "levels": [
+        0,
+        2,
+        2,
+        2
+      ],
+      "budget": 10,
+      "law": [
+        0.7,
+        0.2,
+        0.1
+      ],
+      "full_result_equal": true
+    },
+    {
+      "horizon": 2,
+      "risk": 0.5,
+      "levels": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "budget": 12,
+      "law": [
+        0.7,
+        0.2,
+        0.1
+      ],
+      "full_result_equal": true
+    },
+    {
+      "horizon": 2,
+      "risk": 1e-16,
+      "levels": [
+        1,
+        1,
+        1,
+        1
+      ],
+      "budget": 10,
+      "law": [
+        0.1,
+        0.2,
+        0.7
+      ],
+      "full_result_equal": true
+    },
+    {
+      "horizon": 2,
+      "risk": 10,
+      "levels": [
+        0,
+        1,
+        1,
+        2
+      ],
+      "budget": 8,
+      "law": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "full_result_equal": true
+    }
+  ]
+}

@@ -1,0 +1,27 @@
+F401 [*] `portfolio.actions` imported but unused
+  --> experiments/multimodal_output_portfolio/v4/counterfactual_audit.py:15:5
+   |
+13 | from portfolio import (
+14 |     Allocation, Config, Controller, SHOCK_PROBS, STOP, State,
+15 |     actions, advance, charge, conditional_ce, decode_all,
+   |     ^^^^^^^
+16 |     decoded_external_loss, feasible,
+17 | )
+   |
+help: Remove unused import: `portfolio.actions`
+
+E731 Do not assign a `lambda` expression, use a `def`
+   --> experiments/multimodal_output_portfolio/v4/counterfactual_audit.py:235:5
+    |
+233 |     frozen_open_loop, nominal_static = best_open_loop(initial, cfg, SHOCK_PROBS)
+234 |     feedback = Controller(cfg)
+235 |     dynamic_policy = lambda s: feedback.solve(s)[0]
+    |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+236 |     nominal_dynamic = evaluate(initial, cfg, dynamic_policy, SHOCK_PROBS)
+237 |     # Exact finite tree parity is checked against independent materialized
+    |
+help: Rewrite `dynamic_policy` as a `def`
+
+Found 2 errors.
+[*] 1 fixable with the `--fix` option (1 hidden fix can be enabled with the `--unsafe-fixes` option).
+Baseline Ruff exit: 1
