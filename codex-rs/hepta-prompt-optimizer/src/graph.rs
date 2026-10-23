@@ -177,3 +177,7 @@ pub fn optimize_with_factor_graph(
     result.validate()?;
     Ok(result)
 }
+
+#[cfg(all(test, unix))]
+#[path = "graph_tests.rs"]
+mod tests;

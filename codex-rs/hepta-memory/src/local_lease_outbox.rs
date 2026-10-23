@@ -2578,12 +2578,14 @@ impl LocalLeaseOutbox {
         let outcome = self
             .append_outcome_in_transaction(
                 &mut transaction,
-                occurrence_key,
-                kind,
-                payload,
-                allowed,
-                resulting_state,
-                allow_exact_replay,
+                OutcomeAppendRequest {
+                    occurrence_key,
+                    kind,
+                    payload,
+                    allowed,
+                    resulting_state,
+                    allow_exact_replay,
+                },
             )
             .await?;
         transaction
@@ -2605,12 +2607,14 @@ impl LocalLeaseOutbox {
     ) -> Result<LocalOutcomeReceipt, LocalLeaseOutboxError> {
         self.append_outcome_in_transaction(
             transaction,
-            occurrence_key,
-            "reconcile_committed",
-            receipt,
-            &[LocalOutcomeState::Queued, LocalOutcomeState::Indeterminate],
-            LocalOutcomeState::Committed,
-            /*allow_exact_replay*/ true,
+            OutcomeAppendRequest {
+                occurrence_key,
+                kind: "reconcile_committed",
+                payload: receipt,
+                allowed: &[LocalOutcomeState::Queued, LocalOutcomeState::Indeterminate],
+                resulting_state: LocalOutcomeState::Committed,
+                allow_exact_replay: true,
+            },
         )
         .await
     }
@@ -2618,13 +2622,16 @@ impl LocalLeaseOutbox {
     async fn append_outcome_in_transaction(
         &self,
         transaction: &mut Transaction<'_, Sqlite>,
-        occurrence_key: String,
-        kind: &str,
-        payload: String,
-        allowed: &[LocalOutcomeState],
-        resulting_state: LocalOutcomeState,
-        allow_exact_replay: bool,
+        request: OutcomeAppendRequest<'_>,
     ) -> Result<LocalOutcomeReceipt, LocalLeaseOutboxError> {
+        let OutcomeAppendRequest {
+            occurrence_key,
+            kind,
+            payload,
+            allowed,
+            resulting_state,
+            allow_exact_replay,
+        } = request;
         validate_text(&occurrence_key, "occurrence key", /*max_bytes*/ 512)?;
         validate_text(&payload, "outcome payload", /*max_bytes*/ 65_536)?;
         let payload_sha256 = Sha256Digest::for_bytes(payload.as_bytes());
@@ -3347,6 +3354,16 @@ struct OutboxRow {
     payload_sha256: Sha256Digest,
     previous_sha256: Sha256Digest,
     outbox_sha256: Sha256Digest,
+}
+
+/// Outcome metadata appended under the caller's current lease transaction.
+struct OutcomeAppendRequest<'a> {
+    occurrence_key: String,
+    kind: &'a str,
+    payload: String,
+    allowed: &'a [LocalOutcomeState],
+    resulting_state: LocalOutcomeState,
+    allow_exact_replay: bool,
 }
 
 struct EventInsert<'a> {

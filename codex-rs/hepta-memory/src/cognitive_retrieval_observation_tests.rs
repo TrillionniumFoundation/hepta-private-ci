@@ -155,12 +155,11 @@ async fn saturated_channels_observe_limits_before_dedup_and_preserve_top_four() 
 async fn typed_kg_relations_feed_only_their_declared_retrieval_channels() {
     let temp = TempDir::new().expect("temp");
     let owner = agent_id(/*suffix*/ 91);
-    let store = CognitiveStore::open(&layout(&temp, &owner))
-        .await
-        .expect("store");
+    let owner_layout = layout(&temp, &owner);
+    let store = CognitiveStore::open(&owner_layout).await.expect("store");
     let access = CognitiveAccess::agent_private(owner);
     let content = "Beacon cause procedure contradiction.";
-    store
+    let first = store
         .remember_with_kg(
             &access,
             &source(CognitiveScope::AgentPrivate, "typed-relations", content),
@@ -234,6 +233,21 @@ async fn typed_kg_relations_feed_only_their_declared_retrieval_channels() {
             "all channels reuse one exact generation"
         );
     }
+    // A prepared generation retains no temporal visibility decision between
+    // queries. Querying before its live support starts must stay empty even
+    // after all relation channels populated the same transaction-local cache.
+    for kind in [
+        KgRelationSemanticV1::Causes,
+        KgRelationSemanticV1::ProcedureStep,
+        KgRelationSemanticV1::Contradicts,
+    ] {
+        let channel = store
+            .typed_relation_channel_tx(&mut transaction, &seeds, &mut generations, 99, kind)
+            .await
+            .expect("fresh temporal visibility from cached generation");
+        assert_eq!(channel.values, Vec::new());
+        assert_eq!(generations.len(), 1);
+    }
     seeds[0].generation_sha256 = Some(Sha256Digest::for_bytes(b"wrong-seed-generation"));
     assert!(
         matches!(
@@ -291,6 +305,102 @@ async fn typed_kg_relations_feed_only_their_declared_retrieval_channels() {
             .iter()
             .any(|rank| rank.channel == RetrievalChannel::ContradictionSupport)
     }));
+
+    let corrected_content = "Beacon updated procedure.";
+    let corrected = store
+        .correct_with_kg(
+            &access,
+            &first.memory.id.memory_id,
+            first.memory.id.revision,
+            &source(
+                CognitiveScope::AgentPrivate,
+                "typed-correction",
+                corrected_content,
+            ),
+            &revision(CognitiveScope::AgentPrivate, corrected_content),
+            &KgFactSetDraft {
+                entities: vec![
+                    KgEntityFactDraft {
+                        key: "beacon".to_string(),
+                        entity_type: "topic".to_string(),
+                        label: "Beacon".to_string(),
+                    },
+                    KgEntityFactDraft {
+                        key: "target".to_string(),
+                        entity_type: "topic".to_string(),
+                        label: "Target".to_string(),
+                    },
+                ],
+                relations: vec![KgRelationFactDraft {
+                    key: "procedure".to_string(),
+                    from_entity_key: "beacon".to_string(),
+                    to_entity_key: "target".to_string(),
+                    relation: KgRelationSemanticV1::ProcedureStep.relation().to_string(),
+                }],
+            },
+        )
+        .await
+        .expect("replace typed support after cached queries");
+    let corrected_observation = store
+        .observe_memory_retrieval(&access, &RetrievalRequest::new("Beacon", 200))
+        .await
+        .expect("new transaction reads corrected generation");
+    let typed_counts = corrected_observation
+        .channels()
+        .iter()
+        .filter(|row| {
+            matches!(
+                row.channel,
+                RetrievalChannel::Causal
+                    | RetrievalChannel::Procedural
+                    | RetrievalChannel::ContradictionSupport
+            )
+        })
+        .map(|row| (row.channel, row.candidate_count))
+        .collect::<Vec<_>>();
+    assert_eq!(
+        typed_counts,
+        vec![
+            (RetrievalChannel::Causal, 0),
+            (RetrievalChannel::Procedural, 1),
+            (RetrievalChannel::ContradictionSupport, 0),
+        ]
+    );
+    assert_eq!(
+        corrected_observation.batch().candidates[0].memory,
+        corrected.memory
+    );
+
+    store
+        .forget_with_kg(
+            &access,
+            &first.memory.id.memory_id,
+            corrected.memory.id.revision,
+            &source(CognitiveScope::AgentPrivate, "typed-withdrawal", "withdraw"),
+            &ForgetMemoryDraft {
+                scope: CognitiveScope::AgentPrivate,
+                reason: "withdraw".to_string(),
+                valid_from_unix_seconds: 100,
+                citations: Vec::new(),
+            },
+        )
+        .await
+        .expect("withdraw previously cached typed support");
+    store.pool.close().await;
+    let reopened = CognitiveStore::open(&owner_layout)
+        .await
+        .expect("reopen after withdrawal");
+    let withdrawn = reopened
+        .observe_memory_retrieval(&access, &RetrievalRequest::new("Beacon", 200))
+        .await
+        .expect("withdrawn support cannot survive cache or reopen");
+    assert!(withdrawn.candidates().is_empty());
+    assert!(
+        withdrawn
+            .channels()
+            .iter()
+            .all(|row| row.candidate_count == 0)
+    );
 }
 
 #[tokio::test]
