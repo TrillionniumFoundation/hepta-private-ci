@@ -73,6 +73,12 @@ class IdentityAndReward(unittest.TestCase):
             paired_future_evaluation(outcomes(), F, 'A0', 'A5', 0,
                                      min_episodes=2)
 
+    def test_invalid_behavior_propensity_rejected(self):
+        row = outcomes()[0]
+        for invalid in (0.0, -0.5, 1.5, float('nan')):
+            with self.assertRaisesRegex(Unavailable, 'propensity'):
+                replace(row, behavior_propensity=invalid).validate(F)
+
     def test_critic_revision_and_future_support_fail(self):
         with self.assertRaisesRegex(Unavailable, 'drift'):
             paired_future_evaluation((replace(outcomes()[0], critic_digest='new'),)
