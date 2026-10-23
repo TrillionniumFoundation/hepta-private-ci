@@ -1,0 +1,69 @@
+{
+  "schema": "hepta.root-notes-admission-qualification.v1",
+  "source_head": "4ff1a70e9ade7de51c72e82c41b0bface5bc4619",
+  "source_tree": "253c6296ff3bdd73ea5df8cb15335b3d2aa18bf4",
+  "target": "/data/hepta-root-service-196-target.e3i3hcbg",
+  "commands": [
+    {
+      "stage": "manifest-metadata",
+      "argv": [
+        "/home/qian-qi/.rustup/toolchains/1.96.0-x86_64-unknown-linux-gnu/bin/cargo",
+        "metadata",
+        "--no-deps",
+        "--format-version=1",
+        "--offline",
+        "--locked"
+      ],
+      "exit_code": 0,
+      "seconds": 0.165
+    },
+    {
+      "stage": "compile-original-test-binaries",
+      "argv": [
+        "/home/qian-qi/.rustup/toolchains/1.96.0-x86_64-unknown-linux-gnu/bin/cargo",
+        "nextest",
+        "list",
+        "--cargo-profile",
+        "dev",
+        "--locked",
+        "--offline",
+        "-p",
+        "codex-hepta-agentd",
+        "--lib",
+        "--cargo-metadata",
+        "/data/asterinas-audit-build.8tdrjboi/root-notes-admission-negative-01/cargo-metadata.json",
+        "--list-type",
+        "binaries-only",
+        "--message-format",
+        "json"
+      ],
+      "exit_code": 0,
+      "seconds": 727.903
+    },
+    {
+      "stage": "original-owner-tests",
+      "argv": [
+        "/home/qian-qi/.cargo/bin/just",
+        "test",
+        "--cargo-metadata",
+        "/data/asterinas-audit-build.8tdrjboi/root-notes-admission-negative-01/cargo-metadata.json",
+        "--binaries-metadata",
+        "/data/asterinas-audit-build.8tdrjboi/root-notes-admission-negative-01/binaries-metadata.json",
+        "-E",
+        "test(deployment_notes_preserves_original_objective_route_across_exact_policy_replacement)",
+        "--test-threads",
+        "2"
+      ],
+      "exit_code": 100,
+      "seconds": 7.536
+    }
+  ],
+  "negative_control": true,
+  "passed": false,
+  "status": "complete",
+  "production_authority": false,
+  "actual_session_reserved_qualified": false,
+  "actual_five_lane_dynamic_notes_qualified": false,
+  "expected_original_objective_composition_refusal_observed": true,
+  "source_inputs_unchanged": true
+}
