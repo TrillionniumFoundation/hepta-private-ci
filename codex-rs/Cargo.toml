@@ -176,6 +176,7 @@ members = [
     "utils/fuzzy-match",
     "utils/stream-parser",
     "utils/template",
+    "utils/windows-private-state",
     "codex-client",
     "codex-api",
     "state",
@@ -327,6 +328,7 @@ codex-tools = { path = "tools" }
 codex-tui = { path = "tui" }
 codex-uds = { path = "uds" }
 codex-utils-absolute-path = { path = "utils/absolute-path" }
+codex-utils-windows-private-state = { path = "utils/windows-private-state" }
 codex-utils-build-identity = { path = "utils/build-identity" }
 codex-utils-approval-presets = { path = "utils/approval-presets" }
 codex-utils-audio = { path = "utils/audio" }

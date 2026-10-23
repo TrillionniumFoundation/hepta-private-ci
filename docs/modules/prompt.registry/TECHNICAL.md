@@ -148,6 +148,49 @@ while delivery still returns owned bounded bytes. Metadata serialization, semant
 hashing and the full in-memory registry remain size-dependent; this change reduces
 payload copy/write amplification, not unlimited-history recovery or retention cost.
 
+### Windows dependency within the existing PN0 storage item
+
+The [existing PN0/P0 sequence](../../DEVELOPMENT.md#audit-remediation-within-the-existing-roadmap)
+assigns OS namespace/creation primitives to C2b, FinalUse integration to C3 and
+registry plus its actual Agentd runtime caller to C4. This is design work within
+that item. Windows durable-registry support remains closed; C2a's read-only
+descriptor observations and five pending native controls do not qualify it.
+
+`utils/windows-private-state` must provide opaque private-directory, lock, input,
+mutable journal/payload and stage roles after local NTFS/device and trusted
+ancestor bootstrap qualify. Protected sole-current-owner child descriptors do
+not neutralize a parent's DELETE_CHILD right or whole-root replacement after
+process death. Existing Fleet home/run registration and canonical paths are not
+such a capability. Fleet/Agentd must obtain qualified held parents for the actual
+`home_root/prompt-registry` and `run_root/prompt-runtime` callsites; the latter's
+Windows permission and directory-sync no-ops must be replaced before claiming
+pipeline completion. Privileged ancestor allowances require a separate reviewed
+namespace policy and cannot implicitly broaden the private-child DACL.
+
+Registry owns `registry.lock`, metadata selection, migration and payload integrity.
+The OS utility owns same-handle identity/security checks, bounded parent
+provenance, atomic protected `FILE_CREATE`, verification-only `FILE_OPEN` and
+typed handle operations. No unsafe-object ACL repair, collision adoption,
+AccessDenied-as-missing, raw-handle conversion or SHARE_DELETE fallback is allowed.
+The lock role retains the original second-process contention and process-death
+semantics. `registry.payloads` is an existing mutable extent file requiring
+bounded seek/write/set-length/sync; it cannot be modeled solely as an input or
+rename stage. Hydration, orphan-tail checks and both 32 MiB limits stay here.
+
+C4 must pass the original synced `registry.next` handle into same-root replacement,
+then perform real parent sync. Preserve the V3 order of durable payload extents
+before metadata publication, predecessor selection on precommit failure, and
+indeterminate poison/reopen after an uncertain rename. Do not add another journal
+owner or turn storage admission into grant, model or release authority.
+
+Acceptance follows C2b's native restrictive-creation, collision/non-repair,
+parent-delete/root-swap, remote-device, reparse/hardlink, principal-drift and
+non-inherited-handle controls. Then require the original registry migration,
+extent corruption/truncation, lock/process-death, crash/reopen and sync-failure
+assertions together with the actual Agentd two-store pipeline on the exact Windows
+source and merge candidate. Setup failures are failures; cross-compilation or a
+descriptor-only pass cannot close C4, durability or sandbox-isolation blockers.
+
 ## 7. Runtime, concurrency and transaction model
 
 The [current native implementation](../../../qualification/module-execution-dossiers/detail/prompt.registry.md#8-current-native-implementation) identifies the actual state owner, in-memory versus persistent surfaces, and lock/transaction boundary. Use that implementation scope when composing the module; target state-machine operations are identified in the [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/prompt.registry.md).

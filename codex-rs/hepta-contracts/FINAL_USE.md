@@ -66,19 +66,19 @@ Use `FinalUseGrant::signing_bytes()` as the reference encoder; this is not a
 claim that arbitrary JSON serializations are interchangeable. Changing field
 order, encoding or semantics requires a new version and signing domain.
 
-| Type / field | Meaning and bound |
-| --- | --- |
-| `FinalUseBinding.subject_id`, `destination_id` | Exact principal and effect destination; 1–128 ASCII identifier bytes |
-| `request_sha256` | Nonzero 32-byte digest of the complete adapter operation |
-| `scope_sha256` | Nonzero 32-byte digest of destination/resource/consumer scope |
-| `payload_sha256` | Nonzero 32-byte digest of the expected material |
-| `FinalUseGrant.signer_id`, `grant_id` | Bounded owner and revocation identifiers |
-| `authority_epoch` | Nonzero epoch; must exactly match the current durable head |
-| `nonce` | Nonzero 32-byte random value; unique across that authority epoch |
-| `binding` | The complete operation binding above |
-| `not_before_unix_ms`, `expires_at_unix_ms` | Host clock bounds; positive interval no longer than 300,000 ms |
-| `SignedFinalUseGrant.signature` | Exactly 64 raw Ed25519 signature bytes |
-| `FinalUseRevocations` | Epoch, nonzero owner-global monotonically increasing revision and at most 16,384 revoked grant IDs; an epoch increase does **not** reset revision, so the new head must still have a revision greater than the prior head |
+| Type / field                                   | Meaning and bound                                                                                                                                                                                                         |
+| ---------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `FinalUseBinding.subject_id`, `destination_id` | Exact principal and effect destination; 1–128 ASCII identifier bytes                                                                                                                                                      |
+| `request_sha256`                               | Nonzero 32-byte digest of the complete adapter operation                                                                                                                                                                  |
+| `scope_sha256`                                 | Nonzero 32-byte digest of destination/resource/consumer scope                                                                                                                                                             |
+| `payload_sha256`                               | Nonzero 32-byte digest of the expected material                                                                                                                                                                           |
+| `FinalUseGrant.signer_id`, `grant_id`          | Bounded owner and revocation identifiers                                                                                                                                                                                  |
+| `authority_epoch`                              | Nonzero epoch; must exactly match the current durable head                                                                                                                                                                |
+| `nonce`                                        | Nonzero 32-byte random value; unique across that authority epoch                                                                                                                                                          |
+| `binding`                                      | The complete operation binding above                                                                                                                                                                                      |
+| `not_before_unix_ms`, `expires_at_unix_ms`     | Host clock bounds; positive interval no longer than 300,000 ms                                                                                                                                                            |
+| `SignedFinalUseGrant.signature`                | Exactly 64 raw Ed25519 signature bytes                                                                                                                                                                                    |
+| `FinalUseRevocations`                          | Epoch, nonzero owner-global monotonically increasing revision and at most 16,384 revoked grant IDs; an epoch increase does **not** reset revision, so the new head must still have a revision greater than the prior head |
 
 For Bao, the request digest binds the HTTPS origin, CA bytes, namespace, mount,
 path, field, exact KV v2 version, expected secret digest, subject and consumer.
@@ -99,13 +99,13 @@ permission bits. Creation requests mode 0700. The directory is opened with
 file descriptor, `openat`, `statat` and `renameat`. Replacing an ancestor path
 does not redirect an already opened authority's writes.
 
-| Entry | Contents and invariant |
-| --- | --- |
-| `authority.lock` | Owner-only regular file; `File::try_lock` held by the shared authority owner |
-| `authority.json` | JSON schema 2 `{schema:2, signer_id, verifying_key, head}`; maximum read 8 MiB. Schema 1 is migrated fail-closed on open. |
-| `authority.claims` | Fixed-width append-only replay frames `(authority_epoch:u64, nonce:[u8;32])`; synced before dispatch admission. |
-| `authority.next` | Temporary revocation/trust snapshot replacement written with owner-only permissions before rename |
-| `authority.claims.next` | Temporary compacted replay journal used on trusted head/epoch transitions |
+| Entry                   | Contents and invariant                                                                                                    |
+| ----------------------- | ------------------------------------------------------------------------------------------------------------------------- |
+| `authority.lock`        | Owner-only regular file; `File::try_lock` held by the shared authority owner                                              |
+| `authority.json`        | JSON schema 2 `{schema:2, signer_id, verifying_key, head}`; maximum read 8 MiB. Schema 1 is migrated fail-closed on open. |
+| `authority.claims`      | Fixed-width append-only replay frames `(authority_epoch:u64, nonce:[u8;32])`; synced before dispatch admission.           |
+| `authority.next`        | Temporary revocation/trust snapshot replacement written with owner-only permissions before rename                         |
+| `authority.claims.next` | Temporary compacted replay journal used on trusted head/epoch transitions                                                 |
 
 Files must be regular, singly linked, owned by the effective user and have no
 group/world permissions; opens reject symlinks. The lock is held until the
@@ -150,6 +150,49 @@ switching the local store is never permission to reset replay history.
 The compatibility `open_state_dir` path uses the process system clock and no
 external rollback oracle. It remains useful for qualification/backward source
 compatibility but is not a production anti-rollback or attested-time claim.
+
+### Windows work within the existing PN0 storage item
+
+Windows remains unsupported by this owner. The C2a read-only descriptor utility
+is a prerequisite, not an owner backend; its five real Windows controls are
+pending native execution. The [existing PN0 dependency order](../../docs/DEVELOPMENT.md#audit-remediation-within-the-existing-roadmap)
+places C2b namespace/creation primitives before this C3 consumer integration.
+The following interfaces are design requirements, not source-complete APIs.
+
+The utility must establish an opaque held private-directory guard from actual
+local NTFS/device and ancestor-mutation checks. A raw `authority_state_dir` path,
+canonicalization, a registered Fleet home/run directory or successful leaf
+SID/DACL observation cannot supply that provenance. Parent DELETE_CHILD can
+replace a private root after the last handle closes, losing the lock marker and
+replay history; the same owner-controlled namespace premise also applies to the
+supported Unix deployment. Live no-delete-sharing protection alone is insufficient.
+Any privileged ancestor policy must be reviewed separately from the strict
+sole-current-owner child DACL. Unsupported namespace/device conditions reject.
+
+C2b must offer distinct private lock, input, append-journal and stage roles, with
+bounded parent lifetime and no public raw-handle/`File` conversion. New entries
+use atomic `FILE_CREATE` with a protected current-SID descriptor; existing entries
+use `FILE_OPEN`, validate the same handle and never repair/adopt an unsafe object.
+Ambiguous errors do not become missing state. The lock sharing policy must retain
+the original second-process `StateLocked`, process-death release and final shared
+owner/token lifetime. `authority.claims` needs append/sync operations and cannot
+be represented as an immutable input or a replacement stage.
+
+In C3, `final_use_store` must pass the exact already-synced stage handle into
+`replace_state` and `replace_claims`, bind the destination to the same held root,
+and perform a real parent sync after publication. A writable stage becomes a
+consuming synced-stage role before rename; reopening its path or adding
+SHARE_DELETE on failure is not an equivalent operation. `hepta-contracts` retains
+the journal schema, bounded parsing, nonce burn, initialization marker, key-ring,
+clock/frontier and fenced recovery logic; the utility gains no replay authority.
+
+Acceptance requires actual Windows restrictive-creation/collision/unsafe-parent,
+remote-device/reparse/hardlink, principal-drift and handle-inheritance controls,
+then the original owner tests for two-process locking, nonce persistence,
+trust/frontier mismatch, crash/reopen and post-rename uncertainty. Failed fixture
+preparation remains failure. Exact-source native and merge-candidate results are
+required before any guard change; C2a success or this design does not establish
+Windows durability, sandbox isolation or at-most-once qualification.
 
 ## Admission, concurrency and recovery
 
@@ -237,27 +280,27 @@ fetch newer data or replace protected time and the external rollback frontier.
 
 ## APIs and failure semantics
 
-| API / result | Host action |
-| --- | --- |
-| `open_state_dir` | Compatibility/test open using the system clock and local durability only |
-| `open_state_dir_with_clock` | Bind an explicit host clock; still has no external rollback oracle |
-| `open_state_dir_with_trust` | Single-issuer compatibility open binding explicit clock plus external CAS frontier |
-| `open_state_dir_with_issuer_keys` | Production-oriented open binding epoch-window issuer key ring, explicit clock and external CAS frontier; durable schema V2 pins the complete trust-set digest |
-| `issuer_key_ids` | Read configured issuer key identifiers for audit/operations; grants no authority |
-| `frontier` | Read the current rollback-protection digest/epoch/revision projection |
-| `update_revocations` | Apply only a newer trusted revision; same-epoch revocations cannot be removed |
-| `claim` | Burn one valid nonce before effect dispatch; never reuse the grant on retry |
-| `with_verified_use` | Revalidate, linearize entry, release the authority lock, then consume the token at the final synchronous boundary |
-| `deliver_final_use_with_witness` | Same consumer-entry check, plus a serializable non-authorizing `VerifiedUseTokenWitnessV1` |
-| `dispatch_final_use` / `with_dispatch_boundary` | Revalidate and hold the lock only across one short local irreversible dispatch boundary |
-| `dispatch_final_use_with_witness` | Same dispatch-entry fence, plus a serializable non-authorizing witness |
-| `revocation_head` | Read locally trusted head; no authority or automatic feed refresh |
-| `VerifiedUseToken::enter` / `enter_verified_use` | Consume an exact-frontier token at one asynchronous effect entry; never retry authority |
-| `InvalidGrant`, `InvalidSignature`, `BindingMismatch` | Reject the proposal; do not dispatch |
-| `EpochMismatch`, `Revoked`, `NotYetValid`, `Expired` | Reject stale or currently unauthorized use under the locally trusted head |
-| `AlreadyClaimed`, `CapacityExceeded` | Require owner reconciliation/new authorization or an epoch transition |
-| `InvalidTrust`, `AntiRollbackViolation`, `UnsafeStateDirectory`, `StateLocked`, `Unavailable` | Fail closed; repair owner clock/frontier/configuration/storage without resetting authority implicitly |
-| `StaleRevocationHead` | Reject a rollback/inconsistent host update |
+| API / result                                                                                  | Host action                                                                                                                                                   |
+| --------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `open_state_dir`                                                                              | Compatibility/test open using the system clock and local durability only                                                                                      |
+| `open_state_dir_with_clock`                                                                   | Bind an explicit host clock; still has no external rollback oracle                                                                                            |
+| `open_state_dir_with_trust`                                                                   | Single-issuer compatibility open binding explicit clock plus external CAS frontier                                                                            |
+| `open_state_dir_with_issuer_keys`                                                             | Production-oriented open binding epoch-window issuer key ring, explicit clock and external CAS frontier; durable schema V2 pins the complete trust-set digest |
+| `issuer_key_ids`                                                                              | Read configured issuer key identifiers for audit/operations; grants no authority                                                                              |
+| `frontier`                                                                                    | Read the current rollback-protection digest/epoch/revision projection                                                                                         |
+| `update_revocations`                                                                          | Apply only a newer trusted revision; same-epoch revocations cannot be removed                                                                                 |
+| `claim`                                                                                       | Burn one valid nonce before effect dispatch; never reuse the grant on retry                                                                                   |
+| `with_verified_use`                                                                           | Revalidate, linearize entry, release the authority lock, then consume the token at the final synchronous boundary                                             |
+| `deliver_final_use_with_witness`                                                              | Same consumer-entry check, plus a serializable non-authorizing `VerifiedUseTokenWitnessV1`                                                                    |
+| `dispatch_final_use` / `with_dispatch_boundary`                                               | Revalidate and hold the lock only across one short local irreversible dispatch boundary                                                                       |
+| `dispatch_final_use_with_witness`                                                             | Same dispatch-entry fence, plus a serializable non-authorizing witness                                                                                        |
+| `revocation_head`                                                                             | Read locally trusted head; no authority or automatic feed refresh                                                                                             |
+| `VerifiedUseToken::enter` / `enter_verified_use`                                              | Consume an exact-frontier token at one asynchronous effect entry; never retry authority                                                                       |
+| `InvalidGrant`, `InvalidSignature`, `BindingMismatch`                                         | Reject the proposal; do not dispatch                                                                                                                          |
+| `EpochMismatch`, `Revoked`, `NotYetValid`, `Expired`                                          | Reject stale or currently unauthorized use under the locally trusted head                                                                                     |
+| `AlreadyClaimed`, `CapacityExceeded`                                                          | Require owner reconciliation/new authorization or an epoch transition                                                                                         |
+| `InvalidTrust`, `AntiRollbackViolation`, `UnsafeStateDirectory`, `StateLocked`, `Unavailable` | Fail closed; repair owner clock/frontier/configuration/storage without resetting authority implicitly                                                         |
+| `StaleRevocationHead`                                                                         | Reject a rollback/inconsistent host update                                                                                                                    |
 
 Bao additionally distinguishes provider denial, missing data, transport failure,
 timeout, malformed/oversized replies, version mismatch and digest mismatch.
