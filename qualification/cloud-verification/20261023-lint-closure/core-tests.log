@@ -1,0 +1,250 @@
+RUST_MIN_STACK=8388608 NEXTEST_PROFILE=local python3 ../scripts/run-nextest.py "$@"
+ Downloading crates ...
+  Downloaded float-cmp v0.10.0
+  Downloaded assert_matches v1.5.0
+  Downloaded test-log v0.2.19
+  Downloaded normalize-line-endings v0.3.0
+  Downloaded test-log-macros v0.2.19
+  Downloaded tracing-test v0.2.5
+  Downloaded tracing-test-macro v0.2.5
+  Downloaded console v0.15.11
+  Downloaded insta v1.46.3
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#proc-macro2@1.0.106` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#quote@1.0.45` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#libc@0.2.186` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#serde@1.0.228` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#serde_core@1.0.228` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#libc@0.2.186` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#parking_lot_core@0.9.12` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#portable-atomic@1.13.1` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#generic-array@0.14.7` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#thiserror@2.0.18` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#zmij@1.0.19` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#num-traits@0.2.19` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#getrandom@0.3.4` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#serde_json@1.0.149` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#serde_core@1.0.228` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#zerocopy@0.8.37` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#icu_normalizer_data@2.2.0` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#icu_properties_data@2.2.0` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#crossbeam-utils@0.8.21` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#aws-lc-sys@0.45.0` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#ring@0.17.14` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#aws-lc-rs@1.18.1` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#httparse@1.10.1` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#rustls@0.23.45` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#crc32fast@1.5.0` which wasn't produced by cargo metadata
+   Compiling rustix v1.1.4
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#getrandom@0.4.2` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#serde_json@1.0.149` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#anyhow@1.0.103` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#crossbeam-epoch@0.9.20` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#ahash@0.8.12` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#openssl-sys@0.9.111` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#mime_guess@2.0.5` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#openssl@0.10.75` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#native-tls@0.2.14` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#cookie@0.18.1` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#rayon-core@1.13.0` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#syn@1.0.109` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#schemars@0.8.22` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#ref-cast@1.0.25` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#zstd-sys@2.0.16+zstd.1.5.7` which wasn't produced by cargo metadata
+   Compiling tracing-subscriber v0.3.22
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#rustix@1.1.4` which wasn't produced by cargo metadata
+   Compilingwarning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#memoffset@0.9.1` which wasn't produced by cargo metadata
+ env_logger v0.11.9
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#zstd-safe@7.2.4` which wasn't produced by cargo metadata
+   Compilingwarning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#typeid@1.0.3` which wasn't produced by cargo metadata
+ codex-utils-absolute-path v0.0.0 (/workspace/bedrock-integration/codex-rs/utils/absolute-path)
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#heapless@0.7.17` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#allocative@0.3.6` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#erased-serde@0.4.10` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#blake3@1.8.2` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#logos-codegen@0.15.1` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#nix@0.28.0` which wasn't produced by cargo metadata
+   Compiling quickcheck v1.1.0
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#oid-registry@0.8.1` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#rama-http-headers@0.3.0-alpha.4` which wasn't produced by cargo metadata
+   Compiling sorted_vector_map v0.2.1
+   Compiling tempfile v3.27.0
+   Compiling codex-utils-rustls-provider v0.0.0 (/workspace/bedrock-integration/codex-rs/utils/rustls-provider)
+   Compiling pagable v0.4.1
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#starlark_map@0.14.2` which wasn't produced by cargo metadata
+   Compiling tracing-opentelemetry v0.32.1
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#paste@1.0.15` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#icu_locale_data@2.2.0` which wasn't produced by cargo metadata
+   Compiling codex-http-client v0.0.0 (/workspace/bedrock-integration/codex-rs/http-client)
+   Compiling starlark_map v0.14.2
+   Compiling fd-lock v4.0.4
+   Compiling rustyline v14.0.0
+   Compiling starlark_syntax v0.14.2
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#icu_decimal_data@2.2.0` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#starlark@0.14.2` which wasn't produced by cargo metadata
+   Compiling codex-utils-home-dir v0.0.0 (/workspace/bedrock-integration/codex-rs/utils/home-dir)
+   Compiling codex-utils-cache v0.0.0 (/workspace/bedrock-integration/codex-rs/utils/cache)
+   Compiling starlark v0.14.2
+   Compiling codex-network-proxy v0.0.0 (/workspace/bedrock-integration/codex-rs/network-proxy)
+   Compiling codex-execpolicy v0.0.0 (/workspace/bedrock-integration/codex-rs/execpolicy)
+   Compiling codex-utils-image v0.0.0 (/workspace/bedrock-integration/codex-rs/utils/image)
+   Compiling codex-utils-path-uri v0.0.0 (/workspace/bedrock-integration/codex-rs/utils/path-uri)
+   Compiling codex-extension-items v0.0.0 (/workspace/bedrock-integration/codex-rs/ext/items)
+   Compiling codex-utils-redacted-string v0.0.0 (/workspace/bedrock-integration/codex-rs/utils/redacted-string)
+   Compiling codex-utils-string v0.0.0 (/workspace/bedrock-integration/codex-rs/utils/string)
+   Compiling codex-async-utils v0.0.0 (/workspace/bedrock-integration/codex-rs/async-utils)
+   Compiling codex-protocol v0.0.0 (/workspace/bedrock-integration/codex-rs/protocol)
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#heapless@0.8.0` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#thiserror@1.0.69` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#rustversion@1.0.22` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#generic-array@0.14.7` which wasn't produced by cargo metadata
+   Compiling gix-tempfile v21.0.2
+   Compiling gix-lock v21.0.2
+   Compiling codex-websocket-client v0.0.0 (/workspace/bedrock-integration/codex-rs/websocket-client)
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#nix@0.30.1` which wasn't produced by cargo metadata
+   Compiling gix-ref v0.61.0
+   Compiling codex-client v0.0.0 (/workspace/bedrock-integration/codex-rs/codex-client)
+   Compiling codex-utils-pty v0.0.0 (/workspace/bedrock-integration/codex-rs/utils/pty)
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#curve25519-dalek@4.1.3` which wasn't produced by cargo metadata
+   Compiling codex-api v0.0.0 (/workspace/bedrock-integration/codex-rs/codex-api)
+   Compiling gix-shallow v0.10.0
+   Compiling gix-config v0.54.0
+   Compiling gix-protocol v0.59.0
+   Compiling gix-odb v0.78.0
+   Compiling codex-file-system v0.0.0 (/workspace/bedrock-integration/codex-rs/file-system)
+   Compiling gix-discover v0.49.0
+   Compiling similar v2.7.0
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#tree-sitter-language@0.1.7` which wasn't produced by cargo metadata
+   Compiling gix v0.81.0
+   Compiling gethostname v1.1.0
+   Compiling opentelemetry-appender-tracing v0.31.1
+   Compiling codex-otel v0.0.0 (/workspace/bedrock-integration/codex-rs/otel)
+   Compiling codex-git-utils v0.0.0 (/workspace/bedrock-integration/codex-rs/git-utils)
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#windows_x86_64_gnu@0.52.6` which wasn't produced by cargo metadata
+   Compiling which v8.0.0
+   Compiling codex-utils-path v0.0.0 (/workspace/bedrock-integration/codex-rs/utils/path-utils)
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#tree-sitter-powershell@0.26.4` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#tree-sitter-bash@0.25.1` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#tree-sitter@0.25.10` which wasn't produced by cargo metadata
+   Compiling codex-shell-command v0.0.0 (/workspace/bedrock-integration/codex-rs/shell-command)
+   Compiling codex-features v0.0.0 (/workspace/bedrock-integration/codex-rs/features)
+   Compiling codex-model-provider-info v0.0.0 (/workspace/bedrock-integration/codex-rs/model-provider-info)
+   Compiling codex-config v0.0.0 (/workspace/bedrock-integration/codex-rs/config)
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#async-io@2.6.0` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#nix@0.29.0` which wasn't produced by cargo metadata
+   Compiling polling v3.11.0
+   Compiling codex-windows-sandbox v0.0.0 (/workspace/bedrock-integration/codex-rs/windows-sandbox-rs)
+   Compiling async-io v2.6.0
+   Compiling tracing-appender v0.2.4
+   Compiling zbus v4.4.0
+   Compiling secret-service v4.0.0
+   Compiling codex-sandboxing v0.0.0 (/workspace/bedrock-integration/codex-rs/sandboxing)
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#crossbeam-utils@0.8.21` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#ring@0.17.14` which wasn't produced by cargo metadata
+   Compiling keyring v3.6.3
+   Compiling codex-exec-server-protocol v0.0.0 (/workspace/bedrock-integration/codex-rs/exec-server-protocol)
+   Compiling codex-exec-server v0.0.0 (/workspace/bedrock-integration/codex-rs/exec-server)
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#num-traits@0.2.19` which wasn't produced by cargo metadata
+   Compiling codex-keyring-store v0.0.0 (/workspace/bedrock-integration/codex-rs/keyring-store)
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#aws-types@1.3.11` which wasn't produced by cargo metadata
+   Compiling codex-secrets v0.0.0 (/workspace/bedrock-integration/codex-rs/secrets)
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#getrandom@0.4.2` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#prettyplease@0.2.37` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#rustix@1.1.4` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#rustls@0.23.45` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#thiserror@2.0.18` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#libsqlite3-sys@0.37.0` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#object@0.37.3` which wasn't produced by cargo metadata
+   Compiling codex-utils-template v0.0.0 (/workspace/bedrock-integration/codex-rs/utils/template)
+   Compiling codex-agent-identity v0.0.0 (/workspace/bedrock-integration/codex-rs/agent-identity)
+   Compiling codex-workload-identity v0.0.0 (/workspace/bedrock-integration/codex-rs/workload-identity)
+   Compiling codex-terminal-detection v0.0.0 (/workspace/bedrock-integration/codex-rs/terminal-detection)
+   Compiling rmcp v3.1.3
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#rmcp@3.1.3` which wasn't produced by cargo metadata
+   Compiling codex-install-context v0.0.0 (/workspace/bedrock-integration/codex-rs/install-context)
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#findshlibs@0.10.2` which wasn't produced by cargo metadata
+   Compiling codex-login v0.0.0 (/workspace/bedrock-integration/codex-rs/login)
+   Compiling codex-utils-plugins v0.0.0 (/workspace/bedrock-integration/codex-rs/utils/plugins)
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#sentry-contexts@0.46.1` which wasn't produced by cargo metadata
+   Compiling codex-utils-output-truncation v0.0.0 (/workspace/bedrock-integration/codex-rs/utils/output-truncation)
+   Compiling codex-plugin v0.0.0 (/workspace/bedrock-integration/codex-rs/plugin)
+   Compiling codex-code-mode-protocol v0.0.0 (/workspace/bedrock-integration/codex-rs/code-mode-protocol)
+   Compiling codex-history v0.0.0 (/workspace/bedrock-integration/codex-rs/history)
+   Compiling float-cmp v0.10.0
+   Compiling codex-collaboration-mode-templates v0.0.0 (/workspace/bedrock-integration/codex-rs/collaboration-mode-templates)
+   Compiling normalize-line-endings v0.3.0
+   Compiling predicates v3.1.3
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#assert_cmd@2.1.2` which wasn't produced by cargo metadata
+   Compiling codex-models-manager v0.0.0 (/workspace/bedrock-integration/codex-rs/models-manager)
+   Compiling codex-state v0.0.0 (/workspace/bedrock-integration/codex-rs/state)
+   Compiling codex-feedback v0.0.0 (/workspace/bedrock-integration/codex-rs/feedback)
+   Compiling codex-aws-auth v0.0.0 (/workspace/bedrock-integration/codex-rs/aws-auth)
+   Compiling codex-hepta-contracts v0.0.0 (/workspace/bedrock-integration/codex-rs/hepta-contracts)
+   Compiling codex-response-debug-context v0.0.0 (/workspace/bedrock-integration/codex-rs/response-debug-context)
+   Compiling assert_cmd v2.1.2
+   Compiling codex-file-search v0.0.0 (/workspace/bedrock-integration/codex-rs/file-search)
+   Compiling codex-code-mode v0.0.0 (/workspace/bedrock-integration/codex-rs/code-mode)
+   Compiling codex-model-provider v0.0.0 (/workspace/bedrock-integration/codex-rs/model-provider)
+   Compiling codex-connectors v0.0.0 (/workspace/bedrock-integration/codex-rs/connectors)
+   Compiling codex-utils-cargo-bin v0.0.0 (/workspace/bedrock-integration/codex-rs/utils/cargo-bin)
+   Compiling codex-rollout v0.0.0 (/workspace/bedrock-integration/codex-rs/rollout)
+   Compiling codex-rmcp-client v0.0.0 (/workspace/bedrock-integration/codex-rs/rmcp-client)
+   Compiling codex-exec-server-test-support v0.0.0 (/workspace/bedrock-integration/codex-rs/exec-server/tests/support)
+   Compiling codex-diagnostics v0.0.0 (/workspace/bedrock-integration/codex-rs/diagnostics)
+   Compiling codex-experimental-api-macros v0.0.0 (/workspace/bedrock-integration/codex-rs/codex-experimental-api-macros)
+   Compiling codex-app-server-protocol-noop-macros v0.0.0 (/workspace/bedrock-integration/codex-rs/app-server-protocol-noop-macros)
+   Compiling codex-app-server-protocol v0.0.0 (/workspace/bedrock-integration/codex-rs/app-server-protocol)
+   Compiling codex-tools v0.0.0 (/workspace/bedrock-integration/codex-rs/tools)
+   Compiling codex-mcp v0.0.0 (/workspace/bedrock-integration/codex-rs/codex-mcp)
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#lzma-sys@0.1.20` which wasn't produced by cargo metadata
+   Compiling codex-context-fragments v0.0.0 (/workspace/bedrock-integration/codex-rs/context-fragments)
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#bzip2-sys@0.1.13+1.0.8` which wasn't produced by cargo metadata
+   Compiling codex-skills v0.0.0 (/workspace/bedrock-integration/codex-rs/skills)
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#pulldown-cmark@0.10.3` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#zip@2.4.2` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#stop-words@0.9.0` which wasn't produced by cargo metadata
+   Compiling codex-extension-api v0.0.0 (/workspace/bedrock-integration/codex-rs/ext/extension-api)
+   Compiling codex-apply-patch v0.0.0 (/workspace/bedrock-integration/codex-rs/apply-patch)
+   Compiling codex-shell-escalation v0.0.0 (/workspace/bedrock-integration/codex-rs/shell-escalation)
+   Compiling codex-analytics v0.0.0 (/workspace/bedrock-integration/codex-rs/analytics)
+   Compiling codex-hooks v0.0.0 (/workspace/bedrock-integration/codex-rs/hooks)
+   Compiling codex-linux-sandbox v0.0.0 (/workspace/bedrock-integration/codex-rs/linux-sandbox)
+   Compiling codex-core-plugins v0.0.0 (/workspace/bedrock-integration/codex-rs/core-plugins)
+   Compiling codex-thread-store v0.0.0 (/workspace/bedrock-integration/codex-rs/thread-store)
+   Compiling codex-utils-audio v0.0.0 (/workspace/bedrock-integration/codex-rs/utils/audio)
+   Compiling codex-skills-extension v0.0.0 (/workspace/bedrock-integration/codex-rs/ext/skills)
+   Compiling codex-prompts v0.0.0 (/workspace/bedrock-integration/codex-rs/prompts)
+   Compiling codex-rollout-trace v0.0.0 (/workspace/bedrock-integration/codex-rs/rollout-trace)
+   Compiling codex-agent-graph-store v0.0.0 (/workspace/bedrock-integration/codex-rs/agent-graph-store)
+   Compiling codex-memories-read v0.0.0 (/workspace/bedrock-integration/codex-rs/memories/read)
+   Compiling codex-process-hardening v0.0.0 (/workspace/bedrock-integration/codex-rs/process-hardening)
+   Compiling codex-utils-stream-parser v0.0.0 (/workspace/bedrock-integration/codex-rs/utils/stream-parser)
+   Compiling codex-core v0.0.0 (/workspace/bedrock-integration/codex-rs/core)
+   Compiling codex-arg0 v0.0.0 (/workspace/bedrock-integration/codex-rs/arg0)
+   Compiling codex-home v0.0.0 (/workspace/bedrock-integration/codex-rs/codex-home)
+   Compiling console v0.15.11
+   Compiling tracing-test-macro v0.2.5
+   Compiling test-log-macros v0.2.19
+   Compiling test-log v0.2.19
+   Compiling tracing-test v0.2.5
+   Compiling insta v1.46.3
+   Compiling codex-test-binary-support v0.0.0 (/workspace/bedrock-integration/codex-rs/test-binary-support)
+   Compiling assert_matches v1.5.0
+   Compiling codex-web-search-extension v0.0.0 (/workspace/bedrock-integration/codex-rs/ext/web-search)
+   Compiling core_test_support v0.0.0 (/workspace/bedrock-integration/codex-rs/core/tests/common)
+   Compiling codex-image-generation-extension v0.0.0 (/workspace/bedrock-integration/codex-rs/ext/image-generation)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 5m 47s
+────────────
+ Nextest run ID 99826c16-60ee-4b89-ad79-4c457a146785 with nextest profile: local
+    Starting 10 tests across 1 binary (2412 tests skipped)
+        PASS [   0.029s] ( 1/10) codex-core client::provider_policy_tests::eof_records_partial_indeterminate_terminal
+        PASS [   0.036s] ( 2/10) codex-core client::provider_policy_tests::completed_is_hidden_until_exact_terminal_is_acknowledged
+        PASS [   0.037s] ( 3/10) codex-core client::provider_policy_tests::consumer_drop_records_partial_indeterminate_terminal
+        PASS [   0.040s] ( 4/10) codex-core client::provider_policy_tests::terminal_acknowledgement_wait_is_not_consumer_timeout_driven
+        PASS [   0.021s] ( 5/10) codex-core client::provider_policy_tests::terminal_failure_suppresses_completed_and_last_response
+        PASS [   0.020s] ( 6/10) codex-core client::provider_policy_tests::unauthorized_stream_error_records_rejected_before_downstream_error
+        PASS [   0.036s] ( 7/10) codex-core client::tests::dropped_response_stream_traces_cancelled_partial_output
+        PASS [   0.017s] ( 8/10) codex-core client::tests::response_stream_records_last_model_feedback_ids
+        PASS [   0.041s] ( 9/10) codex-core client::tests::dropped_backpressured_response_stream_traces_cancelled_partial_output
+        PASS [   0.029s] (10/10) codex-core client::tests::ephemeral_unauthorized_and_stream_errors_are_redacted
+────────────
+     Summary [   0.091s] 10 tests run: 10 passed, 2412 skipped

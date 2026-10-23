@@ -1,0 +1,235 @@
+diff --git a/codex-rs/core/src/client.rs b/codex-rs/core/src/client.rs
+index dcf0ec6e3a..135a4da25f 100644
+--- a/codex-rs/core/src/client.rs
++++ b/codex-rs/core/src/client.rs
+@@ -3063,6 +3063,13 @@ fn provider_http_dispatch_metadata(headers: &ApiHeaderMap) -> RequestDispatchMet
+ const RESPONSE_STREAM_CHANNEL_CAPACITY: usize = 1600;
+ const STREAM_DROPPED_REASON: &str = "response stream dropped before provider terminal event";
+ 
++/// The provider request identity travels with its event stream so correlation,
++/// redaction and terminal observation refer to the same physical attempt.
++struct ResponseEventSource<S> {
++    upstream_request_id: Option<String>,
++    events: S,
++}
++
+ fn map_response_stream(
+     api_stream: codex_api::ResponseStream,
+     session_telemetry: SessionTelemetry,
+@@ -3086,8 +3093,10 @@ fn map_response_stream(
+         upstream_request_id: None,
+     };
+     map_response_events(
+-        upstream_request_id,
+-        api_stream,
++        ResponseEventSource {
++            upstream_request_id,
++            events: api_stream,
++        },
+         session_telemetry,
+         inference_trace_attempt,
+         provider,
+@@ -3098,8 +3107,7 @@ fn map_response_stream(
+ }
+ 
+ fn map_response_events<S>(
+-    upstream_request_id: Option<String>,
+-    api_stream: S,
++    source: ResponseEventSource<S>,
+     session_telemetry: SessionTelemetry,
+     inference_trace_attempt: InferenceTraceAttempt,
+     provider: SharedModelProvider,
+@@ -3113,6 +3121,10 @@ where
+         + Send
+         + 'static,
+ {
++    let ResponseEventSource {
++        upstream_request_id,
++        events: api_stream,
++    } = source;
+     let (tx_event, rx_event) =
+         mpsc::channel::<Result<ResponseEvent>>(RESPONSE_STREAM_CHANNEL_CAPACITY);
+     let (tx_last_response, rx_last_response) = oneshot::channel::<LastResponse>();
+diff --git a/codex-rs/core/src/client_provider_policy_tests.rs b/codex-rs/core/src/client_provider_policy_tests.rs
+index a694f93b8a..d7b82c405f 100644
+--- a/codex-rs/core/src/client_provider_policy_tests.rs
++++ b/codex-rs/core/src/client_provider_policy_tests.rs
+@@ -24,6 +24,7 @@ use http::StatusCode;
+ use tokio::sync::oneshot;
+ use tokio::sync::oneshot::error::TryRecvError;
+ 
++use super::ResponseEventSource;
+ use super::map_response_events;
+ use crate::model_provider_policy::ProviderAttemptOwner;
+ use crate::model_provider_policy::bytes_sha256;
+@@ -115,8 +116,10 @@ async fn completed_is_hidden_until_exact_terminal_is_acknowledged() {
+     ]);
+     let (owner, terminal_rx, acknowledge_tx) = gated_owner();
+     let (mut stream, mut last_response) = map_response_events(
+-        /*upstream_request_id*/ None,
+-        events,
++        ResponseEventSource {
++            upstream_request_id: None,
++            events,
++        },
+         test_telemetry(),
+         InferenceTraceAttempt::disabled(),
+         test_provider(),
+@@ -167,8 +170,10 @@ async fn terminal_failure_suppresses_completed_and_last_response() {
+     })]);
+     let (owner, terminal_rx, acknowledge_tx) = gated_owner();
+     let (mut stream, last_response) = map_response_events(
+-        /*upstream_request_id*/ None,
+-        events,
++        ResponseEventSource {
++            upstream_request_id: None,
++            events,
++        },
+         test_telemetry(),
+         InferenceTraceAttempt::disabled(),
+         test_provider(),
+@@ -204,8 +209,10 @@ async fn consumer_drop_records_partial_indeterminate_terminal() {
+         .chain(futures::stream::pending());
+     let (owner, terminal_rx, acknowledge_tx) = gated_owner();
+     let (mut stream, _last_response) = map_response_events(
+-        /*upstream_request_id*/ None,
+-        events,
++        ResponseEventSource {
++            upstream_request_id: None,
++            events,
++        },
+         test_telemetry(),
+         InferenceTraceAttempt::disabled(),
+         test_provider(),
+@@ -240,8 +247,10 @@ async fn unauthorized_stream_error_records_rejected_before_downstream_error() {
+     }))]);
+     let (owner, terminal_rx, acknowledge_tx) = gated_owner();
+     let (mut stream, _last_response) = map_response_events(
+-        /*upstream_request_id*/ None,
+-        events,
++        ResponseEventSource {
++            upstream_request_id: None,
++            events,
++        },
+         test_telemetry(),
+         InferenceTraceAttempt::disabled(),
+         test_provider(),
+@@ -269,8 +278,10 @@ async fn eof_records_partial_indeterminate_terminal() {
+     let events = futures::stream::iter([Ok(ResponseEvent::OutputItemDone(item.clone()))]);
+     let (owner, terminal_rx, acknowledge_tx) = gated_owner();
+     let (mut stream, _last_response) = map_response_events(
+-        /*upstream_request_id*/ None,
+-        events,
++        ResponseEventSource {
++            upstream_request_id: None,
++            events,
++        },
+         test_telemetry(),
+         InferenceTraceAttempt::disabled(),
+         test_provider(),
+@@ -304,8 +315,10 @@ async fn terminal_acknowledgement_wait_is_not_consumer_timeout_driven() {
+     })]);
+     let (owner, terminal_rx, acknowledge_tx) = gated_owner();
+     let (mut stream, _last_response) = map_response_events(
+-        /*upstream_request_id*/ None,
+-        events,
++        ResponseEventSource {
++            upstream_request_id: None,
++            events,
++        },
+         test_telemetry(),
+         InferenceTraceAttempt::disabled(),
+         test_provider(),
+diff --git a/codex-rs/core/src/client_tests.rs b/codex-rs/core/src/client_tests.rs
+index 94a0f022ee..802243bbd8 100644
+--- a/codex-rs/core/src/client_tests.rs
++++ b/codex-rs/core/src/client_tests.rs
+@@ -871,8 +871,10 @@ async fn dropped_response_stream_traces_cancelled_partial_output() -> anyhow::Re
+     let api_stream = futures::stream::iter([Ok(ResponseEvent::OutputItemDone(item))])
+         .chain(futures::stream::pending());
+     let (mut stream, _) = super::map_response_events(
+-        /*upstream_request_id*/ None,
+-        api_stream,
++        super::ResponseEventSource {
++            upstream_request_id: None,
++            events: api_stream,
++        },
+         test_session_telemetry(),
+         attempt,
+         test_model_provider(),
+@@ -924,8 +926,10 @@ async fn response_stream_records_last_model_feedback_ids() {
+         }),
+     ]);
+     let (mut stream, _) = super::map_response_events(
+-        Some("req-123".to_string()),
+-        api_stream,
++        super::ResponseEventSource {
++            upstream_request_id: Some("req-123".to_string()),
++            events: api_stream,
++        },
+         test_session_telemetry(),
+         InferenceTraceAttempt::disabled(),
+         test_model_provider(),
+@@ -1060,8 +1064,10 @@ async fn ephemeral_unauthorized_and_stream_errors_are_redacted() -> anyhow::Resu
+         message: SENTINEL.to_string(),
+     })]);
+     let (mut stream, _) = super::map_response_events(
+-        /*upstream_request_id*/ None,
+-        api_stream,
++        super::ResponseEventSource {
++            upstream_request_id: None,
++            events: api_stream,
++        },
+         test_session_telemetry(),
+         attempt,
+         provider,
+@@ -1244,8 +1250,10 @@ async fn dropped_backpressured_response_stream_traces_cancelled_partial_output()
+     };
+ 
+     let (stream, _) = super::map_response_events(
+-        /*upstream_request_id*/ None,
+-        api_stream,
++        super::ResponseEventSource {
++            upstream_request_id: None,
++            events: api_stream,
++        },
+         test_session_telemetry(),
+         attempt,
+         test_model_provider(),
+diff --git a/codex-rs/ext/hepta-memory/src/cognitive/federation.rs b/codex-rs/ext/hepta-memory/src/cognitive/federation.rs
+index 61b1431420..d519c6e77d 100644
+--- a/codex-rs/ext/hepta-memory/src/cognitive/federation.rs
++++ b/codex-rs/ext/hepta-memory/src/cognitive/federation.rs
+@@ -14,7 +14,6 @@ use codex_extension_api::ExtensionMetrics;
+ use codex_extension_api::ModelProviderPolicyError;
+ use codex_extension_api::ModelProviderPolicyFuture;
+ use codex_extension_api::ModelProviderRequestKind;
+-use codex_extension_api::ModelProviderSha256Digest;
+ use codex_extension_api::TurnInputContext;
+ use codex_extension_api::TurnInputContributor;
+ use codex_hepta_contracts::AgentId;
+@@ -861,12 +860,6 @@ fn federation_source_binding(
+     ))
+ }
+ 
+-fn api_digest(
+-    digest: &Sha256Digest,
+-) -> Result<ModelProviderSha256Digest, ModelProviderPolicyError> {
+-    ModelProviderSha256Digest::parse(digest.as_str())
+-}
+-
+ fn final_use_capability_window_current(
+     revalidation_started_at: i64,
+     final_use_now: i64,
+diff --git a/codex-rs/ext/hepta-memory/src/cognitive/mod.rs b/codex-rs/ext/hepta-memory/src/cognitive/mod.rs
+index db3dba13de..91c3baa779 100644
+--- a/codex-rs/ext/hepta-memory/src/cognitive/mod.rs
++++ b/codex-rs/ext/hepta-memory/src/cognitive/mod.rs
+@@ -271,6 +271,7 @@ pub(crate) struct CognitiveExtension {
+ }
+ 
+ impl CognitiveExtension {
++    #[cfg(test)]
+     pub(crate) fn new(runtime: CognitiveRuntime) -> Self {
+         Self::new_with_mutation(runtime, None, false)
+     }
