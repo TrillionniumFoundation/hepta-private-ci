@@ -3,3 +3,23 @@
 [profile.local]
 retries = 0
 fail-fast = false
+
+# Separate fresh reports for the complete original library in both modes.
+# The explicit profiles override just test's normal NEXTEST_PROFILE=local.
+[profile.native-composition-headless]
+retries = 0
+fail-fast = false
+
+[profile.native-composition-headless.junit]
+path = "junit.xml"
+report-name = "hepta-native-composition-headless"
+report-skipped = "all"
+
+[profile.native-composition-native]
+retries = 0
+fail-fast = false
+
+[profile.native-composition-native.junit]
+path = "junit.xml"
+report-name = "hepta-native-composition-native"
+report-skipped = "all"

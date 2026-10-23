@@ -3,6 +3,7 @@ fn main() {
     // Web and the embedded native host use their own verified packaging paths.
     if std::env::var_os("CARGO_FEATURE_UI").is_none()
         || std::env::var_os("CARGO_FEATURE_NATIVE_HOST").is_some()
+        || std::env::var_os("CARGO_FEATURE_NATIVE_PRESENTATION").is_some()
         || std::env::var("CARGO_CFG_TARGET_ARCH").as_deref() == Ok("wasm32")
     {
         return;
