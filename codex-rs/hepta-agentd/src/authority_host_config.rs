@@ -80,6 +80,7 @@ pub struct HostAuthorityServiceConfig {
     pub lease_revision: u64,
     pub writer: Option<crate::HostAuthorityWriterRegistration>,
     pub checkpoint_state_dir: Option<PathBuf>,
+    pub consumers: Option<HostAuthorityConsumersConfig>,
     pub sockets: HostAuthoritySocketPaths,
     pub peer_uid: u32,
     pub peer_gid: u32,
@@ -93,6 +94,23 @@ pub struct HostAuthoritySocketPaths {
     pub observation: PathBuf,
     pub issuer: PathBuf,
     pub checkpoint: PathBuf,
+    pub device_frontier: Option<PathBuf>,
+    pub notes_frontier: Option<PathBuf>,
+}
+
+/// Two fixed original consumer namespaces, supplied only by the root launcher.
+#[derive(Clone, Debug, Deserialize, Serialize)]
+#[serde(deny_unknown_fields)]
+pub struct HostAuthorityConsumersConfig {
+    pub device: HostAuthorityConsumerConfig,
+    pub notes: HostAuthorityConsumerConfig,
+}
+
+#[derive(Clone, Debug, Deserialize, Serialize)]
+#[serde(deny_unknown_fields)]
+pub struct HostAuthorityConsumerConfig {
+    pub state_dir: PathBuf,
+    pub owner_id: String,
 }
 
 #[derive(Clone, Debug, Deserialize, Serialize)]

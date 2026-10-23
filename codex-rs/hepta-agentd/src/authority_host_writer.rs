@@ -9,6 +9,7 @@ use crate::HostAuthorityWriterObservationV2;
 use crate::HostAuthorityWriterRegistration;
 use crate::HostSignedWriterAuthorizationV1;
 use crate::HostWriterAuthorizationReadResponseV1;
+use codex_hepta_contracts::AuthorityClock;
 use codex_hepta_contracts::authority_lease::AuthorityLeaseVerifier;
 
 pub(super) struct RegisteredWriter {
@@ -18,6 +19,33 @@ pub(super) struct RegisteredWriter {
 }
 
 impl RegisteredWriter {
+    pub(super) fn exchange_consumer(
+        &self,
+        issuer: &DeploymentFinalUseIssuer,
+        clock: &HostAuthorityClock,
+        backend: &crate::HostConsumerFrontier,
+        bytes: &[u8],
+    ) -> Result<Vec<u8>, HostIssuerTransportError> {
+        self.registration
+            .with_live(&self.leases, |_| {
+                if issuer.retained_writer_authorization(&self.registration)? != self.proof {
+                    return Err(io::Error::other("retained writer proof changed"));
+                }
+                let before = issuer.revocations()?;
+                let response = backend.exchange(bytes, &before).map_err(io::Error::other)?;
+                let after = issuer.revocations()?;
+                if after != before {
+                    return Err(io::Error::other(
+                        "issuer head changed during consumer exchange",
+                    ));
+                }
+                let now = clock.now_unix_ms().map_err(io::Error::other)?;
+                validate_observation_lease(&self.registration.authority_lease, &after, now)?;
+                Ok(response)
+            })
+            .map_err(unavailable)
+    }
+
     pub(super) fn exchange_checkpoint(
         &self,
         issuer: &DeploymentFinalUseIssuer,

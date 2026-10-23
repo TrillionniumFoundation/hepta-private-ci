@@ -7,10 +7,8 @@ use std::os::fd::OwnedFd;
 use std::os::unix::fs::DirBuilderExt;
 use std::os::unix::fs::MetadataExt;
 use std::os::unix::fs::PermissionsExt;
-use std::os::unix::net::UnixListener;
 use std::path::Path;
 use std::sync::Arc;
-use std::time::Duration;
 use std::time::Instant;
 
 use codex_hepta_contracts::AuthorityClock;
@@ -34,6 +32,10 @@ use crate::authority_host_config::HostAuthorityBindIdentity;
 use crate::authority_host_config::HostAuthorityRegistration;
 use crate::authority_host_config::HostAuthorityServiceConfig;
 use crate::authority_host_config::read_root_json;
+
+#[path = "authority_host_listeners.rs"]
+mod listeners;
+use listeners::serve_lanes;
 
 const CLOCK_OWNER: &str = "root-authority-clock-v1";
 const LEASE_OWNER: &str = "root-authority-leases-v1";
@@ -200,6 +202,21 @@ pub fn serve_host_authority_session(
     } else {
         service
     };
+    let service = match (
+        &config.consumers,
+        &config.sockets.device_frontier,
+        &config.sockets.notes_frontier,
+    ) {
+        (Some(consumers), Some(_), Some(_)) => {
+            service.with_registered_consumers(&config.state_dir, consumers)?
+        }
+        (None, None, None) => service,
+        _ => {
+            return Err(io::Error::other(
+                "both fixed consumer lanes are required together",
+            ));
+        }
+    };
     serve_lanes(&service, &config, &registration, &owner_pidfd)
 }
 
@@ -342,124 +359,6 @@ fn verify_process(registration: &HostAuthorityRegistration, uid: u32) -> io::Res
         ));
     }
     Ok(())
-}
-
-struct SocketGuard(Vec<(std::path::PathBuf, u64, u64)>);
-impl Drop for SocketGuard {
-    fn drop(&mut self) {
-        for (path, device, inode) in &self.0 {
-            if std::fs::symlink_metadata(path)
-                .is_ok_and(|entry| entry.dev() == *device && entry.ino() == *inode)
-            {
-                let _ = std::fs::remove_file(path);
-            }
-        }
-    }
-}
-
-fn serve_lanes(
-    service: &HostAuthorityService,
-    config: &HostAuthorityServiceConfig,
-    registration: &HostAuthorityRegistration,
-    owner: &OwnedFd,
-) -> io::Result<()> {
-    let paths = [
-        &config.sockets.observation,
-        &config.sockets.issuer,
-        &config.sockets.checkpoint,
-    ];
-    if paths[0] == paths[1] || paths[0] == paths[2] || paths[1] == paths[2] {
-        return Err(io::Error::other("distinct lane sockets required"));
-    }
-    let parent = paths[0]
-        .parent()
-        .ok_or_else(|| io::Error::other("socket parent"))?;
-    let metadata = std::fs::symlink_metadata(parent)?;
-    if !metadata.is_dir()
-        || metadata.uid() != 0
-        || metadata.gid() != config.peer_gid
-        || metadata.mode() & 0o7777 != 0o2710
-        || paths
-            .iter()
-            .any(|path| !path.is_absolute() || path.parent() != Some(parent))
-    {
-        return Err(io::Error::other(
-            "private runtime parent must be root:peer-gid mode02710",
-        ));
-    }
-    // Public runtime ancestors must allow peer traversal but never peer writes.
-    // Every checked path is root-owned; the unprivileged peer cannot replace an
-    // ancestor between this check and bind. Private state has stricter 0700 rules.
-    for ancestor in parent.ancestors() {
-        let entry = std::fs::symlink_metadata(ancestor)?;
-        if !entry.is_dir() || entry.uid() != 0 || entry.mode() & 0o022 != 0 {
-            return Err(io::Error::other("unsafe runtime ancestor"));
-        }
-    }
-    let mut guard = SocketGuard(Vec::new());
-    let mut listeners = Vec::new();
-    for path in paths {
-        let listener = UnixListener::bind(path)?;
-        std::fs::set_permissions(path, std::fs::Permissions::from_mode(0o660))?;
-        let metadata = std::fs::symlink_metadata(path)?;
-        if metadata.uid() != 0 || metadata.gid() != config.peer_gid {
-            return Err(io::Error::other("socket ownership mismatch"));
-        }
-        guard.0.push((path.clone(), metadata.dev(), metadata.ino()));
-        listener.set_nonblocking(true)?;
-        listeners.push(listener);
-    }
-    let end = Instant::now() + Duration::from_millis(config.lifetime_ms);
-    let mut streams = Vec::new();
-    for listener in listeners {
-        loop {
-            owner_alive(owner, end)?;
-            match listener.accept() {
-                Ok((stream, _)) => {
-                    streams.push(stream);
-                    break;
-                }
-                Err(error) if error.kind() == io::ErrorKind::WouldBlock => {
-                    std::thread::sleep(Duration::from_millis(5))
-                }
-                Err(error) => return Err(error),
-            }
-        }
-    }
-    std::thread::scope(|scope| {
-        let mut workers = Vec::new();
-        for (lane, stream) in [
-            HostAuthorityLane::Observation,
-            HostAuthorityLane::Issuer,
-            HostAuthorityLane::Checkpoint,
-        ]
-        .into_iter()
-        .zip(streams)
-        {
-            let pidfd = owner.try_clone()?;
-            let lifetime = end
-                .checked_duration_since(Instant::now())
-                .ok_or_else(|| io::Error::other("session lifetime elapsed"))?;
-            let policy = HostAuthorityPeerPolicy {
-                peer: HostIssuerPeer {
-                    uid: config.peer_uid,
-                    pid: registration.peer_pid,
-                },
-                timeout: Duration::from_millis(config.timeout_ms),
-                lifetime,
-                request_bound: 1,
-                response_bound: 1,
-            };
-            workers.push(scope.spawn(move || service.serve(lane, stream, policy, pidfd)));
-        }
-        for worker in workers {
-            worker
-                .join()
-                .map_err(|_| io::Error::other("authority lane panicked"))?
-                .map_err(io::Error::other)?;
-        }
-        Ok(())
-    })
 }
 
 fn owner_alive(owner: &OwnedFd, end: Instant) -> io::Result<()> {
