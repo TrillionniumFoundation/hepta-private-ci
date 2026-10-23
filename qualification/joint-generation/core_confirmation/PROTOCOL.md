@@ -1,10 +1,11 @@
 # Core-c1: prospective content-control and NDU confirmation
 
-This is a review draft, not a frozen or executed experiment. No core-c1 split,
-model, calibration, validation, or test has been constructed by writing this
-protocol. The final reviewed source, this document, and `plan.json` must be
-committed and bound before execution. The existing engine is reused through the
-fixed `core-c1` experiment registry; a second training/control center is excluded.
+This is prospective registration v1. At registration, no core-c1 split, model,
+calibration, validation, or test had been constructed. The final reviewed source,
+this document, and `plan.json` must be committed and bound before execution;
+actual execution status belongs in separate retained run receipts. The existing
+engine is reused through the fixed `core-c1` experiment registry; a second
+training/control center is excluded.
 Execution remains in the saved hepta-private-ci Codex cloud environment. No
 temporary dot workspace, user computer, Actions run, quota workaround, or access
 denial bypass substitutes for that environment.
