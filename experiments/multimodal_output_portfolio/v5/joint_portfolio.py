@@ -267,11 +267,28 @@ def conditional_ce(values, probabilities, gamma):
     ) / gamma
 
 
+class SolverBudgetExceeded(RuntimeError):
+    """The finite value search exhausted its separately metered work cap."""
+
+
 class JointController:
     """Finite nonanticipative Bellman solver, not a neural FBSDE solver."""
 
-    def __init__(self, cfg: Profile):
+    def __init__(self, cfg: Profile, max_expansions: int = 100000):
+        if type(max_expansions) is not int or max_expansions < 1:
+            raise ValueError("invalid finite solver work cap")
         self.cfg = cfg
+        self.max_expansions = max_expansions
+        self.value_expansions = 0
+
+    def select_with_fallback(self, state: PublicState):
+        """Explicit bounded-work advisory; never claim fallback is optimal."""
+        legal_actions(state, self.cfg)
+        try:
+            action, value = self.solve(state)
+        except SolverBudgetExceeded:
+            return STOP, self.terminal(state), "BUDGETED_STOP_FALLBACK"
+        return action, value, "EXACT_FINITE_VALUE"
 
     def terminal(self, state: PublicState):
         output = emission(state)
@@ -288,6 +305,9 @@ class JointController:
 
     @lru_cache(maxsize=100000)
     def solve(self, state: PublicState):
+        if self.value_expansions >= self.max_expansions:
+            raise SolverBudgetExceeded("finite value search cap exceeded")
+        self.value_expansions += 1
         candidates = legal_actions(state, self.cfg)
         best_action, best_value = STOP, self.terminal(state)
         for action in candidates[1:]:
