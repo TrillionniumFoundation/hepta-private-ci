@@ -174,6 +174,34 @@ ablation. The no-query arm is a **nested/weak mechanistic ablation**, not a
 strong empirical comparator against equal-cost MoE, static, best-of-N, MPC
 or true foundation decoders.
 
+### Independent-witness reliability is a real risk state, not a promise
+
+The independent terminal enumerator accepts a second **external-only**
+witness law, `shared_report_zero`: the purchased observation always
+repeats public report zero, regardless of latent truth. The controller
+and its frozen 98%-accurate witness assumption remain **unchanged**.
+The query is now correlated with the original repeated report and adds
+no information. In a preregisterable future evaluation, this would
+require a distinct source-likelihood calibration and invalidation
+protocol; it is an adversarial **toy** stress here.
+
+In the declared horizon-2, 10-unit ambiguous-source development case,
+the independently enumerated terminal statistics are:
+
+| Same source/world protocol | Mean loss | CVaR90 | Entropic utility | Modeled units |
+| --- | ---: | ---: | ---: | ---: |
+| Frozen NDU, independent witness | 3.28 | 8.16 | -7.578925 | 9 |
+| Frozen NDU, shared-report witness shift | 5.20 | 12.00 | -10.175431 | 9 |
+| Frozen no-query policy, shifted witness world | 2.96 | 7.60 | -8.631012 | 10 |
+
+These are **exact synthetic scenario enumerations**, not sampling
+confidence intervals or independently measured model performance. The
+no-query ablation is not a strong external model comparator. The specific
+shift falsifies any assertion that a nominally optimal portfolio remains
+robust merely because a paid verification call was made. A real witness
+would require independent source identity, empirical conditional
+likelihoods, unknown-correlation safeguards, and an abstention/slow path.
+
 This is **only** a fixed-prior/fixed-witness-accuracy finite toy, not
 independent natural evidence, a trained full-modal system, a calibrated
 joint error model or a general robust FBSDE solution. The paid query has
