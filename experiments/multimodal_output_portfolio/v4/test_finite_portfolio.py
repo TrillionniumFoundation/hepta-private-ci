@@ -140,7 +140,7 @@ class FinitePortfolioTests(unittest.TestCase):
     def test_state_limit_does_not_silently_change_solution(self):
         p = Portfolio(Model(), max_states=1)
         with self.assertRaisesRegex(InvalidModel, 'planning-state cap'):
-            p.solve(State((0,0,0,0), budget=6)
+            p.solve(State((0,0,0,0), budget=6))
 
 
 if __name__ == '__main__':
