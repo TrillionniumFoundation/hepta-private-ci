@@ -9,6 +9,7 @@ import subprocess
 import sys
 import tempfile
 import unittest
+from unittest import mock
 
 from cohort_firewall import CohortContractError, check_cohort, load_sources
 
@@ -444,6 +445,44 @@ class CohortFirewallTests(unittest.TestCase):
             self.assertEqual(result.returncode, 2, result.stderr)
             self.assertIn("byte limit", json.loads(output.read_text())["error"])
 
+
+    @unittest.skipUnless(os.name == "posix", "link-race tests require POSIX")
+    def test_cli_atomic_receipt_does_not_follow_late_link_swap(self):
+        # Reproduce a path replacement after all validation but before publish.
+        # A direct Path.write_text call would overwrite the protected input.
+        from cohort_firewall import main
+        for alias_kind in ("symlink", "hardlink"):
+            with self.subTest(alias=alias_kind), tempfile.TemporaryDirectory() as td:
+                root = Path(td)
+                candidate = root / "candidate.json"
+                history = root / "history.json"
+                destination = root / "receipt.json"
+                candidate.write_text("{}")  # Intentionally invalid cohort.
+                history.write_text("{}")
+                original_candidate = candidate.read_bytes()
+                original_history = history.read_bytes()
+                real_replace = os.replace
+
+                def swap_late(temporary, target):
+                    self.assertEqual(Path(target), destination)
+                    if alias_kind == "symlink":
+                        destination.symlink_to(candidate)
+                    else:
+                        destination.hardlink_to(candidate)
+                    return real_replace(temporary, target)
+
+                args = ["--candidate", str(candidate),
+                        "--historical", str(history),
+                        "--historical-sha256", hashlib.sha256(original_history).hexdigest(),
+                        "--output", str(destination)]
+                with mock.patch("cohort_firewall.os.replace", side_effect=swap_late) as patched:
+                    status = main(args)
+                self.assertEqual(status, 2)
+                self.assertEqual(patched.call_count, 1)
+                self.assertEqual(candidate.read_bytes(), original_candidate)
+                self.assertEqual(history.read_bytes(), original_history)
+                self.assertFalse(destination.is_symlink())
+                self.assertEqual(json.loads(destination.read_text())["status"], "fail")
 
 if __name__ == "__main__":
     unittest.main()
