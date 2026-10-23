@@ -247,6 +247,8 @@ def fractional_cvar(losses: list[tuple[float, float]], alpha: float = 0.9) -> fl
     """Worst tail mass with fractional boundary; no ceil-tail underpricing."""
     if not (0 < alpha < 1) or not losses:
         raise InvalidModel("invalid tail level/distribution")
+    if any(not isfinite(loss) or not isfinite(p) or p < 0 for loss, p in losses):
+        raise InvalidModel("nonfinite loss or invalid mass")
     tail = 1 - alpha
     left = tail
     total = 0.0
