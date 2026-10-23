@@ -687,9 +687,19 @@ worker-entry boundary; the compatibility default still validates delivery only.
 Before irreversible admission, a target checks that the sealed request came
 from its configured authority instance. This non-consuming identity comparison
 does not validate expiry or revocation; the final entry check remains required.
-Signed nonce, expiry, revocation, wrong-owner and existing lost-ack controls cover
-this interface. It does not supply a physical CPU destination, qualify legacy
-adapters, prove resource release or change the original retained-charge failure.
+The ordinary CPU destination now binds a fixed program, arguments and working
+directory to the complete intent, commits dedupe and one of sixteen permanent
+lifetime entries in the same destination transaction, and retains the actual
+Child at the final synchronous spawn boundary. Unsigned delivery and a different
+authority instance cannot allocate an entry. Signed source-route controls cover
+expiry/revocation across the actual SQLite wait, lost acknowledgement, lost Child
+ownership, and nonzero exit without redispatch. Only the original Child's timely
+zero exit plus durable terminal storage establishes an ordinary exit fact; the
+eight-second bound applies to first exit observation. This source composition
+does not qualify legacy adapters, pool/process cold recovery, outer resource
+release or model acceptance, and does not change the original retained-charge
+failure. The existing three rounds of real model upgrades and the five-budget
+qualification remain open.
 
 The earlier Chain `6724ed1` campaign did not observe genuine paid-credit
 depletion. On Chain `873d5cb`, all three baseline phases and all three late-product

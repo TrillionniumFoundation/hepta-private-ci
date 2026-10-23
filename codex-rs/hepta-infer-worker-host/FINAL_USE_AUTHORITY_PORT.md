@@ -24,8 +24,8 @@ entry, and an error or ambiguous commit cannot return a new-entry decision. This
 storage stage does not start a Child or issue terminal authority. Its fixture
 replaces all physical connections in the same pool and rebuilds the owner; it
 does not qualify pool/process cold recovery or change the disabled production
-recovery APIs. Actual Child ownership, the signed source route and the original
-U/C/A resource qualification remain required parts of the same PN3/PN4 work.
+recovery APIs. The target and signed route below compose this prerequisite;
+the original U/C/A resource qualification remains open in the same PN3/PN4 work.
 
 The ordinary target retains the original sealed dispatch through destination
 admission and consumes its claim at synchronous fixed-program/arguments/cwd

@@ -159,7 +159,21 @@ Append-only local history is not deleted in place. Long-lived retention requires
 
 The source prepare transaction linearizes operation/event/outbox identity. A bounded dispatch lease may be renewed/taken over only while the effect boundary has not been crossed. Before target entry the writer persists a one-shot ambiguous-effect fence; after that point restart/reopen must reconcile rather than resend.
 
-`ProductionDispatchRequest` carries subject, destination, payload digest, scope digest, policy generation, full `OperationIntentV1` semantic digest and optional expected predecessor. `ProductionFinalUseOutboxDispatcher` claims the existing final-use authority and seals that original source-verified request, binding and non-cloneable token in `ProductionVerifiedDispatch`. Only the production writer constructs this envelope; consumers cannot extract its token or replace its request/binding. A physical target completes asynchronous preparation first, then consumes the envelope through its preconfigured authority's synchronous dispatch boundary and immediately retains the real effect owner. The compatibility target method retains delivery-only verification and does not qualify legacy asynchronous adapters as physical final-use boundaries. Final-use failures retain their existing typed source rejection path.
+`ProductionDispatchRequest` carries subject, destination, payload digest, scope digest, policy generation, full `OperationIntentV1` semantic digest and optional expected predecessor. `ProductionFinalUseOutboxDispatcher` claims the existing final-use authority and seals that original source-verified request, binding and non-cloneable token in `ProductionVerifiedDispatch`. Only the production writer constructs this envelope; consumers cannot extract its token or replace its request/binding. A physical target completes asynchronous preparation first, then consumes the envelope through its preconfigured authority's synchronous dispatch boundary and immediately retains the real effect owner. The compatibility target method retains delivery-only verification and does not qualify legacy asynchronous adapters as physical final-use boundaries. Definite pre-effect final-use failures retain their existing typed source rejection path; a possible physical effect cannot become rejected or safely retryable.
+
+`OrdinaryCpuTarget` is the bounded CPU destination for this same PN3/PN4 path.
+The trusted host registers the complete fixed program/arguments/cwd payload and
+supplies the already-migrated durable pool and original authority. The target
+checks the authority instance before admission, commits original dedupe and one
+of sixteen permanent entries in the same transaction, then consumes the sealed
+dispatch at synchronous spawn and retains that actual Child. Entries, including
+terminal tombstones, are never pruned or refunded. Only that Child's timely zero
+exit plus durable terminal storage can settle `Applied`; missing ownership,
+nonzero/late exit or uncertain durability stays indeterminate. Signed source-route
+and actual SQLite-wait race controls qualify repository composition; they do not
+establish pool/process cold recovery, wait4/cgroup resource retirement, model
+acceptance or deployed authority custody. See the existing
+[worker authority boundary](../../../codex-rs/hepta-infer-worker-host/FINAL_USE_AUTHORITY_PORT.md).
 
 `AgentdProductionWriterHost` is final-use-only and supports stable destination registration plus bounded observer-only reconciliation. It requires externally supplied authority/grants; default daemon startup does not synthesize them.
 
