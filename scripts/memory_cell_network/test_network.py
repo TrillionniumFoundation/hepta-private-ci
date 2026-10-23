@@ -2,11 +2,16 @@
 
 import base64
 from concurrent.futures import ThreadPoolExecutor
+import json
 import multiprocessing
 import os
 from pathlib import Path
+import select
 import shutil
+import signal
+import sys
 import tempfile
+import time
 import unittest
 
 from network_checkpoints import pack
@@ -111,6 +116,12 @@ class NetworkTests(unittest.TestCase):
         self.assertFalse(before["journal"]["fact_input"])
         self.assertFalse(before["journal"]["retrieval_input"])
         self.assertFalse(before["journal"]["answer_lexicon_input"])
+        self.assertNotEqual(before["pid"], before["journal"]["decoder_process"]["pid"])
+        self.assertEqual(before["journal"]["decoder_process"]["returncode"], 0)
+        self.assertEqual(
+            before["journal"]["decoder_process"]["tensor_lifetime"],
+            "child_process_completed",
+        )
         self.assertEqual(
             before["journal"]["admitted_adapter_state_sha256"],
             controls["base"]["journal"]["admitted_adapter_state_sha256"],
@@ -254,6 +265,120 @@ class NetworkTests(unittest.TestCase):
             with self.assertRaisesRegex(RemoteError, "rollback"):
                 call(node.address, self.key, self.request)
         self.assertEqual(self.counts(), {"a": 0, "b": 0})
+
+    @unittest.skipUnless(
+        sys.platform == "linux" and hasattr(os, "pidfd_open"),
+        "Linux parent-death and pidfd qualification",
+    )
+    def test_failed_decoder_and_inflight_worker_kill_preserve_restart_reads(self):
+        self.a.stop()
+        model_argument = self.a.arguments.index("--model") + 1
+        self.a.arguments[model_argument] = str(self.root / "absent-model")
+        self.a.start()
+        with self.assertRaisesRegex(RemoteError, "isolated decoder exited"):
+            self.client.read("alpha", "memory", self.request["questions"])
+        receipts = self.a.root / "model-processes"
+        failure = json.loads(next(receipts.glob("*.result.json")).read_text())
+        self.assertNotEqual(failure["returncode"], 0)
+        self.assertEqual(failure["bootstrap"]["parent_pid"], self.a.process.pid)
+        self.assertEqual(
+            call(self.a.address, self.key, {"op": "status"})["model_callbacks"], 1
+        )
+        self.a.stop()
+        self.a.arguments[model_argument] = str(self.base)
+        self.a.start()
+        before = self.client.read("alpha", "memory", self.request["questions"])
+        known = set(receipts.glob("*.stderr.txt"))
+        child_fd = None
+        with ThreadPoolExecutor(max_workers=1) as executor:
+            pending = executor.submit(
+                call,
+                self.a.address,
+                self.key,
+                dict(self.request, questions=self.request["questions"] * 128),
+            )
+            try:
+                deadline = time.monotonic() + 30
+                startup = None
+                while startup is None and time.monotonic() < deadline:
+                    for path in set(receipts.glob("*.stderr.txt")) - known:
+                        lines = path.read_text().splitlines()
+                        if lines:
+                            startup, stderr_path = json.loads(lines[0]), path
+                    if startup is None:
+                        time.sleep(0.01)
+                self.assertIsNotNone(startup, "decoder bootstrap was not observed")
+                child_pid = startup["pid"]
+                child_fd = os.pidfd_open(child_pid)
+                os.kill(child_pid, signal.SIGSTOP)
+                # procfs can expose an outer PID namespace in a local sandbox.
+                fdinfo = Path(f"/proc/self/fdinfo/{child_fd}").read_text()
+                proc_pid = int(
+                    next(
+                        line.split()[1]
+                        for line in fdinfo.splitlines()
+                        if line.startswith("Pid:")
+                    )
+                )
+                state = Path(f"/proc/{proc_pid}/stat")
+                while state.read_text().split(") ", 1)[1].split()[0] != "T":
+                    if time.monotonic() >= deadline:
+                        self.fail("decoder did not enter the observed stopped state")
+                    time.sleep(0.01)
+                worker_pid = self.a.process.pid
+                self.assertEqual(startup["parent_pid"], worker_pid)
+                self.assertEqual(startup["parent_death"]["status"], "bound")
+                self.a.process.kill()
+                self.a.process.wait(timeout=10)
+                self.assertEqual(select.select([child_fd], [], [], 10)[0], [child_fd])
+                with self.assertRaises(OSError):
+                    pending.result(timeout=10)
+                try:
+                    proc_fields = state.read_text().split(") ", 1)[1].split()
+                    observed = {
+                        "proc_state": proc_fields[0],
+                        "adopted_parent_pid": int(proc_fields[1]),
+                        "wait_status": int(proc_fields[49]),
+                        "proc_entry_present": True,
+                    }
+                    self.assertEqual(observed["proc_state"], "Z")
+                    self.assertEqual(
+                        os.WTERMSIG(observed["wait_status"]), signal.SIGKILL
+                    )
+                except FileNotFoundError:
+                    observed = {"proc_entry_present": False, "reaped_by_test": False}
+                observation = {
+                    "schema": "hepta.memory-network.parent-death-observation.v1",
+                    "worker_pid": worker_pid,
+                    "worker_returncode": self.a.process.returncode,
+                    "child_start": startup,
+                    "child_exit_observed_by_pidfd": True,
+                    "procfs_pid": proc_pid,
+                    "child_returncode": None,
+                    "raw_stderr": stderr_path.read_text(),
+                    "child_was_stopped_before_parent_kill": True,
+                    "child_ceased_execution": True,
+                    "post_exit_observation": observed,
+                    "test_is_not_the_child_reaper": True,
+                    "failed_decoder_process": failure,
+                }
+            finally:
+                self.a.stop()
+                if child_fd is not None:
+                    if not select.select([child_fd], [], [], 0)[0]:
+                        signal.pidfd_send_signal(child_fd, signal.SIGKILL)
+                    os.close(child_fd)
+        self.a.start()
+        after = self.client.read("alpha", "memory", self.request["questions"])
+        self.assertNotEqual(before["pid"], after["pid"])
+        self.assertEqual(after["placement"], self.initial)
+        self.assertEqual(decoder_rows(before), decoder_rows(after))
+        observation["restarted_worker_pid"] = after["pid"]
+        observation["restarted_decoder_process"] = after["journal"]["decoder_process"]
+        observation["before_read"] = before
+        observation["after_read"] = after
+        observation["checkpoint_and_raw_read_preserved"] = True
+        print(json.dumps(observation, sort_keys=True), flush=True)
 
     def test_placement_and_revocation_changes_during_real_callback_discard_output(self):
         context = multiprocessing.get_context("spawn")

@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - codex/memory-system-final-20261023
+      - codex/memory-runtime-final-20261023
     paths:
       - scripts/memory_cell_service/**
       - scripts/memory_cell_network/**
@@ -39,8 +40,10 @@ jobs:
   typed-memory-mechanisms:
     if: >-
       github.event_name == 'workflow_dispatch' ||
-      (github.event_name == 'push' && github.ref == 'refs/heads/codex/memory-system-final-20261023') ||
-      (github.event_name == 'pull_request' && github.head_ref == 'codex/memory-system-final-20261023')
+      (github.event_name == 'push' &&
+        contains(fromJSON('["refs/heads/codex/memory-system-final-20261023", "refs/heads/codex/memory-runtime-final-20261023"]'), github.ref)) ||
+      (github.event_name == 'pull_request' &&
+        contains(fromJSON('["codex/memory-system-final-20261023", "codex/memory-runtime-final-20261023"]'), github.head_ref))
     runs-on: ubuntu-slim
     timeout-minutes: 15
     steps:
