@@ -11,7 +11,10 @@ Neuron Cells. It is deliberately deterministic and advisory.
 - 'GroupCellObservationV1' carries each Cell's head/action evidence and a
   bounded resource cost.
 - 'GroupDecisionTraceV1' binds the input, route, behavior, terminal outcome,
-  complete candidate-set digest, and every Cell observation.
+  complete candidate-set digest, and every Cell observation. Its required
+  'subject_binding_digest' seals the full owner tuple (subject class, group,
+  generation, objective, shared Encoder, utility profile and resource ceiling),
+  and stale or cross-owner traces now fail closed.
 - 'decide_group_continuation_v1' requires one legal explicit abstain candidate,
   rejects duplicate candidate IDs and duplicate Cell observations, rejects
   negative cost/risk/uncertainty, verifies subject/generation bindings,
@@ -60,3 +63,17 @@ This fixture is not a learned critic and does not mutate runtime state. The
 future learned critic and adaptive-depth model should be trained offline and
 promoted only after it beats this deterministic baseline on replayable utility,
 risk, resource, abstention, calibration, and OOD slices.
+
+## Full-owner trace binding (draft compatibility change)
+
+The old research trace accepted a same-subject/same-generation record when
+replayed against a different Group or Encoder. The decision digest included the
+new subject, but the incoming trace had no matching owner-tuple commitment to
+verify. The strengthened draft trace now requires an explicit canonical
+`subject_binding_digest`, checked before candidate selection. Its bytes are
+also part of the decision trace digest, so old draft receipts cannot silently
+qualify under the new schema.
+
+This is an owner-local consistency check, **not** an authenticated signature,
+real Encoder forward receipt, independent evidence observation, or runtime
+permission. Do not infer P0/P3 or production qualification from unit tests.
