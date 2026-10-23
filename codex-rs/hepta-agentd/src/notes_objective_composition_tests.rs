@@ -194,3 +194,116 @@ async fn notes_objective_protected_factory_checks_complete_binding_before_recove
     );
     Ok(())
 }
+
+#[tokio::test]
+async fn notes_objective_session_registration_returns_observer_for_the_same_private_target()
+-> Result<(), Box<dyn Error>> {
+    let NotesHostFixture {
+        directory: _directory,
+        host,
+        final_use,
+        issuer,
+        ..
+    } = notes_host_fixture().await?;
+    let identity = NotesTargetIdentity {
+        session_instance: "1".repeat(32),
+        task_id: 1,
+        incarnation: "2".repeat(32),
+    };
+    let (parent, session) = UnixDatagram::pair()?;
+    let (effect, mut application_effect) = UnixStream::pair()?;
+    let (recovery, application) = UnixDatagram::pair()?;
+    let peer_identity = identity.clone();
+    let peer = std::thread::spawn(move || -> Result<(), String> {
+        let offer = serde_json::to_vec(&serde_json::json!({
+            "schema_version":2,"action":"offer_notes_target","target":peer_identity,
+            "destination_id":peer_identity.destination_id()
+        }))
+        .map_err(|error| error.to_string())?;
+        let mut vector = libc::iovec {
+            iov_base: offer.as_ptr().cast_mut().cast(),
+            iov_len: offer.len(),
+        };
+        let mut control = [0_usize; 4];
+        // SAFETY: this bounded datagram borrows two live socket descriptors;
+        // payload and aligned ancillary storage remain live through sendmsg.
+        let sent = unsafe {
+            let mut message: libc::msghdr = mem::zeroed();
+            message.msg_iov = &mut vector;
+            message.msg_iovlen = 1;
+            message.msg_control = control.as_mut_ptr().cast();
+            message.msg_controllen =
+                libc::CMSG_SPACE((2 * mem::size_of::<libc::c_int>()) as u32) as usize;
+            let header = libc::CMSG_FIRSTHDR(&message);
+            (*header).cmsg_level = libc::SOL_SOCKET;
+            (*header).cmsg_type = libc::SCM_RIGHTS;
+            (*header).cmsg_len =
+                libc::CMSG_LEN((2 * mem::size_of::<libc::c_int>()) as u32) as usize;
+            let descriptors = libc::CMSG_DATA(header).cast::<libc::c_int>();
+            descriptors.write(effect.as_raw_fd());
+            descriptors.add(1).write(recovery.as_raw_fd());
+            libc::sendmsg(session.as_raw_fd(), &message, libc::MSG_NOSIGNAL)
+        };
+        assert_eq!(sent, offer.len() as isize);
+        drop(effect);
+        drop(recovery);
+        session
+            .set_read_timeout(Some(Duration::from_secs(5)))
+            .map_err(|error| error.to_string())?;
+        application
+            .set_read_timeout(Some(Duration::from_secs(5)))
+            .map_err(|error| error.to_string())?;
+        application_effect
+            .set_nonblocking(true)
+            .map_err(|error| error.to_string())?;
+        let mut bytes = [0_u8; 8192];
+        let size = session
+            .recv(&mut bytes)
+            .map_err(|error| error.to_string())?;
+        let ack: serde_json::Value =
+            serde_json::from_slice(&bytes[..size]).map_err(|error| error.to_string())?;
+        assert_eq!(ack["status"], "attached");
+        let size = application
+            .recv(&mut bytes)
+            .map_err(|error| error.to_string())?;
+        let request: serde_json::Value =
+            serde_json::from_slice(&bytes[..size]).map_err(|error| error.to_string())?;
+        assert_eq!(request["action"], "read_document_state");
+        assert_eq!(
+            request["target"],
+            serde_json::to_value(&peer_identity).unwrap()
+        );
+        let response = serde_json::to_vec(&serde_json::json!({
+            "schema_version":1,"action":"document_state","request_id":request["request_id"],
+            "target":peer_identity,"revision":17,"text_sha256":Sha256Digest::for_bytes(b"owner document").as_str(),
+            "receipt_pending":false
+        })).map_err(|error| error.to_string())?;
+        application
+            .send(&response)
+            .map_err(|error| error.to_string())?;
+        assert_eq!(
+            application_effect.read(&mut [0_u8; 1]).unwrap_err().kind(),
+            std::io::ErrorKind::WouldBlock
+        );
+        Ok(())
+    });
+    let (host, target, observer) = host
+        .attach_notes_from_session_with_observer(parent, final_use, issuer.clone())
+        .await?;
+    assert_eq!(&target, &identity);
+    assert_eq!(observer.target(), &target);
+    assert!(host.has_destination(&target.destination_id()));
+    let observation = tokio::task::spawn_blocking(move || observer.observe_document()).await??;
+    assert_eq!(
+        observation,
+        codex_hepta_memory::NotesDocumentState {
+            target: identity,
+            revision: 17,
+            text_sha256: Sha256Digest::for_bytes(b"owner document"),
+            receipt_pending: false,
+        }
+    );
+    assert_eq!(issuer.requests.load(Ordering::SeqCst), 0);
+    peer.join().expect("registered Notes observer peer")?;
+    Ok(())
+}

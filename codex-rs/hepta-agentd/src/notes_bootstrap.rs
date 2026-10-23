@@ -26,6 +26,7 @@ use crate::AgentdConfig;
 use crate::AgentdError;
 use crate::AgentdFinalUseGrantProvider;
 use crate::AgentdNotesChannel;
+use crate::AgentdNotesDocumentObserver;
 use crate::AgentdProductionOperationRuntimeConfig;
 use crate::AgentdProductionWriterHost;
 
@@ -79,6 +80,20 @@ impl AgentdProductionWriterHost {
         final_use: FinalUseAuthority,
         grants: Arc<dyn AgentdFinalUseGrantProvider>,
     ) -> Result<(Self, NotesTargetIdentity), AgentdError> {
+        let (host, target, _) = self
+            .attach_notes_from_session_with_observer(bootstrap, final_use, grants)
+            .await?;
+        Ok((host, target))
+    }
+
+    /// Register the same fixed target and return a restricted read-only handle
+    /// for the trusted compiler's actual document predecessor observation.
+    pub async fn attach_notes_from_session_with_observer(
+        self,
+        bootstrap: UnixDatagram,
+        final_use: FinalUseAuthority,
+        grants: Arc<dyn AgentdFinalUseGrantProvider>,
+    ) -> Result<(Self, NotesTargetIdentity, AgentdNotesDocumentObserver), AgentdError> {
         self.attach_session_notes(bootstrap, final_use, Attachment::Primary(grants))
             .await
     }
@@ -95,8 +110,10 @@ impl AgentdProductionWriterHost {
                 "Notes bootstrap requires the original grant provider".to_string(),
             ));
         }
-        self.attach_session_notes(bootstrap, final_use, Attachment::Additional)
-            .await
+        let (host, target, _) = self
+            .attach_session_notes(bootstrap, final_use, Attachment::Additional)
+            .await?;
+        Ok((host, target))
     }
 
     async fn attach_session_notes(
@@ -104,36 +121,28 @@ impl AgentdProductionWriterHost {
         bootstrap: UnixDatagram,
         final_use: FinalUseAuthority,
         attachment: Attachment,
-    ) -> Result<(Self, NotesTargetIdentity), AgentdError> {
+    ) -> Result<(Self, NotesTargetIdentity, AgentdNotesDocumentObserver), AgentdError> {
         let deadline = Instant::now() + Duration::from_secs(2);
         let (offer, endpoint, recovery) = receive_session(&bootstrap, deadline)?;
         let identity = offer.target.clone();
         let attached = tokio::time::timeout(remaining(deadline)?, async {
-            match attachment {
+            let target = self
+                .notes_recoverable_target(identity.clone(), endpoint, recovery)
+                .await?;
+            let observer = AgentdNotesDocumentObserver::new(target.document_observer());
+            let host = match attachment {
                 Attachment::Primary(grants) => {
-                    self.attach_notes_recoverable_target(
-                        identity.clone(),
-                        endpoint,
-                        recovery,
-                        final_use,
-                        grants,
-                    )
-                    .await
+                    self.attach_target(final_use, Arc::new(target), grants)
                 }
                 Attachment::Additional => {
-                    self.attach_additional_notes_recoverable_target(
-                        identity.clone(),
-                        endpoint,
-                        recovery,
-                        final_use,
-                    )
-                    .await
+                    self.attach_additional_target(final_use, Arc::new(target))
                 }
-            }
+            }?;
+            Ok::<_, AgentdError>((host, observer))
         })
         .await;
-        let host = match attached {
-            Ok(Ok(host)) => host,
+        let (host, observer) = match attached {
+            Ok(Ok(attached)) => attached,
             Ok(Err(error)) => {
                 let _ = acknowledge(&bootstrap, &offer, RegistrationStatus::Rejected, deadline);
                 return Err(error);
@@ -147,7 +156,7 @@ impl AgentdProductionWriterHost {
         acknowledge(&bootstrap, &offer, RegistrationStatus::Attached, deadline)?;
         // Dropping bootstrap closes the sole handoff channel. A second offer
         // has no receive path and cannot replace this fixed target.
-        Ok((host, identity))
+        Ok((host, identity, observer))
     }
 }
 

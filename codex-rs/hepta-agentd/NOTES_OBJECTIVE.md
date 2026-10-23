@@ -20,7 +20,8 @@ independent Current cut, binds the protected checkpoint, and only then creates
 one original writer and read side. The receipt and fixed-peer transport are
 deployment inputs; this factory does not create a Current witness or issuer.
 
-Attach the real Session Notes handoff with `host.attach_notes_from_session`,
+Attach the real Session Notes handoff with
+`host.attach_notes_from_session_with_observer`,
 register that returned target and the frozen profile with `with_notes_objective`,
 and install the same `Arc<AgentdProductionWriterHost>` using
 `with_production_writer_host`. Construct `original_objective_sender` with the
@@ -30,6 +31,16 @@ and grant provider, and starts the original operation reconciler. No additional
 HOS2 destination or parallel SQLite owner is required. The trusted typed desktop
 listener must run in this host process and retain this same writer and sender;
 opening another writable database owner in the listener is not this composition.
+
+The handoff also returns `AgentdNotesDocumentObserver`. On its bounded blocking
+worker, the trusted compiler calls `observe_document()` immediately before a new
+operation. This reads the same fixed target's actual revision and text digest
+through the existing private recovery channel, using a fresh random response
+nonce. A pending receipt or failed read must stop compilation until the original
+owner reconciles it; neither UI-supplied revisions nor a local counter replace
+the observation. Local edits after the read remain protected by the application's
+atomic predecessor comparison. The observer cannot dispatch effects, retire
+receipts or issue authority, and the old two-endpoint handoff remains unchanged.
 
 Before signing Objective ingress, the trusted compiler must prepare the exact
 original `OperationIntentV1` and payload with the installed writer. Its
@@ -58,8 +69,8 @@ The bounded runtime monitor revisits up to sixteen original publications per
 cycle. It does not invent new runs for stale generations. Original operation
 recovery can observe an unresolved effect across writer handoff; projection of
 historical runs across Agentd generation changes remains governed by the
-existing Run owner. This adapter does not change that owner's schema or claim
-that Notes' in-memory document survives application restart or power loss.
+existing Run owner. This adapter does not change that owner's schema or replace
+the selected Notes application's independent storage and recovery guarantees.
 
 `notes_objective_tests.rs` runs original signed admission, profile compilation,
 durable publication, Run transitions, production operation dispatch, application

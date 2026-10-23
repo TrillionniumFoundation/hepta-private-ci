@@ -94,7 +94,10 @@ impl NotesPrivateChannel for AgentdNotesChannel {
         let action = expected["action"]
             .as_str()
             .ok_or("missing Notes recovery action")?;
-        if !matches!(action, "observe" | "acknowledge_terminal") {
+        if !matches!(
+            action,
+            "observe" | "acknowledge_terminal" | "read_document_state"
+        ) {
             return Err("Notes recovery cannot carry effects".to_string());
         }
         let channel = self
@@ -132,7 +135,18 @@ impl NotesPrivateChannel for AgentdNotesChannel {
             };
             if reply["schema_version"] != expected["schema_version"]
                 || reply["target"] != expected["target"]
-                || reply["operation_id"] != expected["operation_id"]
+            {
+                continue;
+            }
+            if action == "read_document_state" {
+                if reply["action"] == "document_state"
+                    && reply["request_id"] == expected["request_id"]
+                {
+                    return Ok(buffer[..length].to_vec());
+                }
+                continue;
+            }
+            if reply["operation_id"] != expected["operation_id"]
                 || reply["payload_sha256"] != expected["payload_sha256"]
             {
                 continue;
@@ -221,7 +235,7 @@ impl AgentdProductionWriterHost {
         self.attach_additional_target(final_use, Arc::new(target))
     }
 
-    async fn notes_recoverable_target(
+    pub(crate) async fn notes_recoverable_target(
         &self,
         identity: NotesTargetIdentity,
         effect: UnixStream,

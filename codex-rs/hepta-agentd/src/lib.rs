@@ -39,6 +39,8 @@ mod neuron_runtime;
 mod notes_bootstrap;
 #[cfg(unix)]
 mod notes_channel;
+#[cfg(target_os = "linux")]
+mod notes_document_observer;
 mod objective_runtime;
 mod plasticity_anchor_journal;
 mod plasticity_host;
@@ -214,6 +216,8 @@ pub use lane_b_runtime::RuntimeComposition;
 pub use neuron_runtime::AgentdNeuronOwner;
 #[cfg(unix)]
 pub use notes_channel::AgentdNotesChannel;
+#[cfg(target_os = "linux")]
+pub use notes_document_observer::AgentdNotesDocumentObserver;
 pub use objective_runtime::authbus_objective_claims;
 pub use plasticity_host::AgentdPlasticityAdmissionInputV1;
 pub use plasticity_host::AgentdPlasticityAnchorStoreV1;
