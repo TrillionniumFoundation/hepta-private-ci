@@ -66,9 +66,13 @@ better decoded raw utility. The [t5 report](runs/codex-cloud-efficient-r2-t5/REP
 retains the actual build, scope and complete-cost boundaries.
 
 The core content/NDU generation claim and the stronger adaptive-continuation
-claim have separate evidence states. Core validation contrasts are positive but
-not independently tested. The frozen r2 dynamic gates remain failed. Neither a
-service smoke nor a transport contract permits an overall first-goal pass.
+claim have separate evidence states. Core validation contrasts were positive;
+the subsequent independent [CORE c1 t2 confirmation](runs/codex-cloud-core-c1-t2/REPORT.md)
+completed once with exit 1. All six preregistered primary intervals crossed
+zero despite positive means, so the independent core benefit claim remains
+unconfirmed. Its test is consumed and cannot be used for tuning or repeated.
+The frozen r2 dynamic gates remain failed and its formal test stays unopened.
+Neither a service smoke nor a transport contract permits an overall first-goal pass.
 
 The [t6 affine report](runs/codex-cloud-efficient-r2-t6/REPORT.md) shows positive
 same-weight routing means for every seed, but only 164/172/169 control updates

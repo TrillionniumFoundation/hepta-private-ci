@@ -132,9 +132,16 @@ complete control CPU-net benefit remained -0.002650. This is still a failed
 readiness result, not independent first-goal acceptance. The r2 test stays shut.
 The [t11 native-Adam build](runs/codex-cloud-efficient-r2-t11/REPORT.md) retained
 another exit 2, with complete dynamic CPU-net -0.002637 and no cap violations.
-R2's stronger dynamic claim remains open. A separate prospective `core-c1`
-confirmation protocol will test the user's core content/NDU claim with new
-physical sources and its own sealed test; it cannot relabel any r2 failure.
+R2's stronger dynamic claim remains open. The separately preregistered
+[CORE c1 t2 confirmation](runs/codex-cloud-core-c1-t2/REPORT.md) used fresh
+physical sources and useful always-full baselines. TRAIN/validation exited 0
+under all complete caps; all 12 selected models actually updated their content
+parameters. Its sole formal evaluation exited **1**: both contribution means
+were positive, but all six required content-control/NDU confidence intervals
+crossed zero. The core benefit claim is **not confirmed**. This new test is now
+opened and permanently consumed; keep its markers and do not rerun or tune on
+it. The earlier core t1 TRAIN-only construction failure also remains retained.
+Neither this result nor report-only N-versus-S comparisons relabel r2 failures.
 
 **The first configured Codex Cloud execution passed the frozen finite-scene
 acceptance on 2026-10-23**, using source commit
