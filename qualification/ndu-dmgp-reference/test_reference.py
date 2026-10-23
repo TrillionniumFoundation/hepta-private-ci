@@ -7,7 +7,7 @@ from reference import (
     ARMS, MODALITIES, CellCredit, Covariance, GateRejected, GenerationAction,
     MediaEvent, Objective, Observation, Scenario, choose_action,
     closure_audit, credit_conservation, cross_modal_contract,
-    independent_utility, make_scenarios, next_snapshot_gate,
+    independent_utility, fit_static_topk_router, make_scenarios, next_snapshot_gate,
     paired_covariance, portfolio_weights, reference_report, run_shadow_arm,
     validate_splits,
 )
@@ -209,6 +209,10 @@ class ExperimentTests(unittest.TestCase):
         self.assertFalse(report["production_blockers_closed"])
         self.assertFalse(report["real_decoder_observed"])
         self.assertFalse(report["independent_future_observed"])
+        self.assertEqual(report["training_episodes"], 24)
+        self.assertEqual(report["evaluation_episodes"], 24)
+        self.assertTrue(report["train_eval_episodes_disjoint"])
+        self.assertTrue(report["a2_fitted_train_only"])
         for arm in ARMS:
             self.assertEqual(report["summary"][arm]["episodes"], 24)
             self.assertGreater(report["summary"][arm]["controller_peak_python_bytes_max_measured"], 0)
@@ -232,6 +236,25 @@ class ExperimentTests(unittest.TestCase):
         self.assertLessEqual(result["synthetic_compute_units"], scenario.budget)
         self.assertFalse(result["promotion_eligible"])
         self.assertFalse(result["decoder_runtime_measured"])
+
+    def test_router_is_fitted_and_frozen_from_train_only(self):
+        train = make_scenarios(48)[:24]
+        evaluation = make_scenarios(48)[24:]
+        self.assertFalse({s.episode for s in train} & {s.episode for s in evaluation})
+        j = Objective("simulation", 1, MODALITIES, frozenset(), 2., .05, .5, 1.)
+        scores = fit_static_topk_router(train, j)
+        baseline = dict(scores)
+        changed = replace(evaluation[0], actions=tuple(
+            replace(a, observed_gain=-999.) for a in evaluation[0].actions
+        ))
+        c = Covariance(False, (), 0, math.inf, 0, "unsupported")
+        self.assertEqual(choose_action("A2", evaluation[0], (), 2., j, c, scores),
+                         choose_action("A2", changed, (), 2., j, c, scores))
+        self.assertEqual(scores, baseline)
+        with self.assertRaises(GateRejected):
+            fit_static_topk_router(train[:3], j)
+        with self.assertRaises(GateRejected):
+            choose_action("A2", evaluation[0], (), 2., j, c, {"text": 1.})
 
     def test_required_outputs_are_hard_constraints(self):
         j = objective()
