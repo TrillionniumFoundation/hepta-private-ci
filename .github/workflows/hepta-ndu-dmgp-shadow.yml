@@ -12,23 +12,58 @@ permissions:
 
 jobs:
   ndu-dmgp-shadow:
-    runs-on: ubuntu-24.04
-    timeout-minutes: 10
+    # Pure Python/OpenSSL research tests do not need a capacity-limited GPU runner.
+    runs-on: ubuntu-slim
+    timeout-minutes: 15
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
           persist-credentials: false
-      - name: Fail-closed adversarial unit tests
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+      - name: Bind test results to the EXACT submitted source commit
+        env:
+          SOURCE_HEAD: ${{ github.event.pull_request.head.sha || github.sha }}
+        run: |
+          test "$(git rev-parse HEAD)" = "$SOURCE_HEAD"
+          echo "verified-source-head=$SOURCE_HEAD"
+      - name: Check Python/OpenSSL verifier availability
+        run: |
+          python3 --version
+          openssl version
+      - name: Compile source and adversarial tests
+        run: python3 -m compileall -q qualification/ndu-dmgp-shadow
+      - name: All unified fail-closed and causal-credit regression tests
         run: python3 -m unittest discover -s qualification/ndu-dmgp-shadow -p 'test_*.py' -v
-      - name: Reproducible synthetic six-arm experiment
+      - name: Reproducible synthetic six-arm A0-A5 experiment
         run: |
           python3 qualification/ndu-dmgp-shadow/experiment.py > /tmp/ndu-dmgp-shadow.json
           python3 - <<'PY'
           import json
-          x = json.load(open('/tmp/ndu-dmgp-shadow.json'))
-          assert x['kind'] == 'synthetic-shadow-only'
-          assert not x['neural_decoding'] and not x['gpu_benchmark']
-          assert set(x['arms']) == {f'A{i}' for i in range(6)}
-          assert x['episodes'] >= 20
-          print('SHADOW_ONLY A0-A5: reference tests pass; production gates remain open')
+          from pathlib import Path
+          report = json.loads(Path('/tmp/ndu-dmgp-shadow.json').read_text())
+          manifest = json.loads(Path('qualification/ndu-dmgp-shadow/MANIFEST.json').read_text())
+          assert report['kind'] == 'synthetic-shadow-only'
+          assert report['neural_decoding'] is False and report['gpu_benchmark'] is False
+          assert report['model_training'] is False
+          assert set(report['arms']) == {f'A{i}' for i in range(6)}
+          assert report['episodes'] == 40
+          neg = report['a5_vs_a1_negative_control']
+          assert neg['paired_cases'] == 40
+          assert neg['synthetic_quality_parity'] is True
+          assert neg['synthetic_quality_delta_mean'] == 0.0
+          assert neg['model_policy_superiority_established'] is False
+          print(json.dumps(report, indent=2, sort_keys=True))
+          for arm, row in report['arms'].items():
+              if arm != 'A0':
+                  assert row['paired_cases'] == 40
+          for field in (
+              'production_authority', 'real_model_execution',
+              'independent_real_outcomes', 'stochastic_fbsde_qualified',
+              'global_optimality_claim', 'hardware_efficiency_qualified',
+              'learning_efficacy_proven', 'future_snapshot_selection_authorized',
+              'six_scientific_blockers_production_closed',
+          ):
+              assert manifest[field] is False, (field, manifest[field])
+          assert manifest['posture'] == 'synthetic-shadow-only'
+          print('SHADOW_ONLY; A0-A5 synthetic only; production DENY_ALL / HOLD_NO_GO')
           PY

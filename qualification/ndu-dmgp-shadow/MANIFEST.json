@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "experiment_id": "hepta-ndu-dmgp-shadow-a0-a5-v1",
+  "experiment_id": "hepta-ndu-dmgp-shadow-a0-a5-v2-train-only",
   "posture": "synthetic-shadow-only",
   "production_authority": false,
   "real_model_execution": false,
@@ -20,5 +20,9 @@
     "A5"
   ],
   "required_test_command": "python3 -m unittest discover -v",
-  "required_report_command": "python3 experiment.py"
+  "required_report_command": "python3 experiment.py",
+  "synthetic_observer_revision": "synthetic-realized-action-variation-v2",
+  "routing_training_split": "train",
+  "policy_future_oracle_access": false,
+  "synthetic_arithmetic_comparable_to_v1": false
 }

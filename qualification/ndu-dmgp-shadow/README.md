@@ -12,7 +12,7 @@ python3 -m unittest discover -v
 python3 experiment.py > synthetic-results.json
 ```
 
-Python 3.11+ standard library only. The output declares `kind=synthetic-shadow-only`, `model_training=false`, `neural_decoding=false` and `gpu_benchmark=false` regardless of synthetic gains. `mean_local_controller_us` is a local process measurement not comparable with the fabricated decoder costs. The exploratory bound `mean - 2.5*SE` is **not** a production confidence interval or a guaranteed anytime bound.
+Python 3.11+ standard library only. The output declares `kind=synthetic-shadow-only`, `model_training=false`, `neural_decoding=false` and `gpu_benchmark=false` regardless of synthetic gains. `mean_local_controller_us` is a local process measurement not comparable with the fabricated decoder costs. The exploratory bound `mean - 2.5*SE` is **not** a production confidence interval or a guaranteed anytime bound. The standalone A0 and A1 paths do not load fitted policy advantages; training fits are frozen before timed inference to avoid charging first-arm cold-start work to A0. Even after this fix, microsecond process timing is noisy and never a fair GPU/energy or end-to-end quality-matched production benchmark.
 
 ## A0–A5 predeclared contrasts
 
@@ -20,10 +20,12 @@ Python 3.11+ standard library only. The output declares `kind=synthetic-shadow-o
 | --- | --- |
 | A0 | fixed text decoder path |
 | A1 | fixed text+image route and full budget |
-| A2 | context-conditioned top-one route (MoE proxy) |
-| A3 | one-step cost-aware NDU advantage (known synthetic oracle) |
-| A4 | centered conditional covariance, shrinkage, finite-grid Merton proxy; route probabilities, never mixed output tensors |
-| A5 | deterministic bounded Bellman-style continuation, stop and pair interactions; **not** full stochastic NDU/FBSDE |
+| A2 | top-one route from frozen training-only context-conditioned realized synthetic advantages (MoE proxy) |
+| A3 | one-step cost-aware NDU advantage fitted on training-only synthetic outcomes; no future oracle |
+| A4 | training-only *realized synthetic* paired returns, centered conditional covariance, shrinkage, finite-grid Merton proxy; sampled route propensities, never mixed output tensors |
+| A5 | training-only synthetic gains and pair synergy, bounded Bellman-style continuation/stop; **not** full stochastic NDU/FBSDE |
+
+**V2 synthetic-label revision:** single-action observed simulator returns now include action-specific episode variation, and A2/A3/A5 route only from frozen training estimates; A4's fitted risk uses the same realized *simulated* training returns. Future labels are queried solely for post-execution evaluation. V2 numerical scores must not be spliced into V1 statistics or advertised as independent real evidence. The synthetic training episodes allow complete counterfactual actions by construction; real model studies require registered interventions and behavior propensities.
 
 A0/A1/A2/A3/A4/A5 must run against the same frozen prompt split and simulated observer. Real external validation requires grouped train/future splits, full model executions and an independently authenticated evaluator. This demonstration does **not** establish A5 improves over A1: the current synthetic task often makes both choose identical outputs while A5 incurs extra controller overhead. Preserve unfavorable results.
 
