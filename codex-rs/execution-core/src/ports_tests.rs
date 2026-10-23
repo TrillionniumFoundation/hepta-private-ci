@@ -67,12 +67,15 @@ fn prepared() -> (ExecutionJournal, ExecutionStarted) {
         .unwrap();
     let mut started_binding = original;
     started_binding.predecessor = Some(head);
-    (journal, ExecutionStarted {
-        binding: started_binding,
-        reservation_digest,
-        approval_receipt_digest: None,
-        started_at_unix_ms: 100,
-    })
+    (
+        journal,
+        ExecutionStarted {
+            binding: started_binding,
+            reservation_digest,
+            approval_receipt_digest: None,
+            started_at_unix_ms: 100,
+        },
+    )
 }
 
 #[test]
@@ -143,28 +146,38 @@ fn step_budget_cannot_be_reopened_by_model_claim() {
         action_digest: None,
         ..response
     };
-    assert!(missing_action.validate_against(&AgentStepRequestV1 {
-        step: 1,
-        ..request
-    }).is_err());
+    assert!(
+        missing_action
+            .validate_against(&AgentStepRequestV1 { step: 1, ..request })
+            .is_err()
+    );
 }
 
 #[test]
 fn ports_are_object_safe_for_runtime_backend_selection() {
     struct Unavailable;
     impl ModelPort for Unavailable {
-        fn infer<'a>(&'a self, _: &'a CheckedModelInvocationV1) -> PortFuture<'a, ModelObservationV1> {
+        fn infer<'a>(
+            &'a self,
+            _: &'a CheckedModelInvocationV1,
+        ) -> PortFuture<'a, ModelObservationV1> {
             Box::pin(async { Err(PortError::Unavailable) })
         }
     }
     impl ExecutionPort for Unavailable {
-        fn dispatch<'a>(&'a self, _: &'a CheckedStartHandleV1) -> PortFuture<'a, ExecutionObservationV1> {
+        fn dispatch<'a>(
+            &'a self,
+            _: &'a CheckedStartHandleV1,
+        ) -> PortFuture<'a, ExecutionObservationV1> {
             Box::pin(async { Err(PortError::Denied) })
         }
         fn cancel<'a>(&'a self, _: &'a ExecutionBinding) -> PortFuture<'a, ExecutionObservationV1> {
             Box::pin(async { Err(PortError::Indeterminate) })
         }
-        fn reconcile<'a>(&'a self, _: &'a ExecutionBinding) -> PortFuture<'a, ExecutionObservationV1> {
+        fn reconcile<'a>(
+            &'a self,
+            _: &'a ExecutionBinding,
+        ) -> PortFuture<'a, ExecutionObservationV1> {
             Box::pin(async { Err(PortError::Indeterminate) })
         }
     }
@@ -178,7 +191,6 @@ fn ports_are_object_safe_for_runtime_backend_selection() {
     let _: &dyn ExecutionPort = &object;
     let _: &dyn AgentLoopPort = &object;
 }
-
 
 struct Allow;
 
@@ -202,7 +214,7 @@ fn checked_handle_retains_verified_start_identity_without_granting_effect() {
     assert_eq!(checked.start_record_digest(), last_digest);
     assert_eq!(checked.binding().operation_id, operation_id);
     let observation = ExecutionObservationV1 {
-        operation_id: operation_id.clone(),
+        operation_id,
         start_record_digest: last_digest,
         status: PortTerminal::Succeeded,
         terminal_observation_digest: Some(dig(23)),
@@ -255,7 +267,13 @@ fn model_port_requires_checked_final_use_and_independent_verifier() {
         Err(PortError::Denied)
     ));
     let checked = CheckedModelInvocationV1::admit(authorized, &TestOnlyAllowModel).unwrap();
-    assert_eq!(checked.request_digest(), checked.request().digest().unwrap());
-    assert!(matches!(checked.request().binding.final_use, FinalUse::Verified { .. }));
+    assert_eq!(
+        checked.request_digest(),
+        checked.request().digest().unwrap()
+    );
+    assert!(matches!(
+        checked.request().binding.final_use,
+        FinalUse::Verified { .. }
+    ));
     // A unit-test-only accepting verifier does not constitute production authority.
 }

@@ -1,6 +1,5 @@
 //! Deterministic single-operation sequence validator without effect privileges.
 
-use crate::ApprovalRequest;
 use crate::EffectReceipt;
 use crate::ExecutionClass;
 use crate::ExecutionError;
@@ -52,7 +51,11 @@ impl ExecutionJournal {
         event: ExecutionStarted,
         verifier: &impl ExecutionVerifier,
     ) -> Result<String, ExecutionError> {
-        self.append_checked(ExecutionRecord::ExecutionStarted(event), Some(verifier), None)
+        self.append_checked(
+            ExecutionRecord::ExecutionStarted(event),
+            Some(verifier),
+            None,
+        )
     }
 
     pub fn append_effect_receipt(
@@ -83,45 +86,89 @@ impl ExecutionJournal {
             if let FinalUse::Verified { .. } = &previous_binding.binding().final_use
                 && previous_binding.binding().final_use != event.binding().final_use
             {
-                return Err(ExecutionError::Binding("FinalUse witness changed or downgraded"));
+                return Err(ExecutionError::Binding(
+                    "FinalUse witness changed or downgraded",
+                ));
             }
         }
         match (previous, &event) {
             (None, ExecutionRecord::ExecutionIntent(_))
-            | (Some(ExecutionRecord::ExecutionIntent(_)), ExecutionRecord::ExecutionReservation(_))
-            | (Some(ExecutionRecord::ExecutionReservation(_)), ExecutionRecord::ApprovalRequest(_))
-            | (Some(ExecutionRecord::ExecutionReservation(_)), ExecutionRecord::ExecutionStarted(_))
+            | (
+                Some(ExecutionRecord::ExecutionIntent(_)),
+                ExecutionRecord::ExecutionReservation(_),
+            )
+            | (
+                Some(ExecutionRecord::ExecutionReservation(_)),
+                ExecutionRecord::ApprovalRequest(_),
+            )
+            | (
+                Some(ExecutionRecord::ExecutionReservation(_)),
+                ExecutionRecord::ExecutionStarted(_),
+            )
             | (Some(ExecutionRecord::ApprovalRequest(_)), ExecutionRecord::ExecutionStarted(_))
-            | (Some(ExecutionRecord::ExecutionStarted(_)), ExecutionRecord::ExecutionOutputChunk(_))
-            | (Some(ExecutionRecord::ExecutionOutputChunk(_)), ExecutionRecord::ExecutionOutputChunk(_))
-            | (Some(ExecutionRecord::ExecutionStarted(_)), ExecutionRecord::ExecutionCompleted(_))
-            | (Some(ExecutionRecord::ExecutionOutputChunk(_)), ExecutionRecord::ExecutionCompleted(_))
+            | (
+                Some(ExecutionRecord::ExecutionStarted(_)),
+                ExecutionRecord::ExecutionOutputChunk(_),
+            )
+            | (
+                Some(ExecutionRecord::ExecutionOutputChunk(_)),
+                ExecutionRecord::ExecutionOutputChunk(_),
+            )
+            | (
+                Some(ExecutionRecord::ExecutionStarted(_)),
+                ExecutionRecord::ExecutionCompleted(_),
+            )
+            | (
+                Some(ExecutionRecord::ExecutionOutputChunk(_)),
+                ExecutionRecord::ExecutionCompleted(_),
+            )
             | (Some(ExecutionRecord::ExecutionIntent(_)), ExecutionRecord::ExecutionCancelled(_))
-            | (Some(ExecutionRecord::ExecutionReservation(_)), ExecutionRecord::ExecutionCancelled(_))
+            | (
+                Some(ExecutionRecord::ExecutionReservation(_)),
+                ExecutionRecord::ExecutionCancelled(_),
+            )
             | (Some(ExecutionRecord::ApprovalRequest(_)), ExecutionRecord::ExecutionCancelled(_))
-            | (Some(ExecutionRecord::ExecutionStarted(_)), ExecutionRecord::ExecutionCancelled(_))
-            | (Some(ExecutionRecord::ExecutionOutputChunk(_)), ExecutionRecord::ExecutionCancelled(_))
-            | (Some(ExecutionRecord::ExecutionStarted(_)), ExecutionRecord::ExecutionReconciled(_))
-            | (Some(ExecutionRecord::ExecutionOutputChunk(_)), ExecutionRecord::ExecutionReconciled(_))
-            | (Some(ExecutionRecord::ExecutionCompleted(_)), ExecutionRecord::ExecutionReconciled(_))
-            | (Some(ExecutionRecord::ExecutionCancelled(_)), ExecutionRecord::ExecutionReconciled(_))
+            | (
+                Some(ExecutionRecord::ExecutionStarted(_)),
+                ExecutionRecord::ExecutionCancelled(_),
+            )
+            | (
+                Some(ExecutionRecord::ExecutionOutputChunk(_)),
+                ExecutionRecord::ExecutionCancelled(_),
+            )
+            | (
+                Some(ExecutionRecord::ExecutionStarted(_)),
+                ExecutionRecord::ExecutionReconciled(_),
+            )
+            | (
+                Some(ExecutionRecord::ExecutionOutputChunk(_)),
+                ExecutionRecord::ExecutionReconciled(_),
+            )
+            | (
+                Some(ExecutionRecord::ExecutionCompleted(_)),
+                ExecutionRecord::ExecutionReconciled(_),
+            )
+            | (
+                Some(ExecutionRecord::ExecutionCancelled(_)),
+                ExecutionRecord::ExecutionReconciled(_),
+            )
             | (Some(ExecutionRecord::ExecutionCompleted(_)), ExecutionRecord::EffectReceipt(_))
-            | (Some(ExecutionRecord::ExecutionReconciled(_)), ExecutionRecord::EffectReceipt(_)) => {}
+            | (Some(ExecutionRecord::ExecutionReconciled(_)), ExecutionRecord::EffectReceipt(_)) => {
+            }
             _ => return Err(ExecutionError::Sequence("illegal or repeated transition")),
         }
 
-        let intent = self
-            .events
-            .first()
-            .and_then(|first| match first {
-                ExecutionRecord::ExecutionIntent(value) => Some(value),
-                _ => None,
-            });
+        let intent = self.events.first().and_then(|first| match first {
+            ExecutionRecord::ExecutionIntent(value) => Some(value),
+            _ => None,
+        });
 
         if let ExecutionRecord::ApprovalRequest(_) = &event
             && !intent.is_some_and(|value| value.class.needs_approval())
         {
-            return Err(ExecutionError::Sequence("approval not required for this class"));
+            return Err(ExecutionError::Sequence(
+                "approval not required for this class",
+            ));
         }
 
         if let ExecutionRecord::ExecutionOutputChunk(chunk) = &event {
@@ -180,11 +227,13 @@ impl ExecutionJournal {
         }
 
         if let ExecutionRecord::EffectReceipt(receipt) = &event {
-            if previous.is_some_and(|previous| matches!(
-                previous,
-                ExecutionRecord::ExecutionReconciled(reconciled)
-                    if reconciled.status != crate::ReconciliationStatus::EffectObserved
-            )) {
+            if previous.is_some_and(|previous| {
+                matches!(
+                    previous,
+                    ExecutionRecord::ExecutionReconciled(reconciled)
+                        if reconciled.status != crate::ReconciliationStatus::EffectObserved
+                )
+            }) {
                 return Err(ExecutionError::Sequence(
                     "cannot attest an effect after no-effect or indeterminate reconciliation",
                 ));
