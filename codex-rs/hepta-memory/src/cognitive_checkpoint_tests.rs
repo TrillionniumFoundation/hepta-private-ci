@@ -375,3 +375,7 @@ mod notes_retirement_tests;
 #[cfg(unix)]
 #[path = "cognitive_checkpoint_hos2_retirement_tests.rs"]
 mod hos2_retirement_tests;
+
+#[cfg(unix)]
+#[path = "cognitive_checkpoint_effect_entry_tests.rs"]
+mod effect_entry_tests;
