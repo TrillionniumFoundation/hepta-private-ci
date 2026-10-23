@@ -406,6 +406,8 @@ pub use production_writer::ProductionRecoveryReceipt;
 pub use production_writer::ProductionTargetOutcome;
 pub use production_writer::ProductionTerminalObservation;
 pub use production_writer::ProductionTerminalObservationFuture;
+pub use production_writer::ProductionVerifiedDispatch;
+pub use production_writer::ProductionVerifiedDispatchFuture;
 pub use production_writer::ProductionWriterError;
 pub use recall::RECALL_OBSERVATION_SCHEMA_VERSION;
 pub use recall::RecallCandidate;

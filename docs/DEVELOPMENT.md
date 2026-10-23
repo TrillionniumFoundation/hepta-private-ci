@@ -680,6 +680,14 @@ this ordering adds cross-repository evidence dependencies without a second DAG,
 optimizer, durable journal or authority issuer. Parameter, topology, executable
 and consensus upgrades retain their separate admission and release boundaries.
 
+PN4's source-to-destination interface carries the original verified request and
+one-shot FinalUse token in a sealed `ProductionVerifiedDispatch`. Physical targets
+must finish asynchronous preparation before consuming it at the synchronous
+worker-entry boundary; the compatibility default still validates delivery only.
+Signed nonce, expiry, revocation, wrong-owner and existing lost-ack controls cover
+this interface. It does not supply a physical CPU destination, qualify legacy
+adapters, prove resource release or change the original retained-charge failure.
+
 The earlier Chain `6724ed1` campaign did not observe genuine paid-credit
 depletion. On Chain `873d5cb`, all three baseline phases and all three late-product
 phases pass their original criteria. Each of the three from-zero phases now
