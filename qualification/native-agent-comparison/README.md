@@ -66,6 +66,17 @@ test tasks and at least five entirely unseen future groups with disjoint
 families. Only `test` and `future` observations enter measured scores; any
 train/calibration overlap with the evaluation families fails closed.
 
+The Cell-split scorer additionally requires pre-registered
+`max_cpu_overhead_fraction`, `max_rss_overhead_fraction` and
+`max_p99_overhead_fraction` in its frozen plan. For each Cell scale,
+it compares the split candidate's *observed* total CPU time, peak RSS and
+p99 wall latency against the cheaper of `shared_head` and `sparse_moe`
+controls under those allowed overheads. A split with apparent future
+utility gain but excessive resource cost cannot pass structural metrics.
+Duplicate observation receipt digests and contradictory
+`success=true,tool_correct=false` records fail closed; the receipt
+digests are still not authenticated externally.
+
 The structural scorer compares future-group gains against the strongest
 other arm *within each future group*, uses a seed-bound grouped bootstrap,
 measures old-task retention against `no_change`, enforces per-row measured
