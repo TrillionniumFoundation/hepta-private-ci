@@ -79,8 +79,15 @@ Dataset JSONL requires one row per decision with id, cluster, split
 (train/validation/calibration/future_test), timezone-aware event_time,
 language, slice, ood (boolean), state (text), question (text), options
 (list of distinct strings), and gold (an option). Clusters must not cross
-partitions and the four time windows must be ordered. Holdout requires both
-in-domain and OOD rows. Dataset rows must be supplied by an independent owner;
+partitions and the four split cohorts must be ordered. Future-test rows
+**must** also name `future_window=future_1|future_2`; non-holdout rows
+must not claim a future window. Both windows require in-domain tasks, strictly
+ordered timestamps, and disjoint source clusters. Holdout requires both
+in-domain and OOD rows overall. The frozen plan's registration timestamp
+must strictly **predate the first future-test event**; a later registration
+fails closed, even if a self-reported plan hashes correctly. This is a
+structural anti-retrospective gate, **not proof of independently timestamped
+registration or custody of future labels**. Those remain external blockers. Dataset rows must be supplied by an independent owner;
 never commit raw private states or labels. The example plan is **not frozen**
 until a real dataset digest, role separation, thresholds and a preregistration
 timestamp are externally authenticated.
@@ -125,8 +132,13 @@ absent, probabilities are malformed, or holdout predictions are incomplete.
 It reports raw accuracy, correct-and-accepted rate, selective
 accuracy/coverage, class-balanced recall, macro-F1, multiclass normalized
 Brier, ECE (top-confidence, 15 bins), OOD false acceptance,
-per-language/task regressions and a **diagnostic-only paired cluster
-bootstrap interval** (2,000 deterministic resamples). A high raw accuracy
+per-language/task regressions, **separately scored future_1/future_2**
+metrics and maximum within-window accuracy regression, and a
+**diagnostic-only paired cluster bootstrap interval**
+(2,000 deterministic resamples). A future-window without OOD rows has
+`ood_false_acceptance=null` (unknown), never fabricated as zero; aggregate
+holdout OOD is still mandatory. Metric admission checks *both* future windows,
+not merely the pooled headline. A high raw accuracy
 can hide total failure on a rare class; it cannot qualify by itself.
 For the two Encoder arms, it independently hashes the exact labeled
 **train partition** and rejects a mismatch across the published Head
