@@ -47,9 +47,11 @@ class SnapshotProcessOwnerV1:
         with self._owner._lock:
             view = self._observe(candidate.identity)
             candidate.require_current(lambda: view)
-            self._owner.commit(candidate, expected_parent_manifest_sha256=expected_parent_manifest_sha256)
-            # Observe any change made by the external provider during admission.
-            candidate.require_current(lambda: self._observe(candidate.identity))
+            # The final host-observed source/forget cut must be checked while
+            # the parent is still current, not after the successor is published.
+            self._owner.commit(candidate, expected_parent_manifest_sha256=expected_parent_manifest_sha256,
+                before_publish=lambda: candidate.require_current(
+                    lambda: self._observe(candidate.identity)))
 
 
 def _route(snapshot, bundle, budget_units):
