@@ -1,0 +1,96 @@
+{
+  "schema": "hepta.windows-delete-focused-handoff.v1",
+  "worktree": "/tmp/hepta-windows-delete-focused-20261022",
+  "branch": "codex/stem-p38-windows-delete-diagnostics-20261022",
+  "base_sha": "7bf0db2c7549104ce59b6e5ad52256ff6b51a995",
+  "head_sha": "705e28a445403b3c8924dc7a1ab2ff6698856907",
+  "head_tree": "bf6404b25faf4fb29b87a09480cfcfde2cd7a420",
+  "clean": true,
+  "commits": [
+    {
+      "sha": "c29faa1257e15f22f2f6f512cf83b9af3c030379",
+      "tree": "e4dfe0b6e6a0cf996a096e5d654b958fccf00cf0",
+      "subject": "test(windows-sandbox): separate native DELETE permission routes",
+      "numstat": [
+        "360\t0\tcodex-rs/windows-sandbox-rs/src/token_delete_diagnostics_tests.rs",
+        "3\t0\tcodex-rs/windows-sandbox-rs/src/token_tests.rs"
+      ]
+    },
+    {
+      "sha": "705e28a445403b3c8924dc7a1ab2ff6698856907",
+      "tree": "bf6404b25faf4fb29b87a09480cfcfde2cd7a420",
+      "subject": "ci: run exact-head Windows DELETE diagnostics with native receipts",
+      "numstat": [
+        "191\t0\t.github/workflows/hepta-windows-delete-diagnostics.yml"
+      ]
+    }
+  ],
+  "changed_file_sha256": {
+    "codex-rs/windows-sandbox-rs/src/token_tests.rs": "24e57f475065231758559e08382e16a37a15d32912a0435652e2fc3fb2496d58",
+    "codex-rs/windows-sandbox-rs/src/token_delete_diagnostics_tests.rs": "d0492ee9b130334e8967b8a37fc56bd50508051a025637621c7f661804d718ee",
+    ".github/workflows/hepta-windows-delete-diagnostics.yml": "af9d2707eef964d7a05eb97dc8574f8e766fa789c07a5d0d3da546abdc47359c"
+  },
+  "checks": [
+    {
+      "name": "format",
+      "command": [
+        "/tmp/hepta-handoff-tools/bin/just",
+        "fmt",
+        "--base",
+        "7bf0db2c7549104ce59b6e5ad52256ff6b51a995",
+        "--check"
+      ],
+      "exit_code": 0,
+      "output_file": "format.log"
+    },
+    {
+      "name": "actionlint",
+      "command": [
+        "/tmp/hepta-actionlint-1.7.7/actionlint",
+        ".github/workflows/hepta-windows-delete-diagnostics.yml"
+      ],
+      "exit_code": 0,
+      "output_file": "actionlint.log"
+    },
+    {
+      "name": "prettier",
+      "command": [
+        "node",
+        "/tmp/hepta-npm-cache/_npx/073ccfc9e7e55f31/node_modules/prettier/bin/prettier.cjs",
+        "--check",
+        ".github/workflows/hepta-windows-delete-diagnostics.yml"
+      ],
+      "exit_code": 0,
+      "output_file": "prettier.log"
+    },
+    {
+      "name": "diff_check",
+      "command": [
+        "git",
+        "diff",
+        "--check",
+        "7bf0db2c7549104ce59b6e5ad52256ff6b51a995",
+        "HEAD"
+      ],
+      "exit_code": 0,
+      "output_file": "diff_check.log"
+    }
+  ],
+  "static_verified_test_names": [
+    "token::tests::partial_delete_deny_is_repaired_before_native_workspace_writes",
+    "token::tests::workspace_capabilities_deny_writes_and_deletes_under_broad_identity_aces",
+    "unified_exec::tests::legacy_workspace_write_delete_is_limited_to_writable_roots",
+    "token::tests::delete_diagnostics::workspace_delete_permission_routes_diagnostic_matrix"
+  ],
+  "filterset": "test(=token::tests::partial_delete_deny_is_repaired_before_native_workspace_writes) | test(=token::tests::workspace_capabilities_deny_writes_and_deletes_under_broad_identity_aces) | test(=unified_exec::tests::legacy_workspace_write_delete_is_limited_to_writable_roots) | test(=token::tests::delete_diagnostics::workspace_delete_permission_routes_diagnostic_matrix)",
+  "scoped_filter_recognized": true,
+  "nextest_no_fail_fast_in_both_wrapper_paths": true,
+  "original_test_bodies_and_production_unchanged": true,
+  "dependency_changes": false,
+  "native_execution": "PENDING",
+  "compiled_nextest_selection": "PENDING_WINDOWS",
+  "powershell_execution": "PENDING_WINDOWS",
+  "sandbox_qualified": false,
+  "remote_writes": false,
+  "scope": "Two reviewable test/CI stages only. Five isolated native permission routes remain unexecuted; all original negative and positive assertions retained."
+}

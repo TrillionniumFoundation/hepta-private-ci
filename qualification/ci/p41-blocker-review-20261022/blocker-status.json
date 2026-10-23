@@ -1,0 +1,90 @@
+{
+  "schema": "hepta.stem-requested-blocker-state.v1",
+  "observed_at_utc": "2026-10-22T14:38:18.864373+00:00",
+  "code_local_commit_before_this_evidence": "5a0eae07cf25b2911c41d83a2ce178d0a477c7d1",
+  "code_tree_before_this_evidence": "54609552bc5f0743eabd45d3f038f2839bdc56b3",
+  "source_reference_note": "This evidence-only review does not qualify a later head. Re-read live PR refs and applicable current-source CI; source publication mappings are in publication.json.",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "pull_requests": [
+    3118,
+    3122,
+    3222,
+    3227
+  ],
+  "all_requested_blockers_closed": false,
+  "main_merged": false,
+  "production_activation_allowed": false,
+  "authority": "DENY_ALL",
+  "mode": "SHADOW_ONLY",
+  "blockers": [
+    {
+      "id": "final-composed-ci",
+      "status": "OPEN",
+      "observed": "Current-source applicable Actions have no verified terminal-success receipt. Prior run success and queued jobs do not close this gate.",
+      "close_when": "All required applicable final-head and required composition checks terminate successfully on their actual source."
+    },
+    {
+      "id": "ancestor-p30-native-ci",
+      "status": "OPEN",
+      "observed": "Dependency and original lock repairs have scoped evidence; Windows outside-root DELETE still has real failure evidence. Native focused diagnostics and cold-root source fixes are now integrated. Plugin TTL cause remains unresolved.",
+      "close_when": "Run and pass original cargo-deny and applicable Windows/Bazel/native checks on composed repaired source; keep original negative and positive assertions."
+    },
+    {
+      "id": "effective-cell-learning-and-confidence",
+      "status": "CLOSED_FOR_DECLARED_SOURCE_PAIRING_RESEARCH_TASK",
+      "evidence": "research-screen-review.json",
+      "scope": "Frozen private Head training with original-image/caption held-out groups and predefined quality, coverage, risk and correlated minority-subset checks.",
+      "broader_policy_or_deployment_claimed": false
+    },
+    {
+      "id": "paired-multimodal-learning-loop",
+      "status": "CLOSED_FOR_DECLARED_SOURCE_PAIRING_RESEARCH_TASK",
+      "evidence": "research-screen-review.json",
+      "scope": "Original images, human captions, labels and sources; equal-budget within-mode text/image/joint arms; fixed missing-modality and pairing interventions; saved private Heads and per-row ledgers.",
+      "semantic_contradiction_or_pretraining_decontamination_claimed": false
+    },
+    {
+      "id": "stateful-full-policy-learning",
+      "status": "OPEN_INPUT_AND_IMPLEMENTATION",
+      "evidence": "full-policy-readonly-assessment.json",
+      "observed": "The nonlinear native Head is zero-state task-only. No authentic owner-backed joined state/action/outcome episode source was established; action/value/uncertainty remain untrained.",
+      "close_when": "Bind actual authenticated episodes to exact features/pre-post state/legal actions/observed outcomes, train the matching state/action/value/uncertainty operator and evaluate an independently held-out episode window under a frozen plan."
+    },
+    {
+      "id": "target-device-performance",
+      "status": "OPEN_NO_TARGET_EXECUTION",
+      "evidence": [
+        "fleet-retry-unknown.json",
+        "fleet-independent-get.json"
+      ],
+      "observed": "The independent run GET at 2026-10-22T14:22:45Z still shows attempt 5 completed/cancelled. No new target-device execution or energy receipt exists. The retry wrapper has unknown delivery and is not repeated.",
+      "close_when": "Execute the actual defined target workload on the assigned target device, retain device/source/workload identity, raw p95/p99 samples and observed energy."
+    }
+  ],
+  "native_pool_scope": {
+    "templates": 2,
+    "pool_sizes": [
+      1,
+      32,
+      256,
+      4096
+    ],
+    "original_execution_source": "f8855a7ac07af47b618199a3a9ccb87ff9552a5c",
+    "original_report_sha256": "f4ed9cce8f33cb26764933cbc2b950239c9b7e2f8360410b051467a50ca8abe0",
+    "private_head_tensor_bytes": 135256,
+    "pool_4096_tensor_bytes": 554008576,
+    "pool_4096_post_load_rss_bytes": 581398528,
+    "encoder_included": false,
+    "independently_learned_4096_tasks": false,
+    "target_device_qualified": false,
+    "energy_joules": null
+  },
+  "current_policy_review_source_files_unchanged": 29,
+  "cloud_workspace_observation": {
+    "kernel": "Linux 6.18.55",
+    "architecture": "x86_64",
+    "powercap_class_directory_present": false,
+    "target_assignment_inferred_from_workspace": false
+  },
+  "scheduling_note": "Reuse the existing blocker follow-up task; current refs and evidence must be refreshed and no queued-only update should be presented as progress."
+}

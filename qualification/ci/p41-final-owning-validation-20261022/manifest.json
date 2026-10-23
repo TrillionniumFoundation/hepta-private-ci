@@ -1,0 +1,43 @@
+{
+  "schema": "hepta.p41-final-owning-validation-publication.v1",
+  "tested_local_commit": "b6c1a9b88f27b50352ed4553451cd89bb1d92cf1",
+  "equivalent_published_commit": "5eac8b09ba07c49c1eab2d11fc077722c5d54a91",
+  "tested_tree": "96424b3188b86f9ff15db11e851d827d7e29375b",
+  "files": [
+    {
+      "path": "receipt.json",
+      "source": "/tmp/hepta-p41-final-owning-validation-b6c1a9b/receipt.json",
+      "sha256": "c2ce04e29e4262d83bf01bfc61f531db724d5eec167adf03380da0fdd68a4e6e",
+      "bytes": 13917,
+      "preserved_byte_for_byte": true
+    },
+    {
+      "path": "neuron-lib.log",
+      "source": "/tmp/hepta-p41-final-owning-validation-b6c1a9b/neuron-lib.log",
+      "sha256": "4108d62162927aea282fc865b9e12ca75fc4b6c740459420fd8608d1fa9ed43a",
+      "bytes": 15447,
+      "preserved_byte_for_byte": true
+    },
+    {
+      "path": "native-head-examples-clippy.log",
+      "source": "/tmp/hepta-p41-final-owning-validation-b6c1a9b/native-head-examples-clippy.log",
+      "sha256": "4334093e123ba6029ab19b4b5f89ea4aed1cfccc56d99d50f86248cdec9e4605",
+      "bytes": 145,
+      "preserved_byte_for_byte": true
+    }
+  ],
+  "scope": "Actual release-profile Neuron library suite and scoped Clippy for native_task_head and native_task_head_pool on the exact tested source.",
+  "claims": {
+    "library_passed": 110,
+    "library_failed": 0,
+    "library_skipped": 0,
+    "distinct_pass_names": 110,
+    "example_clippy_warnings_denied": true,
+    "current_github_ci_replaced": false,
+    "appserver_native_tests_executed": false,
+    "models_or_performance_reexecuted": false
+  },
+  "nextest_version_observed": "0.9.149",
+  "github_ci_nextest_pin": "0.9.103",
+  "publication_note": "This added evidence does not modify source code or relabel a later CI head as tested. The original immutable receipt retains its exact local source and paths."
+}

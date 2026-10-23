@@ -4028,6 +4028,45 @@ impl ThreadRequestProcessor {
             developer_instructions,
             personality,
         );
+        // Raw `config.workspace_roots` is an explicit caller override, not
+        // inferred history. Normalize it to the same typed field as
+        // `runtimeWorkspaceRoots` before persistence/profile reconciliation;
+        // otherwise an old inferred root may silently survive policy changes.
+        if let Some(raw_roots) = request_overrides
+            .as_mut()
+            .and_then(|overrides| overrides.remove("workspace_roots"))
+        {
+            let parsed = match serde_json::from_value::<Vec<AbsolutePathBuf>>(raw_roots) {
+                Ok(roots) => resolve_runtime_workspace_roots(roots),
+                Err(error) => {
+                    self.outgoing
+                        .send_error(
+                            request_id,
+                            invalid_params(format!(
+                                "invalid `workspace_roots` config override: {error}"
+                            )),
+                        )
+                        .await;
+                    return Ok(());
+                }
+            };
+            if typesafe_overrides
+                .workspace_roots
+                .as_ref()
+                .is_some_and(|typed| typed != &parsed)
+            {
+                self.outgoing
+                    .send_error(
+                        request_id,
+                        invalid_params(
+                            "conflicting `runtimeWorkspaceRoots` and `workspace_roots` overrides",
+                        ),
+                    )
+                    .await;
+                return Ok(());
+            }
+            typesafe_overrides.workspace_roots = Some(parsed);
+        }
         if typesafe_overrides.approval_policy.is_none()
             && let Some(value) = request_overrides
                 .as_mut()

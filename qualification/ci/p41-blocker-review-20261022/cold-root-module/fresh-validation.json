@@ -1,0 +1,83 @@
+{
+  "started_at": "2026-10-22T14:28:17.026408+00:00",
+  "base_head": "e2fe930fe6e188539264c69bf09a1b74ea48641c",
+  "scope": "isolated exact persisted resume module, actual codex_history RolloutItem reexport; not owning AppServer compile or public RPC execution",
+  "owning_appserver_executed": false,
+  "source_sha256": "1d9f348240f0324ed632883b263f44f35d85cd0f425c10542cfb983863b7c30e",
+  "test_source_sha256": "a49a218dd2a31a237ff249e84ce1acbce4dc86af135de379de1698723e3bc6d4",
+  "history_sources": {
+    "codex-rs/history/src/tests.rs": "dae14392b2f89190d12e5c2f7391ef665a412b55b091a8fac8e086b7eb3ef413",
+    "codex-rs/history/src/lib.rs": "258e055a84d0ece96bd7ead626a943913c5422806eb2839e83a96666a8bc7316",
+    "codex-rs/history/src/rollout_payload.rs": "8d68ec68867e41cb8c8665afcf42899bbb27fc2c13ce99fe8e6ea06dde449bee"
+  },
+  "commands": [
+    {
+      "stage": "fresh-history-compile",
+      "argv": [
+        "/root/.rustup/toolchains/1.95.0-x86_64-unknown-linux-gnu/bin/rustc",
+        "--edition=2024",
+        "--crate-name",
+        "codex_history",
+        "--crate-type",
+        "rlib",
+        "-C",
+        "debuginfo=0",
+        "-C",
+        "metadata=hepta_cold_roots",
+        "-L",
+        "dependency=/tmp/hepta-native-shard2-target/debug/deps",
+        "/tmp/hepta-ci-appserver-followup-20261022/codex-rs/history/src/lib.rs",
+        "-o",
+        "/tmp/hepta-resume-policy-module-validation/libcodex_history_cold_root_validation.rlib",
+        "--extern",
+        "codex_protocol=/tmp/hepta-native-shard2-target/debug/deps/libcodex_protocol-3e484f524e3f1d77.rlib",
+        "--extern",
+        "schemars=/tmp/hepta-native-shard2-target/debug/deps/libschemars-742e2595482cc4b2.rlib",
+        "--extern",
+        "serde=/tmp/hepta-native-shard2-target/debug/deps/libserde-7a4e3b18f3456a0c.rlib",
+        "--extern",
+        "serde_json=/tmp/hepta-native-shard2-target/debug/deps/libserde_json-eeabd884fc4f5827.rlib"
+      ]
+    },
+    {
+      "stage": "exact-module-compile",
+      "argv": [
+        "/root/.rustup/toolchains/1.95.0-x86_64-unknown-linux-gnu/bin/rustc",
+        "--edition=2024",
+        "--test",
+        "/tmp/hepta-resume-policy-module-validation/harness.rs",
+        "-C",
+        "debuginfo=0",
+        "-L",
+        "dependency=/tmp/hepta-native-shard2-target/debug/deps",
+        "-L",
+        "dependency=/tmp/hepta-resume-policy-module-validation",
+        "--extern",
+        "codex_protocol=/tmp/hepta-native-shard2-target/debug/deps/libcodex_protocol-3e484f524e3f1d77.rlib",
+        "--extern",
+        "codex_rollout=/tmp/hepta-resume-policy-module-validation/libcodex_history_cold_root_validation.rlib",
+        "--extern",
+        "codex_utils_absolute_path=/tmp/hepta-native-shard2-target/debug/deps/libcodex_utils_absolute_path-7534e1f295f82c91.rlib",
+        "--extern",
+        "pretty_assertions=/tmp/hepta-native-shard2-target/debug/deps/libpretty_assertions-4219d34c6b1d9202.rlib",
+        "-o",
+        "/tmp/hepta-resume-policy-module-validation/module-tests"
+      ]
+    },
+    {
+      "stage": "exact-module-tests",
+      "argv": [
+        "/tmp/hepta-resume-policy-module-validation/module-tests",
+        "--nocapture"
+      ]
+    }
+  ],
+  "fresh-history-compile_exit": 0,
+  "fresh-history-compile_log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "exact-module-compile_exit": 0,
+  "exact-module-compile_log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "exact-module-tests_exit": 0,
+  "exact-module-tests_log_sha256": "30f9e799fa33f3b36857de751915f661acc233379c2d3f51488addea2ac1ba6a",
+  "success": true,
+  "completed_at": "2026-10-22T14:28:19.140975+00:00"
+}

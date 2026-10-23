@@ -1,0 +1,59 @@
+{
+  "binary_reconstruction": "RECONSTRUCT.sh, same-source release build; exact binary identity must be checked separately",
+  "cargo_lock_sha256": "4457fc01b43c7218a6aaa5903098dd7308deba1125e42aeba8d7e188cad363b4",
+  "mapping_note": "append a separate publication record; do not rewrite original report",
+  "omitted": [
+    {
+      "bytes": 2673320,
+      "included": false,
+      "logical_path": "native-results/native_task_head_pool.bin",
+      "original_path": "/tmp/hepta-p41-native-pools-f8855a7/native_task_head_pool.bin",
+      "reason": "deliberately omitted large reconstructible input or executable",
+      "sha256": "42c69fcec3a2b5332893e6a417710df38fbc6cab3ca51ab1afe195db2fe4fc31"
+    },
+    {
+      "bytes": 16988720,
+      "included": false,
+      "logical_path": "native-results/requests.jsonl",
+      "original_path": "/tmp/hepta-p41-native-pools-f8855a7/requests.jsonl",
+      "reason": "deliberately omitted large reconstructible input or executable",
+      "sha256": "3bb13eaae37d0d72b245ce65aa28c81b057a542fe555d367a0f7758b392cd214"
+    }
+  ],
+  "p40_report_sha256": "22e4560ca4ff2b1c604267c92aed71bbf1417e612018c6760930633ca52395e6",
+  "p40_repository_path": "qa/stem-bakeoff/evidence/20261022-native-task-head/native-results",
+  "p40_retained_file_sha256": {
+    "gated-cost.json": "268625eeb5b66d9845a7cccac06206ad57473352d2c2652c660890dbc1f6c3d7",
+    "gated-head/manifest.json": "70b0b57e9fad07be76047dd0d6c31f24e58a6fbc1e0515af03947b592f544f8b",
+    "gated-head/weights.f32le": "36f32f6b26c1e9751e1979a62801d22c1108f0b2abf6670c01044f73490d55fa",
+    "gated-missing_image.jsonl": "2ae422218904a56ba45502073894edbfb5e09e30a8a7a337b352ef928afe06a6",
+    "gated-missing_text.jsonl": "71c0278604baffeeddf3e974b79ee808c6e2607d1fbc2e179c9c6c134eb3ed8b",
+    "gated-mixed_presence.jsonl": "fc83bc3fb68100af3071261adf7929d303f4c25f61eee3f3778a0a01a7079e1a",
+    "gated-paired.jsonl": "1b1d3e9f581fe4ccdc18a5b3130d7536697c071f90a26d8e104d876b30b91cd7",
+    "gated-shuffled_image.jsonl": "c7f9cc6f4eb48fe34de07e71c0d51e8bec304f62455af862b92948d6be4d6ce4",
+    "linear-cost.json": "20fcbe71f192109540fbdb3f24234550c2a428727d4a456525e2bcdce151a0b9",
+    "linear-head/manifest.json": "6f5a5b0d75fdacc5d1e46a460638c135fafcca6331e9b7a91706c1c345c2aa84",
+    "linear-head/weights.f32le": "22781ddbc683e4af786e80ab8301e89bf7b56a2e5fbd2a1ba87caed1c482c230",
+    "linear-missing_image.jsonl": "0b5f6159b6efc993d52bb38efc9ba8f5f648de75b258ac8f02dee9548ae61a02",
+    "linear-missing_text.jsonl": "172f55491c7444fd2421525728424b6b5890d2cdd55ae151f59a6a27ce068144",
+    "linear-mixed_presence.jsonl": "b34116f97103e6dafa26afe1176994a2119ba29f1f36444a54498296bf112759",
+    "linear-paired.jsonl": "1f51c63c6f0c9a49cae499feb737f28497e19c265ebb40ec1f1306d86a18eaab",
+    "linear-shuffled_image.jsonl": "d087ae72514a707270db54d6495f0924fc2ba8c0d1ce3466e85052bcef57071a"
+  },
+  "remote_source_mapping": null,
+  "request_reconstruction": "RECONSTRUCT.sh, cached features only; no Encoder or training",
+  "research_archive_manifest_sha256": "2a853d6c975b30d98a8c79348f01bb3f5b26f36793f2986826a5deed3ea4454e",
+  "research_archive_repository_path": "qa/stem-bakeoff/evidence/20261022-real-multimodal",
+  "schema": "hepta.p41-package-input-references.v1",
+  "source_commit": "f8855a7ac07af47b618199a3a9ccb87ff9552a5c",
+  "source_file_sha256": {
+    "codex-rs/hepta-neuron/examples/native_task_head_pool.rs": "6294c5786f5223cacc3f74a62e6e0b5908bdad7653eabf25106cfd597c7ff0ed",
+    "codex-rs/hepta-neuron/src/lib.rs": "839b884d6853dd8a2b62dc36e45dd2c71f84c7637b2250e93f517c1bb27b7206",
+    "codex-rs/hepta-neuron/src/task_head_native.rs": "a75cdad0fbcb4e99141e1b35d6525f595b06a1759e56e32fe0f4df7f3986c227",
+    "codex-rs/rust-toolchain.toml": "570656042681cfd8795403a455baf9a33035331a07db0645e866bbcea89a3d64",
+    "qa/stem-bakeoff/native_task_head_pool.py": "21fffc60c82a7f4c02e1b04a3bde413c2e8b21336fa4bb4cc9be8f94710ec07f",
+    "qa/stem-bakeoff/replay_native_task_head_v1.py": "9fa6d2e1dac42eb67cbcaf1f8fc960d0a3071156250c421cdc0d759b1186e64b",
+    "qa/stem-bakeoff/test_native_task_head_pool.py": "f3d6eaa5942060df1638e04aec10dff43d43416b3bc914df1483ba0928294f4e"
+  },
+  "source_tree": "231ed14ea73a71c6d2ac3fe353b1779419154f53"
+}

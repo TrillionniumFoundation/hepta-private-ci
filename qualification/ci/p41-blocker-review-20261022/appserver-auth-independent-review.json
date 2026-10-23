@@ -1,0 +1,48 @@
+{
+  "schema": "hepta.p38-appserver-independent-source-review.v1",
+  "reviewed_worktree": "/tmp/hepta-ci-appserver-followup-20261022",
+  "base": "3276ab55007d6d3276106639d36edec67a861ef8",
+  "head": "7bf0db2c7549104ce59b6e5ad52256ff6b51a995",
+  "tree": "9b479bb91781b572aebef8f66949efc1b776bcb4",
+  "source_head": "55943e6ee307388f4630f57b443bd0a418d7480c",
+  "scope": "Six local stages: metadata connection/recovery identity; captured websocket auth; attestation fixture pump; Bedrock routing/SDK credential availability; Bedrock boundary fixtures; qualification receipt",
+  "blocking_safety_findings": [],
+  "mechanical_findings": [
+    {
+      "path": "codex-rs/app-server/tests/suite/v2/bedrock_setup.rs",
+      "line": 589,
+      "description": "New call passes positional None for expected_message without the exact AGENTS argument comment.",
+      "change": "Use /*expected_message*/ None; no behavior change."
+    }
+  ],
+  "verified_source_properties": [
+    "Connection compatibility omits only Prewarm request-kind and root-turn correlation; durable recovery projection and per-request metadata retain them.",
+    "Other compatibility fields, provider/base URL/query/provider headers/beta features, auth credentials/accounts/tasks and custom security headers still distinguish reuse.",
+    "Authentication is captured once; those exact headers form the comparison binding and are applied to the actual upgrade. AgentAssertion stable identity includes immutable signing record and task; debug redacts binding.",
+    "100 ms production attestation timeout, failure envelope, connection/header limits and header merge order were not changed.",
+    "Attestation test now pumps requests while awaiting turn/start and turn/completed; it still checks nonzero attestation requests, one handshake and the exact header.",
+    "Bedrock remains experimental and account-auth serialized. Workload identity, external ChatGPT auth and forced ChatGPT denial precede credential resolution.",
+    "SDK credential availability is resolved before configuration write; it is explicitly not AWS service authorization. Discovery returns profile/region/credential-type availability rather than credential values.",
+    "Only editable active user command-auth is cleared; command-auth from any other layer is rejected before config or credential writes.",
+    "Config transaction still restricts writes to the active user file and preserves requirements/semantic validation.",
+    "New denial fixtures isolate SDK credential sources and assert unchanged config/auth.json/.env; mock container SDK success/failure exercises the fallback."
+  ],
+  "validation_performed_here": [
+    "Read all production diffs and relevant call sites/tests",
+    "git diff --check over exact six-stage range: PASS",
+    "git status --short: clean"
+  ],
+  "not_performed_here": [
+    "No build",
+    "No test execution",
+    "No GitHub API",
+    "No source or remote write"
+  ],
+  "native_combination_qualified": false,
+  "remaining_boundaries": [
+    "Exact native core/model-provider/app-server integration validation remains pending, as stated by the handoff; isolated module tests are not owning integration evidence.",
+    "AWS credential resolution does not validate ListModels/service authorization; the existing explicit TODO remains.",
+    "Independent Windows outside-DELETE blocker remains open and is unrelated to this batch.",
+    "Cold-resume active-permission re-resolution and remote catalog TTL failures are outside this batch's closure claims."
+  ]
+}
