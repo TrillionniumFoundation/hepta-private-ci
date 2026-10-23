@@ -32,6 +32,8 @@ class RetrievalExecutionTests(unittest.TestCase):
         self.root = Path(self.temp.name)
         self.snapshot = self.root / 'models--microsoft--harrier-oss-v1-270m' / 'snapshots' / ('a' * 40)
         self.snapshot.mkdir(parents=True)
+        (self.snapshot / 'model.safetensors').write_bytes(b'synthetic weights')
+        (self.snapshot / 'tokenizer.json').write_text('{}')
         self.queries = self.root / 'queries.jsonl'
         self.corpus = self.root / 'corpus.jsonl'
         self.output = self.root / 'receipt.json'
@@ -137,6 +139,27 @@ class RetrievalExecutionTests(unittest.TestCase):
                 self.assertEqual(self.run_cli(), 2)
                 self.assertIn('BLOCKED:', self.error.getvalue())
                 self.assertFalse(self.output.exists())
+
+    def test_load_mutation_stops_before_encoding_and_preserves_source(self):
+        def load(path, **kwargs):
+            (Path(path) / 'tokenizer.json').write_text('{"changed": true}')
+            return self.model
+        self.load = load
+        self.assertEqual(self.run_cli(), 2)
+        self.assertIn('after retrieval load: runtime copy artifact drift', self.error.getvalue())
+        self.assertEqual(self.encode_calls, [])
+        self.assertEqual((self.snapshot / 'tokenizer.json').read_text(), '{}')
+        self.assertFalse(self.output.exists())
+
+    def test_inference_mutation_prevents_receipt_and_preserves_source(self):
+        def encode(texts, **kwargs):
+            (Path(self.load_calls[0][0][0]) / 'model.safetensors').write_bytes(b'changed')
+            return self.encode(texts, **kwargs)
+        self.model.encode = encode
+        self.assertEqual(self.run_cli(), 2)
+        self.assertIn('after retrieval inference: runtime copy artifact drift', self.error.getvalue())
+        self.assertEqual((self.snapshot / 'model.safetensors').read_bytes(), b'synthetic weights')
+        self.assertFalse(self.output.exists())
 
 
 if __name__ == '__main__':

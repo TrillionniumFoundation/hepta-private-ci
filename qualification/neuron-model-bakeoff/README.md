@@ -64,6 +64,29 @@ hash; standalone Typed/Multilingual snapshots must correspond to their
 own repository paths. Directory names are a drift check, not independent
 artifact provenance or proof of real execution.
 
+Both decision/calibration and retrieval runners now copy the snapshot into a
+disposable per-run directory, preserving its repository/revision layout. This
+needs temporary disk space for one complete snapshot; files are copied, never
+hardlinked. All snapshot files (including configuration, not just weights and
+tokenizer files) are hashed before copying and checked after load, after inference
+and before publishing observations. Artifact drift observed at these checkpoints
+aborts; transient rewrite-and-restore is not detected. The frozen source is not
+repaired or silently adapted. A content digest for the complete snapshot and
+hashes of runner/helper source modules are recorded in the observations/runtime
+identity. The current evaluator does not separately freeze the full snapshot
+digest in its plan; independent configuration/runtime manifest authentication
+and enforcement of the documented clean-source prerequisite remain open. These
+checks provide neither a sandbox nor a disk quota or independent provenance.
+
+Laya runtimes must expose raw and effective temperature profiles, which must
+match exactly before and after inference. Runtime clamps cannot be relabelled
+as publisher calibration. In the observed SDK 0.4.14, English/Typed checkpoints
+clamp a choice:11+ temperature from approximately 0.10058 to 0.5, and Multilingual
+rewrites its tokenizer configuration from a list of extra special tokens to a
+mapping. This strict lane rejects these alterations even if a particular short
+smoke used only two choices. A compatibility profile would need independent
+registration and validation; changing model data to obtain a pass is not allowed.
+
 The runner now requires --device cpu|cuda|mps and verifies the selected
 device on load and after inference (Laya may otherwise silently fall back
 to CPU after an OOM). Its quantization digest binds the loaded tensor

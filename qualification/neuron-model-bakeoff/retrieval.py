@@ -11,6 +11,7 @@ import subprocess
 import sys
 from pathlib import Path
 
+from artifact_guard import SnapshotGuard
 from bakeoff import EMBEDDING_MODELS, MODEL_REPOS, REVISION, file_hash, load_jsonl, require
 from run_models import (
     model_inventory, runtime_identity, device_identity, device_kind,
@@ -102,26 +103,30 @@ def main() -> int:
             require(set(positive).issubset(docs), "missing positive corpus document")
         from sentence_transformers import SentenceTransformer
         import numpy as np
-        model = SentenceTransformer(
-            str(snapshot), trust_remote_code=False, local_files_only=True, device=a.device,
-        )
-        require(device_kind(model.device) == a.device, "retrieval load-device fallback")
-        precision_sha = precision_manifest(model)
-        ids = sorted(docs)
-        doc_vec = model.encode(
-            [docs[i] for i in ids], batch_size=16, normalize_embeddings=True,
-            convert_to_numpy=True, prompt="",
-        )
-        query_options = retrieval_query_kwargs(a.model, getattr(model, "prompts", None))
-        query_vec = model.encode(
-            [row["query"] for row in queries], batch_size=16, normalize_embeddings=True,
-            convert_to_numpy=True, **query_options,
-        )
-        require(device_kind(model.device) == a.device, "retrieval inference-device fallback")
-        dimension = validate_embeddings(doc_vec, len(ids))
-        validate_embeddings(query_vec, len(queries), dimension)
-        scores = np.asarray(query_vec) @ np.asarray(doc_vec).T
-        require(np.isfinite(scores).all(), "nonfinite retrieval scores")
+        with SnapshotGuard(snapshot) as guard:
+            model = SentenceTransformer(
+                str(guard.path), trust_remote_code=False, local_files_only=True, device=a.device,
+            )
+            guard.verify("after retrieval load")
+            require(device_kind(model.device) == a.device, "retrieval load-device fallback")
+            precision_sha = precision_manifest(model)
+            ids = sorted(docs)
+            doc_vec = model.encode(
+                [docs[i] for i in ids], batch_size=16, normalize_embeddings=True,
+                convert_to_numpy=True, prompt="",
+            )
+            query_options = retrieval_query_kwargs(a.model, getattr(model, "prompts", None))
+            query_vec = model.encode(
+                [row["query"] for row in queries], batch_size=16, normalize_embeddings=True,
+                convert_to_numpy=True, **query_options,
+            )
+            guard.verify("after retrieval inference")
+            require(device_kind(model.device) == a.device, "retrieval inference-device fallback")
+            dimension = validate_embeddings(doc_vec, len(ids))
+            validate_embeddings(query_vec, len(queries), dimension)
+            scores = np.asarray(query_vec) @ np.asarray(doc_vec).T
+            require(np.isfinite(scores).all(), "nonfinite retrieval scores")
+            require(model_inventory(snapshot) == inventory, "published retrieval inventory drift")
         results = []
         for row, values in zip(queries, scores):
             ranking = sorted(range(len(ids)), key=lambda i: (-float(values[i]), ids[i]))
@@ -136,7 +141,7 @@ def main() -> int:
             "tokenizer_digest": inventory["tokenizer"], "runtime_digest": runtime_identity(),
             "device_digest": device_identity(), "queries_sha256": file_hash(a.queries),
             "selected_device": a.device, "parameter_precision_sha256": precision_sha,
-            "embedding_dimension": dimension,
+            "embedding_dimension": dimension, "full_snapshot_sha256": guard.digest,
             "corpus_sha256": file_hash(a.corpus), "n_queries": len(results),
             "query_instruction_name": query_options.get("prompt_name"),
             "query_instruction_sha256": hashlib.sha256(
