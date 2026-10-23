@@ -41,6 +41,24 @@ continuation or authorize it: a separate execution owner must charge the next
 physical action before executing it. Utility costs are Q32 and must not be
 silently interpreted as wall-clock microseconds.
 
+An additive `preflight_group_future_cost_v1` now independently recomputes
+`decide_group_continuation_v1` and rejects a forged decision or a different
+trace before admitting any budget quote. Every non-abstain suggestion must
+supply a strictly positive *future physical microsecond* quote no larger than
+`resource_ceiling_micros - sum(observed Cell cost_micros)`. A selected
+abstention requires an exact zero quote. The returned
+`GroupBudgetPreflightV1` binds the full decision digest, prior consumption,
+remaining budget, quote and selected candidate in a domain-separated digest,
+and always carries `AuthorityPosture::DENY_ALL`.
+
+This is an **advisory preflight, not a reservation**. A malicious caller may
+underquote cost; neither the value nor its hash independently authenticates
+physical execution, source witnesses, future compute consumption or a signer.
+The live owner must use atomic reservation and actual measurement under its
+current generation, deadline and independently controlled FinalUse boundaries.
+The old `decide_group_continuation_v1` API stays unchanged and is not silently
+promoted into this new preflight. No new scientific or production claims follow.
+
 The candidate set is digest-bound and the trace digest is deterministic, so a
 future learned critic, Neural Differential Utility solver, or router can be
 introduced behind the same owner boundary and compared against this baseline.
