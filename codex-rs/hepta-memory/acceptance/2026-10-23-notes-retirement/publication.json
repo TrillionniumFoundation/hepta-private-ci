@@ -191,5 +191,13 @@
   "production_root_fsync_qualified": false,
   "pre_effect_entered_cut_qualified": false,
   "hos2_receipt_retirement_qualified": false,
-  "physical_device_qualified": false
+  "physical_device_qualified": false,
+  "concurrent_writer_qualification": "reopened_after_actual_competitor_commit_during_held_retirement",
+  "readonly_begin_immediate_exclusion_qualified": false,
+  "historical_raw_members_unchanged": true,
+  "reopened_shared_boundaries": [
+    "Notes receipt retirement",
+    "HOS2 receipt retirement",
+    "pre-effect entered-cut publication"
+  ]
 }

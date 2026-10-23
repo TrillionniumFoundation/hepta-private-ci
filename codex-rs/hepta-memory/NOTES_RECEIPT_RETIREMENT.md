@@ -1,5 +1,15 @@
 # Managed Notes receipt retirement
 
+**Concurrency qualification reopened on 2026-10-23.** A later actual
+competitor returned `Ok(ProductionQueuedReceipt)` and committed SQLite changes
+while the metadata-retirement callback was still held. The read-only pool's
+`BEGIN IMMEDIATE` did not provide the intended writer exclusion. The earlier
+59/59 and 33/33 results remain historical test results; their short pending
+observation does not prove mutual exclusion. Notes retirement and the HOS2 and
+pre-effect paths sharing this barrier remain blockers pending a real fix and
+actual competing-writer acceptance. No physical Current/recovery safety is
+claimed from this barrier.
+
 The managed durable writer must retain an application receipt until the exact
 terminal operation and its whole-owner recovery cut have been acknowledged as
 Current. Losing that receipt earlier could make a recoverable local operation
@@ -14,10 +24,11 @@ that same coordinator and the original whole-pool commit gate.
 `production_notes_owner.rs` starts the original read-only BEGIN IMMEDIATE
 transaction, revalidates the exact terminal outbox operation and calls
 `acknowledge_bound_owner_transaction` in `production_owner_publication.rs`.
-The transaction holds the original SQLite writer exclusion across complete
+The intended contract requires actual SQLite writer exclusion across complete
 anchor capture, Root Current acknowledgement and synchronous application
-metadata retirement. Another writer cannot insert an unacknowledged mutation
-between those steps. The original authority and live verifier are checked
+metadata retirement. The current read-only transaction does not establish
+that exclusion, so another writer may insert an unacknowledged mutation between
+those steps. The original authority and live verifier are checked
 immediately after the final await and before metadata retirement. Polling and
 read-only lease queries use the original read path rather than changing the
 owner from Current to Dirty merely to observe it.
