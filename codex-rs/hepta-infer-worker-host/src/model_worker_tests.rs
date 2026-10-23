@@ -321,8 +321,8 @@ enum DispatchPath {
     NeuronFeatures,
 }
 
-fn dispatch(
-    worker: &mut InferenceWorker<Driver>,
+fn dispatch<D: ModelDriver + NeuronFeatureDriver>(
+    worker: &mut InferenceWorker<D>,
     path: DispatchPath,
     model_id: &str,
     request_id: &str,
