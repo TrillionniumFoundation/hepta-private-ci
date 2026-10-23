@@ -1,0 +1,33 @@
+{
+  "kind": "BOUNDED_READONLY_SDK_PARITY_NOT_QUALIFICATION",
+  "status": "exact_parity_observed",
+  "profile": "laya-0.4.14-local-readonly-extra-special-token-map-v1",
+  "reference_report_sha256": "55d2734e847529d14a5ea1c9914f3b5634243624ca52faab7343ce6f478041fe",
+  "candidate_report_sha256": "16b37c946ca811433ee11e122c16d4e9ab5c873d70f1f9552f7d478402067374",
+  "comparison_driver_sha256": "84e3a0cbb9d1a6c680c269e5e29c2f0b9d9bfec54391091de8f8bda8ce64b484",
+  "manifest_sha256": "0df0d4888ae3f595b963a46e3f9259bac7646d53f9e9e3732891a4923070642f",
+  "cases_sha256": "5cbf178d8e88aa0ad18a5e04672aa81d6806430f1b02edc43bb5dec2d06db399",
+  "forward_calls_per_profile": 7,
+  "forward_rows_per_profile": 17,
+  "tensor_comparisons": 49,
+  "all_model_inputs_and_both_raw_outputs_bit_identical": true,
+  "decoded_results_identical": true,
+  "original_unchanged": true,
+  "candidate_artifacts_unchanged": true,
+  "official_reference_mutation_retained": [
+    "tokenizer/tokenizer_config.json"
+  ],
+  "calibration_unchanged": true,
+  "limits": [
+    "Pinned Multilingual checkpoint, CPU fp32 eager, only enumerated public example/mechanical fixture inputs",
+    "Not all inputs, devices, batch sizes or SDK releases",
+    "Original Laya SDK still rewrites tokenizer config",
+    "English/Typed 11+ calibration mismatch remains blocked under the unchanged strict default",
+    "Derived candidate removes tokenizer cache; no startup/performance equivalence claim",
+    "Local-only/no-custom-code assurance is for the validated snapshot and diagnostic driver, not arbitrary Agent inputs",
+    "No task quality, independent dataset, future benefit, performance parity or acceptance claim"
+  ],
+  "original_protocol_changed": false,
+  "independent_acceptance": false,
+  "all_blockers_closed": false
+}

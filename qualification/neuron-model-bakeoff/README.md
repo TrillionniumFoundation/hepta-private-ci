@@ -238,3 +238,11 @@ docs/learning/NEURAL_BIOMIMICRY_SPEC.md,
 docs/readiness/NEURON_RUNTIME_EXECUTION.md,
 qualification/module-execution-dossiers/LEARNING_EXPERIMENT.md and
 qualification/module-execution-dossiers/detail/inference.worker.md.
+
+### Explicit derived SDK compatibility diagnostic
+
+The separate [`sdk_readonly/`](sdk_readonly/README.md) comparator can investigate a pinned
+Multilingual tokenizer-loading incompatibility using an isolated, hash-bound derivative of
+the official SDK. It is opt-in, never imported by the default runner, and does not weaken
+snapshot/calibration guards or redefine the frozen five-model/11+ experiment. Its bounded
+public-fixture token/logit parity is not task quality, calibrated confidence or acceptance.

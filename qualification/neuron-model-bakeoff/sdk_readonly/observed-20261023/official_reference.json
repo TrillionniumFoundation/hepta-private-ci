@@ -1,0 +1,983 @@
+{
+  "kind": "VERSIONED_READONLY_SDK_PARITY_DIAGNOSTIC_NOT_QUALIFICATION",
+  "profile": "official_reference",
+  "derived_profile": null,
+  "driver_sha256": "ce2756969d6bb9aad7786885de12671a5aebe790ce3c11f604503aefa3a6d5e7",
+  "source_manifest_sha256": "0df0d4888ae3f595b963a46e3f9259bac7646d53f9e9e3732891a4923070642f",
+  "cases_sha256": "5cbf178d8e88aa0ad18a5e04672aa81d6806430f1b02edc43bb5dec2d06db399",
+  "original_snapshot": {
+    "README.md": "e85d16c3fe35fe7094ef51a7cfa81144a5cc07558e5faddcff753a8153e38a0b",
+    "config.json": "7add7c041b53f7091e65908553af79ab3f077946e5f2312d510ae13b17c7c134",
+    "encoder/config.json": "83f6916d13ef0f556ac461f28308dc2bffa7ebeadee8ec9e2db5812020ea5bb4",
+    "model.safetensors": "9d628fd971b700382ac6f65920a86f149777b2e748e0c955fb3b19695aa8f204",
+    "rl_agent_config.json": "25061739243b617ad88d1219ba6f8a9c86c5881ca28df024fa2d9b3b2fcc30c6",
+    "tokenizer/tokenizer.json": "609d8f4c067cd3950f88594c5a802616cea245823836ef5848ee4fc40aab5b6f",
+    "tokenizer/tokenizer_config.json": "424b69444bf7b5809dc2cd2e36d0bd71b8055124dd24274d6db3c655d38205e7"
+  },
+  "original_snapshot_unchanged": true,
+  "runtime_copy_observed_changes": [
+    "tokenizer/tokenizer_config.json"
+  ],
+  "source_guard_commit": "d3a8c03e58952e1e875088f36a77ff39d4b8cc1a",
+  "source_guard_sha256": "1d62d53d0ddfa48410f722abce7d5255de3cc5cf159a2ca6b7fc1d5c4e6aedc0",
+  "source_run_models_sha256": "2766cb26bad0528d175c96ab2bf96d288b4f9d9b5038cb64ddfd7bd61890fdad",
+  "packages": {
+    "laya": "0.4.14",
+    "torch": "2.8.0+cpu",
+    "transformers": "4.57.1",
+    "numpy": "2.2.6",
+    "safetensors": "0.8.0"
+  },
+  "cpu_threads": 2,
+  "cpu_affinity": [
+    0,
+    1
+  ],
+  "device": "cpu",
+  "dtype": "float32",
+  "forward_observations": [
+    {
+      "case": "official_hindi_dict",
+      "inputs": {
+        "input_ids": {
+          "file": "forward-00-input-input_ids.npy",
+          "shape": [
+            2,
+            69
+          ],
+          "dtype": "torch.int64",
+          "sha256": "bd39f9c003a73081fa6aa89a6a8c044780d41db00524bdb2b981281fb4d49d59"
+        },
+        "attention_mask": {
+          "file": "forward-00-input-attention_mask.npy",
+          "shape": [
+            2,
+            69
+          ],
+          "dtype": "torch.int64",
+          "sha256": "fa8fee916c2df31822ec94a20e20242d3a1928d615060b0ab45cd29507090f06"
+        },
+        "marker_pos": {
+          "file": "forward-00-input-marker_pos.npy",
+          "shape": [
+            2,
+            3
+          ],
+          "dtype": "torch.int64",
+          "sha256": "b7bc9c53d0303d27916d17196acb110fd6013bebaee56ca0bb452e5b3be0e903"
+        },
+        "marker_mask": {
+          "file": "forward-00-input-marker_mask.npy",
+          "shape": [
+            2,
+            3
+          ],
+          "dtype": "torch.bool",
+          "sha256": "551c72f13b430102343c9eea210bc9c37b26a32083ee5c309fc1b939d6ceefb8"
+        },
+        "qtype": {
+          "file": "forward-00-input-qtype.npy",
+          "shape": [
+            2
+          ],
+          "dtype": "torch.int64",
+          "sha256": "bf72f23aa00559891aa7ccc6bf0ec2733f6d598e11e49d8d2023a405748d99e7"
+        }
+      },
+      "outputs": {
+        "option_logits": {
+          "file": "forward-00-output-option_logits.npy",
+          "shape": [
+            2,
+            3
+          ],
+          "dtype": "float32",
+          "sha256": "1f0dc6b620767beaea4a46faa695aae8c112ee71f71b4f3ade4f8ea5ad1b03b2"
+        },
+        "action_logits": {
+          "file": "forward-00-output-action_logits.npy",
+          "shape": [
+            2,
+            2
+          ],
+          "dtype": "float32",
+          "sha256": "581f666707b1fb3ed9445081451ea8825df1e662ffb2b04a1a0b58294b2f5430"
+        }
+      }
+    },
+    {
+      "case": "mixed_language_2_10",
+      "inputs": {
+        "input_ids": {
+          "file": "forward-01-input-input_ids.npy",
+          "shape": [
+            4,
+            78
+          ],
+          "dtype": "torch.int64",
+          "sha256": "104223fc9a850672685840e22a32de79c1dd228cee0ac96500a83b6dfc8bc60f"
+        },
+        "attention_mask": {
+          "file": "forward-01-input-attention_mask.npy",
+          "shape": [
+            4,
+            78
+          ],
+          "dtype": "torch.int64",
+          "sha256": "507e8ad7f24a2c764ad2a0834d0fd086ed937c7d68193352fcd572e610266791"
+        },
+        "marker_pos": {
+          "file": "forward-01-input-marker_pos.npy",
+          "shape": [
+            4,
+            10
+          ],
+          "dtype": "torch.int64",
+          "sha256": "0c6a57ff05e5ccf2e6dcb71a8c1101229f6af9152bb7062f9667d0d7f5022290"
+        },
+        "marker_mask": {
+          "file": "forward-01-input-marker_mask.npy",
+          "shape": [
+            4,
+            10
+          ],
+          "dtype": "torch.bool",
+          "sha256": "6e6bab40171df30acd5f56e4b9490cbaa6f248c5a1669da7efe63a48b6b1c0f5"
+        },
+        "qtype": {
+          "file": "forward-01-input-qtype.npy",
+          "shape": [
+            4
+          ],
+          "dtype": "torch.int64",
+          "sha256": "2167f2928073f74762594a1cbb4965bc351157da2ba3b07d58d6baf4ba16636a"
+        }
+      },
+      "outputs": {
+        "option_logits": {
+          "file": "forward-01-output-option_logits.npy",
+          "shape": [
+            4,
+            10
+          ],
+          "dtype": "float32",
+          "sha256": "571cf344e7b9708c134708422a11b71160c152364ffb8a78db1f928191efeb70"
+        },
+        "action_logits": {
+          "file": "forward-01-output-action_logits.npy",
+          "shape": [
+            4,
+            2
+          ],
+          "dtype": "float32",
+          "sha256": "cf237b7bfe283ffaef371609392cce6b927e86f5da3b1e1aa7eedf14b639230d"
+        }
+      }
+    },
+    {
+      "case": "unicode_special_11_12",
+      "inputs": {
+        "input_ids": {
+          "file": "forward-02-input-input_ids.npy",
+          "shape": [
+            4,
+            117
+          ],
+          "dtype": "torch.int64",
+          "sha256": "db93962c0df7bff517a293d3a51db8e81e9a9f72df32f0926dc8fc924df543ba"
+        },
+        "attention_mask": {
+          "file": "forward-02-input-attention_mask.npy",
+          "shape": [
+            4,
+            117
+          ],
+          "dtype": "torch.int64",
+          "sha256": "1976bcbd3c79937757d90e36af340dbb47075617dcfc6609c7260601cc2c94c3"
+        },
+        "marker_pos": {
+          "file": "forward-02-input-marker_pos.npy",
+          "shape": [
+            4,
+            12
+          ],
+          "dtype": "torch.int64",
+          "sha256": "66226fa765b41e7f47a89a424d84b705ef518f3e080deac68d4c78f3c24767bb"
+        },
+        "marker_mask": {
+          "file": "forward-02-input-marker_mask.npy",
+          "shape": [
+            4,
+            12
+          ],
+          "dtype": "torch.bool",
+          "sha256": "0d9443ce4d851d250427c33a7c2ad5cd64c98c435459380ee65781f9930c66bf"
+        },
+        "qtype": {
+          "file": "forward-02-input-qtype.npy",
+          "shape": [
+            4
+          ],
+          "dtype": "torch.int64",
+          "sha256": "2167f2928073f74762594a1cbb4965bc351157da2ba3b07d58d6baf4ba16636a"
+        }
+      },
+      "outputs": {
+        "option_logits": {
+          "file": "forward-02-output-option_logits.npy",
+          "shape": [
+            4,
+            12
+          ],
+          "dtype": "float32",
+          "sha256": "d30bd8d71b8eaa483133fac5d4e44a67ba479b99776d935193aab3c65b33c241"
+        },
+        "action_logits": {
+          "file": "forward-02-output-action_logits.npy",
+          "shape": [
+            4,
+            2
+          ],
+          "dtype": "float32",
+          "sha256": "3735509642ad7c158d2bb334e34558a8813bf0b604f83568b1f923d52f459313"
+        }
+      }
+    },
+    {
+      "case": "reordered_three",
+      "inputs": {
+        "input_ids": {
+          "file": "forward-03-input-input_ids.npy",
+          "shape": [
+            1,
+            36
+          ],
+          "dtype": "torch.int64",
+          "sha256": "306fd8c016a6333d6725a7530b4a8ddb30b1c30b004ab8b8912b1de2de161f8e"
+        },
+        "attention_mask": {
+          "file": "forward-03-input-attention_mask.npy",
+          "shape": [
+            1,
+            36
+          ],
+          "dtype": "torch.int64",
+          "sha256": "c9539703ff33ce21b1bf8913ac3baeac9bbeffe9ede74874d0836928f67ca491"
+        },
+        "marker_pos": {
+          "file": "forward-03-input-marker_pos.npy",
+          "shape": [
+            1,
+            3
+          ],
+          "dtype": "torch.int64",
+          "sha256": "ccdfc9d2e1bbbc1f81aa27ff14400343815e8e3097b2f42f6a18759ba5e6d8e5"
+        },
+        "marker_mask": {
+          "file": "forward-03-input-marker_mask.npy",
+          "shape": [
+            1,
+            3
+          ],
+          "dtype": "torch.bool",
+          "sha256": "bf467db4043c013cbc259de1111929f01b652fc9be9af5f179cbda588034c8f1"
+        },
+        "qtype": {
+          "file": "forward-03-input-qtype.npy",
+          "shape": [
+            1
+          ],
+          "dtype": "torch.int64",
+          "sha256": "f6df0000bed676f0a4b777e2a1d915b6608dab452e11737f82c685cebf0e8ba7"
+        }
+      },
+      "outputs": {
+        "option_logits": {
+          "file": "forward-03-output-option_logits.npy",
+          "shape": [
+            1,
+            3
+          ],
+          "dtype": "float32",
+          "sha256": "299de5e918f8f979405a2151cfee85fc38a6cb921d285a44d16e6052e1d8a6bc"
+        },
+        "action_logits": {
+          "file": "forward-03-output-action_logits.npy",
+          "shape": [
+            1,
+            2
+          ],
+          "dtype": "float32",
+          "sha256": "d8ae4ff21490298841f4fffcaf1f3957c521d9a80368895f16cbd0ac74841017"
+        }
+      }
+    },
+    {
+      "case": "long_string_right_truncation",
+      "inputs": {
+        "input_ids": {
+          "file": "forward-04-input-input_ids.npy",
+          "shape": [
+            1,
+            1024
+          ],
+          "dtype": "torch.int64",
+          "sha256": "8d28957610c2ce1126ec39203ce7cdcf397ea52488e5a3ff1d1c715215daba5a"
+        },
+        "attention_mask": {
+          "file": "forward-04-input-attention_mask.npy",
+          "shape": [
+            1,
+            1024
+          ],
+          "dtype": "torch.int64",
+          "sha256": "aba069e696e51bbb05d5d15a0e90de8ea2c1285917ee8b0a7a48e2f22fd7845f"
+        },
+        "marker_pos": {
+          "file": "forward-04-input-marker_pos.npy",
+          "shape": [
+            1,
+            2
+          ],
+          "dtype": "torch.int64",
+          "sha256": "37f1a5e171ff8f50cb761635494bcd1c5320a4c0938e5373d519e675ca27457a"
+        },
+        "marker_mask": {
+          "file": "forward-04-input-marker_mask.npy",
+          "shape": [
+            1,
+            2
+          ],
+          "dtype": "torch.bool",
+          "sha256": "10f6ebfc08db3fe5e1342b884f920f94d335cf69773289e4aff645db1a06a0df"
+        },
+        "qtype": {
+          "file": "forward-04-input-qtype.npy",
+          "shape": [
+            1
+          ],
+          "dtype": "torch.int64",
+          "sha256": "f6df0000bed676f0a4b777e2a1d915b6608dab452e11737f82c685cebf0e8ba7"
+        }
+      },
+      "outputs": {
+        "option_logits": {
+          "file": "forward-04-output-option_logits.npy",
+          "shape": [
+            1,
+            2
+          ],
+          "dtype": "float32",
+          "sha256": "4247c0267d822e6b9dcd3a87a0b9208333a2ed8d4baef72393584a55507158bc"
+        },
+        "action_logits": {
+          "file": "forward-04-output-action_logits.npy",
+          "shape": [
+            1,
+            2
+          ],
+          "dtype": "float32",
+          "sha256": "53d68eb4f7f8b20e8cc6a4195b80cabba24241bcb00d37d145205a9601631fbd"
+        }
+      }
+    },
+    {
+      "case": "conversation_left_truncation",
+      "inputs": {
+        "input_ids": {
+          "file": "forward-05-input-input_ids.npy",
+          "shape": [
+            1,
+            1024
+          ],
+          "dtype": "torch.int64",
+          "sha256": "a74400068b941adf78632c0470632a2983fd2c044b901ac8cb7517e95e36a8e4"
+        },
+        "attention_mask": {
+          "file": "forward-05-input-attention_mask.npy",
+          "shape": [
+            1,
+            1024
+          ],
+          "dtype": "torch.int64",
+          "sha256": "aba069e696e51bbb05d5d15a0e90de8ea2c1285917ee8b0a7a48e2f22fd7845f"
+        },
+        "marker_pos": {
+          "file": "forward-05-input-marker_pos.npy",
+          "shape": [
+            1,
+            2
+          ],
+          "dtype": "torch.int64",
+          "sha256": "37f1a5e171ff8f50cb761635494bcd1c5320a4c0938e5373d519e675ca27457a"
+        },
+        "marker_mask": {
+          "file": "forward-05-input-marker_mask.npy",
+          "shape": [
+            1,
+            2
+          ],
+          "dtype": "torch.bool",
+          "sha256": "10f6ebfc08db3fe5e1342b884f920f94d335cf69773289e4aff645db1a06a0df"
+        },
+        "qtype": {
+          "file": "forward-05-input-qtype.npy",
+          "shape": [
+            1
+          ],
+          "dtype": "torch.int64",
+          "sha256": "f6df0000bed676f0a4b777e2a1d915b6608dab452e11737f82c685cebf0e8ba7"
+        }
+      },
+      "outputs": {
+        "option_logits": {
+          "file": "forward-05-output-option_logits.npy",
+          "shape": [
+            1,
+            2
+          ],
+          "dtype": "float32",
+          "sha256": "5854cd852af32949cc259e05ae22b095194c7e8e93fb579762d5365b678f96a1"
+        },
+        "action_logits": {
+          "file": "forward-05-output-action_logits.npy",
+          "shape": [
+            1,
+            2
+          ],
+          "dtype": "float32",
+          "sha256": "01b298291f09a7a7dfa4ae179edba2d8c0c244bceb111c8703f566d58e513f11"
+        }
+      }
+    },
+    {
+      "case": "empty_control_mixed_width",
+      "inputs": {
+        "input_ids": {
+          "file": "forward-06-input-input_ids.npy",
+          "shape": [
+            4,
+            40
+          ],
+          "dtype": "torch.int64",
+          "sha256": "fac99568f5ff83906490af5da184835172bd66cff577b641a35f5f96a88fdb45"
+        },
+        "attention_mask": {
+          "file": "forward-06-input-attention_mask.npy",
+          "shape": [
+            4,
+            40
+          ],
+          "dtype": "torch.int64",
+          "sha256": "c57ee16ed0bbbe64987823d3d84cce54a86812a74abd580f664dbfe49eab1457"
+        },
+        "marker_pos": {
+          "file": "forward-06-input-marker_pos.npy",
+          "shape": [
+            4,
+            3
+          ],
+          "dtype": "torch.int64",
+          "sha256": "7e62da1d73cd16d1976b9a7a143b63996360de1e5a85f887dfcdb5792d2895c2"
+        },
+        "marker_mask": {
+          "file": "forward-06-input-marker_mask.npy",
+          "shape": [
+            4,
+            3
+          ],
+          "dtype": "torch.bool",
+          "sha256": "120312dbbac5c6f512e8102c8c3be4c60b62d93088f4739b7154b940718132e4"
+        },
+        "qtype": {
+          "file": "forward-06-input-qtype.npy",
+          "shape": [
+            4
+          ],
+          "dtype": "torch.int64",
+          "sha256": "dbe1cc8058e6d4a4659f0927fdb2f04712f8e63b879026c70966ceea6659350b"
+        }
+      },
+      "outputs": {
+        "option_logits": {
+          "file": "forward-06-output-option_logits.npy",
+          "shape": [
+            4,
+            3
+          ],
+          "dtype": "float32",
+          "sha256": "b94a25274d5eda595d5a380bb8745d558e954c92ca78ab3e48694834068ba1fe"
+        },
+        "action_logits": {
+          "file": "forward-06-output-action_logits.npy",
+          "shape": [
+            4,
+            2
+          ],
+          "dtype": "float32",
+          "sha256": "ec35d596557185fc233d8e28815f40fa962ba0839b2efc29ec1eeb7b677bbef4"
+        }
+      }
+    }
+  ],
+  "forward_calls": 7,
+  "process_max_rss_bytes": 2506678272,
+  "public_fixture_source": "https://huggingface.co/convaiinnovations/laya-multilingual/blob/1720e3e3357cfe1e281542e223f8273b0890ca34/README.md",
+  "fixture_kind": "public model-card examples plus explicitly mechanical perturbations, no accuracy labels",
+  "calibration_code_changed": false,
+  "original_protocol_changed": false,
+  "independent_acceptance": false,
+  "all_blockers_closed": false,
+  "calibration_identity": "bd36fefcb2bbbabe184e1a2c2c00c4a9ef5333ea6be2dc7623caa08591439df2",
+  "parameters": 321908995,
+  "results": [
+    [
+      {
+        "model": "laya-rl-agent",
+        "answers": {
+          "department": {
+            "type": "choice",
+            "choice": "sales",
+            "probabilities": {
+              "billing": 0.4168,
+              "technical": 0.0022,
+              "sales": 0.5811
+            },
+            "confidence": 0.3687,
+            "answer_confidence": 0.5811,
+            "action": {
+              "act_probability": 1.0
+            }
+          },
+          "refund_requested": {
+            "type": "noul",
+            "noul": 0.9597,
+            "confidence": 0.9597,
+            "answer_confidence": 0.9597,
+            "action": {
+              "act_probability": 1.0
+            }
+          }
+        },
+        "usage": {
+          "input_tokens": 137,
+          "output_tokens": 0,
+          "state_tokens": 35,
+          "state_tokens_dropped": 0,
+          "truncated": false,
+          "truncated_questions": []
+        }
+      }
+    ],
+    [
+      {
+        "model": "laya-rl-agent",
+        "answers": {
+          "two": {
+            "type": "choice",
+            "choice": "option_0",
+            "probabilities": {
+              "option_0": 0.951,
+              "option_1": 0.049
+            },
+            "confidence": 0.7179,
+            "answer_confidence": 0.951,
+            "action": {
+              "act_probability": 1.0
+            }
+          },
+          "ten": {
+            "type": "choice",
+            "choice": "option_9",
+            "probabilities": {
+              "option_0": 0.2174,
+              "option_1": 0.0532,
+              "option_2": 0.0502,
+              "option_3": 0.051,
+              "option_4": 0.0351,
+              "option_5": 0.0348,
+              "option_6": 0.038,
+              "option_7": 0.0352,
+              "option_8": 0.0351,
+              "option_9": 0.4499
+            },
+            "confidence": 0.2429,
+            "answer_confidence": 0.4499,
+            "action": {
+              "act_probability": 1.0
+            }
+          }
+        },
+        "usage": {
+          "input_tokens": 106,
+          "output_tokens": 0,
+          "state_tokens": 4,
+          "state_tokens_dropped": 0,
+          "truncated": false,
+          "truncated_questions": []
+        }
+      },
+      {
+        "model": "laya-rl-agent",
+        "answers": {
+          "two": {
+            "type": "choice",
+            "choice": "option_0",
+            "probabilities": {
+              "option_0": 0.9003,
+              "option_1": 0.0997
+            },
+            "confidence": 0.5318,
+            "answer_confidence": 0.9003,
+            "action": {
+              "act_probability": 1.0
+            }
+          },
+          "ten": {
+            "type": "choice",
+            "choice": "option_9",
+            "probabilities": {
+              "option_0": 0.155,
+              "option_1": 0.0496,
+              "option_2": 0.0746,
+              "option_3": 0.1252,
+              "option_4": 0.0229,
+              "option_5": 0.0282,
+              "option_6": 0.1022,
+              "option_7": 0.0242,
+              "option_8": 0.0359,
+              "option_9": 0.3822
+            },
+            "confidence": 0.1797,
+            "answer_confidence": 0.3822,
+            "action": {
+              "act_probability": 1.0
+            }
+          }
+        },
+        "usage": {
+          "input_tokens": 108,
+          "output_tokens": 0,
+          "state_tokens": 5,
+          "state_tokens_dropped": 0,
+          "truncated": false,
+          "truncated_questions": []
+        }
+      }
+    ],
+    [
+      {
+        "model": "laya-rl-agent",
+        "answers": {
+          "eleven": {
+            "type": "choice",
+            "choice": "option_0",
+            "probabilities": {
+              "option_0": 0.2196,
+              "option_1": 0.1523,
+              "option_2": 0.1017,
+              "option_3": 0.1107,
+              "option_4": 0.051,
+              "option_5": 0.0467,
+              "option_6": 0.0859,
+              "option_7": 0.0507,
+              "option_8": 0.062,
+              "option_9": 0.0762,
+              "option_10": 0.0432
+            },
+            "confidence": 0.0588,
+            "answer_confidence": 0.2196,
+            "action": {
+              "act_probability": 1.0
+            }
+          },
+          "twelve": {
+            "type": "choice",
+            "choice": "option_0",
+            "probabilities": {
+              "option_0": 0.1963,
+              "option_1": 0.0761,
+              "option_2": 0.1046,
+              "option_3": 0.1168,
+              "option_4": 0.0236,
+              "option_5": 0.0452,
+              "option_6": 0.1065,
+              "option_7": 0.0273,
+              "option_8": 0.0606,
+              "option_9": 0.0677,
+              "option_10": 0.0249,
+              "option_11": 0.1503
+            },
+            "confidence": 0.0756,
+            "answer_confidence": 0.1963,
+            "action": {
+              "act_probability": 1.0
+            }
+          }
+        },
+        "usage": {
+          "input_tokens": 227,
+          "output_tokens": 0,
+          "state_tokens": 30,
+          "state_tokens_dropped": 0,
+          "truncated": false,
+          "truncated_questions": []
+        }
+      },
+      {
+        "model": "laya-rl-agent",
+        "answers": {
+          "eleven": {
+            "type": "choice",
+            "choice": "option_0",
+            "probabilities": {
+              "option_0": 0.7545,
+              "option_1": 0.031,
+              "option_2": 0.0177,
+              "option_3": 0.0715,
+              "option_4": 0.0093,
+              "option_5": 0.0081,
+              "option_6": 0.0215,
+              "option_7": 0.0091,
+              "option_8": 0.0083,
+              "option_9": 0.0607,
+              "option_10": 0.0082
+            },
+            "confidence": 0.5673,
+            "answer_confidence": 0.7545,
+            "action": {
+              "act_probability": 1.0
+            }
+          },
+          "twelve": {
+            "type": "choice",
+            "choice": "option_0",
+            "probabilities": {
+              "option_0": 0.7454,
+              "option_1": 0.0174,
+              "option_2": 0.0156,
+              "option_3": 0.1005,
+              "option_4": 0.0092,
+              "option_5": 0.009,
+              "option_6": 0.0303,
+              "option_7": 0.0093,
+              "option_8": 0.0095,
+              "option_9": 0.0363,
+              "option_10": 0.0088,
+              "option_11": 0.0087
+            },
+            "confidence": 0.5703,
+            "answer_confidence": 0.7454,
+            "action": {
+              "act_probability": 1.0
+            }
+          }
+        },
+        "usage": {
+          "input_tokens": 195,
+          "output_tokens": 0,
+          "state_tokens": 14,
+          "state_tokens_dropped": 0,
+          "truncated": false,
+          "truncated_questions": []
+        }
+      }
+    ],
+    [
+      {
+        "model": "laya-rl-agent",
+        "answers": {
+          "three": {
+            "type": "choice",
+            "choice": "option_0",
+            "probabilities": {
+              "option_0": 0.9802,
+              "option_1": 0.0128,
+              "option_2": 0.007
+            },
+            "confidence": 0.8996,
+            "answer_confidence": 0.9802,
+            "action": {
+              "act_probability": 1.0
+            }
+          }
+        },
+        "usage": {
+          "input_tokens": 36,
+          "output_tokens": 0,
+          "state_tokens": 5,
+          "state_tokens_dropped": 0,
+          "truncated": false,
+          "truncated_questions": []
+        }
+      }
+    ],
+    [
+      {
+        "model": "laya-rl-agent",
+        "answers": {
+          "two": {
+            "type": "choice",
+            "choice": "option_1",
+            "probabilities": {
+              "option_0": 0.4648,
+              "option_1": 0.5352
+            },
+            "confidence": 0.0036,
+            "answer_confidence": 0.5352,
+            "action": {
+              "act_probability": 1.0
+            }
+          }
+        },
+        "usage": {
+          "input_tokens": 1024,
+          "output_tokens": 0,
+          "state_tokens": 4005,
+          "state_tokens_dropped": 3006,
+          "truncated": true,
+          "truncated_questions": [
+            "two"
+          ]
+        }
+      }
+    ],
+    [
+      {
+        "model": "laya-rl-agent",
+        "answers": {
+          "two": {
+            "type": "choice",
+            "choice": "option_0",
+            "probabilities": {
+              "option_0": 0.5134,
+              "option_1": 0.4866
+            },
+            "confidence": 0.0005,
+            "answer_confidence": 0.5134,
+            "action": {
+              "act_probability": 1.0
+            }
+          }
+        },
+        "usage": {
+          "input_tokens": 1024,
+          "output_tokens": 0,
+          "state_tokens": 4029,
+          "state_tokens_dropped": 3030,
+          "truncated": true,
+          "truncated_questions": [
+            "two"
+          ]
+        }
+      }
+    ],
+    [
+      {
+        "model": "laya-rl-agent",
+        "answers": {
+          "three": {
+            "type": "choice",
+            "choice": "option_2",
+            "probabilities": {
+              "option_0": 0.1169,
+              "option_1": 0.4153,
+              "option_2": 0.4678
+            },
+            "confidence": 0.1159,
+            "answer_confidence": 0.4678,
+            "action": {
+              "act_probability": 1.0
+            }
+          },
+          "score": {
+            "type": "score",
+            "score": 1.1274,
+            "legend": {
+              "0": "low",
+              "1": "medium",
+              "2": "high"
+            },
+            "probabilities": {
+              "0": 0.0978,
+              "1": 0.6771,
+              "2": 0.2252
+            },
+            "confidence": 0.2472,
+            "answer_confidence": 0.6771,
+            "action": {
+              "act_probability": 1.0
+            }
+          }
+        },
+        "usage": {
+          "input_tokens": 62,
+          "output_tokens": 0,
+          "state_tokens": 0,
+          "state_tokens_dropped": 0,
+          "truncated": false,
+          "truncated_questions": []
+        }
+      },
+      {
+        "model": "laya-rl-agent",
+        "answers": {
+          "three": {
+            "type": "choice",
+            "choice": "option_0",
+            "probabilities": {
+              "option_0": 0.9509,
+              "option_1": 0.0276,
+              "option_2": 0.0215
+            },
+            "confidence": 0.791,
+            "answer_confidence": 0.9509,
+            "action": {
+              "act_probability": 1.0
+            }
+          },
+          "score": {
+            "type": "score",
+            "score": 1.567,
+            "legend": {
+              "0": "low",
+              "1": "medium",
+              "2": "high"
+            },
+            "probabilities": {
+              "0": 0.0272,
+              "1": 0.3786,
+              "2": 0.5942
+            },
+            "confidence": 0.2946,
+            "answer_confidence": 0.5942,
+            "action": {
+              "act_probability": 1.0
+            }
+          }
+        },
+        "usage": {
+          "input_tokens": 80,
+          "output_tokens": 0,
+          "state_tokens": 9,
+          "state_tokens_dropped": 0,
+          "truncated": false,
+          "truncated_questions": []
+        }
+      }
+    ]
+  ],
+  "raw_temperature": [
+    1.0,
+    1.0,
+    1.0
+  ],
+  "effective_temperature": [
+    1.0,
+    1.0,
+    1.0
+  ],
+  "raw_buckets": {},
+  "effective_buckets": {},
+  "cpu_fallback_count": 0
+}

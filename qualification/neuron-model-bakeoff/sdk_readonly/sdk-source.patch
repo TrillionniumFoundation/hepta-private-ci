@@ -1,0 +1,109 @@
+--- official-laya-0.4.14/agent.py
++++ derived-laya-readonly-v1/agent.py
+@@ -58,59 +58,7 @@
+ from .revisions import resolve_revision, snapshot_revision, verify_digests
+ 
+ 
+-def _fix_tokenizer_config(path: str):
+-    """Ensure tokenizer_config.json can be loaded across all transformers versions."""
+-    cfg_file = os.path.join(path, "tokenizer", "tokenizer_config.json")
+-    if not os.path.exists(cfg_file):
+-        return
+-    try:
+-        with open(cfg_file) as f:
+-            tcfg = json.load(f)
+-        changed = False
+-        if tcfg.get("tokenizer_class") in (None, "TokenizersBackend"):
+-            tcfg["tokenizer_class"] = "PreTrainedTokenizerFast"
+-            tcfg.pop("backend", None)
+-            tcfg.pop("is_local", None)
+-            changed = True
+-        # Checkpoints built on the mmBERT/Gemma tokenizer store extra_special_tokens as a list;
+-        # transformers expects a mapping and raises "'list' object has no attribute 'keys'",
+-        # which makes AutoTokenizer -- and so the whole model -- fail to load.
+-        extra = tcfg.get("extra_special_tokens")
+-        if isinstance(extra, list):
+-            tcfg["extra_special_tokens"] = {"extra_%d" % i: t for i, t in enumerate(extra)}
+-            changed = True
+-        if changed:
+-            # HuggingFace snapshots are symlinks into a shared blob store, so writing through the
+-            # link would truncate a file shared with other revisions and processes, race
+-            # concurrent loads, and desync the hub's cache metadata. Write to a temporary file in
+-            # the same directory and `os.replace` it into place: the snapshot entry becomes a
+-            # regular file and is swapped atomically, so a concurrent load never sees a missing
+-            # or half-written config.
+-            cfg_dir = os.path.dirname(cfg_file)
+-            fd, tmp_file = tempfile.mkstemp(dir=cfg_dir, prefix=".tokenizer_config.", suffix=".tmp")
+-            try:
+-                with os.fdopen(fd, "w") as f:
+-                    json.dump(tcfg, f, indent=2)
+-                # mkstemp creates the file 0600; keep the mode the cache file had so a shared
+-                # cache stays readable to the same users as before.
+-                try:
+-                    os.chmod(tmp_file, os.stat(cfg_file).st_mode & 0o777)
+-                except OSError:
+-                    pass
+-                os.replace(tmp_file, cfg_file)
+-            except BaseException:
+-                try:
+-                    os.unlink(tmp_file)
+-                except OSError:
+-                    pass
+-                raise
+-    except Exception as e:
+-        # Do not swallow this silently: if the patch did not apply, AutoTokenizer may fail later
+-        # with a confusing error and no hint that the config was the cause.
+-        warnings.warn(
+-            "laya: could not patch %s (%s); the tokenizer may fail to load with this "
+-            "transformers version." % (cfg_file, e),
+-            RuntimeWarning, stacklevel=2)
++from .readonly_tokenizer import load_readonly_tokenizer
+ 
+ 
+ def _verify_compatibility(model: torch.nn.Module, cfg: Dict, weights: Dict[str, torch.Tensor], model_id: str):
+@@ -219,35 +167,8 @@
+ 
+ 
+ def _load_tokenizer(tok_dir: str, cfg: Dict) -> Any:
+-    """Tokenizer for a checkpoint, parsed once per process.
+-
+-    Parsing `tokenizer.json` is not free and `huggingface_hub` caches only the download, not
+-    the parsed object: the multilingual checkpoint ships a 34 MB, 256k-vocabulary file that
+-    costs seconds to load, several times the cost of applying its weights. A tokenizer is
+-    read-only during inference, so one instance is shared by every Agent that wants the same
+-    directory -- including an Agent the Router has rebuilt after eviction.
+-
+-    Keyed on the tokenizer directory and its mtime, so a re-download or a config rewritten by
+-    `_fix_tokenizer_config()` still produces a fresh parse. Non-directory sources (a hub id)
+-    are not cached, so a caller cannot pin a stale remote revision.
+-    """
+-    from transformers import AutoTokenizer
+-
+-    if not os.path.isdir(tok_dir):
+-        return AutoTokenizer.from_pretrained(cfg.get("encoder"))
+-
+-    try:
+-        stamp = (os.path.abspath(tok_dir), os.path.getmtime(os.path.join(tok_dir, "tokenizer_config.json")))
+-    except OSError:
+-        return AutoTokenizer.from_pretrained(tok_dir)
+-
+-    with _TOKENIZERS_LOCK:
+-        cached = _TOKENIZERS.get(stamp)
+-        if cached is not None:
+-            return cached
+-        tokenizer = AutoTokenizer.from_pretrained(tok_dir)
+-        _TOKENIZERS[stamp] = tokenizer
+-        return tokenizer
++    """Derived local-only, no-write profile; no change to calibration or model code."""
++    return load_readonly_tokenizer(tok_dir)
+ 
+ 
+ def _amp_context(device, dtype, enabled: bool):
+@@ -612,7 +533,6 @@
+         # Verify integrity before any file in the checkpoint is parsed or executed.
+         verify_digests(model_dir, expected_sha256)
+ 
+-        _fix_tokenizer_config(model_dir)
+ 
+         cfg_path = os.path.join(model_dir, "rl_agent_config.json")
+         if not os.path.exists(cfg_path):

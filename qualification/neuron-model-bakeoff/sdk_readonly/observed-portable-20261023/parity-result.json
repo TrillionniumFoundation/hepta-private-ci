@@ -1,0 +1,378 @@
+{
+  "kind": "BOUNDED_READONLY_SDK_PARITY_NOT_QUALIFICATION",
+  "status": "exact_parity_observed",
+  "profile": "laya-0.4.14-local-readonly-extra-special-token-map-v1",
+  "reference_report_sha256": "1127966eba8f8b094d3c616a91f295aa023e802d94409e3520860a7cf40bf752",
+  "candidate_report_sha256": "63a537d7d4bed2da0f23b09b8f0924b27da8e17965e3cf3c884cdfbd0a3c9db0",
+  "comparison_driver_sha256": "476b9c60cfb6946bcb0ba3e0ba2126d651668cf3c882d954770135985789efa5",
+  "manifest_sha256": "0d6e54f185fb02e05aa947f358da121367b8a364882e9b6e3f975ccd511548b1",
+  "cases_sha256": "5cbf178d8e88aa0ad18a5e04672aa81d6806430f1b02edc43bb5dec2d06db399",
+  "forward_calls_per_profile": 7,
+  "forward_rows_per_profile": 17,
+  "tensor_comparisons": 49,
+  "all_model_inputs_and_both_raw_outputs_bit_identical": true,
+  "decoded_results_identical": true,
+  "original_unchanged": true,
+  "candidate_artifacts_unchanged": true,
+  "official_reference_mutation_retained": [
+    "tokenizer/tokenizer_config.json"
+  ],
+  "calibration_unchanged": true,
+  "observations": [
+    {
+      "case": "official_hindi_dict",
+      "section": "inputs",
+      "name": "input_ids",
+      "bit_identical": true,
+      "max_abs_delta": 0.0
+    },
+    {
+      "case": "official_hindi_dict",
+      "section": "inputs",
+      "name": "attention_mask",
+      "bit_identical": true,
+      "max_abs_delta": 0.0
+    },
+    {
+      "case": "official_hindi_dict",
+      "section": "inputs",
+      "name": "marker_pos",
+      "bit_identical": true,
+      "max_abs_delta": 0.0
+    },
+    {
+      "case": "official_hindi_dict",
+      "section": "inputs",
+      "name": "marker_mask",
+      "bit_identical": true,
+      "max_abs_delta": 0.0
+    },
+    {
+      "case": "official_hindi_dict",
+      "section": "inputs",
+      "name": "qtype",
+      "bit_identical": true,
+      "max_abs_delta": 0.0
+    },
+    {
+      "case": "official_hindi_dict",
+      "section": "outputs",
+      "name": "option_logits",
+      "bit_identical": true,
+      "max_abs_delta": 0.0
+    },
+    {
+      "case": "official_hindi_dict",
+      "section": "outputs",
+      "name": "action_logits",
+      "bit_identical": true,
+      "max_abs_delta": 0.0
+    },
+    {
+      "case": "mixed_language_2_10",
+      "section": "inputs",
+      "name": "input_ids",
+      "bit_identical": true,
+      "max_abs_delta": 0.0
+    },
+    {
+      "case": "mixed_language_2_10",
+      "section": "inputs",
+      "name": "attention_mask",
+      "bit_identical": true,
+      "max_abs_delta": 0.0
+    },
+    {
+      "case": "mixed_language_2_10",
+      "section": "inputs",
+      "name": "marker_pos",
+      "bit_identical": true,
+      "max_abs_delta": 0.0
+    },
+    {
+      "case": "mixed_language_2_10",
+      "section": "inputs",
+      "name": "marker_mask",
+      "bit_identical": true,
+      "max_abs_delta": 0.0
+    },
+    {
+      "case": "mixed_language_2_10",
+      "section": "inputs",
+      "name": "qtype",
+      "bit_identical": true,
+      "max_abs_delta": 0.0
+    },
+    {
+      "case": "mixed_language_2_10",
+      "section": "outputs",
+      "name": "option_logits",
+      "bit_identical": true,
+      "max_abs_delta": 0.0
+    },
+    {
+      "case": "mixed_language_2_10",
+      "section": "outputs",
+      "name": "action_logits",
+      "bit_identical": true,
+      "max_abs_delta": 0.0
+    },
+    {
+      "case": "unicode_special_11_12",
+      "section": "inputs",
+      "name": "input_ids",
+      "bit_identical": true,
+      "max_abs_delta": 0.0
+    },
+    {
+      "case": "unicode_special_11_12",
+      "section": "inputs",
+      "name": "attention_mask",
+      "bit_identical": true,
+      "max_abs_delta": 0.0
+    },
+    {
+      "case": "unicode_special_11_12",
+      "section": "inputs",
+      "name": "marker_pos",
+      "bit_identical": true,
+      "max_abs_delta": 0.0
+    },
+    {
+      "case": "unicode_special_11_12",
+      "section": "inputs",
+      "name": "marker_mask",
+      "bit_identical": true,
+      "max_abs_delta": 0.0
+    },
+    {
+      "case": "unicode_special_11_12",
+      "section": "inputs",
+      "name": "qtype",
+      "bit_identical": true,
+      "max_abs_delta": 0.0
+    },
+    {
+      "case": "unicode_special_11_12",
+      "section": "outputs",
+      "name": "option_logits",
+      "bit_identical": true,
+      "max_abs_delta": 0.0
+    },
+    {
+      "case": "unicode_special_11_12",
+      "section": "outputs",
+      "name": "action_logits",
+      "bit_identical": true,
+      "max_abs_delta": 0.0
+    },
+    {
+      "case": "reordered_three",
+      "section": "inputs",
+      "name": "input_ids",
+      "bit_identical": true,
+      "max_abs_delta": 0.0
+    },
+    {
+      "case": "reordered_three",
+      "section": "inputs",
+      "name": "attention_mask",
+      "bit_identical": true,
+      "max_abs_delta": 0.0
+    },
+    {
+      "case": "reordered_three",
+      "section": "inputs",
+      "name": "marker_pos",
+      "bit_identical": true,
+      "max_abs_delta": 0.0
+    },
+    {
+      "case": "reordered_three",
+      "section": "inputs",
+      "name": "marker_mask",
+      "bit_identical": true,
+      "max_abs_delta": 0.0
+    },
+    {
+      "case": "reordered_three",
+      "section": "inputs",
+      "name": "qtype",
+      "bit_identical": true,
+      "max_abs_delta": 0.0
+    },
+    {
+      "case": "reordered_three",
+      "section": "outputs",
+      "name": "option_logits",
+      "bit_identical": true,
+      "max_abs_delta": 0.0
+    },
+    {
+      "case": "reordered_three",
+      "section": "outputs",
+      "name": "action_logits",
+      "bit_identical": true,
+      "max_abs_delta": 0.0
+    },
+    {
+      "case": "long_string_right_truncation",
+      "section": "inputs",
+      "name": "input_ids",
+      "bit_identical": true,
+      "max_abs_delta": 0.0
+    },
+    {
+      "case": "long_string_right_truncation",
+      "section": "inputs",
+      "name": "attention_mask",
+      "bit_identical": true,
+      "max_abs_delta": 0.0
+    },
+    {
+      "case": "long_string_right_truncation",
+      "section": "inputs",
+      "name": "marker_pos",
+      "bit_identical": true,
+      "max_abs_delta": 0.0
+    },
+    {
+      "case": "long_string_right_truncation",
+      "section": "inputs",
+      "name": "marker_mask",
+      "bit_identical": true,
+      "max_abs_delta": 0.0
+    },
+    {
+      "case": "long_string_right_truncation",
+      "section": "inputs",
+      "name": "qtype",
+      "bit_identical": true,
+      "max_abs_delta": 0.0
+    },
+    {
+      "case": "long_string_right_truncation",
+      "section": "outputs",
+      "name": "option_logits",
+      "bit_identical": true,
+      "max_abs_delta": 0.0
+    },
+    {
+      "case": "long_string_right_truncation",
+      "section": "outputs",
+      "name": "action_logits",
+      "bit_identical": true,
+      "max_abs_delta": 0.0
+    },
+    {
+      "case": "conversation_left_truncation",
+      "section": "inputs",
+      "name": "input_ids",
+      "bit_identical": true,
+      "max_abs_delta": 0.0
+    },
+    {
+      "case": "conversation_left_truncation",
+      "section": "inputs",
+      "name": "attention_mask",
+      "bit_identical": true,
+      "max_abs_delta": 0.0
+    },
+    {
+      "case": "conversation_left_truncation",
+      "section": "inputs",
+      "name": "marker_pos",
+      "bit_identical": true,
+      "max_abs_delta": 0.0
+    },
+    {
+      "case": "conversation_left_truncation",
+      "section": "inputs",
+      "name": "marker_mask",
+      "bit_identical": true,
+      "max_abs_delta": 0.0
+    },
+    {
+      "case": "conversation_left_truncation",
+      "section": "inputs",
+      "name": "qtype",
+      "bit_identical": true,
+      "max_abs_delta": 0.0
+    },
+    {
+      "case": "conversation_left_truncation",
+      "section": "outputs",
+      "name": "option_logits",
+      "bit_identical": true,
+      "max_abs_delta": 0.0
+    },
+    {
+      "case": "conversation_left_truncation",
+      "section": "outputs",
+      "name": "action_logits",
+      "bit_identical": true,
+      "max_abs_delta": 0.0
+    },
+    {
+      "case": "empty_control_mixed_width",
+      "section": "inputs",
+      "name": "input_ids",
+      "bit_identical": true,
+      "max_abs_delta": 0.0
+    },
+    {
+      "case": "empty_control_mixed_width",
+      "section": "inputs",
+      "name": "attention_mask",
+      "bit_identical": true,
+      "max_abs_delta": 0.0
+    },
+    {
+      "case": "empty_control_mixed_width",
+      "section": "inputs",
+      "name": "marker_pos",
+      "bit_identical": true,
+      "max_abs_delta": 0.0
+    },
+    {
+      "case": "empty_control_mixed_width",
+      "section": "inputs",
+      "name": "marker_mask",
+      "bit_identical": true,
+      "max_abs_delta": 0.0
+    },
+    {
+      "case": "empty_control_mixed_width",
+      "section": "inputs",
+      "name": "qtype",
+      "bit_identical": true,
+      "max_abs_delta": 0.0
+    },
+    {
+      "case": "empty_control_mixed_width",
+      "section": "outputs",
+      "name": "option_logits",
+      "bit_identical": true,
+      "max_abs_delta": 0.0
+    },
+    {
+      "case": "empty_control_mixed_width",
+      "section": "outputs",
+      "name": "action_logits",
+      "bit_identical": true,
+      "max_abs_delta": 0.0
+    }
+  ],
+  "limits": [
+    "Pinned Multilingual checkpoint, CPU fp32 eager, only enumerated public example/mechanical fixture inputs",
+    "Not all inputs, devices, batch sizes or SDK releases",
+    "Original Laya SDK still rewrites tokenizer config",
+    "English/Typed 11+ calibration mismatch remains blocked under the unchanged strict default",
+    "Derived candidate removes tokenizer cache; no startup/performance equivalence claim",
+    "Local-only/no-custom-code assurance is for the validated snapshot and diagnostic driver, not arbitrary Agent inputs",
+    "No task quality, independent dataset, future benefit, performance parity or acceptance claim"
+  ],
+  "original_protocol_changed": false,
+  "independent_acceptance": false,
+  "all_blockers_closed": false
+}
