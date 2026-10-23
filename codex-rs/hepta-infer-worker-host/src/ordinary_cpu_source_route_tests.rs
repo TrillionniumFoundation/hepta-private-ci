@@ -28,6 +28,9 @@ use std::time::UNIX_EPOCH;
 #[path = "ordinary_cpu_source_route_race_tests.rs"]
 mod races;
 
+#[path = "controlled_aggregate_source_route_tests.rs"]
+mod controlled;
+
 struct TestClock(AtomicU64);
 impl AuthorityClock for TestClock {
     fn now_unix_ms(&self) -> Result<u64, AuthorityTrustError> {

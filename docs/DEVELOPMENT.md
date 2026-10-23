@@ -715,6 +715,19 @@ release or model acceptance, and does not change the original retained-charge
 failure. The existing three rounds of real model upgrades and the five-budget
 qualification remain open.
 
+The next PN4 slice registers a bounded `ControlledAggregateBinding` on that same
+sealed dispatcher destination seam. Its canonical payload fixes the original
+operation/lease, declared reservation and settlement issuer, source/scope/policy,
+planned budget and whole-unit scope. Child-only scope, a sixteen-GiB model plan
+inside A8, and any extension of U16/A8 or the eight-second observer bound refuse
+registration. These declarations supply no funding or native authority. Even a
+correctly signed request remains `Indeterminate` until the original AuthBus
+reservation/issuer and whole-unit owner are connected; no physical entry,
+terminal receipt, AuthBus rejection/refund or activation is provided. The
+ordinary Child route and its existing assertions remain unchanged. Existing PN4
+owners must next connect original funding and native lifetime ownership before
+any settlement or model acceptance can be qualified.
+
 The earlier Chain `6724ed1` campaign did not observe genuine paid-credit
 depletion. On Chain `873d5cb`, all three baseline phases and all three late-product
 phases pass their original criteria. Each of the three from-zero phases now
