@@ -135,7 +135,7 @@ class CheapCosineControlTests(unittest.TestCase):
             save("results/report.json",control.canon({
                 "authority":"DENY_ALL","production_activation_allowed":False}))
             original=[{"source_id":r["row_id"],"pair_block_id":r["pair_block_id"],
-                       "label":r["label"],"arm":"text_image","intervention":"paired",
+                       "label":r["label"],"arm":"text_image-gated","intervention":"paired",
                        "prediction":r["label"]} for r in rows["test"]]
             save("results/text_image-gated-test/rows.json",control.canon(original))
             archive=Path(td)/"manifest.json"

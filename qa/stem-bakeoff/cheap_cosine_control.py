@@ -269,7 +269,7 @@ def run(*,restored,archive_manifest,output):
         witness=original.get(r["row_id"])
         if (witness is None or witness["label"]!=r["label"]
                 or witness["pair_block_id"]!=r["pair_block_id"]
-                or witness["arm"]!="text_image" or witness["intervention"]!="paired"
+                or witness["arm"]!="text_image-gated" or witness["intervention"]!="paired"
                 or type(witness["prediction"]) is not int):
             raise ValueError("historical prediction is not tied to this original row")
         accurate=witness["prediction"]==r["label"]
