@@ -5,13 +5,21 @@ use std::os::unix::fs::MetadataExt;
 use std::os::unix::fs::OpenOptionsExt;
 use std::path::Path;
 use std::path::PathBuf;
-use std::sync::atomic::AtomicBool;
+use std::sync::atomic::AtomicU8;
 use std::sync::atomic::Ordering;
 
 pub(super) struct RequiredMaterialStartup {
     root: PathBuf,
     directory: File,
-    confirmed: AtomicBool,
+    state: AtomicU8,
+}
+
+#[repr(u8)]
+enum StartupState {
+    Pending,
+    Registering,
+    Confirmed,
+    Failed,
 }
 
 impl RequiredMaterialStartup {
@@ -19,7 +27,7 @@ impl RequiredMaterialStartup {
         codex_hepta_contracts::RootAuthorityDirectory::open(root).map_err(io::Error::other)?;
         let directory = std::fs::OpenOptions::new().read(true)
             .custom_flags(libc::O_DIRECTORY | libc::O_NOFOLLOW | libc::O_CLOEXEC).open(root)?;
-        let state = Self { root: root.to_path_buf(), directory, confirmed: AtomicBool::new(false) };
+        let state = Self { root: root.to_path_buf(), directory, state: AtomicU8::new(StartupState::Pending as u8) };
         state.verify_directory()?;
         Ok(state)
     }
@@ -60,6 +68,9 @@ impl HostAuthorityService {
     /// disconnection nor a second call may repair/retry it in this launch.
     pub fn confirm_recovered_owner_ready(&self) -> io::Result<()> {
         let startup = self.material_startup.as_ref().ok_or_else(|| io::Error::other("required material startup missing"))?;
+        startup.state.compare_exchange(StartupState::Pending as u8, StartupState::Registering as u8,
+            Ordering::AcqRel, Ordering::Acquire)
+            .map_err(|_| io::Error::other("recovered owner readiness was already attempted"))?;
         let result = (|| {
             startup.verify_directory()?;
             self.register_material_archive_for_root(&startup.root)?;
@@ -69,11 +80,11 @@ impl HostAuthorityService {
             // Capture makes no sequence, ticket or permission and retains no
             // second issuer. The existing public bootstrap does not change.
             self.capture_public_bootstrap()?;
-            startup.confirmed.store(true, Ordering::Release);
+            startup.state.store(StartupState::Confirmed as u8, Ordering::Release);
             Ok(())
         })();
         if result.is_err() {
-            startup.confirmed.store(false, Ordering::Release);
+            startup.state.store(StartupState::Failed as u8, Ordering::Release);
             if let Some(checkpoint) = &self.checkpoint {
                 checkpoint.backend.close();
             }
@@ -82,7 +93,7 @@ impl HostAuthorityService {
     }
 
     pub(super) fn require_material_startup_complete(&self) -> io::Result<()> {
-        if self.material_startup.as_ref().is_some_and(|startup| !startup.confirmed.load(Ordering::Acquire)) {
+        if self.material_startup.as_ref().is_some_and(|startup| startup.state.load(Ordering::Acquire) != StartupState::Confirmed as u8) {
             return Err(io::Error::new(io::ErrorKind::PermissionDenied, "recovered material startup is not confirmed"));
         }
         Ok(())
