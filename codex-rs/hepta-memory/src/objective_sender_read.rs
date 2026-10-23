@@ -43,7 +43,13 @@ impl<C: ObjectiveSenderCheckpoint> ProductionObjectiveSender<C> {
         if request.origin.agent_id != *self.writer.owner_agent_id() {
             return Err(ObjectiveSenderError::IdentityMismatch);
         }
-        let mut transaction = self.writer.store.pool.begin().await.map_err(unavailable)?;
+        let mut transaction = self
+            .writer
+            .store
+            .observation_pool()
+            .begin()
+            .await
+            .map_err(unavailable)?;
         store::require_request(&mut transaction, &request).await?;
         transaction.rollback().await.map_err(unavailable)?;
         self.writer.sender_live_check()?;
@@ -73,7 +79,13 @@ impl<C: ObjectiveSenderCheckpoint> ProductionObjectiveSender<C> {
                 cursor.after_sha256
             }
         };
-        let mut transaction = self.writer.store.pool.begin().await.map_err(unavailable)?;
+        let mut transaction = self
+            .writer
+            .store
+            .observation_pool()
+            .begin()
+            .await
+            .map_err(unavailable)?;
         let mut requests =
             store::retained_page(&mut transaction, self.writer.owner_agent_id(), &after).await?;
         let next = if requests.len() > 16 {
@@ -103,7 +115,13 @@ impl<C: ObjectiveSenderCheckpoint> ProductionObjectiveSender<C> {
         self.require_ticket_owner(ticket)?;
         self.writer.sender_live_check()?;
         self.writer.verify_authority().await?;
-        let mut transaction = self.writer.store.pool.begin().await.map_err(unavailable)?;
+        let mut transaction = self
+            .writer
+            .store
+            .observation_pool()
+            .begin()
+            .await
+            .map_err(unavailable)?;
         store::require_request(&mut transaction, &ticket.request).await?;
         let snapshot = store::snapshot(&mut transaction, &ticket.request).await?;
         transaction.rollback().await.map_err(unavailable)?;

@@ -10,7 +10,7 @@ impl LocalLeaseOutbox {
         validate_text(operation_id, "operation id", /*max_bytes*/ 512)?;
         let mut transaction = self
             .store
-            .pool
+            .observation_pool()
             .begin()
             .await
             .map_err(crate::cognitive_store::unavailable)?;

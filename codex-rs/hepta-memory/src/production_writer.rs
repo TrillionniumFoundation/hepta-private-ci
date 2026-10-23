@@ -2791,11 +2791,11 @@ fn operation_digest(
 
 async fn verify_durable_store(store: &CognitiveStore) -> Result<(), ProductionWriterError> {
     let journal_mode: String = sqlx::query_scalar("PRAGMA journal_mode")
-        .fetch_one(&store.pool)
+        .fetch_one(store.observation_pool())
         .await
         .map_err(|error| ProductionWriterError::Durability(error.to_string()))?;
     let synchronous: i64 = sqlx::query_scalar("PRAGMA synchronous")
-        .fetch_one(&store.pool)
+        .fetch_one(store.observation_pool())
         .await
         .map_err(|error| ProductionWriterError::Durability(error.to_string()))?;
     if !journal_mode.eq_ignore_ascii_case(PRODUCTION_DURABLE_WRITER_JOURNAL_MODE)

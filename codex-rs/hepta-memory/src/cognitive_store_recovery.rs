@@ -99,7 +99,7 @@ impl CognitiveStore {
     /// independently; this method does not publish an acknowledgement witness.
     pub async fn recovery_anchor(&self) -> Result<CognitiveRecoveryAnchor, CognitiveStoreError> {
         let mut transaction = self
-            .pool
+            .observation_pool()
             .begin_with("BEGIN IMMEDIATE")
             .await
             .map_err(unavailable)?;
@@ -287,6 +287,7 @@ impl CognitiveStore {
             // immediately after a security-sensitive recovery.
             Ok(CognitiveStore {
                 pool,
+                observation_pool: None,
                 owner_agent_id: layout.agent_id().clone(),
                 path: candidate.clone(),
                 commit_gate,

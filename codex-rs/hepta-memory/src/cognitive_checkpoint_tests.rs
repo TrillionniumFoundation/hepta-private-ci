@@ -28,6 +28,14 @@ impl CognitiveCheckpointTransport for ProtocolPeer {
         let current = {
             let mut current = self.receipt.lock().unwrap();
             if request.command != CognitiveCheckpointCommand::ReadHead {
+                assert_eq!(
+                    u64::from_str_radix(&request.request_id[..16], 16).unwrap(),
+                    current.head.publisher_epoch
+                );
+                assert!(
+                    u64::from_str_radix(&request.request_id[16..], 16).unwrap()
+                        > current.head.last_mutation_sequence
+                );
                 assert_eq!(request.expected, Some(current.token.clone()));
                 let predecessor_token = current.token.clone();
                 let head = &mut current.head;
@@ -57,6 +65,8 @@ impl CognitiveCheckpointTransport for ProtocolPeer {
                     CognitiveCheckpointCommand::ReadHead => unreachable!(),
                 }
                 head.counter += 1;
+                head.last_mutation_sequence =
+                    u64::from_str_radix(&request.request_id[16..], 16).unwrap();
                 head.last_request = Some(CognitiveCheckpointRetainedRequest {
                     request_id: request.request_id.clone(),
                     request_sha256: Sha256Digest::from_sha256_output(Sha256::digest(bytes)),
@@ -109,7 +119,10 @@ struct ManagedFixture {
 
 impl ManagedFixture {
     async fn new() -> Self {
-        let temp = tempfile::TempDir::new().unwrap();
+        Self::in_directory(tempfile::TempDir::new().unwrap()).await
+    }
+
+    async fn in_directory(temp: tempfile::TempDir) -> Self {
         let owner = crate::cognitive_test_support::agent_id(OWNER);
         let layout = crate::cognitive_test_support::layout(&temp, &owner);
         let genesis = crate::CognitiveStore::open(&layout).await.unwrap();
@@ -129,7 +142,8 @@ impl ManagedFixture {
             schema_version: 1,
             owner_agent_id: owner,
             publisher_epoch: 9,
-            counter: 1,
+            counter: 7,
+            last_mutation_sequence: 41,
             writer_binding: CognitiveCheckpointWriterBinding {
                 lease_id: LEASE.to_string(),
                 generation: 1,
@@ -148,7 +162,20 @@ impl ManagedFixture {
             phase: CognitiveCheckpointPhase::Current,
             last_current: cut,
             proposal: None,
-            last_request: None,
+            last_request: Some(CognitiveCheckpointRetainedRequest {
+                request_id: format!("{:016x}{:016x}", 9, 41),
+                request_sha256: Sha256Digest::from_sha256_output(Sha256::digest(
+                    b"prior fixture transition",
+                )),
+                command: CognitiveCheckpointCommand::CommitPublication,
+                predecessor_token: CognitiveCheckpointToken {
+                    publisher_epoch: 9,
+                    counter: 6,
+                    head_sha256: Sha256Digest::from_sha256_output(Sha256::digest(
+                        b"prior fixture head",
+                    )),
+                },
+            }),
         };
         let receipt = CognitiveCheckpointReceipt {
             token: token_for(&head),
@@ -192,9 +219,14 @@ impl ManagedFixture {
     }
 }
 
+#[cfg(test)]
+#[path = "cognitive_checkpoint_observation_tests.rs"]
+mod observation_tests;
+
 #[tokio::test]
 async fn protected_checkpoint_invalidates_current_before_normal_owner_writes_and_can_republish() {
     let fixture = ManagedFixture::new().await;
+    let mut prior_connection = fixture.store.pool.acquire().await.unwrap();
     assert_eq!(
         fixture.peer.receipt.lock().unwrap().head.phase,
         CognitiveCheckpointPhase::Dirty
@@ -204,6 +236,15 @@ async fn protected_checkpoint_invalidates_current_before_normal_owner_writes_and
     let current = fixture.peer.receipt.lock().unwrap().clone();
     assert_eq!(current.head.phase, CognitiveCheckpointPhase::Current);
     assert!(!fixture.store.commit_gate.commit_allowed());
+    // A connection checked out during the preceding Dirty interval cannot
+    // commit behind the newly acknowledged Current head without a new Dirty ACK.
+    assert!(
+        sqlx::query("CREATE TABLE stale_dirty_permission_probe (v INTEGER)")
+            .execute(&mut *prior_connection)
+            .await
+            .is_err()
+    );
+    drop(prior_connection);
 
     fixture
         .writer

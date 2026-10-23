@@ -114,6 +114,9 @@ pub struct CognitiveCheckpointHead {
     pub owner_agent_id: AgentId,
     pub publisher_epoch: u64,
     pub counter: u64,
+    /// Durable request-ID high-water mark within this publisher epoch. Read
+    /// requests consume local IDs without incrementing the mutation counter.
+    pub last_mutation_sequence: u64,
     pub writer_binding: CognitiveCheckpointWriterBinding,
     pub peer_lifetime: CognitiveCheckpointPeerLifetime,
     pub phase: CognitiveCheckpointPhase,

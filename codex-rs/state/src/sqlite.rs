@@ -429,6 +429,33 @@ impl SqliteConfig {
     }
 
     /// Open an existing Codex SQLite database without creating or modifying it.
+    ///
+    /// A live original-owner observer uses READONLY file-open flags and a
+    /// permanently rejecting commit hook on every replacement connection.
+    /// BEGIN IMMEDIATE can serialize a checkpoint observation without granting
+    /// any ability to commit writes; callers must explicitly roll back reads.
+    pub async fn open_durable_observation_pool(&self, path: &Path) -> Result<SqlitePool, Error> {
+        let options = SqliteConnectOptions::new()
+            .filename(path)
+            .create_if_missing(false)
+            .read_only(true)
+            .synchronous(SqliteSynchronous::Full)
+            .foreign_keys(true)
+            .busy_timeout(Duration::from_secs(5))
+            .log_statements(LevelFilter::Off);
+        SqlitePoolOptions::new()
+            .max_connections(5)
+            .after_connect(|connection, _metadata| {
+                Box::pin(async move {
+                    connection.lock_handle().await?.set_commit_hook(|| false);
+                    Ok(())
+                })
+            })
+            .connect_with(options)
+            .await
+    }
+
+    /// Open an existing Codex SQLite database without creating or modifying it.
     pub async fn open_read_only_pool(&self, path: &Path) -> Result<SqlitePool, Error> {
         let options = SqliteConnectOptions::new()
             .filename(path)

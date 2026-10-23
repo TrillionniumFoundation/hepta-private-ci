@@ -295,7 +295,7 @@ impl<C: ObjectiveSenderCheckpoint> ProductionObjectiveSender<C> {
         let mut transaction = self
             .writer
             .store
-            .pool
+            .observation_pool()
             .begin_with("BEGIN IMMEDIATE")
             .await
             .map_err(unavailable)?;
@@ -419,7 +419,7 @@ impl<C: ObjectiveSenderCheckpoint> ProductionObjectiveSender<C> {
         let mut transaction = self
             .writer
             .store
-            .pool
+            .observation_pool()
             .begin_with("BEGIN IMMEDIATE")
             .await
             .map_err(unavailable)?;

@@ -248,6 +248,7 @@ pub enum CognitiveStoreError {
 #[derive(Clone)]
 pub struct CognitiveStore {
     pub(crate) pool: SqlitePool,
+    observation_pool: Option<SqlitePool>,
     pub(crate) owner_agent_id: AgentId,
     path: PathBuf,
     pub(crate) commit_gate: CognitiveCommitGate,
@@ -336,6 +337,7 @@ impl CognitiveStore {
     ) -> Self {
         Self {
             pool,
+            observation_pool: None,
             owner_agent_id,
             path,
             commit_gate: CognitiveCommitGate::default(),
@@ -373,6 +375,7 @@ impl CognitiveStore {
         verify_store(&pool, layout.agent_id()).await?;
         Ok(Self {
             pool,
+            observation_pool: None,
             owner_agent_id: layout.agent_id().clone(),
             path,
             commit_gate,
@@ -389,12 +392,21 @@ impl CognitiveStore {
     /// pool is shared by all clones; other store handles must also be dropped
     /// before recovery can obtain the exclusive fence.
     pub async fn close(self) {
+        if let Some(pool) = &self.observation_pool {
+            pool.close().await;
+        }
         self.pool.close().await;
         drop(self);
     }
 
     pub fn path(&self) -> &Path {
         &self.path
+    }
+
+    /// Managed owners share their exclusive recovery guard with this physically
+    /// READONLY pool. Qualification/legacy stores retain their original pool.
+    pub(crate) fn observation_pool(&self) -> &SqlitePool {
+        self.observation_pool.as_ref().unwrap_or(&self.pool)
     }
 
     pub fn owner_agent_id(&self) -> &AgentId {

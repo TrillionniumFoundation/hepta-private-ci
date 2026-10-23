@@ -60,6 +60,7 @@ impl<T: CognitiveCheckpointTransport> ProtectedCognitiveCheckpoint<T> {
             || receipt.head.publisher_epoch == 0
             || receipt.head.counter == 0
             || receipt.head.counter == u64::MAX
+            || receipt.head.last_mutation_sequence == u64::MAX
             || receipt.head.publisher_epoch != receipt.token.publisher_epoch
             || receipt.head.counter != receipt.token.counter
             || receipt.head.last_current.owner_agent_id != receipt.head.owner_agent_id
@@ -68,7 +69,7 @@ impl<T: CognitiveCheckpointTransport> ProtectedCognitiveCheckpoint<T> {
             return Err(ObjectiveSenderCheckpointError::Refused);
         }
         Ok(Self {
-            sequence: AtomicU64::new(receipt.head.counter),
+            sequence: AtomicU64::new(receipt.head.last_mutation_sequence + 1),
             receipt: Mutex::new(receipt),
             transport,
             gate,
@@ -192,6 +193,7 @@ impl<T: CognitiveCheckpointTransport> ProtectedCognitiveCheckpoint<T> {
             || receipt.head.writer_binding != expected.head.writer_binding
             || receipt.head.peer_lifetime != expected.head.peer_lifetime
             || receipt.head.counter < expected.head.counter
+            || receipt.head.last_mutation_sequence < expected.head.last_mutation_sequence
         {
             return Err(ObjectiveSenderCheckpointError::Refused);
         }
@@ -210,6 +212,8 @@ impl<T: CognitiveCheckpointTransport> ProtectedCognitiveCheckpoint<T> {
             .counter
             .checked_add(1)
             .ok_or(ObjectiveSenderCheckpointError::Unavailable)?;
+        expected.last_mutation_sequence = u64::from_str_radix(&request.request_id[16..], 16)
+            .map_err(|_| ObjectiveSenderCheckpointError::Unavailable)?;
         expected.last_request = Some(CognitiveCheckpointRetainedRequest {
             request_id: request.request_id.clone(),
             request_sha256: Sha256Digest::from_sha256_output(Sha256::digest(
@@ -286,6 +290,17 @@ impl<T: CognitiveCheckpointTransport> ObjectiveSenderCheckpoint
                 return Err(ObjectiveSenderCheckpointError::Unavailable);
             }
             *receipt = observed;
+            return Ok(committed.clone());
+        }
+        if receipt.head.phase == CognitiveCheckpointPhase::Current {
+            // The original sender holds BEGIN IMMEDIATE on a physically
+            // READONLY connection. A fresh, identical protected head confirms
+            // this cut without invalidating it or incrementing any counter.
+            if receipt.head.last_current != *committed
+                || self.read_head(&receipt).await? != *receipt
+            {
+                return Err(ObjectiveSenderCheckpointError::Unavailable);
+            }
             return Ok(committed.clone());
         }
         self.gate.close_commits();

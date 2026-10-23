@@ -74,7 +74,8 @@ impl CognitiveStore {
         let sqlite_home = AbsolutePathBuf::try_from(root.to_path_buf()).map_err(unavailable)?;
         let connection_gate = self.commit_gate.clone();
         let checkout_coordinator = Arc::clone(&coordinator);
-        self.pool = SqliteConfig::from_sqlite_home(sqlite_home)
+        let config = SqliteConfig::from_sqlite_home(sqlite_home);
+        self.pool = config
             .open_coordinated_durable_evidence_pool(
                 &self.path,
                 move || connection_gate.commit_allowed(),
@@ -97,6 +98,17 @@ impl CognitiveStore {
         if reopened != expected_cut {
             return Err(CognitiveStoreError::Invalid(
                 "recovered owner changed while its guarded pool was bound".to_string(),
+            ));
+        }
+        self.observation_pool = Some(
+            config
+                .open_durable_observation_pool(&self.path)
+                .await
+                .map_err(unavailable)?,
+        );
+        if self.recovery_anchor().await? != expected_cut {
+            return Err(CognitiveStoreError::Invalid(
+                "read-only observer differs from the recovered owner cut".to_string(),
             ));
         }
         attempt.acknowledge();
