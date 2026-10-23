@@ -705,6 +705,15 @@ network-proxy tests, exact-source CI and Windows checks remain required. Other
 PN0 dependencies and exceptions remain open; this adapter creates no additional
 DNS executor or release authority.
 
+The vendored `rama-dns` directory is a non-workspace Cargo patch, materialized
+by the existing `@crates` generator. Its exact `.bazelignore` entry follows the
+other non-workspace patches: recursive workspace discovery must not load its
+vendored BUILD against workspace-only `DEP_DATA`. The generated external target
+remains a dependency of `network-proxy` through `rama-tcp`; no workspace test
+target is excluded. The original candidate's Bazel loading failures occurred
+before test execution. Target discovery and configured analysis validate this
+boundary repair; they do not replace native tests or exact-source hosted CI.
+
 ## 20. First vertical learning slice
 
 `C1-PROMPTED-MEMORY-RETRIEVAL-RANK` executes:
