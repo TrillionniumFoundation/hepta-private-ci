@@ -715,6 +715,19 @@ release or model acceptance, and does not change the original retained-charge
 failure. The existing three rounds of real model upgrades and the five-budget
 qualification remain open.
 
+Within the same PN0/PN4 boundary, AuthBus owns current settlement-issuer trust.
+`AuthBusAuthorityStore::settle` retains its registration parameter as an exact
+consistency hint, then reads the signed issuer/epoch from the durable registry
+inside its existing `BEGIN IMMEDIATE` before any first settlement quota mutation.
+Signature verification uses that current registered key and lifecycle state;
+a caller-created key, invented epoch or pre-revocation snapshot cannot supply
+trust. Bao's prior registry lookup does not replace this transaction check.
+Five real SQLite controls cover missing registration, key/epoch substitution,
+snapshot revocation and a second owner's revocation commit blocking settlement.
+Existing retained terminal receipts still support exact historical reads without
+a new quota mutation. This closes that local issuer-validation gap; it does not
+qualify PN4 aggregate funding, outer resource return or real-model acceptance.
+
 The earlier Chain `6724ed1` campaign did not observe genuine paid-credit
 depletion. On Chain `873d5cb`, all three baseline phases and all three late-product
 phases pass their original criteria. Each of the three from-zero phases now
