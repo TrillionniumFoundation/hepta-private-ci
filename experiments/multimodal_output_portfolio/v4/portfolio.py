@@ -8,7 +8,6 @@ There are no hidden truth labels or future innovations in policy inputs.
 from __future__ import annotations
 
 from dataclasses import asdict, dataclass
-from functools import lru_cache
 import hashlib
 import json
 import math
@@ -20,6 +19,9 @@ MAX_LEVEL = 2
 # A shared event changes *all* active modalities. Independent marginals would
 # destroy precisely the cross-modality risk this finite pilot needs to test.
 SHOCK_PROBS = (0.20, 0.25, 0.55)  # failure, one-step gain, full gain
+# Exact-support qualification caps; unlike cache capacity, these bound total work.
+MAX_EXACT_SOLVER_STATES = 32_768
+MAX_EXACT_SOLVER_BRANCHES = 1_000_000
 
 
 @dataclass(frozen=True)
@@ -199,29 +201,59 @@ def conditional_ce(values: tuple[float, ...],
 
 
 class Controller:
-    """Finite exact-support Bellman solver; no neural optimality is implied."""
+    """Finite exact-support Bellman solver with bounded episode-local work.
+
+    A module-level @lru_cache on an instance method retains self across runs.
+    This owner-local cache has explicit state/branch expansion limits and a
+    transparent research accounting receipt; it does not measure CPU/energy.
+    """
 
     def __init__(self, cfg: Config):
         self.cfg = cfg
+        self._cache: dict[State, tuple[Allocation, float]] = {}
+        self._expanded_states = 0
+        self._cache_hits = 0
+        self._evaluated_branches = 0
 
     def _terminal(self, state: State) -> float:
         return (-decoded_external_loss(decode_all(state), self.cfg.sync_penalty)
                 -self.cfg.cost_shadow_price * self.cfg.emission_reserve)
 
-    @lru_cache(maxsize=65536)
+    def work_receipt(self) -> dict[str, int]:
+        """Deterministic logical counters, not physical compute or attestation."""
+        return {
+            "expanded_states": self._expanded_states,
+            "cache_hits": self._cache_hits,
+            "evaluated_branches": self._evaluated_branches,
+            "cached_states": len(self._cache),
+            "maximum_states": MAX_EXACT_SOLVER_STATES,
+            "maximum_branches": MAX_EXACT_SOLVER_BRANCHES,
+        }
+
     def solve(self, state: State) -> tuple[Allocation, float]:
         if state.step > self.cfg.horizon:
             raise ValueError("generation horizon exceeded")
+        if state in self._cache:
+            self._cache_hits += 1
+            return self._cache[state]
+        if self._expanded_states >= MAX_EXACT_SOLVER_STATES:
+            raise ValueError("exact solver state budget exhausted")
+        self._expanded_states += 1
         available = actions(state, self.cfg)
         best, best_value = STOP, self._terminal(state)
         for action in available[1:]:
+            if self._evaluated_branches + len(SHOCK_PROBS) > MAX_EXACT_SOLVER_BRANCHES:
+                raise ValueError("exact solver branch budget exhausted")
+            self._evaluated_branches += len(SHOCK_PROBS)
             next_values = tuple(self.solve(advance(state, action, k, self.cfg))[1]
                                 for k in range(len(SHOCK_PROBS)))
             value = (-self.cfg.cost_shadow_price * charge(state, action, self.cfg)
                      + conditional_ce(next_values, SHOCK_PROBS, self.cfg.risk_aversion))
             if value > best_value + 1e-12:
                 best, best_value = action, value
-        return best, best_value
+        answer = (best, best_value)
+        self._cache[state] = answer
+        return answer
 
 
 def covariance_for_action(state: State, action: Allocation,
@@ -268,7 +300,9 @@ def execute(initial: State, cfg: Config, seed: int) -> dict:
            "image": emission.image, "video": emission.video}
     bytes_out = json.dumps(raw, sort_keys=True, separators=(",", ":")).encode()
     spent = initial.remaining - state.remaining + cfg.emission_reserve
-    trace = {"schema": "hepta.ndu.modality-portfolio.trace.v1",
+    solver_work = policy.work_receipt()
+    trace = {"schema": "hepta.ndu.modality-portfolio.trace.v2",
+             "solver_work": solver_work,
              "initial": asdict(initial), "config": asdict(cfg),
              "records": records, "terminal_levels": state.levels,
              "output_sha256": hashlib.sha256(bytes_out).hexdigest()}
@@ -279,4 +313,5 @@ def execute(initial: State, cfg: Config, seed: int) -> dict:
             "trace_sha256": trace_hash,
             "outputs": raw, "output_sha256": hashlib.sha256(bytes_out).hexdigest(),
             "remaining_after_emission": state.remaining - cfg.emission_reserve,
-            "spent": spent, "external_fixture_loss": decoded_external_loss(emission, cfg.sync_penalty)}
+            "spent": spent, "external_fixture_loss": decoded_external_loss(emission, cfg.sync_penalty),
+            "solver_work": solver_work}
