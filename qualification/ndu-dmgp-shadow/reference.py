@@ -8,7 +8,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 from hashlib import sha256
 from itertools import product
-from math import atan2, cos, factorial, isfinite, log, sin, sqrt
+from math import atan2, copysign, cos, factorial, isfinite, log, sin, sqrt
 from statistics import mean, stdev
 from typing import Mapping
 import json
@@ -42,7 +42,9 @@ class Freeze:
     feature_digest: str
 
     def validate(self) -> None:
-        require(self.objective and self.generation > 0, "unbound objective/generation")
+        require(isinstance(self.objective, str) and self.objective
+                and type(self.generation) is int and self.generation > 0,
+                "unbound objective/generation")
         require(all((self.actor, self.critic, self.observer, self.critic_digest,
                      self.feature_digest)), "missing identity/digest")
         require(len({self.actor, self.critic, self.observer}) == 3,
@@ -81,7 +83,8 @@ class Outcome:
         require(finite(self.behavior_propensity)
                 and 0 < self.behavior_propensity <= 1,
                 "unbound behavior propensity")
-        require(min(self.decoder_us, self.controller_us, self.verifier_us) >= 0,
+        require(all(type(v) is int and 0 <= v < 2**64
+                    for v in (self.decoder_us, self.controller_us, self.verifier_us)),
                 "invalid physical cost")
 
     @property
@@ -229,6 +232,47 @@ def cholesky(a: list[list[float]], floor: float = 1e-10) -> list[list[float]]:
     return out
 
 
+
+def symmetric_eigenvalues(matrix: list[list[float]]) -> tuple[float, ...]:
+    """Bounded Jacobi spectrum for registered small risk covariance (k <= 6).
+
+    Cholesky pivot ratios are NOT spectral condition numbers. In particular,
+    nearly collinear 2-D observations can have a true condition number four
+    times the pivot ratio. Reject malformed/asymmetric matrices before risk
+    optimization; a finite simplex grid cannot detect all negative eigenmodes.
+    """
+    n = len(matrix)
+    require(1 <= n <= 6 and all(len(row) == n for row in matrix),
+            "invalid covariance geometry")
+    require(all(type(v) in (float, int) and isfinite(v)
+                for row in matrix for v in row), "nonfinite covariance")
+    require(all(abs(matrix[i][j] - matrix[j][i]) <=
+                1e-12 * max(1.0, abs(matrix[i][j]), abs(matrix[j][i]))
+                for i in range(n) for j in range(i)), "asymmetric covariance")
+    a = [list(row) for row in matrix]
+    for _ in range(100 * n * n):
+        p, q = max(((i, j) for i in range(n) for j in range(i + 1, n)),
+                   key=lambda pair: abs(a[pair[0]][pair[1]]), default=(0, 0))
+        scale = max(1e-12, *(abs(a[i][i]) for i in range(n)))
+        if p == q or abs(a[p][q]) <= 1e-12 * scale:
+            return tuple(sorted(a[i][i] for i in range(n)))
+        tau = (a[q][q] - a[p][p]) / (2.0 * a[p][q])
+        t = copysign(1.0, tau) / (abs(tau) + sqrt(1.0 + tau * tau))
+        cs = 1.0 / sqrt(1.0 + t * t)
+        sn = t * cs
+        cross = a[p][q]
+        a[p][p] -= t * cross
+        a[q][q] += t * cross
+        a[p][q] = a[q][p] = 0.0
+        for i in range(n):
+            if i in (p, q):
+                continue
+            aip, aiq = a[i][p], a[i][q]
+            a[i][p] = a[p][i] = cs * aip - sn * aiq
+            a[i][q] = a[q][i] = sn * aip + cs * aiq
+    raise Unavailable("covariance spectrum failed to converge")
+
+
 def joint_covariance(samples: tuple[JointSample, ...], freeze: Freeze,
                      expected_context: str, shrink: float = 0.2,
                      max_condition: float = 1e6) -> RiskEstimate:
@@ -253,15 +297,18 @@ def joint_covariance(samples: tuple[JointSample, ...], freeze: Freeze,
     # Raw support MUST pass before regularization; ridge must never manufacture
     # identifiability for exactly collinear/constant observations.
     cholesky(raw)
-    diagonal = [raw[i][i] for i in range(k)]
-    condition_upper = max(diagonal) / min(diagonal)
-    require(condition_upper <= max_condition, "unsupported variance scale")
+    raw_eigen = symmetric_eigenvalues(raw)
+    require(raw_eigen[0] > 1e-10, "rank-deficient raw covariance")
+    condition_upper = raw_eigen[-1] / raw_eigen[0]
+    # Shrinkage cannot manufacture conditional support not present in raw data.
+    require(condition_upper <= max_condition, "unsupported raw spectral condition")
     cov = [[(1 - shrink) * raw[i][j] + (shrink * raw[i][i] if i == j else 0.0)
             for j in range(k)] for i in range(k)]
-    chol = cholesky(cov)
-    pivots = [chol[i][i] ** 2 for i in range(k)]
-    condition_upper = max(condition_upper, max(pivots) / min(pivots))
-    require(condition_upper <= max_condition, "covariance condition ceiling")
+    cholesky(cov)
+    shrunk_eigen = symmetric_eigenvalues(cov)
+    require(shrunk_eigen[0] > 1e-10, "rank-deficient shrunk covariance")
+    condition_upper = max(condition_upper, shrunk_eigen[-1] / shrunk_eigen[0])
+    require(condition_upper <= max_condition, "covariance spectral condition ceiling")
     return RiskEstimate(mus, tuple(tuple(row) for row in cov), len(samples),
                         expected_context, condition_upper, k)
 
@@ -345,14 +392,31 @@ def allocate(actions: tuple[Action, ...], risk: RiskEstimate | None,
     require(len(reference_weights) == len(actions) and
             all(v > 0 and finite(v) for v in reference_weights)
             and abs(sum(reference_weights) - 1) < 1e-8, "invalid reference weights")
+    require(type(budget_us) is int and 0 <= budget_us < 2**64
+            and all(a.name and a.modality in ("text", "image", "audio", "video")
+                    and type(a.work_us) is int and 0 <= a.work_us < 2**64
+                    and type(a.legal) is bool for a in actions)
+            and len({a.name for a in actions}) == len(actions),
+            "invalid or duplicated generation action")
     legal = [i for i, a in enumerate(actions)
-             if a.legal and a.work_us >= 0 and a.work_us <= budget_us]
+             if a.legal and a.work_us <= budget_us]
     require(legal, "no feasible generated action: abstain required")
     if risk is None:
         selected = min(legal, key=lambda i: (actions[i].work_us, actions[i].name))
         return Allocation(tuple(float(i == selected) for i in range(len(actions))),
                           0.0, 0.0, "deterministic-fallback")
     require(len(risk.means) == len(actions), "candidate/covariance dimensional drift")
+    require(risk.context and type(risk.sample_count) is int
+            and risk.sample_count >= max(20, 5 * len(actions))
+            and type(risk.rank_retained) is int
+            and 0 <= risk.rank_retained <= len(actions)
+            and isfinite(risk.condition_upper)
+            and 0 < risk.condition_upper <= 1e6
+            and all(type(v) in (int, float) and isfinite(v) and -1 <= v <= 1
+                    for v in risk.means), "unsupported risk source")
+    eigen = symmetric_eigenvalues([list(row) for row in risk.covariance])
+    require(eigen[0] > 1e-10 and eigen[-1] / eigen[0] <= 1e6,
+            "unsupported portfolio covariance spectrum")
     require(abs(1 / step - round(1 / step)) < 1e-8 and 1 / step <= 20,
             "noncanonical finite grid")
     n = round(1 / step)
@@ -404,8 +468,16 @@ def recursive_stop_choice(state: GenerationState, actions: tuple[Action, ...],
             "invalid state")
     require(0 <= continuation_discount <= 1 and cost_per_us >= 0,
             "invalid continuation profile")
+    require(len(actions) <= 6 and type(state.generation) is int
+            and type(state.budget_us) is int
+            and type(state.remaining_steps) is int
+            and len({a.name for a in actions}) == len(actions)
+            and all(a.name and a.modality in ("text", "image", "audio", "video")
+                    and type(a.work_us) is int and 0 <= a.work_us < 2**64
+                    and type(a.legal) is bool for a in actions),
+            "unbounded or invalid generation action")
     legal = [a for a in actions if a.legal and a.work_us <= state.budget_us
-             and a.work_us >= 0 and a.name in predicted_gains]
+             and a.name in predicted_gains]
     require(all(finite(v) for v in predicted_gains.values()), "invalid advantage")
     penalties = risk_penalty or {}
     interactions = pair_gain or {}
@@ -527,8 +599,10 @@ def compare_work(baseline: tuple[WorkReceipt, ...], candidate: tuple[WorkReceipt
             require(r.physical_work_key and r.physical_work_key not in work_ids,
                     "duplicate physical work")
             work_ids.add(r.physical_work_key)
-            require(min(r.decoder_us, r.controller_us, r.verifier_us,
-                        r.peak_rss_bytes) >= 0, "invalid metric")
+            require(all(type(v) is int and 0 <= v < 2**64
+                        for v in (r.decoder_us, r.controller_us, r.verifier_us,
+                                  r.peak_rss_bytes))
+                    and type(r.measured_on_host) is bool, "invalid metric")
             bucket[r.case_id] = r
     require(set(bmap) == set(cmap), "unmatched physical execution")
     btimes = sorted(r.decoder_us + r.controller_us + r.verifier_us for r in baseline)

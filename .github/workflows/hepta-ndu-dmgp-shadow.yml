@@ -18,6 +18,13 @@ jobs:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
           persist-credentials: false
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+      - name: Verify exact research source head
+        env:
+          EXPECTED_HEAD: ${{ github.event.pull_request.head.sha || github.sha }}
+        run: |
+          test "$(git rev-parse HEAD)" = "$EXPECTED_HEAD"
+          echo "verified-source-head=$EXPECTED_HEAD"
       - name: Fail-closed adversarial unit tests
         run: python3 -m unittest discover -s qualification/ndu-dmgp-shadow -p 'test_*.py' -v
       - name: Reproducible synthetic six-arm experiment
