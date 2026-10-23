@@ -36,6 +36,10 @@ use crate::DeploymentFrontierStore;
 #[path = "deployment_authbus.rs"]
 mod authbus;
 
+#[path = "deployment_issuer_root.rs"]
+mod root;
+use root::ProtectedLease;
+
 const STATE_OWNER: &str = "local-final-use-issuer";
 const EXCHANGE_DEADLINE: Duration = Duration::from_secs(2);
 
@@ -64,6 +68,7 @@ pub struct DeploymentFinalUseIssuer {
     key: SigningKey,
     clock: Arc<dyn AuthorityClock>,
     request_lock: Mutex<()>,
+    lease: Option<ProtectedLease>,
 }
 
 /// Read-only view of the independently retained issuer revocation head.
@@ -122,6 +127,16 @@ impl DeploymentFinalUseIssuer {
         policies: Vec<DeploymentGrantPolicy>,
         clock: Arc<dyn AuthorityClock>,
     ) -> io::Result<Self> {
+        Self::create_inner(directory, signer_id, policies, clock, false)
+    }
+
+    fn create_inner(
+        directory: &Path,
+        signer_id: String,
+        policies: Vec<DeploymentGrantPolicy>,
+        clock: Arc<dyn AuthorityClock>,
+        protected: bool,
+    ) -> io::Result<Self> {
         if signer_id.is_empty()
             || signer_id.len() > 64
             || policies.is_empty()
@@ -151,7 +166,11 @@ impl DeploymentFinalUseIssuer {
             probe.signing_bytes().map_err(io::Error::other)?;
         }
         clock.now_unix_ms().map_err(io::Error::other)?;
-        let store = DeploymentFrontierStore::create(directory)?;
+        let store = if protected {
+            DeploymentFrontierStore::create_protected(directory)?
+        } else {
+            DeploymentFrontierStore::create(directory)?
+        };
         let key_bytes = random_bytes()?;
         let mut key_file = OpenOptions::new()
             .write(true)
@@ -175,12 +194,25 @@ impl DeploymentFinalUseIssuer {
             },
         )?;
         File::open(directory)?.sync_all()?;
-        Self::open(directory, clock)
+        Self::open_inner(directory, clock, protected, None)
     }
 
     /// Open the same trust identity. Missing state/key material is an error.
     pub fn open(directory: &Path, clock: Arc<dyn AuthorityClock>) -> io::Result<Self> {
-        let store = DeploymentFrontierStore::open(directory)?;
+        Self::open_inner(directory, clock, false, None)
+    }
+
+    fn open_inner(
+        directory: &Path,
+        clock: Arc<dyn AuthorityClock>,
+        protected: bool,
+        lease: Option<ProtectedLease>,
+    ) -> io::Result<Self> {
+        let store = if protected {
+            DeploymentFrontierStore::open_protected(directory)?
+        } else {
+            DeploymentFrontierStore::open(directory)?
+        };
         let state: IssuerState = store.load(STATE_OWNER).map_err(io::Error::other)?;
         let mut file = OpenOptions::new()
             .read(true)
@@ -210,6 +242,7 @@ impl DeploymentFinalUseIssuer {
             key: SigningKey::from_bytes(&bytes),
             clock,
             request_lock: Mutex::new(()),
+            lease,
         })
     }
 
@@ -233,11 +266,28 @@ impl DeploymentFinalUseIssuer {
     /// Produce a grant only for the provisioned scope. The counter is durable
     /// before reply; interrupted delivery can lose an id, never reuse one.
     pub fn issue(&self, binding: &FinalUseBinding) -> io::Result<Option<SignedFinalUseGrant>> {
+        if let Some(lease) = &self.lease {
+            return lease.with_binding(binding, |epoch, expiry| {
+                self.issue_until(binding, Some(epoch), expiry)
+            });
+        }
+        self.issue_until(binding, None, u64::MAX)
+    }
+
+    fn issue_until(
+        &self,
+        binding: &FinalUseBinding,
+        epoch: Option<u64>,
+        expiry: u64,
+    ) -> io::Result<Option<SignedFinalUseGrant>> {
         let _guard = self
             .request_lock
             .lock()
             .map_err(|_| io::Error::other("issuer fenced"))?;
         let state = self.store.load(STATE_OWNER).map_err(io::Error::other)?;
+        if epoch.is_some_and(|epoch| epoch != state.head.authority_epoch) {
+            return Err(io::Error::other("original lease/issuer epoch mismatch"));
+        }
         let Some(policy) = state.policies.iter().find(|policy| {
             policy.subject_id == binding.subject_id
                 && policy.destination_id == binding.destination_id
@@ -264,16 +314,24 @@ impl DeploymentFinalUseIssuer {
             not_before_unix_ms: now,
             expires_at_unix_ms: now
                 .checked_add(policy.lifetime_ms)
-                .ok_or_else(|| io::Error::other("issuer clock overflow"))?,
+                .ok_or_else(|| io::Error::other("issuer clock overflow"))?
+                .min(expiry),
         };
         let bytes = grant.signing_bytes().map_err(io::Error::other)?;
         self.store
             .compare_and_set(STATE_OWNER, &state, &next)
             .map_err(io::Error::other)?;
-        Ok(Some(SignedFinalUseGrant {
+        let signed = SignedFinalUseGrant {
             grant,
             signature: self.key.sign(&bytes).to_bytes().to_vec(),
-        }))
+        };
+        // Durability can stall; discard an expired response without refunding
+        // the already retained shared sequence (including across reopen).
+        let after = self.clock.now_unix_ms().map_err(io::Error::other)?;
+        if after < now || after >= signed.grant.expires_at_unix_ms {
+            return Err(io::Error::other("FinalUse expired during signing"));
+        }
+        Ok(Some(signed))
     }
 
     /// Revoke an issued id durably. The trusted host must feed this head through
