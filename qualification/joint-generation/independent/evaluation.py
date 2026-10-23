@@ -137,7 +137,8 @@ def _service(generator, controller, mode, x, ledger, sample_rng, route_rng, plan
     return p[0], q[0], outputs[0]
 
 
-def measure(model, controller, mode, data, plan, reference_full_cpu_ns, *, seed=42, observe=True):
+def measure(model, controller, mode, data, plan, reference_full_cpu_ns, *, seed=42, observe=True,
+            capture_outputs=False):
     """Measure a frozen service law; inference receives inputs without labels.
 
     CPU net includes actual build attribution/H and one-time runtime preparation/H.
@@ -148,8 +149,10 @@ def measure(model, controller, mode, data, plan, reference_full_cpu_ns, *, seed=
     """
     if mode not in MODES or type(seed) is not int or not 0 <= seed < 2**63:
         raise ValueError("unsupported frozen service mode or sampling seed")
-    if type(observe) is not bool:
+    if type(observe) is not bool or type(capture_outputs) is not bool:
         raise ValueError("explicit observer boolean required")
+    if capture_outputs and plan.get("experiment_id") != "codec-train-d1":
+        raise ValueError("output retention is restricted to TRAIN-only calibration")
     reference = _positive(reference_full_cpu_ns, "full CPU reference")
     price = _positive(plan["compute_price"], "compute price", allow_zero=True)
     decision_price = _positive(plan.get("decision_price", price), "decision price", allow_zero=True)
@@ -208,9 +211,17 @@ def measure(model, controller, mode, data, plan, reference_full_cpu_ns, *, seed=
         output_units = codec_output_units
     ps, qs, costs, sample = [], [], [], None
     totals, batches = {}, []
+    trace = None
+    if capture_outputs:
+        trace = {"schema": "hepta.codec-train-output-trace.v1", "outputs": [], "batches": [],
+                 "sample_rng_before": sample_rng.bit_generator.state,
+                 "route_rng_before": route_rng.bit_generator.state}
     for offset in range(0, len(full), batch_size):
         chunk = full[offset:offset + batch_size]
         n = len(chunk)
+        if capture_outputs:
+            states_before = {"sample_rng_before": sample_rng.bit_generator.state,
+                             "route_rng_before": route_rng.bit_generator.state}
         cpu_start, wall_start = time.process_time_ns(), time.perf_counter_ns()
         component_cpu = {}
         if native_batch:
@@ -245,6 +256,11 @@ def measure(model, controller, mode, data, plan, reference_full_cpu_ns, *, seed=
                                   "output_bytes": ledger.totals.get("output_bytes", 0)})
         cpu_ns = time.process_time_ns() - cpu_start
         wall_ns = time.perf_counter_ns() - wall_start
+        if capture_outputs:
+            trace["outputs"].extend(outputs)
+            trace["batches"].append({"offset": offset, "rows": n, **states_before,
+                "sample_rng_after": sample_rng.bit_generator.state,
+                "route_rng_after": route_rng.bit_generator.state})
         if native_batch:
             component_cpu["remaining_service_cpu_ns"] = cpu_ns - sum(component_cpu.values())
         if offset == 0:
@@ -281,7 +297,11 @@ def measure(model, controller, mode, data, plan, reference_full_cpu_ns, *, seed=
         metrics["runtime_cpu_net_utility"] = metrics["task_utility"] - price * (
             raw_cpu + prepare_cpu_ns / horizon) / reference
         metrics["cpu_net_utility"] = metrics["runtime_cpu_net_utility"] - price * build_cpu / horizon / reference
-    return {"mode": mode, "means": {key: float(value.mean()) for key, value in metrics.items()},
+    if capture_outputs:
+        trace.update(sample_rng_after=sample_rng.bit_generator.state,
+                     route_rng_after=route_rng.bit_generator.state)
+    return {**({"_diagnostic_output_trace": trace} if capture_outputs else {}),
+            "mode": mode, "means": {key: float(value.mean()) for key, value in metrics.items()},
             "per_row": {key: value.tolist() for key, value in metrics.items()},
             "per_row_cost": {key: [row[key] for row in costs] for key in costs[0]},
             "model_forwards": int(sum(row["model_forwards"] for row in costs)),
@@ -773,6 +793,8 @@ def run_evaluation(run, experiment=None):
     """Only the authorized final runner may call this after protocol freezing."""
     run = Path(run).resolve()
     profile = _experiment(experiment)
+    if not profile.can_evaluate:
+        raise ValueError("TRAIN-only diagnostic cannot open any formal evaluation")
     if profile.marker_path.exists() or (run / "test-opened.json").exists() or (run / "test-result.json").exists():
         raise ValueError("independent test already opened; no re-evaluation in another directory")
     selection, bundles = _frozen(run) if experiment is None else _frozen(run, profile)
