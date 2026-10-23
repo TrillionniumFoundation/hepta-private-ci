@@ -9,6 +9,7 @@ import sys
 import tempfile
 import threading
 import time
+from concurrent.futures import ThreadPoolExecutor
 from contextlib import contextmanager, nullcontext
 from dataclasses import asdict, dataclass
 from pathlib import Path
@@ -782,13 +783,11 @@ def run_review_regressions(
 ) -> dict[str, object]:
     server_script = server_script or _MODULE_DIR / "server.py"
     root = Path(tempfile.mkdtemp(prefix="codex-mcp-review-", dir=artifact_parent))
-    cases: list[CaseResult] = []
+    jobs: list[dict[str, object]] = []
     try:
         for mode in modes:
-            cases.append(
-                _run_review_case(
-                    codex_binary,
-                    server_script,
+            jobs.append(
+                dict(
                     mode=mode,
                     profile=REVIEW_PROFILE,
                     transport="stdio",
@@ -806,10 +805,8 @@ def run_review_regressions(
                 SSE_CR_COMMENTS_PROFILE,
                 SSE_COMMENT_FLOOD_PROFILE,
             ):
-                cases.append(
-                    _run_review_case(
-                        codex_binary,
-                        server_script,
+                jobs.append(
+                    dict(
                         mode=mode,
                         profile=profile,
                         transport="http",
@@ -821,10 +818,8 @@ def run_review_regressions(
         for mode in modes:
             for transport in CATALOG_BOUNDARY_TRANSPORTS:
                 for profile in CATALOG_BOUNDARY_PROFILES:
-                    cases.append(
-                        _run_review_case(
-                            codex_binary,
-                            server_script,
+                    jobs.append(
+                        dict(
                             mode=mode,
                             profile=profile,
                             transport=transport,
@@ -833,6 +828,13 @@ def run_review_regressions(
                         )
                     )
 
+        with ThreadPoolExecutor(max_workers=2) as executor:
+            cases = list(
+                executor.map(
+                    lambda job: _run_review_case(codex_binary, server_script, **job),
+                    jobs,
+                )
+            )
         checks = [check for case in cases for check in case.checks]
         failures = [check for check in checks if not check.success]
         return {
