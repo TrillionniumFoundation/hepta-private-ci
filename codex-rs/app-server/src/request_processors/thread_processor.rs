@@ -4049,6 +4049,45 @@ impl ThreadRequestProcessor {
             };
             typesafe_overrides.approval_policy = Some(approval_policy);
         }
+        // A raw config override must have the same precedence and validation
+        // as the explicitly typed runtime_workspace_roots field. Otherwise a
+        // cold resume can silently replay the prior persisted roots even when
+        // the caller supplied a different raw workspace_roots array.
+        if let Some(value) = request_overrides
+            .as_mut()
+            .and_then(|overrides| overrides.remove("workspace_roots"))
+        {
+            let requested_roots: Vec<AbsolutePathBuf> = match serde_json::from_value(value) {
+                Ok(roots) => roots,
+                Err(error) => {
+                    self.outgoing
+                        .send_error(
+                            request_id,
+                            invalid_params(format!(
+                                "invalid `workspace_roots` config override: {error}"
+                            )),
+                        )
+                        .await;
+                    return Ok(());
+                }
+            };
+            if typesafe_overrides
+                .workspace_roots
+                .as_ref()
+                .is_some_and(|typed_roots| typed_roots != &requested_roots)
+            {
+                self.outgoing
+                    .send_error(
+                        request_id,
+                        invalid_params(
+                            "conflicting typed and raw runtime workspace root overrides",
+                        ),
+                    )
+                    .await;
+                return Ok(());
+            }
+            typesafe_overrides.workspace_roots = Some(requested_roots);
+        }
         let has_explicit_model_resume_override =
             has_model_resume_override(request_overrides.as_ref(), &typesafe_overrides);
         let (
