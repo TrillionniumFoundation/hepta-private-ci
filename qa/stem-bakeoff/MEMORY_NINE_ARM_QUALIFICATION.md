@@ -174,13 +174,29 @@ memory quality.
 
 ## Added physically reconciled E-I learning-work fence (research candidate)
 
-An A-I result cannot become \`eligible_for_external_authenticity_review\` merely
+An A-I result cannot become `eligible_for_external_authenticity_review` merely
 because **planned** total Head parameters, optimizer steps and budgets match.
-The independent audit now accepts \`--training-receipts FILE.json\`. Without
-it, \`physical_e_i_training_cost_gate=false\` and a blocker is retained, even
+The independent audit now accepts `--training-receipts FILE.json`. Without
+it, `physical_e_i_training_cost_gate=false` and a blocker is retained, even
 if the nine-row answer and blinded-judgment fixtures look perfect.
 
-The training file is \`hepta.memory.a-i.physical-training-cost.v1\` and binds
+The physical training record is now committed three ways: the SHA256 of
+the canonical Head tensor digest inventory, the SHA256 of the ordered per-phase
+event journal, and the SHA256 of the complete per-arm training record, which
+must exactly equal that arm's `training_receipt_sha256` in the frozen plan.
+This prevents swapping a self-consistent training journal after plan pinning.
+It does not prove the actual model weights existed or ran.
+
+This exposes a preregistration sequencing dependency. Either candidate model
+weights and training receipts must already be frozen before the independent
+prospective evaluation is sampled, or use two externally timestamped stages:
+source/architecture/budget registration before training, followed by a sealed
+trained-model inventory before Reader and judge evaluation. A future weight
+digest cannot honestly be precommitted before training has happened. The
+two-stage independent-owner protocol is not implemented by this patch and
+remains OPEN.
+
+The training file is `hepta.memory.a-i.physical-training-cost.v1` and binds
 the exact canonical source-first plan digest. There must be one E/F/G/H/I
 receipt each, tied to the same immutable Encoder/source/forget frontiers and
 the exact original per-arm artifact. Its complete physical Head-tensor
@@ -208,10 +224,10 @@ prospective source windows remain separate blockers.
 
 Run the complete local source-contract checks from repository root:
 
-\`\`\`sh
+```sh
 python3 -m unittest discover -s qa/stem-bakeoff -p 'test_memory_nine_arm_gate.py' -v
 python3 -m unittest discover -s qa/stem-bakeoff -p 'test_memory_nine_arm_training_cost.py' -v
-\`\`\`
+```
 
 Passing either test suite is not scientific superiority. Remain
 **DRAFT / SHADOW_ONLY / DENY_ALL / HOLD_NO_GO**.
