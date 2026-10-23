@@ -1,0 +1,17 @@
+{
+  "command": [
+    "python3",
+    "-W",
+    "error",
+    "-m",
+    "ndu_training.cv_train_d2.driver",
+    "smoke",
+    "--freeze",
+    "ndu_training/cv_train_d2/frozen-d2.json",
+    "--out",
+    "ndu_training/cv_train_d2/evidence/entry-smoke.json"
+  ],
+  "exit_code": 0,
+  "physical_process_and_children_cpu": 0.579156876,
+  "scope": "zero-result entry smoke, no TRAIN array load/forward/update"
+}
