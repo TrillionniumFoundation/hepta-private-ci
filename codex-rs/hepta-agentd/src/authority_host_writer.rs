@@ -17,7 +17,7 @@ use codex_hepta_memory::VerifiedCognitiveMaterial;
 
 pub(super) struct RegisteredWriter {
     pub(super) registration: HostAuthorityWriterRegistration,
-    leases: AuthorityLeaseVerifier,
+    pub(super) leases: AuthorityLeaseVerifier,
     pub(super) proof: HostSignedWriterAuthorizationV1,
 }
 

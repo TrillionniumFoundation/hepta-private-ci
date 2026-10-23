@@ -16,7 +16,7 @@ impl Drop for SocketGuard {
     }
 }
 
-pub(super) fn serve_lanes(
+pub(crate) fn serve_lanes(
     service: &HostAuthorityService,
     config: &HostAuthorityServiceConfig,
     registration: &HostAuthorityRegistration,

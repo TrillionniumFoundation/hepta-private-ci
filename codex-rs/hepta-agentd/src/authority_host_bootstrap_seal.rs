@@ -33,9 +33,13 @@ pub fn seal_host_authority_bootstrap(bundle: &HostAuthorityPublicBootstrapV1) ->
             "bootstrap must name its actual root producer",
         ));
     }
+    seal_bytes(&encode_public_bootstrap(bundle)?)
+}
+
+pub(crate) fn encode_public_bootstrap(bundle: &HostAuthorityPublicBootstrapV1) -> io::Result<Vec<u8>> {
     let mut bytes = BoundedBytes(Vec::new());
     serde_json::to_writer(&mut bytes, bundle).map_err(io::Error::other)?;
-    seal_bytes(&bytes.0)
+    Ok(bytes.0)
 }
 
 fn require_root() -> io::Result<()> {

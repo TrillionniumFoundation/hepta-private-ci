@@ -85,12 +85,5 @@ impl HostCognitiveCheckpoint {
         }
     }
 
-    pub(crate) fn retained_current_for_root(&self) -> Result<CognitiveCheckpointHead, AuthorityTrustError> {
-        let _guard = self.exchange_lock.lock().map_err(|_| AuthorityTrustError::Unavailable)?;
-        let head = self.load()?;
-        if self.closed.load(Ordering::Acquire) || head.phase != CognitiveCheckpointPhase::Current || !self.within_expiry()? {
-            return Err(AuthorityTrustError::Unavailable);
-        }
-        Ok(head)
-    }
+
 }

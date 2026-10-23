@@ -329,6 +329,29 @@ impl HostCognitiveCheckpoint {
         Ok(head)
     }
 
+    /// Root-only composition reads the existing complete Current through this
+    /// backend's own lock and permanent fence. No synthetic wire request, CAS,
+    /// request ID, genesis or replacement of a suspect DB is involved.
+    pub(crate) fn retained_current_for_root(
+        &self,
+    ) -> Result<CognitiveCheckpointHead, AuthorityTrustError> {
+        let _guard = self.exchange_lock.lock().map_err(|_| self.close())?;
+        if self.closed.load(Ordering::Acquire) {
+            return Err(AuthorityTrustError::Unavailable);
+        }
+        let head = self.load().map_err(|error| match error {
+            AuthorityTrustError::Conflict => error,
+            AuthorityTrustError::Invalid | AuthorityTrustError::Unavailable => self.close(),
+        })?;
+        if head.phase != CognitiveCheckpointPhase::Current {
+            return Err(AuthorityTrustError::Invalid);
+        }
+        if !self.within_expiry().map_err(|_| self.close())? {
+            return Err(self.close());
+        }
+        Ok(head)
+    }
+
     fn within_expiry(&self) -> Result<bool, AuthorityTrustError> {
         Ok(self.clock.now_unix_ms()?
             < self.registration.writer_binding.expires_at_unix_seconds * 1000)

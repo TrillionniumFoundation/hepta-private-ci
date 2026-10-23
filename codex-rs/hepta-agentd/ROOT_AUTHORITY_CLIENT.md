@@ -124,6 +124,42 @@ The [sealed producer qualification](acceptance/2026-10-23-sealed-bootstrap/READM
 preserves the original 48-test scope, actual Root custody and SSD service cases,
 finish records and explicit deployment boundaries.
 
+## Read-only Root capture API
+
+An already composed `HostAuthorityService` can install
+`HostAuthorityBootstrapLocations` and its launcher's preheld actual Host pidfd
+once with `with_bootstrap_registration`. There are no wire fields for this
+operation. The locations and retained lifetime guard are neither Clone nor
+Serde. All five sockets are fixed under one Root:60001 mode02710 parent; two
+distinct local journal paths share a UID60001 mode0700 parent below it.
+
+`capture_public_bootstrap` derives the registered identity from that service,
+checks actual Root and Host boot/start/credentials before and after reads, and
+holds the original writer registry dispatch fence throughout. Host uses four
+UIDs/GIDs 60001, no supplementary groups, zero capability sets and NNP. The
+preheld pidfd uses the original `OwnerChannel` identity/poll implementation;
+namespace provenance remains the trusted launcher's responsibility. It is a
+lifetime guard and does not itself authorize a lease or Current cut.
+
+The capture reads retained proof/key/head, the original complete Current and
+two full consumer frontiers through their own locks and permanent Unknown
+fences. The whole writer binding comes only from the existing verified proof's
+original `ProductionAuthorityLease` conversion. It issues no grant, initializes
+no store, recomputes no recovery cut, and spends no issuer sequence, checkpoint
+mutation sequence or consumer request ID. A final real clock/lease check follows
+blocking metadata/store reads; only nonblocking original pidfd liveness remains
+after it. Dirty/Publishing/Fenced or permanently Unknown state cannot become a
+public Current bootstrap by reopening a generic store.
+
+The same retained service and actual Root PID must seal and serve the bundle.
+Its original hard lifetime remains at most 300 seconds and is never renewed by
+capture or a peer request. Continuation requires the trusted launcher's normal
+quiescent Current/writer-generation handoff; no bootstrap RPC renews a writer.
+The component fixture delegates capture and then serves that exact object but
+still copies sealed bytes over stdin. Production sealed-FD transfer and fresh
+Root material initialization remain separate deployment stages. This capture
+source stage has no new runtime qualification receipt yet.
+
 ## Trusted writer succession
 
 `DeploymentFinalUseIssuer::rotate_writer_authorization` is a trusted launcher

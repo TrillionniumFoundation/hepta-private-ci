@@ -99,6 +99,37 @@ impl HostConsumerFrontier {
         Ok(frontier)
     }
 
+    /// Read the original complete frontier without spending a wire request ID.
+    /// The surrounding Root service supplies its actual canonical signer/head
+    /// while holding the original live writer fence. A permanently Unknown
+    /// object cannot be revived by reopening the underlying generic store.
+    pub(crate) fn retained_frontier_for_root(
+        &self,
+        fixed_owner_id: &str,
+        observed_head: &FinalUseRevocations,
+    ) -> Result<FinalUseFrontier, AuthorityTrustError> {
+        if fixed_owner_id != self.owner_id {
+            return Err(AuthorityTrustError::Invalid);
+        }
+        let mut session = self.session.try_lock().map_err(|_| AuthorityTrustError::Unavailable)?;
+        if session.closed {
+            return Err(AuthorityTrustError::Unavailable);
+        }
+        let result = self.read_existing().and_then(|frontier| {
+            if frontier.authority_epoch > observed_head.authority_epoch
+                || (frontier.authority_epoch == observed_head.authority_epoch
+                    && frontier.revocation_revision > observed_head.revision)
+            {
+                return Err(AuthorityTrustError::Invalid);
+            }
+            Ok(frontier)
+        });
+        if matches!(result, Err(AuthorityTrustError::Invalid | AuthorityTrustError::Unavailable)) {
+            session.closed = true;
+        }
+        result
+    }
+
     /// One original closed request. A successful CAS already includes durable
     /// file/directory synchronization and exact readback under its publication
     /// lock. Post-I/O expiry/uncertainty returns Unknown without a head and
