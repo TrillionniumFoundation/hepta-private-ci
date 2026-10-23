@@ -199,8 +199,8 @@ async fn conflicting_typed_and_raw_roots_are_rejected() -> Result<()> {
         AbsolutePathBuf::from_absolute_path(normalized_existing_path(old_workspace.path())?)?;
     let requested_root =
         AbsolutePathBuf::from_absolute_path(normalized_existing_path(requested_workspace.path())?)?;
-    let conflicting_root =
-        AbsolutePathBuf::from_absolute_path(normalized_existing_path(conflicting_workspace.path())?)?;
+    let conflicting_path = normalized_existing_path(conflicting_workspace.path())?;
+    let conflicting_root = AbsolutePathBuf::from_absolute_path(conflicting_path)?;
     let thread_id = persist_named_profile_roots(
         &server.uri(),
         home.path(),
@@ -231,12 +231,8 @@ async fn conflicting_typed_and_raw_roots_are_rejected() -> Result<()> {
     )
     .await??;
     assert_eq!(error.error.code, -32602);
-    assert!(
-        error
-            .error
-            .message
-            .contains("conflicting typed and raw runtime workspace root overrides")
-    );
+    let error_message = &error.error.message;
+    assert!(error_message.contains("conflicting typed and raw runtime workspace root overrides"));
 
     // Rejection must leave the thread available and admit agreeing overrides.
     let request = app
