@@ -1,0 +1,39 @@
+{
+  "schema": "hepta.native-abc.v1",
+  "sources": {
+    "hepta": {
+      "commit": "f8c9419df6ddeb36ff8b522a50219981fb8d9345",
+      "tree": "15c9d6ea07bf3832de82825a6cc1e8c958dd3d45"
+    },
+    "runtime": {
+      "commit": "ebfda9b92106718669cd8435235ce1478352ab73",
+      "tree": "d3bcdc7e77656263585b1cb877d724cd116a06cf"
+    },
+    "codex": {
+      "commit": "e6ebdfe00b520e21ed50ac0362656f32dd64d2fc",
+      "tree": "9fde2cfc4b80c7675e77b7cf5ce5911253683cc8"
+    }
+  },
+  "modes": [
+    "A",
+    "B",
+    "C"
+  ],
+  "scales": [
+    64,
+    256,
+    1024,
+    4096
+  ],
+  "target_profile_digest": null,
+  "model_profile_digest": null,
+  "resource_limits": {
+    "max_input_tokens": 16384,
+    "max_output_tokens": 4096,
+    "timeout_ms": 120000,
+    "max_rss_bytes": 2147483648,
+    "max_tool_calls": 64
+  },
+  "tasks": [],
+  "acceptance": "HOLD_NO_GO_UNTIL_REAL_TASKS_MODEL_TARGET_AND_INDEPENDENT_EVIDENCE"
+}
