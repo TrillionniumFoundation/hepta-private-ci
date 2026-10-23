@@ -91,10 +91,24 @@ supplied in either order. The standalone `check_cohort` function remains a
 pure unit-test/research helper and does **not** establish historical custody by
 itself. Do not use its return value as a release authorization.
 
-This closes the specific omitted/substituted-manifest loophole; it still does
-**not** verify that a new candidate's claimed SHA256 is backed by the actual
-source image bytes, or that real-world entities or pretrained images are
-disjoint. Those custody and scientific blockers remain open.
+### Mandatory candidate image-byte custody
+
+The production CLI also requires `--image-dir` and **every** candidate row
+must provide `image_filename` (safe local JPEG basename),
+`image_size: [width,height]`, `image_bytes`, `image_sha256`,
+`decoded_rgb_sha256` and `dhash64`. It uses the original frozen
+`cohort.image_fingerprint` algorithm to read **each original JPEG file**,
+check format/dimensions, count all bytes and recompute the exact original
+bytes SHA256, EXIF-transposed RGB SHA256 and 64-bit horizontal dHash.
+Forged fingerprints, swapped JPEG bytes, unsafe paths and symlinks are
+rejected. A missing `--image-dir` cannot produce a PASS. Unit tests use
+four tiny local synthetic JPEG fixtures, not a scientific evidence cohort.
+
+This closes the omitted/substituted-history loophole **and** the
+manifest-only fingerprint-spoofing loophole for this CLI. It still does
+**not** authenticate the legal image origin, independently establish entity
+identity disjointness, rule out foundation-model pretraining contamination
+or run a new v2 learning experiment. These remain separate blockers.
 
 A required negative control was run with the *v1 candidate manifest itself*
 and both historical data sources. All **256/256** reused v1 sources were
@@ -110,6 +124,8 @@ Run from a checkout of the stacked gate PR, after unpacking the original
 ```bash
 python -m unittest discover -s qa/ndu-grounded-generation -p 'test_cohort_firewall.py' -v
 python -m unittest discover -s qa/ndu-grounded-generation -p 'test_capability_gate.py' -v
+python -m unittest discover -s qa/ndu-grounded-generation -p 'test_pinned_history_custody.py' -v
+python -m unittest discover -s qa/ndu-grounded-generation -p 'test_candidate_image_custody.py' -v
 python qa/ndu-grounded-generation/capability_gate.py \
   --bundle-root /path/to/v1/hepta-ndu-evidence-v1-20261022 \
   --output /tmp/v1-audit.json
@@ -118,11 +134,12 @@ python qa/ndu-grounded-generation/cohort_firewall.py \
   --candidate /path/to/a/new/v2/cohort/manifest.json \
   --historical /path/to/v1/hepta-ndu-evidence-v1-20261022/cohort/manifest.json \
   --historical qa/ndu-grounded-generation/historical_exclusions.json \
+  --image-dir /path/to/a/new/v2/cohort/original-jpegs \
   --output /tmp/v2-cohort-firewall.json
 # EXPECT EXIT STATUS 0 only if identity overlap is absent.
 ```
 
-These 16 standard-library tests require no model weights or downloading.
+The original 16 standard-library tests require no model weights or downloading. New history-custody unit tests use the standard library; candidate-image-custody tests additionally use the pinned Pillow dependency already installed by scoped CI. Neither constitutes a new model trial.
 
 Independent integrity replay of the original immutable evidence remains a
 separate prerequisite:
