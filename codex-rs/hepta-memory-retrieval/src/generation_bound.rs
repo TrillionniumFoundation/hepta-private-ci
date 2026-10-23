@@ -13,7 +13,13 @@ use std::fmt;
 
 use codex_hepta_cognitive_types::MemoryRecord;
 use codex_hepta_cognitive_types::RecordState;
+use codex_hepta_cognitive_types::consumer::CanonicalConsumerBindingV1;
+use codex_hepta_cognitive_types::consumer::CanonicalConsumerV1;
+use codex_hepta_cognitive_types::consumer::CanonicalMigrationPostureV1;
+use codex_hepta_cognitive_types::consumer::CanonicalPayloadKindV1;
+use codex_hepta_cognitive_types::consumer::bind_recall_packet_consumer_v1;
 use codex_hepta_cognitive_types::hnmf::ContractDigestV1;
+use codex_hepta_cognitive_types::hnmf::ContractIdV1;
 use codex_hepta_cognitive_types::hnmf::HnmfContractError;
 use codex_hepta_cognitive_types::hnmf_learning::ActivationPathV1 as CanonicalActivationPathV1;
 use codex_hepta_cognitive_types::hnmf_learning::ActiveNodeV1 as CanonicalActiveNodeV1;
@@ -24,6 +30,7 @@ use codex_hepta_cognitive_types::hnmf_learning::RecallResourceReceiptV1 as Canon
 use codex_hepta_cognitive_types::hnmf_learning::SelectedEventRefV1 as CanonicalSelectedEventRefV1;
 use codex_hepta_cognitive_types::lane_c::CognitiveSnapshotKeyV1;
 use codex_hepta_cognitive_types::lane_c::LaneCContractError;
+use codex_hepta_cognitive_types::wire::canonical_contract_digest_v1;
 use codex_hepta_types::AuthorityPosture;
 use codex_hepta_types::Digest32;
 use codex_hepta_types::FixedQ32;
@@ -584,6 +591,48 @@ impl RecallPacketV1 {
     }
 }
 
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct CanonicalGenerationBoundRecallV1 {
+    pub legacy_packet_digest: Digest32,
+    pub legacy_candidate_union_digest: Digest32,
+    pub legacy_generation_vector_digest: Digest32,
+    pub packet: CanonicalRecallPacketV1,
+    pub consumer_binding: CanonicalConsumerBindingV1,
+}
+
+impl CanonicalGenerationBoundRecallV1 {
+    pub fn validate(&self) -> Result<(), RecallErrorV1> {
+        self.packet
+            .validate()
+            .map_err(RecallErrorV1::CanonicalContract)?;
+        self.consumer_binding
+            .validate()
+            .map_err(|error| RecallErrorV1::CanonicalConsumer(error.to_string()))?;
+        let packet_digest = canonical_contract_digest_v1(&self.packet)
+            .map_err(|error| RecallErrorV1::CanonicalConsumer(error.to_string()))?;
+        if self.consumer_binding.consumer != CanonicalConsumerV1::MemoryRetrieval
+            || self.consumer_binding.payload_kind != CanonicalPayloadKindV1::RecallPacket
+            || self.consumer_binding.canonical_payload_sha256.digest() != packet_digest
+            || self.consumer_binding.source_identity_sha256.digest()
+                != self.legacy_candidate_union_digest
+            || self.consumer_binding.source_snapshot_sha256.digest()
+                != self.legacy_generation_vector_digest
+            || self
+                .consumer_binding
+                .compatibility_payload_sha256
+                .map(ContractDigestV1::digest)
+                != Some(self.legacy_packet_digest)
+            || self.consumer_binding.migration_posture
+                != CanonicalMigrationPostureV1::CompatibilityBound
+        {
+            return Err(RecallErrorV1::CanonicalAdapter(
+                "canonical consumer binding mismatch",
+            ));
+        }
+        Ok(())
+    }
+}
+
 /// Exact identity bridge for one legacy retrieval selection during the
 /// side-by-side HNMF migration. The legacy record identity and the canonical
 /// event identity are deliberately distinct fields.
@@ -733,6 +782,36 @@ pub fn adapt_generation_bound_recall_to_canonical_shadow_v1(
         .validate()
         .map_err(RecallErrorV1::CanonicalContract)?;
     Ok(canonical)
+}
+
+/// Convert the existing generation-bound recall into the canonical product
+/// contract and bind it to the exact legacy packet and generation cut. The
+/// compatibility packet remains readable only through this explicit binding.
+pub fn adapt_generation_bound_recall_to_canonical_v1(
+    operation_id: ContractIdV1,
+    legacy: &RecallPacketV1,
+    context: CanonicalRecallShadowContextV1,
+) -> Result<CanonicalGenerationBoundRecallV1, RecallErrorV1> {
+    let packet = adapt_generation_bound_recall_to_canonical_shadow_v1(legacy, context)?;
+    let consumer_binding = bind_recall_packet_consumer_v1(
+        operation_id,
+        CanonicalConsumerV1::MemoryRetrieval,
+        &packet,
+        legacy.candidate_union_digest,
+        legacy.generation_vector_digest,
+        Some(legacy.packet_digest),
+        CanonicalMigrationPostureV1::CompatibilityBound,
+    )
+    .map_err(|error| RecallErrorV1::CanonicalConsumer(error.to_string()))?;
+    let result = CanonicalGenerationBoundRecallV1 {
+        legacy_packet_digest: legacy.packet_digest,
+        legacy_candidate_union_digest: legacy.candidate_union_digest,
+        legacy_generation_vector_digest: legacy.generation_vector_digest,
+        packet,
+        consumer_binding,
+    };
+    result.validate()?;
+    Ok(result)
 }
 
 pub fn build_candidate_union(
@@ -966,6 +1045,7 @@ fn contradiction_population_count(entries: &[CandidateUnionEntryV1]) -> usize {
 pub enum RecallErrorV1 {
     Contract(LaneCContractError),
     CanonicalContract(HnmfContractError),
+    CanonicalConsumer(String),
     CanonicalAdapter(&'static str),
     EmptyDigest(&'static str),
     EmptyChannelPolicy,

@@ -1,0 +1,592 @@
+name: cognitive-types-depth-evidence
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - "codex-rs/hepta-types/**"
+      - "codex-rs/hepta-cognitive-types/**"
+      - "codex-rs/hepta-cognitive-read/**"
+      - "codex-rs/hepta-cognitive-store/**"
+      - "codex-rs/hepta-memory-retrieval/**"
+      - "codex-rs/hepta-compact-engine/**"
+      - "codex-rs/hepta-intelligence/**"
+      - "codex-rs/hepta-memory/**"
+      - "codex-rs/hepta-agentd/**"
+      - "codex-rs/Cargo.*"
+      - "qualification/cognitive-types-*/**"
+      - "docs/modules/cognitive.types/**"
+      - ".github/workflows/cognitive-types-depth-evidence.yml"
+  schedule:
+    - cron: "23 2 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: cognitive-types-depth-evidence-${{ github.head_ref || github.ref_name || github.run_id }}
+  cancel-in-progress: true
+
+env:
+  CARGO_TERM_COLOR: never
+  PYTHONDONTWRITEBYTECODE: "1"
+  RUST_BACKTRACE: "1"
+
+jobs:
+  resolve:
+    name: Resolve immutable depth candidate
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    outputs:
+      source: ${{ steps.identity.outputs.source }}
+      base: ${{ steps.identity.outputs.base }}
+    steps:
+      - id: checkout
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+
+      - id: identity
+        name: Bind one source and current base before fanout
+        env:
+          SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+          BASE_REF: ${{ github.base_ref || github.ref_name }}
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD^{commit})" = "$SOURCE_SHA"
+          git check-ref-format "refs/heads/$BASE_REF"
+          git fetch --no-tags origin "refs/heads/$BASE_REF:refs/remotes/origin/$BASE_REF"
+          BASE_SHA=$(git rev-parse "refs/remotes/origin/$BASE_REF^{commit}")
+          echo "source=$SOURCE_SHA" >> "$GITHUB_OUTPUT"
+          echo "base=$BASE_SHA" >> "$GITHUB_OUTPUT"
+
+      - name: Execute adversarial verifier regressions
+        run: >-
+          python3 -m unittest discover
+          -s qualification/cognitive-types-v1
+          -p 'test_depth_evidence.py'
+
+  consumer-paths:
+    name: consumer path (${{ matrix.consumer }}, ${{ matrix.candidate }})
+    needs: resolve
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    strategy:
+      fail-fast: false
+      matrix:
+        candidate: ${{ fromJSON(github.event_name == 'pull_request' && '["exact-head","synthetic-merge"]' || '["exact-head"]') }}
+        consumer:
+          - cognitive.read
+          - cognitive.store
+          - memory.retrieval
+          - compact.engine
+          - intelligence.control
+    steps:
+      - id: checkout
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+          ref: ${{ needs.resolve.outputs.source }}
+
+      - name: Prepare the exact deterministic candidate
+        id: identity
+        if: ${{ !cancelled() && steps.checkout.outcome == 'success' }}
+        run: >-
+          python3 qualification/cognitive-types-v1/depth_evidence.py prepare
+          --source '${{ needs.resolve.outputs.source }}'
+          --base '${{ needs.resolve.outputs.base }}'
+          --kind '${{ matrix.candidate }}'
+          --output "$RUNNER_TEMP/cognitive-types-depth/candidate.json"
+
+      - name: Select the existing consumer package
+        id: select
+        if: ${{ !cancelled() && steps.identity.outcome == 'success' }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          case "${{ matrix.consumer }}" in
+            cognitive.read) package=codex-hepta-cognitive-read ;;
+            cognitive.store) package=codex-hepta-cognitive-store ;;
+            memory.retrieval) package=codex-hepta-memory-retrieval ;;
+            compact.engine) package=codex-hepta-compact-engine ;;
+            intelligence.control) package=codex-hepta-intelligence ;;
+            *) echo "unregistered consumer" >&2; exit 2 ;;
+          esac
+          echo "package=$package" >> "$GITHUB_OUTPUT"
+
+      - name: Install and verify the workspace-pinned Rust toolchain
+        id: toolchain
+        if: ${{ !cancelled() && steps.select.outcome == 'success' }}
+        continue-on-error: true
+        working-directory: codex-rs
+        run: |
+          set -euo pipefail
+          python3 ../qualification/cognitive-types-v1/verify_workspace_toolchain.py \
+            2>&1 | tee "$RUNNER_TEMP/cognitive-types-depth/toolchain.log"
+
+      - name: Check consumer formatting
+        id: format
+        if: ${{ !cancelled() && steps.select.outcome == 'success' }}
+        continue-on-error: true
+        working-directory: codex-rs
+        run: |
+          set -o pipefail
+          {
+            status=0
+            python3 ../qualification/cognitive-types-v1/verify_workspace_toolchain.py fmt --manifest-path Cargo.toml \
+              --package "${{ steps.select.outputs.package }}" -- --check || status=$?
+            printf 'cargo fmt exit=%s\n' "$status"
+            exit "$status"
+          } 2>&1 | tee "$RUNNER_TEMP/cognitive-types-depth/format.log"
+
+      - name: Check the complete consumer target set
+        id: check
+        if: ${{ !cancelled() && steps.select.outcome == 'success' }}
+        continue-on-error: true
+        working-directory: codex-rs
+        run: |
+          set -o pipefail
+          python3 ../qualification/cognitive-types-v1/verify_workspace_toolchain.py check --manifest-path Cargo.toml --locked --all-targets \
+            -p "${{ steps.select.outputs.package }}" \
+            2>&1 | tee "$RUNNER_TEMP/cognitive-types-depth/check.log"
+
+      - name: Lint the consumer strictly
+        id: clippy
+        if: ${{ !cancelled() && steps.select.outcome == 'success' }}
+        continue-on-error: true
+        working-directory: codex-rs
+        run: |
+          set -o pipefail
+          python3 ../qualification/cognitive-types-v1/verify_workspace_toolchain.py clippy --manifest-path Cargo.toml --locked --all-targets \
+            -p "${{ steps.select.outputs.package }}" -- -D warnings \
+            2>&1 | tee "$RUNNER_TEMP/cognitive-types-depth/clippy.log"
+
+      - name: Execute the consumer package tests
+        id: test
+        if: ${{ !cancelled() && steps.select.outcome == 'success' }}
+        continue-on-error: true
+        working-directory: codex-rs
+        run: |
+          set -o pipefail
+          python3 ../qualification/cognitive-types-v1/verify_workspace_toolchain.py test --manifest-path Cargo.toml --locked \
+            -p "${{ steps.select.outputs.package }}" \
+            2>&1 | tee "$RUNNER_TEMP/cognitive-types-depth/tests.log"
+
+      - name: Record outcomes and require every consumer check
+        id: seal
+        if: ${{ always() && steps.checkout.outcome == 'success' }}
+        env:
+          STEP_RESULTS: ${{ toJSON(steps) }}
+          CONSUMER: ${{ matrix.consumer }}
+          CANDIDATE: ${{ matrix.candidate }}
+          PACKAGE: ${{ steps.select.outputs.package }}
+        run: |
+          mkdir -p "$RUNNER_TEMP/cognitive-types-depth"
+          python3 - <<'PY'
+          import json
+          import os
+          from pathlib import Path
+
+          steps = json.loads(os.environ["STEP_RESULTS"])
+          required = ("identity", "select", "toolchain", "format", "check", "clippy", "test")
+          outcomes = {name: steps.get(name, {}).get("outcome", "missing") for name in required}
+          report = {
+              "schema": "hepta.cognitive-types.consumer-depth-evidence.v1",
+              "consumer": os.environ["CONSUMER"],
+              "package": os.environ.get("PACKAGE", ""),
+              "candidate": os.environ["CANDIDATE"],
+              "outcomes": outcomes,
+              "product_acceptance": False,
+              "compatibility_retired": False,
+              "activation": False,
+              "release": False,
+          }
+          output = Path(os.environ["RUNNER_TEMP"], "cognitive-types-depth", "results.json")
+          output.write_text(json.dumps(report, indent=2, sort_keys=True) + "\n")
+          bad = {name: value for name, value in outcomes.items() if value != "success"}
+          if bad:
+              raise SystemExit(f"incomplete consumer depth evidence: {bad}")
+          PY
+
+      - name: Seal the complete consumer artifact
+        if: ${{ always() && steps.checkout.outcome == 'success' }}
+        continue-on-error: true
+        run: >-
+          python3 qualification/cognitive-types-v1/depth_evidence.py seal
+          --directory "$RUNNER_TEMP/cognitive-types-depth"
+          --role consumer
+          --consumer '${{ matrix.consumer }}'
+          --source '${{ needs.resolve.outputs.source }}'
+          --base '${{ needs.resolve.outputs.base }}'
+          --kind '${{ matrix.candidate }}'
+          --run-id '${{ github.run_id }}'
+          --run-attempt '${{ github.run_attempt }}'
+
+      - name: Preserve consumer evidence, including refusals
+        if: ${{ always() && steps.checkout.outcome == 'success' }}
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: cognitive-types-consumer-${{ matrix.consumer }}-${{ matrix.candidate }}-${{ needs.resolve.outputs.source }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/cognitive-types-depth
+          if-no-files-found: error
+          retention-days: 30
+
+  owner-paths:
+    name: owner final-use paths (${{ matrix.candidate }})
+    needs: resolve
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
+    strategy:
+      fail-fast: false
+      matrix:
+        candidate: ${{ fromJSON(github.event_name == 'pull_request' && '["exact-head","synthetic-merge"]' || '["exact-head"]') }}
+    steps:
+      - id: checkout
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+          ref: ${{ needs.resolve.outputs.source }}
+
+      - name: Prepare the exact deterministic candidate
+        id: identity
+        if: ${{ !cancelled() && steps.checkout.outcome == 'success' }}
+        run: >-
+          python3 qualification/cognitive-types-v1/depth_evidence.py prepare
+          --source '${{ needs.resolve.outputs.source }}'
+          --base '${{ needs.resolve.outputs.base }}'
+          --kind '${{ matrix.candidate }}'
+          --output "$RUNNER_TEMP/cognitive-types-owner-depth/candidate.json"
+
+      - name: Prepare owner evidence and verify the workspace-pinned toolchain
+        id: prepare
+        if: ${{ !cancelled() && steps.identity.outcome == 'success' }}
+        working-directory: codex-rs
+        run: |
+          set -euo pipefail
+          test -s "$RUNNER_TEMP/cognitive-types-owner-depth/candidate.json"
+          python3 ../qualification/cognitive-types-v1/verify_workspace_toolchain.py \
+            2>&1 | tee "$RUNNER_TEMP/cognitive-types-owner-depth/toolchain.log"
+
+      - name: Lint the existing owners strictly
+        id: clippy
+        if: ${{ !cancelled() && steps.prepare.outcome == 'success' }}
+        continue-on-error: true
+        working-directory: codex-rs
+        run: |
+          set -o pipefail
+          python3 ../qualification/cognitive-types-v1/verify_workspace_toolchain.py clippy --manifest-path Cargo.toml --locked --all-targets \
+            -p codex-hepta-memory -p codex-hepta-agentd -- -D warnings \
+            2>&1 | tee "$RUNNER_TEMP/cognitive-types-owner-depth/clippy.log"
+
+      - name: Execute the durable cognitive.store product writer path
+        id: store
+        if: ${{ !cancelled() && steps.prepare.outcome == 'success' }}
+        continue-on-error: true
+        working-directory: codex-rs
+        run: |
+          set -o pipefail
+          python3 ../qualification/cognitive-types-v1/verify_workspace_toolchain.py test --manifest-path Cargo.toml --locked \
+            -p codex-hepta-agentd --test cognitive_store_product_writer \
+            2>&1 | tee "$RUNNER_TEMP/cognitive-types-owner-depth/store-writer.log"
+
+      - name: Execute retrieval-owned canonical recall through Agentd
+        id: recall
+        if: ${{ !cancelled() && steps.prepare.outcome == 'success' }}
+        continue-on-error: true
+        working-directory: codex-rs
+        run: |
+          set -o pipefail
+          python3 ../qualification/cognitive-types-v1/verify_workspace_toolchain.py test --manifest-path Cargo.toml --locked \
+            -p codex-hepta-agentd --lib canonical_recall_tests \
+            2>&1 | tee "$RUNNER_TEMP/cognitive-types-owner-depth/canonical-recall.log"
+
+      - name: Execute the shared-experience owner bridge
+        id: shared
+        if: ${{ !cancelled() && steps.prepare.outcome == 'success' }}
+        continue-on-error: true
+        working-directory: codex-rs
+        run: |
+          set -o pipefail
+          python3 ../qualification/cognitive-types-v1/verify_workspace_toolchain.py test --manifest-path Cargo.toml --locked \
+            -p codex-hepta-memory shared_experience \
+            2>&1 | tee "$RUNNER_TEMP/cognitive-types-owner-depth/shared-experience.log"
+
+      - name: Record outcomes and require every owner path
+        id: seal
+        if: ${{ always() && steps.checkout.outcome == 'success' }}
+        env:
+          STEP_RESULTS: ${{ toJSON(steps) }}
+          CANDIDATE: ${{ matrix.candidate }}
+        run: |
+          mkdir -p "$RUNNER_TEMP/cognitive-types-owner-depth"
+          python3 - <<'PY'
+          import json
+          import os
+          from pathlib import Path
+
+          steps = json.loads(os.environ["STEP_RESULTS"])
+          required = ("identity", "prepare", "clippy", "store", "recall", "shared")
+          outcomes = {name: steps.get(name, {}).get("outcome", "missing") for name in required}
+          report = {
+              "schema": "hepta.cognitive-types.owner-depth-evidence.v1",
+              "candidate": os.environ["CANDIDATE"],
+              "outcomes": outcomes,
+              "owner_currentness_cached": False,
+              "product_acceptance": False,
+              "activation": False,
+              "release": False,
+          }
+          output = Path(os.environ["RUNNER_TEMP"], "cognitive-types-owner-depth", "results.json")
+          output.write_text(json.dumps(report, indent=2, sort_keys=True) + "\n")
+          bad = {name: value for name, value in outcomes.items() if value != "success"}
+          if bad:
+              raise SystemExit(f"incomplete owner-path evidence: {bad}")
+          PY
+
+      - name: Seal the complete owner artifact
+        if: ${{ always() && steps.checkout.outcome == 'success' }}
+        continue-on-error: true
+        run: >-
+          python3 qualification/cognitive-types-v1/depth_evidence.py seal
+          --directory "$RUNNER_TEMP/cognitive-types-owner-depth"
+          --role owner
+          --source '${{ needs.resolve.outputs.source }}'
+          --base '${{ needs.resolve.outputs.base }}'
+          --kind '${{ matrix.candidate }}'
+          --run-id '${{ github.run_id }}'
+          --run-attempt '${{ github.run_attempt }}'
+
+      - name: Preserve owner evidence, including refusals
+        if: ${{ always() && steps.checkout.outcome == 'success' }}
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: cognitive-types-owner-${{ matrix.candidate }}-${{ needs.resolve.outputs.source }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/cognitive-types-owner-depth
+          if-no-files-found: error
+          retention-days: 30
+
+  fuzz-campaign:
+    name: decoder fuzz campaign (${{ matrix.candidate }})
+    needs: resolve
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    strategy:
+      fail-fast: false
+      matrix:
+        candidate: ${{ fromJSON(github.event_name == 'pull_request' && '["exact-head","synthetic-merge"]' || '["exact-head"]') }}
+    steps:
+      - id: checkout
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+          ref: ${{ needs.resolve.outputs.source }}
+
+      - name: Prepare the exact deterministic candidate
+        id: identity
+        if: ${{ !cancelled() && steps.checkout.outcome == 'success' }}
+        run: >-
+          python3 qualification/cognitive-types-v1/depth_evidence.py prepare
+          --source '${{ needs.resolve.outputs.source }}'
+          --base '${{ needs.resolve.outputs.base }}'
+          --kind '${{ matrix.candidate }}'
+          --output "$RUNNER_TEMP/cognitive-types-fuzz/candidate.json"
+
+      - name: Install the pinned fuzz toolchain
+        id: setup
+        if: ${{ !cancelled() && steps.identity.outcome == 'success' }}
+        env:
+          FUZZ_TOOLCHAIN: nightly-2026-09-15
+        run: |
+          set -euo pipefail
+          rustup toolchain install "$FUZZ_TOOLCHAIN" --profile minimal
+          cargo +"$FUZZ_TOOLCHAIN" install --locked --version 0.13.2 cargo-fuzz
+          mkdir -p "$RUNNER_TEMP/cognitive-types-fuzz/corpus"
+          mkdir -p "$RUNNER_TEMP/cognitive-types-fuzz/artifacts"
+          mkdir -p "$RUNNER_TEMP/cognitive-types-fuzz-target"
+          chmod a-w codex-rs/hepta-cognitive-types/fuzz/Cargo.lock
+          {
+            rustc +"$FUZZ_TOOLCHAIN" --version --verbose
+            cargo +"$FUZZ_TOOLCHAIN" --version --verbose
+            cargo +"$FUZZ_TOOLCHAIN" fuzz --version
+          } > "$RUNNER_TEMP/cognitive-types-fuzz/toolchain.log" 2>&1
+
+      - name: Seed the campaign with one retained canonical envelope
+        id: seed
+        if: ${{ !cancelled() && steps.setup.outcome == 'success' }}
+        run: |
+          python3 - <<'PY'
+          import json
+          import os
+          from pathlib import Path
+
+          vector = json.loads(Path("qualification/cognitive-types-v1/bound_vector.json").read_text())
+          envelope = {
+              "contract": vector["contract"],
+              "payload": vector["payload"],
+              "schema": vector["schema"],
+              "schemaVersion": vector["schemaVersion"],
+          }
+          encoded = json.dumps(
+              envelope, ensure_ascii=False, separators=(",", ":"), sort_keys=True
+          ).encode("utf-8")
+          corpus = Path(os.environ["RUNNER_TEMP"], "cognitive-types-fuzz", "corpus")
+          (corpus / "modality-span-envelope-v1").write_bytes(encoded)
+          PY
+
+      - name: Run the actual decoder fuzz campaign
+        id: campaign
+        if: ${{ !cancelled() && steps.seed.outcome == 'success' }}
+        continue-on-error: true
+        working-directory: codex-rs/hepta-cognitive-types
+        env:
+          FUZZ_TOOLCHAIN: nightly-2026-09-15
+          FUZZ_CORPUS: ${{ runner.temp }}/cognitive-types-fuzz/corpus
+          FUZZ_ARTIFACTS: ${{ runner.temp }}/cognitive-types-fuzz/artifacts
+          CARGO_TARGET_DIR: ${{ runner.temp }}/cognitive-types-fuzz-target
+        run: |
+          set -euo pipefail
+          case "${{ github.event_name }}" in
+            pull_request) campaign_seconds=180 ;;
+            schedule) campaign_seconds=900 ;;
+            *) campaign_seconds=900 ;;
+          esac
+          printf '%s\n' "$campaign_seconds" > "$RUNNER_TEMP/cognitive-types-fuzz/campaign-seconds.txt"
+          set -o pipefail
+          cargo +"$FUZZ_TOOLCHAIN" fuzz run decode_contracts "$FUZZ_CORPUS" -- \
+            -max_total_time="$campaign_seconds" \
+            -timeout=10 \
+            -rss_limit_mb=2048 \
+            -max_len=263168 \
+            -print_final_stats=1 \
+            -artifact_prefix="$FUZZ_ARTIFACTS/" \
+            2>&1 | tee "$RUNNER_TEMP/cognitive-types-fuzz/fuzz.log"
+
+      - name: Verify that the campaign did not mutate tracked source
+        id: clean
+        if: ${{ always() && steps.checkout.outcome == 'success' }}
+        continue-on-error: true
+        run: |
+          set -euo pipefail
+          git status --porcelain=v1 --untracked-files=all \
+            | tee "$RUNNER_TEMP/cognitive-types-fuzz/source-status.txt"
+          test ! -s "$RUNNER_TEMP/cognitive-types-fuzz/source-status.txt"
+
+      - name: Record outcomes and require the completed campaign
+        id: seal
+        if: ${{ always() && steps.checkout.outcome == 'success' }}
+        env:
+          STEP_RESULTS: ${{ toJSON(steps) }}
+          CANDIDATE: ${{ matrix.candidate }}
+        run: |
+          mkdir -p "$RUNNER_TEMP/cognitive-types-fuzz"
+          python3 - <<'PY'
+          import json
+          import os
+          from pathlib import Path
+
+          steps = json.loads(os.environ["STEP_RESULTS"])
+          required = ("identity", "setup", "seed", "campaign", "clean")
+          outcomes = {name: steps.get(name, {}).get("outcome", "missing") for name in required}
+          report = {
+              "schema": "hepta.cognitive-types.decoder-fuzz-evidence.v1",
+              "candidate": os.environ["CANDIDATE"],
+              "outcomes": outcomes,
+              "campaign_is_product_acceptance": False,
+              "activation": False,
+              "release": False,
+          }
+          output = Path(os.environ["RUNNER_TEMP"], "cognitive-types-fuzz", "results.json")
+          output.write_text(json.dumps(report, indent=2, sort_keys=True) + "\n")
+          bad = {name: value for name, value in outcomes.items() if value != "success"}
+          if bad:
+              raise SystemExit(f"incomplete decoder fuzz evidence: {bad}")
+          PY
+
+      - name: Seal the complete fuzz artifact
+        if: ${{ always() && steps.checkout.outcome == 'success' }}
+        run: >-
+          python3 qualification/cognitive-types-v1/depth_evidence.py seal
+          --directory "$RUNNER_TEMP/cognitive-types-fuzz"
+          --role fuzz
+          --source '${{ needs.resolve.outputs.source }}'
+          --base '${{ needs.resolve.outputs.base }}'
+          --kind '${{ matrix.candidate }}'
+          --run-id '${{ github.run_id }}'
+          --run-attempt '${{ github.run_attempt }}'
+
+      - name: Preserve fuzz corpus, findings, and refusal evidence
+        if: ${{ always() && steps.checkout.outcome == 'success' }}
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: cognitive-types-fuzz-${{ matrix.candidate }}-${{ needs.resolve.outputs.source }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/cognitive-types-fuzz
+          if-no-files-found: error
+          retention-days: 30
+
+  depth-evidence-required:
+    name: Cognitive types depth evidence required
+    if: ${{ always() }}
+    needs: [resolve, consumer-paths, owner-paths, fuzz-campaign]
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - id: checkout
+        if: ${{ needs.resolve.result == 'success' }}
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+          ref: ${{ needs.resolve.outputs.source }}
+
+      - name: Download only this attempt's fixed-candidate artifacts
+        id: download
+        if: ${{ always() && steps.checkout.outcome == 'success' }}
+        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          pattern: cognitive-types-*-${{ needs.resolve.outputs.source }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/cognitive-types-depth-matrix
+          merge-multiple: false
+
+      - name: Verify exact artifact set, identities, and complete bytes
+        id: evidence
+        if: ${{ always() && steps.checkout.outcome == 'success' }}
+        run: >-
+          python3 qualification/cognitive-types-v1/depth_evidence.py verify
+          --evidence "$RUNNER_TEMP/cognitive-types-depth-matrix"
+          --source '${{ needs.resolve.outputs.source }}'
+          --base '${{ needs.resolve.outputs.base }}'
+          --event '${{ github.event_name }}'
+          --run-id '${{ github.run_id }}'
+          --run-attempt '${{ github.run_attempt }}'
+          --output "$RUNNER_TEMP/cognitive-types-depth-verified/matrix.json"
+
+      - name: Require execution success and independently verified evidence
+        if: ${{ always() }}
+        env:
+          RESOLVE_RESULT: ${{ needs.resolve.result }}
+          CONSUMER_RESULT: ${{ needs.consumer-paths.result }}
+          OWNER_RESULT: ${{ needs.owner-paths.result }}
+          FUZZ_RESULT: ${{ needs.fuzz-campaign.result }}
+          EVIDENCE_RESULT: ${{ steps.evidence.outcome }}
+        run: |
+          set -euo pipefail
+          test "$RESOLVE_RESULT" = success
+          test "$CONSUMER_RESULT" = success
+          test "$OWNER_RESULT" = success
+          test "$FUZZ_RESULT" = success
+          test "$EVIDENCE_RESULT" = success
+
+      - name: Preserve the aggregate decision, including refusals
+        if: ${{ always() && steps.checkout.outcome == 'success' }}
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: cognitive-types-depth-verified-${{ needs.resolve.outputs.source }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/cognitive-types-depth-verified
+          if-no-files-found: error
+          retention-days: 30

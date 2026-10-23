@@ -1,0 +1,70 @@
+{
+  "schema": "hepta.cognitive-types.current-state.v1",
+  "schemaVersion": 1,
+  "module": "cognitive.types",
+  "observedDate": "2026-10-01",
+  "candidateIdentity": {
+    "authority": "exact_head_and_deterministic_synthetic_merge_ci_receipts",
+    "selfReportedCommitIsQualificationEvidence": false,
+    "sourceMutationWorkflowsPresent": false,
+    "ordinaryReviewableCommitsRequired": true
+  },
+  "source": {
+    "requestScopedCanonicalPayload": "implemented_qualification_pending",
+    "typedDigestProfiles": "implemented_qualification_pending",
+    "preparedConsumerBindings": "implemented_qualification_pending",
+    "semanticIdentityOwnerRegistry": "implemented_owner_consistency_and_confusable_rejection_tested_qualification_pending",
+    "consumerHandoffFuzzCoverage": "all_five_registered_consumers_and_all_current_payload_families",
+    "splitFuzzTargets": [
+      "hnmf_base",
+      "hnmf_learning",
+      "shared_experience_v2",
+      "consumer_handoff",
+      "canonical_json_grammar"
+    ],
+    "deterministicFuzzCorpus": "implemented_python_tests_passed_on_prior_candidate",
+    "fuzzReceiptSealing": "implemented_python_tests_passed_on_prior_candidate",
+    "fuzzCampaignSourceCoverageGuard": "implemented_current_candidate_ci_pending",
+    "windowsObjectiveTestDrift": "source_corrected_current_candidate_ci_pending",
+    "actualSerializationBudget": "implemented_adversarial_regressions_passed_hosted_qualification_pending",
+    "recallResourceAccounting": "implemented_path_and_referenced_node_lower_bounds_hosted_qualification_pending",
+    "canonicalCodecOwner": "wire_legacy.rs_shared_by_compatibility_and_prepared_apis",
+    "targetedMutationInventory": "twelve_targeted_mutants_not_global_coverage"
+  },
+  "qualification": {
+    "exactHead": "pending_current_candidate",
+    "syntheticMerge": "pending_current_candidate",
+    "linux": "pending_current_candidate",
+    "windows": "pending_current_candidate",
+    "macos": "pending_current_candidate",
+    "strictClippy": "pending_current_candidate",
+    "fuzzSmoke": "pending_current_candidate",
+    "fuzzSustained": "pending_future_receipts",
+    "selectedHostResourceEvidence": "pending"
+  },
+  "consumers": {
+    "registeredCount": 5,
+    "sourceBindingsImplemented": true,
+    "preparedBindingOptimizationImplemented": true,
+    "consumerHandoffFuzzAllRegisteredConsumers": true,
+    "identityPolicyRegistryOwnerConsistent": true,
+    "authenticatedOwnerFinalUseProved": false,
+    "canonicalConsumerConvergenceProved": false,
+    "compatibilityRetired": false
+  },
+  "sharedExperienceV2": {
+    "localSourceImplemented": true,
+    "crossHostTransportProved": false,
+    "longitudinalTransferProved": false,
+    "fullInfluenceRemovalProved": false,
+    "ownerEpochAuthenticationProved": false
+  },
+  "claimBoundary": {
+    "productionImplementation": false,
+    "productExecutionProved": false,
+    "independentAcceptance": false,
+    "canary": false,
+    "activation": false,
+    "release": false
+  }
+}

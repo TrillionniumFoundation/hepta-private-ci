@@ -5,6 +5,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import re
 from pathlib import Path
 from typing import Any
 
@@ -16,6 +17,21 @@ except ModuleNotFoundError as error:
     from hepta_metadata import AUTHORITY_KEYS, has_schema_version
 
 ROOT = Path(__file__).resolve().parents[1]
+
+
+def verify_automatic_schedule(workflow: str) -> None:
+    """Require direct automatic coverage until an aggregate caller is proved."""
+    trigger = re.search(r"(?ms)^on:\n(.*?)(?=^\S|\Z)", workflow)
+    need(trigger is not None, "HNMF automatic trigger block")
+    events = trigger.group(1)
+    need(
+        "  pull_request:\n    paths:\n" in events,
+        "HNMF automatic pull-request coverage",
+    )
+    need(
+        "  push:\n    branches:\n      - main\n" in events,
+        "HNMF automatic main coverage",
+    )
 
 
 MODALITIES = [
@@ -316,7 +332,7 @@ def verify() -> int:
     )
     need(
         implementation_map.get("sourceBaseSemantics")
-        == "legacy_registry_baseline_only_not_exact_head_evidence"
+        == "current_source_navigation_anchor_not_execution_evidence"
         and implementation_map.get("exactCandidateIdentitySource")
         == "exact_head_and_synthetic_merge_ci_receipts",
         "implementation-map source identity semantics",
@@ -514,9 +530,13 @@ def verify() -> int:
     fuzz_source = (
         ROOT / "codex-rs/hepta-cognitive-types/fuzz/fuzz_targets/decode_contracts.rs"
     ).read_text(encoding="utf-8")
+    need(
+        "decode_validated_wire_v1::<T>" in fuzz_source,
+        "fuzz harness must exercise the checked canonical decoder",
+    )
     for protocol_id in PROTOCOLS:
         need(
-            f"decode_wire_v1::<{protocol_id}>" in fuzz_source,
+            f"check::<{protocol_id}>" in fuzz_source,
             protocol_id + " fuzz decoder coverage",
         )
 
@@ -553,17 +573,18 @@ def verify() -> int:
     workflow = (ROOT / ".github/workflows/hnmf-qualification.yml").read_text(
         encoding="utf-8"
     )
+    verify_automatic_schedule(workflow)
     for command in [
         "python3 scripts/hepta-hnmf.py verify",
         "cargo fmt --manifest-path qualification/hnmf-reference/Cargo.toml -- --check",
         "cargo check --manifest-path qualification/hnmf-reference/Cargo.toml --all-targets --locked",
         "cargo test --manifest-path qualification/hnmf-reference/Cargo.toml --locked",
         "python3 qualification/cognitive-types-v1/verify_vectors.py",
-        "cargo fmt --manifest-path codex-rs/Cargo.toml --package codex-hepta-cognitive-types -- --check",
-        "cargo check --manifest-path codex-rs/Cargo.toml --locked -p codex-hepta-cognitive-types --all-targets",
-        "cargo clippy --manifest-path codex-rs/Cargo.toml --locked -p codex-hepta-cognitive-types --all-targets -- -D clippy::correctness -D clippy::await_holding_lock -D clippy::await_holding_invalid_type",
-        "cargo test --manifest-path codex-rs/Cargo.toml --locked -p codex-hepta-cognitive-types",
-        "cargo check --manifest-path codex-rs/hepta-cognitive-types/fuzz/Cargo.toml --all-targets",
+        "python3 ../qualification/cognitive-types-v1/verify_workspace_toolchain.py fmt --manifest-path Cargo.toml --package codex-hepta-cognitive-types -- --check",
+        "python3 ../qualification/cognitive-types-v1/verify_workspace_toolchain.py check --manifest-path Cargo.toml --locked -p codex-hepta-cognitive-types --all-targets",
+        "python3 ../qualification/cognitive-types-v1/verify_workspace_toolchain.py clippy --manifest-path Cargo.toml --locked -p codex-hepta-cognitive-types --all-targets -- -D warnings",
+        "python3 ../qualification/cognitive-types-v1/verify_workspace_toolchain.py test --manifest-path Cargo.toml --locked -p codex-hepta-cognitive-types",
+        "python3 ../qualification/cognitive-types-v1/verify_workspace_toolchain.py check --manifest-path hepta-cognitive-types/fuzz/Cargo.toml --all-targets",
     ]:
         need(command in workflow, f"workflow command {command}")
 

@@ -16,6 +16,10 @@ use codex_hepta_types::Generation;
 use codex_hepta_types::Revision;
 use codex_hepta_types::StableId;
 
+use crate::contract::ContractErrorCodeV1;
+use crate::contract::ContractViolationV1;
+use crate::contract::ValidateContractV1;
+
 pub const MAX_MEMORY_ADMISSION_SUPPORTS: usize = 64;
 pub const MAX_FEDERATED_RESULT_ITEMS: usize = 512;
 pub const MAX_CONTEXT_DELIVERY_SEGMENTS: usize = 4_096;
@@ -23,6 +27,8 @@ pub const MAX_CONTEXT_DELIVERY_SEGMENTS: usize = 4_096;
 const GENERATION_VECTOR_DOMAIN: &[u8] = b"hepta.lane-c.generation-vector.v1";
 const MEMORY_ADMISSION_EVIDENCE_DOMAIN: &[u8] = b"hepta.memory-admission.evidence.v1";
 const MEMORY_ADMISSION_CANDIDATE_DOMAIN: &[u8] = b"hepta.memory-admission.candidate.v1";
+const MEMORY_WRITE_INTENT_DOMAIN: &[u8] = b"hepta.memory-write.intent.v1";
+const MEMORY_WRITE_RECEIPT_DOMAIN: &[u8] = b"hepta.memory-write.receipt.v1";
 const FEDERATED_RESULT_DOMAIN: &[u8] = b"hepta.memory-federation.result.v1";
 const GRAPH_GENERATION_DOMAIN: &[u8] = b"hepta.knowledge-graph.generation.v1";
 const PROJECTION_RECEIPT_DOMAIN: &[u8] = b"hepta.knowledge-graph.projection-receipt.v1";
@@ -245,14 +251,32 @@ impl MemoryAdmissionCandidateV1 {
 
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct MemoryWriteIntentV1 {
-    pub intent_id: StableId,
-    pub candidate_digest: Digest32,
-    pub expected_snapshot: CognitiveSnapshotKeyV1,
-    pub writer_fence_digest: Digest32,
-    pub authorization_digest: Digest32,
+    intent_id: StableId,
+    candidate_digest: Digest32,
+    expected_snapshot: CognitiveSnapshotKeyV1,
+    writer_fence_digest: Digest32,
+    authorization_digest: Digest32,
 }
 
 impl MemoryWriteIntentV1 {
+    pub fn new(
+        intent_id: StableId,
+        candidate_digest: Digest32,
+        expected_snapshot: CognitiveSnapshotKeyV1,
+        writer_fence_digest: Digest32,
+        authorization_digest: Digest32,
+    ) -> Result<Self, LaneCContractError> {
+        let value = Self {
+            intent_id,
+            candidate_digest,
+            expected_snapshot,
+            writer_fence_digest,
+            authorization_digest,
+        };
+        value.validate()?;
+        Ok(value)
+    }
+
     pub fn validate(&self) -> Result<(), LaneCContractError> {
         self.expected_snapshot.validate()?;
         ensure_digest("candidate", self.candidate_digest)?;
@@ -260,34 +284,392 @@ impl MemoryWriteIntentV1 {
         ensure_digest("authorization", self.authorization_digest)?;
         Ok(())
     }
+
+    #[must_use]
+    pub const fn intent_id(&self) -> &StableId {
+        &self.intent_id
+    }
+
+    #[must_use]
+    pub const fn candidate_digest(&self) -> Digest32 {
+        self.candidate_digest
+    }
+
+    #[must_use]
+    pub const fn expected_snapshot(&self) -> &CognitiveSnapshotKeyV1 {
+        &self.expected_snapshot
+    }
+
+    #[must_use]
+    pub const fn writer_fence_digest(&self) -> Digest32 {
+        self.writer_fence_digest
+    }
+
+    #[must_use]
+    pub const fn authorization_digest(&self) -> Digest32 {
+        self.authorization_digest
+    }
+
+    #[must_use]
+    pub fn digest(&self) -> Digest32 {
+        compute_memory_write_intent_digest(
+            &self.intent_id,
+            self.candidate_digest,
+            self.expected_snapshot.vector_digest,
+            self.writer_fence_digest,
+            self.authorization_digest,
+        )
+    }
+
+    #[must_use]
+    pub fn binding(&self) -> MemoryWriteIntentBindingV1 {
+        MemoryWriteIntentBindingV1 {
+            intent_id: self.intent_id.clone(),
+            candidate_digest: self.candidate_digest,
+            expected_snapshot_digest: self.expected_snapshot.vector_digest,
+            writer_fence_digest: self.writer_fence_digest,
+            authorization_digest: self.authorization_digest,
+            intent_digest: self.digest(),
+        }
+    }
+}
+
+impl ValidateContractV1 for MemoryWriteIntentV1 {
+    type Error = LaneCContractError;
+
+    fn validate_contract_v1(&self) -> Result<(), Self::Error> {
+        self.validate()
+    }
+}
+
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct MemoryWriteIntentBindingV1 {
+    intent_id: StableId,
+    candidate_digest: Digest32,
+    expected_snapshot_digest: Digest32,
+    writer_fence_digest: Digest32,
+    authorization_digest: Digest32,
+    intent_digest: Digest32,
+}
+
+impl MemoryWriteIntentBindingV1 {
+    pub fn validate(&self) -> Result<(), LaneCContractError> {
+        for (name, digest) in [
+            ("candidate", self.candidate_digest),
+            ("expected_snapshot", self.expected_snapshot_digest),
+            ("writer_fence", self.writer_fence_digest),
+            ("authorization", self.authorization_digest),
+            ("intent", self.intent_digest),
+        ] {
+            ensure_digest(name, digest)?;
+        }
+        if self.intent_digest
+            != compute_memory_write_intent_digest(
+                &self.intent_id,
+                self.candidate_digest,
+                self.expected_snapshot_digest,
+                self.writer_fence_digest,
+                self.authorization_digest,
+            )
+        {
+            return Err(LaneCContractError::DigestMismatch("memory_write_intent"));
+        }
+        Ok(())
+    }
+
+    #[must_use]
+    pub const fn intent_id(&self) -> &StableId {
+        &self.intent_id
+    }
+
+    #[must_use]
+    pub const fn candidate_digest(&self) -> Digest32 {
+        self.candidate_digest
+    }
+
+    #[must_use]
+    pub const fn expected_snapshot_digest(&self) -> Digest32 {
+        self.expected_snapshot_digest
+    }
+
+    #[must_use]
+    pub const fn writer_fence_digest(&self) -> Digest32 {
+        self.writer_fence_digest
+    }
+
+    #[must_use]
+    pub const fn authorization_digest(&self) -> Digest32 {
+        self.authorization_digest
+    }
+
+    #[must_use]
+    pub const fn intent_digest(&self) -> Digest32 {
+        self.intent_digest
+    }
 }
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub enum MemoryWriteDisposition {
     Inserted,
     Unchanged,
-    Rejected,
+}
+
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+pub enum MemoryWriteRejectionCodeV1 {
+    AuthorizationDenied,
+    CandidateInvalid,
+    SnapshotStale,
+    WriterFenceMismatch,
+    Conflict,
+    CapacityExceeded,
+    Indeterminate,
+}
+
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub enum MemoryWriteOutcomeV1 {
+    Committed {
+        record_id: StableId,
+        record_digest: Digest32,
+        committed_frontier: u64,
+        disposition: MemoryWriteDisposition,
+    },
+    Rejected {
+        code: MemoryWriteRejectionCodeV1,
+        evidence_digest: Digest32,
+    },
 }
 
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct MemoryWriteReceiptV1 {
-    pub intent_id: StableId,
-    pub record_id: StableId,
-    pub record_digest: Digest32,
-    pub committed_frontier: u64,
-    pub snapshot_key: CognitiveSnapshotKeyV1,
-    pub disposition: MemoryWriteDisposition,
-    pub authority: AuthorityPosture,
+    intent: MemoryWriteIntentBindingV1,
+    expected_snapshot: CognitiveSnapshotKeyV1,
+    snapshot_key: CognitiveSnapshotKeyV1,
+    outcome: MemoryWriteOutcomeV1,
+    receipt_digest: Digest32,
+    authority: AuthorityPosture,
 }
 
 impl MemoryWriteReceiptV1 {
+    pub fn committed(
+        intent: &MemoryWriteIntentV1,
+        snapshot_key: CognitiveSnapshotKeyV1,
+        record_id: StableId,
+        record_digest: Digest32,
+        committed_frontier: u64,
+        disposition: MemoryWriteDisposition,
+    ) -> Result<Self, LaneCContractError> {
+        intent.validate()?;
+        let mut value = Self {
+            intent: intent.binding(),
+            expected_snapshot: intent.expected_snapshot().clone(),
+            snapshot_key,
+            outcome: MemoryWriteOutcomeV1::Committed {
+                record_id,
+                record_digest,
+                committed_frontier,
+                disposition,
+            },
+            receipt_digest: Digest32::ZERO,
+            authority: AuthorityPosture::DENY_ALL,
+        };
+        value.receipt_digest = value.compute_receipt_digest();
+        value.validate_against_intent(intent)?;
+        Ok(value)
+    }
+
+    pub fn rejected(
+        intent: &MemoryWriteIntentV1,
+        snapshot_key: CognitiveSnapshotKeyV1,
+        code: MemoryWriteRejectionCodeV1,
+        evidence_digest: Digest32,
+    ) -> Result<Self, LaneCContractError> {
+        intent.validate()?;
+        let mut value = Self {
+            intent: intent.binding(),
+            expected_snapshot: intent.expected_snapshot().clone(),
+            snapshot_key,
+            outcome: MemoryWriteOutcomeV1::Rejected {
+                code,
+                evidence_digest,
+            },
+            receipt_digest: Digest32::ZERO,
+            authority: AuthorityPosture::DENY_ALL,
+        };
+        value.receipt_digest = value.compute_receipt_digest();
+        value.validate_against_intent(intent)?;
+        Ok(value)
+    }
+
     pub fn validate(&self) -> Result<(), LaneCContractError> {
-        if self.committed_frontier == 0 {
-            return Err(LaneCContractError::ZeroValue("committed_frontier"));
-        }
-        ensure_digest("record", self.record_digest)?;
+        self.intent.validate()?;
+        self.expected_snapshot.validate()?;
         self.snapshot_key.validate()?;
+        if self.expected_snapshot.vector_digest != self.intent.expected_snapshot_digest() {
+            return Err(LaneCContractError::DigestMismatch(
+                "receipt_expected_snapshot",
+            ));
+        }
+        crate::transitions::validate_receipt_transition_v1(
+            &self.expected_snapshot,
+            &self.snapshot_key,
+            &self.outcome,
+        )
+        .map_err(LaneCContractError::Transition)?;
+        match &self.outcome {
+            MemoryWriteOutcomeV1::Committed {
+                record_digest,
+                committed_frontier,
+                ..
+            } => {
+                ensure_digest("record", *record_digest)?;
+                if *committed_frontier == 0 {
+                    return Err(LaneCContractError::ZeroValue("committed_frontier"));
+                }
+                if *committed_frontier != self.snapshot_key.vector.memory_ledger_frontier {
+                    return Err(LaneCContractError::InvalidState(
+                        "committed_frontier_snapshot_binding",
+                    ));
+                }
+            }
+            MemoryWriteOutcomeV1::Rejected {
+                evidence_digest, ..
+            } => ensure_digest("rejection_evidence", *evidence_digest)?,
+        }
+        if self.receipt_digest != self.compute_receipt_digest() {
+            return Err(LaneCContractError::DigestMismatch("memory_write_receipt"));
+        }
         ensure_deny_all(self.authority)
+    }
+
+    pub fn validate_against_intent(
+        &self,
+        intent: &MemoryWriteIntentV1,
+    ) -> Result<(), LaneCContractError> {
+        self.validate()?;
+        intent.validate()?;
+        if self.intent != intent.binding() {
+            return Err(LaneCContractError::InvalidState(
+                "memory_write_receipt_intent_binding",
+            ));
+        }
+        Ok(())
+    }
+
+    #[must_use]
+    pub const fn intent_binding(&self) -> &MemoryWriteIntentBindingV1 {
+        &self.intent
+    }
+
+    #[must_use]
+    pub const fn intent_id(&self) -> &StableId {
+        self.intent.intent_id()
+    }
+
+    #[must_use]
+    pub const fn intent_digest(&self) -> Digest32 {
+        self.intent.intent_digest()
+    }
+
+    #[must_use]
+    pub const fn candidate_digest(&self) -> Digest32 {
+        self.intent.candidate_digest()
+    }
+
+    #[must_use]
+    pub const fn authorization_digest(&self) -> Digest32 {
+        self.intent.authorization_digest()
+    }
+
+    #[must_use]
+    pub const fn writer_fence_digest(&self) -> Digest32 {
+        self.intent.writer_fence_digest()
+    }
+
+    #[must_use]
+    pub const fn snapshot_key(&self) -> &CognitiveSnapshotKeyV1 {
+        &self.snapshot_key
+    }
+
+    #[must_use]
+    pub const fn outcome(&self) -> &MemoryWriteOutcomeV1 {
+        &self.outcome
+    }
+
+    #[must_use]
+    pub fn record_id(&self) -> Option<&StableId> {
+        match &self.outcome {
+            MemoryWriteOutcomeV1::Committed { record_id, .. } => Some(record_id),
+            MemoryWriteOutcomeV1::Rejected { .. } => None,
+        }
+    }
+
+    #[must_use]
+    pub fn record_digest(&self) -> Option<Digest32> {
+        match &self.outcome {
+            MemoryWriteOutcomeV1::Committed { record_digest, .. } => Some(*record_digest),
+            MemoryWriteOutcomeV1::Rejected { .. } => None,
+        }
+    }
+
+    #[must_use]
+    pub fn committed_frontier(&self) -> Option<u64> {
+        match &self.outcome {
+            MemoryWriteOutcomeV1::Committed {
+                committed_frontier, ..
+            } => Some(*committed_frontier),
+            MemoryWriteOutcomeV1::Rejected { .. } => None,
+        }
+    }
+
+    #[must_use]
+    pub fn disposition(&self) -> Option<MemoryWriteDisposition> {
+        match &self.outcome {
+            MemoryWriteOutcomeV1::Committed { disposition, .. } => Some(*disposition),
+            MemoryWriteOutcomeV1::Rejected { .. } => None,
+        }
+    }
+
+    #[must_use]
+    pub const fn receipt_digest(&self) -> Digest32 {
+        self.receipt_digest
+    }
+
+    #[must_use]
+    pub fn compute_receipt_digest(&self) -> Digest32 {
+        let mut bytes = MEMORY_WRITE_RECEIPT_DOMAIN.to_vec();
+        push_digest(&mut bytes, self.intent.intent_digest());
+        push_digest(&mut bytes, self.snapshot_key.vector_digest);
+        match &self.outcome {
+            MemoryWriteOutcomeV1::Committed {
+                record_id,
+                record_digest,
+                committed_frontier,
+                disposition,
+            } => {
+                bytes.push(0);
+                push_id(&mut bytes, record_id);
+                push_digest(&mut bytes, *record_digest);
+                push_u64(&mut bytes, *committed_frontier);
+                bytes.push(memory_write_disposition_code(*disposition));
+            }
+            MemoryWriteOutcomeV1::Rejected {
+                code,
+                evidence_digest,
+            } => {
+                bytes.push(1);
+                bytes.push(memory_write_rejection_code(*code));
+                push_digest(&mut bytes, *evidence_digest);
+            }
+        }
+        Digest32::of_bytes(&bytes)
+    }
+}
+
+impl ValidateContractV1 for MemoryWriteReceiptV1 {
+    type Error = LaneCContractError;
+
+    fn validate_contract_v1(&self) -> Result<(), Self::Error> {
+        self.validate()
     }
 }
 
@@ -420,14 +802,43 @@ impl FederatedEvidenceResultV1 {
         if self.expires_unix_ms == 0 {
             return Err(LaneCContractError::ZeroValue("expires_unix_ms"));
         }
-        if matches!(self.completeness, FederatedCompletenessV1::Empty) && !self.items.is_empty() {
-            return Err(LaneCContractError::InvalidState("federated_empty_result"));
-        }
-        if matches!(self.completeness, FederatedCompletenessV1::Indeterminate)
-            != matches!(self.validity, FederatedValidityV1::Indeterminate)
-        {
+        let coverage_terminal = u64::from(self.coverage.completed_peers)
+            + u64::from(self.coverage.failed_peers)
+            == u64::from(self.coverage.requested_peers);
+        let indeterminate_validity = matches!(self.validity, FederatedValidityV1::Indeterminate);
+        let state_valid = match self.completeness {
+            FederatedCompletenessV1::Complete => {
+                !self.items.is_empty()
+                    && self.coverage.completed_peers == self.coverage.requested_peers
+                    && self.coverage.failed_peers == 0
+                    && self.coverage.truncated_items == 0
+                    && !indeterminate_validity
+            }
+            FederatedCompletenessV1::Partial => {
+                self.coverage.completed_peers > 0
+                    && (self.coverage.failed_peers > 0
+                        || !coverage_terminal
+                        || self.coverage.truncated_items > 0)
+                    && !indeterminate_validity
+            }
+            FederatedCompletenessV1::Empty => {
+                self.items.is_empty()
+                    && self.coverage.completed_peers == self.coverage.requested_peers
+                    && self.coverage.failed_peers == 0
+                    && self.coverage.truncated_items == 0
+                    && !indeterminate_validity
+            }
+            FederatedCompletenessV1::Indeterminate => {
+                self.items.is_empty()
+                    && self.coverage.completed_peers == 0
+                    && (self.coverage.failed_peers > 0 || !coverage_terminal)
+                    && self.coverage.truncated_items == 0
+                    && indeterminate_validity
+            }
+        };
+        if !state_valid {
             return Err(LaneCContractError::InvalidState(
-                "federated_indeterminate_state",
+                "federated_completeness_coverage_validity",
             ));
         }
         let mut identities = BTreeSet::new();
@@ -833,6 +1244,7 @@ pub enum LaneCContractError {
     DuplicateIdentity(&'static str),
     DigestMismatch(&'static str),
     InvalidState(&'static str),
+    Transition(ContractViolationV1),
     AuthorityGranted,
     LimitExceeded {
         field: &'static str,
@@ -848,6 +1260,81 @@ impl fmt::Display for LaneCContractError {
 }
 
 impl StdError for LaneCContractError {}
+
+impl LaneCContractError {
+    #[must_use]
+    pub fn violation(&self) -> ContractViolationV1 {
+        match self {
+            Self::EmptyCollection(field) => ContractViolationV1::new(
+                ContractErrorCodeV1::EmptyCollection,
+                *field,
+                "collection must not be empty",
+            ),
+            Self::ZeroValue(field) => ContractViolationV1::new(
+                ContractErrorCodeV1::ZeroValue,
+                *field,
+                "value must be non-zero",
+            ),
+            Self::EmptyDigest(field) => ContractViolationV1::new(
+                ContractErrorCodeV1::EmptyDigest,
+                *field,
+                "digest must be non-zero",
+            ),
+            Self::DuplicateIdentity(field) => ContractViolationV1::new(
+                ContractErrorCodeV1::DuplicateIdentity,
+                *field,
+                "semantic identity is duplicated",
+            ),
+            Self::DigestMismatch(field) => ContractViolationV1::new(
+                ContractErrorCodeV1::DigestMismatch,
+                *field,
+                "digest does not bind the supplied payload",
+            ),
+            Self::InvalidState(field) => ContractViolationV1::new(
+                ContractErrorCodeV1::StateConflict,
+                *field,
+                "field combination is not a valid contract state",
+            ),
+            Self::Transition(violation) => violation.clone(),
+            Self::AuthorityGranted => ContractViolationV1::new(
+                ContractErrorCodeV1::AuthorityGranted,
+                "authority",
+                "cognitive type contracts must carry deny-all authority",
+            ),
+            Self::LimitExceeded {
+                field,
+                actual,
+                maximum,
+            } => ContractViolationV1::new(
+                ContractErrorCodeV1::LimitExceeded,
+                *field,
+                format!("{actual} exceeds maximum {maximum}"),
+            ),
+        }
+    }
+}
+
+impl From<LaneCContractError> for ContractViolationV1 {
+    fn from(value: LaneCContractError) -> Self {
+        value.violation()
+    }
+}
+
+fn compute_memory_write_intent_digest(
+    intent_id: &StableId,
+    candidate_digest: Digest32,
+    expected_snapshot_digest: Digest32,
+    writer_fence_digest: Digest32,
+    authorization_digest: Digest32,
+) -> Digest32 {
+    let mut bytes = MEMORY_WRITE_INTENT_DOMAIN.to_vec();
+    push_id(&mut bytes, intent_id);
+    push_digest(&mut bytes, candidate_digest);
+    push_digest(&mut bytes, expected_snapshot_digest);
+    push_digest(&mut bytes, writer_fence_digest);
+    push_digest(&mut bytes, authorization_digest);
+    Digest32::of_bytes(&bytes)
+}
 
 fn ensure_digest(name: &'static str, digest: Digest32) -> Result<(), LaneCContractError> {
     if digest.is_zero() {
@@ -904,6 +1391,25 @@ const fn memory_verification_state_code(value: MemoryVerificationState) -> u8 {
         MemoryVerificationState::Verified => 1,
         MemoryVerificationState::Contradicted => 2,
         MemoryVerificationState::Revoked => 3,
+    }
+}
+
+const fn memory_write_disposition_code(value: MemoryWriteDisposition) -> u8 {
+    match value {
+        MemoryWriteDisposition::Inserted => 0,
+        MemoryWriteDisposition::Unchanged => 1,
+    }
+}
+
+const fn memory_write_rejection_code(value: MemoryWriteRejectionCodeV1) -> u8 {
+    match value {
+        MemoryWriteRejectionCodeV1::AuthorizationDenied => 0,
+        MemoryWriteRejectionCodeV1::CandidateInvalid => 1,
+        MemoryWriteRejectionCodeV1::SnapshotStale => 2,
+        MemoryWriteRejectionCodeV1::WriterFenceMismatch => 3,
+        MemoryWriteRejectionCodeV1::Conflict => 4,
+        MemoryWriteRejectionCodeV1::CapacityExceeded => 5,
+        MemoryWriteRejectionCodeV1::Indeterminate => 6,
     }
 }
 

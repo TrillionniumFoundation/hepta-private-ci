@@ -26,6 +26,15 @@ use sqlx::TypeInfo;
 use sqlx::ValueRef;
 
 use super::CognitiveStore;
+
+impl CognitiveStore {
+    /// Close every SQLite connection before an external owner captures or
+    /// reopens the database as one immutable recovery image. Dropping a pool
+    /// only releases one handle; it does not wait for checked-out connections.
+    pub async fn close(self) {
+        self.pool.close().await;
+    }
+}
 use super::CognitiveStoreError;
 use super::CognitiveStoreOpenGuard;
 use super::REQUIRED_SCHEMA_OBJECTS;

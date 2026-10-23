@@ -1,5 +1,6 @@
 #![forbid(unsafe_code)]
 
+use codex_hepta_cognitive_types::hnmf_learning::MAX_CANDIDATE_EVENTS;
 use hnmf_reference::{
     EventId, NodeId, PPM, ReferenceActivationPath, ReferenceActiveNode, ReferenceContradiction,
     ReferenceCueFeatures, ReferenceEngramPopulation, ReferenceEngramState, ReferenceEventFeatures,
@@ -8,9 +9,35 @@ use hnmf_reference::{
     ReferenceReplayCandidate, ReferenceReplaySelection, ReferenceSynapseRelation,
     ReferenceSynapseState, ReferenceThresholdProposal, ReferenceWeightProposal,
 };
-use codex_hepta_cognitive_types::hnmf_learning::MAX_CANDIDATE_EVENTS;
 use std::collections::{BTreeMap, BTreeSet};
 use std::fmt;
+
+// Compatibility aliases keep this adversarial algorithm fixture readable while
+// the deterministic reference makes its non-canonical status explicit through
+// `Reference*` names. These aliases never create a second wire type.
+#[cfg(test)]
+type MemoryEvent = ReferenceEventFeatures;
+#[cfg(test)]
+type EngramNode = ReferenceEngramState;
+#[cfg(test)]
+type Synapse = ReferenceSynapseState;
+#[cfg(test)]
+type FabricConfig = ReferenceFabricConfig;
+type MemoryCue = ReferenceCueFeatures;
+type ActiveNode = ReferenceActiveNode;
+type ActivationPath = ReferenceActivationPath;
+type Contradiction = ReferenceContradiction;
+type RecallAbstainReason = ReferenceRecallAbstainReason;
+type RecallPacket = ReferenceRecallState;
+type OutcomeSignal = ReferenceOutcomeFeatures;
+type WeightProposal = ReferenceWeightProposal;
+type ThresholdProposal = ReferenceThresholdProposal;
+type PlasticityBatch = ReferencePlasticityProposalSet;
+type ReplayCandidate = ReferenceReplayCandidate;
+type ReplaySelectionReceipt = ReferenceReplaySelection;
+type ForgetBatch = ReferenceForgetPlan;
+type EngramPopulation = ReferenceEngramPopulation;
+type SynapseRelation = ReferenceSynapseRelation;
 
 pub const MAX_STORED_EVENTS: usize = 65_536;
 pub const MAX_GRAPH_HOPS: u8 = 4;

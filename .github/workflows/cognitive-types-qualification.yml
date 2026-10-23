@@ -1,0 +1,177 @@
+name: cognitive-types-qualification
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - "codex-rs/hepta-types/**"
+      - "docs/contracts/CONTRACTS.json"
+      - "docs/contracts/PROTOCOL_SCHEMAS.json"
+      - "codex-rs/hepta-cognitive-*/**"
+      - "codex-rs/hepta-memory*/**"
+      - "codex-rs/hepta-compact-engine/**"
+      - "codex-rs/hepta-intelligence/**"
+      - "codex-rs/hepta-agentd/**"
+      - "codex-rs/hepta-operations/**"
+      - "codex-rs/state/**"
+      - "codex-rs/Cargo.*"
+      - "qualification/cognitive-types-*/**"
+      - "docs/modules/cognitive.types/**"
+      - ".github/workflows/cognitive-types-qualification.yml"
+      - ".github/workflows/cognitive-types-depth-evidence.yml"
+  push:
+    branches: ["codex/cognitive-types-full-closure-20260927"]
+    paths:
+      - "codex-rs/hepta-types/**"
+      - "docs/contracts/CONTRACTS.json"
+      - "docs/contracts/PROTOCOL_SCHEMAS.json"
+      - "codex-rs/hepta-cognitive-*/**"
+      - "codex-rs/hepta-memory*/**"
+      - "codex-rs/hepta-compact-engine/**"
+      - "codex-rs/hepta-intelligence/**"
+      - "codex-rs/hepta-agentd/**"
+      - "codex-rs/hepta-operations/**"
+      - "codex-rs/state/**"
+      - "codex-rs/Cargo.*"
+      - "qualification/cognitive-types-*/**"
+      - "docs/modules/cognitive.types/**"
+      - ".github/workflows/cognitive-types-qualification.yml"
+      - ".github/workflows/cognitive-types-depth-evidence.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: cognitive-types-qualification-${{ github.head_ref || github.ref_name }}
+  cancel-in-progress: true
+
+env:
+  PYTHONDONTWRITEBYTECODE: "1"
+  CARGO_TERM_COLOR: never
+
+jobs:
+  resolve:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    outputs:
+      source: ${{ steps.identity.outputs.source }}
+      base: ${{ steps.identity.outputs.base }}
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          fetch-depth: 0
+          persist-credentials: false
+      - id: identity
+        env:
+          SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
+          echo "source=$SOURCE_SHA" >> "$GITHUB_OUTPUT"
+          echo "base=$(git rev-parse refs/remotes/origin/main^{commit})" >> "$GITHUB_OUTPUT"
+
+  qualify:
+    name: contracts (${{ matrix.group }}, ${{ matrix.kind }})
+    needs: resolve
+    runs-on: ubuntu-24.04
+    timeout-minutes: 90
+    strategy:
+      fail-fast: false
+      matrix:
+        kind: [exact-head, synthetic-merge]
+        group: [native, consumers, owners]
+    steps:
+      - id: checkout
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ needs.resolve.outputs.source }}
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Install explicit test tools without modifying source
+        working-directory: codex-rs
+        run: |
+          set -euo pipefail
+          rustup show active-toolchain
+          rustup component add rustfmt clippy
+          cargo install --locked --version 1.40.0 just
+          cargo install --locked --version 0.9.100 cargo-nextest
+      - name: Install selected-host native resource profilers
+        if: ${{ !cancelled() && matrix.group == 'native' && steps.checkout.outcome == 'success' }}
+        run: |
+          set -euo pipefail
+          sudo apt-get update
+          sudo apt-get install --no-install-recommends -y time valgrind
+      - name: Execute all checks and retain every outcome
+        if: ${{ !cancelled() && steps.checkout.outcome == 'success' }}
+        env:
+          SOURCE_SHA: ${{ needs.resolve.outputs.source }}
+          BASE_SHA: ${{ needs.resolve.outputs.base }}
+          CANDIDATE_KIND: ${{ matrix.kind }}
+          CHECK_GROUP: ${{ matrix.group }}
+        run: |
+          python3 qualification/cognitive-types-v1/run_qualification.py \
+            --source "$SOURCE_SHA" --base "$BASE_SHA" \
+            --kind "$CANDIDATE_KIND" --group "$CHECK_GROUP" \
+            --output "$RUNNER_TEMP/cognitive-types-evidence"
+      - name: Preserve immutable identities, commands and logs even on failure
+        if: ${{ always() && steps.checkout.outcome == 'success' }}
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: cognitive-types-${{ matrix.group }}-${{ matrix.kind }}-${{ needs.resolve.outputs.source }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/cognitive-types-evidence
+          if-no-files-found: error
+          retention-days: 30
+
+  acceptance:
+    name: Cognitive types fixed-candidate qualification
+    if: ${{ always() }}
+    needs: [resolve, qualify]
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - id: checkout
+        if: ${{ needs.resolve.result == 'success' }}
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ needs.resolve.outputs.source }}
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Download this attempt's separate fixed-source artifacts
+        if: ${{ always() && steps.checkout.outcome == 'success' }}
+        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          pattern: cognitive-types-*-${{ needs.resolve.outputs.source }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/cognitive-types-matrix
+          merge-multiple: false
+      - name: Verify identities, complete command plans and exact log bytes
+        id: evidence
+        if: ${{ always() && steps.checkout.outcome == 'success' }}
+        env:
+          SOURCE_SHA: ${{ needs.resolve.outputs.source }}
+          BASE_SHA: ${{ needs.resolve.outputs.base }}
+        run: |
+          python3 qualification/cognitive-types-v1/verify_receipts.py \
+            --source "$SOURCE_SHA" --base "$BASE_SHA" \
+            --evidence "$RUNNER_TEMP/cognitive-types-matrix" \
+            --output "$RUNNER_TEMP/cognitive-types-verified/matrix.json"
+      - name: Require both execution success and verified evidence
+        if: ${{ always() }}
+        env:
+          IDENTITY_RESULT: ${{ needs.resolve.result }}
+          MATRIX_RESULT: ${{ needs.qualify.result }}
+          EVIDENCE_RESULT: ${{ steps.evidence.outcome }}
+        run: |
+          set -euo pipefail
+          test "$IDENTITY_RESULT" = success
+          test "$MATRIX_RESULT" = success
+          test "$EVIDENCE_RESULT" = success
+      - name: Preserve the aggregate decision, including refusals
+        if: ${{ always() && steps.checkout.outcome == 'success' }}
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: cognitive-types-verified-${{ needs.resolve.outputs.source }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/cognitive-types-verified
+          if-no-files-found: error
+          retention-days: 30

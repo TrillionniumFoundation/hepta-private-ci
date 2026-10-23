@@ -132,3 +132,15 @@ exports_files(
     ],
     visibility = ["//codex-rs/hepta-contracts:__pkg__"],
 )
+
+# Exact source evidence read by cognitive.types traceability qualification.
+exports_files(
+    [
+        "src/intelligence_product_canonical_recall_tests.rs",
+        "src/intelligence_product_runner.rs",
+        "src/intelligence_product_signed_tests.rs",
+        "src/intelligence_product_tests.rs",
+        "tests/cognitive_store_product_writer.rs",
+    ],
+    visibility = ["//codex-rs/hepta-cognitive-types:__pkg__"],
+)

@@ -1,5 +1,6 @@
 //! Canonical HNMF V1 engram, recall, replay, plasticity, topology and forget contracts.
 
+use std::cmp::Ordering;
 use std::collections::BTreeMap;
 use std::collections::BTreeSet;
 
@@ -25,9 +26,15 @@ pub const MAX_ACTIVE_PER_POPULATION: usize = 64;
 pub const MAX_RECURRENT_STEPS: u8 = 4;
 pub const MAX_RECALL_EVENTS: usize = 16;
 pub const MAX_ACTIVATION_PATHS: usize = 32;
+pub const MAX_CONTRADICTIONS: usize = 64;
 pub const MAX_REPLAY_CANDIDATES: usize = 4_096;
 pub const MAX_REPLAY_SELECTION: usize = 256;
 pub const MAX_WEIGHT_DELTA_PPM: i32 = 50_000;
+pub const MAX_SOURCE_BUCKET_COUNTS: usize = 256;
+pub const MAX_WEIGHT_PROPOSALS: usize = 4_096;
+pub const MAX_THRESHOLD_PROPOSALS: usize = 4_096;
+pub const MAX_RETIRED_NODES: usize = MAX_NODES;
+pub const MAX_RETIRED_SYNAPSES: usize = MAX_SYNAPSES;
 pub const Q16_ONE: i32 = 65_536;
 
 #[derive(Clone, Copy, Debug, Deserialize, Eq, Ord, PartialEq, PartialOrd, Serialize)]
@@ -153,8 +160,14 @@ impl SynapseV1 {
             return Err(HnmfContractError::Invalid("synapse delay"));
         }
         validate_unit_q16(self.weight_q16, "synapse weight")?;
+        validate_relation_weight_v1(self.relation, self.weight_q16, "synapse relation/weight")?;
         if !(-(PPM as i32)..=PPM as i32).contains(&self.eligibility_ppm) {
             return Err(HnmfContractError::Invalid("synapse eligibility"));
+        }
+        if matches!(self.plasticity_class, PlasticityClassV1::Fixed) && self.eligibility_ppm != 0 {
+            return Err(HnmfContractError::Conflict(
+                "fixed synapse eligibility must be zero",
+            ));
         }
         Ok(())
     }
@@ -321,7 +334,11 @@ impl ActivationPathV1 {
         {
             return Err(HnmfContractError::Invalid("activation path"));
         }
-        Ok(())
+        validate_relation_weight_v1(
+            self.relation,
+            self.contribution_ppm,
+            "activation path relation/contribution",
+        )
     }
 }
 
@@ -397,15 +414,26 @@ impl RecallPacketV1 {
         if self.selected_events.len() > MAX_RECALL_EVENTS
             || self.active_nodes.len() > MAX_ACTIVE_NODES
             || self.activation_paths.len() > MAX_ACTIVATION_PATHS
+            || self.contradictions.len() > MAX_CONTRADICTIONS
         {
             return Err(HnmfContractError::Invalid("recall collection bound"));
         }
         for value in [self.coverage_ppm, self.confidence_ppm, self.ood_ppm] {
             ppm(value, "recall probability")?;
         }
-        ensure_strict_order(&self.selected_events, "selectedEvents")?;
-        ensure_strict_order(&self.active_nodes, "activeNodes")?;
-        ensure_strict_order(&self.activation_paths, "activationPaths")?;
+        ensure_strict_identity_order(&self.selected_events, "selectedEvents", |left, right| {
+            (&left.event_id, left.revision).cmp(&(&right.event_id, right.revision))
+        })?;
+        ensure_strict_identity_order(&self.active_nodes, "activeNodes", |left, right| {
+            left.node_id.cmp(&right.node_id)
+        })?;
+        ensure_strict_identity_order(&self.activation_paths, "activationPaths", |left, right| {
+            (&left.source_node_id, &left.target_node_id, left.relation).cmp(&(
+                &right.source_node_id,
+                &right.target_node_id,
+                right.relation,
+            ))
+        })?;
         ensure_strict_order(&self.contradictions, "contradictions")?;
         for selected in &self.selected_events {
             selected.validate()?;
@@ -421,6 +449,33 @@ impl RecallPacketV1 {
         }
         self.resource_receipt.validate()?;
         population_counts_v1(&self.active_nodes)?;
+        // Each distinct traced path is a synapse, and every referenced node
+        // belongs to the reported graph. Counts are structural consistency,
+        // not authenticated evidence of what the owner actually processed.
+        let referenced_nodes = self
+            .active_nodes
+            .iter()
+            .map(|node| &node.node_id)
+            .chain(
+                self.activation_paths
+                    .iter()
+                    .flat_map(|path| [&path.source_node_id, &path.target_node_id]),
+            )
+            .chain(
+                self.contradictions
+                    .iter()
+                    .flat_map(|pair| [&pair.left_node_id, &pair.right_node_id]),
+            )
+            .collect::<BTreeSet<_>>();
+        if self.activation_paths.len()
+            > usize::try_from(self.resource_receipt.synapse_count).unwrap_or(usize::MAX)
+            || referenced_nodes.len() > usize::from(self.resource_receipt.node_count)
+        {
+            return Err(HnmfContractError::Invalid(
+                "recall resource receipt binding",
+            ));
+        }
+
         if usize::from(self.resource_receipt.candidate_event_count) < self.selected_events.len()
             || usize::from(self.resource_receipt.active_node_count) != self.active_nodes.len()
             || self.resource_receipt.active_node_count > self.resource_receipt.node_count
@@ -440,7 +495,7 @@ impl RecallPacketV1 {
                 ));
             }
         }
-        Ok(())
+        validate_serialized_bound_v1(self, 262_144, "recallPacket")
     }
 }
 
@@ -513,6 +568,18 @@ impl ReplaySelectionReceiptV1 {
             return Err(HnmfContractError::Invalid("replay resource receipt"));
         }
         ensure_strict_order(&self.selected_event_ids, "selectedEventIds")?;
+        if self.source_bucket_counts.len() > MAX_SOURCE_BUCKET_COUNTS {
+            return Err(HnmfContractError::LimitExceeded {
+                field: "sourceBucketCounts",
+                actual: self.source_bucket_counts.len(),
+                maximum: MAX_SOURCE_BUCKET_COUNTS,
+            });
+        }
+        if (selected_count == 0) != self.source_bucket_counts.is_empty() {
+            return Err(HnmfContractError::Conflict(
+                "replay selected/source bucket emptiness",
+            ));
+        }
         if self
             .source_bucket_counts
             .windows(2)
@@ -534,7 +601,7 @@ impl ReplaySelectionReceiptV1 {
         if bucket_total != selected_count {
             return Err(HnmfContractError::Invalid("replay source count binding"));
         }
-        Ok(())
+        validate_serialized_bound_v1(self, 65_536, "replaySelectionReceipt")
     }
 }
 
@@ -558,6 +625,16 @@ impl WeightProposalV1 {
         }
         validate_unit_q16(self.old_weight_q16, "old weight")?;
         validate_unit_q16(self.new_weight_q16, "new weight")?;
+        validate_relation_weight_allow_zero_v1(
+            self.relation,
+            self.old_weight_q16,
+            "old relation/weight",
+        )?;
+        validate_relation_weight_allow_zero_v1(
+            self.relation,
+            self.new_weight_q16,
+            "new relation/weight",
+        )?;
         if q16_delta_ppm(self.old_weight_q16, self.new_weight_q16)? != self.delta_ppm {
             return Err(HnmfContractError::Conflict("weight proposal delta"));
         }
@@ -610,15 +687,42 @@ impl PlasticityBatchV1 {
                 "plasticity generation/authority",
             ));
         }
-        ensure_strict_order(&self.weight_proposals, "weightProposals")?;
-        ensure_strict_order(&self.threshold_proposals, "thresholdProposals")?;
+        if self.weight_proposals.is_empty() && self.threshold_proposals.is_empty() {
+            return Err(HnmfContractError::Invalid("empty plasticity batch"));
+        }
+        if self.weight_proposals.len() > MAX_WEIGHT_PROPOSALS {
+            return Err(HnmfContractError::LimitExceeded {
+                field: "weightProposals",
+                actual: self.weight_proposals.len(),
+                maximum: MAX_WEIGHT_PROPOSALS,
+            });
+        }
+        if self.threshold_proposals.len() > MAX_THRESHOLD_PROPOSALS {
+            return Err(HnmfContractError::LimitExceeded {
+                field: "thresholdProposals",
+                actual: self.threshold_proposals.len(),
+                maximum: MAX_THRESHOLD_PROPOSALS,
+            });
+        }
+        ensure_strict_identity_order(&self.weight_proposals, "weightProposals", |left, right| {
+            (&left.source_node_id, &left.target_node_id, left.relation).cmp(&(
+                &right.source_node_id,
+                &right.target_node_id,
+                right.relation,
+            ))
+        })?;
+        ensure_strict_identity_order(
+            &self.threshold_proposals,
+            "thresholdProposals",
+            |left, right| left.node_id.cmp(&right.node_id),
+        )?;
         for proposal in &self.weight_proposals {
             proposal.validate()?;
         }
         for proposal in &self.threshold_proposals {
             proposal.validate()?;
         }
-        Ok(())
+        validate_serialized_bound_v1(self, 262_144, "plasticityBatch")
     }
 }
 
@@ -678,7 +782,9 @@ impl TopologyTypedNodesEdgesV1 {
         if self.nodes.len() > MAX_NODES || self.edges.len() > MAX_SYNAPSES {
             return Err(HnmfContractError::Invalid("topology delta bound"));
         }
-        ensure_strict_order(&self.nodes, "topologyNodes")?;
+        ensure_strict_identity_order(&self.nodes, "topologyNodes", |left, right| {
+            left.node_id.cmp(&right.node_id)
+        })?;
         ensure_strict_order(&self.edges, "topologyEdges")?;
         for node in &self.nodes {
             node.validate()?;
@@ -723,7 +829,45 @@ pub struct TopologyProposalV1 {
 
 impl TopologyProposalV1 {
     pub fn validate(&self) -> Result<(), HnmfContractError> {
-        self.typed_nodes_edges.validate()
+        self.typed_nodes_edges.validate()?;
+        let node_count = i64::try_from(self.typed_nodes_edges.nodes.len())
+            .map_err(|_| HnmfContractError::Invalid("topology node count"))?;
+        let edge_count = i64::try_from(self.typed_nodes_edges.edges.len())
+            .map_err(|_| HnmfContractError::Invalid("topology edge count"))?;
+        let valid = match self.operation {
+            TopologyOperationV1::Add => {
+                node_count > 0
+                    && self.resource_delta.node_delta == node_count
+                    && self.resource_delta.edge_delta == edge_count
+                    && self.resource_delta.resident_bytes_upper_bound_delta > 0
+            }
+            TopologyOperationV1::Split => {
+                node_count >= 2
+                    && self.resource_delta.node_delta > 0
+                    && self.resource_delta.resident_bytes_upper_bound_delta > 0
+            }
+            TopologyOperationV1::Merge => {
+                node_count >= 2
+                    && self.resource_delta.node_delta < 0
+                    && self.resource_delta.resident_bytes_upper_bound_delta <= 0
+            }
+            TopologyOperationV1::Rewire => {
+                node_count == 0 && edge_count > 0 && self.resource_delta.node_delta == 0
+            }
+            TopologyOperationV1::Retire => {
+                (node_count > 0 || edge_count > 0)
+                    && self.resource_delta.node_delta <= 0
+                    && self.resource_delta.edge_delta <= 0
+                    && self.resource_delta.resident_bytes_upper_bound_delta <= 0
+                    && (self.resource_delta.node_delta < 0 || self.resource_delta.edge_delta < 0)
+            }
+        };
+        if !valid {
+            return Err(HnmfContractError::Conflict(
+                "topology operation/resource delta",
+            ));
+        }
+        validate_serialized_bound_v1(self, 262_144, "topologyProposal")
     }
 }
 
@@ -755,9 +899,65 @@ impl ForgetPropagationReceiptV1 {
         {
             return Err(HnmfContractError::Conflict("forget propagation"));
         }
+        if self.retired_node_ids.is_empty() && self.retired_synapses.is_empty() {
+            return Err(HnmfContractError::Invalid("empty forget propagation"));
+        }
+        if self.retired_node_ids.len() > MAX_RETIRED_NODES {
+            return Err(HnmfContractError::LimitExceeded {
+                field: "retiredNodeIds",
+                actual: self.retired_node_ids.len(),
+                maximum: MAX_RETIRED_NODES,
+            });
+        }
+        if self.retired_synapses.len() > MAX_RETIRED_SYNAPSES {
+            return Err(HnmfContractError::LimitExceeded {
+                field: "retiredSynapses",
+                actual: self.retired_synapses.len(),
+                maximum: MAX_RETIRED_SYNAPSES,
+            });
+        }
         ensure_strict_order(&self.retired_node_ids, "retiredNodeIds")?;
-        ensure_strict_order(&self.retired_synapses, "retiredSynapses")
+        ensure_strict_order(&self.retired_synapses, "retiredSynapses")?;
+        if self
+            .retired_synapses
+            .iter()
+            .any(|synapse| synapse.source_node_id == synapse.target_node_id)
+        {
+            return Err(HnmfContractError::Invalid("retired synapse self-loop"));
+        }
+        validate_serialized_bound_v1(self, 65_536, "forgetPropagationReceipt")
     }
+}
+
+fn validate_relation_weight_v1(
+    relation: SynapseRelationV1,
+    value: i32,
+    field: &'static str,
+) -> Result<(), HnmfContractError> {
+    if value == 0 || (relation.is_negative() && value > 0) || (!relation.is_negative() && value < 0)
+    {
+        return Err(HnmfContractError::Conflict(field));
+    }
+    Ok(())
+}
+
+fn validate_relation_weight_allow_zero_v1(
+    relation: SynapseRelationV1,
+    value: i32,
+    field: &'static str,
+) -> Result<(), HnmfContractError> {
+    if (relation.is_negative() && value > 0) || (!relation.is_negative() && value < 0) {
+        return Err(HnmfContractError::Conflict(field));
+    }
+    Ok(())
+}
+
+fn validate_serialized_bound_v1<T: Serialize>(
+    value: &T,
+    maximum: usize,
+    field: &'static str,
+) -> Result<(), HnmfContractError> {
+    crate::bounded::serialized_size(value, maximum, field).map(|_| ())
 }
 
 fn validate_unit_q16(value: i32, field: &'static str) -> Result<(), HnmfContractError> {
@@ -774,6 +974,24 @@ fn q16_delta_ppm(old: i32, new: i32) -> Result<i32, HnmfContractError> {
         .ok_or(HnmfContractError::Invalid("q16 delta overflow"))?
         / i64::from(Q16_ONE);
     i32::try_from(scaled).map_err(|_| HnmfContractError::Invalid("q16 delta overflow"))
+}
+
+/// Identity ordering deliberately excludes non-identity payload fields. The
+/// logical keys are prefixes of the frozen V1 order, so valid wire bytes and
+/// digests are unchanged; conflicting duplicates are rejected, never deduped.
+fn ensure_strict_identity_order<T>(
+    values: &[T],
+    field: &'static str,
+    compare: impl Fn(&T, &T) -> Ordering,
+) -> Result<(), HnmfContractError> {
+    for pair in values.windows(2) {
+        match compare(&pair[0], &pair[1]) {
+            Ordering::Less => {}
+            Ordering::Equal => return Err(HnmfContractError::DuplicateIdentity(field)),
+            Ordering::Greater => return Err(HnmfContractError::Invalid(field)),
+        }
+    }
+    Ok(())
 }
 
 fn ensure_strict_order<T: Ord>(values: &[T], field: &'static str) -> Result<(), HnmfContractError> {
@@ -802,3 +1020,7 @@ pub fn population_counts_v1(
     }
     Ok(counts)
 }
+
+#[cfg(test)]
+#[path = "hnmf_learning_budget_tests.rs"]
+mod budget_tests;

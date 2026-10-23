@@ -336,11 +336,19 @@ fn authority_verifier() -> IntelligenceAuthorityVerifierV1 {
 }
 
 fn write_authority_file(path: &std::path::Path, owners: &[OwnerBindingV1], frontier: Digest32) {
+    let mut authority_owners = owners.to_vec();
+    let retrieval_owner = canonical_recall_tests::retrieval_owner_binding();
+    if !authority_owners
+        .iter()
+        .any(|owner| owner.owner_id == retrieval_owner.owner_id)
+    {
+        authority_owners.push(retrieval_owner);
+    }
     let file = IntelligenceAuthorityFileV1 {
         schema_version: 1,
         authority_epoch: 11,
         revocation_frontier_digest: frontier.to_string(),
-        owners: owners
+        owners: authority_owners
             .iter()
             .map(|owner| IntelligenceAuthorityOwnerFileV1 {
                 owner_id: owner.owner_id.to_string(),
@@ -639,6 +647,9 @@ fn fixture() -> Fixture {
             },
         },
         inputs: AgentdIntelligenceOwnerInputsV1 {
+            canonical_recall: Some(canonical_recall_tests::explicit_absence_recall(id(
+                "run:agentd-intelligence",
+            ))),
             objective_envelope: envelope,
             objective_profile: profile,
             objective_context,
@@ -964,14 +975,17 @@ async fn aborted_owner_work_retains_its_budget_until_computation_finishes() {
         workers.push(worker);
     }
     assert_eq!(runner.worker_slots.available_permits(), 0);
-    let fixture = fixture();
-    let result = runner
-        .prepare(&product_test_coordinator(), fixture.request, fixture.inputs)
-        .await;
-    assert!(matches!(result, Err(AgentdIntelligenceProductError::Busy)));
+    let saturated = matches!(
+        runner.spawn_owner_work(|| ()),
+        Err(AgentdIntelligenceProductError::Busy)
+    );
     for release in releases {
         release.send(()).expect("release real worker");
     }
+    assert!(
+        saturated,
+        "a fifth owner worker must fail closed while aborted work still runs"
+    );
     for worker in workers {
         timeout(Duration::from_secs(5), worker)
             .await
@@ -990,3 +1004,6 @@ async fn aborted_owner_work_retains_its_budget_until_computation_finishes() {
 
 #[path = "intelligence_product_signed_tests.rs"]
 mod signed;
+
+#[path = "intelligence_product_canonical_recall_tests.rs"]
+mod canonical_recall_tests;

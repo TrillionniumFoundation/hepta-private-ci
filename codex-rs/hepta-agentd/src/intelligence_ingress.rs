@@ -1,9 +1,10 @@
 //! Host-owned canonical intelligence invocation at the existing ObjectiveStart boundary.
 //!
-//! The daemon wire carries the authenticated objective.  It never carries the
-//! seven owners' internal profiles, model state, current artifacts, or trust
-//! material.  A composition owner derives those inputs from the already-durable
-//! RunStart record and the current owner generation.
+//! The daemon wire carries the authenticated objective. It never carries the
+//! seven stage owners' internal profiles, the retrieval owner's canonical
+//! result, model state, current artifacts, or trust material. A composition
+//! owner derives those inputs from the already-durable RunStart record and the
+//! current owner generation.
 
 use codex_hepta_intelligence::CanonicalIntelligenceRunRequestV1;
 use codex_hepta_learning_ledger::RunStartRecordV1;
@@ -40,12 +41,14 @@ impl AgentdIntelligenceInvocationV1 {
     }
 }
 
-/// Composition seam for the seven canonical intelligence owners.
+/// Composition seam for the seven canonical execution owners plus the
+/// `memory.retrieval` input owner.
 ///
-/// Implementations are host-owned and must derive current stage inputs from
-/// their authoritative owners.  Request/wire callers cannot provide this
-/// object and therefore cannot substitute policy, model, artifact, trust, or
-/// currentness inputs.
+/// Implementations are host-owned and must derive current stage inputs and the
+/// owner-sealed canonical recall result from their authoritative owners.
+/// Request/wire callers cannot provide this object and therefore cannot
+/// substitute policy, model, artifact, recall source, trust, or currentness
+/// inputs.
 pub trait AgentdIntelligenceInvocationProviderV1: Send + Sync {
     fn build(
         &self,

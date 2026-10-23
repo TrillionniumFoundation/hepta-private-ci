@@ -3077,6 +3077,77 @@
       "authorityDelta": "none",
       "payloadClass": "contract_specific",
       "compatibility": "deny_unknown_critical_fields"
+    },
+    {
+      "id": "SharedExperiencePublicationV2",
+      "version": 2,
+      "kind": "typed_protocol",
+      "producer": "cognitive.store",
+      "consumers": [
+        "cognitive.read",
+        "memory.retrieval",
+        "learning.ledger",
+        "learning.operator",
+        "learning.artifacts"
+      ],
+      "transport": "canonical_json_or_in_process_typed",
+      "bounded": true,
+      "authorityDelta": "none",
+      "payloadClass": "contract_specific",
+      "compatibility": "new_version_no_v1_reinterpretation"
+    },
+    {
+      "id": "SharedExperienceSnapshotV2",
+      "version": 2,
+      "kind": "typed_protocol",
+      "producer": "learning.ledger",
+      "consumers": [
+        "memory.retrieval",
+        "learning.operator",
+        "learning.eval",
+        "learning.artifacts"
+      ],
+      "transport": "canonical_json_or_in_process_typed",
+      "bounded": true,
+      "authorityDelta": "none",
+      "payloadClass": "contract_specific",
+      "compatibility": "explicit_multi_owner_cut"
+    },
+    {
+      "id": "SharedExperienceUseReceiptV2",
+      "version": 2,
+      "kind": "typed_protocol",
+      "producer": "cognitive.store",
+      "consumers": [
+        "cognitive.read",
+        "memory.retrieval",
+        "learning.ledger",
+        "learning.operator",
+        "learning.artifacts"
+      ],
+      "transport": "canonical_json_or_in_process_typed",
+      "bounded": true,
+      "authorityDelta": "none",
+      "payloadClass": "contract_specific",
+      "compatibility": "permission_class_and_final_use_bound"
+    },
+    {
+      "id": "SharedExperienceRevocationReceiptV2",
+      "version": 2,
+      "kind": "typed_protocol",
+      "producer": "cognitive.store",
+      "consumers": [
+        "cognitive.read",
+        "memory.retrieval",
+        "learning.ledger",
+        "learning.operator",
+        "learning.artifacts"
+      ],
+      "transport": "canonical_json_or_in_process_typed",
+      "bounded": true,
+      "authorityDelta": "none",
+      "payloadClass": "contract_specific",
+      "compatibility": "non_resurrection_and_influence_proof_explicit"
     }
   ],
   "authorityFlags": {

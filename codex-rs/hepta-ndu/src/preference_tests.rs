@@ -162,7 +162,7 @@ fn preference_dimension_and_value_bounds_fail_at_boundary() {
 }
 
 #[test]
-fn iteration_exhaustion_is_unavailable() {
+fn iteration_bound_exhaustion_is_unavailable() {
     let initial = must(PreferenceState::genesis(
         id("agent-slow"),
         SubjectClass::Agent,
@@ -193,7 +193,7 @@ fn iteration_exhaustion_is_unavailable() {
 }
 
 #[test]
-fn parent_and_child_updates_cannot_share_generation() {
+fn parent_and_child_updates_cannot_share_generation_within_one_hierarchy() {
     let generation = must(Generation::new(7));
     let error = must_err(validate_staged_updates(&[
         UpdateGeneration {
@@ -216,7 +216,7 @@ fn parent_and_child_updates_cannot_share_generation() {
 }
 
 #[test]
-fn unrelated_hierarchy_updates_can_share_generation() {
+fn unrelated_hierarchies_may_advance_different_levels_in_same_generation() {
     let generation = must(Generation::new(8));
     must(validate_staged_updates(&[
         UpdateGeneration {

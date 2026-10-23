@@ -3,12 +3,12 @@
   "schemaVersion": 3,
   "sourceIdentityPolicy": "candidate_or_exact_observation_v1",
   "sourceBase": {
-    "commit": "8914a46dfc5984532f03dd2d559bf547ca4f1e69",
-    "tree": "1bd6444d2d980a9fdf06358dbee973b34722f0e1"
+    "commit": "b38762bd25ae449ea7dfe2521f549c476c47146f",
+    "tree": "681a24da1a3ad01ec2bbe8263b77e94a64c4b496"
   },
   "observedAtHead": {
-    "commit": "8914a46dfc5984532f03dd2d559bf547ca4f1e69",
-    "tree": "1bd6444d2d980a9fdf06358dbee973b34722f0e1"
+    "commit": "b38762bd25ae449ea7dfe2521f549c476c47146f",
+    "tree": "681a24da1a3ad01ec2bbe8263b77e94a64c4b496"
   },
   "observedSourcePaths": [
     "codex-rs/Cargo.lock",
@@ -512,6 +512,79 @@
       "delegatedCallees": [],
       "tests": [],
       "authority": "none"
+    },
+    {
+      "operation": "bind_canonical_recall_for_intelligence_v1",
+      "designOperation": "bind_canonical_recall_for_intelligence_v1",
+      "nativeSymbol": "bind_canonical_recall_for_intelligence_v1",
+      "sourcePath": "codex-rs/hepta-intelligence/src/canonical.rs",
+      "sourcePathExists": true,
+      "mappingClass": "owner_native",
+      "state": "source_navigation_only_product_binding_not_proved",
+      "delegatedCallees": [],
+      "tests": [
+        "codex-rs/hepta-intelligence/src/canonical_tests.rs"
+      ],
+      "authority": "none"
+    },
+    {
+      "operation": "prepare_intelligence_run_with_canonical_recall",
+      "designOperation": "prepare_intelligence_run_with_canonical_recall",
+      "nativeSymbol": "prepare_intelligence_run_with_canonical_recall",
+      "sourcePath": "codex-rs/hepta-intelligence/src/canonical.rs",
+      "sourcePathExists": true,
+      "mappingClass": "owner_native",
+      "state": "source_navigation_only_product_binding_not_proved",
+      "delegatedCallees": [],
+      "tests": [
+        "codex-rs/hepta-intelligence/src/canonical_tests.rs"
+      ],
+      "authority": "none"
+    },
+    {
+      "operation": "canonical_recall_binding_policy_digest_v1",
+      "designOperation": "canonical_recall_binding_policy_digest_v1",
+      "nativeSymbol": "canonical_recall_binding_policy_digest_v1",
+      "sourcePath": "codex-rs/hepta-intelligence/src/canonical_recall_policy.rs",
+      "sourcePathExists": true,
+      "mappingClass": "owner_native",
+      "state": "source_navigation_only_product_binding_not_proved",
+      "delegatedCallees": [],
+      "tests": [
+        "codex-rs/hepta-intelligence/src/canonical_recall_policy.rs",
+        "codex-rs/hepta-intelligence/src/canonical_tests.rs"
+      ],
+      "authority": "none"
+    },
+    {
+      "operation": "canonical_recall_absence_policy_digest_v1",
+      "designOperation": "canonical_recall_absence_policy_digest_v1",
+      "nativeSymbol": "canonical_recall_absence_policy_digest_v1",
+      "sourcePath": "codex-rs/hepta-intelligence/src/canonical_recall_policy.rs",
+      "sourcePathExists": true,
+      "mappingClass": "owner_native",
+      "state": "source_navigation_only_product_binding_not_proved",
+      "delegatedCallees": [],
+      "tests": [
+        "codex-rs/hepta-intelligence/src/canonical_recall_policy.rs",
+        "codex-rs/hepta-intelligence/src/canonical_tests.rs"
+      ],
+      "authority": "none"
+    },
+    {
+      "operation": "bind_recall_policy_outcome_v1",
+      "designOperation": "bind_recall_policy_outcome_v1",
+      "nativeSymbol": "bind_recall_policy_outcome_v1",
+      "sourcePath": "codex-rs/hepta-intelligence/src/canonical_recall_policy.rs",
+      "sourcePathExists": true,
+      "mappingClass": "owner_native",
+      "state": "source_navigation_only_product_binding_not_proved",
+      "delegatedCallees": [],
+      "tests": [
+        "codex-rs/hepta-intelligence/src/canonical_recall_policy.rs",
+        "codex-rs/hepta-intelligence/src/canonical_tests.rs"
+      ],
+      "authority": "none"
     }
   ],
   "productCallers": [
@@ -569,11 +642,11 @@
   "sourceObjects": [
     {
       "path": "codex-rs/hepta-agentd/src/intelligence_product.rs",
-      "object": "1781996175ec7f16f44b9f58ac3e2c2bd41358af"
+      "object": "2a9e38c86d103ead3706b6ccf25aecbbfed97a65"
     },
     {
       "path": "codex-rs/hepta-agentd/src/intelligence_product_tests.rs",
-      "object": "4f25f9d81eef9931f46ebabc01778cec297f5dee"
+      "object": "61a148610400130f786816ca9c21869d8010757a"
     },
     {
       "path": "codex-rs/hepta-agentd/src/state.rs",
@@ -581,7 +654,7 @@
     },
     {
       "path": "codex-rs/hepta-context-compiler",
-      "object": "517aa2bbba2f31ab5d4bf2ce96f5f4d8ec4fa662"
+      "object": "be68f136ec0fcf1e753dcabd51af294b5ad42a89"
     },
     {
       "path": "codex-rs/hepta-infer-worker-host/src/native_run_control.rs",
@@ -589,19 +662,23 @@
     },
     {
       "path": "codex-rs/hepta-intelligence",
-      "object": "c382c211dc34b0c3abaf87aec27e7e353bae418e"
+      "object": "c5cedc77fed571f0064094b5c261658851196e1a"
     },
     {
       "path": "codex-rs/hepta-intelligence-eval",
-      "object": "0e61e82c7e344d7c2b1b07f70ab752fd2867e149"
+      "object": "e6fb17e502750521eafa4238d29d024f5fa44c72"
     },
     {
       "path": "codex-rs/hepta-intelligence/src/canonical.rs",
-      "object": "c610f073b47939acf15e7e76aad59883ac13fad4"
+      "object": "79c77f0d2be4a330efd681879059c1d382b95448"
+    },
+    {
+      "path": "codex-rs/hepta-intelligence/src/canonical_recall_policy.rs",
+      "object": "077c4d5e5372ab69db4cd8ef53302fb16ea723b2"
     },
     {
       "path": "codex-rs/hepta-intelligence/src/canonical_tests.rs",
-      "object": "25505e9bad9105368fece10afd40e812ae2f4ccf"
+      "object": "da9b1a53cc95a9f652df622ad5f0c523b30cc6d3"
     },
     {
       "path": "codex-rs/hepta-intelligence/src/evaluated_shadow.rs",
@@ -617,7 +694,7 @@
     },
     {
       "path": "codex-rs/hepta-intelligence/src/lib.rs",
-      "object": "ac161c19df7b828fbca02d39ebfdb6661982e6d4"
+      "object": "24b36fe4cfbf9a150d5e40fd4de3688a8f50be4b"
     },
     {
       "path": "codex-rs/hepta-intelligence/src/lib_tests.rs",
@@ -693,23 +770,85 @@
     },
     {
       "path": "codex-rs/hepta-ndu",
-      "object": "bb334a5a301a5d3988b0b5c660d914f5d1c7d01a"
+      "object": "fcffcc360866034b60aef439a855ff5a14e6ae49"
     },
     {
       "path": "codex-rs/hepta-neuron",
-      "object": "2e0cb699ff6d11dd63e996040d935153f4e63f57"
+      "object": "c8a74a3012db3798b0a0c938ec60f60e136ad493"
     },
     {
       "path": "codex-rs/hepta-objective",
-      "object": "e89450f622d12e85f516df691291e349f42cd8fc"
+      "object": "b016a1ffd8e2c7e82dc9bf8e1ca156929d6e91db"
     },
     {
       "path": "codex-rs/hepta-prompt-optimizer",
-      "object": "030b8b3f7a2f5ce89921926e4b038feedef65c66"
+      "object": "957c132402cfd8ef9c92451076a3735265999110"
     },
     {
       "path": "docs/modules/intelligence.control/TECHNICAL.md",
       "object": "255133762234bb470a3ee24e1c7c84554f2688c0"
+    }
+  ],
+  "historicalNavigationAnchors": [
+    {
+      "sourceBase": {
+        "commit": "a218f469530f9afc53fbd6758109f79a29912548",
+        "tree": "d3f608c46ac02909112609d7c065c0958200ad29"
+      },
+      "observedAtHead": {
+        "commit": "a218f469530f9afc53fbd6758109f79a29912548",
+        "tree": "d3f608c46ac02909112609d7c065c0958200ad29"
+      },
+      "disposition": "historical_source_navigation_only",
+      "executionEvidenceTransferred": false
+    },
+    {
+      "sourceBase": {
+        "commit": "1a5587fe7ed8dd1078ba35bc846492369abffd6d",
+        "tree": "46f353b60d6a29df1b9090070c23aa237f962883"
+      },
+      "observedAtHead": {
+        "commit": "1a5587fe7ed8dd1078ba35bc846492369abffd6d",
+        "tree": "46f353b60d6a29df1b9090070c23aa237f962883"
+      },
+      "disposition": "historical_source_navigation_only",
+      "executionEvidenceTransferred": false
+    },
+    {
+      "sourceBase": {
+        "commit": "332b6a1c33167046c12d1ec41eba5b4b9b6abd4b",
+        "tree": "6893f0cf76e42444c7414b6fba740386bcafaebe"
+      },
+      "observedAtHead": {
+        "commit": "332b6a1c33167046c12d1ec41eba5b4b9b6abd4b",
+        "tree": "6893f0cf76e42444c7414b6fba740386bcafaebe"
+      },
+      "disposition": "historical_source_navigation_only",
+      "executionEvidenceTransferred": false
+    },
+    {
+      "sourceBase": {
+        "commit": "f1d9fda55967a3c88ce856586ee91463f7333994",
+        "tree": "188800e6bd58cbebb9a086b6e7205e65763364cb"
+      },
+      "observedAtHead": {
+        "commit": "f1d9fda55967a3c88ce856586ee91463f7333994",
+        "tree": "188800e6bd58cbebb9a086b6e7205e65763364cb"
+      },
+      "disposition": "historical_source_navigation_only",
+      "executionEvidenceTransferred": false
+    },
+    {
+      "sourceBase": {
+        "commit": "1af1ffc253a6c4940d9aac0f7e8518d4bd2484cb",
+        "tree": "4eacde46f53900c1be073d451d22a36b5598ced1"
+      },
+      "observedAtHead": {
+        "commit": "1af1ffc253a6c4940d9aac0f7e8518d4bd2484cb",
+        "tree": "4eacde46f53900c1be073d451d22a36b5598ced1"
+      },
+      "disposition": "historical_source_navigation_only",
+      "executionEvidenceTransferred": false
     }
   ]
 }

@@ -42,6 +42,7 @@ mod shadow_model_runtime;
 mod shared_experience;
 
 pub use shared_experience::SharedExperienceGrantV1;
+pub use shared_experience::SharedExperiencePublicationBindingV2;
 pub use shared_experience::SharedExperiencePurposeV1;
 pub use shared_experience::SharedExperienceUseV1;
 

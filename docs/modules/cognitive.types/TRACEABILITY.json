@@ -1,0 +1,174 @@
+{
+  "schema": "hepta.cognitive-types.traceability.v1",
+  "schemaVersion": 1,
+  "module": "cognitive.types",
+  "owner": "cognitive-platform",
+  "evidencePolicy": "exact_head_and_two_parent_synthetic_merge",
+  "claimBoundary": {
+    "sourceImplemented": true,
+    "productExecutionProved": false,
+    "independentAcceptance": false,
+    "activation": false,
+    "release": false
+  },
+  "invariants": [
+    {
+      "id": "CTYPE-ID-01",
+      "title": "Logical identities are unique independently of canonical payload order",
+      "source": [
+        "codex-rs/hepta-cognitive-types/src/hnmf.rs",
+        "codex-rs/hepta-cognitive-types/src/hnmf_learning.rs"
+      ],
+      "tests": [
+        "codex-rs/hepta-cognitive-types/src/hardening_tests.rs",
+        "codex-rs/hepta-cognitive-types/src/contract_tests_base.rs"
+      ],
+      "requiredEvidence": "current_exact_head_and_synthetic_merge"
+    },
+    {
+      "id": "CTYPE-WRITE-01",
+      "title": "Write receipts bind intent, expected cut, observed cut and a legal snapshot transition",
+      "source": [
+        "codex-rs/hepta-cognitive-types/src/lane_c.rs",
+        "codex-rs/hepta-cognitive-types/src/transitions.rs"
+      ],
+      "tests": [
+        "codex-rs/hepta-cognitive-types/src/hardening_tests.rs",
+        "codex-rs/hepta-cognitive-types/src/transitions.rs"
+      ],
+      "requiredEvidence": "current_exact_head_and_synthetic_merge"
+    },
+    {
+      "id": "CTYPE-VALIDATE-01",
+      "title": "Raw DTO, structurally validated value and owner-context validation remain distinct",
+      "source": [
+        "codex-rs/hepta-cognitive-types/src/contract.rs",
+        "codex-rs/hepta-cognitive-types/src/context.rs"
+      ],
+      "tests": [
+        "codex-rs/hepta-cognitive-types/src/hardening_tests.rs"
+      ],
+      "requiredEvidence": "current_exact_head_and_synthetic_merge"
+    },
+    {
+      "id": "CTYPE-CONSUMER-01",
+      "title": "All five consumers accept only their registered canonical payload family and bind operation, source identity, source cut and compatibility posture",
+      "source": [
+        "codex-rs/hepta-cognitive-types/src/consumer.rs",
+        "codex-rs/hepta-cognitive-types/src/consumer_adapters.rs",
+        "codex-rs/hepta-cognitive-types/src/handoff.rs",
+        "codex-rs/hepta-cognitive-read/src/authoritative.rs",
+        "codex-rs/hepta-cognitive-store/src/v2.rs",
+        "codex-rs/hepta-memory-retrieval/src/generation_bound.rs",
+        "codex-rs/hepta-compact-engine/src/qualified.rs",
+        "codex-rs/hepta-intelligence/src/canonical.rs",
+        "codex-rs/hepta-agentd/src/intelligence_product_runner.rs"
+      ],
+      "tests": [
+        "codex-rs/hepta-cognitive-types/src/consumer_tests.rs",
+        "codex-rs/hepta-cognitive-types/tests/traceability.rs",
+        "codex-rs/hepta-cognitive-read/src/authoritative_tests.rs",
+        "codex-rs/hepta-cognitive-store/src/v2_tests.rs",
+        "codex-rs/hepta-memory-retrieval/src/generation_bound_tests.rs",
+        "codex-rs/hepta-compact-engine/src/qualified_tests.rs",
+        "codex-rs/hepta-intelligence/src/canonical_tests.rs",
+        "codex-rs/hepta-agentd/src/intelligence_product_canonical_recall_tests.rs",
+        "codex-rs/hepta-agentd/tests/cognitive_store_product_writer.rs"
+      ],
+      "requiredEvidence": "current_exact_head_and_synthetic_merge_product_jobs"
+    },
+    {
+      "id": "CTYPE-RECALL-01",
+      "title": "The normal Agentd entry requires an explicit selected or abstaining canonical recall result and rejects missing input before owner use",
+      "source": [
+        "codex-rs/hepta-agentd/src/intelligence_product_runner.rs",
+        "codex-rs/hepta-intelligence/src/canonical_recall_policy.rs"
+      ],
+      "tests": [
+        "codex-rs/hepta-agentd/src/intelligence_product_tests.rs",
+        "codex-rs/hepta-agentd/src/intelligence_product_canonical_recall_tests.rs",
+        "codex-rs/hepta-agentd/src/intelligence_product_signed_tests.rs"
+      ],
+      "requiredEvidence": "current_exact_head_and_synthetic_merge_product_jobs"
+    },
+    {
+      "id": "CTYPE-DIGEST-01",
+      "title": "Frozen historical and schema-bound current digest profiles are explicit and never conflated",
+      "source": [
+        "codex-rs/hepta-cognitive-types/src/wire.rs",
+        "codex-rs/hepta-cognitive-types/src/consumer.rs",
+        "codex-rs/hepta-cognitive-types/src/handoff.rs"
+      ],
+      "tests": [
+        "codex-rs/hepta-cognitive-types/src/consumer_tests.rs",
+        "codex-rs/hepta-cognitive-types/src/hardening_tests.rs",
+        "qualification/cognitive-types-v1/verify_bound_vector.py",
+        "qualification/cognitive-types-v1/verify_bound_vector.mjs"
+      ],
+      "requiredEvidence": "current_cross_language_and_native_execution"
+    },
+    {
+      "id": "CTYPE-WIRE-01",
+      "title": "Canonical wire rejects unknown, noncanonical, oversized and semantically invalid input",
+      "source": [
+        "codex-rs/hepta-cognitive-types/src/bounded.rs",
+        "codex-rs/hepta-cognitive-types/src/wire.rs",
+        "codex-rs/hepta-cognitive-types/src/shared_wire.rs"
+      ],
+      "tests": [
+        "codex-rs/hepta-cognitive-types/src/codec_tests.rs",
+        "codex-rs/hepta-cognitive-types/src/contract_tests.rs",
+        "codex-rs/hepta-cognitive-types/fuzz/fuzz_targets/decode_contracts.rs",
+        "qualification/cognitive-types-v1/verify_vectors.py",
+        "qualification/cognitive-types-v2/verify_vectors.py"
+      ],
+      "requiredEvidence": "current_native_cross_language_fuzz_smoke"
+    },
+    {
+      "id": "CTYPE-PERF-01",
+      "title": "Maximum-count contract round trips emit reproducible observation-only performance evidence",
+      "source": [
+        "codex-rs/hepta-cognitive-types/examples/canonical_probe.rs",
+        "qualification/cognitive-types-v1/quality_checks.py"
+      ],
+      "tests": [
+        ".github/workflows/cognitive-types-qualification.yml"
+      ],
+      "requiredEvidence": "current_maximum_profile_performance_receipt"
+    },
+    {
+      "id": "CTYPE-MUTATION-01",
+      "title": "High-value invariant, digest-domain and consumer payload-family gate removals are rejected by bounded mutation qualification",
+      "source": [
+        "qualification/cognitive-types-v1/run_mutations.py",
+        "qualification/cognitive-types-v1/quality_checks.py",
+        "codex-rs/hepta-cognitive-types/src/hnmf.rs",
+        "codex-rs/hepta-cognitive-types/src/hnmf_learning.rs",
+        "codex-rs/hepta-cognitive-types/src/wire.rs",
+        "codex-rs/hepta-cognitive-types/src/consumer.rs"
+      ],
+      "tests": [
+        "codex-rs/hepta-cognitive-types/src/identity_tests.rs",
+        "codex-rs/hepta-cognitive-types/src/consumer_tests.rs",
+        "qualification/cognitive-types-v1/test_mutation_runner.py",
+        "qualification/cognitive-types-v1/test_quality_checks.py",
+        ".github/workflows/cognitive-types-qualification.yml"
+      ],
+      "requiredEvidence": "current_mutation_job"
+    },
+    {
+      "id": "CTYPE-EVIDENCE-01",
+      "title": "Qualification is read-only and every exported source package is bound to one immutable SHA and tree",
+      "source": [
+        ".github/workflows/cognitive-types-source-export.yml",
+        ".github/workflows/cognitive-types-qualification.yml",
+        ".github/workflows/hnmf-qualification.yml",
+        "qualification/cognitive-types-v1/verify_candidate.py"
+      ],
+      "tests": [
+        "codex-rs/hepta-cognitive-types/tests/traceability.rs"
+      ],
+      "requiredEvidence": "current_exact_head_and_synthetic_merge"
+    }
+  ]
+}

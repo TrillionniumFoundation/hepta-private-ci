@@ -2,8 +2,8 @@
   "schema": "hepta.module-implementation-map.v3",
   "schemaVersion": 3,
   "sourceBase": {
-    "commit": "05b8bcdc02919ce10a8451d6402de8dd29d6e9ff",
-    "tree": "f9737e2d6c420d94b14aa3dcdb021e58d49ecfe7"
+    "commit": "f1d9fda55967a3c88ce856586ee91463f7333994",
+    "tree": "188800e6bd58cbebb9a086b6e7205e65763364cb"
   },
   "laneId": "LANE-A-FOUNDATION",
   "module": "kernel.authority",
@@ -234,11 +234,11 @@
     },
     {
       "path": "codex-rs/hepta-contracts",
-      "object": "ed5cc643157e33a323693954aab0cdc784be19ec"
+      "object": "3f552c0717abd32b34f1a03a3841373dc3864eec"
     },
     {
       "path": "codex-rs/hepta-contracts/src/authority_lease.rs",
-      "object": "bf09734f8900c1e95dfc550bf8766b0667a875c9"
+      "object": "e16eb4cee7f78e7a35244bef9f0f1cfecbfb476b"
     },
     {
       "path": "codex-rs/hepta-contracts/src/authority_trust.rs",
@@ -250,15 +250,15 @@
     },
     {
       "path": "codex-rs/hepta-contracts/src/final_use_control.rs",
-      "object": "15e3add3fa51932d7a2e243efd09982f27c9d4b8"
+      "object": "e710939305b7201b0adb174476996d13d4d1e549"
     },
     {
       "path": "codex-rs/hepta-contracts/src/final_use_store.rs",
-      "object": "3e5b562ce2ccb12cfff3023e16530c03ec0e8836"
+      "object": "aebb231f3d6331fb90db811aa97dcdbc9533e924"
     },
     {
       "path": "codex-rs/hepta-contracts/src/final_use_tests.rs",
-      "object": "924fc00d4cb7404e2361222000caa04a57d33cd5"
+      "object": "4abe82b93130d0ae7efa4e704863eda766339c76"
     },
     {
       "path": "codex-rs/hepta-contracts/src/verified_use_witness.rs",
@@ -279,6 +279,26 @@
     {
       "path": "docs/modules/kernel.authority/TECHNICAL.md",
       "object": "26694ea19236ed2260858c9c8ddd2bab8c420934"
+    }
+  ],
+  "historicalNavigationAnchors": [
+    {
+      "sourceBase": {
+        "commit": "1a5587fe7ed8dd1078ba35bc846492369abffd6d",
+        "tree": "46f353b60d6a29df1b9090070c23aa237f962883"
+      },
+      "observedAtHead": null,
+      "disposition": "historical_source_navigation_only",
+      "executionEvidenceTransferred": false
+    },
+    {
+      "sourceBase": {
+        "commit": "332b6a1c33167046c12d1ec41eba5b4b9b6abd4b",
+        "tree": "6893f0cf76e42444c7414b6fba740386bcafaebe"
+      },
+      "observedAtHead": null,
+      "disposition": "historical_source_navigation_only",
+      "executionEvidenceTransferred": false
     }
   ]
 }

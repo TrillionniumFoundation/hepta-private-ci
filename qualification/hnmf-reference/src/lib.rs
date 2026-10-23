@@ -916,9 +916,7 @@ impl ReferenceHnmfFabric {
                     }
                     let magnitude =
                         mul_ppm(source_activation, i64::from(synapse.weight_ppm).abs())?;
-                    let contribution = if synapse.relation.is_negative() {
-                        -magnitude
-                    } else if synapse.weight_ppm < 0 {
+                    let contribution = if synapse.relation.is_negative() || synapse.weight_ppm < 0 {
                         -magnitude
                     } else {
                         magnitude
@@ -1660,8 +1658,10 @@ mod tests {
 
     #[test]
     fn sparse_competition_is_bounded() {
-        let mut config = ReferenceFabricConfig::default();
-        config.maximum_active_per_population = 1;
+        let config = ReferenceFabricConfig {
+            maximum_active_per_population: 1,
+            ..ReferenceFabricConfig::default()
+        };
         let mut fabric = ReferenceHnmfFabric::new(1, config).unwrap();
         fabric
             .insert_event(event(1, 1, &[ReferenceModalityKind::Text], &["alpha"]))
@@ -2046,16 +2046,26 @@ mod tests {
             invalid.validate(),
             Err(ReferenceFabricError::AuthorityBoundary)
         );
-        assert!(!ONLINE_TOPOLOGY_ACTIVATION_ALLOWED);
-        assert!(!PRODUCTION_AUTHORITY);
-        assert!(!EXTERNAL_EFFECTS_ALLOWED);
-        assert!(!CURRENT_RUN_MUTATION_ALLOWED);
+        const {
+            assert!(!ONLINE_TOPOLOGY_ACTIVATION_ALLOWED);
+        }
+        const {
+            assert!(!PRODUCTION_AUTHORITY);
+        }
+        const {
+            assert!(!EXTERNAL_EFFECTS_ALLOWED);
+        }
+        const {
+            assert!(!CURRENT_RUN_MUTATION_ALLOWED);
+        }
     }
 
     #[test]
     fn hard_bounds_fail_closed() {
-        let mut config = ReferenceFabricConfig::default();
-        config.maximum_recurrent_steps = 5;
+        let config = ReferenceFabricConfig {
+            maximum_recurrent_steps: 5,
+            ..ReferenceFabricConfig::default()
+        };
         assert_eq!(
             ReferenceHnmfFabric::new(1, config),
             Err(ReferenceFabricError::BoundExceeded(
