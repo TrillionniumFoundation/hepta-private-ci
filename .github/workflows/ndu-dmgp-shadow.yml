@@ -34,6 +34,10 @@ jobs:
           assert report['real_decoder_observed'] is False
           assert report['independent_future_observed'] is False
           assert report['no_promotion_authority'] is True
+          assert report['training_episodes'] == 24
+          assert report['evaluation_episodes'] == 24
+          assert report['train_eval_episodes_disjoint'] is True
+          assert report['a2_fitted_train_only'] is True
           assert all(row['episodes'] == 24 for row in report['summary'].values())
           print('shadow_only=true; arms=6; matched_episodes=24; promotion=false')
           PY
