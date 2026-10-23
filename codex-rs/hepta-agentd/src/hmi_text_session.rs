@@ -140,21 +140,31 @@ fn submit(
             "signed input belongs to another attached owner/thread",
         ));
     }
-    let fence=requests.owner_admission_fence().map_err(invalid)?;
+    let fence = requests.owner_admission_fence().map_err(invalid)?;
     let context = json!({"deliveryId":delivery,"messageId":request.message_id,"threadId":request.body.thread_id,"text":request.body.text});
     emit(tx, json!({"type":"admissionPending","input":context}))?;
     Ok(Box::pin(async move {
-        let lookup=async {
-            let host=crate::authbus_ingress::attached(&state)?;
-            let id=delivery.parse().map_err(invalid)?;
+        let lookup = async {
+            let host = crate::authbus_ingress::attached(&state)?;
+            let id = delivery.parse().map_err(invalid)?;
             match host.evidence.authbus_delivery_status(id).await {
-                Ok(_)=>Ok(()), // Existing durable input never rearms presentation after reconnect.
-                Err(codex_hepta_evidence::AuthBusOutboxError::NotFound)=>requests.observe_owner_submission(fence,state.identity().spawn_generation,
-                    request.sequence,&format!("hepta.authbus:{delivery}"),&request.body.text).map_err(invalid),
-                Err(error)=>Err(invalid(error)),
+                Ok(_) => Ok(()), // Existing durable input never rearms presentation after reconnect.
+                Err(codex_hepta_evidence::AuthBusOutboxError::NotFound) => requests
+                    .observe_owner_submission(
+                        fence,
+                        state.identity().spawn_generation,
+                        request.sequence,
+                        &format!("hepta.authbus:{delivery}"),
+                        &request.body.text,
+                    )
+                    .map_err(invalid),
+                Err(error) => Err(invalid(error)),
             }
-        }.await;
-        if let Err(error)=lookup{return json!({"type":"inputError","input":context,"error":error.to_string()});}
+        }
+        .await;
+        if let Err(error) = lookup {
+            return json!({"type":"inputError","input":context,"error":error.to_string()});
+        }
         let result = tokio::time::timeout(
             Duration::from_secs(5),
             crate::authbus_ingress::submit(&state, request),

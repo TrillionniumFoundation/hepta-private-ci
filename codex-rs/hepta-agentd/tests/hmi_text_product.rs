@@ -317,21 +317,47 @@ async fn original_agentd_signed_hmi_streams_same_thread_deduplicates_and_reconne
     ensure!(thread.thread.turns[0].items.iter().any(|item|matches!(item,ThreadItem::UserMessage {client_id:Some(client_id),..} if client_id==&format!("hepta.authbus:{delivery}"))),"HMI used another Core identity instead of the original AuthBus delivery");
     // A duplicate on a new connection must not consume the next input slot.
     ui.send(json!({"type":"submit","request":request})).await?;
-    let recovered_duplicate=ui.until("admission").await?;
-    ensure!(recovered_duplicate["receipt"]["delivery_id"]==delivery);
-    ensure!(sends(&model).await==1);
-    let second=responses::mount_sse_once(&model,responses::sse(vec![responses::ev_assistant_message("hmi-second",ANSWER),responses::ev_completed("hmi-response-2")])).await;
-    ui.send(json!({"type":"submit","request":fixture.request(2)?})).await?;
-    let mut admitted=false;let mut completed=false;
-    while !admitted||!completed {let event=ui.next().await?;
-        ensure!(event["type"]!="inputError" && event["type"]!="sessionError","next input blocked after recovered duplicate: {event}");
-        admitted|=event["type"]=="admission";
-        if event["type"]=="output" && event["outcome"]["event"]["kind"]["type"]=="terminal" {
-            ensure!(event["outcome"]["event"]["kind"]["outcome"]["status"]=="completed","{event}");completed=true;
+    let recovered_duplicate = ui.until("admission").await?;
+    ensure!(recovered_duplicate["receipt"]["delivery_id"] == delivery);
+    ensure!(sends(&model).await == 1);
+    let second = responses::mount_sse_once(
+        &model,
+        responses::sse(vec![
+            responses::ev_assistant_message("hmi-second", ANSWER),
+            responses::ev_completed("hmi-response-2"),
+        ]),
+    )
+    .await;
+    ui.send(json!({"type":"submit","request":fixture.request(2)?}))
+        .await?;
+    let mut admitted = false;
+    let mut completed = false;
+    while !admitted || !completed {
+        let event = ui.next().await?;
+        ensure!(
+            event["type"] != "inputError" && event["type"] != "sessionError",
+            "next input blocked after recovered duplicate: {event}"
+        );
+        admitted |= event["type"] == "admission";
+        if event["type"] == "output" && event["outcome"]["event"]["kind"]["type"] == "terminal" {
+            ensure!(
+                event["outcome"]["event"]["kind"]["outcome"]["status"] == "completed",
+                "{event}"
+            );
+            completed = true;
         }
     }
-    ensure!(second.single_request().message_input_texts("user").iter().any(|text|text==INPUT));
-    ensure!(sends(&model).await==2,"new distinct input should be dispatched exactly once");
+    ensure!(
+        second
+            .single_request()
+            .message_input_texts("user")
+            .iter()
+            .any(|text| text == INPUT)
+    );
+    ensure!(
+        sends(&model).await == 2,
+        "new distinct input should be dispatched exactly once"
+    );
     ui.send(json!({"type":"stop"})).await?;
     let terminal = ui.until("sessionTerminal").await?;
     ensure!(terminal["error"].is_null());

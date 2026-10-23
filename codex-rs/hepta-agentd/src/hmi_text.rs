@@ -249,13 +249,19 @@ pub(crate) async fn run(
             writer_cancel.cancel();
             result
         };
-        let session=async {
-            let result=session::serve(&state,&active,&session_cancel,&mut read,&tx).await;
-            if let Err(error)=&result {let _=emit(&tx,json!({"type":"sessionError","error":error.to_string()}));}
-            drop(tx);result
+        let session = async {
+            let result = session::serve(&state, &active, &session_cancel, &mut read, &tx).await;
+            if let Err(error) = &result {
+                let _ = emit(
+                    &tx,
+                    json!({"type":"sessionError","error":error.to_string()}),
+                );
+            }
+            drop(tx);
+            result
         };
-        tokio::pin!(writer,session);
-        let result=tokio::select! {
+        tokio::pin!(writer, session);
+        let result = tokio::select! {
             result=&mut session=>{
                 if let other @ (Ok(Err(_))|Err(_))=tokio::time::timeout(Duration::from_secs(3),&mut writer).await {
                     eprintln!("HMI text writer ended without complete delivery: {other:?}");
