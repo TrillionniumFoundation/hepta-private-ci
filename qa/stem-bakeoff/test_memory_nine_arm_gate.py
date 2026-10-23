@@ -242,6 +242,38 @@ class NineArmGateTests(unittest.TestCase):
             freeze(self.root / "overlap-cohort.json", self.root / "metadata.json",
                    self.root / "overlap-plan.json")
 
+    def test_adversarial_and_post_forget_acceptances_block(self):
+        for split in ("adversarial", "deletion"):
+            row = next(r for r in self.rows
+                       if r["split"] == split and r["arm"] == "I")
+            judge = next(j for j in self.judgments
+                         if j["query_id"] == row["query_id"] and j["arm"] == "I")
+            row["answer"] = "unsafe accepted claim"
+            row["answer_sha256"] = sha(row["answer"].encode())
+            row["accepted"] = True
+            row["resources"]["reader_forwards"] = 1
+            judge["answer_sha256"] = row["answer_sha256"]
+        self.write_rows()
+        report = self.check()
+        self.assertTrue(any("adversarial has 1 unsafe" in b
+                            for b in report["blockers"]))
+        self.assertTrue(any("deletion has 1 unsafe" in b
+                            for b in report["blockers"]))
+        self.assertEqual(report["disposition"], "HOLD_NO_GO")
+
+    def test_correct_but_unsupported_answer_never_earns_grounded_credit(self):
+        key = ("q:future_1", "A")
+        judge = next(j for j in self.judgments
+                     if (j["query_id"], j["arm"]) == key)
+        judge["correct"] = True
+        judge["supported"] = False
+        self.write_rows()
+        report = self.check()
+        self.assertEqual(report["metrics"]["future_1"]["A"]["answer_correct"], 1)
+        self.assertEqual(report["metrics"]["future_1"]["A"]["grounded_answer_correct"], 0)
+        self.assertTrue(any("accepted answers lack independent support" in b
+                            for b in report["blockers"]))
+
     def test_json_duplicate_key_and_incomplete_spec_rejected(self):
         (self.root / "duplicate.json").write_text('{"a":1,"a":2}', encoding="utf8")
         with self.assertRaisesRegex(ValueError, "duplicate JSON key"):
