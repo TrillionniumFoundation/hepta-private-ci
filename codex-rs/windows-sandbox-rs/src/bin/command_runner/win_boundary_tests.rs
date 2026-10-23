@@ -30,6 +30,8 @@ fn standalone_runner_refuses_before_token_preparation_or_child_spawn() -> Result
             codex_home: home.clone(),
             real_codex_home: home.clone(),
             // The guard must run even before SID parsing can reject this request.
+            filesystem_roles: None,
+            root_resolution: None,
             cap_sids: vec!["not-a-valid-sid".to_string()],
             network_proxy_restricting_sid: None,
             timeout_ms: Some(1_000),

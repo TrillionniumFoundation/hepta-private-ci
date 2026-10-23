@@ -156,6 +156,7 @@ pub(crate) async fn spawn_windows_sandbox_session_elevated_for_permission_profil
         proxy_settings_mode,
     )?;
 
+    let root_resolution = elevated.filesystem_roles.root_resolution_context().cloned();
     let sandbox_creds = elevated.sandbox_creds;
     let request = RunnerTransportRequest {
         permissions,
@@ -172,6 +173,12 @@ pub(crate) async fn spawn_windows_sandbox_session_elevated_for_permission_profil
             codex_home: elevated.sandbox_base,
             real_codex_home: codex_home.to_path_buf(),
             cap_sids: elevated.cap_sids,
+            filesystem_roles: Some(
+                elevated
+                    .filesystem_roles
+                    .with_network_route(network_proxy_restricting_sid.clone())?,
+            ),
+            root_resolution,
             network_proxy_restricting_sid,
             timeout_ms,
             tty,

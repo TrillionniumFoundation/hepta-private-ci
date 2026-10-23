@@ -42,6 +42,86 @@ pub enum FilesystemCapabilityRole {
     Write,
 }
 
+/// Original user's path-selection context, captured by the real parent producer.
+/// This is public wire data, never prepared ACL or sandbox qualification.
+#[derive(Clone, Debug, Serialize, Deserialize, PartialEq, Eq)]
+#[serde(deny_unknown_fields)]
+pub struct RootResolutionContext {
+    pub(crate) profile: Option<String>,
+    pub(crate) temp: std::collections::BTreeMap<String, String>,
+}
+
+impl RootResolutionContext {
+    fn validate(&self) -> Result<()> {
+        ensure!(
+            self.profile
+                .as_ref()
+                .is_none_or(|path| path.len() <= MAX_PATH_BYTES),
+            "profile context exceeds bound"
+        );
+        ensure!(
+            self.temp.len() <= 2
+                && self
+                    .temp
+                    .iter()
+                    .all(|(key, value)| matches!(key.as_str(), "TEMP" | "TMP")
+                        && value.len() <= MAX_PATH_BYTES),
+            "temporary root context exceeds bound"
+        );
+        Ok(())
+    }
+
+    /// Applies only absent TEMP/TMP selections; rejects changed explicit inputs.
+    pub fn request_environment(
+        &self,
+        environment: &std::collections::HashMap<String, String>,
+    ) -> Result<std::collections::HashMap<String, String>> {
+        self.validate()?;
+        let mut resolved = environment.clone();
+        for key in ["TEMP", "TMP"] {
+            ensure!(
+                environment
+                    .get(key)
+                    .is_none_or(|value| self.temp.get(key) == Some(value)),
+                "request temporary path differs from original root context"
+            );
+            if !resolved.contains_key(key) {
+                // An explicit empty selection prevents downstream ambient fallback.
+                resolved.insert(
+                    key.to_owned(),
+                    self.temp.get(key).cloned().unwrap_or_default(),
+                );
+            }
+        }
+        Ok(resolved)
+    }
+}
+
+/// Bounded request inputs paired with the parent's concrete selected roots.
+#[derive(Clone, Debug, Serialize, Deserialize, PartialEq, Eq)]
+#[serde(deny_unknown_fields)]
+pub(crate) struct RootRequestBinding {
+    pub(crate) permissions: serde_json::Value,
+    pub(crate) cwd: String,
+    pub(crate) codex_home: String,
+    pub(crate) context: RootResolutionContext,
+}
+
+impl RootRequestBinding {
+    fn validate(&self) -> Result<()> {
+        self.context.validate()?;
+        ensure!(
+            self.cwd.len() <= MAX_PATH_BYTES && self.codex_home.len() <= MAX_PATH_BYTES,
+            "root request path exceeds bound"
+        );
+        ensure!(
+            serde_json::to_vec(self)?.len() <= 16 * 1024,
+            "root request context exceeds byte bound"
+        );
+        Ok(())
+    }
+}
+
 /// A bounded, versioned declaration passed to setup and runner.
 ///
 /// Validation binds identities to the current registry; it does not produce an
@@ -59,6 +139,7 @@ pub struct FilesystemCapabilityPlan {
     desktop: DesktopRole,
     child_objects: ChildObjectRole,
     network_route: Option<NetworkRouteCapability>,
+    request: Option<RootRequestBinding>,
 }
 
 fn bounded_active_roots<'de, D: serde::Deserializer<'de>>(
@@ -130,9 +211,30 @@ impl FilesystemCapabilityPlan {
             desktop: DesktopRole::NotPrepared,
             child_objects: ChildObjectRole::PreserveBaseRequired,
             network_route: None,
+            request: None,
         };
         plan.validate_registry(caps)?;
         Ok(plan)
+    }
+
+    pub(crate) fn bind_request(mut self, request: RootRequestBinding) -> Result<Self> {
+        request.validate()?;
+        self.request = Some(request);
+        Ok(self)
+    }
+
+    pub(crate) fn validate_request(&self, request: &RootRequestBinding) -> Result<()> {
+        request.validate()?;
+        ensure!(
+            self.request.as_ref() == Some(request),
+            "filesystem declaration differs from actual request context"
+        );
+        Ok(())
+    }
+
+    /// Parent root-resolution declaration, independent of the runner's user.
+    pub fn root_resolution_context(&self) -> Option<&RootResolutionContext> {
+        self.request.as_ref().map(|request| &request.context)
     }
 
     /// Adds a separate network-route declaration, never a filesystem identity.
@@ -147,6 +249,9 @@ impl FilesystemCapabilityPlan {
 
     pub(crate) fn validate_registry(&self, caps: &CapSids) -> Result<()> {
         caps.validate()?;
+        if let Some(request) = &self.request {
+            request.validate()?;
+        }
         ensure!(
             self.version == PLAN_VERSION && self.registry_generation == caps.generation,
             "stale filesystem capability plan"
@@ -209,6 +314,7 @@ impl FilesystemCapabilityPlan {
             && self.write == other.write
             && self.desktop == other.desktop
             && self.child_objects == other.child_objects
+            && self.request == other.request
     }
 
     pub(crate) fn matches_roots(&self, cwd: &str, read: &[String], write: &[String]) -> bool {

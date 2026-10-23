@@ -31,7 +31,7 @@ async fn reports_refresh_failure_after_setup_completed() {
     let version = codex_windows_sandbox::SETUP_VERSION;
     for (path, contents) in [
         (
-            ".sandbox/setup_marker.json",
+            codex_windows_sandbox::setup_marker_path(home.path()),
             serde_json::json!({
                 "version": version,
                 "offline_username": codex_windows_sandbox::OFFLINE_USERNAME,
@@ -39,7 +39,7 @@ async fn reports_refresh_failure_after_setup_completed() {
             }),
         ),
         (
-            ".sandbox-secrets/sandbox_users.json",
+            codex_windows_sandbox::sandbox_users_path(home.path()),
             serde_json::json!({
                 "version": version,
                 "offline": {
@@ -53,7 +53,6 @@ async fn reports_refresh_failure_after_setup_completed() {
             }),
         ),
     ] {
-        let path = home.path().join(path);
         std::fs::create_dir_all(path.parent().expect("fixture parent"))
             .expect("create fixture directory");
         std::fs::write(path, contents.to_string()).expect("write sandbox fixture");

@@ -26,7 +26,7 @@ use std::path::PathBuf;
 const MAX_FRAME_LEN: usize = 8 * 1024 * 1024;
 
 /// Protocol version shared by the parent process and elevated command runner.
-pub const IPC_PROTOCOL_VERSION: u8 = 5;
+pub const IPC_PROTOCOL_VERSION: u8 = 6;
 
 /// Length-prefixed, JSON-encoded frame.
 #[derive(Debug, Serialize, Deserialize, Clone)]
@@ -65,6 +65,8 @@ pub struct SpawnRequest {
     pub codex_home: PathBuf,
     pub real_codex_home: PathBuf,
     pub cap_sids: Vec<String>,
+    pub filesystem_roles: Option<crate::FilesystemCapabilityPlan>,
+    pub root_resolution: Option<crate::RootResolutionContext>,
     /// Optional managed-network identity added only to the child's restricting SID set.
     #[serde(default)]
     pub network_proxy_restricting_sid: Option<String>,
@@ -176,6 +178,10 @@ pub fn read_frame<R: Read>(mut reader: R) -> Result<Option<FramedMessage>> {
     let mut payload = vec![0u8; len];
     reader.read_exact(&mut payload)?;
     let msg: FramedMessage = serde_json::from_slice(&payload)?;
+    anyhow::ensure!(
+        msg.version == IPC_PROTOCOL_VERSION,
+        "unsupported IPC frame version"
+    );
     Ok(Some(msg))
 }
 
@@ -226,6 +232,8 @@ mod tests {
                     workspace_roots: workspace_roots.clone(),
                     codex_home: PathBuf::from(r"C:\codex"),
                     real_codex_home: PathBuf::from(r"C:\Users\codex"),
+                    filesystem_roles: None,
+                    root_resolution: None,
                     cap_sids: vec!["S-1-15-3-1024-1".to_string()],
                     network_proxy_restricting_sid: Some("S-1-5-21-100-200-300-400".to_string()),
                     timeout_ms: Some(1000),
@@ -283,3 +291,7 @@ mod tests {
         );
     }
 }
+
+#[cfg(test)]
+#[path = "ipc_role_version_tests.rs"]
+mod role_version_tests;

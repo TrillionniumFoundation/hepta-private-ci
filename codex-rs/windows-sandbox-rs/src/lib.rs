@@ -187,6 +187,8 @@ pub use capability_plan::FilesystemCapabilityPlan;
 #[cfg(target_os = "windows")]
 pub use capability_plan::FilesystemCapabilityRole;
 #[cfg(target_os = "windows")]
+pub use capability_plan::RootResolutionContext;
+#[cfg(target_os = "windows")]
 pub use conpty::ConptyInstance;
 #[cfg(target_os = "windows")]
 pub use conpty::spawn_conpty_process_as_user;
@@ -312,6 +314,14 @@ pub use setup::sandbox_bin_dir;
 pub use setup::sandbox_dir;
 #[cfg(target_os = "windows")]
 pub use setup::sandbox_secrets_dir;
+#[cfg(target_os = "windows")]
+pub use setup::sandbox_users_path;
+#[cfg(target_os = "windows")]
+pub use setup::setup_marker_path;
+#[cfg(target_os = "windows")]
+pub use setup::validate_filesystem_plan_for_request;
+#[cfg(target_os = "windows")]
+pub use setup::validate_filesystem_plan_marker;
 #[cfg(target_os = "windows")]
 pub use setup_error::SetupErrorCode;
 #[cfg(target_os = "windows")]

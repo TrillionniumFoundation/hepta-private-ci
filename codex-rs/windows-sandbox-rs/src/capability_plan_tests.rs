@@ -173,3 +173,36 @@ fn a_valid_plan_does_not_match_another_requests_cwd_or_roots() {
     *roots = vec![root; MAX_ACTIVE_ROOTS + 1];
     assert!(serde_json::from_value::<FilesystemCapabilityPlan>(wire).is_err());
 }
+
+#[test]
+fn original_root_context_is_stable_across_runner_users_and_rejects_changes() {
+    let context = RootResolutionContext {
+        profile: Some("profile-a".into()),
+        temp: [("TEMP".into(), "temp-a".into())].into(),
+    };
+    let child_environment = HashMap::from([("USERPROFILE".into(), "profile-b".into())]);
+    let resolved = context.request_environment(&child_environment).unwrap();
+    assert_eq!(
+        (resolved["TEMP"].as_str(), resolved["TMP"].as_str()),
+        ("temp-a", "")
+    );
+    let binding = RootRequestBinding {
+        permissions: serde_json::json!({"kind":"read-only"}),
+        cwd: "cwd".into(),
+        codex_home: "home".into(),
+        context: context.clone(),
+    };
+    let plan = FilesystemCapabilityPlan::declare(&registry(), "cwd".into(), vec![], vec![])
+        .unwrap()
+        .bind_request(binding.clone())
+        .unwrap();
+    plan.validate_request(&binding).unwrap();
+    let mut different = binding;
+    different.context.profile = Some("profile-b".into());
+    assert!(plan.validate_request(&different).is_err());
+    assert!(
+        context
+            .request_environment(&HashMap::from([("TEMP".into(), "temp-b".into())]))
+            .is_err()
+    );
+}

@@ -85,6 +85,7 @@ use sandbox_users::sid_bytes_to_psid;
 #[derive(Debug, Clone, Deserialize, Serialize)]
 struct Payload {
     version: u32,
+    filesystem_roles: Option<codex_windows_sandbox::FilesystemCapabilityPlan>,
     offline_username: String,
     online_username: String,
     codex_home: PathBuf,
@@ -507,6 +508,24 @@ fn real_main() -> Result<()> {
 }
 
 fn run_setup(payload: &Payload, log: &mut dyn Write, sbx_dir: &Path) -> Result<()> {
+    codex_windows_sandbox::require_fresh_filesystem_namespace(&payload.codex_home)?;
+    if payload.mode != SetupMode::ProvisionOnly {
+        let roles = payload
+            .filesystem_roles
+            .as_ref()
+            .context("missing versioned filesystem role plan")?;
+        codex_windows_sandbox::validate_filesystem_capability_plan_roots(
+            &payload.codex_home,
+            &payload.command_cwd,
+            &payload.read_roots,
+            &payload.write_roots,
+            roles,
+        )?;
+        if payload.refresh_only {
+            codex_windows_sandbox::validate_filesystem_plan_marker(&payload.codex_home, roles)?;
+        }
+    }
+
     let writes_setup_marker = !payload.refresh_only && payload.mode != SetupMode::ReadAclsOnly;
     if writes_setup_marker {
         prepare_setup_marker(&payload.codex_home, &payload.real_user)?;
@@ -523,6 +542,7 @@ fn run_setup(payload: &Payload, log: &mut dyn Write, sbx_dir: &Path) -> Result<(
             &payload.online_username,
             &payload.proxy_ports,
             payload.allow_local_binding,
+            payload.filesystem_roles.as_ref(),
         )?;
     }
     Ok(())
@@ -697,10 +717,6 @@ fn lock_persistent_sandbox_dirs(payload: &Payload, sandbox_group_sid: &[u8]) -> 
             ),
         ))
     })?;
-    let legacy_users = sandbox_dir(&payload.codex_home).join("sandbox_users.json");
-    if legacy_users.exists() {
-        let _ = std::fs::remove_file(&legacy_users);
-    }
     Ok(())
 }
 

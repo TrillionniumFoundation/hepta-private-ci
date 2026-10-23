@@ -4,6 +4,7 @@ use std::collections::BTreeSet;
 use std::collections::HashMap;
 use std::collections::HashSet;
 use std::ffi::c_void;
+use std::os::windows::fs::MetadataExt;
 use std::os::windows::process::CommandExt;
 use std::path::Path;
 use std::path::PathBuf;
@@ -46,7 +47,7 @@ use windows_sys::Win32::Security::CheckTokenMembership;
 use windows_sys::Win32::Security::FreeSid;
 use windows_sys::Win32::Security::SECURITY_NT_AUTHORITY;
 
-pub const SETUP_VERSION: u32 = 5;
+pub const SETUP_VERSION: u32 = 6;
 pub const OFFLINE_USERNAME: &str = "CodexSandboxOffline";
 pub const ONLINE_USERNAME: &str = "CodexSandboxOnline";
 const ERROR_CANCELLED: u32 = 1223;
@@ -194,11 +195,11 @@ pub fn sandbox_secrets_dir(codex_home: &Path) -> PathBuf {
 }
 
 pub fn setup_marker_path(codex_home: &Path) -> PathBuf {
-    sandbox_dir(codex_home).join("setup_marker.json")
+    sandbox_dir(codex_home).join("setup_marker.v6.json")
 }
 
 pub fn sandbox_users_path(codex_home: &Path) -> PathBuf {
-    sandbox_secrets_dir(codex_home).join("sandbox_users.json")
+    sandbox_secrets_dir(codex_home).join("sandbox_users.v6.json")
 }
 
 pub struct SandboxSetupRequest<'a> {
@@ -334,6 +335,11 @@ fn run_setup_refresh_inner(
         offline_proxy_settings_for_request(&request, offline_proxy_settings_override);
     let payload = ElevationPayload {
         version: SETUP_VERSION,
+        filesystem_roles: Some(declared_plan_for_roots(
+            &request,
+            &read_roots,
+            &write_roots,
+        )?),
         offline_username: OFFLINE_USERNAME.to_string(),
         online_username: ONLINE_USERNAME.to_string(),
         codex_home: request.codex_home.to_path_buf(),
@@ -356,8 +362,22 @@ fn run_setup_refresh_inner(
     })
 }
 
+fn validate_setup_commandline(executable: &Path, payload: &str) -> Result<()> {
+    anyhow::ensure!(
+        payload.len() <= 16 * 1024 && payload.is_ascii(),
+        "encoded setup payload exceeds bounded command-line transport"
+    );
+    let command = format!("\"{}\" {payload}", executable.display());
+    anyhow::ensure!(
+        command.encode_utf16().count() < 32767,
+        "setup helper command line exceeds UTF-16 capacity"
+    );
+    Ok(())
+}
+
 fn run_setup_refresh_payload(b64: &str, codex_home: &Path) -> Result<()> {
     let exe = find_setup_exe();
+    validate_setup_commandline(&exe, b64)?;
     let sbx_dir = sandbox_dir(codex_home);
     let log_path = current_log_file_path(&sbx_dir);
     let cleared_report = match clear_setup_error_report(codex_home) {
@@ -419,6 +439,7 @@ fn run_setup_refresh_payload(b64: &str, codex_home: &Path) -> Result<()> {
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
 pub struct SetupMarker {
     pub version: u32,
+    pub filesystem_roles: Option<crate::FilesystemCapabilityPlan>,
     pub offline_username: String,
     pub online_username: String,
     #[serde(default)]
@@ -669,6 +690,7 @@ pub(crate) fn effective_write_roots_for_permissions(
 #[derive(Serialize)]
 struct ElevationPayload {
     version: u32,
+    filesystem_roles: Option<crate::FilesystemCapabilityPlan>,
     offline_username: String,
     online_username: String,
     codex_home: PathBuf,
@@ -922,6 +944,7 @@ fn run_setup_exe_payload(
     use windows_sys::Win32::UI::Shell::SHELLEXECUTEINFOW;
     use windows_sys::Win32::UI::Shell::ShellExecuteExW;
     let exe = find_setup_exe();
+    validate_setup_commandline(&exe, payload_b64)?;
     let cleared_report = match clear_setup_error_report(codex_home) {
         Ok(()) => true,
         Err(err) => {
@@ -1058,6 +1081,11 @@ fn run_elevated_setup_inner(
         offline_proxy_settings_for_request(&request, offline_proxy_settings_override);
     let payload = ElevationPayload {
         version: SETUP_VERSION,
+        filesystem_roles: Some(declared_plan_for_roots(
+            &request,
+            &read_roots,
+            &write_roots,
+        )?),
         offline_username: OFFLINE_USERNAME.to_string(),
         online_username: ONLINE_USERNAME.to_string(),
         codex_home: request.codex_home.to_path_buf(),
@@ -1125,6 +1153,7 @@ pub fn run_elevated_provisioning_setup(
     }
     let payload = ElevationPayload {
         version: SETUP_VERSION,
+        filesystem_roles: None,
         offline_username: OFFLINE_USERNAME.to_string(),
         online_username: ONLINE_USERNAME.to_string(),
         codex_home: codex_home.to_path_buf(),
@@ -1141,6 +1170,98 @@ pub fn run_elevated_provisioning_setup(
         refresh_only: false,
     };
     run_setup_exe(&payload, /*needs_elevation*/ false, codex_home)
+}
+
+fn request_binding(
+    request: &SandboxSetupRequest<'_>,
+    context: &crate::RootResolutionContext,
+) -> Result<crate::capability_plan::RootRequestBinding> {
+    // Compare caller-supplied TEMP/TMP with the explicit parent context; no
+    // process environment or profile enumeration occurs in the runner.
+    context.request_environment(request.env_map)?;
+    Ok(crate::capability_plan::RootRequestBinding {
+        permissions: serde_json::to_value(request.permissions)?,
+        cwd: canonical_path_key(request.command_cwd),
+        codex_home: canonical_path_key(request.codex_home),
+        context: context.clone(),
+    })
+}
+
+fn declared_plan_for_roots(
+    request: &SandboxSetupRequest<'_>,
+    read: &[PathBuf],
+    write: &[PathBuf],
+) -> Result<crate::FilesystemCapabilityPlan> {
+    let context = crate::RootResolutionContext {
+        profile: std::env::var_os("USERPROFILE")
+            .map(PathBuf::from)
+            .as_deref()
+            .map(canonical_path_key),
+        temp: ["TEMP", "TMP"]
+            .into_iter()
+            .filter_map(|key| {
+                request
+                    .env_map
+                    .get(key)
+                    .cloned()
+                    .or_else(|| std::env::var(key).ok())
+                    .map(|value| (key.to_owned(), value))
+            })
+            .collect(),
+    };
+    crate::cap::filesystem_capability_plan(request.codex_home, request.command_cwd, read, write)?
+        .bind_request(request_binding(request, &context)?)
+}
+
+pub(crate) fn capability_plan_for_setup(
+    request: SandboxSetupRequest<'_>,
+    overrides: SetupRootOverrides,
+) -> Result<crate::FilesystemCapabilityPlan> {
+    let (read, write) = build_payload_roots(&request, &overrides);
+    let plan = declared_plan_for_roots(&request, &read, &write)?;
+    validate_filesystem_plan_marker(request.codex_home, &plan)?;
+    Ok(plan)
+}
+
+/// Binds the actual request to the parent's bounded root selection context.
+/// The runner never re-enumerates the original user's profile under another user.
+pub fn validate_filesystem_plan_for_request(
+    request: SandboxSetupRequest<'_>,
+    context: &crate::RootResolutionContext,
+    plan: &crate::FilesystemCapabilityPlan,
+) -> Result<()> {
+    crate::cap::validate_filesystem_capability_plan(request.codex_home, plan)?;
+    plan.validate_request(&request_binding(&request, context)?)?;
+    validate_filesystem_plan_marker(request.codex_home, plan)
+}
+
+/// Checks a bounded setup declaration, never prepared ACL or token readiness.
+pub fn validate_filesystem_plan_marker(
+    codex_home: &Path,
+    plan: &crate::FilesystemCapabilityPlan,
+) -> Result<()> {
+    crate::cap::validate_filesystem_capability_plan(codex_home, plan)?;
+    let path = setup_marker_path(codex_home);
+    let metadata = std::fs::symlink_metadata(&path)?;
+    anyhow::ensure!(
+        metadata.is_file()
+            && metadata.file_attributes()
+                & windows_sys::Win32::Storage::FileSystem::FILE_ATTRIBUTE_REPARSE_POINT
+                == 0,
+        "setup declaration marker is not a plain file"
+    );
+    let bytes = crate::identity::read_state_record(&path)?
+        .ok_or_else(|| anyhow!("missing filesystem declaration marker"))?;
+    let marker: SetupMarker = serde_json::from_slice(&bytes)?;
+    anyhow::ensure!(
+        marker.version_matches()
+            && marker
+                .filesystem_roles
+                .as_ref()
+                .is_some_and(|stored| stored.same_filesystem_declaration(plan)),
+        "setup marker lacks the same filesystem declaration; refusing automatic replacement"
+    );
+    Ok(())
 }
 
 fn build_payload_roots(
@@ -1839,6 +1960,7 @@ mod tests {
     fn setup_marker_request_mismatch_reason_ignores_proxy_drift_for_online_identity() {
         let marker = super::SetupMarker {
             version: super::SETUP_VERSION,
+            filesystem_roles: None,
             offline_username: "offline".to_string(),
             online_username: "online".to_string(),
             created_at: None,
@@ -1860,6 +1982,7 @@ mod tests {
     fn setup_marker_request_mismatch_reason_reports_offline_firewall_drift() {
         let marker = super::SetupMarker {
             version: super::SETUP_VERSION,
+            filesystem_roles: None,
             offline_username: "offline".to_string(),
             online_username: "online".to_string(),
             created_at: None,
@@ -2344,3 +2467,7 @@ mod tests {
         );
     }
 }
+
+#[cfg(test)]
+#[path = "setup_role_tests.rs"]
+mod role_tests;

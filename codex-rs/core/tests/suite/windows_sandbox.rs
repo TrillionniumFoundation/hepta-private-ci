@@ -281,7 +281,7 @@ async fn windows_elevated_enforces_deny_read_and_protects_setup_marker() -> anyh
     let bundled_skill_dir = user_profile.path().join(".codex/plugins/cache");
     std::fs::create_dir_all(&bundled_skill_dir)?;
     let bundled_skill = bundled_skill_dir.join("SKILL.md");
-    let setup_marker = codex_home.path().join(".sandbox").join("setup_marker.json");
+    let setup_marker = codex_windows_sandbox::setup_marker_path(codex_home.path());
     std::fs::write(&glob_secret, "glob secret\n")?;
     std::fs::write(&public, "public ok\n")?;
     std::fs::write(&bundled_skill, "bundled skill ok\n")?;

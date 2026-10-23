@@ -75,6 +75,8 @@ fn retry_uses_original_unified_exec_request_and_stops_after_second_failure() {
             workspace_roots: vec![workspace_root],
             codex_home: PathBuf::from(r"C:\Users\codex\.sandbox"),
             real_codex_home: PathBuf::from(r"C:\Users\codex"),
+            filesystem_roles: None,
+            root_resolution: None,
             cap_sids: vec!["S-1-15-3-1024-1".to_string()],
             network_proxy_restricting_sid: Some("S-1-5-21-100-200-300-400".to_string()),
             timeout_ms: Some(5_000),

@@ -393,6 +393,7 @@ struct SandboxUsersFile {
 #[derive(Serialize)]
 struct SetupMarker {
     version: u32,
+    filesystem_roles: Option<codex_windows_sandbox::FilesystemCapabilityPlan>,
     offline_username: String,
     online_username: String,
     created_at: String,
@@ -442,7 +443,7 @@ fn write_secrets(
             password: BASE64.encode(online_blob),
         },
     };
-    let users_path = secrets_dir.join("sandbox_users.json");
+    let users_path = secrets_dir.join("sandbox_users.v6.json");
     let users_json = serde_json::to_vec_pretty(&users).map_err(|err| {
         anyhow::Error::new(SetupFailure::new(
             SetupErrorCode::HelperUsersFileWriteFailed,
@@ -466,20 +467,8 @@ fn write_secrets(
 // modify, or replace it. Once every setup step succeeds, `commit_setup_marker` writes the valid
 // marker contents without changing the file's ACL.
 pub(super) fn prepare_setup_marker(codex_home: &Path, real_user: &str) -> Result<()> {
-    let marker_path = sandbox_dir(codex_home).join("setup_marker.json");
-    match std::fs::remove_file(&marker_path) {
-        Ok(()) => {}
-        Err(err) if err.kind() == std::io::ErrorKind::NotFound => {}
-        Err(err) => {
-            return Err(anyhow::Error::new(SetupFailure::new(
-                SetupErrorCode::HelperSetupMarkerWriteFailed,
-                format!(
-                    "remove setup marker file {} failed: {err}",
-                    marker_path.display()
-                ),
-            )));
-        }
-    }
+    let marker_path = sandbox_dir(codex_home).join("setup_marker.v6.json");
+    // CREATE_NEW below preserves every existing valid or uncertain marker.
 
     let real_user_sid = resolve_sid(real_user)
         .and_then(|sid| string_from_sid_bytes(&sid).map_err(anyhow::Error::msg))
@@ -554,9 +543,11 @@ pub(super) fn commit_setup_marker(
     online_user: &str,
     proxy_ports: &[u16],
     allow_local_binding: bool,
+    filesystem_roles: Option<&codex_windows_sandbox::FilesystemCapabilityPlan>,
 ) -> Result<()> {
     let marker = SetupMarker {
         version: SETUP_VERSION,
+        filesystem_roles: filesystem_roles.cloned(),
         offline_username: offline_user.to_string(),
         online_username: online_user.to_string(),
         created_at: chrono::Utc::now().to_rfc3339(),
@@ -565,7 +556,7 @@ pub(super) fn commit_setup_marker(
         read_roots: Vec::new(),
         write_roots: Vec::new(),
     };
-    let marker_path = sandbox_dir(codex_home).join("setup_marker.json");
+    let marker_path = sandbox_dir(codex_home).join("setup_marker.v6.json");
     let marker_json = serde_json::to_vec_pretty(&marker).map_err(|err| {
         anyhow::Error::new(SetupFailure::new(
             SetupErrorCode::HelperSetupMarkerWriteFailed,
