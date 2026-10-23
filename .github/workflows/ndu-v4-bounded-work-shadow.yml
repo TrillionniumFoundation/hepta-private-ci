@@ -1,0 +1,25 @@
+name: NDU v4 bounded solver regression (research only)
+on:
+  push:
+    branches:
+      - 'fix/ndu-v4-bounded-solver-cache-20261023'
+    paths:
+      - 'experiments/multimodal_output_portfolio/v4/**'
+      - '.github/workflows/ndu-v4-bounded-work-shadow.yml'
+  pull_request:
+    paths:
+      - 'experiments/multimodal_output_portfolio/v4/**'
+      - '.github/workflows/ndu-v4-bounded-work-shadow.yml'
+permissions:
+  contents: read
+jobs:
+  bounded-solver:
+    runs-on: ubuntu-slim
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+      - name: Run all finite portfolio and adversarial tests (source-only)
+        working-directory: experiments/multimodal_output_portfolio/v4
+        run: |
+          python3 -m unittest discover -v -p "test_*.py"
+          python3 -m compileall -q portfolio.py counterfactual_audit.py information_acquisition.py test_*.py
