@@ -173,7 +173,7 @@ jobs:
             'https://raw.githubusercontent.com/snap-research/locomo/3eb6f2c585f5e1699204e3c3bdf7adc5c28cb376/data/locomo10.json' \
             --output "$RUNNER_TEMP/original.json"
           printf '%s  %s\n' \
-            '79fa87e90f04081343b8c8debecb80a9a6842b76a7aa537dc9df651ea698ff4' \
+            '79fa87e90f04081343b8c8debecb80a9a6842b76a7aa537dc9fdf651ea698ff4' \
             "$RUNNER_TEMP/original.json" | sha256sum --check --status
           python3 qa/stem-bakeoff/memory_hybrid_b_physical.py audit \
             --source "$RUNNER_TEMP/original.json" \
@@ -195,3 +195,4 @@ jobs:
           path: ${{ runner.temp }}/independent-audit.json
           if-no-files-found: error
           retention-days: 30
+
