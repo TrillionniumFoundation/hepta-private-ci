@@ -133,6 +133,10 @@ Use group-macro **strict task success** with paired whole-source-group
 resampling, descriptive 95% bootstrap intervals, one-sided paired sign-flip
 randomization tests, and Holm family-wise adjustment across **all eight**
 predeclared evaluation contrasts. No randomization over individual questions.
+The reviewer also computes I--B/C/H paired comparisons in both future windows
+and OOD, requires no negative group-macro delta in any of those nine probes,
+and blocks pooled gains that hide multi-hop or unanswerable-abstention harm vs
+B/C. Such guardrails cannot be retuned from the future holdouts.
 The example V1 admission requires at least 30 independent source groups in the
 evaluation window **and each** of two new future windows, an ex-ante minimum
 absolute lift (for example 0.03), and no unreported safety/abstention/OOD
