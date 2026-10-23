@@ -1,6 +1,69 @@
-//! Original signed admission, replay and publication before execution.
+//! Original publication path shared by statically selected execution profiles.
+//!
+//! Static selection lets a finite Organ reuse admission without linking the
+//! model/App Server execution branch. It does not select an effect owner or
+//! change replay, generation, signature, publication or Notes operation checks.
 
 use super::*;
+
+/// An internal composition decision, never supplied in an IPC request.
+trait ObjectiveExecutionProfile {
+    fn execute<'a>(
+        agentd: &'a AgentdState,
+        record: &'a RunStartRecordV1,
+    ) -> impl std::future::Future<Output = Result<&'static str, AgentdError>> + Send + 'a;
+}
+
+struct FullObjectiveExecution;
+#[cfg(target_os = "linux")]
+struct FiniteNotesExecution;
+
+impl ObjectiveExecutionProfile for FullObjectiveExecution {
+    async fn execute<'a>(
+        agentd: &'a AgentdState,
+        record: &'a RunStartRecordV1,
+    ) -> Result<&'static str, AgentdError> {
+        let disposition = match record.disposition {
+            RunStartObjectiveDispositionV1::Compiled => {
+                match agentd.start_canonical_intelligence(record).await? {
+                    Some(crate::AgentdIntelligenceAdmittedOutcomeV1::Ready { .. }) => {
+                        "canonical_ready"
+                    }
+                    Some(crate::AgentdIntelligenceAdmittedOutcomeV1::Abstained) => {
+                        "canonical_abstained"
+                    }
+                    Some(crate::AgentdIntelligenceAdmittedOutcomeV1::SlowPath) => {
+                        "canonical_slow_path"
+                    }
+                    None => {
+                        agentd.start_current_run_start_record(record)?;
+                        agentd.execute_notes_objective(record).await?;
+                        "compiled"
+                    }
+                }
+            }
+            RunStartObjectiveDispositionV1::ExplicitAbstain => "explicit_abstain",
+        };
+        Ok(disposition)
+    }
+}
+
+#[cfg(target_os = "linux")]
+impl ObjectiveExecutionProfile for FiniteNotesExecution {
+    async fn execute<'a>(
+        agentd: &'a AgentdState,
+        record: &'a RunStartRecordV1,
+    ) -> Result<&'static str, AgentdError> {
+        match record.disposition {
+            RunStartObjectiveDispositionV1::Compiled => {
+                agentd.start_current_run_start_record(record)?;
+                agentd.execute_notes_objective(record).await?;
+                Ok("compiled")
+            }
+            RunStartObjectiveDispositionV1::ExplicitAbstain => Ok("explicit_abstain"),
+        }
+    }
+}
 
 impl ObjectiveRuntimeHost {
     pub(crate) async fn submit(
@@ -9,7 +72,37 @@ impl ObjectiveRuntimeHost {
         request: AuthBusObjectiveIngress,
         current_generation: u64,
     ) -> Result<ObjectiveStartResult, AgentdError> {
-        authbus_ingress::require_ready(agentd)?;
+        self.submit_for::<FullObjectiveExecution>(agentd, request, current_generation)
+            .await
+    }
+
+    #[cfg(target_os = "linux")]
+    pub(crate) async fn submit_notes(
+        &self,
+        agentd: &AgentdState,
+        request: AuthBusObjectiveIngress,
+        current_generation: u64,
+    ) -> Result<ObjectiveStartResult, AgentdError> {
+        if agentd.notes_objective.get().is_none()
+            || agentd.production_operations.get().is_none()
+            || agentd.intelligence_product.get().is_some()
+            || agentd.intelligence_invocation.get().is_some()
+        {
+            return Err(invalid(
+                "finite Notes execution requires its original dedicated owner",
+            ));
+        }
+        self.submit_for::<FiniteNotesExecution>(agentd, request, current_generation)
+            .await
+    }
+
+    async fn submit_for<P: ObjectiveExecutionProfile>(
+        &self,
+        agentd: &AgentdState,
+        request: AuthBusObjectiveIngress,
+        current_generation: u64,
+    ) -> Result<ObjectiveStartResult, AgentdError> {
+        authbus_ingress::require_objective_ready(agentd)?;
         let now_ms = authbus_ingress::now_ms()?;
         let payload = objective_payload(agentd.identity(), &request.body, current_generation)?;
         if request.expires_at_ms <= now_ms || request.expires_at_ms.saturating_sub(now_ms) > 300_000
@@ -154,7 +247,7 @@ impl ObjectiveRuntimeHost {
             (published, record)
         };
 
-        authbus_ingress::require_ready(agentd)?;
+        authbus_ingress::require_objective_ready(agentd)?;
         let current = authbus.trust(agentd)?;
         if !authentication_is_current(
             &record,
@@ -167,27 +260,7 @@ impl ObjectiveRuntimeHost {
             ));
         }
 
-        let disposition = match record.disposition {
-            RunStartObjectiveDispositionV1::Compiled => {
-                match agentd.start_canonical_intelligence(&record).await? {
-                    Some(crate::AgentdIntelligenceAdmittedOutcomeV1::Ready { .. }) => {
-                        "canonical_ready"
-                    }
-                    Some(crate::AgentdIntelligenceAdmittedOutcomeV1::Abstained) => {
-                        "canonical_abstained"
-                    }
-                    Some(crate::AgentdIntelligenceAdmittedOutcomeV1::SlowPath) => {
-                        "canonical_slow_path"
-                    }
-                    None => {
-                        agentd.start_current_run_start_record(&record)?;
-                        agentd.execute_notes_objective(&record).await?;
-                        "compiled"
-                    }
-                }
-            }
-            RunStartObjectiveDispositionV1::ExplicitAbstain => "explicit_abstain",
-        };
+        let disposition = P::execute(agentd, &record).await?;
 
         Ok(ObjectiveStartResult::Admitted(ObjectiveRunAdmission {
             run_id: published.run_start.run_id.to_string(),

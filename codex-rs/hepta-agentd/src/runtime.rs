@@ -430,7 +430,7 @@ where
     Ok(cognitive_runtime)
 }
 
-async fn run_production_operation_reconciler(
+pub(crate) async fn run_production_operation_reconciler(
     host: Arc<crate::AgentdProductionWriterHost>,
     interval: Duration,
     cancellation: CancellationToken,
@@ -528,7 +528,7 @@ async fn probe_app_server(identity: &AgentdIdentity) -> Result<(), AgentdError> 
     Ok(())
 }
 
-async fn drain_runtime(state: Arc<AgentdState>) -> Result<(), AgentdError> {
+pub(crate) async fn drain_runtime(state: Arc<AgentdState>) -> Result<(), AgentdError> {
     state.mark_draining()?;
     let drain_deadline = Instant::now() + RUN_DRAIN_GRACE;
     loop {
@@ -565,7 +565,7 @@ async fn drain_runtime(state: Arc<AgentdState>) -> Result<(), AgentdError> {
 }
 
 #[cfg(unix)]
-async fn shutdown_signal() -> Result<(), AgentdError> {
+pub(crate) async fn shutdown_signal() -> Result<(), AgentdError> {
     let mut terminate = tokio::signal::unix::signal(tokio::signal::unix::SignalKind::terminate())?;
     let mut interrupt = tokio::signal::unix::signal(tokio::signal::unix::SignalKind::interrupt())?;
     tokio::select! {
@@ -580,7 +580,7 @@ async fn shutdown_signal() -> Result<(), AgentdError> {
 }
 
 #[cfg(not(unix))]
-async fn shutdown_signal() -> Result<(), AgentdError> {
+pub(crate) async fn shutdown_signal() -> Result<(), AgentdError> {
     tokio::signal::ctrl_c().await.map_err(Into::into)
 }
 

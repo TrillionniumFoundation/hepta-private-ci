@@ -28,6 +28,42 @@ const CONNECTION_CAPACITY: usize = 32;
 const IO_TIMEOUT: Duration = Duration::from_secs(2);
 const OVERLOAD_WRITE_TIMEOUT: Duration = Duration::from_millis(50);
 
+/// Static host composition keeps finite Organ dispatch out of the full router.
+/// Neither the request schema nor the peer chooses this profile.
+trait ControlProfile {
+    fn response(
+        state: &AgentdState,
+        request: crate::AgentdRequest,
+    ) -> impl std::future::Future<Output = Result<AgentdResponse, AgentdError>> + Send;
+}
+
+struct FullControlProfile;
+#[cfg(target_os = "linux")]
+struct NotesControlProfile;
+
+impl ControlProfile for FullControlProfile {
+    async fn response(
+        state: &AgentdState,
+        request: crate::AgentdRequest,
+    ) -> Result<AgentdResponse, AgentdError> {
+        state
+            .response(request.request_id, request.spawn_generation, request.method)
+            .await
+    }
+}
+
+#[cfg(target_os = "linux")]
+impl ControlProfile for NotesControlProfile {
+    async fn response(
+        state: &AgentdState,
+        request: crate::AgentdRequest,
+    ) -> Result<AgentdResponse, AgentdError> {
+        state
+            .notes_response(request.request_id, request.spawn_generation, request.method)
+            .await
+    }
+}
+
 pub(crate) struct AgentdControlServer {
     listener: UnixListener,
     socket_path: PathBuf,
@@ -56,7 +92,16 @@ impl AgentdControlServer {
         })
     }
 
-    pub(crate) async fn run(mut self) -> Result<(), AgentdError> {
+    pub(crate) async fn run(self) -> Result<(), AgentdError> {
+        self.run_for::<FullControlProfile>().await
+    }
+
+    #[cfg(target_os = "linux")]
+    pub(crate) async fn run_notes(self) -> Result<(), AgentdError> {
+        self.run_for::<NotesControlProfile>().await
+    }
+
+    async fn run_for<P: ControlProfile + 'static>(mut self) -> Result<(), AgentdError> {
         loop {
             let stream = tokio::select! {
                 _ = self.cancellation.cancelled() => return Ok(()),
@@ -74,7 +119,7 @@ impl AgentdControlServer {
             let state = Arc::clone(&self.state);
             tokio::spawn(async move {
                 let _permit = permit;
-                let _ = timeout(IO_TIMEOUT, serve_connection(stream, state)).await;
+                let _ = timeout(IO_TIMEOUT, serve_connection::<P>(stream, state)).await;
             });
         }
     }
@@ -93,7 +138,10 @@ impl Drop for AgentdControlServer {
     }
 }
 
-async fn serve_connection(stream: UnixStream, state: Arc<AgentdState>) -> Result<(), AgentdError> {
+async fn serve_connection<P: ControlProfile>(
+    stream: UnixStream,
+    state: Arc<AgentdState>,
+) -> Result<(), AgentdError> {
     let (reader, mut writer) = tokio::io::split(stream);
     let mut reader = BufReader::new(reader).take(MAX_CONTROL_FRAME_BYTES + 1);
     let mut frame = Vec::new();
@@ -113,15 +161,14 @@ async fn serve_connection(stream: UnixStream, state: Arc<AgentdState>) -> Result
             "unsupported agentd control schema",
         )
     } else {
-        match state
-            .response(request.request_id, request.spawn_generation, request.method)
-            .await
-        {
+        let request_id = request.request_id;
+        let spawn_generation = request.spawn_generation;
+        match P::response(&state, request).await {
             Ok(response) => response,
             Err(error) => error_response(
                 &state,
-                request.request_id,
-                request.spawn_generation,
+                request_id,
+                spawn_generation,
                 "request_rejected",
                 &error.to_string(),
             ),

@@ -828,7 +828,7 @@ pub struct CognitiveContextItem {
 #[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
 #[serde(deny_unknown_fields)]
 pub struct HealthSnapshot {
-    /// True once the App Server initialized while this exact spawn still owns Starting.
+    /// True once the configured execution service initialized while this exact spawn still owns Starting.
     pub promotion_ready: bool,
     /// True only after the supervisor promoted this spawn to Running.
     pub ready: bool,

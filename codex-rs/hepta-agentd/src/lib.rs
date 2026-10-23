@@ -158,6 +158,8 @@ mod notes_bootstrap;
 mod notes_channel;
 #[cfg(target_os = "linux")]
 mod notes_document_observer;
+#[cfg(target_os = "linux")]
+mod notes_organ;
 mod objective_runtime;
 mod plasticity_anchor_journal;
 mod plasticity_host;
@@ -173,6 +175,8 @@ mod production_writer_host;
 mod prompt_runtime;
 mod qualification_writer;
 mod runtime;
+#[cfg(target_os = "linux")]
+pub use notes_organ::run_notes_organ;
 mod runtime_tasks;
 mod shared_terminal_cell;
 mod state;

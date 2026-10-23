@@ -115,7 +115,7 @@ impl ObjectiveRuntimeHost {
     ) -> Result<(), AgentdError> {
         // Startup attaches the durable service before App Server readiness.
         // Runtime projection is deferred until the daemon owner admits runs.
-        if !agentd.automation_admission_ready()? {
+        if !agentd.objective_admission_ready()? {
             return Ok(());
         }
         let trust = authbus_ingress::attached(agentd)?.trust(agentd)?;
@@ -168,8 +168,6 @@ impl ObjectiveRuntimeHost {
         }
         Ok(())
     }
-
-
 }
 
 pub(crate) fn objective_payload(
