@@ -104,8 +104,8 @@ def load_laya_cpu_isolated(snapshot: Path, agent_factory: Callable[..., Any]) ->
         )
         agent = agent_factory(str(view), device="cpu")
         effective = _inventory(view / "tokenizer")
-        if any(a != b for a, b in ((key, effective.get(key))
-                                   for key in original if key != COMPAT_CONFIG)):
+        if any(original[key] != effective.get(key)
+               for key in original if key != COMPAT_CONFIG):
             raise ValueError("Laya loader unexpectedly changed tokenizer input bytes")
         if set(effective) != set(original):
             raise ValueError("Laya loader created or deleted tokenizer files")
