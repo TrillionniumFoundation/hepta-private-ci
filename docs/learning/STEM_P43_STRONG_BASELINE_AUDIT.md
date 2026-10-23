@@ -44,7 +44,7 @@ confirmation criteria. Screen success is NOT scientific or product admission.
 
 ## Engineering validation and replay
 
-The dedicated exact-head CI runs 15 synthetic adversarial unit tests, restores
+The dedicated exact-head CI runs 20 synthetic adversarial unit tests, restores
 the original fixed P39 archive, executes the fixed P42 train-only cosine
 calibration, and independently rechecks the complete P39 Head ledger. It
 retains real per-row, paired and CPU-only replay results. Synthetic fixtures
