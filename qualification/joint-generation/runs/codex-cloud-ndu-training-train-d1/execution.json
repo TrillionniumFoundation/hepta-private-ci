@@ -1,0 +1,17 @@
+{
+  "command": "OPENBLAS_NUM_THREADS=1 OMP_NUM_THREADS=1 MKL_NUM_THREADS=1 python3 -W error -m ndu_training.run train --freeze ndu_training/frozen-train-d1.json --out runs/codex-cloud-ndu-training-train-d1",
+  "exit_code": 0,
+  "cwd": "/workspace/hepta-private-ci/qualification/joint-generation",
+  "scope": "TRAIN-only; no validation or formal construction",
+  "source_commit": "5c030618599b96bb5ba75a18e4e9837838adda29",
+  "freeze_commit": "456ef38b3b",
+  "source_freeze_still_matches": true,
+  "mtime_utc": {
+    "train-started.json": "2026-10-23T15:42:03.425808+00:00",
+    "result.json": "2026-10-23T15:42:17.449557+00:00"
+  },
+  "timestamp_scope": "filesystem artifact mtimes; not extra timing measurements",
+  "terminal_process_cpu_seconds": 14.172893129,
+  "artifact_audit_passed": true,
+  "formal_confirmation_authorized": false
+}
