@@ -1,0 +1,109 @@
+{
+  "caveats": [
+    "This is a fixed historical-split diagnostic, not a validity/coverage certification or full AG News benchmark.",
+    "Conformal theorem requires exchangeability of calibration and test scores; independent seeds do not establish data exchangeability. One realized test coverage below 90% does not alone refute a marginal-over-calibration guarantee.",
+    "Primary logistic TS LAC utility fails; its coverage is 275/320 and singleton error 38/307. Secondary APS must not be promoted post hoc.",
+    "NLL improvement supports predictive log-loss improvement on this pilot; it is not proof of all calibration properties.",
+    "Bootstrap intervals and Wilson bounds are descriptive, unadjusted and depend on sampling assumptions; they are not familywise or distribution-shift guarantees.",
+    "Source and package metadata are sufficient to identify this run, not a bitwise cross-platform reproducibility guarantee; current source does not runtime-enforce the separate preanalysis-freeze checksum."
+  ],
+  "checks": [
+    "12 focused unit tests pass",
+    "100 synthetic temperature fits match independent inverse-temperature derivative bisection within 6.67e-16 NLL",
+    "Independent APS candidate-score/rank tests include class ties and zero probabilities",
+    "Archive bytes, extracted CSV hashes, both freezes verified",
+    "Independent salted split reconstruction: 960 unique groups, 10 official cross groups absent",
+    "Extraction feature shape/dtype/finiteness/norm/array hashes, pooling parity and guard metadata verified",
+    "Current package versions match extraction metadata",
+    "All retained logits reconstructed from features/coefficients without refitting",
+    "All 12 sets and classification/NLL/Brier/ECE metrics recomputed independently",
+    "PCG64 seeds/uniform streams reproduced; cal/test streams differ",
+    "Primary paired bootstrap intervals reproduced",
+    "Logistic objective/gradient and ridge KKT residual verified without refitting",
+    "All reported Wilson intervals independently match scipy.stats.binomtest proportion_ci(method=wilson)"
+  ],
+  "logistic_gradient_l2": 6.819320302189596e-05,
+  "logit_reconstruction_max_abs": 0,
+  "paired_discordance": {
+    "centroid_only_correct": 4,
+    "logistic_only_correct": 1
+  },
+  "reviewed_features_sha256": "efd68909845d2810167a9a2048d1e07e0eed5012b446e6e9713511bcb1e9a9dc",
+  "reviewed_head_artifacts_sha256": "c64090970133a59ca3c42e04654c8bcf37bee382563d5c0f97174cdd7673ba14",
+  "reviewed_plan_sha256": "48ff3c003067370449254daefcf465c4960fbc01a39dae5b83d98123d3aec55c",
+  "reviewed_results_sha256": "3826aa6cc18d6c62687074e673f383d43764c9e7bbd6ec91d42afe0a60643226",
+  "ridge_KKT_residual_l2": 6.641919241874156e-14,
+  "sets": {
+    "centroid_TS_APS": {
+      "covered": 271,
+      "singleton_errors": 17,
+      "singletons": 229
+    },
+    "centroid_TS_LAC": {
+      "covered": 274,
+      "singleton_errors": 36,
+      "singletons": 310
+    },
+    "centroid_raw_APS": {
+      "covered": 273,
+      "singleton_errors": 40,
+      "singletons": 313
+    },
+    "centroid_raw_LAC": {
+      "covered": 278,
+      "singleton_errors": 21,
+      "singletons": 268
+    },
+    "logistic_TS_APS": {
+      "covered": 282,
+      "singleton_errors": 14,
+      "singletons": 223
+    },
+    "logistic_TS_LAC": {
+      "covered": 275,
+      "singleton_errors": 38,
+      "singletons": 307
+    },
+    "logistic_raw_APS": {
+      "covered": 270,
+      "singleton_errors": 18,
+      "singletons": 215
+    },
+    "logistic_raw_LAC": {
+      "covered": 275,
+      "singleton_errors": 32,
+      "singletons": 301
+    },
+    "ridge_TS_APS": {
+      "covered": 279,
+      "singleton_errors": 16,
+      "singletons": 227
+    },
+    "ridge_TS_LAC": {
+      "covered": 282,
+      "singleton_errors": 35,
+      "singletons": 308
+    },
+    "ridge_raw_APS": {
+      "covered": 271,
+      "singleton_errors": 33,
+      "singletons": 269
+    },
+    "ridge_raw_LAC": {
+      "covered": 285,
+      "singleton_errors": 25,
+      "singletons": 284
+    }
+  },
+  "softmax_top1_invariance": {
+    "centroid": true,
+    "logistic": true,
+    "ridge": true
+  },
+  "sources": [
+    "https://proceedings.mlr.press/v70/guo17a.html",
+    "https://arxiv.org/html/2006.02544v1",
+    "https://huggingface.co/microsoft/harrier-oss-v1-270m"
+  ],
+  "status": "PASS with scope/claim caveats; no head-fit correctness blocker found"
+}

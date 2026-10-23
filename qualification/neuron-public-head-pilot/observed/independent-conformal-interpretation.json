@@ -1,0 +1,29 @@
+{
+  "assumptions": [
+    "Predictor and temperature fixed independently of calibration/test rows",
+    "Calibration and test nonconformity scores IID from the same continuous CDF F",
+    "Calibration rank k=145 among n=160; m=320 test observations, all using the same random threshold"
+  ],
+  "derivation": "If Q is the kth calibration score, F(Q) ~ Beta(k,n+1-k)=Beta(145,16). Conditional on F(Q)=p, covered-test count K ~ Binomial(320,p). Integrating over Q gives K ~ BetaBinomial(320,145,16).",
+  "illustrative_P_K_le_275": 0.09203814638093227,
+  "interpretation": "A Wilson interval from 275/320 summarizes uncertainty in conditional test coverage for the realized threshold under IID test rows. Its exclusion of 0.9 does not by itself refute an unconditional guarantee that averages over random calibration thresholds. Likewise it does not prove exchangeability or rescue the failed utility gate.",
+  "manual_logsumexp_tail_check": 0.09203814638091369,
+  "naive_fixed_p_0_9_binomial_tail_for_contrast_only": 0.012662314793578553,
+  "pilot_limits": [
+    "The official train/test split may differ; hash-selected deduplicated finite populations are not literally an IID sampling experiment.",
+    "LAC score continuity and absence of ties are assumptions of this illustration, not verified population properties.",
+    "Cross-head shared uniforms and scores yield dependence between comparisons; no multiple-comparison claim is made."
+  ],
+  "predictive_count_central95": [
+    268.0,
+    304.0
+  ],
+  "predictive_coverage_count_mean": 288.19875776397515,
+  "predictive_coverage_count_sd": 9.22163941665727,
+  "purpose": "Illustrative finite-sample interpretation, not a new efficacy test and not a claim that IID/continuous-score assumptions hold for this pilot",
+  "threshold_true_coverage_central95": [
+    0.8500898173450577,
+    0.9417533123564462
+  ],
+  "threshold_true_coverage_mean": 0.9006211180124224
+}
