@@ -86,9 +86,7 @@ def validate_plan(plan):
         sha(plan.get(key), key)
     limits = plan.get("limits")
     need(isinstance(limits, dict), "resource ceilings absent")
-    for key in ("context_tokens", "reader_output_tokens", "reader_calls",
-                "head_calls", "router_calls", "cpu_ns", "wall_ns",
-                "peak_rss_bytes", "resident_bytes", "training_work_units"):
+    for key in (*MEASURES, "resident_bytes", "training_work_units", "selected_source_count"):
         need(nonnegative(limits.get(key), key) > 0, "nonpositive resource ceiling")
     policy = plan.get("acceptance")
     need(isinstance(policy, dict), "acceptance policy absent")
@@ -228,7 +226,7 @@ def validate_predictions(plan, ctx, predictions):
         need(r["reader_calls"] == 1, "different Reader call budget or missing Reader execution")
         need(all(r[k] > 0 for k in ("context_tokens", "wall_ns", "cpu_ns", "peak_rss_bytes")),
              "nonphysical zero-resource execution receipt")
-        need(len(selected) <= lim.get("selected_source_count", 1_000_000),
+        need(len(selected) <= lim["selected_source_count"],
              "selected evidence count over ceiling")
         if a in "CHI":
             need(row.get("graph_artifact_sha256") == manifest["graph_artifact_sha256"],

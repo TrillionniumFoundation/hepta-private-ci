@@ -81,7 +81,8 @@ def fixture(n_families=30, n_cases=10):
                 source_snapshot_sha256=ZERO, reader_sha256=THREE,
                 encoder_sha256=FOUR, scorer_sha256=ONE,
                 limits=dict(context_tokens=100, reader_output_tokens=32,
-                            reader_calls=1, head_calls=2, router_calls=1,
+                            reader_calls=1, encoder_calls=1, head_calls=2, router_calls=1,
+                            graph_hops=2, io_bytes=100, selected_source_count=8,
                             cpu_ns=1000, wall_ns=1000, peak_rss_bytes=10000,
                             resident_bytes=1000, training_work_units=1000),
                 acceptance=dict(seed=7, bootstrap_repetitions=100,
@@ -142,7 +143,7 @@ class AcceptanceProtocolTests(unittest.TestCase):
     def test_single_shared_encoder_call_required(self):
         row = next(r for r in self.r if r["arm"] == "I")
         row["measured"]["encoder_calls"] = 2
-        with self.assertRaisesRegex(ProtocolError, "shared frozen Encoder"):
+        with self.assertRaisesRegex(ProtocolError, "encoder_calls resource ceiling"):
             adjudicate(self.p, self.r, self.g)
 
     def test_zero_measured_cpu_rejected(self):
@@ -186,6 +187,11 @@ class AcceptanceProtocolTests(unittest.TestCase):
     def test_measured_resource_missing_rejected(self):
         del self.r[0]["measured"]["cpu_ns"]
         with self.assertRaisesRegex(ProtocolError, "incomplete physical"):
+            adjudicate(self.p, self.r, self.g)
+
+    def test_unbounded_graph_budget_rejected(self):
+        self.p["limits"].pop("graph_hops")
+        with self.assertRaisesRegex(ProtocolError, "graph_hops must be a measured integer"):
             adjudicate(self.p, self.r, self.g)
 
     def test_over_budget_rejected(self):
