@@ -13,9 +13,19 @@ and an observer deadline of at most eight seconds. Requests carry that fixed
 payload rather than an executable path or argument list. Registration and
 semantic validation do not enter a worker or consume FinalUse authority. The
 source digest is a declared binding; deployment must separately authenticate the
-immutable executable. Destination persistence, actual Child ownership, the signed
-source route and the original U/C/A resource qualification remain later required
-parts of the same PN3/PN4 implementation.
+immutable executable.
+
+The internal ordinary CPU owner adds a storage prerequisite in the destination's
+trusted, already-migrated SQLite pool. One original `BEGIN IMMEDIATE` transaction
+commits both the exact semantic dedupe record and a permanent entry from sixteen
+lifetime slots; terminal tombstones consume those slots. Every new entry checks
+its actual connection for WAL and synchronous FULL. Replay never admits another
+entry, and an error or ambiguous commit cannot return a new-entry decision. This
+storage stage does not start a Child or issue terminal authority. Its fixture
+replaces all physical connections in the same pool and rebuilds the owner; it
+does not qualify pool/process cold recovery or change the disabled production
+recovery APIs. Actual Child ownership, the signed source route and the original
+U/C/A resource qualification remain required parts of the same PN3/PN4 work.
 
 ## 1. Ownership and effect boundary
 

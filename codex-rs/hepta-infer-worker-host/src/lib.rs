@@ -12,6 +12,7 @@ pub mod model_worker;
 
 pub mod final_use_authorizer;
 pub mod native_app_server;
+mod ordinary_cpu_owner;
 mod ordinary_cpu_registration;
 
 pub use ordinary_cpu_registration::OrdinaryCpuBinding;
