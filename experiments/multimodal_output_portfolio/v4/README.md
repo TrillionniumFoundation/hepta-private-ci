@@ -122,6 +122,72 @@ generator, or incorporate independent query actions into the v4
 four-modality Bellman action lattice. That joint runtime integration and
 new untouched heldout remain open.
 
+## Integrated evidence, generation and stop control (finite v4 extension)
+
+`joint_evidence_portfolio.py` now performs **one** bounded Bellman solve
+over three kinds of mutually competing actions:
+
+- `QUERY`: purchase one declared, synthetic, independently noisy Bayesian
+  witness reading; update the observable posterior, **without reading hidden
+  truth**. One query per episode; mandatory emission reserve remains payable.
+- `REFINE(w_text,w_audio,w_image,w_video)`: execute the existing v4
+  four-channel allocation with a **common stochastic innovation**, full
+  fixed activation cost and the same remaining physical-budget counter.
+- `EMIT`: materialize all four toy raw outputs, select the public-posterior
+  MAP label, charge four required emission units, then end the episode.
+
+The observable state is `(generation levels, generation step, remaining
+budget, previous active Cell mask, posterior P(Y=0|public observations),
+witness-used)`. The hidden fact `Y` is absent from controller inputs.
+Querying does **not** create free extra generation time: the declared
+generation horizon counts refinement actions; queries are limited to one,
+charged against the same budget, and cannot evade emission cost. The
+witness response is sampled only after the query decision.
+
+At terminal emission, the objective combines the **actually materialized
+four toy decoder payloads**, a nonlinear image/video and text/audio
+consistency penalty, and an extra registered fact-error penalty. The
+model uses the public posterior to integrate over unknown truth; only the
+**independent offline scorer** is given the hidden test truth. Four
+outputs that agree on a wrong label still incur the factual penalty.
+
+With cost price `lambda`, query expense `c_q`, future witness `W`,
+refinement innovation `E`, exact conditional entropic certainty equivalent
+`CE_gamma`, and terminal payload loss `L`:
+
+```text
+V(s) = max(
+  CE_gamma(-L(raw_output(s), Y) | public belief) - lambda*emission_reserve,
+  -lambda*c_q + CE_gamma(V(s_QUERY(W)) | public belief),
+  max feasible w [-lambda*charged_cost(s,w)
+                  + CE_gamma(V(s_REFINE(w,E)))]
+)
+```
+
+The second and third controls are independently infeasible if the
+remaining budget cannot also fund all four output emissions. Action
+selection has explicit fixed activation charges. Risk and probability
+terms are not conflated with variance or CVaR.
+
+`offline_audit` enumerates **the entire hidden-truth × actual witness
+channel × generation shock distribution** after the policy has made its
+observable decisions; it rescales no failed outputs, independently scores
+realized toy payloads, computes exact fractional worst-10%-mass CVaR and
+checks that full-path entropic utility agrees with the backward Bellman
+value. The nine new adversarial tests check causal conditional
+information access, non-free evidence, separate truth scoring even if
+all four outputs agree, generator-vs-query budget competition, refusal of
+illegal actions, and nested/full-path utility parity at multiple risk
+levels.
+
+This closes the **joint finite source-level action integration mechanism**
+only. The 98%-accurate binary witness channel, simple proxy levels and
+output facts are **artificial assumptions**, not independently calibrated
+real-world sensors or natural models. The trace cannot attest a true
+witness, authorize calls, identify preferences, or show any superiority
+for natural video/audio/image/text. It does not reopen, modify or close
+frozen v1–v3 outcomes or v3 R03/R05 scientific-efficacy blockers.
+
 ## Next independently measured scientific experiment
 
 Replace the synthetic proxy-state/decoder fixtures with a source-pinned **real** shared Encoder plus four output decoders, observed partial latents, actual Neural/Cell feature invocation and all separately paid decoder/verifier/selection costs. Preregister source-disjoint natural tasks, multiple training seeds and common random-number draws, then compare same-information/static, MoE, risk-neutral MPC, fixed-risk MPC, dynamic NDU and best-of-N with independent decoded-output scoring and risk/coverage/cost thresholds. Train/inference factorial ablations are essential to determine whether NDU changes learned generation rather than only selecting an existing candidate. Do not enable or deploy any output-portfolio policy based only on this code.
