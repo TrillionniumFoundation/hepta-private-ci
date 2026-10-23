@@ -21,6 +21,16 @@ pub struct CognitiveRetrievalLearningSink {
     writer: Mutex<LedgerWriter>,
 }
 
+pub(crate) struct RetrievalDeliveryContext<'a> {
+    pub delivered_candidates:&'a [RetrievalCandidateIdentityV1],
+    pub context_exposed:bool,
+    pub published_context_digest:Option<Digest32>,
+}
+pub(crate) struct RetrievalDeliveryPolicy {
+    pub downstream_policy_digest:Option<Digest32>,
+    pub delivery_propensity:ProbabilityQ32,
+}
+
 impl CognitiveRetrievalLearningSink {
     #[must_use]
     pub fn new(writer: LedgerWriter) -> Self {
@@ -41,11 +51,8 @@ impl CognitiveRetrievalLearningSink {
             body_generation,
             request_id,
             observation,
-            &[],
-            false,
-            None,
-            None,
-            ProbabilityQ32::ONE,
+            RetrievalDeliveryContext {delivered_candidates:&[],context_exposed:false,published_context_digest:None},
+            RetrievalDeliveryPolicy {downstream_policy_digest:None,delivery_propensity:ProbabilityQ32::ONE},
         )
     }
 
@@ -55,36 +62,29 @@ impl CognitiveRetrievalLearningSink {
         body_generation: u64,
         request_id: u64,
         observation: &RetrievalAssignmentObservationV1,
-        delivered_candidates: &[RetrievalCandidateIdentityV1],
-        context_exposed: bool,
-        published_context_digest: Option<Digest32>,
+        delivery:RetrievalDeliveryContext<'_>,
     ) -> Result<AppendReceipt, String> {
         self.append_with_delivery_policy(
             owner,
             body_generation,
             request_id,
             observation,
-            delivered_candidates,
-            context_exposed,
-            published_context_digest,
-            None,
-            ProbabilityQ32::ONE,
+            delivery,
+            RetrievalDeliveryPolicy {downstream_policy_digest:None,delivery_propensity:ProbabilityQ32::ONE},
         )
     }
 
-    #[allow(clippy::too_many_arguments)]
     pub(crate) fn append_with_delivery_policy(
         &self,
         owner: &AgentId,
         body_generation: u64,
         request_id: u64,
         observation: &RetrievalAssignmentObservationV1,
-        delivered_candidates: &[RetrievalCandidateIdentityV1],
-        context_exposed: bool,
-        published_context_digest: Option<Digest32>,
-        downstream_policy_digest: Option<Digest32>,
-        delivery_propensity: ProbabilityQ32,
+        delivery:RetrievalDeliveryContext<'_>,
+        policy:RetrievalDeliveryPolicy,
     ) -> Result<AppendReceipt, String> {
+        let RetrievalDeliveryContext {delivered_candidates,context_exposed,published_context_digest}=delivery;
+        let RetrievalDeliveryPolicy {downstream_policy_digest,delivery_propensity}=policy;
         let episode_id = StableId::new(format!(
             "retrieval-episode:{}:{body_generation}:{request_id}",
             owner.as_str()

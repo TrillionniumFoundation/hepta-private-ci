@@ -190,14 +190,14 @@ impl AgentdIntelligenceProductRunnerV1 {
                     compilation_receipt_digest: envelope.envelope_digest.to_string(),
                 };
                 Ok(AgentdIntelligenceProductOutcomeV1::Ready(
-                    PreparedAgentdIntelligenceRunV1 {
+                    Box::new(PreparedAgentdIntelligenceRunV1 {
                         envelope,
                         dispatch_proposal_digest,
                         snapshot,
                         candidate_ids,
                         run_snapshot,
                         context_attachment,
-                    },
+                    }),
                 ))
             }
             CanonicalRunOutcomeV1::Abstained(_) => {
@@ -286,12 +286,25 @@ impl AgentdIntelligenceProductRunnerV1 {
         else {
             return Err(AgentdIntelligenceLedgerError::NotSelected);
         };
+        // Calibrated intuition has implicit abstention/slow-path outcomes in
+        // addition to the legal actions. Preserve them in the legacy ledger's
+        // complete decision set, as the authenticated shadow adapter does.
+        let mut candidate_ids = prepared.candidate_ids.clone();
+        for reserved in ["abstain", "shadow:slow-path"] {
+            if !candidate_ids.iter().any(|id| id.as_str() == reserved) {
+                candidate_ids.push(StableId::new(reserved).map_err(|_| {
+                    AgentdIntelligenceLedgerError::Ledger(DurableLedgerError::Semantic(
+                        codex_hepta_learning_ledger::LedgerError::InternalInvariant,
+                    ))
+                })?);
+            }
+        }
         let event = LedgerEvent::Decision(EpisodeDecision {
             record_id: prepared.envelope.run_id.clone(),
             episode_id,
             objective_digest: prepared.envelope.objective_digest,
             policy_id,
-            candidate_ids: prepared.candidate_ids.clone(),
+            candidate_ids,
             selected_candidate_id: candidate_id.clone(),
             selected_propensity: *propensity,
             completeness: CandidateSetCompleteness::Complete,
@@ -357,11 +370,11 @@ impl AgentdIntelligenceProductRunnerV1 {
         match journal.append_qualification(expected_predecessor, event.clone()) {
             Ok(receipt) => Ok(receipt),
             Err(DurableLedgerError::Indeterminate | DurableLedgerError::Io(_)) => Err(
-                AgentdIntelligenceLedgerError::Indeterminate(PendingIntelligenceLedgerAppendV1 {
+                AgentdIntelligenceLedgerError::Indeterminate(Box::new(PendingIntelligenceLedgerAppendV1 {
                     expected_predecessor,
                     snapshot,
                     event,
-                }),
+                })),
             ),
             Err(error) => Err(AgentdIntelligenceLedgerError::Ledger(error)),
         }

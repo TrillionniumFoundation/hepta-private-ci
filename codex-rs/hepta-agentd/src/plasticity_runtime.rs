@@ -298,13 +298,12 @@ impl PlasticityRuntimeOwnerV1 {
                     }
                     let result = propose_agentd_plasticity_v1(
                         *request,
-                        &self.artifacts,
-                        &self.ledger,
-                        self.owner_evidence_resolver.as_ref(),
-                        &self.owner_evidence_policy,
-                        &self.verifier,
-                        &mut self.parameter_writer,
-                        &mut self.parameter_anchor_store,
+                        crate::AgentdPlasticityProposalContextV1 {
+                            artifacts:&self.artifacts, ledger:&self.ledger,
+                            owner_evidence_resolver:self.owner_evidence_resolver.as_ref(),
+                            owner_evidence_policy:&self.owner_evidence_policy,verifier:&self.verifier,
+                            writer:&mut self.parameter_writer,anchor_store:&mut self.parameter_anchor_store,
+                        },
                         now,
                     )
                     .map_err(PlasticityRuntimeCallErrorV1::Parameter);
