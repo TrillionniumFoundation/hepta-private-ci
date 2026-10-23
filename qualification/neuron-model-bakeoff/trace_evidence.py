@@ -83,20 +83,27 @@ def audit_trace(summary: dict, samples: list[dict]) -> dict:
         else:
             require(gpu is None or (type(gpu) is int and gpu >= 0),
                     "invalid non-CUDA memory observation")
-        spans.append((start, end))
+        spans.append((start, end, cid))
         durations.append((end - sub) / 1_000_000)
         rss_samples.append(rss)
         first = sub if first is None else min(first, sub)
         last = max(last, end)
     require(len(cells) == scale, "not all declared logical Cells produced real request spans")
-    events = sorted([(a, 1) for a, _ in spans] + [(b, -1) for _, b in spans],
-                    key=lambda item: (item[0], item[1]))
-    in_flight = peak = 0
-    for _, delta in events:
-        in_flight += delta
-        require(in_flight >= 0, "broken in-flight interval")
-        peak = max(peak, in_flight)
-    require(in_flight == 0 and peak == active, "active concurrency not backed by raw spans")
+    events = sorted([(a, 1, cid) for a, _, cid in spans] +
+                    [(b, -1, cid) for _, b, cid in spans],
+                    key=lambda item: (item[0], item[1], item[2]))
+    active_ids = set()
+    peak = 0
+    for _, delta, cid in events:
+        if delta < 0:
+            require(cid in active_ids, "Cell completion without active execution")
+            active_ids.remove(cid)
+        else:
+            require(cid not in active_ids,
+                    "overlapping request spans on same stateful Cell (single writer)")
+            active_ids.add(cid)
+            peak = max(peak, len(active_ids))
+    require(not active_ids and peak == active, "active Cell concurrency not backed by raw spans")
     elapsed = (last - first) / 1e9
     require(elapsed > 0, "invalid workload wallclock interval")
     calculated = {
