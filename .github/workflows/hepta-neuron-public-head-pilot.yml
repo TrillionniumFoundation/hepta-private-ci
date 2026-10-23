@@ -1,0 +1,52 @@
+name: Public Harrier head calibration diagnostic (source only)
+
+on:
+  push:
+    branches:
+      - "dot/neuron-public-head-*"
+    paths:
+      - "qualification/neuron-public-head-pilot/**"
+      - ".github/workflows/hepta-neuron-public-head-pilot.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: hepta-public-head-pilot-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  math-tests:
+    name: Fixed diagnostic math and CLI tests, not model efficacy
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    env:
+      PYTHONDONTWRITEBYTECODE: "1"
+      PIP_DISABLE_PIP_VERSION_CHECK: "1"
+      OMP_NUM_THREADS: "2"
+      OPENBLAS_NUM_THREADS: "2"
+    steps:
+      - name: Check out exact source without retained credentials
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+          fetch-depth: 1
+      - name: Show exact source identity
+        run: |
+          git rev-parse HEAD HEAD^{tree}
+          git diff --check
+      - name: Install pinned numerical library only
+        run: python3 -m pip install --user numpy==2.2.6
+      - name: Run source-only tests, no model or news downloads
+        run: |
+          python3 -m unittest discover -v \
+            -s qualification/neuron-public-head-pilot \
+            -p 'test_*.py'
+      - name: Keep tracked source unchanged
+        if: always()
+        run: |
+          git diff --check
+          git diff --exit-code
+          git diff --cached --exit-code

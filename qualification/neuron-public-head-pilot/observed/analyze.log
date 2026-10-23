@@ -1,0 +1,64 @@
+{
+  "outcomes": {
+    "adaptation": "no_demonstrated_benefit",
+    "calibration": "supported_in_sampled_pilot",
+    "pilot_utility": false
+  },
+  "accuracy_gain": {
+    "mean": -0.009375,
+    "bootstrap95": [
+      -0.025,
+      0.003125
+    ],
+    "replicates": 5000
+  },
+  "nll_gain": {
+    "mean": 0.11386594727400494,
+    "bootstrap95": [
+      0.0620660081090668,
+      0.15818699315282606
+    ],
+    "replicates": 5000
+  },
+  "utility": {
+    "threshold": 0.5566532666770492,
+    "k": 145,
+    "coverage": 0.859375,
+    "coverage_wilson95": [
+      0.8170107228152117,
+      0.8932133505247843
+    ],
+    "mean_set_size": 1.003125,
+    "empty_fraction": 0.01875,
+    "singleton_acceptance": 0.959375,
+    "singleton_count": 307,
+    "singleton_errors": 38,
+    "singleton_error": 0.1237785016286645,
+    "singleton_error_wilson95": [
+      0.0915231798356205,
+      0.16533270780435447
+    ],
+    "per_class": {
+      "0": {
+        "n": 82,
+        "covered": 76,
+        "coverage": 0.926829268292683
+      },
+      "1": {
+        "n": 76,
+        "covered": 75,
+        "coverage": 0.9868421052631579
+      },
+      "2": {
+        "n": 75,
+        "covered": 59,
+        "coverage": 0.7866666666666666
+      },
+      "3": {
+        "n": 87,
+        "covered": 65,
+        "coverage": 0.7471264367816092
+      }
+    }
+  }
+}
