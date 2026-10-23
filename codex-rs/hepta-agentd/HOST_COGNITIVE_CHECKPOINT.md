@@ -88,6 +88,11 @@ drop every original old pidfd and service object before obtaining the separate
 kernel proof; this does not itself qualify an actual Root process restart,
 cross-store issuer reconciliation or an end-to-end recovered writer.
 
+[The nineteen-test retirement qualification](acceptance/2026-10-23-retired-publisher/README.md)
+records the actual kernel/CAS cases, frozen source, original scoped fix and
+explicit committed-range formatting. It preserves the fixed-PID-namespace
+precondition and does not claim actual whole-service restart or Dirty recovery.
+
 The explicit root/data tests create fresh original SQLite databases, use their
 real coherent anchors, and exercise actual root-protected CAS/reopen, exact
 replay and changed-byte refusal, read highwater, binding/epoch rejection,
