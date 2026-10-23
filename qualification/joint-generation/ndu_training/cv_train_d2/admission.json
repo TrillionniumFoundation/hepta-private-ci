@@ -1,0 +1,58 @@
+{
+  "forecast_only": true,
+  "groups": {
+    "A-CV": {
+      "complete_128_round_cpu_forecast": 9.560319239999998,
+      "complete_128_round_units_envelope": 8968783909,
+      "forecast_fits_both_caps": true,
+      "historical_cpu_fully_attributed": 4.920719239999997,
+      "historical_units_fully_attributed": 5983345317,
+      "one_round_units_envelope": 19964364,
+      "one_round_units_with_32_low_rows_each_batch": 16397772,
+      "possible_rounds_by_operator_envelope": 279
+    },
+    "A-plain": {
+      "complete_128_round_cpu_forecast": 7.820072465000001,
+      "complete_128_round_units_envelope": 6770245405,
+      "forecast_fits_both_caps": true,
+      "historical_cpu_fully_attributed": 4.0252724650000005,
+      "historical_units_fully_attributed": 4546132125,
+      "one_round_units_envelope": 14016510,
+      "one_round_units_with_32_low_rows_each_batch": 10449918,
+      "possible_rounds_by_operator_envelope": 501
+    },
+    "N-CV": {
+      "complete_128_round_cpu_forecast": 9.560319239999998,
+      "complete_128_round_units_envelope": 8974141477,
+      "forecast_fits_both_caps": true,
+      "historical_cpu_fully_attributed": 4.920719239999997,
+      "historical_units_fully_attributed": 5983345317,
+      "one_round_units_envelope": 20006220,
+      "one_round_units_with_32_low_rows_each_batch": 16439628,
+      "possible_rounds_by_operator_envelope": 279
+    },
+    "N-plain": {
+      "complete_128_round_cpu_forecast": 7.820072465000001,
+      "complete_128_round_units_envelope": 6775602973,
+      "forecast_fits_both_caps": true,
+      "historical_cpu_fully_attributed": 4.0252724650000005,
+      "historical_units_fully_attributed": 4546132125,
+      "one_round_units_envelope": 14058366,
+      "one_round_units_with_32_low_rows_each_batch": 10491774,
+      "possible_rounds_by_operator_envelope": 499
+    }
+  },
+  "history": {
+    "base_cpu": 4.0252724650000005,
+    "base_units": 4546132125,
+    "note": "full original shared receipt, and full reconstruction shared receipt for CV; no free historical cache",
+    "reference_cpu": 0.8954467749999964,
+    "reference_units": 1437213192
+  },
+  "initial_runtime_admission_required": true,
+  "no_model_or_TRAIN_predictions": true,
+  "ready_for_review": true,
+  "service_requests_each_group": 18432,
+  "service_requests_total": 73728,
+  "service_units_each_group": 354557952
+}
