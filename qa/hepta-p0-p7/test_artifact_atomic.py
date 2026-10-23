@@ -14,7 +14,7 @@ class AtomicArtifactTests(unittest.TestCase):
         self.root = Path(self.temp.name) / "root"
         self.root.mkdir()
         (self.root / "nested").mkdir()
-        self.content = b"pinned original evidence bytes\\x00"
+        self.content = b"pinned original evidence bytes\x00"
         (self.root / "nested" / "proof.bin").write_bytes(self.content)
         self.expected = digest(self.content)
 
@@ -39,8 +39,8 @@ class AtomicArtifactTests(unittest.TestCase):
     def test_noncanonical_platform_paths_denied(self):
         for rel in ("../root/nested/proof.bin", "nested/../nested/proof.bin",
                     "nested//proof.bin", "./nested/proof.bin",
-                    "/nested/proof.bin", "nested\\\\proof.bin", "C:/outside.bin",
-                    "nested/\\x00proof.bin"):
+                    "/nested/proof.bin", "nested\\proof.bin", "C:/outside.bin",
+                    "nested/\x00proof.bin"):
             with self.subTest(rel=rel), self.assertRaises(EvidenceError):
                 verify_artifact(self.root, rel, self.expected)
 
