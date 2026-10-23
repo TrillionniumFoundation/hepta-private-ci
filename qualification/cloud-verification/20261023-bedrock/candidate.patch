@@ -1,0 +1,46 @@
+diff --git a/codex-rs/app-server/src/message_processor.rs b/codex-rs/app-server/src/message_processor.rs
+index 1c83eb476c..955db668d7 100644
+--- a/codex-rs/app-server/src/message_processor.rs
++++ b/codex-rs/app-server/src/message_processor.rs
+@@ -1655,9 +1655,12 @@ impl MessageProcessor {
+                     .login_account(request_id.clone(), params)
+                     .await
+             },
+-            ClientRequest::BedrockDiscover { .. } | ClientRequest::BedrockSetup { .. } => Err(
+-                crate::error_code::method_not_found("Amazon Bedrock setup is not implemented"),
+-            ),
++            ClientRequest::BedrockDiscover { params, .. } => {
++                processor.account_processor.bedrock_discover(params).await
++            },
++            ClientRequest::BedrockSetup { params, .. } => {
++                processor.account_processor.bedrock_setup(params).await
++            },
+             ClientRequest::LogoutAccount { .. } => {
+                 processor.account_processor
+                     .logout_account(request_id.clone())
+diff --git a/codex-rs/app-server/src/request_processors/account_processor/bedrock_setup.rs b/codex-rs/app-server/src/request_processors/account_processor/bedrock_setup.rs
+index 1f329984bf..9e7cb31856 100644
+--- a/codex-rs/app-server/src/request_processors/account_processor/bedrock_setup.rs
++++ b/codex-rs/app-server/src/request_processors/account_processor/bedrock_setup.rs
+@@ -21,10 +21,6 @@ const AWS_SECRET_ACCESS_KEY: &str = "AWS_SECRET_ACCESS_KEY";
+ const AWS_BEARER_TOKEN_BEDROCK: &str = "AWS_BEARER_TOKEN_BEDROCK";
+ 
+ impl AccountRequestProcessor {
+-    #[expect(
+-        dead_code,
+-        reason = "Bedrock account endpoints are not yet routed by the stable protocol"
+-    )]
+     pub(crate) async fn bedrock_discover(
+         &self,
+         _params: BedrockDiscoverParams,
+@@ -69,10 +65,6 @@ impl AccountRequestProcessor {
+         ))
+     }
+ 
+-    #[expect(
+-        dead_code,
+-        reason = "Bedrock account endpoints are not yet routed by the stable protocol"
+-    )]
+     pub(crate) async fn bedrock_setup(
+         &self,
+         params: BedrockSetupParams,

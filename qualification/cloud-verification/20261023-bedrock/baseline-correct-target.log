@@ -1,0 +1,845 @@
+RUST_MIN_STACK=8388608 NEXTEST_PROFILE=local python3 ../scripts/run-nextest.py "$@"
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#proc-macro2@1.0.106` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#quote@1.0.45` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#libc@0.2.186` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#serde@1.0.228` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#serde_core@1.0.228` which wasn't produced by cargo metadata
+   Compiling zeroize_derive v1.4.3
+   Compiling getrandom v0.2.17
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#parking_lot_core@0.9.12` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#libc@0.2.186` which wasn't produced by cargo metadata
+   Compiling subtle v2.6.1
+   Compilingwarning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#portable-atomic@1.13.1` which wasn't produced by cargo metadata
+ generic-array v0.14.7
+   Compiling typenum v1.20.0
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#generic-array@0.14.7` which wasn't produced by cargo metadata
+   Compiling rand_core v0.6.4
+   Compiling lock_api v0.4.14
+   Compiling zeroize v1.8.2
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#thiserror@2.0.18` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#zmij@1.0.19` which wasn't produced by cargo metadata
+   Compiling mio v1.2.0
+   Compiling parking_lot v0.12.5
+   Compiling tokio v1.52.3
+   Compiling futures-util v0.3.32
+   Compiling crypto-common v0.1.7
+   Compiling block-buffer v0.10.4
+   Compiling digest v0.10.7
+   Compiling serde_json v1.0.149
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#serde_json@1.0.149` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#num-traits@0.2.19` which wasn't produced by cargo metadata
+   Compiling getrandom v0.3.4
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#getrandom@0.3.4` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#serde_core@1.0.228` which wasn't produced by cargo metadata
+   Compiling tinystr v0.8.3
+   Compiling num_threads v0.1.7
+   Compiling time v0.3.47
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#zerocopy@0.8.37` which wasn't produced by cargo metadata
+   Compiling sha2 v0.10.9
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#icu_normalizer_data@2.2.0` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#icu_properties_data@2.2.0` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#crossbeam-utils@0.8.21` which wasn't produced by cargo metadata
+   Compiling icu_locale_core v2.2.0
+   Compiling ring v0.17.14
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#aws-lc-sys@0.45.0` which wasn't produced by cargo metadata
+   Compiling tokio-util v0.7.18
+   Compiling icu_provider v2.2.0
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#aws-lc-rs@1.18.1` which wasn't produced by cargo metadata
+   Compiling num-integer v0.1.46
+   Compiling rustls-pki-types v1.14.0
+   Compiling aws-lc-rs v1.18.1
+   Compiling icu_normalizer v2.2.0
+   Compiling icu_properties v2.2.0
+   Compiling sha1_smol v1.0.1
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#httparse@1.10.1` which wasn't produced by cargo metadata
+   Compiling uuid v1.20.0
+   Compiling idna_adapter v1.2.1
+   Compiling sha1 v0.10.6
+   Compiling idna v1.1.0
+   Compiling rustls v0.23.45
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#crc32fast@1.5.0` which wasn't produced by cargo metadata
+   Compiling rustix v1.1.4
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#rustix@1.1.4` which wasn't produced by cargo metadata
+   Compiling url v2.5.8
+   Compiling linux-raw-sys v0.12.1
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#ring@0.17.14` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#rustls@0.23.45` which wasn't produced by cargo metadata
+   Compiling h2 v0.4.16
+   Compiling rustls-webpki v0.103.15
+   Compiling rand_core v0.9.5
+   Compiling rand_chacha v0.9.0
+   Compiling futures-executor v0.3.32
+   Compiling rand v0.9.3
+   Compiling toml_parser v1.1.3+spec-1.1.0
+   Compiling hyper v1.8.1
+   Compiling rustls-native-certs v0.8.3
+   Compiling toml_edit v0.23.10+spec-1.0.0
+   Compiling hyper-util v0.1.20
+   Compiling tokio-rustls v0.26.4
+   Compiling tower v0.5.3
+   Compiling webpki-roots v1.0.9
+   Compiling proc-macro-crate v3.4.0
+   Compiling futures v0.3.31
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#anyhow@1.0.103` which wasn't produced by cargo metadata
+   Compiling spin v0.9.8
+   Compiling getrandom v0.4.2
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#serde_json@1.0.149` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#crossbeam-epoch@0.9.20` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#getrandom@0.4.2` which wasn't produced by cargo metadata
+   Compiling hyper-rustls v0.27.7
+   Compiling num-bigint v0.4.6
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#ahash@0.8.12` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#openssl-sys@0.9.111` which wasn't produced by cargo metadata
+   Compiling ahash v0.8.12
+   Compiling rama-macros v0.3.0-alpha.4
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#mime_guess@2.0.5` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#openssl@0.10.75` which wasn't produced by cargo metadata
+   Compiling flume v0.12.0
+   Compiling rama-utils v0.3.0-alpha.4
+   Compiling tokio-graceful v0.2.2
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#native-tls@0.2.14` which wasn't produced by cargo metadata
+   Compiling tokio-stream v0.1.18
+   Compiling cookie v0.18.1
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#cookie@0.18.1` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#rayon-core@1.13.0` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#syn@1.0.109` which wasn't produced by cargo metadata
+   Compiling rama-core v0.3.0-alpha.4
+   Compiling tokio-native-tls v0.3.1
+   Compiling tower-http v0.6.8
+   Compiling tempfile v3.27.0
+   Compiling publicsuffix v2.3.0
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#schemars@0.8.22` which wasn't produced by cargo metadata
+   Compiling cookie_store v0.22.1
+   Compiling hyper-tls v0.6.0
+   Compiling opentelemetry v0.31.0
+   Compiling cpufeatures v0.3.0
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#ref-cast@1.0.25` which wasn't produced by cargo metadata
+   Compiling chacha20 v0.10.0
+   Compilingwarning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#zstd-sys@2.0.16+zstd.1.5.7` which wasn't produced by cargo metadata
+ reqwest v0.12.28
+   Compiling schemars v0.8.22
+   Compiling rama-http-types v0.3.0-alpha.4
+   Compiling zlib-rs v0.5.5
+   Compiling rama-net v0.3.0-alpha.4
+   Compiling flate2 v1.1.8
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#memoffset@0.9.1` which wasn't produced by cargo metadata
+   Compiling rand v0.10.1
+   Compiling ts-rs v11.1.0
+   Compiling tracing-serde v0.2.0
+   Compiling matchers v0.2.0
+   Compiling tracing-subscriber v0.3.22
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#typeid@1.0.3` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#zstd-safe@7.2.4` which wasn't produced by cargo metadata
+   Compiling enumflags2 v0.7.12
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#heapless@0.7.17` which wasn't produced by cargo metadata
+   Compiling codex-utils-absolute-path v0.0.0 (/workspace/bedrock-integration/codex-rs/utils/absolute-path)
+   Compiling arrayvec v0.7.6
+   Compiling lock_free_hashtable v0.1.4
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#allocative@0.3.6` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#erased-serde@0.4.10` which wasn't produced by cargo metadata
+   Compiling moka v0.12.13
+   Compiling asn1-rs v0.7.1
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#blake3@1.8.2` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#logos-codegen@0.15.1` which wasn't produced by cargo metadata
+   Compiling heapless v0.7.17
+   Compiling hickory-proto v0.25.2
+   Compiling quickcheck v1.1.0
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#nix@0.28.0` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#oid-registry@0.8.1` which wasn't produced by cargo metadata
+   Compiling dashmap v6.1.0
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#rama-http-headers@0.3.0-alpha.4` which wasn't produced by cargo metadata
+   Compiling blake3 v1.8.2
+   Compiling allocative v0.3.6
+   Compiling postcard v1.1.3
+   Compiling sorted_vector_map v0.2.1
+   Compiling static_interner v0.1.2
+   Compiling hickory-resolver v0.25.2
+   Compiling schemafy_core v0.5.2
+   Compiling codex-utils-rustls-provider v0.0.0 (/workspace/bedrock-integration/codex-rs/utils/rustls-provider)
+   Compiling terminal_size v0.4.3
+   Compiling pagable v0.4.1
+   Compiling clap_builder v4.5.58
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#starlark_map@0.14.2` which wasn't produced by cargo metadata
+   Compiling schemafy_lib v0.5.2
+   Compiling rama-dns v0.3.0-alpha.4
+   Compiling rama-http-headers v0.3.0-alpha.4
+   Compiling oid-registry v0.8.1
+   Compiling der-parser v10.0.0
+   Compiling tracing-opentelemetry v0.32.1
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#paste@1.0.15` which wasn't produced by cargo metadata
+   Compiling rama-http v0.3.0-alpha.4
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#icu_locale_data@2.2.0` which wasn't produced by cargo metadata
+   Compiling clap v4.5.58
+   Compiling codex-http-client v0.0.0 (/workspace/bedrock-integration/codex-rs/http-client)
+   Compiling rama-tcp v0.3.0-alpha.4
+   Compiling x509-parser v0.18.1
+   Compiling schemafy v0.5.2
+   Compiling starlark_map v0.14.2
+   Compiling lsp-types v0.97.0
+   Compiling tokio-test v0.4.5
+   Compiling fd-lock v4.0.4
+   Compiling yasna v0.5.2
+   Compiling rustyline v14.0.0
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#icu_decimal_data@2.2.0` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#starlark@0.14.2` which wasn't produced by cargo metadata
+   Compiling rama-http-core v0.3.0-alpha.4
+   Compiling rcgen v0.14.7
+   Compiling png v0.18.0
+   Compiling starlark_syntax v0.14.2
+   Compiling debugserver-types v0.5.0
+   Compiling rama-udp v0.3.0-alpha.4
+   Compiling rama-unix v0.3.0-alpha.4
+   Compiling codex-utils-home-dir v0.0.0 (/workspace/bedrock-integration/codex-rs/utils/home-dir)
+   Compiling codex-utils-cache v0.0.0 (/workspace/bedrock-integration/codex-rs/utils/cache)
+   Compiling rama-http-backend v0.3.0-alpha.4
+   Compiling rama-socks5 v0.3.0-alpha.4
+   Compiling starlark v0.14.2
+   Compiling icu_locale v2.2.0
+   Compiling image v0.25.9
+   Compiling rama-tls-rustls v0.3.0-alpha.4
+   Compiling icu_decimal v2.2.0
+   Compiling codex-network-proxy v0.0.0 (/workspace/bedrock-integration/codex-rs/network-proxy)
+   Compiling codex-utils-image v0.0.0 (/workspace/bedrock-integration/codex-rs/utils/image)
+   Compiling codex-utils-path-uri v0.0.0 (/workspace/bedrock-integration/codex-rs/utils/path-uri)
+   Compiling codex-extension-items v0.0.0 (/workspace/bedrock-integration/codex-rs/ext/items)
+   Compiling landlock v0.4.4
+   Compiling codex-utils-redacted-string v0.0.0 (/workspace/bedrock-integration/codex-rs/utils/redacted-string)
+   Compiling codex-utils-string v0.0.0 (/workspace/bedrock-integration/codex-rs/utils/string)
+   Compiling codex-async-utils v0.0.0 (/workspace/bedrock-integration/codex-rs/async-utils)
+   Compiling prodash v31.0.0
+   Compiling gix-features v0.46.2
+   Compiling either v1.15.0
+   Compiling concurrent-queue v2.5.0
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#heapless@0.8.0` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#thiserror@1.0.69` which wasn't produced by cargo metadata
+   Compiling event-listener v5.4.1
+   Compiling zerovec v0.11.6
+   Compiling sha1-checked v0.10.0
+   Compiling gix-hash v0.23.0
+   Compiling gix-hashtable v0.13.0
+   Compiling gix-object v0.58.0
+   Compiling codex-execpolicy v0.0.0 (/workspace/bedrock-integration/codex-rs/execpolicy)
+   Compiling codex-protocol v0.0.0 (/workspace/bedrock-integration/codex-rs/protocol)
+   Compiling itertools v0.13.0
+   Compiling block-padding v0.3.3
+   Compiling cfg_aliases v0.2.1
+   Compiling inout v0.1.4
+   Compiling prost-derive v0.14.3
+   Compiling event-listener-strategy v0.5.4
+   Compiling gix-fs v0.19.2
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#rustversion@1.0.22` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#generic-array@0.14.7` which wasn't produced by cargo metadata
+   Compiling cipher v0.4.4
+   Compiling gix-tempfile v21.0.2
+   Compiling gix-lock v21.0.2
+   Compiling async-channel v2.5.0
+   Compiling headers-core v0.3.0
+   Compiling pin-project-internal v1.1.10
+   Compiling pin-project v1.1.10
+   Compiling headers v0.4.1
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#curve25519-dalek@4.1.3` which wasn't produced by cargo metadata
+   Compiling gix-commitgraph v0.35.0
+   Compiling utf-8 v0.7.6
+   Compiling tungstenite v0.27.0 (https://github.com/openai-oss-forks/tungstenite-rs?rev=4fffad30fe373adbdcffab9545e9e9bf4f2fc19f#4fffad30)
+   Compiling curve25519-dalek v4.1.3
+   Compiling gix-revwalk v0.29.0
+   Compiling gix-ref v0.61.0
+   Compiling rand_chacha v0.3.1
+   Compiling rand v0.8.6
+   Compiling codex-utils-pty v0.0.0 (/workspace/bedrock-integration/codex-rs/utils/pty)
+   Compiling tokio-tungstenite v0.28.0 (https://github.com/openai-oss-forks/tokio-tungstenite?rev=0e5b2d73aa18dd9f0a50ee9ff199d5aef7594186#0e5b2d73)
+   Compiling gix-glob v0.24.0
+   Compiling hyper-timeout v0.5.2
+   Compiling hmac v0.12.1
+   Compiling gix-pack v0.68.0
+   Compiling tonic v0.14.3
+   Compiling gix-transport v0.55.1
+   Compiling gix-revision v0.43.0
+   Compiling gix-shallow v0.10.0
+   Compiling prost v0.14.3
+   Compiling gix-config v0.54.0
+   Compiling gix-protocol v0.59.0
+   Compiling codex-file-system v0.0.0 (/workspace/bedrock-integration/codex-rs/file-system)
+   Compiling tonic-prost v0.14.3
+   Compiling gix-refspec v0.39.0
+   Compiling gix-odb v0.78.0
+   Compiling codex-websocket-client v0.0.0 (/workspace/bedrock-integration/codex-rs/websocket-client)
+   Compiling gix-discover v0.49.0
+   Compiling gix-traverse v0.55.0
+   Compiling nix v0.30.1
+   Compiling gix-diff v0.61.0
+   Compiling universal-hash v0.5.1
+   Compiling base64ct v1.8.3
+   Compiling opaque-debug v0.3.1
+   Compiling gix v0.81.0
+   Compiling pem-rfc7468 v0.7.0
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#nix@0.30.1` which wasn't produced by cargo metadata
+   Compiling eventsource-stream v0.2.3
+   Compiling codex-client v0.0.0 (/workspace/bedrock-integration/codex-rs/codex-client)
+   Compiling codex-git-utils v0.0.0 (/workspace/bedrock-integration/codex-rs/git-utils)
+   Compiling der v0.7.10
+   Compiling codex-api v0.0.0 (/workspace/bedrock-integration/codex-rs/codex-api)
+   Compiling spki v0.7.3
+   Compiling opentelemetry_sdk v0.31.0
+   Compiling aead v0.5.2
+   Compiling const-hex v1.17.0
+   Compiling pkcs8 v0.10.2
+   Compiling opentelemetry-http v0.31.0
+   Compiling num-complex v0.4.6
+   Compiling tree-sitter-language v0.1.7
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#tree-sitter-language@0.1.7` which wasn't produced by cargo metadata
+   Compiling os_info v3.14.0
+   Compiling aes v0.8.4
+   Compiling opentelemetry-appender-tracing v0.31.1
+   Compiling gethostname v1.1.0
+   Compiling opentelemetry-semantic-conventions v0.31.0
+   Compiling unic-langid-impl v0.9.6
+   Compiling opentelemetry-proto v0.31.0
+   Compiling opentelemetry-otlp v0.31.0
+   Compiling unic-langid v0.9.6
+   Compiling signature v2.2.0
+   Compiling rustc-hash v2.1.1
+   Compiling type-map v0.5.1
+   Compiling http v0.2.12
+   Compiling codex-otel v0.0.0 (/workspace/bedrock-integration/codex-rs/otel)
+   Compiling serde_path_to_error v0.1.20
+   Compiling toml_datetime v0.7.5+spec-1.1.0
+   Compiling vsimd v0.8.0
+   Compiling toml_writer v1.0.6+spec-1.1.0
+   Compiling outref v0.5.2
+   Compiling base64-simd v0.8.0
+   Compiling http-body v0.4.6
+   Compiling x25519-dalek v2.0.1
+   Compiling bytes-utils v0.1.4
+   Compiling windows_x86_64_gnu v0.52.6
+   Compiling env_home v0.1.0
+   Compiling self_cell v1.2.2
+   Compiling self_cell v0.10.3
+   Compiling which v8.0.0
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#windows_x86_64_gnu@0.52.6` which wasn't produced by cargo metadata
+   Compiling toml v0.9.11+spec-1.1.0
+   Compiling aws-smithy-types v1.4.7
+   Compiling fluent-syntax v0.11.1
+   Compiling futures-lite v2.6.1
+   Compiling codex-utils-path v0.0.0 (/workspace/bedrock-integration/codex-rs/utils/path-utils)
+   Compiling tree-sitter v0.25.10
+   Compiling tree-sitter-powershell v0.26.4
+   Compiling tree-sitter-bash v0.25.1
+   Compiling zvariant_utils v2.1.0
+   Compiling rustc-hash v1.1.0
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#tree-sitter-powershell@0.26.4` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#tree-sitter-bash@0.25.1` which wasn't produced by cargo metadata
+   Compiling rust-embed-utils v8.11.0
+   Compiling glob v0.3.3
+   Compiling async-task v4.7.1
+   Compiling streaming-iterator v0.1.9
+   Compiling rust-embed-impl v8.11.0
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#tree-sitter@0.25.10` which wasn't produced by cargo metadata
+   Compiling windows-targets v0.52.6
+   Compiling zvariant_derive v4.2.0
+   Compiling ed25519 v2.2.3
+   Compiling poly1305 v0.8.0
+   Compiling nix v0.29.0
+   Compiling toml v0.5.11
+   Compiling basic-toml v0.1.10
+   Compiling aws-smithy-async v1.2.14
+   Compiling piper v0.2.4
+   Compiling async-io v2.6.0
+   Compiling aws-smithy-runtime-api-macros v1.0.0
+   Compiling endi v1.1.1
+   Compiling zvariant v4.2.0
+   Compiling find-crate v0.6.3
+   Compiling i18n-config v0.4.8
+   Compiling aws-smithy-runtime-api v1.12.0
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#async-io@2.6.0` which wasn't produced by cargo metadata
+   Compiling blocking v1.6.2
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#nix@0.29.0` which wasn't produced by cargo metadata
+   Compiling ed25519-dalek v2.2.0
+   Compiling codex-shell-command v0.0.0 (/workspace/bedrock-integration/codex-rs/shell-command)
+   Compiling windows-result v0.2.0
+   Compiling codex-features v0.0.0 (/workspace/bedrock-integration/codex-rs/features)
+   Compiling toml_edit v0.24.0+spec-1.1.0
+   Compiling intl-memoizer v0.5.3
+   Compiling intl_pluralrules v7.0.2
+   Compiling fluent-langneg v0.13.1
+   Compiling codex-model-provider-info v0.0.0 (/workspace/bedrock-integration/codex-rs/model-provider-info)
+   Compiling hkdf v0.12.4
+   Compiling salsa20 v0.10.2
+   Compiling async-lock v3.4.2
+   Compiling polling v3.11.0
+   Compiling dns-lookup v3.0.1
+   Compiling serde_ignored v0.1.14
+   Compiling async-fs v2.2.0
+   Compiling codex-config v0.0.0 (/workspace/bedrock-integration/codex-rs/config)
+   Compiling fluent-bundle v0.15.3
+   Compiling windows-strings v0.1.0
+   Compiling zbus_names v3.0.0
+   Compiling i18n-embed-impl v0.8.4
+   Compiling async-executor v1.13.3
+   Compiling zbus_macros v4.4.0
+   Compiling async-broadcast v0.7.2
+   Compiling potential_utf v0.1.4
+   Compiling num-rational v0.4.2
+   Compiling num-iter v0.1.45
+   Compiling ordered-stream v0.2.0
+   Compiling windows-implement v0.58.0
+   Compiling windows-interface v0.58.0
+   Compiling xdg-home v1.3.0
+   Compiling base64 v0.21.7
+   Compiling windows-core v0.58.0
+   Compiling zbus v4.4.0
+   Compiling num v0.4.3
+   Compiling icu_collections v2.2.0
+   Compiling fluent v0.16.1
+   Compiling rust-embed v8.11.0
+   Compiling pbkdf2 v0.12.2
+   Compiling cbc v0.1.2
+   Compiling chacha20 v0.9.1
+   Compiling dirs-sys-next v0.1.2
+   Compiling proc-macro-error-attr2 v2.0.0
+   Compiling codex-windows-sandbox v0.0.0 (/workspace/bedrock-integration/codex-rs/windows-sandbox-rs)
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#crossbeam-utils@0.8.21` which wasn't produced by cargo metadata
+   Compiling proc-macro-error2 v2.0.1
+   Compiling dirs-next v2.0.0
+   Compiling secret-service v4.0.0
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#ring@0.17.14` which wasn't produced by cargo metadata
+   Compiling chacha20poly1305 v0.10.1
+   Compiling i18n-embed v0.15.4
+   Compiling windows v0.58.0
+   Compiling polyval v0.6.2
+   Compiling tracing-appender v0.2.4
+   Compiling cookie-factory v0.3.3
+   Compiling linux-keyutils v0.2.4
+   Compiling secrecy v0.10.3
+   Compiling keccak v0.1.6
+   Compiling io_tee v0.1.1
+   Compiling age-core v0.11.0
+   Compiling sha3 v0.10.9
+   Compiling keyring v3.6.3
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#num-traits@0.2.19` which wasn't produced by cargo metadata
+   Compiling ghash v0.5.1
+   Compiling i18n-embed-fl v0.9.4
+   Compiling scrypt v0.11.0
+   Compiling ctr v0.9.2
+   Compiling thiserror-impl-no-std v2.0.2
+   Compiling hybrid-array v0.2.3
+   Compiling kem v0.3.0-pre.0
+   Compiling bech32 v0.9.1
+   Compiling age v0.11.2
+   Compiling ml-kem v0.2.3
+   Compiling thiserror-no-std v2.0.2
+   Compiling aes-gcm v0.10.3
+   Compiling codex-sandboxing v0.0.0 (/workspace/bedrock-integration/codex-rs/sandboxing)
+   Compiling codex-keyring-store v0.0.0 (/workspace/bedrock-integration/codex-rs/keyring-store)
+   Compiling aws-credential-types v1.2.11
+   Compiling aws-smithy-http v0.62.6
+   Compiling axum-core v0.5.6
+   Compiling aws-types v1.3.11
+   Compiling foldhash v0.1.5
+   Compiling matchit v0.8.4
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#thiserror@2.0.18` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#rustls@0.23.45` which wasn't produced by cargo metadata
+   Compiling axum v0.8.8
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#aws-types@1.3.11` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#libsqlite3-sys@0.37.0` which wasn't produced by cargo metadata
+   Compiling codex-secrets v0.0.0 (/workspace/bedrock-integration/codex-rs/secrets)
+   Compiling clatter v2.2.0
+   Compiling codex-exec-server-protocol v0.0.0 (/workspace/bedrock-integration/codex-rs/exec-server-protocol)
+   Compiling aws-smithy-observability v0.1.5
+   Compiling aws-smithy-http-client v1.1.12
+   Compiling debugid v0.8.0
+   Compiling sentry-types v0.46.1
+   Compiling aws-smithy-runtime v1.9.5
+   Compiling codex-exec-server v0.0.0 (/workspace/bedrock-integration/codex-rs/exec-server)
+   Compiling aws-sigv4 v1.3.7
+   Compiling crypto_secretbox v0.1.1
+   Compiling futures-intrusive v0.5.0
+   Compiling simple_asn1 v0.6.4
+   Compiling blake2 v0.10.6
+   Compiling ff v0.13.1
+   Compiling syn v3.0.3
+   Compiling prettyplease v0.2.37
+   Compiling object v0.37.3
+   Compiling chunked_transfer v1.5.0
+   Compiling base16ct v0.2.0
+   Compiling ascii v1.1.0
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#getrandom@0.4.2` which wasn't produced by cargo metadata
+   Compiling tiny_http v0.12.0
+   Compiling sqlx-core v0.9.0
+   Compiling darling_core v0.24.0
+   Compiling sec1 v0.7.3
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#object@0.37.3` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#rustix@1.1.4` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#prettyplease@0.2.37` which wasn't produced by cargo metadata
+   Compiling group v0.13.0
+   Compiling crypto_box v0.9.1
+   Compiling jsonwebtoken v9.3.1
+   Compiling aws-runtime v1.5.17
+   Compiling sentry-core v0.46.1
+   Compiling codex-hepta-contracts v0.0.0 (/workspace/bedrock-integration/codex-rs/hepta-contracts)
+   Compiling aws-smithy-json v0.61.9
+   Compiling webbrowser v1.2.4
+   Compiling crypto-bigint v0.5.5
+   Compiling dotenvy v0.15.7
+   Compiling gimli v0.32.3
+   Compiling codex-utils-template v0.0.0 (/workspace/bedrock-integration/codex-rs/utils/template)
+   Compiling addr2line v0.25.1
+   Compiling elliptic-curve v0.13.8
+   Compiling sqlx-sqlite v0.9.0
+   Compiling codex-agent-identity v0.0.0 (/workspace/bedrock-integration/codex-rs/agent-identity)
+   Compiling darling_macro v0.24.0
+   Compiling hashbrown v0.15.5
+   Compiling codex-workload-identity v0.0.0 (/workspace/bedrock-integration/codex-rs/workload-identity)
+   Compiling codex-terminal-detection v0.0.0 (/workspace/bedrock-integration/codex-rs/terminal-detection)
+   Compiling findshlibs v0.10.2
+   Compiling rustc-demangle v0.1.27
+   Compiling fastrand v2.3.0
+   Compiling fixedbitset v0.5.7
+   Compiling backtrace v0.3.76
+   Compiling petgraph v0.8.3
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#findshlibs@0.10.2` which wasn't produced by cargo metadata
+   Compiling codex-login v0.0.0 (/workspace/bedrock-integration/codex-rs/login)
+   Compiling prost-types v0.14.3
+   Compiling darling v0.24.0
+   Compiling sqlx-macros-core v0.9.0
+   Compiling rfc6979 v0.4.0
+   Compiling schemars_derive v1.2.1
+   Compiling sentry-contexts v0.46.1
+   Compiling xmlparser v0.13.6
+   Compiling rmcp v3.1.3
+   Compiling multimap v0.10.1
+   Compiling prost-build v0.14.3
+   Compiling aws-smithy-xml v0.60.13
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#rmcp@3.1.3` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#sentry-contexts@0.46.1` which wasn't produced by cargo metadata
+   Compiling schemars v1.2.1
+   Compiling sqlx-macros v0.9.0
+   Compiling ecdsa v0.16.9
+   Compiling rmcp-macros v3.1.3
+   Compiling sentry-backtrace v0.46.1
+   Compiling tonic-build v0.14.3
+   Compiling primeorder v0.13.6
+   Compiling oauth2 v5.0.0
+   Compiling aws-smithy-query v0.60.9
+   Compiling process-wrap v9.0.1
+   Compiling codex-utils-output-truncation v0.0.0 (/workspace/bedrock-integration/codex-rs/utils/output-truncation)
+   Compiling reqwest v0.13.4
+   Compiling sse-stream v0.2.5
+   Compiling semver v1.0.27
+   Compiling hostname v0.4.2
+   Compiling uname v0.1.1
+   Compiling protoc-bin-vendored-linux-ppcle_64 v3.2.0
+   Compiling protoc-bin-vendored-win32 v3.2.0
+   Compiling protoc-bin-vendored-macos-aarch_64 v3.2.0
+   Compiling protoc-bin-vendored-linux-s390_64 v3.2.0
+   Compiling protoc-bin-vendored-linux-aarch_64 v3.2.0
+   Compiling protoc-bin-vendored-linux-x86_32 v3.2.0
+   Compiling protoc-bin-vendored-macos-x86_64 v3.2.0
+   Compiling base64 v0.23.0
+   Compiling protoc-bin-vendored-linux-x86_64 v3.2.0
+   Compiling pastey v0.2.1
+   Compiling protoc-bin-vendored v3.2.0
+   Compiling codex-install-context v0.0.0 (/workspace/bedrock-integration/codex-rs/install-context)
+   Compiling tonic-prost-build v0.14.3
+   Compiling aws-sdk-sts v1.95.0
+   Compiling p256 v0.13.2
+   Compiling sentry-panic v0.46.1
+   Compiling sentry-debug-images v0.46.1
+   Compiling sqlx v0.9.0
+   Compiling aws-sdk-signin v1.2.0
+   Compiling aws-sdk-ssooidc v1.93.0
+   Compiling aws-sdk-sso v1.91.0
+   Compiling codex-utils-plugins v0.0.0 (/workspace/bedrock-integration/codex-rs/utils/plugins)
+   Compiling codex-history v0.0.0 (/workspace/bedrock-integration/codex-rs/history)
+   Compiling codex-plugin v0.0.0 (/workspace/bedrock-integration/codex-rs/plugin)
+   Compiling aws-config v1.8.12
+   Compiling codex-state v0.0.0 (/workspace/bedrock-integration/codex-rs/state)
+   Compiling sentry v0.46.1
+   Compiling codex-code-mode-protocol v0.0.0 (/workspace/bedrock-integration/codex-rs/code-mode-protocol)
+   Compiling codex-collaboration-mode-templates v0.0.0 (/workspace/bedrock-integration/codex-rs/collaboration-mode-templates)
+   Compiling codex-models-manager v0.0.0 (/workspace/bedrock-integration/codex-rs/models-manager)
+   Compiling codex-feedback v0.0.0 (/workspace/bedrock-integration/codex-rs/feedback)
+   Compiling codex-aws-auth v0.0.0 (/workspace/bedrock-integration/codex-rs/aws-auth)
+   Compiling codex-response-debug-context v0.0.0 (/workspace/bedrock-integration/codex-rs/response-debug-context)
+   Compiling codex-model-provider v0.0.0 (/workspace/bedrock-integration/codex-rs/model-provider)
+   Compiling codex-connectors v0.0.0 (/workspace/bedrock-integration/codex-rs/connectors)
+   Compiling codex-code-mode v0.0.0 (/workspace/bedrock-integration/codex-rs/code-mode)
+   Compiling codex-rmcp-client v0.0.0 (/workspace/bedrock-integration/codex-rs/rmcp-client)
+   Compiling codex-exec-server-test-support v0.0.0 (/workspace/bedrock-integration/codex-rs/exec-server/tests/support)
+   Compiling codex-diagnostics v0.0.0 (/workspace/bedrock-integration/codex-rs/diagnostics)
+   Compiling jsonptr v0.7.1
+   Compiling symphonia-core v0.6.0
+   Compiling rayon v1.11.0
+   Compiling codex-tools v0.0.0 (/workspace/bedrock-integration/codex-rs/tools)
+   Compiling codex-mcp v0.0.0 (/workspace/bedrock-integration/codex-rs/codex-mcp)
+   Compiling nucleo-matcher v0.3.1 (https://github.com/helix-editor/nucleo.git?rev=4253de9faabb4e5c6d81d946a5e35a90f87347ee#4253de9f)
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#assert_cmd@2.1.2` which wasn't produced by cargo metadata
+   Compiling nucleo v0.5.0 (https://github.com/helix-editor/nucleo.git?rev=4253de9faabb4e5c6d81d946a5e35a90f87347ee#4253de9f)
+   Compiling codex-context-fragments v0.0.0 (/workspace/bedrock-integration/codex-rs/context-fragments)
+   Compiling ignore v0.4.25
+   Compiling symphonia-metadata v0.6.0
+   Compiling codex-file-search v0.0.0 (/workspace/bedrock-integration/codex-rs/file-search)
+   Compiling codex-utils-cargo-bin v0.0.0 (/workspace/bedrock-integration/codex-rs/utils/cargo-bin)
+   Compiling codex-rollout v0.0.0 (/workspace/bedrock-integration/codex-rs/rollout)
+   Compiling lzma-sys v0.1.20
+   Compiling bzip2-sys v0.1.13+1.0.8
+   Compiling codex-experimental-api-macros v0.0.0 (/workspace/bedrock-integration/codex-rs/codex-experimental-api-macros)
+   Compiling codex-extension-api v0.0.0 (/workspace/bedrock-integration/codex-rs/ext/extension-api)
+   Compiling codex-app-server-protocol-noop-macros v0.0.0 (/workspace/bedrock-integration/codex-rs/app-server-protocol-noop-macros)
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#bzip2-sys@0.1.13+1.0.8` which wasn't produced by cargo metadata
+   Compiling codex-app-server-protocol v0.0.0 (/workspace/bedrock-integration/codex-rs/app-server-protocol)
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#lzma-sys@0.1.20` which wasn't produced by cargo metadata
+   Compiling symphonia-common v0.6.0
+   Compiling darling_core v0.20.11
+   Compiling include_dir_macros v0.7.4
+   Compiling unsafe-libyaml v0.2.11
+   Compiling codex-skills v0.0.0 (/workspace/bedrock-integration/codex-rs/skills)
+   Compiling darling_macro v0.20.11
+   Compiling serde_yaml v0.9.34+deprecated
+   Compiling include_dir v0.7.4
+   Compiling zip v2.4.2
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#zip@2.4.2` which wasn't produced by cargo metadata
+   Compiling bzip2 v0.5.2
+   Compiling xz2 v0.1.7
+   Compiling darling v0.20.11
+   Compiling zopfli v0.8.3
+   Compiling stop-words v0.9.0
+   Compiling lzma-rs v0.3.0
+   Compiling filetime v0.2.27
+   Compiling deflate64 v0.1.10
+   Compiling extended v0.1.0
+   Compiling pulldown-cmark v0.10.3
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#pulldown-cmark@0.10.3` which wasn't produced by cargo metadata
+   Compiling symphonia-format-riff v0.6.0
+   Compiling tar v0.4.45
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#stop-words@0.9.0` which wasn't produced by cargo metadata
+   Compiling cached_proc_macro v0.25.0
+   Compiling symphonia-format-mkv v0.6.0
+   Compiling symphonia-format-isomp4 v0.6.0
+   Compiling symphonia-format-ogg v0.6.0
+   Compiling symphonia-bundle-mp3 v0.6.0
+   Compiling codex-hooks v0.0.0 (/workspace/bedrock-integration/codex-rs/hooks)
+   Compiling cached_proc_macro_types v0.1.1
+   Compiling web-time v1.1.0
+   Compiling cached v0.56.0
+   Compiling symphonia v0.6.0
+   Compiling codex-apply-patch v0.0.0 (/workspace/bedrock-integration/codex-rs/apply-patch)
+   Compiling codex-shell-escalation v0.0.0 (/workspace/bedrock-integration/codex-rs/shell-escalation)
+   Compiling rust-stemmers v1.2.0
+   Compiling deunicode v1.6.2
+   Compiling bm25 v2.3.2
+   Compiling codex-utils-audio v0.0.0 (/workspace/bedrock-integration/codex-rs/utils/audio)
+   Compiling codex-prompts v0.0.0 (/workspace/bedrock-integration/codex-rs/prompts)
+   Compiling codex-rollout-trace v0.0.0 (/workspace/bedrock-integration/codex-rs/rollout-trace)
+   Compiling codex-agent-graph-store v0.0.0 (/workspace/bedrock-integration/codex-rs/agent-graph-store)
+   Compiling codex-memories-read v0.0.0 (/workspace/bedrock-integration/codex-rs/memories/read)
+   Compiling codex-utils-stream-parser v0.0.0 (/workspace/bedrock-integration/codex-rs/utils/stream-parser)
+   Compiling whoami v1.6.1
+   Compiling codex-hepta-types v0.0.0 (/workspace/bedrock-integration/codex-rs/hepta-types)
+   Compiling codex-backend-openapi-models v0.0.0 (/workspace/bedrock-integration/codex-rs/codex-backend-openapi-models)
+   Compiling inotify-sys v0.1.5
+   Compiling codex-linux-sandbox v0.0.0 (/workspace/bedrock-integration/codex-rs/linux-sandbox)
+   Compiling inotify v0.11.0
+   Compiling codex-backend-client v0.0.0 (/workspace/bedrock-integration/codex-rs/backend-client)
+   Compiling codex-hepta-cognitive-types v0.0.0 (/workspace/bedrock-integration/codex-rs/hepta-cognitive-types)
+   Compiling notify-types v2.1.0
+   Compiling codex-process-hardening v0.0.0 (/workspace/bedrock-integration/codex-rs/process-hardening)
+   Compiling is_ci v1.2.0
+   Compiling notify v8.2.0
+   Compiling codex-hepta-prompt-registry v0.0.0 (/workspace/bedrock-integration/codex-rs/hepta-prompt-registry)
+   Compiling is-terminal v0.4.17
+   Compiling owo-colors v4.3.0
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#owo-colors@4.3.0` which wasn't produced by cargo metadata
+   Compiling supports-color v2.1.0
+   Compiling codex-hepta-kg v0.0.0 (/workspace/bedrock-integration/codex-rs/hepta-kg)
+   Compiling codex-arg0 v0.0.0 (/workspace/bedrock-integration/codex-rs/arg0)
+   Compiling codex-hepta-memory-retrieval v0.0.0 (/workspace/bedrock-integration/codex-rs/hepta-memory-retrieval)
+   Compiling codex-hepta-cognitive-read v0.0.0 (/workspace/bedrock-integration/codex-rs/hepta-cognitive-read)
+   Compiling codex-analytics v0.0.0 (/workspace/bedrock-integration/codex-rs/analytics)
+   Compiling codex-thread-store v0.0.0 (/workspace/bedrock-integration/codex-rs/thread-store)
+   Compiling codex-core-plugins v0.0.0 (/workspace/bedrock-integration/codex-rs/core-plugins)
+   Compiling codex-skills-extension v0.0.0 (/workspace/bedrock-integration/codex-rs/ext/skills)
+   Compiling supports-color v3.0.2
+   Compiling codex-hepta-authbus v0.0.0 (/workspace/bedrock-integration/codex-rs/hepta-authbus)
+   Compiling codex-core v0.0.0 (/workspace/bedrock-integration/codex-rs/core)
+   Compiling codex-hepta-operations v0.0.0 (/workspace/bedrock-integration/codex-rs/hepta-operations)
+   Compiling codex-hepta-memory-federation v0.0.0 (/workspace/bedrock-integration/codex-rs/hepta-memory-federation)
+   Compiling codex-home v0.0.0 (/workspace/bedrock-integration/codex-rs/codex-home)
+   Compiling codex-hepta-paths v0.0.0 (/workspace/bedrock-integration/codex-rs/hepta-paths)
+   Compiling codex-hepta-memory v0.0.0 (/workspace/bedrock-integration/codex-rs/hepta-memory)
+   Compiling codex-hepta-evidence v0.0.0 (/workspace/bedrock-integration/codex-rs/hepta-evidence)
+   Compiling codex-connectors-extension v0.0.0 (/workspace/bedrock-integration/codex-rs/ext/connectors)
+   Compiling codex-utils-cli v0.0.0 (/workspace/bedrock-integration/codex-rs/utils/cli)
+   Compiling codex-uds v0.0.0 (/workspace/bedrock-integration/codex-rs/uds)
+   Compiling codex-hepta-governance v0.0.0 (/workspace/bedrock-integration/codex-rs/ext/hepta-governance)
+   Compiling codex-hepta-memory-extension v0.0.0 (/workspace/bedrock-integration/codex-rs/ext/hepta-memory)
+warning: associated function `new` is never used
+   --> ext/hepta-memory/src/cognitive/mod.rs:274:19
+    |
+273 | impl CognitiveExtension {
+    | ----------------------- associated function in this implementation
+274 |     pub(crate) fn new(runtime: CognitiveRuntime) -> Self {
+    |                   ^^^
+    |
+    = note: `#[warn(dead_code)]` (part of `#[warn(unused)]`) on by default
+
+warning: function `api_digest` is never used
+   --> ext/hepta-memory/src/cognitive/federation.rs:864:4
+    |
+864 | fn api_digest(
+    |    ^^^^^^^^^^
+
+   Compiling codex-file-watcher v0.0.0 (/workspace/bedrock-integration/codex-rs/file-watcher)
+   Compiling codex-git-attribution v0.0.0 (/workspace/bedrock-integration/codex-rs/ext/git-attribution)
+warning: `codex-hepta-memory-extension` (lib) generated 2 warnings
+   Compiling codex-hepta-prompt-extension v0.0.0 (/workspace/bedrock-integration/codex-rs/ext/hepta-prompt)
+   Compiling codex-utils-json-to-toml v0.0.0 (/workspace/bedrock-integration/codex-rs/utils/json-to-toml)
+   Compiling num_cpus v1.17.0
+   Compiling dtor-proc-macro v0.0.6
+   Compiling deadpool-runtime v0.1.4
+   Compiling deadpool v0.12.3
+   Compiling dtor v0.1.1
+   Compiling assert-json-diff v2.0.2
+   Compiling ctor-proc-macro v0.0.7
+   Compiling ctor v0.6.3
+   Compiling wiremock v0.6.5
+   Compiling test-case-core v3.3.1
+   Compiling sdd v3.0.10
+   Compiling test-case-macros v3.3.1
+   Compiling scc v2.4.0
+   Compiling serial_test_derive v3.3.1
+   Compiling test-case v3.3.1
+   Compiling serial_test v3.3.1
+   Compiling codex-memories-write v0.0.0 (/workspace/bedrock-integration/codex-rs/memories/write)
+   Compiling codex-goal-extension v0.0.0 (/workspace/bedrock-integration/codex-rs/ext/goal)
+   Compiling codex-external-agent-migration v0.0.0 (/workspace/bedrock-integration/codex-rs/external-agent-migration)
+   Compiling codex-chatgpt v0.0.0 (/workspace/bedrock-integration/codex-rs/chatgpt)
+   Compiling codex-history-notes-extension v0.0.0 (/workspace/bedrock-integration/codex-rs/ext/history-notes)
+   Compiling codex-cloud-config v0.0.0 (/workspace/bedrock-integration/codex-rs/cloud-config)
+   Compiling codex-web-search-extension v0.0.0 (/workspace/bedrock-integration/codex-rs/ext/web-search)
+   Compiling codex-agent-extension v0.0.0 (/workspace/bedrock-integration/codex-rs/ext/agent)
+   Compiling codex-app-server-transport v0.0.0 (/workspace/bedrock-integration/codex-rs/app-server-transport)
+   Compiling codex-mcp-extension v0.0.0 (/workspace/bedrock-integration/codex-rs/ext/mcp)
+   Compiling codex-image-generation-extension v0.0.0 (/workspace/bedrock-integration/codex-rs/ext/image-generation)
+   Compiling codex-queue-extension v0.0.0 (/workspace/bedrock-integration/codex-rs/ext/queue)
+   Compiling codex-memories-extension v0.0.0 (/workspace/bedrock-integration/codex-rs/ext/memories)
+   Compiling codex-guardian-v2 v0.0.0 (/workspace/bedrock-integration/codex-rs/ext/guardian-v2)
+   Compiling codex-app-server v0.0.0 (/workspace/bedrock-integration/codex-rs/app-server)
+   Compiling core_test_support v0.0.0 (/workspace/bedrock-integration/codex-rs/core/tests/common)
+   Compiling app_test_support v0.0.0 (/workspace/bedrock-integration/codex-rs/app-server/tests/common)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 8m 05s
+────────────
+ Nextest run ID b19fb7b0-1a95-4857-af1a-e36b10d8b28a with nextest profile: local
+    Starting 2 tests across 1 binary (1013 tests skipped)
+  TRY 1 FAIL [   0.303s] (───) codex-app-server::all suite::v2::bedrock_setup::discover_bedrock_profiles_and_environment_credentials
+  stdout ───
+
+    running 1 test
+    test suite::v2::bedrock_setup::discover_bedrock_profiles_and_environment_credentials ... FAILED
+
+    failures:
+
+    failures:
+        suite::v2::bedrock_setup::discover_bedrock_profiles_and_environment_credentials
+
+    test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 1014 filtered out; finished in 0.27s
+
+  stderr ───
+    WARNING: proceeding, even though we could not create PATH aliases: Read-only file system (os error 30)
+    writing message to stdin: Request(JSONRPCRequest { id: Integer(0), method: "initialize", params: Some(Object {"capabilities": Object {"experimentalApi": Bool(true), "optOutNotificationMethods": Null, "requestAttestation": Bool(false)}, "clientInfo": Object {"name": String("codex-app-server-tests"), "title": Null, "version": String("0.1.0")}}), trace: None })
+    read message from stdout: Response(JSONRPCResponse { id: Integer(0), result: Object {"codexHome": String("/tmp/.tmpgc13Ht"), "platformFamily": String("unix"), "platformOs": String("linux"), "userAgent": String("codex-app-server-tests/0.0.0 (Debian 13.0.0; x86_64) dumb (codex-app-server-tests; 0.1.0)")} })
+    writing message to stdin: Notification(JSONRPCNotification { method: "initialized", params: None })
+    writing message to stdin: Request(JSONRPCRequest { id: Integer(1), method: "account/bedrock/discover", params: Some(Object {}), trace: None })
+    in read_stream_until_response_message(Integer(1))
+    read message from stdout: Notification(JSONRPCNotification { method: "remoteControl/status/changed", params: Some(Object {"environmentId": Null, "installationId": String("e6948114-a616-4227-93c5-6b110e975676"), "serverName": String("9f0c6e910de1"), "status": String("disabled")}) })
+    read message from stdout: Error(JSONRPCError { error: JSONRPCErrorError { code: -32601, data: None, message: "Amazon Bedrock setup is not implemented" }, id: Integer(1) })
+
+    thread 'suite::v2::bedrock_setup::discover_bedrock_profiles_and_environment_credentials' (72665) panicked at app-server/tests/common/test_app_server.rs:1660:13:
+    internal error: entered unreachable code: expected JSONRPCMessage::Response, got Error(JSONRPCError { error: JSONRPCErrorError { code: -32601, data: None, message: "Amazon Bedrock setup is not implemented" }, id: Integer(1) })
+    note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+  TRY 1 FAIL [   0.305s] (───) codex-app-server::all suite::v2::bedrock_setup::setup_bedrock_rejects_invalid_or_conflicting_credentials
+  stdout ───
+
+    running 1 test
+    test suite::v2::bedrock_setup::setup_bedrock_rejects_invalid_or_conflicting_credentials ... FAILED
+
+    failures:
+
+    failures:
+        suite::v2::bedrock_setup::setup_bedrock_rejects_invalid_or_conflicting_credentials
+
+    test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 1014 filtered out; finished in 0.28s
+
+  stderr ───
+    WARNING: proceeding, even though we could not create PATH aliases: Read-only file system (os error 30)
+    writing message to stdin: Request(JSONRPCRequest { id: Integer(0), method: "initialize", params: Some(Object {"capabilities": Object {"experimentalApi": Bool(true), "optOutNotificationMethods": Null, "requestAttestation": Bool(false)}, "clientInfo": Object {"name": String("codex-app-server-tests"), "title": Null, "version": String("0.1.0")}}), trace: None })
+    read message from stdout: Response(JSONRPCResponse { id: Integer(0), result: Object {"codexHome": String("/tmp/.tmpBSY1kj"), "platformFamily": String("unix"), "platformOs": String("linux"), "userAgent": String("codex-app-server-tests/0.0.0 (Debian 13.0.0; x86_64) dumb (codex-app-server-tests; 0.1.0)")} })
+    writing message to stdin: Notification(JSONRPCNotification { method: "initialized", params: None })
+    writing message to stdin: Request(JSONRPCRequest { id: Integer(1), method: "account/bedrock/setup", params: Some(Object {"profile": String("engineering"), "region": String("us-west-1"), "type": String("profile")}), trace: None })
+    read message from stdout: Notification(JSONRPCNotification { method: "remoteControl/status/changed", params: Some(Object {"environmentId": Null, "installationId": String("bb554a37-c289-412d-9d0c-2bdaf2381637"), "serverName": String("9f0c6e910de1"), "status": String("disabled")}) })
+    read message from stdout: Error(JSONRPCError { error: JSONRPCErrorError { code: -32601, data: None, message: "Amazon Bedrock setup is not implemented" }, id: Integer(1) })
+
+    thread 'suite::v2::bedrock_setup::setup_bedrock_rejects_invalid_or_conflicting_credentials' (72663) panicked at app-server/tests/suite/v2/bedrock_setup.rs:293:9:
+    expected "Amazon Bedrock does not support region `us-west-1`", got "Amazon Bedrock setup is not implemented"
+    note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+  TRY 2 FAIL [   0.184s] (1/2) codex-app-server::all suite::v2::bedrock_setup::discover_bedrock_profiles_and_environment_credentials
+  stdout ───
+
+    running 1 test
+    test suite::v2::bedrock_setup::discover_bedrock_profiles_and_environment_credentials ... FAILED
+
+    failures:
+
+    failures:
+        suite::v2::bedrock_setup::discover_bedrock_profiles_and_environment_credentials
+
+    test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 1014 filtered out; finished in 0.17s
+
+  stderr ───
+    WARNING: proceeding, even though we could not create PATH aliases: Read-only file system (os error 30)
+    writing message to stdin: Request(JSONRPCRequest { id: Integer(0), method: "initialize", params: Some(Object {"capabilities": Object {"experimentalApi": Bool(true), "optOutNotificationMethods": Null, "requestAttestation": Bool(false)}, "clientInfo": Object {"name": String("codex-app-server-tests"), "title": Null, "version": String("0.1.0")}}), trace: None })
+    read message from stdout: Response(JSONRPCResponse { id: Integer(0), result: Object {"codexHome": String("/tmp/.tmpeHTFtb"), "platformFamily": String("unix"), "platformOs": String("linux"), "userAgent": String("codex-app-server-tests/0.0.0 (Debian 13.0.0; x86_64) dumb (codex-app-server-tests; 0.1.0)")} })
+    writing message to stdin: Notification(JSONRPCNotification { method: "initialized", params: None })
+    writing message to stdin: Request(JSONRPCRequest { id: Integer(1), method: "account/bedrock/discover", params: Some(Object {}), trace: None })
+    in read_stream_until_response_message(Integer(1))
+    read message from stdout: Notification(JSONRPCNotification { method: "remoteControl/status/changed", params: Some(Object {"environmentId": Null, "installationId": String("53387d77-6861-4dad-9130-e6c03a7fc0eb"), "serverName": String("9f0c6e910de1"), "status": String("disabled")}) })
+    read message from stdout: Error(JSONRPCError { error: JSONRPCErrorError { code: -32601, data: None, message: "Amazon Bedrock setup is not implemented" }, id: Integer(1) })
+
+    thread 'suite::v2::bedrock_setup::discover_bedrock_profiles_and_environment_credentials' (72716) panicked at app-server/tests/common/test_app_server.rs:1660:13:
+    internal error: entered unreachable code: expected JSONRPCMessage::Response, got Error(JSONRPCError { error: JSONRPCErrorError { code: -32601, data: None, message: "Amazon Bedrock setup is not implemented" }, id: Integer(1) })
+    note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+  TRY 2 FAIL [   0.200s] (2/2) codex-app-server::all suite::v2::bedrock_setup::setup_bedrock_rejects_invalid_or_conflicting_credentials
+  stdout ───
+
+    running 1 test
+    test suite::v2::bedrock_setup::setup_bedrock_rejects_invalid_or_conflicting_credentials ... FAILED
+
+    failures:
+
+    failures:
+        suite::v2::bedrock_setup::setup_bedrock_rejects_invalid_or_conflicting_credentials
+
+    test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 1014 filtered out; finished in 0.18s
+
+  stderr ───
+    WARNING: proceeding, even though we could not create PATH aliases: Read-only file system (os error 30)
+    writing message to stdin: Request(JSONRPCRequest { id: Integer(0), method: "initialize", params: Some(Object {"capabilities": Object {"experimentalApi": Bool(true), "optOutNotificationMethods": Null, "requestAttestation": Bool(false)}, "clientInfo": Object {"name": String("codex-app-server-tests"), "title": Null, "version": String("0.1.0")}}), trace: None })
+    read message from stdout: Response(JSONRPCResponse { id: Integer(0), result: Object {"codexHome": String("/tmp/.tmpxDaQU1"), "platformFamily": String("unix"), "platformOs": String("linux"), "userAgent": String("codex-app-server-tests/0.0.0 (Debian 13.0.0; x86_64) dumb (codex-app-server-tests; 0.1.0)")} })
+    writing message to stdin: Notification(JSONRPCNotification { method: "initialized", params: None })
+    writing message to stdin: Request(JSONRPCRequest { id: Integer(1), method: "account/bedrock/setup", params: Some(Object {"profile": String("engineering"), "region": String("us-west-1"), "type": String("profile")}), trace: None })
+    read message from stdout: Notification(JSONRPCNotification { method: "remoteControl/status/changed", params: Some(Object {"environmentId": Null, "installationId": String("eef12bc7-b050-4562-ada4-240fa286cf3d"), "serverName": String("9f0c6e910de1"), "status": String("disabled")}) })
+    read message from stdout: Error(JSONRPCError { error: JSONRPCErrorError { code: -32601, data: None, message: "Amazon Bedrock setup is not implemented" }, id: Integer(1) })
+
+    thread 'suite::v2::bedrock_setup::setup_bedrock_rejects_invalid_or_conflicting_credentials' (72718) panicked at app-server/tests/suite/v2/bedrock_setup.rs:293:9:
+    expected "Amazon Bedrock does not support region `us-west-1`", got "Amazon Bedrock setup is not implemented"
+    note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+────────────
+     Summary [   0.513s] 2 tests run: 0 passed, 2 failed, 1013 skipped
+  TRY 2 FAIL [   0.184s] (1/2) codex-app-server::all suite::v2::bedrock_setup::discover_bedrock_profiles_and_environment_credentials
+  TRY 2 FAIL [   0.200s] (2/2) codex-app-server::all suite::v2::bedrock_setup::setup_bedrock_rejects_invalid_or_conflicting_credentials
+error: test run failed
+error: recipe `test` failed on line 89 with exit code 100

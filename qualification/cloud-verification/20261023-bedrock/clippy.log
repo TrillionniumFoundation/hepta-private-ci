@@ -1,0 +1,603 @@
+    Checking zeroize v1.8.2
+    Checking getrandom v0.2.17
+    Checking subtle v2.6.1
+    Checking typenum v1.20.0
+    Checking lock_api v0.4.14
+    Checking rand_core v0.6.4
+    Checking mio v1.2.0
+    Checking parking_lot v0.12.5
+    Checking futures-util v0.3.32
+    Checking tokio v1.52.3
+    Checking generic-array v0.14.7
+    Checking crypto-common v0.1.7
+    Checking block-buffer v0.10.4
+    Checking digest v0.10.7
+    Checking serde_json v1.0.149
+    Checking getrandom v0.3.4
+    Checking tinystr v0.8.3
+    Checking num_threads v0.1.7
+    Checking time v0.3.47
+    Checking sha2 v0.10.9
+    Checking icu_locale_core v2.2.0
+    Checking icu_provider v2.2.0
+   Compiling ring v0.17.14
+    Checking num-integer v0.1.46
+    Checking rustls-pki-types v1.14.0
+    Checking aws-lc-rs v1.18.1
+    Checking tokio-util v0.7.18
+    Checking icu_properties v2.2.0
+    Checking icu_normalizer v2.2.0
+    Checking sha1_smol v1.0.1
+    Checking uuid v1.20.0
+    Checking sha1 v0.10.6
+    Checking linux-raw-sys v0.12.1
+    Checking idna_adapter v1.2.1
+    Checking idna v1.1.0
+    Checking url v2.5.8
+    Checking h2 v0.4.16
+    Checking rustix v1.1.4
+   Compiling rustls v0.23.45
+    Checking rand_core v0.9.5
+    Checking rand_chacha v0.9.0
+    Checking futures-executor v0.3.32
+    Checking rand v0.9.3
+    Checking hyper v1.8.1
+    Checking rustls-native-certs v0.8.3
+    Checking tower v0.5.3
+    Checking rustls-webpki v0.103.15
+    Checking hyper-util v0.1.20
+    Checking webpki-roots v1.0.9
+    Checking futures v0.3.31
+    Checking spin v0.9.8
+    Checking getrandom v0.4.2
+    Checking num-bigint v0.4.6
+    Checking ahash v0.8.12
+    Checking rama-utils v0.3.0-alpha.4
+    Checking flume v0.12.0
+    Checking tokio-graceful v0.2.2
+    Checking tokio-stream v0.1.18
+    Checking rama-core v0.3.0-alpha.4
+    Checking tokio-rustls v0.26.4
+    Checking cookie v0.18.1
+    Checking hyper-rustls v0.27.7
+    Checking tokio-native-tls v0.3.1
+    Checking tower-http v0.6.8
+    Checking tempfile v3.27.0
+    Checking publicsuffix v2.3.0
+    Checking hyper-tls v0.6.0
+    Checking cookie_store v0.22.1
+    Checking opentelemetry v0.31.0
+    Checking cpufeatures v0.3.0
+    Checking chacha20 v0.10.0
+    Checking reqwest v0.12.28
+    Checking schemars v0.8.22
+    Checking zlib-rs v0.5.5
+    Checking ts-rs v11.1.0
+    Checking rand v0.10.1
+    Checking rama-http-types v0.3.0-alpha.4
+    Checking tracing-serde v0.2.0
+    Checking matchers v0.2.0
+    Checking codex-utils-absolute-path v0.0.0 (/workspace/bedrock-integration/codex-rs/utils/absolute-path)
+    Checking tracing-subscriber v0.3.22
+    Checking flate2 v1.1.8
+    Checking enumflags2 v0.7.12
+    Checking arrayvec v0.7.6
+    Checking lock_free_hashtable v0.1.4
+    Checking moka v0.12.13
+    Checking asn1-rs v0.7.1
+    Checking rama-net v0.3.0-alpha.4
+    Checking heapless v0.7.17
+    Checking hickory-proto v0.25.2
+    Checking quickcheck v1.1.0
+    Checking blake3 v1.8.2
+    Checking dashmap v6.1.0
+    Checking allocative v0.3.6
+    Checking postcard v1.1.3
+    Checking sorted_vector_map v0.2.1
+    Checking static_interner v0.1.2
+    Checking codex-utils-rustls-provider v0.0.0 (/workspace/bedrock-integration/codex-rs/utils/rustls-provider)
+   Compiling schemafy_core v0.5.2
+    Checking terminal_size v0.4.3
+    Checking clap_builder v4.5.58
+    Checking hickory-resolver v0.25.2
+    Checking rama-http-headers v0.3.0-alpha.4
+    Checking pagable v0.4.1
+    Checking rama-dns v0.3.0-alpha.4
+   Compiling schemafy_lib v0.5.2
+    Checking oid-registry v0.8.1
+    Checking der-parser v10.0.0
+    Checking tracing-opentelemetry v0.32.1
+    Checking rama-http v0.3.0-alpha.4
+    Checking codex-http-client v0.0.0 (/workspace/bedrock-integration/codex-rs/http-client)
+    Checking clap v4.5.58
+    Checking x509-parser v0.18.1
+    Checking rama-tcp v0.3.0-alpha.4
+   Compiling schemafy v0.5.2
+    Checking starlark_map v0.14.2
+    Checking lsp-types v0.97.0
+    Checking tokio-test v0.4.5
+    Checking fd-lock v4.0.4
+    Checking yasna v0.5.2
+    Checking rustyline v14.0.0
+    Checking rcgen v0.14.7
+    Checking png v0.18.0
+    Checking debugserver-types v0.5.0
+    Checking rama-http-core v0.3.0-alpha.4
+    Checking rama-unix v0.3.0-alpha.4
+    Checking rama-udp v0.3.0-alpha.4
+    Checking codex-utils-home-dir v0.0.0 (/workspace/bedrock-integration/codex-rs/utils/home-dir)
+    Checking codex-utils-cache v0.0.0 (/workspace/bedrock-integration/codex-rs/utils/cache)
+    Checking rama-socks5 v0.3.0-alpha.4
+    Checking starlark_syntax v0.14.2
+    Checking starlark v0.14.2
+    Checking icu_locale v2.2.0
+    Checking image v0.25.9
+    Checking rama-http-backend v0.3.0-alpha.4
+    Checking rama-tls-rustls v0.3.0-alpha.4
+    Checking icu_decimal v2.2.0
+    Checking codex-utils-image v0.0.0 (/workspace/bedrock-integration/codex-rs/utils/image)
+    Checking codex-network-proxy v0.0.0 (/workspace/bedrock-integration/codex-rs/network-proxy)
+    Checking codex-utils-path-uri v0.0.0 (/workspace/bedrock-integration/codex-rs/utils/path-uri)
+    Checking landlock v0.4.4
+    Checking codex-extension-items v0.0.0 (/workspace/bedrock-integration/codex-rs/ext/items)
+    Checking codex-utils-redacted-string v0.0.0 (/workspace/bedrock-integration/codex-rs/utils/redacted-string)
+    Checking codex-utils-string v0.0.0 (/workspace/bedrock-integration/codex-rs/utils/string)
+    Checking codex-async-utils v0.0.0 (/workspace/bedrock-integration/codex-rs/async-utils)
+    Checking prodash v31.0.0
+    Checking gix-features v0.46.2
+   Compiling either v1.15.0
+    Checking concurrent-queue v2.5.0
+    Checking event-listener v5.4.1
+   Compiling zerovec v0.11.6
+    Checking sha1-checked v0.10.0
+    Checking gix-hash v0.23.0
+    Checking gix-hashtable v0.13.0
+    Checking gix-object v0.58.0
+   Compiling itertools v0.13.0
+   Compiling anyhow v1.0.103
+    Checking block-padding v0.3.3
+    Checking inout v0.1.4
+   Compiling prost-derive v0.14.3
+    Checking event-listener-strategy v0.5.4
+    Checking gix-fs v0.19.2
+    Checking cipher v0.4.4
+    Checking gix-tempfile v21.0.2
+    Checking gix-lock v21.0.2
+    Checking async-channel v2.5.0
+    Checking headers-core v0.3.0
+    Checking pin-project v1.1.10
+    Checking headers v0.4.1
+    Checking gix-commitgraph v0.35.0
+    Checking utf-8 v0.7.6
+    Checking curve25519-dalek v4.1.3
+    Checking tungstenite v0.27.0 (https://github.com/openai-oss-forks/tungstenite-rs?rev=4fffad30fe373adbdcffab9545e9e9bf4f2fc19f#4fffad30)
+    Checking gix-revwalk v0.29.0
+    Checking gix-ref v0.61.0
+    Checking rand_chacha v0.3.1
+    Checking rand v0.8.6
+    Checking tokio-tungstenite v0.28.0 (https://github.com/openai-oss-forks/tokio-tungstenite?rev=0e5b2d73aa18dd9f0a50ee9ff199d5aef7594186#0e5b2d73)
+    Checking codex-utils-pty v0.0.0 (/workspace/bedrock-integration/codex-rs/utils/pty)
+    Checking gix-glob v0.24.0
+    Checking hyper-timeout v0.5.2
+    Checking hmac v0.12.1
+    Checking gix-pack v0.68.0
+    Checking tonic v0.14.3
+    Checking gix-transport v0.55.1
+    Checking gix-revision v0.43.0
+    Checking codex-execpolicy v0.0.0 (/workspace/bedrock-integration/codex-rs/execpolicy)
+    Checking prost v0.14.3
+    Checking gix-shallow v0.10.0
+    Checking gix-config v0.54.0
+    Checking tonic-prost v0.14.3
+    Checking gix-protocol v0.59.0
+    Checking codex-protocol v0.0.0 (/workspace/bedrock-integration/codex-rs/protocol)
+    Checking gix-refspec v0.39.0
+    Checking gix-odb v0.78.0
+    Checking codex-websocket-client v0.0.0 (/workspace/bedrock-integration/codex-rs/websocket-client)
+    Checking gix-discover v0.49.0
+    Checking gix-traverse v0.55.0
+    Checking gix-diff v0.61.0
+    Checking universal-hash v0.5.1
+    Checking base64ct v1.8.3
+    Checking opaque-debug v0.3.1
+    Checking gix v0.81.0
+    Checking pem-rfc7468 v0.7.0
+    Checking eventsource-stream v0.2.3
+    Checking codex-client v0.0.0 (/workspace/bedrock-integration/codex-rs/codex-client)
+    Checking nix v0.30.1
+    Checking der v0.7.10
+    Checking opentelemetry_sdk v0.31.0
+    Checking spki v0.7.3
+    Checking aead v0.5.2
+    Checking const-hex v1.17.0
+    Checking pkcs8 v0.10.2
+    Checking opentelemetry-http v0.31.0
+    Checking num-complex v0.4.6
+    Checking os_info v3.14.0
+    Checking aes v0.8.4
+    Checking opentelemetry-appender-tracing v0.31.1
+    Checking gethostname v1.1.0
+    Checking opentelemetry-semantic-conventions v0.31.0
+   Compiling unic-langid-impl v0.9.6
+   Compiling unic-langid v0.9.6
+    Checking signature v2.2.0
+    Checking toml_parser v1.1.3+spec-1.1.0
+    Checking http v0.2.12
+    Checking opentelemetry-proto v0.31.0
+    Checking toml_datetime v0.7.5+spec-1.1.0
+    Checking serde_path_to_error v0.1.20
+    Checking toml_writer v1.0.6+spec-1.1.0
+    Checking vsimd v0.8.0
+    Checking outref v0.5.2
+    Checking base64-simd v0.8.0
+    Checking http-body v0.4.6
+    Checking tree-sitter-language v0.1.7
+    Checking x25519-dalek v2.0.1
+   Compiling thiserror v1.0.69
+    Checking bytes-utils v0.1.4
+    Checking env_home v0.1.0
+   Compiling same-file v1.0.6
+   Compiling walkdir v2.5.0
+    Checking which v8.0.0
+    Checking toml v0.9.11+spec-1.1.0
+    Checking opentelemetry-otlp v0.31.0
+    Checking aws-smithy-types v1.4.7
+    Checking futures-lite v2.6.1
+    Checking codex-utils-path v0.0.0 (/workspace/bedrock-integration/codex-rs/utils/path-utils)
+   Compiling tree-sitter v0.25.10
+   Compiling tree-sitter-powershell v0.26.4
+   Compiling tree-sitter-bash v0.25.1
+    Checking windows_x86_64_gnu v0.52.6
+   Compiling rust-embed-utils v8.11.0
+    Checking async-task v4.7.1
+    Checking streaming-iterator v0.1.9
+   Compiling rustc-hash v2.1.1
+   Compiling type-map v0.5.1
+   Compiling rust-embed-impl v8.11.0
+    Checking windows-targets v0.52.6
+   Compiling zvariant_derive v4.2.0
+    Checking ed25519 v2.2.3
+    Checking poly1305 v0.8.0
+    Checking aws-smithy-async v1.2.14
+   Compiling toml v0.5.11
+   Compiling basic-toml v0.1.10
+    Checking piper v0.2.4
+    Checking endi v1.1.1
+   Compiling self_cell v1.2.2
+   Compiling self_cell v0.10.3
+    Checking zvariant v4.2.0
+   Compiling find-crate v0.6.3
+    Checking aws-smithy-runtime-api v1.12.0
+    Checking blocking v1.6.2
+   Compiling i18n-config v0.4.8
+    Checking ed25519-dalek v2.2.0
+    Checking windows-result v0.2.0
+   Compiling intl-memoizer v0.5.3
+   Compiling fluent-syntax v0.11.1
+    Checking toml_edit v0.24.0+spec-1.1.0
+   Compiling intl_pluralrules v7.0.2
+   Compiling fluent-langneg v0.13.1
+    Checking hkdf v0.12.4
+    Checking salsa20 v0.10.2
+    Checking async-lock v3.4.2
+    Checking polling v3.11.0
+    Checking dns-lookup v3.0.1
+    Checking serde_ignored v0.1.14
+   Compiling rustc-hash v1.1.0
+    Checking async-fs v2.2.0
+   Compiling fluent-bundle v0.15.3
+    Checking async-io v2.6.0
+    Checking windows-strings v0.1.0
+   Compiling i18n-embed-impl v0.8.4
+    Checking nix v0.29.0
+    Checking zbus_names v3.0.0
+    Checking async-executor v1.13.3
+   Compiling zbus_macros v4.4.0
+    Checking async-broadcast v0.7.2
+   Compiling potential_utf v0.1.4
+    Checking num-rational v0.4.2
+    Checking num-iter v0.1.45
+    Checking ordered-stream v0.2.0
+    Checking xdg-home v1.3.0
+    Checking base64 v0.21.7
+   Compiling icu_collections v2.2.0
+    Checking windows-core v0.58.0
+    Checking zbus v4.4.0
+    Checking num v0.4.3
+   Compiling fluent v0.16.1
+   Compiling rust-embed v8.11.0
+    Checking pbkdf2 v0.12.2
+   Compiling arc-swap v1.9.0
+    Checking cbc v0.1.2
+    Checking chacha20 v0.9.1
+    Checking dirs-sys-next v0.1.2
+   Compiling codex-windows-sandbox v0.0.0 (/workspace/bedrock-integration/codex-rs/windows-sandbox-rs)
+    Checking dirs-next v2.0.0
+    Checking secret-service v4.0.0
+    Checking codex-file-system v0.0.0 (/workspace/bedrock-integration/codex-rs/file-system)
+    Checking codex-api v0.0.0 (/workspace/bedrock-integration/codex-rs/codex-api)
+    Checking codex-git-utils v0.0.0 (/workspace/bedrock-integration/codex-rs/git-utils)
+    Checking codex-shell-command v0.0.0 (/workspace/bedrock-integration/codex-rs/shell-command)
+    Checking chacha20poly1305 v0.10.1
+   Compiling i18n-embed v0.15.4
+    Checking windows v0.58.0
+    Checking polyval v0.6.2
+    Checking tracing-appender v0.2.4
+    Checking cookie-factory v0.3.3
+    Checking linux-keyutils v0.2.4
+    Checking secrecy v0.10.3
+    Checking glob v0.3.3
+    Checking io_tee v0.1.1
+    Checking keccak v0.1.6
+    Checking age-core v0.11.0
+    Checking keyring v3.6.3
+    Checking sha3 v0.10.9
+   Compiling i18n-embed-fl v0.9.4
+    Checking ghash v0.5.1
+    Checking codex-otel v0.0.0 (/workspace/bedrock-integration/codex-rs/otel)
+    Checking codex-model-provider-info v0.0.0 (/workspace/bedrock-integration/codex-rs/model-provider-info)
+    Checking scrypt v0.11.0
+    Checking ctr v0.9.2
+    Checking hybrid-array v0.2.3
+    Checking kem v0.3.0-pre.0
+    Checking bech32 v0.9.1
+    Checking age v0.11.2
+    Checking ml-kem v0.2.3
+    Checking thiserror-no-std v2.0.2
+    Checking aes-gcm v0.10.3
+    Checking codex-keyring-store v0.0.0 (/workspace/bedrock-integration/codex-rs/keyring-store)
+    Checking aws-credential-types v1.2.11
+    Checking aws-smithy-http v0.62.6
+    Checking axum-core v0.5.6
+    Checking codex-features v0.0.0 (/workspace/bedrock-integration/codex-rs/features)
+    Checking matchit v0.8.4
+    Checking axum v0.8.8
+    Checking codex-sandboxing v0.0.0 (/workspace/bedrock-integration/codex-rs/sandboxing)
+    Checking codex-config v0.0.0 (/workspace/bedrock-integration/codex-rs/config)
+    Checking codex-secrets v0.0.0 (/workspace/bedrock-integration/codex-rs/secrets)
+    Checking clatter v2.2.0
+    Checking codex-exec-server-protocol v0.0.0 (/workspace/bedrock-integration/codex-rs/exec-server-protocol)
+    Checking aws-smithy-http-client v1.1.12
+    Checking aws-smithy-observability v0.1.5
+    Checking debugid v0.8.0
+    Checking sentry-types v0.46.1
+    Checking aws-smithy-runtime v1.9.5
+    Checking codex-exec-server v0.0.0 (/workspace/bedrock-integration/codex-rs/exec-server)
+    Checking aws-types v1.3.11
+    Checking aws-sigv4 v1.3.7
+    Checking crypto_secretbox v0.1.1
+    Checking simple_asn1 v0.6.4
+    Checking blake2 v0.10.6
+    Checking ff v0.13.1
+    Checking base16ct v0.2.0
+    Checking chunked_transfer v1.5.0
+    Checking ascii v1.1.0
+   Compiling sqlx-core v0.9.0
+    Checking tiny_http v0.12.0
+    Checking sec1 v0.7.3
+    Checking group v0.13.0
+   Compiling darling_core v0.24.0
+    Checking jsonwebtoken v9.3.1
+    Checking crypto_box v0.9.1
+    Checking aws-runtime v1.5.17
+    Checking sentry-core v0.46.1
+    Checking codex-hepta-contracts v0.0.0 (/workspace/bedrock-integration/codex-rs/hepta-contracts)
+    Checking aws-smithy-json v0.61.9
+    Checking webbrowser v1.2.4
+    Checking crypto-bigint v0.5.5
+   Compiling foldhash v0.1.5
+    Checking codex-utils-template v0.0.0 (/workspace/bedrock-integration/codex-rs/utils/template)
+   Compiling bitflags v2.13.1
+    Checking gimli v0.32.3
+    Checking addr2line v0.25.1
+   Compiling hashbrown v0.15.5
+    Checking elliptic-curve v0.13.8
+   Compiling sqlx-sqlite v0.9.0
+    Checking codex-agent-identity v0.0.0 (/workspace/bedrock-integration/codex-rs/agent-identity)
+   Compiling darling_macro v0.24.0
+    Checking object v0.37.3
+    Checking codex-workload-identity v0.0.0 (/workspace/bedrock-integration/codex-rs/workload-identity)
+    Checking codex-terminal-detection v0.0.0 (/workspace/bedrock-integration/codex-rs/terminal-detection)
+    Checking futures-intrusive v0.5.0
+   Compiling findshlibs v0.10.2
+    Checking rustc-demangle v0.1.27
+   Compiling petgraph v0.8.3
+   Compiling sqlx-macros-core v0.9.0
+    Checking backtrace v0.3.76
+    Checking codex-login v0.0.0 (/workspace/bedrock-integration/codex-rs/login)
+   Compiling prost-types v0.14.3
+   Compiling darling v0.24.0
+    Checking rfc6979 v0.4.0
+    Checking xmlparser v0.13.6
+   Compiling prost-build v0.14.3
+    Checking aws-smithy-xml v0.60.13
+    Checking ecdsa v0.16.9
+    Checking schemars v1.2.1
+   Compiling rmcp-macros v3.1.3
+   Compiling sqlx-macros v0.9.0
+    Checking sentry-backtrace v0.46.1
+    Checking primeorder v0.13.6
+    Checking codex-utils-output-truncation v0.0.0 (/workspace/bedrock-integration/codex-rs/utils/output-truncation)
+    Checking oauth2 v5.0.0
+    Checking aws-smithy-query v0.60.9
+    Checking process-wrap v9.0.1
+    Checking reqwest v0.13.4
+    Checking sse-stream v0.2.5
+    Checking semver v1.0.27
+    Checking hostname v0.4.2
+    Checking uname v0.1.1
+    Checking base64 v0.23.0
+    Checking sentry-contexts v0.46.1
+    Checking codex-install-context v0.0.0 (/workspace/bedrock-integration/codex-rs/install-context)
+    Checking sqlx v0.9.0
+    Checking aws-sdk-sts v1.95.0
+    Checking p256 v0.13.2
+    Checking rmcp v3.1.3
+   Compiling tonic-prost-build v0.14.3
+    Checking sentry-debug-images v0.46.1
+    Checking sentry-panic v0.46.1
+    Checking codex-utils-plugins v0.0.0 (/workspace/bedrock-integration/codex-rs/utils/plugins)
+    Checking aws-sdk-signin v1.2.0
+    Checking aws-sdk-sso v1.91.0
+    Checking aws-sdk-ssooidc v1.93.0
+    Checking codex-history v0.0.0 (/workspace/bedrock-integration/codex-rs/history)
+    Checking codex-state v0.0.0 (/workspace/bedrock-integration/codex-rs/state)
+   Compiling codex-code-mode-protocol v0.0.0 (/workspace/bedrock-integration/codex-rs/code-mode-protocol)
+    Checking aws-config v1.8.12
+    Checking codex-plugin v0.0.0 (/workspace/bedrock-integration/codex-rs/plugin)
+    Checking sentry v0.46.1
+    Checking codex-collaboration-mode-templates v0.0.0 (/workspace/bedrock-integration/codex-rs/collaboration-mode-templates)
+    Checking codex-models-manager v0.0.0 (/workspace/bedrock-integration/codex-rs/models-manager)
+    Checking codex-feedback v0.0.0 (/workspace/bedrock-integration/codex-rs/feedback)
+    Checking codex-aws-auth v0.0.0 (/workspace/bedrock-integration/codex-rs/aws-auth)
+    Checking codex-response-debug-context v0.0.0 (/workspace/bedrock-integration/codex-rs/response-debug-context)
+    Checking codex-model-provider v0.0.0 (/workspace/bedrock-integration/codex-rs/model-provider)
+    Checking codex-connectors v0.0.0 (/workspace/bedrock-integration/codex-rs/connectors)
+    Checking codex-code-mode v0.0.0 (/workspace/bedrock-integration/codex-rs/code-mode)
+    Checking codex-exec-server-test-support v0.0.0 (/workspace/bedrock-integration/codex-rs/exec-server/tests/support)
+    Checking codex-diagnostics v0.0.0 (/workspace/bedrock-integration/codex-rs/diagnostics)
+    Checking jsonptr v0.7.1
+    Checking symphonia-core v0.6.0
+    Checking nucleo-matcher v0.3.1 (https://github.com/helix-editor/nucleo.git?rev=4253de9faabb4e5c6d81d946a5e35a90f87347ee#4253de9f)
+    Checking rayon v1.11.0
+    Checking codex-context-fragments v0.0.0 (/workspace/bedrock-integration/codex-rs/context-fragments)
+    Checking codex-rmcp-client v0.0.0 (/workspace/bedrock-integration/codex-rs/rmcp-client)
+    Checking codex-tools v0.0.0 (/workspace/bedrock-integration/codex-rs/tools)
+    Checking nucleo v0.5.0 (https://github.com/helix-editor/nucleo.git?rev=4253de9faabb4e5c6d81d946a5e35a90f87347ee#4253de9f)
+    Checking ignore v0.4.25
+    Checking symphonia-metadata v0.6.0
+    Checking codex-utils-cargo-bin v0.0.0 (/workspace/bedrock-integration/codex-rs/utils/cargo-bin)
+   Compiling lzma-sys v0.1.20
+    Checking codex-file-search v0.0.0 (/workspace/bedrock-integration/codex-rs/file-search)
+   Compiling bzip2-sys v0.1.13+1.0.8
+   Compiling codex-experimental-api-macros v0.0.0 (/workspace/bedrock-integration/codex-rs/codex-experimental-api-macros)
+    Checking codex-rollout v0.0.0 (/workspace/bedrock-integration/codex-rs/rollout)
+   Compiling codex-app-server-protocol-noop-macros v0.0.0 (/workspace/bedrock-integration/codex-rs/app-server-protocol-noop-macros)
+    Checking codex-mcp v0.0.0 (/workspace/bedrock-integration/codex-rs/codex-mcp)
+    Checking codex-app-server-protocol v0.0.0 (/workspace/bedrock-integration/codex-rs/app-server-protocol)
+    Checking codex-extension-api v0.0.0 (/workspace/bedrock-integration/codex-rs/ext/extension-api)
+    Checking symphonia-common v0.6.0
+   Compiling darling_core v0.20.11
+    Checking unsafe-libyaml v0.2.11
+   Compiling codex-skills v0.0.0 (/workspace/bedrock-integration/codex-rs/skills)
+    Checking serde_yaml v0.9.34+deprecated
+    Checking include_dir v0.7.4
+   Compiling darling_macro v0.20.11
+    Checking bzip2 v0.5.2
+   Compiling darling v0.20.11
+    Checking zopfli v0.8.3
+    Checking lzma-rs v0.3.0
+    Checking xz2 v0.1.7
+   Compiling stop-words v0.9.0
+    Checking filetime v0.2.27
+    Checking extended v0.1.0
+    Checking deflate64 v0.1.10
+    Checking zip v2.4.2
+    Checking symphonia-format-riff v0.6.0
+    Checking tar v0.4.45
+   Compiling cached_proc_macro v0.25.0
+    Checking symphonia-format-ogg v0.6.0
+    Checking symphonia-format-isomp4 v0.6.0
+    Checking symphonia-format-mkv v0.6.0
+    Checking symphonia-bundle-mp3 v0.6.0
+    Checking codex-hooks v0.0.0 (/workspace/bedrock-integration/codex-rs/hooks)
+    Checking cached_proc_macro_types v0.1.1
+    Checking web-time v1.1.0
+    Checking cached v0.56.0
+    Checking symphonia v0.6.0
+    Checking pulldown-cmark v0.10.3
+    Checking codex-apply-patch v0.0.0 (/workspace/bedrock-integration/codex-rs/apply-patch)
+    Checking codex-shell-escalation v0.0.0 (/workspace/bedrock-integration/codex-rs/shell-escalation)
+    Checking rust-stemmers v1.2.0
+    Checking deunicode v1.6.2
+    Checking codex-utils-audio v0.0.0 (/workspace/bedrock-integration/codex-rs/utils/audio)
+    Checking bm25 v2.3.2
+    Checking codex-prompts v0.0.0 (/workspace/bedrock-integration/codex-rs/prompts)
+    Checking codex-rollout-trace v0.0.0 (/workspace/bedrock-integration/codex-rs/rollout-trace)
+    Checking codex-agent-graph-store v0.0.0 (/workspace/bedrock-integration/codex-rs/agent-graph-store)
+    Checking codex-memories-read v0.0.0 (/workspace/bedrock-integration/codex-rs/memories/read)
+    Checking whoami v1.6.1
+    Checking codex-utils-stream-parser v0.0.0 (/workspace/bedrock-integration/codex-rs/utils/stream-parser)
+    Checking codex-hepta-types v0.0.0 (/workspace/bedrock-integration/codex-rs/hepta-types)
+    Checking codex-backend-openapi-models v0.0.0 (/workspace/bedrock-integration/codex-rs/codex-backend-openapi-models)
+    Checking inotify-sys v0.1.5
+   Compiling codex-linux-sandbox v0.0.0 (/workspace/bedrock-integration/codex-rs/linux-sandbox)
+    Checking inotify v0.11.0
+    Checking codex-backend-client v0.0.0 (/workspace/bedrock-integration/codex-rs/backend-client)
+    Checking codex-hepta-cognitive-types v0.0.0 (/workspace/bedrock-integration/codex-rs/hepta-cognitive-types)
+    Checking notify-types v2.1.0
+    Checking codex-process-hardening v0.0.0 (/workspace/bedrock-integration/codex-rs/process-hardening)
+    Checking is_ci v1.2.0
+    Checking notify v8.2.0
+    Checking codex-hepta-prompt-registry v0.0.0 (/workspace/bedrock-integration/codex-rs/hepta-prompt-registry)
+    Checking is-terminal v0.4.17
+    Checking dotenvy v0.15.7
+    Checking codex-arg0 v0.0.0 (/workspace/bedrock-integration/codex-rs/arg0)
+    Checking supports-color v2.1.0
+    Checking codex-hepta-cognitive-read v0.0.0 (/workspace/bedrock-integration/codex-rs/hepta-cognitive-read)
+    Checking codex-hepta-memory-retrieval v0.0.0 (/workspace/bedrock-integration/codex-rs/hepta-memory-retrieval)
+    Checking supports-color v3.0.2
+    Checking codex-hepta-authbus v0.0.0 (/workspace/bedrock-integration/codex-rs/hepta-authbus)
+    Checking codex-hepta-kg v0.0.0 (/workspace/bedrock-integration/codex-rs/hepta-kg)
+    Checking codex-hepta-memory-federation v0.0.0 (/workspace/bedrock-integration/codex-rs/hepta-memory-federation)
+    Checking codex-hepta-operations v0.0.0 (/workspace/bedrock-integration/codex-rs/hepta-operations)
+    Checking codex-home v0.0.0 (/workspace/bedrock-integration/codex-rs/codex-home)
+    Checking codex-hepta-paths v0.0.0 (/workspace/bedrock-integration/codex-rs/hepta-paths)
+    Checking codex-hepta-evidence v0.0.0 (/workspace/bedrock-integration/codex-rs/hepta-evidence)
+    Checking codex-hepta-memory v0.0.0 (/workspace/bedrock-integration/codex-rs/hepta-memory)
+    Checking owo-colors v4.3.0
+    Checking codex-utils-cli v0.0.0 (/workspace/bedrock-integration/codex-rs/utils/cli)
+    Checking codex-uds v0.0.0 (/workspace/bedrock-integration/codex-rs/uds)
+    Checking codex-hepta-governance v0.0.0 (/workspace/bedrock-integration/codex-rs/ext/hepta-governance)
+    Checking codex-file-watcher v0.0.0 (/workspace/bedrock-integration/codex-rs/file-watcher)
+    Checking codex-git-attribution v0.0.0 (/workspace/bedrock-integration/codex-rs/ext/git-attribution)
+    Checking codex-hepta-prompt-extension v0.0.0 (/workspace/bedrock-integration/codex-rs/ext/hepta-prompt)
+    Checking codex-utils-json-to-toml v0.0.0 (/workspace/bedrock-integration/codex-rs/utils/json-to-toml)
+    Checking num_cpus v1.17.0
+    Checking deadpool-runtime v0.1.4
+    Checking dtor v0.1.1
+    Checking deadpool v0.12.3
+    Checking assert-json-diff v2.0.2
+    Checking ctor v0.6.3
+    Checking wiremock v0.6.5
+   Compiling test-case-core v3.3.1
+    Checking sdd v3.0.10
+    Checking scc v2.4.0
+   Compiling test-case-macros v3.3.1
+error: this function has too many arguments (8/7)
+   --> hepta-memory/src/cognitive_intelligence_writer.rs:156:5
+    |
+156 | /     pub(crate) async fn correct_with_kg_tx(
+157 | |         &self,
+158 | |         transaction: &mut Transaction<'_, Sqlite>,
+159 | |         access: &CognitiveAccess,
+...   |
+164 | |         facts: &KgFactSetDraft,
+165 | |     ) -> Result<CognitiveWriteReceipt, CognitiveStoreError> {
+    | |___________________________________________________________^
+    |
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.95.0/index.html#too_many_arguments
+    = note: `-D clippy::too-many-arguments` implied by `-D warnings`
+    = help: to override `-D warnings` add `#[allow(clippy::too_many_arguments)]`
+
+    Checking serial_test v3.3.1
+    Checking test-case v3.3.1
+    Checking codex-analytics v0.0.0 (/workspace/bedrock-integration/codex-rs/analytics)
+    Checking codex-thread-store v0.0.0 (/workspace/bedrock-integration/codex-rs/thread-store)
+error: this function has too many arguments (8/7)
+    --> hepta-memory/src/local_lease_outbox.rs:2618:5
+     |
+2618 | /     async fn append_outcome_in_transaction(
+2619 | |         &self,
+2620 | |         transaction: &mut Transaction<'_, Sqlite>,
+2621 | |         occurrence_key: String,
+...    |
+2626 | |         allow_exact_replay: bool,
+2627 | |     ) -> Result<LocalOutcomeReceipt, LocalLeaseOutboxError> {
+     | |___________________________________________________________^
+     |
+     = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.95.0/index.html#too_many_arguments
+
+    Checking codex-core-plugins v0.0.0 (/workspace/bedrock-integration/codex-rs/core-plugins)
+error: could not compile `codex-hepta-memory` (lib) due to 2 previous errors
+warning: build failed, waiting for other jobs to finish...
