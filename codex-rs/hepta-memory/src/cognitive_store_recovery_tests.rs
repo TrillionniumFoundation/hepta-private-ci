@@ -30,6 +30,10 @@ use crate::cognitive_test_support::source;
 #[path = "cognitive_store_recovery_read_only_tests.rs"]
 mod cold_read_only;
 
+#[cfg(target_os = "linux")]
+#[path = "cognitive_store_material_install_tests.rs"]
+mod root_install;
+
 #[cfg(unix)]
 #[path = "cognitive_store_material_tests.rs"]
 mod root_material;
