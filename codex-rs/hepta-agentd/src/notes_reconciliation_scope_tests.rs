@@ -8,11 +8,11 @@ async fn prepare_device(
     host: &AgentdProductionWriterHost,
     owner: &AgentId,
     name: &str,
-    sequence: u64,
+    space_id: [u8; 16],
 ) -> Result<ProductionQueuedReceipt, Box<dyn Error>> {
     let request = Hos2InstallBudgetV1 {
         schema_version: 1,
-        delivery: Hos2DeliveryId::new([1; 16], [2; 16], sequence)?,
+        delivery: Hos2DeliveryId::new([1; 16], space_id, /*sequence*/ 1)?,
         manage_slot: 2,
         manage_generation: 1,
         expected_revision: 1,
@@ -89,7 +89,7 @@ async fn finite_notes_reconciler_excludes_device_grants_dispatch_and_observation
         )?,
     );
     assert_eq!(host.destination_count(), 2);
-    let rejected = prepare_device(&host, &owner, "device:scope:rejected", /*sequence*/ 1).await?;
+    let rejected = prepare_device(&host, &owner, "device:scope:rejected", [2; 16]).await?;
     // Match the original actual_reconciler fixture's real five-second claim.
     // Without it dispatch creates the production thirty-second claim, whose
     // original retry eligibility cannot occur within this test's ten seconds.
@@ -133,11 +133,44 @@ async fn finite_notes_reconciler_excludes_device_grants_dispatch_and_observation
         );
         tokio::time::sleep(Duration::from_millis(10)).await;
     }
-    let queued = prepare_device(&host, &owner, "device:scope:queued", /*sequence*/ 2).await?;
-    let unknown = prepare_device(&host, &owner, "device:scope:unknown", /*sequence*/ 3).await?;
+    let queued = prepare_device(&host, &owner, "device:scope:queued", [3; 16]).await?;
+    let unknown = prepare_device(&host, &owner, "device:scope:unknown", [4; 16]).await?;
     host.writer()
         .mark_indeterminate(&unknown.occurrence_key, "fixture lost device entry")
         .await?;
+    // Independent original namespaces can legally retain these three states
+    // at once. One namespace cannot advance while its predecessor is unknown.
+    let mut namespaces = BTreeSet::new();
+    for receipt in [&rejected, &queued, &unknown] {
+        let request = Hos2InstallBudgetV1::from_json(&receipt.payload_json)?;
+        assert_eq!(request.delivery.sequence()?, 1);
+        namespaces.insert((request.delivery.boot_id, request.delivery.space_id));
+    }
+    assert_eq!(namespaces.len(), 3);
+    assert_eq!(
+        [
+            host.writer().status(&rejected.occurrence_key).await?,
+            host.writer().status(&queued.occurrence_key).await?,
+            host.writer().status(&unknown.occurrence_key).await?,
+        ],
+        [
+            LocalOutcomeState::Indeterminate,
+            LocalOutcomeState::Queued,
+            LocalOutcomeState::Indeterminate,
+        ]
+    );
+    assert_eq!(
+        host.writer()
+            .awaiting_authorization(HOS2_DESTINATION_V1, /*limit*/ 8)
+            .await?
+            .into_iter()
+            .map(|receipt| receipt.occurrence_key)
+            .collect::<Vec<_>>(),
+        vec![rejected.occurrence_key.clone()]
+    );
+    assert_eq!(issuer.requests.load(Ordering::SeqCst), 1);
+    assert_eq!(primary_device.installs.load(Ordering::SeqCst), 0);
+    assert_eq!(primary_device.queries.load(Ordering::SeqCst), 0);
     let payload = serde_json::to_string(&json!({
         "schema_version":1,"action":"replace_note","operation_id":"notes.scope.lost-ack",
         "destination_id":target.destination_id(),"target":target,"expected_revision":0,"text":"Notes scope fixture"
