@@ -115,7 +115,7 @@ pub(crate) async fn tick(state: &AgentdState) -> Result<(), AgentdError> {
     result
 }
 
-async fn connect(state: &AgentdState) -> Result<RemoteAppServerClient, AgentdError> {
+pub(crate) async fn connect(state: &AgentdState) -> Result<RemoteAppServerClient, AgentdError> {
     let identity = state.identity();
     let connect = RemoteAppServerClient::connect_with_bounded_events(
         RemoteAppServerConnectArgs {
@@ -261,7 +261,7 @@ async fn deliver<Q: TextQueueTransport>(
     }
 }
 
-fn input_digest(input: &[UserInput]) -> Result<String, AgentdError> {
+pub(crate) fn input_digest(input: &[UserInput]) -> Result<String, AgentdError> {
     user_input_payload_sha256(
         &input
             .iter()
@@ -272,7 +272,7 @@ fn input_digest(input: &[UserInput]) -> Result<String, AgentdError> {
     .map_err(Into::into)
 }
 
-fn receipt(
+pub(crate) fn receipt(
     response: &ThreadQueueReconcileResponse,
     client_id: &str,
     expected: &str,

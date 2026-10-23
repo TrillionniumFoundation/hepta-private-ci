@@ -8,6 +8,7 @@ mod app_runtime;
 mod authbus_checkpoint;
 mod audio_observation;
 mod audio_policy;
+mod audio_dispatch;
 mod authbus_dispatch;
 mod authbus_ingress;
 mod authbus_trust;

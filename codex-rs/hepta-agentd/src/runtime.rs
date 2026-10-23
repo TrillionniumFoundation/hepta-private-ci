@@ -41,6 +41,11 @@ pub async fn run(
 ) -> Result<(), AgentdError> {
     let production_operations = config.take_production_operations();
     let hmi_text_enabled = config.hmi_text_enabled();
+    let hmi_audio_authority_file = config.hmi_audio_authority_file().map(std::path::Path::to_path_buf);
+    let hmi_audio_enabled = hmi_audio_authority_file.is_some();
+    if hmi_audio_enabled && !hmi_text_enabled {
+        return Err(AgentdError::Invalid("audio observations require the existing HMI port".into()));
+    }
     let plasticity_bootstrap = config.take_plasticity_runtime_bootstrap();
     let trust_file = config
         .authbus_trust_file()
@@ -138,8 +143,12 @@ pub async fn run(
     match (trust_file, checkpoint_file) {
         (Some(trust), Some(checkpoint)) => {
             state.refresh_generation()?;
-            let host =
+            let mut host =
                 crate::authbus_ingress::TextIngress::open(&identity, trust, checkpoint).await?;
+            if let Some(path) = hmi_audio_authority_file {
+                crate::audio_policy::AudioPolicy::load(&path, &identity)?;
+                host.audio_authority_file = Some(path);
+            }
             state.refresh_generation()?;
             state
                 .authbus
@@ -304,6 +313,9 @@ pub async fn run(
             "authbus-relay",
             crate::authbus_dispatch::run(Arc::clone(&state), cancellation.clone()),
         )?;
+        if hmi_audio_enabled {
+            tasks.spawn_required("audio-observation-relay", crate::audio_dispatch::run(Arc::clone(&state), cancellation.clone()))?;
+        }
         if let Some(owner) = plasticity_runtime {
             tasks.spawn_required(
                 "plasticity-owner",

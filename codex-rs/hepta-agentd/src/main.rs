@@ -18,6 +18,7 @@ fn main() -> anyhow::Result<()> {
         let mut args = std::env::args_os().skip(1);
         let mut authbus_trust = None;
         let mut hmi_text = false;
+        let mut hmi_audio_authority = None;
         let mut intelligence_authority_file = None;
         let mut intelligence_authority_signer = None;
         let mut intelligence_authority_verifying_key = None;
@@ -41,6 +42,9 @@ fn main() -> anyhow::Result<()> {
             if flag == "--authbus-trust-file" {
                 anyhow::ensure!(authbus_trust.is_none(), "duplicate --authbus-trust-file");
                 authbus_trust = Some(path);
+            } else if flag == "--hmi-audio-authority-file" {
+                anyhow::ensure!(hmi_audio_authority.is_none(), "duplicate --hmi-audio-authority-file");
+                hmi_audio_authority = Some(path);
             } else if flag == "--plasticity-bootstrap-descriptor" {
                 anyhow::ensure!(
                     plasticity_bootstrap_descriptor.is_none(),
@@ -119,6 +123,9 @@ fn main() -> anyhow::Result<()> {
         }
         if hmi_text {
             config = config.with_hmi_text();
+        }
+        if let Some(path) = hmi_audio_authority {
+            config = config.with_hmi_audio_authority_file(path.into());
         }
         match (
             intelligence_authority_file,

@@ -77,6 +77,7 @@ pub struct AgentdConfig {
     _writer_lock: File,
     authbus_trust_file: Option<PathBuf>,
     hmi_text_enabled: bool,
+    hmi_audio_authority_file: Option<PathBuf>,
     evidence_trust_file: Option<PathBuf>,
     automation_effect_host_file: Option<PathBuf>,
     evidence_recovery_frontier_file: Option<PathBuf>,
@@ -201,6 +202,7 @@ impl AgentdConfig {
             _writer_lock: writer_lock,
             authbus_trust_file: None,
             hmi_text_enabled: false,
+            hmi_audio_authority_file: None,
             evidence_trust_file: None,
             automation_effect_host_file: None,
             evidence_recovery_frontier_file: None,
@@ -239,6 +241,15 @@ impl AgentdConfig {
     }
     pub(crate) fn hmi_text_enabled(&self) -> bool {
         self.hmi_text_enabled
+    }
+    /// Read an existing owner policy for independently signed audio observations.
+    /// This neither provisions the policy nor requests hardware permissions.
+    pub fn with_hmi_audio_authority_file(mut self, path: PathBuf) -> Self {
+        self.hmi_audio_authority_file = Some(path);
+        self
+    }
+    pub(crate) fn hmi_audio_authority_file(&self) -> Option<&Path> {
+        self.hmi_audio_authority_file.as_deref()
     }
 
     /// Explicit multi-issuer role registry for kernel.evidence product ingress.
