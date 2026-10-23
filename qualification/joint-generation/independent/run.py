@@ -1,0 +1,484 @@
+"""Freeze, train/select, then separately open an independent efficient-budget test."""
+
+import argparse
+import hashlib
+import json
+import os
+from pathlib import Path
+import subprocess
+import sys
+import time
+import traceback
+
+import numpy as np
+
+from control import fit_controller
+from data import decoded_metrics, outcome_table, templates
+from independent.accounting import WorkLedger, compare_budgets, counted_model_class
+from independent.calibration import calibration_manifest, stratified_indices
+from independent.data_v2 import dataset, manifest
+from independent.inference import FrozenGenerator, units
+from independent.learning import CachedObjective, setup_work, step_work
+from model import JointModel
+
+
+ROOT = Path(__file__).resolve().parents[1]
+PLAN = ROOT / "independent/plan.json"
+MARKER = ROOT / "independent/efficient-r2-test-opened.json"
+
+
+def sha(path):
+    return hashlib.sha256(Path(path).read_bytes()).hexdigest()
+
+
+def write_json(path, value, *, exclusive=True):
+    with Path(path).open("x" if exclusive else "w", encoding="utf-8") as stream:
+        json.dump(value, stream, indent=2, sort_keys=True, allow_nan=False)
+        stream.write("\n")
+
+
+def cpu_clock():
+    child = os.times()
+    return time.process_time() + child.children_user + child.children_system
+
+
+def sources():
+    paths = list(ROOT.glob("*.py")) + list((ROOT / "independent").glob("*.py"))
+    paths += list((ROOT / "independent").glob("*.c"))
+    return {str(p.relative_to(ROOT)): sha(p) for p in sorted(paths)}
+
+
+def freeze(receipt):
+    if MARKER.exists():
+        raise ValueError("independent test already opened; no new freeze/repeat")
+    head = subprocess.check_output(["git", "rev-parse", "HEAD"], cwd=ROOT, text=True).strip()
+    identity = sources()
+    for name, digest in {**identity, "independent/plan.json": sha(PLAN)}.items():
+        committed = subprocess.check_output([
+            "git", "show", head + ":qualification/joint-generation/" + name], cwd=ROOT)
+        if hashlib.sha256(committed).hexdigest() != digest:
+            raise ValueError("commit all protocol/source bytes before freezing: " + name)
+    write_json(receipt, {"schema": "hepta.joint-generation.efficient-freeze.v2",
+        "source_commit": head, "plan_sha256": sha(PLAN), "sources": identity,
+        "plan": json.loads(PLAN.read_text()), "test_opened": False,
+        "created_unix_ns": time.time_ns()})
+
+
+def check_freeze(path):
+    frozen = json.loads(Path(path).read_text())
+    if MARKER.exists():
+        raise ValueError("independent test already opened; training cannot resume")
+    if frozen["test_opened"] or frozen["plan_sha256"] != sha(PLAN):
+        raise ValueError("frozen protocol mismatch")
+    if frozen["sources"] != sources():
+        raise ValueError("frozen execution source changed")
+    if frozen["plan"] != json.loads(PLAN.read_text()):
+        raise ValueError("frozen plan bytes/meaning differ")
+    return frozen
+
+
+def plain_copy(model):
+    out = JointModel(*model.dimensions[:3], hidden=model.dimensions[3])
+    out.params = {name: value.copy() for name, value in model.params.items()}
+    return out
+
+
+def observer_work(n):
+    return {"macs": 4 * n * 12 * 12, "scalar_ops": 124 * n,
+            "compare_ops": 14 * n, "div_ops": n}
+
+
+def score(model, p, q, data):
+    reward = outcome_table(model)[data["labels"]]
+    metrics = decoded_metrics(model, p, q, data["labels"])
+    metrics["task_utility"] = np.einsum("ni,nij,nj->n", p, reward, q)
+    return {key: float(value.mean()) for key, value in metrics.items()}
+
+
+def validation_work(model, n):
+    generator = FrozenGenerator(model, prepare_low=False)
+    work = {}
+    for part in (generator.full_work(n), generator.low_work(n), generator.prepare_work(),
+                 {"scalar_ops": 24 * n, "div_ops": 24 * n},
+                 *([observer_work(n)] * 3), *([setup_work(model.dimensions, "additive")] * 6)):
+        for key, value in part.items():
+            work[key] = work.get(key, 0) + value
+    return work
+
+
+def batch_validation(model, data, ledger, *, stage="search_validation"):
+    n = len(data["labels"])
+    ledger.charge_kernel(stage, "two_view_validation", **validation_work(model, n),
+                         counts={"validation_rows": n, "validation_candidates": 1,
+                                 "model_forward_rows": 2 * n, "observer_modes": 3})
+    gen = FrozenGenerator(model)
+    pf, qf = gen.forward_full(data["full"])
+    pl, ql = gen.forward_low(data["full"])
+    predictions = {"full": (pf, qf), "low": (pl, ql),
+                   "ensemble": ((pf + pl) / 2, (qf + ql) / 2)}
+    return {mode: score(model, p, q, data) for mode, (p, q) in predictions.items()}, predictions
+
+
+def save_model(model, path, ledger, stage):
+    before = cpu_clock()
+    model.save(path)
+    ledger.record(stage, serialized_bytes=Path(path).stat().st_size,
+                  serialized_tensors=len(model.params) + 1)
+    return {"file": Path(path).name, "sha256": sha(path), "digest": model.digest(),
+            "serialization_cpu_seconds": cpu_clock() - before}
+
+
+def prepare_shared(plan, run, runtime_plan):
+    from independent.evaluation import measure
+    from independent.native import compile_native
+
+    started = cpu_clock()
+    shared = WorkLedger("shared-build", total_cap=plan["operator_units_per_system"])
+    train = dataset("train", plan["data_profile"])
+    val = dataset("validation", plan["data_profile"])
+    if (set(train["source_ids"]) & set(val["source_ids"])
+            or set(train["input_hashes"]) & set(val["input_hashes"])):
+        raise ValueError("independent training/validation leakage")
+    shared.record("base_data", prepared_rows=len(train["labels"]) + len(val["labels"]))
+    take = stratified_indices(train, plan["calibration_per_class"], plan["calibration_salt"])
+    if len(take) != plan["calibration_rows"]:
+        raise ValueError("stratified calibration rows differ from frozen protocol")
+    calibration_identity = calibration_manifest(train, take)
+    calibration_data = {key: value[take] for key, value in train.items()
+                        if key in ("full", "labels", "source_ids", "groups")}
+    (run / "build").mkdir()
+    compiled = compile_native(run / "build/libjoint.so")
+    shared.record("base_compile", compiler_invocations=1,
+                  native_library_bytes=(run / "build/libjoint.so").stat().st_size)
+    runtime_plan["native_library"] = str((run / "build/libjoint.so").resolve())
+    bases, base_rows, calibrations = {}, {}, {}
+    Counted = counted_model_class(JointModel)
+    for seed in plan["model_seeds"]:
+        decoder = Counted(202, 12, 192, hidden=plan["hidden"], seed=seed, ledger=shared)
+        with shared.phase("base_decoder"):
+            mse = decoder.fit_decoder(templates(), steps=plan["decoder_steps"])
+        model = plain_copy(decoder)
+        objective = CachedObjective("supervised", model)
+        rng = np.random.default_rng(seed + 1000)
+        for _ in range(plan["pretrain_steps"]):
+            idx = rng.integers(len(train["labels"]), size=plan["batch_size"])
+            full = rng.random(len(idx)) < 0.5
+            x = np.where(full[:, None], train["full"][idx], train["low"][idx])
+            objective.step(model, x, train["labels"][idx], 0.003,
+                           ledger=shared, stage="base_pretrain")
+        base_validation, _ = batch_validation(model, val, shared, stage="base_validation")
+        times, costs = {}, {}
+        for mode in plan["static_modes"]:
+            cpu_samples, work_samples = [], []
+            for _ in range(plan["calibration_repeats"]):
+                measured = measure(model, None, mode, calibration_data, runtime_plan, 1.0,
+                                   seed=seed, observe=False)
+                cpu_samples.extend(measured["per_row_cost"]["cpu_ns"])
+                work_samples.extend(measured["per_row_cost"]["work_units"])
+                shared.record("base_calibration", units=int(round(sum(
+                    measured["per_row_cost"]["work_units"])))
+                    + measured["cost"]["prepare"]["consumed_units"],
+                    measured_service_requests=len(calibration_data["labels"]))
+            times[mode] = float(np.median(cpu_samples))
+            costs[mode] = float(np.mean(work_samples))
+        calibrations[seed] = {"cpu_ns": times, "work_units": costs}
+        shared.record("base_calibration", serving_calibration_rows=len(calibration_data["labels"])
+                      * len(plan["static_modes"]) * plan["calibration_repeats"])
+        base_rows[seed] = {"decoder_mse": mse, "validation": base_validation,
+                          **save_model(model, run / f"base-{seed}.npz", shared, "base_export")}
+        bases[seed] = model
+    return shared, bases, train, val, {"bases": base_rows, "calibrations": calibrations,
+        "calibration_identity": calibration_identity,
+        "native_compile": compiled, "cpu_seconds": cpu_clock() - started}
+
+
+def choose_global(candidates, plan):
+    choices = [(lr, mode) for lr in plan["learning_rates"] for mode in plan["static_modes"]]
+    return max(choices, key=lambda pair: np.mean([
+        row["validation"][pair[1]]["calibrated_net_utility"]
+        for row in candidates if row["learning_rate"] == pair[0]]))
+
+
+def train_system(system, plan, run, shared, bases, train, val, common):
+    ledger = WorkLedger(system, total_cap=plan["operator_units_per_system"])
+    ledger.attribute_shared(shared)
+    started = cpu_clock()
+    extra_units = plan["control_reserve_units"] if system == "ndu_control" else 0
+    extra_cpu = plan["control_reserve_cpu_seconds"] if system == "ndu_control" else 0
+    n_candidates = len(plan["model_seeds"]) * len(plan["learning_rates"])
+    representative = next(iter(bases.values()))
+    fixed_validation = ledger.estimate_kernel(**validation_work(representative, len(val["labels"])))
+    fixed_setup = ledger.estimate_kernel(**setup_work(representative.dimensions, system))
+    available = (ledger.remaining_units - extra_units - plan["tail_reserve_units"]
+                 - n_candidates * (fixed_validation + fixed_setup))
+    candidate_units = available // n_candidates
+    candidate_cpu = (plan["cpu_seconds_per_system"] - common["cpu_seconds"] - extra_cpu
+        - plan["tail_reserve_cpu_seconds"] - n_candidates * plan["candidate_validation_reserve_cpu_seconds"]) / n_candidates
+    if candidate_units <= 0 or candidate_cpu <= plan["cpu_guard_seconds"]:
+        raise ValueError("shared build leaves no useful candidate training budget")
+    results = []
+    for seed in plan["model_seeds"]:
+        for lr in plan["learning_rates"]:
+            model = plain_copy(bases[seed])
+            objective = CachedObjective(system, model, rho=plan["rho"],
+                ce_anchor=plan["ce_anchor"], ledger=ledger)
+            rng = np.random.default_rng(seed + 9000)
+            step_units = ledger.estimate_kernel(**step_work(model.dimensions, system, plan["batch_size"]))
+            step_start, cpu_start, steps = ledger.consumed_units, cpu_clock(), 0
+            last_step_cpu = 0.0
+            losses = []
+            while (ledger.consumed_units - step_start + step_units <= candidate_units
+                   and cpu_clock() - cpu_start + max(plan["cpu_guard_seconds"], 2 * last_step_cpu) <= candidate_cpu):
+                idx = rng.integers(len(train["labels"]), size=plan["batch_size"])
+                full = rng.random(len(idx)) < 0.5
+                x = np.where(full[:, None], train["full"][idx], train["low"][idx])
+                before = cpu_clock()
+                losses.append(objective.step(model, x, train["labels"][idx], lr, ledger=ledger))
+                last_step_cpu = cpu_clock() - before
+                steps += 1
+            if steps == 0:
+                raise ValueError("no complete update admitted")
+            validation, _ = batch_validation(model, val, ledger)
+            ref = common["reference_full_cpu_ns"]
+            for mode in plan["static_modes"]:
+                validation[mode]["calibrated_net_utility"] = validation[mode]["task_utility"] - (
+                    plan["compute_price"] * common["calibrations"][seed]["cpu_ns"][mode] / ref)
+            name = f"{system}-{seed}-{lr}"
+            artifact = save_model(model, run / (name + ".npz"), ledger, "search_export")
+            row = {"system": system, "seed": seed, "learning_rate": lr, "name": name,
+                "updates": steps, "mean_training_loss": float(np.mean(losses)),
+                "candidate_train_units": ledger.consumed_units - step_start - fixed_validation,
+                "candidate_train_cpu_seconds": cpu_clock() - cpu_start,
+                "validation": validation, "model_file": artifact["file"],
+                "model_sha256": artifact["sha256"], "model_digest": artifact["digest"],
+                "reference_full_cpu_ns": ref}
+            results.append(row)
+            print(json.dumps({"candidate": name, "updates": steps, "validation": validation}), flush=True)
+    lr, mode = choose_global(results, plan)
+    selected = [{**row, "mode": mode, "controller_file": None, "controller_sha256": None,
+                 "controller_type": None} for row in results if row["learning_rate"] == lr]
+    cpu = common["cpu_seconds"] + cpu_clock() - started
+    return ledger, results, selected, {"cpu_seconds": cpu, "candidate_train_unit_cap": candidate_units,
+        "candidate_train_cpu_seconds_cap": candidate_cpu, "selected_lr": lr, "selected_static_mode": mode}
+
+
+def fit_selected_controls(selected, plan, runtime_plan, run, train, ledger):
+    started = cpu_clock()
+    for row in selected:
+        model = JointModel.load(run / row["model_file"])
+        objective = CachedObjective("ndu", model, rho=plan["rho"],
+            ce_anchor=plan["ce_anchor"], ledger=ledger, stage="critic_targets")
+        gen = FrozenGenerator(model, ledger, "critic_prepare")
+        pl, ql = gen.forward_low(train["full"], ledger, "critic_targets")
+        pf, qf = gen.forward_full(train["full"], ledger, "critic_targets")
+        vl = objective.utility_values(pl, ql, train["labels"], ledger=ledger)
+        vf = objective.utility_values(pf, qf, train["labels"], ledger=ledger)
+        ledger.critic_fit("critic_fit", rows=len(pl), classes=12)
+        controller = fit_controller(pl, ql, vf - vl,
+            regularization=plan["controller"]["ridge_regularization"])
+        name = row["name"] + "-controller.npz"
+        np.savez_compressed(run / name, **controller.to_arrays())
+        ledger.record("critic_export", serialized_bytes=(run / name).stat().st_size,
+                      serialized_tensors=7)
+        row.update(mode="continuation", controller_type="continuation", controller_file=name,
+                   controller_sha256=sha(run / name), gain_objective="full-minus-low entropic CE",
+                   rho=plan["rho"])
+    return cpu_clock() - started
+
+
+def controller_for(run, row):
+    if row["controller_file"] is None:
+        return None
+    from control import Controller
+    with np.load(run / row["controller_file"], allow_pickle=False) as arrays:
+        return Controller.from_arrays(arrays)
+
+
+def charge_measure(report, model, n, ledger):
+    used = int(round(sum(report["per_row_cost"]["work_units"]))) + report["cost"]["prepare"]["consumed_units"]
+    ledger.record("selection_validation", units=used, serving_validation_rows=n)
+    for _ in range(3):
+        ledger.charge_kernel("selection_validation", "observer_preparation",
+                             **setup_work(model.dimensions, "additive"))
+    observed = observer_work(n)
+    observed["macs"] += 2 * n * 12 * 12
+    observed["scalar_ops"] += 2 * n
+    ledger.charge_kernel("selection_validation", "decoded_observer", **observed)
+
+
+def validate_selected(selected, plan, runtime_plan, run, val, ledger):
+    from independent.evaluation import measure
+    measured = {}
+    for row in selected:
+        model = JointModel.load(run / row["model_file"])
+        report = measure(model, controller_for(run, row), row["mode"], val,
+            runtime_plan, row["reference_full_cpu_ns"], seed=row["seed"])
+        # measure performs normal utility, decoded metrics and a real corrupted
+        # decoder negative control outside service timers. They still cost build
+        # work during validation, including their three decoder observations.
+        charge_measure(report, model, len(val["labels"]), ledger)
+        measured[row["seed"]] = report
+        # A no-critic random baseline can reinvest the saved low/critic work in
+        # a greater probability of direct full generation. Fix it on validation.
+        gen = FrozenGenerator(model, prepare_low=False)
+        output_units = report["cost"]["reference_full_work_units"] - units(gen.full_work(1))
+        lo = units(gen.low_work(1)) + output_units
+        hi = units(gen.full_work(1)) + output_units
+        row["random_full_probability"] = float(np.clip((np.mean(
+            report["per_row_cost"]["work_units"]) - lo - 2) / (hi - lo), 0, 1))
+        if row["system"] == "ndu_control":
+            random_report = measure(model, None, "random", val,
+                {**runtime_plan, "random_full_probability": row["random_full_probability"]},
+                row["reference_full_cpu_ns"], seed=row["seed"])
+            charge_measure(random_report, model, len(val["labels"]), ledger)
+            report["random_validation"] = random_report
+    return measured
+
+
+def train(freeze_path, out):
+    start = cpu_clock()
+    frozen = check_freeze(freeze_path)
+    plan = frozen["plan"]
+    run = Path(out).resolve()
+    run.mkdir(parents=True, exist_ok=False)
+    runtime_plan = {**plan}
+    try:
+        shared, bases, train_data, val, common = prepare_shared(plan, run, runtime_plan)
+        common["cpu_seconds"] = cpu_clock() - start
+        common["reference_full_cpu_ns"] = common["calibrations"][plan["model_seeds"][0]]["cpu_ns"]["full"]
+        all_candidates, selected, ledgers, system_cost, val_measures = [], [], {}, {}, {}
+        for system in plan["systems"]:
+            system_start = cpu_clock()
+            ledger, candidates, chosen, cost = train_system(
+                system, plan, run, shared, bases, train_data, val, common)
+            if system == "ndu_control":
+                cost["critic_cpu_seconds"] = fit_selected_controls(chosen, plan, runtime_plan, run, train_data, ledger)
+            val_measures[system] = validate_selected(chosen, plan, runtime_plan, run, val, ledger)
+            cost["cpu_seconds"] = common["cpu_seconds"] + cpu_clock() - system_start
+            for row in chosen:
+                row["build_cpu_ns"] = cost["cpu_seconds"] * 1e9 / len(plan["model_seeds"])
+            all_candidates.extend(candidates)
+            selected.extend(chosen)
+            ledgers[system], system_cost[system] = ledger, cost
+        final_selection_start = cpu_clock()
+        fairness = compare_budgets(ledgers, required_stages={name: (
+            "base_decoder", "base_pretrain", "base_validation", "search_train", "search_validation",
+            "selection_validation", *(("critic_fit",) if name == "ndu_control" else ()))
+            for name in ledgers})
+        # Full build amortization is fixed after all validation/search CPU has
+        # been measured. It is never silently omitted from the system comparison.
+        for row in selected:
+            report = val_measures[row["system"]][row["seed"]]
+            runtime_net = report["per_row"].get("runtime_cpu_net_utility",
+                                              report["per_row"]["cpu_net_utility"])
+            overhead = plan["compute_price"] * row["build_cpu_ns"] / (
+                plan["service_horizon"] * row["reference_full_cpu_ns"])
+            net = np.asarray(runtime_net) - overhead
+            report["per_row"]["cpu_net_utility"] = net.tolist()
+            report["means"]["cpu_net_utility"] = float(net.mean())
+        static = [name for name in plan["systems"] if name != "ndu_control"]
+        reference = max(static, key=lambda name: np.mean([
+            report["means"]["cpu_net_utility"] for report in val_measures[name].values()]))
+        contrasts = {}
+        for left, right in (("additive", "anchor"), ("ndu", "additive")):
+            for metric in ("task_utility", "joint_success"):
+                means = []
+                for seed in plan["model_seeds"]:
+                    l = next(row for row in selected if row["system"] == left and row["seed"] == seed)
+                    rr = next(row for row in selected if row["system"] == right and row["seed"] == seed)
+                    means.append(l["validation"]["full"][metric] - rr["validation"]["full"][metric])
+                contrasts[left + "-" + right + ":" + metric] = float(np.mean(means))
+        contrasts["ndu_control-" + reference + ":cpu_net_utility"] = float(np.mean([
+            val_measures["ndu_control"][seed]["means"]["cpu_net_utility"]
+            - val_measures[reference][seed]["means"]["cpu_net_utility"] for seed in plan["model_seeds"]]))
+        for metric in ("task_utility", "joint_success"):
+            contrasts["ndu_control-random:" + metric] = float(np.mean([
+                report["means"][metric] - report["random_validation"]["means"][metric]
+                for report in val_measures["ndu_control"].values()]))
+        greedy_drops = []
+        for left, right in (("anchor", "additive"), ("additive", "ndu")):
+            for seed in plan["model_seeds"]:
+                l = next(row for row in selected if row["system"] == left and row["seed"] == seed)
+                rr = next(row for row in selected if row["system"] == right and row["seed"] == seed)
+                greedy_drops.append(l["validation"]["full"]["greedy_joint_success"]
+                                    - rr["validation"]["full"]["greedy_joint_success"])
+        for seed in plan["model_seeds"]:
+            greedy_drops.append(val_measures[reference][seed]["means"]["greedy_joint_success"]
+                                - val_measures["ndu_control"][seed]["means"]["greedy_joint_success"])
+        maximum_greedy_drop = max(greedy_drops)
+        corruption = all(report["decoder_corruption_score_drop"] > 0
+                         for reports in val_measures.values() for report in reports.values())
+        # Selection is useful build work. Each system receives the entire shared
+        # final-selection CPU; administrative receipt writing stays outside it.
+        final_selection_cpu = cpu_clock() - final_selection_start
+        for name, cost in system_cost.items():
+            cost["final_selection_cpu_seconds"] = final_selection_cpu
+            cost["cpu_seconds"] += final_selection_cpu
+            for row in (row for row in selected if row["system"] == name):
+                row["build_cpu_ns"] = cost["cpu_seconds"] * 1e9 / len(plan["model_seeds"])
+                report = val_measures[name][row["seed"]]
+                adjustment = plan["compute_price"] * final_selection_cpu * 1e9 / (
+                    len(plan["model_seeds"]) * plan["service_horizon"] * row["reference_full_cpu_ns"])
+                net = np.asarray(report["per_row"]["cpu_net_utility"]) - adjustment
+                report["per_row"]["cpu_net_utility"] = net.tolist()
+                report["means"]["cpu_net_utility"] = float(net.mean())
+        violations = [name for name, value in system_cost.items()
+                      if value["cpu_seconds"] > plan["cpu_seconds_per_system"]]
+        ready = (not violations and all(value > 0 for value in contrasts.values())
+                 and corruption and maximum_greedy_drop <= plan["maximum_greedy_drop"])
+        for system in plan["systems"]:
+            write_json(run / (system + "-build.json"), {"ledger": ledgers[system].snapshot(),
+                "cost": system_cost[system],
+                "all_candidates": [row for row in all_candidates if row["system"] == system],
+                "selected": [row for row in selected if row["system"] == system]})
+        selection = {"schema": "hepta.joint-generation.efficient-selection.v2", "plan": plan,
+            "plan_sha256": frozen["plan_sha256"], "sources": frozen["sources"],
+            "source_commit": frozen["source_commit"], "freeze_sha256": sha(freeze_path),
+            "execution_commit": subprocess.check_output(["git", "rev-parse", "HEAD"], cwd=ROOT, text=True).strip(),
+            "native_library": "build/libjoint.so", "native_library_sha256": sha(run / "build/libjoint.so"),
+            "datasets": {"train": manifest(train_data), "validation": manifest(val)},
+            "common": common, "all_validation_candidates": all_candidates, "selected": selected,
+            "budgets": {name: ledger.snapshot() for name, ledger in ledgers.items()},
+            "system_cost": system_cost, "budget_fairness": fairness,
+            "validation_measures": val_measures, "validation_mean_contrasts": contrasts,
+            "validation_maximum_greedy_drop": maximum_greedy_drop,
+            "validation_decoder_corruption_reduces_score": corruption,
+            "efficient_reference": reference, "cpu_budget_violations": violations,
+            "selection_ready": ready, "test_opened": False,
+            "execution_location": "same enclosing configured Codex Cloud task, not self-attested",
+            "environment": {"python": sys.version, "numpy": np.__version__, "device": "CPU"}}
+        write_json(run / "selection.json", selection)
+        print(json.dumps({"selection": str(run / "selection.json"), "ready": ready,
+            "validation_mean_contrasts": contrasts, "cpu_budget_violations": violations,
+            "test_opened": False}), flush=True)
+        return 0 if ready else 2
+    except Exception as error:
+        write_json(run / "failure.json", {"error_type": type(error).__name__, "error": str(error),
+            "traceback": traceback.format_exc(), "source_commit": frozen["source_commit"],
+            "freeze_sha256": sha(freeze_path), "test_opened": MARKER.exists()})
+        raise
+
+
+def main():
+    parser = argparse.ArgumentParser(description=__doc__)
+    actions = parser.add_subparsers(dest="action", required=True)
+    f = actions.add_parser("freeze")
+    f.add_argument("--receipt", required=True)
+    t = actions.add_parser("train")
+    t.add_argument("--freeze", required=True)
+    t.add_argument("--out", required=True)
+    e = actions.add_parser("evaluate")
+    e.add_argument("--run", required=True)
+    args = parser.parse_args()
+    if args.action == "freeze":
+        freeze(args.receipt)
+        return 0
+    if args.action == "train":
+        return train(args.freeze, args.out)
+    from independent.evaluation import run_evaluation
+    result = run_evaluation(args.run)
+    return 0 if result["benefit_verified"] else 1
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

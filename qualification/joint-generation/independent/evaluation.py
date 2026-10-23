@@ -128,15 +128,19 @@ def _service(generator, controller, mode, x, ledger, sample_rng, route_rng, plan
     return p[0], q[0], outputs[0]
 
 
-def measure(model, controller, mode, data, plan, reference_full_cpu_ns, *, seed=42):
+def measure(model, controller, mode, data, plan, reference_full_cpu_ns, *, seed=42, observe=True):
     """Measure a frozen service law; inference receives inputs without labels.
 
     CPU net includes actual build attribution/H and one-time runtime preparation/H.
     Runtime-only nets remain separately visible. Data observations/ground truth,
     bootstrap, result logging and diagnostic aggregation are outside service CPU.
+    Training-only calibration can set observe=False to avoid all labels and
+    external scoring, returning service costs/output without utility metrics.
     """
     if mode not in MODES or type(seed) is not int or not 0 <= seed < 2**63:
         raise ValueError("unsupported frozen service mode or sampling seed")
+    if type(observe) is not bool:
+        raise ValueError("explicit observer boolean required")
     reference = _positive(reference_full_cpu_ns, "full CPU reference")
     price = _positive(plan["compute_price"], "compute price", allow_zero=True)
     horizon = _positive(plan.get("service_horizon", 100000), "service horizon")
@@ -146,11 +150,15 @@ def measure(model, controller, mode, data, plan, reference_full_cpu_ns, *, seed=
     if type(batch_size) is not int or not 1 <= batch_size <= 64:
         raise ValueError("bounded runtime batch size required")
     full = np.asarray(data["full"], dtype=np.float64)
-    labels = np.asarray(data["labels"])
     if (full.ndim != 2 or full.shape[1] != 202 or not 1 <= len(full) <= 65536
-            or not np.isfinite(full).all() or labels.shape != (len(full),)
-            or labels.dtype.kind not in "iu" or np.any(labels < 0) or np.any(labels >= 12)):
-        raise ValueError("bounded input rows and scoring labels required")
+            or not np.isfinite(full).all()):
+        raise ValueError("bounded input rows required")
+    labels = None
+    if observe:
+        labels = np.asarray(data["labels"])
+        if (labels.shape != (len(full),) or labels.dtype.kind not in "iu"
+                or np.any(labels < 0) or np.any(labels >= 12)):
+            raise ValueError("bounded scoring labels required")
     if mode == "continuation" and not isinstance(controller, Controller):
         raise ValueError("continuation needs the frozen probability critic")
     before = model.digest()
@@ -222,23 +230,25 @@ def measure(model, controller, mode, data, plan, reference_full_cpu_ns, *, seed=
                 totals[key] = totals.get(key, 0) + value
     if model.digest() != before:
         raise ValueError("service changed frozen content parameters")
-    p, q = np.asarray(ps), np.asarray(qs)
-    observer = _Observer(generator)
-    scoring_started = time.process_time_ns()
-    reward = outcome_table(observer)[labels]
-    metrics = decoded_metrics(observer, p, q, labels)
-    metrics["task_utility"] = np.einsum("ni,nij,nj->n", p, reward, q)
-    corrupted = outcome_table(_Observer(generator, corrupt_decoder=True))[labels]
-    corruption_drop = float((metrics["task_utility"] - np.einsum("ni,nij,nj->n", p, corrupted, q)).mean())
-    observer_cpu_ns = time.process_time_ns() - scoring_started
-    raw_work = np.asarray([row["work_units"] for row in costs], dtype=np.float64)
-    raw_cpu = np.asarray([row["cpu_ns"] for row in costs], dtype=np.float64)
-    metrics["runtime_net_utility"] = metrics["task_utility"] - price * (
-        raw_work + preparation.consumed_units / horizon) / reference_units
-    metrics["net_utility"] = metrics["runtime_net_utility"] - price * build_work / horizon / reference_units
-    metrics["runtime_cpu_net_utility"] = metrics["task_utility"] - price * (
-        raw_cpu + prepare_cpu_ns / horizon) / reference
-    metrics["cpu_net_utility"] = metrics["runtime_cpu_net_utility"] - price * build_cpu / horizon / reference
+    metrics, corruption_drop, observer_cpu_ns = {}, None, 0
+    if observe:
+        p, q = np.asarray(ps), np.asarray(qs)
+        observer = _Observer(generator)
+        scoring_started = time.process_time_ns()
+        reward = outcome_table(observer)[labels]
+        metrics = decoded_metrics(observer, p, q, labels)
+        metrics["task_utility"] = np.einsum("ni,nij,nj->n", p, reward, q)
+        corrupted = outcome_table(_Observer(generator, corrupt_decoder=True))[labels]
+        corruption_drop = float((metrics["task_utility"] - np.einsum("ni,nij,nj->n", p, corrupted, q)).mean())
+        observer_cpu_ns = time.process_time_ns() - scoring_started
+        raw_work = np.asarray([row["work_units"] for row in costs], dtype=np.float64)
+        raw_cpu = np.asarray([row["cpu_ns"] for row in costs], dtype=np.float64)
+        metrics["runtime_net_utility"] = metrics["task_utility"] - price * (
+            raw_work + preparation.consumed_units / horizon) / reference_units
+        metrics["net_utility"] = metrics["runtime_net_utility"] - price * build_work / horizon / reference_units
+        metrics["runtime_cpu_net_utility"] = metrics["task_utility"] - price * (
+            raw_cpu + prepare_cpu_ns / horizon) / reference
+        metrics["cpu_net_utility"] = metrics["runtime_cpu_net_utility"] - price * build_cpu / horizon / reference
     return {"mode": mode, "means": {key: float(value.mean()) for key, value in metrics.items()},
             "per_row": {key: value.tolist() for key, value in metrics.items()},
             "per_row_cost": {key: [row[key] for row in costs] for key in costs[0]},

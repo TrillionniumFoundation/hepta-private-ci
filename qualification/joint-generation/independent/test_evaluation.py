@@ -90,6 +90,32 @@ class EvaluationTests(unittest.TestCase):
                 measure(self.model, None, "full", self.data,
                         {**self.plan, "inference_cap_full_equivalents": .01}, 100000)
 
+    def test_cost_only_calibration_ignores_labels_and_never_scores(self):
+        class InputsOnly(dict):
+            def __getitem__(self, key):
+                if key != "full":
+                    raise AssertionError("calibration accessed ground truth")
+                return super().__getitem__(key)
+
+        inputs = InputsOnly(full=self.data["full"])
+        with patch("independent.evaluation.outcome_table", side_effect=AssertionError("scoring")) as table:
+            with patch("independent.evaluation.decoded_metrics", side_effect=AssertionError("scoring")) as metrics:
+                result = measure(self.model, None, "low", inputs, self.plan, 100000,
+                                 seed=19, observe=False)
+                table.assert_not_called()
+                metrics.assert_not_called()
+        self.assertEqual(result["means"], {})
+        self.assertEqual(result["per_row"], {})
+        self.assertIsNone(result["decoder_corruption_score_drop"])
+        self.assertEqual(result["cost"]["observer_cpu_ns"], 0)
+        self.assertEqual(result["model_forwards"], 4)
+        self.assertEqual(len(result["per_row_cost"]["work_units"]), 4)
+        self.assertGreater(result["cost"]["cpu_ns"], 0)
+        self.assertTrue(base64.b64decode(result["sampled_output"]["png_base64"]).startswith(b"\x89PNG\r\n\x1a\n"))
+        scored = measure(self.model, None, "low", self.data, self.plan, 100000, seed=19)
+        self.assertEqual(result["sampled_output"], scored["sampled_output"])
+        self.assertEqual(result["per_row_cost"]["work_units"], scored["per_row_cost"]["work_units"])
+
     def test_random_probability_is_frozen_not_selected_on_scoring_labels(self):
         for probability, mode in ((0., "low"), (1., "full")):
             result = measure(self.model, None, "random", self.data,
