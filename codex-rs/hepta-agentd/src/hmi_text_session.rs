@@ -20,6 +20,7 @@ use tokio::io::AsyncBufReadExt;
 enum Command {
     Submit { request: AuthBusTextIngress },
     SubmitAudio { request: Box<crate::SignedAudioObservationV1> },
+    ReconcileAudio { request: Box<crate::SignedAudioObservationV1> },
     Attach { request: AuthBusTextIngress },
     Reconcile { delivery_id: String, text: String },
     CancelRecovered { delivery_id: String, text: String },
@@ -252,6 +253,16 @@ pub(super) async fn serve<R: AsyncBufRead + Unpin>(
                         match submit(state.clone(),requests.clone(),SignedInput::Audio(request),tx){Ok(future)=>pending=Some(future),Err(error)=>{if let Err(error)=emit(tx,json!({"type":"inputError","error":error.to_string()})){break Err(error);}}}
                     }
                     Command::Attach {..}=>{if let Err(error)=emit(tx,json!({"type":"inputError","error":"attach is only valid as the first command"})){break Err(error);}}
+                    Command::ReconcileAudio {request}=>{
+                        if pending.is_some(){if let Err(error)=emit(tx,json!({"type":"inputError","error":"input slot busy"})){break Err(error);}continue;}
+                        if request.body.thread_id!=requests.binding().thread_id || request.issuer_id!=requests.binding().principal_id {
+                            if let Err(error)=emit(tx,json!({"type":"inputError","error":"observation belongs to another attached owner/thread"})){break Err(error);}continue;
+                        }
+                        let state=state.clone();
+                        pending=Some(Box::pin(async move {match crate::audio_observation::reconcile(&state,*request).await {
+                            Ok(receipt)=>json!({"type":"audioReconciled","observation":receipt}),Err(error)=>json!({"type":"inputError","error":error.to_string()}),
+                        }}));
+                    }
                     Command::Reconcile {delivery_id,text}=>{
                         if pending.is_some(){if let Err(error)=emit(tx,json!({"type":"inputError","error":"input slot busy"})){break Err(error);}continue;}
                         if delivery_id.len()!=64 || !delivery_id.bytes().all(|b|b.is_ascii_digit()||(b'a'..=b'f').contains(&b)){if let Err(error)=emit(tx,json!({"type":"inputError","error":"invalid delivery ID"})){break Err(error);}continue;}

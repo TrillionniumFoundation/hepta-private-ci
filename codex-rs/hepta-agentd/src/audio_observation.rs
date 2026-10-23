@@ -125,14 +125,18 @@ pub(crate) fn message(state: &AgentdState, request: &SignedAudioObservationV1) -
     })
 }
 
+enum Access { Admission, RetainedReceipt }
 pub(crate) fn authenticate(state: &AgentdState, request: &SignedAudioObservationV1) -> Result<String, AgentdError> {
+    authenticate_for(state,request,Access::Admission)
+}
+fn authenticate_for(state: &AgentdState, request: &SignedAudioObservationV1, access:Access) -> Result<String, AgentdError> {
     state.refresh_generation()?;
     require_ready(state)?;
     let host = attached(state)?;
     let policy = crate::audio_policy::AudioPolicy::current(state)?;
     policy.permits(&request.issuer_id, request.key_epoch, &request.body)?;
     let trust = host.trust(state)?;
-    if !trust.permits(&request.body.thread_id) || request.body.spawn_generation != state.identity().spawn_generation {
+    if !trust.permits(&request.body.thread_id) || (matches!(access,Access::Admission) && request.body.spawn_generation != state.identity().spawn_generation) {
         return Err(invalid("current thread or Agentd generation is not permitted"));
     }
     let now = now_ms()?;
@@ -143,6 +147,22 @@ pub(crate) fn authenticate(state: &AgentdState, request: &SignedAudioObservation
     let verified = message.authenticate(&trust.issuer()?, message.claims.scope_digest,
         message.claims.payload_digest, now).map_err(invalid)?;
     Ok(verified.receipt().envelope_digest.to_string())
+}
+
+/// Read the exact retained observation after owner restart. Its independently
+/// signed envelope, current device/thread policy and expiry still apply; only
+/// the old process incarnation is historical. No insertion, lease, replay
+/// advancement, source-availability claim or Core dispatch occurs on this path.
+pub(crate) async fn reconcile(state:&AgentdState,request:SignedAudioObservationV1)->Result<AudioObservationReceiptV1,AgentdError> {
+    let delivery=authenticate_for(state,&request,Access::RetainedReceipt)?;
+    let host=attached(state)?;
+    let message=message(state,&request)?;
+    let status=host.evidence.authbus_delivery_status(delivery.parse().map_err(invalid)?).await.map_err(invalid)?;
+    if status.subject_id!=host.subject || status.scope_digest!=message.claims.scope_digest {
+        return Err(invalid("retained observation belongs to another owner or capture route"));
+    }
+    authenticate_for(state,&request,Access::RetainedReceipt)?;
+    receipt(status,&request.body)
 }
 
 pub(crate) async fn submit(state: &AgentdState, request: SignedAudioObservationV1) -> Result<AudioObservationReceiptV1, AgentdError> {
