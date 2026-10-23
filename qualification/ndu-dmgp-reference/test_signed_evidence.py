@@ -1,5 +1,6 @@
 """Signed independent-observer / host-meter NDU-DMGP shadow audit negatives."""
 import base64
+import hashlib
 import subprocess
 import tempfile
 import unittest
@@ -53,7 +54,8 @@ class SignedEvidenceTests(unittest.TestCase):
     def pair(self, *, arm="A5", episode="e1", window="future", at=101):
         identity = {"objective_digest": H, "generation": 1,
                     "episode": episode, "arm": arm, "window": window,
-                    "run_id": "run-0", "trace_digest": T,
+                    "run_id": "run-0", "trace_digest": hashlib.sha256(
+                        f"{episode}:{arm}:{window}".encode()).hexdigest(),
                     "input_digest": I, "artifact_digest": A}
         observer = dict(identity, role="independent_observer", actor_id="actor",
                         observer_id="independent", evidence_kind="independent_observation",
@@ -72,7 +74,8 @@ class SignedEvidenceTests(unittest.TestCase):
 
     def verify(self, entry):
         return verify_pair(entry, self.public_obs, self.public_meter,
-                           expected_objective=H, training_cutoff=100)
+                           expected_objective=H, expected_evaluator_digest=P,
+                             expected_device_digest=H, training_cutoff=100)
 
     def test_accepted_signatures_keep_no_promotion_authority(self):
         accepted = self.verify(self.pair())
@@ -82,7 +85,8 @@ class SignedEvidenceTests(unittest.TestCase):
                                    "trials": [self.pair(arm=arm) for arm in
                                               ("A0", "A1", "A2", "A3", "A4", "A5")]},
                                   self.public_obs, self.public_meter,
-                                  expected_objective=H, training_cutoff=100)
+                                  expected_objective=H, expected_evaluator_digest=P,
+                             expected_device_digest=H, training_cutoff=100)
         self.assertFalse(report["production_blockers_closed"])
         self.assertTrue(report["no_promotion_authority"])
         self.assertIn("insufficient independent future matched episodes",
@@ -104,7 +108,8 @@ class SignedEvidenceTests(unittest.TestCase):
             audit_trial_file({"schema": "hepta.ndu-dmgp.signed-trials.v1",
                               "trials": [self.pair()]},
                              self.public_obs, self.public_obs,
-                             expected_objective=H, training_cutoff=100)
+                             expected_objective=H, expected_evaluator_digest=P,
+                             expected_device_digest=H, training_cutoff=100)
 
     def test_cross_signed_trace_drift_is_rejected(self):
         entry = self.pair()
@@ -123,6 +128,8 @@ class SignedEvidenceTests(unittest.TestCase):
             ("meter", {"decoder_ms": 0}),
             ("meter", {"energy_joules": -1}),
             ("meter", {"source": "synthetic_reference"}),
+            ("meter", {"device_digest": "0" * 64}),
+            ("observer", {"modalities": [{}]}),
         ):
             entry = self.pair()
             payload = dict(entry[which]["payload"], **mutation)
@@ -135,7 +142,8 @@ class SignedEvidenceTests(unittest.TestCase):
     def test_objective_generation_time_split_fail_closed(self):
         with self.assertRaises(EvidenceRejected):
             verify_pair(self.pair(), self.public_obs, self.public_meter,
-                        expected_objective="0" * 64, training_cutoff=100)
+                        expected_objective="0" * 64, expected_evaluator_digest=P,
+                        expected_device_digest=H, training_cutoff=100)
         entry = self.pair(window="train", at=110)
         with self.assertRaisesRegex(EvidenceRejected, "after frozen cutoff"):
             self.verify(entry)
@@ -148,11 +156,13 @@ class SignedEvidenceTests(unittest.TestCase):
         bad = {"schema": "hepta.ndu-dmgp.signed-trials.v1", "trials": rows+rows[:1]}
         with self.assertRaisesRegex(EvidenceRejected, "duplicate trial"):
             audit_trial_file(bad, self.public_obs, self.public_meter,
-                             expected_objective=H, training_cutoff=100)
+                             expected_objective=H, expected_evaluator_digest=P,
+                             expected_device_digest=H, training_cutoff=100)
         bad["trials"] = rows + [self.pair(arm="A0", window="train", at=80)]
         with self.assertRaisesRegex(EvidenceRejected, "episode leakage"):
             audit_trial_file(bad, self.public_obs, self.public_meter,
-                             expected_objective=H, training_cutoff=100)
+                             expected_objective=H, expected_evaluator_digest=P,
+                             expected_device_digest=H, training_cutoff=100)
 
 
 if __name__ == "__main__":
