@@ -46,6 +46,47 @@ tolerance rather than the looser implicit relative tolerance. These are
 source-level correctness fixes, **not** evidence of risk-model calibration,
 natural multimodal quality, or production admission.
 
+## Independent full-path counterfactual audit (toy, not natural output)
+
+`counterfactual_audit.py` independently enumerates the finite shock tree
+and **materializes four actual synthetic outputs** at termination before
+scoring their joint external fixture loss. It charges four mandatory
+decoder-emission units, per-action units and fixed activation costs. The
+comparator is the **best ex-ante open-loop schedule** over the same bounded
+action lattice (not an arbitrarily weak static action); impossible plans
+are screened against all modeled physical budget requirements. Its exact
+search rejects profiles exceeding 5,000 candidate schedules instead of
+silently reducing the baseline search.
+
+The nominated dynamic policy is frozen on the model's registered common
+three-branch shock law. Its full-path entropic value is independently
+compared with the Controller's recursive value; parity and nominal
+dominance over the enumerated open-loop subpolicy are **finite-model
+properties**, not NDU foundation-model efficacy.
+
+`paired_nominal_shift` reweights unchanged action policies using an
+alternative scalar law. `paired_dependence_shift` changes the *joint*
+four-modality shock vectors, allowing anti-correlated modality errors and
+exposing a registered adversarial case where the dynamic policy has
+**better mean external loss but worse decoded CVaR90 and worse risk-sensitive
+utility** than the same nominally optimized static plan. This makes it
+incorrect to claim distribution-shift safety from nominal Bellman parity.
+The empirical CVaR90 uses exact fractional worst-10% probability mass,
+not a ceiling count of worst examples.
+
+This is a unit-testable stress **counterexample on toy media and modeled
+integer units**, with no pretrained Decoder/Cell, source-disjoint natural
+heldout, real wall/energy measurements, or independent witness to a
+real-world terminal fact. The Controller itself is unchanged. The
+exhaustive helper must not run on a production inference hot path.
+
+Run:
+```bash
+cd experiments/multimodal_output_portfolio/v4
+python3 -m unittest discover -v -p "test_*.py"
+python3 -m compileall -q portfolio.py counterfactual_audit.py test_*.py
+```
+
 ## Next independently measured scientific experiment
 
 Replace the synthetic proxy-state/decoder fixtures with a source-pinned **real** shared Encoder plus four output decoders, observed partial latents, actual Neural/Cell feature invocation and all separately paid decoder/verifier/selection costs. Preregister source-disjoint natural tasks, multiple training seeds and common random-number draws, then compare same-information/static, MoE, risk-neutral MPC, fixed-risk MPC, dynamic NDU and best-of-N with independent decoded-output scoring and risk/coverage/cost thresholds. Train/inference factorial ablations are essential to determine whether NDU changes learned generation rather than only selecting an existing candidate. Do not enable or deploy any output-portfolio policy based only on this code.
