@@ -12,7 +12,10 @@ import sys
 from pathlib import Path
 
 from bakeoff import EMBEDDING_MODELS, MODEL_REPOS, REVISION, file_hash, load_jsonl, require
-from run_models import model_inventory, runtime_identity, device_identity
+from run_models import (
+    model_inventory, runtime_identity, device_identity, device_kind,
+    precision_manifest, validate_snapshot_repository,
+)
 
 
 def ranked_metrics(ranked: list[str], positives: set[str], k: int = 10) -> tuple[float, float, float]:
@@ -39,12 +42,28 @@ def retrieval_query_kwargs(model_name: str, prompts: object) -> dict[str, str]:
     return {"prompt_name": prompt}
 
 
+def validate_embeddings(vectors: object, count: int, dimension: int | None = None) -> int:
+    """Reject incomplete/nonfinite observations before deterministic ranking."""
+    require(count > 0 and len(vectors) == count, "embedding row count mismatch")
+    width = dimension if dimension is not None else len(vectors[0])
+    require(width > 0, "empty embedding dimension")
+    for vector in vectors:
+        require(len(vector) == width, "embedding dimension mismatch")
+        require(all(math.isfinite(float(value)) for value in vector),
+                "nonfinite embedding")
+        norm_squared = sum(float(value) ** 2 for value in vector)
+        require(math.isclose(norm_squared, 1.0, rel_tol=1e-3, abs_tol=1e-3),
+                "embedding is not unit normalized")
+    return width
+
+
 def main() -> int:
     p = argparse.ArgumentParser(description=__doc__)
     p.add_argument("--model", required=True, choices=EMBEDDING_MODELS)
     p.add_argument("--snapshot", type=Path, required=True)
     p.add_argument("--revision", required=True)
     p.add_argument("--source-commit", required=True)
+    p.add_argument("--device", required=True, choices=("cpu", "cuda", "mps"))
     p.add_argument("--queries", type=Path, required=True)
     p.add_argument("--corpus", type=Path, required=True)
     p.add_argument("--output", type=Path, required=True)
@@ -58,8 +77,7 @@ def main() -> int:
             "source drift",
         )
         snapshot = a.snapshot.resolve(strict=True)
-        require(snapshot.parent.name == "snapshots" and snapshot.name == a.revision,
-                "not a pinned Hugging Face snapshot")
+        validate_snapshot_repository(snapshot, a.model, a.revision)
         inventory = model_inventory(snapshot)
         queries, corpus = load_jsonl(a.queries), load_jsonl(a.corpus)
         docs = {}
@@ -84,18 +102,26 @@ def main() -> int:
             require(set(positive).issubset(docs), "missing positive corpus document")
         from sentence_transformers import SentenceTransformer
         import numpy as np
-        model = SentenceTransformer(str(snapshot), trust_remote_code=False, local_files_only=True)
+        model = SentenceTransformer(
+            str(snapshot), trust_remote_code=False, local_files_only=True, device=a.device,
+        )
+        require(device_kind(model.device) == a.device, "retrieval load-device fallback")
+        precision_sha = precision_manifest(model)
         ids = sorted(docs)
         doc_vec = model.encode(
             [docs[i] for i in ids], batch_size=16, normalize_embeddings=True,
-            convert_to_numpy=True,
+            convert_to_numpy=True, prompt="",
         )
         query_options = retrieval_query_kwargs(a.model, getattr(model, "prompts", None))
         query_vec = model.encode(
             [row["query"] for row in queries], batch_size=16, normalize_embeddings=True,
             convert_to_numpy=True, **query_options,
         )
+        require(device_kind(model.device) == a.device, "retrieval inference-device fallback")
+        dimension = validate_embeddings(doc_vec, len(ids))
+        validate_embeddings(query_vec, len(queries), dimension)
         scores = np.asarray(query_vec) @ np.asarray(doc_vec).T
+        require(np.isfinite(scores).all(), "nonfinite retrieval scores")
         results = []
         for row, values in zip(queries, scores):
             ranking = sorted(range(len(ids)), key=lambda i: (-float(values[i]), ids[i]))
@@ -109,6 +135,8 @@ def main() -> int:
             "source_commit": a.source_commit, "weights_digest": inventory["weights"],
             "tokenizer_digest": inventory["tokenizer"], "runtime_digest": runtime_identity(),
             "device_digest": device_identity(), "queries_sha256": file_hash(a.queries),
+            "selected_device": a.device, "parameter_precision_sha256": precision_sha,
+            "embedding_dimension": dimension,
             "corpus_sha256": file_hash(a.corpus), "n_queries": len(results),
             "query_instruction_name": query_options.get("prompt_name"),
             "query_instruction_sha256": hashlib.sha256(
@@ -122,7 +150,7 @@ def main() -> int:
         a.output.parent.mkdir(parents=True, exist_ok=True)
         a.output.write_text(json.dumps(receipt, sort_keys=True, indent=2) + "\n")
         return 0
-    except (ValueError, OSError, KeyError) as exc:
+    except (ValueError, OSError, KeyError, RuntimeError, TypeError, OverflowError) as exc:
         print(f"BLOCKED: {exc}", file=sys.stderr)
         return 2
 
