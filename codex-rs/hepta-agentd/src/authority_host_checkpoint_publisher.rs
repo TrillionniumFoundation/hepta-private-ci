@@ -15,6 +15,87 @@ pub struct RetainedCheckpointPublisher {
     descriptor: OwnedFd,
 }
 
+/// Kernel-observed retirement after Root lost its old retained pidfd. This is
+/// not deserializable and never accepts an exit claim from an ordinary peer.
+/// The exact protected predecessor lifetime is checked again by adoption.
+pub struct RetiredCheckpointPublisher {
+    pub(super) lifetime: CognitiveCheckpointPeerLifetime,
+    // When a PID exists, retain the actual kernel object used for observation.
+    _descriptor: Option<OwnedFd>,
+}
+
+impl RetiredCheckpointPublisher {
+    /// Same-boot only. ESRCH, an exited actual pidfd, or an independently
+    /// observed different start-time proves that this former life has ended.
+    /// UID changes, /proc read failures and unavailable pidfd support do not.
+    /// The trusted launcher runs in the original publisher's pinned PID space.
+    pub fn observe(lifetime: CognitiveCheckpointPeerLifetime) -> Result<Self, AuthorityTrustError> {
+        // SAFETY: geteuid takes no pointers and has no side effects.
+        if unsafe { libc::geteuid() } != 0
+            || lifetime.uid == 0
+            || lifetime.pid == 0
+            || lifetime.pid > i32::MAX as u32
+            || lifetime.process_start_ticks == 0
+        {
+            return Err(AuthorityTrustError::Invalid);
+        }
+        require_same_boot(&lifetime)?;
+        // SAFETY: pidfd_open receives an in-range PID, zero flags, no pointers.
+        let raw = unsafe { libc::syscall(libc::SYS_pidfd_open, lifetime.pid, 0) };
+        if raw < 0 {
+            return if std::io::Error::last_os_error().raw_os_error() == Some(libc::ESRCH) {
+                Ok(Self { lifetime, _descriptor: None })
+            } else {
+                Err(AuthorityTrustError::Unavailable)
+            };
+        }
+        // SAFETY: successful pidfd_open returned a fresh owned descriptor.
+        let descriptor = unsafe { OwnedFd::from_raw_fd(raw as i32) };
+        if descriptor_exited(&descriptor)? {
+            return Ok(Self { lifetime, _descriptor: Some(descriptor) });
+        }
+        let stat = std::fs::read_to_string(format!("/proc/{}/stat", lifetime.pid));
+        let info = std::fs::read_to_string(format!("/proc/self/fdinfo/{}", descriptor.as_raw_fd()));
+        // The process may have exited during either read; an actual pidfd exit
+        // remains sufficient. An unrelated read error is never an exit proof.
+        if descriptor_exited(&descriptor)? {
+            return Ok(Self { lifetime, _descriptor: Some(descriptor) });
+        }
+        let stat = stat.map_err(|_| AuthorityTrustError::Unavailable)?;
+        let info = info.map_err(|_| AuthorityTrustError::Unavailable)?;
+        let start = stat.rsplit_once(") ")
+            .and_then(|(_, fields)| fields.split_whitespace().nth(19))
+            .and_then(|value| value.parse::<u64>().ok())
+            .filter(|value| *value != 0)
+            .ok_or(AuthorityTrustError::Unavailable)?;
+        let fd_pid = info.lines().find_map(|line| line.strip_prefix("Pid:"))
+            .and_then(|value| value.trim().parse::<u32>().ok());
+        if fd_pid != Some(lifetime.pid) {
+            return Err(AuthorityTrustError::Unavailable);
+        }
+        if start == lifetime.process_start_ticks {
+            return Err(AuthorityTrustError::Conflict);
+        }
+        Ok(Self { lifetime, _descriptor: Some(descriptor) })
+    }
+
+    pub(super) fn require_retired(&self) -> Result<(), AuthorityTrustError> {
+        // The observed termination of a former process lifetime is monotonic.
+        // A later process at that PID cannot revive the old kernel lifetime.
+        require_same_boot(&self.lifetime)
+    }
+}
+
+fn require_same_boot(lifetime: &CognitiveCheckpointPeerLifetime) -> Result<(), AuthorityTrustError> {
+    let boot = std::fs::read_to_string("/proc/sys/kernel/random/boot_id")
+        .map_err(|_| AuthorityTrustError::Unavailable)?;
+    if boot.trim() == lifetime.boot_id {
+        Ok(())
+    } else {
+        Err(AuthorityTrustError::Invalid)
+    }
+}
+
 impl RetainedCheckpointPublisher {
     /// Capture before the old publisher exits or the new publisher is released.
     /// The caller still enforces the dedicated UID/capability launch policy.
@@ -76,8 +157,13 @@ impl RetainedCheckpointPublisher {
     }
 
     fn exited(&self) -> Result<bool, AuthorityTrustError> {
+        descriptor_exited(&self.descriptor)
+    }
+}
+
+fn descriptor_exited(descriptor: &OwnedFd) -> Result<bool, AuthorityTrustError> {
         let mut poll = libc::pollfd {
-            fd: self.descriptor.as_raw_fd(),
+            fd: descriptor.as_raw_fd(),
             events: libc::POLLIN,
             revents: 0,
         };
@@ -89,5 +175,4 @@ impl RetainedCheckpointPublisher {
         if count == 0 { return Ok(false); }
         if poll.revents & libc::POLLIN != 0 { return Ok(true); }
         Err(AuthorityTrustError::Unavailable)
-    }
 }

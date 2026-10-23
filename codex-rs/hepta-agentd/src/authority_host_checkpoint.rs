@@ -42,6 +42,7 @@ const OPERATION: &str = "runtime.cognitive.checkpoint.v1";
 #[path = "authority_host_checkpoint_publisher.rs"]
 mod publisher;
 pub use publisher::RetainedCheckpointPublisher;
+pub use publisher::RetiredCheckpointPublisher;
 
 #[path = "authority_host_checkpoint_adoption.rs"]
 mod adoption;

@@ -299,3 +299,96 @@ async fn root_current_handoff_post_cas_clock_failure_is_unknown_not_definite_con
     assert_eq!(head.last_current, f.previous.head.last_current);
     assert_eq!(result, Some(AuthorityTrustError::Unavailable));
 }
+
+#[tokio::test]
+#[ignore = "explicit root-owned data-bind qualification"]
+async fn root_retirement_observation_refuses_live_lifetime_uid_change_and_other_boot() {
+    let f = Fixture::new().await;
+    let lifetime = f.old.retained.lifetime.clone();
+    assert_eq!(RetiredCheckpointPublisher::observe(lifetime.clone()).err(), Some(AuthorityTrustError::Conflict));
+    let mut changed_uid = lifetime.clone();
+    changed_uid.uid += 1;
+    assert_eq!(RetiredCheckpointPublisher::observe(changed_uid).err(), Some(AuthorityTrustError::Conflict));
+    let mut changed_boot = lifetime;
+    changed_boot.boot_id = "00000000-0000-4000-8000-000000000001".into();
+    assert_eq!(RetiredCheckpointPublisher::observe(changed_boot).err(), Some(AuthorityTrustError::Invalid));
+    assert_eq!(f.backend.load().unwrap(), f.previous.head);
+}
+
+#[tokio::test]
+#[ignore = "explicit root-owned data-bind qualification"]
+async fn root_current_adoption_without_any_retained_old_pidfd_preserves_exact_cut() {
+    let mut f = Fixture::new().await;
+    let lifetime = f.previous.head.peer_lifetime.clone();
+    f.old.stop();
+    let Fixture { _temp, directory, previous, registration, backend, clock, old, new } = f;
+    drop(old); // Drop the original captured pidfd, not merely its process.
+    drop(backend); // No original service object survives this stage.
+    assert!(RetainedCheckpointPublisher::capture(lifetime.clone()).is_err());
+    let retirement = RetiredCheckpointPublisher::observe(lifetime).unwrap();
+    let adopted = HostCognitiveCheckpoint::adopt_current_after_root_restart(
+        directory.clone(), &previous, &retirement, registration.clone(), &new.retained, clock.clone()).unwrap();
+    let head = adopted.load().unwrap();
+    let mut expected = previous.head.clone();
+    expected.publisher_epoch = registration.publisher_epoch;
+    expected.counter += 1;
+    expected.last_mutation_sequence = 0;
+    expected.last_request = None;
+    expected.writer_binding = registration.writer_binding.clone();
+    expected.peer_lifetime = registration.peer_lifetime.clone();
+    assert_eq!(head, expected);
+    assert_eq!(HostCognitiveCheckpoint::adopt_current_after_root_restart(
+        directory.clone(), &previous, &retirement, registration.clone(), &new.retained, clock.clone()).err(), Some(AuthorityTrustError::Conflict));
+    let reopened = HostCognitiveCheckpoint::open(directory, registration, clock).unwrap();
+    assert_eq!(reopened.load().unwrap(), expected);
+    drop(_temp);
+}
+
+#[tokio::test]
+#[ignore = "explicit root-owned data-bind qualification"]
+async fn root_retirement_proof_cannot_replace_protected_predecessor_lifetime() {
+    let f = Fixture::new().await;
+    let mut invented = f.old.retained.lifetime.clone();
+    invented.process_start_ticks += 1;
+    // A controlled nonmatching historical lifetime exercises the replacement
+    // branch. This does not claim that the test forced actual PID reuse.
+    let retirement = RetiredCheckpointPublisher::observe(invented).unwrap();
+    assert_eq!(HostCognitiveCheckpoint::adopt_current_after_root_restart(
+        f.directory.clone(), &f.previous, &retirement, f.registration.clone(), &f.new.retained, f.clock.clone()).err(), Some(AuthorityTrustError::Invalid));
+    assert_eq!(f.backend.load().unwrap(), f.previous.head);
+}
+
+#[tokio::test]
+#[ignore = "explicit root-owned data-bind qualification"]
+async fn root_retired_adoption_never_promotes_dirty_publishing_or_fenced() {
+    for phase in [CognitiveCheckpointPhase::Dirty, CognitiveCheckpointPhase::Publishing, CognitiveCheckpointPhase::Fenced] {
+        let mut f = Fixture::new().await;
+        f.mutate(CognitiveCheckpointCommand::BeginWrites, 2);
+        if phase == CognitiveCheckpointPhase::Publishing {
+            f.mutate(CognitiveCheckpointCommand::PreparePublication, 3);
+        } else if phase == CognitiveCheckpointPhase::Fenced {
+            f.mutate(CognitiveCheckpointCommand::FencePublisher, 3);
+        }
+        f.old.stop();
+        let retirement = RetiredCheckpointPublisher::observe(f.previous.head.peer_lifetime.clone()).unwrap();
+        assert_eq!(HostCognitiveCheckpoint::adopt_current_after_root_restart(
+            f.directory.clone(), &f.previous, &retirement, f.registration.clone(), &f.new.retained, f.clock.clone()).err(), Some(AuthorityTrustError::Invalid));
+        assert_eq!(f.backend.load().unwrap(), f.previous.head);
+    }
+}
+
+#[tokio::test]
+#[ignore = "explicit root-owned data-bind qualification"]
+async fn root_retired_adoption_post_cas_clock_error_is_unknown_and_exactly_reconciled() {
+    let mut f = Fixture::new().await;
+    f.old.stop();
+    let retirement = RetiredCheckpointPublisher::observe(f.previous.head.peer_lifetime.clone()).unwrap();
+    f.clock.reject_on.store(f.clock.reads.load(Ordering::SeqCst) + 2, Ordering::SeqCst);
+    assert_eq!(HostCognitiveCheckpoint::adopt_current_after_root_restart(
+        f.directory.clone(), &f.previous, &retirement, f.registration.clone(), &f.new.retained, f.clock.clone()).err(), Some(AuthorityTrustError::Unavailable));
+    let reopened = HostCognitiveCheckpoint::open(f.directory.clone(), f.registration.clone(), f.clock.clone()).unwrap();
+    let head = reopened.load().unwrap();
+    assert_eq!(head.counter, f.previous.head.counter + 1);
+    assert_eq!(head.last_current, f.previous.head.last_current);
+    assert_eq!(head.peer_lifetime, f.new.retained.lifetime);
+}

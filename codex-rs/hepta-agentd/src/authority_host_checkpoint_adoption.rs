@@ -3,6 +3,27 @@
 use super::*;
 use codex_hepta_memory::CognitiveCheckpointReceipt;
 
+enum Predecessor<'a> {
+    Retained(&'a RetainedCheckpointPublisher),
+    Retired(&'a RetiredCheckpointPublisher),
+}
+
+impl Predecessor<'_> {
+    fn lifetime(&self) -> &CognitiveCheckpointPeerLifetime {
+        match self {
+            Self::Retained(publisher) => &publisher.lifetime,
+            Self::Retired(publisher) => &publisher.lifetime,
+        }
+    }
+
+    fn require_retired(&self) -> Result<(), AuthorityTrustError> {
+        match self {
+            Self::Retained(publisher) => publisher.require_exited(),
+            Self::Retired(publisher) => publisher.require_retired(),
+        }
+    }
+}
+
 impl HostCognitiveCheckpoint {
     /// Adopt only an exact retained Current after the captured old process has
     /// exited. The trusted launcher must hold the new writer's original live
@@ -12,6 +33,35 @@ impl HostCognitiveCheckpoint {
         directory: Arc<RootAuthorityDirectory>,
         previous: &CognitiveCheckpointReceipt,
         predecessor: &RetainedCheckpointPublisher,
+        registration: HostCognitiveCheckpointRegistration,
+        successor: &RetainedCheckpointPublisher,
+        clock: Arc<dyn AuthorityClock>,
+    ) -> Result<Self, AuthorityTrustError> {
+        Self::adopt_current_with_predecessor(directory, previous,
+            Predecessor::Retained(predecessor), registration, successor, clock)
+    }
+
+    /// Same clean-Current CAS after Root lost its retained old pidfd. The
+    /// replacement evidence must come from actual same-boot kernel observation,
+    /// not a PID/exit flag read from disk or supplied by the successor. All
+    /// original local lease retirement and live canonical authority fences are
+    /// still enforced by the trusted launcher before this administrative call.
+    pub fn adopt_current_after_root_restart(
+        directory: Arc<RootAuthorityDirectory>,
+        previous: &CognitiveCheckpointReceipt,
+        predecessor: &RetiredCheckpointPublisher,
+        registration: HostCognitiveCheckpointRegistration,
+        successor: &RetainedCheckpointPublisher,
+        clock: Arc<dyn AuthorityClock>,
+    ) -> Result<Self, AuthorityTrustError> {
+        Self::adopt_current_with_predecessor(directory, previous,
+            Predecessor::Retired(predecessor), registration, successor, clock)
+    }
+
+    fn adopt_current_with_predecessor(
+        directory: Arc<RootAuthorityDirectory>,
+        previous: &CognitiveCheckpointReceipt,
+        predecessor: Predecessor<'_>,
         registration: HostCognitiveCheckpointRegistration,
         successor: &RetainedCheckpointPublisher,
         clock: Arc<dyn AuthorityClock>,
@@ -32,7 +82,7 @@ impl HostCognitiveCheckpoint {
             || token_for(old)? != previous.token
             || old.owner_agent_id != registration.owner_agent_id
             || old.publisher_epoch.checked_add(1) != Some(registration.publisher_epoch)
-            || predecessor.lifetime != old.peer_lifetime
+            || predecessor.lifetime() != &old.peer_lifetime
             || successor.lifetime != registration.peer_lifetime
             || old.peer_lifetime == registration.peer_lifetime
             || old.peer_lifetime.uid != registration.peer_lifetime.uid
@@ -46,7 +96,7 @@ impl HostCognitiveCheckpoint {
         {
             return Err(AuthorityTrustError::Invalid);
         }
-        predecessor.require_exited()?;
+        predecessor.require_retired()?;
         successor.require_alive()?;
         let before = clock.now_unix_ms()?;
         let expiry = new_writer.expires_at_unix_seconds * 1000;
@@ -72,7 +122,7 @@ impl HostCognitiveCheckpoint {
         // uncertain, even when an underlying clock or pidfd reports Conflict.
         let after = clock.now_unix_ms().map_err(|_| AuthorityTrustError::Unavailable)?;
         if after < before || after >= expiry { return Err(AuthorityTrustError::Unavailable); }
-        predecessor.require_exited().map_err(|_| AuthorityTrustError::Unavailable)?;
+        predecessor.require_retired().map_err(|_| AuthorityTrustError::Unavailable)?;
         successor.require_alive().map_err(|_| AuthorityTrustError::Unavailable)?;
         Ok(Self {
             registration,

@@ -66,11 +66,27 @@ CAS sync/readback and a final clock/process check precede success. A lost result
 may have committed: reconcile by opening that exact new registration. Never
 choose another identity or initialize fresh after an uncertain result.
 
-This stage refuses actual Dirty, Publishing and Fenced heads. It cannot recover
-after losing the retained old pidfd (including a Root process restart), adopt
+This stage refuses actual Dirty, Publishing and Fenced heads. It cannot adopt
 across a reboot, validate suspect SQLite bytes, rotate the canonical issuer's
 retained writer proof, or restore unfinished effects. Those require separate
 trusted composition and recovery evidence; a clean handoff does not close them.
+
+If Root lost its retained predecessor pidfd, the separate non-deserializable
+`RetiredCheckpointPublisher::observe` can establish same-boot retirement from
+the actual kernel: pidfd_open must report ESRCH, its actual new pidfd must report
+exit, or a live pidfd bound to the same PID must expose a different process
+start-time. A UID change alone never proves exit; an unreadable /proc record,
+unavailable pidfd primitive, identical start-time or different boot refuses.
+The launcher runs in the original pinned PID space. No peer exit flag is trusted.
+
+`adopt_current_after_root_restart` uses exactly the original clean adoption CAS,
+including exact protected predecessor lifetime, complete receipt/token, local
+lease one-step succession, captured live successor, original durable cut and
+post-CAS uncertainty. This observation creates no new authority and never
+bypasses the original local lease expiry/legal release. Its component tests
+drop every original old pidfd and service object before obtaining the separate
+kernel proof; this does not itself qualify an actual Root process restart,
+cross-store issuer reconciliation or an end-to-end recovered writer.
 
 The explicit root/data tests create fresh original SQLite databases, use their
 real coherent anchors, and exercise actual root-protected CAS/reopen, exact

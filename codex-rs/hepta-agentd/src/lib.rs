@@ -18,6 +18,8 @@ pub use authority_host_checkpoint::HostCognitiveCheckpointRegistration;
 #[cfg(target_os = "linux")]
 pub use authority_host_checkpoint::RetainedCheckpointPublisher;
 #[cfg(target_os = "linux")]
+pub use authority_host_checkpoint::RetiredCheckpointPublisher;
+#[cfg(target_os = "linux")]
 mod authority_host_wire;
 #[cfg(target_os = "linux")]
 pub use authority_host_wire::HOST_AUTHORITY_OBSERVATION_V2;
