@@ -1,0 +1,41 @@
+{
+  "schema": "hepta.fashion-D-software-verification.v1",
+  "commands": [
+    {
+      "argv": [
+        "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+        "-m",
+        "unittest",
+        "fashion_research.test_data",
+        "fashion_research.test_model",
+        "fashion_research.test_transport",
+        "fashion_research.test_cost",
+        "fashion_research.test_run",
+        "-v"
+      ],
+      "exit_code": 0,
+      "wall_ns": 1557605173,
+      "parent_CPU_ns": 4183867,
+      "child_CPU_ns": 1556195000,
+      "scope": "Synthetic software verification R&D; no real data or registered probe.",
+      "cumulative_reaped_children_peak_RSS_bytes_not_command_specific": 56311808
+    },
+    {
+      "argv": [
+        "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+        "-m",
+        "fashion_research.launch",
+        "--smoke"
+      ],
+      "exit_code": 0,
+      "wall_ns": 223708969,
+      "parent_CPU_ns": 2183793,
+      "child_CPU_ns": 221797000,
+      "scope": "Synthetic software verification R&D; no real data or registered probe.",
+      "cumulative_reaped_children_peak_RSS_bytes_not_command_specific": 56311808
+    }
+  ],
+  "registered_probe_started": false,
+  "real_data_read": false,
+  "scope_warning": "This brackets these verification commands, not all current/historical development R&D."
+}
