@@ -168,19 +168,51 @@ impl HmiRequestsV1 {
     /// Synchronous media fence. Call before awaiting turn/interrupt; it does not
     /// claim that any already-dispatched tool effect has been undone.
     pub fn stop_output(&self, current_generation: u64) -> Result<Option<String>, HmiError> {
+        self.retire_output_epoch(current_generation, 0)
+            .map(|scope| scope.turn_id)
+    }
+    pub(super) fn retire_output_epoch(
+        &self,
+        current_generation: u64,
+        minimum_epoch: u64,
+    ) -> Result<HmiOutputScopeV1, HmiError> {
         let mut state = self.shared.state.lock().map_err(|_| HmiError::Fenced)?;
         if state.fenced || current_generation != self.shared.binding.organ_generation {
             return Err(HmiError::Fenced);
         }
-        state.epoch = state.epoch.checked_add(1).ok_or(HmiError::Fenced)?;
-        let turn = state.active_turn.clone();
+        if minimum_epoch != 0
+            && (minimum_epoch < state.epoch
+                || (minimum_epoch == state.epoch && state.output_enabled))
+        {
+            return Err(HmiError::Fenced);
+        }
+        state.epoch = if minimum_epoch == state.epoch && !state.output_enabled {
+            state.epoch
+        } else {
+            state
+                .epoch
+                .checked_add(1)
+                .ok_or(HmiError::Fenced)?
+                .max(minimum_epoch)
+        };
         state.cancel_requested = true;
         state.output_enabled = false;
-        Ok(turn)
+        Ok(output_scope(&self.shared, &state))
     }
 
     pub async fn interrupt(&self, current_generation: u64) -> Result<(), HmiError> {
-        let turn = self.stop_output(current_generation)?;
+        let scope = self.retire_output_epoch(current_generation, 0)?;
+        self.interrupt_retired(scope.output_epoch).await
+    }
+
+    pub(super) async fn interrupt_retired(&self, epoch: u64) -> Result<(), HmiError> {
+        let turn = {
+            let state = self.shared.state.lock().map_err(|_| HmiError::Fenced)?;
+            if state.fenced || state.epoch != epoch || state.output_enabled {
+                return Err(HmiError::Fenced);
+            }
+            state.active_turn.clone()
+        };
         if let Some(turn_id) = turn {
             return self.interrupt_turn(turn_id).await;
         }

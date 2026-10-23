@@ -47,8 +47,11 @@ mod events;
 #[path = "hmi_owner_types.rs"]
 mod owner_types;
 pub use owner_types::*;
+#[path = "hmi_owner.rs"]
+mod owner;
 #[path = "hmi_requests.rs"]
 mod requests;
+pub use owner::*;
 #[path = "hmi_media_jsonl.rs"]
 mod media_jsonl;
 pub use media_jsonl::*;
