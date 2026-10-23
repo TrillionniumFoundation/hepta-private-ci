@@ -199,8 +199,11 @@ async fn snapshot_acknowledged_does_not_promote_a_committed_observation_without_
         ));
         assert!(matches!(
             sender.retain_before_send(request()).await,
-            Err(ObjectiveSenderError::AlreadyRetained)
+            Err(ObjectiveSenderError::Writer(
+                ProductionWriterError::CheckpointFenced
+            ))
         ));
+        assert!(fixture.writer.checkpoint_fenced());
     }
 }
 
@@ -419,9 +422,13 @@ async fn failed_mismatched_or_revoked_final_checkpoint_leaves_unknown_not_a_new_
         let fresh_facade = fixture.sender();
         assert!(matches!(
             fresh_facade.retain_before_send(request()).await,
-            Err(ObjectiveSenderError::AlreadyRetained)
+            Err(ObjectiveSenderError::Writer(
+                ProductionWriterError::CheckpointFenced
+            ))
         ));
         let recovered = fresh_facade.recover_pending(request()).await.unwrap();
+        assert!(fresh_facade.snapshot_acknowledged(&recovered).await.is_ok());
+        assert!(fixture.writer.checkpoint_fenced());
         assert!(matches!(
             fresh_facade.mark_send_started(&recovered).await,
             Err(ObjectiveSenderError::SendPermissionUnavailable)
@@ -482,8 +489,11 @@ async fn timeout_and_cancelled_checkpoint_future_release_lock_but_keep_durable_f
     ));
     assert!(matches!(
         fixture.sender().retain_before_send(request()).await,
-        Err(ObjectiveSenderError::AlreadyRetained)
+        Err(ObjectiveSenderError::Writer(
+            ProductionWriterError::CheckpointFenced
+        ))
     ));
+    assert!(fixture.sender().recover_pending(request()).await.is_ok());
 
     let fixture = Fixture::new().await;
     *fixture.checkpoint.mode.lock().unwrap() = CheckpointMode::Hold;
@@ -494,8 +504,11 @@ async fn timeout_and_cancelled_checkpoint_future_release_lock_but_keep_durable_f
     assert!(matches!(retain.await, Err(error) if error.is_cancelled()));
     assert!(matches!(
         fixture.sender().retain_before_send(request()).await,
-        Err(ObjectiveSenderError::AlreadyRetained)
+        Err(ObjectiveSenderError::Writer(
+            ProductionWriterError::CheckpointFenced
+        ))
     ));
+    assert!(fixture.sender().recover_pending(request()).await.is_ok());
 }
 
 #[tokio::test]
@@ -549,8 +562,22 @@ async fn observations_and_local_cancellation_are_durable_and_never_rearm() {
         Err(ObjectiveSenderError::SendPermissionUnavailable)
     ));
     *fixture.checkpoint.mode.lock().unwrap() = CheckpointMode::Accept;
-    sender.retain_local_cancellation(&ticket).await.unwrap();
-    assert!(sender.snapshot(&ticket).await.unwrap().locally_cancelled);
+    assert!(matches!(
+        sender.retain_local_cancellation(&ticket).await,
+        Err(ObjectiveSenderError::Writer(
+            ProductionWriterError::CheckpointFenced
+        ))
+    ));
+    let before = fixture.store.recovery_anchor().await.unwrap();
+    assert!(
+        sender
+            .snapshot_acknowledged(&ticket)
+            .await
+            .unwrap()
+            .locally_cancelled
+    );
+    assert_eq!(fixture.store.recovery_anchor().await.unwrap(), before);
+    assert!(fixture.writer.checkpoint_fenced());
     assert!(matches!(
         sender.retain_observation(&ticket, &distinct).await,
         Err(ObjectiveSenderError::ObservationConflict)

@@ -24,6 +24,7 @@ use sqlx::sqlite::SqlitePoolOptions;
 use sqlx::sqlite::SqliteSynchronous;
 use std::path::Path;
 use std::path::PathBuf;
+use std::sync::Arc;
 use std::time::Duration;
 use std::time::Instant;
 
@@ -297,6 +298,25 @@ impl SqliteConfig {
     /// not route authoritative corruption through the rebuildable state-DB
     /// recovery path.
     pub async fn open_durable_evidence_pool(&self, path: &Path) -> Result<SqlitePool, Error> {
+        self.open_durable_evidence_pool_guarded(path, || true).await
+    }
+
+    /// Open a FULL-durability pool whose every connection checks the same
+    /// owner-supplied guard at SQLite's commit boundary, including implicit
+    /// transactions and connections created after the pool was opened.
+    ///
+    /// Returning false rolls the transaction back. The callback must be bounded,
+    /// nonblocking, and must not access SQLite. This does not supply authority,
+    /// persist a recovery fence, or cover separately opened pools.
+    pub async fn open_durable_evidence_pool_guarded<F>(
+        &self,
+        path: &Path,
+        commit_allowed: F,
+    ) -> Result<SqlitePool, Error>
+    where
+        F: Fn() -> bool + Send + Sync + 'static,
+    {
+        let commit_allowed = Arc::new(commit_allowed);
         let options = SqliteConnectOptions::new()
             .filename(path)
             .create_if_missing(true)
@@ -307,6 +327,16 @@ impl SqliteConfig {
             .log_statements(LevelFilter::Off);
         SqlitePoolOptions::new()
             .max_connections(5)
+            .after_connect(move |connection, _metadata| {
+                let commit_allowed = Arc::clone(&commit_allowed);
+                Box::pin(async move {
+                    connection
+                        .lock_handle()
+                        .await?
+                        .set_commit_hook(move || commit_allowed());
+                    Ok(())
+                })
+            })
             .connect_with(options)
             .await
     }

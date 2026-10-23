@@ -25,6 +25,7 @@ use sqlx::SqliteConnection;
 use sqlx::TypeInfo;
 use sqlx::ValueRef;
 
+use super::CognitiveCommitGate;
 use super::CognitiveStore;
 use super::CognitiveStoreError;
 use super::CognitiveStoreOpenGuard;
@@ -103,7 +104,9 @@ impl CognitiveStore {
             .await
             .map_err(unavailable)?;
         let anchor = capture(&mut transaction, &self.owner_agent_id).await?;
-        transaction.commit().await.map_err(unavailable)?;
+        // This observation performs no writes. Roll back explicitly so it
+        // remains available after the whole-owner commit gate is fenced.
+        transaction.rollback().await.map_err(unavailable)?;
         Ok(anchor)
     }
 
@@ -166,8 +169,12 @@ impl CognitiveStore {
             .map_err(recovery_error)?;
 
         let result = async {
+            let commit_gate = CognitiveCommitGate::default();
+            let connection_gate = commit_gate.clone();
             let pool = config
-                .open_durable_evidence_pool(&candidate)
+                .open_durable_evidence_pool_guarded(&candidate, move || {
+                    !connection_gate.is_fenced()
+                })
                 .await
                 .map_err(|error| CognitiveRecoveryError::Unavailable(error.to_string()))?;
             let authenticated = async {
@@ -237,8 +244,11 @@ impl CognitiveStore {
             sync_cognitive_directory(&canonical_root)
                 .map_err(|error| CognitiveRecoveryError::Unavailable(error.to_string()))?;
 
+            let connection_gate = commit_gate.clone();
             let pool = config
-                .open_durable_evidence_pool(&candidate)
+                .open_durable_evidence_pool_guarded(&candidate, move || {
+                    !connection_gate.is_fenced()
+                })
                 .await
                 .map_err(|error| CognitiveRecoveryError::Unavailable(error.to_string()))?;
             let final_check = async {
@@ -279,6 +289,7 @@ impl CognitiveStore {
                 pool,
                 owner_agent_id: layout.agent_id().clone(),
                 path: candidate.clone(),
+                commit_gate,
                 _open_guard: Some(std::sync::Arc::new(exclusive_guard)),
             })
         }

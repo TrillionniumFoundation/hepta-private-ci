@@ -118,6 +118,8 @@ pub const PRODUCTION_DISPATCH_CLAIM_LEASE_MS: u64 = 30_000;
 /// Errors returned by the production writer and dispatcher boundary.
 #[derive(Debug, thiserror::Error)]
 pub enum ProductionWriterError {
+    #[error("the owner generation is fenced after uncertain checkpoint publication")]
+    CheckpointFenced,
     #[error(transparent)]
     Local(#[from] LocalLeaseOutboxError),
     #[error("production authority rejected: {0}")]
@@ -680,10 +682,21 @@ impl ProductionDurableWriter {
     /// Revalidate the external authority immediately before a semantic owner
     /// mutation. Legacy qualification writers fail closed at this boundary.
     pub async fn verify_current_authority(&self) -> Result<(), ProductionWriterError> {
+        self.store
+            .commit_gate
+            .require_open()
+            .map_err(|_| ProductionWriterError::CheckpointFenced)?;
         if self.live_verifier.is_none() {
             return Err(ProductionWriterError::LiveVerifierRequired);
         }
         self.verify_authority().await
+    }
+
+    /// Whether this entire store generation stopped accepting commits after
+    /// an uncertain checkpoint. Every clone/capability shares the same fence;
+    /// a new facade cannot clear it. Read-only inspection remains available.
+    pub fn checkpoint_fenced(&self) -> bool {
+        self.store.commit_gate.is_fenced()
     }
 
     /// Mint the only production cognitive mutation capability. A legacy writer

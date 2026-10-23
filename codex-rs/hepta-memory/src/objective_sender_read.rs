@@ -38,7 +38,8 @@ impl<C: ObjectiveSenderCheckpoint> ProductionObjectiveSender<C> {
         &self,
         request: ObjectiveSenderRequest,
     ) -> Result<ObjectiveSenderTicket, ObjectiveSenderError> {
-        self.writer.verify_current_authority().await?;
+        self.writer.sender_live_check()?;
+        self.writer.verify_authority().await?;
         if request.origin.agent_id != *self.writer.owner_agent_id() {
             return Err(ObjectiveSenderError::IdentityMismatch);
         }
@@ -61,7 +62,8 @@ impl<C: ObjectiveSenderCheckpoint> ProductionObjectiveSender<C> {
         &self,
         position: ObjectiveSenderRetainedPosition,
     ) -> Result<ObjectiveSenderRetainedPage, ObjectiveSenderError> {
-        self.writer.verify_current_authority().await?;
+        self.writer.sender_live_check()?;
+        self.writer.verify_authority().await?;
         let after = match position {
             ObjectiveSenderRetainedPosition::Beginning => String::new(),
             ObjectiveSenderRetainedPosition::After(cursor) => {
@@ -99,7 +101,8 @@ impl<C: ObjectiveSenderCheckpoint> ProductionObjectiveSender<C> {
         ticket: &ObjectiveSenderTicket,
     ) -> Result<ObjectiveSenderSnapshot, ObjectiveSenderError> {
         self.require_ticket_owner(ticket)?;
-        self.writer.verify_current_authority().await?;
+        self.writer.sender_live_check()?;
+        self.writer.verify_authority().await?;
         let mut transaction = self.writer.store.pool.begin().await.map_err(unavailable)?;
         store::require_request(&mut transaction, &ticket.request).await?;
         let snapshot = store::snapshot(&mut transaction, &ticket.request).await?;

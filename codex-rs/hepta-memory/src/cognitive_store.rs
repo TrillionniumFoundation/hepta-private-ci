@@ -51,6 +51,10 @@ use crate::framing::frame_part;
 mod sync;
 use sync::sync_cognitive_directory;
 
+#[path = "cognitive_store_gate.rs"]
+mod gate;
+pub(crate) use gate::CognitiveCommitGate;
+
 #[path = "cognitive_store_recovery.rs"]
 mod recovery;
 pub use recovery::CognitiveRecoveryAnchor;
@@ -243,6 +247,7 @@ pub struct CognitiveStore {
     pub(crate) pool: SqlitePool,
     pub(crate) owner_agent_id: AgentId,
     path: PathBuf,
+    pub(crate) commit_gate: CognitiveCommitGate,
     _open_guard: Option<Arc<CognitiveStoreOpenGuard>>,
 }
 
@@ -327,6 +332,7 @@ impl CognitiveStore {
             pool,
             owner_agent_id,
             path,
+            commit_gate: CognitiveCommitGate::default(),
             _open_guard: None,
         }
     }
@@ -341,8 +347,10 @@ impl CognitiveStore {
         let path = resolve_active_database_path(&root)?;
         let sqlite_home = AbsolutePathBuf::try_from(root.to_path_buf())
             .map_err(|error| CognitiveStoreError::Invalid(error.to_string()))?;
+        let commit_gate = CognitiveCommitGate::default();
+        let connection_gate = commit_gate.clone();
         let pool = SqliteConfig::from_sqlite_home(sqlite_home)
-            .open_durable_evidence_pool(&path)
+            .open_durable_evidence_pool_guarded(&path, move || !connection_gate.is_fenced())
             .await
             .map_err(unavailable)?;
         MIGRATOR.run(&pool).await.map_err(classify_migrate_error)?;
@@ -361,6 +369,7 @@ impl CognitiveStore {
             pool,
             owner_agent_id: layout.agent_id().clone(),
             path,
+            commit_gate,
             _open_guard: Some(open_guard),
         })
     }
