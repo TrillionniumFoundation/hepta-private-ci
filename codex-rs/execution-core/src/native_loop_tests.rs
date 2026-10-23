@@ -315,3 +315,30 @@ fn action_and_step_receipt_identity_are_part_of_successor_state() {
         .unwrap();
     assert_ne!(first_done.state_digest(), third_done.state_digest());
 }
+
+#[test]
+fn full_binding_and_resource_envelope_are_committed_in_successor_state() {
+    let base = start();
+    let mut other_binding = binding();
+    other_binding.host = "host-2".into();
+    other_binding.policy_digest = digest(13);
+    let other = NativeLoopCursorV1::begin(other_binding, digest(4), 3, 10_000).unwrap();
+
+    let base_waiting = base
+        .accept_step(&proposed(&base, AgentStepDisposition::InvokeModel), 1)
+        .unwrap();
+    let other_waiting = other
+        .accept_step(&proposed(&other, AgentStepDisposition::InvokeModel), 1)
+        .unwrap();
+    let outcome = external(NativeExternalKindV1::Model);
+    let base_result = base_waiting
+        .accept_external(&outcome, &TrustedFixture, 2)
+        .unwrap();
+    let other_result = other_waiting
+        .accept_external(&outcome, &TrustedFixture, 2)
+        .unwrap();
+
+    // The result may look identical to a model, but belongs to different
+    // principal/policy/host boundary metadata and cannot share state identity.
+    assert_ne!(base_result.state_digest(), other_result.state_digest());
+}
