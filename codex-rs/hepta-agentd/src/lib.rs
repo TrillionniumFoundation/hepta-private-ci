@@ -46,6 +46,12 @@ pub use authority_host_runtime::serve_host_authority_session;
 pub use authority_host_service::HostAuthorityLane;
 #[cfg(target_os = "linux")]
 pub use authority_host_service::HostAuthorityService;
+#[cfg(target_os = "linux")]
+mod root_writer_proof;
+#[cfg(target_os = "linux")]
+pub use root_writer_proof::AgentdRootAuthorityError;
+#[cfg(target_os = "linux")]
+pub use root_writer_proof::AgentdRootWriterTrust;
 mod authbus_checkpoint;
 mod authbus_dispatch;
 mod authbus_ingress;
