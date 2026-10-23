@@ -58,16 +58,40 @@ tests are marked ignored and are launched explicitly by their parent cases.
 
 `HostAuthorityClock` stores a separate, explicitly registered clock frontier.
 It samples the running kernel's boot ID, CLOCK_BOOTTIME and CLOCK_REALTIME.
-BOOTTIME includes suspended time. Each timestamp is CAS-persisted and fsynced
-before being returned. A wall-clock reading below the retained highwater,
-backwards BOOTTIME within one boot, invalid samples or arithmetic overflow
-fail closed. After reboot, realtime must reach the previous boot's highwater;
-opening never resets that value. It cannot detect a whole-host snapshot that
+BOOTTIME includes suspended time. The retained actual-time anchor and a fixed
+1000 ms future observation ceiling are separate values. CAS/fsync commits that
+window; a new actual BOOTTIME/REALTIME sample is then taken after I/O. Only a
+post-I/O reading inside the already durable window can be returned. Slow I/O,
+a boot change during I/O, samples spanning over 10 ms, invalid arithmetic or
+backwards clocks fail closed. A future ceiling is never returned as actual now.
+
+Within the same boot, sampled wall time has its own retained highwater, separate
+from the monotonic BOOTTIME mapping and future ceiling. Wall samples anchor to
+the earlier BOOTTIME reading to form a conservative upper projection. The
+post-I/O value uses this already durable mapping at the later BOOTTIME reading.
+If a post-I/O wall step is ahead of that mapping, the observation is refused;
+it needs a new mapping committed first. No unretained forward value is published.
+The integer-ms public anchor preserves its exact sub-ms BOOTTIME phase, so its
+projection equals the returned observation and a refresh cannot round backwards.
+After reboot, realtime must conservatively reach
+the previous ceiling, which bounds every formerly published value. Opening
+never resets it. Earlier clock records without a ceiling are refused, not
+silently migrated or replaced. This cannot detect a whole-host snapshot that
 restores both the protected frontier and OS time. Root and the OS remain trusted.
+
+`refresh_projection` exposes a public boot ID/BOOTTIME anchor, anchor Unix ms and
+durable ceiling, plus an actual post-I/O observation. A cached reader must match
+the kernel boot identity, advance time with actual BOOTTIME and reject values
+beyond the ceiling. This API does not supply an authority epoch, revocation head
+or authenticated/fresh delivery channel; the original host must bind those.
 
 Clock tests cover actual Linux sampling and reopen, a retained future watermark
 that refuses to reopen without rewriting state, and projection/reboot/rollback
-boundaries.
+boundaries. Explicit root-only cases delay acknowledgement of an actual
+filesystem CAS/fsync/rename/dirsync, then check both window expiry and original
+FinalUse token entry after grant expiry. The same two cases fail with the old
+pre-I/O-return behavior. Their root-owned `/run` fixture tests the clock and
+entry boundary; it does not qualify persistence across power loss.
 
 ## Local key custody and issuance
 

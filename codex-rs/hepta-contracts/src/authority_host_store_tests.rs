@@ -93,8 +93,27 @@ fn actual_host_clock_reopens_and_refuses_a_retained_future_highwater() {
     assert!(clock.now_unix_ms().unwrap() >= first);
     assert!(HostAuthorityClock::initialize(root.clone(), "host-clock".into()).is_err());
 
+    // Simulate an independently committed forward mapping, then reopen under
+    // the real OS time, which is still above the original old anchor but below
+    // that committed wall highwater. Reopening may not forget the advance.
+    let retained =
+        HostAuthorityFrontierStore::<serde_json::Value>::open(root.clone(), "host-clock".into())
+            .unwrap();
+    let expected = retained.load("host-clock").unwrap();
+    let mut advanced = expected.clone();
+    let future_ns = expected["unix_ns"].as_u64().unwrap() + 60_000_000_000;
+    advanced["unix_ns"] = future_ns.into();
+    advanced["wall_ns"] = future_ns.into();
+    advanced["ceiling_ns"] = (future_ns + 1_000_000_000).into();
+    retained
+        .compare_and_set("host-clock", &expected, &advanced)
+        .unwrap();
+    drop(clock);
+    assert!(HostAuthorityClock::open(root.clone(), "host-clock".into()).is_err());
+    assert_eq!(retained.load("host-clock"), Ok(advanced));
+
     let future = serde_json::json!({ "boot_id": "previous-boot", "boottime_ns": 0,
-        "unix_ns": u64::MAX });
+        "unix_ns": u64::MAX - 1_000_000_000, "wall_ns": u64::MAX - 1_000_000_000, "ceiling_ns": u64::MAX });
     let store =
         HostAuthorityFrontierStore::initialize(root.clone(), "future-clock".into(), future.clone())
             .unwrap();
