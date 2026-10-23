@@ -218,3 +218,10 @@ fn valid_frontier(frontier: &FinalUseFrontier) -> bool {
 #[cfg(test)]
 #[path = "authority_host_consumer_frontier_tests.rs"]
 mod tests;
+
+/// Classify only the original closed read DTO during trusted startup. The
+/// original exchange still checks every schema/id/head and does the actual read.
+pub(crate) fn is_startup_read(bytes: &[u8]) -> bool {
+    !bytes.is_empty() && bytes.len() <= FRAME_LIMIT
+        && matches!(serde_json::from_slice::<Request>(bytes), Ok(Request::Load { .. }))
+}

@@ -12,6 +12,8 @@ impl HostAuthorityService {
     /// new held publisher alive; no caller-supplied exit assertion suffices.
     ///
     /// Call before installing the recovered owner or releasing Session. This
+    /// borrows and retains no material capability, so the caller can subsequently
+    /// consume that same verified image during fixed-owner installation. It
     /// returns no operation/writer capability. The new owner still needs its
     /// original exact-cut factory and subsequent material archive registration.
     pub fn with_recovered_checkpoint(
@@ -21,7 +23,7 @@ impl HostAuthorityService {
         predecessor: &crate::RetiredCheckpointPublisher,
         successor: &crate::RetainedCheckpointPublisher,
         publisher_epoch: u64,
-        material: VerifiedCognitiveMaterial,
+        material: &VerifiedCognitiveMaterial,
     ) -> io::Result<Self> {
         if self.checkpoint.is_some() {
             return Err(io::Error::other("checkpoint already installed"));
@@ -34,9 +36,12 @@ impl HostAuthorityService {
         let peer = registration.peer_lifetime.clone();
         let backend = writer.adopt_material_checkpoint(
             &self.issuer, &self.clock, directory, previous, predecessor,
-            registration, successor, &material,
+            registration, successor, material,
         )?;
-        self.checkpoint = Some(RegisteredCheckpoint { backend, peer, material: None });
+        self.checkpoint = Some(RegisteredCheckpoint { backend, peer,
+            material: std::sync::OnceLock::new(),
+            material_attempted: std::sync::atomic::AtomicBool::new(false),
+        });
         Ok(self)
     }
 }

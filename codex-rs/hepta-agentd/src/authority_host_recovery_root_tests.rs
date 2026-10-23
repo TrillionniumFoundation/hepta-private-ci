@@ -39,7 +39,7 @@ fn original_registry_rotation_recovers_material_then_captures_and_serves() {
     proof.signature_hex.replace_range(..1, first);
     let result = wrong.with_recovered_checkpoint(
         RootAuthorityDirectory::open(directory).unwrap(), &f.previous, &f.retired,
-        &f.successor, /*publisher_epoch*/ 2, f.another_material(),
+        &f.successor, /*publisher_epoch*/ 2, &f.another_material(),
     );
     assert!(result.is_err(), "wrong retained proof must return no assembled service");
     assert_eq!(store.load(STORE_OWNER).unwrap(), f.previous.head);
@@ -48,7 +48,7 @@ fn original_registry_rotation_recovers_material_then_captures_and_serves() {
     let service = f.service();
     let service = service.with_recovered_checkpoint(
         RootAuthorityDirectory::open(directory).unwrap(), &f.previous, &f.retired,
-        &f.successor, /*publisher_epoch*/ 2, f.material,
+        &f.successor, /*publisher_epoch*/ 2, &f.material,
     ).unwrap().with_registered_consumers(&f.config.state_dir, f.config.consumers.as_ref().unwrap()).unwrap();
     let paths = &f.config.sockets;
     let service = service.with_bootstrap_registration(crate::HostAuthorityBootstrapLocations {

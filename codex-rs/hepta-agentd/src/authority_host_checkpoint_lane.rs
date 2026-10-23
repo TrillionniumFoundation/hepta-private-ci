@@ -15,7 +15,8 @@ use crate::authority_host_material::RegisteredMaterialArchive;
 pub(super) struct RegisteredCheckpoint {
     pub(super) backend: HostCognitiveCheckpoint,
     pub(super) peer: CognitiveCheckpointPeerLifetime,
-    pub(super) material: Option<RegisteredMaterialArchive>,
+    pub(super) material: std::sync::OnceLock<RegisteredMaterialArchive>,
+    pub(super) material_attempted: std::sync::atomic::AtomicBool,
 }
 
 impl RegisteredCheckpoint {
@@ -25,7 +26,8 @@ impl RegisteredCheckpoint {
         clock: Arc<HostAuthorityClock>,
     ) -> io::Result<Self> {
         Ok(Self {
-            material: None,
+            material: std::sync::OnceLock::new(),
+            material_attempted: std::sync::atomic::AtomicBool::new(false),
             peer: registration.peer_lifetime.clone(),
             backend: HostCognitiveCheckpoint::open(directory, registration, clock)
                 .map_err(io::Error::other)?,
@@ -40,7 +42,7 @@ impl RegisteredCheckpoint {
             let Some(intent) = self.backend.material_intent(bytes).map_err(io::Error::other)? else {
                 return Ok(None);
             };
-            let archive = self.material.as_ref().ok_or_else(|| io::Error::other("registered physical material archive required"))?;
+            let archive = self.material.get().ok_or_else(|| io::Error::other("registered physical material archive required"))?;
             match intent {
                 MaterialIntent::Prepare(cut) => archive.prepare(bytes, &cut),
                 MaterialIntent::Retained(cut) => archive.retained(bytes, &cut),
