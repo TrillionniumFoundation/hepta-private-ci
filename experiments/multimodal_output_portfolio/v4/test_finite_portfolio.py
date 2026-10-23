@@ -46,6 +46,14 @@ class FinitePortfolioTests(unittest.TestCase):
         losses = [(0.0, 1/11)] * 10 + [(10.0, 1/11)]
         self.assertAlmostEqual(fractional_cvar(losses), 100 / 11, places=10)
 
+    def test_adversarial_tail_distribution_fails_closed(self):
+        with self.assertRaises(InvalidModel):
+            fractional_cvar([(float('nan'), 1.0)])
+        with self.assertRaises(InvalidModel):
+            fractional_cvar([(0.0, 1.1), (1.0, -0.1)])
+        with self.assertRaises(InvalidModel):
+            fractional_cvar([(float('inf'), 1.0)])
+
     def test_joint_dependence_is_not_product_marginals(self):
         law = Model(common_flip=.35)
         p = Portfolio(law)
