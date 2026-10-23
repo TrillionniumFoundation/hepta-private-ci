@@ -125,3 +125,25 @@ new untouched heldout remain open.
 ## Next independently measured scientific experiment
 
 Replace the synthetic proxy-state/decoder fixtures with a source-pinned **real** shared Encoder plus four output decoders, observed partial latents, actual Neural/Cell feature invocation and all separately paid decoder/verifier/selection costs. Preregister source-disjoint natural tasks, multiple training seeds and common random-number draws, then compare same-information/static, MoE, risk-neutral MPC, fixed-risk MPC, dynamic NDU and best-of-N with independent decoded-output scoring and risk/coverage/cost thresholds. Train/inference factorial ablations are essential to determine whether NDU changes learned generation rather than only selecting an existing candidate. Do not enable or deploy any output-portfolio policy based only on this code.
+
+## Matched 2×2 learning-versus-control scientific admission
+
+`factorial_admission.py` introduces a deliberately **non-authorizing** score
+receipt for the same seed × original source × world × draw across four arms:
+`base_static`, `base_ndu`, `trained_static`, and `trained_ndu`.
+All arms must share the same input, actual stochastic draw-plan identity,
+Decoder checkpoint digest, independent scoring revision, and measured
+physical cost unit; every failure remains counted. The gate rejects
+incomplete 2×2 panels, duplicate arms, seed collapse, forged/unregistered
+source IDs, invalid losses, fabricated MAC-as-physical units, and changed
+scoring rules. Only an externally fixed evaluator can establish the
+authenticity of caller-supplied hashes and physical measurements.
+
+The resulting contrasts decompose base-model inference-control benefit,
+NDU-training benefit with static inference, post-training inference
+benefit, and the difference-in-differences interaction. These are
+**descriptive** without randomized assignment, matched real model
+executions, source-group statistical intervals and independent terminal
+outcomes. The helper explicitly returns
+`causal_or_statistical_superiority_established=false`. The synthetic
+regression tests are not a natural model execution or a closed P3 gate.
