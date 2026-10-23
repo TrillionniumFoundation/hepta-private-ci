@@ -122,3 +122,8 @@ separate requirement.
 preserves the original default release build/shape success, failed Linux/data
 attempts, separate SSD reference success and actual native500ms failure. It
 does not qualify an installed production authority or recovered writer.
+
+The subsequent [native clock-window V2 qualification](acceptance/2026-10-23-native-clock-window/README.md)
+passed the same original bounds on frozen5a2+d5a (feed19ms). Checkpoint still
+had no ACK; that preflight is separate from the freshcounter1/five-lane writer
+composition and does not qualify production effects or recovery.
