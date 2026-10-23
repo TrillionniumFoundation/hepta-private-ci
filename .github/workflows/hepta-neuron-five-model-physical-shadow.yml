@@ -5,6 +5,8 @@ on:
     paths:
       - qa/stem-bakeoff/replacement_physical.py
       - qa/stem-bakeoff/test_replacement_physical.py
+      - qa/stem-bakeoff/replacement_physical_audit.py
+      - qa/stem-bakeoff/test_replacement_physical_audit.py
       - qa/stem-bakeoff/replacement_models.json
       - qa/stem-bakeoff/replacement_gate.py
       - qa/stem-bakeoff/prepare_news_cohorts.py
@@ -36,8 +38,9 @@ jobs:
           set -euo pipefail
           test "$(git rev-parse HEAD)" = "$EXPECTED_SHA"
           git diff --check
-          python3 -m py_compile qa/stem-bakeoff/replacement_physical.py qa/stem-bakeoff/test_replacement_physical.py
+          python3 -m py_compile qa/stem-bakeoff/replacement_physical.py qa/stem-bakeoff/test_replacement_physical.py qa/stem-bakeoff/replacement_physical_audit.py qa/stem-bakeoff/test_replacement_physical_audit.py
           python3 -m unittest discover -s qa/stem-bakeoff -p 'test_replacement_gate.py' -v
+          python3 -m unittest discover -s qa/stem-bakeoff -p 'test_replacement_physical_audit.py' -v
       - name: Execute actual task-Head contract negatives
         run: |
           set -euo pipefail
@@ -181,3 +184,56 @@ jobs:
         run: |
           git diff --check
           git diff --exit-code
+
+
+  cross-arm-original-output-audit:
+    needs: five-checkpoint-probes
+    if: always()
+    runs-on: ubuntu-24.04
+    timeout-minutes: 12
+    env:
+      EXPECTED_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - name: Download per-model original-output artifacts, preserving arm identity
+        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          pattern: neuron-physical-*-${{ github.event.pull_request.head.sha || github.sha }}
+          path: ${{ runner.temp }}/five-arm-artifacts
+          merge-multiple: false
+      - name: Keep model IDs separate and re-score original raw rows
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import os
+          from pathlib import Path
+          root = Path(os.environ["RUNNER_TEMP"]) / "five-arm-artifacts"
+          arms = ("laya_english_421m","laya_typed_421m","laya_multi_322m",
+                  "arctic_305m","harrier_270m")
+          dst = Path(os.environ["RUNNER_TEMP"]) / "five-arm-raw"
+          dst.mkdir(exist_ok=False)
+          import shutil
+          expected_sha = os.environ["EXPECTED_SHA"]
+          for name in arms:
+              artifact = root / f"neuron-physical-{name}-{expected_sha}"
+              target = dst / name
+              target.mkdir()
+              source = artifact / "physical-output.json"
+              if source.is_file() and not source.is_symlink():
+                  shutil.copyfile(source, target / "physical-output.json")
+          PY
+          python3 qa/stem-bakeoff/replacement_physical_audit.py \
+            --input-directory "$RUNNER_TEMP/five-arm-raw" \
+            --output "$RUNNER_TEMP/five-model-original-audit.json"
+      - name: Retain cross-arm audit even if one original model failed
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: neuron-five-arm-original-audit-${{ github.event.pull_request.head.sha || github.sha }}
+          path: ${{ runner.temp }}/five-model-original-audit.json
+          if-no-files-found: warn
+          retention-days: 30
