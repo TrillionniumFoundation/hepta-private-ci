@@ -1,0 +1,544 @@
+name: Original Run worker library gate
+
+# Full original worker lib on the exact PR source head, including eight exact
+# RunCancel regression names. This does not qualify crash-durable RunCancel,
+# production signing/authority, the full workspace, Bazel or a native guest.
+on:
+  pull_request:
+    types: [opened, synchronize, reopened, ready_for_review]
+    paths:
+      - .github/workflows/hepta-original-run-worker.yml
+      - .github/actions/**
+      - .github/scripts/**
+      - codex-rs/**
+      - scripts/**
+      - justfile
+      - MODULE.bazel
+      - MODULE.bazel.lock
+      - .bazelversion
+
+permissions:
+  contents: read
+
+concurrency:
+  group: original-run-worker-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+jobs:
+  worker-library:
+    name: Original infer worker library (source head)
+    runs-on: ubuntu-24.04
+    timeout-minutes: 240
+    env:
+      SOURCE_SHA: ${{ github.event.pull_request.head.sha }}
+      BASE_SHA: ${{ github.event.pull_request.base.sha }}
+      RUSTUP_TOOLCHAIN: 1.95.0
+      RUSTUP_AUTO_INSTALL: "0"
+      CARGO_INCREMENTAL: "0"
+      CARGO_BUILD_JOBS: "1"
+      CARGO_TERM_COLOR: never
+      PYTHONDONTWRITEBYTECODE: "1"
+      OPENSSL_INCLUDE_DIR: /usr/include
+      OPENSSL_LIB_DIR: /usr/lib/x86_64-linux-gnu
+    steps:
+      - name: Initialize an attempt receipt before checkout
+        shell: bash
+        run: |
+          set -euo pipefail
+          export WORKER_CI_EVIDENCE="$RUNNER_TEMP/hepta-original-run-worker"
+          mkdir -p "$WORKER_CI_EVIDENCE"
+          printf 'WORKER_CI_EVIDENCE=%s\n' "$WORKER_CI_EVIDENCE" >> "$GITHUB_ENV"
+          python3 - <<'PY'
+          import json
+          import os
+          from pathlib import Path
+          receipt = {key: os.environ.get(key) for key in (
+              "SOURCE_SHA", "BASE_SHA", "GITHUB_RUN_ID", "GITHUB_RUN_ATTEMPT",
+              "GITHUB_REPOSITORY", "RUNNER_OS", "RUNNER_ARCH")}
+          receipt.update(worker_library_qualified=False, full_workspace_qualified=False,
+                         cross_crash_run_cancel_qualified=False)
+          Path(os.environ["WORKER_CI_EVIDENCE"], "attempt.json").write_text(
+              json.dumps(receipt, indent=2) + "\n")
+          PY
+
+      - name: Check out the immutable PR head without retained credentials
+        id: checkout
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ env.SOURCE_SHA }}
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Freeze actual source bytes and the original command plan
+        id: source
+        shell: bash
+        run: |
+          set -euo pipefail
+          cat > "$WORKER_CI_EVIDENCE/run_worker.py" <<'PY'
+          import datetime
+          import hashlib
+          import json
+          import os
+          from pathlib import Path
+          import re
+          import shutil
+          import stat
+          import subprocess
+          import sys
+          import tomllib
+          import xml.etree.ElementTree as ET
+
+          ROOT = Path(os.environ["GITHUB_WORKSPACE"]).resolve()
+          OUT = Path(os.environ["WORKER_CI_EVIDENCE"])
+          SOURCE = os.environ["SOURCE_SHA"]
+          BASE = os.environ["BASE_SHA"]
+          # nextest 0.9.103 RustBinaryId::from_parts keeps the Cargo package
+          # name for lib targets; JUnit suite.name/classname use that ID.
+          # Primary source: nextest-rs/nextest d2e7b879fb79975e8b47a8e3ce569b651e6381c0.
+          PACKAGES = {"worker": "codex-hepta-infer-worker-host"}
+          COMMANDS = {
+              "native-update": ["sudo", "apt-get", "update"],
+              "native-install": ["sudo", "apt-get", "install", "-y", "--no-install-recommends",
+                  "build-essential", "bubblewrap", "libcap-dev", "pkg-config", "libssl-dev", "cmake", "clang"],
+              "v8": ["python3", "scripts/hepta_ci_v8.py"],
+              "metadata": ["cargo", "metadata", "--locked", "--no-deps", "--format-version", "1"],
+              "format": ["just", "fmt", "--check", "--base", BASE],
+          }
+          for label, package in PACKAGES.items():
+              COMMANDS[label] = ["just", "test", "--locked", "--cargo-profile", "dev-small",
+                  "--build-jobs", "1", "--test-threads", "1", "-p", package, "--lib", "--no-tests", "fail"]
+              COMMANDS["fix-" + label] = ["just", "fix", "-p", package, "--locked", "--profile", "dev-small", "--lib"]
+          COMMANDS["format-final"] = COMMANDS["format"]
+          REQUIRED_WORKER = {
+              "native_app_server::run_monitor::tests::spawn_one_retains_run_two_and_dispatch_cannot_be_reused",
+              "native_app_server::run_monitor::tests::every_retained_identity_field_and_revision_is_checked_without_advancing",
+              "native_app_server::run_monitor::tests::missing_indeterminate_and_terminal_projection_never_become_a_terminal_witness",
+              "native_app_server::run_monitor::tests::external_cancelling_is_one_checked_revision_transition",
+              "native_app_server::run_monitor::tests::rejected_cancel_receipts_cannot_guess_or_roll_back_the_run_revision",
+              "native_app_server::cancellation_tests::original_intelligence_branch_keeps_spawn_one_and_run_two",
+              "native_app_server::cancellation_tests::original_external_cancel_interrupts_once_and_commits_correlated_terminal",
+              "native_app_server::cancellation_tests::original_indeterminate_run_stops_exact_turn_without_rewriting_run_terminal",
+          }
+
+          def now():
+              return datetime.datetime.now(datetime.timezone.utc).isoformat()
+
+          def digest(data):
+              return hashlib.sha256(data).hexdigest()
+
+          def save(name, value):
+              (OUT / name).write_text(json.dumps(value, indent=2) + "\n")
+
+          def git(*args):
+              return subprocess.check_output(["git", "--no-replace-objects", *args], cwd=ROOT)
+
+          def resource_state():
+              available = next(int(line.split()[1]) * 1024 for line in Path("/proc/meminfo").read_text().splitlines()
+                               if line.startswith("MemAvailable:"))
+              return {"at": now(), "memory_available_bytes": available,
+                      "disk_available_bytes": shutil.disk_usage(ROOT).free,
+                      "build_jobs": 1, "test_threads": 1, "cargo_profile": "dev-small"}
+
+          def snapshot():
+              head = git("rev-parse", "HEAD").decode().strip()
+              tree = git("rev-parse", "HEAD^{tree}").decode().strip()
+              rows = []
+              errors = []
+              for item in git("ls-tree", "-rz", "--full-tree", "HEAD").split(b"\0"):
+                  if not item:
+                      continue
+                  meta, raw_path = item.split(b"\t", 1)
+                  mode, kind, expected = meta.decode().split()
+                  name = os.fsdecode(raw_path)
+                  path = ROOT / name
+                  try:
+                      if kind != "blob":
+                          raise ValueError("unsupported non-blob checkout input")
+                      actual_mode = path.lstat().st_mode
+                      if mode == "120000":
+                          if not stat.S_ISLNK(actual_mode):
+                              raise ValueError("symlink mode changed")
+                          data = os.fsencode(os.readlink(path))
+                      else:
+                          if not stat.S_ISREG(actual_mode) or bool(actual_mode & 0o111) != (mode == "100755"):
+                              raise ValueError("regular file mode changed")
+                          data = path.read_bytes()
+                      actual = hashlib.sha1(b"blob " + str(len(data)).encode() + b"\0" + data).hexdigest()
+                      if actual != expected:
+                          errors.append({"path": name, "error": "actual bytes differ from HEAD", "actual_git_blob": actual})
+                      rows.append({"path": name, "mode": mode, "git_blob": actual,
+                                   "sha256": digest(data), "bytes": len(data)})
+                  except (OSError, ValueError) as error:
+                      errors.append({"path": name, "error": str(error)})
+              status = git("status", "--porcelain=v1", "--untracked-files=all").decode()
+              locks = [row for row in rows if Path(row["path"]).name in
+                       {"Cargo.lock", "MODULE.bazel.lock", "uv.lock", "pnpm-lock.yaml", "package-lock.json"}]
+              return {"head": head, "tree": tree, "tracked_blobs": len(rows), "files": rows,
+                      "files_sha256": digest(json.dumps(rows, sort_keys=True).encode()),
+                      "locks": locks, "errors": errors, "git_status": status}
+
+          def verify_source():
+              value = snapshot()
+              original = json.loads((OUT / "source.json").read_text())
+              ok = (value["head"] == SOURCE and value["tree"] == original["tree"]
+                    and value["files_sha256"] == original["files_sha256"]
+                    and not value["errors"] and not value["git_status"])
+              return {key: value[key] for key in ("head", "tree", "tracked_blobs", "files_sha256", "locks", "errors", "git_status")} | {"unchanged": ok}
+
+          def junit_paths():
+              paths = {ROOT / "codex-rs/target/nextest/local/junit.xml"}
+              if os.environ.get("CARGO_TARGET_DIR"):
+                  target = Path(os.environ["CARGO_TARGET_DIR"])
+                  if not target.is_absolute():
+                      target = ROOT / "codex-rs" / target
+                  paths.add(target / "nextest/local/junit.xml")
+              metadata = OUT / "metadata.json"
+              if metadata.is_file():
+                  target = json.loads(metadata.read_text()).get("cargo_target_directory")
+                  if target:
+                      paths.add(Path(target) / "nextest/local/junit.xml")
+              return sorted(paths)
+
+          def retain_tests(label):
+              if label != "worker":
+                  raise ValueError("Only the original worker library report is accepted")
+              candidates = junit_paths()
+              if any(path.is_symlink() for path in candidates):
+                  raise ValueError("Generated JUnit must not be a symlink")
+              reports = [path for path in candidates if path.is_file()]
+              if len(reports) != 1:
+                  raise ValueError(f"Expected one fresh original JUnit report, got {reports}")
+              data = reports[0].read_bytes()
+              (OUT / (label + ".junit.xml")).write_bytes(data)
+              root = ET.fromstring(data)
+              suites = root.findall("./testsuite")
+              cases = root.findall(".//testcase")
+              errors = []
+              if root.tag != "testsuites" or len(suites) != 1:
+                  errors.append("Expected the original single-library nextest testsuites shape")
+              if len(suites) == 1 and (
+                      suites[0].attrib.get("name") != PACKAGES[label]
+                      or suites[0].findall("./testcase") != cases):
+                  errors.append("JUnit suite identity or case placement differs from the original worker library")
+              names = [case.attrib.get("name", "") for case in cases]
+              if not cases or len(names) != len(set(names)) or any(not name for name in names):
+                  errors.append("JUnit is empty or has empty/duplicate full test names")
+              if any(case.attrib.get("classname") != PACKAGES[label] for case in cases):
+                  errors.append("JUnit case belongs to a different package")
+              final_tags = ("failure", "error", "skipped")
+              counts = {"tests": len(cases)} | {
+                  {"failure": "failures", "error": "errors", "skipped": "skipped"}[tag]:
+                  sum(case.find(tag) is not None for case in cases) for tag in final_tags}
+              if any(sum(len(case.findall(tag)) for tag in final_tags) > 1 for case in cases):
+                  errors.append("A case has ambiguous final statuses")
+              for element in [root, *suites]:
+                  for key, expected in counts.items():
+                      # The pinned nextest 0.9.103 fixture uses suite.disabled=0 and
+                      # omits a root skip counter. Newer nextest uses skipped=0.
+                      # Missing zero-only skip metadata is allowed; present counters
+                      # must still agree, and required skipped cases always refuse.
+                      keys = (key,) if key != "skipped" else tuple(
+                          name for name in ("skipped", "disabled") if name in element.attrib)
+                      if key == "skipped" and not keys:
+                          if expected:
+                              errors.append("A nonzero skipped-case count has no JUnit counter")
+                          continue
+                      for counter in keys:
+                          value = element.attrib.get(counter, "")
+                          if not re.fullmatch(r"[0-9]+", value) or int(value) != expected:
+                              errors.append(f"JUnit {element.tag} {counter} counter disagrees with actual cases")
+              passed = {case.attrib["name"] for case in cases
+                        if case.attrib.get("name") and not any(case.find(tag) is not None for tag in final_tags)}
+              missing = sorted(REQUIRED_WORKER - passed)
+              if missing:
+                  errors.append("An exact required worker case is absent, skipped or failing")
+              if counts["failures"] or counts["errors"]:
+                  errors.append("The original worker library contains a final failure/error")
+              retry_tags = {"rerunFailure", "rerunError", "flakyFailure", "flakyError"}
+              retries = [{"name": case.attrib.get("name"), "elements": [
+                  {"tag": child.tag, "attributes": child.attrib}
+                  for child in case if child.tag in retry_tags]}
+                  for case in cases if any(child.tag in retry_tags for child in case)]
+              result = {
+                  "source_path": str(reports[0]), "sha256": digest(data), "bytes": len(data),
+                  "junit_attributes": root.attrib, "suite_attributes": [suite.attrib for suite in suites],
+                  "reported_counts": counts, "reported_test_names": names,
+                  "executed_test_names": sorted(passed), "required_exact_test_names": sorted(REQUIRED_WORKER),
+                  "required_test_names_missing": missing, "validation_errors": errors,
+                  "retry_evidence": retries, "retry_policy": "Original local profile inherits default retries=1; no override",
+                  "nextest_summary_lines": [line for line in (OUT / (label + ".stderr")).read_text(errors="replace").splitlines()
+                                            if "Summary" in line or "Starting" in line],
+                  "required_owning_tests_present_and_passed": not errors,
+                  "selection": "Complete original package --lib, no test-name or filterset restriction",
+                  "ignored_or_skipped_policy": "Original default selection preserved; every required case must execute and pass",
+              }
+              save(label + "-test-index.json", result)
+              if errors:
+                  raise ValueError("Original worker JUnit failed validation: " + "; ".join(errors))
+              return result
+
+          def execute(label):
+              receipt = {"name": label, "argv": COMMANDS[label], "source_sha": SOURCE,
+                         "started_at": now(), "status": "running", "exit_code": None,
+                         "resources_before": resource_state()}
+              save(label + ".json", receipt)
+              stdout = OUT / (label + ".stdout")
+              stderr = OUT / (label + ".stderr")
+              stdout.touch()
+              stderr.touch()
+              try:
+                  receipt["source_before"] = verify_source()
+                  if not receipt["source_before"]["unchanged"]:
+                      raise ValueError("Source or lock drift before original command")
+                  if label in PACKAGES:
+                      for path in junit_paths():
+                          if path.exists() or path.is_symlink():
+                              if path.is_symlink() or not path.is_file():
+                                  raise ValueError("Invalid prior generated JUnit path")
+                              # A previous report cannot qualify this command; the fresh bytes are retained below.
+                              path.unlink()
+                  cwd = ROOT / "codex-rs" if label == "metadata" else ROOT
+                  receipt["cwd"] = str(cwd)
+                  print("Running original gate: " + label, flush=True)
+                  with stdout.open("wb") as out, stderr.open("wb") as err:
+                      completed = subprocess.run(COMMANDS[label], cwd=cwd, stdout=out, stderr=err, check=False)
+                  receipt["exit_code"] = completed.returncode
+                  if label in PACKAGES and any(path.is_file() for path in junit_paths()):
+                      receipt["tests"] = retain_tests(label)
+                  if completed.returncode != 0:
+                      raise ValueError("Original command failed")
+                  if label in PACKAGES and "tests" not in receipt:
+                      raise ValueError("Successful test command did not produce fresh JUnit")
+                  if label == "v8":
+                      names = {"RUSTY_V8_ARCHIVE", "RUSTY_V8_SRC_BINDING_PATH"}
+                      exported = {key: value for line in Path(os.environ["GITHUB_ENV"]).read_text().splitlines()
+                                  if "=" in line for key, value in [line.split("=", 1)] if key in names}
+                      if set(exported) != names or not all(exported.values()):
+                          raise ValueError("Original verified V8 resolver did not export its archive and binding")
+                      receipt["verified_v8_artifacts"] = []
+                      for name, value in sorted(exported.items()):
+                          path = Path(value)
+                          with path.open("rb") as artifact:
+                              artifact_sha256 = hashlib.file_digest(artifact, "sha256").hexdigest()
+                          receipt["verified_v8_artifacts"].append({"environment": name, "path": str(path),
+                              "bytes": path.stat().st_size, "sha256": artifact_sha256})
+                  if label == "metadata":
+                      metadata = json.loads(stdout.read_text())
+                      members = set(metadata["workspace_members"])
+                      packages = {row["name"] for row in metadata["packages"] if row["id"] in members}
+                      if len(members) != 193 or not set(PACKAGES.values()) <= packages:
+                          raise ValueError("Original 193-member workspace or owning packages changed; review this profile")
+                      if Path(metadata["workspace_root"]).resolve() != ROOT / "codex-rs":
+                          raise ValueError("Cargo metadata did not resolve the original workspace root")
+                      receipt["cargo_target_directory"] = metadata["target_directory"]
+                      receipt["effective_workspace_members"] = len(members)
+                      receipt["packages"] = sorted(packages)
+                  receipt["status"] = "passed"
+              except (OSError, ValueError, KeyError, TypeError, ET.ParseError, subprocess.SubprocessError) as error:
+                  receipt["status"] = "failed"
+                  receipt["error"] = str(error)
+              finally:
+                  try:
+                      receipt["source_after"] = verify_source()
+                      if not receipt["source_after"]["unchanged"]:
+                          receipt["status"] = "failed"
+                  except (OSError, ValueError, subprocess.SubprocessError) as error:
+                      receipt["status"] = "failed"
+                      receipt["source_verification_error"] = str(error)
+                  receipt.update(finished_at=now(), resources_after=resource_state())
+                  for kind, path in (("stdout", stdout), ("stderr", stderr)):
+                      receipt[kind] = {"file": path.name, "bytes": path.stat().st_size, "sha256": digest(path.read_bytes())}
+                  save(label + ".json", receipt)
+              print(json.dumps({key: receipt[key] for key in ("name", "status", "exit_code")}), flush=True)
+              return 0 if receipt["status"] == "passed" else 1
+
+          def initialize():
+              if not re.fullmatch("[0-9a-f]{40}", SOURCE) or not re.fullmatch("[0-9a-f]{40}", BASE):
+                  raise ValueError("Expected immutable PR head and base IDs")
+              git("cat-file", "-e", BASE + "^{commit}")
+              value = snapshot()
+              save("source.json", value)
+              if value["head"] != SOURCE or value["errors"] or value["git_status"]:
+                  raise ValueError("PR head checkout/readback is not exact and clean")
+              toolchain = tomllib.loads((ROOT / "codex-rs/rust-toolchain.toml").read_text())["toolchain"]
+              if toolchain["channel"] != "1.95.0" or not {"clippy", "rustfmt", "rust-src"} <= set(toolchain["components"]):
+                  raise ValueError("Repository compiler profile changed; review the owner gate")
+              for name, package in PACKAGES.items():
+                  manifest = tomllib.loads((ROOT / "codex-rs" / package.removeprefix("codex-") / "Cargo.toml").read_text())
+                  if manifest["package"]["name"] != package:
+                      raise ValueError("Original owning-package identity changed")
+              nextest_path = ROOT / "codex-rs/.config/nextest.toml"
+              nextest = tomllib.loads(nextest_path.read_text())
+              profiles = nextest["profile"]
+              if (profiles["local"].get("inherits") != "default"
+                      or profiles["default"].get("retries") != 1
+                      or profiles["default"]["junit"]["path"] != "junit.xml"):
+                  raise ValueError("Original nextest profile/retries/JUnit path changed; review this gate")
+              (OUT / "original-nextest.toml").write_bytes(nextest_path.read_bytes())
+              save("nextest-profile.json", {"path": "codex-rs/.config/nextest.toml",
+                  "sha256": digest(nextest_path.read_bytes()), "profile": "local",
+                  "configuration": nextest, "overrides_added": False})
+              save("command-plan.json", {name: {"argv": argv, "status": "not_started"} for name, argv in COMMANDS.items()})
+              save("compiler-profile.json", toolchain)
+              save("initial-resources.json", resource_state())
+              return 0
+
+          if __name__ == "__main__":
+              try:
+                  code = initialize() if sys.argv[1] == "initialize" else execute(sys.argv[1])
+              except (OSError, ValueError, KeyError, TypeError, subprocess.SubprocessError) as error:
+                  save("runner-error.json", {"at": now(), "phase": sys.argv[1:], "error": str(error), "qualified": False})
+                  code = 1
+              raise SystemExit(code)
+          PY
+          python3 "$WORKER_CI_EVIDENCE/run_worker.py" initialize
+
+      - name: Prepare the original project Bazel and Cargo environment
+        id: tools
+        uses: ./.github/actions/prepare-bazel-ci
+        with:
+          target: x86_64-unknown-linux-gnu
+          cache-scope: original-run-worker
+
+      - name: Install the original pinned compiler and components
+        id: rust
+        uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582
+        with:
+          toolchain: 1.95.0
+          components: clippy,rustfmt,rust-src
+
+      - name: Install the existing CI nextest version
+        id: nextest
+        uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
+        with:
+          tool: nextest@0.9.103
+
+      - name: Install native prerequisites including original system OpenSSL
+        id: native
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 "$WORKER_CI_EVIDENCE/run_worker.py" native-update
+          python3 "$WORKER_CI_EVIDENCE/run_worker.py" native-install
+          python3 - <<'PY'
+          import json
+          import os
+          from pathlib import Path
+          import subprocess
+          evidence = Path(os.environ["WORKER_CI_EVIDENCE"])
+          records = []
+          for command in (["rustc", "-Vv"], ["cargo", "-Vv"], ["just", "--version"],
+                          ["cargo", "nextest", "--version"], ["pkg-config", "--modversion", "openssl"],
+                          ["pkg-config", "--variable=libdir", "openssl"]):
+              result = subprocess.run(command, text=True, capture_output=True, check=False)
+              records.append({"argv": command, "exit_code": result.returncode,
+                              "stdout": result.stdout, "stderr": result.stderr})
+          (evidence / "tool-versions.json").write_text(json.dumps(records, indent=2) + "\n")
+          if any(record["exit_code"] for record in records):
+              raise SystemExit(1)
+          if not records[0]["stdout"].startswith("rustc 1.95.0 "):
+              raise SystemExit("Wrong effective compiler")
+          if records[3]["stdout"].split()[:2] != ["cargo-nextest", "0.9.103"]:
+              raise SystemExit("Wrong effective nextest version for the reviewed JUnit profile")
+          if records[-1]["stdout"].strip() != os.environ["OPENSSL_LIB_DIR"]:
+              raise SystemExit("Unexpected original system OpenSSL library directory")
+          PY
+
+      - name: Resolve the original checksum-verified V8 archive and binding
+        id: v8
+        shell: bash
+        env:
+          PYTHONPATH: scripts
+          CODEX_REPO_ROOT: ${{ github.workspace }}
+          V8_FROM_SOURCE: "0"
+          RUSTY_V8_ARCHIVE: ""
+          RUSTY_V8_SRC_BINDING_PATH: ""
+        run: python3 "$WORKER_CI_EVIDENCE/run_worker.py" v8
+
+      - name: Resolve the unchanged original complete workspace and lock
+        id: metadata
+        shell: bash
+        run: python3 "$WORKER_CI_EVIDENCE/run_worker.py" metadata
+
+      - name: Check formatting through the original recipe against the exact PR base
+        id: format
+        shell: bash
+        run: python3 "$WORKER_CI_EVIDENCE/run_worker.py" format
+
+      - name: Run the full original worker library including all eight exact RunCancel regression cases
+        id: worker
+        if: always() && steps.metadata.outcome == 'success' && steps.v8.outcome == 'success'
+        shell: bash
+        run: python3 "$WORKER_CI_EVIDENCE/run_worker.py" worker
+
+      - name: Run original scoped worker Clippy and reject any source or lock rewrite
+        id: fix_worker
+        if: always() && steps.metadata.outcome == 'success' && steps.v8.outcome == 'success'
+        shell: bash
+        run: python3 "$WORKER_CI_EVIDENCE/run_worker.py" fix-worker
+
+      - name: Recheck original formatting on the exact unchanged final source
+        id: format_final
+        if: always() && steps.metadata.outcome == 'success' && steps.v8.outcome == 'success'
+        shell: bash
+        run: python3 "$WORKER_CI_EVIDENCE/run_worker.py" format-final
+
+      - name: Retain terminal setup, source and complete gate evidence
+        if: always()
+        shell: bash
+        env:
+          SETUP_OUTCOMES: ${{ toJSON(steps) }}
+        run: |
+          python3 - <<'PY'
+          import hashlib
+          import importlib.util
+          import json
+          import os
+          from pathlib import Path
+          import subprocess
+          evidence = Path(os.environ["RUNNER_TEMP"], "hepta-original-run-worker")
+          evidence.mkdir(parents=True, exist_ok=True)
+          result = {"source_sha": os.environ["SOURCE_SHA"], "steps": json.loads(os.environ["SETUP_OUTCOMES"]),
+                    "worker_library_qualified": False, "full_workspace_qualified": False,
+                    "bazel_qualified": False, "native_guest_qualified": False,
+                    "cross_crash_run_cancel_qualified": False, "production_authority_qualified": False}
+          try:
+              spec = importlib.util.spec_from_file_location("original_run_worker_ci", evidence / "run_worker.py")
+              runner = importlib.util.module_from_spec(spec)
+              spec.loader.exec_module(runner)
+              result["source_final"] = runner.verify_source()
+              result["commands"] = {}
+              for label, argv in runner.COMMANDS.items():
+                  path = evidence / (label + ".json")
+                  result["commands"][label] = json.loads(path.read_text()) if path.exists() else {
+                      "argv": argv, "status": "not_started", "exit_code": None}
+              required_steps = ("checkout", "source", "tools", "rust", "nextest", "native", "v8", "metadata",
+                                "format", "worker", "fix_worker", "format_final")
+              result["worker_library_qualified"] = (result["source_final"]["unchanged"]
+                  and all(result["steps"].get(name, {}).get("outcome") == "success" for name in required_steps)
+                  and all(row["status"] == "passed" and row["exit_code"] == 0 for row in result["commands"].values()))
+              with (evidence / "source-drift.patch").open("wb") as output:
+                  subprocess.run(["git", "diff", "--binary", "--no-renames", "HEAD"], stdout=output, check=True)
+          except (OSError, ValueError, KeyError, TypeError, ImportError, subprocess.SubprocessError) as error:
+              result["finalization_error"] = str(error)
+              result["worker_library_qualified"] = False
+          (evidence / "result.json").write_text(json.dumps(result, indent=2) + "\n")
+          inventory = []
+          for path in sorted(evidence.rglob("*")):
+              if path.is_file():
+                  data = path.read_bytes()
+                  inventory.append({"path": str(path.relative_to(evidence)), "bytes": len(data),
+                                    "sha256": hashlib.sha256(data).hexdigest()})
+          (evidence / "artifact-inventory.json").write_text(json.dumps(inventory, indent=2) + "\n")
+          raise SystemExit(0 if result["worker_library_qualified"] else 1)
+          PY
+
+      - name: Upload raw source-bound evidence on every outcome
+        if: always()
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f
+        with:
+          name: original-run-worker-${{ env.SOURCE_SHA }}-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/hepta-original-run-worker
+          if-no-files-found: error
+          include-hidden-files: true
+          retention-days: 14

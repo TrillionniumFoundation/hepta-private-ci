@@ -75,6 +75,12 @@ use codex_utils_absolute_path::AbsolutePathBuf;
 mod control;
 pub use control::NativeAdmission;
 pub use control::NativeIntelligenceRunBinding;
+#[path = "native_run_monitor.rs"]
+mod run_monitor;
+use run_monitor::ObservationFailure;
+use run_monitor::OwnerRunObservation;
+use run_monitor::RetainedIntelligenceRun;
+use run_monitor::RunObservation;
 use tokio::time::Instant;
 use tokio::time::timeout;
 use tokio::time::timeout_at;
@@ -135,6 +141,7 @@ pub trait TurnStartAuthorizer: Send + Sync {
 pub struct NativeWorkerConfig {
     pub agentd_socket: PathBuf,
     pub agent_id: AgentId,
+    /// Immutable Agentd process spawn, not the admitted run's lifecycle generation.
     pub generation: u64,
     pub model: String,
     pub timeout: Duration,
@@ -449,8 +456,10 @@ impl AppServerModelDriver {
                 );
             }
         }
-        let mut intelligence_revision = match intelligence {
-            Some(binding) => Some(require_intelligence_handoff(&owner, binding).await?),
+        let mut retained_intelligence = match intelligence {
+            Some(binding) => {
+                Some(require_intelligence_handoff(&owner, binding, &self.config).await?)
+            }
             None => None,
         };
         let ingress = owner.session_ingress().await?;
@@ -542,10 +551,10 @@ impl AppServerModelDriver {
             return Err("cancelled before model dispatch".into());
         }
         if let Some(binding) = intelligence {
-            let current_revision = require_intelligence_handoff(&owner, binding).await?;
-            if Some(current_revision) != intelligence_revision {
+            let current = require_intelligence_handoff(&owner, binding, &self.config).await?;
+            if Some(&current) != retained_intelligence.as_ref() {
                 let _ = timeout(RPC_TIMEOUT, client.shutdown()).await;
-                return Err("intelligence handoff revision changed before dispatch".into());
+                return Err("intelligence handoff binding changed before dispatch".into());
             }
         }
         let turn_params = TurnStartParams {
@@ -657,9 +666,9 @@ impl AppServerModelDriver {
             &app_server_version,
         )?;
 
-        if let Some(binding) = intelligence {
+        if let Some(retained) = retained_intelligence.as_mut() {
             let dispatched = match owner
-                .run_mark_dispatched(binding.run_id.clone(), binding.expected_revision)
+                .run_mark_dispatched(retained.run_id().to_string(), retained.revision())
                 .await
             {
                 Ok(receipt) => receipt,
@@ -677,21 +686,11 @@ impl AppServerModelDriver {
             };
             // Idempotent acknowledgement is reconciliation, not a second
             // physical-send permit. A competing worker must not redispatch.
-            if dispatched.phase != AgentRunPhase::Dispatched
-                || dispatched.idempotent
-                || dispatched.generation != self.config.generation
-                || dispatched.terminal_observed
-                || dispatched.context_digest.as_deref() != Some(binding.context_digest.as_str())
-                || dispatched.compilation_receipt_digest.as_deref()
-                    != Some(binding.envelope_digest.as_str())
-            {
-                let reason =
-                    "Agentd did not newly commit this exact intelligence dispatch".to_string();
+            if let Err(reason) = retained.accept_dispatch(&dispatched) {
                 control.abort_native_before_effect(pre_effect_abort, reason.clone())?;
                 let _ = timeout(RPC_TIMEOUT, client.shutdown()).await;
                 return Err(reason.into());
             }
-            intelligence_revision = Some(dispatched.revision);
         }
 
         let post_health = match owner.health().await {
@@ -829,7 +828,7 @@ impl AppServerModelDriver {
                             turn
                         } else {
                             let _ = timeout(RPC_TIMEOUT, client.shutdown()).await;
-                            return Ok(reconcile_intelligence_start_unknown(&owner, intelligence, intelligence_revision, indeterminate_start_output(
+                            return Ok(reconcile_intelligence_start_unknown(&owner, intelligence, retained_intelligence.as_ref().map(RetainedIntelligenceRun::revision), indeterminate_start_output(
                                 started,
                                 format!(
                                     "turn/start returned an accepted-or-unknown JSON-RPC error ({reason}); reconciliation found no exact turn; do not replay"
@@ -845,7 +844,7 @@ impl AppServerModelDriver {
                     turn
                 } else {
                     let _ = timeout(RPC_TIMEOUT, client.shutdown()).await;
-                    return Ok(reconcile_intelligence_start_unknown(&owner, intelligence, intelligence_revision, indeterminate_start_output(
+                    return Ok(reconcile_intelligence_start_unknown(&owner, intelligence, retained_intelligence.as_ref().map(RetainedIntelligenceRun::revision), indeterminate_start_output(
                         started,
                         format!(
                             "turn/start transport outcome unknown ({error}); reconciliation found no exact turn; do not replay"
@@ -858,7 +857,7 @@ impl AppServerModelDriver {
                     turn
                 } else {
                     let _ = timeout(RPC_TIMEOUT, client.shutdown()).await;
-                    return Ok(reconcile_intelligence_start_unknown(&owner, intelligence, intelligence_revision, indeterminate_start_output(
+                    return Ok(reconcile_intelligence_start_unknown(&owner, intelligence, retained_intelligence.as_ref().map(RetainedIntelligenceRun::revision), indeterminate_start_output(
                         started,
                         "turn/start timed out; reconciliation found no exact turn; do not replay"
                             .to_string(),
@@ -885,11 +884,11 @@ impl AppServerModelDriver {
             codex_terminal_correlation_digest: None,
         };
         if let Err(error) = control.native_started(request_id, output.turn_id.clone()) {
-            if let (Some(binding), Some(revision)) = (intelligence, intelligence_revision) {
+            if let Some(retained) = retained_intelligence.as_ref() {
                 let _ = owner
                     .run_cancel(
-                        binding.run_id.clone(),
-                        revision,
+                        retained.run_id().to_string(),
+                        retained.revision(),
                         "native start journal update failed".to_string(),
                     )
                     .await;
@@ -900,29 +899,56 @@ impl AppServerModelDriver {
         }
         let deadline =
             Instant::now() + observation_budget_from(unix_time_ms()?, binding.intent.deadline_ms);
+        let mut intelligence_reconciled = true;
         let result = self
             .observe(
                 &mut client,
                 &mut output,
                 deadline,
                 cancellation,
-                Some(&owner),
+                Some(OwnerRunObservation {
+                    owner: &owner,
+                    intelligence: retained_intelligence.as_mut(),
+                }),
                 &binding,
             )
             .await;
-        if let Err(reason) = result {
-            output.boundary_status = classify_observation_failure(&reason);
+        if let Err(failure) = result {
+            let reason = failure.reason().to_string();
+            output.boundary_status = match &failure {
+                ObservationFailure::OwnerCancelling => NativeBoundaryStatus::Cancelled,
+                ObservationFailure::Existing(_) | ObservationFailure::RunUnresolved(_) => {
+                    classify_observation_failure(&reason)
+                }
+            };
             output.stop_reason = Some(reason.clone());
-            if let (Some(binding), Some(revision)) = (intelligence, intelligence_revision) {
-                if let Ok(cancelled) = owner
+            intelligence_reconciled = !matches!(&failure, ObservationFailure::RunUnresolved(_));
+            // An owner-observed Cancelling is already the cancellation request.
+            // Do not send it again with a new reason or stale revision. A lost
+            // binding permits containment of this exact turn, not run mutation.
+            if matches!(&failure, ObservationFailure::Existing(_))
+                && let Some(retained) = retained_intelligence.as_mut()
+            {
+                match owner
                     .run_cancel(
-                        binding.run_id.clone(),
-                        revision,
+                        retained.run_id().to_string(),
+                        retained.revision(),
                         reason.chars().take(512).collect(),
                     )
                     .await
                 {
-                    intelligence_revision = Some(cancelled.receipt.revision);
+                    Ok(cancelled) => {
+                        intelligence_reconciled = retained.accept_cancellation(&cancelled).is_ok();
+                    }
+                    // Rejection can follow an expiry mutation. It never proves
+                    // absence and must not rearm dispatch or guess a revision.
+                    Err(_) => intelligence_reconciled = false,
+                }
+                if !intelligence_reconciled {
+                    output.boundary_status = NativeBoundaryStatus::Quarantined;
+                    output.stop_reason = Some(format!(
+                        "{reason}; Agentd cancellation acknowledgement unresolved; retained revision cannot advance"
+                    ));
                 }
             }
             // Persist cancellation intent, but still interrupt if that write
@@ -953,11 +979,12 @@ impl AppServerModelDriver {
             loss_recorded?;
             cancel_recorded?;
             if !output.terminal_observed
-                && let (Some(binding), Some(revision)) = (intelligence, intelligence_revision)
+                && intelligence_reconciled
+                && let Some(retained) = retained_intelligence.as_ref()
                 && let Err(error) = owner
                     .run_observe_terminal(
-                        binding.run_id.clone(),
-                        revision,
+                        retained.run_id().to_string(),
+                        retained.revision(),
                         AgentRunPhase::Indeterminate,
                         /*terminal_observed*/ false,
                     )
@@ -990,9 +1017,9 @@ impl AppServerModelDriver {
             let _ = verify_owner_health(&mut output, owner.health(), Instant::now() + RPC_TIMEOUT)
                 .await;
             downgrade_for_owner_loss(&mut output);
-            if let (Some(binding), Some(revision)) = (intelligence, intelligence_revision)
-                && let Err(error) =
-                    commit_intelligence_terminal(&owner, binding, revision, &output).await
+            if intelligence_reconciled
+                && let Some(retained) = retained_intelligence.as_ref()
+                && let Err(error) = commit_intelligence_terminal(&owner, retained, &output).await
             {
                 let note = format!("Agentd terminal reconciliation required: {error}");
                 output.stop_reason = Some(match output.stop_reason.take() {
@@ -1010,16 +1037,29 @@ impl AppServerModelDriver {
         output: &mut NativeRunOutput,
         deadline: Instant,
         cancellation: &CancellationToken,
-        owner: Option<&AgentdClient>,
+        mut owner: Option<OwnerRunObservation<'_>>,
         binding: &CodexTurnBinding,
-    ) -> std::result::Result<(), String> {
+    ) -> std::result::Result<(), ObservationFailure> {
         let mut health_tick = tokio::time::interval(Duration::from_millis(500));
         loop {
             let event = tokio::select! {
-                _ = cancellation.cancelled() => return Err(LOCAL_CANCELLED.to_string()),
+                _ = cancellation.cancelled() => return Err(LOCAL_CANCELLED.to_string().into()),
                 _ = health_tick.tick(), if owner.is_some() => {
-                    if let Some(owner) = owner {
-                        verify_owner_health(output, owner.health(), deadline).await?;
+                    if let Some(observation) = owner.as_mut() {
+                        verify_owner_health(output, observation.owner.health(), deadline).await?;
+                        if let Some(retained) = observation.intelligence.as_deref_mut() {
+                            let receipt = timeout_at(
+                                deadline.min(Instant::now() + RPC_TIMEOUT),
+                                observation.owner.run_status(retained.run_id().to_string()),
+                            )
+                            .await
+                            .map_err(|_| ObservationFailure::RunUnresolved("bound Agentd run read timed out".to_string()))?
+                            .map_err(|_| ObservationFailure::RunUnresolved("bound Agentd run read failed".to_string()))?;
+                            match retained.observe(receipt).map_err(ObservationFailure::RunUnresolved)? {
+                                RunObservation::Dispatched => {}
+                                RunObservation::Cancelling => return Err(ObservationFailure::OwnerCancelling),
+                            }
+                        }
                     }
                     continue;
                 },
@@ -1051,8 +1091,10 @@ impl AppServerModelDriver {
                     .map_err(|_| "approval rejection timed out".to_string())?
                     .map_err(|error| error.to_string())?;
                 }
-                AppServerEvent::Lagged { .. } => return Err("provider events lost".to_string()),
-                AppServerEvent::Disconnected { message } => return Err(message.clone()),
+                AppServerEvent::Lagged { .. } => {
+                    return Err("provider events lost".to_string().into());
+                }
+                AppServerEvent::Disconnected { message } => return Err(message.clone().into()),
             }
         }
     }
@@ -1303,7 +1345,8 @@ async fn reconcile_intelligence_start_unknown(
 async fn require_intelligence_handoff(
     owner: &AgentdClient,
     binding: &NativeIntelligenceRunBinding,
-) -> Result<u64> {
+    config: &NativeWorkerConfig,
+) -> Result<RetainedIntelligenceRun> {
     if binding.run_id.is_empty()
         || binding.expected_revision == 0
         || binding.context_digest.is_empty()
@@ -1321,21 +1364,12 @@ async fn require_intelligence_handoff(
         .run_status(binding.run_id.clone())
         .await?
         .ok_or("intelligence run is not admitted in Agentd")?;
-    if run.phase != AgentRunPhase::ContextAttached
-        || run.revision != binding.expected_revision
-        || run.context_digest.as_deref() != Some(binding.context_digest.as_str())
-        || run.compilation_receipt_digest.as_deref() != Some(binding.envelope_digest.as_str())
-        || run.terminal_observed
-    {
-        return Err("Agentd intelligence handoff is stale or mixed".into());
-    }
-    Ok(run.revision)
+    RetainedIntelligenceRun::from_handoff(config, binding, run).map_err(Into::into)
 }
 
 async fn commit_intelligence_terminal(
     owner: &AgentdClient,
-    binding: &NativeIntelligenceRunBinding,
-    expected_revision: u64,
+    retained: &RetainedIntelligenceRun,
     output: &NativeRunOutput,
 ) -> Result<()> {
     if !output.terminal_observed
@@ -1354,17 +1388,14 @@ async fn commit_intelligence_terminal(
     };
     let receipt = owner
         .run_observe_terminal(
-            binding.run_id.clone(),
-            expected_revision,
+            retained.run_id().to_string(),
+            retained.revision(),
             phase,
             /*terminal_observed*/ true,
         )
         .await?;
-    if receipt.phase != phase
-        || !receipt.terminal_observed
-        || receipt.context_digest.as_deref() != Some(binding.context_digest.as_str())
-        || receipt.compilation_receipt_digest.as_deref() != Some(binding.envelope_digest.as_str())
-    {
+    retained.validate_receipt(&receipt)?;
+    if receipt.phase != phase || !receipt.terminal_observed {
         return Err("Agentd terminal receipt lost the intelligence handoff binding".into());
     }
     Ok(())
@@ -1403,6 +1434,8 @@ fn downgrade_for_owner_loss(output: &mut NativeRunOutput) {
 }
 
 async fn interrupt(client: &mut RemoteAppServerClient, output: &NativeRunOutput) {
+    #[cfg(all(test, unix))]
+    cancellation_tests::record_interrupt(output);
     // An interrupt acknowledgement is not a terminal model outcome.
     let _ = timeout(
         RPC_TIMEOUT,
@@ -1492,3 +1525,7 @@ fn observe_event(
 #[cfg(test)]
 #[path = "native_app_server_tests.rs"]
 mod tests;
+
+#[cfg(all(test, unix))]
+#[path = "native_run_cancellation_tests.rs"]
+mod cancellation_tests;
