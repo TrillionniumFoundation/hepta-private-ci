@@ -173,11 +173,11 @@ fn completion_is_a_candidate_until_verified_by_independent_observer() {
         NativeLoopPhaseV1::CompletionCandidate { .. }
     ));
     assert!(matches!(
-        candidate.accept_completion(&digest(9), &Deny),
+        candidate.accept_completion(&digest(9), &Deny, 2),
         Err(PortError::Denied)
     ));
     let done = candidate
-        .accept_completion(&digest(9), &TrustedFixture)
+        .accept_completion(&digest(9), &TrustedFixture, 2)
         .unwrap();
     assert!(matches!(done.phase(), NativeLoopPhaseV1::Completed { .. }));
     assert!(done.next_request(2).is_err());
@@ -215,4 +215,30 @@ fn continuation_digest_is_bound_to_run_and_operation() {
         .accept_external(&observed, &TrustedFixture, 2)
         .unwrap();
     assert_ne!(first_done.state_digest(), second_done.state_digest());
+}
+
+#[test]
+fn expired_completion_remains_unverified_even_if_observer_approves() {
+    let base = start();
+    let mut proposed_completion = proposed(&base, AgentStepDisposition::Completed);
+    proposed_completion.action_digest = None;
+    proposed_completion.next_state_digest = None;
+    let candidate = base.accept_step(&proposed_completion, 9_999).unwrap();
+    let before = candidate.checkpoint_digest().unwrap();
+
+    // Deadline equality must fail closed; an observer cannot extend the run.
+    for now in [10_000, 10_001, u64::MAX] {
+        assert!(matches!(
+            candidate.accept_completion(&digest(9), &TrustedFixture, now),
+            Err(PortError::Cancelled)
+        ));
+        assert_eq!(candidate.checkpoint_digest().unwrap(), before);
+    }
+    let before_deadline = candidate
+        .accept_completion(&digest(9), &TrustedFixture, 9_999)
+        .unwrap();
+    assert!(matches!(
+        before_deadline.phase(),
+        NativeLoopPhaseV1::Completed { .. }
+    ));
 }
