@@ -16,6 +16,7 @@ use codex_hepta_agentd::NeuralCognitivePinV1;
 use codex_hepta_agentd::NeuralCognitiveRequestV1;
 use codex_hepta_types::Digest32;
 use serde::Deserialize;
+use tokio_util::sync::CancellationToken;
 
 use crate::model_worker::DriverModelHandle;
 use crate::model_worker::DriverRunObservation;
@@ -70,6 +71,7 @@ pub(super) struct SmolLmDriver {
     pub(super) parameters: Vec<u8>,
     pub(super) mailbox: Mailbox,
     runtime: tokio::runtime::Handle,
+    cancellation: CancellationToken,
     session: Option<Session>,
 }
 
@@ -80,6 +82,7 @@ impl SmolLmDriver {
         parameters: Vec<u8>,
         mailbox: Mailbox,
         runtime: tokio::runtime::Handle,
+        cancellation: CancellationToken,
     ) -> Self {
         Self {
             config,
@@ -87,11 +90,15 @@ impl SmolLmDriver {
             parameters,
             mailbox,
             runtime,
+            cancellation,
             session: None,
         }
     }
 
     fn start(&mut self) -> Result<DriverModelHandle, String> {
+        if self.cancellation.is_cancelled() {
+            return Err("neural worker startup cancelled before material use".to_owned());
+        }
         let config = &self.config;
         config.verify_sources()?;
         if self.parameters.len() > 2 * 1024 * 1024
@@ -146,6 +153,9 @@ impl SmolLmDriver {
             .custom_flags(libc::O_DIRECTORY | libc::O_NOFOLLOW)
             .open(root)
             .map_err(|error| error.to_string())?;
+        if self.cancellation.is_cancelled() {
+            return Err("neural worker startup cancelled before process spawn".to_owned());
+        }
         let child = Command::new(&config.python)
             .arg(&config.script)
             .arg("serve")
@@ -182,6 +192,11 @@ impl SmolLmDriver {
         let deadline = Instant::now() + Duration::from_secs(120);
         loop {
             let session = self.session.as_mut().ok_or("neural session missing")?;
+            if self.cancellation.is_cancelled() {
+                // Returning drops the worker/session through its original
+                // reaper. A cancelled load remains indeterminate in control.
+                return Err("neural worker startup cancelled while loading".to_owned());
+            }
             if session.has_exited()? {
                 return Err("neural worker terminated before ready".to_owned());
             }

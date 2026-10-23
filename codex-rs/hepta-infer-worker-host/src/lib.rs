@@ -18,6 +18,12 @@ pub mod native_app_server;
 #[cfg(target_os = "linux")]
 pub mod smollm_neural_read;
 
+#[cfg(target_os = "linux")]
+pub mod smollm_cognitive_host;
+
+#[cfg(target_os = "linux")]
+pub mod smollm_cognitive_process;
+
 use std::error::Error as StdError;
 use std::fmt;
 

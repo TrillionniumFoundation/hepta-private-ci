@@ -17,11 +17,13 @@ use std::time::Instant;
 use serde::Deserialize;
 
 const STOP: &[u8] = b"{\"schema\":\"hepta-smollm-neural-read-worker-v1\",\"stop\":true}\n";
+const SUPERVISOR_WALL_SECONDS: u64 = 600;
 
 pub(super) struct Session {
     directory: File,
     supervisor: Option<Child>,
     runtime: tokio::runtime::Handle,
+    cleanup_deadline: Instant,
 }
 
 impl Session {
@@ -30,6 +32,7 @@ impl Session {
             directory,
             supervisor: Some(supervisor),
             runtime,
+            cleanup_deadline: Instant::now() + Duration::from_secs(SUPERVISOR_WALL_SECONDS),
         }
     }
 
@@ -157,7 +160,7 @@ impl Session {
             || !receipt.waited_child_reaped
             || !receipt.owned_child_reap_resolved
             || receipt.waited_child_observation_error.is_some()
-            || receipt.budget.wall_seconds != 600
+            || receipt.budget.wall_seconds != SUPERVISOR_WALL_SECONDS
             || receipt.budget.rss_bytes != 8 * 1024 * 1024 * 1024
             || receipt.observed_wall_ns > 600_000_000_000
             || !receipt
@@ -175,21 +178,66 @@ impl Drop for Session {
     fn drop(&mut self) {
         if let Some(mut supervisor) = self.supervisor.take() {
             let directory = self.directory.try_clone();
+            let deadline = self.cleanup_deadline;
             // Keep the observer alive, rather than killing it and stranding its
             // wait4-owned model child. No completion is reported by this reaper.
-            // Its original 600-second wall owner remains the hard lifetime cap.
+            // A cold model may not have published its socket yet. Retain the
+            // directory FD and retry STOP until it does or the observer exits;
+            // never lose the stop request because the first connect was early.
+            // Retry cannot extend the original 600-second owner window. Once
+            // it ends, retain only wait/reap under the original supervisor.
             std::thread::spawn(move || {
-                if let Ok(directory) = directory {
-                    let socket = format!(
+                use tokio::io::AsyncWriteExt;
+
+                let socket = directory.as_ref().ok().map(|directory| {
+                    format!(
                         "/proc/self/fd/{}/session/worker/model.sock",
                         directory.as_raw_fd()
-                    );
-                    if let Ok(mut connection) = UnixStream::connect(socket) {
-                        let _ = connection.set_write_timeout(Some(Duration::from_millis(250)));
-                        let _ = connection.write_all(STOP);
-                    }
+                    )
+                });
+                // Cleanup may outlive the embedding runtime. Its private I/O
+                // timer only bounds STOP; it issues no resource or use grant.
+                if let Some(socket) = socket
+                    && let Ok(runtime) = tokio::runtime::Builder::new_current_thread()
+                        .enable_all()
+                        .build()
+                {
+                    runtime.block_on(async {
+                        loop {
+                            match supervisor.try_wait() {
+                                Ok(Some(_)) | Err(_) => break,
+                                Ok(None) => {}
+                            }
+                            let remaining = deadline.saturating_duration_since(Instant::now());
+                            if remaining.is_zero() {
+                                break;
+                            }
+                            let stop = async {
+                                let mut connection =
+                                    tokio::net::UnixStream::connect(&socket).await?;
+                                connection.write_all(STOP).await
+                            };
+                            if matches!(
+                                tokio::time::timeout(
+                                    remaining.min(Duration::from_millis(250)),
+                                    stop
+                                )
+                                .await,
+                                Ok(Ok(()))
+                            ) {
+                                break;
+                            }
+                            tokio::time::sleep(
+                                deadline
+                                    .saturating_duration_since(Instant::now())
+                                    .min(Duration::from_millis(20)),
+                            )
+                            .await;
+                        }
+                    });
                 }
                 let _ = supervisor.wait();
+                drop(directory);
             });
         }
     }

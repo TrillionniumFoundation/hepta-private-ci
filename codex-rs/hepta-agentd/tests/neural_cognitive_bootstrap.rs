@@ -344,3 +344,75 @@ fn neural_descriptor_schema_identity_and_authority_fields_fail_before_material_u
     }
     assert_eq!(port.inference_calls.load(Ordering::SeqCst), 0);
 }
+
+#[cfg(target_os = "linux")]
+#[tokio::test]
+async fn ordinary_native_composition_rejects_untrusted_qualification_before_inference_owners() {
+    use codex_hepta_infer_worker_host::model_worker::ResourceGrant;
+    use codex_hepta_infer_worker_host::smollm_cognitive_host::SmolLmCognitiveHostInputsV1;
+    use codex_hepta_infer_worker_host::smollm_cognitive_host::prepare_smollm_neural_agentd_v1;
+    use codex_hepta_infer_worker_host::smollm_neural_read::SmolLmNeuralReadConfigV1;
+    use std::collections::BTreeMap;
+
+    let directory = tempfile::tempdir().unwrap();
+    let root = directory.path().canonicalize().unwrap();
+    let config = config(&root);
+    // This is the original deliberately untrusted, syntactically complete
+    // descriptor. No signer, issuer, qualification or successful read is faked.
+    let bytes = serde_json::to_vec(&descriptor_fixture::untrusted_descriptor(
+        &root,
+        config.identity(),
+    ))
+    .unwrap();
+    let descriptor = root.join("untrusted-neural-bootstrap.json");
+    std::fs::write(&descriptor, &bytes).unwrap();
+    let journal = root.join("must-not-create-inference-journal");
+    let worker_directory = root.join("must-not-create-worker");
+    let unavailable = root.join("must-not-open-material-or-issuer");
+    let digest = hash("deliberately-unadmitted-native-input");
+    let inputs = SmolLmCognitiveHostInputsV1 {
+        descriptor,
+        descriptor_digest: Digest32::of_bytes(&bytes),
+        worker: SmolLmNeuralReadConfigV1 {
+            python: unavailable.clone(),
+            script: unavailable.clone(),
+            materials: unavailable.clone(),
+            run_directory: worker_directory.clone(),
+            source_pins: BTreeMap::new(),
+            target_contract: Vec::new(),
+            wrapped_adapter: Vec::new(),
+            contract_digest: digest,
+            adapter_digest: digest,
+            backbone_digest: digest,
+            tokenizer_digest: digest,
+            action_completions: BTreeMap::new(),
+        },
+        worker_id: "unadmitted-neural-worker".to_owned(),
+        resource_grant: ResourceGrant {
+            grant_id: "not-an-issued-grant".to_owned(),
+            authority_epoch: 1,
+            generation: 1,
+            expires_at_ms: 1,
+            revoked: true,
+            maximum_models: 1,
+            maximum_active_requests: 1,
+            maximum_memory_bytes: 8 * 1024 * 1024 * 1024,
+            semantic_digest: digest.to_string(),
+        },
+        inference_journal: journal.clone(),
+        inference_journal_capacity: 128,
+        final_use_authorizer_config: unavailable.clone(),
+    };
+    let error = match prepare_smollm_neural_agentd_v1(config, inputs).await {
+        Err(error) => error,
+        Ok(_) => panic!("untrusted qualification reached the ordinary native runtime"),
+    };
+    assert!(error.contains("neural product qualification"), "{error}");
+    assert!(
+        error.contains("independent nonempty journal anchors"),
+        "{error}"
+    );
+    assert!(!journal.exists());
+    assert!(!worker_directory.exists());
+    assert!(!unavailable.exists());
+}

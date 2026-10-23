@@ -61,3 +61,117 @@ fn terminal_unload_requires_successful_supervisor_and_original_child_receipt() {
         assert!(session.supervisor.is_some());
     }
 }
+
+#[test]
+fn dropped_cold_session_retries_stop_when_socket_appears_and_retains_reaper() {
+    use std::os::unix::net::UnixListener;
+
+    let runtime = tokio::runtime::Builder::new_current_thread()
+        .enable_all()
+        .build()
+        .unwrap();
+    let directory = tempfile::tempdir().unwrap();
+    let worker = directory.path().join("session/worker");
+    fs::create_dir_all(&worker).unwrap();
+    // A controlled supervisor remains alive until this test observes the exact
+    // STOP frame. No model, issuer or successful supervisor receipt is faked.
+    let mut supervisor = Command::new("/bin/sh")
+        .args(["-c", "read -r value; test \"$value\" = stop"])
+        .stdin(Stdio::piped())
+        .stdout(Stdio::null())
+        .stderr(Stdio::null())
+        .spawn()
+        .unwrap();
+    let pid = supervisor.id();
+    let mut input = supervisor.stdin.take().unwrap();
+    drop(Session::new(
+        File::open(directory.path()).unwrap(),
+        supervisor,
+        runtime.handle().clone(),
+    ));
+    // Publish after the drop path's initial attempt, as in a cancelled cold
+    // load. The original one-shot cleanup would forget this absent socket.
+    std::thread::sleep(Duration::from_millis(100));
+    let listener = UnixListener::bind(worker.join("model.sock")).unwrap();
+    listener.set_nonblocking(true).unwrap();
+    let deadline = Instant::now() + Duration::from_secs(5);
+    let mut connection = loop {
+        match listener.accept() {
+            Ok((connection, _)) => break connection,
+            Err(error) if error.kind() == std::io::ErrorKind::WouldBlock => {
+                assert!(
+                    Instant::now() < deadline,
+                    "cold session lost its pending STOP"
+                );
+                std::thread::sleep(Duration::from_millis(10));
+            }
+            Err(error) => panic!("accept STOP: {error}"),
+        }
+    };
+    connection
+        .set_read_timeout(Some(Duration::from_secs(1)))
+        .unwrap();
+    let mut frame = vec![0; STOP.len()];
+    connection.read_exact(&mut frame).unwrap();
+    assert_eq!(frame, STOP);
+    input.write_all(b"stop\n").unwrap();
+    drop(input);
+    // Only the Session's retained owner may wait/reap this child.
+    let process = std::path::PathBuf::from(format!("/proc/{pid}"));
+    while process.exists() {
+        assert!(
+            Instant::now() < deadline,
+            "original supervisor was not reaped"
+        );
+        std::thread::sleep(Duration::from_millis(10));
+    }
+}
+
+#[test]
+fn dropped_session_does_not_extend_its_expired_stop_window() {
+    use std::os::unix::net::UnixListener;
+
+    let runtime = tokio::runtime::Builder::new_current_thread()
+        .enable_all()
+        .build()
+        .unwrap();
+    let directory = tempfile::tempdir().unwrap();
+    let worker = directory.path().join("session/worker");
+    fs::create_dir_all(&worker).unwrap();
+    let mut supervisor = Command::new("/bin/sh")
+        .args(["-c", "read -r value; test \"$value\" = stop"])
+        .stdin(Stdio::piped())
+        .stdout(Stdio::null())
+        .stderr(Stdio::null())
+        .spawn()
+        .unwrap();
+    let pid = supervisor.id();
+    let mut input = supervisor.stdin.take().unwrap();
+    let mut session = Session::new(
+        File::open(directory.path()).unwrap(),
+        supervisor,
+        runtime.handle().clone(),
+    );
+    // Shorten the controlled owner's deadline; no production deadline is
+    // overridden or renewed by a late socket becoming available.
+    session.cleanup_deadline = Instant::now();
+    drop(session);
+    let listener = UnixListener::bind(worker.join("model.sock")).unwrap();
+    listener.set_nonblocking(true).unwrap();
+    std::thread::sleep(Duration::from_millis(100));
+    assert_eq!(
+        listener.accept().unwrap_err().kind(),
+        std::io::ErrorKind::WouldBlock
+    );
+    input.write_all(b"stop\n").unwrap();
+    drop(input);
+    let deadline = Instant::now() + Duration::from_secs(5);
+    let process = std::path::PathBuf::from(format!("/proc/{pid}"));
+    while process.exists() {
+        assert!(
+            Instant::now() < deadline,
+            "expired owner did not retain its reaper"
+        );
+        std::thread::sleep(Duration::from_millis(10));
+    }
+}

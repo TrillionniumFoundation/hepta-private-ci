@@ -24,6 +24,7 @@ use codex_hepta_infer_core::durable_control::Reservation;
 use codex_hepta_infer_core::durable_control::TerminalObservation;
 use codex_hepta_types::AuthorityPosture;
 use codex_hepta_types::Digest32;
+use tokio_util::sync::CancellationToken;
 
 use crate::model_worker::ExecutionStatus;
 use crate::model_worker::InferenceWorker;
@@ -265,6 +266,40 @@ impl SmolLmNeuralReadPortV1 {
         authorizer: Arc<dyn TurnStartAuthorizer>,
         runtime: tokio::runtime::Handle,
     ) -> Result<Self, String> {
+        Self::start_cancellable(
+            config,
+            pin,
+            parameter_bytes,
+            owner_id,
+            body_generation,
+            worker_id,
+            grant,
+            control,
+            authorizer,
+            runtime,
+            CancellationToken::new(),
+        )
+    }
+
+    /// Startup cancellation never claims terminal inference completion. The
+    /// original driver session retains its observed child until cleanup.
+    #[allow(clippy::too_many_arguments)]
+    pub(crate) fn start_cancellable(
+        config: SmolLmNeuralReadConfigV1,
+        pin: NeuralCognitivePinV1,
+        parameter_bytes: Vec<u8>,
+        owner_id: AgentId,
+        body_generation: u64,
+        worker_id: String,
+        grant: ResourceGrant,
+        control: Arc<Mutex<DurableInferenceControl>>,
+        authorizer: Arc<dyn TurnStartAuthorizer>,
+        runtime: tokio::runtime::Handle,
+        cancellation: CancellationToken,
+    ) -> Result<Self, String> {
+        if cancellation.is_cancelled() {
+            return Err("neural worker startup cancelled before admission".to_owned());
+        }
         let now = now_ms()?;
         if body_generation == 0
             || grant.maximum_models != 1
@@ -315,6 +350,7 @@ impl SmolLmNeuralReadPortV1 {
             parameter_bytes,
             mailbox.clone(),
             context.runtime.clone(),
+            cancellation,
         );
         let mut worker = InferenceWorker::new(now, worker_id, grant.generation, grant, driver)
             .map_err(|error| error.to_string())?;
