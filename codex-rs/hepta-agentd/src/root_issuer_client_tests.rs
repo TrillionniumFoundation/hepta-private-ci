@@ -2,6 +2,7 @@
 use super::*;
 use pretty_assertions::assert_eq;
 use serde_json::json;
+use std::os::fd::FromRawFd;
 use std::thread;
 
 fn body() -> AuthBusObjectiveBody {
@@ -32,11 +33,11 @@ fn signed(body: AuthBusObjectiveBody) -> AuthBusObjectiveIngress {
 }
 
 fn pidfd(pid: u32) -> OwnedFd {
-    rustix::process::pidfd_open(
-        rustix::process::Pid::from_raw(pid as i32).unwrap(),
-        rustix::process::PidfdFlags::empty(),
-    )
-    .unwrap()
+    // SAFETY: a live fixture PID and zero flags return a newly owned pidfd.
+    let descriptor = unsafe { libc::syscall(libc::SYS_pidfd_open, pid, 0) };
+    assert!(descriptor >= 0);
+    // SAFETY: the successful syscall transferred sole descriptor ownership.
+    unsafe { OwnedFd::from_raw_fd(descriptor as i32) }
 }
 
 fn fixture(lifetime: Duration) -> (AgentdUnixFinalUseGrantProvider, UnixStream) {
@@ -47,7 +48,7 @@ fn fixture(lifetime: Duration) -> (AgentdUnixFinalUseGrantProvider, UnixStream) 
         pidfd(std::process::id()),
         Duration::from_millis(500),
         lifetime,
-        rustix::process::geteuid().as_raw(),
+        unsafe { libc::geteuid() },
     )
     .unwrap();
     (provider, server)
@@ -163,7 +164,7 @@ fn root_issuer_legacy_constructor_cannot_request_signing_or_bypass_uid_zero() {
     let provider = AgentdUnixFinalUseGrantProvider::from_stream(
         client,
         AgentdFinalUseIssuerPeer {
-            uid: rustix::process::geteuid().as_raw(),
+            uid: unsafe { libc::geteuid() },
             pid: std::process::id(),
         },
         Duration::from_millis(100),
@@ -175,7 +176,7 @@ fn root_issuer_legacy_constructor_cannot_request_signing_or_bypass_uid_zero() {
     );
     drop(provider);
     assert_eq!(server.read(&mut [0; 1]).unwrap(), 0);
-    if rustix::process::geteuid().as_raw() != 0 {
+    if unsafe { libc::geteuid() } != 0 {
         let (client, _) = UnixStream::pair().unwrap();
         assert!(
             AgentdUnixFinalUseGrantProvider::from_root_stream(
@@ -222,7 +223,7 @@ fn root_issuer_dead_original_process_cannot_authorize_inherited_stream_reply() {
         held,
         Duration::from_millis(500),
         Duration::from_secs(3),
-        rustix::process::geteuid().as_raw(),
+        unsafe { libc::geteuid() },
     )
     .unwrap();
     assert_eq!(
