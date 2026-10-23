@@ -29,6 +29,13 @@ policy is a replayable continuation gate:
 
 net = continuation_value - current_value - cost - risk
 
+The legal abstain candidate has its own net value under that same equation.
+A strictly positive continuation is selected only if its net value is also
+strictly greater than the abstain alternative; equal values favor abstention.
+The abstain net is validated before any selection so overflow cannot hide
+behind an otherwise positive continuation. These are advisory economics,
+not an allocation of physical microsecond budget or production authority.
+
 The candidate set is digest-bound and the trace digest is deterministic, so a
 future learned critic, Neural Differential Utility solver, or router can be
 introduced behind the same owner boundary and compared against this baseline.

@@ -142,6 +142,10 @@ pub fn decide_group_continuation_v1(
         .find(|candidate| candidate.abstain)
         .ok_or(GroupSystem2Error::MissingAbstainCandidate)?;
 
+    // Validate the abstain baseline before considering any continuation:
+    // it is an actual legal alternative, not an assumed zero-utility action.
+    let abstain_net = candidate_net_value(abstain)?;
+
     let mut best_non_abstain: Option<(&GroupContinuationCandidateV1, i64)> = None;
     for candidate in candidates
         .iter()
@@ -161,8 +165,8 @@ pub fn decide_group_continuation_v1(
     }
 
     let (selected_candidate, selected_net) = match best_non_abstain {
-        Some((candidate, net)) if net > 0 => (candidate, net),
-        _ => (abstain, candidate_net_value(abstain)?),
+        Some((candidate, net)) if net > 0 && net > abstain_net => (candidate, net),
+        _ => (abstain, abstain_net),
     };
 
     let trace_digest = decision_trace_digest(subject, trace, candidate_digest);
