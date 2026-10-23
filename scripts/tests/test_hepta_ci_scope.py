@@ -158,6 +158,37 @@ class ScopeTests(unittest.TestCase):
             with self.subTest(path=path), self.assertRaises(ValueError):
                 select([path])
 
+    def test_required_workflow_concurrency_is_scoped_by_source_repository(self):
+        # Branch names are not globally unique: two forks can both use "fix".
+        # Keep push/PR coalescing within a repository, never across forks.
+        root = Path(__file__).resolve().parents[2]
+        workflows = (
+            "blocking-ci.yml",
+            "v8-canary.yml",
+            "automation-taskflow-focused.yml",
+            "hepta-architecture-convergence.yml",
+        )
+        for name in workflows:
+            with self.subTest(workflow=name):
+                content = (root / ".github" / "workflows" / name).read_text(
+                    encoding="utf-8"
+                )
+                keys = [
+                    line.strip()
+                    for line in content.splitlines()
+                    if line.startswith("  group: ")
+                ]
+                self.assertEqual(len(keys), 1)
+                key = keys[0]
+                self.assertIn(
+                    "::${{ github.event.pull_request.head.repo.full_name || github.repository }}::",
+                    key,
+                )
+                self.assertIn(
+                    "${{ github.event.pull_request.head.ref || github.ref_name }}",
+                    key,
+                )
+
     def test_commit_id_validation_precedes_subprocess(self):
         with patch("subprocess.run") as run, self.assertRaises(ValueError):
             changed_paths("--output=/tmp/file", "a" * 40)
