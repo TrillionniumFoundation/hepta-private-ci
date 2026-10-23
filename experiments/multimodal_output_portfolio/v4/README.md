@@ -122,6 +122,102 @@ generator, or incorporate independent query actions into the v4
 four-modality Bellman action lattice. That joint runtime integration and
 new untouched heldout remain open.
 
+## Joined information-and-generation Bellman control (separate v4 follow-up)
+
+`joint_evidence_generation.py` composes the existing bounded four-output
+`portfolio.py` transitions and the existing separately paid Bayesian witness
+`information_acquisition.py` into **one** finite dynamic program, without
+changing either predecessor, changing frozen v1-v3 protocols, or selecting any
+production model. The public state is `(synthetic observed quality[4],
+remaining modeled units, logical step, previous activation mask, posterior
+P(Y=0), witness_seen)`. Available controls are `EMIT_ALL_FOUR`,
+`QUERY_INDEPENDENT`, and each feasible four-vector refinement allocation.
+Every independent query costs one physical *modeled* budget unit and consumes
+one decision boundary; four terminal output emissions always reserve four
+units. Source truth and future stochastic outcomes never enter controller
+observations.
+
+Conditional entropic utility prices the same terminal decoded-output loss
+used by the separate offline synthetic fixture. The controller marginalizes
+over latent truth under the current public posterior; the offline audit
+enumerates source truth, all witness responses, common generation shocks,
+executed actions and actual four materialized toy media, scoring **after**
+emission. Their full-path entropic valuation must agree with the Bellman
+initial value. The gamma=0 branch is additionally compared with a completely
+separate `fractions.Fraction` recursive Oracle (no Value solver call).
+
+Under one declared, short synthetic example (horizon=2, modelled 10-unit
+budget, four-output reserve=4, gamma=1, source `levels=(2,2,0,0)`), the
+ambiguous public source buys the independent witness first, then allocates
+image/video refinement; the strong-prior source refines image/video without
+buying it. Risk-neutral optimization exhibits history-dependent switching:
+after weak image/video feedback it refines again, whereas after stronger
+feedback it uses the remaining budget to query. Four mutually agreeing
+semantic outputs can still all be wrong; generation refinement alone does
+not update the truth posterior or turn that wrong claim into a true one.
+
+The joint solver has **per-instance** memoization and an admitted bound on
+number of newly evaluated Bellman states (default 16,384). It refuses a
+larger problem instead of silently claiming real-time high-dimensional
+optimality; the `resource_receipt()` reports visited states and compared
+actions in **logical** solver units, not actual FLOPs, CPU time or joules.
+The independent path audit also checks exact resource-budget conservation
+against every executed state transition. Resource-envelope and independent
+hardware benchmarking remain open.
+
+The new `test_joint_evidence_generation.py` covers exact modeled budget
+and time accounting, complete materialized text/audio/image/video outputs,
+shared-wrong fact errors, no hidden-truth action inputs, finite gamma=0 / 0.5 /
+1 / 3 full-path parity, risk-neutral rational Oracle agreement, observation-
+conditioned action switching, legal witness-once state, and a joint no-query
+ablation. The no-query arm is a **nested/weak mechanistic ablation**, not a
+strong empirical comparator against equal-cost MoE, static, best-of-N, MPC
+or true foundation decoders.
+
+### Independent-witness reliability is a real risk state, not a promise
+
+The independent terminal enumerator accepts a second **external-only**
+witness law, `shared_report_zero`: the purchased observation always
+repeats public report zero, regardless of latent truth. The controller
+and its frozen 98%-accurate witness assumption remain **unchanged**.
+The query is now correlated with the original repeated report and adds
+no information. In a preregisterable future evaluation, this would
+require a distinct source-likelihood calibration and invalidation
+protocol; it is an adversarial **toy** stress here.
+
+In the declared horizon-2, 10-unit ambiguous-source development case,
+the independently enumerated terminal statistics are:
+
+| Same source/world protocol | Mean loss | CVaR90 | Entropic utility | Modeled units |
+| --- | ---: | ---: | ---: | ---: |
+| Frozen NDU, independent witness | 3.28 | 8.16 | -7.578925 | 9 |
+| Frozen NDU, shared-report witness shift | 5.20 | 12.00 | -10.175431 | 9 |
+| Frozen no-query policy, shifted witness world | 2.96 | 7.60 | -8.631012 | 10 |
+
+These are **exact synthetic scenario enumerations**, not sampling
+confidence intervals or independently measured model performance. The
+no-query ablation is not a strong external model comparator. The specific
+shift falsifies any assertion that a nominally optimal portfolio remains
+robust merely because a paid verification call was made. A real witness
+would require independent source identity, empirical conditional
+likelihoods, unknown-correlation safeguards, and an abstention/slow path.
+
+This is **only** a fixed-prior/fixed-witness-accuracy finite toy, not
+independent natural evidence, a trained full-modal system, a calibrated
+joint error model or a general robust FBSDE solution. The paid query has
+synthetic correctness 98% by assumption, not by verified performance.
+Its costs are invented integer units, not wall/CPU/energy measurements.
+It does **not** close scientific R03/R05, natural N03/N04, stochastic R07,
+training R08, production E03, or dedicated runner E02. Record a new
+natural-data protocol and new untouched heldout before any empirical claim.
+
+Run from this directory:
+
+```bash
+python3 -m unittest discover -v -p "test_*.py"
+python3 -m compileall -q portfolio.py counterfactual_audit.py information_acquisition.py joint_evidence_generation.py test_*.py
+```
+
 ## Next independently measured scientific experiment
 
 Replace the synthetic proxy-state/decoder fixtures with a source-pinned **real** shared Encoder plus four output decoders, observed partial latents, actual Neural/Cell feature invocation and all separately paid decoder/verifier/selection costs. Preregister source-disjoint natural tasks, multiple training seeds and common random-number draws, then compare same-information/static, MoE, risk-neutral MPC, fixed-risk MPC, dynamic NDU and best-of-N with independent decoded-output scoring and risk/coverage/cost thresholds. Train/inference factorial ablations are essential to determine whether NDU changes learned generation rather than only selecting an existing candidate. Do not enable or deploy any output-portfolio policy based only on this code.
