@@ -85,7 +85,10 @@ pub(super) fn release(
 ) {
     let bytes = config.consumers.as_ref().map(|_| {
         let bundle = bootstrap::capture(config, registration);
-        let bytes = serde_json::to_vec(&bundle).unwrap();
+        let mut sealed = crate::seal_host_authority_bootstrap(&bundle).unwrap();
+        let mut bytes = Vec::new();
+        std::io::Read::read_to_end(&mut sealed, &mut bytes).unwrap();
+        assert_eq!(bytes, serde_json::to_vec(&bundle).unwrap());
         assert!(bytes.len() <= crate::HOST_AUTHORITY_BOOTSTRAP_BOUND);
         if let Some(path) = std::env::var_os("HEPTA_SERVICE_PUBLIC_BUNDLE_OUT") {
             let mut file = std::fs::OpenOptions::new()
@@ -102,8 +105,8 @@ pub(super) fn release(
     let mut stdin = child.stdin.take().unwrap();
     stdin.write_all(&[1]).unwrap();
     if let Some(bytes) = bytes {
-        // This full public bundle comes from actual root state, independently
-        // of the proof later read from the live observation lane.
+        // Component fixture only: copy the actual producer's sealed bytes to
+        // stdin. Production transfers the sealed File itself, never this pipe.
         stdin
             .write_all(&(bytes.len() as u32).to_be_bytes())
             .unwrap();

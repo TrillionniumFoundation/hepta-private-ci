@@ -109,6 +109,17 @@ The [original wire/proof type qualification](acceptance/2026-10-23-public-bootst
 binds the six-test Rust1.96 scope and finish. It does not certify a live bundle,
 receiver loader or five-lane deployment.
 
+`seal_host_authority_bootstrap` is the root-only descriptor producer for that
+same bundle. It pre-encodes within the 64KiB bound, requires the actual producer
+PID, creates an unlinked root-owned regular memfd, sets mode 0400, adds
+`F_SEAL_WRITE|F_SEAL_GROW|F_SEAL_SHRINK|F_SEAL_SEAL`, and verifies the full retained
+bytes before returning the descriptor. No consumer receives an unsealed FD.
+Unsupported custody/seals fail closed; an ordinary file is not a fallback. The
+trusted parent must transfer the already sealed file and preheld root pidfd;
+the consumer independently checks the same descriptor contract. The same root
+PID must continue serving all five lanes. Descriptor-only tests do not qualify
+the production launcher, authority contents or Asterinas ABI.
+
 ## Trusted writer succession
 
 `DeploymentFinalUseIssuer::rotate_writer_authorization` is a trusted launcher

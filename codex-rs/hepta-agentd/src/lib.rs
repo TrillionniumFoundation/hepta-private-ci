@@ -49,6 +49,10 @@ pub use authority_host_wire::HostWriterAuthorizationReadResponseV1;
 #[cfg(target_os = "linux")]
 mod authority_host_bootstrap;
 #[cfg(target_os = "linux")]
+mod authority_host_bootstrap_seal;
+#[cfg(target_os = "linux")]
+pub use authority_host_bootstrap_seal::seal_host_authority_bootstrap;
+#[cfg(target_os = "linux")]
 mod authority_host_config;
 #[cfg(target_os = "linux")]
 pub use authority_host_bootstrap::HOST_AUTHORITY_BOOTSTRAP_BOUND;
