@@ -211,11 +211,18 @@ def validate_predictions(
     return predicted
 
 
-def metrics(dataset: dict[str, dict[str, Any]], predicted: dict[str, dict[str, Any]], bins: int = 15) -> dict[str, Any]:
+def metrics(
+    dataset: dict[str, dict[str, Any]],
+    predicted: dict[str, dict[str, Any]],
+    bins: int = 15,
+    *,
+    require_ood: bool = True,
+) -> dict[str, Any]:
     ids = sorted(predicted)
     in_domain = [x for x in ids if not dataset[x]["ood"]]
     ood = [x for x in ids if dataset[x]["ood"]]
-    require(bool(in_domain) and bool(ood), "in-domain and OOD holdouts required")
+    require(bool(in_domain) and (bool(ood) or not require_ood),
+            "in-domain and OOD holdouts required")
     groups: list[list[tuple[float, float]]] = [[] for _ in range(bins)]
     correct = accepted_correct = answered = 0
     brier = 0.0
@@ -260,7 +267,8 @@ def metrics(dataset: dict[str, dict[str, Any]], predicted: dict[str, dict[str, A
         "balanced_accuracy": sum(recall_by_class.values()) / len(recall_by_class),
         "per_class_recall": recall_by_class,
         "macro_f1": sum(macro_f1_by_class.values()) / len(macro_f1_by_class),
-        "ood_false_acceptance": sum(not predicted[x]["abstained"] for x in ood) / len(ood),
+        "ood_false_acceptance": (sum(not predicted[x]["abstained"] for x in ood) / len(ood)
+                                 if ood else None),
     }
 
 
@@ -383,6 +391,15 @@ def analyse(plan: dict[str, Any], dataset_path: Path, run_dir: Path) -> dict[str
             "all": metrics(dataset, predicted),
             "languages": slice_accuracy(dataset, predicted, "language", minimum),
             "tasks": slice_accuracy(dataset, predicted, "slice", minimum),
+            "future_windows": {
+                window: metrics(
+                    dataset,
+                    {rid: prediction for rid, prediction in predicted.items()
+                     if dataset[rid]["future_window"] == window},
+                    require_ood=False,
+                )
+                for window in FUTURE_WINDOWS
+            },
         }
     head_a = load_json(run_dir / EMBEDDING_MODELS[0] / "run.json")["profile"]
     head_b = load_json(run_dir / EMBEDDING_MODELS[1] / "run.json")["profile"]
@@ -398,8 +415,26 @@ def analyse(plan: dict[str, Any], dataset_path: Path, run_dir: Path) -> dict[str
             (baseline[k][name] - result[k][name] for k in ("languages", "tasks") for name in baseline[k]),
             default=0.0,
         )
+        result["maximum_future_window_accuracy_regression"] = max(
+            baseline["future_windows"][window]["accuracy"]
+            - result["future_windows"][window]["accuracy"]
+            for window in FUTURE_WINDOWS
+        )
+        result["future_window_metric_gate"] = all(
+            result["future_windows"][window]["ece"] <= limits["max_ece"]
+            and result["future_windows"][window]["brier"] <= limits["max_brier"]
+            and (
+                result["future_windows"][window]["ood_false_acceptance"] is None
+                or result["future_windows"][window]["ood_false_acceptance"]
+                   <= limits["max_ood_false_acceptance"]
+            )
+            for window in FUTURE_WINDOWS
+        )
         result["metric_gate"] = (
-            result["all"]["ece"] <= limits["max_ece"]
+            result["future_window_metric_gate"]
+            and result["maximum_future_window_accuracy_regression"]
+                <= limits["max_slice_regression"]
+            and result["all"]["ece"] <= limits["max_ece"]
             and result["all"]["brier"] <= limits["max_brier"]
             and result["all"]["ood_false_acceptance"] <= limits["max_ood_false_acceptance"]
             and result["maximum_slice_regression"] <= limits["max_slice_regression"]
