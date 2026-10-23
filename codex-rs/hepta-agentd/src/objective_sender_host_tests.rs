@@ -150,7 +150,16 @@ async fn retained_signed_body_hash_matches_original_agentd_wire_projection()
                 config.identity(),
                 &body,
                 config.identity().spawn_generation,
-            )?;
+            );
+            if body
+                .runtime_body_digest
+                .bytes()
+                .any(|byte| byte.is_ascii_uppercase())
+            {
+                assert!(original_payload.is_err());
+                continue;
+            }
+            let original_payload = original_payload?;
             assert_eq!(original_payload, serde_json::to_vec(&body)?);
             let mut ingress = AuthBusObjectiveIngress {
                 issuer_id: "composition-original-issuer".to_string(),
