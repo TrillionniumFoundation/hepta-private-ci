@@ -1,0 +1,103 @@
+name: Hepta independent multimodal Head gain audit (research only)
+
+on:
+  pull_request:
+    paths:
+      - qa/stem-bakeoff/paired_gain_audit.py
+      - qa/stem-bakeoff/test_paired_gain_audit.py
+      - docs/learning/STEM_P43_STRONG_BASELINE_AUDIT.md
+      - .github/workflows/hepta-multimodal-gain-audit.yml
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: hepta-joint-gain-${{ github.event.pull_request.head.sha || github.sha }}
+  cancel-in-progress: false
+
+jobs:
+  source-bound-independent-audit:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - name: Exact source and clean diff
+        env:
+          EXPECTED_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$EXPECTED_SHA"
+          git diff --check
+      - name: Install numerical dependency only
+        run: |
+          set -euo pipefail
+          python3 -m venv "$RUNNER_TEMP/p43-venv"
+          "$RUNNER_TEMP/p43-venv/bin/python" -m pip install --no-cache-dir --only-binary=:all: 'numpy==2.2.6'
+      - name: Reject forged pair metrics, identity and production claims
+        run: |
+          set -euo pipefail
+          "$RUNNER_TEMP/p43-venv/bin/python" -m unittest discover \
+            -s qa/stem-bakeoff -p 'test_paired_gain_audit.py' -v \
+            2>&1 | tee "$RUNNER_TEMP/p43-unit.log"
+      - name: Restore original P39 source-bound evidence without model download
+        run: |
+          set -euo pipefail
+          "$RUNNER_TEMP/p43-venv/bin/python" qa/stem-bakeoff/multimodal_evidence.py \
+            --directory qa/stem-bakeoff/evidence/20261022-real-multimodal \
+            --manifest-sha256 2a853d6c975b30d98a8c79348f01bb3f5b26f36793f2986826a5deed3ea4454e \
+            --output "$RUNNER_TEMP/p43-original" \
+            2>&1 | tee "$RUNNER_TEMP/p43-restore.log"
+      - name: Independently fit train-only frozen cosine and audit complete held-out pairs
+        run: |
+          set -euo pipefail
+          "$RUNNER_TEMP/p43-venv/bin/python" qa/stem-bakeoff/cheap_cosine_control.py \
+            --restored "$RUNNER_TEMP/p43-original" \
+            --archive-manifest qa/stem-bakeoff/evidence/20261022-real-multimodal/archive-manifest.json \
+            --output "$RUNNER_TEMP/p43-cosine" \
+            2>&1 | tee "$RUNNER_TEMP/p43-cosine.log"
+          "$RUNNER_TEMP/p43-venv/bin/python" qa/stem-bakeoff/paired_gain_audit.py \
+            --plan "$RUNNER_TEMP/p43-cosine/plan.json" \
+            --report "$RUNNER_TEMP/p43-cosine/report.json" \
+            --baseline-rows "$RUNNER_TEMP/p43-cosine/test-rows.json" \
+            --primary qa/stem-bakeoff/evidence/20261022-real-multimodal/primary-predictions.json \
+            --output "$RUNNER_TEMP/p43-audit.json" \
+            2>&1 | tee "$RUNNER_TEMP/p43-audit.log"
+          "$RUNNER_TEMP/p43-venv/bin/python" - <<'PY'
+          import json, os
+          from pathlib import Path
+          p=Path(os.environ["RUNNER_TEMP"])/"p43-audit.json"
+          r=json.loads(p.read_bytes())
+          assert r["schema"] == "hepta.p43-joint-vs-frozen-cosine-independent-audit.v1"
+          assert r["observed"]["trained_head"]["correct"] == 251
+          assert r["observed"]["trained_head"]["accepted"] == 255
+          assert r["observed"]["trained_head"]["accepted_errors"] == 5
+          assert r["observed"]["paired"]["pair_blocks"] == 64
+          assert r["original_blind_test_previously_inspected"] is True
+          assert r["new_independent_semantic_holdout"] is False
+          assert r["eligible_for_production"] is False
+          assert r["admission"] == "HOLD_NO_GO" and r["authority"] == "DENY_ALL"
+          print("Scientific audit completed; no production or semantic admission")
+          PY
+      - name: Upload bounded audit, test and original comparison evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: p43-joint-gain-${{ github.event.pull_request.head.sha || github.sha }}
+          path: |
+            ${{ runner.temp }}/p43-unit.log
+            ${{ runner.temp }}/p43-restore.log
+            ${{ runner.temp }}/p43-cosine.log
+            ${{ runner.temp }}/p43-audit.log
+            ${{ runner.temp }}/p43-audit.json
+            ${{ runner.temp }}/p43-cosine/
+          if-no-files-found: warn
+          retention-days: 14
+      - name: Verify source has not changed
+        if: always()
+        run: |
+          git diff --check
+          git diff --exit-code
