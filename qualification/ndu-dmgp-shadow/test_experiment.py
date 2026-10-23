@@ -69,6 +69,18 @@ class AblationTests(unittest.TestCase):
                         self.assertTrue(set(actions) <= {'text', 'image'})
                         self.assertGreater(prob, 0)
 
+
+    def test_fixed_A0_A1_and_covariance_A4_do_not_fit_advantage_at_inference(self):
+        risk = training_risk()
+        prompt = Prompt(10003, 'complex', 'future')
+        with patch('experiment.frozen_training_signals',
+                   side_effect=AssertionError('unrequired learning during inference')):
+            self.assertEqual(decide('A0', prompt, risk['complex']), ('text',))
+            self.assertEqual(decide('A1', prompt, risk['complex']), ('text', 'image'))
+            chosen, p = decide_detail('A4', prompt, risk['complex'])
+            self.assertTrue(set(chosen) <= {'text', 'image'})
+            self.assertGreater(p, 0)
+
     def test_training_risk_uses_realized_simulator_returns_not_forecast_jitter(self):
         risk = training_risk()
         for context in ('simple', 'complex'):
