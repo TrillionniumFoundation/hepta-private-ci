@@ -99,6 +99,29 @@ class CohortFirewallTests(unittest.TestCase):
                     check_cohort(candidate, [self.old])
         self.assertEqual(check_cohort(self.new, [self.old])["status"], "pass")
 
+    def test_candidate_task_key_must_not_alias_historical_cohort(self):
+        candidate = copy.deepcopy(self.new)
+        candidate["splits"]["dev"]["sources"][0]["task_id"] = (
+            self.old["splits"]["train"]["sources"][0]["task_id"])
+        self.assertNotEqual(
+            candidate["splits"]["dev"]["sources"][0]["source_id"],
+            self.old["splits"]["train"]["sources"][0]["source_id"])
+        self.assertNotEqual(
+            candidate["splits"]["dev"]["sources"][0]["image_sha256"],
+            self.old["splits"]["train"]["sources"][0]["image_sha256"])
+        with self.assertRaisesRegex(CohortContractError, "candidate task_id aliases historical"):
+            check_cohort(candidate, [self.old])
+
+    def test_historical_task_keys_must_be_unique_across_manifests(self):
+        other = manifest(20000)
+        other["splits"]["test"]["sources"][0]["task_id"] = (
+            self.old["splits"]["train"]["sources"][0]["task_id"])
+        self.assertNotEqual(
+            other["splits"]["test"]["sources"][0]["source_id"],
+            self.old["splits"]["train"]["sources"][0]["source_id"])
+        with self.assertRaisesRegex(CohortContractError, "duplicate task_id across historical"):
+            check_cohort(self.new, [self.old, other])
+
     def test_bad_contract_fails_closed(self):
         for bad in [None, {}, {"schema": "bad"}, {"schema": "hepta.grounded-cohort.v1", "splits": {}}]:
             with self.subTest(bad=bad), self.assertRaises(CohortContractError):
@@ -170,6 +193,12 @@ class CohortFirewallTests(unittest.TestCase):
         self.assertEqual(result["status"], "pass")
         self.assertTrue(result["historical_roster_shape_confirmed"])
         self.assertFalse(result["independent_history_trust_established"])
+        aliased_candidate = manifest(10000)
+        aliased_candidate["splits"]["test"]["sources"][0]["task_id"] = (
+            v1["splits"]["train"]["sources"][0]["task_id"])
+        with self.assertRaisesRegex(CohortContractError, "candidate task_id aliases historical"):
+            check_cohort(aliased_candidate, [v1, wrapper],
+                         require_complete_history=True)
         duplicate = copy.deepcopy(wrapper)
         duplicate["source_sample"]["images"][1] = duplicate["source_sample"]["images"][0]
         with self.assertRaisesRegex(CohortContractError, "duplicate identities"):
