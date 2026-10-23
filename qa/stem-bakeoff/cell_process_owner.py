@@ -47,9 +47,13 @@ class SnapshotProcessOwnerV1:
         with self._owner._lock:
             view = self._observe(candidate.identity)
             candidate.require_current(lambda: view)
-            self._owner.commit(candidate, expected_parent_manifest_sha256=expected_parent_manifest_sha256)
-            # Observe any change made by the external provider during admission.
-            candidate.require_current(lambda: self._observe(candidate.identity))
+            # A second external observation is required after the internal
+            # owner's first eligibility check, but BEFORE it publishes the
+            # successor. A failed final check must never expose that successor.
+            self._owner.commit(candidate,
+                expected_parent_manifest_sha256=expected_parent_manifest_sha256,
+                final_admission_check=lambda: candidate.require_current(
+                    lambda: self._observe(candidate.identity)))
 
 
 def _route(snapshot, bundle, budget_units):

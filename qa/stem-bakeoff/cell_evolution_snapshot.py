@@ -383,7 +383,7 @@ class OfflineEvolutionOwnerV1:
     def current(self):
         return self._current
 
-    def commit(self, candidate, *, expected_parent_manifest_sha256):
+    def commit(self, candidate, *, expected_parent_manifest_sha256, final_admission_check=None):
         with self._lock:
             if (self._current.manifest_sha256 != expected_parent_manifest_sha256
                     or candidate.report["parent_snapshot_digest"] != expected_parent_manifest_sha256
@@ -392,6 +392,14 @@ class OfflineEvolutionOwnerV1:
             if any(value > self._budget[key] for key, value in asdict(candidate.budget).items()):
                 raise EvolutionError("candidate raised the owner's fixed budget")
             candidate.require_current(self._provider)
+            if final_admission_check is not None:
+                if not callable(final_admission_check):
+                    raise EvolutionError("final admission check must be callable")
+                # The source/withdrawal check is within the same in-process
+                # commit lock and happens BEFORE publishing the new pointer.
+                # An external owner may revoke immediately afterwards, so
+                # every eventual use must still check its current frontier.
+                final_admission_check()
             self._current = candidate
 
     def predict_task(self, bundle):

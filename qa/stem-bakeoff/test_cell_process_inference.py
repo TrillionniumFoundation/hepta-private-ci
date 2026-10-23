@@ -187,6 +187,44 @@ class CellProcessInferenceTests(unittest.TestCase):
         self.assertEqual(result["router_forward_calls"], 0)
         self.assertTrue(all(r["actual_calls"] == ["a"] for r in result["routes"]))
 
+    def test_late_withdrawal_rejects_snapshot_commit_without_adopting_successor(self):
+        predecessor = self.owner.current
+        original_observe = self.owner._observe
+        observations = [0]
+
+        def withdraw_at_final_admission(identity):
+            observations[0] += 1
+            if observations[0] == 2:
+                self.withdrawals.revoke(predecessor.report["source_closure"][0])
+            return original_observe(identity)
+
+        # The preliminary check and the inner eligibility check pass, but the
+        # final check sees the independent withdrawal before pointer publication.
+        with patch.object(self.owner, "_observe", side_effect=withdraw_at_final_admission):
+            with self.assertRaisesRegex(EvolutionError, "withdrawn"):
+                self.owner.commit(self.retired,
+                    expected_parent_manifest_sha256=predecessor.manifest_sha256)
+        self.assertEqual(observations[0], 2)
+        self.assertIs(self.owner.current, predecessor)
+        self.assertEqual(self.owner.current.generation, 1)
+
+        # Neither predecessor nor successor becomes usable on a revoked
+        # source; the observed frontier is not rolled back on rejection.
+        with self.assertRaises(EvolutionError):
+            self.owner.capture()
+        self.withdrawals.view = WithdrawalViewV1(IDENTITY.scope_id)
+        with self.assertRaisesRegex(EvolutionError, "frontier"):
+            self.owner.capture()
+        self.assertIs(self.owner.current, predecessor)
+
+    def test_final_admission_callback_must_be_callable_and_cannot_publish(self):
+        predecessor = self.owner.current
+        with self.assertRaisesRegex(EvolutionError, "callable"):
+            self.owner._owner.commit(self.retired,
+                expected_parent_manifest_sha256=predecessor.manifest_sha256,
+                final_admission_check=123)
+        self.assertIs(self.owner.current, predecessor)
+
     def test_wrong_feature_scope_is_rejected_before_any_worker_forward(self):
         pool = self.pool()
         bad = cohort("different-scope", identity=replace(IDENTITY, scope_id="another-owner")).bundle
