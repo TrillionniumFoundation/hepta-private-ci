@@ -191,6 +191,21 @@ def conditional_ce(values: tuple[float, ...],
     # underflow to zero (or change the policy's value).
     supported = [(p, v) for p, v in zip(probabilities, values) if p > 0]
     anchor = min(v for _, v in supported)
+    # With small positive gamma, rounding log(1 + O(gamma)) *before*
+    # division by gamma can materially change finite Bellman action ranks.
+    # Restrict compensated arithmetic to the near-neutral limit, leaving
+    # the frozen ordinary-risk evaluation path bit-for-bit unchanged.
+    span = max(v for _, v in supported) - anchor
+    if risk_aversion < 1e-250:
+        total = math.fsum(p for p, _ in supported)
+        return math.fsum(v * (p / total) for p, v in supported)
+    if math.isfinite(span) and risk_aversion * span <= 1e-4:
+        total = math.fsum(p for p, _ in supported)
+        delta = math.fsum(
+            (p / total) * math.expm1(-risk_aversion * (v - anchor))
+            for p, v in supported
+        )
+        return anchor - math.log1p(delta) / risk_aversion
     scaled = math.fsum(p * math.exp(-risk_aversion * (v - anchor))
                        for p, v in supported)
     if scaled <= 0:
