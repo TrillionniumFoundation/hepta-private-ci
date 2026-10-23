@@ -25,6 +25,9 @@ use crate::DeploymentFinalUseIssuer;
 #[path = "authority_host_writer.rs"]
 mod writer;
 use writer::RegisteredWriter;
+#[path = "authority_host_checkpoint_lane.rs"]
+mod checkpoint;
+use checkpoint::RegisteredCheckpoint;
 
 /// A lane is fixed by its private listener, never selected by a wire request.
 #[derive(Clone, Copy, Debug)]
@@ -42,6 +45,7 @@ pub struct HostAuthorityService {
     clock: Arc<HostAuthorityClock>,
     identity: AgentdIdentity,
     writer: Option<RegisteredWriter>,
+    checkpoint: Option<RegisteredCheckpoint>,
 }
 
 impl HostAuthorityService {
@@ -58,6 +62,7 @@ impl HostAuthorityService {
             clock,
             identity,
             writer: None,
+            checkpoint: None,
         })
     }
 
@@ -73,6 +78,27 @@ impl HostAuthorityService {
             &self.identity,
             registration,
             leases,
+        )?);
+        Ok(self)
+    }
+
+    /// Open the existing protected checkpoint for this verified writer and
+    /// trusted launcher's actual peer lifetime. Missing state never initializes.
+    pub fn with_registered_checkpoint(
+        mut self,
+        directory: Arc<codex_hepta_contracts::RootAuthorityDirectory>,
+        publisher_epoch: u64,
+        peer: codex_hepta_memory::CognitiveCheckpointPeerLifetime,
+    ) -> io::Result<Self> {
+        let writer = self
+            .writer
+            .as_ref()
+            .ok_or_else(|| io::Error::other("registered writer required"))?;
+        let registration = writer.checkpoint_registration(&self.issuer, publisher_epoch, peer)?;
+        self.checkpoint = Some(RegisteredCheckpoint::open(
+            directory,
+            registration,
+            self.clock.clone(),
         )?);
         Ok(self)
     }
@@ -94,6 +120,11 @@ impl HostAuthorityService {
         };
         policy.request_bound = bound;
         policy.response_bound = bound;
+        if matches!(lane, HostAuthorityLane::Checkpoint)
+            && let Some(checkpoint) = &self.checkpoint
+        {
+            checkpoint.validate_peer(policy.peer).map_err(unavailable)?;
+        }
         let mut channel = HostAuthorityPeerChannel::from_stream(stream, policy, owner_pidfd)?;
         while channel.exchange(|bytes| self.handle(lane, bytes))? {}
         Ok(())
@@ -107,9 +138,20 @@ impl HostAuthorityService {
         match lane {
             HostAuthorityLane::Observation => self.observe(bytes),
             HostAuthorityLane::Issuer => self.issue(bytes),
-            // Until an independently registered protected head exists there is
-            // no legitimate witness, implicit genesis or successful response.
-            HostAuthorityLane::Checkpoint => Err(HostIssuerTransportError::Unavailable),
+            HostAuthorityLane::Checkpoint => self
+                .writer
+                .as_ref()
+                .ok_or(HostIssuerTransportError::Unavailable)?
+                .exchange_checkpoint(
+                    &self.issuer,
+                    &self.clock,
+                    &self
+                        .checkpoint
+                        .as_ref()
+                        .ok_or(HostIssuerTransportError::Unavailable)?
+                        .backend,
+                    bytes,
+                ),
         }
     }
 

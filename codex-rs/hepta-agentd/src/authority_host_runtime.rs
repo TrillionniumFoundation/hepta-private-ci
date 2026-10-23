@@ -183,6 +183,23 @@ pub fn serve_host_authority_session(
     } else {
         service
     };
+    let service = if let Some(directory) = &config.checkpoint_state_dir {
+        if !directory.starts_with(&config.state_dir) || directory == &config.state_dir {
+            return Err(io::Error::other("checkpoint must be a private state child"));
+        }
+        service.with_registered_checkpoint(
+            RootAuthorityDirectory::open(directory).map_err(io::Error::other)?,
+            registration.publisher_epoch,
+            codex_hepta_memory::CognitiveCheckpointPeerLifetime {
+                uid: config.peer_uid,
+                pid: registration.peer_pid,
+                boot_id: registration.boot_id.clone(),
+                process_start_ticks: registration.process_start_ticks,
+            },
+        )?
+    } else {
+        service
+    };
     serve_lanes(&service, &config, &registration, &owner_pidfd)
 }
 
@@ -216,7 +233,7 @@ pub fn register_host_writer_authorization(
     issuer.register_writer_authorization(writer, &leases.verifier())
 }
 
-fn open_registered_issuer(
+pub(super) fn open_registered_issuer(
     config: &HostAuthorityServiceConfig,
 ) -> io::Result<(
     Arc<HostAuthorityClock>,

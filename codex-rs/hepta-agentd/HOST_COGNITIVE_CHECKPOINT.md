@@ -137,3 +137,41 @@ those failures and the unchanged-input, empty-diff finish evidence are retained
 in [the complete adoption receipts](acceptance/2026-10-23-checkpoint-adoption/README.md).
 This is the clean same-boot backend boundary; real service/issuer and cold or
 Dirty recovery remain separate requirements.
+
+The service can now explicitly open `checkpoint_state_dir`, an existing private
+child of its configured protected state. The root registration supplies the
+publisher epoch and actual UID/PID/boot/start lifetime. The service derives the
+complete original writer binding through `VerifiedRootWriterProof` and its
+`ProductionAuthorityLease`, including the original grant and grant-bound token
+digest methods. Neither the wire nor a JSON recovery cut supplies this binding.
+Missing state, a different writer/token/publisher or a different peer lifetime
+refuses opening; there is no automatic initialization or publisher adoption.
+
+Every checkpoint request holds the original exact writer lease dispatch fence
+through retained-proof validation, the original backend exchange and the final
+issuer-head/clock/expiry check. The original 32KiB closed DTO and peer pidfd/frame
+deadlines remain. A live-lease failure emits no response prefix and the client
+must remain fenced. The existing backend's uncertain-publication semantics still
+apply. No remote genesis, renewal, cut rehash or previous-Current fallback is added.
+
+The no-effect service fixture prepares its genuinely fresh original CognitiveStore
+and captures its coherent anchor before starting the protected clock or leases.
+It checks Current reading, Dirty and terminal Fenced publication, exact duplicate
+ACK and stale CAS refusal. It deliberately does not manufacture an original
+writer's `lease_sha256` for a Prepare/Commit claim. Complete production-writer
+publication and restart reconciliation require the actual owner integration.
+
+The first service integration phase compiled with Rust 1.96 and passed 41 scoped
+tests. Its actual root/data-bind run refused initialization with `Unavailable`
+before entering the dedicated UID 60001 channel. A separate diagnostic trace
+reached the channel (141ms observation) but then refused another operation with
+`Unavailable`; it is diagnostic evidence, not a successful service run. The
+original one-second clock horizon and 500ms feed freshness remain unchanged.
+That frozen phase's fresh-head counter also predates the separately identified original
+client counter-zero incompatibility. This phase does not qualify fresh whole-writer
+binding, complete publication or persistent-service availability.
+
+The separate root/data-bind expired-writer negative did pass: the actual dedicated
+UID 60001 waited three seconds after a two-second original writer authorization,
+received no checkpoint response prefix, and left the original protected Current
+head unchanged. This proves the expiry refusal only, not the positive service path.

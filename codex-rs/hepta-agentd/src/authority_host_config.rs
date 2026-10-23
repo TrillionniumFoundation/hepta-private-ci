@@ -79,6 +79,7 @@ pub struct HostAuthorityServiceConfig {
     pub lease_id: String,
     pub lease_revision: u64,
     pub writer: Option<crate::HostAuthorityWriterRegistration>,
+    pub checkpoint_state_dir: Option<PathBuf>,
     pub sockets: HostAuthoritySocketPaths,
     pub peer_uid: u32,
     pub peer_gid: u32,
