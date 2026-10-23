@@ -1,0 +1,31 @@
+name: Hepta Group System2 causal receipts (research)
+
+on:
+  pull_request:
+    paths:
+      - "qualification/group-system2-causality/**"
+      - ".github/workflows/hepta-group-causal-receipts.yml"
+  push:
+    branches:
+      - "research/group-system2-causal-three-phase-20261023"
+    paths:
+      - "qualification/group-system2-causality/**"
+      - ".github/workflows/hepta-group-causal-receipts.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  source-only:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+      - name: Strict source-only tests
+        run: |
+          python3 -m unittest discover -s qualification/group-system2-causality -p 'test_*.py' -v
+          python3 -O -m unittest discover -s qualification/group-system2-causality -p 'test_*.py' -v
+          python3 -m compileall -q qualification/group-system2-causality
