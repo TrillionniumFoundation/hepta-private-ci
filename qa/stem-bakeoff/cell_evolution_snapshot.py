@@ -383,7 +383,15 @@ class OfflineEvolutionOwnerV1:
     def current(self):
         return self._current
 
-    def commit(self, candidate, *, expected_parent_manifest_sha256):
+    def commit(self, candidate, *, expected_parent_manifest_sha256, before_publish=None):
+        """Validate all owner and optional host fences before publishing the pointer.
+
+        The optional check executes under this owner's lock immediately before
+        publication. A host must not report a failed post-publication validation
+        while leaving an unacknowledged successor as the current snapshot.
+        """
+        if before_publish is not None and not callable(before_publish):
+            raise EvolutionError("prepublication verifier must be callable")
         with self._lock:
             if (self._current.manifest_sha256 != expected_parent_manifest_sha256
                     or candidate.report["parent_snapshot_digest"] != expected_parent_manifest_sha256
@@ -391,6 +399,10 @@ class OfflineEvolutionOwnerV1:
                 raise EvolutionError("stale snapshot compare-and-swap")
             if any(value > self._budget[key] for key, value in asdict(candidate.budget).items()):
                 raise EvolutionError("candidate raised the owner's fixed budget")
+            candidate.require_current(self._provider)
+            if before_publish is not None:
+                before_publish()
+            # Recheck after the host hook; it may observe a newer withdrawal cut.
             candidate.require_current(self._provider)
             self._current = candidate
 
