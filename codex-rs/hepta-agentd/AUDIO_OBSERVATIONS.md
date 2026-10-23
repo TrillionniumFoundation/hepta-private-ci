@@ -85,6 +85,15 @@ availability assertion or model dispatch occurs. Original metadata can be
 compared with the producer's retained input even after owner process replacement.
 This does not create a post-expiry or post-revocation access exception.
 
+An `inputError` can carry `committedAudioObservation` and
+`admissionReady:false` when the canonical observation committed before a replay
+checkpoint or authorization refresh failed. Preserve that original receipt for
+reconciliation; it is not a Core queue, model, playback or tool-effect receipt.
+Failure without a receipt still does not prove absence. The relay connects to
+the existing Core before claiming a first delivery attempt, so a known failed
+connection cannot consume first-admission eligibility. Once a request may have
+crossed the seam, recovery remains lookup-only under its original identity.
+
 After a crash the HMI listener reclaims only its own private socket, following
 connection-refused and inode/ownership checks. Live sockets, links, regular
 files and changed paths are rejected. Existing filesystem/device/deployment
@@ -100,3 +109,7 @@ resource-growth measurements. Its latency samples measure software send-to-text
 terminal only. They are not microphone-to-speaker percentiles or long-run device
 acceptance. Trusted multilingual STT/TTS artifacts, actual adopted platform/device
 authority and real speech/fault/performance acceptance remain separate inputs.
+
+See [config-templates/hmi/README.md](config-templates/hmi/README.md) for passive
+templates and the exact remaining integration materials. They do not install or
+activate this profile.

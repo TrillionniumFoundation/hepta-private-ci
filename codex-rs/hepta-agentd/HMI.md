@@ -61,6 +61,10 @@ The default profile is text only. Its principal is the actual registered AuthBus
 the local Agent UI identity is scoped by that key epoch and Agent spawn. These
 fields are not microphone/device permissions. `capture_generation` is zero,
 and audio verification, speech and audio-observation methods fail explicitly.
+Every later submission must retain the attached signature profile and key epoch.
+An audio session additionally retains the exact current device-policy digest.
+Identical identity labels do not permit switching a text session to audio, or
+an audio session to text; reconnecting preserves this authorization boundary.
 No placeholder audio receipt is issued. The current `AuthBusTextBody` has only
 spawn generation, thread ID and text; `KernelEvidenceAppend` accepts a signed
 qualification evidence envelope, not a captured-audio observation. A sourced
@@ -85,3 +89,7 @@ identities under `/workspace/pipecat-hmi-audit-20261023/`.
 The explicit opt-in signed source profile and process-recovery commands are
 documented in [AUDIO_OBSERVATIONS.md](AUDIO_OBSERVATIONS.md). They add no hardware
 or speech permission to the default text port.
+
+Passive owner flags, intentionally inactive policy templates and the external
+runtime materials inventory are in
+[config-templates/hmi/README.md](config-templates/hmi/README.md).
