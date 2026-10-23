@@ -89,3 +89,36 @@ No automatic approval review denied an action; no runtime/access blocker
 remains. The blockers to a new scientific claim are the failed new TRAIN
 hypothesis, insufficient conditional-routing headroom, lack of authorization
 for any formal look, and the outstanding provenance/error-budget review.
+
+## Parent's independent-review clarification
+
+The parent reports that its independent review of result commit
+`86601343b8691a535f9f9105759ee03b1eb20061` found no new complete-budget or
+source-split blocker: one cumulative ledger per arm covers all nine candidates,
+all path search, observations, service/export and executed control; shared
+preparation/compiler cost is fully attributed, refiner features are additional,
+and144 fit/48 inner sources each keep their16 rows together. This is a
+parent-reported review, not another model execution in this workspace.
+
+TRAIN candidate search and internal validation are exploratory development,
+not formal confirmation looks and not, by themselves, formal alpha spending.
+They belong in the history for selection/adaptation/provenance and research-cost
+transparency. The error-budget discussion above applies to relevant formal
+confirmations and their declared decisions, not an arbitrary alpha charge for
+each TRAIN fit or marginal diagnostic interval. The positive dense A-H interval
+uses the same inner rows that selected the models, so it remains exploratory.
+
+New independent physical realizations may be synthetic, within the same finite
+12-code task. No natural-image requirement has been added. Predeclared independent
+synthetic generation, new clean-source realizations and physical-source grouping
+can supply new evidence, with explicit hashes/provenance and no outcome-based
+screening. Repeating an existing clean source with fresh sensor noise, renaming
+its directory or cherry-picking favorable draws cannot. A fresh generator seed
+can be part of that valid independent construction; it is not sufficient
+documentation by itself.
+
+The budgets establish equal resource ceilings, not identical measured spending
+or equal cumulative historical R&D. The refiner remains rejected; its small
+headroom does not authorize a gate expansion. Confirmation drafts and the
+unrun block-update proposal remain on hold pending a unified design with the
+parent's NDU review. No old/new formal test or old-system retest is authorized.

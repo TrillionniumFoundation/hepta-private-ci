@@ -132,3 +132,10 @@ require new physical provenance, fixed once-only opening authority, and honest
 accounting for previous looks. The parent-reported toy exact-reference numbers
 are documented [separately](MATHEMATICAL_REFERENCE_NOTE.md); they neither expand
 this candidate nor qualify its budget or model benefit.
+
+The parent subsequently reports an independent review of result commit
+`86601343b8691a535f9f9105759ee03b1eb20061` with no new budget/split blocker.
+Its [clarifications](HISTORY_AND_CONFIRMATION.md#parents-independent-review-clarification)
+distinguish TRAIN search from formal alpha spending and explicitly allow
+independent new synthetic physical sources. This proposal and every confirmation
+draft remain unexecuted pending a unified design with the parent's NDU review.
