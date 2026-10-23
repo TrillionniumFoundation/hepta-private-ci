@@ -17,11 +17,16 @@ use std::time::Instant;
 struct Clock {
     reads: AtomicU64,
     expire_on: AtomicU64,
+    reject_on: AtomicU64,
 }
 
 impl AuthorityClock for Clock {
     fn now_unix_ms(&self) -> Result<u64, AuthorityTrustError> {
         let read = self.reads.fetch_add(1, Ordering::SeqCst) + 1;
+        let rejection = self.reject_on.load(Ordering::SeqCst);
+        if rejection != 0 && read >= rejection {
+            return Err(AuthorityTrustError::Conflict);
+        }
         let expiry = self.expire_on.load(Ordering::SeqCst);
         Ok(if expiry != 0 && read >= expiry { 10_000 } else { 1_000 })
     }
@@ -276,4 +281,21 @@ async fn root_current_handoff_two_real_cas_handles_choose_one_successor() {
     assert_eq!(outcomes.iter().filter(|result| **result == Err(AuthorityTrustError::Conflict)).count(), 1);
     let reopened = HostCognitiveCheckpoint::open(f.directory.clone(), f.registration.clone(), f.clock.clone()).unwrap();
     assert_eq!(reopened.load().unwrap().counter, f.previous.head.counter + 1);
+}
+
+#[tokio::test]
+#[ignore = "explicit root-owned data-bind qualification"]
+async fn root_current_handoff_post_cas_clock_failure_is_unknown_not_definite_conflict() {
+    let mut f = Fixture::new().await;
+    f.old.stop();
+    f.clock.reject_on.store(f.clock.reads.load(Ordering::SeqCst) + 2, Ordering::SeqCst);
+    let result = f.adopt().err();
+    // Observe the actual durable new registration before checking the reported
+    // result. The clock remains unavailable; this is forensic readback, not
+    // revival of an expired or uncertain runtime authority.
+    let reopened = HostCognitiveCheckpoint::open(f.directory.clone(), f.registration.clone(), f.clock.clone()).unwrap();
+    let head = reopened.load().unwrap();
+    assert_eq!(head.counter, f.previous.head.counter + 1);
+    assert_eq!(head.last_current, f.previous.head.last_current);
+    assert_eq!(result, Some(AuthorityTrustError::Unavailable));
 }
