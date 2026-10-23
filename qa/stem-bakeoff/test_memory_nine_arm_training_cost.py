@@ -2,7 +2,7 @@
 from copy import deepcopy
 import unittest
 
-from memory_nine_arm_gate import Refused, canonical, sha
+from memory_nine_arm_gate import Refused, audit, canonical, sha
 from memory_nine_arm_training_cost import (
     PHASES, SCHEMA, TRAINED, verify_training_receipts,
 )
@@ -84,6 +84,30 @@ class PhysicalTrainingCostTests(unittest.TestCase):
         self.assertFalse(report["prospective_memory_superiority_established"])
         self.assertFalse(report["production_activation_allowed"])
         self.assertEqual(report["authority"], "DENY_ALL")
+
+    def test_missing_physical_training_keeps_original_gate_on_hold(self):
+        _, obs, judgments = fixture()
+        report = audit(self.plan, obs, judgments, sha(canonical(self.plan)))
+        self.assertFalse(report["physical_e_i_training_cost_gate"])
+        self.assertFalse(report["eligible_for_external_authenticity_review"])
+        self.assertTrue(any("E-I actual optimizer" in b for b in report["blockers"]))
+
+    def test_reconciled_fixture_changes_only_mechanism_flag(self):
+        _, obs, judgments = fixture()
+        report = audit(self.plan, obs, judgments, sha(canonical(self.plan)),
+                       training_receipts=self.package)
+        self.assertTrue(report["physical_e_i_training_cost_gate"])
+        self.assertIsNotNone(report["physical_e_i_training_audit"])
+        self.assertFalse(report["production_accepted"])
+        self.assertFalse(report["superiority_established"])
+        self.assertEqual(report["status"], "HOLD_NO_GO")
+
+    def test_invalid_physical_training_rejected_by_whole_gate(self):
+        _, obs, judgments = fixture()
+        self.subject("H")["events"].pop()
+        with self.assertRaisesRegex(Refused, "work census"):
+            audit(self.plan, obs, judgments, sha(canonical(self.plan)),
+                  training_receipts=self.package)
 
     def test_missing_arm_rejected(self):
         self.package["arms"].pop()
