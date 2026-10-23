@@ -111,6 +111,11 @@ composition still requires the original recovered host and external grant
 provider. The adapter's protocol tests do not establish native Agentd execution,
 production authority or G2 qualification.
 
+The [independent final-use issuer transport](../../../codex-rs/hepta-agentd/FINAL_USE_ISSUER_PORT.md)
+connects an explicitly supplied private issuer descriptor to the original
+writer's grant-provider seam. Its bounded transport does not supply the seven
+independent production authority and recovery inputs.
+
 ### Explicit Notes destination bootstrap
 
 `hepta-memory::ProductionNotesTarget` consumes `trill.notes.replace.v1` through

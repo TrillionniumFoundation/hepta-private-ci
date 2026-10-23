@@ -48,6 +48,14 @@ pub trait AgentdFinalUseGrantProvider: Send + Sync {
     fn signed_grant(&self, binding: &FinalUseBinding) -> Result<SignedFinalUseGrant, AgentdError>;
 }
 
+#[cfg(target_os = "linux")]
+impl AgentdFinalUseGrantProvider for crate::AgentdUnixFinalUseGrantProvider {
+    fn signed_grant(&self, binding: &FinalUseBinding) -> Result<SignedFinalUseGrant, AgentdError> {
+        self.request_grant(binding)
+            .map_err(|error| AgentdError::Protocol(format!("final-use issuer transport: {error}")))
+    }
+}
+
 /// Explicit runtime composition input for the production operation service.
 /// Supplying this value is a product-host decision; default Agentd startup does
 /// not manufacture any of these authorities.

@@ -25,6 +25,8 @@ mod event_buffer;
 mod evidence_frontier;
 mod evidence_host;
 mod evidence_trust;
+#[cfg(target_os = "linux")]
+mod final_use_issuer;
 mod grant_provider_worker;
 #[cfg(target_os = "linux")]
 mod hos2_device;
@@ -165,6 +167,12 @@ pub use error::AgentdError;
 pub use evidence_frontier::EvidenceRecoveryFrontierV1;
 pub use evidence_frontier::evidence_recovery_frontier_signing_bytes;
 pub use evidence_host::kernel_evidence_claims;
+#[cfg(target_os = "linux")]
+pub use final_use_issuer::AgentdFinalUseIssuerError;
+#[cfg(target_os = "linux")]
+pub use final_use_issuer::AgentdFinalUseIssuerPeer;
+#[cfg(target_os = "linux")]
+pub use final_use_issuer::AgentdUnixFinalUseGrantProvider;
 #[cfg(target_os = "linux")]
 pub use hos2_device::AgentdHos2Device;
 #[cfg(target_os = "linux")]
