@@ -108,7 +108,10 @@ def validate_dataset(rows: list[dict[str, Any]]) -> dict[str, dict[str, Any]]:
     return by_id
 
 
-def validate_run(run: dict[str, Any], model: str, dataset_hash: str, prediction_hash: str) -> None:
+def validate_run(
+    run: dict[str, Any], model: str, dataset_hash: str, prediction_hash: str,
+    source_commit: str, frozen_threshold: float,
+) -> None:
     require(run.get("schema") == SCHEMA and run.get("model") == model, "run schema/model mismatch")
     require(run.get("dataset_sha256") == dataset_hash, "dataset identity mismatch")
     require(run.get("predictions_sha256") == prediction_hash, "prediction identity mismatch")
@@ -117,6 +120,15 @@ def validate_run(run: dict[str, Any], model: str, dataset_hash: str, prediction_
     rev, source = run.get("revision"), run.get("source_commit")
     require(isinstance(rev, str) and REVISION.fullmatch(rev) is not None, "exact checkpoint revision required")
     require(isinstance(source, str) and REVISION.fullmatch(source) is not None, "exact source commit required")
+    require(source == source_commit, "mixed or unregistered source commits")
+    calibration = run.get("calibration")
+    require(isinstance(calibration, dict), "missing calibration receipt")
+    temperature = calibration.get("temperature")
+    threshold = calibration.get("abstention_threshold")
+    require(type(temperature) in (float, int) and math.isfinite(temperature) and temperature > 0,
+            "invalid calibration temperature")
+    require(type(threshold) in (float, int) and math.isfinite(threshold)
+            and threshold == frozen_threshold, "unregistered abstention threshold")
     digests = run.get("digests")
     require(isinstance(digests, dict), "artifact digests missing")
     for name in REQUIRED_DIGESTS:
@@ -134,6 +146,7 @@ def validate_run(run: dict[str, Any], model: str, dataset_hash: str, prediction_
 
 def validate_predictions(
     rows: list[dict[str, Any]], dataset: dict[str, dict[str, Any]], model: str,
+    frozen_threshold: float,
 ) -> dict[str, dict[str, Any]]:
     predicted: dict[str, dict[str, Any]] = {}
     holdout = {rid: item for rid, item in dataset.items() if item["split"] == "future_test"}
@@ -147,6 +160,8 @@ def validate_predictions(
         require(all(type(v) in (float, int) and math.isfinite(v) and 0 <= v <= 1 for v in values), f"{rid}: invalid probability")
         require(abs(sum(values) - 1.0) <= 1e-5, f"{rid}: mass does not sum to 1")
         require(type(prediction.get("abstained")) is bool, f"{rid}: missing abstention")
+        require(prediction["abstained"] == (max(values) < frozen_threshold),
+                f"{rid}: abstention flag inconsistent with frozen threshold")
         predicted[rid] = prediction
     require(set(predicted) == set(holdout), "predictions must cover exact holdout once")
     return predicted
@@ -158,14 +173,15 @@ def metrics(dataset: dict[str, dict[str, Any]], predicted: dict[str, dict[str, A
     ood = [x for x in ids if dataset[x]["ood"]]
     require(bool(in_domain) and bool(ood), "in-domain and OOD holdouts required")
     groups: list[list[tuple[float, float]]] = [[] for _ in range(bins)]
-    correct = answered = 0
+    correct = accepted_correct = answered = 0
     brier = 0.0
     for rid in in_domain:
         row, pred = dataset[rid], predicted[rid]
         probs = pred["probabilities"]
         guess = max(row["options"], key=lambda x: probs[x])
         ok = guess == row["gold"]
-        correct += int(ok and not pred["abstained"])
+        correct += int(ok)
+        accepted_correct += int(ok and not pred["abstained"])
         answered += int(not pred["abstained"])
         brier += sum((probs[x] - float(x == row["gold"])) ** 2 for x in row["options"]) / len(row["options"])
         confidence = probs[guess]
@@ -174,7 +190,8 @@ def metrics(dataset: dict[str, dict[str, Any]], predicted: dict[str, dict[str, A
     return {
         "n_in_domain": len(in_domain), "n_ood": len(ood),
         "coverage": answered / len(in_domain), "accuracy": correct / len(in_domain),
-        "selective_accuracy": correct / answered if answered else None,
+        "effective_correct_rate": accepted_correct / len(in_domain),
+        "selective_accuracy": accepted_correct / answered if answered else None,
         "brier": brier / len(in_domain), "ece": ece,
         "ood_false_acceptance": sum(not predicted[x]["abstained"] for x in ood) / len(ood),
     }
@@ -198,6 +215,14 @@ def slice_accuracy(dataset: dict[str, dict[str, Any]], predicted: dict[str, dict
 
 def analyse(plan: dict[str, Any], dataset_path: Path, run_dir: Path) -> dict[str, Any]:
     require(plan.get("schema") == SCHEMA, "unknown plan schema")
+    require(plan.get("kind") == "frozen_experiment_plan", "unfrozen/template experiment plan")
+    source_commit = plan.get("source_commit")
+    require(isinstance(source_commit, str) and REVISION.fullmatch(source_commit) is not None,
+            "unregistered exact source commit")
+    parse_time(plan.get("registered_before_utc"))
+    frozen_threshold = plan.get("abstention_threshold")
+    require(type(frozen_threshold) in (float, int) and math.isfinite(frozen_threshold)
+            and 0 < frozen_threshold < 1, "missing/invalid frozen abstention threshold")
     require(plan.get("candidates") == list(CANDIDATES), "candidate list/order not frozen")
     require(plan.get("baseline") == CANDIDATES[0], "baseline drift")
     roles = plan.get("independent_roles")
@@ -218,8 +243,10 @@ def analyse(plan: dict[str, Any], dataset_path: Path, run_dir: Path) -> dict[str
         predictions_path = run_dir / model / "predictions.jsonl"
         run_path = run_dir / model / "run.json"
         require(predictions_path.is_file() and run_path.is_file(), f"missing measured run for {model}")
-        validate_run(load_json(run_path), model, dataset_hash, file_hash(predictions_path))
-        predicted = validate_predictions(load_jsonl(predictions_path), dataset, model)
+        validate_run(load_json(run_path), model, dataset_hash, file_hash(predictions_path),
+                     source_commit, frozen_threshold)
+        predicted = validate_predictions(load_jsonl(predictions_path), dataset, model,
+                                         frozen_threshold)
         results[model] = {
             "all": metrics(dataset, predicted),
             "languages": slice_accuracy(dataset, predicted, "language", minimum),
