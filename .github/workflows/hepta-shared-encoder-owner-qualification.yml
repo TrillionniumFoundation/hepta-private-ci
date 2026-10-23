@@ -1,0 +1,131 @@
+name: Hepta shared Encoder owner qualification (read-only)
+
+on:
+  push:
+    branches:
+      - qualification/shared-encoder-owner-native-20261018
+
+permissions:
+  contents: read
+
+concurrency:
+  group: hepta-shared-encoder-owner-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  qualification:
+    name: Native owner compile, test, fmt, clippy
+    runs-on: ubuntu-24.04
+    timeout-minutes: 75
+    env:
+      CARGO_BUILD_JOBS: "2"
+      CARGO_INCREMENTAL: "0"
+      CARGO_PROFILE_DEV_DEBUG: "0"
+      CARGO_PROFILE_TEST_DEBUG: "0"
+      SOURCE_SHA: ${{ github.sha }}
+      CODEX_REPO_ROOT: ${{ github.workspace }}
+      PYTHONPATH: scripts
+    steps:
+      - name: Checkout exact immutable source
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 1
+          persist-credentials: false
+
+      - name: Verify source and hosted runner preconditions
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$GITHUB_REF" = refs/heads/qualification/shared-encoder-owner-native-20261018
+          test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
+          test "$RUNNER_OS" = Linux
+          test "$RUNNER_ENVIRONMENT" = github-hosted
+          df -h "$GITHUB_WORKSPACE"
+          mkdir -p "$RUNNER_TEMP/hepta-owner-evidence"
+          printf 'source=%s\n' "$SOURCE_SHA" > "$RUNNER_TEMP/hepta-owner-evidence/source.txt"
+          git rev-parse 'HEAD^{tree}' >> "$RUNNER_TEMP/hepta-owner-evidence/source.txt"
+
+      - name: Install native test prerequisites
+        shell: bash
+        run: |
+          set -euo pipefail
+          sudo apt-get update
+          sudo apt-get install -y build-essential bubblewrap libcap-dev pkg-config
+          rustc --version
+          cargo --version
+
+      # Ubuntu 24.04's AppArmor denies Bubblewrap a user namespace without
+      # an explicit executable-scoped profile. Keep global restriction ON.
+      # This profile additionally forbids sandboxed children from nesting
+      # another user namespace: it does not disable read-only sandboxing.
+      - name: Qualify distro AppArmor Bubblewrap userns profile
+        shell: bash
+        run: |
+          set -euo pipefail
+          before="$(sysctl -n kernel.apparmor_restrict_unprivileged_userns)"
+          test "$before" = 1
+          sudo apt-get install -y apparmor-profiles apparmor-utils
+          distro_profile=/usr/share/apparmor/extra-profiles/bwrap-userns-restrict
+          test -r "$distro_profile"
+          sudo install -m 0644 "$distro_profile" /etc/apparmor.d/bwrap-userns-restrict
+          sudo apparmor_parser -r /etc/apparmor.d/bwrap-userns-restrict
+          test "$(sysctl -n kernel.apparmor_restrict_unprivileged_userns)" = "$before"
+          # Real user and network namespace operations, no mock or elevation
+          # of the E2E process. Fail closed before any expensive compilation.
+          bwrap --unshare-user --unshare-net --uid 0 --gid 0 \
+            --ro-bind / / --dev-bind /dev /dev --proc /proc \
+            /bin/true
+          printf 'AppArmor userns restriction remains %s; confined bwrap smoke passed\n' "$before" \
+            | tee "$RUNNER_TEMP/hepta-owner-evidence/bwrap-apparmor.log"
+
+      - uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
+        with:
+          tool: just@1.51.0,nextest@0.9.103
+
+      - uses: facebook/install-dotslash@1e4e7b3e07eaca387acb98f1d4720e0bee8dbb6a
+      - run: sudo install -m 0755 "$(command -v dotslash)" /usr/local/bin/dotslash
+
+      - name: Resolve verified V8 artifacts for owner dependencies
+        shell: bash
+        run: python3 scripts/hepta_ci_v8.py
+
+      - name: Check Rustfmt for precise owner package
+        working-directory: codex-rs
+        shell: bash
+        run: |
+          set -euo pipefail
+          cargo fmt --package codex-hepta-infer-worker-host -- --check 2>&1 | tee "$RUNNER_TEMP/hepta-owner-evidence/fmt.log"
+
+      - name: Build exact-source Codex executable for real Agentd integration
+        working-directory: codex-rs
+        shell: bash
+        run: |
+          set -euo pipefail
+          cargo build --locked -p codex-cli --bin codex 2>&1 | tee "$RUNNER_TEMP/hepta-owner-evidence/codex-cli-build.log"
+          test -x target/debug/codex
+          target/debug/codex --version 2>&1 | tee "$RUNNER_TEMP/hepta-owner-evidence/codex-cli-version.log"
+          printf 'HEPTA_TEST_CODEX_BIN=%s\n' "$GITHUB_WORKSPACE/codex-rs/target/debug/codex" >> "$GITHUB_ENV"
+
+      - name: Run actual owner Rust unit and integration tests
+        working-directory: codex-rs
+        shell: bash
+        run: |
+          set -euo pipefail
+          just test --locked -p codex-hepta-infer-worker-host 2>&1 | tee "$RUNNER_TEMP/hepta-owner-evidence/owner-test.log"
+
+      - name: Run owner Clippy correctness lint
+        working-directory: codex-rs
+        shell: bash
+        run: |
+          set -euo pipefail
+          cargo clippy --locked -p codex-hepta-infer-worker-host --all-targets -- -D clippy::correctness 2>&1 | tee "$RUNNER_TEMP/hepta-owner-evidence/clippy.log"
+
+      - name: Preserve actual qualification evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: shared-encoder-owner-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/hepta-owner-evidence/
+          if-no-files-found: error
+          retention-days: 14

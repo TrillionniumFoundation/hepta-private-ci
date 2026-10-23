@@ -1434,6 +1434,20 @@ fn observe_event(
             }
             output.output.push_str(&delta.delta);
         }
+        // Some Responses API paths deliver a complete message without deltas.
+        // Observe only the exact bound turn and never double-count streamed text.
+        ServerNotification::ItemCompleted(completed)
+            if completed.thread_id == output.thread_id && completed.turn_id == output.turn_id =>
+        {
+            if let ThreadItem::AgentMessage { text, .. } = &completed.item
+                && output.output.is_empty()
+            {
+                if text.len() > MAX_OUTPUT_BYTES {
+                    return Err("completed message byte limit exceeded".to_string());
+                }
+                output.output.push_str(text);
+            }
+        }
         ServerNotification::ThreadTokenUsageUpdated(usage)
             if usage.thread_id == output.thread_id && usage.turn_id == output.turn_id =>
         {
@@ -1477,6 +1491,23 @@ fn observe_event(
                     .ok_or_else(|| "terminal receipt omitted correlation digest".to_string())?
                     .to_string(),
             );
+            // The terminal turn may provide canonical item text even when no
+            // agentMessage/delta was emitted. Prefer that complete bound-turn
+            // witness over a partial stream, without relaxing any terminal gate.
+            if !completed.turn.items.is_empty() {
+                let mut completed_output = String::new();
+                for item in &completed.turn.items {
+                    if let ThreadItem::AgentMessage { text, .. } = item {
+                        if text.len() > MAX_OUTPUT_BYTES.saturating_sub(completed_output.len()) {
+                            return Err("completed output byte limit exceeded".to_string());
+                        }
+                        completed_output.push_str(text);
+                    }
+                }
+                if !completed_output.is_empty() {
+                    output.output = completed_output;
+                }
+            }
             if let Some(error) = &completed.turn.error {
                 output.stop_reason = Some(error.message.chars().take(1024).collect());
             }

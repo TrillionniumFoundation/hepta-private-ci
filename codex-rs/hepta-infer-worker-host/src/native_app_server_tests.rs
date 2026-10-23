@@ -1,6 +1,7 @@
 use super::*;
 use codex_app_server_client::RemoteAppServerObservedEvent;
 use codex_app_server_protocol::AgentMessageDeltaNotification;
+use codex_app_server_protocol::ItemCompletedNotification;
 use codex_app_server_protocol::Turn;
 use codex_app_server_protocol::TurnCompletedNotification;
 use codex_app_server_protocol::TurnItemsView;
@@ -180,6 +181,90 @@ fn output_is_observed_bounded_and_never_predeclares_success() {
     );
     assert_eq!(output.output, "model output");
     assert!(!output.terminal_observed);
+}
+
+#[test]
+fn nonstreaming_completed_message_preserves_exact_bound_output_and_byte_budget() {
+    let complete_message = |thread: &str, turn: &str, text: String| {
+        ServerNotification::ItemCompleted(ItemCompletedNotification {
+            thread_id: thread.to_string(),
+            turn_id: turn.to_string(),
+            item: ThreadItem::AgentMessage {
+                id: "message-item".to_string(),
+                text,
+                phase: None,
+                memory_citation: None,
+                delivery: None,
+            },
+            completed_at_ms: 123,
+        })
+    };
+    let mut unstreamed = output();
+    observe_for_test(
+        &mut unstreamed,
+        complete_message("wrong-thread", "turn-a", "untrusted".to_string()),
+    )
+    .unwrap();
+    observe_for_test(
+        &mut unstreamed,
+        complete_message("thread-a", "wrong-turn", "untrusted".to_string()),
+    )
+    .unwrap();
+    assert!(unstreamed.output.is_empty());
+    assert!(
+        !observe_for_test(
+            &mut unstreamed,
+            complete_message("thread-a", "turn-a", "fresh context accepted".to_string()),
+        )
+        .unwrap()
+    );
+    assert_eq!(unstreamed.output, "fresh context accepted");
+    assert!(!unstreamed.terminal_observed);
+    assert_eq!(unstreamed.status, NativeRunStatus::Indeterminate);
+
+    let mut streamed = output();
+    observe_for_test(
+        &mut streamed,
+        ServerNotification::AgentMessageDelta(AgentMessageDeltaNotification {
+            thread_id: "thread-a".to_string(),
+            turn_id: "turn-a".to_string(),
+            item_id: "message-item".to_string(),
+            delta: "fresh ".to_string(),
+        }),
+    )
+    .unwrap();
+    observe_for_test(
+        &mut streamed,
+        complete_message("thread-a", "turn-a", "fresh context accepted".to_string()),
+    )
+    .unwrap();
+    assert_eq!(
+        streamed.output, "fresh ",
+        "do not double-count completed items"
+    );
+    let mut completion = terminal("thread-a", "turn-a", TurnStatus::Completed);
+    if let ServerNotification::TurnCompleted(ref mut event) = completion {
+        event.turn.items.push(ThreadItem::AgentMessage {
+            id: "message-item".to_string(),
+            text: "fresh context accepted".to_string(),
+            phase: None,
+            memory_citation: None,
+            delivery: None,
+        });
+    }
+    assert!(observe_for_test(&mut streamed, completion).unwrap());
+    assert_eq!(streamed.output, "fresh context accepted");
+    assert!(streamed.terminal_observed);
+
+    let mut oversized = output();
+    assert!(
+        observe_for_test(
+            &mut oversized,
+            complete_message("thread-a", "turn-a", "x".repeat(MAX_OUTPUT_BYTES + 1)),
+        )
+        .is_err()
+    );
+    assert!(oversized.output.is_empty());
 }
 
 #[test]
@@ -407,8 +492,16 @@ fn cognitive_final_use_revalidation_follows_durable_dispatch_and_precedes_turn_s
         .find("owner.revalidate_cognitive_context(snapshot).await")
         .expect("final-use cognitive revalidation");
     let turn_start = source
-        .find("client.request_typed::<TurnStartResponse>(ClientRequest::TurnStart")
-        .expect("physical turn start");
+        .find("send_authorized_turn_start(&mut client, entered_use, turn_params)")
+        .expect("authorized turn start");
+    let helper = source
+        .find("async fn send_authorized_turn_start(")
+        .expect("typed final-use turn helper");
+    let physical_turn = source
+        .find(".request_typed_observed(ClientRequest::TurnStart {")
+        .expect("physical TurnStart request");
+    assert!(turn_start < helper);
+    assert!(helper < physical_turn);
     let durable_stop = source
         .find("control.abort_native_before_effect(")
         .expect("durable pre-turn stop");
@@ -450,8 +543,16 @@ async fn real_agentd_worker_accepts_fresh_context_and_rejects_final_use_tombston
     let nonce = SystemTime::now().duration_since(UNIX_EPOCH)?.as_nanos();
     let root = std::env::temp_dir().join(format!("hepta-cognitive-worker-e2e-{nonce}"));
     let agent_id = codex_hepta_contracts::AgentId::parse(AGENT_ID)?;
-    let host =
-        CognitiveTestHost::start(root, agent_id, MODEL, &format!("{}/v1", server.uri())).await?;
+    let codex_self_exe = std::env::var_os("HEPTA_TEST_CODEX_BIN")
+        .ok_or("exact-revision Codex executable must be provided for Agentd E2E")?;
+    let host = CognitiveTestHost::start(
+        root,
+        agent_id,
+        MODEL,
+        &format!("{}/v1", server.uri()),
+        codex_self_exe.into(),
+    )
+    .await?;
     let _accepted_memory = host
         .seed_verified_memory("worker-final-use-accept", ACCEPT_MEMORY)
         .await?;
