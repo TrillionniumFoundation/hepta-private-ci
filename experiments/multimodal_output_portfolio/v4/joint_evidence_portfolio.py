@@ -106,17 +106,20 @@ class JointController:
 
     def __init__(self, cfg: Config, *, query_units: int = 1,
                  factual_penalty: int = 12, allow_query: bool = True,
-                 allow_refine: bool = True):
+                 allow_refine: bool = True, max_states: int = 50000):
         if (type(query_units) is not int or query_units <= 0
             or type(factual_penalty) is not int or factual_penalty <= 0
             or type(allow_query) is not bool
-            or type(allow_refine) is not bool):
+            or type(allow_refine) is not bool
+            or type(max_states) is not int or not 1 <= max_states <= 65536):
             raise ValueError("unadmitted joint optimizer profile")
         self.cfg = cfg
         self.query_units = query_units
         self.factual_penalty = factual_penalty
         self.allow_query = allow_query
         self.allow_refine = allow_refine
+        self.max_states = max_states
+        self.evaluated_states = 0
 
     def _emit_value(self, state: JointState) -> float:
         raw = emission(state)
@@ -131,6 +134,12 @@ class JointController:
 
     @lru_cache(maxsize=65536)
     def solve(self, state: JointState) -> tuple[JointAction, float]:
+        # A deterministic per-controller bound on actual cache misses:
+        # hitting the cap rejects exact planning, it never silently labels
+        # a partial search 'optimal'. One-step MPC is a separate fallback.
+        self.evaluated_states += 1
+        if self.evaluated_states > self.max_states:
+            raise ValueError("finite exact planner state cap exceeded")
         cfg = self.cfg
         if (state.generation.remaining < cfg.emission_reserve
             or state.generation.step > cfg.horizon):
@@ -162,6 +171,54 @@ class JointController:
                 if score > value + 1e-12:
                     best, value = JointAction("REFINE", allocation), score
         return best, value
+
+
+
+def one_step_mpc(state: JointState,
+                 controller: JointController) -> tuple[JointAction, float, int]:
+    """Bounded one-step planner; value is MYOPIC, not exact continuation.
+
+    It uses the same terminal raw-output estimator and actual legal actions,
+    charges all modeled costs, and NEVER reads hidden truth. It evaluates
+    only the next observable transition; any later replan is a new call.
+    """
+    cfg = controller.cfg
+    if (state.generation.remaining < cfg.emission_reserve
+        or state.generation.step > cfg.horizon):
+        raise ValueError("unadmitted one-step generation state")
+    best = EMIT
+    value = controller._emit_value(state)
+    leaf_calls = 1
+    if controller.allow_query and not state.queried and (
+            state.generation.remaining >=
+            cfg.emission_reserve + controller.query_units):
+        query_leaves = tuple(controller._emit_value(
+            query_next(state, w, controller.query_units, cfg))
+            for w in (0, 1))
+        leaf_calls += 2
+        probs = tuple(float(witness_probability(state.belief_zero, w))
+                      for w in (0, 1))
+        candidate = (-cfg.cost_shadow_price*controller.query_units
+                     + conditional_ce(query_leaves, probs,
+                                      cfg.risk_aversion))
+        if candidate > value + 1e-12:
+            best, value = QUERY, candidate
+    if controller.allow_refine:
+        for allocation in actions(state.generation, cfg)[1:]:
+            leaves = tuple(controller._emit_value(JointState(
+                advance(state.generation, allocation, k, cfg),
+                state.belief_zero, state.queried))
+                for k in range(3))
+            leaf_calls += 3
+            candidate = (-cfg.cost_shadow_price
+                         * charge(state.generation, allocation, cfg)
+                         + conditional_ce(leaves, SHOCK_PROBS,
+                                          cfg.risk_aversion))
+            if candidate > value + 1e-12:
+                best, value = JointAction("REFINE", allocation), candidate
+    # Number of calls is completely determined by the admitted action menu,
+    # not by episode history length or an unbounded scenario tree.
+    return best, value, leaf_calls
 
 
 def offline_audit(initial: JointState, controller: JointController,
