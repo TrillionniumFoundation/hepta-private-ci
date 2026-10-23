@@ -103,6 +103,8 @@ def export_bundle(run, system, seed, out):
     if len(rows) != 1:
         raise ContractError("selected system/seed missing or duplicated")
     row, plan = rows[0], selection["plan"]
+    if plan.get("output_codec_profile", "rowwise-png-v1") != "rowwise-png-v1":
+        raise UnsupportedCapability("opted-in output codecs are an evaluation prototype; native bundle export is unsupported")
     if plan.get("runtime_backend") != "native":
         raise UnsupportedCapability("selected backend is not native")
     model = _file(run, row["model_file"], 32 * 2**20, row["model_sha256"])

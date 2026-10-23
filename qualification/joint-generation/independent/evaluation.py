@@ -80,8 +80,10 @@ class _Observer:
         return JointModel.decode_images(self, ids)
 
 
-def _outputs(generator, p, q, ledger, sample_rng):
+def _outputs(generator, p, q, ledger, sample_rng, codec=None):
     """Useful batch sampling/decoding, followed by actual per-output encoding."""
+    if codec is not None:
+        return codec.outputs(generator, p, q, ledger, sample_rng)
     n, k = p.shape
     pixels = generator.dimensions[2]
     ledger.charge_kernel("output", "sample_and_quantize",
@@ -109,7 +111,7 @@ def _outputs(generator, p, q, ledger, sample_rng):
     return outputs, sizes
 
 
-def _service(generator, controller, mode, x, ledger, sample_rng, route_rng, plan):
+def _service(generator, controller, mode, x, ledger, sample_rng, route_rng, plan, codec=None):
     if mode == "full":
         p, q = generator.forward_full(x, ledger)
     elif mode == "low":
@@ -131,7 +133,7 @@ def _service(generator, controller, mode, x, ledger, sample_rng, route_rng, plan
                              counts={"random_view_choices": 1})
         forward = generator.forward_full if route_rng.random() < probability else generator.forward_low
         p, q = forward(x, ledger)
-    outputs, _ = _outputs(generator, p, q, ledger, sample_rng)
+    outputs, _ = _outputs(generator, p, q, ledger, sample_rng, codec)
     return p[0], q[0], outputs[0]
 
 
@@ -157,6 +159,9 @@ def measure(model, controller, mode, data, plan, reference_full_cpu_ns, *, seed=
     batch_size = plan.get("runtime_batch_size", 1)
     if type(batch_size) is not int or not 1 <= batch_size <= 64:
         raise ValueError("bounded runtime batch size required")
+    codec_profile = plan.get("output_codec_profile", "rowwise-png-v1")
+    if type(codec_profile) is not str or codec_profile not in ("rowwise-png-v1", "local-png-codebook-v1"):
+        raise ValueError("unsupported output codec profile")
     full = np.asarray(data["full"], dtype=np.float64)
     if (full.ndim != 2 or full.shape[1] != 202 or not 1 <= len(full) <= 65536
             or not np.isfinite(full).all()):
@@ -183,6 +188,12 @@ def measure(model, controller, mode, data, plan, reference_full_cpu_ns, *, seed=
     elif plan.get("runtime_backend", "python") != "python":
         raise ValueError("unknown runtime backend")
     generator = generator_type(model, ledger=preparation, prepare_low=mode != "full", **extra)
+    codec = None
+    codec_output_units = None
+    if codec_profile != "rowwise-png-v1":
+        from independent.output_codec import prepare_codec, request_work
+        codec = prepare_codec(generator, codec_profile, preparation)
+        codec_output_units = preparation.estimate_kernel(**request_work())
     sample_rng = np.random.default_rng(seed)
     route_rng = np.random.default_rng(seed + 900001)
     prepare_cpu_ns = time.process_time_ns() - prepared_cpu
@@ -193,6 +204,8 @@ def measure(model, controller, mode, data, plan, reference_full_cpu_ns, *, seed=
     if plan.get("runtime_backend") == "native" and batch_size > 1 and not native_batch:
         raise ValueError("declared native batch backend unavailable")
     output_units = reference_units - units(generator.full_work(1))
+    if codec is not None:
+        output_units = codec_output_units
     ps, qs, costs, sample = [], [], [], None
     totals, batches = {}, []
     for offset in range(0, len(full), batch_size):
@@ -211,7 +224,7 @@ def measure(model, controller, mode, data, plan, reference_full_cpu_ns, *, seed=
             p, q, receipt = generator.batch(chunk, mode, critic=controller if mode == "continuation" else None,
                 price=decision_price, ledger=ledger, random_full_mask=mask, per_request_cap=cap - output_units)
             generation_done_cpu = time.process_time_ns()
-            outputs, sizes = _outputs(generator, p, q, ledger, sample_rng)
+            outputs, sizes = _outputs(generator, p, q, ledger, sample_rng, codec)
             output_done_cpu = time.process_time_ns()
             component_cpu = {"native_generation_and_ledger_cpu_ns": generation_done_cpu - cpu_start,
                              "output_encoding_and_ledger_cpu_ns": output_done_cpu - generation_done_cpu}
@@ -225,7 +238,7 @@ def measure(model, controller, mode, data, plan, reference_full_cpu_ns, *, seed=
             p, q, outputs, row_costs, ledgers = [], [], [], [], []
             for x in chunk:
                 ledger = WorkLedger("request", total_cap=cap)
-                pp, qq, output = _service(generator, controller, mode, x[None, :], ledger, sample_rng, route_rng, plan)
+                pp, qq, output = _service(generator, controller, mode, x[None, :], ledger, sample_rng, route_rng, plan, codec)
                 p.append(pp); q.append(qq); outputs.append(output); ledgers.append(ledger)
                 row_costs.append({"work_units": ledger.consumed_units,
                                   "model_forwards": ledger.totals.get("model_forward_rows", 0),
@@ -282,6 +295,8 @@ def measure(model, controller, mode, data, plan, reference_full_cpu_ns, *, seed=
                      "reference_full_work_units": reference_units, "request_cap_units": cap,
                      "cpu_ns": sum(row["cpu_ns"] for row in batches), "wall_ns": sum(row["wall_ns"] for row in batches),
                      "runtime_batch_size": batch_size, "batches": batches, "observer_cpu_ns": observer_cpu_ns,
+                     "output_codec_profile": codec_profile,
+                     "output_codec_storage": codec.storage if codec is not None else None,
                      "component_timing_scope": "Native batch CPU splits cover generation/input/routing/ledger, then learned decode/sampling/PNG/JSON/output ledger; remaining service CPU covers receipt bookkeeping and timer overhead. Components sum to unchanged authoritative total; no component is subtracted. Python fallback retains total only.",
                      "latency_semantics": "batch totals and batch CPU/n attribution; not single-request latency"},
             "decoder_corruption_score_drop": corruption_drop,
