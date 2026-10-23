@@ -79,7 +79,7 @@ impl fmt::Display for ValidationError {
 impl std::error::Error for ValidationError {}
 
 #[derive(Eq, PartialEq)]
-#[repr(align(4))]
+#[repr(C, align(4))]
 struct Sid {
     bytes: [u8; 68],
     length: usize,
