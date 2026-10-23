@@ -888,3 +888,6 @@ fn missing_or_truncated_claim_journal_fails_closed_on_restart() {
         );
     }
 }
+
+#[path = "final_use_nonce_tests.rs"]
+mod nonce_tests;

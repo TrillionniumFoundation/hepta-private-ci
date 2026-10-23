@@ -18,6 +18,8 @@ use std::io::Seek;
 use std::io::SeekFrom;
 use std::io::Write;
 use std::path::Path;
+use std::sync::atomic::AtomicU64;
+use std::sync::atomic::Ordering;
 
 const STATE_SCHEMA_V1: u32 = 1;
 const STATE_SCHEMA_V2: u32 = 2;
@@ -78,6 +80,9 @@ pub(super) struct Store {
     signer_id: String,
     trust: StoreTrust,
     _lock: File,
+    // Access is serialized by the authority state mutex. The atomic keeps the
+    // store shareable while retaining the last validated durable journal size.
+    claims_len: AtomicU64,
 }
 
 impl Store {
@@ -142,6 +147,7 @@ impl Store {
             signer_id: signer_id.to_owned(),
             trust,
             _lock: lock,
+            claims_len: AtomicU64::new(0),
         };
         let has_state = entry_exists(&store.root, "authority.json")?;
         let mut state = if has_state {
@@ -281,12 +287,21 @@ impl Store {
             return Err(FinalUseError::InvalidTrust);
         }
         let mut file = open_private(&self.root, "authority.claims", Access::Write)?;
-        file.seek(SeekFrom::End(0))
+        let length = file
+            .seek(SeekFrom::End(0))
             .map_err(|_| FinalUseError::Unavailable)?;
+        if length != self.claims_len.load(Ordering::Relaxed) {
+            return Err(FinalUseError::Unavailable);
+        }
+        let next_length = length
+            .checked_add(CLAIM_FRAME_BYTES as u64)
+            .ok_or(FinalUseError::Unavailable)?;
         file.write_all(&authority_epoch.to_be_bytes())
             .and_then(|()| file.write_all(&nonce))
             .and_then(|()| file.sync_all())
-            .map_err(|_| FinalUseError::Unavailable)
+            .map_err(|_| FinalUseError::Unavailable)?;
+        self.claims_len.store(next_length, Ordering::Relaxed);
+        Ok(())
     }
 
     fn persist_snapshot(&self, head: &FinalUseRevocations) -> Result<(), FinalUseError> {
@@ -337,6 +352,7 @@ impl Store {
         if claims.len() > MAX_CLAIMS {
             return Err(FinalUseError::InvalidTrust);
         }
+        self.claims_len.store(bytes.len() as u64, Ordering::Relaxed);
         Ok(claims)
     }
 
@@ -360,7 +376,12 @@ impl Store {
         }
         file.sync_all().map_err(|_| FinalUseError::Unavailable)?;
         replace_claims(&self.root)?;
-        self.root.sync_all().map_err(|_| FinalUseError::Unavailable)
+        self.root
+            .sync_all()
+            .map_err(|_| FinalUseError::Unavailable)?;
+        self.claims_len
+            .store((claims.len() * CLAIM_FRAME_BYTES) as u64, Ordering::Relaxed);
+        Ok(())
     }
 }
 

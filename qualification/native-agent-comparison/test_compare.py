@@ -13,37 +13,72 @@ def fixture():
 
     baseline = {
         "schema": "hepta.native-abc.v1",
-        "sources": {k: {"commit": h40(i), "tree": h40(i + 10)} for i, k in enumerate(("hepta", "runtime", "codex"), 1)},
+        "sources": {
+            k: {"commit": h40(i), "tree": h40(i + 10)}
+            for i, k in enumerate(("hepta", "runtime", "codex"), 1)
+        },
         "modes": ["A", "B", "C"],
         "scales": [64, 256, 1024, 4096],
         "target_profile_digest": sha(99),
         "model_profile_digest": sha(98),
         "mode_build_digests": {m: sha(80 + i) for i, m in enumerate(("A", "B", "C"))},
-        "resource_limits": {"max_input_tokens": 500, "max_output_tokens": 200, "timeout_ms": 60000, "max_cpu_ms": 80000,
-                            "max_rss_bytes": 1000000000, "max_gpu_memory_bytes": 1000000000,
-                            "max_active_concurrency": 4096, "max_tool_calls": 30},
-        "tasks": [{"task_id": "read-file", "fixture_digest": sha(5), "answer_oracle_digest": sha(6), "seed": 13}],
+        "resource_limits": {
+            "max_input_tokens": 500,
+            "max_output_tokens": 200,
+            "timeout_ms": 60000,
+            "max_cpu_ms": 80000,
+            "max_rss_bytes": 1000000000,
+            "max_gpu_memory_bytes": 1000000000,
+            "max_active_concurrency": 4096,
+            "max_tool_calls": 30,
+        },
+        "tasks": [
+            {
+                "task_id": "read-file",
+                "fixture_digest": sha(5),
+                "answer_oracle_digest": sha(6),
+                "seed": 13,
+            }
+        ],
     }
     receipts = []
     for scale in baseline["scales"]:
         for mode in baseline["modes"]:
-            receipts.append({
-                "schema": "hepta.native-abc-observation.v1", "mode": mode,
-                "scale": scale, "task_id": "read-file", "seed": 13,
-                "fixture_digest": sha(5), "answer_oracle_digest": sha(6),
-                "target_profile_digest": sha(99),
-                "model_profile_digest": sha(98),
-                "resource_limits": copy.deepcopy(baseline["resource_limits"]),
-                "source_commits": {r: baseline["sources"][r]["commit"] for r in baseline["sources"]},
-                "source_trees": {r: baseline["sources"][r]["tree"] for r in baseline["sources"]},
-                "mode_build_digest": baseline["mode_build_digests"][mode],
-                "observation_digest": sha(500 + len(receipts)),
-                "task_success": True, "tool_correct": True, "recovery_pass": True,
-                "idempotency_replayed": False, "unknown_effects_open": 0,
-                "wall_ms": 150, "cpu_ms": 120, "peak_rss_bytes": 10000000,
-                "peak_gpu_memory_bytes": 0, "active_concurrency": 1,
-                "input_tokens": 100, "output_tokens": 5, "tool_calls": 1,
-            })
+            receipts.append(
+                {
+                    "schema": "hepta.native-abc-observation.v1",
+                    "mode": mode,
+                    "scale": scale,
+                    "task_id": "read-file",
+                    "seed": 13,
+                    "fixture_digest": sha(5),
+                    "answer_oracle_digest": sha(6),
+                    "target_profile_digest": sha(99),
+                    "model_profile_digest": sha(98),
+                    "resource_limits": copy.deepcopy(baseline["resource_limits"]),
+                    "source_commits": {
+                        r: baseline["sources"][r]["commit"] for r in baseline["sources"]
+                    },
+                    "source_trees": {
+                        r: baseline["sources"][r]["tree"] for r in baseline["sources"]
+                    },
+                    "mode_build_digest": baseline["mode_build_digests"][mode],
+                    "observation_digest": sha(500 + len(receipts)),
+                    "task_success": True,
+                    "tool_correct": True,
+                    "recovery_pass": True,
+                    "idempotency_replayed": False,
+                    "unknown_effects_open": 0,
+                    "wall_ms": 150,
+                    "cpu_ms": 120,
+                    "peak_rss_bytes": 10000000,
+                    "peak_gpu_memory_bytes": 0,
+                    "active_concurrency": 1,
+                    "input_tokens": 100,
+                    "output_tokens": 5,
+                    "tool_calls": 1,
+                }
+            )
     return baseline, receipts
 
 
@@ -64,10 +99,12 @@ class ComparatorTests(unittest.TestCase):
                 receipt["wall_ms"] = 60000
                 receipt["peak_rss_bytes"] = 999999999
         result = compare(base, receipts)
-        self.assertEqual(result["mode_summaries"]["C"]["success_rate"], .75)
+        self.assertEqual(result["mode_summaries"]["C"]["success_rate"], 0.75)
         self.assertEqual(result["scale_summaries"]["4096"]["C"]["success_rate"], 0)
         self.assertEqual(result["scale_summaries"]["4096"]["C"]["wall_p99_ms"], 60000)
-        self.assertEqual(result["scale_summaries"]["4096"]["C"]["peak_rss_bytes"], 999999999)
+        self.assertEqual(
+            result["scale_summaries"]["4096"]["C"]["peak_rss_bytes"], 999999999
+        )
         self.assertEqual(result["scale_summaries"]["64"]["C"]["success_rate"], 1)
         self.assertFalse(result["independent_acceptance"])
         self.assertFalse(result["concurrent_throughput_proven"])
@@ -91,7 +128,9 @@ class ComparatorTests(unittest.TestCase):
     def test_contradictory_tool_outcome_cannot_count_as_success(self):
         base, receipts = fixture()
         receipts[0]["tool_correct"] = False
-        with self.assertRaisesRegex(ComparisonError, "task success conflicts with tool correctness"):
+        with self.assertRaisesRegex(
+            ComparisonError, "task success conflicts with tool correctness"
+        ):
             compare(base, receipts)
         base, receipts = fixture()
         receipts[0]["task_success"] = False
@@ -134,9 +173,13 @@ class ComparatorTests(unittest.TestCase):
 
     def test_source_tree_build_and_receipt_identity_are_bound(self):
         for field, value, reason in [
-            ("source_trees", {"hepta": "f"*40, "runtime": "f"*40, "codex": "f"*40}, "source tree drift"),
-            ("mode_build_digest", "e"*64, "built artifact"),
-            ("observation_digest", "0"*64, "receipt digest invalid"),
+            (
+                "source_trees",
+                {"hepta": "f" * 40, "runtime": "f" * 40, "codex": "f" * 40},
+                "source tree drift",
+            ),
+            ("mode_build_digest", "e" * 64, "built artifact"),
+            ("observation_digest", "0" * 64, "receipt digest invalid"),
         ]:
             base, receipts = fixture()
             receipts[0][field] = value
@@ -144,19 +187,25 @@ class ComparatorTests(unittest.TestCase):
                 compare(base, receipts)
         base, receipts = fixture()
         receipts[1]["observation_digest"] = receipts[0]["observation_digest"]
-        with self.assertRaisesRegex(ComparisonError, "duplicate observation receipt digest"):
+        with self.assertRaisesRegex(
+            ComparisonError, "duplicate observation receipt digest"
+        ):
             compare(base, receipts)
 
     def test_missing_mode_binary_pin_fails_closed(self):
         base, receipts = fixture()
         del base["mode_build_digests"]["C"]
-        with self.assertRaisesRegex(ComparisonError, "executable and configuration manifests"):
+        with self.assertRaisesRegex(
+            ComparisonError, "executable and configuration manifests"
+        ):
             compare(base, receipts)
 
     def test_abc_variants_must_not_reuse_one_build_configuration(self):
         base, receipts = fixture()
         base["mode_build_digests"]["C"] = base["mode_build_digests"]["A"]
-        with self.assertRaisesRegex(ComparisonError, "executable and configuration manifests"):
+        with self.assertRaisesRegex(
+            ComparisonError, "executable and configuration manifests"
+        ):
             compare(base, receipts)
 
     def test_cpu_gpu_and_active_concurrency_are_measured_and_bounded(self):
@@ -179,7 +228,9 @@ class ComparatorTests(unittest.TestCase):
                 receipt["cpu_ms"] = 30000
         result = compare(base, receipts)
         self.assertEqual(result["scale_summaries"]["4096"]["C"]["wall_p99_ms"], 40000)
-        self.assertEqual(result["scale_deltas"]["4096"]["C_vs_A"]["wall_p99_delta_ms"], 39850)
+        self.assertEqual(
+            result["scale_deltas"]["4096"]["C_vs_A"]["wall_p99_delta_ms"], 39850
+        )
         self.assertEqual(result["scale_summaries"]["64"]["C"]["wall_p99_ms"], 150)
         self.assertFalse(result["independent_acceptance"])
 

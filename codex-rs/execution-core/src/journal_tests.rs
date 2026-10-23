@@ -135,10 +135,11 @@ fn read_only_chain_requires_verified_start_and_effect_observation() {
 }
 
 #[test]
-fn mutating_action_rejects_missing_final_use_and_stale_generation() {
+fn mutating_action_rejects_final_use_downgrade_and_stale_generation() {
     let class = ExecutionClass::RestrictedFileWrite;
     let (mut journal, mut binding, reservation_digest) = prepared(class);
     let last = journal.events().last().unwrap().digest().unwrap();
+    let original_events = journal.events().to_vec();
     binding.final_use = FinalUse::NotGranted;
     let started = ExecutionStarted {
         binding: successor(binding.clone(), &last),
@@ -148,8 +149,11 @@ fn mutating_action_rejects_missing_final_use_and_stale_generation() {
     };
     assert_eq!(
         journal.append_started(started, &Allow),
-        Err(ExecutionError::AuthorizationDenied)
+        Err(ExecutionError::Binding(
+            "FinalUse witness changed or downgraded"
+        ))
     );
+    assert_eq!(journal.events(), original_events);
     binding.currentness = Currentness::Stale;
     binding.final_use = FinalUse::Verified {
         grant_digest: digest(4),
@@ -167,6 +171,7 @@ fn mutating_action_rejects_missing_final_use_and_stale_generation() {
         ),
         Err(ExecutionError::AuthorizationDenied)
     );
+    assert_eq!(journal.events(), original_events);
 }
 
 #[test]
@@ -296,4 +301,52 @@ fn crash_after_start_reconciles_but_indeterminate_never_authorizes_effect() {
             "cannot attest an effect after no-effect or indeterminate reconciliation"
         ))
     );
+}
+
+#[test]
+fn mutating_action_without_any_final_use_never_reaches_the_verifier() {
+    struct UnexpectedVerifier;
+    impl ExecutionVerifier for UnexpectedVerifier {
+        fn verify_start(
+            &self,
+            _reservation: &ExecutionReservation,
+            _started: &ExecutionStarted,
+            _class: ExecutionClass,
+        ) -> Result<(), ExecutionError> {
+            panic!("a missing FinalUse must be rejected before host verification");
+        }
+    }
+
+    let class = ExecutionClass::RestrictedFileWrite;
+    let mut binding = binding(class);
+    binding.final_use = FinalUse::NotGranted;
+    let mut journal = ExecutionJournal::new();
+    let intent_digest = journal
+        .append(ExecutionRecord::ExecutionIntent(ExecutionIntent {
+            binding: binding.clone(),
+            class,
+            payload_digest: digest(6),
+        }))
+        .unwrap();
+    let reservation_digest = journal
+        .append(ExecutionRecord::ExecutionReservation(
+            ExecutionReservation {
+                binding: successor(binding.clone(), &intent_digest),
+                lease_digest: digest(7),
+                expires_at_unix_ms: 200,
+            },
+        ))
+        .unwrap();
+    let original_events = journal.events().to_vec();
+    let started = ExecutionStarted {
+        binding: successor(binding, &reservation_digest),
+        reservation_digest,
+        approval_receipt_digest: None,
+        started_at_unix_ms: 100,
+    };
+    assert_eq!(
+        journal.append_started(started, &UnexpectedVerifier),
+        Err(ExecutionError::AuthorizationDenied)
+    );
+    assert_eq!(journal.events(), original_events);
 }

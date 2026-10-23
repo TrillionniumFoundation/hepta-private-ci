@@ -1,4 +1,5 @@
 """Synthetic composition regressions, never physical or independent evidence."""
+
 import copy
 import unittest
 
@@ -21,23 +22,40 @@ class IntegratedGateTests(unittest.TestCase):
         rows += extra
         for row in rows:
             if row["scale"] == 4096:
-                row["task_success"] = (row["task_id"] == "second-task") == (row["mode"] == "C")
+                row["task_success"] = (row["task_id"] == "second-task") == (
+                    row["mode"] == "C"
+                )
                 if row["mode"] == "C":
                     row["cpu_ms"] += 25
                     row["peak_gpu_memory_bytes"] = 1024
                     row["active_concurrency"] = 2
         result = compare(base, rows)
-        self.assertEqual(result["scale_deltas"]["4096"]["C_vs_A"]["success_rate_delta"], 0)
+        self.assertEqual(
+            result["scale_deltas"]["4096"]["C_vs_A"]["success_rate_delta"], 0
+        )
         paired = result["paired_effects_by_scale"]["4096"]["C_vs_A"]
-        self.assertEqual(paired["quality"]["task_success"], {
-            "native_only_passes": 1, "reference_only_passes": 1,
-            "paired_delta_percentage_points": 0.0,
-        })
+        self.assertEqual(
+            paired["quality"]["task_success"],
+            {
+                "native_only_passes": 1,
+                "reference_only_passes": 1,
+                "paired_delta_percentage_points": 0.0,
+            },
+        )
         self.assertTrue(paired["any_paired_quality_regression"])
         self.assertEqual(paired["mean_resource_delta_C_minus_reference"]["cpu_ms"], 25)
-        self.assertEqual(paired["mean_resource_delta_C_minus_reference"]["peak_gpu_memory_bytes"], 1024)
-        self.assertEqual(paired["mean_resource_delta_C_minus_reference"]["active_concurrency"], 1)
-        self.assertFalse(result["paired_effects_by_scale"]["64"]["C_vs_A"]["any_paired_quality_regression"])
+        self.assertEqual(
+            paired["mean_resource_delta_C_minus_reference"]["peak_gpu_memory_bytes"],
+            1024,
+        )
+        self.assertEqual(
+            paired["mean_resource_delta_C_minus_reference"]["active_concurrency"], 1
+        )
+        self.assertFalse(
+            result["paired_effects_by_scale"]["64"]["C_vs_A"][
+                "any_paired_quality_regression"
+            ]
+        )
         self.assertFalse(result["independent_acceptance"])
         self.assertFalse(paired["statistical_significance_proven"])
 
