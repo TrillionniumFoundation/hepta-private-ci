@@ -166,7 +166,9 @@ class JointController:
 
 def offline_audit(initial: JointState, controller: JointController,
                   policy: Callable[[JointState], JointAction] | None = None,
-                  max_outcomes: int = 8192) -> dict:
+                  max_outcomes: int = 8192,
+                  observed_witness_accuracy: Fraction = WITNESS_ACCURACY
+                  ) -> dict:
     """Enumerate hidden-truth/witness/shock histories outside the controller.
 
     The independent scorer materializes actual toy outputs for each leaf.
@@ -174,8 +176,10 @@ def offline_audit(initial: JointState, controller: JointController,
     This does not identify natural-world model error or real resource units.
     """
     if (type(max_outcomes) is not int or not 1 <= max_outcomes <= 8192
-        or initial.generation.remaining < controller.cfg.emission_reserve):
-        raise ValueError("unadmitted audit budget")
+        or initial.generation.remaining < controller.cfg.emission_reserve
+        or type(observed_witness_accuracy) is not Fraction
+        or not Fraction(0) <= observed_witness_accuracy <= Fraction(1)):
+        raise ValueError("unadmitted audit budget or witness shift")
     cfg = controller.cfg
     decide = policy if policy is not None else lambda s: controller.solve(s)[0]
     rows: list[tuple[float, int, int, tuple[str, ...]]] = []
@@ -201,8 +205,10 @@ def offline_audit(initial: JointState, controller: JointController,
                     cfg.emission_reserve + controller.query_units):
                 raise ValueError("policy queried illegally")
             for w in (0, 1):
-                prob = (WITNESS_ACCURACY if w == truth
-                        else 1-WITNESS_ACCURACY)
+                # External stress channel changes the actual observation law,
+                # NOT the frozen controller's nominal posterior update.
+                prob = (observed_witness_accuracy if w == truth
+                        else 1-observed_witness_accuracy)
                 walk(query_next(state, w, controller.query_units, cfg),
                      truth, mass * float(prob), trace + ("QUERY",))
         else:
@@ -230,6 +236,10 @@ def offline_audit(initial: JointState, controller: JointController,
     observed_cost = math.fsum(p*paid for p, _, paid, _ in rows)
     return {
         "scope": "FINITE_SYNTHETIC_DENY_ALL",
+        "nominal_witness_accuracy": str(WITNESS_ACCURACY),
+        "observed_witness_accuracy": str(observed_witness_accuracy),
+        "off_nominal_witness_law": (
+            observed_witness_accuracy != WITNESS_ACCURACY),
         "full_path_utility": full_value,
         "mean_external_loss": math.fsum(p*loss for p, loss, _, _ in rows),
         "mean_modeled_units": observed_cost,
