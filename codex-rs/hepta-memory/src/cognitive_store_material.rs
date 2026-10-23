@@ -126,6 +126,18 @@ impl CognitiveStore {
         ))
     }
 
+    /// Revalidation of retained Root material is unavailable on non-Unix.
+    #[cfg(not(unix))]
+    pub async fn verify_retained_root_material(
+        layout: &HeptaAgentLayout,
+        expected: &CognitiveRecoveryAnchor,
+    ) -> Result<VerifiedCognitiveMaterial, CognitiveRecoveryError> {
+        let _ = (layout, expected);
+        Err(CognitiveRecoveryError::Unavailable(
+            "Root material admission requires Unix".into(),
+        ))
+    }
+
     /// Validate and consolidate an already isolated Root-private candidate.
     ///
     /// The launcher derives this layout from its fixed material registration.
@@ -169,6 +181,29 @@ impl CognitiveStore {
             &CognitiveCommitGate::default(),
         )
         .await?;
+        Self::verify_retained_root_material(layout, expected).await
+    }
+
+    /// Recheck an already consolidated private image using the original
+    /// retained-descriptor read-only verifier. No checkpoint, journal-mode
+    /// change, sidecar cleanup, writer, Current or recovery activation occurs.
+    /// The caller independently proves the cut is the retained Current before
+    /// using it for recovery; this method establishes exact image integrity.
+    #[cfg(unix)]
+    pub async fn verify_retained_root_material(
+        layout: &HeptaAgentLayout,
+        expected: &CognitiveRecoveryAnchor,
+    ) -> Result<VerifiedCognitiveMaterial, CognitiveRecoveryError> {
+        use std::os::unix::fs::OpenOptionsExt;
+        validate_requirement(layout, CognitiveRecoveryRequirement::ExactCurrentCut(expected))?;
+        let root = layout.cognitive_root();
+        let _protected = codex_hepta_contracts::RootAuthorityDirectory::open(root)
+            .map_err(|error| CognitiveRecoveryError::AccessDenied(error.to_string()))?;
+        let config = SqliteConfig::from_sqlite_home(
+            AbsolutePathBuf::try_from(root.to_path_buf())
+                .map_err(|error| CognitiveRecoveryError::Invalid(error.to_string()))?,
+        );
+        let path = root.join(super::super::COGNITIVE_DB_FILENAME);
         let guard = config
             .bind_existing_recovery_database(&path)
             .map_err(recovery_error)?;
@@ -202,6 +237,14 @@ impl CognitiveStore {
         guard
             .verify_inspection_unchanged()
             .map_err(recovery_error)?;
+        // Read-only revalidation also completes durability for a prior
+        // uncertain copy. It does not rewrite or reconsolidate Current bytes.
+        std::fs::OpenOptions::new().read(true).custom_flags(libc::O_NOFOLLOW | libc::O_CLOEXEC)
+            .open(&path).and_then(|file| file.sync_all())
+            .map_err(|error| CognitiveRecoveryError::Unavailable(error.to_string()))?;
+        sync_cognitive_directory(root)
+            .map_err(|error| CognitiveRecoveryError::Unavailable(error.to_string()))?;
+        guard.verify_inspection_unchanged().map_err(recovery_error)?;
         Ok(VerifiedCognitiveMaterial {
             path,
             anchor: expected.clone(),

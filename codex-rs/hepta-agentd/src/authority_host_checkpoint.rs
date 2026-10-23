@@ -50,6 +50,16 @@ pub use publisher::RetiredCheckpointPublisher;
 #[path = "authority_host_checkpoint_adoption.rs"]
 mod adoption;
 
+#[path = "authority_host_checkpoint_material.rs"]
+mod material;
+pub(crate) use material::MaterialIntent;
+
+#[derive(Clone, Copy)]
+enum PublicationMaterial<'a> {
+    MetadataProtocol,
+    Required(Option<&'a crate::authority_host_material::PreparedCheckpointMaterial>),
+}
+
 /// Actual trusted launcher registration. The peer cannot replace these fields.
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct HostCognitiveCheckpointRegistration {
@@ -138,6 +148,18 @@ impl HostCognitiveCheckpoint {
     /// outcome closes this publisher object permanently. The transport performs
     /// its original owner/deadline checks before sending a response prefix.
     pub fn exchange(&self, bytes: &[u8]) -> Result<Vec<u8>, AuthorityTrustError> {
+        self.exchange_inner(bytes, PublicationMaterial::MetadataProtocol)
+    }
+
+    pub(crate) fn exchange_with_material(
+        &self,
+        bytes: &[u8],
+        material: Option<&crate::authority_host_material::PreparedCheckpointMaterial>,
+    ) -> Result<Vec<u8>, AuthorityTrustError> {
+        self.exchange_inner(bytes, PublicationMaterial::Required(material))
+    }
+
+    fn exchange_inner(&self, bytes: &[u8], material: PublicationMaterial<'_>) -> Result<Vec<u8>, AuthorityTrustError> {
         if bytes.is_empty() || bytes.len() > COGNITIVE_CHECKPOINT_FRAME_LIMIT {
             return Err(AuthorityTrustError::Invalid);
         }
@@ -147,7 +169,7 @@ impl HostCognitiveCheckpoint {
             .exchange_lock
             .lock()
             .map_err(|_| AuthorityTrustError::Unavailable)?;
-        let response = self.handle(&request, bytes);
+        let response = self.handle(&request, bytes, material);
         let encoded = serde_json::to_vec(&response).map_err(|_| self.close())?;
         if encoded.len() > COGNITIVE_CHECKPOINT_FRAME_LIMIT {
             return Err(self.close());
@@ -159,6 +181,7 @@ impl HostCognitiveCheckpoint {
         &self,
         request: &CognitiveCheckpointRequest,
         raw: &[u8],
+        material: PublicationMaterial<'_>,
     ) -> CognitiveCheckpointResponse {
         let refused = |reason| response(request, CognitiveCheckpointStatus::Refused, Some(reason));
         let unknown = || {
@@ -217,6 +240,10 @@ impl HostCognitiveCheckpoint {
             {
                 return refused(CognitiveCheckpointReason::Invalid);
             }
+            if !self.material_authorizes(request, raw, &current, material) {
+                self.close();
+                return unknown();
+            }
             return self.ack_after_io(request, current);
         }
         if sequence <= current.last_mutation_sequence {
@@ -243,6 +270,10 @@ impl HostCognitiveCheckpoint {
             Ok(next) => next,
             Err(reason) => return refused(reason),
         };
+        if !self.material_authorizes(request, raw, &next, material) {
+            self.close();
+            return unknown();
+        }
         match self.store.compare_and_set(STORE_OWNER, &current, &next) {
             Ok(()) => {}
             Err(AuthorityTrustError::Conflict) => {
@@ -303,7 +334,7 @@ impl HostCognitiveCheckpoint {
             < self.registration.writer_binding.expires_at_unix_seconds * 1000)
     }
 
-    fn close(&self) -> AuthorityTrustError {
+    pub(crate) fn close(&self) -> AuthorityTrustError {
         self.closed.store(true, Ordering::Release);
         AuthorityTrustError::Unavailable
     }

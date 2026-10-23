@@ -110,6 +110,27 @@ impl HostAuthorityService {
         Ok(self)
     }
 
+    /// Trusted Root launch only, after the sole recovered owner is quiescent
+    /// and before checkpoint binding/Session release. The source generation is
+    /// derived from this service's original fixed layout, never a wire path.
+    /// Initial exact Current material must be durable before assembly returns.
+    /// There is no runtime generation setter, replacement or recovery fallback.
+    pub fn with_registered_material_archive(mut self, archive_root: &std::path::Path) -> io::Result<Self> {
+        let checkpoint = self.checkpoint.as_mut().ok_or_else(|| io::Error::other("registered checkpoint required"))?;
+        if checkpoint.material.is_some() {
+            return Err(io::Error::other("material source already registered"));
+        }
+        let writer = self.writer.as_ref().ok_or_else(|| io::Error::other("registered writer required"))?;
+        let expected = checkpoint.backend.retained_current_for_root().map_err(io::Error::other)?;
+        let archive = crate::authority_host_material::RegisteredMaterialArchive::register(
+            &self.identity.layout, checkpoint.peer.uid, archive_root,
+        )?;
+        let material = archive.prepare(b"root:initial-current-material:v1", &expected.last_current)?;
+        writer.accept_material_registration(&self.issuer, &self.clock, checkpoint, &expected, &material)?;
+        checkpoint.material = Some(archive);
+        Ok(self)
+    }
+
     /// Open both existing original consumer stores with fixed root namespaces.
     /// The trusted launcher supplies these fields; no wire initializes an owner.
     pub fn with_registered_consumers(
@@ -175,11 +196,10 @@ impl HostAuthorityService {
                 .exchange_checkpoint(
                     &self.issuer,
                     &self.clock,
-                    &self
+                    self
                         .checkpoint
                         .as_ref()
-                        .ok_or(HostIssuerTransportError::Unavailable)?
-                        .backend,
+                        .ok_or(HostIssuerTransportError::Unavailable)?,
                     bytes,
                 ),
             HostAuthorityLane::DeviceConsumerFrontier

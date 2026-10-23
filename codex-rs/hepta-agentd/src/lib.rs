@@ -12,6 +12,8 @@ pub use authority_host_consumer_frontier::HostConsumerFrontier;
 #[cfg(target_os = "linux")]
 mod authority_host_checkpoint;
 #[cfg(target_os = "linux")]
+mod authority_host_material;
+#[cfg(target_os = "linux")]
 pub use authority_host_checkpoint::HostCognitiveCheckpoint;
 #[cfg(target_os = "linux")]
 pub use authority_host_checkpoint::HostCognitiveCheckpointRegistration;

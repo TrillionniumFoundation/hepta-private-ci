@@ -1,4 +1,7 @@
 //! Explicit root/data backend qualification, not a production writer fixture.
+#[path = "authority_host_checkpoint_material_tests.rs"]
+mod material_tests;
+
 use super::*;
 use codex_hepta_memory::CognitiveStore;
 use codex_hepta_memory::ObjectiveSenderWriterFence;
