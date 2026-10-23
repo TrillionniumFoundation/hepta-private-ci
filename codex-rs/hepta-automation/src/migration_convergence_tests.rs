@@ -8,8 +8,8 @@ async fn historical_pool(displaced: bool) -> (SqlitePool, tempfile::TempDir) {
     // Keep the private fixture root alive until the owner pool is closed.
     // The shared shim enforces the same SQLite durability settings as the real owner.
     let directory = tempfile::tempdir().expect("historical SQLite fixture");
-    let sqlite_home = AbsolutePathBuf::try_from(directory.path().to_path_buf())
-        .expect("absolute fixture root");
+    let sqlite_home =
+        AbsolutePathBuf::try_from(directory.path().to_path_buf()).expect("absolute fixture root");
     let pool = SqliteConfig::new_for_testing(sqlite_home)
         .open_durable_evidence_pool(&directory.path().join("historical.sqlite3"))
         .await
