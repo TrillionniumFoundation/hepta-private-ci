@@ -396,3 +396,43 @@ async fn root_two_independent_handles_cannot_both_win_the_same_original_cas() {
     assert_eq!(head.counter, 1);
     assert_eq!(head.phase, CognitiveCheckpointPhase::Dirty);
 }
+
+#[tokio::test]
+#[ignore = "explicit root-owned data-bind qualification"]
+async fn root_trusted_successor_keeps_global_counter_separate_from_publisher_sequence() {
+    let f = Fixture::new().await;
+    let previous = f.backend.load().unwrap();
+    // This is an explicit root-admin state fixture, not a runtime rotation API
+    // or proof that the old actual process has quiesced. Runtime has no reset.
+    let mut registration = f.registration.clone();
+    registration.publisher_epoch += 1;
+    registration.writer_binding.owner_epoch += 1;
+    let mut successor = previous.clone();
+    successor.publisher_epoch = registration.publisher_epoch;
+    successor.writer_binding = registration.writer_binding.clone();
+    successor.counter = previous.counter + 1;
+    successor.last_mutation_sequence = 0;
+    successor.last_request = None;
+    f.backend
+        .store
+        .compare_and_set(STORE_OWNER, &previous, &successor)
+        .unwrap();
+    let next = HostCognitiveCheckpoint::open(
+        RootAuthorityDirectory::open(&f.path).unwrap(),
+        registration.clone(),
+        f.clock.clone(),
+    )
+    .unwrap();
+    let request = CognitiveCheckpointRequest {
+        schema_version: 1,
+        operation: OPERATION.into(),
+        request_id: format!("{:016x}{:016x}", registration.publisher_epoch, 1),
+        command: CognitiveCheckpointCommand::BeginWrites,
+        expected: Some(token_for(&successor).unwrap()),
+        proposal: None,
+    };
+    let changed = exchange(&next, &request);
+    ack(&changed, CognitiveCheckpointPhase::Dirty, 2);
+    assert_eq!(changed.head.as_ref().unwrap().last_mutation_sequence, 1);
+    assert!(f.backend.load().is_err());
+}

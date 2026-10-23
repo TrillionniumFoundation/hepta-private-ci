@@ -113,13 +113,12 @@ pub(super) fn validate_head(
         || head.publisher_epoch != registration.publisher_epoch
         || head.writer_binding != registration.writer_binding
         || head.peer_lifetime != registration.peer_lifetime
-        || head.counter > head.last_mutation_sequence
     {
         return Err(AuthorityTrustError::Invalid);
     }
     validate_cut(registration, &head.last_current)?;
     match (&head.last_request, head.counter) {
-        (None, 0)
+        (None, _)
             if head.last_mutation_sequence == 0
                 && head.phase == CognitiveCheckpointPhase::Current => {}
         (Some(last), counter)

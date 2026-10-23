@@ -72,9 +72,7 @@ impl HostCognitiveCheckpoint {
     ) -> Result<Self, AuthorityTrustError> {
         validate_registration(&registration)?;
         validate_cut(&registration, &initial_cut)?;
-        if clock.now_unix_ms()?
-            >= registration.writer_binding.expires_at_unix_seconds * 1000
-        {
+        if clock.now_unix_ms()? >= registration.writer_binding.expires_at_unix_seconds * 1000 {
             return Err(AuthorityTrustError::Invalid);
         }
         let head = CognitiveCheckpointHead {
