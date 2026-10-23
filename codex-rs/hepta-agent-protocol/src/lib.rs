@@ -1085,7 +1085,7 @@ mod tests {
                 read_digest: snapshot.read_digest.clone(),
                 omitted_records: snapshot.omitted_records,
                 items: snapshot.items.clone(),
-                plan: snapshot.plan.clone(),
+                plan: snapshot.plan,
             },
         };
         let bytes = serde_json::to_vec(&request).expect("serialize revalidation request");
@@ -1334,7 +1334,7 @@ mod tests {
         let cancel = AgentdRequest::run_cancel(
             14,
             3,
-            snapshot.run_id.clone(),
+            snapshot.run_id,
             2,
             "operator_request".to_string(),
         );
