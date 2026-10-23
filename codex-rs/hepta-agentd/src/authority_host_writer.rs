@@ -18,6 +18,10 @@ pub(super) struct RegisteredWriter {
 }
 
 impl RegisteredWriter {
+    pub(super) fn matches_notes(&self, notes: &crate::RootNotesGrantAdmission) -> bool {
+        notes.matches_writer(&self.registration, &self.proof)
+    }
+
     pub(super) fn open(
         issuer: &DeploymentFinalUseIssuer,
         identity: &AgentdIdentity,

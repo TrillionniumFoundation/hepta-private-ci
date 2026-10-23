@@ -42,6 +42,7 @@ pub struct HostAuthorityService {
     clock: Arc<HostAuthorityClock>,
     identity: AgentdIdentity,
     writer: Option<RegisteredWriter>,
+    notes: Option<crate::RootNotesGrantAdmission>,
 }
 
 impl HostAuthorityService {
@@ -58,6 +59,7 @@ impl HostAuthorityService {
             clock,
             identity,
             writer: None,
+            notes: None,
         })
     }
 
@@ -74,6 +76,21 @@ impl HostAuthorityService {
             registration,
             leases,
         )?);
+        Ok(self)
+    }
+
+    /// Install one Root-created fixed Notes delegation for this same retained
+    /// writer. The peer wire cannot create policy or select a lease identity.
+    pub fn with_registered_notes(
+        mut self,
+        notes: crate::RootNotesGrantAdmission,
+    ) -> io::Result<Self> {
+        let writer = self.writer.as_ref()
+            .ok_or_else(|| io::Error::other("registered writer required for Notes"))?;
+        if !writer.matches_notes(&notes) {
+            return Err(io::Error::other("Notes delegation writer mismatch"));
+        }
+        self.notes = Some(notes);
         Ok(self)
     }
 
@@ -167,7 +184,11 @@ impl HostAuthorityService {
                 if schema_version != 1 || bytes.len() > 16 * 1024 {
                     return Err(HostIssuerTransportError::InvalidRequest);
                 }
-                let grant = match self.issuer.issue(&binding) {
+                let result = match &self.notes {
+                    Some(notes) => notes.issue(&self.issuer, &binding),
+                    None => self.issuer.issue(&binding),
+                };
+                let grant = match result {
                     Ok(grant) => grant,
                     Err(error) if error.kind() == io::ErrorKind::PermissionDenied => None,
                     Err(error) => return Err(unavailable(error)),
