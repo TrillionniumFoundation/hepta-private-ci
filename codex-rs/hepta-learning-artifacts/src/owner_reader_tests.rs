@@ -7,6 +7,44 @@ use std::fs;
 use std::time::Instant;
 
 #[test]
+fn reader_requires_canonical_root_and_rejects_ancestor_aliases() {
+    let (directory, config, service, _) = published();
+    let anchor = service
+        .host
+        .discover_current_head(/*now*/ 20)
+        .fixture("current")
+        .fixture("anchor")
+        .signed;
+    let reader =
+        ArtifactOwnerCurrentReaderV1::open(&directory.0, config.trust.clone(), anchor.clone())
+            .fixture("canonical reader");
+    pretty_assertions::assert_eq!(
+        reader
+            .current_registry_view(/*now*/ 20)
+            .fixture("read")
+            .receipt(),
+        service
+            .current_registry_view(/*now*/ 20)
+            .fixture("owner read")
+            .receipt()
+    );
+
+    let aliases = super::tests::TestDir::new();
+    let root_alias = aliases.0.join("root-alias");
+    std::os::unix::fs::symlink(&directory.0, &root_alias).fixture("root alias");
+    let parent_alias = aliases.0.join("parent-alias");
+    std::os::unix::fs::symlink(directory.0.parent().fixture("owner parent"), &parent_alias)
+        .fixture("parent alias");
+    let through_parent = parent_alias.join(directory.0.file_name().fixture("owner name"));
+    for root in [root_alias, through_parent] {
+        assert!(matches!(
+            ArtifactOwnerCurrentReaderV1::open(root, config.trust.clone(), anchor.clone()),
+            Err(ArtifactOwnerHostError::CurrentObservationFence)
+        ));
+    }
+}
+
+#[test]
 fn reader_requires_existing_observation_inode_and_never_recreates_it() {
     let (directory, config, service, _) = published();
     let anchor = service
