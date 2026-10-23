@@ -17,6 +17,7 @@ use std::time::Instant;
 
 use codex_hepta_contracts::FinalUseBinding;
 use codex_hepta_contracts::FinalUseRevocations;
+use codex_hepta_contracts::HostAuthorityPeerChannel;
 use codex_hepta_contracts::SignedFinalUseGrant;
 use serde::Deserialize;
 use serde::Serialize;
@@ -26,6 +27,14 @@ const OPERATION: &str = "runtime.agentd.production_operation";
 const MAX_REQUEST_BYTES: usize = 16 * 1024;
 const MAX_RESPONSE_BYTES: usize = 64 * 1024;
 const MAX_TIMEOUT: Duration = Duration::from_secs(30);
+
+#[path = "root_issuer_client.rs"]
+mod root_client;
+
+struct ProtectedRootIssuer {
+    channel: HostAuthorityPeerChannel,
+    end: Instant,
+}
 
 /// Independently pinned identity of the connected issuer, not request data.
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
@@ -68,6 +77,7 @@ impl std::error::Error for AgentdFinalUseIssuerError {}
 pub struct AgentdUnixFinalUseGrantProvider {
     stream: Mutex<Option<UnixStream>>,
     timeout: Duration,
+    protected_root: Option<ProtectedRootIssuer>,
 }
 
 impl AgentdUnixFinalUseGrantProvider {
@@ -85,6 +95,7 @@ impl AgentdUnixFinalUseGrantProvider {
         Ok(Self {
             stream: Mutex::new(Some(stream)),
             timeout,
+            protected_root: None,
         })
     }
 
@@ -105,6 +116,14 @@ impl AgentdUnixFinalUseGrantProvider {
         if request.is_empty() || request.len() > MAX_REQUEST_BYTES {
             return Err(AgentdFinalUseIssuerError::InvalidGrant);
         }
+        self.exchange_guarded(|stream, deadline| exchange(stream, &request, binding, deadline))?
+            .ok_or(AgentdFinalUseIssuerError::Denied)
+    }
+
+    fn exchange_guarded<T>(
+        &self,
+        exchange: impl FnOnce(&mut UnixStream, Instant) -> Result<T, AgentdFinalUseIssuerError>,
+    ) -> Result<T, AgentdFinalUseIssuerError> {
         let mut slot = self.stream.try_lock().map_err(|error| match error {
             std::sync::TryLockError::WouldBlock => AgentdFinalUseIssuerError::Busy,
             std::sync::TryLockError::Poisoned(_) => AgentdFinalUseIssuerError::ChannelClosed,
@@ -112,18 +131,38 @@ impl AgentdUnixFinalUseGrantProvider {
         let mut stream = slot
             .take()
             .ok_or(AgentdFinalUseIssuerError::ChannelClosed)?;
-        let deadline = Instant::now() + self.timeout;
-        let result = exchange(&mut stream, &request, binding, deadline);
+        let deadline = (Instant::now() + self.timeout).min(
+            self.protected_root
+                .as_ref()
+                .map_or_else(|| Instant::now() + self.timeout, |root| root.end),
+        );
+        let result = (|| {
+            self.check_root()?;
+            remaining(deadline)?;
+            let response = exchange(&mut stream, deadline)?;
+            self.check_root()?;
+            remaining(deadline)?;
+            Ok(response)
+        })();
         match result {
             Ok(response) => {
                 *slot = Some(stream);
-                response.ok_or(AgentdFinalUseIssuerError::Denied)
+                Ok(response)
             }
             Err(error) => {
                 let _ = stream.shutdown(Shutdown::Both);
                 Err(error)
             }
         }
+    }
+
+    fn check_root(&self) -> Result<(), AgentdFinalUseIssuerError> {
+        if let Some(root) = &self.protected_root {
+            root.channel
+                .check_peer_lifetime()
+                .map_err(|_| AgentdFinalUseIssuerError::PeerDenied)?;
+        }
+        Ok(())
     }
 }
 
@@ -152,16 +191,7 @@ fn exchange(
     binding: &FinalUseBinding,
     deadline: Instant,
 ) -> Result<Option<SignedFinalUseGrant>, AgentdFinalUseIssuerError> {
-    write_until(stream, &(request.len() as u32).to_be_bytes(), deadline)?;
-    write_until(stream, request, deadline)?;
-    let mut length = [0; 4];
-    read_until(stream, &mut length, deadline)?;
-    let length = u32::from_be_bytes(length) as usize;
-    if length == 0 || length > MAX_RESPONSE_BYTES {
-        return Err(AgentdFinalUseIssuerError::MalformedResponse);
-    }
-    let mut bytes = vec![0; length];
-    read_until(stream, &mut bytes, deadline)?;
+    let bytes = exchange_frame(stream, request, deadline)?;
     let response: IssuerResponse =
         serde_json::from_slice(&bytes).map_err(|_| AgentdFinalUseIssuerError::MalformedResponse)?;
     remaining(deadline)?;
@@ -181,6 +211,25 @@ fn exchange(
         (None, Some(reason)) if !reason.is_empty() && reason.len() <= 1024 => Ok(None),
         _ => Err(AgentdFinalUseIssuerError::MalformedResponse),
     }
+}
+
+fn exchange_frame(
+    stream: &mut UnixStream,
+    request: &[u8],
+    deadline: Instant,
+) -> Result<Vec<u8>, AgentdFinalUseIssuerError> {
+    write_until(stream, &(request.len() as u32).to_be_bytes(), deadline)?;
+    write_until(stream, request, deadline)?;
+    let mut length = [0; 4];
+    read_until(stream, &mut length, deadline)?;
+    let length = u32::from_be_bytes(length) as usize;
+    if length == 0 || length > MAX_RESPONSE_BYTES {
+        return Err(AgentdFinalUseIssuerError::MalformedResponse);
+    }
+    let mut bytes = vec![0; length];
+    read_until(stream, &mut bytes, deadline)?;
+    remaining(deadline)?;
+    Ok(bytes)
 }
 
 fn remaining(deadline: Instant) -> Result<Duration, AgentdFinalUseIssuerError> {

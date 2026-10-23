@@ -271,3 +271,35 @@ initialization path, before writer registration: the fixed one-second protected
 clock horizon was exceeded by actual filesystem synchronization. Those failures
 remain evidence, not successful writer or current-cut receipts. No horizon,
 request deadline, feed freshness or production readiness claim was relaxed.
+
+## Original consumer frontier client
+
+`RootFinalUseFrontierClient` implements the original
+`AuthorityFrontierStore<FinalUseFrontier>` on an exclusive, already-connected
+purpose-limited root-service stream, one fixed stream for each original consumer. Trusted launcher inputs fix the local `owner_id`,
+root PID/boot/start identity, pre-held root pidfd, timeout and lifetime. The public
+constructor requires UID 0. It cannot connect, reopen a numeric PID, select a
+remote owner/type, initialize/reset state or administer epochs. The original
+consumer remains responsible for computing its complete canonical state hash;
+this narrow root store does not infer state monotonicity from an opaque digest.
+
+The shared `HostConsumerFrontier*V1` values live in contracts and remain
+re-exported by Agentd. Each u32BE-framed request/response is at most 16 KiB.
+Request IDs are nonzero, increasing and echoed exactly. CAS sends the complete
+original expected/next frontier and accepts ACK only with exactly `next`. A
+complete conflict can be returned without retry; all uncertain outcomes,
+including lost ACK after remote commit, permanently discard the stream and
+return `Unavailable`. The original authority must remain fenced in that case.
+There is no reconnect or new-ID replay inside this client.
+
+Device and Notes are separate original consumers. Each requires its own client
+instance, fixed root endpoint, owner and protected backend; they must not share
+a frontier. The owner is never transmitted as a request selector.
+
+Calls perform synchronous bounded storage I/O at the original authority's
+persistence boundary. They must not be installed as clock or live-verifier
+callbacks. Concurrent misuse fails immediately rather than interleaving frames.
+Tests use private same-UID socketpairs for protocol faults and verify public
+root-identity rejection; these do not establish deployment qualification for a
+root service or a consumer running under a separate UID. That qualification
+requires the real launcher, registered original consumer and protected backend.

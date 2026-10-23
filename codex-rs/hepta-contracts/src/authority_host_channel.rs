@@ -15,13 +15,13 @@ use std::time::Instant;
 
 const MAX_SESSION_LIFETIME: Duration = Duration::from_secs(300);
 
-pub(super) struct OwnerChannel {
+pub(crate) struct OwnerChannel {
     owner: OwnedFd,
     end: Instant,
 }
 
 impl OwnerChannel {
-    pub(super) fn new(
+    pub(crate) fn new(
         owner: OwnedFd,
         pid: u32,
         lifetime: Duration,
@@ -56,15 +56,15 @@ impl OwnerChannel {
         Ok(channel)
     }
 
-    pub(super) fn end(&self) -> Instant {
+    pub(crate) fn end(&self) -> Instant {
         self.end
     }
 
-    pub(super) fn deadline(&self, timeout: Duration) -> Instant {
+    pub(crate) fn deadline(&self, timeout: Duration) -> Instant {
         (Instant::now() + timeout).min(self.end)
     }
 
-    pub(super) fn check(&self, deadline: Instant) -> Result<(), HostIssuerTransportError> {
+    pub(crate) fn check(&self, deadline: Instant) -> Result<(), HostIssuerTransportError> {
         remaining(deadline.min(self.end))?;
         let mut descriptors = [PollFd::new(&self.owner, PollFlags::IN)];
         loop {
@@ -116,7 +116,7 @@ impl OwnerChannel {
         }
     }
 
-    pub(super) fn read(
+    pub(crate) fn read(
         &self,
         stream: &mut UnixStream,
         bytes: &mut [u8],
@@ -136,7 +136,7 @@ impl OwnerChannel {
         }
     }
 
-    pub(super) fn read_until(
+    pub(crate) fn read_until(
         &self,
         stream: &mut UnixStream,
         mut bytes: &mut [u8],
@@ -151,7 +151,7 @@ impl OwnerChannel {
         Ok(())
     }
 
-    pub(super) fn write_until(
+    pub(crate) fn write_until(
         &self,
         stream: &mut UnixStream,
         mut bytes: &[u8],

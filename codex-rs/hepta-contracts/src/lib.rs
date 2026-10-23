@@ -11,6 +11,7 @@ pub mod authbus_b5;
 #[cfg(test)]
 #[path = "authbus_tests.rs"]
 mod authbus_tests;
+mod authority_consumer_wire;
 #[cfg(target_os = "linux")]
 mod authority_host_clock;
 #[cfg(target_os = "linux")]
@@ -18,6 +19,8 @@ mod authority_host_issuer_transport;
 #[cfg(unix)]
 mod authority_host_store;
 pub mod authority_lease;
+#[cfg(target_os = "linux")]
+mod authority_root_frontier;
 pub mod authority_trust;
 #[cfg(test)]
 mod callers_manifest_tests;
@@ -33,6 +36,9 @@ mod receipt;
 mod stable_id;
 mod verified_use_witness;
 
+pub use authority_consumer_wire::HostConsumerFrontierRequestV1;
+pub use authority_consumer_wire::HostConsumerFrontierResponseV1;
+pub use authority_consumer_wire::HostConsumerFrontierStatusV1;
 #[cfg(target_os = "linux")]
 pub use authority_host_clock::HostAuthorityClock;
 #[cfg(target_os = "linux")]
@@ -61,6 +67,10 @@ pub use authority_host_store::HostIssuerError;
 pub use authority_host_store::RootAuthorityDirectory;
 pub use authority_lease::deliver_authority_lease_with_witness;
 pub use authority_lease::dispatch_authority_lease_with_witness;
+#[cfg(target_os = "linux")]
+pub use authority_root_frontier::RootFinalUseFrontierClient;
+#[cfg(target_os = "linux")]
+pub use authority_root_frontier::RootPeerIdentity;
 pub use authority_trust::AuthorityClock;
 pub use authority_trust::AuthorityFrontierStore;
 pub use authority_trust::AuthorityTrustError;

@@ -3,7 +3,6 @@
 //! verify the pinned peer, exact registration, live lease, version and bounds.
 
 use codex_hepta_contracts::AgentId;
-use codex_hepta_contracts::FinalUseFrontier;
 use codex_hepta_contracts::FinalUseRevocations;
 use codex_hepta_contracts::HostAuthorityClockProjection;
 use codex_hepta_contracts::Sha256Digest;
@@ -124,41 +123,9 @@ pub struct HostWriterAuthorizationReadResponseV1 {
     pub proof: HostSignedWriterAuthorizationV1,
 }
 
-/// The owner and original frontier type are fixed by trusted root registration;
-/// no remote initialize, reset, arbitrary namespace or epoch endpoint exists.
-#[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
-#[serde(tag = "operation", deny_unknown_fields)]
-pub enum HostConsumerFrontierRequestV1 {
-    #[serde(rename = "runtime.final_use.frontier.load.v1")]
-    Load {
-        schema_version: u32,
-        request_id: u64,
-    },
-    #[serde(rename = "runtime.final_use.frontier.cas.v1")]
-    CompareAndSet {
-        schema_version: u32,
-        request_id: u64,
-        expected: FinalUseFrontier,
-        next: FinalUseFrontier,
-    },
-}
-
-#[derive(Clone, Copy, Debug, Deserialize, Eq, PartialEq, Serialize)]
-#[serde(rename_all = "snake_case")]
-pub enum HostConsumerFrontierStatusV1 {
-    Ack,
-    Conflict,
-    Unknown,
-}
-
-#[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
-#[serde(deny_unknown_fields)]
-pub struct HostConsumerFrontierResponseV1 {
-    pub schema_version: u32,
-    pub request_id: u64,
-    pub status: HostConsumerFrontierStatusV1,
-    pub frontier: Option<FinalUseFrontier>,
-}
+pub use codex_hepta_contracts::HostConsumerFrontierRequestV1;
+pub use codex_hepta_contracts::HostConsumerFrontierResponseV1;
+pub use codex_hepta_contracts::HostConsumerFrontierStatusV1;
 
 #[cfg(test)]
 #[path = "authority_host_wire_tests.rs"]
