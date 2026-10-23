@@ -1,5 +1,10 @@
 # Saved-state diagnosis: encoder learning bottleneck remains a hypothesis
 
+Subsequent status: the parent paused the lambda.001 head-anchor proposal. It is
+still unimplemented/unrun. The current requested work is only the
+[code-pair reconciliation availability check and protocol draft](../content_reconcile/PROTOCOL_DRAFT.md),
+with no new model computation or formal evaluation.
+
 This analysis reads the existing36 candidate logs, saved gradients/moments,
 base/final parameters and original TRAIN endpoints. It runs no forward pass,
 new gradient, optimizer step, training, old-model evaluation or formal-data read.
