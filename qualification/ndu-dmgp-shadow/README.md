@@ -52,3 +52,34 @@ All `Unavailable` failures should be propagated to fallback / slow path. Never i
 - Upgrade the bounded Bellman shadow policy to validated recursive NDU/FBSDE semantics and independent full-circuit credit, including non-Markov closure review.
 
 Until all these gates pass, keep `production_activation=false`, `selection=false`, `release=false`.
+
+
+## Converged independent research slices (October 23, 2026)
+
+This branch stacks on the signed-evidence/causal-credit research candidate (PR #3463),
+and imports the separate spectral-risk and preregistered six-arm checks from
+PR #3484 without replacing its tighter shadow physical-counter ceiling.
+
+- Raw paired covariance **must pass an actual small-matrix eigen-spectrum**
+  condition-number admission before shrinkage; externally supplied matrices
+  must also be spectrally positive definite. A positive variance on simplex
+  weights alone cannot prove that a covariance matrix is valid.
+- A0–A5 preregistered comparisons require exactly matched future episodes,
+  distinct measured execution identifiers and no repeated original-source
+  digest across episodes. Five A5-to-baseline claims use a declared
+  simultaneous one-sided bounded-outcome correction.
+- The preregistered comparison in `preregistered_assessment.py` accepts
+  structurally validated `Outcome` rows **but does not verify signatures**.
+  The independent signature verifier in `signed_evidence.py` is a
+  distinct offline evidence port. Their outputs must not be spliced together
+  to claim qualified model training, physical cost evidence, independence or
+  production rollout; a fully bound bridge remains a separate gate.
+- The spectral and preregistration adversarial tests are included in the same
+  `unittest discover` run as signed evidence, prospective causal credit,
+  closure and A0–A5 negative controls. Only a completed exact-head workflow
+  result can be cited as CI success for this composite source.
+
+**All real-model and production blockers remain open.** Neither signed fixture
+data nor synthetic route scores establish real multimodal decoding, external
+observer key custody, independent task success, calibrated risk, matched GPU
+cost, longitudinal learning or permission to activate a candidate.
