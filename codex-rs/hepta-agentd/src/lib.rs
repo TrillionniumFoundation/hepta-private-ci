@@ -52,6 +52,10 @@ mod root_writer_proof;
 pub use root_writer_proof::AgentdRootAuthorityError;
 #[cfg(target_os = "linux")]
 pub use root_writer_proof::AgentdRootWriterTrust;
+#[cfg(target_os = "linux")]
+mod root_observation_stream;
+#[cfg(target_os = "linux")]
+pub use root_observation_stream::AgentdRootAuthorityPeer;
 mod authbus_checkpoint;
 mod authbus_dispatch;
 mod authbus_ingress;
