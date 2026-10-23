@@ -438,7 +438,13 @@ def write_receipt_atomically(
     A shared hostile parent directory is not a security boundary: keep inputs
     and receipts in separately trusted directories for a production run.
     """
+    # A forbidden destination must not create directories inside frozen inputs.
+    # The caller may invoke this writer directly, without main's preflight.
+    validate_output_destination(
+        dest, input_paths, protected_image_dir=protected_image_dir
+    )
     dest.parent.mkdir(parents=True, exist_ok=True)
+    # Revalidate after creating an absent parent (or observing an alias change).
     validate_output_destination(
         dest, input_paths, protected_image_dir=protected_image_dir
     )
