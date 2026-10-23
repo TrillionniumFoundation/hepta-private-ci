@@ -172,6 +172,19 @@ execution environment used for this work, `/dev/shm/hepta-v4` is visible across
 escalated commands only; default sandbox commands see a different filesystem
 view. This is an environment-specific storage fact, not a model requirement.
 
+When the archive will be built on another filesystem, add
+`--archive-headroom-dir /absolute/path/existing-archive-directory`. The directory
+must already exist. The runner compares actual filesystem device IDs (`st_dev`),
+not path names. With two different devices, the evidence filesystem and archive
+filesystem must each have at least the full uncompressed payload estimate plus
+64 MiB free. With the same device, or when the option is omitted, the original
+requirement remains twice the payload estimate plus 128 MiB on that device.
+Two directories on one device cannot count the same free space twice. The
+total reservation is unchanged, and `storage.json` records both locations,
+devices, observed free bytes and requirements. This is a preflight check, not
+an allocation of disk space. Build the complete archive directly in the chosen
+archive directory; do not first create a second archive on the evidence device.
+
 ## B. Rebuild under a new receipt and reproduction commit
 
 A new compiler, build path or environment can produce different executable

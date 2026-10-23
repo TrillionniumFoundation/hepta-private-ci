@@ -11,6 +11,52 @@ import run as driver
 
 
 class RunnerEvidenceTests(unittest.TestCase):
+    def test_same_filesystem_cannot_count_the_same_free_space_twice(self):
+        payload, allowance = 1024, 64 * 1024 * 1024
+        estimate = {"uncompressed_payload_estimate_bytes": payload,
+                    "required_free_bytes_with_archive_headroom": 2 * (payload + allowance)}
+        output = {"directory": "/output", "st_dev": 7, "free_bytes": payload + allowance}
+        archive = {"directory": "/different-path", "st_dev": 7, "free_bytes": payload + allowance}
+        plan = driver.storage_plan(estimate, output, archive)
+        self.assertFalse(plan["passed"])
+        self.assertEqual(plan["strategy"], "shared-filesystem")
+        self.assertTrue(plan["archive"]["required_is_shared_with_output"])
+        self.assertEqual(plan["total_required_unique_filesystem_bytes"], 2 * (payload + allowance))
+        self.assertFalse(driver.storage_plan(estimate, output, output)["passed"])
+        output["free_bytes"] = archive["free_bytes"] = 2 * (payload + allowance)
+        self.assertTrue(driver.storage_plan(estimate, output, archive)["passed"])
+
+    def test_split_devices_preserve_total_and_both_individual_requirements(self):
+        payload, allowance = 1024, 64 * 1024 * 1024
+        estimate = {"uncompressed_payload_estimate_bytes": payload,
+                    "required_free_bytes_with_archive_headroom": 2 * (payload + allowance)}
+        output = {"directory": "/output", "st_dev": 7, "free_bytes": payload + allowance}
+        archive = {"directory": "/archive", "st_dev": 9, "free_bytes": payload + allowance}
+        plan = driver.storage_plan(estimate, output, archive)
+        self.assertTrue(plan["passed"])
+        self.assertEqual(plan["strategy"], "split-filesystems")
+        self.assertFalse(plan["archive"]["required_is_shared_with_output"])
+        self.assertEqual(plan["total_required_unique_filesystem_bytes"],
+                         estimate["required_free_bytes_with_archive_headroom"])
+        self.assertEqual(plan["output"]["required_free_bytes"] + plan["archive"]["required_free_bytes"],
+                         estimate["required_free_bytes_with_archive_headroom"])
+        for scarce in ("output", "archive"):
+            with self.subTest(scarce=scarce):
+                records = {"output": dict(output), "archive": dict(archive)}
+                records[scarce]["free_bytes"] -= 1
+                records["archive" if scarce == "output" else "output"]["free_bytes"] += 1000000
+                self.assertFalse(driver.storage_plan(estimate, **records)["passed"])
+
+    def test_archive_argument_must_already_be_a_directory(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            fixture = Path(temporary)
+            for candidate in (fixture / "missing", fixture / "file"):
+                if candidate.name == "file":
+                    candidate.write_text("not a directory")
+                with self.subTest(path=candidate.name), self.assertRaises((FileNotFoundError, NotADirectoryError)):
+                    driver.execute(fixture / "not-started", fixture, fixture / "unused", True, candidate)
+                self.assertFalse((fixture / "not-started").exists())
+
     def test_binding_works_without_local_blob_and_detects_changed_or_untracked_bytes(self):
         with tempfile.TemporaryDirectory() as temporary:
             repo = Path(temporary)

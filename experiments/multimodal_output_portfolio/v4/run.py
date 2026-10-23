@@ -105,8 +105,29 @@ def storage_estimate(protocol, development):
             "scope": "All trees, four outputs, all observed latents and transcripts; compression may reduce actual size."}
 
 
-def execute(output, source_run, native_binary, development=False):
+def storage_plan(estimate, output, archive):
+    """Allocate the unchanged reservation across observed filesystem devices."""
+    output, archive = dict(output), dict(archive)
+    shared = output["st_dev"] == archive["st_dev"]
+    total = estimate["required_free_bytes_with_archive_headroom"]
+    if total != 2 * estimate["uncompressed_payload_estimate_bytes"] + 128 * 1024 * 1024:
+        raise ValueError("complete payload and archive reservation must remain unchanged")
+    required = total if shared else estimate["uncompressed_payload_estimate_bytes"] + 64 * 1024 * 1024
+    output["required_free_bytes"] = archive["required_free_bytes"] = required
+    archive["required_is_shared_with_output"] = shared
+    return {**estimate, "strategy": "shared-filesystem" if shared else "split-filesystems",
+            "distinct_filesystems": not shared, "output": output, "archive": archive,
+            "free_bytes_at_start": output["free_bytes"],
+            "total_required_unique_filesystem_bytes": required if shared else 2 * required,
+            "passed": output["free_bytes"] >= required and archive["free_bytes"] >= required}
+
+
+def execute(output, source_run, native_binary, development=False, archive_headroom_dir=None):
     output, source_run, native_binary = map(Path, (output, source_run, native_binary))
+    if archive_headroom_dir is not None:
+        archive_headroom_dir = Path(archive_headroom_dir).resolve(strict=True)
+        if not archive_headroom_dir.is_dir():
+            raise NotADirectoryError("archive headroom must refer to an existing directory")
     output.mkdir(parents=True, exist_ok=False)
     started, cpu = time.perf_counter(), time.process_time()
     receipt = {"schema": "hepta.modality-allocation.execution.v4", "status": "running",
@@ -145,10 +166,14 @@ def execute(output, source_run, native_binary, development=False):
                 or torch.__version__ != "2.5.1+cpu" or torch.version.cuda is not None):
             raise RuntimeError("registered Python3.12 / NumPy1.26.4 / Torch2.5.1+cpu required")
         torch.set_num_threads(protocol["runtime"]["torch_threads"])
-        budget = storage_estimate(protocol, development)
-        budget["free_bytes_at_start"] = shutil.disk_usage(output).free
+        observations = []
+        for path in (output.resolve(), archive_headroom_dir or output.resolve()):
+            observations.append({"directory": str(path), "st_dev": path.stat().st_dev,
+                                 "free_bytes": shutil.disk_usage(path).free})
+        budget = storage_plan(storage_estimate(protocol, development), *observations)
+        budget["archive_headroom_requested"] = archive_headroom_dir is not None
         write_json(output / "storage.json", budget)
-        if budget["free_bytes_at_start"] < budget["required_free_bytes_with_archive_headroom"]:
+        if not budget["passed"]:
             raise RuntimeError("insufficient room for complete evidence and archive headroom")
         source = source_manifest()
         write_json(output / "source-manifest.json", source)
@@ -272,8 +297,11 @@ def main():
     parser.add_argument("--source-run", type=Path, required=True)
     parser.add_argument("--native-binary", type=Path, required=True)
     parser.add_argument("--development", action="store_true")
+    parser.add_argument("--archive-headroom-dir", type=Path,
+                        help="existing archive directory; a different filesystem may hold the archive reservation")
     arguments = parser.parse_args()
-    execute(arguments.output, arguments.source_run, arguments.native_binary, arguments.development)
+    execute(arguments.output, arguments.source_run, arguments.native_binary, arguments.development,
+            arguments.archive_headroom_dir)
 
 
 if __name__ == "__main__":
