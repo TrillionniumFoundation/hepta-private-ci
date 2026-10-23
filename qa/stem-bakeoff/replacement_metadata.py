@@ -37,10 +37,16 @@ def check_metadata(name: str, spec: dict, record: dict) -> dict:
             type(weight.get("size")) is not int or
             not 100_000_000 <= weight["size"] <= 4_000_000_000):
         raise ValueError(f"{name}: immutable weights digest/size disagree")
-    if "config.json" not in rows:
-        raise ValueError(f"{name}: config.json missing")
-    if not ("tokenizer.json" in rows or "tokenizer/tokenizer.json" in rows):
-        raise ValueError(f"{name}: tokenizer missing")
+    # Publisher checkpoint layouts differ: Laya Typed Decisions has no root
+    # config.json at its pinned revision. Its typed policy is specified by
+    # rl_agent_config.json + encoder/config.json and nested tokenizer bytes.
+    if name.startswith("laya_"):
+        required = ("rl_agent_config.json", "encoder/config.json", "tokenizer/tokenizer.json")
+    else:
+        required = ("config.json", "tokenizer.json")
+    for part in required:
+        if part not in rows or type(rows[part].get("size")) is not int or rows[part]["size"] <= 0:
+            raise ValueError(f"{name}: required checkpoint component missing/empty: {part}")
     return {"model": name, "repository": spec["repository"],
             "revision": spec["revision"], "weights_sha256": spec["weight_sha256"],
             "weight_size_bytes": weight["size"],
