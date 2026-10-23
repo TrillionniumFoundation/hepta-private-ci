@@ -254,7 +254,8 @@ impl DeploymentFinalUseIssuer {
                     .ok_or_else(|| io::Error::other("invalid Notes lifetime"))?,
             }.signing_bytes().map_err(io::Error::other)?;
             if state.policies == [next.clone()] {
-                return Ok(());
+                let after = self.clock.now_unix_ms().map_err(io::Error::other)?;
+                return writer::validate_writer_time(registration, state.head.authority_epoch, after);
             }
             if state.policies != [previous] {
                 return Err(denied("original Notes policy CAS mismatch"));
