@@ -65,6 +65,10 @@ pub struct FeatureCacheKeyV1 {
 #[derive(Clone, Debug, Default, Eq, PartialEq)]
 pub struct FeatureCacheV1 {
     entries: BTreeMap<FeatureCacheKeyV1, ImmutableFeatureSnapshotV1>,
+    // Invalidating the last snapshot must not reopen a retired scope generation.
+    scope_high_watermarks: BTreeMap<StableId, Generation>,
+    // An explicit cutover fences even scopes that have not cached a feature.
+    minimum_generation: Option<Generation>,
 }
 
 impl FeatureCacheV1 {
@@ -73,8 +77,26 @@ impl FeatureCacheV1 {
         scope_id: StableId,
         snapshot: ImmutableFeatureSnapshotV1,
     ) -> Result<(), CellWorkerError> {
+        let generation = snapshot.generation();
+        if self
+            .minimum_generation
+            .is_some_and(|minimum| generation.get() < minimum.get())
+            || self
+                .scope_high_watermarks
+                .get(&scope_id)
+                .is_some_and(|previous| generation.get() < previous.get())
+        {
+            return Err(CellWorkerError::StaleFeatureGeneration);
+        }
+        // Watermarks are bounded independently from live entries because old
+        // keys may disappear during a generation cutover.
+        if !self.scope_high_watermarks.contains_key(&scope_id)
+            && self.scope_high_watermarks.len() >= MAX_INDEX_ENTRIES
+        {
+            return Err(CellWorkerError::IndexCapacity);
+        }
         let key = FeatureCacheKeyV1 {
-            scope_id,
+            scope_id: scope_id.clone(),
             encoder_digest: snapshot.encoder_digest(),
             input_digest: snapshot.input_digest(),
         };
@@ -92,6 +114,7 @@ impl FeatureCacheV1 {
             return Err(CellWorkerError::IndexCapacity);
         }
         self.entries.insert(key, snapshot);
+        self.scope_high_watermarks.insert(scope_id, generation);
         Ok(())
     }
 
@@ -107,6 +130,13 @@ impl FeatureCacheV1 {
     }
 
     pub fn invalidate_generation(&mut self, generation: Generation) {
+        // Keep a monotone floor. Clearing an entry is not permission to
+        // reintroduce an older snapshot under the same or another cache key.
+        self.minimum_generation = Some(
+            self.minimum_generation
+                .filter(|minimum| minimum.get() > generation.get())
+                .unwrap_or(generation),
+        );
         self.entries
             .retain(|_, snapshot| snapshot.generation() == generation);
     }

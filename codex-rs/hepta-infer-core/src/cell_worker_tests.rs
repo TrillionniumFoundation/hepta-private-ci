@@ -203,3 +203,84 @@ fn retired_model_and_cell_eviction_are_idempotent() {
     assert_eq!(index.entry_count, 1);
     assert_eq!(index.entries.len(), 1);
 }
+
+#[test]
+fn cache_cutover_keeps_monotone_floor_across_scopes_and_eviction() {
+    let encoder = digest("shared-encoder");
+    let input = digest("frozen-input");
+    let snapshot = |epoch| {
+        ImmutableFeatureSnapshotV1::new_for_input(
+            generation(epoch),
+            encoder,
+            input,
+            vec![1, 2, 3],
+        )
+        .expect("valid feature")
+    };
+    let mut cache = FeatureCacheV1::default();
+    cache.insert(id("scope:a"), snapshot(2)).expect("seed generation");
+    cache.invalidate_generation(generation(3));
+    assert!(cache.is_empty());
+
+    // Eviction must not make a previously accepted stale generation writable.
+    assert_eq!(
+        cache.insert(id("scope:a"), snapshot(2)),
+        Err(CellWorkerError::StaleFeatureGeneration),
+    );
+    // Even a scope that has not cached a feature respects the cutover floor.
+    assert_eq!(
+        cache.insert(id("scope:new"), snapshot(2)),
+        Err(CellWorkerError::StaleFeatureGeneration),
+    );
+    cache.insert(id("scope:a"), snapshot(3)).expect("current generation");
+    cache.invalidate_generation(generation(2));
+    assert!(cache.is_empty());
+
+    // A stale invalidation request must not lower the epoch floor.
+    assert_eq!(
+        cache.insert(id("scope:new"), snapshot(2)),
+        Err(CellWorkerError::StaleFeatureGeneration),
+    );
+    cache.insert(id("scope:new"), snapshot(4)).expect("forward generation");
+}
+
+#[test]
+fn cache_watermark_spans_different_encoder_and_input_keys_within_scope() {
+    let first = ImmutableFeatureSnapshotV1::new_for_input(
+        generation(8),
+        digest("encoder:a"),
+        digest("input:a"),
+        vec![4, 5],
+    )
+    .expect("first snapshot");
+    let previous = ImmutableFeatureSnapshotV1::new_for_input(
+        generation(7),
+        digest("encoder:b"),
+        digest("input:b"),
+        vec![6, 7],
+    )
+    .expect("previous snapshot");
+    let successor = ImmutableFeatureSnapshotV1::new_for_input(
+        generation(9),
+        digest("encoder:b"),
+        digest("input:b"),
+        vec![8, 9],
+    )
+    .expect("successor snapshot");
+    let mut cache = FeatureCacheV1::default();
+    cache.insert(id("scope:a"), first).expect("seed scope");
+    assert_eq!(
+        cache.insert(id("scope:a"), previous.clone()),
+        Err(CellWorkerError::StaleFeatureGeneration),
+        "a different encoder must not evade the scope generation watermark",
+    );
+    // Independent scopes may have different generations before an explicit
+    // global cutover is announced.
+    cache.insert(id("scope:b"), previous.clone()).expect("other scope");
+    cache.insert(id("scope:a"), successor).expect("scope successor");
+    assert_eq!(
+        cache.insert(id("scope:a"), previous),
+        Err(CellWorkerError::StaleFeatureGeneration),
+        "a stale write cannot resurrect a retired encoder key",
+    );
+}
