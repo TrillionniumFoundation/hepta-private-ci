@@ -50,7 +50,8 @@ def checked_baseline(base: object) -> dict:
     require(base.get("modes") == list(MODES) and base.get("scales") == list(SCALES), "mode/scale matrix changed")
     builds = base.get("mode_build_digests")
     require(isinstance(builds, dict) and set(builds) == set(MODES)
-            and all(digest(value) for value in builds.values()),
+            and all(digest(value) for value in builds.values())
+            and len(set(builds.values())) == len(MODES),
             "A/B/C executable and configuration manifests not pinned")
     tasks = base.get("tasks")
     require(isinstance(tasks, list) and len(tasks) > 0, "no frozen task fixtures: HOLD_NO_GO")
