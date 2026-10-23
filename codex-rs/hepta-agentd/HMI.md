@@ -57,7 +57,7 @@ copied by the client or roll back committed tools. A terminal request ack does
 not claim a terminal model receipt. Disconnect/unknown admission requires
 reconciliation of the original delivery, never a replacement request.
 
-This profile is text only. Its principal is the actual registered AuthBus issuer;
+The default profile is text only. Its principal is the actual registered AuthBus issuer;
 the local Agent UI identity is scoped by that key epoch and Agent spawn. These
 fields are not microphone/device permissions. `capture_generation` is zero,
 and audio verification, speech and audio-observation methods fail explicitly.
@@ -81,3 +81,7 @@ just test --locked -p codex-hepta-agentd --test hmi_text_product --cargo-profile
 
 The cloud source audit retains all failed attempts and original-candidate
 identities under `/workspace/pipecat-hmi-audit-20261023/`.
+
+The explicit opt-in signed source profile and process-recovery commands are
+documented in [AUDIO_OBSERVATIONS.md](AUDIO_OBSERVATIONS.md). They add no hardware
+or speech permission to the default text port.
