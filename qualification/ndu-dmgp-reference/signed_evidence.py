@@ -106,7 +106,8 @@ def _check_identity(payload: Mapping[str, object], expected_objective: str) -> N
             or payload["generation"] < 1
             or not all(isinstance(payload[k], str) and payload[k]
                        for k in ("episode", "run_id"))
-            or payload["arm"] not in ARMS
+            or not isinstance(payload["arm"], str) or payload["arm"] not in ARMS
+            or not isinstance(payload["window"], str)
             or payload["window"] not in ("train", "future", "retention")
             or not all(_hex_digest(payload[k])
                        for k in ("trace_digest", "input_digest", "artifact_digest"))):
@@ -114,15 +115,20 @@ def _check_identity(payload: Mapping[str, object], expected_objective: str) -> N
 
 
 def verify_pair(entry: object, observer_pem: Path, meter_pem: Path, *,
-                expected_objective: str, training_cutoff: int,
+                expected_objective: str, expected_evaluator_digest: str,
+                expected_device_digest: str, training_cutoff: int,
                 max_av_skew_ms: float = 120.0) -> dict:
     """Verify separately signed outcome + resource receipt for the same execution.
 
     A successful pair is *not* an independent claim of physical or perceptual truth:
     key custody and observer/meter quality require separate operator attestation.
     """
-    if not _hex_digest(expected_objective) or training_cutoff < 1:
-        raise EvidenceRejected("missing trusted frozen objective/cutoff")
+    if (not all(_hex_digest(x) for x in
+                (expected_objective, expected_evaluator_digest, expected_device_digest))
+            or not isinstance(training_cutoff, int)
+            or isinstance(training_cutoff, bool) or training_cutoff < 1
+            or not math.isfinite(max_av_skew_ms) or max_av_skew_ms < 0):
+        raise EvidenceRejected("missing trusted frozen objective/evaluator/device/cutoff")
     if not isinstance(entry, dict) or set(entry) != {"observer", "meter"}:
         raise EvidenceRejected("missing independent observer and host meter")
     obs = verify_envelope(entry["observer"], observer_pem, "independent_observer")
@@ -148,12 +154,14 @@ def verify_pair(entry: object, observer_pem: Path, meter_pem: Path, *,
     risk = _number(obs.get("risk"), "independent risk")
     if quality > 1 or risk > 1:
         raise EvidenceRejected("unregistered quality/risk units")
-    if not _hex_digest(obs.get("perceptual_evaluator_digest")):
-        raise EvidenceRejected("missing independently identified perceptual evaluator")
+    if obs.get("perceptual_evaluator_digest") != expected_evaluator_digest:
+        raise EvidenceRejected("unregistered perceptual evaluator revision")
     if obs.get("source_to_output_verified") is not True or obs.get("output_to_source_verified") is not True:
         raise EvidenceRejected("missing bidirectional semantic observation")
     modalities = obs.get("modalities")
-    if not isinstance(modalities, list) or not modalities or len(set(modalities)) != len(modalities):
+    if (not isinstance(modalities, list) or not modalities
+            or not all(isinstance(item, str) for item in modalities)
+            or len(set(modalities)) != len(modalities)):
         raise EvidenceRejected("invalid output modality declaration")
     if set(modalities) - {"text", "image", "audio", "video"}:
         raise EvidenceRejected("invalid output modality")
@@ -169,7 +177,10 @@ def verify_pair(entry: object, observer_pem: Path, meter_pem: Path, *,
     for digest_field in ("device_digest", "encoder_digest", "decoder_digest", "runtime_digest"):
         if not _hex_digest(meter.get(digest_field)):
             raise EvidenceRejected(f"missing host artifact identity: {digest_field}")
+    if meter["device_digest"] != expected_device_digest:
+        raise EvidenceRejected("unregistered measured device identity")
     return {
+        "trace_digest": obs["trace_digest"],
         "episode": obs["episode"], "arm": obs["arm"], "window": obs["window"],
         "run_id": obs["run_id"], "input_digest": obs["input_digest"],
         "artifact_digest": obs["artifact_digest"], "quality": quality, "risk": risk,
@@ -181,7 +192,8 @@ def verify_pair(entry: object, observer_pem: Path, meter_pem: Path, *,
 
 
 def audit_trial_file(manifest: object, observer_pem: Path, meter_pem: Path, *,
-                     expected_objective: str, training_cutoff: int) -> dict:
+                     expected_objective: str, expected_evaluator_digest: str,
+                     expected_device_digest: str, training_cutoff: int) -> dict:
     """Produce diagnostic numerical evidence; never a production activation token."""
     if not isinstance(manifest, dict) or manifest.get("schema") != "hepta.ndu-dmgp.signed-trials.v1":
         raise EvidenceRejected("unsupported signed trial manifest")
@@ -192,6 +204,8 @@ def audit_trial_file(manifest: object, observer_pem: Path, meter_pem: Path, *,
         raise EvidenceRejected("missing or unbounded signed trials")
     rows = [verify_pair(item, observer_pem, meter_pem,
                         expected_objective=expected_objective,
+                        expected_evaluator_digest=expected_evaluator_digest,
+                        expected_device_digest=expected_device_digest,
                         training_cutoff=training_cutoff) for item in trials]
     cohorts: dict[tuple[str, str], dict[str, dict]] = {}
     episode_windows: dict[str, str] = {}
@@ -203,6 +217,7 @@ def audit_trial_file(manifest: object, observer_pem: Path, meter_pem: Path, *,
             raise EvidenceRejected("duplicate trial arm in matched cohort")
         cohorts[k][r["arm"]] = r
     if any(set(v) != ARMS or len({a["input_digest"] for a in v.values()}) != 1
+           or len({a["trace_digest"] for a in v.values()}) != len(ARMS)
            for v in cohorts.values()):
         raise EvidenceRejected("missing arm or unmatched inputs across A0-A5")
     n = {window: sum(1 for w, _ in cohorts if w == window)
@@ -247,12 +262,16 @@ def main() -> int:
     parser.add_argument("--observer-public-key", required=True, type=Path)
     parser.add_argument("--meter-public-key", required=True, type=Path)
     parser.add_argument("--expected-objective-digest", required=True)
+    parser.add_argument("--expected-evaluator-digest", required=True)
+    parser.add_argument("--expected-device-digest", required=True)
     parser.add_argument("--training-cutoff", required=True, type=int)
     args = parser.parse_args()
     try:
         manifest = json.loads(args.manifest.read_text(encoding="utf-8"))
         report = audit_trial_file(manifest, args.observer_public_key, args.meter_public_key,
                                   expected_objective=args.expected_objective_digest,
+                                  expected_evaluator_digest=args.expected_evaluator_digest,
+                                  expected_device_digest=args.expected_device_digest,
                                   training_cutoff=args.training_cutoff)
     except (EvidenceRejected, OSError, json.JSONDecodeError, subprocess.TimeoutExpired) as exc:
         print(json.dumps({"status": "rejected", "reason": str(exc),
