@@ -3,10 +3,10 @@ name: Hepta Memory A-I nine-arm shadow acceptance
 on:
   pull_request:
     paths:
-      - 'qa/stem-bakeoff/memory_nine_arm_acceptance.py'
-      - 'qa/stem-bakeoff/test_memory_nine_arm_acceptance.py'
-      - 'docs/learning/MEMORY_NINE_ARM_ACCEPTANCE_20261023.md'
-      - '.github/workflows/hepta-memory-nine-arm-shadow.yml'
+      - "qa/stem-bakeoff/memory_nine_arm_acceptance.py"
+      - "qa/stem-bakeoff/test_memory_nine_arm_acceptance.py"
+      - "docs/learning/MEMORY_NINE_ARM_ACCEPTANCE_20261023.md"
+      - ".github/workflows/hepta-memory-nine-arm-shadow.yml"
   workflow_dispatch:
 
 permissions:
