@@ -87,10 +87,8 @@ class SourceBindingTests(unittest.TestCase):
         from pathlib import Path
         workflow = (Path(__file__).resolve().parents[2] / ".github/workflows" /
                     "hepta-neuron-five-model-physical-shadow.yml").read_text()
-        self.assertIn('"    unittest.main()
- + '{args[@]}"', workflow)
-        self.assertNotIn('"    unittest.main()
- + '{args[$]}"', workflow)
+        self.assertIn('"' + chr(36) + '{args[@]}"', workflow)
+        self.assertNotIn('"' + chr(36) + '{args[$]}"', workflow)
         self.assertIn("replacement_source_audit.py", workflow)
         self.assertIn("test_replacement_source_audit.py", workflow)
 
