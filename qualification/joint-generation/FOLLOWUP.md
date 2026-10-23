@@ -46,6 +46,8 @@ builds also have byte-verified lossless archives.
 | t4 | +0.024836 | +0.003498 | -0.004656 | Unready; caps held; raw control/random also negative |
 | t5 | +0.014986 | +0.012584 | -0.002427 | Unready; caps held; raw control/random also negative |
 | t6 | +0.007445 | +0.012055 | -0.014405 | Unready; caps held; affine raw control/random +0.001884 |
+| t7 | — | — | — | Exit 1; shared admission left no candidate allocation |
+| t8 | — | — | — | Exit 1; shared CPU 12.274880402s exceeded the unchanged 10s cap |
 
 These are validation mean contrasts, not held-out confidence intervals. t4
 aligned raw critic gain and complete marginal service CPU using train-only
@@ -79,3 +81,25 @@ observed excess; actual budget guards, prices and all benefit gates stay fixed.
 First-goal efficient-budget acceptance remains blocked by demonstrated control
 net-benefit failure. Audio/video generation and long interactions remain unrun
 subsequent work, rather than claims made by a transport schema or by the r1 result.
+
+The [t8 report](runs/codex-cloud-efficient-r2-t8/REPORT.md) retains the complete
+shared metadata that was missing from t7's early failure. All original costs,
+models, calibration samples, traceback and nonzero status are preserved. The
+equivalent incremental ledger cache passed 151 independent source tests and
+exact old/new hand-fixture comparisons; its actual-update timings were mixed,
+with only 0.15% aggregate saving. It did not close the actual resource blocker.
+
+One prospectively declared [timer-only diagnostic](runs/codex-cloud-efficient-r2-shared-timing-d2/REPORT.md)
+partitioned a new execution into 43 disjoint high-level CPU spans. It used
+2.528051049s CPU, of which 2.506054746s was assigned to spans, and reproduced all
+three t8 base files and its native library byte-for-byte. It retained a real
+169ms output-encoding outlier. The multi-second slowdown was not reproduced;
+its cause remains unknown. This is a separate development diagnostic, not a
+replacement pass or permission to repeat identical qualification for favorable
+CPU timing. No subsequent qualification or formal evaluation was run.
+
+The next build needs a concrete supported repair under the existing protocol.
+Current evidence does not identify one that closes the resource variation or
+the effective-control benefit gap. No cloud-quota error was observed; the actual
+failure is the frozen scientific CPU budget. GitHub identity/PR API queries
+remain separately denied with `Forbidden`; Git branch transport succeeded.

@@ -116,6 +116,9 @@ exited 1 during shared preparation/admission; t8 exceeded the unchanged
 10-second CPU cap at 12.274880402 seconds before any candidate completed.
 The independent formal r2 test remains unopened. Its calibrated standalone
 serving/reload demonstration passed without implying experimental acceptance.
+The subsequent [one-shot shared timing diagnostic](runs/codex-cloud-efficient-r2-shared-timing-d2/REPORT.md)
+reproduced t8's model/library bytes in 2.528 CPU seconds but did not reproduce
+or explain its slowdown. That debug result does not replace the cap failure.
 
 **The first configured Codex Cloud execution passed the frozen finite-scene
 acceptance on 2026-10-23**, using source commit

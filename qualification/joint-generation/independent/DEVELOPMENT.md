@@ -245,3 +245,16 @@ metadata is now retained even on that early failure. The optimization did not
 close the resource blocker and no identical-source retry or formal evaluation
 followed. The retained receipt supports further component-cost diagnosis; the
 historical runtime variation is still unexplained.
+
+One subsequent timer-only shared diagnostic was declared and committed before
+execution. It called the unchanged `prepare_shared` once, ran no candidates or
+test construction, and retained every full calibration result. Its 43 disjoint
+high-level spans accounted for 2.506054746 of 2.528051049 observed process-plus-
+child CPU seconds, leaving 0.021996303 seconds of explicit residual. All three
+models and the native library matched t8 bytes. A real 169ms output-encoding
+outlier remained in the 27 calibration calls, without deletion or remeasurement.
+The historical multi-second slowdown did not reproduce; no cause or repair is
+established, and no subsequent qualification attempt was made. This diagnostic's
+setup/execution and administrative persistence are separately retained R&D cost,
+not a credit against any qualified build or an assertion of matched cumulative
+research budgets.
