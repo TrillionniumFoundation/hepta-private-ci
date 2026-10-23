@@ -678,6 +678,68 @@ class CohortFirewallTests(unittest.TestCase):
                 with self.assertRaisesRegex(CohortContractError, "regular file"):
                     cohort_firewall.verify_candidate_image_bytes(candidate, image_dir)
 
+    @unittest.skipUnless(
+        hasattr(os, "O_NOFOLLOW") and hasattr(os, "O_DIRECTORY")
+        and os.open in os.supports_dir_fd,
+        "descriptor-relative no-follow required",
+    )
+    def test_real_candidate_image_root_rejects_symlink_ancestor(self):
+        import cohort_firewall
+
+        with tempfile.TemporaryDirectory() as td:
+            root = Path(td)
+            actual = root / "actual"
+            actual.mkdir()
+            candidate = manifest(10000)
+            self._four_original_jpegs(candidate, actual / "images")
+            (root / "alias").symlink_to(actual, target_is_directory=True)
+            with self.assertRaisesRegex(CohortContractError, "no-follow directory path"):
+                cohort_firewall.verify_candidate_image_bytes(
+                    candidate, root / "alias" / "images"
+                )
+
+    @unittest.skipUnless(
+        hasattr(os, "O_NOFOLLOW") and hasattr(os, "O_DIRECTORY")
+        and os.open in os.supports_dir_fd,
+        "descriptor-relative no-follow required",
+    )
+    def test_real_candidate_image_root_rejects_final_directory_link(self):
+        import cohort_firewall
+
+        with tempfile.TemporaryDirectory() as td:
+            root = Path(td)
+            actual = root / "images"
+            actual.mkdir()
+            (root / "alias").symlink_to(actual, target_is_directory=True)
+            with self.assertRaisesRegex(CohortContractError, "no-follow directory path"):
+                cohort_firewall._open_pinned_image_directory(root / "alias")
+
+    @unittest.skipUnless(
+        hasattr(os, "O_NOFOLLOW") and hasattr(os, "O_DIRECTORY")
+        and os.open in os.supports_dir_fd,
+        "descriptor-relative no-follow required",
+    )
+    def test_retained_image_dir_fd_cannot_be_redirected_by_path_replacement(self):
+        import cohort_firewall
+
+        with tempfile.TemporaryDirectory() as td:
+            root = Path(td)
+            original = root / "images"
+            original.mkdir()
+            (original / "test.jpg").write_bytes(b"original")
+            fd = cohort_firewall._open_pinned_image_directory(original)
+            try:
+                original.rename(root / "renamed")
+                original.mkdir()
+                (original / "test.jpg").write_bytes(b"forged")
+                opened = os.open(
+                    "test.jpg", os.O_RDONLY | os.O_NOFOLLOW, dir_fd=fd
+                )
+                with os.fdopen(opened, "rb") as reader:
+                    self.assertEqual(reader.read(), b"original")
+            finally:
+                os.close(fd)
+
     @unittest.skipUnless(hasattr(os, "O_NOFOLLOW"), "no-follow FD required")
     def test_real_candidate_bytes_required_for_cli_pass(self):
         import cohort_firewall
