@@ -14,11 +14,11 @@ lockfile change is required.
 
 | File | Responsibility |
 | --- | --- |
-| `src/objective_sender.rs` | Restricted capability on the same `Arc<ProductionDurableWriter>`, one local send transition, cancellation and post-commit checkpoint protocol. |
+| `src/objective_sender.rs` | Restricted capability on the same `Arc<ProductionDurableWriter>`, one local send transition, checked observation append, cancellation, post-commit checkpoint protocol and acknowledged recovery snapshots. |
 | `src/objective_sender_model.rs` | Bounded structural projection of the original `AuthBusObjectiveIngress`, exact input bytes, complete transport origin and writer fence. |
 | `src/objective_sender_store.rs` | Original SQLite transactions for atomic retention, immutable events and bounded private enumeration. |
 | `src/objective_sender_integrity.rs` | Startup/recovery validation of raw bytes, metadata, original historical leases and the complete event chain. |
-| `src/objective_sender_read.rs` | Original-owner recovery reads and snapshots, with no send permission. |
+| `src/objective_sender_read.rs` | Original-owner enumeration, recovered handles and raw snapshots, with no send permission or independent checkpoint acknowledgement. |
 | `migrations/0017_objective_sender.sql` | Two domain tables, original lease foreign keys, immutable rows, contiguous events and uniqueness constraints. |
 
 The request and its initial `permit_issued` event commit in one original
@@ -54,18 +54,28 @@ After each committed request, observation or cancellation, the capability:
 2. Revalidates the original live lease and captures the entire original
    `CognitiveRecoveryAnchor` with the original capture function. Any intervening
    committed writes are included in this cut.
-3. Calls the bounded external acknowledgement with that exact cut and the
-   actual checked original writer fence. The callback must independently
+3. Calls the external acknowledgement under its configured deadline with that
+   exact cut and the actual checked original writer fence. The callback must independently
    authenticate the owner and publisher, fence stale publishers, and durably
    establish that the exact cut is current.
 4. Requires an exactly matching acknowledgement, rechecks the retained live
-   authority and releases the read-only snapshot transaction by rollback.
+   authority and releases the read-only snapshot transaction by rollback, then
+   performs a final live-authority check.
 
-The SQLite write lock remains held through the external callback and final
-authority check. A capability-local mutex would not serialize other original
+The SQLite write lock remains held through the external callback and its first
+post-ACK authority check; one final live check follows rollback. A
+capability-local mutex would not serialize other original
 writers and is not used. The callback must never re-enter this CognitiveStore;
 it must also prevent background publication of an obsolete cut after its future
 is cancelled. The supplied deadline is positive and at most five seconds.
+
+This is a cooperative Tokio timeout, not a preemptive wall-clock limit. Each
+checkpoint future poll and every synchronous verifier, protected-clock or
+observation-check callback must be bounded and nonblocking. The embedding must
+meet these requirements; the timeout cannot interrupt a blocked callback or
+CPU work that does not yield. Cancellation must release external resources
+without continuing a stale publication in the background. No extra worker,
+runtime or substitute authority service is supplied by this capability.
 
 An error after the first commit, including acknowledgement refusal, mismatch,
 deadline, cancellation or final authority rejection, grants no ticket. Returned
@@ -125,6 +135,40 @@ transport/host adapter must validate the original response and retain a real
 journal ACK before exposing a history anchor. The ordinary Objective admission
 response has no journal publication sequence to synthesize such an anchor.
 
+### Concurrent semantic observation checks
+
+The generic `retain_observation` API preserves exact data but does not interpret
+the meaning of history publications. A separate `snapshot`, application-level
+check and later generic append do not make a semantic invariant atomic: two
+recovered handles can both see no history and then append different first
+publications. The generic API retains this existing behavior.
+
+Trusted composition code that must enforce an invariant uses
+`retain_observation_checked(ticket, observation, check)`. After the original
+ticket and live-authority checks, it acquires the original database-wide
+`BEGIN IMMEDIATE` transaction, validates the current writer fence and exact
+retained request, reads the current observation snapshot, and invokes the
+synchronous predicate. Only an accepting predicate reaches the original
+immutable append and final live check in that same transaction. A rejected
+predicate rolls back before append and before checkpoint acknowledgement.
+
+The predicate receives bounded retained metadata. It must do no I/O, waiting
+or store re-entry and must not grant authority. For the Session host's receipt
+format, it compares the previously retained original publication against the
+new one; a later response generation does not replace the original publication.
+The owner does not supply this domain rule automatically. Other trusted writers
+of this publication format must apply the same invariant through the checked
+entry point; using the opaque generic API can still violate it.
+
+After a successful checked mutation, the original post-commit checkpoint
+protocol still applies. An acknowledgement failure can therefore leave the
+observation committed with its independent confirmation unknown. An explicit
+retry of the exact same observation runs the check again and, if accepted,
+obtains a fresh acknowledgement without adding another event. Neither rejection nor retry
+restores sending or local cancellation permission.
+
+### Local cancellation and worker boundary
+
 `retain_local_cancellation` atomically consumes only a still-unused live local
 permission. It cannot cancel a started or recovered request. A failed
 acknowledgement may be retried only to retain/re-acknowledge the same local
@@ -155,7 +199,38 @@ checks its exact original bytes and full origin again. It returns a recovered
 read/observation handle. Such a handle cannot enter `mark_send_started` or local
 cancellation, even when the previous process died before its first socket write.
 `snapshot` returns the original ordered observations and local cancellation
-fact without rewriting unknown history into a completion claim.
+fact without rewriting unknown history into a completion claim. This raw read
+verifies local retained contents; it does not call the independent checkpoint.
+A row may exist after its mutation committed but the checkpoint refused,
+timed out or was cancelled. Reading that row, or its local recovery anchor,
+cannot by itself promote an unknown acknowledgement to a confirmed
+`*_recorded` view flag.
+
+### Acknowledged snapshots for recovery projection
+
+Use `snapshot_acknowledged(&ticket)` when restored observations will be exposed
+as independently acknowledged. It validates the same owner-bound ticket and
+original live authority/WAL/lease, acquires `BEGIN IMMEDIATE`, verifies and
+reads the exact retained request and ordered snapshot, and captures the full
+current recovery cut in that same transaction. The original checkpoint helper
+checks the current writer fence, requires an exactly matching independent ACK,
+and rechecks live authority. Only after read-only rollback and a final live
+check does the method return the snapshot.
+
+The database-wide write serialization binds the returned observations to the
+cut acknowledged by the external provider; it is not a separate read followed
+by an assumption about some later cut. Refusal, timeout, mismatched ACK or loss
+of authority returns no acknowledged snapshot. The original committed records
+remain available for a later explicit read/ACK. This operation adds no event,
+does not alter ticket state, and grants no send or local cancellation right.
+It can acknowledge a previously committed cancellation through a recovered
+read handle without recreating cancellation permission.
+
+The ACK establishes a cut at that serialized boundary, not a promise that the
+store never changes afterward. Other original writers can advance the state
+after the transaction releases. Full-store recovery still requires an
+independently protected current cut, and this API does not implement that
+external production service or a new UI ledger.
 
 The retained domain has hard caps: 1,024 requests, 16,384 events overall, 64
 events per request, 32 MiB of accounted retained data, 64 KiB per original
@@ -209,6 +284,18 @@ revoked acknowledgements, actual SQLite write-lock contention, future
 cancellation, immutable observations, local cancellation, startup semantic
 tampering, stale schema refusal, bounded private pagination and same-owner
 ticket affinity.
+
+The checked-append regressions use two actual original capabilities and
+recovered tickets. A barrier forces both old-style prechecks to observe empty
+history: the real generic API is the negative control and retains both
+conflicting records, while checked appends retain one and reject the other.
+An exact retry obtains one new checkpoint ACK without another event. The
+acknowledged-snapshot regressions preserve the real committed-but-unacknowledged
+row as a raw-read negative control, exercise checkpoint refusal and timeout,
+require fresh ACK before returning recovery data, and test the original SQLite
+write lock through the callback. They also check that recovery adds no sending
+or cancellation permission. These are test descriptions, not execution results;
+the prior source version's passing count does not qualify either new API.
 
 The crash tests end a real child process without Rust cleanup after the
 original request, observation or cancellation commit. A test-host checkpoint

@@ -48,6 +48,8 @@ const MAX_CHECKPOINT_DEADLINE: Duration = Duration::from_secs(5);
 /// implementation. Never re-enter this CognitiveStore: the future runs while its
 /// original BEGIN IMMEDIATE write lock is held. Cancellation must release all
 /// external resources and must not later publish a stale cut in the background.
+/// Each future poll must be bounded and nonblocking. The Tokio deadline is
+/// cooperative, not a preemptive wall-clock limit.
 pub trait ObjectiveSenderCheckpoint: Send + Sync {
     fn acknowledge_current<'a>(
         &'a self,
@@ -107,6 +109,8 @@ impl ObjectiveSenderTicket {
 /// A restricted capability over the same original ProductionDurableWriter.
 /// It opens no database and provides no issuer, transport, default checkpoint,
 /// or production trust. An embedding must supply its independent checkpoint.
+/// The retained synchronous authority verifier and clock must also be bounded
+/// and nonblocking; cooperative timeouts cannot preempt these callbacks.
 pub struct ProductionObjectiveSender<C: ObjectiveSenderCheckpoint> {
     writer: Arc<ProductionDurableWriter>,
     checkpoint: Arc<C>,
@@ -265,6 +269,36 @@ impl<C: ObjectiveSenderCheckpoint> ProductionObjectiveSender<C> {
         .await
     }
 
+    /// Read retained observations and obtain an independent current-cut ACK
+    /// before returning them as acknowledged recovery data. Unlike `snapshot`,
+    /// this does not infer confirmation from the presence of local SQLite rows.
+    /// The snapshot and complete recovery cut share one original BEGIN IMMEDIATE
+    /// transaction, held through the injected checkpoint and its live checks.
+    /// A final live check follows the read-only transaction's release.
+    /// No event, sending permission or local cancellation permission is created.
+    /// A failed or cancelled ACK returns no snapshot; the same original records
+    /// remain available for a later explicit read/ACK without resubmission.
+    pub async fn snapshot_acknowledged(
+        &self,
+        ticket: &ObjectiveSenderTicket,
+    ) -> Result<ObjectiveSenderSnapshot, ObjectiveSenderError> {
+        self.require_ticket_owner(ticket)?;
+        self.writer.verify_current_authority().await?;
+        let mut transaction = self
+            .writer
+            .store
+            .pool
+            .begin_with("BEGIN IMMEDIATE")
+            .await
+            .map_err(unavailable)?;
+        store::require_request(&mut transaction, &ticket.request).await?;
+        let snapshot = store::snapshot(&mut transaction, &ticket.request).await?;
+        self.acknowledge_transaction(&mut transaction).await?;
+        transaction.rollback().await.map_err(unavailable)?;
+        self.writer.sender_live_check()?;
+        Ok(snapshot)
+    }
+
     /// Consume only this live unused local permission. A failed durable ACK
     /// cannot rearm it; the same local cancellation can only be re-acknowledged.
     pub async fn retain_local_cancellation(
@@ -381,9 +415,18 @@ impl<C: ObjectiveSenderCheckpoint> ProductionObjectiveSender<C> {
             .begin_with("BEGIN IMMEDIATE")
             .await
             .map_err(unavailable)?;
-        let writer = self.current_fence(&mut transaction).await?;
-        let current =
-            capture_recovery_anchor(&mut transaction, self.writer.owner_agent_id()).await?;
+        self.acknowledge_transaction(&mut transaction).await?;
+        transaction.rollback().await.map_err(unavailable)?;
+        self.writer.sender_live_check()?;
+        Ok(())
+    }
+
+    async fn acknowledge_transaction(
+        &self,
+        transaction: &mut Transaction<'_, Sqlite>,
+    ) -> Result<(), ObjectiveSenderError> {
+        let writer = self.current_fence(transaction).await?;
+        let current = capture_recovery_anchor(transaction, self.writer.owner_agent_id()).await?;
         self.writer.sender_live_check()?;
         let acknowledged = tokio::time::timeout(
             self.deadline,
@@ -395,8 +438,6 @@ impl<C: ObjectiveSenderCheckpoint> ProductionObjectiveSender<C> {
         if acknowledged != current {
             return Err(ObjectiveSenderError::AcknowledgementUnknown);
         }
-        self.writer.sender_live_check()?;
-        transaction.rollback().await.map_err(unavailable)?;
         self.writer.sender_live_check()?;
         Ok(())
     }

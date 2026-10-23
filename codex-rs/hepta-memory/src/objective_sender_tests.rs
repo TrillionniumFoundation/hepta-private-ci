@@ -144,6 +144,145 @@ async fn checked_concurrent_history_keeps_one_publication_and_idempotent_acknowl
 }
 
 #[tokio::test]
+async fn snapshot_acknowledged_does_not_promote_a_committed_observation_without_checkpoint_ack() {
+    for mode in [CheckpointMode::Refuse, CheckpointMode::Hold] {
+        let fixture = Fixture::new().await;
+        let sender = fixture
+            .writer
+            .objective_sender(fixture.checkpoint.clone(), Duration::from_millis(50))
+            .unwrap();
+        let ticket = sender.retain_before_send(request()).await.unwrap();
+        sender.mark_send_started(&ticket).await.unwrap();
+        let observed = observation(
+            ObjectiveSenderObservationKind::History,
+            "{\"status\":\"original_publication_test_metadata\"}",
+        );
+        *fixture.checkpoint.mode.lock().unwrap() = mode;
+        assert!(matches!(
+            sender.retain_observation(&ticket, &observed).await,
+            Err(ObjectiveSenderError::AcknowledgementUnknown)
+        ));
+        drop(ticket);
+        let committed = fixture.store.recovery_anchor().await.unwrap();
+        let recovered = sender.recover_pending(request()).await.unwrap();
+        let calls_before_read = fixture.checkpoint.seen.lock().unwrap().len();
+        // Negative control: the real raw snapshot sees the committed row, but
+        // it performs no independent ACK and cannot settle that uncertainty.
+        assert!(sender.snapshot(&recovered).await.unwrap().observations == vec![observed.clone()]);
+        assert_eq!(
+            fixture.checkpoint.seen.lock().unwrap().len(),
+            calls_before_read
+        );
+        assert!(matches!(
+            sender.snapshot_acknowledged(&recovered).await,
+            Err(ObjectiveSenderError::AcknowledgementUnknown)
+        ));
+        assert_eq!(fixture.store.recovery_anchor().await.unwrap(), committed);
+
+        *fixture.checkpoint.mode.lock().unwrap() = CheckpointMode::Accept;
+        let before_retry = fixture.checkpoint.seen.lock().unwrap().len();
+        let acknowledged = sender.snapshot_acknowledged(&recovered).await.unwrap();
+        assert!(acknowledged.observations == vec![observed]);
+        assert!(!acknowledged.locally_cancelled);
+        assert_eq!(
+            fixture.checkpoint.seen.lock().unwrap().len(),
+            before_retry + 1
+        );
+        assert_eq!(fixture.store.recovery_anchor().await.unwrap(), committed);
+        assert!(matches!(
+            sender.mark_send_started(&recovered).await,
+            Err(ObjectiveSenderError::SendPermissionUnavailable)
+        ));
+        assert!(matches!(
+            sender.retain_local_cancellation(&recovered).await,
+            Err(ObjectiveSenderError::LocalCancellationUnavailable)
+        ));
+        assert!(matches!(
+            sender.retain_before_send(request()).await,
+            Err(ObjectiveSenderError::AlreadyRetained)
+        ));
+    }
+}
+
+#[tokio::test]
+async fn snapshot_acknowledged_recovers_local_cancellation_without_a_new_cancellation_right() {
+    let fixture = Fixture::new().await;
+    let sender = fixture.sender();
+    let ticket = sender.retain_before_send(request()).await.unwrap();
+    *fixture.checkpoint.mode.lock().unwrap() = CheckpointMode::Refuse;
+    assert!(matches!(
+        sender.retain_local_cancellation(&ticket).await,
+        Err(ObjectiveSenderError::AcknowledgementUnknown)
+    ));
+    drop(ticket);
+    let committed = fixture.store.recovery_anchor().await.unwrap();
+    let recovered = sender.recover_pending(request()).await.unwrap();
+    let calls_before_read = fixture.checkpoint.seen.lock().unwrap().len();
+    assert!(sender.snapshot(&recovered).await.unwrap().locally_cancelled);
+    assert_eq!(
+        fixture.checkpoint.seen.lock().unwrap().len(),
+        calls_before_read
+    );
+    assert!(matches!(
+        sender.snapshot_acknowledged(&recovered).await,
+        Err(ObjectiveSenderError::AcknowledgementUnknown)
+    ));
+    *fixture.checkpoint.mode.lock().unwrap() = CheckpointMode::Accept;
+    let acknowledged = sender.snapshot_acknowledged(&recovered).await.unwrap();
+    assert!(acknowledged.locally_cancelled);
+    assert!(acknowledged.observations.is_empty());
+    assert_eq!(fixture.store.recovery_anchor().await.unwrap(), committed);
+    assert!(matches!(
+        sender.mark_send_started(&recovered).await,
+        Err(ObjectiveSenderError::SendPermissionUnavailable)
+    ));
+    assert!(matches!(
+        sender.retain_local_cancellation(&recovered).await,
+        Err(ObjectiveSenderError::LocalCancellationUnavailable)
+    ));
+}
+
+#[tokio::test]
+async fn snapshot_acknowledged_holds_the_original_write_lock_through_the_current_cut_ack() {
+    let fixture = Fixture::new().await;
+    let sender = fixture.sender();
+    drop(sender.retain_before_send(request()).await.unwrap());
+    let recovered = sender.recover_pending(request()).await.unwrap();
+    let options = SqliteConnectOptions::new()
+        .filename(fixture.store.path())
+        .busy_timeout(Duration::ZERO);
+    let mut competing_writer = SqliteConnection::connect_with(&options).await.unwrap();
+    *fixture.checkpoint.mode.lock().unwrap() = CheckpointMode::Hold;
+    let read = tokio::spawn(async move { sender.snapshot_acknowledged(&recovered).await });
+    fixture.checkpoint.entered.notified().await;
+    let locked = sqlx::query("BEGIN IMMEDIATE")
+        .execute(&mut competing_writer)
+        .await
+        .unwrap_err();
+    assert_eq!(
+        locked.as_database_error().unwrap().code().as_deref(),
+        Some("5")
+    );
+    fixture.checkpoint.release.notify_one();
+    let acknowledged = read.await.unwrap().unwrap();
+    assert!(acknowledged.observations.is_empty());
+    assert!(!acknowledged.locally_cancelled);
+    sqlx::query("BEGIN IMMEDIATE")
+        .execute(&mut competing_writer)
+        .await
+        .unwrap();
+    sqlx::query("ROLLBACK")
+        .execute(&mut competing_writer)
+        .await
+        .unwrap();
+    let current = fixture.store.recovery_anchor().await.unwrap();
+    assert_eq!(
+        fixture.checkpoint.seen.lock().unwrap().last().unwrap().0,
+        current
+    );
+}
+
+#[tokio::test]
 async fn retain_binds_exact_raw_to_one_permit_without_effect_outbox_rows() {
     let fixture = Fixture::new().await;
     let sender = fixture.sender();
