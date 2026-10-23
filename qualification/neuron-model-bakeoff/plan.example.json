@@ -1,6 +1,9 @@
 {
   "schema": "hepta.neuron.bakeoff.v1",
   "kind": "UNFROZEN_TEMPLATE_NOT_EVIDENCE",
+  "source_commit": null,
+  "registered_before_utc": null,
+  "abstention_threshold": null,
   "candidates": [
     "laya-english-421m",
     "laya-typed-421m",
@@ -24,5 +27,32 @@
     "max_slice_regression": 0.02,
     "min_accuracy_gain": 0
   },
-  "notes": "All values are example planning inputs, not selected production thresholds. Dataset owner must freeze on a prior version-controlled/signed plan before future_test starts. Never use this template as a passing receipt."
+  "notes": "All values are example planning inputs, not selected production thresholds. Dataset owner must freeze on a prior version-controlled/signed plan before future_test starts. Never use this template as a passing receipt.",
+  "model_artifacts": {
+    "laya-english-421m": {
+      "revision": null,
+      "weights_sha256": null,
+      "tokenizer_sha256": null
+    },
+    "laya-typed-421m": {
+      "revision": null,
+      "weights_sha256": null,
+      "tokenizer_sha256": null
+    },
+    "laya-multilingual-322m": {
+      "revision": null,
+      "weights_sha256": null,
+      "tokenizer_sha256": null
+    },
+    "arctic-embed-305m": {
+      "revision": null,
+      "weights_sha256": null,
+      "tokenizer_sha256": null
+    },
+    "harrier-270m": {
+      "revision": null,
+      "weights_sha256": null,
+      "tokenizer_sha256": null
+    }
+  }
 }

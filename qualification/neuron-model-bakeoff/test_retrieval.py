@@ -8,7 +8,8 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
-from retrieval import ranked_metrics
+from bakeoff import EvidenceError
+from retrieval import ranked_metrics, retrieval_query_kwargs
 
 
 class RetrievalMetricTests(unittest.TestCase):
@@ -20,6 +21,27 @@ class RetrievalMetricTests(unittest.TestCase):
         self.assertEqual(mrr, 0.5)
         self.assertTrue(0 < ndcg < 1)
         self.assertEqual(recall, 1.0)
+
+    def test_harrier_query_instruction_must_be_present(self):
+        with self.assertRaisesRegex(EvidenceError, "harrier-270m query-side"):
+            retrieval_query_kwargs("harrier-270m", {})
+        with self.assertRaisesRegex(EvidenceError, "harrier-270m query-side"):
+            retrieval_query_kwargs("harrier-270m", {"web_search_query": ""})
+
+    def test_harrier_query_only_prompt(self):
+        options = retrieval_query_kwargs(
+            "harrier-270m", {"web_search_query": "Instruct: Retrieve relevant passages\\nQuery: "},
+        )
+        self.assertEqual(options, {"prompt_name": "web_search_query"})
+        self.assertEqual(retrieval_query_kwargs(
+            "arctic-embed-305m", {"query": "query: "},
+        ), {"prompt_name": "query"})
+
+    def test_arctic_query_instruction_must_be_present(self):
+        with self.assertRaisesRegex(EvidenceError, "arctic-embed-305m query-side"):
+            retrieval_query_kwargs("arctic-embed-305m", {})
+        with self.assertRaisesRegex(EvidenceError, "arctic-embed-305m query-side"):
+            retrieval_query_kwargs("arctic-embed-305m", {"query": ""})
 
     def test_missing_relevant_document(self):
         self.assertEqual(ranked_metrics(["a", "b"], {"c"}), (0.0, 0.0, 0.0))

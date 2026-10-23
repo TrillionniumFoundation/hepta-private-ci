@@ -39,6 +39,31 @@ in the emitted run receipts. **No implicit HF downloads are allowed.**
 Prepare each model snapshot in a private target host by independently
 downloading a specific 40-character HF revision and verifying its immutable
 weights/tokenizer against the owner's artifact registry.
+A freeze-ready plan must explicitly set `kind=frozen_experiment_plan`,
+`source_commit` to the exact runner checkout SHA, a timezone-aware
+`registered_before_utc`, and a preregistered `abstention_threshold`
+strictly between zero and one. Template values cannot pass evaluation.
+Each model run must bind the **same** source commit and threshold.
+The plan's `model_artifacts` map must independently freeze **all five**
+40-character repository revisions and 64-character *observed-model-inventory*
+weight/tokenizer digests before future-test analysis. A new runner revision
+or a silently changed safetensors/tokenizer fails the comparison. This is
+an identity check and not proof that an independent Artifact CAS owner
+authenticated the files.
+The evaluator independently recomputes abstention from each published
+probability vector; changing an `abstained` boolean cannot improve
+selective accuracy or OOD acceptance. Reported `accuracy` is raw
+prediction accuracy on all in-domain rows, `effective_correct_rate`
+is correct-and-accepted divided by all in-domain rows, and
+`selective_accuracy` is correct/accepted. Keep these distinct.
+
+The three Laya arms require distinct **repository-specific** local
+Hugging Face cache snapshots. The English bundled repository's
+multilingual/typed sibling files are excluded from the English artifact
+hash; standalone Typed/Multilingual snapshots must correspond to their
+own repository paths. Directory names are a drift check, not independent
+artifact provenance or proof of real execution.
+
 The runner now requires --device cpu|cuda|mps and verifies the selected
 device on load and after inference (Laya may otherwise silently fall back
 to CPU after an OOM). Its quantization digest binds the loaded tensor
@@ -97,9 +122,15 @@ preregistered plan:
 The evaluator aborts if any of the five runs is missing, a model or artifact
 identity drifts, Head budgets differ, data leaks between partitions, OOD is
 absent, probabilities are malformed, or holdout predictions are incomplete.
-It reports accuracy, selective accuracy/coverage, multiclass normalized Brier,
-ECE (top-confidence, 15 bins), OOD false acceptance and per-language/task
-regressions. This diagnostic is not a causal or independent acceptance
+It reports raw accuracy, correct-and-accepted rate, selective
+accuracy/coverage, class-balanced recall, macro-F1, multiclass normalized
+Brier, ECE (top-confidence, 15 bins), OOD false acceptance,
+per-language/task regressions and a **diagnostic-only paired cluster
+bootstrap interval** (2,000 deterministic resamples). A high raw accuracy
+can hide total failure on a rare class; it cannot qualify by itself.
+For the two Encoder arms, it independently hashes the exact labeled
+**train partition** and rejects a mismatch across the published Head
+training receipts. This diagnostic is not a causal or independent acceptance
 decision. Correlated-cluster confidence bounds, alpha spending, power,
 retention and two real future windows remain mandatory external gates.
 
@@ -114,8 +145,14 @@ positive_ids; corpus rows have id and text):
       --corpus /private/eval/corpus.jsonl \
       --output /private/eval/harrier-retrieval.json
 
-Observe Recall@10, MRR@10 and NDCG@10. Rankings are deterministic. This
-retrieval result does not automatically establish decision superiority.
+Observe Recall@10, MRR@10 and NDCG@10. Rankings are deterministic. Query
+vectors must use each model's reviewed **query-only** prompt: Arctic
+`prompt_name="query"`, Harrier `prompt_name="web_search_query"`; document
+embeddings do **not** take either query prompt. Missing registered prompts
+fail closed, and their name/content SHA256 are recorded in the retrieval
+receipt. Any prompt change invalidates old scores. These are upstream
+retrieval instructions, not user-provided policy authority.
+This retrieval result does not automatically establish decision superiority.
 
 For serving, build a **real** isolated qualification-only local adapter bound
 to the Inference Control owner. The adapter must accept one POST JSON with
@@ -139,7 +176,7 @@ physical CAS, routing, execution or final-use authorization.
 
     python3 -m unittest discover -v -s qualification/neuron-model-bakeoff -p 'test_*.py'
 
-The 18 synthetic tests exercise negative inputs and no-authority invariants.
+The synthetic contract and loopback tests exercise negative inputs and no-authority invariants.
 They are never model accuracy, resource or live crash measurements. Real
 acceptance additionally needs signed owner-observed artifact writes,
 independent dataset provenance/holdout verification, target-host performance,

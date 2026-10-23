@@ -12,7 +12,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 
 from bakeoff import (
     CANDIDATES, MODEL_REPOS, SCHEMA, EvidenceError, analyse,
-    file_hash, validate_dataset, validate_predictions,
+    file_hash, validate_dataset, validate_predictions, metrics, training_partition_digest,
 )
 from run_models import calibrate, choose_temperature, normalize
 
@@ -49,9 +49,18 @@ class BakeoffContractTests(unittest.TestCase):
         ]
         emit_jsonl(self.dataset_path, self.rows)
         self.plan = {
-            "schema": SCHEMA, "candidates": list(CANDIDATES),
+            "schema": SCHEMA, "kind": "frozen_experiment_plan",
+            "source_commit": "a" * 40,
+            "registered_before_utc": "2026-09-30T00:00:00Z",
+            "abstention_threshold": 0.7,
+            "candidates": list(CANDIDATES),
             "baseline": CANDIDATES[0],
             "dataset_sha256": file_hash(self.dataset_path),
+            "model_artifacts": {
+                arm: {"revision": "f" * 40, "weights_sha256": "b" * 64,
+                      "tokenizer_sha256": "b" * 64}
+                for arm in CANDIDATES
+            },
             "independent_roles": {
                 "dataset_owner": "data-owner", "evaluator": "eval",
                 "selector": "select", "executor": "exec",
@@ -81,6 +90,7 @@ class BakeoffContractTests(unittest.TestCase):
                 "dataset_sha256": file_hash(self.dataset_path),
                 "predictions_sha256": file_hash(path),
                 "execution": "real_weights", "role": "model_runner",
+                "calibration": {"temperature": 1.0, "abstention_threshold": 0.7},
                 "digests": {
                     key: "b" * 64 for key in (
                         "weights", "tokenizer", "preprocessor",
@@ -93,6 +103,7 @@ class BakeoffContractTests(unittest.TestCase):
                     "head_l2": 0.005, "head_seed": 1729,
                     "projection": "seeded_gaussian_256",
                     "projection_sha256": "c" * 64,
+                    "head_training_dataset_sha256": training_partition_digest(self.rows),
                 },
             }))
 
@@ -107,12 +118,35 @@ class BakeoffContractTests(unittest.TestCase):
         with self.assertRaisesRegex(EvidenceError, "missing measured run"):
             analyse(self.plan, self.dataset_path, self.runs)
 
+    def test_model_revision_must_match_frozen_manifest(self):
+        self.plan["model_artifacts"][CANDIDATES[1]]["revision"] = "c" * 40
+        with self.assertRaisesRegex(EvidenceError, "model revision differs"):
+            analyse(self.plan, self.dataset_path, self.runs)
+
+    def test_model_weights_must_match_frozen_manifest(self):
+        self.plan["model_artifacts"][CANDIDATES[0]]["weights_sha256"] = "c" * 64
+        with self.assertRaisesRegex(EvidenceError, "model weights differ"):
+            analyse(self.plan, self.dataset_path, self.runs)
+
+    def test_model_tokenizer_must_match_frozen_manifest(self):
+        self.plan["model_artifacts"][CANDIDATES[0]]["tokenizer_sha256"] = "c" * 64
+        with self.assertRaisesRegex(EvidenceError, "model tokenizer differs"):
+            analyse(self.plan, self.dataset_path, self.runs)
+
     def test_unpinned_head_fails(self):
         path = self.runs / CANDIDATES[1] / "run.json"
         manifest = json.loads(path.read_text())
         manifest["digests"]["head"] = "UNPINNED"
         path.write_text(json.dumps(manifest))
         with self.assertRaisesRegex(EvidenceError, "head digest"):
+            analyse(self.plan, self.dataset_path, self.runs)
+
+    def test_encoder_head_training_corpus_mismatch_fails(self):
+        path = self.runs / CANDIDATES[-1] / "run.json"
+        data = json.loads(path.read_text())
+        data["profile"]["head_training_dataset_sha256"] = "f" * 64
+        path.write_text(json.dumps(data))
+        with self.assertRaisesRegex(EvidenceError, "head training partition digest mismatch"):
             analyse(self.plan, self.dataset_path, self.runs)
 
     def test_dataset_drift_fails(self):
@@ -138,7 +172,7 @@ class BakeoffContractTests(unittest.TestCase):
         )
         row["id"] = "train"
         with self.assertRaisesRegex(EvidenceError, "nonholdout"):
-            validate_predictions([row], dataset, CANDIDATES[0])
+            validate_predictions([row], dataset, CANDIDATES[0], 0.7)
 
     def test_nan_probability_fails(self):
         dataset = validate_dataset(self.rows)
@@ -149,7 +183,7 @@ class BakeoffContractTests(unittest.TestCase):
         ]
         rows[0]["probabilities"]["allow"] = float("nan")
         with self.assertRaisesRegex(EvidenceError, "invalid probability"):
-            validate_predictions(rows, dataset, CANDIDATES[0])
+            validate_predictions(rows, dataset, CANDIDATES[0], 0.7)
 
     def test_version_drift_fails(self):
         path = self.runs / CANDIDATES[0] / "run.json"
@@ -172,6 +206,83 @@ class BakeoffContractTests(unittest.TestCase):
         result = analyse(self.plan, self.dataset_path, self.runs)
         self.assertFalse(result["results"][model]["metric_gate"])
         self.assertEqual(result["results"][model]["maximum_slice_regression"], 1.0)
+        self.assertLess(result["results"][model]["paired_cluster_accuracy_gain_95ci"]["lower"], 0)
+
+    def test_forged_abstention_is_rejected(self):
+        dataset = validate_dataset(self.rows)
+        path = self.runs / CANDIDATES[0] / "predictions.jsonl"
+        rows = [json.loads(x) for x in path.read_text().splitlines()]
+        rows[0]["abstained"] = True  # confidence remains 0.9 > frozen 0.7
+        with self.assertRaisesRegex(EvidenceError, "abstention flag inconsistent"):
+            validate_predictions(rows, dataset, CANDIDATES[0], 0.7)
+
+    def test_unregistered_threshold_is_rejected(self):
+        path = self.runs / CANDIDATES[0] / "run.json"
+        data = json.loads(path.read_text())
+        data["calibration"]["abstention_threshold"] = 0.9
+        path.write_text(json.dumps(data))
+        with self.assertRaisesRegex(EvidenceError, "unregistered abstention threshold"):
+            analyse(self.plan, self.dataset_path, self.runs)
+
+    def test_mixed_source_commits_are_rejected(self):
+        path = self.runs / CANDIDATES[2] / "run.json"
+        data = json.loads(path.read_text())
+        data["source_commit"] = "b" * 40
+        path.write_text(json.dumps(data))
+        with self.assertRaisesRegex(EvidenceError, "mixed or unregistered source"):
+            analyse(self.plan, self.dataset_path, self.runs)
+
+    def test_unfrozen_template_fails(self):
+        self.plan["kind"] = "UNFROZEN_TEMPLATE_NOT_EVIDENCE"
+        with self.assertRaisesRegex(EvidenceError, "unfrozen"):
+            analyse(self.plan, self.dataset_path, self.runs)
+
+    def test_raw_accuracy_does_not_conflate_abstention(self):
+        dataset = validate_dataset(self.rows)
+        path = self.runs / CANDIDATES[0] / "predictions.jsonl"
+        rows = [json.loads(x) for x in path.read_text().splitlines()]
+        rows[0]["probabilities"] = {"allow": 0.6, "deny": 0.4}
+        rows[0]["abstained"] = True
+        predicted = validate_predictions(rows, dataset, CANDIDATES[0], 0.7)
+        result = metrics(dataset, predicted)
+        self.assertEqual(result["accuracy"], 1.0)
+        self.assertEqual(result["effective_correct_rate"], 0.5)
+        self.assertEqual(result["coverage"], 0.5)
+        self.assertEqual(result["selective_accuracy"], 1.0)
+
+    def test_class_imbalance_is_visible_not_hidden_by_accuracy(self):
+        dataset = {}
+        predicted = {}
+        for n in range(11):
+            rid = f"case-{n}"
+            gold = "deny" if n == 10 else "allow"
+            dataset[rid] = {
+                "gold": gold, "options": ["allow", "deny"],
+                "cluster": rid, "ood": False,
+            }
+            predicted[rid] = {
+                "probabilities": {"allow": 0.9, "deny": 0.1},
+                "abstained": False,
+            }
+        dataset["ood"] = {"ood": True, "gold": "deny",
+                          "options": ["allow", "deny"], "cluster": "ood"}
+        predicted["ood"] = {"probabilities": {"allow": 0.5, "deny": 0.5},
+                            "abstained": True}
+        score = metrics(dataset, predicted)
+        self.assertGreater(score["accuracy"], 0.9)
+        self.assertAlmostEqual(score["balanced_accuracy"], 0.5)
+        self.assertLess(score["macro_f1"], score["accuracy"])
+        self.assertEqual(score["per_class_recall"]["deny"], 0.0)
+
+    def test_paired_bootstrap_is_diagnostic_only(self):
+        result = analyse(self.plan, self.dataset_path, self.runs)
+        for model in CANDIDATES:
+            ci = result["results"][model]["paired_cluster_accuracy_gain_95ci"]
+            self.assertEqual(ci["independent_clusters"], 2)
+            self.assertEqual(ci["posture"],
+                             "diagnostic_only_not_a_preregistered_statistical_acceptance")
+            self.assertEqual(ci["lower"], 0.0)
+            self.assertEqual(ci["upper"], 0.0)
 
     def test_calibration_grid_and_normalization(self):
         examples = [

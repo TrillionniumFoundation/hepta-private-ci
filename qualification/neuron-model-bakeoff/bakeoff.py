@@ -6,6 +6,7 @@ import argparse
 import hashlib
 import json
 import math
+import random
 import re
 import sys
 from collections import defaultdict
@@ -29,6 +30,7 @@ EMBEDDING_MODELS = CANDIDATES[-2:]
 HEAD_BUDGET_FIELDS = (
     "head_trainable_parameters", "head_epochs", "head_training_steps",
     "head_learning_rate", "head_l2", "head_seed", "projection",
+    "head_training_dataset_sha256",
 )
 SPLITS = ("train", "validation", "calibration", "future_test")
 SHA256 = re.compile(r"[0-9a-f]{64}\Z")
@@ -97,7 +99,7 @@ def validate_dataset(rows: list[dict[str, Any]]) -> dict[str, dict[str, Any]]:
         require(all(isinstance(x, str) and x for x in options), f"{rid}: invalid option")
         require(len(set(options)) == len(options), f"{rid}: duplicate option")
         require(row.get("gold") in options, f"{rid}: gold label not in options")
-        for name in ("language", "slice"):
+        for name in ("state", "question", "language", "slice"):
             require(isinstance(row.get(name), str) and row[name], f"{rid}: missing {name}")
         require(type(row.get("ood")) is bool, f"{rid}: missing OOD label")
         windows[split].append(parse_time(row.get("event_time")))
@@ -108,7 +110,25 @@ def validate_dataset(rows: list[dict[str, Any]]) -> dict[str, dict[str, Any]]:
     return by_id
 
 
-def validate_run(run: dict[str, Any], model: str, dataset_hash: str, prediction_hash: str) -> None:
+def training_partition_digest(rows: list[dict[str, Any]]) -> str:
+    """Freeze the exact label-bearing train cases, separate from future gold."""
+    training = [
+        {name: row[name] for name in ("id", "state", "question", "options", "gold")}
+        for row in rows if row["split"] == "train"
+    ]
+    training.sort(key=lambda row: row["id"])
+    require(bool(training), "empty head training partition")
+    return hashlib.sha256(json.dumps(
+        training, sort_keys=True, separators=(",", ":"), ensure_ascii=False,
+        allow_nan=False,
+    ).encode("utf-8")).hexdigest()
+
+
+def validate_run(
+    run: dict[str, Any], model: str, dataset_hash: str, prediction_hash: str,
+    source_commit: str, frozen_threshold: float, training_digest: str,
+    frozen_artifact: dict[str, str],
+) -> None:
     require(run.get("schema") == SCHEMA and run.get("model") == model, "run schema/model mismatch")
     require(run.get("dataset_sha256") == dataset_hash, "dataset identity mismatch")
     require(run.get("predictions_sha256") == prediction_hash, "prediction identity mismatch")
@@ -116,24 +136,41 @@ def validate_run(run: dict[str, Any], model: str, dataset_hash: str, prediction_
     require(run.get("repository") == MODEL_REPOS[model], "model repository mismatch")
     rev, source = run.get("revision"), run.get("source_commit")
     require(isinstance(rev, str) and REVISION.fullmatch(rev) is not None, "exact checkpoint revision required")
+    require(rev == frozen_artifact["revision"], "model revision differs from frozen plan")
     require(isinstance(source, str) and REVISION.fullmatch(source) is not None, "exact source commit required")
+    require(source == source_commit, "mixed or unregistered source commits")
+    calibration = run.get("calibration")
+    require(isinstance(calibration, dict), "missing calibration receipt")
+    temperature = calibration.get("temperature")
+    threshold = calibration.get("abstention_threshold")
+    require(type(temperature) in (float, int) and math.isfinite(temperature) and temperature > 0,
+            "invalid calibration temperature")
+    require(type(threshold) in (float, int) and math.isfinite(threshold)
+            and threshold == frozen_threshold, "unregistered abstention threshold")
     digests = run.get("digests")
     require(isinstance(digests, dict), "artifact digests missing")
     for name in REQUIRED_DIGESTS:
         value = digests.get(name)
         require(isinstance(value, str) and SHA256.fullmatch(value) is not None, f"missing/invalid {name} digest")
+    require(digests["weights"] == frozen_artifact["weights_sha256"],
+            "model weights differ from frozen plan")
+    require(digests["tokenizer"] == frozen_artifact["tokenizer_sha256"],
+            "model tokenizer differs from frozen plan")
     require(run.get("role") == "model_runner", "run role mismatch")
     if model in EMBEDDING_MODELS:
         profile = run.get("profile")
         require(isinstance(profile, dict), "missing encoder training profile")
         require(all(k in profile for k in HEAD_BUDGET_FIELDS), "incomplete equal-budget head training")
         require(profile["head_trainable_parameters"] == 256, "unapproved head parameter budget")
+        require(profile["head_training_dataset_sha256"] == training_digest,
+                "head training partition digest mismatch")
         d = profile.get("projection_sha256")
         require(isinstance(d, str) and SHA256.fullmatch(d) is not None, "missing feature projection digest")
 
 
 def validate_predictions(
     rows: list[dict[str, Any]], dataset: dict[str, dict[str, Any]], model: str,
+    frozen_threshold: float,
 ) -> dict[str, dict[str, Any]]:
     predicted: dict[str, dict[str, Any]] = {}
     holdout = {rid: item for rid, item in dataset.items() if item["split"] == "future_test"}
@@ -147,6 +184,8 @@ def validate_predictions(
         require(all(type(v) in (float, int) and math.isfinite(v) and 0 <= v <= 1 for v in values), f"{rid}: invalid probability")
         require(abs(sum(values) - 1.0) <= 1e-5, f"{rid}: mass does not sum to 1")
         require(type(prediction.get("abstained")) is bool, f"{rid}: missing abstention")
+        require(prediction["abstained"] == (max(values) < frozen_threshold),
+                f"{rid}: abstention flag inconsistent with frozen threshold")
         predicted[rid] = prediction
     require(set(predicted) == set(holdout), "predictions must cover exact holdout once")
     return predicted
@@ -158,24 +197,49 @@ def metrics(dataset: dict[str, dict[str, Any]], predicted: dict[str, dict[str, A
     ood = [x for x in ids if dataset[x]["ood"]]
     require(bool(in_domain) and bool(ood), "in-domain and OOD holdouts required")
     groups: list[list[tuple[float, float]]] = [[] for _ in range(bins)]
-    correct = answered = 0
+    correct = accepted_correct = answered = 0
     brier = 0.0
+    class_counts: dict[str, dict[str, int]] = defaultdict(lambda: {"tp": 0, "fp": 0, "fn": 0})
+    true_labels: set[str] = set()
     for rid in in_domain:
         row, pred = dataset[rid], predicted[rid]
         probs = pred["probabilities"]
         guess = max(row["options"], key=lambda x: probs[x])
         ok = guess == row["gold"]
-        correct += int(ok and not pred["abstained"])
+        true_labels.add(row["gold"])
+        if ok:
+            class_counts[guess]["tp"] += 1
+        else:
+            class_counts[guess]["fp"] += 1
+            class_counts[row["gold"]]["fn"] += 1
+        correct += int(ok)
+        accepted_correct += int(ok and not pred["abstained"])
         answered += int(not pred["abstained"])
         brier += sum((probs[x] - float(x == row["gold"])) ** 2 for x in row["options"]) / len(row["options"])
         confidence = probs[guess]
         groups[min(bins - 1, int(confidence * bins))].append((confidence, float(ok)))
     ece = sum(len(b) * abs(sum(x for x, _ in b) / len(b) - sum(y for _, y in b) / len(b)) for b in groups if b) / len(in_domain)
+    # Unlike overall accuracy, balanced accuracy exposes failures on rare
+    # ground-truth classes. Do not let abstentions re-label the true class.
+    recall_by_class = {
+        label: class_counts[label]["tp"] /
+        (class_counts[label]["tp"] + class_counts[label]["fn"])
+        for label in sorted(true_labels)
+    }
+    macro_f1_by_class = {
+        label: 2 * stat["tp"] / (2 * stat["tp"] + stat["fp"] + stat["fn"])
+        if 2 * stat["tp"] + stat["fp"] + stat["fn"] else 0.0
+        for label, stat in sorted(class_counts.items())
+    }
     return {
         "n_in_domain": len(in_domain), "n_ood": len(ood),
         "coverage": answered / len(in_domain), "accuracy": correct / len(in_domain),
-        "selective_accuracy": correct / answered if answered else None,
+        "effective_correct_rate": accepted_correct / len(in_domain),
+        "selective_accuracy": accepted_correct / answered if answered else None,
         "brier": brier / len(in_domain), "ece": ece,
+        "balanced_accuracy": sum(recall_by_class.values()) / len(recall_by_class),
+        "per_class_recall": recall_by_class,
+        "macro_f1": sum(macro_f1_by_class.values()) / len(macro_f1_by_class),
         "ood_false_acceptance": sum(not predicted[x]["abstained"] for x in ood) / len(ood),
     }
 
@@ -196,8 +260,57 @@ def slice_accuracy(dataset: dict[str, dict[str, Any]], predicted: dict[str, dict
     }
 
 
+def paired_cluster_accuracy_ci(
+    dataset: dict[str, dict[str, Any]],
+    baseline: dict[str, dict[str, Any]],
+    candidate: dict[str, dict[str, Any]],
+    *, repetitions: int = 2000,
+) -> dict[str, Any]:
+    """Deterministic paired *cluster*-bootstrap diagnostic, not a promotion CI."""
+    groups: dict[str, list[str]] = defaultdict(list)
+    for rid in sorted(baseline):
+        if not dataset[rid]["ood"]:
+            groups[dataset[rid]["cluster"]].append(rid)
+    require(len(groups) >= 2, "paired bootstrap requires >=2 independent holdout clusters")
+
+    def correct(rid: str, rows: dict[str, dict[str, Any]]) -> int:
+        opts = dataset[rid]["options"]
+        return int(max(opts, key=lambda label: rows[rid]["probabilities"][label]) == dataset[rid]["gold"])
+
+    stats = [
+        (
+            sum(correct(rid, baseline) for rid in group),
+            sum(correct(rid, candidate) for rid in group),
+            len(group),
+        )
+        for _, group in sorted(groups.items())
+    ]
+    rng = random.Random(1729)
+    samples = []
+    for _ in range(repetitions):
+        draw = [stats[rng.randrange(len(stats))] for _ in stats]
+        total = sum(size for _, _, size in draw)
+        samples.append(sum(c - b for b, c, _ in draw) / total)
+    samples.sort()
+    return {
+        "lower": samples[int(0.025 * repetitions)],
+        "upper": samples[min(repetitions - 1, int(0.975 * repetitions))],
+        "independent_clusters": len(stats),
+        "resamples": repetitions,
+        "posture": "diagnostic_only_not_a_preregistered_statistical_acceptance",
+    }
+
+
 def analyse(plan: dict[str, Any], dataset_path: Path, run_dir: Path) -> dict[str, Any]:
     require(plan.get("schema") == SCHEMA, "unknown plan schema")
+    require(plan.get("kind") == "frozen_experiment_plan", "unfrozen/template experiment plan")
+    source_commit = plan.get("source_commit")
+    require(isinstance(source_commit, str) and REVISION.fullmatch(source_commit) is not None,
+            "unregistered exact source commit")
+    parse_time(plan.get("registered_before_utc"))
+    frozen_threshold = plan.get("abstention_threshold")
+    require(type(frozen_threshold) in (float, int) and math.isfinite(frozen_threshold)
+            and 0 < frozen_threshold < 1, "missing/invalid frozen abstention threshold")
     require(plan.get("candidates") == list(CANDIDATES), "candidate list/order not frozen")
     require(plan.get("baseline") == CANDIDATES[0], "baseline drift")
     roles = plan.get("independent_roles")
@@ -208,18 +321,38 @@ def analyse(plan: dict[str, Any], dataset_path: Path, run_dir: Path) -> dict[str
     require(isinstance(limits, dict), "missing thresholds")
     for key in ("max_ece", "max_brier", "max_ood_false_acceptance", "max_slice_regression", "min_accuracy_gain"):
         require(type(limits.get(key)) in (float, int) and 0 <= limits[key] <= 1, f"invalid threshold {key}")
+    frozen_artifacts = plan.get("model_artifacts")
+    require(isinstance(frozen_artifacts, dict) and set(frozen_artifacts) == set(CANDIDATES),
+            "five independently frozen model artifacts required")
+    for arm in CANDIDATES:
+        manifest = frozen_artifacts[arm]
+        require(isinstance(manifest, dict) and set(manifest) == {
+            "revision", "weights_sha256", "tokenizer_sha256",
+        }, f"{arm}: incomplete frozen artifact")
+        for key, pattern in (("revision", REVISION),
+                             ("weights_sha256", SHA256),
+                             ("tokenizer_sha256", SHA256)):
+            value = manifest[key]
+            require(isinstance(value, str) and pattern.fullmatch(value) is not None,
+                    f"{arm}: invalid frozen {key}")
     minimum = plan.get("minimum_slice_size")
     require(type(minimum) is int and minimum >= 1, "minimum_slice_size invalid")
     dataset_hash = file_hash(dataset_path)
     require(plan.get("dataset_sha256") == dataset_hash, "preregistered dataset hash mismatch")
     dataset = validate_dataset(load_jsonl(dataset_path))
+    training_digest = training_partition_digest(list(dataset.values()))
     results: dict[str, Any] = {}
+    predictions_by_model: dict[str, dict[str, dict[str, Any]]] = {}
     for model in CANDIDATES:
         predictions_path = run_dir / model / "predictions.jsonl"
         run_path = run_dir / model / "run.json"
         require(predictions_path.is_file() and run_path.is_file(), f"missing measured run for {model}")
-        validate_run(load_json(run_path), model, dataset_hash, file_hash(predictions_path))
-        predicted = validate_predictions(load_jsonl(predictions_path), dataset, model)
+        validate_run(load_json(run_path), model, dataset_hash, file_hash(predictions_path),
+                     source_commit, frozen_threshold, training_digest,
+                     frozen_artifacts[model])
+        predicted = validate_predictions(load_jsonl(predictions_path), dataset, model,
+                                         frozen_threshold)
+        predictions_by_model[model] = predicted
         results[model] = {
             "all": metrics(dataset, predicted),
             "languages": slice_accuracy(dataset, predicted, "language", minimum),
@@ -232,6 +365,9 @@ def analyse(plan: dict[str, Any], dataset_path: Path, run_dir: Path) -> dict[str
     for model in CANDIDATES:
         result = results[model]
         result["accuracy_gain"] = result["all"]["accuracy"] - baseline["all"]["accuracy"]
+        result["paired_cluster_accuracy_gain_95ci"] = paired_cluster_accuracy_ci(
+            dataset, predictions_by_model[CANDIDATES[0]], predictions_by_model[model],
+        )
         result["maximum_slice_regression"] = max(
             (baseline[k][name] - result[k][name] for k in ("languages", "tasks") for name in baseline[k]),
             default=0.0,
