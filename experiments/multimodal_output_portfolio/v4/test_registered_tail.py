@@ -78,9 +78,12 @@ class SourceClusterTailTests(unittest.TestCase):
         self.assertGreater(
             report["within_source_draw_tail_cvar90_physical_cost"]
             ["base_static"], 2.0)
-        self.assertGreaterEqual(
+        # One of two independent training seeds has a failed source
+        # (CVaR90=4); the other retains CVaR90=1. The registered estimand
+        # averages these seed-level tails equally, yielding (4+1)/2=2.5.
+        self.assertAlmostEqual(
             report["within_source_draw_tail_cvar90_external_loss"]
-            ["base_static"], 4.0)
+            ["base_static"], 2.5)
 
     def test_fractional_upper_tail_mass_is_not_ceiling_average(self):
         self.assertAlmostEqual(
