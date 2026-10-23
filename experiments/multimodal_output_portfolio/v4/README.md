@@ -24,6 +24,37 @@ This provides an executable **four-modality allocation algorithm and independent
 
 ## Local verification
 
+### Trajectory entry and cost-accounting boundary
+
+`portfolio.execute(initial, cfg, seed)` is a low-level model trajectory
+simulator from the supplied state. It accepts both a fresh step-zero state
+and a continuation. It does **not** verify checkpoint provenance or earlier
+payments: `step`, `remaining`, and `active_mask` are data, not authentication.
+A caller using a continuation must establish its paid transition history
+under the same configuration. The seed starts a new local random stream;
+this helper does not restore a previous RNG/checkpoint.
+
+The returned `spent` is exactly this invocation's control charges plus the
+four-output terminal emission reserve. It is an episode total only when the
+input is a fresh root. For example, with activation cost 5, one unit per step,
+zero risk and zero cost shadow price, seed 0 gives cost 10 from
+`State((0,2,2,2),10)`, but cost 5 from the same levels/budget at step 1 with
+mask 1. The latter is also a legitimate successor of a budget-16 root after
+a cost-6 activation with shock 0. Its full prefix-plus-suffix modeled cost
+is 11, not 5. The difference is not evidence of an unpaid runtime action.
+
+Fresh-root callers must use `step=0`; `State` then rejects a nonzero active
+mask. `JointState` similarly rejects a claimed prior witness at step zero.
+The full-episode `full_outcome_audit`, `evaluate`, and `evaluate_dependence`
+entry points separately reject nonzero initial steps. Do not expose
+`execute` as an untrusted fresh-episode admission boundary or treat a
+caller-constructed continuation as a verified resume source. No such
+external adapter or checkpoint verification exists in this experiment.
+These are modeled integer costs, not measured energy or physical receipts;
+trace hashes provide no independent provenance. `test_execute_boundary.py`
+preserves the counterexample, legitimate continuation accounting, and the
+separate fresh-root audit restrictions.
+
 Requires only Python >=3.10 standard library:
 
 ```bash

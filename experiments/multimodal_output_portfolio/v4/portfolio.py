@@ -271,7 +271,19 @@ def covariance_for_action(state: State, action: Allocation,
 
 
 def execute(initial: State, cfg: Config, seed: int) -> dict:
-    """Run a causal observed-feedback trajectory; no test truth is an input."""
+    """Simulate a trajectory suffix from caller-supplied model state.
+
+    This low-level helper does not authenticate a checkpoint or reconstruct
+    prior transitions. For a continuation, the caller must establish that
+    remaining budget and previous activation mask came from paid transitions
+    under the same config. A nonzero step is not proof of that history.
+
+    ``spent`` counts only this call's control costs plus terminal emission;
+    it excludes any earlier costs. For a fresh episode, supply a step-zero
+    State (whose active mask must be zero). The seed starts a new local RNG;
+    this is not an exact RNG/checkpoint resume API. No test truth is an input,
+    and trace hashes attest neither provenance nor physical expenditure.
+    """
     rng = random.Random(seed)
     policy = Controller(cfg)
     state = initial
