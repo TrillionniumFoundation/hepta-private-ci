@@ -1,0 +1,174 @@
+"""Frozen residual-budget forecasts; estimates reserve work, never charge it.
+
+CPU forecasts use only training probes/counters. They are scheduling estimates,
+not bounds on hardware execution; the runner still rejects actual cap breaches.
+"""
+
+import math
+
+from independent.evaluation import output_work
+from independent.controller_cost import controller_work
+from independent.inference import FrozenGenerator
+from independent.learning import setup_work
+
+
+def add_work(*parts):
+    result = {}
+    for part in parts:
+        for key, value in part.items():
+            result[key] = result.get(key, 0) + int(value)
+    return result
+
+
+def scale_work(work, count):
+    return {key: int(value) * count for key, value in work.items()}
+
+
+def observer_work(n):
+    return {"macs": 4 * n * 12 * 12, "scalar_ops": 124 * n,
+            "compare_ops": 14 * n, "div_ops": n}
+
+
+def validation_work(model, n):
+    generator = FrozenGenerator(model, prepare_low=False)
+    return add_work(generator.full_work(n), generator.low_work(n), generator.prepare_work(),
+        {"scalar_ops": 24 * n, "div_ops": 24 * n},
+        scale_work(observer_work(n), 3), scale_work(setup_work(model.dimensions, "additive"), 6))
+
+
+def _output_work(model, n):
+    pixels = model.dimensions[2]
+    return add_work(scale_work(output_work(model.dimensions[1], pixels), n),
+        {"scalar_ops": 3 * n * pixels, "compare_ops": 2 * n * pixels,
+         "exp_ops": n * pixels, "div_ops": n * pixels})
+
+
+def _observation_work(model, n):
+    return add_work(scale_work(setup_work(model.dimensions, "additive"), 3),
+        observer_work(n), {"macs": 2 * n * 12 * 12, "scalar_ops": 2 * n})
+
+
+def _service_work(model, generator, n, mode):
+    if mode == "full":
+        generation, prepare = generator.full_work(n), {}
+    elif mode == "low":
+        generation, prepare = generator.low_work(n), generator.prepare_work()
+    elif mode == "ensemble":
+        generation = add_work(generator.full_work(n), generator.low_work(n),
+                              {"scalar_ops": 24 * n, "div_ops": 24 * n})
+        prepare = generator.prepare_work()
+    elif mode == "continuation":
+        generation = add_work(generator.full_work(n), generator.low_work(n), generator.critic_work(n))
+        prepare = generator.prepare_work()
+    elif mode == "random":
+        generation = add_work(generator.full_work(n), {"scalar_ops": n, "compare_ops": n})
+        # Random routing can require a folded low view even though all-full
+        # generation is its upper arithmetic cost.
+        prepare = generator.prepare_work()
+    else:
+        raise ValueError("unsupported frozen residual service mode")
+    return add_work(generation, prepare, _output_work(model, n))
+
+
+def reserve_work(model, system, mode, *, train_rows, validation_rows,
+                 calibration_rows, calibration_repeats, raw_reward_cached=True):
+    """Per-selected-model future inventories, with worst-case optional passes."""
+    if any(type(n) is not int or n <= 0 for n in
+           (train_rows, validation_rows, calibration_rows, calibration_repeats)):
+        raise ValueError("positive frozen row counts and repeats required")
+    generator = FrozenGenerator(model, prepare_low=False)
+    observation = _observation_work(model, validation_rows)
+    service = _service_work(model, generator, validation_rows, mode)
+    critic, paired = {}, {}
+    if system == "ndu_control":
+        service = add_work(_service_work(model, generator, validation_rows, "continuation"),
+                            _service_work(model, generator, validation_rows, "random"))
+        observation = scale_work(observation, 2)
+        # Each matched pair executes low+critic in both laws and full only in
+        # the go law. Six measures prepare their own generator for 3 repeats.
+        paired = scale_work(add_work(scale_work(generator.low_work(calibration_rows), 2),
+            generator.full_work(calibration_rows), scale_work(generator.critic_work(calibration_rows), 2),
+            scale_work(_output_work(model, calibration_rows), 2),
+            scale_work(generator.prepare_work(), 2)), calibration_repeats)
+        total_controller = controller_work(model, train_rows, calibration_rows,
+            calibration_repeats, raw_reward_cached=raw_reward_cached)
+        # Keep probe CPU and fit CPU forecasts separate while deriving the
+        # authoritative total (including ridge/summary/formula extras) once.
+        critic = {key: value - paired.get(key, 0) for key, value in total_controller.items()}
+    return {"service": service, "observer": observation, "critic": critic,
+            "paired_calibration": paired, "tail": add_work(service, observation, critic, paired),
+            "revalidation": validation_work(model, validation_rows)}
+
+
+def forecast(system, selected, candidates, common, plan, inventories, ledger):
+    """Retain every training-only input used by the residual scheduler."""
+    if not selected or len({row["seed"] for row in selected}) != len(selected):
+        raise ValueError("one selected model per seed required")
+    if not candidates or any(type(row["updates"]) is not int or row["updates"] <= 0
+            or type(row["candidate_step_units"]) is not int or row["candidate_step_units"] <= 0
+            or not math.isfinite(row["objective_step_cpu_seconds"])
+            or row["objective_step_cpu_seconds"] <= 0 for row in candidates):
+        raise ValueError("complete positive training counters required")
+    unit_rates = [row["objective_step_cpu_seconds"] / (row["updates"] * row["candidate_step_units"])
+                  for row in candidates]
+    if not unit_rates or any(not math.isfinite(v) or v <= 0 for v in unit_rates):
+        raise ValueError("positive observed training CPU/unit rates required")
+    unit_rate = max(unit_rates)
+    serialization = max(row["serialization_cpu_seconds"] for row in candidates)
+    safety = plan["refinement_cpu_unit_safety"]
+    multiplier = plan["refinement_service_cpu_multiplier"]
+    if safety < 1 or multiplier <= 0 or not math.isfinite(safety + multiplier):
+        raise ValueError("finite conservative arithmetic and service factors required")
+    n = len(selected)
+    priced = {key: n * ledger.estimate_kernel(**work) for key, work in inventories.items()}
+    profiles, service_cpu, preparation_cpu = [], 0.0, 0.0
+    val_rows = plan["data_profile"]["sources_per_class"]["validation"] * 12 * (
+        plan["data_profile"]["instructions_per_source"] * plan["data_profile"]["variants"])
+    for row in selected:
+        calibration = common["calibrations"][row["seed"]]
+        modes = plan["static_modes"] if system == "ndu_control" else [row["mode"]]
+        mode = max(modes, key=lambda name: calibration["cpu_ns"][name])
+        requests = val_rows * (2 if system == "ndu_control" else 1)
+        measures = 2 if system == "ndu_control" else 1
+        if system == "ndu_control":
+            requests += 2 * plan["calibration_rows"] * plan["calibration_repeats"]
+            measures += 2 * plan["calibration_repeats"]
+        cpu_ns = calibration["cpu_ns"][mode]
+        prepare_ns = calibration["prepare_cpu_ns"][mode]
+        profiles.append({"seed": row["seed"], "mode": mode, "requests": requests,
+            "cpu_ns_per_request": cpu_ns, "prepare_cpu_ns_per_measure": prepare_ns,
+            "measures": measures})
+        service_cpu += requests * cpu_ns * multiplier / 1e9
+        preparation_cpu += measures * prepare_ns * multiplier / 1e9
+    # The external observers are outside service probes and must be forecast
+    # separately together with critic training and changed-model validation.
+    arithmetic_cpu = safety * unit_rate * (priced["critic"] + priced["observer"])
+    changed_cpu = safety * unit_rate * priced["revalidation"] + n * serialization
+    floor = plan["tail_reserve_cpu_seconds"] + (
+        plan["control_reserve_cpu_seconds"] if system == "ndu_control" else 0)
+    tail_cpu = max(floor, service_cpu + preparation_cpu + arithmetic_cpu)
+    return {"policy": "selected-residual-v1", "system": system,
+        "cpu_cap": plan["cpu_seconds_per_system"], "tail_units": priced["tail"],
+        "changed_model_units": priced["revalidation"], "tail_cpu_seconds": tail_cpu,
+        "changed_model_cpu_seconds": changed_cpu, "training_cpu_per_unit_max": unit_rate,
+        "training_cpu_per_unit_samples": unit_rates, "serialization_cpu_seconds_max": serialization,
+        "training_rate_inputs": [{key: row[key] for key in ("name", "updates",
+            "candidate_step_units", "objective_step_cpu_seconds")} for row in candidates],
+        "arithmetic_safety": safety, "service_multiplier": multiplier,
+        "tail_cpu_floor": floor, "service_profiles": profiles,
+        "service_cpu_seconds": service_cpu, "preparation_cpu_seconds": preparation_cpu,
+        "arithmetic_cpu_seconds": arithmetic_cpu, "inventory_units": priced,
+        "inventories_per_selected_model": inventories,
+        "forecast_scope": "training-only scheduling estimate; actual caps remain authoritative"}
+
+
+def admit_round(receipt, ledger, cpu_seconds, step_units, *, guard_seconds):
+    """Admit a complete seed round plus one final changed-model validation."""
+    if (type(step_units) is not int or step_units <= 0
+            or not math.isfinite(cpu_seconds) or cpu_seconds < 0
+            or not math.isfinite(guard_seconds) or guard_seconds < 0):
+        raise ValueError("positive round work and finite nonnegative CPU/guard required")
+    return (ledger.remaining_units >= receipt["tail_units"] + receipt["changed_model_units"] + step_units
+        and cpu_seconds + receipt["tail_cpu_seconds"] + receipt["changed_model_cpu_seconds"]
+        + max(guard_seconds, receipt["arithmetic_safety"] * step_units
+              * receipt["training_cpu_per_unit_max"]) <= receipt["cpu_cap"])

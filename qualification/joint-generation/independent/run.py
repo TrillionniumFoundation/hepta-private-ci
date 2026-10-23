@@ -13,13 +13,13 @@ import traceback
 
 import numpy as np
 
-from control import fit_controller
 from data import decoded_metrics, outcome_table, templates
 from independent.accounting import BudgetExceeded, WorkLedger, compare_budgets, counted_model_class
 from independent.calibration import calibration_manifest, stratified_indices
 from independent.data_v2 import dataset, manifest
 from independent.inference import FrozenGenerator, units
 from independent.learning import CachedObjective, setup_work, step_work
+from independent.refinement import admit_round, forecast, reserve_work, validation_work
 from model import JointModel
 
 
@@ -198,17 +198,6 @@ def score(model, p, q, data):
     return {key: float(value.mean()) for key, value in metrics.items()}
 
 
-def validation_work(model, n):
-    generator = FrozenGenerator(model, prepare_low=False)
-    work = {}
-    for part in (generator.full_work(n), generator.low_work(n), generator.prepare_work(),
-                 {"scalar_ops": 24 * n, "div_ops": 24 * n},
-                 *([observer_work(n)] * 3), *([setup_work(model.dimensions, "additive")] * 6)):
-        for key, value in part.items():
-            work[key] = work.get(key, 0) + value
-    return work
-
-
 def batch_validation(model, data, ledger, *, stage="search_validation"):
     n = len(data["labels"])
     ledger.charge_kernel(stage, "two_view_validation", **validation_work(model, n),
@@ -248,7 +237,8 @@ def prepare_shared(plan, run, runtime_plan):
         raise ValueError("stratified calibration rows differ from frozen protocol")
     calibration_identity = calibration_manifest(train, take)
     calibration_data = {key: np.asarray(value)[take] for key, value in train.items()
-                        if key in ("full", "labels", "source_ids", "groups")}
+                        if key in ("full", "labels", "source_ids", "groups", "source_scenes", "input_hashes")}
+    calibration_data["split"] = "train"
     (run / "build").mkdir()
     compiled = compile_native(run / "build/libjoint.so")
     shared.record("base_compile", compiler_invocations=1,
@@ -270,21 +260,30 @@ def prepare_shared(plan, run, runtime_plan):
             objective.step(model, x, train["labels"][idx], 0.003,
                            ledger=shared, stage="base_pretrain")
         base_validation, _ = batch_validation(model, val, shared, stage="base_validation")
-        times, costs = {}, {}
+        times, costs, preparation, components = {}, {}, {}, {}
         for mode in plan["static_modes"]:
-            cpu_samples, work_samples = [], []
+            cpu_samples, work_samples, preparation_samples = [], [], []
+            component_samples = {"native_generation_and_ledger_cpu_ns": [],
+                                 "output_encoding_and_ledger_cpu_ns": []}
             for _ in range(plan["calibration_repeats"]):
                 measured = measure(model, None, mode, calibration_data, runtime_plan, 1.0,
                                    seed=seed, observe=False)
                 cpu_samples.extend(measured["per_row_cost"]["cpu_ns"])
                 work_samples.extend(measured["per_row_cost"]["work_units"])
+                preparation_samples.append(measured["cost"]["prepare_cpu_ns"])
+                for key, samples in component_samples.items():
+                    samples.extend((batch[key], batch["rows"]) for batch in measured["cost"]["batches"])
                 shared.record("base_calibration", units=int(round(sum(
                     measured["per_row_cost"]["work_units"])))
                     + measured["cost"]["prepare"]["consumed_units"],
                     measured_service_requests=len(calibration_data["labels"]))
             times[mode] = float(np.median(cpu_samples))
             costs[mode] = float(np.mean(work_samples))
-        calibrations[seed] = {"cpu_ns": times, "work_units": costs}
+            preparation[mode] = float(np.max(preparation_samples))
+            components[mode] = {key: float(sum(cpu for cpu, _ in values) / sum(n for _, n in values))
+                                for key, values in component_samples.items()}
+        calibrations[seed] = {"cpu_ns": times, "work_units": costs,
+                              "prepare_cpu_ns": preparation, "mean_component_cpu_ns": components}
         shared.record("base_calibration", serving_calibration_rows=len(calibration_data["labels"])
                       * len(plan["static_modes"]) * plan["calibration_repeats"])
         base_rows[seed] = {"decoder_mse": mse, "validation": base_validation,
@@ -292,7 +291,8 @@ def prepare_shared(plan, run, runtime_plan):
         bases[seed] = model
     return shared, bases, train, val, {"bases": base_rows, "calibrations": calibrations,
         "calibration_identity": calibration_identity,
-        "native_compile": compiled, "cpu_seconds": cpu_clock() - started}
+        "native_compile": compiled, "_calibration_data": calibration_data,
+        "cpu_seconds": cpu_clock() - started}
 
 
 def choose_global(candidates, plan):
@@ -326,6 +326,7 @@ def _train_system_candidates(system, plan, run, shared, bases, train, val, commo
     activity.resume()
     ledger = WorkLedger(system, total_cap=plan["operator_units_per_system"])
     results = []
+    states = {}
     cost = {"cpu_seconds": common["cpu_seconds"], "active_candidate_cpu_seconds": 0.0}
     progress.update(ledger=ledger, candidates=results, cost=cost, current=None, _activity=activity)
     ledger.attribute_shared(shared)
@@ -409,6 +410,7 @@ def _train_system_candidates(system, plan, run, shared, bases, train, val, commo
             row = {"system": system, "seed": seed, "learning_rate": lr, "name": name,
                 "updates": steps, "mean_training_loss": float(np.mean(losses)),
                 "candidate_train_units": ledger.consumed_units - step_start - fixed_validation,
+                "candidate_step_units": step_units,
                 "candidate_train_cpu_seconds": cpu_clock() - cpu_start,
                 "candidate_cpu_scope": "training loop, validation and export; phase fields are separate",
                 "training_loop_cpu_seconds": train_cpu,
@@ -421,6 +423,8 @@ def _train_system_candidates(system, plan, run, shared, bases, train, val, commo
                 "model_sha256": artifact["sha256"], "model_digest": artifact["digest"],
                 "reference_full_cpu_ns": ref}
             results.append(row)
+            states[name] = {"model": model, "objective": objective, "rng": rng,
+                            "last_step_cpu": last_step_cpu, "refinement_updates": 0}
             print(json.dumps({"candidate": name, "updates": steps, "validation": validation}), flush=True)
             guard("candidate_complete", current)
             activity.pause()
@@ -429,34 +433,137 @@ def _train_system_candidates(system, plan, run, shared, bases, train, val, commo
     lr, mode = choose_global(results, plan)
     selected = [{**row, "mode": mode, "controller_file": None, "controller_sha256": None,
                  "controller_type": None} for row in results if row["learning_rate"] == lr]
+    progress["_selected_states"] = {row["seed"]: states[row["name"]] for row in selected}
+    states.clear()  # Release every unselected optimizer inside this billed interval.
     cost.update(selected_lr=lr, selected_static_mode=mode)
     guard("content_selection_complete")
     activity.pause()
     return ledger, results, selected, cost
 
 
-def fit_selected_controls(selected, plan, runtime_plan, run, train, ledger):
+def fit_selected_controls(selected, plan, runtime_plan, run, train, ledger, states, calibration_data):
+    from independent.controller_cost import fit_and_calibrate
+
     started = cpu_clock()
     for row in selected:
-        model = JointModel.load(run / row["model_file"])
-        objective = CachedObjective("ndu", model, rho=plan["rho"],
-            ce_anchor=plan["ce_anchor"], ledger=ledger, stage="critic_targets")
-        gen = FrozenGenerator(model, ledger, "critic_prepare")
-        pl, ql = gen.forward_low(train["full"], ledger, "critic_targets")
-        pf, qf = gen.forward_full(train["full"], ledger, "critic_targets")
-        vl = objective.utility_values(pl, ql, train["labels"], ledger=ledger)
-        vf = objective.utility_values(pf, qf, train["labels"], ledger=ledger)
-        ledger.critic_fit("critic_fit", rows=len(pl), classes=12)
-        controller = fit_controller(pl, ql, vf - vl,
-            regularization=plan["controller"]["ridge_regularization"])
+        state = states[row["seed"]]
+        controller, decision_price, receipt = fit_and_calibrate(state["model"], train,
+            calibration_data, plan, runtime_plan, ledger, row["reference_full_cpu_ns"],
+            row["seed"], raw_reward=state["objective"].reward)
         name = row["name"] + "-controller.npz"
         np.savez_compressed(run / name, **controller.to_arrays())
         ledger.record("critic_export", serialized_bytes=(run / name).stat().st_size,
                       serialized_tensors=7)
         row.update(mode="continuation", controller_type="continuation", controller_file=name,
-                   controller_sha256=sha(run / name), gain_objective="full-minus-low entropic CE",
-                   rho=plan["rho"])
+                   controller_sha256=sha(run / name), gain_objective="raw-decoded-task-utility",
+                   decision_price=decision_price, cost_ratio=receipt["cost_ratio"],
+                   controller_calibration=receipt, rho=plan["rho"])
     return cpu_clock() - started
+
+
+def refine_content(selected, progress, ledgers, costs, plan, common, train, val, run,
+                   telemetry, schedule):
+    """Spend only residual budgets after the original LR and mode are frozen."""
+    if plan["refinement_policy"] != "selected-residual-v1":
+        raise ValueError("unsupported frozen refinement policy")
+    rows = {system: [row for row in selected if row["system"] == system]
+            for system in plan["systems"]}
+    start = cpu_clock()
+    active_before = sum(cost.get("refinement_cpu_seconds", 0.0) for cost in costs.values())
+    try:
+        for system in plan["systems"]:
+            cost, ledger, state = costs[system], ledgers[system], progress[system]
+            with active_tail_phase(cost, state, "refinement_prepare", None, "refinement_cpu_seconds"):
+                models = state["_selected_states"]
+                first = models[rows[system][0]["seed"]]["model"]
+                inventories = reserve_work(first, system, rows[system][0]["mode"],
+                    train_rows=len(train["labels"]), validation_rows=len(val["labels"]),
+                    calibration_rows=plan["calibration_rows"], calibration_repeats=plan["calibration_repeats"])
+                cost["refinement"] = forecast(system, rows[system], state["candidates"],
+                                                common, plan, inventories, ledger)
+                cost["refinement"].update(initial_remaining_units=ledger.remaining_units,
+                    initial_cpu_seconds=cost["cpu_seconds"], completed_rounds=0)
+                for row in rows[system]:
+                    row.update(search_updates=row["updates"], search_validation=row["validation"],
+                        search_model_file=row["model_file"], search_model_sha256=row["model_sha256"],
+                        search_model_digest=row["model_digest"], final_model_file=row["model_file"],
+                        refinement_updates=0)
+            guard_cpu_budget(system, plan, run, ledger, cost, state["candidates"], "refinement_prepared")
+        index = 0
+        while True:
+            eligible = []
+            for system in plan["systems"]:
+                states = progress[system]["_selected_states"]
+                step_units = sum(ledgers[system].estimate_kernel(**step_work(
+                    state["model"].dimensions, system, plan["batch_size"])) for state in states.values())
+                guard = max(plan["cpu_guard_seconds"], 2 * sum(state["last_step_cpu"] for state in states.values()))
+                if admit_round(costs[system]["refinement"], ledgers[system], costs[system]["cpu_seconds"],
+                               step_units, guard_seconds=guard):
+                    eligible.append(system)
+            if not eligible:
+                break
+            for seed_index, seed in enumerate(plan["model_seeds"]):
+                for system in rotate_systems(eligible, index + seed_index):
+                    row = next(row for row in rows[system] if row["seed"] == seed)
+                    state = progress[system]["_selected_states"][seed]
+                    cost, ledger = costs[system], ledgers[system]
+                    with active_tail_phase(cost, progress[system], "selected_refinement", row,
+                                           "refinement_cpu_seconds"):
+                        with traced_phase(telemetry, "selected_refinement", system=system, seed=seed, round=index):
+                            rng = state["rng"]
+                            ids = rng.integers(len(train["labels"]), size=plan["batch_size"])
+                            full = rng.random(len(ids)) < 0.5
+                            x = np.where(full[:, None], train["full"][ids], train["low"][ids])
+                            before = cpu_clock()
+                            state["objective"].step(state["model"], x, train["labels"][ids],
+                                row["learning_rate"], ledger=ledger, stage="selected_refinement")
+                            state["last_step_cpu"] = cpu_clock() - before
+                            state["refinement_updates"] += 1
+                            row["refinement_updates"] += 1
+                            row["updates"] += 1
+                    guard_cpu_budget(system, plan, run, ledger, cost, progress[system]["candidates"],
+                                     "selected_refinement_complete", current=row)
+                    schedule.append({"phase": "selected_refinement", "round": index,
+                                     "system": system, "seed": seed})
+            for system in eligible:
+                costs[system]["refinement"]["completed_rounds"] += 1
+            index += 1
+        for index, seed in enumerate(plan["model_seeds"]):
+            for system in rotate_systems(plan["systems"], index):
+                row = next(row for row in rows[system] if row["seed"] == seed)
+                if row["refinement_updates"] == 0:
+                    continue
+                state = progress[system]["_selected_states"][seed]
+                cost, ledger = costs[system], ledgers[system]
+                with active_tail_phase(cost, progress[system], "refinement_revalidation", row,
+                                       "refinement_cpu_seconds"):
+                    with traced_phase(telemetry, "refinement_revalidation", system=system, seed=seed):
+                        validation, _ = batch_validation(state["model"], val, ledger,
+                                                         stage="refinement_validation")
+                        for mode in plan["static_modes"]:
+                            validation[mode]["calibrated_net_utility"] = validation[mode]["task_utility"] - (
+                                plan["compute_price"] * common["calibrations"][seed]["cpu_ns"][mode]
+                                / common["reference_full_cpu_ns"])
+                        row["validation"] = validation
+                        artifact = save_model(state["model"], run / (row["name"] + "-refined.npz"),
+                                              ledger, "refinement_export")
+                        row.update(model_file=artifact["file"], final_model_file=artifact["file"],
+                            model_sha256=artifact["sha256"], model_digest=artifact["digest"])
+                guard_cpu_budget(system, plan, run, ledger, cost, progress[system]["candidates"],
+                                 "refinement_revalidation_complete", current=row)
+    finally:
+        active_after = sum(cost.get("refinement_cpu_seconds", 0.0) for cost in costs.values())
+        scheduler = max(0.0, cpu_clock() - start - (active_after - active_before))
+        for cost in costs.values():
+            cost["refinement_scheduler_cpu_seconds"] = scheduler
+            cost["cpu_seconds"] += scheduler
+            if "refinement" in cost:
+                cost["refinement"]["actual_cpu_seconds"] = cost.get("refinement_cpu_seconds", 0.0)
+    for system in plan["systems"]:
+        costs[system]["refinement"].update(remaining_units_after=ledgers[system].remaining_units,
+            cpu_seconds_after=costs[system]["cpu_seconds"])
+        guard_cpu_budget(system, plan, run, ledgers[system], costs[system], progress[system]["candidates"],
+                         "refinement_scheduling_complete")
 
 
 def controller_for(run, row):
@@ -485,7 +592,8 @@ def validate_selected(selected, plan, runtime_plan, run, val, ledger):
     for row in selected:
         model = JointModel.load(run / row["model_file"])
         report = measure(model, controller_for(run, row), row["mode"], val,
-            runtime_plan, row["reference_full_cpu_ns"], seed=row["seed"])
+            {**runtime_plan, **({"decision_price": row["decision_price"]}
+                if "decision_price" in row else {})}, row["reference_full_cpu_ns"], seed=row["seed"])
         # measure performs normal utility, decoded metrics and a real corrupted
         # decoder negative control outside service timers. They still cost build
         # work during validation, including their three decoder observations.
@@ -520,6 +628,7 @@ def train(freeze_path, out):
     try:
         with traced_phase(telemetry, "shared_preparation"):
             shared, bases, train_data, val, common = prepare_shared(plan, run, runtime_plan)
+            calibration_data = common.pop("_calibration_data", None)
         common["cpu_seconds"] = cpu_clock() - start
         common["reference_full_cpu_ns"] = common["calibrations"][plan["model_seeds"][0]]["cpu_ns"]["full"]
         guard_cpu_budget("shared", plan, run, shared,
@@ -554,6 +663,9 @@ def train(freeze_path, out):
             guard_cpu_budget(system, plan, run, ledgers[system], system_cost[system],
                              progress[system]["candidates"], "candidate_scheduling_complete")
 
+        refine_content(selected, progress, ledgers, system_cost, plan, common,
+                       train_data, val, run, telemetry, schedule)
+
         if "ndu_control" in ledgers:
             system = "ndu_control"
             ledger, cost = ledgers[system], system_cost[system]
@@ -563,7 +675,8 @@ def train(freeze_path, out):
                                  progress[system]["candidates"], "before_selected_critic", current=row)
                 with active_tail_phase(cost, progress[system], "selected_critic", row, "critic_cpu_seconds"):
                     with traced_phase(telemetry, "selected_critic", system=system, seed=row["seed"]):
-                        fit_selected_controls([row], plan, runtime_plan, run, train_data, ledger)
+                        fit_selected_controls([row], plan, runtime_plan, run, train_data, ledger,
+                                              progress[system]["_selected_states"], calibration_data)
                 guard_cpu_budget(system, plan, run, ledger, cost,
                                  progress[system]["candidates"], "selected_critic_complete", current=row)
 

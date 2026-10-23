@@ -1,9 +1,13 @@
 import json
+from contextlib import nullcontext
 from pathlib import Path
 import subprocess
 import tempfile
 import unittest
 from unittest.mock import patch
+from types import SimpleNamespace
+
+import numpy as np
 
 from independent import run
 from independent.accounting import BudgetExceeded, WorkLedger
@@ -187,6 +191,96 @@ class CandidateSchedulingTests(unittest.TestCase):
             run.run_candidate_rounds({"S": iter(())}, ("S",), 1)
         with self.assertRaisesRegex(ValueError, "exceeded"):
             run.run_candidate_rounds({"S": iter(({}, {}))}, ("S",), 1)
+
+
+class ResidualContinuationTests(unittest.TestCase):
+    def fixture(self, cap=16):
+        now, order, originals, selected, progress, ledgers, costs = [0.0], [], [], [], {}, {}, {}
+        systems, seeds = ("supervised", "ndu"), (11, 23, 47)
+        for system in systems:
+            candidates, states = [], {}
+            for seed in seeds:
+                model = SimpleNamespace(dimensions=(202, 12, 192, 32), marker=0, _moments={"retained": seed})
+
+                class Objective:
+                    def step(self, current, x, y, lr, *, ledger, stage, name=system, value=seed):
+                        ledger.charge_kernel(stage, "mock_update", scalar_ops=1)
+                        now[0] += 0.01
+                        current.marker += 1
+                        order.append((name, value))
+
+                states[seed] = {"model": model, "objective": Objective(),
+                    "rng": np.random.default_rng(seed), "last_step_cpu": 0.01, "refinement_updates": 0}
+                row = {"system": system, "seed": seed, "name": f"{system}-{seed}",
+                       "updates": 3, "learning_rate": 0.01, "mode": "full",
+                       "validation": {"full": {"task_utility": 0.2}}, "model_file": "original.npz",
+                       "model_sha256": "original-sha", "model_digest": "original-digest"}
+                candidates.append(row)
+                originals.append(row)
+                selected.append(dict(row))
+            progress[system] = {"_selected_states": states, "candidates": candidates}
+            ledgers[system], costs[system] = WorkLedger(system, total_cap=cap), {"cpu_seconds": 0.0}
+        plan = {"systems": systems, "model_seeds": seeds, "refinement_policy": "selected-residual-v1",
+                "batch_size": 1, "calibration_rows": 72, "calibration_repeats": 3,
+                "cpu_guard_seconds": 0.001, "cpu_seconds_per_system": 100,
+                "static_modes": ("full", "low", "ensemble"), "compute_price": 0.02}
+        common = {"reference_full_cpu_ns": 1, "calibrations": {
+            seed: {"cpu_ns": {mode: 1 for mode in plan["static_modes"]}} for seed in seeds}}
+        receipt = {"tail_units": 7, "changed_model_units": 3, "tail_cpu_seconds": 0.0,
+                   "changed_model_cpu_seconds": 0.0, "arithmetic_safety": 1.0,
+                   "training_cpu_per_unit_max": 0.0, "cpu_cap": 100}
+        train = {"full": np.array([[1.0, 2.0], [3.0, 4.0]]),
+                 "low": np.array([[0.0, 1.0], [1.0, 2.0]]), "labels": np.array([0, 1])}
+        return now, order, originals, selected, progress, ledgers, costs, plan, common, receipt, train
+
+    def test_residual_rounds_keep_states_search_rows_and_frozen_lr_mode(self):
+        now, order, originals, selected, progress, ledgers, costs, plan, common, receipt, train = self.fixture()
+        identities = {system: {seed: (id(state["model"]), id(state["objective"]), id(state["rng"]),
+            id(state["model"]._moments)) for seed, state in value["_selected_states"].items()}
+            for system, value in progress.items()}
+
+        def validation(model, data, ledger, *, stage):
+            ledger.charge_kernel(stage, "mock_validation", scalar_ops=1)
+            return {mode: {"task_utility": float(model.marker)} for mode in plan["static_modes"]}, None
+
+        with patch.object(run, "cpu_clock", lambda: now[0]), \
+                patch.object(run, "reserve_work", return_value={}), \
+                patch.object(run, "forecast", side_effect=lambda *args: dict(receipt)), \
+                patch.object(run, "step_work", return_value={"scalar_ops": 1}), \
+                patch.object(run, "traced_phase", side_effect=lambda *args, **kwargs: nullcontext()), \
+                patch.object(run, "batch_validation", side_effect=validation), \
+                patch.object(run, "save_model", return_value={"file": "final-refined.npz", "sha256": "final", "digest": "final"}), \
+                patch.object(run, "choose_global", side_effect=AssertionError("no reselection")):
+            run.refine_content(selected, progress, ledgers, costs, plan, common, train,
+                               {"labels": ()}, Path("/unused"), [], [])
+        self.assertEqual(order[:6], [("supervised", 11), ("ndu", 11), ("ndu", 23),
+                                     ("supervised", 23), ("supervised", 47), ("ndu", 47)])
+        self.assertEqual(order[6], ("ndu", 11))
+        for system, value in progress.items():
+            self.assertEqual(ledgers[system].remaining_units, 7)
+            for seed, state in value["_selected_states"].items():
+                self.assertEqual(identities[system][seed], (id(state["model"]), id(state["objective"]),
+                    id(state["rng"]), id(state["model"]._moments)))
+                self.assertEqual(state["model"].marker, 2)
+        for row in selected:
+            self.assertEqual((row["learning_rate"], row["mode"], row["updates"]), (0.01, "full", 5))
+            self.assertEqual(row["refinement_updates"], 2)
+            self.assertEqual(row["search_model_sha256"], "original-sha")
+            self.assertEqual(row["validation"]["full"]["task_utility"], 2)
+        self.assertTrue(all(row["updates"] == 3 and row["model_sha256"] == "original-sha" for row in originals))
+
+    def test_unaffordable_round_reuses_validation_without_padding(self):
+        now, _, _, selected, progress, ledgers, costs, plan, common, receipt, train = self.fixture(cap=12)
+        with patch.object(run, "cpu_clock", lambda: now[0]), \
+                patch.object(run, "reserve_work", return_value={}), \
+                patch.object(run, "forecast", side_effect=lambda *args: dict(receipt)), \
+                patch.object(run, "step_work", return_value={"scalar_ops": 1}), \
+                patch.object(run, "batch_validation", side_effect=AssertionError("unchanged model")), \
+                patch.object(run, "save_model", side_effect=AssertionError("unchanged model")):
+            run.refine_content(selected, progress, ledgers, costs, plan, common, train,
+                               {"labels": ()}, Path("/unused"), [], [])
+        self.assertTrue(all(row["refinement_updates"] == 0 for row in selected))
+        self.assertTrue(all(ledger.consumed_units == 0 for ledger in ledgers.values()))
 
 
 if __name__ == "__main__":
