@@ -136,6 +136,7 @@ def verify_candidate_image_bytes(candidate, image_dir):
         raise CohortContractError("image-dir must be an existing non-symlink directory")
     # Reuse the original frozen v1 fingerprint algorithm byte-for-byte:
     # raw JPEG SHA, EXIF-transposed RGB SHA, and 9x8 horizontal dHash.
+    from PIL import Image
     from cohort import image_fingerprint
     validated = 0
     bytes_total = 0
@@ -152,14 +153,15 @@ def verify_candidate_image_bytes(candidate, image_dir):
                 raise CohortContractError(f"{origin}: missing image or image symlink")
             expected_size = item.get("image_size")
             if (not isinstance(expected_size, list) or len(expected_size) != 2 or
-                    any(type(n) is not int or n < 1 or n > 20000 for n in expected_size)):
+                    any(type(n) is not int or n < 1 or n > 4096 for n in expected_size) or
+                    expected_size[0] * expected_size[1] > 8_000_000):
                 raise CohortContractError(f"{origin}: require bounded image_size [width,height]")
             expected_bytes = item.get("image_bytes")
             if type(expected_bytes) is not int or not 0 < expected_bytes <= 3_000_000:
                 raise CohortContractError(f"{origin}: missing/invalid image_bytes")
             try:
                 actual = image_fingerprint(path, expected_size)
-            except (OSError, ValueError) as exc:
+            except (OSError, ValueError, Image.DecompressionBombError) as exc:
                 raise CohortContractError(f"{origin}: invalid candidate JPEG: {exc}") from exc
             for key in ("image_sha256", "decoded_rgb_sha256", "dhash64", "image_bytes"):
                 if actual[key] != item.get(key):
@@ -192,7 +194,7 @@ def check_cohort(candidate, history, *, max_hamming=4):
         raise CohortContractError("max_hamming must be an integer in [0,64]")
     new_sources = load_sources(candidate, "candidate")
     if not history:
-        raise CohortContractError("at least one pinned historical manifest is required")
+        raise CohortContractError("at least one historical manifest is required; CLI separately pins two")
     old_sources = []
     for index, document in enumerate(history):
         old_sources.extend(load_sources(document, f"history:{index}", historical=True))
