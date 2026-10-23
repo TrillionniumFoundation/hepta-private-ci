@@ -96,11 +96,21 @@ def evaluate(study: Mapping):
     draws = protocol.get("draws_per_world")
     _need(type(draws) is int and 1 <= draws <= 16, "unregistered draw count")
     cost_units = protocol.get("cost_units")
-    _need(isinstance(cost_units, str) and len(cost_units) > 0, "missing measured cost unit")
+    _need(cost_units in ("measured_cpu_seconds", "measured_wall_seconds"),
+          "physical cost must be declared in measured time, not proxy MACs or budget units")
+    # A per-request hard limit is distinct from the *mean* cost ratio. Without
+    # it, a controller can overspend on hard prompts and compensate by doing
+    # less work elsewhere, while falsely appearing equal-budget on average.
+    hard_cost_cap = _number(protocol.get("hard_per_world_total_cost_limit"),
+                            "registered hard per-world cost limit", lower=1e-12)
     observations = study.get("worlds")
     _need(isinstance(observations, list) and len(observations) == len(flat_ids),
           "unobserved or selectively omitted heldout worlds")
     size = counts[0]
+    min_protected = protocol.get("min_protected_worlds_per_seed")
+    coverage_floor = max(4, math.ceil(0.1 * size))
+    _need(type(min_protected) is int and coverage_floor <= min_protected <= size,
+          "protected-task coverage must be preregistered and at least 10% per seed")
     values = np.empty((len(ARMS), len(seeds), size, len(METRICS) + 1))
     protected = np.zeros((len(seeds), size), dtype=bool)
     arm_idx = {a: i for i, a in enumerate(ARMS)}
@@ -152,7 +162,13 @@ def evaluate(study: Mapping):
                       "physical cost ledger not reconciled")
                 values[arm_idx[name], i, j, :len(METRICS)] = entries.mean(axis=0)
                 values[arm_idx[name], i, j, -1] = total
-    _need(bool(np.any(protected)), "no protected-task evaluation coverage")
+    coverage = protected.sum(axis=1)
+    _need(bool(np.all(coverage >= min_protected)),
+          "insufficient protected-task coverage in one or more registered seeds")
+    # These are research-only declarations; only an authenticated external
+    # executor and observer could prove that measured CPU/wall times are real.
+    per_arm_budget = np.all(values[..., -1] <= hard_cost_cap + max(1e-9, hard_cost_cap * 1e-7),
+                            axis=(1, 2))
     # Every sampled heldout unit remains paired. Tail CVaR is computed within
     # seed AFTER draw aggregation, then averaged over training seeds.
     def summarize(v):
@@ -190,6 +206,7 @@ def evaluate(study: Mapping):
             "ambiguity_noninferiority": bool(upper[2] <= ambiguity_tol),
             "consistency_noninferiority": bool(upper[3] <= inconsistency_tol),
             "physical_total_cost": bool(ratio <= max_cost_ratio),
+            "hard_per_world_total_cost": bool(per_arm_budget[0] and per_arm_budget[index + 1]),
             "protected_task_no_regression": protected_ok,
         }
         local_all &= all(gates.values())
@@ -201,6 +218,10 @@ def evaluate(study: Mapping):
                "all_provisional_gates_pass": bool(local_all and boots >= 2000),
                "all_registered_worlds_seen": True, "registered_seeds": len(seeds),
                "worlds_per_seed": size, "draws_per_world": draws,
+               "min_protected_worlds_per_seed": min_protected,
+               "actual_protected_worlds_per_seed": coverage.astype(int).tolist(),
+               "hard_per_world_total_cost_limit": hard_cost_cap,
+               "max_observed_arm_world_total_cost": values[..., -1].max(axis=(1, 2)).tolist(),
                "familywise_alpha": alpha, "bootstrap_replicates": boots,
                "comparator_selection": protocol["validation_selected_best"],
                "comparison": out,
