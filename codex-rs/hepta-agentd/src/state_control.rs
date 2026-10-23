@@ -483,6 +483,51 @@ impl AgentdState {
                     .map_err(run_error)?;
                 AgentdPayload::RunReceipt(wire_run_receipt(receipt))
             }
+            crate::AgentdMethod::RunMarkDispatchedBound {
+                run_id,
+                expected_revision,
+                dispatch_binding_digest,
+                pre_effect_abort_commitment_digest,
+            } => {
+                require_run_admission_ready(lifecycle, app_server_ready, fenced)?;
+                let receipt = self
+                    .runs
+                    .lock()
+                    .map_err(poisoned_state)?
+                    .mark_dispatched_bound(
+                        now_ms()?,
+                        &run_id,
+                        expected_revision,
+                        dispatch_binding_digest,
+                        pre_effect_abort_commitment_digest,
+                    )
+                    .map_err(run_error)?;
+                AgentdPayload::RunReceipt(wire_run_receipt(receipt))
+            }
+            crate::AgentdMethod::RunAbortBeforeEffect {
+                run_id,
+                expected_revision,
+                dispatch_binding_digest,
+                abort_nonce_hex,
+                proof_digest,
+                reason,
+            } => {
+                require_run_reconciliation_ready(lifecycle, fenced)?;
+                let receipt = self
+                    .runs
+                    .lock()
+                    .map_err(poisoned_state)?
+                    .abort_before_effect(
+                        &run_id,
+                        expected_revision,
+                        &dispatch_binding_digest,
+                        &abort_nonce_hex,
+                        &proof_digest,
+                        &reason,
+                    )
+                    .map_err(run_error)?;
+                AgentdPayload::RunReceipt(wire_run_receipt(receipt))
+            }
             crate::AgentdMethod::RunCancel {
                 run_id,
                 expected_revision,
@@ -1310,6 +1355,7 @@ fn internal_run_phase(value: crate::AgentRunPhase) -> crate::RunPhase {
         crate::AgentRunPhase::Admitted => crate::RunPhase::Admitted,
         crate::AgentRunPhase::ContextAttached => crate::RunPhase::ContextAttached,
         crate::AgentRunPhase::Dispatched => crate::RunPhase::Dispatched,
+        crate::AgentRunPhase::AbortedBeforeEffect => crate::RunPhase::AbortedBeforeEffect,
         crate::AgentRunPhase::Cancelling => crate::RunPhase::Cancelling,
         crate::AgentRunPhase::Cancelled => crate::RunPhase::Cancelled,
         crate::AgentRunPhase::Succeeded => crate::RunPhase::Succeeded,
@@ -1323,6 +1369,7 @@ fn wire_run_phase(value: crate::RunPhase) -> crate::AgentRunPhase {
         crate::RunPhase::Admitted => crate::AgentRunPhase::Admitted,
         crate::RunPhase::ContextAttached => crate::AgentRunPhase::ContextAttached,
         crate::RunPhase::Dispatched => crate::AgentRunPhase::Dispatched,
+        crate::RunPhase::AbortedBeforeEffect => crate::AgentRunPhase::AbortedBeforeEffect,
         crate::RunPhase::Cancelling => crate::AgentRunPhase::Cancelling,
         crate::RunPhase::Cancelled => crate::AgentRunPhase::Cancelled,
         crate::RunPhase::Succeeded => crate::AgentRunPhase::Succeeded,
@@ -1342,6 +1389,9 @@ fn wire_run_receipt(value: crate::RunReceipt) -> crate::AgentRunReceipt {
         generation: value.generation,
         fence_digest: value.fence_digest,
         deadline_ms: value.deadline_ms,
+        dispatch_binding_digest: value.dispatch_binding_digest,
+        pre_effect_abort_commitment_digest: value.pre_effect_abort_commitment_digest,
+        pre_effect_abort_proof_digest: value.pre_effect_abort_proof_digest,
         cancel_reason: value.cancel_reason,
         cancel_ack_deadline_ms: value.cancel_ack_deadline_ms,
         terminal_observed: value.terminal_observed,

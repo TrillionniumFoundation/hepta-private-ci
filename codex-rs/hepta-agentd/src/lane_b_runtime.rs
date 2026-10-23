@@ -2,6 +2,7 @@ use std::collections::BTreeMap;
 
 use codex_hepta_learning_ledger::RunStartObjectiveDispositionV1;
 use codex_hepta_learning_ledger::RunStartRecordV1;
+use codex_hepta_types::Digest32;
 
 const MAX_SUPPORTED_ACTIVE_RUNS: usize = 256;
 const MAX_RETAINED_RUNS: usize = 1_024;
@@ -14,6 +15,9 @@ pub enum RunPhase {
     Admitted,
     ContextAttached,
     Dispatched,
+    /// The exact dispatch was durably prepared by both owners, but the worker
+    /// proved that no external effect boundary was crossed.
+    AbortedBeforeEffect,
     Cancelling,
     Cancelled,
     Succeeded,
@@ -23,7 +27,10 @@ pub enum RunPhase {
 
 impl RunPhase {
     fn closed(self) -> bool {
-        matches!(self, Self::Cancelled | Self::Succeeded | Self::Failed)
+        matches!(
+            self,
+            Self::AbortedBeforeEffect | Self::Cancelled | Self::Succeeded | Self::Failed
+        )
     }
 
     fn terminal_observed(self) -> bool {
@@ -98,6 +105,16 @@ pub struct RunReceipt {
     pub cancel_reason: Option<String>,
     pub cancel_ack_deadline_ms: Option<u64>,
     pub compilation_receipt_digest: Option<String>,
+    /// Exact runtime.codex request/dispatch binding committed before the
+    /// physical effect boundary. Legacy callers leave this empty and therefore
+    /// cannot use the exact pre-effect abort transition.
+    pub dispatch_binding_digest: Option<String>,
+    /// Commitment to the live worker's non-serializable abort nonce. Agentd
+    /// records it at the same transition that records Dispatched.
+    pub pre_effect_abort_commitment_digest: Option<String>,
+    /// Durable proof identity accepted by Agentd for a definitely-unsent
+    /// dispatch. This is deliberately not a provider terminal observation.
+    pub pre_effect_abort_proof_digest: Option<String>,
     pub terminal_observed: bool,
     pub idempotent: bool,
 }
@@ -137,6 +154,9 @@ struct RunRecord {
     phase: RunPhase,
     context_digest: Option<String>,
     compilation_receipt_digest: Option<String>,
+    dispatch_binding_digest: Option<String>,
+    pre_effect_abort_commitment_digest: Option<String>,
+    pre_effect_abort_proof_digest: Option<String>,
     cancel_reason: Option<String>,
     cancel_ack_deadline_ms: Option<u64>,
 }
@@ -211,6 +231,9 @@ impl AgentRunCoordinator {
             phase: RunPhase::Admitted,
             context_digest: None,
             compilation_receipt_digest: None,
+            dispatch_binding_digest: None,
+            pre_effect_abort_commitment_digest: None,
+            pre_effect_abort_proof_digest: None,
             cancel_reason: None,
             cancel_ack_deadline_ms: None,
         };
@@ -304,19 +327,66 @@ impl AgentRunCoordinator {
         Ok(receipt(record, /*idempotent*/ false))
     }
 
+    /// Legacy dispatch transition. It remains for compatibility, but because it
+    /// carries no exact external binding it cannot later prove a pre-effect
+    /// abort across the owner boundary.
     pub fn mark_dispatched(
         &mut self,
         now_ms: u64,
         run_id: &str,
         expected_revision: u64,
     ) -> Result<RunReceipt, AgentRunError> {
+        self.mark_dispatched_inner(now_ms, run_id, expected_revision, None, None)
+    }
+
+    /// Commit the exact runtime.codex dispatch identity and the live worker's
+    /// nonce commitment at the Agentd owner.
+    pub fn mark_dispatched_bound(
+        &mut self,
+        now_ms: u64,
+        run_id: &str,
+        expected_revision: u64,
+        dispatch_binding_digest: String,
+        pre_effect_abort_commitment_digest: String,
+    ) -> Result<RunReceipt, AgentRunError> {
+        validate_digest(&dispatch_binding_digest, "dispatch binding")?;
+        validate_digest(
+            &pre_effect_abort_commitment_digest,
+            "pre-effect abort commitment",
+        )?;
+        self.mark_dispatched_inner(
+            now_ms,
+            run_id,
+            expected_revision,
+            Some(dispatch_binding_digest),
+            Some(pre_effect_abort_commitment_digest),
+        )
+    }
+
+    fn mark_dispatched_inner(
+        &mut self,
+        now_ms: u64,
+        run_id: &str,
+        expected_revision: u64,
+        dispatch_binding_digest: Option<String>,
+        pre_effect_abort_commitment_digest: Option<String>,
+    ) -> Result<RunReceipt, AgentRunError> {
         validate_identity(run_id, "run")?;
+        if dispatch_binding_digest.is_some() != pre_effect_abort_commitment_digest.is_some() {
+            return Err(AgentRunError::InvalidTransition);
+        }
         let record = self
             .runs
             .get_mut(run_id)
             .ok_or(AgentRunError::RunNotFound)?;
         if record.phase == RunPhase::Dispatched {
-            return Ok(receipt(record, /*idempotent*/ true));
+            return if record.dispatch_binding_digest == dispatch_binding_digest
+                && record.pre_effect_abort_commitment_digest == pre_effect_abort_commitment_digest
+            {
+                Ok(receipt(record, /*idempotent*/ true))
+            } else {
+                Err(AgentRunError::Conflict)
+            };
         }
         require_revision(record, expected_revision)?;
         require_live_deadline(record, now_ms)?;
@@ -326,7 +396,68 @@ impl AgentRunCoordinator {
         if record.phase != RunPhase::ContextAttached {
             return Err(AgentRunError::ContextRequired);
         }
+        record.dispatch_binding_digest = dispatch_binding_digest;
+        record.pre_effect_abort_commitment_digest = pre_effect_abort_commitment_digest;
         record.phase = RunPhase::Dispatched;
+        advance_revision(record)?;
+        Ok(receipt(record, /*idempotent*/ false))
+    }
+
+    /// Close a bound dispatch as definitely unsent without inventing a
+    /// provider terminal observation. The nonce opens the commitment stored by
+    /// mark_dispatched_bound, and the proof additionally binds the reason.
+    pub fn abort_before_effect(
+        &mut self,
+        run_id: &str,
+        expected_revision: u64,
+        dispatch_binding_digest: &str,
+        abort_nonce_hex: &str,
+        proof_digest: &str,
+        reason: &str,
+    ) -> Result<RunReceipt, AgentRunError> {
+        validate_identity(run_id, "run")?;
+        validate_digest(dispatch_binding_digest, "dispatch binding")?;
+        validate_digest(proof_digest, "pre-effect abort proof")?;
+        validate_cancel_reason(reason)?;
+        let nonce = decode_abort_nonce_hex(abort_nonce_hex)?;
+        let expected_commitment =
+            pre_effect_abort_commitment(run_id, dispatch_binding_digest, &nonce);
+        let expected_proof =
+            pre_effect_abort_proof(run_id, dispatch_binding_digest, &nonce, reason);
+        if expected_proof != proof_digest {
+            return Err(AgentRunError::Conflict);
+        }
+
+        let record = self
+            .runs
+            .get_mut(run_id)
+            .ok_or(AgentRunError::RunNotFound)?;
+        if record.phase == RunPhase::AbortedBeforeEffect {
+            let same = record.dispatch_binding_digest.as_deref() == Some(dispatch_binding_digest)
+                && record.pre_effect_abort_commitment_digest.as_deref()
+                    == Some(expected_commitment.as_str())
+                && record.pre_effect_abort_proof_digest.as_deref() == Some(proof_digest)
+                && record.cancel_reason.as_deref() == Some(reason);
+            return if same {
+                Ok(receipt(record, /*idempotent*/ true))
+            } else {
+                Err(AgentRunError::Conflict)
+            };
+        }
+        require_revision(record, expected_revision)?;
+        if record.phase != RunPhase::Dispatched {
+            return Err(AgentRunError::InvalidTransition);
+        }
+        if record.dispatch_binding_digest.as_deref() != Some(dispatch_binding_digest)
+            || record.pre_effect_abort_commitment_digest.as_deref()
+                != Some(expected_commitment.as_str())
+        {
+            return Err(AgentRunError::Conflict);
+        }
+        record.phase = RunPhase::AbortedBeforeEffect;
+        record.pre_effect_abort_proof_digest = Some(proof_digest.to_string());
+        record.cancel_reason = Some(reason.to_string());
+        record.cancel_ack_deadline_ms = None;
         advance_revision(record)?;
         Ok(receipt(record, /*idempotent*/ false))
     }
@@ -378,7 +509,10 @@ impl AgentRunCoordinator {
                     receipt(record, /*idempotent*/ true),
                 ));
             }
-            RunPhase::Cancelled | RunPhase::Succeeded | RunPhase::Failed => {
+            RunPhase::AbortedBeforeEffect
+            | RunPhase::Cancelled
+            | RunPhase::Succeeded
+            | RunPhase::Failed => {
                 return Ok((
                     CancellationDisposition::AlreadyTerminal,
                     receipt(record, /*idempotent*/ true),
@@ -455,6 +589,9 @@ impl AgentRunCoordinator {
             phase: RunPhase::Indeterminate,
             context_digest: Some(recovery.context_digest),
             compilation_receipt_digest: Some(recovery.compilation_receipt_digest),
+            dispatch_binding_digest: None,
+            pre_effect_abort_commitment_digest: None,
+            pre_effect_abort_proof_digest: None,
             cancel_reason: recovery.cancel_reason,
             cancel_ack_deadline_ms: None,
         };
@@ -494,7 +631,8 @@ impl AgentRunCoordinator {
                     record.cancel_ack_deadline_ms = Some(cancel_ack_deadline(now_ms)?);
                     advance_revision(record)?;
                 }
-                RunPhase::Cancelling
+                RunPhase::AbortedBeforeEffect
+                | RunPhase::Cancelling
                 | RunPhase::Cancelled
                 | RunPhase::Succeeded
                 | RunPhase::Failed
@@ -700,7 +838,8 @@ fn expire_record(record: &mut RunRecord, now_ms: u64) -> Result<bool, AgentRunEr
             advance_revision(record)?;
             Ok(true)
         }
-        RunPhase::Cancelling
+        RunPhase::AbortedBeforeEffect
+        | RunPhase::Cancelling
         | RunPhase::Cancelled
         | RunPhase::Succeeded
         | RunPhase::Failed
@@ -735,8 +874,91 @@ fn receipt(record: &RunRecord, idempotent: bool) -> RunReceipt {
         cancel_reason: record.cancel_reason.clone(),
         cancel_ack_deadline_ms: record.cancel_ack_deadline_ms,
         compilation_receipt_digest: record.compilation_receipt_digest.clone(),
+        dispatch_binding_digest: record.dispatch_binding_digest.clone(),
+        pre_effect_abort_commitment_digest: record.pre_effect_abort_commitment_digest.clone(),
+        pre_effect_abort_proof_digest: record.pre_effect_abort_proof_digest.clone(),
         terminal_observed: record.phase.terminal_observed(),
         idempotent,
+    }
+}
+
+const PRE_EFFECT_ABORT_COMMITMENT_DOMAIN: &[u8] =
+    b"hepta.runtime.codex.pre-effect-abort.commitment.v1";
+const PRE_EFFECT_ABORT_PROOF_DOMAIN: &[u8] = b"hepta.runtime.codex.pre-effect-abort.proof.v1";
+
+fn pre_effect_abort_commitment(
+    run_id: &str,
+    dispatch_binding_digest: &str,
+    nonce: &[u8; 32],
+) -> String {
+    framed_abort_digest(
+        PRE_EFFECT_ABORT_COMMITMENT_DOMAIN,
+        run_id,
+        dispatch_binding_digest,
+        nonce,
+        None,
+    )
+}
+
+fn pre_effect_abort_proof(
+    run_id: &str,
+    dispatch_binding_digest: &str,
+    nonce: &[u8; 32],
+    reason: &str,
+) -> String {
+    framed_abort_digest(
+        PRE_EFFECT_ABORT_PROOF_DOMAIN,
+        run_id,
+        dispatch_binding_digest,
+        nonce,
+        Some(reason),
+    )
+}
+
+fn framed_abort_digest(
+    domain: &[u8],
+    run_id: &str,
+    dispatch_binding_digest: &str,
+    nonce: &[u8; 32],
+    reason: Option<&str>,
+) -> String {
+    let mut bytes = Vec::new();
+    push_abort_part(&mut bytes, domain);
+    push_abort_part(&mut bytes, run_id.as_bytes());
+    push_abort_part(&mut bytes, dispatch_binding_digest.as_bytes());
+    push_abort_part(&mut bytes, nonce);
+    if let Some(reason) = reason {
+        push_abort_part(&mut bytes, reason.as_bytes());
+    }
+    Digest32::of_bytes(&bytes).to_string()
+}
+
+fn push_abort_part(output: &mut Vec<u8>, value: &[u8]) {
+    let length = u64::try_from(value.len()).expect("bounded runtime.codex abort field");
+    output.extend_from_slice(&length.to_be_bytes());
+    output.extend_from_slice(value);
+}
+
+fn decode_abort_nonce_hex(value: &str) -> Result<[u8; 32], AgentRunError> {
+    if value.len() != 64 {
+        return Err(AgentRunError::InvalidDigest("pre-effect abort nonce"));
+    }
+    let mut nonce = [0_u8; 32];
+    for (index, pair) in value.as_bytes().chunks_exact(2).enumerate() {
+        let high = abort_hex_nibble(pair[0])
+            .ok_or(AgentRunError::InvalidDigest("pre-effect abort nonce"))?;
+        let low = abort_hex_nibble(pair[1])
+            .ok_or(AgentRunError::InvalidDigest("pre-effect abort nonce"))?;
+        nonce[index] = (high << 4) | low;
+    }
+    Ok(nonce)
+}
+
+fn abort_hex_nibble(value: u8) -> Option<u8> {
+    match value {
+        b'0'..=b'9' => Some(value - b'0'),
+        b'a'..=b'f' => Some(value - b'a' + 10),
+        _ => None,
     }
 }
 

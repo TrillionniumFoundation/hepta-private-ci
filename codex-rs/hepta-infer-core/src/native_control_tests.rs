@@ -601,3 +601,52 @@ fn historical_codex_dispatch_without_frontier_reopens_but_cannot_upgrade_to_succ
     drop(control);
     std::fs::remove_file(path).unwrap();
 }
+
+#[test]
+fn two_phase_pre_effect_abort_survives_reopen_and_holds_capacity_until_owner_ack() {
+    let path = path("abort-saga");
+    let mut control = DurableInferenceControl::open(&path, 8).unwrap();
+    control.reserve_native(request("r1"), 1).unwrap();
+    let (_, token) = control
+        .dispatch_native_with_pre_effect_abort("r1", dispatch())
+        .unwrap();
+    let binding = "7".repeat(64);
+    let commitment = token
+        .commitment_digest("run.1", &binding)
+        .expect("commitment");
+    let pending = control
+        .prepare_native_abort_before_effect(
+            token,
+            "run.1".to_string(),
+            3,
+            binding.clone(),
+            "final-use fence changed".to_string(),
+        )
+        .expect("prepare abort");
+    assert_eq!(pending.state, NativeReservationState::AbortPending);
+    let abort = pending.pre_effect_abort.as_ref().expect("abort record");
+    assert_eq!(abort.commitment_digest, commitment);
+    assert_eq!(
+        control.reserve_native(request("r2"), 1),
+        Err(Error::CapacityExceeded)
+    );
+    let proof = abort.proof_digest.clone();
+
+    drop(control);
+    let mut reopened = DurableInferenceControl::open(&path, 8).unwrap();
+    let recovered = reopened.native_record("r1").cloned().expect("recovered");
+    assert_eq!(recovered, pending);
+    assert_eq!(recovered.state, NativeReservationState::AbortPending);
+    let confirmed = reopened
+        .confirm_native_abort_before_effect("r1", &proof)
+        .expect("confirm owner abort");
+    assert_eq!(confirmed.state, NativeReservationState::Released);
+    assert_eq!(
+        confirmed.pre_dispatch_stop.as_deref(),
+        Some("final-use fence changed")
+    );
+    assert_eq!(confirmed.observation, None);
+    reopened.reserve_native(request("r2"), 1).unwrap();
+    drop(reopened);
+    std::fs::remove_file(path).unwrap();
+}
