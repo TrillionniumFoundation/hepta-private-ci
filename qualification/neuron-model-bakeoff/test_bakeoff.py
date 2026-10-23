@@ -84,7 +84,7 @@ class BakeoffContractTests(unittest.TestCase):
                 "digests": {
                     key: "b" * 64 for key in (
                         "weights", "tokenizer", "preprocessor",
-                        "head", "runtime", "device",
+                        "head", "quantization", "runtime", "device",
                     )
                 },
                 "profile": {

@@ -79,12 +79,31 @@ def choose_temperature(records: list[tuple[dict[str, float], str]]) -> float:
     return best[1]
 
 
-def laya_scores(snapshot: Path, rows: list[dict[str, Any]]) -> tuple[dict[str, dict[str, float]], dict[str, Any]]:
+def precision_manifest(model: Any) -> str:
+    import torch
+
+    descriptors = sorted(
+        [name, list(parameter.shape), str(parameter.dtype), str(parameter.device)]
+        for name, parameter in model.named_parameters()
+    )
+    require(bool(descriptors), "loaded model has no trainable/registered parameters")
+    return hashlib.sha256(json.dumps(descriptors, sort_keys=True).encode()).hexdigest()
+
+
+def device_kind(device: Any) -> str:
+    return str(device).split(":", 1)[0]
+
+
+def laya_scores(
+    snapshot: Path, rows: list[dict[str, Any]], expected_device: str,
+) -> tuple[dict[str, dict[str, float]], dict[str, Any]]:
     import laya
 
     started = time.perf_counter()
-    agent = laya.load(str(snapshot))
+    agent = laya.load(str(snapshot), device=expected_device)
     load_ms = (time.perf_counter() - started) * 1000
+    require(device_kind(agent.device) == expected_device, "Laya silent load-device fallback")
+    precision_sha = precision_manifest(agent.model)
     output: dict[str, dict[str, float]] = {}
     for row in rows:
         options = row["options"]
@@ -95,22 +114,31 @@ def laya_scores(snapshot: Path, rows: list[dict[str, Any]]) -> tuple[dict[str, d
             },
         }
         answer = agent.predict(row["state"], question)["answers"]["decision"]
+        require(device_kind(agent.device) == expected_device, "Laya silent inference CPU fallback")
         probs = answer.get("probabilities")
         require(isinstance(probs, dict) and set(probs) == set(options),
                 "Laya decision did not emit a complete distribution")
         output[row["id"]] = normalize({x: float(probs[x]) for x in options})
-    return output, {"backend": "laya-sdk", "load_ms": load_ms}
+    return output, {
+        "backend": "laya-sdk", "load_ms": load_ms,
+        "selected_device": expected_device,
+        "parameter_precision_sha256": precision_sha,
+    }
 
 
 def embedding_scores(
-    snapshot: Path, rows: list[dict[str, Any]],
+    snapshot: Path, rows: list[dict[str, Any]], expected_device: str,
 ) -> tuple[dict[str, dict[str, float]], dict[str, Any], str]:
     import numpy as np
     from sentence_transformers import SentenceTransformer
 
     started = time.perf_counter()
-    model = SentenceTransformer(str(snapshot), trust_remote_code=False, local_files_only=True)
+    model = SentenceTransformer(
+        str(snapshot), trust_remote_code=False, local_files_only=True, device=expected_device,
+    )
     load_ms = (time.perf_counter() - started) * 1000
+    require(device_kind(model.device) == expected_device, "Encoder device fallback")
+    precision_sha = precision_manifest(model)
     texts: list[str] = []
     positions: dict[str, tuple[int, int]] = {}
     for row in rows:
@@ -124,6 +152,7 @@ def embedding_scores(
         convert_to_numpy=True, show_progress_bar=False,
     )
     encode_ms = (time.perf_counter() - started) * 1000
+    require(device_kind(model.device) == expected_device, "Encoder device changed")
     require(embeddings.ndim == 2 and embeddings.shape[1] >= HEAD_DIM and np.isfinite(embeddings).all(),
             "invalid real embeddings")
     rng = np.random.default_rng(HEAD_SEED)
@@ -160,6 +189,7 @@ def embedding_scores(
     return output, {
         "backend": "sentence-transformers", "load_ms": load_ms,
         "embedding_forward_ms": encode_ms,
+        "selected_device": expected_device, "parameter_precision_sha256": precision_sha,
         "head_trainable_parameters": HEAD_DIM,
         "head_epochs": HEAD_EPOCHS,
         "head_training_steps": updates,
@@ -204,6 +234,7 @@ def main() -> int:
     p.add_argument("--source-commit", required=True)
     p.add_argument("--dataset", type=Path, required=True)
     p.add_argument("--abstention-threshold", type=float, required=True)
+    p.add_argument("--device", choices=("cpu", "cuda", "mps"), required=True)
     p.add_argument("--output-root", type=Path, required=True)
     a = p.parse_args()
     try:
@@ -217,6 +248,18 @@ def main() -> int:
         require(root.is_dir() and root.parent.name == "snapshots" and root.name == a.revision,
                 "snapshot must be local Hugging Face cache snapshots/<exact SHA>")
         require(0 < a.abstention_threshold < 1, "invalid preregistered abstention threshold")
+        import torch
+
+        require(
+            (a.device == "cpu")
+            or (a.device == "cuda" and torch.cuda.is_available())
+            or (
+                a.device == "mps"
+                and hasattr(torch.backends, "mps")
+                and torch.backends.mps.is_available()
+            ),
+            "requested accelerator unavailable; no automatic fallback",
+        )
         inventory = model_inventory(root)
         data = load_jsonl(a.dataset)
         validate_dataset(data)
@@ -225,11 +268,13 @@ def main() -> int:
         if a.model.startswith("laya-"):
             scores, profile = laya_scores(
                 root, [r for r in data if r["split"] in ("calibration", "future_test")],
+                a.device,
             )
             head_digest = inventory["weights"]
         else:
             scores, profile, head_digest = embedding_scores(
                 root, [r for r in data if r["split"] in ("train", "calibration", "future_test")],
+                a.device,
             )
         calibration_rows = [r for r in data if r["split"] == "calibration" and not r["ood"]]
         temp = choose_temperature([(scores[r["id"]], r["gold"]) for r in calibration_rows])
@@ -253,6 +298,7 @@ def main() -> int:
             "predictions_sha256": file_hash(out_file),
             "digests": {
                 **inventory, "head": head_digest,
+                "quantization": profile["parameter_precision_sha256"],
                 "preprocessor": hashlib.sha256(b"hepta.choice.v1\nstate+question+option").hexdigest(),
                 "runtime": runtime_identity(), "device": device_identity(),
             },

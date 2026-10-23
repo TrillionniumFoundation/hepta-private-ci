@@ -33,12 +33,17 @@ https://huggingface.co/microsoft/harrier-oss-v1-270m .
 
 ## Setup and real measurement
 
-The source commit, model repo and revision, all six artifact digests, dataset
+The source commit, model repo and revision, all seven artifact digests, dataset
 SHA256, predictions SHA256, training profile and outcome partitions are bound
 in the emitted run receipts. **No implicit HF downloads are allowed.**
 Prepare each model snapshot in a private target host by independently
 downloading a specific 40-character HF revision and verifying its immutable
-weights/tokenizer against the owner's artifact registry. The resolved folder
+weights/tokenizer against the owner's artifact registry.
+The runner now requires --device cpu|cuda|mps and verifies the selected
+device on load and after inference (Laya may otherwise silently fall back
+to CPU after an OOM). Its quantization digest binds the loaded tensor
+shape/dtype/device manifest; full quantization calibration, operator and
+runtime identities still require external Artifact Registry verification. The resolved folder
 must be a real Hugging Face cache snapshots/<revision> directory. Install
 pinned compatible versions of torch, transformers, laya, sentence-transformers
 and numpy on that host; retain an external lock/SBOM. Some upstream checkpoints
@@ -65,7 +70,7 @@ changes), for each model:
       --revision ACTUAL_SHA \
       --source-commit "$(git rev-parse HEAD)" \
       --dataset /private/eval/locked.jsonl \
-      --abstention-threshold PRE_REGISTERED_FLOAT \
+      --abstention-threshold PRE_REGISTERED_FLOAT --device cuda \
       --output-root /private/eval/runs
 
 Repeat for typed, multilingual, Arctic and Harrier with their own actual

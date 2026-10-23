@@ -33,7 +33,7 @@ HEAD_BUDGET_FIELDS = (
 SPLITS = ("train", "validation", "calibration", "future_test")
 SHA256 = re.compile(r"[0-9a-f]{64}\Z")
 REVISION = re.compile(r"[0-9a-f]{40}\Z")
-REQUIRED_DIGESTS = ("weights", "tokenizer", "preprocessor", "head", "runtime", "device")
+REQUIRED_DIGESTS = ("weights", "tokenizer", "preprocessor", "head", "quantization", "runtime", "device")
 
 
 class EvidenceError(ValueError):
