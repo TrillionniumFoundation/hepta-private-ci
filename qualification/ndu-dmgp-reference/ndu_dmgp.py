@@ -414,10 +414,12 @@ def evaluate(bundle: dict[str, Any]) -> dict[str, Any]:
         "reference_checks_passed": all(gates.values()),
         "production_qualified": False,
         "production_blockers": [
-            "cryptographic observer/evidence verification against host trust root not implemented",
-            "no production model or decoder execution performed by this reference evaluator",
-            "causal attribution, BSDE numerical well-posedness and true Markov sufficiency not certified",
-            "independent future-window selection/release requires learning.eval and final-use owner",
+            "reward_truth: real externally observed outcomes and cryptographic observer/evidence verification unavailable",
+            "cross_modal_consistency: no real decoded audio/image/video, bidirectional reconstruction or independently verified timelines",
+            "covariance_identifiability: no real conditional joint-trajectory dataset or stochastic NDU BSDE driver qualification",
+            "compute_efficiency: target hardware decoder/controller wall/GPU/CPU/RSS measurements unavailable",
+            "learning_stability: prospective future-window model/critic training and independent final-use/rollback not qualified",
+            "global_utility_decomposition: causal full-circuit attribution and multivariate Markov closure not certified",
         ],
     }
     report["report_digest"] = digest(report)
