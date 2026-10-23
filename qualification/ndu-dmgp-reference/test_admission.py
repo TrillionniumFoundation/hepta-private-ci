@@ -81,14 +81,20 @@ class IndependentEvidenceTests(unittest.TestCase):
             {"evidence_kind": "synthetic_reference"},
             {"required_modalities": ("text",)},
             {"emitted_modalities": ("text",)},
-            {"peak_rss_bytes": 0}, {"peak_vram_bytes": -1},
+            {"peak_rss_bytes": 0}, {"peak_rss_bytes": math.nan},
+            {"peak_vram_bytes": -1}, {"peak_vram_bytes": math.nan},
+            {"generation": True}, {"observed_at": True},
             {"wall_us": 30.}, {"controller_us": math.nan},
-            {"quality": 1.1}, {"risk": 1.1}, {"compute_units": 5.},
+            {"quality": 1.1}, {"quality": True}, {"risk": 1.1},
+            {"compute_units": 5.}, {"compute_units": 0.},
         ):
             with self.subTest(mutation=mutation), self.assertRaises(GateRejected):
                 changed = replace(raw(), **mutation)
                 # An authorized signer cannot legalize illegal source, scope or physics.
-                digest = evidence_digest(changed) if math.isfinite(changed.controller_us) else "bad"
+                try:
+                    digest = evidence_digest(changed)
+                except (ValueError, TypeError):
+                    digest = "bad"
                 record = replace(changed,
                                  observer_signature=hmac.new(KEYS["independent-observer"],
                                      digest.encode(), "sha256").hexdigest(),
