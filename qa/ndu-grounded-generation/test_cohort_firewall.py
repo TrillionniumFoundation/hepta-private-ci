@@ -196,6 +196,22 @@ class CohortFirewallTests(unittest.TestCase):
 
     @unittest.skipUnless(hasattr(os, "O_NOFOLLOW") and hasattr(os, "symlink"),
                          "no-follow open is unavailable on this platform")
+    def test_cli_does_not_follow_mutable_manifest_symlink(self):
+        with tempfile.TemporaryDirectory() as td:
+            root = Path(td)
+            (root / "real.json").write_text(json.dumps(self.new))
+            (root / "alias.json").symlink_to(root / "real.json")
+            raw = json.dumps(self.old).encode()
+            (root / "history.json").write_bytes(raw)
+            args = [sys.executable, str(Path(__file__).parent / "cohort_firewall.py"),
+                    "--candidate", str(root / "alias.json"),
+                    "--historical", str(root / "history.json"),
+                    "--historical-sha256", hashlib.sha256(raw).hexdigest(),
+                    "--output", str(root / "receipt.json")]
+            result = subprocess.run(args, capture_output=True, text=True, timeout=5)
+            self.assertEqual(result.returncode, 2, result.stderr)
+            self.assertEqual(json.loads((root / "receipt.json").read_text())["status"],
+                             "fail")
 
     def test_cli_refuses_unpinned_or_incomplete_history(self):
         with tempfile.TemporaryDirectory() as td:
