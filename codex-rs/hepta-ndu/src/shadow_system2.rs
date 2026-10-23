@@ -100,6 +100,7 @@ pub struct NduShadowSuggestionV1 {
 pub enum NduShadowError {
     EmptyId(&'static str),
     IdTooLarge(&'static str),
+    InvalidId(&'static str),
     ZeroDigest(&'static str),
     ZeroGeneration,
     InvalidMaxDepth,
@@ -381,8 +382,13 @@ fn validate_id(name: &'static str, value: &str) -> Result<(), NduShadowError> {
     if value.len() > MAX_NDU_SHADOW_ID_BYTES_V1 {
         return Err(NduShadowError::IdTooLarge(name));
     }
-    if value.bytes().any(|byte| byte == 0) {
-        return Err(NduShadowError::EmptyId(name));
+    // Stable identifiers must not carry control text, path separators, or
+    // visually ambiguous non-ASCII characters into receipt and trace fields.
+    if !value
+        .bytes()
+        .all(|byte| byte.is_ascii_alphanumeric() || b"._:-".contains(&byte))
+    {
+        return Err(NduShadowError::InvalidId(name));
     }
     Ok(())
 }
