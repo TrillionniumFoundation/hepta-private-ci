@@ -90,7 +90,7 @@ async fn root_material_recovery_rejects_changed_held_image_without_advancing_hea
 
 #[tokio::test]
 #[ignore = "actual Root image/counter/pidfd recovery qualification"]
-async fn root_material_recovery_rejects_wrong_cut_or_forged_full_predecessor() {
+async fn root_material_recovery_rejects_wrong_cut_or_stale_full_predecessor() {
     let mut f = Fixture::new().await;
     let image = material(&f).await;
     f.mutate(CognitiveCheckpointCommand::BeginWrites, 2);
@@ -100,10 +100,14 @@ async fn root_material_recovery_rejects_wrong_cut_or_forged_full_predecessor() {
     f.previous.token = token_for(&f.previous.head).unwrap();
     assert_eq!(recover(&f, &image).err(), Some(AuthorityTrustError::Invalid));
     f.previous = original.clone();
-    f.previous.head.counter += 1;
-    f.previous.token = token_for(&f.previous.head).unwrap();
+    // Obtain another valid full protected head through its original protocol.
+    // A manually changed counter would be malformed and rejected before CAS,
+    // so it cannot exercise the stale-but-valid full-predecessor comparison.
+    f.mutate(CognitiveCheckpointCommand::FencePublisher, 3);
+    let actual = f.previous.clone();
+    f.previous = original;
     assert_eq!(recover(&f, &image).err(), Some(AuthorityTrustError::Conflict));
-    assert_eq!(f.backend.load().unwrap(), original.head);
+    assert_eq!(f.backend.load().unwrap(), actual.head);
 }
 
 #[tokio::test]
