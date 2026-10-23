@@ -45,7 +45,25 @@ pub use authority_host_wire::HostWriterAuthorizationReadRequestV1;
 pub use authority_host_wire::HostWriterAuthorizationReadResponseV1;
 
 #[cfg(target_os = "linux")]
+mod authority_host_bootstrap;
+#[cfg(target_os = "linux")]
 mod authority_host_config;
+#[cfg(target_os = "linux")]
+pub use authority_host_bootstrap::HOST_AUTHORITY_BOOTSTRAP_BOUND;
+#[cfg(target_os = "linux")]
+pub use authority_host_bootstrap::HOST_AUTHORITY_BOOTSTRAP_V1;
+#[cfg(target_os = "linux")]
+pub use authority_host_bootstrap::HostAuthorityFiveLanePathsV1;
+#[cfg(target_os = "linux")]
+pub use authority_host_bootstrap::HostAuthorityPublicBootstrapV1;
+#[cfg(target_os = "linux")]
+pub use authority_host_bootstrap::HostAuthorityPublicConsumerV1;
+#[cfg(target_os = "linux")]
+pub use authority_host_bootstrap::HostAuthorityPublicConsumersV1;
+#[cfg(target_os = "linux")]
+pub use authority_host_bootstrap::HostAuthorityPublicIssuerKeyV1;
+#[cfg(target_os = "linux")]
+pub use authority_host_config::HostAuthorityRegisteredIdentity;
 #[cfg(target_os = "linux")]
 mod authority_host_runtime;
 #[cfg(target_os = "linux")]

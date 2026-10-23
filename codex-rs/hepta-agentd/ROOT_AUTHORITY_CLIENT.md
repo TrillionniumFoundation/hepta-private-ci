@@ -82,6 +82,29 @@ pure verification. These are client qualifications, not proof that a root
 service, its protected directories or a complete device/Notes deployment was
 installed and qualified.
 
+## Public trusted-launcher bundle
+
+`HostAuthorityPublicBootstrapV1` in `authority_host_bootstrap.rs` is the shared
+closed JSON shape (`schema_version: 1`, `operation:
+"runtime.authority.bootstrap.v1"`, at most 64KiB). It contains the original
+root/consumer lifetime records, registered identity, public issuer key,
+revocations, exact writer registration and signed proof, complete protected
+checkpoint head, two original consumer frontiers/local journal paths, and the
+five mandatory socket paths. `checkpoint.last_current` is the original complete
+local cut. Both consumer owner IDs are the canonical signer ID; their protected
+root directories and original local journals remain separate.
+
+`HostAuthorityPublicIssuerKeyV1` serializes only the original public trust-key
+fields and converts to/from `FinalUseIssuerTrustKey` without defaults. The key,
+PID, proof and cut are not authenticated by JSON decoding. The trusted launcher
+must separately transfer its already held actual root/consumer pidfds and the
+fixed bootstrap descriptor; the compiler must validate that root source and all
+purpose/identity/binding fields before constructing the original clients. No
+private signing key, protected root directory FD, clock fallback, genesis claim
+or successful production-authority receipt is part of this bundle. Actual
+deployment qualification and example bundles come from the live root launcher,
+not a fabricated cut or a user-filled recovery template.
+
 ## Trusted writer succession
 
 `DeploymentFinalUseIssuer::rotate_writer_authorization` is a trusted launcher
