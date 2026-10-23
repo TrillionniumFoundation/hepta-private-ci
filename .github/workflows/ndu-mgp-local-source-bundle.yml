@@ -1,0 +1,61 @@
+name: NDU-MGP frozen source handoff for local reproduction
+
+on:
+  push:
+    branches: [research/ndu-mgp-local-source-bundle-20261023]
+    paths:
+      - '.github/workflows/ndu-mgp-local-source-bundle.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  pack-research-only:
+    if: github.repository == 'TrillionniumFoundation/hepta-private-ci'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - name: Checkout exact immutable source
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+          fetch-depth: 1
+          filter: blob:none
+          sparse-checkout: |
+            experiments/ndu_latent_riccati
+            experiments/ndu_mgp_gates
+      - name: Pack only tracked research files with manifest
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/ndu-source"
+          python3 - <<'PY'
+          import hashlib, json, os, pathlib, subprocess, zipfile
+          prefixes=("experiments/ndu_latent_riccati/", "experiments/ndu_mgp_gates/")
+          tracked=subprocess.check_output(["git","ls-files","-z"]).split(b"\0")
+          paths=[pathlib.Path(os.fsdecode(p)) for p in tracked if p and os.fsdecode(p).startswith(prefixes)]
+          assert 25 <= len(paths) <= 180, f"unexpected research source count {len(paths)}"
+          output=pathlib.Path(os.environ["RUNNER_TEMP"])/"ndu-source"
+          source_zip=output/"frozen-ndu-research-source.zip"
+          manifest={"schema":"ndu-local-source-handoff-v1",
+                    "source_sha":os.environ["GITHUB_SHA"],
+                    "scope":"research_only_no_secret_no_production_authority",
+                    "files":{}}
+          with zipfile.ZipFile(source_zip,"w",zipfile.ZIP_DEFLATED,compresslevel=6) as z:
+              for p in sorted(paths):
+                  assert p.is_file(), f"tracked path missing: {p}"
+                  data=p.read_bytes()
+                  manifest["files"][p.as_posix()] = hashlib.sha256(data).hexdigest()
+                  z.writestr(p.as_posix(),data)
+          (output/"manifest.json").write_text(json.dumps(manifest,indent=2)+"\n")
+          print(f"Packaged {len(paths)} tracked files for local reproduction.")
+          PY
+      - name: Upload portable source bundle
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f
+        with:
+          name: ndu-mgp-source-${{ github.sha }}
+          path: ${{ runner.temp }}/ndu-source/
+          if-no-files-found: error
+          retention-days: 7
