@@ -17,7 +17,7 @@ use std::sync::Arc;
 use std::time::Duration;
 
 #[path = "authority_host_channel.rs"]
-mod channel;
+pub(crate) mod channel;
 
 #[path = "authority_host_peer.rs"]
 mod peer;

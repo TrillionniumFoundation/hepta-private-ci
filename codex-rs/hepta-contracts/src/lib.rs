@@ -19,6 +19,8 @@ mod authority_host_issuer_transport;
 #[cfg(unix)]
 mod authority_host_store;
 pub mod authority_lease;
+#[cfg(target_os = "linux")]
+mod authority_root_frontier;
 pub mod authority_trust;
 #[cfg(test)]
 mod callers_manifest_tests;
@@ -65,6 +67,10 @@ pub use authority_host_store::HostIssuerError;
 pub use authority_host_store::RootAuthorityDirectory;
 pub use authority_lease::deliver_authority_lease_with_witness;
 pub use authority_lease::dispatch_authority_lease_with_witness;
+#[cfg(target_os = "linux")]
+pub use authority_root_frontier::RootFinalUseFrontierClient;
+#[cfg(target_os = "linux")]
+pub use authority_root_frontier::RootPeerIdentity;
 pub use authority_trust::AuthorityClock;
 pub use authority_trust::AuthorityFrontierStore;
 pub use authority_trust::AuthorityTrustError;
