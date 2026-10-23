@@ -7,7 +7,7 @@ from dataclasses import replace
 
 from reference import MODALITIES, GateRejected, Objective
 from admission import (RunEvidence, admit_run, compare_a0_a5,
-                       conditional_covariance, evidence_digest)
+                       conditional_policy_arm_covariance, evidence_digest)
 
 KEYS = {"independent-observer": b"observer-test-fixture-not-real-trust",
         "host-meter": b"meter-test-fixture-not-real-trust"}
@@ -152,7 +152,7 @@ class ConditionalRiskTests(unittest.TestCase):
             for i in range(n) for arm in ("A0", "A1")])
 
     def test_paired_condition_scoped_covariance_and_low_rank(self):
-        result = conditional_covariance(self.matrix(), ("A0", "A1"),
+        result = conditional_policy_arm_covariance(self.matrix(), ("A0", "A1"),
                                         train_cutoff=150, stratum="text-image", rank=1)
         self.assertTrue(result.supported, result.reason)
         self.assertEqual(result.sample_count, 36)
@@ -165,9 +165,9 @@ class ConditionalRiskTests(unittest.TestCase):
                         [replace(r, evidence=replace(r.evidence, observed_at=200))
                          for r in rows]):
             with self.assertRaises(GateRejected):
-                conditional_covariance(changed, ("A0", "A1"),
+                conditional_policy_arm_covariance(changed, ("A0", "A1"),
                                        train_cutoff=150, stratum="text-image")
-        self.assertFalse(conditional_covariance(self.matrix(n=4), ("A0", "A1"),
+        self.assertFalse(conditional_policy_arm_covariance(self.matrix(n=4), ("A0", "A1"),
                                                 train_cutoff=150, stratum="text-image").supported)
 
 
