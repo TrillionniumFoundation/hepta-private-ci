@@ -6,6 +6,33 @@
 
 mod app_runtime;
 #[cfg(target_os = "linux")]
+mod authority_host_wire;
+#[cfg(target_os = "linux")]
+pub use authority_host_wire::HOST_AUTHORITY_OBSERVATION_V2;
+#[cfg(target_os = "linux")]
+pub use authority_host_wire::HOST_WRITER_AUTHORIZATION_V1;
+#[cfg(target_os = "linux")]
+pub use authority_host_wire::HostAuthorityObservationRequestV2;
+#[cfg(target_os = "linux")]
+pub use authority_host_wire::HostAuthorityObservationResponseV2;
+#[cfg(target_os = "linux")]
+pub use authority_host_wire::HostAuthorityWriterObservationV2;
+#[cfg(target_os = "linux")]
+pub use authority_host_wire::HostConsumerFrontierRequestV1;
+#[cfg(target_os = "linux")]
+pub use authority_host_wire::HostConsumerFrontierResponseV1;
+#[cfg(target_os = "linux")]
+pub use authority_host_wire::HostConsumerFrontierStatusV1;
+#[cfg(target_os = "linux")]
+pub use authority_host_wire::HostSignedWriterAuthorizationV1;
+#[cfg(target_os = "linux")]
+pub use authority_host_wire::HostWriterAuthorizationClaimsV1;
+#[cfg(target_os = "linux")]
+pub use authority_host_wire::HostWriterAuthorizationReadRequestV1;
+#[cfg(target_os = "linux")]
+pub use authority_host_wire::HostWriterAuthorizationReadResponseV1;
+
+#[cfg(target_os = "linux")]
 mod authority_host_config;
 #[cfg(target_os = "linux")]
 mod authority_host_runtime;
