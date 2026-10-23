@@ -1,0 +1,59 @@
+{
+  "schema": "hepta.p41-provider-binding-e0599-source-and-native-review.v1",
+  "date_utc": "2026-10-23",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "isolation": {
+    "draft_pr": 3425,
+    "parent_draft_pr": 3320,
+    "base_head_at_fix": "a0736e8216ab61e7a1d9a64db5dba139c66baf85",
+    "source_fix_commit": "33b94fa8d237439fab445fe3315ac4b4300948c4",
+    "formatting_fix_commit": "3d359b46935f4b6c46a4256c4d03d52be11004e3"
+  },
+  "original_failures": [
+    {
+      "kind": "rustc_E0599",
+      "workflow": "Hepta architecture convergence",
+      "run_id": 39896771433,
+      "job_id": 120228922832,
+      "source_sha": "a0736e8216ab61e7a1d9a64db5dba139c66baf85",
+      "path": "codex-rs/hepta-agentd/src/automation_effect_host.rs",
+      "line": 945,
+      "diagnosis": "ProviderEffectBindingError does not implement Display required by the test-only checked() helper; compiler error E0599",
+      "evidence": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/39896771433/job/120228922832"
+    },
+    {
+      "kind": "rustfmt_diff",
+      "workflow": "blocking-ci",
+      "run_id": 39896771403,
+      "job_id": 120245596593,
+      "source_sha": "a0736e8216ab61e7a1d9a64db5dba139c66baf85",
+      "path": "codex-rs/hepta-agentd/src/automation_effect_host.rs",
+      "lines": [
+        729,
+        737,
+        744,
+        1030
+      ],
+      "diagnosis": "just fmt-check / cargo fmt --check emitted four diffs in the same test module",
+      "evidence": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/39896771403/job/120245596593"
+    }
+  ],
+  "repair": {
+    "scope": "One test-only error conversion plus four owning-rustfmt formatting changes in the same file",
+    "error_conversion": "map_err(|error| anyhow::anyhow!(\"provider key: {error:?}\"))?",
+    "source_and_test_assertions": "No production code/permissions/tokens or test assertions altered",
+    "rust_dependency_changes": false,
+    "frozen_p39_research_evidence_changed": false
+  },
+  "validation": {
+    "pre_fix_native_error_confirmed": true,
+    "post_fix_native_architecture": "PENDING_VERIFICATION",
+    "post_fix_blocking_ci": "PENDING_VERIFICATION",
+    "post_fix_v8": "PENDING_VERIFICATION",
+    "notes": "Queued/in-progress/metadata-only checks are not successful closure; obtain matching final exact-HEAD job logs and artifacts before updating status."
+  },
+  "blocker_closure_claimed": false,
+  "mode": "SHADOW_ONLY",
+  "authority": "DENY_ALL",
+  "release": "HOLD_NO_GO"
+}
