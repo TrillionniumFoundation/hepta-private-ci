@@ -48,7 +48,7 @@ jobs:
           set -euo pipefail
           test ! -e "$RUNNER_TEMP/windows-delete-boundary"
           mkdir -p "$RUNNER_TEMP/windows-delete-boundary"
-          printf 'Three existing native Windows deletion-boundary regressions, four native private-state mechanism probes, and all eight current ACL unit controls. AccessCheck output is diagnostic; original deletion assertions determine success. Probe success does not establish Windows private-state owner support, owner ACL policy, power-loss durability, whole-project or PoN qualification.\n' > "$RUNNER_TEMP/windows-delete-boundary/SCOPE.txt"
+          printf 'Three existing native Windows deletion-boundary regressions, four native private-state mechanism probes, five read-only owner-descriptor controls, and all eight current ACL unit controls. AccessCheck output is diagnostic; original deletion assertions determine success. Mechanism and descriptor control success does not establish Windows private-state owner support, parent or volume admission, power-loss durability, whole-project or PoN qualification.\n' > "$RUNNER_TEMP/windows-delete-boundary/SCOPE.txt"
           git config --global core.autocrlf false
           git config --global core.longpaths true
           printf 'CARGO_TARGET_DIR=%s/windows-delete-boundary-target\n' "$RUNNER_TEMP" >> "$GITHUB_ENV"
@@ -104,7 +104,14 @@ jobs:
               "acl::tests::partial_read_deny_is_repaired_before_native_file_data_access",
               "acl::tests::deny_ace_update_failure_is_an_error",
           )
-          required = ("partial-delete-deny", "broad-identity-delete", "legacy-delete-boundary", *probes, "acl-unit-controls")
+          owner_selectors = (
+              "security::tests::native_owner_only_readback_is_valid_for_file_and_directory",
+              "security::tests::native_rejects_existing_unsafe_dacls_without_repair",
+              "security::tests::native_rejects_wrong_expected_sid_and_unsafe_object_shapes",
+              "security::tests::native_readback_parser_rejects_altered_forms_and_every_truncation",
+              "security::tests::native_unqueryable_thread_token_never_falls_back_to_process_user",
+          )
+          required = ("partial-delete-deny", "broad-identity-delete", "legacy-delete-boundary", *probes, "acl-unit-controls", "private-owner-descriptor")
           if sys.argv[1] == "tests":
               name, minimum = sys.argv[2], int(sys.argv[3])
               assert name in required, "unknown native test receipt"
@@ -134,10 +141,15 @@ jobs:
                   observed = {selector: re.search(r"^test " + re.escape(selector) + r" \.\.\. ok\s*$", text, re.MULTILINE) is not None for selector in acl_selectors}
                   ok = ok and minimum == len(acl_selectors) and all(observed.values())
                   proof = {"test_filter": "test(/^acl::tests::/)", "required_test_names_observed": observed}
+              elif name == "private-owner-descriptor":
+                  observed = {selector: re.search(r"^test " + re.escape(selector) + r" \.\.\. ok\s*$", text, re.MULTILINE) is not None for selector in owner_selectors}
+                  runs = re.findall(r"Summary[^\n]*?(\d+) tests? run:", text)
+                  ok = ok and minimum == passed == len(owner_selectors) and runs[-1:] == [str(len(owner_selectors))] and all(observed.values())
+                  proof = {"test_package": "codex-utils-windows-private-state", "required_test_names_observed": observed, "owner_supported": False, "power_loss_qualified": False}
               save(name + ".json", {"returncode": code, "logging_returncode": log_code, "minimum_tests": minimum, "observed_passed_tests": passed, "observed_failed_tests": failed, "log_sha256": hashlib.sha256(raw).hexdigest(), "status": "passed" if ok else "failed", **proof})
               sys.exit(0 if ok else 1)
           phase = sys.argv[2]
-          result = {"scope": "three native Windows deletion regressions, four private-state mechanism probes, and eight current ACL controls; no Windows owner support or power-loss qualification", "windows_private_state_owners_supported": False, "power_loss_qualified": False, "run_id": os.environ["GITHUB_RUN_ID"], "run_attempt": os.environ["GITHUB_RUN_ATTEMPT"], "status": "running"}
+          result = {"scope": "three native Windows deletion regressions, four private-state mechanism probes, five read-only descriptor controls, and eight current ACL controls; no Windows owner support or power-loss qualification", "windows_private_state_owners_supported": False, "power_loss_qualified": False, "run_id": os.environ["GITHUB_RUN_ID"], "run_attempt": os.environ["GITHUB_RUN_ATTEMPT"], "status": "running"}
           save("result.json", result)
           assert sys.argv[1] == "source" and phase in {"before", "after"}
           if phase == "before":
@@ -192,6 +204,14 @@ jobs:
           assert result["status"] != "failed"
           PY
           python "$RUNNER_TEMP/windows-delete-boundary/check.py" source before
+      - name: Run all five read-only native owner-descriptor controls
+        if: ${{ !cancelled() && steps.source.outcome == 'success' }}
+        run: |
+          set +e
+          just test --locked -p codex-utils-windows-private-state --lib --test-threads 1 --no-capture 2>&1 | tee "$RUNNER_TEMP/windows-delete-boundary/private-owner-descriptor.log"
+          codes="${PIPESTATUS[*]}"
+          set -e
+          python "$RUNNER_TEMP/windows-delete-boundary/check.py" tests private-owner-descriptor 5 "$codes"
       - name: Run original partial delete-deny repair regression
         if: ${{ !cancelled() && steps.source.outcome == 'success' }}
         run: |
@@ -256,7 +276,7 @@ jobs:
           codes="${PIPESTATUS[*]}"
           set -e
           python "$RUNNER_TEMP/windows-delete-boundary/check.py" tests acl-unit-controls 8 "$codes"
-      - name: Require unchanged source and all eight completed Windows result receipts
+      - name: Require unchanged source and all nine completed Windows result receipts
         if: ${{ always() && steps.source.outcome == 'success' }}
         run: python "$RUNNER_TEMP/windows-delete-boundary/check.py" source after
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
