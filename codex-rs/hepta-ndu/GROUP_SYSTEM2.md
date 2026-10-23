@@ -64,7 +64,6 @@ future learned critic and adaptive-depth model should be trained offline and
 promoted only after it beats this deterministic baseline on replayable utility,
 risk, resource, abstention, calibration, and OOD slices.
 
-
 ## Full-owner trace binding (draft compatibility change)
 
 The old research trace accepted a same-subject/same-generation record when
