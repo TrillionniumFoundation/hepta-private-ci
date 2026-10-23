@@ -7,7 +7,8 @@ pool's `BEGIN IMMEDIATE` did not establish the required exclusion. The original
 59/59 and 33/33 outputs below remain byte-identical historical evidence, but
 the short pending assertion was insufficient. A corrected barrier and actual
 competing-writer tests are required for Notes, HOS2 and pre-effect publication.
-The later failing phase will be published separately with its source receipts.
+The [later failing phases](../2026-10-23-retirement-counterexample/README.md)
+retain their original source and binary receipts.
 
 Frozen source `0f7a96752529a7914b7c24d07fadd527c5bd7bce` passed the original
 Memory owner scope: 59/59, including all six new retirement cases, followed by
