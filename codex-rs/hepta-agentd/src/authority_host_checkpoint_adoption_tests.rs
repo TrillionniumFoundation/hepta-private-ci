@@ -28,7 +28,11 @@ impl AuthorityClock for Clock {
             return Err(AuthorityTrustError::Conflict);
         }
         let expiry = self.expire_on.load(Ordering::SeqCst);
-        Ok(if expiry != 0 && read >= expiry { 10_000 } else { 1_000 })
+        Ok(if expiry != 0 && read >= expiry {
+            10_000
+        } else {
+            1_000
+        })
     }
 }
 
@@ -40,26 +44,51 @@ struct Publisher {
 impl Publisher {
     fn spawn() -> Self {
         let mut child = Command::new("/usr/bin/setpriv")
-            .args(["--reuid=60001", "--regid=60001", "--clear-groups",
-                "--bounding-set=-all", "--inh-caps=-all", "--ambient-caps=-all",
-                "--no-new-privs", "/usr/bin/sleep", "120"])
-            .stdin(Stdio::null()).stdout(Stdio::null()).stderr(Stdio::null())
-            .spawn().unwrap();
+            .args([
+                "--reuid=60001",
+                "--regid=60001",
+                "--clear-groups",
+                "--bounding-set=-all",
+                "--inh-caps=-all",
+                "--ambient-caps=-all",
+                "--no-new-privs",
+                "/usr/bin/sleep",
+                "120",
+            ])
+            .stdin(Stdio::null())
+            .stdout(Stdio::null())
+            .stderr(Stdio::null())
+            .spawn()
+            .unwrap();
         let until = Instant::now() + Duration::from_secs(2);
         loop {
             assert!(child.try_wait().unwrap().is_none());
             let stat = std::fs::read_to_string(format!("/proc/{}/stat", child.id())).unwrap();
-            let ticks = stat.rsplit_once(") ").unwrap().1.split_whitespace()
-                .nth(19).unwrap().parse().unwrap();
+            let ticks = stat
+                .rsplit_once(") ")
+                .unwrap()
+                .1
+                .split_whitespace()
+                .nth(19)
+                .unwrap()
+                .parse()
+                .unwrap();
             let lifetime = CognitiveCheckpointPeerLifetime {
-                uid: 60001, pid: child.id(),
-                boot_id: std::fs::read_to_string("/proc/sys/kernel/random/boot_id").unwrap().trim().into(),
+                uid: 60001,
+                pid: child.id(),
+                boot_id: std::fs::read_to_string("/proc/sys/kernel/random/boot_id")
+                    .unwrap()
+                    .trim()
+                    .into(),
                 process_start_ticks: ticks,
             };
             if let Ok(retained) = RetainedCheckpointPublisher::capture(lifetime) {
                 return Self { child, retained };
             }
-            assert!(Instant::now() < until, "dedicated child did not become ready");
+            assert!(
+                Instant::now() < until,
+                "dedicated child did not become ready"
+            );
             std::thread::sleep(Duration::from_millis(5));
         }
     }
@@ -114,8 +143,10 @@ impl Fixture {
             owner_agent_id: agent,
             publisher_epoch: 7,
             writer_binding: CognitiveCheckpointWriterBinding {
-                lease_id: "original-local-writer".into(), generation: 3,
-                authority_epoch: 1, owner_epoch: 2,
+                lease_id: "original-local-writer".into(),
+                generation: 3,
+                authority_epoch: 1,
+                owner_epoch: 2,
                 authority_grant_digest: Sha256Digest::for_bytes(b"qualification-old-grant"),
                 fencing_token_digest: Sha256Digest::for_bytes(b"qualification-old-token"),
                 expires_at_unix_seconds: 10,
@@ -123,23 +154,48 @@ impl Fixture {
             peer_lifetime: old.retained.lifetime.clone(),
         };
         let clock = Arc::new(Clock::default());
-        let backend = HostCognitiveCheckpoint::initialize_fresh(directory.clone(),
-            old_registration.clone(), cut, clock.clone()).unwrap();
+        let backend = HostCognitiveCheckpoint::initialize_fresh(
+            directory.clone(),
+            old_registration.clone(),
+            cut,
+            clock.clone(),
+        )
+        .unwrap();
         let head = backend.load().unwrap();
-        let previous = CognitiveCheckpointReceipt { token: token_for(&head).unwrap(), head };
+        let previous = CognitiveCheckpointReceipt {
+            token: token_for(&head).unwrap(),
+            head,
+        };
         let mut registration = old_registration;
         registration.publisher_epoch += 1;
         registration.writer_binding.generation += 1;
         registration.writer_binding.owner_epoch += 1;
-        registration.writer_binding.authority_grant_digest = Sha256Digest::for_bytes(b"qualification-new-grant");
-        registration.writer_binding.fencing_token_digest = Sha256Digest::for_bytes(b"qualification-new-token");
+        registration.writer_binding.authority_grant_digest =
+            Sha256Digest::for_bytes(b"qualification-new-grant");
+        registration.writer_binding.fencing_token_digest =
+            Sha256Digest::for_bytes(b"qualification-new-token");
         registration.peer_lifetime = new.retained.lifetime.clone();
-        Self { _temp: temp, directory, previous, registration, backend, clock, old, new }
+        Self {
+            _temp: temp,
+            directory,
+            previous,
+            registration,
+            backend,
+            clock,
+            old,
+            new,
+        }
     }
 
     fn adopt(&self) -> Result<HostCognitiveCheckpoint, AuthorityTrustError> {
-        HostCognitiveCheckpoint::adopt_current(self.directory.clone(), &self.previous,
-            &self.old.retained, self.registration.clone(), &self.new.retained, self.clock.clone())
+        HostCognitiveCheckpoint::adopt_current(
+            self.directory.clone(),
+            &self.previous,
+            &self.old.retained,
+            self.registration.clone(),
+            &self.new.retained,
+            self.clock.clone(),
+        )
     }
 
     fn mutate(&mut self, command: CognitiveCheckpointCommand, sequence: u64) {
@@ -161,15 +217,24 @@ impl Fixture {
             }
         });
         let request = CognitiveCheckpointRequest {
-            schema_version: 1, operation: OPERATION.into(),
+            schema_version: 1,
+            operation: OPERATION.into(),
             request_id: format!("{:016x}{sequence:016x}", self.previous.head.publisher_epoch),
-            command, expected: Some(self.previous.token.clone()), proposal,
+            command,
+            expected: Some(self.previous.token.clone()),
+            proposal,
         };
         let response: CognitiveCheckpointResponse = serde_json::from_slice(
-            &self.backend.exchange(&serde_json::to_vec(&request).unwrap()).unwrap()).unwrap();
+            &self
+                .backend
+                .exchange(&serde_json::to_vec(&request).unwrap())
+                .unwrap(),
+        )
+        .unwrap();
         assert_eq!(response.status, CognitiveCheckpointStatus::Ack);
         self.previous = CognitiveCheckpointReceipt {
-            token: response.token.unwrap(), head: response.head.unwrap(),
+            token: response.token.unwrap(),
+            head: response.head.unwrap(),
         };
     }
 }
@@ -200,7 +265,9 @@ async fn root_current_handoff_requires_actual_exit_and_preserves_cut_and_counter
     assert_eq!(head, expected);
     assert!(f.backend.load().is_err());
     assert_eq!(f.adopt().err(), Some(AuthorityTrustError::Conflict));
-    let reopened = HostCognitiveCheckpoint::open(f.directory.clone(), f.registration.clone(), f.clock.clone()).unwrap();
+    let reopened =
+        HostCognitiveCheckpoint::open(f.directory.clone(), f.registration.clone(), f.clock.clone())
+            .unwrap();
     assert_eq!(reopened.load().unwrap(), expected);
 }
 
@@ -216,7 +283,8 @@ async fn root_current_handoff_refuses_changed_cut_phase_generation_and_dead_succ
     assert_eq!(f.adopt().err(), Some(AuthorityTrustError::Invalid));
     f.registration = original;
     let previous = f.previous.clone();
-    f.previous.head.last_current.state_digest = Sha256Digest::for_bytes(b"untrusted replacement cut");
+    f.previous.head.last_current.state_digest =
+        Sha256Digest::for_bytes(b"untrusted replacement cut");
     f.previous.token = token_for(&f.previous.head).unwrap();
     assert_eq!(f.adopt().err(), Some(AuthorityTrustError::Conflict));
     f.previous = previous;
@@ -228,7 +296,11 @@ async fn root_current_handoff_refuses_changed_cut_phase_generation_and_dead_succ
 #[tokio::test]
 #[ignore = "explicit root-owned data-bind qualification"]
 async fn root_current_handoff_never_promotes_actual_dirty_publishing_or_fenced() {
-    for phase in [CognitiveCheckpointPhase::Dirty, CognitiveCheckpointPhase::Publishing, CognitiveCheckpointPhase::Fenced] {
+    for phase in [
+        CognitiveCheckpointPhase::Dirty,
+        CognitiveCheckpointPhase::Publishing,
+        CognitiveCheckpointPhase::Fenced,
+    ] {
         let mut f = Fixture::new().await;
         f.mutate(CognitiveCheckpointCommand::BeginWrites, 2);
         if phase == CognitiveCheckpointPhase::Publishing {
@@ -248,20 +320,40 @@ async fn root_current_handoff_never_promotes_actual_dirty_publishing_or_fenced()
 async fn root_current_handoff_post_cas_expiry_is_unknown_but_new_head_is_reconciled() {
     let mut f = Fixture::new().await;
     f.old.stop();
-    f.clock.expire_on.store(f.clock.reads.load(Ordering::SeqCst) + 2, Ordering::SeqCst);
+    f.clock
+        .expire_on
+        .store(f.clock.reads.load(Ordering::SeqCst) + 2, Ordering::SeqCst);
     assert_eq!(f.adopt().err(), Some(AuthorityTrustError::Unavailable));
-    let reopened = HostCognitiveCheckpoint::open(f.directory.clone(), f.registration.clone(), f.clock.clone()).unwrap();
-    assert_eq!(reopened.load().unwrap().counter, f.previous.head.counter + 1);
-    assert_eq!(reopened.load().unwrap().last_current, f.previous.head.last_current);
+    let reopened =
+        HostCognitiveCheckpoint::open(f.directory.clone(), f.registration.clone(), f.clock.clone())
+            .unwrap();
+    assert_eq!(
+        reopened.load().unwrap().counter,
+        f.previous.head.counter + 1
+    );
+    assert_eq!(
+        reopened.load().unwrap().last_current,
+        f.previous.head.last_current
+    );
     let request = CognitiveCheckpointRequest {
-        schema_version: 1, operation: OPERATION.into(),
+        schema_version: 1,
+        operation: OPERATION.into(),
         request_id: format!("{:016x}{:016x}", f.registration.publisher_epoch, 1),
-        command: CognitiveCheckpointCommand::ReadHead, expected: None, proposal: None,
+        command: CognitiveCheckpointCommand::ReadHead,
+        expected: None,
+        proposal: None,
     };
     let response: CognitiveCheckpointResponse = serde_json::from_slice(
-        &reopened.exchange(&serde_json::to_vec(&request).unwrap()).unwrap()).unwrap();
+        &reopened
+            .exchange(&serde_json::to_vec(&request).unwrap())
+            .unwrap(),
+    )
+    .unwrap();
     assert_eq!(response.status, CognitiveCheckpointStatus::Refused);
-    assert_eq!(response.reason, Some(CognitiveCheckpointReason::AuthorityDenied));
+    assert_eq!(
+        response.reason,
+        Some(CognitiveCheckpointReason::AuthorityDenied)
+    );
     assert_eq!((response.head, response.token), (None, None));
     assert_eq!(f.adopt().err(), Some(AuthorityTrustError::Unavailable));
 }
@@ -273,14 +365,31 @@ async fn root_current_handoff_two_real_cas_handles_choose_one_successor() {
     f.old.stop();
     let barrier = Barrier::new(2);
     let outcomes = std::thread::scope(|scope| {
-        let first = scope.spawn(|| { barrier.wait(); f.adopt().map(|_| ()) });
-        let second = scope.spawn(|| { barrier.wait(); f.adopt().map(|_| ()) });
+        let first = scope.spawn(|| {
+            barrier.wait();
+            f.adopt().map(|_| ())
+        });
+        let second = scope.spawn(|| {
+            barrier.wait();
+            f.adopt().map(|_| ())
+        });
         [first.join().unwrap(), second.join().unwrap()]
     });
     assert_eq!(outcomes.iter().filter(|result| result.is_ok()).count(), 1);
-    assert_eq!(outcomes.iter().filter(|result| **result == Err(AuthorityTrustError::Conflict)).count(), 1);
-    let reopened = HostCognitiveCheckpoint::open(f.directory.clone(), f.registration.clone(), f.clock.clone()).unwrap();
-    assert_eq!(reopened.load().unwrap().counter, f.previous.head.counter + 1);
+    assert_eq!(
+        outcomes
+            .iter()
+            .filter(|result| **result == Err(AuthorityTrustError::Conflict))
+            .count(),
+        1
+    );
+    let reopened =
+        HostCognitiveCheckpoint::open(f.directory.clone(), f.registration.clone(), f.clock.clone())
+            .unwrap();
+    assert_eq!(
+        reopened.load().unwrap().counter,
+        f.previous.head.counter + 1
+    );
 }
 
 #[tokio::test]
@@ -288,12 +397,16 @@ async fn root_current_handoff_two_real_cas_handles_choose_one_successor() {
 async fn root_current_handoff_post_cas_clock_failure_is_unknown_not_definite_conflict() {
     let mut f = Fixture::new().await;
     f.old.stop();
-    f.clock.reject_on.store(f.clock.reads.load(Ordering::SeqCst) + 2, Ordering::SeqCst);
+    f.clock
+        .reject_on
+        .store(f.clock.reads.load(Ordering::SeqCst) + 2, Ordering::SeqCst);
     let result = f.adopt().err();
     // Observe the actual durable new registration before checking the reported
     // result. The clock remains unavailable; this is forensic readback, not
     // revival of an expired or uncertain runtime authority.
-    let reopened = HostCognitiveCheckpoint::open(f.directory.clone(), f.registration.clone(), f.clock.clone()).unwrap();
+    let reopened =
+        HostCognitiveCheckpoint::open(f.directory.clone(), f.registration.clone(), f.clock.clone())
+            .unwrap();
     let head = reopened.load().unwrap();
     assert_eq!(head.counter, f.previous.head.counter + 1);
     assert_eq!(head.last_current, f.previous.head.last_current);
@@ -305,13 +418,22 @@ async fn root_current_handoff_post_cas_clock_failure_is_unknown_not_definite_con
 async fn root_retirement_observation_refuses_live_lifetime_uid_change_and_other_boot() {
     let f = Fixture::new().await;
     let lifetime = f.old.retained.lifetime.clone();
-    assert_eq!(RetiredCheckpointPublisher::observe(lifetime.clone()).err(), Some(AuthorityTrustError::Conflict));
+    assert_eq!(
+        RetiredCheckpointPublisher::observe(lifetime.clone()).err(),
+        Some(AuthorityTrustError::Conflict)
+    );
     let mut changed_uid = lifetime.clone();
     changed_uid.uid += 1;
-    assert_eq!(RetiredCheckpointPublisher::observe(changed_uid).err(), Some(AuthorityTrustError::Conflict));
+    assert_eq!(
+        RetiredCheckpointPublisher::observe(changed_uid).err(),
+        Some(AuthorityTrustError::Conflict)
+    );
     let mut changed_boot = lifetime;
     changed_boot.boot_id = "00000000-0000-4000-8000-000000000001".into();
-    assert_eq!(RetiredCheckpointPublisher::observe(changed_boot).err(), Some(AuthorityTrustError::Invalid));
+    assert_eq!(
+        RetiredCheckpointPublisher::observe(changed_boot).err(),
+        Some(AuthorityTrustError::Invalid)
+    );
     assert_eq!(f.backend.load().unwrap(), f.previous.head);
 }
 
@@ -321,13 +443,29 @@ async fn root_current_adoption_without_any_retained_old_pidfd_preserves_exact_cu
     let mut f = Fixture::new().await;
     let lifetime = f.previous.head.peer_lifetime.clone();
     f.old.stop();
-    let Fixture { _temp, directory, previous, registration, backend, clock, old, new } = f;
+    let Fixture {
+        _temp,
+        directory,
+        previous,
+        registration,
+        backend,
+        clock,
+        old,
+        new,
+    } = f;
     drop(old); // Drop the original captured pidfd, not merely its process.
     drop(backend); // No original service object survives this stage.
     assert!(RetainedCheckpointPublisher::capture(lifetime.clone()).is_err());
     let retirement = RetiredCheckpointPublisher::observe(lifetime).unwrap();
     let adopted = HostCognitiveCheckpoint::adopt_current_after_root_restart(
-        directory.clone(), &previous, &retirement, registration.clone(), &new.retained, clock.clone()).unwrap();
+        directory.clone(),
+        &previous,
+        &retirement,
+        registration.clone(),
+        &new.retained,
+        clock.clone(),
+    )
+    .unwrap();
     let head = adopted.load().unwrap();
     let mut expected = previous.head.clone();
     expected.publisher_epoch = registration.publisher_epoch;
@@ -337,8 +475,18 @@ async fn root_current_adoption_without_any_retained_old_pidfd_preserves_exact_cu
     expected.writer_binding = registration.writer_binding.clone();
     expected.peer_lifetime = registration.peer_lifetime.clone();
     assert_eq!(head, expected);
-    assert_eq!(HostCognitiveCheckpoint::adopt_current_after_root_restart(
-        directory.clone(), &previous, &retirement, registration.clone(), &new.retained, clock.clone()).err(), Some(AuthorityTrustError::Conflict));
+    assert_eq!(
+        HostCognitiveCheckpoint::adopt_current_after_root_restart(
+            directory.clone(),
+            &previous,
+            &retirement,
+            registration.clone(),
+            &new.retained,
+            clock.clone()
+        )
+        .err(),
+        Some(AuthorityTrustError::Conflict)
+    );
     let reopened = HostCognitiveCheckpoint::open(directory, registration, clock).unwrap();
     assert_eq!(reopened.load().unwrap(), expected);
     drop(_temp);
@@ -353,15 +501,29 @@ async fn root_retirement_proof_cannot_replace_protected_predecessor_lifetime() {
     // A controlled nonmatching historical lifetime exercises the replacement
     // branch. This does not claim that the test forced actual PID reuse.
     let retirement = RetiredCheckpointPublisher::observe(invented).unwrap();
-    assert_eq!(HostCognitiveCheckpoint::adopt_current_after_root_restart(
-        f.directory.clone(), &f.previous, &retirement, f.registration.clone(), &f.new.retained, f.clock.clone()).err(), Some(AuthorityTrustError::Invalid));
+    assert_eq!(
+        HostCognitiveCheckpoint::adopt_current_after_root_restart(
+            f.directory.clone(),
+            &f.previous,
+            &retirement,
+            f.registration.clone(),
+            &f.new.retained,
+            f.clock.clone()
+        )
+        .err(),
+        Some(AuthorityTrustError::Invalid)
+    );
     assert_eq!(f.backend.load().unwrap(), f.previous.head);
 }
 
 #[tokio::test]
 #[ignore = "explicit root-owned data-bind qualification"]
 async fn root_retired_adoption_never_promotes_dirty_publishing_or_fenced() {
-    for phase in [CognitiveCheckpointPhase::Dirty, CognitiveCheckpointPhase::Publishing, CognitiveCheckpointPhase::Fenced] {
+    for phase in [
+        CognitiveCheckpointPhase::Dirty,
+        CognitiveCheckpointPhase::Publishing,
+        CognitiveCheckpointPhase::Fenced,
+    ] {
         let mut f = Fixture::new().await;
         f.mutate(CognitiveCheckpointCommand::BeginWrites, 2);
         if phase == CognitiveCheckpointPhase::Publishing {
@@ -370,9 +532,20 @@ async fn root_retired_adoption_never_promotes_dirty_publishing_or_fenced() {
             f.mutate(CognitiveCheckpointCommand::FencePublisher, 3);
         }
         f.old.stop();
-        let retirement = RetiredCheckpointPublisher::observe(f.previous.head.peer_lifetime.clone()).unwrap();
-        assert_eq!(HostCognitiveCheckpoint::adopt_current_after_root_restart(
-            f.directory.clone(), &f.previous, &retirement, f.registration.clone(), &f.new.retained, f.clock.clone()).err(), Some(AuthorityTrustError::Invalid));
+        let retirement =
+            RetiredCheckpointPublisher::observe(f.previous.head.peer_lifetime.clone()).unwrap();
+        assert_eq!(
+            HostCognitiveCheckpoint::adopt_current_after_root_restart(
+                f.directory.clone(),
+                &f.previous,
+                &retirement,
+                f.registration.clone(),
+                &f.new.retained,
+                f.clock.clone()
+            )
+            .err(),
+            Some(AuthorityTrustError::Invalid)
+        );
         assert_eq!(f.backend.load().unwrap(), f.previous.head);
     }
 }
@@ -382,11 +555,26 @@ async fn root_retired_adoption_never_promotes_dirty_publishing_or_fenced() {
 async fn root_retired_adoption_post_cas_clock_error_is_unknown_and_exactly_reconciled() {
     let mut f = Fixture::new().await;
     f.old.stop();
-    let retirement = RetiredCheckpointPublisher::observe(f.previous.head.peer_lifetime.clone()).unwrap();
-    f.clock.reject_on.store(f.clock.reads.load(Ordering::SeqCst) + 2, Ordering::SeqCst);
-    assert_eq!(HostCognitiveCheckpoint::adopt_current_after_root_restart(
-        f.directory.clone(), &f.previous, &retirement, f.registration.clone(), &f.new.retained, f.clock.clone()).err(), Some(AuthorityTrustError::Unavailable));
-    let reopened = HostCognitiveCheckpoint::open(f.directory.clone(), f.registration.clone(), f.clock.clone()).unwrap();
+    let retirement =
+        RetiredCheckpointPublisher::observe(f.previous.head.peer_lifetime.clone()).unwrap();
+    f.clock
+        .reject_on
+        .store(f.clock.reads.load(Ordering::SeqCst) + 2, Ordering::SeqCst);
+    assert_eq!(
+        HostCognitiveCheckpoint::adopt_current_after_root_restart(
+            f.directory.clone(),
+            &f.previous,
+            &retirement,
+            f.registration.clone(),
+            &f.new.retained,
+            f.clock.clone()
+        )
+        .err(),
+        Some(AuthorityTrustError::Unavailable)
+    );
+    let reopened =
+        HostCognitiveCheckpoint::open(f.directory.clone(), f.registration.clone(), f.clock.clone())
+            .unwrap();
     let head = reopened.load().unwrap();
     assert_eq!(head.counter, f.previous.head.counter + 1);
     assert_eq!(head.last_current, f.previous.head.last_current);

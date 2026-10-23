@@ -44,7 +44,10 @@ impl RetiredCheckpointPublisher {
         let raw = unsafe { libc::syscall(libc::SYS_pidfd_open, lifetime.pid, 0) };
         if raw < 0 {
             return if std::io::Error::last_os_error().raw_os_error() == Some(libc::ESRCH) {
-                Ok(Self { lifetime, _descriptor: None })
+                Ok(Self {
+                    lifetime,
+                    _descriptor: None,
+                })
             } else {
                 Err(AuthorityTrustError::Unavailable)
             };
@@ -52,23 +55,32 @@ impl RetiredCheckpointPublisher {
         // SAFETY: successful pidfd_open returned a fresh owned descriptor.
         let descriptor = unsafe { OwnedFd::from_raw_fd(raw as i32) };
         if descriptor_exited(&descriptor)? {
-            return Ok(Self { lifetime, _descriptor: Some(descriptor) });
+            return Ok(Self {
+                lifetime,
+                _descriptor: Some(descriptor),
+            });
         }
         let stat = std::fs::read_to_string(format!("/proc/{}/stat", lifetime.pid));
         let info = std::fs::read_to_string(format!("/proc/self/fdinfo/{}", descriptor.as_raw_fd()));
         // The process may have exited during either read; an actual pidfd exit
         // remains sufficient. An unrelated read error is never an exit proof.
         if descriptor_exited(&descriptor)? {
-            return Ok(Self { lifetime, _descriptor: Some(descriptor) });
+            return Ok(Self {
+                lifetime,
+                _descriptor: Some(descriptor),
+            });
         }
         let stat = stat.map_err(|_| AuthorityTrustError::Unavailable)?;
         let info = info.map_err(|_| AuthorityTrustError::Unavailable)?;
-        let start = stat.rsplit_once(") ")
+        let start = stat
+            .rsplit_once(") ")
             .and_then(|(_, fields)| fields.split_whitespace().nth(19))
             .and_then(|value| value.parse::<u64>().ok())
             .filter(|value| *value != 0)
             .ok_or(AuthorityTrustError::Unavailable)?;
-        let fd_pid = info.lines().find_map(|line| line.strip_prefix("Pid:"))
+        let fd_pid = info
+            .lines()
+            .find_map(|line| line.strip_prefix("Pid:"))
             .and_then(|value| value.trim().parse::<u32>().ok());
         if fd_pid != Some(lifetime.pid) {
             return Err(AuthorityTrustError::Unavailable);
@@ -76,7 +88,10 @@ impl RetiredCheckpointPublisher {
         if start == lifetime.process_start_ticks {
             return Err(AuthorityTrustError::Conflict);
         }
-        Ok(Self { lifetime, _descriptor: Some(descriptor) })
+        Ok(Self {
+            lifetime,
+            _descriptor: Some(descriptor),
+        })
     }
 
     pub(super) fn require_retired(&self) -> Result<(), AuthorityTrustError> {
@@ -86,7 +101,9 @@ impl RetiredCheckpointPublisher {
     }
 }
 
-fn require_same_boot(lifetime: &CognitiveCheckpointPeerLifetime) -> Result<(), AuthorityTrustError> {
+fn require_same_boot(
+    lifetime: &CognitiveCheckpointPeerLifetime,
+) -> Result<(), AuthorityTrustError> {
     let boot = std::fs::read_to_string("/proc/sys/kernel/random/boot_id")
         .map_err(|_| AuthorityTrustError::Unavailable)?;
     if boot.trim() == lifetime.boot_id {
@@ -116,26 +133,38 @@ impl RetainedCheckpointPublisher {
         }
         // SAFETY: a successful pidfd_open returned a fresh owned descriptor.
         let descriptor = unsafe { OwnedFd::from_raw_fd(raw as i32) };
-        let retained = Self { lifetime, descriptor };
+        let retained = Self {
+            lifetime,
+            descriptor,
+        };
         retained.require_alive()?;
         let boot = std::fs::read_to_string("/proc/sys/kernel/random/boot_id")
             .map_err(|_| AuthorityTrustError::Unavailable)?;
         let stat = std::fs::read_to_string(format!("/proc/{}/stat", retained.lifetime.pid))
             .map_err(|_| AuthorityTrustError::Unavailable)?;
-        let start = stat.rsplit_once(") ")
+        let start = stat
+            .rsplit_once(") ")
             .and_then(|(_, fields)| fields.split_whitespace().nth(19))
             .and_then(|value| value.parse::<u64>().ok());
         let status = std::fs::read_to_string(format!("/proc/{}/status", retained.lifetime.pid))
             .map_err(|_| AuthorityTrustError::Unavailable)?;
         let expected_uid = retained.lifetime.uid.to_string();
-        let uid_matches = status.lines().find_map(|line| line.strip_prefix("Uid:"))
+        let uid_matches = status
+            .lines()
+            .find_map(|line| line.strip_prefix("Uid:"))
             .is_some_and(|values| {
                 let mut values = values.split_whitespace();
-                (0..4).all(|_| values.next() == Some(expected_uid.as_str())) && values.next().is_none()
+                (0..4).all(|_| values.next() == Some(expected_uid.as_str()))
+                    && values.next().is_none()
             });
-        let info = std::fs::read_to_string(format!("/proc/self/fdinfo/{}", retained.descriptor.as_raw_fd()))
-            .map_err(|_| AuthorityTrustError::Unavailable)?;
-        let fd_pid = info.lines().find_map(|line| line.strip_prefix("Pid:"))
+        let info = std::fs::read_to_string(format!(
+            "/proc/self/fdinfo/{}",
+            retained.descriptor.as_raw_fd()
+        ))
+        .map_err(|_| AuthorityTrustError::Unavailable)?;
+        let fd_pid = info
+            .lines()
+            .find_map(|line| line.strip_prefix("Pid:"))
             .and_then(|value| value.trim().parse::<u32>().ok());
         if boot.trim() != retained.lifetime.boot_id
             || start != Some(retained.lifetime.process_start_ticks)
@@ -149,11 +178,19 @@ impl RetainedCheckpointPublisher {
     }
 
     pub(super) fn require_alive(&self) -> Result<(), AuthorityTrustError> {
-        if self.exited()? { Err(AuthorityTrustError::Conflict) } else { Ok(()) }
+        if self.exited()? {
+            Err(AuthorityTrustError::Conflict)
+        } else {
+            Ok(())
+        }
     }
 
     pub(super) fn require_exited(&self) -> Result<(), AuthorityTrustError> {
-        if self.exited()? { Ok(()) } else { Err(AuthorityTrustError::Conflict) }
+        if self.exited()? {
+            Ok(())
+        } else {
+            Err(AuthorityTrustError::Conflict)
+        }
     }
 
     fn exited(&self) -> Result<bool, AuthorityTrustError> {
@@ -162,17 +199,21 @@ impl RetainedCheckpointPublisher {
 }
 
 fn descriptor_exited(descriptor: &OwnedFd) -> Result<bool, AuthorityTrustError> {
-        let mut poll = libc::pollfd {
-            fd: descriptor.as_raw_fd(),
-            events: libc::POLLIN,
-            revents: 0,
-        };
-        // SAFETY: one valid initialized pollfd is borrowed for a nonblocking call.
-        let count = unsafe { libc::poll(&mut poll, 1, 0) };
-        if count < 0 || poll.revents & (libc::POLLERR | libc::POLLNVAL) != 0 {
-            return Err(AuthorityTrustError::Unavailable);
-        }
-        if count == 0 { return Ok(false); }
-        if poll.revents & libc::POLLIN != 0 { return Ok(true); }
-        Err(AuthorityTrustError::Unavailable)
+    let mut poll = libc::pollfd {
+        fd: descriptor.as_raw_fd(),
+        events: libc::POLLIN,
+        revents: 0,
+    };
+    // SAFETY: one valid initialized pollfd is borrowed for a nonblocking call.
+    let count = unsafe { libc::poll(&mut poll, 1, 0) };
+    if count < 0 || poll.revents & (libc::POLLERR | libc::POLLNVAL) != 0 {
+        return Err(AuthorityTrustError::Unavailable);
+    }
+    if count == 0 {
+        return Ok(false);
+    }
+    if poll.revents & libc::POLLIN != 0 {
+        return Ok(true);
+    }
+    Err(AuthorityTrustError::Unavailable)
 }

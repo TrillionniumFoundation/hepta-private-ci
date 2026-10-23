@@ -37,8 +37,14 @@ impl HostCognitiveCheckpoint {
         successor: &RetainedCheckpointPublisher,
         clock: Arc<dyn AuthorityClock>,
     ) -> Result<Self, AuthorityTrustError> {
-        Self::adopt_current_with_predecessor(directory, previous,
-            Predecessor::Retained(predecessor), registration, successor, clock)
+        Self::adopt_current_with_predecessor(
+            directory,
+            previous,
+            Predecessor::Retained(predecessor),
+            registration,
+            successor,
+            clock,
+        )
     }
 
     /// Same clean-Current CAS after Root lost its retained old pidfd. The
@@ -54,8 +60,14 @@ impl HostCognitiveCheckpoint {
         successor: &RetainedCheckpointPublisher,
         clock: Arc<dyn AuthorityClock>,
     ) -> Result<Self, AuthorityTrustError> {
-        Self::adopt_current_with_predecessor(directory, previous,
-            Predecessor::Retired(predecessor), registration, successor, clock)
+        Self::adopt_current_with_predecessor(
+            directory,
+            previous,
+            Predecessor::Retired(predecessor),
+            registration,
+            successor,
+            clock,
+        )
     }
 
     fn adopt_current_with_predecessor(
@@ -100,11 +112,16 @@ impl HostCognitiveCheckpoint {
         successor.require_alive()?;
         let before = clock.now_unix_ms()?;
         let expiry = new_writer.expires_at_unix_seconds * 1000;
-        if before >= expiry { return Err(AuthorityTrustError::Unavailable); }
+        if before >= expiry {
+            return Err(AuthorityTrustError::Unavailable);
+        }
         let store = HostAuthorityFrontierStore::open(directory, STORE_OWNER.into())?;
         let mut next = old.clone();
         next.publisher_epoch = registration.publisher_epoch;
-        next.counter = old.counter.checked_add(1).ok_or(AuthorityTrustError::Invalid)?;
+        next.counter = old
+            .counter
+            .checked_add(1)
+            .ok_or(AuthorityTrustError::Invalid)?;
         next.last_mutation_sequence = 0;
         next.last_request = None;
         next.writer_binding = new_writer.clone();
@@ -114,16 +131,28 @@ impl HostCognitiveCheckpoint {
         // The original last_current cut is carried byte-for-byte, never rehashed
         // from a possibly modified database. A lost result must be reconciled
         // by opening the actual new registration, never by minting another one.
-        store.compare_and_set(STORE_OWNER, old, &next).map_err(|error| match error {
-            AuthorityTrustError::Conflict => AuthorityTrustError::Conflict,
-            AuthorityTrustError::Invalid | AuthorityTrustError::Unavailable => AuthorityTrustError::Unavailable,
-        })?;
+        store
+            .compare_and_set(STORE_OWNER, old, &next)
+            .map_err(|error| match error {
+                AuthorityTrustError::Conflict => AuthorityTrustError::Conflict,
+                AuthorityTrustError::Invalid | AuthorityTrustError::Unavailable => {
+                    AuthorityTrustError::Unavailable
+                }
+            })?;
         // A durable CAS may already have committed. Every later failure is
         // uncertain, even when an underlying clock or pidfd reports Conflict.
-        let after = clock.now_unix_ms().map_err(|_| AuthorityTrustError::Unavailable)?;
-        if after < before || after >= expiry { return Err(AuthorityTrustError::Unavailable); }
-        predecessor.require_retired().map_err(|_| AuthorityTrustError::Unavailable)?;
-        successor.require_alive().map_err(|_| AuthorityTrustError::Unavailable)?;
+        let after = clock
+            .now_unix_ms()
+            .map_err(|_| AuthorityTrustError::Unavailable)?;
+        if after < before || after >= expiry {
+            return Err(AuthorityTrustError::Unavailable);
+        }
+        predecessor
+            .require_retired()
+            .map_err(|_| AuthorityTrustError::Unavailable)?;
+        successor
+            .require_alive()
+            .map_err(|_| AuthorityTrustError::Unavailable)?;
         Ok(Self {
             registration,
             store,

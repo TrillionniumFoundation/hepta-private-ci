@@ -31,10 +31,13 @@ use codex_hepta_memory::CognitiveRecoveryAnchor;
 
 #[path = "authority_host_checkpoint_state.rs"]
 mod state;
-use state::{
-    advance, request_sequence, response, token_for, validate_cut, validate_head,
-    validate_registration,
-};
+use state::advance;
+use state::request_sequence;
+use state::response;
+use state::token_for;
+use state::validate_cut;
+use state::validate_head;
+use state::validate_registration;
 
 const STORE_OWNER: &str = "root-cognitive-checkpoint-v1";
 const OPERATION: &str = "runtime.cognitive.checkpoint.v1";
