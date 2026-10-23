@@ -3,6 +3,7 @@
 import copy
 import hashlib
 import json
+import os
 from pathlib import Path
 import subprocess
 import sys
@@ -280,6 +281,67 @@ class CohortFirewallTests(unittest.TestCase):
                 self.assertEqual(denied.returncode, 2, denied.stderr)
                 self.assertEqual(json.loads(destination.read_text())["status"], "fail")
                 self.assertEqual((candidate.read_bytes(), history.read_bytes()), before)
+
+
+    @unittest.skipUnless(os.name == "posix", "requires a POSIX named pipe")
+    def test_cli_rejects_unopened_candidate_fifo_without_blocking(self):
+        with tempfile.TemporaryDirectory() as td:
+            root = Path(td)
+            fifo = root / "candidate.fifo"
+            os.mkfifo(fifo)
+            history = root / "history.json"
+            history.write_text(json.dumps(self.old))
+            output = root / "denial.json"
+            result = subprocess.run(
+                [sys.executable, str(Path(__file__).parent / "cohort_firewall.py"),
+                 "--candidate", str(fifo),
+                 "--historical", str(history),
+                 "--historical-sha256", hashlib.sha256(history.read_bytes()).hexdigest(),
+                 "--output", str(output)],
+                capture_output=True, text=True, timeout=3,
+            )
+            self.assertEqual(result.returncode, 2, result.stderr)
+            self.assertIn("regular file", json.loads(output.read_text())["error"])
+
+    @unittest.skipUnless(os.name == "posix", "requires a POSIX named pipe")
+    def test_cli_rejects_unopened_historical_fifo_without_blocking(self):
+        with tempfile.TemporaryDirectory() as td:
+            root = Path(td)
+            candidate = root / "candidate.json"
+            candidate.write_text(json.dumps(self.new))
+            fifo = root / "history.fifo"
+            os.mkfifo(fifo)
+            output = root / "denial.json"
+            result = subprocess.run(
+                [sys.executable, str(Path(__file__).parent / "cohort_firewall.py"),
+                 "--candidate", str(candidate),
+                 "--historical", str(fifo),
+                 "--historical-sha256", "0" * 64,
+                 "--output", str(output)],
+                capture_output=True, text=True, timeout=3,
+            )
+            self.assertEqual(result.returncode, 2, result.stderr)
+            self.assertIn("regular file", json.loads(output.read_text())["error"])
+
+    def test_cli_rejects_oversized_sparse_cohort_before_full_read(self):
+        with tempfile.TemporaryDirectory() as td:
+            root = Path(td)
+            candidate = root / "candidate.json"
+            with candidate.open("wb") as handle:
+                handle.truncate(16 * 1024 * 1024 + 1)
+            history = root / "history.json"
+            history.write_text(json.dumps(self.old))
+            output = root / "denial.json"
+            result = subprocess.run(
+                [sys.executable, str(Path(__file__).parent / "cohort_firewall.py"),
+                 "--candidate", str(candidate),
+                 "--historical", str(history),
+                 "--historical-sha256", hashlib.sha256(history.read_bytes()).hexdigest(),
+                 "--output", str(output)],
+                capture_output=True, text=True, timeout=3,
+            )
+            self.assertEqual(result.returncode, 2, result.stderr)
+            self.assertIn("byte limit", json.loads(output.read_text())["error"])
 
 
 if __name__ == "__main__":

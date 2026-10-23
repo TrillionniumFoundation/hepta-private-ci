@@ -8,6 +8,8 @@ only; it cannot attest real-world entity overlap or base-model pretraining.
 import argparse
 import hashlib
 import json
+import os
+import stat
 from pathlib import Path
 import re
 
@@ -209,10 +211,17 @@ def main(argv=None):
             raise CohortContractError("each historical manifest requires an out-of-band SHA256")
 
         def read_bounded(path):
-            file = Path(path)
-            if file.stat().st_size > MAX_INPUT_BYTES:
-                raise CohortContractError("cohort manifest byte limit exceeded")
-            raw = file.read_bytes()
+            # O_NONBLOCK prevents a FIFO from stalling before its type can be
+            # checked. The opened descriptor, rather than a pathname stat,
+            # supplies the canonical type and size of the bytes being read.
+            flags = os.O_RDONLY | getattr(os, "O_NONBLOCK", 0)
+            with os.fdopen(os.open(path, flags), "rb") as handle:
+                metadata = os.fstat(handle.fileno())
+                if not stat.S_ISREG(metadata.st_mode):
+                    raise CohortContractError("cohort manifest must be a regular file")
+                if metadata.st_size > MAX_INPUT_BYTES:
+                    raise CohortContractError("cohort manifest byte limit exceeded")
+                raw = handle.read(MAX_INPUT_BYTES + 1)
             if len(raw) > MAX_INPUT_BYTES:
                 raise CohortContractError("cohort manifest byte limit exceeded")
             return raw
