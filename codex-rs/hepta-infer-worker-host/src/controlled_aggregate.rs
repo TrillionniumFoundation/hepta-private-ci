@@ -100,8 +100,10 @@ impl ControlledAggregateRegistration {
             || !binding.planned_budget.fits(aggregate)
             || !aggregate.fits(aggregate_limit)
             || !controller.fits(unit)
-            || aggregate.memory_bytes.checked_add(controller.memory_bytes)
-                != Some(unit.memory_bytes)
+            || !aggregate
+                .memory_bytes
+                .checked_add(controller.memory_bytes)
+                .is_some_and(|total| total <= unit.memory_bytes)
             || aggregate.cpu_percent.checked_add(controller.cpu_percent) != Some(unit.cpu_percent)
             || aggregate.tasks.checked_add(controller.tasks) != Some(unit.tasks)
         {

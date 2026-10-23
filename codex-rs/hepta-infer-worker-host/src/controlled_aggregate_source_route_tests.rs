@@ -21,6 +21,13 @@ struct ControlledFixture {
 
 impl ControlledFixture {
     async fn new(change_target: impl FnOnce(&mut ControlledAggregateBinding)) -> Self {
+        Self::with_controller_memory(8 * 1024 * 1024 * 1024, change_target).await
+    }
+
+    async fn with_controller_memory(
+        controller_memory_bytes: u64,
+        change_target: impl FnOnce(&mut ControlledAggregateBinding),
+    ) -> Self {
         let source = SourceFixture::new(WorkerBehavior::ExitZero).await;
         let gib = 1024 * 1024 * 1024;
         let mut binding = ControlledAggregateBinding {
@@ -47,7 +54,7 @@ impl ControlledFixture {
                 tasks: 128,
             },
             controller_budget: ResourceBudget {
-                memory_bytes: 8 * gib,
+                memory_bytes: controller_memory_bytes,
                 cpu_percent: 100,
                 tasks: 128,
             },
@@ -167,6 +174,31 @@ impl ControlledFixture {
         assert_eq!(entries, 0);
         assert!(!self.source.temp.path().join("child-marker").exists());
     }
+}
+
+#[tokio::test]
+async fn controlled_signed_memory_headroom_remains_indeterminate_without_funding() {
+    let fixture = ControlledFixture::with_controller_memory(128 * 1024 * 1024, |_| {}).await;
+    fixture
+        .registration
+        .validate(&fixture.request)
+        .expect("exact signed-source headroom declaration");
+    let payload: serde_json::Value =
+        serde_json::from_str(&fixture.request.payload_json).expect("signed payload");
+    assert_eq!(
+        payload["controller_budget"],
+        serde_json::json!({
+            "memory_bytes": 128 * 1024 * 1024,
+            "cpu_percent": 100,
+            "tasks": 128,
+        })
+    );
+    assert!(
+        fixture.declared.aggregate_budget.memory_bytes
+            + fixture.declared.controller_budget.memory_bytes
+            < 16 * 1024 * 1024 * 1024
+    );
+    fixture.assert_retained().await;
 }
 
 #[tokio::test]

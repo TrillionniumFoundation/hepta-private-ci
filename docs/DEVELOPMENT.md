@@ -720,7 +720,9 @@ sealed dispatcher destination seam. Its canonical payload fixes the original
 operation/lease, declared reservation and settlement issuer, source/scope/policy,
 planned budget and whole-unit scope. Child-only scope, a sixteen-GiB model plan
 inside A8, and any extension of U16/A8 or the eight-second observer bound refuse
-registration. These declarations supply no funding or native authority. Even a
+registration. Memory accepts positive controller shares with A+C at most U16,
+including A8/C128 MiB headroom; CPU 400% and tasks 256 remain exact allocations.
+These declarations supply no funding or native authority. Even a
 correctly signed request remains `Indeterminate` until the original AuthBus
 reservation/issuer and whole-unit owner are connected; no physical entry,
 terminal receipt, AuthBus rejection/refund or activation is provided. The
