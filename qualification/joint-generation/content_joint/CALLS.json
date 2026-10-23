@@ -1,0 +1,520 @@
+{
+  "aliases_add_calls": 0,
+  "final_forward_calls_per_family": 6,
+  "historical_S_forward_calls_shared": 3,
+  "inherited_old_calibration_requests": 64,
+  "initial_forward_calls_shared": 6,
+  "intermediate_checkpoint_updates": [
+    1,
+    128,
+    256,
+    512
+  ],
+  "intermediate_rows": "128 fit+128 inner; eight complete physical sources each",
+  "models_per_family": 6,
+  "native_full_Q_audits_per_family": 3,
+  "native_full_Q_audits_shared": 3,
+  "native_zero_controls_shared": 3,
+  "new_actual_service_calls_per_family": 9,
+  "new_actual_service_requests_per_family": 576,
+  "quality_rows_per_call": 768,
+  "service_calls": [
+    {
+      "family": "S",
+      "ordinal": 0,
+      "profile": "KEEP",
+      "recipe": "independent",
+      "rows": 64,
+      "sampler_seed": 1800110,
+      "seed": 11
+    },
+    {
+      "family": "S",
+      "ordinal": 1,
+      "profile": "log2",
+      "recipe": "independent",
+      "rows": 64,
+      "sampler_seed": 1800111,
+      "seed": 11
+    },
+    {
+      "family": "S",
+      "ordinal": 2,
+      "profile": "native",
+      "recipe": "native",
+      "rows": 64,
+      "sampler_seed": 1800112,
+      "seed": 11
+    },
+    {
+      "family": "H",
+      "ordinal": 3,
+      "profile": "native",
+      "recipe": "native",
+      "rows": 64,
+      "sampler_seed": 1900112,
+      "seed": 11
+    },
+    {
+      "family": "H",
+      "ordinal": 4,
+      "profile": "log2",
+      "recipe": "independent",
+      "rows": 64,
+      "sampler_seed": 1900111,
+      "seed": 11
+    },
+    {
+      "family": "H",
+      "ordinal": 5,
+      "profile": "KEEP",
+      "recipe": "independent",
+      "rows": 64,
+      "sampler_seed": 1900110,
+      "seed": 11
+    },
+    {
+      "family": "A",
+      "ordinal": 6,
+      "profile": "KEEP",
+      "recipe": "independent",
+      "rows": 64,
+      "sampler_seed": 2000110,
+      "seed": 11
+    },
+    {
+      "family": "A",
+      "ordinal": 7,
+      "profile": "log2",
+      "recipe": "independent",
+      "rows": 64,
+      "sampler_seed": 2000111,
+      "seed": 11
+    },
+    {
+      "family": "A",
+      "ordinal": 8,
+      "profile": "native",
+      "recipe": "native",
+      "rows": 64,
+      "sampler_seed": 2000112,
+      "seed": 11
+    },
+    {
+      "family": "N",
+      "ordinal": 9,
+      "profile": "native",
+      "recipe": "native",
+      "rows": 64,
+      "sampler_seed": 2100112,
+      "seed": 11
+    },
+    {
+      "family": "N",
+      "ordinal": 10,
+      "profile": "log2",
+      "recipe": "independent",
+      "rows": 64,
+      "sampler_seed": 2100111,
+      "seed": 11
+    },
+    {
+      "family": "N",
+      "ordinal": 11,
+      "profile": "KEEP",
+      "recipe": "independent",
+      "rows": 64,
+      "sampler_seed": 2100110,
+      "seed": 11
+    },
+    {
+      "family": "H",
+      "ordinal": 12,
+      "profile": "native",
+      "recipe": "native",
+      "rows": 64,
+      "sampler_seed": 1900232,
+      "seed": 23
+    },
+    {
+      "family": "H",
+      "ordinal": 13,
+      "profile": "log2",
+      "recipe": "independent",
+      "rows": 64,
+      "sampler_seed": 1900231,
+      "seed": 23
+    },
+    {
+      "family": "H",
+      "ordinal": 14,
+      "profile": "KEEP",
+      "recipe": "independent",
+      "rows": 64,
+      "sampler_seed": 1900230,
+      "seed": 23
+    },
+    {
+      "family": "A",
+      "ordinal": 15,
+      "profile": "KEEP",
+      "recipe": "independent",
+      "rows": 64,
+      "sampler_seed": 2000230,
+      "seed": 23
+    },
+    {
+      "family": "A",
+      "ordinal": 16,
+      "profile": "log2",
+      "recipe": "independent",
+      "rows": 64,
+      "sampler_seed": 2000231,
+      "seed": 23
+    },
+    {
+      "family": "A",
+      "ordinal": 17,
+      "profile": "native",
+      "recipe": "native",
+      "rows": 64,
+      "sampler_seed": 2000232,
+      "seed": 23
+    },
+    {
+      "family": "N",
+      "ordinal": 18,
+      "profile": "native",
+      "recipe": "native",
+      "rows": 64,
+      "sampler_seed": 2100232,
+      "seed": 23
+    },
+    {
+      "family": "N",
+      "ordinal": 19,
+      "profile": "log2",
+      "recipe": "independent",
+      "rows": 64,
+      "sampler_seed": 2100231,
+      "seed": 23
+    },
+    {
+      "family": "N",
+      "ordinal": 20,
+      "profile": "KEEP",
+      "recipe": "independent",
+      "rows": 64,
+      "sampler_seed": 2100230,
+      "seed": 23
+    },
+    {
+      "family": "S",
+      "ordinal": 21,
+      "profile": "KEEP",
+      "recipe": "independent",
+      "rows": 64,
+      "sampler_seed": 1800230,
+      "seed": 23
+    },
+    {
+      "family": "S",
+      "ordinal": 22,
+      "profile": "log2",
+      "recipe": "independent",
+      "rows": 64,
+      "sampler_seed": 1800231,
+      "seed": 23
+    },
+    {
+      "family": "S",
+      "ordinal": 23,
+      "profile": "native",
+      "recipe": "native",
+      "rows": 64,
+      "sampler_seed": 1800232,
+      "seed": 23
+    },
+    {
+      "family": "A",
+      "ordinal": 24,
+      "profile": "KEEP",
+      "recipe": "independent",
+      "rows": 64,
+      "sampler_seed": 2000470,
+      "seed": 47
+    },
+    {
+      "family": "A",
+      "ordinal": 25,
+      "profile": "log2",
+      "recipe": "independent",
+      "rows": 64,
+      "sampler_seed": 2000471,
+      "seed": 47
+    },
+    {
+      "family": "A",
+      "ordinal": 26,
+      "profile": "native",
+      "recipe": "native",
+      "rows": 64,
+      "sampler_seed": 2000472,
+      "seed": 47
+    },
+    {
+      "family": "N",
+      "ordinal": 27,
+      "profile": "native",
+      "recipe": "native",
+      "rows": 64,
+      "sampler_seed": 2100472,
+      "seed": 47
+    },
+    {
+      "family": "N",
+      "ordinal": 28,
+      "profile": "log2",
+      "recipe": "independent",
+      "rows": 64,
+      "sampler_seed": 2100471,
+      "seed": 47
+    },
+    {
+      "family": "N",
+      "ordinal": 29,
+      "profile": "KEEP",
+      "recipe": "independent",
+      "rows": 64,
+      "sampler_seed": 2100470,
+      "seed": 47
+    },
+    {
+      "family": "S",
+      "ordinal": 30,
+      "profile": "KEEP",
+      "recipe": "independent",
+      "rows": 64,
+      "sampler_seed": 1800470,
+      "seed": 47
+    },
+    {
+      "family": "S",
+      "ordinal": 31,
+      "profile": "log2",
+      "recipe": "independent",
+      "rows": 64,
+      "sampler_seed": 1800471,
+      "seed": 47
+    },
+    {
+      "family": "S",
+      "ordinal": 32,
+      "profile": "native",
+      "recipe": "native",
+      "rows": 64,
+      "sampler_seed": 1800472,
+      "seed": 47
+    },
+    {
+      "family": "H",
+      "ordinal": 33,
+      "profile": "native",
+      "recipe": "native",
+      "rows": 64,
+      "sampler_seed": 1900472,
+      "seed": 47
+    },
+    {
+      "family": "H",
+      "ordinal": 34,
+      "profile": "log2",
+      "recipe": "independent",
+      "rows": 64,
+      "sampler_seed": 1900471,
+      "seed": 47
+    },
+    {
+      "family": "H",
+      "ordinal": 35,
+      "profile": "KEEP",
+      "recipe": "independent",
+      "rows": 64,
+      "sampler_seed": 1900470,
+      "seed": 47
+    }
+  ],
+  "service_cohort": "64 np.linspace indices from existing768 inner TRAIN rows",
+  "slots": [
+    {
+      "family": "S",
+      "ordinal": 0,
+      "recipe": "independent",
+      "rng_seed": 10011,
+      "seed": 11
+    },
+    {
+      "family": "H",
+      "ordinal": 1,
+      "recipe": "independent",
+      "rng_seed": 10011,
+      "seed": 11
+    },
+    {
+      "family": "A",
+      "ordinal": 2,
+      "recipe": "independent",
+      "rng_seed": 10011,
+      "seed": 11
+    },
+    {
+      "family": "N",
+      "ordinal": 3,
+      "recipe": "independent",
+      "rng_seed": 10011,
+      "seed": 11
+    },
+    {
+      "family": "H",
+      "ordinal": 4,
+      "recipe": "native",
+      "rng_seed": 10011,
+      "seed": 11
+    },
+    {
+      "family": "A",
+      "ordinal": 5,
+      "recipe": "native",
+      "rng_seed": 10011,
+      "seed": 11
+    },
+    {
+      "family": "N",
+      "ordinal": 6,
+      "recipe": "native",
+      "rng_seed": 10011,
+      "seed": 11
+    },
+    {
+      "family": "S",
+      "ordinal": 7,
+      "recipe": "native",
+      "rng_seed": 10011,
+      "seed": 11
+    },
+    {
+      "family": "A",
+      "ordinal": 8,
+      "recipe": "native",
+      "rng_seed": 10023,
+      "seed": 23
+    },
+    {
+      "family": "N",
+      "ordinal": 9,
+      "recipe": "native",
+      "rng_seed": 10023,
+      "seed": 23
+    },
+    {
+      "family": "S",
+      "ordinal": 10,
+      "recipe": "native",
+      "rng_seed": 10023,
+      "seed": 23
+    },
+    {
+      "family": "H",
+      "ordinal": 11,
+      "recipe": "native",
+      "rng_seed": 10023,
+      "seed": 23
+    },
+    {
+      "family": "N",
+      "ordinal": 12,
+      "recipe": "independent",
+      "rng_seed": 10023,
+      "seed": 23
+    },
+    {
+      "family": "S",
+      "ordinal": 13,
+      "recipe": "independent",
+      "rng_seed": 10023,
+      "seed": 23
+    },
+    {
+      "family": "H",
+      "ordinal": 14,
+      "recipe": "independent",
+      "rng_seed": 10023,
+      "seed": 23
+    },
+    {
+      "family": "A",
+      "ordinal": 15,
+      "recipe": "independent",
+      "rng_seed": 10023,
+      "seed": 23
+    },
+    {
+      "family": "S",
+      "ordinal": 16,
+      "recipe": "independent",
+      "rng_seed": 10047,
+      "seed": 47
+    },
+    {
+      "family": "H",
+      "ordinal": 17,
+      "recipe": "independent",
+      "rng_seed": 10047,
+      "seed": 47
+    },
+    {
+      "family": "A",
+      "ordinal": 18,
+      "recipe": "independent",
+      "rng_seed": 10047,
+      "seed": 47
+    },
+    {
+      "family": "N",
+      "ordinal": 19,
+      "recipe": "independent",
+      "rng_seed": 10047,
+      "seed": 47
+    },
+    {
+      "family": "H",
+      "ordinal": 20,
+      "recipe": "native",
+      "rng_seed": 10047,
+      "seed": 47
+    },
+    {
+      "family": "A",
+      "ordinal": 21,
+      "recipe": "native",
+      "rng_seed": 10047,
+      "seed": 47
+    },
+    {
+      "family": "N",
+      "ordinal": 22,
+      "recipe": "native",
+      "rng_seed": 10047,
+      "seed": 47
+    },
+    {
+      "family": "S",
+      "ordinal": 23,
+      "recipe": "native",
+      "rng_seed": 10047,
+      "seed": 47
+    }
+  ],
+  "total_new_service_calls": 36,
+  "total_new_service_requests": 2304
+}
