@@ -1,0 +1,8 @@
+{
+  "error": "shared build leaves no useful candidate training budget",
+  "error_type": "ValueError",
+  "freeze_sha256": "3eb0e3a54adce989b2170b47ef3e3ca078e9938b93cd7d03e239d314d5d334b0",
+  "source_commit": "2a08efc131c7bd241466cd48d1e4297e3f1be060",
+  "test_opened": false,
+  "traceback": "Traceback (most recent call last):\n  File \"/workspace/hepta-private-ci/qualification/joint-generation/independent/run.py\", line 654, in train\n    completed = run_candidate_rounds(tasks, plan[\"systems\"],\n                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/workspace/hepta-private-ci/qualification/joint-generation/independent/run.py\", line 84, in run_candidate_rounds\n    candidate = next(tasks[system])\n                ^^^^^^^^^^^^^^^^^^^\n  File \"/workspace/hepta-private-ci/qualification/joint-generation/independent/run.py\", line 310, in train_system\n    return (yield from _train_system_candidates(system, plan, run, shared, bases, train, val,\n            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/workspace/hepta-private-ci/qualification/joint-generation/independent/run.py\", line 356, in _train_system_candidates\n    raise ValueError(\"shared build leaves no useful candidate training budget\")\nValueError: shared build leaves no useful candidate training budget\n"
+}

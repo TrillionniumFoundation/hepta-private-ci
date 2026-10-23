@@ -1,0 +1,46 @@
+{
+  "arm": "ndu",
+  "artifact_sha256": "ef6cea485ef19155627f678dcb9ac9461eddce0da023efd49549f686202bf326",
+  "capabilities": [
+    "text",
+    "image"
+  ],
+  "compute_price": 0.02,
+  "content_parameters_changed": true,
+  "controller_file": "ndu-23-0.01-controller.npz",
+  "controller_sha256": "56d5135c7f185d96e044e2871cfb72f0f0b417a23772d59762f2762a406b0354",
+  "controller_training": {
+    "model_forward_rows": 3120,
+    "outcome_cells": 449280,
+    "ridge_features": 31,
+    "rows": 1560,
+    "wall_seconds": 0.03935474799999383
+  },
+  "cost": {
+    "examples": 19200,
+    "joint_outcome_cells": 5529600,
+    "tensor_macs": 431308800,
+    "updates": 300,
+    "utility_profiles_per_update": [
+      0,
+      1.5
+    ],
+    "wall_seconds": 0.47380663599997774
+  },
+  "learning_rate": 0.01,
+  "model_file": "ndu-23-0.01.npz",
+  "model_sha256": "ea057d5822aeca8e03fb782e9d209566e37de78ca7bcc5d07a4063a02dbea876",
+  "name": "ndu-23-0.01",
+  "qualification_only": true,
+  "rho": 1.5,
+  "seed": 23,
+  "validation": {
+    "consistency": 0.9802014926567917,
+    "greedy_joint_success": 0.9903100775193798,
+    "joint_success": 0.9742870941288468,
+    "ndu": 0.9610671575294217,
+    "pixel_mse": 0.0007955171125380973,
+    "task_utility": 0.975519810919115
+  },
+  "validation_seconds": 0.008797157000003608
+}

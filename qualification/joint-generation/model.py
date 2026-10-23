@@ -91,7 +91,10 @@ class JointModel:
         scale = min(1.0, 5.0 / max(norm, 1e-300))
         # Per-parameter clocks keep decoder and content training independent.
         for key, g in clean.items():
-            m, v, step = self._moments.get(key, (np.zeros_like(g), np.zeros_like(g), 0))
+            try:
+                m, v, step = self._moments[key]
+            except KeyError:
+                m, v, step = np.zeros_like(g), np.zeros_like(g), 0
             g = g * scale
             m, v, step = 0.9 * m + 0.1 * g, 0.999 * v + 0.001 * g * g, step + 1
             self.params[key] -= lr * (m / (1 - 0.9 ** step)) / (np.sqrt(v / (1 - 0.999 ** step)) + 1e-8)

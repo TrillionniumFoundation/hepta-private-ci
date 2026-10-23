@@ -1,0 +1,307 @@
+{
+  "all_samples_retained": {
+    "batches": 18,
+    "repeats": 9,
+    "rows": 648
+  },
+  "future_rows_per_model": 1152,
+  "no_future_validation_timings_used": true,
+  "not_accessed": [
+    "test-result.json",
+    "test-inputs",
+    "models",
+    "dataset construction",
+    "native inference"
+  ],
+  "scheduling": {
+    "additive": {
+      "completed_rounds": 0,
+      "cpu_cap_seconds": 10.0,
+      "cpu_without_even_one_update": 10.634384729333235,
+      "predicted_observer_seconds": 0.03682533111497028,
+      "predicted_prepare_seconds": 0.015670796,
+      "predicted_service_seconds": 1.180859688,
+      "remaining_units_before_residual": 2780221325,
+      "reserved_changed_model_seconds": 0.3232724452182613,
+      "reserved_tail_and_revalidation_units": 130964256,
+      "reserved_tail_seconds": 1.2333558151149702,
+      "spent_cpu_before_residual": 9.077756469000002
+    },
+    "anchor": {
+      "completed_rounds": 0,
+      "cpu_cap_seconds": 10.0,
+      "cpu_without_even_one_update": 10.482955488083176,
+      "predicted_observer_seconds": 0.019107399277855333,
+      "predicted_prepare_seconds": 0.015670796,
+      "predicted_service_seconds": 1.180859688,
+      "remaining_units_before_residual": 1652186695,
+      "reserved_changed_model_seconds": 0.1885071408053113,
+      "reserved_tail_and_revalidation_units": 130964256,
+      "reserved_tail_seconds": 1.2156378832778554,
+      "spent_cpu_before_residual": 9.078810464000009
+    },
+    "ndu": {
+      "completed_rounds": 0,
+      "cpu_cap_seconds": 10.0,
+      "cpu_without_even_one_update": 10.414256598132159,
+      "predicted_observer_seconds": 0.016318602087046698,
+      "predicted_prepare_seconds": 0.015670796,
+      "predicted_service_seconds": 1.180859688,
+      "remaining_units_before_residual": 2202596523,
+      "reserved_changed_model_seconds": 0.15681838104510487,
+      "reserved_tail_and_revalidation_units": 130964256,
+      "reserved_tail_seconds": 1.2128490860870467,
+      "spent_cpu_before_residual": 9.044589131000007
+    },
+    "supervised": {
+      "completed_rounds": 0,
+      "cpu_cap_seconds": 10.0,
+      "cpu_without_even_one_update": 10.448295281195483,
+      "predicted_observer_seconds": 0.017284073608920626,
+      "predicted_prepare_seconds": 0.015670796,
+      "predicted_service_seconds": 1.180859688,
+      "remaining_units_before_residual": 1465823557,
+      "reserved_changed_model_seconds": 0.1695944045865549,
+      "reserved_tail_and_revalidation_units": 130964256,
+      "reserved_tail_seconds": 1.2138145576089205,
+      "spent_cpu_before_residual": 9.064886319000008
+    }
+  },
+  "scope": "Saved TRAIN calibration and existing pre-residual cost receipts only; not qualification",
+  "seeds": {
+    "11": {
+      "cpu_wall_ratio_range": [
+        0.9999217810120758,
+        1.000397529445744
+      ],
+      "flattened_216_row_cpu_median_ns": 763512.875,
+      "generation_cpu_ns_sum": 37425399,
+      "output_byte_arrays_identical_across_repeats": true,
+      "output_cpu_fraction": 0.7669433418780516,
+      "output_cpu_ns_sum": 124376073,
+      "per_row_work_unique": [
+        19236
+      ],
+      "remaining_cpu_ns_sum": 369664,
+      "repeat_row_medians_ns": [
+        809584.3125,
+        763512.875,
+        476919.484375
+      ],
+      "service_cpu_ns_sum": 162171136,
+      "work_units_sum": 4154976
+    },
+    "23": {
+      "cpu_wall_ratio_range": [
+        0.9997440929286215,
+        1.0001637408120276
+      ],
+      "flattened_216_row_cpu_median_ns": 67682.5,
+      "generation_cpu_ns_sum": 2798681,
+      "output_byte_arrays_identical_across_repeats": true,
+      "output_cpu_fraction": 0.8399216386044349,
+      "output_cpu_ns_sum": 15305252,
+      "per_row_work_unique": [
+        19236
+      ],
+      "remaining_cpu_ns_sum": 118305,
+      "repeat_row_medians_ns": [
+        88759.96875,
+        65740.4375,
+        67682.5
+      ],
+      "service_cpu_ns_sum": 18222238,
+      "work_units_sum": 4154976
+    },
+    "47": {
+      "cpu_wall_ratio_range": [
+        0.9997261773216688,
+        1.0001612155868782
+      ],
+      "flattened_216_row_cpu_median_ns": 193856.4375,
+      "generation_cpu_ns_sum": 8887626,
+      "output_byte_arrays_identical_across_repeats": true,
+      "output_cpu_fraction": 0.823243275328582,
+      "output_cpu_ns_sum": 42162215,
+      "per_row_work_unique": [
+        19236
+      ],
+      "remaining_cpu_ns_sum": 164929,
+      "repeat_row_medians_ns": [
+        349512.296875,
+        193856.4375,
+        126907.53125
+      ],
+      "service_cpu_ns_sum": 51214770,
+      "work_units_sum": 4154976
+    }
+  },
+  "shared_preparation": {
+    "difference": {
+      "container": {
+        "cpu_stat": {
+          "burst_usec": 0,
+          "nice_usec": 0,
+          "nr_bursts": 0,
+          "nr_periods": 37,
+          "nr_throttled": 0,
+          "system_usec": 182109,
+          "throttled_usec": 0,
+          "usage_usec": 3747496,
+          "user_usec": 3565386
+        },
+        "memory_events": {
+          "high": 0,
+          "low": 0,
+          "max": 0,
+          "oom": 0,
+          "oom_group_kill": 0,
+          "oom_kill": 0
+        },
+        "scope": "container, not process; deltas do not establish causation"
+      },
+      "errors": {},
+      "process_cpu_ns": 3064979435,
+      "process_threads": {
+        "after": 1,
+        "before": 1
+      },
+      "rusage": {
+        "involuntary_context_switches": 7,
+        "major_faults": 0,
+        "minor_faults": 4093,
+        "system_cpu_ns": 80409000,
+        "user_cpu_ns": 2984563000,
+        "voluntary_context_switches": 9
+      },
+      "schema": "hepta.resource-delta.v1",
+      "thread_cpu_ns": 3065001227,
+      "wall_ns": 3738248684
+    },
+    "gc": {
+      "active": false,
+      "count": 22,
+      "cpu_ns_max": 4007123,
+      "cpu_ns_total": 12020419,
+      "dropped_events": 0,
+      "events": [
+        {
+          "cpu_ns": 192710,
+          "generation": 0,
+          "wall_ns": 191281
+        },
+        {
+          "cpu_ns": 158551,
+          "generation": 0,
+          "wall_ns": 157525
+        },
+        {
+          "cpu_ns": 162009,
+          "generation": 0,
+          "wall_ns": 161539
+        },
+        {
+          "cpu_ns": 53419,
+          "generation": 0,
+          "wall_ns": 51287
+        },
+        {
+          "cpu_ns": 1693134,
+          "generation": 1,
+          "wall_ns": 1692881
+        },
+        {
+          "cpu_ns": 42188,
+          "generation": 0,
+          "wall_ns": 41086
+        },
+        {
+          "cpu_ns": 43809,
+          "generation": 0,
+          "wall_ns": 42567
+        },
+        {
+          "cpu_ns": 242095,
+          "generation": 0,
+          "wall_ns": 186301
+        },
+        {
+          "cpu_ns": 20440,
+          "generation": 0,
+          "wall_ns": 20119
+        },
+        {
+          "cpu_ns": 90486,
+          "generation": 0,
+          "wall_ns": 89428
+        },
+        {
+          "cpu_ns": 17839,
+          "generation": 0,
+          "wall_ns": 17867
+        },
+        {
+          "cpu_ns": 18026,
+          "generation": 0,
+          "wall_ns": 17836
+        },
+        {
+          "cpu_ns": 17692,
+          "generation": 0,
+          "wall_ns": 17653
+        },
+        {
+          "cpu_ns": 17472,
+          "generation": 0,
+          "wall_ns": 17492
+        },
+        {
+          "cpu_ns": 17860,
+          "generation": 0,
+          "wall_ns": 17799
+        },
+        {
+          "cpu_ns": 1348208,
+          "generation": 0,
+          "wall_ns": 1349250
+        },
+        {
+          "cpu_ns": 3274110,
+          "generation": 1,
+          "wall_ns": 3273888
+        },
+        {
+          "cpu_ns": 4007123,
+          "generation": 0,
+          "wall_ns": 4007116
+        },
+        {
+          "cpu_ns": 258221,
+          "generation": 0,
+          "wall_ns": 254866
+        },
+        {
+          "cpu_ns": 135285,
+          "generation": 0,
+          "wall_ns": 133865
+        },
+        {
+          "cpu_ns": 68268,
+          "generation": 0,
+          "wall_ns": 68210
+        },
+        {
+          "cpu_ns": 141474,
+          "generation": 0,
+          "wall_ns": 139401
+        }
+      ],
+      "pending": false,
+      "scope": "GC callback intervals; process CPU may include other threads",
+      "unmatched_starts": 0,
+      "unmatched_stops": 0,
+      "wall_ns_max": 4007116,
+      "wall_ns_total": 11949257
+    }
+  }
+}

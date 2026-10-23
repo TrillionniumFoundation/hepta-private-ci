@@ -1,0 +1,61 @@
+test_actual_zip_identity_ignores_only_manifest_metadata (test_analyze.AnalysisTests.test_actual_zip_identity_ignores_only_manifest_metadata) ... ok
+test_available_prefix_mismatch_hard_and_missing32_soft (test_analyze.AnalysisTests.test_available_prefix_mismatch_hard_and_missing32_soft) ... ok
+test_capability_cap_reference_frozen_and_artifact_failures (test_analyze.AnalysisTests.test_capability_cap_reference_frozen_and_artifact_failures) ... ok
+test_complete_handmade_audit_and_fixed_pair_direction (test_analyze.AnalysisTests.test_complete_handmade_audit_and_fixed_pair_direction) ... ok
+test_incremental_audit_checks_each_completed_slot_before_next_build (test_analyze.AnalysisTests.test_incremental_audit_checks_each_completed_slot_before_next_build) ... 
+  test_incremental_audit_checks_each_completed_slot_before_next_build (test_analyze.AnalysisTests.test_incremental_audit_checks_each_completed_slot_before_next_build) (count=1) ... ERROR
+  test_incremental_audit_checks_each_completed_slot_before_next_build (test_analyze.AnalysisTests.test_incremental_audit_checks_each_completed_slot_before_next_build) (count=2) ... ERROR
+  test_incremental_audit_checks_each_completed_slot_before_next_build (test_analyze.AnalysisTests.test_incremental_audit_checks_each_completed_slot_before_next_build) (count=3) ... ERROR
+
+======================================================================
+ERROR: test_incremental_audit_checks_each_completed_slot_before_next_build (test_analyze.AnalysisTests.test_incremental_audit_checks_each_completed_slot_before_next_build) (count=1)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/hepta-private-ci/qualification/joint-generation/training_diagnostics/codec-d1/test_analyze.py", line 140, in test_incremental_audit_checks_each_completed_slot_before_next_build
+    self.assertEqual(analyze.audit_builds(self.roots[:count])["calibration_traces_compared"], 9 * count)
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/hepta-private-ci/qualification/joint-generation/training_diagnostics/codec-d1/analyze.py", line 150, in audit_builds
+    builds = _loads(build_paths)
+             ^^^^^^^^^^^^^^^^^^^
+  File "/workspace/hepta-private-ci/qualification/joint-generation/training_diagnostics/codec-d1/analyze.py", line 144, in _loads
+    _require(len(set(roots)) == 4, "fresh distinct build directories required")
+  File "/workspace/hepta-private-ci/qualification/joint-generation/training_diagnostics/codec-d1/analyze.py", line 26, in _require
+    raise ValueError(reason)
+ValueError: fresh distinct build directories required
+
+======================================================================
+ERROR: test_incremental_audit_checks_each_completed_slot_before_next_build (test_analyze.AnalysisTests.test_incremental_audit_checks_each_completed_slot_before_next_build) (count=2)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/hepta-private-ci/qualification/joint-generation/training_diagnostics/codec-d1/test_analyze.py", line 140, in test_incremental_audit_checks_each_completed_slot_before_next_build
+    self.assertEqual(analyze.audit_builds(self.roots[:count])["calibration_traces_compared"], 9 * count)
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/hepta-private-ci/qualification/joint-generation/training_diagnostics/codec-d1/analyze.py", line 150, in audit_builds
+    builds = _loads(build_paths)
+             ^^^^^^^^^^^^^^^^^^^
+  File "/workspace/hepta-private-ci/qualification/joint-generation/training_diagnostics/codec-d1/analyze.py", line 144, in _loads
+    _require(len(set(roots)) == 4, "fresh distinct build directories required")
+  File "/workspace/hepta-private-ci/qualification/joint-generation/training_diagnostics/codec-d1/analyze.py", line 26, in _require
+    raise ValueError(reason)
+ValueError: fresh distinct build directories required
+
+======================================================================
+ERROR: test_incremental_audit_checks_each_completed_slot_before_next_build (test_analyze.AnalysisTests.test_incremental_audit_checks_each_completed_slot_before_next_build) (count=3)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/hepta-private-ci/qualification/joint-generation/training_diagnostics/codec-d1/test_analyze.py", line 140, in test_incremental_audit_checks_each_completed_slot_before_next_build
+    self.assertEqual(analyze.audit_builds(self.roots[:count])["calibration_traces_compared"], 9 * count)
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/hepta-private-ci/qualification/joint-generation/training_diagnostics/codec-d1/analyze.py", line 150, in audit_builds
+    builds = _loads(build_paths)
+             ^^^^^^^^^^^^^^^^^^^
+  File "/workspace/hepta-private-ci/qualification/joint-generation/training_diagnostics/codec-d1/analyze.py", line 144, in _loads
+    _require(len(set(roots)) == 4, "fresh distinct build directories required")
+  File "/workspace/hepta-private-ci/qualification/joint-generation/training_diagnostics/codec-d1/analyze.py", line 26, in _require
+    raise ValueError(reason)
+ValueError: fresh distinct build directories required
+
+----------------------------------------------------------------------
+Ran 5 tests in 5.133s
+
+FAILED (errors=3)

@@ -1,0 +1,18 @@
+{
+  "CPU_not_separately_metered": true,
+  "D_probe_started": false,
+  "command": "OPENBLAS_NUM_THREADS=1 OMP_NUM_THREADS=1 MKL_NUM_THREADS=1 PYTHONDONTWRITEBYTECODE=1 python -m unittest fashion_research.test_phase_ownership.ClosingBoundaryTests -v",
+  "exit_code": 0,
+  "log_provenance": "Exact stdout/stderr observed in exec_command; saved after the successful invocation without rerunning tests",
+  "read_only_closure": "Both branches retain row before comparing same closing timestamp against450/150; next phase starts at returned end",
+  "reviewer": "/root/audit_runtime_costs",
+  "schema": "hepta.fashion-closing-v3-mock-regression.v1",
+  "scope": "Only two pure mock-clock regressions; model/intake/actor are mocked. No old full graph suite or data used.",
+  "source_SHA256": {
+    "qualification/joint-generation/fashion_research/run.py": "e58816ad65309cc38e6c2cf078b0ef7a0ae5f0094277485d01e997b03cb3ca3f",
+    "qualification/joint-generation/fashion_research/test_phase_ownership.py": "0bf5f6e0ad1e12ec2181d8e6bdd558d74ae3e69e5ba652b734c67b4b7f8a9969"
+  },
+  "tests_run": 2,
+  "tool_reported_command_wall_seconds": 0.264721584,
+  "unittest_reported_seconds": 0.046
+}

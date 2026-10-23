@@ -1,0 +1,19 @@
+{
+  "commands": [
+    "OPENBLAS_NUM_THREADS=1 OMP_NUM_THREADS=1 MKL_NUM_THREADS=1 PYTHONDONTWRITEBYTECODE=1 python runs/codex-cloud-efficient-r2-shared-timing-d2/worker.py declare",
+    "OPENBLAS_NUM_THREADS=1 OMP_NUM_THREADS=1 MKL_NUM_THREADS=1 PYTHONDONTWRITEBYTECODE=1 python runs/codex-cloud-efficient-r2-shared-timing-d2/worker.py execute"
+  ],
+  "declare_exit_code": 0,
+  "evidence_recorded_unix_ns": 1792759356133655780,
+  "execute_exit_code": 0,
+  "execute_session_id": 65739,
+  "execution_commit": "fb1436db11664603bb637ca0b1db95d129f08b1d",
+  "protocol_sha256": "775b30b3c71555775135b0368b782e3360b3368a04b09331332de58461dc3abf",
+  "qualification": false,
+  "schema": "hepta.shared-timing-execution.v1",
+  "source_commit": "d0b99c25a26739c52e5695433625ac1b966f25a4",
+  "started_unix_ns": 1792759245341694746,
+  "stdout_evidence": "copied verbatim from actual tool capture; command was not re-executed",
+  "timing_file_mtime_ns": 1792759248034248910,
+  "worker_sha256": "167d1f33983e1d6af6b601771160467014ffc02e5e4b6182bf912b4a6a321615"
+}

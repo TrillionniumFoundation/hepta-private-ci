@@ -1,0 +1,46 @@
+{
+  "arm": "supervised",
+  "artifact_sha256": "c3ee1764252461214df647507f7e531f496bef914504e9f6a2b56c6ebc6ee055",
+  "capabilities": [
+    "text",
+    "image"
+  ],
+  "compute_price": 0.02,
+  "content_parameters_changed": true,
+  "controller_file": "supervised-23-0.01-controller.npz",
+  "controller_sha256": "b7d63b536afe6fecffb289bd73b77e7f9030d24cc09d93b52a6948ed53faaed6",
+  "controller_training": {
+    "model_forward_rows": 3120,
+    "outcome_cells": 449280,
+    "ridge_features": 31,
+    "rows": 1560,
+    "wall_seconds": 0.03999784699999509
+  },
+  "cost": {
+    "examples": 19200,
+    "joint_outcome_cells": 5529600,
+    "tensor_macs": 431308800,
+    "updates": 300,
+    "utility_profiles_per_update": [
+      0,
+      1.5
+    ],
+    "wall_seconds": 0.4907991660000164
+  },
+  "learning_rate": 0.01,
+  "model_file": "supervised-23-0.01.npz",
+  "model_sha256": "fa966a7bb4084a94ddc438e562c78e1a817aa5413965a85ba7271d6b2cab7fb3",
+  "name": "supervised-23-0.01",
+  "qualification_only": true,
+  "rho": 1.5,
+  "seed": 23,
+  "validation": {
+    "consistency": 0.9627463386708235,
+    "greedy_joint_success": 0.9903100775193798,
+    "joint_success": 0.9573398937070567,
+    "ndu": 0.9292063546963635,
+    "pixel_mse": 0.0015100879088232183,
+    "task_utility": 0.9590214009702916
+  },
+  "validation_seconds": 0.01141867900000193
+}

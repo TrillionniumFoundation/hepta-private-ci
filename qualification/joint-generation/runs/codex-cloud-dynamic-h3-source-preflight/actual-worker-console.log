@@ -1,0 +1,10 @@
+Traceback (most recent call last):
+  File "/workspace/hepta-private-ci/qualification/joint-generation/training_diagnostics/dynamic-h2/run_once.py", line 494, in <module>
+    result = collect(args.freeze or stage / f"frozen-{args.experiment}.json", experiment=args.experiment)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/hepta-private-ci/qualification/joint-generation/training_diagnostics/dynamic-h2/run_once.py", line 299, in collect
+    restored = safe_restore(protocol, output_root)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/hepta-private-ci/qualification/joint-generation/training_diagnostics/dynamic-h2/run_once.py", line 217, in safe_restore
+    raise ValueError("historical complete build cost changed")
+ValueError: historical complete build cost changed

@@ -1,0 +1,255 @@
+{
+  "schema": "hepta.dynamic-h4-postrun-independent-audit.v1",
+  "auditor": "/root/audit_acceptance",
+  "audit_date_utc": "2026-10-23",
+  "experiment_id": "h4",
+  "qualification_eligible": false,
+  "conclusion": "The sole H4 TRAIN diagnostic completed its fixed 36-call design within its registered CPU, operator and retained-byte bounds. Independent saved-array and receipt checks reproduce the reported empirical content gaps and conditional proxy headroom. The pooled free-label raw oracle and proxy net contrasts against selected static NDU/full are negative; this establishes no dynamic benefit or scientific qualification.",
+  "execution_identity": {
+    "analysis_sha256": "c62b60c7fdd3ee06fb5e4fda5fc5af7b9cfe269e4420932d043d7768e1afe1ca",
+    "protocol_sha256": "090f6190250b1e2bb252f3f51285671599553936ff4dd091c6863fc7e4337e94",
+    "script_sha256": "68899243d62d2d5ff4bd029c0412e13aa1201823f280723399ec67ed23d41c70",
+    "source_commit": "9adc3743a60ab613a0e4cb1ed105e1b5169186aa",
+    "execution_commit": "065e18814106f763317f0fedaffa6996ba865f02",
+    "freeze_sha256": "1ee47226e3af40cd9e40e1980e42990429f1ae28e18fb95efc736493e2335425",
+    "historical_committed_binding_checks": {
+      "training_diagnostics/dynamic-h2/analyze.py": true,
+      "training_diagnostics/dynamic-h2/run_once.py": true,
+      "training_diagnostics/dynamic-h4/protocol.json": true
+    },
+    "worker_exit_code": 0,
+    "overall_exit_code": 0,
+    "outcome": "completed",
+    "single_registered_START_copies_equal": true,
+    "no_retry_or_selected_repeat_performed_by_auditor": true
+  },
+  "independent_saved_artifact_checks": {
+    "Q1_input_order": true,
+    "all_report_receipts_and_samples": true,
+    "fixed_36_order": true,
+    "freeze_protocol": true,
+    "input_artifact_hashes": true,
+    "manifest_profile": true,
+    "old_cost_sum": true,
+    "original_manifest": true,
+    "outer_CPU_sum": true,
+    "paired_go_full_first_outputs": true,
+    "physical_groups": true,
+    "protected": true,
+    "restored_bytes": true,
+    "saved_formula_values": true,
+    "saved_full_row_bytes": true,
+    "settled_attempts": true,
+    "start_copies": true,
+    "work_conservation": true
+  },
+  "preservation": {
+    "protected_entries_hashed": 114,
+    "protected_hash_mismatches": [],
+    "original_manifest_entries_verified": 53,
+    "original_manifest_mismatches": [],
+    "restored_model_controller_library_files_hashed": 10,
+    "run_files_before_audit": 55,
+    "run_bytes_before_audit": 10670081,
+    "registered_artifact_cap_bytes": 33554432,
+    "core_opening_marker_unchanged": true,
+    "r2_opening_marker_remains_absent": true,
+    "method": "Previous formal artifact bytes were hashed against the frozen protection inventory; no formal inputs, labels, metrics or results were semantically parsed."
+  },
+  "fixed_design": {
+    "completed_service_calls": 36,
+    "repeats": 3,
+    "model_seeds": [
+      11,
+      23,
+      47
+    ],
+    "paths": [
+      "NC-full",
+      "NC-go",
+      "NC-stop",
+      "N-full"
+    ],
+    "rows_per_call": 3072,
+    "total_output_rows": 110592,
+    "batch_rows": 64,
+    "batches_per_call": 48,
+    "total_service_batches": 1728,
+    "order": "For each repeat and seed_index, left rotate the four fixed paths by (repeat+seed_index)%4; no missing or duplicate identity.",
+    "sampling_seed": "model_seed+1009*repeat",
+    "all_actual_report_hashes_and_call_identities_verified": true,
+    "all_service_reports_unobserved": true,
+    "service_observer_cpu_ns": 0,
+    "forwards_per_call": {
+      "NC-go": 6144,
+      "NC-stop": 3072,
+      "NC-full": 3072,
+      "N-full": 3072
+    },
+    "positive_output_byte_vectors": true,
+    "first_actual_PNG_samples_verified": 36,
+    "paired_NC_go_full_first_samples_byte_equal": 9,
+    "payload_scope": "One first actual PNG/JSON per completed call is retained; other outputs were generated and costed. All per-row work/CPU/output-byte vectors and batch/preparation costs are retained. This is not full retention of 110592 payloads or complete RNG trajectories."
+  },
+  "input_and_probe_checks": {
+    "existing_saved_TRAIN_rows": 3072,
+    "physical_sources": 192,
+    "rows_per_physical_source": 16,
+    "metadata_groups_equal_source_ids": true,
+    "all_saved_full_input_row_byte_hashes_recomputed": true,
+    "all_3072_input_hashes_and_physical_source_order_equal_Q1": true,
+    "saved_manifest_and_original_profile_equal_frozen_protocol": true,
+    "Q1_prediction_archive_hash_checked": true,
+    "Q1_max_absolute_errors": {
+      "11": {
+        "delta": 0,
+        "full": 0,
+        "low": 0
+      },
+      "23": {
+        "delta": 0,
+        "full": 0,
+        "low": 0
+      },
+      "47": {
+        "delta": 0,
+        "full": 0,
+        "low": 0
+      }
+    },
+    "NC_full_minus_low_equals_saved_delta_within_absolute_tolerance": 1e-12,
+    "new_dataset_constructor_or_model_execution_by_auditor": false,
+    "scope": "Only existing saved input/utility arrays and metadata were loaded. No dataset was reconstructed, no label-dependent model scoring or model inference was rerun."
+  },
+  "work_accounting": {
+    "complete": true,
+    "unsettled_reserved_units": 0,
+    "all_36_attempts_settled_actual_equals_preflight_quote": true,
+    "service_units": 2073627648,
+    "content_probe_units": 346067136,
+    "known_consumed_units": 2419694784,
+    "arithmetic_conservation": "2073627648 + 346067136 = 2419694784",
+    "registered_operator_cap": 4000000000,
+    "remaining_operator_units": 1580305216,
+    "maximum_actual_request_units": 25829,
+    "request_cap_units": 38472,
+    "all_service_budget_violations": 0,
+    "prices_scope": "Declared priced-operator-work-v1; no hardware FLOP, energy or elapsed-time equivalence claim."
+  },
+  "actual_research_costs": {
+    "worker_receipt_cpu_ns": 12706851116,
+    "outer_full_worker_and_descendant_cpu_ns": 12789331000,
+    "outer_launcher_own_cpu_ns_before_receipt": 23855359,
+    "total_H4_cpu_ns_before_receipt": 12813186359,
+    "registered_H4_cpu_cap_ns": 30000000000,
+    "outer_CPU_cap_pass": true,
+    "H2_prior_registered_failure_cpu_ns": 519258463,
+    "H3_prior_registered_failure_cpu_ns": 807168997,
+    "cumulative_H2_H3_H4_registered_cpu_ns_before_receipts": 14139613819,
+    "separate_H4_no_data_preflight_worker_cpu_ns": 769679171,
+    "scope": "Worker and launcher CPU are added once. H2/H3 failures remain retained, not refunded. The cumulative registered-invocation subtotal excludes separately retained preflights, tests, metadata repairs, analysis and audit costs, and is not total lifetime research cost. Final receipt serialization retains the outer receipt's small enclosing-execution remainder limitation."
+  },
+  "fixed_cost_law": {
+    "reference_full_cpu_ns": 73435.296875,
+    "compute_price": 0.02,
+    "horizon_per_selected_seed": 100000,
+    "selected_seed_count": 3,
+    "original_historical_build_seconds": {
+      "N": 8.307966292000007,
+      "NC": 8.537556029000005
+    },
+    "canonical_build_ns": {
+      "NC": 8537556029,
+      "N": 8307966292
+    },
+    "canonical_build_identity_verified": {
+      "N": true,
+      "NC": true
+    },
+    "historical_build_utility_cost": {
+      "NC": 0.00775063799227452,
+      "N": 0.007542209850522465
+    },
+    "NC_minus_N_historical_build_utility_cost": 0.00020842814175205462,
+    "formula": "Build utility charge = price * historical whole-arm seconds * 1e9 / (3*H*R), once. Runtime cost = price*median(service_cpu_ns/3072 + prepare_cpu_ns/H)/R. The signed median of paired go-minus-stop service CPU is retained before zero clamp; preparation is not silently included in marginal service c.",
+    "no_duplicate_gross_critic_build_charge": true,
+    "no_replacement_of_historical_R_or_H1_prices": true
+  },
+  "independently_recomputed_values": {
+    "by_seed": [
+      {
+        "c": 0.005334180326828239,
+        "content_gap_N_minus_NC": 0.0002954944990011561,
+        "free_raw_oracle_minus_N_full": 0.0009754048283925242,
+        "go_proxy_minus_measured_go": 0.0002629319377169849,
+        "proxy_oracle_net_minus_N_full": -0.0021790398151732004,
+        "routing_headroom_proxy": 0.005051723363760626,
+        "seed": 11,
+        "signed_marginal_cpu_ns": 19585.855794270814
+      },
+      {
+        "c": 0,
+        "content_gap_N_minus_NC": 0.0021591409732121774,
+        "free_raw_oracle_minus_N_full": -0.0012831176292010076,
+        "go_proxy_minus_measured_go": 0.0001765939104130601,
+        "proxy_oracle_net_minus_N_full": -0.0027563366245508814,
+        "routing_headroom_proxy": 0.0008760233440111691,
+        "seed": 23,
+        "signed_marginal_cpu_ns": -647.826171875
+      },
+      {
+        "c": 0,
+        "content_gap_N_minus_NC": 0.000966005128167385,
+        "free_raw_oracle_minus_N_full": -0.0003324298160203568,
+        "go_proxy_minus_measured_go": -0.003931687441006207,
+        "proxy_oracle_net_minus_N_full": 0.00042393103690474554,
+        "routing_headroom_proxy": 0.0006335753121470281,
+        "seed": 47,
+        "signed_marginal_cpu_ns": -56.45703125
+      }
+    ],
+    "means": {
+      "content_gap_N_minus_NC": 0.0011402135334602395,
+      "free_raw_oracle_minus_N_full": -0.00021338087227628004,
+      "proxy_oracle_net_minus_N_full": -0.001503815134273112
+    },
+    "comparison_tolerance_to_saved_analysis": 1e-12,
+    "formula_scope": "All computations use saved arrays and all three saved timing observations per seed/path; no new scoring, fitting, bootstrap, trimming or timing measurements.",
+    "decomposition": "oracle_proxy - N_direct = E[(c-g)+] - E[N_full-NC_full] - (Cstop+c-C_N_full) - (B_NC-B_N).",
+    "best_constant_proxy_scope": "min(E[(c-g)+],E[(g-c)+]) is relative to the better fixed action within each seed under the constant-additive-cost proxy."
+  },
+  "interpretation_limits": {
+    "free_raw_oracle": "mean(max(NC_full,NC_low)) is an empirical raw-utility ceiling for these two fixed NC content actions on this already-seen TRAIN sample, with free outcome labels. Its three-seed mean minus selected NDU/full is -0.00021338087227628004; seed11 is positive and seeds23/47 negative. It is not a population/generalization claim, net-utility bound or limit on another model/action set.",
+    "conditional_proxy": "The oracle uses unavailable labels and a constant marginal-mixture cost estimated from aggregate median CPU. It is neither deployable nor a certified request-level or complete-system CPU upper bound.",
+    "seed47_nonadditivity": {
+      "go_proxy_minus_measured_go_utility_cost": -0.003931687441006207,
+      "mandatory_overhead_proxy_vs_direct_NC_full": -0.0014394726419097517,
+      "measured_paired_median_go_minus_direct_NC_full_utility_cost": 0.0020812906667767393,
+      "meaning": "Median stop cost plus clamped median marginal cost does not equal measured median go cost. The proxy even suggests negative mandatory overhead while the measured paired contrast is positive. The positive seed47 oracle proxy contrast must not be sold as achieved dynamic gain or a strict bound."
+    },
+    "actual_contrast_boundary": "The necessary static comparator is the previously selected T11 NDU/full. This does not exhaust the full/low/ensemble static menu, prove deployable dynamic superiority or establish NDU superiority to full-strength supervised CE.",
+    "timing_scope": "Every fixed repeat is retained, including negative signed increments and slow observations. Per-row CPU allocations share 64-request batches; there is no new timing CI, bootstrap or across-wave performance claim.",
+    "original_goal_status": "H4 completes the missing current-weight TRAIN diagnostic. It does not reverse r1/r2/core failures or establish the original scientific generation-benefit goal."
+  },
+  "supporting_artifact_sha256": {
+    "runs/codex-cloud-dynamic-h4-source-preflight/actual-worker-execution.json": "e2a4a0f194a577c609085af99dcc437c4386b0f5f608209146f7537c0dd615a9",
+    "runs/codex-cloud-dynamic-train-headroom-h4/content-values.npz": "b62c2e67f6b90492d4d1e36fd42e4167c81a7544799b010e8430664d1e46a1ee",
+    "runs/codex-cloud-dynamic-train-headroom-h4/diagnostic.json": "ef7913c6f3decc67218c8ecd0dfce9929d13d4435fd15c2b428a0c2e44398719",
+    "runs/codex-cloud-dynamic-train-headroom-h4/headroom-analysis.json": "458c454766ab142847b08cfec00f20c92fa4f84b88964e3bfbec58c1179a3e2f",
+    "runs/codex-cloud-dynamic-train-headroom-h4/manifest.json": "8dfb32626a5a74fcbff288d25972d72fe1ca8d7717c7ac6a9d691def5ca9e646",
+    "runs/codex-cloud-dynamic-train-headroom-h4/train-metadata.json": "4f3f2f73b83d5bd7baab43b53e5bde42cc2f1aa243ae2bb75476f9a796ba3800",
+    "runs/codex-cloud-dynamic-train-headroom-h4/train.npz": "f87ea0c386bbd01fc036f67cf6e2bc3cd84dc10f9ddb0fbc92184e148efc7626"
+  },
+  "audit_execution_limits": {
+    "new_model_or_dataset_execution": false,
+    "loaded_saved_nonmodel_arrays": true,
+    "loaded_model_parameter_tensors": false,
+    "new_measurements_bootstraps_or_fits": false,
+    "formal_semantic_data_or_results_read": false,
+    "source_or_original_artifact_edits": false,
+    "only_file_added": "runs/codex-cloud-dynamic-train-headroom-h4/postrun-audit.json",
+    "audit_CPU_independently_bracketed": false,
+    "cost_policy": "Read-only administrative/development audit; never credited to a registered measurement or model budget."
+  },
+  "remaining_blocker": "No execution blocker remains for the completed H4 diagnostic. Its saved results do not demonstrate current-profile dynamic benefit; any future method change must preserve these outcomes and cannot select or repeat this measured wave."
+}

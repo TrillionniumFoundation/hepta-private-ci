@@ -1,0 +1,1312 @@
+{
+  "all_validation_candidates": [
+    {
+      "arm": "supervised",
+      "content_parameters_changed": true,
+      "cost": {
+        "examples": 19200,
+        "joint_outcome_cells": 5529600,
+        "tensor_macs": 431308800,
+        "updates": 300,
+        "utility_profiles_per_update": [
+          0,
+          1.5
+        ],
+        "wall_seconds": 0.48528688800001873
+      },
+      "learning_rate": 0.001,
+      "name": "supervised-11-0.001",
+      "seed": 11,
+      "validation": {
+        "consistency": 0.8796443581293413,
+        "greedy_joint_success": 0.9903100775193798,
+        "joint_success": 0.8693338566139505,
+        "ndu": 0.7916818088864835,
+        "pixel_mse": 0.0049067647012486365,
+        "task_utility": 0.8729392538607201
+      },
+      "validation_seconds": 0.01609873900000025
+    },
+    {
+      "arm": "supervised",
+      "content_parameters_changed": true,
+      "cost": {
+        "examples": 19200,
+        "joint_outcome_cells": 5529600,
+        "tensor_macs": 431308800,
+        "updates": 300,
+        "utility_profiles_per_update": [
+          0,
+          1.5
+        ],
+        "wall_seconds": 0.47680532900000117
+      },
+      "learning_rate": 0.003,
+      "name": "supervised-11-0.003",
+      "seed": 11,
+      "validation": {
+        "consistency": 0.9269202373590703,
+        "greedy_joint_success": 0.9903100775193798,
+        "joint_success": 0.9189869483841593,
+        "ndu": 0.8711375690687803,
+        "pixel_mse": 0.0031278737140744664,
+        "task_utility": 0.9213370391551117
+      },
+      "validation_seconds": 0.0073031560000060836
+    },
+    {
+      "arm": "supervised",
+      "content_parameters_changed": true,
+      "cost": {
+        "examples": 19200,
+        "joint_outcome_cells": 5529600,
+        "tensor_macs": 431308800,
+        "updates": 300,
+        "utility_profiles_per_update": [
+          0,
+          1.5
+        ],
+        "wall_seconds": 0.45292823300002283
+      },
+      "learning_rate": 0.01,
+      "name": "supervised-11-0.01",
+      "seed": 11,
+      "validation": {
+        "consistency": 0.9531548963664273,
+        "greedy_joint_success": 0.9786821705426356,
+        "joint_success": 0.9388356143723593,
+        "ndu": 0.9100525155070562,
+        "pixel_mse": 0.0023241794181519796,
+        "task_utility": 0.9413561022176317
+      },
+      "validation_seconds": 0.010400309999994306
+    },
+    {
+      "arm": "additive",
+      "content_parameters_changed": true,
+      "cost": {
+        "examples": 19200,
+        "joint_outcome_cells": 5529600,
+        "tensor_macs": 431308800,
+        "updates": 300,
+        "utility_profiles_per_update": [
+          0,
+          1.5
+        ],
+        "wall_seconds": 0.4611669779999943
+      },
+      "learning_rate": 0.001,
+      "name": "additive-11-0.001",
+      "seed": 11,
+      "validation": {
+        "consistency": 0.8885808887885138,
+        "greedy_joint_success": 0.9864341085271318,
+        "joint_success": 0.8776080360620339,
+        "ndu": 0.8058848889337009,
+        "pixel_mse": 0.004409989299110234,
+        "task_utility": 0.8812536311795408
+      },
+      "validation_seconds": 0.010460532999985617
+    },
+    {
+      "arm": "additive",
+      "content_parameters_changed": true,
+      "cost": {
+        "examples": 19200,
+        "joint_outcome_cells": 5529600,
+        "tensor_macs": 431308800,
+        "updates": 300,
+        "utility_profiles_per_update": [
+          0,
+          1.5
+        ],
+        "wall_seconds": 0.46671127599998385
+      },
+      "learning_rate": 0.003,
+      "name": "additive-11-0.003",
+      "seed": 11,
+      "validation": {
+        "consistency": 0.9405408279928107,
+        "greedy_joint_success": 0.9903100775193798,
+        "joint_success": 0.9334888457523478,
+        "ndu": 0.8935608681568736,
+        "pixel_mse": 0.002396008203125909,
+        "task_utility": 0.9357038000677813
+      },
+      "validation_seconds": 0.014506882000006271
+    },
+    {
+      "arm": "additive",
+      "content_parameters_changed": true,
+      "cost": {
+        "examples": 19200,
+        "joint_outcome_cells": 5529600,
+        "tensor_macs": 431308800,
+        "updates": 300,
+        "utility_profiles_per_update": [
+          0,
+          1.5
+        ],
+        "wall_seconds": 0.6633855850000145
+      },
+      "learning_rate": 0.01,
+      "name": "additive-11-0.01",
+      "seed": 11,
+      "validation": {
+        "consistency": 0.9722599565821869,
+        "greedy_joint_success": 0.9883720930232558,
+        "joint_success": 0.9619337562099409,
+        "ndu": 0.9437057324832876,
+        "pixel_mse": 0.0013598000795417343,
+        "task_utility": 0.963688860744308
+      },
+      "validation_seconds": 0.009789778999987675
+    },
+    {
+      "arm": "ndu",
+      "content_parameters_changed": true,
+      "cost": {
+        "examples": 19200,
+        "joint_outcome_cells": 5529600,
+        "tensor_macs": 431308800,
+        "updates": 300,
+        "utility_profiles_per_update": [
+          0,
+          1.5
+        ],
+        "wall_seconds": 0.4416518870000061
+      },
+      "learning_rate": 0.001,
+      "name": "ndu-11-0.001",
+      "seed": 11,
+      "validation": {
+        "consistency": 0.8954710541394834,
+        "greedy_joint_success": 0.9864341085271318,
+        "joint_success": 0.8836116380336861,
+        "ndu": 0.8170939814615535,
+        "pixel_mse": 0.004026432980564679,
+        "task_utility": 0.8872920896654753
+      },
+      "validation_seconds": 0.01080675399998654
+    },
+    {
+      "arm": "ndu",
+      "content_parameters_changed": true,
+      "cost": {
+        "examples": 19200,
+        "joint_outcome_cells": 5529600,
+        "tensor_macs": 431308800,
+        "updates": 300,
+        "utility_profiles_per_update": [
+          0,
+          1.5
+        ],
+        "wall_seconds": 0.4656842720000043
+      },
+      "learning_rate": 0.003,
+      "name": "ndu-11-0.003",
+      "seed": 11,
+      "validation": {
+        "consistency": 0.9481335954148685,
+        "greedy_joint_success": 0.9903100775193798,
+        "joint_success": 0.940807927038272,
+        "ndu": 0.9063985014490522,
+        "pixel_mse": 0.0020079024680314216,
+        "task_utility": 0.9429682653642435
+      },
+      "validation_seconds": 0.009093397000015102
+    },
+    {
+      "arm": "ndu",
+      "content_parameters_changed": true,
+      "cost": {
+        "examples": 19200,
+        "joint_outcome_cells": 5529600,
+        "tensor_macs": 431308800,
+        "updates": 300,
+        "utility_profiles_per_update": [
+          0,
+          1.5
+        ],
+        "wall_seconds": 0.4541389349999747
+      },
+      "learning_rate": 0.01,
+      "name": "ndu-11-0.01",
+      "seed": 11,
+      "validation": {
+        "consistency": 0.9794196223334429,
+        "greedy_joint_success": 0.9883720930232558,
+        "joint_success": 0.9692557501904004,
+        "ndu": 0.9558312951964855,
+        "pixel_mse": 0.0010358491516081576,
+        "task_utility": 0.9708133345548018
+      },
+      "validation_seconds": 0.008594850000008591
+    },
+    {
+      "arm": "supervised",
+      "content_parameters_changed": true,
+      "cost": {
+        "examples": 19200,
+        "joint_outcome_cells": 5529600,
+        "tensor_macs": 431308800,
+        "updates": 300,
+        "utility_profiles_per_update": [
+          0,
+          1.5
+        ],
+        "wall_seconds": 0.4712188329999947
+      },
+      "learning_rate": 0.001,
+      "name": "supervised-23-0.001",
+      "seed": 23,
+      "validation": {
+        "consistency": 0.8758881766811184,
+        "greedy_joint_success": 0.9922480620155039,
+        "joint_success": 0.8678978283126867,
+        "ndu": 0.7828274652001536,
+        "pixel_mse": 0.005375230096450574,
+        "task_utility": 0.87144908181353
+      },
+      "validation_seconds": 0.010970971999995527
+    },
+    {
+      "arm": "supervised",
+      "content_parameters_changed": true,
+      "cost": {
+        "examples": 19200,
+        "joint_outcome_cells": 5529600,
+        "tensor_macs": 431308800,
+        "updates": 300,
+        "utility_profiles_per_update": [
+          0,
+          1.5
+        ],
+        "wall_seconds": 0.5099842600000102
+      },
+      "learning_rate": 0.003,
+      "name": "supervised-23-0.003",
+      "seed": 23,
+      "validation": {
+        "consistency": 0.9295844210696333,
+        "greedy_joint_success": 0.9941860465116279,
+        "joint_success": 0.9237520089451089,
+        "ndu": 0.8707456309879484,
+        "pixel_mse": 0.0029598884426343445,
+        "task_utility": 0.9262334387874478
+      },
+      "validation_seconds": 0.007630320999993501
+    },
+    {
+      "arm": "supervised",
+      "content_parameters_changed": true,
+      "cost": {
+        "examples": 19200,
+        "joint_outcome_cells": 5529600,
+        "tensor_macs": 431308800,
+        "updates": 300,
+        "utility_profiles_per_update": [
+          0,
+          1.5
+        ],
+        "wall_seconds": 0.4907991660000164
+      },
+      "learning_rate": 0.01,
+      "name": "supervised-23-0.01",
+      "seed": 23,
+      "validation": {
+        "consistency": 0.9627463386708235,
+        "greedy_joint_success": 0.9903100775193798,
+        "joint_success": 0.9573398937070567,
+        "ndu": 0.9292063546963635,
+        "pixel_mse": 0.0015100879088232183,
+        "task_utility": 0.9590214009702916
+      },
+      "validation_seconds": 0.01141867900000193
+    },
+    {
+      "arm": "additive",
+      "content_parameters_changed": true,
+      "cost": {
+        "examples": 19200,
+        "joint_outcome_cells": 5529600,
+        "tensor_macs": 431308800,
+        "updates": 300,
+        "utility_profiles_per_update": [
+          0,
+          1.5
+        ],
+        "wall_seconds": 0.7510562220000168
+      },
+      "learning_rate": 0.001,
+      "name": "additive-23-0.001",
+      "seed": 23,
+      "validation": {
+        "consistency": 0.887794415459953,
+        "greedy_joint_success": 0.9903100775193798,
+        "joint_success": 0.8797618091941868,
+        "ndu": 0.8012268602577522,
+        "pixel_mse": 0.004749022960564294,
+        "task_utility": 0.8832025929790032
+      },
+      "validation_seconds": 0.011380596999998716
+    },
+    {
+      "arm": "additive",
+      "content_parameters_changed": true,
+      "cost": {
+        "examples": 19200,
+        "joint_outcome_cells": 5529600,
+        "tensor_macs": 431308800,
+        "updates": 300,
+        "utility_profiles_per_update": [
+          0,
+          1.5
+        ],
+        "wall_seconds": 0.6575631089999945
+      },
+      "learning_rate": 0.003,
+      "name": "additive-23-0.003",
+      "seed": 23,
+      "validation": {
+        "consistency": 0.9436871051486868,
+        "greedy_joint_success": 0.9941860465116279,
+        "joint_success": 0.9376823218659343,
+        "ndu": 0.8950134884263563,
+        "pixel_mse": 0.0022904939076947395,
+        "task_utility": 0.9398958507469367
+      },
+      "validation_seconds": 0.0078314670000168
+    },
+    {
+      "arm": "additive",
+      "content_parameters_changed": true,
+      "cost": {
+        "examples": 19200,
+        "joint_outcome_cells": 5529600,
+        "tensor_macs": 431308800,
+        "updates": 300,
+        "utility_profiles_per_update": [
+          0,
+          1.5
+        ],
+        "wall_seconds": 0.48486846500000524
+      },
+      "learning_rate": 0.01,
+      "name": "additive-23-0.01",
+      "seed": 23,
+      "validation": {
+        "consistency": 0.974605785083021,
+        "greedy_joint_success": 0.9903100775193798,
+        "joint_success": 0.9697153141091083,
+        "ndu": 0.9509730971985688,
+        "pixel_mse": 0.0010214656104429968,
+        "task_utility": 0.971009271174884
+      },
+      "validation_seconds": 0.007602894999990895
+    },
+    {
+      "arm": "ndu",
+      "content_parameters_changed": true,
+      "cost": {
+        "examples": 19200,
+        "joint_outcome_cells": 5529600,
+        "tensor_macs": 431308800,
+        "updates": 300,
+        "utility_profiles_per_update": [
+          0,
+          1.5
+        ],
+        "wall_seconds": 0.5434139189999883
+      },
+      "learning_rate": 0.001,
+      "name": "ndu-23-0.001",
+      "seed": 23,
+      "validation": {
+        "consistency": 0.8957041851608735,
+        "greedy_joint_success": 0.9883720930232558,
+        "joint_success": 0.8870347466427145,
+        "ndu": 0.813708766923581,
+        "pixel_mse": 0.004320364260090663,
+        "task_utility": 0.8904459599229206
+      },
+      "validation_seconds": 0.01864486600001669
+    },
+    {
+      "arm": "ndu",
+      "content_parameters_changed": true,
+      "cost": {
+        "examples": 19200,
+        "joint_outcome_cells": 5529600,
+        "tensor_macs": 431308800,
+        "updates": 300,
+        "utility_profiles_per_update": [
+          0,
+          1.5
+        ],
+        "wall_seconds": 0.4699701240000138
+      },
+      "learning_rate": 0.003,
+      "name": "ndu-23-0.003",
+      "seed": 23,
+      "validation": {
+        "consistency": 0.9524344801676132,
+        "greedy_joint_success": 0.9883720930232558,
+        "joint_success": 0.9462571501734209,
+        "ndu": 0.9111930111817581,
+        "pixel_mse": 0.0018364651065653126,
+        "task_utility": 0.9483073020175765
+      },
+      "validation_seconds": 0.01167631399999891
+    },
+    {
+      "arm": "ndu",
+      "content_parameters_changed": true,
+      "cost": {
+        "examples": 19200,
+        "joint_outcome_cells": 5529600,
+        "tensor_macs": 431308800,
+        "updates": 300,
+        "utility_profiles_per_update": [
+          0,
+          1.5
+        ],
+        "wall_seconds": 0.47380663599997774
+      },
+      "learning_rate": 0.01,
+      "name": "ndu-23-0.01",
+      "seed": 23,
+      "validation": {
+        "consistency": 0.9802014926567917,
+        "greedy_joint_success": 0.9903100775193798,
+        "joint_success": 0.9742870941288468,
+        "ndu": 0.9610671575294217,
+        "pixel_mse": 0.0007955171125380973,
+        "task_utility": 0.975519810919115
+      },
+      "validation_seconds": 0.008797157000003608
+    },
+    {
+      "arm": "supervised",
+      "content_parameters_changed": true,
+      "cost": {
+        "examples": 19200,
+        "joint_outcome_cells": 5529600,
+        "tensor_macs": 431308800,
+        "updates": 300,
+        "utility_profiles_per_update": [
+          0,
+          1.5
+        ],
+        "wall_seconds": 0.45414314600000694
+      },
+      "learning_rate": 0.001,
+      "name": "supervised-47-0.001",
+      "seed": 47,
+      "validation": {
+        "consistency": 0.868572590292893,
+        "greedy_joint_success": 0.9883720930232558,
+        "joint_success": 0.8567166431405301,
+        "ndu": 0.7717511690600272,
+        "pixel_mse": 0.005724052716669234,
+        "task_utility": 0.860565031653349
+      },
+      "validation_seconds": 0.007555597999981956
+    },
+    {
+      "arm": "supervised",
+      "content_parameters_changed": true,
+      "cost": {
+        "examples": 19200,
+        "joint_outcome_cells": 5529600,
+        "tensor_macs": 431308800,
+        "updates": 300,
+        "utility_profiles_per_update": [
+          0,
+          1.5
+        ],
+        "wall_seconds": 0.45351928899998484
+      },
+      "learning_rate": 0.003,
+      "name": "supervised-47-0.003",
+      "seed": 47,
+      "validation": {
+        "consistency": 0.9226616293591486,
+        "greedy_joint_success": 0.9903100775193798,
+        "joint_success": 0.9151246044201685,
+        "ndu": 0.8613414436561897,
+        "pixel_mse": 0.003287704755012792,
+        "task_utility": 0.9177529204871003
+      },
+      "validation_seconds": 0.00820362800001817
+    },
+    {
+      "arm": "supervised",
+      "content_parameters_changed": true,
+      "cost": {
+        "examples": 19200,
+        "joint_outcome_cells": 5529600,
+        "tensor_macs": 431308800,
+        "updates": 300,
+        "utility_profiles_per_update": [
+          0,
+          1.5
+        ],
+        "wall_seconds": 0.6282752939999909
+      },
+      "learning_rate": 0.01,
+      "name": "supervised-47-0.01",
+      "seed": 47,
+      "validation": {
+        "consistency": 0.9476149045823633,
+        "greedy_joint_success": 0.9786821705426356,
+        "joint_success": 0.930637479381126,
+        "ndu": 0.9002879271961802,
+        "pixel_mse": 0.002149308201515009,
+        "task_utility": 0.9336106617733932
+      },
+      "validation_seconds": 0.015632736000014802
+    },
+    {
+      "arm": "additive",
+      "content_parameters_changed": true,
+      "cost": {
+        "examples": 19200,
+        "joint_outcome_cells": 5529600,
+        "tensor_macs": 431308800,
+        "updates": 300,
+        "utility_profiles_per_update": [
+          0,
+          1.5
+        ],
+        "wall_seconds": 0.8965506199999993
+      },
+      "learning_rate": 0.001,
+      "name": "additive-47-0.001",
+      "seed": 47,
+      "validation": {
+        "consistency": 0.8815643847937595,
+        "greedy_joint_success": 0.9883720930232558,
+        "joint_success": 0.8708635024428626,
+        "ndu": 0.7927615773935561,
+        "pixel_mse": 0.005029450526825593,
+        "task_utility": 0.8745280819208137
+      },
+      "validation_seconds": 0.012223296000001938
+    },
+    {
+      "arm": "additive",
+      "content_parameters_changed": true,
+      "cost": {
+        "examples": 19200,
+        "joint_outcome_cells": 5529600,
+        "tensor_macs": 431308800,
+        "updates": 300,
+        "utility_profiles_per_update": [
+          0,
+          1.5
+        ],
+        "wall_seconds": 0.8987253540000211
+      },
+      "learning_rate": 0.003,
+      "name": "additive-47-0.003",
+      "seed": 47,
+      "validation": {
+        "consistency": 0.93607329269067,
+        "greedy_joint_success": 0.9903100775193798,
+        "joint_success": 0.9282952319154902,
+        "ndu": 0.88450270407789,
+        "pixel_mse": 0.0026465294409422913,
+        "task_utility": 0.930694687506641
+      },
+      "validation_seconds": 0.007895183000016459
+    },
+    {
+      "arm": "additive",
+      "content_parameters_changed": true,
+      "cost": {
+        "examples": 19200,
+        "joint_outcome_cells": 5529600,
+        "tensor_macs": 431308800,
+        "updates": 300,
+        "utility_profiles_per_update": [
+          0,
+          1.5
+        ],
+        "wall_seconds": 0.4777044719999992
+      },
+      "learning_rate": 0.01,
+      "name": "additive-47-0.01",
+      "seed": 47,
+      "validation": {
+        "consistency": 0.9611470049990194,
+        "greedy_joint_success": 0.9728682170542635,
+        "joint_success": 0.9435426473419407,
+        "ndu": 0.9221226178096741,
+        "pixel_mse": 0.0017143931434250566,
+        "task_utility": 0.9462858449667145
+      },
+      "validation_seconds": 0.008267635999999356
+    },
+    {
+      "arm": "ndu",
+      "content_parameters_changed": true,
+      "cost": {
+        "examples": 19200,
+        "joint_outcome_cells": 5529600,
+        "tensor_macs": 431308800,
+        "updates": 300,
+        "utility_profiles_per_update": [
+          0,
+          1.5
+        ],
+        "wall_seconds": 0.4780667830000027
+      },
+      "learning_rate": 0.001,
+      "name": "ndu-47-0.001",
+      "seed": 47,
+      "validation": {
+        "consistency": 0.8886300810961687,
+        "greedy_joint_success": 0.9844961240310077,
+        "joint_success": 0.8777625699401764,
+        "ndu": 0.8046406529006908,
+        "pixel_mse": 0.004615806771286476,
+        "task_utility": 0.8813889703183699
+      },
+      "validation_seconds": 0.008824148000002197
+    },
+    {
+      "arm": "ndu",
+      "content_parameters_changed": true,
+      "cost": {
+        "examples": 19200,
+        "joint_outcome_cells": 5529600,
+        "tensor_macs": 431308800,
+        "updates": 300,
+        "utility_profiles_per_update": [
+          0,
+          1.5
+        ],
+        "wall_seconds": 0.5274667380000153
+      },
+      "learning_rate": 0.003,
+      "name": "ndu-47-0.003",
+      "seed": 47,
+      "validation": {
+        "consistency": 0.9452897294481939,
+        "greedy_joint_success": 0.9903100775193798,
+        "joint_success": 0.9372033562500731,
+        "ndu": 0.9006667616551376,
+        "pixel_mse": 0.002156155169983521,
+        "task_utility": 0.9394869520727983
+      },
+      "validation_seconds": 0.007449155000017527
+    },
+    {
+      "arm": "ndu",
+      "content_parameters_changed": true,
+      "cost": {
+        "examples": 19200,
+        "joint_outcome_cells": 5529600,
+        "tensor_macs": 431308800,
+        "updates": 300,
+        "utility_profiles_per_update": [
+          0,
+          1.5
+        ],
+        "wall_seconds": 0.7413790100000028
+      },
+      "learning_rate": 0.01,
+      "name": "ndu-47-0.01",
+      "seed": 47,
+      "validation": {
+        "consistency": 0.9681016905726515,
+        "greedy_joint_success": 0.9728682170542635,
+        "joint_success": 0.9502258524020363,
+        "ndu": 0.9337791723112102,
+        "pixel_mse": 0.001474800809916582,
+        "task_utility": 0.95282282360272
+      },
+      "validation_seconds": 0.009416904000005388
+    }
+  ],
+  "bases": {
+    "11": {
+      "decoder_mse": 4.223006916853196e-05,
+      "decoder_seconds": 0.0344081340000173,
+      "decoder_updates": 300,
+      "digest": "da700fb9d43b2c6b16bb6cab87d76ff9a5b2f1f1ea10a597a19315148864121c",
+      "pretrain_seconds": 0.33640906300001916,
+      "pretrain_updates": 500,
+      "validation": {
+        "consistency": 0.801529499438327,
+        "greedy_joint_success": 0.9961240310077519,
+        "joint_success": 0.7876225344120746,
+        "ndu": 0.6720972391083685,
+        "pixel_mse": 0.00860368534844787,
+        "task_utility": 0.7920285025883873
+      },
+      "validation_seconds": 0.00874482899999407
+    },
+    "23": {
+      "decoder_mse": 4.215895888370227e-05,
+      "decoder_seconds": 0.03334809599999744,
+      "decoder_updates": 300,
+      "digest": "d294d1c8bd52c00e663a5275d3014dcc3d8fbec6b3c6b7e54d488909da119fba",
+      "pretrain_seconds": 0.33171885599998063,
+      "pretrain_updates": 500,
+      "validation": {
+        "consistency": 0.7929648152433244,
+        "greedy_joint_success": 0.9883720930232558,
+        "joint_success": 0.778825105582068,
+        "ndu": 0.6593307109379459,
+        "pixel_mse": 0.009528969856223547,
+        "task_utility": 0.78309135711758
+      },
+      "validation_seconds": 0.00829874999999447
+    },
+    "47": {
+      "decoder_mse": 4.2179546497228226e-05,
+      "decoder_seconds": 0.03394218500000079,
+      "decoder_updates": 300,
+      "digest": "faeefd91adb008b5d434f884e1a11e70354e45553d49391970c401578c43ad1e",
+      "pretrain_seconds": 0.34010977899998807,
+      "pretrain_updates": 500,
+      "validation": {
+        "consistency": 0.7892280344368413,
+        "greedy_joint_success": 0.9825581395348837,
+        "joint_success": 0.7701742262506588,
+        "ndu": 0.6506687502728825,
+        "pixel_mse": 0.009437323072775769,
+        "task_utility": 0.7751380037553042
+      },
+      "validation_seconds": 0.007060918999997057
+    }
+  },
+  "datasets": {
+    "train": {
+      "group_count": 260,
+      "groups_sha256": "81dc503f5745ea90dbf5b83338d5c0ab91a187c645e8c7ca120ffd441ed110d7",
+      "inputs_sha256": "434666c2a80a1a238095aa5a43aa2932200e3a061015b65c3d6342a6c63da0bc",
+      "rows": 1560
+    },
+    "validation": {
+      "group_count": 86,
+      "groups_sha256": "8afe5d125e20deb6c158ceb92c676bce5212ecd09636e3128c3b0614946be3fd",
+      "inputs_sha256": "81a435d674ca398f9e94c6897cad347595f04f11d2c057a4a93479bf65b6599a",
+      "rows": 516
+    }
+  },
+  "environment": {
+    "device": "CPU",
+    "numpy": "2.3.5",
+    "platform": "Linux-6.18.55-x86_64-with-glibc2.41",
+    "python": "3.12.14",
+    "thread_evidence": {
+      "declared": {
+        "MKL_NUM_THREADS": "1",
+        "OMP_NUM_THREADS": "1",
+        "OPENBLAS_NUM_THREADS": "1"
+      },
+      "observed": [
+        {
+          "api": "openblas",
+          "threads": 1
+        }
+      ],
+      "single_thread_verified": true
+    }
+  },
+  "lifecycle": {
+    "base_cost": "shared initial checkpoint per seed; reported separately, not free",
+    "controller_cost": "training-fold model passes, utility cells and ridge fit reported per selected bundle",
+    "selection_cost": "all learning-rate candidate adaptation and validation rows retained",
+    "total_training_selection_seconds": 17.048074751
+  },
+  "plan": {
+    "adapt_steps": 300,
+    "arms": [
+      "supervised",
+      "additive",
+      "ndu"
+    ],
+    "audio_video": "declared unsupported by this profile; no synchronous AV or long-horizon claim",
+    "base_commit": "f8c9419df6ddeb36ff8b522a50219981fb8d9345",
+    "batch_size": 64,
+    "benefit_gate": {
+      "all_seeds_reported": true,
+      "decoder_corruption_must_reduce_score": true,
+      "maximum_greedy_accuracy_drop": 0.02,
+      "paired_decoded_utility_ci95_lower_gt": 0.0,
+      "paired_joint_success_ci95_lower_gt": 0.0,
+      "strict_budget_violations": 0
+    },
+    "ce_anchor": 0.2,
+    "compute_price": 0.02,
+    "dataset_seeds": {
+      "test": 303,
+      "train": 101,
+      "validation": 202
+    },
+    "decoder_steps": 300,
+    "dynamic_gate": {
+      "comparison": "NDU adaptive route versus identical-content random route at identical forward count",
+      "paired_decoded_utility_ci95_lower_gt": 0.0,
+      "paired_joint_success_ci95_lower_gt": 0.0
+    },
+    "hidden": 32,
+    "learning_rates": [
+      0.001,
+      0.003,
+      0.01
+    ],
+    "model_seeds": [
+      11,
+      23,
+      47
+    ],
+    "pretrain_steps": 500,
+    "profile": "fixed-rho recursive entropic certainty equivalent; not general FBSDE",
+    "rho": 1.5,
+    "schema": "hepta.joint-generation.experiment.v1",
+    "scope": "qualification-only finite-scene text and learned RGB generation",
+    "selection": "maximum validation decoded expected task utility; no test rows",
+    "test_policy": "one final evaluation after validation selection; retain failures",
+    "variants": 6
+  },
+  "plan_sha256": "49993a1512b55309bc80d883ea2279c1cec60a0fabe1ebdf05c82d08e600a573",
+  "selected": [
+    {
+      "arm": "supervised",
+      "artifact_sha256": "46519dfa1a9f8dd5fb6684a200e0665f51263746e5524b39a0027ba2c2272cc2",
+      "capabilities": [
+        "text",
+        "image"
+      ],
+      "compute_price": 0.02,
+      "content_parameters_changed": true,
+      "controller_file": "supervised-11-0.01-controller.npz",
+      "controller_sha256": "a51c2b7974a518e9192f1a306306c27d8eb730578d2a6c1b8538258b5f006257",
+      "controller_training": {
+        "model_forward_rows": 3120,
+        "outcome_cells": 449280,
+        "ridge_features": 31,
+        "rows": 1560,
+        "wall_seconds": 0.05590659000000642
+      },
+      "cost": {
+        "examples": 19200,
+        "joint_outcome_cells": 5529600,
+        "tensor_macs": 431308800,
+        "updates": 300,
+        "utility_profiles_per_update": [
+          0,
+          1.5
+        ],
+        "wall_seconds": 0.45292823300002283
+      },
+      "learning_rate": 0.01,
+      "model_file": "supervised-11-0.01.npz",
+      "model_sha256": "a44da394d2fe569907b193fcedfa0ad6c879c60b4ca620e88add7351906b8ea4",
+      "name": "supervised-11-0.01",
+      "qualification_only": true,
+      "rho": 1.5,
+      "seed": 11,
+      "validation": {
+        "consistency": 0.9531548963664273,
+        "greedy_joint_success": 0.9786821705426356,
+        "joint_success": 0.9388356143723593,
+        "ndu": 0.9100525155070562,
+        "pixel_mse": 0.0023241794181519796,
+        "task_utility": 0.9413561022176317
+      },
+      "validation_seconds": 0.010400309999994306
+    },
+    {
+      "arm": "supervised",
+      "artifact_sha256": "c3ee1764252461214df647507f7e531f496bef914504e9f6a2b56c6ebc6ee055",
+      "capabilities": [
+        "text",
+        "image"
+      ],
+      "compute_price": 0.02,
+      "content_parameters_changed": true,
+      "controller_file": "supervised-23-0.01-controller.npz",
+      "controller_sha256": "b7d63b536afe6fecffb289bd73b77e7f9030d24cc09d93b52a6948ed53faaed6",
+      "controller_training": {
+        "model_forward_rows": 3120,
+        "outcome_cells": 449280,
+        "ridge_features": 31,
+        "rows": 1560,
+        "wall_seconds": 0.03999784699999509
+      },
+      "cost": {
+        "examples": 19200,
+        "joint_outcome_cells": 5529600,
+        "tensor_macs": 431308800,
+        "updates": 300,
+        "utility_profiles_per_update": [
+          0,
+          1.5
+        ],
+        "wall_seconds": 0.4907991660000164
+      },
+      "learning_rate": 0.01,
+      "model_file": "supervised-23-0.01.npz",
+      "model_sha256": "fa966a7bb4084a94ddc438e562c78e1a817aa5413965a85ba7271d6b2cab7fb3",
+      "name": "supervised-23-0.01",
+      "qualification_only": true,
+      "rho": 1.5,
+      "seed": 23,
+      "validation": {
+        "consistency": 0.9627463386708235,
+        "greedy_joint_success": 0.9903100775193798,
+        "joint_success": 0.9573398937070567,
+        "ndu": 0.9292063546963635,
+        "pixel_mse": 0.0015100879088232183,
+        "task_utility": 0.9590214009702916
+      },
+      "validation_seconds": 0.01141867900000193
+    },
+    {
+      "arm": "supervised",
+      "artifact_sha256": "5d4a1bc8bb8e35ab5fd8fdb43535d881862598b00399591c8ebe55ce647d7ec1",
+      "capabilities": [
+        "text",
+        "image"
+      ],
+      "compute_price": 0.02,
+      "content_parameters_changed": true,
+      "controller_file": "supervised-47-0.01-controller.npz",
+      "controller_sha256": "f3ca0f2604f792d8e6da1e47fc27d8c5f0486c003ae14d86b94f7d1c1602b650",
+      "controller_training": {
+        "model_forward_rows": 3120,
+        "outcome_cells": 449280,
+        "ridge_features": 31,
+        "rows": 1560,
+        "wall_seconds": 0.050180961999984675
+      },
+      "cost": {
+        "examples": 19200,
+        "joint_outcome_cells": 5529600,
+        "tensor_macs": 431308800,
+        "updates": 300,
+        "utility_profiles_per_update": [
+          0,
+          1.5
+        ],
+        "wall_seconds": 0.6282752939999909
+      },
+      "learning_rate": 0.01,
+      "model_file": "supervised-47-0.01.npz",
+      "model_sha256": "2afc0fc6bdff09e5d00bcf7f15ed699347e82ea22c78e6477d9fb926b0e1a51a",
+      "name": "supervised-47-0.01",
+      "qualification_only": true,
+      "rho": 1.5,
+      "seed": 47,
+      "validation": {
+        "consistency": 0.9476149045823633,
+        "greedy_joint_success": 0.9786821705426356,
+        "joint_success": 0.930637479381126,
+        "ndu": 0.9002879271961802,
+        "pixel_mse": 0.002149308201515009,
+        "task_utility": 0.9336106617733932
+      },
+      "validation_seconds": 0.015632736000014802
+    },
+    {
+      "arm": "additive",
+      "artifact_sha256": "9778433f2a4ee55250e94a6104737d75f557319d5b51affdd5d30a7c9279d4ac",
+      "capabilities": [
+        "text",
+        "image"
+      ],
+      "compute_price": 0.02,
+      "content_parameters_changed": true,
+      "controller_file": "additive-11-0.01-controller.npz",
+      "controller_sha256": "81fb2e358a084e5bdaa3fcb14a7e36d928750222370be13c1a1ece42d309beca",
+      "controller_training": {
+        "model_forward_rows": 3120,
+        "outcome_cells": 449280,
+        "ridge_features": 31,
+        "rows": 1560,
+        "wall_seconds": 0.05328554199999758
+      },
+      "cost": {
+        "examples": 19200,
+        "joint_outcome_cells": 5529600,
+        "tensor_macs": 431308800,
+        "updates": 300,
+        "utility_profiles_per_update": [
+          0,
+          1.5
+        ],
+        "wall_seconds": 0.6633855850000145
+      },
+      "learning_rate": 0.01,
+      "model_file": "additive-11-0.01.npz",
+      "model_sha256": "9a276dc26d264d02ac7608bd1aa1fdeb33576803b1351bb87724b36123b85d94",
+      "name": "additive-11-0.01",
+      "qualification_only": true,
+      "rho": 1.5,
+      "seed": 11,
+      "validation": {
+        "consistency": 0.9722599565821869,
+        "greedy_joint_success": 0.9883720930232558,
+        "joint_success": 0.9619337562099409,
+        "ndu": 0.9437057324832876,
+        "pixel_mse": 0.0013598000795417343,
+        "task_utility": 0.963688860744308
+      },
+      "validation_seconds": 0.009789778999987675
+    },
+    {
+      "arm": "additive",
+      "artifact_sha256": "86234db978eec8413ac3fa2dfb448e6690d6a14abbe94f0c50ce4b968aaa3fe9",
+      "capabilities": [
+        "text",
+        "image"
+      ],
+      "compute_price": 0.02,
+      "content_parameters_changed": true,
+      "controller_file": "additive-23-0.01-controller.npz",
+      "controller_sha256": "949fa6fc709c032c2e504f6fe3a614419c5fb205b2a239a33a054d66d107b506",
+      "controller_training": {
+        "model_forward_rows": 3120,
+        "outcome_cells": 449280,
+        "ridge_features": 31,
+        "rows": 1560,
+        "wall_seconds": 0.041987035000005335
+      },
+      "cost": {
+        "examples": 19200,
+        "joint_outcome_cells": 5529600,
+        "tensor_macs": 431308800,
+        "updates": 300,
+        "utility_profiles_per_update": [
+          0,
+          1.5
+        ],
+        "wall_seconds": 0.48486846500000524
+      },
+      "learning_rate": 0.01,
+      "model_file": "additive-23-0.01.npz",
+      "model_sha256": "dad3ec54f2f52d4464993bb54044c7fcbac532996766f44c4b782a3f3b13be08",
+      "name": "additive-23-0.01",
+      "qualification_only": true,
+      "rho": 1.5,
+      "seed": 23,
+      "validation": {
+        "consistency": 0.974605785083021,
+        "greedy_joint_success": 0.9903100775193798,
+        "joint_success": 0.9697153141091083,
+        "ndu": 0.9509730971985688,
+        "pixel_mse": 0.0010214656104429968,
+        "task_utility": 0.971009271174884
+      },
+      "validation_seconds": 0.007602894999990895
+    },
+    {
+      "arm": "additive",
+      "artifact_sha256": "0a3beaa2014bd384847ffad441dccb6f788134468a444aa00d606ba686b3b942",
+      "capabilities": [
+        "text",
+        "image"
+      ],
+      "compute_price": 0.02,
+      "content_parameters_changed": true,
+      "controller_file": "additive-47-0.01-controller.npz",
+      "controller_sha256": "99585f062ccfa11dd02b5f90ba65e09a6d71a1d28923fe614b69dab1a77c41b2",
+      "controller_training": {
+        "model_forward_rows": 3120,
+        "outcome_cells": 449280,
+        "ridge_features": 31,
+        "rows": 1560,
+        "wall_seconds": 0.12790976400000886
+      },
+      "cost": {
+        "examples": 19200,
+        "joint_outcome_cells": 5529600,
+        "tensor_macs": 431308800,
+        "updates": 300,
+        "utility_profiles_per_update": [
+          0,
+          1.5
+        ],
+        "wall_seconds": 0.4777044719999992
+      },
+      "learning_rate": 0.01,
+      "model_file": "additive-47-0.01.npz",
+      "model_sha256": "b97265f258e0fca3269bfdc1b05f1b5988ab334a6912643a0683d5a108f2eca1",
+      "name": "additive-47-0.01",
+      "qualification_only": true,
+      "rho": 1.5,
+      "seed": 47,
+      "validation": {
+        "consistency": 0.9611470049990194,
+        "greedy_joint_success": 0.9728682170542635,
+        "joint_success": 0.9435426473419407,
+        "ndu": 0.9221226178096741,
+        "pixel_mse": 0.0017143931434250566,
+        "task_utility": 0.9462858449667145
+      },
+      "validation_seconds": 0.008267635999999356
+    },
+    {
+      "arm": "ndu",
+      "artifact_sha256": "dcce55e7b0d0cc8da2e9620b610e1d90e390f9395fc68b50c3a4d69e63b27fca",
+      "capabilities": [
+        "text",
+        "image"
+      ],
+      "compute_price": 0.02,
+      "content_parameters_changed": true,
+      "controller_file": "ndu-11-0.01-controller.npz",
+      "controller_sha256": "2c5b3ceb1dce699ff3fc82a96baa10e2269f87b344c9069de7ff287d2c5132e7",
+      "controller_training": {
+        "model_forward_rows": 3120,
+        "outcome_cells": 449280,
+        "ridge_features": 31,
+        "rows": 1560,
+        "wall_seconds": 0.05326885399998105
+      },
+      "cost": {
+        "examples": 19200,
+        "joint_outcome_cells": 5529600,
+        "tensor_macs": 431308800,
+        "updates": 300,
+        "utility_profiles_per_update": [
+          0,
+          1.5
+        ],
+        "wall_seconds": 0.4541389349999747
+      },
+      "learning_rate": 0.01,
+      "model_file": "ndu-11-0.01.npz",
+      "model_sha256": "faed70fea2e13bb98f56c3e6be986f536188ef279bc997f360a105df09375bb4",
+      "name": "ndu-11-0.01",
+      "qualification_only": true,
+      "rho": 1.5,
+      "seed": 11,
+      "validation": {
+        "consistency": 0.9794196223334429,
+        "greedy_joint_success": 0.9883720930232558,
+        "joint_success": 0.9692557501904004,
+        "ndu": 0.9558312951964855,
+        "pixel_mse": 0.0010358491516081576,
+        "task_utility": 0.9708133345548018
+      },
+      "validation_seconds": 0.008594850000008591
+    },
+    {
+      "arm": "ndu",
+      "artifact_sha256": "ef6cea485ef19155627f678dcb9ac9461eddce0da023efd49549f686202bf326",
+      "capabilities": [
+        "text",
+        "image"
+      ],
+      "compute_price": 0.02,
+      "content_parameters_changed": true,
+      "controller_file": "ndu-23-0.01-controller.npz",
+      "controller_sha256": "56d5135c7f185d96e044e2871cfb72f0f0b417a23772d59762f2762a406b0354",
+      "controller_training": {
+        "model_forward_rows": 3120,
+        "outcome_cells": 449280,
+        "ridge_features": 31,
+        "rows": 1560,
+        "wall_seconds": 0.03935474799999383
+      },
+      "cost": {
+        "examples": 19200,
+        "joint_outcome_cells": 5529600,
+        "tensor_macs": 431308800,
+        "updates": 300,
+        "utility_profiles_per_update": [
+          0,
+          1.5
+        ],
+        "wall_seconds": 0.47380663599997774
+      },
+      "learning_rate": 0.01,
+      "model_file": "ndu-23-0.01.npz",
+      "model_sha256": "ea057d5822aeca8e03fb782e9d209566e37de78ca7bcc5d07a4063a02dbea876",
+      "name": "ndu-23-0.01",
+      "qualification_only": true,
+      "rho": 1.5,
+      "seed": 23,
+      "validation": {
+        "consistency": 0.9802014926567917,
+        "greedy_joint_success": 0.9903100775193798,
+        "joint_success": 0.9742870941288468,
+        "ndu": 0.9610671575294217,
+        "pixel_mse": 0.0007955171125380973,
+        "task_utility": 0.975519810919115
+      },
+      "validation_seconds": 0.008797157000003608
+    },
+    {
+      "arm": "ndu",
+      "artifact_sha256": "89f81a88bc23737e9889414bb8044278dcc9f5b38d18cd9bb65635da3bbd78d1",
+      "capabilities": [
+        "text",
+        "image"
+      ],
+      "compute_price": 0.02,
+      "content_parameters_changed": true,
+      "controller_file": "ndu-47-0.01-controller.npz",
+      "controller_sha256": "f23de22a5c9b06400fbe93fab91116a7818c4705907765a174c8ffd587274774",
+      "controller_training": {
+        "model_forward_rows": 3120,
+        "outcome_cells": 449280,
+        "ridge_features": 31,
+        "rows": 1560,
+        "wall_seconds": 0.04025201499999298
+      },
+      "cost": {
+        "examples": 19200,
+        "joint_outcome_cells": 5529600,
+        "tensor_macs": 431308800,
+        "updates": 300,
+        "utility_profiles_per_update": [
+          0,
+          1.5
+        ],
+        "wall_seconds": 0.7413790100000028
+      },
+      "learning_rate": 0.01,
+      "model_file": "ndu-47-0.01.npz",
+      "model_sha256": "2ceb9ea5414e40d4b63814cf55d6c0aa05b8420bce5f6242e9dd66a83c4ff25d",
+      "name": "ndu-47-0.01",
+      "qualification_only": true,
+      "rho": 1.5,
+      "seed": 47,
+      "validation": {
+        "consistency": 0.9681016905726515,
+        "greedy_joint_success": 0.9728682170542635,
+        "joint_success": 0.9502258524020363,
+        "ndu": 0.9337791723112102,
+        "pixel_mse": 0.001474800809916582,
+        "task_utility": 0.95282282360272
+      },
+      "validation_seconds": 0.009416904000005388
+    }
+  ],
+  "sources": {
+    "cloud_run.py": "e5dbcb587ac47745be9350441cc4e2a6211572395519d48ccb19dcd3b847b20e",
+    "contracts.py": "544cdbebc6e79abf5e55fc4e4d1a0fc30e169c805199ad72b9b420891fd8a61d",
+    "control.py": "1b79169db91317cf80f8cd29793ea8ac4a08dd2088e05095543c139181209c4b",
+    "data.py": "a3ac8701a57c2656a8508949e1bdaf09f8902a91cdbf08dc370e4f676cfb8bcb",
+    "evaluate.py": "879741e81852ab973ad0c69bad65c3398f4126604b71e7c4349a68db5fd5b3e3",
+    "model.py": "36b99a28ea690a5e1c7c82db8debbbf58067d57796502f89cacb146554da4dc8",
+    "serve.py": "ab87f2babbcb5d89db09d237888e83691908c311000125f6c03771f6c64f380f",
+    "test_contracts.py": "93a9608a979666d2d8c791ab86074a5d95b3d050271c8e88ab56173df3408261",
+    "test_control.py": "3f50c88f5b7afcede31e6886ce4f90e3c5dbf8b911cd10045ef812964eaeeb24",
+    "test_data.py": "d21db8fdc010eae4d3c45f75a4d84e94df021782b21e1aea952f4955ac0ea744",
+    "test_model.py": "e895ebdd360ef89f0b7a0320363ccbf1ce61a7564772491e5ab8fbf74e22dce3",
+    "test_serve.py": "4a1ffac26586b65e308cd2b9269f4698cadc292cda8e1e23a62f55b0742539b0",
+    "test_utility.py": "dc019e559169c80be650b6f28ddc458004dda4b47ae56e75a76fd6ae2ccf8d01",
+    "train.py": "b61de784b5ea74093f9fddc6356d6ade9b3625c8b680a2154651645fdb09a737",
+    "utility.py": "bbfcbad5557107e3d9be587f55cd91889e2c1b0d6c3d87d07ec329ff54251037"
+  },
+  "test_opened": false
+}

@@ -1,0 +1,130 @@
+{
+  "bundle_digest": "fe21a93b5e329294651774786db983d923ddc32a833f39bea6d94a9ef899c407",
+  "caption": "blue cross right",
+  "checkpoint_restored": true,
+  "choices": {
+    "image": 11,
+    "text": 11
+  },
+  "command": "OPENBLAS_NUM_THREADS=1 OMP_NUM_THREADS=1 MKL_NUM_THREADS=1 PYTHONDONTWRITEBYTECODE=1 python runs/codex-cloud-core-c1-t2/portable-smoke/run_smoke.py",
+  "current_source_commit": "7edc79c1e1eb6554b263a428aaafbebc2cb7a9b5",
+  "dataset_and_external_observer_call_guard": {
+    "forbidden_calls": [],
+    "project_call_events": 4330
+  },
+  "dataset_constructed": false,
+  "evaluation_called": false,
+  "exact_reload_output_and_checkpoint": true,
+  "experiment_id": "core-c1",
+  "external_observer_called": false,
+  "finished_utc": "2026-10-23T14:45:29.339443+00:00",
+  "first_infer_cpu_ns": 15656704,
+  "formal_exit_code": 1,
+  "formal_qualified": false,
+  "formal_status_source": "parent-confirmed sealed core-c1 result; no formal metrics or test inputs read",
+  "frozen_model_source_commit": "cff9562102a21eb2a852daa61810e2e0b576ed9d",
+  "guarded_during_import_and_serving": true,
+  "model_file": "ndu-11-0.01.npz",
+  "model_seed": 11,
+  "native_sha256": "ca84652442d6258ab67f2d553fb55742e0cc4c08222cb5e0fad02504c7ad32a0",
+  "original_run_file_count": 59,
+  "original_run_file_stats_unchanged": true,
+  "output_png_sha256": "c6765fd611d6347ea48765af88835e3c130cbf0560191848b02028535fd5a620",
+  "plan_sha256": "94d84d8eb1af73c4c766604b3ddbcac0be2d9a2b1638b2afa10acf8216c2762b",
+  "png": {
+    "format": "PNG",
+    "mode": "RGB",
+    "size": [
+      8,
+      8
+    ]
+  },
+  "reloaded_infer_cpu_ns": 11365150,
+  "route": {
+    "actual_units": 15132,
+    "batch_size": 1,
+    "charged_units": 15132,
+    "continued": [
+      false
+    ],
+    "mode": "full",
+    "model_forwards": 1,
+    "per_row": {
+      "full_forwards": [
+        1
+      ],
+      "gain": [
+        0.0
+      ],
+      "low_forwards": [
+        0
+      ],
+      "model_forwards": [
+        1
+      ],
+      "work_units": [
+        15132
+      ]
+    },
+    "per_row_forwards": [
+      1
+    ],
+    "per_row_work_units": [
+      15132
+    ],
+    "prepare_units": 0,
+    "request_cap_units": 34368,
+    "reservation_charged": false,
+    "worst_reserved_units": 15132
+  },
+  "schema": "hepta.joint-generation.portable-artifact-smoke.v1",
+  "scope": "one handcrafted external RGB/instruction, actual native generation and exact artifact reload/checkpoint replay; no qualification or accuracy claim",
+  "sealed_marker_sha256": {
+    "core_confirmation/core-c1-test-opened.json": "1312e8b106f6ee24c65caa880bbe41889e6878ff5cfe768d4cdbebf485a106f2",
+    "runs/codex-cloud-core-c1-t2/test-opened.json": "1312e8b106f6ee24c65caa880bbe41889e6878ff5cfe768d4cdbebf485a106f2"
+  },
+  "sealed_markers_unchanged": true,
+  "selected_model_digest": "3bc3d59f6ff87cbd334dd4771aef42713708e1d660ac9e466d8aa74664cd2484",
+  "selected_model_sha256": "df97426079823fd12fe469f537640eca303c364449aba2d791f04274c7db7531",
+  "selected_policy": "always_full",
+  "selection_ready": true,
+  "selection_sha256": "8141ed76433b8663f51f4c3adb39ef0313b05d35e3804458b293185941f96881",
+  "source_run": "runs/codex-cloud-core-c1-t2",
+  "source_sha256": {
+    "contracts.py": "544cdbebc6e79abf5e55fc4e4d1a0fc30e169c805199ad72b9b420891fd8a61d",
+    "data.py": "2e7401afac84deec2149fad89fe3a2b461046b6cd667408070c7da9ec130e0a3",
+    "independent/accounting.py": "3deccbaee86f5142391ddd1472522e331055935d4f17c458eb050c177650509b",
+    "independent/data_v2.py": "8f25960bf6ab43e461f7866a41c0f33742d04ba70cb62cd656b3bad478db2764",
+    "independent/evaluation.py": "01ae0e3c7213206a9fcd1a4a297a52b2e2e97023ff96a6fd5c13738554f3ae0e",
+    "independent/inference.py": "68438497601e2f26bd615da646c167933187a0410a557f83218025dd231e9a3a",
+    "independent/native.py": "b9919cec02efeca9383a58182bc4273c4506b23a0adddf360a954b3d6c7e2f42",
+    "independent/serve.py": "fedf99ec22c722420cfdd89abde79e1db97ade1fb1ac17521adaa5e3f32ad936",
+    "model.py": "b1892fb8568336034cd52f7e280a6dbbad5b5cc48c072edf2455815e4c817291",
+    "multimodal_contract.py": "411924b5b4116b758c444fa244c6eb64083d86b1534e058e2a3aaba269aae108",
+    "serve.py": "e75cb3d003109599f18a95cb5ad8e6c3024e98aef76cb0c0831963b97abedd93"
+  },
+  "spent": {
+    "controller": 0,
+    "generator": 19236,
+    "output_bytes": 107
+  },
+  "started_utc": "2026-10-23T14:45:28.889206+00:00",
+  "system": "ndu",
+  "thread_environment": {
+    "MKL_NUM_THREADS": "1",
+    "OMP_NUM_THREADS": "1",
+    "OPENBLAS_NUM_THREADS": "1"
+  },
+  "versions": {
+    "frozen_native_compiler": "cc (Debian 14.2.0-19) 14.2.0",
+    "machine": "x86_64",
+    "numpy": "2.3.5",
+    "pillow": "12.3.0",
+    "python": "3.12.14",
+    "system": "Linux"
+  },
+  "worker_cpu_ns_before_report_persistence": 439331662,
+  "worker_path": "runs/codex-cloud-core-c1-t2/portable-smoke/run_smoke.py",
+  "worker_sha256": "7e99c67bdc8926c39560fd95692c060b0322c878a891c95c1d48a5580ab105ee",
+  "worker_wall_ns_before_report_persistence": 450264634
+}

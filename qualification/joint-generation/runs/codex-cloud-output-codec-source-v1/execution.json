@@ -1,0 +1,23 @@
+{
+  "command": "OPENBLAS_NUM_THREADS=1 OMP_NUM_THREADS=1 MKL_NUM_THREADS=1 PYTHONDONTWRITEBYTECODE=1 python -m unittest discover -s independent -p test_*.py -v",
+  "core_confirmation_repeated": false,
+  "core_retained_manifest_all_files_unchanged": true,
+  "cwd": "/workspace/hepta-private-ci/qualification/joint-generation",
+  "exit_code": 0,
+  "finished_utc": "2026-10-23T15:02:35.170463+00:00",
+  "full_child_cpu_ns": 7629346000,
+  "launcher_own_cpu_ns": 31649007,
+  "outer_wall_ns": 7659845419,
+  "protected_sha256": {
+    "core_confirmation/core-c1-test-opened.json": "1312e8b106f6ee24c65caa880bbe41889e6878ff5cfe768d4cdbebf485a106f2",
+    "core_confirmation/plan.json": "94d84d8eb1af73c4c766604b3ddbcac0be2d9a2b1638b2afa10acf8216c2762b",
+    "independent/plan.json": "df041a749c9f757a6c432cd013603f8eece441014505839398ff079e73d1d085",
+    "plan.json": "49993a1512b55309bc80d883ea2279c1cec60a0fabe1ebdf05c82d08e600a573",
+    "runs/codex-cloud-core-c1-t2/test-opened.json": "1312e8b106f6ee24c65caa880bbe41889e6878ff5cfe768d4cdbebf485a106f2"
+  },
+  "r2_test_unopened": true,
+  "schema": "hepta.output-codec.source-regression.v1",
+  "scope": "Source regression and handmade/native fixtures only. No new official dataset, qualification build, timing benchmark or formal evaluation.",
+  "source_commit": "7a016760eadd1a86739495b50031c5ce8abd8415",
+  "started_utc": "2026-10-23T15:02:27.545257+00:00"
+}

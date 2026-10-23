@@ -1,0 +1,28 @@
+{
+  "payload": {
+    "cancelled": false,
+    "prefixes": {
+      "image": "89504e470d0a1a0a0000000d49484452000000080000000808020000004b6d29dc0000002249444154789c6364646464c00698b08a6295f88955e2279c24d6287638c948b2ab005d6f030e482021260000000049454e44ae426082",
+      "text": "626c75652063726f7373207269676874"
+    },
+    "spec": {
+      "artifact_sha256": "fe21a93b5e329294651774786db983d923ddc32a833f39bea6d94a9ef899c407",
+      "budget": {
+        "compute_units": 100000,
+        "output_bytes": 8192
+      },
+      "deadline_ns": 21640202772455,
+      "modalities": [
+        "text",
+        "image"
+      ],
+      "objective_id": "scene-transform-v1",
+      "run_id": "core-c1-t2:portable-smoke:ndu11"
+    },
+    "spent": {
+      "controller": 0,
+      "generator": 19236
+    }
+  },
+  "sha256": "dfccc28ab6300faae9e2c7fdb521608fb163822c28733b353e89c330c3f3ba60"
+}

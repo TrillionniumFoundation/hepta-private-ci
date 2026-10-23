@@ -1,0 +1,25 @@
+{
+  "codec_variant": "rowwise-png-v1",
+  "command": [
+    "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+    "-m",
+    "independent.run",
+    "--experiment",
+    "codec-train-d1",
+    "train",
+    "--freeze",
+    "/workspace/hepta-private-ci/qualification/joint-generation/training_diagnostics/codec-d1/frozen-d1.json",
+    "--out",
+    "/workspace/hepta-private-ci/qualification/joint-generation/runs/codex-cloud-codec-training-d1/slot-0-rowwise-png-v1",
+    "--variant",
+    "rowwise-png-v1",
+    "--build-index",
+    "0"
+  ],
+  "completed_utc": "2026-10-23T15:48:40.260939+00:00",
+  "exit_code": 1,
+  "full_child_cpu_ns": 28528182000,
+  "outer_wall_ns": 28541131726,
+  "slot_index": 0,
+  "started_utc": "2026-10-23T15:48:11.719815+00:00"
+}

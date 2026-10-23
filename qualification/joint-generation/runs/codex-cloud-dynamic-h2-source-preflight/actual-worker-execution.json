@@ -1,0 +1,20 @@
+{
+  "command": [
+    "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+    "training_diagnostics/dynamic-h2/run_once.py",
+    "--freeze",
+    "training_diagnostics/dynamic-h2/frozen-h2.json"
+  ],
+  "completed_utc": "2026-10-23T16:10:37.017153+00:00",
+  "full_research_cpu_cap_seconds": 30.0,
+  "full_worker_and_descendant_cpu_ns": 491702000,
+  "launcher_own_cpu_ns_before_receipt": 27556463,
+  "outer_cpu_cap_pass": true,
+  "overall_exit_code": 1,
+  "schema": "hepta.h2-outer-execution.v1",
+  "scope": "Sole registered H2 TRAIN wave; no fit, selection, formal evaluation or retries. Receipt final serialization tiny remainder remains charged by enclosing execution, never credited to model.",
+  "started_utc": "2026-10-23T16:10:36.526689+00:00",
+  "total_research_cpu_ns_before_receipt": 519258463,
+  "wall_ns": 490468164,
+  "worker_exit_code": 1
+}

@@ -1,0 +1,56 @@
+{
+  "schema": "hepta.fashion-D-software-verification.v1",
+  "commands": [
+    {
+      "argv": [
+        "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+        "-m",
+        "unittest",
+        "fashion_research.test_data",
+        "fashion_research.test_model",
+        "fashion_research.test_transport",
+        "fashion_research.test_cost",
+        "fashion_research.test_run",
+        "-v"
+      ],
+      "exit_code": 0,
+      "wall_ns": 1677350811,
+      "parent_CPU_ns": 3499956,
+      "child_CPU_ns": 1676787000,
+      "cumulative_reaped_children_peak_RSS_bytes_not_command_specific": 56365056,
+      "scope": "Synthetic software verification R&D; no real data or registered probe."
+    },
+    {
+      "argv": [
+        "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+        "-m",
+        "fashion_research.launch",
+        "--smoke"
+      ],
+      "exit_code": 0,
+      "wall_ns": 296595843,
+      "parent_CPU_ns": 1689426,
+      "child_CPU_ns": 295724000,
+      "cumulative_reaped_children_peak_RSS_bytes_not_command_specific": 56365056,
+      "scope": "Synthetic software verification R&D; no real data or registered probe."
+    }
+  ],
+  "source_sha256": {
+    "fashion_research/__init__.py": "c183be0098158464a097ece9cc5a916664ff239c0bfc408b151c9a1b04802cdf",
+    "fashion_research/autodiff.py": "fc4113a8219ac1eee7fe349ca53f4c4a06272fa5f55954a0e54f392406eff0fa",
+    "fashion_research/cost.py": "76008bde5e457d8709e49fb4e45d8f54d93a98e454c6ab67565dd0cc0416dde5",
+    "fashion_research/data.py": "6a32aff30f83b3867b514bc4e82db0069eb8a0369a47b4e45eb0486621bfb070",
+    "fashion_research/launch.py": "65f308e621bebd2cf7b0781fae6b42f5573189fbffec924fa956110f7432df3c",
+    "fashion_research/model.py": "503180f85d37ce39c735489cd08c7cf7b734480dcfe6b8e4852543f63291831f",
+    "fashion_research/run.py": "b077c4dc7d3561de4035a977331294a1f405b05c2c497e8f4d1490b8f2b8fa20",
+    "fashion_research/test_cost.py": "5bff645ac2508202a3b67c366e1c41b17a16e989cdfeac03bebd2744c119a2b9",
+    "fashion_research/test_data.py": "b306d37fcb85381b9e91259c08d8d44d861c7d15d89a2147f19a5d157a8d71e3",
+    "fashion_research/test_model.py": "f7638b0465162c93984c9c56937535e9452e967c604f00ef6bb2c2223cd21c9c",
+    "fashion_research/test_run.py": "406080d1b2a91f6d8a9bfc6186ac1f92a423eff9e58bac76e50d0b9a9145c1ff",
+    "fashion_research/test_transport.py": "dd1787304df1a55c9bae587a6b7d110c8a13039112994506b85a8f843c635558",
+    "fashion_research/transport.py": "5f7f89a117197b00d1fbe656cd101c35418121847fdfa816d769430dadc11e73"
+  },
+  "registered_probe_started": false,
+  "real_data_read": false,
+  "scope_warning": "These commands only, not all development/historical R&D. Cumulative child RSS is not a command-specific measurement."
+}
