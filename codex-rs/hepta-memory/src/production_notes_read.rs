@@ -81,8 +81,7 @@ impl ProductionNotesObserver {
         Ok(NotesDocumentState {
             target: response.target,
             revision: response.revision,
-            text_sha256: Sha256Digest::parse(response.text_sha256)
-                .map_err(|error| error.to_string())?,
+            text_sha256: Sha256Digest::parse(response.text_sha256)?,
             receipt_pending: response.receipt_pending,
         })
     }
