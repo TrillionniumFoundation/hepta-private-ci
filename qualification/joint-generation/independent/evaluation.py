@@ -7,6 +7,7 @@ CPU net utility never substitutes declared operator estimates for CPU time.
 
 import argparse
 import base64
+from dataclasses import replace
 import hashlib
 import io
 import json
@@ -462,24 +463,94 @@ def _controller_decision_binding(row, selection):
             raise ValueError("controller decision price binding changed: " + name)
 
 
-def _frozen(run):
+def _experiment(experiment):
+    from independent.experiments import resolve_experiment
+    if experiment is None:
+        return replace(resolve_experiment(root=ROOT), plan_path=PLAN_PATH, marker_path=GLOBAL_MARKER)
+    return resolve_experiment(experiment, root=ROOT)
+
+
+def _core_cost_binding(selection):
+    """Bind the declared cost denominator and compiler to their actual receipts."""
+    plan, common = selection["plan"], selection["common"]
+    seeds, rows, repeats = plan["model_seeds"], plan["calibration_rows"], plan["calibration_repeats"]
+    calibrations = common["calibrations"]
+    if (type(rows) is not int or rows <= 0 or type(repeats) is not int or repeats <= 0
+            or set(calibrations) != {str(seed) for seed in seeds}):
+        raise ValueError("core calibration identity changed")
+    medians = {}
+    for seed in seeds:
+        calibration = calibrations[str(seed)]
+        raw = calibration["raw_repeats"]
+        if set(raw) != {"full"} or len(raw["full"]) != repeats or set(calibration["cpu_ns"]) != {"full"}:
+            raise ValueError("core full calibration repeats changed")
+        samples = []
+        for repeat, measured in enumerate(raw["full"]):
+            if (type(measured.get("repeat")) is not int or measured["repeat"] != repeat
+                    or measured.get("sampling_seed") != seed or measured.get("rows") != rows
+                    or measured.get("mode") != "full" or measured.get("observe") is not False
+                    or type(measured.get("budget_violations")) is not int or measured["budget_violations"] != 0):
+                raise ValueError("core full calibration law changed")
+            cpu = measured["per_row_cost"]["cpu_ns"]
+            if not isinstance(cpu, list) or len(cpu) != rows:
+                raise ValueError("core raw calibration row CPU is missing")
+            samples.extend(_positive(value, "raw calibration row CPU") for value in cpu)
+            total = _positive(measured["cost"]["cpu_ns"], "raw calibration total CPU")
+            if not math.isclose(sum(cpu), total, rel_tol=1e-10, abs_tol=1e-6):
+                raise ValueError("core calibration row/total CPU differs")
+        median = float(np.median(samples))
+        if not math.isclose(_positive(calibration["cpu_ns"]["full"], "calibration median CPU"),
+                            median, rel_tol=1e-12, abs_tol=1e-9):
+            raise ValueError("core calibration median changed")
+        medians[seed] = median
+    reference = _positive(common["reference_full_cpu_ns"], "common full CPU reference")
+    if (reference != medians[seeds[0]]
+            or any(row["reference_full_cpu_ns"] != reference for row in selection["selected"])):
+        raise ValueError("core selected/common/raw calibration reference differs")
+    if plan["runtime_backend"] != "native":
+        return
+    compiled = common["native_compile"]
+    argv = compiled["argv"]
+    if (compiled.get("schema") != "hepta.native-build.v1"
+            or type(compiled.get("exit_code")) is not int or compiled["exit_code"] != 0
+            or compiled.get("cached_compilation_used") is not False
+            or compiled.get("source_sha256") != selection["sources"]["independent/native.c"]
+            or compiled.get("library_sha256") != selection["native_library_sha256"]
+            or not isinstance(argv, list) or len(argv) != 10
+            or any(not isinstance(value, str) or not value for value in argv)
+            or argv[1:6] != ["-O3", "-ffp-contract=off", "-std=c11", "-shared", "-fPIC"]
+            or argv[7] != "-o" or argv[9] != "-lm"
+            or argv[6] != compiled.get("source_path") or argv[8] != compiled.get("library_path")
+            or Path(argv[6]).parts[-2:] != ("independent", "native.c")
+            or Path(argv[8]).parts[-2:] != Path(selection["native_library"]).parts[-2:]):
+        raise ValueError("core native compiler/source/library receipt changed")
+    _positive(compiled["cpu_seconds"], "complete compiler CPU")
+    _positive(compiled["wall_seconds"], "complete compiler wall")
+
+
+def _frozen(run, profile=None):
+    from independent.experiments import bind_identity, validate_plan
+    profile = _experiment(None) if profile is None else profile
+    systems, core = profile.systems, profile.name == "core-c1"
     selection_path = _artifact(run, "selection.json")
     selection = json.loads(selection_path.read_text())
     plan = selection["plan"]
+    bind_identity(profile, selection)
+    validate_plan(profile, plan)
     if selection.get("selection_ready") is not True:
         raise ValueError("validation readiness has not passed")
     if selection.get("cpu_budget_violations") != []:
         raise ValueError("actual build CPU budget violations remain")
     system_cost = selection.get("system_cost", {})
-    if (set(system_cost) != set(SYSTEMS)
+    if (set(system_cost) != set(systems)
             or any(_positive(row["cpu_seconds"], "actual build CPU", allow_zero=True)
                    > plan["cpu_seconds_per_system"] for row in system_cost.values())):
         raise ValueError("actual system build CPU budget is missing or exceeded")
-    if sha256(PLAN_PATH) != selection["plan_sha256"] or json.loads(PLAN_PATH.read_text()) != plan:
+    if sha256(profile.plan_path) != selection["plan_sha256"] or json.loads(profile.plan_path.read_text()) != plan:
         raise ValueError("independent frozen plan changed")
     budgets = selection["budgets"]
     cap = plan["operator_units_per_system"]
-    if (type(cap) is not int or cap <= 0 or set(budgets) != set(SYSTEMS)
+    if (type(cap) is not int or cap <= 0 or set(budgets) != set(systems)
             or any(type(row["total_cap"]) is not int or row["total_cap"] != cap
                    for row in budgets.values())):
         raise ValueError("complete build budget cap must equal the frozen plan")
@@ -493,6 +564,8 @@ def _frozen(run):
     required = {"model.py", "utility.py", "data.py", "control.py", "independent/inference.py",
                 "independent/accounting.py", "independent/evaluation.py", "independent/data_v2.py",
                 "independent/run.py", "independent/learning.py"}
+    if core:
+        required.update(("independent/experiments.py", "independent/core_claims.py"))
     if plan["runtime_backend"] == "native":
         required.update(("independent/native.py", "independent/native.c"))
     if plan.get("controller", {}).get("gain_head") is not None:
@@ -510,12 +583,21 @@ def _frozen(run):
         committed = subprocess.check_output(["git", "show", selection["source_commit"] + ":qualification/joint-generation/" + name], cwd=ROOT)
         if hashlib.sha256(committed).hexdigest() != digest:
             raise ValueError("source does not match execution commit: " + name)
+    if core:
+        committed = subprocess.check_output(["git", "show", selection["source_commit"]
+            + ":qualification/joint-generation/" + str(profile.plan_path.relative_to(ROOT))], cwd=ROOT)
+        if hashlib.sha256(committed).hexdigest() != selection["plan_sha256"]:
+            raise ValueError("core plan does not match execution commit")
+        committed = subprocess.check_output(["git", "show", selection["source_commit"]
+            + ":qualification/joint-generation/core_confirmation/PROTOCOL.md"], cwd=ROOT)
+        if hashlib.sha256(committed).hexdigest() != plan["protocol_sha256"]:
+            raise ValueError("core protocol does not match execution commit")
     if plan["runtime_backend"] == "native":
         library = _artifact(run, selection["native_library"], basename=False)
         if sha256(library) != selection["native_library_sha256"]:
             raise ValueError("native library changed")
     selected = selection["selected"]
-    expected = {(system, seed) for system in SYSTEMS for seed in plan["model_seeds"]}
+    expected = {(system, seed) for system in systems for seed in plan["model_seeds"]}
     if {(row["system"], row["seed"]) for row in selected} != expected or len(selected) != len(expected):
         raise ValueError("missing or duplicate system/seed")
     price_tables = []
@@ -530,8 +612,19 @@ def _frozen(run):
         price_tables.append(json.dumps(row["prices"], sort_keys=True))
     if len(set(price_tables)) != 1:
         raise ValueError("build operator prices differ")
-    if selection["efficient_reference"] not in SYSTEMS[:-1]:
+    if selection["efficient_reference"] not in (systems if core else systems[:-1]):
         raise ValueError("efficient reference must be selected before held-out opening")
+    if core:
+        from independent.core_claims import validation_summary
+        _core_cost_binding(selection)
+        summary = validation_summary(selected, selection["validation_measures"], plan)
+        if (type(selection.get("validation_service_budget_violations")) is not int
+                or selection["validation_service_budget_violations"] != 0
+                or summary["budget_violations"] != selection["validation_service_budget_violations"]
+                or not all(value > 0 for value in summary["contrasts"].values())
+                or summary["maximum_greedy_drop"] > plan["maximum_greedy_drop"]
+                or not summary["corruption"]):
+            raise ValueError("core validation readiness or service budgets have not passed")
     bundles = []
     for row in selected:
         model_path = _artifact(run, row["model_file"])
@@ -547,6 +640,9 @@ def _frozen(run):
             raise ValueError("build CPU attribution changed")
         if row["mode"] not in ("full", "low", "ensemble", "continuation"):
             raise ValueError("unsupported selected policy")
+        if core and (row["mode"] != "full" or any(row.get(key) is not None for key in (
+                "controller_file", "controller_sha256", "controller_type", "controller_calibration"))):
+            raise ValueError("core requires one full-view law without a critic")
         critic = None
         if row["system"] == "ndu_control":
             if row["mode"] != "continuation":
@@ -569,14 +665,15 @@ def _frozen(run):
     return selection, bundles
 
 
-def _measurement_order(bundles, seeds):
+def _measurement_order(bundles, seeds, systems=None):
     """Counterbalance already validated system/seed bundles across seed rounds."""
+    systems = SYSTEMS if systems is None else systems
     by_identity = {(bundle[0]["system"], bundle[0]["seed"]): bundle for bundle in bundles}
     ordered = []
     for index, seed in enumerate(seeds):
-        offset = index % len(SYSTEMS)
-        systems = SYSTEMS[offset:] + SYSTEMS[:offset]
-        ordered.extend(by_identity[(system, seed)] for system in systems)
+        offset = index % len(systems)
+        rotated = systems[offset:] + systems[:offset]
+        ordered.extend(by_identity[(system, seed)] for system in rotated)
     return ordered
 
 
@@ -586,14 +683,86 @@ def _exclusive(path, value):
         stream.write("\n")
 
 
-def run_evaluation(run):
+def _core_test_artifact(run, test, plan):
+    """Retain exact opened inputs and row identities without reconstructing test."""
+    arrays = {key: np.asarray(test[key]) for key in (
+        "full", "labels", "source_ids", "input_hashes", "groups", "source_scenes", "commands")
+        if key in test}
+    path = run / "test-inputs.npz"
+    with path.open("xb") as stream:
+        np.savez_compressed(stream, **arrays)
+    size = path.stat().st_size
+    if size > plan.get("retained_artifact_bound_bytes", 33554432):
+        raise ValueError("core test artifact exceeds the frozen retained bound")
+    return {"file": path.name, "sha256": sha256(path), "bytes": size,
+            "arrays": {key: {"shape": list(value.shape), "dtype": str(value.dtype)}
+                       for key, value in arrays.items()}}
+
+
+def _core_opened(run, selection, bundles, train, validation, profile, opening):
+    """Keep actual finished receipts and the irreversible opening on failure."""
+    rows, test_identity, test_artifact, current = [], None, None, None
+    phase = "local_opening"
+    try:
+        from independent.core_claims import make_claims
+        _exclusive(run / "test-opened.json", opening)
+        phase = "test_construction"
+        plan = selection["plan"]
+        test = dataset("test", plan["data_profile"], allow_test=True)
+        for left, right in ((train, validation), (train, test), (validation, test)):
+            if (set(left["source_ids"]) & set(right["source_ids"])
+                    or set(left["input_hashes"]) & set(right["input_hashes"])):
+                raise ValueError("physical-source or observed-input leakage")
+        test_identity = manifest(test)
+        phase = "test_input_persistence"
+        test_artifact = _core_test_artifact(run, test, plan)
+        phase = "full_measurement"
+        for row, model, _ in bundles:
+            current = {"system": row["system"], "seed": row["seed"]}
+            runtime = {**plan, "build_cpu_ns": row["build_cpu_ns"],
+                "build_work_units": selection["budgets"][row["system"]]["consumed_units"] / len(plan["model_seeds"])}
+            if plan["runtime_backend"] == "native":
+                runtime["native_library"] = str(run / selection["native_library"])
+            full = measure(model, None, "full", test, runtime, row["reference_full_cpu_ns"], seed=row["seed"])
+            rows.append({**current, "mode": "full", "always_full": full})
+            current = None
+        phase = "claims"
+        claims = make_claims(rows, plan, test["source_ids"], paired_interval)
+        result = {"schema": "hepta.independent-core-confirmation-evaluation.v1",
+            "experiment_id": profile.name, "selection_sha256": sha256(run / "selection.json"),
+            "plan_sha256": selection["plan_sha256"], "source_commit": selection["source_commit"],
+            "test": test_identity, "test_artifact": test_artifact, "all_system_results": rows, **claims,
+            "scope": "Independent core-c1 confirmation of the preregistered four full-view content arms; "
+                "all six primary intervals must pass jointly. No efficient-r2, continuation, general NDU or AV claim."}
+        phase = "result_persistence"
+        _exclusive(run / "test-result.json", result)
+        return result
+    except BaseException as error:
+        try:
+            _exclusive(run / "core-evaluation-partial.json", {
+                "schema": "hepta.independent-core-confirmation-partial.v1", "experiment_id": profile.name,
+                "selection_sha256": opening["selection_sha256"], "source_commit": selection["source_commit"],
+                "phase": phase, "error_type": type(error).__name__, "error": str(error),
+                "global_marker_exists": profile.marker_path.exists(),
+                "local_marker_exists": (run / "test-opened.json").exists(),
+                "completed_system_results": rows, "interrupted_measurement": current,
+                "test": test_identity, "test_artifact": test_artifact,
+                "scope": "Irreversible core-c1 opening retained. Interrupted work can have CPU cost "
+                    "without a returned measurement receipt; no retry or pass is authorized."})
+        except Exception as persistence_error:
+            error.add_note("core partial persistence also failed: " + repr(persistence_error))
+        raise
+
+
+def run_evaluation(run, experiment=None):
     """Only the authorized final runner may call this after protocol freezing."""
     run = Path(run).resolve()
-    if GLOBAL_MARKER.exists() or (run / "test-opened.json").exists() or (run / "test-result.json").exists():
+    profile = _experiment(experiment)
+    if profile.marker_path.exists() or (run / "test-opened.json").exists() or (run / "test-result.json").exists():
         raise ValueError("independent test already opened; no re-evaluation in another directory")
-    selection, bundles = _frozen(run)
+    selection, bundles = _frozen(run) if experiment is None else _frozen(run, profile)
     plan = selection["plan"]
-    bundles = _measurement_order(bundles, plan["model_seeds"])
+    bundles = _measurement_order(bundles, plan["model_seeds"], profile.systems)
     train, validation = (dataset(split, plan["data_profile"]) for split in ("train", "validation"))
     if any(manifest(data) != selection["datasets"][split]
            for split, data in (("train", train), ("validation", validation))):
@@ -602,7 +771,11 @@ def run_evaluation(run):
         raise ValueError("training/validation physical-source leakage")
     opening = {"selection_sha256": sha256(run / "selection.json"), "evaluator_sha256": sha256(__file__),
                "source_commit": selection["source_commit"], "opened_unix_ns": time.time_ns()}
-    _exclusive(GLOBAL_MARKER, opening)
+    if profile.name == "core-c1":
+        opening["experiment_id"] = profile.name
+    _exclusive(profile.marker_path, opening)
+    if profile.name == "core-c1":
+        return _core_opened(run, selection, bundles, train, validation, profile, opening)
     _exclusive(run / "test-opened.json", opening)
     test = dataset("test", plan["data_profile"], allow_test=True)
     for left, right in ((train, validation), (train, test), (validation, test)):
@@ -680,8 +853,11 @@ def run_evaluation(run):
 
 
 if __name__ == "__main__":
+    from independent.experiments import EXPERIMENTS
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--run", required=True)
-    result = run_evaluation(parser.parse_args().run)
+    parser.add_argument("--experiment", choices=EXPERIMENTS)
+    args = parser.parse_args()
+    result = run_evaluation(args.run, args.experiment)
     print(json.dumps({"benefit_verified": result["benefit_verified"], "gates": result["gates"]}, sort_keys=True))
     raise SystemExit(0 if result["benefit_verified"] else 1)
