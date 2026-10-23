@@ -47,6 +47,7 @@ impl RootSqliteMaterialSource {
         {
             let rule = super::OwnerRule::RegisteredRootSource(registered_uid);
             rule.expected_uid()?;
+            verify_root_ancestors(destination.home())?;
             if database.parent() != Some(source.home())
                 || destination.home() == source.home()
                 || destination
@@ -99,8 +100,17 @@ impl RootSqliteMaterialSource {
                 return Err(SqliteRecoveryError::Indeterminate);
             }
             self.destination.revalidate()?;
+            verify_root_ancestors(&self.destination.path)?;
             self.source.revalidate()?;
             let target = self.destination.path.join(name);
+            for suffix in ["", "-wal", "-shm", "-journal"] {
+                let mut path = target.as_os_str().to_os_string();
+                path.push(suffix);
+                match std::fs::symlink_metadata(PathBuf::from(path)) {
+                    Err(error) if error.kind() == std::io::ErrorKind::NotFound => {}
+                    Ok(_) | Err(_) => return Err(SqliteRecoveryError::Indeterminate),
+                }
+            }
             super::image::materialize_retained_copy(&self.destination.path, &self.source, &target)?;
             self.source.revalidate()?;
             // Creating our candidate changes directory timestamps. Recheck
@@ -110,6 +120,7 @@ impl RootSqliteMaterialSource {
                 &self.destination.path,
                 super::OwnerRule::CurrentUser,
             )?;
+            verify_root_ancestors(&self.destination.path)?;
             if observed.snapshot.device != self.destination.snapshot.device
                 || observed.snapshot.inode != self.destination.snapshot.inode
             {
@@ -127,4 +138,30 @@ impl RootSqliteMaterialSource {
             Err(SqliteRecoveryError::Unavailable)
         }
     }
+}
+
+#[cfg(unix)]
+fn verify_root_ancestors(path: &Path) -> Result<(), SqliteRecoveryError> {
+    use std::os::unix::fs::MetadataExt;
+    if !path.is_absolute() {
+        return Err(SqliteRecoveryError::Indeterminate);
+    }
+    let mut current = PathBuf::new();
+    for component in path.components() {
+        match component {
+            std::path::Component::RootDir | std::path::Component::Normal(_) => {
+                current.push(component);
+            }
+            _ => return Err(SqliteRecoveryError::Indeterminate),
+        }
+        let metadata = std::fs::symlink_metadata(&current).map_err(super::indeterminate)?;
+        if !metadata.is_dir()
+            || metadata.file_type().is_symlink()
+            || metadata.uid() != 0
+            || metadata.mode() & 0o022 != 0
+        {
+            return Err(SqliteRecoveryError::Indeterminate);
+        }
+    }
+    Ok(())
 }

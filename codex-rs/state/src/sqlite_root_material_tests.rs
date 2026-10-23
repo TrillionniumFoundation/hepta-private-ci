@@ -21,7 +21,12 @@ impl Fixture {
         std::fs::set_permissions(&root, std::fs::Permissions::from_mode(0o700))?;
         let root = root.canonicalize()?;
         let source = root.join("registered");
-        let destination = root.join("protected");
+        let protected = PathBuf::from(
+            std::env::var_os("HEPTA_TEST_ROOT_MATERIAL_DESTINATION").ok_or_else(|| {
+                anyhow::anyhow!("actual Root fixture must supply its protected destination")
+            })?,
+        );
+        let destination = protected.join(root.file_name().expect("unique fixture basename"));
         for path in [&source, &destination] {
             std::fs::create_dir(path)?;
             std::fs::set_permissions(path, std::fs::Permissions::from_mode(0o700))?;
@@ -60,6 +65,7 @@ impl Fixture {
 impl Drop for Fixture {
     fn drop(&mut self) {
         let _ = std::fs::remove_dir_all(&self.root);
+        let _ = std::fs::remove_dir_all(self.destination.home());
     }
 }
 
@@ -205,6 +211,26 @@ fn root_material_cannot_escape_home_or_overwrite_existing_material() -> anyhow::
                 .materialize_private_candidate(OsStr::new(name))
                 .is_err()
         );
+    }
+    for suffix in ["-wal", "-shm", "-journal"] {
+        let sidecar = fixture
+            .destination
+            .home()
+            .join(format!("candidate.sqlite{suffix}"));
+        std::fs::write(&sidecar, b"existing sidecar must remain untouched")?;
+        std::fs::set_permissions(&sidecar, std::fs::Permissions::from_mode(0o600))?;
+        assert!(
+            fixture
+                .bind()?
+                .materialize_private_candidate(OsStr::new("candidate.sqlite"))
+                .is_err()
+        );
+        assert_eq!(
+            std::fs::read(&sidecar)?,
+            b"existing sidecar must remain untouched"
+        );
+        assert!(!fixture.destination.home().join("candidate.sqlite").exists());
+        std::fs::remove_file(sidecar)?;
     }
     let existing = fixture.destination.home().join("candidate.sqlite");
     std::fs::write(&existing, b"retain this previous material")?;
