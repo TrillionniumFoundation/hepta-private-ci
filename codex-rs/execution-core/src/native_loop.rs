@@ -273,7 +273,13 @@ impl NativeLoopCursorV1 {
         &self,
         independent_receipt_digest: &str,
         verifier: &dyn NativeLoopObserver,
+        now_unix_ms: u64,
     ) -> Result<Self, PortError> {
+        // The task deadline is a completion boundary, not just an admission
+        // boundary. A delayed observer must not promote a stale candidate.
+        if now_unix_ms >= self.deadline_unix_ms {
+            return Err(PortError::Cancelled);
+        }
         if !matches!(&self.phase, NativeLoopPhaseV1::CompletionCandidate { .. })
             || !valid_digest(independent_receipt_digest)
         {
