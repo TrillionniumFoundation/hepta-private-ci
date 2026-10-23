@@ -1,0 +1,193 @@
+{
+  "schema": "hepta.natural-text-interface-smoke.v1",
+  "completed": true,
+  "created_at": "2026-10-23T05:14:30.246780+00:00",
+  "command": [
+    "experiments/multimodal_output_portfolio/natural_io/text_model_smoke.py",
+    "--assets",
+    "/tmp/hepta-t5-small-assets",
+    "--caption",
+    "/tmp/hepta-natural-io-001/human-description.de.txt",
+    "--output",
+    "/tmp/hepta-natural-text-001",
+    "--receipt",
+    "experiments/multimodal_output_portfolio/natural_io/evidence/text-interface-001.json"
+  ],
+  "script_sha256": "73da9ab4639e05e6023f26b6c1a11beb79836137440ec5f8978416fb2215adac",
+  "model": {
+    "id": "google-t5/t5-small",
+    "revision": "df1b051c49625cf57a3d0d8d3863ed4d13564fe4",
+    "license": "Apache-2.0",
+    "card_url": "https://huggingface.co/google-t5/t5-small/blob/df1b051c49625cf57a3d0d8d3863ed4d13564fe4/README.md",
+    "parameter_count": 60506624,
+    "assets": {
+      "README.md": {
+        "url": "https://huggingface.co/google-t5/t5-small/resolve/df1b051c49625cf57a3d0d8d3863ed4d13564fe4/README.md",
+        "bytes": 8473,
+        "sha256": "6559de584e57caf42cd2c77a23bb31d5bd28c5aa9995ee1d967b510acd88d410",
+        "upstream_git_blob": "ec7fe4d8539a6aa166b27598bd402329eedc4305"
+      },
+      "config.json": {
+        "url": "https://huggingface.co/google-t5/t5-small/resolve/df1b051c49625cf57a3d0d8d3863ed4d13564fe4/config.json",
+        "bytes": 1206,
+        "sha256": "530e25060e3a8d5f7b0fcf53bfea9f3601165161f3b1914676e98d97cf07bcf1",
+        "upstream_git_blob": "378f74060b20f6a9a1ea41b03fc0504466206255"
+      },
+      "generation_config.json": {
+        "url": "https://huggingface.co/google-t5/t5-small/resolve/df1b051c49625cf57a3d0d8d3863ed4d13564fe4/generation_config.json",
+        "bytes": 147,
+        "sha256": "f5a1c7e2be8092018d8835128987edf0111637dd98e90599cc80310fef75d95a",
+        "upstream_git_blob": "d52815623b46b7db1c4b957b5a83a8ad30b0146a"
+      },
+      "spiece.model": {
+        "url": "https://huggingface.co/google-t5/t5-small/resolve/df1b051c49625cf57a3d0d8d3863ed4d13564fe4/spiece.model",
+        "bytes": 791656,
+        "sha256": "d60acb128cf7b7f2536e8f38a5b18a05535c9e14c7a355904270e15b0945ea86",
+        "upstream_git_blob": "4e28ff6ebdf584f5372d9de68867399142435d9a"
+      },
+      "tokenizer.json": {
+        "url": "https://huggingface.co/google-t5/t5-small/resolve/df1b051c49625cf57a3d0d8d3863ed4d13564fe4/tokenizer.json",
+        "bytes": 1389353,
+        "sha256": "d2acde0d8d71dd30a711834b07781b9c89feaac33fd332f60507699282740066",
+        "upstream_git_blob": "41911369be79611d82d152725113e66206bd7b79"
+      },
+      "tokenizer_config.json": {
+        "url": "https://huggingface.co/google-t5/t5-small/resolve/df1b051c49625cf57a3d0d8d3863ed4d13564fe4/tokenizer_config.json",
+        "bytes": 2324,
+        "sha256": "d1e7146101aa96282057f374aa9c3b260fba2109e5990edb1775d6efc70ffa3c",
+        "upstream_git_blob": "4fd6c49c32ecf41886dba213d40030f063c72b07"
+      },
+      "model.safetensors": {
+        "url": "https://huggingface.co/google-t5/t5-small/resolve/df1b051c49625cf57a3d0d8d3863ed4d13564fe4/model.safetensors",
+        "bytes": 242043056,
+        "sha256": "bd944e5f1b3ad9b70dd9d00010a517059e19265671076b8b0a4a58d9491842bc",
+        "upstream_git_blob": null
+      }
+    },
+    "remote_code_executed": false,
+    "safetensors": true,
+    "implementation_module": "/tmp/hepta-natural-text-env/lib/python3.12/site-packages/transformers/models/t5/modeling_t5.py",
+    "implementation_sha256": "ee1a043f5c03c684a2bbb0213ea3b3f8be272a03ab884bdca57c31e7315e7b7e"
+  },
+  "input": {
+    "path": "/tmp/hepta-natural-io-001/human-description.de.txt",
+    "sha256": "fc94c0783f5be90a070d4c066eadd6c1d7e92177c93661078abcbf575bcd8a31",
+    "bytes": 56,
+    "text": "Lachender Hans (Dacelo novaeguineae) im Tierpark Zittau",
+    "language": "de",
+    "provenance": "existing human Commons description; not a timed transcript",
+    "task_prefix": null,
+    "task_quality_evaluation": false
+  },
+  "runtime": {
+    "python": "3.12.14",
+    "platform": "Linux-6.18.55-x86_64-with-glibc2.39",
+    "packages": {
+      "torch": "2.5.1+cpu",
+      "numpy": "1.26.4",
+      "transformers": "4.57.1",
+      "tokenizers": "0.22.1",
+      "safetensors": "0.6.2",
+      "huggingface-hub": "0.35.3",
+      "sentencepiece": "0.2.1"
+    },
+    "device": "cpu",
+    "torch_threads": 1,
+    "cuda_available": false
+  },
+  "outputs": {
+    "input_ids": {
+      "shape": [
+        1,
+        25
+      ],
+      "dtype": "int64",
+      "finite": true,
+      "sha256": "70d32c4ec3e2c1ea355b9b429667cc981bb6844e35d292a253126199b1995be6"
+    },
+    "attention_mask": {
+      "shape": [
+        1,
+        25
+      ],
+      "dtype": "int64",
+      "finite": true,
+      "sha256": "9060d7baa74e0778cf6c0a534a56f8e914c6e6118c28b9328dfbc42962fa69c5"
+    },
+    "encoder_hidden": {
+      "shape": [
+        1,
+        25,
+        512
+      ],
+      "dtype": "float32",
+      "finite": true,
+      "sha256": "afd154eacd7d72153de82d8af41f7aaad52cbe11e7244a2e10bca00e7c83c0c7"
+    },
+    "decoder_first_logits": {
+      "shape": [
+        1,
+        1,
+        32128
+      ],
+      "dtype": "float32",
+      "finite": true,
+      "sha256": "8fc81b3b53168a1ed61016020b975522ccdd035284d94cd163484e70e30480d8"
+    },
+    "generated_ids": {
+      "shape": [
+        1,
+        26
+      ],
+      "dtype": "int64",
+      "finite": true,
+      "sha256": "d03bd18d78629337a9cd130994ae51fb9f42989efab5ea2a5e4f5308f238938d"
+    }
+  },
+  "decoded_text": "Lachender Hans (Dacelo novaeguineae) im Tierpark Zittau",
+  "generation": {
+    "max_new_tokens": 32,
+    "do_sample": false,
+    "num_beams": 1,
+    "token_count": 26
+  },
+  "work": {
+    "asset_preparation_wall_seconds": 4.665398825000011,
+    "model_load_wall_seconds": 0.13796521400036,
+    "inference_wall_seconds": 0.5989490049996675,
+    "inference_process_cpu_seconds": 0.5986294229999993,
+    "total_wall_seconds": 5.4248347810007544,
+    "total_process_cpu_seconds": 1.482542494,
+    "max_rss_linux_kib": 579392,
+    "linear_macs_only": 2573074432,
+    "mac_exclusions": [
+      "attention matmul",
+      "embeddings",
+      "softmax and activations",
+      "layer normalization",
+      "sampling/control",
+      "loading"
+    ]
+  },
+  "scope": {
+    "pretrained_encoder_executed": true,
+    "pretrained_decoder_executed": true,
+    "bounded_autoregressive_decoding_executed": true,
+    "training": false,
+    "ndu": false,
+    "multimodal_generation": false,
+    "quality_validation": false,
+    "foundation_model_blocker_closed": false,
+    "statement": "Unprefixed German caption is an interface probe, not a validated translation or summarization task."
+  },
+  "artifacts": {
+    "text-interface-tensors.npz": {
+      "bytes": 157660,
+      "sha256": "d2056802344ee5cd2f04573f21dd5ac6bc8ca5502f5fb5cb48d4c23cf442b5e7"
+    },
+    "decoded-output.txt": {
+      "bytes": 56,
+      "sha256": "fc94c0783f5be90a070d4c066eadd6c1d7e92177c93661078abcbf575bcd8a31"
+    }
+  }
+}
