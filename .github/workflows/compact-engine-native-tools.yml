@@ -1,0 +1,56 @@
+name: compact.engine native dependency diagnostics
+
+on:
+  push:
+    branches:
+      - fix/compact-engine-current-main-convergence-20260925
+    paths:
+      - .github/workflows/compact-engine-native-tools.yml
+
+permissions:
+  contents: read
+
+jobs:
+  metadata-cache:
+    name: Export nextest metadata dependencies (not qualification)
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582
+      - name: Resolve metadata without building or mutating source
+        working-directory: codex-rs
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/compact-metadata"
+          cargo metadata --locked --all-features --filter-platform x86_64-unknown-linux-gnu --format-version 1 > "$RUNNER_TEMP/compact-metadata/cargo-metadata.json"
+          git diff --exit-code
+          git ls-files -z '*Cargo.toml' '*Cargo.lock' | sort -z | xargs -0 sha256sum > "$RUNNER_TEMP/compact-metadata/manifest-sha256.txt"
+          {
+            rustc -Vv
+            cargo -V
+            printf 'source_sha=%s\n' '${{ github.sha }}'
+          } > "$RUNNER_TEMP/compact-metadata/versions.txt"
+      - name: Archive resolver and source caches only
+        shell: bash
+        run: |
+          set -euo pipefail
+          CARGO_HOME="${CARGO_HOME:-$HOME/.cargo}"
+          paths=()
+          for path in registry/cache registry/src registry/index git/db git/checkouts; do
+            if [ -d "$CARGO_HOME/$path" ]; then paths+=("$path"); fi
+          done
+          test "${#paths[@]}" -gt 0
+          tar -C "$CARGO_HOME" -czf "$RUNNER_TEMP/compact-metadata/cargo-cache.tar.gz" "${paths[@]}"
+          cd "$RUNNER_TEMP/compact-metadata"
+          sha256sum cargo-cache.tar.gz cargo-metadata.json manifest-sha256.txt > SHA256SUMS
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: compact-engine-metadata-cache-${{ github.sha }}
+          path: ${{ runner.temp }}/compact-metadata
+          retention-days: 1
+          if-no-files-found: error

@@ -1,0 +1,105 @@
+name: compact.engine capacity profile
+
+on:
+  push:
+    branches: [fix/compact-engine-current-main-convergence-20260925]
+    paths:
+      - "codex-rs/hepta-compact-engine/**"
+      - ".github/workflows/compact-engine-capacity.yml"
+  pull_request:
+    paths:
+      - "codex-rs/hepta-compact-engine/**"
+      - ".github/workflows/compact-engine-capacity.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: compact-engine-capacity-${{ github.event_name }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+env:
+  SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+
+jobs:
+  production-ceiling:
+    name: Kernel ceiling and full durable profile
+    runs-on: ubuntu-24.04
+    timeout-minutes: 120
+    env:
+      CARGO_INCREMENTAL: "0"
+      CARGO_PROFILE_TEST_DEBUG: "0"
+      CARGO_PROFILE_DEV_DEBUG: "0"
+      RUST_BACKTRACE: "1"
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ env.SOURCE_SHA }}
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Bind exact source and host identity
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
+          mkdir -p "$RUNNER_TEMP/compact-capacity"
+          {
+            printf 'source=%s\n' "$SOURCE_SHA"
+            printf 'tree=%s\n' "$(git rev-parse HEAD^{tree})"
+            uname -a
+            lscpu
+            free -b
+            df -B1 .
+          } > "$RUNNER_TEMP/compact-capacity/host.txt"
+          git diff --exit-code
+          git diff --cached --exit-code
+      - uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582
+      - name: Record toolchain
+        shell: bash
+        run: |
+          set -euo pipefail
+          {
+            rustc --version --verbose
+            cargo --version --verbose
+          } > "$RUNNER_TEMP/compact-capacity/toolchain.txt"
+      - name: Run ignored production-ceiling kernel profile
+        working-directory: codex-rs
+        shell: bash
+        run: |
+          set -euo pipefail
+          /usr/bin/time -v \
+            cargo test --locked -p codex-hepta-compact-engine \
+              --test capacity_profile \
+              production_ceiling_capacity_profile \
+              -- --ignored --exact --nocapture \
+            2>&1 | tee "$RUNNER_TEMP/compact-capacity/kernel-profile.log"
+          grep -F 'COMPACT_ENGINE_CAPACITY_PROFILE=' \
+            "$RUNNER_TEMP/compact-capacity/kernel-profile.log" \
+            > "$RUNNER_TEMP/compact-capacity/kernel-profile.jsonl"
+          git diff --exit-code
+          git diff --cached --exit-code
+      - name: Run full signed publish and cryptographic reopen profile
+        working-directory: codex-rs
+        shell: bash
+        run: |
+          set -euo pipefail
+          /usr/bin/time -v \
+            cargo test --locked -p codex-hepta-compact-engine \
+              --test full_operation_profile \
+              profile::full_publication_reopen_profile \
+              -- --ignored --exact --nocapture \
+            2>&1 | tee "$RUNNER_TEMP/compact-capacity/full-operation-profile.log"
+          grep -F 'COMPACT_ENGINE_FULL_OPERATION_PROFILE=' \
+            "$RUNNER_TEMP/compact-capacity/full-operation-profile.log" \
+            > "$RUNNER_TEMP/compact-capacity/full-operation-profile.jsonl"
+          git diff --exit-code
+          git diff --cached --exit-code
+      - name: Retain exact-source capacity evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: compact-engine-capacity-${{ env.SOURCE_SHA }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/compact-capacity/
+          if-no-files-found: error
+          retention-days: 14
