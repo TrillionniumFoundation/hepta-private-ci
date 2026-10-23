@@ -728,8 +728,7 @@ mod tests {
                 agent_id.clone(),
                 WorkspaceBinding::new(workspace.clone(), &fleet_root)?,
                 resources.clone(),
-            )
-            ?;
+            )?;
             let layout = registry.register(manifest)?.layout;
             let identity = AgentdIdentity {
                 agent_id: agent_id.clone(),
@@ -744,8 +743,7 @@ mod tests {
                 app_server_socket: layout.app_server_socket().to_path_buf(),
             };
             let store = AutomationStore::open(&layout)
-                .await
-                ?;
+                .await?;
             Ok(Self {
                 _temp: temp,
                 identity,
@@ -802,13 +800,11 @@ mod tests {
             1,
             1,
             "agentd-product-effect-fence",
-        )
-        ?;
+        )?;
         fixture
             .store
             .register_taskflow_definition(&definition, &fence, now_ms)
-            .await
-            ?;
+            .await?;
         fixture
             .store
             .create_taskflow_run(
@@ -819,13 +815,11 @@ mod tests {
                 "thread-product-effect",
                 now_ms,
             )
-            .await
-            ?;
+            .await?;
         let claimed = fixture
             .store
             .claim_taskflow_run(&intent.run_id, &fence, now_ms + 1, 60_000)
-            .await
-            ?;
+            .await?;
         fixture
             .store
             .apply_taskflow_command(
@@ -836,11 +830,9 @@ mod tests {
                     claimed.revision,
                     TaskFlowTransition::Start,
                     now_ms + 2,
-                )
-                ?,
+                )?,
             )
-            .await
-            ?;
+            .await?;
         let digest = intent.digest()?;
         fixture
             .store
@@ -854,8 +846,7 @@ mod tests {
                 "agentd-product-effect-prepare",
                 now_ms + 3,
             )
-            .await
-            ?;
+            .await?;
         fixture
             .store
             .claim_taskflow_step(
@@ -868,8 +859,7 @@ mod tests {
                 "agentd-product-effect-claim",
                 now_ms + 4,
             )
-            .await
-            ?;
+            .await?;
         Ok(fence)
     }
 
@@ -915,11 +905,9 @@ mod tests {
         let fixture = Fixture::new().await?;
         let now_ms = u64::try_from(
             SystemTime::now()
-                .duration_since(UNIX_EPOCH)
-                ?
+                .duration_since(UNIX_EPOCH)?
                 .as_millis(),
-        )
-        ?;
+        )?;
         let scope = Sha256Digest::for_bytes(b"provider-fixture-scope");
         let intent = effect_intent(&scope);
         prepare_effect(&fixture, now_ms, &intent).await?;
@@ -929,8 +917,7 @@ mod tests {
             "provider/fixture-v1",
             &intent.run_id,
             &intent.step_id,
-        )
-        ?;
+        )?;
         let provider_operation = Sha256Digest::for_bytes(b"provider-operation");
         let ack = serde_json::json!({
             "effect_key": provider_key.as_str(),
@@ -961,8 +948,7 @@ mod tests {
             attestation: None,
         };
         let contract_digest = unsigned_provider_config
-            .contract_sha256()
-            ?;
+            .contract_sha256()?;
         let statement = HttpProviderEffectContractAttestation::statement_for(
             "agentd-product-effect-contract",
             &contract_digest,
@@ -980,12 +966,9 @@ mod tests {
                 authority_epoch: 9,
                 revision: 1,
                 revoked_grant_ids: BTreeSet::new(),
-            })
-            ?,
-        )
-        ?;
-        fs::set_permissions(&revocations_file, fs::Permissions::from_mode(0o600))
-            ?;
+            })?,
+        )?;
+        fs::set_permissions(&revocations_file, fs::Permissions::from_mode(0o600))?;
 
         let host_file = fixture
             .identity
@@ -1013,10 +996,8 @@ mod tests {
         fs::write(
             &host_file,
             serde_json::to_vec(&host_json)?,
-        )
-        ?;
-        fs::set_permissions(&host_file, fs::Permissions::from_mode(0o600))
-            ?;
+        )?;
+        fs::set_permissions(&host_file, fs::Permissions::from_mode(0o600))?;
 
         let host =
             AgentdAutomationEffectHost::open(&fixture.identity, &host_file)?;
@@ -1030,8 +1011,7 @@ mod tests {
                 "agentd-product-effect-dispatch",
                 now_ms + 5,
             )
-            .await
-            ?;
+            .await?;
         assert_eq!(
             receipt.observation,
             Some(TaskFlowStepObservation::Succeeded)
@@ -1046,8 +1026,7 @@ mod tests {
                 "agentd-product-effect-dispatch",
                 now_ms + 6,
             )
-            .await
-            ?;
+            .await?;
         assert_eq!(replay.receipt_digest, receipt.receipt_digest);
         // A terminal read is not permission to substitute bytes or command
         // identity, even though the live lease has already been cleared.
