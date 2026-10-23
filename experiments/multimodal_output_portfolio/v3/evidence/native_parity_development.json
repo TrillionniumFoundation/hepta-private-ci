@@ -1,0 +1,48 @@
+{
+  "additional_u64_overflow_session": 1,
+  "audit_python_cpu_seconds": 0.053706063,
+  "audit_wall_seconds": 0.09069933600039803,
+  "binary": "/tmp/hepta-native-target/debug/ndu-feedback-generation",
+  "binary_sha256": "8226656bb90a5c6fc8f616332556c3addbcc379ec606b4bb0521fc9f8716188d",
+  "choices": {
+    "emit": 257,
+    "refine": 64
+  },
+  "expected_errors_checked": {
+    "CostMismatch": 321,
+    "InvalidConfiguration": 5,
+    "InvalidOutputs": 257,
+    "InvalidProtocol": 1,
+    "InvalidTable": 642,
+    "NonFiniteValue": 963,
+    "PendingExecution": 578,
+    "Sealed": 514,
+    "SessionSequence": 257,
+    "SnapshotMismatch": 963
+  },
+  "mismatches": 0,
+  "native_child_cpu_seconds": "not separately measured by this portable subprocess audit",
+  "persistent_processes": 1,
+  "randomized_sessions": 256,
+  "requests_checked": 5400,
+  "returncode": 0,
+  "schema": "hepta.feedback-native-parity.v1",
+  "scope": "development finite action-table and persistent-process parity; no neural, production runtime, or heldout claim",
+  "seed": 7301,
+  "source_sha256": {
+    "codex-rs/Cargo.lock": "8354b4cbdf14389db7aa5508e2ed5b524fc2d4c4ea0ecb475955c933f8bea389",
+    "codex-rs/hepta-ndu/BUILD.bazel": "f2d1b5135da40059f000209620f1a206162b77204d5faab580836c1bb3a7d756",
+    "codex-rs/hepta-ndu/Cargo.toml": "92a89006826453d77ba4fc2dde8629d25d2bd4adad7dff80aba8e86a0b8f6ee7",
+    "codex-rs/hepta-ndu/src/bin/ndu-feedback-generation.rs": "206117e7ab1f6c721aae9d14950f0036d6ca3e30e86844bd5b5feb430a3df1e1",
+    "codex-rs/hepta-ndu/src/feedback_generation.rs": "520f53dcbf8abf015602f0eaeb2835b5a300787b815716e33ba340e8c4fa5e47",
+    "codex-rs/hepta-ndu/src/feedback_generation_protocol.rs": "fdcd3d3c4f542011b356d554f96427e3fa11cf4566ad5505d8e54611ecbd9133",
+    "codex-rs/hepta-ndu/src/feedback_generation_tests.rs": "d8b312045f323e0a941ca1a450237ea895c71a54aa5ad224b4ff9b5e46581b4f",
+    "codex-rs/hepta-ndu/src/lib.rs": "a67506831637fb663639f2b5a286969a338990cf8877ba0ff5c93c4f857199e7",
+    "experiments/multimodal_output_portfolio/v3/native_parity.py": "1ec4e6b0332f01e009fc8148c3ff5fc1d90e887baa9ddfc84a91cb3f4174a231"
+  },
+  "stderr": "",
+  "stdin_sha256": "0d16feeff4c66cdb45e21a18b65d989702c23223c24a22485daaf5a7056cc909",
+  "stdout_sha256": "1eeb8d7af184c0b01107849f2972f6ab518f979119bd0e06412b4d4667c46e77",
+  "transcript_artifact": "native_parity_development.transcript.jsonl.gz",
+  "transcript_gzip_sha256": "46c2929d1e54763288b8e09d84e11f9aea6812374826359eaad0ba019f3446db"
+}
