@@ -21,11 +21,11 @@ static int softmax12(double *values) {
     return 0;
 }
 
-int hepta_forward(const double *x, size_t n, int hidden, int low,
-                  const double *encoder, const double *bias,
-                  const double *text, const double *text_bias,
-                  const double *image, const double *image_bias,
-                  double *p, double *q) {
+static int forward_state(const double *x, size_t n, int hidden, int low,
+                         const double *encoder, const double *bias,
+                         const double *text, const double *text_bias,
+                         const double *image, const double *image_bias,
+                         double *p, double *q, double *hidden_out) {
     if (!x || !encoder || !bias || !text || !text_bias || !image ||
         !image_bias || !p || !q || n < 1 || n > 65536 ||
         hidden < 1 || hidden > 512 || (low != 0 && low != 1)) return 1;
@@ -60,6 +60,9 @@ int hepta_forward(const double *x, size_t n, int hidden, int low,
             state[j] = tanh(state[j] + bias[j]);
             if (!isfinite(state[j])) return 2;
         }
+        if (hidden_out)
+            for (int j = 0; j < hidden; ++j)
+                hidden_out[row * (size_t)hidden + j] = state[j];
         for (int k = 0; k < 12; ++k) pt[k] = pi[k] = 0.0;
         for (int j = 0; j < hidden; ++j) {
             for (int k = 0; k < 12; ++k) {
@@ -77,6 +80,26 @@ int hepta_forward(const double *x, size_t n, int hidden, int low,
         if (status) return status;
     }
     return 0;
+}
+
+int hepta_forward(const double *x, size_t n, int hidden, int low,
+                  const double *encoder, const double *bias,
+                  const double *text, const double *text_bias,
+                  const double *image, const double *image_bias,
+                  double *p, double *q) {
+    return forward_state(x, n, hidden, low, encoder, bias, text, text_bias,
+                         image, image_bias, p, q, NULL);
+}
+
+/* hidden_out is a required row-major n-by-hidden post-tanh output. */
+int hepta_forward_state_v1(const double *x, size_t n, int hidden, int low,
+                           const double *encoder, const double *bias,
+                           const double *text, const double *text_bias,
+                           const double *image, const double *image_bias,
+                           double *p, double *q, double *hidden_out) {
+    if (!hidden_out) return 1;
+    return forward_state(x, n, hidden, low, encoder, bias, text, text_bias,
+                         image, image_bias, p, q, hidden_out);
 }
 
 int hepta_low_critic(const double *x, int hidden, const double *encoder58,
@@ -186,6 +209,58 @@ int hepta_batch(const double *x, size_t n, int hidden, int mode,
                 pt[k] = mode == 2 ? (pt[k] + full_p[k]) / 2.0 : full_p[k];
                 pi[k] = mode == 2 ? (pi[k] + full_q[k]) / 2.0 : full_q[k];
             }
+        }
+    }
+    return 0;
+}
+
+/* Affine continuation features are [low post-tanh state, instruction10]. */
+int hepta_batch_gain_v1(const double *x, size_t n, int hidden,
+                        const double *encoder202, const double *encoder58,
+                        const double *bias, const double *text,
+                        const double *text_bias, const double *image,
+                        const double *image_bias, const double *mean,
+                        const double *scale, const double *weights,
+                        double intercept, double lower, double upper,
+                        double price, double *p, double *q, double *gains,
+                        int *low_used, int *full_used) {
+    if (!x || !encoder202 || !encoder58 || !bias || !text || !text_bias ||
+        !image || !image_bias || !mean || !scale || !weights || !p || !q ||
+        !gains || !low_used || !full_used || n < 1 || n > 65536 ||
+        hidden < 1 || hidden > 512 || !isfinite(intercept) ||
+        !isfinite(lower) || !isfinite(upper) || lower > upper ||
+        !isfinite(price) || price < 0.0) return 1;
+    int dimension = hidden + 10;
+    for (int j = 0; j < dimension; ++j) {
+        if (!isfinite(mean[j]) || !isfinite(scale[j]) ||
+            !isfinite(weights[j]) || scale[j] <= 0.0) return 1;
+    }
+    for (size_t row = 0; row < n; ++row) {
+        const double *input = x + row * 202;
+        double *pt = p + row * 12, *pi = q + row * 12;
+        double state[512];
+        double gain = 0.0;
+        gains[row] = 0.0;
+        low_used[row] = full_used[row] = 0;
+        int status = forward_state(input, 1, hidden, 1, encoder58, bias,
+            text, text_bias, image, image_bias, pt, pi, state);
+        if (status) return status;
+        low_used[row] = 1;
+        for (int j = 0; j < dimension; ++j) {
+            double feature = j < hidden ? state[j] : input[192 + j - hidden];
+            if (!isfinite(feature)) return 2;
+            gain += ((feature - mean[j]) / scale[j]) * weights[j];
+        }
+        gain += intercept;
+        if (!isfinite(gain)) return 2;
+        if (gain < lower) gain = lower;
+        if (gain > upper) gain = upper;
+        gains[row] = gain;
+        if (gain > price) {
+            status = hepta_forward(input, 1, hidden, 0, encoder202, bias,
+                text, text_bias, image, image_bias, pt, pi);
+            if (status) return status;
+            full_used[row] = 1;
         }
     }
     return 0;

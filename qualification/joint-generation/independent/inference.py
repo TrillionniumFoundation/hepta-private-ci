@@ -108,7 +108,7 @@ class FrozenGenerator:
         """One 2×2 thumbnail reduction and one actual 58-input forward."""
         return _sum_work(self.thumbnail_work(n), self._model_work(n, 58))
 
-    def critic_work(self, n):
+    def critic_work(self, n, critic=None):
         """Declared arithmetic for Controller features, ridge prediction/decision.
 
         Shape/domain validation and memory copies follow the same unpriced
@@ -116,6 +116,11 @@ class FrozenGenerator:
         feature divisions, sorting and decision comparisons are included.
         """
         n = _rows(n)
+        if critic is not None and not isinstance(critic, Controller):
+            from independent.gain_head import AffineGainHead
+            if not isinstance(critic, AffineGainHead) or critic.hidden_dim != self.dimensions[3]:
+                raise ValueError("compatible affine gain head required")
+            return critic.work(n)
         k = self.dimensions[1]
         width = 2 * k + 7
         return {"macs": n * width, "scalar_ops": n * (6 * k + width + 3),
@@ -142,10 +147,11 @@ class FrozenGenerator:
             raise ValueError("expected finite [N,202] full RGB/instruction input")
         return value
 
-    def _content(self, x, encoder):
+    def _content(self, x, encoder, *, return_state=False):
         hidden = np.tanh(x @ encoder + self.params["bias"])
-        return (softmax(hidden @ self.params["text"] + self.params["text_bias"]),
-                softmax(hidden @ self.params["image"] + self.params["image_bias"]))
+        result = (softmax(hidden @ self.params["text"] + self.params["text_bias"]),
+                  softmax(hidden @ self.params["image"] + self.params["image_bias"]))
+        return (*result, hidden) if return_state else result
 
     def forward_full(self, x_full, ledger=None, stage="inference"):
         x = self._input(x_full)
@@ -157,6 +163,10 @@ class FrozenGenerator:
         return self._content(x, self.params["encoder"])
 
     def forward_low(self, x_full, ledger=None, stage="inference"):
+        return self.forward_low_state(x_full, ledger, stage)[:2]
+
+    def forward_low_state(self, x_full, ledger=None, stage="inference"):
+        """Return p/q and the same admitted low encoder's post-tanh state."""
         x = self._input(x_full)
         ledger = self._ledger_for(ledger)
         work = self.low_work(len(x))
@@ -172,7 +182,7 @@ class FrozenGenerator:
         if ledger is not None:
             ledger.model_forward(stage, rows=len(x), input_dim=58,
                                  hidden=self.dimensions[3], classes=self.dimensions[1])
-        return self._content(packed, self._folded_encoder)
+        return self._content(packed, self._folded_encoder, return_state=True)
 
     def continuation(self, x_full, critic, price=0.02, ledger=None, stage="inference"):
         """One cheap low pass, a charged critic, and at most one full pass.
@@ -182,22 +192,30 @@ class FrozenGenerator:
         Insufficient optional budget stops after low; mandatory work rejects.
         """
         x = self._input(x_full)
-        if (len(x) != 1 or not isinstance(critic, Controller)
-                or critic.classes != self.dimensions[1]
+        if (len(x) != 1 or getattr(critic, "classes", None) != self.dimensions[1]
                 or type(price) not in (int, float) or not np.isfinite(price) or price < 0):
             raise ValueError("one request, compatible critic and finite nonnegative price required")
+        critic_work = self.critic_work(1, critic)
+        affine = not isinstance(critic, Controller)
         ledger = self._ledger_for(ledger)
-        required = _sum_work(self.low_work(1), self.critic_work(1))
+        required = _sum_work(self.low_work(1), critic_work)
         if not self.prepared_low:
             required = _sum_work(required, self.prepare_work())
         self._admit(required, ledger, stage)
         before = 0 if ledger is None else ledger.consumed_units
-        p, q = self.forward_low(x, ledger, stage)
+        if affine:
+            p, q, hidden = self.forward_low_state(x, ledger, stage)
+        else:
+            p, q = self.forward_low(x, ledger, stage)
         if ledger is not None:
-            ledger.charge_kernel(stage, "continuation_critic", **self.critic_work(1),
+            ledger.charge_kernel(stage, "continuation_critic", **critic_work,
                                  counts={"critic_decisions": 1, "critic_rows": 1})
         available = int(ledger is None or ledger.remaining_units >= units(self.full_work(1), ledger))
-        continued = bool(critic.decide(p, q, remaining_steps=available, price=price)[0])
+        if affine:
+            wanted = bool(critic.predict_state(hidden, x[:, 192:])[0] > price)
+            continued = bool(available and wanted)
+        else:
+            continued = bool(critic.decide(p, q, remaining_steps=available, price=price)[0])
         if continued:
             p, q = self.forward_full(x, ledger, stage)
         return p, q, {"continued": continued, "model_forwards": 1 + int(continued),

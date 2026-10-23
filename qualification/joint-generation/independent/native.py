@@ -115,6 +115,7 @@ class NativeGenerator(FrozenGenerator):
             raise FileNotFoundError("compile_native must create the explicit library path first: " + self.library_path)
         self._native = _bind(self.library_path)
         self._last_critic = None
+        self._state_function = self._gain_function = None
         if prepare_low:
             self._prepare(ledger)
 
@@ -134,16 +135,44 @@ class NativeGenerator(FrozenGenerator):
             result.update(thumbnail_calls=1, thumbnail_rows=n)
         return result
 
-    def _call_forward(self, x, low):
+    def _state_entry(self):
+        if self._state_function is None:
+            try:
+                function = self._native.hepta_forward_state_v1
+            except AttributeError as error:
+                raise RuntimeError("native library lacks hepta_forward_state_v1 for low hidden state") from error
+            function.argtypes = [_DOUBLE, ctypes.c_size_t, ctypes.c_int, ctypes.c_int] + [_DOUBLE] * 9
+            function.restype = ctypes.c_int
+            self._state_function = function
+        return self._state_function
+
+    def _gain_entry(self):
+        if self._gain_function is None:
+            try:
+                function = self._native.hepta_batch_gain_v1
+            except AttributeError as error:
+                raise RuntimeError("native library lacks hepta_batch_gain_v1 for affine gain head") from error
+            function.argtypes = ([_DOUBLE, ctypes.c_size_t, ctypes.c_int] + [_DOUBLE] * 10
+                + [ctypes.c_double] * 4 + [_DOUBLE] * 3 + [ctypes.POINTER(ctypes.c_int)] * 2)
+            function.restype = ctypes.c_int
+            self._gain_function = function
+        return self._gain_function
+
+    def _call_forward(self, x, low, *, return_state=False):
         p, q = np.empty((len(x), 12)), np.empty((len(x), 12))
         parameters = self.params
         encoder = self._folded_encoder if low else parameters["encoder"]
-        status = self._native.hepta_forward(_pointer(x), len(x), self.dimensions[3], int(low),
+        hidden = np.empty((len(x), self.dimensions[3])) if return_state else None
+        function = self._state_entry() if return_state else self._native.hepta_forward
+        arguments = [
             *[_pointer(value) for value in (encoder, parameters["bias"], parameters["text"],
-              parameters["text_bias"], parameters["image"], parameters["image_bias"], p, q)])
+              parameters["text_bias"], parameters["image"], parameters["image_bias"], p, q)]]
+        if return_state:
+            arguments.append(_pointer(hidden))
+        status = function(_pointer(x), len(x), self.dimensions[3], int(low), *arguments)
         if status:
             raise FloatingPointError("native tensor kernel returned " + str(status))
-        return p, q
+        return (p, q, hidden) if return_state else (p, q)
 
     def forward_full(self, x_full, ledger=None, stage="inference"):
         x = self._input(x_full)
@@ -165,17 +194,36 @@ class NativeGenerator(FrozenGenerator):
             ledger.charge_kernel(stage, "native_low", **work, counts=self._counts(len(x), True))
         return self._call_forward(x, True)
 
+    def forward_low_state(self, x_full, ledger=None, stage="inference"):
+        x = self._input(x_full)
+        self._state_entry()  # Old libraries reject unsupported new API before charging.
+        ledger = self._ledger_for(ledger)
+        work = self.low_work(len(x))
+        self._admit(work if self.prepared_low else _sum_work(work, self.prepare_work()), ledger, stage)
+        self._prepare(ledger)
+        if ledger is not None:
+            ledger.charge_kernel(stage, "native_low_state", **work, counts=self._counts(len(x), True))
+        return self._call_forward(x, True, return_state=True)
+
     def _critic(self, critic):
         if self._last_critic is not None and self._last_critic[0] is critic:
             return self._last_critic[1]
-        if not isinstance(critic, Controller) or critic.classes != 12:
+        if isinstance(critic, Controller):
+            frozen = Controller(critic.classes, critic.mean, critic.scale, critic.weights,
+                                critic.intercept, critic.bounds)
+        else:
+            from independent.gain_head import AffineGainHead
+            if not isinstance(critic, AffineGainHead) or critic.hidden_dim != self.dimensions[3]:
+                raise ValueError("compatible frozen affine gain head required")
+            frozen = AffineGainHead.from_arrays(critic.to_arrays())
+        if frozen.classes != 12:
             raise ValueError("compatible frozen critic required")
-        frozen = Controller(critic.classes, critic.mean, critic.scale, critic.weights,
-                            critic.intercept, critic.bounds)
-        # All features lie within [0,1], up to normal floating-point error.
-        bound = ((np.longdouble(1.000000000001) + np.abs(frozen.mean.astype(np.longdouble)))
-                 / frozen.scale.astype(np.longdouble) * np.abs(frozen.weights.astype(np.longdouble)))
-        if bound.sum() + abs(np.longdouble(frozen.intercept)) > np.finfo(np.float64).max:
+        # Ridge probabilities are [0,1]; affine hidden states are [-1,1].
+        normalized_bound = ((np.longdouble(1.000000000001) + np.abs(frozen.mean.astype(np.longdouble)))
+                            / frozen.scale.astype(np.longdouble))
+        bound = normalized_bound * np.abs(frozen.weights.astype(np.longdouble))
+        if (np.any(normalized_bound > np.finfo(np.float64).max)
+                or bound.sum() + abs(np.longdouble(frozen.intercept)) > np.finfo(np.float64).max):
             raise ValueError("critic can overflow its bounded feature profile")
         self._last_critic = (critic, frozen)
         return frozen
@@ -198,8 +246,11 @@ class NativeGenerator(FrozenGenerator):
         if (len(x) != 1 or type(price) not in (int, float) or not np.isfinite(price) or price < 0):
             raise ValueError("one request and finite nonnegative price required")
         critic = self._critic(critic)
+        affine = not isinstance(critic, Controller)
+        if affine:
+            self._gain_entry()
         ledger = self._ledger_for(ledger)
-        work = _sum_work(self.low_work(1), self.critic_work(1))
+        work = _sum_work(self.low_work(1), self.critic_work(1, critic))
         required = work if self.prepared_low else _sum_work(work, self.prepare_work())
         self._admit(required, ledger, stage)
         before = 0 if ledger is None else ledger.consumed_units
@@ -207,11 +258,20 @@ class NativeGenerator(FrozenGenerator):
         if ledger is not None:
             counts = {**self._counts(1, True), "critic_decisions": 1, "critic_rows": 1}
             ledger.charge_kernel(stage, "native_low_critic", **work, counts=counts)
-        p, q, gain = self._call_low_critic(x, critic)
         available = ledger is None or ledger.remaining_units >= units(self.full_work(1), ledger)
-        continued = bool(available and gain > price)
-        if continued:
-            p, q = self.forward_full(x, ledger, stage)
+        if affine:
+            # The same exclusive-ledger admission as batch: optional full is
+            # funded before C and charged only if that fused branch executes.
+            p, q, _, _, full = self._call_batch(x, 3, critic,
+                price if available else np.finfo(np.float64).max, None)
+            continued = bool(full[0])
+            if continued and ledger is not None:
+                ledger.charge_kernel(stage, "native_full", **self.full_work(1), counts=self._counts(1, False))
+        else:
+            p, q, gain = self._call_low_critic(x, critic)
+            continued = bool(available and gain > price)
+            if continued:
+                p, q = self.forward_full(x, ledger, stage)
         return p, q, {"continued": continued, "model_forwards": 1 + int(continued),
             "low_forwards": 1, "full_forwards": int(continued),
             "charged_units": None if ledger is None else ledger.consumed_units - before,
@@ -227,11 +287,17 @@ class NativeGenerator(FrozenGenerator):
                   None if critic is None else critic.mean, None if critic is None else critic.scale,
                   None if critic is None else critic.weights)
         values = (0.0, 0.0, 0.0) if critic is None else (critic.intercept, *critic.bounds)
-        status = self._native.hepta_batch(_pointer(x), n, self.dimensions[3], mode,
-            *[None if value is None else _pointer(value) for value in arrays], *values, price,
-            None if mask is None else mask.ctypes.data_as(ctypes.POINTER(ctypes.c_ubyte)),
-            _pointer(p), _pointer(q), _pointer(gains),
-            low.ctypes.data_as(ctypes.POINTER(ctypes.c_int)), full.ctypes.data_as(ctypes.POINTER(ctypes.c_int)))
+        pointers = [None if value is None else _pointer(value) for value in arrays]
+        outputs = [_pointer(p), _pointer(q), _pointer(gains),
+            low.ctypes.data_as(ctypes.POINTER(ctypes.c_int)), full.ctypes.data_as(ctypes.POINTER(ctypes.c_int))]
+        if critic is not None and not isinstance(critic, Controller):
+            if mode != 3 or mask is not None:
+                raise ValueError("affine gain entry only supports continuation")
+            status = self._gain_entry()(_pointer(x), n, self.dimensions[3], *pointers, *values, price, *outputs)
+        else:
+            status = self._native.hepta_batch(_pointer(x), n, self.dimensions[3], mode,
+                *pointers, *values, price,
+                None if mask is None else mask.ctypes.data_as(ctypes.POINTER(ctypes.c_ubyte)), *outputs)
         if status:
             raise FloatingPointError("native batch kernel returned " + str(status))
         return p, q, gains, low, full
@@ -261,9 +327,11 @@ class NativeGenerator(FrozenGenerator):
         elif random_full_mask is not None:
             raise ValueError("random mask is only valid for random mode")
         frozen = self._critic(critic) if mode == "continuation" else None
+        if frozen is not None and not isinstance(frozen, Controller):
+            self._gain_entry()
         ledger = self._ledger_for(ledger)
         full_work, low_work = self.full_work(1), self.low_work(1)
-        critic_work = self.critic_work(1) if mode == "continuation" else {}
+        critic_work = self.critic_work(1, frozen) if mode == "continuation" else {}
         extra = {"scalar_ops": 24, "div_ops": 24} if mode == "ensemble" else (
             {"scalar_ops": 1, "compare_ops": 1} if mode == "random" else {})
         fu, lu, cu, eu = (units(work, ledger) for work in (full_work, low_work, critic_work, extra))

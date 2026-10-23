@@ -1,6 +1,7 @@
 """Native equivalence and admission checks on random arrays, without datasets."""
 
 import hashlib
+import subprocess
 import tempfile
 from pathlib import Path
 import unittest
@@ -13,6 +14,7 @@ from model import JointModel
 from independent.accounting import BudgetExceeded, WorkLedger
 from independent.inference import FrozenGenerator, units
 from independent.native import NativeGenerator, SOURCE, compile_native
+from independent.gain_head import AffineGainHead
 
 
 class NativeTests(unittest.TestCase):
@@ -22,6 +24,15 @@ class NativeTests(unittest.TestCase):
         cls.addClassCleanup(cls.directory.cleanup)
         cls.path = Path(cls.directory.name) / "kernel.so"
         cls.build = compile_native(cls.path)
+        # A real library exposing only the original public ABI. The unchanged
+        # legacy kernels remain compiled; the two new entry names are absent.
+        old_source = Path(cls.directory.name) / "legacy.c"
+        old_source.write_text(SOURCE.read_text().replace("int hepta_forward_state_v1(", "int fixture_state(")
+                              .replace("int hepta_batch_gain_v1(", "int fixture_gain("))
+        cls.legacy_path = Path(cls.directory.name) / "legacy.so"
+        argv = [str(old_source) if value == str(SOURCE) else str(cls.legacy_path)
+                if value == str(cls.path) else value for value in cls.build["argv"]]
+        subprocess.run(argv, capture_output=True, text=True, check=True)
 
     def setUp(self):
         self.model = JointModel(202, 12, 192, hidden=32, seed=29)
@@ -30,6 +41,94 @@ class NativeTests(unittest.TestCase):
     def critic(self, gain=0.1):
         return Controller(12, np.zeros(31), np.ones(31), np.zeros(31), gain,
                           np.array([gain, gain]))
+
+    def gain_head(self, gain=None):
+        rng = np.random.default_rng(62)
+        return AffineGainHead(32, rng.normal(0, 0.1, 42), rng.uniform(0.1, 2, 42),
+            rng.normal(0, 0.03, 42), 0.02 if gain is None else gain,
+            np.array([-1., 1.]) if gain is None else np.array([gain, gain]))
+
+    def test_low_state_native_parity_and_one_forward_work(self):
+        before = self.model.digest()
+        py_cost, c_cost = WorkLedger("python"), WorkLedger("native")
+        python, native = FrozenGenerator(self.model, py_cost), NativeGenerator(self.model, self.path, c_cost)
+        for a, b in zip(python.forward_low_state(self.x), native.forward_low_state(self.x)):
+            np.testing.assert_allclose(a, b, rtol=1e-12, atol=1e-12)
+        self.assertEqual(py_cost.totals, c_cost.totals)
+        self.assertEqual(c_cost.totals["model_forward_rows"], len(self.x))
+        self.assertEqual(self.model.digest(), before)
+
+    def test_affine_fused_batch_matches_python_gain_actions_and_actual_work(self):
+        head, before = self.gain_head(), self.model.digest()
+        python, native = FrozenGenerator(self.model), NativeGenerator(self.model, self.path)
+        pl, ql, hidden = python.forward_low_state(self.x)
+        gains = head.predict_state(hidden, self.x[:, 192:])
+        ledger = WorkLedger("affine-batch")
+        p, q, receipt = native.batch(self.x, "continuation", head, ledger=ledger)
+        np.testing.assert_allclose(receipt["per_row"]["gain"], gains, rtol=1e-12, atol=1e-12)
+        decisions = gains > 0.02
+        self.assertEqual(receipt["continued"], decisions.tolist())
+        pf, qf = python.forward_full(self.x)
+        for a, b in ((p, np.where(decisions[:, None], pf, pl)), (q, np.where(decisions[:, None], qf, ql))):
+            np.testing.assert_allclose(a, b, rtol=1e-12, atol=1e-12)
+        mandatory = units(native.low_work(1)) + units(native.critic_work(1, head))
+        self.assertEqual(receipt["per_row_work_units"], [mandatory + int(go) * units(native.full_work(1)) for go in decisions])
+        self.assertEqual(ledger.totals["model_forward_rows"], len(self.x) + int(decisions.sum()))
+        self.assertEqual(ledger.totals.get("op_log_ops", 0), 0)
+        self.assertEqual(self.model.digest(), before)
+        self.assertTrue(all(not value.flags.writeable for value in native._critic(head).to_arrays().values()))
+
+    def test_affine_single_stop_tie_continue_and_short_optional(self):
+        for gain in (-0.1, 0.02, 0.1):
+            costs = [WorkLedger("python"), WorkLedger("native")]
+            generators = [FrozenGenerator(self.model, costs[0]), NativeGenerator(self.model, self.path, costs[1])]
+            results = [gen.continuation(self.x[:1], self.gain_head(gain)) for gen in generators]
+            self.assertEqual(results[0][2], results[1][2])
+            for a, b in zip(results[0][:2], results[1][:2]):
+                np.testing.assert_allclose(a, b, rtol=1e-12, atol=1e-12)
+            self.assertEqual(costs[0].totals, costs[1].totals)
+        native, head = NativeGenerator(self.model, self.path), self.gain_head(0.1)
+        mandatory = units(native.low_work(1)) + units(head.work(1))
+        ledger = WorkLedger("short", mandatory)
+        _, _, receipt = native.continuation(self.x[:1], head, ledger=ledger)
+        self.assertFalse(receipt["continued"])
+        self.assertEqual(ledger.consumed_units, mandatory)
+        self.assertEqual(ledger.totals["model_forward_rows"], 1)
+
+    def test_affine_preflight_rejects_unfunded_or_invalid_head_before_c(self):
+        native, head = NativeGenerator(self.model, self.path, prepare_low=False), self.gain_head()
+        mandatory = units(native.low_work(1)) + units(head.work(1)) + units(native.prepare_work())
+        ledger = WorkLedger("reject", mandatory - 1)
+        with patch.object(native, "_call_batch", side_effect=AssertionError("unfunded gain C")):
+            with self.assertRaises(BudgetExceeded):
+                native.continuation(self.x[:1], head, ledger=ledger)
+        self.assertFalse(native.prepared_low)
+        self.assertEqual(ledger.consumed_units, 0)
+        worst = units(native.low_work(1)) + units(head.work(1)) + units(native.full_work(1))
+        with patch.object(native, "_call_batch", side_effect=AssertionError("unfunded batch C")):
+            with self.assertRaises(BudgetExceeded):
+                native.batch(self.x, "continuation", head, per_request_cap=worst - 1)
+        for values in (np.full(42, np.nan), np.full(42, 1e308)):
+            bad = self.gain_head()
+            object.__setattr__(bad, "weights", values)
+            with patch.object(native, "_call_batch", side_effect=AssertionError("invalid gain C")):
+                with self.assertRaises(ValueError):
+                    native.continuation(self.x[:1], bad)
+
+    def test_legacy_abi_library_keeps_ridge_and_rejects_new_head_before_charge(self):
+        native = NativeGenerator(self.model, self.legacy_path, prepare_low=False)
+        python = FrozenGenerator(self.model)
+        with patch.object(native, "_gain_entry", side_effect=AssertionError("legacy must not bind new entry")):
+            for a, b in zip(native.forward_full(self.x), python.forward_full(self.x)):
+                np.testing.assert_allclose(a, b, rtol=1e-12, atol=1e-12)
+            for a, b in zip(native.continuation(self.x[:1], self.critic())[:2], python.continuation(self.x[:1], self.critic())[:2]):
+                np.testing.assert_allclose(a, b, rtol=1e-12, atol=1e-12)
+        ledger = WorkLedger("legacy-new-api")
+        with self.assertRaisesRegex(RuntimeError, "hepta_batch_gain_v1"):
+            native.batch(self.x, "continuation", self.gain_head(), ledger=ledger)
+        with self.assertRaisesRegex(RuntimeError, "hepta_forward_state_v1"):
+            native.forward_low_state(self.x, ledger)
+        self.assertEqual(ledger.consumed_units, 0)
 
     def test_build_receipt_binds_uncached_compiler_source_and_library(self):
         self.assertEqual(self.build["exit_code"], 0)

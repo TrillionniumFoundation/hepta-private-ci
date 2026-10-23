@@ -9,6 +9,7 @@ from control import Controller
 from model import JointModel, softmax
 from independent.accounting import BudgetExceeded, WorkLedger
 from independent.inference import FrozenGenerator, units
+from independent.gain_head import AffineGainHead
 
 
 class InferenceTests(unittest.TestCase):
@@ -19,6 +20,47 @@ class InferenceTests(unittest.TestCase):
     def critic(self, gain=1.0):
         return Controller(12, np.zeros(31), np.ones(31), np.zeros(31), gain,
                           np.array([gain, gain]))
+
+    def gain_head(self, gain=0.1):
+        return AffineGainHead(32, np.zeros(42), np.ones(42), np.zeros(42), gain, np.array([gain, gain]))
+
+    def test_low_state_reuses_one_encoder_and_same_head_predictions(self):
+        ledger = WorkLedger("low-state")
+        generator = FrozenGenerator(self.model, ledger)
+        before = ledger.consumed_units
+        with patch.object(generator, "_content", wraps=generator._content) as execute:
+            p, q, hidden = generator.forward_low_state(self.x)
+        self.assertEqual(execute.call_count, 1)
+        packed, encoder = execute.call_args.args
+        np.testing.assert_array_equal(hidden, np.tanh(packed @ encoder + generator.params["bias"]))
+        for name, value in (("text", p), ("image", q)):
+            np.testing.assert_array_equal(value, softmax(hidden @ generator.params[name] + generator.params[name + "_bias"]))
+        self.assertEqual(ledger.consumed_units - before, units(generator.low_work(7)))
+        self.assertEqual(ledger.totals["model_forward_rows"], 7)
+
+    def test_affine_stop_continue_tie_and_short_optional_use_only_one_low_state(self):
+        for gain, want_full in ((-0.1, False), (0.02, False), (0.1, True)):
+            generator, ledger = FrozenGenerator(self.model), WorkLedger("affine")
+            head = self.gain_head(gain)
+            with patch.object(generator, "forward_low_state", wraps=generator.forward_low_state) as low:
+                p, q, receipt = generator.continuation(self.x[:1], head, ledger=ledger)
+            self.assertEqual(low.call_count, 1)
+            self.assertEqual(receipt["continued"], want_full)
+            expected = generator.forward_full(self.x[:1]) if want_full else generator.forward_low(self.x[:1])
+            for a, b in zip((p, q), expected):
+                np.testing.assert_array_equal(a, b)
+            work = units(generator.low_work(1)) + units(head.work(1)) + want_full * units(generator.full_work(1))
+            self.assertEqual(ledger.consumed_units, work)
+            self.assertEqual(ledger.totals.get("op_log_ops", 0), 0)
+        generator, head = FrozenGenerator(self.model), self.gain_head()
+        mandatory = units(generator.low_work(1)) + units(head.work(1))
+        ledger = WorkLedger("optional", mandatory)
+        with patch.object(AffineGainHead, "predict_state", autospec=True,
+                          side_effect=AffineGainHead.predict_state) as predict:
+            _, _, receipt = generator.continuation(self.x[:1], head, ledger=ledger)
+        self.assertEqual(predict.call_count, 1)
+        self.assertFalse(receipt["continued"])
+        self.assertEqual(ledger.consumed_units, mandatory)
 
     def test_folded_low_matches_original_upsampled_logits_and_probabilities(self):
         images = self.x[:, :192].reshape(7, 4, 2, 4, 2, 3)
