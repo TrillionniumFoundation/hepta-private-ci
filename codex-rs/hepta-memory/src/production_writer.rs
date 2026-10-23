@@ -2512,6 +2512,9 @@ pub enum ProductionTerminalObservation {
 pub type ProductionTerminalObservationFuture<'a> =
     Pin<Box<dyn Future<Output = ProductionTerminalObservation> + Send + 'a>>;
 
+/// Base dispatch interface. A returned future alone does not specify when an
+/// effect enters; production authority composition must bind the actual entry
+/// boundary, not merely construction of an asynchronous future.
 pub trait ProductionOutboxTarget: Send + Sync {
     fn dispatch<'a>(&'a self, request: ProductionDispatchRequest) -> ProductionDispatchFuture<'a>;
 }
@@ -2519,6 +2522,14 @@ pub trait ProductionOutboxTarget: Send + Sync {
 /// Production target with a stable destination identity and an independent
 /// terminal observer. The default observer is deliberately unavailable so a
 /// target cannot accidentally turn transport acknowledgement into terminality.
+///
+/// The original FinalUse dispatcher holds its protected owner barrier only
+/// through the synchronous `dispatch` invocation, then releases it before
+/// polling the returned future. Native Notes and HOS2 perform actual entry in
+/// that invocation; their returned futures carry an already observed outcome.
+/// A target that defers entry until polling needs its own authority-bound
+/// consumer-entry protocol. This interface does not extend the synchronous
+/// Notes/HOS2 guarantee across arbitrary asynchronous work.
 pub trait FinalUseProductionOutboxTarget: ProductionOutboxTarget {
     fn destination_id(&self) -> &str;
 
