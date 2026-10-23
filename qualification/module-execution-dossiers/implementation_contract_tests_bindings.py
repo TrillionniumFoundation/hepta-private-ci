@@ -117,3 +117,51 @@ class CurrentNativeBindingTests(unittest.TestCase):
             bindings.BindingError, "uncommitted module ownership"
         ):
             self.observe()
+
+
+class QualifiedRustSourceBindingTests(unittest.TestCase):
+    def has(self, source, symbol="Owner::run"):
+        return bindings.source_symbol_exists(Path("fixture.rs"), source.encode(), symbol)
+
+    def test_real_generic_inherent_impl_and_exact_module_are_supported(self):
+        source = "pub struct Owner<T>(T); impl<T: Store> Owner<T> { pub async fn run(&self) {} }"
+        self.assertTrue(self.has(source))
+        self.assertTrue(self.has("mod exact { " + source + " }", "exact::Owner::run"))
+        self.assertFalse(self.has("mod other { " + source + " }", "exact::Owner::run"))
+        self.assertFalse(self.has("mod other { " + source + " }"))
+
+    def test_type_method_and_impl_owner_cannot_be_combined_across_items(self):
+        for source in (
+            "struct Owner; impl Other { fn run() {} }",
+            "struct Other; impl Other { fn run() {} }",
+            "impl Owner { fn different() {} } fn run() {}",
+            "trait Owner { fn run(); }",
+            "impl Trait for Other { fn run() {} } struct Owner;",
+            "impl Trait for Owner { fn run() {} }",
+            "impl Owner { fn other() { fn run() {} } }",
+            "fn wrapper() { impl Owner { fn run() {} } }",
+            "trait Owner {} fn wrapper() -> impl Owner { fn run() {} value }",
+        ):
+            with self.subTest(source=source):
+                self.assertFalse(self.has(source))
+
+    def test_comments_literals_and_macro_tokens_cannot_define_the_owner(self):
+        fake = "impl Owner { fn run() {} }"
+        for source in (
+            "// " + fake,
+            "/* outer /* nested */ " + fake + " */",
+            'const X: &str = "' + fake + '";',
+            'const X: &str = r"' + fake + '";',
+            'const X: &[u8] = br##"' + fake + '"##;',
+            "macro_rules! fake { () => { " + fake + " } }",
+            "fake!(" + fake + ");",
+            "fake! { " + fake + " }",
+        ):
+            with self.subTest(source=source):
+                self.assertFalse(self.has(source))
+
+    def test_bare_symbol_observation_and_invalid_qualified_names(self):
+        self.assertTrue(self.has("pub struct Owner;", "Owner"))
+        for symbol in ("Owner::", "::Owner::run", "Owner / run", "Owner::run::"):
+            with self.subTest(symbol=symbol):
+                self.assertFalse(self.has("impl Owner { fn run() {} }", symbol))

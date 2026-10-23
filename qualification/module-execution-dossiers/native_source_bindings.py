@@ -6,10 +6,12 @@ Git HEAD, its tree and the bytes inspected here; neither proves product use.
 
 import hashlib
 import io
+import importlib.util
 import json
 import re
 import subprocess
 import tokenize
+from functools import lru_cache
 from pathlib import Path
 from typing import Any
 
@@ -31,6 +33,102 @@ def git_blob(data: bytes) -> str:
     return hashlib.sha1(b"blob " + str(len(data)).encode() + b"\0" + data).hexdigest()
 
 
+@lru_cache(maxsize=1)
+def _rust_lexer():
+    # Repository checks share the reviewed masker; exported bundle checks do not
+    # require repository scripts or load this helper.
+    path = Path(__file__).resolve().parents[2] / "scripts/hepta_lane_e_writer_source.py"
+    spec = importlib.util.spec_from_file_location("native_binding_rust_lexer", path)
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    return module.rust_code
+
+
+def _rust_qualified_symbols(source: str) -> set[str]:
+    """Locate direct inherent methods, without inferring types or active cfgs."""
+    tokens = re.findall(r"[A-Za-z_]\w*|::|->|[^\s]", _rust_lexer()(source))
+    pairs = {"(": ")", "[": "]", "{": "}", "<": ">"}
+
+    def close(start):
+        opening, depth = tokens[start], 1
+        for index in range(start + 1, len(tokens)):
+            if tokens[index] == opening:
+                depth += 1
+            elif tokens[index] == pairs[opening]:
+                depth -= 1
+                if not depth:
+                    return index
+        raise ValueError("unbalanced Rust source item")
+
+    found = set()
+
+    def items(start, end, modules, owner=None):
+        index = start
+        while index < end:
+            token = tokens[index]
+            if token == "mod" and owner is None and index + 2 < end and tokens[index + 2] == "{":
+                closing = close(index + 2)
+                items(index + 3, closing, modules + (tokens[index + 1],))
+                index = closing + 1
+                continue
+            if token == "impl" and owner is None:
+                cursor = index + 1
+                if cursor < end and tokens[cursor] == "<":
+                    cursor = close(cursor) + 1
+                names = []
+                if cursor < end and tokens[cursor].isidentifier():
+                    names.append(tokens[cursor])
+                    cursor += 1
+                    while cursor + 1 < end and tokens[cursor] == "::" and tokens[cursor + 1].isidentifier():
+                        names.append(tokens[cursor + 1])
+                        cursor += 2
+                if cursor < end and tokens[cursor] == "<":
+                    cursor = close(cursor) + 1
+                if cursor < end and tokens[cursor] == "where":
+                    while cursor < end and tokens[cursor] not in {"{", ";"}:
+                        cursor += 1
+                if names and cursor < end and tokens[cursor] == "{":
+                    closing = close(cursor)
+                    items(cursor + 1, closing, modules, tuple(names))
+                    index = closing + 1
+                    continue
+            if token == "fn" and index + 1 < end and tokens[index + 1].isidentifier():
+                if owner is not None:
+                    found.add("::".join(modules + owner + (tokens[index + 1],)))
+                # A return-position `impl Trait` is not an inherent impl item.
+                cursor = index + 2
+                while cursor < end and tokens[cursor] not in {"{", ";"}:
+                    if tokens[cursor] in {"(", "[", "<"}:
+                        cursor = close(cursor) + 1
+                    else:
+                        cursor += 1
+                index = close(cursor) + 1 if cursor < end and tokens[cursor] == "{" else cursor + 1
+                continue
+            # Bodies, macro inputs, attributes and function parameters are opaque.
+            # Only explicit inline modules and inherent impls recurse above.
+            if token in {"(", "[", "{"}:
+                index = close(index) + 1
+            else:
+                index += 1
+
+    items(0, len(tokens), ())
+    return found
+
+
+def source_symbol_exists(path: Path, data: bytes, symbol: str) -> bool:
+    """Keep bare observations; qualified Rust names require structural ownership."""
+    if not isinstance(symbol, str):
+        return False
+    if "::" not in symbol:
+        return symbol.isidentifier() and symbol in identifiers(path, data)
+    if path.suffix != ".rs" or re.fullmatch(r"[A-Za-z_]\w*(?:::[A-Za-z_]\w*)+", symbol) is None:
+        return False
+    try:
+        return symbol in _rust_qualified_symbols(data.decode("utf-8"))
+    except ValueError:
+        return False
+
+
 def identifiers(path: Path, data: bytes) -> set[str]:
     source = data.decode("utf-8")
     if path.suffix == ".py":
@@ -39,6 +137,9 @@ def identifiers(path: Path, data: bytes) -> set[str]:
             for token in tokenize.generate_tokens(io.StringIO(source).readline)
             if token.type == tokenize.NAME
         }
+    if path.suffix == ".rs":
+        source = _rust_lexer()(source)
+        return set(re.findall(r"\b[A-Za-z_]\w*\b", source))
     # Exclude comments and quoted strings from observed-identifier checks.
     # Compiler/native tests, rather than this structural check, own API validity.
     quoted = r"'(?:\\.|[^'\\\n])*'" if path.suffix != ".rs" else r"'(?:\\.|[^'\\])'"
