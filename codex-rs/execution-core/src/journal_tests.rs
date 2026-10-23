@@ -246,3 +246,20 @@ fn strict_deserialization_and_hash_chain() {
     value["record"]["unexpected"] = serde_json::json!(true);
     assert!(serde_json::from_value::<ExecutionRecord>(value).is_err());
 }
+
+#[test]
+fn external_runtime_shadow_abi_has_identical_digest() {
+    let mut common = binding(ExecutionClass::ReadOnlyInspection);
+    common.objective_digest = "1".repeat(64);
+    common.policy_digest = "2".repeat(64);
+    common.candidate_digest = "3".repeat(64);
+    let intent = ExecutionRecord::ExecutionIntent(ExecutionIntent {
+        binding: common,
+        class: ExecutionClass::ReadOnlyInspection,
+        payload_digest: "6".repeat(64),
+    });
+    assert_eq!(
+        intent.digest().unwrap(),
+        "9ef6afcc1658e9d022a321e0d2decaac71445433c96591a7c1c9afbc5b07f9a9"
+    );
+}

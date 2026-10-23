@@ -19,7 +19,10 @@ pub fn canonical_codex_intent_v1(
     if binding.operation_id != operation.operation_id.as_str()
         || operation.payload_digest != operation.lease_payload_digest
         || operation.deadline_ms == 0
-        || operation.app_server_binding.is_some()
+        || operation
+            .app_server_binding
+            .as_ref()
+            .is_some_and(|source| source.agent_generation.get() != binding.generation)
     {
         return Err(ExecutionError::Binding(
             "Codex operation requires exact external admission",
