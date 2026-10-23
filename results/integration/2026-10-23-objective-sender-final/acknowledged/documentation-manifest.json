@@ -1,0 +1,31 @@
+{
+  "created_at": "2026-10-23T08:15:31.066174+00:00",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "scope": "Docs-only, separate from executable source overlay; based on frozen original owner19 document. No new qualification claim.",
+  "files": [
+    {
+      "path": "codex-rs/hepta-memory/OBJECTIVE_SENDER.md",
+      "source_path": "/workspace/scratch/3d6a75235bcb/work/owner-recovery-ack/docs-only/codex-rs/hepta-memory/OBJECTIVE_SENDER.md",
+      "preimage_sha256": "46f470968c66e7a3c9ef8f58d1d835ad49f0301c499a14195cd086141dd37565",
+      "preimage_git_blob": "1406fb1396178faaf2924cdd1354c632dc37d812",
+      "candidate_sha256": "5b04a9e2c977b2d6c461e6efe3d73a759f5866a1ed900dbbe32529879d934c57",
+      "candidate_git_blob": "336e9c29e6192c058f8e2ebe8dfcd1866025a632",
+      "bytes": 20272,
+      "mode": "100644"
+    }
+  ],
+  "describes_source_hashes": {
+    "codex-rs/hepta-memory/src/objective_sender.rs": "abdfbd3d027ff66807c767169efc25911d486dc34cab19d0fedb3eb62245d90a",
+    "codex-rs/hepta-memory/src/objective_sender_tests.rs": "41c9087f316aa331638591cba0fd7abce3b618e2044374b19ac286af2e9b6462"
+  },
+  "kept_production_requirements": [
+    "Independent original checkpoint service still required and not implemented here",
+    "Original grant/lease/live clock and full current-cut recovery remain mandatory",
+    "No authority, send/cancel right, worker/runtime or UI ledger added"
+  ],
+  "new_sections": [
+    "Concurrent semantic observation checks",
+    "Acknowledged snapshots for recovery projection"
+  ],
+  "execution_status": "No new API passing result asserted by this document."
+}

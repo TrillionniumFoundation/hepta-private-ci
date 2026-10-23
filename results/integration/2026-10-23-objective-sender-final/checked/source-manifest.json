@@ -1,0 +1,51 @@
+{
+  "created_at": "2026-10-23T07:58:41.647958+00:00",
+  "base_source_tree": "7f5f940a549afeb7803f952c656264eb5fba7680",
+  "qualification": "New code and two actual owner regression tests are not yet executed. Prior 317/317 pass belongs to frozen base only. Pinned rustfmt 1.95 parse/format succeeded; original workspace fmt/package gates delegated to root.",
+  "files": [
+    {
+      "repository": "TrillionniumFoundation/hepta-private-ci",
+      "path": "codex-rs/hepta-memory/src/objective_sender.rs",
+      "source_path": "/workspace/scratch/3d6a75235bcb/work/owner-checked/change/codex-rs/hepta-memory/src/objective_sender.rs",
+      "preimage_git_blob": "97236bb0e7b0955a0f5bd86c2fe5eea4a601345a",
+      "preimage_sha256": "fc58e27efb3f5cf583022642b50b0e14e560a0a488b06c99b11fcd300359e9e2",
+      "candidate_git_blob": "593ed6533d56a6f0d3ef4bebdc8894370c1f3c71",
+      "candidate_sha256": "8af19d51dbe81fddcca2f98e950f035eda0bcc31d21db54b8e093a8107c588f1",
+      "bytes": 15874,
+      "mode": "100644"
+    },
+    {
+      "repository": "TrillionniumFoundation/hepta-private-ci",
+      "path": "codex-rs/hepta-memory/src/objective_sender_tests.rs",
+      "source_path": "/workspace/scratch/3d6a75235bcb/work/owner-checked/change/codex-rs/hepta-memory/src/objective_sender_tests.rs",
+      "preimage_git_blob": "5b09405bfd039842ad3e6893afb46ed491954b29",
+      "preimage_sha256": "f89c4fa1983bd7ee01757ec9699ddee2496d93f0fe7ac330a329c358809adf13",
+      "candidate_git_blob": "26e5a78d01bcd4f02d9e128e4978e7cee57e329b",
+      "candidate_sha256": "6d214d838da90135acf84a1285aae11a03e7ca143b0153e697882417c65f0aa0",
+      "bytes": 22633,
+      "mode": "100644"
+    },
+    {
+      "repository": "TrillionniumFoundation/trillionnium-os-desktop",
+      "path": "services/hepta-session-host/src/owner.rs",
+      "source_path": "/workspace/scratch/3d6a75235bcb/work/owner-adapter/change/services/hepta-session-host/src/owner.rs",
+      "preimage_git_blob": "7badd1ab2042bd7013f672134fb945cca02c9d83",
+      "preimage_sha256": "68a42d19733b1eead0894c50d075fcb269b5314569eec939e92a15c8ef38b32c",
+      "candidate_git_blob": "34ee440f89f4442fcf7f989570dcb4869623fccc",
+      "candidate_sha256": "98058d0db593e22b41cb22afc665df901dd856aa466cc436a1b4d2983cd7399d",
+      "bytes": 7340,
+      "mode": "100644"
+    }
+  ],
+  "tests": [
+    "checked_negative_control_separate_prechecks_allow_conflicting_generic_appends",
+    "checked_concurrent_history_keeps_one_publication_and_idempotent_acknowledgement"
+  ],
+  "unchanged": [
+    "Cargo manifests",
+    "Cargo.lock",
+    "SQL schema",
+    "generic observation semantics",
+    "original authority/live/checkpoint mechanisms"
+  ]
+}

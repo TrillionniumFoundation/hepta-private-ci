@@ -1,0 +1,159 @@
+{
+  "scope": "Exact pre-Clippy candidate bytes. Both pre/post full source verifications pass; no source rewrite is hidden by just fix.",
+  "duplicate_source_blobs_not_reuploaded": true,
+  "reconstruction": "Read each path at its immutable reconstruction_commit and verify Git blob, SHA-256 and byte count.",
+  "files": [
+    {
+      "path": "codex-rs/hepta-agentd/src/objective_sender_host_tests.rs",
+      "mode": "100644",
+      "bytes": 7803,
+      "sha256": "c76ec2b41236d80dfb5ed0670834e913810c5378d3ad74802121d9fb04f20991",
+      "git_blob": "bdc1ca768d732bec420d54608cb0c67d0d0746a2",
+      "reconstruction_commit": "7f86518d7f179c068d60c6cf26d41710d3540579"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/production_composition.rs",
+      "mode": "100644",
+      "bytes": 9030,
+      "sha256": "d947e62d38aa9cbe88da2b884697e4f481100d352ed582c54690d3ec5774e5fe",
+      "git_blob": "343169894cbb0d3c28dbc1ab919db485c124c3c9",
+      "reconstruction_commit": "7f86518d7f179c068d60c6cf26d41710d3540579"
+    },
+    {
+      "path": "codex-rs/hepta-memory/OBJECTIVE_SENDER.md",
+      "mode": "100644",
+      "bytes": 14720,
+      "sha256": "46f470968c66e7a3c9ef8f58d1d835ad49f0301c499a14195cd086141dd37565",
+      "git_blob": "1406fb1396178faaf2924cdd1354c632dc37d812",
+      "reconstruction_commit": "7f86518d7f179c068d60c6cf26d41710d3540579"
+    },
+    {
+      "path": "codex-rs/hepta-memory/migrations/0017_objective_sender.sql",
+      "mode": "100644",
+      "bytes": 5243,
+      "sha256": "471fc24a446b79c46866ac28093115765a12e4ff5c734ef48c02a36744e7e79b",
+      "git_blob": "84cbee78827a6338c534d79508c50d46bc919005",
+      "reconstruction_commit": "7f86518d7f179c068d60c6cf26d41710d3540579"
+    },
+    {
+      "path": "codex-rs/hepta-memory/src/cognitive_store.rs",
+      "mode": "100644",
+      "bytes": 72298,
+      "sha256": "f5ff6af4596ea82b1c7da2effb52d76435d058c8d561aae2d385899ead7d48db",
+      "git_blob": "d8ac919d3cf7ab34dd623f5141ff9e2cb1eae426",
+      "reconstruction_commit": "7f86518d7f179c068d60c6cf26d41710d3540579"
+    },
+    {
+      "path": "codex-rs/hepta-memory/src/cognitive_store_recovery.rs",
+      "mode": "100644",
+      "bytes": 27116,
+      "sha256": "020b47b89cbef1202848825e0115f85ce51bc3d875815d0e721c7fb3068dce68",
+      "git_blob": "5639d61d6d0f97d12058a3e5eed90332864983f4",
+      "reconstruction_commit": "7f86518d7f179c068d60c6cf26d41710d3540579"
+    },
+    {
+      "path": "codex-rs/hepta-memory/src/cognitive_store_tests.rs",
+      "mode": "100644",
+      "bytes": 40739,
+      "sha256": "0ec0d4d36cb42dbebe24a96f44a8b27d08ed100f729988c4844dfc857a9e6fde",
+      "git_blob": "26df0d8c72b9cc275cfafd8403c9c1b72be95ddf",
+      "reconstruction_commit": "7f86518d7f179c068d60c6cf26d41710d3540579"
+    },
+    {
+      "path": "codex-rs/hepta-memory/src/lib.rs",
+      "mode": "100644",
+      "bytes": 25572,
+      "sha256": "54e86af8613aa8fce65b7e15fe05690f08c2cbc687e6ff7e96dd06d1ea8b20c0",
+      "git_blob": "65fb9b4dcf09083a7b9562296fc05f3ed3b227d8",
+      "reconstruction_commit": "7f86518d7f179c068d60c6cf26d41710d3540579"
+    },
+    {
+      "path": "codex-rs/hepta-memory/src/local_lease_outbox.rs",
+      "mode": "100644",
+      "bytes": 213209,
+      "sha256": "37b6e8a99111958ea9bb2a964afe00097141d9fb33ced7c30a92d85e04a65964",
+      "git_blob": "83b2aa35bf9767f0af36771214be15f4f846bcf6",
+      "reconstruction_commit": "7f86518d7f179c068d60c6cf26d41710d3540579"
+    },
+    {
+      "path": "codex-rs/hepta-memory/src/objective_sender.rs",
+      "mode": "100644",
+      "bytes": 15874,
+      "sha256": "8af19d51dbe81fddcca2f98e950f035eda0bcc31d21db54b8e093a8107c588f1",
+      "git_blob": "593ed6533d56a6f0d3ef4bebdc8894370c1f3c71",
+      "reconstruction_commit": "7f86518d7f179c068d60c6cf26d41710d3540579"
+    },
+    {
+      "path": "codex-rs/hepta-memory/src/objective_sender_crash_tests.rs",
+      "mode": "100644",
+      "bytes": 11229,
+      "sha256": "2da56c24b9289a756dd5ce0d91ec0f2d955f57a9b8d7eb79e7138f5eb43d4fd7",
+      "git_blob": "e994d1594e9e205d5d262e57e73c12901c779703",
+      "reconstruction_commit": "7f86518d7f179c068d60c6cf26d41710d3540579"
+    },
+    {
+      "path": "codex-rs/hepta-memory/src/objective_sender_integrity.rs",
+      "mode": "100644",
+      "bytes": 8659,
+      "sha256": "7a842ba2f772e066cead336634df8ada3777b075da46a019528f0e34092a50cc",
+      "git_blob": "40bd46882a7c41bd716f1da49b99f5bd3eac1de4",
+      "reconstruction_commit": "7f86518d7f179c068d60c6cf26d41710d3540579"
+    },
+    {
+      "path": "codex-rs/hepta-memory/src/objective_sender_model.rs",
+      "mode": "100644",
+      "bytes": 10499,
+      "sha256": "5725d4e363ef7e212482006c4458beee020eea44823186ccc7744bef37958537",
+      "git_blob": "e1e0155936a493adadf883ffda47caea58fbb7ad",
+      "reconstruction_commit": "7f86518d7f179c068d60c6cf26d41710d3540579"
+    },
+    {
+      "path": "codex-rs/hepta-memory/src/objective_sender_model_tests.rs",
+      "mode": "100644",
+      "bytes": 3937,
+      "sha256": "a8992ed15b0cd6bc7e426245b6c3a40309a9757d40cab179cf7a5179d90237ce",
+      "git_blob": "4bbe254b1d7d8da912e67e9e9d366d8f4a534caa",
+      "reconstruction_commit": "7f86518d7f179c068d60c6cf26d41710d3540579"
+    },
+    {
+      "path": "codex-rs/hepta-memory/src/objective_sender_read.rs",
+      "mode": "100644",
+      "bytes": 4648,
+      "sha256": "5e8358ed9e6b9b7e57196117a77a944ed610fa6bc464d739989a86a95f3084a9",
+      "git_blob": "127cef603de2b91cbc5f0f188e1c64a5d45ae790",
+      "reconstruction_commit": "7f86518d7f179c068d60c6cf26d41710d3540579"
+    },
+    {
+      "path": "codex-rs/hepta-memory/src/objective_sender_store.rs",
+      "mode": "100644",
+      "bytes": 10808,
+      "sha256": "b6cbefce5d31b620b6c623fd996f2194d983c29935f99c82aad656b707601765",
+      "git_blob": "3e4e477eced86fd0b99c33c7b147ef0be874c75e",
+      "reconstruction_commit": "7f86518d7f179c068d60c6cf26d41710d3540579"
+    },
+    {
+      "path": "codex-rs/hepta-memory/src/objective_sender_test_support.rs",
+      "mode": "100644",
+      "bytes": 6389,
+      "sha256": "7f7e049741a0989f1e831d3390909750a29cf7d71b4409752f1318bcbd5aac34",
+      "git_blob": "6f45dcad101acebab0ddabd1c4ed11b10511d3bf",
+      "reconstruction_commit": "7f86518d7f179c068d60c6cf26d41710d3540579"
+    },
+    {
+      "path": "codex-rs/hepta-memory/src/objective_sender_tests.rs",
+      "mode": "100644",
+      "bytes": 22633,
+      "sha256": "6d214d838da90135acf84a1285aae11a03e7ca143b0153e697882417c65f0aa0",
+      "git_blob": "26e5a78d01bcd4f02d9e128e4978e7cee57e329b",
+      "reconstruction_commit": "7f86518d7f179c068d60c6cf26d41710d3540579"
+    },
+    {
+      "path": "codex-rs/hepta-memory/src/production_writer.rs",
+      "mode": "100644",
+      "bytes": 161978,
+      "sha256": "e3325918b90e75505152249635461eef36c4b943fcc9f768cc182a57173fb753",
+      "git_blob": "4ffa3296e784df15a4f669182e3a7d169426f07e",
+      "reconstruction_commit": "7f86518d7f179c068d60c6cf26d41710d3540579"
+    }
+  ]
+}

@@ -1,0 +1,40 @@
+{
+  "created_at": "2026-10-23T08:10:04.442710+00:00",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "base": "frozen owner source tree7f5f940a549afeb7803f952c656264eb5fba7680 plus exact checked delta identified below",
+  "files": [
+    {
+      "path": "codex-rs/hepta-memory/src/objective_sender.rs",
+      "source_path": "/workspace/scratch/3d6a75235bcb/work/owner-recovery-ack/change/codex-rs/hepta-memory/src/objective_sender.rs",
+      "preimage_git_blob": "593ed6533d56a6f0d3ef4bebdc8894370c1f3c71",
+      "preimage_sha256": "8af19d51dbe81fddcca2f98e950f035eda0bcc31d21db54b8e093a8107c588f1",
+      "candidate_git_blob": "744c48b6f776be3d9cf7f3904df1ee7f08803448",
+      "candidate_sha256": "93e235a9038fec74361672f6527a9d2325381dec17991a4b01c36b7ec20ed964",
+      "bytes": 17594,
+      "mode": "100644"
+    },
+    {
+      "path": "codex-rs/hepta-memory/src/objective_sender_tests.rs",
+      "source_path": "/workspace/scratch/3d6a75235bcb/work/owner-recovery-ack/change/codex-rs/hepta-memory/src/objective_sender_tests.rs",
+      "preimage_git_blob": "26e5a78d01bcd4f02d9e128e4978e7cee57e329b",
+      "preimage_sha256": "6d214d838da90135acf84a1285aae11a03e7ca143b0153e697882417c65f0aa0",
+      "candidate_git_blob": "fbaeeb9f39b4d168c5e8fd3de6f1e9750901bbbe",
+      "candidate_sha256": "41c9087f316aa331638591cba0fd7abce3b618e2044374b19ac286af2e9b6462",
+      "bytes": 28626,
+      "mode": "100644"
+    }
+  ],
+  "qualification": "Pinned Rust1.95 rustfmt succeeded. New API and 3 owning-package tests UNEXECUTED; no prior 317/319 result covers these bytes.",
+  "tests": [
+    "snapshot_acknowledged_does_not_promote_a_committed_observation_without_checkpoint_ack",
+    "snapshot_acknowledged_recovers_local_cancellation_without_a_new_cancellation_right",
+    "snapshot_acknowledged_holds_the_original_write_lock_through_the_current_cut_ack"
+  ],
+  "unchanged": [
+    "Cargo manifests and lock",
+    "SQL schema and event hashes",
+    "generic snapshot read semantics",
+    "send/cancel ticket state",
+    "original authority and checkpoint inputs"
+  ]
+}
