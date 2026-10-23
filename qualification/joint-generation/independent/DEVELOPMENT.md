@@ -353,3 +353,32 @@ clipping, custom-price envelope safety, atomic rejection, unchanged RNG draws,
 whole-seed-round admission and actual-unit forecasting. A new immutable source
 freeze must precede the next actual TRAIN/validation build. No benefit, speed,
 extra updates or acceptance has yet been credited to this kernel.
+
+## T10 CPU constraint and adaptation-only optimizer
+
+The frozen folded-adaptation build exited 2. All caps held, shared bases matched
+t9 byte-for-byte, and every selected content model changed all 7288 entries.
+NDU reached 636/637/637 updates, NC 490/475/402; the arithmetic savings became
+real updates. A-anchor and NDU-additive validation utility remained positive at
+0.017316017337 and 0.004722618475, but complete NC-static net was -0.002650369319.
+The saved decomposition is content -0.003445684603, own-weight routing
++0.000446690712 and complete CPU contribution +0.000348624573. More updates are
+not guaranteed to close that content gap. T10's actual shared CPU was 3.122s;
+the historical slowdown remains unresolved.
+
+All nine NC candidates stopped on CPU admission despite room for the next
+operator envelope. A/N/NC residual rounds also stopped on CPU forecast/guard;
+S/H were unit-limited. This differs from t9's unit-limited execution. The failed
+run and all 80 raw files were losslessly archived with per-file size/hash checks
+before any removal, then pushed in commit 278f3bed09. No formal data was opened.
+
+The next isolated candidate uses adaptation-only native Adam to remove repeated
+temporary arrays and Python dispatch, preserving original element expressions,
+Python norm/clip/power denominators, clocks and per-step arithmetic inventories.
+Preparation scans are charged and reserved; compilation and binding stay inside
+complete CPU. Shared dense base/decoder training stays on its unchanged NumPy
+path. All five adaptation arms use the same adapter. See ADAPTATION_OPTIMIZER.md.
+Three hand-array tests prove exact parameter/moment bytes; the final independent
+suite passed 180 tests and root suite 49. An initial compiler-mock fixture failure
+and all corrected logs remain retained. No speed or content benefit is credited
+before a new immutable freeze and actual build; original gates remain unchanged.
