@@ -130,5 +130,32 @@ class EvidenceDistributionShiftTests(unittest.TestCase):
             )
 
 
+class BoundedSolverCostTests(unittest.TestCase):
+    def test_budget_exhaustion_returns_explicit_nonoptimal_safe_stop(self):
+        from joint_portfolio import SolverBudgetExceeded
+        cfg = Profile(horizon=3)
+        state = PublicState((0, 0, 0, 0), Fraction(1, 2), 12)
+        limited = JointController(cfg, max_expansions=1)
+        with self.assertRaises(SolverBudgetExceeded):
+            limited.solve(state)
+        action, value, disposition = limited.select_with_fallback(state)
+        self.assertEqual(action, STOP)
+        self.assertEqual(disposition, "BUDGETED_STOP_FALLBACK")
+        self.assertEqual(value, limited.terminal(state))
+        self.assertEqual(limited.value_expansions, 1)
+
+    def test_sufficient_budget_reports_exact_finite_scope_only(self):
+        cfg = Profile(horizon=1)
+        state = PublicState((2, 2, 2, 2), Fraction(99, 100), 5)
+        controller = JointController(cfg, max_expansions=100000)
+        action, _, disposition = controller.select_with_fallback(state)
+        self.assertEqual(action, STOP)
+        self.assertEqual(disposition, "EXACT_FINITE_VALUE")
+        self.assertGreaterEqual(controller.value_expansions, 1)
+        self.assertLessEqual(controller.value_expansions, controller.max_expansions)
+        with self.assertRaises(ValueError):
+            JointController(cfg, max_expansions=False)
+
+
 if __name__ == "__main__":
     unittest.main()
