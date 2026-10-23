@@ -50,3 +50,39 @@ All `Unavailable` failures should be propagated to fallback / slow path. Never i
 - Upgrade the bounded Bellman shadow policy to validated recursive NDU/FBSDE semantics and independent full-circuit credit, including non-Markov closure review.
 
 Until all these gates pass, keep `production_activation=false`, `selection=false`, `release=false`.
+
+
+## Spectral-risk and resource-admission hardening (source-level only)
+
+The prior centered covariance implementation used Cholesky pivot ratios as a
+surrogate for the **spectral** condition number. A deterministic 40-episode
+two-expert construction has pivot ratio approximately 435,633 (apparently under
+the registered ceiling of 1,000,000) but an actual eigenvalue ratio of
+approximately 1,742,632 (over the ceiling). The raw estimate must be rejected
+**before** shrinkage; otherwise regularization can mask unsupported joint
+returns. A bounded (k <= 6) symmetric Jacobi eigensolver now computes the
+raw and shrunk spectral condition numbers. This is a numerical support check,
+not a proof of statistically identified or causally valid covariance.
+
+The optimizer revalidates caller-provided risk estimates: symmetric and
+positive-definite covariance, finite bounded returns, genuine joint sample
+count, condition limit and compatible action width. A simplex-only quadratic
+check is insufficient: the matrix [[1,2],[2,1]] yields positive quadratic
+scores for all nonnegative portfolio weights while its eigenvalues are
+(3,-1), so it is **not** a covariance matrix. Malformed estimates raise
+`Unavailable`; downstream control must use an explicitly admitted
+deterministic fallback or abstain rather than treating a rejection as zero risk.
+
+Outcome and physical-work counters must be exact nonnegative u64, rejecting
+booleans, NaN, floats and overflow. The exploratory host-meter flag remains
+untrusted and `production_efficiency_evidence` remains **false**. The bounded
+recursive generator refuses more than six action alternatives, illegal work
+types and duplicate action identities before entering combinatorial search.
+
+A new `test_numeric_hardening.py` covers these negative cases. The scoped CI
+now validates the exact PR head SHA instead of silently testing GitHub's
+synthetic merge commit. Passing this workflow, if observed, closes only the
+named numerical/replay regression gate. **All six independent-real-evidence
+production blockers remain open**, as do decoder execution, external outcome
+truth, OOD conditional risk calibration, native owner ports and qualified
+future/retention evidence.
