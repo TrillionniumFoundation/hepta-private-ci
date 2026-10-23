@@ -3219,6 +3219,15 @@ dependencies = [
 ]
 
 [[package]]
+name = "codex-execution-core"
+version = "0.0.0"
+dependencies = [
+ "serde",
+ "serde_json",
+ "sha2",
+]
+
+[[package]]
 name = "codex-experimental-api-macros"
 version = "0.0.0"
 dependencies = [
