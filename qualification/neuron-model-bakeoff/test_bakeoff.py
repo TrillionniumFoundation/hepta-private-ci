@@ -216,9 +216,17 @@ class BakeoffContractTests(unittest.TestCase):
 
     def test_forged_workload_p99_is_rejected(self):
         rows = bakeoff.records(self.root / "workload.jsonl")
+        # Keep summary ordering valid so this reaches the raw-trace comparison.
+        rows[0]["p99_ms"] *= 2
+        self.manifest["workload"] = self.put_jsonl("workload.jsonl", rows)
+        with self.assertRaisesRegex(bakeoff.EvidenceError, "raw trace disagrees with p99_ms"):
+            self.run_eval()
+
+    def test_p99_below_p95_is_rejected(self):
+        rows = bakeoff.records(self.root / "workload.jsonl")
         rows[0]["p99_ms"] = 0.00001
         self.manifest["workload"] = self.put_jsonl("workload.jsonl", rows)
-        with self.assertRaisesRegex(bakeoff.EvidenceError, "p99"):
+        with self.assertRaisesRegex(bakeoff.EvidenceError, "invalid workload measurement"):
             self.run_eval()
 
     def test_missing_trace_cannot_prove_p99(self):

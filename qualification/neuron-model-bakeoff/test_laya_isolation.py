@@ -126,6 +126,63 @@ class ViewTests(unittest.TestCase):
                 load_laya_cpu_isolated(snapshot, wrong_agent)
 
 
+class ExceptionCustodyTests(unittest.TestCase):
+    def test_constructor_mutation_then_raise_is_detected_and_chained(self):
+        for relative in ("tokenizer/tokenizer_config.json", "encoder/config.json", "model.safetensors"):
+            with self.subTest(relative=relative), tempfile.TemporaryDirectory() as t:
+                snapshot = fixture(Path(t))
+                failure = RuntimeError("constructor failed")
+                witnessed = []
+
+                def broken_agent(path, device):
+                    witnessed.append(Path(path))
+                    (snapshot / relative).write_bytes(b"changed")
+                    raise failure
+
+                with self.assertRaisesRegex(ValueError, "original") as caught:
+                    load_laya_cpu_isolated(snapshot, broken_agent)
+                self.assertIs(caught.exception.__cause__, failure)
+                self.assertFalse(witnessed[0].exists())
+                self.assertEqual((snapshot / relative).read_bytes(), b"changed")
+
+    def test_constructor_failure_without_mutation_is_preserved(self):
+        with tempfile.TemporaryDirectory() as t:
+            snapshot = fixture(Path(t))
+            failure = RuntimeError("constructor failed")
+
+            def broken_agent(path, device):
+                raise failure
+
+            with self.assertRaises(RuntimeError) as caught:
+                load_laya_cpu_isolated(snapshot, broken_agent)
+            self.assertIs(caught.exception, failure)
+
+    def test_unregistered_json_type_drift_denied(self):
+        for original_value, replacement in ((True, 1), (False, 0),
+                                            (1, True), (0, False), (1, 1.0)):
+            with self.subTest(original=original_value, replacement=replacement):
+                with tempfile.TemporaryDirectory() as t:
+                    snapshot = fixture(Path(t))
+                    config = snapshot / "tokenizer" / "tokenizer_config.json"
+                    raw = json.loads(config.read_text())
+                    raw["custom"] = {"values": [original_value]}
+                    config.write_text(json.dumps(raw))
+
+                    def wrong_agent(path, device):
+                        private = Path(path) / "tokenizer" / "tokenizer_config.json"
+                        actual = json.loads(private.read_text())
+                        actual["tokenizer_class"] = "PreTrainedTokenizerFast"
+                        actual.pop("backend", None)
+                        actual.pop("is_local", None)
+                        actual["extra_special_tokens"] = {"extra_0": "<slot>"}
+                        actual["custom"]["values"][0] = replacement
+                        private.write_text(json.dumps(actual))
+                        return object()
+
+                    with self.assertRaisesRegex(ValueError, "unregistered tokenizer rewrite"):
+                        load_laya_cpu_isolated(snapshot, wrong_agent)
+
+
 class ResourceBoundsTests(unittest.TestCase):
     def test_bounded_tokenizer_file_and_directory_inventories(self):
         with tempfile.TemporaryDirectory() as t:

@@ -16,7 +16,7 @@ import sys
 import time
 
 import bakeoff
-from laya_isolation import load_laya_isolated
+from laya_isolation import guard_laya_originals, load_laya_isolated
 
 
 def file_sha(path: Path) -> str:
@@ -132,55 +132,58 @@ def main() -> int:
         os.environ["HF_HUB_OFFLINE"] = "1"
         os.environ["TRANSFORMERS_OFFLINE"] = "1"
         os.environ["USE_TF"] = "0"
-        import laya
-        import psutil
-        import torch
-        agent, isolation = load_laya_isolated(root, laya.load, device=args.device)
-        if agent.device.type != args.device:
-            raise ValueError("Laya fallback to a different device during load")
-        # Frozen experiment sequence budgets are applied to in-memory policy
-        # configuration, not to the immutable publisher checkpoint artifacts.
-        agent.cfg["max_len"] = args.max_len
-        agent.cfg["head_max_len"] = args.head_max_len
-        process = psutil.Process(os.getpid())
-        if args.device == "cuda":
-            torch.cuda.synchronize()
-        with args.output.open("x", encoding="utf-8") as output:
-            for row in dataset_rows:
-                if row["split"] not in ("test", "future"):
-                    continue
-                question = choice_question(row)
-                # DO NOT pass label, group, OOD, split or any ground truth to the model.
-                state = row["state"]
-                if args.device == "cuda":
-                    torch.cuda.reset_peak_memory_stats()
-                    torch.cuda.synchronize()
-                start = time.perf_counter()
-                prediction = agent.predict(state, question)
-                if agent.device.type != args.device:
-                    raise ValueError("Laya silently changed device during original policy forward")
-                if args.device == "cuda":
-                    torch.cuda.synchronize()
-                elapsed = (time.perf_counter() - start) * 1_000
-                allocated = int(torch.cuda.max_memory_allocated()) if args.device == "cuda" else None
-                answer = dict(prediction["answers"]["decision"])
-                answer["probabilities"] = apply_extra_temperature(
-                    answer["probabilities"], temperature)
-                observation = result_row(
-                    row, answer, elapsed_ms=elapsed, rss=process.memory_info().rss,
-                    host_id=args.host_id, device=args.device,
-                    weights_sha256=args.weights_sha256, calibration_sha256=calibration_sha256,
-                    threshold=args.confidence_min, gpu_allocator_peak=allocated)
-                observation["sdk_probability_postcalibration_temperature"] = temperature
-                observation["original_tokenizer_inventory_sha256"] = isolation[
-                    "original_tokenizer_inventory_sha256"]
-                observation["effective_tokenizer_inventory_sha256"] = isolation[
-                    "effective_tokenizer_inventory_sha256"]
-                output.write(json.dumps(observation, ensure_ascii=False, allow_nan=False) + "\n")
-                output.flush()
-                os.fsync(output.fileno())
-        if file_sha(weight_path) != args.weights_sha256:
-            raise ValueError("publisher model weights changed during load/forward")
+        with guard_laya_originals(root):
+            import laya
+            import psutil
+            import torch
+            agent, isolation = load_laya_isolated(root, laya.load, device=args.device)
+            if isolation["original_weight_sha256"] != args.weights_sha256:
+                raise ValueError("loaded Laya weight identity differs from selected SHA256")
+            if agent.device.type != args.device:
+                raise ValueError("Laya fallback to a different device during load")
+            # Frozen experiment sequence budgets are applied to in-memory policy
+            # configuration, not to the immutable publisher checkpoint artifacts.
+            agent.cfg["max_len"] = args.max_len
+            agent.cfg["head_max_len"] = args.head_max_len
+            process = psutil.Process(os.getpid())
+            if args.device == "cuda":
+                torch.cuda.synchronize()
+            with args.output.open("x", encoding="utf-8") as output:
+                for row in dataset_rows:
+                    if row["split"] not in ("test", "future"):
+                        continue
+                    question = choice_question(row)
+                    # DO NOT pass label, group, OOD, split or any ground truth to the model.
+                    state = row["state"]
+                    if args.device == "cuda":
+                        torch.cuda.reset_peak_memory_stats()
+                        torch.cuda.synchronize()
+                    start = time.perf_counter()
+                    prediction = agent.predict(state, question)
+                    if agent.device.type != args.device:
+                        raise ValueError("Laya silently changed device during original policy forward")
+                    if args.device == "cuda":
+                        torch.cuda.synchronize()
+                    elapsed = (time.perf_counter() - start) * 1_000
+                    allocated = int(torch.cuda.max_memory_allocated()) if args.device == "cuda" else None
+                    answer = dict(prediction["answers"]["decision"])
+                    answer["probabilities"] = apply_extra_temperature(
+                        answer["probabilities"], temperature)
+                    observation = result_row(
+                        row, answer, elapsed_ms=elapsed, rss=process.memory_info().rss,
+                        host_id=args.host_id, device=args.device,
+                        weights_sha256=args.weights_sha256, calibration_sha256=calibration_sha256,
+                        threshold=args.confidence_min, gpu_allocator_peak=allocated)
+                    observation["sdk_probability_postcalibration_temperature"] = temperature
+                    observation["original_tokenizer_inventory_sha256"] = isolation[
+                        "original_tokenizer_inventory_sha256"]
+                    observation["effective_tokenizer_inventory_sha256"] = isolation[
+                        "effective_tokenizer_inventory_sha256"]
+                    output.write(json.dumps(observation, ensure_ascii=False, allow_nan=False) + "\n")
+                    output.flush()
+                    os.fsync(output.fileno())
+            if file_sha(weight_path) != args.weights_sha256:
+                raise ValueError("publisher model weights changed during load/forward")
     except (OSError, ValueError, KeyError, ImportError, RuntimeError) as exc:
         print(f"BLOCKED: {exc}", file=sys.stderr)
         return 2
