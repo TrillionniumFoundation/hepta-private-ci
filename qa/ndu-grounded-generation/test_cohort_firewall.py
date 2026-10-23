@@ -715,5 +715,42 @@ class CohortFirewallTests(unittest.TestCase):
             self.assertEqual(receipt["candidate_image_custody"]["checked_images"], 4)
             self.assertFalse(receipt["independent_history_trust_established"])
 
+
+    def test_cli_receipt_cannot_overwrite_candidate_image_custody(self):
+        import cohort_firewall
+
+        with tempfile.TemporaryDirectory() as td:
+            root = Path(td)
+            images = root / "images"
+            images.mkdir()
+            original = images / "original.jpg"
+            frozen = b"frozen source JPEG bytes cannot be replaced by denial"
+            original.write_bytes(frozen)
+            candidate = root / "candidate.json"
+            history = root / "history.json"
+            candidate.write_text("{}", encoding="utf-8")
+            history.write_text("{}", encoding="utf-8")
+            history_digest = hashlib.sha256(history.read_bytes()).hexdigest()
+            for output in (original, images / "receipt.json"):
+                with self.subTest(output=str(output)):
+                    with self.assertRaisesRegex(
+                        CohortContractError, "overlaps frozen candidate image"
+                    ):
+                        cohort_firewall.validate_output_destination(
+                            output, [candidate, history],
+                            protected_image_dir=images,
+                        )
+                    result = cohort_firewall.main([
+                        "--candidate", str(candidate),
+                        "--historical", str(history),
+                        "--historical-sha256", history_digest,
+                        "--image-dir", str(images),
+                        "--output", str(output),
+                    ])
+                    self.assertEqual(result, 2)
+                    self.assertEqual(original.read_bytes(), frozen)
+                    if output != original:
+                        self.assertFalse(output.exists())
+
 if __name__ == "__main__":
     unittest.main()
