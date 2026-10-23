@@ -11,6 +11,8 @@ pub mod authbus_b5;
 #[cfg(test)]
 #[path = "authbus_tests.rs"]
 mod authbus_tests;
+#[cfg(unix)]
+mod authority_host_store;
 pub mod authority_lease;
 pub mod authority_trust;
 #[cfg(test)]
@@ -27,6 +29,10 @@ mod receipt;
 mod stable_id;
 mod verified_use_witness;
 
+#[cfg(unix)]
+pub use authority_host_store::HostAuthorityFrontierStore;
+#[cfg(unix)]
+pub use authority_host_store::RootAuthorityDirectory;
 pub use authority_lease::deliver_authority_lease_with_witness;
 pub use authority_lease::dispatch_authority_lease_with_witness;
 pub use authority_trust::AuthorityClock;
