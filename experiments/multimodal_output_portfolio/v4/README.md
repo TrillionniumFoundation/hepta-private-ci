@@ -179,6 +179,67 @@ recompile and re-evaluate against the exact reviewed source. No older CI run
 qualifies this composition. This closes only a narrow numeric/state/replay
 source integration gap, not real learned-generator efficacy or production use.
 
+## Integrated 2×2 output-training / control evaluation and source-tail admission
+
+This research integration carries **unchanged exact Git blobs** for both
+\`factorial_admission.py\` and \`test_factorial_admission.py\` from #3424, and
+\`registered_factorial.py\` and \`test_registered_factorial.py\` from #3440.
+It combines those frozen-source validators with #3436's typed finite control,
+bounded offline snapshot and cold-reload replay in one candidate tree. No
+existing v1/v2/v3 experimental data, policy weights or scopes are modified.
+Their tests now run together on the same revision in the scoped workflow.
+
+The independent four-arm roster is:
+\`base_static\`, \`base_ndu\`, \`trained_static\`, \`trained_ndu\`.
+The registered cohort fixes every training-seed / original-source / world /
+draw key before score inspection. It binds four-arm input, randomness, common
+Decoder and scoring identities; retains failed and over-budget rows with the
+frozen failure loss and paid physical cost; and calculates equal-weight
+seed/source/world/draw contrasts rather than treating extra draws as new
+independent sources. All digests and outcomes remain **caller-supplied**, and
+the four arms have not been run on a real pretrained common model here.
+
+\`registered_tail.py\` extends this **descriptive-only** admission with
+fractional CVaR90 at independent-original-source level. It reports separately:
+
+* Worst 10% of per-source mean **decoded external losses**, balanced by
+  training seed, original source, world and draw.
+* Worst 10% of the worst per-world draw-tail loss for each source, so a rare
+  catastrophic draw cannot be concealed by the same source's good mean.
+* Similarly clustered modeled physical-cost tail and the upper-tail
+  distribution of the within-source NDU-minus-static paired loss contrasts.
+
+The difference of two CVaR values is **not** the CVaR of their paired
+difference. Both are reported without conflating their interpretations.
+The 90% level and independent grouping unit are frozen in code; no heldout
+test can select a more flattering tail threshold after outcome inspection.
+
+\`test_registered_tail.py\` proves in synthetic adversarial fixtures that
+duplicating 100 favorable draws does not create 100 independent sources,
+that equal average quality can conceal a harmful worst-decile loss, that
+failed/expensive outputs remain in the source tail, and that fractional
+tail mass, reordering, mixed units and missing panel rows behave correctly.
+These are **unit tests**, not externally observed multimodal model gains.
+
+Run the scoped workflow / local command:
+
+\`\`\`bash
+cd experiments/multimodal_output_portfolio/v4
+python3 -m unittest discover -v -p "test_*.py"
+python3 -m compileall -q portfolio.py counterfactual_audit.py \
+  information_acquisition.py snapshot_policy.py benchmark_snapshot.py \
+  factorial_admission.py registered_factorial.py registered_tail.py test_*.py
+python3 benchmark_snapshot.py
+\`\`\`
+
+No combined run may be called \`PASS\` until tests on **this exact source
+commit** complete; older source-head checks cannot be inherited. The cold
+finite snapshot benchmark excludes pretrained Encoder/Decoder invocation,
+actual energy, native IPC and independent terminal outcome acquisition.
+A statistically powered natural-data confirmation, common physical budget,
+reliable independent witness, real 2×2 model training, and protected-task
+quality remain OPEN. **RESEARCH_ONLY / DENY_ALL / HOLD_NO_GO** stays fixed.
+
 ## Next independently measured scientific experiment
 
 Replace the synthetic proxy-state/decoder fixtures with a source-pinned **real** shared Encoder plus four output decoders, observed partial latents, actual Neural/Cell feature invocation and all separately paid decoder/verifier/selection costs. Preregister source-disjoint natural tasks, multiple training seeds and common random-number draws, then compare same-information/static, MoE, risk-neutral MPC, fixed-risk MPC, dynamic NDU and best-of-N with independent decoded-output scoring and risk/coverage/cost thresholds. Train/inference factorial ablations are essential to determine whether NDU changes learned generation rather than only selecting an existing candidate. Do not enable or deploy any output-portfolio policy based only on this code.
