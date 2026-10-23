@@ -190,6 +190,84 @@ fn denied(message: &'static str) -> io::Error {
     io::Error::new(io::ErrorKind::PermissionDenied, message)
 }
 
+impl DeploymentFinalUseIssuer {
+    /// Trusted Root launcher only: move the single exact Notes policy after
+    /// obtaining its actual new Session Reserved target. The launcher must
+    /// separately finish publisher quiescence, writer rotation and Current
+    /// adoption. Existing signed grants remain evidence for old reconciliation;
+    /// replacing this policy grants no permission to dispatch old operations.
+    ///
+    /// An error may follow durable CAS. Reconcile the exact desired policy on
+    /// retry; never reinitialize the issuer, key, epoch, revocations or sequence.
+    pub fn replace_registered_notes_policy(
+        &self,
+        writer: &HostAuthorityWriterRegistration,
+        previous_target: &NotesTargetIdentity,
+        previous_lifetime_ms: u64,
+        target: &NotesTargetIdentity,
+        lifetime_ms: u64,
+    ) -> io::Result<()> {
+        // SAFETY: geteuid has no arguments or borrowed memory.
+        if unsafe { libc::geteuid() } != 0 {
+            return Err(denied("Root Notes policy replacement requires the trusted launcher"));
+        }
+        self.replace_notes_policy(writer, previous_target, previous_lifetime_ms, target, lifetime_ms)
+    }
+
+    fn replace_notes_policy(
+        &self,
+        registration: &HostAuthorityWriterRegistration,
+        previous_target: &NotesTargetIdentity,
+        previous_lifetime_ms: u64,
+        target: &NotesTargetIdentity,
+        lifetime_ms: u64,
+    ) -> io::Result<()> {
+        previous_target.validate().map_err(io::Error::other)?;
+        target.validate().map_err(io::Error::other)?;
+        let policy = |target: &NotesTargetIdentity, lifetime_ms| DeploymentGrantPolicy {
+            subject_id: registration.registered_agent_id.as_str().into(),
+            destination_id: target.destination_id(),
+            scope_sha256: target.scope_digest().into_array(),
+            lifetime_ms,
+        };
+        let previous = policy(previous_target, previous_lifetime_ms);
+        let next = policy(target, lifetime_ms);
+        let verifier = &self.lease.as_ref()
+            .ok_or_else(|| denied("protected canonical issuer required"))?.verifier;
+        registration.with_live(verifier, |_| {
+            let proof = self.retained_writer_authorization(registration)?;
+            let _guard = self.request_lock.lock().map_err(|_| io::Error::other("issuer fenced"))?;
+            let state = self.store.load(STATE_OWNER).map_err(io::Error::other)?;
+            if state.writer_authorization.as_ref() != Some(&proof) {
+                return Err(denied("registered writer proof changed"));
+            }
+            // Use the original grant validation before retaining a new policy.
+            FinalUseGrant {
+                schema_version: 1, signer_id: state.signer_id.clone(),
+                authority_epoch: state.head.authority_epoch, grant_id: "policy-validation".into(),
+                nonce: [1; 32], binding: FinalUseBinding {
+                    subject_id: next.subject_id.clone(), destination_id: next.destination_id.clone(),
+                    scope_sha256: next.scope_sha256, payload_sha256: [1; 32], request_sha256: [1; 32],
+                },
+                not_before_unix_ms: 1,
+                expires_at_unix_ms: 1_u64.checked_add(lifetime_ms)
+                    .ok_or_else(|| io::Error::other("invalid Notes lifetime"))?,
+            }.signing_bytes().map_err(io::Error::other)?;
+            if state.policies == [next.clone()] {
+                return Ok(());
+            }
+            if state.policies != [previous] {
+                return Err(denied("original Notes policy CAS mismatch"));
+            }
+            let mut changed = state.clone();
+            changed.policies = vec![next];
+            self.store.compare_and_set(STATE_OWNER, &state, &changed).map_err(io::Error::other)?;
+            let after = self.clock.now_unix_ms().map_err(io::Error::other)?;
+            writer::validate_writer_time(registration, state.head.authority_epoch, after)
+        })
+    }
+}
+
 #[cfg(test)]
 #[path = "deployment_notes_tests.rs"]
 mod tests;

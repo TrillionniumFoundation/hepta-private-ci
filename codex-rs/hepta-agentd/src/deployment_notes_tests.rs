@@ -187,3 +187,42 @@ fn deployment_notes_changed_canonical_proof_cannot_sign_after_original_delegatio
     assert_eq!(f.registry.frontier().unwrap(), before);
     assert_eq!(f.sequence(), 1);
 }
+
+#[test]
+fn deployment_notes_policy_incarnation_cas_retains_key_head_counter_and_old_grant() {
+    let f = Fixture::new();
+    let admission = f.admission();
+    let old_grant = admission.issue(&f.issuer, &f.binding).unwrap().unwrap();
+    let key = f.issuer.trust_key().unwrap();
+    let head = f.issuer.revocations().unwrap();
+    let next = NotesTargetIdentity { incarnation: "3".repeat(32), ..f.target.clone() };
+    f.issuer.replace_notes_policy(&f.writer, &f.target, 1_000, &next, 1_000).unwrap();
+    let changed = f.issuer.store.load(STATE_OWNER).unwrap();
+    f.issuer.replace_notes_policy(&f.writer, &f.target, 1_000, &next, 1_000).unwrap();
+    assert!(admission.issue(&f.issuer, &f.binding).unwrap().is_none());
+    assert_eq!(f.issuer.store.load(STATE_OWNER).unwrap().sequence, changed.sequence);
+    assert_eq!(f.sequence(), 2);
+    assert_eq!(f.issuer.trust_key().unwrap().verifying_key, key.verifying_key);
+    assert_eq!(f.issuer.revocations().unwrap(), head);
+    let new_admission = RootNotesGrantAdmission::open(&f.issuer, f.registry.clone(),
+        f.writer.clone(), &next, 1_000).unwrap();
+    let binding = FinalUseBinding { destination_id: next.destination_id(),
+        scope_sha256: next.scope_digest().into_array(), ..f.binding.clone() };
+    assert_eq!(new_admission.issue(&f.issuer, &binding).unwrap().unwrap().grant.grant_id,
+        "canonical-notes-issuer:1:3");
+    ed25519_dalek::VerifyingKey::from_bytes(&key.verifying_key).unwrap()
+        .verify_strict(&old_grant.grant.signing_bytes().unwrap(),
+            &ed25519_dalek::Signature::from_slice(&old_grant.signature).unwrap()).unwrap();
+}
+
+#[test]
+fn deployment_notes_policy_wrong_predecessor_or_expired_writer_cannot_change_state() {
+    let f = Fixture::new();
+    let next = NotesTargetIdentity { incarnation: "3".repeat(32), ..f.target.clone() };
+    let before = f.issuer.store.load(STATE_OWNER).unwrap();
+    assert!(f.issuer.replace_notes_policy(&f.writer, &f.target, 999, &next, 1_000).is_err());
+    assert!(f.issuer.replace_notes_policy(&f.writer, &f.target, 1_000, &next, 0).is_err());
+    f.clock.0.store(20_000, Ordering::SeqCst);
+    assert!(f.issuer.replace_notes_policy(&f.writer, &f.target, 1_000, &next, 1_000).is_err());
+    assert!(f.issuer.store.load(STATE_OWNER).unwrap() == before);
+}
