@@ -122,6 +122,41 @@ generator, or incorporate independent query actions into the v4
 four-modality Bellman action lattice. That joint runtime integration and
 new untouched heldout remain open.
 
+## Bounded offline compilation and snapshot-only finite inference
+
+`snapshot_policy.py` adds a **research-only exact finite** offline compiler
+that reuses the parent v4 Bellman equation via its undecorated solver body.
+Per-compilation work is fail-closed at 32,768 expanded states or 1,000,000
+branch evaluations. Unlike an unbounded inference-time recursive search,
+the online `PolicySnapshot.choose` is a constant-time dictionary lookup
+for a state previously reached by the selected policy; uncovered states,
+wrong source/profile/scope or insufficient emission budget fail closed.
+
+The compiled portfolio contains canonical `Config`, initial state, source
+digest, state/action/value rows and a SHA-256 integrity digest. A stable
+canonical byte format supports cold reload; loader validation checks exact
+profile/source/scope, bounded row count, nonfinite and duplicate values,
+admissible physical budget, **every** reachable stochastic successor and
+absence of extraneous states. Recomputing the checksum of a corrupted,
+incomplete state graph does not bypass coverage validation. These SHA-256
+digests are **not signatures, remote attestation or promotion authority**.
+The compiled policy is not learned; no real adapter/Encoder is loaded.
+
+`test_snapshot_policy.py` covers 128 same-seed parity replays of all four
+toy decoded outputs, complete costs and routes, no Controller invocation
+in the runtime path, cold bytes export/reload, intentional corruption,
+recomputed-digest missing-branch attacks, source/profile/revocation-like
+mismatch, budget exhaustion and initial-cell activation constraints.
+
+`benchmark_snapshot.py` emits an explicitly host-scoped Python research
+receipt for 12 **cold**, separate exact Bellman evaluations, one offline
+compilation, 1,000 policy lookups and 100 toy output rollouts. All 100
+rollouts compare terminal outputs, external fixture loss and modeled
+resource spend with the original controller. Cold solving, lookup and
+decoder emission are measured separately; this is not an energy, full
+end-to-end decoder, neural throughput or target production device test.
+The workflow runs the benchmark but does not set a universal latency claim.
+
 ## Next independently measured scientific experiment
 
 Replace the synthetic proxy-state/decoder fixtures with a source-pinned **real** shared Encoder plus four output decoders, observed partial latents, actual Neural/Cell feature invocation and all separately paid decoder/verifier/selection costs. Preregister source-disjoint natural tasks, multiple training seeds and common random-number draws, then compare same-information/static, MoE, risk-neutral MPC, fixed-risk MPC, dynamic NDU and best-of-N with independent decoded-output scoring and risk/coverage/cost thresholds. Train/inference factorial ablations are essential to determine whether NDU changes learned generation rather than only selecting an existing candidate. Do not enable or deploy any output-portfolio policy based only on this code.

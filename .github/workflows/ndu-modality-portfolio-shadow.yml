@@ -17,4 +17,5 @@ jobs:
         working-directory: experiments/multimodal_output_portfolio/v4
         run: |
           python3 -m unittest discover -v -p "test_*.py"
-          python3 -m compileall -q portfolio.py counterfactual_audit.py information_acquisition.py test_*.py
+          python3 -m compileall -q portfolio.py counterfactual_audit.py information_acquisition.py snapshot_policy.py benchmark_snapshot.py test_*.py
+          python3 benchmark_snapshot.py
