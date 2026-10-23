@@ -41,18 +41,18 @@ The exclusive root owns the canonical `OperationIntentV1` semantics and determin
 
 ### Current claim levels
 
-| Claim | Current candidate |
-| --- | --- |
-| target architecture | specified |
-| reference oracle | implemented |
-| durable source implementation | implemented |
-| final-use CognitiveStore destination | implemented |
-| second current-main OperationIntentV1 consumer | implemented in automation.taskflow |
-| Agentd final-use host primitive | source-composed |
-| Agentd daemon lifecycle composition | source-composed through explicit host injection |
-| external authority/grant enrollment | not activated; no default authority is manufactured |
-| exact-head / synthetic-merge execution | pending current candidate CI |
-| independent acceptance / release | false |
+| Claim                                          | Current candidate                                   |
+| ---------------------------------------------- | --------------------------------------------------- |
+| target architecture                            | specified                                           |
+| reference oracle                               | implemented                                         |
+| durable source implementation                  | implemented                                         |
+| final-use CognitiveStore destination           | implemented                                         |
+| second current-main OperationIntentV1 consumer | implemented in automation.taskflow                  |
+| Agentd final-use host primitive                | source-composed                                     |
+| Agentd daemon lifecycle composition            | source-composed through explicit host injection     |
+| external authority/grant enrollment            | not activated; no default authority is manufactured |
+| exact-head / synthetic-merge execution         | pending current candidate CI                        |
+| independent acceptance / release               | false                                               |
 
 Canonical exact source identity is recorded by `IMPLEMENTATION_MAP.json` with `sourceIdentityPolicy=path_blob_manifest_v1`. The verifier resolves every mapped path through `git rev-parse HEAD:<path>`; a tracked map therefore does not need to contain its own future HEAD/tree hash.
 
@@ -159,7 +159,7 @@ Append-only local history is not deleted in place. Long-lived retention requires
 
 The source prepare transaction linearizes operation/event/outbox identity. A bounded dispatch lease may be renewed/taken over only while the effect boundary has not been crossed. Before target entry the writer persists a one-shot ambiguous-effect fence; after that point restart/reopen must reconcile rather than resend.
 
-`ProductionDispatchRequest` carries subject, destination, payload digest, scope digest, policy generation, full `OperationIntentV1` semantic digest and optional expected predecessor. `ProductionFinalUseOutboxDispatcher` consumes final-use authority immediately before target entry.
+`ProductionDispatchRequest` carries subject, destination, payload digest, scope digest, policy generation, full `OperationIntentV1` semantic digest and optional expected predecessor. `ProductionFinalUseOutboxDispatcher` claims the existing final-use authority and seals that original source-verified request, binding and non-cloneable token in `ProductionVerifiedDispatch`. Only the production writer constructs this envelope; consumers cannot extract its token or replace its request/binding. A physical target completes asynchronous preparation first, then consumes the envelope through its preconfigured authority's synchronous dispatch boundary and immediately retains the real effect owner. The compatibility target method retains delivery-only verification and does not qualify legacy asynchronous adapters as physical final-use boundaries. Final-use failures retain their existing typed source rejection path.
 
 `AgentdProductionWriterHost` is final-use-only and supports stable destination registration plus bounded observer-only reconciliation. It requires externally supplied authority/grants; default daemon startup does not synthesize them.
 
@@ -358,18 +358,18 @@ The following additional work packages are source-planning envelopes introduced 
 
 This receipt is source-navigation evidence for the current durable candidate; runtime activation and release remain separate.
 
-| Operation | Native symbol | Source path | Evidence |
-|---|---|---|---|
-| canonical intent | `OperationIntentV1` | `codex-rs/hepta-operations/src/model.rs` | semantic-field binding tests |
-| durable prepare | `ProductionDurableWriter::prepare_operation` | `codex-rs/hepta-memory/src/production_writer.rs` | atomic prepare/fault tests |
-| durable claim | `operation_claims::claim/renew` | `codex-rs/hepta-memory/src/operation_claims.rs` | attempt/lease/backoff tests |
-| final-use dispatch | `ProductionFinalUseOutboxDispatcher::dispatch` | `codex-rs/hepta-memory/src/production_writer.rs` | final-use tests |
-| destination CAS/observer | `CognitiveSourceOutboxTarget` | `codex-rs/hepta-memory/src/production_cognitive_source_target.rs` | predecessor/lost-ack tests |
-| Agentd host primitive | `AgentdProductionWriterHost` | `codex-rs/hepta-agentd/src/production_writer_host.rs` | explicit final-use/grant composition |
-| Agentd runtime composition | `AgentdConfig::with_production_operations` + `runtime::run` | `codex-rs/hepta-agentd/src/config.rs`, `runtime.rs` | lifecycle task cleanup/fail-closed default |
-| second current-main consumer | `AutomationStore::execute_authorized_taskflow_effect` | `codex-rs/hepta-automation/src/authorized_effect.rs` | automation authorized-effect tests |
-| reference ledger | `OperationLedger` | `codex-rs/hepta-operations/src/ledger.rs` | reference oracle |
-| reference outbox | `Outbox` | `codex-rs/hepta-operations/src/outbox.rs` | reference oracle |
+| Operation                    | Native symbol                                               | Source path                                                       | Evidence                                   |
+| ---------------------------- | ----------------------------------------------------------- | ----------------------------------------------------------------- | ------------------------------------------ |
+| canonical intent             | `OperationIntentV1`                                         | `codex-rs/hepta-operations/src/model.rs`                          | semantic-field binding tests               |
+| durable prepare              | `ProductionDurableWriter::prepare_operation`                | `codex-rs/hepta-memory/src/production_writer.rs`                  | atomic prepare/fault tests                 |
+| durable claim                | `operation_claims::claim/renew`                             | `codex-rs/hepta-memory/src/operation_claims.rs`                   | attempt/lease/backoff tests                |
+| final-use dispatch           | `ProductionFinalUseOutboxDispatcher::dispatch`              | `codex-rs/hepta-memory/src/production_writer.rs`                  | final-use tests                            |
+| destination CAS/observer     | `CognitiveSourceOutboxTarget`                               | `codex-rs/hepta-memory/src/production_cognitive_source_target.rs` | predecessor/lost-ack tests                 |
+| Agentd host primitive        | `AgentdProductionWriterHost`                                | `codex-rs/hepta-agentd/src/production_writer_host.rs`             | explicit final-use/grant composition       |
+| Agentd runtime composition   | `AgentdConfig::with_production_operations` + `runtime::run` | `codex-rs/hepta-agentd/src/config.rs`, `runtime.rs`               | lifecycle task cleanup/fail-closed default |
+| second current-main consumer | `AutomationStore::execute_authorized_taskflow_effect`       | `codex-rs/hepta-automation/src/authorized_effect.rs`              | automation authorized-effect tests         |
+| reference ledger             | `OperationLedger`                                           | `codex-rs/hepta-operations/src/ledger.rs`                         | reference oracle                           |
+| reference outbox             | `Outbox`                                                    | `codex-rs/hepta-operations/src/outbox.rs`                         | reference oracle                           |
 
 - Exact mapped source identity is verified through `path_blob_manifest_v1`.
 - `productionImplementation=true` means repository source implementation exists; it does not mean product execution, activation, acceptance or release.

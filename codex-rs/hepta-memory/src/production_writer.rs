@@ -8,6 +8,11 @@
 //! or target effect: an embedding must explicitly attach a
 //! `ProductionOutboxTarget` to dispatch a queued row.
 
+#[path = "production_verified_dispatch.rs"]
+mod verified_dispatch;
+pub use verified_dispatch::ProductionVerifiedDispatch;
+pub use verified_dispatch::ProductionVerifiedDispatchFuture;
+
 use std::fmt;
 use std::fs::File;
 use std::fs::OpenOptions;
@@ -1325,10 +1330,16 @@ impl ProductionDurableWriter {
                 return Err(ProductionWriterError::FinalUse(error));
             }
         };
-        let future = match final_use
-            .with_verified_use(token, expected, || target.dispatch(request.clone()))
+        let outcome = match target
+            .dispatch_verified(ProductionVerifiedDispatch {
+                request: request.clone(),
+                authority: final_use.clone(),
+                token,
+                expected: expected.clone(),
+            })
+            .await
         {
-            Ok(future) => future,
+            Ok(outcome) => outcome,
             Err(error) => {
                 if self
                     .settle_pre_dispatch_rejection(
@@ -1349,7 +1360,6 @@ impl ProductionDurableWriter {
                 return Err(ProductionWriterError::FinalUse(error));
             }
         };
-        let outcome = future.await;
         let settled = if inherited_from_generation.is_some() {
             self.settle_inherited_dispatch_outcome(
                 request,
@@ -2104,6 +2114,27 @@ pub trait ProductionOutboxTarget: Send + Sync {
 /// target cannot accidentally turn transport acknowledgement into terminality.
 pub trait FinalUseProductionOutboxTarget: ProductionOutboxTarget {
     fn destination_id(&self) -> &str;
+
+    /// Override to carry the sealed claim through preparation and consume it at
+    /// the actual synchronous effect entry. The compatibility default retains
+    /// delivery-only validation; it does not qualify legacy async adapters as
+    /// physical final-use boundaries.
+    fn dispatch_verified<'a>(
+        &'a self,
+        dispatch: ProductionVerifiedDispatch,
+    ) -> ProductionVerifiedDispatchFuture<'a> {
+        Box::pin(async move {
+            let ProductionVerifiedDispatch {
+                request,
+                authority,
+                token,
+                expected,
+            } = dispatch;
+            let future =
+                authority.with_verified_use(token, &expected, || self.dispatch(request))?;
+            Ok(future.await)
+        })
+    }
 
     fn observe_terminal<'a>(
         &'a self,
