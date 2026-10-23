@@ -1319,9 +1319,21 @@ async fn five_running_agents_share_only_with_the_explicit_consumer() -> Result<(
     seed_verified_agent_memory(&owner, "five-agent-shared-marker", SHARED).await?;
 
     let mut controls = Vec::new();
-    for fixture in fixtures {
-        fleet.start(fixture)?;
-        controls.push(fleet.wait_ready(fixture, 1).await?.0);
+    let bootstrap_started = Instant::now();
+    // Two independent real Agentd bootstraps may overlap; every original
+    // readiness/identity check still completes before federation is granted.
+    for group in fixtures.chunks(/*chunk_size*/ 2) {
+        for fixture in group {
+            fleet.start(fixture)?;
+        }
+        for fixture in group {
+            controls.push(fleet.wait_ready(fixture, 1).await?.0);
+            eprintln!(
+                "FLEET_STAGE federation bootstrap agent={} elapsed={:?}",
+                fixture.agent_id,
+                bootstrap_started.elapsed()
+            );
+        }
     }
     controls[0]
         .memory_federation_grant(
@@ -1638,11 +1650,23 @@ async fn five_real_agents_survive_one_automation_store_failure_without_peer_stal
 
     let mut controls = Vec::new();
     let mut before = Vec::new();
-    for fixture in fixtures {
-        fleet.start(fixture)?;
-        let (control, health) = fleet.wait_ready(fixture, 1).await?;
-        controls.push(control);
-        before.push(health);
+    let bootstrap_started = Instant::now();
+    // Retain each real owner and health snapshot before sabotaging Agent A.
+    // Bound simultaneous bootstrap work to two independent processes.
+    for group in fixtures.chunks(/*chunk_size*/ 2) {
+        for fixture in group {
+            fleet.start(fixture)?;
+        }
+        for fixture in group {
+            let (control, health) = fleet.wait_ready(fixture, 1).await?;
+            controls.push(control);
+            before.push(health);
+            eprintln!(
+                "FLEET_STAGE store-failure bootstrap agent={} elapsed={:?}",
+                fixture.agent_id,
+                bootstrap_started.elapsed()
+            );
+        }
     }
 
     // Materialize Agent A's automation store before sabotaging only that Agent.
