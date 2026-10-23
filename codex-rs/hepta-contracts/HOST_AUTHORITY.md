@@ -357,3 +357,7 @@ supplied to this original registry must be independent of that registry and must
 not reenter it. `with_verified_use` still releases the owner mutex before its
 consumer; `with_dispatch_boundary` still retains it across the bounded local
 entry. No deadline, lease lifetime, binding or revocation policy changes.
+
+[Original entry-clock qualification and failures](acceptance/2026-10-23-entry-clock/README.md)
+retain the real old-behavior negative, corrected17-test lease scope, remaining
+full-contracts clock failure and subsequent formatting/lint phase.
