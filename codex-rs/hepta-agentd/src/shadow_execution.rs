@@ -23,3 +23,7 @@ pub fn propose_shadow_execution_v1(
     let intent = canonical_codex_intent_v1(binding, operation, class)?;
     propose_native_shadow_execution_v1(intent)
 }
+
+#[cfg(test)]
+#[path = "shadow_execution_tests.rs"]
+mod tests;
