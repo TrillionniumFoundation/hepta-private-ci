@@ -100,7 +100,12 @@ impl AgentdUnixCognitiveCheckpointTransport {
         {
             return Err(ObjectiveSenderCheckpointError::Refused);
         }
-        let root = AsyncFd::new(root_pidfd).map_err(unavailable)?;
+        // SAFETY: AsyncFd exclusively owns this OwnedFd. Its number and open
+        // file description remain unchanged until AsyncFd drops it; no raw fd
+        // ownership or mutable access escapes this client.
+        let root =
+            unsafe { AsyncFd::register_with_interest(root_pidfd, tokio::io::Interest::READABLE) }
+                .map_err(|_| ObjectiveSenderCheckpointError::Unavailable)?;
         check_lifetime(root.get_ref())?;
         Ok(Self {
             stream: Mutex::new(Some(stream)),
