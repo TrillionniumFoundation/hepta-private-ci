@@ -13,6 +13,8 @@ mod record;
 pub use journal::EffectReceiptVerifier;
 pub use journal::ExecutionJournal;
 pub use journal::ExecutionVerifier;
+pub use journal::MAX_EXECUTION_OUTPUT_BYTES;
+pub use journal::MAX_EXECUTION_OUTPUT_CHUNKS;
 pub use record::ApprovalRequest;
 pub use record::CompletionStatus;
 pub use record::Currentness;

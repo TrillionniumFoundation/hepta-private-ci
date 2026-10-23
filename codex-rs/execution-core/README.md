@@ -16,6 +16,11 @@ currentness, FinalUse posture, idempotency key and rollback reference.
 
 - Deny unbound operation/identity/generation changes and predecessor drift.
 - Deny replay and illegal transitions; chunk sequence is strictly increasing.
+- Bound the entire volatile operation journal to 128 output chunks and 1 MiB of
+  declared stream bytes, in addition to the existing 32 KiB per-record cap.
+  An over-limit chunk fails before journal mutation; terminal completion and
+  subsequent independent effect reconciliation remain possible. This is not an
+  excuse to truncate evidence silently, nor a cap on an external durable log.
 - Deny side-effectful starts without a FinalUse verification claim, and
   privileged or cross-host starts without a prior approval request/receipt.
 - **Do not trust serialized grants, approval or outcome claims.** The
