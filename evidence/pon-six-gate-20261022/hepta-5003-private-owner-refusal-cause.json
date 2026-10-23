@@ -1,0 +1,113 @@
+{
+  "schema": "hepta.operator-private-owner-pre-sideeffect-refusal-cause.v1",
+  "review_base": {
+    "commit": "5003a975543cd1f0db4996d2db0e9474a8a17b48",
+    "tree": "704260c9c07bc1b62e9eff0e4dfcce5728725dff"
+  },
+  "source_before": {
+    "codex-rs/hepta-operator-acceptance/src/durable.rs": "ba562fe38aaa24ff445f790020673af67f285b76",
+    "codex-rs/hepta-operator-acceptance/src/lib.rs": "6bcf833dce3354a8de00c0e3d24138549247f2bc",
+    "codex-rs/hepta-operator-acceptance/src/g5_trust.rs": "4a767f487138eef390cec1645b51b25c19848df4",
+    "codex-rs/hepta-operator-acceptance/src/preflight.rs": "acc6c4f03814bc99b12a2b9f9da58a2bd4d286ef",
+    "codex-rs/hepta-operator-acceptance/src/ceremony.rs": "cdd5ce0e9b56c7b49f8b5ce053153812808337b3",
+    "codex-rs/hepta-operator-acceptance/src/durable_windows.rs": "04c1ee508ae6d9f1cb0c97b91ac4700cc323c0fd",
+    "codex-rs/hepta-operator-acceptance/src/trust.rs": "cceef4a4a0195b7e510a119742433ca33b0f011f"
+  },
+  "repair_source_blobs": {
+    "codex-rs/hepta-operator-acceptance/src/durable.rs": "ffb001566b5025710523bd45a9d30f5aab1c9d6f",
+    "codex-rs/hepta-operator-acceptance/src/lib.rs": "19231fcfbbc8f2ed6138160e542e3d047506beb2",
+    "codex-rs/hepta-operator-acceptance/src/private_directory_owner_windows_tests.rs": "7484b5ced82bb1a526978f831f8a6ef33f470990"
+  },
+  "causal_findings": [
+    {
+      "source": "durable.rs::write_private_new and write_private_atomic_replace",
+      "scope": "Static source analysis, not Windows execution. The predecessor creates and writes a regular file before its final parent File::open(parent)?.sync_all(). A later directory-handle failure can therefore leave an artifact or temporary file; no original Windows artifact residue was captured."
+    },
+    {
+      "source": "durable.rs::open_sidecar_lock",
+      "scope": "The predecessor opens or creates a lock file, but exclusive flock is cfg(unix) only. Non-Unix regular-file checks do not establish an exclusive directory owner."
+    },
+    {
+      "source": "durable.rs::verify_private_mode, same_file_identity; durable_windows.rs::FileSnapshot",
+      "scope": "Non-Unix private mode verification returns Ok and parent identity is directory-kind-only. Windows FileSnapshot protects regular-file identity, reparse and hardlink checks; it does not qualify private directory ACL ownership, held-root durable binding or an exclusive sidecar lock."
+    }
+  ],
+  "public_reachability": {
+    "g5_prepare": "prepare_g5_challenge validates portable inputs and calls write_private_new without the V1 formal Mac host guard. With valid pinned inputs the mutation seam is statically reachable; it was not executed on Windows in this review.",
+    "g5_assess": "assess_g5_challenge with Some(assessment_path) calls write_private_new. None remains read-only and grants no authority.",
+    "v1": "prepare, verify_and_seal and verify_receipt require exact formal environment and canonical /Volumes/T5 V1 roots before the helper seam. Original internal helper failures do not prove public V1 Windows side effects."
+  },
+  "minimal_repair": {
+    "guards": [
+      "write_private_new entry",
+      "write_private_atomic_replace entry",
+      "open_sidecar_lock entry"
+    ],
+    "non_unix_result": "AcceptanceError::UnsupportedPrivateDirectoryOwner before any helper create/write/rename/lock side effect; no successful fallback or ignored flush error.",
+    "unix_result": "Guard returns Ok without I/O, preserving the existing body and error order.",
+    "read_scope": "secure_read, secure_hash and canonical/hash APIs are unchanged. High-level verify_receipt requests lock_existing_sidecar and thus also inherits the intended unsupported-owner lock refusal on non-Unix.",
+    "api_scope": "AcceptanceError adds a public variant. Repository explicit variant consumers were reviewed; external exhaustive consumers may need to handle the new variant.",
+    "not_a_windows_backend": "No Windows owner, ACL qualification, directory flush qualification, power-loss proof, successful private writer or exclusive lock backend is implemented."
+  },
+  "new_windows_native_negative_tests": {
+    "module": "codex-rs/hepta-operator-acceptance/src/private_directory_owner_windows_tests.rs",
+    "tests": [
+      "private_create_refuses_before_creating_a_file",
+      "atomic_replace_preserves_target_and_does_not_create_temporary",
+      "new_sidecar_lock_refuses_before_creating_a_lock_file",
+      "existing_sidecar_lock_refuses_without_changing_the_directory"
+    ],
+    "assertion_scope": "Actual helper calls must return the exact typed refusal and preserve the complete fixture directory listing, file bytes, created/modified times and read-only flags. No target, temporary or new lock file may appear. These are selected seam negatives, not public Windows positive acceptance.",
+    "execution": "NOT_RUN locally; the module is compiled and executed only on actual Windows. No platform spoofing or synthetic Windows acceptance."
+  },
+  "original_positive_controls_unchanged": {
+    "codex-rs/hepta-operator-acceptance/src/durable_windows_tests.rs": "4a0c88f052a7c65360e45894c4c2809edda4f817",
+    "codex-rs/hepta-operator-acceptance/src/g5_trust_tests.rs": "35f5d3821785689ced32d37849c9201238064149",
+    "codex-rs/hepta-operator-acceptance/src/lib_tests.rs": "726d627ba01dd8b6b5a48ab58cd4ff5d54dc3df2",
+    "codex-rs/hepta-operator-acceptance/src/manifest_inventory_tests.rs": "3b42c285de0ffe2f4b2dbbf977c175b3a8b1b926",
+    "codex-rs/hepta-operator-acceptance/src/trust_tests.rs": "09cdef8a43fa7513c732440013910a5e80e7b8a1",
+    "codex-rs/hepta-operator-acceptance/tests/formal_e2e.zsh": "7e63bd9d58c0d96f995e28b751c1898d354f5a11"
+  },
+  "retained_original_failures": {
+    "source": "83b20a0f43d265a15216904c01194e8939647c65",
+    "run": 39755399167,
+    "full_failed_jobs": {
+      "file": "hepta-83-full-rust-nine-failure-source-manifest.json",
+      "bytes": 14195,
+      "sha256": "3d4c3842203106c771deada629e329e431105b7d4b0edf19cf3d3c0d5bd42a4c"
+    },
+    "all_four_arm_shards": {
+      "file": "hepta-83-arm-four-shard-evidence-manifest.json",
+      "bytes": 5844,
+      "sha256": "f843eca60b4e7725d08a0a74b08af62a318c18fb9872fbf072af519e339aea1b"
+    },
+    "failures": 355,
+    "timeouts": 31,
+    "specific_shard3": {
+      "job": 119770367012,
+      "file": "hepta-83-arm-shard3-job-119770367012.decoded.log.gzip.json",
+      "raw_sha256": "b965484d3121aa29d81f9289e842bfdc517637fcde9874250a1156e466527253",
+      "scope": "Original SSH fixture NotFound and private helper PermissionDenied are retained. PermissionDenied log lacks syscall-stage and resulting filesystem snapshots; it is not proof of observed leftover artifacts."
+    },
+    "directory_probe": {
+      "job": 119752031442,
+      "file": "hepta-83-job-119752031442.decoded.log.gzip.json",
+      "scope": "Held-root read/write directory FlushFileBuffers and NtFlushBuffersFileEx probes succeeded, while owner_supported and power_loss_qualified remained false. This repair does not claim Windows cannot flush a directory; the product private directory owner is unqualified."
+    }
+  },
+  "remaining_blockers": [
+    "Actual Windows compilation and four negative tests",
+    "Original Windows private-write and SSHSIG positive tests remain open and unchanged",
+    "Qualified private directory owner, exclusive lock and held-root recovery/flush evidence",
+    "All other exact-current-source Rust, paired, security, model, budget and independent WAN gates remain independently required"
+  ],
+  "validation_scope": "Python controls, formatting, exact source/navigation checks are recorded separately on the final commit; no native build or Windows execution was performed in this constrained shared environment.",
+  "authority": {
+    "production": false,
+    "windows_qualified": false,
+    "native_acceptance": false,
+    "power_loss_qualified": false,
+    "test_or_timeout_weakening": false,
+    "workflow_or_dependency_change": false
+  }
+}

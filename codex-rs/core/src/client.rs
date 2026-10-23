@@ -391,7 +391,7 @@ impl WebsocketConnectionIdentity {
         responses_metadata: &CodexResponsesMetadata,
     ) -> std::result::Result<Self, ApiError> {
         let compatibility_projection_json =
-            serde_json::to_vec(&responses_metadata.turn_recovery_compatibility_projection())
+            serde_json::to_vec(&responses_metadata.websocket_connection_compatibility_projection())
                 .map_err(|error| {
                     ApiError::Stream(format!(
                         "failed to bind websocket compatibility identity: {error}"
@@ -3086,26 +3086,35 @@ fn map_response_stream(
         upstream_request_id: None,
     };
     map_response_events(
-        upstream_request_id,
         api_stream,
-        session_telemetry,
-        inference_trace_attempt,
-        provider,
-        provider_attempt,
-        redact_provider_errors,
-        encoded_request_observer,
+        ResponseEventMapContext {
+            upstream_request_id,
+            session_telemetry,
+            inference_trace_attempt,
+            provider,
+            provider_attempt,
+            redact_provider_errors,
+            encoded_request_observer,
+        },
     )
 }
 
-fn map_response_events<S>(
+/// Immutable binding of all owner-selected provider and telemetry
+/// identities for one response stream. Keeping these together prevents
+/// accidental argument reordering across the provider/observation boundary.
+struct ResponseEventMapContext {
     upstream_request_id: Option<String>,
-    api_stream: S,
     session_telemetry: SessionTelemetry,
     inference_trace_attempt: InferenceTraceAttempt,
     provider: SharedModelProvider,
     provider_attempt: Option<ProviderAttemptOwner>,
     redact_provider_errors: bool,
     encoded_request_observer: Option<Arc<dyn codex_api::EncodedRequestBodyObserver>>,
+}
+
+fn map_response_events<S>(
+    api_stream: S,
+    context: ResponseEventMapContext,
 ) -> (ResponseStream, oneshot::Receiver<LastResponse>)
 where
     S: futures::Stream<Item = std::result::Result<ResponseEvent, ApiError>>
@@ -3113,6 +3122,15 @@ where
         + Send
         + 'static,
 {
+    let ResponseEventMapContext {
+        upstream_request_id,
+        session_telemetry,
+        inference_trace_attempt,
+        provider,
+        provider_attempt,
+        redact_provider_errors,
+        encoded_request_observer,
+    } = context;
     let (tx_event, rx_event) =
         mpsc::channel::<Result<ResponseEvent>>(RESPONSE_STREAM_CHANNEL_CAPACITY);
     let (tx_last_response, rx_last_response) = oneshot::channel::<LastResponse>();

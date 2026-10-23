@@ -398,9 +398,14 @@ mod tests {
                 }],
             }])
             .unwrap();
-        let clock = Arc::new(ManualClock::new(1_100));
-        let coordinator =
-            FleetRevocationCoordinator::new(feed, convergence, clock.clone(), 500).unwrap();
+        let clock = Arc::new(ManualClock::new(/*now*/ 1_100));
+        let coordinator = FleetRevocationCoordinator::new(
+            feed,
+            convergence,
+            clock.clone(),
+            /*convergence_sla_ms*/ 500,
+        )
+        .unwrap();
         let update = FinalUseRevocationUpdate::new(
             "revocation-distributor".into(),
             FinalUseRevocations {
@@ -408,8 +413,8 @@ mod tests {
                 revision: 2,
                 revoked_grant_ids: BTreeSet::from(["grant-a".into()]),
             },
-            1_000,
-            2_000,
+            /*issued_at_unix_ms*/ 1_000,
+            /*expires_at_unix_ms*/ 2_000,
         );
         let signed_update = SignedFinalUseRevocationUpdate {
             signature: distributor
@@ -457,12 +462,12 @@ mod tests {
             coordinator.node_state("node-a").unwrap(),
             FleetNodeRevocationState::CatchingUp
         );
-        clock.set(1_500);
+        clock.set(/*now*/ 1_500);
         assert_eq!(
             coordinator.node_state("node-a").unwrap(),
             FleetNodeRevocationState::Quarantined
         );
-        clock.set(2_000);
+        clock.set(/*now*/ 2_000);
         assert_eq!(
             coordinator.node_state("node-a").unwrap(),
             FleetNodeRevocationState::FeedStale
@@ -476,8 +481,8 @@ mod tests {
     fn exact_ack_makes_node_ready_and_duplicate_is_idempotent() {
         let (mut coordinator, clock, _distributor, node, update) = setup();
         coordinator.install_update(update.clone()).unwrap();
-        clock.set(1_200);
-        let ack = signed_ack(&node, &update, 1_200);
+        clock.set(/*now*/ 1_200);
+        let ack = signed_ack(&node, &update, /*applied_at_unix_ms*/ 1_200);
         let first = coordinator.record_ack(ack.clone()).unwrap();
         let retry = coordinator.record_ack(ack).unwrap();
         assert_eq!(first, retry);
@@ -492,9 +497,11 @@ mod tests {
     fn new_head_forces_catchup_and_same_revision_drift_conflicts() {
         let (mut coordinator, clock, distributor, node, update) = setup();
         coordinator.install_update(update.clone()).unwrap();
-        clock.set(1_200);
+        clock.set(/*now*/ 1_200);
         coordinator
-            .record_ack(signed_ack(&node, &update, 1_200))
+            .record_ack(signed_ack(
+                &node, &update, /*applied_at_unix_ms*/ 1_200,
+            ))
             .unwrap();
 
         let mut drifted = update.clone();
@@ -512,7 +519,7 @@ mod tests {
             FleetRevocationError::ConflictingUpdate
         );
 
-        clock.set(1_300);
+        clock.set(/*now*/ 1_300);
         let mut removed = update.clone();
         removed.update.head.revision = 3;
         removed.update.head.revoked_grant_ids.clear();

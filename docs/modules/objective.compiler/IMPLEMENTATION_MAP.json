@@ -349,8 +349,8 @@
     "implementedOperationMappingComplete": true
   },
   "sourceBase": {
-    "commit": "e8e81b7d541a81e75635cc1c0a713edaedb999d5",
-    "tree": "aaa6e4ecb7d45d01ea88f93b6a716e7dca3cf395"
+    "commit": "c927ca0e86258c0e4eca8004b2ed4d1b709310ea",
+    "tree": "2505bf2709731af13b22eb80511592f9a43ee943"
   },
   "repositoryControlledGaps": [
     "Obtain successful exact-head and deterministic synthetic-merge workflow receipts for one final canonical candidate checkout.",
@@ -390,8 +390,8 @@
     }
   ],
   "exactSourceCandidate": {
-    "commit": "e946a7ed08814881f9986d813c5b8cd821241f99",
-    "tree": "5c62cf98768ee7f99c55e80c3b4430bcfddd41e7",
+    "commit": "87bb35d51e514cdc2fe96792259b089193f015ac",
+    "tree": "2f95a67a2ee1759ce2a90810cce3933f4f9ec45e",
     "roots": [
       "codex-rs/hepta-objective"
     ],
@@ -402,8 +402,8 @@
     "RunStartSnapshotV1"
   ],
   "productCompositionSourceCandidate": {
-    "commit": "e603e7ac675843e69f6cfd741e42180b2d5437ed",
-    "tree": "6de843d2ddf162869e4aff0ebb84642d4b2c26c3",
+    "commit": "87bb35d51e514cdc2fe96792259b089193f015ac",
+    "tree": "2f95a67a2ee1759ce2a90810cce3933f4f9ec45e",
     "paths": [
       "codex-rs/hepta-agentd/src/objective_runtime.rs",
       "codex-rs/hepta-agentd/src/objective_runtime_tests.rs",
@@ -431,20 +431,48 @@
   ],
   "sourceObjects": [
     {
+      "path": ".github/workflows/hepta-lane-d-semantic-conformance.yml",
+      "object": "4756be76b745582520ff66d07fa103048fc6ec5c"
+    },
+    {
+      "path": ".github/workflows/hepta-objective-admission.yml",
+      "object": "ef98ab5c6918c38949583ecdb4b089a31cb4ceac"
+    },
+    {
+      "path": "codex-rs/Cargo.lock",
+      "object": "03d69dfb1eb682f332edbe77f5845a291ca44b4e"
+    },
+    {
+      "path": "codex-rs/Cargo.toml",
+      "object": "70c7b8dc2bc9768f6fc673049c2e348baddce838"
+    },
+    {
       "path": "codex-rs/hepta-agentd/src/objective_runtime.rs",
       "object": "84a4b156fa04f27665319300e241732697a0ea01"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/objective_runtime_tests.rs",
+      "object": "5664ccb24703982a41b2d6a4aade34a09f1be379"
+    },
+    {
+      "path": "codex-rs/hepta-intelligence/src/objective_run.rs",
+      "object": "a2f361edbf1e0f8fd1024d085edcd71b4f2396f0"
     },
     {
       "path": "codex-rs/hepta-intelligence/src/objective_run_tests.rs",
       "object": "125f654d9d3cf27577e2ae9b387a885accdf115f"
     },
     {
+      "path": "codex-rs/hepta-learning-ledger/src/run_start.rs",
+      "object": "e93f1208bddd3dba92a7eecf06873a3feff949e9"
+    },
+    {
       "path": "codex-rs/hepta-learning-ledger/src/run_start_tests.rs",
-      "object": "cfbb34705a6dee9a2b0c5afda76592109c83f86b"
+      "object": "70fc58a9d19defb8f7acae75a7482fe1a60b6865"
     },
     {
       "path": "codex-rs/hepta-objective",
-      "object": "e89450f622d12e85f516df691291e349f42cd8fc"
+      "object": "49a0ddd78c87bee02fb4b2a5e6d8c03c00b63117"
     },
     {
       "path": "codex-rs/hepta-objective/src/compiler.rs",
@@ -452,7 +480,7 @@
     },
     {
       "path": "codex-rs/hepta-objective/src/compiler_tests.rs",
-      "object": "3debd314419d0c3143e9b8287288709ef53fa54d"
+      "object": "6aab1bf858b7a5bf80517aeb102944339667a55d"
     },
     {
       "path": "codex-rs/hepta-objective/src/feasibility.rs",
@@ -464,7 +492,7 @@
     },
     {
       "path": "codex-rs/hepta-objective/src/feasibility_tests.rs",
-      "object": "c77c620fe88a59619bb71aa041836957e86c6387"
+      "object": "33cbb493955fcf6508714e13dbbcbe3bb079ac4e"
     },
     {
       "path": "codex-rs/hepta-objective/src/objective_admission.rs",
@@ -472,7 +500,7 @@
     },
     {
       "path": "codex-rs/hepta-objective/src/objective_admission_tests.rs",
-      "object": "5a52048e6542dababa20825243de2b96e011b1e2"
+      "object": "12aab31b583215b3f6fe5c4ad3d3968ca503a7db"
     },
     {
       "path": "codex-rs/hepta-objective/src/objective_function_v1.rs",
@@ -495,8 +523,53 @@
       "object": "5dc5676e23de3b4a661e1520a0c5ae4a1dc2020d"
     },
     {
+      "path": "docs/contracts/OBJECTIVE_ERRORS.json",
+      "object": "cbaf5bfea789f7d61be8ba33e6de21e667e021ee"
+    },
+    {
       "path": "docs/modules/objective.compiler/TECHNICAL.md",
       "object": "6c627878c86207f41091eb56fedf701b1e49ddd4"
+    },
+    {
+      "path": "docs/readiness/OBJECTIVE_COMPILER_EXECUTION.md",
+      "object": "ea827917e37e1dff7ad33fa5c2b17b75864240a9"
+    },
+    {
+      "path": "scripts/hepta-implementation-maps.py",
+      "object": "e8ae0fd675b7e3ca2911b80af92cc21021789fbe"
     }
+  ],
+  "observedAtHead": {
+    "commit": "c927ca0e86258c0e4eca8004b2ed4d1b709310ea",
+    "tree": "2505bf2709731af13b22eb80511592f9a43ee943"
+  },
+  "observedSourcePaths": [
+    ".github/workflows/hepta-lane-d-semantic-conformance.yml",
+    ".github/workflows/hepta-objective-admission.yml",
+    "codex-rs/Cargo.lock",
+    "codex-rs/Cargo.toml",
+    "codex-rs/hepta-agentd/src/objective_runtime.rs",
+    "codex-rs/hepta-agentd/src/objective_runtime_tests.rs",
+    "codex-rs/hepta-intelligence/src/objective_run.rs",
+    "codex-rs/hepta-intelligence/src/objective_run_tests.rs",
+    "codex-rs/hepta-learning-ledger/src/run_start.rs",
+    "codex-rs/hepta-learning-ledger/src/run_start_tests.rs",
+    "codex-rs/hepta-objective",
+    "codex-rs/hepta-objective/src/compiler.rs",
+    "codex-rs/hepta-objective/src/compiler_tests.rs",
+    "codex-rs/hepta-objective/src/feasibility.rs",
+    "codex-rs/hepta-objective/src/feasibility_exhaustive_tests.rs",
+    "codex-rs/hepta-objective/src/feasibility_tests.rs",
+    "codex-rs/hepta-objective/src/objective_admission.rs",
+    "codex-rs/hepta-objective/src/objective_admission_tests.rs",
+    "codex-rs/hepta-objective/src/objective_function_v1.rs",
+    "codex-rs/hepta-objective/src/source_envelope_json.rs",
+    "codex-rs/hepta-objective/src/source_envelope_json_tests.rs",
+    "codex-rs/hepta-objective/src/source_envelope_v1_tests.rs",
+    "codex-rs/hepta-objective/src/source_envelope_validation.rs",
+    "docs/contracts/OBJECTIVE_ERRORS.json",
+    "docs/modules/objective.compiler/TECHNICAL.md",
+    "docs/readiness/OBJECTIVE_COMPILER_EXECUTION.md",
+    "scripts/hepta-implementation-maps.py"
   ]
 }

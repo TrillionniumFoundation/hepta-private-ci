@@ -2,8 +2,8 @@
   "schema": "hepta.module-implementation-map.v3",
   "schemaVersion": 3,
   "sourceBase": {
-    "commit": "8914a46dfc5984532f03dd2d559bf547ca4f1e69",
-    "tree": "1bd6444d2d980a9fdf06358dbee973b34722f0e1"
+    "commit": "c927ca0e86258c0e4eca8004b2ed4d1b709310ea",
+    "tree": "2505bf2709731af13b22eb80511592f9a43ee943"
   },
   "laneId": "LANE-B-RUNTIME",
   "module": "runtime.codex",
@@ -308,12 +308,20 @@
   ],
   "sourceObjects": [
     {
+      "path": "codex-rs/Cargo.lock",
+      "object": "03d69dfb1eb682f332edbe77f5845a291ca44b4e"
+    },
+    {
+      "path": "codex-rs/Cargo.toml",
+      "object": "70c7b8dc2bc9768f6fc673049c2e348baddce838"
+    },
+    {
       "path": "codex-rs/app-server",
-      "object": "369db165729574a745833cb651a17faf3fd00a46"
+      "object": "66ea57c4c6f6a4edd29f305c6838837a0cf610a2"
     },
     {
       "path": "codex-rs/app-server/src/request_processors/thread_processor.rs",
-      "object": "6126faf53271e6108c96394b0217bc763213cf86"
+      "object": "7f50435d37c2ff05a5ac2f203635334d1dcb6385"
     },
     {
       "path": "codex-rs/app-server/src/request_processors/turn_processor.rs",
@@ -328,12 +336,16 @@
       "object": "e624887eccb92cc0be6eaceeec9c5a50da20dbc1"
     },
     {
+      "path": "codex-rs/codex-app-server",
+      "object": "bee4d8d5805720d44f32f764d22cd7c47bb793f8"
+    },
+    {
       "path": "codex-rs/codex-app-server/BINDING.json",
       "object": "f3dec1f92ed39c2eeed2b7a97b34babb01800197"
     },
     {
       "path": "codex-rs/core/src/codex_thread.rs",
-      "object": "7272a699937ac9f5e474e2f11ee47db3d3725b8c"
+      "object": "8ecba73891ad76b73bdf5315d5c0d675056caa66"
     },
     {
       "path": "codex-rs/core/src/tools/executed_tool_calls_tests.rs",
@@ -344,16 +356,102 @@
       "object": "f8ff2cfcb8dc0daad9e88077de63a53bc18daa49"
     },
     {
+      "path": "codex-rs/core/src/tools/spec_plan.rs",
+      "object": "7ed58cec717f3ecf531a8b79c32c3604ede30b4a"
+    },
+    {
+      "path": "codex-rs/core/src/tools/spec_plan_tests.rs",
+      "object": "a5f8884b2e16a6575a83cbd2228290defd7618ca"
+    },
+    {
       "path": "codex-rs/hepta-agentd/src/app_runtime.rs",
       "object": "b25375be9219be18baba2ab4d3488658d0040897"
     },
     {
+      "path": "codex-rs/hepta-agentd/tests/runtime_codex_product_e2e.rs",
+      "object": "bd41d2a22e4b78bd9b465d9928f7623366ed215a"
+    },
+    {
       "path": "codex-rs/hepta-codex-adapter",
-      "object": "5643ca35d5a347bd53bf6a5f9bcd0dfbe964d90b"
+      "object": "7d367ee4b257b56f0e073f3c1fac66361cd4ee1e"
+    },
+    {
+      "path": "codex-rs/hepta-codex-adapter/src/deadline_digest_tests.rs",
+      "object": "9ca777c897a002750bc12ba3cb147d20fdea002c"
+    },
+    {
+      "path": "codex-rs/hepta-codex-adapter/src/lib_tests.rs",
+      "object": "40f425bbadf5d05f8d20ca8cd620aee2c6e2bb79"
+    },
+    {
+      "path": "codex-rs/hepta-infer-core/src/native_control.rs",
+      "object": "d92b748a22b19046465bcfe0b4fd9f58cc0c09fa"
+    },
+    {
+      "path": "codex-rs/hepta-infer-core/src/native_control_tests.rs",
+      "object": "83815c4ec58a8e4d2ec60c614674869c785daa54"
+    },
+    {
+      "path": "codex-rs/hepta-infer-worker-host/src/final_use_authorizer.rs",
+      "object": "5ba248accf42aea808b51929b73ccc4fde400c48"
+    },
+    {
+      "path": "codex-rs/hepta-infer-worker-host/src/final_use_authorizer_tests.rs",
+      "object": "9b1bb255c443cdca02546a54f42cd06583f0493e"
+    },
+    {
+      "path": "codex-rs/hepta-infer-worker-host/src/native_app_server.rs",
+      "object": "ddfe32dd3c3e2dd9273abb6a66d10497d8ac00cd"
+    },
+    {
+      "path": "codex-rs/hepta-infer-worker-host/src/native_app_server_tests.rs",
+      "object": "7dbca8ee4ac5f664aa139dfbc3877897a837fa7d"
+    },
+    {
+      "path": "codex-rs/hepta-infer-worker-host/src/native_run_control_tests.rs",
+      "object": "c3ef8bf87075cf072660074fe8e91aedb75d5f5e"
     },
     {
       "path": "docs/modules/runtime.codex/TECHNICAL.md",
       "object": "28590a009a9a3b47042547bb5c6fe23f60bdffad"
+    },
+    {
+      "path": "scripts/hepta-lane-b-truth.py",
+      "object": "59f6076d7a5b1235267359c6b74da4abc3226908"
     }
+  ],
+  "observedAtHead": {
+    "commit": "c927ca0e86258c0e4eca8004b2ed4d1b709310ea",
+    "tree": "2505bf2709731af13b22eb80511592f9a43ee943"
+  },
+  "observedSourcePaths": [
+    "codex-rs/Cargo.lock",
+    "codex-rs/Cargo.toml",
+    "codex-rs/app-server",
+    "codex-rs/app-server/src/request_processors/thread_processor.rs",
+    "codex-rs/app-server/src/request_processors/turn_processor.rs",
+    "codex-rs/app-server/tests/suite/v2/thread_start.rs",
+    "codex-rs/app-server/tests/suite/v2/turn_start.rs",
+    "codex-rs/codex-app-server",
+    "codex-rs/codex-app-server/BINDING.json",
+    "codex-rs/core/src/codex_thread.rs",
+    "codex-rs/core/src/tools/executed_tool_calls_tests.rs",
+    "codex-rs/core/src/tools/router.rs",
+    "codex-rs/core/src/tools/spec_plan.rs",
+    "codex-rs/core/src/tools/spec_plan_tests.rs",
+    "codex-rs/hepta-agentd/src/app_runtime.rs",
+    "codex-rs/hepta-agentd/tests/runtime_codex_product_e2e.rs",
+    "codex-rs/hepta-codex-adapter",
+    "codex-rs/hepta-codex-adapter/src/deadline_digest_tests.rs",
+    "codex-rs/hepta-codex-adapter/src/lib_tests.rs",
+    "codex-rs/hepta-infer-core/src/native_control.rs",
+    "codex-rs/hepta-infer-core/src/native_control_tests.rs",
+    "codex-rs/hepta-infer-worker-host/src/final_use_authorizer.rs",
+    "codex-rs/hepta-infer-worker-host/src/final_use_authorizer_tests.rs",
+    "codex-rs/hepta-infer-worker-host/src/native_app_server.rs",
+    "codex-rs/hepta-infer-worker-host/src/native_app_server_tests.rs",
+    "codex-rs/hepta-infer-worker-host/src/native_run_control_tests.rs",
+    "docs/modules/runtime.codex/TECHNICAL.md",
+    "scripts/hepta-lane-b-truth.py"
   ]
 }

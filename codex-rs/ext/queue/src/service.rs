@@ -1079,6 +1079,23 @@ impl QueuedItemService {
         Ok(())
     }
 
+    async fn dispatch_idle_input(&self, input: ThreadIdleInput<'_>) {
+        if input.cause == ThreadIdleCause::Interrupted {
+            return;
+        }
+        let Ok(thread_id) = ThreadId::from_string(input.thread_store.level_id()) else {
+            tracing::warn!(
+                level_id = input.thread_store.level_id(),
+                "queue extension received an invalid thread id"
+            );
+            return;
+        };
+        let _guard = self.dispatch_guard(thread_id).await;
+        if let Err(error) = self.dispatch_if_idle(thread_id).await {
+            tracing::warn!(%thread_id, %error, "failed to dispatch queued user input");
+        }
+    }
+
     async fn dispatch_if_idle(&self, thread_id: ThreadId) -> Result<(), QueueServiceError> {
         let Some(manager) = self.thread_manager.upgrade() else {
             return Ok(());
@@ -1336,22 +1353,14 @@ where
     }
 
     fn on_thread_idle<'a>(&'a self, input: ThreadIdleInput<'a>) -> ExtensionFuture<'a, ()> {
-        Box::pin(async move {
-            if input.cause == ThreadIdleCause::Interrupted {
-                return;
-            }
-            let Ok(thread_id) = ThreadId::from_string(input.thread_store.level_id()) else {
-                tracing::warn!(
-                    level_id = input.thread_store.level_id(),
-                    "queue extension received an invalid thread id"
-                );
-                return;
-            };
-            let _guard = self.dispatch_guard(thread_id).await;
-            if let Err(error) = self.dispatch_if_idle(thread_id).await {
-                tracing::warn!(%thread_id, %error, "failed to dispatch queued user input");
-            }
-        })
+        Box::pin(self.dispatch_idle_input(input))
+    }
+
+    fn on_thread_admission_recheck<'a>(
+        &'a self,
+        input: ThreadIdleInput<'a>,
+    ) -> ExtensionFuture<'a, ()> {
+        Box::pin(self.dispatch_idle_input(input))
     }
 }
 

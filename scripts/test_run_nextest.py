@@ -131,6 +131,63 @@ class ScopedNextestTests(unittest.TestCase):
         )
         self.assertIn("1 failed", (self.root / "output.log").read_text())
 
+    def test_compile_only_builds_without_running_and_execution_still_checks_tests(self):
+        for package, full_metadata, scoped in (
+            ("hepta-nextest-fixture", "0", True),
+            ("hepta-nextest-fixture", "1", False),
+            ("hepta-nextest-*", "0", False),
+        ):
+            with (
+                self.subTest(package=package, full_metadata=full_metadata),
+                patch.dict(os.environ, {"HEPTA_NEXTTEST_FULL_METADATA": full_metadata}),
+            ):
+                args = ["-p", package, "--offline", "--lib"]
+                output = self.root / "output.log"
+                start = output.stat().st_size if output.exists() else 0
+                # This real test fails if run: compile-only must build it and
+                # succeed without executing it on every metadata path.
+                self.assertEqual(
+                    RUNNER.run([*args, "--features", "negative", "--no-run"]), 0
+                )
+                self.assertEqual("--cargo-metadata" in self.commands[-1], scoped)
+                self.assertNotIn("--no-fail-fast", self.commands[-1])
+                compile_output = output.read_bytes()[start:].decode()
+                self.assertIn("Finished", compile_output)
+                self.assertNotIn("test run:", compile_output)
+                self.assertNotEqual(RUNNER.run([*args, "--features", "negative"]), 0)
+                self.assertIn("--no-fail-fast", self.commands[-1])
+                self.assertIn("1 failed", output.read_bytes()[start:].decode())
+                start = output.stat().st_size
+                self.assertEqual(RUNNER.run(args), 0)
+                self.assertIn(
+                    "1 test run: 1 passed", output.read_bytes()[start:].decode()
+                )
+                start = output.stat().st_size
+                self.assertNotEqual(RUNNER.run([*args, "-Etest(absent)"]), 0)
+                self.assertIn("no tests to run", output.read_bytes()[start:].decode())
+
+    def test_compile_only_preserves_explicit_conflicts_and_separator_semantics(self):
+        for package, full_metadata in (
+            ("hepta-nextest-fixture", "0"),
+            ("hepta-nextest-fixture", "1"),
+            ("hepta-nextest-*", "0"),
+        ):
+            with (
+                self.subTest(package=package, full_metadata=full_metadata),
+                patch.dict(os.environ, {"HEPTA_NEXTTEST_FULL_METADATA": full_metadata}),
+            ):
+                args = ["-p", package, "--offline", "--lib"]
+                self.assertEqual(RUNNER.run([*args, "--no-run", "--no-fail-fast"]), 2)
+                self.assertEqual(self.commands[-1].count("--no-fail-fast"), 1)
+                self.assertIn(
+                    "'--no-run' cannot be used with '--no-fail-fast'",
+                    (self.root / "output.log").read_text(),
+                )
+                self.assertNotEqual(RUNNER.run([*args, "--", "--no-run"]), 0)
+                command = self.commands[-1]
+                self.assertIn("--no-fail-fast", command[: command.index("--")])
+                self.assertEqual(command[command.index("--") :], ["--", "--no-run"])
+
     def test_pure_test_filter_uses_scoped_metadata_and_no_tests_is_an_error(self):
         self.assertNotEqual(
             RUNNER.run(

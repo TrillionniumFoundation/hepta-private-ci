@@ -971,6 +971,18 @@ async fn v1_store_migrates_atomically_to_dispatch_outcome_schema() {
     // Keep the schema rewind on one connection so each DDL statement sees
     // the preceding change, and publish the complete v1 fixture atomically.
     let mut rewind = pool.begin().await.expect("begin legacy schema rewind");
+    // The converged v17/v18 branch objects are not part of v1. Drop their
+    // owners before dispatch outcomes so the timer drain trigger cannot retain
+    // a reference to a removed table while SQLite validates subsequent DDL.
+    for statement in [
+        "DROP TABLE automation_timer_lifecycle",
+        "DROP TABLE destination_operation_dedupe",
+    ] {
+        sqlx::query(statement)
+            .execute(&mut *rewind)
+            .await
+            .expect("drop post-v1 owner and its triggers");
+    }
     sqlx::query("DROP INDEX automation_dispatch_outcome_state_idx")
         .execute(&mut *rewind)
         .await
@@ -1059,6 +1071,27 @@ async fn v1_store_migrates_atomically_to_dispatch_outcome_schema() {
     .execute(&mut *rewind)
     .await
     .expect("restore immutable trigger");
+    let legacy_objects: Vec<String> = sqlx::query_scalar(
+        "SELECT name FROM sqlite_master
+         WHERE name NOT LIKE 'sqlite_%' AND name != '_sqlx_migrations'
+         ORDER BY name",
+    )
+    .fetch_all(&mut *rewind)
+    .await
+    .expect("inspect v1 schema objects");
+    assert_eq!(
+        legacy_objects,
+        [
+            "automation_due_idx",
+            "automation_meta",
+            "automation_meta_no_delete",
+            "automation_meta_no_update",
+            "automation_recovery_idx",
+            "automation_runs",
+            "automation_tasks",
+        ],
+        "the fixture must contain only the original v1 schema objects"
+    );
     rewind.commit().await.expect("commit legacy schema rewind");
     pool.close().await;
 

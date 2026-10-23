@@ -1,0 +1,133 @@
+{
+  "schema": "windows-nextest-prerequisites-source-repair-v1",
+  "recorded_at": "2026-10-22T07:35:08.807702+00:00",
+  "base": "8bcdd39640ceea73afcdc6b082383b8307694e89",
+  "observed_failure_source": "097d97137a43aee84fb96be12e44135278776748",
+  "causes": [
+    {
+      "job_id": 119685152120,
+      "actual_checkout": "C:\\a\\hepta-private-ci\\hepta-private-ci",
+      "embedded_manifest": "D:\\a\\hepta-private-ci\\hepta-private-ci\\codex-rs\\core",
+      "evidence_lines": [
+        77,
+        1524,
+        1525,
+        1611,
+        19542,
+        19563
+      ],
+      "source_binding": "utils/cargo-bin find_resource! Cargo branch uses env!(CARGO_MANIFEST_DIR); full CI ARM archive_runner explicitly windows-latest while consumer windows-11-arm.",
+      "limit": "Path mismatch explains observed fixture/cwd failures; does not classify every failure/timeout."
+    },
+    {
+      "job_id": 119685152180,
+      "actual_checkout": "C:\\a\\hepta-private-ci\\hepta-private-ci",
+      "embedded_manifest": "D:\\a\\hepta-private-ci\\hepta-private-ci\\codex-rs\\core",
+      "evidence_lines": [
+        77,
+        1466
+      ],
+      "limit": "Raw per-test failures/timeouts remain retained independently."
+    },
+    {
+      "job_id": 119685152120,
+      "actual_temp": "D:/tmp",
+      "observed_filesystem": "ReFS",
+      "native_probe_owner_supported": false,
+      "native_probe_power_loss_qualified": false,
+      "evidence_lines": [
+        352,
+        19542,
+        19563
+      ],
+      "source_binding": "setup-ci configures TEMP/TMP below ReFS Dev Drive; original probe uses tempfile::tempdir and requires NTFS. Original rename/flush receipts report successful operations before the final correct NTFS refusal.",
+      "limit": "Not Error87; this prerequisite repair neither qualifies the backend nor repairs the independent token deletion-boundary failure."
+    }
+  ],
+  "patch": [
+    "Use native windows-11-arm archive producer by removing x64 override.",
+    "Capture actual producer codex-rs workspace; consumer refuses missing/mismatched root before tests; retain nextest workspace remap.",
+    "Keep build/cache Dev Drive untouched; create unique test temp under RUNNER_TEMP, create marker and query actual containing volume via Get-Volume -FilePath; require exactly one NTFS volume before TEMP/TMP export."
+  ],
+  "validation": {
+    "python_source_contract": "7 passed, including mutation negative controls; not PowerShell/Windows execution",
+    "rust_1_96_just_fmt": "exit0",
+    "rust_1_96_just_fmt_check": "exit0",
+    "yaml_parse": "Both modified workflows parsed with PyYAML6.0.3",
+    "prettier_check": "Both modified workflows PASS",
+    "source_equivalence": "Original reusable tests step and every downstream byte unchanged; full workflow only removes ARM x64 archive override; no Rust/tests/NTFSrequire/timeout/matrix gate changes.",
+    "retained_iteration_failure": "contract-attempt2 rejected pre-existing cache step continue-on-error due overbroad new guard; guard narrowed to job-level and own preflight only; original cache workflow unchanged."
+  },
+  "unresolved": [
+    "Native Windows archive build/test execution for new candidate",
+    "Independent existing positive deletion-boundary / parent DELETE_CHILD failure",
+    "All original timeout failures, including ten_thousand_deltas_are_bounded_and_final_is_exact and claim_query_rejects_more_than_512_references",
+    "Host/volume-specific native flush experiment results and all backend acceptance gates"
+  ],
+  "reference": "https://learn.microsoft.com/en-us/powershell/module/storage/get-volume?view=windowsserver2025-ps",
+  "files": [
+    {
+      "path": ".github/workflows/rust-ci-full.yml",
+      "sha256": "ea84d491b347afe1a56852968ea210ab7f417785ff589b8af643e1b362c57181",
+      "bytes": 21978
+    },
+    {
+      "path": ".github/workflows/rust-ci-full-nextest-platform.yml",
+      "sha256": "6be277fbaffe4f5e1c46ac92f44190881c9d77e4e1781887792dec0efa07e4c4",
+      "bytes": 21847
+    },
+    {
+      "path": "scripts/test_hepta_windows_nextest_prerequisites.py",
+      "sha256": "8824bb12adad4d0ff6fc119b082659d9cb6142a93a19b8d9d32baeea37ec9240",
+      "bytes": 7470
+    },
+    {
+      "path": "/workspace/scratch/ff4dad3c0eb8/tmp/current-ci-20261022/hepta-097-job-119685152120.raw.log",
+      "sha256": "5da2cc58a1f3fcb1b2ca606d1a212a3f1984ee253e48eb3671adb9c0a0980ca8",
+      "bytes": 2142939
+    },
+    {
+      "path": "/workspace/scratch/ff4dad3c0eb8/tmp/current-ci-20261022/hepta-097-job-119685152180.raw.log",
+      "sha256": "de57b37442e3feb53ec075d4a95dcd63600b3fb18540c6838cf294695b1cbbec",
+      "bytes": 2041296
+    },
+    {
+      "path": "/workspace/scratch/ff4dad3c0eb8/tmp/current-ci-20261022/hepta-097-windows-arm-new-failures.json",
+      "sha256": "e80e3515805ce8247e6f1ed8f6fe4c7caf4976da23120569d47144b8dfb07ab2",
+      "bytes": 1571613
+    },
+    {
+      "path": "/workspace/scratch/ff4dad3c0eb8/tmp/current-ci-20261022/windows-nextest-prereq-fmt.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "/workspace/scratch/ff4dad3c0eb8/tmp/current-ci-20261022/windows-nextest-prereq-fmt-check.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "/workspace/scratch/ff4dad3c0eb8/tmp/current-ci-20261022/windows-nextest-prereq-contract.log",
+      "sha256": "e3809fd1033d0859f877d86dff35d18007efc5608aa9a314707edf0451ce09ca",
+      "bytes": 1402
+    },
+    {
+      "path": "/workspace/scratch/ff4dad3c0eb8/tmp/current-ci-20261022/windows-nextest-prereq-contract-attempt2.log",
+      "sha256": "8b873263a4c578ac407bb5fd39f0cb218dc33399ab1ed0574cf39ed67f1ea539",
+      "bytes": 3047
+    },
+    {
+      "path": "/workspace/scratch/ff4dad3c0eb8/tmp/current-ci-20261022/windows-nextest-prereq-prettier.log",
+      "sha256": "17aa973d3f004560237d9a95171210b0671deff23d61628eecf7322ff5938f20",
+      "bytes": 66
+    }
+  ],
+  "remote_actions": "none; no rerun, cancellation, dispatch or publication",
+  "commit": "2ad1870bba6d248bfb691ea9890d17e150ab8ee0",
+  "tree": "36e15571aa225e54e10cf89ccf0993b8c5316533",
+  "review": {
+    "agent": "/root/ci_security",
+    "result": "No review blocker. Producer/consumer actual codex-rs path binding, native ARM domain, new marker Get-Volume -FilePath query, fail-before-TEMP/TMP behavior and untouched original tests confirmed read-only. If RUNNER_TEMP is not NTFS, refuses rather than finding a fallback NTFS volume. No Windows execution claim."
+  },
+  "limit": "Existing RUNNER_TEMP volume must be NTFS; no alternate volume is provisioned or selected. Native ARM cold archive build capacity within original 60min and actual native tests remain unverified."
+}

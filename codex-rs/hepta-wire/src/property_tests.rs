@@ -86,13 +86,13 @@ fn v2_same_payload_with_different_metadata_changes_digest() -> Result<(), Box<dy
     let left = WireEnvelopeV2::new(
         StableId::new("schema.left")?,
         StableId::new("producer")?,
-        Generation::new(1)?,
+        Generation::new(/*value*/ 1)?,
         payload.clone(),
     )?;
     let right = WireEnvelopeV2::new(
         StableId::new("schema.right")?,
         StableId::new("producer")?,
-        Generation::new(1)?,
+        Generation::new(/*value*/ 1)?,
         payload,
     )?;
     assert_ne!(left.frame_digest(), right.frame_digest());

@@ -53,6 +53,14 @@ impl From<CognitiveStoreError> for CognitiveContextError {
     }
 }
 
+/// Borrowed optional adapters used by the current cognitive read owner.
+pub(crate) struct CognitiveContextReadAdapters<'a> {
+    pub(crate) ranker: Option<&'a std::sync::Arc<crate::PinnedCognitiveRanker>>,
+    pub(crate) current_retrieval:
+        Option<&'a std::sync::Arc<dyn crate::CurrentMemoryRetrievalContext>>,
+    pub(crate) learning_sink: Option<&'a std::sync::Arc<crate::CognitiveRetrievalLearningSink>>,
+}
+
 /// `body_generation` is the process launch identity, not the separately fenced
 /// fleet lifecycle epoch (Starting -> Running advances that epoch).
 #[cfg(test)]
@@ -70,9 +78,11 @@ pub(crate) async fn read(
         body_generation,
         query,
         limit,
-        ranker,
-        None,
-        None,
+        CognitiveContextReadAdapters {
+            ranker,
+            current_retrieval: None,
+            learning_sink: None,
+        },
         None,
     )
     .await
@@ -94,9 +104,11 @@ pub(crate) async fn read_with_retrieval_context(
         body_generation,
         query,
         limit,
-        ranker,
-        current_retrieval,
-        None,
+        CognitiveContextReadAdapters {
+            ranker,
+            current_retrieval,
+            learning_sink: None,
+        },
         None,
     )
     .await
@@ -108,11 +120,14 @@ pub(crate) async fn read_with_retrieval_context_and_learning(
     body_generation: u64,
     query: &str,
     limit: u16,
-    ranker: Option<&std::sync::Arc<crate::PinnedCognitiveRanker>>,
-    current_retrieval: Option<&std::sync::Arc<dyn crate::CurrentMemoryRetrievalContext>>,
-    learning_sink: Option<&std::sync::Arc<crate::CognitiveRetrievalLearningSink>>,
+    adapters: CognitiveContextReadAdapters<'_>,
     request_id: Option<u64>,
 ) -> Result<CognitiveContextSnapshot, CognitiveContextError> {
+    let CognitiveContextReadAdapters {
+        ranker,
+        current_retrieval,
+        learning_sink,
+    } = adapters;
     if query.is_empty() || query.len() > 2048 || !(1..=4).contains(&limit) {
         return Err(CognitiveStoreError::Invalid(
             "context requires a 1..2048 byte query and a 1..4 result limit".to_string(),
@@ -482,40 +497,25 @@ pub(crate) async fn read_with_retrieval_context_and_learning(
 pub(crate) async fn revalidate(
     store: &CognitiveStore,
     owner: &AgentId,
-    snapshot_digest: &str,
-    read_digest: &str,
-    omitted_records: u64,
-    items: &[CognitiveContextItem],
-    plan: Option<&CognitiveContextPlan>,
+    snapshot: &CognitiveContextSnapshot,
     ranker: Option<&std::sync::Arc<crate::PinnedCognitiveRanker>>,
 ) -> Result<CognitiveContextRevalidation, CognitiveContextError> {
-    revalidate_with_retrieval_context(
-        store,
-        owner,
-        snapshot_digest,
-        read_digest,
-        omitted_records,
-        items,
-        plan,
-        ranker,
-        1,
-        None,
-    )
-    .await
+    revalidate_with_retrieval_context(store, owner, snapshot, ranker, 1, None).await
 }
 
 pub(crate) async fn revalidate_with_retrieval_context(
     store: &CognitiveStore,
     owner: &AgentId,
-    snapshot_digest: &str,
-    read_digest: &str,
-    omitted_records: u64,
-    items: &[CognitiveContextItem],
-    plan: Option<&CognitiveContextPlan>,
+    snapshot: &CognitiveContextSnapshot,
     ranker: Option<&std::sync::Arc<crate::PinnedCognitiveRanker>>,
     body_generation: u64,
     current_retrieval: Option<&std::sync::Arc<dyn crate::CurrentMemoryRetrievalContext>>,
 ) -> Result<CognitiveContextRevalidation, CognitiveContextError> {
+    let snapshot_digest = snapshot.snapshot_digest.as_str();
+    let read_digest = snapshot.read_digest.as_str();
+    let omitted_records = snapshot.omitted_records;
+    let items = snapshot.items.as_slice();
+    let plan = snapshot.plan.as_ref();
     if items.len() > 4 {
         return Err(CognitiveStoreError::Invalid(
             "context revalidation accepts at most four items".to_string(),

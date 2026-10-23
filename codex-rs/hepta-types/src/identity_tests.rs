@@ -11,7 +11,7 @@ fn stable_id_and_generation_are_strict() {
         StableId::new("bad/path"),
         Err(IdentityError::InvalidCharacter)
     );
-    assert_eq!(Generation::new(0), Err(IdentityError::Zero));
+    assert_eq!(Generation::new(/*value*/ 0), Err(IdentityError::Zero));
 }
 
 #[test]

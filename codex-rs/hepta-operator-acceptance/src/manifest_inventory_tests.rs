@@ -34,16 +34,24 @@ fn verified_manifest_rejects_extra_files_and_hardlinks() {
     let fixture = Fixture::new();
     fixture.write("artifact", b"sealed");
     let sums = fixture.seal(&[("artifact", b"sealed")]);
-    VerifiedManifest::load(&fixture.root, &sha256(&sums), 1).expect("sealed fixture");
+    VerifiedManifest::load(&fixture.root, &sha256(&sums), /*expected_entries*/ 1)
+        .expect("sealed fixture");
 
     fixture.write("extra", b"unsealed");
-    assert!(VerifiedManifest::load(&fixture.root, &sha256(&sums), 1).is_err());
+    assert!(VerifiedManifest::load(&fixture.root, &sha256(&sums), /*expected_entries*/ 1).is_err());
     std::fs::remove_file(fixture.root.join("extra")).expect("remove test extra");
 
     std::fs::hard_link(fixture.root.join("artifact"), fixture.root.join("alias"))
         .expect("create test hardlink");
     let linked_sums = fixture.seal(&[("alias", b"sealed"), ("artifact", b"sealed")]);
-    assert!(VerifiedManifest::load(&fixture.root, &sha256(&linked_sums), 2).is_err());
+    assert!(
+        VerifiedManifest::load(
+            &fixture.root,
+            &sha256(&linked_sums),
+            /*expected_entries*/ 2
+        )
+        .is_err()
+    );
 }
 
 #[cfg(unix)]
@@ -55,7 +63,7 @@ fn verified_manifest_rejects_symlinks() {
     fixture.write("target", b"sealed");
     symlink(fixture.root.join("target"), fixture.root.join("alias")).expect("create test symlink");
     let sums = fixture.seal(&[("alias", b"sealed"), ("target", b"sealed")]);
-    assert!(VerifiedManifest::load(&fixture.root, &sha256(&sums), 2).is_err());
+    assert!(VerifiedManifest::load(&fixture.root, &sha256(&sums), /*expected_entries*/ 2).is_err());
 }
 
 struct Fixture {

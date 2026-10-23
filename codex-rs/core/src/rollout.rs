@@ -45,6 +45,12 @@ impl codex_rollout::RolloutConfigView for Config {
     }
 }
 
+impl codex_rollout::RolloutConfigMut for Config {
+    fn set_sqlite_config(&mut self, sqlite: codex_state::SqliteConfig) {
+        self.sqlite = sqlite;
+    }
+}
+
 pub(crate) mod list {
     pub use codex_rollout::find_thread_path_by_id_str;
 }

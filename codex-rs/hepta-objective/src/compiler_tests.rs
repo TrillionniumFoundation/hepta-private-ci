@@ -51,7 +51,7 @@ fn envelope() -> ObjectiveSourceEnvelope {
     ObjectiveSourceEnvelope {
         request_id: id("request-1"),
         principal_scope: id("principal:alpha"),
-        revision: must(Revision::new(1)),
+        revision: must(Revision::new(/*value*/ 1)),
         source_trust: SourceTrust::PrincipalStructured,
         source_digest: Digest32::of_bytes(b"source"),
         schema_digest: Digest32::of_bytes(b"schema"),

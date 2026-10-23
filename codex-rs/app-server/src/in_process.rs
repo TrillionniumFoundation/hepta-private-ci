@@ -829,8 +829,8 @@ mod tests {
         channel_capacity: usize,
     ) -> InProcessClientHandle {
         let codex_home = TempDir::new().expect("temp dir");
-        let config = Arc::new(build_test_config(codex_home.path()).await);
-        let state_db = codex_rollout::state_db::try_init(config.as_ref())
+        let mut config = Arc::new(build_test_config(codex_home.path()).await);
+        let state_db = codex_rollout::state_db::try_init(Arc::make_mut(&mut config))
             .await
             .expect("state db should initialize for in-process test");
         #[cfg(target_os = "linux")]

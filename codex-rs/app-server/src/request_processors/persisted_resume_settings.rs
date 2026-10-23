@@ -1,9 +1,41 @@
+use codex_core::config::Config;
 use codex_protocol::config_types::ApprovalsReviewer;
 use codex_protocol::models::ActivePermissionProfile;
 use codex_protocol::protocol::AskForApproval;
 use codex_protocol::protocol::EventMsg;
 use codex_rollout::RolloutItem;
 use codex_utils_absolute_path::AbsolutePathBuf;
+use std::collections::HashSet;
+
+pub(super) struct PersistedResumeEnvironment {
+    pub(super) cwd: Option<AbsolutePathBuf>,
+    pub(super) workspace_roots: Vec<AbsolutePathBuf>,
+    pub(super) active_permission_profile: Option<ActivePermissionProfile>,
+}
+
+impl PersistedResumeEnvironment {
+    pub(super) fn restore_workspace_roots(self, config: &mut Config) -> Option<AbsolutePathBuf> {
+        // Rollouts contain effective roots, including roots derived from the old
+        // profile. Resolve today's profile first so changing its identity or
+        // inheritance cannot carry those roots into the new profile as explicit
+        // runtime roots. Legacy records without an identity retain their roots.
+        // Identity is not a versioned definition: edits within the same id and
+        // extends are not distinguishable from these older rollout records.
+        if self.active_permission_profile.is_none()
+            || self.active_permission_profile == config.permissions.active_permission_profile()
+        {
+            let mut workspace_roots = self.workspace_roots;
+            let mut seen = HashSet::new();
+            workspace_roots.retain(|root| seen.insert(root.clone()));
+            config.workspace_roots = workspace_roots.clone();
+            config.workspace_roots_explicit = true;
+            config.permissions.set_workspace_roots(workspace_roots);
+        }
+        // The persisted cwd is independent of the permission profile. The caller
+        // only supplies it when no current cwd or root override was requested.
+        self.cwd
+    }
+}
 
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub(super) struct PersistedResumeSettings {

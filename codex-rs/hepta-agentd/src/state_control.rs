@@ -275,9 +275,11 @@ impl AgentdState {
                     self.identity.spawn_generation,
                     &query,
                     limit,
-                    self.cognitive_ranker.get(),
-                    self.cognitive_retrieval_context.get(),
-                    self.cognitive_retrieval_learning.get(),
+                    crate::cognitive_context::CognitiveContextReadAdapters {
+                        ranker: self.cognitive_ranker.get(),
+                        current_retrieval: self.cognitive_retrieval_context.get(),
+                        learning_sink: self.cognitive_retrieval_learning.get(),
+                    },
                     Some(request_id),
                 )
                 .await;
@@ -352,11 +354,13 @@ impl AgentdState {
                 let result = crate::cognitive_context::revalidate_with_retrieval_context(
                     store.as_ref(),
                     &self.identity.agent_id,
-                    &snapshot_digest,
-                    &read_digest,
-                    omitted_records,
-                    &items,
-                    plan.as_ref(),
+                    &crate::CognitiveContextSnapshot {
+                        snapshot_digest,
+                        read_digest,
+                        omitted_records,
+                        items,
+                        plan,
+                    },
                     self.cognitive_ranker.get(),
                     self.identity.spawn_generation,
                     self.cognitive_retrieval_context.get(),
@@ -662,22 +666,26 @@ impl AgentdState {
                     .await?;
                 self.fence_after_durable_change()?;
                 let snapshot = match result {
-                    crate::automation_effect_host::AgentdAutomationEffectReconcileOutcome::Observed(
+                    crate::automation_effect_host::AgentdAutomationEffectReconcileOutcome::Observed {
                         receipt,
-                    ) => crate::AutomationEffectReconcileSnapshot {
+                        chain,
+                    } => crate::AutomationEffectReconcileSnapshot {
                         state: crate::AutomationEffectReconcileState::Terminal,
-                        effect: Some(effect_snapshot(receipt)?),
+                        effect: Some(effect_snapshot(*receipt)?),
+                        chain,
                     },
                     crate::automation_effect_host::AgentdAutomationEffectReconcileOutcome::Indeterminate => {
                         crate::AutomationEffectReconcileSnapshot {
                             state: crate::AutomationEffectReconcileState::Indeterminate,
                             effect: None,
+                            chain: None,
                         }
                     }
                     crate::automation_effect_host::AgentdAutomationEffectReconcileOutcome::ProvenAbsent => {
                         crate::AutomationEffectReconcileSnapshot {
                             state: crate::AutomationEffectReconcileState::ProvenAbsent,
                             effect: None,
+                            chain: None,
                         }
                     }
                 };

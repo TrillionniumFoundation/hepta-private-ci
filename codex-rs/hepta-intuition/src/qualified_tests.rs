@@ -34,8 +34,8 @@ fn fixture() -> (CalibratedDecisionRequestV1, CanonicalPolicyProfileV1) {
         legal: true,
         hard_veto: false,
         utility: FixedQ32::ONE,
-        calibrated_confidence: probability_ppm(900_000),
-        ood_score: probability_ppm(100_000),
+        calibrated_confidence: probability_ppm(/*ppm*/ 900_000),
+        ood_score: probability_ppm(/*ppm*/ 100_000),
         assignment_probability: ProbabilityQ32::ZERO,
         support_digest: digest("candidate-support"),
     }];
@@ -49,7 +49,7 @@ fn fixture() -> (CalibratedDecisionRequestV1, CanonicalPolicyProfileV1) {
         policy_digest: policy,
         policy_generation: 9,
         sequence: 20,
-        minimum_confidence: probability_ppm(700_000),
+        minimum_confidence: probability_ppm(/*ppm*/ 700_000),
         maximum_ece_ppm: 30_000,
         maximum_ood_false_acceptance_ppm: 2_000,
         risk_class: RiskClass::Low,
@@ -82,7 +82,7 @@ fn fixture() -> (CalibratedDecisionRequestV1, CanonicalPolicyProfileV1) {
             generation: 9,
             valid_from_sequence: 1,
             expires_after_sequence: 100,
-            maximum_in_domain_score: probability_ppm(500_000),
+            maximum_in_domain_score: probability_ppm(/*ppm*/ 500_000),
             measured_false_acceptance_ppm: 1_000,
         },
         assignment: AssignmentModeV1::Deterministic,
@@ -95,10 +95,10 @@ fn fixture() -> (CalibratedDecisionRequestV1, CanonicalPolicyProfileV1) {
         generation: 9,
         valid_from_sequence: 1,
         expires_after_sequence: 100,
-        minimum_confidence: probability_ppm(700_000),
+        minimum_confidence: probability_ppm(/*ppm*/ 700_000),
         maximum_ece_ppm: 30_000,
         maximum_ood_false_acceptance_ppm: 2_000,
-        maximum_in_domain_score: probability_ppm(500_000),
+        maximum_in_domain_score: probability_ppm(/*ppm*/ 500_000),
         risk_rule: CanonicalRiskRuleV1::HighOnlySlowPath,
         scorer: LearnedScorerContractV1 {
             model_digest: policy,
@@ -156,7 +156,7 @@ fn evidence_payloads_change_when_profile_or_candidate_set_changes() {
     let qualification = canonical_qualification_evidence_payload_v1(&request, &profile).unwrap();
 
     let mut changed_request = request.clone();
-    changed_request.candidates[0].utility = FixedQ32::from_raw(2);
+    changed_request.candidates[0].utility = FixedQ32::from_raw(/*raw*/ 2);
     changed_request.completeness.candidate_set_digest =
         canonical_candidate_set_digest_v1(&changed_request.candidates).unwrap();
     assert_ne!(

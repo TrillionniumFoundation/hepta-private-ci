@@ -418,7 +418,7 @@ pub(super) async fn start_app_server_for_session_command(
             .map(ToOwned::to_owned)
     });
     let cwd = cli.cwd.clone();
-    let config = ConfigBuilder::default()
+    let mut config = ConfigBuilder::default()
         .cli_overrides(cli_kv_overrides.clone())
         .harness_overrides(ConfigOverrides {
             model,
@@ -446,7 +446,7 @@ pub(super) async fn start_app_server_for_session_command(
             .build(Some(local_runtime_paths), config.http_client_factory())
             .wrap_err("failed to initialize environment manager")?,
     );
-    let state_db = super::init_state_db_for_app_server_target(&config, &app_server_target)
+    let state_db = super::init_state_db_for_app_server_target(&mut config, &app_server_target)
         .await
         .wrap_err("failed to initialize state database")?;
     let app_server = super::start_app_server(

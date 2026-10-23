@@ -1,0 +1,57 @@
+[
+  {
+    "name": "hepta-converged-workspace",
+    "command": [
+      "python3",
+      "scripts/hepta_workspace.py"
+    ],
+    "returncode": 0,
+    "seconds": 0.62354244699236,
+    "log_sha256": "6a437814142f1071f98664abc8a131c5c26d3dc40521307842b1acda091272f0"
+  },
+  {
+    "name": "hepta-converged-workspace-tests",
+    "command": [
+      "python3",
+      "-m",
+      "unittest",
+      "discover",
+      "-s",
+      "scripts",
+      "-p",
+      "test_hepta_workspace*.py",
+      "-v"
+    ],
+    "returncode": 0,
+    "seconds": 0.7967382270144299,
+    "log_sha256": "521f261ceac02ddf1e345281d04548dc6e5e3558d83b10f993d9dfb6224f9763"
+  },
+  {
+    "name": "hepta-converged-source-contract-tests",
+    "command": [
+      "python3",
+      "-m",
+      "unittest",
+      "discover",
+      "-s",
+      "scripts",
+      "-p",
+      "test_hepta_ci_source_identity.py",
+      "-v"
+    ],
+    "returncode": 0,
+    "seconds": 4.180945321917534,
+    "log_sha256": "7fea4b75f7ba2198a1d3f367f1a3592a5b551d587e4d5c68cb333967f294183e"
+  },
+  {
+    "name": "hepta-converged-integrity-selftest",
+    "command": [
+      "python3",
+      "scripts/hepta-repository-integrity.py",
+      "self-test"
+    ],
+    "returncode": 0,
+    "seconds": 0.11294169491156936,
+    "log_sha256": "c9ee5197c6d584f5a368a59c20e79add0b07b6a67c819038dfcf1e00ba740e50"
+  }
+]

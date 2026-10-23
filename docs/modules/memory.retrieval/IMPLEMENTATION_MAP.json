@@ -2,8 +2,8 @@
   "schema": "hepta.module-implementation-map.v3",
   "schemaVersion": 3,
   "sourceBase": {
-    "commit": "8914a46dfc5984532f03dd2d559bf547ca4f1e69",
-    "tree": "1bd6444d2d980a9fdf06358dbee973b34722f0e1"
+    "commit": "c927ca0e86258c0e4eca8004b2ed4d1b709310ea",
+    "tree": "2505bf2709731af13b22eb80511592f9a43ee943"
   },
   "laneId": "LANE-C-MEMORY",
   "module": "memory.retrieval",
@@ -191,8 +191,8 @@
   ],
   "sourceIdentityPolicy": "candidate_or_exact_observation_v1",
   "observedAtHead": {
-    "commit": "8914a46dfc5984532f03dd2d559bf547ca4f1e69",
-    "tree": "1bd6444d2d980a9fdf06358dbee973b34722f0e1"
+    "commit": "c927ca0e86258c0e4eca8004b2ed4d1b709310ea",
+    "tree": "2505bf2709731af13b22eb80511592f9a43ee943"
   },
   "observedSourcePaths": [
     ".github/workflows/hepta-memory-retrieval-qualification-host.yml",
@@ -210,6 +210,7 @@
     "codex-rs/hepta-agentd/src/config_tests.rs",
     "codex-rs/hepta-agentd/src/runtime.rs",
     "codex-rs/hepta-agentd/src/runtime_tests.rs",
+    "codex-rs/hepta-agentd/src/state_control.rs",
     "codex-rs/hepta-learning-ledger/Cargo.toml",
     "codex-rs/hepta-learning-ledger/src/durable_codec.rs",
     "codex-rs/hepta-learning-ledger/src/ledger.rs",
@@ -226,6 +227,7 @@
     "codex-rs/hepta-memory/src/cognitive_retrieval_adapter_tests.rs",
     "codex-rs/hepta-memory/src/cognitive_retrieval_observation.rs",
     "codex-rs/hepta-memory/src/cognitive_retrieval_observation_tests.rs",
+    "docs/modules/memory.retrieval/TECHNICAL.md",
     "qualification/memory-retrieval/TARGET_HOST.md"
   ],
   "canonicalCognitiveRecallMigration": {
@@ -247,12 +249,96 @@
   ],
   "sourceObjects": [
     {
+      "path": ".github/workflows/hepta-memory-retrieval-qualification-host.yml",
+      "object": "8d91832441db0cf8f064e27ed8193f9cadbbf462"
+    },
+    {
+      "path": "codex-rs/Cargo.lock",
+      "object": "03d69dfb1eb682f332edbe77f5845a291ca44b4e"
+    },
+    {
+      "path": "codex-rs/Cargo.toml",
+      "object": "70c7b8dc2bc9768f6fc673049c2e348baddce838"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/Cargo.toml",
+      "object": "5d13cd8f355bab3ecb95f8c068517de200dd143f"
+    },
+    {
       "path": "codex-rs/hepta-agentd/src/cognitive_context.rs",
-      "object": "494043d2e03a7f738ad1de3a065766a4423cef0b"
+      "object": "ed471e437cd611d90fecae8615242a95e0433a43"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cognitive_context_budget_tests.rs",
+      "object": "d6347cc9be5255e2b64dc07558f8efa31a87266d"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cognitive_context_hnmf_tests.rs",
+      "object": "309781d9308ad9425366b54e2f0e5b4b0272dd8f"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cognitive_context_tests.rs",
+      "object": "6e4d8abb8b9f429d311d419dfe67db2b4e31f663"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cognitive_retrieval_context.rs",
+      "object": "14b482e9e523274d3af6f7f513d025bf4ac704ad"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cognitive_retrieval_learning.rs",
+      "object": "a02b829431c99d649897150e1bf13e6bda88a0bb"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cognitive_retrieval_learning_tests.rs",
+      "object": "32f0ac3fe848581ea60c2694dee4a2f52dda8f55"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/config.rs",
+      "object": "92f0fa719c3fafcbf01e8d5f558700ce656d43c6"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/config_tests.rs",
+      "object": "e1f3fa191bd46090380a338134ffd84c0a44a5e3"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/runtime.rs",
+      "object": "b3d9131f5b07c7f3d1f61c82657512985e7033ad"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/runtime_tests.rs",
+      "object": "463a1b756b43acc92dbbbe0ce05252ae19d3383b"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/state_control.rs",
+      "object": "d6fddb0fccc02297e6a6bac983cd8be62cef9580"
+    },
+    {
+      "path": "codex-rs/hepta-learning-ledger/Cargo.toml",
+      "object": "1d76cad44498e9538cefff1e20202482520257ff"
+    },
+    {
+      "path": "codex-rs/hepta-learning-ledger/src/durable_codec.rs",
+      "object": "29773833806142d8c6967cd2ac94d48958d90b2e"
+    },
+    {
+      "path": "codex-rs/hepta-learning-ledger/src/ledger.rs",
+      "object": "d043d06c49312f75a023f8d0766ea088fbdc60db"
+    },
+    {
+      "path": "codex-rs/hepta-learning-ledger/src/model.rs",
+      "object": "ebdec3db9e6c28a7abacffc332d37c0fd6e2e22d"
+    },
+    {
+      "path": "codex-rs/hepta-learning-ledger/src/retrieval_assignment.rs",
+      "object": "52d16861093cf7bd55e5afb7a681d194cc54e858"
+    },
+    {
+      "path": "codex-rs/hepta-learning-ledger/src/retrieval_assignment_tests.rs",
+      "object": "8f68f836e34bee5e583764626b58f868379ffb84"
     },
     {
       "path": "codex-rs/hepta-memory-retrieval",
-      "object": "1726d1438e550f9703186b80317cfa4a9a31af84"
+      "object": "036d72b16ec8bd02c2ef69b0e370ae1a8085c3a0"
     },
     {
       "path": "codex-rs/hepta-memory-retrieval/src/decision.rs",
@@ -260,15 +346,15 @@
     },
     {
       "path": "codex-rs/hepta-memory-retrieval/src/decision_tests.rs",
-      "object": "913279edc53383c07fbb66ac283b127bc1b4a22d"
+      "object": "096a12bd1ffaed2b8f51458c8ef16e4084559a00"
     },
     {
       "path": "codex-rs/hepta-memory-retrieval/src/engram.rs",
-      "object": "2d2df3efb3cfcfe0c785c4e1369a68a8712258b0"
+      "object": "0c0516d3504ede04e15ff5ea3534307666c0ec42"
     },
     {
       "path": "codex-rs/hepta-memory-retrieval/src/engram_tests.rs",
-      "object": "b87318ada8fe56aa720661cd77b79399885417f2"
+      "object": "de293d661e54b10f4b119980c95975e4d967f9d9"
     },
     {
       "path": "codex-rs/hepta-memory-retrieval/src/generation_bound.rs",
@@ -276,7 +362,7 @@
     },
     {
       "path": "codex-rs/hepta-memory-retrieval/src/generation_bound_tests.rs",
-      "object": "7d9ba67c030067ce774544dfd30a431a11b46cc6"
+      "object": "5161f0bfde4f6bf39db0aa873115020cdd098107"
     },
     {
       "path": "codex-rs/hepta-memory-retrieval/src/generator.rs",
@@ -284,7 +370,7 @@
     },
     {
       "path": "codex-rs/hepta-memory-retrieval/src/generator_tests.rs",
-      "object": "0e85cfad1b66c7294981e66b37eb494dffe15fea"
+      "object": "2e69f59970f083e289e9d9d062fbc5b432585495"
     },
     {
       "path": "codex-rs/hepta-memory-retrieval/src/v2.rs",
@@ -295,8 +381,49 @@
       "object": "b7106760e9a336177b4b05973ba9e52ada3d13f7"
     },
     {
+      "path": "codex-rs/hepta-memory/Cargo.toml",
+      "object": "6ba04f39f78e7d6295c9922d279e37e0492180f2"
+    },
+    {
+      "path": "codex-rs/hepta-memory/src/cognitive_intelligence_writer.rs",
+      "object": "a5139d71d18aa455babb87bbdc8de45a24a967ba"
+    },
+    {
+      "path": "codex-rs/hepta-memory/src/cognitive_kg_store.rs",
+      "object": "14702d68d7f9e5c25ac76d2605bdb958cecc0803"
+    },
+    {
+      "path": "codex-rs/hepta-memory/src/cognitive_model.rs",
+      "object": "38f87484a8e07da934ceb429ff73f9104d9241a0"
+    },
+    {
+      "path": "codex-rs/hepta-memory/src/cognitive_retrieval.rs",
+      "object": "3d4a656b34ab0e9623d6c1081346f81eaa54a5cd"
+    },
+    {
+      "path": "codex-rs/hepta-memory/src/cognitive_retrieval_adapter.rs",
+      "object": "255461531b165634463de79f4aee92f1de6ffc08"
+    },
+    {
+      "path": "codex-rs/hepta-memory/src/cognitive_retrieval_adapter_tests.rs",
+      "object": "4ae4274836a7412ce1ce1581c4f7c002a45edf4d"
+    },
+    {
+      "path": "codex-rs/hepta-memory/src/cognitive_retrieval_observation.rs",
+      "object": "560783823aa390a1ee4767f05d6a2f0551cdd120"
+    },
+    {
+      "path": "codex-rs/hepta-memory/src/cognitive_retrieval_observation_tests.rs",
+      "object": "d3d93e441bb05b97def0b84964e28361db1b0e06"
+    },
+    {
       "path": "docs/modules/memory.retrieval/TECHNICAL.md",
       "object": "5b04a2e04f9a20d3337cc460b17cc0814a7e9bc4"
+    },
+    {
+      "path": "qualification/memory-retrieval/TARGET_HOST.md",
+      "object": "91713f7cf1be82f54c79eab5715d0860b8475eac"
     }
-  ]
+  ],
+  "sourceObservationScope": "Current source navigation was independently re-observed at sourceBase. Source objects and observed paths bind that source snapshot; this observation does not renew historical execution, acceptance, activation or release evidence."
 }

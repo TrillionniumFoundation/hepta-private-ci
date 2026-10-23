@@ -67,7 +67,9 @@ fn output(status: NativeRunStatus, tokens: Option<u64>) -> NativeRunOutput {
 }
 
 fn start(control: &mut DurableInferenceControl, id: &str) {
-    control.reserve_native(request(id), 1).unwrap();
+    control
+        .reserve_native(request(id), /*maximum_in_flight*/ 1)
+        .unwrap();
     control.dispatch_native(id, dispatch()).unwrap();
     control.native_started(id, "turn-1".to_string()).unwrap();
 }
@@ -86,31 +88,46 @@ fn completed_owner_ready_without_codex_witness_is_not_success() {
 #[test]
 fn duplicate_reopen_preserves_exact_binding_and_reserves_only_once() {
     let path = path("duplicate");
-    let mut control = DurableInferenceControl::open(&path, 8).unwrap();
-    let reserved = control.reserve_native(request("r1"), 1).unwrap();
-    assert_eq!(control.reserve_native(request("r1"), 1).unwrap(), reserved);
+    let mut control = DurableInferenceControl::open(&path, /*capacity*/ 8).unwrap();
+    let reserved = control
+        .reserve_native(request("r1"), /*maximum_in_flight*/ 1)
+        .unwrap();
+    assert_eq!(
+        control
+            .reserve_native(request("r1"), /*maximum_in_flight*/ 1)
+            .unwrap(),
+        reserved
+    );
     let mut changed = request("r1");
     changed.worker_generation += 1;
-    assert_eq!(control.reserve_native(changed, 1), Err(Error::Conflict));
     assert_eq!(
-        control.reserve_native(request("r1"), 2),
+        control.reserve_native(changed, /*maximum_in_flight*/ 1),
         Err(Error::Conflict)
     );
     assert_eq!(
-        control.reserve_native(request("r2"), 1),
+        control.reserve_native(request("r1"), /*maximum_in_flight*/ 2),
+        Err(Error::Conflict)
+    );
+    assert_eq!(
+        control.reserve_native(request("r2"), /*maximum_in_flight*/ 1),
         Err(Error::CapacityExceeded)
     );
     control.dispatch_native("r1", dispatch()).unwrap();
     let expected = control.native_record("r1").unwrap().clone();
     drop(control);
-    let mut reopened = DurableInferenceControl::open(&path, 8).unwrap();
-    assert_eq!(reopened.reserve_native(request("r1"), 1).unwrap(), expected);
+    let mut reopened = DurableInferenceControl::open(&path, /*capacity*/ 8).unwrap();
+    assert_eq!(
+        reopened
+            .reserve_native(request("r1"), /*maximum_in_flight*/ 1)
+            .unwrap(),
+        expected
+    );
     assert_eq!(
         reopened.dispatch_native("r1", dispatch()),
         Err(Error::InvalidTransition)
     );
     assert_eq!(
-        reopened.reserve_native(request("r2"), 1),
+        reopened.reserve_native(request("r2"), /*maximum_in_flight*/ 1),
         Err(Error::CapacityExceeded)
     );
     drop(reopened);
@@ -120,27 +137,32 @@ fn duplicate_reopen_preserves_exact_binding_and_reserves_only_once() {
 #[test]
 fn unknown_execution_holds_slot_and_late_terminal_settles_real_usage() {
     let path = path("unknown");
-    let mut control = DurableInferenceControl::open(&path, 8).unwrap();
+    let mut control = DurableInferenceControl::open(&path, /*capacity*/ 8).unwrap();
     start(&mut control, "r1");
     let unknown = control
-        .settle_native("r1", output(NativeRunStatus::Indeterminate, None))
+        .settle_native(
+            "r1",
+            output(NativeRunStatus::Indeterminate, /*tokens*/ None),
+        )
         .unwrap();
     assert_eq!(unknown.state, NativeReservationState::Indeterminate);
     assert_eq!(unknown.observation.unwrap().observed_output_tokens, None);
     assert_eq!(
-        control.reserve_native(request("r2"), 1),
+        control.reserve_native(request("r2"), /*maximum_in_flight*/ 1),
         Err(Error::CapacityExceeded)
     );
     drop(control);
-    let mut control = DurableInferenceControl::open(&path, 8).unwrap();
+    let mut control = DurableInferenceControl::open(&path, /*capacity*/ 8).unwrap();
     // No synthetic u32 cap is allowed to erase an actually observed overrun.
     let terminal = output(NativeRunStatus::Completed, Some(u64::from(u32::MAX) + 1));
     let settled = control.settle_native("r1", terminal.clone()).unwrap();
     assert_eq!(settled.state, NativeReservationState::Released);
     assert_eq!(control.settle_native("r1", terminal).unwrap(), settled);
-    control.reserve_native(request("r2"), 1).unwrap();
+    control
+        .reserve_native(request("r2"), /*maximum_in_flight*/ 1)
+        .unwrap();
     drop(control);
-    let control = DurableInferenceControl::open(&path, 8).unwrap();
+    let control = DurableInferenceControl::open(&path, /*capacity*/ 8).unwrap();
     assert_eq!(control.native_record("r1"), Some(&settled));
     drop(control);
     std::fs::remove_file(path).unwrap();
@@ -149,22 +171,22 @@ fn unknown_execution_holds_slot_and_late_terminal_settles_real_usage() {
 #[test]
 fn cancellation_intent_and_terminal_failure_do_not_invent_zero_usage() {
     let path = path("cancel");
-    let mut control = DurableInferenceControl::open(&path, 8).unwrap();
+    let mut control = DurableInferenceControl::open(&path, /*capacity*/ 8).unwrap();
     start(&mut control, "r1");
     let cancelling = control.cancel_native("r1").unwrap();
     assert_eq!(control.cancel_native("r1").unwrap(), cancelling);
     assert_eq!(
-        control.reserve_native(request("r2"), 1),
+        control.reserve_native(request("r2"), /*maximum_in_flight*/ 1),
         Err(Error::CapacityExceeded)
     );
-    let terminal = output(NativeRunStatus::Interrupted, None);
+    let terminal = output(NativeRunStatus::Interrupted, /*tokens*/ None);
     let interrupted = control.settle_native("r1", terminal.clone()).unwrap();
     assert_eq!(interrupted.state, NativeReservationState::Released);
     assert!(interrupted.cancel_requested);
     assert_eq!(interrupted.observation, Some(terminal));
     start(&mut control, "r2");
     let failed = control
-        .settle_native("r2", output(NativeRunStatus::Failed, None))
+        .settle_native("r2", output(NativeRunStatus::Failed, /*tokens*/ None))
         .unwrap();
     assert_eq!(failed.observation.unwrap().observed_output_tokens, None);
     assert_eq!(failed.state, NativeReservationState::Released);
@@ -175,10 +197,10 @@ fn cancellation_intent_and_terminal_failure_do_not_invent_zero_usage() {
 #[test]
 fn missing_terminal_usage_can_be_completed_without_changing_the_outcome() {
     let path = path("late-usage");
-    let mut control = DurableInferenceControl::open(&path, 8).unwrap();
+    let mut control = DurableInferenceControl::open(&path, /*capacity*/ 8).unwrap();
     start(&mut control, "r1");
     control
-        .settle_native("r1", output(NativeRunStatus::Completed, None))
+        .settle_native("r1", output(NativeRunStatus::Completed, /*tokens*/ None))
         .unwrap();
     let settled = control
         .settle_native("r1", output(NativeRunStatus::Completed, Some(27)))
@@ -198,7 +220,7 @@ fn missing_terminal_usage_can_be_completed_without_changing_the_outcome() {
         Err(Error::AssignmentMismatch)
     );
     drop(control);
-    let control = DurableInferenceControl::open(&path, 8).unwrap();
+    let control = DurableInferenceControl::open(&path, /*capacity*/ 8).unwrap();
     assert_eq!(control.native_record("r1"), Some(&settled));
     drop(control);
     std::fs::remove_file(path).unwrap();
@@ -207,8 +229,10 @@ fn missing_terminal_usage_can_be_completed_without_changing_the_outcome() {
 #[test]
 fn pre_dispatch_stop_releases_without_claiming_provider_terminal() {
     let path = path("before");
-    let mut control = DurableInferenceControl::open(&path, 8).unwrap();
-    control.reserve_native(request("r1"), 1).unwrap();
+    let mut control = DurableInferenceControl::open(&path, /*capacity*/ 8).unwrap();
+    control
+        .reserve_native(request("r1"), /*maximum_in_flight*/ 1)
+        .unwrap();
     let stopped = control
         .stop_native_before_dispatch("r1", "cancelled".to_string())
         .unwrap();
@@ -224,7 +248,7 @@ fn pre_dispatch_stop_releases_without_claiming_provider_terminal() {
         Err(Error::InvalidTransition)
     );
     drop(control);
-    let control = DurableInferenceControl::open(&path, 8).unwrap();
+    let control = DurableInferenceControl::open(&path, /*capacity*/ 8).unwrap();
     assert_eq!(control.native_record("r1"), Some(&stopped));
     drop(control);
     std::fs::remove_file(path).unwrap();
@@ -233,8 +257,10 @@ fn pre_dispatch_stop_releases_without_claiming_provider_terminal() {
 #[test]
 fn post_dispatch_pre_turn_stop_is_durable_and_releases_without_provider_terminal() {
     let path = path("finalize-stop");
-    let mut control = DurableInferenceControl::open(&path, 8).unwrap();
-    control.reserve_native(request("r1"), 1).unwrap();
+    let mut control = DurableInferenceControl::open(&path, /*capacity*/ 8).unwrap();
+    control
+        .reserve_native(request("r1"), /*maximum_in_flight*/ 1)
+        .unwrap();
     let (_, token) = control
         .dispatch_native_with_pre_effect_abort("r1", dispatch())
         .unwrap();
@@ -246,7 +272,9 @@ fn post_dispatch_pre_turn_stop_is_durable_and_releases_without_provider_terminal
     assert_eq!(stopped.observation, None);
     assert!(stopped.dispatch.is_some());
 
-    control.reserve_native(request("r2"), 1).unwrap();
+    control
+        .reserve_native(request("r2"), /*maximum_in_flight*/ 1)
+        .unwrap();
     let (_, too_late_token) = control
         .dispatch_native_with_pre_effect_abort("r2", dispatch())
         .unwrap();
@@ -257,7 +285,7 @@ fn post_dispatch_pre_turn_stop_is_durable_and_releases_without_provider_terminal
     );
 
     drop(control);
-    let control = DurableInferenceControl::open(&path, 8).unwrap();
+    let control = DurableInferenceControl::open(&path, /*capacity*/ 8).unwrap();
     assert_eq!(control.native_record("r1"), Some(&stopped));
     drop(control);
     std::fs::remove_file(path).unwrap();
@@ -266,8 +294,10 @@ fn post_dispatch_pre_turn_stop_is_durable_and_releases_without_provider_terminal
 #[test]
 fn one_shot_pre_effect_abort_releases_only_the_live_write_ahead() {
     let path = path("pre-effect-abort");
-    let mut control = DurableInferenceControl::open(&path, 8).unwrap();
-    control.reserve_native(request("r1"), 1).unwrap();
+    let mut control = DurableInferenceControl::open(&path, /*capacity*/ 8).unwrap();
+    control
+        .reserve_native(request("r1"), /*maximum_in_flight*/ 1)
+        .unwrap();
     let (_, token) = control
         .dispatch_native_with_pre_effect_abort("r1", dispatch())
         .unwrap();
@@ -280,10 +310,12 @@ fn one_shot_pre_effect_abort_releases_only_the_live_write_ahead() {
         Some("final-use denied before send")
     );
     assert_eq!(stopped.observation, None);
-    control.reserve_native(request("r2"), 1).unwrap();
+    control
+        .reserve_native(request("r2"), /*maximum_in_flight*/ 1)
+        .unwrap();
 
     drop(control);
-    let mut reopened = DurableInferenceControl::open(&path, 8).unwrap();
+    let mut reopened = DurableInferenceControl::open(&path, /*capacity*/ 8).unwrap();
     assert_eq!(reopened.native_record("r1"), Some(&stopped));
     assert_eq!(
         reopened.stop_native_before_dispatch("r1", "already stopped".to_string()),
@@ -296,15 +328,17 @@ fn one_shot_pre_effect_abort_releases_only_the_live_write_ahead() {
 #[test]
 fn lost_pre_effect_abort_token_becomes_reconcile_only_on_reopen() {
     let path = path("pre-effect-recovery");
-    let mut control = DurableInferenceControl::open(&path, 8).unwrap();
-    control.reserve_native(request("r1"), 1).unwrap();
+    let mut control = DurableInferenceControl::open(&path, /*capacity*/ 8).unwrap();
+    control
+        .reserve_native(request("r1"), /*maximum_in_flight*/ 1)
+        .unwrap();
     let (_, token) = control
         .dispatch_native_with_pre_effect_abort("r1", dispatch())
         .unwrap();
     drop(token);
     drop(control);
 
-    let mut reopened = DurableInferenceControl::open(&path, 8).unwrap();
+    let mut reopened = DurableInferenceControl::open(&path, /*capacity*/ 8).unwrap();
     assert_eq!(
         reopened.native_record("r1").unwrap().state,
         NativeReservationState::Dispatching
@@ -314,7 +348,7 @@ fn lost_pre_effect_abort_token_becomes_reconcile_only_on_reopen() {
         Err(Error::InvalidTransition)
     );
     assert_eq!(
-        reopened.reserve_native(request("r2"), 1),
+        reopened.reserve_native(request("r2"), /*maximum_in_flight*/ 1),
         Err(Error::CapacityExceeded)
     );
     drop(reopened);
@@ -324,8 +358,10 @@ fn lost_pre_effect_abort_token_becomes_reconcile_only_on_reopen() {
 #[test]
 fn explicit_dispatch_rejection_releases_without_claiming_provider_terminal() {
     let path = path("dispatch-rejected");
-    let mut control = DurableInferenceControl::open(&path, 8).unwrap();
-    control.reserve_native(request("r1"), 1).unwrap();
+    let mut control = DurableInferenceControl::open(&path, /*capacity*/ 8).unwrap();
+    control
+        .reserve_native(request("r1"), /*maximum_in_flight*/ 1)
+        .unwrap();
     control.dispatch_native("r1", dispatch()).unwrap();
     let rejection = NativeDispatchRejection {
         status: NativeDispatchRejectionStatus::Overloaded,
@@ -340,10 +376,12 @@ fn explicit_dispatch_rejection_releases_without_claiming_provider_terminal() {
     assert_eq!(rejected.dispatch_rejection, Some(rejection));
     assert_eq!(rejected.observation, None);
     assert_eq!(rejected.turn_id, None);
-    control.reserve_native(request("r2"), 1).unwrap();
+    control
+        .reserve_native(request("r2"), /*maximum_in_flight*/ 1)
+        .unwrap();
     drop(control);
 
-    let control = DurableInferenceControl::open(&path, 8).unwrap();
+    let control = DurableInferenceControl::open(&path, /*capacity*/ 8).unwrap();
     assert_eq!(control.native_record("r1"), Some(&rejected));
     drop(control);
     std::fs::remove_file(path).unwrap();
@@ -352,8 +390,10 @@ fn explicit_dispatch_rejection_releases_without_claiming_provider_terminal() {
 #[test]
 fn generic_dispatch_rejection_holds_slot_when_pre_admission_is_not_proven() {
     let path = path("dispatch-rejected-unknown");
-    let mut control = DurableInferenceControl::open(&path, 8).unwrap();
-    control.reserve_native(request("r1"), 1).unwrap();
+    let mut control = DurableInferenceControl::open(&path, /*capacity*/ 8).unwrap();
+    control
+        .reserve_native(request("r1"), /*maximum_in_flight*/ 1)
+        .unwrap();
     control.dispatch_native("r1", dispatch()).unwrap();
     let rejection = NativeDispatchRejection {
         status: NativeDispatchRejectionStatus::Rejected,
@@ -368,7 +408,7 @@ fn generic_dispatch_rejection_holds_slot_when_pre_admission_is_not_proven() {
     assert_eq!(rejected.dispatch_rejection, Some(rejection));
     assert_eq!(rejected.observation, None);
     assert_eq!(
-        control.reserve_native(request("r2"), 1),
+        control.reserve_native(request("r2"), /*maximum_in_flight*/ 1),
         Err(Error::CapacityExceeded)
     );
     drop(control);
@@ -378,7 +418,7 @@ fn generic_dispatch_rejection_holds_slot_when_pre_admission_is_not_proven() {
 #[test]
 fn codex_bound_terminal_requires_adapter_correlation_witness() {
     let path = path("terminal-witness");
-    let mut control = DurableInferenceControl::open(&path, 8).unwrap();
+    let mut control = DurableInferenceControl::open(&path, /*capacity*/ 8).unwrap();
     start(&mut control, "r1");
     let mut dishonest = output(NativeRunStatus::Completed, Some(1));
     dishonest.codex_terminal_correlation_digest = None;
@@ -394,7 +434,7 @@ fn codex_bound_terminal_requires_adapter_correlation_witness() {
 fn journal_byte_budget_rejects_before_append_and_replay_checks_actual_bytes() {
     use std::io::Write;
     let path = path("byte-budget");
-    let mut control = DurableInferenceControl::open(&path, 8).unwrap();
+    let mut control = DurableInferenceControl::open(&path, /*capacity*/ 8).unwrap();
     start(&mut control, "r1");
     let mut observed = output(NativeRunStatus::Completed, Some(0));
     observed.output = "x".repeat(1024 * 1024);
@@ -415,7 +455,7 @@ fn journal_byte_budget_rejects_before_append_and_replay_checks_actual_bytes() {
     }
     let expected = control.native_record("r1").unwrap().clone();
     drop(control);
-    let control = DurableInferenceControl::open(&path, 8).unwrap();
+    let control = DurableInferenceControl::open(&path, /*capacity*/ 8).unwrap();
     assert_eq!(control.native_record("r1"), Some(&expected));
     drop(control);
     // A syntactically valid extra observation still exceeds the total budget.
@@ -432,7 +472,7 @@ fn journal_byte_budget_rejects_before_append_and_replay_checks_actual_bytes() {
     drop(file);
     let oversized_bytes = std::fs::metadata(&path).unwrap().len();
     assert!(matches!(
-        DurableInferenceControl::open(&path, 8),
+        DurableInferenceControl::open(&path, /*capacity*/ 8),
         Err(Error::CapacityExceeded)
     ));
     assert_eq!(std::fs::metadata(&path).unwrap().len(), oversized_bytes);
@@ -446,7 +486,7 @@ fn oversized_and_incomplete_lines_are_rejected_without_truncation() {
     oversized.push(b'\n');
     std::fs::write(&path, &oversized).unwrap();
     assert!(matches!(
-        DurableInferenceControl::open(&path, 8),
+        DurableInferenceControl::open(&path, /*capacity*/ 8),
         Err(Error::CapacityExceeded)
     ));
     assert_eq!(
@@ -454,15 +494,17 @@ fn oversized_and_incomplete_lines_are_rejected_without_truncation() {
         oversized.len() as u64
     );
     std::fs::remove_file(&path).unwrap();
-    let mut control = DurableInferenceControl::open(&path, 8).unwrap();
-    control.reserve_native(request("r1"), 1).unwrap();
+    let mut control = DurableInferenceControl::open(&path, /*capacity*/ 8).unwrap();
+    control
+        .reserve_native(request("r1"), /*maximum_in_flight*/ 1)
+        .unwrap();
     drop(control);
     let file = std::fs::OpenOptions::new().write(true).open(&path).unwrap();
     let truncated_length = file.metadata().unwrap().len() - 1;
     file.set_len(truncated_length).unwrap();
     drop(file);
     assert!(matches!(
-        DurableInferenceControl::open(&path, 8),
+        DurableInferenceControl::open(&path, /*capacity*/ 8),
         Err(Error::CorruptJournal("incomplete line"))
     ));
     assert_eq!(std::fs::metadata(&path).unwrap().len(), truncated_length);
@@ -472,7 +514,7 @@ fn oversized_and_incomplete_lines_are_rejected_without_truncation() {
 #[test]
 fn late_completed_releases_slot_without_erasing_authority_loss() {
     let path = path("authority-loss");
-    let mut control = DurableInferenceControl::open(&path, 8).unwrap();
+    let mut control = DurableInferenceControl::open(&path, /*capacity*/ 8).unwrap();
     start(&mut control, "r1");
     control.cancel_native("r1").unwrap();
     let mut interrupted_observation = output(NativeRunStatus::Indeterminate, Some(42));
@@ -492,7 +534,9 @@ fn late_completed_releases_slot_without_erasing_authority_loss() {
     assert!(settled.cancel_requested);
     assert_eq!(settled.observation, Some(terminal.clone()));
     assert!(!terminal.succeeded());
-    control.reserve_native(request("r2"), 1).unwrap();
+    control
+        .reserve_native(request("r2"), /*maximum_in_flight*/ 1)
+        .unwrap();
     let mut dishonest_upgrade = terminal;
     dishonest_upgrade.owner_authority = NativeOwnerAuthority::ObservedReady;
     assert_eq!(
@@ -500,7 +544,7 @@ fn late_completed_releases_slot_without_erasing_authority_loss() {
         Err(Error::Conflict)
     );
     drop(control);
-    let control = DurableInferenceControl::open(&path, 8).unwrap();
+    let control = DurableInferenceControl::open(&path, /*capacity*/ 8).unwrap();
     assert_eq!(control.native_record("r1"), Some(&settled));
     assert!(
         !control
@@ -518,7 +562,7 @@ fn late_completed_releases_slot_without_erasing_authority_loss() {
 #[test]
 fn legacy_journal_completion_without_authority_cannot_be_replayed_as_success() {
     let path = path("legacy-authority");
-    let mut control = DurableInferenceControl::open(&path, 8).unwrap();
+    let mut control = DurableInferenceControl::open(&path, /*capacity*/ 8).unwrap();
     start(&mut control, "r1");
     let mut old_output = output(NativeRunStatus::Completed, Some(19));
     old_output.owner_authority = NativeOwnerAuthority::ObservedReady;
@@ -539,7 +583,7 @@ fn legacy_journal_completion_without_authority_cannot_be_replayed_as_success() {
         ))
         .unwrap();
     drop(control);
-    let mut control = DurableInferenceControl::open(&path, 8).unwrap();
+    let mut control = DurableInferenceControl::open(&path, /*capacity*/ 8).unwrap();
     let mut replayed = control
         .native_record("r1")
         .unwrap()
@@ -562,8 +606,10 @@ fn legacy_journal_completion_without_authority_cannot_be_replayed_as_success() {
 #[test]
 fn historical_codex_dispatch_without_frontier_reopens_but_cannot_upgrade_to_success() {
     let path = path("historical-codex-frontier");
-    let mut control = DurableInferenceControl::open(&path, 8).unwrap();
-    control.reserve_native(request("r1"), 1).unwrap();
+    let mut control = DurableInferenceControl::open(&path, /*capacity*/ 8).unwrap();
+    control
+        .reserve_native(request("r1"), /*maximum_in_flight*/ 1)
+        .unwrap();
     let mut historical = dispatch();
     historical.codex_authority_epoch = None;
     historical.codex_revocation_revision = None;
@@ -572,7 +618,7 @@ fn historical_codex_dispatch_without_frontier_reopens_but_cannot_upgrade_to_succ
     control.native_started("r1", "turn-1".to_string()).unwrap();
     drop(control);
 
-    let mut control = DurableInferenceControl::open(&path, 8).unwrap();
+    let mut control = DurableInferenceControl::open(&path, /*capacity*/ 8).unwrap();
     let reopened = control.native_record("r1").unwrap();
     assert_eq!(
         reopened

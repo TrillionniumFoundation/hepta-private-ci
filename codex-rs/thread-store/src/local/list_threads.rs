@@ -416,7 +416,7 @@ mod tests {
     #[tokio::test]
     async fn list_threads_preserves_sqlite_title_search_results() {
         let home = TempDir::new().expect("temp dir");
-        let config = test_config(home.path());
+        let mut config = test_config(home.path());
         let uuid = Uuid::from_u128(103);
         let thread_id = ThreadId::from_string(&uuid.to_string()).expect("valid thread id");
         let rollout_path = home.path().join("rollout-title-search.jsonl");
@@ -428,6 +428,7 @@ mod tests {
         )
         .await
         .expect("state db should initialize");
+        config.sqlite = runtime.sqlite().clone();
         let store = LocalThreadStore::new(config.clone(), Some(runtime.clone()));
         runtime
             .mark_backfill_complete(/*last_watermark*/ None)
@@ -486,7 +487,7 @@ mod tests {
     #[tokio::test]
     async fn list_paginated_threads_uses_sqlite_name_over_legacy_compatibility() {
         let home = TempDir::new().expect("temp dir");
-        let config = test_config(home.path());
+        let mut config = test_config(home.path());
         let uuid = Uuid::from_u128(104);
         let thread_id = ThreadId::from_string(&uuid.to_string()).expect("valid thread id");
         let rollout_path = home.path().join("rollout-paginated-name-search.jsonl");
@@ -498,6 +499,7 @@ mod tests {
         )
         .await
         .expect("state db should initialize");
+        config.sqlite = runtime.sqlite().clone();
         let store = LocalThreadStore::new(config.clone(), Some(runtime.clone()));
         runtime
             .mark_backfill_complete(/*last_watermark*/ None)

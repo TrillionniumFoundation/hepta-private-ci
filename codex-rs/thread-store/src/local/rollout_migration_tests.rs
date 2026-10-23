@@ -275,17 +275,18 @@ fn assert_failed_with_reason(
 }
 
 async fn indexed_store(home: &Path) -> LocalThreadStore {
-    let config = test_config(home);
-    let rollout_config = RolloutConfig {
+    let mut config = test_config(home);
+    let mut rollout_config = RolloutConfig {
         codex_home: config.codex_home.clone(),
         sqlite: config.sqlite.clone(),
         cwd: home.to_path_buf(),
         model_provider_id: config.default_model_provider_id.clone(),
         generate_memories: false,
     };
-    let state_db = codex_rollout::state_db::try_init(&rollout_config)
+    let state_db = codex_rollout::state_db::try_init(&mut rollout_config)
         .await
         .expect("backfill legacy thread metadata");
+    config.sqlite = rollout_config.sqlite;
     LocalThreadStore::new(config, Some(state_db))
 }
 

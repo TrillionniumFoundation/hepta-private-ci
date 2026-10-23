@@ -65,6 +65,24 @@ async fn authorized_read_rpc_is_capability_gated_and_denies_outside_root() -> Re
 
     let sandbox = read_only_sandbox(&allowed_dir)?;
     let info = client.environment_info().await?;
+    for max_bytes in [0, u64::MAX] {
+        let error = client
+            .fs_read_file_authorized(FsReadFileAuthorizedParams {
+                path: PathUri::from_host_native_path(&allowed_file)?,
+                sandbox: sandbox.clone(),
+                max_bytes,
+            })
+            .await
+            .expect_err("invalid bounds must be rejected before the capability check");
+        let ExecServerError::Server { code, message } = error else {
+            bail!("expected invalid-bound rejection, got {error:?}");
+        };
+        assert_eq!(code, -32600);
+        assert_eq!(
+            message,
+            "authorized file read bound must leave room for an overflow sentinel"
+        );
+    }
     let allowed = client
         .fs_read_file_authorized(FsReadFileAuthorizedParams {
             path: PathUri::from_host_native_path(&allowed_file)?,
@@ -101,6 +119,12 @@ async fn authorized_read_rpc_is_capability_gated_and_denies_outside_root() -> Re
         };
         assert_eq!(*code, -32600);
         assert_eq!(message, "Permission denied");
+    } else {
+        let ExecServerError::Server { code, message } = &denied else {
+            bail!("expected unsupported authorized read, got {denied:?}");
+        };
+        assert_eq!(*code, -32603);
+        assert_eq!(message, "bounded authorized file reads are unsupported");
     }
     assert!(!denied.to_string().contains("secret.txt"));
 

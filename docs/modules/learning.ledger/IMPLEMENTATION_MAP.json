@@ -2,8 +2,8 @@
   "schema": "hepta.module-implementation-map.v3",
   "schemaVersion": 3,
   "sourceBase": {
-    "commit": "e8e81b7d541a81e75635cc1c0a713edaedb999d5",
-    "tree": "aaa6e4ecb7d45d01ea88f93b6a716e7dca3cf395"
+    "commit": "2ef518504585e0ad3a617e7606abc412b41894c4",
+    "tree": "fe196ed324179d37e06d56ef46ab2971a2f6e6c1"
   },
   "laneId": "LANE-E-LEARNING",
   "module": "learning.ledger",
@@ -178,7 +178,7 @@
       "designOperation": "ledger_witness_store",
       "mappingClass": "owner_native",
       "delegatedCallees": [],
-      "sourceBlob": "ba44274288e20aa82a9fbb49967d6b520ae07d3c"
+      "sourceBlob": "8a4ab6d671be3639817015ab0b7496c1e1f0ab20"
     },
     {
       "operation": "activate_learning_trust",
@@ -399,8 +399,24 @@
   ],
   "sourceObjects": [
     {
+      "path": "codex-rs/Cargo.lock",
+      "object": "03d69dfb1eb682f332edbe77f5845a291ca44b4e"
+    },
+    {
+      "path": "codex-rs/Cargo.toml",
+      "object": "70c7b8dc2bc9768f6fc673049c2e348baddce838"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/lane_b_runtime.rs",
+      "object": "dfba6f9599d2736f977a84ad36482f8a0319935b"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/lane_b_runtime_tests.rs",
+      "object": "aed29fe2689084b405dba3864dfcc3375bbf6708"
+    },
+    {
       "path": "codex-rs/hepta-agentd/tests/terminal_cell_owner.rs",
-      "object": "e6a6e032c59f36859327c08bbbcc0c0c7353b399"
+      "object": "0441205938ba338911bdcf35cbbfd88c3a5f4e4b"
     },
     {
       "path": "codex-rs/hepta-intelligence/src/evaluated_shadow.rs",
@@ -408,19 +424,19 @@
     },
     {
       "path": "codex-rs/hepta-intelligence/src/evaluated_shadow_segment_tests.rs",
-      "object": "9de2be23178bf344eacf09eaff464b672351c860"
+      "object": "d5bb2fcd262feead81536add997f5dd66917b90a"
     },
     {
       "path": "codex-rs/hepta-intelligence/src/evaluated_shadow_tests.rs",
-      "object": "80996b19831da4b6a88b1282157ca82ec526e8d8"
+      "object": "d00119e687a6f2826c4ec2bac63fb762ccdf2ccd"
     },
     {
       "path": "codex-rs/hepta-intelligence/src/outcome_credit_v2.rs",
-      "object": "2d8e226a87cf0346bbfbb0ddb6b00cb4e973d742"
+      "object": "b46598498d827b7bff37c46fe50029c35d6bf77f"
     },
     {
       "path": "codex-rs/hepta-learning-ledger",
-      "object": "e0413c9f6eecfd1665bafb7a1673c9726a9f71fa"
+      "object": "bcab8f86cae941448798563e23b5a8538655d235"
     },
     {
       "path": "codex-rs/hepta-learning-ledger/src/causal_v2.rs",
@@ -428,7 +444,7 @@
     },
     {
       "path": "codex-rs/hepta-learning-ledger/src/causal_v2_tests.rs",
-      "object": "40d8379f5ef720b74a961ced765c9be024a83605"
+      "object": "7652e1692d8caa87211e8fda16988fb4b27aa951"
     },
     {
       "path": "codex-rs/hepta-learning-ledger/src/checkpoint.rs",
@@ -436,7 +452,7 @@
     },
     {
       "path": "codex-rs/hepta-learning-ledger/src/checkpoint_tests.rs",
-      "object": "21cf3b242ed8f64cfab361aea7e7fddba2b4ff85"
+      "object": "29f1e0bff0aa13bfa98b972b8c041ed606f69d77"
     },
     {
       "path": "codex-rs/hepta-learning-ledger/src/durable.rs",
@@ -444,7 +460,7 @@
     },
     {
       "path": "codex-rs/hepta-learning-ledger/src/ledger_tests.rs",
-      "object": "97847c20549507227cfc8400ca1b2a0d6b17aaf1"
+      "object": "efd38c14308514744d6b58632038ec4becf755c2"
     },
     {
       "path": "codex-rs/hepta-learning-ledger/src/production.rs",
@@ -452,7 +468,7 @@
     },
     {
       "path": "codex-rs/hepta-learning-ledger/src/production_tests.rs",
-      "object": "dd4bc76067733c4688df47756e2b0e2c9d998b35"
+      "object": "b7d35f6fa327cffbf04f9cfb6f4fce30f7cc703f"
     },
     {
       "path": "codex-rs/hepta-learning-ledger/src/protocol.rs",
@@ -460,7 +476,7 @@
     },
     {
       "path": "codex-rs/hepta-learning-ledger/src/protocol_tests.rs",
-      "object": "61f9b22a939f7c4b7880573fc12e2bc81bbde3f7"
+      "object": "cbe8a9371aa5b73b372e6a3ffaa42e0add246604"
     },
     {
       "path": "codex-rs/hepta-learning-ledger/src/recovery_work.rs",
@@ -468,15 +484,15 @@
     },
     {
       "path": "codex-rs/hepta-learning-ledger/src/run_start.rs",
-      "object": "adf96585c3efb947e35ae73cc096ca1d18d40a78"
+      "object": "e93f1208bddd3dba92a7eecf06873a3feff949e9"
     },
     {
       "path": "codex-rs/hepta-learning-ledger/src/run_start_tests.rs",
-      "object": "cfbb34705a6dee9a2b0c5afda76592109c83f86b"
+      "object": "70fc58a9d19defb8f7acae75a7482fe1a60b6865"
     },
     {
       "path": "codex-rs/hepta-learning-ledger/src/segments.rs",
-      "object": "ca537d5afffe8a94c93d5c4b19319c8599b450ac"
+      "object": "8e439d4149e7c5c2d290d53ff1f061d250232889"
     },
     {
       "path": "codex-rs/hepta-learning-ledger/src/signed_evidence.rs",
@@ -488,19 +504,108 @@
     },
     {
       "path": "codex-rs/hepta-learning-ledger/src/trust_distribution_tests.rs",
-      "object": "f41835aab0932243991c8df5e2e7cb25a28caadd"
+      "object": "0904f11e6703a9739dae3b5738205709d3467a3d"
     },
     {
       "path": "codex-rs/hepta-learning-ledger/src/witness.rs",
-      "object": "ba44274288e20aa82a9fbb49967d6b520ae07d3c"
+      "object": "8a4ab6d671be3639817015ab0b7496c1e1f0ab20"
     },
     {
       "path": "codex-rs/hepta-learning-ledger/src/witness_tests.rs",
-      "object": "94af8463ed0964f95c9c14a07ac8b1bb94671a46"
+      "object": "d4b587b89bd699fcbd9cac51be226654d7e31557"
+    },
+    {
+      "path": "docs/STATUS.md",
+      "object": "85a89d141ea690905a88146c5edefd4a2a1430f1"
+    },
+    {
+      "path": "docs/contracts/CONTRACTS.json",
+      "object": "a779872578ebce3dc61205b43519854133812ac2"
+    },
+    {
+      "path": "docs/contracts/PROTOCOL_SCHEMAS.json",
+      "object": "25bc4824c90d4aa4145949928e0da1944a61ab90"
+    },
+    {
+      "path": "docs/delivery/WORK_PACKAGES.json",
+      "object": "fd3977b7eb26f252ff1aff01710268e3ed3f6661"
+    },
+    {
+      "path": "docs/lane-e/END_TO_END_LEARNING_SEQUENCE.md",
+      "object": "960824a72d2f4031875e8b7feb4a80aad5c3c702"
+    },
+    {
+      "path": "docs/lane-e/LANE_E_IMPLEMENTATION_MATRIX.json",
+      "object": "de3ff278f79dfb5cdcca23bac690e706cbcf0023"
+    },
+    {
+      "path": "docs/lane-e/VERSION_COMPATIBILITY.md",
+      "object": "ba6554d7e4b38c25b01f36dda2fb835abd51de98"
+    },
+    {
+      "path": "docs/modules/MODULE_DOCS.json",
+      "object": "1ac87f5e5d295510524239da07537ee5b183d3c2"
     },
     {
       "path": "docs/modules/learning.ledger/TECHNICAL.md",
       "object": "9ddcc6bf01d6ce9a61a804f0c38fdbfa3d690d54"
+    },
+    {
+      "path": "qualification/gap-closure/PLAN_AUDIT.json",
+      "object": "251280d8b6097d2783cbc830642b854552d50a58"
+    },
+    {
+      "path": "qualification/lane-e/TEST_TRACEABILITY.json",
+      "object": "a007dc16c160cc337abfa019ddc0186505d01398"
+    },
+    {
+      "path": "qualification/module-execution-dossiers/IMPLEMENTATION_PROFILES.json",
+      "object": "58a8a1528a2752328789ba33482e94384d967c64"
+    },
+    {
+      "path": "qualification/module-execution-dossiers/detail/learning.ledger.md",
+      "object": "6373fa9fbafb583f2f4fc3b1170499d788fa8614"
+    },
+    {
+      "path": "scripts/hepta-implementation-maps.py",
+      "object": "e8ae0fd675b7e3ca2911b80af92cc21021789fbe"
+    },
+    {
+      "path": "scripts/hepta-lane-e-closure.py",
+      "object": "e945d748bc7755d622eecfcee995581d859e661a"
     }
+  ],
+  "observedAtHead": {
+    "commit": "2ef518504585e0ad3a617e7606abc412b41894c4",
+    "tree": "fe196ed324179d37e06d56ef46ab2971a2f6e6c1"
+  },
+  "sourceObservationScope": "Current source navigation was independently re-observed at sourceBase. Source objects and observed paths bind that source snapshot; this observation does not renew historical execution, acceptance, activation or release evidence.",
+  "currentSourceEvidenceScope": "The unchanged currentSourceEvidence and sourceEvidencePolicy fields retain the historical cbb3cee durable-run-start observation and its original no-drift policy. They do not claim absence of later source/test changes or current execution. Current navigation is independently bound by sourceBase, observedAtHead and sourceObjects.",
+  "observedSourcePaths": [
+    "codex-rs/Cargo.lock",
+    "codex-rs/Cargo.toml",
+    "codex-rs/hepta-agentd/src/lane_b_runtime.rs",
+    "codex-rs/hepta-agentd/src/lane_b_runtime_tests.rs",
+    "codex-rs/hepta-agentd/tests/terminal_cell_owner.rs",
+    "codex-rs/hepta-intelligence/src/evaluated_shadow.rs",
+    "codex-rs/hepta-intelligence/src/evaluated_shadow_segment_tests.rs",
+    "codex-rs/hepta-intelligence/src/evaluated_shadow_tests.rs",
+    "codex-rs/hepta-intelligence/src/outcome_credit_v2.rs",
+    "codex-rs/hepta-learning-ledger",
+    "docs/STATUS.md",
+    "docs/contracts/CONTRACTS.json",
+    "docs/contracts/PROTOCOL_SCHEMAS.json",
+    "docs/delivery/WORK_PACKAGES.json",
+    "docs/lane-e/END_TO_END_LEARNING_SEQUENCE.md",
+    "docs/lane-e/LANE_E_IMPLEMENTATION_MATRIX.json",
+    "docs/lane-e/VERSION_COMPATIBILITY.md",
+    "docs/modules/MODULE_DOCS.json",
+    "docs/modules/learning.ledger/TECHNICAL.md",
+    "qualification/gap-closure/PLAN_AUDIT.json",
+    "qualification/lane-e/TEST_TRACEABILITY.json",
+    "qualification/module-execution-dossiers/IMPLEMENTATION_PROFILES.json",
+    "qualification/module-execution-dossiers/detail/learning.ledger.md",
+    "scripts/hepta-implementation-maps.py",
+    "scripts/hepta-lane-e-closure.py"
   ]
 }

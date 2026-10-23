@@ -73,7 +73,7 @@ pub async fn run_main(
             format!("error parsing -c overrides: {e}"),
         )
     })?;
-    let config = ConfigBuilder::default()
+    let mut config = ConfigBuilder::default()
         .cli_overrides(cli_kv_overrides)
         .strict_config(strict_config)
         .build()
@@ -97,7 +97,7 @@ pub async fn run_main(
     })?;
     codex_core::otel_init::record_process_start(otel.as_ref(), OTEL_SERVICE_NAME);
     codex_core::otel_init::install_sqlite_telemetry(otel.as_ref(), OTEL_SERVICE_NAME);
-    let state_db = codex_core::init_state_db(&config).await;
+    let state_db = codex_core::init_state_db(&mut config).await;
     let environment_manager = Arc::new(
         EnvironmentManager::from_codex_home(
             config.codex_home.clone(),

@@ -34,9 +34,9 @@ fn snapshot_key() -> CognitiveSnapshotKeyV1 {
         knowledge_fact_frontier: 8,
         tombstone_frontier: 4,
         source_ledger_frontier: 11,
-        knowledge_graph_generation: generation(2),
-        compact_checkpoint_generation: generation(1),
-        prompt_registry_revision: revision(3),
+        knowledge_graph_generation: generation(/*value*/ 2),
+        compact_checkpoint_generation: generation(/*value*/ 1),
+        prompt_registry_revision: revision(/*value*/ 3),
         retrieval_profile_digest: digest("retrieval-profile"),
         encoder_preprocessor_digest: digest("encoder-profile"),
         authority_epoch: 5,
@@ -63,7 +63,7 @@ fn cue() -> MemoryCueV1 {
 fn record(number: u64) -> MemoryRecord {
     MemoryRecord {
         record_id: id(&format!("memory:{number}")),
-        revision: revision(1),
+        revision: revision(/*value*/ 1),
         kind: MemoryKind::Fact,
         content_digest: digest(&format!("content-{number}")),
         predecessor_digest: None,
@@ -133,7 +133,7 @@ fn policy() -> RetrievalPolicyV1 {
             },
         ],
         maximum_results: 8,
-        minimum_total_score: FixedQ32::from_raw(1),
+        minimum_total_score: FixedQ32::from_raw(/*raw*/ 1),
         maximum_ood: ProbabilityQ32::ONE,
         minimum_distinct_channels: 2,
         abstain_on_contradiction: true,
@@ -149,7 +149,7 @@ fn lexical_policy() -> RetrievalPolicyV1 {
             maximum_candidates: 16,
         }],
         maximum_results: 8,
-        minimum_total_score: FixedQ32::from_raw(1),
+        minimum_total_score: FixedQ32::from_raw(/*raw*/ 1),
         maximum_ood: ProbabilityQ32::ONE,
         minimum_distinct_channels: 1,
         abstain_on_contradiction: true,
@@ -176,13 +176,13 @@ fn compile_cue_is_the_validated_constructor() {
 
 #[test]
 fn generator_completeness_is_bound_even_with_identical_candidates() {
-    let record = record(1);
+    let record = record(/*number*/ 1);
     let exhausted = GeneratedCandidateInputV1::new(vec![batch(
         RetrievalGeneratorOwnerV1::CognitiveLexical,
         vec![candidate(
             record.clone(),
             RetrievalChannelV1::Lexical,
-            1,
+            /*rank*/ 1,
             "support",
         )],
         RetrievalSourceCompletenessV1::Exhausted,
@@ -190,7 +190,12 @@ fn generator_completeness_is_bound_even_with_identical_candidates() {
     .expect("exhausted input");
     let limited = GeneratedCandidateInputV1::new(vec![batch(
         RetrievalGeneratorOwnerV1::CognitiveLexical,
-        vec![candidate(record, RetrievalChannelV1::Lexical, 1, "support")],
+        vec![candidate(
+            record,
+            RetrievalChannelV1::Lexical,
+            /*rank*/ 1,
+            "support",
+        )],
         RetrievalSourceCompletenessV1::LimitReached,
     )])
     .expect("limited input");
@@ -202,14 +207,14 @@ fn generator_completeness_is_bound_even_with_identical_candidates() {
 
 #[test]
 fn associative_and_entity_owner_batches_merge_without_double_counting_channel() {
-    let record = record(1);
+    let record = record(/*number*/ 1);
     let input = GeneratedCandidateInputV1::new(vec![
         batch(
             RetrievalGeneratorOwnerV1::CognitiveEntity,
             vec![candidate(
                 record.clone(),
                 RetrievalChannelV1::Entity,
-                1,
+                /*rank*/ 1,
                 "entity-support",
             )],
             RetrievalSourceCompletenessV1::Exhausted,
@@ -219,7 +224,7 @@ fn associative_and_entity_owner_batches_merge_without_double_counting_channel() 
             vec![candidate(
                 record,
                 RetrievalChannelV1::Graph,
-                1,
+                /*rank*/ 1,
                 "graph-support",
             )],
             RetrievalSourceCompletenessV1::Exhausted,
@@ -238,7 +243,7 @@ fn tampered_generator_receipt_fails_closed() {
         RetrievalGeneratorOwnerV1::CognitiveTemporal,
         cue().snapshot_key.vector_digest,
         digest("owner-generation"),
-        0,
+        /*candidate_count*/ 0,
         RetrievalSourceCompletenessV1::Exhausted,
     )
     .expect("receipt");
@@ -254,9 +259,9 @@ fn generator_rank_and_total_candidate_bounds_fail_closed() {
     let invalid_rank = batch(
         RetrievalGeneratorOwnerV1::CognitiveLexical,
         vec![candidate(
-            record(1),
+            record(/*number*/ 1),
             RetrievalChannelV1::Lexical,
-            2,
+            /*rank*/ 2,
             "rank-out-of-range",
         )],
         RetrievalSourceCompletenessV1::Exhausted,
@@ -309,9 +314,9 @@ fn generated_receipt_rejects_cross_generation_rebinding() {
     let input = GeneratedCandidateInputV1::new(vec![batch(
         RetrievalGeneratorOwnerV1::CognitiveLexical,
         vec![candidate(
-            record(1),
+            record(/*number*/ 1),
             RetrievalChannelV1::Lexical,
-            1,
+            /*rank*/ 1,
             "support",
         )],
         RetrievalSourceCompletenessV1::Exhausted,
@@ -325,7 +330,7 @@ fn generated_receipt_rejects_cross_generation_rebinding() {
         RetrievalGeneratorOwnerV1::CognitiveLexical,
         digest("different-generation"),
         digest("different-owner-generation"),
-        1,
+        /*candidate_count*/ 1,
         RetrievalSourceCompletenessV1::Exhausted,
     )
     .expect("replacement receipt");
@@ -346,8 +351,18 @@ fn generator_batch_requires_one_exact_rank_per_candidate() {
     let duplicate_rank = batch(
         RetrievalGeneratorOwnerV1::CognitiveLexical,
         vec![
-            candidate(record(1), RetrievalChannelV1::Lexical, 1, "rank-one-a"),
-            candidate(record(2), RetrievalChannelV1::Lexical, 1, "rank-one-b"),
+            candidate(
+                record(/*number*/ 1),
+                RetrievalChannelV1::Lexical,
+                /*rank*/ 1,
+                "rank-one-a",
+            ),
+            candidate(
+                record(/*number*/ 2),
+                RetrievalChannelV1::Lexical,
+                /*rank*/ 1,
+                "rank-one-b",
+            ),
         ],
         RetrievalSourceCompletenessV1::Exhausted,
     );
@@ -362,9 +377,9 @@ fn active_policy_requires_exact_owner_generator_coverage() {
     let input = GeneratedCandidateInputV1::new(vec![batch(
         RetrievalGeneratorOwnerV1::CognitiveLexical,
         vec![candidate(
-            record(1),
+            record(/*number*/ 1),
             RetrievalChannelV1::Lexical,
-            1,
+            /*rank*/ 1,
             "lexical-only",
         )],
         RetrievalSourceCompletenessV1::Exhausted,
@@ -381,9 +396,9 @@ fn active_policy_requires_exact_owner_generator_coverage() {
         batch(
             RetrievalGeneratorOwnerV1::CognitiveLexical,
             vec![candidate(
-                record(1),
+                record(/*number*/ 1),
                 RetrievalChannelV1::Lexical,
-                1,
+                /*rank*/ 1,
                 "lexical",
             )],
             RetrievalSourceCompletenessV1::Exhausted,
@@ -409,9 +424,9 @@ fn enabled_generator_unavailability_fails_closed() {
         batch(
             RetrievalGeneratorOwnerV1::CognitiveLexical,
             vec![candidate(
-                record(1),
+                record(/*number*/ 1),
                 RetrievalChannelV1::Lexical,
-                1,
+                /*rank*/ 1,
                 "lexical",
             )],
             RetrievalSourceCompletenessV1::Exhausted,
@@ -441,22 +456,42 @@ fn enabled_generator_unavailability_fails_closed() {
 
 #[test]
 fn property_all_generator_batch_permutations_have_one_recall() {
-    let first = record(1);
-    let second = record(2);
+    let first = record(/*number*/ 1);
+    let second = record(/*number*/ 2);
     let batches = [
         batch(
             RetrievalGeneratorOwnerV1::CognitiveLexical,
             vec![
-                candidate(first.clone(), RetrievalChannelV1::Lexical, 1, "lexical-1"),
-                candidate(second.clone(), RetrievalChannelV1::Lexical, 2, "lexical-2"),
+                candidate(
+                    first.clone(),
+                    RetrievalChannelV1::Lexical,
+                    /*rank*/ 1,
+                    "lexical-1",
+                ),
+                candidate(
+                    second.clone(),
+                    RetrievalChannelV1::Lexical,
+                    /*rank*/ 2,
+                    "lexical-2",
+                ),
             ],
             RetrievalSourceCompletenessV1::Exhausted,
         ),
         batch(
             RetrievalGeneratorOwnerV1::CognitiveEntity,
             vec![
-                candidate(first, RetrievalChannelV1::Entity, 1, "entity-1"),
-                candidate(second.clone(), RetrievalChannelV1::Entity, 2, "entity-2"),
+                candidate(
+                    first,
+                    RetrievalChannelV1::Entity,
+                    /*rank*/ 1,
+                    "entity-1",
+                ),
+                candidate(
+                    second.clone(),
+                    RetrievalChannelV1::Entity,
+                    /*rank*/ 2,
+                    "entity-2",
+                ),
             ],
             RetrievalSourceCompletenessV1::LimitReached,
         ),
@@ -465,7 +500,7 @@ fn property_all_generator_batch_permutations_have_one_recall() {
             vec![candidate(
                 second,
                 RetrievalChannelV1::Temporal,
-                1,
+                /*rank*/ 1,
                 "temporal-2",
             )],
             RetrievalSourceCompletenessV1::Exhausted,

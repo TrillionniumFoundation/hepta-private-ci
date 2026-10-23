@@ -63,9 +63,27 @@ fn decision_request() -> DecisionRequest {
         candidate_set_digest: Digest32::ZERO,
         minimum_confidence: probability(1_u64 << 31),
         candidates: vec![
-            candidate("candidate-b", 10, ProbabilityQ32::ONE, true, false),
-            candidate("candidate-a", 20, ProbabilityQ32::ONE, true, false),
-            candidate("candidate-vetoed", 100, ProbabilityQ32::ONE, true, true),
+            candidate(
+                "candidate-b",
+                /*utility*/ 10,
+                ProbabilityQ32::ONE,
+                /*legal*/ true,
+                /*hard_veto*/ false,
+            ),
+            candidate(
+                "candidate-a",
+                /*utility*/ 20,
+                ProbabilityQ32::ONE,
+                /*legal*/ true,
+                /*hard_veto*/ false,
+            ),
+            candidate(
+                "candidate-vetoed",
+                /*utility*/ 100,
+                ProbabilityQ32::ONE,
+                /*legal*/ true,
+                /*hard_veto*/ true,
+            ),
         ],
     };
     request.candidate_set_digest = canonical_candidate_set_digest(&request);
@@ -141,10 +159,13 @@ fn caller_supplied_candidate_set_digest_drift_fails_closed() {
 #[test]
 fn reserved_abstain_cannot_be_smuggled_into_policy_candidates() {
     let mut request = shadow_request();
-    request
-        .decision
-        .candidates
-        .push(candidate("abstain", 200, ProbabilityQ32::ONE, true, false));
+    request.decision.candidates.push(candidate(
+        "abstain",
+        /*utility*/ 200,
+        ProbabilityQ32::ONE,
+        /*legal*/ true,
+        /*hard_veto*/ false,
+    ));
     request.decision.candidate_set_digest = canonical_candidate_set_digest(&request.decision);
 
     let error = prepare_shadow_decision(request).expect_err("reserved abstain must reject");

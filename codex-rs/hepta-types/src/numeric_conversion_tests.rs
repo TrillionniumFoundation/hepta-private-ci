@@ -108,12 +108,12 @@ fn q24_to_q32_is_exact_and_legacy_multiply_keeps_toward_zero() {
     assert_eq!(receipt.absolute_error_bound.numerator, 0);
     let half = FixedQ32::from_raw(1 << 31);
     assert_eq!(
-        FixedQ32::from_raw(7).checked_mul(half),
-        Ok(FixedQ32::from_raw(3))
+        FixedQ32::from_raw(/*raw*/ 7).checked_mul(half),
+        Ok(FixedQ32::from_raw(/*raw*/ 3))
     );
     assert_eq!(
-        FixedQ32::from_raw(-7).checked_mul(half),
-        Ok(FixedQ32::from_raw(-3))
+        FixedQ32::from_raw(/*raw*/ -7).checked_mul(half),
+        Ok(FixedQ32::from_raw(/*raw*/ -3))
     );
 }
 
@@ -259,7 +259,7 @@ fn registered_conversion_requires_normalization_and_both_profile_definitions() {
         crate::RegistryKindV1::Normalization,
         crate::validate_id("normalization:identity", crate::IdProfileV1::Normalization)
             .unwrap_or_else(|error| panic!("normalization id fixture failed: {error}")),
-        1,
+        /*version*/ 1,
         "scale=identity;clamp=none",
     )
     .unwrap_or_else(|error| panic!("normalization definition fixture failed: {error}"));

@@ -2,6 +2,7 @@ use super::canonical_path_without_redirection;
 use crate::CognitiveAccess;
 use crate::CognitiveScope;
 use crate::CognitiveStore;
+use crate::canonical_workspace_binding;
 use crate::cognitive_test_support::agent_id;
 use crate::cognitive_test_support::source;
 use codex_hepta_paths::HeptaFleetRoot;
@@ -22,6 +23,14 @@ async fn native_and_os_canonical_roots_share_store_identity_and_source_replay() 
     let canonical = native.canonicalize().expect("OS canonical fleet");
     #[cfg(windows)]
     assert_ne!(native, canonical, "exercise ordinary and verbatim prefixes");
+    assert_eq!(
+        canonical_workspace_binding(&native).expect("native workspace identity"),
+        Some(canonical.clone())
+    );
+    assert_eq!(
+        canonical_workspace_binding(&canonical).expect("canonical workspace identity"),
+        Some(canonical.clone())
+    );
     let owner = agent_id(/*suffix*/ 230);
     let first = CognitiveStore::open(
         &HeptaFleetRoot::parse(&native)
@@ -44,6 +53,10 @@ async fn native_and_os_canonical_roots_share_store_identity_and_source_replay() 
     assert_eq!(
         first.path(),
         first.path().canonicalize().expect("canonical database")
+    );
+    assert_eq!(
+        canonical_workspace_binding(first.path()).expect("database is not a workspace"),
+        None
     );
     let access = CognitiveAccess::agent_private(owner);
     let draft = source(CognitiveScope::AgentPrivate, "namespace-replay", "one fact");
@@ -71,6 +84,10 @@ async fn symlinked_fleet_and_database_are_rejected() {
     std::os::unix::fs::symlink(&real, &alias).expect("fleet symlink");
     assert_eq!(
         canonical_path_without_redirection(&alias).expect("inspect alias"),
+        None
+    );
+    assert_eq!(
+        canonical_workspace_binding(&alias).expect("inspect workspace alias"),
         None
     );
     let layout = HeptaFleetRoot::parse(&alias)
@@ -117,6 +134,10 @@ async fn junction_and_its_descendants_are_rejected() {
     for path in [&alias, &alias.join("retained")] {
         assert_eq!(
             canonical_path_without_redirection(path).expect("inspect junction"),
+            None
+        );
+        assert_eq!(
+            canonical_workspace_binding(path).expect("inspect workspace junction"),
             None
         );
     }

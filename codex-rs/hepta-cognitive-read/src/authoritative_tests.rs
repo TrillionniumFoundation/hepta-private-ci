@@ -48,9 +48,9 @@ fn vector() -> LaneCGenerationVectorV1 {
         knowledge_fact_frontier: 8,
         tombstone_frontier: 4,
         source_ledger_frontier: 9,
-        knowledge_graph_generation: generation(2),
-        compact_checkpoint_generation: generation(1),
-        prompt_registry_revision: revision(3),
+        knowledge_graph_generation: generation(/*value*/ 2),
+        compact_checkpoint_generation: generation(/*value*/ 1),
+        prompt_registry_revision: revision(/*value*/ 3),
         retrieval_profile_digest: digest("retrieval"),
         encoder_preprocessor_digest: digest("encoder"),
         authority_epoch: 7,
@@ -64,7 +64,7 @@ fn vector() -> LaneCGenerationVectorV1 {
 fn envelope() -> AuthoritativeSnapshotV1 {
     let record = MemoryRecord {
         record_id: id("memory:one"),
-        revision: revision(1),
+        revision: revision(/*value*/ 1),
         kind: MemoryKind::Fact,
         content_digest: digest("content"),
         predecessor_digest: None,
@@ -74,12 +74,18 @@ fn envelope() -> AuthoritativeSnapshotV1 {
         }],
         state: RecordState::Live,
     };
-    let snapshot = build_snapshot(generation(1), vec![record])
+    let snapshot = build_snapshot(generation(/*value*/ 1), vec![record])
         .unwrap_or_else(|error| panic!("valid snapshot: {error}"));
     let key =
         CognitiveSnapshotKeyV1::new(vector()).unwrap_or_else(|error| panic!("valid key: {error}"));
-    AuthoritativeSnapshotV1::new(id("provider:one"), key, snapshot, 5, 50)
-        .unwrap_or_else(|error| panic!("valid envelope: {error}"))
+    AuthoritativeSnapshotV1::new(
+        id("provider:one"),
+        key,
+        snapshot,
+        /*acquired_at_unix_ms*/ 5,
+        /*lease_expires_unix_ms*/ 50,
+    )
+    .unwrap_or_else(|error| panic!("valid envelope: {error}"))
 }
 
 fn contract_id(value: &str) -> ContractIdV1 {
@@ -149,8 +155,13 @@ fn authoritative_read_result() -> AuthoritativeReadResultV1 {
         },
         maximum_encoded_bytes: crate::MAX_ENCODED_READ_RESULT_BYTES_V2,
     };
-    read_authoritative(&provider, 10, acquisition_request(), request)
-        .unwrap_or_else(|error| panic!("authoritative read: {error}"))
+    read_authoritative(
+        &provider,
+        /*now_unix_ms*/ 10,
+        acquisition_request(),
+        request,
+    )
+    .unwrap_or_else(|error| panic!("authoritative read: {error}"))
 }
 
 fn acquisition_request() -> SnapshotAcquisitionRequestV1 {
@@ -194,8 +205,13 @@ fn authoritative_read_binds_provider_vector_and_query() {
         },
         maximum_encoded_bytes: crate::MAX_ENCODED_READ_RESULT_BYTES_V2,
     };
-    let result = read_authoritative(&provider, 10, acquisition_request(), request)
-        .unwrap_or_else(|error| panic!("authoritative read: {error}"));
+    let result = read_authoritative(
+        &provider,
+        /*now_unix_ms*/ 10,
+        acquisition_request(),
+        request,
+    )
+    .unwrap_or_else(|error| panic!("authoritative read: {error}"));
     assert_eq!(result.read_result.records().len(), 1);
     assert_eq!(
         result.generation_vector_digest,
@@ -213,21 +229,21 @@ fn provider_rejects_scope_frontier_and_epoch_drift() {
     let mut request = acquisition_request();
     request.scope_id = id("scope:other");
     assert_eq!(
-        envelope.validate_for_request(10, &request),
+        envelope.validate_for_request(/*now_unix_ms*/ 10, &request),
         Err(SnapshotProviderError::ScopeMismatch)
     );
 
     let mut request = acquisition_request();
     request.minimum_tombstone_frontier += 1;
     assert_eq!(
-        envelope.validate_for_request(10, &request),
+        envelope.validate_for_request(/*now_unix_ms*/ 10, &request),
         Err(SnapshotProviderError::StaleTombstoneFrontier)
     );
 
     let mut request = acquisition_request();
     request.authority_epoch += 1;
     assert_eq!(
-        envelope.validate_for_request(10, &request),
+        envelope.validate_for_request(/*now_unix_ms*/ 10, &request),
         Err(SnapshotProviderError::AuthorityEpochMismatch)
     );
 }
@@ -236,7 +252,7 @@ fn provider_rejects_scope_frontier_and_epoch_drift() {
 fn provider_rejects_expired_deadline_and_wrong_read_snapshot() {
     let envelope = envelope();
     assert_eq!(
-        envelope.validate_for_request(50, &acquisition_request()),
+        envelope.validate_for_request(/*now_unix_ms*/ 50, &acquisition_request()),
         Err(SnapshotProviderError::DeadlineExpired)
     );
 
@@ -251,7 +267,12 @@ fn provider_rejects_expired_deadline_and_wrong_read_snapshot() {
         maximum_encoded_bytes: crate::MAX_ENCODED_READ_RESULT_BYTES_V2,
     };
     assert_eq!(
-        read_authoritative(&provider, 10, acquisition_request(), request),
+        read_authoritative(
+            &provider,
+            /*now_unix_ms*/ 10,
+            acquisition_request(),
+            request
+        ),
         Err(SnapshotProviderError::ReadSnapshotMismatch)
     );
 }

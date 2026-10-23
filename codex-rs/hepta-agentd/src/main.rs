@@ -3,6 +3,7 @@ use std::path::PathBuf;
 use codex_hepta_agentd::AgentdConfig;
 use codex_hepta_agentd::AgentdIntelligenceProductRunnerV1;
 use codex_hepta_agentd::IntelligenceAuthorityVerifierV1;
+use codex_hepta_agentd::load_cognitive_process_bootstrap_v1;
 use codex_hepta_agentd::load_plasticity_process_bootstrap_v1;
 use codex_hepta_types::Digest32;
 use codex_utils_absolute_path::AbsolutePathBuf;
@@ -20,6 +21,8 @@ fn main() -> anyhow::Result<()> {
         let mut intelligence_authority_file = None;
         let mut intelligence_authority_signer = None;
         let mut intelligence_authority_verifying_key = None;
+        let mut cognitive_bootstrap_descriptor: Option<PathBuf> = None;
+        let mut cognitive_bootstrap_descriptor_digest: Option<Digest32> = None;
         let mut plasticity_bootstrap_descriptor: Option<PathBuf> = None;
         let mut plasticity_bootstrap_descriptor_digest: Option<Digest32> = None;
         let mut objective_profile = None;
@@ -35,6 +38,24 @@ fn main() -> anyhow::Result<()> {
             if flag == "--authbus-trust-file" {
                 anyhow::ensure!(authbus_trust.is_none(), "duplicate --authbus-trust-file");
                 authbus_trust = Some(path);
+            } else if flag == "--cognitive-bootstrap-descriptor" {
+                anyhow::ensure!(
+                    cognitive_bootstrap_descriptor.is_none(),
+                    "duplicate --cognitive-bootstrap-descriptor"
+                );
+                cognitive_bootstrap_descriptor = Some(PathBuf::from(path));
+            } else if flag == "--cognitive-bootstrap-descriptor-digest" {
+                anyhow::ensure!(
+                    cognitive_bootstrap_descriptor_digest.is_none(),
+                    "duplicate --cognitive-bootstrap-descriptor-digest"
+                );
+                let value = path
+                    .into_string()
+                    .map_err(|_| anyhow::anyhow!("cognitive descriptor digest must be UTF-8"))?;
+                cognitive_bootstrap_descriptor_digest =
+                    Some(value.parse::<Digest32>().map_err(|error| {
+                        anyhow::anyhow!("invalid cognitive descriptor digest: {error}")
+                    })?);
             } else if flag == "--plasticity-bootstrap-descriptor" {
                 anyhow::ensure!(
                     plasticity_bootstrap_descriptor.is_none(),
@@ -177,6 +198,21 @@ fn main() -> anyhow::Result<()> {
             (None, None) => {}
             _ => anyhow::bail!(
                 "--plasticity-bootstrap-descriptor and its digest must be supplied together"
+            ),
+        }
+
+        match (
+            cognitive_bootstrap_descriptor,
+            cognitive_bootstrap_descriptor_digest,
+        ) {
+            (Some(path), Some(expected_digest)) => {
+                let bootstrap =
+                    load_cognitive_process_bootstrap_v1(&path, expected_digest, config.identity())?;
+                config = config.with_evaluated_cognitive_bootstrap(bootstrap)?;
+            }
+            (None, None) => {}
+            _ => anyhow::bail!(
+                "--cognitive-bootstrap-descriptor and its digest must be supplied together"
             ),
         }
 

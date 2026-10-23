@@ -52,7 +52,7 @@ pub(crate) async fn run(
     let overrides = config_overrides
         .parse_overrides()
         .map_err(anyhow::Error::msg)?;
-    let config = ConfigBuilder::default()
+    let mut config = ConfigBuilder::default()
         .cli_overrides(overrides)
         .build()
         .await?;
@@ -87,13 +87,14 @@ pub(crate) async fn run(
     };
     let state_db = if mode == RolloutMigrationMode::Apply {
         Some(
-            codex_rollout::state_db::try_init(&config)
+            codex_rollout::state_db::try_init(&mut config)
                 .await
                 .context("failed to initialize local thread metadata")?,
         )
     } else {
         None
     };
+    let thread_history_db_path = config.sqlite.thread_history_db_path();
     let store = LocalThreadStore::new(LocalThreadStoreConfig::from_config(&config), state_db);
     let mut progress = MigrationProgress::new(mode, json);
     progress.begin();

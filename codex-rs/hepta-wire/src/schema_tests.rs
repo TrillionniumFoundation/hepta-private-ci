@@ -17,7 +17,7 @@ impl StrictCodec {
                 StableId::new("hepta.strict-message.v1")?,
                 WireVersion::V2,
                 WireVersion::V2,
-                256,
+                /*max_payload_bytes*/ 256,
             )?,
         })
     }
@@ -173,7 +173,7 @@ fn conflicting_schema_registration_rejects() -> Result<(), Box<dyn Error>> {
         codec.descriptor().schema().clone(),
         WireVersion::V1,
         WireVersion::V2,
-        256,
+        /*max_payload_bytes*/ 256,
     )?;
     assert!(matches!(
         registry.register(conflicting),

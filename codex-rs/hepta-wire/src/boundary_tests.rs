@@ -54,7 +54,7 @@ fn v1_frame_matches_frozen_bytes_not_only_its_own_encoder() -> Result<(), Box<dy
     let expected = WireEnvelope::new(
         StableId::new("s")?,
         StableId::new("p")?,
-        Generation::new(1)?,
+        Generation::new(/*value*/ 1)?,
         vec![1, 2, 3],
     )?;
     assert!(expected.encode() == golden);

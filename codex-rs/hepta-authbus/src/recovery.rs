@@ -64,7 +64,7 @@ impl AuthBusAuthorityStore {
                 .map_err(storage)?;
             }
         }
-        set_dirty(&mut tx, false).await?;
+        set_dirty(&mut tx, /*dirty*/ false).await?;
         tx.commit().await.map_err(storage)
     }
 
@@ -106,7 +106,7 @@ impl AuthBusAuthorityStore {
             && external.digest == authority_frontier_digest_tx(&mut tx).await?
         {
             persist_checkpoint(&mut tx, external).await?;
-            set_dirty(&mut tx, false).await?;
+            set_dirty(&mut tx, /*dirty*/ false).await?;
             tx.commit().await.map_err(storage)?;
             return Ok(None);
         }
@@ -133,7 +133,7 @@ impl AuthBusAuthorityStore {
             return Err(AuthBusAuthorityError::RollbackDetected);
         }
         persist_checkpoint(&mut tx, external).await?;
-        set_dirty(&mut tx, false).await?;
+        set_dirty(&mut tx, /*dirty*/ false).await?;
         tx.commit().await.map_err(storage)
     }
 

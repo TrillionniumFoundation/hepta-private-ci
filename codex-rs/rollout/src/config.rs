@@ -11,6 +11,14 @@ pub trait RolloutConfigView {
     fn generate_memories(&self) -> bool;
 }
 
+/// Configuration owned by the caller initializing a local state runtime.
+///
+/// Successful initialization replaces only its SQLite configuration with the
+/// canonical identity returned by that same runtime, before consumers receive it.
+pub trait RolloutConfigMut: RolloutConfigView {
+    fn set_sqlite_config(&mut self, sqlite: SqliteConfig);
+}
+
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub struct RolloutConfig {
     pub codex_home: PathBuf,
@@ -53,6 +61,12 @@ impl RolloutConfigView for RolloutConfig {
 
     fn generate_memories(&self) -> bool {
         self.generate_memories
+    }
+}
+
+impl RolloutConfigMut for RolloutConfig {
+    fn set_sqlite_config(&mut self, sqlite: SqliteConfig) {
+        self.sqlite = sqlite;
     }
 }
 

@@ -383,6 +383,36 @@ impl CodexResponsesMetadata {
         }
     }
 
+    /// Bind socket reuse to provider policy, separately from request recovery.
+    /// A startup prewarm prepares an ordinary turn's socket. Turn lineage and
+    /// extra client metadata travel on every frame and can change on that
+    /// socket; recovery must still bind those fields to the original request.
+    pub(crate) fn websocket_connection_compatibility_projection(
+        &self,
+    ) -> WebsocketConnectionCompatibilityProjection<'_> {
+        let request_kind = self
+            .request_kind
+            .map(CodexResponsesRequestKind::metadata)
+            .and_then(|(kind, _)| (!matches!(kind, "turn" | "prewarm")).then_some(kind));
+        WebsocketConnectionCompatibilityProjection {
+            schema: "websocket-connection-compatibility:v1",
+            request_kind,
+            agent_name: self.agent_name.as_deref(),
+            forked_from_thread_id: self.forked_from_thread_id,
+            parent_thread_id: self.parent_thread_id,
+            subagent_header: self.subagent_header.as_deref(),
+            subagent_kind: self.subagent_kind.as_deref(),
+            thread_source: self.thread_source.as_ref(),
+            sandbox: self.sandbox.as_deref(),
+            sandbox_mode: self.sandbox_mode.as_deref(),
+            auto_review_enabled: self.auto_review_enabled,
+            node_repl_auto_review_required: self.node_repl_auto_review_required,
+            node_repl_disabled: self.node_repl_disabled,
+            workspaces: &self.workspaces,
+            tool_namespaces_info: self.tool_namespaces_info.as_ref(),
+        }
+    }
+
     pub(crate) fn turn_recovery_start_state(
         &self,
         final_output_json_schema: Option<Value>,
@@ -484,6 +514,28 @@ pub(crate) struct TurnRecoveryCompatibilityProjection<'a> {
     #[serde(default, skip_serializing_if = "Option::is_none")]
     tool_namespaces_info: Option<&'a TurnToolNamespacesInfo>,
     extra: &'a BTreeMap<String, String>,
+}
+
+/// Connection policy that remains stable across a prewarm and later turns.
+/// Per-frame lineage, client metadata, and request identifiers are deliberately
+/// absent; the stricter recovery projection above continues to bind them.
+#[derive(Serialize)]
+pub(crate) struct WebsocketConnectionCompatibilityProjection<'a> {
+    schema: &'static str,
+    request_kind: Option<&'static str>,
+    agent_name: Option<&'a str>,
+    forked_from_thread_id: Option<ThreadId>,
+    parent_thread_id: Option<ThreadId>,
+    subagent_header: Option<&'a str>,
+    subagent_kind: Option<&'a str>,
+    thread_source: Option<&'a ThreadSource>,
+    sandbox: Option<&'a str>,
+    sandbox_mode: Option<&'a str>,
+    auto_review_enabled: Option<bool>,
+    node_repl_auto_review_required: Option<bool>,
+    node_repl_disabled: Option<bool>,
+    workspaces: &'a BTreeMap<String, TurnMetadataWorkspace>,
+    tool_namespaces_info: Option<&'a TurnToolNamespacesInfo>,
 }
 
 pub(crate) fn subagent_header_value(session_source: &SessionSource) -> Option<String> {

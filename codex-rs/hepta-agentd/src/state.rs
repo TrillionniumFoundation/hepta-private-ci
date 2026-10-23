@@ -48,9 +48,8 @@ pub(crate) struct AgentdState {
         std::sync::OnceLock<Arc<crate::automation_effect_host::AgentdAutomationEffectHost>>,
     pub(crate) objective_runtime:
         std::sync::OnceLock<Arc<crate::objective_runtime::ObjectiveRuntimeHost>>,
-    plasticity_runtime: std::sync::OnceLock<
-        crate::plasticity_learning_producer::AgentdLearningPlasticityProducerV1,
-    >,
+    // Retain the bounded sender for the configured Agentd generation.
+    plasticity_runtime: std::sync::OnceLock<crate::PlasticityRuntimeHandleV1>,
     identity: AgentdIdentity,
     registry: FleetRegistry,
     runtime: Mutex<RuntimeState>,
@@ -165,16 +164,13 @@ impl AgentdState {
         handle: crate::PlasticityRuntimeHandleV1,
     ) -> Result<(), AgentdError> {
         self.plasticity_runtime
-            .set(
-                crate::plasticity_learning_producer::AgentdLearningPlasticityProducerV1::new(
-                    handle,
-                ),
-            )
+            .set(handle)
             .map_err(|_| AgentdError::Protocol("plasticity runtime already attached".to_string()))
     }
 
-    /// Named Agentd-owned producer boundary for governed parameter plasticity.
-    /// Callers never receive the mutable writer or a second owner handle.
+    /// Test submission adapter for governed parameter plasticity.
+    /// Borrows the retained sender without exposing writers or owner state.
+    #[cfg(test)]
     pub(crate) async fn submit_parameter_plasticity_v1(
         &self,
         request: codex_hepta_intelligence::ParameterPlasticityProductRequestV1,
@@ -183,15 +179,18 @@ impl AgentdState {
         codex_hepta_intelligence::ParameterPlasticityProductReceiptV1,
         crate::PlasticityRuntimeCallErrorV1,
     > {
-        let producer = self
+        let handle = self
             .plasticity_runtime
             .get()
             .ok_or(crate::PlasticityRuntimeCallErrorV1::Closed)?;
+        let producer =
+            crate::plasticity_learning_producer::AgentdLearningPlasticityProducerV1::new(handle);
         producer.submit_parameter(request, now).await
     }
 
-    /// Named Agentd-owned producer boundary for governed topology plasticity.
+    /// Test submission adapter for governed topology plasticity.
     /// The long-lived owner performs final artifact/ledger/trust/anchor checks.
+    #[cfg(test)]
     pub(crate) async fn submit_topology_plasticity_v1(
         &self,
         request: codex_hepta_intelligence::TopologyPlasticityProductRequestV1,
@@ -200,10 +199,12 @@ impl AgentdState {
         codex_hepta_intelligence::TopologyPlasticityProductReceiptV1,
         crate::PlasticityRuntimeCallErrorV1,
     > {
-        let producer = self
+        let handle = self
             .plasticity_runtime
             .get()
             .ok_or(crate::PlasticityRuntimeCallErrorV1::Closed)?;
+        let producer =
+            crate::plasticity_learning_producer::AgentdLearningPlasticityProducerV1::new(handle);
         producer.submit_topology(request, now).await
     }
 

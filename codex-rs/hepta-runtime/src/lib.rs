@@ -178,7 +178,7 @@ impl HeptaRuntime {
         let envelope = WireEnvelopeV2::new(
             codec.descriptor().schema().clone(),
             StableId::new("runtime.codex")?,
-            Generation::new(1)?,
+            Generation::new(/*value*/ 1)?,
             payload,
         )
         .context("encode runtime status HPTA V2 envelope")?;

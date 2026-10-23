@@ -3,6 +3,7 @@
 #![forbid(unsafe_code)]
 
 mod authbus;
+mod automation_chain_observation;
 mod capabilities;
 mod evidence;
 pub use authbus::AuthBusObjectiveBody;
@@ -13,6 +14,9 @@ pub use authbus::AuthBusTextState;
 pub use authbus::AuthBusTextStatus;
 pub use authbus::ObjectiveRunAdmission;
 pub use authbus::ObjectiveStartOutcome;
+pub use automation_chain_observation::AUTOMATION_EFFECT_CHAIN_OBSERVATION_VERSION;
+pub use automation_chain_observation::AutomationEffectTaskAcceptanceV1;
+pub use automation_chain_observation::ExpectedAutomationTaskAcceptanceV1;
 pub use capabilities::AGENTD_CAPABILITY_AUTOMATION_CALENDAR_V2;
 pub use capabilities::AGENTD_CAPABILITY_AUTOMATION_EXTERNAL_EFFECT;
 pub use capabilities::AGENTD_CAPABILITY_CANONICAL_INTELLIGENCE_V1;
@@ -338,7 +342,7 @@ impl AgentdRequest {
             method: AgentdMethod::AutomationExecuteEffect {
                 intent,
                 wire_payload_hex,
-                signed_grant,
+                signed_grant: Box::new(signed_grant),
                 command_id,
             },
         }
@@ -651,7 +655,7 @@ pub enum AgentdMethod {
     AutomationExecuteEffect {
         intent: AuthorizedEffectIntent,
         wire_payload_hex: String,
-        signed_grant: SignedFinalUseGrant,
+        signed_grant: Box<SignedFinalUseGrant>,
         command_id: String,
     },
     AutomationReconcileEffect {
@@ -713,11 +717,61 @@ pub enum AutomationEffectReconcileState {
     ProvenAbsent,
 }
 
+/// Current read-only Chain observation attached to an already-owned effect.
+///
+/// This is not a provider acknowledgement, final-use token, confirmation/finality
+/// certificate, or proof that another peer did not receive the packet.  It exists
+/// so callers can distinguish an irreversible local submit fact from current
+/// active-chain state after a reorganization.
+#[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
+#[serde(deny_unknown_fields)]
+pub struct AutomationEffectChainObservation {
+    pub schema_version: u32,
+    pub block_id: String,
+    pub stored_exact: bool,
+    pub block_height: Option<u64>,
+    pub block_chainwork_hex: Option<String>,
+    pub active_tip: String,
+    pub active_tip_height: u64,
+    pub active_tip_chainwork_hex: String,
+    pub active_chain_member: bool,
+    pub active_depth: Option<u64>,
+    pub active_work_depth_hex: Option<String>,
+    pub active_membership_sql_lookups: Option<u64>,
+    pub active_membership_sql_budget: u64,
+    /// Signed local confirmation policy result. This never represents
+    /// consensus finality, execution authority, or model-install authority.
+    pub confirmation_policy_min_depth: u64,
+    pub confirmation_policy_min_work_depth_hex: String,
+    pub confirmation_policy_satisfied: bool,
+    /// Exact durable provider-effect occurrence whose original wire bytes were
+    /// used for this observation. Older responses may omit this binding.
+    #[serde(default)]
+    pub provider_effect_key: Option<String>,
+    /// SHA-256 of the exact durable provider wire bytes used by packet-status.
+    /// This is an effect binding only; it grants no selection or final-use authority.
+    #[serde(default)]
+    pub payload_sha256: Option<String>,
+    /// Exact settled task in the original packet, when unambiguous and active.
+    /// Introduced by observation version 4. Legacy observations remain readable
+    /// but cannot match a task acceptance or authorize a model change.
+    #[serde(default)]
+    pub accepted_task: Option<AutomationEffectTaskAcceptanceV1>,
+    pub owner_generation: u64,
+    pub local_target_only: bool,
+    pub global_absence_authority: bool,
+    pub confirmation_authority: bool,
+    pub finality_authority: bool,
+    pub execution_authority: bool,
+}
+
 #[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
 #[serde(deny_unknown_fields)]
 pub struct AutomationEffectReconcileSnapshot {
     pub state: AutomationEffectReconcileState,
     pub effect: Option<AutomationEffectSnapshot>,
+    #[serde(default)]
+    pub chain: Option<Box<AutomationEffectChainObservation>>,
 }
 
 #[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
@@ -1072,7 +1126,7 @@ mod tests {
                 read_digest: snapshot.read_digest.clone(),
                 omitted_records: snapshot.omitted_records,
                 items: snapshot.items.clone(),
-                plan: snapshot.plan.clone(),
+                plan: snapshot.plan,
             },
         };
         let bytes = serde_json::to_vec(&request).expect("serialize revalidation request");
@@ -1214,6 +1268,18 @@ mod tests {
             .iter()
             .flat_map(|byte| format!("{byte:02x}").chars().collect::<Vec<_>>())
             .collect::<String>();
+        let expected_wire = serde_json::json!({
+            "schema_version": AGENTD_CONTROL_SCHEMA_VERSION,
+            "request_id": 11,
+            "spawn_generation": 3,
+            "method": {
+                "type": "automation_execute_effect",
+                "intent": &intent,
+                "wire_payload_hex": &wire_payload_hex,
+                "signed_grant": &signed_grant,
+                "command_id": "effect-command",
+            },
+        });
         let request = AgentdRequest::automation_execute_effect(
             11,
             3,
@@ -1223,6 +1289,10 @@ mod tests {
             "effect-command".to_string(),
         );
         let bytes = serde_json::to_vec(&request).expect("serialize effect request");
+        assert_eq!(
+            serde_json::from_slice::<serde_json::Value>(&bytes).expect("read effect wire shape"),
+            expected_wire
+        );
         assert!(bytes.len() as u64 <= MAX_CONTROL_FRAME_BYTES);
         assert_eq!(
             serde_json::from_slice::<AgentdRequest>(&bytes).expect("parse effect request"),
@@ -1233,6 +1303,7 @@ mod tests {
             AgentdPayload::AutomationEffectReconcile(AutomationEffectReconcileSnapshot {
                 state: AutomationEffectReconcileState::Indeterminate,
                 effect: None,
+                chain: None,
             });
         let response_bytes = serde_json::to_vec(&response).expect("serialize effect response");
         assert_eq!(
@@ -1318,13 +1389,8 @@ mod tests {
             attach
         );
 
-        let cancel = AgentdRequest::run_cancel(
-            14,
-            3,
-            snapshot.run_id.clone(),
-            2,
-            "operator_request".to_string(),
-        );
+        let cancel =
+            AgentdRequest::run_cancel(14, 3, snapshot.run_id, 2, "operator_request".to_string());
         let cancel_bytes = serde_json::to_vec(&cancel).expect("serialize cancellation");
         assert!(cancel_bytes.len() as u64 <= MAX_CONTROL_FRAME_BYTES);
         assert_eq!(

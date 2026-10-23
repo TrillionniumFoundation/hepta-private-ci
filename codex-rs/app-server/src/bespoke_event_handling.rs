@@ -118,12 +118,18 @@ use codex_shell_command::parse_command::shlex_join;
 use codex_utils_absolute_path::AbsolutePathBuf;
 use codex_utils_path_uri::LegacyAppPathString;
 use std::collections::HashMap;
+use std::ops::ControlFlow;
 use std::sync::Arc;
 use std::time::SystemTime;
 use std::time::UNIX_EPOCH;
 use tokio::sync::Mutex;
 use tokio::sync::oneshot;
 use tracing::error;
+
+#[path = "listener_terminal_wait.rs"]
+mod listener_terminal_wait;
+
+use listener_terminal_wait::wait_for_terminalization_or_listener_cancel;
 
 enum CommandExecutionApprovalPresentation {
     Network(V2NetworkApprovalContext),
@@ -141,7 +147,7 @@ struct CommandExecutionCompletionItem {
 
 #[allow(clippy::too_many_arguments)]
 pub(crate) async fn apply_bespoke_event_handling(
-    event: Event,
+    delivery: impl Into<codex_core::EventDelivery>,
     conversation_id: ThreadId,
     conversation: Arc<CodexThread>,
     thread_manager: Arc<ThreadManager>,
@@ -150,7 +156,12 @@ pub(crate) async fn apply_bespoke_event_handling(
     thread_watch_manager: ThreadWatchManager,
     thread_list_state_permit: Arc<tokio::sync::Semaphore>,
     fallback_model_provider: String,
-) {
+    listener_cancel: &mut oneshot::Receiver<()>,
+) -> ControlFlow<()> {
+    let codex_core::EventDelivery {
+        event,
+        terminalization,
+    } = delivery.into();
     let Event {
         id: event_turn_id,
         msg,
@@ -190,6 +201,9 @@ pub(crate) async fn apply_bespoke_event_handling(
             // All per-thread requests are bound to a turn, so abort them.
             outgoing.abort_pending_server_requests().await;
             respond_to_pending_interrupts(&thread_state, &outgoing).await;
+            // Release old approval waiters before waiting; hold no thread-state lock here.
+            wait_for_terminalization_or_listener_cancel(terminalization.wait(), listener_cancel)
+                .await?;
             let turn_failed = thread_state.lock().await.turn_summary.last_error.is_some();
             thread_watch_manager
                 .note_turn_completed(&conversation_id.to_string(), turn_failed)
@@ -815,7 +829,7 @@ pub(crate) async fn apply_bespoke_event_handling(
                     {
                         error!("failed to submit ResolveElicitation: {err}");
                     }
-                    return;
+                    return ControlFlow::Continue(());
                 }
             };
             let params = McpServerElicitationRequestParams {
@@ -949,17 +963,13 @@ pub(crate) async fn apply_bespoke_event_handling(
                 codex_error_info,
                 Some(CoreCodexErrorInfo::ThreadRollbackFailed)
             ) {
-                return handle_thread_rollback_failed(
-                    conversation_id,
-                    message,
-                    &thread_state,
-                    &outgoing,
-                )
-                .await;
+                handle_thread_rollback_failed(conversation_id, message, &thread_state, &outgoing)
+                    .await;
+                return ControlFlow::Continue(());
             };
 
             if !ev.affects_turn_status() {
-                return;
+                return ControlFlow::Continue(());
             }
 
             let turn_error = TurnError {
@@ -1116,6 +1126,9 @@ pub(crate) async fn apply_bespoke_event_handling(
             // All per-thread requests are bound to a turn, so abort them.
             outgoing.abort_pending_server_requests().await;
             respond_to_pending_interrupts(&thread_state, &outgoing).await;
+            // Release old approval waiters before waiting; hold no thread-state lock here.
+            wait_for_terminalization_or_listener_cancel(terminalization.wait(), listener_cancel)
+                .await?;
 
             thread_watch_manager
                 .note_turn_interrupted(&conversation_id.to_string())
@@ -1147,7 +1160,7 @@ pub(crate) async fn apply_bespoke_event_handling(
                                 )),
                             )
                             .await;
-                        return;
+                        return ControlFlow::Continue(());
                     }
                 };
                 let fallback_cwd = conversation.config_snapshot().await.cwd().clone();
@@ -1167,7 +1180,7 @@ pub(crate) async fn apply_bespoke_event_handling(
                                 )),
                             )
                             .await;
-                        return;
+                        return ControlFlow::Continue(());
                     }
                 };
                 let loaded_status = thread_watch_manager
@@ -1185,7 +1198,7 @@ pub(crate) async fn apply_bespoke_event_handling(
                         outgoing
                             .send_error(request_id.clone(), internal_error(err))
                             .await;
-                        return;
+                        return ControlFlow::Continue(());
                     }
                 };
 
@@ -1243,6 +1256,7 @@ pub(crate) async fn apply_bespoke_event_handling(
 
         _ => {}
     }
+    ControlFlow::Continue(())
 }
 
 async fn handle_turn_diff(
@@ -2382,7 +2396,8 @@ mod tests {
     impl GuardianAssessmentTestContext {
         async fn apply_guardian_assessment_event(&self, assessment: GuardianAssessmentEvent) {
             let event_turn_id = assessment.turn_id.clone();
-            apply_bespoke_event_handling(
+            let (_listener_cancel_tx, mut listener_cancel_rx) = oneshot::channel();
+            let handling = apply_bespoke_event_handling(
                 Event {
                     id: event_turn_id,
                     msg: EventMsg::GuardianAssessment(assessment),
@@ -2395,8 +2410,10 @@ mod tests {
                 self.thread_watch_manager.clone(),
                 Arc::new(tokio::sync::Semaphore::new(/*permits*/ 1)),
                 "test-provider".to_string(),
+                &mut listener_cancel_rx,
             )
             .await;
+            assert_eq!(handling, ControlFlow::Continue(()));
         }
     }
 
@@ -3322,6 +3339,105 @@ mod tests {
     }
 
     #[tokio::test]
+    async fn cancelled_listener_does_not_publish_terminal_completion_or_idle() -> Result<()> {
+        let codex_home = TempDir::new()?;
+        let config = load_default_config_for_test(&codex_home).await;
+        let thread_manager = Arc::new(
+            codex_core::test_support::thread_manager_with_models_provider_and_home(
+                CodexAuth::create_dummy_chatgpt_auth_for_testing(),
+                config.model_provider.clone(),
+                config.codex_home.to_path_buf(),
+                Arc::new(codex_exec_server::EnvironmentManager::default_for_tests()),
+            ),
+        );
+        let codex_core::NewThread {
+            thread_id: conversation_id,
+            thread: conversation,
+            ..
+        } = thread_manager
+            .start_thread(codex_core::StartThreadOptions::new(config))
+            .await?;
+
+        for msg in [
+            EventMsg::TurnComplete(turn_complete_event("retired-listener-turn")),
+            EventMsg::TurnAborted(turn_aborted_event("retired-listener-turn")),
+        ] {
+            let thread_state = new_thread_state();
+            {
+                let mut state = thread_state.lock().await;
+                state.turn_summary.started_at = Some(42);
+                state
+                    .pending_interrupts
+                    .push(crate::outgoing_message::ConnectionRequestId {
+                        connection_id: ConnectionId(1),
+                        request_id: RequestId::Integer(77),
+                    });
+            }
+            let thread_watch_manager = ThreadWatchManager::new();
+            thread_watch_manager
+                .note_turn_started(&conversation_id.to_string())
+                .await;
+            let (tx, mut rx) = mpsc::channel(CHANNEL_CAPACITY);
+            let outgoing = ThreadScopedOutgoingMessageSender::new(
+                Arc::new(OutgoingMessageSender::new(
+                    tx,
+                    codex_analytics::AnalyticsEventsClient::disabled(),
+                )),
+                vec![ConnectionId(1)],
+                conversation_id,
+            );
+            let (cancel_tx, mut cancel_rx) = oneshot::channel();
+            cancel_tx.send(()).expect("listener receiver");
+
+            let handling = apply_bespoke_event_handling(
+                Event {
+                    id: "retired-listener-turn".to_string(),
+                    msg,
+                },
+                conversation_id,
+                conversation.clone(),
+                thread_manager.clone(),
+                outgoing,
+                thread_state.clone(),
+                thread_watch_manager.clone(),
+                Arc::new(tokio::sync::Semaphore::new(/*permits*/ 1)),
+                "test-provider".to_string(),
+                &mut cancel_rx,
+            )
+            .await;
+
+            assert_eq!(handling, ControlFlow::Break(()));
+            let interrupt_response = recv_broadcast_message(&mut rx).await?;
+            assert_eq!(
+                serde_json::to_value(interrupt_response)?,
+                json!({"id": 77, "result": {}})
+            );
+            assert!(
+                rx.try_recv().is_err(),
+                "retired listener must not emit terminal completion"
+            );
+            {
+                let state = thread_state.lock().await;
+                assert!(
+                    state.pending_interrupts.is_empty(),
+                    "release interrupt waiters before teardown"
+                );
+                assert_eq!(state.turn_summary.started_at, Some(42));
+            }
+            assert_eq!(
+                thread_watch_manager
+                    .loaded_status_for_thread(&conversation_id.to_string())
+                    .await,
+                ThreadStatus::Active {
+                    active_flags: vec![]
+                },
+            );
+            assert_eq!(thread_watch_manager.running_turn_count().await, 1);
+        }
+        Ok(())
+    }
+
+    #[tokio::test]
     async fn turn_started_omits_active_snapshot_items() -> Result<()> {
         let codex_home = TempDir::new()?;
         let config = load_default_config_for_test(&codex_home).await;
@@ -3377,7 +3493,8 @@ mod tests {
             conversation_id,
         );
 
-        apply_bespoke_event_handling(
+        let (_listener_cancel_tx, mut listener_cancel_rx) = oneshot::channel();
+        let handling = apply_bespoke_event_handling(
             Event {
                 id: "turn-1".to_string(),
                 msg: EventMsg::TurnStarted(codex_protocol::protocol::TurnStartedEvent {
@@ -3396,8 +3513,10 @@ mod tests {
             thread_watch_manager,
             Arc::new(tokio::sync::Semaphore::new(/*permits*/ 1)),
             "test-provider".to_string(),
+            &mut listener_cancel_rx,
         )
         .await;
+        assert_eq!(handling, ControlFlow::Continue(()));
 
         let msg = recv_broadcast_notification(&mut rx).await?;
         match msg {
@@ -3448,7 +3567,8 @@ mod tests {
             conversation_id,
         );
 
-        apply_bespoke_event_handling(
+        let (_listener_cancel_tx, mut listener_cancel_rx) = oneshot::channel();
+        let handling = apply_bespoke_event_handling(
             Event {
                 id: "turn-1".to_string(),
                 msg: EventMsg::ItemCompleted(ItemCompletedEvent {
@@ -3473,8 +3593,10 @@ mod tests {
             thread_watch_manager.clone(),
             Arc::new(tokio::sync::Semaphore::new(/*permits*/ 1)),
             "test-provider".to_string(),
+            &mut listener_cancel_rx,
         )
         .await;
+        assert_eq!(handling, ControlFlow::Continue(()));
 
         assert_eq!(
             thread_watch_manager
@@ -3534,7 +3656,8 @@ mod tests {
             conversation_id,
         );
 
-        apply_bespoke_event_handling(
+        let (_listener_cancel_tx, mut listener_cancel_rx) = oneshot::channel();
+        let handling = apply_bespoke_event_handling(
             Event {
                 id: "turn-1".to_string(),
                 msg: EventMsg::ItemStarted(ItemStartedEvent {
@@ -3562,8 +3685,10 @@ mod tests {
             ThreadWatchManager::new(),
             Arc::new(tokio::sync::Semaphore::new(/*permits*/ 1)),
             "test-provider".to_string(),
+            &mut listener_cancel_rx,
         )
         .await;
+        assert_eq!(handling, ControlFlow::Continue(()));
 
         let item_started = recv_broadcast_notification(&mut rx).await?;
         let ServerNotification::ItemStarted(payload) = item_started else {

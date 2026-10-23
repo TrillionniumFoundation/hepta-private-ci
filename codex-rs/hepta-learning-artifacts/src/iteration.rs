@@ -184,10 +184,10 @@ mod tests {
     fn envelope() -> IterationEnvelopeV1 {
         IterationEnvelopeV1 {
             envelope_id: id("envelope-1"),
-            base_commit: digest(1),
-            base_tree: digest(2),
-            objective_digest: digest(3),
-            grammar_digest: digest(4),
+            base_commit: digest(/*value*/ 1),
+            base_tree: digest(/*value*/ 2),
+            objective_digest: digest(/*value*/ 3),
+            grammar_digest: digest(/*value*/ 4),
             maximum_files: 10,
             maximum_diff_bytes: 1024,
             maximum_candidates: 4,
@@ -202,9 +202,9 @@ mod tests {
             candidate_id: id("candidate-1"),
             envelope_id: id("envelope-1"),
             generator_identity: id("generator-1"),
-            semantic_diff_digest: digest(5),
-            test_plan_digest: digest(6),
-            rollback_digest: digest(7),
+            semantic_diff_digest: digest(/*value*/ 5),
+            test_plan_digest: digest(/*value*/ 6),
+            rollback_digest: digest(/*value*/ 7),
             predecessor: None,
             state: IterationCandidateStateV1::SandboxTested,
         };

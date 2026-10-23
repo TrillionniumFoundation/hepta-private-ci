@@ -142,7 +142,7 @@ async fn agentd_product_host_recovers_exact_cut_into_fenced_writer_generation()
     )?;
 
     let store = DurableCognitiveStore::open(&config.identity().layout).await?;
-    let expected = store.recovery_anchor().await?;
+    let bootstrap_cut = store.recovery_anchor().await?;
     drop(store);
 
     let authority = ProductionAuthorityLease::from_verified_parts(
@@ -172,6 +172,34 @@ async fn agentd_product_host_recovers_exact_cut_into_fenced_writer_generation()
             Ok(())
         },
     );
+
+    // Acquiring the first production lease is a durable owner mutation. Retain
+    // its resulting cut before testing exact recovery of that same generation;
+    // the empty database cut cannot equal a database with a new lease ledger.
+    let bootstrap_host = AgentdProductionWriterHost::open_with_recovery(
+        &config,
+        CognitiveRecoveryRequirement::ExactCurrentCut(&bootstrap_cut),
+        authority.clone(),
+        Arc::clone(&verifier),
+        "agentd-product-recovery-test",
+        1,
+    )
+    .await?;
+    let expected = bootstrap_host.writer().recovery_anchor().await?;
+    assert_eq!(
+        (
+            &expected.profile,
+            &expected.owner_agent_id,
+            &expected.schema_digest
+        ),
+        (
+            &bootstrap_cut.profile,
+            &bootstrap_cut.owner_agent_id,
+            &bootstrap_cut.schema_digest
+        ),
+    );
+    assert_ne!(expected.state_digest, bootstrap_cut.state_digest);
+    drop(bootstrap_host);
 
     let host = AgentdProductionWriterHost::open_with_recovery(
         &config,

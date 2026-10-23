@@ -29,7 +29,7 @@ jobs:
         with:
           persist-credentials: false
       - uses: ./.github/actions/setup-ci
-      - uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582 # 1.95.0
+      - uses: dtolnay/rust-toolchain@3db9de313aa3e84732d075f6fd8938cc0d6d4b58 # 1.96.0
         with:
           components: rustfmt
       - name: cargo fmt
@@ -49,7 +49,7 @@ jobs:
         with:
           persist-credentials: false
       - uses: ./.github/actions/setup-ci
-      - uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582 # 1.95.0
+      - uses: dtolnay/rust-toolchain@3db9de313aa3e84732d075f6fd8938cc0d6d4b58 # 1.96.0
       - uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532 # v2.62.49
         with:
           tool: cargo-shear@1.11.2
@@ -68,7 +68,7 @@ jobs:
         with:
           persist-credentials: false
       - uses: ./.github/actions/setup-ci
-      - uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582 # 1.95.0
+      - uses: dtolnay/rust-toolchain@3db9de313aa3e84732d075f6fd8938cc0d6d4b58 # 1.96.0
         with:
           toolchain: nightly-2025-09-18
           components: llvm-tools-preview, rustc-dev, rust-src
@@ -238,7 +238,7 @@ jobs:
             sudo apt-get update -y
             sudo DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends build-essential pkg-config libcap-dev
           fi
-      - uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582 # 1.95.0
+      - uses: dtolnay/rust-toolchain@3db9de313aa3e84732d075f6fd8938cc0d6d4b58 # 1.96.0
         with:
           targets: ${{ matrix.target }}
           components: clippy
@@ -446,6 +446,7 @@ jobs:
       profile: ci-test
       artifact_id: macos-aarch64
       use_sccache: true
+      archive_ci_test_no_debug: true
     secrets: inherit
 
   tests_linux_x64_remote:
@@ -458,6 +459,9 @@ jobs:
       artifact_id: linux-x64-remote
       remote_env: true
       use_sccache: true
+      # Reduce archive disk pressure after the runner reported 50 MB free before
+      # the linker crash. This candidate still requires native completion.
+      archive_ci_test_no_debug: true
     secrets: inherit
 
   tests_linux_arm64:
@@ -487,12 +491,14 @@ jobs:
     uses: ./.github/workflows/rust-ci-full-nextest-platform.yml
     with:
       runner: windows-11-arm
-      archive_runner: windows-latest
       target: aarch64-pc-windows-msvc
       profile: ci-test
       artifact_id: windows-arm64
       test_threads: 8
       use_sccache: true
+      # The native ARM archive exhausted D: while writing LLVM output. Keep the
+      # unoptimized ci-test execution, with the existing archive-only debug setting.
+      archive_ci_test_no_debug: true
     secrets: inherit
 
   # --- Gatherer job for the full post-merge workflow --------------------------

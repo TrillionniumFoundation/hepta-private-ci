@@ -339,7 +339,7 @@ impl AuthorityPosture {
     }
 
     pub const fn flags(self) -> AuthorityFlagsV1 {
-        AuthorityFlagsV1::from_wire_mask(0)
+        AuthorityFlagsV1::from_wire_mask(/*mask*/ 0)
     }
 }
 

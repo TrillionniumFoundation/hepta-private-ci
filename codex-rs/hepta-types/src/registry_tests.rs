@@ -22,13 +22,13 @@ fn immutable_registry_resolves_exact_definition_and_numeric_profile() {
     let normalization = definition(
         RegistryKindV1::Normalization,
         "normalization:unit-range",
-        1,
+        /*version*/ 1,
         "clamp=none;scale=identity;range=-1..1",
     );
     let schema = definition(
         RegistryKindV1::Schema,
         "schema:numeric-signal",
-        1,
+        /*version*/ 1,
         "row-major;i64;rank<=4;elements<=4096",
     );
     let profile = NumericProfileDefinitionV1::canonical(NumericProfileV1::HnmfPpmTowardZero)
@@ -58,11 +58,16 @@ fn immutable_registry_resolves_exact_definition_and_numeric_profile() {
 
 #[test]
 fn registry_digest_is_insertion_order_independent_and_definition_sensitive() {
-    let left = definition(RegistryKindV1::Schema, "schema:a", 1, "field=a:u64");
+    let left = definition(
+        RegistryKindV1::Schema,
+        "schema:a",
+        /*version*/ 1,
+        "field=a:u64",
+    );
     let right = definition(
         RegistryKindV1::Normalization,
         "normalization:b",
-        1,
+        /*version*/ 1,
         "identity",
     );
     let p1 = NumericProfileDefinitionV1::canonical(NumericProfileV1::HnmfPpmTowardZero)
@@ -78,7 +83,12 @@ fn registry_digest_is_insertion_order_independent_and_definition_sensitive() {
         .unwrap_or_else(|error| panic!("second fixture: {error}"));
     assert_eq!(first.registry_digest(), second.registry_digest());
 
-    let changed = definition(RegistryKindV1::Schema, "schema:a", 2, "field=a:u64");
+    let changed = definition(
+        RegistryKindV1::Schema,
+        "schema:a",
+        /*version*/ 2,
+        "field=a:u64",
+    );
     assert_ne!(changed.digest(), first.entries()[0].digest());
 }
 
@@ -87,7 +97,7 @@ fn definition_kind_is_bound_to_identifier_namespace() {
     let wrong = StableId::new("normalization:a")
         .unwrap_or_else(|error| panic!("stable id fixture: {error}"));
     assert_eq!(
-        RegistryDefinitionV1::new(RegistryKindV1::Schema, wrong, 1, "x"),
+        RegistryDefinitionV1::new(RegistryKindV1::Schema, wrong, /*version*/ 1, "x"),
         Err(RegistryError::Identity(IdentityError::NonCanonical))
     );
 }
@@ -98,13 +108,18 @@ fn registry_rejects_duplicate_identity_profile_version_capacity_and_aggregate_by
         RegistryDefinitionV1::new(
             RegistryKindV1::Schema,
             id("schema:a", IdProfileV1::Schema),
-            0,
+            /*version*/ 0,
             "definition",
         ),
         Err(RegistryError::InvalidVersion)
     );
 
-    let entry = definition(RegistryKindV1::Schema, "schema:a", 1, "definition");
+    let entry = definition(
+        RegistryKindV1::Schema,
+        "schema:a",
+        /*version*/ 1,
+        "definition",
+    );
     assert_eq!(
         ContractRegistryV1::new(vec![entry.clone(), entry.clone()]),
         Err(RegistryError::DuplicateDefinition)
@@ -128,7 +143,7 @@ fn registry_rejects_duplicate_identity_profile_version_capacity_and_aggregate_by
         definitions.push(definition(
             RegistryKindV1::Schema,
             &format!("schema:item-{index}"),
-            1,
+            /*version*/ 1,
             &chunk,
         ));
     }

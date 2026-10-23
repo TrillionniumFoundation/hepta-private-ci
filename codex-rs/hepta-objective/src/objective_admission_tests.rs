@@ -59,7 +59,7 @@ fn resource_axis(name: &str, class: ConstraintClass) -> ObjectiveResourceAxisPro
         constraint_id: id(&format!("resource.{name}.ceiling")),
         axis: id(&format!("resource.{name}")),
         class,
-        q32_per_source_unit: FixedQ32::from_raw(1),
+        q32_per_source_unit: FixedQ32::from_raw(/*raw*/ 1),
         evidence_source: id("objective.resource.profile"),
     }
 }
@@ -67,7 +67,7 @@ fn resource_axis(name: &str, class: ConstraintClass) -> ObjectiveResourceAxisPro
 fn profile() -> ObjectiveAdmissionProfileV1 {
     ObjectiveAdmissionProfileV1 {
         profile_id: id("objective.profile.readonly.v1"),
-        profile_revision: Revision::new(1).expect("revision"),
+        profile_revision: Revision::new(/*value*/ 1).expect("revision"),
         expected_input_schema_digest: digest("schema-v1"),
         expected_normalization_profile_digest: digest("normalization-v1"),
         principal_scope_digest: digest("principal-scope"),
@@ -133,25 +133,25 @@ fn profile() -> ObjectiveAdmissionProfileV1 {
             class: ConstraintClass::Principal,
             risk_constraint_id: id("risk.class"),
             risk_axis: id("risk.class.value"),
-            low_value: FixedQ32::from_raw(0),
-            medium_value: FixedQ32::from_raw(1),
-            high_value: FixedQ32::from_raw(2),
-            critical_value: FixedQ32::from_raw(3),
+            low_value: FixedQ32::from_raw(/*raw*/ 0),
+            medium_value: FixedQ32::from_raw(/*raw*/ 1),
+            high_value: FixedQ32::from_raw(/*raw*/ 2),
+            critical_value: FixedQ32::from_raw(/*raw*/ 3),
             rollback_constraint_id: id("risk.rollback"),
             rollback_axis: id("risk.rollback.value"),
-            rollback_none_value: FixedQ32::from_raw(0),
-            rollback_reversible_value: FixedQ32::from_raw(1),
-            rollback_compensatable_value: FixedQ32::from_raw(2),
-            rollback_irreversible_value: FixedQ32::from_raw(3),
+            rollback_none_value: FixedQ32::from_raw(/*raw*/ 0),
+            rollback_reversible_value: FixedQ32::from_raw(/*raw*/ 1),
+            rollback_compensatable_value: FixedQ32::from_raw(/*raw*/ 2),
+            rollback_irreversible_value: FixedQ32::from_raw(/*raw*/ 3),
             compensation_constraint_id: id("risk.compensation"),
             compensation_axis: id("risk.compensation.value"),
-            compensation_false_value: FixedQ32::from_raw(0),
-            compensation_true_value: FixedQ32::from_raw(1),
+            compensation_false_value: FixedQ32::from_raw(/*raw*/ 0),
+            compensation_true_value: FixedQ32::from_raw(/*raw*/ 1),
             abstention_constraint_id: id("risk.abstention"),
             abstention_axis: id("risk.abstention.value"),
             abstention_rules: vec![ObjectiveAbstentionRuleProfileV1 {
                 source_rule: "ask".to_string(),
-                value: FixedQ32::from_raw(1),
+                value: FixedQ32::from_raw(/*raw*/ 1),
             }],
         },
     }
@@ -239,7 +239,7 @@ fn context(
     envelope: &ObjectiveSourceEnvelopeV1,
 ) -> ObjectiveAdmissionContextV1 {
     ObjectiveAdmissionContextV1 {
-        revision: Revision::new(7).expect("revision"),
+        revision: Revision::new(/*value*/ 7).expect("revision"),
         now_unix_micros: NOW_MICROS,
         selected_profile_digest: profile.digest().expect("profile digest"),
         source_authentication: ObjectiveSourceAuthenticationV1::Principal {
@@ -287,7 +287,7 @@ fn complete_profile_bound_envelope_compiles_without_dropping_fields() {
     );
     assert_eq!(1, compiled.objective.soft_preferences.len());
     assert_eq!(
-        Revision::new(7).expect("revision"),
+        Revision::new(/*value*/ 7).expect("revision"),
         compiled.objective.revision
     );
 }
@@ -455,7 +455,7 @@ fn oversized_profile_mapping_set_is_rejected() {
 #[test]
 fn risk_profile_ordering_is_monotone() {
     let mut profile = profile();
-    profile.risk.high_value = FixedQ32::from_raw(0);
+    profile.risk.high_value = FixedQ32::from_raw(/*raw*/ 0);
     assert_eq!(
         ObjectiveAdmissionError::InvalidProfile("risk ordering"),
         profile
@@ -501,7 +501,7 @@ fn measurement_ordinary_admission_compile_v1() {
     let profile = profile();
     let envelope = envelope();
     let context = context(&profile, &envelope);
-    let samples = measurement_sample_count(1_000, 100_000);
+    let samples = measurement_sample_count(/*default*/ 1_000, /*maximum*/ 100_000);
     let mut timings = Vec::with_capacity(samples);
 
     for _ in 0..samples {

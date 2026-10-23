@@ -4,6 +4,8 @@ use std::path::PathBuf;
 use std::process::Stdio;
 use std::time::Duration;
 
+#[cfg(windows)]
+use anyhow::Context;
 use anyhow::anyhow;
 use codex_exec_server_protocol::JSONRPCMessage;
 use codex_exec_server_protocol::JSONRPCNotification;
@@ -51,6 +53,8 @@ impl Drop for ExecServerHarness {
 pub(crate) struct TestCodexHelperPaths {
     pub(crate) codex_exe: PathBuf,
     pub(crate) codex_linux_sandbox_exe: Option<PathBuf>,
+    #[cfg(windows)]
+    _windows_bundle: TempDir,
 }
 
 pub(crate) struct DisconnectableWebSocketProxy {
@@ -69,9 +73,33 @@ impl Drop for DisconnectableWebSocketProxy {
 
 pub(crate) fn test_codex_helper_paths() -> anyhow::Result<TestCodexHelperPaths> {
     let (helper_binary, codex_linux_sandbox_exe) = super::current_test_binary_helper_paths()?;
+    #[cfg(windows)]
+    let (helper_binary, windows_bundle) = {
+        let bundle = tempfile::Builder::new()
+            .prefix("exec-server-windows-helpers-")
+            .tempdir()?;
+        let binary_name = helper_binary.file_name().context("test binary file name")?;
+        let bundled_binary = bundle.path().join(binary_name);
+        // Keep the real test-binary dispatch entry point in a private bundle.
+        // A cross-volume temp directory requires a copy instead of a hard link.
+        std::fs::hard_link(&helper_binary, &bundled_binary)
+            .or_else(|_| std::fs::copy(&helper_binary, &bundled_binary).map(|_| ()))
+            .context("stage exec-server test binary")?;
+        let resources = bundle.path().join("codex-resources");
+        std::fs::create_dir(&resources)?;
+        for helper_name in ["codex-windows-sandbox-setup", "codex-command-runner"] {
+            let source = codex_utils_cargo_bin::cargo_bin(helper_name)?;
+            let file_name = source.file_name().context("sandbox helper file name")?;
+            std::fs::copy(&source, resources.join(file_name))
+                .with_context(|| format!("stage {helper_name}"))?;
+        }
+        (bundled_binary, bundle)
+    };
     Ok(TestCodexHelperPaths {
         codex_exe: helper_binary,
         codex_linux_sandbox_exe,
+        #[cfg(windows)]
+        _windows_bundle: windows_bundle,
     })
 }
 

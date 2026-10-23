@@ -28,7 +28,7 @@ fn ledger_03_rejects_shared_credential_chain() {
     let generator = actor("generator", "shared-credential", "generator-key");
     let observer = actor("observer", "shared-credential", "observer-key");
     assert_eq!(
-        verify_independent_roles(&generator, &observer, 50),
+        verify_independent_roles(&generator, &observer, /*now*/ 50),
         Err(CausalV2Error::RoleCollision("credential chain"))
     );
 }
@@ -55,13 +55,13 @@ fn ledger_04_validates_terminal_watermark_and_correction_lineage() {
             finalized_at: Some(46),
         },
     };
-    let receipt = validate_authenticated_outcome(&generator, &outcome, 50);
+    let receipt = validate_authenticated_outcome(&generator, &outcome, /*now*/ 50);
     assert!(receipt.is_ok());
 
     let mut invalid = outcome;
     invalid.value = None;
     assert_eq!(
-        validate_authenticated_outcome(&generator, &invalid, 50),
+        validate_authenticated_outcome(&generator, &invalid, /*now*/ 50),
         Err(CausalV2Error::OutcomeStateMismatch)
     );
 }
@@ -73,22 +73,22 @@ fn ledger_credit_batch_enforces_conservation() {
         episode_id: id("episode-1"),
         outcome_id: id("outcome-1"),
         allocator: actor("allocator", "allocator-credential", "allocator-key"),
-        terminal_outcome: FixedQ32::from_raw(100),
+        terminal_outcome: FixedQ32::from_raw(/*raw*/ 100),
         allocations: vec![
             CreditAllocationV1 {
                 target_id: id("artifact-b"),
-                credit: FixedQ32::from_raw(30),
+                credit: FixedQ32::from_raw(/*raw*/ 30),
             },
             CreditAllocationV1 {
                 target_id: id("artifact-a"),
-                credit: FixedQ32::from_raw(60),
+                credit: FixedQ32::from_raw(/*raw*/ 60),
             },
         ],
-        conservation_residual: FixedQ32::from_raw(10),
+        conservation_residual: FixedQ32::from_raw(/*raw*/ 10),
         support_digest: digest("credit-support"),
         finalized: true,
     };
-    let receipt = match finalize_credit_batch(batch.clone(), 50) {
+    let receipt = match finalize_credit_batch(batch.clone(), /*now*/ 50) {
         Ok(receipt) => receipt,
         Err(error) => panic!("valid conserved batch failed: {error}"),
     };
@@ -97,9 +97,9 @@ fn ledger_credit_batch_enforces_conservation() {
     assert!(!receipt.authority.grants_any());
 
     let mut invalid = batch;
-    invalid.conservation_residual = FixedQ32::from_raw(9);
+    invalid.conservation_residual = FixedQ32::from_raw(/*raw*/ 9);
     assert_eq!(
-        finalize_credit_batch(invalid, 50),
+        finalize_credit_batch(invalid, /*now*/ 50),
         Err(CausalV2Error::CreditConservation)
     );
 }
@@ -148,13 +148,13 @@ fn ledger_dataset_freeze_is_order_independent_and_rejects_duplicates() {
         pending_outcomes: 2,
         censored_outcomes: 1,
     };
-    let ordered = match freeze_dataset(request.clone(), 50) {
+    let ordered = match freeze_dataset(request.clone(), /*now*/ 50) {
         Ok(snapshot) => snapshot,
         Err(error) => panic!("valid dataset freeze failed: {error}"),
     };
     let mut reversed = request.clone();
     reversed.source_record_digests.reverse();
-    let reversed = match freeze_dataset(reversed, 50) {
+    let reversed = match freeze_dataset(reversed, /*now*/ 50) {
         Ok(snapshot) => snapshot,
         Err(error) => panic!("reordered dataset freeze failed: {error}"),
     };
@@ -166,7 +166,7 @@ fn ledger_dataset_freeze_is_order_independent_and_rejects_duplicates() {
     let mut duplicate = request;
     duplicate.source_record_digests = vec![first, first];
     assert_eq!(
-        freeze_dataset(duplicate, 50),
+        freeze_dataset(duplicate, /*now*/ 50),
         Err(CausalV2Error::DuplicateSourceRecord)
     );
 }

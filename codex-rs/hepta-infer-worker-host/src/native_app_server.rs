@@ -48,7 +48,6 @@ use codex_hepta_codex_adapter::AdapterStatus;
 use codex_hepta_codex_adapter::AppServerRequestBinding;
 use codex_hepta_codex_adapter::CodexOperationIntent;
 use codex_hepta_codex_adapter::TURN_START_METHOD_ID;
-use codex_hepta_codex_adapter::adapt_observed_event;
 use codex_hepta_codex_adapter::adapt_observed_server_rejection;
 use codex_hepta_codex_adapter::adapt_observed_thread_read_reconciliation;
 use codex_hepta_codex_adapter::adapt_request;
@@ -70,6 +69,10 @@ use codex_hepta_types::Digest32;
 use codex_hepta_types::Generation;
 use codex_hepta_types::StableId;
 use codex_utils_absolute_path::AbsolutePathBuf;
+
+#[path = "native_app_server_observation.rs"]
+mod observation;
+use observation::NativeTurnObservation;
 
 #[path = "native_run_control.rs"]
 mod control;
@@ -643,18 +646,20 @@ impl AppServerModelDriver {
         verify_persisted_dispatch_binding(
             control,
             request_id,
-            payload_digest,
-            request_receipt.request_digest,
-            source_admission_digest,
-            codex_home_digest,
-            connection_id,
-            &started.thread.session_id,
-            adapter_intent.deadline_ms,
-            authority_epoch,
-            revocation_revision,
-            &revocation_head_digest,
-            &authority_witness,
-            &app_server_version,
+            ExpectedNativeDispatchBinding {
+                payload_digest,
+                request_digest: request_receipt.request_digest,
+                source_admission_digest,
+                codex_home_digest,
+                connection_id,
+                session_id: &started.thread.session_id,
+                deadline_ms: adapter_intent.deadline_ms,
+                authority_epoch,
+                revocation_revision,
+                revocation_head_digest: &revocation_head_digest,
+                authority_witness: &authority_witness,
+                app_server_version: &app_server_version,
+            },
         )?;
 
         if let Some(binding) = intelligence {
@@ -900,6 +905,7 @@ impl AppServerModelDriver {
         }
         let deadline =
             Instant::now() + observation_budget_from(unix_time_ms()?, binding.intent.deadline_ms);
+        let mut observation = NativeTurnObservation::new(binding);
         let result = self
             .observe(
                 &mut client,
@@ -907,23 +913,22 @@ impl AppServerModelDriver {
                 deadline,
                 cancellation,
                 Some(&owner),
-                &binding,
+                &mut observation,
             )
             .await;
         if let Err(reason) = result {
             output.boundary_status = classify_observation_failure(&reason);
             output.stop_reason = Some(reason.clone());
-            if let (Some(binding), Some(revision)) = (intelligence, intelligence_revision) {
-                if let Ok(cancelled) = owner
+            if let (Some(binding), Some(revision)) = (intelligence, intelligence_revision)
+                && let Ok(cancelled) = owner
                     .run_cancel(
                         binding.run_id.clone(),
                         revision,
                         reason.chars().take(512).collect(),
                     )
                     .await
-                {
-                    intelligence_revision = Some(cancelled.receipt.revision);
-                }
+            {
+                intelligence_revision = Some(cancelled.receipt.revision);
             }
             // Persist cancellation intent, but still interrupt if that write
             // fails. A failed journal write fences later admission/settlement.
@@ -938,18 +943,23 @@ impl AppServerModelDriver {
                     Ok(())
                 };
             let cancel_recorded = control.cancel_native(request_id);
-            interrupt(&mut client, &output).await;
-            let grace = CancellationToken::new();
-            let _ = self
-                .observe(
-                    &mut client,
-                    &mut output,
-                    Instant::now() + INTERRUPT_GRACE,
-                    &grace,
-                    /*owner*/ None,
-                    &binding,
-                )
-                .await;
+            // A selected terminal can establish physical completion while the
+            // local cancellation/deadline boundary denies authorized success.
+            // Only a still-unresolved turn needs interrupt and bounded grace.
+            if !output.terminal_observed {
+                interrupt(&mut client, &output).await;
+                let grace = CancellationToken::new();
+                let _ = self
+                    .observe(
+                        &mut client,
+                        &mut output,
+                        Instant::now() + INTERRUPT_GRACE,
+                        &grace,
+                        /*owner*/ None,
+                        &mut observation,
+                    )
+                    .await;
+            }
             loss_recorded?;
             cancel_recorded?;
             if !output.terminal_observed
@@ -1011,7 +1021,7 @@ impl AppServerModelDriver {
         deadline: Instant,
         cancellation: &CancellationToken,
         owner: Option<&AgentdClient>,
-        binding: &CodexTurnBinding,
+        observation: &mut NativeTurnObservation,
     ) -> std::result::Result<(), String> {
         let mut health_tick = tokio::time::interval(Duration::from_millis(500));
         loop {
@@ -1029,7 +1039,7 @@ impl AppServerModelDriver {
             };
             match event.event() {
                 AppServerEvent::ServerNotification(_) => {
-                    if observe_event(output, &event, binding)? {
+                    if observation.observe_selected_event(output, &event, deadline, cancellation)? {
                         return Ok(());
                     }
                 }
@@ -1146,22 +1156,42 @@ async fn send_authorized_turn_start(
         .await
 }
 
-fn verify_persisted_dispatch_binding(
-    control: &DurableInferenceControl,
-    request_id: &str,
+/// Expected fields compared with the durable dispatch before physical send.
+/// Constructing this input does not verify the dispatch or grant final-use authority.
+struct ExpectedNativeDispatchBinding<'a> {
     payload_digest: Digest32,
     request_digest: Digest32,
     source_admission_digest: Digest32,
     codex_home_digest: Digest32,
     connection_id: u64,
-    session_id: &str,
+    session_id: &'a str,
     deadline_ms: u64,
     authority_epoch: u64,
     revocation_revision: u64,
-    revocation_head_digest: &str,
-    authority_witness: &str,
-    app_server_version: &str,
+    revocation_head_digest: &'a str,
+    authority_witness: &'a str,
+    app_server_version: &'a str,
+}
+
+fn verify_persisted_dispatch_binding(
+    control: &DurableInferenceControl,
+    request_id: &str,
+    expected: ExpectedNativeDispatchBinding<'_>,
 ) -> Result<()> {
+    let ExpectedNativeDispatchBinding {
+        payload_digest,
+        request_digest,
+        source_admission_digest,
+        codex_home_digest,
+        connection_id,
+        session_id,
+        deadline_ms,
+        authority_epoch,
+        revocation_revision,
+        revocation_head_digest,
+        authority_witness,
+        app_server_version,
+    } = expected;
     let dispatch = control
         .native_record(request_id)
         .and_then(|record| record.dispatch.as_ref())
@@ -1415,78 +1445,6 @@ async fn interrupt(client: &mut RemoteAppServerClient, output: &NativeRunOutput)
         }),
     )
     .await;
-}
-
-fn observe_event(
-    output: &mut NativeRunOutput,
-    observed: &RemoteAppServerObservedEvent,
-    binding: &CodexTurnBinding,
-) -> std::result::Result<bool, String> {
-    let AppServerEvent::ServerNotification(notification) = observed.event() else {
-        return Ok(false);
-    };
-    match notification.as_ref() {
-        ServerNotification::AgentMessageDelta(delta)
-            if delta.thread_id == output.thread_id && delta.turn_id == output.turn_id =>
-        {
-            if delta.delta.len() > MAX_OUTPUT_BYTES.saturating_sub(output.output.len()) {
-                return Err("output byte limit exceeded".to_string());
-            }
-            output.output.push_str(&delta.delta);
-        }
-        ServerNotification::ThreadTokenUsageUpdated(usage)
-            if usage.thread_id == output.thread_id && usage.turn_id == output.turn_id =>
-        {
-            let observed_tokens = u64::try_from(usage.token_usage.total.output_tokens)
-                .map_err(|_| "invalid negative provider usage".to_string())?;
-            if output
-                .observed_output_tokens
-                .is_some_and(|previous| observed_tokens < previous)
-            {
-                return Err("provider cumulative usage regressed".to_string());
-            }
-            output.observed_output_tokens = Some(observed_tokens);
-        }
-        ServerNotification::TurnCompleted(completed)
-            if completed.thread_id == output.thread_id && completed.turn.id == output.turn_id =>
-        {
-            let receipt = adapt_observed_event(&binding.intent, &binding.turn_id, observed)
-                .map_err(|error| format!("invalid App Server terminal witness: {error}"))?
-                .ok_or_else(|| "turn/completed did not produce terminal receipt".to_string())?;
-            let physical_boundary = match receipt.status {
-                AdapterStatus::Succeeded => {
-                    output.status = NativeRunStatus::Completed;
-                    NativeBoundaryStatus::Succeeded
-                }
-                AdapterStatus::Failed => {
-                    output.status = NativeRunStatus::Failed;
-                    NativeBoundaryStatus::Failed
-                }
-                AdapterStatus::Interrupted => {
-                    output.status = NativeRunStatus::Interrupted;
-                    NativeBoundaryStatus::Interrupted
-                }
-                _ => return Err("nonterminal adapter status for turn/completed".to_string()),
-            };
-            if output.boundary_status == NativeBoundaryStatus::Indeterminate {
-                output.boundary_status = physical_boundary;
-            }
-            output.codex_terminal_correlation_digest = Some(
-                receipt
-                    .correlation_digest
-                    .ok_or_else(|| "terminal receipt omitted correlation digest".to_string())?
-                    .to_string(),
-            );
-            if let Some(error) = &completed.turn.error {
-                output.stop_reason = Some(error.message.chars().take(1024).collect());
-            }
-            output.terminal_observed = true;
-            downgrade_for_owner_loss(output);
-            return Ok(true);
-        }
-        _ => {}
-    }
-    Ok(false)
 }
 
 #[cfg(test)]

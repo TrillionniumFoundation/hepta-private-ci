@@ -72,9 +72,13 @@ pub struct CognitiveTestHost {
 }
 
 impl CognitiveTestHost {
+    /// The caller supplies a real helper-capable executable for App Server
+    /// child re-execs. A test harness is suitable only when its startup runs
+    /// the original Codex arg0 dispatch before the test entry point.
     pub async fn start(
         root: PathBuf,
         agent_id: AgentId,
+        codex_self_exe: PathBuf,
         model: &str,
         provider_base_url: &str,
     ) -> TestResult<Self> {
@@ -118,6 +122,9 @@ impl CognitiveTestHost {
         state.attach_cognitive_store(Arc::clone(&store))?;
         registry.compare_and_transition(&agent_id, 1, AgentLifecycle::Running)?;
         state.refresh_generation()?;
+        // Use the ordinary zero-effect-authority owner startup gate after the
+        // canonical cognitive store is open and attached under this generation.
+        state.mark_runtime_prerequisites_ready()?;
 
         codex_utils_home_dir::set_process_codex_home_override(
             AbsolutePathBuf::from_absolute_path(identity.home_root.clone())?,
@@ -133,7 +140,10 @@ impl CognitiveTestHost {
         let control_task = tokio::spawn(control.run());
         let app_server_task = tokio::spawn(run_app_server(
             identity.clone(),
-            Arg0DispatchPaths::default(),
+            Arg0DispatchPaths {
+                codex_self_exe: Some(codex_self_exe),
+                ..Arg0DispatchPaths::default()
+            },
             CognitiveRuntime::Available(Arc::clone(&store)),
             Arc::clone(&state),
             /*production_writer_host*/ None,

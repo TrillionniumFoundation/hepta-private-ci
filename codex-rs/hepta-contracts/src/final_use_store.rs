@@ -92,7 +92,7 @@ impl Store {
             signer_id,
             StoreTrust::SingleKey(verifying_key),
             initial,
-            true,
+            /*allow_startup_head_advance*/ true,
         )
     }
 
@@ -107,7 +107,7 @@ impl Store {
             signer_id,
             StoreTrust::SingleKey(verifying_key),
             initial,
-            false,
+            /*allow_startup_head_advance*/ false,
         )
     }
 
@@ -122,7 +122,7 @@ impl Store {
             signer_id,
             StoreTrust::IssuerKeyRing(issuer_trust_sha256),
             initial,
-            false,
+            /*allow_startup_head_advance*/ false,
         )
     }
 

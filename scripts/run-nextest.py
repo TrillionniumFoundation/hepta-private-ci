@@ -220,7 +220,13 @@ def use_scoped_metadata(args, cwd):
 
 
 def run(args):
-    command = ["cargo", "nextest", "run", "--no-fail-fast", *args]
+    nextest_args = args[: args.index("--") if "--" in args else len(args)]
+    command_prefix = ["cargo", "nextest", "run"]
+    # Compile-only mode conflicts with this execution default. Preserve explicit
+    # caller options, including conflicts that nextest itself must reject.
+    if "--no-run" not in nextest_args:
+        command_prefix.append("--no-fail-fast")
+    command = [*command_prefix, *args]
     if not use_scoped_metadata(args, Path.cwd()):
         return subprocess.call(command)
     metadata_command = ["cargo", "metadata", "--no-deps", "--format-version=1"]
@@ -266,7 +272,7 @@ def run(args):
                 next(arguments)
             elif not arg.startswith("--manifest-path="):
                 build_args.append(arg)
-        command = ["cargo", "nextest", "run", "--no-fail-fast", *build_args]
+        command = [*command_prefix, *build_args]
         separator = command.index("--") if "--" in command else len(command)
         command[separator:separator] = ["--cargo-metadata", str(metadata_path)]
         return subprocess.call(command)

@@ -86,7 +86,7 @@ fn cyclic_tolerance_counterexample_retains_frontier_in_every_input_order() {
             candidate_id: row.candidate_id.clone(),
             organ_id: id("observed-owner"),
             objective_digest: Digest32::of_bytes(b"objective"),
-            generation: Generation::new(1).expect("valid generation"),
+            generation: Generation::new(/*value*/ 1).expect("valid generation"),
             feasibility: FeasibilityPosture::Feasible,
             utility: row.utility.clone(),
             risk: vec![],
@@ -131,7 +131,7 @@ fn cyclic_tolerance_counterexample_retains_frontier_in_every_input_order() {
                         let receipt = evaluate_candidates_with_policy(
                             ContributionSet {
                                 objective_digest: Digest32::of_bytes(b"objective"),
-                                generation: Generation::new(1).expect("valid generation"),
+                                generation: Generation::new(/*value*/ 1).expect("valid generation"),
                                 contributions: [a, b, c, d]
                                     .map(|index| contributions[index].clone())
                                     .to_vec(),

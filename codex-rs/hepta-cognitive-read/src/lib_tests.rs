@@ -29,7 +29,7 @@ fn generation(value: u64) -> Generation {
 fn record(name: &str, kind: MemoryKind, state: RecordState) -> MemoryRecord {
     MemoryRecord {
         record_id: id(name),
-        revision: revision(1),
+        revision: revision(/*value*/ 1),
         kind,
         content_digest: Digest32::of_bytes(name.as_bytes()),
         predecessor_digest: None,
@@ -40,7 +40,7 @@ fn record(name: &str, kind: MemoryKind, state: RecordState) -> MemoryRecord {
 
 fn snapshot() -> CognitiveSnapshot {
     let result = build_snapshot(
-        generation(1),
+        generation(/*value*/ 1),
         vec![
             record("memory:a", MemoryKind::Fact, RecordState::Live),
             record("memory:b", MemoryKind::Episode, RecordState::Live),
@@ -135,7 +135,7 @@ fn altered_snapshot_fields_are_rejected_before_filtering() {
     value.records[2].state = RecordState::Live;
     altered.push(value);
     let mut value = original.clone();
-    value.generation = generation(2);
+    value.generation = generation(/*value*/ 2);
     altered.push(value);
     let mut value = original.clone();
     value.records[0]
@@ -146,7 +146,7 @@ fn altered_snapshot_fields_are_rejected_before_filtering() {
         });
     altered.push(value);
     let mut value = original.clone();
-    value.records[0].revision = revision(2);
+    value.records[0].revision = revision(/*value*/ 2);
     altered.push(value);
     assert_eq!(
         codex_hepta_types::AuthorityPosture::try_from_wire_bytes(&[0x01]),
@@ -196,12 +196,14 @@ fn current_revision_is_resolved_before_kind_and_tombstone_filtering() {
         (MemoryKind::Fact, RecordState::Live),
     ] {
         let mut successor = original.clone();
-        successor.revision = revision(2);
+        successor.revision = revision(/*value*/ 2);
         successor.predecessor_digest = Some(original.record_digest());
         successor.kind = kind;
         successor.state = state;
-        let Ok(value) = build_snapshot(generation(1), vec![successor.clone(), original.clone()])
-        else {
+        let Ok(value) = build_snapshot(
+            generation(/*value*/ 1),
+            vec![successor.clone(), original.clone()],
+        ) else {
             panic!("revision history must form a valid snapshot");
         };
         let request = ReadRequest {

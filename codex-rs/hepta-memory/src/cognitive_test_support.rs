@@ -21,6 +21,9 @@ pub(crate) fn workspace(value: &str) -> Sha256Digest {
 pub(crate) fn layout(temp: &TempDir, agent_id: &AgentId) -> codex_hepta_paths::HeptaAgentLayout {
     let fleet = temp.path().join("fleet");
     std::fs::create_dir_all(&fleet).expect("create fleet root");
+    // Normal fixtures use the created directory's canonical identity. Path
+    // redirection tests construct their own unmodified attack paths.
+    let fleet = fleet.canonicalize().expect("canonical fleet root");
     HeptaFleetRoot::parse(fleet)
         .expect("fleet root")
         .layout()
