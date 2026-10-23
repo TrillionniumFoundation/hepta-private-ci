@@ -8,9 +8,11 @@ independent runtime/effect result. Its output must never authorize cutover.
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
 import os
 import re
+import stat
 import subprocess
 import sys
 from pathlib import Path
@@ -30,9 +32,10 @@ def _git(path: Path, *args: str) -> bytes:
     # with the selected checkout only, without hooks, filters or fsmonitor.
     env = {key: value for key, value in os.environ.items() if not key.startswith("GIT_")}
     env.update({"GIT_NO_REPLACE_OBJECTS": "1", "GIT_CONFIG_NOSYSTEM": "1",
-                "GIT_CONFIG_GLOBAL": os.devnull, "GIT_OPTIONAL_LOCKS": "0"})
+                "GIT_CONFIG_GLOBAL": os.devnull, "GIT_OPTIONAL_LOCKS": "0",
+                "GIT_NO_LAZY_FETCH": "1", "GIT_TERMINAL_PROMPT": "0"})
     cmd = ["git", "-c", "core.fsmonitor=false", "-c", "core.hooksPath=" + os.devnull,
-           "-C", str(path), *args]
+           "-c", "core.untrackedCache=false", "-C", str(path), *args]
     try:
         proc = subprocess.run(cmd, env=env, capture_output=True, timeout=30, check=False)
     except (OSError, subprocess.TimeoutExpired) as error:
@@ -49,6 +52,50 @@ def _sha(text: object, label: str) -> str:
     if not isinstance(text, str) or not SHA.fullmatch(text) or text == "0" * 40:
         raise SourceGuardError(f"invalid pinned {label}")
     return text
+
+
+def _verify_source_bytes(root: Path) -> None:
+    # Git status applies clean/encoding/ident transformations. Compare the raw
+    # filesystem bytes to HEAD objects as well, without running any filter.
+    for entry in _git(root, "ls-tree", "-r", "-z", "--full-tree", "HEAD").split(b"\0"):
+        if not entry:
+            continue
+        metadata, relative = entry.split(b"\t", 1)
+        mode, kind, expected = metadata.split()
+        if mode == b"160000":
+            raise SourceGuardError("submodule source needs separate pinning")
+        if kind != b"blob" or mode not in (b"100644", b"100755", b"120000"):
+            raise SourceGuardError("unsupported tracked source mode")
+        path = root / os.fsdecode(relative)
+        if relative.startswith(b"/") or b".." in relative.split(b"/"):
+            raise SourceGuardError("invalid tracked source path")
+        for parent in path.parents:
+            if parent == root:
+                break
+            if parent.is_symlink() or not parent.is_dir():
+                raise SourceGuardError("tracked source parent is not a real directory")
+        try:
+            if mode == b"120000":
+                if not path.is_symlink():
+                    raise SourceGuardError("tracked source symlink changed")
+                data = os.fsencode(os.readlink(path))
+                actual = hashlib.sha1(b"blob " + str(len(data)).encode() + b"\0" + data).hexdigest()
+            else:
+                file_mode = path.lstat().st_mode
+                if not stat.S_ISREG(file_mode):
+                    raise SourceGuardError("tracked source is not a regular file")
+                if bool(file_mode & stat.S_IXUSR) != (mode == b"100755"):
+                    raise SourceGuardError("tracked source executable bit differs from pinned Git mode")
+                with path.open("rb") as source:
+                    size = os.fstat(source.fileno()).st_size
+                    digest = hashlib.sha1(b"blob " + str(size).encode() + b"\0")
+                    for chunk in iter(lambda: source.read(1024 * 1024), b""):
+                        digest.update(chunk)
+                    actual = digest.hexdigest()
+        except OSError as error:
+            raise SourceGuardError(f"tracked source unreadable: {error}") from error
+        if actual != expected.decode("ascii"):
+            raise SourceGuardError("raw tracked source bytes differ from pinned Git blob")
 
 
 def verify_worktrees(baseline: object, paths: dict[str, str]) -> dict:
@@ -74,30 +121,42 @@ def verify_worktrees(baseline: object, paths: dict[str, str]) -> dict:
         top = _git(path, "rev-parse", "--show-toplevel").decode().strip()
         if Path(top).resolve() != path:
             raise SourceGuardError(f"{owner}: path is not the repository root")
+        # Inspect names only: configuration values may contain credentials.
+        # This must precede object reads: partial clones can lazily run a
+        # repository-configured transport while resolving a missing tree.
+        keys = _git(path, "config", "--includes", "--null", "--name-only", "--list")
+        names = [key.lower() for key in keys.split(b"\0")]
+        if any(key == b"extensions.partialclone" or
+               (key.startswith(b"remote.") and key.endswith((b".promisor", b".partialclonefilter")))
+               for key in names):
+            raise SourceGuardError(f"{owner}: partial/promisor Git sources are not permitted")
+        if any(key.startswith(b"filter.") for key in names):
+            raise SourceGuardError(f"{owner}: configured Git filters are not permitted")
         observed_commit = _git(path, "rev-parse", "--verify", "HEAD^{commit}").decode().strip()
         observed_tree = _git(path, "rev-parse", "--verify", "HEAD^{tree}").decode().strip()
         if observed_commit != commit or observed_tree != tree:
             raise SourceGuardError(f"{owner}: checked-out Git commit/tree drift")
 
+        # Status must not enter a submodule with its own uninspected filters.
+        # Reject index gitlinks before status, and never recurse into submodules.
+        for entry in _git(path, "ls-files", "--stage", "-z").split(b"\0"):
+            if entry.startswith(b"160000 "):
+                raise SourceGuardError(f"{owner}: submodule source needs separate pinning")
         # Porcelain status catches tracked, staged and visible untracked dirt.
         if _git(path, "status", "--porcelain=v1", "-z", "--untracked-files=all",
-                "--ignore-submodules=none"):
+                "--ignore-submodules=all"):
             raise SourceGuardError(f"{owner}: modified, staged or untracked files present")
         # A build may read ignored files even when porcelain status is clean.
         # Demand a source-only checkout before a reproducibility claim; callers
         # can keep generated outputs in separate worktrees or build directories.
         if _git(path, "ls-files", "--others", "--ignored", "--exclude-standard", "-z"):
             raise SourceGuardError(f"{owner}: ignored untracked files present")
+        _verify_source_bytes(path)
         # Hidden index flags can conceal locally modified tracked inputs from
         # status, making a supposedly exact-source execution irreproducible.
         for entry in _git(path, "ls-files", "-v", "-z").split(b"\0"):
             if entry and (entry[:1].islower() or entry[:1] == b"S"):
                 raise SourceGuardError(f"{owner}: assume-unchanged/skip-worktree index entry")
-        # A Git tree binds only a submodule gitlink, not its actual worktree.
-        # Do not assert a three-repository checkout is complete with gitlinks.
-        for entry in _git(path, "ls-files", "--stage", "-z").split(b"\0"):
-            if entry.startswith(b"160000 "):
-                raise SourceGuardError(f"{owner}: submodule source needs separate pinning")
         verified[owner] = {"commit": commit, "tree": tree, "worktree_clean": True}
 
     # The existing comparison baseline validates tasks, model, target and

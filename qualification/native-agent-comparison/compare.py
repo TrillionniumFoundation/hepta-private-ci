@@ -12,6 +12,8 @@ import re
 import sys
 from pathlib import Path
 
+from paired_effects import paired_effects_by_scale
+
 SHA = re.compile(r"[0-9a-f]{40}\Z")
 DIGEST = re.compile(r"[0-9a-f]{64}\Z")
 MODES = ("A", "B", "C")
@@ -106,6 +108,7 @@ def compare(base: object, observations: object) -> dict:
         observation_digests.add(observation_digest)
         require(o.get("idempotency_replayed") is False and type(o.get("unknown_effects_open")) is int and o["unknown_effects_open"] == 0, "unsafe replay or unresolved effect")
         require(type(o.get("task_success")) is bool and type(o.get("tool_correct")) is bool, "missing outcome truth")
+        require(not o["task_success"] or o["tool_correct"], "task success conflicts with tool correctness")
         require(type(o.get("recovery_pass")) is bool, "missing recovery disposition")
         for name in METRICS:
             v = o.get(name)
@@ -177,6 +180,7 @@ def compare(base: object, observations: object) -> dict:
         "mode_summaries": summary,
         "scale_summaries": scale_summary,
         "scale_deltas": deltas,
+        "paired_effects_by_scale": paired_effects_by_scale(base["tasks"], actual, SCALES),
     }
 
 
