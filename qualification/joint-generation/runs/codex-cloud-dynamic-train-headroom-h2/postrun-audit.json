@@ -1,0 +1,132 @@
+{
+  "schema": "hepta.dynamic-h2-postrun-independent-audit.v1",
+  "auditor": "/root/audit_acceptance",
+  "audit_date_utc": "2026-10-23",
+  "diagnostic_id": "dynamic-train-headroom-h2",
+  "qualification_eligible": false,
+  "conclusion": "The sole H2 execution failed during dependency initialization, before TRAIN construction, artifact restoration, model loading, content checks or any service call. It produced no H2 measurement. The consumed START remains final; no retry, continuation or output alias is authorized.",
+  "execution_identity": {
+    "environment_id": "ccarenv_b64_Y2NhcmVudl8wOGNhYzlkMjdjYjg4MTkxOWJkMDY0MGIyMDBhYTA5OA",
+    "cwd": "/workspace/hepta-private-ci/qualification/joint-generation",
+    "source_commit": "f3c9d89bf10be3e0d7664d3ba5c3eb17cc782665",
+    "execution_commit": "a5bec822cf5c235c52c7a6ab20bf74297a9795e8",
+    "freeze_sha256": "cf555cd1571d2019b6c9c2e1ca737ff9392682a0e2b19aae580425d699413e52",
+    "protocol_sha256": "0da7509c51248832182d448f77cb323cf8bc3b23e98585795e9c3e0912a2c051",
+    "protocol_markdown_sha256": "bd4050117231941d840824119a1f5c4f4fab8d22b5d913a59863b69a29f47924",
+    "executed_script_sha256": "5311a378af1753a6801438a0607f3570c9bf3256f959eebbfab41dfa60f8545e",
+    "freeze_and_protocol_hashes_match_start_and_diagnostic": true,
+    "historical_committed_source_protocol_script_analysis_entries_checked": 71,
+    "historical_committed_binding_mismatches": [],
+    "protocol_markdown_matches_execution_source_commit": true,
+    "binding_scope": "The immutable executed commit and freeze were checked. Later source-only repairs are not described as the code that produced this failure."
+  },
+  "failure": {
+    "outcome": "failed",
+    "phase": "dependency_imports",
+    "error_type": "AccountingError",
+    "error": "invalid arm",
+    "failing_construction": "WorkLedger('H2-TRAIN-R&D-not-qualification', total_cap=4000000000)",
+    "cause": "The literal arm name contains &, which is outside WorkLedger._name's allowed character set.",
+    "traceback_retained": true,
+    "worker_and_outer_console_agree_on_original_error": true,
+    "worker_exit_code": 1,
+    "overall_exit_code": 1,
+    "nonzero_statuses_consistent": true,
+    "scientific_or_performance_failure_inference": "None. This is an initialization defect, not a measured model, routing, content or CPU-headroom result."
+  },
+  "zero_measurement_scope": {
+    "recorded_phases": ["dependency_imports"],
+    "dataset_construction_started": false,
+    "archive_verification_or_restoration_started": false,
+    "model_or_controller_loading_started": false,
+    "content_checks_started": false,
+    "attempted_service_calls": 0,
+    "completed_service_calls": 0,
+    "saved_inputs": {},
+    "ledger": null,
+    "known_consumed_units": 0,
+    "unsettled_reserved_operator_units_upper_bound": 0,
+    "possible_consumed_units_interval": {
+      "lower_inclusive": 0,
+      "upper_inclusive": 0
+    },
+    "accounting_complete_in_original_receipt": true,
+    "basis": "Saved phases, empty inputs/attempts/calls, absent restored/data/report artifacts, and the executed source's control flow: ledger construction raised before the subsequent artifact and TRAIN phases.",
+    "resource_limit": "Zero recorded model/operator measurement work does not mean zero resource use: imports, source/protection hashing and failure persistence consumed actual CPU."
+  },
+  "actual_process_costs": {
+    "dependency_imports_phase_cpu_ns": 87083664,
+    "dependency_imports_phase_wall_ns": 87085450,
+    "worker_receipt_cpu_ns": 443129104,
+    "worker_receipt_wall_ns": 441498353,
+    "outer_full_worker_and_descendant_cpu_ns": 491702000,
+    "outer_launcher_own_cpu_ns_before_receipt": 27556463,
+    "outer_total_research_cpu_ns_before_receipt": 519258463,
+    "outer_total_equals_worker_plus_launcher": true,
+    "outer_wall_ns": 490468164,
+    "outer_started_utc": "2026-10-23T16:10:36.526689+00:00",
+    "outer_completed_utc": "2026-10-23T16:10:37.017153+00:00",
+    "registered_cpu_cap_seconds": 30.0,
+    "outer_cpu_cap_pass": true,
+    "scope": "The larger outer worker receipt includes full process startup and terminal work missing from the earlier in-worker counter. Launcher-own CPU is added once. Final outer-receipt serialization remains the stated small enclosing-execution remainder, not a model budget credit. The run failed despite staying below this diagnostic CPU cap."
+  },
+  "one_shot_and_protection": {
+    "stage_and_output_start_copies_byte_equal": true,
+    "stage_partial_and_output_diagnostic_byte_equal": true,
+    "start_remains_consumed": true,
+    "retry_or_continuation_authorized": false,
+    "protected_previous_entries_hashed": 79,
+    "protected_hash_mismatches": [],
+    "protected_evidence_verified_at_exit_in_worker_receipt": true,
+    "core_opening_marker_sha256": "1312e8b106f6ee24c65caa880bbe41889e6878ff5cfe768d4cdbebf485a106f2",
+    "core_opening_marker_unchanged": true,
+    "r2_opening_marker_absent": true,
+    "protection_method": "Hash existing protected bytes only; no formal input arrays, labels, metrics, results or reports were semantically loaded or parsed by this audit."
+  },
+  "original_run_artifacts": {
+    "files_present_before_this_audit": ["START.json", "diagnostic.json", "manifest.json"],
+    "original_manifest_entries_verified": ["START.json", "diagnostic.json"],
+    "original_manifest_entry_hash_and_byte_count_mismatches": [],
+    "identities": {
+      "runs/codex-cloud-dynamic-train-headroom-h2/START.json": {
+        "bytes": 805,
+        "sha256": "4bd25ebd1569630a273acc059baea093e737a9926a00d1ddd348359be4cc04dc"
+      },
+      "runs/codex-cloud-dynamic-train-headroom-h2/diagnostic.json": {
+        "bytes": 2555,
+        "sha256": "eaaed14c1a77f4d2d5af801d6579539c82ab8cad4ef3a306ee5bcf864ae366fa"
+      },
+      "runs/codex-cloud-dynamic-train-headroom-h2/manifest.json": {
+        "bytes": 270,
+        "sha256": "03ffbb74f17d99783afaea3a562ed6ad607d598de8745c109e3332c9c8a55251"
+      },
+      "runs/codex-cloud-dynamic-h2-source-preflight/actual-worker-execution.json": {
+        "bytes": 875,
+        "sha256": "7edac8719400ea0d9c8578c15bc1b38e5072eb6797f05ea46037aac649cdbe7e"
+      },
+      "runs/codex-cloud-dynamic-h2-source-preflight/actual-worker-console.log": {
+        "bytes": 960,
+        "sha256": "a5da339e3c0cc39136b6235972fbcd23b9494cde1d48c96e9bb5ec67abd55636"
+      }
+    }
+  },
+  "not_measured": [
+    "All 36 registered service calls and 110592 planned service rows.",
+    "NC direct-full, forced-go, forced-stop and selected static NDU full TRAIN service costs.",
+    "Recomputed NC raw utility/gain parity against Q1 and selected NDU TRAIN raw utility.",
+    "New-wave signed or clamped marginal prices, oracle headroom, content gaps or their decomposition.",
+    "Any dynamic policy, codec effect, new generalization result or formal scientific qualification."
+  ],
+  "audit_limits": {
+    "new_dataset_or_model_execution": false,
+    "model_or_npz_array_loading": false,
+    "formal_semantic_data_or_results_read": false,
+    "formal_artifact_bytes_hashed_only_for_protection": true,
+    "source_edits": false,
+    "original_run_files_overwritten": false,
+    "only_file_added_by_this_audit": "runs/codex-cloud-dynamic-train-headroom-h2/postrun-audit.json",
+    "audit_cpu_independently_bracketed": false,
+    "audit_cost_policy": "Administrative/development work; not a credit to any model or H2 measurement budget."
+  },
+  "remaining_blocker": "The sole H2 registration is consumed by a technical initialization failure. A legal arm-label source correction and metadata regression may be prepared, but neither resets START nor authorizes additional H2 measurement. Any recovery proposal requires explicit prospective authorization; no such execution was performed in this audit."
+}

@@ -166,6 +166,16 @@ cannot replace it. No new formal test opened. The saved TRAIN-only
 identifies conditional oracle allowance but lacks direct NC/full service and
 static NDU TRAIN content terms. Dynamic superiority remains unconfirmed.
 
+The separately frozen [H2 TRAIN collection](runs/codex-cloud-dynamic-train-headroom-h2/REPORT.md)
+then exited **1 before any data/model/measurement** because a WorkLedger label
+contained an invalid ampersand. Its fixed START remains consumed; all 36 service
+calls are unexecuted and no headroom result exists. The one-line label correction
+and production-constructor regression are retained, without rerunning H2. A
+[technical recovery draft](training_diagnostics/dynamic-h2/TECHNICAL_RECOVERY_DRAFT.md)
+requires explicit amendment of that once-only rule and preservation of prior
+startup cost before the unexecuted collection can proceed. No core/dynamic
+acceptance or model-family impossibility follows from this startup error.
+
 **The first configured Codex Cloud execution passed the frozen finite-scene
 acceptance on 2026-10-23**, using source commit
 `57d2c7aa5880dd761b4c43f79d0f6f16b26b72e7`. The exact runner exited 0; all 30

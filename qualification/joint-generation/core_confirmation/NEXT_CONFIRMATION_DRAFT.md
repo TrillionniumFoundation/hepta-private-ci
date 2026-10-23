@@ -387,3 +387,15 @@ TRAIN utility under comparable complete budgets; independent accounting review
 is pending. Those results are not independently verified in this document and
 cannot be inherited as dynamic or formal success. Any applicable optimization
 must also be supplied to the effective static NDU comparator.
+
+
+The later H2 collection was a separately preregistered TRAIN-only attempt to
+fill H1's direct-service/static-content terms. Its sole invocation failed at
+dependency-ledger initialization (`AccountingError: invalid arm`) before any
+TRAIN construction, artifact/model restoration, probe or service measurement.
+Known units and attempted service count are zero; startup still cost
+0.519258463 CPU seconds including launcher before final receipt. Its START and
+failure remain consumed; the one-line label repair and regression do not
+constitute a successful repeat or a scientific result. A technical recovery
+amendment is only proposed, not executed. This administrative startup failure
+creates no formal alpha allocation, reset or independent evidence.
