@@ -116,6 +116,16 @@ class MemoryRetrievalProbeTests(unittest.TestCase):
                 changed[field] = value
                 verify(changed)
 
+    def test_independent_audit_rejects_boolean_full_recall(self):
+        full = {"accepted": True, "gold_evidence_count": 1,
+                "support_recall": 1.0, "all_support_recalled": 1,
+                "any_support_recalled": 1, "answerability_screen_correct": 1}
+        verify_row_scoring(full, {"D1:1"}, ["D1:1"], "scorable", 2)
+        for value in (True, 1):
+            with self.subTest(value=value), self.assertRaises(ValueError):
+                verify_row_scoring({**full, "support_recall": value},
+                                   {"D1:1"}, ["D1:1"], "scorable", 2)
+
     def test_independent_audit_preserves_unscored_and_abstained_rows(self):
         adversarial = {"accepted": False, "gold_evidence_count": 1,
             "support_recall": None, "all_support_recalled": None,
