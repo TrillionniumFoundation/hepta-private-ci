@@ -1,6 +1,4 @@
 use super::*;
-use codex_state::RootSqliteMaterialSource;
-use std::ffi::OsStr;
 
 #[tokio::test]
 async fn private_material_rejects_unregistered_schema_before_check_expressions() {
@@ -59,16 +57,20 @@ fn protected_temp() -> TempDir {
 }
 
 fn root_source_layout(source_layout: &HeptaAgentLayout) {
-    for name in [
-        "cognitive_1.sqlite3",
-        "cognitive_1.sqlite3-wal",
-        "cognitive_1.sqlite3-shm",
-        "cognitive_1.sqlite3-journal",
-    ] {
-        let path = source_layout.cognitive_root().join(name);
+    let database = resolve_active_database_path(source_layout.cognitive_root()).unwrap();
+    for suffix in ["", "-wal", "-shm", "-journal"] {
+        let mut path = database.as_os_str().to_os_string();
+        path.push(suffix);
+        let path = PathBuf::from(path);
         if path.exists() {
             std::os::unix::fs::chown(path, Some(60001), /*gid*/ None).unwrap();
         }
+    }
+    let pointer = source_layout
+        .cognitive_root()
+        .join(super::super::super::COGNITIVE_ACTIVE_DB_POINTER);
+    if pointer.exists() {
+        std::os::unix::fs::chown(pointer, Some(60001), /*gid*/ None).unwrap();
     }
     std::os::unix::fs::chown(
         source_layout.cognitive_root(),
@@ -89,20 +91,11 @@ fn capture_copy(
         std::fs::Permissions::from_mode(0o700),
     )
     .map_err(|error| CognitiveRecoveryError::Unavailable(error.to_string()))?;
-    let source_config = SqliteConfig::from_sqlite_home(
-        AbsolutePathBuf::try_from(source_layout.cognitive_root().to_path_buf()).unwrap(),
-    );
-    let destination_config = SqliteConfig::from_sqlite_home(
-        AbsolutePathBuf::try_from(destination_layout.cognitive_root().to_path_buf()).unwrap(),
-    );
-    RootSqliteMaterialSource::bind_registered(
-        &source_config,
-        &source_layout.cognitive_root().join("cognitive_1.sqlite3"),
+    super::super::RootCognitiveMaterialRegistration::bind_registered_layout(
+        source_layout,
         /*registered_uid*/ 60001,
-        &destination_config,
-    )
-    .and_then(|source| source.materialize_private_candidate(OsStr::new("cognitive_1.sqlite3")))
-    .map_err(recovery_error)
+    )?
+    .materialize_private_candidate(destination_layout)
 }
 
 #[tokio::test]
@@ -188,4 +181,94 @@ async fn root_material_mismatched_full_cut_does_not_return_evidence_or_activate(
             .exists()
     );
     transaction.rollback().await.unwrap();
+}
+
+#[tokio::test]
+#[ignore = "requires actual Root0, a protected destination and private /data TMP"]
+async fn root_registration_selects_original_recovered_generation_and_rejects_pointer_replacement() {
+    let source_temp = TempDir::new().unwrap();
+    let owner = agent_id(174);
+    let source_layout = layout(&source_temp, &owner);
+    let (store, _, _) = seeded(&source_temp, &owner).await;
+    let cut = store.recovery_anchor().await.unwrap();
+    store.observation_pool().close().await;
+    drop(store);
+    let recovered = CognitiveStore::open_with_recovery(
+        &source_layout,
+        CognitiveRecoveryRequirement::ExactCurrentCut(&cut),
+        &recovery_authority(&owner),
+        &RecoveryVerifier,
+    )
+    .await
+    .unwrap();
+    assert_ne!(
+        recovered.path(),
+        source_layout.cognitive_root().join("cognitive_1.sqlite3")
+    );
+    root_source_layout(&source_layout);
+    let registered = super::super::RootCognitiveMaterialRegistration::bind_registered_layout(
+        &source_layout,
+        /*registered_uid*/ 60001,
+    )
+    .unwrap();
+    assert_eq!(registered.identity().database_path(), recovered.path());
+    let destination_temp = protected_temp();
+    let destination_layout = layout(&destination_temp, &owner);
+    std::fs::create_dir_all(destination_layout.cognitive_root()).unwrap();
+    std::fs::set_permissions(
+        destination_layout.cognitive_root(),
+        std::fs::Permissions::from_mode(0o700),
+    )
+    .unwrap();
+    let mut transaction = recovered
+        .observation_pool()
+        .begin_with("BEGIN IMMEDIATE")
+        .await
+        .unwrap();
+    registered
+        .materialize_private_candidate(&destination_layout)
+        .unwrap();
+    CognitiveStore::verify_root_material_candidate(&destination_layout, &cut)
+        .await
+        .unwrap();
+    let pointer = source_layout
+        .cognitive_root()
+        .join(super::super::super::COGNITIVE_ACTIVE_DB_POINTER);
+    let bytes = std::fs::read(&pointer).unwrap();
+    std::fs::rename(&pointer, pointer.with_extension("old")).unwrap();
+    std::fs::write(&pointer, &bytes).unwrap();
+    std::fs::set_permissions(&pointer, std::fs::Permissions::from_mode(0o600)).unwrap();
+    std::os::unix::fs::chown(&pointer, Some(60001), /*gid*/ None).unwrap();
+    assert_eq!(
+        resolve_active_database_path(source_layout.cognitive_root()).unwrap(),
+        recovered.path()
+    );
+    assert!(
+        registered.verify_registered().is_err(),
+        "same basename cannot replace the registered pointer inode"
+    );
+    transaction.rollback().await.unwrap();
+
+    let fresh_temp = TempDir::new().unwrap();
+    let fresh_owner = agent_id(175);
+    let fresh_layout = layout(&fresh_temp, &fresh_owner);
+    let (fresh, _, _) = seeded(&fresh_temp, &fresh_owner).await;
+    root_source_layout(&fresh_layout);
+    let registered = super::super::RootCognitiveMaterialRegistration::bind_registered_layout(
+        &fresh_layout,
+        /*registered_uid*/ 60001,
+    )
+    .unwrap();
+    std::fs::write(
+        fresh_layout
+            .cognitive_root()
+            .join(super::super::super::COGNITIVE_ACTIVE_DB_POINTER),
+        b"unexpected pointer",
+    )
+    .unwrap();
+    assert!(
+        registered.verify_registered().is_err(),
+        "absent pointer cannot become present"
+    );
+    drop(fresh);
 }

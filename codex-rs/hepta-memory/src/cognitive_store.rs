@@ -64,6 +64,7 @@ pub use recovery::CognitiveRecoveryAnchor;
 pub use recovery::CognitiveRecoveryError;
 pub use recovery::CognitiveRecoveryRequirement;
 pub use recovery::RecoveredCognitiveReadOnly;
+pub use recovery::RootCognitiveMaterialRegistration;
 pub use recovery::VerifiedCognitiveMaterial;
 pub(crate) use recovery::capture as capture_recovery_anchor;
 

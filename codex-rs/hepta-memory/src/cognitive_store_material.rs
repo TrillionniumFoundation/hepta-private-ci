@@ -4,6 +4,10 @@ use super::*;
 use std::path::Path;
 use std::path::PathBuf;
 
+#[path = "cognitive_store_material_registration.rs"]
+mod registration;
+pub use registration::RootCognitiveMaterialRegistration;
+
 /// A validated private image, not a protected Current or permission to recover.
 /// Root must durably commit its original checkpoint before treating this cut
 /// as Current. This object supplies no writer, grant, replay or activation API.

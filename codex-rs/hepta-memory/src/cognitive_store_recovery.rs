@@ -47,6 +47,7 @@ use crate::framing::frame_part;
 mod material;
 #[path = "cognitive_store_recovery_read_only.rs"]
 mod read_only;
+pub use material::RootCognitiveMaterialRegistration;
 pub use material::VerifiedCognitiveMaterial;
 pub use read_only::RecoveredCognitiveReadOnly;
 
