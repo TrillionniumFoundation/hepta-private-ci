@@ -29,11 +29,22 @@ def observer_work(n):
             "compare_ops": 14 * n, "div_ops": n}
 
 
-def validation_work(model, n):
+def validation_modes(modes=None):
+    modes = ("full", "low", "ensemble") if modes is None else tuple(modes)
+    if (not modes or len(set(modes)) != len(modes)
+            or any(mode not in ("full", "low", "ensemble") for mode in modes)):
+        raise ValueError("unique supported static validation modes required")
+    return modes
+
+
+def validation_work(model, n, modes=None):
+    modes = validation_modes(modes)
     generator = FrozenGenerator(model, prepare_low=False)
-    return add_work(generator.full_work(n), generator.low_work(n), generator.prepare_work(),
-        {"scalar_ops": 24 * n, "div_ops": 24 * n},
-        scale_work(observer_work(n), 3), setup_work(model.dimensions, "additive"))
+    return add_work(generator.full_work(n) if "full" in modes or "ensemble" in modes else {},
+        add_work(generator.low_work(n), generator.prepare_work())
+            if "low" in modes or "ensemble" in modes else {},
+        {"scalar_ops": 24 * n, "div_ops": 24 * n} if "ensemble" in modes else {},
+        scale_work(observer_work(n), len(modes)), setup_work(model.dimensions, "additive"))
 
 
 def _output_work(model, n):
@@ -113,7 +124,8 @@ def reserve_work(model, system, mode, *, train_rows, validation_rows,
             raise ValueError("controller inventory omits reserved paired work")
     return {"service": service, "observer": observation, "critic": critic,
             "paired_calibration": paired, "tail": add_work(service, observation, critic, paired),
-            "revalidation": validation_work(model, validation_rows)}
+            "revalidation": validation_work(model, validation_rows,
+                None if plan is None else plan.get("static_modes"))}
 
 
 def _preparation_forecast(calibration, mode, measures, plan):

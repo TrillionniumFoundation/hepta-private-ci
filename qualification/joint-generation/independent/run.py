@@ -2,6 +2,7 @@
 
 import argparse
 from contextlib import contextmanager
+from dataclasses import replace
 import hashlib
 import json
 import os
@@ -18,14 +19,22 @@ from independent.accounting import BudgetExceeded, WorkLedger, compare_budgets, 
 from independent.calibration import calibration_manifest, stratified_indices
 from independent.data_v2 import dataset, manifest
 from independent.inference import FrozenGenerator, units
+from independent.experiments import EXPERIMENTS, bind_identity, resolve_experiment, validate_plan
 from independent.learning import CachedObjective, setup_work, step_work
-from independent.refinement import admit_round, forecast, reserve_work, validation_work
+from independent.refinement import admit_round, forecast, reserve_work, validation_modes, validation_work
 from model import JointModel
 
 
 ROOT = Path(__file__).resolve().parents[1]
 PLAN = ROOT / "independent/plan.json"
 MARKER = ROOT / "independent/efficient-r2-test-opened.json"
+
+
+def _experiment(name=None):
+    # Default aliases preserve the original programmatic r2 API and its tests.
+    # The CLI and nondefault identities always use fixed registry paths.
+    profile = resolve_experiment("efficient-r2" if name is None else name, root=ROOT)
+    return replace(profile, plan_path=PLAN, marker_path=MARKER) if name is None else profile
 
 
 def sha(path):
@@ -126,7 +135,8 @@ def guard_cpu_budget(system, plan, run, ledger, cost, candidates, phase, *, curr
             "schema": "hepta.joint-generation.partial-arm.v1", "system": system,
             "phase": phase, "ledger": ledger.snapshot(), "cost": dict(cost),
             "completed_candidates": list(candidates), "incomplete_candidate": current,
-            "test_opened": MARKER.exists(), "outcome": "CPU budget exceeded; later phases not executed"},
+            "test_opened": _experiment(plan.get("experiment_id")).marker_path.exists(),
+            "outcome": "CPU budget exceeded; later phases not executed"},
             exclusive=False)
     except Exception as persistence_error:
         error.add_note("partial-arm persistence also failed: " + repr(persistence_error))
@@ -151,31 +161,41 @@ def sources():
     return {str(p.relative_to(ROOT)): sha(p) for p in sorted(paths)}
 
 
-def freeze(receipt):
-    if MARKER.exists():
+def freeze(receipt, *, experiment=None):
+    profile = _experiment(experiment)
+    if profile.marker_path.exists():
         raise ValueError("independent test already opened; no new freeze/repeat")
+    plan = json.loads(profile.plan_path.read_text())
+    validate_plan(profile, plan)
     head = subprocess.check_output(["git", "rev-parse", "HEAD"], cwd=ROOT, text=True).strip()
     identity = sources()
-    for name, digest in {**identity, "independent/plan.json": sha(PLAN)}.items():
+    bound = {str(profile.plan_path.relative_to(ROOT)): sha(profile.plan_path)}
+    if profile.name == "core-c1":
+        bound[plan["protocol_path"]] = plan["protocol_sha256"]
+    for name, digest in {**identity, **bound}.items():
         committed = subprocess.check_output([
             "git", "show", head + ":qualification/joint-generation/" + name], cwd=ROOT)
         if hashlib.sha256(committed).hexdigest() != digest:
             raise ValueError("commit all protocol/source bytes before freezing: " + name)
     write_json(receipt, {"schema": "hepta.joint-generation.efficient-freeze.v2",
-        "source_commit": head, "plan_sha256": sha(PLAN), "sources": identity,
-        "plan": json.loads(PLAN.read_text()), "test_opened": False,
+        "experiment_id": profile.name,
+        "source_commit": head, "plan_sha256": sha(profile.plan_path), "sources": identity,
+        "plan": plan, "test_opened": False,
         "created_unix_ns": time.time_ns()})
 
 
-def check_freeze(path):
+def check_freeze(path, *, experiment=None):
+    profile = _experiment(experiment)
     frozen = json.loads(Path(path).read_text())
-    if MARKER.exists():
+    bind_identity(profile, frozen)
+    validate_plan(profile, frozen["plan"])
+    if profile.marker_path.exists():
         raise ValueError("independent test already opened; training cannot resume")
-    if frozen["test_opened"] or frozen["plan_sha256"] != sha(PLAN):
+    if frozen["test_opened"] or frozen["plan_sha256"] != sha(profile.plan_path):
         raise ValueError("frozen protocol mismatch")
     if frozen["sources"] != sources():
         raise ValueError("frozen execution source changed")
-    if frozen["plan"] != json.loads(PLAN.read_text()):
+    if frozen["plan"] != json.loads(profile.plan_path.read_text()):
         raise ValueError("frozen plan bytes/meaning differ")
     return frozen
 
@@ -232,16 +252,27 @@ def adaptation_optimizer(model, plan, common, run, ledger):
     return NativeAdam(model, library_path=library)
 
 
-def batch_validation(model, data, ledger, *, stage="search_validation"):
+def batch_validation(model, data, ledger, *, stage="search_validation", modes=None):
+    modes = validation_modes(modes)
     n = len(data["labels"])
-    ledger.charge_kernel(stage, "two_view_validation", **validation_work(model, n),
+    full = "full" in modes or "ensemble" in modes
+    low = "low" in modes or "ensemble" in modes
+    kernel = "two_view_validation" if full and low else ("full_view_validation" if full else "low_view_validation")
+    ledger.charge_kernel(stage, kernel, **validation_work(model, n, modes),
                          counts={"validation_rows": n, "validation_candidates": 1,
-                                 "model_forward_rows": 2 * n, "observer_modes": 3})
-    gen = FrozenGenerator(model)
-    pf, qf = gen.forward_full(data["full"])
-    pl, ql = gen.forward_low(data["full"])
-    predictions = {"full": (pf, qf), "low": (pl, ql),
-                   "ensemble": ((pf + pl) / 2, (qf + ql) / 2)}
+                                 "model_forward_rows": (int(full) + int(low)) * n,
+                                 "observer_modes": len(modes)})
+    gen = FrozenGenerator(model, prepare_low=low)
+    predictions = {}
+    if full:
+        pf, qf = gen.forward_full(data["full"])
+        predictions["full"] = pf, qf
+    if low:
+        pl, ql = gen.forward_low(data["full"])
+        predictions["low"] = pl, ql
+    if "ensemble" in modes:
+        predictions["ensemble"] = (pf + pl) / 2, (qf + ql) / 2
+    predictions = {mode: predictions[mode] for mode in modes}
     observer = prepare_decoded_observer(model)
     return {mode: score(model, p, q, data, observer=observer)
             for mode, (p, q) in predictions.items()}, predictions
@@ -295,15 +326,25 @@ def prepare_shared(plan, run, runtime_plan):
             x = np.where(full[:, None], train["full"][idx], train["low"][idx])
             objective.step(model, x, train["labels"][idx], 0.003,
                            ledger=shared, stage="base_pretrain")
-        base_validation, _ = batch_validation(model, val, shared, stage="base_validation")
-        times, costs, preparation, preparation_raw, components = {}, {}, {}, {}, {}
+        base_validation, _ = batch_validation(model, val, shared, stage="base_validation",
+                                             modes=plan["static_modes"])
+        times, costs, preparation, preparation_raw, components, raw_repeats = {}, {}, {}, {}, {}, {}
         for mode in plan["static_modes"]:
             cpu_samples, work_samples, preparation_samples = [], [], []
+            raw_repeats[mode] = []
             component_samples = {"native_generation_and_ledger_cpu_ns": [],
                                  "output_encoding_and_ledger_cpu_ns": []}
-            for _ in range(plan["calibration_repeats"]):
+            for repeat in range(plan["calibration_repeats"]):
                 measured = measure(model, None, mode, calibration_data, runtime_plan, 1.0,
                                    seed=seed, observe=False)
+                # Retain every timing/work sample, including outliers, without
+                # duplicating generated PNG/base64 payloads or measuring again.
+                raw_repeats[mode].append({"repeat": repeat, "sampling_seed": seed,
+                    "rows": len(calibration_data["labels"]), "mode": mode, "observe": False,
+                    "per_row_cost": measured["per_row_cost"], "cost": measured["cost"],
+                    "model_forwards": measured["model_forwards"],
+                    "maximum_forwards_per_request": measured["maximum_forwards_per_request"],
+                    "budget_violations": measured["budget_violations"]})
                 cpu_samples.extend(measured["per_row_cost"]["cpu_ns"])
                 work_samples.extend(measured["per_row_cost"]["work_units"])
                 preparation_samples.append(measured["cost"]["prepare_cpu_ns"])
@@ -321,7 +362,7 @@ def prepare_shared(plan, run, runtime_plan):
                                 for key, values in component_samples.items()}
         calibrations[seed] = {"cpu_ns": times, "work_units": costs,
                               "prepare_cpu_ns": preparation, "prepare_cpu_samples_ns": preparation_raw,
-                              "mean_component_cpu_ns": components}
+                              "mean_component_cpu_ns": components, "raw_repeats": raw_repeats}
         shared.record("base_calibration", serving_calibration_rows=len(calibration_data["labels"])
                       * len(plan["static_modes"]) * plan["calibration_repeats"])
         base_rows[seed] = {"decoder_mse": mse, "validation": base_validation,
@@ -381,7 +422,8 @@ def _train_system_candidates(system, plan, run, shared, bases, train, val, commo
     extra_cpu = plan["control_reserve_cpu_seconds"] if system == "ndu_control" else 0
     n_candidates = len(plan["model_seeds"]) * len(plan["learning_rates"])
     representative = next(iter(bases.values()))
-    fixed_validation = ledger.estimate_kernel(**validation_work(representative, len(val["labels"])))
+    fixed_validation = ledger.estimate_kernel(**validation_work(representative, len(val["labels"]),
+                                                               plan["static_modes"]))
     fixed_setup = ledger.estimate_kernel(**setup_work(representative.dimensions, system)) + ledger.estimate_kernel(
         **adaptation_optimizer_work(representative, plan, empty_moments=True))
     available = (ledger.remaining_units - extra_units - plan["tail_reserve_units"]
@@ -441,7 +483,7 @@ def _train_system_candidates(system, plan, run, shared, bases, train, val, commo
             validation_start = cpu_clock()
             progress["phase"] = "candidate_validation"
             with traced_phase(telemetry, "candidate_validation", system=system, candidate=name):
-                validation, _ = batch_validation(model, val, ledger)
+                validation, _ = batch_validation(model, val, ledger, modes=plan["static_modes"])
             validation_cpu = cpu_clock() - validation_start
             guard("candidate_validation_complete", current)
             ref = common["reference_full_cpu_ns"]
@@ -593,7 +635,7 @@ def refine_content(selected, progress, ledgers, costs, plan, common, train, val,
                                        "refinement_cpu_seconds"):
                     with traced_phase(telemetry, "refinement_revalidation", system=system, seed=seed):
                         validation, _ = batch_validation(state["model"], val, ledger,
-                                                         stage="refinement_validation")
+                                                         stage="refinement_validation", modes=plan["static_modes"])
                         for mode in plan["static_modes"]:
                             validation[mode]["calibrated_net_utility"] = validation[mode]["task_utility"] - (
                                 plan["compute_price"] * common["calibrations"][seed]["cpu_ns"][mode]
@@ -669,9 +711,10 @@ def validate_selected(selected, plan, runtime_plan, run, val, ledger):
     return measured
 
 
-def train(freeze_path, out):
+def train(freeze_path, out, *, experiment=None):
+    profile = _experiment(experiment)
     start = cpu_clock()
-    frozen = check_freeze(freeze_path)
+    frozen = check_freeze(freeze_path, experiment=experiment)
     plan = frozen["plan"]
     run = Path(out).resolve()
     run.mkdir(parents=True, exist_ok=False)
@@ -780,35 +823,42 @@ def train(freeze_path, out):
             static = [name for name in plan["systems"] if name != "ndu_control"]
             reference = max(static, key=lambda name: np.mean([
                 report["means"]["cpu_net_utility"] for report in val_measures[name].values()]))
-            contrasts = {}
-            for left, right in (("additive", "anchor"), ("ndu", "additive")):
+            if profile.name == "core-c1":
+                from independent.core_claims import validation_summary
+                summary = validation_summary(selected, val_measures, plan)
+                contrasts = summary["contrasts"]
+                maximum_greedy_drop = summary["maximum_greedy_drop"]
+                corruption = summary["corruption"]
+            else:
+                contrasts = {}
+                for left, right in (("additive", "anchor"), ("ndu", "additive")):
+                    for metric in ("task_utility", "joint_success"):
+                        means = []
+                        for seed in plan["model_seeds"]:
+                            l = next(row for row in selected if row["system"] == left and row["seed"] == seed)
+                            rr = next(row for row in selected if row["system"] == right and row["seed"] == seed)
+                            means.append(l["validation"]["full"][metric] - rr["validation"]["full"][metric])
+                        contrasts[left + "-" + right + ":" + metric] = float(np.mean(means))
+                contrasts["ndu_control-" + reference + ":cpu_net_utility"] = float(np.mean([
+                    val_measures["ndu_control"][seed]["means"]["cpu_net_utility"]
+                    - val_measures[reference][seed]["means"]["cpu_net_utility"] for seed in plan["model_seeds"]]))
                 for metric in ("task_utility", "joint_success"):
-                    means = []
+                    contrasts["ndu_control-random:" + metric] = float(np.mean([
+                        report["means"][metric] - report["random_validation"]["means"][metric]
+                        for report in val_measures["ndu_control"].values()]))
+                greedy_drops = []
+                for left, right in (("anchor", "additive"), ("additive", "ndu")):
                     for seed in plan["model_seeds"]:
                         l = next(row for row in selected if row["system"] == left and row["seed"] == seed)
                         rr = next(row for row in selected if row["system"] == right and row["seed"] == seed)
-                        means.append(l["validation"]["full"][metric] - rr["validation"]["full"][metric])
-                    contrasts[left + "-" + right + ":" + metric] = float(np.mean(means))
-            contrasts["ndu_control-" + reference + ":cpu_net_utility"] = float(np.mean([
-                val_measures["ndu_control"][seed]["means"]["cpu_net_utility"]
-                - val_measures[reference][seed]["means"]["cpu_net_utility"] for seed in plan["model_seeds"]]))
-            for metric in ("task_utility", "joint_success"):
-                contrasts["ndu_control-random:" + metric] = float(np.mean([
-                    report["means"][metric] - report["random_validation"]["means"][metric]
-                    for report in val_measures["ndu_control"].values()]))
-            greedy_drops = []
-            for left, right in (("anchor", "additive"), ("additive", "ndu")):
+                        greedy_drops.append(l["validation"]["full"]["greedy_joint_success"]
+                                            - rr["validation"]["full"]["greedy_joint_success"])
                 for seed in plan["model_seeds"]:
-                    l = next(row for row in selected if row["system"] == left and row["seed"] == seed)
-                    rr = next(row for row in selected if row["system"] == right and row["seed"] == seed)
-                    greedy_drops.append(l["validation"]["full"]["greedy_joint_success"]
-                                        - rr["validation"]["full"]["greedy_joint_success"])
-            for seed in plan["model_seeds"]:
-                greedy_drops.append(val_measures[reference][seed]["means"]["greedy_joint_success"]
-                                    - val_measures["ndu_control"][seed]["means"]["greedy_joint_success"])
-            maximum_greedy_drop = max(greedy_drops)
-            corruption = all(report["decoder_corruption_score_drop"] > 0
-                             for reports in val_measures.values() for report in reports.values())
+                    greedy_drops.append(val_measures[reference][seed]["means"]["greedy_joint_success"]
+                                        - val_measures["ndu_control"][seed]["means"]["greedy_joint_success"])
+                maximum_greedy_drop = max(greedy_drops)
+                corruption = all(report["decoder_corruption_score_drop"] > 0
+                                 for reports in val_measures.values() for report in reports.values())
         finally:
             # Attribute shared selection work to every arm even if selection
             # raises; the original error remains the failure's cause.
@@ -831,12 +881,17 @@ def train(freeze_path, out):
                       if value["cpu_seconds"] > plan["cpu_seconds_per_system"]]
         ready = (not violations and all(value > 0 for value in contrasts.values())
                  and corruption and maximum_greedy_drop <= plan["maximum_greedy_drop"])
+        service_violations = sum(report["budget_violations"] for reports in val_measures.values()
+                                 for report in reports.values())
+        if profile.name == "core-c1":
+            ready = ready and service_violations == 0
         for system in plan["systems"]:
             write_json(run / (system + "-build.json"), {"ledger": ledgers[system].snapshot(),
                 "cost": system_cost[system],
                 "all_candidates": [row for row in all_candidates if row["system"] == system],
                 "selected": [row for row in selected if row["system"] == system]})
         selection = {"schema": "hepta.joint-generation.efficient-selection.v2", "plan": plan,
+            "experiment_id": profile.name,
             "plan_sha256": frozen["plan_sha256"], "sources": frozen["sources"],
             "source_commit": frozen["source_commit"], "freeze_sha256": sha(freeze_path),
             "execution_commit": subprocess.check_output(["git", "rev-parse", "HEAD"], cwd=ROOT, text=True).strip(),
@@ -849,6 +904,7 @@ def train(freeze_path, out):
             "validation_measures": val_measures, "validation_mean_contrasts": contrasts,
             "validation_maximum_greedy_drop": maximum_greedy_drop,
             "validation_decoder_corruption_reduces_score": corruption,
+            "validation_service_budget_violations": service_violations,
             "efficient_reference": reference, "cpu_budget_violations": violations,
             "selection_ready": ready, "test_opened": False,
             "execution_location": "selected configured Codex Cloud environment; see enclosing platform task context",
@@ -873,13 +929,13 @@ def train(freeze_path, out):
                     "datasets": {"train": manifest(train_data), "validation": manifest(val)},
                     "source_commit": frozen["source_commit"], "sources": frozen.get("sources"),
                     "plan_sha256": frozen.get("plan_sha256"), "freeze_sha256": sha(freeze_path),
-                    "test_opened": MARKER.exists(),
+                    "test_opened": profile.marker_path.exists(),
                     "scope": "Already completed shared preparation; administrative failure persistence, no new data or measurement."})
             except Exception as persistence_error:
                 error.add_note("shared-build persistence also failed: " + repr(persistence_error))
         try:
             if progress:
-                write_json(run / "partial-build.json", {"test_opened": MARKER.exists(),
+                write_json(run / "partial-build.json", {"test_opened": profile.marker_path.exists(),
                     "all_completed_candidates": all_candidates, "selected": selected,
                     "execution_schedule": schedule, "systems": {name: {
                         "ledger": value["ledger"].snapshot() if "ledger" in value else None,
@@ -891,7 +947,7 @@ def train(freeze_path, out):
         try:
             write_json(run / "failure.json", {"error_type": type(error).__name__, "error": str(error),
                 "traceback": original_traceback, "source_commit": frozen["source_commit"],
-                "freeze_sha256": sha(freeze_path), "test_opened": MARKER.exists()})
+                "freeze_sha256": sha(freeze_path), "test_opened": profile.marker_path.exists()})
         except Exception as persistence_error:
             error.add_note("failure persistence also failed: " + repr(persistence_error))
         raise
@@ -903,7 +959,7 @@ def train(freeze_path, out):
                 "phases": telemetry, "execution_schedule": schedule,
                 "numerical_runtime": runtime_identity,
                 "scope": "diagnostic observations; capture overhead included while the arm is active",
-                "test_opened": MARKER.exists()}, exclusive=False)
+                "test_opened": profile.marker_path.exists()}, exclusive=False)
         except Exception as error:
             if original_error is None:
                 raise
@@ -912,6 +968,7 @@ def train(freeze_path, out):
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--experiment", choices=EXPERIMENTS, default="efficient-r2")
     actions = parser.add_subparsers(dest="action", required=True)
     f = actions.add_parser("freeze")
     f.add_argument("--receipt", required=True)
@@ -920,14 +977,16 @@ def main():
     t.add_argument("--out", required=True)
     e = actions.add_parser("evaluate")
     e.add_argument("--run", required=True)
+    for action in (f, t, e):
+        action.add_argument("--experiment", choices=EXPERIMENTS, default=argparse.SUPPRESS)
     args = parser.parse_args()
     if args.action == "freeze":
-        freeze(args.receipt)
+        freeze(args.receipt, experiment=args.experiment)
         return 0
     if args.action == "train":
-        return train(args.freeze, args.out)
+        return train(args.freeze, args.out, experiment=args.experiment)
     from independent.evaluation import run_evaluation
-    result = run_evaluation(args.run)
+    result = run_evaluation(args.run, experiment=args.experiment)
     return 0 if result["benefit_verified"] else 1
 
 

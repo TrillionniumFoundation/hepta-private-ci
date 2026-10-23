@@ -247,7 +247,7 @@ class CandidateSchedulingTests(unittest.TestCase):
                 now[0] += .01
                 return 0.0
 
-        def validation(current, data, ledger):
+        def validation(current, data, ledger, *, modes=None):
             ledger.charge_kernel("search_validation", "fixture", scalar_ops=3)
             return {"full": {"task_utility": .2}}, None
 
@@ -503,7 +503,7 @@ class ResidualContinuationTests(unittest.TestCase):
             id(state["model"]._moments)) for seed, state in value["_selected_states"].items()}
             for system, value in progress.items()}
 
-        def validation(model, data, ledger, *, stage):
+        def validation(model, data, ledger, *, stage, modes=None):
             ledger.charge_kernel(stage, "mock_validation", scalar_ops=1)
             return {mode: {"task_utility": float(model.marker)} for mode in plan["static_modes"]}, None
 
@@ -560,7 +560,7 @@ class ResidualContinuationTests(unittest.TestCase):
                     now[0] += .01
                 state["objective"] = SimpleNamespace(step=step)
 
-        def validation(model, data, ledger, *, stage):
+        def validation(model, data, ledger, *, stage, modes=None):
             ledger.charge_kernel(stage, "fixture", scalar_ops=1)
             return {mode: {"task_utility": float(model.marker)} for mode in plan["static_modes"]}, None
 
