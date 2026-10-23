@@ -136,5 +136,40 @@ class PinnedInputTests(unittest.TestCase):
         self.assertEqual(receipt["authority"], "DENY_ALL")
 
 
+    def test_complete_pinned_cli_is_still_hold_no_go(self):
+        # Exercise the real CLI with the existing 128-source x 3-seed x 9-arm
+        # synthetic dataset; success means valid *structure*, not capability.
+        from test_qualification import generate_fixture
+
+        protocol, sources, history, _by_id, records = generate_fixture(self.root)
+        raw_protocol = json.dumps(protocol, sort_keys=True).encode("utf-8")
+        raw_sources = json.dumps(sources, sort_keys=True).encode("utf-8")
+        raw_history = json.dumps(history, sort_keys=True).encode("utf-8")
+        raw_episodes = ("\\n".join(
+            json.dumps(row, sort_keys=True) for row in records
+        ) + "\\n").encode("utf-8")
+        paths = {
+            "protocol": self.put("protocol.json", raw_protocol),
+            "sources": self.put("sources.json", raw_sources),
+            "history": self.put("history.json", raw_history),
+            "episodes": self.put("episodes.jsonl", raw_episodes),
+        }
+        argv = []
+        for name, raw in (("protocol", raw_protocol), ("sources", raw_sources),
+                          ("history", raw_history), ("episodes", raw_episodes)):
+            argv.extend(["--" + name, str(paths[name]),
+                         "--" + name + "-sha256", pin(raw)])
+        argv.extend(["--artifacts-root", str(self.root)])
+        output = io.StringIO()
+        with contextlib.redirect_stdout(output):
+            self.assertEqual(main(argv), 2)
+        receipt = json.loads(output.getvalue())
+        self.assertEqual(receipt["episode_count"], 3456)
+        self.assertEqual(set(receipt["stage_status"].values()), {"HOLD_NO_GO"})
+        self.assertFalse(receipt["model_promotion_authorized"])
+        self.assertEqual(receipt["authority"], "DENY_ALL")
+
+
+
 if __name__ == "__main__":
     unittest.main()
