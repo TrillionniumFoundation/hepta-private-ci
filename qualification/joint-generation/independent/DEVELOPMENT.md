@@ -78,3 +78,31 @@ cost and original errors. The data, objectives, price, caps and benefit gates do
 not change. The formal test remains unopened. Before this freeze, 92 independent
 source tests passed; the final affected runner suite passed 12 tests after its
 last exception-path fix. Evaluator coverage is 17 tests, not all metadata-only.
+
+## Prospective cost-aligned controller after t3
+
+The rotated t3 build exited 2 without CPU overruns. Validation additive-anchor
+utility was +0.021224 and NDU-additive +0.006639; control versus the selected
+NDU/full reference remained CPU-net negative at -0.004409. Its selected models
+also received fewer content updates, and routing lost raw utility against the
+same model's full view. These observations identify training/validation method
+work; they do not authorize test reuse or a changed acceptance gate.
+
+Before another source freeze, the prospective revision changes critic targets
+from entropic CE gains to raw decoded task utility gains. A fixed TRAIN-only
+paired stop/continue measurement estimates complete marginal service CPU,
+including real output encoding. Its median, zero-clamp and global-price scaling
+are fixed in the plan. No threshold is chosen from validation. Calibration
+consumes actual control-system budget; static systems do no unused probes.
+
+Every arm may continue only its already selected models in affordable complete
+seed rounds, retaining original Adam/RNG state. Future necessary work is reserved
+with explicit operator inventories and training-only CPU estimates; actual caps
+remain decisive. There is no validation stopping or LR/mode reselection. The
+independent formal fold remains unconstructed and unopened throughout this work.
+
+Before this revision's source freeze, 114 independent tests passed in 5.019
+seconds (exit 0). Coverage includes real native stop/continue output paths,
+complete helper inventory conservation, original optimizer/RNG object retention,
+unaffordable-round refusal, and seed-offset calibration binding. These source
+tests use hand-built fixtures rather than the formal experiment test fold.

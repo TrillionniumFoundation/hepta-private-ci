@@ -90,3 +90,34 @@ formal measurement rounds, attributes only each system's active CPU, retains pha
 telemetry, and stops further work as soon as a phase reveals an actual CPU
 overrun. This changes scheduling and observability; the data, content objectives,
 prices, complete budget caps and benefit gates remain unchanged.
+
+The balanced t3 build also failed readiness: content and NDU validation gains
+were positive, but control CPU-net utility against the selected NDU/full
+reference was -0.004409. All actual build caps held; no independent test opened.
+These are validation diagnostics, not evidence of qualified benefit.
+
+The next prospective revision aligns the critic with raw decoded task utility.
+Its routing threshold is `0.02 * cost_ratio`; the global complete-system price
+remains 0.02. Each selected control model measures complete service on the fixed
+72 training calibration inputs under forced stop and continue, retaining both
+paths' low/critic work and actual sampled caption, PNG, JSON and ledger costs.
+Three paired repeats alternate AB/BA by repeat and seed index, using the same
+sample seed within each pair. The median per-request incremental CPU, clamped
+below at zero, is divided by the frozen full-service reference CPU. This is a
+training-only local marginal estimate, not a guarantee of external net gain.
+Mandatory controller/output and all calibration costs remain in total budgets.
+
+All five systems may also spend affordable residual budget on the selected
+models, retaining their original Adam and RNG states. Complete seed rounds
+rotate system/seed order, with no new LR/mode selection or validation stopping.
+Exact future operator inventories and training-only CPU forecasts reserve
+critic, paired calibration, selected service, changed-model validation and
+exports. An unaffordable round is skipped; an actual cap overrun still fails.
+The frozen plan records forecast factors and inputs, including conservative
+arithmetic CPU scaling, rather than treating predictions as executed charges.
+No content objective, data split, price, cap or benefit gate changes.
+
+New standalone bundles use `native-bundle.v2` to bind the separate routing
+threshold, cost ratio and full training-calibration receipt to model and input
+hashes. Loading an archived v1 bundle preserves its original rule and explicitly
+reports that it has no calibrated controller cost.

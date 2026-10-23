@@ -27,6 +27,10 @@
   "tail_reserve_cpu_seconds": 0.3,
   "candidate_validation_reserve_units": 120000000,
   "candidate_validation_reserve_cpu_seconds": 0.06,
+  "refinement_policy": "selected-residual-v1",
+  "refinement_cpu_unit_safety": 2.0,
+  "refinement_service_cpu_multiplier": 1.0,
+  "refinement": "after one fixed LR/mode selection, all arms may continue their selected three-seed models using original Adam and RNG state in rotated complete seed rounds; no validation-based stopping or reselection; reserve exact future operators and training-only CPU forecasts for critic, paired calibration, selected service, changed-model revalidation and exports; actual caps remain authoritative",
   "runtime_backend": "native",
   "runtime_batch_size": 64,
   "runtime_profile": "fixed batches up to 64 requests; complete batch CPU and latency retained; not a single-request latency qualification",
@@ -42,7 +46,9 @@
     "kind": "continuation",
     "ridge_regularization": 0.001,
     "input": "first cheap thumbnail content distributions only",
-    "decision": "fixed-rho full-minus-low predicted utility exceeds unchanged price 0.02",
+    "gain_target": "raw-decoded-task-utility",
+    "decision": "predicted full-minus-low raw decoded task utility exceeds decision_price = compute_price * cost_ratio; compute_price remains 0.02 for total net utility",
+    "cost_calibration": "same fitted critic and model on the 72 frozen TRAIN calibration inputs; forced stop bounds [0,0] and continue bounds [1,1] at decision price 0.5; complete low+critic, optional full, PNG/caption/JSON and ledger CPU; three paired repeats, AB/BA order by (repeat + model seed index) modulo 2, common sample seed model_seed+1009*repeat; per-request paired delta median is clamped below at zero then divided by frozen full-service reference CPU; no minimum timing or validation-driven threshold selection; all probe costs charged only to ndu_control",
     "input_router": "implemented optional candidate, not searched or qualified in r2"
   },
   "data_profile": {
@@ -56,7 +62,7 @@
     "background_range": [0.0, 0.04],
     "noise_range": [0.03, 0.12]
   },
-  "selection": "global LR and static mode maximize mean validation decoded utility minus measured training-calibrated CPU price; control LR selected by this same content rule before train-only critic fit",
+  "selection": "global LR and static mode maximize mean validation decoded utility minus measured training-calibrated CPU price; control LR selected by this same content rule before train-only critic fit; selected residual training never reselects LR or mode",
   "calibration": "fixed training-only stratified matching: six distinct physical sources per each of twelve source classes and six rows per each of twelve target classes, interleaved across classes, three repeats; reference full-service CPU median from first shared base; request CPU includes processing, controller, real generation, sampled caption/PNG and JSON serialization",
   "no_padding": "only applied objective kernels execute; cached fixed decoder objective and one encoder forward per update; cheaper systems spend savings on extra updates up to the same build caps; static baselines do not fit or run an unused critic",
   "bootstrap_replicates": 2000,
