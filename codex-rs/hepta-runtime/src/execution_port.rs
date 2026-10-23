@@ -55,7 +55,9 @@ impl RuntimeExecutionPortV1 {
         Self::default()
     }
 
-    pub fn with_cutover(cutover: RuntimeCutoverStageV1) -> Self {
+    // Only the runtime-owning crate may opt in after host policy admission.
+    // External callers cannot elevate a fresh shadow port by supplying a tag.
+    pub(crate) fn with_cutover(cutover: RuntimeCutoverStageV1) -> Self {
         Self {
             journal: ExecutionJournal::new(),
             cutover,
