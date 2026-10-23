@@ -1,0 +1,17 @@
+# Independent execute entry-contract review
+
+Base #3607 exact cb97779e6f4ff361b5c1988523cb4dea87974ad4. Read-only source review in /workspace/state-entry; repository AGENTS.md inspected. No source changes.
+
+Conclusion: no basis to label the continuation example an established fresh-entry vulnerability. execute is a general causal Markov-trajectory helper with no fresh-root predicate, while its cost formula explicitly measures execution after the supplied initial state. Document caller trust/provenance and suffix cost semantics, and test them without adding a step==0 restriction. A behavior restriction would reject legitimately generated continuation states and exceeds the current function contract.
+
+Repository searches for imports and execute calls found direct callers only in v4/test_portfolio.py and test_reallocation.py. Those tests currently pass fresh states; this alone does not establish fresh-only API behavior. There is no server, serialized remote entry, verified execution receipt consumer or full-episode cost guarantee found for this helper. The existing docstring says causal observed-feedback trajectory and no test truth, not fresh root or verified prefix.
+
+portfolio.py:273–315 starts at exactly initial; Controller uses supplied step/remaining/active_mask; advance increments step, debits charge and records action.mask. spent=initial.remaining-state.remaining+emission_reserve is the suffix spend including terminal emission. Prior modeled activation can validly reduce the cost of repeating an action: charge only counts newly active bits. Trace hashing commits the supplied initial state and local records but does not independently prove an earlier transition or paid-prefix history.
+
+Distinct fresh audit entry contracts are explicit: joint_evidence_generation.full_outcome_audit rejects initial.generation.step!=0; counterfactual_audit.evaluate and evaluate_dependence reject initial.step!=0. State rejects step0/nonzero-active-mask roots, preserving #3607; valid later states remain representable. These boundaries are not interchangeable. No witness custody or #3605 policy replay code should change.
+
+Independent construction: Config(activation_cost=5,risk_aversion=0), root=State((0,2,2,2),16), action=Allocation((1,0,0,0)), shock=0. charge=6 and advance yields exactly State((0,2,2,2),10,step=1,active_mask=1). With otherwise-default Config and seed0 or7, execute fresh budget10 reports10; execute that legal continuation reports6; prefix6+suffix6=12 and remaining4 reconcile to root16. The parent's proposed suffix5 reproduction may use another explicit config; tests must bind the exact configuration rather than treating5 as invariant. The legal continuation suffices to disprove inference that all inherited-mask discounts are forged.
+
+Recommended narrow change: docstring/README specify fresh caller supplies step0/mask0; continuation caller owns validation of the prior history and correct state, because execute itself cannot authenticate provenance. spent/records cover only this call, and continuation seed starts a new RNG stream rather than promising bitwise replay of an interrupted seeded episode. Test an actual advance-produced continuation, suffix accounting, same-state action cost, and rejection by fresh-only audit APIs. Preserve runtime behavior and existing scientific/research-only limitations.
+
+Pending complete documentation/test diff review. This is a local synthetic source contract assessment, not hardware-cost auditing or production trust-boundary certification.
