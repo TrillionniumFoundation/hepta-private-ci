@@ -46,7 +46,9 @@
   "controller": {
     "kind": "continuation",
     "ridge_regularization": 0.001,
-    "input": "first cheap thumbnail content distributions only",
+    "gain_head": "low-hidden-instruction-affine-v1",
+    "input": "already computed cheap thumbnail hidden state plus the original ten instruction coordinates; no extra encoder forward",
+    "gain_head_fit": "ordinary raw-gain affine ridge, same regularization 0.001, training mean/std with scale floor 0.05 and training target-support clipping; no nonlinear head, threshold search or validation stopping",
     "gain_target": "raw-decoded-task-utility",
     "decision": "predicted full-minus-low raw decoded task utility exceeds decision_price = compute_price * cost_ratio; compute_price remains 0.02 for total net utility",
     "cost_calibration": "same fitted critic and model on the 72 frozen TRAIN calibration inputs; forced stop bounds [0,0] and continue bounds [1,1] at decision price 0.5; complete low+critic, optional full, PNG/caption/JSON and ledger CPU; three paired repeats, AB/BA order by (repeat + model seed index) modulo 2, common sample seed model_seed+1009*repeat; per-request paired delta median is clamped below at zero then divided by frozen full-service reference CPU; no minimum timing or validation-driven threshold selection; all probe costs charged only to ndu_control",

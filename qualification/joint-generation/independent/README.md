@@ -121,3 +121,13 @@ New standalone bundles use `native-bundle.v2` to bind the separate routing
 threshold, cost ratio and full training-calibration receipt to model and input
 hashes. Loading an archived v1 bundle preserves its original rule and explicitly
 reports that it has no calibrated controller cost.
+
+The next fixed controller candidate is an affine raw-gain head over the already
+computed thumbnail hidden state and the original ten instruction coordinates.
+A protocol-first, physical-source grouped TRAIN diagnostic supported this
+smaller representation repair; no nonlinear head or threshold search was chosen.
+Its complete normalization, ridge fit, paired calibration and inference are
+charged. Low state is reused from the same encoder evaluation, while static
+systems execute no gain head. Existing ridge artifacts remain loadable. This
+implementation is not acceptance evidence; all frozen content and dynamic gates
+still apply to the next actual build.

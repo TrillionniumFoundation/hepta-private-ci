@@ -138,3 +138,41 @@ updates for all three seeds but still a -0.001265 full-content utility gap.
 These optimization trajectories and rare early-stop losses call for TRAIN-only
 grouped decision-regret diagnosis before assuming a larger head is necessary.
 No prospective nonlinear head has been committed, frozen or evaluated.
+
+## TRAIN-only decision-regret diagnosis after t5
+
+An exclusive START protocol preceded a single physical-source grouped four-fold
+critic diagnostic. It compared exactly three fixed methods on TRAIN only: the
+original 31-feature MSE ridge, a hidden-state/instruction affine MSE ridge, and a
+loss-weighted classifier on the original features. No model or selection bytes
+changed. The fixed content encoder had already seen all TRAIN sources, so this
+is critic cross-validation, not independent content generalization.
+
+Original ridge regret was 0.001452852795; hidden/instruction affine regret was
+0.001078681362, about 25.75% lower. Its raw route gain over always-full was
++0.000371247790 and positive for all three seeds, with one seed only +0.00000365.
+The weighted classifier always continued and gave no learned routing benefit.
+The label-known oracle's raw advantage was only +0.001449929152 on this TRAIN
+probe; those labels are unavailable at serving. No outlier was removed.
+
+The diagnostic executed 36 fits and six actual 202-dimensional content forwards,
+costing 549944880 declared units and 0.783566380 process-CPU seconds. This is
+explicit development cost, not a held-out result or an unreported search inside
+a qualified final build. All prior failed builds remain separately retained;
+there is no claim that cumulative research budgets were equal. The prospective
+builder fixes the chosen affine representation before source freeze and charges
+its complete real fitting, calibration and inference work to control.
+
+The evidence supports this smaller representation repair before any MLP. It
+reuses the already computed thumbnail hidden state plus the original instruction,
+fits the same raw full-minus-low target and ridge regularization, and retains the
+same CPU-calibrated decision price, total caps and all existing benefit gates.
+Positive TRAIN results do not guarantee validation readiness or formal benefit.
+
+The affine integration's final 143 independent source tests passed in 4.836
+seconds (exit 0), including real C/Python state, gain, route, work and reload
+parity. The preceding check exited 1 because its test spy tried to assign a
+method on a frozen dataclass; only the test spy was corrected. Production
+equations, budgets and guards were not relaxed. The old C entry points retain
+their argument lists; an old library lacking the new state/gain entry points
+rejects an affine request before execution instead of using an unsafe ABI.
