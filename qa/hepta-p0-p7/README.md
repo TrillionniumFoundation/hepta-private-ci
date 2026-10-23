@@ -25,6 +25,21 @@ python3 qa/hepta-p0-p7/qualification.py \
 
 Exit codes: **3** invalid evidence; **2** structurally consistent evidence but insufficient externally authenticated P0–P7 promotion proof. **No exit 0** is currently defined. Local synthetic 128-source/three-seed examples exist *only in tests*, never as experiment results.
 
+## Hosted exact-source audit execution (research-only)
+
+The isolated CI follow-up runs this **standard-library-only** evidence audit
+on GitHub's `ubuntu-slim` runner, where the Python 3.12 runtime was actually
+observed in the independent finite-portfolio workflow. It does not require a
+GPU, natural pretrained checkpoint, privileged self-hosted runner, or package
+installation. Checkout is pinned to the triggering PR Head SHA (or dispatch
+SHA), with persisted credentials disabled. A separate step checks that
+`git rev-parse HEAD` exactly equals that event SHA **before any validation**.
+The full unit suite, syntax compilation, and the no-evidence exit-code-3
+fail-closed check remain identical in meaning. Host identity, version and
+CI completion are observed from actual logs, not presumed from the workflow
+source or a queued job. This hosted check never supersedes the distinct
+whole-repository, cross-platform, device, provenance and production gates.
+
 ## P0–P7 research and production gates
 
 | Gate | Required external closure (never inferred from this script) |
