@@ -23,10 +23,11 @@ _PRE_FIELDS = frozenset({
     "evaluator_id", "encoder_digest", "encoder_generation", "input_digest",
     "policy_digest", "candidate_ids", "allowed_actions", "hard_cost_cap",
     "max_depth", "required_outputs", "source_frontier_digest",
+    "emission_reserve",
 })
 _STEP_FIELDS = frozenset({"index", "action", "candidate_id", "cost", "observation_digest", "status"})
 _EXEC_FIELDS = frozenset({"phase", "pre_digest", "steps", "outputs", "terminal_action"})
-_OUTPUT_FIELDS = frozenset({"kind", "digest"})
+_OUTPUT_FIELDS = frozenset({"kind", "digest", "cost"})
 _POST_FIELDS = frozenset({
     "phase", "pre_digest", "execution_digest", "evaluator_id",
     "outcome_digest", "independent_evidence_digest", "quality", "severe",
@@ -103,9 +104,12 @@ def seal_predecision(pre: dict) -> dict:
     _integer(p["seed"], "seed", 0, 2**31 - 1)
     _integer(p["hard_cost_cap"], "hard_cost_cap", 1, 10**12)
     _integer(p["max_depth"], "max_depth", 1, 64)
+    _integer(p["emission_reserve"], "emission_reserve", 1, p["hard_cost_cap"])
     _tokens(p["candidate_ids"], "candidate_ids", 1, 128)
     _tokens(p["allowed_actions"], "allowed_actions", 3, 12)
     _tokens(p["required_outputs"], "required_outputs", 1, 8)
+    if p["emission_reserve"] < len(p["required_outputs"]):
+        raise ReceiptError("mandatory output reserve underpriced")
     if not {"STOP", "ABSTAIN", "VERIFY"}.issubset(p["allowed_actions"]):
         raise ReceiptError("missing legal stop, abstain or verifier action")
     return {"predecision_digest": _seal(b"hepta.group.predecision.v1", p), "authority": "DENY_ALL"}
@@ -140,20 +144,31 @@ def seal_execution(pre: dict, execution: dict) -> dict:
             raise ReceiptError("work after terminal action")
     if steps[-1]["action"] != e["terminal_action"]:
         raise ReceiptError("terminal step and action disagree")
+    if (e["terminal_action"] == "STOP"
+            and used + pre["emission_reserve"] > pre["hard_cost_cap"]):
+        raise ReceiptError("mandatory output reserve exhausted by reasoning")
     outputs = e["outputs"]
     if type(outputs) is not list or len(outputs) > len(pre["required_outputs"]):
         raise ReceiptError("invalid output list")
     kinds: list[str] = []
+    emission_cost = 0
     for item in outputs:
         out = _exact(item, _OUTPUT_FIELDS, "output")
         if out["kind"] not in pre["required_outputs"]:
             raise ReceiptError("undeclared output modality")
         _digest(out["digest"], "output digest")
+        _integer(out["cost"], "output cost", 1, pre["hard_cost_cap"])
+        emission_cost += out["cost"]
         kinds.append(out["kind"])
     if len(kinds) != len(set(kinds)) or (e["terminal_action"] == "ABSTAIN" and kinds):
         raise ReceiptError("duplicate output or abstention with outputs")
+    if used + emission_cost > pre["hard_cost_cap"]:
+        raise ReceiptError("output emission exceeds hard budget")
+    if (set(kinds) == set(pre["required_outputs"])
+            and emission_cost < pre["emission_reserve"]):
+        raise ReceiptError("complete outputs underpay reserved emission")
     return {"execution_digest": _seal(b"hepta.group.execution.v1", e),
-            "physical_cost_claim": used,
+            "physical_cost_claim": used + emission_cost,
             "complete_outputs": (set(kinds) == set(pre["required_outputs"]) and
                                  all(s["status"] == "COMPLETE" for s in steps) and
                                  e["terminal_action"] == "STOP"),
