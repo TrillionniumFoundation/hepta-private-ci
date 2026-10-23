@@ -1,0 +1,19 @@
+{
+  "children_cpu_ns": 2581994000,
+  "command": [
+    "python",
+    "/workspace/hepta-private-ci/qualification/joint-generation/runs/codex-cloud-efficient-r2-launch-paired-p1/worker.py",
+    "execute",
+    "B1"
+  ],
+  "parent_cpu_ns": 840439,
+  "parent_environment": {
+    "MKL_NUM_THREADS": null,
+    "OMP_NUM_THREADS": null,
+    "OPENBLAS_NUM_THREADS": null
+  },
+  "parent_executable": "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+  "returncode": 0,
+  "scope": "parent own CPU and waited child CPU separate; do not add child CPU again to worker totals",
+  "wall_ns": 2582769931
+}
