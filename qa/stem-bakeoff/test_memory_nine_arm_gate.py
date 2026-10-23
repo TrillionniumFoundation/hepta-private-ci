@@ -80,7 +80,14 @@ def fixture():
                 "context_tokens": 50, "generated_tokens": 5,
                 "answer": answer, "answer_sha256": sha(answer.encode()),
                 "worker_receipt_sha256": h("worker:" + case["id"] + arm),
-                "reader_calls": 1, "head_calls": 1 if arm in "EFGHI" else 0,
+                "reader_calls": 1,
+                "encoder_forwards": 1 if arm in "BEFGHI" else 0,
+                "dense_forwards": 1 if arm == "B" else 0,
+                "reranker_forwards": 1 if arm == "B" else 0,
+                "graph_traversals": 1 if arm in "CHI" else 0,
+                "typed_lookups": 1 if arm in "DF" else 0,
+                "router_forwards": 1 if arm in "GHI" else 0,
+                "head_calls": 1 if arm in "EFGHI" else 0,
                 "latency_ns": 1000, "cpu_ns": 900,
                 "peak_rss_bytes": 4096,
             })
@@ -265,6 +272,68 @@ class NineArmGateTests(unittest.TestCase):
         results = check(p, o, j)
         self.assertEqual(set(results["contrasts"]), set(CONTRASTS))
         self.assertFalse(results["superiority_established"])
+
+    def test_dense_reranker_bypass_in_one_completed_case_refused(self):
+        p, o, j = fixture()
+        row = next(x for x in o if x["arm"] == "B")
+        row["reranker_forwards"] = 0
+        with self.assertRaisesRegex(Refused, "bypassed"):
+            check(p, o, j)
+
+    def test_graph_retrieval_bypass_in_one_completed_case_refused(self):
+        p, o, j = fixture()
+        row = next(x for x in o if x["arm"] == "C")
+        row["graph_traversals"] = 0
+        with self.assertRaisesRegex(Refused, "bypassed"):
+            check(p, o, j)
+
+    def test_typed_memory_bypass_in_one_completed_case_refused(self):
+        p, o, j = fixture()
+        row = next(x for x in o if x["arm"] == "D")
+        row["typed_lookups"] = 0
+        with self.assertRaisesRegex(Refused, "bypassed"):
+            check(p, o, j)
+
+    def test_learned_router_bypass_in_one_completed_case_refused(self):
+        p, o, j = fixture()
+        row = next(x for x in o if x["arm"] == "G")
+        row["router_forwards"] = 0
+        with self.assertRaisesRegex(Refused, "bypassed"):
+            check(p, o, j)
+
+    def test_meta_graph_bypass_in_one_completed_case_refused(self):
+        p, o, j = fixture()
+        row = next(x for x in o if x["arm"] == "H")
+        row["graph_traversals"] = 0
+        with self.assertRaisesRegex(Refused, "bypassed"):
+            check(p, o, j)
+
+    def test_bm25_cannot_borrow_neural_work(self):
+        p, o, j = fixture()
+        row = next(x for x in o if x["arm"] == "A")
+        row["encoder_forwards"] = 1
+        with self.assertRaisesRegex(Refused, "BM25 baseline"):
+            check(p, o, j)
+
+    def test_early_abstention_may_skip_expensive_mechanisms(self):
+        p, o, j = fixture()
+        row = next(x for x in o if x["arm"] == "H")
+        row["status"] = "abstained"
+        row["answer"] = ""
+        row["answer_sha256"] = sha(b"")
+        row["generated_tokens"] = 0
+        row.update({x: 0 for x in ("encoder_forwards", "graph_traversals",
+                                   "router_forwards", "head_calls")})
+        judge = next(x for x in j if x["case_id"] == row["case_id"]
+                     and x["arm"] == row["arm"])
+        judge["answer_sha256"] = sha(b"")
+        judge["correct"] = False
+        judge["grounded"] = False
+        judge["semantic_citation_entailment"] = False
+        judge["proper_abstention"] = True
+        result = check(p, o, j)
+        self.assertEqual(result["status"], "HOLD_NO_GO")
+        self.assertEqual(result["original_Reader_attempts"], 36)
 
     def test_source_first_gold_cannot_enter_plan(self):
         p, o, j = fixture()
