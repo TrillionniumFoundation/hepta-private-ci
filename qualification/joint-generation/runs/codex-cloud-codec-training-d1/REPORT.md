@@ -28,3 +28,23 @@ Inspect the existing TRAIN-only forecast and tail receipts to explain the under-
 CORE c1 remains a sealed formal failure with all six intervals crossing zero. R1 remains sealed. R2 remains unqualified with its test still unopened. No new formal test, AV generation, merge, deployment or permission change occurred.
 
 The raw slot contains 27558364 bytes, below the frozen 32 MiB bound. `partial-descriptive.json`, `PARTIAL.json`, child `failure.json`, full telemetry, model states, candidate witnesses, inputs and output ZIPs support this report. Additional postrun metadata analysis is separate development CPU and is never credited to a capped build.
+
+## Source-grounded follow-up, without a rerun
+
+[The saved cost audit](cost-reservation-audit.md) decomposes the actual NDU CPU
+exactly, including 0.040894753 s of real shared refinement scheduler CPU settled
+after admission and a selected-service tail of 0.371741917 s versus the 0.300 s
+forecast. The existing partial serializer did not retain `val_measures`; this
+prevents recovery of completed per-batch service/preparation/observer details.
+No rerun is allowed to fill that missing evidence. Complete archive/GC/call
+CPU cannot be isolated from the remaining aggregate receipts, and the entire
+0.022472113 s overrun remains charged.
+
+A subsequent source repair includes already elapsed pending scheduler CPU in
+future admission reservations, then settles the actual cost only once. It also
+retains already returned selected-service measures on future exceptions. Caps,
+floors, content equations and random draws are unchanged. Hand-clock and opaque
+service fixtures validate rejection/no unadmitted draw, exactly-once settlement,
+and retention of completed receipts while preserving the original interruption.
+This repair is not a successful D1 repeat and does not quantify or close the
+unmeasured full-call/archive forecast gap.
