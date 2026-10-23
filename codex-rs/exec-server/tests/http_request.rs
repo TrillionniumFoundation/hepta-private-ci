@@ -703,7 +703,10 @@ async fn exec_server_http_request_honors_optional_timeout() -> anyhow::Result<()
                 url: delayed_url,
                 headers: Vec::new(),
                 body: None,
-                timeout_ms: Some(10),
+                // Leave time for the HTTP/1.1 request bytes to reach the local
+                // listener on contended macOS CI; the server response still
+                // outlasts this explicit client deadline.
+                timeout_ms: Some(1_000),
                 redirect_policy: HttpRedirectPolicy::Follow,
                 request_id: "buffered-request".to_string(),
                 stream_response: false,
@@ -713,7 +716,7 @@ async fn exec_server_http_request_honors_optional_timeout() -> anyhow::Result<()
 
     let captured = accept_http_request(&listener).await?;
     let delayed_timeout_response = tokio::spawn(async move {
-        tokio::time::sleep(Duration::from_millis(100)).await;
+        tokio::time::sleep(Duration::from_secs(3)).await;
         respond_with_status_and_headers(captured.stream, "200 OK", &[], b"too-late").await
     });
     let error = wait_for_error_response(&mut server, timeout_request_id).await?;
