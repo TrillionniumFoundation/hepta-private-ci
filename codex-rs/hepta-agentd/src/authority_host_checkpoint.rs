@@ -179,6 +179,12 @@ impl HostCognitiveCheckpoint {
         }
         let current = match self.load() {
             Ok(current) => current,
+            // The original nonblocking publication lock can be busy before
+            // this request has mutated anything. That is a definite refusal;
+            // post-CAS readback failure below remains permanently Unknown.
+            Err(AuthorityTrustError::Conflict) => {
+                return refused(CognitiveCheckpointReason::Conflict);
+            }
             Err(_) => {
                 self.close();
                 return unknown();
