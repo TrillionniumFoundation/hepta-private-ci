@@ -6,7 +6,8 @@ import unittest
 from portfolio import Config, State
 from joint_evidence_portfolio import (
     EMIT, QUERY, JointAction, JointController, JointState,
-    emission, offline_audit, public_state, query_next, raw_output_loss,
+    emission, offline_audit, one_step_mpc, public_state, query_next,
+    raw_output_loss,
 )
 
 
@@ -145,6 +146,45 @@ class JointEvidencePortfolioTests(unittest.TestCase):
                 with self.assertRaises(ValueError):
                     offline_audit(state, controller,
                                   observed_witness_accuracy=bad)
+
+    def test_bounded_one_step_mpc_retains_legal_controls_and_costs(self):
+        from portfolio import actions
+        cfg = Config(horizon=2, risk_aversion=1, cost_shadow_price=0.05)
+        state = public_state("hard", (2,2,0,0), 9)
+        model = JointController(cfg)
+        decision, local_value, calls = one_step_mpc(state, model)
+        self.assertIn(decision.kind, ("EMIT", "QUERY", "REFINE"))
+        self.assertTrue(math.isfinite(local_value))
+        expected = (1 + 2 +
+                    3 * (len(actions(state.generation, cfg)) - 1))
+        self.assertEqual(calls, expected)
+        self.assertEqual(model.evaluated_states, 0)
+        # The full-horizon optimum dominates the realized utility of
+        # the legitimate receding one-step policy, under the SAME model.
+        exact_value = model.solve(state)[1]
+        greedy = offline_audit(
+            state, model, policy=lambda s: one_step_mpc(s, model)[0])
+        self.assertGreaterEqual(
+            exact_value + 1e-8, greedy["full_path_utility"])
+        self.assertTrue(greedy["all_budget_feasible"])
+
+    def test_expansion_cap_fails_closed_without_optimality_claim(self):
+        cfg = Config(horizon=2, risk_aversion=0)
+        state = public_state("hard", (0,0,0,0), 12)
+        limited = JointController(cfg, max_states=1)
+        with self.assertRaisesRegex(ValueError, "state cap exceeded"):
+            limited.solve(state)
+        self.assertGreater(limited.evaluated_states, limited.max_states)
+        # An admitted, safe one-step policy is still available when the
+        # larger exact search cannot finish within its explicit bound.
+        action, value, calls = one_step_mpc(state, limited)
+        self.assertIn(action.kind, ("QUERY", "REFINE", "EMIT"))
+        self.assertTrue(math.isfinite(value))
+        self.assertLessEqual(calls, 1+2+3*80)
+        with self.assertRaises(ValueError):
+            JointController(cfg, max_states=True)
+        with self.assertRaises(ValueError):
+            JointController(cfg, max_states=0)
 
     def test_invalid_data_authority_and_actions_reject(self):
         cfg = Config()
