@@ -3465,11 +3465,12 @@ dependencies = [
 [[package]]
 name = "codex-hepta-agentd"
 version = "0.0.0"
-dependencies = [ "anyhow",
+dependencies = [
+ "anyhow",
  "app_test_support",
+ "codex-app-server",
  "codex-app-server-client",
  "codex-app-server-protocol",
- "codex-app-server",
  "codex-arg0",
  "codex-config",
  "codex-execution-core",
@@ -3489,14 +3490,14 @@ dependencies = [ "anyhow",
  "codex-hepta-fleet",
  "codex-hepta-infer-core",
  "codex-hepta-infer-worker-host",
- "codex-hepta-intelligence-eval",
  "codex-hepta-intelligence",
+ "codex-hepta-intelligence-eval",
  "codex-hepta-intuition",
  "codex-hepta-learning-artifacts",
  "codex-hepta-learning-ledger",
+ "codex-hepta-memory",
  "codex-hepta-memory-extension",
  "codex-hepta-memory-retrieval",
- "codex-hepta-memory",
  "codex-hepta-ndu",
  "codex-hepta-neuron",
  "codex-hepta-objective",
@@ -3518,14 +3519,14 @@ dependencies = [ "anyhow",
  "core_test_support",
  "ed25519-dalek",
  "http 1.4.0",
- "serde_json",
  "serde",
+ "serde_json",
  "sha2 0.10.9",
  "sqlx",
  "tempfile",
  "thiserror 2.0.18",
- "tokio-util",
  "tokio",
+ "tokio-util",
  "wiremock",
 ]
 
@@ -3612,14 +3613,15 @@ dependencies = [
 [[package]]
 name = "codex-hepta-codex-adapter"
 version = "0.0.0"
-dependencies = [ "codex-app-server-client",
+dependencies = [
+ "codex-app-server-client",
  "codex-app-server-protocol",
  "codex-execution-core",
  "codex-hepta-prompt-extension",
  "codex-hepta-types",
  "codex-hepta-wire",
- "serde_json",
  "serde",
+ "serde_json",
 ]
 
 [[package]]
@@ -4137,7 +4139,8 @@ dependencies = [
 [[package]]
 name = "codex-hepta-runtime"
 version = "0.0.0"
-dependencies = [ "anyhow",
+dependencies = [
+ "anyhow",
  "codex-execution-core",
  "codex-hepta-contracts",
  "codex-hepta-control-plane",
@@ -4150,8 +4153,8 @@ dependencies = [ "anyhow",
  "ed25519-dalek",
  "hmac 0.12.1",
  "libc",
- "serde_json",
  "serde",
+ "serde_json",
  "sha2 0.10.9",
  "sqlx",
  "tempfile",
