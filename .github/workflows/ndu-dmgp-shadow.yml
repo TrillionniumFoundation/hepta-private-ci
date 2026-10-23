@@ -1,0 +1,39 @@
+name: ndu-dmgp-shadow
+
+on:
+  pull_request:
+    paths:
+      - 'qualification/ndu-dmgp-reference/**'
+      - '.github/workflows/ndu-dmgp-shadow.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  shadow-reference:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          persist-credentials: false
+      - name: Compile Python reference
+        run: python3 -m py_compile qualification/ndu-dmgp-reference/reference.py qualification/ndu-dmgp-reference/test_reference.py
+      - name: Adversarial shadow gate tests
+        run: python3 -m unittest discover -s qualification/ndu-dmgp-reference -p 'test_*.py' -v
+      - name: Run six matched synthetic ablation arms
+        run: |
+          python3 qualification/ndu-dmgp-reference/reference.py > /tmp/dmgp.json
+          python3 - <<'PY'
+          import json
+          with open('/tmp/dmgp.json', encoding='utf-8') as fh:
+              report = json.load(fh)
+          assert report['experiment_arms'] == ['A0','A1','A2','A3','A4','A5']
+          assert report['production_blockers_closed'] is False
+          assert report['real_decoder_observed'] is False
+          assert report['independent_future_observed'] is False
+          assert report['no_promotion_authority'] is True
+          assert all(row['episodes'] == 24 for row in report['summary'].values())
+          print('shadow_only=true; arms=6; matched_episodes=24; promotion=false')
+          PY
