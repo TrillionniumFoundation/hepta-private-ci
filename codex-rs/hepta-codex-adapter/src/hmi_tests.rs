@@ -8,9 +8,9 @@ use tokio::net::TcpStream;
 use tokio_tungstenite::WebSocketStream;
 use tokio_tungstenite::accept_async;
 use tokio_tungstenite::tungstenite::Message;
-type Socket = WebSocketStream<TcpStream>;
+pub(super) type Socket = WebSocketStream<TcpStream>;
 
-fn binding() -> HmiBindingV1 {
+pub(super) fn binding() -> HmiBindingV1 {
     HmiBindingV1 {
         principal_id: "user:test".into(),
         device_id: "device:test".into(),
@@ -24,7 +24,7 @@ fn binding() -> HmiBindingV1 {
         app_server_version: "9.8.7-test".into(),
     }
 }
-fn args(url: &str) -> RemoteAppServerConnectArgs {
+pub(super) fn args(url: &str) -> RemoteAppServerConnectArgs {
     RemoteAppServerConnectArgs {
         endpoint: codex_app_server_client::RemoteAppServerEndpoint::WebSocket {
             websocket_url: url.into(),
@@ -38,7 +38,7 @@ fn args(url: &str) -> RemoteAppServerConnectArgs {
         channel_capacity: 8,
     }
 }
-async fn read(socket: &mut Socket) -> Value {
+pub(super) async fn read(socket: &mut Socket) -> Value {
     loop {
         match socket
             .next()
@@ -52,27 +52,27 @@ async fn read(socket: &mut Socket) -> Value {
         }
     }
 }
-async fn send(socket: &mut Socket, value: Value) {
+pub(super) async fn send(socket: &mut Socket, value: Value) {
     socket
         .send(Message::Text(value.to_string().into()))
         .await
         .expect("send JSON RPC");
 }
-async fn reply(socket: &mut Socket, request: &Value, result: Value) {
+pub(super) async fn reply(socket: &mut Socket, request: &Value, result: Value) {
     send(
         socket,
         json!({"jsonrpc":"2.0", "id":request["id"], "result":result}),
     )
     .await;
 }
-async fn notification(socket: &mut Socket, method: &str, params: Value) {
+pub(super) async fn notification(socket: &mut Socket, method: &str, params: Value) {
     send(
         socket,
         json!({"jsonrpc":"2.0", "method":method, "params":params}),
     )
     .await;
 }
-async fn initialize(socket: &mut Socket) {
+pub(super) async fn initialize(socket: &mut Socket) {
     let request = read(socket).await;
     assert_eq!(request["method"], "initialize");
     reply(
@@ -99,14 +99,14 @@ async fn initialize(socket: &mut Socket) {
     )
     .await;
 }
-fn admission(request: &Value, persisted: bool) -> Value {
+pub(super) fn admission(request: &Value, persisted: bool) -> Value {
     let params = &request["params"];
     json!({"clientUserMessageId": params["clientUserMessageId"], "payloadSha256":params["expectedPayloadSha256"],
         "outcome":if persisted {json!({"type":"persisted","turnId":"turn:test"})}
         else {json!({"type":"queued","created":true,"queuedSubmission":{"id":"queue:test",
             "input":params["input"],"clientUserMessageId":params["clientUserMessageId"]}})}})
 }
-async fn started(socket: &mut Socket, request: &Value) {
+pub(super) async fn started(socket: &mut Socket, request: &Value) {
     notification(
         socket,
         "item/started",
@@ -116,7 +116,7 @@ async fn started(socket: &mut Socket, request: &Value) {
     )
     .await;
 }
-async fn delta(socket: &mut Socket, thread: &str, text: &str) {
+pub(super) async fn delta(socket: &mut Socket, thread: &str, text: &str) {
     notification(
         socket,
         "item/agentMessage/delta",
@@ -124,13 +124,13 @@ async fn delta(socket: &mut Socket, thread: &str, text: &str) {
     )
     .await;
 }
-async fn completed(socket: &mut Socket, status: &str) {
+pub(super) async fn completed(socket: &mut Socket, status: &str) {
     notification(socket,"turn/completed",json!({"threadId":"thread:test","turn":{
         "id":"turn:test","items":[],"status":status,
         "error":if status == "failed" {json!({"message":"fixture provider failed","additionalDetails":null,"codexErrorInfo":null})}else{Value::Null}
     }})).await;
 }
-async fn listener() -> (TcpListener, String) {
+pub(super) async fn listener() -> (TcpListener, String) {
     let listener = TcpListener::bind("127.0.0.1:0")
         .await
         .expect("loopback listener");
@@ -217,6 +217,7 @@ async fn real_socket_stream_preserves_failure_and_reconciles_same_request() {
         connection.requests.terminal_snapshot().unwrap(),
         Some(terminal)
     );
+    assert_eq!(connection.requests.take_completed_speech(7).unwrap(), None);
     assert_eq!(
         connection
             .requests
@@ -324,6 +325,7 @@ async fn cancellation_before_admission_interrupts_late_turn_without_presenting_i
         }
     ));
     assert!(!connection.requests.permits_output(&result.scope).unwrap());
+    assert_eq!(connection.requests.take_completed_speech(7).unwrap(), None);
     submit.await.unwrap().unwrap();
     peer.await.unwrap();
     connection.events.shutdown().await.unwrap();
@@ -359,6 +361,8 @@ async fn real_socket_reconnect_resumes_exact_thread_and_revokes_old_handle() {
     .await
     .unwrap();
     let reattached = connection.reconnect(args(&url), 16).await.unwrap();
+    assert_eq!(old.take_completed_speech(7).unwrap_err(), HmiError::Fenced);
+    assert_eq!(reattached.requests.take_completed_speech(7).unwrap(), None);
     assert_eq!(
         old.submit_text(
             7,
@@ -391,4 +395,179 @@ async fn real_socket_reconnect_resumes_exact_thread_and_revokes_old_handle() {
         .unwrap();
     reattached.events.shutdown().await.unwrap();
     peer.await.unwrap();
+}
+
+#[tokio::test]
+async fn completed_items_form_one_bounded_media_request_and_cancel_fences_the_claim() {
+    let (listener, url) = listener().await;
+    let peer = tokio::spawn(async move {
+        let mut socket = accept_async(listener.accept().await.unwrap().0)
+            .await
+            .unwrap();
+        initialize(&mut socket).await;
+        let request = read(&mut socket).await;
+        reply(&mut socket, &request, admission(&request, false)).await;
+        started(&mut socket, &request).await;
+        delta(&mut socket, "thread:test", "你").await;
+        for (id, text) in [("answer:test", "你好"), ("answer:two", "世界")] {
+            let event = codex_app_server_protocol::ItemCompletedNotification {
+                item: ThreadItem::AgentMessage {
+                    id: id.into(),
+                    text: text.into(),
+                    phase: None,
+                    memory_citation: None,
+                    delivery: None,
+                },
+                thread_id: "thread:test".into(),
+                turn_id: "turn:test".into(),
+                completed_at_ms: 2,
+            };
+            notification(
+                &mut socket,
+                "item/completed",
+                serde_json::to_value(event).unwrap(),
+            )
+            .await;
+        }
+        completed(&mut socket, "completed").await;
+        let _ = socket.next().await;
+    });
+    let mut connection = HmiConnectionV1::connect(
+        args(&url),
+        binding(),
+        /*event_capacity*/ 16,
+        Duration::from_secs(3),
+    )
+    .await
+    .unwrap();
+    connection
+        .requests
+        .submit_text(
+            /*current_generation*/ 7,
+            /*sequence*/ 1,
+            "speech:one",
+            "用户输入",
+            ThreadQueueReconcileMode::AllowIfAbsent,
+        )
+        .await
+        .unwrap();
+    for _ in 0..4 {
+        let event = connection.events.next().await.unwrap().unwrap();
+        assert!(
+            !matches!(event.kind, HmiEventKindV1::Terminal { .. }),
+            "premature terminal: {event:?}"
+        );
+        assert_eq!(connection.requests.take_completed_speech(7).unwrap(), None);
+    }
+    let terminal = connection.events.next().await.unwrap().unwrap();
+    assert_eq!(
+        connection.requests.take_completed_speech(8).unwrap_err(),
+        HmiError::Fenced
+    );
+    let request = connection
+        .requests
+        .take_completed_speech(7)
+        .unwrap()
+        .unwrap();
+    assert_eq!(
+        serde_json::to_value(&request).unwrap(),
+        json!({
+            "type":"speak", "scope":terminal.scope, "text":"你好\n世界"
+        })
+    );
+    let HmiSpeechRequestV1::Speak { scope, .. } = &request;
+    assert!(connection.requests.permits_output(scope).unwrap());
+    assert_eq!(
+        connection
+            .requests
+            .clone()
+            .take_completed_speech(7)
+            .unwrap(),
+        None
+    );
+    connection.requests.stop_output(7).unwrap();
+    assert!(!connection.requests.permits_output(scope).unwrap());
+    assert_eq!(
+        connection.requests.terminal_snapshot().unwrap(),
+        Some(terminal)
+    );
+    connection.events.shutdown().await.unwrap();
+    peer.await.unwrap();
+}
+
+#[tokio::test]
+async fn completed_speech_media_bounds_are_explicit_and_preserve_terminal_text() {
+    let mut long_scope = binding();
+    long_scope.principal_id = "p".repeat(257);
+    for (binding, text, expected) in [
+        (
+            binding(),
+            "x".repeat(4097),
+            HmiError::Invalid("completed speech exceeds 4096 bytes"),
+        ),
+        (
+            long_scope,
+            "retained output".into(),
+            HmiError::Invalid("media scope identity"),
+        ),
+    ] {
+        let (listener, url) = listener().await;
+        let peer_text = text.clone();
+        let peer = tokio::spawn(async move {
+            let mut socket = accept_async(listener.accept().await.unwrap().0)
+                .await
+                .unwrap();
+            initialize(&mut socket).await;
+            let request = read(&mut socket).await;
+            reply(&mut socket, &request, admission(&request, false)).await;
+            started(&mut socket, &request).await;
+            delta(&mut socket, "thread:test", &peer_text).await;
+            completed(&mut socket, "completed").await;
+            let _ = socket.next().await;
+        });
+        let mut connection = HmiConnectionV1::connect(
+            args(&url),
+            binding,
+            /*event_capacity*/ 16,
+            Duration::from_secs(3),
+        )
+        .await
+        .unwrap();
+        connection
+            .requests
+            .submit_text(
+                /*current_generation*/ 7,
+                /*sequence*/ 1,
+                "speech:large",
+                "input",
+                ThreadQueueReconcileMode::AllowIfAbsent,
+            )
+            .await
+            .unwrap();
+        connection.events.next().await.unwrap().unwrap();
+        connection.events.next().await.unwrap().unwrap();
+        let terminal = connection.events.next().await.unwrap().unwrap();
+        assert_eq!(
+            terminal.kind,
+            HmiEventKindV1::Terminal {
+                outcome: HmiTerminalV1 {
+                    status: HmiTerminalStatusV1::Completed,
+                    generated_text: text,
+                    error: None,
+                }
+            }
+        );
+        assert_eq!(
+            connection.requests.take_completed_speech(7).unwrap_err(),
+            expected
+        );
+        assert_eq!(
+            connection.requests.terminal_snapshot().unwrap(),
+            Some(terminal)
+        );
+        connection.requests.stop_output(7).unwrap();
+        assert_eq!(connection.requests.take_completed_speech(7).unwrap(), None);
+        connection.events.shutdown().await.unwrap();
+        peer.await.unwrap();
+    }
 }

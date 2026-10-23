@@ -61,6 +61,9 @@ enum Command {
     Interrupt {
         generation: u64,
     },
+    TakeSpeech {
+        generation: u64,
+    },
     Reconnect,
     Stop,
 }
@@ -175,6 +178,12 @@ async fn run() -> Result<(), Box<dyn std::error::Error>> {
                         match connection.requests.interrupt(generation).await {
                             Ok(()) => output.emit(&connection.requests,json!({"type":"interruptRequested","terminalObserved":false}))?,
                             Err(error) => output.emit(&connection.requests,json!({"type":"requestError","error":error.to_string(),"requiresReconciliation":true}))?,
+                        }
+                    }
+                    Command::TakeSpeech { generation } => {
+                        match connection.requests.take_completed_speech(generation) {
+                            Ok(request) => output.emit(&connection.requests,json!({"type":"mediaRequest","request":request}))?,
+                            Err(error) => output.emit(&connection.requests,json!({"type":"speechUnavailable","error":error.to_string()}))?,
                         }
                     }
                     Command::Reconnect => {

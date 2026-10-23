@@ -85,6 +85,7 @@ impl HmiRequestsV1 {
                     state.active_turn = None;
                     state.items.clear();
                     state.terminal = None;
+                    state.speech_taken = false;
                 }
             }
         }
@@ -283,26 +284,74 @@ impl HmiRequestsV1 {
     pub fn binding(&self) -> &HmiBindingV1 {
         &self.shared.binding
     }
+    pub fn connection_id(&self) -> u64 {
+        self.shared.connection_id
+    }
 
     /// Check again at the actual output boundary; queued frames from old
     /// connections, generations, turns or output epochs must be discarded.
     pub fn permits_output(&self, scope: &HmiOutputScopeV1) -> Result<bool, HmiError> {
         let state = self.shared.state.lock().map_err(|_| HmiError::Fenced)?;
-        Ok(!state.fenced
-            && state.output_enabled
-            && state.active_turn.is_some()
-            && scope.principal_id == self.shared.binding.principal_id
-            && scope.device_id == self.shared.binding.device_id
-            && scope.device_generation == self.shared.binding.device_generation
-            && scope.organ_id == self.shared.binding.organ_id
-            && scope.logical_session_id == self.shared.binding.logical_session_id
-            && scope.utterance_sequence == state.sequence
-            && scope.utterance_id.as_ref()
-                == state.pending.as_ref().map(|(client_id, _)| client_id)
-            && scope.organ_generation == self.shared.binding.organ_generation
-            && scope.connection_id == self.shared.connection_id
-            && scope.output_epoch == state.epoch
-            && scope.turn_id == state.active_turn)
+        Ok(output_permitted(&self.shared, &state, scope))
+    }
+
+    /// Claim the retained completed turn as one media utterance, including all
+    /// output items in observed order. Partial, failed, unknown and interrupted
+    /// turns never become speech requests. Oversize output remains available in
+    /// the terminal snapshot and returns an explicit error without truncation.
+    /// The owner must recheck its live grant and `permits_output` at submission;
+    /// this process-local claim is not durable delivery or external-effect dedupe.
+    pub fn take_completed_speech(
+        &self,
+        current_generation: u64,
+    ) -> Result<Option<HmiSpeechRequestV1>, HmiError> {
+        let mut state = self.shared.state.lock().map_err(|_| HmiError::Fenced)?;
+        if state.fenced || current_generation != self.shared.binding.organ_generation {
+            return Err(HmiError::Fenced);
+        }
+        if state.speech_taken {
+            return Ok(None);
+        }
+        let Some(HmiEventV1 {
+            scope,
+            kind: HmiEventKindV1::Terminal { outcome },
+        }) = &state.terminal
+        else {
+            return Ok(None);
+        };
+        if outcome.status != HmiTerminalStatusV1::Completed
+            || !output_permitted(&self.shared, &state, scope)
+            || outcome.generated_text.trim().is_empty()
+        {
+            return Ok(None);
+        }
+        if outcome.generated_text.len() > MAX_SPEECH_BYTES {
+            return Err(HmiError::Invalid("completed speech exceeds 4096 bytes"));
+        }
+        let (Some(turn_id), Some(utterance_id)) = (&scope.turn_id, &scope.utterance_id) else {
+            return Err(HmiError::Invalid("media scope identity"));
+        };
+        if scope.connection_id == 0
+            || scope.utterance_sequence == 0
+            || [
+                &scope.principal_id,
+                &scope.device_id,
+                &scope.organ_id,
+                &scope.logical_session_id,
+                turn_id,
+                utterance_id,
+            ]
+            .iter()
+            .any(|id| id.trim().is_empty() || id.len() > 256 || id.chars().any(char::is_control))
+        {
+            return Err(HmiError::Invalid("media scope identity"));
+        }
+        let request = HmiSpeechRequestV1::Speak {
+            scope: scope.clone(),
+            text: outcome.generated_text.clone(),
+        };
+        state.speech_taken = true;
+        Ok(Some(request))
     }
 
     pub fn terminal_snapshot(&self) -> Result<Option<HmiEventV1>, HmiError> {
@@ -314,4 +363,21 @@ impl HmiRequestsV1 {
             .terminal
             .clone())
     }
+}
+
+fn output_permitted(shared: &Shared, state: &State, scope: &HmiOutputScopeV1) -> bool {
+    !state.fenced
+        && state.output_enabled
+        && state.active_turn.is_some()
+        && scope.principal_id == shared.binding.principal_id
+        && scope.device_id == shared.binding.device_id
+        && scope.device_generation == shared.binding.device_generation
+        && scope.organ_id == shared.binding.organ_id
+        && scope.logical_session_id == shared.binding.logical_session_id
+        && scope.utterance_sequence == state.sequence
+        && scope.utterance_id.as_ref() == state.pending.as_ref().map(|(id, _)| id)
+        && scope.organ_generation == shared.binding.organ_generation
+        && scope.connection_id == shared.connection_id
+        && scope.output_epoch == state.epoch
+        && scope.turn_id == state.active_turn
 }

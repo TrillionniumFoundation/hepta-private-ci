@@ -40,6 +40,7 @@ use serde::Serialize;
 
 const MAX_TEXT_BYTES: usize = 64 * 1024;
 const MAX_ITEMS: usize = 32;
+const MAX_SPEECH_BYTES: usize = 4096;
 
 #[path = "hmi_events.rs"]
 mod events;
@@ -94,6 +95,17 @@ pub struct HmiOutputScopeV1 {
     pub turn_id: Option<String>,
 }
 
+/// One bounded request for the existing media owner's `speak` command.
+/// This carries source identity, not a device grant or a playback receipt.
+#[derive(Clone, Debug, Eq, PartialEq, Serialize)]
+#[serde(tag = "type", rename_all = "camelCase")]
+pub enum HmiSpeechRequestV1 {
+    Speak {
+        scope: HmiOutputScopeV1,
+        text: String,
+    },
+}
+
 #[derive(Clone, Debug, Eq, PartialEq, Serialize)]
 #[serde(rename_all = "camelCase")]
 pub enum HmiTerminalStatusV1 {
@@ -139,6 +151,7 @@ struct State {
     active_turn: Option<String>,
     items: Vec<(String, String)>,
     terminal: Option<HmiEventV1>,
+    speech_taken: bool,
 }
 
 struct Shared {
@@ -225,6 +238,7 @@ impl HmiConnectionV1 {
                 active_turn: None,
                 items: Vec::new(),
                 terminal: None,
+                speech_taken: false,
             }),
         });
         let requests = HmiRequestsV1 {
