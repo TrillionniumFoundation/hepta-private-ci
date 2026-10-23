@@ -316,7 +316,9 @@ impl AgentdAutomationEffectHost {
                 AuthorizedEffectRecoveryResult::Observed(receipt)
                     if receipt.observation != Some(TaskFlowStepObservation::Indeterminate) =>
                 {
-                    return Ok(AgentdAutomationEffectReconcileOutcome::Observed(Box::new(receipt)));
+                    return Ok(AgentdAutomationEffectReconcileOutcome::Observed(Box::new(
+                        receipt,
+                    )));
                 }
                 AuthorizedEffectRecoveryResult::ProvenAbsent => {
                     return Ok(AgentdAutomationEffectReconcileOutcome::ProvenAbsent);
@@ -345,9 +347,9 @@ impl AgentdAutomationEffectHost {
                             "reconcile authorized effect terminal observation: {error}"
                         ))
                     })? {
-                    AuthorizedEffectRecoveryResult::Observed(receipt) => {
-                        Ok(AgentdAutomationEffectReconcileOutcome::Observed(Box::new(receipt)))
-                    }
+                    AuthorizedEffectRecoveryResult::Observed(receipt) => Ok(
+                        AgentdAutomationEffectReconcileOutcome::Observed(Box::new(receipt)),
+                    ),
                     AuthorizedEffectRecoveryResult::ProvenAbsent => Err(AgentdError::Protocol(
                         "status lookup cannot manufacture provider absence".to_string(),
                     )),
@@ -719,7 +721,8 @@ mod tests {
             let root = temp.path().canonicalize().context("canonical temp root")?;
             let fleet_path = root.join("fleet");
             let fleet_root = HeptaFleetRoot::parse(fleet_path.clone()).context("fleet root")?;
-            let registry = FleetRegistry::initialize(fleet_root.clone()).context("fleet registry")?;
+            let registry =
+                FleetRegistry::initialize(fleet_root.clone()).context("fleet registry")?;
             let workspace = root.join("workspace");
             fs::create_dir(&workspace).context("workspace")?;
             let workspace = workspace.canonicalize().context("canonical workspace")?;
@@ -727,11 +730,15 @@ mod tests {
             let resources = ResourceBudget::local_default();
             let manifest = AgentManifest::new(
                 agent_id.clone(),
-                WorkspaceBinding::new(workspace.clone(), &fleet_root).context("workspace binding")?,
+                WorkspaceBinding::new(workspace.clone(), &fleet_root)
+                    .context("workspace binding")?,
                 resources.clone(),
             )
             .context("manifest")?;
-            let layout = registry.register(manifest).context("register agent")?.layout;
+            let layout = registry
+                .register(manifest)
+                .context("register agent")?
+                .layout;
             let identity = AgentdIdentity {
                 agent_id: agent_id.clone(),
                 layout: layout.clone(),
@@ -924,7 +931,9 @@ mod tests {
         .expect("millis");
         let scope = Sha256Digest::for_bytes(b"provider-fixture-scope");
         let intent = effect_intent(&scope);
-        prepare_effect(&fixture, now_ms, &intent).await.expect("prepare original effect");
+        prepare_effect(&fixture, now_ms, &intent)
+            .await
+            .expect("prepare original effect");
 
         let server = MockServer::start().await;
         let provider_key = ProviderEffectKey::for_operation(
@@ -1022,7 +1031,8 @@ mod tests {
 
         let host =
             AgentdAutomationEffectHost::open(&fixture.identity, &host_file).expect("effect host");
-        let grant = signed_final_use(&intent, now_ms, &final_use_signer).expect("existing final-use grant");
+        let grant =
+            signed_final_use(&intent, now_ms, &final_use_signer).expect("existing final-use grant");
         let receipt = host
             .execute(
                 &fixture.store,

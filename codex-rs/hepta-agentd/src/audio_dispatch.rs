@@ -71,67 +71,67 @@ pub(super) async fn tick(state: &AgentdState) -> Result<(), AgentdError> {
     };
     // A failed connection is known not to have crossed the Core seam. Resolve it
     // before consuming a durable delivery attempt, as the original text relay does.
-    let client=crate::authbus_dispatch::connect(state).await?;
-    let result=async {
-    require_ready(state)?;
-    let issuer=host.trust(state)?.issuer()?;
-    let worker = StableId::new(format!(
-        "agentd:audio:{}",
-        state.identity().spawn_generation
-    ))
-    .map_err(invalid)?;
-    let delivery = host
-        .evidence
-        .claim_authbus_delivery(
-            &issuer,
-            AuthBusClaimRequest {
-                delivery_id: status.delivery_id,
-                subject_id: &host.subject,
-                scope_digest: route,
-                worker_id: &worker,
-                lease_ms: 30_000,
-            },
-        )
-        .await
+    let client = crate::authbus_dispatch::connect(state).await?;
+    let result = async {
+        require_ready(state)?;
+        let issuer = host.trust(state)?.issuer()?;
+        let worker = StableId::new(format!(
+            "agentd:audio:{}",
+            state.identity().spawn_generation
+        ))
         .map_err(invalid)?;
-    let checked = async {
-        let body: AudioObservationBodyV1 = serde_json::from_slice(&delivery.payload)?;
-        if payload(&body)? != delivery.payload
-            || delivery.message.claims.sequence != body.source.sequence
-            || scope(
-                &state.identity().agent_id,
-                &body.source.stream,
-                body.source.capture_generation,
-            )? != route
-            || (body.spawn_generation != state.identity().spawn_generation
-                && delivery.attempts == 1)
-        {
-            return Err(invalid(
-                "audio payload, capture route or Agentd generation drift",
-            ));
+        let delivery = host
+            .evidence
+            .claim_authbus_delivery(
+                &issuer,
+                AuthBusClaimRequest {
+                    delivery_id: status.delivery_id,
+                    subject_id: &host.subject,
+                    scope_digest: route,
+                    worker_id: &worker,
+                    lease_ms: 30_000,
+                },
+            )
+            .await
+            .map_err(invalid)?;
+        let checked = async {
+            let body: AudioObservationBodyV1 = serde_json::from_slice(&delivery.payload)?;
+            if payload(&body)? != delivery.payload
+                || delivery.message.claims.sequence != body.source.sequence
+                || scope(
+                    &state.identity().agent_id,
+                    &body.source.stream,
+                    body.source.capture_generation,
+                )? != route
+                || (body.spawn_generation != state.identity().spawn_generation
+                    && delivery.attempts == 1)
+            {
+                return Err(invalid(
+                    "audio payload, capture route or Agentd generation drift",
+                ));
+            }
+            policy.permits(
+                delivery.message.claims.issuer_id.as_str(),
+                delivery.message.claims.key_epoch.get(),
+                &body,
+            )?;
+            if !host.trust(state)?.permits(&body.thread_id) {
+                return Err(invalid("thread permission changed"));
+            }
+            policy.verify_media(state.identity(), &body.source).await?;
+            Ok::<_, AgentdError>(body)
         }
-        policy.permits(
-            delivery.message.claims.issuer_id.as_str(),
-            delivery.message.claims.key_epoch.get(),
-            &body,
-        )?;
-        if !host.trust(state)?.permits(&body.thread_id) {
-            return Err(invalid("thread permission changed"));
-        }
-        policy.verify_media(state.identity(), &body.source).await?;
-        Ok::<_, AgentdError>(body)
-    }
-    .await;
-    let body = match checked {
-        Ok(body) => body,
-        Err(_) => {
-            return host
-                .evidence
-                .quarantine_authbus_delivery(&host.trust(state)?.issuer()?, &delivery.lease)
-                .await
-                .map_err(invalid);
-        }
-    };
+        .await;
+        let body = match checked {
+            Ok(body) => body,
+            Err(_) => {
+                return host
+                    .evidence
+                    .quarantine_authbus_delivery(&host.trust(state)?.issuer()?, &delivery.lease)
+                    .await
+                    .map_err(invalid);
+            }
+        };
         require_ready(state)?;
         let issuer = host.trust(state)?.issuer()?;
         AudioPolicy::current(state)?.permits(

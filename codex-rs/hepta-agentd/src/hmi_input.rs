@@ -90,12 +90,14 @@ impl SignedInput {
             Self::Text(r) => Ok(serde_json::to_value(
                 crate::authbus_ingress::submit(state, r).await?,
             )?),
-            Self::Audio(r) => {
-                match crate::audio_observation::submit(state,*r).await {
-                    Ok(receipt)=>Ok(json!({"delivery_id":receipt.delivery_id,"audioObservation":receipt})),
-                    Err(failure)=>Ok(json!({"audioAdmissionFailure":{"error":failure.error.to_string(),"committedObservation":failure.committed_observation,"admissionReady":false}})),
+            Self::Audio(r) => match crate::audio_observation::submit(state, *r).await {
+                Ok(receipt) => {
+                    Ok(json!({"delivery_id":receipt.delivery_id,"audioObservation":receipt}))
                 }
-            }
+                Err(failure) => Ok(
+                    json!({"audioAdmissionFailure":{"error":failure.error.to_string(),"committedObservation":failure.committed_observation,"admissionReady":false}}),
+                ),
+            },
         }
     }
 }

@@ -269,18 +269,19 @@ impl AgentdState {
                 };
                 // The model and context plan bind to the body that was launched.
                 // Current lifecycle authority remains fenced before and after I/O.
-                let result = crate::cognitive_context::read_with_retrieval_context_and_learning(&store,
-        crate::cognitive_context::CognitiveReadInput {
-            owner: &self.identity.agent_id,
-            body_generation: self.identity.spawn_generation,
-            query: &query,
-            limit,
-            ranker: self.cognitive_ranker.get(),
-            current_retrieval: self.cognitive_retrieval_context.get(),
-            learning_sink: self.cognitive_retrieval_learning.get(),
-            request_id: Some(request_id),
-        },
-    )
+                let result = crate::cognitive_context::read_with_retrieval_context_and_learning(
+                    &store,
+                    crate::cognitive_context::CognitiveReadInput {
+                        owner: &self.identity.agent_id,
+                        body_generation: self.identity.spawn_generation,
+                        query: &query,
+                        limit,
+                        ranker: self.cognitive_ranker.get(),
+                        current_retrieval: self.cognitive_retrieval_context.get(),
+                        learning_sink: self.cognitive_retrieval_learning.get(),
+                        request_id: Some(request_id),
+                    },
+                )
                 .await;
                 self.refresh_generation()?;
                 {
@@ -350,19 +351,20 @@ impl AgentdState {
                         cognitive_control_unavailable(),
                     );
                 };
-                let result = crate::cognitive_context::revalidate_with_retrieval_context(store.as_ref(),
-        crate::cognitive_context::CognitiveRevalidationInput {
-            owner: &self.identity.agent_id,
-            snapshot_digest: &snapshot_digest,
-            read_digest: &read_digest,
-            omitted_records,
-            items: &items,
-            plan: plan.as_ref(),
-            ranker: self.cognitive_ranker.get(),
-            body_generation: self.identity.spawn_generation,
-            current_retrieval: self.cognitive_retrieval_context.get(),
-        },
-    )
+                let result = crate::cognitive_context::revalidate_with_retrieval_context(
+                    store.as_ref(),
+                    crate::cognitive_context::CognitiveRevalidationInput {
+                        owner: &self.identity.agent_id,
+                        snapshot_digest: &snapshot_digest,
+                        read_digest: &read_digest,
+                        omitted_records,
+                        items: &items,
+                        plan: plan.as_ref(),
+                        ranker: self.cognitive_ranker.get(),
+                        body_generation: self.identity.spawn_generation,
+                        current_retrieval: self.cognitive_retrieval_context.get(),
+                    },
+                )
                 .await;
                 self.refresh_generation()?;
                 {

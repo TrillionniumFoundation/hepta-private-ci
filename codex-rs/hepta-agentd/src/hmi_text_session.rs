@@ -148,11 +148,13 @@ fn submit(
     requests: HmiRequestsV1,
     input: SignedInput,
     tx: &Sender,
-    authority:&OwnerAuthority,
+    authority: &OwnerAuthority,
 ) -> Result<Pending, AgentdError> {
     let delivery = input.authenticate(&state)?;
-    if input.key_epoch()!=authority.key_epoch || input.audio_policy()!=authority.audio_policy {
-        return Err(invalid("signed input profile or authority epoch differs from the attached session"));
+    if input.key_epoch() != authority.key_epoch || input.audio_policy() != authority.audio_policy {
+        return Err(invalid(
+            "signed input profile or authority epoch differs from the attached session",
+        ));
     }
     if !input.matches(&state, requests.binding()) {
         return Err(invalid(
@@ -189,9 +191,9 @@ fn submit(
             Ok(Ok(receipt)) if receipt["delivery_id"] == delivery => {
                 json!({"type":"admission","input":context,"receipt":receipt})
             }
-            Ok(Ok(failed)) if failed.get("audioAdmissionFailure").is_some()=>{
-                let _=requests.stop_output(requests.binding().organ_generation);
-                let failure=&failed["audioAdmissionFailure"];
+            Ok(Ok(failed)) if failed.get("audioAdmissionFailure").is_some() => {
+                let _ = requests.stop_output(requests.binding().organ_generation);
+                let failure = &failed["audioAdmissionFailure"];
                 json!({"type":"inputError","input":context,"error":failure["error"],"committedAudioObservation":failure["committedObservation"],"admissionReady":false})
             }
             other => {
@@ -242,7 +244,13 @@ pub(super) async fn serve<R: AsyncBufRead + Unpin>(
         tx.clone(),
     )?;
     let mut pending = if admit {
-        Some(submit(state.clone(), requests.clone(), input, tx, &authority)?)
+        Some(submit(
+            state.clone(),
+            requests.clone(),
+            input,
+            tx,
+            &authority,
+        )?)
     } else {
         None
     };

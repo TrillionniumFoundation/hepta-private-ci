@@ -702,10 +702,18 @@ pub fn resolve_agentd_plasticity_admission_v1(
 /// transplanted across artifact/ledger changes.
 pub fn propose_agentd_plasticity_v1(
     mut request: ParameterPlasticityProductRequestV1,
-    context:crate::AgentdPlasticityProposalContextV1<'_>,
+    context: crate::AgentdPlasticityProposalContextV1<'_>,
     now: u64,
 ) -> Result<ParameterPlasticityProductReceiptV1, AgentdPlasticityHostErrorV1> {
-    let crate::AgentdPlasticityProposalContextV1 {artifacts,ledger,owner_evidence_resolver,owner_evidence_policy,verifier,writer,anchor_store}=context;
+    let crate::AgentdPlasticityProposalContextV1 {
+        artifacts,
+        ledger,
+        owner_evidence_resolver,
+        owner_evidence_policy,
+        verifier,
+        writer,
+        anchor_store,
+    } = context;
     let resolved = resolve_agentd_plasticity_admission_v1(
         &AgentdPlasticityAdmissionInputV1 {
             baseline_id: request.admission.baseline_id.clone(),

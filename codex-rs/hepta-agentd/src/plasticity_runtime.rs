@@ -299,10 +299,13 @@ impl PlasticityRuntimeOwnerV1 {
                     let result = propose_agentd_plasticity_v1(
                         *request,
                         crate::AgentdPlasticityProposalContextV1 {
-                            artifacts:&self.artifacts, ledger:&self.ledger,
-                            owner_evidence_resolver:self.owner_evidence_resolver.as_ref(),
-                            owner_evidence_policy:&self.owner_evidence_policy,verifier:&self.verifier,
-                            writer:&mut self.parameter_writer,anchor_store:&mut self.parameter_anchor_store,
+                            artifacts: &self.artifacts,
+                            ledger: &self.ledger,
+                            owner_evidence_resolver: self.owner_evidence_resolver.as_ref(),
+                            owner_evidence_policy: &self.owner_evidence_policy,
+                            verifier: &self.verifier,
+                            writer: &mut self.parameter_writer,
+                            anchor_store: &mut self.parameter_anchor_store,
                         },
                         now,
                     )

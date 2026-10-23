@@ -662,7 +662,7 @@ fn fixture() -> Fixture {
 #[cfg(feature = "qualification-legacy-learning-write")]
 #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
 async fn real_owner_product_path_records_decision_outcome_and_reopens() {
-    let (fixture,trust) = signed::signed_fixture();
+    let (fixture, trust) = signed::signed_fixture();
     let temp = tempfile::tempdir().expect("tempdir");
     let authority = temp.path().join("intelligence-authority.json");
     write_authority_file(
@@ -670,8 +670,10 @@ async fn real_owner_product_path_records_decision_outcome_and_reopens() {
         &fixture.owners,
         fixture.request.snapshot.revocation_frontier_digest(),
     );
-    let runner = AgentdIntelligenceProductRunnerV1::new(authority, authority_verifier()).expect("runner")
-        .with_evaluation_trust(trust).expect("existing signed evaluator fixture");
+    let runner = AgentdIntelligenceProductRunnerV1::new(authority, authority_verifier())
+        .expect("runner")
+        .with_evaluation_trust(trust)
+        .expect("existing signed evaluator fixture");
     let mut coordinator = product_test_coordinator();
     let outcome = runner
         .prepare_and_admit(&mut coordinator, fixture.request, fixture.inputs)
@@ -693,7 +695,11 @@ async fn real_owner_product_path_records_decision_outcome_and_reopens() {
         Some(prepared.envelope.envelope_digest.to_string().as_str())
     );
     let dispatched = coordinator
-        .mark_dispatched(wall_clock_ms().expect("dispatch clock"), &attached.run_id, attached.revision)
+        .mark_dispatched(
+            wall_clock_ms().expect("dispatch clock"),
+            &attached.run_id,
+            attached.revision,
+        )
         .expect("commit dispatch before physical effect");
     assert_eq!(dispatched.phase, RunPhase::Dispatched);
 
@@ -720,7 +726,10 @@ async fn real_owner_product_path_records_decision_outcome_and_reopens() {
         panic!("original decision must be recorded");
     };
     assert_eq!(prepared.candidate_ids, vec![id("action.read")]);
-    assert_eq!(recorded.candidate_ids, vec![id("abstain"), id("action.read"), id("shadow:slow-path")]);
+    assert_eq!(
+        recorded.candidate_ids,
+        vec![id("abstain"), id("action.read"), id("shadow:slow-path")]
+    );
     assert_eq!(recorded.selected_candidate_id, id("action.read"));
 
     let outcome = runner
@@ -831,7 +840,7 @@ async fn unsigned_currentness_substitution_fails_before_owner_use() {
 #[cfg(feature = "qualification-legacy-learning-write")]
 #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
 async fn final_use_revocation_race_fails_before_decision_publication() {
-    let (fixture,trust) = signed::signed_fixture();
+    let (fixture, trust) = signed::signed_fixture();
     let temp = tempfile::tempdir().expect("tempdir");
     let authority = temp.path().join("intelligence-authority.json");
     write_authority_file(
@@ -840,7 +849,9 @@ async fn final_use_revocation_race_fails_before_decision_publication() {
         fixture.request.snapshot.revocation_frontier_digest(),
     );
     let runner = AgentdIntelligenceProductRunnerV1::new(authority.clone(), authority_verifier())
-        .expect("runner").with_evaluation_trust(trust).expect("existing signed evaluator fixture");
+        .expect("runner")
+        .with_evaluation_trust(trust)
+        .expect("existing signed evaluator fixture");
     let outcome = runner
         .prepare(&product_test_coordinator(), fixture.request, fixture.inputs)
         .await
