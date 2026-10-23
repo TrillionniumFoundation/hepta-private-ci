@@ -9,6 +9,7 @@
 
 mod journal;
 mod record;
+pub mod ports;
 
 pub use journal::EffectReceiptVerifier;
 pub use journal::ExecutionJournal;
@@ -32,6 +33,23 @@ pub use record::FinalUse;
 pub use record::ReconciliationStatus;
 pub use record::EXECUTION_SCHEMA_VERSION;
 pub use record::MAX_EXECUTION_RECORD_BYTES;
+pub use ports::AgentLoopPort;
+pub use ports::AgentStepDisposition;
+pub use ports::AgentStepObservationV1;
+pub use ports::AgentStepRequestV1;
+pub use ports::CheckedStartHandleV1;
+pub use ports::ExecutionObservationV1;
+pub use ports::ExecutionPort;
+pub use ports::ModelInvocationV1;
+pub use ports::ModelObservationV1;
+pub use ports::ModelPort;
+pub use ports::PortError;
+pub use ports::PortFuture;
+pub use ports::PortTerminal;
+
+#[cfg(test)]
+#[path = "ports_tests.rs"]
+mod ports_tests;
 
 #[cfg(test)]
 #[path = "journal_tests.rs"]
