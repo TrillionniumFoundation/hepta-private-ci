@@ -1,0 +1,90 @@
+name: NDU v4 frozen hosted confirmation
+on:
+  push:
+    branches: [research/ndu-feedback-generation-v3]
+    paths: [experiments/multimodal_output_portfolio/v4_hosted/RUN_REQUEST.json]
+permissions:
+  contents: read
+defaults:
+  run:
+    shell: bash
+jobs:
+  confirmation:
+    if: github.repository == 'TrillionniumFoundation/hepta-private-ci'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 90
+    steps:
+      - name: Allocate a new attempt without overwriting evidence
+        run: |
+          mkdir -p "$RUNNER_TEMP/ndu-v4-hosted"
+          out="$RUNNER_TEMP/ndu-v4-hosted/$GITHUB_RUN_ID-$GITHUB_RUN_ATTEMPT"
+          mkdir -m 700 "$out"
+          printf 'NDU_V4_OUTPUT=%s\n' "$out" >> "$GITHUB_ENV"
+          python3 - "$out" <<'PY'
+          import json, os, pathlib, sys
+          value = {key: os.environ.get(key) for key in ('GITHUB_SHA', 'GITHUB_REF', 'GITHUB_RUN_ID', 'GITHUB_RUN_ATTEMPT', 'GITHUB_JOB', 'RUNNER_NAME', 'RUNNER_ENVIRONMENT', 'RUNNER_OS', 'RUNNER_ARCH')}
+          value.update(external_assignment_verified=False, dedicated_runner_verified=False, production_claim=False)
+          pathlib.Path(sys.argv[1], 'workflow-context.json').write_text(json.dumps(value, indent=2) + '\n')
+          PY
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.sha }}
+          path: request
+          persist-credentials: false
+          sparse-checkout: |
+            .github/workflows
+            experiments/multimodal_output_portfolio/v4_hosted
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: 7713023e604746a3947e0e0e2d31e8eaef6e48b1
+          path: science
+          persist-credentials: false
+          fetch-depth: 0
+          sparse-checkout: |
+            experiments/multimodal_output_portfolio
+            codex-rs/hepta-ndu
+            codex-rs/hepta-types
+            codex-rs/.cargo
+      - uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405
+        with:
+          python-version: '3.12'
+      - name: Verify inputs, execute full frozen protocol, and independently audit
+        env:
+          PYTHONDONTWRITEBYTECODE: '1'
+        run: |
+          python request/experiments/multimodal_output_portfolio/v4_hosted/adapter.py \
+            --request-repo "$GITHUB_WORKSPACE/request" --science-repo "$GITHUB_WORKSPACE/science" \
+            --output "$NDU_V4_OUTPUT" 2>&1 | tee "$NDU_V4_OUTPUT/adapter-console.log"
+      - name: Preserve outcome and complete per-file evidence manifest
+        if: always() && env.NDU_V4_OUTPUT != ''
+        env:
+          NDU_V4_JOB_STATUS: ${{ job.status }}
+        run: |
+          python3 - <<'PY'
+          import hashlib, json, os, pathlib, stat
+          out = pathlib.Path(os.environ['NDU_V4_OUTPUT'])
+          def save(name, value):
+              with (out / name).open('x') as stream:
+                  json.dump(value, stream, indent=2, allow_nan=False); stream.write('\n')
+          save('workflow-outcome.json', {'job_status': os.environ['NDU_V4_JOB_STATUS'], 'adapter_receipt_present': (out / 'adapter-receipt.json').is_file(), 'external_assignment_verified': False})
+          if not (out / 'adapter-receipt.json').exists():
+              save('adapter-not-completed.json', {'status': 'no_completed_adapter_receipt', 'formal_integrity_passed': False, 'mechanism_gate_passed': False, 'primary_superiority_passed': False})
+          rows = {}
+          for path in sorted(out.rglob('*')):
+              if path.is_symlink():
+                  raise RuntimeError('evidence symlink: ' + str(path))
+              if path.is_file():
+                  with path.open('rb') as stream:
+                      sha = hashlib.file_digest(stream, 'sha256').hexdigest()
+                  rows[str(path.relative_to(out))] = {'bytes': path.stat().st_size, 'sha256': sha, 'unix_mode': stat.S_IMODE(path.stat().st_mode)}
+          save('hosted-artifacts.json', {'schema': 'hepta.v4.hosted-artifacts.v1', 'manifest_self_excluded': True, 'files': rows})
+          PY
+      - uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f
+        if: always() && env.NDU_V4_OUTPUT != ''
+        with:
+          name: ndu-v4-hosted-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ env.NDU_V4_OUTPUT }}
+          if-no-files-found: error
+          include-hidden-files: true
+          compression-level: 6
+          retention-days: 30
