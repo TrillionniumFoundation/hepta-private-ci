@@ -158,7 +158,7 @@ def evaluate_capabilities(report, protocol, episodes, *,
                               for a,b in jointly_completed)
     # Some observable differences can be entirely induced by runtime failure:
     # no inference of a beneficial covariance mechanism follows from them.
-    # Only one pre-selected weight and no pre-registered independent
+    # Only one preselected weight and no pre-registered independent
     # terminal-covariance estimator: the v1 mechanism is unidentifiable,
     # regardless of post-hoc observed outcome changes.
     covariance_identified = False

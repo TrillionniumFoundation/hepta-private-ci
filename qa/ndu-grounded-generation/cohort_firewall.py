@@ -8,11 +8,14 @@ only; it cannot attest real-world entity overlap or base-model pretraining.
 import argparse
 import hashlib
 import json
+import os
 from pathlib import Path
 import re
+import stat
 
 HEX256 = re.compile(r"^[0-9a-f]{64}$")
 HEX64 = re.compile(r"^[0-9a-f]{16}$")
+TASK_ID_RE = re.compile(r"^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$")
 SPLITS = ("train", "dev", "calibration", "test")
 V1_SPLIT_COUNTS = (128, 32, 32, 64)
 MAX_CANDIDATE_SOURCES = 2048
@@ -73,6 +76,7 @@ def load_sources(document, origin, *, historical=False):
     if not isinstance(splits, dict) or set(splits) != set(SPLITS):
         raise CohortContractError(f"{origin}: require exactly four original-source splits")
     sources = []
+    task_ids = set()
     for split in SPLITS:
         part = splits[split]
         if not isinstance(part, dict) or not isinstance(part.get("sources"), list):
@@ -82,8 +86,12 @@ def load_sources(document, origin, *, historical=False):
         if len(part["sources"]) > MAX_CANDIDATE_SOURCES:
             raise CohortContractError(f"{origin}:{split}: source limit exceeded")
         for n, item in enumerate(part["sources"]):
-            if not isinstance(item, dict) or not isinstance(item.get("task_id"), str) or not item["task_id"]:
-                raise CohortContractError(f"{origin}:{split}:{n}: missing task_id")
+            task_id = item.get("task_id") if isinstance(item, dict) else None
+            if not isinstance(task_id, str) or not TASK_ID_RE.fullmatch(task_id):
+                raise CohortContractError(f"{origin}:{split}:{n}: missing or noncanonical task_id")
+            if task_id in task_ids:
+                raise CohortContractError(f"{origin}:{split}:{n}: duplicate task_id across source splits")
+            task_ids.add(task_id)
             sources.append(_checked_image(item, f"{origin}:{split}:{n}"))
     return sources
 
@@ -177,10 +185,15 @@ def main(argv=None):
             raise CohortContractError("each historical manifest requires an out-of-band SHA256")
 
         def read_bounded(path):
-            file = Path(path)
-            if file.stat().st_size > MAX_INPUT_BYTES:
-                raise CohortContractError("cohort manifest byte limit exceeded")
-            raw = file.read_bytes()
+            # Bound the actual read on the opened descriptor; stat-then-read
+            # alone does not bound a concurrently replaced file or a FIFO.
+            flags = os.O_RDONLY | getattr(os, "O_BINARY", 0)
+            flags |= getattr(os, "O_NONBLOCK", 0)
+            flags |= getattr(os, "O_NOFOLLOW", 0)
+            with os.fdopen(os.open(path, flags), "rb") as source:
+                if not stat.S_ISREG(os.fstat(source.fileno()).st_mode):
+                    raise CohortContractError("regular cohort manifest file required")
+                raw = source.read(MAX_INPUT_BYTES + 1)
             if len(raw) > MAX_INPUT_BYTES:
                 raise CohortContractError("cohort manifest byte limit exceeded")
             return raw
