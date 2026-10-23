@@ -120,6 +120,10 @@ the consumer independently checks the same descriptor contract. The same root
 PID must continue serving all five lanes. Descriptor-only tests do not qualify
 the production launcher, authority contents or Asterinas ABI.
 
+The [sealed producer qualification](acceptance/2026-10-23-sealed-bootstrap/README.md)
+preserves the original 48-test scope, actual Root custody and SSD service cases,
+finish records and explicit deployment boundaries.
+
 ## Trusted writer succession
 
 `DeploymentFinalUseIssuer::rotate_writer_authorization` is a trusted launcher
