@@ -2,6 +2,7 @@
 //! No consumer nonce journal, writer genesis or publisher activation is created.
 
 use super::*;
+use codex_hepta_contracts::authority_lease::AuthorityLease;
 use codex_hepta_contracts::authority_lease::AuthorityLeaseBinding;
 use codex_hepta_contracts::authority_lease::AuthorityLeaseError;
 use codex_hepta_contracts::authority_lease::AuthorityLeaseVerifier;
@@ -78,6 +79,43 @@ fn lease_error(error: AuthorityLeaseError) -> io::Error {
 }
 
 impl DeploymentFinalUseIssuer {
+    /// Observe only under the same original pinned lease/revocation fence used
+    /// by issuance. The callback must check its final post-I/O observation
+    /// against this lease's expiry before publishing a feed response.
+    pub(crate) fn with_live_lease<T>(
+        &self,
+        observe: impl FnOnce(&AuthorityLease) -> io::Result<T>,
+    ) -> io::Result<T> {
+        let pinned = self
+            .lease
+            .as_ref()
+            .ok_or_else(|| io::Error::other("no protected lease"))?;
+        let lease = pinned
+            .verifier
+            .read_lease(&pinned.id)
+            .map_err(lease_error)?
+            .ok_or_else(|| {
+                io::Error::new(io::ErrorKind::PermissionDenied, "original lease missing")
+            })?
+            .lease;
+        // As for issuance, never use an older clone after the requested newer
+        // revision becomes installed between read and the original token check.
+        if lease.revision != pinned.revision {
+            return Err(io::Error::new(
+                io::ErrorKind::PermissionDenied,
+                "original lease revision mismatch",
+            ));
+        }
+        let token = pinned
+            .verifier
+            .verify_use(&pinned.id, pinned.revision, &lease.binding)
+            .map_err(lease_error)?;
+        pinned
+            .verifier
+            .with_dispatch_boundary(token, &lease.binding, || observe(&lease))
+            .map_err(lease_error)?
+    }
+
     /// Explicitly create one new root-owned issuer. Existing/partial paths are
     /// never reset. The supplied clock and lease verifier are original trusted
     /// owners, not constructed from peer request fields.

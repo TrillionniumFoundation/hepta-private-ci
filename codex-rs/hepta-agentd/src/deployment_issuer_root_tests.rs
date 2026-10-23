@@ -347,3 +347,101 @@ fn deployment_protected_root_factory_retains_original_key_head_counter_and_lease
             .ends_with(":2")
     );
 }
+
+#[test]
+fn deployment_live_observation_uses_the_original_revision_revocation_and_expiry_checks() {
+    let mut fixture = Fixture::new();
+    fixture.issuer.lease =
+        Some(ProtectedLease::new(fixture.registry.verifier(), "pinned-lease".into(), 1).unwrap());
+    assert_eq!(
+        fixture
+            .issuer
+            .with_live_lease(|lease| Ok((lease.revision, lease.expires_at_unix_ms)))
+            .unwrap(),
+        (1, 20_000)
+    );
+    fixture.clock.now.store(20_000, Ordering::SeqCst);
+    let called = std::sync::atomic::AtomicBool::new(false);
+    assert_eq!(
+        fixture
+            .issuer
+            .with_live_lease(|_| {
+                called.store(true, Ordering::SeqCst);
+                Ok(())
+            })
+            .unwrap_err()
+            .kind(),
+        io::ErrorKind::PermissionDenied
+    );
+    assert!(!called.load(Ordering::SeqCst));
+    fixture.clock.now.store(10_000, Ordering::SeqCst);
+    fixture.registry.revoke("pinned-lease", 1, [9; 32]).unwrap();
+    assert_eq!(
+        fixture
+            .issuer
+            .with_live_lease(|_| {
+                called.store(true, Ordering::SeqCst);
+                Ok(())
+            })
+            .unwrap_err()
+            .kind(),
+        io::ErrorKind::PermissionDenied
+    );
+    assert!(!called.load(Ordering::SeqCst));
+}
+
+#[test]
+fn deployment_live_observation_cannot_use_an_older_clone_for_a_requested_new_revision() {
+    let mut fixture = Fixture::new();
+    fixture.issuer.lease =
+        Some(ProtectedLease::new(fixture.registry.verifier(), "pinned-lease".into(), 2).unwrap());
+    let (stage, observed) = mpsc::channel();
+    let (resume, proceed) = mpsc::channel();
+    *fixture.clock.barrier.lock().unwrap() = Some((stage.clone(), proceed));
+    let issuer = Arc::new(fixture.issuer);
+    let worker_issuer = issuer.clone();
+    let worker = std::thread::spawn(move || {
+        stage
+            .send(Stage::Complete(Box::new(worker_issuer.with_live_lease(
+                |lease| {
+                    assert!(
+                        lease.expires_at_unix_ms <= 15_000,
+                        "cannot publish stale lease expiry"
+                    );
+                    Ok(None)
+                },
+            ))))
+            .unwrap();
+    });
+    let initial = observed.recv_timeout(Duration::from_secs(10)).unwrap();
+    fixture
+        .registry
+        .put_lease(
+            AuthorityLease {
+                revision: 2,
+                expires_at_unix_ms: 15_000,
+                ..lease(10_000, 20_000)
+            },
+            1,
+        )
+        .unwrap();
+    let result = match initial {
+        Stage::Complete(result) => *result,
+        Stage::Checking => {
+            resume.send(()).unwrap();
+            match observed.recv_timeout(Duration::from_secs(10)).unwrap() {
+                Stage::Complete(result) => *result,
+                Stage::Checking => panic!("second barrier"),
+            }
+        }
+    };
+    worker.join().unwrap();
+    assert!(result.unwrap_err().to_string().contains("revision"));
+    *fixture.clock.barrier.lock().unwrap() = None;
+    assert_eq!(
+        issuer
+            .with_live_lease(|lease| Ok(lease.expires_at_unix_ms))
+            .unwrap(),
+        15_000
+    );
+}

@@ -123,6 +123,46 @@ mod qualification {
         let mut observation = connect(&runtime.join("observation.sock"), root_pid);
         let mut issuer = connect(&runtime.join("issuer.sock"), root_pid);
         let mut checkpoint = connect(&runtime.join("checkpoint.sock"), root_pid);
+        if std::env::var_os("HEPTA_SERVICE_EXPECT_EXPIRED_FEED").is_some() {
+            std::thread::sleep(Duration::from_secs(3));
+            let request = serde_json::to_vec(
+                &serde_json::json!({"schema_version":1,"operation":"runtime.authority.observation.v1"}),
+            )?;
+            observation.write_all(&(request.len() as u32).to_be_bytes())?;
+            observation.write_all(&request)?;
+            let mut first = [0];
+            assert_eq!(
+                observation.read(&mut first)?,
+                0,
+                "expired lease must not emit a feed prefix"
+            );
+            let identity: PublicFixtureIdentity =
+                serde_json::from_str(&std::env::var("HEPTA_SERVICE_IDENTITY")?)?;
+            let provider = AgentdUnixFinalUseGrantProvider::from_stream(
+                issuer,
+                AgentdFinalUseIssuerPeer {
+                    uid: 0,
+                    pid: root_pid,
+                },
+                Duration::from_secs(10),
+            )?;
+            let binding = FinalUseBinding {
+                subject_id: identity.agent_id.to_string(),
+                destination_id: "qualification.no-effect".into(),
+                scope_sha256: [2; 32],
+                request_sha256: [1; 32],
+                payload_sha256: [3; 32],
+            };
+            assert!(matches!(
+                provider.request_grant(&binding),
+                Err(AgentdFinalUseIssuerError::Denied)
+            ));
+            println!(
+                "{}",
+                serde_json::json!({"qualification":"root_authority_expired_lease_v1","uid":60001,"feed_refused":true,"final_use_denied":true,"production_ready":false})
+            );
+            return Ok(());
+        }
         let start = Instant::now();
         let observation = exchange(
             &mut observation,

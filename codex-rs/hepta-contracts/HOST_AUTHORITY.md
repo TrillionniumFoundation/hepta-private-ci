@@ -224,3 +224,14 @@ access denial, feed freshness measured before reading, and original signature
 verification/shared sequence. Missing checkpoint state still produces no ACK.
 It is a qualification executable and carries no native control role or writer
 current-cut authority.
+
+Every v1 observation now revalidates the configured original lease through its
+original verifier and dispatch fence, including the exact cloned revision,
+revocation, registered subject and epoch. The fence covers the local head read
+and final clock projection. The response is refused if the lease expires during
+that I/O; another clock-writing check after producing the projection is avoided.
+The unchanged v1 wire still supplies no complete production writer proof or
+consumer frontier adapter. A fresh two-second no-effect qualification lease,
+observed after three seconds, must close the feed without a response prefix and
+deny the original FinalUse request. Restoring the earlier head/clock-only handler
+makes this actual dedicated-peer regression fail. All original bounds remain.

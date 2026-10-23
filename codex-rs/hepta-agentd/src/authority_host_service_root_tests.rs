@@ -123,6 +123,39 @@ fn protected_service_client() {
     let mut observe = connect(&runtime.join("observation.sock"));
     let mut issuer = connect(&runtime.join("issuer.sock"));
     let mut checkpoint = connect(&runtime.join("checkpoint.sock"));
+    if std::env::var_os("HEPTA_SERVICE_EXPECT_EXPIRED_FEED").is_some() {
+        std::thread::sleep(Duration::from_secs(3));
+        let request = serde_json::to_vec(
+            &serde_json::json!({"schema_version":1,"operation":"runtime.authority.observation.v1"}),
+        )
+        .unwrap();
+        observe
+            .write_all(&(request.len() as u32).to_be_bytes())
+            .unwrap();
+        observe.write_all(&request).unwrap();
+        let mut first = [0];
+        assert_eq!(
+            observe.read(&mut first).unwrap(),
+            0,
+            "expired lease must not emit a feed prefix"
+        );
+        let registered: HostAuthorityRegisteredIdentity =
+            serde_json::from_str(&std::env::var("HEPTA_SERVICE_IDENTITY").unwrap()).unwrap();
+        let provider = AgentdUnixFinalUseGrantProvider::from_stream(
+            issuer,
+            AgentdFinalUseIssuerPeer {
+                uid: 0,
+                pid: std::env::var("HEPTA_SERVICE_PID").unwrap().parse().unwrap(),
+            },
+            Duration::from_secs(10),
+        )
+        .unwrap();
+        assert!(matches!(
+            provider.request_grant(&binding(registered.agent_id.as_str())),
+            Err(crate::AgentdFinalUseIssuerError::Denied)
+        ));
+        return;
+    }
     let before = Instant::now();
     let observation = exchange(
         &mut observe,
@@ -269,7 +302,7 @@ fn root_data_service_three_lanes_use_original_wire_key_and_dedicated_peer() {
     let bootstrap = root.join("bootstrap.json");
     write_json(
         &bootstrap,
-        &serde_json::json!({"schema_version":1,"required_bind":required_bind,"signer_id":"root-service-qualification","policies":[DeploymentGrantPolicy {subject_id:owner.to_string(),destination_id:b.destination_id.clone(),scope_sha256:b.scope_sha256,lifetime_ms:30000},DeploymentGrantPolicy {subject_id:owner.to_string(),destination_id:DeploymentFinalUseIssuer::OBJECTIVE_DESTINATION.into(),scope_sha256:*crate::objective_runtime::objective_scope(&identity.identity().unwrap()).as_array(),lifetime_ms:30000}],"lease_id":"root-service-qualification","lease_binding":AuthorityLeaseBinding {principal_id:b.subject_id,operation_class:"runtime.agentd.production_operation".into(),destination_id:b.destination_id,scope_sha256:b.scope_sha256,payload_sha256:b.payload_sha256},"lease_lifetime_ms":60000}),
+        &serde_json::json!({"schema_version":1,"required_bind":required_bind,"signer_id":"root-service-qualification","policies":[DeploymentGrantPolicy {subject_id:owner.to_string(),destination_id:b.destination_id.clone(),scope_sha256:b.scope_sha256,lifetime_ms:30000},DeploymentGrantPolicy {subject_id:owner.to_string(),destination_id:DeploymentFinalUseIssuer::OBJECTIVE_DESTINATION.into(),scope_sha256:*crate::objective_runtime::objective_scope(&identity.identity().unwrap()).as_array(),lifetime_ms:30000}],"lease_id":"root-service-qualification","lease_binding":AuthorityLeaseBinding {principal_id:b.subject_id,operation_class:"runtime.agentd.production_operation".into(),destination_id:b.destination_id,scope_sha256:b.scope_sha256,payload_sha256:b.payload_sha256},"lease_lifetime_ms":if std::env::var_os("HEPTA_SERVICE_EXPECT_EXPIRED_FEED").is_some() {2000} else {60000}}),
     );
     let state = root.join("authority");
     let initialized = initialize_host_authority(&state, &bootstrap).unwrap();

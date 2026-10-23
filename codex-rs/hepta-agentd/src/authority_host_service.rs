@@ -96,22 +96,36 @@ impl HostAuthorityService {
         if request.schema_version != 1 || request.operation != "runtime.authority.observation.v1" {
             return Err(HostIssuerTransportError::InvalidRequest);
         }
-        let revocations = self.issuer.revocations().map_err(unavailable)?;
-        // Sample after head durability work. The ceiling is never actual-now.
-        let observation = self.clock.refresh_projection().map_err(unavailable)?;
-        encode_bounded(
-            &ObservationResponse {
-                schema_version: 1,
-                operation: "runtime.authority.observation.v1",
-                authority_epoch: revocations.authority_epoch,
-                revocations,
-                clock: observation.projection,
-                observed_unix_ms: observation.observed_unix_ms,
-                registered_agent_id: self.identity.agent_id.as_str(),
-                spawn_generation: self.identity.spawn_generation,
-            },
-            16 * 1024,
-        )
+        self.issuer
+            .with_live_lease(|lease| {
+                if lease.binding.principal_id != self.identity.agent_id.as_str() {
+                    return Err(io::Error::new(
+                        io::ErrorKind::PermissionDenied,
+                        "registered lease owner mismatch",
+                    ));
+                }
+                let revocations = self.issuer.revocations()?;
+                // The original lease fence remains held through these local reads.
+                // Sample after durability work and refuse a lease expiring during it.
+                // Do not do another clock-writing verification after this projection.
+                let observation = self.clock.refresh_projection().map_err(io::Error::other)?;
+                validate_observation_lease(lease, &revocations, observation.observed_unix_ms)?;
+                encode_bounded(
+                    &ObservationResponse {
+                        schema_version: 1,
+                        operation: "runtime.authority.observation.v1",
+                        authority_epoch: revocations.authority_epoch,
+                        revocations,
+                        clock: observation.projection,
+                        observed_unix_ms: observation.observed_unix_ms,
+                        registered_agent_id: self.identity.agent_id.as_str(),
+                        spawn_generation: self.identity.spawn_generation,
+                    },
+                    16 * 1024,
+                )
+                .map_err(io::Error::other)
+            })
+            .map_err(unavailable)
     }
 
     fn issue(&self, bytes: &[u8]) -> Result<Vec<u8>, HostIssuerTransportError> {
@@ -222,6 +236,23 @@ struct ObjectiveResponse {
     schema_version: u32,
     operation: &'static str,
     ingress: AuthBusObjectiveIngress,
+}
+
+fn validate_observation_lease(
+    lease: &codex_hepta_contracts::authority_lease::AuthorityLease,
+    head: &FinalUseRevocations,
+    post_io_unix_ms: u64,
+) -> io::Result<()> {
+    if lease.authority_epoch != head.authority_epoch
+        || post_io_unix_ms < lease.issued_at_unix_ms
+        || post_io_unix_ms >= lease.expires_at_unix_ms
+    {
+        return Err(io::Error::new(
+            io::ErrorKind::PermissionDenied,
+            "lease no longer live after observation I/O",
+        ));
+    }
+    Ok(())
 }
 
 fn decode<T: serde::de::DeserializeOwned>(bytes: &[u8]) -> Result<T, HostIssuerTransportError> {
