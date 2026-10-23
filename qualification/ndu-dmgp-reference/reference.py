@@ -443,6 +443,24 @@ def _feasible(scenario: Scenario, used: tuple[str, ...], budget: float,
             and a.risk <= objective.max_action_risk]
 
 
+def fit_static_topk_router(train: Sequence[Scenario], objective: Objective) -> dict[str, float]:
+    """A2: train a lightweight top-k score table on TRAIN observations only.
+
+    No evaluation episode or its realized benefit may enter this fitted table.
+    """
+    if len(train) < 8 or len({s.episode for s in train}) != len(train):
+        raise GateRejected("insufficient or overlapping router training episodes")
+    seen: dict[str, list[float]] = {}
+    for scenario in train:
+        for action in scenario.actions:
+            if action.observed_gain is None:
+                raise GateRejected("router training lacks independently observed label")
+            net = (action.observed_gain - objective.resource_price*action.compute_units
+                   - objective.risk_price*action.risk) / action.compute_units
+            seen.setdefault(action.name, []).append(net)
+    return {name: statistics.fmean(values) for name, values in seen.items()}
+
+
 def _lookahead(scenario: Scenario, used: tuple[str, ...], budget: float,
                steps: int, objective: Objective) -> tuple[float, str | None]:
     current = scenario.value(used, objective.resource_price, objective.risk_price)
@@ -462,7 +480,8 @@ def _lookahead(scenario: Scenario, used: tuple[str, ...], budget: float,
 
 def choose_action(arm: str, scenario: Scenario, used: tuple[str, ...],
                   budget: float, objective: Objective,
-                  covariance: Covariance) -> str | None:
+                  covariance: Covariance,
+                  learned_router_scores: Mapping[str, float] | None = None) -> str | None:
     actions = _feasible(scenario, used, budget, objective)
     if not actions:
         return None
@@ -472,6 +491,12 @@ def choose_action(arm: str, scenario: Scenario, used: tuple[str, ...],
         return next((name for name in ("text", "image", "audio", "video")
                      if any(a.name == name for a in actions)), None)
     if arm == "A2":
+        if learned_router_scores is not None:
+            if not all(a.name in learned_router_scores and
+                       math.isfinite(learned_router_scores[a.name]) for a in actions):
+                raise GateRejected("untrained or unqualified expert routing score")
+            return max(actions, key=lambda a: learned_router_scores[a.name]).name
+        # A2 unit-test-only fallback; the matrix experiment supplies fitted scores.
         return max(actions, key=lambda a: a.immediate_gain / a.compute_units).name
     if arm == "A3":
         return max(actions, key=lambda a: a.immediate_gain
@@ -499,7 +524,8 @@ def choose_action(arm: str, scenario: Scenario, used: tuple[str, ...],
 
 
 def run_shadow_arm(arm: str, scenario: Scenario, objective: Objective,
-                   covariance: Covariance) -> dict[str, object]:
+                   covariance: Covariance,
+                   learned_router_scores: Mapping[str, float] | None = None) -> dict[str, object]:
     """Scenario/decoder outputs are SYNTHETIC; only controller time is actually timed."""
     if arm not in ARMS:
         raise GateRejected("unregistered ablation arm")
@@ -514,7 +540,8 @@ def run_shadow_arm(arm: str, scenario: Scenario, objective: Objective,
     try:
         for _ in range(scenario.horizon):
             start = time.perf_counter_ns()
-            choice = choose_action(arm, scenario, used, budget, objective, covariance)
+            choice = choose_action(arm, scenario, used, budget, objective, covariance,
+                                   learned_router_scores)
             controller_us += (time.perf_counter_ns() - start)/1000
             if choice is None:
                 break
@@ -626,15 +653,20 @@ def next_snapshot_gate(
 def reference_report() -> dict[str, object]:
     objective = Objective("ndu-dmgp-reference", 1, MODALITIES, frozenset(),
                           2., .05, .5, 1.)
-    scenarios = make_scenarios()
-    # Paired within-scenario synthetic observations are used only for numerical exercise.
+    all_scenarios = make_scenarios(48)
+    train_scenarios, scenarios = all_scenarios[:24], all_scenarios[24:]
+    if {s.episode for s in train_scenarios} & {s.episode for s in scenarios}:
+        raise GateRejected("evaluation scenario leaked into training data")
+    learned_router = fit_static_topk_router(train_scenarios, objective)
+    # Only TRAIN episodes can inform conditional covariance; evaluation stays held out.
     outcomes = {
         s.episode: {a.name: a.immediate_gain + (i % 5 - 2)*.05*(j+1)
                     for j, a in enumerate(s.actions)}
-        for i, s in enumerate(scenarios)
+        for i, s in enumerate(train_scenarios)
     }
     cov = paired_covariance(outcomes, [a.name for a in scenarios[0].actions], rank=2)
-    matrix = [run_shadow_arm(arm, scenario, objective, cov)
+    matrix = [run_shadow_arm(arm, scenario, objective, cov,
+                             learned_router_scores=learned_router)
               for scenario in scenarios for arm in ARMS]
     summaries = {}
     for arm in ARMS:
@@ -652,6 +684,10 @@ def reference_report() -> dict[str, object]:
     return {
         "schema": "hepta.ndu-dmgp.shadow-report.v1", "objective_digest": objective.digest,
         "experiment_arms": list(ARMS), "dataset": "synthetic_scenarios_only",
+        "training_episodes": len(train_scenarios),
+        "evaluation_episodes": len(scenarios),
+        "train_eval_episodes_disjoint": True,
+        "a2_fitted_train_only": True,
         "covariance_supported": cov.supported,
         "covariance_condition_number": cov.condition_number if cov.supported else None,
         "real_decoder_observed": False, "independent_future_observed": False,
