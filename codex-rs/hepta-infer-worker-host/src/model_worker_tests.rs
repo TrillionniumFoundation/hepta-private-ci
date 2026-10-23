@@ -6,6 +6,7 @@ struct Driver {
     indeterminate: bool,
     corrupt_neuron_head: bool,
     fail_run: bool,
+    invalid_load_handle: bool,
     unload_failures: usize,
     dispatch_count: usize,
     unload_handles: Vec<DriverModelHandle>,
@@ -16,7 +17,11 @@ impl ModelDriver for Driver {
     fn load(&mut self, manifest: &ModelManifest) -> Result<DriverModelHandle, Error> {
         self.loaded += 1;
         Ok(DriverModelHandle {
-            opaque_id: format!("handle.{}", manifest.model_id),
+            opaque_id: if self.invalid_load_handle {
+                String::new()
+            } else {
+                format!("handle.{}", manifest.model_id)
+            },
             observed_memory_bytes: 1_024,
         })
     }
@@ -507,4 +512,76 @@ fn failed_unload_retains_and_freezes_original_handle_until_successful_retry() {
     assert!(worker.models.is_empty());
     assert!(worker.active_requests.is_empty());
     assert_eq!(worker.driver.loaded, 0);
+}
+
+
+#[test]
+fn rejected_initial_load_cleans_up_the_physical_handle_when_observed() {
+    for invalid_handle in [false, true] {
+        let mut admission = grant();
+        if !invalid_handle {
+            admission.maximum_memory_bytes = 512;
+        }
+        let driver = Driver {
+            invalid_load_handle: invalid_handle,
+            ..Driver::default()
+        };
+        let mut worker =
+            InferenceWorker::new(100, "worker.1".to_string(), 3, admission, driver)
+                .expect("worker");
+        let reason = if invalid_handle {
+            Error::InvalidIdentity("model handle")
+        } else {
+            Error::ModelCapacity
+        };
+        assert_eq!(worker.load_model(100, manifest()), Err(reason));
+        assert!(worker.models.is_empty());
+        assert_eq!(worker.driver.unload_handles.len(), 1);
+        assert_eq!(worker.driver.loaded, 0);
+    }
+}
+
+#[test]
+fn failed_initial_load_cleanup_retains_handle_until_same_handle_recovery() {
+    for invalid_handle in [false, true] {
+        let mut admission = grant();
+        if !invalid_handle {
+            admission.maximum_memory_bytes = 512;
+        }
+        let driver = Driver {
+            invalid_load_handle: invalid_handle,
+            unload_failures: 1,
+            ..Driver::default()
+        };
+        let mut worker =
+            InferenceWorker::new(100, "worker.1".to_string(), 3, admission, driver)
+                .expect("worker");
+        assert_eq!(
+            worker.load_model(100, manifest()),
+            Err(Error::DriverFailure("unload unresolved".to_string()))
+        );
+        let original = worker.models["model.1"].handle.clone();
+        assert_eq!(
+            worker.models["model.1"].lifecycle,
+            ModelLifecycle::UnloadUnresolved
+        );
+        assert_eq!(worker.driver.loaded, 1);
+        assert_eq!(
+            worker.load_model(100, manifest()),
+            Err(Error::ModelAlreadyLoaded)
+        );
+        for path in [DispatchPath::Tokens, DispatchPath::NeuronFeatures] {
+            assert_eq!(
+                dispatch(&mut worker, path, "model.1", "request.2"),
+                Err(Error::ActiveRequests)
+            );
+        }
+        worker
+            .unload_model(100, "model.1")
+            .expect("reconcile initial-load cleanup using original handle");
+        assert_eq!(worker.driver.unload_handles, vec![original.clone(), original]);
+        assert_eq!(worker.driver.dispatch_count, 0);
+        assert_eq!(worker.driver.loaded, 0);
+        assert!(worker.models.is_empty());
+    }
 }
