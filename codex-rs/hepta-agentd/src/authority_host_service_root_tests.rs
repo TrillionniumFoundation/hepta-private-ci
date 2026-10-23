@@ -293,8 +293,18 @@ fn root_data_service_three_lanes_use_original_wire_key_and_dedicated_peer() {
             "--ambient-caps=-all",
             "--bounding-set=-all",
         ])
-        .arg(std::env::current_exe().unwrap())
-        .args(["--exact", CLIENT, "--ignored", "--nocapture"])
+        .arg(
+            std::env::var_os("HEPTA_HOST_AUTHORITY_QUALIFICATION_CLIENT_BIN")
+                .map(std::path::PathBuf::from)
+                .unwrap_or_else(|| std::env::current_exe().unwrap()),
+        )
+        .args(
+            if std::env::var_os("HEPTA_HOST_AUTHORITY_QUALIFICATION_CLIENT_BIN").is_some() {
+                Vec::new()
+            } else {
+                vec!["--exact", CLIENT, "--ignored", "--nocapture"]
+            },
+        )
         .env("HEPTA_SERVICE_STATE", &state)
         .env("HEPTA_SERVICE_RUNTIME", runtime.path())
         .env(

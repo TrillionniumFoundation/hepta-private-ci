@@ -212,3 +212,15 @@ state with real fsync, SO_PEERCRED and retained pidfd. An absent checkpoint
 registration closes its lane without any successful record. This qualifies the
 service/factory boundary, not production loader, genesis, current-cut recovery,
 whole-host antirollback, native-kernel compatibility or G2 control admission.
+
+`cargo build -p codex-hepta-agentd --example
+authority_host_peer_qualification --profile dev-small --locked` builds a thin
+no-effect peer without the full libtest harness. The explicit root qualification
+can select it with `HEPTA_HOST_AUTHORITY_QUALIFICATION_CLIENT_BIN`. Its public
+`HEPTA_SERVICE_*` fixture inputs are supplied by that privileged launcher, not a
+production bootstrap. It checks actual UID60001, cleared capabilities/groups,
+NoNewPrivileges, root peer credentials on all three streams, state-directory
+access denial, feed freshness measured before reading, and original signature
+verification/shared sequence. Missing checkpoint state still produces no ACK.
+It is a qualification executable and carries no native control role or writer
+current-cut authority.
