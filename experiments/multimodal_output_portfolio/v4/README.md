@@ -174,7 +174,18 @@ channel × generation shock distribution** after the policy has made its
 observable decisions; it rescales no failed outputs, independently scores
 realized toy payloads, computes exact fractional worst-10%-mass CVaR and
 checks that full-path entropic utility agrees with the backward Bellman
-value. The nine new adversarial tests check causal conditional
+value. The eleven new adversarial tests also include a **frozen-policy
+corrupted witness-channel stress**: an independent sensor that was nominally
+correct 49/50 becomes correct only 1/50 under the constructed shift, while
+the running controller incorrectly retains its nominal posterior. In the
+balanced hard-input fixture, its actual external loss increases from 0.24
+to 11.76, whereas never-query remains at 6.0. This is a registered
+counterexample to uncalibrated information-source robustness, NOT a measured
+real-world shift or a guarantee about general correlation regimes.
+Bellman/full-path parity is meaningful under the declared nominal law,
+not under this deliberately mismatched environmental likelihood.
+
+The adversarial tests check causal conditional
 information access, non-free evidence, separate truth scoring even if
 all four outputs agree, generator-vs-query budget competition, refusal of
 illegal actions, and nested/full-path utility parity at multiple risk
