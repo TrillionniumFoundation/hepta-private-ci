@@ -27,7 +27,9 @@ jobs:
   metadata-admission:
     if: >-
       github.event_name == 'workflow_dispatch' ||
-      (github.event_name == 'pull_request' && github.head_ref == 'codex/memory-parametric-catalog-20261023')
+      (github.event_name == 'pull_request' &&
+       (github.head_ref == 'codex/memory-parametric-catalog-20261023' ||
+        github.head_ref == 'codex/memory-catalog-runtime-fix-20261023'))
     runs-on: ubuntu-24.04
     timeout-minutes: 15
     steps:
@@ -65,7 +67,7 @@ jobs:
         run: |
           set -euo pipefail
           python -m pip install --only-binary=:all: --index-url https://download.pytorch.org/whl/cpu 'torch==2.5.1' 2>&1 | tee "$RUNNER_TEMP/catalog-metadata/install.log"
-          python -m pip install --only-binary=:all: 'numpy==1.26.4' 'safetensors==0.6.2' 2>&1 | tee -a "$RUNNER_TEMP/catalog-metadata/install.log"
+          python -m pip install --only-binary=:all: 'numpy==1.26.4' 'safetensors==0.6.2' 'packaging==26.3' 2>&1 | tee -a "$RUNNER_TEMP/catalog-metadata/install.log"
           python -m pip check
           python -m pip freeze > "$RUNNER_TEMP/catalog-metadata/runtime.txt"
       - name: Run catalog admission tests without a pretrained model
