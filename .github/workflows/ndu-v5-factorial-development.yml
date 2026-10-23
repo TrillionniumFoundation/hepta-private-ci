@@ -31,3 +31,5 @@ jobs:
           python3 -m json.tool AUDIT_LOCK.json > /dev/null
           python3 audit_development.py
           python3 audit_independent.py
+          python3 -m compileall -q factorial_credit_gate.py test_factorial_credit_gate.py
+          python3 factorial_credit_gate.py
