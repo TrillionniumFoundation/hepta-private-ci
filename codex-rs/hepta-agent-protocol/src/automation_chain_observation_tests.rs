@@ -138,3 +138,29 @@ fn claimed_confirmation_success_cannot_hide_inconsistent_or_under_policy_work() 
         assert!(!other.matches_expected_task_acceptance(&expected));
     }
 }
+
+#[test]
+fn growth_task_match_requires_exact_bounded_walk_and_original_task() {
+    let (mut observation, expected) = fixture();
+    observation.active_membership_sql_budget = 8193;
+    observation.active_membership_sql_lookups = Some(5);
+    assert!(observation.matches_expected_task_acceptance(&expected));
+    for (budget, lookups) in [
+        (8192, 5),
+        (8194, 5),
+        (8193, 0),
+        (8193, 3),
+        (8193, 4),
+        (8193, 8194),
+    ] {
+        let mut other = observation.clone();
+        other.active_membership_sql_budget = budget;
+        other.active_membership_sql_lookups = Some(lookups);
+        assert!(!other.matches_expected_task_acceptance(&expected));
+    }
+    let mut foreign = expected.clone();
+    foreign.output_sha256 = "11".repeat(32);
+    assert!(!observation.matches_expected_task_acceptance(&foreign));
+    observation.accepted_task = None;
+    assert!(!observation.matches_expected_task_acceptance(&expected));
+}

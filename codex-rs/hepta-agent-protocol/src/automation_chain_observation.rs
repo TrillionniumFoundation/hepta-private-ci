@@ -75,6 +75,22 @@ impl AutomationEffectChainObservation {
         ) else {
             return false;
         };
+        // This DTO follows the host's strict schema/context and exact-payload
+        // checks. Preserve both fixed native read policies, not arbitrary
+        // caller-supplied budgets. Growth walks one record plus two reads per
+        // ancestor; maintenance lacks accepted_task and returned above.
+        let membership_reads_valid = match self.active_membership_sql_budget {
+            1024 => self
+                .active_membership_sql_lookups
+                .is_some_and(|lookups| (2..=1024).contains(&lookups)),
+            8193 => depth
+                .checked_mul(2)
+                .and_then(|reads| reads.checked_add(1))
+                .is_some_and(|reads| {
+                    reads <= 8193 && self.active_membership_sql_lookups == Some(reads)
+                }),
+            _ => false,
+        };
         self.schema_version == AUTOMATION_EFFECT_CHAIN_OBSERVATION_VERSION
             && self.owner_generation > 0
             && self.local_target_only
@@ -91,10 +107,7 @@ impl AutomationEffectChainObservation {
             && (1..=4096).contains(&self.confirmation_policy_min_depth)
             && self.active_tip_height.checked_sub(height) == Some(depth)
             && depth >= self.confirmation_policy_min_depth
-            && self.active_membership_sql_budget == 1024
-            && self
-                .active_membership_sql_lookups
-                .is_some_and(|lookups| (2..=1024).contains(&lookups))
+            && membership_reads_valid
             && nonzero_digest(&self.active_tip)
             && (self.block_id == self.active_tip) == (height == self.active_tip_height)
             && work_difference_matches(&self.active_tip_chainwork_hex, block_work, work)

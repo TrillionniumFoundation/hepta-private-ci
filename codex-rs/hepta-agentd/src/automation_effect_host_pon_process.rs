@@ -9,6 +9,11 @@ use tokio::io::AsyncRead;
 use tokio::io::AsyncReadExt;
 use tokio::io::AsyncWriteExt;
 
+#[path = "automation_effect_host_pon_credential.rs"]
+mod credential;
+pub(super) use credential::CredentialPin;
+pub(super) use credential::CredentialSnapshot;
+
 pub(super) enum Outcome {
     BeforeStart,
     Unknown,
@@ -34,10 +39,37 @@ async fn read_bounded(mut stream: impl AsyncRead + Unpin, limit: usize) -> io::R
 }
 
 pub(super) async fn run(
+    command: Command,
+    payload: &[u8],
+    deadline: Instant,
+    output_limit: usize,
+) -> Outcome {
+    run_owned(
+        command,
+        payload,
+        deadline,
+        output_limit,
+        /*credential*/ None,
+    )
+    .await
+}
+
+pub(super) async fn run_with_credential(
+    command: Command,
+    payload: &[u8],
+    deadline: Instant,
+    output_limit: usize,
+    credential: CredentialSnapshot,
+) -> Outcome {
+    run_owned(command, payload, deadline, output_limit, Some(credential)).await
+}
+
+async fn run_owned(
     mut command: Command,
     payload: &[u8],
     deadline: Instant,
     output_limit: usize,
+    mut credential: Option<CredentialSnapshot>,
 ) -> Outcome {
     if Instant::now() >= deadline {
         return Outcome::BeforeStart;
@@ -59,6 +91,9 @@ pub(super) async fn run(
         Ok(child) => child,
         Err(_) => return Outcome::BeforeStart,
     };
+    if let Some(credential) = credential.as_mut() {
+        credential.child_started();
+    }
     // These futures are polled together and dropped together. There are no
     // detached pipe threads whose blocking join can escape the original limit.
     let exchange = async {
@@ -95,6 +130,9 @@ pub(super) async fn run(
     if let Ok(Ok(stdout)) = result
         && Instant::now() < deadline
     {
+        if let Some(credential) = credential.as_mut() {
+            credential.child_reaped();
+        }
         return Outcome::Complete(stdout);
     }
     // Timeout/output failure is post-entry Unknown, never NotDispatched. This
@@ -103,7 +141,14 @@ pub(super) async fn run(
     // it cannot turn an incomplete response into an acknowledgement. This is
     // direct-child cleanup, not a claim of arbitrary descendant supervision.
     let _ = child.start_kill();
-    let _ = tokio::time::timeout(Duration::from_millis(250), child.wait()).await;
+    if let Ok(Ok(_)) = tokio::time::timeout(Duration::from_millis(250), child.wait()).await
+        && let Some(credential) = credential.as_mut()
+    {
+        credential.child_reaped();
+    }
+    // If reap was not observed (including cancellation of this future), retain
+    // only the protected snapshot pathname. Tokio retains direct-child cleanup;
+    // this does not introduce another owner or extend the success deadline.
     Outcome::Unknown
 }
 
@@ -130,3 +175,19 @@ mod chain_tests;
 ))]
 #[path = "automation_effect_host_pon_task_chain_tests.rs"]
 mod task_chain_tests;
+
+#[cfg(all(
+    test,
+    target_os = "linux",
+    any(target_arch = "x86_64", target_arch = "aarch64")
+))]
+#[path = "automation_effect_host_pon_growth_chain_tests.rs"]
+mod growth_chain_tests;
+
+#[cfg(all(
+    test,
+    target_os = "linux",
+    any(target_arch = "x86_64", target_arch = "aarch64")
+))]
+#[path = "automation_effect_host_pon_growth_remote_chain_tests.rs"]
+mod growth_remote_chain_tests;

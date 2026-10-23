@@ -1,6 +1,7 @@
 //! Compiled ELF fixtures exercise the real adapter's sealed-object and pipe path.
 //! The fixture is not a Chain node or evidence of model/ledger/owner acceptance.
 use super::super::PonInvocation;
+use super::super::PonLocalProfile;
 use super::super::PonLocalProviderEffectAdapter;
 use codex_hepta_contracts::ProviderEffectDispatch;
 use codex_hepta_contracts::ProviderEffectIntent;
@@ -114,12 +115,14 @@ fn fixture(
         binary,
         binary_sha256,
         store: root,
-        state_backend: "authenticated-v1".into(),
         genesis_time: 1,
-        evaluation_policy: "fixture".into(),
-        task_profile: "fixture".into(),
-        model_profile: "fixture".into(),
-        workers: 1,
+        profile: PonLocalProfile::Legacy {
+            state_backend: "authenticated-v1".into(),
+            evaluation_policy: "fixture".into(),
+            task_profile: "fixture".into(),
+            model_profile: "fixture".into(),
+            workers: 1,
+        },
         min_confirmation_depth: 1,
         min_confirmation_work_depth_hex: format!("{}01", "00".repeat(63)),
         timeout,

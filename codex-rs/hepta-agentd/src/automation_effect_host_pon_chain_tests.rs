@@ -2,6 +2,7 @@
 //! The explicit CI invocation supplies a source-pinned release binary. No fixture
 //! binary, missing-environment skip, model-install authority or network claim.
 use super::super::AgentdProviderEffectAdapter;
+use super::super::PonLocalProfile;
 use super::super::PonLocalProviderEffectAdapter;
 use super::super::pon_executable::PinnedExecutable;
 use super::Outcome;
@@ -74,12 +75,14 @@ impl Chain {
             binary: self.binary.clone(),
             binary_sha256: self.digest.clone(),
             store,
-            state_backend: self.backend.to_owned(),
             genesis_time: self.genesis_time,
-            evaluation_policy: "legacy-first-two-v3".into(),
-            task_profile: "legacy-task-v1".into(),
-            model_profile: "linear-expert-dev-v1".into(),
-            workers: 1,
+            profile: PonLocalProfile::Legacy {
+                state_backend: self.backend.to_owned(),
+                evaluation_policy: "legacy-first-two-v3".into(),
+                task_profile: "legacy-task-v1".into(),
+                model_profile: "linear-expert-dev-v1".into(),
+                workers: 1,
+            },
             min_confirmation_depth: 1,
             min_confirmation_work_depth_hex: format!("{}02", "00".repeat(63)),
             timeout: Duration::from_secs(30),

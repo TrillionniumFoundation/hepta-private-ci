@@ -202,6 +202,71 @@ decisions. Consensus/verifier/root changes require an explicit protocol
 context and migration/replay. A better score, vote, sealed binary or chain
 confirmation alone cannot authorize any higher-level upgrade.
 
+### Live PNP2 provider contract and credential handoff
+
+Schema 4, `trillionnium-pon-growth-local-v1`, retains the explicit cold local
+Node/store contract. A resident writer can make that local observer unavailable
+with `WRITER_BUSY`. Schema 5, `trillionnium-pon-growth-remote-v1`, instead invokes
+the pinned Chain executable's ordinary `push` and `packet-status` client with
+`public-protected-growth-development-v1`. It opens no local Chain store and
+rejects `chain_store`, legacy backend and recovery fields. The existing TaskFlow
+intent, effect journal, reconciliation and FinalUseAuthority remain the owners.
+
+The V5 signed provider contract fixes these operator-selected inputs:
+
+| Inputs | Binding |
+| --- | --- |
+| `chain_binary`, `chain_binary_sha256` | Original sealed executable identity. |
+| `chain_transport_profile`, `chain_peer`, `chain_server_public_key_hex`, `chain_resource_profile_sha256` | Explicit profile, canonical numeric IP:port, server identity and independently retained resource policy. |
+| `chain_client_secret_file`, `chain_client_secret_sha256`, `chain_client_public_key_hex` | Credential source, exact file bytes and derived Ed25519 caller identity. |
+| `chain_admission_bits`, `chain_admission_ttl_ms` | Original admission policy: 8–20 bits and 100–2000 ms; no additional execution credit. |
+| `chain_growth_namespace`, `chain_network_sha256`, `chain_parameters_sha256`, `chain_genesis_sha256`, `chain_genesis_time` | Exact growth context, PNP2 and permanent-account-growth-native-v2. |
+| Confirmation depth/work, `timeout_ms`, provider/destination/scope and FinalUse signer/key/revocations path | Existing admission thresholds, one operation deadline of at most 30000 ms, and existing local authority roots. |
+
+Resource policy and server/context pins are not learned from an unverified
+response on each request. The fixed CLI verifies its original signed cookie and
+response, including request/body and caller binding. Agentd then strictly checks
+`pon-native-growth-remote-client-result-v1`, the declared operation, outer pins,
+verified success and false authority flags, before applying the original exact
+growth observation parser and its 8193 SQL budget. This is a trusted pinned
+provider's signed view, not trustless Chain verification, SPV or global finality.
+The stdout wrapper contains no independently transferable signature certificate.
+`local_target_only` still means the selected provider's view; absence never
+proves global absence. Maintenance packets still have no accepted external task.
+
+The source credential is opened without following its final symlink and with
+nonblocking flags, then checked on the opened descriptor for regular-file,
+single-link, current-user and owner-only permissions. Exact SHA256 and the
+derived caller key must match the signed pins. The child receives a new 0600
+snapshot inside an operation-private 0700 directory under the existing Agentd
+automation root, rather than reopening the original checked pathname. Only the
+fixed transport credential is copied; no FinalUse or model-qualification issuer
+is generated. Host-owner and kernel trust remain as above. Unsupported platforms
+fail closed through the original immutable-executable boundary.
+
+Executable preparation, credential handoff, read preflight and submission share
+one original deadline. The child receives only its remaining milliseconds;
+cookie TTL and admission policy are separate limits. Expired preparation or a
+failed read preflight cannot start a mutation here. A failed or incomplete
+submission after entry remains Unknown, and recovery uses exact status lookup
+without automatic redispatch. Status uses the owner's original paid lane.
+After the direct child's actual reap, snapshot deletion is best-effort. If reap
+is unconfirmed after the original 250 ms cleanup grace, or the exchange future
+is cancelled, the private snapshot is retained rather than removed under a
+possibly live child. Existing host operations must clean such residual files
+after process termination; no extra supervisor or success deadline is created.
+This does not promise arbitrary-descendant cleanup, preemptible filesystem I/O
+or zero residual credentials after an abnormal termination.
+
+The existing paired workflow explicitly executes
+`real_growth_remote_chain_resident_task_lost_ack_confirm_reorg_restart` and
+requires at least one passed test. It checks the actual resident service and
+ordinary client, V4 lock refusal, independent tag-5 identity, maintenance
+exclusion, reorganization and clean same-endpoint restart. Its lost-ACK case
+discards a real consumer acknowledgement and reconciles by lookup while checking
+actual submit counts; it does not claim TCP ACK-drop fault injection. These
+checks do not qualify throughput, independent operators or model installation.
+
 ### Ordinary PoN-to-model composition remediation
 
 Use existing `P0.8D-VERTICAL-SLICE` and `INT-2-AGENTD-CODEX-COMPOSITION` with

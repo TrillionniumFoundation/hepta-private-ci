@@ -64,8 +64,12 @@ mod pon_task_acceptance;
 
 #[path = "automation_effect_host_pon_executable.rs"]
 mod pon_executable;
+#[path = "automation_effect_host_pon_growth.rs"]
+mod pon_growth;
 #[path = "automation_effect_host_pon_process.rs"]
 mod pon_process;
+#[path = "automation_effect_host_pon_growth_remote.rs"]
+mod pon_remote;
 
 #[cfg(all(test, unix))]
 #[path = "automation_effect_host_pon_tests.rs"]
@@ -113,6 +117,8 @@ struct AutomationEffectHostFileV3 {
 enum AutomationEffectHostFile {
     Http(AutomationEffectHostFileV1),
     Pon(AutomationEffectHostFileV3),
+    PonGrowth(pon_growth::HostFileV4),
+    PonGrowthRemote(pon_remote::HostFileV5),
 }
 
 #[derive(Clone)]
@@ -196,15 +202,24 @@ struct PonLocalProviderEffectAdapter {
     binary: PathBuf,
     binary_sha256: Sha256Digest,
     store: PathBuf,
-    state_backend: String,
     genesis_time: u64,
-    evaluation_policy: String,
-    task_profile: String,
-    model_profile: String,
-    workers: u64,
+    profile: PonLocalProfile,
     min_confirmation_depth: u64,
     min_confirmation_work_depth_hex: String,
     timeout: Duration,
+}
+
+#[derive(Clone, Debug)]
+enum PonLocalProfile {
+    Legacy {
+        state_backend: String,
+        evaluation_policy: String,
+        task_profile: String,
+        model_profile: String,
+        workers: u64,
+    },
+    Growth(pon_growth::Context),
+    GrowthRemote(pon_remote::Transport),
 }
 
 impl std::fmt::Debug for PonLocalProviderEffectAdapter {
@@ -214,12 +229,8 @@ impl std::fmt::Debug for PonLocalProviderEffectAdapter {
             .field("binary", &self.binary)
             .field("binary_sha256", &self.binary_sha256)
             .field("store", &self.store)
-            .field("state_backend", &self.state_backend)
             .field("genesis_time", &self.genesis_time)
-            .field("evaluation_policy", &self.evaluation_policy)
-            .field("task_profile", &self.task_profile)
-            .field("model_profile", &self.model_profile)
-            .field("workers", &self.workers)
+            .field("profile", &self.profile)
             .field("min_confirmation_depth", &self.min_confirmation_depth)
             .field(
                 "min_confirmation_work_depth_hex",
@@ -238,6 +249,10 @@ enum PonInvocation {
 
 impl PonLocalProviderEffectAdapter {
     fn validate_paths(&self) -> Result<(), ()> {
+        if matches!(&self.profile, PonLocalProfile::GrowthRemote(_)) {
+            // The signed remote profile has no local Node namespace.
+            return self.store.as_os_str().is_empty().then_some(()).ok_or(());
+        }
         let canonical_store = self.store.canonicalize().map_err(|_| ())?;
         if canonical_store != self.store || !canonical_store.is_dir() {
             return Err(());
@@ -252,23 +267,48 @@ impl PonLocalProviderEffectAdapter {
 
     fn command(&self, operation: &str, executable: &Path) -> Command {
         let mut command = Command::new(executable);
+        match &self.profile {
+            PonLocalProfile::Legacy {
+                state_backend,
+                evaluation_policy,
+                task_profile,
+                model_profile,
+                workers,
+            } => {
+                command
+                    .arg(operation)
+                    .arg("--development")
+                    .arg("--store")
+                    .arg(&self.store)
+                    .arg("--state-backend")
+                    .arg(state_backend)
+                    .arg("--genesis-time")
+                    .arg(self.genesis_time.to_string())
+                    .arg("--evaluation-policy")
+                    .arg(evaluation_policy)
+                    .arg("--task-profile")
+                    .arg(task_profile)
+                    .arg("--model-profile")
+                    .arg(model_profile)
+                    .arg("--workers")
+                    .arg(workers.to_string());
+            }
+            PonLocalProfile::Growth(context) => {
+                command
+                    .arg(format!("growth-{operation}"))
+                    .arg("--development")
+                    .arg("--store")
+                    .arg(&self.store)
+                    .arg("--growth-namespace")
+                    .arg(&context.namespace)
+                    .arg("--genesis-time")
+                    .arg(self.genesis_time.to_string());
+            }
+            PonLocalProfile::GrowthRemote(transport) => {
+                return transport.command(operation, executable, self.genesis_time);
+            }
+        }
         command
-            .arg(operation)
-            .arg("--development")
-            .arg("--store")
-            .arg(&self.store)
-            .arg("--state-backend")
-            .arg(&self.state_backend)
-            .arg("--genesis-time")
-            .arg(self.genesis_time.to_string())
-            .arg("--evaluation-policy")
-            .arg(&self.evaluation_policy)
-            .arg("--task-profile")
-            .arg(&self.task_profile)
-            .arg("--model-profile")
-            .arg(&self.model_profile)
-            .arg("--workers")
-            .arg(self.workers.to_string())
             .arg("--packet-stdin")
             .stdin(Stdio::piped())
             .stdout(Stdio::piped())
@@ -276,10 +316,39 @@ impl PonLocalProviderEffectAdapter {
         command
     }
 
+    fn parse_observation(&self, value: &Value) -> Option<crate::AutomationEffectChainObservation> {
+        match &self.profile {
+            PonLocalProfile::Legacy { .. } => parse_pon_chain_observation(
+                value,
+                self.min_confirmation_depth,
+                &self.min_confirmation_work_depth_hex,
+            ),
+            PonLocalProfile::Growth(context) => context.parse_observation(
+                value,
+                self.min_confirmation_depth,
+                &self.min_confirmation_work_depth_hex,
+            ),
+            PonLocalProfile::GrowthRemote(transport) => transport.context.parse_observation(
+                value,
+                self.min_confirmation_depth,
+                &self.min_confirmation_work_depth_hex,
+            ),
+        }
+    }
+
     fn invoke(&self, operation: &str, wire_payload: &[u8]) -> PonInvocation {
         let Some(deadline) = Instant::now().checked_add(self.timeout) else {
             return PonInvocation::BeforeStart;
         };
+        self.invoke_before(operation, wire_payload, deadline)
+    }
+
+    fn invoke_before(
+        &self,
+        operation: &str,
+        wire_payload: &[u8],
+        deadline: Instant,
+    ) -> PonInvocation {
         if wire_payload.len() > 1024 * 1024 || self.validate_paths().is_err() {
             return PonInvocation::BeforeStart;
         }
@@ -297,16 +366,50 @@ impl PonLocalProviderEffectAdapter {
         // Hash/path verification is not preemptible, but no child may start if
         // it consumed the original deadline. The entire pipe exchange uses the
         // same deadline; stdout and stderr limits are equally authoritative.
-        match runtime.block_on(pon_process::run(
-            self.command(operation, executable.path()),
-            wire_payload,
-            deadline,
-            MAX_PON_PROCESS_OUTPUT_BYTES,
-        )) {
+        let mut command = self.command(operation, executable.path());
+        let outcome = if let PonLocalProfile::GrowthRemote(transport) = &self.profile {
+            let Ok(credential) = transport.credential.prepare(deadline) else {
+                return PonInvocation::BeforeStart;
+            };
+            let remaining_ms = deadline
+                .saturating_duration_since(Instant::now())
+                .as_millis()
+                .min(30_000);
+            if remaining_ms == 0 {
+                return PonInvocation::BeforeStart;
+            }
+            command
+                .arg("--auth-secret")
+                .arg(credential.path())
+                .arg("--request-deadline-ms")
+                .arg(remaining_ms.to_string());
+            runtime.block_on(pon_process::run_with_credential(
+                command,
+                wire_payload,
+                deadline,
+                MAX_PON_PROCESS_OUTPUT_BYTES,
+                credential,
+            ))
+        } else {
+            runtime.block_on(pon_process::run(
+                command,
+                wire_payload,
+                deadline,
+                MAX_PON_PROCESS_OUTPUT_BYTES,
+            ))
+        };
+        match outcome {
             pon_process::Outcome::BeforeStart => PonInvocation::BeforeStart,
             pon_process::Outcome::Unknown => PonInvocation::Unknown,
             pon_process::Outcome::Complete(stdout) => match serde_json::from_slice(&stdout) {
-                Ok(value) => PonInvocation::Value(value),
+                Ok(value) => match &self.profile {
+                    PonLocalProfile::GrowthRemote(transport) => transport
+                        .normalize(operation, value)
+                        .map_or(PonInvocation::Unknown, PonInvocation::Value),
+                    PonLocalProfile::Legacy { .. } | PonLocalProfile::Growth(_) => {
+                        PonInvocation::Value(value)
+                    }
+                },
                 Err(_) => PonInvocation::Unknown,
             },
         }
@@ -336,7 +439,31 @@ impl PonLocalProviderEffectAdapter {
                 reason_code: "pon_packet_payload_binding_invalid".to_string(),
             };
         }
-        match self.invoke("submit", &wire_payload) {
+        let Some(deadline) = Instant::now().checked_add(self.timeout) else {
+            return ProviderEffectDispatch::NotDispatched {
+                reason_code: "pon_local_owner_unavailable_before_start".to_string(),
+            };
+        };
+        if matches!(
+            &self.profile,
+            PonLocalProfile::Growth(_) | PonLocalProfile::GrowthRemote(_)
+        ) {
+            // Check the signed context before any mutation. The read and send
+            // share the original deadline; a failed read proves no send here.
+            let PonInvocation::Value(value) =
+                self.invoke_before("packet-status", &wire_payload, deadline)
+            else {
+                return ProviderEffectDispatch::NotDispatched {
+                    reason_code: "pon_growth_context_unavailable_before_send".to_string(),
+                };
+            };
+            if self.parse_observation(&value).is_none() {
+                return ProviderEffectDispatch::NotDispatched {
+                    reason_code: "pon_growth_context_invalid_before_send".to_string(),
+                };
+            }
+        }
+        match self.invoke_before("submit", &wire_payload, deadline) {
             PonInvocation::BeforeStart => ProviderEffectDispatch::NotDispatched {
                 reason_code: "pon_local_owner_unavailable_before_start".to_string(),
             },
@@ -366,11 +493,7 @@ impl PonLocalProviderEffectAdapter {
         let PonInvocation::Value(value) = self.invoke("packet-status", &wire_payload) else {
             return None;
         };
-        let mut observation = parse_pon_chain_observation(
-            &value,
-            self.min_confirmation_depth,
-            &self.min_confirmation_work_depth_hex,
-        )?;
+        let mut observation = self.parse_observation(&value)?;
         observation.provider_effect_key = Some(intent.key.as_str().to_owned());
         observation.payload_sha256 = Some(intent.payload_sha256.as_str().to_owned());
         Some(observation)
@@ -389,11 +512,7 @@ impl PonLocalProviderEffectAdapter {
         let PonInvocation::Value(value) = self.invoke("packet-status", &wire_payload) else {
             return ProviderEffectLookup::Unknown;
         };
-        let Some(observation) = parse_pon_chain_observation(
-            &value,
-            self.min_confirmation_depth,
-            &self.min_confirmation_work_depth_hex,
-        ) else {
+        let Some(observation) = self.parse_observation(&value) else {
             return ProviderEffectLookup::Unknown;
         };
         if !observation.stored_exact {
@@ -509,6 +628,34 @@ fn parse_pon_chain_observation(
     min_confirmation_depth: u64,
     min_confirmation_work_depth_hex: &str,
 ) -> Option<crate::AutomationEffectChainObservation> {
+    parse_pon_observation_fields(
+        value,
+        PonObservationProfile::Legacy,
+        min_confirmation_depth,
+        min_confirmation_work_depth_hex,
+    )
+}
+
+#[derive(Clone, Copy)]
+enum PonObservationProfile {
+    Legacy,
+    Growth,
+}
+
+fn parse_pon_observation_fields(
+    value: &Value,
+    profile: PonObservationProfile,
+    min_confirmation_depth: u64,
+    min_confirmation_work_depth_hex: &str,
+) -> Option<crate::AutomationEffectChainObservation> {
+    let (expected_schema, membership_budget, min_membership_lookups) = match profile {
+        PonObservationProfile::Legacy => ("pon-native-exact-packet-observation-v3", 1024, 2),
+        PonObservationProfile::Growth => (
+            pon_growth::OBSERVATION_SCHEMA,
+            pon_growth::MEMBERSHIP_SQL_BUDGET,
+            1,
+        ),
+    };
     if !(1..=4096).contains(&min_confirmation_depth)
         || !lower_hex_64(min_confirmation_work_depth_hex)
         || min_confirmation_work_depth_hex
@@ -518,7 +665,7 @@ fn parse_pon_chain_observation(
         return None;
     }
     let result = value.get("result")?;
-    if result.get("schema")?.as_str()? != "pon-native-exact-packet-observation-v3"
+    if result.get("schema")?.as_str()? != expected_schema
         || !result.get("local_target_only")?.as_bool()?
         || result.get("global_absence_authority")?.as_bool()?
         || result.get("confirmation_authority")?.as_bool()?
@@ -577,8 +724,11 @@ fn parse_pon_chain_observation(
         value => Some(value.as_u64()?),
     };
     let owner_generation = result.get("generation")?.as_u64()?;
-    if owner_generation == 0
-        || active_membership_sql_budget != 1024
+    if (owner_generation == 0
+        && (!matches!(profile, PonObservationProfile::Growth)
+            || active_chain_member
+            || active_tip_height != 0))
+        || active_membership_sql_budget != membership_budget
         || (!stored_exact
             && (block_height.is_some()
                 || block_chainwork_hex.is_some()
@@ -589,13 +739,26 @@ fn parse_pon_chain_observation(
         || (stored_exact
             && (block_height.is_none()
                 || block_chainwork_hex.is_none()
-                || !active_membership_sql_lookups
-                    .is_some_and(|lookups| (2..=active_membership_sql_budget).contains(&lookups))))
+                || !active_membership_sql_lookups.is_some_and(|lookups| {
+                    (min_membership_lookups..=active_membership_sql_budget).contains(&lookups)
+                })))
         || (active_chain_member != active_depth.is_some())
         || (active_chain_member != active_work_depth_hex.is_some())
         || block_height.is_some_and(|height| height > active_tip_height && active_chain_member)
     {
         return None;
+    }
+    if matches!(profile, PonObservationProfile::Growth) && stored_exact {
+        let lookups = active_membership_sql_lookups?;
+        // PNP2 walks one tip record and two SQL reads per ancestor. The native
+        // owner reports this actual count; a changed algorithm needs a profile.
+        if lookups % 2 != 1
+            || active_depth.is_some_and(|depth| {
+                depth.checked_mul(2).and_then(|reads| reads.checked_add(1)) != Some(lookups)
+            })
+        {
+            return None;
+        }
     }
     // Height, identity and work are distinct checked facts. A plausible depth
     // must not bypass the signed consumer's minimum-height policy.
@@ -864,6 +1027,12 @@ impl AgentdAutomationEffectHost {
         let config = match read_host_file(path)? {
             AutomationEffectHostFile::Http(config) => config,
             AutomationEffectHostFile::Pon(config) => return Self::open_pon(identity, config),
+            AutomationEffectHostFile::PonGrowth(config) => {
+                return pon_growth::open(identity, config);
+            }
+            AutomationEffectHostFile::PonGrowthRemote(config) => {
+                return pon_remote::open(identity, config);
+            }
         };
         if config.schema_version != AUTOMATION_EFFECT_HOST_SCHEMA_VERSION {
             return Err(AgentdError::Invalid(
@@ -1073,12 +1242,14 @@ impl AgentdAutomationEffectHost {
             binary: config.chain_binary,
             binary_sha256: binary_digest,
             store: config.chain_store,
-            state_backend: config.chain_state_backend,
             genesis_time: config.chain_genesis_time,
-            evaluation_policy: config.chain_evaluation_policy,
-            task_profile: config.chain_task_profile,
-            model_profile: config.chain_model_profile,
-            workers: config.chain_workers,
+            profile: PonLocalProfile::Legacy {
+                state_backend: config.chain_state_backend,
+                evaluation_policy: config.chain_evaluation_policy,
+                task_profile: config.chain_task_profile,
+                model_profile: config.chain_model_profile,
+                workers: config.chain_workers,
+            },
             min_confirmation_depth: config.chain_min_confirmation_depth,
             min_confirmation_work_depth_hex: config.chain_min_confirmation_work_depth_hex,
             timeout: Duration::from_millis(config.timeout_ms),
@@ -1515,6 +1686,12 @@ fn read_host_file(path: &Path) -> Result<AutomationEffectHostFile, AgentdError> 
         ),
         Some(version) if version == AUTOMATION_EFFECT_HOST_PON_SCHEMA_VERSION as u64 => Ok(
             AutomationEffectHostFile::Pon(serde_json::from_value(value)?),
+        ),
+        Some(version) if version == u64::from(pon_growth::SCHEMA_VERSION) => Ok(
+            AutomationEffectHostFile::PonGrowth(serde_json::from_value(value)?),
+        ),
+        Some(version) if version == u64::from(pon_remote::SCHEMA_VERSION) => Ok(
+            AutomationEffectHostFile::PonGrowthRemote(serde_json::from_value(value)?),
         ),
         _ => Err(AgentdError::Invalid(
             "unsupported automation effect host schema".to_string(),

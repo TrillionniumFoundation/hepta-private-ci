@@ -3,6 +3,7 @@
 //! inputs fail this selected test; no mocked responses or model-install claim.
 
 use super::super::AgentdProviderEffectAdapter;
+use super::super::PonLocalProfile;
 use super::super::PonLocalProviderEffectAdapter;
 use super::super::pon_executable::PinnedExecutable;
 use super::Outcome;
@@ -96,12 +97,14 @@ impl Chain {
             binary: self.binary.path.clone(),
             binary_sha256: self.binary.sha256.clone(),
             store,
-            state_backend: self.backend.into(),
             genesis_time: self.genesis_time,
-            evaluation_policy: "legacy-first-two-v3".into(),
-            task_profile: "legacy-task-v1".into(),
-            model_profile: "linear-expert-dev-v1".into(),
-            workers: 1,
+            profile: PonLocalProfile::Legacy {
+                state_backend: self.backend.into(),
+                evaluation_policy: "legacy-first-two-v3".into(),
+                task_profile: "legacy-task-v1".into(),
+                model_profile: "linear-expert-dev-v1".into(),
+                workers: 1,
+            },
             min_confirmation_depth: 1,
             min_confirmation_work_depth_hex: format!("{}02", "00".repeat(63)),
             timeout: Duration::from_secs(30),
