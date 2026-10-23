@@ -134,7 +134,15 @@ def describe_source_cluster_tail(
     return {
         "scope": "SOURCE_CLUSTERED_TAIL_DESCRIPTIVE_DENY_ALL",
         "registered_cohort_digest": admitted["registered_cohort_digest"],
+        # Source × seed strata are only within-seed weighting units. The
+        # identical original source across training seeds is a single
+        # declared source ID, never an additional independent source.
         "source_strata": admitted["original_source_strata"],
+        "declared_unique_original_source_ids":
+            admitted["declared_unique_original_source_ids"],
+        "declared_source_ids_reused_across_seeds":
+            admitted["declared_source_ids_reused_across_seeds"],
+        "sampling_unit_independence_verified": False,
         "training_seeds": admitted["training_seeds"],
         "retained_failed_arm_rows": admitted["retained_failed_arm_rows"],
         "physical_cost_unit": admitted["physical_cost_unit"],
