@@ -1,0 +1,547 @@
+[
+  {
+    "workflow": "automation-taskflow-focused.yml",
+    "on": {
+      "push": {
+        "branches": [
+          "work/automation-taskflow-durable-causal-chain"
+        ],
+        "paths": [
+          "codex-rs/hepta-automation/**",
+          "codex-rs/hepta-agentd/**",
+          "codex-rs/hepta-contracts/**",
+          "codex-rs/hepta-operations/**",
+          "codex-rs/hepta-types/**",
+          "codex-rs/Cargo.lock",
+          ".github/workflows/automation-taskflow-focused.yml"
+        ]
+      },
+      "workflow_dispatch": ""
+    },
+    "job": "focused",
+    "if": null,
+    "hits": [
+      {
+        "step": "Test Agentd library",
+        "if": null,
+        "commands": [
+          "cargo test -p codex-hepta-agentd --lib"
+        ]
+      }
+    ]
+  },
+  {
+    "workflow": "blocking-ci.yml",
+    "on": {
+      "pull_request": {},
+      "push": {
+        "branches": [
+          "main"
+        ]
+      }
+    },
+    "job": "scope",
+    "if": null,
+    "hits": [
+      {
+        "step": "Select dependency impact",
+        "if": null,
+        "commands": [
+          "python3 -m unittest -v scripts.tests.test_hepta_ci_scope scripts.tests.test_hepta_ci_dependencies"
+        ]
+      }
+    ]
+  },
+  {
+    "workflow": "blocking-ci.yml",
+    "on": {
+      "pull_request": {},
+      "push": {
+        "branches": [
+          "main"
+        ]
+      }
+    },
+    "job": "hepta-scoped",
+    "if": "needs.scope.outputs.native == 'true' && needs.scope.outputs.full_repo != 'true'",
+    "hits": [
+      {
+        "step": "Test affected owners and reverse consumers, not a hand-written package list",
+        "if": null,
+        "commands": [
+          "python3 scripts/hepta_ci_exec.py --timeout-seconds 3600 --output \"$RUNNER_TEMP/impact-test.json\" -- python3 scripts/hepta_ci_dependencies.py --base \"$BASE_SHA\" --tested \"$TESTED_SHA\" --output \"$RUNNER_TEMP/cargo-impact.json\" --run"
+        ]
+      }
+    ]
+  },
+  {
+    "workflow": "hepta-architecture-convergence.yml",
+    "on": {
+      "pull_request": "",
+      "workflow_dispatch": ""
+    },
+    "job": "qualification",
+    "if": null,
+    "hits": [
+      {
+        "step": "Converged authority and browser semantics",
+        "if": "steps.execution.outputs.run_native == 'true' && steps.scope.outputs.effects == 'true'",
+        "commands": [
+          "python3 scripts/hepta_ci_exec.py --output \"$RUNNER_TEMP/hepta-command-records/browser.json\" --minimum-tests 1 -- cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-agentd browser_servo"
+        ]
+      },
+      {
+        "step": "Selected-artifact adoption and explicit rollback",
+        "if": "steps.execution.outputs.run_native == 'true' && steps.scope.outputs.learning == 'true'",
+        "commands": [
+          "python3 scripts/hepta_ci_exec.py --output \"$RUNNER_TEMP/hepta-command-records/selected-ranker.json\" --minimum-tests 1 -- cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-agentd new_generation_candidate_changes_behavior_and_explicit_predecessor_reload_restores_it"
+        ]
+      },
+      {
+        "step": "Compiled service lifecycle and actual process restart",
+        "if": "steps.execution.outputs.run_native == 'true' && steps.scope.outputs.lifecycle == 'true'",
+        "commands": [
+          "python3 scripts/hepta_ci_exec.py --output \"$RUNNER_TEMP/hepta-command-records/runtime-tasks.json\" --minimum-tests 1 -- just test --locked -p codex-hepta-agentd --lib -E 'test(runtime_tasks::tests)'",
+          "python3 scripts/hepta_ci_exec.py --output \"$RUNNER_TEMP/hepta-command-records/optional-process-restart.json\" --minimum-tests 1 -- cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-agentd --test optional_module_restart forty_first_service -- --nocapture"
+        ]
+      }
+    ]
+  },
+  {
+    "workflow": "hepta-browser-agentd-composition.yml",
+    "on": {
+      "workflow_call": "",
+      "workflow_dispatch": ""
+    },
+    "job": "exact-composition",
+    "if": null,
+    "hits": [
+      {
+        "step": "Exercise real FinalUseAuthority handoff tests",
+        "if": null,
+        "commands": [
+          "cargo test --locked -p codex-hepta-agentd browser_servo --lib"
+        ]
+      }
+    ]
+  },
+  {
+    "workflow": "hepta-consolidated-source.yml",
+    "on": {
+      "workflow_call": {
+        "inputs": {
+          "full_qualification": {
+            "type": "boolean",
+            "default": "false"
+          }
+        }
+      },
+      "workflow_dispatch": {
+        "inputs": {
+          "full_qualification": {
+            "description": "Execute all workspace owners and revalidate historical qualification gates.",
+            "type": "boolean",
+            "default": "true"
+          }
+        }
+      }
+    },
+    "job": "qualification",
+    "if": null,
+    "hits": [
+      {
+        "step": "Compute affected owners from both exact Cargo graphs",
+        "if": null,
+        "commands": [
+          "python3 scripts/hepta_ci_dependencies.py \"${args[@]}\" \\"
+        ]
+      },
+      {
+        "step": "Formatting without source mutation",
+        "if": "${{ !cancelled() && steps.candidate.outcome == 'success' && steps.impact.outputs.has_packages == 'true' }}",
+        "commands": [
+          "python3 ../scripts/hepta_ci_dependencies.py --root .. \"${args[@]}\" --action fmt \\"
+        ]
+      },
+      {
+        "step": "Compile and test actual imported packages",
+        "if": "steps.impact.outputs.has_packages == 'true'",
+        "commands": [
+          "python3 ../scripts/hepta_ci_dependencies.py --root .. \"${args[@]}\" --action test \\"
+        ]
+      },
+      {
+        "step": "Qualify cognitive child-process crash and reopen",
+        "if": "matrix.lane == 'source-head' && steps.impact.outputs.has_packages == 'true'",
+        "commands": [
+          "cargo test --locked -p codex-hepta-memory \\"
+        ]
+      },
+      {
+        "step": "Strict Clippy independently of test outcome",
+        "if": "${{ !cancelled() && steps.native_ready.outcome == 'success' }}",
+        "commands": [
+          "python3 ../scripts/hepta_ci_dependencies.py --root .. \"${args[@]}\" --action clippy \\"
+        ]
+      }
+    ]
+  },
+  {
+    "workflow": "hepta-gap-agentd-process.yml",
+    "on": {
+      "workflow_call": "",
+      "workflow_dispatch": ""
+    },
+    "job": "process-qualification",
+    "if": null,
+    "hits": [
+      {
+        "step": "Exercise owner and lifecycle libraries",
+        "if": "steps.execution.outputs.run_native == 'true'",
+        "commands": [
+          "just test --locked --lib -p codex-hepta-agentd -p codex-hepta-cognitive-read \\"
+        ]
+      },
+      {
+        "step": "Exercise actual optional retirement and durable destination recovery",
+        "if": "steps.execution.outputs.run_native == 'true'",
+        "commands": [
+          "just test --locked -p codex-hepta-agentd --test optional_module_restart \\",
+          "just test --locked -p codex-hepta-memory --lib destination_recovery_binding --test-threads=1"
+        ]
+      },
+      {
+        "step": "Exercise named plasticity and live cutover paths",
+        "if": "steps.execution.outputs.run_native == 'true'",
+        "commands": [
+          "just test --locked -p codex-hepta-agentd --lib \\"
+        ]
+      },
+      {
+        "step": "Exercise writer admission and real daemon process suites",
+        "if": "steps.execution.outputs.run_native == 'true'",
+        "commands": [
+          "just test --locked -p codex-hepta-agentd --features qualification-cognitive-write \\",
+          "just test --locked -p codex-hepta-agentd --features qualification-cognitive-write \\"
+        ]
+      }
+    ]
+  },
+  {
+    "workflow": "hepta-kernel-evidence-qualification.yml",
+    "on": {
+      "workflow_call": "",
+      "workflow_dispatch": ""
+    },
+    "job": "source-head",
+    "if": null,
+    "hits": [
+      {
+        "step": "Run exact-source qualification commands",
+        "if": null,
+        "commands": [
+          "python3 scripts/hepta_ci_exec.py --output \"$records/agentd-product-test.json\" --             bash -lc 'cd codex-rs && cargo test -p codex-hepta-agentd --test kernel_evidence_product'"
+        ]
+      }
+    ]
+  },
+  {
+    "workflow": "hepta-kernel-evidence-qualification.yml",
+    "on": {
+      "workflow_call": "",
+      "workflow_dispatch": ""
+    },
+    "job": "merge-candidate",
+    "if": "github.event_name == 'pull_request'",
+    "hits": [
+      {
+        "step": "Run synthetic-merge qualification commands",
+        "if": null,
+        "commands": [
+          "python3 scripts/hepta_ci_exec.py --output \"$records/agentd-product-test.json\" --             bash -lc 'cd codex-rs && cargo test -p codex-hepta-agentd --test kernel_evidence_product'"
+        ]
+      }
+    ]
+  },
+  {
+    "workflow": "hepta-knowledge-graph-qualification.yml",
+    "on": {
+      "workflow_call": "",
+      "workflow_dispatch": ""
+    },
+    "job": "qualification",
+    "if": null,
+    "hits": [
+      {
+        "step": "Test durable cognitive KG owner and recovery",
+        "if": null,
+        "commands": [
+          "cargo test --locked -p codex-hepta-memory --lib -- --nocapture --test-threads=1"
+        ]
+      },
+      {
+        "step": "Crash/reopen KG transaction windows",
+        "if": null,
+        "commands": [
+          "cargo test --locked -p codex-hepta-memory --lib \\"
+        ]
+      },
+      {
+        "step": "Measure PERF-LIBRARY pilot capacity",
+        "if": "matrix.lane == 'source-head'",
+        "commands": [
+          "cargo test --locked -p codex-hepta-memory --lib \\"
+        ]
+      },
+      {
+        "step": "Test default Agentd production cognitive-writer profile",
+        "if": null,
+        "commands": [
+          "cargo test --locked -p codex-hepta-agentd \\"
+        ]
+      },
+      {
+        "step": "Test qualification witness on top of product writer",
+        "if": null,
+        "commands": [
+          "cargo test --locked -p codex-hepta-agentd \\"
+        ]
+      }
+    ]
+  },
+  {
+    "workflow": "hepta-lane-b-truth.yml",
+    "on": {
+      "workflow_call": "",
+      "workflow_dispatch": ""
+    },
+    "job": "source-head",
+    "if": null,
+    "hits": [
+      {
+        "step": "Verify Rust Lane B owners",
+        "if": null,
+        "commands": [
+          "cargo test -p codex-hepta-agentd --lib"
+        ]
+      }
+    ]
+  },
+  {
+    "workflow": "hepta-memory-retrieval-qualification-host.yml",
+    "on": {
+      "workflow_call": "",
+      "workflow_dispatch": ""
+    },
+    "job": "qualification-host",
+    "if": null,
+    "hits": [
+      {
+        "step": "SQLite owner retrieval and revalidation probe",
+        "if": null,
+        "commands": [
+          "/usr/bin/time -v             cargo test --release --locked -p codex-hepta-memory             target_host_owner_retrieval_reports_latency_percentiles             -- --ignored --nocapture --test-threads=1             > \"$RUNNER_TEMP/memory-retrieval-target-host/sqlite-owner.log\" 2>&1"
+        ]
+      },
+      {
+        "step": "HNMF 512-candidate four-step probe",
+        "if": null,
+        "commands": [
+          "/usr/bin/time -v             cargo test --release --locked -p codex-hepta-memory-retrieval             target_host_hnmf_reports_latency_percentiles_at_candidate_ceiling             -- --ignored --nocapture --test-threads=1             > \"$RUNNER_TEMP/memory-retrieval-target-host/hnmf-512.log\" 2>&1"
+        ]
+      },
+      {
+        "step": "HNMF 4096-node 32768-synapse structural probe",
+        "if": null,
+        "commands": [
+          "/usr/bin/time -v             cargo test --release --locked -p codex-hepta-memory-retrieval             target_host_hnmf_validates_full_structural_ceiling             -- --ignored --nocapture --test-threads=1             > \"$RUNNER_TEMP/memory-retrieval-target-host/hnmf-structural.log\" 2>&1"
+        ]
+      }
+    ]
+  },
+  {
+    "workflow": "hepta-objective-admission.yml",
+    "on": {
+      "workflow_call": "",
+      "workflow_dispatch": ""
+    },
+    "job": "qualify",
+    "if": null,
+    "hits": [
+      {
+        "step": "Objective and product-composition tests",
+        "if": null,
+        "commands": [
+          "cargo test --locked -p codex-hepta-agentd objective_runtime -- --nocapture"
+        ]
+      }
+    ]
+  },
+  {
+    "workflow": "hepta-objective-product-composition.yml",
+    "on": {
+      "workflow_call": "",
+      "workflow_dispatch": ""
+    },
+    "job": "product-composition",
+    "if": null,
+    "hits": [
+      {
+        "step": "Test product objective chain",
+        "if": "steps.execution.outputs.run_native == 'true'",
+        "commands": [
+          "cargo test --locked -p codex-hepta-agentd objective -- --nocapture"
+        ]
+      }
+    ]
+  },
+  {
+    "workflow": "hepta-production-hos2-proposal.yml",
+    "on": {
+      "pull_request": {
+        "types": [
+          "opened",
+          "synchronize",
+          "reopened"
+        ],
+        "paths": [
+          ".github/workflows/hepta-production-hos2-proposal.yml",
+          "codex-rs/hepta-memory/**",
+          "codex-rs/hepta-cognitive-store/**",
+          "codex-rs/hepta-agentd/**",
+          "codex-rs/Cargo.toml",
+          "codex-rs/Cargo.lock",
+          "codex-rs/rust-toolchain.toml",
+          "MODULE.bazel",
+          "MODULE.bazel.lock",
+          ".bazelversion",
+          "justfile",
+          "scripts/format.py",
+          "scripts/run-nextest.py"
+        ]
+      }
+    },
+    "job": "owner-candidate",
+    "if": "github.event.pull_request.head.repo.full_name == github.repository && github.event.pull_request.head.ref == 'codex/production-hos2-delivery-20261020'",
+    "hits": [
+      {
+        "step": "Freeze input identity, repository toolchain and exact command plan",
+        "if": null,
+        "commands": [
+          "(\"memory-tests\", [\"just\", \"test\", \"--locked\", \"-p\", \"codex-hepta-memory\"], \"codex-rs\", [\"metadata\"]),",
+          "(\"agentd-tests\", [\"just\", \"test\", \"--locked\", \"-p\", \"codex-hepta-agentd\"], \"codex-rs\", [\"metadata\", \"v8\"]),"
+        ]
+      }
+    ]
+  },
+  {
+    "workflow": "hepta-windows-private-state-native.yml",
+    "on": {
+      "pull_request": {
+        "paths": [
+          "codex-rs/utils/path-utils/**",
+          "codex-rs/hepta-prompt-registry/**",
+          "codex-rs/hepta-contracts/**",
+          "codex-rs/hepta-agentd/**",
+          "codex-rs/Cargo.toml",
+          "codex-rs/Cargo.lock",
+          "codex-rs/rust-toolchain.toml",
+          ".github/workflows/hepta-windows-private-state-native.yml",
+          ".github/scripts/check_windows_private_state_acquisition.py",
+          ".github/scripts/test_check_windows_private_state_acquisition.py",
+          ".github/fixtures/windows-private-state-acquisition/**"
+        ]
+      },
+      "workflow_dispatch": ""
+    },
+    "job": "windows-secure-private-state",
+    "if": null,
+    "hits": [
+      {
+        "step": "Validate Agentd Prompt Runtime integration and reopened state",
+        "if": null,
+        "commands": [
+          "just test --locked -p codex-hepta-agentd --lib -E 'test(prompt_runtime::tests::)' --test-threads 1 --no-tests fail --retries 0"
+        ]
+      }
+    ]
+  },
+  {
+    "workflow": "memory-federation-v2-final-verify.yml",
+    "on": {
+      "workflow_call": "",
+      "workflow_dispatch": ""
+    },
+    "job": "source-head",
+    "if": null,
+    "hits": [
+      {
+        "step": "Test canonical federation contract",
+        "if": null,
+        "commands": [
+          "cargo test -p codex-hepta-memory-federation --lib"
+        ]
+      },
+      {
+        "step": "Test memory product adapter",
+        "if": null,
+        "commands": [
+          "cargo test -p codex-hepta-memory --lib cognitive_runtime_tests"
+        ]
+      },
+      {
+        "step": "Test legacy federation regression suite",
+        "if": null,
+        "commands": [
+          "cargo test -p codex-hepta-memory --lib cognitive_federation_tests"
+        ]
+      },
+      {
+        "step": "Test model-input federation integration",
+        "if": null,
+        "commands": [
+          "cargo test -p codex-hepta-memory-extension --lib cognitive::federation"
+        ]
+      }
+    ]
+  },
+  {
+    "workflow": "memory-federation-v2-final-verify.yml",
+    "on": {
+      "workflow_call": "",
+      "workflow_dispatch": ""
+    },
+    "job": "merge-candidate",
+    "if": "github.event_name == 'pull_request'",
+    "hits": [
+      {
+        "step": "Test canonical federation contract on merge candidate",
+        "if": null,
+        "commands": [
+          "cargo test -p codex-hepta-memory-federation --lib"
+        ]
+      },
+      {
+        "step": "Test memory product adapter on merge candidate",
+        "if": null,
+        "commands": [
+          "cargo test -p codex-hepta-memory --lib cognitive_runtime_tests"
+        ]
+      },
+      {
+        "step": "Test legacy federation regression suite on merge candidate",
+        "if": null,
+        "commands": [
+          "cargo test -p codex-hepta-memory --lib cognitive_federation_tests"
+        ]
+      },
+      {
+        "step": "Test model-input federation integration on merge candidate",
+        "if": null,
+        "commands": [
+          "cargo test -p codex-hepta-memory-extension --lib cognitive::federation"
+        ]
+      }
+    ]
+  }
+]
