@@ -1654,12 +1654,13 @@ impl ProductionDurableWriter {
     ) -> Result<ProductionOutcomeReceipt, ProductionWriterError> {
         if request.topic == crate::NOTES_REPLACE_TOPIC_V1 {
             self.verify_authority().await?;
-            let proof = NotesPreDispatchRejection::at_rejected_entry(
-                request,
-                dispatch_event_id,
-                reason,
-            );
-            Ok(self.lease.reject_notes_before_dispatch(&proof).await?.into())
+            let proof =
+                NotesPreDispatchRejection::at_rejected_entry(request, dispatch_event_id, reason);
+            Ok(self
+                .lease
+                .reject_notes_before_dispatch(&proof)
+                .await?
+                .into())
         } else if inherited {
             self.reconcile(&request.occurrence_key, LocalReconcileOutcome::Rejected)
                 .await

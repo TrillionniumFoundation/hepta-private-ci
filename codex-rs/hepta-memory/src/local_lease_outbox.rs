@@ -2864,8 +2864,7 @@ impl LocalLeaseOutbox {
         if matches!(
             outbox.topic.as_str(),
             crate::NOTES_REPLACE_TOPIC_V1 | crate::HOS2_INSTALL_TOPIC_V1
-        )
-            && kind == "rolled_back"
+        ) && kind == "rolled_back"
             && current == LocalOutcomeState::Indeterminate
         {
             return Err(LocalLeaseOutboxError::AccessDenied(

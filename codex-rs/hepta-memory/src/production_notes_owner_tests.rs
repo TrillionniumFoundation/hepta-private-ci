@@ -281,7 +281,13 @@ async fn generic_terminal_outcomes_cannot_replace_notes_application_evidence() -
     let owner = AgentId::parse("018f4f72-5f8f-7cc1-8f55-df9fb3aa2d19")?;
     let mut observed = Vec::new();
     let mut expected = Vec::new();
-    for route in ["reconcile_committed", "reconcile_rejected", "apply", "reject", "rollback"] {
+    for route in [
+        "reconcile_committed",
+        "reconcile_rejected",
+        "apply",
+        "reject",
+        "rollback",
+    ] {
         let fleet_path = temp.path().join(route);
         std::fs::create_dir(&fleet_path)?;
         let fleet = HeptaFleetRoot::parse(fleet_path.canonicalize()?)?;
@@ -301,19 +307,33 @@ async fn generic_terminal_outcomes_cannot_replace_notes_application_evidence() -
             .await?;
         let result = match route {
             "reconcile_committed" => {
-                writer.reconcile(&operation, LocalReconcileOutcome::Committed).await
+                writer
+                    .reconcile(&operation, LocalReconcileOutcome::Committed)
+                    .await
             }
             "reconcile_rejected" => {
-                writer.reconcile(&operation, LocalReconcileOutcome::Rejected).await
+                writer
+                    .reconcile(&operation, LocalReconcileOutcome::Rejected)
+                    .await
             }
-            "apply" => writer.apply(&operation, "unverified application receipt").await,
+            "apply" => {
+                writer
+                    .apply(&operation, "unverified application receipt")
+                    .await
+            }
             "reject" => writer.reject(&operation, "unverified rejection").await,
-            "rollback" => writer.rollback_occurrence(&operation, "cancel unknown effect").await,
+            "rollback" => {
+                writer
+                    .rollback_occurrence(&operation, "cancel unknown effect")
+                    .await
+            }
             _ => unreachable!(),
         };
         let denied = matches!(
             result,
-            Err(ProductionWriterError::Local(LocalLeaseOutboxError::AccessDenied(_)))
+            Err(ProductionWriterError::Local(
+                LocalLeaseOutboxError::AccessDenied(_)
+            ))
         );
         let state_after_attempt = writer.status(&operation).await?;
         let recovered = writer.reconcile_target_batch(&target, /*limit*/ 1).await?;
@@ -364,11 +384,13 @@ async fn original_final_use_rejection_preserves_notes_no_entry_settlement() -> T
     }
     impl AuthorityClock for EntryClock {
         fn now_unix_ms(&self) -> Result<u64, AuthorityTrustError> {
-            Ok(if self.calls.fetch_add(1, Ordering::SeqCst) >= self.expire_after {
-                1_120_000
-            } else {
-                1_000_000
-            })
+            Ok(
+                if self.calls.fetch_add(1, Ordering::SeqCst) >= self.expire_after {
+                    1_120_000
+                } else {
+                    1_000_000
+                },
+            )
         }
     }
 
@@ -394,18 +416,29 @@ async fn original_final_use_rejection_preserves_notes_no_entry_settlement() -> T
             StableId::new(owner.as_str())?,
             Generation::new(1)?,
         )?;
-        let queued = writer.prepare_operation(intent, crate::NOTES_REPLACE_TOPIC_V1, payload).await?;
-        let binding = writer.final_use_binding(&queued, &identity.destination_id()).await?;
+        let queued = writer
+            .prepare_operation(intent, crate::NOTES_REPLACE_TOPIC_V1, payload)
+            .await?;
+        let binding = writer
+            .final_use_binding(&queued, &identity.destination_id())
+            .await?;
         let authority_dir = fleet_path.join("final-use");
         std::fs::create_dir(&authority_dir)?;
         std::fs::set_permissions(&authority_dir, std::fs::Permissions::from_mode(0o700))?;
         let issuer = SigningKey::from_bytes(&[85; 32]);
-        let clock = Arc::new(EntryClock { calls: AtomicUsize::new(0), expire_after });
+        let clock = Arc::new(EntryClock {
+            calls: AtomicUsize::new(0),
+            expire_after,
+        });
         let authority = FinalUseAuthority::open_state_dir_with_clock(
             &authority_dir,
             "notes-fixture-issuer".to_string(),
             issuer.verifying_key().to_bytes(),
-            FinalUseRevocations { authority_epoch: 71, revision: 1, revoked_grant_ids: BTreeSet::new() },
+            FinalUseRevocations {
+                authority_epoch: 71,
+                revision: 1,
+                revoked_grant_ids: BTreeSet::new(),
+            },
             clock.clone(),
         )?;
         let grant = FinalUseGrant {
@@ -428,23 +461,43 @@ async fn original_final_use_rejection_preserves_notes_no_entry_settlement() -> T
             sqlx::query("CREATE TRIGGER notes_fixture_fail_rejection BEFORE INSERT ON cognitive_local_events WHEN NEW.event_kind = 'reconcile_rejected' BEGIN SELECT RAISE(ABORT, 'fixture rejection durability failure'); END").execute(&store.pool).await?;
         }
         assert!(matches!(
-            dispatcher.dispatch(&writer, &signed, &binding, queued).await,
+            dispatcher
+                .dispatch(&writer, &signed, &binding, queued)
+                .await,
             Err(ProductionWriterError::FinalUse(_))
         ));
         if stage == "storage-failure" {
-            assert_eq!(writer.status(&operation).await?, LocalOutcomeState::Indeterminate);
+            assert_eq!(
+                writer.status(&operation).await?,
+                LocalOutcomeState::Indeterminate
+            );
             let rejected: i64 = sqlx::query_scalar("SELECT COUNT(*) FROM cognitive_local_events WHERE event_kind = 'reconcile_rejected'").fetch_one(&store.pool).await?;
             assert_eq!(rejected, 0);
-            assert_eq!((target.observations.load(Ordering::SeqCst), target.retirements.load(Ordering::SeqCst)), (0, 0));
+            assert_eq!(
+                (
+                    target.observations.load(Ordering::SeqCst),
+                    target.retirements.load(Ordering::SeqCst)
+                ),
+                (0, 0)
+            );
             store.close().await;
             continue;
         }
-        assert_eq!(writer.status(&operation).await?, LocalOutcomeState::Rejected);
+        assert_eq!(
+            writer.status(&operation).await?,
+            LocalOutcomeState::Rejected
+        );
         let reason: String = sqlx::query_scalar(
             "SELECT payload_json FROM cognitive_local_events WHERE lease_id = ? AND occurrence_key = ? AND event_kind = 'reconcile_rejected'",
         ).bind(LEASE).bind(&operation).fetch_one(&store.pool).await?;
         assert!(reason.starts_with(&format!("final-use {stage} rejected:")));
-        assert_eq!((target.observations.load(Ordering::SeqCst), target.retirements.load(Ordering::SeqCst)), (0, 0));
+        assert_eq!(
+            (
+                target.observations.load(Ordering::SeqCst),
+                target.retirements.load(Ordering::SeqCst)
+            ),
+            (0, 0)
+        );
         store.close().await;
     }
     Ok(())
@@ -459,18 +512,42 @@ async fn notes_queued_cancellation_remains_available_before_effect_boundary() ->
     let owner = AgentId::parse("018f4f72-5f8f-7cc1-8f55-df9fb3aa2d21")?;
     let store = CognitiveStore::open(&fleet.layout().agent(&owner)).await?;
     let writer = ProductionDurableWriter::open_with_live_verifier(
-        store.clone(), source(&owner, 1)?, Arc::new(Verifier), LEASE, /*generation*/ 1,
-    ).await?;
+        store.clone(),
+        source(&owner, 1)?,
+        Arc::new(Verifier),
+        LEASE,
+        /*generation*/ 1,
+    )
+    .await?;
     let (payload, identity, target) = fixture()?;
     let intent = notes_operation_intent(
-        &identity, &payload, StableId::new(owner.as_str())?, Generation::new(1)?,
+        &identity,
+        &payload,
+        StableId::new(owner.as_str())?,
+        Generation::new(1)?,
     )?;
-    let queued = writer.prepare_operation(intent, crate::NOTES_REPLACE_TOPIC_V1, payload).await?;
-    let cancelled = writer.rollback_occurrence(&queued.occurrence_key, "cancel before dispatch").await?;
+    let queued = writer
+        .prepare_operation(intent, crate::NOTES_REPLACE_TOPIC_V1, payload)
+        .await?;
+    let cancelled = writer
+        .rollback_occurrence(&queued.occurrence_key, "cancel before dispatch")
+        .await?;
     assert_eq!(cancelled.state, LocalOutcomeState::RolledBack);
-    assert_eq!(writer.status(&queued.occurrence_key).await?, LocalOutcomeState::RolledBack);
-    assert_eq!(writer.reconcile_target_batch(&target, /*limit*/ 1).await?, 0);
-    assert_eq!((target.observations.load(Ordering::SeqCst), target.retirements.load(Ordering::SeqCst)), (0, 0));
+    assert_eq!(
+        writer.status(&queued.occurrence_key).await?,
+        LocalOutcomeState::RolledBack
+    );
+    assert_eq!(
+        writer.reconcile_target_batch(&target, /*limit*/ 1).await?,
+        0
+    );
+    assert_eq!(
+        (
+            target.observations.load(Ordering::SeqCst),
+            target.retirements.load(Ordering::SeqCst)
+        ),
+        (0, 0)
+    );
     store.close().await;
     Ok(())
 }

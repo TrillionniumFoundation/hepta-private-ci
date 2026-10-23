@@ -307,9 +307,21 @@ async fn queued_native_cancellation_remains_available_before_effect_boundary() -
     let directory = tempfile::tempdir()?;
     let fixture = Fixture::open(directory.path()).await?;
     fixture.prepare(OPERATION, /*sequence*/ 1).await?;
-    let cancelled = fixture.writer.rollback_occurrence(OPERATION, "cancel before dispatch").await?;
+    let cancelled = fixture
+        .writer
+        .rollback_occurrence(OPERATION, "cancel before dispatch")
+        .await?;
     assert_eq!(cancelled.state, LocalOutcomeState::RolledBack);
-    assert_eq!(fixture.writer.status(OPERATION).await?, LocalOutcomeState::RolledBack);
-    assert_eq!((fixture.device.calls.load(Ordering::SeqCst), fixture.device.retire_calls.load(Ordering::SeqCst)), (0, 0));
+    assert_eq!(
+        fixture.writer.status(OPERATION).await?,
+        LocalOutcomeState::RolledBack
+    );
+    assert_eq!(
+        (
+            fixture.device.calls.load(Ordering::SeqCst),
+            fixture.device.retire_calls.load(Ordering::SeqCst)
+        ),
+        (0, 0)
+    );
     Ok(())
 }
