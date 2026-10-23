@@ -295,3 +295,6 @@ impl HostCognitiveCheckpoint {
     }
 }
 
+#[cfg(test)]
+#[path = "authority_host_checkpoint_tests.rs"]
+mod tests;
