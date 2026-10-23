@@ -1,0 +1,20 @@
+name: NDU joint evidence and four-output research (shadow)
+on:
+  pull_request:
+    paths:
+      - 'experiments/multimodal_output_portfolio/v5/**'
+      - '.github/workflows/ndu-joint-evidence-output-shadow.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  joint-finite-oracle:
+    runs-on: ubuntu-slim
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+      - name: Validate joint policy, path audit, independence and shift
+        working-directory: experiments/multimodal_output_portfolio/v5
+        run: |
+          python3 -m unittest discover -v -p "test_*.py"
+          python3 -m compileall -q joint_portfolio.py test_*.py
