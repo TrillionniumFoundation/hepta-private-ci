@@ -58,6 +58,8 @@ def generate_fixture(root):
                     previous = after
                 action_sha = digest(b"hepta.group.actions.v1\0"+
                                     json.dumps(actions,separators=(",", ":")).encode())
+                trace_sha = digest(b"hepta.group.trace.v1\0" +
+                                   json.dumps(trace,sort_keys=True,separators=(",", ":")).encode())
                 score = .95 if arm=="ndu" else .8 if arm=="ndu_no_cov" else .75
                 records.append(dict(arm=arm,source_id=s["source_id"],
                     source_sha256=s["source_sha256"],seed=seed,
@@ -69,7 +71,7 @@ def generate_fixture(root):
                     valid=True,covered=True,severe=False,quality=score,
                     output_path="outputs/final.bin",output_sha256=digest(finished),
                     actual_steps=len(trace),decisions=trace,action_digest=action_sha,
-                    risk_weight=.5 if arm=="ndu" else 0.0))
+                    trace_sha256=trace_sha,risk_weight=.5 if arm=="ndu" else 0.0))
     return protocol, {"sources":sources}, {"source_sha256":[]}, source_index, records
 
 
@@ -124,6 +126,25 @@ class QualificationTests(unittest.TestCase):
         row["action_digest"] = state(33)
         with self.assertRaisesRegex(EvidenceError,"action digest"):
             validate_episode(self.root,row,self.by_id,self.protocol)
+
+    def test_trace_hash_binds_state_and_measured_cost(self):
+        row = dict(self.records[0])
+        row["decisions"] = [dict(x) for x in row["decisions"]]
+        row["decisions"][0]["cost_us"] = 60
+        with self.assertRaisesRegex(EvidenceError,"trace digest"):
+            validate_episode(self.root,row,self.by_id,self.protocol)
+
+    def test_covariance_requires_distinct_actions_not_merely_hashes(self):
+        rows = [dict(r) for r in self.records]
+        by_key = {(r["source_id"],r["seed"],r["arm"]):r for r in rows}
+        for r in rows:
+            if r["arm"] == "ndu_no_cov":
+                target = by_key[(r["source_id"],r["seed"],"ndu")]
+                r["decisions"] = target["decisions"]
+                r["action_digest"] = target["action_digest"]
+                r["trace_sha256"] = target["trace_sha256"]
+        receipt = report_status(self.by_id,self.protocol,rows)
+        self.assertFalse(receipt["mechanism_checks"]["ndu_covariance_changes_action"])
 
     def test_wrong_source_and_output_hash_denied(self):
         row = dict(self.records[0]); row["source_sha256"] = state(0)

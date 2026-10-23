@@ -179,6 +179,9 @@ def validate_trace(row):
                          ensure_ascii=True, separators=(",", ":")).encode()
     require(row.get("action_digest") == digest(b"hepta.group.actions.v1\0" + actions),
             "action digest does not bind executed decision trace")
+    trace_bytes = json.dumps(trace, sort_keys=True, separators=(",", ":")).encode()
+    require(row.get("trace_sha256") == digest(b"hepta.group.trace.v1\0" + trace_bytes),
+            "trace digest does not bind state transitions and paid actions")
 
 
 def validate_episode(root, row, by_id, protocol):
@@ -267,11 +270,10 @@ def report_status(by_id, protocol, rows):
                            for r in ndu_rows)
     has_backtracking = any(any(step["action"] == "BACKTRACK" for step in r["decisions"])
                            for r in ndu_rows)
-    covariance_effect = any(table[(sid,seed,"ndu")].get("action_digest") !=
-                            table[(sid,seed,"ndu_no_cov")].get("action_digest") and
-                            sha(table[(sid,seed,"ndu")].get("action_digest")) and
-                            sha(table[(sid,seed,"ndu_no_cov")].get("action_digest"))
-                            for sid in tests for seed in protocol["seeds"])
+    covariance_effect = any(
+        [x["action"] for x in table[(sid,seed,"ndu")]["decisions"]] !=
+        [x["action"] for x in table[(sid,seed,"ndu_no_cov")]["decisions"]]
+        for sid in tests for seed in protocol["seeds"])
     # Data checks are never converted into model promotion or production authority.
     return {"schema": "hepta.p0-p7.audit.v1", "source_groups": len(tests),
             "seeds": len(protocol["seeds"]), "episode_count": len(rows),
