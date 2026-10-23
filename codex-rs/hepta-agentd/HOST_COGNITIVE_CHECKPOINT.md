@@ -72,4 +72,6 @@ semantic phase removed the redundant post-CAS public load and passed seven
 again. Original clock/transport deadlines were not changed. Raw evidence lives
 in `/data/asterinas-audit-build.8tdrjboi/root-checkpoint-qualification-01`, `-02`
 and `-03`; formatting/lint follows these test phases without another same-phase
-test run. This does not qualify the real service/bootstrap/live lease.
+test run. [Published original receipts and logs](acceptance/2026-10-23-root-authority/README.md)
+include the earlier failures and successful finish. This does not qualify the
+real service/bootstrap/live lease.
