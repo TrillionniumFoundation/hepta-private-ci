@@ -108,6 +108,7 @@ def compare(base: object, observations: object) -> dict:
         observation_digests.add(observation_digest)
         require(o.get("idempotency_replayed") is False and type(o.get("unknown_effects_open")) is int and o["unknown_effects_open"] == 0, "unsafe replay or unresolved effect")
         require(type(o.get("task_success")) is bool and type(o.get("tool_correct")) is bool, "missing outcome truth")
+        require(not o["task_success"] or o["tool_correct"], "task success conflicts with tool correctness")
         require(type(o.get("recovery_pass")) is bool, "missing recovery disposition")
         for name in METRICS:
             v = o.get(name)
