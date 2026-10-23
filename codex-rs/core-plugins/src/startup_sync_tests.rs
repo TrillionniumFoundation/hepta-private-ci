@@ -21,6 +21,39 @@ use zip::write::SimpleFileOptions;
 
 const TEST_CURATED_PLUGIN_SHA: &str = "0123456789abcdef0123456789abcdef01234567";
 
+
+#[cfg(unix)]
+#[test]
+fn curated_zip_permissions_strip_archive_special_and_shared_write_bits() {
+    assert_eq!(safe_curated_zip_file_mode(0o104755), 0o755); // regular file, setuid
+    assert_eq!(safe_curated_zip_file_mode(0o102775), 0o755); // setgid + group write
+    assert_eq!(safe_curated_zip_file_mode(0o101777), 0o755); // sticky + world write
+    assert_eq!(safe_curated_zip_file_mode(0o100644), 0o644); // normal data file
+    assert_eq!(safe_curated_zip_file_mode(0o100600), 0o600); // private data file
+}
+
+#[cfg(unix)]
+#[test]
+fn curated_zip_extraction_uses_constrained_file_permissions() {
+    use std::os::unix::fs::PermissionsExt;
+
+    let tmp = tempdir().expect("tempdir");
+    let mut writer = ZipWriter::new(std::io::Cursor::new(Vec::new()));
+    let options = SimpleFileOptions::default().unix_permissions(0o777);
+    writer
+        .start_file("archive-root/plugins/example/run.sh", options)
+        .expect("start executable");
+    writer.write_all(b"#!/bin/sh\nexit 0\n").expect("write executable");
+    let archive = writer.finish().expect("finish ZIP").into_inner();
+
+    extract_zipball_to_dir(&archive, tmp.path()).expect("extract curated ZIP");
+    let path = tmp.path().join("plugins/example/run.sh");
+    assert_eq!(std::fs::read(&path).expect("extracted file"), b"#!/bin/sh\nexit 0\n");
+    let mode = std::fs::metadata(&path).expect("extracted metadata").permissions().mode();
+    assert_eq!(mode & 0o777, 0o755);
+    assert_eq!(mode & 0o7022, 0, "no setuid/setgid/sticky or shared write bits");
+}
+
 #[tokio::test]
 async fn github_http_routes_repository_ref_and_zipball_urls() {
     let server = MockServer::start().await;
