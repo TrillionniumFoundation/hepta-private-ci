@@ -231,6 +231,7 @@ impl RegisteredWriter {
             material.verify_unchanged().map_err(io::Error::other)?;
             let now = clock.now_unix_ms().map_err(io::Error::other)?;
             validate_observation_lease(&self.registration.authority_lease, &head, now)?;
+            successor.check_alive_for_root().map_err(io::Error::other)?;
             Ok(backend)
         })
     }

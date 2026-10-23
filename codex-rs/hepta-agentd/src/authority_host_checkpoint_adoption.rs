@@ -158,11 +158,6 @@ impl HostCognitiveCheckpoint {
         }
         predecessor.require_retired()?;
         successor.require_alive()?;
-        let before = clock.now_unix_ms()?;
-        let expiry = new_writer.expires_at_unix_seconds * 1000;
-        if before >= expiry {
-            return Err(AuthorityTrustError::Unavailable);
-        }
         let store = HostAuthorityFrontierStore::open(directory, STORE_OWNER.into())?;
         let mut next = old.clone();
         next.publisher_epoch = registration.publisher_epoch;
@@ -181,6 +176,11 @@ impl HostCognitiveCheckpoint {
         next.proposal = None;
         validate_head(&registration, &next)?;
         material.validate(old)?;
+        let before = clock.now_unix_ms()?;
+        let expiry = new_writer.expires_at_unix_seconds * 1000;
+        if before >= expiry {
+            return Err(AuthorityTrustError::Unavailable);
+        }
         // Exact old head CAS, original file/directory sync and exact readback.
         // The original last_current cut is carried byte-for-byte, never rehashed
         // from a possibly modified database. A lost result must be reconciled
@@ -195,19 +195,21 @@ impl HostCognitiveCheckpoint {
             })?;
         // A durable CAS may already have committed. Every later failure is
         // uncertain, even when an underlying clock or pidfd reports Conflict.
+        predecessor
+            .require_retired()
+            .map_err(|_| AuthorityTrustError::Unavailable)?;
+        material.validate(old).map_err(|_| AuthorityTrustError::Unavailable)?;
+        // All blocking metadata and retirement I/O precedes this final clock.
+        // Only the original nonblocking successor pidfd poll follows it.
         let after = clock
             .now_unix_ms()
             .map_err(|_| AuthorityTrustError::Unavailable)?;
         if after < before || after >= expiry {
             return Err(AuthorityTrustError::Unavailable);
         }
-        predecessor
-            .require_retired()
-            .map_err(|_| AuthorityTrustError::Unavailable)?;
         successor
             .require_alive()
             .map_err(|_| AuthorityTrustError::Unavailable)?;
-        material.validate(old).map_err(|_| AuthorityTrustError::Unavailable)?;
         Ok(Self {
             registration,
             store,
