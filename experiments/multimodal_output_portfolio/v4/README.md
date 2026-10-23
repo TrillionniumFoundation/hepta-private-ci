@@ -48,9 +48,10 @@ or weights.
 \`\`\`bash
 python -m unittest discover -s experiments/multimodal_output_portfolio/v4 -p 'test_*.py' -v
 python experiments/multimodal_output_portfolio/v4/run_experiment.py
+python experiments/multimodal_output_portfolio/v4/run_selective_witness.py
 \`\`\`
 
-12 unit/adversarial tests passed locally. The saved
+13 unit/adversarial tests passed locally. The saved
 \`evidence-development.json\` contains complete exact enumeration, not a
 randomized holdout or physical resource measurement.
 
@@ -105,3 +106,19 @@ No repository main-branch updates, selected artifacts, production dispatch
 changes, model promotions, new grants or external effects are authorized.
 The code does not consume model checkpoints or emit natural media.
 \`BLOCKER_LEDGER.json\` names what is complete and what remains open.
+
+### Additional exploratory conditional-witness mechanism
+
+A separate **post-primary, nonconfirmatory** fixture changes the registered
+toy parameters to common corruption 0.03, cost penalty 0.01, witness accuracy
+0.98 and witness cost 1. Root (0,0,0,0) selects video; video feedback 0
+selects image, but feedback 1 triggers the new independent witness. Across
+all enumerated toy worlds, the witness is queried **31.8016%** of the time.
+
+In this *exploratory* configuration, dynamic terminal loss is 0.1022563
+versus static 0.1026000; dynamic CVaR90 0.4214181 versus static 0.4324116.
+Myopic and dynamic are **identical**; no strict long-horizon NDU advantage is
+supported. This does not close the original v3 R03 selective-query superiority
+claim, because it is a different tuned toy law and not an independent natural
+information source. Exact replay: \`run_selective_witness.py\` and
+\`evidence-selective-development.json\`.
