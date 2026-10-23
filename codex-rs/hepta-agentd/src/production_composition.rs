@@ -24,12 +24,17 @@ use crate::AgentdProductionWriterHost;
 use crate::AgentdUnixFinalUseGrantProvider;
 
 /// Complete host-owned input set. The current cut must already be independently
-/// retained and authenticated; this composition never captures or invents one.
+/// retained and authenticated before recovery; this composition never derives
+/// that initial authorization from the database being recovered. The same
+/// independently protected checkpoint must acknowledge the live post-recovery
+/// cut and remain attached to the returned restricted sender capability.
 /// The authority lease/verifier, protected FinalUse inputs, private issuer
 /// descriptor, and original destination are not discovered from local files or
 /// environment variables. No grant is accepted or requested during bootstrap.
-pub struct AgentdProductionHostInputs<'a> {
+pub struct AgentdProductionHostInputs<'a, C: ObjectiveSenderCheckpoint> {
     pub current_cut: CognitiveRecoveryRequirement<'a>,
+    pub checkpoint: Arc<C>,
+    pub checkpoint_deadline: Duration,
     pub authority: ProductionAuthorityLease,
     pub verifier: Arc<dyn ProductionAuthorityVerifier>,
     pub lease_id: String,
@@ -41,6 +46,15 @@ pub struct AgentdProductionHostInputs<'a> {
     pub target: Arc<dyn FinalUseProductionOutboxTarget>,
     pub reconcile_interval: Duration,
     pub notes: Option<AgentdProductionNotesInputs>,
+}
+
+/// Successful strict composition. The canonical embedding uses this sender,
+/// bound to the same original writer and checkpoint Arc used for bootstrap.
+/// The optional Notes identity is returned only after both handles install;
+/// neither value claims that a runtime, Objective or effect has started.
+pub struct AgentdProductionHostAttachment<C: ObjectiveSenderCheckpoint> {
+    pub notes_identity: Option<NotesTargetIdentity>,
+    pub original_sender: ProductionObjectiveSender<C>,
 }
 
 /// Optional original Session handoff, with independently supplied Notes trust.
@@ -88,6 +102,8 @@ impl AgentdConfig {
     /// Obtain the restricted Objective sender from the installed original owner.
     /// The trusted embedding must supply an independent current-cut checkpoint;
     /// no default checkpoint, new writer, database open or transport is created.
+    /// This remains an explicit trusted-embedding compatibility entry point.
+    /// Strict composition uses the returned attachment's already-bound sender.
     pub fn original_objective_sender<C: ObjectiveSenderCheckpoint>(
         &self,
         checkpoint: Arc<C>,
@@ -116,11 +132,17 @@ impl AgentdConfig {
 /// A failure leaves `config` unchanged. Original durable recovery/authority
 /// writes are never deleted or rolled back: a later retry still needs current
 /// independent recovery authorization. No runtime or effect starts here.
-pub async fn attach_production_operation_host(
+pub async fn attach_production_operation_host<C: ObjectiveSenderCheckpoint>(
     config: &mut AgentdConfig,
-    inputs: AgentdProductionHostInputs<'_>,
-) -> Result<Option<NotesTargetIdentity>, AgentdError> {
+    inputs: AgentdProductionHostInputs<'_, C>,
+) -> Result<AgentdProductionHostAttachment<C>, AgentdError> {
     config.require_unconfigured_production_hosts()?;
+    if inputs.checkpoint_deadline.is_zero() || inputs.checkpoint_deadline > Duration::from_secs(5) {
+        return Err(AgentdError::Invalid(
+            "production checkpoint requires a positive deadline of at most five seconds"
+                .to_string(),
+        ));
+    }
     match &inputs.current_cut {
         CognitiveRecoveryRequirement::Revoked => {
             return Err(AgentdError::GenerationFenced(
@@ -207,10 +229,28 @@ pub async fn attach_production_operation_host(
     } else {
         (operations, None)
     };
+    let writer = recovered_host.writer();
+    // The lease acquired by the original recovered writer changes its exact
+    // cut. Publish that live cut without creating a synthetic Objective. Notes
+    // attached is a descriptor ACK, not a CognitiveStore row in this cut.
+    writer
+        .checkpoint_current(inputs.checkpoint.as_ref(), inputs.checkpoint_deadline)
+        .await
+        .map_err(|error| {
+            AgentdError::Invalid(format!("production current-cut checkpoint: {error}"))
+        })?;
+    let original_sender = writer
+        .objective_sender(inputs.checkpoint, inputs.checkpoint_deadline)
+        .map_err(|error| {
+            AgentdError::Invalid(format!("original Objective sender unavailable: {error}"))
+        })?;
     config.install_production_hosts(recovered_host, operations)?;
     // A handoff ACK can precede a final live-authority refusal. Only return
     // this identity after both original handles were installed successfully.
-    Ok(notes_identity)
+    Ok(AgentdProductionHostAttachment {
+        notes_identity,
+        original_sender,
+    })
 }
 
 #[cfg(test)]

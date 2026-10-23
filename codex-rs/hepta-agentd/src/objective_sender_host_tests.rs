@@ -60,13 +60,17 @@ async fn installed_original_objective_sender_reuses_same_writer_and_live_verifie
 -> Result<(), Box<dyn Error>> {
     let (mut config, fixture) = Fixture::new().await?;
     let (inputs, probes, _peer) = fixture.inputs()?;
-    attach_production_operation_host(&mut config, inputs).await?;
-    let checkpoint = Arc::new(CheckpointProbe::default());
-    let sender =
-        config.original_objective_sender(Arc::clone(&checkpoint), Duration::from_secs(1))?;
+    let attachment = attach_production_operation_host(&mut config, inputs).await?;
+    let checkpoint = Arc::clone(&probes.checkpoint);
+    let sender = attachment.original_sender;
     let writer = config.production_writer_host().unwrap().writer();
-    let same_owner = writer.objective_sender(Arc::clone(&checkpoint), Duration::from_secs(1))?;
+    // The explicit compatibility getter remains available to trusted hosts.
+    // The strict path above returns the same original writer/provider binding.
+    let same_owner =
+        config.original_objective_sender(Arc::clone(&checkpoint), Duration::from_secs(1))?;
     let before = writer.recovery_anchor().await?;
+    assert_eq!(checkpoint.seen.lock().unwrap().len(), 1);
+    assert_eq!(checkpoint.seen.lock().unwrap()[0].0, before);
     let original = serde_json::to_string(&serde_json::json!({
         "issuer_id": "composition-objective-issuer", "key_epoch": 1,
         "message_id": "composition-objective-message", "sequence": 1,
@@ -102,7 +106,8 @@ async fn installed_original_objective_sender_reuses_same_writer_and_live_verifie
     ));
     let after = writer.recovery_anchor().await?;
     assert_ne!(before, after);
-    assert_eq!(checkpoint.seen.lock().unwrap()[0].0, after);
+    assert_eq!(checkpoint.seen.lock().unwrap().len(), 2);
+    assert_eq!(checkpoint.seen.lock().unwrap()[1].0, after);
     assert!(
         CognitiveStore::open(&config.identity().layout)
             .await

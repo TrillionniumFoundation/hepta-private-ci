@@ -111,15 +111,25 @@ jobs:
               "snapshot_acknowledged_does_not_promote_a_committed_observation_without_checkpoint_ack",
               "snapshot_acknowledged_holds_the_original_write_lock_through_the_current_cut_ack",
               "snapshot_acknowledged_recovers_local_cancellation_without_a_new_cancellation_right",
+              "checkpoint_current_cancelled_future_releases_lock_without_creating_sender_state",
+              "checkpoint_current_holds_the_original_write_lock_through_acknowledgement",
+              "checkpoint_current_invalid_deadline_and_terminal_leases_never_call_the_publisher",
+              "checkpoint_current_refusal_timeout_mismatch_and_live_revocation_preserve_the_cut",
+              "checkpoint_current_without_a_request_uses_the_original_fence_and_changes_no_rows",
           }
           REQUIRED_BRIDGE = {
               "uninstalled_original_objective_sender_refuses_without_a_new_owner",
               "installed_original_objective_sender_reuses_same_writer_and_live_verifier",
               "retained_signed_body_hash_matches_original_agentd_wire_projection",
           }
+          REQUIRED_BOOTSTRAP = {
+              "production_composition::tests::checkpoint_failures_and_post_ack_live_refusals_never_install_recovered_hosts",
+              "production_composition::tests::invalid_checkpoint_deadline_refuses_before_consulting_external_inputs",
+              "production_composition::notes_tests::attached_notes_ack_then_checkpoint_refusal_publishes_no_host_and_closes_target",
+          }
           REQUIRED_AGENTD_GROUPS = {
-              "production_composition::tests::": 7,
-              "production_composition::notes_tests::": 5,
+              "production_composition::tests::": 9,
+              "production_composition::notes_tests::": 6,
               "production_composition::objective_sender_tests::": 3,
               "production_authority::tests::": 5,
               "final_use_issuer::tests::": 7,
@@ -208,7 +218,7 @@ jobs:
               cases = root.findall(".//testcase")
               passed = {case.attrib["name"] for case in cases
                         if not any(case.findall(tag) for tag in ("failure", "error", "skipped"))}
-              required = REQUIRED_MEMORY if label == "memory" else REQUIRED_BRIDGE
+              required = REQUIRED_MEMORY if label == "memory" else REQUIRED_BRIDGE | REQUIRED_BOOTSTRAP
               groups = {prefix: sum(name.startswith(prefix) for name in passed)
                         for prefix in REQUIRED_AGENTD_GROUPS} if label == "agentd" else {}
               valid = (bool(cases) and int(root.attrib["tests"]) == len(cases)

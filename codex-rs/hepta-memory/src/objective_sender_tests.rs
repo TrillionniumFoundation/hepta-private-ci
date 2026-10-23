@@ -3,10 +3,238 @@ use super::*;
 use crate::CognitiveStore;
 use crate::cognitive_test_support::layout;
 use codex_hepta_contracts::Sha256Digest;
+use codex_state::SqliteConfig;
+use codex_utils_absolute_path::AbsolutePathBuf;
 use pretty_assertions::assert_eq;
-use sqlx::Connection;
-use sqlx::sqlite::SqliteConnectOptions;
 use sqlx::sqlite::SqliteConnection;
+
+async fn independent_writer_connection(store: &CognitiveStore) -> SqliteConnection {
+    let sqlite_home =
+        AbsolutePathBuf::try_from(store.path().parent().unwrap().to_path_buf()).unwrap();
+    // A separate shim-created pool supplies a genuinely independent SQLite
+    // connection, detached before closing that pool. It cannot borrow the
+    // original owner's transaction or reconnect through the owner's pool.
+    let pool = SqliteConfig::from_sqlite_home(sqlite_home)
+        .open_durable_evidence_pool(store.path())
+        .await
+        .unwrap();
+    let mut connection = pool.acquire().await.unwrap().detach();
+    pool.close().await;
+    sqlx::query("PRAGMA busy_timeout = 0")
+        .execute(&mut connection)
+        .await
+        .unwrap();
+    connection
+}
+
+#[tokio::test]
+async fn checkpoint_current_without_a_request_uses_the_original_fence_and_changes_no_rows() {
+    let fixture = Fixture::new().await;
+    let before = fixture.store.recovery_anchor().await.unwrap();
+    for _ in 0..2 {
+        let acknowledged = fixture
+            .writer
+            .checkpoint_current(fixture.checkpoint.as_ref(), Duration::from_secs(1))
+            .await
+            .unwrap();
+        assert_eq!(acknowledged, before);
+    }
+    assert_eq!(fixture.store.recovery_anchor().await.unwrap(), before);
+    let records: i64 = sqlx::query_scalar(
+        "SELECT (SELECT COUNT(*) FROM cognitive_objective_sender_requests)
+              + (SELECT COUNT(*) FROM cognitive_objective_sender_events)",
+    )
+    .fetch_one(&fixture.store.pool)
+    .await
+    .unwrap();
+    assert_eq!(records, 0);
+    let seen = fixture.checkpoint.seen.lock().unwrap();
+    assert_eq!(seen.len(), 2);
+    for (cut, fence) in seen.iter() {
+        assert_eq!(*cut, before);
+        assert_eq!(fence.owner_agent_id, *fixture.writer.owner_agent_id());
+        assert_eq!(fence.lease_id, fixture.writer.lease_id());
+        assert_eq!(fence.generation, fixture.writer.generation());
+        assert_eq!(
+            fence.authority_epoch,
+            fixture.writer.authority().authority_epoch
+        );
+        assert_eq!(fence.owner_epoch, fixture.writer.authority().owner_epoch);
+        assert_eq!(
+            fence.authority_grant_digest,
+            fixture.writer.authority().grant_digest
+        );
+        assert_eq!(
+            fence.fencing_token_digest,
+            fixture.writer.authority().fencing_token_digest().unwrap()
+        );
+        assert_eq!(
+            fence.expires_at_unix_seconds,
+            fixture.writer.authority().lease_expires_at_unix_seconds
+        );
+    }
+}
+
+#[tokio::test]
+async fn checkpoint_current_invalid_deadline_and_terminal_leases_never_call_the_publisher() {
+    let fixture = Fixture::new().await;
+    let before = fixture.store.recovery_anchor().await.unwrap();
+    for deadline in [Duration::ZERO, Duration::from_millis(5_001)] {
+        assert!(matches!(
+            fixture
+                .writer
+                .checkpoint_current(fixture.checkpoint.as_ref(), deadline)
+                .await,
+            Err(ObjectiveSenderError::Input(
+                ObjectiveSenderInputError::Bound
+            ))
+        ));
+    }
+    assert!(fixture.checkpoint.seen.lock().unwrap().is_empty());
+    assert_eq!(fixture.store.recovery_anchor().await.unwrap(), before);
+
+    for rollback in [false, true] {
+        let fixture = Fixture::new().await;
+        if rollback {
+            fixture.writer.rollback_lease().await.unwrap();
+        } else {
+            fixture.writer.release().await.unwrap();
+        }
+        let terminal = fixture.store.recovery_anchor().await.unwrap();
+        assert!(
+            fixture
+                .writer
+                .checkpoint_current(fixture.checkpoint.as_ref(), Duration::from_secs(1))
+                .await
+                .is_err()
+        );
+        assert!(fixture.checkpoint.seen.lock().unwrap().is_empty());
+        assert_eq!(fixture.store.recovery_anchor().await.unwrap(), terminal);
+    }
+}
+
+#[tokio::test]
+async fn checkpoint_current_refusal_timeout_mismatch_and_live_revocation_preserve_the_cut() {
+    for mode in [
+        CheckpointMode::Refuse,
+        CheckpointMode::Hold,
+        CheckpointMode::Mismatch,
+        CheckpointMode::RevokeAfterAcknowledgement,
+    ] {
+        let fixture = Fixture::new().await;
+        let before = fixture.store.recovery_anchor().await.unwrap();
+        *fixture.checkpoint.mode.lock().unwrap() = mode;
+        let result = fixture
+            .writer
+            .checkpoint_current(fixture.checkpoint.as_ref(), Duration::from_millis(5))
+            .await;
+        match mode {
+            CheckpointMode::RevokeAfterAcknowledgement => {
+                assert!(matches!(result, Err(ObjectiveSenderError::Writer(_))));
+            }
+            _ => assert!(matches!(
+                result,
+                Err(ObjectiveSenderError::AcknowledgementUnknown)
+            )),
+        }
+        assert_eq!(fixture.checkpoint.seen.lock().unwrap().len(), 1);
+        // This is an explicit later ACK of the original live owner, not a
+        // repeat mutation or a new Objective send opportunity.
+        fixture.verifier.revoked.store(false, Ordering::SeqCst);
+        *fixture.checkpoint.mode.lock().unwrap() = CheckpointMode::Accept;
+        assert_eq!(
+            fixture
+                .writer
+                .checkpoint_current(fixture.checkpoint.as_ref(), Duration::from_secs(1))
+                .await
+                .unwrap(),
+            before
+        );
+        assert_eq!(fixture.checkpoint.seen.lock().unwrap().len(), 2);
+        assert_eq!(fixture.store.recovery_anchor().await.unwrap(), before);
+    }
+}
+
+#[tokio::test]
+async fn checkpoint_current_holds_the_original_write_lock_through_acknowledgement() {
+    let fixture = Fixture::new().await;
+    let before = fixture.store.recovery_anchor().await.unwrap();
+    let mut competing = independent_writer_connection(&fixture.store).await;
+    *fixture.checkpoint.mode.lock().unwrap() = CheckpointMode::Hold;
+    let writer = Arc::clone(&fixture.writer);
+    let checkpoint = Arc::clone(&fixture.checkpoint);
+    let pending = tokio::spawn(async move {
+        writer
+            .checkpoint_current(checkpoint.as_ref(), Duration::from_secs(2))
+            .await
+    });
+    tokio::time::timeout(
+        Duration::from_secs(2),
+        fixture.checkpoint.entered.notified(),
+    )
+    .await
+    .unwrap();
+    let locked = sqlx::query("BEGIN IMMEDIATE")
+        .execute(&mut competing)
+        .await
+        .unwrap_err();
+    assert_eq!(
+        locked.as_database_error().unwrap().code().as_deref(),
+        Some("5")
+    );
+    fixture.checkpoint.release.notify_one();
+    assert_eq!(pending.await.unwrap().unwrap(), before);
+    sqlx::query("BEGIN IMMEDIATE")
+        .execute(&mut competing)
+        .await
+        .unwrap();
+    sqlx::query("ROLLBACK")
+        .execute(&mut competing)
+        .await
+        .unwrap();
+    assert_eq!(fixture.store.recovery_anchor().await.unwrap(), before);
+}
+
+#[tokio::test]
+async fn checkpoint_current_cancelled_future_releases_lock_without_creating_sender_state() {
+    let fixture = Fixture::new().await;
+    let before = fixture.store.recovery_anchor().await.unwrap();
+    *fixture.checkpoint.mode.lock().unwrap() = CheckpointMode::Hold;
+    let writer = Arc::clone(&fixture.writer);
+    let checkpoint = Arc::clone(&fixture.checkpoint);
+    let pending = tokio::spawn(async move {
+        writer
+            .checkpoint_current(checkpoint.as_ref(), Duration::from_secs(2))
+            .await
+    });
+    tokio::time::timeout(
+        Duration::from_secs(2),
+        fixture.checkpoint.entered.notified(),
+    )
+    .await
+    .unwrap();
+    pending.abort();
+    assert!(matches!(pending.await, Err(error) if error.is_cancelled()));
+    assert_eq!(fixture.store.recovery_anchor().await.unwrap(), before);
+    *fixture.checkpoint.mode.lock().unwrap() = CheckpointMode::Accept;
+    assert_eq!(
+        fixture
+            .writer
+            .checkpoint_current(fixture.checkpoint.as_ref(), Duration::from_secs(1))
+            .await
+            .unwrap(),
+        before
+    );
+    let records: i64 = sqlx::query_scalar(
+        "SELECT (SELECT COUNT(*) FROM cognitive_objective_sender_requests)
+              + (SELECT COUNT(*) FROM cognitive_objective_sender_events)",
+    )
+    .fetch_one(&fixture.store.pool)
+    .await
+    .unwrap();
+    assert_eq!(records, 0);
+    assert_eq!(fixture.checkpoint.seen.lock().unwrap().len(), 2);
+}
 
 #[derive(Clone, Copy)]
 enum ObservationPath {
@@ -248,10 +476,7 @@ async fn snapshot_acknowledged_holds_the_original_write_lock_through_the_current
     let sender = fixture.sender();
     drop(sender.retain_before_send(request()).await.unwrap());
     let recovered = sender.recover_pending(request()).await.unwrap();
-    let options = SqliteConnectOptions::new()
-        .filename(fixture.store.path())
-        .busy_timeout(Duration::ZERO);
-    let mut competing_writer = SqliteConnection::connect_with(&options).await.unwrap();
+    let mut competing_writer = independent_writer_connection(&fixture.store).await;
     *fixture.checkpoint.mode.lock().unwrap() = CheckpointMode::Hold;
     let read = tokio::spawn(async move { sender.snapshot_acknowledged(&recovered).await });
     fixture.checkpoint.entered.notified().await;
@@ -436,10 +661,7 @@ async fn failed_mismatched_or_revoked_final_checkpoint_leaves_unknown_not_a_new_
 #[tokio::test]
 async fn checkpoint_holds_original_sqlite_write_serialization_until_acknowledgement() {
     let fixture = Fixture::new().await;
-    let options = SqliteConnectOptions::new()
-        .filename(fixture.store.path())
-        .busy_timeout(Duration::ZERO);
-    let mut other_writer = SqliteConnection::connect_with(&options).await.unwrap();
+    let mut other_writer = independent_writer_connection(&fixture.store).await;
     *fixture.checkpoint.mode.lock().unwrap() = CheckpointMode::Hold;
     let sender = fixture.sender();
     let retain = tokio::spawn(async move { sender.retain_before_send(request()).await });

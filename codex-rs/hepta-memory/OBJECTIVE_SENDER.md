@@ -14,7 +14,7 @@ lockfile change is required.
 
 | File | Responsibility |
 | --- | --- |
-| `src/objective_sender.rs` | Restricted capability on the same `Arc<ProductionDurableWriter>`, one local send transition, checked observation append, cancellation, post-commit checkpoint protocol and acknowledged recovery snapshots. |
+| `src/objective_sender.rs` | Original active-writer current-cut ACK, restricted capability on the same `Arc<ProductionDurableWriter>`, one local send transition, checked observation append, cancellation, shared post-commit checkpoint protocol and acknowledged recovery snapshots. |
 | `src/objective_sender_model.rs` | Bounded structural projection of the original `AuthBusObjectiveIngress`, exact input bytes, complete transport origin and writer fence. |
 | `src/objective_sender_store.rs` | Original SQLite transactions for atomic retention, immutable events and bounded private enumeration. |
 | `src/objective_sender_integrity.rs` | Startup/recovery validation of raw bytes, metadata, original historical leases and the complete event chain. |
@@ -76,6 +76,9 @@ meet these requirements; the timeout cannot interrupt a blocked callback or
 CPU work that does not yield. Cancellation must release external resources
 without continuing a stale publication in the background. No extra worker,
 runtime or substitute authority service is supplied by this capability.
+The deadline applies only to the acknowledgement future. Waiting for the
+original transaction, bounded full-state capture, synchronous future construction,
+authority checks and rollback are not covered by an overall wall-clock deadline.
 
 An error after the first commit, including acknowledgement refusal, mismatch,
 deadline, cancellation or final authority rejection, grants no ticket. Returned
@@ -94,6 +97,41 @@ The acknowledgement establishes a current cut at this serialized boundary.
 This slice does not retrofit checkpoint publication onto every other original
 writer operation. Later writes in other domains require their own host
 checkpoint integration; an outdated cut must cause exact recovery to refuse.
+
+### Current active writer without an Objective request
+
+`ProductionDurableWriter::checkpoint_current(&checkpoint, deadline)` exposes
+that same original transaction and ACK protocol without creating a request,
+sender event, ticket, cancellation right or sending permission. It first
+validates the positive, at-most-five-second ACK deadline and the retained live
+authority, then captures the full cut with the original active lease and writer
+fence under `BEGIN IMMEDIATE`. The independent ACK must match that exact cut.
+The write lock remains held through the post-ACK live check; after read-only
+rollback, another live check precedes returning the cut.
+
+The sender's post-commit ACK delegates to this entry point. An acknowledged
+snapshot uses the same private transaction helper without releasing its original
+snapshot transaction. The returned cut describes the serialized checkpoint
+boundary; another original mutation after unlock can make it stale. It is not
+a claim that the cut remains current at every later observation.
+
+This entry point requires the original **current active lease**. It refuses an
+expired, superseded, released or rolled-back writer, and does not call the
+publisher after a terminal lease. It cannot publish a cut after `release` or
+`rollback_lease`; terminal-cut publication requires a separate original-authority
+transaction design. A trusted host may use it at an active-writer success
+boundary, but it does not retrofit publication onto every semantic mutation,
+dispatch claim or outcome reconciliation. In particular, existing Notes terminal
+receipt retirement still has its own missing independent full-cut boundary.
+
+The strict Agentd production factory now requires an explicit `Arc<C>` of this
+same checkpoint and a deadline. It preserves the independently authenticated
+**initial** recovery cut, recovers the original owner and acquires its lease,
+completes any original Notes handoff, then acknowledges the changed live cut
+before installing either config handle. Its typed result returns an Objective
+sender bound to that same writer and checkpoint Arc. It never derives recovery
+authorization from the database being recovered. Notes `attached` remains a
+descriptor handshake, not a persisted CognitiveStore record in the cut.
 
 ## Host call sequence
 
@@ -327,6 +365,19 @@ tests. The latter serializes the actual original `AuthBusObjectiveBody` through
 Agentd's own payload function, covering Unicode and digest spelling, and keeps
 the original empty-source refusal. These tests must run
 in the original Agentd package and are not covered by the memory-only command.
+The explicit getter remains a trusted-embedding compatibility API: it may be
+given another checkpoint. The canonical strict path instead consumes
+`AgentdProductionHostAttachment::original_sender`, already bound to the factory's
+writer and checkpoint. No global prohibition on other trusted callers choosing
+a provider is claimed.
+
+The no-request checkpoint regressions cover unchanged full cuts and zero sender
+rows, exact original fence fields, invalid deadlines, terminal leases with zero
+publisher calls, refused/held/mismatched ACKs, final live revocation, actual
+SQLite write-lock contention, cancellation and later explicit acknowledgement.
+Agentd adds mandatory-bootstrap and real Notes handoff refusal cases. These are
+source-level test descriptions; execution of an earlier source version does not
+qualify this checkpoint refactor or the Agentd factory.
 
 Production composition still requires the real independent checkpoint
 provider, the trusted adapter from the original Session owner port to this

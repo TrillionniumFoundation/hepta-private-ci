@@ -118,6 +118,41 @@ pub struct ProductionObjectiveSender<C: ObjectiveSenderCheckpoint> {
 }
 
 impl ProductionDurableWriter {
+    /// Acknowledge this original active writer's complete current recovery cut.
+    /// No Objective request, event, ticket or sending permission is created.
+    /// The initial recovery cut must have been independently authorized before
+    /// opening this writer; this is not a way to authorize a suspect database.
+    /// Released, rolled-back, expired or superseded leases remain refused.
+    ///
+    /// The original BEGIN IMMEDIATE lock is held through the same independent
+    /// checkpoint and live checks used by Objective retention. The positive,
+    /// at-most-five-second deadline bounds only the cooperative ACK future:
+    /// begin, cut capture, verifier and rollback are not an overall wall-clock
+    /// timeout. Synchronous callbacks and each future poll must be bounded and
+    /// nonblocking, with no stale background publication after cancellation.
+    pub async fn checkpoint_current<C: ObjectiveSenderCheckpoint>(
+        &self,
+        checkpoint: &C,
+        deadline: Duration,
+    ) -> Result<CognitiveRecoveryAnchor, ObjectiveSenderError> {
+        if deadline.is_zero() || deadline > MAX_CHECKPOINT_DEADLINE {
+            return Err(ObjectiveSenderInputError::Bound.into());
+        }
+        self.verify_current_authority().await?;
+        let mut transaction = self
+            .store
+            .pool
+            .begin_with("BEGIN IMMEDIATE")
+            .await
+            .map_err(unavailable)?;
+        let current = self
+            .checkpoint_current_transaction(&mut transaction, checkpoint, deadline)
+            .await?;
+        transaction.rollback().await.map_err(unavailable)?;
+        self.sender_live_check()?;
+        Ok(current)
+    }
+
     pub fn objective_sender<C: ObjectiveSenderCheckpoint>(
         self: &Arc<Self>,
         checkpoint: Arc<C>,
@@ -148,6 +183,50 @@ impl ProductionDurableWriter {
             .verify(&self.authority, self.store.owner_agent_id())
             .map_err(ProductionWriterError::AuthorityRejected)
     }
+
+    async fn current_fence(
+        &self,
+        transaction: &mut Transaction<'_, Sqlite>,
+    ) -> Result<model::OwnerFence, ObjectiveSenderError> {
+        let lease = self
+            .lease
+            .require_current_transaction(transaction)
+            .await
+            .map_err(ProductionWriterError::from)?;
+        self.sender_live_check()?;
+        Ok(model::OwnerFence {
+            owner_agent_id: self.owner_agent_id().clone(),
+            lease_id: self.lease_id().to_string(),
+            lease_sha256: lease.lease_sha256,
+            generation: self.generation(),
+            authority_epoch: self.authority.authority_epoch,
+            owner_epoch: self.authority.owner_epoch,
+            authority_grant_digest: self.authority.grant_digest.clone(),
+            fencing_token_digest: self.authority.fencing_token_digest()?,
+            expires_at_unix_seconds: self.authority.lease_expires_at_unix_seconds,
+        })
+    }
+
+    async fn checkpoint_current_transaction<C: ObjectiveSenderCheckpoint>(
+        &self,
+        transaction: &mut Transaction<'_, Sqlite>,
+        checkpoint: &C,
+        deadline: Duration,
+    ) -> Result<CognitiveRecoveryAnchor, ObjectiveSenderError> {
+        let writer = self.current_fence(transaction).await?;
+        let current = capture_recovery_anchor(transaction, self.owner_agent_id()).await?;
+        self.sender_live_check()?;
+        let acknowledged =
+            tokio::time::timeout(deadline, checkpoint.acknowledge_current(&current, &writer))
+                .await
+                .map_err(|_| ObjectiveSenderError::AcknowledgementUnknown)?
+                .map_err(|_| ObjectiveSenderError::AcknowledgementUnknown)?;
+        if acknowledged != current {
+            return Err(ObjectiveSenderError::AcknowledgementUnknown);
+        }
+        self.sender_live_check()?;
+        Ok(current)
+    }
 }
 
 impl<C: ObjectiveSenderCheckpoint> ProductionObjectiveSender<C> {
@@ -172,7 +251,7 @@ impl<C: ObjectiveSenderCheckpoint> ProductionObjectiveSender<C> {
             .begin_with("BEGIN IMMEDIATE")
             .await
             .map_err(unavailable)?;
-        let fence = self.current_fence(&mut transaction).await?;
+        let fence = self.writer.current_fence(&mut transaction).await?;
         store::retain(&mut transaction, &request, &fence).await?;
         self.writer.sender_live_check()?;
         transaction
@@ -293,7 +372,13 @@ impl<C: ObjectiveSenderCheckpoint> ProductionObjectiveSender<C> {
             .map_err(unavailable)?;
         store::require_request(&mut transaction, &ticket.request).await?;
         let snapshot = store::snapshot(&mut transaction, &ticket.request).await?;
-        self.acknowledge_transaction(&mut transaction).await?;
+        self.writer
+            .checkpoint_current_transaction(
+                &mut transaction,
+                self.checkpoint.as_ref(),
+                self.deadline,
+            )
+            .await?;
         transaction.rollback().await.map_err(unavailable)?;
         self.writer.sender_live_check()?;
         Ok(snapshot)
@@ -364,7 +449,7 @@ impl<C: ObjectiveSenderCheckpoint> ProductionObjectiveSender<C> {
             .begin_with("BEGIN IMMEDIATE")
             .await
             .map_err(unavailable)?;
-        let fence = self.current_fence(&mut transaction).await?;
+        let fence = self.writer.current_fence(&mut transaction).await?;
         store::require_request(&mut transaction, &ticket.request).await?;
         if let Some(check) = check {
             let snapshot = store::snapshot(&mut transaction, &ticket.request).await?;
@@ -381,65 +466,13 @@ impl<C: ObjectiveSenderCheckpoint> ProductionObjectiveSender<C> {
             .map_err(|_| ObjectiveSenderError::AcknowledgementUnknown)
     }
 
-    async fn current_fence(
-        &self,
-        transaction: &mut Transaction<'_, Sqlite>,
-    ) -> Result<model::OwnerFence, ObjectiveSenderError> {
-        let lease = self
-            .writer
-            .lease
-            .require_current_transaction(transaction)
-            .await
-            .map_err(ProductionWriterError::from)?;
-        self.writer.sender_live_check()?;
-        Ok(model::OwnerFence {
-            owner_agent_id: self.writer.owner_agent_id().clone(),
-            lease_id: self.writer.lease_id().to_string(),
-            lease_sha256: lease.lease_sha256,
-            generation: self.writer.generation(),
-            authority_epoch: self.writer.authority.authority_epoch,
-            owner_epoch: self.writer.authority.owner_epoch,
-            authority_grant_digest: self.writer.authority.grant_digest.clone(),
-            fencing_token_digest: self.writer.authority.fencing_token_digest()?,
-            expires_at_unix_seconds: self.writer.authority.lease_expires_at_unix_seconds,
-        })
-    }
-
     async fn acknowledge_committed(&self) -> Result<(), ObjectiveSenderError> {
         // This is the original database-wide SQLite write serialization, not a
         // capability-local Mutex. Intervening commits are included in capture.
-        let mut transaction = self
-            .writer
-            .store
-            .pool
-            .begin_with("BEGIN IMMEDIATE")
+        self.writer
+            .checkpoint_current(self.checkpoint.as_ref(), self.deadline)
             .await
-            .map_err(unavailable)?;
-        self.acknowledge_transaction(&mut transaction).await?;
-        transaction.rollback().await.map_err(unavailable)?;
-        self.writer.sender_live_check()?;
-        Ok(())
-    }
-
-    async fn acknowledge_transaction(
-        &self,
-        transaction: &mut Transaction<'_, Sqlite>,
-    ) -> Result<(), ObjectiveSenderError> {
-        let writer = self.current_fence(transaction).await?;
-        let current = capture_recovery_anchor(transaction, self.writer.owner_agent_id()).await?;
-        self.writer.sender_live_check()?;
-        let acknowledged = tokio::time::timeout(
-            self.deadline,
-            self.checkpoint.acknowledge_current(&current, &writer),
-        )
-        .await
-        .map_err(|_| ObjectiveSenderError::AcknowledgementUnknown)?
-        .map_err(|_| ObjectiveSenderError::AcknowledgementUnknown)?;
-        if acknowledged != current {
-            return Err(ObjectiveSenderError::AcknowledgementUnknown);
-        }
-        self.writer.sender_live_check()?;
-        Ok(())
+            .map(|_| ())
     }
 }
 

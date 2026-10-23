@@ -1,6 +1,7 @@
 //! Real original Notes descriptor/ACK handoff with qualification-only inputs.
 
 use super::fixture::AckFailure;
+use super::fixture::CheckpointMode;
 use super::fixture::Fixture;
 use super::*;
 use pretty_assertions::assert_eq;
@@ -97,8 +98,11 @@ async fn original_notes_offer_ack_returns_identity_only_after_both_handles_insta
         final_use: notes_inputs.final_use,
     });
     let registered = attach_production_operation_host(&mut config, inputs).await?;
-    assert_eq!(registered, Some(identity()));
+    assert_eq!(registered.notes_identity, Some(identity()));
     let original_host = config.production_writer_host().unwrap();
+    let current = original_host.writer().recovery_anchor().await?;
+    assert_eq!(probes.checkpoint.seen.lock().unwrap().len(), 1);
+    assert_eq!(probes.checkpoint.seen.lock().unwrap()[0].0, current);
     let operations = config.take_production_operations().unwrap();
     let (runtime_host, _) = operations.attach(original_host.clone()).await?;
     assert!(Arc::ptr_eq(&original_host.writer(), &runtime_host.writer()));
@@ -246,4 +250,47 @@ async fn notes_independent_frontier_refusal_does_not_publish_or_read_handoff()
     assert_eq!(probes.target.effects.load(Ordering::SeqCst), 0);
     assert_empty_stream(application)?;
     assert_empty_stream(issuer_peer)
+}
+
+#[tokio::test]
+async fn attached_notes_ack_then_checkpoint_refusal_publishes_no_host_and_closes_target()
+-> Result<(), Box<dyn Error>> {
+    for mode in [
+        CheckpointMode::Refuse,
+        CheckpointMode::Hold,
+        CheckpointMode::Mismatch,
+    ] {
+        let (mut config, fixture) = Fixture::new().await?;
+        let (mut inputs, probes, issuer_peer) = fixture.inputs()?;
+        *probes.checkpoint.mode.lock().unwrap() = mode;
+        inputs.checkpoint_deadline = Duration::from_millis(5);
+        let (notes_inputs, notes_probes, _unused_peer) = fixture.inputs()?;
+        let (owner, session) = UnixDatagram::pair()?;
+        let (mut application, _recovery_peer) = send_offer(&session, true, false)?;
+        inputs.notes = Some(AgentdProductionNotesInputs {
+            bootstrap: owner,
+            final_use: notes_inputs.final_use,
+        });
+        assert!(
+            attach_production_operation_host(&mut config, inputs)
+                .await
+                .is_err()
+        );
+        assert_uninstalled(&mut config);
+        session.set_nonblocking(true)?;
+        let mut bytes = [0_u8; 1024];
+        let length = session.recv(&mut bytes)?;
+        let ack: serde_json::Value = serde_json::from_slice(&bytes[..length])?;
+        assert_eq!(ack["status"], "attached");
+        assert_eq!(ack["target"], serde_json::to_value(identity())?);
+        let seen = probes.checkpoint.seen.lock().unwrap().clone();
+        assert_eq!(seen.len(), 1);
+        assert_ne!(seen[0].0, fixture.cut);
+        assert_eq!(notes_probes.frontier.loads.load(Ordering::SeqCst), 1);
+        assert_eq!(probes.target.effects.load(Ordering::SeqCst), 0);
+        application.set_nonblocking(true)?;
+        assert_eq!(application.read(&mut [0; 1])?, 0);
+        assert_empty_stream(issuer_peer)?;
+    }
+    Ok(())
 }
