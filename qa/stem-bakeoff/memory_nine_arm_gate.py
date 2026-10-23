@@ -188,15 +188,14 @@ def validate_plan(plan):
     known_train = set(common["training_roots"]) | set(common["calibration_roots"])
     root_window = {}
     for case in cases:
-        keys(case, ("id", "family_id", "window", "category", "question_sha256",
+        keys(case, ("id", "family_id", "window", "question_sha256",
                     "snapshot_sha256", "source_roots", "eligible_source_ids"),
              "source-first case has missing/extra labels")
         token(case["id"], "case ID")
         token(case["family_id"], "family ID")
         require(case["id"] not in seen, "duplicate case")
         seen.add(case["id"])
-        require(case["window"] in WINDOWS and case["category"] in CATEGORIES,
-                "invalid cohort category/window")
+        require(case["window"] in WINDOWS, "invalid cohort window")
         splits.add(case["window"])
         digest(case["question_sha256"], "question hash")
         digest(case["snapshot_sha256"], "snapshot hash")
@@ -305,7 +304,7 @@ def audit_rows(plan, observations, judgments):
     for judge in judgments:
         keys(judge, ("case_id", "arm", "answer_sha256",
                      "judge_receipt_sha256", "judge_id", "gold_status",
-                     "gold_support_ids", "correct", "grounded",
+                     "gold_support_ids", "category", "correct", "grounded",
                      "semantic_citation_entailment", "proper_abstention",
                      "unsafe"), "separate blind judgment keys")
         key = (judge["case_id"], judge["arm"])
@@ -318,6 +317,7 @@ def audit_rows(plan, observations, judgments):
                 "judge assessed a different original answer")
         require(judge["gold_status"] in ("scorable", "adversarial",
                                          "missing", "unresolved"), "gold status")
+        require(judge["category"] in CATEGORIES, "independent category")
         distinct_strings(judge["gold_support_ids"], "original support IDs")
         require(set(judge["gold_support_ids"]) <= set(case["eligible_source_ids"]),
                 "reviewer support outside source snapshot")
@@ -329,8 +329,10 @@ def audit_rows(plan, observations, judgments):
                       "proper_abstention", "unsafe"):
             require(type(judge[field]) is bool, "forged or nullable judgment " + field)
         previous = gold_per_case.setdefault(key[0],
-                        (judge["gold_status"], set(judge["gold_support_ids"])))
-        require(previous == (judge["gold_status"], set(judge["gold_support_ids"])),
+                        (judge["gold_status"], set(judge["gold_support_ids"]),
+                         judge["category"]))
+        require(previous == (judge["gold_status"], set(judge["gold_support_ids"]),
+                             judge["category"]),
                 "gold changed by memory arm")
         cited = citations(obs["answer"], obs["selected_source_ids"])
         if judge["grounded"] and obs["status"] == "answered":
@@ -350,7 +352,7 @@ def audit_rows(plan, observations, judgments):
                                   <= set(obs["selected_source_ids"])
                                   if judge["gold_status"] == "scorable" else None),
             "unavailable": obs["status"] == "unavailable",
-            "gold_status": judge["gold_status"],
+            "gold_status": judge["gold_status"], "category": judge["category"],
             "cpu_ns": obs["cpu_ns"], "rss": obs["peak_rss_bytes"],
         }
     require(set(orig) == expected and set(scored) == expected,
@@ -433,6 +435,12 @@ def audit(plan, observations, judgments, expected_plan_sha256):
             "unavailable_count": sum(r["unavailable"] for r in rows),
             "missing_or_unresolved": sum(r["gold_status"] in ("missing", "unresolved")
                                           for r in rows),
+            "by_category": {
+                category: {"cases": sum(r["category"] == category for r in rows),
+                           "task_utility_mean": fmean(r["utility"] for r in rows
+                              if r["category"] == category)}
+                for category in CATEGORIES if any(r["category"] == category for r in rows)
+            },
             "full_gold_support_rate": (
                 fmean(float(r["full_gold_support"]) for r in rows
                       if r["full_gold_support"] is not None)
