@@ -124,6 +124,12 @@ under all caps with positive content/NDU validation means, but control CPU-net
 benefit remained -0.002094. It is operator-allocation limited, with CPU headroom;
 the core generation claim still awaits independent evidence and the stronger
 dynamic gate remains failed. Its actual standalone RGB/reload smoke passed.
+The [t10 folded-adaptation build](runs/codex-cloud-efficient-r2-t10/REPORT.md)
+also exited 2 under all caps. It converted saved encoder work into more real
+content updates (NDU 636/637/637; control 490/475/402), while the control group
+became CPU-limited. Core content/NDU validation means stayed positive, but
+complete control CPU-net benefit remained -0.002650. This is still a failed
+readiness result, not independent first-goal acceptance. The r2 test stays shut.
 
 **The first configured Codex Cloud execution passed the frozen finite-scene
 acceptance on 2026-10-23**, using source commit
