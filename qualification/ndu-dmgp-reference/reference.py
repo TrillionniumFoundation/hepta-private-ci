@@ -680,10 +680,15 @@ def reference_report() -> dict[str, object]:
         raise GateRejected("evaluation scenario leaked into training data")
     learned_router = fit_static_topk_router(train_scenarios, objective)
     # Only TRAIN episodes can inform conditional covariance; evaluation stays held out.
+    # Use TRAIN realized-minus-forecast residuals, never synthesized jitter
+    # over forecasts. Constant or unidentified directions must disable A4 risk.
+    # This is still SYNTHETIC supervision; it is not an external observation.
+    if any(a.observed_gain is None for s in train_scenarios for a in s.actions):
+        raise GateRejected("covariance train row lacks observed expert outcome")
     outcomes = {
-        s.episode: {a.name: a.immediate_gain + (i % 5 - 2)*.05*(j+1)
-                    for j, a in enumerate(s.actions)}
-        for i, s in enumerate(train_scenarios)
+        s.episode: {a.name: a.observed_gain - a.immediate_gain
+                    for a in s.actions}
+        for s in train_scenarios
     }
     cov = paired_covariance(outcomes, [a.name for a in scenarios[0].actions], rank=2)
     matrix = [run_shadow_arm(arm, scenario, objective, cov,
